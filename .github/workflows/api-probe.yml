@@ -10,10 +10,6 @@ name: api-probe
 #   gh workflow run api-probe.yml -f classes=net.minecraft.world.item.Item
 
 on:
-  push:
-    # workflow_dispatch n'est utilisable que depuis la branche par defaut :
-    # ce declencheur sert a obtenir la premiere sonde avant le merge.
-    branches: ["chore/sonde-api"]
   workflow_dispatch:
     inputs:
       classes:
@@ -52,20 +48,17 @@ jobs:
 
       - name: Sonder
         env:
-          # Valeurs par defaut pour le declencheur push : exactement ce dont la
-          # phase 1 a besoin (attachments, enregistrement du HUD, commandes).
-          DEFAULT_CLASSES: >-
-            net.minecraft.commands.Commands,
-            net.minecraft.server.permissions.PermissionSet
-          DEFAULT_PACKAGES: >-
-            net.minecraft.server.permissions
+          # Passage par l'environnement plutot que par interpolation directe
+          # dans le script : un nom de classe imbriquee comme
+          # BlockEvent$EntityPlaceEvent serait sinon vide par l'expansion de
+          # variable du shell.
+          IN_CLASSES: ${{ inputs.classes }}
+          IN_PACKAGES: ${{ inputs.packages }}
         run: |
-          CLASSES="${{ inputs.classes }}"
-          PACKAGES="${{ inputs.packages }}"
-          if [ -z "$CLASSES" ] && [ -z "$PACKAGES" ]; then
-            CLASSES="$DEFAULT_CLASSES"
-            PACKAGES="$DEFAULT_PACKAGES"
+          if [ -z "$IN_CLASSES" ] && [ -z "$IN_PACKAGES" ]; then
+            echo "::error::Rien a sonder : renseigne classes ou packages."
+            exit 1
           fi
           gradle apiProbe --no-daemon -q \
-            -Pprobe="$(echo "$CLASSES" | tr -d ' \n')" \
-            -Ppkg="$(echo "$PACKAGES" | tr -d ' \n')"
+            -Pprobe="$(echo "$IN_CLASSES" | tr -d ' \n')" \
+            -Ppkg="$(echo "$IN_PACKAGES" | tr -d ' \n')"
