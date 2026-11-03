@@ -1,0 +1,95 @@
+plugins {
+    id 'java'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = "${mod_version}+mc${minecraft_version}"
+group = mod_group_id
+base.archivesName = mod_id
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version as int)
+}
+
+repositories {
+    mavenCentral()
+}
+
+neoForge {
+    version = neo_version
+
+    // Noms de parametres lisibles dans le decompile. Decommenter si besoin,
+    // en verifiant qu'un mapping Parchment existe pour 26.2.
+    // parchment {
+    //     minecraftVersion = minecraft_version
+    //     mappingsVersion = 'TODO'
+    // }
+
+    runs {
+        configureEach {
+            systemProperty 'forge.logging.markers', ''
+            systemProperty 'forge.logging.console.level', 'debug'
+            gameDirectory = file('run')
+        }
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+        clientData {
+            clientData()
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+dependencies {
+    // NTM NEXT arrivera ici en compileOnly (phase 10), jamais en implementation :
+    // le mod doit tourner sans lui.
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+    options.release = java_version as int
+}
+
+// Injecte les proprietes de gradle.properties dans les metadonnees.
+tasks.named('processResources', ProcessResources).configure {
+    def props = [
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_license            : mod_license,
+            mod_description        : mod_description,
+            minecraft_version_range: minecraft_version_range,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+    ]
+    inputs.properties(props)
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand props
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                'Specification-Title'   : mod_name,
+                'Specification-Version' : mod_version,
+                'Implementation-Title'  : mod_name,
+                'Implementation-Version': mod_version,
+        ])
+    }
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
