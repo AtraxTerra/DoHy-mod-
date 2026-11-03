@@ -9,9 +9,8 @@ pluginManagement {
     }
 }
 
-plugins {
-    // Cache des metadonnees NeoForge entre les builds CI.
-    id 'net.neoforged.moddev.repositories' version '2.0.148'
-}
+// Ne pas appliquer 'net.neoforged.moddev.repositories' ici : il met le plugin
+// moddev sur le classpath, et la demande versionnee de build.gradle echoue
+// ensuite avec "already on the classpath with an unknown version".
 
 rootProject.name = 'DoHy'
