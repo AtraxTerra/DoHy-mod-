@@ -53,7 +53,7 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 
 1. [x] Monnaie, persistance, HUD, **backups**
 2. [x] **Tracking des blocs posés** (chunk attachment) — bloquant pour 5 et 6
-3. [~] Catalogue de prix, `/worth`, `/sell` — **le GUI du shop et `/sellall` restent à faire**
+3. [x] Shop complet : catalogue de prix, `/worth`, `/sell`, **`/shop` en coffre et `/sellall`**
 4. [ ] Prix dynamiques et oubli
 5. [ ] Collections
 6. [ ] Skills et perks
@@ -108,11 +108,18 @@ de vérité, et la CI vérifie que la copie a bien atterri dans le jar — si el
 casse, le mod se charge mais plus rien ne se vend, un symptôme qui ne ressemble
 pas à sa cause.
 `/worth`, `/sell`, `/sell stack`, `/dohy reload`.
-**Pas encore fait** : le GUI du shop, et `/sellall` sur l'inventaire entier. La
-disposition interne de l'inventaire a changé dans la ligne 26.x ; lire est sans
-risque (l'interface `Container` est stable, c'est ce qu'utilise `/worth`), mais
-supprimer des piles par le mauvais index détruirait l'équipement du joueur. À
-sonder avant d'écrire.
+**Phase 3b — le shop.** Choix d'implémentation retenu avec le joueur : **shop en
+coffre** plutôt qu'écran custom. `ShopMenu` est une sous-classe de `ChestMenu`
+déclarée avec le type vanilla `GENERIC_9x6`, donc **aucun code client** — ni
+écran, ni `MenuType`, ni paquet. Le rendu en mode retenu de 26.2, qui est la plus
+grosse inconnue du projet, est ainsi entièrement contourné pour un premier shop
+fonctionnel.
+Le conteneur ne contient que des copies d'affichage et `super.clicked` n'est
+jamais appelé : aucun item ne peut être déplacé, dupliqué ou perdu.
+`/sellall` passe par `getNonEquipmentItems()`, qui exclut l'équipement porté —
+c'est la vérification qui avait fait reporter la commande.
+Si un écran custom devient souhaitable (afficher les prix dynamiques, un
+historique), c'est à ce moment-là qu'il faudra affronter `extractBackground`.
 
 Signatures 26.2 ajoutées à la table ci-dessous : `BlockEvent.BreakEvent`,
 `LevelChunk.markUnsaved`, `Registry.getOptional`.
@@ -145,6 +152,10 @@ Elles sont consignees ici parce qu'elles vont se reposer a chaque phase :
 | `LevelChunk` | `markUnsaved()` / `isUnsaved()` |
 | `Registry` | `getOptional(Identifier)` → `Optional<T>`, `get(...)` → `Optional<Holder.Reference<T>>` |
 | Permissions | `Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)` |
+| `ClickType` | renommé **`ContainerInput`** (enum : PICKUP, QUICK_MOVE, SWAP, CLONE, THROW, PICKUP_ALL, QUICK_CRAFT) ; `clicked(int, int, ContainerInput, Player)` |
+| `Inventory` | **`getNonEquipmentItems()`** → `NonNullList<ItemStack>`, exclut l'équipement porté |
+| `ChestMenu` | constructeur public `(MenuType, int, Inventory, Container, int rows)` → sous-classable avec `MenuType.GENERIC_9x6` |
+| `ServerPlayer.playNotifySound` | signature changée → passer par `Level.playSound` |
 
 **Phase 1 validée en jeu** : solde affiché, crédit et animation de gain,
 `/money hide`, persistance au rechargement du monde, conservation à la mort, et
