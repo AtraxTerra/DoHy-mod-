@@ -4,7 +4,6 @@ import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
 import fr.atraxterra.dohy.util.MoneyFormat;
-import net.minecraft.Util;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -53,7 +52,7 @@ public final class MoneyHudLayer implements GuiLayer {
     private void renderInner(GuiGraphicsExtractor graphics) {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
-        if (player == null || minecraft.options.hideGui) {
+        if (player == null) {
             return;
         }
 
@@ -88,7 +87,7 @@ public final class MoneyHudLayer implements GuiLayer {
         }
         if (balance != lastKnownBalance) {
             pendingDelta = balance - lastKnownBalance;
-            deltaShownAt = Util.getMillis();
+            deltaShownAt = System.currentTimeMillis();
             lastKnownBalance = balance;
         }
     }
@@ -97,7 +96,7 @@ public final class MoneyHudLayer implements GuiLayer {
         if (pendingDelta == 0L) {
             return;
         }
-        long elapsed = Util.getMillis() - deltaShownAt;
+        long elapsed = System.currentTimeMillis() - deltaShownAt;
         if (elapsed >= DELTA_DURATION) {
             pendingDelta = 0L;
             return;

@@ -30,7 +30,7 @@ import java.nio.file.StandardCopyOption;
  * inventaire a refaire. L'instantane est en lecture seule du point de vue du
  * jeu : il sert a restaurer a la main, pas a etre recharge automatiquement.
  */
-@EventBusSubscriber(modid = DoHy.MOD_ID)
+@EventBusSubscriber
 public final class EconomyBackup {
 
     /** 20 ticks par seconde, soit cinq minutes. */
@@ -99,7 +99,7 @@ public final class EconomyBackup {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             JsonObject entry = new JsonObject();
             entry.addProperty("uuid", player.getUUID().toString());
-            entry.addProperty("name", player.getGameProfile().getName());
+            entry.addProperty("name", player.getGameProfile().name());
             PlayerEconomy.CODEC
                     .encodeStart(JsonOps.INSTANCE, Economy.of(player))
                     .resultOrPartial(message -> DoHy.LOGGER.warn("Encodage partiel de l'economie : {}", message))

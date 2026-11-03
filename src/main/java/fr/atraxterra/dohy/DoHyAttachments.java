@@ -25,7 +25,7 @@ public final class DoHyAttachments {
     public static final Supplier<AttachmentType<PlayerEconomy>> ECONOMY = ATTACHMENT_TYPES.register(
             "economy",
             () -> AttachmentType.builder(() -> PlayerEconomy.EMPTY)
-                    .serialize(PlayerEconomy.CODEC)
+                    .serialize(PlayerEconomy.MAP_CODEC)
                     .sync(PlayerEconomy.STREAM_CODEC)
                     .copyOnDeath()
                     .build());

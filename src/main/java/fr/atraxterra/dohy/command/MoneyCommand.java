@@ -19,7 +19,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
  * {@code /money} — consulter son solde, masquer le HUD, et les sous-commandes
  * d'administration pour tester l'equilibrage sans grind.
  */
-@EventBusSubscriber(modid = DoHy.MOD_ID)
+@EventBusSubscriber
 public final class MoneyCommand {
 
     private MoneyCommand() {
@@ -36,14 +36,16 @@ public final class MoneyCommand {
                 .then(Commands.literal("hide")
                         .executes(ctx -> toggleHud(ctx.getSource())))
                 // Administration : indispensable pour tester un palier de prix
-                // sans devoir le gagner. Niveau 2 = commandes d'operateur.
+                // sans devoir le gagner. En 26.x, hasPermission(int) a disparu :
+                // les niveaux passent par Commands.hasPermission(PermissionCheck),
+                // LEVEL_GAMEMASTERS correspondant a l'ancien niveau 2.
                 .then(Commands.literal("give")
-                        .requires(source -> source.hasPermission(2))
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.argument("montant", LongArgumentType.longArg(1))
                                 .executes(ctx -> give(ctx.getSource(),
                                         LongArgumentType.getLong(ctx, "montant")))))
                 .then(Commands.literal("set")
-                        .requires(source -> source.hasPermission(2))
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.argument("montant", LongArgumentType.longArg(0))
                                 .executes(ctx -> set(ctx.getSource(),
                                         LongArgumentType.getLong(ctx, "montant")))));

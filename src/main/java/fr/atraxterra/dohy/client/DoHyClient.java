@@ -7,8 +7,15 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 
-/** Enregistrements cote client. */
-@EventBusSubscriber(modid = DoHy.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+/**
+ * Enregistrements cote client.
+ *
+ * <p>En 26.2, {@code @EventBusSubscriber} n'a plus ni {@code modid} ni
+ * {@code bus} : le bus est deduit du type de l'evenement (un
+ * {@code IModBusEvent} part sur le bus du mod), et seule la distribution reste
+ * a preciser.
+ */
+@EventBusSubscriber(Dist.CLIENT)
 public final class DoHyClient {
 
     private DoHyClient() {

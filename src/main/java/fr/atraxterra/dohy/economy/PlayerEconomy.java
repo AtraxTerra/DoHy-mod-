@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.economy;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -24,12 +25,19 @@ public record PlayerEconomy(long balance, long lifetimeEarned, int deaths, boole
     /** Solde de depart : zero. La premiere heure de jeu doit etre pauvre. */
     public static final PlayerEconomy EMPTY = new PlayerEconomy(0L, 0L, 0, false);
 
-    public static final Codec<PlayerEconomy> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    /**
+     * {@code MapCodec} et non {@code Codec} : le builder d'attachment de
+     * NeoForge 26.2 n'accepte qu'un {@code MapCodec}.
+     */
+    public static final MapCodec<PlayerEconomy> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.LONG.optionalFieldOf("balance", 0L).forGetter(PlayerEconomy::balance),
             Codec.LONG.optionalFieldOf("lifetime_earned", 0L).forGetter(PlayerEconomy::lifetimeEarned),
             Codec.INT.optionalFieldOf("deaths", 0).forGetter(PlayerEconomy::deaths),
             Codec.BOOL.optionalFieldOf("hud_hidden", false).forGetter(PlayerEconomy::hudHidden)
     ).apply(instance, PlayerEconomy::new));
+
+    /** Derive du precedent, pour l'encodage JSON des sauvegardes de secours. */
+    public static final Codec<PlayerEconomy> CODEC = MAP_CODEC.codec();
 
     /** Le HUD est dessine cote client : les donnees doivent y etre synchronisees. */
     public static final StreamCodec<ByteBuf, PlayerEconomy> STREAM_CODEC = StreamCodec.composite(
