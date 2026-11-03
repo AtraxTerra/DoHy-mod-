@@ -189,7 +189,7 @@ tasks.register('apiProbe') {
                 }
             }
 
-            def methods = clazz.declaredMethods.findAll { java.lang.reflect.Modifier.isPublic(it.modifiers) }
+            def methods = (clazz.declaredMethods.toList() + clazz.methods.toList()).unique { it.toString() }.findAll { java.lang.reflect.Modifier.isPublic(it.modifiers) && it.declaringClass != Object }
             if (methods) {
                 println "\n  -- methodes --"
                 methods.sort { it.name }.each { m ->
