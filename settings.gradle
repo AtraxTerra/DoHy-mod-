@@ -1,0 +1,17 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        maven {
+            name = 'NeoForged'
+            url = 'https://maven.neoforged.net/releases'
+        }
+    }
+}
+
+plugins {
+    // Cache des metadonnees NeoForge entre les builds CI.
+    id 'net.neoforged.moddev.repositories' version '2.0.148'
+}
+
+rootProject.name = 'DoHy'

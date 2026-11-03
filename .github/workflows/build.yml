@@ -1,0 +1,84 @@
+name: build
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Compile le mod. C'est cette CI qui valide les signatures de l'API 26.2 :
+  # NeoForge 26.2 est recent et les erreurs de compilation sont la seule facon
+  # fiable de les verifier sans lancer le jeu.
+  gradle:
+    name: Compilation NeoForge
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      # Gradle est epingle ici plutot que par un wrapper : le wrapper n'a pas pu
+      # etre genere depuis l'environnement de dev (services.gradle.org injoignable).
+      # A remplacer par ./gradlew des que le wrapper est commite.
+      - name: Gradle 9.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.1.0"
+
+      - name: Build
+        run: gradle build --no-daemon --stacktrace
+
+      - name: Jar
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dohy-jar
+          path: build/libs/*.jar
+          if-no-files-found: warn
+
+  # Garde-fou d'equilibrage : si rates.csv change sans que les fichiers generes
+  # soient regeneres, le build echoue. Evite une data incoherente dans le depot.
+  data:
+    name: Coherence des donnees
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Regenerer les prix
+        run: python3 tools/gen_prices.py
+
+      - name: Les fichiers generes doivent etre a jour
+        run: |
+          if ! git diff --exit-code -- data/; then
+            echo "::error::data/ n'est pas a jour. Lance 'python3 tools/gen_prices.py' et commite le resultat."
+            exit 1
+          fi
+
+      - name: Les JSON doivent parser
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, sys
+          bad = []
+          for p in pathlib.Path("data").rglob("*.json"):
+              try:
+                  json.loads(p.read_text(encoding="utf-8"))
+              except Exception as exc:
+                  bad.append(f"{p}: {exc}")
+          if bad:
+              print("\n".join(bad))
+              sys.exit(1)
+          print("tous les JSON de data/ parsent")
+          PY

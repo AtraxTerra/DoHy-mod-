@@ -1,7 +1,7 @@
 # DoHy — Document de conception
 
 Mod d'économie et de progression pour une partie **solo**, monde normal.
-Cible : **Minecraft 26.2 / NeoForge 26.2** (encore en beta — épingler la version du build).
+Cible : **Minecraft 26.2 / NeoForge 26.2.0.93** (stable), **Java 25**, Gradle 9.1, ModDevGradle 2.0.148.
 Inspirations : DonutSMP (économie, shop, prix dynamiques) et Hypixel SkyBlock (skills, collections, jalons).
 
 ---
@@ -249,5 +249,9 @@ L'ordre n'est pas négociable sur les points 1, 2 et 10 : les backups avant d'av
 
 ## 13. Réserves assumées
 
-- **NeoForge 26.2 est en beta** et postérieur à mes connaissances fiables. Les signatures d'API devront être validées par la compilation en CI ; prévoir des corrections.
+- **NeoForge 26.2.0.93 est stable**, mais 26.2 est postérieur à mes connaissances fiables. Les signatures d'API devront être validées par la compilation en CI ; prévoir des corrections.
+- **26.2 a réécrit le rendu en mode retenu.** `GuiGraphics` n'existe plus : les écrans n'affichent pas, ils *extraient* (`extractBackground`, `extractLabels`, écriture dans un `GuiGraphicsExtractor`, rendu différé par `GuiRenderer`). `MultiBufferSource` et `Tesselator` ont disparu au profit du pipeline SubmitNode. Cela concerne directement le HUD de la monnaie (§2) et le GUI du shop (§3) : à concevoir d'emblée en mode retenu, pas à porter après coup.
+- **`ChatFormatting` a été vidé** en 26.2 : le formatage passe par `Style` (`withColor`, `withBold`…), les constantes de couleur par `TextColor`. Concerne tous les messages du mod.
+- **La sauvegarde de données n'utilise plus `CompoundTag`** mais `ValueInput`/`ValueOutput` adossés à des codecs. Concerne directement les attachments du §2 et le §10.1.
+- **Les trocs de villageois sont passés en registres de datapack** en 26.1 (`data/<ns>/villager_trade/*.json`, `trade_set/*.json`). C'est une piste plus propre que les plafonds de prix du §3.3 : à évaluer en phase 3, puisqu'on peut désormais retirer ou renchérir un troc par datapack au lieu de corriger ses conséquences.
 - L'équilibrage de ce document est **cohérent, pas validé**. Aucun chiffre n'a été testé en jeu. Les retours de session sont la seule source de vérité : chaque écart constaté se corrige dans `BALANCE.md` et se répercute via `MONEY_MULTIPLIER` ou le taux de l'item concerné.
