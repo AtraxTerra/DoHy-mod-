@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 
 /**
- * Affichage du solde, en haut a droite, avec l'animation de gain.
+ * Affichage du solde, au centre du bord droit, avec l'animation de gain.
  *
  * <p>Ecrit directement pour le rendu en mode retenu de 26.2 : une couche de HUD
  * n'affiche pas, elle ecrit son etat dans un {@link GuiGraphicsExtractor} que le
@@ -69,10 +69,13 @@ public final class MoneyHudLayer implements GuiLayer {
         Font font = minecraft.font;
         String balanceText = MoneyFormat.shortForm(data.balance());
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
+        int screenHeight = minecraft.getWindow().getGuiScaledHeight();
 
         int textWidth = font.width(balanceText);
         int x = screenWidth - MARGIN - textWidth;
-        int y = MARGIN;
+        // Centre vertical du bord droit : hors du chemin de la barre d'effets en
+        // haut a droite, et loin de la hotbar et du chat en bas.
+        int y = (screenHeight - font.lineHeight) / 2;
 
         graphics.fill(x - 4, y - 3, screenWidth - MARGIN + 2, y + font.lineHeight + 1, COLOR_BACKDROP);
         graphics.text(font, Component.literal(balanceText), x, y, COLOR_BALANCE);
