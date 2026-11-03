@@ -52,8 +52,8 @@ Dernière mise à jour : 2026-11-03
 Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 
 1. [x] Monnaie, persistance, HUD, **backups**
-2. [ ] **Tracking des blocs posés** (chunk attachment) — bloquant pour 5 et 6
-3. [ ] Shop statique, `/worth`, `/sellall`
+2. [x] **Tracking des blocs posés** (chunk attachment) — bloquant pour 5 et 6
+3. [~] Catalogue de prix, `/worth`, `/sell` — **le GUI du shop et `/sellall` restent à faire**
 4. [ ] Prix dynamiques et oubli
 5. [ ] Collections
 6. [ ] Skills et perks
@@ -87,6 +87,36 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 
 ## Journal des sessions
 
+### 2026-11-03 (suite) — phases 2 et 3
+
+**Phase 2 — suivi des blocs posés.** Attachment de chunk, positions compactées en
+`long` dans un ensemble fastutil, sérialisation conditionnelle, et jamais de
+chargement forcé de chunk depuis un gestionnaire d'événement de bloc.
+Point de conception à retenir : le verdict « ce bloc était-il posé ? » est
+**mémoïsé par événement**, parce que plusieurs systèmes vont le demander pour la
+même casse et que consommer la marque priverait le second appelant de la réponse.
+La mémoïsation rend l'ordre des gestionnaires indifférent, sans toucher aux
+priorités du bus.
+Commandes de diagnostic `/dohy placed` et `/dohy chunk` : le suivi est invisible
+par nature, et sans moyen de l'interroger une régression ne se verrait qu'au
+moment où un skill distribue de l'XP sur des blocs reposés.
+
+**Phase 3 — catalogue de prix.** Lu via le gestionnaire de ressources du serveur
+depuis `data/dohy/prices.json`, donc remplaçable par un datapack. Le fichier du
+jar est **copié au build** depuis `data/generated/prices.json` : une seule source
+de vérité, et la CI vérifie que la copie a bien atterri dans le jar — si elle
+casse, le mod se charge mais plus rien ne se vend, un symptôme qui ne ressemble
+pas à sa cause.
+`/worth`, `/sell`, `/sell stack`, `/dohy reload`.
+**Pas encore fait** : le GUI du shop, et `/sellall` sur l'inventaire entier. La
+disposition interne de l'inventaire a changé dans la ligne 26.x ; lire est sans
+risque (l'interface `Container` est stable, c'est ce qu'utilise `/worth`), mais
+supprimer des piles par le mauvais index détruirait l'équipement du joueur. À
+sonder avant d'écrire.
+
+Signatures 26.2 ajoutées à la table ci-dessous : `BlockEvent.BreakEvent`,
+`LevelChunk.markUnsaved`, `Registry.getOptional`.
+
 ### 2026-11-03 (suite) — phase 1
 
 Monnaie livree : `PlayerEconomy` immuable (codec de persistance + codec reseau),
@@ -107,11 +137,17 @@ Elles sont consignees ici parce qu'elles vont se reposer a chaque phase :
 | `GameProfile` | devenu un **record** : `name()` |
 | Permissions | `CommandSourceStack.hasPermission(int)` supprime → `Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)` |
 | `net.minecraft.Util` | n'existe plus |
-| `Options.hideGui` | n'existe plus |
+| `Options.hideGui` | n'existe plus — et c'est sans conséquence, le gestionnaire de couches ne rend rien quand l'interface est masquée (**vérifié en jeu**) |
+| `BlockEvent.BreakEvent` | **supprimé** → `BlockDropsEvent` (position, état, casseur, drops, outil) |
+| `LevelChunk` | `markUnsaved()` / `isUnsaved()` |
+| `Registry` | `getOptional(Identifier)` → `Optional<T>`, `get(...)` → `Optional<Holder.Reference<T>>` |
+| Permissions | `Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)` |
 
-A verifier en jeu, point par point ouvert : le HUD doit disparaitre quand
-l'interface est masquee par F1. Si ce n'est pas le cas, le gestionnaire de
-couches ne filtre pas, et il faudra retrouver l'etat de masquage ailleurs.
+**Phase 1 validée en jeu** : solde affiché, crédit et animation de gain,
+`/money hide`, persistance au rechargement du monde, conservation à la mort, et
+masquage par F1 — l'hypothèse sur le gestionnaire de couches était la bonne.
+Le HUD a été déplacé au centre du bord droit à la demande du joueur.
+Reste à confirmer : la sauvegarde de secours après 5 minutes de jeu.
 
 ### 2026-11-03
 Première session. Cadrage complet et production du doc + data.

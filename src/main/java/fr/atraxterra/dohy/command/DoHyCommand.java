@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.world.PlacedBlocks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -38,6 +39,8 @@ public final class DoHyCommand {
                         .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                 .executes(ctx -> placed(ctx.getSource(),
                                         BlockPosArgument.getLoadedBlockPos(ctx, "pos")))))
+                .then(Commands.literal("reload")
+                        .executes(ctx -> reload(ctx.getSource())))
                 .then(Commands.literal("chunk")
                         .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                 .executes(ctx -> chunk(ctx.getSource(),
@@ -51,6 +54,24 @@ public final class DoHyCommand {
                         : "Naturel — rapportera normalement.")
                 .withStyle(playerPlaced ? ChatFormatting.RED : ChatFormatting.GREEN), false);
         return playerPlaced ? 1 : 0;
+    }
+
+    /**
+     * Recharge le catalogue de prix sans relancer le jeu.
+     *
+     * <p>Indispensable a l'equilibrage : si regler un prix coute un
+     * redemarrage, on ne le regle pas.
+     */
+    private static int reload(CommandSourceStack source) {
+        if (Prices.load(source.getServer())) {
+            source.sendSuccess(() -> Component.literal(
+                            "Catalogue recharge : " + Prices.book().size() + " items.")
+                    .withStyle(ChatFormatting.GREEN), true);
+            return Prices.book().size();
+        }
+        source.sendFailure(Component.literal(
+                "Rechargement echoue, l'ancien catalogue reste en service. Voir les logs."));
+        return 0;
     }
 
     private static int chunk(CommandSourceStack source, BlockPos pos) {
