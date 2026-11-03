@@ -11,6 +11,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
@@ -324,12 +325,21 @@ public final class ShopMenu extends ChestMenu {
     }
 
     private void click(ServerPlayer serverPlayer) {
-        serverPlayer.playNotifySound(SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.MASTER, 0.4f, 1.0f);
+        play(serverPlayer, SoundEvents.UI_BUTTON_CLICK.value(), 0.4f, 1.0f);
     }
 
     private void sound(ServerPlayer serverPlayer, boolean success) {
-        serverPlayer.playNotifySound(
+        play(serverPlayer,
                 success ? SoundEvents.EXPERIENCE_ORB_PICKUP : SoundEvents.VILLAGER_NO,
-                SoundSource.MASTER, 0.5f, success ? 1.4f : 1.0f);
+                0.5f, success ? 1.4f : 1.0f);
+    }
+
+    /**
+     * Passe par le niveau et non par {@code playNotifySound}, dont la signature
+     * a change : {@code Level.playSound} est stable de version en version.
+     */
+    private void play(ServerPlayer serverPlayer, SoundEvent sound, float volume, float pitch) {
+        serverPlayer.level().playSound(null, serverPlayer.blockPosition(),
+                sound, SoundSource.MASTER, volume, pitch);
     }
 }
