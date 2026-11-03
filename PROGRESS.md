@@ -51,7 +51,7 @@ Dernière mise à jour : 2026-11-03
 
 Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 
-1. [ ] Monnaie, persistance, HUD, **backups**
+1. [x] Monnaie, persistance, HUD, **backups**
 2. [ ] **Tracking des blocs posés** (chunk attachment) — bloquant pour 5 et 6
 3. [ ] Shop statique, `/worth`, `/sellall`
 4. [ ] Prix dynamiques et oubli
@@ -86,6 +86,32 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 ---
 
 ## Journal des sessions
+
+### 2026-11-03 (suite) — phase 1
+
+Monnaie livree : `PlayerEconomy` immuable (codec de persistance + codec reseau),
+`Economy` comme seul point de mutation pour que la synchronisation ne puisse pas
+etre oubliee, `MoneyFormat`, HUD en mode retenu avec animation de gain,
+sauvegardes de secours en trois copies glissantes, et `/money` avec ses
+sous-commandes d'administration.
+
+**Sonde d'API : six signatures de 26.2 que personne ne pouvait deviner.**
+Elles sont consignees ici parce qu'elles vont se reposer a chaque phase :
+
+| Sujet | 26.2 |
+|---|---|
+| `ResourceLocation` | renomme **`Identifier`**, fabrique `fromNamespaceAndPath` |
+| `GuiGraphics` | **supprime**. Une couche de HUD est `GuiLayer.render(GuiGraphicsExtractor, DeltaTracker)` |
+| `@EventBusSubscriber` | plus de `modid` ni de `bus`, seul `value = Dist` subsiste ; le bus est deduit du type de l'evenement |
+| Builder d'attachment | `serialize(MapCodec)`, pas `Codec` ; `sync(StreamCodec)` existe nativement |
+| `GameProfile` | devenu un **record** : `name()` |
+| Permissions | `CommandSourceStack.hasPermission(int)` supprime → `Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)` |
+| `net.minecraft.Util` | n'existe plus |
+| `Options.hideGui` | n'existe plus |
+
+A verifier en jeu, point par point ouvert : le HUD doit disparaitre quand
+l'interface est masquee par F1. Si ce n'est pas le cas, le gestionnaire de
+couches ne filtre pas, et il faudra retrouver l'etat de masquage ailleurs.
 
 ### 2026-11-03
 Première session. Cadrage complet et production du doc + data.
