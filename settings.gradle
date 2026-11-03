@@ -1,0 +1,16 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        maven {
+            name = 'NeoForged'
+            url = 'https://maven.neoforged.net/releases'
+        }
+    }
+}
+
+// Ne pas appliquer 'net.neoforged.moddev.repositories' ici : il met le plugin
+// moddev sur le classpath, et la demande versionnee de build.gradle echoue
+// ensuite avec "already on the classpath with an unknown version".
+
+rootProject.name = 'DoHy'
