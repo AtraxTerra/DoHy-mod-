@@ -93,3 +93,116 @@ jar {
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
 }
+
+/*
+ * Sonde d'API.
+ *
+ * Minecraft 26.2 et NeoForge 26.2 sont trop recents pour qu'on puisse se fier a
+ * une signature de memoire, et l'environnement de dev n'a ni JDK 25 ni acces aux
+ * depots Maven NeoForge. Plutot que de decouvrir chaque signature par un echec
+ * de compilation (une boucle a trois minutes), cette tache liste par reflexion
+ * les membres publics des classes demandees, depuis le classpath de compilation.
+ *
+ *   gradle apiProbe -Pprobe=net.neoforged.neoforge.attachment.AttachmentType
+ *
+ * Plusieurs classes separees par des virgules. Utilise par le workflow
+ * .github/workflows/api-probe.yml, declenchable a la main.
+ */
+tasks.register('apiProbe') {
+    group = 'verification'
+    description = 'Liste les membres publics de classes du classpath (-Pprobe=a,b,c)'
+
+    def classpath = sourceSets.main.compileClasspath
+    def requested = (findProperty('probe') ?: '') as String
+    def packages = (findProperty('pkg') ?: '') as String
+    dependsOn 'compileJava'
+    inputs.property('probe', requested)
+    inputs.property('pkg', packages)
+
+    doLast {
+        if (!requested.trim() && !packages.trim()) {
+            throw new GradleException("Rien a sonder. Exemple : -Pprobe=java.lang.String ou -Ppkg=java.lang")
+        }
+
+        // Mode inventaire : liste les classes d'un paquet en parcourant les jars
+        // du classpath. Indispensable quand on ne connait meme pas le nom exact
+        // de la classe a sonder (une API remaniee, un paquet renomme).
+        packages.split(',')*.trim().findAll { it }.each { pkgName ->
+            def prefix = pkgName.replace('.', '/') + '/'
+            def found = new TreeSet<String>()
+            classpath.files.findAll { it.name.endsWith('.jar') && it.exists() }.each { jarFile ->
+                try {
+                    new java.util.zip.ZipFile(jarFile).withCloseable { zip ->
+                        zip.entries().each { entry ->
+                            def n = entry.name
+                            if (n.startsWith(prefix) && n.endsWith('.class')) {
+                                def rest = n.substring(prefix.length(), n.length() - 6)
+                                if (!rest.contains('/')) {
+                                    found << rest.replace('$', '$')
+                                }
+                            }
+                        }
+                    }
+                } catch (Throwable ignored) {
+                    // jar illisible : on continue, l'inventaire reste utile
+                }
+            }
+            println "\n${'=' * 78}\nPAQUET ${pkgName} — ${found.size()} classes\n${'=' * 78}"
+            found.each { println "  ${pkgName}.${it}" }
+        }
+
+        if (!requested.trim()) {
+            return
+        }
+
+        def urls = classpath.files.collect { it.toURI().toURL() } as URL[]
+        def loader = new URLClassLoader(urls, ClassLoader.systemClassLoader)
+
+        requested.split(',')*.trim().findAll { it }.each { name ->
+            println "\n${'=' * 78}\n${name}\n${'=' * 78}"
+            Class<?> clazz
+            try {
+                clazz = Class.forName(name, false, loader)
+            } catch (Throwable t) {
+                println "  INTROUVABLE : ${t.class.simpleName}: ${t.message}"
+                return
+            }
+
+            println "  kind      : ${clazz.isInterface() ? 'interface' : clazz.isEnum() ? 'enum' : clazz.isRecord() ? 'record' : 'class'}"
+            println "  modifiers : ${java.lang.reflect.Modifier.toString(clazz.modifiers)}"
+            if (clazz.superclass) println "  extends   : ${clazz.superclass.name}"
+            if (clazz.interfaces) println "  implements: ${clazz.interfaces*.name.join(', ')}"
+
+            def fields = clazz.declaredFields.findAll { java.lang.reflect.Modifier.isPublic(it.modifiers) }
+            if (fields) {
+                println "\n  -- champs --"
+                fields.sort { it.name }.each { f ->
+                    println "  ${java.lang.reflect.Modifier.toString(f.modifiers)} ${f.genericType.typeName} ${f.name}"
+                }
+            }
+
+            def ctors = clazz.declaredConstructors.findAll { java.lang.reflect.Modifier.isPublic(it.modifiers) }
+            if (ctors) {
+                println "\n  -- constructeurs --"
+                ctors.each { c ->
+                    println "  (${c.genericParameterTypes*.typeName.join(', ')})"
+                }
+            }
+
+            def methods = (clazz.declaredMethods.toList() + clazz.methods.toList()).unique { it.toString() }.findAll { java.lang.reflect.Modifier.isPublic(it.modifiers) && it.declaringClass != Object }
+            if (methods) {
+                println "\n  -- methodes --"
+                methods.sort { it.name }.each { m ->
+                    def mods = java.lang.reflect.Modifier.toString(m.modifiers)
+                    println "  ${mods} ${m.genericReturnType.typeName} ${m.name}(${m.genericParameterTypes*.typeName.join(', ')})"
+                }
+            }
+
+            def nested = clazz.declaredClasses.findAll { java.lang.reflect.Modifier.isPublic(it.modifiers) }
+            if (nested) {
+                println "\n  -- classes imbriquees --"
+                nested*.name.sort().each { println "  ${it}" }
+            }
+        }
+    }
+}

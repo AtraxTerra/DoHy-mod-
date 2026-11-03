@@ -1,0 +1,71 @@
+name: api-probe
+
+# Sonde d'API, declenchable a la main.
+#
+# Minecraft 26.2 et NeoForge 26.2 sont trop recents pour qu'on se fie a une
+# signature de memoire. Cette CI liste les membres publics des classes demandees
+# depuis le classpath de compilation : une execution donne la verite sur
+# plusieurs classes a la fois, au lieu de la decouvrir par des echecs successifs.
+#
+#   gh workflow run api-probe.yml -f classes=net.minecraft.world.item.Item
+
+on:
+  push:
+    # workflow_dispatch n'est utilisable que depuis la branche par defaut :
+    # ce declencheur sert a obtenir la premiere sonde avant le merge.
+    branches: ["chore/sonde-api"]
+  workflow_dispatch:
+    inputs:
+      classes:
+        description: "Classes a sonder, separees par des virgules"
+        required: false
+        type: string
+      packages:
+        description: "Paquets dont lister les classes, separes par des virgules"
+        required: false
+        type: string
+      ref:
+        description: "Branche ou commit"
+        required: false
+        default: main
+        type: string
+
+jobs:
+  probe:
+    name: Sonde
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - name: JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Gradle 9.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.1.0"
+
+      - name: Sonder
+        env:
+          # Valeurs par defaut pour le declencheur push : exactement ce dont la
+          # phase 1 a besoin (attachments, enregistrement du HUD, commandes).
+          DEFAULT_CLASSES: >-
+            net.minecraft.commands.Commands,
+            net.minecraft.server.permissions.PermissionSet
+          DEFAULT_PACKAGES: >-
+            net.minecraft.server.permissions
+        run: |
+          CLASSES="${{ inputs.classes }}"
+          PACKAGES="${{ inputs.packages }}"
+          if [ -z "$CLASSES" ] && [ -z "$PACKAGES" ]; then
+            CLASSES="$DEFAULT_CLASSES"
+            PACKAGES="$DEFAULT_PACKAGES"
+          fi
+          gradle apiProbe --no-daemon -q \
+            -Pprobe="$(echo "$CLASSES" | tr -d ' \n')" \
+            -Ppkg="$(echo "$PACKAGES" | tr -d ' \n')"
