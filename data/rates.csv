@@ -1,0 +1,153 @@
+item_id,display_category,tier,rate_per_hour,notes
+minecraft:wheat,FARM,FARM,1200,ferme a blé semi-auto
+minecraft:carrot,FARM,FARM,1200,
+minecraft:potato,FARM,FARM,1200,
+minecraft:beetroot,FARM,FARM,900,
+minecraft:melon_slice,FARM,FARM,3000,tres haut rendement par bloc
+minecraft:pumpkin,FARM,FARM,600,
+minecraft:sugar_cane,FARM,FARM,2400,ferme auto triviale
+minecraft:bamboo,FARM,FARM,6000,le plus haut debit du jeu
+minecraft:cactus,FARM,FARM,1200,
+minecraft:dried_kelp,FARM,FARM,3000,
+minecraft:sweet_berries,FARM,FARM,900,
+minecraft:glow_berries,FARM,FARM,600,
+minecraft:cocoa_beans,FARM,FARM,900,
+minecraft:nether_wart,FARM,FARM,1500,
+minecraft:brown_mushroom,FARM,FARM,600,
+minecraft:red_mushroom,FARM,FARM,600,
+minecraft:chorus_fruit,FARM,FARM,400,
+minecraft:moss_block,FARM,FARM,600,bone meal
+minecraft:vine,FARM,FARM,600,
+minecraft:twisting_vines,FARM,FARM,600,
+minecraft:weeping_vines,FARM,FARM,600,
+minecraft:glow_lichen,FARM,FARM,300,
+minecraft:big_dripleaf,FARM,FARM,300,
+minecraft:moss_carpet,FARM,FARM,600,
+minecraft:sea_pickle,FARM,FARM,300,
+minecraft:torchflower,FARM,FARM,60,sniffer
+minecraft:pitcher_pod,FARM,FARM,60,sniffer
+minecraft:oak_log,FARM,FARM,1500,
+minecraft:birch_log,FARM,FARM,1500,
+minecraft:spruce_log,FARM,FARM,1500,
+minecraft:jungle_log,FARM,FARM,1200,
+minecraft:acacia_log,FARM,FARM,1200,
+minecraft:dark_oak_log,FARM,FARM,1200,
+minecraft:mangrove_log,FARM,FARM,1000,
+minecraft:cherry_log,FARM,FARM,1000,
+minecraft:pale_oak_log,FARM,FARM,1000,
+minecraft:crimson_stem,FARM,FARM,1200,
+minecraft:warped_stem,FARM,FARM,1200,
+minecraft:apple,FARM,FARM,150,
+minecraft:oak_sapling,FARM,FARM,900,
+minecraft:charcoal,FARM,FARM,1200,
+minecraft:honeycomb,FARM,FARM,240,
+minecraft:honey_bottle,FARM,FARM,120,
+minecraft:white_wool,FARM,FARM,1200,
+minecraft:leather,FARM,FARM,300,
+minecraft:feather,FARM,FARM,600,
+minecraft:egg,FARM,FARM,900,
+minecraft:ink_sac,FARM,FARM,400,
+minecraft:goat_horn,FARM,FARM,10,tres lent meme en ferme
+minecraft:turtle_scute,FARM,FARM,30,
+minecraft:armadillo_scute,FARM,FARM,60,
+minecraft:ochre_froglight,FARM,FARM,200,
+minecraft:verdant_froglight,FARM,FARM,200,
+minecraft:pearlescent_froglight,FARM,FARM,200,
+minecraft:cobblestone,FARM,FARM,6000,generateur
+minecraft:stone,FARM,FARM,6000,generateur
+minecraft:basalt,FARM,FARM,3000,generateur
+minecraft:obsidian,FARM,FARM,600,generateur eau/lave
+minecraft:crying_obsidian,FARM,FARM,120,troc piglin
+minecraft:snowball,FARM,FARM,2400,golem de neige
+minecraft:ice,FARM,FARM,1200,
+minecraft:pointed_dripstone,FARM,FARM,300,
+minecraft:dripstone_block,FARM,FARM,300,
+minecraft:clay_ball,FARM,FARM,600,boue + dripstone
+minecraft:amethyst_shard,FARM,FARM,600,budding amethyst
+minecraft:sculk,FARM,FARM,1200,catalyseur + xp
+minecraft:iron_ingot,FARM,FARM,1200,ferme a golems - metal renouvelable
+minecraft:copper_ingot,FARM,FARM,600,noyés
+minecraft:gold_ingot,FARM,FARM,220,zombified piglin
+minecraft:gold_nugget,FARM,FARM,2000,
+minecraft:iron_nugget,FARM,FARM,400,troc piglin
+minecraft:coal,FARM,FARM,1200,equivalent charbon de bois
+minecraft:quartz,FARM,FARM,900,troc piglin
+minecraft:gravel,FARM,FARM,600,troc piglin
+minecraft:soul_sand,FARM,FARM,600,troc piglin
+minecraft:lapis_lazuli,FARM,FARM,1200,vendu par les clercs - taux relevé pour fermer la boucle emeraude->lapis
+minecraft:emerald,FARM,FARM,12000,taux d'un hall de troc optimise - donne un prix plancher de 2
+minecraft:potent_sulfur,FARM,FARM,600,26.2 geyser - a verifier en jeu
+minecraft:beef,FOOD,FOOD,300,
+minecraft:porkchop,FOOD,FOOD,300,
+minecraft:chicken,FOOD,FOOD,400,
+minecraft:mutton,FOOD,FOOD,300,
+minecraft:rabbit,FOOD,FOOD,200,
+minecraft:cod,FOOD,FOOD,400,
+minecraft:salmon,FOOD,FOOD,400,
+minecraft:tropical_fish,FOOD,FOOD,200,
+minecraft:pufferfish,FOOD,FOOD,150,
+minecraft:rotten_flesh,MOB_DROP,MOB,2000,
+minecraft:bone,MOB_DROP,MOB,1200,
+minecraft:arrow,MOB_DROP,MOB,1500,
+minecraft:string,MOB_DROP,MOB,900,
+minecraft:gunpowder,MOB_DROP,MOB,600,
+minecraft:ender_pearl,MOB_DROP,MOB,300,
+minecraft:blaze_rod,MOB_DROP,MOB,400,
+minecraft:spider_eye,MOB_DROP,MOB,400,
+minecraft:slime_ball,MOB_DROP,MOB,900,
+minecraft:magma_cream,MOB_DROP,MOB,300,
+minecraft:prismarine_shard,MOB_DROP,MOB,800,
+minecraft:prismarine_crystals,MOB_DROP,MOB,400,
+minecraft:redstone,MOB_DROP,MOB,900,sorcieres
+minecraft:glowstone_dust,MOB_DROP,MOB,600,sorcieres
+minecraft:sugar,MOB_DROP,MOB,600,sorcieres
+minecraft:ghast_tear,MOB_DROP,MOB,100,
+minecraft:phantom_membrane,MOB_DROP,MOB,60,
+minecraft:nautilus_shell,MOB_DROP,MOB,60,
+minecraft:dragon_breath,MOB_DROP,MOB,60,
+minecraft:rabbit_foot,MOB_DROP,MOB,60,
+minecraft:rabbit_hide,MOB_DROP,MOB,200,
+minecraft:shulker_shell,MOB_DROP,RARE,60,
+minecraft:wither_skeleton_skull,MOB_DROP,RARE,20,
+minecraft:totem_of_undying,MOB_DROP,RARE,30,ferme a raids
+minecraft:trident,MOB_DROP,RARE,20,
+minecraft:nether_star,MOB_DROP,RARE,4,
+minecraft:diamond,FOUND,FOUND,40,non renouvelable - aucun trade ne le donne
+minecraft:ancient_debris,FOUND,FOUND,8,strictement fini
+minecraft:netherite_scrap,FOUND,FOUND,8,
+minecraft:raw_iron,FOUND,FOUND,400,issu du minerai donc fini
+minecraft:raw_copper,FOUND,FOUND,900,
+minecraft:raw_gold,FOUND,FOUND,200,
+minecraft:iron_ore,FOUND,FOUND,400,pioche soie
+minecraft:deepslate_iron_ore,FOUND,FOUND,400,
+minecraft:copper_ore,FOUND,FOUND,600,
+minecraft:gold_ore,FOUND,FOUND,200,
+minecraft:diamond_ore,FOUND,FOUND,40,
+minecraft:deepslate_diamond_ore,FOUND,FOUND,40,
+minecraft:lapis_ore,FOUND,FOUND,150,
+minecraft:redstone_ore,FOUND,FOUND,300,
+minecraft:emerald_ore,FOUND,FOUND,30,
+minecraft:nether_quartz_ore,FOUND,FOUND,900,
+minecraft:nether_gold_ore,FOUND,FOUND,600,
+minecraft:sand,FOUND,FOUND,1500,non renouvelable
+minecraft:red_sand,FOUND,FOUND,1200,
+minecraft:deepslate,FOUND,FOUND,3000,
+minecraft:tuff,FOUND,FOUND,1200,
+minecraft:calcite,FOUND,FOUND,600,
+minecraft:granite,FOUND,FOUND,1500,
+minecraft:diorite,FOUND,FOUND,1500,
+minecraft:andesite,FOUND,FOUND,1500,
+minecraft:netherrack,FOUND,FOUND,3000,
+minecraft:blackstone,FOUND,FOUND,1500,
+minecraft:gilded_blackstone,FOUND,FOUND,60,
+minecraft:soul_soil,FOUND,FOUND,1200,
+minecraft:end_stone,FOUND,FOUND,3000,
+minecraft:terracotta,FOUND,FOUND,1200,badlands
+minecraft:sulfur,FOUND,FOUND,900,26.2 - brut non renouvelable
+minecraft:sulfur_spike,FOUND,FOUND,600,26.2
+minecraft:cinnabar,FOUND,FOUND,900,26.2
+minecraft:sponge,FOUND,RARE,20,
+minecraft:heart_of_the_sea,FOUND,RARE,8,
+minecraft:elytra,FOUND,RARE,2,
+minecraft:dragon_egg,FOUND,RARE,1,unique par monde
+minecraft:enchanted_golden_apple,FOUND,RARE,4,coffres uniquement

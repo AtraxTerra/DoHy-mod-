@@ -1,0 +1,43 @@
+{
+  "_comment": "Paliers de collection. Les items ne sont PAS listes ici : la courbe applicable se deduit du tier dans prices.json. Un item ajoute a rates.csv obtient automatiquement sa collection.",
+  "curves": {
+    "found": {
+      "_applies_to_tiers": ["FOUND", "RARE"],
+      "tiers": [10, 50, 100, 500, 1500, 2500]
+    },
+    "farmable": {
+      "_applies_to_tiers": ["FARM", "FOOD", "MOB"],
+      "tiers": [100, 1000, 5000, 25000, 100000, 250000]
+    }
+  },
+  "rewards_per_tier": [
+    { "tier_index": 0, "unlock_sell": true,  "floor_bonus_pct": 0.00, "global_xp": 10,  "money": 0 },
+    { "tier_index": 1, "unlock_sell": true,  "floor_bonus_pct": 0.05, "global_xp": 25,  "money": 0 },
+    { "tier_index": 2, "unlock_sell": true,  "floor_bonus_pct": 0.10, "global_xp": 60,  "money": 0 },
+    { "tier_index": 3, "unlock_sell": true,  "floor_bonus_pct": 0.15, "global_xp": 150, "money": 0 },
+    { "tier_index": 4, "unlock_sell": true,  "floor_bonus_pct": 0.20, "global_xp": 400, "money": 0 },
+    { "tier_index": 5, "unlock_sell": true,  "floor_bonus_pct": 0.25, "global_xp": 1000, "money_formula": "base_price * 2500" }
+  ],
+  "rules": {
+    "_1": "Le palier 0 debloque la vente de l'item au shop. Avant lui, l'item n'est pas vendable.",
+    "_2": "Seuls les blocs NON poses par le joueur comptent (voir DESIGN.md 10.1).",
+    "_3": "floor_bonus_pct s'ajoute au plancher du tier : un FARM a fond passe de 15% a 40% de plancher.",
+    "_4": "Les items obtenus par achat au shop ne comptent pas dans la collection."
+  },
+  "exceptions": {
+    "minecraft:dragon_egg": {
+      "_reason": "un seul exemplaire par monde",
+      "tiers": [1]
+    },
+    "minecraft:elytra": {
+      "tiers": [1, 2, 4, 8, 16, 32]
+    },
+    "minecraft:nether_star": {
+      "tiers": [1, 3, 8, 20, 50, 100]
+    },
+    "minecraft:emerald": {
+      "_reason": "generateur villageois : aucun bonus de plancher, sinon l'exploit revient par la porte de derriere",
+      "floor_bonus_disabled": true
+    }
+  }
+}

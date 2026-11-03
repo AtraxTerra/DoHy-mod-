@@ -1,0 +1,225 @@
+{
+  "_comment": "Table d'XP et perks des skills. Editable a chaud via /ecoreload.",
+  "_todo": "Les ids d'attributs sont a valider contre l'API reelle de 26.2 (voir DESIGN.md 13).",
+  "curve": {
+    "max_level": 50,
+    "xp_formula": "100 * level^1.8",
+    "xp_base": 100,
+    "xp_exponent": 1.8,
+    "money_formula": "750 * level^1.5",
+    "money_base": 750,
+    "money_exponent": 1.5,
+    "perk_every_n_levels": 5
+  },
+  "skills": {
+    "mining": {
+      "display": "Minage",
+      "sources": {
+        "blocks": {
+          "#minecraft:base_stone_overworld": 1,
+          "minecraft:deepslate": 2,
+          "minecraft:iron_ore": 12,
+          "minecraft:deepslate_iron_ore": 14,
+          "minecraft:copper_ore": 10,
+          "minecraft:gold_ore": 20,
+          "minecraft:redstone_ore": 18,
+          "minecraft:lapis_ore": 22,
+          "minecraft:diamond_ore": 90,
+          "minecraft:deepslate_diamond_ore": 100,
+          "minecraft:emerald_ore": 110,
+          "minecraft:ancient_debris": 400,
+          "minecraft:sulfur": 8,
+          "minecraft:cinnabar": 8,
+          "minecraft:sulfur_spike": 6,
+          "minecraft:amethyst_cluster": 15
+        }
+      },
+      "perks": [
+        { "level": 5,  "type": "attribute", "attribute": "minecraft:mining_efficiency", "amount": 0.05, "operation": "add_multiplied_base" },
+        { "level": 10, "type": "double_drop_chance", "amount": 0.02, "applies_to": "ores" },
+        { "level": 15, "type": "attribute", "attribute": "minecraft:mining_efficiency", "amount": 0.10, "operation": "add_multiplied_base" },
+        { "level": 20, "type": "attribute", "attribute": "minecraft:block_interaction_range", "amount": 0.5, "operation": "add_value" },
+        { "level": 25, "type": "double_drop_chance", "amount": 0.05, "applies_to": "ores" },
+        { "level": 30, "type": "attribute", "attribute": "minecraft:mining_efficiency", "amount": 0.15, "operation": "add_multiplied_base" },
+        { "level": 35, "type": "xp_bonus", "amount": 0.10, "applies_to": "mining" },
+        { "level": 40, "type": "double_drop_chance", "amount": 0.08, "applies_to": "ores" },
+        { "level": 45, "type": "attribute", "attribute": "minecraft:block_interaction_range", "amount": 1.0, "operation": "add_value" },
+        { "level": 50, "type": "double_drop_chance", "amount": 0.15, "applies_to": "ores" }
+      ]
+    },
+    "combat": {
+      "display": "Combat",
+      "sources": {
+        "entities": {
+          "minecraft:zombie": 4,
+          "minecraft:skeleton": 5,
+          "minecraft:spider": 4,
+          "minecraft:creeper": 7,
+          "minecraft:enderman": 12,
+          "minecraft:witch": 18,
+          "minecraft:blaze": 15,
+          "minecraft:wither_skeleton": 25,
+          "minecraft:guardian": 10,
+          "minecraft:elder_guardian": 120,
+          "minecraft:shulker": 30,
+          "minecraft:piglin_brute": 35,
+          "minecraft:warden": 800,
+          "minecraft:wither": 1200,
+          "minecraft:ender_dragon": 2000,
+          "minecraft:sulfur_cube": 8
+        }
+      },
+      "perks": [
+        { "level": 5,  "type": "attribute", "attribute": "minecraft:attack_damage", "amount": 0.3, "operation": "add_value" },
+        { "level": 10, "type": "attribute", "attribute": "minecraft:max_health", "amount": 2.0, "operation": "add_value" },
+        { "level": 15, "type": "attribute", "attribute": "minecraft:attack_damage", "amount": 0.6, "operation": "add_value" },
+        { "level": 20, "type": "attribute", "attribute": "minecraft:armor", "amount": 1.0, "operation": "add_value" },
+        { "level": 25, "type": "attribute", "attribute": "minecraft:max_health", "amount": 4.0, "operation": "add_value" },
+        { "level": 30, "type": "attribute", "attribute": "minecraft:attack_damage", "amount": 1.0, "operation": "add_value" },
+        { "level": 35, "type": "loot_bonus", "amount": 0.10, "applies_to": "mob_drops" },
+        { "level": 40, "type": "attribute", "attribute": "minecraft:armor_toughness", "amount": 1.0, "operation": "add_value" },
+        { "level": 45, "type": "attribute", "attribute": "minecraft:max_health", "amount": 6.0, "operation": "add_value" },
+        { "level": 50, "type": "loot_bonus", "amount": 0.25, "applies_to": "mob_drops" }
+      ]
+    },
+    "farming": {
+      "display": "Agriculture",
+      "_rule": "XP uniquement sur culture mature (age max). Bone meal sur plant non mature = 0.",
+      "sources": {
+        "blocks": {
+          "minecraft:wheat": 2,
+          "minecraft:carrots": 2,
+          "minecraft:potatoes": 2,
+          "minecraft:beetroots": 2,
+          "minecraft:nether_wart": 2,
+          "minecraft:melon": 3,
+          "minecraft:pumpkin": 3,
+          "minecraft:sugar_cane": 1,
+          "minecraft:cocoa": 3,
+          "minecraft:sweet_berry_bush": 2,
+          "minecraft:torchflower_crop": 40,
+          "minecraft:pitcher_crop": 40
+        },
+        "entities": {
+          "minecraft:cow": 3,
+          "minecraft:pig": 3,
+          "minecraft:sheep": 3,
+          "minecraft:chicken": 2,
+          "minecraft:rabbit": 3
+        }
+      },
+      "perks": [
+        { "level": 5,  "type": "harvest_bonus", "amount": 0.05 },
+        { "level": 10, "type": "attribute", "attribute": "minecraft:max_health", "amount": 2.0, "operation": "add_value" },
+        { "level": 15, "type": "harvest_bonus", "amount": 0.10 },
+        { "level": 20, "type": "bonemeal_efficiency", "amount": 0.20 },
+        { "level": 25, "type": "harvest_bonus", "amount": 0.15 },
+        { "level": 30, "type": "xp_bonus", "amount": 0.10, "applies_to": "farming" },
+        { "level": 35, "type": "harvest_bonus", "amount": 0.20 },
+        { "level": 40, "type": "bonemeal_efficiency", "amount": 0.40 },
+        { "level": 45, "type": "harvest_bonus", "amount": 0.25 },
+        { "level": 50, "type": "harvest_bonus", "amount": 0.40 }
+      ]
+    },
+    "foraging": {
+      "display": "Bucheronnage",
+      "sources": {
+        "blocks": {
+          "#minecraft:logs": 3,
+          "#minecraft:leaves": 1,
+          "minecraft:bamboo": 1,
+          "minecraft:moss_block": 2
+        }
+      },
+      "perks": [
+        { "level": 5,  "type": "attribute", "attribute": "minecraft:movement_speed", "amount": 0.02, "operation": "add_multiplied_base" },
+        { "level": 10, "type": "double_drop_chance", "amount": 0.05, "applies_to": "logs" },
+        { "level": 15, "type": "tree_chop", "amount": 1, "_note": "abat l'arbre entier, rayon croissant" },
+        { "level": 20, "type": "double_drop_chance", "amount": 0.08, "applies_to": "logs" },
+        { "level": 25, "type": "attribute", "attribute": "minecraft:movement_speed", "amount": 0.04, "operation": "add_multiplied_base" },
+        { "level": 30, "type": "tree_chop", "amount": 2 },
+        { "level": 35, "type": "double_drop_chance", "amount": 0.12, "applies_to": "logs" },
+        { "level": 40, "type": "xp_bonus", "amount": 0.10, "applies_to": "foraging" },
+        { "level": 45, "type": "tree_chop", "amount": 3 },
+        { "level": 50, "type": "double_drop_chance", "amount": 0.20, "applies_to": "logs" }
+      ]
+    },
+    "fishing": {
+      "display": "Peche",
+      "sources": {
+        "actions": {
+          "fish_caught": 8,
+          "treasure_caught": 60,
+          "junk_caught": 3
+        }
+      },
+      "perks": [
+        { "level": 5,  "type": "fishing_speed", "amount": 0.05 },
+        { "level": 10, "type": "treasure_chance", "amount": 0.03 },
+        { "level": 15, "type": "fishing_speed", "amount": 0.10 },
+        { "level": 20, "type": "treasure_chance", "amount": 0.06 },
+        { "level": 25, "type": "attribute", "attribute": "minecraft:max_health", "amount": 2.0, "operation": "add_value" },
+        { "level": 30, "type": "fishing_speed", "amount": 0.20 },
+        { "level": 35, "type": "treasure_chance", "amount": 0.10 },
+        { "level": 40, "type": "xp_bonus", "amount": 0.10, "applies_to": "fishing" },
+        { "level": 45, "type": "fishing_speed", "amount": 0.30 },
+        { "level": 50, "type": "treasure_chance", "amount": 0.20 }
+      ]
+    },
+    "smithing": {
+      "display": "Forge",
+      "sources": {
+        "actions": {
+          "item_smelted": 2,
+          "item_crafted_tool": 5,
+          "item_enchanted": 25,
+          "anvil_use": 10,
+          "smithing_table_use": 40
+        }
+      },
+      "perks": [
+        { "level": 5,  "type": "smelt_speed", "amount": 0.05 },
+        { "level": 10, "type": "tool_durability", "amount": 0.05 },
+        { "level": 15, "type": "smelt_speed", "amount": 0.10 },
+        { "level": 20, "type": "anvil_cost_reduction", "amount": 0.10 },
+        { "level": 25, "type": "tool_durability", "amount": 0.10 },
+        { "level": 30, "type": "smelt_fuel_efficiency", "amount": 0.15 },
+        { "level": 35, "type": "anvil_cost_reduction", "amount": 0.20 },
+        { "level": 40, "type": "tool_durability", "amount": 0.15 },
+        { "level": 45, "type": "smelt_speed", "amount": 0.25 },
+        { "level": 50, "type": "tool_durability", "amount": 0.30 }
+      ]
+    },
+    "building": {
+      "display": "Construction",
+      "_rule": "XP a la POSE d'un bloc, une seule fois par position (le tracking de blocs poses sert aussi a ca). Reposer le meme bloc ne redonne rien.",
+      "sources": {
+        "actions": {
+          "block_placed": 1,
+          "block_placed_decorative": 2
+        }
+      },
+      "perks": [
+        { "level": 5,  "type": "attribute", "attribute": "minecraft:block_interaction_range", "amount": 0.5, "operation": "add_value" },
+        { "level": 10, "type": "attribute", "attribute": "minecraft:safe_fall_distance", "amount": 1.0, "operation": "add_value" },
+        { "level": 15, "type": "attribute", "attribute": "minecraft:block_interaction_range", "amount": 1.0, "operation": "add_value" },
+        { "level": 20, "type": "scaffold_assist", "amount": 1 },
+        { "level": 25, "type": "attribute", "attribute": "minecraft:safe_fall_distance", "amount": 3.0, "operation": "add_value" },
+        { "level": 30, "type": "attribute", "attribute": "minecraft:block_interaction_range", "amount": 1.5, "operation": "add_value" },
+        { "level": 35, "type": "xp_bonus", "amount": 0.10, "applies_to": "building" },
+        { "level": 40, "type": "attribute", "attribute": "minecraft:safe_fall_distance", "amount": 5.0, "operation": "add_value" },
+        { "level": 45, "type": "attribute", "attribute": "minecraft:block_interaction_range", "amount": 2.0, "operation": "add_value" },
+        { "level": 50, "type": "no_fall_damage_below", "amount": 10.0 }
+      ]
+    },
+    "nuclear": {
+      "display": "Nucleaire",
+      "_todo": "Phase 10. Sources a remplir depuis les ids reels de NTM NEXT.",
+      "_requires_mod": "hbm",
+      "sources": {
+        "actions": {}
+      },
+      "perks": []
+    }
+  }
+}
