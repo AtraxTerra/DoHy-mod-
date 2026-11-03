@@ -117,6 +117,9 @@ sonder avant d'écrire.
 Signatures 26.2 ajoutées à la table ci-dessous : `BlockEvent.BreakEvent`,
 `LevelChunk.markUnsaved`, `Registry.getOptional`.
 
+**Phases 2 et 3 validées en jeu** : `/worth`, `/dohy reload`, `/dohy placed`.
+Les phases 1 à 3 sont donc confirmées de bout en bout, catalogue compris.
+
 ### 2026-11-03 (suite) — phase 1
 
 Monnaie livree : `PlayerEconomy` immuable (codec de persistance + codec reseau),
@@ -147,7 +150,8 @@ Elles sont consignees ici parce qu'elles vont se reposer a chaque phase :
 `/money hide`, persistance au rechargement du monde, conservation à la mort, et
 masquage par F1 — l'hypothèse sur le gestionnaire de couches était la bonne.
 Le HUD a été déplacé au centre du bord droit à la demande du joueur.
-Reste à confirmer : la sauvegarde de secours après 5 minutes de jeu.
+**Sauvegarde de secours confirmée en jeu** : `<monde>/dohy/economy-backup-1.json`
+est bien écrit. Le filet sous la progression longue est donc en place.
 
 ### 2026-11-03
 Première session. Cadrage complet et production du doc + data.
