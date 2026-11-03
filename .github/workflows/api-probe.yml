@@ -55,16 +55,13 @@ jobs:
           # Valeurs par defaut pour le declencheur push : exactement ce dont la
           # phase 1 a besoin (attachments, enregistrement du HUD, commandes).
           DEFAULT_CLASSES: >-
-            net.neoforged.neoforge.attachment.AttachmentType,
-            net.neoforged.neoforge.attachment.IAttachmentHolder,
-            net.neoforged.neoforge.registries.NeoForgeRegistries$Keys,
-            net.neoforged.neoforge.event.RegisterCommandsEvent,
-            net.minecraft.network.chat.Style,
-            net.minecraft.client.gui.GuiGraphics
+            net.neoforged.neoforge.attachment.AttachmentType$Builder,
+            net.neoforged.neoforge.client.gui.GuiLayer,
+            net.neoforged.neoforge.client.event.RegisterGuiLayersEvent,
+            net.neoforged.neoforge.client.gui.VanillaGuiLayers
           DEFAULT_PACKAGES: >-
-            net.neoforged.neoforge.client.event,
-            net.neoforged.neoforge.client.gui,
-            net.neoforged.neoforge.attachment
+            net.minecraft.client.gui,
+            net.minecraft.client.gui.render.state
         run: |
           CLASSES="${{ inputs.classes }}"
           PACKAGES="${{ inputs.packages }}"
