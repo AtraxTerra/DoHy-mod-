@@ -56,8 +56,8 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 3. [x] Shop complet : catalogue de prix, `/worth`, `/sell`, **`/shop` en coffre et `/sellall`**
 4. [x] Prix dynamiques et oubli
 5. [x] Collections
-6. [ ] Skills et perks
-7. [ ] Banque et pénalité de mort
+6. [x] Skills et perks
+7. [x] Banque et pénalité de mort
 8. [ ] Contrats et demande du jour
 9. [ ] Boosters, caisses, autosell
 10. [ ] NTM NEXT
@@ -86,6 +86,36 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 ---
 
 ## Journal des sessions
+
+### 2026-11-04 — phases 6 et 7
+
+**Phase 6, skills.** L'XP totale est stockée, pas le niveau : rééquilibrer la
+courbe recalcule les niveaux sans migration.
+Les modificateurs d'attribut sont **transitoires** et recalculés à chaque
+connexion depuis les niveaux. Un modificateur permanent survit à la sauvegarde,
+donc le moindre bug de recalcul donnerait des bonus qui s'empilent à l'infini au
+fil des connexions, sans retour possible. Même raison pour laquelle une montée de
+niveau recalcule tout plutôt qu'un delta.
+Les perks d'un même type ne s'additionnent pas, seul le plus haut palier compte.
+Les huit attributs de `skills.json` existent bien en 26.2 (sonde) : aucun à
+remplacer.
+**Perks actifs** : `attribute`, `double_drop_chance`, `xp_bonus`. Les autres sont
+chargés, ignorés, et listés dans un avertissement unique au chargement.
+
+**Phase 7, banque et mort.** Pénalité indexée sur les **gains cumulés**, plafonnée
+à `50 000 + 1 % des gains`. Trois premières morts gratuites.
+Les nouveaux champs de `PlayerEconomy` sont en `optionalFieldOf` : les sauvegardes
+antérieures se chargent toujours.
+Écart assumé vs `DESIGN.md` : l'assurance est une charge achetée par commande, pas
+un objet consommable — un objet demanderait enregistrement, modèle et texture pour
+une mécanique qui n'en a pas besoin.
+
+**À rééquilibrer, constat chiffré.** Les intérêts tels que spécifiés sont
+négligeables : le plafond de 50 k/jour de jeu mord dès **10 M épargnés**, et une
+soirée de 2 h rapporte donc au plus **4 166 $** — 17 % d'une seule récolte de blé.
+L'intention de `BALANCE.md` était qu'une soirée sans grind fasse progresser ;
+c'est raté d'un facteur 5 à 6. Les boutons sont `Bank.DAILY_RATE` et
+`Bank.DAILY_CAP`. Décision laissée au joueur.
 
 ### 2026-11-04 — phase 5, collections
 
