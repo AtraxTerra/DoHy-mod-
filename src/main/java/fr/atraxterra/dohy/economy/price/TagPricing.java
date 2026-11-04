@@ -110,7 +110,9 @@ public final class TagPricing {
         }
 
         for (Holder.Reference<Item> holder : BuiltInRegistries.ITEM.listElements().toList()) {
-            Identifier id = holder.key().location();
+            // ResourceKey.location() n'existe plus depuis le renommage en
+            // Identifier : on passe par le registre, dont getKey est confirme.
+            Identifier id = BuiltInRegistries.ITEM.getKey(holder.value());
             if (explicit.containsKey(id)) {
                 continue;
             }

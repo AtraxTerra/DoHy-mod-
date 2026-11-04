@@ -119,7 +119,7 @@ public final class DoHyCommand {
         List<String> examples = new ArrayList<>();
 
         for (Holder.Reference<Item> holder : BuiltInRegistries.ITEM.listElements().toList()) {
-            Identifier id = holder.key().location();
+            Identifier id = BuiltInRegistries.ITEM.getKey(holder.value());
             if (namespace != null && !id.getNamespace().equals(namespace)) {
                 continue;
             }
