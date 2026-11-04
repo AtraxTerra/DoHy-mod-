@@ -7,6 +7,7 @@ import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -208,7 +209,9 @@ public final class SellChestMenu extends ChestMenu {
                             "  ·  " + unsellable + " non vendable(s), rendu(s) a la fermeture")
                     .withStyle(ChatFormatting.GRAY));
         }
-        player.displayClientMessage(line, true);
+        // displayClientMessage a disparu en 26.2 : on envoie directement le
+        // paquet de barre d'action.
+        player.connection.send(new ClientboundSetActionBarTextPacket(line));
     }
 
     private void play(net.minecraft.sounds.SoundEvent sound, float volume, float pitch) {
