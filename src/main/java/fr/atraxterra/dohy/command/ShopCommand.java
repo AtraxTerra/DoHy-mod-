@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
@@ -88,6 +89,7 @@ public final class ShopCommand {
         long payout = 0L;
         int sold = 0;
         int kinds = 0;
+        int locked = 0;
 
         // Agregation par item avant tarification : le prix dynamique est une
         // integrale sur la quantite, et cinq piles du meme item tarifees
@@ -102,6 +104,13 @@ public final class ShopCommand {
                 continue;
             }
             if (only != null && !only.key().equalsIgnoreCase(entry.category())) {
+                continue;
+            }
+            // Collection pas encore debloquee : l'item reste dans l'inventaire
+            // plutot que de disparaitre sans etre paye.
+            if (!CollectionApi.isUnlocked(player,
+                    BuiltInRegistries.ITEM.getKey(stack.getItem()), entry)) {
+                locked++;
                 continue;
             }
             batch.merge(stack.getItem(), stack.getCount(), Integer::sum);
@@ -120,9 +129,13 @@ public final class ShopCommand {
         }
 
         if (sold == 0) {
+            int finalLocked = locked;
             source.sendSuccess(() -> Component.literal(only == null
                             ? "Rien de vendable dans ton inventaire."
                             : "Rien de vendable en " + only.display() + ".")
+                    .append(finalLocked > 0
+                            ? Component.literal(" (" + finalLocked + " type(s) encore verrouille(s))")
+                            : Component.empty())
                     .withStyle(ChatFormatting.GRAY), false);
             return 0;
         }

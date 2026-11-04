@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.shop;
 
+import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
@@ -153,6 +154,12 @@ public final class ShopMenu extends ChestMenu {
 
         if (rightClick) {
             buy(serverPlayer, item, entry, shift ? 16 : 1);
+        } else if (entry.sellable() && !CollectionApi.isUnlocked(serverPlayer, id, entry)) {
+            long missing = CollectionApi.missingToUnlock(serverPlayer, id, entry);
+            serverPlayer.sendSystemMessage(Component.literal(
+                            "Vente verrouillee : il t'en manque " + MoneyFormat.exact(missing)
+                                    + " a collecter.")
+                    .withStyle(ChatFormatting.GRAY));
         } else if (entry.sellable()) {
             sell(serverPlayer, item, entry, shift ? Integer.MAX_VALUE : 1);
         } else {
@@ -290,7 +297,13 @@ public final class ShopMenu extends ChestMenu {
 
         int owned = countOwned(item);
         List<Component> lore = new ArrayList<>();
-        if (entry.sellable()) {
+        if (entry.sellable() && !CollectionApi.isUnlocked(player, id, entry)) {
+            // Verrouille : on montre l'objectif plutot qu'un prix inaccessible.
+            lore.add(Component.literal("Vente verrouillee").withStyle(ChatFormatting.RED));
+            lore.add(Component.literal("  collecte " + MoneyFormat.exact(
+                            CollectionApi.missingToUnlock(player, id, entry)) + " de plus")
+                    .withStyle(ChatFormatting.DARK_GRAY));
+        } else if (entry.sellable()) {
             long current = DynamicPrice.unitPrice(player, id, entry);
             int percent = (int) Math.round(100.0 * current / Math.max(1L, entry.basePrice()));
             lore.add(Component.literal("Vente : " + MoneyFormat.exact(current))
@@ -309,6 +322,16 @@ public final class ShopMenu extends ChestMenu {
                     .withStyle(ChatFormatting.RED));
         }
         lore.add(Component.literal("Tu en as : " + owned).withStyle(ChatFormatting.GRAY));
+
+        long collected = CollectionApi.countOf(player, id);
+        long next = CollectionApi.nextThreshold(player, id, entry);
+        if (next > 0) {
+            lore.add(Component.literal("Collection : " + MoneyFormat.exact(collected)
+                            + " / " + MoneyFormat.exact(next))
+                    .withStyle(ChatFormatting.DARK_AQUA));
+        } else if (collected > 0) {
+            lore.add(Component.literal("Collection complete").withStyle(ChatFormatting.AQUA));
+        }
 
         ItemStack stack = new ItemStack(item, Math.max(1, Math.min(64, owned)));
         stack.set(DataComponents.LORE, new ItemLore(lore));
