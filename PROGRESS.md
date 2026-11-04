@@ -60,7 +60,7 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 7. [x] Banque et pénalité de mort
 8. [x] Contrats et demande du jour
 9. [x] Boosters, caisses, autosell
-10. [ ] NTM NEXT
+10. [x] NTM NEXT
 
 ---
 
@@ -86,6 +86,32 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 ---
 
 ## Journal des sessions
+
+### 2026-11-04 — phase 10, NTM NEXT
+
+**Lu dans le source du mod, pas deviné.** NTM NEXT déclare proprement les tags de
+convention : `c:raw_materials` (14 types), `c:ingots` (92), `c:dusts` (77),
+`c:nuggets` (48), `c:plates` (13), `c:gems` (12), `c:crystals` (2). Ses items
+suivent `hbm:ingot_uranium`, `hbm:raw_titanium`.
+
+**Conséquence de conception : une règle par tag, pas une ligne par item.** Lister
+des centaines d'items serait à refaire à chaque version du mod. Et si le mod n'est
+pas installé, les tags sont vides et rien n'est généré — **aucune dépendance de
+compilation, aucun chargement conditionnel, aucune classe du mod référencée**.
+
+**Décision d'équilibrage : NTM ne vend que sa matière brute.** Ses chaînes de
+traitement multiplient la matière ; rendre lingots, poudres ou plaques vendables
+transformerait ce rendement en revenu infini. Le reste est en achat seul. Exploit
+fermé par construction, sans audit recette par recette.
+
+`prices.json` reste toujours prioritaire sur une règle de tag, et l'ordre des
+règles dans le fichier fait la priorité.
+
+`/dohy scan [namespace]` liste les items enregistrés sans prix : c'est l'outil
+pour intégrer **n'importe quel** mod futur depuis la réalité du registre.
+
+Signature 26.2 ajoutée à la table : `ResourceKey.location()` a disparu avec le
+renommage en `Identifier` — passer par `Registry.getKey(value)`.
 
 ### 2026-11-04 — interface de banque, phases 8 et 9
 
@@ -116,8 +142,10 @@ demanderait enregistrement, modèle, texture et table de butin pour une mécaniq
 qui n'a besoin que d'une position. Le passage **ne charge jamais le chunk** —
 forcer le chargement ferait tourner une ferme à distance en permanence.
 
-Reste au plan : **phase 10, NTM NEXT**. Et les perks de skill non encore
-appliqués (liste dans le journal au démarrage).
+**Les dix phases du plan sont faites.** Restent, hors plan :
+- les perks de skill non encore appliqués (liste dans le journal au démarrage) ;
+- l'équilibrage des intérêts de banque, constat chiffré plus bas ;
+- la liste d'items de DonutSMP (`donut.build/auction`), demandée puis mise de côté.
 
 ### 2026-11-04 — phases 6 et 7
 
@@ -284,6 +312,10 @@ Elles sont consignees ici parce qu'elles vont se reposer a chaque phase :
 | `Inventory` | **`getNonEquipmentItems()`** → `NonNullList<ItemStack>`, exclut l'équipement porté |
 | `ChestMenu` | constructeur public `(MenuType, int, Inventory, Container, int rows)` → sous-classable avec `MenuType.GENERIC_9x6` |
 | `ServerPlayer.playNotifySound` | signature changée → passer par `Level.playSound` |
+| `ResourceKey.location()` | **supprimé** → `Registry.getKey(value)` |
+| `Item.getName()` | exige une `ItemStack` → `new ItemStack(item).getHoverName()` |
+| `Level.random` | protégé → `Entity.getRandom()` |
+| `EntityType.is(TagKey)` | absent → `Registry.get(id).map(h -> h.is(tag))` |
 | `displayClientMessage` | **supprimé** → `player.connection.send(new ClientboundSetActionBarTextPacket(...))` |
 
 **Phase 1 validée en jeu** : solde affiché, crédit et animation de gain,
