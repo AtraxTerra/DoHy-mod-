@@ -11,6 +11,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
 import java.io.BufferedReader;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Charge et tient a disposition le catalogue de prix.
@@ -70,9 +72,21 @@ public final class Prices {
             }
 
             PriceBook loaded = result.getOrThrow();
+
+            // Les regles de tag completent le catalogue avec les items des mods
+            // installes, sans jamais ecraser un prix explicite. Si aucun mod
+            // concerne n'est present, les tags sont vides et rien n'est ajoute.
+            TagPricing.load(server);
+            Map<Identifier, PriceEntry> generated = TagPricing.generate(loaded.items());
+            if (!generated.isEmpty()) {
+                Map<Identifier, PriceEntry> merged = new LinkedHashMap<>(loaded.items());
+                merged.putAll(generated);
+                loaded = new PriceBook(loaded.moneyMultiplier(), Map.copyOf(merged));
+            }
+
             book = loaded;
-            DoHy.LOGGER.info("Catalogue de prix charge : {} items, multiplicateur {}",
-                    loaded.size(), loaded.moneyMultiplier());
+            DoHy.LOGGER.info("Catalogue de prix charge : {} items ({} explicites), multiplicateur {}",
+                    loaded.size(), loaded.size() - generated.size(), loaded.moneyMultiplier());
             return true;
         } catch (Exception error) {
             DoHy.LOGGER.error("Echec du chargement du catalogue de prix", error);

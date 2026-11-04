@@ -1,0 +1,66 @@
+{
+  "_comment": "Regles de tarification par tag, appliquees a tout item enregistre qui n'a pas de prix explicite dans prices.json. C'est ce qui permet d'integrer un mod de plusieurs centaines d'items sans en lister un seul — et de rester correct si le mod n'est pas installe, puisqu'un tag vide ne produit rien.",
+  "_why_ntm_sells_only_raw": "NTM NEXT multiplie la matiere : ses chaines de traitement rendent plusieurs lingots par minerai, plus des sous-produits. Rendre les lingots, poudres ou plaques vendables transformerait ce rendement en revenu infini. Seule la matiere brute — le rendement reel du minage, non renouvelable — est donc vendable. Le reste est en achat seul, ce qui ferme l'exploit par construction au lieu de l'auditer recette par recette.",
+  "rules": [
+    {
+      "tag": "c:raw_materials",
+      "category": "NTM",
+      "tier": "FOUND",
+      "rate_per_hour": 400,
+      "sellable": true,
+      "buy_markup": 4.0,
+      "_note": "Le rendement du minage. 14 types dans NTM NEXT, dont 3 vanilla deja tarifes explicitement et donc non repris ici."
+    },
+    {
+      "tag": "c:gems",
+      "category": "NTM",
+      "tier": "FOUND",
+      "rate_per_hour": 600,
+      "sellable": true,
+      "buy_markup": 4.0,
+      "_note": "Charbon, lignite, cinabre : extraits, pas transformes."
+    },
+    {
+      "tag": "c:ingots",
+      "category": "NTM",
+      "tier": "FARM",
+      "rate_per_hour": 400,
+      "sellable": false,
+      "buy_markup": 6.0,
+      "_note": "Achat seul : sortie d'une chaine qui multiplie la matiere."
+    },
+    {
+      "tag": "c:plates",
+      "category": "NTM",
+      "tier": "FARM",
+      "rate_per_hour": 300,
+      "sellable": false,
+      "buy_markup": 6.0
+    },
+    {
+      "tag": "c:dusts",
+      "category": "NTM",
+      "tier": "FARM",
+      "rate_per_hour": 600,
+      "sellable": false,
+      "buy_markup": 6.0
+    },
+    {
+      "tag": "c:nuggets",
+      "category": "NTM",
+      "tier": "FARM",
+      "rate_per_hour": 3600,
+      "sellable": false,
+      "buy_markup": 6.0,
+      "_note": "Neuf nuggets pour un lingot : le taux suit, sinon la conversion serait rentable dans un sens."
+    },
+    {
+      "tag": "c:crystals",
+      "category": "NTM",
+      "tier": "FARM",
+      "rate_per_hour": 200,
+      "sellable": false,
+      "buy_markup": 6.0
+    }
+  ]
+}
