@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
@@ -13,6 +14,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
@@ -77,9 +79,17 @@ public final class SellCommand {
         }
 
         PriceEntry entry = maybeEntry.get();
+        Identifier id = BuiltInRegistries.ITEM.getKey(held.getItem());
+
+        if (!CollectionApi.isUnlocked(player, id, entry)) {
+            source.sendFailure(Component.literal("Vente verrouillee : il t'en manque "
+                    + MoneyFormat.exact(CollectionApi.missingToUnlock(player, id, entry))
+                    + " a collecter."));
+            return 0;
+        }
+
         int amount = wholeStack ? held.getCount() : 1;
-        long payout = DynamicPrice.sell(player,
-                BuiltInRegistries.ITEM.getKey(held.getItem()), entry, amount);
+        long payout = DynamicPrice.sell(player, id, entry, amount);
 
         held.shrink(amount);
         long balance = Economy.credit(player, payout);

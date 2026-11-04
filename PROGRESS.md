@@ -55,7 +55,7 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 2. [x] **Tracking des blocs posés** (chunk attachment) — bloquant pour 5 et 6
 3. [x] Shop complet : catalogue de prix, `/worth`, `/sell`, **`/shop` en coffre et `/sellall`**
 4. [x] Prix dynamiques et oubli
-5. [ ] Collections
+5. [x] Collections
 6. [ ] Skills et perks
 7. [ ] Banque et pénalité de mort
 8. [ ] Contrats et demande du jour
@@ -86,6 +86,34 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 ---
 
 ## Journal des sessions
+
+### 2026-11-04 — phase 5, collections
+
+Le premier palier débloque la vente de l'item. Levier de rythme : on ne peut pas
+tout vendre dès la première minute, et il devient utile de miner autre chose que
+l'optimum du moment.
+
+**Problème repéré en relisant la spec, et corrigé.** La règle « un bloc posé ne
+rapporte rien » (phase 2) aurait **interdit l'agriculture** : une culture doit
+être plantée pour être récoltée, donc le blé n'aurait jamais compté. Le tag
+`#dohy:placement_exempt` liste les blocs qui mûrissent sur place. L'exemption est
+sans danger — on ne duplique pas du blé en le plantant, on investit des graines
+et du temps. La canne à sucre, le bambou et le cactus n'y sont **pas**
+volontairement : seule la partie poussée au-dessus du bloc planté compte, ce qui
+est exactement le rendement.
+
+**Comptage à la source, pas au ramassage.** Compter au ramassage serait plus
+simple et plus complet, mais ouvrirait un exploit immédiat : jeter une pile puis
+la ramasser, en boucle. Compter à la casse, à la mort de mob et à la pêche exclut
+de surcroît les achats au shop par construction, sans marquer les items achetés.
+
+Limite assumée : les drops de mob ne comptent que si la mort est attribuable à un
+joueur (directement, ou via `getLastHurtByMob`). Une ferme purement passive —
+chute, suffocation — ne fera pas progresser les collections. Attribuer au joueur
+le plus proche serait faux par principe.
+
+Repli en dur si `collections.json` manque : sans paliers, **aucun item ne serait
+vendable**, puisque le premier palier débloque la vente.
 
 ### 2026-11-04 — phase 4, prix dynamiques
 

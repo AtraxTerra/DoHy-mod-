@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.shop;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
@@ -123,9 +124,10 @@ public final class SellChestMenu extends ChestMenu {
                 }
 
                 PriceEntry entry = Prices.book().entry(stack).orElse(null);
-                if (entry != null && entry.sellable()) {
+                if (entry != null && entry.sellable() && unlocked(stack, entry)) {
                     batch.merge(stack.getItem(), stack.getCount(), Integer::sum);
                 } else {
+                    // Non vendable, ou collection pas encore debloquee : rendu.
                     toReturn.add(stack);
                 }
             }
@@ -164,6 +166,11 @@ public final class SellChestMenu extends ChestMenu {
                 }
             }
         }
+    }
+
+    private boolean unlocked(ItemStack stack, PriceEntry entry) {
+        return CollectionApi.isUnlocked(player,
+                BuiltInRegistries.ITEM.getKey(stack.getItem()), entry);
     }
 
     /** Rend des piles au joueur, au sol si l'inventaire est plein. */
@@ -212,7 +219,7 @@ public final class SellChestMenu extends ChestMenu {
                 continue;
             }
             PriceEntry entry = Prices.book().entry(stack).orElse(null);
-            if (entry != null && entry.sellable()) {
+            if (entry != null && entry.sellable() && unlocked(stack, entry)) {
                 batch.merge(stack.getItem(), stack.getCount(), Integer::sum);
             } else {
                 unsellable++;

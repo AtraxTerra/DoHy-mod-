@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.economy.market;
 
 import fr.atraxterra.dohy.DoHyAttachments;
+import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,17 +46,25 @@ public final class DynamicPrice {
         return player.getData(DoHyAttachments.MARKET);
     }
 
-    /** Multiplicateur courant, entre le plancher et le plafond du tier. */
-    public static double multiplier(ServerPlayer player, Identifier id, PriceEntry entry) {
-        return multiplierAt(market(player).soldOf(id), entry);
+    /**
+     * Plancher effectif : celui du tier, releve par les paliers de collection
+     * deja franchis. Un item `FARM` a fond passe ainsi de 15 % a 40 %.
+     */
+    public static double effectiveFloor(ServerPlayer player, Identifier id, PriceEntry entry) {
+        return Math.min(0.95d, entry.floorPct() + CollectionApi.floorBonus(player, id, entry));
     }
 
-    static double multiplierAt(double sold, PriceEntry entry) {
+    /** Multiplicateur courant, entre le plancher effectif et le plafond du tier. */
+    public static double multiplier(ServerPlayer player, Identifier id, PriceEntry entry) {
+        return multiplierAt(market(player).soldOf(id), entry, effectiveFloor(player, id, entry));
+    }
+
+    static double multiplierAt(double sold, PriceEntry entry, double floor) {
         double s0 = Math.max(1, entry.halfSaturation());
         double raw = Math.pow(s0 / (s0 + Math.max(0, sold)), K);
         // Le plafond ne mord pas encore : la formule ne depasse jamais 1. Il
         // existe pour la demande du jour (phase 8), qui multipliera ce facteur.
-        return Math.min(entry.ceilingPct(), Math.max(entry.floorPct(), raw));
+        return Math.min(entry.ceilingPct(), Math.max(floor, raw));
     }
 
     /** Prix unitaire affiche, arrondi. Jamais zero. */
@@ -72,7 +81,8 @@ public final class DynamicPrice {
             return 0L;
         }
         double start = market(player).soldOf(id);
-        return Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry)));
+        return Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry,
+                effectiveFloor(player, id, entry))));
     }
 
     /**
@@ -87,7 +97,8 @@ public final class DynamicPrice {
         }
         PlayerMarket market = market(player);
         double start = market.soldOf(id);
-        long payout = Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry)));
+        long payout = Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry,
+                effectiveFloor(player, id, entry))));
         market.record(id, quantity);
         return payout;
     }
@@ -98,10 +109,9 @@ public final class DynamicPrice {
      * @param from pression avant la vente
      * @param to   pression apres la vente
      */
-    private static double payoutBetween(double from, double to, PriceEntry entry) {
+    private static double payoutBetween(double from, double to, PriceEntry entry, double floor) {
         double s0 = Math.max(1, entry.halfSaturation());
         double base = entry.basePrice();
-        double floor = entry.floorPct();
         double breakpoint = floorBreakpoint(s0, floor);
 
         double total = 0.0d;

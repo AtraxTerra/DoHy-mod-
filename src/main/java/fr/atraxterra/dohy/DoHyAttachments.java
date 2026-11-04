@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy;
 
+import fr.atraxterra.dohy.collection.CollectionData;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
 import fr.atraxterra.dohy.economy.market.PlayerMarket;
 import fr.atraxterra.dohy.world.PlacedBlockData;
@@ -53,6 +54,18 @@ public final class DoHyAttachments {
             "market",
             () -> AttachmentType.builder(PlayerMarket::new)
                     .serialize(PlayerMarket.MAP_CODEC, market -> !market.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /**
+     * Collections par item. Conservees a la mort : un acquis ne se reperd pas,
+     * et le premier palier debloque la vente — la perdre a la mort serait
+     * punitif au point d'etre absurde.
+     */
+    public static final Supplier<AttachmentType<CollectionData>> COLLECTIONS = ATTACHMENT_TYPES.register(
+            "collections",
+            () -> AttachmentType.builder(CollectionData::new)
+                    .serialize(CollectionData.MAP_CODEC, data -> !data.isEmpty())
                     .copyOnDeath()
                     .build());
 

@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
@@ -82,6 +83,12 @@ public final class WorthCommand {
         source.sendSuccess(() -> line("le stack (64)", MoneyFormat.exact(stack)), false);
         source.sendSuccess(() -> line("ton inventaire (" + inInventory + ")", MoneyFormat.exact(total)), false);
 
+        if (!CollectionApi.isUnlocked(player, id, entry)) {
+            long missing = CollectionApi.missingToUnlock(player, id, entry);
+            source.sendSuccess(() -> Component.literal("  vente verrouillee : collecte "
+                            + MoneyFormat.exact(missing) + " de plus")
+                    .withStyle(ChatFormatting.RED), false);
+        }
         if (percent < 100) {
             source.sendSuccess(() -> Component.literal("  " + percent + " % du prix de base ("
                             + MoneyFormat.exact(entry.basePrice()) + ") · remonte avec le temps de jeu")

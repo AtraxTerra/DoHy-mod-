@@ -40,15 +40,21 @@ jobs:
       # Le catalogue de prix est copie dans le jar au lieu d'etre duplique dans
       # les sources. Si cette copie casse silencieusement, le mod se charge mais
       # plus rien ne se vend — un symptome qui ne ressemble pas a sa cause.
-      - name: Le catalogue doit etre dans le jar
+      - name: Les donnees doivent etre dans le jar
         run: |
           JAR=$(ls build/libs/*.jar | head -1)
-          if ! unzip -l "$JAR" | grep -q "data/dohy/prices.json"; then
-            echo "::error::data/dohy/prices.json est absent de $JAR"
+          MISSING=0
+          for f in data/dohy/prices.json data/dohy/collections.json data/dohy/tags/block/placement_exempt.json; do
+            if ! unzip -l "$JAR" | grep -q "$f"; then
+              echo "::error::$f est absent de $JAR"
+              MISSING=1
+            fi
+          done
+          if [ "$MISSING" = "1" ]; then
             unzip -l "$JAR"
             exit 1
           fi
-          echo "Catalogue present dans $(basename "$JAR")"
+          echo "Donnees presentes dans $(basename "$JAR")"
 
       - name: Jar
         if: success()

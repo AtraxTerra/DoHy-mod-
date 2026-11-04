@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import fr.atraxterra.dohy.collection.CollectionTiers;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.world.PlacedBlocks;
 import net.minecraft.ChatFormatting;
@@ -63,14 +64,19 @@ public final class DoHyCommand {
      * redemarrage, on ne le regle pas.
      */
     private static int reload(CommandSourceStack source) {
-        if (Prices.load(source.getServer())) {
+        boolean prices = Prices.load(source.getServer());
+        boolean tiers = CollectionTiers.load(source.getServer());
+
+        if (prices && tiers) {
             source.sendSuccess(() -> Component.literal(
-                            "Catalogue recharge : " + Prices.book().size() + " items.")
+                            "Recharge : " + Prices.book().size() + " items, paliers de collection a jour.")
                     .withStyle(ChatFormatting.GREEN), true);
             return Prices.book().size();
         }
-        source.sendFailure(Component.literal(
-                "Rechargement echoue, l'ancien catalogue reste en service. Voir les logs."));
+        source.sendFailure(Component.literal("Rechargement partiel ou echoue ("
+                + (prices ? "prix ok" : "prix en echec") + ", "
+                + (tiers ? "paliers ok" : "paliers en echec")
+                + "). Les anciennes donnees restent en service. Voir les logs."));
         return 0;
     }
 
