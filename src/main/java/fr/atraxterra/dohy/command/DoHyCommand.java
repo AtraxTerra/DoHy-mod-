@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.boost.Crates;
 import fr.atraxterra.dohy.collection.CollectionTiers;
 import fr.atraxterra.dohy.contract.ContractConfig;
@@ -12,10 +13,19 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Commandes de diagnostic.
@@ -45,6 +55,13 @@ public final class DoHyCommand {
                                         BlockPosArgument.getLoadedBlockPos(ctx, "pos")))))
                 .then(Commands.literal("reload")
                         .executes(ctx -> reload(ctx.getSource())))
+                .then(Commands.literal("scan")
+                        .executes(ctx -> scan(ctx.getSource(), null))
+                        .then(Commands.argument("namespace",
+                                        com.mojang.brigadier.arguments.StringArgumentType.word())
+                                .executes(ctx -> scan(ctx.getSource(),
+                                        com.mojang.brigadier.arguments.StringArgumentType
+                                                .getString(ctx, "namespace")))))
                 .then(Commands.literal("chunk")
                         .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                 .executes(ctx -> chunk(ctx.getSource(),
@@ -87,6 +104,50 @@ public final class DoHyCommand {
                 + (crates ? "caisses ok" : "caisses en echec")
                 + "). Les anciennes donnees restent en service. Voir les logs."));
         return 0;
+    }
+
+    /**
+     * Liste les items enregistres qui n'ont aucun prix, groupes par espace de
+     * noms.
+     *
+     * <p>C'est l'outil pour integrer un mod : il dit exactement ce qui echappe
+     * encore au catalogue, au lieu de le deviner. Le detail complet part dans
+     * les logs, le chat n'en recoit qu'un resume lisible.
+     */
+    private static int scan(CommandSourceStack source, String namespace) {
+        Map<String, Integer> missing = new TreeMap<>();
+        List<String> examples = new ArrayList<>();
+
+        for (Holder.Reference<Item> holder : BuiltInRegistries.ITEM.listElements().toList()) {
+            Identifier id = holder.key().location();
+            if (namespace != null && !id.getNamespace().equals(namespace)) {
+                continue;
+            }
+            if (Prices.book().entry(id).isPresent()) {
+                continue;
+            }
+            missing.merge(id.getNamespace(), 1, Integer::sum);
+            if (examples.size() < 40) {
+                examples.add(id.toString());
+            }
+        }
+
+        if (missing.isEmpty()) {
+            source.sendSuccess(() -> Component.literal("Tous les items sont tarifes.")
+                    .withStyle(ChatFormatting.GREEN), false);
+            return 0;
+        }
+
+        int total = missing.values().stream().mapToInt(Integer::intValue).sum();
+        source.sendSuccess(() -> Component.literal(total + " item(s) sans prix")
+                .withStyle(ChatFormatting.GOLD), false);
+        missing.forEach((ns, count) -> source.sendSuccess(() ->
+                Component.literal("  " + ns + " : " + count).withStyle(ChatFormatting.GRAY), false));
+
+        DoHy.LOGGER.info("Items sans prix ({} au total) — exemples : {}", total, examples);
+        source.sendSuccess(() -> Component.literal("  detail dans les logs du serveur")
+                .withStyle(ChatFormatting.DARK_GRAY), false);
+        return total;
     }
 
     private static int chunk(CommandSourceStack source, BlockPos pos) {
