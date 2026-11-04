@@ -54,7 +54,7 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 1. [x] Monnaie, persistance, HUD, **backups**
 2. [x] **Tracking des blocs posés** (chunk attachment) — bloquant pour 5 et 6
 3. [x] Shop complet : catalogue de prix, `/worth`, `/sell`, **`/shop` en coffre et `/sellall`**
-4. [ ] Prix dynamiques et oubli
+4. [x] Prix dynamiques et oubli
 5. [ ] Collections
 6. [ ] Skills et perks
 7. [ ] Banque et pénalité de mort
@@ -86,6 +86,33 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 ---
 
 ## Journal des sessions
+
+### 2026-11-04 — phase 4, prix dynamiques
+
+Le paiement est l'**intégrale** du prix unitaire sur la quantité vendue, pas une
+multiplication. C'est le point non évident de cette phase : vendre 10 000 blés
+d'un coup au prix d'avant-vente serait l'inverse exact de l'effet recherché,
+puisqu'il suffirait de tout stocker puis de tout écouler en une fois pour ignorer
+la pression. Forme fermée, vérifiée numériquement contre une somme unité par
+unité ; l'arrondi n'intervient qu'une fois à la fin, car arrondir chaque unité
+fait perdre jusqu'à 12 % sur les items bon marché au plancher.
+
+**Tous les chemins de vente agrègent par item avant de tarifer** — coffre de
+vente, shop, `/sellall`, `/sell`. Sans ça, cinq piles du même item partiraient
+toutes au prix d'avant-vente et l'agrégation serait contournée par accident.
+
+**L'oubli est en temps de jeu**, appliqué chaque minute avec le facteur
+équivalent à 10 % par 20 min. En temps réel, un week-end de grind écraserait les
+prix et les cinq jours ouvrés les feraient remonter sans que le joueur y soit
+pour rien.
+
+Simulation retenue (blé, base 15) : 1ʳᵉ récolte de 2 000 → 23 963 $, 2ᵉ → 17 425 $,
+3ᵉ → 14 194 $. Après une soirée de 2 h le prix unitaire remonte de 6,53 à 8,47 ;
+après un week-end de 10 h, à 13,96 soit 93 % de la base.
+Point à surveiller : les items `FOUND` (S0 = 64) atteignent le plancher vite — un
+dump de 5 stacks de diamants demande ~12 h de jeu pour revenir à la base. C'est
+voulu (forcer la diversification), mais si ça pèse, **S0 est le bouton**, pas la
+formule.
 
 ### 2026-11-03 (suite) — phases 2 et 3
 
