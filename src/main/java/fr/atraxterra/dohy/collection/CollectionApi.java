@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -137,9 +138,10 @@ public final class CollectionApi {
     private static void announce(ServerPlayer player, Identifier id, PriceEntry entry,
                                  int index, long threshold, int total) {
         Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+        // Item.getName exige une pile en 26.2 : on en fabrique une jetable.
         Component name = item == null
                 ? Component.literal(id.toString())
-                : item.getName();
+                : new ItemStack(item).getHoverName();
 
         player.level().playSound(null, player.blockPosition(),
                 SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.5f, 1.6f);

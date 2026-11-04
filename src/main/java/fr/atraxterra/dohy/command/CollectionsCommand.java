@@ -98,7 +98,9 @@ public final class CollectionsCommand {
                 continue;
             }
             Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
-            Component name = item == null ? Component.literal(id.getPath()) : item.getName();
+            Component name = item == null
+                    ? Component.literal(id.getPath())
+                    : new ItemStack(item).getHoverName();
             long next = CollectionApi.nextThreshold(player, id, entry);
             int tier = CollectionApi.tierIndex(player, id, entry);
 
