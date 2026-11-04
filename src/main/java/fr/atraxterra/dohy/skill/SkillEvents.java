@@ -137,7 +137,7 @@ public final class SkillEvents {
     /** Duplique les drops avec la probabilite accordee par les perks. */
     private static void maybeDoubleDrop(ServerPlayer player, Skill skill, BlockDropsEvent event) {
         double chance = SkillPerks.doubleDropChance(player, skill);
-        if (chance <= 0 || player.level().random.nextDouble() >= chance) {
+        if (chance <= 0 || player.getRandom().nextDouble() >= chance) {
             return;
         }
         event.getDrops().forEach(drop -> {
