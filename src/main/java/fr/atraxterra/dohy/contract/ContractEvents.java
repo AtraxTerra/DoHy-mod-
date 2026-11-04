@@ -158,9 +158,13 @@ public final class ContractEvents {
             if (!target.startsWith("#")) {
                 return target.equals(id.toString());
             }
+            // EntityType n'expose pas is(TagKey) : on teste via le holder du
+            // registre, dont la signature est stable.
             TagKey<EntityType<?>> tag = TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(),
                     Identifier.bySeparator(target.substring(1), ':'));
-            return entity.getType().is(tag);
+            return BuiltInRegistries.ENTITY_TYPE.get(id)
+                    .map(holder -> holder.is(tag))
+                    .orElse(false);
         };
     }
 }
