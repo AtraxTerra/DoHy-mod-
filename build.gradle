@@ -90,6 +90,9 @@ tasks.named('processResources', ProcessResources).configure {
     from(rootProject.file('data/skills.json')) {
         into "data/${mod_id}"
     }
+    from(rootProject.file('data/contracts.json')) {
+        into "data/${mod_id}"
+    }
 }
 
 jar {

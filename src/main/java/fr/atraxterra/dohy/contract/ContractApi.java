@@ -1,0 +1,253 @@
+package fr.atraxterra.dohy.contract;
+
+import fr.atraxterra.dohy.DoHyAttachments;
+import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.economy.price.PriceEntry;
+import fr.atraxterra.dohy.economy.price.Prices;
+import fr.atraxterra.dohy.util.MoneyFormat;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+
+/**
+ * Contrats, demande du jour et niveau global.
+ *
+ * <h2>Le role de ces systemes</h2>
+ *
+ * <p>Ils existent pour une raison precise, tiree du rythme de jeu vise : deux
+ * heures en semaine doivent suffire a franchir quelque chose. Les trois contrats
+ * quotidiens sont calibres pour ca, le contrat hebdomadaire est volontairement
+ * infaisable en une soiree, et la demande du jour donne un objectif immediat des
+ * la connexion.
+ *
+ * <p>Aucun de ces systemes ne se casse si on saute un soir : les compteurs sont
+ * en minutes de jeu, donc rien n'expire pendant que le monde est ferme. C'est la
+ * raison pour laquelle il n'y a pas de serie a entretenir.
+ */
+public final class ContractApi {
+
+    /** Croissance de la recompense avec le niveau global, par niveau. */
+    private static final double REWARD_PER_GLOBAL_LEVEL = 0.35d;
+
+    /** XP necessaire pour passer au niveau global suivant, par niveau. */
+    private static final long GLOBAL_XP_PER_LEVEL = 500L;
+
+    /** Recompense accordee tous les cinq niveaux globaux. */
+    private static final long GLOBAL_MILESTONE_MONEY = 50_000L;
+
+    private ContractApi() {
+    }
+
+    public static ContractData data(ServerPlayer player) {
+        return player.getData(DoHyAttachments.CONTRACTS);
+    }
+
+    public static int globalLevel(ServerPlayer player) {
+        return (int) (data(player).globalXp() / GLOBAL_XP_PER_LEVEL);
+    }
+
+    /** XP de jalon. Les paliers de niveau global sont annonces et payes ici. */
+    public static void grantGlobalXp(ServerPlayer player, long amount, String reason) {
+        if (amount <= 0) {
+            return;
+        }
+        ContractData data = data(player);
+        int before = globalLevel(player);
+        data.addGlobalXp(amount);
+        int after = globalLevel(player);
+
+        for (int level = before + 1; level <= after; level++) {
+            if (level % 5 != 0) {
+                continue;
+            }
+            long money = GLOBAL_MILESTONE_MONEY * (level / 5L);
+            long balance = Economy.credit(player, money);
+            player.level().playSound(null, player.blockPosition(),
+                    SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.7f, 0.8f);
+            player.sendSystemMessage(Component.literal("Niveau global " + level)
+                    .withStyle(ChatFormatting.LIGHT_PURPLE)
+                    .append(Component.literal("  +" + MoneyFormat.exact(money))
+                            .withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal("  · solde " + MoneyFormat.shortForm(balance))
+                            .withStyle(ChatFormatting.DARK_GRAY)));
+        }
+
+        if (after > before && after % 5 != 0) {
+            player.sendSystemMessage(Component.literal("Niveau global " + after + " — " + reason)
+                    .withStyle(ChatFormatting.DARK_PURPLE));
+        }
+    }
+
+    /** Tire de nouveaux contrats si leur duree de validite est ecoulee. */
+    public static void rollIfDue(ServerPlayer player) {
+        ContractData data = data(player);
+        ContractConfig.Config config = ContractConfig.config();
+
+        if (due(data.dailyRolledAt(), data.playtimeMinutes(), config.daily().rerollHours())) {
+            data.setDaily(pick(config.daily(), false));
+            data.markDailyRolled();
+            announce(player, data.daily(), "Contrats du jour");
+        }
+        if (due(data.weeklyRolledAt(), data.playtimeMinutes(), config.weekly().rerollHours())) {
+            data.setWeekly(pick(config.weekly(), true));
+            data.markWeeklyRolled();
+            announce(player, data.weekly(), "Contrat de la semaine");
+        }
+    }
+
+    private static boolean due(long rolledAt, long now, long validityHours) {
+        return rolledAt < 0 || now - rolledAt >= validityHours * 60L;
+    }
+
+    private static List<ActiveContract> pick(ContractConfig.Pool pool, boolean weekly) {
+        List<ContractConfig.Entry> candidates = new ArrayList<>(pool.pool());
+        Collections.shuffle(candidates);
+        List<ActiveContract> chosen = new ArrayList<>();
+        for (ContractConfig.Entry entry : candidates) {
+            if (chosen.size() >= pool.count()) {
+                break;
+            }
+            if (ContractType.byName(entry.type()) == ContractType.UNKNOWN) {
+                continue;
+            }
+            chosen.add(ActiveContract.of(entry, weekly));
+        }
+        return chosen;
+    }
+
+    private static void announce(ServerPlayer player, List<ActiveContract> contracts, String title) {
+        if (contracts.isEmpty()) {
+            return;
+        }
+        player.sendSystemMessage(Component.literal(title).withStyle(ChatFormatting.GOLD));
+        contracts.forEach(contract -> player.sendSystemMessage(
+                Component.literal("  " + describe(contract)).withStyle(ChatFormatting.GRAY)));
+    }
+
+    /**
+     * Fait avancer les contrats de ce type dont la cible satisfait le test.
+     *
+     * <p>Le test est fourni par l'appelant et non resolu ici, parce que seul
+     * l'appelant dispose du sujet : un bloc sait tester ses propres tags, un
+     * compteur de distance n'a pas de cible du tout. Un contrat sans cible
+     * accepte toujours.
+     */
+    public static void progress(ServerPlayer player, ContractType type,
+                                Predicate<String> targetTest, long delta) {
+        if (delta <= 0) {
+            return;
+        }
+        ContractData data = data(player);
+        advance(player, data, data.daily(), false, type, targetTest, delta);
+        advance(player, data, data.weekly(), true, type, targetTest, delta);
+    }
+
+    private static void advance(ServerPlayer player, ContractData data, List<ActiveContract> list,
+                                boolean weekly, ContractType type,
+                                Predicate<String> targetTest, long delta) {
+        for (int index = 0; index < list.size(); index++) {
+            ActiveContract contract = list.get(index);
+            if (contract.done() || contract.kind() != type) {
+                continue;
+            }
+            if (contract.target().isPresent() && !targetTest.test(contract.target().get())) {
+                continue;
+            }
+            ActiveContract advanced = contract.advance(delta);
+            data.replace(weekly, index, advanced);
+            if (advanced.done()) {
+                complete(player, advanced);
+            }
+        }
+    }
+
+    private static void complete(ServerPlayer player, ActiveContract contract) {
+        ContractConfig.Pool pool = contract.weekly()
+                ? ContractConfig.config().weekly()
+                : ContractConfig.config().daily();
+
+        long money = Math.round(pool.moneyPerLevel()
+                * (1.0d + globalLevel(player) * REWARD_PER_GLOBAL_LEVEL));
+        long balance = Economy.credit(player, money);
+
+        player.level().playSound(null, player.blockPosition(),
+                SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.8f, 1.0f);
+        player.sendSystemMessage(Component.literal("Contrat termine — ")
+                .withStyle(ChatFormatting.GREEN)
+                .append(Component.literal(describe(contract)).withStyle(ChatFormatting.WHITE))
+                .append(Component.literal("  +" + MoneyFormat.exact(money))
+                        .withStyle(ChatFormatting.GOLD))
+                .append(Component.literal("  · solde " + MoneyFormat.shortForm(balance))
+                        .withStyle(ChatFormatting.DARK_GRAY)));
+
+        grantGlobalXp(player, pool.globalXp(), "contrat termine");
+    }
+
+    /** Tire la demande du jour si celle en cours a expire. */
+    public static void refreshDemand(ServerPlayer player) {
+        ContractData data = data(player);
+        if (data.demandItem() != null) {
+            return;
+        }
+
+        ContractConfig.Demand demand = ContractConfig.config().demand();
+        List<Identifier> candidates = new ArrayList<>();
+        Prices.book().items().forEach((id, entry) -> {
+            if (demand.eligibleTiers().stream().anyMatch(t -> t.equalsIgnoreCase(entry.tier()))
+                    && entry.sellable()) {
+                candidates.add(id);
+            }
+        });
+        if (candidates.isEmpty()) {
+            return;
+        }
+
+        Identifier chosen = candidates.get(player.getRandom().nextInt(candidates.size()));
+        data.setDemand(chosen, data.playtimeMinutes() + demand.durationHours() * 60L);
+
+        Item item = BuiltInRegistries.ITEM.getOptional(chosen).orElse(null);
+        Component name = item == null
+                ? Component.literal(chosen.getPath())
+                : new ItemStack(item).getHoverName();
+        player.sendSystemMessage(Component.literal("Demande du jour : ")
+                .withStyle(ChatFormatting.AQUA)
+                .append(name.copy().withStyle(ChatFormatting.WHITE))
+                .append(Component.literal("  x" + demand.multiplier() + " a la vente")
+                        .withStyle(ChatFormatting.GOLD)));
+    }
+
+    public static String describe(ActiveContract contract) {
+        String target = contract.target().map(t -> " " + t).orElse("");
+        String label = switch (contract.kind()) {
+            case MINE_BLOCK -> "miner";
+            case KILL_ENTITY -> "tuer";
+            case HARVEST -> "recolter";
+            case FISH -> "pecher";
+            case SMELT -> "fondre";
+            case SELL_VALUE -> "vendre pour";
+            case TRAVEL -> "parcourir";
+            case PLACE_BLOCK -> "poser";
+            case COLLECTION_TIER -> "franchir des paliers de collection";
+            case SKILL_LEVELS -> "gagner des niveaux de skill";
+            case UNKNOWN -> contract.type();
+        };
+        return label + " " + MoneyFormat.exact(contract.amount()) + target
+                + "  [" + MoneyFormat.exact(contract.progress()) + "/"
+                + MoneyFormat.exact(contract.amount()) + "]";
+    }
+
+    public static PriceEntry entryOf(Identifier id) {
+        return Prices.book().entry(id).orElse(null);
+    }
+}

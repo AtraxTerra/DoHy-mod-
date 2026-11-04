@@ -3,7 +3,8 @@
   "daily": {
     "count": 3,
     "reroll_on_playtime_hours": 24,
-    "money_formula": "9000 * (1 + global_level * 0.35)",
+    "money_formula": "money_base * (1 + global_level * 0.35)",
+    "money_base": 9000,
     "global_xp": 15,
     "pool": [
       { "id": "mine_deepslate",   "type": "MINE_BLOCK",   "target": "minecraft:deepslate", "amount": 500 },
@@ -29,7 +30,8 @@
   "weekly": {
     "count": 1,
     "reroll_on_playtime_hours": 168,
-    "money_formula": "110000 * (1 + global_level * 0.35)",
+    "money_formula": "money_base * (1 + global_level * 0.35)",
+    "money_base": 110000,
     "global_xp": 250,
     "_note": "Recompense ~12x un quotidien. Ne doit jamais etre terminable en une soiree de semaine.",
     "pool": [

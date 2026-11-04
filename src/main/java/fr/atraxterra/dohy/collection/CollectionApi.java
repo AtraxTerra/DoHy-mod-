@@ -1,6 +1,8 @@
 package fr.atraxterra.dohy.collection;
 
 import fr.atraxterra.dohy.DoHyAttachments;
+import fr.atraxterra.dohy.contract.ContractApi;
+import fr.atraxterra.dohy.contract.ContractType;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.util.MoneyFormat;
@@ -66,6 +68,9 @@ public final class CollectionApi {
             long threshold = tiers.get(index);
             if (before < threshold && after >= threshold) {
                 announce(player, id, entry, index, threshold, tiers.size());
+                ContractApi.grantGlobalXp(player,
+                        CollectionTiers.config().reward(index).globalXp(), "palier de collection");
+                ContractApi.progress(player, ContractType.COLLECTION_TIER, target -> true, 1L);
             }
         }
     }

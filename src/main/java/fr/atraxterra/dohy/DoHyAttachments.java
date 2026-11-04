@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy;
 
 import fr.atraxterra.dohy.collection.CollectionData;
+import fr.atraxterra.dohy.contract.ContractData;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
 import fr.atraxterra.dohy.skill.SkillData;
 import fr.atraxterra.dohy.economy.market.PlayerMarket;
@@ -75,6 +76,17 @@ public final class DoHyAttachments {
             "skills",
             () -> AttachmentType.builder(SkillData::new)
                     .serialize(SkillData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /**
+     * Contrats, demande du jour, niveau global et compteur de temps de jeu.
+     * Conserves a la mort : mourir ne doit pas annuler un contrat en cours.
+     */
+    public static final Supplier<AttachmentType<ContractData>> CONTRACTS = ATTACHMENT_TYPES.register(
+            "contracts",
+            () -> AttachmentType.builder(ContractData::new)
+                    .serialize(ContractData.MAP_CODEC, data -> !data.isEmpty())
                     .copyOnDeath()
                     .build());
 
