@@ -1,6 +1,8 @@
 package fr.atraxterra.dohy.skill;
 
 import fr.atraxterra.dohy.DoHyAttachments;
+import fr.atraxterra.dohy.contract.ContractApi;
+import fr.atraxterra.dohy.contract.ContractType;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
@@ -99,6 +101,8 @@ public final class SkillApi {
             for (int level = before + 1; level <= after; level++) {
                 reward(player, skill, level);
             }
+            ContractApi.grantGlobalXp(player, (after - before) * 20L, "niveau de skill");
+            ContractApi.progress(player, ContractType.SKILL_LEVELS, target -> true, after - before);
             // Les perks dependent du niveau : on les recalcule entierement
             // plutot que d'appliquer un delta, ce qui evite toute derive.
             SkillPerks.apply(player);

@@ -1,15 +1,7 @@
 {
   "_comment": "Blocs exemptes de la regle 'un bloc pose ne rapporte rien'. Une culture doit etre plantee pour etre recoltee : sans cette exemption, l'agriculture ne compterait jamais dans les collections ni dans l'XP. L'exemption est sans danger, parce qu'on ne duplique pas du ble en le plantant — on investit des graines et du temps. A l'inverse, la canne a sucre, le bambou et le cactus n'y sont PAS : seule la partie qui a pousse au-dessus du bloc plante compte, ce qui est exactement le rendement.",
   "values": [
-    "minecraft:wheat",
-    "minecraft:carrots",
-    "minecraft:potatoes",
-    "minecraft:beetroots",
-    "minecraft:nether_wart",
-    "minecraft:torchflower_crop",
-    "minecraft:pitcher_crop",
-    "minecraft:cocoa",
-    "minecraft:sweet_berry_bush",
+    "#dohy:crops",
     "minecraft:melon_stem",
     "minecraft:pumpkin_stem",
     "minecraft:attached_melon_stem",

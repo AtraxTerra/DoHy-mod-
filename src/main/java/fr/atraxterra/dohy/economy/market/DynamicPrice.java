@@ -2,6 +2,9 @@ package fr.atraxterra.dohy.economy.market;
 
 import fr.atraxterra.dohy.DoHyAttachments;
 import fr.atraxterra.dohy.collection.CollectionApi;
+import fr.atraxterra.dohy.contract.Bonuses;
+import fr.atraxterra.dohy.contract.ContractApi;
+import fr.atraxterra.dohy.contract.ContractType;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -81,8 +84,9 @@ public final class DynamicPrice {
             return 0L;
         }
         double start = market(player).soldOf(id);
-        return Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry,
+        long base = Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry,
                 effectiveFloor(player, id, entry))));
+        return Math.max(1L, Math.round(base * Bonuses.preview(player, id)));
     }
 
     /**
@@ -97,9 +101,18 @@ public final class DynamicPrice {
         }
         PlayerMarket market = market(player);
         double start = market.soldOf(id);
-        long payout = Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry,
+        long base = Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry,
                 effectiveFloor(player, id, entry))));
+
+        // La pression enregistree est celle de la quantite reellement vendue :
+        // un bonus ne doit pas accelerer la chute du prix, sinon il s'annule.
         market.record(id, quantity);
+
+        double multiplier = Bonuses.consume(player, id);
+        long payout = Math.max(1L, Math.round(base * multiplier));
+        Bonuses.report(player, multiplier, payout);
+
+        ContractApi.progress(player, ContractType.SELL_VALUE, target -> true, payout);
         return payout;
     }
 
