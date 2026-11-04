@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import fr.atraxterra.dohy.boost.Crates;
 import fr.atraxterra.dohy.collection.CollectionTiers;
 import fr.atraxterra.dohy.contract.ContractConfig;
 import fr.atraxterra.dohy.skill.SkillConfig;
@@ -70,8 +71,9 @@ public final class DoHyCommand {
         boolean tiers = CollectionTiers.load(source.getServer());
         boolean skills = SkillConfig.load(source.getServer());
         boolean contracts = ContractConfig.load(source.getServer());
+        boolean crates = Crates.load(source.getServer());
 
-        if (prices && tiers && skills && contracts) {
+        if (prices && tiers && skills && contracts && crates) {
             source.sendSuccess(() -> Component.literal(
                             "Recharge : " + Prices.book().size() + " items, paliers de collection a jour.")
                     .withStyle(ChatFormatting.GREEN), true);
@@ -81,7 +83,8 @@ public final class DoHyCommand {
                 + (prices ? "prix ok" : "prix en echec") + ", "
                 + (tiers ? "paliers ok" : "paliers en echec") + ", "
                 + (skills ? "skills ok" : "skills en echec") + ", "
-                + (contracts ? "contrats ok" : "contrats en echec")
+                + (contracts ? "contrats ok" : "contrats en echec") + ", "
+                + (crates ? "caisses ok" : "caisses en echec")
                 + "). Les anciennes donnees restent en service. Voir les logs."));
         return 0;
     }
