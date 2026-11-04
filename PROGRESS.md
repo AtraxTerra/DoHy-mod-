@@ -121,6 +121,17 @@ c'est la vérification qui avait fait reporter la commande.
 Si un écran custom devient souhaitable (afficher les prix dynamiques, un
 historique), c'est à ce moment-là qu'il faudra affronter `extractBackground`.
 
+**Coffre de vente** (demande du joueur, hors plan initial). `SellChestMenu`, même
+présentation de coffre, mais conteneur **réel** : les clics sont délégués à
+`super`, donc vanilla gère tout le déplacement d'items. À la fermeture, le
+vendable est payé et le reste rendu, au sol si l'inventaire est plein.
+Deux protections qui méritent d'être connues : une garde contre le double
+règlement (`removed` peut être appelé plusieurs fois, et payer deux fois le même
+dépôt serait une machine à argent), et un rattrapage qui restitue le contenu si
+le règlement lève une exception — elle surviendrait au pire moment, les items
+étant déjà sortis du conteneur mais pas encore rendus.
+`/sell` sans argument ouvre le coffre ; `/sell hand` et `/sell stack` restent.
+
 Signatures 26.2 ajoutées à la table ci-dessous : `BlockEvent.BreakEvent`,
 `LevelChunk.markUnsaved`, `Registry.getOptional`.
 
@@ -156,6 +167,7 @@ Elles sont consignees ici parce qu'elles vont se reposer a chaque phase :
 | `Inventory` | **`getNonEquipmentItems()`** → `NonNullList<ItemStack>`, exclut l'équipement porté |
 | `ChestMenu` | constructeur public `(MenuType, int, Inventory, Container, int rows)` → sous-classable avec `MenuType.GENERIC_9x6` |
 | `ServerPlayer.playNotifySound` | signature changée → passer par `Level.playSound` |
+| `displayClientMessage` | **supprimé** → `player.connection.send(new ClientboundSetActionBarTextPacket(...))` |
 
 **Phase 1 validée en jeu** : solde affiché, crédit et animation de gain,
 `/money hide`, persistance au rechargement du monde, conservation à la mort, et
