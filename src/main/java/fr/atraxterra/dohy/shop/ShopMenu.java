@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.shop;
 
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.util.MoneyFormat;
@@ -181,7 +182,8 @@ public final class ShopMenu extends ChestMenu {
             return;
         }
 
-        long payout = entry.basePrice() * removed;
+        long payout = DynamicPrice.sell(serverPlayer,
+                BuiltInRegistries.ITEM.getKey(item), entry, removed);
         long balance = Economy.credit(serverPlayer, payout);
         sound(serverPlayer, true);
         serverPlayer.sendSystemMessage(Component.literal("Vendu " + removed + "x pour ")
@@ -289,8 +291,16 @@ public final class ShopMenu extends ChestMenu {
         int owned = countOwned(item);
         List<Component> lore = new ArrayList<>();
         if (entry.sellable()) {
-            lore.add(Component.literal("Vente : " + MoneyFormat.exact(entry.basePrice()))
+            long current = DynamicPrice.unitPrice(player, id, entry);
+            int percent = (int) Math.round(100.0 * current / Math.max(1L, entry.basePrice()));
+            lore.add(Component.literal("Vente : " + MoneyFormat.exact(current))
                     .withStyle(ChatFormatting.GREEN));
+            if (percent < 100) {
+                // Le prix a baisse sous la pression des ventes passees : le dire,
+                // sinon le joueur croit a un bug du catalogue.
+                lore.add(Component.literal("  " + percent + " % du prix de base · remonte avec le temps de jeu")
+                        .withStyle(ChatFormatting.DARK_GRAY));
+            }
         } else {
             lore.add(Component.literal("Achat seul").withStyle(ChatFormatting.DARK_GRAY));
         }

@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.shop;
 
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.util.MoneyFormat;
@@ -17,10 +18,14 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Coffre de vente : on y depose ce qu'on veut vendre, et la fermeture regle la
@@ -105,6 +110,12 @@ public final class SellChestMenu extends ChestMenu {
         List<ItemStack> toReturn = new ArrayList<>();
 
         try {
+            // Agregation par item avant tarification : le prix dynamique est une
+            // integrale sur la quantite vendue, et la calculer une fois pour
+            // 320 blés donne le bon montant, alors que cinq piles tarifees
+            // separement partiraient toutes au prix d'avant-vente.
+            Map<Item, Integer> batch = new LinkedHashMap<>();
+
             for (int slot = 0; slot < deposit.getContainerSize(); slot++) {
                 ItemStack stack = deposit.removeItemNoUpdate(slot);
                 if (stack.isEmpty()) {
@@ -113,12 +124,21 @@ public final class SellChestMenu extends ChestMenu {
 
                 PriceEntry entry = Prices.book().entry(stack).orElse(null);
                 if (entry != null && entry.sellable()) {
-                    payout += entry.basePrice() * stack.getCount();
-                    soldCount += stack.getCount();
-                    soldKinds++;
+                    batch.merge(stack.getItem(), stack.getCount(), Integer::sum);
                 } else {
                     toReturn.add(stack);
                 }
+            }
+
+            for (Map.Entry<Item, Integer> line : batch.entrySet()) {
+                PriceEntry entry = Prices.book().entry(line.getKey()).orElse(null);
+                if (entry == null) {
+                    continue;
+                }
+                payout += DynamicPrice.sell(player,
+                        BuiltInRegistries.ITEM.getKey(line.getKey()), entry, line.getValue());
+                soldCount += line.getValue();
+                soldKinds++;
             }
 
             giveBack(toReturn);
@@ -184,6 +204,7 @@ public final class SellChestMenu extends ChestMenu {
     private void showRunningTotal() {
         long total = 0L;
         int unsellable = 0;
+        Map<Item, Integer> batch = new LinkedHashMap<>();
 
         for (int slot = 0; slot < deposit.getContainerSize(); slot++) {
             ItemStack stack = deposit.getItem(slot);
@@ -192,9 +213,19 @@ public final class SellChestMenu extends ChestMenu {
             }
             PriceEntry entry = Prices.book().entry(stack).orElse(null);
             if (entry != null && entry.sellable()) {
-                total += entry.basePrice() * stack.getCount();
+                batch.merge(stack.getItem(), stack.getCount(), Integer::sum);
             } else {
                 unsellable++;
+            }
+        }
+
+        // Meme agregation que le reglement, pour que l'apercu annonce
+        // exactement ce qui sera paye.
+        for (Map.Entry<Item, Integer> line : batch.entrySet()) {
+            PriceEntry entry = Prices.book().entry(line.getKey()).orElse(null);
+            if (entry != null) {
+                total += DynamicPrice.quote(player,
+                        BuiltInRegistries.ITEM.getKey(line.getKey()), entry, line.getValue());
             }
         }
 

@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.shop.ShopCategory;
@@ -12,13 +13,18 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * {@code /shop} pour ouvrir le shop, et {@code /sellall} pour vider son
@@ -83,6 +89,10 @@ public final class ShopCommand {
         int sold = 0;
         int kinds = 0;
 
+        // Agregation par item avant tarification : le prix dynamique est une
+        // integrale sur la quantite, et cinq piles du meme item tarifees
+        // separement partiraient toutes au prix d'avant-vente.
+        Map<Item, Integer> batch = new LinkedHashMap<>();
         for (ItemStack stack : items) {
             if (stack.isEmpty()) {
                 continue;
@@ -94,12 +104,19 @@ public final class ShopCommand {
             if (only != null && !only.key().equalsIgnoreCase(entry.category())) {
                 continue;
             }
-
-            int count = stack.getCount();
-            payout += entry.basePrice() * count;
-            sold += count;
-            kinds++;
+            batch.merge(stack.getItem(), stack.getCount(), Integer::sum);
             stack.setCount(0);
+        }
+
+        for (Map.Entry<Item, Integer> line : batch.entrySet()) {
+            PriceEntry entry = Prices.book().entry(line.getKey()).orElse(null);
+            if (entry == null) {
+                continue;
+            }
+            payout += DynamicPrice.sell(player,
+                    BuiltInRegistries.ITEM.getKey(line.getKey()), entry, line.getValue());
+            sold += line.getValue();
+            kinds++;
         }
 
         if (sold == 0) {
