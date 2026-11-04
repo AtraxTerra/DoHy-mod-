@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import fr.atraxterra.dohy.collection.CollectionTiers;
+import fr.atraxterra.dohy.skill.SkillConfig;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.world.PlacedBlocks;
 import net.minecraft.ChatFormatting;
@@ -66,8 +67,9 @@ public final class DoHyCommand {
     private static int reload(CommandSourceStack source) {
         boolean prices = Prices.load(source.getServer());
         boolean tiers = CollectionTiers.load(source.getServer());
+        boolean skills = SkillConfig.load(source.getServer());
 
-        if (prices && tiers) {
+        if (prices && tiers && skills) {
             source.sendSuccess(() -> Component.literal(
                             "Recharge : " + Prices.book().size() + " items, paliers de collection a jour.")
                     .withStyle(ChatFormatting.GREEN), true);
@@ -75,7 +77,8 @@ public final class DoHyCommand {
         }
         source.sendFailure(Component.literal("Rechargement partiel ou echoue ("
                 + (prices ? "prix ok" : "prix en echec") + ", "
-                + (tiers ? "paliers ok" : "paliers en echec")
+                + (tiers ? "paliers ok" : "paliers en echec") + ", "
+                + (skills ? "skills ok" : "skills en echec")
                 + "). Les anciennes donnees restent en service. Voir les logs."));
         return 0;
     }
