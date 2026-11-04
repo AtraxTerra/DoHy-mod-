@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.economy.Bank;
+import fr.atraxterra.dohy.shop.BankMenu;
 import fr.atraxterra.dohy.economy.DeathPenalty;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
@@ -13,6 +14,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -37,7 +39,11 @@ public final class BankCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("bank")
-                .executes(ctx -> show(ctx.getSource()))
+                // Sans argument : l'interface. Les sous-commandes restent pour
+                // les montants precis, que des parts predefinies ne couvrent pas.
+                .executes(ctx -> open(ctx.getSource()))
+                .then(Commands.literal("info")
+                        .executes(ctx -> show(ctx.getSource())))
                 .then(Commands.literal("deposit")
                         .then(Commands.argument("montant", LongArgumentType.longArg(1))
                                 .executes(ctx -> deposit(ctx.getSource(),
@@ -52,6 +58,14 @@ public final class BankCommand {
                                 .executes(ctx -> withdrawAll(ctx.getSource()))))
                 .then(Commands.literal("insurance")
                         .executes(ctx -> insurance(ctx.getSource())));
+    }
+
+    private static int open(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        player.openMenu(new SimpleMenuProvider(
+                (containerId, inventory, viewer) -> new BankMenu(containerId, inventory, player),
+                Component.literal("Banque")));
+        return 1;
     }
 
     private static int show(CommandSourceStack source) throws CommandSyntaxException {
