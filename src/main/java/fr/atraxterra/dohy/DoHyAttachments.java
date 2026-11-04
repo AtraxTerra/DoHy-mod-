@@ -2,6 +2,7 @@ package fr.atraxterra.dohy;
 
 import fr.atraxterra.dohy.collection.CollectionData;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
+import fr.atraxterra.dohy.skill.SkillData;
 import fr.atraxterra.dohy.economy.market.PlayerMarket;
 import fr.atraxterra.dohy.world.PlacedBlockData;
 import net.neoforged.bus.api.IEventBus;
@@ -66,6 +67,14 @@ public final class DoHyAttachments {
             "collections",
             () -> AttachmentType.builder(CollectionData::new)
                     .serialize(CollectionData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /** XP de skill. Conservee a la mort, comme les collections. */
+    public static final Supplier<AttachmentType<SkillData>> SKILLS = ATTACHMENT_TYPES.register(
+            "skills",
+            () -> AttachmentType.builder(SkillData::new)
+                    .serialize(SkillData.MAP_CODEC, data -> !data.isEmpty())
                     .copyOnDeath()
                     .build());
 
