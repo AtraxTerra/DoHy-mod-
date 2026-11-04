@@ -2,13 +2,16 @@ package fr.atraxterra.dohy.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -63,18 +66,29 @@ public final class WorthCommand {
             return 0;
         }
 
-        long unit = entry.basePrice();
-        long stack = unit * 64L;
+        Identifier id = BuiltInRegistries.ITEM.getKey(held.getItem());
+        long unit = DynamicPrice.unitPrice(player, id, entry);
+        // Les montants du stack et de l'inventaire sont des integrales, pas des
+        // multiplications : vendre 64 exemplaires fait baisser le prix en cours
+        // de route, et l'annoncer autrement serait mentir au joueur.
+        long stack = DynamicPrice.quote(player, id, entry, 64);
         int inInventory = countInInventory(player, held);
-        long total = unit * inInventory;
+        long total = DynamicPrice.quote(player, id, entry, inInventory);
+        int percent = (int) Math.round(100.0 * unit / Math.max(1L, entry.basePrice()));
 
         source.sendSuccess(() -> held.getHoverName().copy().withStyle(ChatFormatting.WHITE)
                 .append(Component.literal("  [" + entry.category() + "]").withStyle(ChatFormatting.DARK_GRAY)), false);
         source.sendSuccess(() -> line("a l'unite", MoneyFormat.exact(unit)), false);
         source.sendSuccess(() -> line("le stack (64)", MoneyFormat.exact(stack)), false);
         source.sendSuccess(() -> line("ton inventaire (" + inInventory + ")", MoneyFormat.exact(total)), false);
-        source.sendSuccess(() -> Component.literal("plancher " + MoneyFormat.exact(entry.floorPrice())
-                        + " · plafond " + MoneyFormat.exact(entry.ceilingPrice()))
+
+        if (percent < 100) {
+            source.sendSuccess(() -> Component.literal("  " + percent + " % du prix de base ("
+                            + MoneyFormat.exact(entry.basePrice()) + ") · remonte avec le temps de jeu")
+                    .withStyle(ChatFormatting.YELLOW), false);
+        }
+        source.sendSuccess(() -> Component.literal("  plancher " + MoneyFormat.exact(entry.floorPrice())
+                        + " · base " + MoneyFormat.exact(entry.basePrice()))
                 .withStyle(ChatFormatting.DARK_GRAY), false);
 
         return (int) Math.min(Integer.MAX_VALUE, unit);

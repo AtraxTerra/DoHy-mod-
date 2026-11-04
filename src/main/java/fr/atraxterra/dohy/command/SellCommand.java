@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.shop.SellChestMenu;
@@ -10,6 +11,7 @@ import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
@@ -20,17 +22,8 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 /**
  * {@code /sell} — ouvre le coffre de vente ; {@code /sell hand} et
- * {@code /sell stack} vendent directement ce qu'on tient.
+ * {@code /sell stack} vendent directement ce qu'on tient, au prix dynamique.
  *
- * <p>Les prix sont ceux du catalogue, sans dynamique : la pression a la vente
- * arrive en phase 4. Vendre a prix fixe permet de verifier que le catalogue, la
- * monnaie et le HUD s'enchainent correctement avant d'ajouter une formule
- * par-dessus.
- *
- * <p>La vente de l'inventaire entier attend le shop : la disposition interne de
- * l'inventaire a change dans la ligne 26.x, et supprimer des piles par le
- * mauvais index reviendrait a detruire l'equipement du joueur. Lire est sans
- * risque, ecrire merite d'etre verifie.
  */
 @EventBusSubscriber
 public final class SellCommand {
@@ -85,7 +78,8 @@ public final class SellCommand {
 
         PriceEntry entry = maybeEntry.get();
         int amount = wholeStack ? held.getCount() : 1;
-        long payout = entry.basePrice() * amount;
+        long payout = DynamicPrice.sell(player,
+                BuiltInRegistries.ITEM.getKey(held.getItem()), entry, amount);
 
         held.shrink(amount);
         long balance = Economy.credit(player, payout);

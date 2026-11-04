@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy;
 
 import fr.atraxterra.dohy.economy.PlayerEconomy;
+import fr.atraxterra.dohy.economy.market.PlayerMarket;
 import fr.atraxterra.dohy.world.PlacedBlockData;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -41,6 +42,18 @@ public final class DoHyAttachments {
             "placed_blocks",
             () -> AttachmentType.builder(PlacedBlockData::new)
                     .serialize(PlacedBlockData.MAP_CODEC, data -> !data.isEmpty())
+                    .build());
+
+    /**
+     * Pression de vente par item. Persistee, non synchronisee (le client n'en a
+     * pas besoin), et conservee a la mort : mourir ne doit pas remettre les
+     * prix a neuf, ce serait une facon tordue de reinitialiser le marche.
+     */
+    public static final Supplier<AttachmentType<PlayerMarket>> MARKET = ATTACHMENT_TYPES.register(
+            "market",
+            () -> AttachmentType.builder(PlayerMarket::new)
+                    .serialize(PlayerMarket.MAP_CODEC, market -> !market.isEmpty())
+                    .copyOnDeath()
                     .build());
 
     private DoHyAttachments() {
