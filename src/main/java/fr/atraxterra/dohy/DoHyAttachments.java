@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy;
 
+import fr.atraxterra.dohy.boost.BoostData;
 import fr.atraxterra.dohy.collection.CollectionData;
 import fr.atraxterra.dohy.contract.ContractData;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
@@ -87,6 +88,14 @@ public final class DoHyAttachments {
             "contracts",
             () -> AttachmentType.builder(ContractData::new)
                     .serialize(ContractData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /** Booster actif, cles de caisse, coffre d'autosell. Conserves a la mort. */
+    public static final Supplier<AttachmentType<BoostData>> BOOSTS = ATTACHMENT_TYPES.register(
+            "boosts",
+            () -> AttachmentType.builder(BoostData::new)
+                    .serialize(BoostData.MAP_CODEC, data -> !data.isEmpty())
                     .copyOnDeath()
                     .build());
 

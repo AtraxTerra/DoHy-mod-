@@ -58,8 +58,8 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 5. [x] Collections
 6. [x] Skills et perks
 7. [x] Banque et pénalité de mort
-8. [ ] Contrats et demande du jour
-9. [ ] Boosters, caisses, autosell
+8. [x] Contrats et demande du jour
+9. [x] Boosters, caisses, autosell
 10. [ ] NTM NEXT
 
 ---
@@ -86,6 +86,38 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 ---
 
 ## Journal des sessions
+
+### 2026-11-04 — interface de banque, phases 8 et 9
+
+**Interface de banque** (demande du joueur). Coffre de 3 rangées, montants
+proposés en parts du solde (10 %, 50 %, tout) plutôt que saisis au clavier.
+`/bank` ouvre l'interface, `/bank info` garde l'affichage texte.
+
+**Phase 8, contrats.** Une seule horloge pour tout le mod : un compteur de
+**minutes de jeu** dans `ContractData`, qui n'avance que serveur en marche. Rien
+n'expire pendant que le monde est fermé — c'est ce qui permet de n'avoir aucune
+série à entretenir.
+Le test de cible d'un contrat est **fourni par l'appelant** et non résolu dans
+l'API : seul l'appelant dispose du sujet, un bloc sait tester ses propres tags et
+un compteur de distance n'a pas de cible. `#minecraft:hostile` n'étant pas un tag
+vanilla, il est traité à part via l'interface `Enemy`.
+Les termes d'un contrat sont recopiés au tirage, pas relus à chaque progression :
+si le datapack change, un contrat déjà accepté garde ses termes.
+Bonus (demande ×2,5, première vente ×1,5) appliqués **après** le prix dynamique,
+la pression enregistrée restant celle de la quantité réellement vendue.
+
+**Phase 9, boosters, caisses, autosell.**
+Boosters non cumulables, 20 min de jeu, avec un rappel à 5 minutes de la fin — un
+booster payé des millions ne doit pas expirer inaperçu.
+Caisses : tables de butin dans le datapack, calibrées pour rendre un peu moins
+que leur prix en moyenne, donc un puits et non une source.
+**Autosell sur coffre vanilla lié**, pas sur un bloc du mod : un bloc dédié
+demanderait enregistrement, modèle, texture et table de butin pour une mécanique
+qui n'a besoin que d'une position. Le passage **ne charge jamais le chunk** —
+forcer le chargement ferait tourner une ferme à distance en permanence.
+
+Reste au plan : **phase 10, NTM NEXT**. Et les perks de skill non encore
+appliqués (liste dans le journal au démarrage).
 
 ### 2026-11-04 — phases 6 et 7
 

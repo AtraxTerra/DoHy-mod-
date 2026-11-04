@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.contract;
 
+import fr.atraxterra.dohy.boost.Boosters;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -21,12 +22,12 @@ public final class Bonuses {
 
     /** Multiplicateur applicable, sans rien consommer. Pour les apercus. */
     public static double preview(ServerPlayer player, Identifier id) {
-        return demand(player, id) * firstSale(player, false);
+        return demand(player, id) * firstSale(player, false) * Boosters.active(player);
     }
 
     /** Multiplicateur applicable, en consommant le bonus de premiere vente. */
     public static double consume(ServerPlayer player, Identifier id) {
-        return demand(player, id) * firstSale(player, true);
+        return demand(player, id) * firstSale(player, true) * Boosters.active(player);
     }
 
     private static double demand(ServerPlayer player, Identifier id) {
