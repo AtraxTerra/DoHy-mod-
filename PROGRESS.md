@@ -167,6 +167,12 @@ reste juste quand le catalogue grandit.
 Récompenses limitées aux mécanismes déjà prouvés en jeu : attributs, double drop,
 remise d'achat.
 
+**Vitrine navigable** (demande du joueur, style Hypixel). Accueil avec les ailes,
+barre de progression, récompense annoncée et valeur exposée ; puis une grille par
+aile. Le choix d'affichage qui fait l'intérêt de la vue : une pièce exposée
+apparaît telle quelle, une pièce **manquante en vitrail**, donc on voit le trou et
+non la liste de ce qu'on a déjà.
+
 **Les dix phases du plan sont faites.** Restent, hors plan :
 - les perks de skill non encore appliqués (liste dans le journal au démarrage) ;
 - ~~l'équilibrage des intérêts de banque~~ → **corrigé le 2026-11-05** : 2 %/jour
@@ -348,6 +354,9 @@ Elles sont consignees ici parce qu'elles vont se reposer a chaque phase :
 | `Item.getName()` | exige une `ItemStack` → `new ItemStack(item).getHoverName()` |
 | `Level.random` | protégé → `Entity.getRandom()` |
 | `EntityType.is(TagKey)` | absent → `Registry.get(id).map(h -> h.is(tag))` |
+| Blocs colorés | **unifiés** en 26.x : `GRAY_STAINED_GLASS_PANE` n'existe plus (`STAINED_GLASS_PANE`, `DYE` sont des items uniques) |
+| `ServerPlayer.server` / `getServer()` | inaccessibles → ouvrir un menu par appel direct |
+| `SoundEvents` | certains sont des `Holder` (`.value()`), d'autres des `SoundEvent` direct — vérifier au cas par cas |
 | `displayClientMessage` | **supprimé** → `player.connection.send(new ClientboundSetActionBarTextPacket(...))` |
 
 **Phase 1 validée en jeu** : solde affiché, crédit et animation de gain,

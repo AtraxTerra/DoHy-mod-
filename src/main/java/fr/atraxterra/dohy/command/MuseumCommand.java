@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.museum.MuseumApi;
+import fr.atraxterra.dohy.museum.MuseumBrowseMenu;
 import fr.atraxterra.dohy.museum.MuseumConfig;
 import fr.atraxterra.dohy.museum.MuseumMenu;
 import net.minecraft.ChatFormatting;
@@ -31,9 +32,22 @@ public final class MuseumCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("museum")
-                .executes(ctx -> open(ctx.getSource()))
+                // Sans argument : la vitrine. Le guichet reste accessible depuis
+                // l'interface et par /museum donate.
+                .executes(ctx -> browse(ctx.getSource()))
+                .then(Commands.literal("donate")
+                        .executes(ctx -> open(ctx.getSource())))
                 .then(Commands.literal("list")
                         .executes(ctx -> list(ctx.getSource())));
+    }
+
+    private static int browse(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        player.openMenu(new SimpleMenuProvider(
+                (containerId, inventory, viewer) ->
+                        new MuseumBrowseMenu(containerId, inventory, player),
+                Component.literal("Musee")));
+        return 1;
     }
 
     private static int open(CommandSourceStack source) throws CommandSyntaxException {
