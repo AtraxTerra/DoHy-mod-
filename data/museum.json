@@ -1,0 +1,51 @@
+{
+  "_comment": "Le musee. Chaque don est definitif et porte sur UN exemplaire. Ce n'est pas la somme de 152 micro-bonus — ce serait illisible et chacun imperceptible — mais six collections de collections, dont seule la completion paie. Chaque don individuel donne de l'XP globale, pour que la progression reste continue entre deux paliers.",
+  "_exclude_tiers": "Les items du tier RARE sont exclus des categories obligatoires : l'oeuf du dragon est unique par monde, et exiger son sacrifice transformerait un systeme de collection en source de regret. Ils forment le panneau mecene, optionnel, avec son propre bonus.",
+  "global_xp_per_donation": 25,
+  "exclude_tiers": ["RARE"],
+  "categories": {
+    "FOOD": {
+      "display": "Nourriture",
+      "rewards": [
+        { "type": "attribute", "attribute": "minecraft:max_health", "amount": 4.0, "operation": "add_value" }
+      ]
+    },
+    "FOUND": {
+      "display": "Trouvables",
+      "rewards": [
+        { "type": "double_drop_chance", "amount": 0.12 }
+      ]
+    },
+    "FARM": {
+      "display": "Fermes auto",
+      "rewards": [
+        { "type": "attribute", "attribute": "minecraft:mining_efficiency", "amount": 0.15, "operation": "add_multiplied_base" }
+      ]
+    },
+    "MOB_DROP": {
+      "display": "Drops de mobs",
+      "rewards": [
+        { "type": "attribute", "attribute": "minecraft:attack_damage", "amount": 1.5, "operation": "add_value" }
+      ]
+    },
+    "COMPONENT": {
+      "display": "Composants",
+      "rewards": [
+        { "type": "buy_discount", "amount": 0.10 }
+      ]
+    },
+    "NTM": {
+      "display": "NTM NEXT",
+      "rewards": [
+        { "type": "attribute", "attribute": "minecraft:block_interaction_range", "amount": 1.0, "operation": "add_value" }
+      ]
+    }
+  },
+  "patron": {
+    "display": "Mecene",
+    "_comment": "Les items uniques ou quasi uniques, donnes par choix et non par obligation.",
+    "rewards": [
+      { "type": "attribute", "attribute": "minecraft:luck", "amount": 2.0, "operation": "add_value" }
+    ]
+  }
+}

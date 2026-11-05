@@ -44,7 +44,7 @@ jobs:
         run: |
           JAR=$(ls build/libs/*.jar | head -1)
           MISSING=0
-          for f in data/dohy/prices.json data/dohy/collections.json data/dohy/skills.json data/dohy/tags/block/placement_exempt.json data/dohy/tags/block/crops.json data/dohy/contracts.json data/dohy/crates.json data/dohy/tag_prices.json data/dohy/economy.json; do
+          for f in data/dohy/prices.json data/dohy/collections.json data/dohy/skills.json data/dohy/tags/block/placement_exempt.json data/dohy/tags/block/crops.json data/dohy/contracts.json data/dohy/crates.json data/dohy/tag_prices.json data/dohy/economy.json data/dohy/museum.json; do
             if ! unzip -l "$JAR" | grep -q "$f"; then
               echo "::error::$f est absent de $JAR"
               MISSING=1

@@ -136,7 +136,9 @@ public final class SkillEvents {
 
     /** Duplique les drops avec la probabilite accordee par les perks. */
     private static void maybeDoubleDrop(ServerPlayer player, Skill skill, BlockDropsEvent event) {
-        double chance = SkillPerks.doubleDropChance(player, skill);
+        // Les ailes completes du musee s'ajoutent aux perks de skill.
+        double chance = SkillPerks.doubleDropChance(player, skill)
+                + fr.atraxterra.dohy.museum.MuseumApi.doubleDropBonus(player);
         if (chance <= 0 || player.getRandom().nextDouble() >= chance) {
             return;
         }

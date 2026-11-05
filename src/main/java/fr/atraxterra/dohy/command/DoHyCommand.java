@@ -5,6 +5,7 @@ import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.boost.Crates;
 import fr.atraxterra.dohy.collection.CollectionTiers;
 import fr.atraxterra.dohy.economy.EconomyConfig;
+import fr.atraxterra.dohy.museum.MuseumConfig;
 import fr.atraxterra.dohy.contract.ContractConfig;
 import fr.atraxterra.dohy.skill.SkillConfig;
 import fr.atraxterra.dohy.economy.price.Prices;
@@ -91,8 +92,9 @@ public final class DoHyCommand {
         boolean contracts = ContractConfig.load(source.getServer());
         boolean crates = Crates.load(source.getServer());
         boolean economy = EconomyConfig.load(source.getServer());
+        boolean museum = MuseumConfig.load(source.getServer());
 
-        if (prices && tiers && skills && contracts && crates && economy) {
+        if (prices && tiers && skills && contracts && crates && economy && museum) {
             source.sendSuccess(() -> Component.literal(
                             "Recharge : " + Prices.book().size() + " items, paliers de collection a jour.")
                     .withStyle(ChatFormatting.GREEN), true);
@@ -104,7 +106,8 @@ public final class DoHyCommand {
                 + (skills ? "skills ok" : "skills en echec") + ", "
                 + (contracts ? "contrats ok" : "contrats en echec") + ", "
                 + (crates ? "caisses ok" : "caisses en echec") + ", "
-                + (economy ? "economie ok" : "economie en echec")
+                + (economy ? "economie ok" : "economie en echec") + ", "
+                + (museum ? "musee ok" : "musee en echec")
                 + "). Les anciennes donnees restent en service. Voir les logs."));
         return 0;
     }
