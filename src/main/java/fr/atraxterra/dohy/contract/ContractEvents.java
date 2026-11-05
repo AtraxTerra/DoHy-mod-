@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.contract;
 
 import fr.atraxterra.dohy.collection.CollectionEvents;
+import fr.atraxterra.dohy.util.RealClock;
 import fr.atraxterra.dohy.world.PlacedBlocks;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -38,11 +39,13 @@ public final class ContractEvents {
     }
 
     /**
-     * Compteur central de temps de jeu.
+     * Le battement d'une minute : temps de jeu, et marque de presence.
      *
-     * <p>C'est la seule horloge du mod. Elle n'avance que serveur en marche,
-     * donc rien n'expire pendant que le monde est ferme : c'est ce qui garantit
-     * qu'aucun systeme ne punit une absence.
+     * <p>{@code playtimeMinutes} n'avance que serveur en marche, et sert encore
+     * aux boosters et a l'autosell. {@code lastSeenMinute} note la minute reelle
+     * courante : elle est reecrite chaque minute pour qu'une deconnexion
+     * brutale ne laisse pas {@link fr.atraxterra.dohy.economy.OfflineCatchUp}
+     * rattraper une periode deja comptee en jeu.
      */
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
@@ -51,8 +54,11 @@ public final class ContractEvents {
         }
         tickCounter = 0;
 
+        long now = RealClock.epochMinutes();
         for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
-            ContractApi.data(player).tickPlaytime();
+            ContractData data = ContractApi.data(player);
+            data.tickPlaytime();
+            data.setLastSeenMinute(now);
             ContractApi.rollIfDue(player);
             ContractApi.refreshDemand(player);
         }

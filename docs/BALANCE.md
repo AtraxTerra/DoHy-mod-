@@ -133,14 +133,34 @@ Le barème initial était négligeable : plafond de 50 k par jour de jeu, qui mo
 dès **10 M épargnés**, soit 4 166 $ par soirée de 2 h. L'intention écrite était
 qu'une soirée sans grind fasse progresser ; c'était raté d'un facteur 5 à 6.
 
-Barème retenu : **2 % par jour de temps de jeu, plafonné à 2 M**.
+Barème retenu dans un premier temps : **2 % par jour de temps de jeu, plafonné à 2 M**.
 
-| Épargné | Par jour de jeu | Par soirée de 2 h |
-|---|---|---|
-| 1 M | 20 k | 1 667 |
-| 10 M | 200 k | 16 667 |
-| 50 M | 1 M | 83 333 |
-| 100 M et plus | 2 M (plafond) | 166 667 |
+### Passage au temps réel — 2026-11-05
+
+Les cycles sont passés en temps réel (voir `DESIGN.md`, principe 2). Si on garde
+2 %/jour en changeant l'unité, le rendement est multiplié par le rapport entre un
+jour entier et une journée de jeu — soit **environ 12** au rythme visé (~3 h de jeu
+par jour en moyenne, 2 h en semaine et beaucoup le week-end). Attendre serait alors
+devenu douze fois plus rentable que jouer : exactement ce que le compteur en temps
+de jeu cherchait à empêcher.
+
+Le taux est donc divisé par le même rapport, ce qui laisse le revenu d'une soirée
+inchangé et le rend seulement indépendant du moment où on joue :
+
+Barème retenu : **0,25 % par jour réel, plafonné à 250 k**.
+
+| Épargné | Par jour réel | Par semaine | Ancien équivalent par soirée de 2 h |
+|---|---|---|---|
+| 1 M | 2 500 | 17 500 | 1 667 |
+| 10 M | 25 k | 175 k | 16 667 |
+| 50 M | 125 k | 875 k | 83 333 |
+| 100 M et plus | 250 k (plafond) | 1,75 M | 166 667 |
+
+Les intérêts courent monde fermé : ils sont rattrapés à la connexion, plafonnés à
+trente jours d'un coup. Ce plafond n'est pas de l'équilibrage — trente jours
+plafonnés font 7,5 M, c'est modeste — mais une protection d'horloge : une date
+système changée ou une sauvegarde recopiée d'une machine à l'autre ne doit pas se
+traduire en crédit absurde.
 
 Volontairement négligeable en début de partie, comparable à une récolte au milieu,
 et largement dépassé par le jeu actif en fin : **une épargne ne doit jamais
@@ -193,7 +213,11 @@ prix = base × clamp( (S₀/(S₀+vendu))^0.6 , plancher , 1.8 )
 | 50 000 | 0,19 |
 | 120 000 + | 0,15 (plancher) |
 
-Oubli : **−10 % de `vendu` par 20 min de temps de jeu**, soit retour à ~5 % du pic après 20 h de jeu. Une soirée de semaine suffit à faire remonter nettement un prix écrasé le week-end — c'est exactement l'effet recherché.
+Oubli : **−10 % de `vendu` par 20 min de temps réel**, soit retour à ~5 % du pic après 20 h — donc en une nuit, hors ligne comprise (révisé le 2026-11-05).
+
+En temps de jeu, la remontée exigeait d'être en jeu : un prix écrasé le dimanche
+restait écrasé une douzaine de soirées, et il fallait grinder sa propre remontée.
+En temps réel, se reconnecter le lundi soir retrouve des prix largement refaits.
 
 | Vendu (tier FOUND, S₀ = 64) | Multiplicateur |
 |---|---|

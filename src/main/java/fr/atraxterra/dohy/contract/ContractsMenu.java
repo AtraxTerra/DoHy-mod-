@@ -117,45 +117,62 @@ public final class ContractsMenu extends DisplayMenu {
                 Gui.bar(ContractApi.globalXpIntoLevel(player),
                         ContractApi.globalXpPerLevel(), 20),
                 Gui.blank(),
+                Gui.field("nouveaux contrats dans",
+                        delay(ContractApi.minutesUntilDailyReset())),
+                Gui.field("nouvel hebdo dans",
+                        delay(ContractApi.minutesUntilWeeklyReset())),
+                Gui.hint("en temps reel : le compte tourne monde ferme"),
+                Gui.blank(),
                 Gui.field("temps de jeu", hours + " h " + minutes + " min"),
-                Gui.hint("tous les delais comptent en temps de jeu"),
-                Gui.hint("rien n'expire monde ferme"),
                 Gui.blank(),
                 booster > 1.0d
                         ? Gui.good("booster x" + (long) booster + " · "
-                                + Boosters.remaining(player) + " min restantes")
+                                + Boosters.remaining(player) + " min de jeu restantes")
                         : Gui.hint("aucun booster actif")));
+    }
+
+    /** Un delai en minutes, rendu lisible : « 2 j 5 h », « 5 h 12 min ». */
+    public static String delay(long minutes) {
+        long hours = minutes / 60L;
+        if (hours >= 24) {
+            return (hours / 24L) + " j " + (hours % 24L) + " h";
+        }
+        return hours > 0
+                ? hours + " h " + (minutes % 60L) + " min"
+                : minutes + " min";
     }
 
     private ItemStack demand(ContractData data) {
         ContractConfig.Demand config = ContractConfig.config().demand();
-        Identifier item = data.demandItem();
+        Identifier item = ContractApi.demandItem(player);
         if (item == null) {
             return Gui.button(Items.BELL, "Demande du jour", Gui.lore(
                     Gui.hint("aucune demande en cours"),
                     Gui.hint("la prochaine est tiree a la connexion")));
         }
 
-        long left = Math.max(0L, data.demandUntil() - data.playtimeMinutes());
         return Gui.button(Items.BELL, "Demande du jour", Gui.lore(
                 Gui.displayName(item).copy().withStyle(ChatFormatting.AQUA),
                 Gui.blank(),
                 Gui.good("x" + config.multiplier() + " a la vente"),
-                Gui.hint(left + " min de jeu restantes"),
+                Gui.hint("change dans " + delay(ContractApi.minutesUntilDailyReset())),
                 Gui.blank(),
                 Gui.hint("se cumule avec le booster")));
     }
 
     private ItemStack firstSale(ContractData data) {
         ContractConfig.FirstSale config = ContractConfig.config().firstSale();
-        boolean available = data.firstSaleAvailable(config.resetHours() * 60L);
+        boolean available = ContractApi.firstSaleAvailable(player);
         return Gui.button(Items.EMERALD, "Bonus de premiere vente", Gui.lore(
                 available
                         ? Gui.good("disponible · x" + config.multiplier())
-                        : Gui.hint("deja utilise sur cette periode"),
+                        : Gui.hint("deja utilise aujourd'hui"),
                 Gui.blank(),
                 Gui.hint("s'applique a ta premiere vente"),
-                Gui.hint("remis a zero toutes les " + config.resetHours() + " h de jeu"),
+                available
+                        ? Gui.hint("remis a zero chaque jour")
+                        : Gui.hint("de retour dans "
+                                + delay(ContractApi.minutesUntilDailyReset())),
                 Gui.blank(),
                 Gui.hint("pas de serie a entretenir : rater un soir"),
                 Gui.hint("ne coute rien")));

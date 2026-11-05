@@ -87,6 +87,65 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 
 ## Journal des sessions
 
+### 2026-11-05 — les cycles passent en temps réel
+
+**Signalé par le joueur** : « si je me déconnecte un soir à 20h et que le timer
+des contrats est de 24h, j'aimerais qu'il s'actualise ». Ce n'était pas une
+préférence mais un **bug de conception** : `reroll_on_playtime_hours: 24`
+comptait 24 h **de jeu**, soit douze soirées à son rythme. Les contrats « du
+jour » se renouvelaient donc deux fois par mois.
+
+**Tranché avec le joueur** (trois questions) : renouvellement à **heure fixe**
+plutôt que 24 h après le dernier tirage, intérêts de banque en temps réel **avec
+taux recalibré**, et remontée des prix en temps réel.
+
+**La règle retenue** — deux horloges, et le choix dépend de ce qu'on mesure :
+
+| Temps réel (cycles) | Temps de jeu (consommé en session) |
+|---|---|
+| Contrats du jour et de la semaine | Durée d'un booster (20 min) |
+| Demande du jour | Intervalle de l'autosell (5 min) |
+| Bonus de première vente | |
+| Intérêts d'épargne | |
+| Oubli de la pression sur les prix | |
+
+Un booster payé 300 M ne doit pas fondre parce que la connexion a sauté, et
+l'autosell n'a pas de sens joueur absent. Tout le reste modélise le monde, pas
+l'activité du joueur, donc tourne monde fermé.
+
+**Clés de période, pas comptes à rebours** — `util/RealClock` : on stocke la clé
+du jour (ou de la semaine) où le tirage a eu lieu, et on retire dès que la clé
+courante diffère. Trois conséquences voulues : le renouvellement tombe à heure
+fixe donc il est anticipable, sauter trois jours ne produit qu'un seul tirage et
+non trois de rattrapage, et se connecter à 19h mardi trouve bien les contrats de
+mardi. Bascule à **5 h** locales : à minuit, une soirée qui dépasse l'heure
+verrait ses contrats se renouveler sous son nez.
+
+**Rattrapage hors ligne** — `economy/OfflineCatchUp`, branché à la connexion.
+`ContractData.lastSeenMinute` est réécrit chaque minute en jeu, donc une
+déconnexion brutale ne fait pas recompter une période déjà créditée. L'oubli du
+marché se calcule en une fois : le facteur est multiplicatif, donc l'élever à la
+puissance du nombre de minutes donne exactement le résultat de la boucle, sans
+la boucle. Plafond de trente jours — pas de l'équilibrage, une protection
+d'horloge contre une date système changée ou une sauvegarde recopiée.
+
+**Recalibrage de la banque** : 2 %/jour de jeu → **0,25 %/jour réel**, plafond
+2 M → **250 k**. Le rapport est celui d'une journée entière à une journée de jeu
+(~3 h), soit ~12. Sans ce recalibrage, attendre devenait douze fois plus
+rentable que jouer — précisément ce que le compteur en temps de jeu voulait
+éviter. Le revenu par soirée est inchangé ; il ne dépend plus du moment où on
+joue.
+
+**Constat au passage** : la crainte d'origine sur l'oubli des prix (« le temps
+réel avantage le week-end ») était l'inverse de la réalité. En temps de jeu, la
+remontée exigeait *elle aussi* d'être en jeu, donc un prix écrasé le dimanche le
+restait douze soirées et il fallait grinder sa propre remontée.
+
+**Migration des sauvegardes** : les champs du codec sont renommés
+(`daily_rolled_at` → `daily_period`, etc.), donc un fichier existant retombe sur
+`-1` et provoque un tirage neuf à la première connexion. C'est le comportement
+voulu.
+
 ### 2026-11-05 — refonte des interfaces
 
 **Demandé** : une interface pour les contrats avec les noms et icônes des items

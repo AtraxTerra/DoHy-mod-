@@ -77,13 +77,13 @@ public final class EconomyConfig {
     public record Bank(double depositFee, double dailyRate, long dailyCap, long insurancePrice) {
         static final Codec<Bank> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.DOUBLE.optionalFieldOf("deposit_fee", 0.03d).forGetter(Bank::depositFee),
-                Codec.DOUBLE.optionalFieldOf("daily_rate", 0.02d).forGetter(Bank::dailyRate),
-                Codec.LONG.optionalFieldOf("daily_cap", 2_000_000L).forGetter(Bank::dailyCap),
+                Codec.DOUBLE.optionalFieldOf("daily_rate", 0.0025d).forGetter(Bank::dailyRate),
+                Codec.LONG.optionalFieldOf("daily_cap", 250_000L).forGetter(Bank::dailyCap),
                 Codec.LONG.optionalFieldOf("insurance_price", 50_000L).forGetter(Bank::insurancePrice)
         ).apply(instance, Bank::new));
 
-        /** Interet par jour de temps de jeu a ce solde, plafond compris. */
-        public long perPlayDay(long banked) {
+        /** Interet par jour reel a ce solde, plafond compris. */
+        public long perDay(long banked) {
             if (banked <= 0) {
                 return 0L;
             }

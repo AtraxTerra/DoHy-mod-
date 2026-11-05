@@ -29,9 +29,9 @@ public final class Bank {
         return EconomyConfig.bank().insurancePrice();
     }
 
-    /** Interet par jour de temps de jeu a ce solde, plafond compris. */
-    public static long perPlayDay(long banked) {
-        return EconomyConfig.bank().perPlayDay(banked);
+    /** Interet par jour reel a ce solde, plafond compris. */
+    public static long perDay(long banked) {
+        return EconomyConfig.bank().perDay(banked);
     }
 
     private Bank() {
@@ -87,14 +87,14 @@ public final class Bank {
      * ramenes au pas : les interets tombent donc de facon continue, sans palier
      * visible, et une soiree de deux heures en rapporte un douzieme.
      */
-    public static long accrue(ServerPlayer player, int minutes) {
+    public static long accrue(ServerPlayer player, long minutes) {
         PlayerEconomy data = Economy.of(player);
         if (data.banked() <= 0 || minutes <= 0) {
             return 0L;
         }
 
         double fraction = minutes / (24.0d * 60.0d);
-        long interest = Math.round(EconomyConfig.bank().perPlayDay(data.banked()) * fraction);
+        long interest = Math.round(EconomyConfig.bank().perDay(data.banked()) * fraction);
         if (interest <= 0) {
             return 0L;
         }

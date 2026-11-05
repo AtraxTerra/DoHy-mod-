@@ -140,9 +140,10 @@ public final class BankMenu extends DisplayMenu {
         info.add(Gui.field("patrimoine", MoneyFormat.exact(data.netWorth())));
         info.add(Gui.blank());
 
-        long perDay = Bank.perPlayDay(data.banked());
-        info.add(Gui.good("interets : " + MoneyFormat.exact(perDay) + " / jour de jeu"));
-        info.add(Gui.hint("  soit " + MoneyFormat.exact(perDay / 12) + " par soiree de 2 h"));
+        long perDay = Bank.perDay(data.banked());
+        info.add(Gui.good("interets : " + MoneyFormat.exact(perDay) + " / jour"));
+        info.add(Gui.hint("  soit " + MoneyFormat.exact(perDay * 7) + " par semaine"));
+        info.add(Gui.hint("  les interets courent aussi monde ferme"));
         if (data.interestTotal() > 0) {
             info.add(Gui.hint("percus a ce jour : " + MoneyFormat.exact(data.interestTotal())));
         }
