@@ -333,6 +333,16 @@ public final class ShopMenu extends ChestMenu {
             lore.add(Component.literal("Collection complete").withStyle(ChatFormatting.AQUA));
         }
 
+        int prestigeLevel = CollectionApi.prestigeLevel(player, id);
+        if (prestigeLevel > 0) {
+            lore.add(Component.literal("Prestige " + prestigeLevel + " · ecoulable x"
+                            + String.format("%.1f", CollectionApi.s0Multiplier(player, id)))
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        }
+        if (CollectionApi.canPrestige(player, id, entry)) {
+            lore.add(Component.literal("Prestige disponible").withStyle(ChatFormatting.GOLD));
+        }
+
         ItemStack stack = new ItemStack(item, Math.max(1, Math.min(64, owned)));
         stack.set(DataComponents.LORE, new ItemLore(lore));
         return stack;

@@ -99,7 +99,22 @@ public final class CollectionTiers {
         ).apply(instance, Exception_::new));
     }
 
-    public record Config(Map<String, Curve> curves, List<Reward> rewards, Map<Identifier, Exception_> exceptions) {
+    /** Regles de prestige. Voir le commentaire de {@code collections.json}. */
+    public record Prestige(int maxLevel, double s0BonusPerLevel,
+                           double floorBonusPerLevel, long globalXp) {
+        static final Codec<Prestige> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.INT.optionalFieldOf("max_level", 5).forGetter(Prestige::maxLevel),
+                Codec.DOUBLE.optionalFieldOf("s0_bonus_per_level", 0.5d).forGetter(Prestige::s0BonusPerLevel),
+                Codec.DOUBLE.optionalFieldOf("floor_bonus_per_level", 0.02d)
+                        .forGetter(Prestige::floorBonusPerLevel),
+                Codec.LONG.optionalFieldOf("global_xp", 500L).forGetter(Prestige::globalXp)
+        ).apply(instance, Prestige::new));
+    }
+
+    public record Config(Map<String, Curve> curves, List<Reward> rewards,
+                         Map<Identifier, Exception_> exceptions, Prestige prestige) {
+
+        static final Prestige FALLBACK_PRESTIGE = new Prestige(5, 0.5d, 0.02d, 500L);
 
         /**
          * Repli si le fichier manque : les courbes de {@code DESIGN.md}, en dur.
@@ -119,13 +134,15 @@ public final class CollectionTiers {
                         new Reward(true, 0.15d, 150L),
                         new Reward(true, 0.20d, 400L),
                         new Reward(true, 0.25d, 1000L)),
-                Map.of());
+                Map.of(),
+                new Prestige(5, 0.5d, 0.02d, 500L));
 
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.unboundedMap(Codec.STRING, Curve.CODEC).fieldOf("curves").forGetter(Config::curves),
                 Reward.CODEC.listOf().fieldOf("rewards_per_tier").forGetter(Config::rewards),
                 Codec.unboundedMap(Identifier.CODEC, Exception_.CODEC)
-                        .optionalFieldOf("exceptions", Map.of()).forGetter(Config::exceptions)
+                        .optionalFieldOf("exceptions", Map.of()).forGetter(Config::exceptions),
+                Prestige.CODEC.optionalFieldOf("prestige", FALLBACK_PRESTIGE).forGetter(Config::prestige)
         ).apply(instance, Config::new));
 
         /** Les paliers applicables a un item, selon son tier de prix. */

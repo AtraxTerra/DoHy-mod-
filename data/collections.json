@@ -18,6 +18,13 @@
     { "tier_index": 4, "unlock_sell": true,  "floor_bonus_pct": 0.20, "global_xp": 400, "money": 0 },
     { "tier_index": 5, "unlock_sell": true,  "floor_bonus_pct": 0.25, "global_xp": 1000, "money_formula": "base_price * 2500" }
   ],
+  "prestige": {
+    "_comment": "Prestige d'une collection complete : le compteur repart a zero, et le gain est PERMANENT. Il n'augmente pas le prix de base — ce serait inflationniste sans fin — mais le S0, c'est-a-dire la quantite ecoulable avant que le prix tombe. Le plafond reste le prix de base, donc zero inflation : on devient industriellement efficace sur un item, on ne le rend pas magiquement plus cher.",
+    "max_level": 5,
+    "s0_bonus_per_level": 0.5,
+    "floor_bonus_per_level": 0.02,
+    "global_xp": 500
+  },
   "rules": {
     "_1": "Le palier 0 debloque la vente de l'item au shop. Avant lui, l'item n'est pas vendable.",
     "_2": "Seuls les blocs NON poses par le joueur comptent (voir DESIGN.md 10.1).",

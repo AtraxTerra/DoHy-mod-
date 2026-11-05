@@ -128,6 +128,85 @@ public final class CollectionApi {
         return CollectionTiers.config().reward(index).floorBonusPct();
     }
 
+    public static int prestigeLevel(ServerPlayer player, Identifier id) {
+        return data(player).prestigeOf(id);
+    }
+
+    /**
+     * Vrai si la collection est complete et qu'il reste un prestige disponible.
+     */
+    public static boolean canPrestige(ServerPlayer player, Identifier id, PriceEntry entry) {
+        CollectionTiers.Prestige rules = CollectionTiers.config().prestige();
+        if (prestigeLevel(player, id) >= rules.maxLevel()) {
+            return false;
+        }
+        List<Long> tiers = CollectionTiers.config().tiersFor(id, entry.tier());
+        if (tiers.isEmpty()) {
+            return false;
+        }
+        return data(player).countOf(id) >= tiers.get(tiers.size() - 1);
+    }
+
+    /**
+     * Passe un prestige. Retourne la raison du refus, ou {@code null}.
+     *
+     * <p>Le gain est permanent et porte sur le {@code S0} — la quantite
+     * ecoulable avant que le prix tombe — et non sur le prix de base. Augmenter
+     * le prix de base serait inflationniste sans fin ; augmenter le S0 est
+     * auto-limite, puisque le plafond reste le prix de base. On devient
+     * industriellement efficace sur un item, on ne le rend pas plus cher.
+     */
+    public static String prestige(ServerPlayer player, Identifier id, PriceEntry entry) {
+        CollectionTiers.Prestige rules = CollectionTiers.config().prestige();
+        if (prestigeLevel(player, id) >= rules.maxLevel()) {
+            return "Prestige maximal atteint (" + rules.maxLevel() + ").";
+        }
+        if (!canPrestige(player, id, entry)) {
+            long last = lastThreshold(id, entry);
+            return "Collection incomplete : il faut " + MoneyFormat.exact(last)
+                    + " (tu en as " + MoneyFormat.exact(data(player).countOf(id)) + ").";
+        }
+
+        int level = data(player).addPrestige(id);
+
+        Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+        Component name = item == null
+                ? Component.literal(id.toString())
+                : new ItemStack(item).getHoverName();
+
+        player.level().playSound(null, player.blockPosition(),
+                SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.8f, 0.6f);
+        player.sendSystemMessage(Component.literal("Prestige " + level + " — ")
+                .withStyle(ChatFormatting.LIGHT_PURPLE)
+                .append(name.copy().withStyle(ChatFormatting.WHITE)));
+        player.sendSystemMessage(Component.literal("  tu ecoules desormais "
+                        + Math.round((1 + level * rules.s0BonusPerLevel()) * 100)
+                        + " % de la quantite d'origine au meme prix")
+                .withStyle(ChatFormatting.GREEN));
+        player.sendSystemMessage(Component.literal("  collection repartie a zero")
+                .withStyle(ChatFormatting.GRAY));
+
+        ContractApi.grantGlobalXp(player, rules.globalXp(), "prestige de collection");
+        return null;
+    }
+
+    /** Multiplicateur de S0 acquis par le prestige. */
+    public static double s0Multiplier(ServerPlayer player, Identifier id) {
+        return 1.0d + prestigeLevel(player, id)
+                * CollectionTiers.config().prestige().s0BonusPerLevel();
+    }
+
+    /** Bonus de plancher acquis par le prestige. */
+    public static double prestigeFloorBonus(ServerPlayer player, Identifier id) {
+        return prestigeLevel(player, id)
+                * CollectionTiers.config().prestige().floorBonusPerLevel();
+    }
+
+    private static long lastThreshold(Identifier id, PriceEntry entry) {
+        List<Long> tiers = CollectionTiers.config().tiersFor(id, entry.tier());
+        return tiers.isEmpty() ? 0L : tiers.get(tiers.size() - 1);
+    }
+
     /** Prochain palier a atteindre, ou -1 si tout est franchi. */
     public static long nextThreshold(ServerPlayer player, Identifier id, PriceEntry entry) {
         List<Long> tiers = CollectionTiers.config().tiersFor(id, entry.tier());
