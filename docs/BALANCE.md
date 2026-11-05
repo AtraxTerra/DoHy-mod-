@@ -206,6 +206,33 @@ Un stack de diamants vendu d'un coup fait déjà tomber le prix à 66 %. Voulu :
 
 ---
 
+## 6 bis. Prix d'achat NTM NEXT
+
+Volontairement énormes. NTM NEXT est un mod dont tout l'intérêt est de **construire
+la chaîne** : pouvoir acheter ses lingots avec l'argent de fermes vanilla
+court-circuiterait 200 heures de contenu. L'achat reste possible pour la pièce qui
+manque, jamais pour s'industrialiser.
+
+| Tag | Prix de base | Marge | Prix d'achat |
+|---|---|---|---|
+| `c:raw_materials` | 100 | ×30 | 3 000 |
+| `c:gems` | 67 | ×40 | 2 680 |
+| `c:dusts` | 30 | ×80 | 2 400 |
+| `c:ingots` | 45 | ×100 | 4 500 |
+| `c:plates` | 60 | ×120 | 7 200 |
+| `c:nuggets` | 5 | ×100 | 500 |
+| `c:crystals` | 90 | ×150 | 13 500 |
+
+Deux propriétés vérifiées :
+
+- **L'échelle est cohérente** : matière brute 3 000 → lingot 4 500 (le traitement
+  ajoute de la valeur) → plaque 7 200 (faite de lingots).
+- **9 nuggets = 1 lingot exactement** (9 × 500 = 4 500). Sans cette neutralité, on
+  achèterait la forme la moins chère pour la convertir.
+
+Les **prix de vente sont inchangés** : seule la matière brute se vend, au même prix
+qu'avant.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** (phase 10) : les taux dépendent des recettes réelles du mod, à extraire de son source
