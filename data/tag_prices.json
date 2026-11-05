@@ -1,5 +1,7 @@
 {
   "_comment": "Regles de tarification par tag, appliquees a tout item enregistre qui n'a pas de prix explicite dans prices.json. C'est ce qui permet d'integrer un mod de plusieurs centaines d'items sans en lister un seul — et de rester correct si le mod n'est pas installe, puisqu'un tag vide ne produit rien.",
+  "_why_buy_is_expensive": "Les marges d'achat NTM sont volontairement enormes. NTM NEXT est un mod dont tout l'interet est de construire la chaine : pouvoir acheter ses lingots avec l'argent de fermes vanilla court-circuiterait 200 heures de contenu. L'achat reste possible — pour la piece qui manque — sans jamais permettre de s'industrialiser au shop.",
+  "_buy_ladder": "L'echelle est coherente de bout en bout : matiere brute 3 000 -> lingot 4 500 (le traitement ajoute de la valeur) -> plaque 7 200 (faite de lingots). Et 9 nuggets a 500 coutent exactement un lingot a 4 500 : sans cette neutralite, on achererait la forme la moins chere pour la convertir.",
   "_why_ntm_sells_only_raw": "NTM NEXT multiplie la matiere : ses chaines de traitement rendent plusieurs lingots par minerai, plus des sous-produits. Rendre les lingots, poudres ou plaques vendables transformerait ce rendement en revenu infini. Seule la matiere brute — le rendement reel du minage, non renouvelable — est donc vendable. Le reste est en achat seul, ce qui ferme l'exploit par construction au lieu de l'auditer recette par recette.",
   "rules": [
     {
@@ -8,7 +10,7 @@
       "tier": "FOUND",
       "rate_per_hour": 400,
       "sellable": true,
-      "buy_markup": 4.0,
+      "buy_markup": 30.0,
       "_note": "Le rendement du minage. 14 types dans NTM NEXT, dont 3 vanilla deja tarifes explicitement et donc non repris ici."
     },
     {
@@ -17,7 +19,7 @@
       "tier": "FOUND",
       "rate_per_hour": 600,
       "sellable": true,
-      "buy_markup": 4.0,
+      "buy_markup": 40.0,
       "_note": "Charbon, lignite, cinabre : extraits, pas transformes."
     },
     {
@@ -26,7 +28,7 @@
       "tier": "FARM",
       "rate_per_hour": 400,
       "sellable": false,
-      "buy_markup": 6.0,
+      "buy_markup": 100.0,
       "_note": "Achat seul : sortie d'une chaine qui multiplie la matiere."
     },
     {
@@ -35,7 +37,7 @@
       "tier": "FARM",
       "rate_per_hour": 300,
       "sellable": false,
-      "buy_markup": 6.0
+      "buy_markup": 120.0
     },
     {
       "tag": "c:dusts",
@@ -43,7 +45,7 @@
       "tier": "FARM",
       "rate_per_hour": 600,
       "sellable": false,
-      "buy_markup": 6.0
+      "buy_markup": 80.0
     },
     {
       "tag": "c:nuggets",
@@ -51,7 +53,7 @@
       "tier": "FARM",
       "rate_per_hour": 3600,
       "sellable": false,
-      "buy_markup": 6.0,
+      "buy_markup": 100.0,
       "_note": "Neuf nuggets pour un lingot : le taux suit, sinon la conversion serait rentable dans un sens."
     },
     {
@@ -60,7 +62,7 @@
       "tier": "FARM",
       "rate_per_hour": 200,
       "sellable": false,
-      "buy_markup": 6.0
+      "buy_markup": 150.0
     }
   ]
 }
