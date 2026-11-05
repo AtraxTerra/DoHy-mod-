@@ -43,17 +43,10 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 @EventBusSubscriber
 public final class DeathPenalty {
 
-    /** Nombre de morts gratuites en debut de partie. */
-    public static final int FREE_DEATHS = 3;
-
-    /** Part du solde liquide perdue. */
-    public static final double RATE = 0.08d;
-
-    /** Plancher du plafond absolu. */
-    public static final long CAP_BASE = 50_000L;
-
-    /** Part des gains cumules ajoutee au plafond. */
-    public static final double CAP_LIFETIME_RATE = 0.01d;
+    /** Les chiffres vivent dans {@code data/dohy/economy.json}. */
+    public static int freeDeaths() {
+        return EconomyConfig.death().freeDeaths();
+    }
 
     private DeathPenalty() {
     }
@@ -67,9 +60,9 @@ public final class DeathPenalty {
         PlayerEconomy data = Economy.of(player).withDeath();
         int deathNumber = data.deaths();
 
-        if (deathNumber <= FREE_DEATHS) {
+        if (deathNumber <= freeDeaths()) {
             store(player, data);
-            player.sendSystemMessage(Component.literal("Mort " + deathNumber + "/" + FREE_DEATHS
+            player.sendSystemMessage(Component.literal("Mort " + deathNumber + "/" + freeDeaths()
                             + " — aucune penalite. Au-dela, pense a la banque (/bank).")
                     .withStyle(ChatFormatting.GRAY));
             return;
@@ -78,7 +71,7 @@ public final class DeathPenalty {
         long loss = lossFor(data);
         boolean insured = data.insurance() > 0;
         if (insured) {
-            loss = loss / 2;
+            loss = Math.round(loss * (1.0d - EconomyConfig.death().insuranceReduction()));
             data = data.withInsurance(data.insurance() - 1);
         }
 
@@ -108,11 +101,12 @@ public final class DeathPenalty {
 
     /** La perte brute, avant assurance. Exposee pour l'affichage de {@code /bank}. */
     public static long lossFor(PlayerEconomy data) {
-        if (data.deaths() < FREE_DEATHS) {
+        EconomyConfig.Death config = EconomyConfig.death();
+        if (data.deaths() < config.freeDeaths()) {
             return 0L;
         }
-        long byRate = Math.round(data.balance() * RATE);
-        long cap = CAP_BASE + Math.round(data.lifetimeEarned() * CAP_LIFETIME_RATE);
+        long byRate = Math.round(data.balance() * config.rate());
+        long cap = config.capBase() + Math.round(data.lifetimeEarned() * config.capLifetimeRate());
         return Math.max(0L, Math.min(byRate, cap));
     }
 

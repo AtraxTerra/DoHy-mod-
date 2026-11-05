@@ -80,13 +80,19 @@ public final class BankCommand {
         source.sendSuccess(() -> line("epargne", MoneyFormat.exact(data.banked())), false);
         source.sendSuccess(() -> line("total", MoneyFormat.exact(data.netWorth())), false);
 
+        // On annonce le rendement a CE solde, pas le taux abstrait : c'est le
+        // chiffre sur lequel le joueur decide de deposer ou non.
+        long perDay = Bank.perPlayDay(data.banked());
+        source.sendSuccess(() -> line("interets", MoneyFormat.exact(perDay)
+                + " / jour de jeu  (" + MoneyFormat.exact(perDay / 12) + " par 2 h)"), false);
+        if (data.interestTotal() > 0) {
+            source.sendSuccess(() -> line("interets percus", MoneyFormat.exact(data.interestTotal())), false);
+        }
         source.sendSuccess(() -> Component.literal("  frais de depot : "
-                        + Math.round(Bank.DEPOSIT_FEE * 100) + " %  ·  interets : "
-                        + (Bank.DAILY_RATE * 100) + " % par jour de jeu, plafonnes a "
-                        + MoneyFormat.exact(Bank.DAILY_CAP))
+                        + Math.round(Bank.depositFee() * 100) + " %")
                 .withStyle(ChatFormatting.DARK_GRAY), false);
 
-        int remaining = Math.max(0, DeathPenalty.FREE_DEATHS - data.deaths());
+        int remaining = Math.max(0, DeathPenalty.freeDeaths() - data.deaths());
         if (remaining > 0) {
             source.sendSuccess(() -> Component.literal("  " + remaining
                             + " mort(s) encore sans penalite")
@@ -98,7 +104,7 @@ public final class BankCommand {
                             .withStyle(ChatFormatting.RED))
                     .append(Component.literal(insured
                                     ? " (assurance : " + data.insurance() + ")"
-                                    : " · assurance a " + MoneyFormat.exact(Bank.INSURANCE_PRICE)
+                                    : " · assurance a " + MoneyFormat.exact(Bank.insurancePrice())
                                             + " : /bank insurance")
                             .withStyle(ChatFormatting.DARK_GRAY)), false);
         }
@@ -157,7 +163,7 @@ public final class BankCommand {
         ServerPlayer player = source.getPlayerOrException();
         if (!Bank.buyInsurance(player)) {
             source.sendFailure(Component.literal("Il te faut "
-                    + MoneyFormat.exact(Bank.INSURANCE_PRICE) + " en liquide."));
+                    + MoneyFormat.exact(Bank.insurancePrice()) + " en liquide."));
             return 0;
         }
         source.sendSuccess(() -> Component.literal("Assurance achetee — "

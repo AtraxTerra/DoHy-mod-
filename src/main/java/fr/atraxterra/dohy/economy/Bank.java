@@ -16,17 +16,23 @@ import net.minecraft.server.level.ServerPlayer;
  */
 public final class Bank {
 
-    /** Frais preleves au depot. C'est le sink qui justifie le systeme. */
-    public static final double DEPOSIT_FEE = 0.03d;
+    /**
+     * Les chiffres vivent dans {@code data/dohy/economy.json} et se rechargent
+     * par {@code /dohy reload}. Ces accesseurs ne sont la que pour la lisibilite
+     * des appels.
+     */
+    public static double depositFee() {
+        return EconomyConfig.bank().depositFee();
+    }
 
-    /** Interet par jour de temps de jeu. */
-    public static final double DAILY_RATE = 0.005d;
+    public static long insurancePrice() {
+        return EconomyConfig.bank().insurancePrice();
+    }
 
-    /** Plafond d'interet par jour de temps de jeu. */
-    public static final long DAILY_CAP = 50_000L;
-
-    /** Prix d'une charge d'assurance. */
-    public static final long INSURANCE_PRICE = 50_000L;
+    /** Interet par jour de temps de jeu a ce solde, plafond compris. */
+    public static long perPlayDay(long banked) {
+        return EconomyConfig.bank().perPlayDay(banked);
+    }
 
     private Bank() {
     }
@@ -37,7 +43,7 @@ public final class Bank {
 
     /** Frais pour un depot donne. */
     public static long feeFor(long amount) {
-        return Math.round(amount * DEPOSIT_FEE);
+        return Math.round(amount * depositFee());
     }
 
     /**
@@ -88,20 +94,18 @@ public final class Bank {
         }
 
         double fraction = minutes / (24.0d * 60.0d);
-        long interest = Math.round(Math.min(
-                data.banked() * DAILY_RATE * fraction,
-                DAILY_CAP * fraction));
+        long interest = Math.round(EconomyConfig.bank().perPlayDay(data.banked()) * fraction);
         if (interest <= 0) {
             return 0L;
         }
 
-        apply(player, data.withBanked(data.banked() + interest));
+        apply(player, data.withInterest(interest));
         return interest;
     }
 
     /** Achete une charge d'assurance. Retourne false si le solde ne suffit pas. */
     public static boolean buyInsurance(ServerPlayer player) {
-        if (!Economy.tryDebit(player, INSURANCE_PRICE)) {
+        if (!Economy.tryDebit(player, insurancePrice())) {
             return false;
         }
         PlayerEconomy data = Economy.of(player);
