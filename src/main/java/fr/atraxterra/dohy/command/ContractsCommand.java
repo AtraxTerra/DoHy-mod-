@@ -61,28 +61,29 @@ public final class ContractsCommand {
         source.sendSuccess(() -> Component.literal("Niveau global "
                         + ContractApi.globalLevel(player))
                 .withStyle(ChatFormatting.LIGHT_PURPLE)
-                .append(Component.literal("  ·  " + MoneyFormat.exact(data.playtimeMinutes())
+                .append(Component.literal("  ·  renouvellement dans "
+                                + ContractsMenu.delay(ContractApi.minutesUntilDailyReset())
+                                + "  ·  " + MoneyFormat.exact(data.playtimeMinutes())
                                 + " min de jeu")
                         .withStyle(ChatFormatting.DARK_GRAY)), false);
 
-        Identifier demand = data.demandItem();
+        Identifier demand = ContractApi.demandItem(player);
         if (demand != null) {
             Item item = BuiltInRegistries.ITEM.getOptional(demand).orElse(null);
             Component name = item == null
                     ? Component.literal(demand.getPath())
                     : new ItemStack(item).getHoverName();
-            long left = Math.max(0, data.demandUntil() - data.playtimeMinutes());
             source.sendSuccess(() -> Component.literal("Demande du jour : ")
                     .withStyle(ChatFormatting.AQUA)
                     .append(name.copy().withStyle(ChatFormatting.WHITE))
                     .append(Component.literal("  x"
                                     + ContractConfig.config().demand().multiplier()
-                                    + " · " + left + " min restantes")
+                                    + " · change dans "
+                                    + ContractsMenu.delay(ContractApi.minutesUntilDailyReset()))
                             .withStyle(ChatFormatting.DARK_GRAY)), false);
         }
 
-        long reset = ContractConfig.config().firstSale().resetHours() * 60L;
-        if (data.firstSaleAvailable(reset)) {
+        if (ContractApi.firstSaleAvailable(player)) {
             source.sendSuccess(() -> Component.literal("Premiere vente du jour : x"
                             + ContractConfig.config().firstSale().multiplier() + " disponible")
                     .withStyle(ChatFormatting.GREEN), false);
@@ -93,7 +94,7 @@ public final class ContractsCommand {
 
         if (data.daily().isEmpty() && data.weekly().isEmpty()) {
             source.sendSuccess(() -> Component.literal(
-                            "Aucun contrat. Ils arrivent a la prochaine minute de jeu.")
+                            "Aucun contrat. Ils arrivent dans la minute.")
                     .withStyle(ChatFormatting.GRAY), false);
         }
         return 1;

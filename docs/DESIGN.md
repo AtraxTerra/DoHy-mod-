@@ -16,7 +16,10 @@ Le joueur unique a un rythme connu :
 Deux conséquences structurelles, qui reviennent partout dans ce document :
 
 1. **Aucun système ne doit dépendre d'une connexion quotidienne.** Pas de streak qui se casse, pas de récompense perdue si on saute un soir.
-2. **Les compteurs de temps sont en temps de jeu, pas en temps réel.** Un décompte en jours réels avantagerait massivement le week-end et rendrait les soirées de semaine inutiles.
+2. **Deux horloges, et le choix se fait au cas par cas** — révisé le 2026-11-05.
+   - **Temps réel, à heure fixe** pour tout ce qui est un *cycle* : contrats du jour et de la semaine, demande du jour, bonus de première vente, intérêts d'épargne, oubli des prix. La version précédente comptait en temps de jeu, et c'était une erreur de conception : 24 h **de jeu**, à 2 h par soirée, font douze jours. Des contrats « du jour » qui se renouvellent deux fois par mois ne renouvellent rien.
+   - **Temps de jeu** pour ce qui se *consomme pendant une session* : durée d'un booster, intervalle de l'autosell. Un booster payé 300 M ne doit pas fondre parce que la connexion a sauté, et l'autosell n'a pas de sens joueur absent.
+   - Le passage au temps réel n'avantage le week-end que si les taux restent ceux du temps de jeu. Ils ont donc été recalibrés — voir la banque dans `BALANCE.md`.
 
 ## 1. Principes directeurs
 
@@ -68,7 +71,7 @@ prix_vente = base × clamp( (S₀ / (S₀ + vendu))^0.6 , plancher , 1.8 )
 
 - `vendu` = quantité cumulée vendue par le joueur pour cet item
 - `S₀` = demi-saturation, propre à chaque tier (voir `BALANCE.md`)
-- **Oubli : `vendu` décroît de 10 % par 20 minutes de temps de jeu.** Pas par jour réel — sinon un week-end de grind écrase tous les prix et les soirées de semaine qui suivent n'ont plus aucun revenu.
+- **Oubli : `vendu` décroît de 10 % par 20 minutes de temps réel**, en ligne comme hors ligne (révisé le 2026-11-05 ; c'était en temps de jeu). La crainte d'origine — « un week-end de grind écrase les prix et les soirées suivantes n'ont plus de revenu » — était l'inverse de ce qui se produisait : en temps de jeu, la remontée demandait *elle aussi* d'être en jeu, donc les prix écrasés le dimanche le restaient pendant une douzaine de soirées. En temps réel, la nuit suffit à refaire une bonne partie du chemin.
 - Plancher par tier (15 % à 50 %) : sans plancher, le grind devient littéralement gratuit et le joueur se sent volé.
 - Plafond 180 % : récompense le fait de ne pas spammer un item.
 
@@ -122,7 +125,7 @@ Règles :
 
 - Solde protégé de la pénalité de mort
 - **3 % de frais au dépôt** (le sink qui justifie le système)
-- **0,5 % par jour de temps de jeu, plafonné à 50 k/jour**
+- **0,25 % par jour réel, plafonné à 250 k/jour**, intérêts courus même monde fermé (le chiffre d'origine, 0,5 %/jour de jeu plafonné à 50 k, était négligeable d'un facteur 5 ; voir `BALANCE.md` pour le calcul et pour le recalibrage du passage au temps réel)
 - Rôle : garantir qu'une soirée de semaine sans grind fait quand même progresser
 
 ### 5.3 Assurance
@@ -180,7 +183,7 @@ Implémentation : une seule `Map<ItemId, Long>` dans l'attachment joueur, palier
 
 | Système | Détail | Rôle |
 |---|---|---|
-| **Demande du jour** | Un item tiré au hasard à **×2,5** pendant 24 h de temps de jeu, annoncé à la connexion | Donne un objectif immédiat à une soirée de 2 h |
+| **Demande du jour** | Un item tiré au hasard à **×2,5** pour la journée, jusqu'à la bascule de 5 h, annoncé à la connexion | Donne un objectif immédiat à une soirée de 2 h |
 | **Contrats quotidiens** | 3 contrats faisables en ~2 h (ex. « miner 500 deepslate », « tuer 60 mobs ») | Structure la session de semaine |
 | **Contrat hebdo** | 1 contrat lourd, infaisable en une soirée, grosse récompense | Structure le week-end |
 | **Première vente du jour** | ×1,5 sur la première transaction | Récompense sans punir l'absence (pas de streak) |
@@ -240,7 +243,9 @@ L'ordre n'est pas négociable sur les points 1, 2 et 10 : les backups avant d'av
 | Décision | Alternative écartée | Raison |
 |---|---|---|
 | Catégorie « trouvable » par **ID d'item** | Tag `DataComponentType` posé à la casse | Deux stacks aux composants différents ne fusionnent pas → inventaire ingérable, et le tag se perd au craft et au four |
-| Oubli des prix en **temps de jeu** | Temps réel | Le temps réel avantage massivement le week-end et stérilise les soirées de semaine |
+| Cycles en **temps réel à heure fixe** | Temps de jeu (choix initial, **renversé le 2026-11-05**) | 24 h de jeu à 2 h par soirée font douze jours : un cycle en temps de jeu n'est pas un cycle. Le temps réel n'avantage le week-end que si on oublie de recalibrer les taux |
+| Durée des boosters en **temps de jeu** | Temps réel | Une déconnexion ne doit pas consommer un achat de 300 M |
+| Bascule quotidienne à **5 h** | Minuit | Une soirée qui dépasse minuit verrait ses contrats se renouveler sous son nez |
 | Pénalité indexée sur les **gains cumulés** | Solde instantané | Le solde instantané apprend à ne pas avoir de solde |
 | Items craftables **non vendables** | Audit recette par recette | 2 000 recettes à vérifier, et une seule oubliée suffit |
 | Money `long` + HUD custom | Scoreboard vanilla | `int` plafonne à 2,1 G, incompatible avec l'objectif 1T |

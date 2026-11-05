@@ -82,9 +82,9 @@ public final class BankCommand {
 
         // On annonce le rendement a CE solde, pas le taux abstrait : c'est le
         // chiffre sur lequel le joueur decide de deposer ou non.
-        long perDay = Bank.perPlayDay(data.banked());
+        long perDay = Bank.perDay(data.banked());
         source.sendSuccess(() -> line("interets", MoneyFormat.exact(perDay)
-                + " / jour de jeu  (" + MoneyFormat.exact(perDay / 12) + " par 2 h)"), false);
+                + " / jour  (" + MoneyFormat.exact(perDay * 7) + " par semaine)"), false);
         if (data.interestTotal() > 0) {
             source.sendSuccess(() -> line("interets percus", MoneyFormat.exact(data.interestTotal())), false);
         }

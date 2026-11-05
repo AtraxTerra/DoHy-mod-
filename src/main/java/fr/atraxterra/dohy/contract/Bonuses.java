@@ -31,7 +31,7 @@ public final class Bonuses {
     }
 
     private static double demand(ServerPlayer player, Identifier id) {
-        Identifier wanted = ContractApi.data(player).demandItem();
+        Identifier wanted = ContractApi.demandItem(player);
         if (wanted == null || !wanted.equals(id)) {
             return 1.0d;
         }
@@ -39,17 +39,13 @@ public final class Bonuses {
     }
 
     private static double firstSale(ServerPlayer player, boolean consume) {
-        ContractConfig.FirstSale config = ContractConfig.config().firstSale();
-        long resetMinutes = config.resetHours() * 60L;
-        ContractData data = ContractApi.data(player);
-
-        if (!data.firstSaleAvailable(resetMinutes)) {
+        if (!ContractApi.firstSaleAvailable(player)) {
             return 1.0d;
         }
         if (consume) {
-            data.consumeFirstSale();
+            ContractApi.consumeFirstSale(player);
         }
-        return Math.max(1.0d, config.multiplier());
+        return Math.max(1.0d, ContractConfig.config().firstSale().multiplier());
     }
 
     /** Annonce au joueur le detail d'un bonus applique. */

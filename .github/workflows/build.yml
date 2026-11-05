@@ -76,6 +76,22 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      # RealClock ne depend que de java.time : c'est le seul morceau du mod
+      # verifiable autrement qu'en jeu, et celui ou une erreur de bascule ne se
+      # verrait qu'a 5 h du matin trois jours plus tard.
+      - name: L'horloge reelle doit passer son test
+        run: |
+          javac -d /tmp/clock \
+            src/main/java/fr/atraxterra/dohy/util/RealClock.java \
+            tools/RealClockTest.java
+          java -cp /tmp/clock fr.atraxterra.dohy.util.RealClockTest
+
       - name: Regenerer les prix
         run: python3 tools/gen_prices.py
 

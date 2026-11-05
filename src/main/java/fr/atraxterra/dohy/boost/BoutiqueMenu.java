@@ -311,7 +311,7 @@ public final class BoutiqueMenu extends DisplayMenu {
         return Gui.button(Items.CHEST_MINECART, "Banque", Gui.lore(
                 Gui.field("epargne", MoneyFormat.exact(Bank.banked(player))),
                 Gui.field("interets", MoneyFormat.exact(
-                        Bank.perPlayDay(Bank.banked(player))) + " / jour de jeu"),
+                        Bank.perDay(Bank.banked(player))) + " / jour"),
                 Gui.blank(),
                 Gui.hint("l'epargne est protegee de la mort"),
                 Gui.blank(),

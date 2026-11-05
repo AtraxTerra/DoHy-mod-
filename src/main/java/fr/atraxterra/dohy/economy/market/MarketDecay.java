@@ -38,6 +38,17 @@ public final class MarketDecay {
     /** Facteur conserve a chaque pas : 0.9 ^ (1/20) par minute. */
     private static final double KEEP_PER_STEP = Math.pow(1.0d - DECAY_PER_20_MIN, 1.0d / 20.0d);
 
+    /**
+     * Le facteur conserve par minute, pour le rattrapage hors ligne.
+     *
+     * <p>Expose plutot que duplique : deux constantes a 0,9 ^ (1/20) finiraient
+     * par diverger, et la courbe des prix se mettrait a dependre de la presence
+     * du joueur sans que personne ne l'ait decide.
+     */
+    public static double keepPerMinute() {
+        return KEEP_PER_STEP;
+    }
+
     private static int tickCounter;
 
     private MarketDecay() {

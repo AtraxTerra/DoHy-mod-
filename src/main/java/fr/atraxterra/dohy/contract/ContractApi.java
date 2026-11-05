@@ -5,6 +5,7 @@ import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.util.MoneyFormat;
+import fr.atraxterra.dohy.util.RealClock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -31,9 +32,15 @@ import java.util.function.Predicate;
  * infaisable en une soiree, et la demande du jour donne un objectif immediat des
  * la connexion.
  *
- * <p>Aucun de ces systemes ne se casse si on saute un soir : les compteurs sont
- * en minutes de jeu, donc rien n'expire pendant que le monde est ferme. C'est la
- * raison pour laquelle il n'y a pas de serie a entretenir.
+ * <p>Les cycles tournent en <b>temps reel</b>, a heure fixe : les contrats du
+ * jour se renouvellent a l'heure de bascule du datapack, et non vingt-quatre
+ * heures apres le dernier tirage. Se connecter deux soirs de suite donne donc
+ * bien deux series de contrats, ce qu'un compteur en temps de jeu ne faisait
+ * pas — vingt-quatre heures de jeu, a deux heures par soiree, font douze jours.
+ *
+ * <p>Aucun de ces systemes ne se casse si on saute un soir : sauter trois jours
+ * ne produit pas trois tirages de rattrapage, juste un seul. C'est la raison
+ * pour laquelle il n'y a pas de serie a entretenir.
  */
 public final class ContractApi {
 
@@ -113,25 +120,52 @@ public final class ContractApi {
         }
     }
 
-    /** Tire de nouveaux contrats si leur duree de validite est ecoulee. */
+    /** La cle du jour courant, bascule du datapack comprise. */
+    public static long today() {
+        return RealClock.dayKey(ContractConfig.config().reset().dailyHour());
+    }
+
+    /** La cle de la semaine courante. */
+    public static long thisWeek() {
+        ContractConfig.Reset reset = ContractConfig.config().reset();
+        return RealClock.weekKey(reset.dailyHour(), RealClock.parseDay(reset.weeklyDay()));
+    }
+
+    /** Minutes reelles avant le prochain renouvellement quotidien. */
+    public static long minutesUntilDailyReset() {
+        return RealClock.minutesUntilNextDay(ContractConfig.config().reset().dailyHour());
+    }
+
+    /** Minutes reelles avant le prochain renouvellement hebdomadaire. */
+    public static long minutesUntilWeeklyReset() {
+        ContractConfig.Reset reset = ContractConfig.config().reset();
+        return RealClock.minutesUntilNextWeek(reset.dailyHour(),
+                RealClock.parseDay(reset.weeklyDay()));
+    }
+
+    /**
+     * Tire de nouveaux contrats si la periode a change.
+     *
+     * <p>Une comparaison de cles, pas un compte a rebours : sauter trois jours
+     * ne declenche donc qu'un seul tirage, et non trois de rattrapage.
+     */
     public static void rollIfDue(ServerPlayer player) {
         ContractData data = data(player);
         ContractConfig.Config config = ContractConfig.config();
 
-        if (due(data.dailyRolledAt(), data.playtimeMinutes(), config.daily().rerollHours())) {
+        long today = today();
+        if (data.dailyPeriod() != today) {
             data.setDaily(pick(config.daily(), false));
-            data.markDailyRolled();
+            data.setDailyPeriod(today);
             announce(player, data.daily(), "Contrats du jour");
         }
-        if (due(data.weeklyRolledAt(), data.playtimeMinutes(), config.weekly().rerollHours())) {
+
+        long week = thisWeek();
+        if (data.weeklyPeriod() != week) {
             data.setWeekly(pick(config.weekly(), true));
-            data.markWeeklyRolled();
+            data.setWeeklyPeriod(week);
             announce(player, data.weekly(), "Contrat de la semaine");
         }
-    }
-
-    private static boolean due(long rolledAt, long now, long validityHours) {
-        return rolledAt < 0 || now - rolledAt >= validityHours * 60L;
     }
 
     private static List<ActiveContract> pick(ContractConfig.Pool pool, boolean weekly) {
@@ -217,10 +251,30 @@ public final class ContractApi {
         grantGlobalXp(player, pool.globalXp(), "contrat termine");
     }
 
-    /** Tire la demande du jour si celle en cours a expire. */
+    /**
+     * L'item en demande aujourd'hui, ou {@code null}.
+     *
+     * <p>Seule source de verite : la donnee stockee ne vaut que pour la periode
+     * ou elle a ete tiree.
+     */
+    public static Identifier demandItem(ServerPlayer player) {
+        ContractData data = data(player);
+        return data.demandPeriod() == today() ? data.rawDemandItem() : null;
+    }
+
+    /** Vrai si le bonus de premiere vente n'a pas encore servi aujourd'hui. */
+    public static boolean firstSaleAvailable(ServerPlayer player) {
+        return data(player).firstSalePeriod() != today();
+    }
+
+    public static void consumeFirstSale(ServerPlayer player) {
+        data(player).setFirstSalePeriod(today());
+    }
+
+    /** Tire la demande du jour si celle du fichier n'est plus celle du jour. */
     public static void refreshDemand(ServerPlayer player) {
         ContractData data = data(player);
-        if (data.demandItem() != null) {
+        if (demandItem(player) != null) {
             return;
         }
 
@@ -237,7 +291,7 @@ public final class ContractApi {
         }
 
         Identifier chosen = candidates.get(player.getRandom().nextInt(candidates.size()));
-        data.setDemand(chosen, data.playtimeMinutes() + demand.durationHours() * 60L);
+        data.setDemand(chosen, today());
 
         Item item = BuiltInRegistries.ITEM.getOptional(chosen).orElse(null);
         Component name = item == null

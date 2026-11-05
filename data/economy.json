@@ -2,10 +2,10 @@
   "_comment": "Tous les chiffres de la banque et de la penalite de mort. Rechargeable par /dohy reload : regler l'equilibrage ne doit pas couter un build.",
   "bank": {
     "deposit_fee": 0.03,
-    "_daily_rate": "Interet par jour de TEMPS DE JEU, applique chaque minute au prorata.",
-    "daily_rate": 0.02,
-    "_daily_cap": "Plafond par jour de temps de jeu. Mord a partir de 100 M epargnes.",
-    "daily_cap": 2000000,
+    "_daily_rate": "Interet par jour REEL, applique chaque minute au prorata, en ligne comme hors ligne. Calibre pour que le rendement d'une soiree de 2 h soit celui de l'ancien 2 %/jour de jeu : a ~3 h de jeu par jour, 2 % x 3/24 = 0,25 %.",
+    "daily_rate": 0.0025,
+    "_daily_cap": "Plafond par jour reel. Mord a partir de 100 M epargnes, comme l'ancien plafond de 2 M par jour de jeu au meme rythme.",
+    "daily_cap": 250000,
     "insurance_price": 50000
   },
   "death": {
