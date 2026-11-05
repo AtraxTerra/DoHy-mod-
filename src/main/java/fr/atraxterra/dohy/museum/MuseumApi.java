@@ -146,7 +146,7 @@ public final class MuseumApi {
                 : new ItemStack(item).getHoverName();
 
         player.level().playSound(null, player.blockPosition(),
-                SoundEvents.AMETHYST_BLOCK_CHIME.value(), SoundSource.MASTER, 0.6f, 1.0f);
+                SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.MASTER, 0.6f, 1.0f);
         player.sendSystemMessage(Component.literal("Musee : ")
                 .withStyle(ChatFormatting.GRAY)
                 .append(name.copy().withStyle(ChatFormatting.AQUA))
