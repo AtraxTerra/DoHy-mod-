@@ -5,6 +5,7 @@ import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
+import fr.atraxterra.dohy.museum.MuseumApi;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
@@ -201,7 +202,9 @@ public final class ShopMenu extends ChestMenu {
     }
 
     private void buy(ServerPlayer serverPlayer, Item item, PriceEntry entry, int wanted) {
-        long unitPrice = entry.buyPrice();
+        // La remise du musee s'applique au prix d'achat.
+        long unitPrice = Math.max(1L, Math.round(entry.buyPrice()
+                * (1.0d - MuseumApi.buyDiscount(serverPlayer))));
         if (unitPrice <= 0L) {
             serverPlayer.sendSystemMessage(Component.literal("Cet item n'est pas en vente.")
                     .withStyle(ChatFormatting.GRAY));
@@ -318,7 +321,10 @@ public final class ShopMenu extends ChestMenu {
             lore.add(Component.literal("Achat seul").withStyle(ChatFormatting.DARK_GRAY));
         }
         if (entry.buyPrice() > 0L) {
-            lore.add(Component.literal("Achat : " + MoneyFormat.exact(entry.buyPrice()))
+            double discount = MuseumApi.buyDiscount(player);
+            long shown = Math.max(1L, Math.round(entry.buyPrice() * (1.0d - discount)));
+            lore.add(Component.literal("Achat : " + MoneyFormat.exact(shown)
+                            + (discount > 0 ? "  (-" + Math.round(discount * 100) + " % musee)" : ""))
                     .withStyle(ChatFormatting.RED));
         }
         lore.add(Component.literal("Tu en as : " + owned).withStyle(ChatFormatting.GRAY));

@@ -4,6 +4,7 @@ import fr.atraxterra.dohy.boost.BoostData;
 import fr.atraxterra.dohy.collection.CollectionData;
 import fr.atraxterra.dohy.contract.ContractData;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
+import fr.atraxterra.dohy.museum.MuseumData;
 import fr.atraxterra.dohy.skill.SkillData;
 import fr.atraxterra.dohy.economy.market.PlayerMarket;
 import fr.atraxterra.dohy.world.PlacedBlockData;
@@ -96,6 +97,14 @@ public final class DoHyAttachments {
             "boosts",
             () -> AttachmentType.builder(BoostData::new)
                     .serialize(BoostData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /** Pieces exposees au musee. Conservees a la mort : un don est definitif. */
+    public static final Supplier<AttachmentType<MuseumData>> MUSEUM = ATTACHMENT_TYPES.register(
+            "museum",
+            () -> AttachmentType.builder(MuseumData::new)
+                    .serialize(MuseumData.MAP_CODEC, data -> !data.isEmpty())
                     .copyOnDeath()
                     .build());
 
