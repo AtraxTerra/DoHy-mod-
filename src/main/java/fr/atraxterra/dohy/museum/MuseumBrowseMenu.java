@@ -124,18 +124,16 @@ public final class MuseumBrowseMenu extends ChestMenu {
     /**
      * Ouvre le guichet de dons.
      *
-     * <p>Differe au tick suivant : ouvrir un menu depuis le gestionnaire de clic
-     * du menu courant reviendrait a le fermer pendant qu'il traite un
-     * evenement.
+     * <p>Appel direct : l'appelant retourne immediatement apres, donc la
+     * fermeture de ce menu n'intervient pas au milieu du traitement d'un clic.
+     * Ni {@code ServerPlayer.server} ni {@code getServer()} ne sont accessibles
+     * en 26.2, donc differer au tick suivant demanderait de passer par le
+     * niveau — inutile ici.
      */
     private void openDeposit(ServerPlayer serverPlayer) {
-        var server = serverPlayer.getServer();
-        if (server == null) {
-            return;
-        }
-        server.execute(() -> serverPlayer.openMenu(new SimpleMenuProvider(
+        serverPlayer.openMenu(new SimpleMenuProvider(
                 (containerId, inventory, viewer) -> new MuseumMenu(containerId, inventory, serverPlayer),
-                Component.literal("Musee — depose, ferme pour exposer"))));
+                Component.literal("Musee — depose, ferme pour exposer")));
     }
 
     private List<Identifier> contents() {
