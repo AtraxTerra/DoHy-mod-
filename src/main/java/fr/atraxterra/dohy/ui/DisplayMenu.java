@@ -36,8 +36,8 @@ public abstract class DisplayMenu extends ChestMenu {
     private final int size;
 
     protected DisplayMenu(int containerId, Inventory inventory, ServerPlayer player, int rows) {
-        this(containerId, inventory, player, rows <= 3 ? 3 : 6,
-                new SimpleContainer((rows <= 3 ? 3 : 6) * 9));
+        this(containerId, inventory, player, Math.max(1, Math.min(6, rows)),
+                new SimpleContainer(Math.max(1, Math.min(6, rows)) * 9));
     }
 
     private DisplayMenu(int containerId, Inventory inventory, ServerPlayer player,
@@ -49,12 +49,22 @@ public abstract class DisplayMenu extends ChestMenu {
     }
 
     /**
-     * Seuls trois et six rangees sont retenues : ce sont les deux formats
-     * vanilla deja valides par la compilation, et toutes les fenetres du mod
-     * tiennent dans l'un ou l'autre.
+     * Le type vanilla correspondant au nombre de rangees.
+     *
+     * <p>Les six constantes existent bien en 26.2 (verifie a la sonde d'API).
+     * Le type et le nombre de rangees doivent concorder : un type a six rangees
+     * avec un conteneur de quatre ferait dessiner au client des emplacements que
+     * le serveur n'a pas.
      */
     private static MenuType<?> typeFor(int rows) {
-        return rows <= 3 ? MenuType.GENERIC_9x3 : MenuType.GENERIC_9x6;
+        return switch (rows) {
+            case 1 -> MenuType.GENERIC_9x1;
+            case 2 -> MenuType.GENERIC_9x2;
+            case 3 -> MenuType.GENERIC_9x3;
+            case 4 -> MenuType.GENERIC_9x4;
+            case 5 -> MenuType.GENERIC_9x5;
+            default -> MenuType.GENERIC_9x6;
+        };
     }
 
     /** Dessine l'ecran. Appele apres chaque clic ; doit etre idempotent. */

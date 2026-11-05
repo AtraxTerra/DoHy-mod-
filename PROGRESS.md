@@ -419,6 +419,10 @@ Elles sont consignees ici parce qu'elles vont se reposer a chaque phase :
 | `ServerPlayer.server` / `getServer()` | inaccessibles → ouvrir un menu par appel direct |
 | `SoundEvents` | certains sont des `Holder` (`.value()`), d'autres des `SoundEvent` direct — vérifier au cas par cas |
 | `displayClientMessage` | **supprimé** → `player.connection.send(new ClientboundSetActionBarTextPacket(...))` |
+| `MenuType.GENERIC_9x1` … `9x6` | les **six** existent, typées `MenuType<ChestMenu>` (sondé le 2026-11-05) |
+| `Player.closeContainer()` | **présent** (sondé le 2026-11-05) |
+| `EntityType.getDescription()` | **présent**, rend un `Component` (sondé le 2026-11-05) |
+| `Identifier.tryParse` | **non vérifié** — fabriquer avec `fromNamespaceAndPath` après découpe sur `:` (voir `ContractDisplay.parse`) |
 
 **Phase 1 validée en jeu** : solde affiché, crédit et animation de gain,
 `/money hide`, persistance au rechargement du monde, conservation à la mort, et
