@@ -54,16 +54,29 @@ public final class DynamicPrice {
      * deja franchis. Un item `FARM` a fond passe ainsi de 15 % a 40 %.
      */
     public static double effectiveFloor(ServerPlayer player, Identifier id, PriceEntry entry) {
-        return Math.min(0.95d, entry.floorPct() + CollectionApi.floorBonus(player, id, entry));
+        return Math.min(0.95d, entry.floorPct()
+                + CollectionApi.floorBonus(player, id, entry)
+                + CollectionApi.prestigeFloorBonus(player, id));
+    }
+
+    /**
+     * Demi-saturation effective : celle du tier, elargie par le prestige.
+     *
+     * <p>C'est le levier du prestige. Elargir S0 recule le point ou le prix
+     * s'effondre, sans jamais depasser le prix de base : le gain est reel et
+     * l'economie ne peut pas gonfler.
+     */
+    public static double effectiveS0(ServerPlayer player, Identifier id, PriceEntry entry) {
+        return Math.max(1, entry.halfSaturation()) * CollectionApi.s0Multiplier(player, id);
     }
 
     /** Multiplicateur courant, entre le plancher effectif et le plafond du tier. */
     public static double multiplier(ServerPlayer player, Identifier id, PriceEntry entry) {
-        return multiplierAt(market(player).soldOf(id), entry, effectiveFloor(player, id, entry));
+        return multiplierAt(market(player).soldOf(id), entry,
+                effectiveFloor(player, id, entry), effectiveS0(player, id, entry));
     }
 
-    static double multiplierAt(double sold, PriceEntry entry, double floor) {
-        double s0 = Math.max(1, entry.halfSaturation());
+    static double multiplierAt(double sold, PriceEntry entry, double floor, double s0) {
         double raw = Math.pow(s0 / (s0 + Math.max(0, sold)), K);
         // Le plafond ne mord pas encore : la formule ne depasse jamais 1. Il
         // existe pour la demande du jour (phase 8), qui multipliera ce facteur.
@@ -85,7 +98,7 @@ public final class DynamicPrice {
         }
         double start = market(player).soldOf(id);
         long base = Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry,
-                effectiveFloor(player, id, entry))));
+                effectiveFloor(player, id, entry), effectiveS0(player, id, entry))));
         return Math.max(1L, Math.round(base * Bonuses.preview(player, id)));
     }
 
@@ -102,7 +115,7 @@ public final class DynamicPrice {
         PlayerMarket market = market(player);
         double start = market.soldOf(id);
         long base = Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry,
-                effectiveFloor(player, id, entry))));
+                effectiveFloor(player, id, entry), effectiveS0(player, id, entry))));
 
         // La pression enregistree est celle de la quantite reellement vendue :
         // un bonus ne doit pas accelerer la chute du prix, sinon il s'annule.
@@ -122,8 +135,8 @@ public final class DynamicPrice {
      * @param from pression avant la vente
      * @param to   pression apres la vente
      */
-    private static double payoutBetween(double from, double to, PriceEntry entry, double floor) {
-        double s0 = Math.max(1, entry.halfSaturation());
+    private static double payoutBetween(double from, double to, PriceEntry entry,
+                                        double floor, double s0) {
         double base = entry.basePrice();
         double breakpoint = floorBreakpoint(s0, floor);
 

@@ -48,7 +48,9 @@ public final class CollectionsCommand {
         return Commands.literal("collections")
                 .executes(ctx -> show(ctx.getSource()))
                 .then(Commands.literal("all")
-                        .executes(ctx -> list(ctx.getSource())));
+                        .executes(ctx -> list(ctx.getSource())))
+                .then(Commands.literal("prestige")
+                        .executes(ctx -> prestige(ctx.getSource())));
     }
 
     private static int show(CommandSourceStack source) throws CommandSyntaxException {
@@ -69,6 +71,38 @@ public final class CollectionsCommand {
         }
 
         detail(source, player, id, entry, held.getHoverName());
+        return 1;
+    }
+
+    /**
+     * Passe un prestige sur l'item en main.
+     *
+     * <p>Volontairement sur l'item tenu et non par argument : le geste est
+     * irreversible, et tenir l'item est une confirmation implicite plus claire
+     * qu'un identifiant tape au clavier.
+     */
+    private static int prestige(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        ItemStack held = player.getMainHandItem();
+        if (held.isEmpty()) {
+            source.sendFailure(Component.literal(
+                    "Tiens l'item dont tu veux passer le prestige."));
+            return 0;
+        }
+
+        Identifier id = BuiltInRegistries.ITEM.getKey(held.getItem());
+        PriceEntry entry = Prices.book().entry(id).orElse(null);
+        if (entry == null) {
+            source.sendFailure(held.getHoverName().copy()
+                    .append(Component.literal(" n'a pas de collection.")));
+            return 0;
+        }
+
+        String refusal = CollectionApi.prestige(player, id, entry);
+        if (refusal != null) {
+            source.sendFailure(Component.literal(refusal));
+            return 0;
+        }
         return 1;
     }
 
@@ -145,6 +179,19 @@ public final class CollectionsCommand {
             source.sendSuccess(() -> Component.literal("  prix plancher +"
                             + Math.round(bonus * 100) + " %")
                     .withStyle(ChatFormatting.GREEN), false);
+        }
+
+        int prestigeLevel = CollectionApi.prestigeLevel(player, id);
+        if (prestigeLevel > 0) {
+            source.sendSuccess(() -> Component.literal("  prestige " + prestigeLevel
+                            + " — quantite ecoulable x"
+                            + String.format("%.1f", CollectionApi.s0Multiplier(player, id)))
+                    .withStyle(ChatFormatting.LIGHT_PURPLE), false);
+        }
+        if (CollectionApi.canPrestige(player, id, entry)) {
+            source.sendSuccess(() -> Component.literal(
+                            "  prestige disponible — /collections prestige (remet la collection a zero)")
+                    .withStyle(ChatFormatting.GOLD), false);
         }
 
         if (!CollectionApi.isUnlocked(player, id, entry)) {
