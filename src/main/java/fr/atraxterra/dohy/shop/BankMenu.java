@@ -138,7 +138,7 @@ public final class BankMenu extends ChestMenu {
         if (!Bank.buyInsurance(player)) {
             play(SoundEvents.VILLAGER_NO, 1.0f);
             player.sendSystemMessage(Component.literal("Il te faut "
-                            + MoneyFormat.exact(Bank.INSURANCE_PRICE) + " en liquide.")
+                            + MoneyFormat.exact(Bank.insurancePrice()) + " en liquide.")
                     .withStyle(ChatFormatting.RED));
             return;
         }
@@ -153,7 +153,7 @@ public final class BankMenu extends ChestMenu {
         long loss = DeathPenalty.lossFor(data);
         boolean insured = data.insurance() > 0;
         long effective = insured ? loss / 2 : loss;
-        int freeLeft = Math.max(0, DeathPenalty.FREE_DEATHS - data.deaths());
+        int freeLeft = Math.max(0, DeathPenalty.freeDeaths() - data.deaths());
 
         for (int slot = 0; slot < 27; slot++) {
             display.setItem(slot, ItemStack.EMPTY);
@@ -163,6 +163,20 @@ public final class BankMenu extends ChestMenu {
         info.add(value("liquide", data.balance()));
         info.add(value("epargne", data.banked()));
         info.add(value("total", data.netWorth()));
+        info.add(Component.literal("").withStyle(ChatFormatting.DARK_GRAY));
+
+        // Le rendement a CE solde, et par soiree de deux heures : c'est le
+        // chiffre qui fait decider de deposer, pas un taux abstrait.
+        long perDay = Bank.perPlayDay(data.banked());
+        info.add(Component.literal("interets : " + MoneyFormat.exact(perDay) + " / jour de jeu")
+                .withStyle(ChatFormatting.GREEN));
+        info.add(Component.literal("  soit " + MoneyFormat.exact(perDay / 12) + " par soiree de 2 h")
+                .withStyle(ChatFormatting.DARK_GRAY));
+        if (data.interestTotal() > 0) {
+            info.add(Component.literal("percus a ce jour : "
+                            + MoneyFormat.exact(data.interestTotal()))
+                    .withStyle(ChatFormatting.DARK_GRAY));
+        }
         info.add(Component.literal("").withStyle(ChatFormatting.DARK_GRAY));
         if (freeLeft > 0) {
             info.add(Component.literal(freeLeft + " mort(s) sans penalite")
@@ -190,7 +204,7 @@ public final class BankMenu extends ChestMenu {
                 data.banked()));
 
         display.setItem(SLOT_INSURANCE, labelled(Items.TOTEM_OF_UNDYING,
-                "Assurance — " + MoneyFormat.exact(Bank.INSURANCE_PRICE),
+                "Assurance — " + MoneyFormat.exact(Bank.insurancePrice()),
                 List.of(
                         Component.literal("charges : " + data.insurance())
                                 .withStyle(ChatFormatting.GRAY),
@@ -205,7 +219,7 @@ public final class BankMenu extends ChestMenu {
         return labelled(icon, name, List.of(
                 Component.literal(MoneyFormat.exact(amount)).withStyle(ChatFormatting.GOLD),
                 Component.literal("frais " + MoneyFormat.exact(fee) + " ("
-                                + Math.round(Bank.DEPOSIT_FEE * 100) + " %)")
+                                + Math.round(Bank.depositFee() * 100) + " %)")
                         .withStyle(ChatFormatting.DARK_GRAY)));
     }
 

@@ -144,7 +144,10 @@ forcer le chargement ferait tourner une ferme à distance en permanence.
 
 **Les dix phases du plan sont faites.** Restent, hors plan :
 - les perks de skill non encore appliqués (liste dans le journal au démarrage) ;
-- l'équilibrage des intérêts de banque, constat chiffré plus bas ;
+- ~~l'équilibrage des intérêts de banque~~ → **corrigé le 2026-11-05** : 2 %/jour
+  de jeu plafonné à 2 M (10 M épargnés = 16,7 k par soirée, contre 4,2 k avant), et
+  tous les chiffres de la banque et de la mort déplacés dans `data/economy.json`,
+  rechargeable à chaud ;
 - la liste d'items de DonutSMP (`donut.build/auction`), demandée puis mise de côté.
 
 ### 2026-11-04 — phases 6 et 7

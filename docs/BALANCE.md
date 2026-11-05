@@ -127,6 +127,28 @@ Arc visé : **une saison de 4 mois**, avec un palier franchi chaque semaine et u
 
 ## 4. Sinks
 
+### Banque — barème corrigé
+
+Le barème initial était négligeable : plafond de 50 k par jour de jeu, qui mordait
+dès **10 M épargnés**, soit 4 166 $ par soirée de 2 h. L'intention écrite était
+qu'une soirée sans grind fasse progresser ; c'était raté d'un facteur 5 à 6.
+
+Barème retenu : **2 % par jour de temps de jeu, plafonné à 2 M**.
+
+| Épargné | Par jour de jeu | Par soirée de 2 h |
+|---|---|---|
+| 1 M | 20 k | 1 667 |
+| 10 M | 200 k | 16 667 |
+| 50 M | 1 M | 83 333 |
+| 100 M et plus | 2 M (plafond) | 166 667 |
+
+Volontairement négligeable en début de partie, comparable à une récolte au milieu,
+et largement dépassé par le jeu actif en fin : **une épargne ne doit jamais
+remplacer le jeu**.
+
+Tous ces chiffres, ainsi que ceux de la pénalité de mort, vivent dans
+`data/economy.json` et se rechargent par `/dohy reload`.
+
 | Sink | Coût | Rôle |
 |---|---|---|
 | Frais de dépôt banque | 3 % | friction permanente |
