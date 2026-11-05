@@ -129,7 +129,11 @@ public final class MuseumBrowseMenu extends ChestMenu {
      * evenement.
      */
     private void openDeposit(ServerPlayer serverPlayer) {
-        serverPlayer.server.execute(() -> serverPlayer.openMenu(new SimpleMenuProvider(
+        var server = serverPlayer.getServer();
+        if (server == null) {
+            return;
+        }
+        server.execute(() -> serverPlayer.openMenu(new SimpleMenuProvider(
                 (containerId, inventory, viewer) -> new MuseumMenu(containerId, inventory, serverPlayer),
                 Component.literal("Musee — depose, ferme pour exposer"))));
     }
@@ -285,7 +289,10 @@ public final class MuseumBrowseMenu extends ChestMenu {
             return stack;
         }
 
-        ItemStack pane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+        // Les blocs colores ont ete unifies en 26.x : GRAY_STAINED_GLASS_PANE
+        // n'existe plus, et teinter STAINED_GLASS_PANE demanderait un composant
+        // de couleur non verifie. Le vitrail neutre rend le meme service.
+        ItemStack pane = new ItemStack(Items.GLASS_PANE);
         pane.set(DataComponents.CUSTOM_NAME,
                 itemName.copy().withStyle(ChatFormatting.DARK_GRAY));
         pane.set(DataComponents.LORE, new ItemLore(List.of(
