@@ -142,13 +142,42 @@ demanderait enregistrement, modèle, texture et table de butin pour une mécaniq
 qui n'a besoin que d'une position. Le passage **ne charge jamais le chunk** —
 forcer le chargement ferait tourner une ferme à distance en permanence.
 
+### 2026-11-05 — longévité : prestige et musée
+
+Deux systèmes choisis pour allonger la durée de vie du monde, hors plan initial.
+
+**Prestige des collections.** Une collection complète se remet à zéro contre un
+gain permanent. Le gain porte sur le **S0** — la quantité écoulable avant que le
+prix tombe — et non sur le prix de base : augmenter le prix serait inflationniste
+sans fin, élargir le S0 est auto-limité puisque le plafond reste le prix de base.
+Mesuré sur le blé : 4 350 unités écoulables avant de tomber à 50 % du prix au
+prestige 0, contre 15 224 au prestige 5. Soit **3,5× le débit, zéro inflation**.
+Le coût est réel (le compteur repart à zéro, les bonus de plancher sont à
+regagner) ; la vente reste débloquée, un droit acquis ne se reperd pas. Plafond à
+5, configurable.
+
+**Le musée.** Un exemplaire de chaque item, donné définitivement. **Par aile et
+non par item** : 152 micro-bonus seraient imperceptibles et illisibles, donc six
+ailes dont seule la complétion paie, chaque don donnant de l'XP globale.
+Décision du joueur : les items du tier `RARE` sont **exclus** des ailes
+obligatoires — l'œuf du dragon est unique par monde et exiger son sacrifice
+transformerait une collection en source de regret. Ils forment le panneau mécène,
+optionnel. La règle porte sur le **tier**, pas sur une liste d'ids, donc elle
+reste juste quand le catalogue grandit.
+Récompenses limitées aux mécanismes déjà prouvés en jeu : attributs, double drop,
+remise d'achat.
+
 **Les dix phases du plan sont faites.** Restent, hors plan :
 - les perks de skill non encore appliqués (liste dans le journal au démarrage) ;
 - ~~l'équilibrage des intérêts de banque~~ → **corrigé le 2026-11-05** : 2 %/jour
   de jeu plafonné à 2 M (10 M épargnés = 16,7 k par soirée, contre 4,2 k avant), et
   tous les chiffres de la banque et de la mort déplacés dans `data/economy.json`,
   rechargeable à chaud ;
-- la liste d'items de DonutSMP (`donut.build/auction`), demandée puis mise de côté.
+- la liste d'items de DonutSMP (`donut.build/auction`), demandée puis mise de côté ;
+- d'autres idées de longévité évoquées et non retenues pour l'instant : chantiers
+  de construction (réutiliserait le suivi de blocs posés), événements sur
+  l'horloge de jeu, contrats d'exploration géolocalisés, NTM en campagne verrouillée
+  par niveau global.
 
 ### 2026-11-04 — phases 6 et 7
 
