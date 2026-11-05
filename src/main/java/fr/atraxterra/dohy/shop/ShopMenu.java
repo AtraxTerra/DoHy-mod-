@@ -1,11 +1,15 @@
 package fr.atraxterra.dohy.shop;
 
+import fr.atraxterra.dohy.boost.BoutiqueMenu;
 import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.museum.MuseumApi;
+import fr.atraxterra.dohy.ui.DisplayMenu;
+import fr.atraxterra.dohy.ui.Gui;
+import fr.atraxterra.dohy.ui.Hub;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
@@ -14,16 +18,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.ContainerInput;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -36,142 +31,100 @@ import java.util.List;
 /**
  * Le shop, presente comme un coffre.
  *
- * <p>Choix d'implementation : une sous-classe de {@link ChestMenu} declaree avec
- * le type vanilla {@code GENERIC_9x6}. Le client ouvre donc son ecran de coffre
- * habituel et <b>aucun code client n'est necessaire</b> — ni ecran, ni
- * enregistrement de {@code MenuType}, ni paquet. C'est ce qui evite d'affronter
- * la reecriture du rendu en mode retenu de 26.2 pour un premier shop
- * fonctionnel.
- *
- * <p>Le conteneur ne contient que des copies d'affichage. Aucun clic n'est
+ * <p>Le conteneur ne contient que des copies d'affichage : aucun clic n'est
  * delegue a {@code super}, donc aucun item ne peut etre deplace, duplique ou
- * perdu : chaque clic est traduit en operation economique, puis la page est
- * redessinee.
+ * perdu. Chaque clic est traduit en operation economique, puis la page est
+ * redessinee. C'est le socle {@link DisplayMenu} qui le garantit, pour tous les
+ * ecrans du mod a la fois.
  *
  * <p>Contrepartie assumee : le client predit localement le deplacement d'items
  * avant d'etre corrige par le serveur, ce qui provoque un bref scintillement au
  * clic. C'est le comportement de tous les shops en coffre, et le prix a payer
  * pour n'avoir aucun code de rendu.
  */
-public final class ShopMenu extends ChestMenu {
+public final class ShopMenu extends DisplayMenu {
 
     /** Emplacements de marchandise : cinq rangees. */
     private static final int ITEM_SLOTS = 45;
 
     private static final int SLOT_PREVIOUS = 45;
     private static final int SLOT_FIRST_TAB = 46;
+    private static final int SLOT_BOUTIQUE = 51;
     private static final int SLOT_BALANCE = 52;
     private static final int SLOT_NEXT = 53;
-
-    private final ServerPlayer player;
-    private final Container display;
 
     private ShopCategory category = ShopCategory.FARM;
     private int page;
     private List<Identifier> currentItems = List.of();
 
     public ShopMenu(int containerId, Inventory inventory, ServerPlayer player) {
-        this(containerId, inventory, player, new SimpleContainer(54));
-    }
-
-    private ShopMenu(int containerId, Inventory inventory, ServerPlayer player, Container display) {
-        super(MenuType.GENERIC_9x6, containerId, inventory, display, 6);
-        this.player = player;
-        this.display = display;
+        super(containerId, inventory, player, 6);
         refresh();
     }
 
     @Override
-    public boolean stillValid(Player candidate) {
-        return candidate == player;
+    protected void onClick(int slot, int button, boolean shift) {
+        if (slot >= ITEM_SLOTS) {
+            handleControl(slot, button);
+            return;
+        }
+        int index = page * ITEM_SLOTS + slot;
+        if (index < currentItems.size()) {
+            handleTrade(currentItems.get(index), button, shift);
+        }
     }
 
-    /**
-     * Aucun deplacement rapide : un shift-clic depuis l'inventaire du joueur ne
-     * doit pas pousser d'items dans un conteneur d'affichage.
-     */
-    @Override
-    public ItemStack quickMoveStack(Player candidate, int slot) {
-        return ItemStack.EMPTY;
-    }
-
-    /**
-     * Traduit chaque clic en operation economique.
-     *
-     * <p>{@code super.clicked} n'est jamais appele, ce qui rend structurellement
-     * impossible la perte ou la duplication d'un item par le shop.
-     */
-    @Override
-    public void clicked(int slotId, int button, ContainerInput input, Player candidate) {
-        if (!(candidate instanceof ServerPlayer serverPlayer) || serverPlayer != player) {
-            return;
-        }
-        if (slotId < 0 || slotId >= 54) {
-            // Clic hors de la grille du shop (inventaire du joueur, ou en
-            // dehors de la fenetre) : on ignore, rien ne bouge.
-            refresh();
-            return;
-        }
-
-        if (slotId >= ITEM_SLOTS) {
-            handleControl(slotId, serverPlayer);
-            return;
-        }
-
-        int index = page * ITEM_SLOTS + slotId;
-        if (index >= currentItems.size()) {
-            return;
-        }
-        handleTrade(currentItems.get(index), button, input, serverPlayer);
-    }
-
-    private void handleControl(int slotId, ServerPlayer serverPlayer) {
-        if (slotId == SLOT_PREVIOUS && page > 0) {
+    private void handleControl(int slot, int button) {
+        if (slot == SLOT_PREVIOUS && page > 0) {
             page--;
-            click(serverPlayer);
-        } else if (slotId == SLOT_NEXT && (page + 1) * ITEM_SLOTS < currentItems.size()) {
+            click();
+        } else if (slot == SLOT_NEXT && (page + 1) * ITEM_SLOTS < currentItems.size()) {
             page++;
-            click(serverPlayer);
-        } else if (slotId >= SLOT_FIRST_TAB && slotId < SLOT_FIRST_TAB + ShopCategory.values().length) {
-            ShopCategory target = ShopCategory.values()[slotId - SLOT_FIRST_TAB];
+            click();
+        } else if (slot == SLOT_BOUTIQUE) {
+            click(0.9f);
+            open("Boutique", (id, inventory) -> new BoutiqueMenu(id, inventory, player));
+        } else if (slot == SLOT_BALANCE) {
+            click(0.7f);
+            Hub.open(player);
+        } else if (slot >= SLOT_FIRST_TAB
+                && slot < SLOT_FIRST_TAB + ShopCategory.values().length) {
+            ShopCategory target = ShopCategory.values()[slot - SLOT_FIRST_TAB];
             if (target != category) {
                 category = target;
                 page = 0;
-                click(serverPlayer);
+                click();
             }
         }
-        refresh();
     }
 
-    private void handleTrade(Identifier id, int button, ContainerInput input, ServerPlayer serverPlayer) {
+    private void handleTrade(Identifier id, int button, boolean shift) {
         PriceEntry entry = Prices.book().entry(id).orElse(null);
         Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
         if (entry == null || item == null) {
             return;
         }
 
-        boolean rightClick = button == 1;
-        boolean shift = input == ContainerInput.QUICK_MOVE;
-
-        if (rightClick) {
-            buy(serverPlayer, item, entry, shift ? 16 : 1);
-        } else if (entry.sellable() && !CollectionApi.isUnlocked(serverPlayer, id, entry)) {
-            long missing = CollectionApi.missingToUnlock(serverPlayer, id, entry);
-            serverPlayer.sendSystemMessage(Component.literal(
+        if (button == 1) {
+            buy(item, entry, shift ? 16 : 1);
+        } else if (entry.sellable() && !CollectionApi.isUnlocked(player, id, entry)) {
+            failure();
+            long missing = CollectionApi.missingToUnlock(player, id, entry);
+            player.sendSystemMessage(Component.literal(
                             "Vente verrouillee : il t'en manque " + MoneyFormat.exact(missing)
                                     + " a collecter.")
                     .withStyle(ChatFormatting.GRAY));
         } else if (entry.sellable()) {
-            sell(serverPlayer, item, entry, shift ? Integer.MAX_VALUE : 1);
+            sell(item, entry, shift ? Integer.MAX_VALUE : 1);
         } else {
-            serverPlayer.sendSystemMessage(Component.literal("Cet item est en achat seul.")
+            failure();
+            player.sendSystemMessage(Component.literal("Cet item est en achat seul.")
                     .withStyle(ChatFormatting.GRAY));
         }
-        refresh();
     }
 
-    private void sell(ServerPlayer serverPlayer, Item item, PriceEntry entry, int wanted) {
-        NonNullList<ItemStack> items = serverPlayer.getInventory().getNonEquipmentItems();
+    private void sell(Item item, PriceEntry entry, int wanted) {
+        NonNullList<ItemStack> items = player.getInventory().getNonEquipmentItems();
         int removed = 0;
 
         for (int slot = 0; slot < items.size() && removed < wanted; slot++) {
@@ -185,93 +138,100 @@ public final class ShopMenu extends ChestMenu {
         }
 
         if (removed == 0) {
-            serverPlayer.sendSystemMessage(Component.literal("Tu n'en as pas.")
+            failure();
+            player.sendSystemMessage(Component.literal("Tu n'en as pas.")
                     .withStyle(ChatFormatting.GRAY));
             return;
         }
 
-        long payout = DynamicPrice.sell(serverPlayer,
+        long payout = DynamicPrice.sell(player,
                 BuiltInRegistries.ITEM.getKey(item), entry, removed);
-        long balance = Economy.credit(serverPlayer, payout);
-        sound(serverPlayer, true);
-        serverPlayer.sendSystemMessage(Component.literal("Vendu " + removed + "x pour ")
+        long balance = Economy.credit(player, payout);
+        success();
+        player.sendSystemMessage(Component.literal("Vendu " + removed + "x pour ")
                 .withStyle(ChatFormatting.GRAY)
                 .append(Component.literal(MoneyFormat.exact(payout)).withStyle(ChatFormatting.GOLD))
                 .append(Component.literal(" · solde " + MoneyFormat.shortForm(balance))
                         .withStyle(ChatFormatting.DARK_GRAY)));
     }
 
-    private void buy(ServerPlayer serverPlayer, Item item, PriceEntry entry, int wanted) {
+    private void buy(Item item, PriceEntry entry, int wanted) {
         // La remise du musee s'applique au prix d'achat.
         long unitPrice = Math.max(1L, Math.round(entry.buyPrice()
-                * (1.0d - MuseumApi.buyDiscount(serverPlayer))));
-        if (unitPrice <= 0L) {
-            serverPlayer.sendSystemMessage(Component.literal("Cet item n'est pas en vente.")
+                * (1.0d - MuseumApi.buyDiscount(player))));
+        if (entry.buyPrice() <= 0L) {
+            failure();
+            player.sendSystemMessage(Component.literal("Cet item n'est pas en vente.")
                     .withStyle(ChatFormatting.GRAY));
             return;
         }
 
         long cost = unitPrice * wanted;
-        if (!Economy.tryDebit(serverPlayer, cost)) {
-            sound(serverPlayer, false);
-            serverPlayer.sendSystemMessage(Component.literal("Il te manque "
-                            + MoneyFormat.exact(cost - Economy.balance(serverPlayer)) + ".")
+        if (!Economy.tryDebit(player, cost)) {
+            failure();
+            player.sendSystemMessage(Component.literal("Il te manque "
+                            + MoneyFormat.exact(cost - Economy.balance(player)) + ".")
                     .withStyle(ChatFormatting.RED));
             return;
         }
 
         ItemStack bought = new ItemStack(item, wanted);
-        if (!serverPlayer.getInventory().add(bought)) {
+        if (!player.getInventory().add(bought)) {
             // Inventaire plein : l'item tombe au sol plutot que de disparaitre
             // apres avoir ete paye.
-            serverPlayer.drop(bought, false);
+            player.drop(bought, false);
         }
-        sound(serverPlayer, true);
-        serverPlayer.sendSystemMessage(Component.literal("Achete " + wanted + "x pour ")
+        success();
+        player.sendSystemMessage(Component.literal("Achete " + wanted + "x pour ")
                 .withStyle(ChatFormatting.GRAY)
                 .append(Component.literal(MoneyFormat.exact(cost)).withStyle(ChatFormatting.GOLD)));
     }
 
-    /** Redessine la page courante et la pousse au client. */
-    private void refresh() {
+    @Override
+    protected void build() {
         currentItems = itemsOf(category);
 
         for (int slot = 0; slot < ITEM_SLOTS; slot++) {
             int index = page * ITEM_SLOTS + slot;
-            display.setItem(slot, index < currentItems.size()
-                    ? renderOffer(currentItems.get(index))
-                    : ItemStack.EMPTY);
+            if (index < currentItems.size()) {
+                set(slot, renderOffer(currentItems.get(index)));
+            }
         }
 
         int pages = Math.max(1, (currentItems.size() + ITEM_SLOTS - 1) / ITEM_SLOTS);
 
-        display.setItem(SLOT_PREVIOUS, page > 0
-                ? labelled(Items.ARROW, "Page precedente", List.of())
-                : ItemStack.EMPTY);
-        display.setItem(SLOT_NEXT, page + 1 < pages
-                ? labelled(Items.ARROW, "Page suivante", List.of())
-                : ItemStack.EMPTY);
+        footer();
+        if (page > 0) {
+            set(SLOT_PREVIOUS, Gui.previousPage(page, pages));
+        }
+        if (page + 1 < pages) {
+            set(SLOT_NEXT, Gui.nextPage(page + 2, pages));
+        }
 
         for (ShopCategory tab : ShopCategory.values()) {
             boolean active = tab == category;
-            display.setItem(SLOT_FIRST_TAB + tab.ordinal(), labelled(
-                    tab.icon(),
-                    (active ? "> " : "") + tab.display(),
-                    List.of(Component.literal(itemsOf(tab).size() + " item(s)")
-                            .withStyle(ChatFormatting.DARK_GRAY))));
+            set(SLOT_FIRST_TAB + tab.ordinal(), Gui.button(tab.icon(),
+                    Component.literal((active ? "> " : "") + tab.display())
+                            .withStyle(active ? ChatFormatting.GOLD : ChatFormatting.YELLOW),
+                    Gui.lore(Gui.hint(itemsOf(tab).size() + " item(s)"))));
         }
 
-        display.setItem(SLOT_BALANCE, labelled(Items.GOLD_INGOT,
-                "Solde : " + MoneyFormat.exact(Economy.balance(player)),
-                List.of(
-                        Component.literal("Page " + (page + 1) + " / " + pages)
-                                .withStyle(ChatFormatting.DARK_GRAY),
-                        Component.literal("clic gauche : vendre 1").withStyle(ChatFormatting.DARK_GRAY),
-                        Component.literal("shift + gauche : tout vendre").withStyle(ChatFormatting.DARK_GRAY),
-                        Component.literal("clic droit : acheter 1").withStyle(ChatFormatting.DARK_GRAY),
-                        Component.literal("shift + droit : acheter 16").withStyle(ChatFormatting.DARK_GRAY))));
+        set(SLOT_BOUTIQUE, Gui.button(Items.GOLD_BLOCK, "Boutique", Gui.lore(
+                Gui.hint("boosters, caisses, assurance, autosell"),
+                Gui.hint("tout ce qui ne se trouve pas en jeu"),
+                Gui.blank(),
+                Gui.action("clic pour ouvrir"))));
 
-        broadcastChanges();
+        set(SLOT_BALANCE, Gui.button(Items.GOLD_INGOT,
+                "Solde : " + MoneyFormat.exact(Economy.balance(player)), Gui.lore(
+                        Gui.hint("page " + (page + 1) + " / " + pages),
+                        Gui.blank(),
+                        Gui.hint("clic gauche : vendre 1"),
+                        Gui.hint("shift + gauche : tout vendre"),
+                        Gui.hint("clic droit : acheter 1"),
+                        Gui.hint("shift + droit : acheter 16"),
+                        Gui.blank(),
+                        Gui.action("clic ici : revenir au menu"))));
     }
 
     private List<Identifier> itemsOf(ShopCategory target) {
@@ -302,23 +262,21 @@ public final class ShopMenu extends ChestMenu {
         List<Component> lore = new ArrayList<>();
         if (entry.sellable() && !CollectionApi.isUnlocked(player, id, entry)) {
             // Verrouille : on montre l'objectif plutot qu'un prix inaccessible.
-            lore.add(Component.literal("Vente verrouillee").withStyle(ChatFormatting.RED));
-            lore.add(Component.literal("  collecte " + MoneyFormat.exact(
-                            CollectionApi.missingToUnlock(player, id, entry)) + " de plus")
-                    .withStyle(ChatFormatting.DARK_GRAY));
+            lore.add(Gui.bad("Vente verrouillee"));
+            lore.add(Gui.hint("  collecte " + MoneyFormat.exact(
+                    CollectionApi.missingToUnlock(player, id, entry)) + " de plus"));
         } else if (entry.sellable()) {
             long current = DynamicPrice.unitPrice(player, id, entry);
             int percent = (int) Math.round(100.0 * current / Math.max(1L, entry.basePrice()));
-            lore.add(Component.literal("Vente : " + MoneyFormat.exact(current))
-                    .withStyle(ChatFormatting.GREEN));
+            lore.add(Gui.good("Vente : " + MoneyFormat.exact(current)));
             if (percent < 100) {
                 // Le prix a baisse sous la pression des ventes passees : le dire,
                 // sinon le joueur croit a un bug du catalogue.
-                lore.add(Component.literal("  " + percent + " % du prix de base · remonte avec le temps de jeu")
-                        .withStyle(ChatFormatting.DARK_GRAY));
+                lore.add(Gui.hint("  " + percent
+                        + " % du prix de base · remonte avec le temps de jeu"));
             }
         } else {
-            lore.add(Component.literal("Achat seul").withStyle(ChatFormatting.DARK_GRAY));
+            lore.add(Gui.hint("Achat seul"));
         }
         if (entry.buyPrice() > 0L) {
             double discount = MuseumApi.buyDiscount(player);
@@ -354,15 +312,6 @@ public final class ShopMenu extends ChestMenu {
         return stack;
     }
 
-    private ItemStack labelled(Item item, String name, List<Component> lore) {
-        ItemStack stack = new ItemStack(item);
-        stack.set(DataComponents.CUSTOM_NAME, Component.literal(name).withStyle(ChatFormatting.YELLOW));
-        if (!lore.isEmpty()) {
-            stack.set(DataComponents.LORE, new ItemLore(lore));
-        }
-        return stack;
-    }
-
     private int countOwned(Item item) {
         int count = 0;
         for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
@@ -371,24 +320,5 @@ public final class ShopMenu extends ChestMenu {
             }
         }
         return count;
-    }
-
-    private void click(ServerPlayer serverPlayer) {
-        play(serverPlayer, SoundEvents.UI_BUTTON_CLICK.value(), 0.4f, 1.0f);
-    }
-
-    private void sound(ServerPlayer serverPlayer, boolean success) {
-        play(serverPlayer,
-                success ? SoundEvents.EXPERIENCE_ORB_PICKUP : SoundEvents.VILLAGER_NO,
-                0.5f, success ? 1.4f : 1.0f);
-    }
-
-    /**
-     * Passe par le niveau et non par {@code playNotifySound}, dont la signature
-     * a change : {@code Level.playSound} est stable de version en version.
-     */
-    private void play(ServerPlayer serverPlayer, SoundEvent sound, float volume, float pitch) {
-        serverPlayer.level().playSound(null, serverPlayer.blockPosition(),
-                sound, SoundSource.MASTER, volume, pitch);
     }
 }

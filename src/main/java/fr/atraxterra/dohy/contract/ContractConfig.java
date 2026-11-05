@@ -60,12 +60,23 @@ public final class ContractConfig {
         }
     }
 
-    public record Entry(String id, String type, Optional<String> target, long amount) {
+    /**
+     * Un contrat du pool.
+     *
+     * <p>{@code label} et {@code icon} ne servent qu'a l'affichage et sont
+     * facultatifs : sans eux, {@link ContractDisplay} derive un intitule depuis
+     * la cible. Les renseigner evite les tournures approximatives — « miner
+     * 2000 #minecraft:base_stone_overworld » n'est pas une phrase.
+     */
+    public record Entry(String id, String type, Optional<String> target, long amount,
+                        Optional<String> label, Optional<String> icon) {
         static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("id").forGetter(Entry::id),
                 Codec.STRING.fieldOf("type").forGetter(Entry::type),
                 Codec.STRING.optionalFieldOf("target").forGetter(Entry::target),
-                Codec.LONG.fieldOf("amount").forGetter(Entry::amount)
+                Codec.LONG.fieldOf("amount").forGetter(Entry::amount),
+                Codec.STRING.optionalFieldOf("label").forGetter(Entry::label),
+                Codec.STRING.optionalFieldOf("icon").forGetter(Entry::icon)
         ).apply(instance, Entry::new));
     }
 

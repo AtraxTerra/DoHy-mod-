@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.boost;
 import fr.atraxterra.dohy.DoHyAttachments;
 import fr.atraxterra.dohy.contract.ContractApi;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
@@ -74,7 +75,7 @@ public final class Boosters {
             return "Un booster est deja actif (" + remaining(player) + " min restantes).";
         }
         if (!Economy.tryDebit(player, tier.price())) {
-            return "Il te faut " + tier.price() + " en liquide.";
+            return "Il te faut " + MoneyFormat.exact(tier.price()) + " en liquide.";
         }
 
         long until = ContractApi.data(player).playtimeMinutes() + DURATION_MINUTES;

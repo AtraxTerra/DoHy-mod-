@@ -78,7 +78,7 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 - **Trocs de villageois en registres de datapack** (nouveauté 26.1 : `data/<ns>/villager_trade/*.json` et `trade_set/*.json`). **Piste à évaluer en phase 3** : plutôt que de plafonner le prix de vente du lapis, de la perle de l'ender et du reste, on peut retirer ou renchérir directement le troc fautif par datapack — et rendre leurs vrais prix à ces items. C'est traiter la cause au lieu du symptôme, et ça rendrait les plafonds inutiles.
 - **HUD et GUI en mode retenu** : 26.2 a supprimé `GuiGraphics`. Le HUD de la monnaie et le GUI du shop doivent être écrits directement en `extract*` + `GuiGraphicsExtractor`. L'API exacte d'enregistrement d'une couche de HUD côté NeoForge 26.2 est à confirmer en CI (l'ancien `RegisterGuiLayersEvent` n'est pas garanti sous cette forme).
 - **Plafonds villageois** : ~~à confirmer~~ → **tranché le 2026-11-03 : on garde les plafonds.** Ne pas relancer `gen_prices.py` avec `--no-villager-caps`. Audit encore à compléter sur : briques, argile, papier, verre teinté, charbon, fer.
-- **Catégorie COMPONENT** : liste et prix d'achat à établir (phase 3).
+- ~~**Catégorie COMPONENT** : liste et prix d'achat à établir (phase 3).~~ → **tranché le 2026-11-05 : la catégorie est supprimée.** Elle n'a jamais contenu d'item (aucune ligne de `rates.csv`, aucune règle de `tag_prices.json`), donc l'onglet du shop était vide et l'aile de musée correspondante ne pouvait pas se compléter. L'onglet est remplacé par la boutique ; la remise d'achat de −10 % est passée sur l'aile NTM.
 - **Table de loot des caisses** : non écrite.
 - **Barème d'XP du niveau global** par type de jalon : à fixer quand les contrats tournent.
 - **`minecraft:potent_sulfur`** classé farmable sur la base des tags de geyser de 26.2 — **à vérifier en jeu** : si l'éruption ne produit pas de gain net, le reclasser en `FOUND`.
@@ -86,6 +86,67 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 ---
 
 ## Journal des sessions
+
+### 2026-11-05 — refonte des interfaces
+
+**Demandé** : une interface pour les contrats avec les noms et icônes des items
+requis (« je n'aime pas trop voir `minecraft:stone_block` »), une interface
+d'achat des boosters quitte à remplacer la catégorie Composants du shop, des
+interfaces pour les skills et les collections, et un revamp de l'ensemble pour
+que tout se ressemble, façon SkyBlock.
+
+**Socle commun** — `ui/Gui.java` et `ui/DisplayMenu.java`. Sept écrans écrits
+chacun à sa façon finissent par avoir sept conventions : le joueur réapprend
+chaque fenêtre et une correction de style demande sept modifications. Le socle
+fixe une fois pour toutes :
+
+- `Gui.displayName(Identifier)` → le nom traduit de l'item, et seulement si
+  l'item est absent du registre, le chemin embelli. **C'est le correctif de la
+  demande : plus un seul identifiant brut dans une interface.**
+- `Gui.button` / `filler` / `bar` / `field` / `hint` / `action` / `good` / `bad`
+  — les briques de vignette, et une barre de progression en caractères pleins.
+- `DisplayMenu` — conteneur d'affichage pur : `super.clicked` n'est jamais
+  appelé, `quickMoveStack` rend vide. La sûreté (aucun item déplacé, dupliqué ou
+  perdu) est acquise par héritage et non re-décidée par écran. `frame()` encadre
+  l'écran, `footer()` remplit la dernière rangée, `open()` enchaîne vers un
+  autre écran.
+
+**Écrans neufs** : `ui/Hub` (`/menu`, le menu central, chaque vignette portant
+le chiffre qui dit s'il faut y aller), `contract/ContractsMenu`,
+`skill/SkillsMenu` (grille des huit skills + fiche détaillée avec les perks),
+`collection/CollectionsMenu` (catégories → grille, prestige au clic droit),
+`boost/BoutiqueMenu` (boosters, caisses, assurance, autosell, banque).
+
+**Noms de contrats** : `label` et `icon` facultatifs sur chaque entrée de
+`contracts.json`, renseignés pour les 28 contrats, portés par
+`ContractConfig.Entry` puis `ActiveContract`. `ContractDisplay` les utilise avec
+une dérivation de secours à trois niveaux — intitulé du datapack, nom de l'item
+ou de l'entité visée, verbe générique du type. `ContractApi.describe` y délègue
+pour que le chat et l'interface nomment un contrat de la même façon.
+
+**Trouvaille** : la catégorie `COMPONENT` n'a jamais contenu d'item. L'onglet du
+shop était vide depuis la phase 3, et l'aile de musée correspondante ne pouvait
+jamais se compléter — sa remise d'achat de −10 % était donc inatteignable.
+`ShopCategory` passe à cinq onglets, la boutique prend la place libérée, et la
+remise est passée sur l'aile NTM (deux récompenses pour l'aile la plus longue du
+mod).
+
+**Corrigé au passage** : dans `ShopMenu.buy`, le garde testait `unitPrice <= 0`
+après un `Math.max(1, …)` — donc jamais vrai. Un item à `buy_price` nul pouvait
+être acheté pour 1. Le garde teste désormais `entry.buyPrice()`.
+`Boosters.buy` annonçait son prix en chiffres bruts, sans `MoneyFormat`.
+
+**Écrans migrés** sur le socle : `ShopMenu`, `BankMenu`, `MuseumBrowseMenu`.
+`SellChestMenu` et `MuseumMenu` restent des conteneurs de dépôt réels — ils ne
+peuvent pas hériter de `DisplayMenu`, qui refuse tout mouvement d'item.
+
+**Commandes** : `/menu` et `/boutique` ; `/contracts`, `/skills` et
+`/collections` ouvrent maintenant leur interface, le texte passant sous `list`,
+`list` et `held`.
+
+**Vérification locale** : `javac` 21 sans classpath Minecraft, en filtrant les
+erreurs de résolution — ça ne valide rien de l'API 26.2 mais ça élimine les
+fautes de syntaxe avant de dépenser un cycle de CI. À refaire à chaque session.
 
 ### 2026-11-04 — phase 10, NTM NEXT
 

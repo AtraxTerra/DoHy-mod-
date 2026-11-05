@@ -2,6 +2,9 @@ package fr.atraxterra.dohy.museum;
 
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
+import fr.atraxterra.dohy.ui.DisplayMenu;
+import fr.atraxterra.dohy.ui.Gui;
+import fr.atraxterra.dohy.ui.Hub;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -9,17 +12,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.ContainerInput;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,32 +24,26 @@ import java.util.List;
 /**
  * Le musee, en vitrine navigable.
  *
- * <p>Conteneur d'affichage comme le shop : les clics ne sont jamais delegues a
- * {@code super}, donc aucune piece ne peut sortir d'une vitrine.
- *
  * <p>Deux vues. L'accueil presente les ailes avec leur avancement et la
  * recompense a la cle. Une aile ouverte affiche sa grille : les pieces exposees
  * apparaissent telles quelles, les manquantes en vitrail gris portant leur nom.
  * C'est ce contraste qui fait l'interet d'une vitrine — on voit le trou, pas une
  * liste de ce qu'on possede deja.
  */
-public final class MuseumBrowseMenu extends ChestMenu {
+public final class MuseumBrowseMenu extends DisplayMenu {
 
     private static final int ITEM_SLOTS = 45;
 
     private static final int SLOT_HEADER = 4;
-    private static final int SLOT_FIRST_WING = 10;
+    private static final int SLOT_FIRST_WING = 19;
     private static final int SLOT_BACK = 45;
-    private static final int SLOT_PREVIOUS = 48;
+    private static final int SLOT_PREVIOUS = 47;
     private static final int SLOT_DEPOSIT = 49;
-    private static final int SLOT_NEXT = 50;
-    private static final int SLOT_FOOTER = 53;
+    private static final int SLOT_NEXT = 51;
+    private static final int SLOT_INFO = 53;
 
     /** Clef conventionnelle du panneau mecene. */
     private static final String PATRON = "patron";
-
-    private final ServerPlayer player;
-    private final Container display;
 
     /** Aile ouverte, ou {@code null} pour l'accueil. */
     private String wing;
@@ -64,76 +51,71 @@ public final class MuseumBrowseMenu extends ChestMenu {
     private List<String> wings = List.of();
 
     public MuseumBrowseMenu(int containerId, Inventory inventory, ServerPlayer player) {
-        this(containerId, inventory, player, new SimpleContainer(54));
-    }
-
-    private MuseumBrowseMenu(int containerId, Inventory inventory,
-                             ServerPlayer player, Container display) {
-        super(MenuType.GENERIC_9x6, containerId, inventory, display, 6);
-        this.player = player;
-        this.display = display;
+        super(containerId, inventory, player, 6);
         refresh();
     }
 
     @Override
-    public boolean stillValid(Player candidate) {
-        return candidate == player;
-    }
-
-    @Override
-    public ItemStack quickMoveStack(Player candidate, int slot) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public void clicked(int slotId, int button, ContainerInput input, Player candidate) {
-        if (!(candidate instanceof ServerPlayer serverPlayer) || serverPlayer != player) {
-            return;
-        }
-        if (slotId < 0 || slotId >= 54) {
-            refresh();
-            return;
-        }
-
-        if (slotId == SLOT_DEPOSIT) {
-            openDeposit(serverPlayer);
+    protected void onClick(int slot, int button, boolean shift) {
+        if (slot == SLOT_DEPOSIT) {
+            click(0.9f);
+            open("Musee — depose, ferme pour exposer",
+                    (containerId, inventory) -> new MuseumMenu(containerId, inventory, player));
             return;
         }
 
         if (wing == null) {
-            int index = slotId - SLOT_FIRST_WING;
-            if (index >= 0 && index < wings.size()) {
+            if (slot == SLOT_BACK) {
+                click(0.7f);
+                Hub.open(player);
+                return;
+            }
+            int index = slot - SLOT_FIRST_WING;
+            if (index >= 0 && index < wings.size() && slot < SLOT_FIRST_WING + 7) {
                 wing = wings.get(index);
                 page = 0;
                 click(0.9f);
             }
-        } else if (slotId == SLOT_BACK) {
-            wing = null;
-            page = 0;
-            click(0.7f);
-        } else if (slotId == SLOT_PREVIOUS && page > 0) {
-            page--;
-            click(1.0f);
-        } else if (slotId == SLOT_NEXT && (page + 1) * ITEM_SLOTS < contents().size()) {
-            page++;
-            click(1.0f);
+            return;
         }
-        refresh();
+
+        switch (slot) {
+            case SLOT_BACK -> {
+                wing = null;
+                page = 0;
+                click(0.7f);
+            }
+            case SLOT_PREVIOUS -> {
+                if (page > 0) {
+                    page--;
+                    click();
+                }
+            }
+            case SLOT_NEXT -> {
+                if ((page + 1) * ITEM_SLOTS < contents().size()) {
+                    page++;
+                    click();
+                }
+            }
+            default -> {
+                // Une vitrine ne se clique pas : on vient la regarder.
+            }
+        }
     }
 
-    /**
-     * Ouvre le guichet de dons.
-     *
-     * <p>Appel direct : l'appelant retourne immediatement apres, donc la
-     * fermeture de ce menu n'intervient pas au milieu du traitement d'un clic.
-     * Ni {@code ServerPlayer.server} ni {@code getServer()} ne sont accessibles
-     * en 26.2, donc differer au tick suivant demanderait de passer par le
-     * niveau — inutile ici.
-     */
-    private void openDeposit(ServerPlayer serverPlayer) {
-        serverPlayer.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> new MuseumMenu(containerId, inventory, serverPlayer),
-                Component.literal("Musee — depose, ferme pour exposer")));
+    @Override
+    protected void build() {
+        if (wing == null) {
+            renderHub();
+        } else {
+            renderWing();
+        }
+        set(SLOT_DEPOSIT, Gui.button(Items.HOPPER, "Deposer des pieces", Gui.lore(
+                Gui.hint("ouvre le guichet de dons"),
+                Gui.hint("un seul exemplaire est preleve"),
+                Gui.hint("le reste t'est rendu"),
+                Gui.blank(),
+                Gui.action("clic pour ouvrir"))));
     }
 
     private List<Identifier> contents() {
@@ -143,24 +125,8 @@ public final class MuseumBrowseMenu extends ChestMenu {
         return PATRON.equals(wing) ? MuseumApi.patronItems() : MuseumApi.expected(wing);
     }
 
-    private void refresh() {
-        for (int slot = 0; slot < 54; slot++) {
-            display.setItem(slot, ItemStack.EMPTY);
-        }
-        if (wing == null) {
-            renderHub();
-        } else {
-            renderWing();
-        }
-        display.setItem(SLOT_DEPOSIT, labelled(Items.HOPPER, "Deposer des pieces", List.of(
-                Component.literal("ouvre le guichet de dons").withStyle(ChatFormatting.GRAY),
-                Component.literal("un seul exemplaire est preleve")
-                        .withStyle(ChatFormatting.DARK_GRAY),
-                Component.literal("le reste t'est rendu").withStyle(ChatFormatting.DARK_GRAY))));
-        broadcastChanges();
-    }
-
     private void renderHub() {
+        frame();
         wings = new ArrayList<>(MuseumApi.categories());
         if (!MuseumApi.patronItems().isEmpty()) {
             wings.add(PATRON);
@@ -191,39 +157,38 @@ public final class MuseumBrowseMenu extends ChestMenu {
             String name = section.display().isEmpty() ? key : section.display();
 
             List<Component> lore = new ArrayList<>();
-            lore.add(Component.literal(bar(done, expected.size()) + "  " + done + " / " + expected.size())
-                    .withStyle(wingComplete ? ChatFormatting.AQUA : ChatFormatting.GRAY));
-            lore.add(Component.empty());
+            lore.add(Gui.bar(done, expected.size(), 20));
+            lore.add(Gui.blank());
             if (patron) {
                 lore.add(Component.literal("Optionnel — pieces uniques")
                         .withStyle(ChatFormatting.LIGHT_PURPLE));
-                lore.add(Component.literal("aucune aile ne les exige")
-                        .withStyle(ChatFormatting.DARK_GRAY));
-                lore.add(Component.empty());
+                lore.add(Gui.hint("aucune aile ne les exige"));
+                lore.add(Gui.blank());
             }
             section.rewards().forEach(reward -> lore.add(Component.literal(
                             (wingComplete ? "✔ " : "a la cle : ") + MuseumApi.describe(reward))
                     .withStyle(wingComplete ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY)));
-            lore.add(Component.empty());
-            lore.add(Component.literal("clic pour ouvrir la vitrine").withStyle(ChatFormatting.YELLOW));
+            lore.add(Gui.blank());
+            lore.add(Gui.action("clic pour ouvrir la vitrine"));
 
-            display.setItem(SLOT_FIRST_WING + index, labelled(
-                    icon(key, patron),
-                    (wingComplete ? "✔ " : "") + name,
+            set(SLOT_FIRST_WING + index, Gui.button(icon(key, patron),
+                    Component.literal((wingComplete ? "✔ " : "") + name)
+                            .withStyle(wingComplete ? ChatFormatting.GOLD : ChatFormatting.YELLOW),
                     lore));
         }
 
-        long value = museumValue();
-        display.setItem(SLOT_HEADER, labelled(Items.ENCHANTING_TABLE, "Musee", List.of(
-                Component.literal(bar(totalDone, totalExpected) + "  " + totalDone
-                                + " / " + totalExpected + " pieces")
-                        .withStyle(ChatFormatting.GRAY),
-                Component.literal(complete + " aile(s) complete(s)").withStyle(ChatFormatting.AQUA),
-                Component.empty(),
-                Component.literal("valeur exposee : " + MoneyFormat.exact(value))
-                        .withStyle(ChatFormatting.GOLD),
-                Component.empty(),
-                Component.literal("Un don est definitif.").withStyle(ChatFormatting.DARK_GRAY))));
+        set(SLOT_HEADER, Gui.button(Items.ENCHANTING_TABLE, "Musee", Gui.lore(
+                Gui.field("pieces exposees", totalDone + " / " + totalExpected),
+                Gui.bar(totalDone, totalExpected, 20),
+                Gui.blank(),
+                complete > 0
+                        ? Gui.good(complete + " aile(s) complete(s)")
+                        : Gui.hint("aucune aile complete"),
+                Gui.field("valeur exposee", MoneyFormat.exact(museumValue())),
+                Gui.blank(),
+                Gui.hint("un don est definitif"))));
+
+        set(SLOT_BACK, Gui.back("le menu"));
     }
 
     private void renderWing() {
@@ -233,10 +198,9 @@ public final class MuseumBrowseMenu extends ChestMenu {
 
         for (int slot = 0; slot < ITEM_SLOTS; slot++) {
             int index = page * ITEM_SLOTS + slot;
-            if (index >= expected.size()) {
-                continue;
+            if (index < expected.size()) {
+                set(slot, vitrine(expected.get(index)));
             }
-            display.setItem(slot, vitrine(expected.get(index)));
         }
 
         MuseumConfig.Section section = patron
@@ -245,19 +209,17 @@ public final class MuseumBrowseMenu extends ChestMenu {
         String name = section.display().isEmpty() ? wing : section.display();
         int done = donatedAmong(expected);
 
-        display.setItem(SLOT_BACK, labelled(Items.ARROW, "Retour", List.of(
-                Component.literal("vers l'accueil du musee").withStyle(ChatFormatting.GRAY))));
+        footer(SLOT_BACK, SLOT_PREVIOUS, SLOT_DEPOSIT, SLOT_NEXT, SLOT_INFO);
+        set(SLOT_BACK, Gui.back("l'accueil du musee"));
         if (page > 0) {
-            display.setItem(SLOT_PREVIOUS, labelled(Items.PAPER, "Page precedente", List.of()));
+            set(SLOT_PREVIOUS, Gui.previousPage(page, pages));
         }
         if (page + 1 < pages) {
-            display.setItem(SLOT_NEXT, labelled(Items.PAPER, "Page suivante", List.of()));
+            set(SLOT_NEXT, Gui.nextPage(page + 2, pages));
         }
-        display.setItem(SLOT_FOOTER, labelled(icon(wing, patron), name, List.of(
-                Component.literal(bar(done, expected.size()) + "  " + done + " / " + expected.size())
-                        .withStyle(ChatFormatting.GRAY),
-                Component.literal("page " + (page + 1) + " / " + pages)
-                        .withStyle(ChatFormatting.DARK_GRAY))));
+        set(SLOT_INFO, Gui.button(icon(wing, patron), name, Gui.lore(
+                Gui.bar(done, expected.size(), 20),
+                Gui.field("page", (page + 1) + " / " + pages))));
     }
 
     /**
@@ -279,11 +241,10 @@ public final class MuseumBrowseMenu extends ChestMenu {
             ItemStack stack = new ItemStack(item);
             stack.set(DataComponents.CUSTOM_NAME,
                     itemName.copy().withStyle(ChatFormatting.AQUA));
-            stack.set(DataComponents.LORE, new ItemLore(List.of(
-                    Component.literal("Expose").withStyle(ChatFormatting.AQUA),
-                    entry == null ? Component.empty()
-                            : Component.literal("valeur " + MoneyFormat.exact(entry.basePrice()))
-                            .withStyle(ChatFormatting.DARK_GRAY))));
+            stack.set(DataComponents.LORE, new ItemLore(Gui.lore(
+                    Gui.good("Expose"),
+                    entry == null ? null
+                            : Gui.hint("valeur " + MoneyFormat.exact(entry.basePrice())))));
             return stack;
         }
 
@@ -293,9 +254,9 @@ public final class MuseumBrowseMenu extends ChestMenu {
         ItemStack pane = new ItemStack(Items.GLASS_PANE);
         pane.set(DataComponents.CUSTOM_NAME,
                 itemName.copy().withStyle(ChatFormatting.DARK_GRAY));
-        pane.set(DataComponents.LORE, new ItemLore(List.of(
-                Component.literal("Manquant").withStyle(ChatFormatting.RED),
-                Component.literal("apporte-en un au guichet").withStyle(ChatFormatting.DARK_GRAY))));
+        pane.set(DataComponents.LORE, new ItemLore(Gui.lore(
+                Gui.bad("Manquant"),
+                Gui.hint("apporte-en un au guichet"))));
         return pane;
     }
 
@@ -321,14 +282,6 @@ public final class MuseumBrowseMenu extends ChestMenu {
         return count;
     }
 
-    /** Barre de progression en caracteres pleins. */
-    private static String bar(int done, int total) {
-        int width = 20;
-        int filled = total <= 0 ? 0 : Math.round((float) done / total * width);
-        return "▏".repeat(Math.max(0, filled))
-                + "·".repeat(Math.max(0, width - filled));
-    }
-
     private static Item icon(String key, boolean patron) {
         if (patron) {
             return Items.NETHER_STAR;
@@ -338,27 +291,8 @@ public final class MuseumBrowseMenu extends ChestMenu {
             case "FOUND" -> Items.DIAMOND;
             case "FARM" -> Items.WHEAT;
             case "MOB_DROP" -> Items.ROTTEN_FLESH;
-            case "COMPONENT" -> Items.CRAFTING_TABLE;
             case "NTM" -> Items.ANVIL;
             default -> Items.BOOK;
         };
-    }
-
-    private ItemStack labelled(Item item, String name, List<Component> lore) {
-        ItemStack stack = new ItemStack(item);
-        stack.set(DataComponents.CUSTOM_NAME,
-                Component.literal(name).withStyle(ChatFormatting.YELLOW));
-        if (!lore.isEmpty()) {
-            stack.set(DataComponents.LORE, new ItemLore(lore));
-        }
-        return stack;
-    }
-
-    private void click(float pitch) {
-        play(SoundEvents.UI_BUTTON_CLICK.value(), pitch);
-    }
-
-    private void play(SoundEvent sound, float pitch) {
-        player.level().playSound(null, player.blockPosition(), sound, SoundSource.MASTER, 0.4f, pitch);
     }
 }

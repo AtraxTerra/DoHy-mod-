@@ -128,12 +128,13 @@ public final class SkillApi {
             SkillConfig.config().def(skill).perks().stream()
                     .filter(perk -> perk.level() == level)
                     .forEach(perk -> player.sendSystemMessage(
-                            Component.literal("  Perk : " + describe(perk))
+                            Component.literal("  Perk : " + describePerk(perk))
                                     .withStyle(ChatFormatting.AQUA)));
         }
     }
 
-    private static String describe(SkillConfig.Perk perk) {
+    /** Un perk en une phrase. Expose pour que l'interface dise la meme chose. */
+    public static String describePerk(SkillConfig.Perk perk) {
         String amount = perk.amount() >= 1 || perk.amount() <= -1
                 ? String.format("%+.1f", perk.amount())
                 : String.format("%+.0f %%", perk.amount() * 100);

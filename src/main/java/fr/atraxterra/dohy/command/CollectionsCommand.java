@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.collection.CollectionApi;
+import fr.atraxterra.dohy.collection.CollectionsMenu;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.util.MoneyFormat;
@@ -13,6 +14,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -46,11 +48,25 @@ public final class CollectionsCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("collections")
-                .executes(ctx -> show(ctx.getSource()))
+                // Sans argument : l'interface. Le detail de l'item en main
+                // passe sous « held », et reste le chemin le plus court quand
+                // on a justement l'item en main.
+                .executes(ctx -> open(ctx.getSource()))
+                .then(Commands.literal("held")
+                        .executes(ctx -> show(ctx.getSource())))
                 .then(Commands.literal("all")
                         .executes(ctx -> list(ctx.getSource())))
                 .then(Commands.literal("prestige")
                         .executes(ctx -> prestige(ctx.getSource())));
+    }
+
+    private static int open(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        player.openMenu(new SimpleMenuProvider(
+                (containerId, inventory, viewer) ->
+                        new CollectionsMenu(containerId, inventory, player),
+                Component.literal("Collections")));
+        return 1;
     }
 
     private static int show(CommandSourceStack source) throws CommandSyntaxException {

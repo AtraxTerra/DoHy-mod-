@@ -13,7 +13,8 @@ import java.util.Optional;
  * un contrat deja accepte garde les termes sous lesquels il a ete propose.
  */
 public record ActiveContract(String id, String type, Optional<String> target,
-                             long amount, long progress, boolean weekly) {
+                             long amount, long progress, boolean weekly,
+                             Optional<String> label, Optional<String> icon) {
 
     public static final Codec<ActiveContract> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("id").forGetter(ActiveContract::id),
@@ -21,12 +22,14 @@ public record ActiveContract(String id, String type, Optional<String> target,
             Codec.STRING.optionalFieldOf("target").forGetter(ActiveContract::target),
             Codec.LONG.fieldOf("amount").forGetter(ActiveContract::amount),
             Codec.LONG.optionalFieldOf("progress", 0L).forGetter(ActiveContract::progress),
-            Codec.BOOL.optionalFieldOf("weekly", false).forGetter(ActiveContract::weekly)
+            Codec.BOOL.optionalFieldOf("weekly", false).forGetter(ActiveContract::weekly),
+            Codec.STRING.optionalFieldOf("label").forGetter(ActiveContract::label),
+            Codec.STRING.optionalFieldOf("icon").forGetter(ActiveContract::icon)
     ).apply(instance, ActiveContract::new));
 
     public static ActiveContract of(ContractConfig.Entry entry, boolean weekly) {
         return new ActiveContract(entry.id(), entry.type(), entry.target(),
-                entry.amount(), 0L, weekly);
+                entry.amount(), 0L, weekly, entry.label(), entry.icon());
     }
 
     public ContractType kind() {
@@ -42,7 +45,7 @@ public record ActiveContract(String id, String type, Optional<String> target,
             return this;
         }
         return new ActiveContract(id, type, target, amount,
-                Math.min(amount, progress + delta), weekly);
+                Math.min(amount, progress + delta), weekly, label, icon);
     }
 
     public double ratio() {

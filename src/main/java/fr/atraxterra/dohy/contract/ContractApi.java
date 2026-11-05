@@ -57,6 +57,30 @@ public final class ContractApi {
         return (int) (data(player).globalXp() / GLOBAL_XP_PER_LEVEL);
     }
 
+    public static long globalXpPerLevel() {
+        return GLOBAL_XP_PER_LEVEL;
+    }
+
+    /** XP acquise dans le niveau global en cours. */
+    public static long globalXpIntoLevel(ServerPlayer player) {
+        return data(player).globalXp() % GLOBAL_XP_PER_LEVEL;
+    }
+
+    /**
+     * Recompense actuelle d'un contrat, niveau global compris.
+     *
+     * <p>Expose pour que l'interface annonce le montant exact qui sera verse,
+     * et non une estimation : un ecran qui promet un chiffre different de celui
+     * du paiement est pire que pas d'ecran.
+     */
+    public static long rewardFor(ServerPlayer player, ActiveContract contract) {
+        ContractConfig.Pool pool = contract.weekly()
+                ? ContractConfig.config().weekly()
+                : ContractConfig.config().daily();
+        return Math.round(pool.moneyPerLevel()
+                * (1.0d + globalLevel(player) * REWARD_PER_GLOBAL_LEVEL));
+    }
+
     /** XP de jalon. Les paliers de niveau global sont annonces et payes ici. */
     public static void grantGlobalXp(ServerPlayer player, long amount, String reason) {
         if (amount <= 0) {
@@ -177,8 +201,7 @@ public final class ContractApi {
                 ? ContractConfig.config().weekly()
                 : ContractConfig.config().daily();
 
-        long money = Math.round(pool.moneyPerLevel()
-                * (1.0d + globalLevel(player) * REWARD_PER_GLOBAL_LEVEL));
+        long money = rewardFor(player, contract);
         long balance = Economy.credit(player, money);
 
         player.level().playSound(null, player.blockPosition(),
@@ -227,23 +250,16 @@ public final class ContractApi {
                         .withStyle(ChatFormatting.GOLD)));
     }
 
+    /**
+     * Intitule d'un contrat, pour le chat.
+     *
+     * <p>Delegue a {@link ContractDisplay} : le chat et l'interface doivent
+     * nommer un contrat de la meme facon, sinon le joueur croit a deux contrats
+     * differents.
+     */
     public static String describe(ActiveContract contract) {
-        String target = contract.target().map(t -> " " + t).orElse("");
-        String label = switch (contract.kind()) {
-            case MINE_BLOCK -> "miner";
-            case KILL_ENTITY -> "tuer";
-            case HARVEST -> "recolter";
-            case FISH -> "pecher";
-            case SMELT -> "fondre";
-            case SELL_VALUE -> "vendre pour";
-            case TRAVEL -> "parcourir";
-            case PLACE_BLOCK -> "poser";
-            case COLLECTION_TIER -> "franchir des paliers de collection";
-            case SKILL_LEVELS -> "gagner des niveaux de skill";
-            case UNKNOWN -> contract.type();
-        };
-        return label + " " + MoneyFormat.exact(contract.amount()) + target
-                + "  [" + MoneyFormat.exact(contract.progress()) + "/"
+        return ContractDisplay.label(contract)
+                + "  [" + MoneyFormat.exact(contract.progress()) + " / "
                 + MoneyFormat.exact(contract.amount()) + "]";
     }
 

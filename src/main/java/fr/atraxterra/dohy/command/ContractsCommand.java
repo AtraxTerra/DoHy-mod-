@@ -6,6 +6,7 @@ import fr.atraxterra.dohy.contract.ActiveContract;
 import fr.atraxterra.dohy.contract.ContractApi;
 import fr.atraxterra.dohy.contract.ContractConfig;
 import fr.atraxterra.dohy.contract.ContractData;
+import fr.atraxterra.dohy.contract.ContractsMenu;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -14,6 +15,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -36,7 +38,20 @@ public final class ContractsCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("contracts")
-                .executes(ctx -> show(ctx.getSource()));
+                // Sans argument : l'interface. Le detail en texte reste sous
+                // « list », plus pratique pour copier un chiffre.
+                .executes(ctx -> open(ctx.getSource()))
+                .then(Commands.literal("list")
+                        .executes(ctx -> show(ctx.getSource())));
+    }
+
+    private static int open(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        player.openMenu(new SimpleMenuProvider(
+                (containerId, inventory, viewer) ->
+                        new ContractsMenu(containerId, inventory, player),
+                Component.literal("Contrats")));
+        return 1;
     }
 
     private static int show(CommandSourceStack source) throws CommandSyntaxException {

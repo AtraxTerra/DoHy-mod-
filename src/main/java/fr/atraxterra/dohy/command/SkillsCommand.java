@@ -5,12 +5,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.skill.Skill;
 import fr.atraxterra.dohy.skill.SkillApi;
 import fr.atraxterra.dohy.skill.SkillConfig;
+import fr.atraxterra.dohy.skill.SkillsMenu;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -31,7 +33,20 @@ public final class SkillsCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("skills")
-                .executes(ctx -> show(ctx.getSource()));
+                // Sans argument : l'interface, qui montre les perks. Le resume
+                // en texte reste sous « list ».
+                .executes(ctx -> open(ctx.getSource()))
+                .then(Commands.literal("list")
+                        .executes(ctx -> show(ctx.getSource())));
+    }
+
+    private static int open(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        player.openMenu(new SimpleMenuProvider(
+                (containerId, inventory, viewer) ->
+                        new SkillsMenu(containerId, inventory, player),
+                Component.literal("Skills")));
+        return 1;
     }
 
     private static int show(CommandSourceStack source) throws CommandSyntaxException {
