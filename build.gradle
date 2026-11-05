@@ -77,6 +77,34 @@ tasks.named('processResources', ProcessResources).configure {
     filesMatching(['META-INF/neoforge.mods.toml']) {
         expand props
     }
+
+    // Le catalogue de prix est genere par tools/gen_prices.py et vit dans
+    // data/generated/. On le copie dans le jar au lieu d'en garder une seconde
+    // copie dans src/main/resources, qui finirait par deriver.
+    from(rootProject.file('data/generated/prices.json')) {
+        into "data/${mod_id}"
+    }
+    from(rootProject.file('data/collections.json')) {
+        into "data/${mod_id}"
+    }
+    from(rootProject.file('data/skills.json')) {
+        into "data/${mod_id}"
+    }
+    from(rootProject.file('data/contracts.json')) {
+        into "data/${mod_id}"
+    }
+    from(rootProject.file('data/crates.json')) {
+        into "data/${mod_id}"
+    }
+    from(rootProject.file('data/tag_prices.json')) {
+        into "data/${mod_id}"
+    }
+    from(rootProject.file('data/economy.json')) {
+        into "data/${mod_id}"
+    }
+    from(rootProject.file('data/museum.json')) {
+        into "data/${mod_id}"
+    }
 }
 
 jar {

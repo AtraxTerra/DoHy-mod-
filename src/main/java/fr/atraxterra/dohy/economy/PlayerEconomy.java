@@ -20,10 +20,11 @@ import net.minecraft.network.codec.StreamCodec;
  * parce qu'indexer sur le solde apprend au joueur a ne jamais avoir de solde
  * (voir {@code docs/DESIGN.md} section 5).
  */
-public record PlayerEconomy(long balance, long lifetimeEarned, int deaths, boolean hudHidden) {
+public record PlayerEconomy(long balance, long lifetimeEarned, int deaths, boolean hudHidden,
+                            long banked, int insurance, long interestTotal) {
 
     /** Solde de depart : zero. La premiere heure de jeu doit etre pauvre. */
-    public static final PlayerEconomy EMPTY = new PlayerEconomy(0L, 0L, 0, false);
+    public static final PlayerEconomy EMPTY = new PlayerEconomy(0L, 0L, 0, false, 0L, 0, 0L);
 
     /**
      * {@code MapCodec} et non {@code Codec} : le builder d'attachment de
@@ -33,7 +34,12 @@ public record PlayerEconomy(long balance, long lifetimeEarned, int deaths, boole
             Codec.LONG.optionalFieldOf("balance", 0L).forGetter(PlayerEconomy::balance),
             Codec.LONG.optionalFieldOf("lifetime_earned", 0L).forGetter(PlayerEconomy::lifetimeEarned),
             Codec.INT.optionalFieldOf("deaths", 0).forGetter(PlayerEconomy::deaths),
-            Codec.BOOL.optionalFieldOf("hud_hidden", false).forGetter(PlayerEconomy::hudHidden)
+            Codec.BOOL.optionalFieldOf("hud_hidden", false).forGetter(PlayerEconomy::hudHidden),
+            // optionalFieldOf : les sauvegardes d'avant la phase 7 n'ont pas ces
+            // champs et doivent continuer de se charger.
+            Codec.LONG.optionalFieldOf("banked", 0L).forGetter(PlayerEconomy::banked),
+            Codec.INT.optionalFieldOf("insurance", 0).forGetter(PlayerEconomy::insurance),
+            Codec.LONG.optionalFieldOf("interest_total", 0L).forGetter(PlayerEconomy::interestTotal)
     ).apply(instance, PlayerEconomy::new));
 
     /** Derive du precedent, pour l'encodage JSON des sauvegardes de secours. */
@@ -45,11 +51,44 @@ public record PlayerEconomy(long balance, long lifetimeEarned, int deaths, boole
             ByteBufCodecs.VAR_LONG, PlayerEconomy::lifetimeEarned,
             ByteBufCodecs.VAR_INT, PlayerEconomy::deaths,
             ByteBufCodecs.BOOL, PlayerEconomy::hudHidden,
+            ByteBufCodecs.VAR_LONG, PlayerEconomy::banked,
+            ByteBufCodecs.VAR_INT, PlayerEconomy::insurance,
+            ByteBufCodecs.VAR_LONG, PlayerEconomy::interestTotal,
             PlayerEconomy::new
     );
 
     public PlayerEconomy withBalance(long newBalance) {
-        return new PlayerEconomy(newBalance, lifetimeEarned, deaths, hudHidden);
+        return new PlayerEconomy(newBalance, lifetimeEarned, deaths, hudHidden, banked, insurance, interestTotal);
+    }
+
+    public PlayerEconomy withBanked(long newBanked) {
+        return new PlayerEconomy(balance, lifetimeEarned, deaths, hudHidden,
+                Math.max(0L, newBanked), insurance, interestTotal);
+    }
+
+    public PlayerEconomy withInsurance(int charges) {
+        return new PlayerEconomy(balance, lifetimeEarned, deaths, hudHidden,
+                banked, Math.max(0, charges), interestTotal);
+    }
+
+    /**
+     * Credite l'epargne d'interets et tient le cumul a jour.
+     *
+     * <p>Le cumul existe pour une raison d'interface : les interets tombent
+     * minute par minute et sont donc invisibles. Sans un total affichable, le
+     * joueur ne peut pas savoir si la banque lui rapporte quelque chose.
+     */
+    public PlayerEconomy withInterest(long amount) {
+        if (amount <= 0) {
+            return this;
+        }
+        return new PlayerEconomy(balance, lifetimeEarned, deaths, hudHidden,
+                saturatedAdd(banked, amount), insurance, saturatedAdd(interestTotal, amount));
+    }
+
+    /** Solde liquide plus epargne. C'est ce chiffre qui mesure la richesse. */
+    public long netWorth() {
+        return saturatedAdd(balance, banked);
     }
 
     /**
@@ -63,7 +102,7 @@ public record PlayerEconomy(long balance, long lifetimeEarned, int deaths, boole
         }
         long newBalance = saturatedAdd(balance, amount);
         long newLifetime = saturatedAdd(lifetimeEarned, amount);
-        return new PlayerEconomy(newBalance, newLifetime, deaths, hudHidden);
+        return new PlayerEconomy(newBalance, newLifetime, deaths, hudHidden, banked, insurance, interestTotal);
     }
 
     /** Debite le joueur, sans jamais passer sous zero. */
@@ -79,11 +118,11 @@ public record PlayerEconomy(long balance, long lifetimeEarned, int deaths, boole
     }
 
     public PlayerEconomy withDeath() {
-        return new PlayerEconomy(balance, lifetimeEarned, deaths + 1, hudHidden);
+        return new PlayerEconomy(balance, lifetimeEarned, deaths + 1, hudHidden, banked, insurance, interestTotal);
     }
 
     public PlayerEconomy withHudHidden(boolean hidden) {
-        return new PlayerEconomy(balance, lifetimeEarned, deaths, hidden);
+        return new PlayerEconomy(balance, lifetimeEarned, deaths, hidden, banked, insurance, interestTotal);
     }
 
     private static long saturatedAdd(long a, long b) {

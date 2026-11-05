@@ -1,6 +1,12 @@
 package fr.atraxterra.dohy;
 
+import fr.atraxterra.dohy.boost.BoostData;
+import fr.atraxterra.dohy.collection.CollectionData;
+import fr.atraxterra.dohy.contract.ContractData;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
+import fr.atraxterra.dohy.museum.MuseumData;
+import fr.atraxterra.dohy.skill.SkillData;
+import fr.atraxterra.dohy.economy.market.PlayerMarket;
 import fr.atraxterra.dohy.world.PlacedBlockData;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -41,6 +47,65 @@ public final class DoHyAttachments {
             "placed_blocks",
             () -> AttachmentType.builder(PlacedBlockData::new)
                     .serialize(PlacedBlockData.MAP_CODEC, data -> !data.isEmpty())
+                    .build());
+
+    /**
+     * Pression de vente par item. Persistee, non synchronisee (le client n'en a
+     * pas besoin), et conservee a la mort : mourir ne doit pas remettre les
+     * prix a neuf, ce serait une facon tordue de reinitialiser le marche.
+     */
+    public static final Supplier<AttachmentType<PlayerMarket>> MARKET = ATTACHMENT_TYPES.register(
+            "market",
+            () -> AttachmentType.builder(PlayerMarket::new)
+                    .serialize(PlayerMarket.MAP_CODEC, market -> !market.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /**
+     * Collections par item. Conservees a la mort : un acquis ne se reperd pas,
+     * et le premier palier debloque la vente — la perdre a la mort serait
+     * punitif au point d'etre absurde.
+     */
+    public static final Supplier<AttachmentType<CollectionData>> COLLECTIONS = ATTACHMENT_TYPES.register(
+            "collections",
+            () -> AttachmentType.builder(CollectionData::new)
+                    .serialize(CollectionData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /** XP de skill. Conservee a la mort, comme les collections. */
+    public static final Supplier<AttachmentType<SkillData>> SKILLS = ATTACHMENT_TYPES.register(
+            "skills",
+            () -> AttachmentType.builder(SkillData::new)
+                    .serialize(SkillData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /**
+     * Contrats, demande du jour, niveau global et compteur de temps de jeu.
+     * Conserves a la mort : mourir ne doit pas annuler un contrat en cours.
+     */
+    public static final Supplier<AttachmentType<ContractData>> CONTRACTS = ATTACHMENT_TYPES.register(
+            "contracts",
+            () -> AttachmentType.builder(ContractData::new)
+                    .serialize(ContractData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /** Booster actif, cles de caisse, coffre d'autosell. Conserves a la mort. */
+    public static final Supplier<AttachmentType<BoostData>> BOOSTS = ATTACHMENT_TYPES.register(
+            "boosts",
+            () -> AttachmentType.builder(BoostData::new)
+                    .serialize(BoostData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /** Pieces exposees au musee. Conservees a la mort : un don est definitif. */
+    public static final Supplier<AttachmentType<MuseumData>> MUSEUM = ATTACHMENT_TYPES.register(
+            "museum",
+            () -> AttachmentType.builder(MuseumData::new)
+                    .serialize(MuseumData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
                     .build());
 
     private DoHyAttachments() {

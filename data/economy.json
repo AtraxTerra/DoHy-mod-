@@ -1,0 +1,21 @@
+{
+  "_comment": "Tous les chiffres de la banque et de la penalite de mort. Rechargeable par /dohy reload : regler l'equilibrage ne doit pas couter un build.",
+  "bank": {
+    "deposit_fee": 0.03,
+    "_daily_rate": "Interet par jour de TEMPS DE JEU, applique chaque minute au prorata.",
+    "daily_rate": 0.02,
+    "_daily_cap": "Plafond par jour de temps de jeu. Mord a partir de 100 M epargnes.",
+    "daily_cap": 2000000,
+    "insurance_price": 50000
+  },
+  "death": {
+    "_free_deaths": "Morts sans penalite en debut de partie, le temps de decouvrir la banque.",
+    "free_deaths": 3,
+    "_rate": "Part du solde liquide perdue. L'epargne n'est jamais touchee.",
+    "rate": 0.08,
+    "_cap": "Plafond absolu : cap_base + cap_lifetime_rate x gains cumules.",
+    "cap_base": 50000,
+    "cap_lifetime_rate": 0.01,
+    "insurance_reduction": 0.5
+  }
+}

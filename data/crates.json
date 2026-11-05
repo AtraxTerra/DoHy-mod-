@@ -1,0 +1,38 @@
+{
+  "_comment": "Tables de butin des caisses. Les poids sont relatifs au total de chaque palier. Une entree peut donner de l'argent (money_min/money_max), un item (item/count), ou les deux.",
+  "crates": {
+    "common": {
+      "price": 100000,
+      "entries": [
+        { "weight": 40, "money_min": 20000, "money_max": 80000 },
+        { "weight": 25, "item": "minecraft:diamond", "count": 8 },
+        { "weight": 15, "item": "minecraft:iron_block", "count": 6 },
+        { "weight": 10, "item": "minecraft:ender_pearl", "count": 16 },
+        { "weight": 7, "money_min": 150000, "money_max": 250000 },
+        { "weight": 3, "item": "minecraft:ancient_debris", "count": 2 }
+      ]
+    },
+    "rare": {
+      "price": 5000000,
+      "entries": [
+        { "weight": 35, "money_min": 1500000, "money_max": 4000000 },
+        { "weight": 25, "item": "minecraft:diamond_block", "count": 4 },
+        { "weight": 15, "item": "minecraft:ancient_debris", "count": 8 },
+        { "weight": 12, "item": "minecraft:netherite_ingot", "count": 2 },
+        { "weight": 8, "money_min": 6000000, "money_max": 9000000 },
+        { "weight": 5, "item": "minecraft:enchanted_golden_apple", "count": 4 }
+      ]
+    },
+    "legendary": {
+      "price": 150000000,
+      "entries": [
+        { "weight": 35, "money_min": 50000000, "money_max": 120000000 },
+        { "weight": 20, "item": "minecraft:netherite_block", "count": 2 },
+        { "weight": 18, "item": "minecraft:ancient_debris", "count": 32 },
+        { "weight": 12, "item": "minecraft:elytra", "count": 1 },
+        { "weight": 10, "money_min": 180000000, "money_max": 260000000 },
+        { "weight": 5, "item": "minecraft:nether_star", "count": 3 }
+      ]
+    }
+  }
+}
