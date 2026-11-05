@@ -132,7 +132,7 @@ public final class ContractsMenu extends DisplayMenu {
     }
 
     /** Un delai en minutes, rendu lisible : « 2 j 5 h », « 5 h 12 min ». */
-    static String delay(long minutes) {
+    public static String delay(long minutes) {
         long hours = minutes / 60L;
         if (hours >= 24) {
             return (hours / 24L) + " j " + (hours % 24L) + " h";

@@ -87,7 +87,7 @@ public final class Bank {
      * ramenes au pas : les interets tombent donc de facon continue, sans palier
      * visible, et une soiree de deux heures en rapporte un douzieme.
      */
-    public static long accrue(ServerPlayer player, int minutes) {
+    public static long accrue(ServerPlayer player, long minutes) {
         PlayerEconomy data = Economy.of(player);
         if (data.banked() <= 0 || minutes <= 0) {
             return 0L;
