@@ -75,27 +75,51 @@ python3 tools/gen_prices.py --multiplier 0.6
 
 ## 2. Courbe des skills
 
-`xp(lvl) = 100 × lvl^1.8` · `money(lvl) = 750 × lvl^1.5`
+`xp(lvl) = 100 × lvl^1.6` · `money(lvl) = 750 × lvl^1.4` · **100 niveaux**
+
+### Pourquoi la courbe a changé en passant de 50 à 100 niveaux
+
+Garder `lvl^1.8` aurait donné **961 h pour un seul skill** à 15 k XP/h, contre
+140 h pour le niveau 50 — soit trois fois la saison entière pour un huitième du
+contenu. Les exposants descendent donc : l'XP de 1,8 à 1,6, l'argent de 1,5 à 1,4.
+
+Le niveau 50 devient un **jalon de milieu de partie** (69 h au lieu de 140) et le
+100 l'**horizon longue durée** (412 h). C'est la bonne forme : 100 niveaux doivent
+être une progression plus fine, pas le même mur vingt fois plus haut.
 
 | Niveau | XP du niveau | XP cumulé | Money du niveau | Money cumulé | Heures (à 15 k XP/h) |
 |---|---|---|---|---|---|
-| 5 | 1 812 | 4 195 | 8 385 | 21 154 | 0,3 |
-| 10 | 6 310 | 25 783 | 23 717 | 107 004 | 1,7 |
-| 15 | 13 091 | 76 805 | 43 571 | 283 556 | 5,1 |
-| 20 | 21 971 | 168 087 | 67 082 | 570 597 | 11,2 |
-| 25 | 32 832 | 309 751 | 93 750 | 984 825 | 20,7 |
-| 30 | 45 585 | 511 426 | 123 238 | 1 540 964 | 34,1 |
-| 40 | 76 508 | 1 131 515 | 189 737 | 3 131 229 | 75,4 |
-| 50 | 114 326 | 2 099 046 | 265 165 | 5 436 527 | 139,9 |
+| 5 | 1 313 | 3 215 | 7 139 | 18 583 | 0,2 |
+| 10 | 3 981 | 17 353 | 18 839 | 88 111 | 1,2 |
+| 15 | 7 616 | 47 814 | 33 234 | 224 566 | 3,2 |
+| 25 | 17 247 | 174 545 | 67 948 | 742 060 | 11,6 |
+| 35 | 29 547 | 412 627 | 108 832 | 1 641 887 | 27,5 |
+| 50 | 52 282 | 1 031 699 | 179 316 | 3 825 801 | 68,8 |
+| 65 | 79 554 | 2 028 785 | 258 905 | 7 141 893 | 135,3 |
+| 75 | 100 023 | 2 935 452 | 316 335 | 10 044 097 | 195,7 |
+| 90 | 133 902 | 4 702 225 | 408 320 | 15 516 666 | 313,5 |
+| 100 | 158 489 | 6 175 195 | 473 218 | 19 954 551 | 411,7 |
 
 Lecture pour le rythme de jeu visé :
 
-- **Niveau 10 en moins de 2 h** → la première soirée donne déjà 2 perks et ~107 k
-- **Niveau 25 en ~21 h** → atteint vers la fin du premier mois
-- **Niveau 50 en ~140 h** → objectif de fin de saison, pas de fin de mois
-- **Un skill maxé rapporte 5,4 M cumulés.** Les 8 skills réunis ≈ 43 M, à comparer aux 500 M de l'autosell : les skills restent un bonus, jamais la source de revenu. C'est le principe 2 de `DESIGN.md`, vérifié chiffre en main.
+- **Niveau 10 en ~1 h** → la première soirée donne déjà 2 perks
+- **Niveau 25 en ~12 h** → première semaine
+- **Niveau 50 en ~69 h** → premier mois, et il reste la moitié de l'échelle
+- **Niveau 100 en ~412 h** → ~21 semaines de jeu *entièrement consacrées à ce skill*. En pratique le temps se répartit, donc un favori se maxe sur une saison ou deux et les autres suivent.
+- **Un skill maxé rapporte 20 M cumulés.** Les 8 skills réunis ≈ **160 M**, à comparer aux 500 M de l'autosell : les skills restent un bonus, jamais la source de revenu. C'est le principe 2 de `DESIGN.md`, revérifié chiffre en main après le passage à 100 niveaux.
 
 Levier unique : `xp_base` dans `data/skills.json`. Le passer à 75 réduit tout de 25 %.
+
+### Perks
+
+**20 perks par skill**, un tous les 5 niveaux jusqu'à 100. Les 10 ajoutés au-delà
+du niveau 50 n'utilisent **que les trois types réellement appliqués** par le mod
+(`attribute`, `double_drop_chance`, `xp_bonus`) : un perk annoncé dans l'interface
+mais sans effet en jeu est pire que pas de perk. Les types inertes des cinquante
+premiers niveaux restent à implémenter.
+
+`nuclear` n'avait **aucun** perk ; il reçoit une échelle complète de 20, tous
+appliqués.
 
 ---
 

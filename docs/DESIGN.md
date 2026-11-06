@@ -166,22 +166,38 @@ Objet consommable acheté au shop, −50 % de perte à la mort. Transforme la pu
 
 Deux courbes, parce que 5 000 blocs se font en une soirée avec une ferme mais en trois semaines à la main :
 
-**Dix paliers par courbe** (six à l'origine, étendu le 2026-11-05) :
+**Vingt-cinq paliers par courbe** (six à l'origine, dix le 2026-11-05, vingt-cinq le 2026-11-06) :
 
 | Type | Paliers |
 |---|---|
-| Trouvables | 10 · 50 · 100 · 500 · 1 500 · 2 500 · 5 000 · 10 000 · 25 000 · 50 000 |
-| Farmables | 100 · 1 000 · 5 000 · 25 000 · 100 000 · 250 000 · 500 000 · 1 M · 2,5 M · 5 M |
+| Trouvables | 10 · 50 · 100 · 500 · 1 500 · 2 500 · 5 000 · 10 000 · 25 000 · 50 000 · 60 k · 70 k · 80 k · 90 k · 100 k · 115 k · 130 k · 145 k · 160 k · 180 k · 200 k · 220 k · 240 k · 265 k · **300 k** |
+| Farmables | 100 · 1 000 · 5 000 · 25 000 · 100 k · 250 k · 500 k · 1 M · 2,5 M · 5 M · 6 M · 7 M · 8 M · 9 M · 10 M · 11,5 M · 13 M · 14,5 M · 16 M · 18 M · 20 M · 22 M · 24 M · 26,5 M · **30 M** |
 
-Les quatre derniers sont des objectifs de durée de vie et non de progression : 50 000 blocs trouvés ou 5 M de blocs de ferme ne s'atteignent pas en une saison.
+**Tête raide, queue dense**, et c'est voulu : les dix premiers paliers montent de ×2 à ×5 (la progression), les quinze suivants de ×1,11 (la durée de vie). Un palier de queue représente 10 à 60 h d'activité ciblée. Les valeurs de tête n'ont jamais bougé, pour ne pas déplacer le palier des collections déjà entamées.
 
-Récompense par palier : **`+0,03` de plancher de prix** sur cet item, et de l'XP globale. Un item travaillé de longue date rapporte donc plus qu'un item découvert hier, à quantité égale — c'est ce qui donne une raison de miner autre chose que l'optimum du moment.
+Récompense par palier : **un bonus de plancher de prix** sur cet item, et de l'XP globale.
+
+Le plancher suit une **courbe concave** jusqu'à 0,30 : `+0,060` au premier palier, `+0,003` au dernier. Il ne suit délibérément pas le nombre de paliers — vingt-cinq crans de 0,03 auraient donné 0,75, soit la borne entière consommée par les seules collections.
+
+Les exceptions gardent leur longueur propre (l'œuf de dragon a un seul palier, l'élytre dix) : un item rare a moins de paliers, donc moins de bonus, ce qui est cohérent. Un item travaillé de longue date rapporte donc plus qu'un item découvert hier, à quantité égale — c'est ce qui donne une raison de miner autre chose que l'optimum du moment.
 
 **Le déblocage de vente est retiré** (2026-11-05). Il fallait avoir récolté 10 ou 100 exemplaires avant de pouvoir vendre un item. C'était présenté ici comme « le meilleur levier de rythme du mod » ; à l'usage, ça retardait surtout la découverte du shop sans rien structurer — un joueur qui vient de miner son premier diamant doit pouvoir le vendre. `sell_requires_collection` dans `collections.json` restaure le verrou sans toucher au code.
 
 **Le plancher cumulé est borné à 75 % du prix de base** (`DynamicPrice.MAX_FLOOR`). Plancher du tier + bonus de collection + bonus de prestige pouvaient atteindre 90 % pour un `RARE`, et la borne existante à 95 % ne couvrait donc pas le cas qu'elle devait couvrir : au-delà de 75 %, le frein des prix dynamiques n'existe plus et la dix-millième unité vendue rapporte encore le plein tarif.
 
 Implémentation : une seule `Map<ItemId, Long>` dans l'attachment joueur, paliers générés par formule. Pas 200 fichiers.
+
+---
+
+## 8 bis. Barre de progression des skills
+
+Une **barre de boss** en haut de l'écran, façon SkyBlock : nom du skill, niveau, XP dans le niveau, gain qui vient d'arriver. Une couleur par skill pour reconnaître l'activité sans lire.
+
+Pourquoi une barre de boss et pas une couche de HUD : c'est le seul affichage riche en haut de l'écran qui soit **entièrement côté serveur**. Le jeu envoie les paquets, le client vanilla la dessine. Le mod n'a donc toujours qu'un seul morceau de code client — le HUD de solde — ce qui le met à l'abri des refontes du rendu (26.2 en a déjà imposé une).
+
+Une seule barre par joueur, renommée quand il change d'activité : miner puis couper du bois ne fait pas apparaître deux barres. Elle s'efface après **5 s** sans gain d'XP (**8 s** sur une montée de niveau), sinon elle mangerait le haut de l'écran en continu et se confondrait avec un vrai combat de boss.
+
+État transitoire, hors sauvegarde : une barre est de l'affichage, pas une donnée de jeu.
 
 ---
 

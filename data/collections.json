@@ -16,7 +16,22 @@
         5000,
         10000,
         25000,
-        50000
+        50000,
+        60000,
+        70000,
+        80000,
+        90000,
+        100000,
+        115000,
+        130000,
+        145000,
+        160000,
+        180000,
+        200000,
+        220000,
+        240000,
+        265000,
+        300000
       ]
     },
     "farmable": {
@@ -35,60 +50,150 @@
         500000,
         1000000,
         2500000,
-        5000000
+        5000000,
+        6000000,
+        7000000,
+        8000000,
+        9000000,
+        10000000,
+        11500000,
+        13000000,
+        14500000,
+        16000000,
+        18000000,
+        20000000,
+        22000000,
+        24000000,
+        26500000,
+        30000000
       ]
     }
   },
   "rewards_per_tier": [
     {
       "tier_index": 0,
-      "floor_bonus_pct": 0.03,
+      "floor_bonus_pct": 0.06,
       "global_xp": 10
     },
     {
       "tier_index": 1,
-      "floor_bonus_pct": 0.06,
-      "global_xp": 25
+      "floor_bonus_pct": 0.085,
+      "global_xp": 13
     },
     {
       "tier_index": 2,
-      "floor_bonus_pct": 0.09,
-      "global_xp": 60
+      "floor_bonus_pct": 0.104,
+      "global_xp": 18
     },
     {
       "tier_index": 3,
       "floor_bonus_pct": 0.12,
-      "global_xp": 150
+      "global_xp": 24
     },
     {
       "tier_index": 4,
-      "floor_bonus_pct": 0.15,
-      "global_xp": 400
+      "floor_bonus_pct": 0.134,
+      "global_xp": 31
     },
     {
       "tier_index": 5,
-      "floor_bonus_pct": 0.18,
-      "global_xp": 1000
+      "floor_bonus_pct": 0.147,
+      "global_xp": 42
     },
     {
       "tier_index": 6,
-      "floor_bonus_pct": 0.21,
-      "global_xp": 2000
+      "floor_bonus_pct": 0.159,
+      "global_xp": 55
     },
     {
       "tier_index": 7,
-      "floor_bonus_pct": 0.24,
-      "global_xp": 4000
+      "floor_bonus_pct": 0.17,
+      "global_xp": 74
     },
     {
       "tier_index": 8,
-      "floor_bonus_pct": 0.27,
-      "global_xp": 8000
+      "floor_bonus_pct": 0.18,
+      "global_xp": 98
     },
     {
       "tier_index": 9,
+      "floor_bonus_pct": 0.19,
+      "global_xp": 130
+    },
+    {
+      "tier_index": 10,
+      "floor_bonus_pct": 0.199,
+      "global_xp": 170
+    },
+    {
+      "tier_index": 11,
+      "floor_bonus_pct": 0.208,
+      "global_xp": 230
+    },
+    {
+      "tier_index": 12,
+      "floor_bonus_pct": 0.216,
+      "global_xp": 310
+    },
+    {
+      "tier_index": 13,
+      "floor_bonus_pct": 0.224,
+      "global_xp": 410
+    },
+    {
+      "tier_index": 14,
+      "floor_bonus_pct": 0.232,
+      "global_xp": 540
+    },
+    {
+      "tier_index": 15,
+      "floor_bonus_pct": 0.24,
+      "global_xp": 720
+    },
+    {
+      "tier_index": 16,
+      "floor_bonus_pct": 0.247,
+      "global_xp": 960
+    },
+    {
+      "tier_index": 17,
+      "floor_bonus_pct": 0.255,
+      "global_xp": 1270
+    },
+    {
+      "tier_index": 18,
+      "floor_bonus_pct": 0.262,
+      "global_xp": 1700
+    },
+    {
+      "tier_index": 19,
+      "floor_bonus_pct": 0.268,
+      "global_xp": 2260
+    },
+    {
+      "tier_index": 20,
+      "floor_bonus_pct": 0.275,
+      "global_xp": 3000
+    },
+    {
+      "tier_index": 21,
+      "floor_bonus_pct": 0.281,
+      "global_xp": 3990
+    },
+    {
+      "tier_index": 22,
+      "floor_bonus_pct": 0.288,
+      "global_xp": 5310
+    },
+    {
+      "tier_index": 23,
+      "floor_bonus_pct": 0.294,
+      "global_xp": 7060
+    },
+    {
+      "tier_index": 24,
       "floor_bonus_pct": 0.3,
-      "global_xp": 15000
+      "global_xp": 9390
     }
   ],
   "prestige": {
@@ -103,8 +208,9 @@
     "_2": "Seuls les blocs NON poses par le joueur comptent (voir DESIGN.md 10.1).",
     "_3": "floor_bonus_pct s'ajoute au plancher du tier, puis au bonus de prestige. La somme est bornee a 75 % du prix de base dans DynamicPrice : au-dela, le frein des prix dynamiques n'existe plus et la 10 000e pierre vaut encore plein tarif. Un FARM a fond atteint 55 %, un FOUND 75 %, un RARE touche la borne.",
     "_4": "Les items obtenus par achat au shop ne comptent pas dans la collection.",
-    "_5": "Dix paliers par courbe. Les quatre derniers sont des objectifs de duree de vie, pas de progression : 50 000 blocs trouves ou 5 M de blocs de ferme ne s'atteignent pas en une saison.",
-    "_6": "Les quatre paliers ajoutes donnent surtout de l'XP globale : le plancher ne monte que de 0,03 par palier, parce que c'est la variable qui peut eteindre le frein des prix."
+    "_5": "Vingt-cinq paliers par courbe. La tete est volontairement raide (x2 a x5 par cran) et la queue dense (environ x1,11) : la tete est la progression, la queue est la duree de vie. Les valeurs de tete n'ont pas bouge depuis la premiere version, pour ne pas deplacer le palier des collections deja entamees.",
+    "_6": "Le plancher suit une courbe concave jusqu'a 0,30 : il gagne 0,06 au premier palier et 0,003 au dernier. Il ne suit pas le nombre de paliers parce que c'est la variable qui peut eteindre le frein des prix — vingt-cinq crans de 0,03 auraient donne 0,75 a eux seuls, soit la borne entiere consommee par les collections.",
+    "_7": "Les exceptions gardent leur longueur propre (l'oeuf de dragon a un seul palier, l'elytre dix) : un item rare a moins de paliers, donc moins de bonus de plancher, ce qui est coherent."
   },
   "exceptions": {
     "minecraft:dragon_egg": {

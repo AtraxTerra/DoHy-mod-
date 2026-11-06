@@ -175,8 +175,23 @@ public final class SkillsMenu extends DisplayMenu {
             return;
         }
 
-        for (int index = 0; index < perks.size() && index < SLOTS_PERKS.length; index++) {
+        // Vingt perks par skill pour vingt-et-un emplacements : ca tient, mais de
+        // justesse. Le dernier emplacement annonce le debordement plutot que de
+        // laisser des perks disparaitre sans bruit si la table s'allonge.
+        int shown = Math.min(perks.size(), SLOTS_PERKS.length);
+        int overflow = perks.size() - shown;
+        if (overflow > 0) {
+            shown--;
+            overflow++;
+        }
+        for (int index = 0; index < shown; index++) {
             set(SLOTS_PERKS[index], perkTile(perks.get(index), level));
+        }
+        if (overflow > 0) {
+            set(SLOTS_PERKS[shown], Gui.button(Items.PAPER,
+                    "+ " + overflow + " perk(s) non affiches", Gui.lore(
+                            Gui.hint("l'ecran est plein"),
+                            Gui.hint("voir /skills list pour la liste complete"))));
         }
     }
 
