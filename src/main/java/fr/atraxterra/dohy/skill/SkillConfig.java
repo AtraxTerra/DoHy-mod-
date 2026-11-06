@@ -33,7 +33,29 @@ public final class SkillConfig {
             Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "skills.json");
 
     /** Types de perks reellement appliques aujourd'hui. */
-    private static final Set<String> IMPLEMENTED = Set.of("attribute", "double_drop_chance", "xp_bonus");
+    /**
+     * Les types de perks reellement appliques.
+     *
+     * <p>Tenu a jour avec {@link SkillPerks} (attributs) et
+     * {@link SkillEffects} (le reste). Un type absent d'ici est signale au
+     * demarrage : c'est le filet qui a permis de decouvrir que trente-trois
+     * perks etaient declares et inertes, et il doit le rester.
+     */
+    private static final Set<String> IMPLEMENTED = Set.of(
+            "attribute", "double_drop_chance", "xp_bonus",
+            "harvest_bonus", "tree_chop", "loot_bonus", "treasure_chance",
+            "no_fall_damage_below", "anvil_cost_reduction");
+
+    /**
+     * Vrai si ce type de perk a un effet en jeu.
+     *
+     * <p>Expose pour que l'interface pose la question au lieu de tenir sa propre
+     * liste : deux listes auraient derive, et c'est l'ecran des skills qui
+     * aurait fini par mentir.
+     */
+    public static boolean isImplemented(String type) {
+        return IMPLEMENTED.contains(type);
+    }
 
     private static volatile Config config = Config.FALLBACK;
 

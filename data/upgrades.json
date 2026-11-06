@@ -1,0 +1,177 @@
+{
+  "_comment": "Ameliorations permanentes, achetees en argent. Editable a chaud via /dohy reload.",
+  "_why": "Tous les puits a argent du mod etaient consommables ou ponctuels : les boosters se depensent, les caisses sont un pari, l'assurance se consomme, et l'autosell a 500 M est un achat UNIQUE. Passe ce point, l'argent n'avait plus de destination — c'est comme ca que meurt une economie. Ces ameliorations sont definitives, de plus en plus cheres, et donnent a l'argent une sortie qui ne s'epuise jamais.",
+  "_pricing": "Chaque palier coute environ 2,6 fois le precedent, et le premier palier de chaque branche tient entre 25 M et 400 M — donc accessible dans les premiers mois. Tout monter represente 14,8 milliards : environ un an de jeu a 15 M/h, deux ans et demi a 6 M/h. Une premiere version chiffrait 328 milliards, soit plus de seize mille heures meme a 20 M/h : les derniers paliers auraient ete du contenu mort, ce qui est pire que pas de palier.",
+  "_effects": "Chaque effet est lu quelque part dans le code. Un effet qui ne serait branche nulle part serait exactement le defaut que les perks inertes ont cree cote skills.",
+  "upgrades": {
+    "negoce": {
+      "label": "Negoce",
+      "icon": "minecraft:emerald",
+      "effect": "shop_discount",
+      "description": "Reduit les prix d'achat au shop.",
+      "_note": "Remplace une premiere idee impossible : l'amelioration devait ajouter des rangees au coffre de vente, mais un menu de coffre plafonne a six rangees et le coffre de vente y est deja. La remise s'ajoute a celle du musee et reste bornee a 25 % dans ShopMenu — au-dela, les prix NTM cesseraient d'etre le mur qu'ils doivent etre.",
+      "levels": [
+        {
+          "price": 25000000,
+          "amount": 0.05
+        },
+        {
+          "price": 65000000,
+          "amount": 0.1
+        },
+        {
+          "price": 170000000,
+          "amount": 0.15
+        }
+      ]
+    },
+    "autosell_rhythm": {
+      "label": "Cadence d'autosell",
+      "icon": "minecraft:hopper",
+      "effect": "autosell_interval_cut",
+      "description": "L'autosell passe plus souvent.",
+      "_note": "En minutes retirees de l'intervalle de cinq minutes. Le plancher d'une minute est garde en dur : en dessous, l'autosell deviendrait un tuyau continu.",
+      "levels": [
+        {
+          "price": 300000000,
+          "amount": 1
+        },
+        {
+          "price": 780000000,
+          "amount": 2
+        },
+        {
+          "price": 2000000000,
+          "amount": 3
+        }
+      ]
+    },
+    "bank_ceiling": {
+      "label": "Plafond de banque",
+      "icon": "minecraft:gold_block",
+      "effect": "bank_cap_multiplier",
+      "description": "Releve le plafond d'interets quotidiens.",
+      "_note": "Multiplicateur du plafond de 250 k par jour reel. Ne touche pas au taux : une grosse epargne rapporte plus, mais toujours lentement.",
+      "levels": [
+        {
+          "price": 80000000,
+          "amount": 2.0
+        },
+        {
+          "price": 210000000,
+          "amount": 4.0
+        },
+        {
+          "price": 540000000,
+          "amount": 8.0
+        },
+        {
+          "price": 1400000000,
+          "amount": 16.0
+        }
+      ]
+    },
+    "contract_slots": {
+      "label": "Carnet de contrats",
+      "icon": "minecraft:writable_book",
+      "effect": "daily_contract_slots",
+      "description": "Un contrat quotidien de plus.",
+      "_note": "Les contrats restent calibres pour une soiree de deux heures ; en ajouter donne du choix, pas de l'obligation. Deux de plus au maximum, sinon une soiree ne suffit plus a en voir le bout.",
+      "levels": [
+        {
+          "price": 120000000,
+          "amount": 1
+        },
+        {
+          "price": 360000000,
+          "amount": 2
+        }
+      ]
+    },
+    "booster_endurance": {
+      "label": "Endurance des boosters",
+      "icon": "minecraft:blaze_powder",
+      "effect": "booster_minutes",
+      "description": "Les boosters durent plus longtemps.",
+      "_note": "Minutes de temps de jeu ajoutees aux vingt de base. C'est l'amelioration qui rend les boosters haut de gamme enfin confortables : vingt minutes passent vite quand il faut aussi remplir le coffre.",
+      "levels": [
+        {
+          "price": 200000000,
+          "amount": 10
+        },
+        {
+          "price": 520000000,
+          "amount": 25
+        },
+        {
+          "price": 1400000000,
+          "amount": 45
+        }
+      ]
+    },
+    "market_resilience": {
+      "label": "Resilience du marche",
+      "icon": "minecraft:emerald_block",
+      "effect": "floor_bonus",
+      "description": "Releve le prix plancher de tous les items.",
+      "_note": "S'ajoute au plancher du tier, aux collections et au prestige — et comme eux, la somme reste bornee a 75 % dans DynamicPrice. C'est volontairement l'amelioration la plus chere : elle attenue le seul vrai frein de l'economie.",
+      "levels": [
+        {
+          "price": 400000000,
+          "amount": 0.03
+        },
+        {
+          "price": 1100000000,
+          "amount": 0.06
+        },
+        {
+          "price": 3100000000,
+          "amount": 0.1
+        }
+      ]
+    },
+    "apprenticeship": {
+      "label": "Apprentissage",
+      "icon": "minecraft:experience_bottle",
+      "effect": "skill_xp_bonus",
+      "description": "Tous les skills gagnent plus d'XP.",
+      "_note": "Se cumule avec les perks d'XP de chaque skill. Rend les cinquante derniers niveaux atteignables sans changer la courbe pour un debutant.",
+      "levels": [
+        {
+          "price": 150000000,
+          "amount": 0.15
+        },
+        {
+          "price": 390000000,
+          "amount": 0.3
+        },
+        {
+          "price": 1000000000,
+          "amount": 0.5
+        }
+      ]
+    },
+    "estate": {
+      "label": "Patrimoine protege",
+      "icon": "minecraft:totem_of_undying",
+      "effect": "death_penalty_cut",
+      "description": "Reduit la perte a la mort.",
+      "_note": "Fraction retiree de la penalite, cumulee avec l'assurance. Plafonnee a 0,8 dans le code : une mort doit toujours couter quelque chose, sinon la penalite cesse d'exister.",
+      "levels": [
+        {
+          "price": 50000000,
+          "amount": 0.2
+        },
+        {
+          "price": 130000000,
+          "amount": 0.4
+        },
+        {
+          "price": 340000000,
+          "amount": 0.6
+        }
+      ]
+    }
+  },
+  "_reading": "Les premiers paliers sont ceux qui comptent pour la sensation de jeu, et ce sont les moins chers. La queue est longue par construction : c'est l'objectif qui reste quand tout le reste est fait, pas une case a cocher."
+}

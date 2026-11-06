@@ -84,10 +84,24 @@ public final class EconomyConfig {
 
         /** Interet par jour reel a ce solde, plafond compris. */
         public long perDay(long banked) {
+            return perDay(banked, 1.0d);
+        }
+
+        /**
+         * Variante avec un multiplicateur de plafond.
+         *
+         * <p>La branche d'amelioration « Plafond de banque » releve le plafond
+         * et <b>jamais le taux</b> : une grosse epargne rapporte donc plus, mais
+         * toujours aussi lentement en proportion. Relever le taux aurait rendu
+         * l'attente plus rentable que le jeu, ce que tout le calibrage de la
+         * banque cherche a eviter.
+         */
+        public long perDay(long banked, double capMultiplier) {
             if (banked <= 0) {
                 return 0L;
             }
-            return Math.min(Math.round(banked * dailyRate), dailyCap);
+            long cap = Math.round(dailyCap * Math.max(1.0d, capMultiplier));
+            return Math.min(Math.round(banked * dailyRate), cap);
         }
     }
 

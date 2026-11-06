@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.boost;
 import fr.atraxterra.dohy.DoHyAttachments;
 import fr.atraxterra.dohy.contract.ContractApi;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -35,6 +36,11 @@ public final class Boosters {
 
     /** Duree, en minutes de temps de jeu. */
     public static final long DURATION_MINUTES = 20L;
+
+    /** La duree effective, allongee par la branche Endurance. */
+    public static long durationFor(ServerPlayer player) {
+        return DURATION_MINUTES + UpgradeApi.bonusInt(player, UpgradeApi.BOOSTER_MINUTES);
+    }
 
     private Boosters() {
     }
@@ -78,7 +84,7 @@ public final class Boosters {
             return "Il te faut " + MoneyFormat.exact(tier.price()) + " en liquide.";
         }
 
-        long until = ContractApi.data(player).playtimeMinutes() + DURATION_MINUTES;
+        long until = ContractApi.data(player).playtimeMinutes() + durationFor(player);
         data(player).setBooster(tier.multiplier(), until);
         return null;
     }

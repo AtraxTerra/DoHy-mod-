@@ -8,6 +8,7 @@ import fr.atraxterra.dohy.economy.EconomyConfig;
 import fr.atraxterra.dohy.museum.MuseumConfig;
 import fr.atraxterra.dohy.contract.ContractConfig;
 import fr.atraxterra.dohy.skill.SkillConfig;
+import fr.atraxterra.dohy.upgrade.UpgradeConfig;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.world.PlacedBlocks;
 import net.minecraft.ChatFormatting;
@@ -93,8 +94,9 @@ public final class DoHyCommand {
         boolean crates = Crates.load(source.getServer());
         boolean economy = EconomyConfig.load(source.getServer());
         boolean museum = MuseumConfig.load(source.getServer());
+        boolean upgrades = UpgradeConfig.load(source.getServer());
 
-        if (prices && tiers && skills && contracts && crates && economy && museum) {
+        if (prices && tiers && skills && contracts && crates && economy && museum && upgrades) {
             source.sendSuccess(() -> Component.literal(
                             "Recharge : " + Prices.book().size() + " items, paliers de collection a jour.")
                     .withStyle(ChatFormatting.GREEN), true);
@@ -107,7 +109,8 @@ public final class DoHyCommand {
                 + (contracts ? "contrats ok" : "contrats en echec") + ", "
                 + (crates ? "caisses ok" : "caisses en echec") + ", "
                 + (economy ? "economie ok" : "economie en echec") + ", "
-                + (museum ? "musee ok" : "musee en echec")
+                + (museum ? "musee ok" : "musee en echec") + ", "
+                + (upgrades ? "ameliorations ok" : "ameliorations en echec")
                 + "). Les anciennes donnees restent en service. Voir les logs."));
         return 0;
     }

@@ -6,6 +6,7 @@ import fr.atraxterra.dohy.contract.Bonuses;
 import fr.atraxterra.dohy.contract.ContractApi;
 import fr.atraxterra.dohy.contract.ContractType;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
+import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -76,7 +77,8 @@ public final class DynamicPrice {
     public static double effectiveFloor(ServerPlayer player, Identifier id, PriceEntry entry) {
         return Math.min(MAX_FLOOR, entry.floorPct()
                 + CollectionApi.floorBonus(player, id, entry)
-                + CollectionApi.prestigeFloorBonus(player, id));
+                + CollectionApi.prestigeFloorBonus(player, id)
+                + UpgradeApi.bonus(player, UpgradeApi.FLOOR_BONUS));
     }
 
     /**

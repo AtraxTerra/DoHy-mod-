@@ -4,6 +4,7 @@ import fr.atraxterra.dohy.DoHyAttachments;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
+import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import fr.atraxterra.dohy.util.RealClock;
 import net.minecraft.ChatFormatting;
@@ -155,25 +156,36 @@ public final class ContractApi {
 
         long today = today();
         if (data.dailyPeriod() != today) {
-            data.setDaily(pick(config.daily(), false));
+            data.setDaily(pick(config.daily(), false, dailySlots(player)));
             data.setDailyPeriod(today);
             announce(player, data.daily(), "Contrats du jour");
         }
 
         long week = thisWeek();
         if (data.weeklyPeriod() != week) {
-            data.setWeekly(pick(config.weekly(), true));
+            data.setWeekly(pick(config.weekly(), true, config.weekly().count()));
             data.setWeeklyPeriod(week);
             announce(player, data.weekly(), "Contrat de la semaine");
         }
     }
 
-    private static List<ActiveContract> pick(ContractConfig.Pool pool, boolean weekly) {
+    /**
+     * Le nombre de contrats quotidiens, branche Carnet comprise.
+     *
+     * <p>Les contrats restent calibres pour une soiree de deux heures : en
+     * ajouter donne du choix, pas de l'obligation.
+     */
+    public static int dailySlots(ServerPlayer player) {
+        return ContractConfig.config().daily().count()
+                + UpgradeApi.bonusInt(player, UpgradeApi.DAILY_CONTRACT_SLOTS);
+    }
+
+    private static List<ActiveContract> pick(ContractConfig.Pool pool, boolean weekly, int slots) {
         List<ContractConfig.Entry> candidates = new ArrayList<>(pool.pool());
         Collections.shuffle(candidates);
         List<ActiveContract> chosen = new ArrayList<>();
         for (ContractConfig.Entry entry : candidates) {
-            if (chosen.size() >= pool.count()) {
+            if (chosen.size() >= slots) {
                 break;
             }
             if (ContractType.byName(entry.type()) == ContractType.UNKNOWN) {

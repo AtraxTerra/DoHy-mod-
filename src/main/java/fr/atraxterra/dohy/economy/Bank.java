@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.economy;
 
 import fr.atraxterra.dohy.DoHyAttachments;
+import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
@@ -32,6 +33,18 @@ public final class Bank {
     /** Interet par jour reel a ce solde, plafond compris. */
     public static long perDay(long banked) {
         return EconomyConfig.bank().perDay(banked);
+    }
+
+    /**
+     * Interet par jour reel pour ce joueur, branche d'amelioration comprise.
+     *
+     * <p>C'est cette variante que l'affichage doit utiliser : annoncer le
+     * plafond de base a un joueur qui a paye pour le relever serait un chiffre
+     * faux a l'ecran.
+     */
+    public static long perDay(ServerPlayer player) {
+        double ceiling = Math.max(1.0d, UpgradeApi.bonus(player, UpgradeApi.BANK_CAP_MULTIPLIER));
+        return EconomyConfig.bank().perDay(banked(player), ceiling);
     }
 
     private Bank() {
@@ -94,7 +107,11 @@ public final class Bank {
         }
 
         double fraction = minutes / (24.0d * 60.0d);
-        long interest = Math.round(EconomyConfig.bank().perDay(data.banked()) * fraction);
+        // La branche Plafond de banque multiplie le plafond, jamais le taux :
+        // une grosse epargne rapporte plus, mais toujours lentement.
+        double ceiling = Math.max(1.0d, UpgradeApi.bonus(player, UpgradeApi.BANK_CAP_MULTIPLIER));
+        long perDay = EconomyConfig.bank().perDay(data.banked(), ceiling);
+        long interest = Math.round(perDay * fraction);
         if (interest <= 0) {
             return 0L;
         }

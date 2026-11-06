@@ -5,6 +5,7 @@ import fr.atraxterra.dohy.collection.CollectionData;
 import fr.atraxterra.dohy.contract.ContractData;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
 import fr.atraxterra.dohy.museum.MuseumData;
+import fr.atraxterra.dohy.upgrade.UpgradeData;
 import fr.atraxterra.dohy.skill.SkillData;
 import fr.atraxterra.dohy.economy.market.PlayerMarket;
 import fr.atraxterra.dohy.world.PlacedBlockData;
@@ -101,6 +102,19 @@ public final class DoHyAttachments {
                     .build());
 
     /** Pieces exposees au musee. Conservees a la mort : un don est definitif. */
+    /**
+     * Les ameliorations permanentes achetees.
+     *
+     * <p>{@code copyOnDeath} comme le reste : un achat definitif paye plusieurs
+     * milliards ne doit pas disparaitre a la mort.
+     */
+    public static final Supplier<AttachmentType<UpgradeData>> UPGRADES = ATTACHMENT_TYPES.register(
+            "upgrades",
+            () -> AttachmentType.builder(UpgradeData::new)
+                    .serialize(UpgradeData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
     public static final Supplier<AttachmentType<MuseumData>> MUSEUM = ATTACHMENT_TYPES.register(
             "museum",
             () -> AttachmentType.builder(MuseumData::new)

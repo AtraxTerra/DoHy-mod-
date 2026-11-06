@@ -201,6 +201,16 @@ Une seule barre par joueur, renommée quand il change d'activité : miner puis c
 
 ---
 
+## 8 ter. Améliorations permanentes
+
+Huit branches achetées en argent, **définitives**, de plus en plus chères. Voir `BALANCE.md` pour le barème.
+
+Elles existent parce que tous les autres puits à argent sont consommables ou ponctuels — booster, caisse, assurance — et que l'autosell à 500 M est un achat **unique**. Après le mois 4, l'argent n'avait plus de destination. C'est le trou de conception le plus sérieux qu'avait le mod.
+
+Règle qui les gouverne : **un effet déclaré est un effet branché.** `UpgradeApi.EFFECTS` liste les effets que le code lit, et le chargement prévient pour tout effet absent. Ce filet a été posé après avoir découvert 33 perks de skill déclarés et inertes ; une amélioration payée plusieurs milliards mérite au moins la même garantie.
+
+---
+
 ## 9. Systèmes de rythme (adaptés au planning de jeu)
 
 | Système | Détail | Rôle |
