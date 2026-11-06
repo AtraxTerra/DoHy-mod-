@@ -76,7 +76,7 @@ public final class TagPricing {
         var resource = server.getResourceManager().getResource(LOCATION);
         if (resource.isEmpty()) {
             // Absence legitime : sans regle, seuls les prix explicites existent.
-            config = new Config(List.of());
+            config = new Config(List.of(), Materials.NONE);
             return true;
         }
         try (BufferedReader reader = resource.get().openAsReader()) {
