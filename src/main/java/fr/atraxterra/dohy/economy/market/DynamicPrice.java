@@ -50,11 +50,31 @@ public final class DynamicPrice {
     }
 
     /**
+     * Borne dure du plancher, en fraction du prix de base.
+     *
+     * <p>Le plancher du tier, le bonus de collection et celui de prestige
+     * s'additionnent, et rien n'empeche la somme de depasser 1 : un `RARE`
+     * (plancher 50 %) a collection complete et prestige maximal atteint 90 %.
+     * A ce niveau le frein des prix dynamiques n'existe plus — la dix-millieme
+     * unite vendue rapporte encore le plein tarif, ce qui est exactement ce que
+     * le systeme doit empecher.
+     *
+     * <p>La borne etait a 95 %, c'est-a-dire nulle part : elle laissait passer
+     * precisement le cas qu'elle devait couvrir. A 75 %, un prix peut toujours
+     * perdre un quart de sa valeur sous la pression, quelle que soit la
+     * progression du joueur et quelles que soient les valeurs du datapack.
+     */
+    private static final double MAX_FLOOR = 0.75d;
+
+    /**
      * Plancher effectif : celui du tier, releve par les paliers de collection
-     * deja franchis. Un item `FARM` a fond passe ainsi de 15 % a 40 %.
+     * franchis et par le prestige, puis borne.
+     *
+     * <p>Un `FARM` a fond atteint 55 %, un `FOUND` 75 %, un `RARE` touche la
+     * borne.
      */
     public static double effectiveFloor(ServerPlayer player, Identifier id, PriceEntry entry) {
-        return Math.min(0.95d, entry.floorPct()
+        return Math.min(MAX_FLOOR, entry.floorPct()
                 + CollectionApi.floorBonus(player, id, entry)
                 + CollectionApi.prestigeFloorBonus(player, id));
     }

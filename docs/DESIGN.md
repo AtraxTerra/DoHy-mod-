@@ -166,14 +166,20 @@ Objet consommable acheté au shop, −50 % de perte à la mort. Transforme la pu
 
 Deux courbes, parce que 5 000 blocs se font en une soirée avec une ferme mais en trois semaines à la main :
 
+**Dix paliers par courbe** (six à l'origine, étendu le 2026-11-05) :
+
 | Type | Paliers |
 |---|---|
-| Trouvables | 10 · 50 · 100 · 500 · 1 500 · 2 500 |
-| Farmables | 100 · 1 000 · 5 000 · 25 000 · 100 000 · 250 000 |
+| Trouvables | 10 · 50 · 100 · 500 · 1 500 · 2 500 · 5 000 · 10 000 · 25 000 · 50 000 |
+| Farmables | 100 · 1 000 · 5 000 · 25 000 · 100 000 · 250 000 · 500 000 · 1 M · 2,5 M · 5 M |
 
-Récompenses par palier : **déblocage de la ligne de vente au shop**, `+5 %` de plancher de prix sur cet item, recettes, et money au dernier palier.
+Les quatre derniers sont des objectifs de durée de vie et non de progression : 50 000 blocs trouvés ou 5 M de blocs de ferme ne s'atteignent pas en une saison.
 
-Le déblocage de vente par collection est le meilleur levier de rythme du mod : il empêche de tout vendre dès la première minute et donne une raison de miner autre chose que l'optimum.
+Récompense par palier : **`+0,03` de plancher de prix** sur cet item, et de l'XP globale. Un item travaillé de longue date rapporte donc plus qu'un item découvert hier, à quantité égale — c'est ce qui donne une raison de miner autre chose que l'optimum du moment.
+
+**Le déblocage de vente est retiré** (2026-11-05). Il fallait avoir récolté 10 ou 100 exemplaires avant de pouvoir vendre un item. C'était présenté ici comme « le meilleur levier de rythme du mod » ; à l'usage, ça retardait surtout la découverte du shop sans rien structurer — un joueur qui vient de miner son premier diamant doit pouvoir le vendre. `sell_requires_collection` dans `collections.json` restaure le verrou sans toucher au code.
+
+**Le plancher cumulé est borné à 75 % du prix de base** (`DynamicPrice.MAX_FLOOR`). Plancher du tier + bonus de collection + bonus de prestige pouvaient atteindre 90 % pour un `RARE`, et la borne existante à 95 % ne couvrait donc pas le cas qu'elle devait couvrir : au-delà de 75 %, le frein des prix dynamiques n'existe plus et la dix-millième unité vendue rapporte encore le plein tarif.
 
 Implémentation : une seule `Map<ItemId, Long>` dans l'attachment joueur, paliers générés par formule. Pas 200 fichiers.
 
