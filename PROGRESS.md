@@ -87,6 +87,68 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 
 ## Journal des sessions
 
+### 2026-11-06 — dix paliers, vente libre, NTM par rareté
+
+**1. Dix paliers de collection** au lieu de six. Trouvables jusqu'à 50 000,
+farmables jusqu'à 5 M. Les quatre ajoutés sont des objectifs de durée de vie.
+
+Le bonus de plancher ne monte que de **0,03 par palier** (au lieu de 0,05) :
+c'est la variable qui peut éteindre le frein des prix dynamiques, donc elle est
+la dernière à augmenter quand on allonge une échelle.
+
+**2. Le verrou de vente par collection est retiré** (demandé). Tout item
+vendable l'est dès la première unité. `sell_requires_collection` dans
+`collections.json` le restaure sans toucher au code — la logique est conservée,
+pas supprimée.
+
+Conséquence traitée : le palier 0 ne donnait *que* ce déverrouillage. Il porte
+désormais un bonus de plancher comme les autres, sinon il devenait vide.
+
+**3. Bug trouvé en chemin** : le plancher cumulé (tier + collection + prestige)
+était borné à **0,95**, c'est-à-dire nulle part. Un `RARE` à collection complète
+et prestige maximal atteignait 0,90 — à ce niveau la dix-millième unité vendue
+rapporte encore le plein tarif, ce qui est exactement ce que les prix dynamiques
+doivent empêcher. La borne existait donc sans couvrir le cas qu'elle visait.
+Resserrée à **0,75** (`DynamicPrice.MAX_FLOOR`), vérifié chiffré.
+
+**4. NTM NEXT passe à deux dimensions.** Un tag ne dit que la *forme* d'un item,
+donc un lingot de schrabidium coûtait un lingot de cuivre. Le prix devient
+**ancre de la rareté × facteur de la forme**.
+
+| Rareté | Matières | Lingot (achat) | Brute (vente) |
+|---|---|---|---|
+| Commune | uranium, titane, cuivre, plomb, aluminium, fluorite, soufre | 4 500 | 100 |
+| Peu commune | thorium, tungstène, béryllium, cobalt, lithium | 112 500 | 800 |
+| Rare | terres rares, niobium | 2,80 M | 6 400 |
+| Très rare | schrabidium, australium, osmiridium | 70,00 M | 51 200 |
+
+**Deux échelles, et c'est le point de conception.** L'achat monte de ×25 par
+cran (4 500 × 25³ = 70,3 M, d'où les 70 M demandés), la vente de ×8 seulement.
+Un achat est un puits qu'on ne peut pas exploiter ; une vente est un revenu
+qu'on peut industrialiser. L'asymétrie va de ×30 au commun à ×911 au très rare.
+
+Le rattachement se fait par **mot-cherché dans le chemin de l'identifiant**, pas
+par identifiant complet : on ne sait pas si le mod nomme ses items
+`uranium_ingot` ou `ingot_uranium`, et les deux contiennent « uranium ». Le
+mot-clé le plus long gagne, sinon l'ordre d'itération d'une map décidrait du
+prix de `rare_earth_ingot`.
+
+**Australium et osmiridium ne se vendent jamais**, pas même en brut : le joueur
+a lui-même signalé qu'ils « ne viennent que de sources spécifiques », donc ils
+sont *productibles*, donc vendables = imprimante à billets. C'est exactement
+l'exploit que la règle « seule la matière brute se vend » ferme ailleurs. Le
+schrabidium a un minerai, sa brute reste vendable.
+
+**Validation chiffrée** : la colonne commune reproduit l'ancien barème déjà
+calibré (brute 3 000, lingot 4 500, plaque 7 200, nugget 500, cristal 13 500) —
+bon signe que le modèle est le bon. Neutralité 9 nuggets = 1 lingot tenue à
+0,01 % près aux quatre raretés. Revenu réel de la brute très rare calculé sur la
+courbe dynamique : 2,62 M pour 64 unités, 21,2 M pour 1 024, plancher atteint à
+304 unités écoulées.
+
+Une matière inconnue retombe sur la règle de forme, au prix d'une matière
+courante : si NTM ajoute un métal, le mod continue de fonctionner.
+
 ### 2026-11-05 — les cycles passent en temps réel
 
 **Signalé par le joueur** : « si je me déconnecte un soir à 20h et que le timer

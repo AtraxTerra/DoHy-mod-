@@ -1,8 +1,82 @@
 {
   "_comment": "Regles de tarification par tag, appliquees a tout item enregistre qui n'a pas de prix explicite dans prices.json. C'est ce qui permet d'integrer un mod de plusieurs centaines d'items sans en lister un seul — et de rester correct si le mod n'est pas installe, puisqu'un tag vide ne produit rien.",
+  "_two_dimensions": "Un item NTM a deux caracteristiques qui comptent pour son prix : sa FORME (matiere brute, lingot, plaque, poudre, nugget, cristal) et la RARETE de sa MATIERE (le cuivre et le schrabidium ne sont pas le meme objet). Les regles par tag ne voyaient que la forme, donc un lingot de schrabidium coutait un lingot de cuivre. Le bloc materials ajoute la seconde dimension : prix = ancre de la rarete x facteur de la forme.",
   "_why_buy_is_expensive": "Les marges d'achat NTM sont volontairement enormes. NTM NEXT est un mod dont tout l'interet est de construire la chaine : pouvoir acheter ses lingots avec l'argent de fermes vanilla court-circuiterait 200 heures de contenu. L'achat reste possible — pour la piece qui manque — sans jamais permettre de s'industrialiser au shop.",
-  "_buy_ladder": "L'echelle est coherente de bout en bout : matiere brute 3 000 -> lingot 4 500 (le traitement ajoute de la valeur) -> plaque 7 200 (faite de lingots). Et 9 nuggets a 500 coutent exactement un lingot a 4 500 : sans cette neutralite, on achererait la forme la moins chere pour la convertir.",
   "_why_ntm_sells_only_raw": "NTM NEXT multiplie la matiere : ses chaines de traitement rendent plusieurs lingots par minerai, plus des sous-produits. Rendre les lingots, poudres ou plaques vendables transformerait ce rendement en revenu infini. Seule la matiere brute — le rendement reel du minage, non renouvelable — est donc vendable. Le reste est en achat seul, ce qui ferme l'exploit par construction au lieu de l'auditer recette par recette.",
+  "materials": {
+    "_comment": "Tarification par matiere. Un item est rattache a une matiere si le chemin de son identifiant contient l'un de ses mots-cles ; la forme vient du tag qui l'a capture. Volontairement par mot-cle et non par identifiant complet : on ne sait pas si le mod nomme ses items ntm:uranium_ingot ou ntm:ingot_uranium, et les deux marchent ainsi.",
+    "_ladder": "x25 d'une rarete a la suivante pour l'ACHAT : 4 500 -> 112 500 -> 2 800 000 -> 70 000 000. Trois crans de x25 font 15 625, ce qui place le tres rare a 70 M le lingot comme demande.",
+    "_sell_ladder": "x8 seulement d'une rarete a la suivante pour la VENTE : 100 -> 800 -> 6 400 -> 51 200 la matiere brute. L'achat est un puits a argent, qu'on ne peut pas exploiter, donc il peut etre extreme. La vente est un revenu : une echelle aussi raide y ferait du minage profond une imprimante. L'asymetrie qui en resulte — 1 367x entre l'achat et la vente du tres rare — est exactement l'intention : acheter la piece qui manque reste possible, s'industrialiser au shop jamais.",
+    "_anchors": "buy_unit et sell_unit sont les prix au facteur de forme 1,0, c'est-a-dire ceux du lingot. Les autres formes en decoulent. Le lingot n'est pas vendable, donc sell_unit est une reference de calcul et pas un prix affiche.",
+    "rarities": {
+      "COMMON": {
+        "buy_unit": 4500,
+        "sell_unit": 150,
+        "_note": "Reproduit l'echelle deja calibree avant ce decoupage : matiere brute a 3 000 a l'achat et 100 a la vente. Rien ne change pour les matieres courantes."
+      },
+      "UNCOMMON": {
+        "buy_unit": 112500,
+        "sell_unit": 1200
+      },
+      "RARE": {
+        "buy_unit": 2800000,
+        "sell_unit": 9600
+      },
+      "VERY_RARE": {
+        "buy_unit": 70000000,
+        "sell_unit": 76800,
+        "_note": "70 M le lingot. Un achat-trophee, pas une voie d'approvisionnement."
+      }
+    },
+    "_forms": "Facteur par forme, relatif au lingot. L'echelle est coherente de bout en bout : matiere brute sous le lingot (le traitement ajoute de la valeur), plaque au-dessus (faite de lingots). Le nugget vaut exactement un neuvieme du lingot. Sans cette neutralite, on achererait la forme la moins chere pour la convertir dans l'autre sens.",
+    "forms": {
+      "c:raw_materials": 0.6667,
+      "c:gems": 0.6,
+      "c:ingots": 1.0,
+      "c:plates": 1.6,
+      "c:dusts": 0.5333,
+      "c:nuggets": 0.1111,
+      "c:crystals": 3.0
+    },
+    "_assign": "Mots-cles cherches dans le chemin de l'identifiant. Casse ignoree.",
+    "assign": {
+      "COMMON": [
+        "uranium",
+        "titanium",
+        "copper",
+        "lead",
+        "aluminium",
+        "aluminum",
+        "fluorite",
+        "sulfur",
+        "sulphur"
+      ],
+      "UNCOMMON": [
+        "thorium",
+        "tungsten",
+        "beryllium",
+        "cobalt",
+        "lithium"
+      ],
+      "RARE": [
+        "rare_earth",
+        "rareearth",
+        "niobium"
+      ],
+      "VERY_RARE": [
+        "schrabidium",
+        "australium",
+        "osmiridium"
+      ]
+    },
+    "never_sellable": {
+      "_comment": "Matieres jamais vendables, meme sous forme brute. Australium et osmiridium ne se minent pas : ils sortent de procedes, donc ils sont PRODUCTIBLES. Les rendre vendables ferait d'une installation une imprimante a billets, exactement l'exploit que la regle sur la matiere brute ferme ailleurs. Le schrabidium, lui, a un minerai : sa matiere brute reste vendable.",
+      "keywords": [
+        "australium",
+        "osmiridium"
+      ]
+    }
+  },
   "rules": [
     {
       "tag": "c:raw_materials",
@@ -11,7 +85,7 @@
       "rate_per_hour": 400,
       "sellable": true,
       "buy_markup": 30.0,
-      "_note": "Le rendement du minage. 14 types dans NTM NEXT, dont 3 vanilla deja tarifes explicitement et donc non repris ici."
+      "_note": "Le rendement du minage. Les matieres non reconnues par le bloc materials retombent sur cette regle, qui vaut une rarete courante."
     },
     {
       "tag": "c:gems",

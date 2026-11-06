@@ -2,21 +2,94 @@
   "_comment": "Paliers de collection. Les items ne sont PAS listes ici : la courbe applicable se deduit du tier dans prices.json. Un item ajoute a rates.csv obtient automatiquement sa collection.",
   "curves": {
     "found": {
-      "_applies_to_tiers": ["FOUND", "RARE"],
-      "tiers": [10, 50, 100, 500, 1500, 2500]
+      "_applies_to_tiers": [
+        "FOUND",
+        "RARE"
+      ],
+      "tiers": [
+        10,
+        50,
+        100,
+        500,
+        1500,
+        2500,
+        5000,
+        10000,
+        25000,
+        50000
+      ]
     },
     "farmable": {
-      "_applies_to_tiers": ["FARM", "FOOD", "MOB"],
-      "tiers": [100, 1000, 5000, 25000, 100000, 250000]
+      "_applies_to_tiers": [
+        "FARM",
+        "FOOD",
+        "MOB"
+      ],
+      "tiers": [
+        100,
+        1000,
+        5000,
+        25000,
+        100000,
+        250000,
+        500000,
+        1000000,
+        2500000,
+        5000000
+      ]
     }
   },
   "rewards_per_tier": [
-    { "tier_index": 0, "unlock_sell": true,  "floor_bonus_pct": 0.00, "global_xp": 10,  "money": 0 },
-    { "tier_index": 1, "unlock_sell": true,  "floor_bonus_pct": 0.05, "global_xp": 25,  "money": 0 },
-    { "tier_index": 2, "unlock_sell": true,  "floor_bonus_pct": 0.10, "global_xp": 60,  "money": 0 },
-    { "tier_index": 3, "unlock_sell": true,  "floor_bonus_pct": 0.15, "global_xp": 150, "money": 0 },
-    { "tier_index": 4, "unlock_sell": true,  "floor_bonus_pct": 0.20, "global_xp": 400, "money": 0 },
-    { "tier_index": 5, "unlock_sell": true,  "floor_bonus_pct": 0.25, "global_xp": 1000, "money_formula": "base_price * 2500" }
+    {
+      "tier_index": 0,
+      "floor_bonus_pct": 0.03,
+      "global_xp": 10
+    },
+    {
+      "tier_index": 1,
+      "floor_bonus_pct": 0.06,
+      "global_xp": 25
+    },
+    {
+      "tier_index": 2,
+      "floor_bonus_pct": 0.09,
+      "global_xp": 60
+    },
+    {
+      "tier_index": 3,
+      "floor_bonus_pct": 0.12,
+      "global_xp": 150
+    },
+    {
+      "tier_index": 4,
+      "floor_bonus_pct": 0.15,
+      "global_xp": 400
+    },
+    {
+      "tier_index": 5,
+      "floor_bonus_pct": 0.18,
+      "global_xp": 1000
+    },
+    {
+      "tier_index": 6,
+      "floor_bonus_pct": 0.21,
+      "global_xp": 2000
+    },
+    {
+      "tier_index": 7,
+      "floor_bonus_pct": 0.24,
+      "global_xp": 4000
+    },
+    {
+      "tier_index": 8,
+      "floor_bonus_pct": 0.27,
+      "global_xp": 8000
+    },
+    {
+      "tier_index": 9,
+      "floor_bonus_pct": 0.3,
+      "global_xp": 15000
+    }
   ],
   "prestige": {
     "_comment": "Prestige d'une collection complete : le compteur repart a zero, et le gain est PERMANENT. Il n'augmente pas le prix de base — ce serait inflationniste sans fin — mais le S0, c'est-a-dire la quantite ecoulable avant que le prix tombe. Le plafond reste le prix de base, donc zero inflation : on devient industriellement efficace sur un item, on ne le rend pas magiquement plus cher.",
@@ -26,25 +99,53 @@
     "global_xp": 500
   },
   "rules": {
-    "_1": "Le palier 0 debloque la vente de l'item au shop. Avant lui, l'item n'est pas vendable.",
+    "_1": "Les paliers ne debloquent plus la vente : ils relevent le prix plancher, cumulativement avec le prestige. Voir sell_requires_collection.",
     "_2": "Seuls les blocs NON poses par le joueur comptent (voir DESIGN.md 10.1).",
-    "_3": "floor_bonus_pct s'ajoute au plancher du tier : un FARM a fond passe de 15% a 40% de plancher.",
-    "_4": "Les items obtenus par achat au shop ne comptent pas dans la collection."
+    "_3": "floor_bonus_pct s'ajoute au plancher du tier, puis au bonus de prestige. La somme est bornee a 75 % du prix de base dans DynamicPrice : au-dela, le frein des prix dynamiques n'existe plus et la 10 000e pierre vaut encore plein tarif. Un FARM a fond atteint 55 %, un FOUND 75 %, un RARE touche la borne.",
+    "_4": "Les items obtenus par achat au shop ne comptent pas dans la collection.",
+    "_5": "Dix paliers par courbe. Les quatre derniers sont des objectifs de duree de vie, pas de progression : 50 000 blocs trouves ou 5 M de blocs de ferme ne s'atteignent pas en une saison.",
+    "_6": "Les quatre paliers ajoutes donnent surtout de l'XP globale : le plancher ne monte que de 0,03 par palier, parce que c'est la variable qui peut eteindre le frein des prix."
   },
   "exceptions": {
     "minecraft:dragon_egg": {
       "_reason": "un seul exemplaire par monde",
-      "tiers": [1]
+      "tiers": [
+        1
+      ]
     },
     "minecraft:elytra": {
-      "tiers": [1, 2, 4, 8, 16, 32]
+      "tiers": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        100,
+        150,
+        250
+      ]
     },
     "minecraft:nether_star": {
-      "tiers": [1, 3, 8, 20, 50, 100]
+      "tiers": [
+        1,
+        3,
+        8,
+        20,
+        50,
+        100,
+        200,
+        350,
+        600,
+        1000
+      ]
     },
     "minecraft:emerald": {
       "_reason": "generateur villageois : aucun bonus de plancher, sinon l'exploit revient par la porte de derriere",
       "floor_bonus_disabled": true
     }
-  }
+  },
+  "sell_requires_collection": false,
+  "_sell_requires_collection": "false : tout item vendable l'est des la premiere unite. Le verrou d'origine (il fallait 10 ou 100 exemplaires avant de pouvoir vendre) retardait la decouverte du shop sans rien apporter — un joueur qui vient de miner son premier diamant doit pouvoir le vendre. Les collections gardent tout leur role par le bonus de plancher et le prestige. Remettre true restaure le verrou sans toucher au code."
 }

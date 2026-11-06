@@ -230,36 +230,87 @@ Un stack de diamants vendu d'un coup fait déjà tomber le prix à 66 %. Voulu :
 
 ---
 
-## 6 bis. Prix d'achat NTM NEXT
+## 6 bis. NTM NEXT — rareté de la matière × forme
 
-Volontairement énormes. NTM NEXT est un mod dont tout l'intérêt est de **construire
-la chaîne** : pouvoir acheter ses lingots avec l'argent de fermes vanilla
-court-circuiterait 200 heures de contenu. L'achat reste possible pour la pièce qui
-manque, jamais pour s'industrialiser.
+Un tag ne dit que la **forme** d'un item. La première version ne voyait donc que
+ça, et un lingot de schrabidium coûtait un lingot de cuivre — absurde dans un mod
+où toute la progression tient à la rareté des matières. Le prix a maintenant deux
+dimensions : **ancre de la rareté × facteur de la forme**.
 
-| Tag | Prix de base | Marge | Prix d'achat |
+### Les quatre raretés
+
+| Rareté | Matières | Lingot à l'achat | Matière brute à la vente |
 |---|---|---|---|
-| `c:raw_materials` | 100 | ×30 | 3 000 |
-| `c:gems` | 67 | ×40 | 2 680 |
-| `c:dusts` | 30 | ×80 | 2 400 |
-| `c:ingots` | 45 | ×100 | 4 500 |
-| `c:plates` | 60 | ×120 | 7 200 |
-| `c:nuggets` | 5 | ×100 | 500 |
-| `c:crystals` | 90 | ×150 | 13 500 |
+| Commune | uranium, titane, cuivre, plomb, aluminium, fluorite, soufre | 4 500 | 100 |
+| Peu commune | thorium, tungstène, béryllium, cobalt, lithium | 112 500 | 800 |
+| Rare | terres rares, niobium | 2,80 M | 6 400 |
+| Très rare | schrabidium, australium, osmiridium | **70,00 M** | 51 200 |
 
-Deux propriétés vérifiées :
+**Deux échelles différentes, et c'est voulu.** L'achat monte de **×25 par cran**
+(4 500 × 25³ = 70,3 M, d'où les 70 M demandés pour le très rare). La vente ne monte
+que de **×8**. Un achat est un puits à argent qu'on ne peut pas exploiter, donc il
+peut être extrême ; une vente est un revenu qu'on peut industrialiser. L'asymétrie
+qui en résulte va de ×30 pour le commun à **×911 pour le très rare** — acheter la
+pièce qui manque reste possible, s'industrialiser au shop jamais.
 
-- **L'échelle est cohérente** : matière brute 3 000 → lingot 4 500 (le traitement
-  ajoute de la valeur) → plaque 7 200 (faite de lingots).
-- **9 nuggets = 1 lingot exactement** (9 × 500 = 4 500). Sans cette neutralité, on
-  achèterait la forme la moins chère pour la convertir.
+### Les sept formes
 
-Les **prix de vente sont inchangés** : seule la matière brute se vend, au même prix
-qu'avant.
+Facteur relatif au lingot : matière brute 0,667 · gemme 0,6 · lingot 1,0 ·
+plaque 1,6 · poudre 0,533 · nugget 1/9 · cristal 3,0.
+
+| Forme | Commune | Peu commune | Rare | Très rare |
+|---|---|---|---|---|
+| matière brute | 3,00 k | 75,00 k | 1,87 M | 46,67 M |
+| nugget | 500 | 12,50 k | 311,08 k | 7,78 M |
+| poudre | 2,40 k | 60,00 k | 1,49 M | 37,33 M |
+| lingot | 4,50 k | 112,50 k | 2,80 M | 70,00 M |
+| plaque | 7,20 k | 180,00 k | 4,48 M | 112,00 M |
+| cristal | 13,50 k | 337,50 k | 8,40 M | 210,00 M |
+
+Trois propriétés vérifiées numériquement :
+
+- **La colonne commune reproduit l'ancien barème** déjà calibré (brute 3 000,
+  lingot 4 500, plaque 7 200, nugget 500, cristal 13 500). Rien ne change pour les
+  matières courantes — un bon signe que le modèle est le bon.
+- **L'échelle reste cohérente** : brute sous le lingot (le traitement ajoute de la
+  valeur), plaque au-dessus (faite de lingots).
+- **9 nuggets = 1 lingot**, à 0,01 % près aux quatre raretés (arrondi). Sans cette
+  neutralité, on achèterait la forme la moins chère pour la convertir.
+
+### Australium et osmiridium ne se vendent jamais
+
+Ils **ne se minent pas** : ils sortent de procédés, donc ils sont *productibles*.
+Les rendre vendables, même sous forme brute, ferait d'une installation une
+imprimante à billets — exactement l'exploit que la règle « seule la matière brute
+se vend » ferme ailleurs. Le schrabidium, lui, a un minerai : sa matière brute
+reste vendable.
+
+### Ce que rapporte vraiment la matière brute très rare
+
+51 203 l'unité au tarif plein, mais le prix dynamique freine (`FOUND` : S0 = 64,
+plancher 35 %) :
+
+| Vendu d'un coup | Recette | Par unité | % du prix de base |
+|---|---|---|---|
+| 16 | 0,76 M | 47 804 | 93 % |
+| 64 | 2,62 M | 40 899 | 80 % |
+| 256 | 7,40 M | 28 919 | 56 % |
+| 1 024 | 21,20 M | 20 706 | 40 % |
+| 4 096 | 76,26 M | 18 617 | 36 % |
+
+Le plancher mord à partir de 304 unités écoulées. C'est une belle récompense
+d'expédition, pas une rente.
+
+### Les matières inconnues retombent au commun
+
+Une matière que `tag_prices.json` ne connaît pas garde l'ancien comportement et le
+prix d'une matière courante. Si NTM ajoute un métal, le mod continue de
+fonctionner, au défaut prudent.
 
 ## 7. Ce qui n'est pas encore chiffré
 
-- **NTM NEXT** (phase 10) : les taux dépendent des recettes réelles du mod, à extraire de son source
-- **COMPONENT** : catégorie achat seul, liste et prix à établir en phase 3
+- **NTM NEXT** : les quatre raretés couvrent 17 matières nommées ; les autres
+  retombent au commun. À compléter si le mod en apporte d'autres qui méritent un cran.
+- ~~**COMPONENT**~~ : catégorie supprimée le 2026-11-05, elle n'a jamais contenu d'item
 - **Caisses** : table de loot à écrire
 - **Niveau global** : barème d'XP par type de jalon à fixer une fois les contrats en jeu

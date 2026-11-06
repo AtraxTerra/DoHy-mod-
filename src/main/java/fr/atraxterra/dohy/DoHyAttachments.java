@@ -63,7 +63,7 @@ public final class DoHyAttachments {
 
     /**
      * Collections par item. Conservees a la mort : un acquis ne se reperd pas,
-     * et le premier palier debloque la vente — la perdre a la mort serait
+     * et chaque palier releve le prix plancher — la perdre a la mort serait
      * punitif au point d'etre absurde.
      */
     public static final Supplier<AttachmentType<CollectionData>> COLLECTIONS = ATTACHMENT_TYPES.register(

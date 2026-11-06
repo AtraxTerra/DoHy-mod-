@@ -112,37 +112,52 @@ public final class CollectionTiers {
     }
 
     public record Config(Map<String, Curve> curves, List<Reward> rewards,
-                         Map<Identifier, Exception_> exceptions, Prestige prestige) {
+                         Map<Identifier, Exception_> exceptions, Prestige prestige,
+                         boolean sellRequiresCollection) {
 
         static final Prestige FALLBACK_PRESTIGE = new Prestige(5, 0.5d, 0.02d, 500L);
 
         /**
          * Repli si le fichier manque : les courbes de {@code DESIGN.md}, en dur.
-         * Mieux vaut des paliers corrects qu'aucune collection — un joueur sans
-         * collection ne peut rien vendre, puisque le premier palier debloque la
-         * vente.
+         * Mieux vaut des paliers corrects qu'aucune collection.
+         *
+         * <p>Le repli ne verrouille pas la vente ({@code false} en dernier
+         * argument) : un fichier manquant ne doit pas rendre l'economie
+         * inutilisable, et c'est de toute facon le reglage retenu.
          */
         static final Config FALLBACK = new Config(
                 Map.of(
-                        "found", new Curve(List.of("FOUND", "RARE"), List.of(10L, 50L, 100L, 500L, 1500L, 2500L)),
+                        "found", new Curve(List.of("FOUND", "RARE"),
+                                List.of(10L, 50L, 100L, 500L, 1500L, 2500L,
+                                        5000L, 10000L, 25000L, 50000L)),
                         "farmable", new Curve(List.of("FARM", "FOOD", "MOB"),
-                                List.of(100L, 1000L, 5000L, 25000L, 100000L, 250000L))),
+                                List.of(100L, 1000L, 5000L, 25000L, 100000L, 250000L,
+                                        500000L, 1000000L, 2500000L, 5000000L))),
                 List.of(
-                        new Reward(true, 0.00d, 10L),
-                        new Reward(true, 0.05d, 25L),
-                        new Reward(true, 0.10d, 60L),
-                        new Reward(true, 0.15d, 150L),
-                        new Reward(true, 0.20d, 400L),
-                        new Reward(true, 0.25d, 1000L)),
+                        new Reward(true, 0.03d, 10L),
+                        new Reward(true, 0.06d, 25L),
+                        new Reward(true, 0.09d, 60L),
+                        new Reward(true, 0.12d, 150L),
+                        new Reward(true, 0.15d, 400L),
+                        new Reward(true, 0.18d, 1000L),
+                        new Reward(true, 0.21d, 2000L),
+                        new Reward(true, 0.24d, 4000L),
+                        new Reward(true, 0.27d, 8000L),
+                        new Reward(true, 0.30d, 15000L)),
                 Map.of(),
-                new Prestige(5, 0.5d, 0.02d, 500L));
+                new Prestige(5, 0.5d, 0.02d, 500L),
+                false);
 
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.unboundedMap(Codec.STRING, Curve.CODEC).fieldOf("curves").forGetter(Config::curves),
                 Reward.CODEC.listOf().fieldOf("rewards_per_tier").forGetter(Config::rewards),
                 Codec.unboundedMap(Identifier.CODEC, Exception_.CODEC)
                         .optionalFieldOf("exceptions", Map.of()).forGetter(Config::exceptions),
-                Prestige.CODEC.optionalFieldOf("prestige", FALLBACK_PRESTIGE).forGetter(Config::prestige)
+                Prestige.CODEC.optionalFieldOf("prestige", FALLBACK_PRESTIGE).forGetter(Config::prestige),
+                // Par defaut false : la vente n'attend aucune collection. Voir
+                // le commentaire de collections.json.
+                Codec.BOOL.optionalFieldOf("sell_requires_collection", false)
+                        .forGetter(Config::sellRequiresCollection)
         ).apply(instance, Config::new));
 
         /** Les paliers applicables a un item, selon son tier de prix. */

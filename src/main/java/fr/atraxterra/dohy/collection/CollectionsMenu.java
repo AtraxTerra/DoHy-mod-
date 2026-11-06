@@ -192,8 +192,8 @@ public final class CollectionsMenu extends DisplayMenu {
                 Gui.blank(),
                 Gui.field("prestiges cumules", String.valueOf(prestiges)),
                 Gui.blank(),
-                Gui.hint("le premier palier debloque la vente"),
-                Gui.hint("les suivants relevent le prix plancher"),
+                Gui.hint("chaque palier releve le prix plancher :"),
+                Gui.hint("l'item resiste mieux a la vente en masse"),
                 Gui.hint("un prestige remet le compteur a zero"),
                 Gui.hint("et augmente la quantite ecoulable"))));
 
@@ -267,7 +267,7 @@ public final class CollectionsMenu extends DisplayMenu {
             lore.add(Gui.hint("  il t'en manque " + MoneyFormat.exact(
                     CollectionApi.missingToUnlock(player, id, entry))));
         } else {
-            lore.add(Gui.good("vente debloquee"));
+            lore.add(Gui.good("vendable"));
             double floor = CollectionApi.floorBonus(player, id, entry);
             if (floor > 0) {
                 lore.add(Gui.hint("  plancher releve de "

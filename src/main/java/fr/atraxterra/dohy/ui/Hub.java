@@ -145,8 +145,8 @@ public final class Hub extends DisplayMenu {
         set(SLOT_CONTRACTS, contracts());
         set(SLOT_SKILLS, skills());
         set(SLOT_COLLECTIONS, Gui.button(Items.BOOKSHELF, "Collections", Gui.lore(
-                Gui.hint("recolter debloque la vente,"),
-                Gui.hint("puis releve le prix plancher"),
+                Gui.hint("recolter releve le prix plancher :"),
+                Gui.hint("l'item resiste mieux a la vente en masse"),
                 Gui.blank(),
                 Gui.action("clic pour ouvrir"))));
         set(SLOT_MUSEUM, museum());

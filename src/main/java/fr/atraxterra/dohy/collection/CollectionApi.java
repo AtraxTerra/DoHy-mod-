@@ -21,9 +21,14 @@ import java.util.List;
 /**
  * Les collections : seul point d'entree.
  *
- * <p>Le premier palier debloque la vente de l'item. C'est le meilleur levier de
- * rythme du mod : il empeche de tout vendre des la premiere minute, et il donne
- * une raison de miner autre chose que l'optimum du moment.
+ * <p>Chaque palier franchi releve le <b>prix plancher</b> de l'item : plus la
+ * collection avance, plus l'item resiste a la vente en masse. C'est ce qui donne
+ * une raison de miner autre chose que l'optimum du moment — un item travaille de
+ * longue date rapporte plus qu'un item decouvert hier, a quantite egale.
+ *
+ * <p>Le premier palier verrouillait aussi la vente, a une epoque. Ce verrou est
+ * retire : il retardait la decouverte du shop sans rien apporter au rythme, et
+ * {@code sell_requires_collection} le restaure si besoin.
  */
 public final class CollectionApi {
 
@@ -76,14 +81,24 @@ public final class CollectionApi {
     }
 
     /**
-     * Vrai si le joueur a atteint le premier palier, donc si l'item est
-     * vendable pour lui.
+     * Vrai si l'item est vendable pour ce joueur.
      *
-     * <p>Un item sans courbe de paliers est vendable d'emblee : c'est le cas des
-     * items hors catalogue de collection, et il vaut mieux laisser vendre que
-     * bloquer sur une donnee manquante.
+     * <p>Par defaut toujours vrai : le verrou d'origine — il fallait avoir
+     * recolte dix ou cent exemplaires avant de pouvoir vendre — retardait la
+     * decouverte du shop sans rien apporter. Un joueur qui vient de miner son
+     * premier diamant doit pouvoir le vendre. Les collections gardent tout leur
+     * role par le bonus de plancher et le prestige.
+     *
+     * <p>{@code sell_requires_collection} dans {@code collections.json} restaure
+     * le verrou sans toucher au code.
+     *
+     * <p>Un item sans courbe de paliers est vendable d'emblee dans tous les cas :
+     * mieux vaut laisser vendre que bloquer sur une donnee manquante.
      */
     public static boolean isUnlocked(ServerPlayer player, Identifier id, PriceEntry entry) {
+        if (!CollectionTiers.config().sellRequiresCollection()) {
+            return true;
+        }
         List<Long> tiers = CollectionTiers.config().tiersFor(id, entry.tier());
         if (tiers.isEmpty()) {
             return true;
@@ -91,8 +106,14 @@ public final class CollectionApi {
         return data(player).countOf(id) >= tiers.get(0);
     }
 
-    /** Quantite encore necessaire pour debloquer la vente. Zero si debloquee. */
+    /**
+     * Quantite encore necessaire pour debloquer la vente. Zero si debloquee,
+     * donc zero partout tant que le verrou reste desactive.
+     */
     public static long missingToUnlock(ServerPlayer player, Identifier id, PriceEntry entry) {
+        if (!CollectionTiers.config().sellRequiresCollection()) {
+            return 0L;
+        }
         List<Long> tiers = CollectionTiers.config().tiersFor(id, entry.tier());
         if (tiers.isEmpty()) {
             return 0L;
