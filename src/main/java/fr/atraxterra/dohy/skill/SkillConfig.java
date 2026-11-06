@@ -147,7 +147,7 @@ public final class SkillConfig {
 
         /** Repli : la courbe de {@code BALANCE.md}, sans aucune source d'XP. */
         static final Config FALLBACK = new Config(
-                new Curve(50, 100.0d, 1.8d, 750.0d, 1.5d, 5), Map.of());
+                new Curve(100, 100.0d, 1.6d, 750.0d, 1.4d, 5), Map.of());
 
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Curve.CODEC.optionalFieldOf("curve", FALLBACK.curve()).forGetter(Config::curve),

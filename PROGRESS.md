@@ -87,6 +87,62 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 
 ## Journal des sessions
 
+### 2026-11-06 (soir) — barre de skills, 100 niveaux, 25 paliers
+
+**1. Barre de boss pour les skills** (`skill/SkillBossBar`). Le point technique
+qui décide tout : `ServerBossEvent` est **entièrement côté serveur** — le jeu
+envoie les paquets, le client vanilla dessine. C'est donc le seul affichage
+riche en haut de l'écran qui n'ajoute pas une ligne de code client, et le mod
+reste avec un seul morceau de rendu (le HUD de solde), ce qui le met à l'abri
+des refontes de rendu comme celle de 26.2.
+
+Sondé avant d'écrire, et bien vu : le constructeur exige un **UUID**
+(`ServerBossEvent(UUID, Component, BossBarColor, BossBarOverlay)`), ce que la
+signature habituelle à trois arguments ne laissait pas deviner. Valeurs
+d'énumération confirmées aussi : 7 couleurs, 5 recouvrements.
+
+Une barre par joueur, renommée au changement d'activité. S'efface après 5 s sans
+XP, 8 s sur une montée de niveau. État transitoire, hors sauvegarde — une barre
+est de l'affichage, pas une donnée de jeu.
+
+Les entrées sont retrouvées **par UUID** et non gardées comme références de
+joueur : un joueur déconnecté n'est plus dans la liste, son entrée est jetée. Pas
+besoin d'écouter la déconnexion, et aucune référence à une entité morte ne
+traîne. `removeAllPlayers()` évité — il n'était pas dans la sonde.
+
+**2. Skills à 100 niveaux**, avec recalibrage obligatoire. Garder `lvl^1.8`
+aurait donné **961 h pour un seul skill** à 15 k XP/h, contre 140 h pour le
+niveau 50 — trois fois la saison entière pour un huitième du contenu. Exposants
+descendus : XP 1,8 → **1,6**, argent 1,5 → **1,4**.
+
+Résultat : le 50 devient un jalon de milieu de partie (69 h au lieu de 140), le
+100 l'horizon longue durée (412 h). Les 8 skills au maximum rapportent 160 M
+cumulés, toujours sous les 500 M de l'autosell — le principe « un skill est un
+bonus, pas un revenu » revérifié chiffre en main.
+
+**20 perks par skill** au lieu de 10. Les 10 ajoutés n'utilisent **que les trois
+types réellement appliqués** (`attribute`, `double_drop_chance`, `xp_bonus`) :
+un perk annoncé dans l'interface mais sans effet en jeu est pire que pas de
+perk. `nuclear` n'en avait **aucun** — il reçoit une échelle complète de 20.
+
+Garde ajouté dans `SkillsMenu` : 20 perks pour 21 emplacements, ça tient de
+justesse, donc le dernier emplacement annonce le débordement plutôt que de
+laisser des perks disparaître sans bruit si la table s'allonge.
+
+**3. Collections à 25 paliers.** Tête raide conservée (×2 à ×5 sur les dix
+premiers), queue dense ajoutée (×1,11 sur les quinze suivants) : la tête est la
+progression, la queue est la durée de vie. Un palier de queue vaut 10 à 60 h
+d'activité ciblée. Les valeurs de tête n'ont pas bougé, pour ne pas déplacer le
+palier des collections déjà entamées.
+
+Le bonus de plancher passe en **courbe concave** jusqu'à 0,30 : `+0,060` au
+premier palier, `+0,003` au dernier. Il ne suit délibérément pas le nombre de
+paliers — vingt-cinq crans de 0,03 auraient donné 0,75, soit la borne entière
+(voir `MAX_FLOOR`, resserrée ce matin) consommée par les seules collections.
+
+Les exceptions gardent leur longueur propre : un item rare a moins de paliers,
+donc moins de bonus.
+
 ### 2026-11-06 — dix paliers, vente libre, NTM par rareté
 
 **1. Dix paliers de collection** au lieu de six. Trouvables jusqu'à 50 000,
@@ -540,6 +596,9 @@ Elles sont consignees ici parce qu'elles vont se reposer a chaque phase :
 | `ServerPlayer.server` / `getServer()` | inaccessibles → ouvrir un menu par appel direct |
 | `SoundEvents` | certains sont des `Holder` (`.value()`), d'autres des `SoundEvent` direct — vérifier au cas par cas |
 | `displayClientMessage` | **supprimé** → `player.connection.send(new ClientboundSetActionBarTextPacket(...))` |
+| `ServerBossEvent` | ctor **exige un UUID** : `(UUID, Component, BossBarColor, BossBarOverlay)` — pas de variante à 3 arguments (sondé le 2026-11-06) |
+| `BossEvent` | `setProgress(float)`, `setName`, `setColor`, `setOverlay`, `addPlayer`, `removePlayer` présents ; `removeAllPlayers` **non confirmé**, évité |
+| `BossBarColor` / `BossBarOverlay` | PINK BLUE RED GREEN YELLOW PURPLE WHITE / PROGRESS NOTCHED_6 NOTCHED_10 NOTCHED_12 NOTCHED_20 (sondé le 2026-11-06) |
 | `MenuType.GENERIC_9x1` … `9x6` | les **six** existent, typées `MenuType<ChestMenu>` (sondé le 2026-11-05) |
 | `Player.closeContainer()` | **présent** (sondé le 2026-11-05) |
 | `EntityType.getDescription()` | **présent**, rend un `Component` (sondé le 2026-11-05) |

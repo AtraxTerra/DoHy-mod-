@@ -97,6 +97,10 @@ public final class SkillApi {
         data(player).addXp(skill, boosted);
         int after = levelOf(player, skill);
 
+        // La barre se rafraichit a chaque gain, avant les recompenses : elle doit
+        // deja montrer le nouveau niveau quand le message de montee arrive.
+        SkillBossBar.show(player, skill, boosted, after > before);
+
         if (after > before) {
             for (int level = before + 1; level <= after; level++) {
                 reward(player, skill, level);
