@@ -204,7 +204,7 @@ public final class SkillsMenu extends DisplayMenu {
      */
     private ItemStack perkTile(SkillConfig.Perk perk, int level) {
         boolean unlocked = level >= perk.level();
-        boolean active = ACTIVE_TYPES.contains(perk.type());
+        boolean active = SkillConfig.isImplemented(perk.type());
 
         List<Component> lore = Gui.lore(
                 Gui.field("niveau requis", String.valueOf(perk.level())),
@@ -219,10 +219,6 @@ public final class SkillsMenu extends DisplayMenu {
                                 : ChatFormatting.DARK_GRAY),
                 lore);
     }
-
-    /** Types de perks reellement appliques, pour l'honnetete de l'affichage. */
-    private static final List<String> ACTIVE_TYPES =
-            List.of("attribute", "double_drop_chance", "xp_bonus");
 
     private static int countUnlocked(List<SkillConfig.Perk> perks, int level) {
         int count = 0;

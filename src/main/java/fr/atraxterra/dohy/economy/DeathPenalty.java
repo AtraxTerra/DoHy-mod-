@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.economy;
 
 import fr.atraxterra.dohy.DoHyAttachments;
+import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -69,6 +70,13 @@ public final class DeathPenalty {
         }
 
         long loss = lossFor(data);
+        // Branche Patrimoine protege, cumulee avec l'assurance mais bornee a
+        // 80 % : une mort doit toujours couter quelque chose, sinon la penalite
+        // cesse d'exister et avec elle la raison de deposer en banque.
+        double shield = Math.min(0.8d, UpgradeApi.bonus(player, UpgradeApi.DEATH_PENALTY_CUT));
+        if (shield > 0) {
+            loss = Math.round(loss * (1.0d - shield));
+        }
         boolean insured = data.insurance() > 0;
         if (insured) {
             loss = Math.round(loss * (1.0d - EconomyConfig.death().insuranceReduction()));

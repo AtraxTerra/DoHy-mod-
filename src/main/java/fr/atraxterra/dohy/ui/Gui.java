@@ -79,6 +79,19 @@ public final class Gui {
         return stack;
     }
 
+    /**
+     * Vignette dont la pile porte un nombre.
+     *
+     * <p>Le compte d'une pile est la seule information qu'un ecran de coffre
+     * affiche sans survol : un niveau ou un palier s'y lit d'un coup d'oeil, ce
+     * qui evite d'ouvrir la description pour la question la plus fréquente.
+     */
+    public static ItemStack button(Item item, Component name, List<Component> lore, int count) {
+        ItemStack stack = button(item, name, lore);
+        stack.setCount(Math.max(1, Math.min(64, count)));
+        return stack;
+    }
+
     /** Remplissage neutre des bordures. */
     public static ItemStack filler() {
         ItemStack stack = new ItemStack(Items.GLASS_PANE);

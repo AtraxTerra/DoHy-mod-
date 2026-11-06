@@ -4,6 +4,7 @@ import fr.atraxterra.dohy.DoHyAttachments;
 import fr.atraxterra.dohy.contract.ContractApi;
 import fr.atraxterra.dohy.contract.ContractType;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -92,7 +93,8 @@ public final class SkillApi {
             return;
         }
 
-        long boosted = Math.round(amount * (1.0d + SkillPerks.xpBonus(player, skill)));
+        long boosted = Math.round(amount * (1.0d + SkillPerks.xpBonus(player, skill)
+                + UpgradeApi.bonus(player, UpgradeApi.SKILL_XP_BONUS)));
         int before = levelOf(player, skill);
         data(player).addXp(skill, boosted);
         int after = levelOf(player, skill);
@@ -146,6 +148,13 @@ public final class SkillApi {
             case "attribute" -> perk.attribute().orElse("attribut") + " " + amount;
             case "double_drop_chance" -> "chance de double drop " + amount;
             case "xp_bonus" -> "XP de skill " + amount;
+            case "harvest_bonus" -> "recolte accrue " + amount;
+            case "tree_chop" -> "abattage, rayon " + (int) perk.amount();
+            case "loot_bonus" -> "chance de butin double " + amount;
+            case "treasure_chance" -> "chance de trouvaille a la peche " + amount;
+            case "no_fall_damage_below" -> "aucun degat de chute sous "
+                    + (int) perk.amount() + " blocs";
+            case "anvil_cost_reduction" -> "cout d'enclume " + amount;
             default -> perk.type() + " " + amount + " (pas encore actif)";
         };
     }

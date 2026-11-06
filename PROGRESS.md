@@ -87,6 +87,75 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 
 ## Journal des sessions
 
+### 2026-11-06 (fin) — zéro perk inerte, et un puits à argent permanent
+
+Carte blanche donnée, hors « raisons de quitter la base ».
+
+**1. Les 33 perks inertes sont réglés — il en reste 0 sur 160.**
+
+Six types sont désormais implémentés dans `skill/SkillEffects` :
+`harvest_bonus`, `tree_chop`, `loot_bonus`, `treasure_chance`,
+`no_fall_damage_below`, `anvil_cost_reduction`.
+
+Six types sont **inimplémentables en 26.2** et ont été remplacés dans le
+datapack par des perks équivalents qui fonctionnent. Ce que la sonde a établi :
+pas d'évènement de durabilité, pas de `BonemealEvent`, **pas de
+`BlockEvent.BreakEvent`** (il a disparu), et la vitesse d'un four ne se rattache
+à aucun joueur. Donc :
+
+| Type retiré | Devient | Pourquoi ce choix |
+|---|---|---|
+| `fishing_speed` | `double_drop_chance` sur les prises | Même effet économique, et le libellé ne mente pas |
+| `tool_durability` | `attribute block_break_speed` | Un outil entretenu travaille plus vite |
+| `smelt_speed` | `attribute armor` | Un forgeron porte ce qu'il forge |
+| `smelt_fuel_efficiency` | `attribute armor_toughness` | idem |
+| `scaffold_assist` | `attribute step_height` | Monter d'un bloc sans sauter : ce que l'échafaudage apportait |
+| `bonemeal_efficiency` | `harvest_bonus` | Rejoint une échelle implémentée |
+
+**Piège évité dans `tree_chop`** : `destroyBlock` refait passer chaque bûche par
+`BlockDropsEvent`, donc l'abattage se serait rappelé pour chaque bûche qu'il
+venait de casser — récursion exponentielle sur un grand arbre. Verrou statique
+`felling`. Les *autres* effets continuent de s'appliquer aux bûches abattues
+(XP et collections comptent l'arbre entier) ; seule la propagation est bloquée.
+
+L'abattage respecte aussi le suivi des blocs posés : un plancher de bois à côté
+de l'arbre ne part pas avec lui.
+
+**Duplication supprimée** : `SkillsMenu` tenait sa propre liste des types actifs
+en face de `SkillConfig.IMPLEMENTED`. Deux listes auraient dérivé, et c'est
+l'écran qui aurait fini par mentir. Une seule source désormais,
+`SkillConfig.isImplemented`.
+
+**2. Arbre d'améliorations permanentes** (`upgrade/`), huit branches,
+24 paliers, 14,83 G pour tout monter.
+
+C'était le trou de conception le plus sérieux du mod : tous les autres puits à
+argent sont consommables ou ponctuels — booster, caisse, assurance — et
+l'autosell à 500 M est un achat **unique**. Passé le mois 4, l'argent n'avait
+plus de destination.
+
+**Recalibré une fois** : la première version chiffrait **328 G** (escalade ×4,
+cinq paliers sur certaines branches), soit plus de seize mille heures même à
+20 M/h. Les derniers paliers auraient été du contenu mort — pire que pas de
+palier. Ramené à ×2,6 avec moins de paliers ; le premier palier de chaque
+branche tient entre 25 M et 400 M, donc accessible dans les premiers mois.
+
+**Une branche abandonnée parce qu'impossible** : elle devait ajouter des rangées
+au coffre de vente, mais un menu de coffre plafonne à six rangées et le coffre
+de vente y est déjà. Devenue « Negoce » (remise d'achat).
+
+**La règle posée** : `UpgradeApi.EFFECTS` liste les huit effets que le code lit
+réellement, et le chargement du datapack prévient pour tout effet absent. Même
+filet que pour les perks, posé pour la même raison — une amélioration payée
+plusieurs milliards doit faire quelque chose.
+
+Deux garde-fous d'équilibrage : « Résilience du marché » est volontairement la
+plus chère car elle atténue le seul vrai frein de l'économie, et son maximum
+fait **mordre la borne `MAX_FLOOR`** de 0,75 (plancher cumulé 0,85 sur un
+`FOUND`) — le frein survit donc à tous les achats possibles, par construction.
+Et « Plafond de banque » relève le plafond et **jamais le taux**, sinon attendre
+redeviendrait plus rentable que jouer.
+
 ### 2026-11-06 (soir) — barre de skills, 100 niveaux, 25 paliers
 
 **1. Barre de boss pour les skills** (`skill/SkillBossBar`). Le point technique

@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.boost;
 import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.contract.ContractApi;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
@@ -41,6 +42,18 @@ public final class Autosell {
 
     /** Intervalle entre deux passages, en minutes de temps de jeu. */
     public static final long INTERVAL_MINUTES = 5L;
+
+    /**
+     * L'intervalle effectif, raccourci par la branche Cadence.
+     *
+     * <p>Plancher d'une minute garde en dur : en dessous, l'autosell ne serait
+     * plus un ramassage periodique mais un tuyau continu, et le coffre de vente
+     * n'aurait plus de raison d'exister.
+     */
+    public static long intervalFor(ServerPlayer player) {
+        long cut = UpgradeApi.bonusInt(player, UpgradeApi.AUTOSELL_INTERVAL_CUT);
+        return Math.max(1L, INTERVAL_MINUTES - cut);
+    }
 
     /** Distance maximale entre le joueur et son coffre lie, pour le lien. */
     private static final int LINK_RANGE = 16;
@@ -92,7 +105,7 @@ public final class Autosell {
         }
 
         long now = ContractApi.data(player).playtimeMinutes();
-        if (data.autosellLast() >= 0 && now - data.autosellLast() < INTERVAL_MINUTES) {
+        if (data.autosellLast() >= 0 && now - data.autosellLast() < intervalFor(player)) {
             return;
         }
         data.markAutosell(now);

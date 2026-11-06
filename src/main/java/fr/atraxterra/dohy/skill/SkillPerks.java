@@ -117,6 +117,34 @@ public final class SkillPerks {
     }
 
     /**
+     * La meilleure valeur acquise d'un type de perk dans un skill donne.
+     *
+     * <p>Point d'entree unique pour tous les effets qui ne sont pas des
+     * attributs : {@link SkillEffects} les lit par ce biais plutot que de
+     * reparcourir la table des perks, de sorte que la regle « seul le plus haut
+     * palier compte » n'existe qu'a un seul endroit.
+     */
+    public static double value(ServerPlayer player, Skill skill, String type) {
+        return sumOf(player, skill, type);
+    }
+
+    /**
+     * La meilleure valeur acquise d'un type de perk, tous skills confondus.
+     *
+     * <p>Utile pour les effets qui n'appartiennent qu'a un skill — les degats de
+     * chute a la construction, le cout d'enclume a la forge — sans que
+     * l'appelant ait a savoir lequel. Si un jour deux skills portent le meme
+     * type, le meilleur des deux l'emporte, ce qui ne cumule jamais.
+     */
+    public static double value(ServerPlayer player, String type) {
+        double best = 0.0d;
+        for (Skill skill : Skill.values()) {
+            best = Math.max(best, sumOf(player, skill, type));
+        }
+        return best;
+    }
+
+    /**
      * Les perks d'un meme type ne s'additionnent pas : seul le plus haut palier
      * atteint compte. Sans ca, un perk de 2 % puis 5 % puis 15 % donnerait 22 %
      * au lieu des 15 % annonces au joueur.

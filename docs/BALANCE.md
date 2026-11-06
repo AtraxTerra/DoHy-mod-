@@ -209,6 +209,63 @@ Prix d'achat des items : `base_price × 4` (`BUY_MARKUP`). Racheter ce qu'on a v
 
 ---
 
+## 4 bis. Améliorations permanentes — le puits à argent qui ne s'épuise pas
+
+### Le trou qu'elles bouchent
+
+Tous les autres puits à argent sont **consommables ou ponctuels** : un booster se
+dépense, une caisse est un pari, une assurance se consomme, et l'autosell à 500 M
+est un achat **unique**. Passé ce point — vers le mois 4 — l'argent n'avait plus
+de destination : on continuait à en gagner sans que ça change quoi que ce soit.
+C'est comme ça que meurt une économie de jeu.
+
+### Le barème
+
+| Branche | Effet | Paliers | Prix |
+|---|---|---|---|
+| Negoce | −5 / −10 / −15 % à l'achat | 3 | 25 M · 65 M · 170 M |
+| Patrimoine protégé | −20 / −40 / −60 % à la mort | 3 | 50 M · 130 M · 340 M |
+| Plafond de banque | ×2 / ×4 / ×8 / ×16 | 4 | 80 M · 210 M · 540 M · 1,4 G |
+| Carnet de contrats | +1 / +2 contrats par jour | 2 | 120 M · 360 M |
+| Apprentissage | +15 / +30 / +50 % d'XP de skill | 3 | 150 M · 390 M · 1,0 G |
+| Endurance des boosters | +10 / +25 / +45 min | 3 | 200 M · 520 M · 1,4 G |
+| Cadence d'autosell | toutes les 4 / 3 / 2 min | 3 | 300 M · 780 M · 2,0 G |
+| Résilience du marché | +3 / +6 / +10 points de plancher | 3 | 400 M · 1,1 G · 3,1 G |
+
+**24 paliers, 14,83 G pour tout monter.** Environ un an de jeu à 15 M/h, deux ans
+et demi à 6 M/h. Chaque palier coûte ~2,6× le précédent, et le **premier palier
+de chaque branche tient entre 25 M et 400 M** — donc accessible dans les premiers
+mois, ce qui est l'essentiel : les premiers paliers font la sensation de jeu, la
+queue est l'horizon.
+
+**Une première version chiffrait 328 G** (escalade ×4, cinq paliers sur certaines
+branches), soit plus de seize mille heures même à 20 M/h. Les derniers paliers
+auraient été du contenu mort — pire que pas de palier.
+
+### Deux garde-fous
+
+- **Résilience du marché est volontairement la plus chère** : c'est la seule
+  branche qui atténue le vrai frein de l'économie. Son maximum porte le plancher
+  cumulé d'un `FOUND` à 0,85, donc **la borne de 0,75 mord** (`MAX_FLOOR`) — le
+  frein survit à tous les achats possibles, par construction.
+- **Plafond de banque relève le plafond et jamais le taux.** Relever le taux
+  aurait rendu l'attente plus rentable que le jeu, ce que tout le calibrage de la
+  banque cherche à éviter.
+
+### Un effet déclaré est un effet branché
+
+`UpgradeApi.EFFECTS` liste les huit effets que le code lit réellement, et le
+chargement du datapack **prévient pour tout effet absent de cette liste**. Même
+filet que pour les perks de skill, posé pour la même raison : on a découvert 33
+perks déclarés et inertes. Une amélioration payée plusieurs milliards doit faire
+quelque chose.
+
+Une neuvième branche était prévue — ajouter des rangées au coffre de vente — et a
+été **abandonnée parce qu'elle est impossible** : un menu de coffre plafonne à six
+rangées et le coffre de vente y est déjà. Elle est devenue Negoce.
+
+---
+
 ## 5. Pénalité de mort
 
 ```

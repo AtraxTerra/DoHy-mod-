@@ -10,6 +10,7 @@ import fr.atraxterra.dohy.museum.MuseumApi;
 import fr.atraxterra.dohy.ui.DisplayMenu;
 import fr.atraxterra.dohy.ui.Gui;
 import fr.atraxterra.dohy.ui.Hub;
+import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
@@ -156,9 +157,7 @@ public final class ShopMenu extends DisplayMenu {
     }
 
     private void buy(Item item, PriceEntry entry, int wanted) {
-        // La remise du musee s'applique au prix d'achat.
-        long unitPrice = Math.max(1L, Math.round(entry.buyPrice()
-                * (1.0d - MuseumApi.buyDiscount(player))));
+        long unitPrice = Math.max(1L, Math.round(entry.buyPrice() * (1.0d - discount(player))));
         if (entry.buyPrice() <= 0L) {
             failure();
             player.sendSystemMessage(Component.literal("Cet item n'est pas en vente.")
@@ -279,10 +278,10 @@ public final class ShopMenu extends DisplayMenu {
             lore.add(Gui.hint("Achat seul"));
         }
         if (entry.buyPrice() > 0L) {
-            double discount = MuseumApi.buyDiscount(player);
+            double discount = discount(player);
             long shown = Math.max(1L, Math.round(entry.buyPrice() * (1.0d - discount)));
             lore.add(Component.literal("Achat : " + MoneyFormat.exact(shown)
-                            + (discount > 0 ? "  (-" + Math.round(discount * 100) + " % musee)" : ""))
+                            + (discount > 0 ? "  (-" + Math.round(discount * 100) + " %)" : ""))
                     .withStyle(ChatFormatting.RED));
         }
         lore.add(Component.literal("Tu en as : " + owned).withStyle(ChatFormatting.GRAY));
@@ -310,6 +309,17 @@ public final class ShopMenu extends DisplayMenu {
         ItemStack stack = new ItemStack(item, Math.max(1, Math.min(64, owned)));
         stack.set(DataComponents.LORE, new ItemLore(lore));
         return stack;
+    }
+
+    /**
+     * La remise d'achat : aile Composants du musee plus branche Negoce.
+     *
+     * <p>Bornee a 25 %. Au-dela, les prix NTM cesseraient d'etre le mur qu'ils
+     * doivent etre — c'est toute la raison pour laquelle ils sont enormes.
+     */
+    private static double discount(ServerPlayer player) {
+        return Math.min(0.25d, MuseumApi.buyDiscount(player)
+                + UpgradeApi.bonus(player, UpgradeApi.SHOP_DISCOUNT));
     }
 
     private int countOwned(Item item) {

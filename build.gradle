@@ -105,6 +105,9 @@ tasks.named('processResources', ProcessResources).configure {
     from(rootProject.file('data/museum.json')) {
         into "data/${mod_id}"
     }
+    from(rootProject.file('data/upgrades.json')) {
+        into "data/${mod_id}"
+    }
 }
 
 jar {

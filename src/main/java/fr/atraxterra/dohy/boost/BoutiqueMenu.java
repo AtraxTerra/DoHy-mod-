@@ -7,6 +7,9 @@ import fr.atraxterra.dohy.shop.BankMenu;
 import fr.atraxterra.dohy.ui.DisplayMenu;
 import fr.atraxterra.dohy.ui.Gui;
 import fr.atraxterra.dohy.ui.Hub;
+import fr.atraxterra.dohy.upgrade.UpgradeApi;
+import fr.atraxterra.dohy.upgrade.UpgradeConfig;
+import fr.atraxterra.dohy.upgrade.UpgradesMenu;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -37,9 +40,11 @@ public final class BoutiqueMenu extends DisplayMenu {
     private static final int SLOT_HEADER = 4;
     private static final int[] SLOTS_BOOSTERS = {19, 21, 23};
     private static final int[] SLOTS_CRATES = {29, 31, 33};
-    private static final int SLOT_INSURANCE = 38;
-    private static final int SLOT_BANK = 40;
-    private static final int SLOT_AUTOSELL = 42;
+    // Quatre vignettes reparties sur l'interieur de la rangee, 37 a 43.
+    private static final int SLOT_INSURANCE = 37;
+    private static final int SLOT_BANK = 39;
+    private static final int SLOT_AUTOSELL = 41;
+    private static final int SLOT_UPGRADES = 43;
     private static final int SLOT_BACK = 45;
     private static final int SLOT_CLOSE = 49;
 
@@ -70,6 +75,12 @@ public final class BoutiqueMenu extends DisplayMenu {
                 click(0.9f);
                 open("Banque", (containerId, inventory) ->
                         new BankMenu(containerId, inventory, player));
+                return;
+            }
+            case SLOT_UPGRADES -> {
+                click(0.9f);
+                open("Ameliorations", (containerId, inventory) ->
+                        new UpgradesMenu(containerId, inventory, player));
                 return;
             }
             case SLOT_INSURANCE -> {
@@ -177,7 +188,12 @@ public final class BoutiqueMenu extends DisplayMenu {
         }
 
         set(SLOT_INSURANCE, insurance());
-        set(SLOT_BANK, bank());
+        set(SLOT_UPGRADES, Gui.button(Items.NETHER_STAR, "Ameliorations", Gui.lore(
+                Gui.field("paliers acquis", UpgradeApi.data(player).total() + " / "
+                        + UpgradeConfig.config().totalLevels()),
+                Gui.hint("achats definitifs, rien ne se consomme"),
+                Gui.blank(),
+                Gui.action("clic pour ouvrir"))));
         set(SLOT_AUTOSELL, autosell());
 
         set(SLOT_BACK, Gui.back("le menu"));
@@ -311,7 +327,7 @@ public final class BoutiqueMenu extends DisplayMenu {
         return Gui.button(Items.CHEST_MINECART, "Banque", Gui.lore(
                 Gui.field("epargne", MoneyFormat.exact(Bank.banked(player))),
                 Gui.field("interets", MoneyFormat.exact(
-                        Bank.perDay(Bank.banked(player))) + " / jour"),
+                        Bank.perDay(player)) + " / jour"),
                 Gui.blank(),
                 Gui.hint("l'epargne est protegee de la mort"),
                 Gui.blank(),

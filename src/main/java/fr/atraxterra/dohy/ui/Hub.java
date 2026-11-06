@@ -17,6 +17,10 @@ import fr.atraxterra.dohy.shop.ShopMenu;
 import fr.atraxterra.dohy.skill.Skill;
 import fr.atraxterra.dohy.skill.SkillApi;
 import fr.atraxterra.dohy.skill.SkillsMenu;
+import fr.atraxterra.dohy.upgrade.UpgradeApi;
+import fr.atraxterra.dohy.upgrade.UpgradeConfig;
+import fr.atraxterra.dohy.upgrade.UpgradeData;
+import fr.atraxterra.dohy.upgrade.UpgradesMenu;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -51,6 +55,7 @@ public final class Hub extends DisplayMenu {
     private static final int SLOT_COLLECTIONS = 32;
     private static final int SLOT_MUSEUM = 34;
 
+    private static final int SLOT_UPGRADES = 40;
     private static final int SLOT_CLOSE = 49;
 
     public Hub(int containerId, Inventory inventory, ServerPlayer player) {
@@ -100,6 +105,10 @@ public final class Hub extends DisplayMenu {
             case SLOT_MUSEUM -> {
                 click(0.9f);
                 open("Musee", (id, inventory) -> new MuseumBrowseMenu(id, inventory, player));
+            }
+            case SLOT_UPGRADES -> {
+                click(0.9f);
+                open("Ameliorations", (id, inventory) -> new UpgradesMenu(id, inventory, player));
             }
             case SLOT_CLOSE -> {
                 click(0.6f);
@@ -151,7 +160,29 @@ public final class Hub extends DisplayMenu {
                 Gui.action("clic pour ouvrir"))));
         set(SLOT_MUSEUM, museum());
 
+        set(SLOT_UPGRADES, upgrades());
         set(SLOT_CLOSE, Gui.close());
+    }
+
+    /**
+     * Les ameliorations, seules sur leur rangee.
+     *
+     * <p>Mises a part des sept autres vignettes parce qu'elles ne sont pas un
+     * systeme de plus mais la sortie d'argent de fin de partie — celle qui
+     * existe encore quand tout le reste est fait.
+     */
+    private ItemStack upgrades() {
+        UpgradeData data = UpgradeApi.data(player);
+        int total = UpgradeConfig.config().totalLevels();
+        return Gui.button(Items.NETHER_STAR,
+                Component.literal("Ameliorations").withStyle(ChatFormatting.LIGHT_PURPLE),
+                Gui.lore(
+                        Gui.field("paliers acquis", data.total() + " / " + total),
+                        Gui.bar(data.total(), total, 20),
+                        Gui.blank(),
+                        Gui.hint("achats definitifs, rien ne se consomme"),
+                        Gui.blank(),
+                        Gui.action("clic pour ouvrir")));
     }
 
     private ItemStack header() {
