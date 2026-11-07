@@ -16,7 +16,18 @@ public enum Skill {
     FISHING("fishing", "Peche"),
     SMITHING("smithing", "Forge"),
     BUILDING("building", "Construction"),
-    NUCLEAR("nuclear", "Nucleaire");
+    NUCLEAR("nuclear", "Nucleaire"),
+
+    /**
+     * Alchimie.
+     *
+     * <p>Ajoute par le chapitre des metiers : les trois autres metiers de
+     * Paladium tombaient deja sur un skill existant ({@code mining},
+     * {@code combat}, {@code farming}), l'Alchimiste n'avait pas d'equivalent.
+     * Le creer plutot que de detourner {@code smithing} evite qu'un seul skill
+     * porte deux progressions sans rapport.
+     */
+    ALCHEMY("alchemy", "Alchimie");
 
     private final String key;
     private final String display;

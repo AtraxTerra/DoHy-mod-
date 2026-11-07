@@ -28,7 +28,17 @@ import java.util.List;
 public final class SkillsMenu extends DisplayMenu {
 
     private static final int SLOT_HEADER = 4;
-    private static final int[] SLOTS_GRID = {19, 21, 23, 25, 28, 30, 32, 34};
+
+    /**
+     * La grille des skills, en 3x3.
+     *
+     * <p>Elle etait en 2x4 pour huit skills ; l'ajout d'{@code ALCHEMY} par le
+     * chapitre des metiers en fait neuf. La garde ci-dessous verifie que la
+     * grille suit l'enumeration : une grille plus courte ferait disparaitre un
+     * skill de l'ecran sans rien signaler, et c'est exactement le genre de
+     * silence qui fait mentir une interface.
+     */
+    private static final int[] SLOTS_GRID = {20, 22, 24, 29, 31, 33, 38, 40, 42};
     private static final int[] SLOTS_PERKS = {
             19, 20, 21, 22, 23, 24, 25,
             28, 29, 30, 31, 32, 33, 34,
@@ -97,6 +107,17 @@ public final class SkillsMenu extends DisplayMenu {
                 maxed++;
             }
             set(SLOTS_GRID[index], tile(skill, level, maxLevel));
+        }
+
+        // Un skill de plus que d'emplacements disparaitrait de l'ecran sans
+        // bruit. On l'annonce, comme pour le debordement des perks.
+        int hidden = Skill.values().length - SLOTS_GRID.length;
+        if (hidden > 0) {
+            set(SLOTS_GRID[SLOTS_GRID.length - 1], Gui.button(Items.PAPER,
+                    "+ " + hidden + " skill(s) non affiches", Gui.lore(
+                            Gui.bad("la grille est pleine"),
+                            Gui.hint("agrandir SLOTS_GRID dans SkillsMenu"),
+                            Gui.hint("voir /skills list en attendant"))));
         }
 
         int cap = maxLevel * Skill.values().length;
@@ -250,6 +271,7 @@ public final class SkillsMenu extends DisplayMenu {
             case SMITHING -> Items.ANVIL;
             case BUILDING -> Items.BRICKS;
             case NUCLEAR -> Items.REDSTONE_BLOCK;
+            case ALCHEMY -> Items.BREWING_STAND;
         };
     }
 }

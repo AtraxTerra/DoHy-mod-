@@ -9,6 +9,11 @@ import fr.atraxterra.dohy.contract.ContractData;
 import fr.atraxterra.dohy.contract.ContractsMenu;
 import fr.atraxterra.dohy.economy.Bank;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.job.Job;
+import fr.atraxterra.dohy.job.JobApi;
+import fr.atraxterra.dohy.job.JobConfig;
+import fr.atraxterra.dohy.job.JobGate;
+import fr.atraxterra.dohy.job.JobsMenu;
 import fr.atraxterra.dohy.museum.MuseumApi;
 import fr.atraxterra.dohy.museum.MuseumBrowseMenu;
 import fr.atraxterra.dohy.shop.BankMenu;
@@ -55,7 +60,18 @@ public final class Hub extends DisplayMenu {
     private static final int SLOT_COLLECTIONS = 32;
     private static final int SLOT_MUSEUM = 34;
 
-    private static final int SLOT_UPGRADES = 40;
+    /**
+     * La derniere rangee : ce qui se gagne en jouant, et ce qui s'achete une
+     * fois pour toutes.
+     *
+     * <p>Les ameliorations etaient seules ici, mises a part des sept autres
+     * vignettes parce qu'elles sont la sortie d'argent de fin de partie. Les
+     * metiers les rejoignent sans affaiblir ce choix : ce sont les deux seuls
+     * systemes dont les gains sont <b>definitifs</b>. Les deux vignettes sont
+     * placees symetriquement autour du centre de la rangee.
+     */
+    private static final int SLOT_JOBS = 38;
+    private static final int SLOT_UPGRADES = 42;
     private static final int SLOT_CLOSE = 49;
 
     public Hub(int containerId, Inventory inventory, ServerPlayer player) {
@@ -105,6 +121,10 @@ public final class Hub extends DisplayMenu {
             case SLOT_MUSEUM -> {
                 click(0.9f);
                 open("Musee", (id, inventory) -> new MuseumBrowseMenu(id, inventory, player));
+            }
+            case SLOT_JOBS -> {
+                click(0.9f);
+                open("Metiers", (id, inventory) -> new JobsMenu(id, inventory, player));
             }
             case SLOT_UPGRADES -> {
                 click(0.9f);
@@ -160,16 +180,66 @@ public final class Hub extends DisplayMenu {
                 Gui.action("clic pour ouvrir"))));
         set(SLOT_MUSEUM, museum());
 
+        set(SLOT_JOBS, jobs());
         set(SLOT_UPGRADES, upgrades());
         set(SLOT_CLOSE, Gui.close());
     }
 
     /**
-     * Les ameliorations, seules sur leur rangee.
+     * Les metiers.
      *
-     * <p>Mises a part des sept autres vignettes parce qu'elles ne sont pas un
+     * <p>Le chiffre qui dit s'il faut y aller n'est pas le niveau — il est deja
+     * dans la vignette des skills — mais le nombre de deblocages acquis. C'est
+     * la seule chose qu'un metier apporte et que le skill n'apporte pas.
+     */
+    private ItemStack jobs() {
+        int unlocked = 0;
+        int total = 0;
+        JobConfig.Unlock soonest = null;
+        for (Job job : Job.values()) {
+            for (JobConfig.Unlock unlock : JobGate.unlocksOf(job)) {
+                total++;
+                if (JobGate.allows(player, unlock)) {
+                    unlocked++;
+                }
+            }
+            JobConfig.Unlock next = JobGate.next(player, job);
+            if (next != null && (soonest == null || missing(next) < missing(soonest))) {
+                soonest = next;
+            }
+        }
+
+        int finalUnlocked = unlocked;
+        return Gui.button(Items.SHIELD,
+                Component.literal("Metiers").withStyle(ChatFormatting.GOLD), Gui.lore(
+                        Gui.field("deblocages acquis", finalUnlocked + " / " + total),
+                        Gui.bar(unlocked, total, 20),
+                        Gui.blank(),
+                        soonest == null
+                                ? Gui.good("tout est debloque")
+                                : Gui.hint("le plus proche, a " + missing(soonest) + " niveau(x) :"),
+                        soonest == null
+                                ? null
+                                : Component.literal("  ").append(JobApi.name(soonest))
+                                        .withStyle(ChatFormatting.AQUA),
+                        Gui.blank(),
+                        Gui.action("clic pour ouvrir")));
+    }
+
+    /** Niveaux restants avant ce deblocage. */
+    private int missing(JobConfig.Unlock unlock) {
+        Job job = Job.byKey(unlock.job());
+        int level = job == null ? 0 : JobApi.level(player, job);
+        return Math.max(0, unlock.level() - level);
+    }
+
+    /**
+     * Les ameliorations.
+     *
+     * <p>Mises a part des vignettes du haut parce qu'elles ne sont pas un
      * systeme de plus mais la sortie d'argent de fin de partie — celle qui
-     * existe encore quand tout le reste est fait.
+     * existe encore quand tout le reste est fait. Elles partagent leur rangee
+     * avec les metiers, l'autre systeme dont les gains ne se reperdent pas.
      */
     private ItemStack upgrades() {
         UpgradeData data = UpgradeApi.data(player);
