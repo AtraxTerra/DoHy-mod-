@@ -169,21 +169,41 @@ tasks.register('packMeta') {
     doLast {
         def wanted = ['version.json', 'pack.mcmeta'] as Set
         def found = 0
+        // Noms de dossiers de premier niveau sous data/minecraft et
+        // assets/minecraft. C'est la reponse a « loot_table ou loot_tables,
+        // recipe ou recipes, tags/block ou tags/blocks » : ces noms ont change
+        // plusieurs fois et un chemin faux ne fait pas echouer la compilation,
+        // il fait juste que le fichier n'est jamais lu.
+        def layout = [:].withDefault { new TreeSet<String>() }
+
         classpath.files.findAll { it.name.endsWith('.jar') && it.exists() }.each { jarFile ->
             try {
                 new java.util.zip.ZipFile(jarFile).withCloseable { zip ->
-                    zip.entries().findAll { wanted.contains(it.name) }.each { entry ->
-                        println "\n${'=' * 78}\n${jarFile.name} :: ${entry.name}\n${'=' * 78}"
-                        println zip.getInputStream(entry).text
-                        found++
+                    zip.entries().each { entry ->
+                        if (wanted.contains(entry.name)) {
+                            println "\n${'=' * 78}\n${jarFile.name} :: ${entry.name}\n${'=' * 78}"
+                            println zip.getInputStream(entry).text
+                            found++
+                            return
+                        }
+                        def match = entry.name =~ '^(data|assets)/([^/]+)/([^/]+)/'
+                        if (match) {
+                            layout["${match[0][1]}/${match[0][2]}"] << match[0][3]
+                        }
                     }
                 }
             } catch (Throwable ignored) {
                 // jar illisible : on continue, l'inventaire reste utile
             }
         }
+
         if (found == 0) {
             println "Aucun version.json ni pack.mcmeta dans les ${classpath.files.size()} entrees du classpath."
+        }
+
+        layout.keySet().sort().each { root ->
+            println "\n${'=' * 78}\nARBORESCENCE ${root}\n${'=' * 78}"
+            layout[root].each { println "  ${root}/${it}/" }
         }
     }
 }
