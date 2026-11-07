@@ -214,14 +214,16 @@ public final class JobsMenu extends DisplayMenu {
                 real || unlock.isTag() ? null : Gui.blank(),
                 real || unlock.isTag() ? null : Gui.hint("item pas encore ajoute par le mod"));
 
-        Item icon;
-        if (real) {
-            icon = net.minecraft.core.registries.BuiltInRegistries.ITEM
-                    .getOptional(JobConfig.parse(unlock.plainId()))
-                    .orElse(acquired ? Items.LIME_DYE : Items.GRAY_DYE);
-        } else {
-            icon = acquired ? Items.PAPER : Items.GRAY_DYE;
-        }
+        // Replis pris dans le vocabulaire deja employe par SkillsMenu pour un
+        // perk acquis ou verrouille : les teintures n'existent plus sous ces
+        // noms en 26.2, et de toute facon deux icones de plus a retenir pour
+        // le joueur n'apportaient rien.
+        Item fallback = acquired ? Items.PAPER : Items.BOOK;
+        Item icon = real
+                ? net.minecraft.core.registries.BuiltInRegistries.ITEM
+                        .getOptional(JobConfig.parse(unlock.plainId()))
+                        .orElse(fallback)
+                : fallback;
 
         return Gui.button(icon,
                 JobApi.name(unlock).copy().withStyle(acquired

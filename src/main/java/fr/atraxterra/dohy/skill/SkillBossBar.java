@@ -120,9 +120,14 @@ public final class SkillBossBar {
     /**
      * Une couleur par skill, pour reconnaitre l'activite sans lire.
      *
-     * <p>Sept couleurs vanilla pour huit skills : la peche et le minage
-     * partagent le bleu, ce sont les deux activites qu'on ne pratique jamais en
-     * meme temps.
+     * <p>Sept couleurs vanilla pour neuf skills : la peche partage le bleu avec
+     * le minage et l'alchimie partage le violet avec le nucleaire. Dans les deux
+     * cas ce sont des activites qu'on ne pratique pas en meme temps, donc la
+     * confusion ne peut pas se produire a l'ecran.
+     *
+     * <p>Le {@code switch} est volontairement exhaustif et sans {@code default}
+     * : ajouter un skill doit casser la compilation ici plutot que de donner
+     * une couleur arbitraire sans que personne ne l'ait decide.
      */
     private static BossEvent.BossBarColor colorOf(Skill skill) {
         return switch (skill) {
@@ -134,6 +139,7 @@ public final class SkillBossBar {
             case SMITHING -> BossEvent.BossBarColor.WHITE;
             case BUILDING -> BossEvent.BossBarColor.PINK;
             case NUCLEAR -> BossEvent.BossBarColor.PURPLE;
+            case ALCHEMY -> BossEvent.BossBarColor.PURPLE;
         };
     }
 
