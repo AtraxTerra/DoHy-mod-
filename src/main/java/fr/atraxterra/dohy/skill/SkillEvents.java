@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -54,12 +55,16 @@ public final class SkillEvents {
 
         Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
 
-        for (Skill skill : new Skill[]{Skill.MINING, Skill.FARMING, Skill.FORAGING}) {
+        for (Skill skill : new Skill[]{Skill.MINING, Skill.FARMING, Skill.FORAGING, Skill.ALCHEMY}) {
             long xp = blockXp(skill, state, blockId);
             if (xp <= 0) {
                 continue;
             }
-            if (skill == Skill.FARMING && !isMature(state)) {
+            // L'alchimie recolte aussi des cultures — les verrues du Nether en
+            // premier. Sans la condition de maturite, elle serait la faille par
+            // laquelle casser des pousses rapporterait autant qu'une recolte,
+            // celle que l'agriculture ferme depuis le depart.
+            if ((skill == Skill.FARMING || skill == Skill.ALCHEMY) && !isMature(state)) {
                 continue;
             }
             SkillApi.grant(player, skill, xp);
@@ -86,6 +91,36 @@ public final class SkillEvents {
                 .map(SkillConfig.Sources::entities).orElse(Map.of()), entityId, null);
         if (farmXp > 0) {
             SkillApi.grant(player, Skill.FARMING, farmXp);
+        }
+
+        // Les creatures qui portent un ingredient de potion comptent pour
+        // l'alchimie : sorciere, blaze, ghast, cube de magma, gardien. Elles
+        // rapportent aussi au combat, et c'est voulu — c'est le meme geste qui
+        // sert deux metiers, exactement comme l'elevage.
+        long alchemyXp = lookup(SkillConfig.config().def(Skill.ALCHEMY).sources()
+                .map(SkillConfig.Sources::entities).orElse(Map.of()), entityId, null);
+        if (alchemyXp > 0) {
+            SkillApi.grant(player, Skill.ALCHEMY, alchemyXp);
+        }
+    }
+
+    /**
+     * Potion terminee a l'alambic : alchimie.
+     *
+     * <p>C'est la source principale du metier d'Alchimiste, et la seule qui ne
+     * passe ni par un bloc ni par une creature. {@code PlayerBrewedPotionEvent}
+     * a ete verifie a la sonde : il porte {@code getEntity()} (le joueur) et
+     * {@code getStack()}, et n'est pas annulable — ce qui convient, on ne fait
+     * que compter.
+     */
+    @SubscribeEvent
+    public static void onPotionBrewed(PlayerBrewedPotionEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        long xp = action(Skill.ALCHEMY, "potion_brewed");
+        if (xp > 0) {
+            SkillApi.grant(player, Skill.ALCHEMY, xp);
         }
     }
 

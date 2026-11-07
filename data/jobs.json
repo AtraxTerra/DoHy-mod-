@@ -1,0 +1,429 @@
+{
+  "_comment": "Table des deblocages par metier. GENERE par tools/palamod_jobs.py depuis le bytecode de PalaMod 10.3.0 — ne pas editer a la main. Un metier est un nom donne a un skill : Mineur lit mining, Chasseur lit combat, Fermier lit farming, Alchimiste lit alchemy. Les niveaux ci-dessous sont donc des niveaux de skill.",
+  "_echelle": "PalaMod compte 20 niveaux par metier, les skills de DoHy en comptent 100 : les niveaux du mod sont multiplies par 5. Valide deux fois contre le wiki Java, qui est deja gradue sur 100 : cobblebreaker niveau 5 dans le code -> 25, annonce 25 ; crusher niveau 8 -> 40, annonce 40.",
+  "_portee": "Le verrou porte sur la pose et l'usage, pas sur le craft : PlayerEvent.ItemCraftedEvent n'est pas annulable en 26.2 (verifie a la sonde), et tous les contournements font perdre les ingredients au joueur. Voir JobGateEvents.",
+  "_syntaxe": "id peut commencer par # pour viser un tag, meme convention que les sources d'XP de skills.json. label sert aux messages quand l'item n'est pas encore enregistre.",
+  "_attention": "Une entree nommant un item que le mod n'a pas encore enregistre est INERTE. C'est normal tant que les chapitres minerais, cultures et machines ne sont pas faits : le chargement le signale et /metiers audit les liste.",
+  "unlocks": [
+    {
+      "id": "palamod:builder_wand",
+      "job": "miner",
+      "level": 10,
+      "label": "Outil de construction"
+    },
+    {
+      "id": "palamod:voidstone",
+      "job": "miner",
+      "level": 10,
+      "label": "Voidstone"
+    },
+    {
+      "id": "palamod:amethyst_excavator",
+      "job": "miner",
+      "level": 15,
+      "label": "Excavatrice en amethyste"
+    },
+    {
+      "id": "palamod:cobblebreaker",
+      "job": "miner",
+      "level": 25,
+      "label": "Cobblebreaker"
+    },
+    {
+      "id": "palamod:voidstone_minage",
+      "job": "miner",
+      "level": 30,
+      "label": "Voidstone minage"
+    },
+    {
+      "id": "palamod:magnet",
+      "job": "miner",
+      "level": 35,
+      "label": "Aimant"
+    },
+    {
+      "id": "palamod:moula_stone",
+      "job": "miner",
+      "level": 40,
+      "label": "Dollars Stone"
+    },
+    {
+      "id": "palamod:paladium_hopper",
+      "job": "miner",
+      "level": 45,
+      "label": "Entonnoir en paladium"
+    },
+    {
+      "id": "palamod:cobblebreaker_amethyst_upgrade",
+      "job": "miner",
+      "level": 50,
+      "label": "Amelioration amethyste du cobblebreaker (x1,5)"
+    },
+    {
+      "id": "palamod:titane_excavator",
+      "job": "miner",
+      "level": 55,
+      "label": "Excavatrice en titane"
+    },
+    {
+      "id": "palamod:cobblebreaker_titane_upgrade",
+      "job": "miner",
+      "level": 65,
+      "label": "Amelioration titane du cobblebreaker (x2,5)"
+    },
+    {
+      "id": "palamod:palaforge",
+      "job": "miner",
+      "level": 70,
+      "label": "Palaforge"
+    },
+    {
+      "id": "palamod:paladium_excavator",
+      "job": "miner",
+      "level": 75,
+      "label": "Excavatrice en paladium"
+    },
+    {
+      "id": "palamod:cobblebreaker_paladium_upgrade",
+      "job": "miner",
+      "level": 80,
+      "label": "Amelioration paladium du cobblebreaker (x4)"
+    },
+    {
+      "id": "palamod:hardness_potion",
+      "job": "miner",
+      "level": 80,
+      "label": "Potion de durete"
+    },
+    {
+      "id": "palamod:endium_cave_block",
+      "job": "miner",
+      "level": 90,
+      "label": "Cave block en endium"
+    },
+    {
+      "id": "palamod:withered_reinforced_piston",
+      "job": "miner",
+      "level": 90,
+      "label": "Piston renforce wither"
+    },
+    {
+      "id": "palamod:endium_nugget_ore",
+      "job": "miner",
+      "level": 100,
+      "label": "Minerai de pepites d'endium"
+    },
+    {
+      "id": "palamod:endium_pickaxe",
+      "job": "miner",
+      "level": 100,
+      "label": "Pioche en endium"
+    },
+    {
+      "id": "palamod:amethyst_seedplanter",
+      "job": "farmer",
+      "level": 15,
+      "label": "Seedplanter en amethyste"
+    },
+    {
+      "id": "palamod:titane_seedplanter",
+      "job": "farmer",
+      "level": 30,
+      "label": "Seedplanter en titane"
+    },
+    {
+      "id": "palamod:eggplant_crop",
+      "job": "farmer",
+      "level": 35,
+      "label": "Culture d'aubergines"
+    },
+    {
+      "id": "palamod:crusher",
+      "job": "farmer",
+      "level": 40,
+      "label": "Crusher"
+    },
+    {
+      "id": "palamod:chervil_crop",
+      "job": "farmer",
+      "level": 60,
+      "label": "Culture de cerfeuil"
+    },
+    {
+      "id": "palamod:totem_of_fertility",
+      "job": "farmer",
+      "level": 70,
+      "label": "Totem de fertilite"
+    },
+    {
+      "id": "palamod:paladium_seedplanter",
+      "job": "farmer",
+      "level": 75,
+      "label": "Seedplanter en paladium"
+    },
+    {
+      "id": "palamod:kiwano_crop",
+      "job": "farmer",
+      "level": 80,
+      "label": "Culture de kiwanos"
+    },
+    {
+      "id": "palamod:green_paladium_seedplanter",
+      "job": "farmer",
+      "level": 90,
+      "label": "Seedplanter en paladium vert"
+    },
+    {
+      "id": "palamod:endium_axe",
+      "job": "farmer",
+      "level": 100,
+      "label": "Hache en endium"
+    },
+    {
+      "id": "palamod:endium_chestplate",
+      "job": "farmer",
+      "level": 100,
+      "label": "Plastron en endium"
+    },
+    {
+      "id": "palamod:endium_seedplanter",
+      "job": "farmer",
+      "level": 100,
+      "label": "Seedplanter en endium"
+    },
+    {
+      "id": "palamod:orangeblue_crop",
+      "job": "farmer",
+      "level": 100,
+      "label": "Culture d'orangeblues"
+    },
+    {
+      "id": "palamod:hunter_compass",
+      "job": "hunter",
+      "level": 15,
+      "label": "Boussole de chasseur"
+    },
+    {
+      "id": "palamod:infernal_knocker",
+      "job": "hunter",
+      "level": 45,
+      "label": "Infernal knocker"
+    },
+    {
+      "id": "palamod:spawner_finder",
+      "job": "hunter",
+      "level": 50,
+      "label": "Spawner finder"
+    },
+    {
+      "id": "palamod:capture_sword",
+      "job": "hunter",
+      "level": 65,
+      "label": "Epee de capture"
+    },
+    {
+      "id": "palamod:capture_stone",
+      "job": "hunter",
+      "level": 70,
+      "label": "Pierre de capture"
+    },
+    {
+      "id": "palamod:paladium_key",
+      "job": "hunter",
+      "level": 85,
+      "label": "Cle en paladium"
+    },
+    {
+      "id": "palamod:endium_nametag",
+      "job": "hunter",
+      "level": 90,
+      "label": "Etiquette en endium"
+    },
+    {
+      "id": "palamod:endium_helmet",
+      "job": "hunter",
+      "level": 100,
+      "label": "Casque en endium"
+    },
+    {
+      "id": "palamod:endium_sword",
+      "job": "hunter",
+      "level": 100,
+      "label": "Epee en endium"
+    },
+    {
+      "id": "palamod:endium_totem",
+      "job": "hunter",
+      "level": 100,
+      "label": "Totem en endium"
+    },
+    {
+      "id": "palamod:perlinpinpin_powder",
+      "job": "hunter",
+      "level": 100,
+      "label": "Poudre de perlimpinpin"
+    },
+    {
+      "id": "palamod:sacrifice_hotel",
+      "job": "hunter",
+      "level": 100,
+      "label": "Autel de sacrifice"
+    },
+    {
+      "id": "palamod:wither_dust",
+      "job": "hunter",
+      "level": 100,
+      "label": "Poudre de wither"
+    },
+    {
+      "id": "palamod:gold_tank",
+      "job": "alchemist",
+      "level": 10,
+      "label": "Tank en or"
+    },
+    {
+      "id": "palamod:alchemy_creator",
+      "job": "alchemist",
+      "level": 15,
+      "label": "Table d'alchimiste"
+    },
+    {
+      "id": "palamod:cauldron",
+      "job": "alchemist",
+      "level": 20,
+      "label": "Bloc du chaudron"
+    },
+    {
+      "id": "palamod:cauldron_core",
+      "job": "alchemist",
+      "level": 20,
+      "label": "Coeur du chaudron"
+    },
+    {
+      "id": "palamod:shiny_jacaranda_wood",
+      "job": "alchemist",
+      "level": 25,
+      "label": "Bois de jacaranda brillant"
+    },
+    {
+      "id": "palamod:amethyst_portal_block",
+      "job": "alchemist",
+      "level": 30,
+      "label": "Bloc de portail en amethyste"
+    },
+    {
+      "id": "palamod:amethyst_portal_key",
+      "job": "alchemist",
+      "level": 30,
+      "label": "Cle de portail en amethyste"
+    },
+    {
+      "id": "palamod:amethyst_tank",
+      "job": "alchemist",
+      "level": 35,
+      "label": "Tank en amethyste"
+    },
+    {
+      "id": "palamod:flower_totem",
+      "job": "alchemist",
+      "level": 40,
+      "label": "Totem fleuri"
+    },
+    {
+      "id": "palamod:shiny_judeecercis_wood",
+      "job": "alchemist",
+      "level": 40,
+      "label": "Bois de judee brillant"
+    },
+    {
+      "id": "palamod:titane_portal_block",
+      "job": "alchemist",
+      "level": 45,
+      "label": "Bloc de portail en titane"
+    },
+    {
+      "id": "palamod:titane_portal_key",
+      "job": "alchemist",
+      "level": 45,
+      "label": "Cle de portail en titane"
+    },
+    {
+      "id": "palamod:titane_tank",
+      "job": "alchemist",
+      "level": 50,
+      "label": "Tank en titane"
+    },
+    {
+      "id": "palamod:shiny_erable_wood",
+      "job": "alchemist",
+      "level": 55,
+      "label": "Bois d'erable brillant"
+    },
+    {
+      "id": "palamod:paladium_portal_block",
+      "job": "alchemist",
+      "level": 60,
+      "label": "Bloc de portail en paladium"
+    },
+    {
+      "id": "palamod:paladium_portal_key",
+      "job": "alchemist",
+      "level": 60,
+      "label": "Cle de portail en paladium"
+    },
+    {
+      "id": "palamod:paladium_tank",
+      "job": "alchemist",
+      "level": 80,
+      "label": "Tank en paladium"
+    },
+    {
+      "id": "palamod:endium_angle_portal_block",
+      "job": "alchemist",
+      "level": 100,
+      "label": "Bloc d'angle de portail en endium"
+    },
+    {
+      "id": "palamod:endium_boots",
+      "job": "alchemist",
+      "level": 100,
+      "label": "Bottes en endium"
+    },
+    {
+      "id": "palamod:endium_heart",
+      "job": "alchemist",
+      "level": 100,
+      "label": "Coeur en endium"
+    },
+    {
+      "id": "palamod:endium_leggings",
+      "job": "alchemist",
+      "level": 100,
+      "label": "Jambieres en endium"
+    },
+    {
+      "id": "palamod:endium_pollen",
+      "job": "alchemist",
+      "level": 100,
+      "label": "Pollen d'endium"
+    },
+    {
+      "id": "palamod:endium_portal_block",
+      "job": "alchemist",
+      "level": 100,
+      "label": "Bloc de portail en endium"
+    },
+    {
+      "id": "palamod:endium_portal_key",
+      "job": "alchemist",
+      "level": 100,
+      "label": "Cle de portail en endium"
+    },
+    {
+      "id": "palamod:shiny_ostrya_wood",
+      "job": "alchemist",
+      "level": 100,
+      "label": "Bois d'ostrya brillant"
+    }
+  ]
+}

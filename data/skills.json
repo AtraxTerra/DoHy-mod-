@@ -1186,6 +1186,160 @@
           "operation": "add_value"
         }
       ]
+    },
+    "alchemy": {
+      "display": "Alchimie",
+      "_comment": "Metier Alchimiste de Paladium. Les trois autres metiers tombaient sur un skill existant (mining, combat, farming) ; celui-ci n'avait pas d'equivalent, d'ou sa creation. Ses sources sont volontairement celles que le mod sait reellement ecouter : SkillEvents couvre les blocs (BlockDropsEvent), les creatures (LivingDeathEvent) et l'alambic (PlayerBrewedPotionEvent, verifie a la sonde). L'enchantement et le chaudron moddé viendront avec les chapitres suivants.",
+      "sources": {
+        "blocks": {
+          "minecraft:nether_wart": 4,
+          "minecraft:brown_mushroom": 2,
+          "minecraft:red_mushroom": 2,
+          "minecraft:brown_mushroom_block": 3,
+          "minecraft:red_mushroom_block": 3,
+          "minecraft:glowstone": 5,
+          "minecraft:chorus_flower": 12,
+          "minecraft:sculk_catalyst": 25,
+          "minecraft:spore_blossom": 20,
+          "minecraft:pink_petals": 2
+        },
+        "entities": {
+          "minecraft:witch": 25,
+          "minecraft:blaze": 15,
+          "minecraft:ghast": 20,
+          "minecraft:magma_cube": 8,
+          "minecraft:guardian": 12,
+          "minecraft:elder_guardian": 60,
+          "minecraft:shulker": 30,
+          "minecraft:spider": 3,
+          "minecraft:cave_spider": 4
+        },
+        "actions": {
+          "potion_brewed": 20
+        }
+      },
+      "perks": [
+        {
+          "level": 5,
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "amount": 0.5,
+          "operation": "add_value"
+        },
+        {
+          "level": 10,
+          "type": "xp_bonus",
+          "amount": 0.03
+        },
+        {
+          "level": 15,
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "amount": 2.0,
+          "operation": "add_value"
+        },
+        {
+          "level": 20,
+          "type": "double_drop_chance",
+          "amount": 0.03
+        },
+        {
+          "level": 25,
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "amount": 1.0,
+          "operation": "add_value"
+        },
+        {
+          "level": 30,
+          "type": "harvest_bonus",
+          "amount": 0.15
+        },
+        {
+          "level": 35,
+          "type": "attribute",
+          "attribute": "minecraft:armor_toughness",
+          "amount": 0.5,
+          "operation": "add_value"
+        },
+        {
+          "level": 40,
+          "type": "xp_bonus",
+          "amount": 0.06
+        },
+        {
+          "level": 45,
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "amount": 4.0,
+          "operation": "add_value"
+        },
+        {
+          "level": 50,
+          "type": "double_drop_chance",
+          "amount": 0.07
+        },
+        {
+          "level": 55,
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "amount": 1.5,
+          "operation": "add_value"
+        },
+        {
+          "level": 60,
+          "type": "harvest_bonus",
+          "amount": 0.3
+        },
+        {
+          "level": 65,
+          "type": "attribute",
+          "attribute": "minecraft:armor_toughness",
+          "amount": 1.0,
+          "operation": "add_value"
+        },
+        {
+          "level": 70,
+          "type": "xp_bonus",
+          "amount": 0.1
+        },
+        {
+          "level": 75,
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "amount": 6.0,
+          "operation": "add_value"
+        },
+        {
+          "level": 80,
+          "type": "double_drop_chance",
+          "amount": 0.12
+        },
+        {
+          "level": 85,
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "amount": 2.0,
+          "operation": "add_value"
+        },
+        {
+          "level": 90,
+          "type": "harvest_bonus",
+          "amount": 0.5
+        },
+        {
+          "level": 95,
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "amount": 0.03,
+          "operation": "add_multiplied_base"
+        },
+        {
+          "level": 100,
+          "type": "xp_bonus",
+          "amount": 0.15
+        }
+      ]
     }
   },
   "_perks_note": "Tous les perks de ce fichier ont un effet reel en jeu. Six types etaient declares et inertes (33 perks sur 160) : ils apparaissaient dans /skills, le joueur les voyait se debloquer, et ils ne faisaient rien. Six autres types sont desormais implementes par SkillEffects (harvest_bonus, tree_chop, loot_bonus, treasure_chance, no_fall_damage_below, anvil_cost_reduction) et les six inimplementables en 26.2 ont ete remplaces ici par des perks equivalents qui fonctionnent. Raison du remplacement : il n'existe ni evenement de durabilite, ni evenement d'engrais a os, ni BlockEvent.BreakEvent, et la vitesse d'un four ne se rattache a aucun joueur. Mieux vaut un bonus different mais reel qu'un bonus annonce et absent."

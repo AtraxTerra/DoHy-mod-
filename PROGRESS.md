@@ -64,6 +64,40 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 
 ---
 
+## Conversion du PalaMod — chapitres
+
+Travail demandé en plus des dix phases : porter le PalaMod de Paladium (Forge 1.7.10) sur ce
+mod, en NeoForge 26.2. Un chapitre = une PR.
+
+Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) et
+`PalaMod-10.3.0.pala`. Spec extraite au bytecode dans [`docs/PALAMOD.md`](docs/PALAMOD.md) —
+**c'est ce fichier qui fait foi, pas le wiki**, qui est incomplet et faux par endroits.
+
+| Chapitre | Contenu | État |
+|---|---|---|
+| 1 | **Métiers** fusionnés dans les skills, table des 70 verrous, interface, `/metiers` | fait |
+| 2 | **Minerais et matériaux** `palamod` : minerais, lingots, blocs, compressés, 6 particules, 4 charbons mixés | à faire |
+| 3 | **Cultures** : 4 plantes, graines, fruits, 5 seedplanters, totem de fertilité | à faire |
+| 4 | **Machines** : cobblebreaker 4 paliers, crusher, palafurnace, grinder, palamachine | à faire |
+| 5 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
+
+**Décisions prises avec le joueur** (2026-11-07) :
+
+1. **Fusion métier/skill** plutôt que deux progressions parallèles. `mining` → Mineur,
+   `combat` → Chasseur, `farming` → Fermier, et un skill `alchemy` créé pour l'Alchimiste.
+   Une seule barre d'XP par activité, rien à migrer, aucun risque de dérive entre deux
+   compteurs. Coût assumé : la table d'XP de PalaJobs (20 niveaux) n'est pas utilisée.
+2. **Namespace `palamod`** et non `dohy`, avec les identifiants de Paladium. Le pack de
+   textures officiel s'applique alors tel quel, sans copie ni renommage dans le jar.
+3. **Chiffres manquants calibrés**, puis remplacés par les vrais dès que le jar de PalaMod a
+   été fourni. Résultat : presque plus rien n'est calibré — voir `docs/PALAMOD.md`.
+
+**Le chapitre 2 est un prérequis non demandé mais nécessaire** : le cobblebreaker sort des
+particules de minerai, le crusher consomme des charbons mixés et rend des lingots. Sans ces
+items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
+
+---
+
 ## Bloqué
 
 | Sujet | Blocage | Débloqué par |
@@ -86,6 +120,62 @@ Ordre détaillé et justifié dans `docs/DESIGN.md` §11. Résumé :
 ---
 
 ## Journal des sessions
+
+### 2026-11-07 — chapitre 1 : les métiers, et la vérité prise au bytecode
+
+**Demandé** : convertir le PalaMod en 26.2, par chapitres, en commençant par les métiers.
+
+**1. Les métiers sont un nom donné aux skills, pas un système de plus.** Choix du joueur
+entre trois options. La conséquence pratique est qu'il n'y a **rien à sauvegarder** :
+`JobApi.level()` délègue à `SkillApi.levelOf()`, donc aucun attachment, aucune migration, et
+aucun moyen que les deux chiffres divergent. Un neuvième skill, `alchemy`, est créé pour
+l'Alchimiste, qui était le seul métier sans équivalent.
+
+**2. Le wiki ne suffisait pas, et il se trompe.** La première version de `data/jobs.json`
+était écrite depuis le wiki. Le joueur a ensuite fourni `PalaMod-10.3.0.pala` : les vraies
+tables y sont, `addBlacklistedCraft(niveau, item)` et `addBlacklistedUsage(niveau, item)`,
+72 et 53 entrées. Deux scripts (`tools/extract_jobs.py`, `tools/palamod_jobs.py`) les lisent
+au bytecode et génèrent le datapack — **70 verrous**, jamais écrits à la main.
+
+Écart trouvé au passage : le wiki place le totem de fertilité au niveau 55, le code au 70.
+
+**3. Le facteur d'échelle est vérifié, pas supposé.** PalaMod compte 20 niveaux par métier,
+les skills 100 : les niveaux sont multipliés par 5. Deux contrôles indépendants contre le
+wiki Java, lui déjà gradué sur 100 : cobblebreaker niveau 5 → 25, annoncé 25 ; crusher
+niveau 8 → 40, annoncé 40. Deux correspondances exactes.
+
+**4. Le verrou ne bloque pas le craft, et c'est un choix.** Paladium le bloquait
+(`JobsConstants.CRAFTING_NOT_ALLOWED`). La sonde d'API a établi que
+`PlayerEvent.ItemCraftedEvent` **n'implémente pas `ICancellableEvent`** en 26.2. Il ne reste
+que des contournements, et tous détruisent les ingrédients déjà consommés — principe 4,
+rien d'irréversible. Donc on verrouille la **pose** (`BlockEvent.EntityPlaceEvent`, annulable,
+l'annulation rend l'item) et l'**usage** (`PlayerInteractEvent.RightClickBlock` et
+`RightClickItem`). Une machine qu'on ne peut ni poser ni actionner est verrouillée pour de
+bon ; l'objet attend dans un coffre, ce qui est plus doux que l'original sans être plus
+permissif sur ce qui compte.
+
+Anti-spam du refus : un clic droit maintenu part plusieurs fois par seconde, le message
+noierait le chat. 40 ticks par joueur, indexés par UUID comme `SkillBossBar`.
+
+**5. Les chapitres suivants n'écriront aucune logique de verrou.** Ils enregistrent leurs
+blocs et ajoutent une ligne au datapack. Corollaire assumé : les 70 entrées nomment des items
+qui n'existent pas encore, donc elles sont **inertes**. Le chargement les signale et
+`/metiers audit` les liste — même filet que `UpgradeApi.EFFECTS` et
+`SkillConfig.IMPLEMENTED`, posé pour la même raison : un verrou déclaré et jamais appliqué
+fait croire que la porte est fermée.
+
+**6. Garde ajouté dans `SkillsMenu`.** La grille était câblée pour huit skills
+(`SLOTS_GRID.length == 8`) en lisant `Skill.values()[index]` : le neuvième aurait disparu de
+l'écran **sans aucune erreur**. Grille passée en 3×3, et un débordement s'annonce désormais
+au lieu de se taire.
+
+**7. Sondes d'API lancées avant d'écrire**, six classes puis quatre. Confirmé :
+`PlayerBrewedPotionEvent` existe et porte `getStack()` ; `RightClickBlock` et
+`RightClickItem` sont annulables et exposent `getUseBlock`/`getUseItem` en `TriState` ;
+`ItemStack.is(TagKey)` existe. C'est ce qui a permis de trancher le point 4 avant d'écrire
+une ligne, au lieu de le découvrir à la compilation.
+
+Spec complète de ce qui a été extrait : [`docs/PALAMOD.md`](docs/PALAMOD.md).
 
 ### 2026-11-06 (fin) — zéro perk inerte, et un puits à argent permanent
 

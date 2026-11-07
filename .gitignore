@@ -33,3 +33,6 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Fichiers deposes par javac quand on verifie la syntaxe hors Gradle.
+javac.*.args

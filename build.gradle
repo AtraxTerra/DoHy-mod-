@@ -108,6 +108,11 @@ tasks.named('processResources', ProcessResources).configure {
     from(rootProject.file('data/upgrades.json')) {
         into "data/${mod_id}"
     }
+    // Table des deblocages de metier. Generee par tools/palamod_jobs.py depuis
+    // le bytecode de PalaMod, jamais ecrite a la main.
+    from(rootProject.file('data/jobs.json')) {
+        into "data/${mod_id}"
+    }
 }
 
 jar {

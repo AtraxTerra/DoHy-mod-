@@ -44,7 +44,7 @@ jobs:
         run: |
           JAR=$(ls build/libs/*.jar | head -1)
           MISSING=0
-          for f in data/dohy/prices.json data/dohy/collections.json data/dohy/skills.json data/dohy/tags/block/placement_exempt.json data/dohy/tags/block/crops.json data/dohy/contracts.json data/dohy/crates.json data/dohy/tag_prices.json data/dohy/economy.json data/dohy/museum.json data/dohy/upgrades.json; do
+          for f in data/dohy/prices.json data/dohy/collections.json data/dohy/skills.json data/dohy/tags/block/placement_exempt.json data/dohy/tags/block/crops.json data/dohy/contracts.json data/dohy/crates.json data/dohy/tag_prices.json data/dohy/economy.json data/dohy/museum.json data/dohy/upgrades.json data/dohy/jobs.json; do
             if ! unzip -l "$JAR" | grep -q "$f"; then
               echo "::error::$f est absent de $JAR"
               MISSING=1
@@ -101,6 +101,44 @@ jobs:
             echo "::error::data/ n'est pas a jour. Lance 'python3 tools/gen_prices.py' et commite le resultat."
             exit 1
           fi
+
+      # La table des metiers est generee depuis un jar absent du depot : la CI
+      # ne peut pas la regenerer pour la comparer. Elle verifie donc ses
+      # invariants, qui sont ce qui casserait le mod en silence — un metier mal
+      # orthographie rend ses verrous inertes sans aucune erreur de compilation.
+      - name: La table des metiers doit etre coherente
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          jobs = json.load(open("data/jobs.json", encoding="utf-8"))
+          skills = json.load(open("data/skills.json", encoding="utf-8"))
+          max_level = skills["curve"]["max_level"]
+          known = {"miner": "mining", "hunter": "combat",
+                   "farmer": "farming", "alchemist": "alchemy"}
+
+          errors = []
+          for skill in known.values():
+              if skill not in skills["skills"]:
+                  errors.append(f"skill « {skill} » absent de skills.json")
+
+          seen = set()
+          for entry in jobs["unlocks"]:
+              key = (entry["job"], entry["id"])
+              if entry["job"] not in known:
+                  errors.append(f"{entry['id']} : metier inconnu « {entry['job']} »")
+              if not 1 <= entry["level"] <= max_level:
+                  errors.append(f"{entry['id']} : niveau {entry['level']} hors de 1..{max_level}")
+              if not entry["id"].startswith("#") and ":" not in entry["id"]:
+                  errors.append(f"{entry['id']} : identifiant sans namespace")
+              if key in seen:
+                  errors.append(f"{entry['id']} : deux entrees pour le meme metier")
+              seen.add(key)
+
+          if errors:
+              print("\n".join(f"::error::{e}" for e in errors))
+              sys.exit(1)
+          print(f"{len(jobs['unlocks'])} deblocages coherents, niveaux dans 1..{max_level}")
+          PY
 
       - name: Les JSON doivent parser
         run: |
