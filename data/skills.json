@@ -32,8 +32,13 @@
           "minecraft:sulfur": 8,
           "minecraft:cinnabar": 8,
           "minecraft:sulfur_spike": 6,
-          "minecraft:amethyst_cluster": 15
-        }
+          "minecraft:amethyst_cluster": 15,
+          "#dohy:mining_xp/low": 30,
+          "#dohy:mining_xp/mid": 80,
+          "#dohy:mining_xp/high": 180,
+          "#dohy:mining_xp/elite": 350
+        },
+        "_palacore": "Les quatre paliers mining_xp sont remplis par PalaCore, qui y range ses minerais. DoHy declare les tags vides : sans PalaCore ils ne capturent rien et ne changent donc rien. Les valeurs se lisent contre l'echelle existante : le fer vaut 12, le diamant 90, l'emeraude 110, les debris antiques 400."
       },
       "perks": [
         {

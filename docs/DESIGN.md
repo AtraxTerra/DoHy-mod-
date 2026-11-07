@@ -162,6 +162,33 @@ Objet consommable acheté au shop, −50 % de perte à la mort. Transforme la pu
 
 ---
 
+## 7 bis. Point d'extension pour les mods de contenu
+
+PalaCore ajoute des minerais et de l'équipement, sans progression propre : il
+s'appuie sur les skills et l'économie d'ici. Le branchement passe par des
+**tags**, et c'est délibéré — les tags fusionnent entre datapacks, les fichiers
+de configuration non. Un mod tiers qui voudrait son XP en éditant `skills.json`
+en écraserait la totalité.
+
+Deux surfaces, toutes deux inertes sans le mod tiers :
+
+- **XP de minage** : `#dohy:mining_xp/{low,mid,high,elite}`, déclarés vides ici
+  et référencés dans `skills.json` à 30, 80, 180 et 350. À comparer à l'échelle
+  existante : fer 12, diamant 90, émeraude 110, débris antiques 400.
+- **Prix** : rien de spécifique. Le mod range ses items dans les tags `c:`
+  habituels et déclare ses matières dans `materials.assign` de
+  `tag_prices.json`. La règle du mot-clé le plus long fait le reste — c'est
+  elle qui classe `green_paladium` en très rare alors que `paladium` est rare.
+
+Les formes héritées de `rules` donnent gratuitement la bonne protection : brut
+et gemme vendables, lingot et pépite en achat seul. Le jour où PalaCore livrera
+son broyeur, doubler le minerai ne pourra donc pas se convertir en revenu.
+
+**À vérifier en jeu** : `raw_green_paladium` sort à 51 203 l'unité, le haut de
+l'échelle de vente. C'est cohérent avec sa rareté annoncée, mais aucune partie
+ne l'a encore confirmé. Si sa génération se révèle plus généreuse que prévu,
+c'est le premier chiffre à redescendre.
+
 ## 8. Collections
 
 Deux courbes, parce que 5 000 blocs se font en une soirée avec une ferme mais en trois semaines à la main :

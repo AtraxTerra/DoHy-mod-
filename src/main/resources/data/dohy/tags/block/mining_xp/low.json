@@ -1,0 +1,4 @@
+{
+  "_comment": "Minerais d'entree de jeu d'un mod tiers. Volontairement vide : c'est le point d'extension par lequel un autre mod declare ses minerais sans toucher a skills.json. Les tags fusionnent entre datapacks, contrairement aux fichiers de configuration. Un tag vide ne capture rien, donc DoHy reste correct seul.",
+  "values": []
+}
