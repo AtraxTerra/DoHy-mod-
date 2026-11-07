@@ -38,6 +38,7 @@
       "c:nuggets": 0.1111,
       "c:crystals": 3.0
     },
+    "_palacore": "Les matieres de PalaCore sont rattachees ici. green_paladium est plus long que paladium, donc la regle du mot-cle le plus long le classe bien en tres rare et pas en rare. Les formes suivent les tags c: que PalaCore declare : brut et gemme vendables, lingot et pepite en achat seul. C'est la protection qui compte le jour ou le broyeur de PalaCore doublera le minerai.",
     "_assign": "Mots-cles cherches dans le chemin de l'identifiant. Casse ignoree.",
     "assign": {
       "COMMON": [
@@ -49,24 +50,30 @@
         "aluminum",
         "fluorite",
         "sulfur",
-        "sulphur"
+        "sulphur",
+        "amethyste"
       ],
       "UNCOMMON": [
         "thorium",
         "tungsten",
         "beryllium",
         "cobalt",
-        "lithium"
+        "lithium",
+        "titane",
+        "findium"
       ],
       "RARE": [
         "rare_earth",
         "rareearth",
-        "niobium"
+        "niobium",
+        "paladium"
       ],
       "VERY_RARE": [
         "schrabidium",
         "australium",
-        "osmiridium"
+        "osmiridium",
+        "green_paladium",
+        "endium"
       ]
     },
     "never_sellable": {
