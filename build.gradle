@@ -144,6 +144,50 @@ tasks.withType(Test).configureEach {
  * Plusieurs classes separees par des virgules. Utilise par le workflow
  * .github/workflows/api-probe.yml, declenchable a la main.
  */
+/*
+ * Metadonnees de pack de la version ciblee.
+ *
+ * Les constantes SharedConstants.RESOURCE_PACK_FORMAT_MAJOR et compagnie ne sont
+ * pas lisibles par reflexion : leur <clinit> touche au jeu et part en
+ * NoClassDefFoundError hors runtime Minecraft. En revanche le jar de Minecraft
+ * embarque son propre version.json et son propre pack.mcmeta, qui portent les
+ * memes nombres. On va les y lire.
+ *
+ * C'est la seule facon d'ecrire pack.mcmeta sur preuve : un format invente fait
+ * rejeter le pack entier, et le symptome (ecran noir, textures absentes) ne
+ * ressemble pas a sa cause.
+ *
+ *   gradle packMeta
+ */
+tasks.register('packMeta') {
+    group = 'verification'
+    description = 'Lit version.json et pack.mcmeta dans les jars du classpath'
+
+    def classpath = sourceSets.main.compileClasspath
+    dependsOn 'compileJava'
+
+    doLast {
+        def wanted = ['version.json', 'pack.mcmeta'] as Set
+        def found = 0
+        classpath.files.findAll { it.name.endsWith('.jar') && it.exists() }.each { jarFile ->
+            try {
+                new java.util.zip.ZipFile(jarFile).withCloseable { zip ->
+                    zip.entries().findAll { wanted.contains(it.name) }.each { entry ->
+                        println "\n${'=' * 78}\n${jarFile.name} :: ${entry.name}\n${'=' * 78}"
+                        println zip.getInputStream(entry).text
+                        found++
+                    }
+                }
+            } catch (Throwable ignored) {
+                // jar illisible : on continue, l'inventaire reste utile
+            }
+        }
+        if (found == 0) {
+            println "Aucun version.json ni pack.mcmeta dans les ${classpath.files.size()} entrees du classpath."
+        }
+    }
+}
+
 tasks.register('apiProbe') {
     group = 'verification'
     description = 'Liste les membres publics de classes du classpath (-Pprobe=a,b,c)'
