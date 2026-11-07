@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:green_paladium_ingot"
+  },
+  "result": {
+    "id": "palamod:green_paladium_block",
+    "count": 1
+  }
+}

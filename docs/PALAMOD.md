@@ -191,6 +191,59 @@ matériau (`green_paladium_seedplanter`, `endium_seedplanter`) pour que l'ordre 
 
 ---
 
+## 6 bis. Minerais et matériaux — relevés dans `PWorld` et `BaseWorldGenerator`
+
+Statistiques de bloc, lues au bytecode (`BlockOre(material, dureté, texture)` puis
+`setHarvestLevel("pickaxe", n)`) :
+
+| Minerai | Dureté | Résistance | Niveau de pioche | Tag 26.2 |
+|---|---|---|---|---|
+| Améthyste | 3,0 | 5,0 | 1 | `needs_stone_tool` |
+| Titane | 3,0 | 5,0 | 2 | `needs_iron_tool` |
+| Paladium | 5,0 | 5,0 | 3 | `needs_diamond_tool` |
+| Paladium vert | 5,0 | 5,0 | 3 | `needs_diamond_tool` |
+| Findium | 5,0 | 5,0 | 3 | `needs_diamond_tool` |
+| Trixium | 3,0 | 5,0 | 3 | `needs_diamond_tool` |
+
+Tailles de filon, lues dans les constructeurs de `WorldGenMinable` :
+améthyste **8**, titane **6**, paladium **4**, paladium vert **3**, findium **3**, trixium **3**.
+
+**Les hauteurs d'origine ne sont pas reprises, et c'est volontaire.** En 1.7.10 le monde allait
+de 0 à 255 et la deepslate n'existait pas ; recopier ces plages concentrerait les minerais au
+mauvais endroit d'un monde qui descend maintenant à −64. Le nombre par chunk et la profondeur
+sont donc **calibrés** sur l'analogue vanilla de chaque niveau de pioche, les tailles de filon
+restant celles du code. C'est le seul endroit du chapitre où un chiffre est de moi.
+
+| Minerai | Filon (code) | Par chunk (calibré) | Hauteur (calibrée) |
+|---|---|---|---|
+| Améthyste | 8 | 8 | −24 à 64 |
+| Titane | 6 | 6 | −32 à 40 |
+| Paladium | 4 | 4 | −48 à 16 |
+| Paladium vert | 3 | 2 | −56 à −8 |
+| Findium | 3 | 3 | −64 à 0 |
+| Trixium | 3 | 1 | −64 à −32 |
+
+### Une septième particule, absente du wiki
+
+Le wiki annonce six particules de minerai. Le code en a **sept** : `item.particle.green.paladium.name`
+existe et sa texture est dans le jar. Elle est enregistrée.
+
+### Formats 26.2, établis sur preuve
+
+Relevés avec `gradle packMeta`, qui lit le jar de Minecraft et celui de NeoForge :
+
+| | Valeur |
+|---|---|
+| `version.json` de MC 26.2 | `resource_major` 88, `resource_minor` 0, `data_major` 107, `data_minor` 1 |
+| `pack.mcmeta` du jar universel NeoForge 26.2.0.93 | `min_format` et `max_format` = `[107, 1]` |
+| Dossiers de données (jar vanilla) | `loot_table/`, `recipe/`, `tags/`, `worldgen/` — **au singulier** |
+| Dossiers d'assets | `blockstates/`, `models/`, `textures/`, `lang/`, **`items/`** |
+
+Le dossier `assets/<ns>/items/` est la définition d'item, obligatoire en plus du modèle :
+sans elle l'icône est violette. C'est ce que vérifie le garde-fou de CI du chapitre 2.
+
+---
+
 ## 7. Grinder — multiblock, pas un bloc
 
 Le wiki le décrit comme un assemblage de 30 blocs plus une source de lave, placement strict,

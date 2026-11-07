@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:amethyst_block",
+    "palamod:amethyst_ore",
+    "palamod:endium_block",
+    "palamod:findium_block",
+    "palamod:findium_ore",
+    "palamod:green_paladium_block",
+    "palamod:paladium_block",
+    "palamod:paladium_green_ore",
+    "palamod:paladium_ore",
+    "palamod:titane_block",
+    "palamod:titane_ore",
+    "palamod:trixium_block",
+    "palamod:trixium_ore"
+  ]
+}

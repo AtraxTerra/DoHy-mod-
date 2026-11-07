@@ -1,7 +1,8 @@
 {
+  "_comment": "min_format et max_format sont des paires [majeur, mineur] depuis 26.x. Les valeurs sont celles que NeoForge 26.2.0.93 declare dans le pack.mcmeta de son propre jar universel, releve avec 'gradle packMeta' : [107, 1]. MC 26.2 annonce resource 88.0 et data 107.1 dans son version.json ; NeoForge ne declare que le format de donnees pour ses deux cotes, et c'est ce que le loader valide pour un mod. Mieux vaut copier ce que le loader ship que choisir entre les deux nombres : l'ancienne forme pack_format + supported_formats etait une hypothese, et un format refuse fait rejeter le pack entier - ecran noir, textures absentes, symptome qui ne ressemble pas a sa cause.",
   "pack": {
     "description": "DoHy",
-    "pack_format": 88,
-    "supported_formats": [88, 107]
+    "min_format": [107, 1],
+    "max_format": [107, 1]
   }
 }

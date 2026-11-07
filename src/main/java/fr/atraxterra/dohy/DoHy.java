@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy;
 
+import fr.atraxterra.dohy.palamod.PalaMod;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -24,6 +25,10 @@ public final class DoHy {
 
     public DoHy(IEventBus modBus, ModContainer container) {
         DoHyAttachments.register(modBus);
-        LOGGER.info("DoHy charge — phase 1 : monnaie");
+        // Le contenu converti du PalaMod s'enregistre sous son propre
+        // namespace, « palamod », pour que le pack de textures officiel de
+        // Paladium s'applique tel quel. Voir PalaMod.
+        PalaMod.register(modBus);
+        LOGGER.info("DoHy charge");
     }
 }

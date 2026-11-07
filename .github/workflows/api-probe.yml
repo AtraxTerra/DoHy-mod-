@@ -20,6 +20,11 @@ on:
         description: "Paquets dont lister les classes, separes par des virgules"
         required: false
         type: string
+      meta:
+        description: "Lire version.json et pack.mcmeta dans les jars du classpath"
+        required: false
+        default: false
+        type: boolean
       ref:
         description: "Branche ou commit"
         required: false
@@ -54,9 +59,16 @@ jobs:
           # variable du shell.
           IN_CLASSES: ${{ inputs.classes }}
           IN_PACKAGES: ${{ inputs.packages }}
+          IN_META: ${{ inputs.meta }}
         run: |
+          if [ "$IN_META" = "true" ]; then
+            gradle packMeta --no-daemon -q
+          fi
           if [ -z "$IN_CLASSES" ] && [ -z "$IN_PACKAGES" ]; then
-            echo "::error::Rien a sonder : renseigne classes ou packages."
+            if [ "$IN_META" = "true" ]; then
+              exit 0
+            fi
+            echo "::error::Rien a sonder : renseigne classes, packages ou meta."
             exit 1
           fi
           gradle apiProbe --no-daemon -q \

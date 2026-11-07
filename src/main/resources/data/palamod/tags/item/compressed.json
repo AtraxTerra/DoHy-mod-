@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:compressed_amethyst",
+    "palamod:compressed_endium",
+    "palamod:compressed_paladium",
+    "palamod:compressed_titane"
+  ]
+}

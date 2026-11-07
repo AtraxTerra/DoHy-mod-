@@ -44,7 +44,10 @@ jobs:
         run: |
           JAR=$(ls build/libs/*.jar | head -1)
           MISSING=0
-          for f in data/dohy/prices.json data/dohy/collections.json data/dohy/skills.json data/dohy/tags/block/placement_exempt.json data/dohy/tags/block/crops.json data/dohy/contracts.json data/dohy/crates.json data/dohy/tag_prices.json data/dohy/economy.json data/dohy/museum.json data/dohy/upgrades.json data/dohy/jobs.json; do
+          # Les entrees palamod sont des temoins : si processResources changeait
+          # et laissait les assets generes dehors, le mod se chargerait avec des
+          # blocs sans texture ni butin au lieu d'echouer franchement.
+          for f in data/dohy/prices.json data/dohy/collections.json data/dohy/skills.json data/dohy/tags/block/placement_exempt.json data/dohy/tags/block/crops.json data/dohy/contracts.json data/dohy/crates.json data/dohy/tag_prices.json data/dohy/economy.json data/dohy/museum.json data/dohy/upgrades.json data/dohy/jobs.json assets/palamod/items/paladium_ingot.json assets/palamod/models/item/paladium_ingot.json assets/palamod/textures/item/paladium_ingot.png assets/palamod/blockstates/paladium_ore.json assets/palamod/lang/fr_fr.json data/palamod/loot_table/blocks/paladium_ore.json data/palamod/recipe/paladium_ingot_from_particles.json data/palamod/worldgen/placed_feature/ore_paladium.json data/palamod/neoforge/biome_modifier/ores.json data/minecraft/tags/block/needs_diamond_tool.json; do
             if ! unzip -l "$JAR" | grep -q "$f"; then
               echo "::error::$f est absent de $JAR"
               MISSING=1
@@ -138,6 +141,77 @@ jobs:
               print("\n".join(f"::error::{e}" for e in errors))
               sys.exit(1)
           print(f"{len(jobs['unlocks'])} deblocages coherents, niveaux dans 1..{max_level}")
+          PY
+
+      # Les assets du namespace palamod sont generes par un script, depuis un
+      # jar absent du depot ; l'enregistrement Java, lui, est ecrit a la main.
+      # Les deux listes peuvent donc deriver, et une derive ne casse PAS la
+      # compilation : un item enregistre sans definition d'item sort violet en
+      # jeu, un asset sans enregistrement est un fichier mort. On compare les
+      # deux sens.
+      - name: Les assets palamod et l'enregistrement Java doivent concorder
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+
+          java = pathlib.Path("src/main/java/fr/atraxterra/dohy/palamod")
+          source = "\n".join(p.read_text(encoding="utf-8") for p in java.glob("*.java"))
+
+          # Les noms passent par les fabriques de PalaItems / PalaBlocks
+          # (simple, ore, storage) autant que par les methodes de NeoForge.
+          ITEM_CALLS = r'(?:registerSimpleItem|simple)'
+          BLOCK_CALLS = r'(?:registerSimpleBlock|ore|storage)'
+          registered = set(re.findall(rf'(?:{ITEM_CALLS}|{BLOCK_CALLS})\(\s*"([a-z0-9_]+)"', source))
+          blocks = set(re.findall(rf'{BLOCK_CALLS}\(\s*"([a-z0-9_]+)"', source))
+
+          res = pathlib.Path("src/main/resources/assets/palamod")
+          definitions = {p.stem for p in (res / "items").glob("*.json")}
+          item_models = {p.stem for p in (res / "models" / "item").glob("*.json")}
+          blockstates = {p.stem for p in (res / "blockstates").glob("*.json")}
+          textures_item = {p.stem for p in (res / "textures" / "item").glob("*.png")}
+          textures_block = {p.stem for p in (res / "textures" / "block").glob("*.png")}
+
+          errors = []
+
+          # Garde contre un succes a vide : si les fabriques sont renommees, le
+          # motif ne trouve plus rien et toutes les verifications ci-dessous
+          # passeraient sans rien verifier.
+          if not registered:
+              errors.append("aucun objet palamod trouve dans le source : "
+                            "les motifs de ce test ne correspondent plus aux fabriques")
+
+          # Chaque objet enregistre a besoin d'une definition d'item ET d'un
+          # modele : c'est la paire que 26.2 exige, et il manque toujours la
+          # seconde quand l'icone est violette.
+          for name in sorted(registered):
+              if name not in definitions:
+                  errors.append(f"{name} : enregistre, mais pas de assets/palamod/items/{name}.json (icone violette)")
+              if name not in item_models:
+                  errors.append(f"{name} : enregistre, mais pas de models/item/{name}.json")
+
+          for name in sorted(blocks):
+              if name not in blockstates:
+                  errors.append(f"{name} : bloc enregistre sans blockstates/{name}.json")
+              if name not in textures_block:
+                  errors.append(f"{name} : bloc enregistre sans textures/block/{name}.png")
+
+          for name in sorted(registered - blocks):
+              if name not in textures_item:
+                  errors.append(f"{name} : item enregistre sans textures/item/{name}.png")
+
+          for name in sorted(definitions - registered):
+              errors.append(f"{name} : definition d'item sans enregistrement Java (fichier mort)")
+
+          # Un bloc sans table de butin ne lache rien du tout.
+          loot = {p.stem for p in pathlib.Path("src/main/resources/data/palamod/loot_table/blocks").glob("*.json")}
+          for name in sorted(blocks - loot):
+              errors.append(f"{name} : bloc sans table de butin, il ne lachera rien")
+
+          if errors:
+              print("\n".join(f"::error::{e}" for e in errors))
+              sys.exit(1)
+          print(f"{len(registered)} objets palamod enregistres, assets complets "
+                f"({len(blocks)} blocs, {len(registered) - len(blocks)} items)")
           PY
 
       - name: Les JSON doivent parser
