@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "palamod:endium_ingot"
+  ],
+  "result": {
+    "id": "palamod:endium_nugget",
+    "count": 9
+  }
+}

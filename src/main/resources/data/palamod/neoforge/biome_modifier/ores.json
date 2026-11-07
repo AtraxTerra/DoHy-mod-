@@ -1,0 +1,13 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "palamod:ore_amethyst",
+    "palamod:ore_findium",
+    "palamod:ore_paladium_green",
+    "palamod:ore_paladium",
+    "palamod:ore_titane",
+    "palamod:ore_trixium"
+  ],
+  "step": "underground_ores"
+}

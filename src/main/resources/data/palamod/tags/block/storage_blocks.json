@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:amethyst_block",
+    "palamod:endium_block",
+    "palamod:findium_block",
+    "palamod:green_paladium_block",
+    "palamod:paladium_block",
+    "palamod:titane_block",
+    "palamod:trixium_block"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:amethyst_particle",
+    "palamod:diamond_particle",
+    "palamod:gold_particle",
+    "palamod:green_paladium_particle",
+    "palamod:iron_particle",
+    "palamod:paladium_particle",
+    "palamod:titane_particle"
+  ]
+}

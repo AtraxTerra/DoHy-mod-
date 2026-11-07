@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:paladium_particle"
+  },
+  "result": {
+    "id": "palamod:paladium_ingot",
+    "count": 1
+  },
+  "group": "palamod_particles"
+}

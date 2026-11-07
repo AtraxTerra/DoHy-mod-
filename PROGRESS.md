@@ -45,7 +45,7 @@ Dernière mise à jour : 2026-11-03
 
 - [ ] **Faire passer la CI au vert.** C'est la seule validation possible des signatures 26.2 : ni JDK 25 ni accès aux dépôts Maven NeoForge depuis l'environnement de dev.
 - [ ] **Générer le wrapper Gradle** : `gradle wrapper --gradle-version 9.1.0` à lancer en local (impossible ici, `services.gradle.org` est injoignable). En attendant, la CI épingle Gradle 9.1.0 via `setup-gradle` et lance `gradle build` au lieu de `./gradlew build`.
-- [ ] Vérifier `pack.mcmeta` : `pack_format` 88 + `supported_formats [88, 107]` est une hypothèse, les deux formats divergeant depuis 26.x. À confirmer au premier lancement.
+- [x] ~~Vérifier `pack.mcmeta`~~ → **tranché le 2026-11-07, sur preuve.** `gradle packMeta` (tâche ajoutée au chapitre 2) lit le jar de Minecraft et celui de NeoForge : MC 26.2 annonce `resource 88.0` / `data 107.1`, et le jar universel de NeoForge déclare `min_format` = `max_format` = `[107, 1]`. Les deux clés sont des paires `[majeur, mineur]` et l'ancienne forme `pack_format` + `supported_formats` est abandonnée. On copie ce que le loader ship.
 
 ## À faire — phases 1 à 10
 
@@ -76,7 +76,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | Chapitre | Contenu | État |
 |---|---|---|
 | 1 | **Métiers** fusionnés dans les skills, table des 70 verrous, interface, `/metiers` | fait |
-| 2 | **Minerais et matériaux** `palamod` : minerais, lingots, blocs, compressés, 6 particules, 4 charbons mixés | à faire |
+| 2 | **Minerais et matériaux** `palamod` : 6 minerais + génération, 7 blocs, 7 particules, lingots, compressés, 4 charbons mixés, onglet créatif | fait |
 | 3 | **Cultures** : 4 plantes, graines, fruits, 5 seedplanters, totem de fertilité | à faire |
 | 4 | **Machines** : cobblebreaker 4 paliers, crusher, palafurnace, grinder, palamachine | à faire |
 | 5 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
@@ -120,6 +120,71 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 ---
 
 ## Journal des sessions
+
+### 2026-11-07 (suite) — chapitre 2 : les minerais, et deux formats établis sur preuve
+
+**Prérequis non demandé mais nécessaire** : le cobblebreaker rend des particules, le crusher
+consomme des charbons mixés et rend des lingots. Sans ces items, les chapitres machines et
+cultures n'ont ni entrée ni sortie.
+
+**37 objets** sous le namespace `palamod` : 6 minerais avec leur génération, 7 blocs de
+stockage, 7 particules, 5 lingots + findium/trixium/pépite/fragment d'endium, 4 compressés,
+4 charbons mixés, un onglet créatif.
+
+**1. Les assets sont générés, pas écrits.** `tools/palamod_assets.py` produit **206 fichiers**
+depuis le jar de PalaMod. Un item demande trois fichiers, un bloc six ; à la main c'est une
+faute de frappe garantie, et une faute de frappe dans un chemin de modèle **ne casse pas la
+compilation** — elle donne une texture violette découverte des semaines plus tard.
+
+Les textures viennent du **jar de PalaMod**, pas du pack Faithful : ce sont les textures par
+défaut du mod, le pack officiel les remplace ensuite. C'est tout l'intérêt du namespace
+`palamod`.
+
+**2. Deux formats tranchés sur preuve, pas devinés.** La tâche `gradle packMeta`, ajoutée à la
+sonde, lit le jar de Minecraft et celui de NeoForge au lieu de supposer :
+
+- `pack.mcmeta` : MC 26.2 annonce `resource 88.0` / `data 107.1`, et le jar universel de
+  NeoForge déclare `min_format` = `max_format` = `[107, 1]`. Ce sont des paires
+  `[majeur, mineur]`, et l'ancienne forme `pack_format` + `supported_formats` est abandonnée.
+  **Ça ferme un point resté ouvert depuis la phase 0** — et ce n'était pas cosmétique : un
+  format refusé fait rejeter le pack entier, donc tout le chapitre.
+- Dossiers de données **au singulier** : `loot_table/`, `recipe/`, `tags/`, `worldgen/`, et
+  `assets/<ns>/items/` pour les définitions d'item. Listés dans le jar vanilla, pas supposés.
+
+La sonde affiche aussi désormais la **valeur** des constantes et non juste leur type. Ça n'a
+pas suffi ici — le `<clinit>` de `SharedConstants` touche au jeu et part en
+`NoClassDefFoundError` — d'où la lecture directe du jar.
+
+**3. Le fer, l'or et le diamant n'ont pas de lingot propre.** Leurs particules se craftent en
+items **vanilla**. Un fer parallèle au fer du jeu casserait tout l'équilibrage du shop, qui
+raisonne sur `minecraft:iron_ingot`. Seules les matières que Paladium ajoute vraiment ont leur
+lingot.
+
+**4. Les chiffres viennent du code, sauf un, et c'est dit.** Dureté, résistance et niveau de
+pioche sont relevés dans `PWorld` ; les tailles de filon dans `BaseWorldGenerator` (améthyste 8,
+titane 6, paladium 4, le reste 3). **Les hauteurs d'origine sont écartées volontairement** : en
+1.7.10 le monde allait de 0 à 255 et la deepslate n'existait pas, donc les recopier
+concentrerait les minerais au mauvais endroit d'un monde qui descend à −64. Nombre par chunk et
+profondeur sont calibrés sur l'analogue vanilla de chaque niveau de pioche.
+
+**5. Garde-fou de CI.** Les assets sont générés, l'enregistrement Java est écrit à la main :
+les deux listes peuvent dériver, et une dérive **ne casse pas la compilation**. Un item
+enregistré sans définition d'item sort violet ; un asset sans enregistrement est un fichier
+mort. La CI compare les deux sens, vérifie les tables de butin, et refuse de passer à vide si
+les motifs ne reconnaissent plus les fabriques.
+
+**6. Trouvaille** : le code a **sept** particules de minerai, le wiki en annonce six. La
+particule de paladium vert existe, sa texture est dans le jar, elle est enregistrée.
+
+**Pas encore fait, volontairement** : les recettes des charbons mixés. Le wiki donne leurs
+rendements (or ×6, améthyste ×8, titane ×8, paladium ×1) mais pas leurs ingrédients. Elles
+arrivent au chapitre des machines, où le `CraftRegistry` de PalaMod les donnera — les inventer
+ici serait un chiffre de plus à défaire.
+
+**Le seul point non vérifiable sans lancer le jeu** : le chemin du modificateur de biome
+NeoForge (`data/palamod/neoforge/biome_modifier/ores.json`). Le jar de NeoForge n'en embarque
+aucun, donc rien à comparer. Si le chemin est faux, seule la génération des minerais est
+muette — le reste du chapitre tient.
 
 ### 2026-11-07 — chapitre 1 : les métiers, et la vérité prise au bytecode
 
