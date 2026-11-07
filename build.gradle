@@ -213,7 +213,29 @@ tasks.register('apiProbe') {
             if (fields) {
                 println "\n  -- champs --"
                 fields.sort { it.name }.each { f ->
-                    println "  ${java.lang.reflect.Modifier.toString(f.modifiers)} ${f.genericType.typeName} ${f.name}"
+                    // Valeur affichee pour les constantes simples. Une signature
+                    // seule ne repond pas aux questions du genre « quel est le
+                    // pack_format de cette version » : le nom du champ est
+                    // connu, c'est le nombre qu'on cherche. Limite aux
+                    // primitives et aux chaines statiques finales, les seules
+                    // qu'on puisse lire sans initialiser le jeu.
+                    def shown = ''
+                    def type = f.type
+                    boolean simple = type.isPrimitive() || type == String
+                    if (simple
+                            && java.lang.reflect.Modifier.isStatic(f.modifiers)
+                            && java.lang.reflect.Modifier.isFinal(f.modifiers)) {
+                        try {
+                            f.setAccessible(true)
+                            def value = f.get(null)
+                            shown = type == String ? " = \"${value}\"" : " = ${value}"
+                        } catch (Throwable t) {
+                            // Un <clinit> qui touche au jeu echoue ici : on se
+                            // contente de la signature plutot que d'echouer.
+                            shown = " = (non lisible : ${t.class.simpleName})"
+                        }
+                    }
+                    println "  ${java.lang.reflect.Modifier.toString(f.modifiers)} ${f.genericType.typeName} ${f.name}${shown}"
                 }
             }
 
