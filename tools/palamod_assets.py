@@ -1526,16 +1526,17 @@ def main():
     # RECETTES DE SUBSTITUTION, signalees comme telles : leurs ingredients
     # d'origine ne sont pas portes.
     # - Epee de capture : les quatre batons a effet (vitesse, force, soin,
-    #   degats) deviennent des batons en paladium, les trois tetes d'arme (epee
-    #   large, epee rapide, epee) des epees en paladium. La forme reste.
-    shaped("capture_sword", ["ABA", "BEB", "AHA"], {
-        "A": "%s:paladium_stick" % NS, "B": "%s:paladium_sword" % NS,
-        "E": "%s:compressed_paladium" % NS, "H": "%s:paladium_stick" % NS,
+    #   degats) deviennent des batons en paladium. Les trois tetes d'arme
+    #   (epee large, epee rapide, epee) sont celles du grinder, comme a
+    #   l'origine.
+    shaped("capture_sword", ["ABA", "DEF", "AHA"], {
+        "A": "%s:paladium_stick" % NS, "B": "%s:broadsword_head" % NS, "D": "%s:fastsword_head" % NS,
+        "E": "%s:compressed_paladium" % NS, "F": "%s:sword_head" % NS, "H": "%s:paladium_stick" % NS,
     }, "%s:capture_sword" % NS)
-    # - Marteau des cavernes : le marteau en paladium (grinder) devient une
-    #   pioche en paladium.
+    # Marteau des cavernes : la recette d'origine, maintenant que le marteau en
+    # paladium (grinder) existe.
     shaped("cavern_hammer", ["AAA", "BCB", "AAA"], {
-        "A": "%s:titane_block" % NS, "B": "minecraft:obsidian", "C": "%s:paladium_pickaxe" % NS,
+        "A": "%s:titane_block" % NS, "B": "minecraft:obsidian", "C": "%s:paladium_hammer" % NS,
     }, "%s:cavern_hammer" % NS)
     # - Reparation du spawner casse : la pierre de gardien (mod GuardianGolem)
     #   devient un coeur de paladium. Le reste est l'original : findium, crane de
@@ -2027,6 +2028,191 @@ def main():
             ("click", "Cliquez pour enchanter", "Click to enchant")):
         label("message", "mystic_enchant." + key, label_fr, label_en)
 
+    # ---- grinder, outils du grinder, buisson a XP ----
+    #
+    # PSRegister_Blocks / PSRegister_Items : textures sous blocks/smeltery et
+    # items/{patern,toolpart,modifier,hammer,broadsword,fastsword}, toutes dans
+    # le pack officiel.
+    def copy_animated(relative, destination, size):
+        """Une texture animee (bande verticale) et son .mcmeta, pack d'abord."""
+        tex(relative, destination, size)
+        for origin in root:
+            meta = origin and os.path.join(origin, "assets", NS, "textures", relative + ".mcmeta")
+            if meta and os.path.exists(meta):
+                shutil.copyfile(meta, os.path.join(RES, "assets", NS, "textures", destination + ".mcmeta"))
+                return
+        missing.append(relative + ".mcmeta")
+
+    # Le grinder : la face avant regarde le joueur, les autres faces sont le cote.
+    tex("blocks/smeltery/grinder_block_front.png", "block/grinder_front.png")
+    tex("blocks/smeltery/grinder_block_side.png", "block/grinder_side.png")
+    write("assets/%s/models/block/grinder.json" % NS, {
+        "parent": "minecraft:block/orientable",
+        "textures": {"front": "%s:block/grinder_front" % NS, "side": "%s:block/grinder_side" % NS,
+                     "top": "%s:block/grinder_side" % NS, "particle": "%s:block/grinder_side" % NS}})
+    write("assets/%s/blockstates/grinder.json" % NS, {"variants": {
+        "facing=%s,lit=%s" % (facing, lit): {"model": "%s:block/grinder" % NS, "y": rotation}
+        for facing, rotation in (("north", 0), ("east", 90), ("south", 180), ("west", 270))
+        for lit in ("true", "false")}})
+    block_item("grinder")
+    drops_itself("grinder")
+    label("block", "grinder", "Grinder", "Grinder")
+    for name, source, label_fr, label_en in (
+            ("grinder_casing", "grinder_casing_block", "Casing du grinder", "Grinder Casing"),
+            ("grinder_frame", "grinder_frame_block", "Cadre du grinder", "Grinder Frame")):
+        tex("blocks/smeltery/%s.png" % source, "block/%s.png" % name)
+        cube(name, "%s:block/%s" % (NS, name))
+        block_item(name)
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+    for name in ("grinder", "grinder_casing", "grinder_frame"):
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+        tag("minecraft/tags/block/needs_iron_tool.json", ["%s:%s" % (NS, name)])
+    label("container", "grinder", "Grinder", "Grinder")
+    label("message", "grinder.incomplete",
+          "Structure incomplete : un cube de 3 x 3 x 3 — 20 cadres, 5 casings, une source de lave au centre",
+          "Incomplete structure: a 3 x 3 x 3 cube — 20 frames, 5 casings, a lava source in the middle")
+
+    for kind, folder, prefix_fr, prefix_en, names in (
+            ("pattern", "patern", "Pattern", "Pattern", (
+                ("axe", "de hache", "Axe"), ("hammer", "de marteau", "Hammer"), ("shovel", "de pelle", "Shovel"),
+                ("broadsword", "de broadsword", "Broadsword"), ("fastsword", "de fastsword", "Fastsword"),
+                ("pickaxe", "de pioche", "Pickaxe"), ("sword", "d'epee", "Sword"), ("ingot", "de lingot", "Ingot"),
+                ("block", "de bloc", "Block"), ("socket", "de base", "Socket"))),
+            ("head", "toolpart", "Tete", "Head", (
+                ("axe", "de hache", "Axe"), ("hammer", "de marteau", "Hammer"), ("shovel", "de pelle", "Shovel"),
+                ("broadsword", "de broadsword", "Broadsword"), ("fastsword", "de fastsword", "Fastsword"),
+                ("pickaxe", "de pioche", "Pickaxe"), ("sword", "d'epee", "Sword")))):
+        for name, of_fr, label_en in names:
+            item = "%s_%s" % (name, kind)
+            source = "items/%s/%s.png" % (folder, name if kind == "pattern" else "head_" + name)
+            tex(source, "item/%s.png" % item)
+            flat_item(item, "%s:item/%s" % (NS, item))
+            label("item", item, "%s %s" % (prefix_fr, of_fr), "%s %s" % (label_en, prefix_en))
+
+    for name, source, label_fr, label_en in (
+            ("smelt_modifier", "modifier/smelt", "Modificateur de fusion", "Smelt Modifier"),
+            ("damage_modifier", "modifier/damage", "Modificateur de dommage", "Damage Modifier"),
+            ("flame_modifier", "modifier/flame", "Modificateur de flamme", "Flame Modifier"),
+            ("knockback_modifier", "modifier/knockback", "Modificateur de recul", "Knockback Modifier"),
+            ("more_upgrade_modifier", "modifier/moreupgrade", "Amelioration d'emplacement de modificateur",
+             "Modifier Slot Upgrade"),
+            ("knockback_orb", "machine/orb_knockback", "Orbe de recul", "Knockback Orb")):
+        tex("items/%s.png" % source, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    for modifier, label_fr, label_en in (("smelt", "Fusion", "Smelt"), ("fortune", "Fortune", "Fortune"),
+                                         ("speed", "Vitesse", "Speed"), ("damage", "Dommage", "Damage"),
+                                         ("flame", "Flamme", "Flame"), ("knockback", "Recul", "Knockback"),
+                                         ("more_upgrade", "Emplacement", "Slot")):
+        label("modifier", modifier, label_fr, label_en)
+    label("item", "modifiers.slots", "Modificateurs : %s/%s", "Modifiers: %s/%s")
+
+    # Marteaux, broadswords, fastswords : tenus comme des outils.
+    for family, folder, of_fr, label_en in (("hammer", "hammer", "Marteau", "Hammer"),
+                                            ("broadsword", "broadsword", "Broadsword", "Broadsword"),
+                                            ("fastsword", "fastsword", "Fastsword", "Fastsword")):
+        for metal, metal_fr, metal_en in (("amethyst", "en amethyste", "Amethyst"),
+                                          ("titane", "en titane", "Titanium"),
+                                          ("paladium", "en paladium", "Paladium")):
+            name = "%s_%s" % (metal, family)
+            tex("items/%s/%s.png" % (folder, metal), "item/%s.png" % name)
+            write("assets/%s/models/item/%s.json" % (NS, name),
+                  {"parent": "minecraft:item/handheld", "textures": {"layer0": "%s:item/%s" % (NS, name)}})
+            write("assets/%s/items/%s.json" % (NS, name),
+                  {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)}})
+            label("item", name, "%s %s" % (of_fr, metal_fr), "%s %s" % (metal_en, label_en))
+
+    # Buisson a XP : quatre etapes de taille croissante, la derniere mure (animee).
+    tex("blocks/bush/berry_xp_bush_fancy.png", "block/xp_bush.png")
+    copy_animated("blocks/bush/berry_xp_bush_ripe_fancy.png", "block/xp_bush_ripe.png", (16, 112))
+    for age, (low, high) in enumerate(((4, 12), (2, 14), (1, 15), (1, 15))):
+        top = (8, 12, 15, 15)[age]
+        texture = "%s:block/%s" % (NS, "xp_bush_ripe" if age == 3 else "xp_bush")
+        faces = {face: {"texture": "#bush", "uv": [low, 16 - top if face not in ("up", "down") else low,
+                                                   high, 16 if face not in ("up", "down") else high]}
+                 for face in ("north", "south", "east", "west", "up", "down")}
+        write("assets/%s/models/block/xp_bush_%d.json" % (NS, age), {
+            "textures": {"bush": texture, "particle": texture},
+            "elements": [{"from": [low, 0, low], "to": [high, top, high], "faces": faces}]})
+    write("assets/%s/blockstates/xp_bush.json" % NS, {"variants": {
+        "age=%d" % age: {"model": "%s:block/xp_bush_%d" % (NS, age)} for age in range(4)}})
+    write("assets/%s/models/item/xp_bush.json" % NS, {"parent": "%s:block/xp_bush_2" % NS})
+    write("assets/%s/items/xp_bush.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:block/xp_bush_2" % NS}})
+    drops_itself("xp_bush")
+    label("block", "xp_bush", "Buisson a XP", "XP Bush")
+    tag("minecraft/tags/block/mineable/hoe.json", ["%s:xp_bush" % NS])
+    for name, source, label_fr, label_en in (("xp_berry", "xp_berry", "Baie d'XP", "XP Berry"),
+                                             ("compressed_xp_berry", "compressed_xp_berry",
+                                              "Baie d'XP compressee", "Compressed XP Berry")):
+        copy_animated("items/fruits/%s.png" % source, "item/%s.png" % name, (16, 128))
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    # PRegister_Craft.addShapelessRecipe : la boucle des recettes ne lit que les
+    # grilles, celle-ci (une baie compressee -> neuf baies) est recopiee.
+    shapeless("xp_berry", ["%s:compressed_xp_berry" % NS], "%s:xp_berry" % NS, 9)
+    # BaseWorldGenerator : trois essais par chunk, une chance sur cinq, un filon
+    # de trois dans la pierre, a la hauteur du titane (calee comme lui sur -32..40).
+    write("data/%s/worldgen/configured_feature/xp_bush.json" % NS, {
+        "type": "minecraft:ore",
+        "config": {"size": 3, "discard_chance_on_air_exposure": 0.0, "targets": [
+            {"target": {"predicate_type": "minecraft:tag_match", "tag": "minecraft:stone_ore_replaceables"},
+             "state": {"Name": "%s:xp_bush" % NS, "Properties": {"age": "0"}}}]}})
+    write("data/%s/worldgen/placed_feature/xp_bush.json" % NS, {
+        "feature": "%s:xp_bush" % NS,
+        "placement": [
+            {"type": "minecraft:count", "count": 3},
+            {"type": "minecraft:rarity_filter", "chance": 5},
+            {"type": "minecraft:in_square"},
+            {"type": "minecraft:height_range", "height": {"type": "minecraft:uniform",
+                                                          "min_inclusive": {"absolute": -32},
+                                                          "max_inclusive": {"absolute": 40}}},
+            {"type": "minecraft:biome"}]})
+    write("data/%s/neoforge/biome_modifier/xp_bush.json" % NS, {
+        "type": "neoforge:add_features", "biomes": "#minecraft:is_overworld",
+        "features": ["%s:xp_bush" % NS], "step": "underground_ores"})
+
+    # ---- pioche des dieux ----
+    # ItemGodPickaxe : vingt textures, une tous les cinq niveaux, choisies par
+    # la custom_model_data que la pioche pose en changeant de palier.
+    for index in range(20):
+        name = "god_pickaxe_%d" % index
+        tex("items/god_pickaxe/%s.png" % name, "item/%s.png" % name)
+        write("assets/%s/models/item/%s.json" % (NS, name),
+              {"parent": "minecraft:item/handheld", "textures": {"layer0": "%s:item/%s" % (NS, name)}})
+    write("assets/%s/items/god_pickaxe.json" % NS, {"model": {
+        "type": "minecraft:range_dispatch", "property": "minecraft:custom_model_data", "index": 0,
+        "entries": [{"threshold": index, "model": {"type": "minecraft:model",
+                                                   "model": "%s:item/god_pickaxe_%d" % (NS, index)}}
+                    for index in range(1, 20)],
+        "fallback": {"type": "minecraft:model", "model": "%s:item/god_pickaxe_0" % NS}}})
+    # Le nom est code en dur dans PalaMod, sans cle de langue.
+    label("item", "god_pickaxe", "Pickaxe of the gods", "Pickaxe of the Gods")
+    label("item", "god_pickaxe.level", " (Niveau %s)", " (Level %s)")
+    label("item", "god_pickaxe.silk", " [Silk]", " [Silk]")
+    label("item", "god_pickaxe.tooltip.level", "Niveau %s", "Level %s")
+    label("item", "god_pickaxe.tooltip.max", "Niveau max", "Max level")
+    label("item", "god_pickaxe.tooltip.next", "Prochain niveau dans : %s exp", "Next level in: %s xp")
+    label("item", "god_pickaxe.tooltip.auto_smelt", "⚫ Auto smelt (I)", "⚫ Auto smelt (I)")
+    tex("items/god_pickaxe_auto_smelt.png", "item/god_pickaxe_auto_smelt.png")
+    flat_item("god_pickaxe_auto_smelt", "%s:item/god_pickaxe_auto_smelt" % NS)
+    label("item", "god_pickaxe_auto_smelt", "Fusion automatique de la pioche des dieux", "God Pickaxe Auto Smelt")
+    label("message", "god_pickaxe.silk_on", "Silk Touch active", "Silk Touch enabled")
+    label("message", "god_pickaxe.silk_off", "Silk Touch desactive", "Silk Touch disabled")
+    label("message", "god_pickaxe.given", "Pioche des dieux de niveau %s donnee", "Level %s god pickaxe given")
+    label("message", "god_pickaxe.not_held", "Il faut tenir une pioche des dieux en main",
+          "You must hold a god pickaxe")
+    label("message", "god_pickaxe.upgraded", "Amelioration ajoutee", "Upgrade added")
+    # ToolHandler.minerals : les minerais ou la Fortune multiplie la fusion. Le
+    # cuivre n'existait pas en 1.7.10 ; il est minerai comme les autres.
+    tag("%s/tags/block/god_pickaxe_minerals.json" % NS, [
+        "#minecraft:coal_ores", "#minecraft:iron_ores", "#minecraft:gold_ores", "#minecraft:copper_ores",
+        "#minecraft:redstone_ores", "#minecraft:lapis_ores", "#minecraft:diamond_ores",
+        "#minecraft:emerald_ores", "minecraft:nether_quartz_ore", "minecraft:nether_gold_ore",
+        "%s:findium_ore" % NS, "%s:paladium_ore" % NS, "%s:titane_ore" % NS, "%s:amethyst_ore" % NS,
+        "%s:trixium_ore" % NS])
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de
@@ -2078,6 +2264,22 @@ def main():
         "AMETHYSTE_PORTAL_KEY": "amethyst_portal_key", "TITANE_PORTAL_KEY": "titane_portal_key",
         "PALADIUM_PORTAL_KEY": "paladium_portal_key", "ENDIUM_PORTAL_KEY": "endium_portal_key",
         "MYSTICAL_BOOKSHELF": "mystical_bookshelf",
+        # Grinder (chapitre 12) : PSRegister_Craft. Les outils en paladium, les
+        # tetes et les lingots sortent du grinder lui-meme (GrinderRecipes).
+        "GRINDER_BLOCK": "grinder", "GRINDER_CASING_BLOCK": "grinder_casing",
+        "GRINDER_FRAME_BLOCK": "grinder_frame",
+        "PATERN_AXE": "axe_pattern", "PATERN_HAMMER": "hammer_pattern", "PATERN_SHOVEL": "shovel_pattern",
+        "PATERN_BROADSWORD": "broadsword_pattern", "PATERN_FASTSWORD": "fastsword_pattern",
+        "PATERN_PICKAXE": "pickaxe_pattern", "PATERN_SWORD": "sword_pattern", "PATERN_INGOT": "ingot_pattern",
+        "PATERN_BLOCK": "block_pattern", "PATERN_SOCKET": "socket_pattern",
+        "MODIFIER_SMELT": "smelt_modifier", "MODIFIER_DAMAGE": "damage_modifier",
+        "MODIFIER_FLAME": "flame_modifier", "MODIFIER_KNOCKBACK": "knockback_modifier",
+        "MODIFIER_MOREUPGRADE": "more_upgrade_modifier", "ORB_KNOCKBACK": "knockback_orb",
+        "HAMMER_AMETHYST": "amethyst_hammer", "HAMMER_TITANE": "titane_hammer",
+        "BROADSWORD_AMETHYST": "amethyst_broadsword", "BROADSWORD_TITANE": "titane_broadsword",
+        "FASTSWORD_AMETHYST": "amethyst_fastsword", "FASTSWORD_TITANE": "titane_fastsword",
+        "COMPRESSED_XP_BERRY": "compressed_xp_berry",
+        "GOD_PICKAXE": "god_pickaxe", "GOD_PICKAXE_AUTOSMELT": "god_pickaxe_auto_smelt",
     }
     # Un meme objet 1.7.10 a plusieurs metas, plusieurs objets en 26.2 : la
     # recette se choisit par (nom, meta). Sans cette table, les quatre outils de
@@ -2144,6 +2346,13 @@ def main():
         ("BlocksRegister.SHINY_JUDEECERCIS_WOOD", 0): "%s:shiny_judeecercis_wood" % NS,
         ("BlocksRegister.SHINY_ERABLE_WOOD", 0): "%s:shiny_erable_wood" % NS,
         ("BlocksRegister.SHINY_OSTRYA_WOOD", 0): "%s:shiny_ostrya_wood" % NS,
+        # Grinder : baton de blaze, briquet, soupe de champignons, larme de ghast.
+        ("Items.field_151072_bj", 0): "minecraft:blaze_rod",
+        ("Items.field_151033_d", 0): "minecraft:flint_and_steel",
+        ("Items.field_151009_A", 0): "minecraft:mushroom_stew",
+        ("Items.field_151073_bk", 0): "minecraft:ghast_tear",
+        ("PSRegister_Items.HAMMER_PALADIUM", 0): "%s:paladium_hammer" % NS,
+        ("ItemsRegister.XP_BERRY", 0): "%s:xp_berry" % NS,
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())
@@ -2194,6 +2403,13 @@ def main():
         used = {char for row in pattern for char in row if char != " "}
         pattern = ["".join(char if char in keys else " " for char in row) for row in pattern]
         keys = {key: value for key, value in keys.items() if key in used}
+        # Les lignes vides du bord ne changent rien : la grille moderne les retire
+        # d'elle-meme. On les ote pour garder des fichiers lisibles ; une ligne
+        # vide AU MILIEU (le cadre du grinder) reste, elle compte.
+        while pattern and not pattern[0].strip():
+            pattern = pattern[1:]
+        while pattern and not pattern[-1].strip():
+            pattern = pattern[:-1]
 
         shaped(name, pattern, keys, "%s:%s" % (NS, name), recipe["result"]["count"])
         emitted[name] = recipe

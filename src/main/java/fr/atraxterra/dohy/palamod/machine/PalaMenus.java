@@ -65,6 +65,13 @@ public final class PalaMenus {
                             MachineLayout.PALAFORGE),
                     FeatureFlags.VANILLA_SET));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> GRINDER =
+            MENUS.register("grinder", () -> new MenuType<>(
+                    (containerId, inventory) -> new MachineMenu(
+                            PalaMenus.GRINDER.get(), containerId, inventory,
+                            MachineLayout.GRINDER),
+                    FeatureFlags.VANILLA_SET));
+
     private PalaMenus() {
     }
 

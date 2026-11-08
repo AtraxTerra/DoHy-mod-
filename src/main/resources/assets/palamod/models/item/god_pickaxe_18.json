@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "palamod:item/god_pickaxe_18"
+  }
+}

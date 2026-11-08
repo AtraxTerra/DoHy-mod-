@@ -39,7 +39,9 @@ public class MachineMenu extends AbstractContainerMenu {
     public static final int DATA_DURATION = 1;
     public static final int DATA_TANK = 2;
     public static final int DATA_TANK_GOAL = 3;
-    public static final int DATA_COUNT = 4;
+    public static final int DATA_WORK2 = 4;
+    public static final int DATA_DURATION2 = 5;
+    public static final int DATA_COUNT = 6;
 
     /** Coordonnees vanilla de l'inventaire du joueur. Voir tools/gen_gui.py. */
     private static final int PLAYER_X = 8;
@@ -129,6 +131,15 @@ public class MachineMenu extends AbstractContainerMenu {
     }
 
     /** Fruits deja broyes dans le bac en cours. */
+    /** La seconde fleche (le grinder en a deux). */
+    public float progress2() {
+        int duration = data.get(DATA_DURATION2);
+        if (duration <= 0) {
+            return 0.0f;
+        }
+        return Math.clamp(data.get(DATA_WORK2) / (float) duration, 0.0f, 1.0f);
+    }
+
     public int tank() {
         return data.get(DATA_TANK);
     }

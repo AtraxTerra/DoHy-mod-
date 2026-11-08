@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "palamod:compressed_xp_berry"
+  ],
+  "result": {
+    "id": "palamod:xp_berry",
+    "count": 9
+  }
+}

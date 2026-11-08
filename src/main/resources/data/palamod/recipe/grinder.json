@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "YYY",
+    "YXY",
+    "YYY"
+  ],
+  "key": {
+    "Y": "palamod:paladium_ingot",
+    "X": "palamod:paladium_furnace"
+  },
+  "result": {
+    "id": "palamod:grinder",
+    "count": 1
+  }
+}

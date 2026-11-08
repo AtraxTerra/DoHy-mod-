@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:xp_berry"
+  },
+  "result": {
+    "id": "palamod:compressed_xp_berry",
+    "count": 1
+  }
+}

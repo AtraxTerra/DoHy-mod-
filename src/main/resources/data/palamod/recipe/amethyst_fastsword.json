@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X",
+    "X",
+    "Y"
+  ],
+  "key": {
+    "X": "palamod:amethyst_stick",
+    "Y": "minecraft:stick"
+  },
+  "result": {
+    "id": "palamod:amethyst_fastsword",
+    "count": 1
+  }
+}

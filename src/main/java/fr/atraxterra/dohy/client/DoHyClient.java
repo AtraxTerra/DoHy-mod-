@@ -84,6 +84,8 @@ public final class DoHyClient {
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "palafurnace"));
         event.<MachineMenu, MachineScreen>register(PalaMenus.PALAFORGE.get(),
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "palaforge"));
+        event.<MachineMenu, MachineScreen>register(PalaMenus.GRINDER.get(),
+                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "grinder"));
         event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.AMETHYST_CHEST_MENU.get(),
                 PalaChestScreen::new);
         event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.TITANE_CHEST_MENU.get(),

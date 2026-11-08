@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.palamod.machine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
@@ -58,6 +59,8 @@ public abstract class MachineBlockEntity extends BlockEntity
                 case MachineMenu.DATA_DURATION -> cycleDuration();
                 case MachineMenu.DATA_TANK -> tankFill();
                 case MachineMenu.DATA_TANK_GOAL -> tankGoal();
+                case MachineMenu.DATA_WORK2 -> work2();
+                case MachineMenu.DATA_DURATION2 -> cycleDuration2();
                 default -> 0;
             };
         }
@@ -210,6 +213,23 @@ public abstract class MachineBlockEntity extends BlockEntity
     /** Elements qu'il faut pour un lot, ou zero si la machine n'accumule rien. */
     public int tankGoal() {
         return 0;
+    }
+
+    /** Le second cycle, pour une machine a deux fleches. */
+    public int work2() {
+        return 0;
+    }
+
+    public int cycleDuration2() {
+        return 0;
+    }
+
+    /**
+     * Le joueur peut-il ouvrir l'interface ? Une machine a multibloc (le
+     * grinder) refuse tant que sa structure n'est pas complete.
+     */
+    public boolean canOpen(ServerPlayer player) {
+        return true;
     }
 
     @Override

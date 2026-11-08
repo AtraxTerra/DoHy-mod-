@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "palamod:item/god_pickaxe_auto_smelt"
+  }
+}

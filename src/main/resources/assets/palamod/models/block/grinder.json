@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "palamod:block/grinder_front",
+    "side": "palamod:block/grinder_side",
+    "top": "palamod:block/grinder_side",
+    "particle": "palamod:block/grinder_side"
+  }
+}

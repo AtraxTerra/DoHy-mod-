@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "palamod:block/xp_bush_0"
+    },
+    "age=1": {
+      "model": "palamod:block/xp_bush_1"
+    },
+    "age=2": {
+      "model": "palamod:block/xp_bush_2"
+    },
+    "age=3": {
+      "model": "palamod:block/xp_bush_3"
+    }
+  }
+}

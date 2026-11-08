@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XZX",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot",
+    "Z": "minecraft:mushroom_stew"
+  },
+  "result": {
+    "id": "palamod:damage_modifier",
+    "count": 1
+  }
+}

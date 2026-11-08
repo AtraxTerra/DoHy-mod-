@@ -8,7 +8,7 @@
   "key": {
     "A": "palamod:titane_block",
     "B": "minecraft:obsidian",
-    "C": "palamod:paladium_pickaxe"
+    "C": "palamod:paladium_hammer"
   },
   "result": {
     "id": "palamod:cavern_hammer",

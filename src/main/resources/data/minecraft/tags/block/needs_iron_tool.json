@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "palamod:amethyst_chest",
+    "palamod:grinder",
+    "palamod:grinder_casing",
+    "palamod:grinder_frame",
     "palamod:paladium_furnace",
     "palamod:titane_block",
     "palamod:titane_chest",
