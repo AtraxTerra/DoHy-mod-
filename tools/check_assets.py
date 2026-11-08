@@ -75,7 +75,9 @@ def resolve(reference, kind):
 
 def registered():
     """Les noms enregistres dans le source Java, par famille."""
-    source = "\n".join(p.read_text(encoding="utf-8") for p in sorted(JAVA.glob("*.java")))
+    # rglob et non glob : les machines vivent dans un sous-paquet, et ne pas
+    # descendre y rendait tous leurs assets « morts » a tort.
+    source = "\n".join(p.read_text(encoding="utf-8") for p in sorted(JAVA.rglob("*.java")))
     items, blocks, itemless = set(), set(), set()
     for factory in ITEM_FACTORIES:
         items |= set(re.findall(rf'\b{factory}\(\s*"([a-z0-9_]+)"', source))

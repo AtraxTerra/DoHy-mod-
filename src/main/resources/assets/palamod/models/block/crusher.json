@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "palamod:block/crusher_top",
+    "bottom": "palamod:block/crusher_top",
+    "side": "palamod:block/crusher_side"
+  }
+}

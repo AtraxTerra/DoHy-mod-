@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "palamod:block/cobblebreaker_paladium_top",
+    "bottom": "palamod:block/cobblebreaker_paladium_top",
+    "side": "palamod:block/cobblebreaker_paladium_side"
+  }
+}

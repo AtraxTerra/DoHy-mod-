@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "tier=default": {
+      "model": "palamod:block/cobblebreaker_default"
+    },
+    "tier=amethyst": {
+      "model": "palamod:block/cobblebreaker_amethyst"
+    },
+    "tier=titane": {
+      "model": "palamod:block/cobblebreaker_titane"
+    },
+    "tier=paladium": {
+      "model": "palamod:block/cobblebreaker_paladium"
+    }
+  }
+}
