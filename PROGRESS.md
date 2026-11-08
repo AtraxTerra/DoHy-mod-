@@ -122,6 +122,40 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 
 ## Journal des sessions
 
+### 2026-11-08 (suite) — le creatif ne passe plus par les verrous
+
+**Demande du joueur** : en creatif, pouvoir ouvrir et utiliser les items qui demandent un
+niveau de metier.
+
+**Fait**, et la ou il fallait. L'exemption est dans `JobGateEvents`, **pas** dans
+`JobGate.allows`. La distinction n'est pas cosmetique : `allows` repond « ce joueur a-t-il le
+niveau ? », et le Hub, `JobsMenu` et `/metiers` s'en servent pour compter les deverrouillages
+et afficher la progression. Exempter la-bas aurait affiche **« 70/70 » a un administrateur de
+niveau 1**, et masque sa vraie progression des qu'il repasse en survie — un bug de confiance
+dans l'interface, pour une commodite de construction. Ici, `allows` dit toujours la verite et
+seule l'application choisit de ne pas s'en servir.
+
+Trois gestionnaires, trois appels a `exempt(player)`, qui teste `player.isCreative()` —
+`isCreative()` releve a la sonde avec `hasInfiniteMaterials()` et `gameMode()`, pas pris de
+memoire.
+
+**La faute que ca ouvre, et qui arrivera au chapitre 5.** Les seedplanters, le totem et le
+grinder ajouteront des verrous. Un quatrieme gestionnaire ecrit sur le modele des trois
+autres mais sans le test d'exemption **compile, se charge, tourne** — et bloque les
+administrateurs en creatif sans un mot dans les logs. Personne ne le remarque avant qu'un
+joueur s'en plaigne.
+
+`tools/check_job_gates.py` lit les gestionnaires `@SubscribeEvent` de la classe et exige que
+chacun appelle `exempt(`. Il verifie aussi les deux autres facons de casser ca : une `exempt()`
+qui ne teste plus aucun mode de jeu, et l'exemption migree dans `allows`. Verifie en provoquant
+les trois ; les trois remontent nommement, dont le cas du chapitre 5 ecrit tel qu'il le sera :
+
+```
+::error::onSeedplanterUse n'appelle pas exempt() : ce verrou s'appliquerait aussi en creatif, et ca ne se voit qu'en jeu
+::error::exempt() ne teste aucun mode de jeu : elle ne peut donc plus reconnaitre un joueur en creatif
+::error::JobGate.allows teste isCreative : l'exemption appartient a JobGateEvents. Ici elle afficherait « tout deverrouille » dans /metiers et masquerait la vraie progression
+```
+
 ### 2026-11-08 (suite) — le mod ne demarrait plus, et pourquoi la CI ne pouvait pas le voir
 
 **Crash au lancement du chapitre 4** : `ExceptionInInitializerError` pendant la construction du
