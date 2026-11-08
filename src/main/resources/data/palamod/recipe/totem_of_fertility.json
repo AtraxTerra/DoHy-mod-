@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EYE",
+    "UEU",
+    "EJE"
+  ],
+  "key": {
+    "E": "minecraft:oak_log",
+    "Y": "minecraft:creeper_head",
+    "U": "palamod:compressed_paladium",
+    "J": "minecraft:bone_meal"
+  },
+  "result": {
+    "id": "palamod:totem_of_fertility",
+    "count": 1
+  }
+}

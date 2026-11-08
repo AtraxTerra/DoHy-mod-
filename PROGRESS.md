@@ -83,6 +83,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 5a | **Machines du fermier** : totem de fertilité, 5 seedplanters | fait |
 | 5b | **Machines de craft** : palaforge, grinder (multiblock), palamachine | à faire |
 | 6 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
+| 7 | **Équipement** : 19 outils, 5 houes à rayon, 6 armures, leurs effets, 49 recettes | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
 
@@ -142,6 +143,64 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — chapitre 7 : l'equipement, et la formule d'armure qu'on ne peut pas lire
+
+**Demande du joueur** : armures, epees, pioches, houes, haches et leurs effets, en s'aidant des
+deux PalaMod, du wiki et des mods fournis. Le chapitre passe avant 5b et 6 a sa demande.
+
+**Trois sources, et la troisieme etait inattendue.** `PToolMaterial` et `PArmorMaterial` pour les
+chiffres, `PRegister_Items` pour la construction de chaque piece — et **PalaJobs** pour les
+houes. Elles n'existent pas dans le registre principal de PalaMod : elles appartiennent au
+metier de fermier (`ItemRadiusHoe`), et c'est en suivant leurs textures dans le pack que je les
+ai trouvees. Leur geometrie est celle des seedplanters : on laboure le carre qu'on plantera.
+
+**Ce qui se porte exactement.** Durabilite, efficacite, enchantabilite, et les degats de l'epee :
+`4 + bonus` en 1.7.10, `1 + bonus + 3` en 26.2, meme formule. La durabilite des armures aussi,
+`ArmorType.getDurability` multipliant par les memes bases {11, 16, 15, 13}.
+
+**Ce qui ne se porte pas, et c'est le point du chapitre.** Les armures Paladium totalisent 36 a
+46 points. En 1.7.10, Forge plafonne l'absorption a 100 % des 25 points : chacune rendait
+**invulnerable aux coups**. Le jeu reel ne marche evidemment pas comme ca — le calcul de degats
+de Paladium vit dans un plugin serveur. J'ai cherche `applyArmorCalculations`, `ISpecialArmor`
+et `ArmorProperties` dans les dix jars fournis : rien. Cette formule-la, on ne la lira pas.
+
+La defense est donc la **seule valeur calibree** du chapitre, et la calibration est dans le code
+avec les valeurs d'origine a cote : ancree sur le diamant (identique dans les deux versions),
+projetee **emplacement par emplacement** jusqu'au plafond de 30. La premiere version projetait
+set par set, et rendait le casque en titane moins bon que celui en amethyste alors que les deux
+valent 9 — une fonction croissante appliquee piece par piece ne peut pas faire ca.
+
+A savoir avant de tester : **26.2 ecrase le haut de gamme.** Contre un coup de 10, tous les sets
+Paladium sont au plafond de 80 %. Ce n'est pas trahir l'original — en 1.7.10 cote client ils
+etaient tous a 100 %. La progression se lit sur les gros coups (61 → 66 → 75 → 80 % a 30
+degats), la durabilite et les effets. Si l'ecart parait trop faible, le levier est la robustesse.
+
+**Les effets, et deux choses qu'on ne devinerait pas.** Les bottes en endium mixe donnent une
+**immunite** aux chutes, pas une reduction : `PotionFeatherFalling`, une potion propre a PalaMod,
+lue par `PotionHandler` qui ramene les degats de chute a zero. Et la panoplie complete d'endium
+rend **invisible** — or les verrous du chapitre 1 repartissent ses quatre pieces entre les quatre
+metiers, au niveau 100. **L'invisibilite est la recompense des quatre metiers au maximum.** Deux
+effets du code d'endium (force, vitesse II) sont du code mort, enjambes par un `goto` ; ils ne
+s'appliquaient jamais et ne sont pas portes.
+
+**Deux fautes silencieuses de plus, et leurs garde-fous.** Une armure dont la definition
+d'equipement ou une couche manque est portee, protege — et ne se voit pas. Et en 26.2 ce sont des
+**tags d'item** qui decident si Tranchant va sur une epee : une piece absente de `#swords` ou
+`#head_armor` refuse ses enchantements sans erreur, ce qui pour du PvP Paladium serait un trou
+beant. `check_assets.py` verifie les deux chaines ; verifie en les cassant.
+
+**Les recettes viennent du relevé, pas d'une transcription.** `data/palamod_crafts.json` →
+une table de correspondance explicite → 49 recettes. Un nom inconnu fait echouer le generateur.
+
+**Une seule erreur de compilation sur tout le chapitre** : `LivingEntity.getSlotForHand`
+n'existe pas en 26.2. `ToolMaterial`, `ArmorMaterial`, `humanoidArmor`, les effets renommes
+(`SPEED` et `HASTE`, plus `MOVEMENT_SPEED` / `DIG_SPEED`), `LivingFallEvent` et le labour NeoForge
+ont tous compile du premier coup — parce que chacun avait ete releve a la sonde avant d'etre ecrit.
+
+**Une erreur de ma part a corriger dans le recit.** J'avais annonce les 15 recettes du chapitre 5a
+dans la PR #38. Elle a ete mergee a 11 h 15, le commit des recettes a ete pousse un quart d'heure
+apres : il n'y est jamais entre. Il voyage dans la PR de ce chapitre.
 
 ### 2026-11-08 (suite) — chapitre 5a : le totem, et l'ambiguite tranchee
 

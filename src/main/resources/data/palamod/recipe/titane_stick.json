@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X",
+    "X"
+  ],
+  "key": {
+    "X": "palamod:titane_ingot"
+  },
+  "result": {
+    "id": "palamod:titane_stick",
+    "count": 1
+  }
+}

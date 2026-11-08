@@ -418,6 +418,238 @@ Deux pièges qui compilent sans un mot :
 
 ---
 
+## 9. Recettes de fabrication — relevées, pas transcrites
+
+Les recettes sont **éparpillées sur quatre registres**, ce qui explique pourquoi le chapitre 2
+avait noté « ingrédients des charbons mixés inconnus » : je n'avais regardé que
+`PRegister_Craft`.
+
+| Registre | Appels | Nature |
+|---|---|---|
+| `PRegister_Craft` | 218 | table de craft |
+| `smeltery/registerer/PSRegister_Craft` | 29 | table de craft |
+| `hunter/init/Crafts` | 24 | table de craft |
+| `miner/init/Crafts` | 19 | table de craft |
+| `PaladiumMachineRecipies.add` | 38 | **palamachine** → chapitre 5b |
+| `GrinderRecipe.addUpgrade` | 6 | **grinder** → chapitre 5b |
+| alchimie, bow machine | 12 | machines non portées |
+
+`tools/extract_crafts.py` lit les quatre premiers et rend **282 recettes** — exactement
+`249 + 11 + 22`, le compte des trois surcharges de `GameRegistry` dans le bytecode. C'est le
+contrôle qui dit que le parseur voit tous les appels et n'en invente aucun.
+
+### Trois fautes que le relevé automatique a rattrapées
+
+**1. La surcharge `addRecipe(IRecipe)`.** Huit appels passent une recette à classe propre
+(`SpikeUpgradeRecipe`) et n'ont donc pas de tableau d'arguments. Sans filtrer sur le
+descripteur, le parseur remontait au tableau de la recette *précédente* : **six recettes se
+retrouvaient attribuées au totem**. Le motif inclut maintenant
+`(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)`.
+
+**2. Le résultat se lit par position, pas par recherche.** Dès qu'un *ingrédient* est un
+`new ItemStack` — ce qui arrive quand il porte un meta — une recherche arrière « le premier
+`new ItemStack` croisé » attrape le mauvais. On part du dernier
+`invokespecial ItemStack."<init>"` avant le tableau et on remonte à son `new` : par
+construction de javac, c'est le résultat.
+
+**3. Les metas comptent.** La recette du totem demande `Items.skull` **meta 4** et
+`Items.dye` **meta 15** : une tête de creeper et de la poudre d'os, pas une tête de squelette
+et de l'encre noire. De la poudre d'os dans un totem de fertilité n'est évidemment pas un
+hasard, et la perdre aurait donné une recette fausse qui se fabrique quand même.
+
+### Une faute dans PalaMod, portée telle quelle
+
+La recette du cobblebreaker a une grille `CPC / CVC / CFC` et des clés `C`, **`D`**, `V`, `F` :
+le `P` de la grille n'a pas de clé, et la clé `D` (pioche en paladium) n'est utilisée nulle
+part. En 1.7.10, `CraftingManager` met `null` pour un caractère inconnu, donc **la case du haut
+au milieu est vide** et la pioche n'a jamais été demandée. Corriger la faute donnerait une
+recette plus chère que l'originale ; `extract_crafts.py` signale l'anomalie et on porte ce que
+le jeu faisait. Cinq recettes sur 282 ont ce genre d'incohérence.
+
+### Ce qui est porté, et ce qui attend
+
+Quinze objets étaient introuvables en survie. Dix le sont plus, **plus quatre intermédiaires
+qu'il fallait porter d'abord** : sans les bâtons en améthyste, titane et paladium, et sans le
+cœur en paladium, les cinq seedplanters, le crusher et le charbon mixé de paladium étaient
+impossibles à écrire.
+
+| Résultat | Rendement | Note |
+|---|---|---|
+| Bâton améthyste / titane | 1 | 2 lingots verticaux |
+| Bâton paladium | **4** | même grille, rendement différent — donnée d'origine |
+| Cœur en paladium | 1 | 5 paladium + 4 titane |
+| Charbon mixé or | **6** | 1 lingot d'or + 1 charbon |
+| Charbon mixé améthyste / titane | **8** | 4 lingots + 1 charbon mixé or |
+| Charbon mixé paladium | **1** | + 2 bâtons de paladium |
+| Totem de fertilité | 1 | 4 bûches, tête de creeper, 2 paladium compressé, poudre d'os |
+| Crusher | 1 | 4 cœurs, améthyste compressé, 4 bâtons, findium |
+| Les 5 seedplanters | 1 | chaîne lvl1 → lvl2 → lvl3 → **lvl5** → lvl4 |
+
+Les rendements 6, 8, 8 et 1 des charbons mixés **concordent avec le wiki**, ce qui confirme le
+relevé par une source indépendante.
+
+La chaîne des seedplanters dit la même chose que la table des métiers, par un autre chemin : le
+paladium vert est un **passage obligé** vers l'endium, ce qui explique son verrou à 90 contre
+100.
+
+**Pas porté : le cobblebreaker et ses trois améliorations.** Le cobblebreaker demande la
+voidstone et le modificateur de fortune du grinder ; les améliorations demandent le
+modificateur de vitesse puis s'enchaînent. La voidstone a un comportement propre dans PalaMod
+et un verrou dans `data/jobs.json` — la porter comme ingrédient inerte serait un mensonge, un
+joueur la fabriquerait et constaterait qu'elle ne fait rien. Les modificateurs appartiennent au
+grinder, donc au chapitre 5b.
+
+Le relevé complet est archivé dans `data/palamod_crafts.json` : les 282 recettes, avec leurs
+anomalies, prêtes pour les chapitres suivants.
+
+---
+
+## 10. Équipement — outils, armes, armures et leurs effets
+
+Relevé sur trois sources : `PToolMaterial` et `PArmorMaterial` (PalaMod), `PRegister_Items`
+pour la construction de chaque objet, et **PalaJobs** pour les houes, qui appartiennent au
+métier de fermier et non au module des outils — c'est pourquoi elles n'apparaissaient pas dans
+le registre principal.
+
+### Matériaux d'outils — `EnumHelper.addToolMaterial(nom, récolte, durabilité, efficacité, dégâts, enchant.)`
+
+| Matériau | Récolte | Durabilité | Efficacité | Bonus de dégâts | Enchantabilité |
+|---|---|---|---|---|---|
+| améthyste | 3 | 1 999 | 20,0 | 3,0 | 20 |
+| titane | 3 | 2 999 | 23,0 | 3,5 | 20 |
+| paladium | 3 | 4 999 | 28,0 | 6,0 | 15 |
+| paladium vert | 3 | 4 999 | 35,0 | 6,0 | 15 |
+| endium | **4** | 4 999 | 40,0 | 7,3 | 25 |
+
+Pour mémoire, la netherite vanilla a une efficacité de 9. Les outils Paladium creusent **deux à
+quatre fois plus vite** : c'est la donnée d'origine, pas une erreur d'échelle.
+
+**Les épées se portent à l'identique.** En 1.7.10 une épée fait `4 + bonus` ; en 26.2,
+`Properties.sword(matériau, 3.0, −2.4)` donne `1 + bonus + 3`. Même formule : améthyste 7,
+titane 7,5, paladium et paladium vert 10, endium 11,3. Pioche, hache, pelle et houe reprennent
+les décalages des outils en diamant de 26.2, si bien qu'un outil Paladium est à l'outil vanilla
+moderne ce qu'il était à l'outil vanilla de 1.7.10 : le même bonus sur la même base.
+
+**`SwordItem` et `PickaxeItem` n'existent plus en 26.2.** Une épée est un `Item` nu avec
+`Properties.sword(...)`. Hache, pelle et houe gardent leur classe pour l'écorçage, les chemins
+et le labour.
+
+L'endium n'a **pas de pelle** dans PalaMod.
+
+### Houes à rayon — PalaJobs, `ItemRadiusHoe(durabilité, rayon, nom)`
+
+| Houe | Durabilité | Rayon | Carré labouré |
+|---|---|---|---|
+| améthyste | 1 999 | 2 | 2 × 2 |
+| titane | 2 999 | 4 | 4 × 4 |
+| paladium | 4 999 | 6 | 6 × 6 |
+| paladium vert | 4 999 | 8 | 8 × 8 |
+| endium | 4 999 | 12 | 12 × 12 |
+
+Même géométrie exacte que les seedplanters : `half = (int)(radius / 2.0)`, boucle de `-half`
+inclus à `half` exclu, donc un carré décalé d'un demi-bloc. Le bloc visé doit être de l'herbe,
+de la terre ou du sol labouré ; chaque case passe par l'événement de labour, et **une seule
+durabilité est consommée par clic**, pas par case. Les houes et les planteurs vont par paires
+— on laboure le carré qu'on plantera.
+
+La recette de la houe en endium demande des **pépites** d'endium, pas des lingots.
+
+### Matériaux d'armure — `EnumHelper.addArmorMaterial(nom, facteur, réductions[4], enchant.)`
+
+| Set | Facteur | Casque | Plastron | Jambières | Bottes | Total | Enchant. |
+|---|---|---|---|---|---|---|---|
+| améthyste | 170 | 9 | 10 | 9 | 8 | 36 | 44 |
+| titane | 200 | 9 | 11 | 10 | 8 | 38 | 35 |
+| paladium | 260 | 10 | 13 | 11 | 9 | 43 | 15 |
+| paladium vert | 300 | 10 | 13 | 11 | 9 | 43 | 15 |
+| endium mixé | 350 | 10 | 14 | 11 | 9 | 44 | 15 |
+| endium | 400 | 11 | 14 | 11 | 10 | 46 | 15 |
+
+La durabilité se porte directement : `ArmorType.getDurability(facteur)` multiplie par les mêmes
+bases {11, 16, 15, 13} qu'en 1.7.10. Casque en endium : 4 400.
+
+### La seule valeur calibrée du chapitre : la défense
+
+**Ces totaux sont impossibles à porter tels quels, et la raison mérite d'être écrite.** En
+1.7.10, Forge calcule `points / 25` par pièce, additionne, et plafonne à 100 %. Toute armure de
+25 points ou plus rendait donc **invulnérable aux coups** — et chaque set Paladium en fait au
+moins 36. Ce n'est évidemment pas le jeu réel : le calcul de dégâts de Paladium vit dans un
+**plugin serveur qui n'est dans aucun des jars fournis**. Vérifié en cherchant
+`applyArmorCalculations`, `ISpecialArmor` et `ArmorProperties` dans tous : rien.
+
+En 26.2, l'attribut d'armure plafonne à 30 et la réduction à 80 %. La projection retenue :
+
+- **ancrée sur le diamant**, présent dans les deux versions avec les mêmes valeurs (3/8/6/3) ;
+- **pièce par pièce** et non set par set : la même droite par emplacement, si bien qu'un palier
+  supérieur ne peut jamais être moins bon qu'un inférieur, et que deux originaux égaux restent
+  égaux. La projection par set, essayée d'abord, rendait le casque en titane moins bon que celui
+  en améthyste — alors que les deux valent 9 ;
+- défense projetée de [20 (diamant) … 46 (endium)] sur [20 … 30], robustesse de [2 … 4].
+
+| Set | Défense 26.2 | Total | Robustesse | Réduction contre 10 / 20 / 30 |
+|---|---|---|---|---|
+| *diamant* | *3 / 8 / 6 / 3* | *20* | *2* | *64 / 48 / 32 %* |
+| *netherite* | *3 / 8 / 6 / 3* | *20* | *3* | *65 / 51 / 36 %* |
+| améthyste | 5 / 9 / 7 / 5 | 26 | 3,2 | 80 / 75 / 61 % |
+| titane | 5 / 9 / 8 / 5 | 27 | 3,4 | 80 / 80 / 66 % |
+| paladium | 6 / 10 / 8 / 5 | 29 | 3,8 | 80 / 80 / 75 % |
+| paladium vert | 6 / 10 / 8 / 5 | 29 | 3,8 | 80 / 80 / 75 % |
+| endium mixé | 6 / 10 / 8 / 5 | 29 | 3,8 | 80 / 80 / 75 % |
+| endium | 6 / 10 / 8 / 6 | 30 | 4,0 | 80 / 80 / 80 % |
+
+**À savoir avant de tester : la formule de 26.2 écrase le haut de gamme.** Contre un coup de 10,
+tous les sets Paladium sont au plafond. Ce n'est pas trahir l'original : en 1.7.10 côté client,
+ils étaient tous à 100 %, donc tout aussi identiques. La progression se lit sur les **gros
+coups** — épée en paladium tranchant V et coup critique, c'est 20 à 30 —, sur la **durabilité**
+(1 870 → 4 400 pour un casque) et sur les **effets**. Si l'écart paraît trop faible en jeu, le
+levier est la robustesse : c'est elle qui sépare les armures contre les coups lourds.
+
+### Réparation
+
+Chaque objet se répare avec son propre métal — **sauf l'armure en paladium, qui se répare au
+titane**. Une seule exception sur 43 objets, relevée au constructeur ; portée telle quelle.
+
+Le système de réparation propre à Paladium (`IRepairable`, une capacité de réparation par pièce,
+8 000 / 12 000 / 10 000 / 7 000 pour le paladium) n'est **pas** porté : c'est l'enclume vanilla
+qui répare, avec l'ingrédient d'origine.
+
+### Effets — `onArmorTick`, relevés classe par classe
+
+| Set | Casque | Plastron | Jambières | Bottes | Panoplie complète |
+|---|---|---|---|---|---|
+| améthyste, titane | — | — | — | — | — |
+| paladium | vision nocturne | — | — | vitesse I | — |
+| paladium vert | vision nocturne | célérité I | — | vitesse II | — |
+| endium mixé | vision nocturne | résistance au feu | célérité II | vitesse II **et aucune chute** | — |
+| endium | vision nocturne | vision nocturne | vision nocturne | vision nocturne | **invisibilité** |
+
+Trois détails qu'on ne devinerait pas :
+
+- **Les bottes en endium mixé annulent toute chute.** Elles appliquent `PotionFeatherFalling`,
+  une potion propre à PalaMod que `PotionHandler` lit sur `LivingHurtEvent` : dégâts de
+  `DamageSource.fall` ramenés à 0, événement annulé. Pas une réduction, une immunité.
+- **La panoplie complète d'endium rend invisible**, réappliquée à chaque tick. Le test porte sur
+  les quatre emplacements (`instanceof ItemEndiumArmor` × 4). L'armure elle-même reste
+  visible, comme pour toute invisibilité.
+- **Le code d'endium contient deux effets morts.** Après le bloc d'invisibilité, un `goto` saute
+  à la fin ; les blocs de force et de vitesse II qui suivent ne sont la cible d'aucun saut. Ils
+  ne s'appliquaient donc jamais, et ne sont pas portés.
+
+L'épée en paladium vert a sa propre classe, mais **aucun effet de combat** : seulement une icône
+alternative (« elucidatorIcon »). Elle se porte comme une épée ordinaire.
+
+### Ce qui n'est pas porté
+
+| Objet | Pourquoi |
+|---|---|
+| Armures de tournoi, de voyage, antiques ; objets d'événement | hors du périmètre demandé, chacun a un mécanisme propre |
+| Épées larges et épées rapides (`Broadsword`, `Fastsword`) | fabriquées par le système de forge à motifs, qui n'est pas porté |
+| Amulettes de l'armure en endium | un système de NBT à part entière |
+| Boucle d'inventaire en tête de l'`onArmorTick` d'endium | elle déplace armures et épées dans l'inventaire ; son but n'est pas lisible au bytecode, la deviner serait pire que l'omettre |
+| Réparation `IRepairable` | remplacée par l'enclume vanilla |
+
+---
+
 ## 7. Grinder — multiblock, pas un bloc
 
 Le wiki le décrit comme un assemblage de 30 blocs plus une source de lave, placement strict,

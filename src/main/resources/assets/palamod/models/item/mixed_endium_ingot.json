@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "palamod:item/mixed_endium_ingot"
+  }
+}

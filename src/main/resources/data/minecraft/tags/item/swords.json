@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:amethyst_sword",
+    "palamod:endium_sword",
+    "palamod:green_paladium_sword",
+    "palamod:paladium_sword",
+    "palamod:titane_sword"
+  ]
+}

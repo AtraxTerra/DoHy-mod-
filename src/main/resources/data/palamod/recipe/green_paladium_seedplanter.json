@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PBP",
+    "PWP",
+    "SSS"
+  ],
+  "key": {
+    "P": "palamod:green_paladium_ingot",
+    "B": "palamod:green_paladium_block",
+    "W": "palamod:paladium_seedplanter",
+    "S": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:green_paladium_seedplanter",
+    "count": 1
+  }
+}

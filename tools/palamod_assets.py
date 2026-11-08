@@ -31,6 +31,7 @@ s'appliquent sans rien regenerer.
     `tags/item/`, `tags/block/`.
 """
 import json
+import re
 import os
 import shutil
 import struct
@@ -94,11 +95,22 @@ MIXED_COALS = {
                         "Charbon mixe de paladium", "Palamixed Coal"),
 }
 
+# Intermediaires de fabrication, sans aucun comportement. Releves parce que dix
+# des quinze recettes du chapitre les demandent : les cinq seedplanters, le
+# crusher et le charbon mixe de paladium.
+CRAFTING_PARTS = {
+    "amethyst_stick": ("stick/amethyst.png", "Baton en amethyste", "Amethyst Stick"),
+    "titane_stick": ("stick/titane.png", "Baton en titane", "Titane Stick"),
+    "paladium_stick": ("stick/paladium.png", "Baton en paladium", "Paladium Stick"),
+    "paladium_core": ("paladiumCore.png", "Coeur en paladium", "Paladium Core"),
+}
+
 ITEMS = {}
 ITEMS.update(PARTICLES)
 ITEMS.update(MATERIALS)
 ITEMS.update(COMPRESSED)
 ITEMS.update(MIXED_COALS)
+ITEMS.update(CRAFTING_PARTS)
 
 # ---------------------------------------------------------------------------
 # Blocs. Durete, resistance et niveau de pioche releves au bytecode dans
@@ -297,7 +309,7 @@ PACK_PATHS = {
 provenance = {"pack": 0, "jar": []}
 
 
-def copy_texture(roots, relative, destination, wrong_size=None):
+def copy_texture(roots, relative, destination, wrong_size=None, expected=None):
     """Copie une texture, pack d'abord, jar en repli.
 
     roots est (pack, jar). Le pack est la version entretenue ; le jar ne sert
@@ -316,10 +328,13 @@ def copy_texture(roots, relative, destination, wrong_size=None):
         if not os.path.exists(src):
             continue
         size = png_size(src)
-        if size is not None and size != EXPECTED_SIZE:
+        # Les icones font 16x16 ; les couches d'armure portees font 64x32, la
+        # disposition UV du modele de joueur — la meme en 1.7.10 et en 26.2.
+        want = expected or EXPECTED_SIZE
+        if size is not None and size != want:
             if wrong_size is not None:
                 wrong_size.append("%s (%s) : %dx%d au lieu de %dx%d"
-                                  % (relative, origin, size[0], size[1], *EXPECTED_SIZE))
+                                  % (relative, origin, size[0], size[1], *want))
             continue
         dst = os.path.join(RES, "assets", NS, "textures", destination)
         os.makedirs(os.path.dirname(dst), exist_ok=True)
@@ -456,6 +471,21 @@ def main():
         if group:
             payload["group"] = group
         write("data/%s/recipe/%s.json" % (NS, path), payload)
+
+    def shaped(path, pattern, keys, result, count=1):
+        """Une recette a grille, telle qu'elle est relevee au bytecode.
+
+        `pattern` et `keys` sont recopies de la sortie de
+        tools/extract_crafts.py, sans reinterpretation. Les lignes de grille
+        d'origine peuvent faire une ou deux cases de large : le format moderne
+        l'accepte, il n'y a rien a completer.
+        """
+        write("data/%s/recipe/%s.json" % (NS, path), {
+            "type": "minecraft:crafting_shaped",
+            "pattern": pattern,
+            "key": keys,
+            "result": {"id": result, "count": count},
+        })
 
     def packed(path, ingredient, result, group=None):
         payload = {
@@ -836,6 +866,261 @@ def main():
         # inventaire n'a pas d'autre moyen de la connaitre.
         fr["item.%s.%s" % (NS, name)] = "%s (%dx%d)" % (label_fr, side, side)
         en["item.%s.%s" % (NS, name)] = "%s (%dx%d)" % (label_en, side, side)
+
+    # ---- chapitre 5c : les recettes de fabrication ----
+    #
+    # Toutes relevees par tools/extract_crafts.py sur quatre registres de
+    # PalaMod, et recopiees ici sans reinterpretation. Les grilles de une ou
+    # deux cases de large sont celles de l'original.
+    #
+    # Ce qui MANQUE encore, et pourquoi : le cobblebreaker demande la voidstone
+    # et le modificateur de fortune du grinder. La voidstone a un comportement
+    # propre dans PalaMod et un verrou dans data/jobs.json ; la porter comme
+    # simple ingredient inerte serait un mensonge — un joueur la fabriquerait
+    # et constaterait qu'elle ne fait rien. Le modificateur appartient au
+    # grinder, donc au chapitre 5b. Le cobblebreaker et ses trois ameliorations
+    # attendent donc ce chapitre-la, et restent obtenables par l'onglet creatif
+    # et la boutique d'ici la.
+
+    # Les quatre intermediaires. Noter la quantite du baton de paladium : 4
+    # pour deux lingots, contre 1 pour les deux autres metaux. C'est la donnee
+    # d'origine, pas une faute de relevé.
+    for name, ingot, count in (
+            ("amethyst_stick", "amethyst_ingot", 1),
+            ("titane_stick", "titane_ingot", 1),
+            ("paladium_stick", "paladium_ingot", 4)):
+        shaped(name, ["X", "X"], {"X": "%s:%s" % (NS, ingot)},
+               "%s:%s" % (NS, name), count)
+
+    # Le coeur : X et Z sont tous deux le lingot de paladium dans l'original
+    # (deux cles pour un meme ingredient), ce qui donne 5 paladium et 4 titane.
+    shaped("paladium_core", ["YXY", "XZX", "YXY"],
+           {"X": "%s:paladium_ingot" % NS, "Y": "%s:titane_ingot" % NS,
+            "Z": "%s:paladium_ingot" % NS},
+           "%s:paladium_core" % NS)
+
+    # Les quatre charbons mixes. Les quantites rendues — 6, 8, 8 et 1 —
+    # concordent avec celles du wiki, ce qui confirme le relevé par une source
+    # independante.
+    shaped("gold_mixed_coal", ["SC"],
+           {"C": "minecraft:coal", "S": "minecraft:gold_ingot"},
+           "%s:gold_mixed_coal" % NS, 6)
+    for metal, count in (("amethyst", 8), ("titane", 8)):
+        shaped("%s_mixed_coal" % metal, [" C", "CSC", " C"],
+               {"C": "%s:%s_ingot" % (NS, metal), "S": "%s:gold_mixed_coal" % NS},
+               "%s:%s_mixed_coal" % (NS, metal), count)
+    shaped("pala_mixed_coal", ["TCT", "CSC", " C"],
+           {"C": "%s:paladium_ingot" % NS, "S": "%s:gold_mixed_coal" % NS,
+            "T": "%s:paladium_stick" % NS},
+           "%s:pala_mixed_coal" % NS)
+
+    # Le crusher.
+    shaped("crusher", ["XSX", "TFT", "XTX"],
+           {"X": "%s:paladium_core" % NS, "S": "%s:compressed_amethyst" % NS,
+            "T": "%s:paladium_stick" % NS, "F": "%s:findium" % NS},
+           "%s:crusher" % NS)
+
+    # Le totem. Les deux metas comptent : 4 sur la tete (creeper, pas squelette)
+    # et 15 sur le colorant (poudre d'os, pas encre noire). Les perdre aurait
+    # donne une recette fausse qui se fabrique quand meme — exactement le genre
+    # de faute qu'un relevé a l'oeil laisse passer. La poudre d'os dans un totem
+    # de fertilite n'est evidemment pas un hasard.
+    shaped("totem_of_fertility", ["EYE", "UEU", "EJE"],
+           {"E": "minecraft:oak_log", "Y": "minecraft:creeper_head",
+            "U": "%s:compressed_paladium" % NS, "J": "minecraft:bone_meal"},
+           "%s:totem_of_fertility" % NS)
+
+    # Les cinq seedplanters, et leur chaine : lvl1 -> lvl2 -> lvl3 -> lvl5 ->
+    # lvl4. Le paladium vert (lvl5) est donc un PASSAGE OBLIGE vers l'endium
+    # (lvl4), ce qui explique son verrou a 90 contre 100 — la table des metiers
+    # et la table des recettes disent la meme chose, par deux chemins.
+    shaped("amethyst_seedplanter", ["AAA", "ASA", "TTT"],
+           {"A": "%s:amethyst_ingot" % NS, "S": "%s:compressed_amethyst" % NS,
+            "T": "%s:amethyst_stick" % NS},
+           "%s:amethyst_seedplanter" % NS)
+    shaped("titane_seedplanter", ["THT", "TGT", "SSS"],
+           {"T": "%s:titane_ingot" % NS, "H": "%s:compressed_titane" % NS,
+            "G": "%s:amethyst_seedplanter" % NS, "S": "%s:titane_stick" % NS},
+           "%s:titane_seedplanter" % NS)
+    shaped("paladium_seedplanter", ["THT", "TGT", "SSS"],
+           {"T": "%s:paladium_ingot" % NS, "H": "%s:compressed_paladium" % NS,
+            "G": "%s:titane_seedplanter" % NS, "S": "%s:paladium_stick" % NS},
+           "%s:paladium_seedplanter" % NS)
+    shaped("green_paladium_seedplanter", ["PBP", "PWP", "SSS"],
+           {"P": "%s:green_paladium_ingot" % NS, "B": "%s:green_paladium_block" % NS,
+            "W": "%s:paladium_seedplanter" % NS, "S": "%s:paladium_stick" % NS},
+           "%s:green_paladium_seedplanter" % NS)
+    shaped("endium_seedplanter", ["RBR", "EWE", "SSS"],
+           {"R": "%s:compressed_paladium" % NS, "B": "%s:green_paladium_block" % NS,
+            "E": "%s:endium_ingot" % NS, "W": "%s:green_paladium_seedplanter" % NS,
+            "S": "%s:paladium_stick" % NS},
+           "%s:endium_seedplanter" % NS)
+
+    # ---- chapitre 7 : l'equipement ----
+    #
+    # Quarante-huit objets et le lingot d'endium mixe. Les icones viennent du
+    # pack officiel ; les couches portees de textures/models/<set>_armor_1 et _2,
+    # au format 64x32 du modele de joueur — la meme disposition UV en 1.7.10 et
+    # en 26.2, donc rien a redessiner.
+    #
+    # Le paladium vert s'appelle paladium_green_* dans les textures et
+    # green_paladium_* ici, comme le reste du mod. Les houes, qui viennent de
+    # PalaJobs, s'appelaient deja green_paladium_radius_hoe.
+    EQUIPMENT_METALS = (
+        # (id, prefixe de texture, set d'armure 1.7.10 ou None, FR, EN, outils)
+        ("amethyst", "amethyst", "amethyst", "en amethyste", "Amethyst",
+         ("sword", "pickaxe", "axe", "shovel")),
+        ("titane", "titane", "titane", "en titane", "Titane",
+         ("sword", "pickaxe", "axe", "shovel")),
+        ("paladium", "paladium", "paladium", "en paladium", "Paladium",
+         ("sword", "pickaxe", "axe", "shovel")),
+        ("green_paladium", "paladium_green", "paladium_green", "en paladium vert", "Green Paladium",
+         ("sword", "pickaxe", "axe", "shovel")),
+        ("mixed_endium", "mixed_endium", "mixed_endium", "en endium mixe", "Mixed Endium",
+         ()),
+        # Pas de pelle en endium dans PalaMod.
+        ("endium", "endium", "endium", "en endium", "Endium",
+         ("sword", "pickaxe", "axe")),
+    )
+    TOOL_FR = {"sword": "Epee", "pickaxe": "Pioche", "axe": "Hache", "shovel": "Pelle"}
+    TOOL_EN = {"sword": "Sword", "pickaxe": "Pickaxe", "axe": "Axe", "shovel": "Shovel"}
+    ARMOR_FR = {"helmet": "Casque", "chestplate": "Plastron", "leggings": "Jambieres", "boots": "Bottes"}
+    ARMOR_EN = {"helmet": "Helmet", "chestplate": "Chestplate", "leggings": "Leggings", "boots": "Boots"}
+    HOE_SIDE = {"amethyst": 2, "titane": 4, "paladium": 6, "green_paladium": 8, "endium": 12}
+
+    def equipment_item(name, texture, handheld):
+        if not copy_texture(root, "items/%s.png" % texture, "item/%s.png" % name, wrong_size):
+            missing.append("items/%s.png" % texture)
+        # Un outil se tient en diagonale dans la main ; une piece d'armure non.
+        write("assets/%s/models/item/%s.json" % (NS, name), {
+            "parent": "minecraft:item/handheld" if handheld else "minecraft:item/generated",
+            "textures": {"layer0": "%s:item/%s" % (NS, name)},
+        })
+        write("assets/%s/items/%s.json" % (NS, name), {
+            "model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)},
+        })
+
+    for metal, prefix, armor_set, fr_suffix, en_prefix, tools in EQUIPMENT_METALS:
+        for tool in tools:
+            name = "%s_%s" % (metal, tool)
+            equipment_item(name, "%s_%s" % (prefix, tool), True)
+            fr["item.%s.%s" % (NS, name)] = "%s %s" % (TOOL_FR[tool], fr_suffix)
+            en["item.%s.%s" % (NS, name)] = "%s %s" % (en_prefix, TOOL_EN[tool])
+            tag("minecraft/tags/item/%s.json" % {"sword": "swords", "pickaxe": "pickaxes",
+                                                 "axe": "axes", "shovel": "shovels"}[tool],
+                ["%s:%s" % (NS, name)])
+
+        if metal in HOE_SIDE:
+            name = "%s_radius_hoe" % metal
+            # Le nom de texture vient de PalaJobs : green_paladium_*, pas
+            # paladium_green_*.
+            equipment_item(name, name, True)
+            side = HOE_SIDE[metal]
+            fr["item.%s.%s" % (NS, name)] = "Houe %s (%dx%d)" % (fr_suffix, side, side)
+            en["item.%s.%s" % (NS, name)] = "%s Radius Hoe (%dx%d)" % (en_prefix, side, side)
+            tag("minecraft/tags/item/hoes.json", ["%s:%s" % (NS, name)])
+
+        # L'armure : quatre icones, une definition d'equipement, deux couches.
+        for piece in ("helmet", "chestplate", "leggings", "boots"):
+            name = "%s_%s" % (metal, piece)
+            equipment_item(name, "%s_%s" % (prefix, piece), False)
+            fr["item.%s.%s" % (NS, name)] = "%s %s" % (ARMOR_FR[piece], fr_suffix)
+            en["item.%s.%s" % (NS, name)] = "%s %s" % (en_prefix, ARMOR_EN[piece])
+            # Ces tags decident a eux seuls quels enchantements s'appliquent :
+            # sans eux, une epee Paladium refuserait Tranchant et un casque
+            # Protection, sans la moindre erreur. Et trimmable_armor ouvre les
+            # garnitures.
+            tag("minecraft/tags/item/%s.json" % {"helmet": "head_armor", "chestplate": "chest_armor",
+                                                 "leggings": "leg_armor", "boots": "foot_armor"}[piece],
+                ["%s:%s" % (NS, name)])
+            tag("minecraft/tags/item/trimmable_armor.json", ["%s:%s" % (NS, name)])
+
+        for layer, suffix in (("humanoid", 1), ("humanoid_leggings", 2)):
+            source = "models/%s_armor_%d.png" % (armor_set, suffix)
+            if not copy_texture(root, source, "entity/equipment/%s/%s.png" % (layer, metal),
+                                wrong_size, expected=(64, 32)):
+                missing.append(source)
+        # La definition d'equipement : c'est elle que l'ArmorMaterial designe
+        # par son identifiant. Absente, le joueur porte une armure invisible.
+        write("assets/%s/equipment/%s.json" % (NS, metal), {
+            "layers": {
+                "humanoid": [{"texture": "%s:%s" % (NS, metal)}],
+                "humanoid_leggings": [{"texture": "%s:%s" % (NS, metal)}],
+            },
+        })
+
+    # Le lingot d'endium mixe.
+    if not copy_texture(root, "items/mixed_endium_ingot.png", "item/mixed_endium_ingot.png", wrong_size):
+        missing.append("items/mixed_endium_ingot.png")
+    write("assets/%s/models/item/mixed_endium_ingot.json" % NS, {
+        "parent": "minecraft:item/generated",
+        "textures": {"layer0": "%s:item/mixed_endium_ingot" % NS},
+    })
+    write("assets/%s/items/mixed_endium_ingot.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:item/mixed_endium_ingot" % NS},
+    })
+    fr["item.%s.mixed_endium_ingot" % NS] = "Lingot d'endium mixe"
+    en["item.%s.mixed_endium_ingot" % NS] = "Mixed Endium Ingot"
+
+    # Les tags de reparation. Une entree de plus que de metaux : l'armure en
+    # paladium se repare au TITANE, seule exception sur les 43 pieces.
+    for tag_name, ingot in (("amethyst", "amethyst_ingot"), ("titane", "titane_ingot"),
+                            ("paladium", "paladium_ingot"), ("paladium_armor", "titane_ingot"),
+                            ("green_paladium", "green_paladium_ingot"),
+                            ("mixed_endium", "mixed_endium_ingot"), ("endium", "endium_ingot")):
+        tag("%s/tags/item/repairs/%s.json" % (NS, tag_name), ["%s:%s" % (NS, ingot)])
+
+    # Les recettes, depuis le relevé archive et non recopiees a la main.
+    #
+    # data/palamod_crafts.json porte les 282 recettes de PalaMod telles que
+    # tools/extract_crafts.py les a lues. On ne garde que celles de
+    # l'equipement, et on traduit les noms : ingredients et resultats passent
+    # par une table explicite, si bien qu'un nom inconnu fait echouer le
+    # generateur au lieu de produire une recette fausse.
+    INGREDIENTS = {
+        "Items.field_151055_y": "minecraft:stick",
+        "ItemsRegister.AMETHYST_INGOT": "%s:amethyst_ingot" % NS,
+        "ItemsRegister.TITANE_INGOT": "%s:titane_ingot" % NS,
+        "ItemsRegister.PALADIUM_INGOT": "%s:paladium_ingot" % NS,
+        "ItemsRegister.PALADIUM_GREEN_INGOT": "%s:green_paladium_ingot" % NS,
+        "ItemsRegister.ENDIUM_INGOT": "%s:endium_ingot" % NS,
+        "ItemsRegister.ENDIUM_NUGGET": "%s:endium_nugget" % NS,
+        "ItemsRegister.ENDIUM_FRAGMENT": "%s:endium_fragment" % NS,
+        "ItemsRegister.MIXED_ENDIUM_INGOT": "%s:mixed_endium_ingot" % NS,
+    }
+    EQUIPMENT_RESULT = re.compile(
+        r"^(?:ItemsRegister|ItemsRegistry)\.((?:AMETHYST|TITANE|PALADIUM_GREEN|GREEN_PALADIUM|PALADIUM|"
+        r"MIXED_ENDIUM|ENDIUM)_(?:SWORD|PICKAXE|AXE|SHOVEL|HELMET|CHESTPLATE|LEGGINGS|BOOTS|RADIUS_HOE)"
+        r"|MIXED_ENDIUM_INGOT)$")
+
+    def modern_id(palamod_name):
+        name = palamod_name.lower()
+        if name.startswith("paladium_green_"):
+            name = "green_paladium_" + name[len("paladium_green_"):]
+        return name
+
+    crafts = json.load(open(os.path.join(os.path.dirname(__file__), "..", "data",
+                                         "palamod_crafts.json"), encoding="utf-8"))
+    emitted = set()
+    for recipe in crafts:
+        match = EQUIPMENT_RESULT.match(recipe["result"]["item"] or "")
+        if not match:
+            continue
+        name = modern_id(match.group(1))
+        # Les haches existent en deux grilles miroir, et les bottes en titane
+        # sont declarees deux fois. 26.2 accepte le miroir de lui-meme : une
+        # recette par objet suffit, la premiere est gardee.
+        if name in emitted:
+            continue
+        keys = {}
+        for key, ingredient in recipe["keys"].items():
+            if ingredient["id"] not in INGREDIENTS:
+                raise SystemExit("recette de %s : ingredient inconnu %s — l'ajouter a "
+                                 "INGREDIENTS plutot que de deviner" % (name, ingredient["id"]))
+            keys[key] = INGREDIENTS[ingredient["id"]]
+        shaped(name, recipe["pattern"], keys, "%s:%s" % (NS, name), recipe["result"]["count"])
+        emitted.add(name)
+    print("equipement : %d recettes depuis data/palamod_crafts.json" % len(emitted))
 
     # ---- generation du monde ----
     #

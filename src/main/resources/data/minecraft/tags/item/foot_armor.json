@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:amethyst_boots",
+    "palamod:endium_boots",
+    "palamod:green_paladium_boots",
+    "palamod:mixed_endium_boots",
+    "palamod:paladium_boots",
+    "palamod:titane_boots"
+  ]
+}

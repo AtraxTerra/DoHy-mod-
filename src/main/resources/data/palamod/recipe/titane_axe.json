@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " XX",
+    " ZX",
+    " Z"
+  ],
+  "key": {
+    "X": "palamod:titane_ingot",
+    "Z": "minecraft:stick"
+  },
+  "result": {
+    "id": "palamod:titane_axe",
+    "count": 1
+  }
+}

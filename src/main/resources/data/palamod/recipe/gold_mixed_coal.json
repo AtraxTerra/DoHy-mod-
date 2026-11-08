@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SC"
+  ],
+  "key": {
+    "C": "minecraft:coal",
+    "S": "minecraft:gold_ingot"
+  },
+  "result": {
+    "id": "palamod:gold_mixed_coal",
+    "count": 6
+  }
+}

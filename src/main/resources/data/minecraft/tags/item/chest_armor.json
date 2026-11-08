@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:amethyst_chestplate",
+    "palamod:endium_chestplate",
+    "palamod:green_paladium_chestplate",
+    "palamod:mixed_endium_chestplate",
+    "palamod:paladium_chestplate",
+    "palamod:titane_chestplate"
+  ]
+}

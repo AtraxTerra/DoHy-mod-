@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "X X"
+  ],
+  "key": {
+    "X": "palamod:titane_ingot"
+  },
+  "result": {
+    "id": "palamod:titane_helmet",
+    "count": 1
+  }
+}

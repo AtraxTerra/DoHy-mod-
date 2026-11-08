@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XSX",
+    "TFT",
+    "XTX"
+  ],
+  "key": {
+    "X": "palamod:paladium_core",
+    "S": "palamod:compressed_amethyst",
+    "T": "palamod:paladium_stick",
+    "F": "palamod:findium"
+  },
+  "result": {
+    "id": "palamod:crusher",
+    "count": 1
+  }
+}

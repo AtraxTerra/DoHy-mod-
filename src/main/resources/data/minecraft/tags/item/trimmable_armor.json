@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:amethyst_boots",
+    "palamod:amethyst_chestplate",
+    "palamod:amethyst_helmet",
+    "palamod:amethyst_leggings",
+    "palamod:endium_boots",
+    "palamod:endium_chestplate",
+    "palamod:endium_helmet",
+    "palamod:endium_leggings",
+    "palamod:green_paladium_boots",
+    "palamod:green_paladium_chestplate",
+    "palamod:green_paladium_helmet",
+    "palamod:green_paladium_leggings",
+    "palamod:mixed_endium_boots",
+    "palamod:mixed_endium_chestplate",
+    "palamod:mixed_endium_helmet",
+    "palamod:mixed_endium_leggings",
+    "palamod:paladium_boots",
+    "palamod:paladium_chestplate",
+    "palamod:paladium_helmet",
+    "palamod:paladium_leggings",
+    "palamod:titane_boots",
+    "palamod:titane_chestplate",
+    "palamod:titane_helmet",
+    "palamod:titane_leggings"
+  ]
+}

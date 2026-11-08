@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.palamod;
 
+import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
 import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
 import net.minecraft.core.registries.Registries;
@@ -55,6 +56,9 @@ public final class PalaTab {
                         // Les planteurs ferment l'onglet : ce sont des outils de
                         // champ, ils suivent les machines plutot que les graines.
                         PalaSeedPlanters.ORDERED.forEach(item -> output.accept(item.get()));
+
+                        // L'equipement ferme l'onglet, metal par metal.
+                        PalaEquipment.ordered().forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

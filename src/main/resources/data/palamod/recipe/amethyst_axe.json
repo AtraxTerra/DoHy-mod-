@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " XX",
+    " ZX",
+    " Z"
+  ],
+  "key": {
+    "X": "palamod:amethyst_ingot",
+    "Z": "minecraft:stick"
+  },
+  "result": {
+    "id": "palamod:amethyst_axe",
+    "count": 1
+  }
+}

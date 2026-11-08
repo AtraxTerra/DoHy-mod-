@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "YXY",
+    "XZX",
+    "YXY"
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot",
+    "Y": "palamod:titane_ingot",
+    "Z": "palamod:paladium_ingot"
+  },
+  "result": {
+    "id": "palamod:paladium_core",
+    "count": 1
+  }
+}
