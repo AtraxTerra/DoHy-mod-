@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "palamod:block/withered_reinforced_piston"
+    },
+    "facing=east": {
+      "model": "palamod:block/withered_reinforced_piston",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "palamod:block/withered_reinforced_piston",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "palamod:block/withered_reinforced_piston",
+      "y": 270
+    }
+  }
+}

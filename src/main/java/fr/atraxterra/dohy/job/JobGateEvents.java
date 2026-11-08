@@ -1,11 +1,17 @@
 package fr.atraxterra.dohy.job;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +58,10 @@ public final class JobGateEvents {
      * {@code JobBossBar} : aucune reference a une entite morte ne traine.
      */
     private static final Map<UUID, Long> lastRefusal = new HashMap<>();
+
+    /** Blocs dont la casse, et pas seulement la pose, demande le niveau. */
+    private static final TagKey<Block> BREAK_LOCKED = TagKey.create(Registries.BLOCK,
+            Identifier.fromNamespaceAndPath("palamod", "break_locked"));
     private static final long REFUSAL_COOLDOWN_TICKS = 40L;
 
     private JobGateEvents() {
@@ -118,6 +128,48 @@ public final class JobGateEvents {
             event.setCanceled(true);
             refuse(player, target);
         }
+    }
+
+    /**
+     * Casse d'un bloc avec un outil verrouille.
+     *
+     * <p>PalaJobs refusait l'usage d'un outil sans le niveau ; un outil ne passe
+     * pas par le clic droit, c'est donc a la casse que le verrou s'applique.
+     * Seuls les outils sont concernes — les objets porteurs du composant
+     * {@code tool} : tenir une machine verrouillee en main ne doit pas empecher
+     * de casser de la terre. {@code BreakBlockEvent} est annulable et le bloc
+     * reste en place.
+     *
+     * <p>C'est aussi ce verrou qui arrete le 3x3 de la pioche en endium et des
+     * excavatrices : leur casse en zone ignore un evenement annule.
+     */
+    @SubscribeEvent
+    public static void onBreak(BreakBlockEvent event) {
+        if (!(event.getPlayer() instanceof ServerPlayer player) || exempt(player)) {
+            return;
+        }
+        // Les rares blocs que le metier interdit de CASSER, et pas seulement de
+        // poser : le minerai de pepites d'endium (« Vous devez etre niveau 20 »).
+        // Opt-in par tag : sans lui, un joueur ne pourrait plus deplacer une
+        // machine posee avant une baisse de niveau.
+        if (event.getState().is(BREAK_LOCKED)) {
+            JobConfig.Unlock block = JobGate.of(event.getState());
+            if (!JobGate.allows(player, block)) {
+                event.setCanceled(true);
+                refuse(player, block);
+                return;
+            }
+        }
+        ItemStack tool = player.getMainHandItem();
+        if (!tool.has(DataComponents.TOOL)) {
+            return;
+        }
+        JobConfig.Unlock unlock = JobGate.of(tool);
+        if (JobGate.allows(player, unlock)) {
+            return;
+        }
+        event.setCanceled(true);
+        refuse(player, unlock);
     }
 
     /** Clic droit dans le vide avec un item verrouille. */

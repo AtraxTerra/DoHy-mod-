@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "palamod:block/palaforge_front_off",
+    "side": "palamod:block/palaforge_side",
+    "top": "palamod:block/palaforge_top",
+    "particle": "palamod:block/palaforge_side"
+  }
+}

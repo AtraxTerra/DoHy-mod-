@@ -44,6 +44,10 @@ BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "cr
 # n'ont donc ni definition d'item ni modele d'item, et c'est normal.
 ITEMLESS = ("crop",)
 
+# Blocs sans item enregistres par registerBlock : la void stone se pose depuis
+# la Voidstone minage et la rend a la casse, elle n'a pas d'objet propre.
+ITEMLESS_BLOCKS = ("void_stone",)
+
 errors = []
 
 
@@ -89,7 +93,35 @@ def registered():
             itemless |= found
     # Un bloc n'est pas un item : son BlockItem est enregistre par boucle, pas
     # par un appel nomme, donc il n'apparait pas dans items.
+    itemless |= set(ITEMLESS_BLOCKS) & blocks
     return items - blocks, blocks, itemless
+
+
+def model_references(node):
+    """Les modeles qu'une definition d'item peut afficher, toutes branches suivies."""
+    if not isinstance(node, dict):
+        return []
+    if node.get("type", "minecraft:model") in ("minecraft:model", "model") and "model" in node \
+            and isinstance(node["model"], str):
+        return [node["model"]]
+    found = []
+    for key in ("on_true", "on_false", "fallback", "model"):
+        found += model_references(node.get(key))
+    for case in node.get("cases", []) or []:
+        found += model_references(case.get("model"))
+    for entry in node.get("entries", []) or []:
+        found += model_references(entry.get("model"))
+    return found
+
+
+# Les textures qui ne sont pas des faces de cube : un modele a elements qui
+# reprend une texture d'entite garde la taille de cette texture. Chaque entree
+# est un choix, pas une tolerance — les coffres reprennent la texture 64x64 du
+# ModelChest de 1.7.10 et leurs UV sont calcules pour elle.
+MODEL_TEXTURES = {
+    "block/amethyst_chest.png": (64, 64),
+    "block/titane_chest.png": (64, 64),
+}
 
 
 def check_textures():
@@ -101,7 +133,7 @@ def check_textures():
             size = png_size(png)
             if size is None:
                 fail(f"{folder}/{png.name} : ce n'est pas un PNG")
-            elif size != EXPECTED_PNG:
+            elif size != MODEL_TEXTURES.get(f"{folder}/{png.name}", EXPECTED_PNG):
                 fail(f"{folder}/{png.name} : {size[0]}x{size[1]} au lieu de "
                      f"{EXPECTED_PNG[0]}x{EXPECTED_PNG[1]} — homonyme pris dans le jar ? "
                      "verifier le sous-dossier")
@@ -168,13 +200,17 @@ def check_items(items, blocks, itemless):
         except json.JSONDecodeError as error:
             fail(f"items/{name}.json : JSON illisible ({error})")
             continue
-        reference = (payload.get("model") or {}).get("model")
-        if not reference:
+        # Une definition peut choisir son modele selon un etat (condition,
+        # select) : l'aimant change d'icone quand il est actif. On suit donc
+        # toutes les branches, et chacune doit aboutir a un modele qui existe.
+        references = model_references(payload.get("model") or {})
+        if not references:
             fail(f"items/{name}.json : pas de modele declare")
             continue
-        target = resolve(reference, "model")
-        if target is not None and not target.exists():
-            fail(f"items/{name}.json : pointe sur un modele absent ({reference})")
+        for reference in references:
+            target = resolve(reference, "model")
+            if target is not None and not target.exists():
+                fail(f"items/{name}.json : pointe sur un modele absent ({reference})")
 
     # Dans l'autre sens : un asset sans enregistrement est un fichier mort.
     known = items | blocks
@@ -222,7 +258,7 @@ SCREEN_JAVA = JAVA.parent / "client" / "MachineScreen.java"
 GUI_MANIFEST = pathlib.Path("data") / "gui_layout.json"
 
 # Le role note par le generateur dit si le shift-clic peut y deposer.
-INPUT_ROLES = {"input", "fruit", "fuel"}
+INPUT_ROLES = {"input", "fruit", "fuel", "upgrade", "equipment"}
 
 # Taille de reference des blits de MachineScreen.
 GUI_PNG = (256, 256)

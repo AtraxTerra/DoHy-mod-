@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CS "
+  ],
+  "key": {
+    "C": "minecraft:coal",
+    "S": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:furnace_upgrade",
+    "count": 1
+  }
+}

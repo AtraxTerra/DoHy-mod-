@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " BB",
+    " SB",
+    "S  "
+  ],
+  "key": {
+    "B": "palamod:paladium_block",
+    "S": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:paladium_builder_wand",
+    "count": 1
+  }
+}

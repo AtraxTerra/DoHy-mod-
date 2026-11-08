@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " F ",
+    "XDX",
+    " C "
+  ],
+  "key": {
+    "X": "palamod:titane_ingot",
+    "F": "minecraft:ender_pearl",
+    "D": "palamod:voidstone",
+    "C": "palamod:titane_chest"
+  },
+  "result": {
+    "id": "palamod:voidstone_minage",
+    "count": 1
+  }
+}

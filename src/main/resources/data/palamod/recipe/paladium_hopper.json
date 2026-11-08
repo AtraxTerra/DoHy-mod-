@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "P P",
+    "PCP",
+    " P "
+  ],
+  "key": {
+    "P": "palamod:paladium_ingot",
+    "C": "palamod:titane_chest"
+  },
+  "result": {
+    "id": "palamod:paladium_hopper",
+    "count": 1
+  }
+}

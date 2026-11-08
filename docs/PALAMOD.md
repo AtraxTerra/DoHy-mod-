@@ -750,3 +750,148 @@ sticks, 26 blocs d'alchimiste, 6 blocs de spawner, 5 GUI de coffre.
 Attention à l'arborescence : le pack est en 1.7.10 (`textures/blocks/`, `textures/items/`).
 En 26.2 il faut `textures/block/` et `textures/item/` — conversion mécanique à faire au
 chapitre 2.
+
+---
+
+## 11. Mineur — les objets débloqués (chapitre 8)
+
+Relevé dans `MinerRegisterer` (verrous), `ToolHandler`, `ItemBuilderWand`, `PlayerHandler`,
+`TileEntityVoidStone`, `PaladiumFurnaceLogic`, `ForgeLogic`, `TileEntityPaladiumHopper`,
+`BlockEndiumCaveRenderer`, `EventsManager` et `BaseWorldGenerator`. Niveaux du code ×5.
+
+| Niveau | Objet | Wiki | Porté |
+|---|---|---|---|
+| 10 | Voidstone | 2 | déjà au chapitre 4 |
+| 15 / 55 / 75 | Excavatrices améthyste / titane / paladium | 3 / 11 / 15 | oui |
+| 15 | Commande `/nether` | 3 | **non, à la demande du joueur** |
+| 20 / 60 / 85 / 100 | Outils de construction | 4 / 12 / 17 / 20 | oui |
+| 25 | Cobblebreaker | 5 | déjà au chapitre 4 |
+| 30 | Voidstone minage | 6 | oui |
+| 35 | Aimant | 7 | oui |
+| 40 | Dollars Stone (`moula_stone`) | 8 | oui |
+| 45 | Entonnoir en paladium | 9 | oui |
+| 50 / 65 / 80 | Améliorations du cobblebreaker | 10 / 13 / 16 | déjà au chapitre 4 |
+| 70 | Palaforge | 14 | oui |
+| 80 | Potion de dureté | — | oui |
+| 85 | Amélioration de vitesse du spawner | 17 | **non** — pas de système de spawner |
+| 90 | Cave block en endium | 18 | oui |
+| 90 | Piston renforcé wither (compresseur à cobblestone) | 18 | oui |
+| 95 | God Villager | 19 | oui (sans verrou : c'est une apparition) |
+| 95 | Trône du Mineur | 19 | **non, laissé de côté à la demande du joueur** |
+| 100 | Minerai de pépites d'endium, pioche en endium | 20 | oui |
+
+Les prérequis non listés par le wiki sont portés aussi : **coffres en améthyste et en titane**
+(ingrédients de l'entonnoir et de la Voidstone minage), **Palafurnace** et **amélioration de
+fourneau** (ingrédients de la Palaforge), **cave block** (ingrédient du cave block en endium).
+
+### Le relevé des verrous ratait 26 objets
+
+`extract_jobs.py` ne reconnaissait que les champs des registres `palamod/api`. Les trônes, les
+objets du spawner et les houes à rayon vivent dans d'autres registres (`BlocksRegistry`,
+`SpawnerItemRegistry`, `ItemsRegistry` de PalaJobs) : 26 verrous perdus, 99 au lieu de 73.
+Conséquence visible hors de ce chapitre : **les houes à rayon sont maintenant verrouillées**
+(Fermier 10, 25, 65, 85 et 100). Les verrous d'objets pas encore portés (trônes, spawner) sont
+dans la table et restent inertes tant que l'objet n'existe pas.
+
+### Outils de zone — `ToolHandler.removeBlocksInIteration`
+
+Plan 3×3 perpendiculaire à la face visée (lancer de rayon depuis les yeux). Un bloc du plan
+n'est cassé que s'il est **au plus aussi dur** que le bloc visé, de dureté positive, récoltable
+par l'outil et de sa famille. **Une seule usure par clic** : seul le bloc visé use l'outil.
+Chaque bloc du plan passe par `destroyBlock` — drops, XP de Mineur, protections et suivi des
+blocs posés compris.
+
+- **Excavatrice** : une pelle (`ItemSpade`), non enchantable (`getItemEnchantability` = 0).
+- **Pioche en endium** : `setDamage` plafonne l'usure, elle ne casse jamais ; à bout d'usure le
+  3×3 s'arrête. 26.2 détruit une pile qui *atteint* le maximum : le plafond est un point plus bas.
+- **Écart** : l'obsidienne et l'obsidienne pleureuse sont exclues du 3×3
+  (`#palamod:area_mining_immune`) — sur un serveur de faction, neuf obsidiennes d'un coup
+  ouvriraient les bases.
+
+### Outils de construction — `ItemBuilderWand`
+
+Côté 6, 9, 11 ou 20 parcouru de `-côté/2` à `côté/2` exclu : 6, 8, 10 et 20 positions, soit
+les 36, 64, 100 et 400 blocs du wiki. Copie le bloc cliqué sur chaque position du plan qui porte
+le même bloc et dont la voisine est libre. Un joueur dans le volume annule tout. **Deux bugs de
+l'original corrigés** : l'objet était consommé *avant* le test de protection (un bloc refusé
+était perdu), et les branches est/ouest étaient inversées.
+
+### Aimant, Dollars Stone, Voidstone minage — `PlayerHandler.playerTickEvent`
+
+- **Aimant** : actif dans la barre d'action, ramène chaque tick les objets d'un cube de 6 blocs.
+  Clic droit pour l'allumer, l'éclat d'enchantement le montre.
+- **Dollars Stone** (case 8, hors créatif) : retire chaque tick un exemplaire de chaque pile de
+  son filtre (pierre, cobblestone, terre, gravier, granite, diorite, andésite et formes polies).
+  Paladium payait 0,10 $ la cobblestone et la terre. **Ici c'est le marché de DoHy qui paie**, au
+  prix dynamique, par lots d'une seconde : la pierre ne devient pas une source d'argent de plus.
+  Un objet que DoHy ne rachète pas est détruit, comme dans l'original ; un objet dont la vente est
+  verrouillée par la collection est laissé.
+- **Voidstone minage** (case 8) : avale les piles **entières** de pierre et de cobblestone dans son
+  compteur, détruit le reste de son filtre. Posée dans un cobblebreaker, elle en est l'entrée
+  (une pierre par cycle) ; clic droit sur un bloc, elle se pose en **void stone**.
+
+### Compresseur à cobblestone — `TileEntityVoidStone`
+
+Une void stone entre deux **pistons renforcés wither** sur le même axe, les deux alimentés :
+jusqu'à 64 obsidiennes par activation, 100 pierres chacune. Couper le courant réarme le compteur.
+Les 64 sortent en une pile plutôt qu'en 64 entités.
+
+**Le piston renforcé wither n'est pas un piston** : `BlockWitheredReinforcedPiston` est un bloc
+orienté qui ne pousse rien — le wiki se trompe (« poussent 3 blocs de plus »). Il tombe des
+pistons pris dans **l'explosion d'apparition** d'un Wither (source directe : le Wither), si le
+joueur le plus proche à 30 blocs a Mineur 90. Sa conversion de l'obsidienne voisine en
+obsidienne wither (portail de la dimension de minage) n'est pas portée.
+
+### Palafurnace — `PaladiumFurnaceLogic`
+
+Recettes et combustibles du fourneau vanilla. `n` = améliorations de fourneau dans la case de
+gauche, plafonné à 16, et 1 si elle est vide : une cuisson dure `200 / n` ticks et le combustible
+brûle `n` fois plus vite. **Une seule amélioration ne change rien** (`n` vaut déjà 1) : c'est
+l'original. Pas d'XP de fourneau au retrait.
+
+### Palaforge — `ForgeLogic`, `EnumAllowItemsForge`
+
+Refond l'équipement en lingots : `maximum × pct / 100` en division entière, `pct` étant la
+durabilité restante. Cycle de 101 ticks. Maximums (casque, plastron, jambières, bottes, épée,
+hache, pioche, pelle) : fer et or 4-7-6-3-2-2-2-1, titane 5-8-7-4-2-3-3-1, améthyste
+4-7-6-3-2-3-3-1, paladium 4-7-6-3-2-2-2-1, endium idem sans pelle. **Bugs corrigés** : une pièce
+qui ne rendait rien brûlait tout le combustible, et le contenu était perdu à la casse.
+
+### Entonnoir en paladium — `TileEntityPaladiumHopper`
+
+Toutes les 8 ticks, prend **la pile entière** dans l'inventaire du dessus — rien au sol. Une
+chaîne d'entonnoirs en paladium envoie directement au dernier inventaire. **Écart** : l'original
+se bloquait sur la première pile qui ne rentrait pas ; ici on essaie les suivantes.
+
+### Coffres en améthyste et en titane — `ModdedChestContainer`
+
+108 cases (12 × 9). **Écart** : les cases d'anneaux de l'original ne sont pas portées, et le
+couvercle ne s'ouvre pas (modèle JSON statique tiré du `ModelChest`, pas de rendu animé).
+
+### Cave block et cave block en endium
+
+Le cave block se déclare opaque avec une texture trouée : le moteur ne dessine pas les faces
+collées à lui, et l'on voit les grottes à travers — un x-ray volontaire, gardé tel quel. Le
+cave block en endium montre en plus **les conteneurs vus à travers lui** (contour bleu à travers
+les murs). L'original le dessinait côté client ; ici c'est un shulker invisible et lumineux
+envoyé par paquets au seul joueur concerné, coloré par une équipe que lui seul connaît. Couleur
+d'équipe bleue au lieu de `#2537FB`.
+
+### Potion de dureté, God Villager, XP convertie
+
+- **Potion de dureté** : 8 minutes d'effet. Sous l'effet, une obsidienne récoltée sans toucher
+  de soie donne 4 XP de PalaJobs. PalaMod ne la fabrique pas (récompense de jetons) : shop et
+  créatif.
+- **God Villager** : une chance sur 500 000 000 par tick de joueur Mineur 95. Un échange :
+  64 blocs de paladium contre une pépite d'endium, puis il disparaît et donne 15 000 XP de
+  PalaJobs. **Écart d'apparence** : un marchand ambulant vanilla nommé, pas l'entité d'origine.
+- Les gains d'XP codés en dur sont des XP de PalaJobs, **convertis au rapport 0,357** (§ 1) :
+  4 → 1,43 (partie fractionnaire tirée au sort), 15 000 → environ 5 350.
+
+### Minerai de pépites d'endium — `BlockEndiumNuggetOre`, `BaseWorldGenerator`
+
+Dureté 5, résistance de la bedrock, une seule pépite sans fortune ni toucher de soie ; le casser
+demande Mineur 100 (`#palamod:break_locked`). **Écart** : il ne naissait que dans la dimension
+de minage, non portée. Il est placé au fond de l'overworld (y −64 à −54) : quatre tirages par
+chunk à 1 sur 225, chaque filon ramené à un bloc — d'où `replace_single_block` et 1 chance
+sur 56 par chunk.

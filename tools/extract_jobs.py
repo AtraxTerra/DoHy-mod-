@@ -17,7 +17,12 @@ import subprocess
 import sys
 
 PUSH = re.compile(r'^\s*\d+:\s+(iconst_(\d)|bipush\s+(-?\d+)|sipush\s+(-?\d+)|ldc\s+#\d+\s+//\s+int\s+(-?\d+))')
-FIELD = re.compile(r'getstatic\s+#\d+\s+//\s+Field\s+(?:fr/paladium/palamod/api/)?(\w+)\.(\w+):')
+# Le chemin du registre est ignore, seul compte son nom de classe : les verrous
+# visent ItemsRegister et BlocksRegister (palamod/api), mais aussi les registres
+# des modules — BlocksRegistry des metiers (les trones), SpawnerItemRegistry de
+# PalaSpawner. L'ancienne expression n'acceptait que palamod/api et perdait les
+# autres sans rien dire.
+FIELD = re.compile(r'getstatic\s+#\d+\s+//\s+Field\s+(?:[\w$]+/)*([\w$]+)\.(\w+):')
 CALL = re.compile(r'invokevirtual\s+#\d+\s+//\s+Method\s+\S*?(addBlacklistedCraft|addBlacklistedUsage|addObjective)')
 
 JOBS = ["Miner", "Farmer", "Hunter", "Alchemist"]

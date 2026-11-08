@@ -117,7 +117,43 @@ LAYOUTS = {
         # tourbillon de gui/void_slot_background.png dit ce qu'elle fait.
         "slots": [{"x": 80, "y": 35, "role": "input", "ghost": "void", "big": True}],
     },
+    "palafurnace": {
+        # PaladiumFurnaceContainer : le fourneau vanilla, plus la case des
+        # ameliorations de fourneau a gauche, qui en accepte seize.
+        "slots": [
+            {"x": 56, "y": 17, "role": "input"},
+            {"x": 56, "y": 53, "role": "fuel", "ghost": "fuel"},
+            {"x": 116, "y": 35, "role": "output", "big": True},
+            {"x": 19, "y": 35, "role": "upgrade", "ghost": "upgrade"},
+        ],
+        "arrow": {"x": 79, "y": 34, "vertical": False},
+        "flame": {"x": 57, "y": 37},
+    },
+    "palaforge": {
+        # ForgeContainer : la piece a recycler en haut, les lingots en bas, la
+        # fleche descend de l'une a l'autre ; le combustible a droite sous sa
+        # flamme. La sortie descend jusqu'a y 74 : pas de cadre de 26 px ni de
+        # separateur, qui couperaient la case.
+        "slots": [
+            {"x": 58, "y": 15, "role": "equipment", "ghost": "equipment"},
+            {"x": 58, "y": 58, "role": "output"},
+            {"x": 115, "y": 45, "role": "fuel", "ghost": "fuel"},
+        ],
+        "arrow": {"x": 54, "y": 36, "vertical": True},
+        "flame": {"x": 116, "y": 27},
+        "separator": False,
+    },
 }
+
+# Les coffres en amethyste et en titane (ModdedChestContainer) : 12 x 9 cases,
+# puis l'inventaire du joueur centre dessous. Ce ne sont pas des machines —
+# PalaChestScreen a sa propre geometrie, reprise de PalaChestMenu — donc hors
+# du manifeste.
+CHEST_WIDTH, CHEST_HEIGHT = 240, 256
+CHEST_X, CHEST_Y = 12, 8
+CHEST_COLUMNS, CHEST_ROWS = 12, 9
+CHEST_PLAYER_X, CHEST_PLAYER_Y, CHEST_HOTBAR_Y = 39, 174, 232
+CHESTS = {"amethyst_chest": "amethyst", "titane_chest": "titane"}
 
 GHOSTS = {}
 
@@ -133,6 +169,8 @@ def load_ghosts(pack, jar):
     sources = {
         "fruit": os.path.join(RES, "assets", NS, "textures", "item", "eggplant.png"),
         "fuel": os.path.join(RES, "assets", NS, "textures", "item", "gold_mixed_coal.png"),
+        "upgrade": os.path.join(RES, "assets", NS, "textures", "item", "furnace_upgrade.png"),
+        "equipment": os.path.join(RES, "assets", NS, "textures", "item", "paladium_pickaxe.png"),
     }
     if pack:
         sources["cobblestone"] = os.path.join(
@@ -156,7 +194,7 @@ def load_ghosts(pack, jar):
         GHOSTS[name] = image
 
 
-def panel(draw, width, height):
+def panel(draw, width, height, separator=True):
     """Le panneau : aplat sombre, contour discret, coins casses d'un pixel.
 
     Une barre PRIMARY sous l'en-tete, la signature des interfaces Paladium, et
@@ -171,7 +209,8 @@ def panel(draw, width, height):
     # Barre d'accent sous le titre (le titre est ecrit par le jeu en y 6).
     draw.rectangle([7, 15, 40, 15], fill=PRIMARY)
     # Separateur au-dessus du libelle « Inventaire » (ecrit en y 72).
-    draw.line([7, 69, width - 8, 69], fill=BORDER)
+    if separator:
+        draw.line([7, 69, width - 8, 69], fill=BORDER)
 
 
 def slot(image, draw, x, y, entry=None):
@@ -250,7 +289,7 @@ def build(name, layout):
     image = Image.new("RGBA", (TEXTURE, TEXTURE), TRANSPARENT)
     draw = ImageDraw.Draw(image)
 
-    panel(draw, WIDTH, HEIGHT)
+    panel(draw, WIDTH, HEIGHT, layout.get("separator", True))
 
     for entry in layout["slots"]:
         slot(image, draw, entry["x"], entry["y"], entry)
@@ -276,6 +315,33 @@ def build(name, layout):
     return path
 
 
+def build_chest(name, metal):
+    """Le fond d'un coffre : la grille, l'inventaire, un coin du metal."""
+    image = Image.new("RGBA", (TEXTURE, TEXTURE), TRANSPARENT)
+    draw = ImageDraw.Draw(image)
+    draw.rectangle([1, 0, CHEST_WIDTH - 2, CHEST_HEIGHT - 1], fill=BACKGROUND)
+    draw.rectangle([0, 1, CHEST_WIDTH - 1, CHEST_HEIGHT - 2], fill=BACKGROUND)
+    draw.line([1, 0, CHEST_WIDTH - 2, 0], fill=BORDER)
+    draw.line([1, CHEST_HEIGHT - 1, CHEST_WIDTH - 2, CHEST_HEIGHT - 1], fill=BORDER)
+    draw.line([0, 1, 0, CHEST_HEIGHT - 2], fill=BORDER)
+    draw.line([CHEST_WIDTH - 1, 1, CHEST_WIDTH - 1, CHEST_HEIGHT - 2], fill=BORDER)
+    # Le titre est ecrit au-dessus du panneau : la barre d'accent prend la
+    # couleur du metal, en haut a gauche, a la place de celle des machines.
+    draw.rectangle([CHEST_X - 1, 3, CHEST_X + 32, 4], fill=METAL[metal])
+    for row in range(CHEST_ROWS):
+        for column in range(CHEST_COLUMNS):
+            slot(image, draw, CHEST_X + column * 18, CHEST_Y + row * 18)
+    for row in range(3):
+        for column in range(9):
+            slot(image, draw, CHEST_PLAYER_X + column * 18, CHEST_PLAYER_Y + row * 18)
+    for column in range(9):
+        slot(image, draw, CHEST_PLAYER_X + column * 18, CHEST_HOTBAR_Y)
+    path = os.path.join(RES, "assets", NS, "textures", "gui", "%s.png" % name)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    image.save(path)
+    return path
+
+
 def main():
     pack = sys.argv[1] if len(sys.argv) > 1 else None
     jar = sys.argv[2] if len(sys.argv) > 2 else None
@@ -284,6 +350,8 @@ def main():
     written = []
     for name, layout in LAYOUTS.items():
         written.append(build(name, layout))
+    for name, metal in CHESTS.items():
+        written.append(build_chest(name, metal))
 
     # Le manifeste que la CI compare au code Java.
     manifest = {

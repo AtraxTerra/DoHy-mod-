@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "palamod:block/endium_cave_block",
+    "particle": "palamod:block/endium_cave_block"
+  }
+}

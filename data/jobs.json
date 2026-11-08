@@ -108,6 +108,12 @@
       "label": "Outil de construction en paladium"
     },
     {
+      "id": "palamod:upgrade_speed",
+      "job": "miner",
+      "level": 85,
+      "label": "Amelioration de vitesse de spawner"
+    },
+    {
       "id": "palamod:endium_cave_block",
       "job": "miner",
       "level": 90,
@@ -118,6 +124,12 @@
       "job": "miner",
       "level": 90,
       "label": "Piston renforce wither"
+    },
+    {
+      "id": "palamod:miner_throne",
+      "job": "miner",
+      "level": 95,
+      "label": "Trone du mineur"
     },
     {
       "id": "palamod:endium_builder_wand",
@@ -138,10 +150,22 @@
       "label": "Pioche en endium"
     },
     {
+      "id": "palamod:amethyst_radius_hoe",
+      "job": "farmer",
+      "level": 10,
+      "label": "Houe en amethyste"
+    },
+    {
       "id": "palamod:amethyst_seedplanter",
       "job": "farmer",
       "level": 15,
       "label": "Seedplanter en amethyste"
+    },
+    {
+      "id": "palamod:titane_radius_hoe",
+      "job": "farmer",
+      "level": 25,
+      "label": "Houe en titane"
     },
     {
       "id": "palamod:titane_seedplanter",
@@ -162,10 +186,34 @@
       "label": "Crusher"
     },
     {
+      "id": "palamod:colored_grass_seeds",
+      "job": "farmer",
+      "level": 45,
+      "label": "Graines d'herbe coloree"
+    },
+    {
+      "id": "palamod:root_seeds_block",
+      "job": "farmer",
+      "level": 50,
+      "label": "Bloc de graines de racine"
+    },
+    {
+      "id": "palamod:colored_grass",
+      "job": "farmer",
+      "level": 55,
+      "label": "Herbe coloree"
+    },
+    {
       "id": "palamod:chervil_crop",
       "job": "farmer",
       "level": 60,
       "label": "Culture de cerfeuil"
+    },
+    {
+      "id": "palamod:paladium_radius_hoe",
+      "job": "farmer",
+      "level": 65,
+      "label": "Houe en paladium"
     },
     {
       "id": "palamod:totem_of_fertility",
@@ -186,10 +234,22 @@
       "label": "Culture de kiwanos"
     },
     {
+      "id": "palamod:green_paladium_radius_hoe",
+      "job": "farmer",
+      "level": 85,
+      "label": "Houe en paladium vert"
+    },
+    {
       "id": "palamod:green_paladium_seedplanter",
       "job": "farmer",
       "level": 90,
       "label": "Seedplanter en paladium vert"
+    },
+    {
+      "id": "palamod:farmer_throne",
+      "job": "farmer",
+      "level": 95,
+      "label": "Trone du fermier"
     },
     {
       "id": "palamod:endium_axe",
@@ -204,6 +264,12 @@
       "label": "Plastron en endium"
     },
     {
+      "id": "palamod:endium_radius_hoe",
+      "job": "farmer",
+      "level": 100,
+      "label": "Houe en endium"
+    },
+    {
       "id": "palamod:endium_seedplanter",
       "job": "farmer",
       "level": 100,
@@ -214,6 +280,48 @@
       "job": "farmer",
       "level": 100,
       "label": "Culture d'orangeblues"
+    },
+    {
+      "id": "palamod:bamboo_boat",
+      "job": "hunter",
+      "level": 10,
+      "label": "Bateau en bambou"
+    },
+    {
+      "id": "palamod:pet_cage",
+      "job": "hunter",
+      "level": 15,
+      "label": "Cage a familier"
+    },
+    {
+      "id": "palamod:paladium_fishing_rod",
+      "job": "hunter",
+      "level": 20,
+      "label": "Canne a peche en paladium"
+    },
+    {
+      "id": "palamod:cavern_hammer",
+      "job": "hunter",
+      "level": 25,
+      "label": "Marteau de caverne"
+    },
+    {
+      "id": "palamod:empty_mob_spawner",
+      "job": "hunter",
+      "level": 30,
+      "label": "Spawner vide"
+    },
+    {
+      "id": "palamod:mini_golem",
+      "job": "hunter",
+      "level": 35,
+      "label": "Mini golem"
+    },
+    {
+      "id": "palamod:spawner_structure_one",
+      "job": "hunter",
+      "level": 40,
+      "label": "Structure de spawner I"
     },
     {
       "id": "palamod:infernal_knocker",
@@ -228,6 +336,12 @@
       "label": "Spawner finder"
     },
     {
+      "id": "palamod:spawner_structure_two",
+      "job": "hunter",
+      "level": 60,
+      "label": "Structure de spawner II"
+    },
+    {
       "id": "palamod:capture_sword",
       "job": "hunter",
       "level": 65,
@@ -240,6 +354,18 @@
       "label": "Pierre de capture"
     },
     {
+      "id": "palamod:upgrade_looting",
+      "job": "hunter",
+      "level": 75,
+      "label": "Amelioration de butin de spawner"
+    },
+    {
+      "id": "palamod:spawner_structure_three",
+      "job": "hunter",
+      "level": 80,
+      "label": "Structure de spawner III"
+    },
+    {
       "id": "palamod:paladium_key",
       "job": "hunter",
       "level": 85,
@@ -250,6 +376,12 @@
       "job": "hunter",
       "level": 90,
       "label": "Etiquette en endium"
+    },
+    {
+      "id": "palamod:hunter_throne",
+      "job": "hunter",
+      "level": 95,
+      "label": "Trone du chasseur"
     },
     {
       "id": "palamod:endium_helmet",
@@ -286,6 +418,12 @@
       "job": "hunter",
       "level": 100,
       "label": "Autel de sacrifice"
+    },
+    {
+      "id": "palamod:spawner_structure_four",
+      "job": "hunter",
+      "level": 100,
+      "label": "Structure de spawner IV"
     },
     {
       "id": "palamod:wither_dust",
@@ -390,10 +528,28 @@
       "label": "Cle de portail en paladium"
     },
     {
+      "id": "palamod:upgrade_slime",
+      "job": "alchemist",
+      "level": 75,
+      "label": "Amelioration slime de spawner"
+    },
+    {
       "id": "palamod:paladium_tank",
       "job": "alchemist",
       "level": 80,
       "label": "Tank en paladium"
+    },
+    {
+      "id": "palamod:upgrade_more",
+      "job": "alchemist",
+      "level": 90,
+      "label": "Amelioration d'emplacements de spawner"
+    },
+    {
+      "id": "palamod:alchemist_throne",
+      "job": "alchemist",
+      "level": 95,
+      "label": "Trone de l'alchimiste"
     },
     {
       "id": "palamod:endium_angle_portal_block",

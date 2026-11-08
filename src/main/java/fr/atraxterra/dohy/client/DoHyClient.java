@@ -3,6 +3,8 @@ package fr.atraxterra.dohy.client;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
+import fr.atraxterra.dohy.palamod.storage.PalaChestMenu;
+import fr.atraxterra.dohy.palamod.storage.PalaStorage;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -56,5 +58,13 @@ public final class DoHyClient {
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "crusher"));
         event.<MachineMenu, MachineScreen>register(PalaMenus.VOIDSTONE.get(),
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "voidstone"));
+        event.<MachineMenu, MachineScreen>register(PalaMenus.PALAFURNACE.get(),
+                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "palafurnace"));
+        event.<MachineMenu, MachineScreen>register(PalaMenus.PALAFORGE.get(),
+                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "palaforge"));
+        event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.AMETHYST_CHEST_MENU.get(),
+                PalaChestScreen::new);
+        event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.TITANE_CHEST_MENU.get(),
+                PalaChestScreen::new);
     }
 }

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/hopper_side",
+  "textures": {
+    "particle": "palamod:block/paladium_hopper_outside",
+    "top": "palamod:block/paladium_hopper_top",
+    "side": "palamod:block/paladium_hopper_outside",
+    "inside": "palamod:block/paladium_hopper_inside"
+  }
+}

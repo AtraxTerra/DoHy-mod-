@@ -121,4 +121,33 @@ public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, Tex
     public static final MachineLayout VOIDSTONE = new MachineLayout(
             List.of(new SlotPos(80, 35, true)),
             null, null, null);
+
+    /**
+     * La Palafurnace : la geometrie du fourneau vanilla, plus la case
+     * d'ameliorations a gauche ({@code PaladiumFurnaceContainer} : entree
+     * (56,17), combustible (56,53), sortie (116,35), ameliorations (19,35)).
+     */
+    public static final MachineLayout PALAFURNACE = new MachineLayout(
+            List.of(
+                    new SlotPos(56, 17, true),
+                    new SlotPos(56, 53, true),
+                    new SlotPos(116, 35, false),
+                    new SlotPos(19, 35, true)),
+            new Sprite(79, 34, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, false, false),
+            new Sprite(57, 37, FLAME_U, FLAME_V, FLAME_FULL_V, FLAME_W, FLAME_H, true, true),
+            null);
+
+    /**
+     * La Palaforge ({@code ForgeContainer}) : la piece en haut (58,15), les
+     * lingots en dessous (58,58), une fleche qui descend entre les deux, et le
+     * combustible a droite (115,45) sous sa flamme.
+     */
+    public static final MachineLayout PALAFORGE = new MachineLayout(
+            List.of(
+                    new SlotPos(58, 15, true),
+                    new SlotPos(58, 58, false),
+                    new SlotPos(115, 45, true)),
+            new Sprite(54, 36, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, true, false),
+            new Sprite(116, 27, FLAME_U, FLAME_V, FLAME_FULL_V, FLAME_W, FLAME_H, true, true),
+            null);
 }

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "palamod:block/withered_reinforced_piston_front",
+    "side": "palamod:block/withered_reinforced_piston_side",
+    "top": "palamod:block/withered_reinforced_piston_side",
+    "particle": "palamod:block/withered_reinforced_piston_side"
+  }
+}

@@ -110,6 +110,67 @@
           "role": "input"
         }
       ]
+    },
+    "palafurnace": {
+      "slots": [
+        {
+          "x": 56,
+          "y": 17,
+          "role": "input"
+        },
+        {
+          "x": 56,
+          "y": 53,
+          "role": "fuel"
+        },
+        {
+          "x": 116,
+          "y": 35,
+          "role": "output"
+        },
+        {
+          "x": 19,
+          "y": 35,
+          "role": "upgrade"
+        }
+      ],
+      "arrow": {
+        "x": 79,
+        "y": 34,
+        "vertical": false
+      },
+      "flame": {
+        "x": 57,
+        "y": 37
+      }
+    },
+    "palaforge": {
+      "slots": [
+        {
+          "x": 58,
+          "y": 15,
+          "role": "equipment"
+        },
+        {
+          "x": 58,
+          "y": 58,
+          "role": "output"
+        },
+        {
+          "x": 115,
+          "y": 45,
+          "role": "fuel"
+        }
+      ],
+      "arrow": {
+        "x": 54,
+        "y": 36,
+        "vertical": true
+      },
+      "flame": {
+        "x": 116,
+        "y": 27
+      }
     }
   }
 }
