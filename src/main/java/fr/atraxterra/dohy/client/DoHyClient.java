@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.client;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
@@ -40,12 +41,18 @@ public final class DoHyClient {
      *
      * <p>Le nom passe en dernier argument est celui de la texture, pas du menu.
      * Les deux coincident ici, et {@code tools/check_assets.py} le verifie.
+     *
+     * <p><b>Les parametres de type sont ecrits a la main</b>, et il le faut :
+     * {@code register} declare {@code <M extends AbstractContainerMenu, U
+     * extends Screen & MenuAccess<M>>}, et {@code U} ne se deduit que du type
+     * de retour de la lambda — qui est lui-meme une expression a inferer. Sans
+     * le temoin, javac rend « cannot infer type-variable(s) M,U ».
      */
     @SubscribeEvent
     public static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
-        event.register(PalaMenus.COBBLEBREAKER.get(),
+        event.<MachineMenu, MachineScreen>register(PalaMenus.COBBLEBREAKER.get(),
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "cobblebreaker"));
-        event.register(PalaMenus.CRUSHER.get(),
+        event.<MachineMenu, MachineScreen>register(PalaMenus.CRUSHER.get(),
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "crusher"));
     }
 }
