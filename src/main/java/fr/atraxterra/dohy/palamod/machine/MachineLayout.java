@@ -16,7 +16,17 @@ import java.util.List;
  * principe que pour les assets : quand une donnee doit vivre a deux endroits,
  * on fait verifier l'accord par la CI plutot que par l'attention.
  */
-public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame) {
+public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, TextPos counter) {
+
+    /**
+     * Ou ecrire le compteur, centre horizontalement sur ce x.
+     *
+     * <p>{@code null} quand la machine n'a rien a compter. Le cobblebreaker est
+     * dans ce cas : son unique etat cache est la cadence, et la fleche la dit
+     * deja.
+     */
+    public record TextPos(int x, int y) {
+    }
 
     /**
      * Une case.
@@ -73,7 +83,7 @@ public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame) {
                     new SlotPos(106, 54, false),
                     new SlotPos(124, 54, false)),
             new Sprite(76, 36, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, true, false),
-            null);
+            null, null);
 
     /**
      * Le crusher : fruit au-dessus du charbon, sortie a droite.
@@ -81,6 +91,11 @@ public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame) {
      * <p>C'est la disposition du fourneau vanilla, que tout le monde sait lire
      * sans explication — et le crusher fait la meme chose : une matiere, un
      * combustible, un resultat.
+     *
+     * <p>Plus un compteur, que le fourneau n'a pas : le crusher accumule des
+     * fruits avant de rendre quoi que ce soit — jusqu'a 128 pour l'orangeblue.
+     * Sans ce chiffre affiche, un joueur ne peut pas savoir s'il en est au
+     * troisieme ou au cent-vingtieme.
      */
     public static final MachineLayout CRUSHER = new MachineLayout(
             List.of(
@@ -88,5 +103,6 @@ public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame) {
                     new SlotPos(44, 60, true),
                     new SlotPos(116, 42, false)),
             new Sprite(76, 44, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, false, false),
-            new Sprite(45, 44, FLAME_U, FLAME_V, FLAME_FULL_V, FLAME_W, FLAME_H, true, true));
+            new Sprite(45, 44, FLAME_U, FLAME_V, FLAME_FULL_V, FLAME_W, FLAME_H, true, true),
+            new TextPos(88, 66));
 }

@@ -55,6 +55,8 @@ public abstract class MachineBlockEntity extends BlockEntity implements Containe
             return switch (index) {
                 case MachineMenu.DATA_WORK -> work();
                 case MachineMenu.DATA_DURATION -> cycleDuration();
+                case MachineMenu.DATA_TANK -> tankFill();
+                case MachineMenu.DATA_TANK_GOAL -> tankGoal();
                 default -> 0;
             };
         }
@@ -193,6 +195,21 @@ public abstract class MachineBlockEntity extends BlockEntity implements Containe
      * progression » sans avoir a connaitre les conditions de chaque machine.
      */
     public abstract int cycleDuration();
+
+    /**
+     * Elements deja accumules, pour une machine qui accumule.
+     *
+     * <p>Zero par defaut : le cobblebreaker rend son lot a chaque cycle et n'a
+     * rien a compter. Seul le crusher redefinit ces deux-la.
+     */
+    public int tankFill() {
+        return 0;
+    }
+
+    /** Elements qu'il faut pour un lot, ou zero si la machine n'accumule rien. */
+    public int tankGoal() {
+        return 0;
+    }
 
     /** Le travail d'un tick. Appele par le ticker du serveur uniquement. */
     public abstract void serverTick();

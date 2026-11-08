@@ -77,6 +77,10 @@ LAYOUTS = {
         ],
         "arrow": {"x": 76, "y": 44, "vertical": False},
         "flame": {"x": 45, "y": 44},
+        # Le compteur de fruits broyes : centre sous la fleche, a l'ecart des
+        # trois cases. C'est l'etat le plus volumineux de la machine — jusqu'a
+        # 128 fruits pour l'orangeblue — et il n'etait visible nulle part.
+        "counter": {"x": 88, "y": 66},
     },
 }
 
@@ -177,6 +181,7 @@ def main():
                 "slots": layout["slots"],
                 "arrow": layout["arrow"],
                 **({"flame": layout["flame"]} if "flame" in layout else {}),
+                **({"counter": layout["counter"]} if "counter" in layout else {}),
             }
             for name, layout in LAYOUTS.items()
         },

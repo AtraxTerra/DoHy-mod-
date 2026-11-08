@@ -316,6 +316,9 @@ ensuite. Signatures confirmées par `gradle apiProbe` :
 | Pipeline d'interface | — | `RenderPipelines.GUI_TEXTURED` |
 | Association type → écran | `MenuScreens.register` | `RegisterMenuScreensEvent.register(MenuType<? extends M>, MenuScreens.ScreenConstructor<M, U>)` |
 | Constructeur d'écran | idem | `AbstractContainerScreen(T, Inventory, Component, int imageWidth, int imageHeight)` |
+| Texte d'un écran de conteneur | `renderLabels(GuiGraphics, int, int)` | **supprimé** → écrire dans `extractContents(GuiGraphicsExtractor, int, int, float)` |
+| Écriture d'une ligne | `GuiGraphics.drawString` | `extractor.text(Font, …, x, y, color)` / `centeredText(Font, …, centerX, y, color)` |
+| Coin de l'écran | `getGuiLeft()` / `getGuiTop()` | **marqués pour suppression** → `getLeftPos()` / `getTopPos()` |
 
 Noter l'**ordre des arguments de `extractBackground`** : le `partialTick` est passé en dernier
 alors que `renderBg` le prenait en premier. Les quatre paramètres sont des nombres, donc une
@@ -325,9 +328,15 @@ souris.
 Le canal d'entiers entre un menu serveur et sa copie client reste `ContainerData` /
 `addDataSlots` : c'est la seule façon de synchroniser une progression sans écrire de paquet.
 
-**Non confirmé** : les méthodes de texte d'un écran de conteneur (l'équivalent de
-`renderLabels`). Nécessaires pour afficher le remplissage des bacs du crusher ; une sonde est
-en attente.
+Deux pièges qui compilent sans un mot :
+
+- Un chiffre écrit dans `extractBackground` passe **sous les objets** des cases. Le texte va
+  dans `extractContents`, après `super`.
+- `register` de `RegisterMenuScreensEvent` déclare `<M extends AbstractContainerMenu, U extends
+  Screen & MenuAccess<M>>`, et `U` ne se déduit que du type de retour de la lambda — qui est
+  lui-même une expression à inférer. Sans témoin de type explicite
+  (`event.<MachineMenu, MachineScreen>register(…)`), javac rend « cannot infer type-variable(s)
+  M,U ».
 
 ---
 

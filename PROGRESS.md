@@ -112,7 +112,7 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 
 - **IDs d'attributs 26.2** : les perks de `skills.json` utilisent des ids plausibles (`minecraft:mining_efficiency`, `minecraft:block_interaction_range`…) qui doivent être validés contre l'API réelle. À faire à la première compilation.
 - **Trocs de villageois en registres de datapack** (nouveauté 26.1 : `data/<ns>/villager_trade/*.json` et `trade_set/*.json`). **Piste à évaluer en phase 3** : plutôt que de plafonner le prix de vente du lapis, de la perle de l'ender et du reste, on peut retirer ou renchérir directement le troc fautif par datapack — et rendre leurs vrais prix à ces items. C'est traiter la cause au lieu du symptôme, et ça rendrait les plafonds inutiles.
-- **HUD et GUI en mode retenu** : 26.2 a supprimé `GuiGraphics`. Le HUD de la monnaie et le GUI du shop doivent être écrits directement en `extract*` + `GuiGraphicsExtractor`. L'API exacte d'enregistrement d'une couche de HUD côté NeoForge 26.2 est à confirmer en CI (l'ancien `RegisterGuiLayersEvent` n'est pas garanti sous cette forme). → **partiellement tranché le 2026-11-08** : les écrans de conteneur sont écrits et compilent (`extractBackground`, `blit` avec `RenderPipelines.GUI_TEXTURED`, `RegisterMenuScreensEvent`) — voir `MachineScreen`. Reste à confirmer : les méthodes de texte d'un écran de conteneur (l'équivalent de `renderLabels`), nécessaires pour afficher le remplissage des bacs du crusher.
+- **HUD et GUI en mode retenu** : 26.2 a supprimé `GuiGraphics`. Le HUD de la monnaie et le GUI du shop doivent être écrits directement en `extract*` + `GuiGraphicsExtractor`. L'API exacte d'enregistrement d'une couche de HUD côté NeoForge 26.2 est à confirmer en CI (l'ancien `RegisterGuiLayersEvent` n'est pas garanti sous cette forme). → **tranché le 2026-11-08** : relevé par sonde et écrit — `extractBackground` et `extractContents` (il n'y a plus de `renderLabels`), `blit` avec `RenderPipelines.GUI_TEXTURED`, `centeredText` pour le texte, `getLeftPos` / `getTopPos` (`getGuiLeft` / `getGuiTop` sont marqués pour suppression), `RegisterMenuScreensEvent` avec témoins de type explicites. Voir `MachineScreen` et `docs/PALAMOD.md`.
 - **Plafonds villageois** : ~~à confirmer~~ → **tranché le 2026-11-03 : on garde les plafonds.** Ne pas relancer `gen_prices.py` avec `--no-villager-caps`. Audit encore à compléter sur : briques, argile, papier, verre teinté, charbon, fer.
 - ~~**Catégorie COMPONENT** : liste et prix d'achat à établir (phase 3).~~ → **tranché le 2026-11-05 : la catégorie est supprimée.** Elle n'a jamais contenu d'item (aucune ligne de `rates.csv`, aucune règle de `tag_prices.json`), donc l'onglet du shop était vide et l'aile de musée correspondante ne pouvait pas se compléter. L'onglet est remplacé par la boutique ; la remise d'achat de −10 % est passée sur l'aile NTM.
 - **Table de loot des caisses** : non écrite.
@@ -183,12 +183,27 @@ rend ensuite. `renderBg` devient `extractBackground`, et `blit` prend un pipelin
 risque reste contenu : un ecran de conteneur ne touche pas au pipeline de soumission en monde,
 qui est la vraie difficulte de cette version.
 
-**Ce qui reste cache, et pourquoi je le dis plutot que de le bricoler.** Le crusher compte les
-fruits deja broyes par recette — **jusqu'a 128 pour l'orangeblue**. Ce compteur est l'etat le
-plus volumineux du chapitre et il reste invisible : l'afficher demande les methodes de texte
-d'un ecran de conteneur en 26.2, dont je n'ai pas le nom confirme (`renderLabels` n'existe
-probablement plus sous cette forme). Une sonde part avec cette PR ; le compteur sera branche
-quand j'aurai le nom, pas devine.
+**Le compteur du crusher, branche apres la sonde.** Le crusher accumule des fruits par recette
+avant de rendre quoi que ce soit — **jusqu'a 128 pour l'orangeblue**. C'etait l'etat le plus
+volumineux du chapitre et il n'etait visible nulle part : un joueur ne pouvait pas savoir s'il
+en etait au troisieme ou au cent-vingtieme fruit. Je ne l'ai pas branche a l'aveugle : une
+sonde a d'abord liste `AbstractContainerScreen`, `GuiGraphicsExtractor` et `Font`.
+
+Ce qu'elle a donne, et qu'aucune memoire ne pouvait donner :
+
+- **`renderLabels` n'existe plus.** Le texte d'un ecran de conteneur se place dans
+  `extractContents`, qui dessine les cases et les libelles. Ecrire le compteur dans
+  `extractBackground` l'aurait mis **sous les objets**.
+- **`getGuiLeft` / `getGuiTop` sont marques pour suppression**, remplaces par `getLeftPos` /
+  `getTopPos`. Le premier jet compilait avec deux avertissements ; corrige.
+- `GuiGraphicsExtractor.centeredText(Font, String, int x, int y, int color)`, ou `x` est le
+  centre. Et `getFont()` est public sur l'ecran.
+
+Le compteur affiche le bac de la recette chargee ; machine vide, celui qui est le plus avance,
+plutot que rien — un joueur qui revient apres une pause veut savoir ou il en etait, pas
+decouvrir un zero qui lui ferait croire son travail perdu. Tous les bacs a zero : rien
+d'affiche, parce qu'un « 0/0 » vaut moins que le vide. La position du compteur est verifiee par
+le meme garde-fou que les cases.
 
 ### 2026-11-08 (suite) — le mod ne demarrait plus, et pourquoi la CI ne pouvait pas le voir
 

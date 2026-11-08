@@ -34,10 +34,12 @@ import net.minecraft.world.item.ItemStack;
  */
 public class MachineMenu extends AbstractContainerMenu {
 
-    /** Indices des deux entiers synchronises. */
+    /** Indices des entiers synchronises. */
     public static final int DATA_WORK = 0;
     public static final int DATA_DURATION = 1;
-    public static final int DATA_COUNT = 2;
+    public static final int DATA_TANK = 2;
+    public static final int DATA_TANK_GOAL = 3;
+    public static final int DATA_COUNT = 4;
 
     /** Coordonnees vanilla de l'inventaire du joueur. Voir tools/gen_gui.py. */
     private static final int PLAYER_X = 8;
@@ -97,6 +99,16 @@ public class MachineMenu extends AbstractContainerMenu {
             return 0.0f;
         }
         return Math.clamp(data.get(DATA_WORK) / (float) duration, 0.0f, 1.0f);
+    }
+
+    /** Fruits deja broyes dans le bac en cours. */
+    public int tank() {
+        return data.get(DATA_TANK);
+    }
+
+    /** Fruits qu'il faut pour un lot, ou zero si la machine n'accumule rien. */
+    public int tankGoal() {
+        return data.get(DATA_TANK_GOAL);
     }
 
     @Override

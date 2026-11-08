@@ -349,6 +349,20 @@ def check_gui():
                 fail(f"gui : {name} {sprite} vertical={vertical} en Java mais "
                      f"{generated['vertical']} dans la texture")
 
+        # Le compteur de lot : meme regle que les cases, il est positionne des
+        # deux cotes. Ici le generateur ne dessine rien — il reserve la place —
+        # donc un desaccord ecrirait le chiffre par-dessus une case.
+        text_pos = re.search(r"new TextPos\((-?\d+),\s*(-?\d+)\)", source)
+        generated = expected.get("counter")
+        if (generated is None) != (text_pos is None):
+            fail(f"gui : {name} a un compteur d'un seul cote "
+                 f"(Java: {text_pos is not None}, manifeste: {generated is not None})")
+        elif generated is not None:
+            x, y = int(text_pos.group(1)), int(text_pos.group(2))
+            if (x, y) != (generated["x"], generated["y"]):
+                fail(f"gui : {name} compteur declare en ({x},{y}) mais reserve en "
+                     f"({generated['x']},{generated['y']})")
+
 
 def main():
     items, blocks, itemless = registered()

@@ -38,6 +38,9 @@ public class MachineScreen extends AbstractContainerScreen<MachineMenu> {
     /** La texture fait 256x256 ; les sprites vivent a droite du panneau. */
     private static final int TEXTURE_SIZE = 256;
 
+    /** Le gris des libelles vanilla, pour que le compteur se lise de meme. */
+    private static final int LABEL_COLOR = 0xFF404040;
+
     private final Identifier texture;
 
     public MachineScreen(MachineMenu menu, Inventory inventory, Component title, String name) {
@@ -49,8 +52,8 @@ public class MachineScreen extends AbstractContainerScreen<MachineMenu> {
     @Override
     public void extractBackground(GuiGraphicsExtractor extractor, int mouseX, int mouseY,
                                   float partialTick) {
-        int left = getGuiLeft();
-        int top = getGuiTop();
+        int left = getLeftPos();
+        int top = getTopPos();
 
         extractor.blit(RenderPipelines.GUI_TEXTURED, texture, left, top,
                 0.0f, 0.0f, PANEL_WIDTH, PANEL_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
@@ -65,6 +68,34 @@ public class MachineScreen extends AbstractContainerScreen<MachineMenu> {
         if (layout.flame() != null) {
             drawProgress(extractor, left, top, layout.flame(), progress);
         }
+    }
+
+    /**
+     * Le compteur de lot, par-dessus les cases.
+     *
+     * <p>Ecrit dans {@code extractContents} et non dans
+     * {@code extractBackground} : le fond passe sous les objets, un chiffre
+     * ecrit la se retrouverait derriere eux. {@code extractContents} dessine
+     * les cases et les libelles, c'est la que le texte d'un ecran de conteneur
+     * se place en 26.2 — il n'y a plus de {@code renderLabels}.
+     */
+    @Override
+    public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY,
+                                float partialTick) {
+        super.extractContents(extractor, mouseX, mouseY, partialTick);
+
+        MachineLayout.TextPos counter = getMenu().layout().counter();
+        if (counter == null) {
+            return;
+        }
+        int goal = getMenu().tankGoal();
+        if (goal <= 0) {
+            // Machine vide et tous les bacs a zero : rien a dire, et un
+            // « 0/0 » affiche vaudrait moins que le vide.
+            return;
+        }
+        extractor.centeredText(getFont(), getMenu().tank() + "/" + goal,
+                getLeftPos() + counter.x(), getTopPos() + counter.y(), LABEL_COLOR);
     }
 
     /**
