@@ -328,6 +328,12 @@ souris.
 Le canal d'entiers entre un menu serveur et sa copie client reste `ContainerData` /
 `addDataSlots` : c'est la seule façon de synchroniser une progression sans écrire de paquet.
 
+Pour tout crochet **protégé** (`getRenderShape`, `useWithoutItem`,
+`createBlockStateDefinition`), la sonde par réflexion ne sert à rien : elle ne liste que le
+public et ne dit jamais ce qu'une méthode retourne. Utiliser
+`gradle bytecodeProbe -Pjavap=<classe> -Pmember=<méthode>`, qui lance `javap -p -c -constants`
+sur le classpath.
+
 Deux pièges qui compilent sans un mot :
 
 - Un chiffre écrit dans `extractBackground` passe **sous les objets** des cases. Le texte va

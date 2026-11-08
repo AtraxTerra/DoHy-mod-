@@ -311,6 +311,25 @@ def check_gui():
             fail(f"gui : MachineLayout n'a pas de constante {name.upper()}")
             continue
 
+        # La taille de l'inventaire doit egaler le nombre de cases du menu.
+        #
+        # C'est l'invariant dont la violation a coute une session de debogage :
+        # un menu de 9 cases sur un inventaire de 7 jette « Container size 7 is
+        # smaller than expected 9 » a l'ouverture — et le jeu SUPPRIME cette
+        # erreur (« Failed to handle packet ... suppressing error »). Le joueur
+        # voit un clic droit sans effet, sans un mot dans le chat. 183 fois dans
+        # le log, et rien a l'ecran.
+        entity = JAVA / "machine" / (name.capitalize() + "BlockEntity.java")
+        if not entity.exists():
+            fail(f"gui : {name} n'a pas de {entity.name} — la convention de nom "
+                 "a change, ce controle ne verifie plus rien")
+        else:
+            declared_size = java_ints(entity).get("SLOT_COUNT")
+            if declared_size != len(expected["slots"]):
+                fail(f"gui : {entity.name} declare SLOT_COUNT={declared_size} mais "
+                     f"l'interface a {len(expected['slots'])} cases. L'ouverture "
+                     "echouera en silence, l'erreur etant supprimee par le jeu")
+
         slots = re.findall(r"new SlotPos\((-?\d+),\s*(-?\d+),\s*(true|false)\)", source)
         if len(slots) != len(expected["slots"]):
             fail(f"gui : {name} a {len(slots)} cases en Java et "
