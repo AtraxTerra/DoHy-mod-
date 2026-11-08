@@ -22,3 +22,7 @@ type = "required"
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
+
+# L'anti-chute de l'Alchimiste : Player.isStayingOnGroundSurface (voir PlayerEdgeMixin).
+[[mixins]]
+config = "dohy.mixins.json"

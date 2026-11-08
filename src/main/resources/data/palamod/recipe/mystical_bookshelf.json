@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WWW",
+    "BBB",
+    "WWW"
+  ],
+  "key": {
+    "W": "palamod:shiny_jacaranda_wood",
+    "B": "minecraft:book"
+  },
+  "result": {
+    "id": "palamod:mystical_bookshelf",
+    "count": 2
+  }
+}

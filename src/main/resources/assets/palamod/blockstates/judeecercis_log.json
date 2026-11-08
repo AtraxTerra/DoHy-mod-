@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "palamod:block/judeecercis_log"
+    },
+    "axis=z": {
+      "model": "palamod:block/judeecercis_log_horizontal",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "palamod:block/judeecercis_log_horizontal",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

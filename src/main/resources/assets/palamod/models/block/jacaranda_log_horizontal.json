@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "side": "palamod:block/jacaranda_log",
+    "end": "palamod:block/jacaranda_log_top"
+  }
+}

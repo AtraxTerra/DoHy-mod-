@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:dead_wood",
+    "palamod:erable_log",
+    "palamod:jacaranda_log",
+    "palamod:judeecercis_log",
+    "palamod:ostrya_log"
+  ]
+}

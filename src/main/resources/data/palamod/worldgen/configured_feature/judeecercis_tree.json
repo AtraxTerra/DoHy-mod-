@@ -1,0 +1,14 @@
+{
+  "type": "palamod:tree",
+  "config": {
+    "log": {
+      "Name": "palamod:judeecercis_log",
+      "Properties": {
+        "axis": "y"
+      }
+    },
+    "leaves": {
+      "Name": "palamod:judeecercis_leaves"
+    }
+  }
+}

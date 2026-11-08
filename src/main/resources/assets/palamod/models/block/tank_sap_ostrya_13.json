@@ -1,0 +1,76 @@
+{
+  "textures": {
+    "sap": "palamod:block/sap/ostrya",
+    "particle": "palamod:block/sap/ostrya"
+  },
+  "elements": [
+    {
+      "from": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "to": [
+        15.4,
+        12.625,
+        15.4
+      ],
+      "faces": {
+        "up": {
+          "texture": "#sap",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#sap",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#sap",
+          "uv": [
+            0,
+            3,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#sap",
+          "uv": [
+            0,
+            3,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#sap",
+          "uv": [
+            0,
+            3,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#sap",
+          "uv": [
+            0,
+            3,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

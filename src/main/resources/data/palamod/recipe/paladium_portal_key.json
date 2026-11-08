@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LSL",
+    "ECE",
+    " S "
+  ],
+  "key": {
+    "L": "palamod:lightning_potion",
+    "S": "palamod:paladium_stick",
+    "E": "palamod:paladium_sword",
+    "C": "palamod:compressed_paladium"
+  },
+  "result": {
+    "id": "palamod:paladium_portal_key",
+    "count": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WWW",
+    "WHW",
+    "WWW"
+  ],
+  "key": {
+    "W": "palamod:shiny_judeecercis_wood",
+    "H": "palamod:titane_block"
+  },
+  "result": {
+    "id": "palamod:titane_portal_block",
+    "count": 1
+  }
+}

@@ -1025,3 +1025,122 @@ pierre, non porté, est remplacé par un cœur de paladium).
   vanilla réessayer à chaque tick sans relancer son délai. La vague est donc refusée à l'entrée
   dans le monde (`EntityJoinLevelEvent`) : `BaseSpawner.serverTick` relance alors son délai
   normal, que l'ajout échoue ou réussisse.
+
+## 14. Alchimiste — les objets débloqués (chapitre 11)
+
+Relevé dans `PAlchimiste` (recettes du chaudron et des portails), `CraftMod`, `TileEntityExtractor`,
+`BlockTank`, `TileEntityCauldronCore`, `TileEntityAlchemistPortalController`,
+`BlockPortalAlchemist`, `EnchantMod`, et pour les arbres dans `PWorld`, `WorldTree1Gen` / `2Gen`,
+`BaseWorldGenerator`. Niveaux du code ×5. Périmètre choisi par le joueur : arbres et sève,
+chaudron, portails, enchantements mystiques.
+
+| Niveau | Objet | Porté |
+|---|---|---|
+| 10 / 35 / 50 / 80 | Tanks en or, améthyste, titane, paladium | oui (sève seulement) |
+| 20 | Bloc et cœur du chaudron | oui |
+| 25 / 40 / 55 / 100 | Bois brillants (jacaranda, judée, érable, ostrya) | oui |
+| 30 / 45 / 60 / 100 | Blocs et clés de portail (améthyste, titane, paladium, endium) | oui |
+| 100 | Bloc d'angle, cœur et pollen d'endium | oui |
+| 100 | Jambières et bottes en endium | déjà au chapitre 7 |
+| 15 / 40 | Table d'alchimiste, totem fleuri | **non, écartés par le joueur** |
+| 75 / 90 | Améliorations de spawner | **non** (sans contrôleur de spawner) |
+| 95 | Trône de l'alchimiste | **non — aucun trône** |
+
+Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèque mystique, arbres.
+
+### Les arbres — `PWorld`, `WorldTreeNGen`
+
+- Quatre essences (jacaranda, judée, érable, ostrya) et le bois mort : bûche, planches, feuilles,
+  pousse. Bûches et planches durent 3 (plus que le bois vanilla), **ni inflammables ni dans
+  `#planks`** : une planche de PalaMod ne fait ni bâtons ni établi. Une bûche donne quatre
+  planches. Bûches et planches brûlent 300 ticks au four (bois de 1.7.10).
+- Les **générateurs sont des patrons figés**, communs aux quatre essences : 30 bûches et 97
+  feuilles (11 de haut) deux fois sur trois, 35 et 129 (12 de haut) sinon ; les patrons 3 et 4
+  ne sont jamais tirés. Coordonnées recopiées du bytecode (`PalaTreeFeature`).
+- Les **feuilles ne pourrissent pas** (un bloc simple) : 1,01 % de pousse, la feuille à la
+  cisaille ou au toucher de soie. La pousse suit la croissance vanilla.
+- XP : 10 par bûche de jacaranda, judée ou érable coupée (aucune pour l'ostrya), converties.
+- **Écart : génération activée.** L'original ne générait ces arbres que sur le serveur de minage
+  (`Server Minage`, désactivé par défaut) : sans eux, rien de l'Alchimiste ne s'obtient. Rythme
+  d'origine : un essai par essence et par chunk, sur de l'herbe, 9 % (1/11 ici), tout l'overworld.
+- **Écart** : l'arbre de l'original écrasait tout dans son empreinte ; ici il ne remplace que
+  l'air, les plantes, l'eau et les feuilles.
+
+### La sève — `TileEntityExtractor`, `TileEntityWood`, `BlockTank`
+
+- **Unité** : une fiole pleine = 1 000 unités = un seau. Une fiole remplie de n sixièmes vaut
+  `(int)(n / 6 × 100) × 10` : 160, 330, 500, 660, 830, 1 000. Fioles par 16.
+- **Extracteur** (recette : 2) : posé, il vise le bloc dans la direction du regard. Une fiole
+  vide dedans, devant une bûche à sève : un sixième **toutes les 11 ticks**. La bûche devient
+  une bûche entamée de **36 sixièmes (6 fioles), qui ne se régénère jamais** ; vidée, du bois
+  mort ; cassée, du bois mort (sa sève est perdue). 144 sixièmes par extracteur (24 fioles),
+  puis il se brise. L'objet garde ses utilisations restantes. Accroupi, clic droit : la fiole
+  ressort, avec l'XP d'extraction — 60 / 120 / 240 par fiole pleine (jacaranda dès 0, judée dès
+  25, érable dès 50), **rien pour l'ostrya**, comme l'original.
+- **Tanks** : 35 / 60 / 95 / 135 fioles. Clic droit avec des fioles : elles s'y vident (une
+  fiole entière ou rien) ; accroupi : chaque fiole de la pile gagne un sixième (160 ou 170
+  unités) ; main vide : le contenu. L'objet garde son contenu.
+- **Écarts** : le remplissage était au clic gauche (il casse le bloc ici) ; une fiole vide perd
+  son type de sève (l'original le gardait, et la fiole ne s'empilait plus) ; un tank ne remplit
+  plus une fiole avec la sève d'un autre arbre ; l'extracteur usé disparaît (il se réparait à la
+  palamachine, non portée) ; les tanks ne prennent que la sève (eau, lave et eau sulfurique ne
+  servaient qu'au pistolet à tank, non porté).
+
+### Le chaudron — `BlockCauldronCore`, `TileEntityCauldronCore`
+
+- **Forme** : 64 blocs du chaudron — un plancher de 7 × 7 et un anneau de 5 × 5 au-dessus —
+  puis le cœur posé au centre du plancher, en dernier : la foudre tombe et le chaudron est
+  formé. **Écart** : le coin (+2, +2) de l'anneau n'était pas vérifié ; un clic droit main vide
+  sur le cœur refait la vérification.
+- **Bassin** : un seau d'eau angélique **jeté** dans le bassin vide le remplit d'un coup (le seau
+  est consommé). Un bassin entamé — une source puisée, un seau versé à la main — fait exploser
+  le chaudron : le cœur saute, le bassin devient de la lave.
+- **Travail** : bassin plein, un joueur à 4,5 blocs qui a le niveau du cœur. Tout objet jeté est
+  traité au tick, le résultat ressort au-dessus du centre :
+  - potion de foudre + bûche : **2 bois brillants** de l'essence — leur seule source ;
+  - poudre lumineuse : 3 pépites d'or ;
+  - coquelicot et ses cousins, pissenlit : par fleur, 1/500 fleur minérale, 1/300 fleur de
+    paladium, 1/5 000 harpagophytum, 1/15 000 fleur d'endium, 1/1 754 clathrus ; XP 0,75 à 2
+    par fleur dès Alchimiste 15 ;
+  - fleur de paladium : un lingot de paladium (XP 100 dès 80) ;
+  - fleur d'endium (Alchimiste 100) : un pollen d'endium, plus 25 % paladium, 15 % titane,
+    10 % améthyste, 0,2 % pépite d'endium ;
+  - pollens : titane → 1 bloc de titane, améthyste → 2 blocs d'améthyste, paladium → 5 lingots.
+- Intégrité vérifiée toutes les 11 ticks de travail. Aucune XP pour les recettes du chaudron :
+  l'original déclarait une XP qu'il ne versait jamais.
+- **Écart** : une fleur d'endium jetée sans le niveau reste là ; l'original la consommait pour rien.
+- **Potion de foudre** : sous la pluie, un casque en fer ou en or, une fiole d'eau vide en main —
+  1/800 par tick (≈ 40 s) — la foudre tombe et la fiole devient potion ; 30 XP. **Écart** :
+  il faut être sous la pluie, pas seulement qu'il pleuve quelque part.
+- **Fleurs** : six fleurs dans les plaines, les collines venteuses et les forêts. L'original
+  tirait une hauteur entre 50 et 74 qui devait tomber pile sur le sol ; le rythme effectif est
+  gardé : une fleur de paladium tous les 125 chunks, d'endium tous les 2 500, etc.
+
+### Les portails — `TileEntityAlchemistPortalController`, `BlockPortalAlchemist`
+
+- **Ce ne sont pas des portails qui mènent ailleurs** : des autels. Un anneau de 5 × 5 à plat,
+  le bloc de portail au milieu d'un côté, les quatre coins dans le bloc du métal (le bloc
+  d'angle pour l'endium), le reste en bois brillant de la sève. Clé insérée : le trou de 3 × 3
+  s'emplit de la surface du portail ; main vide, la clé ressort.
+- On y jette des fioles (ou des tanks) de la bonne sève ; elle s'accumule **dans la clé**, qui la
+  garde. Par palier : améthyste 1 000 → 1 lingot (XP 6 dès 15), titane 2 000 → 1 lingot (20 dès
+  30), paladium 4 000 → 1 lingot (40 dès 50), endium **3 448 000** + 2 pollens d'endium → 1
+  pépite (aucune XP) — `sipush 3448` fois mille, porté tel quel.
+- **Écarts**, des corrections : fioles et tanks reviennent vides (l'original les détruisait) ;
+  sans clé, seule la surface disparaît (l'original vidait le trou de tout, à chaque tick) ; les
+  quatre coins sont vérifiés (un ne l'était pas dans une orientation) ; endium : deux pollens par
+  pépite toujours (un tank n'en demandait pas), plusieurs pépites par lancer, la sève en trop
+  n'est plus détruite, les pollens sont sauvegardés.
+
+### Les enchantements mystiques — `EnchantMod`, `IMixinEnchantTable`
+
+- Bibliothèque mystique (recette : 2) : **puissance 4**. Une table d'enchantement entourée de plus
+  de 60 — seize bibliothèques mystiques — ouvre la **table de l'Alchimiste** : elle enchante
+  l'objet tenu en main (l'original avait une case), un niveau par clic, **30 niveaux
+  d'expérience** chaque fois. Ni à la table vanilla, ni en livre.
+- **Anti chute** (bottes, 1 niveau) : on ne tombe plus d'un bord, comme accroupi. Un mixin sur
+  `Player.isStayingOnGroundSurface` — le seul point qui décide, sans événement.
+- **Grass Breaker** (épées, 3 niveaux, Fermier 20) : les hautes herbes lâchent jusqu'à `niveau`
+  graines de plus par graine. **Écart** : l'original le réservait aux épées rapides, non portées.
+- Pas portés : le casque d'unclaim (ni unclaim finder ni factions), la protection contre l'eau
+  sulfurique (pas d'eau sulfurique), la table « lisible » d'Alchimiste 75.

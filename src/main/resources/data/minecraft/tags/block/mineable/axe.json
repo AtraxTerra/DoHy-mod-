@@ -1,6 +1,20 @@
 {
   "replace": false,
   "values": [
+    "palamod:dead_wood",
+    "palamod:dead_wood_planks",
+    "palamod:erable_log",
+    "palamod:erable_planks",
+    "palamod:jacaranda_log",
+    "palamod:jacaranda_planks",
+    "palamod:judeecercis_log",
+    "palamod:judeecercis_planks",
+    "palamod:ostrya_log",
+    "palamod:ostrya_planks",
+    "palamod:tapped_erable_log",
+    "palamod:tapped_jacaranda_log",
+    "palamod:tapped_judeecercis_log",
+    "palamod:tapped_ostrya_log",
     "palamod:totem_of_fertility"
   ]
 }

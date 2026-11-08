@@ -1,0 +1,139 @@
+{
+  "textures": {
+    "particle": "palamod:block/jacaranda_log",
+    "log": "palamod:block/jacaranda_log",
+    "log_top": "palamod:block/jacaranda_log_top",
+    "dead": "palamod:block/dead_wood",
+    "dead_top": "palamod:block/dead_wood_top"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        5.3333,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#log_top",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "cullface": "down"
+        },
+        "north": {
+          "texture": "#log",
+          "uv": [
+            0,
+            10.666699999999999,
+            16,
+            16
+          ],
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#log",
+          "uv": [
+            0,
+            10.666699999999999,
+            16,
+            16
+          ],
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#log",
+          "uv": [
+            0,
+            10.666699999999999,
+            16,
+            16
+          ],
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#log",
+          "uv": [
+            0,
+            10.666699999999999,
+            16,
+            16
+          ],
+          "cullface": "west"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        5.3333,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#dead_top",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "cullface": "up"
+        },
+        "north": {
+          "texture": "#dead",
+          "uv": [
+            0,
+            0,
+            16,
+            10.666699999999999
+          ],
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#dead",
+          "uv": [
+            0,
+            0,
+            16,
+            10.666699999999999
+          ],
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#dead",
+          "uv": [
+            0,
+            0,
+            16,
+            10.666699999999999
+          ],
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#dead",
+          "uv": [
+            0,
+            0,
+            16,
+            10.666699999999999
+          ],
+          "cullface": "west"
+        }
+      }
+    }
+  ]
+}

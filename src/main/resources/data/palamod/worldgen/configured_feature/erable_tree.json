@@ -1,0 +1,14 @@
+{
+  "type": "palamod:tree",
+  "config": {
+    "log": {
+      "Name": "palamod:erable_log",
+      "Properties": {
+        "axis": "y"
+      }
+    },
+    "leaves": {
+      "Name": "palamod:erable_leaves"
+    }
+  }
+}

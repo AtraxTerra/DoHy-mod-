@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "fr.atraxterra.dohy.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "PlayerEdgeMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

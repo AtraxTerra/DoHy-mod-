@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "palamod:block/dead_wood",
+    "end": "palamod:block/dead_wood_top"
+  }
+}

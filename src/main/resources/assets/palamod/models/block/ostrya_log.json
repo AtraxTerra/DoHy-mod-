@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "palamod:block/ostrya_log",
+    "end": "palamod:block/ostrya_log_top"
+  }
+}

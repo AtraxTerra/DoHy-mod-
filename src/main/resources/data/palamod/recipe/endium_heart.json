@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FEF",
+    "EPE",
+    "FEF"
+  ],
+  "key": {
+    "F": "palamod:findium_block",
+    "E": "palamod:endium_flower",
+    "P": "palamod:paladium_block"
+  },
+  "result": {
+    "id": "palamod:endium_heart",
+    "count": 1
+  }
+}

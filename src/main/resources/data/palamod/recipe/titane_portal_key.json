@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LSL",
+    "ECE",
+    " S "
+  ],
+  "key": {
+    "L": "palamod:lightning_potion",
+    "S": "palamod:titane_stick",
+    "E": "palamod:titane_sword",
+    "C": "palamod:compressed_titane"
+  },
+  "result": {
+    "id": "palamod:titane_portal_key",
+    "count": 1
+  }
+}

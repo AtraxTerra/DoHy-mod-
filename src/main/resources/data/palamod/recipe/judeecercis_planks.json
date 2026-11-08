@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "palamod:judeecercis_log"
+  ],
+  "result": {
+    "id": "palamod:judeecercis_planks",
+    "count": 4
+  }
+}

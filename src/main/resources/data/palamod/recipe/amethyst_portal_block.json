@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WWW",
+    "WHW",
+    "WWW"
+  ],
+  "key": {
+    "W": "palamod:shiny_jacaranda_wood",
+    "H": "palamod:amethyst_block"
+  },
+  "result": {
+    "id": "palamod:amethyst_portal_block",
+    "count": 1
+  }
+}

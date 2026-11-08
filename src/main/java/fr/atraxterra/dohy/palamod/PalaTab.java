@@ -2,6 +2,8 @@ package fr.atraxterra.dohy.palamod;
 
 import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
 import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
+import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
+import fr.atraxterra.dohy.palamod.alchemist.PalaWoods;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
@@ -63,6 +65,8 @@ public final class PalaTab {
                         PalaSeedPlanters.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaFluids.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaHunter.ORDERED.forEach(item -> output.accept(item.get()));
+                        PalaWoods.ORDERED.forEach(item -> output.accept(item.get()));
+                        PalaAlchemist.ORDERED.forEach(item -> output.accept(item.get()));
 
                         // L'equipement ferme l'onglet, metal par metal.
                         PalaEquipment.ordered().forEach(item -> output.accept(item.get()));
