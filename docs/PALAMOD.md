@@ -328,6 +328,15 @@ souris.
 Le canal d'entiers entre un menu serveur et sa copie client reste `ContainerData` /
 `addDataSlots` : c'est la seule façon de synchroniser une progression sans écrire de paquet.
 
+Premier usage de cette sonde, et un piège écarté : en 1.21.x, `BaseEntityBlock` redéfinit
+`getRenderShape()` pour rendre `INVISIBLE`, ce qui rend un bloc invisible tant qu'on ne
+redéfinit pas à `MODEL` (c'est pourquoi `AbstractFurnaceBlock` le fait). **En 26.2 ce piège
+n'existe plus** : `javap -p` montre que `BaseEntityBlock` ne déclare que son constructeur,
+`codec()`, `triggerEvent`, `getMenuProvider` et `createTickerHelper` — pas de
+`getRenderShape`. Les machines s'affichent donc depuis leur blockstate, sans redéfinition.
+À noter aussi, `getMenuProvider` y est **protégé** et rend la block entity quand elle est un
+`MenuProvider`.
+
 Pour tout crochet **protégé** (`getRenderShape`, `useWithoutItem`,
 `createBlockStateDefinition`), la sonde par réflexion ne sert à rien : elle ne liste que le
 public et ne dit jamais ce qu'une méthode retourne. Utiliser
