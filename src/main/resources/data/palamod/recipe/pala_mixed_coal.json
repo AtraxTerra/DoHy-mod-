@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "TCT",
+    "CSC",
+    " C"
+  ],
+  "key": {
+    "C": "palamod:paladium_ingot",
+    "S": "palamod:gold_mixed_coal",
+    "T": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:pala_mixed_coal",
+    "count": 1
+  }
+}

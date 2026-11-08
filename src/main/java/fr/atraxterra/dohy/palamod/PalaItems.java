@@ -103,6 +103,23 @@ public final class PalaItems {
     public static final DeferredItem<BlockItem> ORANGEBLUE_SEEDS =
             seed("orangeblue_seeds", PalaCrops.ORANGEBLUE_CROP);
 
+    /**
+     * Intermediaires de fabrication, releves dans les recettes de PalaMod.
+     *
+     * <p>Ils n'ont aucun comportement : ce sont des pieces qui n'existent que
+     * pour etre assemblees. Les porter n'etait pas un choix esthetique — sans
+     * les batons et le coeur, <b>dix des quinze recettes du chapitre etaient
+     * impossibles a ecrire</b> : les cinq seedplanters, le crusher et le
+     * charbon mixe de paladium les demandent tous.
+     *
+     * <p>Le coeur de paladium s'appelle {@code paladiumCore} dans le pack de
+     * textures ; la correspondance est dans le generateur.
+     */
+    public static final DeferredItem<Item> AMETHYST_STICK = simple("amethyst_stick");
+    public static final DeferredItem<Item> TITANE_STICK = simple("titane_stick");
+    public static final DeferredItem<Item> PALADIUM_STICK = simple("paladium_stick");
+    public static final DeferredItem<Item> PALADIUM_CORE = simple("paladium_core");
+
     /** Fruits puis graines, chaque famille dans l'ordre de progression. */
     public static final List<DeferredItem<? extends Item>> CROP_ITEMS = List.of(
             EGGPLANT_SEEDS, CHERVIL_SEEDS, KIWANO_SEEDS, ORANGEBLUE_SEEDS,
@@ -115,7 +132,8 @@ public final class PalaItems {
             AMETHYST_INGOT, TITANE_INGOT, PALADIUM_INGOT, GREEN_PALADIUM_INGOT,
             ENDIUM_INGOT, ENDIUM_NUGGET, ENDIUM_FRAGMENT, FINDIUM, TRIXIUM,
             COMPRESSED_AMETHYST, COMPRESSED_TITANE, COMPRESSED_PALADIUM, COMPRESSED_ENDIUM,
-            GOLD_MIXED_COAL, AMETHYST_MIXED_COAL, TITANE_MIXED_COAL, PALA_MIXED_COAL);
+            GOLD_MIXED_COAL, AMETHYST_MIXED_COAL, TITANE_MIXED_COAL, PALA_MIXED_COAL,
+            AMETHYST_STICK, TITANE_STICK, PALADIUM_STICK, PALADIUM_CORE);
 
     /**
      * Les {@code BlockItem} des blocs, dans l'ordre de {@link PalaBlocks#ORDERED}.

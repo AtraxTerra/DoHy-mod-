@@ -383,6 +383,63 @@ def check_gui():
                      f"({generated['x']},{generated['y']})")
 
 
+# ---------------------------------------------------------------------------
+# Recettes : aucune ne doit nommer un objet palamod qui n'existe pas.
+#
+# Une recette qui reference un identifiant inconnu ne casse pas la compilation
+# et ne plante pas le chargement : Minecraft la rejette au chargement du
+# datapack et passe a la suivante. Le joueur se retrouve avec un objet
+# introuvable, et il faut lire le log pour savoir pourquoi. Comme le reste des
+# controles de ce script, celui-ci rend visible une faute qui ne se signale pas
+# toute seule.
+#
+# Les identifiants vanilla ne sont pas verifies : il faudrait le jar de
+# Minecraft, que la CI de donnees n'a pas. C'est la compilation qui les attrape
+# quand ils apparaissent aussi dans le Java, et le chargement sinon.
+# ---------------------------------------------------------------------------
+
+RECIPES = DATA / "recipe"
+
+
+def recipe_ids(payload):
+    """Tous les identifiants d'objet d'une recette, ingredients et resultat."""
+    found = set()
+
+    def walk(node):
+        if isinstance(node, str):
+            if node.startswith(NS + ":"):
+                found.add(node.split(":", 1)[1])
+        elif isinstance(node, list):
+            for child in node:
+                walk(child)
+        elif isinstance(node, dict):
+            for key, child in node.items():
+                # Les tags (#palamod:...) ne sont pas des objets.
+                if isinstance(child, str) and child.startswith("#"):
+                    continue
+                walk(child)
+
+    walk(payload)
+    return found
+
+
+def check_recipes(items, blocks):
+    if not RECIPES.is_dir():
+        return
+    known = set(items) | set(blocks)
+    count = 0
+    for path in sorted(RECIPES.glob("*.json")):
+        count += 1
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        for name in sorted(recipe_ids(payload)):
+            if name not in known:
+                fail(f"recipe/{path.name} nomme {NS}:{name}, qui n'est pas "
+                     "enregistre : la recette sera rejetee au chargement et "
+                     "l'objet restera introuvable")
+    if count:
+        print(f"recettes : {count} verifiees")
+
+
 def main():
     items, blocks, itemless = registered()
 
@@ -396,6 +453,7 @@ def main():
     check_items(items, blocks, itemless)
     check_loot(blocks)
     check_lang(items, blocks)
+    check_recipes(items, blocks)
     check_gui()
 
     if errors:

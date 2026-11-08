@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RBR",
+    "EWE",
+    "SSS"
+  ],
+  "key": {
+    "R": "palamod:compressed_paladium",
+    "B": "palamod:green_paladium_block",
+    "E": "palamod:endium_ingot",
+    "W": "palamod:green_paladium_seedplanter",
+    "S": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:endium_seedplanter",
+    "count": 1
+  }
+}

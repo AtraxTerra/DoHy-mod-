@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "THT",
+    "TGT",
+    "SSS"
+  ],
+  "key": {
+    "T": "palamod:titane_ingot",
+    "H": "palamod:compressed_titane",
+    "G": "palamod:amethyst_seedplanter",
+    "S": "palamod:titane_stick"
+  },
+  "result": {
+    "id": "palamod:titane_seedplanter",
+    "count": 1
+  }
+}

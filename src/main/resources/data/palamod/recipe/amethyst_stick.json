@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X",
+    "X"
+  ],
+  "key": {
+    "X": "palamod:amethyst_ingot"
+  },
+  "result": {
+    "id": "palamod:amethyst_stick",
+    "count": 1
+  }
+}

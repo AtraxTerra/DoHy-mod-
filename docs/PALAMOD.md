@@ -418,6 +418,92 @@ Deux pièges qui compilent sans un mot :
 
 ---
 
+## 9. Recettes de fabrication — relevées, pas transcrites
+
+Les recettes sont **éparpillées sur quatre registres**, ce qui explique pourquoi le chapitre 2
+avait noté « ingrédients des charbons mixés inconnus » : je n'avais regardé que
+`PRegister_Craft`.
+
+| Registre | Appels | Nature |
+|---|---|---|
+| `PRegister_Craft` | 218 | table de craft |
+| `smeltery/registerer/PSRegister_Craft` | 29 | table de craft |
+| `hunter/init/Crafts` | 24 | table de craft |
+| `miner/init/Crafts` | 19 | table de craft |
+| `PaladiumMachineRecipies.add` | 38 | **palamachine** → chapitre 5b |
+| `GrinderRecipe.addUpgrade` | 6 | **grinder** → chapitre 5b |
+| alchimie, bow machine | 12 | machines non portées |
+
+`tools/extract_crafts.py` lit les quatre premiers et rend **282 recettes** — exactement
+`249 + 11 + 22`, le compte des trois surcharges de `GameRegistry` dans le bytecode. C'est le
+contrôle qui dit que le parseur voit tous les appels et n'en invente aucun.
+
+### Trois fautes que le relevé automatique a rattrapées
+
+**1. La surcharge `addRecipe(IRecipe)`.** Huit appels passent une recette à classe propre
+(`SpikeUpgradeRecipe`) et n'ont donc pas de tableau d'arguments. Sans filtrer sur le
+descripteur, le parseur remontait au tableau de la recette *précédente* : **six recettes se
+retrouvaient attribuées au totem**. Le motif inclut maintenant
+`(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)`.
+
+**2. Le résultat se lit par position, pas par recherche.** Dès qu'un *ingrédient* est un
+`new ItemStack` — ce qui arrive quand il porte un meta — une recherche arrière « le premier
+`new ItemStack` croisé » attrape le mauvais. On part du dernier
+`invokespecial ItemStack."<init>"` avant le tableau et on remonte à son `new` : par
+construction de javac, c'est le résultat.
+
+**3. Les metas comptent.** La recette du totem demande `Items.skull` **meta 4** et
+`Items.dye` **meta 15** : une tête de creeper et de la poudre d'os, pas une tête de squelette
+et de l'encre noire. De la poudre d'os dans un totem de fertilité n'est évidemment pas un
+hasard, et la perdre aurait donné une recette fausse qui se fabrique quand même.
+
+### Une faute dans PalaMod, portée telle quelle
+
+La recette du cobblebreaker a une grille `CPC / CVC / CFC` et des clés `C`, **`D`**, `V`, `F` :
+le `P` de la grille n'a pas de clé, et la clé `D` (pioche en paladium) n'est utilisée nulle
+part. En 1.7.10, `CraftingManager` met `null` pour un caractère inconnu, donc **la case du haut
+au milieu est vide** et la pioche n'a jamais été demandée. Corriger la faute donnerait une
+recette plus chère que l'originale ; `extract_crafts.py` signale l'anomalie et on porte ce que
+le jeu faisait. Cinq recettes sur 282 ont ce genre d'incohérence.
+
+### Ce qui est porté, et ce qui attend
+
+Quinze objets étaient introuvables en survie. Dix le sont plus, **plus quatre intermédiaires
+qu'il fallait porter d'abord** : sans les bâtons en améthyste, titane et paladium, et sans le
+cœur en paladium, les cinq seedplanters, le crusher et le charbon mixé de paladium étaient
+impossibles à écrire.
+
+| Résultat | Rendement | Note |
+|---|---|---|
+| Bâton améthyste / titane | 1 | 2 lingots verticaux |
+| Bâton paladium | **4** | même grille, rendement différent — donnée d'origine |
+| Cœur en paladium | 1 | 5 paladium + 4 titane |
+| Charbon mixé or | **6** | 1 lingot d'or + 1 charbon |
+| Charbon mixé améthyste / titane | **8** | 4 lingots + 1 charbon mixé or |
+| Charbon mixé paladium | **1** | + 2 bâtons de paladium |
+| Totem de fertilité | 1 | 4 bûches, tête de creeper, 2 paladium compressé, poudre d'os |
+| Crusher | 1 | 4 cœurs, améthyste compressé, 4 bâtons, findium |
+| Les 5 seedplanters | 1 | chaîne lvl1 → lvl2 → lvl3 → **lvl5** → lvl4 |
+
+Les rendements 6, 8, 8 et 1 des charbons mixés **concordent avec le wiki**, ce qui confirme le
+relevé par une source indépendante.
+
+La chaîne des seedplanters dit la même chose que la table des métiers, par un autre chemin : le
+paladium vert est un **passage obligé** vers l'endium, ce qui explique son verrou à 90 contre
+100.
+
+**Pas porté : le cobblebreaker et ses trois améliorations.** Le cobblebreaker demande la
+voidstone et le modificateur de fortune du grinder ; les améliorations demandent le
+modificateur de vitesse puis s'enchaînent. La voidstone a un comportement propre dans PalaMod
+et un verrou dans `data/jobs.json` — la porter comme ingrédient inerte serait un mensonge, un
+joueur la fabriquerait et constaterait qu'elle ne fait rien. Les modificateurs appartiennent au
+grinder, donc au chapitre 5b.
+
+Le relevé complet est archivé dans `data/palamod_crafts.json` : les 282 recettes, avec leurs
+anomalies, prêtes pour les chapitres suivants.
+
+---
+
 ## 7. Grinder — multiblock, pas un bloc
 
 Le wiki le décrit comme un assemblage de 30 blocs plus une source de lave, placement strict,

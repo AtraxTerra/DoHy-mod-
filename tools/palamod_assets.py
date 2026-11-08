@@ -94,11 +94,22 @@ MIXED_COALS = {
                         "Charbon mixe de paladium", "Palamixed Coal"),
 }
 
+# Intermediaires de fabrication, sans aucun comportement. Releves parce que dix
+# des quinze recettes du chapitre les demandent : les cinq seedplanters, le
+# crusher et le charbon mixe de paladium.
+CRAFTING_PARTS = {
+    "amethyst_stick": ("stick/amethyst.png", "Baton en amethyste", "Amethyst Stick"),
+    "titane_stick": ("stick/titane.png", "Baton en titane", "Titane Stick"),
+    "paladium_stick": ("stick/paladium.png", "Baton en paladium", "Paladium Stick"),
+    "paladium_core": ("paladiumCore.png", "Coeur en paladium", "Paladium Core"),
+}
+
 ITEMS = {}
 ITEMS.update(PARTICLES)
 ITEMS.update(MATERIALS)
 ITEMS.update(COMPRESSED)
 ITEMS.update(MIXED_COALS)
+ITEMS.update(CRAFTING_PARTS)
 
 # ---------------------------------------------------------------------------
 # Blocs. Durete, resistance et niveau de pioche releves au bytecode dans
@@ -456,6 +467,21 @@ def main():
         if group:
             payload["group"] = group
         write("data/%s/recipe/%s.json" % (NS, path), payload)
+
+    def shaped(path, pattern, keys, result, count=1):
+        """Une recette a grille, telle qu'elle est relevee au bytecode.
+
+        `pattern` et `keys` sont recopies de la sortie de
+        tools/extract_crafts.py, sans reinterpretation. Les lignes de grille
+        d'origine peuvent faire une ou deux cases de large : le format moderne
+        l'accepte, il n'y a rien a completer.
+        """
+        write("data/%s/recipe/%s.json" % (NS, path), {
+            "type": "minecraft:crafting_shaped",
+            "pattern": pattern,
+            "key": keys,
+            "result": {"id": result, "count": count},
+        })
 
     def packed(path, ingredient, result, group=None):
         payload = {
@@ -836,6 +862,95 @@ def main():
         # inventaire n'a pas d'autre moyen de la connaitre.
         fr["item.%s.%s" % (NS, name)] = "%s (%dx%d)" % (label_fr, side, side)
         en["item.%s.%s" % (NS, name)] = "%s (%dx%d)" % (label_en, side, side)
+
+    # ---- chapitre 5c : les recettes de fabrication ----
+    #
+    # Toutes relevees par tools/extract_crafts.py sur quatre registres de
+    # PalaMod, et recopiees ici sans reinterpretation. Les grilles de une ou
+    # deux cases de large sont celles de l'original.
+    #
+    # Ce qui MANQUE encore, et pourquoi : le cobblebreaker demande la voidstone
+    # et le modificateur de fortune du grinder. La voidstone a un comportement
+    # propre dans PalaMod et un verrou dans data/jobs.json ; la porter comme
+    # simple ingredient inerte serait un mensonge — un joueur la fabriquerait
+    # et constaterait qu'elle ne fait rien. Le modificateur appartient au
+    # grinder, donc au chapitre 5b. Le cobblebreaker et ses trois ameliorations
+    # attendent donc ce chapitre-la, et restent obtenables par l'onglet creatif
+    # et la boutique d'ici la.
+
+    # Les quatre intermediaires. Noter la quantite du baton de paladium : 4
+    # pour deux lingots, contre 1 pour les deux autres metaux. C'est la donnee
+    # d'origine, pas une faute de relevé.
+    for name, ingot, count in (
+            ("amethyst_stick", "amethyst_ingot", 1),
+            ("titane_stick", "titane_ingot", 1),
+            ("paladium_stick", "paladium_ingot", 4)):
+        shaped(name, ["X", "X"], {"X": "%s:%s" % (NS, ingot)},
+               "%s:%s" % (NS, name), count)
+
+    # Le coeur : X et Z sont tous deux le lingot de paladium dans l'original
+    # (deux cles pour un meme ingredient), ce qui donne 5 paladium et 4 titane.
+    shaped("paladium_core", ["YXY", "XZX", "YXY"],
+           {"X": "%s:paladium_ingot" % NS, "Y": "%s:titane_ingot" % NS,
+            "Z": "%s:paladium_ingot" % NS},
+           "%s:paladium_core" % NS)
+
+    # Les quatre charbons mixes. Les quantites rendues — 6, 8, 8 et 1 —
+    # concordent avec celles du wiki, ce qui confirme le relevé par une source
+    # independante.
+    shaped("gold_mixed_coal", ["SC"],
+           {"C": "minecraft:coal", "S": "minecraft:gold_ingot"},
+           "%s:gold_mixed_coal" % NS, 6)
+    for metal, count in (("amethyst", 8), ("titane", 8)):
+        shaped("%s_mixed_coal" % metal, [" C", "CSC", " C"],
+               {"C": "%s:%s_ingot" % (NS, metal), "S": "%s:gold_mixed_coal" % NS},
+               "%s:%s_mixed_coal" % (NS, metal), count)
+    shaped("pala_mixed_coal", ["TCT", "CSC", " C"],
+           {"C": "%s:paladium_ingot" % NS, "S": "%s:gold_mixed_coal" % NS,
+            "T": "%s:paladium_stick" % NS},
+           "%s:pala_mixed_coal" % NS)
+
+    # Le crusher.
+    shaped("crusher", ["XSX", "TFT", "XTX"],
+           {"X": "%s:paladium_core" % NS, "S": "%s:compressed_amethyst" % NS,
+            "T": "%s:paladium_stick" % NS, "F": "%s:findium" % NS},
+           "%s:crusher" % NS)
+
+    # Le totem. Les deux metas comptent : 4 sur la tete (creeper, pas squelette)
+    # et 15 sur le colorant (poudre d'os, pas encre noire). Les perdre aurait
+    # donne une recette fausse qui se fabrique quand meme — exactement le genre
+    # de faute qu'un relevé a l'oeil laisse passer. La poudre d'os dans un totem
+    # de fertilite n'est evidemment pas un hasard.
+    shaped("totem_of_fertility", ["EYE", "UEU", "EJE"],
+           {"E": "minecraft:oak_log", "Y": "minecraft:creeper_head",
+            "U": "%s:compressed_paladium" % NS, "J": "minecraft:bone_meal"},
+           "%s:totem_of_fertility" % NS)
+
+    # Les cinq seedplanters, et leur chaine : lvl1 -> lvl2 -> lvl3 -> lvl5 ->
+    # lvl4. Le paladium vert (lvl5) est donc un PASSAGE OBLIGE vers l'endium
+    # (lvl4), ce qui explique son verrou a 90 contre 100 — la table des metiers
+    # et la table des recettes disent la meme chose, par deux chemins.
+    shaped("amethyst_seedplanter", ["AAA", "ASA", "TTT"],
+           {"A": "%s:amethyst_ingot" % NS, "S": "%s:compressed_amethyst" % NS,
+            "T": "%s:amethyst_stick" % NS},
+           "%s:amethyst_seedplanter" % NS)
+    shaped("titane_seedplanter", ["THT", "TGT", "SSS"],
+           {"T": "%s:titane_ingot" % NS, "H": "%s:compressed_titane" % NS,
+            "G": "%s:amethyst_seedplanter" % NS, "S": "%s:titane_stick" % NS},
+           "%s:titane_seedplanter" % NS)
+    shaped("paladium_seedplanter", ["THT", "TGT", "SSS"],
+           {"T": "%s:paladium_ingot" % NS, "H": "%s:compressed_paladium" % NS,
+            "G": "%s:titane_seedplanter" % NS, "S": "%s:paladium_stick" % NS},
+           "%s:paladium_seedplanter" % NS)
+    shaped("green_paladium_seedplanter", ["PBP", "PWP", "SSS"],
+           {"P": "%s:green_paladium_ingot" % NS, "B": "%s:green_paladium_block" % NS,
+            "W": "%s:paladium_seedplanter" % NS, "S": "%s:paladium_stick" % NS},
+           "%s:green_paladium_seedplanter" % NS)
+    shaped("endium_seedplanter", ["RBR", "EWE", "SSS"],
+           {"R": "%s:compressed_paladium" % NS, "B": "%s:green_paladium_block" % NS,
+            "E": "%s:endium_ingot" % NS, "W": "%s:green_paladium_seedplanter" % NS,
+            "S": "%s:paladium_stick" % NS},
+           "%s:endium_seedplanter" % NS)
 
     # ---- generation du monde ----
     #

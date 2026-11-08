@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C",
+    "CSC",
+    " C"
+  ],
+  "key": {
+    "C": "palamod:amethyst_ingot",
+    "S": "palamod:gold_mixed_coal"
+  },
+  "result": {
+    "id": "palamod:amethyst_mixed_coal",
+    "count": 8
+  }
+}
