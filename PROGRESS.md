@@ -121,6 +121,46 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 
 ## Journal des sessions
 
+### 2026-11-08 (suite) — terre fertilisee, et bascule sur le pack officiel
+
+**Deux corrections demandees par le joueur apres essai en jeu.**
+
+**1. La terre fertilisee manquait, et c'etait une omission.** Contrairement au totem, c'est un
+bloc simple sans block entity : elle appartenait bien au chapitre des cultures. Son mecanisme
+est dans `BlockConnectedDirt` et n'est **nulle part sur le wiki** — a chaque tick aleatoire, le
+bloc fait passer **deux ticks de croissance supplementaires** a la plante du dessus. Avec celui
+qu'elle recoit deja, elle avance environ **trois fois plus vite**.
+
+Deux variantes, comme le booleen `tilled` d'origine : la brute porte l'herbe, les fleurs et les
+pousses d'arbre, la labouree porte les cultures, et la houe fait passer de l'une a l'autre.
+**Les deux accelerent** — la methode n'est pas conditionnee au booleen, donc la version brute
+nourrit aussi les arbres.
+
+Trois API trouvees a la sonde avant d'ecrire : `UseHoeEvent` est remplace par
+`BlockToolModificationEvent` (avec `ItemAbilities.HOE_TILL`), NeoForge a **conserve**
+`canSustainPlant` (il rend un `TriState`), et `BlockState.randomTick` est public — ce qui
+compte, parce que la methode `randomTick` du bloc est protegee et donc inaccessible depuis une
+autre classe. C'est par la que le serveur tique lui-meme les blocs.
+
+Casser l'une ou l'autre variante rend de la terre **brute** : un coup de houe mal place ne
+coute rien.
+
+**Une seule recette inventee dans tout le portage, et elle est signalee.** Le PalaMod n'en
+donne aucune — sur le serveur, la terre fertilisee s'achetait. Plutot que de la laisser
+inaccessible hors creatif : un bloc d'os entoure de huit terres donne huit blocs. Thematique
+(des os, donc de l'engrais), calibre pour une ferme, et dans un fichier de datapack donc
+modifiable sans recompiler. Elle n'accelere que la croissance, jamais le rendement.
+
+**2. Les textures viennent desormais du pack officiel, plus du jar.** 60 des 64 textures en
+sortent ; le jar ne sert plus que pour les quatre que le pack n'a pas (`connectedDirt`,
+`trixium_block`, `compressed_endium`, `particle_green_paladium`).
+
+Benefice inattendu : **le pack corrige des defauts du jar**. C'est lui qui porte le bon
+`endium_block` en 16x16, la ou le jar traine trois homonymes dont deux en 15x15 — le piege du
+correctif precedent. Le repli n'est jamais silencieux : le generateur compte la provenance et
+nomme chaque fichier repris au jar.
+
+
 ### 2026-11-08 — chapitre 3 : les cultures, et un mecanisme absent du wiki
 
 **Le vrai mecanisme des cultures n'est pas celui que le wiki decrit.** Lu dans

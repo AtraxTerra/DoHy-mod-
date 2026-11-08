@@ -194,6 +194,33 @@ Chaque culture a trois assets : le bloc (`blocks/crops/<nom>_stage_N.png`), la g
 (`items/seeds/<nom>.png`) et le fruit (`items/fruits/<nom>.png`, **au pluriel** pour l'aubergine :
 `eggplants.png`).
 
+### La terre fertilisée — `connectedDirt`, l'accélérateur de cultures
+
+Lu dans `BlockConnectedDirt`, absent du wiki. **À chaque tick aléatoire, le bloc fait passer
+deux ticks de croissance supplémentaires à la plante posée dessus.** Avec celui que la plante
+reçoit par elle-même, elle avance environ **trois fois plus vite**. Des particules d'os
+(effet 2005) sont jouées quand la plante peut encore pousser.
+
+S'y ajoute `isFertile()` qui rend toujours `true` : la culture touche le bonus de terre labourée
+irriguée **sans aucune eau à proximité**.
+
+Deux variantes, un seul `boolean tilled` dans le constructeur :
+
+| Variante | Porte | Obtention |
+|---|---|---|
+| `connectedDirt` | herbe, fleurs, pousses d'arbre (types Plains, Cave, Water) | — |
+| `connectedDirtTilled` | les cultures (type Crop) | houe sur la version brute |
+
+**Les deux accélèrent** : `func_149674_a` n'est pas conditionnée au booléen, donc la version
+brute nourrit aussi les arbres et les fleurs.
+
+Le passage de l'une à l'autre se fait à la houe, via `UseHoeEvent` dans `PlayerHandler`.
+Textures : une seule, `blocks/connectedDirt.png`, **absente du pack officiel** — reprise du jar.
+Dureté 0,6, son de gravier, hauteur 15/16 comme la terre labourée.
+
+**Aucune recette de craft n'existe dans le code** : sur le serveur, la terre fertilisée
+s'achetait.
+
 ### Le compromis de portage sur le nombre de stades
 
 En 26.2, `CropBlock` est câblé sur `AGE_7` (8 stades) et **n'expose plus de `getAgeProperty()`**
@@ -293,6 +320,13 @@ annoncés). À reprendre dans le code avant de l'implémenter.
 
 Namespace `palamod` du pack Faithful officiel — c'est pour cela que le mod enregistre sous
 ce namespace : le pack s'applique alors tel quel, sans conversion ni copie.
+
+**Les textures embarquées viennent du pack officiel en priorité**, et du jar de PalaMod
+seulement pour les quatre qu'il est seul à avoir : `connectedDirt`, `trixium_block`,
+`compressed_endium` et `particle_green_paladium`. Le pack est la version entretenue et
+corrige au passage des défauts du jar — c'est lui qui porte le bon `endium_block` en 16×16,
+là où le jar traîne trois homonymes dont deux en 15×15. Le générateur affiche la
+provenance et nomme chaque repli : aucun n'est silencieux.
 
 Présent : cobblebreaker 4 paliers (front/side/top), palafurnace (on/off/side), 4 cultures ×
 4-5 stades, 4 graines, 4 fruits, 6 particules, 4 charbons mixés, 5 seedplanters, minerais
