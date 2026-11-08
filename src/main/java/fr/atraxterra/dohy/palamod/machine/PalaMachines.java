@@ -79,28 +79,37 @@ public final class PalaMachines {
     public static final DeferredItem<Item> PALADIUM_UPGRADE =
             ITEMS.registerSimpleItem("cobblebreaker_paladium_upgrade", properties -> properties);
 
-    /**
-     * Les items des deux machines.
-     *
-     * <p>Construits par boucle sur {@link #ORDERED_BLOCKS} : une machine
-     * ajoutee a cette liste recoit son item sans qu'on y pense, et il ne peut
-     * pas y avoir de machine sans item — cas qui donnerait un bloc impossible a
-     * obtenir autrement qu'en commande.
-     */
-    public static final List<DeferredItem<BlockItem>> BLOCK_ITEMS = blockItems();
-
     /** Blocs puis ameliorations, dans l'ordre d'affichage de l'onglet creatif. */
     public static final List<DeferredBlock<Block>> ORDERED_BLOCKS =
             List.of(COBBLEBREAKER_BLOCK, CRUSHER_BLOCK);
     public static final List<DeferredItem<Item>> ORDERED_ITEMS =
             List.of(AMETHYST_UPGRADE, TITANE_UPGRADE, PALADIUM_UPGRADE);
 
+    /**
+     * Les items des deux machines.
+     *
+     * <p>Construits par boucle : une machine ajoutee a {@link #ORDERED_BLOCKS}
+     * recoit son item sans qu'on y pense, et il ne peut pas y avoir de machine
+     * sans item — cas qui donnerait un bloc impossible a obtenir autrement
+     * qu'en commande.
+     *
+     * <p><b>La liste est passee en argument, et ce n'est pas un detail.</b>
+     * Lue directement dans {@code blockItems()}, elle serait encore
+     * {@code null} si ce champ etait declare avant elle : les champs statiques
+     * s'initialisent dans l'ordre du fichier, et le mod partirait en
+     * {@code ExceptionInInitializerError} au chargement — ce qui est arrive
+     * une fois. En la passant en argument, un champ place trop haut devient une
+     * <b>erreur de compilation</b> (« illegal forward reference ») au lieu d'un
+     * plantage au demarrage que la CI ne peut pas voir.
+     */
+    public static final List<DeferredItem<BlockItem>> BLOCK_ITEMS = blockItems(ORDERED_BLOCKS);
+
     private PalaMachines() {
     }
 
-    private static List<DeferredItem<BlockItem>> blockItems() {
+    private static List<DeferredItem<BlockItem>> blockItems(List<DeferredBlock<Block>> blocks) {
         List<DeferredItem<BlockItem>> list = new ArrayList<>();
-        for (DeferredBlock<Block> block : ORDERED_BLOCKS) {
+        for (DeferredBlock<Block> block : blocks) {
             list.add(ITEMS.registerSimpleBlockItem(block, properties -> properties));
         }
         return List.copyOf(list);
