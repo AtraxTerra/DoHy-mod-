@@ -943,6 +943,11 @@ Pas un objet du Fermier, mais l'ingrédient de sa graine de racinier, et demand�
   joueurs ; il est ici par joueur.
 - Le seau, par un : potion de régénération sur un seau d'eau (le seau d'eau rend son seau vide).
   La potion est reconnue par un ingrédient à composants de NeoForge.
+- **Physique de l'eau** : le type de fluide doit être déclaré `isWaterLike(true)`. Sans ce
+  drapeau, 26.2 ne compte pas le fluide comme de l'eau (`Entity.updateFluidInteraction` ne suit
+  que ces types) : le joueur le traversait comme de l'air et le soin ne se déclenchait jamais —
+  trouvé au premier test en jeu. Le soin lit maintenant le fluide aux pieds ou aux yeux du
+  joueur, sans dépendre de ce suivi.
 - Rendu : en 26.2 un fluide se dessine par un **modèle de fluide** (`RegisterFluidModelsEvent`,
   `FluidModel.Unbaked`), plus par les textures de son type. Textures animées de PalaMod, sans
   teinte.
