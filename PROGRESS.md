@@ -203,6 +203,10 @@ endium). Les herbes colorées et le racinier ont été portés, puis **retirés 
 joueur** (« nul et moche ») : il garde la hache en endium et demande l'**eau angélique**. Les
 relevés au bytecode de ces deux objets sont résumés dans `docs/PALAMOD.md` § 12.
 
+**Premier retour en jeu** : l'eau angélique se traversait comme de l'air et ne soignait pas. Il
+manquait `FluidType.Properties.isWaterLike(true)` : en 26.2 c'est ce drapeau, et non le seul fait
+d'être un fluide, qui donne la physique de l'eau. Le soin lit maintenant le fluide dans le monde.
+
 **Le rendu des fluides a changé en 26.2.** `IClientFluidTypeExtensions` n'a plus de textures ;
 un fluide se dessine par un `FluidModel.Unbaked` (textures fixe, coulante, voile) enregistré dans
 `RegisterFluidModelsEvent`. Trouvé à la sonde, en lisant comment le jeu construit l'eau et la
