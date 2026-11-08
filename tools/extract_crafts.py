@@ -55,7 +55,11 @@ CALL = re.compile(
     r"(addRecipe|addShapelessRecipe|addShapedRecipe):"
     r"\(Lnet/minecraft/item/ItemStack;\[Ljava/lang/Object;\)")
 GETSTATIC = re.compile(r"getstatic\s+#\d+\s+// Field ([\w/$]+)\.(\w+):")
-LDC_STRING = re.compile(r"ldc(?:_w)?\s+#(\d+)\s+// String (.*)$")
+# « // String » peut n'etre suivi de rien : une ligne de grille faite seulement
+# d'espaces, que javap rogne entierement. L'espace est donc facultatif, et la
+# vraie valeur vient du pool de constantes. Sans cela, la ligne vide du milieu
+# du cadre du grinder (« YZY », «     », « YZY ») disparaissait.
+LDC_STRING = re.compile(r"ldc(?:_w)?\s+#(\d+)\s+// String ?(.*)$")
 PUSH_INT = re.compile(r"(?:iconst_(\d)|bipush\s+(-?\d+)|sipush\s+(-?\d+))")
 ANEWARRAY = re.compile(r"anewarray\s+#\d+\s+// class java/lang/Object")
 CHAR_VALUEOF = re.compile(r"// Method java/lang/Character\.valueOf:")

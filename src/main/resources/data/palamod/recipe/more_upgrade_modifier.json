@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XZX",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:compressed_paladium",
+    "Z": "palamod:paladium_hammer"
+  },
+  "result": {
+    "id": "palamod:more_upgrade_modifier",
+    "count": 1
+  }
+}

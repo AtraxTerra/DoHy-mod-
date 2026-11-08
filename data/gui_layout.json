@@ -171,6 +171,58 @@
         "x": 116,
         "y": 27
       }
+    },
+    "grinder": {
+      "slots": [
+        {
+          "x": 78,
+          "y": 18,
+          "role": "output"
+        },
+        {
+          "x": 8,
+          "y": 18,
+          "role": "input"
+        },
+        {
+          "x": 26,
+          "y": 18,
+          "role": "input"
+        },
+        {
+          "x": 8,
+          "y": 50,
+          "role": "upgrade"
+        },
+        {
+          "x": 60,
+          "y": 50,
+          "role": "equipment"
+        },
+        {
+          "x": 120,
+          "y": 18,
+          "role": "fuel"
+        }
+      ],
+      "arrow": {
+        "x": 48,
+        "y": 18,
+        "vertical": false
+      },
+      "arrow2": {
+        "x": 30,
+        "y": 50,
+        "vertical": false
+      },
+      "flame": {
+        "x": 121,
+        "y": 38
+      },
+      "counter": {
+        "x": 128,
+        "y": 56
+      }
     }
   }
 }

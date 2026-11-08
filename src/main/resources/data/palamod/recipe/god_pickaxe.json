@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "APT",
+    " S ",
+    " S "
+  ],
+  "key": {
+    "A": "palamod:amethyst_pickaxe",
+    "P": "palamod:paladium_pickaxe",
+    "T": "palamod:titane_pickaxe",
+    "S": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:god_pickaxe",
+    "count": 1
+  }
+}

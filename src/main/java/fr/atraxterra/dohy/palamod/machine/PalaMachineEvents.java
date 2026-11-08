@@ -71,7 +71,9 @@ public final class PalaMachineEvents {
             return;
         }
         event.setCanceled(true);
-        player.openMenu(machine);
+        if (machine.canOpen(player)) {
+            player.openMenu(machine);
+        }
     }
 
     /**

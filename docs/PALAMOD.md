@@ -715,15 +715,9 @@ alternative (« elucidatorIcon »). Elle se porte comme une épée ordinaire.
 
 ## 7. Grinder — multiblock, pas un bloc
 
-Le wiki le décrit comme un assemblage de 30 blocs plus une source de lave, placement strict,
-sur trois couches. Les sous-composants existent dans le code (`grinder block` 595,
-`grinder casing` 596, `grinder frame` 597) et trois textures sont dans le pack
-(`blocks/smeltery/grinder_block_front`, `_side`, `grinder_casing_block`,
-`grinder_frame_block`).
-
-**Manquent au pack** : `grinder_table` et `grinder_robinia`. Le wiki se contredit lui-même
-sur les totaux (30 blocs listés contre 26 annoncés ; 134 paladium calculés contre 132
-annoncés). À reprendre dans le code avant de l'implémenter.
+Porté au chapitre 12 : voir § 15. Les incohérences notées ici (30 blocs contre 26, 134 paladium
+contre 132, `grinder_table`, `grinder_robinia`) venaient d'une ancienne page du wiki ; le code et
+le wiki actuel concordent sur 26 blocs et une source de lave, 126 paladium, et ni table ni robinia.
 
 ---
 
@@ -1144,3 +1138,91 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
   graines de plus par graine. **Écart** : l'original le réservait aux épées rapides, non portées.
 - Pas portés : le casque d'unclaim (ni unclaim finder ni factions), la protection contre l'eau
   sulfurique (pas d'eau sulfurique), la table « lisible » d'Alchimiste 75.
+
+---
+
+## 15. Grinder, outils du grinder, buisson à XP, pioche des dieux (chapitre 12)
+
+Relevé dans `smeltery` (`PSRegister_Blocks`, `PSRegister_Items`, `PSRegister_Craft`, `BlockGrinder`,
+`GrinderLogic`, `GrinderRecipe`, `UpgradeHelper`, `SlotUpgradeGrinder`), `ItemBroadsword`,
+`ItemFastsword`, `ItemHammer`, `ToolHandler`, `BlockXpBush`, `ItemXpBerry`, `BaseWorldGenerator`,
+`miner.item.ItemGodPickaxe`, `CommandGodPickaxe`. **Aucun verrou de métier** sur tout le chapitre,
+ni dans PalaMod ni dans PalaJobs.
+
+### Le multibloc — `BlockGrinder.checkNorth/East/South/West`
+
+- Un cube plein de 3 × 3 × 3 : le **grinder** au milieu d'une face, une **source de lave** au
+  centre, un **casing** au centre de chacune des cinq autres faces, des **cadres** sur les vingt
+  arêtes et coins. Le cube peut s'étendre de n'importe quel côté horizontal du grinder, son
+  orientation n'est pas lue. Coût : 126 lingots de paladium, 40 de titane, un four en paladium.
+- Le grinder s'allume quand le cube est complet ; incomplet, il ne s'ouvre pas et le dit en barre
+  d'action. **Écart** : PalaMod ne revoyait la structure qu'à l'ouverture, et une machine dont on
+  avait cassé le cube continuait de travailler. Ici, elle est revue toutes les secondes et la
+  machine s'arrête.
+
+### La machine — `GrinderLogic`
+
+- Six cases : sortie, deux entrées, modificateur, outil, carburant. Réservoir de **100 paladium**,
+  rempli toutes les 21 ticks par un lingot (1), un bloc (9), ou une pioche (3), une épée (2), une
+  pièce d'armure (5 / 8 / 7 / 4) en paladium au prorata de leur usure. Le paladium du réservoir
+  est perdu si on casse le grinder, comme dans PalaMod.
+- **Forge** (100 ticks) : 19 recettes. Pattern + base → tête d'outil (coûts : broadsword 4,
+  pioche 3, épée 2, fastsword 1, marteau 6, pelle 1, hache 3) ; pattern de lingot ou de bloc +
+  base → lingot (1) ou bloc (9) de paladium ; tête + bâton → l'outil en paladium (0 avec un bâton
+  en paladium, 1 avec un bâton en bois). Les patterns ne sont jamais consommés.
+- **Amélioration** (100 ticks, gratuite) : un modificateur posé sur un outil qui a encore un
+  emplacement. Marteau en paladium : fusion (1), fortune (3), vitesse (3) ; broadsword (4
+  emplacements) et fastsword (3) en paladium : dommage (3), flamme (1), recul (2) ;
+  l'amélioration d'emplacement (2) sur tout outil, +2 emplacements pour un occupé.
+- Pas d'accès par entonnoir.
+
+### Les outils — `ItemHammer`, `ItemBroadsword`, `ItemFastsword`
+
+- **Marteaux** (améthyste, titane, paladium) : 3 × 3, neuf fois plus lents qu'une pioche du même
+  métal, la vitesse multipliée par (niveau de vitesse + 1). Seul le bloc visé use l'outil.
+  Fusion : chaque objet lâché sort cuit. Fortune : l'enchantement vanilla, posé par le grinder.
+- **Broadswords** : 7,7 / 8,2 / 9 de dégâts, +2,8 par niveau de dommage. **Fastswords** : 6 / 5 /
+  7, +1,5 par niveau ; tenue en main, Célérité IV ; la cible ne reste invulnérable que 18 ticks.
+  Flamme : la cible brûle 10 secondes ; recul : un demi-bloc par niveau.
+- **Écarts**, des coquilles corrigées : broadsword en titane et fastsword en paladium avaient 20
+  de durabilité (portée à 2 000) ; la flamme de la fastsword durait 200 secondes (des ticks pris
+  pour des secondes, ramenée à 10).
+- Recettes restaurées : le marteau de caverne reprend son marteau en paladium, l'épée de capture
+  ses trois têtes d'arme (les quatre bâtons à effet restent des bâtons en paladium).
+
+### Le buisson à XP — `BlockXpBush`, `ItemXpBerry`
+
+- Quatre stades, pousse au hasard sans lumière. Mûr, un clic (ou un coup) le ramène au stade 3 et
+  donne une baie. Une baie donne 2 ou 3 points d'XP ; une baie compressée (9 baies), neuf fois
+  plus.
+- Généré comme un minerai : trois essais par chunk à une chance sur cinq, un filon de trois dans
+  la pierre, à la hauteur du titane (−32 à 40).
+
+### La pioche des dieux — `ItemGodPickaxe`
+
+- Craft sans verrou : pioches en améthyste, paladium et titane sur deux bâtons en paladium.
+  Incassable, non enchantable ; la barre d'usure montre l'avancement du niveau. 8 de dégâts.
+- **1 XP par bloc** plein (ou feuillage) de dureté non nulle ; seuil du niveau n :
+  `(int) (80 · n^2,3 / 1,5)`. Le niveau 100 demande 2 074 721 blocs, puis l'XP ne compte plus.
+- Paliers : bois (1-5), pierre, fer, diamant, **or** (21-25, plus rapide mais ne récolte plus le
+  fer ni le diamant — l'original), améthyste, titane, paladium (36-80), paladium vert (81-100).
+  Efficacité I à V de 41 à 65, Fortune I à III de 66 à 80. Vitesse et récolte valent pour tous
+  les blocs : pioche, hache et pelle à la fois. Une texture tous les cinq niveaux.
+- Au niveau 100 : accroupi + clic droit active ou retire le Toucher de soie ; la **fusion
+  automatique** (5 verres autour d'un four en paladium) se pose au grinder, une fois, sans
+  paladium. Seul le premier objet lâché compte : cuit, il sort en un exemplaire, 1 à 2 en Fortune
+  III sur un minerai. Tout bloc y passe (le sable donne du verre).
+- `/godpickaxe create <niveau>` et `/godpickaxe add auto_smelt`, réservés aux opérateurs.
+- **Écarts**, des corrections : pile sur un seuil, PalaMod retombait au niveau 1 le temps d'un bloc,
+  enchantements effacés ; il réécrivait les enchantements à chaque bloc, Toucher de soie compris ;
+  l'amélioration de fusion se perdait sur un marteau ou une épée ; la fusion faisait perdre l'XP
+  des minerais. L'amélioration « big hole », lue par aucun code et sans recette, n'est pas portée.
+
+### Ce qui n'est pas porté
+
+- Le jeton de récompense du Mineur 95 (un marteau en paladium avec 3 fortune et 3 vitesse) : les
+  récompenses de DoHy sont des objets sans composants.
+- Succès, quêtes et événements du grinder (PalaPass, tutoriel), l'événement « Pioche de Légende »
+  du lucky block Findium (pas de lucky blocks), le bonus de familier de la pioche.
+- La fusion automatique ne crédite pas d'XP de métier : DoHy n'a pas de source « cuisson ».
+

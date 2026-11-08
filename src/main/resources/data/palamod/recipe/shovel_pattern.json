@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "YXY",
+    "XZX",
+    "YXY"
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot",
+    "Z": "palamod:titane_shovel",
+    "Y": "palamod:titane_ingot"
+  },
+  "result": {
+    "id": "palamod:shovel_pattern",
+    "count": 1
+  }
+}

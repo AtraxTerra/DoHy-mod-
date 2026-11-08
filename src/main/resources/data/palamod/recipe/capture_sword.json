@@ -2,13 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ABA",
-    "BEB",
+    "DEF",
     "AHA"
   ],
   "key": {
     "A": "palamod:paladium_stick",
-    "B": "palamod:paladium_sword",
+    "B": "palamod:broadsword_head",
+    "D": "palamod:fastsword_head",
     "E": "palamod:compressed_paladium",
+    "F": "palamod:sword_head",
     "H": "palamod:paladium_stick"
   },
   "result": {

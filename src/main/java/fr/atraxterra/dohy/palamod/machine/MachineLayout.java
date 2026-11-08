@@ -16,10 +16,16 @@ import java.util.List;
  * principe que pour les assets : quand une donnee doit vivre a deux endroits,
  * on fait verifier l'accord par la CI plutot que par l'attention.
  */
-public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, TextPos counter) {
+public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, TextPos counter, Sprite arrow2) {
+
+    /** Une machine a une seule fleche : toutes sauf le grinder. */
+    public MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, TextPos counter) {
+        this(slots, arrow, flame, counter, null);
+    }
 
     // arrow, flame et counter peuvent etre null : une machine sans cycle
-    // (la voidstone) n'a ni jauge ni compteur.
+    // (la voidstone) n'a ni jauge ni compteur. arrow2 est la seconde fleche du
+    // grinder, qui forge et ameliore en meme temps, sur deux minuteurs.
 
     /**
      * Ou ecrire le compteur, centre horizontalement sur ce x.
@@ -150,4 +156,24 @@ public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, Tex
             new Sprite(54, 36, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, true, false),
             new Sprite(116, 27, FLAME_U, FLAME_V, FLAME_FULL_V, FLAME_W, FLAME_H, true, true),
             null);
+
+    /**
+     * Le grinder ({@code GrinderContainer}, resserre dans 176 x 166) : sortie,
+     * forge A, forge B, modificateur, outil a ameliorer, paladium — l'ordre des
+     * cases de {@code GrinderLogic}. Deux fleches, la forge et l'amelioration,
+     * qui avancent chacune sur son minuteur ; la jauge et le compteur disent le
+     * reservoir de paladium (sur 100).
+     */
+    public static final MachineLayout GRINDER = new MachineLayout(
+            List.of(
+                    new SlotPos(78, 18, false),
+                    new SlotPos(8, 18, true),
+                    new SlotPos(26, 18, true),
+                    new SlotPos(8, 50, true),
+                    new SlotPos(60, 50, true),
+                    new SlotPos(120, 18, true)),
+            new Sprite(48, 18, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, false, false),
+            new Sprite(121, 38, FLAME_U, FLAME_V, FLAME_FULL_V, FLAME_W, FLAME_H, true, true),
+            new TextPos(128, 56),
+            new Sprite(30, 50, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, false, false));
 }

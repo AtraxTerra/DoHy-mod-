@@ -82,12 +82,13 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 4 | **Machines** : cobblebreaker 4 paliers, crusher | fait |
 | 4b | **Interfaces de machines** : menu et écran propres, barre de progression | fait |
 | 5a | **Machines du fermier** : totem de fertilité, 5 seedplanters | fait |
-| 5b | **Machines de craft** : grinder (multiblock), palamachine (la palaforge est au chapitre 8) | à faire |
+| 5b | **Machines de craft** : palamachine (le grinder est au chapitre 12, la palaforge au chapitre 8) | à faire |
 | 6 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
 | 7 | **Équipement** : 19 outils, 5 houes à rayon, 6 armures, leurs effets, 49 recettes | fait |
 | 9 | **Fermier** : abattage et incassabilité de la hache en endium, eau angélique (fluide qui soigne, seau) — sans herbes colorées, racinier ni trône | fait |
 | 10 | **Chasseur** : canne à pêche en paladium, épée en endium qui ne frappe plus à bout, épée et pierre de capture, marteau de caverne, spawner cassé, spawner customisé (âmes, paliers, créatures empilées) — sans contrôleur, familiers, améliorations ni trône | fait |
 | 11 | **Alchimiste** : 4 arbres de PalaMod (générés), sève (fiole, extracteur, tanks), chaudron multibloc, potion de foudre, fleurs et pollens, portails à sève et leurs clés, bibliothèque mystique et table de l'Alchimiste (anti chute, grass breaker) — sans table d'alchimiste, totem fleuri, boules de glu ni trône | fait |
+| 12 | **Grinder** : multibloc, forge des têtes et des outils en paladium, modificateurs ; marteaux, broadswords, fastswords ; buisson à XP (généré) et baies ; pioche des dieux (100 niveaux, Toucher de soie, fusion automatique) | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -152,6 +153,26 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — chapitre 12 : le grinder
+
+**Demande** : le grinder, puis le buisson à XP et la pioche des dieux. Le golem, sa boîte, les
+croquettes et leur machine viennent au chapitre suivant. Relevés et écarts : `docs/PALAMOD.md`
+§ 15.
+
+**Le grinder est un cube, pas une recette.** 26 blocs et une source de lave, dans n'importe
+quelle direction autour du contrôleur. PalaMod ne revérifiait la structure qu'à l'ouverture ;
+une machine au cube cassé continuait de forger. Elle s'arrête maintenant.
+
+**La pioche des dieux avait un trou à chaque palier.** Deux inégalités strictes : pile sur un
+seuil, aucun niveau ne répondait, la pioche retombait au niveau 1 et perdait ses enchantements le
+temps d'un bloc. Le niveau est maintenant le plus haut seuil dépassé, et les enchantements ne
+changent qu'au changement de palier — le Toucher de soie survit.
+
+**Un relevé qui n'avait pas tout vu.** `tools/extract_crafts.py` sautait les lignes de grille
+faites d'espaces : le cadre du grinder (`YZY / ␣␣␣ / YZY`) sortait sur deux lignes. Corrigé ;
+aucune recette déjà portée n'a changé. Les recettes du marteau de caverne et de l'épée de
+capture retrouvent leurs ingrédients d'origine.
 
 ### 2026-11-08 (suite) — chapitre 11 : l'Alchimiste
 

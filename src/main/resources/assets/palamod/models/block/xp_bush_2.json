@@ -1,0 +1,76 @@
+{
+  "textures": {
+    "bush": "palamod:block/xp_bush",
+    "particle": "palamod:block/xp_bush"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        15,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bush",
+          "uv": [
+            1,
+            1,
+            15,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#bush",
+          "uv": [
+            1,
+            1,
+            15,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#bush",
+          "uv": [
+            1,
+            1,
+            15,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#bush",
+          "uv": [
+            1,
+            1,
+            15,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#bush",
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#bush",
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ]
+        }
+      }
+    }
+  ]
+}

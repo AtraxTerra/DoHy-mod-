@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "YXY",
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:titane_ingot",
+    "Y": "palamod:paladium_block"
+  },
+  "result": {
+    "id": "palamod:block_pattern",
+    "count": 1
+  }
+}

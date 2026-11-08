@@ -143,6 +143,25 @@ LAYOUTS = {
         "flame": {"x": 116, "y": 27},
         "separator": False,
     },
+    "grinder": {
+        # GrinderContainer, resserre dans un panneau vanilla : la forge en haut
+        # (pattern ou tete, puis socle ou baton, la fleche, le resultat), les
+        # modificateurs en bas (modificateur, la seconde fleche, l'outil qu'il
+        # ameliore sur place), le paladium a droite — sa case, sa jauge, et
+        # « x/100 » dessous, comme l'original l'ecrivait sous son reservoir.
+        "slots": [
+            {"x": 78, "y": 18, "role": "output"},
+            {"x": 8, "y": 18, "role": "input"},
+            {"x": 26, "y": 18, "role": "input"},
+            {"x": 8, "y": 50, "role": "upgrade", "ghost": "upgrade"},
+            {"x": 60, "y": 50, "role": "equipment", "ghost": "equipment"},
+            {"x": 120, "y": 18, "role": "fuel", "ghost": "fuel"},
+        ],
+        "arrow": {"x": 48, "y": 18, "vertical": False},
+        "arrow2": {"x": 30, "y": 50, "vertical": False},
+        "flame": {"x": 121, "y": 38},
+        "counter": {"x": 128, "y": 56},
+    },
 }
 
 # Les coffres en amethyste et en titane (ModdedChestContainer) : 12 x 9 cases,
@@ -372,6 +391,7 @@ def main():
                 # role. Les ornements (silhouette, metal, cadre) sont du dessin.
                 "slots": [{"x": e["x"], "y": e["y"], "role": e["role"]} for e in layout["slots"]],
                 **({"arrow": layout["arrow"]} if "arrow" in layout else {}),
+                **({"arrow2": layout["arrow2"]} if "arrow2" in layout else {}),
                 **({"flame": layout["flame"]} if "flame" in layout else {}),
                 **({"counter": layout["counter"]} if "counter" in layout else {}),
             }

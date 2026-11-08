@@ -112,6 +112,30 @@ public final class PalaMachines {
             () -> new BlockEntityType<>(PalaforgeBlockEntity::new,
                     Set.of(PALAFORGE_BLOCK.get())));
 
+    // -- Grinder : le controleur et les deux blocs de sa structure ------------
+    //
+    // PSRegister_Blocks : le grinder durete 3, le casing et le frame 12 ; tous
+    // les trois a la pioche en fer, resistance 12 apres conversion.
+    public static final DeferredBlock<Block> GRINDER_BLOCK = BLOCKS.registerBlock(
+            "grinder", GrinderBlock::new, properties -> properties
+                    .strength(3.0f, 12.0f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+    public static final DeferredBlock<Block> GRINDER_CASING = BLOCKS.registerBlock(
+            "grinder_casing", Block::new, properties -> properties
+                    .strength(12.0f, 12.0f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+    public static final DeferredBlock<Block> GRINDER_FRAME = BLOCKS.registerBlock(
+            "grinder_frame", Block::new, properties -> properties
+                    .strength(12.0f, 12.0f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GrinderBlockEntity>>
+            GRINDER = TYPES.register("grinder",
+            () -> new BlockEntityType<>(GrinderBlockEntity::new, Set.of(GRINDER_BLOCK.get())));
+
     // -- Ameliorations du cobblebreaker --------------------------------------
     //
     // Des items ordinaires : c'est PalaMachineEvents qui leur donne un effet,
@@ -131,7 +155,8 @@ public final class PalaMachines {
 
     /** Blocs puis ameliorations, dans l'ordre d'affichage de l'onglet creatif. */
     public static final List<DeferredBlock<Block>> ORDERED_BLOCKS =
-            List.of(COBBLEBREAKER_BLOCK, CRUSHER_BLOCK, TOTEM_BLOCK, PALAFURNACE_BLOCK, PALAFORGE_BLOCK);
+            List.of(COBBLEBREAKER_BLOCK, CRUSHER_BLOCK, TOTEM_BLOCK, PALAFURNACE_BLOCK, PALAFORGE_BLOCK,
+                    GRINDER_BLOCK, GRINDER_CASING, GRINDER_FRAME);
     public static final List<DeferredItem<Item>> ORDERED_ITEMS =
             List.of(AMETHYST_UPGRADE, TITANE_UPGRADE, PALADIUM_UPGRADE, FURNACE_UPGRADE);
 

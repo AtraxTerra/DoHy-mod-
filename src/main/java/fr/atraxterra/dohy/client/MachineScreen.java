@@ -77,6 +77,9 @@ public class MachineScreen extends AbstractContainerScreen<MachineMenu> {
         if (layout.arrow() != null) {
             drawProgress(extractor, left, top, layout.arrow(), progress);
         }
+        if (layout.arrow2() != null) {
+            drawProgress(extractor, left, top, layout.arrow2(), getMenu().progress2());
+        }
 
         // La flamme suit la meme progression que la fleche : le crusher consomme
         // son charbon au rythme ou il broie. Deux jauges qui disent la meme
@@ -87,7 +90,11 @@ public class MachineScreen extends AbstractContainerScreen<MachineMenu> {
         // de la machine porte alors le combustible restant et sa duree.
         if (layout.flame() != null) {
             int goal = getMenu().tankGoal();
-            float flame = layout.counter() == null && goal > 0
+            // Le grinder, lui, a les deux : son reservoir de paladium se lit a la
+            // fois dans la jauge et dans le compteur, et ses deux fleches disent
+            // deja la progression.
+            boolean tankGauge = layout.counter() == null || layout.arrow2() != null;
+            float flame = tankGauge && goal > 0
                     ? Math.min(1.0f, getMenu().tank() / (float) goal)
                     : progress;
             drawProgress(extractor, left, top, layout.flame(), flame);

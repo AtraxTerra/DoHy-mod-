@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XUX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:glass",
+    "U": "palamod:paladium_furnace"
+  },
+  "result": {
+    "id": "palamod:god_pickaxe_auto_smelt",
+    "count": 1
+  }
+}

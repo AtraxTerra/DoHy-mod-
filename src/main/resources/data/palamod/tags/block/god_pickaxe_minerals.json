@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:coal_ores",
+    "#minecraft:copper_ores",
+    "#minecraft:diamond_ores",
+    "#minecraft:emerald_ores",
+    "#minecraft:gold_ores",
+    "#minecraft:iron_ores",
+    "#minecraft:lapis_ores",
+    "#minecraft:redstone_ores",
+    "minecraft:nether_gold_ore",
+    "minecraft:nether_quartz_ore",
+    "palamod:amethyst_ore",
+    "palamod:findium_ore",
+    "palamod:paladium_ore",
+    "palamod:titane_ore",
+    "palamod:trixium_ore"
+  ]
+}

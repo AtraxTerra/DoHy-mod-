@@ -131,6 +131,10 @@ MODEL_TEXTURES = {
     "block/extractor_off.png": (64, 32),
     # La surface du portail : 32 images de 16 x 16, animees par son .mcmeta.
     "block/alchemist_portal.png": (16, 512),
+    # Baies et buisson a XP murs : des bandes animees (.mcmeta), 7 et 8 images.
+    "block/xp_bush_ripe.png": (16, 112),
+    "item/xp_berry.png": (16, 128),
+    "item/compressed_xp_berry.png": (16, 128),
 }
 
 
@@ -400,9 +404,14 @@ def check_gui():
             x = _resolve(parts[0], constants, LAYOUT_JAVA)
             y = _resolve(parts[1], constants, LAYOUT_JAVA)
             vertical = parts[7] == "true"
-            declared["flame" if parts[2].startswith("FLAME") else "arrow"] = (x, y, vertical)
+            # Dans l'ordre du record : arrow, flame, puis arrow2 — la seconde
+            # fleche du grinder, qui reprend le sprite de la premiere.
+            kind = "flame" if parts[2].startswith("FLAME") else "arrow"
+            if kind == "arrow" and "arrow" in declared:
+                kind = "arrow2"
+            declared[kind] = (x, y, vertical)
 
-        for sprite in ("arrow", "flame"):
+        for sprite in ("arrow", "flame", "arrow2"):
             generated = expected.get(sprite)
             if (generated is None) != (sprite not in declared):
                 fail(f"gui : {name} a un {sprite} d'un seul cote "
