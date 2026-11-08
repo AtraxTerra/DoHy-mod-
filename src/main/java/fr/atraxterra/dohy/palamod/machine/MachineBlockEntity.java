@@ -44,7 +44,8 @@ import net.minecraft.world.level.storage.ValueOutput;
  * <p>La sauvegarde passe par {@code ValueInput} / {@code ValueOutput}, qui ont
  * remplace {@code CompoundTag} en 26.2.
  */
-public abstract class MachineBlockEntity extends BlockEntity implements Container, MenuProvider {
+public abstract class MachineBlockEntity extends BlockEntity
+        implements Container, MenuProvider, ServerTicking {
 
     protected final NonNullList<ItemStack> items;
     private final Component title;
@@ -211,6 +212,6 @@ public abstract class MachineBlockEntity extends BlockEntity implements Containe
         return 0;
     }
 
-    /** Le travail d'un tick. Appele par le ticker du serveur uniquement. */
+    @Override
     public abstract void serverTick();
 }

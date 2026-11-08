@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.palamod;
 
+import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -50,6 +51,10 @@ public final class PalaTab {
                         // les cultures qui les alimentent.
                         PalaMachines.ORDERED_BLOCKS.forEach(block -> output.accept(block.get()));
                         PalaMachines.ORDERED_ITEMS.forEach(item -> output.accept(item.get()));
+
+                        // Les planteurs ferment l'onglet : ce sont des outils de
+                        // champ, ils suivent les machines plutot que les graines.
+                        PalaSeedPlanters.ORDERED.forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

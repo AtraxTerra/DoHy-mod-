@@ -42,6 +42,10 @@ public abstract class MachineBlock extends BaseEntityBlock {
      *
      * <p>Un ticker cote client ferait tourner la machine deux fois : une fois
      * pour de vrai, une fois dans une copie que personne ne sauvegarde.
+     *
+     * <p>Le test porte sur {@link ServerTicking} et non sur
+     * {@link MachineBlockEntity} : le totem travaille a chaque tick sans avoir
+     * d'interface, et n'a donc rien a dire sur un menu.
      */
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
@@ -50,7 +54,7 @@ public abstract class MachineBlock extends BaseEntityBlock {
             return null;
         }
         return (tickLevel, pos, tickState, entity) -> {
-            if (entity instanceof MachineBlockEntity machine) {
+            if (entity instanceof ServerTicking machine) {
                 machine.serverTick();
             }
         };

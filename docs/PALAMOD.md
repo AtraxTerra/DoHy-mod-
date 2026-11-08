@@ -139,19 +139,51 @@ Verrou : **Fermier 8 → niveau 40**.
 
 ## 5. Totem de fertilité
 
-`TileEntityTotem` :
+`TileEntityTotem`, relevé intégralement au bytecode. **L'ambiguïté ms/ticks est tranchée : ce
+sont des millisecondes.** Le tick commence par `System.currentTimeMillis()`, et les deux champs
+sont des `long` comparés à cette horloge :
 
-| Donnée | Valeur |
-|---|---|
-| `DEFAULT_MAX_BOOSTED_BLOCKS` | **2 048** blocs accélérés par lingot de paladium |
-| Zone | boucle de −7 à +8 sur X et Z, soit **15 × 15** |
-| Période du tick | 10 ticks |
-| Stock de lingots | 64 |
-| Verrou | Fermier 14 → niveau **70** (le wiki dit 55 — faux) |
+```
+ 4: invokestatic System.currentTimeMillis():J   → now
+26: getfield timeforgrowth:J ; ifne             → si timeforgrowth == 0
+36: ldc2_w 10000l ; ladd                        →   timeforgrowth = now + 10000
+55: lload now ; getfield waiting ; ifle         → si now > waiting
+66: ldc2_w 1000l ; ladd                         →   waiting = now + 1000
+```
 
-Alimentation : lingot de paladium en main, clic droit sur le totem (un lingot par clic).
-Clic droit à main vide : consulter le contenu. Maj + clic droit : afficher la zone en vert.
-Cassé, il rend les lingots restants.
+| Donnée | Valeur | Source |
+|---|---|---|
+| Période de croissance | **10 s** (200 ticks) | `timeforgrowth = now + 10000` |
+| Période de balayage de la zone | **1 s** (20 ticks) | `waiting = now + 1000` |
+| Zone balayée | **15 × 15**, de −7 à +7 inclus, **au niveau `y − 1`** | boucle `bipush -7` … `if_icmpge 8`, `field_145848_d` − 1 |
+| Poussées de croissance par lingot | **2 048** | `DEFAULT_MAX_BOOSTED_BLOCKS` |
+| Stock de lingots | 64 | la pile de carburant |
+| Verrou | Fermier 14 → niveau **70** (le wiki dit 55 — faux) | `FarmerRegisterer` |
+
+**Le totem ne travaille que sur la terre fertilisée.** Le balayage ne retient que les
+`BlockConnectedDirt` (`instanceof #101`), et le boost revérifie la condition avant d'agir. Le
+totem et la terre fertilisée du chapitre 3 sont donc un couple : sans terre fertilisée, un
+totem alimenté ne fait rien. Ce n'est écrit nulle part sur le wiki.
+
+Ce que fait une poussée, par case retenue (`lambda$updateEntity$0`) :
+
+1. La plante est le bloc en `y + 1` ; elle doit exister, ne pas être de l'air, et être
+   `IPlantable`. Sans carburant, rien.
+2. Si elle est `IGrowable` et peut pousser : particules d'os (`playAuxSfx 2005`), puis
+   `blockboost++`. Quand `blockboost > 2048`, **un lingot est consommé** et le compteur repart
+   à zéro. Le lingot paie donc 2 048 *poussées réussies*, pas 2 048 blocs.
+3. Puis **1 ou 2 tirages** (`random.nextInt(2) + 1`) de `updateTick` sur la plante.
+4. Branche sans `IGrowable` (cannes, cactus) : `updateTick` en `y + 1`, puis en `y + 2` si
+   c'est le même bloc.
+
+**Une bizarrerie de l'original, non reproduite.** Le balayage ne tourne que
+`if (blockList.isEmpty())`. La liste ne faisant que grossir, elle n'est rebalayée qu'une fois :
+de la terre fertilisée posée **après** le totem n'est jamais prise en compte. C'est un piège,
+pas un choix d'équilibrage — le port rebalaye à chaque cycle de croissance (225 blocs, c'est
+gratuit).
+
+Alimentation : lingot de paladium en main, clic droit (un lingot par clic). Clic droit à main
+vide : consulter le contenu. Maj + clic droit : afficher la zone. Cassé, il rend les lingots.
 
 ---
 
@@ -234,18 +266,49 @@ reste celui de Paladium. Le joueur voit huit étapes au lieu de dix ; il attend 
 
 ### Seedplanters
 
-Les noms de champ `SEEDPLANTER_LVL1..5` **ne suivent pas** l'ordre des paliers : `LVL4` est
-l'endium et `LVL5` le paladium vert, or le paladium vert vient avant l'endium. Les niveaux
-18 puis 20 semblent donc inversés alors qu'ils sont justes. `data/jobs.json` les nomme par
-matériau (`green_paladium_seedplanter`, `endium_seedplanter`) pour que l'ordre se lise seul.
+Cinq **items**, pas des blocs. `SeedPlanterSeedFood(String name, int r, int lvlmin, ArrayList)`,
+relevé dans `PRegister_Items` :
 
-| Seedplanter | Niveau code | Niveau DoHy |
-|---|---|---|
-| Améthyste | 3 | 15 |
-| Titane | 6 | 30 |
-| Paladium | 15 | 75 |
-| Paladium vert | 18 | 90 |
-| Endium | 20 | 100 |
+| Texture / id d'origine | Nom | `r` | Côté planté (`r/2 × 2`) | `lvlmin` | Verrou `FarmerRegisterer` ×5 |
+|---|---|---|---|---|---|
+| `seedplanter_lvl1` | Améthyste | 3 | 2 × 2 | 5 | **15** |
+| `seedplanter_lvl2` | Titane | 5 | 4 × 4 | 10 | **30** |
+| `seedplanter_lvl3` | Paladium | 7 | 6 × 6 | 15 | **75** |
+| `seedplanter_lvl4` | Endium | 12 | 12 × 12 | 20 | **100** |
+| `seedplanter_lvl5` | Paladium vert | 12 | 12 × 12 | 17 | **90** |
+
+**Deux jeux de niveaux se contredisent dans PalaMod.** Le champ `lvlmin` de l'item (5/10/15/20/17)
+et le niveau du registre de métier (3/6/15/18/20 sur l'échelle 20) ne concordent que pour le
+paladium. C'est `FarmerRegisterer` qui gouverne le verrou — c'est lui que `JobGate` lit depuis
+`data/jobs.json` — et `lvlmin` n'est qu'une valeur d'infobulle. Les deux sont notés ici pour que
+le prochain qui trouve un écart sache qu'il est d'origine.
+
+Noter que le paladium vert a **le même rayon que l'endium** pour un niveau plus bas : c'est une
+version alternative, pas un palier supérieur.
+
+**Le mécanisme, et il est très particulier** (`func_77659_a`) : les graines doivent être dans
+**la case de la barre d'action immédiatement à droite** du planteur
+(`mainInventory[currentItem + 1]`). Le planteur lit cette pile, en déduit la plante
+(`ItemSeeds.getPlant` ou `BaseItemSeed.getPlant`), puis :
+
+```java
+int half = r / 2;
+for (dx = -half; dx < half; dx++)
+  for (dz = -half; dz < half; dz++) {
+      x = (int) player.posX + dx; y = (int) player.posY; z = (int) player.posZ + dz;
+      if (!world.isAirBlock(x, y, z)) continue;
+      Block below = world.getBlock(x, y - 1, z);
+      if (!(below instanceof BlockFarmland || below instanceof BlockConnectedDirt)) continue;
+      if (seeds.stackSize <= 0) continue;
+      world.setBlock(x, y, z, plant);
+      seeds.stackSize--;
+  }
+```
+
+Donc : **au niveau des pieds du joueur**, case d'air obligatoire, sol labouré **ou terre
+fertilisée**, une graine consommée par case. Aucun labour : le planteur plante, il ne prépare
+pas. Et la boucle `-half` → `< half` n'est pas centrée sur le joueur : elle est décalée d'un
+demi-bloc, ce qui est le comportement d'origine.
 
 ---
 

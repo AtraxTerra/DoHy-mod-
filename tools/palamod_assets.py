@@ -777,6 +777,66 @@ def main():
     tag("minecraft/tags/block/needs_stone_tool.json",
         ["%s:cobblebreaker" % NS, "%s:crusher" % NS])
 
+    # ---- chapitre 5 : le totem de fertilite ----
+    #
+    # L'original le dessine avec un TESR (ModelTotem, RenderTotem) : un mat
+    # sculpte, pas un cube. On s'en tient a un cube texture, parce qu'un
+    # renderer de block entity est le genre de code client que ce mod evite, et
+    # que la texture blocks/totem.png du pack suffit a le rendre
+    # reconnaissable. Note comme un ecart dans docs/PALAMOD.md.
+    if not copy_texture(root, "blocks/totem.png", "block/totem_of_fertility.png", wrong_size):
+        missing.append("blocks/totem.png")
+    write("assets/%s/models/block/totem_of_fertility.json" % NS, {
+        "parent": "minecraft:block/cube_all",
+        "textures": {"all": "%s:block/totem_of_fertility" % NS},
+    })
+    write("assets/%s/blockstates/totem_of_fertility.json" % NS,
+          {"variants": {"": {"model": "%s:block/totem_of_fertility" % NS}}})
+    write("assets/%s/models/item/totem_of_fertility.json" % NS,
+          {"parent": "%s:block/totem_of_fertility" % NS})
+    write("assets/%s/items/totem_of_fertility.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:block/totem_of_fertility" % NS},
+    })
+    write("data/%s/loot_table/blocks/totem_of_fertility.json" % NS, {
+        "type": "minecraft:block",
+        "pools": [{"rolls": 1, "entries": [
+            {"type": "minecraft:item", "name": "%s:totem_of_fertility" % NS}]}],
+    })
+    fr["block.%s.totem_of_fertility" % NS] = "Totem de fertilite"
+    en["block.%s.totem_of_fertility" % NS] = "Totem of Fertility"
+
+    # A la hache, pas a la pioche : c'est du bois, et il n'exige aucun palier
+    # d'outil. Les autres machines du chapitre 5 seront du metal.
+    tag("minecraft/tags/block/mineable/axe.json", ["%s:totem_of_fertility" % NS])
+
+    # ---- chapitre 5 : les cinq seedplanters ----
+    #
+    # Les identifiants viennent des verrous du chapitre 1 ; les textures
+    # d'origine s'appellent seedplanter_lvl1 a lvl5. La correspondance est ici
+    # et nulle part ailleurs — le Java ne connait que les identifiants.
+    for name, level, side, label_fr, label_en in (
+            ("amethyst_seedplanter", 1, 2, "Seedplanter en amethyste", "Amethyst Seedplanter"),
+            ("titane_seedplanter", 2, 4, "Seedplanter en titane", "Titane Seedplanter"),
+            ("paladium_seedplanter", 3, 6, "Seedplanter en paladium", "Paladium Seedplanter"),
+            ("green_paladium_seedplanter", 5, 12,
+             "Seedplanter en paladium vert", "Green Paladium Seedplanter"),
+            ("endium_seedplanter", 4, 12, "Seedplanter en endium", "Endium Seedplanter")):
+        source = "items/seedplanter/seedplanter_lvl%d.png" % level
+        if not copy_texture(root, source, "item/%s.png" % name, wrong_size):
+            missing.append(source)
+        write("assets/%s/models/item/%s.json" % (NS, name), {
+            "parent": "minecraft:item/generated",
+            "textures": {"layer0": "%s:item/%s" % (NS, name)},
+        })
+        write("assets/%s/items/%s.json" % (NS, name), {
+            "model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)},
+        })
+        # Le cote du carre est dans le nom affiche : c'est la seule difference
+        # entre les cinq, et un joueur qui compare deux planteurs dans son
+        # inventaire n'a pas d'autre moyen de la connaitre.
+        fr["item.%s.%s" % (NS, name)] = "%s (%dx%d)" % (label_fr, side, side)
+        en["item.%s.%s" % (NS, name)] = "%s (%dx%d)" % (label_en, side, side)
+
     # ---- generation du monde ----
     #
     # La TAILLE DE FILON vient du code (BaseWorldGenerator, constructeurs de

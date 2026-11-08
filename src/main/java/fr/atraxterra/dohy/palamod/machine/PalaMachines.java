@@ -20,12 +20,12 @@ import java.util.Set;
 /**
  * Les machines du PalaMod : blocs, types de block entity, ameliorations.
  *
- * <p>Deux machines dans ce chapitre, les deux dont la specification est
- * entierement lue au bytecode : le cobblebreaker avec ses quatre paliers et le
- * crusher avec ses quatre recettes. Le totem de fertilite attend le chapitre
- * suivant — ses deux constantes de cadence sont ambigues (millisecondes ou
- * ticks, un facteur 20 d'ecart sur l'equilibrage) et il vaut mieux l'etablir
- * que le deviner.
+ * <p>Le cobblebreaker et ses quatre paliers, le crusher et ses quatre recettes,
+ * et depuis le chapitre 5 le totem de fertilite — dont les deux constantes de
+ * cadence etaient restees ambigues (millisecondes ou ticks, un facteur 20
+ * d'ecart sur l'equilibrage) jusqu'a ce que le bytecode les tranche : le tick
+ * d'origine lit {@code System.currentTimeMillis()}, donc des millisecondes.
+ * Voir {@link TotemBlockEntity}.
  *
  * <p>Les verrous de metier sont deja poses : {@code data/jobs.json} exige
  * Mineur 25 pour le cobblebreaker, 50 / 65 / 80 pour ses ameliorations, et
@@ -50,6 +50,19 @@ public final class PalaMachines {
     public static final DeferredBlock<Block> CRUSHER_BLOCK = BLOCKS.registerBlock(
             "crusher", CrusherBlock::new, PalaMachines::machineProperties);
 
+    /**
+     * Le totem de fertilite.
+     *
+     * <p>Ses proprietes ne sont pas celles des deux autres : un totem est en
+     * bois dans l'original, et il n'a pas a demander une pioche pour etre
+     * recupere. Le reste du chapitre 5 — palaforge, grinder, palamachine — est
+     * bien du metal et reprendra {@code machineProperties}.
+     */
+    public static final DeferredBlock<Block> TOTEM_BLOCK = BLOCKS.registerBlock(
+            "totem_of_fertility", TotemBlock::new, properties -> properties
+                    .strength(2.5f)
+                    .sound(SoundType.WOOD));
+
     // -- Types de block entity -----------------------------------------------
     //
     // BlockEntityType$Builder n'existe plus en 26.2 (verifie a la sonde) : on
@@ -66,6 +79,11 @@ public final class PalaMachines {
             () -> new BlockEntityType<>(CrusherBlockEntity::new,
                     Set.of(CRUSHER_BLOCK.get())));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TotemBlockEntity>>
+            TOTEM = TYPES.register("totem_of_fertility",
+            () -> new BlockEntityType<>(TotemBlockEntity::new,
+                    Set.of(TOTEM_BLOCK.get())));
+
     // -- Ameliorations du cobblebreaker --------------------------------------
     //
     // Des items ordinaires : c'est PalaMachineEvents qui leur donne un effet,
@@ -81,7 +99,7 @@ public final class PalaMachines {
 
     /** Blocs puis ameliorations, dans l'ordre d'affichage de l'onglet creatif. */
     public static final List<DeferredBlock<Block>> ORDERED_BLOCKS =
-            List.of(COBBLEBREAKER_BLOCK, CRUSHER_BLOCK);
+            List.of(COBBLEBREAKER_BLOCK, CRUSHER_BLOCK, TOTEM_BLOCK);
     public static final List<DeferredItem<Item>> ORDERED_ITEMS =
             List.of(AMETHYST_UPGRADE, TITANE_UPGRADE, PALADIUM_UPGRADE);
 
