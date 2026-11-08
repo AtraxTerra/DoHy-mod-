@@ -80,7 +80,8 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 3 | **Cultures** : 4 plantes, graines, fruits, lot rare, XP d'agriculture | fait |
 | 4 | **Machines** : cobblebreaker 4 paliers, crusher | fait |
 | 4b | **Interfaces de machines** : menu et écran propres, barre de progression | fait |
-| 5 | **Machines, suite** : totem de fertilité, 5 seedplanters, palafurnace, grinder, palamachine | à faire |
+| 5a | **Machines du fermier** : totem de fertilité, 5 seedplanters | fait |
+| 5b | **Machines de craft** : palaforge, grinder (multiblock), palamachine | à faire |
 | 6 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -141,6 +142,89 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — chapitre 5a : le totem, et l'ambiguite tranchee
+
+**Le chapitre 5 est coupe en deux, et je dis pourquoi.** Le totem et les seedplanters sont des
+machines de champ : ils travaillent sur la terre fertilisee du chapitre 3 et completent le
+travail du fermier. Le palaforge, le grinder et la palamachine sont des machines de craft : ils
+demandent un registre de recettes (`GrinderRecipe`, `PRegister_Craft`) et, pour le grinder, un
+multiblock avec son blueprint. Deux surfaces techniques sans rien en commun ; les livrer
+ensemble aurait donne un chapitre long et a moitie profond. 5a est complet, 5b suit.
+
+**1. L'ambiguite du chapitre 4 est tranchee au bytecode.** J'avais refuse de deviner si
+`waiting = 1000` et `timeforgrowth = 10000` etaient des millisecondes ou des ticks — un facteur
+20 sur l'equilibrage. Le tick d'origine repond en une instruction :
+
+```
+ 4: invokestatic System.currentTimeMillis():J   → now
+36: ldc2_w 10000l ; ladd                        → timeforgrowth = now + 10000
+66: ldc2_w 1000l  ; ladd                        → waiting = now + 1000
+```
+
+Ce sont des **millisecondes**. Donc 10 s entre deux poussees de croissance, 1 s entre deux
+balayages. L'autre lecture aurait donne 10 000 ticks, soit huit minutes par poussee : un totem
+inutilisable, et le genre de chiffre qu'on ne remet pas en cause avant des semaines de jeu.
+
+**2. Une decouverte absente du wiki : le totem ne travaille que sur la terre fertilisee.** Le
+balayage ne retient que les `BlockConnectedDirt`, et le boost revérifie la condition. Le totem
+et la terre fertilisee sont un couple : un totem alimente pose sur un champ ordinaire ne fait
+rien, et rien dans le jeu ne le dit. C'est pour ca que l'affichage de la zone (maj + clic droit)
+ne montre pas le carre de 15x15 mais **les cases fertilisees** — montrer le carre entier aurait
+laisse croire que tout le carre est accelere. Le balayage et l'affichage partagent la meme
+methode, sinon l'affichage finirait par mentir.
+
+**3. Pas d'interface pour le totem, et c'est un choix.** Son etat tient en deux nombres : des
+lingots, et des poussees restantes. Une fenetre a une seule case aurait demande une troisieme
+texture d'interface, une disposition, une entree dans le manifeste — pour moins d'information
+qu'une ligne de chat. Les trois gestes d'origine sont conserves : lingot en main pour
+alimenter, main vide pour consulter, accroupi pour voir la zone.
+
+**4. Trois ecarts avec l'original, tous volontaires et notes dans la classe.**
+
+- **Le temps est compte en ticks de jeu.** L'original lit l'horloge du systeme, donc il tourne
+  quand le monde est en pause et brule du carburant pendant qu'on regarde un menu. Les durees
+  sont identiques, 200 et 20 ticks.
+- **La zone est rebalayee a chaque cycle.** L'original ne rebalaye que `if (blockList.isEmpty())`,
+  et la liste ne faisant que grossir, elle n'est balayee qu'une fois : de la terre fertilisee
+  posee **apres** le totem n'etait jamais prise en compte. C'est un piege, pas un equilibrage.
+  225 blocs toutes les 10 s ne coutent rien.
+- **Le carburant paie les croissances reelles, pas les tentatives.** L'original incremente son
+  compteur quand la plante *pourrait* pousser (`IGrowable.canGrow`). On compare ici l'etat avant
+  et apres : plus mesurable, legerement plus avantageux pour le joueur, et surtout ca evite de
+  dependre d'une signature de `BonemealableBlock` qu'il aurait fallu deviner.
+
+**5. Les seedplanters, et un mecanisme qu'on n'aurait pas invente.** Les graines doivent etre
+dans **la case juste a droite** du planteur. Ce n'est pas arbitraire : ca laisse choisir la
+plante sans interface et rend le geste reproductible. Releve a la sonde pour le lire en 26.2 :
+`Inventory.getSelectedSlot()`, `Inventory.SELECTION_SIZE`.
+
+Rayons de `PRegister_Items` : 3, 5, 7, 12, 12 → carres de 2x2, 4x4, 6x6, 12x12, 12x12. Le
+paladium vert a le **meme rayon que l'endium pour un niveau plus bas** (90 contre 100) : version
+alternative, pas palier superieur. Conserve.
+
+La plante se deduit du `BlockItem` de la graine — `eggplant_seeds` porte `eggplant_crop` comme
+`wheat_seeds` porte `wheat` — donc aucune table de correspondance a tenir, et une culture
+ajoutee plus tard marche sans toucher le planteur.
+
+**6. Deux jeux de niveaux se contredisent dans PalaMod, et ce n'est pas une faute de portage.**
+Le champ `lvlmin` de l'item (5/10/15/20/17) et le niveau de `FarmerRegisterer` (3/6/15/18/20)
+ne concordent que pour le paladium. C'est le registre de metier qui gouverne le verrou, et
+c'est lui que `data/jobs.json` porte depuis le chapitre 1 ; `lvlmin` n'est qu'une infobulle.
+Note des deux cotes pour que le prochain qui trouve l'ecart sache qu'il est d'origine.
+
+**7. Un ecart visuel assume.** L'original dessine le totem avec un renderer de block entity
+(`ModelTotem`, `RenderTotem`) : un mat sculpte, pas un cube. Ici c'est un cube texture avec
+`blocks/totem.png`. Un renderer en monde est la partie vraiment difficile du rendu 26.2, et le
+chapitre 4b vient tout juste d'introduire le premier ecran du mod. A reprendre si le cube gene.
+
+**8. Un petit refactor que le totem a force.** `MachineBlock` tiquait sur `MachineBlockEntity`,
+qui impose un type de menu et une disposition de cases. Le totem travaille a chaque tick sans
+avoir d'interface : il aurait fallu lui inventer les deux. D'ou l'interface `ServerTicking`, que
+le ticker teste a la place.
+
+Les six entrees de `data/jobs.json` qui portaient sur ces blocs cessent d'etre inertes. Le
+decompte de `/metiers audit` passe de 61 a 55.
 
 ### 2026-11-08 (suite) — « rien ne se passe » : l'erreur que le jeu avale
 

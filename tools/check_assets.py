@@ -36,7 +36,7 @@ EXPECTED_PNG = (16, 16)
 # Les fabriques de PalaItems, PalaBlocks et PalaCrops, en plus des methodes de
 # NeoForge. Un nom ajoute ici doit l'etre aussi dans BLOCK_FACTORIES s'il
 # enregistre un bloc.
-ITEM_FACTORIES = ("registerSimpleItem", "registerItem", "simple", "seed")
+ITEM_FACTORIES = ("registerSimpleItem", "registerItem", "simple", "seed", "planter")
 BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "crop", "soil")
 
 # Les blocs sans item : on les obtient en semant, comme le ble vanilla. Ils
