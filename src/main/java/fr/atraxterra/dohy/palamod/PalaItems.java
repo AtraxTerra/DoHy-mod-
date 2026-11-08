@@ -2,7 +2,9 @@ package fr.atraxterra.dohy.palamod;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -72,6 +74,40 @@ public final class PalaItems {
     public static final DeferredItem<Item> TITANE_MIXED_COAL = simple("titane_mixed_coal");
     public static final DeferredItem<Item> PALA_MIXED_COAL = simple("pala_mixed_coal");
 
+    // -- Fruits --------------------------------------------------------------
+    // Ce que les cultures rendent, et ce que le crusher consomme : 32
+    // aubergines, 32 cerfeuils, 64 kiwanos ou 128 orangeblues par cycle.
+
+    public static final DeferredItem<Item> EGGPLANT = simple("eggplant");
+    public static final DeferredItem<Item> CHERVIL = simple("chervil");
+    public static final DeferredItem<Item> KIWANO = simple("kiwano");
+    public static final DeferredItem<Item> ORANGEBLUE = simple("orangeblue");
+
+    // -- Graines -------------------------------------------------------------
+    //
+    // Des BlockItem, et non l'ancien ItemNameBlockItem — cette classe n'existe
+    // plus en 26.2 (verifie a la sonde). Elle ne servait qu'a deduire le bloc du
+    // nom de l'item ; maintenant que l'identifiant est explicite, le detour n'a
+    // plus de raison d'etre.
+    //
+    // C'est la pose du bloc de culture qui declenche le verrou de metier, pas
+    // la graine : JobGateEvents annule EntityPlaceEvent, et l'annulation rend
+    // la graine au joueur. Rien n'est perdu sur un refus.
+
+    public static final DeferredItem<BlockItem> EGGPLANT_SEEDS =
+            seed("eggplant_seeds", PalaCrops.EGGPLANT_CROP);
+    public static final DeferredItem<BlockItem> CHERVIL_SEEDS =
+            seed("chervil_seeds", PalaCrops.CHERVIL_CROP);
+    public static final DeferredItem<BlockItem> KIWANO_SEEDS =
+            seed("kiwano_seeds", PalaCrops.KIWANO_CROP);
+    public static final DeferredItem<BlockItem> ORANGEBLUE_SEEDS =
+            seed("orangeblue_seeds", PalaCrops.ORANGEBLUE_CROP);
+
+    /** Fruits puis graines, chaque famille dans l'ordre de progression. */
+    public static final List<DeferredItem<? extends Item>> CROP_ITEMS = List.of(
+            EGGPLANT_SEEDS, CHERVIL_SEEDS, KIWANO_SEEDS, ORANGEBLUE_SEEDS,
+            EGGPLANT, CHERVIL, KIWANO, ORANGEBLUE);
+
     /** Les items, dans l'ordre d'affichage de l'onglet creatif. */
     public static final List<DeferredItem<Item>> ORDERED = List.of(
             IRON_PARTICLE, GOLD_PARTICLE, DIAMOND_PARTICLE, AMETHYST_PARTICLE,
@@ -96,6 +132,19 @@ public final class PalaItems {
 
     private static DeferredItem<Item> simple(String name) {
         return ITEMS.registerSimpleItem(name, properties -> properties);
+    }
+
+    /**
+     * Une graine : un {@link BlockItem} qui pose la culture.
+     *
+     * <p>Le nom de l'item et celui du bloc diffferent volontairement
+     * ({@code eggplant_seeds} pose {@code eggplant_crop}), comme
+     * {@code wheat_seeds} pose {@code wheat} chez vanilla. C'est pour cela qu'on
+     * ne passe pas par {@code registerSimpleBlockItem}, qui nommerait l'item
+     * d'apres le bloc.
+     */
+    private static DeferredItem<BlockItem> seed(String name, DeferredBlock<Block> crop) {
+        return ITEMS.registerItem(name, properties -> new BlockItem(crop.get(), properties));
     }
 
     private static List<DeferredItem<BlockItem>> blockItems() {

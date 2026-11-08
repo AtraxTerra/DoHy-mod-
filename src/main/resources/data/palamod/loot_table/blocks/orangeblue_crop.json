@@ -1,0 +1,60 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "palamod:orangeblue_crop",
+          "properties": {
+            "age": "7"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "palamod:endium_nugget",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.0025
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "palamod:orangeblue"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "palamod:orangeblue_crop",
+          "properties": {
+            "age": "7"
+          }
+        },
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.066667
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "palamod:orangeblue_seeds"
+        }
+      ]
+    }
+  ]
+}

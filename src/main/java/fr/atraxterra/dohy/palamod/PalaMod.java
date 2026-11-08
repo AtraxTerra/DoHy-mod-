@@ -35,12 +35,14 @@ public final class PalaMod {
     /**
      * Enregistre blocs, items et onglet creatif.
      *
-     * <p>L'ordre compte : les blocs avant les items, parce que chaque bloc de
-     * {@link PalaBlocks} recoit son {@code BlockItem} dans {@link PalaItems},
-     * qui le referencerait sinon avant qu'il existe.
+     * <p>L'ordre compte : les blocs et les cultures avant les items, parce que
+     * chaque bloc de {@link PalaBlocks} recoit son {@code BlockItem} dans
+     * {@link PalaItems}, et chaque culture de {@link PalaCrops} y recoit sa
+     * graine ; les uns referenceraient sinon les autres avant qu'ils existent.
      */
     public static void register(IEventBus modBus) {
         PalaBlocks.register(modBus);
+        PalaCrops.register(modBus);
         PalaItems.register(modBus);
         PalaTab.register(modBus);
     }

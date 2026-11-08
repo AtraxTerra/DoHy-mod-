@@ -1,0 +1,56 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "palamod:eggplant_crop",
+          "properties": {
+            "age": "7"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "palamod:amethyst_ingot",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.08
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "palamod:eggplant"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "palamod:eggplant_crop",
+          "properties": {
+            "age": "7"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "palamod:eggplant_seeds"
+        }
+      ]
+    }
+  ]
+}

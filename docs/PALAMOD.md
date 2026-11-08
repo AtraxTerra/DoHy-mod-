@@ -164,15 +164,46 @@ blé. Elle se transpose donc directement sur `CropBlock` en 26.2, sans rien réi
 Probabilités de drop lues dans `getDrops`, sur une base de 10 000 : **800** (8 %), **500**
 (5 %), **200** (2 %) et **25** (0,25 %).
 
-| Culture | Stades (textures) | Verrou Fermier (code → DoHy) |
-|---|---|---|
-| Eggplant | 4 (`_stage_0` à `_3`) | 7 → **35** |
-| Chervil | 4 | 12 → **60** |
-| Kiwano | 5 (`_stage_0` à `_4`) | 16 → **80** |
-| Orangeblue | 5 | 20 → **100** |
+### Le lot rare — le vrai mécanisme, absent du wiki
+
+Lu dans `BaseBlockCrops.getDrops` : **à maturité, un tirage sur 10 000 décide entre un lingot
+et le fruit.** Le lingot *remplace* le fruit, il ne s'y ajoute pas. L'agriculture est donc une
+voie d'accès aux métaux à part entière, parallèle au minage — ce qui explique pourquoi le
+crusher est verrouillé sur le **Fermier** et non sur le Mineur.
+
+| Culture | Stades (code) | Dessins | Chance du lot | Lot rare | Graine rendue | Verrou Fermier |
+|---|---|---|---|---|---|---|
+| Eggplant | 8 | 4 | 800 → **8 %** | lingot d'améthyste | toujours | 7 → **35** |
+| Chervil | 8 | 4 | 500 → **5 %** | lingot de titane | toujours | 12 → **60** |
+| Kiwano | 10 | 5 | 200 → **2 %** | lingot de paladium | toujours | 16 → **80** |
+| Orangeblue | 10 | 5 | 25 → **0,25 %** | pépite d'endium | **6,67 %** | 20 → **100** |
+
+**L'orangeblue est la seule à ne pas s'auto-entretenir** : un second tirage, sur 30, ne rend la
+graine que si le résultat vaut 0 ou 1. C'est délibéré — c'est la seule source d'endium du jeu.
+
+**Une culture immature ne lâche rien du tout**, pas même sa graine : `func_149745_a` rend 0 et
+`BlockBush` ne donne rien. C'est plus dur que le blé vanilla.
+
+Un dessin couvre **deux stades consécutifs** (stage 0 pour les âges 0-1, etc.) — relevé dans les
+tableaux de `textureNames` de `PRegister_Blocks`.
+
+Le troisième argument du constructeur (`5`, `10`, `15`, `20` selon la culture) est **mort** : il
+n'est jamais stocké ni lu. Rien à porter.
 
 Chaque culture a trois assets : le bloc (`blocks/crops/<nom>_stage_N.png`), la graine
-(`items/seeds/<nom>.png`) et le fruit (`items/fruits/<nom>.png`).
+(`items/seeds/<nom>.png`) et le fruit (`items/fruits/<nom>.png`, **au pluriel** pour l'aubergine :
+`eggplants.png`).
+
+### Le compromis de portage sur le nombre de stades
+
+En 26.2, `CropBlock` est câblé sur `AGE_7` (8 stades) et **n'expose plus de `getAgeProperty()`**
+surchargeable. L'aubergine et le cerfeuil sont donc **exacts**. Le kiwano et l'orangeblue
+passent de 10 à 8 stades, ce qui les ferait mûrir 20 % plus vite — pas anodin quand l'orangeblue
+est la seule source d'endium.
+
+La compensation porte sur la **cadence** et non sur le nombre d'étapes : `PalaCropBlock` ignore
+20 % des ticks de croissance pour ces deux cultures, de sorte que le *temps total* de maturation
+reste celui de Paladium. Le joueur voit huit étapes au lieu de dix ; il attend aussi longtemps.
 
 ### Seedplanters
 

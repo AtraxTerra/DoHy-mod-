@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:chervil_crop",
+    "palamod:eggplant_crop",
+    "palamod:kiwano_crop",
+    "palamod:orangeblue_crop"
+  ]
+}
