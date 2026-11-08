@@ -26,6 +26,7 @@ exactement son role — et c'est pour cela que le namespace est `palamod`.
 import json
 import os
 import shutil
+import struct
 import sys
 
 NS = "palamod"
@@ -126,7 +127,12 @@ STORAGE = {
                        "Bloc de paladium", "Block of Paladium"),
     "green_paladium_block": ("gpaladium/gpaladium_block.png", "palamod:green_paladium_ingot",
                              "Bloc de paladium vert", "Block of Green Paladium"),
-    "endium_block": ("endium_block.png", "palamod:endium_ingot",
+    # Attention au chemin : PalaMod contient TROIS endium_block.png, et deux
+    # sont en 15x15 — un fichier isole a la racine de blocks/ et un asset de
+    # GUI de LuckyBlock. Le bon est dans le sous-dossier endium/, comme pour
+    # tous les autres materiaux. La garde de taille ci-dessous existe a cause
+    # de cette confusion, qui est passee en revue une premiere fois.
+    "endium_block": ("endium/endium_block.png", "palamod:endium_ingot",
                      "Bloc d'endium", "Block of Endium"),
     "findium_block": ("findium/findium_block.png", "palamod:findium",
                       "Bloc de findium", "Block of Findium"),
@@ -178,9 +184,35 @@ def write(path, payload):
         fh.write("\n")
 
 
-def copy_texture(source_root, relative, destination):
+def png_size(path):
+    """Largeur et hauteur d'un PNG, lues dans son en-tete IHDR."""
+    with open(path, "rb") as fh:
+        head = fh.read(24)
+    if len(head) < 24 or head[:8] != b"\x89PNG\r\n\x1a\n":
+        return None
+    return struct.unpack(">II", head[16:24])
+
+
+# Les textures hors 16x16 sont refusees.
+#
+# PalaMod traine des homonymes : il y a trois `endium_block.png`, dont deux en
+# 15x15 (un fichier isole a la racine de blocks/ et un asset de GUI). Le script
+# a pris le mauvais la premiere fois, et rien ne l'a signale — une texture
+# 15x15 part dans l'atlas sans erreur de chargement et se voit seulement en
+# jeu, sur un bloc qu'il faut d'abord pouvoir obtenir.
+#
+# Un chemin explicite ne suffit donc pas : il faut verifier ce qu'on a copie.
+EXPECTED_SIZE = (16, 16)
+
+
+def copy_texture(source_root, relative, destination, wrong_size=None):
     src = os.path.join(source_root, "assets", NS, "textures", relative)
     if not os.path.exists(src):
+        return False
+    size = png_size(src)
+    if size is not None and size != EXPECTED_SIZE and wrong_size is not None:
+        wrong_size.append("%s : %dx%d au lieu de %dx%d"
+                          % (relative, size[0], size[1], *EXPECTED_SIZE))
         return False
     dst = os.path.join(RES, "assets", NS, "textures", destination)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
@@ -194,12 +226,13 @@ def main():
     root = sys.argv[1]
 
     missing = []
+    wrong_size = []
     fr = {}
     en = {}
 
     # ---- items ----
     for name, (texture, label_fr, label_en) in ITEMS.items():
-        if not copy_texture(root, "items/" + texture, "item/%s.png" % name):
+        if not copy_texture(root, "items/" + texture, "item/%s.png" % name, wrong_size):
             missing.append("items/" + texture)
         write("assets/%s/models/item/%s.json" % (NS, name), {
             "parent": "minecraft:item/generated",
@@ -221,7 +254,7 @@ def main():
         blocks[name] = (texture, "%s:%s" % (NS, name), label_fr, label_en)
 
     for name, (texture, drop, label_fr, label_en) in blocks.items():
-        if not copy_texture(root, "blocks/" + texture, "block/%s.png" % name):
+        if not copy_texture(root, "blocks/" + texture, "block/%s.png" % name, wrong_size):
             missing.append("blocks/" + texture)
         write("assets/%s/blockstates/%s.json" % (NS, name), {
             "variants": {"": {"model": "%s:block/%s" % (NS, name)}},
@@ -433,8 +466,14 @@ def main():
         print("\nTEXTURES ABSENTES (%d) — a corriger, elles donneront du violet :" % len(missing))
         for path in missing:
             print("  " + path)
+    if wrong_size:
+        print("\nTEXTURES A LA MAUVAISE TAILLE (%d) — probablement un homonyme,"
+              " verifier le sous-dossier :" % len(wrong_size))
+        for line in wrong_size:
+            print("  " + line)
+    if missing or wrong_size:
         return 1
-    print("\ntoutes les textures ont ete trouvees")
+    print("\ntoutes les textures ont ete trouvees, toutes en %dx%d" % EXPECTED_SIZE)
     return 0
 
 

@@ -202,6 +202,25 @@ jobs:
           for name in sorted(definitions - registered):
               errors.append(f"{name} : definition d'item sans enregistrement Java (fichier mort)")
 
+          # Taille des textures. PalaMod traine des homonymes : trois fichiers
+          # s'appellent endium_block.png, dont deux en 15x15. Le generateur a
+          # pris le mauvais une premiere fois et rien ne l'a signale — une
+          # texture hors norme part dans l'atlas sans erreur de chargement et
+          # ne se voit qu'en jeu. Le generateur garde maintenant, mais il ne
+          # tourne qu'avec le jar sous la main : la CI verifie ce qui est
+          # reellement commite.
+          import struct
+          for folder in ("item", "block"):
+              for png in sorted((res / "textures" / folder).glob("*.png")):
+                  head = png.read_bytes()[:24]
+                  if len(head) < 24 or head[:8] != b"\x89PNG\r\n\x1a\n":
+                      errors.append(f"{folder}/{png.name} : ce n'est pas un PNG")
+                      continue
+                  width, height = struct.unpack(">II", head[16:24])
+                  if (width, height) != (16, 16):
+                      errors.append(f"{folder}/{png.name} : {width}x{height} au lieu de 16x16 "
+                                    f"(homonyme pris dans le jar ? verifier le sous-dossier)")
+
           # Un bloc sans table de butin ne lache rien du tout.
           loot = {p.stem for p in pathlib.Path("src/main/resources/data/palamod/loot_table/blocks").glob("*.json")}
           for name in sorted(blocks - loot):
