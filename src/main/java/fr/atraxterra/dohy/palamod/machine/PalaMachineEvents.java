@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.palamod.machine;
 
 import fr.atraxterra.dohy.palamod.PalaItems;
+import fr.atraxterra.dohy.palamod.golem.GolemBoxBlockEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -62,6 +63,16 @@ public final class PalaMachineEvents {
         if (machine instanceof CobblebreakerBlockEntity cobblebreaker
                 && applyUpgrade(player, cobblebreaker, event.getItemStack())) {
             event.setCanceled(true);
+            return;
+        }
+
+        // La boite a golem : accroupi, main vide, on change de metal.
+        if (machine instanceof GolemBoxBlockEntity box && player.isShiftKeyDown()
+                && event.getItemStack().isEmpty()) {
+            event.setCanceled(true);
+            if (event.getHand() == net.minecraft.world.InteractionHand.MAIN_HAND) {
+                box.cycleMetal(player);
+            }
             return;
         }
 

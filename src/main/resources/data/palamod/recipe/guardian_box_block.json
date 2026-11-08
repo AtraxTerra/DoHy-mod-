@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PFP",
+    "PPP"
+  ],
+  "key": {
+    "P": "palamod:paladium_ingot",
+    "F": "palamod:findium"
+  },
+  "result": {
+    "id": "palamod:guardian_box_block",
+    "count": 1
+  }
+}

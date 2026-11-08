@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "B B"
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "B": "minecraft:book"
+  },
+  "result": {
+    "id": "palamod:whitelist",
+    "count": 1
+  }
+}

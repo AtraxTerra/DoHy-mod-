@@ -135,6 +135,8 @@ MODEL_TEXTURES = {
     "block/xp_bush_ripe.png": (16, 112),
     "item/xp_berry.png": (16, 128),
     "item/compressed_xp_berry.png": (16, 128),
+    # La machine a croquettes reprend la texture de son FoodMachineModel.
+    "block/food_machine.png": (64, 46),
 }
 
 
@@ -371,9 +373,10 @@ def check_gui():
         # voit un clic droit sans effet, sans un mot dans le chat. 183 fois dans
         # le log, et rien a l'ecran.
         # Une machine a une block entity ; la voidstone, un simple conteneur.
-        entity = JAVA / "machine" / (name.capitalize() + "BlockEntity.java")
-        if not entity.exists():
-            entity = JAVA / "machine" / (name.capitalize() + "Container.java")
+        # Cherchee dans tout le portage : le golem range ses machines a lui.
+        camel = "".join(part.capitalize() for part in name.split("_"))
+        found = sorted(JAVA.rglob(camel + "BlockEntity.java")) or sorted(JAVA.rglob(camel + "Container.java"))
+        entity = found[0] if found else JAVA / "machine" / (camel + "BlockEntity.java")
         if not entity.exists():
             fail(f"gui : {name} n'a ni BlockEntity ni Container — la convention de nom "
                  "a change, ce controle ne verifie plus rien")
@@ -473,8 +476,9 @@ def recipe_ids(payload):
                 walk(child)
         elif isinstance(node, dict):
             for key, child in node.items():
-                # Les tags (#palamod:...) ne sont pas des objets.
-                if isinstance(child, str) and child.startswith("#"):
+                # Les tags (#palamod:...) ne sont pas des objets, ni le type
+                # d'une recette speciale (palamod:mini_golem_repair).
+                if key == "type" or isinstance(child, str) and child.startswith("#"):
                     continue
                 walk(child)
 

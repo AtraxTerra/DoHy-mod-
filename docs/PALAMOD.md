@@ -1226,3 +1226,98 @@ ni dans PalaMod ni dans PalaJobs.
   du lucky block Findium (pas de lucky blocks), le bonus de familier de la pioche.
 - La fusion automatique ne crédite pas d'XP de métier : DoHy n'a pas de source « cuisson ».
 
+---
+
+## 16. Golem gardien, boîte à golem, croquettes (chapitre 13)
+
+Relevé dans le mod GuardianGolem 6.1.0 (`fr.welsymc.guardiangolem`, ponté par PalaMod) :
+`EntityGolem`, `EntityAIGuardian`, `ModGuardianUpgrades`, `Choices`, `GuardianUtils`,
+`TileEntityFoodMachine`, `TileEntityGuardianBox`, `BlockGuardian`, `GuardianKeeperHandler`,
+`CraftInit`, `MiniGolemRecipe`, `MiniGolemRepair`. Tout passe sous l'espace `palamod`. Seul verrou de
+métier : le mini golem, Chasseur 35 (déjà dans `data/jobs.json`).
+
+### Le golem — `EntityGolem`
+
+- **Éveil** : une pierre de gardien (pierre et paladium compressé) frappée sur un bloc gardien posé
+  sur un T renversé de blocs de paladium. Les quatre blocs disparaissent. Pierre vide : un golem
+  neuf ; pierre habitée : le golem qu'elle garde. Il appartient à celui qui l'éveille.
+- **Chargement** : 30 secondes à mi-vie, immobile, puis la vie remonte. **Écart** : l'original le
+  refaisait à chaque rechargement du chunk.
+- **Statistiques** : `200 + 125 × niveau` PV, `6 + 0,25 × niveau` de dégâts, une frappe par seconde,
+  recul encaissé à moitié. +1 PV par seconde hors combat (5 minutes après le dernier coup reçu).
+- **Cibles** : tout joueur à 40 blocs, sauf le propriétaire et la liste blanche ; ce qui le frappe ;
+  les golems des autres joueurs. **Écart** : l'original attaquait aussi les golems de son propre
+  maître.
+- **XP** : il mange lingots et blocs — améthyste 1 / 9, titane 2 / 18, paladium 30 / 270, findium
+  70 / 630 (avec Régime novateur). Accroupi, toute la pile. Niveau n → n + 1 : 1 000 XP, puis
+  +5 % par niveau ; 120 050 XP de 0 à 40, soit 4 002 lingots de paladium. Un point de capacité
+  par niveau.
+- **Mort ou marteau** (3 coups, propriétaire ou opérateur) : le stockage tombe, la pierre part au
+  **gardien de golem** du propriétaire — neuf cases, ouvertes par n'importe quel bloc gardien, même
+  hors ligne. Gardien plein : le golem est perdu. Le golem fou ne revient jamais.
+- **Barre de vie** au-dessus de l'écran, à 32 blocs, sauf avec Discret.
+
+### L'arbre — `ModGuardianUpgrades`
+
+Golemancie (1) ouvre trois voies : utilitaire, guerrière, farmeur (0 chacune). Guerrière et farmeur
+s'excluent. Coûts et effets du code (les descriptions de l'original se trompaient) :
+
+- Utilitaire : Régime novateur (1), Gourmand (1, XP ×2), Mecagolem (1, sans effet, ouvre la suite),
+  Discret (1), Golem en boîte (1), Stockeur (2, 16 cases), Golem de ménage (1, ramasse au sol),
+  Wither hunter (2).
+- Guerrière : Combattant (5, dégâts 6,6), Berserker (2, +20 PV), Combattant 2 (3, dégâts 7,8),
+  Résistance avancée (2), Résistance spécialisée (2), Carnage (3, deux frappes par seconde),
+  Accélération (2, +15 % de vitesse), Dernier souffle (3), Golem fou (10, encaisse 60 % de moins,
+  attaque tout le monde, plus d'interface), Magicien (2), Désynchronisation (3, chaque coup frappe
+  aussi le joueur le plus proche).
+- Farmeur : Pacification (1, ne bouge ni ne se bat), Régime industriel (1), Ferero-, Amétho-, Titano-,
+  Palado-créateur (2, 2, 2, 3), Bouclier (2, aucun dégât d'explosion).
+- Les **choix** : withers (les chasser et frapper les monstres ×1,3, ou être ignoré d'eux), résistance
+  avancée (coups ×0,8 et projectiles ×1,33, ou l'inverse ×0,7 / ×1,2), résistance spécialisée
+  (explosions, feu, magie, noyade), dernier souffle à 10 % de vie (Force IV 5 s, Régénération III
+  10 s, Faiblesse III et cécité II à l'attaquant, Wither II à l'attaquant), magicien toutes les
+  29 s (repousser, Lenteur III, Nausée II, enflammer).
+- **Écarts**, des corrections : Wither hunter choix 2 rendait le golem passif ; la Désynchronisation
+  pouvait frapper le maître ; le magicien enflammait 100 secondes (5 dans sa description) ; la
+  résistance spécialisée 4 doublait la magie (sa description dit les liquides : la noyade).
+- **Pas portés**, parce qu'ils ne font rien dans GuardianGolem ou demandent un service externe :
+  Lanceur d'alerte (webhook Discord), Démembrement (`earthquake()` vide), Démultiplication 1 à 3
+  (aucune limite par chunk), Auto-crafter (jamais dans l'arbre).
+
+### Les croquettes et leur machine — `TileEntityFoodMachine`
+
+- Seule source de croquettes. Lave au seau : 2 unités le seau, 100 au plus, 0,05 la fournée.
+  Trois cases (fibres, minéraux, protéines), un de chaque, 7 ticks : **en-cas** 5 (deux parmi
+  pastèque / citrouille / canne à sucre, pierre / pierre taillée, chair putréfiée), **goûter** 8
+  (deux parmi verrue / pomme de terre / carotte, gravier, viande crue ou œuf, plus un ingrédient
+  d'en-cas), **gros repas** 16 (un parmi pomme / blé, pierre moussue, poisson cru, plus un de
+  goûter). Quarante fournées par seau.
+- **Écarts** : l'original consommait sans lave, pouvait consommer trois fois pour une fournée,
+  versait dans une case qui ne contenait pas de croquettes et oubliait la fournée au redémarrage.
+- Recette : deux **pommes en paladium** (portées ici : huit lingots et une pomme), findium,
+  deux seaux d'eau, paladium compressé, deux obsidiennes, une étoile du Nether.
+- Une croquette donnée à un golem créateur rend 10 fer, 5 améthyste, 3 titane ou 1 paladium (le
+  meilleur créateur qu'il a), une fois toutes les 8 minutes.
+
+### La boîte à golem — `TileEntityGuardianBox`
+
+- Un cube de 3 × 3 × 3 : 25 cadres, le bloc de boîte au centre d'une face latérale, une source
+  d'**eau angélique** au centre.
+- Trois mini golems (pierre habitée entre trois blocs de paladium, avec Golem en boîte) ; toutes
+  les 8 minutes, chacun mange une croquette et rend le métal choisi — accroupi, main vide, clic
+  droit sur la boîte —, au plus le meilleur créateur commun. 144 productions par mini golem ; la
+  clé le répare (il redevient une pierre, usure remise à neuf).
+- Posé au sol, un mini golem redevient un golem.
+- **Écarts** : la structure est vérifiée pour travailler (plus seulement pour ouvrir), le métal ne
+  déborde plus dans les cases de croquettes, les mini golems se retirent comme des objets.
+
+### Ce qui n'est pas porté
+
+- Le renommeur (une étiquette vanilla nomme le golem), les cosmétiques (chapeaux, particules,
+  skins : lucky blocks et calendrier de l'Avent), le livre de recettes de la machine, le bonus de
+  familier (+5 croquettes).
+- `/guardianadmin`, `/goleminfos`, `/guardiankeeper`. Restent `/whitelistgolem add|remove` et
+  `/guardiangolem <niveau>` (opérateurs, pour tester).
+- L'arbre est un coffre de six rangées (une colonne de trois cases par voie), pas l'image défilante
+  de l'original.
+

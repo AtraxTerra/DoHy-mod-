@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "YYY",
+    "ZXZ",
+    "YYY"
+  ],
+  "key": {
+    "Y": "palamod:paladium_ingot",
+    "Z": "palamod:compressed_paladium",
+    "X": "palamod:guardian_stone"
+  },
+  "result": {
+    "id": "palamod:guardian_keeper",
+    "count": 1
+  }
+}

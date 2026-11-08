@@ -176,4 +176,43 @@ public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, Tex
             new Sprite(121, 38, FLAME_U, FLAME_V, FLAME_FULL_V, FLAME_W, FLAME_H, true, true),
             new TextPos(128, 56),
             new Sprite(30, 50, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, false, false));
+
+    /**
+     * La machine a croquettes : la lave a gauche sous sa jauge, les trois
+     * ingredients en colonne (fibres, mineraux, proteines), la fleche, quatre
+     * sorties en carre.
+     */
+    public static final MachineLayout FOOD_MACHINE = new MachineLayout(
+            List.of(
+                    new SlotPos(8, 53, true),
+                    new SlotPos(44, 17, true),
+                    new SlotPos(44, 35, true),
+                    new SlotPos(44, 53, true),
+                    new SlotPos(98, 26, false),
+                    new SlotPos(116, 26, false),
+                    new SlotPos(98, 44, false),
+                    new SlotPos(116, 44, false)),
+            new Sprite(68, 35, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, false, false),
+            new Sprite(9, 35, FLAME_U, FLAME_V, FLAME_FULL_V, FLAME_W, FLAME_H, true, true),
+            null);
+
+    /**
+     * La boite a golem : trois mini golems en haut, leurs croquettes en bas, la
+     * fleche des 8 minutes, cinq sorties a droite.
+     */
+    public static final MachineLayout GOLEM_BOX = new MachineLayout(
+            List.of(
+                    new SlotPos(44, 17, true),
+                    new SlotPos(62, 17, true),
+                    new SlotPos(80, 17, true),
+                    new SlotPos(44, 53, true),
+                    new SlotPos(62, 53, true),
+                    new SlotPos(80, 53, true),
+                    new SlotPos(128, 17, false),
+                    new SlotPos(146, 17, false),
+                    new SlotPos(128, 35, false),
+                    new SlotPos(146, 35, false),
+                    new SlotPos(128, 53, false)),
+            new Sprite(100, 35, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, false, false),
+            null, null);
 }

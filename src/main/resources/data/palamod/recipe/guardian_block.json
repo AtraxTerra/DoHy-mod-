@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "YYY",
+    "YXY",
+    "YYY"
+  ],
+  "key": {
+    "X": "palamod:guardian_stone",
+    "Y": "palamod:titane_ingot"
+  },
+  "result": {
+    "id": "palamod:guardian_block",
+    "count": 1
+  }
+}

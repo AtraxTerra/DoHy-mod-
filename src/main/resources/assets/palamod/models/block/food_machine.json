@@ -1,0 +1,144 @@
+{
+  "textures": {
+    "machine": "palamod:block/food_machine",
+    "particle": "palamod:block/food_machine"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#machine",
+          "uv": [
+            4.0,
+            0.0,
+            8.0,
+            5.565
+          ]
+        },
+        "down": {
+          "texture": "#machine",
+          "uv": [
+            8.0,
+            0.0,
+            12.0,
+            5.565
+          ]
+        },
+        "west": {
+          "texture": "#machine",
+          "uv": [
+            8.0,
+            5.565,
+            12.0,
+            11.13
+          ]
+        },
+        "east": {
+          "texture": "#machine",
+          "uv": [
+            0.0,
+            5.565,
+            4.0,
+            11.13
+          ]
+        },
+        "north": {
+          "texture": "#machine",
+          "uv": [
+            4.0,
+            5.565,
+            8.0,
+            11.13
+          ]
+        },
+        "south": {
+          "texture": "#machine",
+          "uv": [
+            12.0,
+            5.565,
+            16.0,
+            11.13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        16,
+        3
+      ],
+      "to": [
+        13,
+        20,
+        13
+      ],
+      "faces": {
+        "up": {
+          "texture": "#machine",
+          "uv": [
+            2.5,
+            11.13,
+            5.0,
+            14.609
+          ]
+        },
+        "down": {
+          "texture": "#machine",
+          "uv": [
+            5.0,
+            11.13,
+            7.5,
+            14.609
+          ]
+        },
+        "west": {
+          "texture": "#machine",
+          "uv": [
+            5.0,
+            14.609,
+            7.5,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#machine",
+          "uv": [
+            0.0,
+            14.609,
+            2.5,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#machine",
+          "uv": [
+            2.5,
+            14.609,
+            5.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#machine",
+          "uv": [
+            7.5,
+            14.609,
+            10.0,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

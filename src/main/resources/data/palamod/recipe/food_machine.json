@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XYX",
+    "ZCZ",
+    "ONO"
+  ],
+  "key": {
+    "X": "palamod:paladium_apple",
+    "Y": "palamod:findium",
+    "Z": "minecraft:water_bucket",
+    "C": "palamod:compressed_paladium",
+    "O": "minecraft:obsidian",
+    "N": "minecraft:nether_star"
+  },
+  "result": {
+    "id": "palamod:food_machine",
+    "count": 1
+  }
+}

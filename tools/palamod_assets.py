@@ -1538,12 +1538,11 @@ def main():
     shaped("cavern_hammer", ["AAA", "BCB", "AAA"], {
         "A": "%s:titane_block" % NS, "B": "minecraft:obsidian", "C": "%s:paladium_hammer" % NS,
     }, "%s:cavern_hammer" % NS)
-    # - Reparation du spawner casse : la pierre de gardien (mod GuardianGolem)
-    #   devient un coeur de paladium. Le reste est l'original : findium, crane de
-    #   squelette, paladium compresse, crusher.
+    # Reparation du spawner casse : la recette d'origine, maintenant que la
+    #   pierre de gardien (mod GuardianGolem) existe.
     shaped("empty_mob_spawner", ["ABA", "CDE", "AFA"], {
         "A": "%s:findium" % NS, "B": "minecraft:skeleton_skull", "C": "%s:compressed_paladium" % NS,
-        "D": "%s:broken_spawner" % NS, "E": "%s:paladium_core" % NS, "F": "%s:crusher" % NS,
+        "D": "%s:broken_spawner" % NS, "E": "%s:guardian_stone" % NS, "F": "%s:crusher" % NS,
     }, "%s:empty_mob_spawner" % NS)
 
     tag("minecraft/tags/item/swords.json", ["%s:capture_sword" % NS])
@@ -2213,6 +2212,173 @@ def main():
         "%s:findium_ore" % NS, "%s:paladium_ore" % NS, "%s:titane_ore" % NS, "%s:amethyst_ore" % NS,
         "%s:trixium_ore" % NS])
 
+    # ---- golem gardien ----
+    # GuardianGolem 6.1.0 : ses textures ne sont que dans son jar (le pack
+    # officiel n'a pas d'espace guardiangolem). Troisieme argument, ou le
+    # dossier voisin du jar de PalaMod.
+    golem_root = sys.argv[3] if len(sys.argv) > 3 else (
+        os.path.join(os.path.dirname(root[1].rstrip("/")), "GuardianGolem-6.1.0") if root[1] else None)
+
+    def golem_tex(relative, destination, size=(16, 16)):
+        source = os.path.join(golem_root or "", "assets", "guardiangolem", "textures", relative)
+        if not golem_root or not os.path.exists(source):
+            missing.append("guardiangolem:" + relative)
+            return
+        if png_size(source) != size:
+            wrong_size.append("guardiangolem:%s : %s au lieu de %s" % (relative, png_size(source), size))
+            return
+        target = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(source, target)
+
+    for name, label_fr, label_en in (("guardian_block", "Bloc gardien", "Guardian Block"),
+                                     ("guardian_box_block", "Boite a golem", "Golem Box"),
+                                     ("guardian_box_frame", "Cadre de boite a golem", "Golem Box Frame")):
+        golem_tex("blocks/%s.png" % name, "block/%s.png" % name)
+        cube(name, "%s:block/%s" % (NS, name))
+        block_item(name)
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+    golem_tex("blocks/guardian_keeper.png", "block/guardian_keeper.png")
+    golem_tex("blocks/guardian_keeper_top.png", "block/guardian_keeper_top.png")
+    write("assets/%s/blockstates/guardian_keeper.json" % NS,
+          {"variants": {"": {"model": "%s:block/guardian_keeper" % NS}}})
+    write("assets/%s/models/block/guardian_keeper.json" % NS, {
+        "parent": "minecraft:block/cube_column",
+        "textures": {"side": "%s:block/guardian_keeper" % NS, "end": "%s:block/guardian_keeper_top" % NS}})
+    block_item("guardian_keeper")
+    drops_itself("guardian_keeper")
+    label("block", "guardian_keeper", "Gardien de golem", "Guardian Keeper")
+
+    # FoodMachineModel : un cube et un couvercle de 10 x 4 x 10, sur une texture
+    # de 64 x 46 lue en boites de modele (uv / 4 en largeur, x 16 / 46 en hauteur).
+    golem_tex("models/food_machine.png", "block/food_machine.png", (64, 46))
+
+    def box_uv(u, v, w, h, d):
+        def rect(x0, y0, x1, y1):
+            return [round(x0 / 4.0, 3), round(y0 * 16.0 / 46.0, 3), round(x1 / 4.0, 3), round(y1 * 16.0 / 46.0, 3)]
+        return {
+            "up": rect(u + d, v, u + d + w, v + d),
+            "down": rect(u + d + w, v, u + d + 2 * w, v + d),
+            "west": rect(u + d + w, v + d, u + 2 * d + w, v + d + h),
+            "east": rect(u, v + d, u + d, v + d + h),
+            "north": rect(u + d, v + d, u + d + w, v + d + h),
+            "south": rect(u + 2 * d + w, v + d, u + 2 * d + 2 * w, v + d + h),
+        }
+
+    def faces(uvs):
+        return {face: {"texture": "#machine", "uv": uv} for face, uv in uvs.items()}
+
+    write("assets/%s/models/block/food_machine.json" % NS, {
+        "textures": {"machine": "%s:block/food_machine" % NS, "particle": "%s:block/food_machine" % NS},
+        "elements": [
+            {"from": [0, 0, 0], "to": [16, 16, 16], "faces": faces(box_uv(0, 0, 16, 16, 16))},
+            {"from": [3, 16, 3], "to": [13, 20, 13], "faces": faces(box_uv(0, 32, 10, 4, 10))},
+        ]})
+    write("assets/%s/blockstates/food_machine.json" % NS,
+          {"variants": {"": {"model": "%s:block/food_machine" % NS}}})
+    block_item("food_machine")
+    drops_itself("food_machine")
+    label("block", "food_machine", "Machine a croquettes", "Food Machine")
+    label("container", "food_machine", "Machine a croquettes", "Food Machine")
+    label("container", "golem_box", "Boite a golem", "Golem Box")
+    label("container", "guardian_keeper", "Gardien de golem", "Guardian Keeper")
+    for name in ("guardian_block", "guardian_keeper", "guardian_box_block", "guardian_box_frame", "food_machine"):
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+
+    for name, source, label_fr, label_en, handheld in (
+            ("guardian_stone", "guardian_stone", "Pierre de gardien", "Guardian Stone", False),
+            ("mini_golem", "mini_golem", "Mini golem", "Mini Golem", False),
+            ("guardian_hammer", "guardianhammer", "Marteau du gardien", "Guardian Hammer", True),
+            ("whitelist", "whitelist", "Liste blanche du golem", "Guardian Whitelist", False),
+            ("wrench", "wrench", "Cle", "Wrench", True),
+            ("croquette", "food", "Croquette", "Croquette", False)):
+        golem_tex("items/%s.png" % source, "item/%s.png" % name)
+        write("assets/%s/models/item/%s.json" % (NS, name), {
+            "parent": "minecraft:item/%s" % ("handheld" if handheld else "generated"),
+            "textures": {"layer0": "%s:item/%s" % (NS, name)}})
+        write("assets/%s/items/%s.json" % (NS, name),
+              {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)}})
+        label("item", name, label_fr, label_en)
+    tex("items/paladium_apple.png", "item/paladium_apple.png")
+    flat_item("paladium_apple", "%s:item/paladium_apple" % NS)
+    label("item", "paladium_apple", "Pomme en paladium", "Paladium Apple")
+
+    # Le golem : la texture du golem de fer de 1.7.10, 128 x 128.
+    golem_tex("entity/golem.png", "entity/guardian_golem.png", (128, 128))
+    label("entity", "guardian_golem", "Golem gardien", "Guardian Golem")
+    label("entity", "guardian_golem.level", " (niveau %s)", " (level %s)")
+    label("entity", "guardian_golem.loading", " (%ss)", " (%ss)")
+    for key, label_fr, label_en in (
+            ("guardian_stone.empty", "Vide : eveille un golem neuf", "Empty: awakens a new golem"),
+            ("guardian_stone.level", "Golem de niveau %s", "Level %s golem"),
+            ("guardian_stone.owner", "Proprietaire : %s", "Owner: %s"),
+            ("guardian_stone.points", "%s points libres, %s ameliorations", "%s free points, %s upgrades"),
+            ("guardian_stone.death", "Mort (%s) le %s en %s", "Died (%s) on %s at %s"),
+            ("mini_golem.durability", "Productions : %s / %s", "Productions: %s / %s"),
+            ("mini_golem.no_inbox", "Sans « Golem en boite » : refuse par la boite",
+             "Without 'Golem in a box': refused by the box"),
+            ("whitelist.players", "Joueurs autorises :", "Allowed players:"),
+            ("whitelist.none", "aucun", "none")):
+        label("item", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("golem.structure", "Il faut un bloc de paladium dessous et un de chaque cote du bloc gardien",
+             "The guardian block needs a paladium block below it and one on each side"),
+            ("golem.not_yours", "Ce n'est pas votre golem !", "This is not your golem!"),
+            ("golem.max_level", "Ce golem est deja au niveau maximum", "This golem is already at max level"),
+            ("golem.whitelist", "Liste blanche retenue : %s joueurs", "Whitelist stored: %s players"),
+            ("golem.kept", "Votre golem est mort : sa pierre vous attend dans votre gardien",
+             "Your golem died: its stone is waiting in your keeper"),
+            ("golem.lost", "Votre golem est mort, et votre gardien est plein : il est perdu",
+             "Your golem died and your keeper is full: it is lost"),
+            ("golem.spawned", "Golem de niveau %s eveille", "Level %s golem awakened"),
+            ("golem_box.incomplete",
+             "Structure incomplete : un cube de 3 x 3 x 3, 25 cadres, de l'eau angelique au centre",
+             "Incomplete structure: a 3 x 3 x 3 cube, 25 frames, angelic water in the middle"),
+            ("golem_box.no_golem", "Aucun mini golem en boite", "No mini golem in the box"),
+            ("golem_box.metal", "Production : %s", "Production: %s"),
+            ("golem_box.metal.iron", "fer", "iron"),
+            ("golem_box.metal.amethyst", "amethyste", "amethyst"),
+            ("golem_box.metal.titane", "titane", "titanium"),
+            ("golem_box.metal.paladium", "paladium", "paladium"),
+            ("whitelist.not_held", "Il faut tenir une liste blanche du golem", "You must hold a guardian whitelist"),
+            ("whitelist.invalid", "Nom invalide (16 caracteres au plus)", "Invalid name (16 characters at most)"),
+            ("whitelist.present", "%s est deja dans la liste", "%s is already listed"),
+            ("whitelist.absent", "%s n'est pas dans la liste", "%s is not listed"),
+            ("whitelist.full", "La liste est pleine (%s noms)", "The list is full (%s names)"),
+            ("whitelist.added", "%s ajoute", "%s added"),
+            ("whitelist.removed", "%s retire", "%s removed")):
+        label("message", key, label_fr, label_en)
+
+    # CraftInit : les recettes de GuardianGolem, hors du releve de PalaMod.
+    shaped("guardian_stone", [" X ", "XYX", " X "],
+           {"X": "minecraft:stone", "Y": "%s:compressed_paladium" % NS}, "%s:guardian_stone" % NS)
+    shaped("guardian_keeper", ["YYY", "ZXZ", "YYY"],
+           {"Y": "%s:paladium_ingot" % NS, "Z": "%s:compressed_paladium" % NS, "X": "%s:guardian_stone" % NS},
+           "%s:guardian_keeper" % NS)
+    shaped("guardian_block", ["YYY", "YXY", "YYY"],
+           {"X": "%s:guardian_stone" % NS, "Y": "%s:titane_ingot" % NS}, "%s:guardian_block" % NS)
+    # La rangee du haut, vide en 1.7.10, disparait en 26.2.
+    shaped("whitelist", ["PPP", "B B"], {"P": "minecraft:paper", "B": "minecraft:book"}, "%s:whitelist" % NS)
+    shaped("guardian_hammer", ["TPT", " S ", " S "],
+           {"T": "%s:titane_ingot" % NS, "P": "%s:paladium_ingot" % NS, "S": "minecraft:stick"},
+           "%s:guardian_hammer" % NS)
+    shaped("food_machine", ["XYX", "ZCZ", "ONO"], {
+        "X": "%s:paladium_apple" % NS, "Y": "%s:findium" % NS, "Z": "minecraft:water_bucket",
+        "C": "%s:compressed_paladium" % NS, "O": "minecraft:obsidian", "N": "minecraft:nether_star"},
+           "%s:food_machine" % NS)
+    shaped("guardian_box_frame", ["TTT", "TPA", "AAA"], {
+        "T": "%s:titane_ingot" % NS, "P": "%s:paladium_ingot" % NS, "A": "%s:amethyst_ingot" % NS},
+           "%s:guardian_box_frame" % NS)
+    shaped("guardian_box_block", ["PPP", "PFP", "PPP"],
+           {"P": "%s:paladium_ingot" % NS, "F": "%s:findium" % NS}, "%s:guardian_box_block" % NS)
+    shaped("wrench", ["T T", "PSP", " S "], {
+        "T": "%s:titane_block" % NS, "P": "%s:paladium_block" % NS, "S": "%s:paladium_stick" % NS},
+           "%s:wrench" % NS)
+    # MiniGolemRecipe et MiniGolemRepair : des recettes qui recopient le golem.
+    write("data/%s/recipe/mini_golem.json" % NS, {"type": "%s:mini_golem" % NS})
+    write("data/%s/recipe/mini_golem_repair.json" % NS, {"type": "%s:mini_golem_repair" % NS})
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de
@@ -2280,6 +2446,7 @@ def main():
         "FASTSWORD_AMETHYST": "amethyst_fastsword", "FASTSWORD_TITANE": "titane_fastsword",
         "COMPRESSED_XP_BERRY": "compressed_xp_berry",
         "GOD_PICKAXE": "god_pickaxe", "GOD_PICKAXE_AUTOSMELT": "god_pickaxe_auto_smelt",
+        "PALADIUM_APPLE": "paladium_apple",
     }
     # Un meme objet 1.7.10 a plusieurs metas, plusieurs objets en 26.2 : la
     # recette se choisit par (nom, meta). Sans cette table, les quatre outils de
@@ -2348,6 +2515,7 @@ def main():
         ("BlocksRegister.SHINY_OSTRYA_WOOD", 0): "%s:shiny_ostrya_wood" % NS,
         # Grinder : baton de blaze, briquet, soupe de champignons, larme de ghast.
         ("Items.field_151072_bj", 0): "minecraft:blaze_rod",
+        ("Items.field_151034_e", 0): "minecraft:apple",
         ("Items.field_151033_d", 0): "minecraft:flint_and_steel",
         ("Items.field_151009_A", 0): "minecraft:mushroom_stew",
         ("Items.field_151073_bk", 0): "minecraft:ghast_tear",
