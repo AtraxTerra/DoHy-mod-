@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "palamod:block/spawner/spawner_top",
+    "bottom": "palamod:block/spawner/spawner_top",
+    "side": "palamod:block/spawner/amethyst_spawner_side",
+    "particle": "palamod:block/spawner/amethyst_spawner_side"
+  }
+}

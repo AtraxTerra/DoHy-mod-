@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BEB",
+    "AHA"
+  ],
+  "key": {
+    "A": "palamod:paladium_stick",
+    "B": "palamod:paladium_sword",
+    "E": "palamod:compressed_paladium",
+    "H": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:capture_sword",
+    "count": 1
+  }
+}

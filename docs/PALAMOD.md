@@ -946,3 +946,82 @@ Pas un objet du Fermier, mais l'ingrédient de sa graine de racinier, et demand�
   teinte.
 - Pas porté : ses usages dans le chaudron de l'alchimiste, les réservoirs, le pistolet à
   réservoir et les familiers — ils viendront avec leurs modules.
+
+## 13. Chasseur — les objets débloqués (chapitre 10)
+
+Relevé dans `HunterRegisterer` (verrous), `ItemPaladiumFishingRod`, `ItemCaptureSword`,
+`ItemCaptureStone`, `ItemCavernHammer`, `SpawnerEventHandler`, `SpawnerManager`, et pour le
+spawner sur le wiki (« spawner customisé »). Niveaux du code ×5. Périmètre choisi par le joueur.
+
+| Niveau | Objet | Porté |
+|---|---|---|
+| 20 | Canne à pêche en paladium | oui |
+| 25 | Marteau de caverne | oui |
+| 30 | Spawner vide (spawner customisé) | oui, avec les âmes et les paliers |
+| 65 / 70 | Épée de capture, pierre de capture | oui |
+| 100 | Épée en endium (ne frappe plus à bout) | oui (l'épée l'était au chapitre 7) |
+| — | Spawner cassé | oui (pas de verrou dans l'original) |
+| 10 / 15 / 35 / 40–100 | Bateau en bambou, cage et familiers, mini golem, structures et contrôleur de spawner, détecteur, améliorations, clé, étiquette, totem, autel, boussole, poudres | **non, écartés par le joueur** |
+| 95 | Trône du chasseur | **non — aucun trône** |
+
+Les verrous non portés restent dans `data/jobs.json`, inertes.
+
+### Canne à pêche en paladium — `ItemPaladiumFishingRod`
+
+Durabilité 128, enchantable. Dans l'original elle ne pêchait pas plus vite : elle changeait les
+chances du mini-jeu de pêche de Paladium, qui n'existe pas ici. **Écart** : elle donne **+3 de
+chance** en main (le bonus de *Chance de la mer* III), ce qui améliore le butin de la même façon.
+
+### Épée en endium — `onLeftClickEntity`
+
+À un point de durabilité, elle ne s'use plus et **refuse de frapper** (l'attaque est annulée) ;
+elle reste réparable. Même plafond que la pioche et la hache en endium.
+
+### Épée et pierre de capture — `ItemCaptureSword`, `ItemCaptureStone`
+
+- Tuer une créature avec l'épée (durabilité 32) l'**enferme** dans la dernière pierre de capture
+  vide de l'inventaire : pas de butin, pas d'XP. Les joueurs ne se capturent pas. Sans pierre
+  vide, ou si la créature n'est pas capturable, elle disparaît sans rien laisser : c'est le
+  comportement d'origine. Une créature de pile n'en emporte qu'une.
+- Créatures capturables (liste de l'original, traduite) : cochon, vache, mouton, slime, zombie,
+  zombie villageois, creeper, poulet, lapin, tortue, panda, dauphin, perroquet, chèvre.
+- Clic droit avec une pierre pleine : la créature réapparaît sur la face visée, **avec son
+  nom, son âge, sa couleur et ses autres données**, soignée. **Écart** : l'original ne gardait
+  que le type ; garder les données est la seule façon de ne pas perdre une bête nommée.
+- **Recette substituée** : l'épée demandait des objets non portés ; ici bâtons et épées en
+  paladium autour d'un paladium compressé.
+
+### Marteau de caverne et âmes — `ItemCavernHammer`, `SpawnerEventHandler`
+
+- Casser au marteau un **spawner de donjon** de zombie, squelette, araignée, araignée venimeuse,
+  slime ou sorcière ajoute **une âme** au premier spawner vide de cette créature qui a de la place
+  dans l'inventaire, sinon au dernier spawner vide sans créature. Sans spawner où la mettre, la
+  casse est refusée (un message le dit) : l'âme serait perdue.
+- Casser un spawner de donjon donne 1 250 XP de Chasseur (converties) à partir du niveau 40.
+- **Écarts** : sans marteau, un spawner de donjon se casse normalement ; un spawner customisé
+  posé ne donne jamais d'âme (on taperait sans fin le sien).
+- **Recette substituée** : blocs de titane, obsidienne et pioche en paladium.
+
+### Spawner cassé
+
+Chaque spawner de donjon pris dans l'explosion d'un creeper a une chance sur deux de lâcher un
+spawner cassé. Il sert à fabriquer le spawner vide ; **recette substituée** (le gardien de
+pierre, non porté, est remplacé par un cœur de paladium).
+
+### Spawner customisé — wiki, `SpawnerManager`
+
+- Les âmes s'accumulent jusqu'à **250**. Paliers : **100 / 150 / 200 / 250 âmes → I à IV**.
+  Sous 100 (palier 0), le spawner posé reste **vide**. La cage prend la couleur du palier
+  (améthyste, titane, paladium, endium) ; l'objet aussi, avec le palier et les âmes en info-bulle.
+- Posé, il **fonctionne comme un spawner vanilla** (délai, portée du joueur, lumière), à la
+  demande du joueur. Dans PalaMod, sans contrôleur, il ne faisait rien.
+- **Les créatures s'empilent** (demande du joueur, contre le lag) : une vague rejoint la pile de
+  sa créature à 16 blocs du spawner et y ajoute 4, au lieu d'apparaître ; le nombre est affiché
+  au-dessus (« x7 »). **Plafond par palier : 3 / 6 / 9 / 12.** Tuer une pile n'en tue **qu'une** :
+  son butin et son XP, puis une créature neuve reprend la pile, moins une.
+- Cassé (n'importe quel outil), il se rend **avec ses âmes**, sans XP ; deux spawners de la même
+  créature se fusionnent à l'enclume, âmes additionnées jusqu'à 250, pour total / 10 niveaux.
+- **Piège trouvé au bytecode** : annuler l'apparition (`FinalizeSpawnEvent`) laisse le spawner
+  vanilla réessayer à chaque tick sans relancer son délai. La vague est donc refusée à l'entrée
+  dans le monde (`EntityJoinLevelEvent`) : `BaseSpawner.serverTick` relance alors son délai
+  normal, que l'ajout échoue ou réussisse.

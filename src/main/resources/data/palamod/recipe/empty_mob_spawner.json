@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDE",
+    "AFA"
+  ],
+  "key": {
+    "A": "palamod:findium",
+    "B": "minecraft:skeleton_skull",
+    "C": "palamod:compressed_paladium",
+    "D": "palamod:broken_spawner",
+    "E": "palamod:paladium_core",
+    "F": "palamod:crusher"
+  },
+  "result": {
+    "id": "palamod:empty_mob_spawner",
+    "count": 1
+  }
+}

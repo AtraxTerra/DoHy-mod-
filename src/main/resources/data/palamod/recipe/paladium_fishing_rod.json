@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  P",
+    " SX",
+    "S X"
+  ],
+  "key": {
+    "P": "palamod:paladium_ingot",
+    "S": "palamod:paladium_stick",
+    "X": "minecraft:string"
+  },
+  "result": {
+    "id": "palamod:paladium_fishing_rod",
+    "count": 1
+  }
+}
