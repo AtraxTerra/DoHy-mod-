@@ -2,9 +2,9 @@
   "replace": false,
   "values": [
     "palamod:amethyst_ingot",
-    "palamod:titane_ingot",
-    "palamod:paladium_ingot",
+    "palamod:endium_ingot",
     "palamod:green_paladium_ingot",
-    "palamod:endium_ingot"
+    "palamod:paladium_ingot",
+    "palamod:titane_ingot"
   ]
 }

@@ -384,8 +384,17 @@ def main():
         fr["block.%s.%s" % (NS, name)] = label_fr
         en["block.%s.%s" % (NS, name)] = label_en
 
+    # Les tags s'ACCUMULENT au lieu de s'ecraser.
+    #
+    # Plusieurs familles ecrivent dans le meme fichier : minerais, blocs de
+    # stockage et machines vont tous dans mineable/pickaxe. Avec une ecriture
+    # directe, le dernier appel effacait les precedents — et un tag efface ne
+    # produit aucune erreur, juste un bloc qui se casse a la main a vitesse
+    # normale. On collecte, et on ecrit une fois a la fin.
+    collected_tags = {}
+
     def tag(path, entries):
-        write("data/%s" % path, {"replace": False, "values": entries})
+        collected_tags.setdefault(path, set()).update(entries)
 
     # ---- tables de butin ----
     # Un minerai lache son lingot, et le bloc lui-meme a la pioche soie. C'est
@@ -677,6 +686,97 @@ def main():
     # sert deja a l'XP d'agriculture.
     tag("minecraft/tags/block/crops.json", ["%s:%s" % (NS, c) for c in sorted(CROPS)])
 
+    # ---- machines ----
+    #
+    # Le cobblebreaker a QUATRE apparences, une par palier : c'est ce qui dit au
+    # joueur ou en est sa machine sans qu'il ouvre quoi que ce soit, puisque le
+    # mod n'a pas d'interface dessinee. Le palier est une propriete d'etat, donc
+    # un modele par palier et une variante de blockstate par palier.
+    for tier in ("default", "amethyst", "titane", "paladium"):
+        for face in ("front", "side", "top"):
+            source = "blocks/machines/cobblebreaker/cobblebreaker_%s_%s.png" % (tier, face)
+            target = "block/cobblebreaker_%s_%s.png" % (tier, face)
+            if not copy_texture(root, source, target, wrong_size):
+                missing.append(source)
+        write("assets/%s/models/block/cobblebreaker_%s.json" % (NS, tier), {
+            # cube_bottom_top donne une face distincte dessus et dessous ; le
+            # dessous reprend le dessus, le PalaMod n'ayant pas de texture
+            # propre pour lui.
+            "parent": "minecraft:block/cube_bottom_top",
+            "textures": {
+                "top": "%s:block/cobblebreaker_%s_top" % (NS, tier),
+                "bottom": "%s:block/cobblebreaker_%s_top" % (NS, tier),
+                "side": "%s:block/cobblebreaker_%s_side" % (NS, tier),
+            },
+        })
+
+    write("assets/%s/blockstates/cobblebreaker.json" % NS, {
+        "variants": {
+            "tier=%s" % tier: {"model": "%s:block/cobblebreaker_%s" % (NS, tier)}
+            for tier in ("default", "amethyst", "titane", "paladium")
+        },
+    })
+    # L'item du bloc montre le palier de base : c'est celui qu'on pose.
+    write("assets/%s/models/item/cobblebreaker.json" % NS,
+          {"parent": "%s:block/cobblebreaker_default" % NS})
+    write("assets/%s/items/cobblebreaker.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:block/cobblebreaker_default" % NS},
+    })
+
+    # Le crusher : une seule apparence. Ses textures ne sont QUE dans le jar.
+    for face in ("front", "side", "top"):
+        source = "blocks/machines/crusher_%s.png" % face
+        if not copy_texture(root, source, "block/crusher_%s.png" % face, wrong_size):
+            missing.append(source)
+    write("assets/%s/models/block/crusher.json" % NS, {
+        "parent": "minecraft:block/cube_bottom_top",
+        "textures": {
+            "top": "%s:block/crusher_top" % NS,
+            "bottom": "%s:block/crusher_top" % NS,
+            "side": "%s:block/crusher_side" % NS,
+        },
+    })
+    write("assets/%s/blockstates/crusher.json" % NS,
+          {"variants": {"": {"model": "%s:block/crusher" % NS}}})
+    write("assets/%s/models/item/crusher.json" % NS, {"parent": "%s:block/crusher" % NS})
+    write("assets/%s/items/crusher.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:block/crusher" % NS},
+    })
+
+    for machine, label_fr, label_en in (
+            ("cobblebreaker", "Cobblebreaker", "Cobblebreaker"),
+            ("crusher", "Crusher", "Crusher")):
+        fr["block.%s.%s" % (NS, machine)] = label_fr
+        en["block.%s.%s" % (NS, machine)] = label_en
+        write("data/%s/loot_table/blocks/%s.json" % (NS, machine), {
+            "type": "minecraft:block",
+            "pools": [{"rolls": 1, "entries": [
+                {"type": "minecraft:item", "name": "%s:%s" % (NS, machine)}]}],
+        })
+
+    # Les trois ameliorations du cobblebreaker.
+    for tier, label_fr, label_en in (
+            ("amethyst", "Amelioration amethyste (x1,5)", "Amethyst Upgrade (x1.5)"),
+            ("titane", "Amelioration titane (x2,5)", "Titane Upgrade (x2.5)"),
+            ("paladium", "Amelioration paladium (x4)", "Paladium Upgrade (x4)")):
+        name = "cobblebreaker_%s_upgrade" % tier
+        if not copy_texture(root, "items/%s.png" % name, "item/%s.png" % name, wrong_size):
+            missing.append("items/%s.png" % name)
+        write("assets/%s/models/item/%s.json" % (NS, name), {
+            "parent": "minecraft:item/generated",
+            "textures": {"layer0": "%s:item/%s" % (NS, name)},
+        })
+        write("assets/%s/items/%s.json" % (NS, name), {
+            "model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)},
+        })
+        fr["item.%s.%s" % (NS, name)] = label_fr
+        en["item.%s.%s" % (NS, name)] = label_en
+
+    tag("minecraft/tags/block/mineable/pickaxe.json",
+        ["%s:cobblebreaker" % NS, "%s:crusher" % NS])
+    tag("minecraft/tags/block/needs_stone_tool.json",
+        ["%s:cobblebreaker" % NS, "%s:crusher" % NS])
+
     # ---- generation du monde ----
     #
     # La TAILLE DE FILON vient du code (BaseWorldGenerator, constructeurs de
@@ -730,6 +830,10 @@ def main():
                      for name in sorted(ORE_GEN)],
         "step": "underground_ores",
     })
+
+    # ---- ecriture des tags accumules ----
+    for path, entries in sorted(collected_tags.items()):
+        write("data/%s" % path, {"replace": False, "values": sorted(entries)})
 
     # ---- langues ----
     fr["itemGroup.%s.materials" % NS] = "PalaMod — minerais et materiaux"

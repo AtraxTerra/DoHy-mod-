@@ -78,8 +78,9 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 1 | **Métiers** fusionnés dans les skills, table des 70 verrous, interface, `/metiers` | fait |
 | 2 | **Minerais et matériaux** `palamod` : 6 minerais + génération, 7 blocs, 7 particules, lingots, compressés, 4 charbons mixés, onglet créatif | fait |
 | 3 | **Cultures** : 4 plantes, graines, fruits, lot rare, XP d'agriculture | fait |
-| 4 | **Machines** : cobblebreaker 4 paliers, crusher, palafurnace, grinder, palamachine, **totem de fertilité et 5 seedplanters** | à faire |
-| 5 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
+| 4 | **Machines** : cobblebreaker 4 paliers, crusher | fait |
+| 5 | **Machines, suite** : totem de fertilité, 5 seedplanters, palafurnace, grinder, palamachine | à faire |
+| 6 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
 
 **Décisions prises avec le joueur** (2026-11-07) :
 
@@ -120,6 +121,68 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — chapitre 4 : cobblebreaker et crusher
+
+**Le socle des block entities est pose**, et avec un choix qui tient tout le chapitre.
+
+**1. L'interface d'une machine est un coffre vanilla.** Une machine demande normalement un
+`AbstractContainerMenu` **et un ecran cote client** — donc du code de rendu, que ce mod evite
+depuis le depart. En adossant l'inventaire de la machine a un `ChestMenu`
+(`ChestMenu(MenuType, int, Inventory, Container, int)`, verifie a la sonde), on obtient une
+interface fonctionnelle, compatible shift-clic et entonnoirs, **sans une ligne de code client**.
+
+Ce qu'on y perd : pas de barre de progression dessinee. Les machines disent donc leur etat
+autrement — et c'est pour ca que **le palier du cobblebreaker est une propriete d'etat du
+bloc** : la machine change de texture quand on l'ameliore, donc le joueur voit son palier de
+l'exterieur. Ce n'est pas cosmetique, c'est ce qui remplace la jauge.
+
+**2. Le cobblebreaker, au tick pres.** Cadences 400 / 266 / 160 / 100 ticks, et un tirage sur
+250 dont le wiki ne dit pas un mot :
+
+| Tranche | Lot | Chance |
+|---|---|---|
+| [0 ; 0,111[ | paladium | 0,044 % |
+| [0,111 ; 3[ | titane | 1,16 % |
+| [3 ; 7[ | amethyste | 1,60 % |
+| [7 ; 12[ | diamant | 2,00 % |
+| [12 ; 20[ | or | 3,20 % |
+| [20 ; 30[ | fer | 4,00 % |
+| [30 ; 250[ | **rien** | **88 %** |
+
+Une pierre sur huit rend quelque chose. Il faut en moyenne **20 250 pierres** pour un lingot de
+paladium : le cobblebreaker est une rente de fond, pas une source de metal. Les multiplicateurs
+annonces par le wiki (x1,5 / x2,5 / x4) tombent exactement juste a partir des cadences, ce qui
+les confirme l'un l'autre.
+
+**3. Le crusher, et une adaptation assumee.** 100 ticks par fruit, quatre recettes conformes au
+wiki. L'original demandait de **cliquer un bouton** pour vider un bac plein ; sans interface
+dessinee, le lot tombe automatiquement dans l'emplacement de sortie. Meme nombre de fruits pour
+le meme nombre de lingots, un clic en moins.
+
+Les deux machines ne traitent pas le manque de place pareil, et c'est voulu : le cobblebreaker
+perd son lot quand le bac est plein (comportement d'origine, le cout est une pierre), le
+crusher refuse de broyer le dernier fruit si le lot ne tient pas (le cout serait des dizaines
+de minutes de recolte).
+
+**4. Le totem passe au chapitre suivant, et je dis pourquoi.** Ses deux constantes de cadence
+(`waiting` 1000, `timeforgrowth` 10000) sont **ambigues** : millisecondes ou ticks, un facteur
+20 d'ecart sur l'equilibrage. Il vaut mieux l'etablir que le deviner.
+
+**5. Deux defauts trouves dans l'outillage, et corriges.**
+
+- `tag()` **ecrasait** au lieu d'accumuler. Minerais, blocs de stockage et machines ecrivent
+  tous dans `mineable/pickaxe` : le dernier appel effacait les precedents. Un tag efface ne
+  produit aucune erreur — juste un bloc qui se casse a la main a vitesse normale.
+- `check_assets.py` ne lisait que le paquet racine (`glob` au lieu de `rglob`). Les machines
+  vivant dans un sous-paquet, **tous leurs assets etaient declares morts a tort**. Le controle
+  a donc attrape sa propre lacune, ce qui est exactement son role.
+
+**6. Les verrous de metier cessent d'etre inertes.** `data/jobs.json` nommait
+`palamod:cobblebreaker` et `palamod:crusher` depuis le chapitre 1 ; aucune ligne de logique de
+verrou n'a ete ecrite ici. `PalaMachineEvents` lit `isCanceled()` avant d'ouvrir l'interface,
+sinon le refus s'afficherait et l'interface s'ouvrirait quand meme.
+
 
 ### 2026-11-08 (suite) — terre fertilisee, et bascule sur le pack officiel
 

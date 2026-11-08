@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.palamod;
 
+import fr.atraxterra.dohy.palamod.machine.PalaMachines;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -44,6 +45,11 @@ public final class PalaTab {
                         // obtient une culture en semant, comme le ble vanilla,
                         // dont le bloc n'est pas dans l'inventaire non plus.
                         PalaItems.CROP_ITEMS.forEach(item -> output.accept(item.get()));
+                        // Les machines et leurs ameliorations ferment l'onglet :
+                        // c'est la fin de la progression, apres les matieres et
+                        // les cultures qui les alimentent.
+                        PalaMachines.ORDERED_BLOCKS.forEach(block -> output.accept(block.get()));
+                        PalaMachines.ORDERED_ITEMS.forEach(item -> output.accept(item.get()));
                     })
                     .build());
 
