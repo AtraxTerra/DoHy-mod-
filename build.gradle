@@ -208,6 +208,75 @@ tasks.register('packMeta') {
     }
 }
 
+/*
+ * Desassemble des classes du classpath avec javap.
+ *
+ *   gradle bytecodeProbe -Pjavap=net.minecraft.world.level.block.BaseEntityBlock
+ *
+ * Pourquoi en plus de `apiProbe` : celui-la liste les membres PUBLICS par
+ * reflexion, et beaucoup de crochets de Minecraft sont PROTEGES —
+ * `getRenderShape`, `useWithoutItem`, `createBlockStateDefinition`. Ils sont
+ * invisibles a la sonde, donc on les devine, et deviner est exactement ce que
+ * ce projet evite. Surtout, la reflexion ne dit jamais ce qu'une methode
+ * RETOURNE : savoir que `getRenderShape` existe n'apprend rien, savoir qu'elle
+ * rend INVISIBLE change tout.
+ *
+ * javap repond aux deux : il montre les membres proteges et le corps des
+ * methodes. C'est la meme technique qui a servi a relever la specification du
+ * PalaMod depuis son jar.
+ */
+tasks.register('bytecodeProbe') {
+    group = 'verification'
+    description = 'Desassemble des classes du classpath avec javap (-Pjavap=a,b,c)'
+
+    def classpath = sourceSets.main.compileClasspath
+    def requested = (findProperty('javap') ?: '') as String
+    def filter = (findProperty('member') ?: '') as String
+    dependsOn 'compileJava'
+    inputs.property('javap', requested)
+    inputs.property('member', filter)
+
+    doLast {
+        if (!requested.trim()) {
+            throw new GradleException("Rien a desassembler. Exemple : -Pjavap=java.lang.String")
+        }
+        def tool = "${System.getProperty('java.home')}/bin/javap"
+        requested.split(',')*.trim().findAll { it }.each { name ->
+            println "\n${'=' * 78}\nJAVAP ${name}\n${'=' * 78}"
+            def out = new ByteArrayOutputStream()
+            def err = new ByteArrayOutputStream()
+            def result = exec {
+                commandLine tool, '-p', '-c', '-constants', '-cp', classpath.asPath, name
+                standardOutput = out
+                errorOutput = err
+                ignoreExitValue = true
+            }
+            if (result.exitValue != 0) {
+                println "  (javap a echoue : ${err.toString().trim()})"
+                return
+            }
+            def text = out.toString()
+            if (!filter.trim()) {
+                println text
+                return
+            }
+            // Avec -Pmember=nom, on ne garde que les methodes dont la
+            // signature contient ce nom, avec leur bytecode. Une classe comme
+            // BlockBehaviour fait des milliers de lignes ; sans ce filtre la
+            // reponse est illisible.
+            def keep = false
+            text.eachLine { line ->
+                if (line ==~ /^ {2}\S.*/) {
+                    keep = filter.split(',')*.trim().any { line.contains(it) }
+                }
+                if (keep) {
+                    println line
+                }
+            }
+        }
+    }
+}
+
 tasks.register('apiProbe') {
     group = 'verification'
     description = 'Liste les membres publics de classes du classpath (-Pprobe=a,b,c)'
