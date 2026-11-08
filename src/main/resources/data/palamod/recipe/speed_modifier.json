@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XZX",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot",
+    "Z": "palamod:speed_orb"
+  },
+  "result": {
+    "id": "palamod:speed_modifier",
+    "count": 1
+  }
+}

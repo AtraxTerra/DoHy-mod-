@@ -52,6 +52,7 @@ public final class PalaTab {
                         // les cultures qui les alimentent.
                         PalaMachines.ORDERED_BLOCKS.forEach(block -> output.accept(block.get()));
                         PalaMachines.ORDERED_ITEMS.forEach(item -> output.accept(item.get()));
+                        output.accept(PalaItems.VOIDSTONE.get());
 
                         // Les planteurs ferment l'onglet : ce sont des outils de
                         // champ, ils suivent les machines plutot que les graines.

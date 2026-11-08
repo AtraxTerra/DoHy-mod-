@@ -40,6 +40,17 @@ public final class PalaMenus {
                             MachineLayout.CRUSHER),
                     FeatureFlags.VANILLA_SET));
 
+    /**
+     * La voidstone n'a pas de block entity : son menu s'ouvre depuis un objet.
+     * Cote client il ne differe des autres que par sa disposition.
+     */
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> VOIDSTONE =
+            MENUS.register("voidstone", () -> new MenuType<>(
+                    (containerId, inventory) -> new MachineMenu(
+                            PalaMenus.VOIDSTONE.get(), containerId, inventory,
+                            MachineLayout.VOIDSTONE),
+                    FeatureFlags.VANILLA_SET));
+
     private PalaMenus() {
     }
 

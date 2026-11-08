@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "C C",
+    "CVC",
+    "CFC"
+  ],
+  "key": {
+    "C": "minecraft:cobblestone",
+    "V": "palamod:voidstone",
+    "F": "palamod:fortune_modifier"
+  },
+  "result": {
+    "id": "palamod:cobblebreaker",
+    "count": 1
+  }
+}

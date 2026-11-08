@@ -62,7 +62,7 @@ public class MachineMenu extends AbstractContainerMenu {
 
         for (int index = 0; index < layout.slots().size(); index++) {
             MachineLayout.SlotPos position = layout.slots().get(index);
-            addSlot(new Slot(container, index, position.x(), position.y()));
+            addSlot(new MachineSlot(container, index, position.x(), position.y()));
         }
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -74,6 +74,33 @@ public class MachineMenu extends AbstractContainerMenu {
         this(type, containerId, playerInventory,
                 new SimpleContainer(layout.slots().size()),
                 new SimpleContainerData(DATA_COUNT), layout);
+    }
+
+    /**
+     * Une case qui demande au conteneur ce qu'elle accepte.
+     *
+     * <p>Un {@link Slot} vanilla repond oui a tout dans {@code mayPlace} : seul
+     * le shift-clic de ce menu consultait {@code canPlaceItem}. Un clic direct
+     * pouvait donc poser n'importe quoi n'importe ou — bloquer un bac de sortie
+     * du cobblebreaker avec de la terre, ou laisser tomber sa pioche dans la
+     * voidstone, qui la detruit. Le filtre s'applique maintenant aux deux
+     * gestes, avec la meme regle.
+     */
+    private static final class MachineSlot extends Slot {
+
+        private final Container machine;
+        private final int machineIndex;
+
+        MachineSlot(Container machine, int index, int x, int y) {
+            super(machine, index, x, y);
+            this.machine = machine;
+            this.machineIndex = index;
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return machine.canPlaceItem(machineIndex, stack);
+        }
     }
 
     private void addPlayerInventory(Inventory playerInventory) {

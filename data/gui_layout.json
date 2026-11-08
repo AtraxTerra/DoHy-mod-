@@ -73,34 +73,43 @@
     "crusher": {
       "slots": [
         {
-          "x": 44,
-          "y": 24,
+          "x": 56,
+          "y": 17,
           "role": "fruit"
         },
         {
-          "x": 44,
-          "y": 60,
+          "x": 56,
+          "y": 53,
           "role": "fuel"
         },
         {
           "x": 116,
-          "y": 42,
+          "y": 35,
           "role": "output"
         }
       ],
       "arrow": {
-        "x": 76,
-        "y": 44,
+        "x": 79,
+        "y": 34,
         "vertical": false
       },
       "flame": {
-        "x": 45,
-        "y": 44
+        "x": 57,
+        "y": 37
       },
       "counter": {
-        "x": 88,
-        "y": 66
+        "x": 91,
+        "y": 58
       }
+    },
+    "voidstone": {
+      "slots": [
+        {
+          "x": 80,
+          "y": 35,
+          "role": "input"
+        }
+      ]
     }
   }
 }

@@ -6,8 +6,8 @@
     "SSS"
   ],
   "key": {
-    "R": "palamod:compressed_paladium",
     "B": "palamod:green_paladium_block",
+    "R": "palamod:compressed_paladium",
     "E": "palamod:endium_ingot",
     "W": "palamod:green_paladium_seedplanter",
     "S": "palamod:paladium_stick"

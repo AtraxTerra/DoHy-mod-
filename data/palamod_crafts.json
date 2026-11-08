@@ -2,3388 +2,6 @@
   {
     "kind": "addRecipe",
     "result": {
-      "item": "ItemsRegister.HUNTER_BACKPACK",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "ICI",
-      "IHI",
-      "LIL"
-    ],
-    "keys": {
-      "I": {
-        "id": "ItemsRegister.AMETHYST_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "BlocksRegister.AMETHYST_CHEST",
-        "meta": 0
-      },
-      "H": {
-        "id": "Blocks.field_150438_bZ",
-        "meta": 0
-      },
-      "L": {
-        "id": "Items.field_151116_aA",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "ICI"
-      ],
-      [
-        "str",
-        "IHI"
-      ],
-      [
-        "str",
-        "LIL"
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.AMETHYST_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "BlocksRegister.AMETHYST_CHEST",
-        0
-      ],
-      [
-        "char",
-        "H"
-      ],
-      [
-        "ref",
-        "Blocks.field_150438_bZ",
-        0
-      ],
-      [
-        "char",
-        "L"
-      ],
-      [
-        "ref",
-        "Items.field_151116_aA",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.HUNTER_BACKPACK",
-      "count": 1,
-      "meta": 1
-    },
-    "pattern": [
-      "ICI",
-      "IHI",
-      "LIL"
-    ],
-    "keys": {
-      "I": {
-        "id": "ItemsRegister.TITANE_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "BlocksRegister.TITANE_CHEST",
-        "meta": 0
-      },
-      "H": {
-        "id": "Blocks.field_150438_bZ",
-        "meta": 0
-      },
-      "L": {
-        "id": "Items.field_151116_aA",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "ICI"
-      ],
-      [
-        "str",
-        "IHI"
-      ],
-      [
-        "str",
-        "LIL"
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.TITANE_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "BlocksRegister.TITANE_CHEST",
-        0
-      ],
-      [
-        "char",
-        "H"
-      ],
-      [
-        "ref",
-        "Blocks.field_150438_bZ",
-        0
-      ],
-      [
-        "char",
-        "L"
-      ],
-      [
-        "ref",
-        "Items.field_151116_aA",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.HUNTER_BACKPACK",
-      "count": 1,
-      "meta": 2
-    },
-    "pattern": [
-      "ICI",
-      "IHI",
-      "LIL"
-    ],
-    "keys": {
-      "I": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "BlocksRegister.PALADIUM_CHEST",
-        "meta": 0
-      },
-      "H": {
-        "id": "Blocks.field_150438_bZ",
-        "meta": 0
-      },
-      "L": {
-        "id": "Items.field_151116_aA",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "ICI"
-      ],
-      [
-        "str",
-        "IHI"
-      ],
-      [
-        "str",
-        "LIL"
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "BlocksRegister.PALADIUM_CHEST",
-        0
-      ],
-      [
-        "char",
-        "H"
-      ],
-      [
-        "ref",
-        "Blocks.field_150438_bZ",
-        0
-      ],
-      [
-        "char",
-        "L"
-      ],
-      [
-        "ref",
-        "Items.field_151116_aA",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.HUNTER_BACKPACK",
-      "count": 1,
-      "meta": 3
-    },
-    "pattern": [
-      "ICI",
-      "IHI",
-      "LEL"
-    ],
-    "keys": {
-      "I": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "BlocksRegister.PALADIUM_CHEST",
-        "meta": 0
-      },
-      "H": {
-        "id": "Blocks.field_150438_bZ",
-        "meta": 0
-      },
-      "L": {
-        "id": "Items.field_151116_aA",
-        "meta": 0
-      },
-      "E": {
-        "id": "ItemsRegister.ENDIUM_NUGGET",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "ICI"
-      ],
-      [
-        "str",
-        "IHI"
-      ],
-      [
-        "str",
-        "LEL"
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "BlocksRegister.PALADIUM_CHEST",
-        0
-      ],
-      [
-        "char",
-        "H"
-      ],
-      [
-        "ref",
-        "Blocks.field_150438_bZ",
-        0
-      ],
-      [
-        "char",
-        "L"
-      ],
-      [
-        "ref",
-        "Items.field_151116_aA",
-        0
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "ItemsRegister.ENDIUM_NUGGET",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.HUNTER_COMPASS",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "FUF",
-      "ICI",
-      "FIF"
-    ],
-    "keys": {
-      "F": {
-        "id": "ItemsRegister.FINDIUM",
-        "meta": 0
-      },
-      "U": {
-        "id": "ItemsRegister.UNCLAIMFINDER",
-        "meta": 0
-      },
-      "I": {
-        "id": "ItemsRegister.AMETHYST_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "Items.field_151111_aL",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "FUF"
-      ],
-      [
-        "str",
-        "ICI"
-      ],
-      [
-        "str",
-        "FIF"
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "ItemsRegister.FINDIUM",
-        0
-      ],
-      [
-        "char",
-        "U"
-      ],
-      [
-        "ref",
-        "ItemsRegister.UNCLAIMFINDER",
-        0
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.AMETHYST_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "Items.field_151111_aL",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.HUNTER_COMPASS",
-      "count": 1,
-      "meta": 1
-    },
-    "pattern": [
-      "FUF",
-      "ICI",
-      "FIF"
-    ],
-    "keys": {
-      "F": {
-        "id": "ItemsRegister.FINDIUM",
-        "meta": 0
-      },
-      "U": {
-        "id": "ItemsRegister.UNCLAIMFINDER_ORANGE",
-        "meta": 0
-      },
-      "I": {
-        "id": "ItemsRegister.TITANE_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "Items.field_151111_aL",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "FUF"
-      ],
-      [
-        "str",
-        "ICI"
-      ],
-      [
-        "str",
-        "FIF"
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "ItemsRegister.FINDIUM",
-        0
-      ],
-      [
-        "char",
-        "U"
-      ],
-      [
-        "ref",
-        "ItemsRegister.UNCLAIMFINDER_ORANGE",
-        0
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.TITANE_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "Items.field_151111_aL",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.HUNTER_COMPASS",
-      "count": 1,
-      "meta": 2
-    },
-    "pattern": [
-      "FUF",
-      "ICI",
-      "FIF"
-    ],
-    "keys": {
-      "F": {
-        "id": "ItemsRegister.FINDIUM",
-        "meta": 0
-      },
-      "U": {
-        "id": "ItemsRegister.UNCLAIMFINDER_ROUGE",
-        "meta": 0
-      },
-      "I": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "Items.field_151111_aL",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "FUF"
-      ],
-      [
-        "str",
-        "ICI"
-      ],
-      [
-        "str",
-        "FIF"
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "ItemsRegister.FINDIUM",
-        0
-      ],
-      [
-        "char",
-        "U"
-      ],
-      [
-        "ref",
-        "ItemsRegister.UNCLAIMFINDER_ROUGE",
-        0
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "Items.field_151111_aL",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.HUNTER_COMPASS",
-      "count": 1,
-      "meta": 3
-    },
-    "pattern": [
-      "FUF",
-      "ICI",
-      "FEF"
-    ],
-    "keys": {
-      "F": {
-        "id": "ItemsRegister.FINDIUM",
-        "meta": 0
-      },
-      "U": {
-        "id": "ItemsRegister.UNCLAIMFINDER_ROUGE",
-        "meta": 0
-      },
-      "I": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "E": {
-        "id": "ItemsRegister.ENDIUM_NUGGET",
-        "meta": 0
-      },
-      "C": {
-        "id": "Items.field_151111_aL",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "FUF"
-      ],
-      [
-        "str",
-        "ICI"
-      ],
-      [
-        "str",
-        "FEF"
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "ItemsRegister.FINDIUM",
-        0
-      ],
-      [
-        "char",
-        "U"
-      ],
-      [
-        "ref",
-        "ItemsRegister.UNCLAIMFINDER_ROUGE",
-        0
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "ItemsRegister.ENDIUM_NUGGET",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "Items.field_151111_aL",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.HUNTER_COMPASS",
-      "count": 1,
-      "meta": 4
-    },
-    "pattern": [
-      "FUF",
-      "ICI",
-      "FIF"
-    ],
-    "keys": {
-      "F": {
-        "id": "ItemsRegister.FINDIUM",
-        "meta": 0
-      },
-      "U": {
-        "id": "ItemsRegister.UNCLAIMFINDER_ROUGE",
-        "meta": 0
-      },
-      "I": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "ItemsRegister.COMPRESSED_PALADIUM",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "FUF"
-      ],
-      [
-        "str",
-        "ICI"
-      ],
-      [
-        "str",
-        "FIF"
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "ItemsRegister.FINDIUM",
-        0
-      ],
-      [
-        "char",
-        "U"
-      ],
-      [
-        "ref",
-        "ItemsRegister.UNCLAIMFINDER_ROUGE",
-        0
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "ItemsRegister.COMPRESSED_PALADIUM",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.HUNTER_AMULET",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "BNB",
-      " S",
-      " P"
-    ],
-    "keys": {
-      "B": {
-        "id": "Items.field_151065_br",
-        "meta": 0
-      },
-      "N": {
-        "id": "Items.field_151156_bN",
-        "meta": 0
-      },
-      "S": {
-        "id": "ItemsRegister.DIAMOND_STRING",
-        "meta": 0
-      },
-      "P": {
-        "id": "ItemsRegister.STICK_PALADIUM",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "BNB"
-      ],
-      [
-        "str",
-        " S"
-      ],
-      [
-        "str",
-        " P"
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "Items.field_151065_br",
-        0
-      ],
-      [
-        "char",
-        "N"
-      ],
-      [
-        "ref",
-        "Items.field_151156_bN",
-        0
-      ],
-      [
-        "char",
-        "S"
-      ],
-      [
-        "ref",
-        "ItemsRegister.DIAMOND_STRING",
-        0
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_PALADIUM",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.SEEING_AMULET",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "ABA",
-      "CDC",
-      "EFE"
-    ],
-    "keys": {
-      "A": {
-        "id": "BlocksRegister.FLOWER_HARPAGOPHYTUM",
-        "meta": 0
-      },
-      "B": {
-        "id": "ItemsRegister.ORB_SPEED",
-        "meta": 0
-      },
-      "C": {
-        "id": "ItemsRegister.ORB_HEAL",
-        "meta": 0
-      },
-      "D": {
-        "id": "ItemsRegister.VOIDSTONE",
-        "meta": 0
-      },
-      "E": {
-        "id": "BlocksRegister.FLOWER_CLATHRUSARCHERI",
-        "meta": 0
-      },
-      "F": {
-        "id": "ItemsRegister.ORB_STRENGHT",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "ABA"
-      ],
-      [
-        "str",
-        "CDC"
-      ],
-      [
-        "str",
-        "EFE"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "BlocksRegister.FLOWER_HARPAGOPHYTUM",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "ItemsRegister.ORB_SPEED",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "ItemsRegister.ORB_HEAL",
-        0
-      ],
-      [
-        "char",
-        "D"
-      ],
-      [
-        "ref",
-        "ItemsRegister.VOIDSTONE",
-        0
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "BlocksRegister.FLOWER_CLATHRUSARCHERI",
-        0
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "ItemsRegister.ORB_STRENGHT",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.MAGMA_AMULET",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "MFM",
-      "PCP",
-      "MPM"
-    ],
-    "keys": {
-      "M": {
-        "id": "Items.field_151064_bs",
-        "meta": 0
-      },
-      "F": {
-        "id": "ItemsRegister.FINDIUM",
-        "meta": 0
-      },
-      "P": {
-        "id": "Items.field_151068_bn",
-        "meta": 8259
-      },
-      "C": {
-        "id": "ItemsRegister.PALADIUM_CORE",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "MFM"
-      ],
-      [
-        "str",
-        "PCP"
-      ],
-      [
-        "str",
-        "MPM"
-      ],
-      [
-        "char",
-        "M"
-      ],
-      [
-        "ref",
-        "Items.field_151064_bs",
-        0
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "ItemsRegister.FINDIUM",
-        0
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "Items.field_151068_bn",
-        8259
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_CORE",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "BlocksRegister.ELEVATOR_BLOCK",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "AAA",
-      "BCB",
-      "DED"
-    ],
-    "keys": {
-      "A": {
-        "id": "Blocks.field_150325_L",
-        "meta": 0
-      },
-      "B": {
-        "id": "ItemsRegister.FURNACE_UPGRADE",
-        "meta": 0
-      },
-      "C": {
-        "id": "Blocks.field_150331_J",
-        "meta": 0
-      },
-      "D": {
-        "id": "Blocks.field_150344_f",
-        "meta": 0
-      },
-      "E": {
-        "id": "Items.field_151137_ax",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "AAA"
-      ],
-      [
-        "str",
-        "BCB"
-      ],
-      [
-        "str",
-        "DED"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "Blocks.field_150325_L",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "ItemsRegister.FURNACE_UPGRADE",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "Blocks.field_150331_J",
-        0
-      ],
-      [
-        "char",
-        "D"
-      ],
-      [
-        "ref",
-        "Blocks.field_150344_f",
-        0
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "Items.field_151137_ax",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.ENDIUM_NAMETAG",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      " A",
-      "BCB",
-      "DBD"
-    ],
-    "keys": {
-      "A": {
-        "id": "ItemsRegister.ENDIUM_NUGGET",
-        "meta": 0
-      },
-      "B": {
-        "id": "ItemsRegister.FINDIUM",
-        "meta": 0
-      },
-      "C": {
-        "id": "Items.field_151057_cb",
-        "meta": 0
-      },
-      "D": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        " A"
-      ],
-      [
-        "str",
-        "BCB"
-      ],
-      [
-        "str",
-        "DBD"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "ItemsRegister.ENDIUM_NUGGET",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "ItemsRegister.FINDIUM",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "Items.field_151057_cb",
-        0
-      ],
-      [
-        "char",
-        "D"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.CAPTURE_SWORD",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "ABC",
-      "DEF",
-      "GHI"
-    ],
-    "keys": {
-      "A": {
-        "id": "ItemsRegister.STICK_SPEED",
-        "meta": 0
-      },
-      "B": {
-        "id": "PSRegister_Items.HEAD_BROADSWORD",
-        "meta": 0
-      },
-      "C": {
-        "id": "ItemsRegister.STICK_STRENGHT",
-        "meta": 0
-      },
-      "D": {
-        "id": "PSRegister_Items.HEAD_FASTSWORD",
-        "meta": 0
-      },
-      "E": {
-        "id": "ItemsRegister.COMPRESSED_PALADIUM",
-        "meta": 0
-      },
-      "F": {
-        "id": "PSRegister_Items.HEAD_SWORD",
-        "meta": 0
-      },
-      "G": {
-        "id": "ItemsRegister.STICK_HEAL",
-        "meta": 0
-      },
-      "H": {
-        "id": "ItemsRegister.STICK_PALADIUM",
-        "meta": 0
-      },
-      "I": {
-        "id": "ItemsRegister.STICK_DAMAGE",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "ABC"
-      ],
-      [
-        "str",
-        "DEF"
-      ],
-      [
-        "str",
-        "GHI"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_SPEED",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "PSRegister_Items.HEAD_BROADSWORD",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_STRENGHT",
-        0
-      ],
-      [
-        "char",
-        "D"
-      ],
-      [
-        "ref",
-        "PSRegister_Items.HEAD_FASTSWORD",
-        0
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "ItemsRegister.COMPRESSED_PALADIUM",
-        0
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "PSRegister_Items.HEAD_SWORD",
-        0
-      ],
-      [
-        "char",
-        "G"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_HEAL",
-        0
-      ],
-      [
-        "char",
-        "H"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_PALADIUM",
-        0
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_DAMAGE",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.CAPTURE_STONE",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "AXA",
-      "BOC",
-      "AYA"
-    ],
-    "keys": {
-      "A": {
-        "id": "Items.field_151065_br",
-        "meta": 0
-      },
-      "B": {
-        "id": "BlocksRegister.BLOCK_AMETHYST",
-        "meta": 0
-      },
-      "C": {
-        "id": "BlocksRegister.BLOCK_TITANE",
-        "meta": 0
-      },
-      "O": {
-        "id": "Blocks.field_150343_Z",
-        "meta": 0
-      },
-      "X": {
-        "id": "ItemsRegister.COMPRESSED_TITANE",
-        "meta": 0
-      },
-      "Y": {
-        "id": "ItemsRegister.COMPRESSED_AMETHYST",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "AXA"
-      ],
-      [
-        "str",
-        "BOC"
-      ],
-      [
-        "str",
-        "AYA"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "Items.field_151065_br",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "BlocksRegister.BLOCK_AMETHYST",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "BlocksRegister.BLOCK_TITANE",
-        0
-      ],
-      [
-        "char",
-        "O"
-      ],
-      [
-        "ref",
-        "Blocks.field_150343_Z",
-        0
-      ],
-      [
-        "char",
-        "X"
-      ],
-      [
-        "ref",
-        "ItemsRegister.COMPRESSED_TITANE",
-        0
-      ],
-      [
-        "char",
-        "Y"
-      ],
-      [
-        "ref",
-        "ItemsRegister.COMPRESSED_AMETHYST",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "SpawnerBlockRegistry.EMPTY_MOB_SPAWNER",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "ABA",
-      "CDE",
-      "AFA",
-      "guardiangolem",
-      "guardian_stone"
-    ],
-    "keys": null,
-    "anomalies": {
-      "cases_sans_cle": [
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "_",
-        "a",
-        "d",
-        "e",
-        "g",
-        "i",
-        "l",
-        "m",
-        "n",
-        "o",
-        "r",
-        "s",
-        "t",
-        "u"
-      ]
-    },
-    "raw": [
-      [
-        "str",
-        "ABA"
-      ],
-      [
-        "str",
-        "CDE"
-      ],
-      [
-        "str",
-        "AFA"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "ItemsRegister.FINDIUM",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "Items.field_151144_bL",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "ItemsRegister.COMPRESSED_PALADIUM",
-        0
-      ],
-      [
-        "char",
-        "D"
-      ],
-      [
-        "ref",
-        "SpawnerBlockRegistry.EMPTY_BROKEN_MOB_SPAWNER",
-        0
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "str",
-        "guardiangolem"
-      ],
-      [
-        "str",
-        "guardian_stone"
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "BlocksRegister.CRUSHER",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "BlocksRegister.BAMBOO_BLOCK",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "AAA",
-      "AAA",
-      "AAA"
-    ],
-    "keys": {
-      "A": {
-        "id": "BlocksRegister.BAMBOO",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "AAA"
-      ],
-      [
-        "str",
-        "AAA"
-      ],
-      [
-        "str",
-        "AAA"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "BlocksRegister.BAMBOO",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addShapelessRecipe",
-    "result": {
-      "item": "BlocksRegister.BAMBOO",
-      "count": 9,
-      "meta": 0
-    },
-    "pattern": [],
-    "keys": {},
-    "anomalies": null,
-    "raw": [
-      [
-        "ref",
-        "BlocksRegister.BAMBOO_BLOCK",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "SpawnerItemRegistry.CAVERN_HAMMER",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "AAA",
-      "BCB",
-      "AAA"
-    ],
-    "keys": {
-      "A": {
-        "id": "BlocksRegister.BLOCK_TITANE",
-        "meta": 0
-      },
-      "B": {
-        "id": "Blocks.field_150343_Z",
-        "meta": 0
-      },
-      "C": {
-        "id": "PSRegister_Items.HAMMER_PALADIUM",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "AAA"
-      ],
-      [
-        "str",
-        "BCB"
-      ],
-      [
-        "str",
-        "AAA"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "BlocksRegister.BLOCK_TITANE",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "Blocks.field_150343_Z",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "PSRegister_Items.HAMMER_PALADIUM",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.SNAIL_SHELL",
-      "count": 1,
-      "meta": 1
-    },
-    "pattern": [
-      "A A",
-      "BCD",
-      " E"
-    ],
-    "keys": {
-      "A": {
-        "id": "Blocks.field_150327_N",
-        "meta": 0
-      },
-      "B": {
-        "id": "Blocks.field_150337_Q",
-        "meta": 0
-      },
-      "C": {
-        "id": "ItemsRegister.SNAIL_SHELL",
-        "meta": 0
-      },
-      "D": {
-        "id": "Blocks.field_150338_P",
-        "meta": 0
-      },
-      "E": {
-        "id": "Items.field_151054_z",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "A A"
-      ],
-      [
-        "str",
-        "BCD"
-      ],
-      [
-        "str",
-        " E"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "Blocks.field_150327_N",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "Blocks.field_150337_Q",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "ItemsRegister.SNAIL_SHELL",
-        0
-      ],
-      [
-        "char",
-        "D"
-      ],
-      [
-        "ref",
-        "Blocks.field_150338_P",
-        0
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "Items.field_151054_z",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "BlocksRegister.PERLINPINPIN_POWER",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "ABC",
-      "BDB",
-      "EBF"
-    ],
-    "keys": {
-      "A": {
-        "id": "Items.field_151114_aO",
-        "meta": 0
-      },
-      "B": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "Items.field_151102_aT",
-        "meta": 0
-      },
-      "D": {
-        "id": "ItemsRegister.BLUE_GLUEBALL",
-        "meta": 0
-      },
-      "E": {
-        "id": "Items.field_151016_H",
-        "meta": 0
-      },
-      "F": {
-        "id": "Items.field_151137_ax",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "ABC"
-      ],
-      [
-        "str",
-        "BDB"
-      ],
-      [
-        "str",
-        "EBF"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "Items.field_151114_aO",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "Items.field_151102_aT",
-        0
-      ],
-      [
-        "char",
-        "D"
-      ],
-      [
-        "ref",
-        "ItemsRegister.BLUE_GLUEBALL",
-        0
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "Items.field_151016_H",
-        0
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "Items.field_151137_ax",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "BlocksRegister.ENDIUM_TOTEM",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "ABC",
-      "DEF",
-      "GHI"
-    ],
-    "keys": {
-      "A": {
-        "id": "ItemsRegister.SNAKE_VENOM",
-        "meta": 0
-      },
-      "B": {
-        "id": "ItemsRegister.PARROT_FEATHER",
-        "meta": 0
-      },
-      "C": {
-        "id": "ItemsRegister.TURTLE_SCALES",
-        "meta": 0
-      },
-      "D": {
-        "id": "ItemsRegister.GOAT_SHOE",
-        "meta": 0
-      },
-      "E": {
-        "id": "Blocks.field_150381_bn",
-        "meta": 0
-      },
-      "F": {
-        "id": "ItemsRegister.WITHER_SKULLFRAGMENT",
-        "meta": 0
-      },
-      "G": {
-        "id": "ItemsRegister.MEDUSE_HOOK",
-        "meta": 0
-      },
-      "H": {
-        "id": "ItemsRegister.SNAIL_SHELL",
-        "meta": 0
-      },
-      "I": {
-        "id": "ItemsRegister.PANDA_DROOL",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "ABC"
-      ],
-      [
-        "str",
-        "DEF"
-      ],
-      [
-        "str",
-        "GHI"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "ItemsRegister.SNAKE_VENOM",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PARROT_FEATHER",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "ItemsRegister.TURTLE_SCALES",
-        0
-      ],
-      [
-        "char",
-        "D"
-      ],
-      [
-        "ref",
-        "ItemsRegister.GOAT_SHOE",
-        0
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "Blocks.field_150381_bn",
-        0
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "ItemsRegister.WITHER_SKULLFRAGMENT",
-        0
-      ],
-      [
-        "char",
-        "G"
-      ],
-      [
-        "ref",
-        "ItemsRegister.MEDUSE_HOOK",
-        0
-      ],
-      [
-        "char",
-        "H"
-      ],
-      [
-        "ref",
-        "ItemsRegister.SNAIL_SHELL",
-        0
-      ],
-      [
-        "char",
-        "I"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PANDA_DROOL",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "BlocksRegister.SACRIFICE_HOTEL",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "ABA",
-      "CDE",
-      "FFF",
-      "guardiangolem",
-      "mini_golem"
-    ],
-    "keys": null,
-    "anomalies": {
-      "cases_sans_cle": [
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "_",
-        "a",
-        "d",
-        "e",
-        "g",
-        "i",
-        "l",
-        "m",
-        "n",
-        "o",
-        "r",
-        "u"
-      ]
-    },
-    "raw": [
-      [
-        "str",
-        "ABA"
-      ],
-      [
-        "str",
-        "CDE"
-      ],
-      [
-        "str",
-        "FFF"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALAMIXEDCOAL",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "Items.field_151122_aG",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "ItemsRegister.HUNTER_AMULET",
-        0
-      ],
-      [
-        "char",
-        "D"
-      ],
-      [
-        "str",
-        "guardiangolem"
-      ],
-      [
-        "str",
-        "mini_golem"
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "ItemsRegister.SEEING_AMULET",
-        0
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "Blocks.field_150343_Z",
-        0
-      ]
-    ],
-    "source": "modules_hunter_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.SPAWNER_FINDER",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      " F",
-      "PBP",
-      " F"
-    ],
-    "keys": {
-      "F": {
-        "id": "BlocksRegister.BLOCK_FINDIUM",
-        "meta": 0
-      },
-      "P": {
-        "id": "ItemsRegister.PALADIUM_CORE",
-        "meta": 0
-      },
-      "B": {
-        "id": "SpawnerBlockRegistry.EMPTY_BROKEN_MOB_SPAWNER",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        " F"
-      ],
-      [
-        "str",
-        "PBP"
-      ],
-      [
-        "str",
-        " F"
-      ],
-      [
-        "char",
-        "F"
-      ],
-      [
-        "ref",
-        "BlocksRegister.BLOCK_FINDIUM",
-        0
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_CORE",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "SpawnerBlockRegistry.EMPTY_BROKEN_MOB_SPAWNER",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.BUILDER_WAND",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      " BB",
-      " SB",
-      "S"
-    ],
-    "keys": {
-      "B": {
-        "id": "BlocksRegister.BLOCK_AMETHYST",
-        "meta": 0
-      },
-      "S": {
-        "id": "ItemsRegister.STICK_AMETHYST",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        " BB"
-      ],
-      [
-        "str",
-        " SB"
-      ],
-      [
-        "str",
-        "S"
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "BlocksRegister.BLOCK_AMETHYST",
-        0
-      ],
-      [
-        "char",
-        "S"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_AMETHYST",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.BUILDER_WAND",
-      "count": 1,
-      "meta": 1
-    },
-    "pattern": [
-      " BB",
-      " SB",
-      "S"
-    ],
-    "keys": {
-      "B": {
-        "id": "BlocksRegister.BLOCK_TITANE",
-        "meta": 0
-      },
-      "S": {
-        "id": "ItemsRegister.STICK_TITANE",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        " BB"
-      ],
-      [
-        "str",
-        " SB"
-      ],
-      [
-        "str",
-        "S"
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "BlocksRegister.BLOCK_TITANE",
-        0
-      ],
-      [
-        "char",
-        "S"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_TITANE",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.BUILDER_WAND",
-      "count": 1,
-      "meta": 2
-    },
-    "pattern": [
-      " BB",
-      " SB",
-      "S"
-    ],
-    "keys": {
-      "B": {
-        "id": "BlocksRegister.BLOCK_PALADIUM",
-        "meta": 0
-      },
-      "S": {
-        "id": "ItemsRegister.STICK_PALADIUM",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        " BB"
-      ],
-      [
-        "str",
-        " SB"
-      ],
-      [
-        "str",
-        "S"
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "BlocksRegister.BLOCK_PALADIUM",
-        0
-      ],
-      [
-        "char",
-        "S"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_PALADIUM",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.BUILDER_WAND",
-      "count": 1,
-      "meta": 3
-    },
-    "pattern": [
-      "  E",
-      " S",
-      "S"
-    ],
-    "keys": {
-      "E": {
-        "id": "ItemsRegister.ENDIUM_NUGGET",
-        "meta": 0
-      },
-      "S": {
-        "id": "ItemsRegister.STICK_PALADIUM",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "  E"
-      ],
-      [
-        "str",
-        " S"
-      ],
-      [
-        "str",
-        "S"
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "ItemsRegister.ENDIUM_NUGGET",
-        0
-      ],
-      [
-        "char",
-        "S"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_PALADIUM",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.AMETHYST_EXCAVATOR",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "PPP",
-      " S",
-      " S"
-    ],
-    "keys": {
-      "P": {
-        "id": "ItemsRegister.AMETHYST_SHOVEL",
-        "meta": 0
-      },
-      "S": {
-        "id": "ItemsRegister.STICK_AMETHYST",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "PPP"
-      ],
-      [
-        "str",
-        " S"
-      ],
-      [
-        "str",
-        " S"
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.AMETHYST_SHOVEL",
-        0
-      ],
-      [
-        "char",
-        "S"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_AMETHYST",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.TITANE_EXCAVATOR",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "PPP",
-      " S",
-      " S"
-    ],
-    "keys": {
-      "P": {
-        "id": "ItemsRegister.TITANE_SHOVEL",
-        "meta": 0
-      },
-      "S": {
-        "id": "ItemsRegister.STICK_TITANE",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "PPP"
-      ],
-      [
-        "str",
-        " S"
-      ],
-      [
-        "str",
-        " S"
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.TITANE_SHOVEL",
-        0
-      ],
-      [
-        "char",
-        "S"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_TITANE",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.PALADIUM_EXCAVATOR",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "PPP",
-      " S",
-      " S"
-    ],
-    "keys": {
-      "P": {
-        "id": "ItemsRegister.PALADIUM_SHOVEL",
-        "meta": 0
-      },
-      "S": {
-        "id": "ItemsRegister.STICK_PALADIUM",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "PPP"
-      ],
-      [
-        "str",
-        " S"
-      ],
-      [
-        "str",
-        " S"
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_SHOVEL",
-        0
-      ],
-      [
-        "char",
-        "S"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_PALADIUM",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "BlocksRegister.PALADIUM_HOPPER",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "P P",
-      "PCP",
-      " P"
-    ],
-    "keys": {
-      "P": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "BlocksRegister.TITANE_CHEST",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "P P"
-      ],
-      [
-        "str",
-        "PCP"
-      ],
-      [
-        "str",
-        " P"
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "BlocksRegister.TITANE_CHEST",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.COBBLEBREAKER_AMETHYST_UPGRADE",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "ACA",
-      "A A",
-      "ASA"
-    ],
-    "keys": {
-      "A": {
-        "id": "ItemsRegister.AMETHYST_INGOT",
-        "meta": 0
-      },
-      "C": {
-        "id": "BlocksRegister.COBBLEBREAKER",
-        "meta": 0
-      },
-      "S": {
-        "id": "PSRegister_Items.MODIFIER_SPEED",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "ACA"
-      ],
-      [
-        "str",
-        "A A"
-      ],
-      [
-        "str",
-        "ASA"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "ItemsRegister.AMETHYST_INGOT",
-        0
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "BlocksRegister.COBBLEBREAKER",
-        0
-      ],
-      [
-        "char",
-        "S"
-      ],
-      [
-        "ref",
-        "PSRegister_Items.MODIFIER_SPEED",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.COBBLEBREAKER_TITANE_UPGRADE",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "T T",
-      "TUT",
-      "T T"
-    ],
-    "keys": {
-      "T": {
-        "id": "ItemsRegister.TITANE_INGOT",
-        "meta": 0
-      },
-      "U": {
-        "id": "ItemsRegister.COBBLEBREAKER_AMETHYST_UPGRADE",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "T T"
-      ],
-      [
-        "str",
-        "TUT"
-      ],
-      [
-        "str",
-        "T T"
-      ],
-      [
-        "char",
-        "T"
-      ],
-      [
-        "ref",
-        "ItemsRegister.TITANE_INGOT",
-        0
-      ],
-      [
-        "char",
-        "U"
-      ],
-      [
-        "ref",
-        "ItemsRegister.COBBLEBREAKER_AMETHYST_UPGRADE",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.COBBLEBREAKER_PALADIUM_UPGRADE",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "P P",
-      "PUP",
-      "P P"
-    ],
-    "keys": {
-      "P": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "U": {
-        "id": "ItemsRegister.COBBLEBREAKER_TITANE_UPGRADE",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "P P"
-      ],
-      [
-        "str",
-        "PUP"
-      ],
-      [
-        "str",
-        "P P"
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "U"
-      ],
-      [
-        "ref",
-        "ItemsRegister.COBBLEBREAKER_TITANE_UPGRADE",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.MAGNET",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "P P",
-      "B B",
-      "BBB"
-    ],
-    "keys": {
-      "P": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "B": {
-        "id": "Blocks.field_150339_S",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "P P"
-      ],
-      [
-        "str",
-        "B B"
-      ],
-      [
-        "str",
-        "BBB"
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "Blocks.field_150339_S",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "BlocksRegister.DRAWBRIDGE",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "P P",
-      "BDB",
-      "RRR"
-    ],
-    "keys": {
-      "P": {
-        "id": "Blocks.field_150331_J",
-        "meta": 0
-      },
-      "B": {
-        "id": "ModBlocks.slime",
-        "meta": 0
-      },
-      "D": {
-        "id": "Blocks.field_150367_z",
-        "meta": 0
-      },
-      "R": {
-        "id": "Items.field_151137_ax",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "P P"
-      ],
-      [
-        "str",
-        "BDB"
-      ],
-      [
-        "str",
-        "RRR"
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "Blocks.field_150331_J",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "ModBlocks.slime",
-        0
-      ],
-      [
-        "char",
-        "D"
-      ],
-      [
-        "ref",
-        "Blocks.field_150367_z",
-        0
-      ],
-      [
-        "char",
-        "R"
-      ],
-      [
-        "ref",
-        "Items.field_151137_ax",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.SEALED_XP_BOTTLE",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "PBP",
-      " P"
-    ],
-    "keys": {
-      "P": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "B": {
-        "id": "Items.field_151069_bo",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "PBP"
-      ],
-      [
-        "str",
-        " P"
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "B"
-      ],
-      [
-        "ref",
-        "Items.field_151069_bo",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.GOD_PICKAXE",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "APT",
-      " S",
-      " S"
-    ],
-    "keys": {
-      "A": {
-        "id": "ItemsRegister.AMETHYST_PICKAXE",
-        "meta": 0
-      },
-      "P": {
-        "id": "ItemsRegister.PALADIUM_PICKAXE",
-        "meta": 0
-      },
-      "T": {
-        "id": "ItemsRegister.TITANE_PICKAXE",
-        "meta": 0
-      },
-      "S": {
-        "id": "ItemsRegister.STICK_PALADIUM",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "APT"
-      ],
-      [
-        "str",
-        " S"
-      ],
-      [
-        "str",
-        " S"
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "ItemsRegister.AMETHYST_PICKAXE",
-        0
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_PICKAXE",
-        0
-      ],
-      [
-        "char",
-        "T"
-      ],
-      [
-        "ref",
-        "ItemsRegister.TITANE_PICKAXE",
-        0
-      ],
-      [
-        "char",
-        "S"
-      ],
-      [
-        "ref",
-        "ItemsRegister.STICK_PALADIUM",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.MOULA_STONE",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "EPE",
-      "TVT",
-      "EAE"
-    ],
-    "keys": {
-      "E": {
-        "id": "Items.field_151079_bi",
-        "meta": 0
-      },
-      "P": {
-        "id": "ItemsRegister.PALADIUM_INGOT",
-        "meta": 0
-      },
-      "A": {
-        "id": "ItemsRegister.AMETHYST_INGOT",
-        "meta": 0
-      },
-      "V": {
-        "id": "ItemsRegister.VOIDSTONE",
-        "meta": 0
-      }
-    },
-    "anomalies": {
-      "cases_sans_cle": [
-        "T"
-      ]
-    },
-    "raw": [
-      [
-        "str",
-        "EPE"
-      ],
-      [
-        "str",
-        "TVT"
-      ],
-      [
-        "str",
-        "EAE"
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "Items.field_151079_bi",
-        0
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.TITANE_INGOT",
-        0
-      ],
-      [
-        "char",
-        "P"
-      ],
-      [
-        "ref",
-        "ItemsRegister.PALADIUM_INGOT",
-        0
-      ],
-      [
-        "char",
-        "A"
-      ],
-      [
-        "ref",
-        "ItemsRegister.AMETHYST_INGOT",
-        0
-      ],
-      [
-        "char",
-        "V"
-      ],
-      [
-        "ref",
-        "ItemsRegister.VOIDSTONE",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "ItemsRegister.GOD_PICKAXE_AUTOSMELT",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "XUX",
-      "XXX"
-    ],
-    "keys": {
-      "X": {
-        "id": "Blocks.field_150359_w",
-        "meta": 0
-      },
-      "U": {
-        "id": "BlocksRegister.PALADIUM_FURNACE",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "XUX"
-      ],
-      [
-        "str",
-        "XXX"
-      ],
-      [
-        "char",
-        "X"
-      ],
-      [
-        "ref",
-        "Blocks.field_150359_w",
-        0
-      ],
-      [
-        "char",
-        "U"
-      ],
-      [
-        "ref",
-        "BlocksRegister.PALADIUM_FURNACE",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
-      "item": "BlocksRegister.ENDIUM_CAVE_BLOCK",
-      "count": 1,
-      "meta": 0
-    },
-    "pattern": [
-      "CCC",
-      "CEC",
-      "CCC"
-    ],
-    "keys": {
-      "C": {
-        "id": "BlocksRegister.CAVE_BLOCK",
-        "meta": 0
-      },
-      "E": {
-        "id": "ItemsRegister.ENDIUM_NUGGET",
-        "meta": 0
-      }
-    },
-    "anomalies": null,
-    "raw": [
-      [
-        "str",
-        "CCC"
-      ],
-      [
-        "str",
-        "CEC"
-      ],
-      [
-        "str",
-        "CCC"
-      ],
-      [
-        "char",
-        "C"
-      ],
-      [
-        "ref",
-        "BlocksRegister.CAVE_BLOCK",
-        0
-      ],
-      [
-        "char",
-        "E"
-      ],
-      [
-        "ref",
-        "ItemsRegister.ENDIUM_NUGGET",
-        0
-      ]
-    ],
-    "source": "modules_miner_init_Crafts.txt"
-  },
-  {
-    "kind": "addRecipe",
-    "result": {
       "item": "ItemsRegister.PALADIUM_HELMET",
       "count": 1,
       "meta": 0
@@ -4223,9 +841,9 @@
       "meta": 0
     },
     "pattern": [
-      " S",
+      " S ",
       "SIS",
-      " S"
+      " S "
     ],
     "keys": {
       "S": {
@@ -4241,7 +859,7 @@
     "raw": [
       [
         "str",
-        " S"
+        " S "
       ],
       [
         "str",
@@ -4249,7 +867,7 @@
       ],
       [
         "str",
-        " S"
+        " S "
       ],
       [
         "char",
@@ -4465,7 +1083,7 @@
     },
     "pattern": [
       "BBB",
-      " I",
+      " I ",
       "III"
     ],
     "keys": {
@@ -4486,7 +1104,7 @@
       ],
       [
         "str",
-        " I"
+        " I "
       ],
       [
         "str",
@@ -4522,7 +1140,7 @@
     },
     "pattern": [
       "BBB",
-      " I",
+      " I ",
       "III"
     ],
     "keys": {
@@ -4543,7 +1161,7 @@
       ],
       [
         "str",
-        " I"
+        " I "
       ],
       [
         "str",
@@ -4579,7 +1197,7 @@
     },
     "pattern": [
       "BBB",
-      " I",
+      " I ",
       "III"
     ],
     "keys": {
@@ -4600,7 +1218,7 @@
       ],
       [
         "str",
-        " I"
+        " I "
       ],
       [
         "str",
@@ -4676,7 +1294,7 @@
     "pattern": [
       " TQ",
       "QPQ",
-      " Q"
+      " Q "
     ],
     "keys": {
       "P": {
@@ -4704,7 +1322,7 @@
       ],
       [
         "str",
-        " Q"
+        " Q "
       ],
       [
         "char",
@@ -4744,9 +1362,9 @@
       "meta": 0
     },
     "pattern": [
-      " P",
+      " P ",
       "PKP",
-      " P"
+      " P "
     ],
     "keys": {
       "P": {
@@ -4762,7 +1380,7 @@
     "raw": [
       [
         "str",
-        " P"
+        " P "
       ],
       [
         "str",
@@ -4770,7 +1388,7 @@
       ],
       [
         "str",
-        " P"
+        " P "
       ],
       [
         "char",
@@ -4801,9 +1419,9 @@
       "meta": 0
     },
     "pattern": [
-      "PP",
-      " K",
-      " K"
+      "PP ",
+      " K ",
+      " K "
     ],
     "keys": {
       "P": {
@@ -4819,15 +1437,15 @@
     "raw": [
       [
         "str",
-        "PP"
+        "PP "
       ],
       [
         "str",
-        " K"
+        " K "
       ],
       [
         "str",
-        " K"
+        " K "
       ],
       [
         "char",
@@ -4858,9 +1476,9 @@
       "meta": 0
     },
     "pattern": [
-      "PP",
-      " K",
-      " K"
+      "PP ",
+      " K ",
+      " K "
     ],
     "keys": {
       "P": {
@@ -4876,15 +1494,15 @@
     "raw": [
       [
         "str",
-        "PP"
+        "PP "
       ],
       [
         "str",
-        " K"
+        " K "
       ],
       [
         "str",
-        " K"
+        " K "
       ],
       [
         "char",
@@ -4915,9 +1533,9 @@
       "meta": 0
     },
     "pattern": [
-      "PP",
-      " K",
-      " K"
+      "PP ",
+      " K ",
+      " K "
     ],
     "keys": {
       "P": {
@@ -4933,15 +1551,15 @@
     "raw": [
       [
         "str",
-        "PP"
+        "PP "
       ],
       [
         "str",
-        " K"
+        " K "
       ],
       [
         "str",
-        " K"
+        " K "
       ],
       [
         "char",
@@ -4972,9 +1590,9 @@
       "meta": 0
     },
     "pattern": [
-      "PP",
-      " K",
-      " K"
+      "PP ",
+      " K ",
+      " K "
     ],
     "keys": {
       "P": {
@@ -4990,15 +1608,15 @@
     "raw": [
       [
         "str",
-        "PP"
+        "PP "
       ],
       [
         "str",
-        " K"
+        " K "
       ],
       [
         "str",
-        " K"
+        " K "
       ],
       [
         "char",
@@ -5029,9 +1647,9 @@
       "meta": 0
     },
     "pattern": [
-      "PP",
-      " K",
-      " K"
+      "PP ",
+      " K ",
+      " K "
     ],
     "keys": {
       "P": {
@@ -5047,15 +1665,15 @@
     "raw": [
       [
         "str",
-        "PP"
+        "PP "
       ],
       [
         "str",
-        " K"
+        " K "
       ],
       [
         "str",
-        " K"
+        " K "
       ],
       [
         "char",
@@ -5603,8 +2221,8 @@
     },
     "pattern": [
       "XXX",
-      " Z",
-      " Z"
+      " Z ",
+      " Z "
     ],
     "keys": {
       "X": {
@@ -5624,11 +2242,11 @@
       ],
       [
         "str",
-        " Z"
+        " Z "
       ],
       [
         "str",
-        " Z"
+        " Z "
       ],
       [
         "char",
@@ -5723,8 +2341,8 @@
     },
     "pattern": [
       "XXX",
-      " Z",
-      " Z"
+      " Z ",
+      " Z "
     ],
     "keys": {
       "X": {
@@ -5744,11 +2362,11 @@
       ],
       [
         "str",
-        " Z"
+        " Z "
       ],
       [
         "str",
-        " Z"
+        " Z "
       ],
       [
         "char",
@@ -5780,8 +2398,8 @@
     },
     "pattern": [
       "XXX",
-      " Y",
-      " Y"
+      " Y ",
+      " Y "
     ],
     "keys": {
       "X": {
@@ -5801,11 +2419,11 @@
       ],
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "char",
@@ -5838,7 +2456,7 @@
     "pattern": [
       " XX",
       " ZX",
-      " Z"
+      " Z "
     ],
     "keys": {
       "X": {
@@ -5862,7 +2480,7 @@
       ],
       [
         "str",
-        " Z"
+        " Z "
       ],
       [
         "char",
@@ -5893,9 +2511,9 @@
       "meta": 0
     },
     "pattern": [
-      "XX",
-      "XZ",
-      " Z"
+      "XX ",
+      "XZ ",
+      " Z "
     ],
     "keys": {
       "X": {
@@ -5911,15 +2529,15 @@
     "raw": [
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
-        "XZ"
+        "XZ "
       ],
       [
         "str",
-        " Z"
+        " Z "
       ],
       [
         "char",
@@ -5952,7 +2570,7 @@
     "pattern": [
       " XX",
       " ZX",
-      " Z"
+      " Z "
     ],
     "keys": {
       "X": {
@@ -5976,7 +2594,7 @@
       ],
       [
         "str",
-        " Z"
+        " Z "
       ],
       [
         "char",
@@ -6007,9 +2625,9 @@
       "meta": 0
     },
     "pattern": [
-      "XX",
-      "XZ",
-      " Z"
+      "XX ",
+      "XZ ",
+      " Z "
     ],
     "keys": {
       "X": {
@@ -6025,15 +2643,15 @@
     "raw": [
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
-        "XZ"
+        "XZ "
       ],
       [
         "str",
-        " Z"
+        " Z "
       ],
       [
         "char",
@@ -6064,9 +2682,9 @@
       "meta": 0
     },
     "pattern": [
-      "XX",
-      "XZ",
-      " Z"
+      "XX ",
+      "XZ ",
+      " Z "
     ],
     "keys": {
       "X": {
@@ -6082,15 +2700,15 @@
     "raw": [
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
-        "XZ"
+        "XZ "
       ],
       [
         "str",
-        " Z"
+        " Z "
       ],
       [
         "char",
@@ -7223,7 +3841,7 @@
       "meta": 0
     },
     "pattern": [
-      " Y",
+      " Y ",
       "XYX"
     ],
     "keys": {
@@ -7240,7 +3858,7 @@
     "raw": [
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
@@ -7275,9 +3893,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -7293,7 +3911,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -7301,7 +3919,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -7472,9 +4090,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -7490,7 +4108,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -7498,7 +4116,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -7529,9 +4147,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -7547,7 +4165,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -7555,7 +4173,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -7586,9 +4204,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -7604,7 +4222,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -7612,7 +4230,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -7643,9 +4261,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -7661,7 +4279,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -7669,7 +4287,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -7770,9 +4388,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XYX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -7788,7 +4406,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -7796,7 +4414,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -7897,9 +4515,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -7915,7 +4533,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -7923,7 +4541,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -7956,7 +4574,7 @@
     "pattern": [
       " XX",
       " YX",
-      " Y"
+      " Y "
     ],
     "keys": {
       "X": {
@@ -7980,7 +4598,7 @@
       ],
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "char",
@@ -8011,9 +4629,9 @@
       "meta": 0
     },
     "pattern": [
-      "XX",
-      "XY",
-      " Y"
+      "XX ",
+      "XY ",
+      " Y "
     ],
     "keys": {
       "X": {
@@ -8029,15 +4647,15 @@
     "raw": [
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
-        "XY"
+        "XY "
       ],
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "char",
@@ -8069,8 +4687,8 @@
     },
     "pattern": [
       "XXX",
-      " Y",
-      " Y"
+      " Y ",
+      " Y "
     ],
     "keys": {
       "X": {
@@ -8090,11 +4708,11 @@
       ],
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "char",
@@ -8352,9 +4970,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -8370,7 +4988,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -8378,7 +4996,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -8823,7 +5441,7 @@
       "meta": 0
     },
     "pattern": [
-      " Y",
+      " Y ",
       "YXY",
       "XXX"
     ],
@@ -8841,7 +5459,7 @@
     "raw": [
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
@@ -8880,7 +5498,7 @@
       "meta": 0
     },
     "pattern": [
-      " Y",
+      " Y ",
       "YXY",
       "XXX"
     ],
@@ -8898,7 +5516,7 @@
     "raw": [
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
@@ -8937,7 +5555,7 @@
       "meta": 0
     },
     "pattern": [
-      " Y",
+      " Y ",
       "YXY",
       "XXX"
     ],
@@ -8955,7 +5573,7 @@
     "raw": [
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
@@ -8994,7 +5612,7 @@
       "meta": 0
     },
     "pattern": [
-      " Y",
+      " Y ",
       "YXY",
       "XXX"
     ],
@@ -9012,7 +5630,7 @@
     "raw": [
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
@@ -9051,7 +5669,7 @@
       "meta": 0
     },
     "pattern": [
-      " Y",
+      " Y ",
       "YXY",
       "XXX"
     ],
@@ -9069,7 +5687,7 @@
     "raw": [
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
@@ -9108,7 +5726,7 @@
       "meta": 0
     },
     "pattern": [
-      " Y",
+      " Y ",
       "YXY",
       "XXX"
     ],
@@ -9126,7 +5744,7 @@
     "raw": [
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
@@ -9165,7 +5783,7 @@
       "meta": 0
     },
     "pattern": [
-      " Y",
+      " Y ",
       "YXY",
       "XXX"
     ],
@@ -9183,7 +5801,7 @@
     "raw": [
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
@@ -9401,7 +6019,7 @@
       "meta": 0
     },
     "pattern": [
-      "CS"
+      "CS "
     ],
     "keys": {
       "C": {
@@ -9417,7 +6035,7 @@
     "raw": [
       [
         "str",
-        "CS"
+        "CS "
       ],
       [
         "char",
@@ -9495,9 +6113,9 @@
       "meta": 0
     },
     "pattern": [
-      " C",
+      " C ",
       "CSC",
-      " C"
+      " C "
     ],
     "keys": {
       "C": {
@@ -9513,7 +6131,7 @@
     "raw": [
       [
         "str",
-        " C"
+        " C "
       ],
       [
         "str",
@@ -9521,7 +6139,7 @@
       ],
       [
         "str",
-        " C"
+        " C "
       ],
       [
         "char",
@@ -9552,9 +6170,9 @@
       "meta": 0
     },
     "pattern": [
-      " C",
+      " C ",
       "CSC",
-      " C"
+      " C "
     ],
     "keys": {
       "C": {
@@ -9570,7 +6188,7 @@
     "raw": [
       [
         "str",
-        " C"
+        " C "
       ],
       [
         "str",
@@ -9578,7 +6196,7 @@
       ],
       [
         "str",
-        " C"
+        " C "
       ],
       [
         "char",
@@ -9611,7 +6229,7 @@
     "pattern": [
       "TCT",
       "CSC",
-      " C"
+      " C "
     ],
     "keys": {
       "C": {
@@ -9639,7 +6257,7 @@
       ],
       [
         "str",
-        " C"
+        " C "
       ],
       [
         "char",
@@ -10631,8 +7249,8 @@
     },
     "pattern": [
       "XXX",
-      " S",
-      " S"
+      " S ",
+      " S "
     ],
     "keys": {
       "X": {
@@ -10652,11 +7270,11 @@
       ],
       [
         "str",
-        " S"
+        " S "
       ],
       [
         "str",
-        " S"
+        " S "
       ],
       [
         "char",
@@ -10687,9 +7305,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
-      " S",
-      " S"
+      " X ",
+      " S ",
+      " S "
     ],
     "keys": {
       "X": {
@@ -10705,15 +7323,15 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
-        " S"
+        " S "
       ],
       [
         "str",
-        " S"
+        " S "
       ],
       [
         "char",
@@ -10744,9 +7362,9 @@
       "meta": 0
     },
     "pattern": [
-      "XX",
-      "XS",
-      " S"
+      "XX ",
+      "XS ",
+      " S "
     ],
     "keys": {
       "X": {
@@ -10762,15 +7380,15 @@
     "raw": [
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
-        "XS"
+        "XS "
       ],
       [
         "str",
-        " S"
+        " S "
       ],
       [
         "char",
@@ -10803,7 +7421,7 @@
     "pattern": [
       " XX",
       " SX",
-      " S"
+      " S "
     ],
     "keys": {
       "X": {
@@ -10827,7 +7445,7 @@
       ],
       [
         "str",
-        " S"
+        " S "
       ],
       [
         "char",
@@ -10858,9 +7476,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
-      " X",
-      " S"
+      " X ",
+      " X ",
+      " S "
     ],
     "keys": {
       "X": {
@@ -10876,15 +7494,15 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
-        " S"
+        " S "
       ],
       [
         "char",
@@ -11081,9 +7699,9 @@
       "meta": 0
     },
     "pattern": [
-      "S",
-      "X",
-      "X"
+      "S  ",
+      "X  ",
+      "X  "
     ],
     "keys": {
       "X": {
@@ -11099,15 +7717,15 @@
     "raw": [
       [
         "str",
-        "S"
+        "S  "
       ],
       [
         "str",
-        "X"
+        "X  "
       ],
       [
         "str",
-        "X"
+        "X  "
       ],
       [
         "char",
@@ -11682,9 +8300,9 @@
       "meta": 0
     },
     "pattern": [
-      "XX",
-      "XX",
-      "XX"
+      "XX ",
+      "XX ",
+      "XX "
     ],
     "keys": {
       "X": {
@@ -11696,15 +8314,15 @@
     "raw": [
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "char",
@@ -11799,8 +8417,8 @@
       "meta": 0
     },
     "pattern": [
-      "X",
-      "XX",
+      "X  ",
+      "XX ",
       "XXX"
     ],
     "keys": {
@@ -11813,11 +8431,11 @@
     "raw": [
       [
         "str",
-        "X"
+        "X  "
       ],
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
@@ -11877,8 +8495,8 @@
       "meta": 0
     },
     "pattern": [
-      "X",
-      "XX",
+      "X  ",
+      "XX ",
       "XXX"
     ],
     "keys": {
@@ -11891,11 +8509,11 @@
     "raw": [
       [
         "str",
-        "X"
+        "X  "
       ],
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
@@ -11955,8 +8573,8 @@
       "meta": 0
     },
     "pattern": [
-      "X",
-      "XX",
+      "X  ",
+      "XX ",
       "XXX"
     ],
     "keys": {
@@ -11969,11 +8587,11 @@
     "raw": [
       [
         "str",
-        "X"
+        "X  "
       ],
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
@@ -12033,8 +8651,8 @@
       "meta": 0
     },
     "pattern": [
-      "X",
-      "XX",
+      "X  ",
+      "XX ",
       "XXX"
     ],
     "keys": {
@@ -12047,11 +8665,11 @@
     "raw": [
       [
         "str",
-        "X"
+        "X  "
       ],
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
@@ -12077,9 +8695,9 @@
       "meta": 0
     },
     "pattern": [
-      " F",
+      " F ",
       "XDX",
-      " C"
+      " C "
     ],
     "keys": {
       "X": {
@@ -12103,7 +8721,7 @@
     "raw": [
       [
         "str",
-        " F"
+        " F "
       ],
       [
         "str",
@@ -12111,7 +8729,7 @@
       ],
       [
         "str",
-        " C"
+        " C "
       ],
       [
         "char",
@@ -12620,9 +9238,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XYX",
-      " Z"
+      " Z "
     ],
     "keys": {
       "X": {
@@ -12642,7 +9260,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -12650,7 +9268,7 @@
       ],
       [
         "str",
-        " Z"
+        " Z "
       ],
       [
         "char",
@@ -12724,8 +9342,8 @@
       "meta": 0
     },
     "pattern": [
-      "X",
-      "XX",
+      "X  ",
+      "XX ",
       "XXX"
     ],
     "keys": {
@@ -12738,11 +9356,11 @@
     "raw": [
       [
         "str",
-        "X"
+        "X  "
       ],
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
@@ -12812,8 +9430,8 @@
       "meta": 0
     },
     "pattern": [
-      "X",
-      "XX",
+      "X  ",
+      "XX ",
       "XXX"
     ],
     "keys": {
@@ -12826,11 +9444,11 @@
     "raw": [
       [
         "str",
-        "X"
+        "X  "
       ],
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
@@ -12900,9 +9518,9 @@
       "meta": 0
     },
     "pattern": [
-      " Y",
+      " Y ",
       "X X",
-      " X"
+      " X "
     ],
     "keys": {
       "Y": {
@@ -12918,7 +9536,7 @@
     "raw": [
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "str",
@@ -12926,7 +9544,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -13103,8 +9721,8 @@
       "meta": 0
     },
     "pattern": [
-      "XX",
-      "XX"
+      "XX ",
+      "XX "
     ],
     "keys": {
       "X": {
@@ -13116,11 +9734,11 @@
     "raw": [
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "str",
-        "XX"
+        "XX "
       ],
       [
         "char",
@@ -13463,7 +10081,7 @@
     "pattern": [
       " PP",
       " IP",
-      "I"
+      "I  "
     ],
     "keys": {
       "P": {
@@ -13487,7 +10105,7 @@
       ],
       [
         "str",
-        "I"
+        "I  "
       ],
       [
         "char",
@@ -13691,7 +10309,7 @@
     "pattern": [
       " CE",
       " SC",
-      "S"
+      "S  "
     ],
     "keys": {
       "C": {
@@ -13719,7 +10337,7 @@
       ],
       [
         "str",
-        "S"
+        "S  "
       ],
       [
         "char",
@@ -13759,9 +10377,9 @@
       "meta": 0
     },
     "pattern": [
-      " E",
+      " E ",
       "EME",
-      " E"
+      " E "
     ],
     "keys": {
       "E": {
@@ -13777,7 +10395,7 @@
     "raw": [
       [
         "str",
-        " E"
+        " E "
       ],
       [
         "str",
@@ -13785,7 +10403,7 @@
       ],
       [
         "str",
-        " E"
+        " E "
       ],
       [
         "char",
@@ -13930,9 +10548,9 @@
       "meta": 0
     },
     "pattern": [
-      " C",
+      " C ",
       "CUC",
-      " C"
+      " C "
     ],
     "keys": {
       "C": {
@@ -13948,7 +10566,7 @@
     "raw": [
       [
         "str",
-        " C"
+        " C "
       ],
       [
         "str",
@@ -13956,7 +10574,7 @@
       ],
       [
         "str",
-        " C"
+        " C "
       ],
       [
         "char",
@@ -13987,9 +10605,9 @@
       "meta": 0
     },
     "pattern": [
-      " C",
+      " C ",
       "CPC",
-      " C"
+      " C "
     ],
     "keys": {
       "C": {
@@ -14005,7 +10623,7 @@
     "raw": [
       [
         "str",
-        " C"
+        " C "
       ],
       [
         "str",
@@ -14013,7 +10631,7 @@
       ],
       [
         "str",
-        " C"
+        " C "
       ],
       [
         "char",
@@ -14114,9 +10732,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "YWY",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -14136,7 +10754,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -14144,7 +10762,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -14179,14 +10797,3396 @@
   {
     "kind": "addRecipe",
     "result": {
+      "item": "ItemsRegister.SPAWNER_FINDER",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      " F ",
+      "PBP",
+      " F "
+    ],
+    "keys": {
+      "F": {
+        "id": "BlocksRegister.BLOCK_FINDIUM",
+        "meta": 0
+      },
+      "P": {
+        "id": "ItemsRegister.PALADIUM_CORE",
+        "meta": 0
+      },
+      "B": {
+        "id": "SpawnerBlockRegistry.EMPTY_BROKEN_MOB_SPAWNER",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        " F "
+      ],
+      [
+        "str",
+        "PBP"
+      ],
+      [
+        "str",
+        " F "
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_CORE",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "SpawnerBlockRegistry.EMPTY_BROKEN_MOB_SPAWNER",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.BUILDER_WAND",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      " BB",
+      " SB",
+      "S  "
+    ],
+    "keys": {
+      "B": {
+        "id": "BlocksRegister.BLOCK_AMETHYST",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_AMETHYST",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        " BB"
+      ],
+      [
+        "str",
+        " SB"
+      ],
+      [
+        "str",
+        "S  "
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_AMETHYST",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_AMETHYST",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.BUILDER_WAND",
+      "count": 1,
+      "meta": 1
+    },
+    "pattern": [
+      " BB",
+      " SB",
+      "S  "
+    ],
+    "keys": {
+      "B": {
+        "id": "BlocksRegister.BLOCK_TITANE",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_TITANE",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        " BB"
+      ],
+      [
+        "str",
+        " SB"
+      ],
+      [
+        "str",
+        "S  "
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_TITANE",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_TITANE",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.BUILDER_WAND",
+      "count": 1,
+      "meta": 2
+    },
+    "pattern": [
+      " BB",
+      " SB",
+      "S  "
+    ],
+    "keys": {
+      "B": {
+        "id": "BlocksRegister.BLOCK_PALADIUM",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_PALADIUM",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        " BB"
+      ],
+      [
+        "str",
+        " SB"
+      ],
+      [
+        "str",
+        "S  "
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_PALADIUM",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_PALADIUM",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.BUILDER_WAND",
+      "count": 1,
+      "meta": 3
+    },
+    "pattern": [
+      "  E",
+      " S ",
+      "S  "
+    ],
+    "keys": {
+      "E": {
+        "id": "ItemsRegister.ENDIUM_NUGGET",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_PALADIUM",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "  E"
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "str",
+        "S  "
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ENDIUM_NUGGET",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_PALADIUM",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.AMETHYST_EXCAVATOR",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "PPP",
+      " S ",
+      " S "
+    ],
+    "keys": {
+      "P": {
+        "id": "ItemsRegister.AMETHYST_SHOVEL",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_AMETHYST",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "PPP"
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.AMETHYST_SHOVEL",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_AMETHYST",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.TITANE_EXCAVATOR",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "PPP",
+      " S ",
+      " S "
+    ],
+    "keys": {
+      "P": {
+        "id": "ItemsRegister.TITANE_SHOVEL",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_TITANE",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "PPP"
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.TITANE_SHOVEL",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_TITANE",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.PALADIUM_EXCAVATOR",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "PPP",
+      " S ",
+      " S "
+    ],
+    "keys": {
+      "P": {
+        "id": "ItemsRegister.PALADIUM_SHOVEL",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_PALADIUM",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "PPP"
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_SHOVEL",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_PALADIUM",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.PALADIUM_HOPPER",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "P P",
+      "PCP",
+      " P "
+    ],
+    "keys": {
+      "P": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "BlocksRegister.TITANE_CHEST",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "P P"
+      ],
+      [
+        "str",
+        "PCP"
+      ],
+      [
+        "str",
+        " P "
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "BlocksRegister.TITANE_CHEST",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.COBBLEBREAKER_AMETHYST_UPGRADE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "ACA",
+      "A A",
+      "ASA"
+    ],
+    "keys": {
+      "A": {
+        "id": "ItemsRegister.AMETHYST_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "BlocksRegister.COBBLEBREAKER",
+        "meta": 0
+      },
+      "S": {
+        "id": "PSRegister_Items.MODIFIER_SPEED",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "ACA"
+      ],
+      [
+        "str",
+        "A A"
+      ],
+      [
+        "str",
+        "ASA"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "ItemsRegister.AMETHYST_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "BlocksRegister.COBBLEBREAKER",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "PSRegister_Items.MODIFIER_SPEED",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.COBBLEBREAKER_TITANE_UPGRADE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "T T",
+      "TUT",
+      "T T"
+    ],
+    "keys": {
+      "T": {
+        "id": "ItemsRegister.TITANE_INGOT",
+        "meta": 0
+      },
+      "U": {
+        "id": "ItemsRegister.COBBLEBREAKER_AMETHYST_UPGRADE",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "T T"
+      ],
+      [
+        "str",
+        "TUT"
+      ],
+      [
+        "str",
+        "T T"
+      ],
+      [
+        "char",
+        "T"
+      ],
+      [
+        "ref",
+        "ItemsRegister.TITANE_INGOT",
+        0
+      ],
+      [
+        "char",
+        "U"
+      ],
+      [
+        "ref",
+        "ItemsRegister.COBBLEBREAKER_AMETHYST_UPGRADE",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.COBBLEBREAKER_PALADIUM_UPGRADE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "P P",
+      "PUP",
+      "P P"
+    ],
+    "keys": {
+      "P": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "U": {
+        "id": "ItemsRegister.COBBLEBREAKER_TITANE_UPGRADE",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "P P"
+      ],
+      [
+        "str",
+        "PUP"
+      ],
+      [
+        "str",
+        "P P"
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "U"
+      ],
+      [
+        "ref",
+        "ItemsRegister.COBBLEBREAKER_TITANE_UPGRADE",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.MAGNET",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "P P",
+      "B B",
+      "BBB"
+    ],
+    "keys": {
+      "P": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "B": {
+        "id": "Blocks.field_150339_S",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "P P"
+      ],
+      [
+        "str",
+        "B B"
+      ],
+      [
+        "str",
+        "BBB"
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "Blocks.field_150339_S",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.DRAWBRIDGE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "P P",
+      "BDB",
+      "RRR"
+    ],
+    "keys": {
+      "P": {
+        "id": "Blocks.field_150331_J",
+        "meta": 0
+      },
+      "B": {
+        "id": "ModBlocks.slime",
+        "meta": 0
+      },
+      "D": {
+        "id": "Blocks.field_150367_z",
+        "meta": 0
+      },
+      "R": {
+        "id": "Items.field_151137_ax",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "P P"
+      ],
+      [
+        "str",
+        "BDB"
+      ],
+      [
+        "str",
+        "RRR"
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "Blocks.field_150331_J",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "ModBlocks.slime",
+        0
+      ],
+      [
+        "char",
+        "D"
+      ],
+      [
+        "ref",
+        "Blocks.field_150367_z",
+        0
+      ],
+      [
+        "char",
+        "R"
+      ],
+      [
+        "ref",
+        "Items.field_151137_ax",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.SEALED_XP_BOTTLE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "PBP",
+      " P "
+    ],
+    "keys": {
+      "P": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "B": {
+        "id": "Items.field_151069_bo",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "PBP"
+      ],
+      [
+        "str",
+        " P "
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "Items.field_151069_bo",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.GOD_PICKAXE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "APT",
+      " S ",
+      " S "
+    ],
+    "keys": {
+      "A": {
+        "id": "ItemsRegister.AMETHYST_PICKAXE",
+        "meta": 0
+      },
+      "P": {
+        "id": "ItemsRegister.PALADIUM_PICKAXE",
+        "meta": 0
+      },
+      "T": {
+        "id": "ItemsRegister.TITANE_PICKAXE",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_PALADIUM",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "APT"
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "ItemsRegister.AMETHYST_PICKAXE",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_PICKAXE",
+        0
+      ],
+      [
+        "char",
+        "T"
+      ],
+      [
+        "ref",
+        "ItemsRegister.TITANE_PICKAXE",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_PALADIUM",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.MOULA_STONE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "EPE",
+      "TVT",
+      "EAE"
+    ],
+    "keys": {
+      "E": {
+        "id": "Items.field_151079_bi",
+        "meta": 0
+      },
+      "P": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "A": {
+        "id": "ItemsRegister.AMETHYST_INGOT",
+        "meta": 0
+      },
+      "V": {
+        "id": "ItemsRegister.VOIDSTONE",
+        "meta": 0
+      }
+    },
+    "anomalies": {
+      "cases_sans_cle": [
+        "T"
+      ]
+    },
+    "raw": [
+      [
+        "str",
+        "EPE"
+      ],
+      [
+        "str",
+        "TVT"
+      ],
+      [
+        "str",
+        "EAE"
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "Items.field_151079_bi",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.TITANE_INGOT",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "ItemsRegister.AMETHYST_INGOT",
+        0
+      ],
+      [
+        "char",
+        "V"
+      ],
+      [
+        "ref",
+        "ItemsRegister.VOIDSTONE",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.GOD_PICKAXE_AUTOSMELT",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "XUX",
+      "XXX"
+    ],
+    "keys": {
+      "X": {
+        "id": "Blocks.field_150359_w",
+        "meta": 0
+      },
+      "U": {
+        "id": "BlocksRegister.PALADIUM_FURNACE",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "XUX"
+      ],
+      [
+        "str",
+        "XXX"
+      ],
+      [
+        "char",
+        "X"
+      ],
+      [
+        "ref",
+        "Blocks.field_150359_w",
+        0
+      ],
+      [
+        "char",
+        "U"
+      ],
+      [
+        "ref",
+        "BlocksRegister.PALADIUM_FURNACE",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.ENDIUM_CAVE_BLOCK",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "CCC",
+      "CEC",
+      "CCC"
+    ],
+    "keys": {
+      "C": {
+        "id": "BlocksRegister.CAVE_BLOCK",
+        "meta": 0
+      },
+      "E": {
+        "id": "ItemsRegister.ENDIUM_NUGGET",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "CCC"
+      ],
+      [
+        "str",
+        "CEC"
+      ],
+      [
+        "str",
+        "CCC"
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "BlocksRegister.CAVE_BLOCK",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ENDIUM_NUGGET",
+        0
+      ]
+    ],
+    "source": "modules_miner_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.HUNTER_BACKPACK",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "ICI",
+      "IHI",
+      "LIL"
+    ],
+    "keys": {
+      "I": {
+        "id": "ItemsRegister.AMETHYST_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "BlocksRegister.AMETHYST_CHEST",
+        "meta": 0
+      },
+      "H": {
+        "id": "Blocks.field_150438_bZ",
+        "meta": 0
+      },
+      "L": {
+        "id": "Items.field_151116_aA",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "ICI"
+      ],
+      [
+        "str",
+        "IHI"
+      ],
+      [
+        "str",
+        "LIL"
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.AMETHYST_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "BlocksRegister.AMETHYST_CHEST",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "Blocks.field_150438_bZ",
+        0
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "Items.field_151116_aA",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.HUNTER_BACKPACK",
+      "count": 1,
+      "meta": 1
+    },
+    "pattern": [
+      "ICI",
+      "IHI",
+      "LIL"
+    ],
+    "keys": {
+      "I": {
+        "id": "ItemsRegister.TITANE_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "BlocksRegister.TITANE_CHEST",
+        "meta": 0
+      },
+      "H": {
+        "id": "Blocks.field_150438_bZ",
+        "meta": 0
+      },
+      "L": {
+        "id": "Items.field_151116_aA",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "ICI"
+      ],
+      [
+        "str",
+        "IHI"
+      ],
+      [
+        "str",
+        "LIL"
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.TITANE_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "BlocksRegister.TITANE_CHEST",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "Blocks.field_150438_bZ",
+        0
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "Items.field_151116_aA",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.HUNTER_BACKPACK",
+      "count": 1,
+      "meta": 2
+    },
+    "pattern": [
+      "ICI",
+      "IHI",
+      "LIL"
+    ],
+    "keys": {
+      "I": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "BlocksRegister.PALADIUM_CHEST",
+        "meta": 0
+      },
+      "H": {
+        "id": "Blocks.field_150438_bZ",
+        "meta": 0
+      },
+      "L": {
+        "id": "Items.field_151116_aA",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "ICI"
+      ],
+      [
+        "str",
+        "IHI"
+      ],
+      [
+        "str",
+        "LIL"
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "BlocksRegister.PALADIUM_CHEST",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "Blocks.field_150438_bZ",
+        0
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "Items.field_151116_aA",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.HUNTER_BACKPACK",
+      "count": 1,
+      "meta": 3
+    },
+    "pattern": [
+      "ICI",
+      "IHI",
+      "LEL"
+    ],
+    "keys": {
+      "I": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "BlocksRegister.PALADIUM_CHEST",
+        "meta": 0
+      },
+      "H": {
+        "id": "Blocks.field_150438_bZ",
+        "meta": 0
+      },
+      "L": {
+        "id": "Items.field_151116_aA",
+        "meta": 0
+      },
+      "E": {
+        "id": "ItemsRegister.ENDIUM_NUGGET",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "ICI"
+      ],
+      [
+        "str",
+        "IHI"
+      ],
+      [
+        "str",
+        "LEL"
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "BlocksRegister.PALADIUM_CHEST",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "Blocks.field_150438_bZ",
+        0
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "Items.field_151116_aA",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ENDIUM_NUGGET",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.HUNTER_COMPASS",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "FUF",
+      "ICI",
+      "FIF"
+    ],
+    "keys": {
+      "F": {
+        "id": "ItemsRegister.FINDIUM",
+        "meta": 0
+      },
+      "U": {
+        "id": "ItemsRegister.UNCLAIMFINDER",
+        "meta": 0
+      },
+      "I": {
+        "id": "ItemsRegister.AMETHYST_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "Items.field_151111_aL",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "FUF"
+      ],
+      [
+        "str",
+        "ICI"
+      ],
+      [
+        "str",
+        "FIF"
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "ItemsRegister.FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "U"
+      ],
+      [
+        "ref",
+        "ItemsRegister.UNCLAIMFINDER",
+        0
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.AMETHYST_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "Items.field_151111_aL",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.HUNTER_COMPASS",
+      "count": 1,
+      "meta": 1
+    },
+    "pattern": [
+      "FUF",
+      "ICI",
+      "FIF"
+    ],
+    "keys": {
+      "F": {
+        "id": "ItemsRegister.FINDIUM",
+        "meta": 0
+      },
+      "U": {
+        "id": "ItemsRegister.UNCLAIMFINDER_ORANGE",
+        "meta": 0
+      },
+      "I": {
+        "id": "ItemsRegister.TITANE_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "Items.field_151111_aL",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "FUF"
+      ],
+      [
+        "str",
+        "ICI"
+      ],
+      [
+        "str",
+        "FIF"
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "ItemsRegister.FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "U"
+      ],
+      [
+        "ref",
+        "ItemsRegister.UNCLAIMFINDER_ORANGE",
+        0
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.TITANE_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "Items.field_151111_aL",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.HUNTER_COMPASS",
+      "count": 1,
+      "meta": 2
+    },
+    "pattern": [
+      "FUF",
+      "ICI",
+      "FIF"
+    ],
+    "keys": {
+      "F": {
+        "id": "ItemsRegister.FINDIUM",
+        "meta": 0
+      },
+      "U": {
+        "id": "ItemsRegister.UNCLAIMFINDER_ROUGE",
+        "meta": 0
+      },
+      "I": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "Items.field_151111_aL",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "FUF"
+      ],
+      [
+        "str",
+        "ICI"
+      ],
+      [
+        "str",
+        "FIF"
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "ItemsRegister.FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "U"
+      ],
+      [
+        "ref",
+        "ItemsRegister.UNCLAIMFINDER_ROUGE",
+        0
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "Items.field_151111_aL",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.HUNTER_COMPASS",
+      "count": 1,
+      "meta": 3
+    },
+    "pattern": [
+      "FUF",
+      "ICI",
+      "FEF"
+    ],
+    "keys": {
+      "F": {
+        "id": "ItemsRegister.FINDIUM",
+        "meta": 0
+      },
+      "U": {
+        "id": "ItemsRegister.UNCLAIMFINDER_ROUGE",
+        "meta": 0
+      },
+      "I": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "E": {
+        "id": "ItemsRegister.ENDIUM_NUGGET",
+        "meta": 0
+      },
+      "C": {
+        "id": "Items.field_151111_aL",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "FUF"
+      ],
+      [
+        "str",
+        "ICI"
+      ],
+      [
+        "str",
+        "FEF"
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "ItemsRegister.FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "U"
+      ],
+      [
+        "ref",
+        "ItemsRegister.UNCLAIMFINDER_ROUGE",
+        0
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ENDIUM_NUGGET",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "Items.field_151111_aL",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.HUNTER_COMPASS",
+      "count": 1,
+      "meta": 4
+    },
+    "pattern": [
+      "FUF",
+      "ICI",
+      "FIF"
+    ],
+    "keys": {
+      "F": {
+        "id": "ItemsRegister.FINDIUM",
+        "meta": 0
+      },
+      "U": {
+        "id": "ItemsRegister.UNCLAIMFINDER_ROUGE",
+        "meta": 0
+      },
+      "I": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "ItemsRegister.COMPRESSED_PALADIUM",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "FUF"
+      ],
+      [
+        "str",
+        "ICI"
+      ],
+      [
+        "str",
+        "FIF"
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "ItemsRegister.FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "U"
+      ],
+      [
+        "ref",
+        "ItemsRegister.UNCLAIMFINDER_ROUGE",
+        0
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.COMPRESSED_PALADIUM",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.HUNTER_AMULET",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "BNB",
+      " S ",
+      " P "
+    ],
+    "keys": {
+      "B": {
+        "id": "Items.field_151065_br",
+        "meta": 0
+      },
+      "N": {
+        "id": "Items.field_151156_bN",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.DIAMOND_STRING",
+        "meta": 0
+      },
+      "P": {
+        "id": "ItemsRegister.STICK_PALADIUM",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "BNB"
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "str",
+        " P "
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "Items.field_151065_br",
+        0
+      ],
+      [
+        "char",
+        "N"
+      ],
+      [
+        "ref",
+        "Items.field_151156_bN",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.DIAMOND_STRING",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_PALADIUM",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.SEEING_AMULET",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "ABA",
+      "CDC",
+      "EFE"
+    ],
+    "keys": {
+      "A": {
+        "id": "BlocksRegister.FLOWER_HARPAGOPHYTUM",
+        "meta": 0
+      },
+      "B": {
+        "id": "ItemsRegister.ORB_SPEED",
+        "meta": 0
+      },
+      "C": {
+        "id": "ItemsRegister.ORB_HEAL",
+        "meta": 0
+      },
+      "D": {
+        "id": "ItemsRegister.VOIDSTONE",
+        "meta": 0
+      },
+      "E": {
+        "id": "BlocksRegister.FLOWER_CLATHRUSARCHERI",
+        "meta": 0
+      },
+      "F": {
+        "id": "ItemsRegister.ORB_STRENGHT",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "ABA"
+      ],
+      [
+        "str",
+        "CDC"
+      ],
+      [
+        "str",
+        "EFE"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "BlocksRegister.FLOWER_HARPAGOPHYTUM",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ORB_SPEED",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ORB_HEAL",
+        0
+      ],
+      [
+        "char",
+        "D"
+      ],
+      [
+        "ref",
+        "ItemsRegister.VOIDSTONE",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "BlocksRegister.FLOWER_CLATHRUSARCHERI",
+        0
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ORB_STRENGHT",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.MAGMA_AMULET",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "MFM",
+      "PCP",
+      "MPM"
+    ],
+    "keys": {
+      "M": {
+        "id": "Items.field_151064_bs",
+        "meta": 0
+      },
+      "F": {
+        "id": "ItemsRegister.FINDIUM",
+        "meta": 0
+      },
+      "P": {
+        "id": "Items.field_151068_bn",
+        "meta": 8259
+      },
+      "C": {
+        "id": "ItemsRegister.PALADIUM_CORE",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "MFM"
+      ],
+      [
+        "str",
+        "PCP"
+      ],
+      [
+        "str",
+        "MPM"
+      ],
+      [
+        "char",
+        "M"
+      ],
+      [
+        "ref",
+        "Items.field_151064_bs",
+        0
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "ItemsRegister.FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "Items.field_151068_bn",
+        8259
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_CORE",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.ELEVATOR_BLOCK",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "AAA",
+      "BCB",
+      "DED"
+    ],
+    "keys": {
+      "A": {
+        "id": "Blocks.field_150325_L",
+        "meta": 0
+      },
+      "B": {
+        "id": "ItemsRegister.FURNACE_UPGRADE",
+        "meta": 0
+      },
+      "C": {
+        "id": "Blocks.field_150331_J",
+        "meta": 0
+      },
+      "D": {
+        "id": "Blocks.field_150344_f",
+        "meta": 0
+      },
+      "E": {
+        "id": "Items.field_151137_ax",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "AAA"
+      ],
+      [
+        "str",
+        "BCB"
+      ],
+      [
+        "str",
+        "DED"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "Blocks.field_150325_L",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "ItemsRegister.FURNACE_UPGRADE",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "Blocks.field_150331_J",
+        0
+      ],
+      [
+        "char",
+        "D"
+      ],
+      [
+        "ref",
+        "Blocks.field_150344_f",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "Items.field_151137_ax",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.ENDIUM_NAMETAG",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      " A ",
+      "BCB",
+      "DBD"
+    ],
+    "keys": {
+      "A": {
+        "id": "ItemsRegister.ENDIUM_NUGGET",
+        "meta": 0
+      },
+      "B": {
+        "id": "ItemsRegister.FINDIUM",
+        "meta": 0
+      },
+      "C": {
+        "id": "Items.field_151057_cb",
+        "meta": 0
+      },
+      "D": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        " A "
+      ],
+      [
+        "str",
+        "BCB"
+      ],
+      [
+        "str",
+        "DBD"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ENDIUM_NUGGET",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "ItemsRegister.FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "Items.field_151057_cb",
+        0
+      ],
+      [
+        "char",
+        "D"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.CAPTURE_SWORD",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "ABC",
+      "DEF",
+      "GHI"
+    ],
+    "keys": {
+      "A": {
+        "id": "ItemsRegister.STICK_SPEED",
+        "meta": 0
+      },
+      "B": {
+        "id": "PSRegister_Items.HEAD_BROADSWORD",
+        "meta": 0
+      },
+      "C": {
+        "id": "ItemsRegister.STICK_STRENGHT",
+        "meta": 0
+      },
+      "D": {
+        "id": "PSRegister_Items.HEAD_FASTSWORD",
+        "meta": 0
+      },
+      "E": {
+        "id": "ItemsRegister.COMPRESSED_PALADIUM",
+        "meta": 0
+      },
+      "F": {
+        "id": "PSRegister_Items.HEAD_SWORD",
+        "meta": 0
+      },
+      "G": {
+        "id": "ItemsRegister.STICK_HEAL",
+        "meta": 0
+      },
+      "H": {
+        "id": "ItemsRegister.STICK_PALADIUM",
+        "meta": 0
+      },
+      "I": {
+        "id": "ItemsRegister.STICK_DAMAGE",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "ABC"
+      ],
+      [
+        "str",
+        "DEF"
+      ],
+      [
+        "str",
+        "GHI"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_SPEED",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "PSRegister_Items.HEAD_BROADSWORD",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_STRENGHT",
+        0
+      ],
+      [
+        "char",
+        "D"
+      ],
+      [
+        "ref",
+        "PSRegister_Items.HEAD_FASTSWORD",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "ItemsRegister.COMPRESSED_PALADIUM",
+        0
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "PSRegister_Items.HEAD_SWORD",
+        0
+      ],
+      [
+        "char",
+        "G"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_HEAL",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_PALADIUM",
+        0
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_DAMAGE",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.CAPTURE_STONE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "AXA",
+      "BOC",
+      "AYA"
+    ],
+    "keys": {
+      "A": {
+        "id": "Items.field_151065_br",
+        "meta": 0
+      },
+      "B": {
+        "id": "BlocksRegister.BLOCK_AMETHYST",
+        "meta": 0
+      },
+      "C": {
+        "id": "BlocksRegister.BLOCK_TITANE",
+        "meta": 0
+      },
+      "O": {
+        "id": "Blocks.field_150343_Z",
+        "meta": 0
+      },
+      "X": {
+        "id": "ItemsRegister.COMPRESSED_TITANE",
+        "meta": 0
+      },
+      "Y": {
+        "id": "ItemsRegister.COMPRESSED_AMETHYST",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "AXA"
+      ],
+      [
+        "str",
+        "BOC"
+      ],
+      [
+        "str",
+        "AYA"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "Items.field_151065_br",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_AMETHYST",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_TITANE",
+        0
+      ],
+      [
+        "char",
+        "O"
+      ],
+      [
+        "ref",
+        "Blocks.field_150343_Z",
+        0
+      ],
+      [
+        "char",
+        "X"
+      ],
+      [
+        "ref",
+        "ItemsRegister.COMPRESSED_TITANE",
+        0
+      ],
+      [
+        "char",
+        "Y"
+      ],
+      [
+        "ref",
+        "ItemsRegister.COMPRESSED_AMETHYST",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "SpawnerBlockRegistry.EMPTY_MOB_SPAWNER",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "ABA",
+      "CDE",
+      "AFA",
+      "guardiangolem",
+      "guardian_stone"
+    ],
+    "keys": null,
+    "anomalies": {
+      "cases_sans_cle": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "_",
+        "a",
+        "d",
+        "e",
+        "g",
+        "i",
+        "l",
+        "m",
+        "n",
+        "o",
+        "r",
+        "s",
+        "t",
+        "u"
+      ]
+    },
+    "raw": [
+      [
+        "str",
+        "ABA"
+      ],
+      [
+        "str",
+        "CDE"
+      ],
+      [
+        "str",
+        "AFA"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "ItemsRegister.FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "Items.field_151144_bL",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.COMPRESSED_PALADIUM",
+        0
+      ],
+      [
+        "char",
+        "D"
+      ],
+      [
+        "ref",
+        "SpawnerBlockRegistry.EMPTY_BROKEN_MOB_SPAWNER",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "str",
+        "guardiangolem"
+      ],
+      [
+        "str",
+        "guardian_stone"
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "BlocksRegister.CRUSHER",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.BAMBOO_BLOCK",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "AAA",
+      "AAA",
+      "AAA"
+    ],
+    "keys": {
+      "A": {
+        "id": "BlocksRegister.BAMBOO",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "AAA"
+      ],
+      [
+        "str",
+        "AAA"
+      ],
+      [
+        "str",
+        "AAA"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BAMBOO",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addShapelessRecipe",
+    "result": {
+      "item": "BlocksRegister.BAMBOO",
+      "count": 9,
+      "meta": 0
+    },
+    "pattern": [],
+    "keys": {},
+    "anomalies": null,
+    "raw": [
+      [
+        "ref",
+        "BlocksRegister.BAMBOO_BLOCK",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "SpawnerItemRegistry.CAVERN_HAMMER",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "AAA",
+      "BCB",
+      "AAA"
+    ],
+    "keys": {
+      "A": {
+        "id": "BlocksRegister.BLOCK_TITANE",
+        "meta": 0
+      },
+      "B": {
+        "id": "Blocks.field_150343_Z",
+        "meta": 0
+      },
+      "C": {
+        "id": "PSRegister_Items.HAMMER_PALADIUM",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "AAA"
+      ],
+      [
+        "str",
+        "BCB"
+      ],
+      [
+        "str",
+        "AAA"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_TITANE",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "Blocks.field_150343_Z",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "PSRegister_Items.HAMMER_PALADIUM",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.SNAIL_SHELL",
+      "count": 1,
+      "meta": 1
+    },
+    "pattern": [
+      "A A",
+      "BCD",
+      " E "
+    ],
+    "keys": {
+      "A": {
+        "id": "Blocks.field_150327_N",
+        "meta": 0
+      },
+      "B": {
+        "id": "Blocks.field_150337_Q",
+        "meta": 0
+      },
+      "C": {
+        "id": "ItemsRegister.SNAIL_SHELL",
+        "meta": 0
+      },
+      "D": {
+        "id": "Blocks.field_150338_P",
+        "meta": 0
+      },
+      "E": {
+        "id": "Items.field_151054_z",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "A A"
+      ],
+      [
+        "str",
+        "BCD"
+      ],
+      [
+        "str",
+        " E "
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "Blocks.field_150327_N",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "Blocks.field_150337_Q",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.SNAIL_SHELL",
+        0
+      ],
+      [
+        "char",
+        "D"
+      ],
+      [
+        "ref",
+        "Blocks.field_150338_P",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "Items.field_151054_z",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.PERLINPINPIN_POWER",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "ABC",
+      "BDB",
+      "EBF"
+    ],
+    "keys": {
+      "A": {
+        "id": "Items.field_151114_aO",
+        "meta": 0
+      },
+      "B": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "C": {
+        "id": "Items.field_151102_aT",
+        "meta": 0
+      },
+      "D": {
+        "id": "ItemsRegister.BLUE_GLUEBALL",
+        "meta": 0
+      },
+      "E": {
+        "id": "Items.field_151016_H",
+        "meta": 0
+      },
+      "F": {
+        "id": "Items.field_151137_ax",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "ABC"
+      ],
+      [
+        "str",
+        "BDB"
+      ],
+      [
+        "str",
+        "EBF"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "Items.field_151114_aO",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "Items.field_151102_aT",
+        0
+      ],
+      [
+        "char",
+        "D"
+      ],
+      [
+        "ref",
+        "ItemsRegister.BLUE_GLUEBALL",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "Items.field_151016_H",
+        0
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "Items.field_151137_ax",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.ENDIUM_TOTEM",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "ABC",
+      "DEF",
+      "GHI"
+    ],
+    "keys": {
+      "A": {
+        "id": "ItemsRegister.SNAKE_VENOM",
+        "meta": 0
+      },
+      "B": {
+        "id": "ItemsRegister.PARROT_FEATHER",
+        "meta": 0
+      },
+      "C": {
+        "id": "ItemsRegister.TURTLE_SCALES",
+        "meta": 0
+      },
+      "D": {
+        "id": "ItemsRegister.GOAT_SHOE",
+        "meta": 0
+      },
+      "E": {
+        "id": "Blocks.field_150381_bn",
+        "meta": 0
+      },
+      "F": {
+        "id": "ItemsRegister.WITHER_SKULLFRAGMENT",
+        "meta": 0
+      },
+      "G": {
+        "id": "ItemsRegister.MEDUSE_HOOK",
+        "meta": 0
+      },
+      "H": {
+        "id": "ItemsRegister.SNAIL_SHELL",
+        "meta": 0
+      },
+      "I": {
+        "id": "ItemsRegister.PANDA_DROOL",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "ABC"
+      ],
+      [
+        "str",
+        "DEF"
+      ],
+      [
+        "str",
+        "GHI"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "ItemsRegister.SNAKE_VENOM",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PARROT_FEATHER",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.TURTLE_SCALES",
+        0
+      ],
+      [
+        "char",
+        "D"
+      ],
+      [
+        "ref",
+        "ItemsRegister.GOAT_SHOE",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "Blocks.field_150381_bn",
+        0
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "ItemsRegister.WITHER_SKULLFRAGMENT",
+        0
+      ],
+      [
+        "char",
+        "G"
+      ],
+      [
+        "ref",
+        "ItemsRegister.MEDUSE_HOOK",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "ItemsRegister.SNAIL_SHELL",
+        0
+      ],
+      [
+        "char",
+        "I"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PANDA_DROOL",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.SACRIFICE_HOTEL",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "ABA",
+      "CDE",
+      "FFF",
+      "guardiangolem",
+      "mini_golem"
+    ],
+    "keys": null,
+    "anomalies": {
+      "cases_sans_cle": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "_",
+        "a",
+        "d",
+        "e",
+        "g",
+        "i",
+        "l",
+        "m",
+        "n",
+        "o",
+        "r",
+        "u"
+      ]
+    },
+    "raw": [
+      [
+        "str",
+        "ABA"
+      ],
+      [
+        "str",
+        "CDE"
+      ],
+      [
+        "str",
+        "FFF"
+      ],
+      [
+        "char",
+        "A"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALAMIXEDCOAL",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "Items.field_151122_aG",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.HUNTER_AMULET",
+        0
+      ],
+      [
+        "char",
+        "D"
+      ],
+      [
+        "str",
+        "guardiangolem"
+      ],
+      [
+        "str",
+        "mini_golem"
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "ItemsRegister.SEEING_AMULET",
+        0
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "Blocks.field_150343_Z",
+        0
+      ]
+    ],
+    "source": "modules_hunter_init_Crafts.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
       "item": "PSRegister_Items.MODIFIER_SPEED",
       "count": 1,
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -14202,7 +14202,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -14210,7 +14210,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -14241,9 +14241,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -14259,7 +14259,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -14267,7 +14267,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -14298,9 +14298,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -14316,7 +14316,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -14324,7 +14324,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -14355,9 +14355,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -14373,7 +14373,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -14381,7 +14381,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -14412,9 +14412,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -14430,7 +14430,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -14438,7 +14438,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -14469,9 +14469,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -14487,7 +14487,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -14495,7 +14495,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -14526,9 +14526,9 @@
       "meta": 0
     },
     "pattern": [
-      " X",
+      " X ",
       "XZX",
-      " X"
+      " X "
     ],
     "keys": {
       "X": {
@@ -14544,7 +14544,7 @@
     "raw": [
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "str",
@@ -14552,7 +14552,7 @@
       ],
       [
         "str",
-        " X"
+        " X "
       ],
       [
         "char",
@@ -15412,7 +15412,7 @@
     "pattern": [
       "XXX",
       "XXX",
-      " Y"
+      " Y "
     ],
     "keys": {
       "X": {
@@ -15436,7 +15436,7 @@
       ],
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "char",
@@ -15469,7 +15469,7 @@
     "pattern": [
       "XXX",
       "XXX",
-      " Y"
+      " Y "
     ],
     "keys": {
       "X": {
@@ -15493,7 +15493,7 @@
       ],
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "char",
@@ -15526,7 +15526,7 @@
     "pattern": [
       "XX",
       "XX",
-      "Y"
+      "Y "
     ],
     "keys": {
       "X": {
@@ -15550,7 +15550,7 @@
       ],
       [
         "str",
-        "Y"
+        "Y "
       ],
       [
         "char",
@@ -15697,7 +15697,7 @@
     "pattern": [
       "XX",
       "XX",
-      "Y"
+      "Y "
     ],
     "keys": {
       "X": {
@@ -15721,7 +15721,7 @@
       ],
       [
         "str",
-        "Y"
+        "Y "
       ],
       [
         "char",
@@ -15844,7 +15844,7 @@
     "pattern": [
       "XXX",
       "XXX",
-      " Y"
+      " Y "
     ],
     "keys": {
       "X": {
@@ -15868,7 +15868,7 @@
       ],
       [
         "str",
-        " Y"
+        " Y "
       ],
       [
         "char",

@@ -60,6 +60,7 @@
   "item.palamod.endium_seedplanter": "Endium Seedplanter (12x12)",
   "item.palamod.endium_sword": "Endium Sword",
   "item.palamod.findium": "Findium",
+  "item.palamod.fortune_modifier": "Fortune Modifier",
   "item.palamod.gold_mixed_coal": "Goldmixed Coal",
   "item.palamod.gold_particle": "Gold Particle",
   "item.palamod.green_paladium_axe": "Green Paladium Axe",
@@ -99,6 +100,8 @@
   "item.palamod.paladium_shovel": "Paladium Shovel",
   "item.palamod.paladium_stick": "Paladium Stick",
   "item.palamod.paladium_sword": "Paladium Sword",
+  "item.palamod.speed_modifier": "Speed Modifier",
+  "item.palamod.speed_orb": "Speed Orb",
   "item.palamod.titane_axe": "Titane Axe",
   "item.palamod.titane_boots": "Titane Boots",
   "item.palamod.titane_chestplate": "Titane Chestplate",
@@ -114,5 +117,6 @@
   "item.palamod.titane_stick": "Titane Stick",
   "item.palamod.titane_sword": "Titane Sword",
   "item.palamod.trixium": "Trixium",
+  "item.palamod.voidstone": "Voidstone",
   "itemGroup.palamod.materials": "PalaMod — Ores and Materials"
 }

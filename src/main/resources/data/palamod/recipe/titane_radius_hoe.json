@@ -1,9 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "PP",
-    " K",
-    " K"
+    "PP ",
+    " K ",
+    " K "
   ],
   "key": {
     "P": "palamod:titane_ingot",

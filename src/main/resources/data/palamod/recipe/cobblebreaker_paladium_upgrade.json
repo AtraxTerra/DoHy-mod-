@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "P P",
+    "PUP",
+    "P P"
+  ],
+  "key": {
+    "P": "palamod:paladium_ingot",
+    "U": "palamod:cobblebreaker_titane_upgrade"
+  },
+  "result": {
+    "id": "palamod:cobblebreaker_paladium_upgrade",
+    "count": 1
+  }
+}
