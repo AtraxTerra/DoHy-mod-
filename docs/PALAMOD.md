@@ -1067,7 +1067,8 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
 - XP : 10 par bûche de jacaranda, judée ou érable coupée (aucune pour l'ostrya), converties.
 - **Écart : génération activée.** L'original ne générait ces arbres que sur le serveur de minage
   (`Server Minage`, désactivé par défaut) : sans eux, rien de l'Alchimiste ne s'obtient. Rythme
-  d'origine : un essai par essence et par chunk, sur de l'herbe, 9 % (1/11 ici), tout l'overworld.
+  d'origine : un essai par essence et par chunk, sur de l'herbe, 9 % ; **divisé par deux à la
+  demande du joueur** (1/22 ici), tout l'overworld.
 - **Écart** : l'arbre de l'original écrasait tout dans son empreinte ; ici il ne remplace que
   l'air, les plantes, l'eau et les feuilles.
 
@@ -1079,7 +1080,8 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
   vide dedans, devant une bûche à sève : un sixième **toutes les 11 ticks**. La bûche devient
   une bûche entamée de **36 sixièmes (6 fioles), qui ne se régénère jamais** ; vidée, du bois
   mort ; cassée, du bois mort (sa sève est perdue). 144 sixièmes par extracteur (24 fioles),
-  puis il se brise. L'objet garde ses utilisations restantes. Accroupi, clic droit : la fiole
+  puis il se brise. L'objet garde ses utilisations restantes. La fiole se voit au pied de
+  l'extracteur, à son niveau de remplissage (propriété d'état `flask`, pas de rendu dynamique). Accroupi, clic droit : la fiole
   ressort, avec l'XP d'extraction — 60 / 120 / 240 par fiole pleine (jacaranda dès 0, judée dès
   25, érable dès 50), **rien pour l'ostrya**, comme l'original.
 - **Tanks** : 35 / 60 / 95 / 135 fioles. Clic droit avec des fioles : elles s'y vident (une

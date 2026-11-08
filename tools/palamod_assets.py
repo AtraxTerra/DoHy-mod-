@@ -1679,11 +1679,12 @@ def main():
             "config": {"log": {"Name": "%s:%s_log" % (NS, wood), "Properties": {"axis": "y"}},
                        "leaves": {"Name": "%s:%s" % (NS, leaves)}}})
         # BaseWorldGenerator : un essai par essence et par chunk, sur de
-        # l'herbe nue, nextInt(100) <= 8 soit 9 % — une chance sur 11 ici.
+        # l'herbe nue, nextInt(100) <= 8 soit 9 % — une chance sur 11. Divise
+        # par deux a la demande du joueur : une sur 22.
         write("data/%s/worldgen/placed_feature/%s_tree.json" % (NS, wood), {
             "feature": "%s:%s_tree" % (NS, wood),
             "placement": [
-                {"type": "minecraft:rarity_filter", "chance": 11},
+                {"type": "minecraft:rarity_filter", "chance": 22},
                 {"type": "minecraft:in_square"},
                 {"type": "minecraft:surface_water_depth_filter", "max_water_depth": 0},
                 {"type": "minecraft:heightmap", "heightmap": "OCEAN_FLOOR"},
@@ -1797,11 +1798,32 @@ def main():
             "textures": {"tape": "%s:block/extractor_%s" % (NS, state),
                          "particle": "%s:block/extractor_%s" % (NS, state)},
             "elements": extractor_elements})
+    # La fiole : TileEntityExtractorRenderer la dessine au pied de l'extracteur,
+    # de cote (0,5 ; 0,25 pour l'angle 0), a 0,45 de sa taille. Ici deux
+    # plans croises de 7 pixels, comme une fleur, avec l'icone de la fiole.
+    for level in range(7):
+        tex("items/alchimiste/flask%d.png" % level, "block/extractor_flask_%d.png" % level)
+        sprite = "%s:block/extractor_flask_%d" % (NS, level)
+        rotation = {"origin": [8, 0, 3.5], "axis": "y", "angle": 45}
+        write("assets/%s/models/block/extractor_flask_%d.json" % (NS, level), {
+            "textures": {"flask": sprite, "particle": sprite},
+            "elements": [
+                {"from": [4.5, 0, 3.5], "to": [11.5, 7, 3.5], "rotation": rotation, "shade": False, "faces": {
+                    "north": {"texture": "#flask", "uv": [0, 0, 16, 16]},
+                    "south": {"texture": "#flask", "uv": [0, 0, 16, 16]}}},
+                {"from": [8, 0, 0], "to": [8, 7, 7], "rotation": rotation, "shade": False, "faces": {
+                    "east": {"texture": "#flask", "uv": [0, 0, 16, 16]},
+                    "west": {"texture": "#flask", "uv": [0, 0, 16, 16]}}}]})
     rotations = {"east": 0, "south": 90, "west": 180, "north": 270}
-    write("assets/%s/blockstates/extractor.json" % NS, {"variants": {
-        "enabled=%s,facing=%s" % (enabled, facing): {
-            "model": "%s:block/extractor_%s" % (NS, "on" if enabled == "true" else "off"), "y": rotation}
-        for enabled in ("true", "false") for facing, rotation in rotations.items()}})
+    parts = []
+    for facing, rotation in rotations.items():
+        for enabled in ("true", "false"):
+            parts.append({"when": {"facing": facing, "enabled": enabled}, "apply": {
+                "model": "%s:block/extractor_%s" % (NS, "on" if enabled == "true" else "off"), "y": rotation}})
+        for shown in range(1, 8):
+            parts.append({"when": {"facing": facing, "flask": str(shown)}, "apply": {
+                "model": "%s:block/extractor_flask_%d" % (NS, shown - 1), "y": rotation}})
+    write("assets/%s/blockstates/extractor.json" % NS, {"multipart": parts})
     write("assets/%s/models/item/extractor.json" % NS, {"parent": "%s:block/extractor_off" % NS})
     write("assets/%s/items/extractor.json" % NS,
           {"model": {"type": "minecraft:model", "model": "%s:block/extractor_off" % NS}})

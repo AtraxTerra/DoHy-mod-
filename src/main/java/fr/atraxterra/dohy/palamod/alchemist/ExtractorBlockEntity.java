@@ -54,11 +54,23 @@ public class ExtractorBlockEntity extends BlockEntity {
     }
 
     private void setEnabled(boolean enabled) {
-        if (level != null && enabled() != enabled) {
-            level.setBlock(worldPosition, getBlockState().setValue(ExtractorBlock.ENABLED, enabled), Block.UPDATE_ALL);
-        }
         if (!enabled) {
             timer = 0;
+        }
+        sync(enabled);
+    }
+
+    /** L'etat du bloc suit la marche et la fiole, pour le modele. */
+    private void sync(boolean enabled) {
+        if (level == null) {
+            return;
+        }
+        FlaskSap sap = flask.get(PalaAlchemist.FLASK_SAP.get());
+        int shown = flask.isEmpty() ? 0 : sap == null ? 1 : 1 + sap.level();
+        BlockState state = getBlockState().setValue(ExtractorBlock.ENABLED, enabled)
+                .setValue(ExtractorBlock.FLASK, shown);
+        if (state != getBlockState()) {
+            level.setBlock(worldPosition, state, Block.UPDATE_ALL);
         }
     }
 
@@ -155,9 +167,7 @@ public class ExtractorBlockEntity extends BlockEntity {
         modified = true;
         uses--;
         setChanged();
-        if (filled.isFull() || left <= 0) {
-            setEnabled(false);
-        }
+        setEnabled(!filled.isFull() && left > 0);
         if (uses <= 0) {
             // Use : il se brise, sa fiole tombe (preRemoveSideEffects).
             level.playSound(null, worldPosition, SoundEvents.ITEM_BREAK.value(), SoundSource.BLOCKS, 1.0f, 1.0f);
