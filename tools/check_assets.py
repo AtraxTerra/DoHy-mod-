@@ -45,8 +45,9 @@ BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "cr
 ITEMLESS = ("crop",)
 
 # Blocs sans item enregistres par registerBlock : la void stone se pose depuis
-# la Voidstone minage et la rend a la casse, elle n'a pas d'objet propre.
-ITEMLESS_BLOCKS = ("void_stone",)
+# la Voidstone minage et la rend a la casse, elle n'a pas d'objet propre. L'eau
+# angelique est un fluide : son objet est le seau.
+ITEMLESS_BLOCKS = ("void_stone", "angelic_water")
 
 errors = []
 
@@ -572,6 +573,14 @@ def check_equipment():
         for name in re.findall(rf'\b{factory}\(\s*"([a-z0-9_]+)"', source):
             checked += 1
             if f"{NS}:{name}" not in values:
+                fail(f"equipement : {name} n'est pas dans #minecraft:{tag_name} — "
+                     "il refusera les enchantements de son type")
+    # Les outils a classe propre passent par registerItem, que le motif
+    # ci-dessus ne voit pas : la pioche et la hache en endium.
+    for name, tag_name in (("endium_pickaxe", "pickaxes"), ("endium_axe", "axes")):
+        if f'registerItem("{name}"' in source:
+            checked += 1
+            if f"{NS}:{name}" not in _tag_values(tag_name):
                 fail(f"equipement : {name} n'est pas dans #minecraft:{tag_name} — "
                      "il refusera les enchantements de son type")
     for name, piece in re.findall(r'\barmor\(\s*"([a-z0-9_]+)",[^;]*ArmorType\.(\w+)\)', source):

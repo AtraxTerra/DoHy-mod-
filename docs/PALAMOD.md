@@ -895,3 +895,54 @@ demande Mineur 100 (`#palamod:break_locked`). **Écart** : il ne naissait que da
 de minage, non portée. Il est placé au fond de l'overworld (y −64 à −54) : quatre tirages par
 chunk à 1 sur 225, chaque filon ramené à un bloc — d'où `replace_single_block` et 1 chance
 sur 56 par chunk.
+
+---
+
+## 12. Fermier — les objets débloqués (chapitre 9)
+
+Relevé dans `FarmerRegisterer` (verrous), `BaseItemAxe` et `BlockAngelicWater`. Niveaux du code ×5.
+
+| Niveau | Objet | Wiki | Porté |
+|---|---|---|---|
+| 10 / 25 / 65 / 85 / 100 | Houes à rayon | 2 / 5 / 13 / 17 / 20 | déjà au chapitre 7 |
+| 15 / 30 / 75 / 90 / 100 | Seedplanters | 3 / 6 / 15 / 18 / 20 | déjà au chapitre 5a |
+| 35 / 60 / 80 / 100 | Cultures | 7 / 12 / 16 / 20 | déjà au chapitre 3 |
+| 40 | Crusher | 8 | déjà au chapitre 4 |
+| 45 / 55 | Graines d'herbe colorée, herbe colorée | 9 / 11 | **non, écartées par le joueur** |
+| 50 | Graine de racinier | 10 | **non, écartée par le joueur** |
+| 70 | Totem de fertilité | 14 | déjà au chapitre 5a |
+| 95 | Trône du fermier | 19 | **non — aucun trône n'est porté, à la demande du joueur** |
+| 100 | Hache en endium (abattage), plastron en endium | 20 | oui (le plastron l'était au chapitre 7) |
+
+Les herbes colorées et le racinier ont été portés puis **retirés à la demande du joueur** après
+lecture du résultat. Leurs relevés restent valables pour qui voudrait y revenir : dix couleurs
+en métas, une graine qui change la terre labourée **humide** en herbe teinte ; un arbre de trois
+bûches dont la racine descend en **une seule colonne** jusqu'à la bedrock ou l'obsidienne (pas
+l'obsidienne renforcée), recette à base de **bûches** de bois mort. Leurs verrous restent dans
+`data/jobs.json`, inertes.
+
+### Hache en endium — `BaseItemAxe.onBlockDestroyed`, `breakTree`
+
+Une bûche cassée abat toutes les bûches qui la touchent, par les 26 voisines, jusqu'à 15 pas,
+sans limite de nombre ; les feuilles restent et pourrissent d'elles-mêmes. **Une usure par
+arbre.** L'usure est plafonnée : à bout, la hache ne fait plus qu'abattre, elle coupe et frappe
+toujours (seule l'épée en endium refusait vraiment de servir). Plafond un point sous le maximum,
+comme la pioche en endium. **Écart** : chaque bûche passe par la casse d'un joueur, donc
+protections, drops normaux et suivi des blocs posés la voient ; l'original ne voyait que la
+première. Une bûche est ce que `#minecraft:logs` contient.
+
+### Eau angélique — `PRegister_Fluids`, `BlockAngelicWater`, `ItemBucketBase`
+
+Pas un objet du Fermier, mais l'ingrédient de sa graine de racinier, et demandée par le joueur.
+- Un fluide de type eau (`Material.water`) : on y nage, on s'y noie, il éteint le feu et
+  humidifie la terre labourée. Densité 200, sans source infinie.
+- **Un joueur dedans regagne un demi-cœur toutes les 40 ticks** s'il est blessé, le rythme d'une
+  régénération I. **Écart** : l'original gardait ce compteur sur le bloc, partagé par tous les
+  joueurs ; il est ici par joueur.
+- Le seau, par un : potion de régénération sur un seau d'eau (le seau d'eau rend son seau vide).
+  La potion est reconnue par un ingrédient à composants de NeoForge.
+- Rendu : en 26.2 un fluide se dessine par un **modèle de fluide** (`RegisterFluidModelsEvent`,
+  `FluidModel.Unbaked`), plus par les textures de son type. Textures animées de PalaMod, sans
+  teinte.
+- Pas porté : ses usages dans le chaudron de l'alchimiste, les réservoirs, le pistolet à
+  réservoir et les familiers — ils viendront avec leurs modules.
