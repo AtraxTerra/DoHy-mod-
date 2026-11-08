@@ -844,7 +844,7 @@ obsidienne wither (portail de la dimension de minage) n'est pas portée.
 
 ### Palafurnace — `PaladiumFurnaceLogic`
 
-Recettes et combustibles du fourneau vanilla. `n` = améliorations de fourneau dans la case de
+Recettes et combustibles du fourneau vanilla, plus les charbons mixés (voir plus bas). `n` = améliorations de fourneau dans la case de
 gauche, plafonné à 16, et 1 si elle est vide : une cuisson dure `200 / n` ticks et le combustible
 brûle `n` fois plus vite. **Une seule amélioration ne change rien** (`n` vaut déjà 1) : c'est
 l'original. Pas d'XP de fourneau au retrait.
@@ -857,11 +857,22 @@ hache, pioche, pelle) : fer et or 4-7-6-3-2-2-2-1, titane 5-8-7-4-2-3-3-1, amét
 4-7-6-3-2-3-3-1, paladium 4-7-6-3-2-2-2-1, endium idem sans pelle. **Bugs corrigés** : une pièce
 qui ne rendait rien brûlait tout le combustible, et le contenu était perdu à la casse.
 
-### Entonnoir en paladium — `TileEntityPaladiumHopper`
+### Entonnoir en paladium — `TileEntityPaladiumHopper`, puis un vrai entonnoir
 
-Toutes les 8 ticks, prend **la pile entière** dans l'inventaire du dessus — rien au sol. Une
-chaîne d'entonnoirs en paladium envoie directement au dernier inventaire. **Écart** : l'original
-se bloquait sur la première pile qui ne rentrait pas ; ici on essaie les suivantes.
+L'original n'avait **pas d'inventaire** et n'aspirait rien au sol : toutes les 8 ticks, il
+prenait la pile entière du coffre du dessus et la posait dans l'inventaire visé. Posé seul, il
+ne faisait rien de visible. **À la demande du joueur** (« c'est censé être un hopper
+amélioré »), c'est maintenant un entonnoir vanilla complet — cinq cases, l'interface de
+l'entonnoir, les objets au sol aspirés, coupé par la redstone, lu par un comparateur — qui garde
+l'amélioration de PalaMod : **une pile entière par transfert** toutes les 8 ticks, là où
+l'entonnoir vanilla déplace un seul objet.
+
+### Charbons mixés comme combustible — choix du joueur
+
+Dans le jar, les charbons mixés ne brûlent nulle part : ce sont les réactifs du crusher. À la
+demande du joueur, ils alimentent la Palafurnace et la Palaforge (et la Palamachine quand elle
+sera portée), pas le fourneau vanilla. Durées **calibrées** (`PalaFuels`), le charbon valant
+1 600 ticks : or 2 400, améthyste 4 000, titane 6 400, paladium 16 000 (un bloc de charbon).
 
 ### Coffres en améthyste et en titane — `ModdedChestContainer`
 

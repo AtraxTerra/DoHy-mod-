@@ -178,7 +178,12 @@ d'après les pixels de la texture.
 
 **À vérifier en jeu** (la CI ne voit ni le rendu ni les paquets) : le contour bleu du cave
 block en endium, le modèle JSON des coffres et leur orientation, la flamme de la Palafurnace et
-de la Palaforge, et l'entonnoir en paladium sur une chaîne.
+de la Palaforge.
+
+**Premier retour en jeu.** L'entonnoir en paladium « ne fait rien » : fidèle à PalaMod, il
+n'avait ni inventaire ni aspiration au sol. Le joueur attend un entonnoir amélioré : c'est
+maintenant un entonnoir vanilla complet qui déplace une pile entière par transfert. Et les
+charbons mixés deviennent le combustible des machines de Paladium (durées calibrées).
 
 ### 2026-11-08 (suite) — les métiers remplacent les skills
 

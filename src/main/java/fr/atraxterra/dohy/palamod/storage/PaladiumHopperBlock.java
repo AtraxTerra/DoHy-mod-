@@ -3,6 +3,10 @@ package fr.atraxterra.dohy.palamod.storage;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -17,6 +21,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -25,10 +31,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * Entonnoir en paladium ({@code BlockPaladiumHopper}).
  *
  * <p>Fer, durete 5, n'importe quelle pioche. Il se pose comme l'entonnoir
- * vanilla — pointe a l'oppose de la face cliquee, jamais vers le haut — et un
- * signal de redstone le coupe. Il n'a pas d'inventaire et ne s'ouvre pas : il
- * deplace des piles entieres de l'inventaire du dessus vers celui qu'il vise
- * ({@link PaladiumHopperBlockEntity}).
+ * vanilla — pointe a l'oppose de la face cliquee, jamais vers le haut —, un
+ * signal de redstone le coupe, il s'ouvre sur l'interface de l'entonnoir et un
+ * comparateur lit son contenu. Ce qui change est dans
+ * {@link PaladiumHopperBlockEntity} : des piles entieres au lieu d'un objet.
  */
 public class PaladiumHopperBlock extends BaseEntityBlock {
 
@@ -37,10 +43,13 @@ public class PaladiumHopperBlock extends BaseEntityBlock {
 
     public static final MapCodec<PaladiumHopperBlock> CODEC = simpleCodec(PaladiumHopperBlock::new);
 
-    /** Le bol et l'entonnoir : la meme silhouette que l'entonnoir vanilla. */
-    private static final VoxelShape BOWL = Shapes.or(
-            Block.box(0, 10, 0, 16, 16, 16),
-            Block.box(4, 4, 4, 12, 10, 12));
+    /**
+     * Le bol et l'entonnoir, creux comme l'entonnoir vanilla : un objet jete
+     * dessus tombe dans le bol, dans la zone d'aspiration.
+     */
+    private static final VoxelShape BOWL = Shapes.join(
+            Shapes.or(Block.box(0, 10, 0, 16, 16, 16), Block.box(4, 4, 4, 12, 10, 12)),
+            Block.box(2, 11, 2, 14, 16, 14), BooleanOp.ONLY_FIRST);
     private static final VoxelShape DOWN = Shapes.or(BOWL, Block.box(6, 0, 6, 10, 4, 10));
     private static final VoxelShape NORTH = Shapes.or(BOWL, Block.box(6, 4, 0, 10, 8, 4));
     private static final VoxelShape SOUTH = Shapes.or(BOWL, Block.box(6, 4, 12, 10, 8, 16));
@@ -90,6 +99,33 @@ public class PaladiumHopperBlock extends BaseEntityBlock {
             case EAST -> EAST;
             default -> DOWN;
         };
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                               BlockHitResult hit) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof PaladiumHopperBlockEntity hopper) {
+            player.openMenu(hopper);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof PaladiumHopperBlockEntity hopper) {
+            Containers.dropContents(level, pos, hopper);
+        }
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+        return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
     }
 
     @Override

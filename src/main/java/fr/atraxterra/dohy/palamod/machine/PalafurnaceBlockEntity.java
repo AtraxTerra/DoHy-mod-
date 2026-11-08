@@ -20,7 +20,8 @@ import net.minecraft.world.level.storage.ValueOutput;
  *
  * <p>Releve dans {@code PaladiumFurnaceLogic} :
  * <ul>
- *   <li>recettes et combustibles du fourneau vanilla ;</li>
+ *   <li>recettes et combustibles du fourneau vanilla — plus les charbons mixes,
+ *       a la demande du joueur ({@link PalaFuels}) ;</li>
  *   <li>{@code n} = le nombre d'ameliorations de four dans la case dediee,
  *       plafonne a 16, et 1 si elle est vide ;</li>
  *   <li>une cuisson dure {@code 200 / n} ticks (division entiere : 200, 100, 66,
@@ -104,7 +105,7 @@ public class PalafurnaceBlockEntity extends MachineBlockEntity implements Worldl
     public boolean canPlaceItem(int slot, ItemStack stack) {
         return switch (slot) {
             case SLOT_INPUT -> !stack.is(PalaMachines.FURNACE_UPGRADE.get());
-            case SLOT_FUEL -> level != null && level.fuelValues().isFuel(stack);
+            case SLOT_FUEL -> PalaFuels.isFuel(level, stack);
             case SLOT_UPGRADE -> stack.is(PalaMachines.FURNACE_UPGRADE.get());
             default -> false;
         };
@@ -126,7 +127,7 @@ public class PalafurnaceBlockEntity extends MachineBlockEntity implements Worldl
 
         if (burnTime <= 0 && canSmelt) {
             ItemStack fuel = getItem(SLOT_FUEL);
-            int duration = fuel.isEmpty() ? 0 : fuel.getBurnTime(RecipeType.SMELTING, server.fuelValues());
+            int duration = PalaFuels.burnTime(server, fuel);
             if (duration > 0) {
                 burnTime = burnDuration = duration;
                 // Le seau de lave rend un seau vide ; tout autre combustible disparait.

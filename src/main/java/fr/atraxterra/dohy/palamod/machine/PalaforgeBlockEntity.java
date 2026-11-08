@@ -11,7 +11,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -26,7 +25,8 @@ import java.util.function.Supplier;
  *
  * <p>Releve dans {@code ForgeLogic} et {@code EnumAllowItemsForge} :
  * <ul>
- *   <li>une piece d'equipement de la table, du combustible vanilla ;</li>
+ *   <li>une piece d'equipement de la table, et pour combustible celui du
+ *       fourneau vanilla ou un charbon mixe ({@link PalaFuels}, choix du joueur) ;</li>
  *   <li>un cycle dure 101 ticks (le travail monte de 0 a 100, la piece est
  *       refondue au tick suivant) ;</li>
  *   <li>on recupere {@code maximum x pct / 100} lingots en division entiere, ou
@@ -176,7 +176,7 @@ public class PalaforgeBlockEntity extends MachineBlockEntity implements WorldlyC
     public boolean canPlaceItem(int slot, ItemStack stack) {
         return switch (slot) {
             case SLOT_INPUT -> table().containsKey(stack.getItem());
-            case SLOT_FUEL -> level != null && level.fuelValues().isFuel(stack);
+            case SLOT_FUEL -> PalaFuels.isFuel(level, stack);
             default -> false;
         };
     }
@@ -194,8 +194,7 @@ public class PalaforgeBlockEntity extends MachineBlockEntity implements WorldlyC
 
         if (burn <= 0) {
             ItemStack fuel = getItem(SLOT_FUEL);
-            int duration = !valid || fuel.isEmpty() ? 0
-                    : fuel.getBurnTime(RecipeType.SMELTING, server.fuelValues());
+            int duration = valid ? PalaFuels.burnTime(server, fuel) : 0;
             if (duration > 0) {
                 burn = burnMax = duration;
                 if (fuel.is(Items.LAVA_BUCKET)) {
