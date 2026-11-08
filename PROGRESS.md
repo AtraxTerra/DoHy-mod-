@@ -79,6 +79,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 2 | **Minerais et matériaux** `palamod` : 6 minerais + génération, 7 blocs, 7 particules, lingots, compressés, 4 charbons mixés, onglet créatif | fait |
 | 3 | **Cultures** : 4 plantes, graines, fruits, lot rare, XP d'agriculture | fait |
 | 4 | **Machines** : cobblebreaker 4 paliers, crusher | fait |
+| 4b | **Interfaces de machines** : menu et écran propres, barre de progression | fait |
 | 5 | **Machines, suite** : totem de fertilité, 5 seedplanters, palafurnace, grinder, palamachine | à faire |
 | 6 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
 
@@ -111,7 +112,7 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 
 - **IDs d'attributs 26.2** : les perks de `skills.json` utilisent des ids plausibles (`minecraft:mining_efficiency`, `minecraft:block_interaction_range`…) qui doivent être validés contre l'API réelle. À faire à la première compilation.
 - **Trocs de villageois en registres de datapack** (nouveauté 26.1 : `data/<ns>/villager_trade/*.json` et `trade_set/*.json`). **Piste à évaluer en phase 3** : plutôt que de plafonner le prix de vente du lapis, de la perle de l'ender et du reste, on peut retirer ou renchérir directement le troc fautif par datapack — et rendre leurs vrais prix à ces items. C'est traiter la cause au lieu du symptôme, et ça rendrait les plafonds inutiles.
-- **HUD et GUI en mode retenu** : 26.2 a supprimé `GuiGraphics`. Le HUD de la monnaie et le GUI du shop doivent être écrits directement en `extract*` + `GuiGraphicsExtractor`. L'API exacte d'enregistrement d'une couche de HUD côté NeoForge 26.2 est à confirmer en CI (l'ancien `RegisterGuiLayersEvent` n'est pas garanti sous cette forme).
+- **HUD et GUI en mode retenu** : 26.2 a supprimé `GuiGraphics`. Le HUD de la monnaie et le GUI du shop doivent être écrits directement en `extract*` + `GuiGraphicsExtractor`. L'API exacte d'enregistrement d'une couche de HUD côté NeoForge 26.2 est à confirmer en CI (l'ancien `RegisterGuiLayersEvent` n'est pas garanti sous cette forme). → **partiellement tranché le 2026-11-08** : les écrans de conteneur sont écrits et compilent (`extractBackground`, `blit` avec `RenderPipelines.GUI_TEXTURED`, `RegisterMenuScreensEvent`) — voir `MachineScreen`. Reste à confirmer : les méthodes de texte d'un écran de conteneur (l'équivalent de `renderLabels`), nécessaires pour afficher le remplissage des bacs du crusher.
 - **Plafonds villageois** : ~~à confirmer~~ → **tranché le 2026-11-03 : on garde les plafonds.** Ne pas relancer `gen_prices.py` avec `--no-villager-caps`. Audit encore à compléter sur : briques, argile, papier, verre teinté, charbon, fer.
 - ~~**Catégorie COMPONENT** : liste et prix d'achat à établir (phase 3).~~ → **tranché le 2026-11-05 : la catégorie est supprimée.** Elle n'a jamais contenu d'item (aucune ligne de `rates.csv`, aucune règle de `tag_prices.json`), donc l'onglet du shop était vide et l'aile de musée correspondante ne pouvait pas se compléter. L'onglet est remplacé par la boutique ; la remise d'achat de −10 % est passée sur l'aile NTM.
 - **Table de loot des caisses** : non écrite.
@@ -121,6 +122,73 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — des interfaces a nous, et ce que le coffre cachait
+
+**Demande du joueur** : des interfaces customs au lieu du coffre vanilla. Option 2 retenue —
+un vrai `AbstractContainerMenu` cote serveur et un `AbstractContainerScreen` cote client.
+
+**Ce que le coffre cachait, et pourquoi c'etait un vrai probleme.** Le chapitre 4 adossait
+l'inventaire des machines a un `ChestMenu` pour n'ecrire aucune ligne de code client. La limite
+n'etait pas esthetique : **un coffre ne synchronise que des objets**. Aucun entier ne transite,
+donc aucune jauge, aucune cadence. Le cobblebreaker a quatre paliers dont le seul effet est la
+vitesse — et le joueur qui depensait un lingot de paladium pour passer de 400 a 100 ticks
+**n'avait aucun moyen de voir que son amelioration avait pris**, sinon le chronometre. Une
+machine qui cache son unique variable d'amelioration est une machine qui ne recompense pas.
+
+**1. Le canal : `ContainerData`, deux entiers.** C'est le seul chemin qui synchronise des
+entiers d'un menu ouvert sans ecrire de paquet reseau — `broadcastChanges` les envoie quand ils
+changent. Le socle expose l'avancement du cycle **et sa duree totale**. La duree y figure parce
+que celle du cobblebreaker depend de son palier, que le client ne peut pas deduire ; l'ecran ne
+fait que le rapport des deux et n'a donc rien a savoir d'aucune machine. `cycleDuration()` rend
+zero quand la machine ne peut pas tourner, ce qui donne a l'ecran « aucune progression » sans
+qu'il connaisse les conditions de chacune.
+
+**2. Un menu generique, deux dispositions.** `MachineMenu` est le meme pour les deux machines ;
+seule change sa `MachineLayout`. Le cobblebreaker met son entree en haut et ses six bacs en
+rangee, **ranges du metal le plus courant au plus rare de gauche a droite** — l'ordre dans
+lequel ils se remplissent, donc la rarete lisible sans explication. Le crusher reprend la
+disposition du fourneau vanilla (matiere, combustible, resultat), que tout le monde sait lire.
+
+**3. Le shift-clic a fallu le filtrer.** Sans `canPlaceItem`, une pierre pouvait partir dans un
+bac de sortie du cobblebreaker, **hors d'atteinte de la machine**. Les cases de sortie declarent
+donc `input = false` et chaque machine filtre ce qu'elle accepte. Le crusher, lui, accepte tous
+les fruits en haut et tous les charbons melanges en bas sans verifier qu'ils vont ensemble :
+c'est le couple que `matchingRecipe` exige, et filtrer plus tot empecherait de preparer la
+machine en deux gestes.
+
+**4. Le sens de remplissage n'est pas l'axe.** La fleche du cobblebreaker est verticale et se
+remplit **du haut vers le bas**, parce qu'elle pointe vers le bas ; la flamme du crusher est
+verticale aussi mais **monte**. Reutiliser un seul booleen pour les deux remplissait la fleche a
+l'envers. `Sprite` porte donc `vertical` (l'axe) et `fillUp` (le sens), separement.
+
+**5. Le probleme reel de ce chapitre : deux sources pour un meme chiffre.** Les positions des
+cases vivent forcement a deux endroits — `tools/gen_gui.py` dessine les creux dans la texture,
+`MachineLayout` les declare au menu. Un decalage de deux pixels donne une interface ou les
+objets flottent a cote de leur creux, et **rien ne le signale** : ni la compilation, ni le
+chargement, ni un demarrage reussi. C'est la meme classe de faute que les textures violettes du
+chapitre 2 et le crash d'initialisation statique d'hier : correcte pour le compilateur, fausse
+en jeu.
+
+Traitee de la meme facon : le generateur emet `data/gui_layout.json`, et `check_assets.py`
+compare ce manifeste aux constantes Java — positions, roles, coordonnees et taille des sprites,
+dimensions du panneau, inventaire du joueur, et la taille 256x256 que `MachineScreen` suppose a
+chaque `blit`. Verifie en cassant volontairement trois choses : un slot decale de 2 px, un role
+`fuel` declare non-entree, un `ARROW_FULL_V` desaccorde. Les trois sont remontees nommement.
+
+**Ce que 26.2 change pour un ecran.** `GuiGraphics` n'existe plus : le rendu d'interface est
+passe en mode retenu, un ecran **extrait** son etat dans un `GuiGraphicsExtractor` que le moteur
+rend ensuite. `renderBg` devient `extractBackground`, et `blit` prend un pipeline
+(`RenderPipelines.GUI_TEXTURED`) en premier argument. C'est le premier ecran du mod, et le
+risque reste contenu : un ecran de conteneur ne touche pas au pipeline de soumission en monde,
+qui est la vraie difficulte de cette version.
+
+**Ce qui reste cache, et pourquoi je le dis plutot que de le bricoler.** Le crusher compte les
+fruits deja broyes par recette — **jusqu'a 128 pour l'orangeblue**. Ce compteur est l'etat le
+plus volumineux du chapitre et il reste invisible : l'afficher demande les methodes de texte
+d'un ecran de conteneur en 26.2, dont je n'ai pas le nom confirme (`renderLabels` n'existe
+probablement plus sous cette forme). Une sonde part avec cette PR ; le compteur sera branche
+quand j'aurai le nom, pas devine.
 
 ### 2026-11-08 (suite) — le mod ne demarrait plus, et pourquoi la CI ne pouvait pas le voir
 

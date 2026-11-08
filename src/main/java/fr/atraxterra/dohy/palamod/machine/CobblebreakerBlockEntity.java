@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.palamod.machine;
 import fr.atraxterra.dohy.palamod.PalaItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -104,6 +105,47 @@ public class CobblebreakerBlockEntity extends MachineBlockEntity {
         tier = candidate;
         setChanged();
         return true;
+    }
+
+    // -- Interface -----------------------------------------------------------
+
+    @Override
+    protected MenuType<MachineMenu> menuType() {
+        return PalaMenus.COBBLEBREAKER.get();
+    }
+
+    @Override
+    protected MachineLayout layout() {
+        return MachineLayout.COBBLEBREAKER;
+    }
+
+    @Override
+    public int work() {
+        return work;
+    }
+
+    /**
+     * Zero quand la machine est a l'arret, sinon la cadence du palier.
+     *
+     * <p>C'est ce qui rend le palier visible : la meme barre se remplit quatre
+     * fois plus vite sur un cobblebreaker en paladium. Jusqu'ici l'amelioration
+     * ne se mesurait qu'au chronometre.
+     */
+    @Override
+    public int cycleDuration() {
+        return canWork() ? tier.workTicks() : 0;
+    }
+
+    /**
+     * Seule la pierre entre, et seulement par la case d'entree.
+     *
+     * <p>Sans ce filtre, le shift-clic deposerait n'importe quoi dans l'entree
+     * et la machine resterait bloquee sans rien dire — {@code canWork} exige de
+     * la pierre, mais ne la reclame pas.
+     */
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return slot == SLOT_INPUT && stack.is(Items.COBBLESTONE);
     }
 
     @Override

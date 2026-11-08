@@ -204,6 +204,152 @@ def check_lang(items, blocks):
             fail(f"{name} : pas de nom francais (block.{NS}.{name})")
 
 
+# ---------------------------------------------------------------------------
+# Interfaces : le Java et le generateur doivent decrire la meme disposition.
+#
+# Les positions des cases vivent a deux endroits, et il n'y a pas moyen de
+# faire autrement : le generateur les dessine dans la texture, le Java les
+# declare au menu. Un decalage de deux pixels donne une interface ou les objets
+# flottent a cote de leur creux, et absolument rien ne le signale — ni la
+# compilation, ni le chargement, ni un demarrage reussi. C'est exactement le
+# genre de faute que ce script existe pour attraper.
+# ---------------------------------------------------------------------------
+
+LAYOUT_JAVA = JAVA / "machine" / "MachineLayout.java"
+MENU_JAVA = JAVA / "machine" / "MachineMenu.java"
+SCREEN_JAVA = JAVA.parent / "client" / "MachineScreen.java"
+GUI_MANIFEST = pathlib.Path("data") / "gui_layout.json"
+
+# Le role note par le generateur dit si le shift-clic peut y deposer.
+INPUT_ROLES = {"input", "fruit", "fuel"}
+
+# Taille de reference des blits de MachineScreen.
+GUI_PNG = (256, 256)
+
+
+def java_ints(path):
+    """Les constantes entieres d'un fichier, par nom."""
+    text = path.read_text(encoding="utf-8")
+    return {
+        name: int(value)
+        for name, value in re.findall(r"static final int (\w+)\s*=\s*(-?\d+);", text)
+    }
+
+
+def _resolve(token, constants, path):
+    token = token.strip()
+    if re.fullmatch(r"-?\d+", token):
+        return int(token)
+    if token in constants:
+        return constants[token]
+    fail(f"gui : {path.name} utilise {token}, introuvable comme constante entiere")
+    return None
+
+
+def _layout_source(text, name):
+    """Le texte de l'initialiseur d'une constante MachineLayout."""
+    start = text.find(f"MachineLayout {name} = new MachineLayout(")
+    if start < 0:
+        return None
+    end = text.find("\n\n", start)
+    return text[start:end if end > 0 else len(text)]
+
+
+def check_gui():
+    if not GUI_MANIFEST.exists():
+        fail("data/gui_layout.json absent : lancer tools/gen_gui.py")
+        return
+    for path in (LAYOUT_JAVA, MENU_JAVA, SCREEN_JAVA):
+        if not path.exists():
+            fail(f"gui : {path} absent")
+            return
+
+    manifest = json.loads(GUI_MANIFEST.read_text(encoding="utf-8"))
+    constants = java_ints(LAYOUT_JAVA)
+    layout_text = LAYOUT_JAVA.read_text(encoding="utf-8")
+
+    # -- Le panneau et l'inventaire du joueur
+    panel = manifest["panel"]
+    screen = java_ints(SCREEN_JAVA)
+    for key, java_name in (("width", "PANEL_WIDTH"), ("height", "PANEL_HEIGHT")):
+        if screen.get(java_name) != panel[key]:
+            fail(f"gui : MachineScreen.{java_name}={screen.get(java_name)} "
+                 f"mais le panneau genere fait {panel[key]} de {key}")
+    menu = java_ints(MENU_JAVA)
+    for key, java_name in (("x", "PLAYER_X"), ("y", "PLAYER_Y"), ("hotbar_y", "HOTBAR_Y")):
+        if menu.get(java_name) != manifest["player"][key]:
+            fail(f"gui : MachineMenu.{java_name}={menu.get(java_name)} "
+                 f"mais les creux du joueur sont a {manifest['player'][key]}")
+
+    # -- Les sprites, lus hors panneau dans la texture
+    for sprite, prefix in (("arrow", "ARROW"), ("flame", "FLAME")):
+        expected = manifest["sprites"][sprite]
+        for key, suffix in (("u", "U"), ("v", "V"), ("full_v", "FULL_V"),
+                            ("width", "W"), ("height", "H")):
+            java_name = f"{prefix}_{suffix}"
+            if constants.get(java_name) != expected[key]:
+                fail(f"gui : MachineLayout.{java_name}={constants.get(java_name)} "
+                     f"mais le sprite {sprite} genere a {key}={expected[key]}")
+
+    # -- Chaque machine : ses cases, ses jauges, sa texture
+    for name, expected in manifest["machines"].items():
+        texture = ASSETS / "textures" / "gui" / f"{name}.png"
+        if not texture.exists():
+            fail(f"gui : {name} n'a pas de texture (textures/gui/{name}.png)")
+        else:
+            # MachineScreen passe 256x256 comme taille de reference a chaque
+            # blit. Une texture d'une autre taille decalerait tous les sprites
+            # sans erreur : le jeu lirait simplement au mauvais endroit.
+            size = png_size(texture)
+            if size != GUI_PNG:
+                fail(f"gui : textures/gui/{name}.png fait {size} au lieu de "
+                     f"{GUI_PNG} — MachineScreen.TEXTURE_SIZE suppose "
+                     f"{GUI_PNG[0]}")
+
+        source = _layout_source(layout_text, name.upper())
+        if source is None:
+            fail(f"gui : MachineLayout n'a pas de constante {name.upper()}")
+            continue
+
+        slots = re.findall(r"new SlotPos\((-?\d+),\s*(-?\d+),\s*(true|false)\)", source)
+        if len(slots) != len(expected["slots"]):
+            fail(f"gui : {name} a {len(slots)} cases en Java et "
+                 f"{len(expected['slots'])} dans la texture")
+        for index, (java_slot, generated) in enumerate(zip(slots, expected["slots"])):
+            x, y, is_input = int(java_slot[0]), int(java_slot[1]), java_slot[2] == "true"
+            if (x, y) != (generated["x"], generated["y"]):
+                fail(f"gui : {name} case {index} declaree en ({x},{y}) "
+                     f"mais le creux est dessine en ({generated['x']},{generated['y']})")
+            if is_input != (generated["role"] in INPUT_ROLES):
+                fail(f"gui : {name} case {index} est '{generated['role']}' pour le "
+                     f"generateur mais input={is_input} en Java")
+
+        sprites = re.findall(r"new Sprite\(([^)]*)\)", source)
+        declared = {}
+        for raw in sprites:
+            parts = [part.strip() for part in raw.split(",")]
+            x = _resolve(parts[0], constants, LAYOUT_JAVA)
+            y = _resolve(parts[1], constants, LAYOUT_JAVA)
+            vertical = parts[7] == "true"
+            declared["flame" if parts[2].startswith("FLAME") else "arrow"] = (x, y, vertical)
+
+        for sprite in ("arrow", "flame"):
+            generated = expected.get(sprite)
+            if (generated is None) != (sprite not in declared):
+                fail(f"gui : {name} a un {sprite} d'un seul cote "
+                     f"(Java: {sprite in declared}, texture: {generated is not None})")
+                continue
+            if generated is None:
+                continue
+            x, y, vertical = declared[sprite]
+            if (x, y) != (generated["x"], generated["y"]):
+                fail(f"gui : {name} {sprite} declare en ({x},{y}) mais dessine en "
+                     f"({generated['x']},{generated['y']})")
+            if "vertical" in generated and vertical != generated["vertical"]:
+                fail(f"gui : {name} {sprite} vertical={vertical} en Java mais "
+                     f"{generated['vertical']} dans la texture")
+
+
 def main():
     items, blocks, itemless = registered()
 
@@ -217,6 +363,7 @@ def main():
     check_items(items, blocks, itemless)
     check_loot(blocks)
     check_lang(items, blocks)
+    check_gui()
 
     if errors:
         for message in errors:
@@ -226,7 +373,8 @@ def main():
 
     print(f"chaine d'assets palamod verifiee : {len(blocks)} blocs "
           f"(dont {len(itemless)} sans item), {len(items)} items, "
-          f"blockstates, modeles, textures, butin et noms francais complets")
+          f"blockstates, modeles, textures, butin, noms francais "
+          "et dispositions d'interface coherentes")
     return 0
 
 

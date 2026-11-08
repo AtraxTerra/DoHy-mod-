@@ -302,6 +302,35 @@ sans elle l'icône est violette. C'est ce que vérifie le garde-fou de CI du cha
 
 ---
 
+### Interfaces de conteneur en 26.2 — relevé sur le classpath
+
+`GuiGraphics` n'existe plus : le rendu d'interface est passé en **mode retenu**. Un écran
+n'écrit plus dans un contexte graphique, il *extrait* son état dans un objet que le moteur rend
+ensuite. Signatures confirmées par `gradle apiProbe` :
+
+| Rôle | 1.21.x | 26.2 |
+|---|---|---|
+| Contexte de rendu | `GuiGraphics` | `GuiGraphicsExtractor` |
+| Fond d'un écran de conteneur | `renderBg(GuiGraphics, float, int, int)` | `extractBackground(GuiGraphicsExtractor, int, int, float)` — **public** |
+| Dessin d'une portion de texture | `blit(Identifier, …)` | `blit(RenderPipeline, Identifier, int x, int y, float u, float v, int w, int h, int texW, int texH)` |
+| Pipeline d'interface | — | `RenderPipelines.GUI_TEXTURED` |
+| Association type → écran | `MenuScreens.register` | `RegisterMenuScreensEvent.register(MenuType<? extends M>, MenuScreens.ScreenConstructor<M, U>)` |
+| Constructeur d'écran | idem | `AbstractContainerScreen(T, Inventory, Component, int imageWidth, int imageHeight)` |
+
+Noter l'**ordre des arguments de `extractBackground`** : le `partialTick` est passé en dernier
+alors que `renderBg` le prenait en premier. Les quatre paramètres sont des nombres, donc une
+inversion compile sans un mot — elle se voit seulement en jeu, par un fond qui ne suit pas la
+souris.
+
+Le canal d'entiers entre un menu serveur et sa copie client reste `ContainerData` /
+`addDataSlots` : c'est la seule façon de synchroniser une progression sans écrire de paquet.
+
+**Non confirmé** : les méthodes de texte d'un écran de conteneur (l'équivalent de
+`renderLabels`). Nécessaires pour afficher le remplissage des bacs du crusher ; une sonde est
+en attente.
+
+---
+
 ## 7. Grinder — multiblock, pas un bloc
 
 Le wiki le décrit comme un assemblage de 30 blocs plus une source de lave, placement strict,
