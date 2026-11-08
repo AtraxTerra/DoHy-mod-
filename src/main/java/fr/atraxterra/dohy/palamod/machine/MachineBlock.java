@@ -46,7 +46,7 @@ public abstract class MachineBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return null;
         }
         return (tickLevel, pos, tickState, entity) -> {
@@ -58,7 +58,7 @@ public abstract class MachineBlock extends BaseEntityBlock {
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof MachineBlockEntity machine) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof MachineBlockEntity machine) {
             Containers.dropContents(level, pos, machine);
         }
         return super.playerWillDestroy(level, pos, state, player);
