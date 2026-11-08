@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PP",
+    " K",
+    " K"
+  ],
+  "key": {
+    "P": "palamod:paladium_ingot",
+    "K": "minecraft:stick"
+  },
+  "result": {
+    "id": "palamod:paladium_radius_hoe",
+    "count": 1
+  }
+}

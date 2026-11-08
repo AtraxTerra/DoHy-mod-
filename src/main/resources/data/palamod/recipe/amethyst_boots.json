@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X X",
+    "X X"
+  ],
+  "key": {
+    "X": "palamod:amethyst_ingot"
+  },
+  "result": {
+    "id": "palamod:amethyst_boots",
+    "count": 1
+  }
+}

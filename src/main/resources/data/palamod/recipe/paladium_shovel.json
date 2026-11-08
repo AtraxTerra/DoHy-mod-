@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X",
+    "Y",
+    "Y"
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot",
+    "Y": "minecraft:stick"
+  },
+  "result": {
+    "id": "palamod:paladium_shovel",
+    "count": 1
+  }
+}

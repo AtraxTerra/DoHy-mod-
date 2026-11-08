@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:amethyst_radius_hoe",
+    "palamod:endium_radius_hoe",
+    "palamod:green_paladium_radius_hoe",
+    "palamod:paladium_radius_hoe",
+    "palamod:titane_radius_hoe"
+  ]
+}

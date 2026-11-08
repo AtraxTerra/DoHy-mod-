@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X X",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:mixed_endium_ingot"
+  },
+  "result": {
+    "id": "palamod:mixed_endium_chestplate",
+    "count": 1
+  }
+}

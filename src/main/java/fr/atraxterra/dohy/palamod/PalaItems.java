@@ -120,6 +120,13 @@ public final class PalaItems {
     public static final DeferredItem<Item> PALADIUM_STICK = simple("paladium_stick");
     public static final DeferredItem<Item> PALADIUM_CORE = simple("paladium_core");
 
+    /**
+     * Le materiau de l'armure en endium mixe : 8 lingots de paladium vert et
+     * un fragment d'endium en donnent 8. Sans lui, l'armure serait la seule de
+     * l'equipement impossible a fabriquer.
+     */
+    public static final DeferredItem<Item> MIXED_ENDIUM_INGOT = simple("mixed_endium_ingot");
+
     /** Fruits puis graines, chaque famille dans l'ordre de progression. */
     public static final List<DeferredItem<? extends Item>> CROP_ITEMS = List.of(
             EGGPLANT_SEEDS, CHERVIL_SEEDS, KIWANO_SEEDS, ORANGEBLUE_SEEDS,
@@ -133,7 +140,7 @@ public final class PalaItems {
             ENDIUM_INGOT, ENDIUM_NUGGET, ENDIUM_FRAGMENT, FINDIUM, TRIXIUM,
             COMPRESSED_AMETHYST, COMPRESSED_TITANE, COMPRESSED_PALADIUM, COMPRESSED_ENDIUM,
             GOLD_MIXED_COAL, AMETHYST_MIXED_COAL, TITANE_MIXED_COAL, PALA_MIXED_COAL,
-            AMETHYST_STICK, TITANE_STICK, PALADIUM_STICK, PALADIUM_CORE);
+            AMETHYST_STICK, TITANE_STICK, PALADIUM_STICK, PALADIUM_CORE, MIXED_ENDIUM_INGOT);
 
     /**
      * Les {@code BlockItem} des blocs, dans l'ordre de {@link PalaBlocks#ORDERED}.

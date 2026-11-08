@@ -36,7 +36,8 @@ EXPECTED_PNG = (16, 16)
 # Les fabriques de PalaItems, PalaBlocks et PalaCrops, en plus des methodes de
 # NeoForge. Un nom ajoute ici doit l'etre aussi dans BLOCK_FACTORIES s'il
 # enregistre un bloc.
-ITEM_FACTORIES = ("registerSimpleItem", "registerItem", "simple", "seed", "planter")
+ITEM_FACTORIES = ("registerSimpleItem", "registerItem", "simple", "seed", "planter",
+                  "sword", "pickaxe", "axe", "shovel", "hoe", "armor")
 BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "crop", "soil")
 
 # Les blocs sans item : on les obtient en semant, comme le ble vanilla. Ils
@@ -440,6 +441,92 @@ def check_recipes(items, blocks):
         print(f"recettes : {count} verifiees")
 
 
+# ---------------------------------------------------------------------------
+# Equipement : deux fautes que rien d'autre ne signale.
+#
+# 1. L'armure invisible. Un ArmorMaterial designe une definition d'equipement
+#    par son nom ; la definition designe des couches ; les couches sont des
+#    textures. Un maillon manquant donne un joueur qui porte une armure qu'on ne
+#    voit pas — l'objet marche, protege, et n'apparait pas.
+# 2. L'objet qui refuse les enchantements. En 26.2 ce sont des TAGS d'item qui
+#    decident si Tranchant va sur une epee ou Protection sur un casque. Une piece
+#    absente de son tag s'enchante a l'enclume avec rien, sans erreur.
+# ---------------------------------------------------------------------------
+
+EQUIPMENT = ASSETS / "equipment"
+LAYERS = ASSETS / "textures" / "entity" / "equipment"
+VANILLA_ITEM_TAGS = RES / "data" / "minecraft" / "tags" / "item"
+ARMOR_MATERIALS_JAVA = JAVA / "equipment" / "PalaArmorMaterials.java"
+EQUIPMENT_JAVA = JAVA / "equipment" / "PalaEquipment.java"
+
+LAYER_SIZE = (64, 32)
+
+# La fabrique Java -> le tag vanilla qui ouvre les enchantements.
+TOOL_TAGS = {"sword": "swords", "pickaxe": "pickaxes", "axe": "axes",
+             "shovel": "shovels", "hoe": "hoes"}
+ARMOR_TAGS = {"HELMET": "head_armor", "CHESTPLATE": "chest_armor",
+              "LEGGINGS": "leg_armor", "BOOTS": "foot_armor"}
+
+
+def _tag_values(name):
+    path = VANILLA_ITEM_TAGS / f"{name}.json"
+    if not path.exists():
+        return set()
+    return set(json.loads(path.read_text(encoding="utf-8")).get("values", []))
+
+
+def check_equipment():
+    if not ARMOR_MATERIALS_JAVA.exists() or not EQUIPMENT_JAVA.exists():
+        return
+
+    # -- 1. materiau -> definition -> couches -> textures
+    materials = set(re.findall(r'material\(\s*"([a-z0-9_]+)"',
+                               ARMOR_MATERIALS_JAVA.read_text(encoding="utf-8")))
+    if not materials:
+        fail("equipement : aucun materiau trouve dans PalaArmorMaterials — le motif "
+             "de ce controle ne correspond plus au code")
+    definitions = {p.stem for p in EQUIPMENT.glob("*.json")} if EQUIPMENT.is_dir() else set()
+
+    for name in sorted(materials - definitions):
+        fail(f"equipement : le materiau « {name} » n'a pas de assets/{NS}/equipment/{name}.json "
+             "— l'armure sera portee mais invisible")
+    for name in sorted(definitions - materials):
+        fail(f"equipement : equipment/{name}.json ne correspond a aucun materiau (fichier mort)")
+
+    for name in sorted(definitions & materials):
+        payload = json.loads((EQUIPMENT / f"{name}.json").read_text(encoding="utf-8"))
+        for layer, entries in payload.get("layers", {}).items():
+            for entry in entries:
+                texture = entry["texture"].split(":", 1)[1]
+                path = LAYERS / layer / f"{texture}.png"
+                if not path.exists():
+                    fail(f"equipement : {name} demande la couche {layer}/{texture}.png, absente "
+                         "— cette partie de l'armure sera invisible")
+                    continue
+                size = png_size(path)
+                if size != LAYER_SIZE:
+                    fail(f"equipement : {layer}/{texture}.png fait {size}, une couche portee "
+                         f"fait {LAYER_SIZE} — le modele lirait la texture au mauvais endroit")
+
+    # -- 2. chaque piece dans le tag qui ouvre ses enchantements
+    source = EQUIPMENT_JAVA.read_text(encoding="utf-8")
+    checked = 0
+    for factory, tag_name in TOOL_TAGS.items():
+        values = _tag_values(tag_name)
+        for name in re.findall(rf'\b{factory}\(\s*"([a-z0-9_]+)"', source):
+            checked += 1
+            if f"{NS}:{name}" not in values:
+                fail(f"equipement : {name} n'est pas dans #minecraft:{tag_name} — "
+                     "il refusera les enchantements de son type")
+    for name, piece in re.findall(r'\barmor\(\s*"([a-z0-9_]+)",[^;]*ArmorType\.(\w+)\)', source):
+        checked += 1
+        tag_name = ARMOR_TAGS[piece]
+        if f"{NS}:{name}" not in _tag_values(tag_name):
+            fail(f"equipement : {name} n'est pas dans #minecraft:{tag_name} — "
+                 "il refusera Protection et les enchantements d'armure")
+    print(f"equipement : {len(materials)} materiaux, {checked} pieces dans leurs tags d'enchantement")
+
+
 def main():
     items, blocks, itemless = registered()
 
@@ -454,6 +541,7 @@ def main():
     check_loot(blocks)
     check_lang(items, blocks)
     check_recipes(items, blocks)
+    check_equipment()
     check_gui()
 
     if errors:

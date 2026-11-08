@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PEP",
+    "PPP"
+  ],
+  "key": {
+    "P": "palamod:green_paladium_ingot",
+    "E": "palamod:endium_fragment"
+  },
+  "result": {
+    "id": "palamod:mixed_endium_ingot",
+    "count": 8
+  }
+}

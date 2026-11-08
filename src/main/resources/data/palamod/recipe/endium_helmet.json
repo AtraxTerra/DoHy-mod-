@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "X X"
+  ],
+  "key": {
+    "X": "palamod:endium_ingot"
+  },
+  "result": {
+    "id": "palamod:endium_helmet",
+    "count": 1
+  }
+}

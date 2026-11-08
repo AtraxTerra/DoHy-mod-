@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    " Z",
+    " Z"
+  ],
+  "key": {
+    "X": "palamod:endium_ingot",
+    "Z": "minecraft:stick"
+  },
+  "result": {
+    "id": "palamod:endium_pickaxe",
+    "count": 1
+  }
+}
