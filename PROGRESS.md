@@ -122,6 +122,37 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 
 ## Journal des sessions
 
+### 2026-11-08 (suite) — le mod ne demarrait plus, et pourquoi la CI ne pouvait pas le voir
+
+**Crash au lancement du chapitre 4** : `ExceptionInInitializerError` pendant la construction du
+mod. Cause trouvee en lisant le code, pas le rapport — celui-ci ne porte pas la trace de
+l'initialiseur.
+
+Dans `PalaMachines`, le champ `BLOCK_ITEMS` appelait `blockItems()`, qui parcourait
+`ORDERED_BLOCKS` **declare trois lignes plus bas**. Les champs statiques s'initialisent dans
+l'ordre du fichier : la liste valait encore `null`.
+
+**Ce qui rend ce bug mauvais, c'est qu'il est invisible a la compilation.** Une lecture
+*directe* d'un champ declare plus bas est refusee par le compilateur (« illegal forward
+reference ») ; **passer par un appel de methode contourne la regle**. Le jar se construit, la CI
+est verte, et le jeu refuse de demarrer. Reproduit a l'identique sur un exemple minimal de six
+lignes, puis verifie que la forme corrigee, elle, est bien rejetee a la compilation.
+
+**Deux parades, posees ensemble.**
+
+1. **La liste est passee en argument** a `blockItems(ORDERED_BLOCKS)`. Le compilateur retrouve
+   alors la forward reference : remonter le champ devient une **erreur de compilation** au lieu
+   d'un plantage au demarrage.
+2. **`tools/check_static_init.py`** suit le meme chemin que la JVM — champ statique, methode
+   appelee, champs qu'elle lit — et signale ceux declares plus bas. Verifie en remettant la
+   faute : il la nomme et dit quoi faire.
+
+Lecon pour la suite : la CI de ce projet valide la **compilation**, pas le **chargement**. Tout
+ce qui se passe entre les deux — ordre d'initialisation statique, enregistrements, datapacks —
+ne se voit qu'en jeu. Les controles de `tools/` existent pour couvrir cet angle mort, un cas a
+la fois.
+
+
 ### 2026-11-08 (suite) — chapitre 4 : cobblebreaker et crusher
 
 **Le socle des block entities est pose**, et avec un choix qui tient tout le chapitre.

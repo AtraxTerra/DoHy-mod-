@@ -148,6 +148,14 @@ jobs:
       # des fautes cherchees ici ne fait echouer la compilation — elles donnent
       # du violet, un bloc invisible ou un identifiant brut affiche au joueur,
       # et seulement en jeu. Le script est lancable a la main : voir son entete.
+      # Un champ statique qui lit, via un appel de methode, un champ declare
+      # plus bas : le compilateur ne voit rien (une lecture DIRECTE serait
+      # refusee, l'appel de methode contourne la regle), le jar se construit, et
+      # le jeu refuse de demarrer sur un ExceptionInInitializerError. C'est
+      # arrive une fois ; ce controle est la pour que ce soit la derniere.
+      - name: Les initialisations statiques doivent etre dans l'ordre
+        run: python3 tools/check_static_init.py
+
       - name: La chaine d'assets palamod doit etre complete
         run: python3 tools/check_assets.py
 
