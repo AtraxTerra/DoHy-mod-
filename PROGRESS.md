@@ -85,6 +85,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 5b | **Machines de craft** : grinder (multiblock), palamachine (la palaforge est au chapitre 8) | à faire |
 | 6 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
 | 7 | **Équipement** : 19 outils, 5 houes à rayon, 6 armures, leurs effets, 49 recettes | fait |
+| 9 | **Fermier** : abattage et incassabilité de la hache en endium, eau angélique (fluide qui soigne, seau) — sans herbes colorées, racinier ni trône | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -149,6 +150,25 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — chapitre 9 : le Fermier
+
+**Demande** : porter les objets débloqués du Fermier. Consignes du joueur en route : **aucun
+trône, pour aucun métier**, et l'économie viendra **après** tous les métiers.
+
+Le Fermier était déjà presque complet (houes, seedplanters, cultures, crusher, totem, armure en
+endium). Les herbes colorées et le racinier ont été portés, puis **retirés à la demande du
+joueur** (« nul et moche ») : il garde la hache en endium et demande l'**eau angélique**. Les
+relevés au bytecode de ces deux objets sont résumés dans `docs/PALAMOD.md` § 12.
+
+**Le rendu des fluides a changé en 26.2.** `IClientFluidTypeExtensions` n'a plus de textures ;
+un fluide se dessine par un `FluidModel.Unbaked` (textures fixe, coulante, voile) enregistré dans
+`RegisterFluidModelsEvent`. Trouvé à la sonde, en lisant comment le jeu construit l'eau et la
+lave dans `FluidStateModelSet`.
+
+**Sources disponibles chez le joueur** (dossiers connectés depuis l'app de bureau) : le dossier
+`.paladium` en 1.7.10 (mods `.pala` complets, configs) et l'instance PrismLauncher 26.2 où il
+teste le mod — ses `logs/latest.log` sont lisibles pour déboguer un retour en jeu.
 
 ### 2026-11-08 (suite) — chapitre 8 : le Mineur
 

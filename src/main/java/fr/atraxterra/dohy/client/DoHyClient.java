@@ -1,16 +1,22 @@
 package fr.atraxterra.dohy.client;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.palamod.PalaMod;
+import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
 import fr.atraxterra.dohy.palamod.storage.PalaChestMenu;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 
 /**
  * Enregistrements cote client.
@@ -24,6 +30,22 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 public final class DoHyClient {
 
     private DoHyClient() {
+    }
+
+    /**
+     * L'eau angelique : en 26.2 un fluide se dessine par un modele de fluide
+     * enregistre ici, plus par les textures de son type. Les textures portent
+     * leur couleur : pas de teinte, comme la lave vanilla. Le voile vu a travers
+     * le verre est celui de l'eau.
+     */
+    @SubscribeEvent
+    public static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
+        event.register(new FluidModel.Unbaked(
+                        new Material(Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "block/fluid/angelic_water_still")),
+                        new Material(Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "block/fluid/angelic_water_flow")),
+                        new Material(Identifier.withDefaultNamespace("block/water_overlay")),
+                        (FluidTintSource) null),
+                PalaFluids.ANGELIC_WATER, PalaFluids.FLOWING_ANGELIC_WATER);
     }
 
     @SubscribeEvent

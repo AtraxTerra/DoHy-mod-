@@ -1344,6 +1344,58 @@ def main():
     tag("%s/tags/block/area_mining_immune.json" % NS,
         ["minecraft:obsidian", "minecraft:crying_obsidian"])
 
+    # ---- chapitre 9 : l'eau angelique ----
+    #
+    # Un fluide : ses textures animees (16 x 16n, avec leur .mcmeta) vont dans
+    # block/fluid/, ou les lit le modele de fluide enregistre par DoHyClient. Le
+    # bloc n'a qu'une particule, comme l'eau vanilla, et pas d'objet : c'est le
+    # seau.
+    for source, target in (("blocks/fluids/angelicwater_still", "block/fluid/angelic_water_still"),
+                           ("blocks/fluids/angelicwater_flowing", "block/fluid/angelic_water_flow")):
+        found = False
+        for origin in (root[0], root[1]):
+            if not origin:
+                continue
+            base = os.path.join(origin, "assets", NS, "textures", source)
+            if os.path.exists(base + ".png"):
+                destination = os.path.join(RES, "assets", NS, "textures", target)
+                os.makedirs(os.path.dirname(destination), exist_ok=True)
+                shutil.copyfile(base + ".png", destination + ".png")
+                if os.path.exists(base + ".png.mcmeta"):
+                    shutil.copyfile(base + ".png.mcmeta", destination + ".png.mcmeta")
+                found = True
+                break
+        if not found:
+            missing.append(source + ".png")
+    write("assets/%s/models/block/angelic_water.json" % NS,
+          {"textures": {"particle": "%s:block/fluid/angelic_water_still" % NS}})
+    write("assets/%s/blockstates/angelic_water.json" % NS,
+          {"variants": {"": {"model": "%s:block/angelic_water" % NS}}})
+    write("data/%s/loot_table/blocks/angelic_water.json" % NS, {"type": "minecraft:block", "pools": []})
+    if not copy_texture(root, "items/fluids/bucket_angelic.png", "item/angelic_water_bucket.png", wrong_size):
+        missing.append("items/fluids/bucket_angelic.png")
+    write("assets/%s/models/item/angelic_water_bucket.json" % NS, {
+        "parent": "minecraft:item/generated",
+        "textures": {"layer0": "%s:item/angelic_water_bucket" % NS},
+    })
+    write("assets/%s/items/angelic_water_bucket.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:item/angelic_water_bucket" % NS},
+    })
+    fr["block.%s.angelic_water" % NS] = "Eau angelique"
+    en["block.%s.angelic_water" % NS] = "Angelic Water"
+    fr["item.%s.angelic_water_bucket" % NS] = "Seau d'eau angelique"
+    en["item.%s.angelic_water_bucket" % NS] = "Angelic Water Bucket"
+    # PRegister_Items : ["Y", "X"], une potion de regeneration (meta 8193) sur
+    # un seau d'eau. Le seau d'eau rend son seau vide, comme en 1.7.10. La potion
+    # se reconnait a son contenu : un ingredient a composants de NeoForge.
+    shaped("angelic_water_bucket", ["Y", "X"], {
+        "Y": {"neoforge:ingredient_type": "neoforge:components",
+              "items": "minecraft:potion",
+              "components": {"minecraft:potion_contents": {"potion": "minecraft:regeneration"}},
+              "strict": False},
+        "X": "minecraft:water_bucket",
+    }, "%s:angelic_water_bucket" % NS)
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de

@@ -110,7 +110,8 @@ public final class PalaEquipment {
     // La pioche en endium casse en 3x3 et ne se brise jamais : voir EndiumPickaxeItem.
     public static final DeferredItem<EndiumPickaxeItem> ENDIUM_PICKAXE = track(ITEMS.registerItem("endium_pickaxe",
             properties -> new EndiumPickaxeItem(properties.pickaxe(PalaToolMaterials.ENDIUM, 1.0f, -2.8f))));
-    public static final DeferredItem<AxeItem> ENDIUM_AXE = axe("endium_axe", PalaToolMaterials.ENDIUM);
+    public static final DeferredItem<EndiumAxeItem> ENDIUM_AXE = track(ITEMS.registerItem("endium_axe",
+            properties -> new EndiumAxeItem(PalaToolMaterials.ENDIUM, 5.0f, -3.0f, properties)));
     public static final DeferredItem<RadiusHoeItem> ENDIUM_RADIUS_HOE = hoe("endium_radius_hoe", PalaToolMaterials.ENDIUM, 12);
     public static final DeferredItem<Item> ENDIUM_HELMET = armor("endium_helmet", PalaArmorMaterials.ENDIUM, ArmorType.HELMET);
     public static final DeferredItem<Item> ENDIUM_CHESTPLATE = armor("endium_chestplate", PalaArmorMaterials.ENDIUM, ArmorType.CHESTPLATE);

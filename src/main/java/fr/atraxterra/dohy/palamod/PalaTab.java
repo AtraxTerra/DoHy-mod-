@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.palamod;
 
 import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
 import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
+import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
 import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
@@ -59,6 +60,7 @@ public final class PalaTab {
                         // Les planteurs ferment l'onglet : ce sont des outils de
                         // champ, ils suivent les machines plutot que les graines.
                         PalaSeedPlanters.ORDERED.forEach(item -> output.accept(item.get()));
+                        PalaFluids.ORDERED.forEach(item -> output.accept(item.get()));
 
                         // L'equipement ferme l'onglet, metal par metal.
                         PalaEquipment.ordered().forEach(item -> output.accept(item.get()));
