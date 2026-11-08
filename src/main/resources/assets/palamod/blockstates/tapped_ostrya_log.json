@@ -1,0 +1,112 @@
+{
+  "variants": {
+    "sap=1": {
+      "model": "palamod:block/tapped_ostrya_log_1"
+    },
+    "sap=2": {
+      "model": "palamod:block/tapped_ostrya_log_1"
+    },
+    "sap=3": {
+      "model": "palamod:block/tapped_ostrya_log_1"
+    },
+    "sap=4": {
+      "model": "palamod:block/tapped_ostrya_log_1"
+    },
+    "sap=5": {
+      "model": "palamod:block/tapped_ostrya_log_1"
+    },
+    "sap=6": {
+      "model": "palamod:block/tapped_ostrya_log_1"
+    },
+    "sap=7": {
+      "model": "palamod:block/tapped_ostrya_log_2"
+    },
+    "sap=8": {
+      "model": "palamod:block/tapped_ostrya_log_2"
+    },
+    "sap=9": {
+      "model": "palamod:block/tapped_ostrya_log_2"
+    },
+    "sap=10": {
+      "model": "palamod:block/tapped_ostrya_log_2"
+    },
+    "sap=11": {
+      "model": "palamod:block/tapped_ostrya_log_2"
+    },
+    "sap=12": {
+      "model": "palamod:block/tapped_ostrya_log_2"
+    },
+    "sap=13": {
+      "model": "palamod:block/tapped_ostrya_log_3"
+    },
+    "sap=14": {
+      "model": "palamod:block/tapped_ostrya_log_3"
+    },
+    "sap=15": {
+      "model": "palamod:block/tapped_ostrya_log_3"
+    },
+    "sap=16": {
+      "model": "palamod:block/tapped_ostrya_log_3"
+    },
+    "sap=17": {
+      "model": "palamod:block/tapped_ostrya_log_3"
+    },
+    "sap=18": {
+      "model": "palamod:block/tapped_ostrya_log_3"
+    },
+    "sap=19": {
+      "model": "palamod:block/tapped_ostrya_log_4"
+    },
+    "sap=20": {
+      "model": "palamod:block/tapped_ostrya_log_4"
+    },
+    "sap=21": {
+      "model": "palamod:block/tapped_ostrya_log_4"
+    },
+    "sap=22": {
+      "model": "palamod:block/tapped_ostrya_log_4"
+    },
+    "sap=23": {
+      "model": "palamod:block/tapped_ostrya_log_4"
+    },
+    "sap=24": {
+      "model": "palamod:block/tapped_ostrya_log_4"
+    },
+    "sap=25": {
+      "model": "palamod:block/tapped_ostrya_log_5"
+    },
+    "sap=26": {
+      "model": "palamod:block/tapped_ostrya_log_5"
+    },
+    "sap=27": {
+      "model": "palamod:block/tapped_ostrya_log_5"
+    },
+    "sap=28": {
+      "model": "palamod:block/tapped_ostrya_log_5"
+    },
+    "sap=29": {
+      "model": "palamod:block/tapped_ostrya_log_5"
+    },
+    "sap=30": {
+      "model": "palamod:block/tapped_ostrya_log_5"
+    },
+    "sap=31": {
+      "model": "palamod:block/tapped_ostrya_log_6"
+    },
+    "sap=32": {
+      "model": "palamod:block/tapped_ostrya_log_6"
+    },
+    "sap=33": {
+      "model": "palamod:block/tapped_ostrya_log_6"
+    },
+    "sap=34": {
+      "model": "palamod:block/tapped_ostrya_log_6"
+    },
+    "sap=35": {
+      "model": "palamod:block/tapped_ostrya_log_6"
+    },
+    "sap=36": {
+      "model": "palamod:block/tapped_ostrya_log_6"
+    }
+  }
+}

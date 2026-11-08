@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "palamod:dead_wood"
+  ],
+  "result": {
+    "id": "palamod:dead_wood_planks",
+    "count": 4
+  }
+}

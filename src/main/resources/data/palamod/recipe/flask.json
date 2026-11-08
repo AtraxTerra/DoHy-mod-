@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "V V",
+    "VVV"
+  ],
+  "key": {
+    "V": "minecraft:glass"
+  },
+  "result": {
+    "id": "palamod:flask",
+    "count": 1
+  }
+}

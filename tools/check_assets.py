@@ -47,7 +47,11 @@ ITEMLESS = ("crop",)
 # Blocs sans item enregistres par registerBlock : la void stone se pose depuis
 # la Voidstone minage et la rend a la casse, elle n'a pas d'objet propre. L'eau
 # angelique est un fluide : son objet est le seau.
-ITEMLESS_BLOCKS = ("void_stone", "angelic_water")
+ITEMLESS_BLOCKS = ("void_stone", "angelic_water",
+                   # Alchimiste : une buche entamee se casse en bois mort, la
+                   # surface du portail n'existe que portail ouvert.
+                   "tapped_jacaranda_log", "tapped_judeecercis_log", "tapped_erable_log",
+                   "tapped_ostrya_log", "alchemist_portal")
 
 errors = []
 
@@ -122,6 +126,11 @@ def model_references(node):
 MODEL_TEXTURES = {
     "block/amethyst_chest.png": (64, 64),
     "block/titane_chest.png": (64, 64),
+    # L'extracteur reprend la texture de son ModelExtractor (Techne, 64 x 32).
+    "block/extractor_on.png": (64, 32),
+    "block/extractor_off.png": (64, 32),
+    # La surface du portail : 32 images de 16 x 16, animees par son .mcmeta.
+    "block/alchemist_portal.png": (16, 512),
 }
 
 

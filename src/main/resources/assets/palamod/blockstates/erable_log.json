@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "palamod:block/erable_log"
+    },
+    "axis=z": {
+      "model": "palamod:block/erable_log_horizontal",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "palamod:block/erable_log_horizontal",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

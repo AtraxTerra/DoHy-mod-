@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LFL",
+    "BNB",
+    " F "
+  ],
+  "key": {
+    "B": "palamod:findium_block",
+    "L": "palamod:lightning_potion",
+    "F": "palamod:findium",
+    "N": "palamod:endium_pollen"
+  },
+  "result": {
+    "id": "palamod:endium_portal_key",
+    "count": 1
+  }
+}

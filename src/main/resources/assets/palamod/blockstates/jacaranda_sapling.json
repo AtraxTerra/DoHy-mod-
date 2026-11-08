@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "stage=0": {
+      "model": "palamod:block/jacaranda_sapling"
+    },
+    "stage=1": {
+      "model": "palamod:block/jacaranda_sapling"
+    }
+  }
+}

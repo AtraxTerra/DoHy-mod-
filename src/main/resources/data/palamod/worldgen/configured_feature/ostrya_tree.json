@@ -1,0 +1,14 @@
+{
+  "type": "palamod:tree",
+  "config": {
+    "log": {
+      "Name": "palamod:ostrya_log",
+      "Properties": {
+        "axis": "y"
+      }
+    },
+    "leaves": {
+      "Name": "palamod:ostrya_leaves"
+    }
+  }
+}

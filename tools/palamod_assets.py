@@ -1550,6 +1550,483 @@ def main():
     tag("minecraft/tags/item/enchantable/fishing.json", ["%s:paladium_fishing_rod" % NS])
     tag("minecraft/tags/item/enchantable/durability.json", ["%s:paladium_fishing_rod" % NS])
 
+    # ---- chapitre 11 : l'Alchimiste ----
+    #
+    # Textures : le pack d'abord (blocks/log, planks, leave, sapling,
+    # alchimiste, tanks, flowers ; items/alchimiste), le jar pour ce qu'il est
+    # seul a avoir — la seve des tanks (alchimiste/seve-*, 32 x 32) et le modele
+    # de l'extracteur (alchimiste/models/tape_*, 64 x 32).
+    def tex(relative, destination, size=None):
+        if not copy_texture(root, relative, destination, wrong_size, expected=size):
+            missing.append(relative)
+
+    def block_item(name):
+        write("assets/%s/models/item/%s.json" % (NS, name), {"parent": "%s:block/%s" % (NS, name)})
+        write("assets/%s/items/%s.json" % (NS, name),
+              {"model": {"type": "minecraft:model", "model": "%s:block/%s" % (NS, name)}})
+
+    def flat_item(name, texture):
+        write("assets/%s/models/item/%s.json" % (NS, name),
+              {"parent": "minecraft:item/generated", "textures": {"layer0": texture}})
+        write("assets/%s/items/%s.json" % (NS, name),
+              {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)}})
+
+    def cube(name, texture):
+        write("assets/%s/blockstates/%s.json" % (NS, name),
+              {"variants": {"": {"model": "%s:block/%s" % (NS, name)}}})
+        write("assets/%s/models/block/%s.json" % (NS, name),
+              {"parent": "minecraft:block/cube_all", "textures": {"all": texture}})
+
+    def drops_itself(name):
+        write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
+            "type": "minecraft:block",
+            "pools": [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, name)}],
+                       "conditions": [{"condition": "minecraft:survives_explosion"}]}]})
+
+    def drops_with(name, components):
+        """Le bloc se rend avec les composants de sa block entity (tank, extracteur)."""
+        write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
+            "type": "minecraft:block",
+            "pools": [{"rolls": 1, "entries": [{
+                "type": "minecraft:item", "name": "%s:%s" % (NS, name),
+                "functions": [{"function": "minecraft:copy_components", "source": "block_entity",
+                               "include": ["%s:%s" % (NS, component) for component in components]}]}]}]})
+
+    def label(kind, name, label_fr, label_en):
+        fr["%s.%s.%s" % (kind, NS, name)] = label_fr
+        en["%s.%s.%s" % (kind, NS, name)] = label_en
+
+    WOODS = (("jacaranda", "jacaranda", "de jacaranda", "Jacaranda"),
+             ("judeecercis", "judeecercis", "de judeecercis", "Judeecercis"),
+             ("erable", "erable", "d'erable", "Maple"),
+             ("ostrya", "ostrya", "d'ostrya", "Ostrya"))
+
+    # Buches : cote et bout, dans les trois axes.
+    def log(name, source, label_fr, label_en):
+        tex("blocks/log/%s.png" % source, "block/%s.png" % name)
+        tex("blocks/log/%s_top.png" % source, "block/%s_top.png" % name)
+        write("assets/%s/models/block/%s.json" % (NS, name), {
+            "parent": "minecraft:block/cube_column",
+            "textures": {"side": "%s:block/%s" % (NS, name), "end": "%s:block/%s_top" % (NS, name)}})
+        write("assets/%s/models/block/%s_horizontal.json" % (NS, name), {
+            "parent": "minecraft:block/cube_column_horizontal",
+            "textures": {"side": "%s:block/%s" % (NS, name), "end": "%s:block/%s_top" % (NS, name)}})
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {
+            "axis=y": {"model": "%s:block/%s" % (NS, name)},
+            "axis=z": {"model": "%s:block/%s_horizontal" % (NS, name), "x": 90},
+            "axis=x": {"model": "%s:block/%s_horizontal" % (NS, name), "x": 90, "y": 90}}})
+        block_item(name)
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+        tag("minecraft/tags/block/mineable/axe.json", ["%s:%s" % (NS, name)])
+        # Les buches dans #logs : l'abattage de la hache en endium les prend.
+        # Pas dans #logs_that_burn : PalaMod n'en faisait pas de charbon.
+        tag("minecraft/tags/block/logs.json", ["%s:%s" % (NS, name)])
+        tag("minecraft/tags/item/logs.json", ["%s:%s" % (NS, name)])
+
+    fuels = {}
+    for wood, source, of_fr, label_en in WOODS:
+        log("%s_log" % wood, source, "Buche %s" % of_fr, "%s Log" % label_en)
+        planks = "%s_planks" % wood
+        tex("blocks/planks/%s.png" % source, "block/%s.png" % planks)
+        cube(planks, "%s:block/%s" % (NS, planks))
+        block_item(planks)
+        drops_itself(planks)
+        label("block", planks, "Planches %s" % of_fr, "%s Planks" % label_en)
+        tag("minecraft/tags/block/mineable/axe.json", ["%s:%s" % (NS, planks)])
+        # PWorld : une buche, quatre planches. Les planches ne sont pas dans
+        # #planks : ni batons ni etabli, comme dans PalaMod.
+        shapeless(planks, ["%s:%s_log" % (NS, wood)], "%s:%s" % (NS, planks), 4)
+        fuels["%s:%s_log" % (NS, wood)] = 300
+        fuels["%s:%s" % (NS, planks)] = 300
+
+        leaves = "%s_leaves" % wood
+        tex("blocks/leave/%s.png" % source, "block/%s.png" % leaves)
+        cube(leaves, "%s:block/%s" % (NS, leaves))
+        block_item(leaves)
+        label("block", leaves, "Feuilles %s" % of_fr, "%s Leaves" % label_en)
+        tag("minecraft/tags/block/mineable/hoe.json", ["%s:%s" % (NS, leaves)])
+        tag("minecraft/tags/block/leaves.json", ["%s:%s" % (NS, leaves)])
+        # BlockLeaveBase : la feuille a la cisaille ou au toucher de soie, sinon
+        # (int)(Math.random() * 10000) <= 100, une pousse sur 99.
+        write("data/%s/loot_table/blocks/%s.json" % (NS, leaves), {
+            "type": "minecraft:block",
+            "pools": [{"rolls": 1, "entries": [{"type": "minecraft:alternatives", "children": [
+                {"type": "minecraft:item", "name": "%s:%s" % (NS, leaves), "conditions": [{
+                    "condition": "minecraft:any_of", "terms": [
+                        {"condition": "minecraft:match_tool", "predicate": {"items": "minecraft:shears"}},
+                        {"condition": "minecraft:match_tool", "predicate": {"predicates": {
+                            "minecraft:enchantments": [{"enchantments": "minecraft:silk_touch",
+                                                        "levels": {"min": 1}}]}}}]}]},
+                {"type": "minecraft:item", "name": "%s:%s_sapling" % (NS, wood),
+                 "conditions": [{"condition": "minecraft:random_chance", "chance": 0.0101}]},
+            ]}]}]})
+
+        sapling = "%s_sapling" % wood
+        tex("blocks/sapling/%s.png" % source, "block/%s.png" % sapling)
+        write("assets/%s/blockstates/%s.json" % (NS, sapling), {"variants": {
+            "stage=0": {"model": "%s:block/%s" % (NS, sapling)},
+            "stage=1": {"model": "%s:block/%s" % (NS, sapling)}}})
+        write("assets/%s/models/block/%s.json" % (NS, sapling),
+              {"parent": "minecraft:block/cross", "textures": {"cross": "%s:block/%s" % (NS, sapling)}})
+        flat_item(sapling, "%s:block/%s" % (NS, sapling))
+        drops_itself(sapling)
+        label("block", sapling, "Pousse %s" % of_fr, "%s Sapling" % label_en)
+
+        # L'arbre : l'une des deux formes de PalaMod (PalaTreeFeature).
+        write("data/%s/worldgen/configured_feature/%s_tree.json" % (NS, wood), {
+            "type": "%s:tree" % NS,
+            "config": {"log": {"Name": "%s:%s_log" % (NS, wood), "Properties": {"axis": "y"}},
+                       "leaves": {"Name": "%s:%s" % (NS, leaves)}}})
+        # BaseWorldGenerator : un essai par essence et par chunk, sur de
+        # l'herbe nue, nextInt(100) <= 8 soit 9 % — une chance sur 11 ici.
+        write("data/%s/worldgen/placed_feature/%s_tree.json" % (NS, wood), {
+            "feature": "%s:%s_tree" % (NS, wood),
+            "placement": [
+                {"type": "minecraft:rarity_filter", "chance": 11},
+                {"type": "minecraft:in_square"},
+                {"type": "minecraft:surface_water_depth_filter", "max_water_depth": 0},
+                {"type": "minecraft:heightmap", "heightmap": "OCEAN_FLOOR"},
+                {"type": "minecraft:block_predicate_filter", "predicate": {
+                    "type": "minecraft:matching_blocks", "offset": [0, -1, 0], "blocks": "minecraft:grass_block"}},
+                {"type": "minecraft:biome"}]})
+
+        tapped = "tapped_%s_log" % wood
+        # Buche entamee : du bois mort en haut, la buche en bas, en six etapes.
+        for step in range(1, 7):
+            height = round(16 * step / 6, 4)
+            log_part = {"from": [0, 0, 0], "to": [16, height, 16], "faces": {
+                "down": {"texture": "#log_top", "uv": [0, 0, 16, 16], "cullface": "down"}}}
+            for face in ("north", "south", "east", "west"):
+                log_part["faces"][face] = {"texture": "#log", "uv": [0, 16 - height, 16, 16], "cullface": face}
+            elements = [log_part]
+            if step == 6:
+                log_part["faces"]["up"] = {"texture": "#log_top", "uv": [0, 0, 16, 16], "cullface": "up"}
+            else:
+                dead = {"from": [0, height, 0], "to": [16, 16, 16], "faces": {
+                    "up": {"texture": "#dead_top", "uv": [0, 0, 16, 16], "cullface": "up"}}}
+                for face in ("north", "south", "east", "west"):
+                    dead["faces"][face] = {"texture": "#dead", "uv": [0, 0, 16, 16 - height], "cullface": face}
+                elements.append(dead)
+            write("assets/%s/models/block/%s_%d.json" % (NS, tapped, step), {
+                "textures": {"particle": "%s:block/%s_log" % (NS, wood),
+                             "log": "%s:block/%s_log" % (NS, wood), "log_top": "%s:block/%s_log_top" % (NS, wood),
+                             "dead": "%s:block/dead_wood" % NS, "dead_top": "%s:block/dead_wood_top" % NS},
+                "elements": elements})
+        write("assets/%s/blockstates/%s.json" % (NS, tapped), {"variants": {
+            "sap=%d" % sap: {"model": "%s:block/%s_%d" % (NS, tapped, (sap + 5) // 6)} for sap in range(1, 37)}})
+        # Cassee, elle donne du bois mort : sa seve est perdue.
+        write("data/%s/loot_table/blocks/%s.json" % (NS, tapped), {
+            "type": "minecraft:block",
+            "pools": [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": "%s:dead_wood" % NS}]}]})
+        label("block", tapped, "Buche %s entamee" % of_fr, "Tapped %s Log" % label_en)
+        tag("minecraft/tags/block/mineable/axe.json", ["%s:%s" % (NS, tapped)])
+
+        shiny = "shiny_%s_wood" % wood
+        tex("blocks/alchimiste/shiny_%s_block.png" % source, "block/%s.png" % shiny)
+        cube(shiny, "%s:block/%s" % (NS, shiny))
+        block_item(shiny)
+        drops_itself(shiny)
+        label("block", shiny, "Bois %s brillant" % of_fr, "Shiny %s Wood" % label_en)
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, shiny)])
+        label("sap", wood, "Seve %s" % of_fr, "%s Sap" % label_en)
+
+    # Bois mort : jamais genere, ce que laisse une buche videe.
+    log("dead_wood", "dead_wood", "Buche de bois mort", "Dead Wood Log")
+    tex("blocks/planks/dead_wood.png", "block/dead_wood_planks.png")
+    cube("dead_wood_planks", "%s:block/dead_wood_planks" % NS)
+    block_item("dead_wood_planks")
+    drops_itself("dead_wood_planks")
+    label("block", "dead_wood_planks", "Planches de bois mort", "Dead Wood Planks")
+    tag("minecraft/tags/block/mineable/axe.json", ["%s:dead_wood_planks" % NS])
+    shapeless("dead_wood_planks", ["%s:dead_wood" % NS], "%s:dead_wood_planks" % NS, 4)
+    fuels["%s:dead_wood" % NS] = 300
+    fuels["%s:dead_wood_planks" % NS] = 300
+    # Bois de 1.7.10 (Material.wood) : 300 ticks au four.
+    write("data/neoforge/data_maps/item/furnace_fuels.json",
+          {"values": {item: {"burn_time": ticks} for item, ticks in sorted(fuels.items())}})
+    write("data/%s/neoforge/biome_modifier/trees.json" % NS, {
+        "type": "neoforge:add_features", "biomes": "#minecraft:is_overworld",
+        "features": ["%s:%s_tree" % (NS, wood) for wood, _s, _f, _e in WOODS],
+        "step": "vegetal_decoration"})
+
+    # Fiole : vide, puis un modele par sixieme.
+    for level in range(7):
+        tex("items/alchimiste/flask%d.png" % level, "item/flask_%d.png" % level)
+        write("assets/%s/models/item/flask_%d.json" % (NS, level),
+              {"parent": "minecraft:item/generated", "textures": {"layer0": "%s:item/flask_%d" % (NS, level)}})
+    write("assets/%s/items/flask.json" % NS, {"model": {
+        "type": "minecraft:range_dispatch", "property": "minecraft:custom_model_data", "index": 0,
+        "entries": [{"threshold": level, "model": {"type": "minecraft:model", "model": "%s:item/flask_%d" % (NS, level)}}
+                    for level in range(1, 7)],
+        "fallback": {"type": "minecraft:model", "model": "%s:item/flask_0" % NS}}})
+    label("item", "flask", "Fiole vide", "Empty Flask")
+    label("item", "flask.filled", "Fiole de seve", "Sap Flask")
+    label("item", "flask.level", "Niveau de seve : %s%%", "Sap level: %s%%")
+    label("item", "flask.sap", "Seve : %s", "Sap: %s")
+    label("item", "flask.no_sap", "Aucune", "None")
+
+    # Extracteur : le ModelExtractor de PalaMod (boites Techne), en elements.
+    # Texture 64 x 32 : u / 4 et v / 2 pour l'espace 16 x 16 des modeles.
+    tex("alchimiste/models/tape_on.png", "block/extractor_on.png", (64, 32))
+    tex("alchimiste/models/tape_off.png", "block/extractor_off.png", (64, 32))
+    extractor_boxes = (  # (de, a, u, v, largeur x, hauteur y, profondeur z)
+        ((14.5, 3.5, 5.5), (15.5, 8.5, 10.5), 51, 11, 1, 5, 5),   # BaseContour
+        ((5.5, 4, 6), (14.5, 8, 10), 0, 12, 9, 4, 4),             # Base
+        ((7.5, 8, 7.5), (8.5, 10, 8.5), 32, 8, 1, 2, 1),          # Robinet
+        ((6, 9.5, 7.5), (10, 10.5, 8.5), 35, 16, 4, 1, 1),        # LeverOne
+        ((7.5, 9.5, 6), (8.5, 10.5, 10), 35, 11, 1, 1, 4),        # LeverTwo
+        ((6.5, 0, 6.5), (9.5, 4, 9.5), 13, 13, 3, 4, 3),          # Exit
+        ((6, 0, 6), (10, 1, 10), 12, 12, 4, 1, 4),                # ExitContour
+    )
+
+    def uv(u0, v0, u1, v1):
+        return [round(u0 / 4, 4), round(v0 / 2, 4), round(u1 / 4, 4), round(v1 / 2, 4)]
+
+    extractor_elements = []
+    for start, end, u, v, w, h, d in extractor_boxes:
+        extractor_elements.append({"from": list(start), "to": list(end), "faces": {
+            "up": {"texture": "#tape", "uv": uv(u + d, v, u + d + w, v + d)},
+            "down": {"texture": "#tape", "uv": uv(u + d + w, v, u + d + 2 * w, v + d)},
+            "east": {"texture": "#tape", "uv": uv(u, v + d, u + d, v + d + h)},
+            "west": {"texture": "#tape", "uv": uv(u + d + w, v + d, u + 2 * d + w, v + d + h)},
+            "north": {"texture": "#tape", "uv": uv(u + d, v + d, u + d + w, v + d + h)},
+            "south": {"texture": "#tape", "uv": uv(u + 2 * d + w, v + d, u + 2 * d + 2 * w, v + d + h)}}})
+    for state in ("on", "off"):
+        write("assets/%s/models/block/extractor_%s.json" % (NS, state), {
+            "textures": {"tape": "%s:block/extractor_%s" % (NS, state),
+                         "particle": "%s:block/extractor_%s" % (NS, state)},
+            "elements": extractor_elements})
+    rotations = {"east": 0, "south": 90, "west": 180, "north": 270}
+    write("assets/%s/blockstates/extractor.json" % NS, {"variants": {
+        "enabled=%s,facing=%s" % (enabled, facing): {
+            "model": "%s:block/extractor_%s" % (NS, "on" if enabled == "true" else "off"), "y": rotation}
+        for enabled in ("true", "false") for facing, rotation in rotations.items()}})
+    write("assets/%s/models/item/extractor.json" % NS, {"parent": "%s:block/extractor_off" % NS})
+    write("assets/%s/items/extractor.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:block/extractor_off" % NS}})
+    drops_with("extractor", ["extractor_uses"])
+    label("block", "extractor", "Extracteur", "Extractor")
+    label("item", "extractor.uses", "Utilisations restantes : %s/%s", "Uses left: %s/%s")
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:extractor" % NS])
+
+    # Tanks : la coque a fenetres, et la seve a sa hauteur (multipart).
+    for sap, source, _f, _e in WOODS:
+        tex("alchimiste/seve-%s.png" % source, "block/sap/%s.png" % sap, (32, 32))
+        for fill in range(1, 17):
+            top = round(0.6 + fill * 14.8 / 16, 4)
+            faces = {"up": {"texture": "#sap", "uv": [0, 0, 16, 16]},
+                     "down": {"texture": "#sap", "uv": [0, 0, 16, 16]}}
+            for face in ("north", "south", "east", "west"):
+                faces[face] = {"texture": "#sap", "uv": [0, round(16 - fill, 4), 16, 16]}
+            write("assets/%s/models/block/tank_sap_%s_%d.json" % (NS, sap, fill), {
+                "textures": {"sap": "%s:block/sap/%s" % (NS, sap), "particle": "%s:block/sap/%s" % (NS, sap)},
+                "elements": [{"from": [0.6, 0.6, 0.6], "to": [15.4, top, 15.4], "faces": faces}]})
+    for tier, source, label_fr, label_en in (("gold", "gold", "Tank en or", "Gold Tank"),
+                                             ("amethyst", "amethyste", "Tank en amethyste", "Amethyst Tank"),
+                                             ("titane", "titane", "Tank en titane", "Titanium Tank"),
+                                             ("paladium", "paladium", "Tank en paladium", "Paladium Tank")):
+        name = "%s_tank" % tier
+        tex("blocks/tanks/%s_tank.png" % source, "block/%s.png" % name)
+        write("assets/%s/models/block/%s.json" % (NS, name),
+              {"parent": "minecraft:block/cube_all", "textures": {"all": "%s:block/%s" % (NS, name)}})
+        parts = [{"apply": {"model": "%s:block/%s" % (NS, name)}}]
+        for sap, _s, _f, _e in WOODS:
+            for fill in range(1, 17):
+                parts.append({"when": {"sap": sap, "fill": str(fill)},
+                              "apply": {"model": "%s:block/tank_sap_%s_%d" % (NS, sap, fill)}})
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"multipart": parts})
+        block_item(name)
+        drops_with(name, ["tank_sap"])
+        label("block", name, label_fr, label_en)
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+    label("item", "tank.empty", "Vide", "Empty")
+    label("item", "tank.content", "Contenu : %s", "Content: %s")
+    label("item", "tank.level", "Niveau : %s / %s", "Level: %s / %s")
+    label("message", "tank.empty", "Vide — 0 / %s", "Empty — 0 / %s")
+    label("message", "tank.content", "%s : %s / %s", "%s: %s / %s")
+    label("message", "tank.full", "Le tank est plein", "The tank is full")
+    label("message", "tank.other_sap", "Ce tank contient une autre seve", "This tank holds another sap")
+    label("message", "tank.not_enough", "Pas assez de seve dans le tank (%s)", "Not enough sap in the tank (%s)")
+
+    # Chaudron.
+    tex("items/alchimiste/lightning_potion.png", "item/lightning_potion.png")
+    flat_item("lightning_potion", "%s:item/lightning_potion" % NS)
+    label("item", "lightning_potion", "Potion de foudre", "Lightning Potion")
+    tex("blocks/alchimiste/cauldron_top.png", "block/cauldron_top.png")
+    tex("blocks/alchimiste/cauldron_side.png", "block/cauldron_side.png")
+    tex("blocks/alchimiste/cauldron_core.png", "block/cauldron_core.png")
+    write("assets/%s/blockstates/cauldron.json" % NS, {"variants": {"": {"model": "%s:block/cauldron" % NS}}})
+    write("assets/%s/models/block/cauldron.json" % NS, {
+        "parent": "minecraft:block/cube_bottom_top",
+        "textures": {"top": "%s:block/cauldron_top" % NS, "bottom": "%s:block/cauldron_side" % NS,
+                     "side": "%s:block/cauldron_side" % NS}})
+    block_item("cauldron")
+    drops_itself("cauldron")
+    label("block", "cauldron", "Bloc du chaudron", "Cauldron Block")
+    write("assets/%s/models/block/cauldron_core.json" % NS,
+          {"parent": "minecraft:block/cube_all", "textures": {"all": "%s:block/cauldron_core" % NS}})
+    write("assets/%s/blockstates/cauldron_core.json" % NS, {"variants": {
+        "formed=false": {"model": "%s:block/cauldron_core" % NS},
+        "formed=true": {"model": "%s:block/cauldron_core" % NS}}})
+    block_item("cauldron_core")
+    drops_itself("cauldron_core")
+    label("block", "cauldron_core", "Coeur du chaudron", "Cauldron Core")
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:cauldron" % NS, "%s:cauldron_core" % NS])
+    label("message", "cauldron.formed", "Le chaudron est forme", "The cauldron is formed")
+    label("message", "cauldron.incomplete",
+          "Il manque des blocs du chaudron : 7 x 7 au sol, un anneau de 5 x 5 au-dessus, le coeur au centre",
+          "Cauldron blocks are missing: 7 x 7 floor, a 5 x 5 ring above, the core in the middle")
+
+    # Fleurs. WorldGenCustomFlower : deux essais par chunk a nextInt(N) == 1,
+    # mais a une hauteur tiree entre 50 et 74 qui doit tomber pile sur le sol —
+    # une fois sur 25 environ. On garde ce rythme effectif : 25 N / 2 chunks.
+    for name, source, label_fr, label_en, rarity in (
+            ("harpagophytum_flower", "flower_harpagophytum", "Harpagophytum", "Harpagophytum", 12500),
+            ("sauge_flower", "flower_sauge", "Sauge", "Sage", 18750),
+            ("clathrusarcheri_flower", "flower_clathrusarcheri", "Clathrusarcheri", "Clathrus Archeri", 1250),
+            ("endium_flower", "flower_endium", "Fleur d'endium", "Endium Flower", 2500),
+            ("paladium_flower", "flower_paladium", "Fleur de paladium", "Paladium Flower", 125),
+            ("mineral_flower", "flower_mineral", "Fleur minerale", "Mineral Flower", 6250)):
+        tex("blocks/flowers/%s.png" % source, "block/%s.png" % name)
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {"": {"model": "%s:block/%s" % (NS, name)}}})
+        write("assets/%s/models/block/%s.json" % (NS, name),
+              {"parent": "minecraft:block/cross", "textures": {"cross": "%s:block/%s" % (NS, name)}})
+        flat_item(name, "%s:block/%s" % (NS, name))
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+        state = {"Name": "%s:%s" % (NS, name)}
+        write("data/%s/worldgen/configured_feature/%s.json" % (NS, name), {
+            "type": "minecraft:simple_block",
+            "config": {"to_place": {"type": "minecraft:simple_state_provider", "state": state}}})
+        write("data/%s/worldgen/placed_feature/%s.json" % (NS, name), {
+            "feature": "%s:%s" % (NS, name),
+            "placement": [
+                {"type": "minecraft:rarity_filter", "chance": rarity},
+                {"type": "minecraft:in_square"},
+                {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
+                {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+                    {"type": "minecraft:matching_blocks", "blocks": "minecraft:air"},
+                    {"type": "minecraft:would_survive", "state": state}]}},
+                {"type": "minecraft:biome"}]})
+    # « Plains », « Extreme Hills », « Forest » seulement.
+    write("data/%s/neoforge/biome_modifier/flowers.json" % NS, {
+        "type": "neoforge:add_features",
+        "biomes": ["minecraft:plains", "minecraft:windswept_hills", "minecraft:forest"],
+        "features": ["%s:%s" % (NS, name) for name in (
+            "harpagophytum_flower", "sauge_flower", "clathrusarcheri_flower", "endium_flower",
+            "paladium_flower", "mineral_flower")],
+        "step": "vegetal_decoration"})
+
+    for metal, label_fr, label_en in (("amethyst", "Pollen d'amethyste", "Amethyst Pollen"),
+                                      ("titane", "Pollen de titane", "Titanium Pollen"),
+                                      ("paladium", "Pollen de paladium", "Paladium Pollen"),
+                                      ("endium", "Pollen d'endium", "Endium Pollen")):
+        tex("items/%s_pollen.png" % metal, "item/%s_pollen.png" % metal)
+        flat_item("%s_pollen" % metal, "%s:item/%s_pollen" % (NS, metal))
+        label("item", "%s_pollen" % metal, label_fr, label_en)
+
+    # Portails.
+    for metal, source, of_fr, label_en in (("amethyst", "amethyste", "en amethyste", "Amethyst"),
+                                           ("titane", "titane", "en titane", "Titanium"),
+                                           ("paladium", "paladium", "en paladium", "Paladium"),
+                                           ("endium", "endium", "en endium", "Endium")):
+        name = "%s_portal_block" % metal
+        tex("blocks/alchimiste/%s_portal_block.png" % source, "block/%s.png" % name)
+        cube(name, "%s:block/%s" % (NS, name))
+        block_item(name)
+        drops_itself(name)
+        label("block", name, "Bloc de portail %s" % of_fr, "%s Portal Block" % label_en)
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+        key = "%s_portal_key" % metal
+        tex("items/alchimiste/%s_portal_key.png" % source, "item/%s.png" % key)
+        flat_item(key, "%s:item/%s" % (NS, key))
+        label("item", key, "Cle de portail %s" % of_fr, "%s Portal Key" % label_en)
+    tex("blocks/alchimiste/endium_angle_portal_block.png", "block/endium_angle_portal_block.png")
+    cube("endium_angle_portal_block", "%s:block/endium_angle_portal_block" % NS)
+    block_item("endium_angle_portal_block")
+    drops_itself("endium_angle_portal_block")
+    label("block", "endium_angle_portal_block", "Bloc d'angle du portail en endium", "Endium Portal Corner Block")
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:endium_angle_portal_block" % NS])
+    tex("items/alchimiste/endium_heart.png", "item/endium_heart.png")
+    flat_item("endium_heart", "%s:item/endium_heart" % NS)
+    label("item", "endium_heart", "Coeur en endium", "Endium Heart")
+    # La surface : une nappe animee de deux pixels (16 x 512, 32 images).
+    for origin in (root[0], root[1]):
+        source = os.path.join(origin or "", "assets", NS, "textures", "blocks", "alchimiste", "portal.png")
+        if origin and os.path.exists(source):
+            target = os.path.join(RES, "assets", NS, "textures", "block", "alchemist_portal.png")
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            shutil.copyfile(source, target)
+            shutil.copyfile(source + ".mcmeta", target + ".mcmeta")
+            break
+    else:
+        missing.append("blocks/alchimiste/portal.png")
+    write("assets/%s/models/block/alchemist_portal.json" % NS, {
+        "textures": {"portal": "%s:block/alchemist_portal" % NS, "particle": "%s:block/alchemist_portal" % NS},
+        "elements": [{"from": [0, 0, 0], "to": [16, 2, 16], "faces": {
+            "up": {"texture": "#portal", "uv": [0, 0, 16, 16]},
+            "down": {"texture": "#portal", "uv": [0, 0, 16, 16], "cullface": "down"},
+            "north": {"texture": "#portal", "uv": [0, 14, 16, 16]},
+            "south": {"texture": "#portal", "uv": [0, 14, 16, 16]},
+            "east": {"texture": "#portal", "uv": [0, 14, 16, 16]},
+            "west": {"texture": "#portal", "uv": [0, 14, 16, 16]}}}]})
+    write("assets/%s/blockstates/alchemist_portal.json" % NS,
+          {"variants": {"": {"model": "%s:block/alchemist_portal" % NS}}})
+    write("data/%s/loot_table/blocks/alchemist_portal.json" % NS, {"type": "minecraft:block", "pools": []})
+    label("block", "alchemist_portal", "Portail d'alchimiste", "Alchemist Portal")
+    label("message", "portal.wrong_key", "Cette cle n'ouvre pas ce portail", "This key doesn't open this portal")
+    label("message", "portal.no_key", "Inserez la cle du portail", "Insert the portal key")
+    label("message", "portal.sap", "Seve : %s / %s", "Sap: %s / %s")
+    label("message", "portal.sap_pollen", "Seve : %s / %s — pollen d'endium : %s / %s",
+          "Sap: %s / %s — endium pollen: %s / %s")
+    label("item", "portal_key.sap", "Seve stockee : %s", "Stored sap: %s")
+    label("item", "portal_key.no_sap", "Aucune seve stockee", "No stored sap")
+
+    # Enchantement : la bibliotheque, la table, deux enchantements.
+    tex("blocks/alchimiste/mystical_bookshelf.png", "block/mystical_bookshelf.png")
+    cube("mystical_bookshelf", "%s:block/mystical_bookshelf" % NS)
+    block_item("mystical_bookshelf")
+    drops_itself("mystical_bookshelf")
+    label("block", "mystical_bookshelf", "Bibliotheque mystique", "Mystical Bookshelf")
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:mystical_bookshelf" % NS])
+    # Ni a la table vanilla ni en livre : absents des tags in_enchanting_table,
+    # tradeable et on_random_loot. On ne les obtient qu'a la table de l'Alchimiste.
+    write("data/%s/enchantment/no_fall.json" % NS, {
+        "description": {"translate": "enchantment.%s.no_fall" % NS},
+        "supported_items": "#minecraft:enchantable/foot_armor",
+        "weight": 1, "max_level": 1,
+        "min_cost": {"base": 30, "per_level_above_first": 0},
+        "max_cost": {"base": 50, "per_level_above_first": 0},
+        "anvil_cost": 4, "slots": ["feet"]})
+    write("data/%s/enchantment/grass_breaker.json" % NS, {
+        "description": {"translate": "enchantment.%s.grass_breaker" % NS},
+        "supported_items": "#minecraft:swords",
+        "weight": 1, "max_level": 3,
+        "min_cost": {"base": 30, "per_level_above_first": 0},
+        "max_cost": {"base": 50, "per_level_above_first": 0},
+        "anvil_cost": 4, "slots": ["mainhand"]})
+    label("enchantment", "no_fall", "Anti chute", "No Fall")
+    label("enchantment", "no_fall.desc", "Empeche de tomber d'un bloc, comme accroupi",
+          "Keeps you from walking off edges, as if sneaking")
+    label("enchantment", "grass_breaker", "Grass Breaker", "Grass Breaker")
+    label("enchantment", "grass_breaker.desc", "Plus de graines sur les hautes herbes",
+          "More seeds from tall grass")
+    label("container", "mystic_enchant", "Table de l'Alchimiste", "Alchemist Table")
+    for key, label_fr, label_en in (
+            ("done", "Enchante : %s", "Enchanted: %s"),
+            ("missing", "Enchantement introuvable", "Enchantment not found"),
+            ("no_item", "Tenez l'objet a enchanter en main", "Hold the item to enchant"),
+            ("unsupported", "Cet objet ne prend pas cet enchantement", "This item can't take this enchantment"),
+            ("max", "Cet enchantement est deja au niveau maximum", "This enchantment is already at its maximum level"),
+            ("job", "Il faut %s niveau %s", "Requires %s level %s"),
+            ("xp", "Il faut au moins %s niveaux d'experience", "Requires at least %s experience levels"),
+            ("level", "Niveau : %s / %s", "Level: %s / %s"),
+            ("cost", "Cout : %s niveaux d'experience", "Cost: %s experience levels"),
+            ("requires", "Requiert %s niveau %s", "Requires %s level %s"),
+            ("click", "Cliquez pour enchanter", "Click to enchant")):
+        label("message", "mystic_enchant." + key, label_fr, label_en)
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de
@@ -1589,6 +2066,18 @@ def main():
         "PALADIUM_FURNACE": "paladium_furnace", "FORGE": "palaforge",
         "FURNACE_UPGRADE": "furnace_upgrade", "PALADIUM_HOPPER": "paladium_hopper",
         "AMETHYST_CHEST": "amethyst_chest", "TITANE_CHEST": "titane_chest",
+        # Alchimiste (chapitre 11) : CraftMod, sans le patron de boule de glu
+        # (les boules de glu ne sont pas portees).
+        "EXTRACTOR": "extractor", "FLASK": "flask",
+        "TANK_GOLD": "gold_tank", "TANK_AMETHYSTE": "amethyst_tank",
+        "TANK_TITANE": "titane_tank", "TANK_PALADIUM": "paladium_tank",
+        "CAULDRON_BLOCK": "cauldron", "CAULDRON_CORE": "cauldron_core",
+        "AMETHYSTE_PORTAL_BLOCK": "amethyst_portal_block", "TITANE_PORTAL_BLOCK": "titane_portal_block",
+        "PALADIUM_PORTAL_BLOCK": "paladium_portal_block", "ENDIUM_PORTAL_BLOCK": "endium_portal_block",
+        "ENDIUM_ANGLE_PORTAL_BLOCK": "endium_angle_portal_block", "ENDIUM_HEART": "endium_heart",
+        "AMETHYSTE_PORTAL_KEY": "amethyst_portal_key", "TITANE_PORTAL_KEY": "titane_portal_key",
+        "PALADIUM_PORTAL_KEY": "paladium_portal_key", "ENDIUM_PORTAL_KEY": "endium_portal_key",
+        "MYSTICAL_BOOKSHELF": "mystical_bookshelf",
     }
     # Un meme objet 1.7.10 a plusieurs metas, plusieurs objets en 26.2 : la
     # recette se choisit par (nom, meta). Sans cette table, les quatre outils de
@@ -1641,6 +2130,20 @@ def main():
         ("Blocks.field_150336_V", 0): "minecraft:bricks",
         ("Items.field_151065_br", 0): "minecraft:blaze_powder",
         ("Blocks.field_150343_Z", 0): "minecraft:obsidian",
+        # Un Block passe tel quel a addRecipe vaut toutes ses metas
+        # (new ItemStack(block, 1, 32767) dans CraftingManager) : toutes les
+        # planches vanilla.
+        ("Blocks.field_150344_f", 0): "#minecraft:planks",
+        ("Items.field_151131_as", 0): "minecraft:water_bucket",
+        ("Items.field_151122_aG", 0): "minecraft:book",
+        ("ItemsRegister.LIGHTNING_POTION", 0): "%s:lightning_potion" % NS,
+        ("ItemsRegister.ENDIUM_POLLEN", 0): "%s:endium_pollen" % NS,
+        ("BlocksRegister.FLOWER_ENDIUM", 0): "%s:endium_flower" % NS,
+        ("BlocksRegister.BLOCK_FINDIUM", 0): "%s:findium_block" % NS,
+        ("BlocksRegister.SHINY_JACARANDA_WOOD", 0): "%s:shiny_jacaranda_wood" % NS,
+        ("BlocksRegister.SHINY_JUDEECERCIS_WOOD", 0): "%s:shiny_judeecercis_wood" % NS,
+        ("BlocksRegister.SHINY_ERABLE_WOOD", 0): "%s:shiny_erable_wood" % NS,
+        ("BlocksRegister.SHINY_OSTRYA_WOOD", 0): "%s:shiny_ostrya_wood" % NS,
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())

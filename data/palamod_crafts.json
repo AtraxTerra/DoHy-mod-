@@ -15986,5 +15986,1309 @@
       ]
     ],
     "source": "modules_smeltery_registerer_PSRegister_Craft.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.EXTRACTOR",
+      "count": 2,
+      "meta": 0
+    },
+    "pattern": [
+      " S ",
+      "SPS",
+      "WFW"
+    ],
+    "keys": {
+      "S": {
+        "id": "Items.field_151055_y",
+        "meta": 0
+      },
+      "P": {
+        "id": "ItemsRegister.PALADIUM_CORE",
+        "meta": 0
+      },
+      "W": {
+        "id": "Blocks.field_150344_f",
+        "meta": 0
+      },
+      "F": {
+        "id": "Items.field_151131_as",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        " S "
+      ],
+      [
+        "str",
+        "SPS"
+      ],
+      [
+        "str",
+        "WFW"
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "Items.field_151055_y",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_CORE",
+        0
+      ],
+      [
+        "char",
+        "W"
+      ],
+      [
+        "ref",
+        "Blocks.field_150344_f",
+        0
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "Items.field_151131_as",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.TANK_GOLD",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "GVG",
+      "V V",
+      "GVG"
+    ],
+    "keys": {
+      "G": {
+        "id": "Items.field_151043_k",
+        "meta": 0
+      },
+      "V": {
+        "id": "Blocks.field_150359_w",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "GVG"
+      ],
+      [
+        "str",
+        "V V"
+      ],
+      [
+        "str",
+        "GVG"
+      ],
+      [
+        "char",
+        "G"
+      ],
+      [
+        "ref",
+        "Items.field_151043_k",
+        0
+      ],
+      [
+        "char",
+        "V"
+      ],
+      [
+        "ref",
+        "Blocks.field_150359_w",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.TANK_AMETHYSTE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "GVG",
+      "V V",
+      "GVG"
+    ],
+    "keys": {
+      "G": {
+        "id": "ItemsRegister.AMETHYST_INGOT",
+        "meta": 0
+      },
+      "V": {
+        "id": "Blocks.field_150359_w",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "GVG"
+      ],
+      [
+        "str",
+        "V V"
+      ],
+      [
+        "str",
+        "GVG"
+      ],
+      [
+        "char",
+        "G"
+      ],
+      [
+        "ref",
+        "ItemsRegister.AMETHYST_INGOT",
+        0
+      ],
+      [
+        "char",
+        "V"
+      ],
+      [
+        "ref",
+        "Blocks.field_150359_w",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.TANK_TITANE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "GVG",
+      "V V",
+      "GVG"
+    ],
+    "keys": {
+      "G": {
+        "id": "ItemsRegister.TITANE_INGOT",
+        "meta": 0
+      },
+      "V": {
+        "id": "Blocks.field_150359_w",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "GVG"
+      ],
+      [
+        "str",
+        "V V"
+      ],
+      [
+        "str",
+        "GVG"
+      ],
+      [
+        "char",
+        "G"
+      ],
+      [
+        "ref",
+        "ItemsRegister.TITANE_INGOT",
+        0
+      ],
+      [
+        "char",
+        "V"
+      ],
+      [
+        "ref",
+        "Blocks.field_150359_w",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.TANK_PALADIUM",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "GVG",
+      "V V",
+      "GVG"
+    ],
+    "keys": {
+      "G": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      },
+      "V": {
+        "id": "Blocks.field_150359_w",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "GVG"
+      ],
+      [
+        "str",
+        "V V"
+      ],
+      [
+        "str",
+        "GVG"
+      ],
+      [
+        "char",
+        "G"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ],
+      [
+        "char",
+        "V"
+      ],
+      [
+        "ref",
+        "Blocks.field_150359_w",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.FLASK",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "V V",
+      "VVV"
+    ],
+    "keys": {
+      "V": {
+        "id": "Blocks.field_150359_w",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "V V"
+      ],
+      [
+        "str",
+        "VVV"
+      ],
+      [
+        "char",
+        "V"
+      ],
+      [
+        "ref",
+        "Blocks.field_150359_w",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.CAULDRON_BLOCK",
+      "count": 3,
+      "meta": 0
+    },
+    "pattern": [
+      "LLL",
+      "LPL",
+      "LLL"
+    ],
+    "keys": {
+      "L": {
+        "id": "ItemsRegister.LIGHTNING_POTION",
+        "meta": 0
+      },
+      "P": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "LLL"
+      ],
+      [
+        "str",
+        "LPL"
+      ],
+      [
+        "str",
+        "LLL"
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "ItemsRegister.LIGHTNING_POTION",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.CAULDRON_CORE",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "LPL",
+      "LPL",
+      "LPL"
+    ],
+    "keys": {
+      "L": {
+        "id": "ItemsRegister.LIGHTNING_POTION",
+        "meta": 0
+      },
+      "P": {
+        "id": "ItemsRegister.PALADIUM_INGOT",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "LPL"
+      ],
+      [
+        "str",
+        "LPL"
+      ],
+      [
+        "str",
+        "LPL"
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "ItemsRegister.LIGHTNING_POTION",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_INGOT",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.GLUEBALL_PATTERN",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "OOO",
+      "SLS",
+      "OOO"
+    ],
+    "keys": {
+      "O": {
+        "id": "Blocks.field_150344_f",
+        "meta": 0
+      },
+      "S": {
+        "id": "Items.field_151055_y",
+        "meta": 0
+      },
+      "L": {
+        "id": "Items.field_151116_aA",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "OOO"
+      ],
+      [
+        "str",
+        "SLS"
+      ],
+      [
+        "str",
+        "OOO"
+      ],
+      [
+        "char",
+        "O"
+      ],
+      [
+        "ref",
+        "Blocks.field_150344_f",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "Items.field_151055_y",
+        0
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "Items.field_151116_aA",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.AMETHYSTE_PORTAL_BLOCK",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "WWW",
+      "WHW",
+      "WWW"
+    ],
+    "keys": {
+      "W": {
+        "id": "BlocksRegister.SHINY_JACARANDA_WOOD",
+        "meta": 0
+      },
+      "H": {
+        "id": "BlocksRegister.BLOCK_AMETHYST",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "WWW"
+      ],
+      [
+        "str",
+        "WHW"
+      ],
+      [
+        "str",
+        "WWW"
+      ],
+      [
+        "char",
+        "W"
+      ],
+      [
+        "ref",
+        "BlocksRegister.SHINY_JACARANDA_WOOD",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_AMETHYST",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.TITANE_PORTAL_BLOCK",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "WWW",
+      "WHW",
+      "WWW"
+    ],
+    "keys": {
+      "W": {
+        "id": "BlocksRegister.SHINY_JUDEECERCIS_WOOD",
+        "meta": 0
+      },
+      "H": {
+        "id": "BlocksRegister.BLOCK_TITANE",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "WWW"
+      ],
+      [
+        "str",
+        "WHW"
+      ],
+      [
+        "str",
+        "WWW"
+      ],
+      [
+        "char",
+        "W"
+      ],
+      [
+        "ref",
+        "BlocksRegister.SHINY_JUDEECERCIS_WOOD",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_TITANE",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.PALADIUM_PORTAL_BLOCK",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "WWW",
+      "WHW",
+      "WWW"
+    ],
+    "keys": {
+      "W": {
+        "id": "BlocksRegister.SHINY_ERABLE_WOOD",
+        "meta": 0
+      },
+      "H": {
+        "id": "BlocksRegister.BLOCK_PALADIUM",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "WWW"
+      ],
+      [
+        "str",
+        "WHW"
+      ],
+      [
+        "str",
+        "WWW"
+      ],
+      [
+        "char",
+        "W"
+      ],
+      [
+        "ref",
+        "BlocksRegister.SHINY_ERABLE_WOOD",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_PALADIUM",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.ENDIUM_PORTAL_BLOCK",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "WWW",
+      "WHW",
+      "WWW"
+    ],
+    "keys": {
+      "W": {
+        "id": "BlocksRegister.SHINY_OSTRYA_WOOD",
+        "meta": 0
+      },
+      "H": {
+        "id": "ItemsRegister.ENDIUM_HEART",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "WWW"
+      ],
+      [
+        "str",
+        "WHW"
+      ],
+      [
+        "str",
+        "WWW"
+      ],
+      [
+        "char",
+        "W"
+      ],
+      [
+        "ref",
+        "BlocksRegister.SHINY_OSTRYA_WOOD",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ENDIUM_HEART",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.ENDIUM_HEART",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "FEF",
+      "EPE",
+      "FEF"
+    ],
+    "keys": {
+      "F": {
+        "id": "BlocksRegister.BLOCK_FINDIUM",
+        "meta": 0
+      },
+      "E": {
+        "id": "BlocksRegister.FLOWER_ENDIUM",
+        "meta": 0
+      },
+      "P": {
+        "id": "BlocksRegister.BLOCK_PALADIUM",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "FEF"
+      ],
+      [
+        "str",
+        "EPE"
+      ],
+      [
+        "str",
+        "FEF"
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "BlocksRegister.FLOWER_ENDIUM",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_PALADIUM",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.ENDIUM_ANGLE_PORTAL_BLOCK",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "NPN",
+      "FHF",
+      "NPN"
+    ],
+    "keys": {
+      "N": {
+        "id": "ItemsRegister.ENDIUM_POLLEN",
+        "meta": 0
+      },
+      "P": {
+        "id": "BlocksRegister.BLOCK_PALADIUM",
+        "meta": 0
+      },
+      "F": {
+        "id": "BlocksRegister.BLOCK_FINDIUM",
+        "meta": 0
+      },
+      "H": {
+        "id": "ItemsRegister.ENDIUM_HEART",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "NPN"
+      ],
+      [
+        "str",
+        "FHF"
+      ],
+      [
+        "str",
+        "NPN"
+      ],
+      [
+        "char",
+        "N"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ENDIUM_POLLEN",
+        0
+      ],
+      [
+        "char",
+        "P"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_PALADIUM",
+        0
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "H"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ENDIUM_HEART",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.AMETHYSTE_PORTAL_KEY",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "LSL",
+      "ECE",
+      " S "
+    ],
+    "keys": {
+      "L": {
+        "id": "ItemsRegister.LIGHTNING_POTION",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_AMETHYST",
+        "meta": 0
+      },
+      "E": {
+        "id": "ItemsRegister.AMETHYST_SWORD",
+        "meta": 0
+      },
+      "C": {
+        "id": "ItemsRegister.COMPRESSED_AMETHYST",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "LSL"
+      ],
+      [
+        "str",
+        "ECE"
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "ItemsRegister.LIGHTNING_POTION",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_AMETHYST",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "ItemsRegister.AMETHYST_SWORD",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.COMPRESSED_AMETHYST",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.TITANE_PORTAL_KEY",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "LSL",
+      "ECE",
+      " S "
+    ],
+    "keys": {
+      "L": {
+        "id": "ItemsRegister.LIGHTNING_POTION",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_TITANE",
+        "meta": 0
+      },
+      "E": {
+        "id": "ItemsRegister.TITANE_SWORD",
+        "meta": 0
+      },
+      "C": {
+        "id": "ItemsRegister.COMPRESSED_TITANE",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "LSL"
+      ],
+      [
+        "str",
+        "ECE"
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "ItemsRegister.LIGHTNING_POTION",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_TITANE",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "ItemsRegister.TITANE_SWORD",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.COMPRESSED_TITANE",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.PALADIUM_PORTAL_KEY",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "LSL",
+      "ECE",
+      " S "
+    ],
+    "keys": {
+      "L": {
+        "id": "ItemsRegister.LIGHTNING_POTION",
+        "meta": 0
+      },
+      "S": {
+        "id": "ItemsRegister.STICK_PALADIUM",
+        "meta": 0
+      },
+      "E": {
+        "id": "ItemsRegister.PALADIUM_SWORD",
+        "meta": 0
+      },
+      "C": {
+        "id": "ItemsRegister.COMPRESSED_PALADIUM",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "LSL"
+      ],
+      [
+        "str",
+        "ECE"
+      ],
+      [
+        "str",
+        " S "
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "ItemsRegister.LIGHTNING_POTION",
+        0
+      ],
+      [
+        "char",
+        "S"
+      ],
+      [
+        "ref",
+        "ItemsRegister.STICK_PALADIUM",
+        0
+      ],
+      [
+        "char",
+        "E"
+      ],
+      [
+        "ref",
+        "ItemsRegister.PALADIUM_SWORD",
+        0
+      ],
+      [
+        "char",
+        "C"
+      ],
+      [
+        "ref",
+        "ItemsRegister.COMPRESSED_PALADIUM",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "ItemsRegister.ENDIUM_PORTAL_KEY",
+      "count": 1,
+      "meta": 0
+    },
+    "pattern": [
+      "LFL",
+      "BNB",
+      " F "
+    ],
+    "keys": {
+      "B": {
+        "id": "BlocksRegister.BLOCK_FINDIUM",
+        "meta": 0
+      },
+      "L": {
+        "id": "ItemsRegister.LIGHTNING_POTION",
+        "meta": 0
+      },
+      "F": {
+        "id": "ItemsRegister.FINDIUM",
+        "meta": 0
+      },
+      "N": {
+        "id": "ItemsRegister.ENDIUM_POLLEN",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "LFL"
+      ],
+      [
+        "str",
+        "BNB"
+      ],
+      [
+        "str",
+        " F "
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "BlocksRegister.BLOCK_FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "L"
+      ],
+      [
+        "ref",
+        "ItemsRegister.LIGHTNING_POTION",
+        0
+      ],
+      [
+        "char",
+        "F"
+      ],
+      [
+        "ref",
+        "ItemsRegister.FINDIUM",
+        0
+      ],
+      [
+        "char",
+        "N"
+      ],
+      [
+        "ref",
+        "ItemsRegister.ENDIUM_POLLEN",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
+  },
+  {
+    "kind": "addRecipe",
+    "result": {
+      "item": "BlocksRegister.MYSTICAL_BOOKSHELF",
+      "count": 2,
+      "meta": 0
+    },
+    "pattern": [
+      "WWW",
+      "BBB",
+      "WWW"
+    ],
+    "keys": {
+      "W": {
+        "id": "BlocksRegister.SHINY_JACARANDA_WOOD",
+        "meta": 0
+      },
+      "B": {
+        "id": "Items.field_151122_aG",
+        "meta": 0
+      }
+    },
+    "anomalies": null,
+    "raw": [
+      [
+        "str",
+        "WWW"
+      ],
+      [
+        "str",
+        "BBB"
+      ],
+      [
+        "str",
+        "WWW"
+      ],
+      [
+        "char",
+        "W"
+      ],
+      [
+        "ref",
+        "BlocksRegister.SHINY_JACARANDA_WOOD",
+        0
+      ],
+      [
+        "char",
+        "B"
+      ],
+      [
+        "ref",
+        "Items.field_151122_aG",
+        0
+      ]
+    ],
+    "source": "modules_alchimiste_common_init_CraftMod.txt"
   }
 ]

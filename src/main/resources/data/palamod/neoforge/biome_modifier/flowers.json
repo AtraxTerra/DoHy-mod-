@@ -1,0 +1,17 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "minecraft:plains",
+    "minecraft:windswept_hills",
+    "minecraft:forest"
+  ],
+  "features": [
+    "palamod:harpagophytum_flower",
+    "palamod:sauge_flower",
+    "palamod:clathrusarcheri_flower",
+    "palamod:endium_flower",
+    "palamod:paladium_flower",
+    "palamod:mineral_flower"
+  ],
+  "step": "vegetal_decoration"
+}

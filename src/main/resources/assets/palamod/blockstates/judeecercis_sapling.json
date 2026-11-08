@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "stage=0": {
+      "model": "palamod:block/judeecercis_sapling"
+    },
+    "stage=1": {
+      "model": "palamod:block/judeecercis_sapling"
+    }
+  }
+}

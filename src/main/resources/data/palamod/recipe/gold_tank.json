@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GVG",
+    "V V",
+    "GVG"
+  ],
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "V": "minecraft:glass"
+  },
+  "result": {
+    "id": "palamod:gold_tank",
+    "count": 1
+  }
+}

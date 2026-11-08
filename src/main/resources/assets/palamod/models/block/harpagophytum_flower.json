@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "palamod:block/harpagophytum_flower"
+  }
+}

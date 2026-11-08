@@ -87,6 +87,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 7 | **Équipement** : 19 outils, 5 houes à rayon, 6 armures, leurs effets, 49 recettes | fait |
 | 9 | **Fermier** : abattage et incassabilité de la hache en endium, eau angélique (fluide qui soigne, seau) — sans herbes colorées, racinier ni trône | fait |
 | 10 | **Chasseur** : canne à pêche en paladium, épée en endium qui ne frappe plus à bout, épée et pierre de capture, marteau de caverne, spawner cassé, spawner customisé (âmes, paliers, créatures empilées) — sans contrôleur, familiers, améliorations ni trône | fait |
+| 11 | **Alchimiste** : 4 arbres de PalaMod (générés), sève (fiole, extracteur, tanks), chaudron multibloc, potion de foudre, fleurs et pollens, portails à sève et leurs clés, bibliothèque mystique et table de l'Alchimiste (anti chute, grass breaker) — sans table d'alchimiste, totem fleuri, boules de glu ni trône | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -151,6 +152,27 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — chapitre 11 : l'Alchimiste
+
+**Demande** : porter l'Alchimiste. Périmètre choisi par le joueur : arbres et sève, chaudron,
+portails, enchantements mystiques. Écartés : table d'alchimiste, totem fleuri, boules de glu,
+trône. Relevés et écarts : `docs/PALAMOD.md` § 14.
+
+**Tout tient aux arbres.** La sève vient de quatre arbres de PalaMod que DoHy n'avait pas, et que
+PalaMod ne générait que sur son serveur de minage. Ils sont portés et générés au rythme
+d'origine ; sans eux, aucun objet du métier ne s'obtient.
+
+**Les « portails » sont des autels.** Rien ne téléporte : la sève jetée s'accumule dans la clé et
+ressort en lingots. Quatre bugs de l'original y sont corrigés (contenants détruits, trou vidé
+de tout, un coin non vérifié, l'endium qui donnait des pépites sans pollen par tank).
+
+**Premier mixin du mod** (`dohy.mixins.json`) : l'anti-chute n'a aucun événement pour se brancher,
+`Player.isStayingOnGroundSurface` est le seul point qui décide. La méthode a été vérifiée à la
+sonde, et `LocalPlayer` ne la redéfinit pas.
+
+**Les recettes de `CraftMod`** rejoignent `data/palamod_crafts.json` : le relevé de
+`tools/extract_crafts.py` sur un cinquième registre, les 282 recettes précédentes inchangées.
 
 ### 2026-11-08 (suite) — chapitre 10 : le Chasseur
 

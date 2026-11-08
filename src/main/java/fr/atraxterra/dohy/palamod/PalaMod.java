@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.palamod;
 
 import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
 import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
+import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
@@ -56,6 +57,7 @@ public final class PalaMod {
         PalaSeedPlanters.register(modBus);
         PalaFluids.register(modBus);
         PalaHunter.register(modBus);
+        PalaAlchemist.register(modBus);
         PalaEquipment.register(modBus);
         PalaMiner.register(modBus);
         PalaStorage.register(modBus);

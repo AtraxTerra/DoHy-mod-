@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GVG",
+    "V V",
+    "GVG"
+  ],
+  "key": {
+    "G": "palamod:titane_ingot",
+    "V": "minecraft:glass"
+  },
+  "result": {
+    "id": "palamod:titane_tank",
+    "count": 1
+  }
+}

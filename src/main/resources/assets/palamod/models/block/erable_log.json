@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "palamod:block/erable_log",
+    "end": "palamod:block/erable_log_top"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "values": {
+    "palamod:dead_wood": {
+      "burn_time": 300
+    },
+    "palamod:dead_wood_planks": {
+      "burn_time": 300
+    },
+    "palamod:erable_log": {
+      "burn_time": 300
+    },
+    "palamod:erable_planks": {
+      "burn_time": 300
+    },
+    "palamod:jacaranda_log": {
+      "burn_time": 300
+    },
+    "palamod:jacaranda_planks": {
+      "burn_time": 300
+    },
+    "palamod:judeecercis_log": {
+      "burn_time": 300
+    },
+    "palamod:judeecercis_planks": {
+      "burn_time": 300
+    },
+    "palamod:ostrya_log": {
+      "burn_time": 300
+    },
+    "palamod:ostrya_planks": {
+      "burn_time": 300
+    }
+  }
+}

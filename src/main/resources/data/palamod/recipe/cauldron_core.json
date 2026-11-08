@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LPL",
+    "LPL",
+    "LPL"
+  ],
+  "key": {
+    "L": "palamod:lightning_potion",
+    "P": "palamod:paladium_ingot"
+  },
+  "result": {
+    "id": "palamod:cauldron_core",
+    "count": 1
+  }
+}

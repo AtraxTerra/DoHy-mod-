@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GVG",
+    "V V",
+    "GVG"
+  ],
+  "key": {
+    "G": "palamod:paladium_ingot",
+    "V": "minecraft:glass"
+  },
+  "result": {
+    "id": "palamod:paladium_tank",
+    "count": 1
+  }
+}

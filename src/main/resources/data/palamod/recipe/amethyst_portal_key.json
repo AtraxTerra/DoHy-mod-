@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LSL",
+    "ECE",
+    " S "
+  ],
+  "key": {
+    "L": "palamod:lightning_potion",
+    "S": "palamod:amethyst_stick",
+    "E": "palamod:amethyst_sword",
+    "C": "palamod:compressed_amethyst"
+  },
+  "result": {
+    "id": "palamod:amethyst_portal_key",
+    "count": 1
+  }
+}

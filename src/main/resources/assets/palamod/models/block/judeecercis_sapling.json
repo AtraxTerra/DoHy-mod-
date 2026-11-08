@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "palamod:block/judeecercis_sapling"
+  }
+}

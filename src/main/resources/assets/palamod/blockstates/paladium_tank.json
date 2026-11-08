@@ -1,0 +1,585 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "palamod:block/paladium_tank"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "1"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_1"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "2"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_2"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "3"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_3"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "4"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_4"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "5"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_5"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "6"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_6"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "7"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_7"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "8"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_8"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "9"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_9"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "10"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_10"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "11"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_11"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "12"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_12"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "13"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_13"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "14"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_14"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "15"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_15"
+      }
+    },
+    {
+      "when": {
+        "sap": "jacaranda",
+        "fill": "16"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_jacaranda_16"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "1"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_1"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "2"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_2"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "3"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_3"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "4"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_4"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "5"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_5"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "6"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_6"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "7"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_7"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "8"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_8"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "9"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_9"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "10"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_10"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "11"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_11"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "12"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_12"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "13"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_13"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "14"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_14"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "15"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_15"
+      }
+    },
+    {
+      "when": {
+        "sap": "judeecercis",
+        "fill": "16"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_judeecercis_16"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "1"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_1"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "2"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_2"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "3"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_3"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "4"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_4"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "5"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_5"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "6"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_6"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "7"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_7"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "8"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_8"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "9"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_9"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "10"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_10"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "11"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_11"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "12"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_12"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "13"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_13"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "14"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_14"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "15"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_15"
+      }
+    },
+    {
+      "when": {
+        "sap": "erable",
+        "fill": "16"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_erable_16"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "1"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_1"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "2"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_2"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "3"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_3"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "4"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_4"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "5"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_5"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "6"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_6"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "7"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_7"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "8"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_8"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "9"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_9"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "10"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_10"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "11"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_11"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "12"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_12"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "13"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_13"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "14"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_14"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "15"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_15"
+      }
+    },
+    {
+      "when": {
+        "sap": "ostrya",
+        "fill": "16"
+      },
+      "apply": {
+        "model": "palamod:block/tank_sap_ostrya_16"
+      }
+    }
+  ]
+}

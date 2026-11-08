@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NPN",
+    "FHF",
+    "NPN"
+  ],
+  "key": {
+    "N": "palamod:endium_pollen",
+    "P": "palamod:paladium_block",
+    "F": "palamod:findium_block",
+    "H": "palamod:endium_heart"
+  },
+  "result": {
+    "id": "palamod:endium_angle_portal_block",
+    "count": 1
+  }
+}
