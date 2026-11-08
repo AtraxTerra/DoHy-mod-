@@ -2041,6 +2041,14 @@ def main():
     write("data/%s/loot_table/blocks/alchemist_portal.json" % NS, {"type": "minecraft:block", "pools": []})
     label("block", "alchemist_portal", "Portail d'alchimiste", "Alchemist Portal")
     label("message", "portal.wrong_key", "Cette cle n'ouvre pas ce portail", "This key doesn't open this portal")
+    label("message", "portal.wrong_item", "Ce portail ne prend que de la seve de %s, en fiole pleine ou en tank",
+          "This portal only takes %s sap, in a full flask or a tank")
+    label("message", "cauldron.fill", "Remplissez d'abord le bassin : jetez-y (touche Q) un seau d'eau angelique",
+          "Fill the basin first: drop (Q key) a bucket of angelic water into it")
+    label("message", "cauldron.need_log", "Il manque une buche de jacaranda, de judee, d'erable ou d'ostrya",
+          "Missing a jacaranda, judeecercis, maple or ostrya log")
+    label("message", "cauldron.need_potion", "Il manque une potion de foudre", "Missing a lightning potion")
+    label("message", "cauldron.unknown", "Le chaudron ne transforme pas : %s", "The cauldron does nothing with: %s")
     label("message", "portal.no_key", "Inserez la cle du portail", "Insert the portal key")
     label("message", "portal.sap", "Seve : %s / %s", "Sap: %s / %s")
     label("message", "portal.sap_pollen", "Seve : %s / %s — pollen d'endium : %s / %s",
