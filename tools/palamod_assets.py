@@ -1396,6 +1396,160 @@ def main():
         "X": "minecraft:water_bucket",
     }, "%s:angelic_water_bucket" % NS)
 
+    # ---- chapitre 10 : le Chasseur ----
+    def hunter_item(name, textures, label_fr, label_en, parent="minecraft:item/generated"):
+        """Un objet a icone : textures = {suffixe: chemin sous textures/ du pack}."""
+        for suffix, source in textures.items():
+            destination = "item/%s%s.png" % (name, suffix)
+            pack = os.path.join(root[0] or "", "assets", source)
+            if os.path.exists(pack):
+                target = os.path.join(RES, "assets", NS, "textures", destination)
+                os.makedirs(os.path.dirname(target), exist_ok=True)
+                shutil.copyfile(pack, target)
+                provenance["pack"] += 1
+            else:
+                missing.append(source)
+            write("assets/%s/models/item/%s%s.json" % (NS, name, suffix), {
+                "parent": parent, "textures": {"layer0": "%s:item/%s%s" % (NS, name, suffix)}})
+        fr["item.%s.%s" % (NS, name)] = label_fr
+        en["item.%s.%s" % (NS, name)] = label_en
+
+    # Canne a peche : lancee ou non, comme la canne vanilla.
+    hunter_item("paladium_fishing_rod", {"": "palajobs/textures/items/paladium_rod_uncast.png",
+                                         "_cast": "palajobs/textures/items/paladium_rod_cast.png"},
+                "Canne a peche en paladium", "Paladium Fishing Rod", parent="minecraft:item/handheld_rod")
+    write("assets/%s/items/paladium_fishing_rod.json" % NS, {"model": {
+        "type": "minecraft:condition", "property": "minecraft:fishing_rod/cast",
+        "on_true": {"type": "minecraft:model", "model": "%s:item/paladium_fishing_rod_cast" % NS},
+        "on_false": {"type": "minecraft:model", "model": "%s:item/paladium_fishing_rod" % NS},
+    }})
+
+    hunter_item("capture_sword", {"": "palamod/textures/items/capture_sword.png"},
+                "Epee de capture", "Capture Sword", parent="minecraft:item/handheld")
+    write("assets/%s/items/capture_sword.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:item/capture_sword" % NS}})
+
+    # Pierre de capture : pleine des qu'elle porte une creature.
+    hunter_item("capture_stone", {"": "palamod/textures/items/capture_stone_empty.png",
+                                  "_full": "palamod/textures/items/capture_stone_full.png"},
+                "Pierre de capture", "Capture Stone")
+    write("assets/%s/items/capture_stone.json" % NS, {"model": {
+        "type": "minecraft:condition", "property": "minecraft:has_component",
+        "component": "%s:captured_entity" % NS,
+        "on_true": {"type": "minecraft:model", "model": "%s:item/capture_stone_full" % NS},
+        "on_false": {"type": "minecraft:model", "model": "%s:item/capture_stone" % NS},
+    }})
+    fr["item.%s.capture_stone.full" % NS] = "Pierre de capture : %s"
+    en["item.%s.capture_stone.full" % NS] = "Capture Stone: %s"
+    fr["item.%s.capture_stone.empty" % NS] = "Cette pierre de capture est vide"
+    en["item.%s.capture_stone.empty" % NS] = "This capture stone is empty"
+    fr["item.%s.capture_stone.entity" % NS] = "Entite : %s"
+    en["item.%s.capture_stone.entity" % NS] = "Entity: %s"
+
+    hunter_item("cavern_hammer", {"": "palamod/textures/items/cavern_hammer.png"},
+                "Marteau des cavernes", "Cavern Hammer", parent="minecraft:item/handheld")
+    write("assets/%s/items/cavern_hammer.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:item/cavern_hammer" % NS}})
+    fr["item.%s.cavern_hammer.tooltip" % NS] = "Casse un spawner de donjon pour en recolter l'ame"
+    en["item.%s.cavern_hammer.tooltip" % NS] = "Break a dungeon spawner to harvest its soul"
+    for key, label_fr, label_en in (
+            ("cannot_collect", "Impossible de recuperer les ames de ce spawner.",
+             "You can't collect the souls of this spawner."),
+            ("wrong_type", "Vous ne pouvez pas recuperer les ames de ce spawner.",
+             "You can't collect souls from this spawner."),
+            ("no_spawner", "Vous n'avez pas de spawner disponible pour recuperer les ames.",
+             "You have no spawner available to collect the souls.")):
+        fr["message.%s.cavern_hammer.%s" % (NS, key)] = label_fr
+        en["message.%s.cavern_hammer.%s" % (NS, key)] = label_en
+
+    # Spawner casse : un objet seulement, dessine en cube.
+    source = os.path.join(root[0] or "", "assets", "palamod", "textures", "blocks", "empty_broken_mob_spawner.png")
+    if os.path.exists(source):
+        target = os.path.join(RES, "assets", NS, "textures", "block", "broken_spawner.png")
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(source, target)
+    else:
+        missing.append(source)
+    write("assets/%s/models/item/broken_spawner.json" % NS, {
+        "parent": "minecraft:block/cube_all", "textures": {"all": "%s:block/broken_spawner" % NS}})
+    write("assets/%s/items/broken_spawner.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:item/broken_spawner" % NS}})
+    fr["item.%s.broken_spawner" % NS] = "Spawner casse"
+    en["item.%s.broken_spawner" % NS] = "Broken Spawner"
+
+    # Spawner customise : une cage par palier (spawner/ du pack), dessus et
+    # dessous communs. L'objet suit le palier par sa donnee de modele.
+    tiers = ("regular", "amethyst", "titane", "paladium", "endium")
+    for name in ("spawner_top",) + tuple("%s_spawner_side" % tier for tier in tiers):
+        source = os.path.join(root[0] or "", "assets", "palamod", "textures", "blocks", "spawner", name + ".png")
+        if os.path.exists(source):
+            target = os.path.join(RES, "assets", NS, "textures", "block", "spawner", name + ".png")
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            shutil.copyfile(source, target)
+        else:
+            missing.append(source)
+    for index, tier in enumerate(tiers):
+        write("assets/%s/models/block/empty_mob_spawner_tier%d.json" % (NS, index), {
+            "parent": "minecraft:block/cube_bottom_top",
+            "textures": {"top": "%s:block/spawner/spawner_top" % NS,
+                         "bottom": "%s:block/spawner/spawner_top" % NS,
+                         "side": "%s:block/spawner/%s_spawner_side" % (NS, tier),
+                         "particle": "%s:block/spawner/%s_spawner_side" % (NS, tier)}})
+    write("assets/%s/blockstates/empty_mob_spawner.json" % NS, {"variants": {
+        "tier=%d" % index: {"model": "%s:block/empty_mob_spawner_tier%d" % (NS, index)} for index in range(5)}})
+    write("assets/%s/models/item/empty_mob_spawner.json" % NS, {"parent": "%s:block/empty_mob_spawner_tier0" % NS})
+    write("assets/%s/items/empty_mob_spawner.json" % NS, {"model": {
+        "type": "minecraft:range_dispatch", "property": "minecraft:custom_model_data", "index": 0,
+        "entries": [{"threshold": index, "model": {"type": "minecraft:model",
+                                                   "model": "%s:block/empty_mob_spawner_tier%d" % (NS, index)}}
+                    for index in range(1, 5)],
+        "fallback": {"type": "minecraft:model", "model": "%s:block/empty_mob_spawner_tier0" % NS},
+    }})
+    # Rendu par l'evenement des drops, avec ses ames : la table reste vide.
+    write("data/%s/loot_table/blocks/empty_mob_spawner.json" % NS, {"type": "minecraft:block", "pools": []})
+    fr["block.%s.empty_mob_spawner" % NS] = "Spawner vide"
+    en["block.%s.empty_mob_spawner" % NS] = "Empty Spawner"
+    fr["item.%s.empty_mob_spawner.filled" % NS] = "Spawner (%s)"
+    en["item.%s.empty_mob_spawner.filled" % NS] = "Spawner (%s)"
+    fr["item.%s.empty_mob_spawner.no_souls" % NS] = "Ne contient aucune ame"
+    en["item.%s.empty_mob_spawner.no_souls" % NS] = "Contains no souls"
+    fr["item.%s.empty_mob_spawner.tier" % NS] = "Palier %s : %s creatures au plus"
+    en["item.%s.empty_mob_spawner.tier" % NS] = "Tier %s: up to %s creatures"
+    fr["item.%s.empty_mob_spawner.souls" % NS] = "%s / %s ames de %s"
+    en["item.%s.empty_mob_spawner.souls" % NS] = "%s / %s souls of %s"
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:empty_mob_spawner" % NS])
+
+    # Recettes. La canne (CraftRegistry de PalaJobs) n'est pas dans le relevé.
+    shaped("paladium_fishing_rod", ["  P", " SX", "S X"], {
+        "P": "%s:paladium_ingot" % NS, "S": "%s:paladium_stick" % NS, "X": "minecraft:string",
+    }, "%s:paladium_fishing_rod" % NS)
+    # RECETTES DE SUBSTITUTION, signalees comme telles : leurs ingredients
+    # d'origine ne sont pas portes.
+    # - Epee de capture : les quatre batons a effet (vitesse, force, soin,
+    #   degats) deviennent des batons en paladium, les trois tetes d'arme (epee
+    #   large, epee rapide, epee) des epees en paladium. La forme reste.
+    shaped("capture_sword", ["ABA", "BEB", "AHA"], {
+        "A": "%s:paladium_stick" % NS, "B": "%s:paladium_sword" % NS,
+        "E": "%s:compressed_paladium" % NS, "H": "%s:paladium_stick" % NS,
+    }, "%s:capture_sword" % NS)
+    # - Marteau des cavernes : le marteau en paladium (grinder) devient une
+    #   pioche en paladium.
+    shaped("cavern_hammer", ["AAA", "BCB", "AAA"], {
+        "A": "%s:titane_block" % NS, "B": "minecraft:obsidian", "C": "%s:paladium_pickaxe" % NS,
+    }, "%s:cavern_hammer" % NS)
+    # - Reparation du spawner casse : la pierre de gardien (mod GuardianGolem)
+    #   devient un coeur de paladium. Le reste est l'original : findium, crane de
+    #   squelette, paladium compresse, crusher.
+    shaped("empty_mob_spawner", ["ABA", "CDE", "AFA"], {
+        "A": "%s:findium" % NS, "B": "minecraft:skeleton_skull", "C": "%s:compressed_paladium" % NS,
+        "D": "%s:broken_spawner" % NS, "E": "%s:paladium_core" % NS, "F": "%s:crusher" % NS,
+    }, "%s:empty_mob_spawner" % NS)
+
+    tag("minecraft/tags/item/swords.json", ["%s:capture_sword" % NS])
+    tag("minecraft/tags/item/pickaxes.json", ["%s:cavern_hammer" % NS])
+    tag("minecraft/tags/item/enchantable/fishing.json", ["%s:paladium_fishing_rod" % NS])
+    tag("minecraft/tags/item/enchantable/durability.json", ["%s:paladium_fishing_rod" % NS])
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de
@@ -1430,7 +1584,7 @@ def main():
         # Mineur (chapitre 8)
         "AMETHYST_EXCAVATOR": "amethyst_excavator", "TITANE_EXCAVATOR": "titane_excavator",
         "PALADIUM_EXCAVATOR": "paladium_excavator", "MAGNET": "magnet",
-        "MOULA_STONE": "moula_stone", "VOIDSTONE_MINAGE": "voidstone_minage",
+        "MOULA_STONE": "moula_stone", "CAPTURE_STONE": "capture_stone", "VOIDSTONE_MINAGE": "voidstone_minage",
         "CAVE_BLOCK": "cave_block", "ENDIUM_CAVE_BLOCK": "endium_cave_block",
         "PALADIUM_FURNACE": "paladium_furnace", "FORGE": "palaforge",
         "FURNACE_UPGRADE": "furnace_upgrade", "PALADIUM_HOPPER": "paladium_hopper",
@@ -1485,6 +1639,8 @@ def main():
         ("BlocksRegister.BLOCK_PALADIUM", 0): "%s:paladium_block" % NS,
         ("Blocks.field_150359_w", 0): "minecraft:glass",
         ("Blocks.field_150336_V", 0): "minecraft:bricks",
+        ("Items.field_151065_br", 0): "minecraft:blaze_powder",
+        ("Blocks.field_150343_Z", 0): "minecraft:obsidian",
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())

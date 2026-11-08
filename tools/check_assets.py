@@ -576,8 +576,9 @@ def check_equipment():
                 fail(f"equipement : {name} n'est pas dans #minecraft:{tag_name} — "
                      "il refusera les enchantements de son type")
     # Les outils a classe propre passent par registerItem, que le motif
-    # ci-dessus ne voit pas : la pioche et la hache en endium.
-    for name, tag_name in (("endium_pickaxe", "pickaxes"), ("endium_axe", "axes")):
+    # ci-dessus ne voit pas : la pioche, la hache et l'epee en endium.
+    for name, tag_name in (("endium_pickaxe", "pickaxes"), ("endium_axe", "axes"),
+                           ("endium_sword", "swords")):
         if f'registerItem("{name}"' in source:
             checked += 1
             if f"{NS}:{name}" not in _tag_values(tag_name):

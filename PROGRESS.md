@@ -86,6 +86,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 6 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
 | 7 | **Équipement** : 19 outils, 5 houes à rayon, 6 armures, leurs effets, 49 recettes | fait |
 | 9 | **Fermier** : abattage et incassabilité de la hache en endium, eau angélique (fluide qui soigne, seau) — sans herbes colorées, racinier ni trône | fait |
+| 10 | **Chasseur** : canne à pêche en paladium, épée en endium qui ne frappe plus à bout, épée et pierre de capture, marteau de caverne, spawner cassé, spawner customisé (âmes, paliers, créatures empilées) — sans contrôleur, familiers, améliorations ni trône | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -150,6 +151,25 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — chapitre 10 : le Chasseur
+
+**Demande** : porter les objets du Chasseur. Périmètre choisi par le joueur : canne à pêche en
+paladium, épée en endium, épée et pierre de capture, marteau de caverne, spawner cassé, âmes et
+spawner customisé. Sans contrôleur ni le reste ; le spawner se règle sur le wiki. Consignes en
+route : **le spawner posé garde le fonctionnement vanilla** ; les paliers restent, plus de
+créatures par palier (**3 / 6 / 9 / 12**) ; ses créatures **s'empilent en une seule** avec leur
+nombre au-dessus, et tuer une pile n'en tue **qu'une à la fois**. Relevés et écarts :
+`docs/PALAMOD.md` § 13.
+
+**Le spawner qui ne s'arrêtait jamais.** Première version : la vague était annulée à
+l'apparition. Lu au bytecode, `BaseSpawner.serverTick` ne relance son délai que si l'ajout au
+monde a été tenté ; annulée plus tôt, la vague recommence au tick suivant, quatre fois par tick.
+La fusion se fait donc à l'entrée dans le monde, après quoi le spawner attend ses 10 à 40 s.
+
+**Noms de 26.2 trouvés à la sonde** : les types d'entités sont dans `EntityTypes`, ceux de block
+entity dans `BlockEntityTypes` ; un bloc à soi reçoit la block entity du spawner par
+`BlockEntityTypeAddBlocksEvent`.
 
 ### 2026-11-08 (suite) — chapitre 9 : le Fermier
 

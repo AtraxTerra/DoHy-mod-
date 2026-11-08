@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "AAA"
+  ],
+  "key": {
+    "A": "palamod:titane_block",
+    "B": "minecraft:obsidian",
+    "C": "palamod:paladium_pickaxe"
+  },
+  "result": {
+    "id": "palamod:cavern_hammer",
+    "count": 1
+  }
+}

@@ -60,7 +60,7 @@ public final class MinerXpEvents {
     }
 
     /** XP de PalaJobs vers XP de DoHy, a progression egale, arrondie au hasard. */
-    static long convert(ServerPlayer player, double palajobsXp) {
+    public static long convert(ServerPlayer player, double palajobsXp) {
         double exact = palajobsXp * JobApi.xpToReach(JobApi.maxLevel()) / PALAJOBS_TOTAL;
         long whole = (long) Math.floor(exact);
         return whole + (player.getRandom().nextDouble() < exact - whole ? 1 : 0);
