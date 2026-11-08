@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -50,6 +51,11 @@ public class ExtractorBlock extends BaseEntityBlock {
 
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
+    /**
+     * La fiole montree a cote du bec, comme le rendu de l'original : 0 sans
+     * fiole, 1 vide, puis 2 a 7 pour un a six sixiemes.
+     */
+    public static final IntegerProperty FLASK = IntegerProperty.create("flask", 0, 7);
 
     /** {@code setBlockBounds} par angle : du centre a la face qui touche la buche. */
     private static final VoxelShape EAST = box(4.8d, 0.0d, 4.8d, 16.0d, 10.4d, 11.2d);
@@ -59,7 +65,8 @@ public class ExtractorBlock extends BaseEntityBlock {
 
     public ExtractorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.EAST).setValue(ENABLED, false));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.EAST).setValue(ENABLED, false)
+                .setValue(FLASK, 0));
     }
 
     @Override
@@ -69,7 +76,7 @@ public class ExtractorBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, ENABLED);
+        builder.add(FACING, ENABLED, FLASK);
     }
 
     @Override
