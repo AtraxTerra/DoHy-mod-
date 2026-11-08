@@ -20,6 +20,14 @@ on:
         description: "Paquets dont lister les classes, separes par des virgules"
         required: false
         type: string
+      javap:
+        description: "Classes a desassembler avec javap, separees par des virgules"
+        required: false
+        type: string
+      member:
+        description: "Avec javap : ne garder que les methodes contenant ce nom"
+        required: false
+        type: string
       meta:
         description: "Lire version.json et pack.mcmeta dans les jars du classpath"
         required: false
@@ -59,16 +67,26 @@ jobs:
           # variable du shell.
           IN_CLASSES: ${{ inputs.classes }}
           IN_PACKAGES: ${{ inputs.packages }}
+          IN_JAVAP: ${{ inputs.javap }}
+          IN_MEMBER: ${{ inputs.member }}
           IN_META: ${{ inputs.meta }}
         run: |
           if [ "$IN_META" = "true" ]; then
             gradle packMeta --no-daemon -q
           fi
+          # javap voit les membres PROTEGES et le corps des methodes, que la
+          # reflexion ne montre pas. C'est le seul mode qui dit ce qu'une
+          # methode retourne.
+          if [ -n "$IN_JAVAP" ]; then
+            gradle bytecodeProbe --no-daemon -q \
+              -Pjavap="$(echo "$IN_JAVAP" | tr -d ' \n')" \
+              -Pmember="$(echo "$IN_MEMBER" | tr -d ' \n')"
+          fi
           if [ -z "$IN_CLASSES" ] && [ -z "$IN_PACKAGES" ]; then
-            if [ "$IN_META" = "true" ]; then
+            if [ "$IN_META" = "true" ] || [ -n "$IN_JAVAP" ]; then
               exit 0
             fi
-            echo "::error::Rien a sonder : renseigne classes, packages ou meta."
+            echo "::error::Rien a sonder : renseigne classes, packages, javap ou meta."
             exit 1
           fi
           gradle apiProbe --no-daemon -q \

@@ -143,11 +143,17 @@ jobs:
           print(f"{len(jobs['unlocks'])} deblocages coherents, niveaux dans 1..{max_level}")
           PY
 
-      # La chaine d'assets palamod : enregistrement Java -> blockstate ->
-      # modele -> texture, et definition d'item, butin, noms francais. AUCUNE
-      # des fautes cherchees ici ne fait echouer la compilation — elles donnent
-      # du violet, un bloc invisible ou un identifiant brut affiche au joueur,
-      # et seulement en jeu. Le script est lancable a la main : voir son entete.
+      # Les trois controles qui suivent partagent une propriete : AUCUNE des
+      # fautes qu'ils cherchent ne fait echouer la compilation. Chacune donne un
+      # jar valide et un defaut qui n'apparait qu'en jeu. Chaque script est
+      # lancable a la main ; son entete dit ce qu'il cherche.
+
+      # Un verrou de metier ecrit sans l'exemption du creatif se charge sans
+      # rien dire et bloque les administrateurs. Le chapitre 5 ajoutera des
+      # verrous : ce controle existe pour cette omission-la.
+      - name: Les verrous de metier doivent exempter le creatif
+        run: python3 tools/check_job_gates.py
+
       # Un champ statique qui lit, via un appel de methode, un champ declare
       # plus bas : le compilateur ne voit rien (une lecture DIRECTE serait
       # refusee, l'appel de methode contourne la regle), le jar se construit, et
@@ -156,6 +162,10 @@ jobs:
       - name: Les initialisations statiques doivent etre dans l'ordre
         run: python3 tools/check_static_init.py
 
+      # La chaine d'assets palamod : enregistrement Java -> blockstate ->
+      # modele -> texture, et definition d'item, butin, noms francais. Les
+      # fautes ici donnent du violet, un bloc invisible ou un identifiant brut
+      # affiche au joueur.
       - name: La chaine d'assets palamod doit etre complete
         run: python3 tools/check_assets.py
 

@@ -28,6 +28,15 @@ import java.util.UUID;
  * qu'on ne peut ni poser ni actionner est verrouillee pour de bon. L'objet reste
  * fabricable et se garde dans un coffre en attendant le niveau — ce qui est
  * meme plus doux que l'original, sans etre plus permissif sur ce qui compte.
+ *
+ * <p><b>Le creatif ne passe pas par les verrous</b>, et l'exemption est ici
+ * plutot que dans {@link JobGate#allows}. La distinction compte : {@code allows}
+ * repond « ce joueur a-t-il le niveau ? », et le Hub, {@code JobsMenu} et
+ * {@code /metiers} s'en servent pour compter les deverrouillages et afficher la
+ * progression. Exempter la-bas afficherait « 70/70 » a un administrateur de
+ * niveau 1 et <b>masquerait sa vraie progression</b> des qu'il repasserait en
+ * survie. Ici, {@code allows} dit toujours la verite et seule l'application
+ * choisit de ne pas s'en servir.
  */
 @EventBusSubscriber
 public final class JobGateEvents {
@@ -49,6 +58,22 @@ public final class JobGateEvents {
     }
 
     /**
+     * Les joueurs que les verrous ne concernent pas.
+     *
+     * <p>Le creatif sert a construire et a tester : un administrateur qui pose
+     * une machine pour verifier une recette n'a pas a monter un metier d'abord,
+     * et le joueur qui essaie son serveur en creatif attend de pouvoir tout
+     * poser. Le niveau reel n'est pas touche — seulement l'application.
+     *
+     * <p><b>Tout gestionnaire de cette classe doit commencer par ce test</b>, y
+     * compris ceux a venir ; {@code tools/check_job_gates.py} le verifie, parce
+     * qu'un verrou oublie ne se voit qu'en jeu et seulement en creatif.
+     */
+    private static boolean exempt(ServerPlayer player) {
+        return player.isCreative();
+    }
+
+    /**
      * Pose d'un bloc verrouille.
      *
      * <p>{@code BlockEvent.EntityPlaceEvent} est annulable (verifie a la sonde)
@@ -56,7 +81,7 @@ public final class JobGateEvents {
      */
     @SubscribeEvent
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || exempt(player)) {
             return;
         }
         JobConfig.Unlock unlock = JobGate.of(event.getPlacedBlock());
@@ -77,7 +102,7 @@ public final class JobGateEvents {
      */
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || exempt(player)) {
             return;
         }
 
@@ -98,7 +123,7 @@ public final class JobGateEvents {
     /** Clic droit dans le vide avec un item verrouille. */
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || exempt(player)) {
             return;
         }
         ItemStack stack = event.getItemStack();

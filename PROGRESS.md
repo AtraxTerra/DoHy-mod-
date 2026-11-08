@@ -100,6 +100,25 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 
 ---
 
+## Où regarder quand « rien ne se passe »
+
+**Le chat ne dit pas tout, et le jeu avale les erreurs serveur.** Une exception levée dans un
+gestionnaire d'interaction est journalisée puis *supprimée* (`Failed to handle packet ...,
+suppressing error`) : le joueur voit un clic sans effet. Le log est donc la première chose à
+lire, pas la dernière.
+
+| Quoi | Où |
+|---|---|
+| Instance de test | `C:\Users\lucas\AppData\Roaming\PrismLauncher\instances\26.2\minecraft` |
+| Log du jeu | `…\minecraft\logs\latest.log` |
+| Jar installé | `…\minecraft\mods\dohy-0.1.0+mc26.2.jar` |
+
+Et **vérifier le jar avant de soupçonner le code** : `javap -p -c` sur les classes concernées
+dit en dix secondes quelle version tourne réellement. Le 8 novembre, le jar testé avait la
+PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
+
+---
+
 ## Bloqué
 
 | Sujet | Blocage | Débloqué par |
@@ -123,6 +142,84 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 
 ## Journal des sessions
 
+### 2026-11-08 (suite) — « rien ne se passe » : l'erreur que le jeu avale
+
+**Signalement** : clic droit sur un cobblebreaker et sur un crusher, rien, aucun message.
+
+**La cause est dans le log, en une ligne**, et nulle part ailleurs :
+
+```
+java.lang.IllegalArgumentException: Container size 7 is smaller than expected 9
+	at net.minecraft.world.inventory.ChestMenu.<init>
+	at fr.atraxterra.dohy.palamod.machine.MachineBlockEntity.createMenu(MachineBlockEntity.java:151)
+	at fr.atraxterra.dohy.palamod.machine.PalaMachineEvents.onRightClickBlock
+[Server thread/ERROR] Failed to handle packet ServerboundUseItemOnPacket, suppressing error
+```
+
+Le coffre du chapitre 4 ouvrait un `GENERIC_9x1`, qui exige **neuf** cases ; le cobblebreaker
+en a sept, le crusher trois. `checkContainerSize` jetait, et **le jeu supprime l'exception** :
+« suppressing error ». 183 occurrences pour le cobblebreaker, 111 pour le crusher, et pas un
+mot a l'ecran. C'est la pire variante du defaut qui revient a chaque chapitre — compile,
+charge, demarre, et echoue sans trace visible.
+
+**Ce n'etait pas le code courant.** Le jar installe avait la PR #37 (exemption creatif) mais
+**pas** la #36 (interfaces) : la branche du creatif partait d'un `main` d'avant le merge des
+interfaces, donc un build de cette branche gardait l'ancien `createMenu` a `ChestMenu`.
+Verifie au `javap` sur le jar installe : ni `MachineMenu`, ni `PalaMenus`, et un
+`invokespecial ChestMenu.<init>` dans `createMenu`. `main` a ete fusionne dans la branche pour
+que les deux correctifs voyagent ensemble.
+
+**Le garde-fou, pour que ce ne soit pas une lecon jetable.** L'invariant viole etait : la taille
+de l'inventaire doit egaler le nombre de cases du menu. Il reviendra au chapitre 5, ou chaque
+machine ajoute un `SLOT_COUNT` et une disposition. `check_assets.py` compare donc le
+`SLOT_COUNT` de chaque `*BlockEntity` au nombre de cases de son interface. Verifie en passant
+le cobblebreaker a 6 :
+
+```
+::error::gui : CobblebreakerBlockEntity.java declare SLOT_COUNT=6 mais l'interface a 7 cases. L'ouverture echouera en silence, l'erreur etant supprimee par le jeu
+```
+
+**Et la sonde voit enfin les membres proteges.** Deux fois dans la journee j'ai bute sur des
+crochets invisibles a la reflexion : `renderLabels` (supprime, remplace par `extractContents`)
+et `getRenderShape`. La reflexion ne montre que le public, et ne dit **jamais** ce qu'une
+methode retourne. `gradle bytecodeProbe -Pjavap=<classe> -Pmember=<methode>` lance
+`javap -p -c -constants` sur le classpath : membres proteges et corps des methodes. C'est la
+technique qui a servi a relever le PalaMod depuis son jar, maintenant disponible pour Minecraft
+lui-meme.
+
+### 2026-11-08 (suite) — le creatif ne passe plus par les verrous
+
+**Demande du joueur** : en creatif, pouvoir ouvrir et utiliser les items qui demandent un
+niveau de metier.
+
+**Fait**, et la ou il fallait. L'exemption est dans `JobGateEvents`, **pas** dans
+`JobGate.allows`. La distinction n'est pas cosmetique : `allows` repond « ce joueur a-t-il le
+niveau ? », et le Hub, `JobsMenu` et `/metiers` s'en servent pour compter les deverrouillages
+et afficher la progression. Exempter la-bas aurait affiche **« 70/70 » a un administrateur de
+niveau 1**, et masque sa vraie progression des qu'il repasse en survie — un bug de confiance
+dans l'interface, pour une commodite de construction. Ici, `allows` dit toujours la verite et
+seule l'application choisit de ne pas s'en servir.
+
+Trois gestionnaires, trois appels a `exempt(player)`, qui teste `player.isCreative()` —
+`isCreative()` releve a la sonde avec `hasInfiniteMaterials()` et `gameMode()`, pas pris de
+memoire.
+
+**La faute que ca ouvre, et qui arrivera au chapitre 5.** Les seedplanters, le totem et le
+grinder ajouteront des verrous. Un quatrieme gestionnaire ecrit sur le modele des trois
+autres mais sans le test d'exemption **compile, se charge, tourne** — et bloque les
+administrateurs en creatif sans un mot dans les logs. Personne ne le remarque avant qu'un
+joueur s'en plaigne.
+
+`tools/check_job_gates.py` lit les gestionnaires `@SubscribeEvent` de la classe et exige que
+chacun appelle `exempt(`. Il verifie aussi les deux autres facons de casser ca : une `exempt()`
+qui ne teste plus aucun mode de jeu, et l'exemption migree dans `allows`. Verifie en provoquant
+les trois ; les trois remontent nommement, dont le cas du chapitre 5 ecrit tel qu'il le sera :
+
+```
+::error::onSeedplanterUse n'appelle pas exempt() : ce verrou s'appliquerait aussi en creatif, et ca ne se voit qu'en jeu
+::error::exempt() ne teste aucun mode de jeu : elle ne peut donc plus reconnaitre un joueur en creatif
+::error::JobGate.allows teste isCreative : l'exemption appartient a JobGateEvents. Ici elle afficherait « tout deverrouille » dans /metiers et masquerait la vraie progression
+```
 ### 2026-11-08 (suite) — des interfaces a nous, et ce que le coffre cachait
 
 **Demande du joueur** : des interfaces customs au lieu du coffre vanilla. Option 2 retenue —
