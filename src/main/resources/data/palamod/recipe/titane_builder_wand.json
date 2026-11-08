@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " BB",
+    " SB",
+    "S  "
+  ],
+  "key": {
+    "B": "palamod:titane_block",
+    "S": "palamod:titane_stick"
+  },
+  "result": {
+    "id": "palamod:titane_builder_wand",
+    "count": 1
+  }
+}

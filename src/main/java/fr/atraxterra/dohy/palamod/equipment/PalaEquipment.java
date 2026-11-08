@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.palamod.equipment;
 
 import fr.atraxterra.dohy.palamod.PalaMod;
+import fr.atraxterra.dohy.palamod.miner.EndiumPickaxeItem;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ShovelItem;
@@ -106,7 +107,9 @@ public final class PalaEquipment {
 
     // -- Endium : pas de pelle dans PalaMod ----------------------------------
     public static final DeferredItem<Item> ENDIUM_SWORD = sword("endium_sword", PalaToolMaterials.ENDIUM);
-    public static final DeferredItem<Item> ENDIUM_PICKAXE = pickaxe("endium_pickaxe", PalaToolMaterials.ENDIUM);
+    // La pioche en endium casse en 3x3 et ne se brise jamais : voir EndiumPickaxeItem.
+    public static final DeferredItem<EndiumPickaxeItem> ENDIUM_PICKAXE = track(ITEMS.registerItem("endium_pickaxe",
+            properties -> new EndiumPickaxeItem(properties.pickaxe(PalaToolMaterials.ENDIUM, 1.0f, -2.8f))));
     public static final DeferredItem<AxeItem> ENDIUM_AXE = axe("endium_axe", PalaToolMaterials.ENDIUM);
     public static final DeferredItem<RadiusHoeItem> ENDIUM_RADIUS_HOE = hoe("endium_radius_hoe", PalaToolMaterials.ENDIUM, 12);
     public static final DeferredItem<Item> ENDIUM_HELMET = armor("endium_helmet", PalaArmorMaterials.ENDIUM, ArmorType.HELMET);

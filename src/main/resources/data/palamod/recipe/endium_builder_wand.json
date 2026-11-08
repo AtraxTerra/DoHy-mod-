@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  E",
+    " S ",
+    "S  "
+  ],
+  "key": {
+    "E": "palamod:endium_nugget",
+    "S": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:endium_builder_wand",
+    "count": 1
+  }
+}

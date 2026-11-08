@@ -987,6 +987,83 @@ def main():
                             ("mixed_endium", "mixed_endium_ingot"), ("endium", "endium_ingot")):
         tag("%s/tags/item/repairs/%s.json" % (NS, tag_name), ["%s:%s" % (NS, ingot)])
 
+    # ---- objets du Mineur (chapitre 8) ----
+    #
+    # Les excavatrices et les outils de construction se tiennent comme des
+    # outils ; les objets de poche sont plats. Les excavatrices ne vont PAS dans
+    # #minecraft:shovels : ce tag ouvrirait la table d'enchantement et
+    # l'enclume, et ItemExcavator n'est pas enchantable.
+    MINER_ITEMS = {
+        "amethyst_excavator": ("excavator/amethyst.png", True,
+                               "Excavatrice en amethyste", "Amethyst Excavator"),
+        "titane_excavator": ("excavator/titane.png", True,
+                             "Excavatrice en titane", "Titane Excavator"),
+        "paladium_excavator": ("excavator/paladium.png", True,
+                               "Excavatrice en paladium", "Paladium Excavator"),
+        "amethyst_builder_wand": ("builder_wand_amethyst.png", True,
+                                  "Outil de construction en amethyste", "Amethyst Builder Wand"),
+        "titane_builder_wand": ("builder_wand_titane.png", True,
+                                "Outil de construction en titane", "Titane Builder Wand"),
+        "paladium_builder_wand": ("builder_wand_paladium.png", True,
+                                  "Outil de construction en paladium", "Paladium Builder Wand"),
+        "endium_builder_wand": ("builder_wand_endium.png", True,
+                                "Outil de construction en endium", "Endium Builder Wand"),
+        "moula_stone": ("moula_stone.png", False, "Dollars Stone", "Dollars Stone"),
+        "hardness_potion": ("hardness_potion.png", False, "Potion de durete", "Hardness Potion"),
+    }
+    for name, (texture, handheld, label_fr, label_en) in MINER_ITEMS.items():
+        if not copy_texture(root, "items/" + texture, "item/%s.png" % name, wrong_size):
+            missing.append("items/" + texture)
+        write("assets/%s/models/item/%s.json" % (NS, name), {
+            "parent": "minecraft:item/handheld" if handheld else "minecraft:item/generated",
+            "textures": {"layer0": "%s:item/%s" % (NS, name)},
+        })
+        write("assets/%s/items/%s.json" % (NS, name), {
+            "model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)},
+        })
+        fr["item.%s.%s" % (NS, name)] = label_fr
+        en["item.%s.%s" % (NS, name)] = label_en
+
+    # L'aimant change d'icone selon son etat. L'etat est la presence du
+    # composant enchantment_glint_override (MagnetItem) : la definition d'item
+    # le teste avec has_component, sans code client.
+    for state, texture in (("magnet", "magnet.png"), ("magnet_on", "magnet_on.png")):
+        if not copy_texture(root, "items/" + texture, "item/%s.png" % state, wrong_size):
+            missing.append("items/" + texture)
+        write("assets/%s/models/item/%s.json" % (NS, state), {
+            "parent": "minecraft:item/generated",
+            "textures": {"layer0": "%s:item/%s" % (NS, state)},
+        })
+    write("assets/%s/items/magnet.json" % NS, {
+        "model": {
+            "type": "minecraft:condition",
+            "property": "minecraft:has_component",
+            "component": "minecraft:enchantment_glint_override",
+            "on_true": {"type": "minecraft:model", "model": "%s:item/magnet_on" % NS},
+            "on_false": {"type": "minecraft:model", "model": "%s:item/magnet" % NS},
+        },
+    })
+    fr["item.%s.magnet" % NS] = "Aimant"
+    en["item.%s.magnet" % NS] = "Magnet"
+
+    # L'icone de l'effet de durete : PalaMod n'en avait pas (CustomPotion sans
+    # setIconIndex), et 26.2 afficherait du violet. On reprend la potion,
+    # centree dans les 18x18 d'une icone d'effet.
+    potion = os.path.join(RES, "assets", NS, "textures", "item", "hardness_potion.png")
+    if os.path.exists(potion):
+        from PIL import Image
+        icon = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
+        icon.paste(Image.open(potion).convert("RGBA"), (1, 1))
+        target = os.path.join(RES, "assets", NS, "textures", "mob_effect", "hardness.png")
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        icon.save(target)
+    fr["effect.%s.hardness" % NS] = "Durete"
+    en["effect.%s.hardness" % NS] = "Hardness"
+
+    # Ce qu'aucun outil de zone ne casse (AreaMining.IMMUNE).
+    tag("%s/tags/block/area_mining_immune.json" % NS,
+        ["minecraft:obsidian", "minecraft:crying_obsidian"])
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de
@@ -1018,6 +1095,19 @@ def main():
         "SEEDPLANTER_LVL1": "amethyst_seedplanter", "SEEDPLANTER_LVL2": "titane_seedplanter",
         "SEEDPLANTER_LVL3": "paladium_seedplanter", "SEEDPLANTER_LVL4": "endium_seedplanter",
         "SEEDPLANTER_LVL5": "green_paladium_seedplanter",
+        # Mineur (chapitre 8)
+        "AMETHYST_EXCAVATOR": "amethyst_excavator", "TITANE_EXCAVATOR": "titane_excavator",
+        "PALADIUM_EXCAVATOR": "paladium_excavator", "MAGNET": "magnet",
+        "MOULA_STONE": "moula_stone",
+    }
+    # Un meme objet 1.7.10 a plusieurs metas, plusieurs objets en 26.2 : la
+    # recette se choisit par (nom, meta). Sans cette table, les quatre outils de
+    # construction prendraient tous la recette du premier.
+    PORTED_BY_META = {
+        ("BUILDER_WAND", 0): "amethyst_builder_wand",
+        ("BUILDER_WAND", 1): "titane_builder_wand",
+        ("BUILDER_WAND", 2): "paladium_builder_wand",
+        ("BUILDER_WAND", 3): "endium_builder_wand",
     }
     # Les memes familles que EQUIPMENT_METALS plus haut : l'endium mixe n'a que
     # l'armure, l'endium n'a pas de pelle.
@@ -1052,6 +1142,11 @@ def main():
         ("ItemsRegister.ENDIUM_FRAGMENT", 0): "%s:endium_fragment" % NS,
         ("ItemsRegister.ENDIUM_NUGGET", 0): "%s:endium_nugget" % NS,
         ("ItemsRegister.PALADIUM_GREEN_INGOT", 0): "%s:green_paladium_ingot" % NS,
+        ("Items.field_151079_bi", 0): "minecraft:ender_pearl",
+        ("Blocks.field_150339_S", 0): "minecraft:iron_block",
+        ("BlocksRegister.BLOCK_AMETHYST", 0): "%s:amethyst_block" % NS,
+        ("BlocksRegister.BLOCK_TITANE", 0): "%s:titane_block" % NS,
+        ("BlocksRegister.BLOCK_PALADIUM", 0): "%s:paladium_block" % NS,
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())
@@ -1066,7 +1161,9 @@ def main():
     emitted = {}
     for recipe in crafts:
         result = (recipe["result"]["item"] or "").split(".", 1)[-1]
-        name = PORTED.get(result)
+        name = PORTED_BY_META.get((result, recipe["result"].get("meta", 0)), PORTED.get(result))
+        if (result, 0) in PORTED_BY_META and name == PORTED.get(result):
+            name = None
         # Les haches existent en deux grilles miroir et quelques recettes sont
         # declarees deux fois. 26.2 accepte le miroir de lui-meme : une recette
         # par objet, la premiere.
@@ -1104,7 +1201,7 @@ def main():
         shaped(name, pattern, keys, "%s:%s" % (NS, name), recipe["result"]["count"])
         emitted[name] = recipe
 
-    missing_recipes = sorted(set(PORTED.values()) - set(emitted))
+    missing_recipes = sorted((set(PORTED.values()) | set(PORTED_BY_META.values())) - set(emitted))
     if missing_recipes:
         raise SystemExit("aucune recette relevee pour : %s" % ", ".join(missing_recipes))
     print("recettes : %d portees depuis data/palamod_crafts.json" % len(emitted))

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EPE",
+    " V ",
+    "EAE"
+  ],
+  "key": {
+    "E": "minecraft:ender_pearl",
+    "P": "palamod:paladium_ingot",
+    "A": "palamod:amethyst_ingot",
+    "V": "palamod:voidstone"
+  },
+  "result": {
+    "id": "palamod:moula_stone",
+    "count": 1
+  }
+}

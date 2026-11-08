@@ -1,11 +1,13 @@
 package fr.atraxterra.dohy.job;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -118,6 +120,36 @@ public final class JobGateEvents {
             event.setCanceled(true);
             refuse(player, target);
         }
+    }
+
+    /**
+     * Casse d'un bloc avec un outil verrouille.
+     *
+     * <p>PalaJobs refusait l'usage d'un outil sans le niveau ; un outil ne passe
+     * pas par le clic droit, c'est donc a la casse que le verrou s'applique.
+     * Seuls les outils sont concernes — les objets porteurs du composant
+     * {@code tool} : tenir une machine verrouillee en main ne doit pas empecher
+     * de casser de la terre. {@code BreakBlockEvent} est annulable et le bloc
+     * reste en place.
+     *
+     * <p>C'est aussi ce verrou qui arrete le 3x3 de la pioche en endium et des
+     * excavatrices : leur casse en zone ignore un evenement annule.
+     */
+    @SubscribeEvent
+    public static void onBreak(BreakBlockEvent event) {
+        if (!(event.getPlayer() instanceof ServerPlayer player) || exempt(player)) {
+            return;
+        }
+        ItemStack tool = player.getMainHandItem();
+        if (!tool.has(DataComponents.TOOL)) {
+            return;
+        }
+        JobConfig.Unlock unlock = JobGate.of(tool);
+        if (JobGate.allows(player, unlock)) {
+            return;
+        }
+        event.setCanceled(true);
+        refuse(player, unlock);
     }
 
     /** Clic droit dans le vide avec un item verrouille. */

@@ -92,6 +92,23 @@ def registered():
     return items - blocks, blocks, itemless
 
 
+def model_references(node):
+    """Les modeles qu'une definition d'item peut afficher, toutes branches suivies."""
+    if not isinstance(node, dict):
+        return []
+    if node.get("type", "minecraft:model") in ("minecraft:model", "model") and "model" in node \
+            and isinstance(node["model"], str):
+        return [node["model"]]
+    found = []
+    for key in ("on_true", "on_false", "fallback", "model"):
+        found += model_references(node.get(key))
+    for case in node.get("cases", []) or []:
+        found += model_references(case.get("model"))
+    for entry in node.get("entries", []) or []:
+        found += model_references(entry.get("model"))
+    return found
+
+
 def check_textures():
     for folder in ("item", "block"):
         directory = ASSETS / "textures" / folder
@@ -168,13 +185,17 @@ def check_items(items, blocks, itemless):
         except json.JSONDecodeError as error:
             fail(f"items/{name}.json : JSON illisible ({error})")
             continue
-        reference = (payload.get("model") or {}).get("model")
-        if not reference:
+        # Une definition peut choisir son modele selon un etat (condition,
+        # select) : l'aimant change d'icone quand il est actif. On suit donc
+        # toutes les branches, et chacune doit aboutir a un modele qui existe.
+        references = model_references(payload.get("model") or {})
+        if not references:
             fail(f"items/{name}.json : pas de modele declare")
             continue
-        target = resolve(reference, "model")
-        if target is not None and not target.exists():
-            fail(f"items/{name}.json : pointe sur un modele absent ({reference})")
+        for reference in references:
+            target = resolve(reference, "model")
+            if target is not None and not target.exists():
+                fail(f"items/{name}.json : pointe sur un modele absent ({reference})")
 
     # Dans l'autre sens : un asset sans enregistrement est un fichier mort.
     known = items | blocks

@@ -4,6 +4,7 @@ import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
 import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
+import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import net.neoforged.bus.api.IEventBus;
 
 /**
@@ -51,6 +52,7 @@ public final class PalaMod {
         PalaMenus.register(modBus);
         PalaSeedPlanters.register(modBus);
         PalaEquipment.register(modBus);
+        PalaMiner.register(modBus);
         PalaItems.register(modBus);
         PalaTab.register(modBus);
     }
