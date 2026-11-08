@@ -88,7 +88,11 @@ public abstract class DisplayMenu extends ChestMenu {
         if (!(candidate instanceof ServerPlayer serverPlayer) || serverPlayer != player) {
             return;
         }
-        if (slotId >= 0 && slotId < size) {
+        // Seuls le clic et le Maj + clic sont des boutons. Un double clic
+        // (PICKUP puis PICKUP_ALL), une touche numerique (SWAP, bouton 0 a 8)
+        // ou un glisser (QUICK_CRAFT) declencheraient sinon une action de plus.
+        if (slotId >= 0 && slotId < size
+                && (input == ContainerInput.PICKUP || input == ContainerInput.QUICK_MOVE)) {
             onClick(slotId, button, input == ContainerInput.QUICK_MOVE);
         }
         refresh();

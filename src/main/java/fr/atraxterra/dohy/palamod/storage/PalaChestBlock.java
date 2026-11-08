@@ -37,10 +37,7 @@ public class PalaChestBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape SHAPE = Block.box(1, 0, 1, 15, 14, 15);
 
-    public static final MapCodec<PalaChestBlock> AMETHYST_CODEC =
-            simpleCodec(properties -> new PalaChestBlock(ChestTier.AMETHYST, properties));
-    public static final MapCodec<PalaChestBlock> TITANE_CODEC =
-            simpleCodec(properties -> new PalaChestBlock(ChestTier.TITANE, properties));
+    private static final java.util.Map<ChestTier, MapCodec<PalaChestBlock>> CODECS = codecs();
 
     private final ChestTier tier;
 
@@ -56,7 +53,15 @@ public class PalaChestBlock extends BaseEntityBlock {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return tier == ChestTier.AMETHYST ? AMETHYST_CODEC : TITANE_CODEC;
+        return CODECS.get(tier);
+    }
+
+    private static java.util.Map<ChestTier, MapCodec<PalaChestBlock>> codecs() {
+        java.util.Map<ChestTier, MapCodec<PalaChestBlock>> map = new java.util.EnumMap<>(ChestTier.class);
+        for (ChestTier tier : ChestTier.values()) {
+            map.put(tier, simpleCodec(properties -> new PalaChestBlock(tier, properties)));
+        }
+        return map;
     }
 
     @Override

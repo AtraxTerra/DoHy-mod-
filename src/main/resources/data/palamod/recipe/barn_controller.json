@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "PCP",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:gray_terracotta",
+    "P": "palamod:paladium_block",
+    "C": "palamod:gold_chest"
+  },
+  "result": {
+    "id": "palamod:barn_controller",
+    "count": 1
+  }
+}

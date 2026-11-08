@@ -96,6 +96,11 @@ def registered():
         blocks |= found
         if factory in ITEMLESS:
             itemless |= found
+    # Les coffres sont enregistres par boucle sur ChestTier : leur nom est la
+    # premiere chaine de chaque constante de l'enum.
+    tiers = JAVA / "storage" / "ChestTier.java"
+    if tiers.exists():
+        blocks |= set(re.findall(r'^\s+[A-Z_]+\("([a-z0-9_]+)"', tiers.read_text(encoding="utf-8"), re.M))
     # Un bloc n'est pas un item : son BlockItem est enregistre par boucle, pas
     # par un appel nomme, donc il n'apparait pas dans items.
     itemless |= set(ITEMLESS_BLOCKS) & blocks
@@ -126,6 +131,11 @@ def model_references(node):
 MODEL_TEXTURES = {
     "block/amethyst_chest.png": (64, 64),
     "block/titane_chest.png": (64, 64),
+    "block/paladium_chest.png": (64, 64),
+    "block/green_paladium_chest.png": (64, 64),
+    "block/endium_chest.png": (64, 64),
+    "block/paladium_ender_chest.png": (64, 64),
+    "block/gold_chest.png": (64, 64),
     # L'extracteur reprend la texture de son ModelExtractor (Techne, 64 x 32).
     "block/extractor_on.png": (64, 32),
     "block/extractor_off.png": (64, 32),
@@ -137,6 +147,8 @@ MODEL_TEXTURES = {
     "item/compressed_xp_berry.png": (16, 128),
     # La machine a croquettes reprend la texture de son FoodMachineModel.
     "block/food_machine.png": (64, 46),
+    # Le gestionnaire d'enclos reprend celle de son BarnControllerModel.
+    "block/barn_controller.png": (64, 64),
 }
 
 

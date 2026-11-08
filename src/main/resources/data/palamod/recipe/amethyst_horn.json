@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    "BTB",
+    " I "
+  ],
+  "key": {
+    "I": "palamod:amethyst_ingot",
+    "B": "palamod:amethyst_block",
+    "T": "minecraft:bone_block"
+  },
+  "result": {
+    "id": "palamod:amethyst_horn",
+    "count": 1
+  }
+}

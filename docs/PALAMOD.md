@@ -857,10 +857,18 @@ Toutes les 8 ticks, prend **la pile entière** dans l'inventaire du dessus — r
 chaîne d'entonnoirs en paladium envoie directement au dernier inventaire. **Écart** : l'original
 se bloquait sur la première pile qui ne rentrait pas ; ici on essaie les suivantes.
 
-### Coffres en améthyste et en titane — `ModdedChestContainer`
+### Coffres — `ModdedChestContainer`, `BlockPaladiumEnderChest`, Iron Chests
 
-108 cases (12 × 9). **Écart** : les cases d'anneaux de l'original ne sont pas portées, et le
-couvercle ne s'ouvre pas (modèle JSON statique tiré du `ModelChest`, pas de rendu animé).
+- **Améthyste, titane, paladium, paladium vert, endium** : 108 cases (12 × 9), fer, dureté 12,
+  pioche en fer. Recettes du relevé de PalaMod.
+- **Coffre en or** (Iron Chests, demandé par le gestionnaire d'enclos) : 81 cases (9 × 9), dureté 3.
+  Le coffre en fer n'est pas porté : huit lingots d'or autour d'un coffre en fer deviennent quatre
+  d'or et quatre de fer autour d'un coffre vanilla.
+- **Coffre de l'End en paladium** : le coffre de l'End du joueur, le même que le vanilla, avec une
+  quatrième rangée gardée à part sur le joueur (PalaMod réglait 4 ou 5 rangées par permission ; le
+  défaut est porté). Un coffre de l'End seul le fabrique ; sans Toucher de soie, 8 obsidiennes.
+- **Écart** : les cases d'anneaux de l'original ne sont pas portées, et le couvercle ne s'ouvre pas
+  (modèle JSON statique tiré du `ModelChest`, pas de rendu animé).
 
 ### Cave block et cave block en endium
 
@@ -1321,3 +1329,109 @@ s'excluent. Coûts et effets du code (les descriptions de l'original se trompaie
 - L'arbre est un coffre de six rangées (une colonne de trois cases par voie), pas l'image défilante
   de l'original.
 
+## 17. Monture : le Dancarok et l'enclos (chapitre 14)
+
+Relevé dans le mod Mount 6.1.0 (`fr.paladium.mount`), croisé avec PalaMod (capture, croquettes,
+recettes) et Lindworm (l'animation). Tout passe sous l'espace `palamod`. Seul le Dancarok est porté :
+le Ravirok et le Tedarok, les deux autres espèces, ne le sont pas. Aucun verrou de métier sur les
+objets de monture ; l'épée et la pierre de capture gardent les leurs (Chasseur 65 et 70).
+
+### Le cycle — `MountManager`, `CommandMount`
+
+1. **Capture** : un Dancarok sauvage tué à l'épée de capture, une pierre de capture vide sur soi,
+   donne une **gemme sauvage** (grise). La pierre est consommée, pas remplie.
+2. **Apprivoiser** : la gemme déposée dans un gestionnaire d'enclos devient la vôtre (dorée),
+   nourriture pleine, vie pleine.
+3. **Équiper** : la monture passe de la gemme au joueur. Sa vie, son énergie, son XP et son
+   inventaire vivent **sur le joueur** ; l'entité invoquée n'en est qu'une projection.
+4. **Invoquer** : touche **K** (menu de la monture) puis Invoquer, ou `/mount summon` ; trois
+   secondes immobile. Il faut le **niveau 10** (`>= 10`), de la vie et de l'énergie. En selle, la
+   même action désinvoque.
+5. **Déséquiper** dans l'enclos : une gemme neuve y revient ; l'inventaire et la corne restent au
+   joueur, pour la monture suivante.
+
+Une gemme sortie de l'enclos **périme en 30 jours** de temps réel, définitivement ; redéposée, son
+horloge s'arrête.
+
+### Le Dancarok — `EntityDancarokMount`, `EntityMount`
+
+- 2,5 × 1,9. **Sauvage** : 53 PV, immobile (il regarde les joueurs, rien d'autre), ne disparaît
+  jamais, ne se monte pas. Il apparaît, rarement, dans les plaines et les savanes : **aucun code
+  d'apparition dans les jars**, les sauvages étaient posés à la main sur le serveur « Farmland » ;
+  la règle d'apparition est donc un ajout.
+- **Niveaux** : 1 à 100, seuil du niveau L = somme de `i^2,5` tronquée pas à pas (749 XP au niveau
+  10, plafond 2 907 301). Seule source : les orbes d'XP ramassées, partagées selon le réglage
+  (50 % par défaut, `/mount xp <0-100>` ou le menu) — que la monture soit invoquée ou non.
+  L'orbe est réduite à la part du joueur avant Raccommodage, comme l'original la réécrivait.
+- **Vie** : 4 PV par niveau (40 au niveau 10, 400 au 100). Tous les coups reçus vont à cette vie,
+  **doublés si elle est montée** ; le cavalier ne blesse pas sa monture. À zéro : son inventaire
+  accessible et sa corne tombent, elle est désinvoquée. Pas de régénération : seuls les soins de
+  l'enclos la rendent. Pas de dégâts de chute.
+- **Inventaire** : `max(1, 36 × niveau / 100)` cases (3 au niveau 10, 36 au 100) et une case de
+  corne, par le menu ou la touche d'inventaire en selle.
+- **Conduite** : vitesse 0,225 (près de 10 blocs/s), une marche d'un bloc, un saut fixe d'environ
+  deux tiers de bloc, marche arrière au quart, de côté à moitié. **Écart** : le saut part au
+  relâchement de la touche, comme pour les montures vanilla (Mount sautait tant qu'elle était
+  enfoncée). Elle coule, son cavalier reste en
+  selle et peut se noyer. Tout coup reçu fait tomber le cavalier. En selle, on ne ramasse ni ne
+  jette rien.
+- **Énergie** : 10 000 ; −1 par bloc parcouru ; à zéro, désinvoquée. Une **croquette** (machine à
+  croquettes, chapitre 13) rend 50.
+- **Modèle et animations** : le fichier Bedrock du jar, converti une fois pour toutes en code
+  vanilla par `tools/bedrock_model.py` (pas de GeckoLib). Marche (sauvage) ou course (invoquée),
+  attente, et le coup de corne. La texture suit la corne posée.
+
+### Les cornes — `ItemHorn`, `CSMountMovement`, `ToolHandler`
+
+- Améthyste, titane, paladium : 3 999, 5 999, 9 999 utilisations. En selle, **clic droit
+  maintenu** : un coup toutes les 500 ms au plus, quelle que soit la corne.
+- La zone n'est **pas** un 3×3, 4×4, 5×5 : `s` (3, 4, 5) est un rayon, la zone fait
+  `(2s+1) × (s+2) × 2` blocs — **7×5×2, 9×6×2, 11×7×2** —, ancrée sur la monture, à partir de ses
+  pattes, orientée par la face visée (rayon de 10 blocs depuis ses yeux). Blocs de pioche et de
+  pelle, lâchés sans condition d'outil, avec leur XP. **L'obsidienne ne part jamais.** Chaque coup
+  coûte `(2s+1)(s+2)` d'énergie : 35, 54, 77.
+- **Écarts** : chaque bloc passe par l'événement de casse (protections, verrous, suivi des blocs
+  posés — l'original ne l'envoyait jamais) ; les blocs à block entity sont épargnés ; un coup qui ne
+  casse rien n'use rien ; faute d'énergie, le coup est refusé plutôt que de creuser la jauge.
+
+### L'enclos — `BlockBarnController`, `TileEntityBarnController`
+
+- Un carré de **foin** de 3×3 à 7×7, un anneau de **fondations d'enclos** chacune surmontée d'une
+  **barrière d'enclos**, et le **gestionnaire** posé sur le foin (n'importe où). Une **couveuse**
+  sur le foin permet les soins. Vérifié à chaque clic droit, avec le message précis de l'original.
+- Capacité : 4, 8, 14, 20, 30 montures de 3×3 à 7×7.
+- **Soins** : couveuse, deux montures au plus, un bandage par tranche de 1 h 30 de temps réel ;
+  +10 % des PV max par bandage, crédités à la fin. Aucun seuil de 30 % : une monture dont il
+  reste de la vie s'équipe.
+- La barrière d'enclos ne fait qu'un bloc de haut en collision : le Dancarok la franchit.
+- **Écarts** : 30 montures logent vraiment dans un 7×7 (l'original n'avait que 21 cases) ; la
+  taille de l'enclos est sauvegardée ; chaque action vérifie que la gemme est à soi ; casser le
+  gestionnaire ne soigne plus entièrement toute gemme déjà soignée (seules comptent les tranches
+  écoulées des soins en cours) ; une gemme rendue à un inventaire plein tombe au lieu de
+  disparaître.
+
+### Recettes
+
+- Relevé de PalaMod : fondation (8 terre cuite grise, 1 bloc de paladium), barrière (4 + 2),
+  couveuse (6 terre cuite, 2 verre, 1 orbe de régénération), gestionnaire (6 terre cuite, 2 blocs
+  de paladium, 1 **coffre en or**), bandage (6 papier, 2 ficelle, 1 orbe), **orbe de
+  régénération** (4 lingots de paladium autour d'une tranche de pastèque scintillante).
+- **Cornes** : la palamachine, l'éléphant et sa défense ne sont pas portés. Substitut à l'établi,
+  mêmes ingrédients, la défense remplacée par un **bloc d'os** : lingot, bloc, os, bloc, lingot.
+  Les recettes « bâtons + bloc » de la palamachine sont des **réparations** : trois bâtons du métal
+  (le bâton du milieu devient un cœur en paladium pour la corne en paladium), la corne usée, un
+  bloc ; elle ressort neuve.
+
+### Ce qui n'est pas porté, et ce qui change de forme
+
+- Les quatre écrans plein cadre (accueil, inventaire, nourriture, enclos) deviennent des coffres :
+  accueil (K ou `/mount`), inventaire, enclos, soins. Le nom se change par `/mount nom <nom>`
+  (4 à 16 caractères). Nourrir : une croquette, ou Maj + clic pour remplir — **écart** : l'original
+  consommait toute la pile posée et perdait l'excédent.
+- `/mount unequip`, qui détruisait la monture, n'est pas porté. `/mount give [niveau]` (opérateurs)
+  donne une gemme apprivoisée ; le niveau est un ajout, pour essayer sans des heures d'orbes.
+- **Écart** : rien ne tombe à la mort du joueur (l'original lâchait l'inventaire de la monture
+  rangée et gardait celui de la monture invoquée, l'inverse de l'intention).
+- Les miniatures de montures au-dessus de l'enclos, l'œuf d'apparition, les permissions
+  (multiplicateur Trixium), les protections WorldGuard, le multi-serveur, la compétence
+  Vétérinaire du mod Pet, le profil web.

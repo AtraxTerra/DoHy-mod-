@@ -1,5 +1,10 @@
 package fr.atraxterra.dohy.palamod.hunter;
 
+import fr.atraxterra.dohy.palamod.mount.Dancarok;
+import fr.atraxterra.dohy.palamod.mount.MountGem;
+import fr.atraxterra.dohy.palamod.mount.MountGemstoneItem;
+import fr.atraxterra.dohy.palamod.mount.MountManager;
+import fr.atraxterra.dohy.palamod.mount.MountTexts;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -39,7 +44,8 @@ import java.util.Set;
  * zombie-villageois, creeper, poulet), le lapin, et cinq creatures que PalaMod
  * ajoutait et qui sont vanilla en 26.2 (tortue, panda, dauphin, perroquet,
  * chevre). Le cheval ne l'a jamais ete ; le wither ne l'etait que sur le serveur
- * de minage ; les autres creatures de PalaMod ne sont pas portees.
+ * de minage ; les autres creatures de PalaMod ne sont pas portees. Le Dancarok
+ * sauvage donne une gemme de monture (chapitre 14).
  */
 @EventBusSubscriber
 public final class HunterEvents {
@@ -62,6 +68,11 @@ public final class HunterEvents {
             return;
         }
         event.setCanceled(true);
+        if (victim instanceof Dancarok mount) {
+            captureMount(player, mount);
+            victim.discard();
+            return;
+        }
         if (victim instanceof Mob mob) {
             MobStacks.split(mob);
         }
@@ -78,6 +89,27 @@ public final class HunterEvents {
                     BuiltInRegistries.ENTITY_TYPE.getKey(victim.getType()), data, victim.getName()));
         }
         victim.discard();
+    }
+
+    /**
+     * Branche monture de {@code ItemCaptureSword.hitEntity} : un Dancarok
+     * sauvage tue avec une pierre vide sur soi donne une gemme sauvage, a
+     * apprivoiser dans un enclos. La pierre est consommee, pas remplie.
+     * <b>Ecarts</b> : la pierre n'est prise qu'une fois la capture acquise
+     * (l'original la retirait avant de verifier que la monture etait sauvage),
+     * et la gemme tombe aux pieds du joueur si son inventaire est plein.
+     */
+    private static void captureMount(ServerPlayer player, Dancarok mount) {
+        if (mount.isTamed()) {
+            return;
+        }
+        ItemStack stone = emptyStone(player.getInventory());
+        if (stone == null) {
+            return;
+        }
+        stone.shrink(1);
+        MountManager.give(player, MountGemstoneItem.stackOf(MountGem.wild()));
+        MountTexts.success(player, "captured");
     }
 
     /** La derniere pierre de capture vide des 36 cases, comme l'original. */

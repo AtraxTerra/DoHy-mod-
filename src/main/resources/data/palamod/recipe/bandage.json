@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PSP",
+    "PEP",
+    "PSP"
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "S": "minecraft:string",
+    "E": "palamod:heal_orb"
+  },
+  "result": {
+    "id": "palamod:bandage",
+    "count": 1
+  }
+}

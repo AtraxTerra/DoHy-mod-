@@ -1,11 +1,16 @@
 package fr.atraxterra.dohy.client;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.client.mount.DancarokGeometry;
+import fr.atraxterra.dohy.client.mount.DancarokModel;
+import fr.atraxterra.dohy.client.mount.DancarokRenderer;
 import fr.atraxterra.dohy.palamod.PalaMod;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.golem.PalaGolem;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
+import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
+import fr.atraxterra.dohy.palamod.storage.ChestTier;
 import fr.atraxterra.dohy.palamod.storage.PalaChestMenu;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
 import net.minecraft.client.renderer.block.FluidModel;
@@ -50,10 +55,17 @@ public final class DoHyClient {
                 PalaFluids.ANGELIC_WATER, PalaFluids.FLOWING_ANGELIC_WATER);
     }
 
-    /** Le golem gardien, sur le modele du golem de fer. */
+    /** Le golem gardien, sur le modele du golem de fer ; le Dancarok, sur le sien. */
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(PalaGolem.GUARDIAN_GOLEM.get(), GuardianGolemRenderer::new);
+        event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
+    }
+
+    /** Le modele du Dancarok, converti de son fichier Bedrock. */
+    @SubscribeEvent
+    public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(DancarokModel.LAYER, DancarokGeometry::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -98,9 +110,8 @@ public final class DoHyClient {
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "food_machine"));
         event.<MachineMenu, MachineScreen>register(PalaGolem.GOLEM_BOX_MENU.get(),
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "golem_box"));
-        event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.AMETHYST_CHEST_MENU.get(),
-                PalaChestScreen::new);
-        event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.TITANE_CHEST_MENU.get(),
-                PalaChestScreen::new);
+        for (ChestTier tier : ChestTier.values()) {
+            event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.menuOf(tier), PalaChestScreen::new);
+        }
     }
 }

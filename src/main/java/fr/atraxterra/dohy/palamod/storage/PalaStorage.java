@@ -15,6 +15,12 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.EnumMap;
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -32,16 +38,15 @@ public final class PalaStorage {
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, PalaMod.NAMESPACE);
     private static final DeferredRegister<MenuType<?>> MENUS =
             DeferredRegister.create(Registries.MENU, PalaMod.NAMESPACE);
+    private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS =
+            DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, PalaMod.NAMESPACE);
 
-    // Fer, durete 12, setResistance(8) soit 4,8 ; pioche en fer.
-    public static final DeferredBlock<PalaChestBlock> AMETHYST_CHEST = BLOCKS.registerBlock(
-            "amethyst_chest", properties -> new PalaChestBlock(ChestTier.AMETHYST, properties),
-            properties -> properties.strength(12.0f, 4.8f).sound(SoundType.METAL)
-                    .requiresCorrectToolForDrops().noOcclusion());
-    public static final DeferredBlock<PalaChestBlock> TITANE_CHEST = BLOCKS.registerBlock(
-            "titane_chest", properties -> new PalaChestBlock(ChestTier.TITANE, properties),
-            properties -> properties.strength(12.0f, 4.8f).sound(SoundType.METAL)
-                    .requiresCorrectToolForDrops().noOcclusion());
+    /**
+     * Les coffres, un par palier. Ceux de PalaMod : fer, durete 12,
+     * setResistance(8) soit 4,8, pioche en fer. Le coffre en or d'Iron Chests :
+     * durete 3, a la pioche.
+     */
+    public static final Map<ChestTier, DeferredBlock<PalaChestBlock>> CHESTS = chests();
 
     // Fer, durete 5 sans setResistance ; n'importe quelle pioche.
     public static final DeferredBlock<PaladiumHopperBlock> PALADIUM_HOPPER_BLOCK = BLOCKS.registerBlock(
@@ -49,40 +54,79 @@ public final class PalaStorage {
             properties -> properties.strength(5.0f).sound(SoundType.METAL)
                     .requiresCorrectToolForDrops().noOcclusion());
 
-    public static final DeferredItem<BlockItem> AMETHYST_CHEST_ITEM =
-            ITEMS.registerSimpleBlockItem(AMETHYST_CHEST, properties -> properties);
-    public static final DeferredItem<BlockItem> TITANE_CHEST_ITEM =
-            ITEMS.registerSimpleBlockItem(TITANE_CHEST, properties -> properties);
+    /** Fer, durete 12, setResistance(8) soit 4,8 ; a la pioche. */
+    public static final DeferredBlock<PaladiumEnderChestBlock> PALADIUM_ENDER_CHEST = BLOCKS.registerBlock(
+            "paladium_ender_chest", PaladiumEnderChestBlock::new,
+            properties -> properties.strength(12.0f, 4.8f).sound(SoundType.STONE).requiresCorrectToolForDrops()
+                    .noOcclusion());
+
+    public static final Map<ChestTier, DeferredItem<BlockItem>> CHEST_ITEMS = chestItems(CHESTS);
+    public static final DeferredItem<BlockItem> PALADIUM_ENDER_CHEST_ITEM =
+            ITEMS.registerSimpleBlockItem(PALADIUM_ENDER_CHEST, properties -> properties);
+
+    public static final java.util.function.Supplier<AttachmentType<EnderExtra>> ENDER_EXTRA = ATTACHMENTS.register(
+            "paladium_ender_chest", () -> AttachmentType.builder(EnderExtra::empty)
+                    .serialize(EnderExtra.MAP_CODEC, extra -> !extra.isEmpty())
+                    .copyOnDeath()
+                    .build());
     public static final DeferredItem<BlockItem> PALADIUM_HOPPER_ITEM =
             ITEMS.registerSimpleBlockItem(PALADIUM_HOPPER_BLOCK, properties -> properties);
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PalaChestBlockEntity>> CHEST =
             BLOCK_ENTITIES.register("chest", () -> new BlockEntityType<>(PalaChestBlockEntity::new,
-                    Set.of(AMETHYST_CHEST.get(), TITANE_CHEST.get())));
+                    CHESTS.values().stream().map(DeferredBlock::get).collect(Collectors.toSet())));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PaladiumHopperBlockEntity>> PALADIUM_HOPPER =
             BLOCK_ENTITIES.register("paladium_hopper", () -> new BlockEntityType<>(PaladiumHopperBlockEntity::new,
                     Set.of(PALADIUM_HOPPER_BLOCK.get())));
 
-    public static final DeferredHolder<MenuType<?>, MenuType<PalaChestMenu>> AMETHYST_CHEST_MENU =
-            MENUS.register("amethyst_chest", () -> new MenuType<>(
-                    (containerId, inventory) -> new PalaChestMenu(PalaStorage.AMETHYST_CHEST_MENU.get(),
-                            ChestTier.AMETHYST, containerId, inventory),
-                    FeatureFlags.VANILLA_SET));
-    public static final DeferredHolder<MenuType<?>, MenuType<PalaChestMenu>> TITANE_CHEST_MENU =
-            MENUS.register("titane_chest", () -> new MenuType<>(
-                    (containerId, inventory) -> new PalaChestMenu(PalaStorage.TITANE_CHEST_MENU.get(),
-                            ChestTier.TITANE, containerId, inventory),
-                    FeatureFlags.VANILLA_SET));
+    /** Un type de menu par coffre : le client en tire la taille de la grille. */
+    public static final Map<ChestTier, DeferredHolder<MenuType<?>, MenuType<PalaChestMenu>>> CHEST_MENUS = menus();
 
     /** L'ordre de l'onglet creatif. */
     public static final List<DeferredItem<? extends Item>> ORDERED =
-            List.of(AMETHYST_CHEST_ITEM, TITANE_CHEST_ITEM, PALADIUM_HOPPER_ITEM);
+            ordered(CHEST_ITEMS, PALADIUM_ENDER_CHEST_ITEM, PALADIUM_HOPPER_ITEM);
 
     private PalaStorage() {
     }
 
+    private static Map<ChestTier, DeferredBlock<PalaChestBlock>> chests() {
+        Map<ChestTier, DeferredBlock<PalaChestBlock>> map = new EnumMap<>(ChestTier.class);
+        for (ChestTier tier : ChestTier.values()) {
+            map.put(tier, BLOCKS.registerBlock(tier.key(), properties -> new PalaChestBlock(tier, properties),
+                    properties -> (tier == ChestTier.GOLD ? properties.strength(3.0f) : properties.strength(12.0f, 4.8f))
+                            .sound(SoundType.METAL).requiresCorrectToolForDrops().noOcclusion()));
+        }
+        return map;
+    }
+
+    private static Map<ChestTier, DeferredItem<BlockItem>> chestItems(Map<ChestTier, DeferredBlock<PalaChestBlock>> blocks) {
+        Map<ChestTier, DeferredItem<BlockItem>> map = new EnumMap<>(ChestTier.class);
+        blocks.forEach((tier, block) -> map.put(tier, ITEMS.registerSimpleBlockItem(block, properties -> properties)));
+        return map;
+    }
+
+    private static Map<ChestTier, DeferredHolder<MenuType<?>, MenuType<PalaChestMenu>>> menus() {
+        Map<ChestTier, DeferredHolder<MenuType<?>, MenuType<PalaChestMenu>>> map = new EnumMap<>(ChestTier.class);
+        for (ChestTier tier : ChestTier.values()) {
+            map.put(tier, MENUS.register(tier.key(), () -> new MenuType<>(
+                    (containerId, inventory) -> new PalaChestMenu(PalaStorage.CHEST_MENUS.get(tier).get(),
+                            tier, containerId, inventory),
+                    FeatureFlags.VANILLA_SET)));
+        }
+        return map;
+    }
+
+    private static List<DeferredItem<? extends Item>> ordered(Map<ChestTier, DeferredItem<BlockItem>> chests,
+                                                             DeferredItem<BlockItem> ender,
+                                                             DeferredItem<BlockItem> hopper) {
+        List<DeferredItem<? extends Item>> list = new ArrayList<>(chests.values());
+        list.add(ender);
+        list.add(hopper);
+        return List.copyOf(list);
+    }
+
     public static MenuType<PalaChestMenu> menuOf(ChestTier tier) {
-        return tier == ChestTier.AMETHYST ? AMETHYST_CHEST_MENU.get() : TITANE_CHEST_MENU.get();
+        return CHEST_MENUS.get(tier).get();
     }
 
     public static void register(IEventBus modBus) {
@@ -90,5 +134,6 @@ public final class PalaStorage {
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         MENUS.register(modBus);
+        ATTACHMENTS.register(modBus);
     }
 }
