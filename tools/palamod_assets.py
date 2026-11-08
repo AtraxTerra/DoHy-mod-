@@ -1060,6 +1060,286 @@ def main():
     fr["effect.%s.hardness" % NS] = "Durete"
     en["effect.%s.hardness" % NS] = "Hardness"
 
+    # La Voidstone minage : un objet plat.
+    if not copy_texture(root, "items/voidstone_minage.png", "item/voidstone_minage.png", wrong_size):
+        missing.append("items/voidstone_minage.png")
+    write("assets/%s/models/item/voidstone_minage.json" % NS, {
+        "parent": "minecraft:item/generated",
+        "textures": {"layer0": "%s:item/voidstone_minage" % NS},
+    })
+    write("assets/%s/items/voidstone_minage.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:item/voidstone_minage" % NS},
+    })
+    fr["item.%s.voidstone_minage" % NS] = "Voidstone minage"
+    en["item.%s.voidstone_minage" % NS] = "Mining Voidstone"
+
+    def miner_block(name, textures, label_fr, label_en, parent="minecraft:block/cube_all",
+                    orientable=False, drop=True, item=True, render_type=None, pickaxe=True):
+        """Un bloc du Mineur : textures, modele, etat, objet, butin, nom, tags.
+
+        textures : {cle du modele: chemin sous textures/ de PalaMod}. Chaque
+        texture est copiee sous block/<name>_<cle>.png, ou block/<name>.png
+        s'il n'y en a qu'une.
+        """
+        model_textures = {}
+        for key, source in textures.items():
+            target = name if len(textures) == 1 else "%s_%s" % (name, key)
+            if not copy_texture(root, source, "block/%s.png" % target, wrong_size):
+                missing.append(source)
+            model_textures[key] = "%s:block/%s" % (NS, target)
+        if "particle" not in model_textures:
+            model_textures["particle"] = next(iter(model_textures.values()))
+        model = {"parent": parent, "textures": model_textures}
+        if render_type:
+            model["render_type"] = render_type
+        write("assets/%s/models/block/%s.json" % (NS, name), model)
+        if orientable:
+            # La face avant regarde le joueur : nord sans rotation, comme le
+            # fourneau vanilla.
+            write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {
+                "facing=%s" % facing: dict({"model": "%s:block/%s" % (NS, name)},
+                                           **({"y": rot} if rot else {}))
+                for facing, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270))
+            }})
+        else:
+            write("assets/%s/blockstates/%s.json" % (NS, name), {
+                "variants": {"": {"model": "%s:block/%s" % (NS, name)}},
+            })
+        if item:
+            write("assets/%s/models/item/%s.json" % (NS, name),
+                  {"parent": "%s:block/%s" % (NS, name)})
+            write("assets/%s/items/%s.json" % (NS, name), {
+                "model": {"type": "minecraft:model", "model": "%s:block/%s" % (NS, name)},
+            })
+        write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
+            "type": "minecraft:block",
+            "pools": [{
+                "rolls": 1,
+                "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, name)}],
+                "conditions": [{"condition": "minecraft:survives_explosion"}],
+            }] if drop else [],
+        })
+        fr["block.%s.%s" % (NS, name)] = label_fr
+        en["block.%s.%s" % (NS, name)] = label_en
+        if pickaxe:
+            tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+
+    # La void stone : aucun drop par table, elle rend la Voidstone minage et sa
+    # reserve par playerWillDestroy. Pas d'objet propre.
+    miner_block("void_stone", {"all": "blocks/voidstone.png"},
+                "Void stone", "Void Stone", drop=False, item=False)
+    # Le piston renforce wither : oriente, face avant + cotes, dessus et
+    # dessous a la texture de cote (getIcon de BlockWitheredReinforcedPiston).
+    miner_block("withered_reinforced_piston",
+                {"front": "blocks/withered_reinforced_piston_front.png",
+                 "side": "blocks/withered_reinforced_piston_side.png"},
+                "Piston renforce wither", "Withered Reinforced Piston",
+                parent="minecraft:block/orientable", orientable=True)
+    # orientable demande aussi « top » : le cote, comme dans l'original.
+    write("assets/%s/models/block/withered_reinforced_piston.json" % NS, {
+        "parent": "minecraft:block/orientable",
+        "textures": {
+            "front": "%s:block/withered_reinforced_piston_front" % NS,
+            "side": "%s:block/withered_reinforced_piston_side" % NS,
+            "top": "%s:block/withered_reinforced_piston_side" % NS,
+            "particle": "%s:block/withered_reinforced_piston_side" % NS,
+        },
+    })
+
+    # Les cave blocks : du verre troue. Pas de render_type : depuis 26.1 le
+    # jeu choisit lui-meme la passe cutout d'apres les pixels transparents de
+    # la texture. Pioche en pierre (BlockCave : setHarvestLevel("pickaxe", 1)).
+    miner_block("cave_block", {"all": "blocks/caveblock/cave_block.png"},
+                "Cave block", "Cave Block")
+    miner_block("endium_cave_block", {"all": "blocks/caveblock/endium_cave_block.png"},
+                "Cave block en endium", "Endium Cave Block")
+    tag("minecraft/tags/block/needs_stone_tool.json",
+        ["%s:cave_block" % NS, "%s:endium_cave_block" % NS])
+
+    # Le minerai de pepites d'endium : une pepite, toujours une seule — ni
+    # fortune ni toucher de soie (BlockEndiumNuggetOre.getDrops). Le casser
+    # demande Mineur 100, par le tag palamod:break_locked que lit JobGateEvents.
+    miner_block("endium_nugget_ore", {"all": "blocks/miner/endium_nuggets_ore.png"},
+                "Minerai de pepites d'endium", "Endium Nugget Ore")
+    write("data/%s/loot_table/blocks/endium_nugget_ore.json" % NS, {
+        "type": "minecraft:block",
+        "pools": [{
+            "rolls": 1,
+            "entries": [{"type": "minecraft:item", "name": "%s:endium_nugget" % NS}],
+            "conditions": [{"condition": "minecraft:survives_explosion"}],
+        }],
+    })
+    tag("%s/tags/block/break_locked.json" % NS, ["%s:endium_nugget_ore" % NS])
+
+    # La Palafurnace et la Palaforge : orientees comme le fourneau vanilla,
+    # avec une face avant eteinte et une allumee (propriete lit).
+    def lit_machine(name, front_off, front_on, side, top, label_fr, label_en, tool):
+        sources = {"front_off": front_off, "front_on": front_on, "side": side, "top": top}
+        for key, source in sources.items():
+            if not copy_texture(root, source, "block/%s_%s.png" % (name, key), wrong_size):
+                missing.append(source)
+        for suffix, front in (("", "front_off"), ("_on", "front_on")):
+            write("assets/%s/models/block/%s%s.json" % (NS, name, suffix), {
+                "parent": "minecraft:block/orientable",
+                "textures": {
+                    "front": "%s:block/%s_%s" % (NS, name, front),
+                    "side": "%s:block/%s_side" % (NS, name),
+                    "top": "%s:block/%s_top" % (NS, name),
+                    "particle": "%s:block/%s_side" % (NS, name),
+                },
+            })
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {
+            "facing=%s,lit=%s" % (facing, lit): dict(
+                {"model": "%s:block/%s%s" % (NS, name, "_on" if lit == "true" else "")},
+                **({"y": rot} if rot else {}))
+            for facing, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270))
+            for lit in ("false", "true")
+        }})
+        write("assets/%s/models/item/%s.json" % (NS, name), {"parent": "%s:block/%s" % (NS, name)})
+        write("assets/%s/items/%s.json" % (NS, name), {
+            "model": {"type": "minecraft:model", "model": "%s:block/%s" % (NS, name)},
+        })
+        write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
+            "type": "minecraft:block",
+            "pools": [{
+                "rolls": 1,
+                "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, name)}],
+                "conditions": [{"condition": "minecraft:survives_explosion"}],
+            }],
+        })
+        fr["block.%s.%s" % (NS, name)] = label_fr
+        en["block.%s.%s" % (NS, name)] = label_en
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+        tag("minecraft/tags/block/%s.json" % tool, ["%s:%s" % (NS, name)])
+
+    # Dessus = cote pour la Palafurnace (BlockPaladiumFurnace.getIcon) ;
+    # la forge a un dessus propre.
+    lit_machine("paladium_furnace", "blocks/machines/paladium_furnace_front_off.png",
+                "blocks/machines/paladium_furnace_front_on.png",
+                "blocks/machines/paladium_furnace_side.png",
+                "blocks/machines/paladium_furnace_side.png",
+                "Palafurnace", "Palafurnace", "needs_iron_tool")
+    lit_machine("palaforge", "blocks/machines/forge_front_off.png",
+                "blocks/machines/forge_front_on.png", "blocks/machines/forge_side.png",
+                "blocks/machines/forge_top.png", "Palaforge", "Palaforge", "needs_stone_tool")
+
+    # L'amelioration de fourneau : jusqu'a seize dans la case de gauche.
+    if not copy_texture(root, "items/machine/furnace_upgrade.png", "item/furnace_upgrade.png",
+                        wrong_size):
+        missing.append("items/machine/furnace_upgrade.png")
+    write("assets/%s/models/item/furnace_upgrade.json" % NS, {
+        "parent": "minecraft:item/generated",
+        "textures": {"layer0": "%s:item/furnace_upgrade" % NS},
+    })
+    write("assets/%s/items/furnace_upgrade.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:item/furnace_upgrade" % NS},
+    })
+    fr["item.%s.furnace_upgrade" % NS] = "Amelioration de fourneau"
+    en["item.%s.furnace_upgrade" % NS] = "Furnace Upgrade"
+
+    # L'entonnoir en paladium : le modele de l'entonnoir vanilla, retexture.
+    # Le modele vanilla declare ses propres elements et lit #top, #side,
+    # #inside et #particle : un enfant qui ne change que les textures suffit.
+    for key in ("top", "inside", "outside"):
+        source = "blocks/paladium_hopper_%s.png" % key
+        if not copy_texture(root, source, "block/paladium_hopper_%s.png" % key, wrong_size):
+            missing.append(source)
+    hopper_textures = {
+        "particle": "%s:block/paladium_hopper_outside" % NS,
+        "top": "%s:block/paladium_hopper_top" % NS,
+        "side": "%s:block/paladium_hopper_outside" % NS,
+        "inside": "%s:block/paladium_hopper_inside" % NS,
+    }
+    write("assets/%s/models/block/paladium_hopper.json" % NS,
+          {"parent": "minecraft:block/hopper", "textures": hopper_textures})
+    write("assets/%s/models/block/paladium_hopper_side.json" % NS,
+          {"parent": "minecraft:block/hopper_side", "textures": hopper_textures})
+    write("assets/%s/blockstates/paladium_hopper.json" % NS, {"variants": {
+        "facing=down": {"model": "%s:block/paladium_hopper" % NS},
+        "facing=north": {"model": "%s:block/paladium_hopper_side" % NS},
+        "facing=east": {"model": "%s:block/paladium_hopper_side" % NS, "y": 90},
+        "facing=south": {"model": "%s:block/paladium_hopper_side" % NS, "y": 180},
+        "facing=west": {"model": "%s:block/paladium_hopper_side" % NS, "y": 270},
+    }})
+    # L'objet est une icone plate, comme l'entonnoir vanilla.
+    if not copy_texture(root, "items/paladium_hopper.png", "item/paladium_hopper.png", wrong_size):
+        missing.append("items/paladium_hopper.png")
+    write("assets/%s/models/item/paladium_hopper.json" % NS, {
+        "parent": "minecraft:item/generated",
+        "textures": {"layer0": "%s:item/paladium_hopper" % NS},
+    })
+    write("assets/%s/items/paladium_hopper.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:item/paladium_hopper" % NS},
+    })
+    write("data/%s/loot_table/blocks/paladium_hopper.json" % NS, {
+        "type": "minecraft:block",
+        "pools": [{
+            "rolls": 1,
+            "entries": [{"type": "minecraft:item", "name": "%s:paladium_hopper" % NS}],
+            "conditions": [{"condition": "minecraft:survives_explosion"}],
+        }],
+    })
+    fr["block.%s.paladium_hopper" % NS] = "Entonnoir en paladium"
+    en["block.%s.paladium_hopper" % NS] = "Paladium Hopper"
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:paladium_hopper" % NS])
+
+    # Les coffres en amethyste et en titane. L'original les dessine avec le
+    # ModelChest de 1.7.10 (TileEntityModdedChestRenderer) ; le meme modele en
+    # JSON, couvercle ferme : socle 14x10x14, couvercle 14x5x14, serrure
+    # 2x4x1, sur une texture de coffre 64x64 (UV en pixels / 4). Face avant au
+    # sud, comme le coffre vanilla sans rotation.
+    def chest_faces(faces):
+        return {face: {"uv": uv, "texture": "#chest"} for face, uv in faces.items()}
+
+    chest_elements = [
+        {"from": [1, 0, 1], "to": [15, 10, 15], "faces": chest_faces({
+            "north": [10.5, 8.25, 14, 10.75], "south": [3.5, 8.25, 7, 10.75],
+            "west": [0, 8.25, 3.5, 10.75], "east": [7, 8.25, 10.5, 10.75],
+            "down": [7, 4.75, 10.5, 8.25], "up": [3.5, 4.75, 7, 8.25]})},
+        {"from": [1, 9, 1], "to": [15, 14, 15], "faces": chest_faces({
+            "north": [10.5, 3.5, 14, 4.75], "south": [3.5, 3.5, 7, 4.75],
+            "west": [0, 3.5, 3.5, 4.75], "east": [7, 3.5, 10.5, 4.75],
+            "up": [3.5, 0, 7, 3.5], "down": [7, 0, 10.5, 3.5]})},
+        {"from": [7, 7, 15], "to": [9, 11, 16], "faces": chest_faces({
+            "south": [0.25, 0.25, 0.75, 1.25], "west": [0, 0.25, 0.25, 1.25],
+            "east": [0.75, 0.25, 1, 1.25], "up": [0.25, 0, 0.75, 0.25],
+            "down": [0.75, 0, 1.25, 0.25], "north": [1, 0.25, 1.5, 1.25]})},
+    ]
+    for name, texture, metal, label_fr, label_en in (
+            ("amethyst_chest", "models/AmethystChest.png", "amethyst",
+             "Coffre en amethyste", "Amethyst Chest"),
+            ("titane_chest", "models/TitaneChest.png", "titane",
+             "Coffre en titane", "Titane Chest")):
+        if not copy_texture(root, texture, "block/%s.png" % name, wrong_size, expected=(64, 64)):
+            missing.append(texture)
+        write("assets/%s/models/block/%s.json" % (NS, name), {
+            "parent": "minecraft:block/block",
+            "textures": {"chest": "%s:block/%s" % (NS, name),
+                         "particle": "%s:block/%s_block" % (NS, metal)},
+            "elements": chest_elements,
+        })
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {
+            "facing=%s" % facing: dict({"model": "%s:block/%s" % (NS, name)},
+                                       **({"y": rot} if rot else {}))
+            for facing, rot in (("south", 0), ("west", 90), ("north", 180), ("east", 270))
+        }})
+        write("assets/%s/models/item/%s.json" % (NS, name), {"parent": "%s:block/%s" % (NS, name)})
+        write("assets/%s/items/%s.json" % (NS, name), {
+            "model": {"type": "minecraft:model", "model": "%s:block/%s" % (NS, name)},
+        })
+        write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
+            "type": "minecraft:block",
+            "pools": [{
+                "rolls": 1,
+                "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, name)}],
+                "conditions": [{"condition": "minecraft:survives_explosion"}],
+            }],
+        })
+        fr["block.%s.%s" % (NS, name)] = label_fr
+        en["block.%s.%s" % (NS, name)] = label_en
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+        tag("minecraft/tags/block/needs_iron_tool.json", ["%s:%s" % (NS, name)])
+
     # Ce qu'aucun outil de zone ne casse (AreaMining.IMMUNE).
     tag("%s/tags/block/area_mining_immune.json" % NS,
         ["minecraft:obsidian", "minecraft:crying_obsidian"])
@@ -1098,7 +1378,11 @@ def main():
         # Mineur (chapitre 8)
         "AMETHYST_EXCAVATOR": "amethyst_excavator", "TITANE_EXCAVATOR": "titane_excavator",
         "PALADIUM_EXCAVATOR": "paladium_excavator", "MAGNET": "magnet",
-        "MOULA_STONE": "moula_stone",
+        "MOULA_STONE": "moula_stone", "VOIDSTONE_MINAGE": "voidstone_minage",
+        "CAVE_BLOCK": "cave_block", "ENDIUM_CAVE_BLOCK": "endium_cave_block",
+        "PALADIUM_FURNACE": "paladium_furnace", "FORGE": "palaforge",
+        "FURNACE_UPGRADE": "furnace_upgrade", "PALADIUM_HOPPER": "paladium_hopper",
+        "AMETHYST_CHEST": "amethyst_chest", "TITANE_CHEST": "titane_chest",
     }
     # Un meme objet 1.7.10 a plusieurs metas, plusieurs objets en 26.2 : la
     # recette se choisit par (nom, meta). Sans cette table, les quatre outils de
@@ -1147,6 +1431,8 @@ def main():
         ("BlocksRegister.BLOCK_AMETHYST", 0): "%s:amethyst_block" % NS,
         ("BlocksRegister.BLOCK_TITANE", 0): "%s:titane_block" % NS,
         ("BlocksRegister.BLOCK_PALADIUM", 0): "%s:paladium_block" % NS,
+        ("Blocks.field_150359_w", 0): "minecraft:glass",
+        ("Blocks.field_150336_V", 0): "minecraft:bricks",
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())
@@ -1250,13 +1536,45 @@ def main():
             ],
         })
 
-    # Un seul modificateur de biome pour les six minerais : NeoForge les ajoute
+    # Le minerai de pepites d'endium. En 1.7.10 il ne naissait que dans la
+    # dimension de minage (BaseWorldGenerator, isMinerDimension), qui n'est pas
+    # portee : on le place donc au fond de l'overworld, ou se trouve
+    # l'equivalent de sa couche. Quatre tirages par chunk a 1 chance sur 225
+    # (paladiumgreen_ore_rarety x 3), et un filon de 3 ramene a UN bloc — le
+    # code effacait les autres dans un cube de 17. D'ou replace_single_block,
+    # et une chance de 4/225, soit 1 sur 56.
+    nugget_state = {"Name": "%s:endium_nugget_ore" % NS}
+    write("data/%s/worldgen/configured_feature/ore_endium_nugget.json" % NS, {
+        "type": "minecraft:replace_single_block",
+        "config": {"targets": [
+            {"target": {"predicate_type": "minecraft:tag_match",
+                        "tag": "minecraft:stone_ore_replaceables"},
+             "state": nugget_state},
+            {"target": {"predicate_type": "minecraft:tag_match",
+                        "tag": "minecraft:deepslate_ore_replaceables"},
+             "state": nugget_state},
+        ]},
+    })
+    write("data/%s/worldgen/placed_feature/ore_endium_nugget.json" % NS, {
+        "feature": "%s:ore_endium_nugget" % NS,
+        "placement": [
+            {"type": "minecraft:rarity_filter", "chance": 56},
+            {"type": "minecraft:in_square"},
+            {"type": "minecraft:height_range",
+             "height": {"type": "minecraft:uniform",
+                        "min_inclusive": {"absolute": -64},
+                        "max_inclusive": {"absolute": -54}}},
+            {"type": "minecraft:biome"},
+        ],
+    })
+
+    # Un seul modificateur de biome pour tous les minerais : NeoForge les ajoute
     # a l'etape underground_ores de tout biome de l'overworld.
     write("data/%s/neoforge/biome_modifier/ores.json" % NS, {
         "type": "neoforge:add_features",
         "biomes": "#minecraft:is_overworld",
         "features": ["%s:ore_%s" % (NS, name.removesuffix("_ore"))
-                     for name in sorted(ORE_GEN)],
+                     for name in sorted(ORE_GEN)] + ["%s:ore_endium_nugget" % NS],
         "step": "underground_ores",
     })
 

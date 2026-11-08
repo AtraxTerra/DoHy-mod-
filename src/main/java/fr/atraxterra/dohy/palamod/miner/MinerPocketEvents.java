@@ -32,7 +32,13 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Les objets qui agissent depuis l'inventaire : l'aimant et la Dollars Stone.
+ * Les objets qui agissent depuis l'inventaire : l'aimant, la Dollars Stone et la
+ * Voidstone minage.
+ *
+ * <h2>Voidstone minage</h2>
+ *
+ * <p>Meme case que la Dollars Stone, memes conditions — c'est le meme
+ * gestionnaire dans PalaMod. Voir {@link VoidstoneMinageItem} pour le filtre.
  *
  * <h2>Aimant ({@code ItemMagnet.onUpdate})</h2>
  *
@@ -103,6 +109,30 @@ public final class MinerPocketEvents {
         }
         magnet(player);
         dollarsStone(player);
+        voidstoneMinage(player);
+    }
+
+    private static void voidstoneMinage(ServerPlayer player) {
+        if (player.isCreative()) {
+            return;
+        }
+        Inventory inventory = player.getInventory();
+        ItemStack minage = inventory.getItem(STONE_SLOT);
+        if (!(minage.getItem() instanceof VoidstoneMinageItem) || !usable(player, minage)) {
+            return;
+        }
+        for (int slot = 0; slot < Inventory.INVENTORY_SIZE; slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (stack.isEmpty()) {
+                continue;
+            }
+            if (VoidstoneMinageItem.COUNTED.contains(stack.getItem())) {
+                VoidstoneMinageItem.addStone(minage, stack.getCount());
+                inventory.setItem(slot, ItemStack.EMPTY);
+            } else if (VoidstoneMinageItem.DESTROYED.contains(stack.getItem())) {
+                inventory.setItem(slot, ItemStack.EMPTY);
+            }
+        }
     }
 
     private static void magnet(ServerPlayer player) {

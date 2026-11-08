@@ -3,7 +3,10 @@
   "values": [
     "palamod:amethyst_block",
     "palamod:amethyst_ore",
+    "palamod:cave_block",
     "palamod:cobblebreaker",
-    "palamod:crusher"
+    "palamod:crusher",
+    "palamod:endium_cave_block",
+    "palamod:palaforge"
   ]
 }

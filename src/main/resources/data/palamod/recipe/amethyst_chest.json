@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XSX",
+    "SCS",
+    "XSX"
+  ],
+  "key": {
+    "X": "palamod:amethyst_ingot",
+    "S": "palamod:compressed_amethyst",
+    "C": "minecraft:chest"
+  },
+  "result": {
+    "id": "palamod:amethyst_chest",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XSX",
+    "SCS",
+    "XSX"
+  ],
+  "key": {
+    "X": "palamod:titane_ingot",
+    "S": "palamod:compressed_titane",
+    "C": "palamod:amethyst_chest"
+  },
+  "result": {
+    "id": "palamod:titane_chest",
+    "count": 1
+  }
+}

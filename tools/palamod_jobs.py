@@ -67,6 +67,9 @@ NAMES = {
     "ENDIUM_CAVE_BLOCK": ("endium_cave_block", "Cave block en endium"),
     "ENDIUM_NUGGET_ORE": ("endium_nugget_ore", "Minerai de pepites d'endium"),
     "HARDNESS_POTION": ("hardness_potion", "Potion de durete"),
+    "MINER_THRONE": ("miner_throne", "Trone du mineur"),
+    # Amelioration du controleur de spawner de PalaSpawner, pas encore portee.
+    "UPGRADE_SPEED": ("upgrade_speed", "Amelioration de vitesse de spawner"),
 
     # -- Fermier : cultures et machines
     "CRUSHER": ("crusher", "Crusher"),
@@ -88,7 +91,29 @@ NAMES = {
     "ENDIUM_AXE": ("endium_axe", "Hache en endium"),
     "ENDIUM_CHESTPLATE": ("endium_chestplate", "Plastron en endium"),
 
+    "AMETHYST_RADIUS_HOE": ("amethyst_radius_hoe", "Houe en amethyste"),
+    "TITANE_RADIUS_HOE": ("titane_radius_hoe", "Houe en titane"),
+    "PALADIUM_RADIUS_HOE": ("paladium_radius_hoe", "Houe en paladium"),
+    "GREEN_PALADIUM_RADIUS_HOE": ("green_paladium_radius_hoe", "Houe en paladium vert"),
+    "ENDIUM_RADIUS_HOE": ("endium_radius_hoe", "Houe en endium"),
+    "FARMER_THRONE": ("farmer_throne", "Trone du fermier"),
+    "COLORED_GRASS": ("colored_grass", "Herbe coloree"),
+    "COLORED_GRASS_SEEDS": ("colored_grass_seeds", "Graines d'herbe coloree"),
+    "ROOT_SEEDS_BLOCK": ("root_seeds_block", "Bloc de graines de racine"),
+
     # -- Chasseur
+    "HUNTER_THRONE": ("hunter_throne", "Trone du chasseur"),
+    "BAMBOO_BOAT": ("bamboo_boat", "Bateau en bambou"),
+    "CAVERN_HAMMER": ("cavern_hammer", "Marteau de caverne"),
+    "EMPTY_MOB_SPAWNER": ("empty_mob_spawner", "Spawner vide"),
+    "MINI_GOLEM": ("mini_golem", "Mini golem"),
+    "PALADIUM_FISHING_ROD": ("paladium_fishing_rod", "Canne a peche en paladium"),
+    "PET_CAGE": ("pet_cage", "Cage a familier"),
+    "SPAWNER_STRUCTURE_ONE": ("spawner_structure_one", "Structure de spawner I"),
+    "SPAWNER_STRUCTURE_TWO": ("spawner_structure_two", "Structure de spawner II"),
+    "SPAWNER_STRUCTURE_THREE": ("spawner_structure_three", "Structure de spawner III"),
+    "SPAWNER_STRUCTURE_FOUR": ("spawner_structure_four", "Structure de spawner IV"),
+    "UPGRADE_LOOTING": ("upgrade_looting", "Amelioration de butin de spawner"),
     "HUNTER_COMPASS": ("hunter_compass", "Boussole de chasseur"),
     "INFERNAL_KNOCKER": ("infernal_knocker", "Infernal knocker"),
     "SPAWNER_FINDER": ("spawner_finder", "Spawner finder"),
@@ -104,6 +129,9 @@ NAMES = {
     "WITHER_DUST": ("wither_dust", "Poudre de wither"),
 
     # -- Alchimiste
+    "ALCHEMIST_THRONE": ("alchemist_throne", "Trone de l'alchimiste"),
+    "UPGRADE_MORE": ("upgrade_more", "Amelioration d'emplacements de spawner"),
+    "UPGRADE_SLIME": ("upgrade_slime", "Amelioration slime de spawner"),
     "ALCHEMY_CREATOR_BLOCK": ("alchemy_creator", "Table d'alchimiste"),
     "CAULDRON_BLOCK": ("cauldron", "Bloc du chaudron"),
     "CAULDRON_CORE": ("cauldron_core", "Coeur du chaudron"),

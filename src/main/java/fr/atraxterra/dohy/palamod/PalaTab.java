@@ -4,6 +4,7 @@ import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
 import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
 import fr.atraxterra.dohy.palamod.miner.PalaMiner;
+import fr.atraxterra.dohy.palamod.storage.PalaStorage;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -64,6 +65,7 @@ public final class PalaTab {
 
                         // Puis les outils et objets du Mineur.
                         PalaMiner.ordered().forEach(item -> output.accept(item.get()));
+                        PalaStorage.ORDERED.forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

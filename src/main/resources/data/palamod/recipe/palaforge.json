@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BFB",
+    "FXF",
+    "BFB"
+  ],
+  "key": {
+    "X": "palamod:findium",
+    "B": "minecraft:bricks",
+    "F": "palamod:paladium_furnace"
+  },
+  "result": {
+    "id": "palamod:palaforge",
+    "count": 1
+  }
+}

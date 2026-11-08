@@ -82,9 +82,10 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 4 | **Machines** : cobblebreaker 4 paliers, crusher | fait |
 | 4b | **Interfaces de machines** : menu et écran propres, barre de progression | fait |
 | 5a | **Machines du fermier** : totem de fertilité, 5 seedplanters | fait |
-| 5b | **Machines de craft** : palaforge, grinder (multiblock), palamachine | à faire |
+| 5b | **Machines de craft** : grinder (multiblock), palamachine (la palaforge est au chapitre 8) | à faire |
 | 6 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
 | 7 | **Équipement** : 19 outils, 5 houes à rayon, 6 armures, leurs effets, 49 recettes | fait |
+| 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
 
@@ -148,6 +149,36 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — chapitre 8 : le Mineur
+
+**Demande** : « fais totalement le chapitre mineur, n'ajoute pas le /nether ». En cours de
+route : « saute le trône ». Tout le reste des objets débloqués du Mineur est porté, avec les
+prérequis que le wiki ne liste pas (coffres en améthyste et en titane, Palafurnace et son
+amélioration, cave block). Détail et écarts : `docs/PALAMOD.md` § 11.
+
+**Le relevé des verrous ratait 26 objets.** `extract_jobs.py` ne lisait que les registres
+`palamod/api` ; trônes, spawner et houes à rayon sont ailleurs. 99 verrous au lieu de 73, et
+**les houes à rayon sont maintenant verrouillées** (Fermier 10 à 100) — changement de
+comportement hors du chapitre.
+
+**Ce qui n'est pas porté** : `/nether` (demandé), le trône (demandé ; son verrou reste inerte),
+l'amélioration de vitesse du spawner (aucun système de spawner), les cases d'anneaux des
+coffres, l'obsidienne wither. Le minerai d'endium, qui ne naissait que dans la dimension de
+minage, est placé au fond de l'overworld.
+
+**Deux choix d'économie.** La Dollars Stone vend par le marché de DoHy au prix dynamique, par
+lots d'une seconde, au lieu de 0,10 $ fixes. Les XP codées en dur (potion de dureté, God
+Villager) sont des XP de PalaJobs, converties au rapport des deux courbes (0,357).
+
+**Trois pièges 26.2 vus à la compilation ou à la sonde** : les constantes d'entités sont dans
+`EntityTypes`, plus dans `EntityType` ; `Entity.getTags()` est devenu `entityTags()` ; et le
+champ `render_type` des modèles n'est plus utile — depuis 26.1 le jeu choisit la passe cutout
+d'après les pixels de la texture.
+
+**À vérifier en jeu** (la CI ne voit ni le rendu ni les paquets) : le contour bleu du cave
+block en endium, le modèle JSON des coffres et leur orientation, la flamme de la Palafurnace et
+de la Palaforge, et l'entonnoir en paladium sur une chaîne.
 
 ### 2026-11-08 (suite) — les métiers remplacent les skills
 

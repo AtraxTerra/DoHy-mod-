@@ -1,7 +1,10 @@
 {
   "replace": false,
   "values": [
+    "palamod:amethyst_chest",
+    "palamod:paladium_furnace",
     "palamod:titane_block",
+    "palamod:titane_chest",
     "palamod:titane_ore"
   ]
 }

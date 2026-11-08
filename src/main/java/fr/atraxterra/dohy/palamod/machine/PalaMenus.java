@@ -51,6 +51,20 @@ public final class PalaMenus {
                             MachineLayout.VOIDSTONE),
                     FeatureFlags.VANILLA_SET));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> PALAFURNACE =
+            MENUS.register("palafurnace", () -> new MenuType<>(
+                    (containerId, inventory) -> new MachineMenu(
+                            PalaMenus.PALAFURNACE.get(), containerId, inventory,
+                            MachineLayout.PALAFURNACE),
+                    FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> PALAFORGE =
+            MENUS.register("palaforge", () -> new MenuType<>(
+                    (containerId, inventory) -> new MachineMenu(
+                            PalaMenus.PALAFORGE.get(), containerId, inventory,
+                            MachineLayout.PALAFORGE),
+                    FeatureFlags.VANILLA_SET));
+
     private PalaMenus() {
     }
 

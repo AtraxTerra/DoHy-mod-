@@ -63,6 +63,24 @@ public final class PalaMachines {
                     .strength(2.5f)
                     .sound(SoundType.WOOD));
 
+    /**
+     * Palafurnace : fer, son de pierre, durete 12, resistance 4,8 (setResistance(8)
+     * en 1.7.10, qui stockait le triple et divisait par cinq), pioche en fer.
+     * Son identifiant reprend le champ de PalaMod, {@code PALADIUM_FURNACE}.
+     */
+    public static final DeferredBlock<Block> PALAFURNACE_BLOCK = BLOCKS.registerBlock(
+            "paladium_furnace", PalafurnaceBlock::new, properties -> properties
+                    .strength(12.0f, 4.8f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE));
+
+    /** Palaforge : fer, durete 12, resistance 4,8, pioche en pierre. */
+    public static final DeferredBlock<Block> PALAFORGE_BLOCK = BLOCKS.registerBlock(
+            "palaforge", PalaforgeBlock::new, properties -> properties
+                    .strength(12.0f, 4.8f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
     // -- Types de block entity -----------------------------------------------
     //
     // BlockEntityType$Builder n'existe plus en 26.2 (verifie a la sonde) : on
@@ -84,6 +102,16 @@ public final class PalaMachines {
             () -> new BlockEntityType<>(TotemBlockEntity::new,
                     Set.of(TOTEM_BLOCK.get())));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PalafurnaceBlockEntity>>
+            PALAFURNACE = TYPES.register("paladium_furnace",
+            () -> new BlockEntityType<>(PalafurnaceBlockEntity::new,
+                    Set.of(PALAFURNACE_BLOCK.get())));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PalaforgeBlockEntity>>
+            PALAFORGE = TYPES.register("palaforge",
+            () -> new BlockEntityType<>(PalaforgeBlockEntity::new,
+                    Set.of(PALAFORGE_BLOCK.get())));
+
     // -- Ameliorations du cobblebreaker --------------------------------------
     //
     // Des items ordinaires : c'est PalaMachineEvents qui leur donne un effet,
@@ -97,11 +125,15 @@ public final class PalaMachines {
     public static final DeferredItem<Item> PALADIUM_UPGRADE =
             ITEMS.registerSimpleItem("cobblebreaker_paladium_upgrade", properties -> properties);
 
+    /** Amelioration de four : un BaseItem nu, en piles de 16. Lu par la Palafurnace. */
+    public static final DeferredItem<Item> FURNACE_UPGRADE =
+            ITEMS.registerSimpleItem("furnace_upgrade", properties -> properties.stacksTo(16));
+
     /** Blocs puis ameliorations, dans l'ordre d'affichage de l'onglet creatif. */
     public static final List<DeferredBlock<Block>> ORDERED_BLOCKS =
-            List.of(COBBLEBREAKER_BLOCK, CRUSHER_BLOCK, TOTEM_BLOCK);
+            List.of(COBBLEBREAKER_BLOCK, CRUSHER_BLOCK, TOTEM_BLOCK, PALAFURNACE_BLOCK, PALAFORGE_BLOCK);
     public static final List<DeferredItem<Item>> ORDERED_ITEMS =
-            List.of(AMETHYST_UPGRADE, TITANE_UPGRADE, PALADIUM_UPGRADE);
+            List.of(AMETHYST_UPGRADE, TITANE_UPGRADE, PALADIUM_UPGRADE, FURNACE_UPGRADE);
 
     /**
      * Les items des deux machines.

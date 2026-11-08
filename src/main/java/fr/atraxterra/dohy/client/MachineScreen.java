@@ -81,8 +81,16 @@ public class MachineScreen extends AbstractContainerScreen<MachineMenu> {
         // La flamme suit la meme progression que la fleche : le crusher consomme
         // son charbon au rythme ou il broie. Deux jauges qui disent la meme
         // chose, mais a deux endroits que l'oeil associe a deux ressources.
+        //
+        // Sauf pour un fourneau : la Palafurnace et la Palaforge ont un vrai feu,
+        // qui brule independamment de la cuisson. Sans compteur affiche, le bac
+        // de la machine porte alors le combustible restant et sa duree.
         if (layout.flame() != null) {
-            drawProgress(extractor, left, top, layout.flame(), progress);
+            int goal = getMenu().tankGoal();
+            float flame = layout.counter() == null && goal > 0
+                    ? Math.min(1.0f, getMenu().tank() / (float) goal)
+                    : progress;
+            drawProgress(extractor, left, top, layout.flame(), flame);
         }
     }
 

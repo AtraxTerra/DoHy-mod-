@@ -44,6 +44,10 @@ BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "cr
 # n'ont donc ni definition d'item ni modele d'item, et c'est normal.
 ITEMLESS = ("crop",)
 
+# Blocs sans item enregistres par registerBlock : la void stone se pose depuis
+# la Voidstone minage et la rend a la casse, elle n'a pas d'objet propre.
+ITEMLESS_BLOCKS = ("void_stone",)
+
 errors = []
 
 
@@ -89,6 +93,7 @@ def registered():
             itemless |= found
     # Un bloc n'est pas un item : son BlockItem est enregistre par boucle, pas
     # par un appel nomme, donc il n'apparait pas dans items.
+    itemless |= set(ITEMLESS_BLOCKS) & blocks
     return items - blocks, blocks, itemless
 
 
@@ -109,6 +114,16 @@ def model_references(node):
     return found
 
 
+# Les textures qui ne sont pas des faces de cube : un modele a elements qui
+# reprend une texture d'entite garde la taille de cette texture. Chaque entree
+# est un choix, pas une tolerance — les coffres reprennent la texture 64x64 du
+# ModelChest de 1.7.10 et leurs UV sont calcules pour elle.
+MODEL_TEXTURES = {
+    "block/amethyst_chest.png": (64, 64),
+    "block/titane_chest.png": (64, 64),
+}
+
+
 def check_textures():
     for folder in ("item", "block"):
         directory = ASSETS / "textures" / folder
@@ -118,7 +133,7 @@ def check_textures():
             size = png_size(png)
             if size is None:
                 fail(f"{folder}/{png.name} : ce n'est pas un PNG")
-            elif size != EXPECTED_PNG:
+            elif size != MODEL_TEXTURES.get(f"{folder}/{png.name}", EXPECTED_PNG):
                 fail(f"{folder}/{png.name} : {size[0]}x{size[1]} au lieu de "
                      f"{EXPECTED_PNG[0]}x{EXPECTED_PNG[1]} — homonyme pris dans le jar ? "
                      "verifier le sous-dossier")
@@ -243,7 +258,7 @@ SCREEN_JAVA = JAVA.parent / "client" / "MachineScreen.java"
 GUI_MANIFEST = pathlib.Path("data") / "gui_layout.json"
 
 # Le role note par le generateur dit si le shift-clic peut y deposer.
-INPUT_ROLES = {"input", "fruit", "fuel"}
+INPUT_ROLES = {"input", "fruit", "fuel", "upgrade", "equipment"}
 
 # Taille de reference des blits de MachineScreen.
 GUI_PNG = (256, 256)

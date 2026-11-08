@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.palamod.machine;
 
 import fr.atraxterra.dohy.palamod.PalaItems;
+import fr.atraxterra.dohy.palamod.miner.VoidstoneMinageItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
@@ -137,7 +138,8 @@ public class CobblebreakerBlockEntity extends MachineBlockEntity {
     }
 
     /**
-     * Seule la pierre entre, et seulement par la case d'entree.
+     * Seule la cobblestone entre — ou une Voidstone minage, qui en tient lieu —
+     * et seulement par la case d'entree.
      *
      * <p>Sans ce filtre, le shift-clic deposerait n'importe quoi dans l'entree
      * et la machine resterait bloquee sans rien dire — {@code canWork} exige de
@@ -145,7 +147,8 @@ public class CobblebreakerBlockEntity extends MachineBlockEntity {
      */
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return slot == SLOT_INPUT && stack.is(Items.COBBLESTONE);
+        return slot == SLOT_INPUT
+                && (stack.is(Items.COBBLESTONE) || stack.getItem() instanceof VoidstoneMinageItem);
     }
 
     @Override
@@ -159,7 +162,14 @@ public class CobblebreakerBlockEntity extends MachineBlockEntity {
             return;
         }
         work = 0;
-        removeItem(SLOT_INPUT, 1);
+        // Une Voidstone minage sert d'entree : une pierre de sa reserve par
+        // cycle, au lieu d'une cobblestone (TileCobbleBreaker, 871-925).
+        ItemStack input = getItem(SLOT_INPUT);
+        if (input.getItem() instanceof VoidstoneMinageItem) {
+            VoidstoneMinageItem.setStone(input, VoidstoneMinageItem.stone(input) - 1);
+        } else {
+            removeItem(SLOT_INPUT, 1);
+        }
         award(level.getRandom().nextDouble() * ROLL_RANGE);
         setChanged();
     }
@@ -174,7 +184,9 @@ public class CobblebreakerBlockEntity extends MachineBlockEntity {
      */
     private boolean canWork() {
         ItemStack input = getItem(SLOT_INPUT);
-        if (input.isEmpty() || !input.is(Items.COBBLESTONE)) {
+        boolean fed = input.is(Items.COBBLESTONE)
+                || (input.getItem() instanceof VoidstoneMinageItem && VoidstoneMinageItem.stone(input) > 0);
+        if (!fed) {
             return false;
         }
         for (int slot = SLOT_FIRST_OUTPUT; slot < SLOT_COUNT; slot++) {
