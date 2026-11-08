@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * <p>L'ordre d'implementation est fixe dans {@code docs/DESIGN.md} section 11,
  * et il n'est pas negociable sur deux points : les sauvegardes de secours
  * arrivent avec la monnaie, donc avant qu'il y ait des donnees a perdre, et le
- * suivi des blocs poses arrive avant les skills et les collections, qui en
+ * suivi des blocs poses arrive avant les metiers et les collections, qui en
  * dependent entierement.
  */
 @Mod(DoHy.MOD_ID)

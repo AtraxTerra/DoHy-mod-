@@ -1,16 +1,10 @@
 {
-  "_comment": "Table des deblocages par metier. GENERE par tools/palamod_jobs.py depuis le bytecode de PalaMod 10.3.0 — ne pas editer a la main. Un metier est un nom donne a un skill : Mineur lit mining, Chasseur lit combat, Fermier lit farming, Alchimiste lit alchemy. Les niveaux ci-dessous sont donc des niveaux de skill.",
-  "_echelle": "PalaMod compte 20 niveaux par metier, les skills de DoHy en comptent 100 : les niveaux du mod sont multiplies par 5. Valide deux fois contre le wiki Java, qui est deja gradue sur 100 : cobblebreaker niveau 5 dans le code -> 25, annonce 25 ; crusher niveau 8 -> 40, annonce 40.",
+  "_comment": "Deblocages et recompenses en objets par metier. GENERE par tools/palamod_jobs.py depuis le bytecode de PalaMod 10.3.0 — ne pas editer a la main. Les metiers sont la progression de DoHy : leur courbe, leurs sources d'XP et leurs perks sont dans job_progression.json.",
+  "_echelle": "PalaMod compte 20 niveaux par metier, DoHy en compte 100 : les niveaux du mod sont multiplies par 5. Valide deux fois contre le wiki Java, qui est deja gradue sur 100 : cobblebreaker niveau 5 dans le code -> 25, annonce 25 ; crusher niveau 8 -> 40, annonce 40.",
   "_portee": "Le verrou porte sur la pose et l'usage, pas sur le craft : PlayerEvent.ItemCraftedEvent n'est pas annulable en 26.2 (verifie a la sonde), et tous les contournements font perdre les ingredients au joueur. Voir JobGateEvents.",
-  "_syntaxe": "id peut commencer par # pour viser un tag, meme convention que les sources d'XP de skills.json. label sert aux messages quand l'item n'est pas encore enregistre.",
+  "_syntaxe": "id peut commencer par # pour viser un tag, meme convention que les sources d'XP de job_progression.json. label sert aux messages quand l'item n'est pas encore enregistre.",
   "_attention": "Une entree nommant un item que le mod n'a pas encore enregistre est INERTE. C'est normal tant que les chapitres minerais, cultures et machines ne sont pas faits : le chargement le signale et /metiers audit les liste.",
   "unlocks": [
-    {
-      "id": "palamod:builder_wand",
-      "job": "miner",
-      "level": 10,
-      "label": "Outil de construction"
-    },
     {
       "id": "palamod:voidstone",
       "job": "miner",
@@ -22,6 +16,12 @@
       "job": "miner",
       "level": 15,
       "label": "Excavatrice en amethyste"
+    },
+    {
+      "id": "palamod:amethyst_builder_wand",
+      "job": "miner",
+      "level": 20,
+      "label": "Outil de construction en amethyste"
     },
     {
       "id": "palamod:cobblebreaker",
@@ -66,6 +66,12 @@
       "label": "Excavatrice en titane"
     },
     {
+      "id": "palamod:titane_builder_wand",
+      "job": "miner",
+      "level": 60,
+      "label": "Outil de construction en titane"
+    },
+    {
       "id": "palamod:cobblebreaker_titane_upgrade",
       "job": "miner",
       "level": 65,
@@ -96,6 +102,12 @@
       "label": "Potion de durete"
     },
     {
+      "id": "palamod:paladium_builder_wand",
+      "job": "miner",
+      "level": 85,
+      "label": "Outil de construction en paladium"
+    },
+    {
       "id": "palamod:endium_cave_block",
       "job": "miner",
       "level": 90,
@@ -106,6 +118,12 @@
       "job": "miner",
       "level": 90,
       "label": "Piston renforce wither"
+    },
+    {
+      "id": "palamod:endium_builder_wand",
+      "job": "miner",
+      "level": 100,
+      "label": "Outil de construction en endium"
     },
     {
       "id": "palamod:endium_nugget_ore",
@@ -198,12 +216,6 @@
       "label": "Culture d'orangeblues"
     },
     {
-      "id": "palamod:hunter_compass",
-      "job": "hunter",
-      "level": 15,
-      "label": "Boussole de chasseur"
-    },
-    {
       "id": "palamod:infernal_knocker",
       "job": "hunter",
       "level": 45,
@@ -256,6 +268,12 @@
       "job": "hunter",
       "level": 100,
       "label": "Totem en endium"
+    },
+    {
+      "id": "palamod:hunter_compass",
+      "job": "hunter",
+      "level": 100,
+      "label": "Boussole de chasseur"
     },
     {
       "id": "palamod:perlinpinpin_powder",
@@ -424,6 +442,1497 @@
       "job": "alchemist",
       "level": 100,
       "label": "Bois d'ostrya brillant"
+    }
+  ],
+  "_recompenses": "Objets donnes en atteignant un niveau, en plus de l'argent et des perks de job_progression.json. Releves dans les Reward.builder de PalaMod, niveaux multiplies par 5 comme les verrous. Les recompenses en argent de Paladium ne sont pas portees : DoHy paie deja chaque niveau. Un objet non enregistre est inerte.",
+  "rewards": [
+    {
+      "job": "miner",
+      "level": 10,
+      "id": "palamod:paladium_ingot",
+      "count": 10,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 10,
+      "id": "palamod:trixium",
+      "count": 10,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 15,
+      "id": "palamod:paladium_ingot",
+      "count": 15,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 15,
+      "id": "palamod:trixium",
+      "count": 15,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 15,
+      "id": "palamod:findium",
+      "count": 2,
+      "label": "Findium"
+    },
+    {
+      "job": "miner",
+      "level": 20,
+      "id": "palamod:paladium_ingot",
+      "count": 20,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 20,
+      "id": "palamod:trixium",
+      "count": 20,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 25,
+      "id": "palamod:paladium_ingot",
+      "count": 25,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 25,
+      "id": "palamod:trixium",
+      "count": 25,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 25,
+      "id": "palamod:amethyst_ingot",
+      "count": 16,
+      "label": "Lingot d'amethyste"
+    },
+    {
+      "job": "miner",
+      "level": 30,
+      "id": "palamod:paladium_ingot",
+      "count": 30,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 30,
+      "id": "palamod:trixium",
+      "count": 30,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 30,
+      "id": "palamod:paladium_pickaxe",
+      "count": 1,
+      "label": "Pioche en paladium",
+      "enchantments": [
+        {
+          "id": "minecraft:efficiency",
+          "level": 5
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "job": "miner",
+      "level": 35,
+      "id": "palamod:paladium_ingot",
+      "count": 35,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 35,
+      "id": "palamod:trixium",
+      "count": 35,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 40,
+      "id": "palamod:paladium_ingot",
+      "count": 40,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 40,
+      "id": "palamod:trixium",
+      "count": 40,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 45,
+      "id": "palamod:paladium_ingot",
+      "count": 45,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 45,
+      "id": "palamod:trixium",
+      "count": 45,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 45,
+      "id": "palamod:speed_modifier",
+      "count": 1,
+      "label": "Modificateur de vitesse"
+    },
+    {
+      "job": "miner",
+      "level": 50,
+      "id": "palamod:paladium_ingot",
+      "count": 50,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 50,
+      "id": "palamod:trixium",
+      "count": 50,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 55,
+      "id": "palamod:paladium_ingot",
+      "count": 55,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 55,
+      "id": "palamod:trixium",
+      "count": 55,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 55,
+      "id": "palamod:paladium_helmet",
+      "count": 1,
+      "label": "Casque en paladium",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 4
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "job": "miner",
+      "level": 55,
+      "id": "palamod:paladium_chestplate",
+      "count": 1,
+      "label": "Plastron en paladium",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 4
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "job": "miner",
+      "level": 55,
+      "id": "palamod:paladium_leggings",
+      "count": 1,
+      "label": "Jambieres en paladium",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 4
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "job": "miner",
+      "level": 55,
+      "id": "palamod:paladium_boots",
+      "count": 1,
+      "label": "Bottes en paladium",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 4
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "job": "miner",
+      "level": 60,
+      "id": "palamod:paladium_ingot",
+      "count": 60,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 60,
+      "id": "palamod:trixium",
+      "count": 60,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 65,
+      "id": "palamod:paladium_ingot",
+      "count": 65,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 65,
+      "id": "palamod:trixium",
+      "count": 65,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 65,
+      "id": "minecraft:obsidian",
+      "count": 64,
+      "label": "Obsidienne"
+    },
+    {
+      "job": "miner",
+      "level": 70,
+      "id": "palamod:paladium_ingot",
+      "count": 70,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 70,
+      "id": "palamod:trixium",
+      "count": 70,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 75,
+      "id": "palamod:paladium_ingot",
+      "count": 75,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 75,
+      "id": "palamod:trixium",
+      "count": 75,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 80,
+      "id": "palamod:paladium_ingot",
+      "count": 80,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 80,
+      "id": "palamod:trixium",
+      "count": 80,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 80,
+      "id": "minecraft:wither_skeleton_skull",
+      "count": 1,
+      "label": "Crane de wither squelette"
+    },
+    {
+      "job": "miner",
+      "level": 85,
+      "id": "palamod:paladium_ingot",
+      "count": 85,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 85,
+      "id": "palamod:trixium",
+      "count": 85,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 90,
+      "id": "palamod:paladium_ingot",
+      "count": 90,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 90,
+      "id": "palamod:trixium",
+      "count": 90,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 95,
+      "id": "palamod:paladium_ingot",
+      "count": 95,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 95,
+      "id": "palamod:trixium",
+      "count": 95,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 95,
+      "id": "palamod:job_candy",
+      "count": 1,
+      "label": "Bonbon de metier"
+    },
+    {
+      "job": "miner",
+      "level": 95,
+      "id": "palamod:wither_receptacle",
+      "count": 1,
+      "label": "Receptacle de wither"
+    },
+    {
+      "job": "miner",
+      "level": 100,
+      "id": "palamod:paladium_ingot",
+      "count": 105,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "miner",
+      "level": 100,
+      "id": "palamod:trixium",
+      "count": 105,
+      "label": "Trixium"
+    },
+    {
+      "job": "miner",
+      "level": 100,
+      "id": "palamod:endium_nugget",
+      "count": 1,
+      "label": "Pepite d'endium"
+    },
+    {
+      "job": "farmer",
+      "level": 10,
+      "id": "palamod:paladium_ingot",
+      "count": 10,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 10,
+      "id": "palamod:trixium",
+      "count": 10,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 15,
+      "id": "palamod:paladium_ingot",
+      "count": 15,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 15,
+      "id": "palamod:trixium",
+      "count": 15,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 15,
+      "id": "palamod:findium",
+      "count": 2,
+      "label": "Findium"
+    },
+    {
+      "job": "farmer",
+      "level": 20,
+      "id": "palamod:paladium_ingot",
+      "count": 20,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 20,
+      "id": "palamod:trixium",
+      "count": 20,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 25,
+      "id": "palamod:paladium_ingot",
+      "count": 25,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 25,
+      "id": "palamod:trixium",
+      "count": 25,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 25,
+      "id": "palamod:amethyst_ingot",
+      "count": 8,
+      "label": "Lingot d'amethyste"
+    },
+    {
+      "job": "farmer",
+      "level": 30,
+      "id": "palamod:paladium_ingot",
+      "count": 30,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 30,
+      "id": "palamod:trixium",
+      "count": 30,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 30,
+      "id": "palamod:furnace_upgrade",
+      "count": 2,
+      "label": "Amelioration de four"
+    },
+    {
+      "job": "farmer",
+      "level": 35,
+      "id": "palamod:paladium_ingot",
+      "count": 35,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 35,
+      "id": "palamod:trixium",
+      "count": 35,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 35,
+      "id": "palamod:titane_radius_hoe",
+      "count": 1,
+      "label": "Houe en titane"
+    },
+    {
+      "job": "farmer",
+      "level": 35,
+      "id": "palamod:eggplant_seeds",
+      "count": 64,
+      "label": "Graines d'aubergine"
+    },
+    {
+      "job": "farmer",
+      "level": 40,
+      "id": "palamod:paladium_ingot",
+      "count": 40,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 40,
+      "id": "palamod:trixium",
+      "count": 40,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 45,
+      "id": "palamod:paladium_ingot",
+      "count": 45,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 45,
+      "id": "palamod:trixium",
+      "count": 45,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 45,
+      "id": "palamod:compressed_amethyst",
+      "count": 1,
+      "label": "Amethyste compressee"
+    },
+    {
+      "job": "farmer",
+      "level": 50,
+      "id": "palamod:paladium_ingot",
+      "count": 50,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 50,
+      "id": "palamod:trixium",
+      "count": 50,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 55,
+      "id": "palamod:paladium_ingot",
+      "count": 55,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 55,
+      "id": "palamod:trixium",
+      "count": 55,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 55,
+      "id": "palamod:travel_boots",
+      "count": 1,
+      "label": "Bottes de voyage"
+    },
+    {
+      "job": "farmer",
+      "level": 55,
+      "id": "palamod:travel_leggings",
+      "count": 1,
+      "label": "Jambieres de voyage"
+    },
+    {
+      "job": "farmer",
+      "level": 55,
+      "id": "palamod:travel_jumpchest",
+      "count": 1,
+      "label": "Plastron de saut"
+    },
+    {
+      "job": "farmer",
+      "level": 55,
+      "id": "palamod:travel_slimyhelmet",
+      "count": 1,
+      "label": "Casque gluant"
+    },
+    {
+      "job": "farmer",
+      "level": 60,
+      "id": "palamod:paladium_ingot",
+      "count": 60,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 60,
+      "id": "palamod:trixium",
+      "count": 60,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 65,
+      "id": "palamod:paladium_ingot",
+      "count": 65,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 65,
+      "id": "palamod:trixium",
+      "count": 65,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 65,
+      "id": "palamod:chervil_seeds",
+      "count": 64,
+      "label": "Graines de cerfeuil"
+    },
+    {
+      "job": "farmer",
+      "level": 70,
+      "id": "palamod:paladium_ingot",
+      "count": 70,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 70,
+      "id": "palamod:trixium",
+      "count": 70,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 75,
+      "id": "palamod:paladium_ingot",
+      "count": 75,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 75,
+      "id": "palamod:trixium",
+      "count": 75,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 80,
+      "id": "palamod:paladium_ingot",
+      "count": 80,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 80,
+      "id": "palamod:trixium",
+      "count": 80,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 80,
+      "id": "palamod:paladium_chest",
+      "count": 1,
+      "label": "Coffre en paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 85,
+      "id": "palamod:paladium_ingot",
+      "count": 85,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 85,
+      "id": "palamod:trixium",
+      "count": 85,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 85,
+      "id": "palamod:kiwano_seeds",
+      "count": 64,
+      "label": "Graines de kiwano"
+    },
+    {
+      "job": "farmer",
+      "level": 90,
+      "id": "palamod:paladium_ingot",
+      "count": 90,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 90,
+      "id": "palamod:trixium",
+      "count": 90,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 95,
+      "id": "palamod:paladium_ingot",
+      "count": 95,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 95,
+      "id": "palamod:trixium",
+      "count": 95,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 95,
+      "id": "palamod:job_candy",
+      "count": 1,
+      "label": "Bonbon de metier"
+    },
+    {
+      "job": "farmer",
+      "level": 95,
+      "id": "palamod:green_paladium_ingot",
+      "count": 5,
+      "label": "Lingot de paladium vert"
+    },
+    {
+      "job": "farmer",
+      "level": 100,
+      "id": "palamod:paladium_ingot",
+      "count": 105,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "farmer",
+      "level": 100,
+      "id": "palamod:trixium",
+      "count": 105,
+      "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 100,
+      "id": "palamod:endium_nugget",
+      "count": 1,
+      "label": "Pepite d'endium"
+    },
+    {
+      "job": "hunter",
+      "level": 10,
+      "id": "palamod:paladium_ingot",
+      "count": 10,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 10,
+      "id": "palamod:trixium",
+      "count": 10,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 15,
+      "id": "palamod:paladium_ingot",
+      "count": 15,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 15,
+      "id": "palamod:trixium",
+      "count": 15,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 15,
+      "id": "palamod:titane_ingot",
+      "count": 5,
+      "label": "Lingot de titane"
+    },
+    {
+      "job": "hunter",
+      "level": 20,
+      "id": "palamod:paladium_ingot",
+      "count": 20,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 20,
+      "id": "palamod:trixium",
+      "count": 20,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 25,
+      "id": "palamod:paladium_ingot",
+      "count": 25,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 25,
+      "id": "palamod:trixium",
+      "count": 25,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 25,
+      "id": "palamod:diamond_string",
+      "count": 5,
+      "label": "Fil de diamant"
+    },
+    {
+      "job": "hunter",
+      "level": 30,
+      "id": "palamod:paladium_ingot",
+      "count": 30,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 30,
+      "id": "palamod:trixium",
+      "count": 30,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 30,
+      "id": "palamod:paladium_sword",
+      "count": 1,
+      "label": "Epee en paladium",
+      "enchantments": [
+        {
+          "id": "minecraft:smite",
+          "level": 5
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "job": "hunter",
+      "level": 35,
+      "id": "palamod:paladium_ingot",
+      "count": 35,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 35,
+      "id": "palamod:trixium",
+      "count": 35,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 40,
+      "id": "palamod:paladium_ingot",
+      "count": 40,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 40,
+      "id": "palamod:trixium",
+      "count": 40,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 40,
+      "id": "palamod:amethyst_ingot",
+      "count": 16,
+      "label": "Lingot d'amethyste"
+    },
+    {
+      "job": "hunter",
+      "level": 45,
+      "id": "palamod:paladium_ingot",
+      "count": 45,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 45,
+      "id": "palamod:trixium",
+      "count": 45,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 50,
+      "id": "palamod:paladium_ingot",
+      "count": 50,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 50,
+      "id": "palamod:trixium",
+      "count": 50,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 50,
+      "id": "palamod:empty_bow_upgrade",
+      "count": 2,
+      "label": "Amelioration d'arc vide"
+    },
+    {
+      "job": "hunter",
+      "level": 55,
+      "id": "palamod:paladium_ingot",
+      "count": 55,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 55,
+      "id": "palamod:trixium",
+      "count": 55,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 60,
+      "id": "palamod:paladium_ingot",
+      "count": 60,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 60,
+      "id": "palamod:trixium",
+      "count": 60,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 60,
+      "id": "minecraft:blaze_rod",
+      "count": 16,
+      "label": "Baguette de blaze"
+    },
+    {
+      "job": "hunter",
+      "level": 65,
+      "id": "palamod:paladium_ingot",
+      "count": 65,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 65,
+      "id": "palamod:trixium",
+      "count": 65,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 70,
+      "id": "palamod:paladium_ingot",
+      "count": 70,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 70,
+      "id": "palamod:trixium",
+      "count": 70,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 75,
+      "id": "palamod:paladium_ingot",
+      "count": 75,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 75,
+      "id": "palamod:trixium",
+      "count": 75,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 80,
+      "id": "palamod:paladium_ingot",
+      "count": 80,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 80,
+      "id": "palamod:trixium",
+      "count": 80,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 80,
+      "id": "palamod:tusk",
+      "count": 1,
+      "label": "Defense"
+    },
+    {
+      "job": "hunter",
+      "level": 85,
+      "id": "palamod:paladium_ingot",
+      "count": 85,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 85,
+      "id": "palamod:trixium",
+      "count": 85,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 90,
+      "id": "palamod:paladium_ingot",
+      "count": 90,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 90,
+      "id": "palamod:trixium",
+      "count": 90,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 95,
+      "id": "palamod:paladium_ingot",
+      "count": 95,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 95,
+      "id": "palamod:trixium",
+      "count": 95,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 95,
+      "id": "palamod:job_candy",
+      "count": 1,
+      "label": "Bonbon de metier"
+    },
+    {
+      "job": "hunter",
+      "level": 95,
+      "id": "minecraft:dragon_head",
+      "count": 1,
+      "label": "Tete de dragon"
+    },
+    {
+      "job": "hunter",
+      "level": 100,
+      "id": "palamod:paladium_ingot",
+      "count": 105,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "hunter",
+      "level": 100,
+      "id": "palamod:trixium",
+      "count": 105,
+      "label": "Trixium"
+    },
+    {
+      "job": "hunter",
+      "level": 100,
+      "id": "palamod:endium_nugget",
+      "count": 1,
+      "label": "Pepite d'endium"
+    },
+    {
+      "job": "alchemist",
+      "level": 10,
+      "id": "palamod:paladium_ingot",
+      "count": 10,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 10,
+      "id": "palamod:trixium",
+      "count": 10,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 15,
+      "id": "palamod:paladium_ingot",
+      "count": 15,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 15,
+      "id": "palamod:trixium",
+      "count": 15,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 15,
+      "id": "minecraft:blaze_rod",
+      "count": 5,
+      "label": "Baguette de blaze"
+    },
+    {
+      "job": "alchemist",
+      "level": 20,
+      "id": "palamod:paladium_ingot",
+      "count": 20,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 20,
+      "id": "palamod:trixium",
+      "count": 20,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 20,
+      "id": "palamod:jacaranda_log",
+      "count": 64,
+      "label": "Buche de jacaranda"
+    },
+    {
+      "job": "alchemist",
+      "level": 25,
+      "id": "palamod:paladium_ingot",
+      "count": 25,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 25,
+      "id": "palamod:trixium",
+      "count": 25,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 25,
+      "id": "palamod:lightning_potion",
+      "count": 5,
+      "label": "Potion de foudre"
+    },
+    {
+      "job": "alchemist",
+      "level": 30,
+      "id": "palamod:paladium_ingot",
+      "count": 30,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 30,
+      "id": "palamod:trixium",
+      "count": 30,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 30,
+      "id": "palamod:judeecercis_log",
+      "count": 64,
+      "label": "Buche d'arbre de Judee"
+    },
+    {
+      "job": "alchemist",
+      "level": 35,
+      "id": "palamod:paladium_ingot",
+      "count": 35,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 35,
+      "id": "palamod:trixium",
+      "count": 35,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 40,
+      "id": "palamod:paladium_ingot",
+      "count": 40,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 40,
+      "id": "palamod:trixium",
+      "count": 40,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 40,
+      "id": "minecraft:nether_quartz_ore",
+      "count": 64,
+      "label": "Minerai de quartz du Nether"
+    },
+    {
+      "job": "alchemist",
+      "level": 45,
+      "id": "palamod:paladium_ingot",
+      "count": 45,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 45,
+      "id": "palamod:trixium",
+      "count": 45,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 50,
+      "id": "palamod:paladium_ingot",
+      "count": 50,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 50,
+      "id": "palamod:trixium",
+      "count": 50,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 50,
+      "id": "palamod:erable_leaves",
+      "count": 64,
+      "label": "Feuilles d'erable"
+    },
+    {
+      "job": "alchemist",
+      "level": 50,
+      "id": "palamod:lightning_potion",
+      "count": 16,
+      "label": "Potion de foudre"
+    },
+    {
+      "job": "alchemist",
+      "level": 55,
+      "id": "palamod:paladium_ingot",
+      "count": 55,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 55,
+      "id": "palamod:trixium",
+      "count": 55,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 60,
+      "id": "palamod:paladium_ingot",
+      "count": 60,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 60,
+      "id": "palamod:trixium",
+      "count": 60,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 60,
+      "id": "palamod:compressed_quartz",
+      "count": 10,
+      "label": "Quartz compresse"
+    },
+    {
+      "job": "alchemist",
+      "level": 65,
+      "id": "palamod:paladium_ingot",
+      "count": 65,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 65,
+      "id": "palamod:trixium",
+      "count": 65,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 70,
+      "id": "palamod:paladium_ingot",
+      "count": 70,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 70,
+      "id": "palamod:trixium",
+      "count": 70,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 75,
+      "id": "palamod:paladium_ingot",
+      "count": 75,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 75,
+      "id": "palamod:trixium",
+      "count": 75,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 75,
+      "id": "palamod:extrapolated_bucket",
+      "count": 2,
+      "label": "Seau extrapole"
+    },
+    {
+      "job": "alchemist",
+      "level": 80,
+      "id": "palamod:paladium_ingot",
+      "count": 80,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 80,
+      "id": "palamod:trixium",
+      "count": 80,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 85,
+      "id": "palamod:paladium_ingot",
+      "count": 85,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 85,
+      "id": "palamod:trixium",
+      "count": 85,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 90,
+      "id": "palamod:paladium_ingot",
+      "count": 90,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 90,
+      "id": "palamod:trixium",
+      "count": 90,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 95,
+      "id": "palamod:paladium_ingot",
+      "count": 95,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 95,
+      "id": "palamod:trixium",
+      "count": 95,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 95,
+      "id": "palamod:job_candy",
+      "count": 1,
+      "label": "Bonbon de metier"
+    },
+    {
+      "job": "alchemist",
+      "level": 95,
+      "id": "minecraft:wither_skeleton_skull",
+      "count": 1,
+      "label": "Crane de wither squelette"
+    },
+    {
+      "job": "alchemist",
+      "level": 100,
+      "id": "palamod:paladium_ingot",
+      "count": 105,
+      "label": "Lingot de paladium"
+    },
+    {
+      "job": "alchemist",
+      "level": 100,
+      "id": "palamod:trixium",
+      "count": 105,
+      "label": "Trixium"
+    },
+    {
+      "job": "alchemist",
+      "level": 100,
+      "id": "palamod:ostrya_log",
+      "count": 64,
+      "label": "Buche d'ostrya"
+    },
+    {
+      "job": "alchemist",
+      "level": 100,
+      "id": "palamod:endium_nugget",
+      "count": 1,
+      "label": "Pepite d'endium"
     }
   ]
 }

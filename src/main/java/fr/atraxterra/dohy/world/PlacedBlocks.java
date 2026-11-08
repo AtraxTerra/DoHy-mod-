@@ -13,7 +13,7 @@ import java.util.WeakHashMap;
  * Sait si un bloc a ete pose par un joueur.
  *
  * <p>C'est le socle de tout le systeme de progression, et la raison pour
- * laquelle il est implemente avant les skills et les collections : sans lui,
+ * laquelle il est implemente avant les metiers et les collections : sans lui,
  * poser puis casser la meme pierre en boucle rapporterait de l'XP et ferait
  * monter une collection. Minecraft ne marque pas les blocs poses par un joueur,
  * il faut donc le faire soi-meme.
@@ -89,7 +89,7 @@ public final class PlacedBlocks {
      * joueur ?
      *
      * <p>Plusieurs systemes vont vouloir cette reponse pour la meme casse — les
-     * skills, les collections, et le nettoyage du suivi lui-meme. Or
+     * metiers, les collections, et le nettoyage du suivi lui-meme. Or
      * {@link #consume} retire la marque : le second appelant lirait
      * {@code false} et croirait le bloc naturel, ce qui donnerait de l'XP sur un
      * bloc pose. Un faux negatif de ce genre est exactement l'exploit que tout

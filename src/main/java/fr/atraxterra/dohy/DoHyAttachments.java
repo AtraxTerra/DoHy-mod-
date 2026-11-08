@@ -4,9 +4,9 @@ import fr.atraxterra.dohy.boost.BoostData;
 import fr.atraxterra.dohy.collection.CollectionData;
 import fr.atraxterra.dohy.contract.ContractData;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
+import fr.atraxterra.dohy.job.JobData;
 import fr.atraxterra.dohy.museum.MuseumData;
 import fr.atraxterra.dohy.upgrade.UpgradeData;
-import fr.atraxterra.dohy.skill.SkillData;
 import fr.atraxterra.dohy.economy.market.PlayerMarket;
 import fr.atraxterra.dohy.world.PlacedBlockData;
 import net.neoforged.bus.api.IEventBus;
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  * Attachments du mod.
  *
  * <p>Les attachments sont le support de toutes les donnees par joueur du mod :
- * solde, skills, collections, contrats. Ils sont persistes par NeoForge avec les
+ * solde, metiers, collections, contrats. Ils sont persistes par NeoForge avec les
  * donnees du joueur, et {@code copyOnDeath} garantit que le solde traverse la
  * mort — la perte eventuelle est appliquee explicitement par le systeme de
  * penalite, elle n'est pas un effet de bord de la reapparition.
@@ -74,11 +74,27 @@ public final class DoHyAttachments {
                     .copyOnDeath()
                     .build());
 
-    /** XP de skill. Conservee a la mort, comme les collections. */
-    public static final Supplier<AttachmentType<SkillData>> SKILLS = ATTACHMENT_TYPES.register(
+    /** XP de metier. Conservee a la mort, comme les collections. */
+    public static final Supplier<AttachmentType<JobData>> JOBS = ATTACHMENT_TYPES.register(
+            "jobs",
+            () -> AttachmentType.builder(JobData::new)
+                    .serialize(JobData.MAP_CODEC, data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /**
+     * L'ancienne XP de skill, d'avant le remplacement des skills par les
+     * metiers.
+     *
+     * <p>Encore enregistree pour que les sauvegardes existantes se relisent :
+     * une piece jointe dont le type a disparu est perdue au chargement.
+     * {@code JobMigration} la verse dans {@link #JOBS} a la premiere connexion
+     * puis la supprime ; elle ne se reecrit donc plus jamais.
+     */
+    public static final Supplier<AttachmentType<JobData>> LEGACY_SKILLS = ATTACHMENT_TYPES.register(
             "skills",
-            () -> AttachmentType.builder(SkillData::new)
-                    .serialize(SkillData.MAP_CODEC, data -> !data.isEmpty())
+            () -> AttachmentType.builder(JobData::new)
+                    .serialize(JobData.MAP_CODEC, data -> !data.isEmpty())
                     .copyOnDeath()
                     .build());
 

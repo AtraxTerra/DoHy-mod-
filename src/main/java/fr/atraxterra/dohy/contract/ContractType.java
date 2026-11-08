@@ -17,10 +17,16 @@ public enum ContractType {
     TRAVEL,
     PLACE_BLOCK,
     COLLECTION_TIER,
-    SKILL_LEVELS,
+    /** Gagner des niveaux de metier, tous metiers confondus. */
+    JOB_LEVELS,
     UNKNOWN;
 
     public static ContractType byName(String raw) {
+        // Ancien nom, d'avant le remplacement des skills par les metiers : les
+        // contrats deja en cours le portent encore dans la sauvegarde.
+        if ("SKILL_LEVELS".equalsIgnoreCase(raw)) {
+            return JOB_LEVELS;
+        }
         try {
             return valueOf(raw.toUpperCase());
         } catch (IllegalArgumentException error) {

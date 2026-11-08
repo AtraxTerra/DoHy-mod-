@@ -26,7 +26,7 @@ import java.util.Set;
  *
  * <p>{@link #EFFECTS} liste les effets que le code lit reellement, et le
  * chargement du datapack previent pour tout effet absent de cette liste. C'est
- * le meme filet que pour les perks de skill, pose apres avoir decouvert que
+ * le meme filet que pour les perks de metier, pose apres avoir decouvert que
  * trente-trois perks etaient declares et inertes. Une amelioration payee
  * plusieurs milliards doit faire quelque chose.
  */
@@ -38,14 +38,14 @@ public final class UpgradeApi {
     public static final String DAILY_CONTRACT_SLOTS = "daily_contract_slots";
     public static final String BOOSTER_MINUTES = "booster_minutes";
     public static final String FLOOR_BONUS = "floor_bonus";
-    public static final String SKILL_XP_BONUS = "skill_xp_bonus";
+    public static final String JOB_XP_BONUS = "job_xp_bonus";
     public static final String DEATH_PENALTY_CUT = "death_penalty_cut";
 
     /** Les effets effectivement lus quelque part dans le code. */
     private static final Set<String> EFFECTS = Set.of(
             SHOP_DISCOUNT, AUTOSELL_INTERVAL_CUT, BANK_CAP_MULTIPLIER,
             DAILY_CONTRACT_SLOTS, BOOSTER_MINUTES, FLOOR_BONUS,
-            SKILL_XP_BONUS, DEATH_PENALTY_CUT);
+            JOB_XP_BONUS, DEATH_PENALTY_CUT);
 
     private UpgradeApi() {
     }

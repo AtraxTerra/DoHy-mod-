@@ -133,9 +133,9 @@
     "apprenticeship": {
       "label": "Apprentissage",
       "icon": "minecraft:experience_bottle",
-      "effect": "skill_xp_bonus",
-      "description": "Tous les skills gagnent plus d'XP.",
-      "_note": "Se cumule avec les perks d'XP de chaque skill. Rend les cinquante derniers niveaux atteignables sans changer la courbe pour un debutant.",
+      "effect": "job_xp_bonus",
+      "description": "Tous les metiers gagnent plus d'XP.",
+      "_note": "Se cumule avec les perks d'XP de chaque metier. Rend les cinquante derniers niveaux atteignables sans changer la courbe pour un debutant.",
       "levels": [
         {
           "price": 150000000,

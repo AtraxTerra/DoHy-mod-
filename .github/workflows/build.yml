@@ -47,7 +47,7 @@ jobs:
           # Les entrees palamod sont des temoins : si processResources changeait
           # et laissait les assets generes dehors, le mod se chargerait avec des
           # blocs sans texture ni butin au lieu d'echouer franchement.
-          for f in data/dohy/prices.json data/dohy/collections.json data/dohy/skills.json data/dohy/tags/block/placement_exempt.json data/dohy/tags/block/crops.json data/dohy/contracts.json data/dohy/crates.json data/dohy/tag_prices.json data/dohy/economy.json data/dohy/museum.json data/dohy/upgrades.json data/dohy/jobs.json assets/palamod/items/paladium_ingot.json assets/palamod/models/item/paladium_ingot.json assets/palamod/textures/item/paladium_ingot.png assets/palamod/blockstates/paladium_ore.json assets/palamod/lang/fr_fr.json data/palamod/loot_table/blocks/paladium_ore.json data/palamod/recipe/paladium_ingot_from_particles.json data/palamod/worldgen/placed_feature/ore_paladium.json data/palamod/neoforge/biome_modifier/ores.json data/minecraft/tags/block/needs_diamond_tool.json assets/palamod/blockstates/kiwano_crop.json assets/palamod/models/block/kiwano_crop_stage_4.json assets/palamod/textures/block/kiwano_stage_4.png assets/palamod/items/kiwano_seeds.json data/palamod/loot_table/blocks/orangeblue_crop.json assets/palamod/blockstates/cobblebreaker.json assets/palamod/models/block/cobblebreaker_paladium.json assets/palamod/textures/block/crusher_front.png assets/palamod/items/cobblebreaker_titane_upgrade.json assets/palamod/textures/gui/cobblebreaker.png assets/palamod/textures/gui/crusher.png; do
+          for f in data/dohy/prices.json data/dohy/collections.json data/dohy/job_progression.json data/dohy/tags/block/placement_exempt.json data/dohy/tags/block/crops.json data/dohy/contracts.json data/dohy/crates.json data/dohy/tag_prices.json data/dohy/economy.json data/dohy/museum.json data/dohy/upgrades.json data/dohy/jobs.json assets/palamod/items/paladium_ingot.json assets/palamod/models/item/paladium_ingot.json assets/palamod/textures/item/paladium_ingot.png assets/palamod/blockstates/paladium_ore.json assets/palamod/lang/fr_fr.json data/palamod/loot_table/blocks/paladium_ore.json data/palamod/recipe/paladium_ingot_from_particles.json data/palamod/worldgen/placed_feature/ore_paladium.json data/palamod/neoforge/biome_modifier/ores.json data/minecraft/tags/block/needs_diamond_tool.json assets/palamod/blockstates/kiwano_crop.json assets/palamod/models/block/kiwano_crop_stage_4.json assets/palamod/textures/block/kiwano_stage_4.png assets/palamod/items/kiwano_seeds.json data/palamod/loot_table/blocks/orangeblue_crop.json assets/palamod/blockstates/cobblebreaker.json assets/palamod/models/block/cobblebreaker_paladium.json assets/palamod/textures/block/crusher_front.png assets/palamod/items/cobblebreaker_titane_upgrade.json assets/palamod/textures/gui/cobblebreaker.png assets/palamod/textures/gui/crusher.png; do
             if ! unzip -l "$JAR" | grep -q "$f"; then
               echo "::error::$f est absent de $JAR"
               MISSING=1
@@ -114,15 +114,17 @@ jobs:
           python3 - <<'PY'
           import json, sys
           jobs = json.load(open("data/jobs.json", encoding="utf-8"))
-          skills = json.load(open("data/skills.json", encoding="utf-8"))
-          max_level = skills["curve"]["max_level"]
-          known = {"miner": "mining", "hunter": "combat",
-                   "farmer": "farming", "alchemist": "alchemy"}
+          progression = json.load(open("data/job_progression.json", encoding="utf-8"))
+          max_level = progression["curve"]["max_level"]
+          known = ("miner", "hunter", "farmer", "alchemist")
 
           errors = []
-          for skill in known.values():
-              if skill not in skills["skills"]:
-                  errors.append(f"skill « {skill} » absent de skills.json")
+          for job in known:
+              if job not in progression["jobs"]:
+                  errors.append(f"metier « {job} » absent de job_progression.json")
+          for job in progression["jobs"]:
+              if job not in known:
+                  errors.append(f"job_progression.json : metier inconnu « {job} »")
 
           seen = set()
           for entry in jobs["unlocks"]:
@@ -137,10 +139,24 @@ jobs:
                   errors.append(f"{entry['id']} : deux entrees pour le meme metier")
               seen.add(key)
 
-          if errors:
-              print("\n".join(f"::error::{e}" for e in errors))
-              sys.exit(1)
-          print(f"{len(jobs['unlocks'])} deblocages coherents, niveaux dans 1..{max_level}")
+          # Une recompense hors de la courbe ne serait jamais donnee ; une
+          # quantite nulle donnerait une pile vide sans le moindre message.
+          for entry in jobs.get("rewards", []):
+              label = f"recompense {entry['job']} {entry['level']} {entry['id']}"
+              if entry["job"] not in known:
+                  errors.append(f"{label} : metier inconnu")
+              if not 1 <= entry["level"] <= max_level:
+                  errors.append(f"{label} : niveau hors de 1..{max_level}")
+              if ":" not in entry["id"] or entry["id"].startswith("#"):
+                  errors.append(f"{label} : identifiant invalide")
+              if entry.get("count", 1) < 1:
+                  errors.append(f"{label} : quantite {entry.get('count')}")
+              for enchant in entry.get("enchantments", []):
+                  if ":" not in enchant["id"] or enchant["level"] < 1:
+                      errors.append(f"{label} : enchantement {enchant}")
+
+          print(f"{len(jobs['unlocks'])} deblocages et {len(jobs.get('rewards', []))} recompenses "
+                f"coherents, niveaux dans 1..{max_level}")
           PY
 
       # Les trois controles qui suivent partagent une propriete : AUCUNE des

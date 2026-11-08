@@ -1,4 +1,4 @@
-package fr.atraxterra.dohy.skill;
+package fr.atraxterra.dohy.job;
 
 import fr.atraxterra.dohy.DoHy;
 import net.minecraft.core.Holder;
@@ -19,7 +19,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
  *
  * <p>Les modificateurs d'attribut sont ajoutes en <b>transitoire</b> : ils ne
  * sont pas sauvegardes avec le joueur et sont recalcules a chaque connexion
- * depuis les niveaux de skill. C'est la seule facon sure de proceder — un
+ * depuis les niveaux de metier. C'est la seule facon sure de proceder — un
  * modificateur permanent survit a la sauvegarde, donc le moindre bug de
  * recalcul se traduirait par des bonus qui s'empilent a l'infini au fil des
  * connexions, sans moyen de revenir en arriere.
@@ -29,9 +29,9 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
  * la mise a jour remplace la valeur au lieu de l'additionner.
  */
 @EventBusSubscriber
-public final class SkillPerks {
+public final class JobPerks {
 
-    private SkillPerks() {
+    private JobPerks() {
     }
 
     /** Recalcule les perks a la connexion. */
@@ -53,26 +53,30 @@ public final class SkillPerks {
     /**
      * Applique tous les perks d'attribut correspondant aux niveaux actuels.
      *
-     * <p>Les perks d'un meme attribut dans un meme skill partagent un
+     * <p>Les perks d'un meme attribut dans un meme metier partagent un
      * identifiant par niveau, si bien que seul le plus haut palier atteint reste
-     * actif pour un attribut donne lorsqu'ils se succedent — et que deux skills
+     * actif pour un attribut donne lorsqu'ils se succedent — et que deux metiers
      * touchant le meme attribut se cumulent, ce qui est l'effet voulu.
+     *
+     * <p>Les modificateurs des anciens skills ({@code perk/mining/5},
+     * {@code perk/foraging/10}...) n'ont pas a etre nettoyes : transitoires,
+     * ils ne survivent pas au redemarrage qu'impose la mise a jour du mod.
      */
     public static void apply(ServerPlayer player) {
-        for (Skill skill : Skill.values()) {
-            int level = SkillApi.levelOf(player, skill);
-            for (SkillConfig.Perk perk : SkillConfig.config().def(skill).perks()) {
+        for (Job job : Job.values()) {
+            int level = JobApi.level(player, job);
+            for (JobProgression.Perk perk : JobProgression.config().def(job).perks()) {
                 if (!"attribute".equals(perk.type()) || perk.attribute().isEmpty()) {
                     continue;
                 }
                 Identifier modifierId = Identifier.fromNamespaceAndPath(DoHy.MOD_ID,
-                        "perk/" + skill.key() + "/" + perk.level());
+                        "perk/" + job.key() + "/" + perk.level());
                 applyOne(player, perk, modifierId, level >= perk.level());
             }
         }
     }
 
-    private static void applyOne(ServerPlayer player, SkillConfig.Perk perk,
+    private static void applyOne(ServerPlayer player, JobProgression.Perk perk,
                                  Identifier modifierId, boolean active) {
         Identifier attributeId = Identifier.bySeparator(perk.attribute().orElseThrow(), ':');
         Holder.Reference<Attribute> attribute = BuiltInRegistries.ATTRIBUTE.get(attributeId).orElse(null);
@@ -106,42 +110,26 @@ public final class SkillPerks {
         }
     }
 
-    /** Somme des bonus d'XP de skill accordes par les perks de ce skill. */
-    public static double xpBonus(ServerPlayer player, Skill skill) {
-        return sumOf(player, skill, "xp_bonus");
+    /** Bonus d'XP accorde par les perks de ce metier. */
+    public static double xpBonus(ServerPlayer player, Job job) {
+        return sumOf(player, job, "xp_bonus");
     }
 
-    /** Somme des chances de double drop accordees par les perks de ce skill. */
-    public static double doubleDropChance(ServerPlayer player, Skill skill) {
-        return sumOf(player, skill, "double_drop_chance");
+    /** Chance de double drop accordee par les perks de ce metier. */
+    public static double doubleDropChance(ServerPlayer player, Job job) {
+        return sumOf(player, job, "double_drop_chance");
     }
 
     /**
-     * La meilleure valeur acquise d'un type de perk dans un skill donne.
+     * La meilleure valeur acquise d'un type de perk dans un metier donne.
      *
      * <p>Point d'entree unique pour tous les effets qui ne sont pas des
-     * attributs : {@link SkillEffects} les lit par ce biais plutot que de
+     * attributs : {@link JobEffects} les lit par ce biais plutot que de
      * reparcourir la table des perks, de sorte que la regle « seul le plus haut
      * palier compte » n'existe qu'a un seul endroit.
      */
-    public static double value(ServerPlayer player, Skill skill, String type) {
-        return sumOf(player, skill, type);
-    }
-
-    /**
-     * La meilleure valeur acquise d'un type de perk, tous skills confondus.
-     *
-     * <p>Utile pour les effets qui n'appartiennent qu'a un skill — les degats de
-     * chute a la construction, le cout d'enclume a la forge — sans que
-     * l'appelant ait a savoir lequel. Si un jour deux skills portent le meme
-     * type, le meilleur des deux l'emporte, ce qui ne cumule jamais.
-     */
-    public static double value(ServerPlayer player, String type) {
-        double best = 0.0d;
-        for (Skill skill : Skill.values()) {
-            best = Math.max(best, sumOf(player, skill, type));
-        }
-        return best;
+    public static double value(ServerPlayer player, Job job, String type) {
+        return sumOf(player, job, type);
     }
 
     /**
@@ -149,10 +137,10 @@ public final class SkillPerks {
      * atteint compte. Sans ca, un perk de 2 % puis 5 % puis 15 % donnerait 22 %
      * au lieu des 15 % annonces au joueur.
      */
-    private static double sumOf(ServerPlayer player, Skill skill, String type) {
-        int level = SkillApi.levelOf(player, skill);
+    private static double sumOf(ServerPlayer player, Job job, String type) {
+        int level = JobApi.level(player, job);
         double best = 0.0d;
-        for (SkillConfig.Perk perk : SkillConfig.config().def(skill).perks()) {
+        for (JobProgression.Perk perk : JobProgression.config().def(job).perks()) {
             if (perk.type().equals(type) && level >= perk.level()) {
                 best = Math.max(best, perk.amount());
             }

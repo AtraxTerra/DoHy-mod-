@@ -1,46 +1,42 @@
 package fr.atraxterra.dohy.job;
 
-import fr.atraxterra.dohy.skill.Skill;
-
 /**
- * Les quatre metiers de Paladium, poses sur les skills du mod.
+ * Les quatre metiers de Paladium : la seule progression du mod.
  *
- * <p><b>La decision de conception du chapitre</b> : un metier n'est pas une
- * progression de plus, c'est un <i>nom</i> donne a un skill existant. Mineur lit
- * {@code mining}, Chasseur lit {@code combat}, Fermier lit {@code farming}, et
- * l'Alchimiste a recu son propre skill faute d'equivalent. Il n'y a donc qu'une
- * barre d'XP par activite.
+ * <p><b>Historique.</b> DoHy avait neuf skills, et les metiers n'etaient qu'un
+ * nom pose sur quatre d'entre eux — Mineur lisait {@code mining}, Chasseur
+ * {@code combat}, Fermier {@code farming}, Alchimiste {@code alchemy}. Les
+ * metiers ont <b>remplace</b> les skills : les cinq sans equivalent Paladium
+ * (bucheronnage, peche, forge, construction, nucleaire) ont ete retires avec
+ * leurs sources d'XP et leurs perks, et chaque metier porte desormais sa propre
+ * XP, sa courbe, ses perks, ses deblocages et ses recompenses.
  *
- * <p>L'alternative — une table d'XP de metier a cote de celle des skills —
- * aurait demande au joueur de monter deux compteurs avec le meme geste, et au
- * mod de tenir deux sauvegardes qui finissent toujours par divergere. Le cout
- * reel de la fusion est que la table d'XP de {@code PalaJobs} (20 niveaux,
- * 22 123 XP pour le niveau 2) ne s'applique pas : c'est la courbe de
- * {@code skills.json} qui fait foi, sur 100 niveaux.
+ * <p>{@link #legacyKey()} est la cle du skill d'origine. Elle ne sert qu'a
+ * relire les sauvegardes d'avant le remplacement ({@link JobData}) : l'XP de
+ * {@code mining} devient celle du Mineur sans que le joueur perde rien.
  *
- * <p>Heureusement, cela tombe juste : les niveaux de deblocage releves sur le
- * wiki sont ceux du Paladium Java, donc gradues sur 100 — cobblebreaker au 25,
- * crusher au 40, totem au 55, obsidienne infusee paladium au 100. Ils
- * s'appliquent tels quels a la courbe du mod, sans remise a l'echelle.
+ * <p>Les niveaux de deblocage releves sur le wiki sont ceux du Paladium Java,
+ * gradues sur 100 — cobblebreaker au 25, crusher au 40 — et s'appliquent tels
+ * quels a la courbe de {@code job_progression.json}.
  */
 public enum Job {
 
-    MINER("miner", "Mineur", Skill.MINING),
-    HUNTER("hunter", "Chasseur", Skill.COMBAT),
-    FARMER("farmer", "Fermier", Skill.FARMING),
-    ALCHEMIST("alchemist", "Alchimiste", Skill.ALCHEMY);
+    MINER("miner", "Mineur", "mining"),
+    HUNTER("hunter", "Chasseur", "combat"),
+    FARMER("farmer", "Fermier", "farming"),
+    ALCHEMIST("alchemist", "Alchimiste", "alchemy");
 
     private final String key;
     private final String display;
-    private final Skill skill;
+    private final String legacyKey;
 
-    Job(String key, String display, Skill skill) {
+    Job(String key, String display, String legacyKey) {
         this.key = key;
         this.display = display;
-        this.skill = skill;
+        this.legacyKey = legacyKey;
     }
 
-    /** Cle employee par {@code jobs.json}. */
+    /** Cle employee par {@code jobs.json} et {@code job_progression.json}. */
     public String key() {
         return key;
     }
@@ -50,9 +46,9 @@ public enum Job {
         return display;
     }
 
-    /** Le skill qui porte l'XP et le niveau de ce metier. */
-    public Skill skill() {
-        return skill;
+    /** Cle du skill que ce metier remplace, pour relire les anciennes sauvegardes. */
+    public String legacyKey() {
+        return legacyKey;
     }
 
     public static Job byKey(String candidate) {
@@ -67,11 +63,20 @@ public enum Job {
         return null;
     }
 
-    /** Le metier qui porte ce skill, ou {@code null} si aucun. */
-    public static Job of(Skill skill) {
-        for (Job job : values()) {
-            if (job.skill == skill) {
-                return job;
+    /**
+     * Le metier designe par une cle actuelle <b>ou</b> par l'ancienne cle de
+     * skill. Les skills retires ({@code foraging}, {@code fishing}...) ne
+     * designent rien : leur XP est abandonnee, c'est la decision prise au
+     * remplacement.
+     */
+    public static Job byKeyOrLegacy(String candidate) {
+        Job job = byKey(candidate);
+        if (job != null || candidate == null) {
+            return job;
+        }
+        for (Job legacy : values()) {
+            if (legacy.legacyKey.equalsIgnoreCase(candidate)) {
+                return legacy;
             }
         }
         return null;

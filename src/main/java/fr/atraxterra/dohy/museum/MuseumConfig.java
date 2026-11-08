@@ -61,7 +61,7 @@ public final class MuseumConfig {
         }
     }
 
-    /** Une recompense de completion. Memes types que les perks de skill. */
+    /** Une recompense de completion. Memes types que les perks de metier. */
     public record Reward(String type, Optional<String> attribute, double amount,
                          Optional<String> operation) {
         static final Codec<Reward> CODEC = RecordCodecBuilder.create(instance -> instance.group(
