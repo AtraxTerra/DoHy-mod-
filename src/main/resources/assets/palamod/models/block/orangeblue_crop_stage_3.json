@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "palamod:block/orangeblue_stage_3"
+  }
+}

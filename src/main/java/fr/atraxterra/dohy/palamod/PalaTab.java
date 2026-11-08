@@ -40,6 +40,10 @@ public final class PalaTab {
                     .displayItems((parameters, output) -> {
                         PalaBlocks.ORDERED.forEach(block -> output.accept(block.get()));
                         PalaItems.ORDERED.forEach(item -> output.accept(item.get()));
+                        // Graines et fruits, mais PAS les blocs de culture : on
+                        // obtient une culture en semant, comme le ble vanilla,
+                        // dont le bloc n'est pas dans l'inventaire non plus.
+                        PalaItems.CROP_ITEMS.forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

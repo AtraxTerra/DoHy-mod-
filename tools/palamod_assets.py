@@ -140,6 +140,79 @@ STORAGE = {
                       "Bloc de trixium", "Block of Trixium"),
 }
 
+# ---------------------------------------------------------------------------
+# Cultures.
+#
+# Tout vient de BaseBlockCrops.getDrops et de PRegister_Blocks, lus au
+# bytecode. Le mecanisme du lot rare n'est NULLE PART sur le wiki : a maturite,
+# un tirage sur 10 000 decide entre un lingot et le fruit.
+#
+# nom : (
+#   graine, fruit, nombre de dessins, stades d'origine,
+#   lot rare, chance du lot sur 10000, chance de rendre la graine,
+#   FR du bloc, FR de la graine, FR du fruit,
+#   EN du bloc, EN de la graine, EN du fruit,
+# )
+# ---------------------------------------------------------------------------
+
+CROP_AGE_MAX = 7  # AGE_7 : 8 stades, ce que CropBlock impose en 26.2
+
+CROPS = {
+    "eggplant_crop": (
+        "eggplant_seeds", "eggplant", 4, 8,
+        "palamod:amethyst_ingot", 800, 1.0,
+        "Aubergines", "Graines d'aubergine", "Aubergine",
+        "Eggplants", "Eggplant Seeds", "Eggplant"),
+    "chervil_crop": (
+        "chervil_seeds", "chervil", 4, 8,
+        "palamod:titane_ingot", 500, 1.0,
+        "Cerfeuil", "Graines de cerfeuil", "Cerfeuil",
+        "Chervil", "Chervil Seeds", "Chervil"),
+    "kiwano_crop": (
+        "kiwano_seeds", "kiwano", 5, 10,
+        "palamod:paladium_ingot", 200, 1.0,
+        "Kiwanos", "Graines de kiwano", "Kiwano",
+        "Kiwanos", "Kiwano Seeds", "Kiwano"),
+    # L'orangeblue est la seule dont la graine ne revient pas toujours : un
+    # second tirage, sur 30, ne la rend que si le resultat vaut 0 ou 1, soit
+    # 6,67 %. C'est ce qui l'empeche de s'auto-entretenir, et c'est voulu —
+    # c'est la seule source d'endium du jeu.
+    "orangeblue_crop": (
+        "orangeblue_seeds", "orangeblue", 5, 10,
+        "palamod:endium_nugget", 25, 2.0 / 30.0,
+        "Orangeblues", "Graines d'orangeblue", "Orangeblue",
+        "Orangeblues", "Orangeblue Seeds", "Orangeblue"),
+}
+
+# Textures sources des graines et des fruits. Elles ne suivent pas le nom de
+# l'item : la graine d'aubergine est items/seeds/eggplant.png et son fruit
+# items/fruits/eggplants.png, au pluriel.
+CROP_TEXTURES = {
+    "eggplant_seeds": "seeds/eggplant.png",
+    "chervil_seeds": "seeds/chervil.png",
+    "kiwano_seeds": "seeds/kiwano.png",
+    "orangeblue_seeds": "seeds/orangeblue.png",
+    "eggplant": "fruits/eggplants.png",
+    "chervil": "fruits/chervil.png",
+    "kiwano": "fruits/kiwano.png",
+    "orangeblue": "fruits/orangeblue.png",
+}
+
+
+def stage_for_age(age, frames):
+    """Quel dessin montrer a cet age.
+
+    <p>Le PalaMod faisait avancer un dessin tous les deux stades : 8 stades pour
+    4 dessins, 10 pour 5. Avec 8 stades imposes, les cultures a 4 dessins
+    gardent ce rythme exactement ; celles a 5 dessins le gardent jusqu'au
+    quatrieme et montrent le dernier sur le seul stade final. La maturite reste
+    donc lisible d'un coup d'oeil, ce qui est tout ce qu'on demande au dessin.
+    """
+    if frames >= 5:
+        return min(frames - 1, age // 2 if age < 6 else age - 3)
+    return min(frames - 1, age // 2)
+
+
 # Generation du monde. nom -> (taille de filon, nombre par chunk, y min, y max)
 #
 # La taille de filon est RELEVEE dans BaseWorldGenerator : amethyste 8,
@@ -395,6 +468,103 @@ def main():
         "%s:endium_block" % NS, "%s:findium_block" % NS, "%s:trixium_block" % NS])
     for level, entries in by_level.items():
         tag("minecraft/tags/block/%s.json" % TOOL_TAG[level], sorted(entries))
+
+    # ---- cultures ----
+    for crop, spec in CROPS.items():
+        (seed, fruit, frames, _original_stages, rare, rare_chance, seed_chance,
+         fr_block, fr_seed, fr_fruit, en_block, en_seed, en_fruit) = spec
+        base = crop.removesuffix("_crop")
+
+        # Les dessins de stade. Un modele par dessin, pas un par stade.
+        for frame in range(frames):
+            texture = "%s_stage_%d" % (base, frame)
+            if not copy_texture(root, "blocks/crops/%s.png" % texture,
+                                "block/%s.png" % texture, wrong_size):
+                missing.append("blocks/crops/%s.png" % texture)
+            write("assets/%s/models/block/%s_stage_%d.json" % (NS, crop, frame), {
+                "parent": "minecraft:block/crop",
+                "textures": {"crop": "%s:block/%s" % (NS, texture)},
+            })
+
+        write("assets/%s/blockstates/%s.json" % (NS, crop), {
+            "variants": {
+                "age=%d" % age: {
+                    "model": "%s:block/%s_stage_%d" % (NS, crop, stage_for_age(age, frames))
+                }
+                for age in range(CROP_AGE_MAX + 1)
+            },
+        })
+        fr["block.%s.%s" % (NS, crop)] = fr_block
+        en["block.%s.%s" % (NS, crop)] = en_block
+
+        # Graine et fruit : des items plats ordinaires.
+        for name, label_fr, label_en in ((seed, fr_seed, en_seed),
+                                         (fruit, fr_fruit, en_fruit)):
+            source = CROP_TEXTURES[name]
+            if not copy_texture(root, "items/" + source, "item/%s.png" % name, wrong_size):
+                missing.append("items/" + source)
+            write("assets/%s/models/item/%s.json" % (NS, name), {
+                "parent": "minecraft:item/generated",
+                "textures": {"layer0": "%s:item/%s" % (NS, name)},
+            })
+            write("assets/%s/items/%s.json" % (NS, name), {
+                "model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)},
+            })
+            fr["item.%s.%s" % (NS, name)] = label_fr
+            en["item.%s.%s" % (NS, name)] = label_en
+
+        # La table de butin, et c'est la que vit tout l'interet des cultures.
+        #
+        # Une culture immature ne lache RIEN, pas meme sa graine : la condition
+        # d'age porte sur les deux reserves. C'est le comportement d'origine,
+        # plus dur que le ble vanilla, et il est reproduit tel quel.
+        mature = {
+            "condition": "minecraft:block_state_property",
+            "block": "%s:%s" % (NS, crop),
+            "properties": {"age": str(CROP_AGE_MAX)},
+        }
+        seed_pool = {
+            "rolls": 1,
+            "conditions": [mature],
+            "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, seed)}],
+        }
+        if seed_chance < 1.0:
+            seed_pool["conditions"] = [mature, {
+                "condition": "minecraft:random_chance",
+                "chance": round(seed_chance, 6),
+            }]
+
+        write("data/%s/loot_table/blocks/%s.json" % (NS, crop), {
+            "type": "minecraft:block",
+            "pools": [
+                {
+                    "rolls": 1,
+                    "conditions": [mature],
+                    # alternatives : le lot rare s'il sort, le fruit sinon. Le
+                    # lingot REMPLACE le fruit, il ne s'y ajoute pas.
+                    "entries": [{
+                        "type": "minecraft:alternatives",
+                        "children": [
+                            {"type": "minecraft:item", "name": rare,
+                             "conditions": [{"condition": "minecraft:random_chance",
+                                             "chance": rare_chance / 10000.0}]},
+                            {"type": "minecraft:item", "name": "%s:%s" % (NS, fruit)},
+                        ],
+                    }],
+                },
+                seed_pool,
+            ],
+        })
+
+    tag("%s/tags/item/seeds.json" % NS,
+        sorted("%s:%s" % (NS, spec[0]) for spec in CROPS.values()))
+    tag("%s/tags/item/fruits.json" % NS,
+        sorted("%s:%s" % (NS, spec[1]) for spec in CROPS.values()))
+    tag("%s/tags/block/crops.json" % NS, ["%s:%s" % (NS, c) for c in sorted(CROPS)])
+    # Les cultures comptent comme des cultures pour le jeu : la houe les
+    # recolte, les villageois les reconnaissent, et le tag DoHy des cultures
+    # sert deja a l'XP d'agriculture.
+    tag("minecraft/tags/block/crops.json", ["%s:%s" % (NS, c) for c in sorted(CROPS)])
 
     # ---- generation du monde ----
     #

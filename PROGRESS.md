@@ -77,8 +77,8 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 |---|---|---|
 | 1 | **Métiers** fusionnés dans les skills, table des 70 verrous, interface, `/metiers` | fait |
 | 2 | **Minerais et matériaux** `palamod` : 6 minerais + génération, 7 blocs, 7 particules, lingots, compressés, 4 charbons mixés, onglet créatif | fait |
-| 3 | **Cultures** : 4 plantes, graines, fruits, 5 seedplanters, totem de fertilité | à faire |
-| 4 | **Machines** : cobblebreaker 4 paliers, crusher, palafurnace, grinder, palamachine | à faire |
+| 3 | **Cultures** : 4 plantes, graines, fruits, lot rare, XP d'agriculture | fait |
+| 4 | **Machines** : cobblebreaker 4 paliers, crusher, palafurnace, grinder, palamachine, **totem de fertilité et 5 seedplanters** | à faire |
 | 5 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -120,6 +120,59 @@ items, les machines des chapitres 3 et 4 n'ont ni entrée ni sortie.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 — chapitre 3 : les cultures, et un mecanisme absent du wiki
+
+**Le vrai mecanisme des cultures n'est pas celui que le wiki decrit.** Lu dans
+`BaseBlockCrops.getDrops` : **a maturite, un tirage sur 10 000 decide entre un lingot et le
+fruit** — le lingot *remplace* le fruit. Aubergine 8 % → lingot d'amethyste, cerfeuil 5 % →
+titane, kiwano 2 % → paladium, orangeblue 0,25 % → pepite d'endium.
+
+L'agriculture est donc une **voie d'acces aux metaux a part entiere**, parallele au minage. Ca
+explique enfin pourquoi le crusher est verrouille sur le Fermier et non sur le Mineur, ce qui
+semblait incoherent au chapitre 1.
+
+**L'orangeblue ne s'auto-entretient pas** : un second tirage, sur 30, ne rend sa graine que
+6,67 % du temps. Delibere — c'est la seule source d'endium du jeu.
+
+**Une culture immature ne lache rien**, pas meme sa graine. Plus dur que le ble vanilla, et
+reproduit tel quel : casser une pousse par erreur coute la graine.
+
+**Le compromis de portage, et ce qu'on fait pour le payer.** `CropBlock` est cable sur `AGE_7`
+(8 stades) en 26.2 et n'expose plus de `getAgeProperty()`. L'aubergine et le cerfeuil ont 8
+stades d'origine : exacts. Le kiwano et l'orangeblue en ont 10 — les ramener a 8 les ferait
+murir 20 % plus vite, ce qui n'est pas anodin pour la seule source d'endium. La compensation
+porte sur la **cadence** : `PalaCropBlock` ignore 20 % des ticks pour ces deux cultures, donc le
+*temps total* de maturation ne bouge pas. Huit etapes visibles, meme attente.
+
+**XP d'agriculture ajoutee, et c'est necessaire et non cosmetique.** Sans elle la chaine de
+deblocage se mordrait la queue : un joueur a Fermier 35 qui passe aux aubergines ne gagnerait
+plus rien et devrait retourner au ble pour atteindre le cerfeuil au 60. Valeurs **calibrees**
+(8 / 15 / 30 / 60) contre les reperes de `skills.json` — vanilla 2 a 3, cultures rares 40.
+La condition de maturite de `SkillEvents` s'applique deja sans modification : elle teste
+`AGE_7 >= 7`, ce que ces cultures utilisent.
+
+**Le garde-fou d'assets est remplace par une vraie validation de chaine.** L'ancien comparait
+des noms ; les cultures n'ont ni item de bloc ni texture a leur nom, ce qui aurait demande des
+cas particuliers. `tools/check_assets.py` remonte desormais la chaine comme le jeu la remonte —
+enregistrement Java → blockstate → modele → texture, plus definition d'item, butin et noms
+francais. **Aucune** des fautes qu'il cherche ne fait echouer la compilation. Verifie en cassant
+les trois cas a la main : texture de modele absente, definition d'item supprimee, blockstate
+pointant sur un modele inexistant. Les trois sont remontes.
+
+**Trois API changees en 26.2, trouvees a la sonde avant d'ecrire** : `ItemNameBlockItem`
+n'existe plus (les graines sont de simples `BlockItem`, le detour par le nom n'a plus de raison
+d'etre maintenant que l'identifiant est explicite) ; `BlockEntityType$Builder` non plus (il faut
+le constructeur) ; et `noCollision` s'ecrit avec **un seul « s »** — la faute de frappe
+historique `noCollission` a ete corrigee. Cette derniere aurait coute un aller-retour de CI.
+
+**Decoupage revu** : le totem de fertilite et les cinq seedplanters passent au chapitre 4. Ils
+sont annonces dans les cultures mais ce sont des **block entities et de l'automatisation** —
+meme surface d'API que le cobblebreaker et le crusher (`BlockEntityType`, tickers,
+`ValueInput`/`ValueOutput`). Les regrouper par technologie plutot que par theme fait un
+chapitre 4 coherent, et laisse celui-ci livrable tout de suite. Les cultures sans totem sont
+deja jouables de bout en bout : semer, attendre, recolter.
+
 
 ### 2026-11-07 (suite) — chapitre 2 : les minerais, et deux formats établis sur preuve
 

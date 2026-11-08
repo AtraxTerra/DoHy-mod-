@@ -350,7 +350,11 @@
           "minecraft:cocoa": 3,
           "minecraft:sweet_berry_bush": 2,
           "minecraft:torchflower_crop": 40,
-          "minecraft:pitcher_crop": 40
+          "minecraft:pitcher_crop": 40,
+          "palamod:eggplant_crop": 8,
+          "palamod:chervil_crop": 15,
+          "palamod:kiwano_crop": 30,
+          "palamod:orangeblue_crop": 60
         },
         "entities": {
           "minecraft:cow": 3,
