@@ -162,6 +162,40 @@ LAYOUTS = {
         "flame": {"x": 121, "y": 38},
         "counter": {"x": 128, "y": 56},
     },
+    "food_machine": {
+        # TileEntityFoodMachine : la lave sous sa jauge, les trois ingredients
+        # en colonne (fibres, mineraux, proteines), la cuisson, quatre sorties.
+        "slots": [
+            {"x": 8, "y": 53, "role": "fuel", "ghost": "lava"},
+            {"x": 44, "y": 17, "role": "input", "ghost": "fibers"},
+            {"x": 44, "y": 35, "role": "input", "ghost": "minerals"},
+            {"x": 44, "y": 53, "role": "input", "ghost": "protein"},
+            {"x": 98, "y": 26, "role": "output"},
+            {"x": 116, "y": 26, "role": "output"},
+            {"x": 98, "y": 44, "role": "output"},
+            {"x": 116, "y": 44, "role": "output"},
+        ],
+        "arrow": {"x": 68, "y": 35, "vertical": False},
+        "flame": {"x": 9, "y": 35},
+    },
+    "golem_box": {
+        # TileEntityGuardianBox : trois mini golems, leurs croquettes dessous,
+        # les 8 minutes de production, cinq sorties.
+        "slots": [
+            {"x": 44, "y": 17, "role": "equipment", "ghost": "mini_golem"},
+            {"x": 62, "y": 17, "role": "equipment", "ghost": "mini_golem"},
+            {"x": 80, "y": 17, "role": "equipment", "ghost": "mini_golem"},
+            {"x": 44, "y": 53, "role": "input", "ghost": "croquette"},
+            {"x": 62, "y": 53, "role": "input", "ghost": "croquette"},
+            {"x": 80, "y": 53, "role": "input", "ghost": "croquette"},
+            {"x": 128, "y": 17, "role": "output"},
+            {"x": 146, "y": 17, "role": "output"},
+            {"x": 128, "y": 35, "role": "output"},
+            {"x": 146, "y": 35, "role": "output"},
+            {"x": 128, "y": 53, "role": "output"},
+        ],
+        "arrow": {"x": 100, "y": 35, "vertical": False},
+    },
 }
 
 # Les coffres en amethyste et en titane (ModdedChestContainer) : 12 x 9 cases,
@@ -190,7 +224,13 @@ def load_ghosts(pack, jar):
         "fuel": os.path.join(RES, "assets", NS, "textures", "item", "gold_mixed_coal.png"),
         "upgrade": os.path.join(RES, "assets", NS, "textures", "item", "furnace_upgrade.png"),
         "equipment": os.path.join(RES, "assets", NS, "textures", "item", "paladium_pickaxe.png"),
+        "croquette": os.path.join(RES, "assets", NS, "textures", "item", "croquette.png"),
+        "mini_golem": os.path.join(RES, "assets", NS, "textures", "item", "mini_golem.png"),
     }
+    if pack:
+        for ghost, item in (("lava", "lava_bucket"), ("fibers", "wheat"), ("minerals", "flint"),
+                            ("protein", "beef")):
+            sources[ghost] = os.path.join(pack, "assets", "minecraft", "textures", "item", item + ".png")
     if pack:
         sources["cobblestone"] = os.path.join(
             pack, "assets", "minecraft", "textures", "block", "cobblestone.png")

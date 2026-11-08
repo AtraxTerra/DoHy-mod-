@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XYX",
+    " X "
+  ],
+  "key": {
+    "X": "minecraft:stone",
+    "Y": "palamod:compressed_paladium"
+  },
+  "result": {
+    "id": "palamod:guardian_stone",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "T T",
+    "PSP",
+    " S "
+  ],
+  "key": {
+    "T": "palamod:titane_block",
+    "P": "palamod:paladium_block",
+    "S": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:wrench",
+    "count": 1
+  }
+}

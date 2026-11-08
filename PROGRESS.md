@@ -89,6 +89,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 10 | **Chasseur** : canne à pêche en paladium, épée en endium qui ne frappe plus à bout, épée et pierre de capture, marteau de caverne, spawner cassé, spawner customisé (âmes, paliers, créatures empilées) — sans contrôleur, familiers, améliorations ni trône | fait |
 | 11 | **Alchimiste** : 4 arbres de PalaMod (générés), sève (fiole, extracteur, tanks), chaudron multibloc, potion de foudre, fleurs et pollens, portails à sève et leurs clés, bibliothèque mystique et table de l'Alchimiste (anti chute, grass breaker) — sans table d'alchimiste, totem fleuri, boules de glu ni trône | fait |
 | 12 | **Grinder** : multibloc, forge des têtes et des outils en paladium, modificateurs ; marteaux, broadswords, fastswords ; buisson à XP (généré) et baies ; pioche des dieux (100 niveaux, Toucher de soie, fusion automatique) | fait |
+| 13 | **Golem gardien** : golem (40 niveaux, arbre à trois voies, choix, gardien de golem), machine à croquettes, boîte à golem et mini golems, pomme en paladium — sans renommeur, cosmétiques, alerte Discord ni trône | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -153,6 +154,24 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — chapitre 13 : le golem gardien
+
+**Demande** : le golem, sa boîte, les croquettes et leur machine. Relevés et écarts :
+`docs/PALAMOD.md` § 16. Source : le mod GuardianGolem 6.1.0, ponté par PalaMod.
+
+**Un mod dans le mod.** Le golem a son entité, son IA, un arbre de 30 compétences, cinq choix,
+un gardien qui garde sa pierre à sa mort, une machine et une boîte multibloc. Une bonne part de
+l'arbre ne faisait rien dans l'original (démembrement vide, limites par chunk inexistantes,
+auto-crafter jamais ajouté) : ces branches ne sont pas portées, et les descriptions disent ce que
+fait le code.
+
+**Les fautes corrigées sont des fautes de logique**, pas d'équilibrage : le chargement à mi-vie à
+chaque rechargement du chunk, le golem rendu passif par un choix, les golems d'un même maître qui
+s'entretuaient, la machine à croquettes qui consommait sans lave.
+
+**Le premier mob du mod.** Le modèle et la texture sont ceux du golem de fer de 1.7.10 :
+le golem de fer de 26.2 les reprend tels quels, avec le moteur de rendu par états.
 
 ### 2026-11-08 (suite) — chapitre 12 : le grinder
 

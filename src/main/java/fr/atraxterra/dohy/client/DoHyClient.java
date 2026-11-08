@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.client;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.palamod.PalaMod;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
+import fr.atraxterra.dohy.palamod.golem.PalaGolem;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
 import fr.atraxterra.dohy.palamod.storage.PalaChestMenu;
@@ -13,6 +14,7 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -46,6 +48,12 @@ public final class DoHyClient {
                         new Material(Identifier.withDefaultNamespace("block/water_overlay")),
                         (FluidTintSource) null),
                 PalaFluids.ANGELIC_WATER, PalaFluids.FLOWING_ANGELIC_WATER);
+    }
+
+    /** Le golem gardien, sur le modele du golem de fer. */
+    @SubscribeEvent
+    public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(PalaGolem.GUARDIAN_GOLEM.get(), GuardianGolemRenderer::new);
     }
 
     @SubscribeEvent
@@ -86,6 +94,10 @@ public final class DoHyClient {
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "palaforge"));
         event.<MachineMenu, MachineScreen>register(PalaMenus.GRINDER.get(),
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "grinder"));
+        event.<MachineMenu, MachineScreen>register(PalaGolem.FOOD_MACHINE_MENU.get(),
+                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "food_machine"));
+        event.<MachineMenu, MachineScreen>register(PalaGolem.GOLEM_BOX_MENU.get(),
+                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "golem_box"));
         event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.AMETHYST_CHEST_MENU.get(),
                 PalaChestScreen::new);
         event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.TITANE_CHEST_MENU.get(),

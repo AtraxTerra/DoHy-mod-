@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "TPT",
+    " S ",
+    " S "
+  ],
+  "key": {
+    "T": "palamod:titane_ingot",
+    "P": "palamod:paladium_ingot",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "palamod:guardian_hammer",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "TTT",
+    "TPA",
+    "AAA"
+  ],
+  "key": {
+    "T": "palamod:titane_ingot",
+    "P": "palamod:paladium_ingot",
+    "A": "palamod:amethyst_ingot"
+  },
+  "result": {
+    "id": "palamod:guardian_box_frame",
+    "count": 1
+  }
+}

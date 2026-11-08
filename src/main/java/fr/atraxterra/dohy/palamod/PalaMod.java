@@ -5,6 +5,7 @@ import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
 import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.godpickaxe.PalaGodPickaxe;
+import fr.atraxterra.dohy.palamod.golem.PalaGolem;
 import fr.atraxterra.dohy.palamod.nature.PalaNature;
 import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
@@ -64,6 +65,7 @@ public final class PalaMod {
         PalaSmeltery.register(modBus);
         PalaNature.register(modBus);
         PalaGodPickaxe.register(modBus);
+        PalaGolem.register(modBus);
         PalaEquipment.register(modBus);
         PalaMiner.register(modBus);
         PalaStorage.register(modBus);

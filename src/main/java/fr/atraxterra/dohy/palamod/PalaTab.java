@@ -6,6 +6,7 @@ import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
 import fr.atraxterra.dohy.palamod.alchemist.PalaWoods;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.godpickaxe.PalaGodPickaxe;
+import fr.atraxterra.dohy.palamod.golem.PalaGolem;
 import fr.atraxterra.dohy.palamod.nature.PalaNature;
 import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
@@ -73,6 +74,8 @@ public final class PalaTab {
                         PalaSmeltery.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaNature.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaGodPickaxe.ORDERED.forEach(item -> output.accept(item.get()));
+                        PalaGolem.ORDERED_BLOCKS.forEach(block -> output.accept(block.get()));
+                        PalaGolem.ORDERED.forEach(item -> output.accept(item.get()));
 
                         // L'equipement ferme l'onglet, metal par metal.
                         PalaEquipment.ordered().forEach(item -> output.accept(item.get()));
