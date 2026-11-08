@@ -30,7 +30,10 @@ les elements du tableau dans l'ordre — des chaines tant qu'on n'a pas vu de
 Usage :
 
     javap -p -c -constants -cp <jar extrait> <classe> > dump.txt
-    python3 tools/extract_crafts.py dump.txt [dump2.txt ...] > crafts.json
+    python3 tools/extract_crafts.py dump.txt=<chemin/Classe.class> [...] > crafts.json
+
+Le fichier .class est obligatoire en pratique : javap rogne les espaces de fin
+des chaines, et les lignes de grille en ont souvent. Voir constant_pool().
 
 Le script ne mappe rien vers les identifiants modernes : il rend les noms
 d'origine tels quels. La correspondance est un choix de portage, elle appartient
@@ -39,6 +42,7 @@ a `tools/palamod_assets.py` et doit rester lisible.
 
 import json
 import re
+import struct
 import sys
 
 # Le descripteur fait partie du motif, et ce n'est pas du zele : addRecipe a
@@ -51,12 +55,57 @@ CALL = re.compile(
     r"(addRecipe|addShapelessRecipe|addShapedRecipe):"
     r"\(Lnet/minecraft/item/ItemStack;\[Ljava/lang/Object;\)")
 GETSTATIC = re.compile(r"getstatic\s+#\d+\s+// Field ([\w/$]+)\.(\w+):")
-LDC_STRING = re.compile(r"ldc(?:_w)?\s+#\d+\s+// String (.*)$")
+LDC_STRING = re.compile(r"ldc(?:_w)?\s+#(\d+)\s+// String (.*)$")
 PUSH_INT = re.compile(r"(?:iconst_(\d)|bipush\s+(-?\d+)|sipush\s+(-?\d+))")
 ANEWARRAY = re.compile(r"anewarray\s+#\d+\s+// class java/lang/Object")
 CHAR_VALUEOF = re.compile(r"// Method java/lang/Character\.valueOf:")
 NEW_ITEMSTACK = re.compile(r"new\s+#\d+\s+// class net/minecraft/item/ItemStack")
 ITEMSTACK_INIT = re.compile(r'// Method net/minecraft/item/ItemStack\."<init>":\(([^)]*)\)')
+
+
+def constant_pool(path):
+    """Les chaines du pool de constantes, lues dans le fichier .class lui-meme.
+
+    javap ROGNE LES ESPACES DE FIN de toutes les chaines qu'il affiche — dans le
+    commentaire de `ldc` comme dans le pool de `javap -v`. Une ligne de grille
+    « " Z " » devient « " Z" », et la recette sort avec des lignes de largeurs
+    differentes. 26.2 la rejette au chargement (« each row must be the same
+    width ») sans rien dire en jeu : onze recettes perdues — toutes les pioches,
+    deux haches, trois charbons mixes — avant que ce lecteur existe.
+
+    On lit donc le pool soi-meme : un `ldc #25` designe l'entree 25, une
+    CONSTANT_String qui pointe vers un CONSTANT_Utf8, dont on prend les octets
+    tels quels.
+    """
+    data = open(path, "rb").read()
+    count = struct.unpack(">H", data[8:10])[0]
+    pos = 10
+    utf8 = {}
+    strings = {}
+    index = 1
+    while index < count:
+        tag = data[pos]
+        pos += 1
+        if tag == 1:                                   # Utf8
+            length = struct.unpack(">H", data[pos:pos + 2])[0]
+            utf8[index] = data[pos + 2:pos + 2 + length].decode("utf-8", "replace")
+            pos += 2 + length
+        elif tag == 8:                                 # String -> Utf8
+            strings[index] = struct.unpack(">H", data[pos:pos + 2])[0]
+            pos += 2
+        elif tag in (7, 16, 19, 20):                   # Class, MethodType, Module, Package
+            pos += 2
+        elif tag in (3, 4, 9, 10, 11, 12, 17, 18):     # Integer, Float, refs, NameAndType, Dynamic
+            pos += 4
+        elif tag in (5, 6):                            # Long, Double : deux entrees
+            pos += 8
+            index += 1
+        elif tag == 15:                                # MethodHandle
+            pos += 3
+        else:
+            raise ValueError("%s : tag de pool inconnu %d a l'entree %d" % (path, tag, index))
+        index += 1
+    return {i: utf8[target] for i, target in strings.items()}
 
 
 def short(owner, name):
@@ -72,6 +121,9 @@ def pushed_int(line):
         if group is not None:
             return int(group)
     return None
+
+
+POOL = None
 
 
 def parse(lines):
@@ -235,7 +287,8 @@ def read_arguments(lines, array_index, call_index):
 
         text = LDC_STRING.search(line)
         if text:
-            arguments.append(("str", text.group(1)))
+            exact = POOL.get(int(text.group(1))) if POOL else None
+            arguments.append(("str", exact if exact is not None else text.group(2)))
             index += 1
             continue
 
@@ -263,8 +316,17 @@ def main():
     if len(sys.argv) < 2:
         raise SystemExit("usage: extract_crafts.py <dump javap> [...]")
 
+    global POOL
     everything = []
-    for path in sys.argv[1:]:
+    for argument in sys.argv[1:]:
+        # « dump.txt=Classe.class » : la classe donne les chaines exactes. Sans
+        # elle on retombe sur le texte de javap, et les grilles a espace final
+        # seront fausses — c'est signale plutot que tolere.
+        path, _, class_file = argument.partition("=")
+        POOL = constant_pool(class_file) if class_file else None
+        if POOL is None:
+            print("%s : pas de fichier .class, les espaces de fin des grilles seront "
+                  "perdus" % path, file=sys.stderr)
         with open(path, encoding="utf-8", errors="replace") as handle:
             lines = handle.read().split("\n")
         found = parse(lines)

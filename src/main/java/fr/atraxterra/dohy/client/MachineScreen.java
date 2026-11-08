@@ -38,8 +38,22 @@ public class MachineScreen extends AbstractContainerScreen<MachineMenu> {
     /** La texture fait 256x256 ; les sprites vivent a droite du panneau. */
     private static final int TEXTURE_SIZE = 256;
 
-    /** Le gris des libelles vanilla, pour que le compteur se lise de meme. */
-    private static final int LABEL_COLOR = 0xFF404040;
+    /**
+     * Les couleurs du texte, celles de Paladium-UI ({@code ColorConstant}).
+     *
+     * <p>Le jeu ecrit ses libelles en {@code 0xFF404040}, code en dur dans
+     * {@code extractLabels} (releve par javap) : du gris fonce, illisible sur le
+     * fond sombre de Paladium. D'ou la surcharge plus bas.
+     */
+    private static final int TITLE_COLOR = 0xFFFFFFFF;
+    private static final int LABEL_COLOR = 0xFF989898;
+
+    /**
+     * « Inventaire », par la cle que le jeu emploie lui-meme. Le champ
+     * {@code playerInventoryTitle} existe, mais son acces n'est pas releve :
+     * plutot que de le deviner, on reconstruit le meme texte.
+     */
+    private static final Component INVENTORY_LABEL = Component.translatable("container.inventory");
 
     private final Identifier texture;
 
@@ -60,7 +74,9 @@ public class MachineScreen extends AbstractContainerScreen<MachineMenu> {
 
         float progress = getMenu().progress();
         MachineLayout layout = getMenu().layout();
-        drawProgress(extractor, left, top, layout.arrow(), progress);
+        if (layout.arrow() != null) {
+            drawProgress(extractor, left, top, layout.arrow(), progress);
+        }
 
         // La flamme suit la meme progression que la fleche : le crusher consomme
         // son charbon au rythme ou il broie. Deux jauges qui disent la meme
@@ -71,31 +87,29 @@ public class MachineScreen extends AbstractContainerScreen<MachineMenu> {
     }
 
     /**
-     * Le compteur de lot, par-dessus les cases.
+     * Les libelles : titre, « Inventaire », et le compteur de lot.
      *
-     * <p>Ecrit dans {@code extractContents} et non dans
-     * {@code extractBackground} : le fond passe sous les objets, un chiffre
-     * ecrit la se retrouverait derriere eux. {@code extractContents} dessine
-     * les cases et les libelles, c'est la que le texte d'un ecran de conteneur
-     * se place en 26.2 — il n'y a plus de {@code renderLabels}.
+     * <p>Surcharge de la methode protegee qui, dans le jeu, ecrit les deux
+     * libelles en gris fonce code en dur. On reprend son travail a l'identique —
+     * memes positions, meme police — avec les couleurs de Paladium-UI. Le
+     * compteur s'y ajoute : il est ecrit au meme moment que les libelles, donc
+     * par-dessus les cases et en coordonnees du panneau.
      */
     @Override
-    public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY,
-                                float partialTick) {
-        super.extractContents(extractor, mouseX, mouseY, partialTick);
+    protected void extractLabels(GuiGraphicsExtractor extractor, int mouseX, int mouseY) {
+        extractor.text(getFont(), getTitle(), titleLabelX, titleLabelY, TITLE_COLOR, false);
+        extractor.text(getFont(), INVENTORY_LABEL, inventoryLabelX, inventoryLabelY,
+                LABEL_COLOR, false);
 
         MachineLayout.TextPos counter = getMenu().layout().counter();
-        if (counter == null) {
-            return;
-        }
         int goal = getMenu().tankGoal();
-        if (goal <= 0) {
+        if (counter == null || goal <= 0) {
             // Machine vide et tous les bacs a zero : rien a dire, et un
             // « 0/0 » affiche vaudrait moins que le vide.
             return;
         }
         extractor.centeredText(getFont(), getMenu().tank() + "/" + goal,
-                getLeftPos() + counter.x(), getTopPos() + counter.y(), LABEL_COLOR);
+                counter.x(), counter.y(), LABEL_COLOR);
     }
 
     /**

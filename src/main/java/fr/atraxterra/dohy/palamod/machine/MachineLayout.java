@@ -18,6 +18,9 @@ import java.util.List;
  */
 public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, TextPos counter) {
 
+    // arrow, flame et counter peuvent etre null : une machine sans cycle
+    // (la voidstone) n'a ni jauge ni compteur.
+
     /**
      * Ou ecrire le compteur, centre horizontalement sur ce x.
      *
@@ -88,9 +91,11 @@ public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, Tex
     /**
      * Le crusher : fruit au-dessus du charbon, sortie a droite.
      *
-     * <p>C'est la disposition du fourneau vanilla, que tout le monde sait lire
-     * sans explication — et le crusher fait la meme chose : une matiere, un
-     * combustible, un resultat.
+     * <p>C'est la geometrie <b>exacte</b> du fourneau vanilla — memes
+     * coordonnees de cases, de flamme et de fleche — que tout le monde lit sans
+     * explication, et le crusher fait la meme chose : une matiere, un
+     * combustible, un resultat. La premiere disposition s'en ecartait, et sa case
+     * de combustible mordait sur le libelle « Inventaire ».
      *
      * <p>Plus un compteur, que le fourneau n'a pas : le crusher accumule des
      * fruits avant de rendre quoi que ce soit — jusqu'a 128 pour l'orangeblue.
@@ -99,10 +104,21 @@ public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, Tex
      */
     public static final MachineLayout CRUSHER = new MachineLayout(
             List.of(
-                    new SlotPos(44, 24, true),
-                    new SlotPos(44, 60, true),
-                    new SlotPos(116, 42, false)),
-            new Sprite(76, 44, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, false, false),
-            new Sprite(45, 44, FLAME_U, FLAME_V, FLAME_FULL_V, FLAME_W, FLAME_H, true, true),
-            new TextPos(88, 66));
+                    new SlotPos(56, 17, true),
+                    new SlotPos(56, 53, true),
+                    new SlotPos(116, 35, false)),
+            new Sprite(79, 34, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, false, false),
+            new Sprite(57, 37, FLAME_U, FLAME_V, FLAME_FULL_V, FLAME_W, FLAME_H, true, true),
+            new TextPos(91, 58));
+
+    /**
+     * La voidstone : une case, au centre, et rien d'autre.
+     *
+     * <p>Pas de fleche ni de compteur : ce qu'on y pose disparait, il n'y a
+     * aucun etat a montrer. {@code arrow} est donc {@code null}, que
+     * {@code MachineScreen} sait ignorer.
+     */
+    public static final MachineLayout VOIDSTONE = new MachineLayout(
+            List.of(new SlotPos(80, 35, true)),
+            null, null, null);
 }

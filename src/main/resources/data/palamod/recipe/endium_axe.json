@@ -1,9 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "XX",
-    "XZ",
-    " Z"
+    "XX ",
+    "XZ ",
+    " Z "
   ],
   "key": {
     "X": "palamod:endium_ingot",

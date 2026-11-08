@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "T T",
+    "TUT",
+    "T T"
+  ],
+  "key": {
+    "T": "palamod:titane_ingot",
+    "U": "palamod:cobblebreaker_amethyst_upgrade"
+  },
+  "result": {
+    "id": "palamod:cobblebreaker_titane_upgrade",
+    "count": 1
+  }
+}

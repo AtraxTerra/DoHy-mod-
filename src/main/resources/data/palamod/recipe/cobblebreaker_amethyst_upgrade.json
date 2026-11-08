@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ACA",
+    "A A",
+    "ASA"
+  ],
+  "key": {
+    "A": "palamod:amethyst_ingot",
+    "C": "palamod:cobblebreaker",
+    "S": "palamod:speed_modifier"
+  },
+  "result": {
+    "id": "palamod:cobblebreaker_amethyst_upgrade",
+    "count": 1
+  }
+}

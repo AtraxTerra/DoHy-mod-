@@ -1,9 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "XX",
-    "XS",
-    " S"
+    "XX ",
+    "XS ",
+    " S "
   ],
   "key": {
     "X": "palamod:green_paladium_ingot",

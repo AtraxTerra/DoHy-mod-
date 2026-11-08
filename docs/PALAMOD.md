@@ -457,6 +457,19 @@ construction de javac, c'est le résultat.
 et de l'encre noire. De la poudre d'os dans un totem de fertilité n'est évidemment pas un
 hasard, et la perdre aurait donné une recette fausse qui se fabrique quand même.
 
+### Quatrième faute, trouvée en jeu : javap rogne les espaces de fin
+
+Onze recettes — toutes les pioches, deux haches, trois charbons mixés — ont été **rejetées au
+chargement** (`Invalid pattern: each row must be the same width`) sans rien afficher en jeu. La
+cause : javap rogne les espaces de fin de toutes les chaînes qu'il affiche, dans le commentaire
+de `ldc` **comme dans le pool de `javap -v`**. La ligne `" Y "` sortait `" Y"`.
+
+`extract_crafts.py` lit donc maintenant le pool de constantes **dans le fichier `.class`
+lui-même** : un `ldc #25` désigne une `CONSTANT_String`, qui pointe vers une `CONSTANT_Utf8`,
+dont on prend les octets tels quels. Le générateur refuse toute grille non rectangulaire (une
+grille 1.7.10 l'est par construction : `CraftingManager` découpe la chaîne concaténée par la
+largeur de la dernière ligne), et `check_assets.py` vérifie largeurs et clés de chaque recette.
+
 ### Une faute dans PalaMod, portée telle quelle
 
 La recette du cobblebreaker a une grille `CPC / CVC / CFC` et des clés `C`, **`D`**, `V`, `F` :
@@ -492,7 +505,19 @@ La chaîne des seedplanters dit la même chose que la table des métiers, par un
 paladium vert est un **passage obligé** vers l'endium, ce qui explique son verrou à 90 contre
 100.
 
-**Pas porté : le cobblebreaker et ses trois améliorations.** Le cobblebreaker demande la
+**Porté depuis : le cobblebreaker et ses trois améliorations**, avec leur chaîne complète :
+
+| Objet | Recette | Nature dans PalaMod |
+|---|---|---|
+| Voidstone | 4 améthyste + coffre | `ItemVoidStone` : **poubelle de poche**, ouvre une case qui détruit ce qu'on y pose — refuse les outils et elle-même |
+| Orbe de vitesse | 4 paladium + sucre | `BaseItem` nu |
+| Modificateur de vitesse | 4 paladium + orbe | `ItemGrinderModifier`, sans comportement : le grinder le lira |
+| Modificateur de fortune | 4 paladium + bloc d'or | idem |
+| Cobblebreaker | 6 pierres, voidstone, modificateur de fortune | case du haut vide (la faute `P`/`D`) |
+| Amélioration améthyste | 6 améthyste, **un cobblebreaker**, modificateur de vitesse | consomme une machine |
+| Amélioration titane / paladium | 8 lingots + l'amélioration précédente | chaîne |
+
+**Ancienne note (chapitre 5a), conservée pour l'historique : pas porté alors.** Le cobblebreaker demande la
 voidstone et le modificateur de fortune du grinder ; les améliorations demandent le
 modificateur de vitesse puis s'enchaînent. La voidstone a un comportement propre dans PalaMod
 et un verrou dans `data/jobs.json` — la porter comme ingrédient inerte serait un mensonge, un

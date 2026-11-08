@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.palamod;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import fr.atraxterra.dohy.palamod.machine.VoidstoneItem;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -127,6 +128,23 @@ public final class PalaItems {
      */
     public static final DeferredItem<Item> MIXED_ENDIUM_INGOT = simple("mixed_endium_ingot");
 
+    /**
+     * La chaine du cobblebreaker et de ses ameliorations.
+     *
+     * <p>L'orbe de vitesse est un {@code BaseItem} nu dans PalaMod. Les deux
+     * modificateurs sont des {@code ItemGrinderModifier}, eux aussi sans aucun
+     * comportement propre : c'est le grinder qui les lit, et il viendra avec le
+     * chapitre 5b. Ils servent d'ici la d'ingredients, exactement comme dans
+     * PalaMod ou on les fabriquait aussi pour le cobblebreaker.
+     */
+    public static final DeferredItem<Item> SPEED_ORB = simple("speed_orb");
+    public static final DeferredItem<Item> SPEED_MODIFIER = simple("speed_modifier");
+    public static final DeferredItem<Item> FORTUNE_MODIFIER = simple("fortune_modifier");
+
+    /** La poubelle de poche. Avec son comportement : voir VoidstoneItem. */
+    public static final DeferredItem<VoidstoneItem> VOIDSTONE =
+            ITEMS.registerItem("voidstone", properties -> new VoidstoneItem(properties.stacksTo(1)));
+
     /** Fruits puis graines, chaque famille dans l'ordre de progression. */
     public static final List<DeferredItem<? extends Item>> CROP_ITEMS = List.of(
             EGGPLANT_SEEDS, CHERVIL_SEEDS, KIWANO_SEEDS, ORANGEBLUE_SEEDS,
@@ -140,7 +158,8 @@ public final class PalaItems {
             ENDIUM_INGOT, ENDIUM_NUGGET, ENDIUM_FRAGMENT, FINDIUM, TRIXIUM,
             COMPRESSED_AMETHYST, COMPRESSED_TITANE, COMPRESSED_PALADIUM, COMPRESSED_ENDIUM,
             GOLD_MIXED_COAL, AMETHYST_MIXED_COAL, TITANE_MIXED_COAL, PALA_MIXED_COAL,
-            AMETHYST_STICK, TITANE_STICK, PALADIUM_STICK, PALADIUM_CORE, MIXED_ENDIUM_INGOT);
+            AMETHYST_STICK, TITANE_STICK, PALADIUM_STICK, PALADIUM_CORE, MIXED_ENDIUM_INGOT,
+            SPEED_ORB, SPEED_MODIFIER, FORTUNE_MODIFIER);
 
     /**
      * Les {@code BlockItem} des blocs, dans l'ordre de {@link PalaBlocks#ORDERED}.

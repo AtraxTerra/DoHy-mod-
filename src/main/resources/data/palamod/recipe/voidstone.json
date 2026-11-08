@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XZX",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:amethyst_ingot",
+    "Z": "minecraft:chest"
+  },
+  "result": {
+    "id": "palamod:voidstone",
+    "count": 1
+  }
+}

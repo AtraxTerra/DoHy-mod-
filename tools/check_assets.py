@@ -320,9 +320,12 @@ def check_gui():
         # erreur (« Failed to handle packet ... suppressing error »). Le joueur
         # voit un clic droit sans effet, sans un mot dans le chat. 183 fois dans
         # le log, et rien a l'ecran.
+        # Une machine a une block entity ; la voidstone, un simple conteneur.
         entity = JAVA / "machine" / (name.capitalize() + "BlockEntity.java")
         if not entity.exists():
-            fail(f"gui : {name} n'a pas de {entity.name} — la convention de nom "
+            entity = JAVA / "machine" / (name.capitalize() + "Container.java")
+        if not entity.exists():
+            fail(f"gui : {name} n'a ni BlockEntity ni Container — la convention de nom "
                  "a change, ce controle ne verifie plus rien")
         else:
             declared_size = java_ints(entity).get("SLOT_COUNT")
@@ -432,6 +435,23 @@ def check_recipes(items, blocks):
     for path in sorted(RECIPES.glob("*.json")):
         count += 1
         payload = json.loads(path.read_text(encoding="utf-8"))
+        # Une grille a lignes de largeurs differentes est rejetee au chargement
+        # (« each row must be the same width ») — onze recettes perdues ainsi,
+        # pioches et charbons mixes, avant que ce controle existe. Et une cle
+        # qu'aucune case n'utilise l'est aussi.
+        pattern = payload.get("pattern")
+        if pattern:
+            if len({len(row) for row in pattern}) > 1:
+                fail(f"recipe/{path.name} : lignes de largeurs inegales {pattern} — "
+                     "26.2 rejettera la recette au chargement")
+            used = {char for row in pattern for char in row if char != " "}
+            declared = set(payload.get("key", {}))
+            if used - declared:
+                fail(f"recipe/{path.name} : la grille utilise {sorted(used - declared)} "
+                     "sans cle")
+            if declared - used:
+                fail(f"recipe/{path.name} : cles {sorted(declared - used)} jamais utilisees "
+                     "— 26.2 rejettera la recette")
         for name in sorted(recipe_ids(payload)):
             if name not in known:
                 fail(f"recipe/{path.name} nomme {NS}:{name}, qui n'est pas "

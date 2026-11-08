@@ -54,5 +54,7 @@ public final class DoHyClient {
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "cobblebreaker"));
         event.<MachineMenu, MachineScreen>register(PalaMenus.CRUSHER.get(),
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "crusher"));
+        event.<MachineMenu, MachineScreen>register(PalaMenus.VOIDSTONE.get(),
+                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "voidstone"));
     }
 }

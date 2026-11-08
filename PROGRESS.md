@@ -144,6 +144,47 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-08 (suite) — onze recettes perdues, et des interfaces aux couleurs de Paladium
+
+**Signalement** : pas de recette pour les pioches ni les charbons mixés ; il manque le
+cobblebreaker et ses améliorations ; les interfaces sont « assez moches ».
+
+**Les recettes perdues, lues dans le log** : onze rejetées au chargement,
+`Invalid pattern: each row must be the same width`. Ma faute, pas celle du jeu : **javap rogne
+les espaces de fin** des chaînes, même dans le pool de `javap -v`, et la grille `" Y "` sortait
+`" Y"`. L'extracteur lit maintenant le pool de constantes dans le `.class` lui-même. Et les
+recettes du chapitre 5a, que j'avais **recopiées à la main** depuis le relevé encore faux, sortent
+désormais toutes du relevé : un seul émetteur, une seule source. Corriger l'extracteur corrige
+toutes les recettes.
+
+Deux garde-fous : le générateur refuse une grille non rectangulaire, et `check_assets.py` vérifie
+largeurs, cases sans clé et clés inutilisées — les trois motifs de rejet de 26.2. Vérifié en
+recassant la recette de la pioche.
+
+**Le cobblebreaker, avec sa chaîne complète.** Il demande la voidstone et le modificateur de
+fortune. J'avais refusé de porter la voidstone comme ingrédient inerte ; elle arrive donc **avec
+son comportement** : une poubelle de poche (`VoidStoneInventory` ne garde rien), qui refuse les
+outils et elle-même. Les modificateurs, eux, sont des `Item` nus dans PalaMod — c'est le grinder
+qui les lit — donc les porter dès maintenant n'est pas un mensonge. À savoir : **l'amélioration
+améthyste consomme un cobblebreaker**, c'est l'original.
+
+**Un vrai défaut de sécurité trouvé en route.** Les cases de `MachineMenu` étaient des `Slot`
+vanilla, dont `mayPlace` répond oui à tout : seul le shift-clic consultait le filtre. Un clic
+direct pouvait bloquer un bac de sortie du cobblebreaker avec de la terre — ou laisser tomber sa
+pioche dans la voidstone, qui la détruit. Le filtre s'applique maintenant aux deux gestes.
+
+**Les interfaces.** Paladium ne dessinait pas d'images de fond : Paladium-UI composait par code,
+en aplats sombres. Sa palette est relevée dans `ColorConstant` (`#1E1D23`, `#40404D`, `#EF3926`) et
+reprise : panneau sombre, accent rouge sous le titre, flèche blanche comme
+`arrow_furnace_filler.png`, coins de couleur par métal sur les sorties du cobblebreaker (la rareté
+se lit de gauche à droite), silhouettes fantômes dans les cases d'entrée. Deux défauts de
+disposition corrigés : la case de charbon du crusher mordait sur « Inventaire » (le crusher reprend
+la géométrie exacte du fourneau vanilla), et la flèche du cobblebreaker était décentrée de 4,5 px.
+
+Les libellés vanilla sont écrits en `0xFF404040` codé en dur dans `extractLabels` (relevé au
+javap) : illisibles sur fond sombre. La méthode est protégée, donc surchargée avec les couleurs de
+Paladium-UI.
+
 ### 2026-11-08 (suite) — chapitre 7 : l'equipement, et la formule d'armure qu'on ne peut pas lire
 
 **Demande du joueur** : armures, epees, pioches, houes, haches et leurs effets, en s'aidant des

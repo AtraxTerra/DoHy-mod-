@@ -1,39 +1,70 @@
 #!/usr/bin/env python3
-"""Dessine les fonds d'interface des machines, au style vanilla.
+"""Dessine les fonds d'interface des machines, dans le style de Paladium.
 
-Pourquoi generer plutot que reprendre les textures de Paladium : elles ne sont
-pas reutilisables. Le PalaMod dessinait ses interfaces avec un framework maison
-(Helios / Paladium-UI) qui assemblait des coins et des remplissages a la volee —
-`gui/crusher/` contient des `*_corner.png` de 26x26 et des `*_placeholder.png`
-de 200x200, pas un fond. Et le cobblebreaker n'a aucun fond du tout, seulement
-une icone d'outil de 43x43. Il n'y a donc rien a convertir.
+Paladium ne dessinait pas ses interfaces avec des images de fond : sa
+bibliotheque Paladium-UI (sur Zephyr-UI) les composait par code, en aplats
+sombres, avec quelques elements (fleche, coins colores par metal, silhouettes
+« fantomes » dans les cases d'entree). Il n'y a donc pas de fond a convertir.
 
-On produit donc des panneaux au format vanilla (256x256, panneau 176x166 en
-haut a gauche), avec la palette exacte des interfaces du jeu, plus les sprites
-de progression a des decalages connus.
+On redessine donc dans SA palette, relevee au bytecode dans
+`fr.paladium.paladiumui.kit.constant.ColorConstant` :
 
-    python3 tools/gen_gui.py
+    BACKGROUND        (30, 29, 35)     le fond des panneaux
+    LIGHT_BACKGROUND  (64, 64, 77)     les cases
+    PRIMARY           (239, 57, 38)    le rouge-orange Paladium
+    BLACK             (15, 15, 18)
+    LIGHT_GRAY        (152, 152, 152)  le texte secondaire
+
+La premiere version reprenait le gris des coffres vanilla : lisible, mais
+etranger a Paladium, et avec deux defauts de disposition — la case de charbon du
+crusher mordait sur le libelle « Inventaire », et la fleche du cobblebreaker
+etait decentree de 4,5 px. Le crusher reprend maintenant la geometrie exacte du
+fourneau vanilla, que tout joueur lit sans y penser.
+
+    python3 tools/gen_gui.py [<pack officiel extrait> [<jar PalaMod extrait>]]
+
+Le pack et le jar ne servent qu'aux silhouettes fantomes (la pierre du
+cobblebreaker, le tourbillon de la voidstone). Sans eux, les cases restent
+vides — c'est signale, pas tu.
 
 LA DISPOSITION DES SLOTS EST LA SOURCE UNIQUE. Elle est aussi emise dans
-`data/palamod/gui_layout.json`, que `check_assets.py` compare aux constantes du
-code Java : un slot dessine a un endroit et declare a un autre donne une
-interface ou les objets flottent a cote de leur case, et rien ne le signale.
+`data/gui_layout.json`, que `check_assets.py` compare aux constantes du code
+Java : un slot dessine a un endroit et declare a un autre donne une interface ou
+les objets flottent a cote de leur case, et rien ne le signale.
 """
 import json
 import os
+import sys
 
 from PIL import Image, ImageDraw
 
 RES = "src/main/resources"
 NS = "palamod"
 
-# Palette des interfaces vanilla, relevee sur les textures du jeu.
-PANEL = (198, 198, 198, 255)
-PANEL_LIGHT = (255, 255, 255, 255)
-PANEL_DARK = (85, 85, 85, 255)
-SLOT_BG = (139, 139, 139, 255)
-SLOT_DARK = (55, 55, 55, 255)
+# Palette de Paladium-UI (ColorConstant), plus deux nuances derivees pour le
+# relief des cases.
+BACKGROUND = (30, 29, 35, 255)
+LIGHT_BACKGROUND = (64, 64, 77, 255)
+PRIMARY = (239, 57, 38, 255)
+BLACK = (15, 15, 18, 255)
+LIGHT_GRAY = (152, 152, 152, 255)
+WHITE = (255, 255, 255, 255)
+BORDER = (46, 45, 54, 255)          # contour du panneau, separateurs
+SLOT_FILL = (42, 41, 50, 255)       # le creux d'une case
+SLOT_EDGE = (64, 64, 77, 255)       # LIGHT_BACKGROUND, en liseré
 TRANSPARENT = (0, 0, 0, 0)
+
+# Coins de couleur par metal, comme ceux de gui/crusher/*_corner.png. Les quatre
+# premiers sont pris sur ces textures ; fer, or et diamant sur les lingots.
+METAL = {
+    "iron": (216, 216, 216, 255),
+    "gold": (245, 211, 63, 255),
+    "diamond": (77, 232, 224, 255),
+    "amethyst": (166, 77, 255, 255),
+    "titane": (127, 127, 127, 255),
+    "paladium": (239, 57, 38, 255),
+    "endium": (77, 121, 255, 255),
+}
 
 WIDTH, HEIGHT = 176, 166
 TEXTURE = 256
@@ -55,102 +86,189 @@ FLAME_FULL_V = 48
 
 LAYOUTS = {
     "cobblebreaker": {
-        "title": "Cobblebreaker",
-        # Une entree en haut au centre, six sorties sur une rangee en dessous.
-        # Les six cases sont rangees du metal le plus courant au plus rare,
-        # de gauche a droite : c'est l'ordre dans lequel le joueur les voit se
-        # remplir, et celui des tranches du tirage.
-        "slots": [{"x": 80, "y": 18, "role": "input"}] + [
-            {"x": 34 + 18 * index, "y": 54, "role": "output"} for index in range(6)
+        # Une entree en haut au centre, six sorties sur une rangee en dessous,
+        # rangees du metal le plus courant au plus rare — l'ordre ou elles se
+        # remplissent. Chaque sortie porte le coin de couleur de son metal.
+        "slots": [{"x": 80, "y": 18, "role": "input", "ghost": "cobblestone"}] + [
+            {"x": 34 + 18 * index, "y": 54, "role": "output", "metal": metal}
+            for index, metal in enumerate(
+                ("iron", "gold", "diamond", "amethyst", "titane", "paladium"))
         ],
         "arrow": {"x": 76, "y": 36, "vertical": True},
     },
     "crusher": {
-        "title": "Crusher",
-        # Fruit au-dessus du charbon, a gauche ; la fleche traverse ; sortie a
-        # droite. C'est la disposition du fourneau vanilla, que tout le monde
-        # sait lire sans explication.
+        # La geometrie exacte du fourneau vanilla : matiere en haut, combustible
+        # en bas, flamme entre les deux, fleche, resultat. Un joueur la lit sans
+        # explication, et le crusher fait la meme chose.
         "slots": [
-            {"x": 44, "y": 24, "role": "fruit"},
-            {"x": 44, "y": 60, "role": "fuel"},
-            {"x": 116, "y": 42, "role": "output"},
+            {"x": 56, "y": 17, "role": "fruit", "ghost": "fruit"},
+            {"x": 56, "y": 53, "role": "fuel", "ghost": "fuel"},
+            {"x": 116, "y": 35, "role": "output", "big": True},
         ],
-        "arrow": {"x": 76, "y": 44, "vertical": False},
-        "flame": {"x": 45, "y": 44},
-        # Le compteur de fruits broyes : centre sous la fleche, a l'ecart des
-        # trois cases. C'est l'etat le plus volumineux de la machine — jusqu'a
-        # 128 fruits pour l'orangeblue — et il n'etait visible nulle part.
-        "counter": {"x": 88, "y": 66},
+        "arrow": {"x": 79, "y": 34, "vertical": False},
+        "flame": {"x": 57, "y": 37},
+        # Le compteur de fruits broyes, sous la fleche : jusqu'a 128 pour
+        # l'orangeblue, et c'est le seul etat de la machine qu'on ne voit pas
+        # autrement.
+        "counter": {"x": 91, "y": 58},
+    },
+    "voidstone": {
+        # Une seule case, au centre : tout ce qu'on y pose disparait. Le
+        # tourbillon de gui/void_slot_background.png dit ce qu'elle fait.
+        "slots": [{"x": 80, "y": 35, "role": "input", "ghost": "void", "big": True}],
     },
 }
 
-
-def panel(draw, x, y, width, height):
-    """Un panneau vanilla : fond gris, lumiere en haut a gauche, ombre en bas a droite."""
-    draw.rectangle([x, y, x + width - 1, y + height - 1], fill=PANEL)
-    draw.line([x, y, x + width - 2, y], fill=PANEL_LIGHT)
-    draw.line([x, y, x, y + height - 2], fill=PANEL_LIGHT)
-    draw.line([x + width - 1, y + 1, x + width - 1, y + height - 1], fill=PANEL_DARK)
-    draw.line([x + 1, y + height - 1, x + width - 1, y + height - 1], fill=PANEL_DARK)
+GHOSTS = {}
 
 
-def slot(draw, x, y):
-    """Une case 18x18 : creux gris, ombre en haut a gauche, lumiere en bas a droite.
+def load_ghosts(pack, jar):
+    """Les silhouettes fantomes, a 30 % d'opacite et desaturees.
+
+    Elles disent quoi poser sans qu'on lise une ligne : c'est le procede de
+    Paladium (gui/crusher/plant_placeholder.png, fuel_placeholder.png). Les
+    placeholders d'origine font 200x200 et sont lisses : reduits a 16x16 ils
+    seraient flous. On prend donc les textures 16x16 des objets eux-memes.
+    """
+    sources = {
+        "fruit": os.path.join(RES, "assets", NS, "textures", "item", "eggplant.png"),
+        "fuel": os.path.join(RES, "assets", NS, "textures", "item", "gold_mixed_coal.png"),
+    }
+    if pack:
+        sources["cobblestone"] = os.path.join(
+            pack, "assets", "minecraft", "textures", "block", "cobblestone.png")
+    if jar:
+        sources["void"] = os.path.join(
+            jar, "assets", NS, "textures", "gui", "void_slot_background.png")
+    for name, path in sources.items():
+        if not os.path.exists(path):
+            print("  silhouette %s absente (%s)" % (name, path))
+            continue
+        image = Image.open(path).convert("RGBA")
+        if image.size != (16, 16):
+            image = image.resize((16, 16), Image.LANCZOS)
+        pixels = image.load()
+        for y in range(16):
+            for x in range(16):
+                r, g, b, a = pixels[x, y]
+                grey = int(0.3 * r + 0.59 * g + 0.11 * b)
+                pixels[x, y] = (grey, grey, grey, int(a * 0.30))
+        GHOSTS[name] = image
+
+
+def panel(draw, width, height):
+    """Le panneau : aplat sombre, contour discret, coins casses d'un pixel.
+
+    Une barre PRIMARY sous l'en-tete, la signature des interfaces Paladium, et
+    un separateur au-dessus de l'inventaire du joueur.
+    """
+    draw.rectangle([1, 0, width - 2, height - 1], fill=BACKGROUND)
+    draw.rectangle([0, 1, width - 1, height - 2], fill=BACKGROUND)
+    draw.line([1, 0, width - 2, 0], fill=BORDER)
+    draw.line([1, height - 1, width - 2, height - 1], fill=BORDER)
+    draw.line([0, 1, 0, height - 2], fill=BORDER)
+    draw.line([width - 1, 1, width - 1, height - 2], fill=BORDER)
+    # Barre d'accent sous le titre (le titre est ecrit par le jeu en y 6).
+    draw.rectangle([7, 15, 40, 15], fill=PRIMARY)
+    # Separateur au-dessus du libelle « Inventaire » (ecrit en y 72).
+    draw.line([7, 69, width - 8, 69], fill=BORDER)
+
+
+def slot(image, draw, x, y, entry=None):
+    """Une case : creux sombre, liseré clair, et ses ornements.
 
     Le decalage de -1 est la convention vanilla : un slot declare en (x, y)
     contient son objet a cette position, et son cadre deborde d'un pixel autour.
+    Une case de sortie principale (« big ») est entouree d'un cadre de 26x26,
+    comme le resultat du fourneau.
     """
+    entry = entry or {}
     left, top = x - 1, y - 1
-    draw.rectangle([left, top, left + 17, top + 17], fill=SLOT_BG)
-    draw.line([left, top, left + 16, top], fill=SLOT_DARK)
-    draw.line([left, top, left, top + 16], fill=SLOT_DARK)
-    draw.line([left + 17, top + 1, left + 17, top + 17], fill=PANEL_LIGHT)
-    draw.line([left + 1, top + 17, left + 17, top + 17], fill=PANEL_LIGHT)
+    if entry.get("big"):
+        draw.rectangle([left - 4, top - 4, left + 21, top + 21], outline=SLOT_EDGE)
+    draw.rectangle([left, top, left + 17, top + 17], fill=SLOT_FILL, outline=SLOT_EDGE)
+    # Ombre interieure d'un pixel en haut a gauche : la case se lit en creux.
+    draw.line([left + 1, top + 1, left + 16, top + 1], fill=BLACK)
+    draw.line([left + 1, top + 1, left + 1, top + 16], fill=BLACK)
+
+    ghost = GHOSTS.get(entry.get("ghost"))
+    if ghost is not None:
+        image.alpha_composite(ghost, (x, y))
+
+    metal = entry.get("metal")
+    if metal:
+        # Coin triangulaire en haut a droite, comme gui/crusher/*_corner.png :
+        # la rarete se lit de gauche a droite sans ouvrir d'infobulle.
+        right = left + 16
+        draw.polygon([(right - 4, top + 1), (right, top + 1), (right, top + 5)], fill=METAL[metal])
 
 
 def arrow(draw, u, v, filled, vertical):
-    """Les deux etats de la fleche de progression : vide, puis pleine."""
-    body = (110, 110, 110, 255) if not filled else (255, 255, 255, 255)
+    """Les deux etats de la fleche : liseré vide, puis blanche comme l'originale.
+
+    gui/arrow_furnace_filler.png est blanc pur sur fond sombre : c'est la
+    couleur de remplissage de Paladium, reprise telle quelle.
+    """
+    body = WHITE if filled else LIGHT_BACKGROUND
     if vertical:
-        # Une fleche vers le bas tient dans 16x24 ; on la dessine dans la meme
-        # case que l'horizontale pour n'avoir qu'un couple de decalages.
-        draw.rectangle([u + 5, v, u + 10, v + 10], fill=body)
-        draw.polygon([(u + 2, v + 9), (u + 13, v + 9), (u + 7, v + 16)], fill=body)
+        # Centree dans la boite de 24x17 : la premiere version la dessinait
+        # autour de u + 7,5 et elle tombait 4,5 px a cote de la case d'entree.
+        cx = u + 12
+        draw.rectangle([cx - 2, v, cx + 1, v + 9], fill=body)
+        draw.polygon([(cx - 6, v + 9), (cx + 5, v + 9), (cx, v + 15), (cx - 1, v + 15)], fill=body)
     else:
-        draw.rectangle([u, v + 5, u + 15, v + 11], fill=body)
-        draw.polygon([(u + 14, v + 2), (u + 14, v + 14), (u + 23, v + 8)], fill=body)
+        cy = v + 8
+        draw.rectangle([u, cy - 2, u + 14, cy + 1], fill=body)
+        draw.polygon([(u + 14, cy - 7), (u + 14, cy + 6), (u + 22, cy), (u + 22, cy - 1)], fill=body)
 
 
-def flame(draw, u, v, filled):
-    """La jauge de carburant, en forme de flamme."""
-    body = (90, 90, 90, 255) if not filled else (255, 170, 40, 255)
-    draw.polygon([(u + 7, v), (u + 11, v + 6), (u + 13, v + 4), (u + 13, v + 10),
-                  (u + 7, v + 13), (u + 1, v + 10), (u + 1, v + 4), (u + 3, v + 6)],
-                 fill=body)
+def flame(image, u, v, filled):
+    """La jauge de combustible : une flamme, en degrade quand elle brule.
+
+    Le degrade reprend gui/crusher/buttons/gold_full.png, la barre de carburant
+    du crusher d'origine : orange profond en bas, jaune en haut.
+    """
+    mask = Image.new("L", (14, 14), 0)
+    ImageDraw.Draw(mask).polygon(
+        [(7, 0), (10, 5), (12, 3), (13, 9), (11, 12), (7, 13), (3, 12), (1, 9), (2, 3), (4, 5)],
+        fill=255)
+    fill = Image.new("RGBA", (14, 14), LIGHT_BACKGROUND)
+    if filled:
+        pixels = fill.load()
+        for y in range(14):
+            t = y / 13.0
+            # haut (t=0) : jaune ; bas (t=1) : orange profond
+            r = int(255 * (1 - t) + 210 * t)
+            g = int(214 * (1 - t) + 60 * t)
+            b = int(40 * (1 - t) + 10 * t)
+            for x in range(14):
+                pixels[x, y] = (r, g, b, 255)
+    image.paste(fill, (u, v), mask)
 
 
 def build(name, layout):
     image = Image.new("RGBA", (TEXTURE, TEXTURE), TRANSPARENT)
     draw = ImageDraw.Draw(image)
 
-    panel(draw, 0, 0, WIDTH, HEIGHT)
+    panel(draw, WIDTH, HEIGHT)
 
     for entry in layout["slots"]:
-        slot(draw, entry["x"], entry["y"])
+        slot(image, draw, entry["x"], entry["y"], entry)
 
     # Inventaire du joueur : trois rangees de neuf, puis la barre d'action.
     for row in range(3):
         for column in range(9):
-            slot(draw, PLAYER_X + column * 18, PLAYER_Y + row * 18)
+            slot(image, draw, PLAYER_X + column * 18, PLAYER_Y + row * 18)
     for column in range(9):
-        slot(draw, PLAYER_X + column * 18, HOTBAR_Y)
+        slot(image, draw, PLAYER_X + column * 18, HOTBAR_Y)
 
-    vertical = layout["arrow"]["vertical"]
-    arrow(draw, ARROW_U, ARROW_V, False, vertical)
-    arrow(draw, ARROW_U, ARROW_FULL_V, True, vertical)
+    if "arrow" in layout:
+        vertical = layout["arrow"]["vertical"]
+        arrow(draw, ARROW_U, ARROW_V, False, vertical)
+        arrow(draw, ARROW_U, ARROW_FULL_V, True, vertical)
     if "flame" in layout:
-        flame(draw, FLAME_U, FLAME_V, False)
-        flame(draw, FLAME_U, FLAME_FULL_V, True)
+        flame(image, FLAME_U, FLAME_V, False)
+        flame(image, FLAME_U, FLAME_FULL_V, True)
 
     path = os.path.join(RES, "assets", NS, "textures", "gui", "%s.png" % name)
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -159,6 +277,10 @@ def build(name, layout):
 
 
 def main():
+    pack = sys.argv[1] if len(sys.argv) > 1 else None
+    jar = sys.argv[2] if len(sys.argv) > 2 else None
+    load_ghosts(pack, jar)
+
     written = []
     for name, layout in LAYOUTS.items():
         written.append(build(name, layout))
@@ -178,8 +300,10 @@ def main():
         },
         "machines": {
             name: {
-                "slots": layout["slots"],
-                "arrow": layout["arrow"],
+                # Le manifeste ne garde que ce que le Java declare : position et
+                # role. Les ornements (silhouette, metal, cadre) sont du dessin.
+                "slots": [{"x": e["x"], "y": e["y"], "role": e["role"]} for e in layout["slots"]],
+                **({"arrow": layout["arrow"]} if "arrow" in layout else {}),
                 **({"flame": layout["flame"]} if "flame" in layout else {}),
                 **({"counter": layout["counter"]} if "counter" in layout else {}),
             }
