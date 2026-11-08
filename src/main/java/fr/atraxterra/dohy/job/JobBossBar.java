@@ -1,4 +1,4 @@
-package fr.atraxterra.dohy.skill;
+package fr.atraxterra.dohy.job;
 
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * La barre de progression des skills, en haut de l'ecran.
+ * La barre de progression des metiers, en haut de l'ecran.
  *
  * <h2>Pourquoi une barre de boss</h2>
  *
@@ -28,8 +28,8 @@ import java.util.UUID;
  * dehors du HUD de solde.
  *
  * <p>Une seule barre par joueur, renommee quand il change d'activite. C'est le
- * comportement de SkyBlock : miner puis couper du bois ne fait pas apparaitre
- * deux barres, la meme bascule de « Minage » a « Bucheronnage ».
+ * comportement de SkyBlock : miner puis recolter ne fait pas apparaitre deux
+ * barres, la meme bascule de « Mineur » a « Fermier ».
  *
  * <h2>Pourquoi elle disparait</h2>
  *
@@ -38,7 +38,7 @@ import java.util.UUID;
  * {@link #VISIBLE_TICKS} sans gain d'XP, et toute activite la rappelle.
  */
 @EventBusSubscriber
-public final class SkillBossBar {
+public final class JobBossBar {
 
     /** Duree d'affichage apres le dernier gain d'XP : cinq secondes. */
     private static final int VISIBLE_TICKS = 100;
@@ -53,7 +53,7 @@ public final class SkillBossBar {
      */
     private static final Map<UUID, Bar> BARS = new HashMap<>();
 
-    private SkillBossBar() {
+    private JobBossBar() {
     }
 
     private static final class Bar {
@@ -70,7 +70,7 @@ public final class SkillBossBar {
      *
      * @param levelUp vrai si ce gain a fait monter d'au moins un niveau
      */
-    public static void show(ServerPlayer player, Skill skill, long gained, boolean levelUp) {
+    public static void show(ServerPlayer player, Job job, long gained, boolean levelUp) {
         Bar bar = BARS.computeIfAbsent(player.getUUID(), uuid -> {
             ServerBossEvent event = new ServerBossEvent(UUID.randomUUID(),
                     Component.empty(), BossEvent.BossBarColor.GREEN, BossEvent.BossBarOverlay.PROGRESS);
@@ -78,13 +78,13 @@ public final class SkillBossBar {
             return new Bar(event);
         });
 
-        int level = SkillApi.levelOf(player, skill);
-        int maxLevel = SkillConfig.config().curve().maxLevel();
+        int level = JobApi.level(player, job);
+        int maxLevel = JobApi.maxLevel();
         boolean maxed = level >= maxLevel;
 
-        bar.event.setColor(colorOf(skill));
-        bar.event.setProgress(maxed ? 1.0f : clamp(SkillApi.progress(player, skill)));
-        bar.event.setName(label(player, skill, level, maxLevel, gained, maxed));
+        bar.event.setColor(colorOf(job));
+        bar.event.setProgress(maxed ? 1.0f : clamp(JobApi.progress(player, job)));
+        bar.event.setName(label(player, job, level, maxLevel, gained, maxed));
         bar.ticksLeft = levelUp ? LEVEL_UP_TICKS : VISIBLE_TICKS;
     }
 
@@ -95,9 +95,9 @@ public final class SkillBossBar {
      * vient de gagner. Une barre se lit en un coup d'oeil au milieu d'une
      * action, pas comme un ecran.
      */
-    private static Component label(ServerPlayer player, Skill skill, int level,
+    private static Component label(ServerPlayer player, Job job, int level,
                                    int maxLevel, long gained, boolean maxed) {
-        Component head = Component.literal(skill.display() + " " + level)
+        Component head = Component.literal(job.display() + " " + level)
                 .withStyle(ChatFormatting.AQUA);
 
         if (maxed) {
@@ -107,8 +107,8 @@ public final class SkillBossBar {
                             .withStyle(ChatFormatting.DARK_GRAY));
         }
 
-        long into = SkillApi.data(player).xpOf(skill) - SkillApi.xpToReach(level);
-        long need = SkillApi.xpForLevel(level + 1);
+        long into = JobApi.xp(player, job) - JobApi.xpToReach(level);
+        long need = JobApi.xpForLevel(level + 1);
         return head.copy()
                 .append(Component.literal("   " + MoneyFormat.shortForm(into)
                                 + " / " + MoneyFormat.shortForm(need))
@@ -118,28 +118,18 @@ public final class SkillBossBar {
     }
 
     /**
-     * Une couleur par skill, pour reconnaitre l'activite sans lire.
-     *
-     * <p>Sept couleurs vanilla pour neuf skills : la peche partage le bleu avec
-     * le minage et l'alchimie partage le violet avec le nucleaire. Dans les deux
-     * cas ce sont des activites qu'on ne pratique pas en meme temps, donc la
-     * confusion ne peut pas se produire a l'ecran.
+     * Une couleur par metier, pour reconnaitre l'activite sans lire.
      *
      * <p>Le {@code switch} est volontairement exhaustif et sans {@code default}
-     * : ajouter un skill doit casser la compilation ici plutot que de donner
+     * : ajouter un metier doit casser la compilation ici plutot que de donner
      * une couleur arbitraire sans que personne ne l'ait decide.
      */
-    private static BossEvent.BossBarColor colorOf(Skill skill) {
-        return switch (skill) {
-            case MINING -> BossEvent.BossBarColor.BLUE;
-            case COMBAT -> BossEvent.BossBarColor.RED;
-            case FARMING -> BossEvent.BossBarColor.GREEN;
-            case FORAGING -> BossEvent.BossBarColor.YELLOW;
-            case FISHING -> BossEvent.BossBarColor.BLUE;
-            case SMITHING -> BossEvent.BossBarColor.WHITE;
-            case BUILDING -> BossEvent.BossBarColor.PINK;
-            case NUCLEAR -> BossEvent.BossBarColor.PURPLE;
-            case ALCHEMY -> BossEvent.BossBarColor.PURPLE;
+    private static BossEvent.BossBarColor colorOf(Job job) {
+        return switch (job) {
+            case MINER -> BossEvent.BossBarColor.BLUE;
+            case HUNTER -> BossEvent.BossBarColor.RED;
+            case FARMER -> BossEvent.BossBarColor.GREEN;
+            case ALCHEMIST -> BossEvent.BossBarColor.PURPLE;
         };
     }
 

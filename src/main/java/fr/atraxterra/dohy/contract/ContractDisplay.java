@@ -142,7 +142,7 @@ public final class ContractDisplay {
             case TRAVEL -> Items.LEATHER_BOOTS;
             case PLACE_BLOCK -> Items.BRICKS;
             case COLLECTION_TIER -> Items.CHEST;
-            case SKILL_LEVELS -> Items.EXPERIENCE_BOTTLE;
+            case JOB_LEVELS -> Items.EXPERIENCE_BOTTLE;
             case UNKNOWN -> Items.PAPER;
         };
     }
@@ -158,7 +158,7 @@ public final class ContractDisplay {
             case TRAVEL -> "Parcourir des blocs";
             case PLACE_BLOCK -> "Poser des blocs";
             case COLLECTION_TIER -> "Franchir des paliers de collection";
-            case SKILL_LEVELS -> "Gagner des niveaux de skill";
+            case JOB_LEVELS -> "Gagner des niveaux de metier";
             case UNKNOWN -> "Contrat inconnu";
         };
     }

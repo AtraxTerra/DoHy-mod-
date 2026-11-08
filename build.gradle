@@ -87,7 +87,7 @@ tasks.named('processResources', ProcessResources).configure {
     from(rootProject.file('data/collections.json')) {
         into "data/${mod_id}"
     }
-    from(rootProject.file('data/skills.json')) {
+    from(rootProject.file('data/job_progression.json')) {
         into "data/${mod_id}"
     }
     from(rootProject.file('data/contracts.json')) {

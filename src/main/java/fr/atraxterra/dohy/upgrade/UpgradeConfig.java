@@ -149,7 +149,7 @@ public final class UpgradeConfig {
         /**
          * Signale un effet qu'aucune partie du code ne lit.
          *
-         * <p>Meme filet que pour les perks de skill, et pour la meme raison : un
+         * <p>Meme filet que pour les perks de metier, et pour la meme raison : un
          * effet annonce au joueur mais branche nulle part est pire que pas
          * d'effet. Ce controle a ete ajoute apres avoir decouvert trente-trois
          * perks inertes.

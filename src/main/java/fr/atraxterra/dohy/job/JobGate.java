@@ -25,7 +25,7 @@ import java.util.Map;
  * pas de cache qui survit a un rechargement.
  *
  * <p>Les tags sont resolus a l'usage et non au chargement, comme dans
- * {@code SkillEvents} : les registres de tags ne sont pas forcement prets au
+ * {@code JobXpEvents} : les registres de tags ne sont pas forcement prets au
  * moment ou le datapack est lu.
  */
 public final class JobGate {
@@ -85,7 +85,7 @@ public final class JobGate {
             if (tagId == null) {
                 continue;
             }
-            // Variable explicitement typee, comme dans SkillEvents : laisser
+            // Variable explicitement typee, comme dans JobXpEvents : laisser
             // l'inference deduire le parametre de TagKey depuis l'argument de
             // is(...) marche ici mais se casse des qu'une surcharge s'ajoute.
             TagKey<Item> tag = TagKey.create(BuiltInRegistries.ITEM.key(), tagId);

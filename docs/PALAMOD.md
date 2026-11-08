@@ -20,7 +20,7 @@ Outils : `tools/extract_jobs.py` (lit les tables de métier au bytecode) puis
 
 ## 1. Échelle des niveaux — le point qui conditionne tout
 
-PalaMod et PalaJobs 8.0.0 comptent **20 niveaux par métier**. Les skills de DoHy en
+PalaMod et PalaJobs 8.0.0 comptent **20 niveaux par métier**. Les métiers de DoHy en
 comptent **100**. Tous les niveaux relevés dans le code sont donc **multipliés par 5**.
 
 Le facteur est validé deux fois, contre le wiki Java qui est déjà gradué sur 100 :
@@ -54,15 +54,53 @@ niveau *n*) :
 | 11 | 675 669 | | |
 
 Au-delà du niveau 20, le coût reste constant à 2 594 953 (`getNeededXpForLvl` retombe sur la
-dernière entrée) et `getLevel` ne plafonne pas. Cette table **n'est pas** celle du mod : la
-fusion métier/skill fait que c'est la courbe de `skills.json` (`100 × niveau^1,6`) qui
-s'applique. Elle est ici pour qu'on sache ce qu'on a écarté, et pourquoi.
+dernière entrée) et `getLevel` ne plafonne pas. Cette table **n'est pas** celle du mod :
+c'est la courbe de `job_progression.json` (`100 × niveau^1,6`) qui s'applique, sur 100
+niveaux. Elle est ici pour qu'on sache ce qu'on a écarté, et pourquoi.
+
+Elle sert quand même une fois : à **convertir une quantité d'XP de PalaJobs**. Le total pour
+atteindre le niveau 20 y vaut 17 302 375 ; celui de DoHy pour le niveau 100 vaut 6 175 195.
+Une XP de PalaJobs vaut donc **0,357** XP de DoHy, à progression égale. C'est ce rapport qui
+traduit les gains d'XP codés en dur dans PalaMod (la potion de dureté, le God Villager).
 
 ### Les quatre métiers
 
 `JobType` : `MINER`, `HUNTER`, `FARMER`, `ALCHEMIST`. Le wiki Bedrock annonce trois métiers ;
-le code en déclare quatre. Mappés sur les skills par `Job` : `mining`, `combat`, `farming`,
-`alchemy`.
+le code en déclare quatre. Ce sont les quatre progressions de DoHy (`Job`) : ils ont remplacé
+les neuf skills le 2026-11-08. Minage, combat, agriculture et alchimie leur ont légué leur XP
+(reprise à la connexion par `JobMigration`), leurs sources et leurs perks.
+
+### Récompenses de niveau
+
+Chaque registerer appelle `addReward(niveau, Reward.builder()...build())`. 280 récompenses :
+204 en objets (`RewardType.GIVE`), 76 en argent (`MONEY_GIVE`, 1 000 $ au niveau 2 puis
++500 $ par niveau, 10 500 $ au 20). **Seuls les objets sont portés** : DoHy paie déjà chaque
+niveau avec sa propre courbe. Ils sont dans `jobs.json` (`rewards`), niveaux ×5.
+
+| Ce que tous les métiers reçoivent | Paliers |
+|---|---|
+| Lingots de paladium et trixium, 5 × le niveau Paladium | chaque palier, 1 050 de chaque au total |
+| Pépite d'endium | 100 |
+| Bonbon de métier (pas encore porté) | 95 |
+
+Et par métier, entre autres : la pioche en paladium Efficacité V / Solidité III (Mineur, 30),
+l'armure en paladium Protection IV / Solidité III (Mineur, 55), l'épée en paladium
+Châtiment V / Solidité III (Chasseur, 30), 64 obsidiennes (Mineur, 65), un crâne de
+wither squelette (Mineur et Alchimiste), une tête de dragon (Chasseur, 95).
+
+**Piège d'extraction** : la pioche, l'épée et l'armure enchantées ne passent pas par un
+`new ItemStack` dans la chaîne du `Reward.builder` — elles sont construites à part, enchantées
+par `func_77966_a`, rangées dans une variable locale, puis passées par un `aload`. Un relevé
+qui ne suit pas les variables locales les perd (six récompenses). `extract_jobs.py` suit donc
+les `astore`/`aload`.
+
+**Tête de dragon** : la récompense du Chasseur au niveau 19 est un crâne vanilla de méta 5,
+qui n'existe pas en 1.7.10 vanilla. C'est le module `back2future` de PalaMod
+(`enableFancySkulls`, repris d'Et Futurum) qui l'ajoute.
+
+**Joueurs migrés** : à la première connexion après le remplacement des skills, un joueur
+reçoit les objets de tous les paliers qu'il avait déjà franchis — leur argent avait été
+versé, les objets n'existaient pas.
 
 ### Types d'objectifs et de quêtes
 

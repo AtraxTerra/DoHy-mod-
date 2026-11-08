@@ -2,7 +2,7 @@
 
 Mod d'économie et de progression pour **Minecraft 26.2 / NeoForge**, conçu pour une partie **solo** en monde normal.
 
-Inspiré de DonutSMP (monnaie, shop à prix dynamiques, boosters) et d'Hypixel SkyBlock (skills, collections, jalons), mais réécrit pour un seul joueur : tout ce qui n'a de sens qu'entre joueurs (hôtel des ventes, primes, duels, équipes) est écarté.
+Inspiré de DonutSMP (monnaie, shop à prix dynamiques, boosters), d'Hypixel SkyBlock (collections, jalons) et de Paladium (métiers, PalaMod), mais réécrit pour un seul joueur : tout ce qui n'a de sens qu'entre joueurs (hôtel des ventes, primes, duels, équipes) est écarté.
 
 ## Documents
 
@@ -19,7 +19,7 @@ data/
   rates.csv              <- SOURCE : taux d'obtention horaire par item (édité à la main)
   prices.csv             <- généré, lisible en tableur
   generated/prices.json  <- généré, consommé par le mod
-  skills.json            <- courbes, sources d'XP, perks
+  job_progression.json   <- courbe, sources d'XP et perks des métiers
   collections.json       <- paliers et récompenses
   contracts.json         <- contrats quotidiens et hebdo, demande du jour
 tools/
@@ -43,7 +43,7 @@ Le script vérifie au passage que le revenu horaire reste constant à l'intérie
 ## Principes
 
 1. Le grind doit se **diversifier**, pas se répéter — c'est le rôle des prix dynamiques.
-2. Les revenus passifs restent **petits** : les 8 skills maxés rapportent 43 M, l'autosell en coûte 500 M.
+2. Les revenus passifs restent **petits** : les 4 métiers maxés rapportent 80 M, l'autosell en coûte 500 M.
 3. **Un seul levier global** d'équilibrage.
 4. Rien d'irréversible pour le joueur : aucune perte non plafonnée.
 5. Tout ce qui est chiffré vit dans un **datapack**, pas dans le code.

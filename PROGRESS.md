@@ -29,11 +29,11 @@ Dernière mise à jour : 2026-11-03
 ## Fait
 
 - [x] `docs/DESIGN.md` — spec des 8 systèmes, anti-exploits, ordre d'implémentation, décisions tranchées
-- [x] `docs/BALANCE.md` — modèle de prix, courbes de skills, progression attendue, sinks
+- [x] `docs/BALANCE.md` — modèle de prix, courbes des métiers, progression attendue, sinks
 - [x] `data/rates.csv` — 152 items avec leur taux d'obtention horaire et leur tier
 - [x] `tools/gen_prices.py` — générateur de prix + vérification de cohérence $/h par tier
 - [x] `data/prices.csv` / `data/generated/prices.json` — générés, 152 items
-- [x] `data/skills.json` — 8 skills, courbes, sources d'XP, 10 perks chacun
+- [x] `data/job_progression.json` — courbe, sources d'XP et perks des 4 métiers (ex-`skills.json`, 8 skills puis 9 jusqu'au 2026-11-08)
 - [x] `data/collections.json` — 2 courbes de paliers, récompenses, exceptions
 - [x] `data/contracts.json` — pool de 18 quotidiens + 10 hebdos, demande du jour, bonus de première vente
 
@@ -76,6 +76,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | Chapitre | Contenu | État |
 |---|---|---|
 | 1 | **Métiers** fusionnés dans les skills, table des 70 verrous, interface, `/metiers` | fait |
+| 1b | **Les métiers remplacent les skills** : 4 progressions, 5 skills retirés, XP migrée, 204 récompenses en objets de Paladium | fait |
 | 2 | **Minerais et matériaux** `palamod` : 6 minerais + génération, 7 blocs, 7 particules, lingots, compressés, 4 charbons mixés, onglet créatif | fait |
 | 3 | **Cultures** : 4 plantes, graines, fruits, lot rare, XP d'agriculture | fait |
 | 4 | **Machines** : cobblebreaker 4 paliers, crusher | fait |
@@ -91,6 +92,10 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
    `combat` → Chasseur, `farming` → Fermier, et un skill `alchemy` créé pour l'Alchimiste.
    Une seule barre d'XP par activité, rien à migrer, aucun risque de dérive entre deux
    compteurs. Coût assumé : la table d'XP de PalaJobs (20 niveaux) n'est pas utilisée.
+   → **Dépassé le 2026-11-08** : les métiers ont **remplacé** les skills (chapitre 1b). Les
+   cinq skills sans métier sont retirés, sources et perks compris ; chaque niveau verse
+   l'argent et les perks de DoHy **et** les objets de Paladium ; l'XP des quatre skills
+   conservés est migrée.
 2. **Namespace `palamod`** et non `dohy`, avec les identifiants de Paladium. Le pack de
    textures officiel s'applique alors tel quel, sans copie ni renommage dans le jar.
 3. **Chiffres manquants calibrés**, puis remplacés par les vrais dès que le jar de PalaMod a
@@ -131,7 +136,7 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Points ouverts à trancher
 
-- **IDs d'attributs 26.2** : les perks de `skills.json` utilisent des ids plausibles (`minecraft:mining_efficiency`, `minecraft:block_interaction_range`…) qui doivent être validés contre l'API réelle. À faire à la première compilation.
+- **IDs d'attributs 26.2** : les perks de `job_progression.json` utilisent des ids plausibles (`minecraft:mining_efficiency`, `minecraft:block_interaction_range`…) qui doivent être validés contre l'API réelle. À faire à la première compilation.
 - **Trocs de villageois en registres de datapack** (nouveauté 26.1 : `data/<ns>/villager_trade/*.json` et `trade_set/*.json`). **Piste à évaluer en phase 3** : plutôt que de plafonner le prix de vente du lapis, de la perle de l'ender et du reste, on peut retirer ou renchérir directement le troc fautif par datapack — et rendre leurs vrais prix à ces items. C'est traiter la cause au lieu du symptôme, et ça rendrait les plafonds inutiles.
 - **HUD et GUI en mode retenu** : 26.2 a supprimé `GuiGraphics`. Le HUD de la monnaie et le GUI du shop doivent être écrits directement en `extract*` + `GuiGraphicsExtractor`. L'API exacte d'enregistrement d'une couche de HUD côté NeoForge 26.2 est à confirmer en CI (l'ancien `RegisterGuiLayersEvent` n'est pas garanti sous cette forme). → **tranché le 2026-11-08** : relevé par sonde et écrit — `extractBackground` et `extractContents` (il n'y a plus de `renderLabels`), `blit` avec `RenderPipelines.GUI_TEXTURED`, `centeredText` pour le texte, `getLeftPos` / `getTopPos` (`getGuiLeft` / `getGuiTop` sont marqués pour suppression), `RegisterMenuScreensEvent` avec témoins de type explicites. Voir `MachineScreen` et `docs/PALAMOD.md`.
 - **Plafonds villageois** : ~~à confirmer~~ → **tranché le 2026-11-03 : on garde les plafonds.** Ne pas relancer `gen_prices.py` avec `--no-villager-caps`. Audit encore à compléter sur : briques, argile, papier, verre teinté, charbon, fer.
@@ -143,6 +148,53 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-08 (suite) — les métiers remplacent les skills
+
+**Demande** : « remplace les skills du DoHy par les métiers ». Trois décisions prises avec le
+joueur avant d'écrire une ligne :
+
+1. **Les cinq skills sans métier sont supprimés** — bûcheronnage, pêche, forge, construction,
+   nucléaire — avec leurs sources d'XP et leurs perks. Partent avec eux l'abattage, la
+   trouvaille de pêche, la chute amortie et la remise d'enclume.
+2. **Récompenses : les deux.** Chaque niveau verse l'argent et les perks de DoHy, **et** les
+   objets que Paladium donnait à ce palier.
+3. **L'XP est migrée** : minage → Mineur, combat → Chasseur, agriculture → Fermier,
+   alchimie → Alchimiste.
+
+**Ce qui a changé dans le code.** Le paquet `skill` n'existe plus : `Job` est la seule
+progression, avec `JobData` (pièce jointe `dohy:jobs`), `JobProgression`
+(`job_progression.json`, l'ancien `skills.json` réduit aux quatre métiers), `JobPerks`,
+`JobEffects`, `JobXpEvents`, `JobBossBar`. `JobsMenu` fusionne les deux écrans : grille des quatre
+métiers, puis une fiche à trois onglets — déblocages, perks, récompenses. `/skills` ouvre les
+métiers pour ceux qui l'ont dans les doigts. La vignette « Skills » du menu central est devenue
+« Métiers ».
+
+**La migration** (`JobMigration`) : l'ancienne pièce jointe `dohy:skills` reste enregistrée en
+lecture seule. À la première connexion, son XP est versée dans `dohy:jobs` puis elle est
+supprimée. Le joueur reçoit au passage les **objets** des paliers qu'il avait déjà franchis —
+l'argent de ces niveaux avait été payé, les objets n'existaient pas. Les contrats
+`SKILL_LEVELS` en cours sont relus sous leur nouveau nom `JOB_LEVELS`.
+
+**Les récompenses, au bytecode.** 280 `Reward.builder` dans les quatre registerers : 204 objets,
+76 montants d'argent. Seuls les objets sont portés (DoHy paie déjà le niveau). Piège trouvé :
+la pioche, l'épée et l'armure enchantées sont construites hors de la chaîne et passées par une
+variable locale — un relevé naïf en perd six. `extract_jobs.py` suit maintenant les
+`astore`/`aload` et les `func_77966_a`. Les enchantements sont traduits par la lettre finale des
+champs SRG, qui suit l'ordre de déclaration (`_p` efficacité, `_r` solidité, `_k` châtiment).
+
+**Un bug d'extraction corrigé en route** : `extract_jobs.py` prenait le dernier entier empilé
+avant l'appel comme niveau — la méta ou la quantité de l'`ItemStack` quand il y en avait une.
+La boussole du chasseur tombait au niveau 15 au lieu de 100, et les quatre outils de construction
+(quatre métas d'un même objet) ne faisaient qu'un verrou. 73 verrous au lieu de 70.
+
+**Un perk inerte réparé** : les trois perks « récolte accrue » de l'Alchimiste ne s'appliquaient
+à rien (l'effet ne lisait que l'agriculture). Ils portent maintenant sur la verrue du Nether
+mûre — mûre seulement, sinon planter puis casser la dupliquerait.
+
+**L'argent total baisse mécaniquement** : 4 métiers maxés font 80 M au lieu des 160 M des 8 skills,
+la courbe par niveau n'a pas bougé. Les objets s'y ajoutent : 1 050 lingots de paladium et
+autant de trixium par métier maxé — leur poids réel dépendra des prix PalaMod, chapitre 6.
 
 ### 2026-11-08 (suite) — onze recettes perdues, et des interfaces aux couleurs de Paladium
 

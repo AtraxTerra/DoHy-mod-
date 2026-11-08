@@ -2,7 +2,7 @@
 
 Mod d'économie et de progression pour une partie **solo**, monde normal.
 Cible : **Minecraft 26.2 / NeoForge 26.2.0.93** (stable), **Java 25**, Gradle 9.1, ModDevGradle 2.0.148.
-Inspirations : DonutSMP (économie, shop, prix dynamiques) et Hypixel SkyBlock (skills, collections, jalons).
+Inspirations : DonutSMP (économie, shop, prix dynamiques), Hypixel SkyBlock (collections, jalons) et Paladium (métiers, PalaMod).
 
 ---
 
@@ -10,7 +10,7 @@ Inspirations : DonutSMP (économie, shop, prix dynamiques) et Hypixel SkyBlock (
 
 Le joueur unique a un rythme connu :
 
-- **~2 h en semaine, le soir** → chaque session doit permettre d'atteindre **au moins un palier visible** (un niveau de skill, un palier de collection, un contrat quotidien). Jamais une soirée sans récompense.
+- **~2 h en semaine, le soir** → chaque session doit permettre d'atteindre **au moins un palier visible** (un niveau de métier, un palier de collection, un contrat quotidien). Jamais une soirée sans récompense.
 - **Beaucoup de temps le week-end** → c'est là que se construisent les fermes, que se lancent les boosters et que se termminent les contrats hebdo.
 
 Deux conséquences structurelles, qui reviennent partout dans ce document :
@@ -24,7 +24,7 @@ Deux conséquences structurelles, qui reviennent partout dans ce document :
 ## 1. Principes directeurs
 
 1. **Le grind doit se diversifier, pas se répéter.** C'est le rôle des prix dynamiques : la 10 000ᵉ pierre vendue ne vaut plus rien, donc il faut aller chercher autre chose.
-2. **Les récompenses passives restent petites.** Skills, banque et jalons sont des bonus, jamais la source principale de revenu.
+2. **Les récompenses passives restent petites.** Métiers, banque et jalons sont des bonus, jamais la source principale de revenu.
 3. **Un seul levier d'équilibrage global.** Tous les prix dérivent d'un multiplicateur unique (`MONEY_MULTIPLIER`). Si l'économie est trop généreuse, on change un chiffre.
 4. **Rien n'est irréversible pour le joueur.** Pas de perte sèche non plafonnée, pas de système qui punit le fait de jouer.
 5. **Tout ce qui est chiffré vit dans un datapack**, pas dans le code. Rééquilibrer ne doit pas demander une recompilation.
@@ -150,30 +150,31 @@ Objet consommable acheté au shop, −50 % de perte à la mort. Transforme la pu
 
 ---
 
-## 7. Skills
+## 7. Métiers
 
-8 skills : `MINING`, `COMBAT`, `FARMING`, `FORAGING`, `FISHING`, `SMITHING`, `BUILDING`, `NUCLEAR` (NTM).
+Quatre métiers, ceux de Paladium : **Mineur**, **Chasseur**, **Fermier**, **Alchimiste**. Ils ont remplacé les neuf skills du départ (2026-11-08) : minage, combat, agriculture et alchimie sont devenus les quatre métiers avec leurs sources d'XP et leurs perks ; bûcheronnage, pêche, forge, construction et nucléaire ont été retirés avec leurs sources et leurs perks. L'XP des quatre premiers est reprise à la première connexion (`JobMigration`), celle des cinq autres abandonnée.
 
-- 50 niveaux, courbe XP : `xp(lvl) = 100 × lvl^1.8`
-- Récompense money par niveau : `750 × lvl^1.5` (nv 10 ≈ 24 k · nv 25 ≈ 94 k · nv 50 ≈ 265 k)
-  → volontairement **sous** le revenu de grind équivalent : c'est un bonus, pas une source
-- **Perk permanent tous les 5 niveaux** via `AttributeModifier` stocké dans l'attachment : vitesse de minage, portée, PV max, chance de double drop. Coût de dev quasi nul, impact ressenti énorme.
-- XP d'agriculture **uniquement sur culture mature**
+- 100 niveaux, courbe XP : `xp(lvl) = 100 × lvl^1.6` (`job_progression.json`)
+- Récompense money par niveau : `750 × lvl^1.4` → volontairement **sous** le revenu de grind équivalent : c'est un bonus, pas une source
+- **Perk permanent tous les 5 niveaux** via `AttributeModifier` transitoire, recalculé à la connexion : vitesse de minage, portée, PV max, chance de double drop
+- **Objets de Paladium aux paliers** (`jobs.json`, relevés dans les `Reward.builder` de PalaMod, niveaux ×5) : lingots de paladium et trixium à chaque palier, pioche et armure enchantées, têtes, pépite d'endium au 100. Un objet pas encore porté est inerte et listé par `/metiers audit`
+- **Déblocages** : machines et outils de PalaMod, verrouillés par niveau (`jobs.json`)
+- XP d'agriculture et d'alchimie **uniquement sur culture mature**
 
 ---
 
 ## 7 bis. Point d'extension pour les mods de contenu
 
 PalaCore ajoute des minerais et de l'équipement, sans progression propre : il
-s'appuie sur les skills et l'économie d'ici. Le branchement passe par des
+s'appuie sur les métiers et l'économie d'ici. Le branchement passe par des
 **tags**, et c'est délibéré — les tags fusionnent entre datapacks, les fichiers
-de configuration non. Un mod tiers qui voudrait son XP en éditant `skills.json`
+de configuration non. Un mod tiers qui voudrait son XP en éditant `job_progression.json`
 en écraserait la totalité.
 
 Deux surfaces, toutes deux inertes sans le mod tiers :
 
 - **XP de minage** : `#dohy:mining_xp/{low,mid,high,elite}`, déclarés vides ici
-  et référencés dans `skills.json` à 30, 80, 180 et 350. À comparer à l'échelle
+  et référencés dans `job_progression.json` à 30, 80, 180 et 350. À comparer à l'échelle
   existante : fer 12, diamant 90, émeraude 110, débris antiques 400.
 - **Prix** : rien de spécifique. Le mod range ses items dans les tags `c:`
   habituels et déclare ses matières dans `materials.assign` de
@@ -216,13 +217,13 @@ Implémentation : une seule `Map<ItemId, Long>` dans l'attachment joueur, palier
 
 ---
 
-## 8 bis. Barre de progression des skills
+## 8 bis. Barre de progression des métiers
 
-Une **barre de boss** en haut de l'écran, façon SkyBlock : nom du skill, niveau, XP dans le niveau, gain qui vient d'arriver. Une couleur par skill pour reconnaître l'activité sans lire.
+Une **barre de boss** en haut de l'écran, façon SkyBlock : nom du métier, niveau, XP dans le niveau, gain qui vient d'arriver. Une couleur par métier pour reconnaître l'activité sans lire.
 
 Pourquoi une barre de boss et pas une couche de HUD : c'est le seul affichage riche en haut de l'écran qui soit **entièrement côté serveur**. Le jeu envoie les paquets, le client vanilla la dessine. Le mod n'a donc toujours qu'un seul morceau de code client — le HUD de solde — ce qui le met à l'abri des refontes du rendu (26.2 en a déjà imposé une).
 
-Une seule barre par joueur, renommée quand il change d'activité : miner puis couper du bois ne fait pas apparaître deux barres. Elle s'efface après **5 s** sans gain d'XP (**8 s** sur une montée de niveau), sinon elle mangerait le haut de l'écran en continu et se confondrait avec un vrai combat de boss.
+Une seule barre par joueur, renommée quand il change d'activité : miner puis récolter ne fait pas apparaître deux barres. Elle s'efface après **5 s** sans gain d'XP (**8 s** sur une montée de niveau), sinon elle mangerait le haut de l'écran en continu et se confondrait avec un vrai combat de boss.
 
 État transitoire, hors sauvegarde : une barre est de l'affichage, pas une donnée de jeu.
 
@@ -234,7 +235,7 @@ Huit branches achetées en argent, **définitives**, de plus en plus chères. Vo
 
 Elles existent parce que tous les autres puits à argent sont consommables ou ponctuels — booster, caisse, assurance — et que l'autosell à 500 M est un achat **unique**. Après le mois 4, l'argent n'avait plus de destination. C'est le trou de conception le plus sérieux qu'avait le mod.
 
-Règle qui les gouverne : **un effet déclaré est un effet branché.** `UpgradeApi.EFFECTS` liste les effets que le code lit, et le chargement prévient pour tout effet absent. Ce filet a été posé après avoir découvert 33 perks de skill déclarés et inertes ; une amélioration payée plusieurs milliards mérite au moins la même garantie.
+Règle qui les gouverne : **un effet déclaré est un effet branché.** `UpgradeApi.EFFECTS` liste les effets que le code lit, et le chargement prévient pour tout effet absent. Ce filet a été posé après avoir découvert 33 perks déclarés et inertes ; une amélioration payée plusieurs milliards mérite au moins la même garantie.
 
 ---
 
@@ -246,7 +247,7 @@ Règle qui les gouverne : **un effet déclaré est un effet branché.** `Upgrade
 | **Contrats quotidiens** | 3 contrats faisables en ~2 h (ex. « miner 500 deepslate », « tuer 60 mobs ») | Structure la session de semaine |
 | **Contrat hebdo** | 1 contrat lourd, infaisable en une soirée, grosse récompense | Structure le week-end |
 | **Première vente du jour** | ×1,5 sur la première transaction | Récompense sans punir l'absence (pas de streak) |
-| **Niveau global** | XP uniquement sur les **jalons** (niveau de skill, palier de collection, contrat hebdo). Récompense tous les 5 niveaux | Un seul chiffre qui résume la partie |
+| **Niveau global** | XP uniquement sur les **jalons** (niveau de métier, palier de collection, contrat hebdo). Récompense tous les 5 niveaux | Un seul chiffre qui résume la partie |
 | **Caisses** | Clé commune 100 k · rare 5 M · légendaire 150 M | Sink principal du milieu de partie |
 | **Autosell** | Coffre lié qui vend son contenu. Déblocage très tard (500 M) | Transforme les fermes de week-end en revenu passif de semaine |
 | **`/stats`** | Argent gagné à vie, blocs minés, mobs tués, temps de jeu, top 5 des ventes | Lisibilité de la progression longue |
@@ -262,7 +263,7 @@ Poser puis casser le même bloc doit donner **0 XP et 0 collection**. Minecraft 
 
 Solution : un **attachment de chunk** contenant l'ensemble des positions posées (`BlockEvent.EntityPlaceEvent` → ajout ; casse → consultation puis retrait).
 
-C'est le morceau de code le plus important du mod. Il doit être écrit **avant** les skills et les collections, pas après : les deux systèmes en dépendent entièrement, et les rajouter ensuite demande de tout retoucher.
+C'est le morceau de code le plus important du mod. Il doit être écrit **avant** les métiers et les collections, pas après : les deux systèmes en dépendent entièrement, et les rajouter ensuite demande de tout retoucher.
 
 Points de vigilance : sérialisation compacte (un `LongSet` de positions packées), purge des positions des chunks déchargés, et comportement sur les blocs déplacés par piston.
 
@@ -287,7 +288,7 @@ Points de vigilance : sérialisation compacte (un `LongSet` de positions packée
 3. Shop statique, `/worth`, `/sellall`
 4. Prix dynamiques et oubli
 5. Collections
-6. Skills et perks
+6. Métiers et perks
 7. Banque et pénalité de mort
 8. Contrats et demande du jour
 9. Boosters, caisses, autosell

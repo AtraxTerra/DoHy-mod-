@@ -6,6 +6,7 @@ import fr.atraxterra.dohy.job.Job;
 import fr.atraxterra.dohy.job.JobApi;
 import fr.atraxterra.dohy.job.JobConfig;
 import fr.atraxterra.dohy.job.JobGate;
+import fr.atraxterra.dohy.job.JobProgression;
 import fr.atraxterra.dohy.job.JobsMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,7 +21,10 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import java.util.List;
 
 /**
- * {@code /metiers} — niveaux, deblocages, et l'audit de la table.
+ * {@code /metiers} — niveaux, deblocages, recompenses, et l'audit de la table.
+ *
+ * <p>Depuis que les metiers ont remplace les skills, c'est la seule commande de
+ * progression : {@code /skills} redirige ici pour les habitues.
  *
  * <p>{@code audit} merite sa place a cote des deux autres : la table des
  * deblocages nomme des items que les chapitres suivants n'ont pas encore
@@ -43,6 +47,9 @@ public final class JobsCommand {
         // Alias anglais : le code et le datapack parlent anglais, autant que la
         // commande reponde aux deux.
         event.getDispatcher().register(build("jobs"));
+        // L'ancienne commande des skills : elle ouvre les metiers plutot que de
+        // repondre « commande inconnue » a ceux qui l'ont dans les doigts.
+        event.getDispatcher().register(build("skills"));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> build(String name) {
@@ -107,7 +114,8 @@ public final class JobsCommand {
         }
 
         source.sendSuccess(() -> Component.literal(
-                        "  L'XP d'un metier est celle de son skill. Voir /skills.")
+                        "  Perk tous les " + JobProgression.config().curve().perkEvery()
+                                + " niveaux, objets aux paliers. Detail : /metiers <metier>.")
                 .withStyle(ChatFormatting.DARK_GRAY), false);
         return Job.values().length;
     }
@@ -141,6 +149,28 @@ public final class JobsCommand {
                             : Component.literal("  (item absent)")
                                     .withStyle(ChatFormatting.DARK_RED)), false);
         }
+
+        List<JobConfig.Reward> rewards = JobConfig.config().rewardsOf(job);
+        if (!rewards.isEmpty()) {
+            source.sendSuccess(() -> Component.literal("  Recompenses en objets")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE), false);
+            for (JobConfig.Reward reward : rewards) {
+                boolean received = level >= reward.level();
+                boolean real = JobConfig.exists(reward.id());
+                source.sendSuccess(() -> Component.literal("  " + (received ? "✔ " : "· "))
+                        .withStyle(received ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(String.format("%3d  ", reward.level()))
+                                .withStyle(ChatFormatting.GOLD))
+                        .append(Component.literal(reward.count() + "x ")
+                                .withStyle(ChatFormatting.WHITE))
+                        .append(JobApi.name(reward).copy()
+                                .withStyle(received ? ChatFormatting.WHITE : ChatFormatting.GRAY))
+                        .append(real
+                                ? Component.empty()
+                                : Component.literal("  (item absent)")
+                                        .withStyle(ChatFormatting.DARK_RED)), false);
+            }
+        }
         return unlocks.size();
     }
 
@@ -163,11 +193,21 @@ public final class JobsCommand {
             }
         }
 
+        java.util.TreeSet<String> missingRewards = new java.util.TreeSet<>();
+        for (JobConfig.Reward reward : JobConfig.config().rewards()) {
+            if (Job.byKey(reward.job()) == null) {
+                badJob.add(reward.id() + " -> metier « " + reward.job() + " »");
+            } else if (!JobConfig.exists(reward.id())) {
+                missingRewards.add(reward.id());
+            }
+        }
+
         source.sendSuccess(() -> Component.literal("Audit des metiers — "
-                        + unlocks.size() + " deblocages declares")
+                        + unlocks.size() + " deblocages, "
+                        + JobConfig.config().rewards().size() + " recompenses declares")
                 .withStyle(ChatFormatting.GOLD), false);
 
-        if (badJob.isEmpty() && missing.isEmpty()) {
+        if (badJob.isEmpty() && missing.isEmpty() && missingRewards.isEmpty()) {
             source.sendSuccess(() -> Component.literal("  tout est branche")
                     .withStyle(ChatFormatting.GREEN), false);
             return 0;
@@ -184,7 +224,14 @@ public final class JobsCommand {
             missing.forEach(id -> source.sendSuccess(() ->
                     Component.literal("    " + id).withStyle(ChatFormatting.DARK_GRAY), false));
         }
-        return badJob.size() + missing.size();
+        if (!missingRewards.isEmpty()) {
+            source.sendSuccess(() -> Component.literal("  " + missingRewards.size()
+                            + " objet(s) de recompense non enregistre(s), donc non donne(s) :")
+                    .withStyle(ChatFormatting.YELLOW), false);
+            missingRewards.forEach(id -> source.sendSuccess(() ->
+                    Component.literal("    " + id).withStyle(ChatFormatting.DARK_GRAY), false));
+        }
+        return badJob.size() + missing.size() + missingRewards.size();
     }
 
     private static String bar(double ratio) {

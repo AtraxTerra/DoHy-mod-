@@ -165,7 +165,7 @@ public final class UpgradesMenu extends DisplayMenu {
             case UpgradeApi.DAILY_CONTRACT_SLOTS -> "+" + (int) amount + " contrat(s) par jour";
             case UpgradeApi.BOOSTER_MINUTES -> "+" + (int) amount + " min de booster";
             case UpgradeApi.FLOOR_BONUS -> "+" + Math.round(amount * 100) + " points de plancher";
-            case UpgradeApi.SKILL_XP_BONUS -> "+" + Math.round(amount * 100) + " % d'XP de skill";
+            case UpgradeApi.JOB_XP_BONUS -> "+" + Math.round(amount * 100) + " % d'XP de metier";
             case UpgradeApi.DEATH_PENALTY_CUT -> "-" + Math.round(amount * 100) + " % a la mort";
             default -> String.format("%+.2f", amount);
         };

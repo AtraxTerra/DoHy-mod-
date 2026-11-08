@@ -214,9 +214,9 @@
       },
       {
         "id": "w_skill_levels",
-        "type": "SKILL_LEVELS",
+        "type": "JOB_LEVELS",
         "amount": 5,
-        "label": "Gagner des niveaux de skill",
+        "label": "Gagner des niveaux de metier",
         "icon": "minecraft:experience_bottle"
       },
       {

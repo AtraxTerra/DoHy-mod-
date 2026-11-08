@@ -19,9 +19,6 @@ import fr.atraxterra.dohy.museum.MuseumBrowseMenu;
 import fr.atraxterra.dohy.shop.BankMenu;
 import fr.atraxterra.dohy.shop.SellChestMenu;
 import fr.atraxterra.dohy.shop.ShopMenu;
-import fr.atraxterra.dohy.skill.Skill;
-import fr.atraxterra.dohy.skill.SkillApi;
-import fr.atraxterra.dohy.skill.SkillsMenu;
 import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.upgrade.UpgradeConfig;
 import fr.atraxterra.dohy.upgrade.UpgradeData;
@@ -56,22 +53,18 @@ public final class Hub extends DisplayMenu {
     private static final int SLOT_BANK = 25;
 
     private static final int SLOT_CONTRACTS = 28;
-    private static final int SLOT_SKILLS = 30;
+    private static final int SLOT_JOBS = 30;
     private static final int SLOT_COLLECTIONS = 32;
     private static final int SLOT_MUSEUM = 34;
 
     /**
-     * La derniere rangee : ce qui se gagne en jouant, et ce qui s'achete une
-     * fois pour toutes.
+     * La derniere rangee : ce qui s'achete une fois pour toutes.
      *
-     * <p>Les ameliorations etaient seules ici, mises a part des sept autres
-     * vignettes parce qu'elles sont la sortie d'argent de fin de partie. Les
-     * metiers les rejoignent sans affaiblir ce choix : ce sont les deux seuls
-     * systemes dont les gains sont <b>definitifs</b>. Les deux vignettes sont
-     * placees symetriquement autour du centre de la rangee.
+     * <p>Les ameliorations sont mises a part des huit autres vignettes parce
+     * qu'elles sont la sortie d'argent de fin de partie. Les metiers, qui les
+     * accompagnaient ici, ont pris la place des skills qu'ils ont remplaces.
      */
-    private static final int SLOT_JOBS = 38;
-    private static final int SLOT_UPGRADES = 42;
+    private static final int SLOT_UPGRADES = 40;
     private static final int SLOT_CLOSE = 49;
 
     public Hub(int containerId, Inventory inventory, ServerPlayer player) {
@@ -109,10 +102,6 @@ public final class Hub extends DisplayMenu {
             case SLOT_CONTRACTS -> {
                 click(0.9f);
                 open("Contrats", (id, inventory) -> new ContractsMenu(id, inventory, player));
-            }
-            case SLOT_SKILLS -> {
-                click(0.9f);
-                open("Skills", (id, inventory) -> new SkillsMenu(id, inventory, player));
             }
             case SLOT_COLLECTIONS -> {
                 click(0.9f);
@@ -172,7 +161,7 @@ public final class Hub extends DisplayMenu {
                 Gui.action("clic pour ouvrir"))));
 
         set(SLOT_CONTRACTS, contracts());
-        set(SLOT_SKILLS, skills());
+        set(SLOT_JOBS, jobs());
         set(SLOT_COLLECTIONS, Gui.button(Items.BOOKSHELF, "Collections", Gui.lore(
                 Gui.hint("recolter releve le prix plancher :"),
                 Gui.hint("l'item resiste mieux a la vente en masse"),
@@ -180,7 +169,6 @@ public final class Hub extends DisplayMenu {
                 Gui.action("clic pour ouvrir"))));
         set(SLOT_MUSEUM, museum());
 
-        set(SLOT_JOBS, jobs());
         set(SLOT_UPGRADES, upgrades());
         set(SLOT_CLOSE, Gui.close());
     }
@@ -188,9 +176,8 @@ public final class Hub extends DisplayMenu {
     /**
      * Les metiers.
      *
-     * <p>Le chiffre qui dit s'il faut y aller n'est pas le niveau — il est deja
-     * dans la vignette des skills — mais le nombre de deblocages acquis. C'est
-     * la seule chose qu'un metier apporte et que le skill n'apporte pas.
+     * <p>Deux chiffres : les niveaux cumules, qui disent ou on en est, et le
+     * deblocage le plus proche, qui dit pourquoi y retourner.
      */
     private ItemStack jobs() {
         int unlocked = 0;
@@ -210,8 +197,9 @@ public final class Hub extends DisplayMenu {
         }
 
         int finalUnlocked = unlocked;
-        return Gui.button(Items.SHIELD,
+        return Gui.button(Items.IRON_PICKAXE,
                 Component.literal("Metiers").withStyle(ChatFormatting.GOLD), Gui.lore(
+                        Gui.field("niveaux cumules", String.valueOf(JobApi.totalLevels(player))),
                         Gui.field("deblocages acquis", finalUnlocked + " / " + total),
                         Gui.bar(unlocked, total, 20),
                         Gui.blank(),
@@ -286,18 +274,6 @@ public final class Hub extends DisplayMenu {
                 weeklyLeft
                         ? Gui.hint("l'hebdomadaire est en cours")
                         : Gui.good("hebdomadaire termine"),
-                Gui.blank(),
-                Gui.action("clic pour ouvrir")));
-    }
-
-    private ItemStack skills() {
-        int total = 0;
-        for (Skill skill : Skill.values()) {
-            total += SkillApi.levelOf(player, skill);
-        }
-        return Gui.button(Items.IRON_PICKAXE, "Skills", Gui.lore(
-                Gui.field("niveaux cumules", String.valueOf(total)),
-                Gui.hint("les perks valent plus que l'argent verse"),
                 Gui.blank(),
                 Gui.action("clic pour ouvrir")));
     }

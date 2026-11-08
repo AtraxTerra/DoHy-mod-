@@ -6,9 +6,9 @@ import fr.atraxterra.dohy.boost.Crates;
 import fr.atraxterra.dohy.collection.CollectionTiers;
 import fr.atraxterra.dohy.economy.EconomyConfig;
 import fr.atraxterra.dohy.job.JobConfig;
+import fr.atraxterra.dohy.job.JobProgression;
 import fr.atraxterra.dohy.museum.MuseumConfig;
 import fr.atraxterra.dohy.contract.ContractConfig;
-import fr.atraxterra.dohy.skill.SkillConfig;
 import fr.atraxterra.dohy.upgrade.UpgradeConfig;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.world.PlacedBlocks;
@@ -36,7 +36,7 @@ import java.util.TreeMap;
  *
  * <p>Le suivi des blocs poses est invisible par nature : rien dans le jeu ne
  * montre si une position est marquee. Sans moyen de l'interroger, une
- * regression passerait inapercue jusqu'a ce qu'un skill distribue de l'XP sur
+ * regression passerait inapercue jusqu'a ce qu'un metier distribue de l'XP sur
  * des blocs reposes — c'est-a-dire trop tard. D'ou ces commandes.
  */
 @EventBusSubscriber
@@ -90,7 +90,7 @@ public final class DoHyCommand {
     private static int reload(CommandSourceStack source) {
         boolean prices = Prices.load(source.getServer());
         boolean tiers = CollectionTiers.load(source.getServer());
-        boolean skills = SkillConfig.load(source.getServer());
+        boolean progression = JobProgression.load(source.getServer());
         boolean contracts = ContractConfig.load(source.getServer());
         boolean crates = Crates.load(source.getServer());
         boolean economy = EconomyConfig.load(source.getServer());
@@ -98,7 +98,7 @@ public final class DoHyCommand {
         boolean upgrades = UpgradeConfig.load(source.getServer());
         boolean jobs = JobConfig.load(source.getServer());
 
-        if (prices && tiers && skills && contracts && crates && economy && museum && upgrades && jobs) {
+        if (prices && tiers && progression && contracts && crates && economy && museum && upgrades && jobs) {
             source.sendSuccess(() -> Component.literal(
                             "Recharge : " + Prices.book().size() + " items, paliers de collection a jour.")
                     .withStyle(ChatFormatting.GREEN), true);
@@ -107,7 +107,7 @@ public final class DoHyCommand {
         source.sendFailure(Component.literal("Rechargement partiel ou echoue ("
                 + (prices ? "prix ok" : "prix en echec") + ", "
                 + (tiers ? "paliers ok" : "paliers en echec") + ", "
-                + (skills ? "skills ok" : "skills en echec") + ", "
+                + (progression ? "progression ok" : "progression en echec") + ", "
                 + (contracts ? "contrats ok" : "contrats en echec") + ", "
                 + (crates ? "caisses ok" : "caisses en echec") + ", "
                 + (economy ? "economie ok" : "economie en echec") + ", "

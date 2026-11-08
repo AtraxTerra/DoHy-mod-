@@ -49,7 +49,7 @@ public final class JobGateEvents {
      * qui lui dit quoi faire. Deux secondes par joueur, sur le tick du serveur.
      *
      * <p>Indexe par UUID et non par reference de joueur, pour la meme raison que
-     * {@code SkillBossBar} : aucune reference a une entite morte ne traine.
+     * {@code JobBossBar} : aucune reference a une entite morte ne traine.
      */
     private static final Map<UUID, Long> lastRefusal = new HashMap<>();
     private static final long REFUSAL_COOLDOWN_TICKS = 40L;

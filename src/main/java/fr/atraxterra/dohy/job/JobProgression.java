@@ -1,4 +1,4 @@
-package fr.atraxterra.dohy.skill;
+package fr.atraxterra.dohy.job;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
@@ -19,39 +19,42 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Courbes, sources d'XP et perks, charges depuis le datapack.
+ * La progression des metiers : courbe, sources d'XP et perks, chargees depuis
+ * le datapack ({@code job_progression.json}).
  *
- * <p>Les perks non encore implementes sont charges et ignores, avec un
- * avertissement unique au chargement : il vaut mieux que le fichier decrive la
- * cible complete et que le journal dise ce qui manque, qu'un fichier amputé qui
- * laisse croire que tout est en place.
+ * <p>Les deblocages et les recompenses en objets vivent a cote, dans
+ * {@code jobs.json} ({@link JobConfig}) : ceux-la sont generes depuis le
+ * bytecode de PalaMod, alors que la progression est l'equilibrage propre a
+ * DoHy. Deux fichiers parce qu'il y a deux sources de verite.
+ *
+ * <p>Les perks non implementes sont charges et ignores, avec un avertissement
+ * unique au chargement : il vaut mieux que le fichier decrive la cible et que
+ * le journal dise ce qui manque, qu'un fichier ampute qui laisse croire que
+ * tout est en place.
  */
 @EventBusSubscriber
-public final class SkillConfig {
+public final class JobProgression {
 
     private static final Identifier LOCATION =
-            Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "skills.json");
+            Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "job_progression.json");
 
-    /** Types de perks reellement appliques aujourd'hui. */
     /**
      * Les types de perks reellement appliques.
      *
-     * <p>Tenu a jour avec {@link SkillPerks} (attributs) et
-     * {@link SkillEffects} (le reste). Un type absent d'ici est signale au
-     * demarrage : c'est le filet qui a permis de decouvrir que trente-trois
-     * perks etaient declares et inertes, et il doit le rester.
+     * <p>Tenu a jour avec {@link JobPerks} (attributs) et {@link JobEffects}
+     * (le reste). Un type absent d'ici est signale au demarrage. L'abattage, la
+     * trouvaille de peche, la chute amortie et la remise d'enclume sont partis
+     * avec les skills qui les portaient.
      */
     private static final Set<String> IMPLEMENTED = Set.of(
-            "attribute", "double_drop_chance", "xp_bonus",
-            "harvest_bonus", "tree_chop", "loot_bonus", "treasure_chance",
-            "no_fall_damage_below", "anvil_cost_reduction");
+            "attribute", "double_drop_chance", "xp_bonus", "harvest_bonus", "loot_bonus");
 
     /**
      * Vrai si ce type de perk a un effet en jeu.
      *
      * <p>Expose pour que l'interface pose la question au lieu de tenir sa propre
-     * liste : deux listes auraient derive, et c'est l'ecran des skills qui
-     * aurait fini par mentir.
+     * liste : deux listes auraient derive, et c'est l'ecran qui aurait fini par
+     * mentir.
      */
     public static boolean isImplemented(String type) {
         return IMPLEMENTED.contains(type);
@@ -59,7 +62,7 @@ public final class SkillConfig {
 
     private static volatile Config config = Config.FALLBACK;
 
-    private SkillConfig() {
+    private JobProgression() {
     }
 
     public static Config config() {
@@ -74,7 +77,7 @@ public final class SkillConfig {
     public static boolean load(MinecraftServer server) {
         var resource = server.getResourceManager().getResource(LOCATION);
         if (resource.isEmpty()) {
-            DoHy.LOGGER.error("Configuration des skills introuvable : data/{}/{}",
+            DoHy.LOGGER.error("Progression des metiers introuvable : data/{}/{}",
                     LOCATION.getNamespace(), LOCATION.getPath());
             return false;
         }
@@ -82,7 +85,7 @@ public final class SkillConfig {
         try (BufferedReader reader = resource.get().openAsReader()) {
             var result = Config.CODEC.parse(JsonOps.INSTANCE, GsonHelper.parse(reader));
             if (result.isError()) {
-                DoHy.LOGGER.error("Configuration des skills illisible : {}",
+                DoHy.LOGGER.error("Progression des metiers illisible : {}",
                         result.error().map(Object::toString).orElse("erreur inconnue"));
                 return false;
             }
@@ -90,38 +93,48 @@ public final class SkillConfig {
             report(config);
             return true;
         } catch (Exception error) {
-            DoHy.LOGGER.error("Echec du chargement de la configuration des skills", error);
+            DoHy.LOGGER.error("Echec du chargement de la progression des metiers", error);
             return false;
         }
     }
 
     private static void report(Config loaded) {
-        int sources = loaded.skills().values().stream()
-                .mapToInt(skill -> skill.sources().map(Sources::total).orElse(0))
+        int sources = loaded.jobs().values().stream()
+                .mapToInt(job -> job.sources().map(Sources::total).orElse(0))
                 .sum();
-        DoHy.LOGGER.info("Skills charges : {} skills, {} sources d'XP",
-                loaded.skills().size(), sources);
+        DoHy.LOGGER.info("Progression des metiers chargee : {} metiers, {} sources d'XP",
+                loaded.jobs().size(), sources);
+
+        Set<String> unknown = new TreeSet<>();
+        loaded.jobs().keySet().forEach(key -> {
+            if (Job.byKey(key) == null) {
+                unknown.add(key);
+            }
+        });
+        if (!unknown.isEmpty()) {
+            DoHy.LOGGER.error("Metiers inconnus dans job_progression.json, ignores : {}", unknown);
+        }
 
         Set<String> pending = new TreeSet<>();
-        loaded.skills().values().forEach(skill -> skill.perks()
+        loaded.jobs().values().forEach(job -> job.perks()
                 .forEach(perk -> {
                     if (!IMPLEMENTED.contains(perk.type())) {
                         pending.add(perk.type());
                     }
                 }));
         if (!pending.isEmpty()) {
-            DoHy.LOGGER.warn("Types de perks declares mais pas encore appliques : {}", pending);
+            DoHy.LOGGER.warn("Types de perks declares mais pas appliques : {}", pending);
         }
     }
 
     public record Curve(int maxLevel, double xpBase, double xpExponent,
                         double moneyBase, double moneyExponent, int perkEvery) {
         static final Codec<Curve> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.INT.optionalFieldOf("max_level", 50).forGetter(Curve::maxLevel),
+                Codec.INT.optionalFieldOf("max_level", 100).forGetter(Curve::maxLevel),
                 Codec.DOUBLE.optionalFieldOf("xp_base", 100.0d).forGetter(Curve::xpBase),
-                Codec.DOUBLE.optionalFieldOf("xp_exponent", 1.8d).forGetter(Curve::xpExponent),
+                Codec.DOUBLE.optionalFieldOf("xp_exponent", 1.6d).forGetter(Curve::xpExponent),
                 Codec.DOUBLE.optionalFieldOf("money_base", 750.0d).forGetter(Curve::moneyBase),
-                Codec.DOUBLE.optionalFieldOf("money_exponent", 1.5d).forGetter(Curve::moneyExponent),
+                Codec.DOUBLE.optionalFieldOf("money_exponent", 1.4d).forGetter(Curve::moneyExponent),
                 Codec.INT.optionalFieldOf("perk_every_n_levels", 5).forGetter(Curve::perkEvery)
         ).apply(instance, Curve::new));
     }
@@ -158,14 +171,14 @@ public final class SkillConfig {
         ).apply(instance, Perk::new));
     }
 
-    public record SkillDef(Optional<Sources> sources, List<Perk> perks) {
-        static final Codec<SkillDef> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Sources.CODEC.optionalFieldOf("sources").forGetter(SkillDef::sources),
-                Perk.CODEC.listOf().optionalFieldOf("perks", List.of()).forGetter(SkillDef::perks)
-        ).apply(instance, SkillDef::new));
+    public record JobDef(Optional<Sources> sources, List<Perk> perks) {
+        static final Codec<JobDef> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Sources.CODEC.optionalFieldOf("sources").forGetter(JobDef::sources),
+                Perk.CODEC.listOf().optionalFieldOf("perks", List.of()).forGetter(JobDef::perks)
+        ).apply(instance, JobDef::new));
     }
 
-    public record Config(Curve curve, Map<String, SkillDef> skills) {
+    public record Config(Curve curve, Map<String, JobDef> jobs) {
 
         /** Repli : la courbe de {@code BALANCE.md}, sans aucune source d'XP. */
         static final Config FALLBACK = new Config(
@@ -173,12 +186,12 @@ public final class SkillConfig {
 
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Curve.CODEC.optionalFieldOf("curve", FALLBACK.curve()).forGetter(Config::curve),
-                Codec.unboundedMap(Codec.STRING, SkillDef.CODEC).optionalFieldOf("skills", Map.of())
-                        .forGetter(Config::skills)
+                Codec.unboundedMap(Codec.STRING, JobDef.CODEC).optionalFieldOf("jobs", Map.of())
+                        .forGetter(Config::jobs)
         ).apply(instance, Config::new));
 
-        public SkillDef def(Skill skill) {
-            return skills.getOrDefault(skill.key(), new SkillDef(Optional.empty(), List.of()));
+        public JobDef def(Job job) {
+            return jobs.getOrDefault(job.key(), new JobDef(Optional.empty(), List.of()));
         }
     }
 }

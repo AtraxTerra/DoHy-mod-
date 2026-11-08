@@ -1,4 +1,4 @@
-package fr.atraxterra.dohy.skill;
+package fr.atraxterra.dohy.job;
 
 import fr.atraxterra.dohy.collection.CollectionEvents;
 import fr.atraxterra.dohy.world.PlacedBlocks;
@@ -15,15 +15,12 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 
 import java.util.Map;
 
 /**
- * Les sources d'XP.
+ * Les sources d'XP des metiers.
  *
  * <p>Comme pour les collections, un bloc pose par le joueur ne rapporte rien —
  * sauf s'il figure dans {@code #dohy:placement_exempt}, qui exempte les
@@ -35,12 +32,12 @@ import java.util.Map;
  * recolte, et l'engrais a os deviendrait une machine a XP.
  */
 @EventBusSubscriber
-public final class SkillEvents {
+public final class JobXpEvents {
 
-    private SkillEvents() {
+    private JobXpEvents() {
     }
 
-    /** Casse d'un bloc : minage, agriculture ou bucheronnage selon le bloc. */
+    /** Casse d'un bloc : Mineur, Fermier ou Alchimiste selon le bloc. */
     @SubscribeEvent
     public static void onBlockDrops(BlockDropsEvent event) {
         if (!(event.getBreaker() instanceof ServerPlayer player)) {
@@ -55,8 +52,8 @@ public final class SkillEvents {
 
         Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
 
-        for (Skill skill : new Skill[]{Skill.MINING, Skill.FARMING, Skill.FORAGING, Skill.ALCHEMY}) {
-            long xp = blockXp(skill, state, blockId);
+        for (Job job : new Job[]{Job.MINER, Job.FARMER, Job.ALCHEMIST}) {
+            long xp = blockXp(job, state, blockId);
             if (xp <= 0) {
                 continue;
             }
@@ -64,15 +61,15 @@ public final class SkillEvents {
             // premier. Sans la condition de maturite, elle serait la faille par
             // laquelle casser des pousses rapporterait autant qu'une recolte,
             // celle que l'agriculture ferme depuis le depart.
-            if ((skill == Skill.FARMING || skill == Skill.ALCHEMY) && !isMature(state)) {
+            if ((job == Job.FARMER || job == Job.ALCHEMIST) && !isMature(state)) {
                 continue;
             }
-            SkillApi.grant(player, skill, xp);
-            maybeDoubleDrop(player, skill, event);
+            JobApi.grant(player, job, xp);
+            maybeDoubleDrop(player, job, event);
         }
     }
 
-    /** Mort d'une creature : combat. */
+    /** Mort d'une creature : Chasseur, et Fermier ou Alchimiste selon la bete. */
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         ServerPlayer player = attribute(event.getEntity(), event);
@@ -80,32 +77,32 @@ public final class SkillEvents {
             return;
         }
         Identifier entityId = BuiltInRegistries.ENTITY_TYPE.getKey(event.getEntity().getType());
-        long xp = lookup(SkillConfig.config().def(Skill.COMBAT).sources()
-                .map(SkillConfig.Sources::entities).orElse(Map.of()), entityId, null);
+        long xp = lookup(JobProgression.config().def(Job.HUNTER).sources()
+                .map(JobProgression.Sources::entities).orElse(Map.of()), entityId, null);
         if (xp > 0) {
-            SkillApi.grant(player, Skill.COMBAT, xp);
+            JobApi.grant(player, Job.HUNTER, xp);
         }
 
-        // Les animaux d'elevage comptent pour l'agriculture, pas pour le combat.
-        long farmXp = lookup(SkillConfig.config().def(Skill.FARMING).sources()
-                .map(SkillConfig.Sources::entities).orElse(Map.of()), entityId, null);
+        // Les animaux d'elevage comptent pour le Fermier, pas pour le Chasseur.
+        long farmXp = lookup(JobProgression.config().def(Job.FARMER).sources()
+                .map(JobProgression.Sources::entities).orElse(Map.of()), entityId, null);
         if (farmXp > 0) {
-            SkillApi.grant(player, Skill.FARMING, farmXp);
+            JobApi.grant(player, Job.FARMER, farmXp);
         }
 
         // Les creatures qui portent un ingredient de potion comptent pour
-        // l'alchimie : sorciere, blaze, ghast, cube de magma, gardien. Elles
-        // rapportent aussi au combat, et c'est voulu — c'est le meme geste qui
+        // l'Alchimiste : sorciere, blaze, ghast, cube de magma, gardien. Elles
+        // rapportent aussi au Chasseur, et c'est voulu — c'est le meme geste qui
         // sert deux metiers, exactement comme l'elevage.
-        long alchemyXp = lookup(SkillConfig.config().def(Skill.ALCHEMY).sources()
-                .map(SkillConfig.Sources::entities).orElse(Map.of()), entityId, null);
+        long alchemyXp = lookup(JobProgression.config().def(Job.ALCHEMIST).sources()
+                .map(JobProgression.Sources::entities).orElse(Map.of()), entityId, null);
         if (alchemyXp > 0) {
-            SkillApi.grant(player, Skill.ALCHEMY, alchemyXp);
+            JobApi.grant(player, Job.ALCHEMIST, alchemyXp);
         }
     }
 
     /**
-     * Potion terminee a l'alambic : alchimie.
+     * Potion terminee a l'alambic : Alchimiste.
      *
      * <p>C'est la source principale du metier d'Alchimiste, et la seule qui ne
      * passe ni par un bloc ni par une creature. {@code PlayerBrewedPotionEvent}
@@ -118,61 +115,16 @@ public final class SkillEvents {
         if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
         }
-        long xp = action(Skill.ALCHEMY, "potion_brewed");
+        long xp = action(Job.ALCHEMIST, "potion_brewed");
         if (xp > 0) {
-            SkillApi.grant(player, Skill.ALCHEMY, xp);
-        }
-    }
-
-    /** Peche. */
-    @SubscribeEvent
-    public static void onItemFished(ItemFishedEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) {
-            return;
-        }
-        long xp = action(Skill.FISHING, "fish_caught");
-        if (xp > 0) {
-            SkillApi.grant(player, Skill.FISHING, xp);
-        }
-    }
-
-    /** Fonte : forge. */
-    @SubscribeEvent
-    public static void onItemSmelted(PlayerEvent.ItemSmeltedEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) {
-            return;
-        }
-        long xp = action(Skill.SMITHING, "item_smelted");
-        if (xp > 0) {
-            SkillApi.grant(player, Skill.SMITHING, xp * Math.max(1, event.getSmelting().getCount()));
-        }
-    }
-
-    /**
-     * Pose d'un bloc : construction.
-     *
-     * <p>Une seule fois par position, grace au suivi des blocs poses : reposer
-     * le meme bloc au meme endroit ne rapporte rien, puisque la position est
-     * deja marquee.
-     */
-    @SubscribeEvent
-    public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) {
-            return;
-        }
-        if (PlacedBlocks.isPlayerPlaced(event.getLevel(), event.getPos())) {
-            return;
-        }
-        long xp = action(Skill.BUILDING, "block_placed");
-        if (xp > 0) {
-            SkillApi.grant(player, Skill.BUILDING, xp);
+            JobApi.grant(player, Job.ALCHEMIST, xp);
         }
     }
 
     /** Duplique les drops avec la probabilite accordee par les perks. */
-    private static void maybeDoubleDrop(ServerPlayer player, Skill skill, BlockDropsEvent event) {
-        // Les ailes completes du musee s'ajoutent aux perks de skill.
-        double chance = SkillPerks.doubleDropChance(player, skill)
+    private static void maybeDoubleDrop(ServerPlayer player, Job job, BlockDropsEvent event) {
+        // Les ailes completes du musee s'ajoutent aux perks de metier.
+        double chance = JobPerks.doubleDropChance(player, job)
                 + fr.atraxterra.dohy.museum.MuseumApi.doubleDropBonus(player);
         if (chance <= 0 || player.getRandom().nextDouble() >= chance) {
             return;
@@ -187,9 +139,9 @@ public final class SkillEvents {
         });
     }
 
-    private static long blockXp(Skill skill, BlockState state, Identifier blockId) {
-        Map<String, Long> table = SkillConfig.config().def(skill).sources()
-                .map(SkillConfig.Sources::blocks).orElse(Map.of());
+    private static long blockXp(Job job, BlockState state, Identifier blockId) {
+        Map<String, Long> table = JobProgression.config().def(job).sources()
+                .map(JobProgression.Sources::blocks).orElse(Map.of());
         return lookup(table, blockId, state);
     }
 
@@ -221,9 +173,9 @@ public final class SkillEvents {
         return 0L;
     }
 
-    private static long action(Skill skill, String name) {
-        return SkillConfig.config().def(skill).sources()
-                .map(SkillConfig.Sources::actions).orElse(Map.of())
+    private static long action(Job job, String name) {
+        return JobProgression.config().def(job).sources()
+                .map(JobProgression.Sources::actions).orElse(Map.of())
                 .getOrDefault(name, 0L);
     }
 

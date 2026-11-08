@@ -21,7 +21,7 @@ import java.util.List;
  * appel de code comme le {@code setHarvestLevel} de 1.7.10.
  *
  * <p>Ce sont des {@link Block} nus et non des {@code DropExperienceBlock} : le
- * minerai ne lache pas d'XP vanilla, l'XP de minage du mod passe par les skills.
+ * minerai ne lache pas d'XP vanilla, l'XP de minage du mod passe par le metier de Mineur.
  * Un bloc nu est aussi la forme dont la signature est la plus stable d'une
  * version a l'autre.
  */

@@ -73,13 +73,13 @@ python3 tools/gen_prices.py --multiplier 0.6
 
 ---
 
-## 2. Courbe des skills
+## 2. Courbe des métiers
 
 `xp(lvl) = 100 × lvl^1.6` · `money(lvl) = 750 × lvl^1.4` · **100 niveaux**
 
 ### Pourquoi la courbe a changé en passant de 50 à 100 niveaux
 
-Garder `lvl^1.8` aurait donné **961 h pour un seul skill** à 15 k XP/h, contre
+Garder `lvl^1.8` aurait donné **961 h pour un seul métier** à 15 k XP/h, contre
 140 h pour le niveau 50 — soit trois fois la saison entière pour un huitième du
 contenu. Les exposants descendent donc : l'XP de 1,8 à 1,6, l'argent de 1,5 à 1,4.
 
@@ -105,14 +105,15 @@ Lecture pour le rythme de jeu visé :
 - **Niveau 10 en ~1 h** → la première soirée donne déjà 2 perks
 - **Niveau 25 en ~12 h** → première semaine
 - **Niveau 50 en ~69 h** → premier mois, et il reste la moitié de l'échelle
-- **Niveau 100 en ~412 h** → ~21 semaines de jeu *entièrement consacrées à ce skill*. En pratique le temps se répartit, donc un favori se maxe sur une saison ou deux et les autres suivent.
-- **Un skill maxé rapporte 20 M cumulés.** Les 8 skills réunis ≈ **160 M**, à comparer aux 500 M de l'autosell : les skills restent un bonus, jamais la source de revenu. C'est le principe 2 de `DESIGN.md`, revérifié chiffre en main après le passage à 100 niveaux.
+- **Niveau 100 en ~412 h** → ~21 semaines de jeu *entièrement consacrées à ce métier*. En pratique le temps se répartit, donc un favori se maxe sur une saison ou deux et les autres suivent.
+- **Un métier maxé rapporte 20 M cumulés.** Les 4 métiers réunis ≈ **80 M**, à comparer aux 500 M de l'autosell : les métiers restent un bonus, jamais la source de revenu. C'est le principe 2 de `DESIGN.md`. Les 8 skills d'avant le remplacement (2026-11-08) en donnaient 160 M ; la courbe par niveau n'a pas bougé, il y a seulement moins de progressions.
+- **Les objets de Paladium s'y ajoutent** (`jobs.json`) : 1 050 lingots de paladium et autant de trixium par métier maxé, plus une pioche, une épée et une armure en paladium enchantées. Leur poids réel dépend des prix des objets PalaMod, encore à fixer au chapitre économique.
 
-Levier unique : `xp_base` dans `data/skills.json`. Le passer à 75 réduit tout de 25 %.
+Levier unique : `xp_base` dans `data/job_progression.json`. Le passer à 75 réduit tout de 25 %.
 
 ### Perks
 
-**20 perks par skill**, un tous les 5 niveaux jusqu'à 100. Les 10 ajoutés au-delà
+**20 perks par métier**, un tous les 5 niveaux jusqu'à 100. Les 10 ajoutés au-delà
 du niveau 50 n'utilisent **que les trois types réellement appliqués** par le mod
 (`attribute`, `double_drop_chance`, `xp_bonus`) : un perk annoncé dans l'interface
 mais sans effet en jeu est pire que pas de perk. Les types inertes des cinquante
@@ -227,7 +228,7 @@ C'est comme ça que meurt une économie de jeu.
 | Patrimoine protégé | −20 / −40 / −60 % à la mort | 3 | 50 M · 130 M · 340 M |
 | Plafond de banque | ×2 / ×4 / ×8 / ×16 | 4 | 80 M · 210 M · 540 M · 1,4 G |
 | Carnet de contrats | +1 / +2 contrats par jour | 2 | 120 M · 360 M |
-| Apprentissage | +15 / +30 / +50 % d'XP de skill | 3 | 150 M · 390 M · 1,0 G |
+| Apprentissage | +15 / +30 / +50 % d'XP de métier | 3 | 150 M · 390 M · 1,0 G |
 | Endurance des boosters | +10 / +25 / +45 min | 3 | 200 M · 520 M · 1,4 G |
 | Cadence d'autosell | toutes les 4 / 3 / 2 min | 3 | 300 M · 780 M · 2,0 G |
 | Résilience du marché | +3 / +6 / +10 points de plancher | 3 | 400 M · 1,1 G · 3,1 G |
@@ -256,7 +257,7 @@ auraient été du contenu mort — pire que pas de palier.
 
 `UpgradeApi.EFFECTS` liste les huit effets que le code lit réellement, et le
 chargement du datapack **prévient pour tout effet absent de cette liste**. Même
-filet que pour les perks de skill, posé pour la même raison : on a découvert 33
+filet que pour les perks de métier, posé pour la même raison : on a découvert 33
 perks déclarés et inertes. Une amélioration payée plusieurs milliards doit faire
 quelque chose.
 
