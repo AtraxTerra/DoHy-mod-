@@ -8,14 +8,21 @@ est un nom. Les ecrire a la main garantit une faute de frappe quelque part, et
 une faute de frappe dans un chemin de modele ne fait pas echouer la compilation
 — elle donne une texture violette en jeu, trois semaines plus tard.
 
-    # 1. extraire le jar de PalaMod (c'est un zip)
-    mkdir palamod && cd palamod && unzip ../PalaMod-10.3.0.pala
-    # 2. generer
-    python3 tools/palamod_assets.py palamod
+    mkdir pack && cd pack && unzip ../updated_faithfull_paladium_officiel.zip
+    mkdir jar  && cd jar  && unzip ../PalaMod-10.3.0.pala
+    python3 tools/palamod_assets.py pack jar
 
-Les textures viennent du jar de PalaMod, pas du pack Faithful : ce sont les
-textures *par defaut* du mod. Le pack officiel les remplace ensuite, ce qui est
-exactement son role — et c'est pour cela que le namespace est `palamod`.
+Les textures viennent du **pack officiel** en priorite, et du jar de PalaMod
+seulement pour celles que le pack n'a pas. Le pack est la version entretenue :
+il corrige au passage des defauts du jar — c'est lui qui a le bon
+`endium_block` en 16x16, la ou le jar traine trois homonymes dont deux en 15x15.
+
+Le repli n'est jamais silencieux : la provenance de chaque texture est comptee
+et affichee, et les fichiers pris dans le jar sont listes nommement.
+
+Le namespace reste `palamod` : un joueur qui installe le pack officiel par
+dessus retrouve donc exactement les memes fichiers, et ses mises a jour
+s'appliquent sans rien regenerer.
 
 26.2 est pointilleux sur deux choses, verifiees dans le jar vanilla :
   - un item demande DEUX fichiers, `models/item/x.json` (la geometrie) ET
@@ -278,25 +285,58 @@ def png_size(path):
 EXPECTED_SIZE = (16, 16)
 
 
-def copy_texture(source_root, relative, destination, wrong_size=None):
-    src = os.path.join(source_root, "assets", NS, "textures", relative)
-    if not os.path.exists(src):
-        return False
-    size = png_size(src)
-    if size is not None and size != EXPECTED_SIZE and wrong_size is not None:
-        wrong_size.append("%s : %dx%d au lieu de %dx%d"
-                          % (relative, size[0], size[1], *EXPECTED_SIZE))
-        return False
-    dst = os.path.join(RES, "assets", NS, "textures", destination)
-    os.makedirs(os.path.dirname(dst), exist_ok=True)
-    shutil.copyfile(src, dst)
-    return True
+# Le pack officiel ne range pas tout comme le jar. Une entree ici dit ou
+# chercher dans le pack quand le chemin du jar n'y mene pas.
+PACK_PATHS = {
+    # Dans le jar, blocks/endium_block.png est un fichier isole en 15x15 et le
+    # bon est dans blocks/endium/. Dans le pack, la racine porte le bon.
+    "blocks/endium/endium_block.png": "blocks/endium_block.png",
+}
+
+# Compteur de provenance, rempli par copy_texture et affiche a la fin.
+provenance = {"pack": 0, "jar": []}
+
+
+def copy_texture(roots, relative, destination, wrong_size=None):
+    """Copie une texture, pack d'abord, jar en repli.
+
+    roots est (pack, jar). Le pack est la version entretenue ; le jar ne sert
+    que pour ce qu'il est seul a avoir, et chaque repli est enregistre pour
+    etre affiche — un repli silencieux ferait croire que le pack couvre tout.
+    """
+    pack_root, jar_root = roots
+    candidates = []
+    if pack_root:
+        candidates.append(("pack", os.path.join(
+            pack_root, "assets", NS, "textures", PACK_PATHS.get(relative, relative))))
+    if jar_root:
+        candidates.append(("jar", os.path.join(jar_root, "assets", NS, "textures", relative)))
+
+    for origin, src in candidates:
+        if not os.path.exists(src):
+            continue
+        size = png_size(src)
+        if size is not None and size != EXPECTED_SIZE:
+            if wrong_size is not None:
+                wrong_size.append("%s (%s) : %dx%d au lieu de %dx%d"
+                                  % (relative, origin, size[0], size[1], *EXPECTED_SIZE))
+            continue
+        dst = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copyfile(src, dst)
+        if origin == "pack":
+            provenance["pack"] += 1
+        else:
+            provenance["jar"].append(relative)
+        return True
+    return False
 
 
 def main():
     if len(sys.argv) < 2:
-        raise SystemExit("usage: palamod_assets.py <dossier PalaMod extrait>")
-    root = sys.argv[1]
+        raise SystemExit(
+            "usage: palamod_assets.py <pack officiel extrait> [<jar PalaMod extrait>]")
+    root = (sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)
 
     missing = []
     wrong_size = []
@@ -343,6 +383,9 @@ def main():
         })
         fr["block.%s.%s" % (NS, name)] = label_fr
         en["block.%s.%s" % (NS, name)] = label_en
+
+    def tag(path, entries):
+        write("data/%s" % path, {"replace": False, "values": entries})
 
     # ---- tables de butin ----
     # Un minerai lache son lingot, et le bloc lui-meme a la pioche soie. C'est
@@ -435,9 +478,6 @@ def main():
               "%s:endium_nugget" % NS, count=9)
 
     # ---- tags ----
-    def tag(path, entries):
-        write("data/%s" % path, {"replace": False, "values": entries})
-
     tag("%s/tags/item/particles.json" % NS,
         ["%s:%s" % (NS, n) for n in sorted(PARTICLES)])
     tag("%s/tags/item/ingots.json" % NS, [
@@ -468,6 +508,77 @@ def main():
         "%s:endium_block" % NS, "%s:findium_block" % NS, "%s:trixium_block" % NS])
     for level, entries in by_level.items():
         tag("minecraft/tags/block/%s.json" % TOOL_TAG[level], sorted(entries))
+
+    # ---- terre fertilisee ----
+    #
+    # Deux blocs, une seule texture. La version labouree reutilise la texture de
+    # la version brute sur ses cotes et son dessous, et emprunte le dessus de la
+    # terre labouree irriguee de vanilla : c'est exactement ce que le bloc fait
+    # — une terre toujours humide — et aucun dessus n'existe dans les sources.
+    if not copy_texture(root, "blocks/connectedDirt.png",
+                        "block/fertilized_dirt.png", wrong_size):
+        missing.append("blocks/connectedDirt.png")
+
+    write("assets/%s/models/block/fertilized_dirt.json" % NS, {
+        "parent": "minecraft:block/cube_all",
+        "textures": {"all": "%s:block/fertilized_dirt" % NS},
+    })
+    write("assets/%s/models/block/fertilized_farmland.json" % NS, {
+        "parent": "minecraft:block/cube_bottom_top",
+        "textures": {
+            "top": "minecraft:block/farmland_moist",
+            "side": "%s:block/fertilized_dirt" % NS,
+            "bottom": "%s:block/fertilized_dirt" % NS,
+        },
+    })
+
+    for soil, label_fr, label_en in (
+            ("fertilized_dirt", "Terre fertilisee", "Fertilized Dirt"),
+            ("fertilized_farmland", "Terre fertilisee labouree", "Tilled Fertilized Dirt")):
+        write("assets/%s/blockstates/%s.json" % (NS, soil),
+              {"variants": {"": {"model": "%s:block/%s" % (NS, soil)}}})
+        write("assets/%s/models/item/%s.json" % (NS, soil),
+              {"parent": "%s:block/%s" % (NS, soil)})
+        write("assets/%s/items/%s.json" % (NS, soil), {
+            "model": {"type": "minecraft:model", "model": "%s:block/%s" % (NS, soil)},
+        })
+        fr["block.%s.%s" % (NS, soil)] = label_fr
+        en["block.%s.%s" % (NS, soil)] = label_en
+        # Les deux rendent de la terre fertilisee BRUTE : labourer puis casser
+        # ne doit rien couter, sinon un coup de houe mal place devient une
+        # perte seche.
+        write("data/%s/loot_table/blocks/%s.json" % (NS, soil), {
+            "type": "minecraft:block",
+            "pools": [{
+                "rolls": 1,
+                "entries": [{"type": "minecraft:item",
+                             "name": "%s:fertilized_dirt" % NS}],
+            }],
+        })
+
+    # RECETTE INVENTEE — la seule du chapitre, et elle est signalee comme telle.
+    #
+    # Le PalaMod n'en donne aucune : sur le serveur, la terre fertilisee
+    # s'achetait. Plutot que de la laisser inaccessible hors creatif, on pose
+    # une recette thematique (des os, donc de l'engrais) et calibree pour une
+    # ferme : un bloc d'os pour huit blocs de terre, soit un peu plus d'une
+    # poudre d'os par bloc. Elle n'accelere que la croissance, jamais le
+    # rendement, donc le risque d'equilibrage est faible.
+    #
+    # C'est un fichier de datapack : la changer ne demande pas de recompiler.
+    write("data/%s/recipe/fertilized_dirt.json" % NS, {
+        "type": "minecraft:crafting_shaped",
+        "pattern": ["DDD", "DBD", "DDD"],
+        "key": {"D": "minecraft:dirt", "B": "minecraft:bone_block"},
+        "result": {"id": "%s:fertilized_dirt" % NS, "count": 8},
+    })
+
+    # La version brute entre dans le tag dirt : pousses d'arbre, fleurs et
+    # herbe y poussent alors sans une ligne de code. La version labouree n'y
+    # entre pas — ce serait lui faire porter aussi les plantes de surface.
+    tag("minecraft/tags/block/dirt.json", ["%s:fertilized_dirt" % NS])
+    tag("minecraft/tags/block/mineable/shovel.json",
+        ["%s:fertilized_dirt" % NS, "%s:fertilized_farmland" % NS])
 
     # ---- cultures ----
     for crop, spec in CROPS.items():
@@ -628,6 +739,12 @@ def main():
               {key: table[key] for key in sorted(table)})
 
     # ---- rapport ----
+    print("textures : %d du pack officiel, %d du jar"
+          % (provenance["pack"], len(provenance["jar"])))
+    if provenance["jar"]:
+        print("  absentes du pack, reprises du jar :")
+        for path in sorted(provenance["jar"]):
+            print("    " + path)
     print("items   : %d" % len(ITEMS))
     print("blocs   : %d (%d minerais, %d blocs de stockage)"
           % (len(blocks), len(ORES), len(STORAGE)))

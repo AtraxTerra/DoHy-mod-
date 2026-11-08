@@ -52,6 +52,21 @@ public final class PalaBlocks {
     public static final DeferredBlock<Block> FINDIUM_BLOCK = storage("findium_block");
     public static final DeferredBlock<Block> TRIXIUM_BLOCK = storage("trixium_block");
 
+    // -- Terre fertilisee ----------------------------------------------------
+    //
+    // Elle fait passer DEUX ticks de croissance supplementaires a la plante
+    // posee dessus, a chaque tick aleatoire : la plante avance donc environ
+    // trois fois plus vite. Voir PalaFertileSoilBlock.
+    //
+    // Deux variantes, comme le booleen `tilled` de BlockConnectedDirt : la
+    // brute porte l'herbe, les fleurs et les pousses d'arbre, la labouree porte
+    // les cultures. La houe fait passer de l'une a l'autre (PalaSoilEvents).
+    //
+    // Durete 0,6 et son de gravier, comme dans le constructeur d'origine.
+
+    public static final DeferredBlock<Block> FERTILIZED_DIRT = soil("fertilized_dirt", false);
+    public static final DeferredBlock<Block> FERTILIZED_FARMLAND = soil("fertilized_farmland", true);
+
     /**
      * Tous les blocs, dans l'ordre d'affichage de l'onglet creatif.
      *
@@ -64,7 +79,8 @@ public final class PalaBlocks {
             AMETHYST_ORE, TITANE_ORE, PALADIUM_ORE, PALADIUM_GREEN_ORE,
             FINDIUM_ORE, TRIXIUM_ORE,
             AMETHYST_BLOCK, TITANE_BLOCK, PALADIUM_BLOCK, GREEN_PALADIUM_BLOCK,
-            ENDIUM_BLOCK, FINDIUM_BLOCK, TRIXIUM_BLOCK);
+            ENDIUM_BLOCK, FINDIUM_BLOCK, TRIXIUM_BLOCK,
+            FERTILIZED_DIRT, FERTILIZED_FARMLAND);
 
     private PalaBlocks() {
     }
@@ -74,6 +90,23 @@ public final class PalaBlocks {
                 .strength(hardness, 5.0f)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.STONE));
+    }
+
+    /**
+     * Une terre fertilisee.
+     *
+     * <p>{@code randomTicks()} n'est pas decoratif : c'est lui qui donne au bloc
+     * les ticks pendant lesquels il pousse la plante du dessus. Sans cet appel,
+     * le bloc existerait et ne ferait rien — le genre de panne qui ne produit
+     * aucune erreur et se diagnostique en regardant pousser du ble.
+     */
+    private static DeferredBlock<Block> soil(String name, boolean tilled) {
+        return BLOCKS.registerBlock(name,
+                properties -> new PalaFertileSoilBlock(properties, tilled),
+                properties -> properties
+                        .strength(0.6f)
+                        .randomTicks()
+                        .sound(SoundType.GRAVEL));
     }
 
     private static DeferredBlock<Block> storage(String name) {
