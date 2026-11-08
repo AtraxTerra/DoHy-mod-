@@ -52,6 +52,11 @@ public final class PalaFluids {
     public static final DeferredHolder<FluidType, FluidType> ANGELIC_WATER_TYPE = TYPES.register(
             "angelic_water", () -> new FluidType(FluidType.Properties.create()
                     .descriptionId("block.palamod.angelic_water")
+                    // La physique de l'eau : nage, courant, remontee, eclaboussures.
+                    // Sans ce drapeau, 26.2 ne compte pas le fluide comme de l'eau
+                    // (Entity.updateFluidInteraction ne suit que les types
+                    // isWaterLike) et le joueur le traverse comme de l'air.
+                    .isWaterLike(true)
                     .canSwim(true)
                     .canDrown(true)
                     .canExtinguish(true)
