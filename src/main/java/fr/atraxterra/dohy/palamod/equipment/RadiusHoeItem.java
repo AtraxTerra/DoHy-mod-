@@ -6,7 +6,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ToolMaterial;
@@ -92,8 +91,9 @@ public class RadiusHoeItem extends HoeItem {
             return InteractionResult.PASS;
         }
         level.playSound(null, origin, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0f, 1.0f);
-        context.getItemInHand().hurtAndBreak(1, player,
-                LivingEntity.getSlotForHand(context.getHand()));
+        // La surcharge qui prend la main, relevee a la sonde :
+        // LivingEntity.getSlotForHand n'existe pas en 26.2.
+        context.getItemInHand().hurtAndBreak(1, player, context.getHand());
         return InteractionResult.SUCCESS;
     }
 
