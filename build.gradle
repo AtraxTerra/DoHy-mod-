@@ -243,19 +243,15 @@ tasks.register('bytecodeProbe') {
         def tool = "${System.getProperty('java.home')}/bin/javap"
         requested.split(',')*.trim().findAll { it }.each { name ->
             println "\n${'=' * 78}\nJAVAP ${name}\n${'=' * 78}"
-            def out = new ByteArrayOutputStream()
-            def err = new ByteArrayOutputStream()
-            def result = exec {
-                commandLine tool, '-p', '-c', '-constants', '-cp', classpath.asPath, name
-                standardOutput = out
-                errorOutput = err
-                ignoreExitValue = true
-            }
-            if (result.exitValue != 0) {
-                println "  (javap a echoue : ${err.toString().trim()})"
+            // ProcessBuilder plutot que project.exec : Gradle 9 interdit
+            // l'acces au projet depuis une action de tache.
+            def process = new ProcessBuilder(tool, '-p', '-c', '-constants',
+                    '-cp', classpath.asPath, name).redirectErrorStream(true).start()
+            def text = process.inputStream.text
+            if (process.waitFor() != 0) {
+                println "  (javap a echoue : ${text.trim().readLines().take(3).join(' / ')})"
                 return
             }
-            def text = out.toString()
             if (!filter.trim()) {
                 println text
                 return
