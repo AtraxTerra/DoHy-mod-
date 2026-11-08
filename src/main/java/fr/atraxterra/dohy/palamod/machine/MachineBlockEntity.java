@@ -9,7 +9,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -21,18 +21,25 @@ import net.minecraft.world.level.storage.ValueOutput;
 /**
  * Socle des machines : un inventaire, une sauvegarde, et une interface.
  *
- * <p><b>L'interface est un coffre vanilla, et c'est un choix.</b> Une machine
- * demande normalement un {@code AbstractContainerMenu} et un {@code Screen}
- * cote client — donc du code de rendu, que ce mod evite depuis le depart (voir
- * {@code DESIGN.md} et le choix de {@code SkillBossBar}). En adossant
- * l'inventaire de la machine a un {@link ChestMenu}, on obtient une interface
- * fonctionnelle, deplacable au shift-clic, compatible avec les entonnoirs, et
- * <b>sans une ligne de code client</b>.
+ * <p><b>L'interface etait un coffre vanilla, elle ne l'est plus.</b> Le coffre
+ * avait l'avantage de ne demander aucune ligne de code client, et il a tenu le
+ * temps d'un chapitre. Sa limite etait structurelle : un coffre ne synchronise
+ * que des objets, donc aucune jauge, aucune cadence. Une machine dont on ne
+ * voit pas si elle tourne force le joueur a deviner — et le cobblebreaker, dont
+ * la cadence est justement ce que les paliers ameliorent, ne montrait pas son
+ * amelioration. D'ou {@link MachineMenu} et son ecran.
  *
- * <p>Ce qu'on y perd : pas de barre de progression ni de jauge dessinee. Les
- * machines disent donc leur etat autrement — le cobblebreaker par son palier
- * visible sur le bloc, le crusher par le remplissage de ses bacs. Un compromis
- * payant tant qu'aucune machine n'a d'etat invisible et essentiel.
+ * <p><b>Les deux entiers synchronises.</b> {@link ContainerData} est le canal
+ * que le jeu ouvre entre un menu serveur et son copie client. Le socle en
+ * expose deux : l'avancement du cycle et sa duree totale. La duree y figure
+ * parce que celle du cobblebreaker depend de son palier, que le client ne peut
+ * pas deduire. L'ecran ne fait que le rapport des deux, ce qui evite d'avoir a
+ * decrire les jauges ici.
+ *
+ * <p>Le {@code set} de cet objet ne fait rien, et c'est correct : cote serveur
+ * le jeu ne lit que {@code get}, et le client travaille sur une
+ * {@code SimpleContainerData} a lui, fabriquee par le constructeur client du
+ * menu. Les deux instances ne se croisent jamais.
  *
  * <p>La sauvegarde passe par {@code ValueInput} / {@code ValueOutput}, qui ont
  * remplace {@code CompoundTag} en 26.2.
@@ -41,6 +48,29 @@ public abstract class MachineBlockEntity extends BlockEntity implements Containe
 
     protected final NonNullList<ItemStack> items;
     private final Component title;
+
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case MachineMenu.DATA_WORK -> work();
+                case MachineMenu.DATA_DURATION -> cycleDuration();
+                case MachineMenu.DATA_TANK -> tankFill();
+                case MachineMenu.DATA_TANK_GOAL -> tankGoal();
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            // Volontairement vide : voir la note de la classe.
+        }
+
+        @Override
+        public int getCount() {
+            return MachineMenu.DATA_COUNT;
+        }
+    };
 
     protected MachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state,
                                  int size, Component title) {
@@ -139,16 +169,46 @@ public abstract class MachineBlockEntity extends BlockEntity implements Containe
     }
 
     /**
-     * Le type de coffre a ouvrir.
+     * Ouvre le menu de cette machine.
      *
-     * <p>Une rangee jusqu'a neuf emplacements, trois au-dela. C'est la seule
-     * chose que la machine ait a dire sur son interface.
+     * <p>La machine fournit son type, sa disposition et son inventaire ; tout
+     * le reste est dans {@link MachineMenu}, qui est le meme pour les deux.
      */
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        int rows = Math.max(1, (getContainerSize() + 8) / 9);
-        MenuType<ChestMenu> type = rows <= 1 ? MenuType.GENERIC_9x1 : MenuType.GENERIC_9x3;
-        return new ChestMenu(type, containerId, playerInventory, this, rows <= 1 ? 1 : 3);
+        return new MachineMenu(menuType(), containerId, playerInventory, this, data, layout());
+    }
+
+    /** Le type enregistre, celui auquel le client associe un ecran. */
+    protected abstract MenuType<MachineMenu> menuType();
+
+    /** Ou sont les cases et les jauges. Partage avec le generateur d'assets. */
+    protected abstract MachineLayout layout();
+
+    /** Ticks deja faits dans le cycle en cours. */
+    public abstract int work();
+
+    /**
+     * Ticks que dure un cycle complet.
+     *
+     * <p>Zero quand la machine ne peut pas tourner : l'ecran y lit « aucune
+     * progression » sans avoir a connaitre les conditions de chaque machine.
+     */
+    public abstract int cycleDuration();
+
+    /**
+     * Elements deja accumules, pour une machine qui accumule.
+     *
+     * <p>Zero par defaut : le cobblebreaker rend son lot a chaque cycle et n'a
+     * rien a compter. Seul le crusher redefinit ces deux-la.
+     */
+    public int tankFill() {
+        return 0;
+    }
+
+    /** Elements qu'il faut pour un lot, ou zero si la machine n'accumule rien. */
+    public int tankGoal() {
+        return 0;
     }
 
     /** Le travail d'un tick. Appele par le ticker du serveur uniquement. */

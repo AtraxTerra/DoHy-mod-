@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.palamod.machine;
 import fr.atraxterra.dohy.palamod.PalaItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
@@ -75,6 +76,85 @@ public class CrusherBlockEntity extends MachineBlockEntity {
     /** Remplissage d'un bac, pour l'affichage. */
     public int tank(int recipe) {
         return tanks[recipe];
+    }
+
+    // -- Interface -----------------------------------------------------------
+
+    @Override
+    protected MenuType<MachineMenu> menuType() {
+        return PalaMenus.CRUSHER.get();
+    }
+
+    @Override
+    protected MachineLayout layout() {
+        return MachineLayout.CRUSHER;
+    }
+
+    @Override
+    public int work() {
+        return work;
+    }
+
+    @Override
+    public int cycleDuration() {
+        return matchingRecipe() >= 0 ? WORK_TICKS : 0;
+    }
+
+    /**
+     * Le bac a afficher : celui de la recette en cours, sinon le plus rempli.
+     *
+     * <p>Les quatre compteurs sont independants, l'ecran n'en montre qu'un. La
+     * recette chargee passe devant, parce que c'est celle que le joueur
+     * regarde avancer. Machine vide, on montre le bac le plus avance plutot
+     * que rien : un joueur qui revient apres une pause veut savoir ou il en
+     * etait, pas decouvrir un compteur a zero qui lui ferait croire son
+     * travail perdu.
+     */
+    private int displayedRecipe() {
+        int current = matchingRecipe();
+        if (current >= 0) {
+            return current;
+        }
+        int best = -1;
+        for (int index = 0; index < tanks.length; index++) {
+            if (tanks[index] > 0 && (best < 0 || tanks[index] > tanks[best])) {
+                best = index;
+            }
+        }
+        return best;
+    }
+
+    @Override
+    public int tankFill() {
+        int index = displayedRecipe();
+        return index < 0 ? 0 : tanks[index];
+    }
+
+    @Override
+    public int tankGoal() {
+        int index = displayedRecipe();
+        return index < 0 ? 0 : RECIPES[index].fruitsPerBatch();
+    }
+
+    /**
+     * Le fruit a gauche en haut, son charbon en dessous.
+     *
+     * <p>On accepte <b>tous</b> les fruits dans la case du haut et tous les
+     * charbons melanges dans celle du bas, sans verifier qu'ils vont ensemble :
+     * c'est {@code matchingRecipe} qui exige le couple. Filtrer plus tot
+     * empecherait de preparer la machine en deux gestes.
+     */
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        for (Recipe recipe : RECIPES) {
+            if (slot == SLOT_FRUIT && stack.is(recipe.fruit().get())) {
+                return true;
+            }
+            if (slot == SLOT_FUEL && stack.is(recipe.fuel().get())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

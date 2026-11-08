@@ -1,0 +1,106 @@
+{
+  "_comment": "GENERE par tools/gen_gui.py. Positions des cases de chaque interface, en pixels depuis le coin haut gauche du panneau. check_assets.py verifie que le code Java declare les memes.",
+  "panel": {
+    "width": 176,
+    "height": 166
+  },
+  "player": {
+    "x": 8,
+    "y": 84,
+    "hotbar_y": 142
+  },
+  "sprites": {
+    "arrow": {
+      "u": 176,
+      "v": 0,
+      "full_v": 17,
+      "width": 24,
+      "height": 17
+    },
+    "flame": {
+      "u": 176,
+      "v": 34,
+      "full_v": 48,
+      "width": 14,
+      "height": 14
+    }
+  },
+  "machines": {
+    "cobblebreaker": {
+      "slots": [
+        {
+          "x": 80,
+          "y": 18,
+          "role": "input"
+        },
+        {
+          "x": 34,
+          "y": 54,
+          "role": "output"
+        },
+        {
+          "x": 52,
+          "y": 54,
+          "role": "output"
+        },
+        {
+          "x": 70,
+          "y": 54,
+          "role": "output"
+        },
+        {
+          "x": 88,
+          "y": 54,
+          "role": "output"
+        },
+        {
+          "x": 106,
+          "y": 54,
+          "role": "output"
+        },
+        {
+          "x": 124,
+          "y": 54,
+          "role": "output"
+        }
+      ],
+      "arrow": {
+        "x": 76,
+        "y": 36,
+        "vertical": true
+      }
+    },
+    "crusher": {
+      "slots": [
+        {
+          "x": 44,
+          "y": 24,
+          "role": "fruit"
+        },
+        {
+          "x": 44,
+          "y": 60,
+          "role": "fuel"
+        },
+        {
+          "x": 116,
+          "y": 42,
+          "role": "output"
+        }
+      ],
+      "arrow": {
+        "x": 76,
+        "y": 44,
+        "vertical": false
+      },
+      "flame": {
+        "x": 45,
+        "y": 44
+      },
+      "counter": {
+        "x": 88,
+        "y": 66
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.palamod;
 
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
+import fr.atraxterra.dohy.palamod.machine.PalaMenus;
 import net.neoforged.bus.api.IEventBus;
 
 /**
@@ -45,6 +46,7 @@ public final class PalaMod {
         PalaBlocks.register(modBus);
         PalaCrops.register(modBus);
         PalaMachines.register(modBus);
+        PalaMenus.register(modBus);
         PalaItems.register(modBus);
         PalaTab.register(modBus);
     }
