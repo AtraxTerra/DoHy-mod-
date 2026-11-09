@@ -132,6 +132,27 @@ public final class RecipeSelfTest {
             log("PROBLEME " + problem);
         }
 
+        log("etape : speciales");
+        ItemStack regen = new ItemStack(Items.POTION);
+        regen.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
+                new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.REGENERATION));
+        ItemStack block = new ItemStack(fr.atraxterra.dohy.palamod.PalaBlocks.PALADIUM_BLOCK.get());
+        ItemStack stone = new ItemStack(fr.atraxterra.dohy.palamod.golem.PalaGolem.GUARDIAN_STONE.get());
+        stone.set(fr.atraxterra.dohy.palamod.golem.PalaGolem.GOLEM_DATA.get(), fr.atraxterra.dohy.palamod.golem.GolemData.EMPTY);
+        ItemStack core = new ItemStack(fr.atraxterra.dohy.palamod.PalaItems.PALADIUM_CORE.get());
+        ItemStack ingot = new ItemStack(fr.atraxterra.dohy.palamod.PalaItems.ENDIUM_INGOT.get());
+        ItemStack none = ItemStack.EMPTY;
+        special(server, level, "palamod:angelic_water_bucket",
+                CraftingInput.of(1, 2, List.of(regen, new ItemStack(Items.WATER_BUCKET))));
+        special(server, level, "palamod:mini_golem",
+                CraftingInput.of(3, 2, List.of(block, stone, block, none, block, none)));
+        special(server, level, "palamod:mini_golem_repair", CraftingInput.of(1, 3, List.of(
+                new ItemStack(fr.atraxterra.dohy.palamod.golem.PalaGolem.WRENCH.get()),
+                new ItemStack(fr.atraxterra.dohy.palamod.golem.PalaGolem.MINI_GOLEM.get()), block)));
+        special(server, level, "palamod:endium_gauntlet", CraftingInput.of(3, 3, List.of(none, core, none,
+                ingot, new ItemStack(fr.atraxterra.dohy.palamod.legendary.PalaLegendary.FORTUNE.get()), ingot,
+                none, core, none)));
+
         log("etape : palamachine");
         int machine = 0;
         for (PalamachineRecipes.Recipe recipe : PalamachineRecipes.all()) {
@@ -170,6 +191,28 @@ public final class RecipeSelfTest {
             }
         }
         log("chaudron " + cauldronOk + "/" + recipes.size());
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void special(MinecraftServer server, ServerLevel level, String id, CraftingInput input) {
+        List<String> problems = new ArrayList<>();
+        try {
+            RecipeHolder<?> holder = null;
+            for (RecipeHolder<?> candidate : server.getRecipeManager().getRecipes()) {
+                if (candidate.id().identifier().toString().equals(id)) {
+                    holder = candidate;
+                }
+            }
+            if (holder == null) {
+                log("PROBLEME speciale " + id + " : absente");
+                return;
+            }
+            int ok = check(server, level, id, (Recipe) holder.value(), input, RecipeType.CRAFTING, problems);
+            log((ok == 1 ? "speciale ok " : "PROBLEME speciale ") + id + " -> "
+                    + ((Recipe) holder.value()).assemble(input) + " " + problems);
+        } catch (Throwable t) {
+            log("PROBLEME speciale " + id + " : exception " + t);
+        }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
