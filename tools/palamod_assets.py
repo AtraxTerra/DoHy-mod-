@@ -2898,6 +2898,78 @@ def main():
     tag("minecraft/tags/block/needs_iron_tool.json",
         ["%s:palamachine" % NS, "%s:slimepad" % NS, "%s:paladium_spike" % NS])
 
+    # ---- pierres legendaires et gant en endium (chapitre 17) ----
+    for name, texture, label_fr, label_en in (
+            ("legendary_stone_random", "RANDOM", "Pierre legendaire aleatoire", "Random Legendary Stone"),
+            ("legendary_stone_teleportation", "TELEPORTATION", "Pierre legendaire de teleportation",
+             "Teleportation Legendary Stone"),
+            ("legendary_stone_invisibility", "INVISIBILITY", "Pierre legendaire d'invisibilite",
+             "Invisibility Legendary Stone"),
+            ("legendary_stone_fortune", "FORTUNE", "Pierre legendaire de fortune", "Fortune Legendary Stone"),
+            ("legendary_stone_power", "POWER", "Pierre legendaire de pouvoir", "Power Legendary Stone"),
+            ("legendary_stone_jobs", "JOBS", "Pierre legendaire de metier", "Jobs Legendary Stone"),
+            ("legendary_stone_chaos", "CHAOS", "Pierre legendaire de chaos", "Chaos Legendary Stone")):
+        tex("items/legendaryStone/LEGENDARYSTONE_%s.png" % texture, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    # Le gant : l'icone doree de l'Infinity Gauntlet quand il porte les six
+    # pierres (custom_model_data « infinity », pose par EndiumGauntletItem).
+    tex("items/endium_gauntlet.png", "item/endium_gauntlet.png")
+    tex("items/infinite_gauntlet.png", "item/infinite_gauntlet.png")
+    for name in ("endium_gauntlet", "infinite_gauntlet"):
+        write("assets/%s/models/item/%s.json" % (NS, name),
+              {"parent": "minecraft:item/generated", "textures": {"layer0": "%s:item/%s" % (NS, name)}})
+    write("assets/%s/items/endium_gauntlet.json" % NS, {"model": {
+        "type": "minecraft:select", "property": "minecraft:custom_model_data", "index": 0,
+        "cases": [{"when": "infinity",
+                   "model": {"type": "minecraft:model", "model": "%s:item/infinite_gauntlet" % NS}}],
+        "fallback": {"type": "minecraft:model", "model": "%s:item/endium_gauntlet" % NS}}})
+    label("item", "endium_gauntlet", "Endium Gauntlet", "Endium Gauntlet")
+    fr["item.%s.endium_gauntlet.infinity" % NS] = "Infinity Gauntlet"
+    en["item.%s.endium_gauntlet.infinity" % NS] = "Infinity Gauntlet"
+    fr["item.%s.endium_gauntlet.named" % NS] = "%s (%s)"
+    en["item.%s.endium_gauntlet.named" % NS] = "%s (%s)"
+    write("data/%s/recipe/endium_gauntlet.json" % NS, {"type": "%s:endium_gauntlet" % NS})
+    for key, label_fr, label_en in (
+            ("teleportation", "Teleportation", "Teleportation"), ("invisibility", "Invisibilite", "Invisibility"),
+            ("fortune", "Fortune", "Fortune"), ("power", "Pouvoir", "Power"), ("jobs", "Metier", "Jobs"),
+            ("chaos", "Chaos", "Chaos"), ("random", "Aleatoire", "Random")):
+        label("legendary", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("legendary.wait_type", "Tu dois encore attendre %s avant de pouvoir utiliser ce type de pierre legendaire.",
+             "You must wait %s more before using this type of legendary stone."),
+            ("legendary.wait", "Tu dois encore attendre %s avant de pouvoir utiliser cette pierre legendaire.",
+             "You must wait %s more before using this legendary stone."),
+            ("legendary.random", "Tu as recu un super objet, une %s, mais a quoi cela sert-il ?",
+             "You received a great item, a %s, but what is it for?"),
+            ("legendary.teleport_overworld", "La pierre de teleportation ne fonctionne que dans l'Overworld.",
+             "The teleportation stone only works in the Overworld."),
+            ("legendary.teleported", "Une chose etrange est arrivee, tu as ete teleporte(e) a un autre endroit !",
+             "Something strange happened: you were teleported somewhere else!"),
+            ("legendary.teleport_failed", "Une chose etrange est arrivee, la teleportation n'a pas fonctionne !",
+             "Something strange happened: the teleportation failed!"),
+            ("legendary.invisible", "Une potion etrange est tombee sur toi, tu es maintenant invisible pendant 2 minutes !",
+             "A strange potion fell on you: you are now invisible for 2 minutes!"),
+            ("legendary.fortune", "La fortune est tombee sur toi !", "Fortune smiled on you!"),
+            ("legendary.power", "Tu as recu un grand pouvoir : tu resistes au feu pendant 30 minutes !",
+             "You received a great power: fire resistance for 30 minutes!"),
+            ("legendary.jobs", "Tu as bien travaille : %s points d'experience de %s. Bravo !",
+             "You worked hard: %s %s experience points. Well done!"),
+            ("legendary.chaos", "Tu viens de lancer le chaos autour de toi !", "You just unleashed chaos around you!"),
+            ("gauntlet.empty", "Il n'y a aucune pierre dans le gant !", "There is no stone in the gauntlet!"),
+            ("gauntlet.selected", "Pierre selectionnee : %s", "Selected stone: %s")):
+        label("message", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("legendary.random", "Surprise, que va-t-il y avoir dedans ?", "Surprise, what could be inside?"),
+            ("legendary.ready", "Prete a l'utilisation !", "Ready to use!"),
+            ("legendary.wait", "Encore %s avant de pouvoir l'utiliser", "%s left before it can be used"),
+            ("gauntlet.stones", "Pierres :", "Stones:"),
+            ("gauntlet.hint", "Accroupi + clic droit : pierre suivante", "Sneak + right-click: next stone")):
+        label("tooltip", key, label_fr, label_en)
+    for key, label_fr, label_en in (("hours", "%s h %s min", "%sh %smin"), ("minutes", "%s min %s s", "%smin %ss"),
+                                    ("seconds", "%s s", "%ss")):
+        label("duration", key, label_fr, label_en)
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de

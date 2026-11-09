@@ -16,6 +16,7 @@ import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
 import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
+import fr.atraxterra.dohy.palamod.legendary.PalaLegendary;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -93,6 +94,7 @@ public final class PalaTab {
                         // Enfin le PvP : la palamachine, ses sticks et ses anneaux.
                         PalaPvp.ORDERED_BLOCKS.forEach(block -> output.accept(block.get()));
                         PalaPvp.ORDERED_ITEMS.forEach(item -> output.accept(item.get()));
+                        PalaLegendary.ORDERED.forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

@@ -1733,3 +1733,69 @@ porté : le modèle tenu au-dessus de la tête.
 - **Spike en paladium** (`BlockSpike`) : posé contre la face cliquée, il inflige 15 points
   (source cactus) à ce qui s'y appuie. Résistance 60. Seul le spike en paladium est porté : c'est
   l'ingrédient du stick de dommage.
+
+## 21. Pierres légendaires et gant en endium (chapitre 17)
+
+Relevé dans `LegendaryStone`, `LegendaryStone$Effect`, `ItemEndiumGauntlet`,
+`EndiumGauntletRecipe`, `UpgradeHelper`, `GrinderLogic` et `PRegister_Craft`. Le wiki
+(« Java – Les legendary stones ») sert de contrôle.
+
+### Les pierres — `LegendaryStone`
+
+Clic droit : l'effet, puis **24 heures** de recharge en temps réel, notée sur la pierre (elle la
+suit si on la donne). Prête, elle brille. Les pierres ne se consomment pas. **Téléportation et
+chaos** ont en plus un verrou de **10 minutes par joueur**, commun à toutes leurs pierres (le wiki
+dit 1 h pour le chaos : c'est l'infobulle, le serveur vérifie 10 min). Le verrou d'une heure des
+quatre autres n'était jamais écrit dans l'original : on peut enchaîner deux pierres différentes.
+
+| Pierre | Effet |
+|---|---|
+| Aléatoire | s'ouvre : elle disparaît et donne l'une des six autres, prête à servir |
+| Téléportation | un point au hasard à moins de 25 000 blocs de l'origine, jusqu'à 11 essais ; la recharge part même en cas d'échec |
+| Invisibilité | invisibilité II, 2 minutes, à tous les joueurs d'un cube de 3 blocs autour du lanceur, lui compris |
+| Fortune | 2 à 25 blocs jetés devant le joueur : charbon, fer, or, diamant, améthyste, titane (15 % chacun), paladium (10 %) |
+| Pouvoir | **résistance au feu, 30 minutes** (voir les écarts) |
+| Métier | 5 000 à 20 000 points d'XP d'un métier au hasard, bonus du joueur compris |
+| Chaos | l'inventaire principal de chaque autre joueur à 10 blocs ou moins est battu (20 échanges de cases) |
+
+**Écarts.**
+- **Pouvoir** : l'original rendait immunisé 5 minutes à l'eau sulfurique (la « fake water » des
+  raids), qui n'est pas portée. Remplacée, au choix du joueur, par 30 minutes de résistance au feu.
+- **Téléportation** : seulement dans l'Overworld (Nether : le toit ; End : le vide ; dimension du
+  Mineur : ses sections) — ailleurs, la pierre refuse sans consommer sa recharge. On atterrit à la
+  surface (l'original montait depuis y = 63 jusqu'au premier bloc d'air, parfois dans une
+  grotte) ; un point est refusé hors de la bordure du monde, sur la bedrock, sur la lave ou dans
+  la protection du spawn.
+- **Chaos** : sur le fil du serveur (l'original lançait un fil à part) et seulement sur les joueurs
+  que le lanceur pourrait frapper (PvP, équipes).
+- Le verrou de 10 minutes survit à la mort (l'original le perdait, ce qui l'offrait à une mort
+  volontaire).
+
+### Le gant en endium — `ItemEndiumGauntlet`
+
+- **À l'établi** : une pierre (sauf l'aléatoire) entre deux lingots d'endium, un cœur en paladium
+  dessus et dessous. Le gant naît avec cette pierre et sa recharge. La recette ne prend jamais un
+  gant existant.
+- **Au grinder** : pierre dans la case du modificateur, gant dans celle de l'outil ; 100 ticks,
+  sans paladium. Une pierre de chaque type au plus. Le gant garde la recharge la plus récente.
+- **Accroupi, clic droit** : la pierre suivante (dans l'ordre téléportation, invisibilité, fortune,
+  pouvoir, métier, chaos). **Clic droit** : l'effet de la pierre sélectionnée, avec sa propre
+  recharge dans ce gant — **12 heures** au lieu de 24 quand il porte les six.
+- Son nom dit la pierre sélectionnée, « Endium Gauntlet (Chaos) » ; l'infobulle liste les pierres
+  et la recharge de chacune.
+- **Écart** : complet, il devient l'**Infinity Gauntlet**, nom et icône dorée. L'original ne les
+  prenait que si l'on renommait le gant ainsi à l'enclume.
+
+### Obtention — au choix du joueur
+
+Les lucky blocks et les événements de Paladium n'existent pas ici. La pierre aléatoire est dans la
+**caisse rare** (poids 4 sur 104) et la **caisse légendaire** (10 sur 112), le gant complet dans la
+**caisse légendaire** (2 sur 112). Une entrée de caisse accepte maintenant des composants
+(`components`), ce qui permet le gant garni.
+
+### Ce qui n'est pas porté
+
+La pierre légendaire corrompue (événement de novembre), les orbes du chaos (8 par pierre de
+chaos), les modules de compétences de familier qui raccourcissaient les recharges, la fiche de
+profil (`/legendarystone`), les particules complètes de `LengendaryStoneFx` (une double hélice de
+la couleur de la pierre les remplace).
