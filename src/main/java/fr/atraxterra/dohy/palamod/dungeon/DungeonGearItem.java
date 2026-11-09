@@ -110,10 +110,13 @@ public class DungeonGearItem extends Item {
             tooltip.accept(Component.translatable("tooltip.palamod.dungeon_gear." + kind, percent, dungeon.display())
                     .withStyle(dungeon.color()));
         }
-        Item essence = dungeon == null ? null : PalaDungeonGear.essence(dungeon, tier.essence());
-        tooltip.accept(essence == null
-                ? Component.translatable("tooltip.palamod.dungeon_gear.repair_any").withStyle(ChatFormatting.GRAY)
-                : Component.translatable("tooltip.palamod.dungeon_gear.repair", essence.getName(new ItemStack(essence)))
-                        .withStyle(ChatFormatting.GRAY));
+        if (dungeon == null) {
+            tooltip.accept(Component.translatable("tooltip.palamod.dungeon_gear.repair_any")
+                    .withStyle(ChatFormatting.GRAY));
+        } else {
+            Item essence = PalaDungeonGear.essence(dungeon, tier.essence());
+            tooltip.accept(Component.translatable("tooltip.palamod.dungeon_gear.repair",
+                    essence.getName(new ItemStack(essence))).withStyle(ChatFormatting.GRAY));
+        }
     }
 }
