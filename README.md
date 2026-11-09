@@ -55,6 +55,14 @@ Le script vérifie au passage que le revenu horaire reste constant à l'intérie
 - aucun système ne dépend d'une connexion quotidienne (pas de streak qui se casse) ;
 - tous les compteurs sont en **temps de jeu**, jamais en temps réel — sinon le week-end écrase les prix et les soirées de semaine n'ont plus de revenu.
 
+## Crédits des textures
+
+- **PalaMod** et son pack officiel : Paladium Games. Le contenu du namespace `palamod` en reprend
+  les textures.
+- **Équipement et essences des donjons** : *Palamod Recreated*, de SILWOX et Solea Pixel (mod de
+  fans pour 1.21, « All Rights Reserved »). Ces textures ne doivent pas être redistribuées
+  publiquement sans leur accord.
+
 ## État
 
 Doc et data terminés. Aucun code écrit — voir [`PROGRESS.md`](PROGRESS.md).

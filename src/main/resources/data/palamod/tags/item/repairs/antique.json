@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:aquatic_essence_concentrate",
+    "palamod:cavern_essence_concentrate",
+    "palamod:flame_essence_concentrate",
+    "palamod:forest_essence_concentrate"
+  ]
+}

@@ -5,7 +5,19 @@
     "palamod:capture_sword",
     "palamod:endium_sword",
     "palamod:green_paladium_sword",
+    "palamod:manelios_legendary_sword",
+    "palamod:manelios_reinforced_sword",
+    "palamod:manelios_sword",
+    "palamod:nimbria_legendary_sword",
+    "palamod:nimbria_reinforced_sword",
+    "palamod:nimbria_sword",
     "palamod:paladium_sword",
-    "palamod:titane_sword"
+    "palamod:talikus_legendary_sword",
+    "palamod:talikus_reinforced_sword",
+    "palamod:talikus_sword",
+    "palamod:titane_sword",
+    "palamod:vitalys_legendary_sword",
+    "palamod:vitalys_reinforced_sword",
+    "palamod:vitalys_sword"
   ]
 }

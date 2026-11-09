@@ -2,10 +2,23 @@
   "replace": false,
   "values": [
     "palamod:amethyst_boots",
+    "palamod:antique_boots",
     "palamod:endium_boots",
     "palamod:green_paladium_boots",
+    "palamod:manelios_boots",
+    "palamod:manelios_legendary_boots",
+    "palamod:manelios_reinforced_boots",
     "palamod:mixed_endium_boots",
+    "palamod:nimbria_boots",
+    "palamod:nimbria_legendary_boots",
+    "palamod:nimbria_reinforced_boots",
     "palamod:paladium_boots",
-    "palamod:titane_boots"
+    "palamod:talikus_boots",
+    "palamod:talikus_legendary_boots",
+    "palamod:talikus_reinforced_boots",
+    "palamod:titane_boots",
+    "palamod:vitalys_boots",
+    "palamod:vitalys_legendary_boots",
+    "palamod:vitalys_reinforced_boots"
   ]
 }

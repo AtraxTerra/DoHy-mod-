@@ -554,6 +554,9 @@ LAYERS = ASSETS / "textures" / "entity" / "equipment"
 VANILLA_ITEM_TAGS = RES / "data" / "minecraft" / "tags" / "item"
 ARMOR_MATERIALS_JAVA = JAVA / "equipment" / "PalaArmorMaterials.java"
 EQUIPMENT_JAVA = JAVA / "equipment" / "PalaEquipment.java"
+# L'equipement de donjon (chapitre 19) declare ses materiaux et ses pieces a
+# part, avec les memes fabriques : il passe par les memes controles.
+DUNGEON_GEAR_JAVA = JAVA / "dungeon" / "PalaDungeonGear.java"
 
 LAYER_SIZE = (64, 32)
 
@@ -576,8 +579,10 @@ def check_equipment():
         return
 
     # -- 1. materiau -> definition -> couches -> textures
-    materials = set(re.findall(r'material\(\s*"([a-z0-9_]+)"',
-                               ARMOR_MATERIALS_JAVA.read_text(encoding="utf-8")))
+    material_source = ARMOR_MATERIALS_JAVA.read_text(encoding="utf-8")
+    if DUNGEON_GEAR_JAVA.exists():
+        material_source += DUNGEON_GEAR_JAVA.read_text(encoding="utf-8")
+    materials = set(re.findall(r'material\(\s*"([a-z0-9_]+)"', material_source))
     if not materials:
         fail("equipement : aucun materiau trouve dans PalaArmorMaterials — le motif "
              "de ce controle ne correspond plus au code")
@@ -606,6 +611,8 @@ def check_equipment():
 
     # -- 2. chaque piece dans le tag qui ouvre ses enchantements
     source = EQUIPMENT_JAVA.read_text(encoding="utf-8")
+    if DUNGEON_GEAR_JAVA.exists():
+        source += DUNGEON_GEAR_JAVA.read_text(encoding="utf-8")
     checked = 0
     for factory, tag_name in TOOL_TAGS.items():
         values = _tag_values(tag_name)

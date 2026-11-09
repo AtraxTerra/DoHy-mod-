@@ -96,9 +96,9 @@ public final class PalaArmorMaterials {
      * nom ici sans fichier la-bas donne un joueur sans armure visible, ce que
      * {@code tools/check_assets.py} verifie.
      */
-    private static ArmorMaterial material(String name, int durabilityFactor, int[] original,
-                                          int enchantability, Holder<SoundEvent> sound,
-                                          TagKey<Item> repair) {
+    public static ArmorMaterial material(String name, int durabilityFactor, int[] original,
+                                         int enchantability, Holder<SoundEvent> sound,
+                                         TagKey<Item> repair) {
         int total = 0;
         for (int value : original) {
             total += value;

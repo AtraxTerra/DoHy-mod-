@@ -128,6 +128,17 @@ final class DungeonRun {
     private Villager merchant;
     private int ticks;
 
+    /** Ce qui fait la note : degats infliges, vie perdue, monstres tues. */
+    static final class Stats {
+        float dealt;
+        float taken;
+        int kills;
+    }
+
+    private final Map<UUID, Stats> stats = new HashMap<>();
+    /** Les salles de combat et de boss terminees. */
+    private int fights;
+
     DungeonRun(int id, ServerLevel level, Dungeon dungeon, int palier, ServerPlayer leader, List<ServerPlayer> party,
                BlockPos origin) {
         this.id = id;
@@ -695,6 +706,9 @@ final class DungeonRun {
     // -- Fin de salle, coffre et portes ---------------------------------------------
 
     private void roomCleared() {
+        if (room.type == RoomType.COMBAT || room.type == RoomType.BOSS) {
+            fights++;
+        }
         if (room.type.loot()) {
             chest = room.chestPos();
             level.setBlock(chest, Blocks.CHEST.defaultBlockState(), 3);
@@ -862,19 +876,75 @@ final class DungeonRun {
         }
     }
 
+    // -- Note ---------------------------------------------------------------------
+
+    private Stats stats(UUID player) {
+        return stats.computeIfAbsent(player, uuid -> new Stats());
+    }
+
+    void recordDealt(ServerPlayer player, float amount) {
+        if (members.contains(player.getUUID()) && amount > 0.0f) {
+            stats(player.getUUID()).dealt += amount;
+        }
+    }
+
+    void recordTaken(ServerPlayer player, float amount) {
+        if (members.contains(player.getUUID()) && amount > 0.0f) {
+            stats(player.getUUID()).taken += amount;
+        }
+    }
+
+    void recordKill(ServerPlayer player) {
+        if (members.contains(player.getUUID())) {
+            stats(player.getUUID()).kills++;
+        }
+    }
+
+    /** La note d'un joueur, et ses trois parts, en pour cent. */
+    private record Mark(Grade grade, int damage, int survival, int involvement) {
+    }
+
+    private Mark mark(ServerPlayer player, List<ServerPlayer> party) {
+        float totalDealt = 0.0f;
+        int totalKills = 0;
+        for (ServerPlayer member : party) {
+            totalDealt += stats(member.getUUID()).dealt;
+            totalKills += stats(member.getUUID()).kills;
+        }
+        Stats own = stats(player.getUUID());
+        int size = party.size();
+        double damage = size <= 1 || totalDealt <= 0.0f ? 1.0d : Math.min(1.0d, own.dealt / totalDealt * size);
+        double involvement = size <= 1 ? (own.kills > 0 ? 1.0d : 0.5d)
+                : totalKills <= 0 ? 0.5d : Math.min(1.0d, (double) own.kills / totalKills * size);
+        double survival = Math.clamp(1.0d - own.taken / (40.0d * Math.max(1, fights)), 0.0d, 1.0d);
+        Grade grade = Grade.of(0.35d * damage + 0.45d * survival + 0.20d * involvement);
+        return new Mark(grade, (int) Math.round(damage * 100), (int) Math.round(survival * 100),
+                (int) Math.round(involvement * 100));
+    }
+
     // -- Fin de partie ------------------------------------------------------------
 
     /** La porte de sortie : sacs livres, XP de metier, progression. */
     private void succeed() {
         phase = Phase.ENDED;
         long jobXp = 600L + 40L * palier;
-        for (ServerPlayer player : onlineMembers()) {
+        List<ServerPlayer> party = onlineMembers();
+        for (ServerPlayer player : party) {
             List<ItemStack> delivered = new ArrayList<>(bags.getOrDefault(player.getUUID(), List.of()));
-            for (ItemStack unique : DungeonRewards.unique(dungeon, palier)) {
+            for (ItemStack unique : DungeonRewards.unique(dungeon, palier, random)) {
                 if (random.nextBoolean()) {
                     DungeonManager.message(player, ChatFormatting.LIGHT_PURPLE, "unique", unique.getHoverName());
                     delivered.add(unique);
                 }
+            }
+            Mark mark = mark(player, party);
+            List<ItemStack> graded = DungeonRewards.gradeChest(level, random, dungeon, palier, mark.grade());
+            DungeonManager.message(player, mark.grade().color(), "grade",
+                    Component.literal(mark.grade().name()).withStyle(mark.grade().color(), ChatFormatting.BOLD),
+                    mark.damage(), mark.survival(), mark.involvement());
+            if (!graded.isEmpty()) {
+                DungeonManager.message(player, ChatFormatting.GOLD, "grade_chest", describe(graded));
+                delivered.addAll(graded);
             }
             for (ItemStack stack : delivered) {
                 ItemStack copy = stack.copy();
@@ -893,7 +963,9 @@ final class DungeonRun {
                     Component.literal("Palier " + palier + " reussi !").withStyle(ChatFormatting.GREEN,
                             ChatFormatting.BOLD)));
             player.connection.send(new ClientboundSetSubtitleTextPacket(
-                    Component.literal(dungeon.display()).withStyle(dungeon.color())));
+                    Component.literal(dungeon.display() + " — note ").withStyle(dungeon.color())
+                            .append(Component.literal(mark.grade().name())
+                                    .withStyle(mark.grade().color(), ChatFormatting.BOLD))));
             DungeonManager.sendBack(player);
         }
         members.clear();
