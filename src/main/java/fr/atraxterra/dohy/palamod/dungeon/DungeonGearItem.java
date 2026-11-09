@@ -113,7 +113,7 @@ public class DungeonGearItem extends Item {
         Item essence = dungeon == null ? null : PalaDungeonGear.essence(dungeon, tier.essence());
         tooltip.accept(essence == null
                 ? Component.translatable("tooltip.palamod.dungeon_gear.repair_any").withStyle(ChatFormatting.GRAY)
-                : Component.translatable("tooltip.palamod.dungeon_gear.repair", essence.getName())
+                : Component.translatable("tooltip.palamod.dungeon_gear.repair", essence.getName(new ItemStack(essence)))
                         .withStyle(ChatFormatting.GRAY));
     }
 }
