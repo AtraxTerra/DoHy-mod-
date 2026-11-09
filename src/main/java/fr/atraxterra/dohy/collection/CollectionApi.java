@@ -217,8 +217,19 @@ public final class CollectionApi {
                 * CollectionTiers.config().prestige().s0BonusPerLevel();
     }
 
-    /** Bonus de plancher acquis par le prestige. */
+    /**
+     * Bonus de plancher acquis par le prestige.
+     *
+     * <p>Un item sans bonus de plancher ({@code floor_bonus_disabled}) n'en a
+     * pas non plus par le prestige : l'emeraude et les blocs de masse ont ce
+     * drapeau pour que leur plancher reste bas, et 300 000 blocs se cassent en
+     * quelques heures a la corne du Dancarok — le prestige rendait ce que les
+     * paliers retenaient.
+     */
     public static double prestigeFloorBonus(ServerPlayer player, Identifier id) {
+        if (!CollectionTiers.config().floorBonusAllowed(id)) {
+            return 0.0d;
+        }
         return prestigeLevel(player, id)
                 * CollectionTiers.config().prestige().floorBonusPerLevel();
     }

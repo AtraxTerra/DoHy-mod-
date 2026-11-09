@@ -1,6 +1,5 @@
 package fr.atraxterra.dohy.shop;
 
-import fr.atraxterra.dohy.boost.BoutiqueMenu;
 import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
@@ -49,8 +48,8 @@ public final class ShopMenu extends DisplayMenu {
     private static final int ITEM_SLOTS = 45;
 
     private static final int SLOT_PREVIOUS = 45;
+    /** Six onglets, 46 a 51. La boutique, qui tenait la case 51, est au menu principal. */
     private static final int SLOT_FIRST_TAB = 46;
-    private static final int SLOT_BOUTIQUE = 51;
     private static final int SLOT_BALANCE = 52;
     private static final int SLOT_NEXT = 53;
 
@@ -82,9 +81,6 @@ public final class ShopMenu extends DisplayMenu {
         } else if (slot == SLOT_NEXT && (page + 1) * ITEM_SLOTS < currentItems.size()) {
             page++;
             click();
-        } else if (slot == SLOT_BOUTIQUE) {
-            click(0.9f);
-            open("Boutique", (id, inventory) -> new BoutiqueMenu(id, inventory, player));
         } else if (slot == SLOT_BALANCE) {
             click(0.7f);
             Hub.open(player);
@@ -215,12 +211,6 @@ public final class ShopMenu extends DisplayMenu {
                     Gui.lore(Gui.hint(itemsOf(tab).size() + " item(s)"))));
         }
 
-        set(SLOT_BOUTIQUE, Gui.button(Items.GOLD_BLOCK, "Boutique", Gui.lore(
-                Gui.hint("boosters, caisses, assurance, autosell"),
-                Gui.hint("tout ce qui ne se trouve pas en jeu"),
-                Gui.blank(),
-                Gui.action("clic pour ouvrir"))));
-
         set(SLOT_BALANCE, Gui.button(Items.GOLD_INGOT,
                 "Solde : " + MoneyFormat.exact(Economy.balance(player)), Gui.lore(
                         Gui.hint("page " + (page + 1) + " / " + pages),
@@ -230,6 +220,7 @@ public final class ShopMenu extends DisplayMenu {
                         Gui.hint("clic droit : acheter 1"),
                         Gui.hint("shift + droit : acheter 16"),
                         Gui.blank(),
+                        Gui.hint("la boutique est au menu"),
                         Gui.action("clic ici : revenir au menu"))));
     }
 

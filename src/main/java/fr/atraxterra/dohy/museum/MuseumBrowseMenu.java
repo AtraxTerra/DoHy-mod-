@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.museum;
 
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
+import fr.atraxterra.dohy.shop.ShopCategory;
 import fr.atraxterra.dohy.ui.DisplayMenu;
 import fr.atraxterra.dohy.ui.Gui;
 import fr.atraxterra.dohy.ui.Hub;
@@ -286,13 +287,7 @@ public final class MuseumBrowseMenu extends DisplayMenu {
         if (patron) {
             return Items.NETHER_STAR;
         }
-        return switch (key) {
-            case "FOOD" -> Items.BREAD;
-            case "FOUND" -> Items.DIAMOND;
-            case "FARM" -> Items.WHEAT;
-            case "MOB_DROP" -> Items.ROTTEN_FLESH;
-            case "NTM" -> Items.ANVIL;
-            default -> Items.BOOK;
-        };
+        ShopCategory category = ShopCategory.byKey(key);
+        return category == null ? Items.BOOK : category.icon();
     }
 }

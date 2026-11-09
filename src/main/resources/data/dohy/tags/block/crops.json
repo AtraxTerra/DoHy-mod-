@@ -1,5 +1,5 @@
 {
-  "_comment": "Cultures qui murissent sur place. Sert aux contrats de recolte, et placement_exempt l'inclut.",
+  "_comment": "Cultures qui murissent sur place. Sert aux contrats de recolte, et placement_exempt l'inclut. Les quatre cultures de PalaMod y sont : sans elles, une culture plantee a la main etait un bloc pose, donc sans XP de Fermier, sans collection ni contrat.",
   "values": [
     "minecraft:wheat",
     "minecraft:carrots",
@@ -9,6 +9,10 @@
     "minecraft:torchflower_crop",
     "minecraft:pitcher_crop",
     "minecraft:cocoa",
-    "minecraft:sweet_berry_bush"
+    "minecraft:sweet_berry_bush",
+    "palamod:eggplant_crop",
+    "palamod:chervil_crop",
+    "palamod:kiwano_crop",
+    "palamod:orangeblue_crop"
   ]
 }

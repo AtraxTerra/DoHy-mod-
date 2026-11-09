@@ -1,11 +1,15 @@
 package fr.atraxterra.dohy.job;
 
+import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.collection.CollectionEvents;
 import fr.atraxterra.dohy.world.PlacedBlocks;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -36,6 +40,15 @@ import java.util.List;
  */
 @EventBusSubscriber
 public final class JobEffects {
+
+    /**
+     * Les graines qui replantent : celles des villageois et celles de PalaMod.
+     * Le tag vanilla seul laissait copier les graines d'aubergine, de cerfeuil et
+     * de kiwano, et un champ de PalaMod grossissait tout seul.
+     */
+    private static final TagKey<Item> REPLANT_SEEDS = TagKey.create(
+            BuiltInRegistries.ITEM.key(),
+            Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "replant_seeds"));
 
     private JobEffects() {
     }
@@ -95,7 +108,7 @@ public final class JobEffects {
                 ItemStack copy = drop.getItem().copy();
                 // Les graines ne sont pas dupliquees : elles servent a replanter,
                 // et les multiplier ferait grossir une ferme toute seule.
-                if (copy.isEmpty() || copy.is(ItemTags.VILLAGER_PLANTABLE_SEEDS)) {
+                if (copy.isEmpty() || copy.is(REPLANT_SEEDS)) {
                     continue;
                 }
                 player.level().addFreshEntity(new ItemEntity(
