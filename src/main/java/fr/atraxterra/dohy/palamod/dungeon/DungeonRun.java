@@ -156,6 +156,15 @@ final class DungeonRun {
         }
     }
 
+    DungeonRun(int id, ServerLevel level, Dungeon dungeon, int palier, BlockPos origin) {
+        this.id = id;
+        this.level = level;
+        this.dungeon = dungeon;
+        this.palier = palier;
+        this.leader = UUID.randomUUID();
+        this.origin = origin;
+    }
+
     ServerLevel level() {
         return level;
     }
