@@ -3294,6 +3294,97 @@ def main():
             ("grade_chest", "Coffre de la note : %s", "Grade chest: %s")):
         label("message", "dungeon." + key, label_fr, label_en)
 
+    # ---- donjons : runes et arbre de competences (chapitre 20) ----
+    #
+    # Aucune texture de rune n'existe, ni dans PalaMod ni dans Palamod
+    # Recreated : une tablette de pierre gravee, dessinee ici pixel par pixel,
+    # dont la gravure prend la couleur de la rarete. Le fragment en est l'eclat
+    # superieur gauche.
+    RUNE_TABLET = (
+        "................",
+        ".....######.....",
+        "....#ssssss#....",
+        "...#sssssssS#...",
+        "...#sGsssGsS#...",
+        "...#sGGsGGsS#...",
+        "...#sGsGsGsS#...",
+        "...#sGsssGsS#...",
+        "...#sGsssGsS#...",
+        "...#ssGsGssS#...",
+        "...#sssGsssS#...",
+        "...#sssssssS#...",
+        "...#ssssssSS#...",
+        "....#SSSSSS#....",
+        ".....######.....",
+        "................")
+    RUNE_SHARD = (
+        "................",
+        "................",
+        ".....####.......",
+        "....#ssss#......",
+        "...#sGsss#......",
+        "...#sGGs#.......",
+        "...#sGsG#.......",
+        "...#sGss##......",
+        "...#sGsss#......",
+        "...#ssGs#.......",
+        "....#ss#........",
+        ".....##.........",
+        "................",
+        "................",
+        "................",
+        "................")
+
+    def rune_texture(name, pattern, glyph):
+        from PIL import Image
+        palette = {"#": (38, 38, 46, 255), "s": (124, 124, 134, 255), "S": (92, 92, 102, 255),
+                   "G": glyph + (255,), ".": (0, 0, 0, 0)}
+        image = Image.new("RGBA", (16, 16))
+        for y, row in enumerate(pattern):
+            for x, cell in enumerate(row):
+                image.putpixel((x, y), palette[cell])
+        full = os.path.join(RES, "assets", NS, "textures", "item", name + ".png")
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        image.save(full)
+
+    for name, pattern, glyph, label_fr, label_en in (
+            ("rune_fragment_common", RUNE_SHARD, (210, 210, 220), "Fragment de rune commune", "Common Rune Fragment"),
+            ("rune_fragment_rare", RUNE_SHARD, (80, 220, 255), "Fragment de rune rare", "Rare Rune Fragment"),
+            ("rune_common", RUNE_TABLET, (236, 236, 244), "Rune commune", "Common Rune"),
+            ("rune_rare", RUNE_TABLET, (80, 220, 255), "Rune rare", "Rare Rune"),
+            ("rune_epic", RUNE_TABLET, (214, 110, 255), "Rune epique", "Epic Rune")):
+        rune_texture(name, pattern, glyph)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+
+    for key, label_fr, label_en in (("common", "commune", "common"), ("rare", "rare", "rare"),
+                                    ("epic", "epique", "epic")):
+        label("rarity", key, label_fr, label_en)
+    for key, label_fr, label_en in (("attack", "Attaque", "Attack"), ("dodge", "Esquive", "Dodge"),
+                                    ("crit", "Critique", "Critical"), ("defense", "Defense", "Defense")):
+        label("rpg", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("rune.unrevealed", "Non revelee : clic droit pour decouvrir ses statistiques",
+             "Unrevealed: right-click to discover its stats"),
+            ("rune.tier", "Rune %s, tier %s", "%s rune, tier %s"),
+            ("rune.hint", "Enclume : avec une rune pareille, tier suivant. Grinder : dans une armure de donjon.",
+             "Anvil: with a matching rune, next tier. Grinder: into dungeon armor."),
+            ("dungeon_gear.rune_slot", "Emplacement de rune libre (au grinder)", "Free rune slot (at the grinder)")):
+        label("tooltip", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("rune.revealed", "La rune revele ses statistiques.", "The rune reveals its stats."),
+            ("rpg.xp", "+%s XP RPG", "+%s RPG XP"),
+            ("rpg.level", "Niveau RPG %s ! Un point de competence de plus (/profil).",
+             "RPG level %s! One more skill point (/profil)."),
+            ("rpg.validated", "Arbre valide : %s points depenses.", "Tree confirmed: %s points spent."),
+            ("rpg.respec", "Arbre reinitialise : vos points sont rendus.", "Tree reset: your points are back."),
+            ("rpg.respec_poor", "Il vous faut 25 000 $ pour reinitialiser l'arbre.",
+             "You need $25,000 to reset the tree."),
+            ("rpg.dodge", "Esquive !", "Dodged!")):
+        label("message", key, label_fr, label_en)
+    fr["button.%s.rpg_profile" % NS] = "Profil RPG"
+    en["button.%s.rpg_profile" % NS] = "RPG Profile"
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de

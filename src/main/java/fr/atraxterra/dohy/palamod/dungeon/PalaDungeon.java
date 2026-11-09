@@ -75,6 +75,18 @@ public final class PalaDungeon {
                     .copyOnDeath()
                     .build());
 
+    /** Les statistiques d'une rune, sur la rune ou sur la piece d'armure qui la porte. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<RuneData>> RUNE =
+            COMPONENTS.registerComponentType("rune", builder -> builder
+                    .persistent(RuneData.CODEC).networkSynchronized(RuneData.STREAM_CODEC));
+
+    /** Le profil RPG : XP et arbre de competences. Il suit la mort. */
+    public static final Supplier<AttachmentType<RpgData>> RPG = ATTACHMENTS.register(
+            "rpg", () -> AttachmentType.builder(() -> RpgData.EMPTY)
+                    .serialize(RpgData.MAP_CODEC, data -> !data.isBlank())
+                    .copyOnDeath()
+                    .build());
+
     /** La prochaine region libre de la dimension, gardee sur l'overworld. */
     public static final Supplier<AttachmentType<Integer>> NEXT_REGION = ATTACHMENTS.register(
             "dungeon_next_region", () -> AttachmentType.builder(() -> 0)
@@ -115,10 +127,26 @@ public final class PalaDungeon {
     public static final DeferredItem<JobBottleItem> ALCHEMIST_BOTTLE = ITEMS.registerItem("job_bottle_alchemist",
             properties -> new JobBottleItem(Job.ALCHEMIST, properties.stacksTo(64)));
 
+    // -- Runes ----------------------------------------------------------------------
+
+    /** « Fragment de rune commune » : quatre font une rune a la palamachine. */
+    public static final DeferredItem<Item> RUNE_FRAGMENT_COMMON = ITEMS.registerItem("rune_fragment_common",
+            properties -> new Item(properties));
+    /** « Fragment de rune rare ». */
+    public static final DeferredItem<Item> RUNE_FRAGMENT_RARE = ITEMS.registerItem("rune_fragment_rare",
+            properties -> new Item(properties));
+    public static final DeferredItem<RuneItem> RUNE_COMMON = ITEMS.registerItem("rune_common",
+            properties -> new RuneItem(RuneRarity.COMMON, properties.stacksTo(1)));
+    public static final DeferredItem<RuneItem> RUNE_RARE = ITEMS.registerItem("rune_rare",
+            properties -> new RuneItem(RuneRarity.RARE, properties.stacksTo(1)));
+    public static final DeferredItem<RuneItem> RUNE_EPIC = ITEMS.registerItem("rune_epic",
+            properties -> new RuneItem(RuneRarity.EPIC, properties.stacksTo(1)));
+
     public static final List<DeferredItem<? extends Item>> ORDERED = List.of(
             TALIKUS_KEY, NIMBRIA_KEY, VITALYS_KEY, MANELIOS_KEY,
             LEATHER_BACKPACK, BACKPACK_T2, BACKPACK_T3,
-            FARMER_BOTTLE, MINER_BOTTLE, HUNTER_BOTTLE, ALCHEMIST_BOTTLE);
+            FARMER_BOTTLE, MINER_BOTTLE, HUNTER_BOTTLE, ALCHEMIST_BOTTLE,
+            RUNE_FRAGMENT_COMMON, RUNE_FRAGMENT_RARE, RUNE_COMMON, RUNE_RARE, RUNE_EPIC);
 
     private PalaDungeon() {
     }

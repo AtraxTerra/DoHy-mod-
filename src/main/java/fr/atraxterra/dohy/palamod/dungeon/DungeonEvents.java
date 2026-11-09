@@ -3,8 +3,12 @@ package fr.atraxterra.dohy.palamod.dungeon;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -19,6 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
@@ -199,14 +204,36 @@ public final class DungeonEvents {
             }
             float amount = event.getAmount() * sourceRun.damageFactor();
             if (target instanceof ServerPlayer player) {
+                // L'esquive evite tout le coup ; sinon defense RPG et armure de donjon.
+                if (player.getRandom().nextFloat() < Rpg.stat(player, RpgStat.DODGE)) {
+                    event.setCanceled(true);
+                    ServerLevel level = (ServerLevel) player.level();
+                    level.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY() + 1.0d, player.getZ(),
+                            8, 0.3d, 0.4d, 0.3d, 0.02d);
+                    player.sendSystemMessage(Component.translatable("message.palamod.rpg.dodge")
+                            .withStyle(RpgStat.DODGE.color()), true);
+                    return;
+                }
                 amount *= 1.0f - DungeonGearItem.reduction(player, sourceRun.dungeon);
+                amount *= 1.0f - Rpg.stat(player, RpgStat.DEFENSE);
             }
             event.setAmount(amount);
         }
         if (targetRun != null) {
             float amount = event.getAmount() * DungeonManager.takenFactor(target.getUUID());
-            if (source instanceof ServerPlayer player && event.getSource().getDirectEntity() == player) {
-                amount *= 1.0f + DungeonGearItem.damageBonus(player, targetRun.dungeon);
+            if (source instanceof ServerPlayer player) {
+                if (event.getSource().getDirectEntity() == player) {
+                    amount *= 1.0f + DungeonGearItem.damageBonus(player, targetRun.dungeon);
+                }
+                amount *= 1.0f + Rpg.stat(player, RpgStat.ATTACK);
+                if (player.getRandom().nextFloat() < Rpg.stat(player, RpgStat.CRIT)) {
+                    amount *= 1.5f;
+                    ServerLevel level = (ServerLevel) target.level();
+                    level.sendParticles(ParticleTypes.CRIT, target.getX(), target.getY() + target.getBbHeight() / 2,
+                            target.getZ(), 12, 0.3d, 0.3d, 0.3d, 0.2d);
+                    level.playSound(null, target.blockPosition(), SoundEvents.PLAYER_ATTACK_CRIT,
+                            SoundSource.PLAYERS, 0.8f, 1.0f);
+                }
             }
             event.setAmount(amount);
         }
@@ -346,11 +373,41 @@ public final class DungeonEvents {
         }
     }
 
+    /**
+     * L'amelioration d'une rune (wiki) : deux runes de meme rarete et de meme
+     * tier, la seconde sacrifiee ; 10, 15 puis 20 niveaux.
+     */
+    @SubscribeEvent
+    public static void onAnvil(AnvilUpdateEvent event) {
+        ItemStack left = event.getLeft();
+        ItemStack right = event.getRight();
+        if (!(left.getItem() instanceof RuneItem) || !left.is(right.getItem())) {
+            return;
+        }
+        RuneData target = left.get(PalaDungeon.RUNE.get());
+        RuneData sacrificed = right.get(PalaDungeon.RUNE.get());
+        if (target == null || sacrificed == null || !target.canUpgradeWith(sacrificed)) {
+            return;
+        }
+        ItemStack output = left.copy();
+        output.set(PalaDungeon.RUNE.get(), target.upgradedWith(sacrificed));
+        event.setOutput(output);
+        event.setXpCost(target.upgradeCost());
+        event.setMaterialCost(1);
+    }
+
     // -- Commandes ----------------------------------------------------------------
 
-    /** {@code /donjon quitter} : abandonner le palier ; {@code /donjon sac} : voir son sac. */
+    /**
+     * {@code /donjon quitter} : abandonner le palier ; {@code /donjon sac} : voir
+     * son sac ; {@code /profil} : le profil RPG, comme le bouton de l'inventaire.
+     */
     @SubscribeEvent
     public static void onCommands(RegisterCommandsEvent event) {
+        event.getDispatcher().register(Commands.literal("profil").executes(context -> {
+            RpgMenu.open(context.getSource().getPlayerOrException());
+            return 1;
+        }));
         event.getDispatcher().register(Commands.literal("donjon")
                 .then(Commands.literal("quitter").executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();

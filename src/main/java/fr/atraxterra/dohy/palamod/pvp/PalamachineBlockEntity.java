@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.palamod.pvp;
 
+import fr.atraxterra.dohy.palamod.dungeon.RuneItem;
 import fr.atraxterra.dohy.palamod.machine.MachineBlockEntity;
 import fr.atraxterra.dohy.palamod.machine.MachineLayout;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
@@ -130,6 +131,10 @@ public class PalamachineBlockEntity extends MachineBlockEntity implements Worldl
         work++;
         if (work >= WORK_GOAL) {
             ItemStack output = items.get(SLOT_OUTPUT);
+            if (result.getItem() instanceof RuneItem && level != null) {
+                // Une rune fabriquee nait avec ses statistiques.
+                RuneItem.ensure(result, level.getRandom());
+            }
             if (output.isEmpty()) {
                 items.set(SLOT_OUTPUT, result);
             } else {

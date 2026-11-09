@@ -110,6 +110,13 @@ public class DungeonGearItem extends Item {
             tooltip.accept(Component.translatable("tooltip.palamod.dungeon_gear." + kind, percent, dungeon.display())
                     .withStyle(dungeon.color()));
         }
+        RuneData rune = stack.get(PalaDungeon.RUNE.get());
+        if (rune != null) {
+            RuneItem.describe(rune, tooltip);
+        } else if (armor) {
+            tooltip.accept(Component.translatable("tooltip.palamod.dungeon_gear.rune_slot")
+                    .withStyle(ChatFormatting.DARK_GRAY));
+        }
         if (dungeon == null) {
             tooltip.accept(Component.translatable("tooltip.palamod.dungeon_gear.repair_any")
                     .withStyle(ChatFormatting.GRAY));

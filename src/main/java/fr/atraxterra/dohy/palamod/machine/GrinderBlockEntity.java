@@ -1,5 +1,9 @@
 package fr.atraxterra.dohy.palamod.machine;
 
+import fr.atraxterra.dohy.palamod.dungeon.DungeonGearItem;
+import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
+import fr.atraxterra.dohy.palamod.dungeon.RuneData;
+import fr.atraxterra.dohy.palamod.dungeon.RuneItem;
 import fr.atraxterra.dohy.palamod.PalaBlocks;
 import fr.atraxterra.dohy.palamod.PalaItems;
 import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
@@ -15,6 +19,7 @@ import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.smeltery.ToolModifiers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -25,6 +30,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -188,12 +194,15 @@ public class GrinderBlockEntity extends MachineBlockEntity implements WorldlyCon
         GrinderModifier modifier = applicable();
         boolean autoSmelt = modifier == null && autoSmeltApplicable();
         boolean stone = modifier == null && !autoSmelt && stoneApplicable();
-        if (modifier != null || autoSmelt || stone) {
+        boolean rune = modifier == null && !autoSmelt && !stone && runeApplicable();
+        if (modifier != null || autoSmelt || stone || rune) {
             if (++workUpgrade >= WORK_GOAL) {
                 if (autoSmelt) {
                     applyAutoSmelt();
                 } else if (stone) {
                     applyStone();
+                } else if (rune) {
+                    applyRune();
                 } else {
                     upgrade(modifier);
                 }
@@ -362,6 +371,42 @@ public class GrinderBlockEntity extends MachineBlockEntity implements WorldlyCon
         setChanged();
     }
 
+    /**
+     * La fusion d'une rune dans une piece d'armure de donjon (wiki : « au
+     * grinder, comme un modificateur de marteau », irreversible, une rune par
+     * piece) : casque 5 paladium, plastron 8, jambieres 7, bottes 4.
+     */
+    private boolean runeApplicable() {
+        ItemStack tool = items.get(SLOT_TOOL);
+        return items.get(SLOT_MODIFIER).getItem() instanceof RuneItem
+                && tool.getItem() instanceof DungeonGearItem gear && gear.isArmor()
+                && !tool.has(PalaDungeon.RUNE.get()) && runeCost(tool) <= paladium;
+    }
+
+    private static int runeCost(ItemStack armor) {
+        Equippable equippable = armor.get(DataComponents.EQUIPPABLE);
+        if (equippable == null) {
+            return Integer.MAX_VALUE;
+        }
+        return switch (equippable.slot()) {
+            case HEAD -> 5;
+            case CHEST -> 8;
+            case LEGS -> 7;
+            case FEET -> 4;
+            default -> Integer.MAX_VALUE;
+        };
+    }
+
+    private void applyRune() {
+        ItemStack runeStack = items.get(SLOT_MODIFIER);
+        ItemStack armor = items.get(SLOT_TOOL);
+        RuneData rune = RuneItem.ensure(runeStack, level.getRandom());
+        paladium -= runeCost(armor);
+        armor.set(PalaDungeon.RUNE.get(), rune);
+        runeStack.shrink(1);
+        setChanged();
+    }
+
     // -- Cases -----------------------------------------------------------------
 
     @Override
@@ -370,9 +415,11 @@ public class GrinderBlockEntity extends MachineBlockEntity implements WorldlyCon
             case SLOT_FIRST -> GrinderRecipes.isFirst(stack);
             case SLOT_SECOND -> GrinderRecipes.isSecond(stack);
             case SLOT_MODIFIER -> GrinderModifier.of(stack.getItem()) != null
-                    || stack.is(PalaGodPickaxe.AUTO_SMELT.get()) || LegendaryStoneItem.insertable(stack);
+                    || stack.is(PalaGodPickaxe.AUTO_SMELT.get()) || LegendaryStoneItem.insertable(stack)
+                    || stack.getItem() instanceof RuneItem;
             case SLOT_TOOL -> stack.getItem() instanceof ModifiableTool tool && tool.modifiable()
-                    || stack.getItem() instanceof GodPickaxeItem || stack.getItem() instanceof EndiumGauntletItem;
+                    || stack.getItem() instanceof GodPickaxeItem || stack.getItem() instanceof EndiumGauntletItem
+                    || stack.getItem() instanceof DungeonGearItem gear && gear.isArmor();
             case SLOT_FUEL -> isFuel(stack) && paladium < MAX_PALADIUM;
             default -> false;
         };
