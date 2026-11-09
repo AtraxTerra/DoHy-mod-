@@ -11,9 +11,14 @@ import fr.atraxterra.dohy.palamod.nature.PalaNature;
 import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
+import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
 import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
+import fr.atraxterra.dohy.palamod.legendary.PalaLegendary;
+import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
+import fr.atraxterra.dohy.palamod.dungeon.PalaDungeonGear;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -79,6 +84,7 @@ public final class PalaTab {
                         PalaGolem.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaMount.ORDERED_BLOCKS.forEach(block -> output.accept(block.get()));
                         PalaMount.ORDERED.forEach(item -> output.accept(item.get()));
+                        PalaDimMiner.ORDERED.forEach(item -> output.accept(item.get()));
 
                         // L'equipement ferme l'onglet, metal par metal.
                         PalaEquipment.ordered().forEach(item -> output.accept(item.get()));
@@ -86,6 +92,13 @@ public final class PalaTab {
                         // Puis les outils et objets du Mineur.
                         PalaMiner.ordered().forEach(item -> output.accept(item.get()));
                         PalaStorage.ORDERED.forEach(item -> output.accept(item.get()));
+
+                        // Enfin le PvP : la palamachine, ses sticks et ses anneaux.
+                        PalaPvp.ORDERED_BLOCKS.forEach(block -> output.accept(block.get()));
+                        PalaPvp.ORDERED_ITEMS.forEach(item -> output.accept(item.get()));
+                        PalaLegendary.ORDERED.forEach(item -> output.accept(item.get()));
+                        PalaDungeon.ORDERED.forEach(item -> output.accept(item.get()));
+                        PalaDungeonGear.ORDERED.forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

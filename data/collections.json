@@ -250,6 +250,86 @@
     "minecraft:emerald": {
       "_reason": "generateur villageois : aucun bonus de plancher, sinon l'exploit revient par la porte de derriere",
       "floor_bonus_disabled": true
+    },
+    "minecraft:cobblestone": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:stone": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:basalt": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:gravel": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:soul_sand": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:deepslate": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:tuff": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:calcite": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:granite": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:diorite": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:andesite": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:netherrack": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:blackstone": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:soul_soil": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:end_stone": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:sand": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:red_sand": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:terracotta": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:sulfur": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
+    },
+    "minecraft:cinnabar": {
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
+      "floor_bonus_disabled": true
     }
   },
   "sell_requires_collection": false,

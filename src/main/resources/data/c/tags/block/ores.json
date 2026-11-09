@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:amethyst_ore",
+    "palamod:endium_nugget_ore",
+    "palamod:findium_ore",
+    "palamod:invoker_ore",
+    "palamod:paladium_green_ore",
+    "palamod:paladium_ore",
+    "palamod:titane_ore",
+    "palamod:trixium_ore"
+  ]
+}

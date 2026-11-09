@@ -468,7 +468,7 @@ avait noté « ingrédients des charbons mixés inconnus » : je n'avais regard�
 | `smeltery/registerer/PSRegister_Craft` | 29 | table de craft |
 | `hunter/init/Crafts` | 24 | table de craft |
 | `miner/init/Crafts` | 19 | table de craft |
-| `PaladiumMachineRecipies.add` | 38 | **palamachine** → chapitre 5b |
+| `PaladiumMachineRecipies.add` | 38 | **palamachine** → chapitre 16 (33 portées) |
 | `GrinderRecipe.addUpgrade` | 6 | **grinder** → chapitre 5b |
 | alchimie, bow machine | 12 | machines non portées |
 
@@ -833,8 +833,9 @@ Les 64 sortent en une pile plutôt qu'en 64 entités.
 **Le piston renforcé wither n'est pas un piston** : `BlockWitheredReinforcedPiston` est un bloc
 orienté qui ne pousse rien — le wiki se trompe (« poussent 3 blocs de plus »). Il tombe des
 pistons pris dans **l'explosion d'apparition** d'un Wither (source directe : le Wither), si le
-joueur le plus proche à 30 blocs a Mineur 90. Sa conversion de l'obsidienne voisine en
-obsidienne wither (portail de la dimension de minage) n'est pas portée.
+joueur le plus proche à 30 blocs a Mineur 90. Alimenté, il change la première **obsidienne**
+voisine (est, ouest, sud, nord ; jamais dessus ni dessous) en **obsidienne wither**, le cadre du
+portail de la dimension du Mineur (§ 18).
 
 ### Palafurnace — `PaladiumFurnaceLogic`
 
@@ -893,10 +894,12 @@ d'équipe bleue au lieu de `#2537FB`.
 ### Minerai de pépites d'endium — `BlockEndiumNuggetOre`, `BaseWorldGenerator`
 
 Dureté 5, résistance de la bedrock, une seule pépite sans fortune ni toucher de soie ; le casser
-demande Mineur 100 (`#palamod:break_locked`). **Écart** : il ne naissait que dans la dimension
-de minage, non portée. Il est placé au fond de l'overworld (y −64 à −54) : quatre tirages par
-chunk à 1 sur 225, chaque filon ramené à un bloc — d'où `replace_single_block` et 1 chance
-sur 56 par chunk.
+demande Mineur 100 (`#palamod:break_locked`). Il ne naissait que dans la dimension du Mineur,
+portée au chapitre 15 (§ 18) : il n'existe plus que là, à son taux d'origine — quatre tirages à
+1 sur 900 (`rand(3 × rareté du paladium vert)`), un chunk sur 225, y −64 à −54. Un filon de 3
+ramené à un bloc (le code effaçait les autres), d'où `replace_single_block`. Du chapitre 8 au
+chapitre 15 il naissait aussi au fond de l'overworld, à 1 chance sur 56 par chunk : les chunks
+générés pendant cette période en gardent.
 
 ---
 
@@ -1091,8 +1094,8 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
   unités) ; main vide : le contenu. L'objet garde son contenu.
 - **Écarts** : le remplissage était au clic gauche (il casse le bloc ici) ; une fiole vide perd
   son type de sève (l'original le gardait, et la fiole ne s'empilait plus) ; un tank ne remplit
-  plus une fiole avec la sève d'un autre arbre ; l'extracteur usé disparaît (il se réparait à la
-  palamachine, non portée) ; les tanks ne prennent que la sève (eau, lave et eau sulfurique ne
+  plus une fiole avec la sève d'un autre arbre ; l'extracteur usé disparaît (il se rechargeait à la
+  palamachine : elle recharge ici un extracteur entamé, § 20) ; les tanks ne prennent que la sève (eau, lave et eau sulfurique ne
   servaient qu'au pistolet à tank, non porté).
 
 ### Le chaudron — `BlockCauldronCore`, `TileEntityCauldronCore`
@@ -1107,7 +1110,8 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
 - **Travail** : bassin plein, un joueur à 4,5 blocs qui a le niveau du cœur. Tout objet jeté est
   traité au tick, le résultat ressort au-dessus du centre :
   - potion de foudre + bûche : **2 bois brillants** de l'essence — leur seule source ;
-  - poudre lumineuse : 3 pépites d'or ;
+  - ~~poudre lumineuse : 3 pépites d'or~~ — **retirée au chapitre économique** (§ 19) : la poudre
+    s'achète 4 $ et les pépites se revendent 27 $, de l'argent infini ;
   - coquelicot et ses cousins, pissenlit : par fleur, 1/500 fleur minérale, 1/300 fleur de
     paladium, 1/5 000 harpagophytum, 1/15 000 fleur d'endium, 1/1 754 clathrus ; XP 0,75 à 2
     par fleur dès Alchimiste 15 ;
@@ -1429,11 +1433,11 @@ horloge s'arrête.
   couveuse (6 terre cuite, 2 verre, 1 orbe de régénération), gestionnaire (6 terre cuite, 2 blocs
   de paladium, 1 **coffre en or**), bandage (6 papier, 2 ficelle, 1 orbe), **orbe de
   régénération** (4 lingots de paladium autour d'une tranche de pastèque scintillante).
-- **Cornes** : la palamachine, l'éléphant et sa défense ne sont pas portés. Substitut à l'établi,
-  mêmes ingrédients, la défense remplacée par un **bloc d'os** : lingot, bloc, os, bloc, lingot.
-  Les recettes « bâtons + bloc » de la palamachine sont des **réparations** : trois bâtons du métal
-  (le bâton du milieu devient un cœur en paladium pour la corne en paladium), la corne usée, un
-  bloc ; elle ressort neuve.
+- **Cornes** : l'éléphant et sa défense ne sont pas portés. Les cornes se fabriquent à la
+  **palamachine** (chapitre 16, § 20), la défense remplacée par un **bloc d'os** : os au centre,
+  lingot, bloc, lingot, bloc. Les recettes « bâtons + bloc » sont des **réparations** : la corne
+  usée au centre, trois bâtons du métal (celui du milieu devient un cœur en paladium pour la corne
+  en paladium) et un bloc ; elle ressort neuve.
 
 ### Ce qui n'est pas porté, et ce qui change de forme
 
@@ -1448,3 +1452,655 @@ horloge s'arrête.
 - Les miniatures de montures au-dessus de l'enclos, l'œuf d'apparition, les permissions
   (multiplicateur Trixium), les protections WorldGuard, le multi-serveur, la compétence
   Vétérinaire du mod Pet, le profil web.
+
+## 18. Dimension du Mineur (chapitre 15)
+
+Relevé dans `modules/miner/dimminer` de PalaMod 10.3.0, avec `BaseWorldGenerator` et
+`MinerRegisterer`. Chez Paladium ce n'était **pas une dimension Forge** mais un serveur à part
+(« dimminer ») rejoint par BungeeCord : un overworld ordinaire où PalaMod triplait ses minerais. En
+solo, c'est une vraie dimension, `palamod:miner`, et l'on y entre et en sort par téléportation.
+
+### Le portail — `BlockWitheredObsidian`, `BlockMinerPortal`
+
+1. **Le cadre** : de l'obsidienne wither (aucune recette : un piston renforcé wither alimenté
+   change l'obsidienne voisine, § 11). Un cadre de portail du Nether, intérieur de 2×3 à 21×21.
+2. **Le charger** : chaque bloc du cadre reçoit **10 blocs de paladium**, un par clic droit. Il
+   s'éclaire d'un cran par bloc ; au dixième, tonnerre et éclair (visuel, sans feu ni dégâts).
+3. **L'allumer** : du feu sur le cadre chargé ; il faut que **tout** le cadre soit à 10.
+4. **Entrer** : il faut **Mineur 90** (18 × 5 ; l'original testait 18 au portail et 17 au paquet,
+   et écrivait 17). Le premier joueur à traverser devient propriétaire du portail ; un autre est
+   repoussé. Le portail ouvre un écran (informations, temps et points restants, « Créer » ou
+   « Rejoindre la dimension »).
+
+Cassé, un bloc de cadre rend lui-même et, **tant que le portail n'a jamais été ouvert**, ses blocs
+de paladium. Un piston ne le pousse pas (immobile comme tout bloc à block entity en 1.7.10). Le
+portail se referme si son cadre est incomplet ou sa nappe trouée. Incassable, sans objet.
+
+### La session — `DimMinerPlayer`, `ServerDimMinerEventHandler`
+
+- **1 000 points**, **3 jours de temps réel** (`DURATION`, horloge système). Casser du paladium
+  coûte 1 point, du paladium vert 5, une pépite d'endium 501 — une seule par session. Le reste est
+  gratuit. Sans assez de points, le minerai ne se casse pas. Un bloc posé par un joueur ne coûte
+  rien et ne compte pas.
+- Une **section** de 5 000 × 5 000 par session, attribuée en spirale carrée depuis (0, 0) ; on ne
+  peut pas en sortir. **Écart** : le compteur des sections est sauvegardé (l'original repartait de
+  0 à chaque redémarrage) et la section est gardée toute la session (l'original en donnait une
+  neuve, avec sa plateforme, à chaque connexion).
+- L'arrivée : un sol libre près du centre (spirale de 20 blocs, 7 × 7 × 6 de place), une
+  plateforme 6 × 5 d'obsidienne wither et un cadre. **Écart** : ce cadre était décoratif (le kick
+  ramenait au serveur Faction) ; il porte ici le **portail de sortie**. Après onze sections sans sol
+  (des océans), une plateforme au niveau de la mer.
+- **Dans la dimension** : aucun monstre, pas de dégâts de chute, aucun conteneur posé, l'obsidienne
+  wither ne se casse pas. **Écart** : une explosion n'y casse aucun bloc — la TNT abattrait les
+  minerais sans payer de points. Une barre en haut de l'écran donne les points et le temps restants
+  (`UIDimMinerOverlay`). Le créatif et le spectateur échappent aux règles de pose, de casse et de
+  bordure (`bypass`).
+- **Sortir** : le portail de l'arrivée, ou `/dimminer quitter`. On ressort devant le portail
+  d'entrée ; la session continue. Par la commande, on retrouvera sa place ; par le portail,
+  l'arrivée.
+- **Fin** : points à zéro ou trois jours écoulés → « Votre dimension mineur va s'effondrer dans 30
+  secondes. », plus ni pose ni casse, puis retour devant le portail d'entrée. L'écran de fin
+  (blocs minés, temps passé, minerais, XP de Mineur gagnée) s'ouvre, et **chaque bloc du cadre
+  d'entrée a une chance sur trois d'être détruit**.
+- **Écart** : la mort est évitée — soigné, ramené à l'arrivée. L'original n'avait rien (le serveur
+  de repli s'en chargeait) ; sans lui, on réapparaîtrait dans l'overworld avec une session en plan.
+- La dimension ne donne pas d'XP propre : l'XP de Mineur ordinaire s'y applique.
+
+### Le monde — `BaseWorldGenerator`
+
+Le terrain de l'overworld (mêmes réglages de bruit, même graine), un seul biome `palamod:miner` :
+les plaines sans pluie, sans mobs, sans salle à monstres. Une nuit fixe : ciel et brouillard noirs,
+lumière du ciel de la nuit vanilla, brouillard proche (le client de Paladium forçait l'heure à
+15 000 et vidait le ciel). Lit et ancre de réapparition sans effet.
+
+Les minerais PalaMod y sont multipliés comme sur le serveur dimminer : `mult = 3`, d'où
+`ceil(3 × base) + 1` tentatives au lieu de `base + 1`, rapport appliqué aux comptes de l'overworld
+DoHy — améthyste 8 → 21, titane 6 → 16, paladium 4 → 9, paladium vert 2 → 4, findium 3 → 8,
+trixium 1 → 3, buisson à XP 3 → 7 essais. Pépite d'endium : un chunk sur 225, et seulement ici.
+Les minerais vanilla gardent leur taux.
+
+### Minerai de Pierre d'Invocation — `PWorld.INVOKER_ORE`, `invocker_stone`
+
+Dureté 5, se rend lui-même ; au four, une **Pierre d'Invocation** (1 XP). Couches du findium, filon
+de 3 : une chance sur deux par chunk dans l'overworld (0,4 à l'origine), un filon par chunk dans
+la dimension. La pierre ne servait qu'aux runes de donjon de PalaRPG, non porté.
+
+### Ce qui n'est pas porté, et ce qui change de forme
+
+- Le **boss** `EntityMinerBoss` : enregistré mais jamais invoqué dans l'original, et refusé par le
+  filtre anti-monstres de sa propre dimension.
+- L'ambiance du client : éclairs et chauves-souris aléatoires, tremblement de caméra et brouillard
+  qui se resserrent avec les points, écran de transition. Il reste un ciel noir et un brouillard
+  fixe.
+- Les écrans ZephyrUI (entrée, fin) deviennent des coffres ; l'overlay, une barre de boss.
+- Les joueurs ne sont pas cachés les uns aux autres. Les permissions, le réseau, les succès et
+  `/dimension` (externes) ne sont pas portés.
+
+## 19. Économie : PalaMod dans le marché de DoHy (chapitre 6)
+
+Les objets de PalaMod n'avaient aucun prix : aucun n'est dans les tags `c:` que lisent les règles
+de `tag_prices.json`. Ils entrent maintenant au catalogue par `data/rates.csv`, au modèle de DoHy
+(`prix = cible du tier / taux horaire`, `BALANCE.md` § 1), dans un sixième onglet du shop,
+**PalaMod**. Il a pris la case de la boutique dans le pied du shop ; la boutique reste au menu.
+
+### Ce qui se vend, et ce qui ne se vend pas
+
+La règle de `DESIGN.md` § 3.3 s'applique telle quelle : **seule la matière première se vend**.
+Rien de ce qui sort d'une recette ou d'une machine — outils, armures, blocs de stockage,
+compressés, charbons mixés, particules, pollens, têtes, sèves, croquettes — n'a de prix, comme
+pour les objets fabriqués vanilla. `/dohy scan palamod` en liste donc 241 : c'est voulu.
+
+| Objet | Tier | Taux/h | Prix | Achat | Pourquoi ce taux |
+|---|---|---|---|---|---|
+| Lingot d'améthyste | FARM | 600 | 30 | 120 | sève de jacaranda (6 par bûche), boîte à golem, aubergine, crusher |
+| Lingot de titane | FARM | 400 | 45 | 180 | crusher (15 pour 32 cerfeuils), boîte à golem, sève de judée |
+| Lingot de paladium | FARM | 250 | 72 | 290 | crusher, sève d'érable, boîte à golem, kiwano ; dimension du Mineur |
+| Lingot de paladium vert | FOUND | 80 | 500 | 2 000 | minage seul |
+| Findium | FOUND | 100 | 400 | 1 600 | minage seul |
+| Trixium | FOUND | 50 | 800 | 3 200 | minage seul, un filon par chunk |
+| Pierre d'Invocation, son minerai | FOUND | 20 | 2 000 | 8 000 | un filon pour deux chunks |
+| Pépite d'endium | RARE | 1,5 | 40 000 | 160 000 | une par session de dimension |
+| Minerais (pioche soie) | FOUND | 400 → 25 | 100 → 1 600 | ×4 | améthyste, titane, paladium, vert, findium, trixium |
+| Aubergine, cerfeuil | FARM | 1 200 | 15 | 60 | comme le blé |
+| Kiwano | FARM | 900 | 20 | 80 | pousse à 0,8 |
+| Orangeblue | FARM | 60 | 300 | 1 200 | la graine ne revient qu'une fois sur 15 |
+| Bûches des quatre essences | FARM | 1 200 | 15 | — | **non achetables** : achetée, la sève d'une bûche de jacaranda vaut 6 lingots |
+| Baie d'XP | FARM | 1 000 | 18 | 72 | buisson à XP |
+
+**Les métaux de PalaMod sont renouvelables**, d'où le tier FARM du lingot et FOUND du minerai,
+exactement comme le fer vanilla (lingot à 15, minerai à 100) : le lingot sort aussi du crusher,
+des cultures, de la sève et des golems ; le minerai ne revient jamais. Les rapports que ces
+machines imposent sont respectés : titane ≈ 1,07 améthyste au crusher, paladium ≈ 2,1 titane.
+Le paladium vert, le findium et le trixium ne sortent d'aucune machine : FOUND.
+
+Les **fleurs**, les **pousses** et les graines n'ont pas de prix, comme les fleurs et la plupart
+des graines vanilla. Une pousse plantée donne un arbre de 30 à 35 bûches, donc 190 lingots
+d'améthyste en sève : l'acheter serait une imprimante, la vendre ne sert à rien.
+
+### L'audit des machines
+
+Chaque machine qui produit a été relevée (entrées, sorties, cadence, automatisation) :
+
+| Producteur | Verdict |
+|---|---|
+| Chaudron, poudre lumineuse → 3 pépites d'or | **Retiré** (écart, décision du joueur). La poudre s'achète 4 $ et les pépites se revendent 27 $ : de l'argent infini, jusqu'à 32 recettes par tick |
+| Corne du Dancarok (154 blocs par coup), excavatrices (9), Dollars Stone | Le plancher de 35 % des blocs « trouvables » faisait de chaque bloc de masse une rente. **Plancher de 5 %** pour vingt blocs de masse (sable, ardoise, tuf, granite, netherrack, pierre, cobble, gravier…), sans bonus de plancher des paliers ni du prestige. Le joueur à la main ne le sent pas : il faut vendre des milliers de blocs pour y descendre |
+| Cobblebreaker (1,6 diamant/h par machine au palier paladium) | **Gardé** (décision du joueur). Limité par la pierre fournie et la chute du prix du diamant (S0 = 64) ; le diamant reste à 1 000 |
+| Boîte à golem (10 fer ou 5 améthyste ou 3 titane ou 1 paladium par croquette) | Une ferme, régulée par le prix dynamique comme toutes les fermes. Fixe le taux des lingots |
+| Sève et portails (6 / 3 / 1,5 lingots par bûche) | Une ferme d'arbres, à surveiller : c'est la source d'améthyste la plus rapide. Bûches non achetables |
+| Cultures et crusher | Fermes. Les cultures de PalaMod n'étaient pas dans `#dohy:crops` (voir plus bas) |
+| Grinder, Palafurnace, Palaforge, pioche des dieux, marteau | Neutres : ni gain de matière ni doublement au-delà de la fortune vanilla |
+| Spawner customisé, pierre de capture, aimant, God Villager | Pas une source (âmes finies, piles de mobs qui meurent une à une) |
+| Compresseur à cobblestone (100 pierres → 1 obsidienne) | Une perte : 100 pierres valent plus qu'une obsidienne |
+| Dimension du Mineur | 1 000 points par session : au plus 1 000 minerais de paladium, une pépite d'endium |
+
+**Achat → conversion → revente**, vérifié pour chaque objet achetable : un minerai acheté puis
+cassé à Fortune III rend 2,2 lingots (améthyste 400 $ → 66 $, paladium 1 100 $ → 158 $) ; 32
+aubergines achetées (1 920 $) font 5 améthystes au crusher (150 $) ; 720 cobbles (8 640 $) font
+1,6 diamant au cobblebreaker ; 100 pierres (1 200 $) une obsidienne. Aucune boucle. Les
+croquettes de la boîte à golem coûtent presque rien, achetées ou cultivées : c'est une ferme, pas
+une boucle — le débit tient aux mini golems (une production toutes les 8 minutes).
+
+### Ce qui change ailleurs
+
+- **Les cultures de PalaMod comptent enfin.** Absentes de `#dohy:crops`, celles plantées à la main
+  étaient des blocs posés : ni XP de Fermier, ni collection, ni contrat de récolte. Seules celles
+  du seedplanter comptaient.
+- **Les bonus de récolte ne copient plus leurs graines** (`#dohy:replant_seeds`) : avec le seul tag
+  vanilla, un champ de kiwano grossissait tout seul.
+- **`#c:ores`** reçoit les huit minerais de PalaMod : la chasse aux minerais hebdomadaire les compte.
+- **Contrats** : trois quotidiens (48 minerais d'améthyste, 16 de paladium, 150 récoltes PalaMod)
+  et un hebdomadaire (400 minerais de PalaMod).
+- **Musée** : une aile PalaMod, 23 pièces (la pépite d'endium, RARE, va au panneau mécène). Elle
+  rapporte **+2 points d'armure**.
+- Les récompenses de niveau de PalaJobs pèsent maintenant : 1 050 lingots de paladium (≈ 76 k) et
+  autant de trixium (≈ 840 k) par métier maxé.
+
+## 20. Pour le PvP : sticks, anneaux, deltaplane, palamachine (chapitre 16)
+
+Relevé dans `ItemStickBase`, `BaseItemRing(Endium)`, `ItemRepairableArmor`, `ARepairable`,
+`BaseItemPickaxe`, `ModdedChestLogic`, `EndiumChestLogic`, `ItemHangGlider`,
+`PaladiumMachineLogic`, `PaladiumMachineRecipies`, `PRegister_Craft`, `BaseBlockSlimePad` et
+`BlockSpike`. Le wiki (« Java – Pour le PvP ») sert de contrôle ; là où il contredit le code,
+c'est le code qui est porté, et l'écart est noté.
+
+### La palamachine — `PaladiumMachineLogic`
+
+Un bloc (fer, dureté 12, pioche en fer), cinq entrées et une sortie, **200 ticks** par
+fabrication, sans combustible. Les cinq entrées sont positionnelles : la pièce au centre, les
+quatre ingrédients aux coins. L'usure de la pièce centrale est ignorée — c'est ce qui permet de
+réparer. Ni entonnoir ni conduit. Recette à l'établi : 8 pierres autour d'un paladium compressé.
+
+- Le résultat **garde les enchantements de la pièce centrale**. Le wiki dit qu'un anneau réparé
+  perd les siens ; le code les recopie.
+- Un stick compte ses réparations (« Réparation : n / 5 ») ; la machine refuse la sixième.
+- **Écarts** : la machine attend quand la sortie contient un autre objet (l'original consommait
+  les entrées et perdait le résultat) ; la première réparation n'est plus gratuite et un stick ne
+  lègue plus son compteur au stick divin qu'il sert à fabriquer.
+- Portées : 12 recettes d'anneaux, 14 de sticks, 6 de cornes de monture, et la recharge de
+  l'extracteur (un extracteur entamé, 3 lingots de paladium et un seau d'eau : il ressort à 144
+  utilisations). La défense d'éléphant devient un **bloc d'os** ; les anciens substituts des
+  cornes à l'établi sont retirés. Laissées : détecteurs de claim, runes de donjon (non portés).
+
+| Création | Pièce centrale | Ingrédients (1, 2, 3, 4) |
+|---|---|---|
+| Stick de régénération | orbe de régénération | bâton de paladium, bloc de paladium, bâton de paladium, bloc de paladium |
+| Stick de vitesse | orbe de vitesse | bâton d'améthyste, améthyste compressée, bâton de titane, titane compressé |
+| Stick de force | orbe de force | bâton de paladium, bloc de paladium, bâton de titane, bloc de paladium |
+| Stick de saut | orbe de saut | bâton de titane, slimepad, bâton de titane, slimepad |
+| Bâton divin | stick de force | stick de régénération, bloc de paladium, stick de vitesse, findium |
+| Stick de super saut | orbe de saut | stick de saut, bloc de paladium, stick de saut, bloc de paladium |
+| Stick de dommage | épée en titane | bâton d'améthyste, spike en paladium, bâton d'améthyste, spike en paladium |
+| Small Ring | bloc de paladium | 4 lingots de paladium |
+| Medium Ring | Small Ring | bloc, lingot, bloc, lingot de paladium |
+| Big Ring | Medium Ring | paladium compressé, 3 lingots de paladium |
+| Small Ring en endium | Medium Ring | 4 fragments d'endium |
+| Medium Ring en endium | Small Ring en endium | bloc de paladium, bloc de findium, bloc de paladium, pépite d'endium |
+| Big Ring en endium | Medium Ring en endium | paladium compressé, pépite, paladium compressé, pépite |
+
+Les réparations ont chacune leur recette (`PalamachineRecipes`). À l'établi : orbe de force
+(4 lingots de paladium autour d'une poudre de blaze), orbe de saut (autour d'une verrue du Nether),
+aile (×2 : 3 bâtons de paladium, 3 cuirs), deltaplane (2 ailes, 2 cuirs), slimepad (6 boules de
+slime), spike en paladium (3 épées en titane sur 3 lingots de paladium).
+
+### Les sticks — `ItemStickBase`
+
+Clic droit : un effet, un point d'usure, une recharge. **La recharge est par type et par joueur**
+(`timer-<type>` sur le joueur) : tous les sticks identiques la partagent. Elle court en temps réel,
+survit à la déconnexion et à la mort, et s'affiche sur la barre d'action. Seul Solidité
+s'applique, à l'enclume.
+
+| Stick | Durabilité | Recharge | Effet (amplificateurs du code) |
+|---|---|---|---|
+| Régénération | 15 | 10 s | +6 points de vie |
+| Vitesse | 15 | 15 s | vitesse VII, 3,5 s |
+| Force | 15 | 15 s | force III, 3,5 s |
+| Saut | 15 | 30 s | +1 de vitesse verticale (environ 5 blocs) |
+| Bâton divin | 8 | 25 s | régénération VI 4 s, 6 points d'absorption, saturation II, vitesse IX 4 s, force III 5 s |
+| Dommage | 16 | 30 s | repousse de 0,7 et soulève de 0,7 tout ce qui vit dans un cube de 3 blocs |
+| Super saut | 8 | 40 s | +2,365 de vitesse verticale (environ 25 blocs) |
+
+Le wiki annonce vitesse III et des recharges un peu plus courtes : ce sont les valeurs du code qui
+sont portées. **Écarts** : l'absorption passe par l'effet Absorption II de deux minutes (en 26.2,
+6 points d'absorption sans effet seraient ramenés à 0) ; le stick de dommage respecte le PvP du
+serveur et les équipes (l'original laissait les modules de protection l'annuler) ; son
+« tremblement de terre » de blocs projetés est rendu par des particules.
+
+### Les anneaux — `BaseItemRing`, `IRepairable`
+
+400, 1 000 ou 3 200 de durabilité. **Dans l'inventaire**, un anneau répare l'armure portée d'un
+point par pièce et par tick, et s'use d'autant. **Dans un coffre**, posé dans la colonne
+d'anneaux, il répare d'un point par tick chaque pièce abîmée des premières rangées.
+
+| Pièce | Où | Anneau | Capacité |
+|---|---|---|---|
+| Armure paladium, paladium vert, endium mixé | portée ; coffre | paladium | casque 8 000, plastron 12 000, jambières 10 000, bottes 7 000 |
+| Armure endium | portée ; coffre en endium | endium | illimitée |
+| Épée, pioche, hache, pelle en paladium | coffre seulement | paladium | 3 remises à neuf |
+| Épée, pioche, hache en endium | coffre en endium seulement | endium | illimitée |
+
+Portée, la capacité se consomme point par point ; au coffre, par remise à neuf complète. Les
+outils en améthyste, titane et paladium vert ne se réparent pas. La capacité restante s'affiche
+une fois entamée (ajout de DoHy).
+
+| Coffre | Rangées réparées | Anneaux |
+|---|---|---|
+| Améthyste | 1 | 1 |
+| Titane | 1 | 2 |
+| Paladium | 2 | 4 |
+| Paladium vert | 6 | 4 |
+| Endium | 9 (toutes) | 4, en endium, et ne répare que l'endium |
+
+La colonne d'anneaux est à droite de la grille ; l'original la posait à cheval sur le bord du
+panneau, qui s'élargit ici. Les entonnoirs n'y ont pas accès. Un filet de la couleur du métal
+marque les rangées réparées.
+
+### Le deltaplane — `ItemHangGlider`
+
+Clic droit pour le déployer ou le replier ; déployé, il brille. Tenu en main et déployé, tant que
+le joueur tombe : vitesse verticale × 0,6 et +0,03 vers l'avant ; accroupi, × 0,8 et +0,1. La chute
+ne compte pas. Il se replie seul au sol : on le déploie donc en l'air (au sol, il se replie au
+tick suivant, comme dans l'original). La physique tourne chez le client (le mouvement d'un
+joueur y est calculé), l'état et l'annulation de la chute sur le serveur. Sans durabilité. Pas
+porté : le modèle tenu au-dessus de la tête.
+
+### Slimepad et spike
+
+- **Slimepad** (`BaseBlockSlimePad`) : on le traverse ; il pousse de 0,2 vers le haut et de 0,2
+  dans la direction du regard au moment de la pose (huit directions, l'inverse accroupi), annule
+  la chute, et ne fait rien sous redstone. Pas porté : la recharge de la Warzone, les couleurs au
+  ciseau.
+- **Spike en paladium** (`BlockSpike`) : posé contre la face cliquée, il inflige 15 points
+  (source cactus) à ce qui s'y appuie. Résistance 60. Seul le spike en paladium est porté : c'est
+  l'ingrédient du stick de dommage.
+
+## 21. Pierres légendaires et gant en endium (chapitre 17)
+
+Relevé dans `LegendaryStone`, `LegendaryStone$Effect`, `ItemEndiumGauntlet`,
+`EndiumGauntletRecipe`, `UpgradeHelper`, `GrinderLogic` et `PRegister_Craft`. Le wiki
+(« Java – Les legendary stones ») sert de contrôle.
+
+### Les pierres — `LegendaryStone`
+
+Clic droit : l'effet, puis **24 heures** de recharge en temps réel, notée sur la pierre (elle la
+suit si on la donne). Prête, elle brille. Les pierres ne se consomment pas. **Téléportation et
+chaos** ont en plus un verrou de **10 minutes par joueur**, commun à toutes leurs pierres (le wiki
+dit 1 h pour le chaos : c'est l'infobulle, le serveur vérifie 10 min). Le verrou d'une heure des
+quatre autres n'était jamais écrit dans l'original : on peut enchaîner deux pierres différentes.
+
+| Pierre | Effet |
+|---|---|
+| Aléatoire | s'ouvre : elle disparaît et donne l'une des six autres, prête à servir |
+| Téléportation | un point au hasard à moins de 25 000 blocs de l'origine, jusqu'à 11 essais ; la recharge part même en cas d'échec |
+| Invisibilité | invisibilité II, 2 minutes, à tous les joueurs d'un cube de 3 blocs autour du lanceur, lui compris |
+| Fortune | 2 à 25 blocs jetés devant le joueur : charbon, fer, or, diamant, améthyste, titane (15 % chacun), paladium (10 %) |
+| Pouvoir | **résistance au feu, 30 minutes** (voir les écarts) |
+| Métier | 5 000 à 20 000 points d'XP d'un métier au hasard, bonus du joueur compris |
+| Chaos | l'inventaire principal de chaque autre joueur à 10 blocs ou moins est battu (20 échanges de cases) |
+
+**Écarts.**
+- **Pouvoir** : l'original rendait immunisé 5 minutes à l'eau sulfurique (la « fake water » des
+  raids), qui n'est pas portée. Remplacée, au choix du joueur, par 30 minutes de résistance au feu.
+- **Téléportation** : seulement dans l'Overworld (Nether : le toit ; End : le vide ; dimension du
+  Mineur : ses sections) — ailleurs, la pierre refuse sans consommer sa recharge. On atterrit à la
+  surface (l'original montait depuis y = 63 jusqu'au premier bloc d'air, parfois dans une
+  grotte) ; un point est refusé hors de la bordure du monde, sur la bedrock, sur la lave ou dans
+  la protection du spawn.
+- **Chaos** : sur le fil du serveur (l'original lançait un fil à part) et seulement sur les joueurs
+  que le lanceur pourrait frapper (PvP, équipes).
+- Le verrou de 10 minutes survit à la mort (l'original le perdait, ce qui l'offrait à une mort
+  volontaire).
+
+### Le gant en endium — `ItemEndiumGauntlet`
+
+- **À l'établi** : une pierre (sauf l'aléatoire) entre deux lingots d'endium, un cœur en paladium
+  dessus et dessous. Le gant naît avec cette pierre et sa recharge. La recette ne prend jamais un
+  gant existant.
+- **Au grinder** : pierre dans la case du modificateur, gant dans celle de l'outil ; 100 ticks,
+  sans paladium. Une pierre de chaque type au plus. Le gant garde la recharge la plus récente.
+- **Accroupi, clic droit** : la pierre suivante (dans l'ordre téléportation, invisibilité, fortune,
+  pouvoir, métier, chaos). **Clic droit** : l'effet de la pierre sélectionnée, avec sa propre
+  recharge dans ce gant — **12 heures** au lieu de 24 quand il porte les six.
+- Son nom dit la pierre sélectionnée, « Endium Gauntlet (Chaos) » ; l'infobulle liste les pierres
+  et la recharge de chacune.
+- **Écart** : complet, il devient l'**Infinity Gauntlet**, nom et icône dorée. L'original ne les
+  prenait que si l'on renommait le gant ainsi à l'enclume.
+
+### Obtention — au choix du joueur
+
+Les lucky blocks et les événements de Paladium n'existent pas ici. La pierre aléatoire est dans la
+**caisse rare** (poids 4 sur 104) et la **caisse légendaire** (10 sur 112), le gant complet dans la
+**caisse légendaire** (2 sur 112). Une entrée de caisse accepte maintenant des composants
+(`components`), ce qui permet le gant garni.
+
+### Ce qui n'est pas porté
+
+La pierre légendaire corrompue (événement de novembre), les orbes du chaos (8 par pierre de
+chaos), les modules de compétences de familier qui raccourcissaient les recharges, la fiche de
+profil (`/legendarystone`), les particules complètes de `LengendaryStoneFx` (une double hélice de
+la couleur de la pierre les remplace).
+
+## 22. Donjons : le cœur jouable (chapitre 18)
+
+Les donjons sont de la V12 de Paladium, postérieurs à la 10.3.0 de PalaMod : **aucun code
+d'origine**. La source est le wiki (« Univers des donjons » et les quatre pages « Donjon … »),
+qui donne les règles, les noms et les récompenses, mais presque aucun chiffre. Tout ce qui
+manque est de DoHy et noté comme tel. Ce chapitre est le premier de trois : 18 cœur jouable ;
+19 équipement, essences et notes D à S ; 20 runes et arbre de compétences. Les sorts et le mana,
+prévus d'abord, sont laissés de côté au choix du joueur.
+
+### Les quatre donjons
+
+| Donjon | Métier | Thème des salles | Monstres (mêlée, distance, mage, volant, assassin) |
+|---|---|---|---|
+| Talikus | Fermier | boue tassée, épicéa, champilampes | zombie villageois, squelette, sorcière, blaze, araignée |
+| Nimbria | Mineur | ardoise des abîmes, fer brut | zombie, vagabond, évocateur, blaze, araignée venimeuse |
+| Vitalys | Chasseur | pierre moussue, jungle, os | zombie momifié, squelette des marais, sorcière, blaze, araignée |
+| Manelios | Alchimiste | prismarine, lanternes marines | noyé, noyé au trident, évocateur, blaze, araignée |
+
+### Entrée — la clé fait le hub
+
+Sur Paladium, on entrait par un hub dédié. Ici, **clic droit avec la clé** : un écran de coffre
+de 100 paliers (45 par page). Vert : réussi, rejouable ; jaune : le suivant ; gris : verrouillé.
+Les paliers en 5 et en 0 portent un crâne. Il faut réussir un palier pour ouvrir le suivant
+(wiki). **Le groupe** : le chef et jusqu'à trois joueurs à 6 blocs de lui (« solo ou jusqu'à 4 »).
+Seul le chef a besoin d'une clé (wiki), **consommée à l'entrée** (choix du joueur).
+
+**Clés** (wiki : paladium vert, invoker stone, stick en paladium, lingot de paladium et
+l'ingrédient du métier ; la grille n'est que dans les images) : pierre d'invocation en haut,
+sticks en paladium de part et d'autre de l'ingrédient (blé, cobblestone, chair putréfiée,
+coquelicot), lingots de paladium et lingot de paladium vert en bas. Icône : la clé en paladium
+de PalaMod, teintée.
+
+### Un palier
+
+Une dimension vide, `palamod:dungeon` (monde plat sans couche, sans ciel ni apparition
+naturelle), une **région par partie** (1 024 blocs d'écart, compteur gardé sur l'overworld,
+jamais réutilisée). Les salles sont **construites par le code** dans les blocs du thème, puis
+effacées ; tant qu'une salle existe, elle tient ses chunks chargés.
+
+- **Trois salles.** La première est un **combat** (wiki : « obligatoire »). À la fin d'une
+  salle, des **portes** s'ouvrent dans le mur du fond : **une à trois** au choix (wiki) entre
+  combat, énigme, boost et marchande, chacune vitrée de sa couleur sous un panneau. On choisit en
+  y avançant. La troisième salle d'un palier en 5 est celle du **mini-boss**, d'un palier en 0
+  celle du **boss**. Après la troisième, la porte de **sortie** : le palier est réussi.
+- **Combat** : 2 vagues, 3 à partir du palier 50 ; `3 + palier / 25` monstres par vague, **2 de
+  plus par joueur** au-delà du premier (« plus de joueurs, plus d'ennemis »).
+- **Énigme** : 3 à 5 boutons sur les murs, à trouver et presser.
+- **Boost** : un autel (table d'enchantement) propose 3 bonus tirés parmi force I, résistance I,
+  régénération I, vitesse I, absorption II, vie supplémentaire I, résistance au feu ; un par
+  joueur, 10 minutes, retirés à la fin du palier.
+- **Marchande** : une villageoise immobile vend en argent DoHy, prix × `(1 + palier / 50)` —
+  pomme dorée 1 500, steaks ×16 300, potion de soin II jetable 800, régénération 600, flèches ×32
+  200, perles ×4 400, totem 20 000.
+
+### Monstres
+
+Les six types du wiki, des monstres vanilla du thème, nommés (« Guerrier de Talikus »…), colorés
+selon la tranche du palier — **Jaune** 1–25, **Orange** 26–50, **Rouge** 51–75, **Noire** 76–100
+(le wiki en fait des variantes de difficulté, sans chiffres).
+
+| Type | Vie au palier 1 | Dès le palier | Rôle |
+|---|---|---|---|
+| Mêlée | 22 | 1 | fonce ; **à Manelios, deux petits noyés à sa mort** (wiki : « se démultiplie ») |
+| Distance | 20 | 1 | tire en gardant ses distances |
+| Volant | 20 | 5 | blaze |
+| Mage | 30 | 10 | immobile, **aucun dégât** (wiki) : toutes les 3 s, force et vitesse aux monstres à 10 blocs, ou lenteur et faiblesse aux joueurs, en alternance |
+| Assassin | 18 | 10 | araignée qui bondit |
+| Tank | 60 | 20 | ×1,35 de taille, armure 8, recul presque nul |
+
+Vie × `1 + 0,06 (palier − 1)` (×6,9 au palier 100), dégâts × `1 + 0,03 (palier − 1)`
+(×4 au palier 100), y compris leurs flèches et boules de feu. Ils ne lâchent rien (le butin est
+dans les coffres) et ne se battent pas entre eux. Un monstre né d'un autre (vex, cavalier)
+rejoint la salle.
+
+### Mini-boss et boss
+
+Le wiki en nomme cinq de chaque par donjon, sans dire où ils apparaissent ; la table des
+récompenses de boss va de 5 en 5. **Mini-boss aux paliers en 5, boss aux paliers en 0**, à tour
+de rôle (palier 5 : le mini-boss V11, 15 : le premier de la V12…). Chacun est un monstre vanilla
+agrandi, nommé, avec deux ou trois capacités toutes les 3,5 à 7 s : ruée, onde de choc, renforts,
+salve de boules de feu, attraction, téléportation dans le dos, cercle de feu, enracinement.
+Deux mini-boss sont des **duos** (wiki : Nimbria et Manelios), chacun à 60 % de la vie.
+
+Vie : `120` (mini-boss) ou `250` (boss) × `1 + 0,05 (palier − 1)` × `1 + 0,6 (joueurs − 1)`.
+Au-delà du plafond vanilla de 1 024 points, le boss encaisse moins de dégâts dans la même
+proportion. Barre de boss.
+
+### Coffres et sac
+
+À la fin d'une salle de combat, d'énigme ou de boss, **un coffre au centre, individuel** (wiki :
+« chacun ses récompenses, personne ne peut voler celles d'un autre »). Le butin va dans le
+**sac**, livré **à la fin du palier** (wiki) ; un coffre laissé est ramassé en partant.
+
+| Sac | Contenance |
+|---|---|
+| sans sac | 9 piles |
+| Sac de donjon en cuir (cuir, coffre, entonnoir, invoker stone) | 18 |
+| Sac de donjon tier 2 (Nimbria, paliers 40 et 50) | 27 |
+| Sac de donjon tier 3 (Nimbria, paliers 60 et 70) | 36 |
+
+Le meilleur sac de l'inventaire à l'entrée fixe la contenance ; ce qui dépasse est perdu.
+`/donjon sac` le montre.
+
+**Butin** (wiki, cumulatif : tout ce qui est débloqué au palier ou avant). Le wiki ne donne
+**aucun taux ni aucune quantité** : les poids et les quantités sont de DoHy.
+- un coffre tire `2 + palier / 50` fois dans la réserve du donjon ; quantités × `1 + palier / 50` ;
+- un coffre de boss tire en plus 1 fois (2 après un boss) dans la **table des boss** : armures en
+  paladium P4U3, épées S5U3F2 et S5U3L3, pioche E5U3, blocs, paladium vert, invoker stone,
+  bouteilles d'XP de métier (1 000), fragment d'endium ; puis l'armure d'endium mixte P4U3, l'étoile
+  du Nether, la tête de wither, la pépite d'endium, la pierre légendaire aléatoire et la pioche des
+  dieux niveau 60, aux paliers du tableau du wiki ;
+- les **récompenses uniques** du palier exact tombent une fois sur deux, à la sortie. Seuls les
+  sacs de Nimbria existent pour l'instant.
+
+**Venus aux chapitres suivants** : épées et armures de donjon, essences et pièces antiques (§ 23),
+runes (§ 24). **Non portés** : parchemins de sort (sorts sautés) et de craft. **Absents de DoHy**, donc ignorés : obsidienne
+infusée, têtes de thirsty et de prédator, totem fleuri, bonbons, jetpack, défense d'éléphant,
+pièce de lune, double XP, têtes de wither passive et suprême.
+
+### Fin du palier
+
+- **Réussite** : sac livré (ou jeté au sol s'il ne tient pas), XP du métier du donjon
+  `600 + 40 × palier` (wiki : « XP Métier » sans chiffre), palier noté, retour au point d'entrée.
+- **Échec** (choix du joueur) : la **mort** fait sortir — soigné, ramené, **inventaire gardé**,
+  sac perdu, clé non rendue. De même `/donjon quitter` et la déconnexion. Sans plus personne
+  dedans, le palier est échoué et la région effacée.
+- Les parties ne vivent qu'en mémoire : un arrêt du serveur ramène tout le monde, sans rien
+  livrer ; qui se reconnecte dans la dimension sans partie y est renvoyé à son entrée.
+
+### Règles de la dimension
+
+Rien ne s'y casse ni ne s'y pose (sauf en créatif), les explosions et les monstres n'y dégradent
+rien, rien ne s'y jette (l'objet revient dans l'inventaire), aucun bloc à interface ne s'y ouvre
+hors du coffre et de l'autel. Un joueur sorti de sa salle (perle, chorus, toit) y est ramené.
+
+### Bouteilles d'XP de métier
+
+`job_bottle_farmer/miner/hunter/alchemist` (textures de PalaMod) : 1 000 XP du métier, clic droit
+pour une, accroupi pour la pile ; l'XP passe par les bonus du joueur.
+
+### Vérifié au démarrage
+
+Par un auto-test temporaire (hors de la PR) : construction des cinq salles des quatre donjons,
+six types de monstres et leurs variantes, petits noyés, quarante boss créés, boss au plafond de
+vie, boutons de l'énigme qui ouvrent les portes, coffres, tirages de butin aux paliers 1 à 100,
+déroulé complet d'un palier jusqu'à la sortie et effacement de la région, chunks libérés. Le jeu
+avec un joueur (portes, coffres, menus, mort) reste à éprouver en jeu.
+
+## 23. Donjons : équipement, essences, notes D à S (chapitre 19)
+
+Deuxième chapitre des donjons. Le wiki donne les tiers, les paliers d'obtention et la règle de
+réparation, et **aucune statistique**. Choix du joueur : un équipement fort **surtout en donjon**,
+les textures de **Palamod Recreated**, et un **coffre selon la note**.
+
+### L'équipement — trois armures et trois épées par donjon
+
+| Tier (wiki) | Hors donjon, comme | Épée | En donjon, par pièce d'armure | Épée en donjon |
+|---|---|---|---|---|
+| Basique (tier 1) | améthyste | 7 de dégâts | −4 % des dégâts des monstres | +25 % |
+| Renforcée (tier 2) | paladium | 10 | −7 % | +50 % |
+| Légendaire (tier 3) | endium mixte | 10,6 | −10 % | +80 % |
+| Antique (palier 100) | endium | — | −12 % | — |
+
+- Les valeurs hors donjon reprennent les valeurs d'origine du métal correspondant, converties
+  comme les armures de PalaMod (§ 10) ; durabilités 170, 260, 350 et 400.
+- Le bonus de donjon ne joue que dans `palamod:dungeon`, contre ses monstres : **à plein dans son
+  propre donjon, à moitié dans les trois autres**. L'armure plafonne à **−60 %** au total.
+  L'épée compte pour les coups portés à la main.
+- **Set antique** (wiki : une pièce par donjon au palier 100 — plastron à Talikus, bottes à
+  Nimbria, casque à Vitalys, pantalon à Manelios) : bonus à plein dans tous les donjons et, complet,
+  **−10 %** de dégâts reçus et **+20 %** de dégâts en plus. Il n'a pas de texture d'origine : c'est
+  le légendaire de Talikus passé au bronze.
+
+### Obtention — les récompenses uniques du wiki
+
+À la sortie du palier exact, une chance sur deux chacune (comme au chapitre 18) :
+
+| Palier | Récompense |
+|---|---|
+| 5, 15 | épée basique (Nimbria : pas au 15) |
+| 10 à 20 | une pièce d'armure basique au hasard |
+| 35, 45 | épée renforcée (Nimbria : pas au 35) |
+| 40 à 50 | une pièce d'armure renforcée au hasard |
+| 65, 75 | épée légendaire |
+| 70 à 80 | une pièce d'armure légendaire au hasard |
+| 100 | la pièce antique du donjon |
+
+Les paliers se rejouent : on complète un set en rejouant sa tranche. Les parchemins de craft du
+même tableau ne sont pas portés.
+
+### Essences et réparation
+
+Wiki : « Fragment d'essence » répare l'armure basique, « Essence » la renforcée, « Essence
+concentrée » la légendaire, et une essence ne répare que son tier. Les textures de Palamod Recreated
+donnent un **élément par donjon** : forêt (Talikus), caverne (Nimbria), flamme (Vitalys), aquatique
+(Manelios). Une essence répare donc, **à l'enclume**, l'équipement de son donjon et de son tier
+(25 % de durabilité par essence, comme un lingot) ; l'antique prend n'importe quelle essence
+concentrée. Le wiki ne cite qu'une « Essence de tier 2 » (Talikus, palier 40) : toutes les réserves
+de coffre en ont, à partir du palier de l'équipement qu'elles réparent (10, 40, 70).
+
+### La note — D à S
+
+Wiki : une note par joueur à la fin du palier, selon les dégâts, la survie et l'implication ; une
+meilleure note ouvre un meilleur coffre. Seules D et S sont nommées. Calcul de DoHy :
+
+`0,35 × dégâts + 0,45 × survie + 0,20 × implication`, chaque part de 0 à 1 :
+- **dégâts** : sa part des dégâts infligés aux monstres, rapportée à une part égale (seul : 1) ;
+- **survie** : `1 − vie perdue / (40 × salles de combat terminées)` ;
+- **implication** : sa part des monstres tués, rapportée à une part égale (seul : 1, ou 0,5 sans
+  aucun tué).
+
+| Note | Score | Coffre de la note |
+|---|---|---|
+| S | ≥ 0,90 | 4 tirages, 50 % d'essence |
+| A | ≥ 0,75 | 3 tirages, 35 % |
+| B | ≥ 0,60 | 2 tirages, 20 % |
+| C | ≥ 0,40 | 1 tirage, 10 % |
+| D | sinon | rien |
+
+Les tirages viennent de la réserve du donjon ; l'essence est du tier du palier. Le coffre de la
+note est livré avec le sac, hors de sa contenance. La note s'affiche au titre et dans le chat avec
+ses trois parts.
+
+### Textures
+
+Armures, couches portées, épées et essences : **Palamod Recreated** (SILWOX / Solea Pixel, mod de
+fans 1.21, « All Rights Reserved »), au choix du joueur — crédité dans le README, à ne pas
+redistribuer publiquement sans leur accord. Leurs statistiques (des valeurs MCreator identiques
+pour les quatre donjons) ne sont pas reprises.
+
+## 24. Donjons : runes et arbre de compétences (chapitre 20)
+
+Troisième et dernier chapitre des donjons. **Les sorts et le mana sont laissés de côté**, au choix
+du joueur (et les parchemins de sort ne tombent pas). Deux autres choix du joueur : les statistiques
+RPG ne jouent **qu'en donjon**, contre ses monstres, et les métiers donnent **1 point tous les 5
+niveaux** (le wiki dit 1 par niveau).
+
+### Statistiques RPG
+
+Le wiki nomme quatre branches sans les définir. Ici :
+
+| Statistique | Effet (en donjon, contre ses monstres) | Par nœud | Plafond (arbre + runes) |
+|---|---|---|---|
+| Attaque | dégâts infligés en plus | +4 % | 100 % |
+| Esquive | chance d'éviter entièrement un coup | +2 % | 35 % |
+| Critique | chance d'un coup à 150 % | +3 % | 60 % |
+| Défense | dégâts reçus en moins | +3 % | 50 % |
+
+Elles s'ajoutent à l'équipement de donjon (§ 23), par multiplication : armure de donjon puis
+défense RPG.
+
+### Niveau RPG et points de compétence
+
+- **XP RPG** (wiki : chaque salle terminée) : `10 + 2 × palier` par salle de combat ou d'énigme, le
+  triple pour une salle de boss.
+- **Niveau** 1 à 100 : du niveau N au suivant, `50 + 20 N` XP — 103 950 au total pour le niveau 100.
+- **Points** (wiki) : 1 par niveau RPG (100), 1 tous les 5 paliers réussis **de chaque donjon**
+  (80), 1 tous les 5 niveaux de chaque métier (80). **260 au plus**, le prix de l'arbre entier.
+  Les points ne sont pas stockés : ils se recalculent.
+
+### L'arbre — « Profil RPG »
+
+Wiki : depuis l'inventaire, bouton « Profil RPG » ; à gauche les statistiques (onglets Perso et
+Global), à droite l'arbre, dont on achète les cases puis « Valider » ; « Reset » annule ce qui
+n'est pas validé. Ici :
+- un **bouton « Profil RPG »** au-dessus de l'inventaire, **`/profil`**, et une vignette du menu
+  `/menu` ;
+- un écran de coffre : une rangée par branche, **8 nœuds** à acheter dans l'ordre (coûts 2, 4, 5,
+  7, 9, 11, 12, 15 — 65 par branche) ; un clic réserve le nœud suivant, un clic sur le dernier
+  réservé le rend ; **Valider** achète, **Reset** annule les réserves ;
+- tuiles **Perso** (l'arbre seul) et **Global** (arbre, runes de l'armure portée, équipement de
+  donjon) ;
+- **ajout** : « Réinitialiser l'arbre » rend tous les points validés contre **25 000 $** (le wiki
+  ne dit pas si un choix validé se défait).
+
+### Les runes
+
+| Objet | Origine |
+|---|---|
+| Fragment de rune commune | coffres, dès le palier 10 |
+| Fragment de rune rare | coffres, dès 25 (Talikus, Nimbria) ou 30 (Vitalys, Manelios) |
+| Rune commune | coffres dès 40 (Vitalys : 50) ; palamachine : 4 fragments communs + 1 lingot de paladium |
+| Rune rare | coffres dès 50 ; palamachine : 4 fragments rares + 1 bloc de paladium |
+| Rune épique | coffres dès 60 (seulement dans les exemples du wiki) ; palamachine : 3 runes rares + 2 fragments d'endium |
+
+- **Statistiques** (wiki : deux au hasard, une seule possible pour les communes) : parmi les quatre.
+  Une ligne vaut `base × rareté × (1 + 0,5 × (tier − 1 + bonus))` — base attaque 2 %, esquive 1 %,
+  critique et défense 1,5 % ; rareté commune ×1, rare ×1,5, épique ×2. Une rune épique de tier 4
+  bien fusionnée donne ainsi jusqu'à 16 % d'attaque.
+- **Rareté et tier** : le wiki les mélange ; ici, deux axes. La rareté fixe les lignes, le tier
+  (1 à 4) les fait monter.
+- **Amélioration, à l'enclume** (wiki) : une rune et une autre de même rareté et de même tier →
+  tier suivant, pour **10, 15 puis 20 niveaux**. Les lignes qu'elle partage avec la rune sacrifiée
+  gagnent un cran de bonus (wiki : « elle fusionne les statistiques qu'elles partagent »), les
+  autres restent.
+- **Fusion, au grinder** (wiki) : rune dans la case du modificateur, pièce d'armure de donjon dans
+  celle de l'outil. **Une rune par pièce, pour toujours.** Coût en paladium du réservoir : casque 5,
+  plastron 8, jambières 7, bottes 4. Seule l'armure de donjon (et l'antique) en prend.
+- Une rune donnée par commande, sans statistiques, se révèle d'un clic droit. Textures : aucune
+  n'existait, une tablette gravée dessinée pour l'occasion.
+
+### Ce qui n'est pas porté
+
+Les sorts et le mana, au choix du joueur ; les parchemins de sort et de craft.

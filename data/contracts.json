@@ -155,6 +155,30 @@
         "_note": "compte les positions neuves uniquement",
         "label": "Poser des blocs sur des positions neuves",
         "icon": "minecraft:bricks"
+      },
+      {
+        "id": "mine_amethyst",
+        "type": "MINE_BLOCK",
+        "target": "palamod:amethyst_ore",
+        "amount": 48,
+        "label": "Miner du minerai d'amethyste",
+        "icon": "palamod:amethyst_ingot"
+      },
+      {
+        "id": "mine_paladium",
+        "type": "MINE_BLOCK",
+        "target": "palamod:paladium_ore",
+        "amount": 16,
+        "label": "Miner du minerai de paladium",
+        "icon": "palamod:paladium_ingot"
+      },
+      {
+        "id": "harvest_palamod",
+        "type": "HARVEST",
+        "target": "#palamod:crops",
+        "amount": 150,
+        "label": "Recolter des cultures de PalaMod",
+        "icon": "palamod:kiwano"
       }
     ]
   },
@@ -241,6 +265,15 @@
         "amount": 400,
         "label": "Grande semaine de peche",
         "icon": "minecraft:cod"
+      },
+      {
+        "id": "w_palamod_ores",
+        "type": "MINE_BLOCK",
+        "target": "#palamod:ores",
+        "amount": 400,
+        "label": "Grande campagne de PalaMod",
+        "icon": "palamod:paladium_pickaxe",
+        "_note": "les six minerais de PalaMod, y compris en dimension du Mineur"
       }
     ]
   },

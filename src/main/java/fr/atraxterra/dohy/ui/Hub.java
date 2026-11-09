@@ -1,5 +1,7 @@
 package fr.atraxterra.dohy.ui;
 
+import fr.atraxterra.dohy.palamod.dungeon.Rpg;
+import fr.atraxterra.dohy.palamod.dungeon.RpgMenu;
 import fr.atraxterra.dohy.boost.Boosters;
 import fr.atraxterra.dohy.boost.BoutiqueMenu;
 import fr.atraxterra.dohy.collection.CollectionsMenu;
@@ -65,6 +67,8 @@ public final class Hub extends DisplayMenu {
      * accompagnaient ici, ont pris la place des skills qu'ils ont remplaces.
      */
     private static final int SLOT_UPGRADES = 40;
+    /** Le profil RPG des donjons : niveau, points, arbre de competences. */
+    private static final int SLOT_RPG = 42;
     private static final int SLOT_CLOSE = 49;
 
     public Hub(int containerId, Inventory inventory, ServerPlayer player) {
@@ -119,6 +123,10 @@ public final class Hub extends DisplayMenu {
                 click(0.9f);
                 open("Ameliorations", (id, inventory) -> new UpgradesMenu(id, inventory, player));
             }
+            case SLOT_RPG -> {
+                click(0.9f);
+                RpgMenu.open(player);
+            }
             case SLOT_CLOSE -> {
                 click(0.6f);
                 player.closeContainer();
@@ -170,6 +178,14 @@ public final class Hub extends DisplayMenu {
         set(SLOT_MUSEUM, museum());
 
         set(SLOT_UPGRADES, upgrades());
+        int rpgLevel = Rpg.level(Rpg.data(player).xp());
+        int freePoints = Rpg.available(player);
+        set(SLOT_RPG, Gui.button(Items.NETHER_STAR, "Profil RPG", Gui.lore(
+                Gui.field("niveau RPG", String.valueOf(rpgLevel)),
+                freePoints > 0 ? Gui.good(freePoints + " point(s) a depenser") : Gui.hint("aucun point a depenser"),
+                Gui.hint("arbre de competences des donjons"),
+                Gui.blank(),
+                Gui.action("clic pour ouvrir"))));
         set(SLOT_CLOSE, Gui.close());
     }
 

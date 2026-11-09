@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/nether_portal_ns",
+  "textures": {
+    "portal": "palamod:block/miner_portal",
+    "particle": "palamod:block/miner_portal"
+  }
+}

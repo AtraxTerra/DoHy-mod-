@@ -3,7 +3,6 @@ package fr.atraxterra.dohy.palamod.alchemist;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +16,14 @@ import java.util.function.Supplier;
  *   <li>potion de foudre + buche d'erable : 2 bois d'erable brillant ;</li>
  *   <li>potion de foudre + buche de jacaranda : 2 bois de jacaranda brillant ;</li>
  *   <li>potion de foudre + buche d'ostrya : 2 bois d'ostrya brillant ;</li>
- *   <li>potion de foudre + buche de judée : 2 bois de judée brillant ;</li>
- *   <li>poudre lumineuse : 3 pepites d'or.</li>
+ *   <li>potion de foudre + buche de judée : 2 bois de judée brillant.</li>
  * </ol>
+ *
+ * <p><b>Ecart</b> : la cinquieme, poudre lumineuse → 3 pepites d'or, n'est pas
+ * portee. Chez Paladium l'or ne valait rien ; ici il se vend, et la poudre
+ * s'achete au shop (4 $) comme chez le clerc (une emeraude) : trois pepites
+ * a 9 $ font de l'argent infini, sans limite de debit — jusqu'a 32 recettes
+ * par tick. Retiree a la demande du joueur (chapitre economique).
  *
  * <p>Une recette se fait des que chacun de ses ingredients est dans le bassin,
  * les autres objets n'y changent rien. <b>Ecart</b> : l'original retirait un
@@ -35,8 +39,6 @@ public record CauldronRecipe(List<Supplier<? extends Item>> inputs, Supplier<Ite
                     List.of(PalaAlchemist.LIGHTNING_POTION, () -> PalaWoods.log(sap).asItem()),
                     () -> new ItemStack(PalaWoods.shiny(sap), 2)));
         }
-        RECIPES.add(new CauldronRecipe(List.of(() -> Items.GLOWSTONE_DUST),
-                () -> new ItemStack(Items.GOLD_NUGGET, 3)));
     }
 
     public ItemStack result() {

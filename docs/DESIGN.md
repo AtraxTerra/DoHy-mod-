@@ -62,6 +62,7 @@ Deux conséquences structurelles, qui reviennent partout dans ce document :
 | `COMPONENT` | Composants de base | **Achat seul** |
 | `NTM` | Matières brutes et composants finis NTM NEXT | Achat + vente, voir 3.4 |
 | `MOB_DROP` | Drops de mobs | Vente |
+| `PALAMOD` | Matières premières de PalaMod : minerais, lingots, cultures, bûches (chapitre 6, `PALAMOD.md` § 19) | Achat + vente, les bûches en vente seule |
 
 ### 3.2 Prix dynamique
 
@@ -84,6 +85,8 @@ prix_vente = base × clamp( (S₀ / (S₀ + vendu))^0.6 , plancher , 1.8 )
   Règle : **tout item vendable qu'un villageois peut vendre doit être plafonné à `N × prix_émeraude`**, ou sorti de la vente. Liste à auditer en phase 3 : lapis, redstone, glowstone, quartz, charbon, fer, argile, briques, papier, cloche, verre teinté.
   Mitigation déjà appliquée : le taux du lapis a été relevé à 1 200/h pour refermer la boucle la plus évidente.
 - Les drops de spawner comptent normalement : c'est le prix dynamique qui régule, pas une interdiction.
+- **Blocs de masse : plancher de 5 %** (2026-11-09). Sable, ardoise, tuf, granite, diorite, andésite, calcite, netherrack, blackstone, end stone, terracotta, soufre, cinabre, pierre, cobble, basalte, gravier, sable des âmes : les outils de zone de PalaMod en cassent 9 par coup et la corne du Dancarok 154. Au plancher de leur tier (35 % pour un `FOUND`), chaque bloc restait une rente sans fond. Le prix de base ne change pas ; ni les paliers de collection ni le prestige ne relèvent ce plancher (`floor_bonus_disabled`).
+- **Une conversion qui part d'un objet achetable doit rendre moins que son prix d'achat.** C'est la boucle émeraude du point précédent, généralisée : le chaudron de PalaMod changeait la poudre lumineuse (4 $ à l'achat) en trois pépites d'or (27 $) ; la recette est retirée. Pour la même raison, les bûches de PalaMod ne s'achètent pas : leur sève se change en lingots.
 
 ### 3.4 NTM NEXT
 
@@ -278,6 +281,8 @@ Points de vigilance : sérialisation compacte (un `LongSet` de positions packée
 | Fermes à haut débit | Régulées par le prix dynamique, pas interdites |
 | Place-and-break | §10.1 |
 | Bone meal sur culture non mature | XP sur culture mature uniquement (§7) |
+| Minage de masse (outils de zone, corne du Dancarok, Dollars Stone) | Plancher de 5 % sur les blocs de masse (§3.3) |
+| Machines de PalaMod (chaudron, crusher, golems, sève, cobblebreaker) | Audit de `PALAMOD.md` § 19 : recette d'or retirée, le reste est une ferme régulée par le prix dynamique |
 
 ---
 

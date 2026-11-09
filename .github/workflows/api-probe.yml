@@ -33,6 +33,19 @@ on:
         required: false
         default: false
         type: boolean
+      files:
+        description: "Avec meta : imprimer les fichiers vanilla dont le chemin commence par ces prefixes"
+        required: false
+        type: string
+      boot:
+        description: "Demarrer un serveur dedie jusqu'a « Done » (charge les datapacks, cree le monde), puis l'arreter"
+        required: false
+        default: false
+        type: boolean
+      commands:
+        description: "Avec boot : commandes envoyees par RCON une fois le serveur pret, separees par des ; (« sleep N » attend N s)"
+        required: false
+        type: string
       ref:
         description: "Branche ou commit"
         required: false
@@ -70,9 +83,11 @@ jobs:
           IN_JAVAP: ${{ inputs.javap }}
           IN_MEMBER: ${{ inputs.member }}
           IN_META: ${{ inputs.meta }}
+          IN_FILES: ${{ inputs.files }}
+          IN_BOOT: ${{ inputs.boot }}
         run: |
           if [ "$IN_META" = "true" ]; then
-            gradle packMeta --no-daemon -q
+            gradle packMeta --no-daemon -q -Pfiles="$(echo "$IN_FILES" | tr -d ' \n')"
           fi
           # javap voit les membres PROTEGES et le corps des methodes, que la
           # reflexion ne montre pas. C'est le seul mode qui dit ce qu'une
@@ -83,7 +98,7 @@ jobs:
               -Pmember="$(echo "$IN_MEMBER" | tr -d ' \n')"
           fi
           if [ -z "$IN_CLASSES" ] && [ -z "$IN_PACKAGES" ]; then
-            if [ "$IN_META" = "true" ] || [ -n "$IN_JAVAP" ]; then
+            if [ "$IN_META" = "true" ] || [ -n "$IN_JAVAP" ] || [ "$IN_BOOT" = "true" ]; then
               exit 0
             fi
             echo "::error::Rien a sonder : renseigne classes, packages, javap ou meta."
@@ -92,3 +107,53 @@ jobs:
           gradle apiProbe --no-daemon -q \
             -Pprobe="$(echo "$IN_CLASSES" | tr -d ' \n')" \
             -Ppkg="$(echo "$IN_PACKAGES" | tr -d ' \n')"
+
+      # Un format de datapack faux ne casse pas la compilation : il casse le
+      # chargement du monde. Seul un demarrage le voit. Le serveur cree aussi
+      # chaque dimension declaree ; les commandes (RCON) peuvent y generer des
+      # chunks et compter des blocs avec /fill ... replace. Le serveur ne se met
+      # pas en pause faute de joueur : sans cela, plus aucun tick au bout de 60 s.
+      - name: Demarrer un serveur
+        if: ${{ inputs.boot }}
+        env:
+          IN_COMMANDS: ${{ inputs.commands }}
+        run: |
+          mkdir -p run
+          echo "eula=true" > run/eula.txt
+          printf 'online-mode=false\nenable-rcon=true\nrcon.password=sonde\nrcon.port=25575\nlevel-seed=dohy\npause-when-empty-seconds=100000\n' \
+            > run/server.properties
+          ( timeout 1200 gradle runServer --no-daemon > /tmp/server.log 2>&1; echo "fin du serveur : $?" >> /tmp/server.log ) &
+          for i in $(seq 1 1100); do
+            grep -qE 'Done \(|fin du serveur' /tmp/server.log && break
+            sleep 1
+          done
+          cat > /tmp/rcon.py <<'PY'
+          import socket, struct, sys, time
+          def send(sock, ident, kind, body):
+              data = body.encode() + b"\0\0"
+              sock.sendall(struct.pack("<iii", len(data) + 8, ident, kind) + data)
+          def receive(sock):
+              size = struct.unpack("<i", sock.recv(4))[0]
+              data = b""
+              while len(data) < size:
+                  data += sock.recv(size - len(data))
+              return data[8:-2].decode(errors="replace")
+          sock = socket.create_connection(("127.0.0.1", 25575), timeout=300)
+          send(sock, 1, 3, "sonde")
+          receive(sock)
+          commands = [c.strip() for c in sys.argv[1].split(";") if c.strip()] + ["stop"]
+          for command in commands:
+              if command.startswith("sleep "):
+                  time.sleep(int(command.split()[1]))
+                  continue
+              send(sock, 2, 2, command)
+              print(">", command)
+              print(receive(sock) if command != "stop" else "")
+          PY
+          if grep -q 'Done (' /tmp/server.log; then
+            python3 /tmp/rcon.py "$IN_COMMANDS" || true
+          fi
+          wait
+          echo "================ journal (extraits) ================"
+          grep -nE 'ERROR|Exception|Caused by|Failed|Done \(|fin du serveur|palamod|\[dohy/' /tmp/server.log | grep -v 'DEBUG' | head -300
+          grep -q 'Done (' /tmp/server.log

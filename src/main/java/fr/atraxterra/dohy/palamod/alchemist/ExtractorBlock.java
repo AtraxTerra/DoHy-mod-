@@ -43,7 +43,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * </ul>
  *
  * <p><b>Ecart</b> : use, l'original se rendait en objet a 0 utilisation, pour
- * la reparation a la palamachine, non portee ; il disparait ici.
+ * la recharge a la palamachine ; il disparait ici. La palamachine recharge
+ * donc un extracteur entame, ramasse avant la fin (chapitre 16).
  */
 public class ExtractorBlock extends BaseEntityBlock {
 

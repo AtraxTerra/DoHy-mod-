@@ -45,6 +45,25 @@ Un villageois qui vend un item contre `N` émeraudes impose un plafond : au-del�
 | flèche | 17 | **1** | 1 ém. → 16 |
 | lapis | 15 | **2** | 1 ém. → 1 |
 
+### Blocs de masse
+
+Vingt blocs que les outils de zone et la corne du Dancarok cassent par dizaines ou par centaines
+(liste dans `DESIGN.md` § 3.3) gardent leur prix de base mais un **plancher de 5 %** (colonne
+`floor` de `rates.csv`), sans bonus de collection ni de prestige. À la corne, 100 000 blocs
+de granite par heure rapportaient 940 k au plancher de 35 % ; à 5 %, 135 k. C'est une borne
+haute : les poches de granite s'épuisent et la pierre autour ne vaut que 0,15. Le joueur qui mine
+à la main, lui, ne vend jamais assez d'un même bloc pour descendre si bas.
+
+| Bloc | Prix | Plancher avant | Plancher après |
+|---|---|---|---|
+| granite, diorite, andésite, sable | 27 | 9,45 | 1,35 |
+| tuf | 33 | 11,55 | 1,65 |
+| ardoise, netherrack, end stone | 13 | 4,55 | 0,65 |
+| cobblestone, pierre | 3 | 0,45 | 0,15 |
+
+La colonne `buy_markup` est l'autre correction par item : `0` retire l'achat (les bûches de
+PalaMod), une valeur supérieure à 4 le renchérit. En dessous de 4, le générateur refuse.
+
 Désactivable : `python3 tools/gen_prices.py --no-villager-caps`. À ne faire que si la partie se joue **sans hall de troc** — sinon l'économie est cassée en une après-midi.
 
 ### Levier unique
@@ -107,7 +126,7 @@ Lecture pour le rythme de jeu visé :
 - **Niveau 50 en ~69 h** → premier mois, et il reste la moitié de l'échelle
 - **Niveau 100 en ~412 h** → ~21 semaines de jeu *entièrement consacrées à ce métier*. En pratique le temps se répartit, donc un favori se maxe sur une saison ou deux et les autres suivent.
 - **Un métier maxé rapporte 20 M cumulés.** Les 4 métiers réunis ≈ **80 M**, à comparer aux 500 M de l'autosell : les métiers restent un bonus, jamais la source de revenu. C'est le principe 2 de `DESIGN.md`. Les 8 skills d'avant le remplacement (2026-11-08) en donnaient 160 M ; la courbe par niveau n'a pas bougé, il y a seulement moins de progressions.
-- **Les objets de Paladium s'y ajoutent** (`jobs.json`) : 1 050 lingots de paladium et autant de trixium par métier maxé, plus une pioche, une épée et une armure en paladium enchantées. Leur poids réel dépend des prix des objets PalaMod, encore à fixer au chapitre économique.
+- **Les objets de Paladium s'y ajoutent** (`jobs.json`) : 1 050 lingots de paladium et autant de trixium par métier maxé, plus une pioche, une épée et une armure en paladium enchantées. Aux prix du chapitre économique, environ 76 k de paladium et 840 k de trixium par métier : l'argent des niveaux reste la part principale.
 
 Levier unique : `xp_base` dans `data/job_progression.json`. Le passer à 75 réduit tout de 25 %.
 
@@ -388,6 +407,16 @@ d'expédition, pas une rente.
 Une matière que `tag_prices.json` ne connaît pas garde l'ancien comportement et le
 prix d'une matière courante. Si NTM ajoute un métal, le mod continue de
 fonctionner, au défaut prudent.
+
+## 6 ter. PalaMod
+
+Vingt-quatre matières premières, au modèle commun (tableau complet et raisons dans
+`PALAMOD.md` § 19). Les métaux renouvelables — améthyste 30, titane 45, paladium 72 — sont
+`FARM` : crusher, cultures, sève et golems en produisent sans fin, comme les golems de fer
+produisent le fer à 15. Ce qui ne sort que de la mine est `FOUND` : paladium vert 500, findium
+400, trixium 800, minerais à la pioche soie de 100 à 1 600. La pépite d'endium est `RARE`,
+40 000. Les rapports de conversion des machines sont tenus : au crusher, 15 titanes coûtent
+16 améthystes et 15 paladiums 32 titanes, donc aucun prix ne rend une conversion gratuite.
 
 ## 7. Ce qui n'est pas encore chiffré
 

@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-03
+Dernière mise à jour : 2026-11-09
 
 ---
 
@@ -82,8 +82,8 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 4 | **Machines** : cobblebreaker 4 paliers, crusher | fait |
 | 4b | **Interfaces de machines** : menu et écran propres, barre de progression | fait |
 | 5a | **Machines du fermier** : totem de fertilité, 5 seedplanters | fait |
-| 5b | **Machines de craft** : palamachine (le grinder est au chapitre 12, la palaforge au chapitre 8) | à faire |
-| 6 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
+| 5b | **Machines de craft** : palamachine (chapitre 16 ; le grinder est au chapitre 12, la palaforge au chapitre 8) | fait |
+| 6 | **Intégration économique** : 24 matières de PalaMod au catalogue (onglet PalaMod), aile de musée, contrats, audit des machines (recette d'or du chaudron retirée, plancher de 5 % des blocs de masse), cultures de PalaMod enfin comptées | fait |
 | 7 | **Équipement** : 19 outils, 5 houes à rayon, 6 armures, leurs effets, 49 recettes | fait |
 | 9 | **Fermier** : abattage et incassabilité de la hache en endium, eau angélique (fluide qui soigne, seau) — sans herbes colorées, racinier ni trône | fait |
 | 10 | **Chasseur** : canne à pêche en paladium, épée en endium qui ne frappe plus à bout, épée et pierre de capture, marteau de caverne, spawner cassé, spawner customisé (âmes, paliers, créatures empilées) — sans contrôleur, familiers, améliorations ni trône | fait |
@@ -91,6 +91,12 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 12 | **Grinder** : multibloc, forge des têtes et des outils en paladium, modificateurs ; marteaux, broadswords, fastswords ; buisson à XP (généré) et baies ; pioche des dieux (100 niveaux, Toucher de soie, fusion automatique) | fait |
 | 13 | **Golem gardien** : golem (40 niveaux, arbre à trois voies, choix, gardien de golem), machine à croquettes, boîte à golem et mini golems, pomme en paladium — sans renommeur, cosmétiques, alerte Discord ni trône | fait |
 | 14 | **Monture** : le Dancarok (capture, gemme, niveaux, vie et énergie sur le joueur, invocation, conduite, cornes qui creusent), l'enclos (gestionnaire, fondation, barrière, couveuse, soins aux bandages), l'orbe de régénération ; les coffres manquants (paladium, paladium vert, endium, coffre de l'End en paladium, coffre en or) — sans Ravirok, Tedarok, palamachine ni éléphant | fait |
+| 15 | **Dimension du Mineur** : obsidienne wither (chargée au paladium, obtenue au piston renforcé), portail du Mineur (propriétaire, Mineur 90), dimension `palamod:miner` (sections de 5 000, 1 000 points, 3 jours, minerais ×3, nuit fixe, sans monstres ni chute), écrans d'entrée et de fin, minerai et Pierre d'Invocation ; la pépite d'endium ne naît plus que dans la dimension — sans boss ni ambiance client | fait |
+| 16 | **Pour le PvP** : palamachine (création et réparation des sticks, anneaux et cornes, enchantements gardés), 7 sticks (effets du code, recharge par type sur le joueur), orbes de force et de saut, 6 anneaux (armure portée, colonne d'anneaux des coffres, capacités de réparation), aile et deltaplane, slimepad, spike en paladium — sans spikes des autres métaux ni modèle 3D du deltaplane | fait |
+| 17 | **Pierres légendaires** : 7 pierres (téléportation, invisibilité, fortune, pouvoir — résistance au feu 30 min —, métier, chaos, et l'aléatoire qui s'ouvre), recharge de 24 h sur la pierre et verrou de 10 min par joueur ; **gant en endium** (établi, grinder, défilement, 12 h complet, Infinity Gauntlet) ; dans les caisses rare et légendaire | fait |
+| 18 | **Donjons, cœur jouable** : 4 clés et l'écran des 100 paliers, groupe de 4, dimension `palamod:dungeon`, salles construites (combat, énigme, boost, marchande, mini-boss en 5, boss en 0), 6 types de monstres renforcés au palier, 40 boss nommés et leurs capacités, coffres individuels, sacs de donjon (9/18/27/36 piles), butin du wiki, XP de métier, mort = palier échoué ; bouteilles d'XP de métier — sans équipement, essences, notes, sorts, runes ni arbre (chapitres 19 à 21) | fait |
+| 19 | **Donjons, équipement** : 3 armures et 3 épées par donjon (basique, renforcée, légendaire ; fortes surtout en donjon, à plein dans le leur), set antique du palier 100, récompenses uniques du wiki, essences par élément et tier (réparation à l'enclume), note D à S et son coffre — textures de Palamod Recreated | fait |
+| 20 | **Donjons, runes et arbre** : niveau RPG (XP des salles, 100 niveaux), points (niveau, paliers, métiers 1/5), arbre de 4 branches × 8 nœuds en écran de coffre (bouton d'inventaire, `/profil`, `/menu`), statistiques RPG en donjon seulement ; runes commune, rare, épique (coffres, palamachine, enclume, grinder) — sorts et mana sautés au choix du joueur | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -155,6 +161,127 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-09 (suite) — chapitre 20 : runes et arbre de compétences
+
+**Demande** : « Saute sorts et mana ». Le chapitre prévu pour les sorts est abandonné ; les runes
+et l'arbre deviennent le chapitre 20 et ferment les donjons. Deux choix du joueur : statistiques
+RPG **en donjon seulement**, et **1 point tous les 5 niveaux de métier** (le wiki : 1 par niveau,
+soit 400 points pour les seuls métiers). Détail : `docs/PALAMOD.md` § 24.
+
+**Le wiki ne définit rien des statistiques** : ni ce que sont l'attaque, l'esquive, le critique et
+la défense, ni les nœuds de l'arbre, ni les statistiques des runes, ni leurs valeurs. Tout est de
+DoHy, calibré pour que l'arbre entier coûte exactement les 260 points qu'on peut gagner.
+
+**Accès** : le bouton « Profil RPG » du wiki est ajouté à l'inventaire (un écran client qui
+envoie un message au serveur), en plus de `/profil` et du menu.
+
+**Vérifié au démarrage, par un auto-test temporaire** : tirages et améliorations de runes
+jusqu'au tier 4, fusion des lignes partagées, courbe de niveau, points depuis les trois sources,
+statistiques et plafonds avec runes portées, recettes de la palamachine, runes tirées dans les
+coffres. Le bouton d'inventaire, l'écran de l'arbre, l'enclume et le grinder restent à éprouver
+en jeu.
+
+### 2026-11-09 (suite) — chapitre 19 : équipement de donjon, essences, notes
+
+**Demande** : « Chapitre 19 ». Trois choix du joueur : un équipement fort **surtout en donjon**
+(hors donjon, il vaut un métal ; dedans, il réduit les dégâts des monstres et l'épée frappe plus
+fort), les textures de **Palamod Recreated** (mod de fans trouvé dans les fichiers fournis,
+crédité), et un **coffre selon la note**. Détail : `docs/PALAMOD.md` § 23.
+
+**Palamod Recreated** a les douze sets, leurs couches et quinze essences en cinq éléments (dont la
+glace d'un cinquième donjon, Frigoria, absent du wiki). Ses statistiques sont des valeurs MCreator
+identiques d'un donjon à l'autre : non reprises.
+
+**Vérifié au démarrage, par un auto-test temporaire** : réductions et bonus par tier, à moitié hors
+de son donjon, plafond, set antique ; réparations acceptées et refusées ; récompenses uniques des
+quatre donjons ; coffres de note ; notes selon la vie perdue.
+
+### 2026-11-09 (suite) — chapitre 18 : donjons, le cœur jouable
+
+**Demande** : « les donjons », depuis le wiki (« Univers des donjons »). Découpage avec le
+joueur en quatre chapitres : 18 cœur jouable, 19 équipement, essences et notes, 20 sorts et mana,
+21 runes et arbre. Choix du joueur : salles générées par le code, monstres vanilla renforcés, mort
+= palier échoué (inventaire gardé), clé consommée. Détail : `docs/PALAMOD.md` § 22.
+
+**Pas de code d'origine.** Les donjons sont de la V12, après la 10.3.0 : le wiki donne les règles,
+les noms et les tables de butin, et ne donne ni taux, ni quantités, ni statistiques, ni contenu des
+salles boost et marchande, ni emplacement des boss. Tous ces chiffres sont de DoHy et documentés.
+
+**26.2 a encore bougé** : les blocs et objets teints sont des `ColorCollection`
+(`Blocks.STAINED_GLASS.pick(DyeColor.RED)`), les étiquettes d'entité sont `entityTags()`, et
+`EntityInteractSpecific` n'existe plus.
+
+**Une entité tout juste ajoutée n'est pas visible** de `ServerLevel.getEntity(UUID)` tant que son
+chunk n'a pas été promu : la croire morte finissait la vague avant le combat. Les parties gardent
+donc leurs monstres par référence, et chaque salle tient ses chunks forcés (libérés à
+l'effacement, et au démarrage du serveur après un arrêt brutal).
+
+**Vérifié au démarrage, par un auto-test temporaire** : salles, monstres, boss, butin, déroulé
+d'un palier jusqu'à la sortie, région effacée. Le jeu avec un joueur reste à éprouver en jeu.
+
+### 2026-11-09 (suite) — chapitre 17 : pierres légendaires et gant
+
+**Demande** : « les pierres de puissance et le gant ». Ce sont les *legendary stones* de PalaMod et
+l'*Endium Gauntlet* qui les porte. Détail : `docs/PALAMOD.md` § 21.
+
+**Deux décisions du joueur.** Obtention : les caisses (la pierre aléatoire dans la rare et la
+légendaire, le gant complet dans la légendaire), à la place des lucky blocks. Pierre de pouvoir :
+l'eau sulfurique dont elle protégeait n'étant pas portée, elle donne 30 minutes de résistance au
+feu.
+
+**Le code contredit le wiki sur les verrous.** Le chaos se verrouille 10 minutes par joueur, pas
+une heure (l'heure n'est que dans l'infobulle) ; et le verrou d'une heure des quatre autres
+effets n'était jamais écrit — seules les recharges de 24 h par pierre comptent.
+
+**Vérifié au démarrage** : le gant garni et la pierre datée se posent par commande avec leurs
+composants, les caisses se chargent avec le gant complet. L'activation demande un joueur : non
+testée en jeu.
+
+### 2026-11-09 (suite) — chapitre 16 : pour le PvP
+
+**Demande** : « ajoute les sticks, les rings, hang glider, leurs effets, craft », depuis la page
+du wiki « Java – Pour le PvP ». Les sticks et les anneaux ne se fabriquent qu'à la palamachine,
+qui n'était pas portée (chapitre 5b) : elle vient avec. Détail : `docs/PALAMOD.md` § 20.
+
+**Le wiki et le code divergent, et c'est le code qui est porté** : vitesse VII et non III pour le
+stick de vitesse (amplificateur 6), recharges de 10 à 40 s, et un anneau réparé à la palamachine
+**garde** ses enchantements (`ench` recopié), quand le wiki dit qu'il les perd.
+
+**Les anneaux comptent de deux façons.** Portée, une armure consomme sa capacité point par point
+(8 000 à 12 000) ; au coffre, par remise à neuf complète — les « 3 » des outils en paladium sont
+trois remises à neuf. Le coffre en endium ne répare que l'endium, avec des anneaux en endium. Les
+coffres prennent leur colonne d'anneaux, laissée de côté au chapitre 14.
+
+**Où tourne la physique.** Le deltaplane et le slimepad poussent un joueur : c'est son client
+qui calcule son mouvement, la poussée y est donc appliquée (`isLocalInstanceAuthoritative`), le
+serveur ne gardant que l'état et l'annulation de la chute. Les sticks de saut, eux, partent du
+serveur avec le paquet de vitesse, comme l'original.
+
+**Vérifié au démarrage, par RCON** : création d'un stick, réparation qui garde Solidité III et
+passe de 4 à 5, refus de la sixième ; coffre en paladium qui répare les deux rangées du haut et
+pas la troisième, capacité décomptée à la remise à neuf ; coffre en endium qui répare l'épée en
+endium et pas celle en paladium ; spike qui tue un cochon ; slimepad qui projette un objet vers
+l'est. Les sticks et le deltaplane demandent un joueur : non testés en jeu.
+
+### 2026-11-09 — chapitre 6 : PalaMod entre dans l'économie
+
+**Demande** : « la refonte de l'économie ». Portée choisie par le joueur : intégrer PalaMod au
+modèle de DoHy, le reste de l'économie ne bouge pas. Détail : `docs/PALAMOD.md` § 19.
+
+**Aucun objet de PalaMod n'avait de prix.** Les règles par tag ne voient que les tags `c:`, et
+PalaMod n'en déclare aucun. Vingt-quatre matières premières entrent au catalogue, dans un sixième
+onglet ; le reste (241 objets fabriqués) n'a pas de prix, comme les objets fabriqués vanilla.
+
+**L'audit des machines** a été fait avant de chiffrer, et trois décisions sont du joueur :
+- la recette du chaudron poudre lumineuse → 3 pépites d'or est **retirée** (argent infini : la
+  poudre s'achète 4 $, les pépites se revendent 27 $) ;
+- les blocs de masse ont un **plancher de 5 %** : la corne du Dancarok en casse 154 par coup ;
+- le cobblebreaker garde ses diamants (1,6/h par machine), limité par la pierre fournie.
+
+**Un trou d'intégration trouvé en route** : les cultures de PalaMod plantées à la main étaient des
+blocs posés, donc sans XP de Fermier, sans collection, sans contrat — depuis le chapitre 3.
+
 
 ### 2026-11-08 (suite) — chapitre 13 : le golem gardien
 

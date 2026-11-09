@@ -2,10 +2,23 @@
   "replace": false,
   "values": [
     "palamod:amethyst_chestplate",
+    "palamod:antique_chestplate",
     "palamod:endium_chestplate",
     "palamod:green_paladium_chestplate",
+    "palamod:manelios_chestplate",
+    "palamod:manelios_legendary_chestplate",
+    "palamod:manelios_reinforced_chestplate",
     "palamod:mixed_endium_chestplate",
+    "palamod:nimbria_chestplate",
+    "palamod:nimbria_legendary_chestplate",
+    "palamod:nimbria_reinforced_chestplate",
     "palamod:paladium_chestplate",
-    "palamod:titane_chestplate"
+    "palamod:talikus_chestplate",
+    "palamod:talikus_legendary_chestplate",
+    "palamod:talikus_reinforced_chestplate",
+    "palamod:titane_chestplate",
+    "palamod:vitalys_chestplate",
+    "palamod:vitalys_legendary_chestplate",
+    "palamod:vitalys_reinforced_chestplate"
   ]
 }

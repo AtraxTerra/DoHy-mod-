@@ -179,6 +179,21 @@ LAYOUTS = {
         "arrow": {"x": 68, "y": 35, "vertical": False},
         "flame": {"x": 9, "y": 35},
     },
+    "palamachine": {
+        # PaladiumMachineContainer, resserre : la piece a transformer au centre
+        # d'un quinconce, les quatre ingredients aux coins (1 et 3 en haut, 2 et
+        # 4 en bas, comme ils encadraient la piece dans l'original), la fleche
+        # des 10 secondes, le resultat.
+        "slots": [
+            {"x": 44, "y": 35, "role": "input", "ghost": "stick"},
+            {"x": 26, "y": 17, "role": "input"},
+            {"x": 26, "y": 53, "role": "input"},
+            {"x": 62, "y": 17, "role": "input"},
+            {"x": 62, "y": 53, "role": "input"},
+            {"x": 124, "y": 35, "role": "output", "big": True},
+        ],
+        "arrow": {"x": 89, "y": 34, "vertical": False},
+    },
     "golem_box": {
         # TileEntityGuardianBox : trois mini golems, leurs croquettes dessous,
         # les 8 minutes de production, cinq sorties.
@@ -212,6 +227,13 @@ CHEST_PLAYER_Y, CHEST_HOTBAR_Y = 174, 232
 CHESTS = {"amethyst_chest": ("amethyst", 12), "titane_chest": ("titane", 12),
           "paladium_chest": ("paladium", 12), "green_paladium_chest": ("green_paladium", 12),
           "endium_chest": ("endium", 12), "gold_chest": ("gold", 9)}
+# Les anneaux de reparation (ModdedChestLogic) : rangees reparees du haut, cases
+# d'anneau dans une colonne a droite de la grille. Memes nombres que ChestTier ;
+# memes formules que ChestTier.ringX, panelWidth et textureWidth.
+CHEST_RINGS = {"amethyst_chest": (1, 1), "titane_chest": (1, 2), "paladium_chest": (2, 4),
+               "green_paladium_chest": (6, 4), "endium_chest": (9, 4)}
+RING_GAP = 6
+RING_COLUMN = RING_GAP + 16
 
 GHOSTS = {}
 
@@ -231,6 +253,9 @@ def load_ghosts(pack, jar):
         "equipment": os.path.join(RES, "assets", NS, "textures", "item", "paladium_pickaxe.png"),
         "croquette": os.path.join(RES, "assets", NS, "textures", "item", "croquette.png"),
         "mini_golem": os.path.join(RES, "assets", NS, "textures", "item", "mini_golem.png"),
+        "stick": os.path.join(RES, "assets", NS, "textures", "item", "heal_stick.png"),
+        "ring": os.path.join(RES, "assets", NS, "textures", "item", "small_ring.png"),
+        "endium_ring": os.path.join(RES, "assets", NS, "textures", "item", "endium_small_ring.png"),
     }
     if pack:
         for ghost, item in (("lava", "lava_bucket"), ("fibers", "wheat"), ("minerals", "flint"),
@@ -380,10 +405,17 @@ def build(name, layout):
 
 
 def build_chest(name, metal, columns):
-    """Le fond d'un coffre : la grille, l'inventaire, un coin du metal."""
-    CHEST_WIDTH = columns * 18 + 24
-    CHEST_PLAYER_X = (CHEST_WIDTH - 9 * 18) // 2
-    image = Image.new("RGBA", (TEXTURE, TEXTURE), TRANSPARENT)
+    """Le fond d'un coffre : la grille, l'inventaire, un coin du metal, et la
+    colonne d'anneaux s'il en prend.
+
+    La colonne elargit le panneau au-dela de 256 px : la texture s'elargit
+    avec lui (ChestTier.textureWidth), et l'ecran passe sa largeur au blit.
+    """
+    repair_rows, rings = CHEST_RINGS.get(name, (0, 0))
+    GRID_WIDTH = columns * 18 + 24
+    CHEST_WIDTH = GRID_WIDTH + (RING_COLUMN if rings else 0)
+    CHEST_PLAYER_X = (GRID_WIDTH - 9 * 18) // 2
+    image = Image.new("RGBA", (max(TEXTURE, CHEST_WIDTH), TEXTURE), TRANSPARENT)
     draw = ImageDraw.Draw(image)
     draw.rectangle([1, 0, CHEST_WIDTH - 2, CHEST_HEIGHT - 1], fill=BACKGROUND)
     draw.rectangle([0, 1, CHEST_WIDTH - 1, CHEST_HEIGHT - 2], fill=BACKGROUND)
@@ -397,6 +429,15 @@ def build_chest(name, metal, columns):
     for row in range(CHEST_ROWS):
         for column in range(columns):
             slot(image, draw, CHEST_X + column * 18, CHEST_Y + row * 18)
+    if rings:
+        # Les rangees que les anneaux reparent : un filet du metal a leur
+        # gauche, pour qu'on sache ou ranger ce qui doit l'etre.
+        draw.rectangle([CHEST_X - 5, CHEST_Y - 1, CHEST_X - 4, CHEST_Y + repair_rows * 18 - 2],
+                       fill=METAL[metal])
+        ring_x = CHEST_X + columns * 18 + RING_GAP
+        ghost = "endium_ring" if metal == "endium" else "ring"
+        for ring in range(rings):
+            slot(image, draw, ring_x, CHEST_Y + ring * 18, {"ghost": ghost, "metal": metal})
     for row in range(3):
         for column in range(9):
             slot(image, draw, CHEST_PLAYER_X + column * 18, CHEST_PLAYER_Y + row * 18)

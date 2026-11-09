@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "palamod:talikus_legendary"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "palamod:talikus_legendary"
+      }
+    ]
+  }
+}

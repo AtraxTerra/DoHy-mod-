@@ -1,0 +1,146 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "palamod:block/slimepad",
+    "core": "palamod:block/slimepad",
+    "outer": "palamod:block/slimepad_outer"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        2,
+        4
+      ],
+      "to": [
+        12,
+        9,
+        12
+      ],
+      "faces": {
+        "down": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#core"
+        },
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#core"
+        },
+        "north": {
+          "uv": [
+            4,
+            7,
+            12,
+            14
+          ],
+          "texture": "#core"
+        },
+        "south": {
+          "uv": [
+            4,
+            7,
+            12,
+            14
+          ],
+          "texture": "#core"
+        },
+        "west": {
+          "uv": [
+            4,
+            7,
+            12,
+            14
+          ],
+          "texture": "#core"
+        },
+        "east": {
+          "uv": [
+            4,
+            7,
+            12,
+            14
+          ],
+          "texture": "#core"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        1,
+        2
+      ],
+      "to": [
+        14,
+        10,
+        14
+      ],
+      "faces": {
+        "down": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#outer"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#outer"
+        },
+        "north": {
+          "uv": [
+            2,
+            6,
+            14,
+            15
+          ],
+          "texture": "#outer"
+        },
+        "south": {
+          "uv": [
+            2,
+            6,
+            14,
+            15
+          ],
+          "texture": "#outer"
+        },
+        "west": {
+          "uv": [
+            2,
+            6,
+            14,
+            15
+          ],
+          "texture": "#outer"
+        },
+        "east": {
+          "uv": [
+            2,
+            6,
+            14,
+            15
+          ],
+          "texture": "#outer"
+        }
+      }
+    }
+  ]
+}

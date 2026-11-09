@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:smelting",
+  "experience": 1.0,
+  "ingredient": "palamod:invoker_ore",
+  "result": {
+    "id": "palamod:invoker_stone"
+  }
+}

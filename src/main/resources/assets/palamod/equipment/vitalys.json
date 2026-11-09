@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "palamod:vitalys"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "palamod:vitalys"
+      }
+    ]
+  }
+}

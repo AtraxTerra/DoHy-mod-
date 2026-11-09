@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "palamod:block/invoker_ore",
+    "particle": "palamod:block/invoker_ore"
+  }
+}

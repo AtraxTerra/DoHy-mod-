@@ -31,6 +31,7 @@ s'appliquent sans rien regenerer.
     `tags/item/`, `tags/block/`.
 """
 import json
+import math
 import re
 import os
 import shutil
@@ -533,6 +534,10 @@ def main():
     tag("%s/tags/item/mixed_coals.json" % NS,
         ["%s:%s" % (NS, n) for n in sorted(MIXED_COALS)])
     tag("%s/tags/block/ores.json" % NS, ["%s:%s" % (NS, n) for n in sorted(ORES)])
+    # Le tag de convention : les contrats « chasse aux minerais » (#c:ores) et
+    # tout mod qui le lit comptent alors les minerais de PalaMod.
+    tag("c/tags/block/ores.json", ["%s:%s" % (NS, n) for n in sorted(ORES)]
+        + ["%s:endium_nugget_ore" % NS, "%s:invoker_ore" % NS])
     tag("%s/tags/block/storage_blocks.json" % NS,
         ["%s:%s" % (NS, n) for n in sorted(STORAGE)])
 
@@ -2671,18 +2676,9 @@ def main():
             ("fully_healed", "Votre monture ne peut etre soignee d'avantage", "Your mount can't be healed any further")):
         label("message", "mount." + key, label_fr, label_en)
 
-    # Cornes : la palamachine n'est pas portee, ni l'elephant et sa defense.
-    # Substitut a l'etabli, memes ingredients, la defense remplacee par un bloc
-    # d'os. Les recettes « batons + bloc » de la palamachine sont des
-    # reparations : la corne usee en ressort neuve.
-    for metal in ("amethyst", "titane", "paladium"):
-        shaped("%s_horn" % metal, [" I ", "BTB", " I "], {
-            "I": "%s:%s_ingot" % (NS, metal), "B": "%s:%s_block" % (NS, metal), "T": "minecraft:bone_block"},
-               "%s:%s_horn" % (NS, metal))
-        middle = "%s:paladium_core" % NS if metal == "paladium" else "%s:%s_stick" % (NS, metal)
-        shaped("%s_horn_repair" % metal, ["SMS", " H ", " B "], {
-            "S": "%s:%s_stick" % (NS, metal), "M": middle, "H": "%s:%s_horn" % (NS, metal),
-            "B": "%s:%s_block" % (NS, metal)}, "%s:%s_horn" % (NS, metal))
+    # Cornes : elles se fabriquent et se reparent a la palamachine
+    # (PalamachineRecipes, chapitre 16), la defense d'elephant remplacee par un
+    # bloc d'os. Les anciens substituts a l'etabli sont retires.
 
     # Apparition : aucune dans les jars de Paladium (les sauvages etaient poses
     # a la main sur le serveur Farmland). Rare, dans les plaines et savanes.
@@ -2691,6 +2687,703 @@ def main():
         "biomes": ["minecraft:plains", "minecraft:sunflower_plains", "minecraft:savanna",
                    "minecraft:savanna_plateau"],
         "spawners": {"type": "%s:dancarok" % NS, "weight": 2, "minCount": 1, "maxCount": 1}})
+
+    # ---- dimension du Mineur (chapitre 15) ----
+    #
+    # modules/miner/dimminer. Textures : blocks/miner du pack (obsidienne,
+    # minerai), le jar pour ce qu'il est seul a avoir — la pierre d'invocation
+    # (items/invockerstone) et la nappe animee du portail.
+    #
+    # L'obsidienne wither : onze textures, une par palier de paladium donne
+    # (icons[feed] ; les paliers 11 a 13 du jar ne sont jamais atteints).
+    for feed in range(11):
+        tex("blocks/miner/withered_obsidian_%d.png" % feed, "block/withered_obsidian_%d.png" % feed)
+        write("assets/%s/models/block/withered_obsidian_%d.json" % (NS, feed), {
+            "parent": "minecraft:block/cube_all",
+            "textures": {"all": "%s:block/withered_obsidian_%d" % (NS, feed)}})
+    write("assets/%s/blockstates/withered_obsidian.json" % NS, {"variants": {
+        "feed=%d" % feed: {"model": "%s:block/withered_obsidian_%d" % (NS, feed)} for feed in range(11)}})
+    write("assets/%s/models/item/withered_obsidian.json" % NS,
+          {"parent": "%s:block/withered_obsidian_0" % NS})
+    write("assets/%s/items/withered_obsidian.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:block/withered_obsidian_0" % NS}})
+    # getDrops : toujours le bloc ; en plus, tant que le portail n'a jamais
+    # ete allume (created), les blocs de paladium donnes.
+    write("data/%s/loot_table/blocks/withered_obsidian.json" % NS, {
+        "type": "minecraft:block",
+        "pools": [
+            {"rolls": 1, "entries": [{"type": "minecraft:item", "name": "%s:withered_obsidian" % NS}],
+             "conditions": [{"condition": "minecraft:survives_explosion"}]},
+            {"rolls": 1, "entries": [{"type": "minecraft:alternatives", "children": [{
+                "type": "minecraft:item", "name": "%s:paladium_block" % NS,
+                "conditions": [{"condition": "minecraft:block_state_property",
+                                "block": "%s:withered_obsidian" % NS,
+                                "properties": {"feed": str(feed), "created": "false"}}],
+                "functions": [{"function": "minecraft:set_count", "count": feed}]}
+                for feed in range(10, 0, -1)]}],
+             "conditions": [{"condition": "minecraft:survives_explosion"}]},
+        ]})
+    label("block", "withered_obsidian", "Obsidienne wither", "Withered Obsidian")
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:withered_obsidian" % NS])
+
+    # Le portail : la nappe de 32 images de 48 x 48 et les deux modeles du
+    # portail du Nether (meme epaisseur, 0.25). Ni objet ni butin.
+    copy_animated("blocks/miner_portal.png", "block/miner_portal.png", (48, 1536))
+    for axis, parent in (("x", "nether_portal_ns"), ("z", "nether_portal_ew")):
+        write("assets/%s/models/block/miner_portal_%s.json" % (NS, parent.rsplit("_", 1)[1]), {
+            "parent": "minecraft:block/%s" % parent,
+            "textures": {"portal": "%s:block/miner_portal" % NS, "particle": "%s:block/miner_portal" % NS}})
+    write("assets/%s/blockstates/miner_portal.json" % NS, {"variants": {
+        "axis=x": {"model": "%s:block/miner_portal_ns" % NS},
+        "axis=z": {"model": "%s:block/miner_portal_ew" % NS}}})
+    write("data/%s/loot_table/blocks/miner_portal.json" % NS, {"type": "minecraft:block", "pools": []})
+    label("block", "miner_portal", "Portail du Mineur", "Miner Portal")
+
+    # Le minerai de Pierre d'Invocation (BlockMiner, durete 5, se rend
+    # lui-meme) et sa pierre, au four (PWorld.addRecipesForFurnace, 1 XP).
+    miner_block("invoker_ore", {"all": "blocks/miner/invoker_ore.png"},
+                "Minerai de Pierre d'Invocation", "Invoker Stone Ore")
+    tex("items/invockerstone.png", "item/invoker_stone.png")
+    flat_item("invoker_stone", "%s:item/invoker_stone" % NS)
+    label("item", "invoker_stone", "Pierre d'Invocation", "Invoker Stone")
+    write("data/%s/recipe/invoker_stone.json" % NS, {
+        "type": "minecraft:smelting", "experience": 1.0,
+        "ingredient": "%s:invoker_ore" % NS, "result": {"id": "%s:invoker_stone" % NS}})
+
+    # Les messages du chat. Les textes viennent du constant pool, prefixe
+    # « [Paladium] » retire ; « 17 » devient le niveau reellement demande.
+    for key, label_fr, label_en in (
+            ("level", "Il vous faut etre niveau %s dans le metier de mineur pour acceder a cette dimension.",
+             "You need to be level %s in the Miner job to enter this dimension."),
+            ("not_owner", "Vous n'etes pas le proprietaire de ce portail.", "You aren't the owner of this portal."),
+            ("no_portal", "Vous ne semblez pas etre dans un portail.", "You don't seem to be in a portal."),
+            ("unavailable", "La dimension mineur n'est pas disponible sur ce serveur.",
+             "The miner dimension isn't available on this server."),
+            ("creating", "Creation de votre dimension mineur en cours", "Creating your miner dimension"),
+            ("teleporting", "Teleportation dans votre dimension mineur en cours",
+             "Teleporting you to your miner dimension"),
+            ("title", "Dimension Mineur", "Miner Dimension"),
+            ("subtitle", "Bienvenue dans la dimension du metier de mineur !", "Welcome to the Miner job's dimension!"),
+            ("collapsing", "Votre dimension mineur va s'effondrer dans 30 secondes.",
+             "Your miner dimension will collapse in 30 seconds."),
+            ("collapsed", "Votre dimension s'est effondree !", "Your dimension has collapsed!"),
+            ("border", "Vous avez atteint la limite de la dimension.", "You've reached the edge of the dimension."),
+            ("bar", "Points restants : %s - Temps restant : %s", "Points left: %s - Time left: %s"),
+            ("saved", "Vous avez failli mourir : vous voila de retour a votre point d'arrivee.",
+             "You nearly died: you're back at your arrival point."),
+            ("closing", "La dimension est entrain de se fermer.", "The dimension is closing."),
+            ("no_container", "Vous ne pouvez pas poser de bloc contenant des items dans cette dimension.",
+             "You can't place blocks that hold items in this dimension."),
+            ("unbreakable", "Vous ne pouvez pas casser ce bloc dans cette dimension.",
+             "You can't break this block in this dimension."),
+            ("not_enough_points", "Vous n'avez pas assez de points pour casser ce bloc.",
+             "You don't have enough points to break this block."),
+            ("not_inside", "Vous n'etes pas dans la dimension mineur.", "You aren't in the miner dimension.")):
+        label("message", "dimminer." + key, label_fr, label_en)
+
+    # ---- pour le PvP (chapitre 16) ----
+    #
+    # Les sticks, les anneaux, l'aile et le deltaplane ; la palamachine qui
+    # fabrique et repare les sticks et les anneaux ; les ingredients qui
+    # manquaient (orbes de force et de saut, slimepad, spike en paladium).
+    # Textures : le pack, le jar pour la palamachine, que le pack n'a pas.
+    for name, texture, label_fr, label_en in (
+            ("heal_stick", "HealStick", "Stick de regeneration", "Heal Stick"),
+            ("speed_stick", "SpeedStick", "Stick de vitesse", "Speed Stick"),
+            ("strength_stick", "StrenghtStick", "Stick de force", "Strength Stick"),
+            ("jump_stick", "JumpStick", "Stick de saut", "Jump Stick"),
+            ("god_stick", "StickOfGod", "Baton divin", "Stick of God"),
+            ("damage_stick", "DamageStick", "Stick de dommage", "Damage Stick"),
+            ("hyper_jump_stick", "HyperJumpStick", "Stick de super saut", "Hyper Jump Stick")):
+        # isFull3D : le stick se tient comme un outil.
+        tex("items/%s.png" % texture, "item/%s.png" % name)
+        write("assets/%s/models/item/%s.json" % (NS, name),
+              {"parent": "minecraft:item/handheld", "textures": {"layer0": "%s:item/%s" % (NS, name)}})
+        write("assets/%s/items/%s.json" % (NS, name),
+              {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)}})
+        label("item", name, label_fr, label_en)
+    for name, texture, label_fr, label_en in (
+            ("strength_orb", "machine/orb_strenght", "Orbe de force", "Strength Orb"),
+            ("jump_orb", "machine/orb_jump", "Orbe de saut", "Jump Orb"),
+            ("small_ring", "small_ring", "Small Ring", "Small Ring"),
+            ("medium_ring", "medium_ring", "Medium Ring", "Medium Ring"),
+            ("big_ring", "medium_big", "Big Ring", "Big Ring"),
+            ("endium_small_ring", "ring/endium_small", "Small Ring en endium", "Endium Small Ring"),
+            ("endium_medium_ring", "ring/endium_medium", "Medium Ring en endium", "Endium Medium Ring"),
+            ("endium_big_ring", "ring/endium_big", "Big Ring en endium", "Endium Big Ring"),
+            ("wing", "wing", "Aile", "Wing"),
+            ("hang_glider", "hangglider", "Hang Glider", "Hang Glider")):
+        tex("items/%s.png" % texture, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("stick.repairs", "Reparation : %s / %s", "Repairs: %s / %s"),
+            ("hang_glider.open", "Deploye - clic droit pour replier", "Deployed - right-click to fold"),
+            ("hang_glider.closed", "Replie - clic droit pour deployer", "Folded - right-click to deploy"),
+            ("ring_repair", "Reparation par anneau : %s / %s", "Ring repairs left: %s / %s")):
+        label("tooltip", key, label_fr, label_en)
+    label("message", "stick.cooldown", "Tu dois attendre que le baton se recharge : %s secondes !",
+          "You must wait for the stick to recharge: %s seconds!")
+
+    # La palamachine : cotes, dessus a part, dessous comme les cotes (getIcon).
+    tex("blocks/machines/paladium_machine_block_side.png", "block/palamachine_side.png")
+    tex("blocks/machines/paladium_machine_block_top.png", "block/palamachine_top.png")
+    write("assets/%s/blockstates/palamachine.json" % NS,
+          {"variants": {"": {"model": "%s:block/palamachine" % NS}}})
+    write("assets/%s/models/block/palamachine.json" % NS, {
+        "parent": "minecraft:block/cube_bottom_top",
+        "textures": {"side": "%s:block/palamachine_side" % NS, "bottom": "%s:block/palamachine_side" % NS,
+                     "top": "%s:block/palamachine_top" % NS}})
+    block_item("palamachine")
+    label("block", "palamachine", "Palamachine", "Palamachine")
+
+    # Le slimepad : un coeur opaque dans une gaine translucide, comme le bloc de
+    # slime vanilla, aux dimensions de setBlockBounds. Symetrique : les huit
+    # directions partagent le modele.
+    tex("blocks/slime/slime_green.png", "block/slimepad.png")
+    tex("blocks/slime/slime_transparent_green.png", "block/slimepad_outer.png")
+
+    def box(frm, to, texture):
+        x0, y0, z0 = frm
+        x1, y1, z1 = to
+        horizontal = [x0, 16 - y1, x1, 16 - y0]
+        depth = [z0, 16 - y1, z1, 16 - y0]
+        top = [x0, z0, x1, z1]
+        return {"from": frm, "to": to, "faces": {
+            "down": {"uv": top, "texture": texture}, "up": {"uv": top, "texture": texture},
+            "north": {"uv": horizontal, "texture": texture}, "south": {"uv": horizontal, "texture": texture},
+            "west": {"uv": depth, "texture": texture}, "east": {"uv": depth, "texture": texture}}}
+
+    write("assets/%s/models/block/slimepad.json" % NS, {
+        "parent": "minecraft:block/block",
+        "textures": {"particle": "%s:block/slimepad" % NS, "core": "%s:block/slimepad" % NS,
+                     "outer": "%s:block/slimepad_outer" % NS},
+        "elements": [box([4, 2, 4], [12, 9, 12], "#core"), box([2, 1, 2], [14, 10, 14], "#outer")]})
+    write("assets/%s/blockstates/slimepad.json" % NS, {"variants": {
+        "direction=%d" % direction: {"model": "%s:block/slimepad" % NS} for direction in range(8)}})
+    block_item("slimepad")
+    label("block", "slimepad", "Slimepad", "Slimepad")
+
+    # Le spike en paladium : une pyramide de quatre degres qui pointe hors de
+    # la face qui le porte. Dessus des degres a la texture en carres
+    # concentriques (SpikePaladium_1), cotes a la texture en strates (_2).
+    tex("blocks/spike/SpikePaladium_1.png", "block/paladium_spike_top.png")
+    tex("blocks/spike/SpikePaladium_2.png", "block/paladium_spike_side.png")
+    steps = []
+    for step in range(4):
+        low, high = step * 2, 16 - step * 2
+        element = box([low, step * 4, low], [high, step * 4 + 4, high], "#side")
+        element["faces"]["up"]["texture"] = "#top"
+        element["faces"]["down"]["texture"] = "#top"
+        steps.append(element)
+    write("assets/%s/models/block/paladium_spike.json" % NS, {
+        "parent": "minecraft:block/block",
+        "textures": {"particle": "%s:block/paladium_spike_side" % NS,
+                     "top": "%s:block/paladium_spike_top" % NS, "side": "%s:block/paladium_spike_side" % NS},
+        "elements": steps})
+    # Les rotations de la baguette de l'End, dont le modele pointe aussi vers le haut.
+    write("assets/%s/blockstates/paladium_spike.json" % NS, {"variants": {
+        "facing=%s" % facing: dict({"model": "%s:block/paladium_spike" % NS}, **rotation)
+        for facing, rotation in (("up", {}), ("down", {"x": 180}), ("north", {"x": 90}),
+                                 ("south", {"x": 90, "y": 180}), ("east", {"x": 90, "y": 90}),
+                                 ("west", {"x": 90, "y": 270}))}})
+    block_item("paladium_spike")
+    label("block", "paladium_spike", "Spike en paladium", "Paladium Spike")
+
+    for name in ("palamachine", "slimepad", "paladium_spike"):
+        drops_itself(name)
+    # setHarvestLevel("pickaxe", 2) : pioche en fer.
+    tag("minecraft/tags/block/mineable/pickaxe.json",
+        ["%s:palamachine" % NS, "%s:slimepad" % NS, "%s:paladium_spike" % NS])
+    tag("minecraft/tags/block/needs_iron_tool.json",
+        ["%s:palamachine" % NS, "%s:slimepad" % NS, "%s:paladium_spike" % NS])
+
+    # ---- pierres legendaires et gant en endium (chapitre 17) ----
+    for name, texture, label_fr, label_en in (
+            ("legendary_stone_random", "RANDOM", "Pierre legendaire aleatoire", "Random Legendary Stone"),
+            ("legendary_stone_teleportation", "TELEPORTATION", "Pierre legendaire de teleportation",
+             "Teleportation Legendary Stone"),
+            ("legendary_stone_invisibility", "INVISIBILITY", "Pierre legendaire d'invisibilite",
+             "Invisibility Legendary Stone"),
+            ("legendary_stone_fortune", "FORTUNE", "Pierre legendaire de fortune", "Fortune Legendary Stone"),
+            ("legendary_stone_power", "POWER", "Pierre legendaire de pouvoir", "Power Legendary Stone"),
+            ("legendary_stone_jobs", "JOBS", "Pierre legendaire de metier", "Jobs Legendary Stone"),
+            ("legendary_stone_chaos", "CHAOS", "Pierre legendaire de chaos", "Chaos Legendary Stone")):
+        tex("items/legendaryStone/LEGENDARYSTONE_%s.png" % texture, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    # Le gant : l'icone doree de l'Infinity Gauntlet quand il porte les six
+    # pierres (custom_model_data « infinity », pose par EndiumGauntletItem).
+    tex("items/endium_gauntlet.png", "item/endium_gauntlet.png")
+    tex("items/infinite_gauntlet.png", "item/infinite_gauntlet.png")
+    for name in ("endium_gauntlet", "infinite_gauntlet"):
+        write("assets/%s/models/item/%s.json" % (NS, name),
+              {"parent": "minecraft:item/generated", "textures": {"layer0": "%s:item/%s" % (NS, name)}})
+    write("assets/%s/items/endium_gauntlet.json" % NS, {"model": {
+        "type": "minecraft:select", "property": "minecraft:custom_model_data", "index": 0,
+        "cases": [{"when": "infinity",
+                   "model": {"type": "minecraft:model", "model": "%s:item/infinite_gauntlet" % NS}}],
+        "fallback": {"type": "minecraft:model", "model": "%s:item/endium_gauntlet" % NS}}})
+    label("item", "endium_gauntlet", "Endium Gauntlet", "Endium Gauntlet")
+    fr["item.%s.endium_gauntlet.infinity" % NS] = "Infinity Gauntlet"
+    en["item.%s.endium_gauntlet.infinity" % NS] = "Infinity Gauntlet"
+    fr["item.%s.endium_gauntlet.named" % NS] = "%s (%s)"
+    en["item.%s.endium_gauntlet.named" % NS] = "%s (%s)"
+    write("data/%s/recipe/endium_gauntlet.json" % NS, {"type": "%s:endium_gauntlet" % NS})
+    for key, label_fr, label_en in (
+            ("teleportation", "Teleportation", "Teleportation"), ("invisibility", "Invisibilite", "Invisibility"),
+            ("fortune", "Fortune", "Fortune"), ("power", "Pouvoir", "Power"), ("jobs", "Metier", "Jobs"),
+            ("chaos", "Chaos", "Chaos"), ("random", "Aleatoire", "Random")):
+        label("legendary", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("legendary.wait_type", "Tu dois encore attendre %s avant de pouvoir utiliser ce type de pierre legendaire.",
+             "You must wait %s more before using this type of legendary stone."),
+            ("legendary.wait", "Tu dois encore attendre %s avant de pouvoir utiliser cette pierre legendaire.",
+             "You must wait %s more before using this legendary stone."),
+            ("legendary.random", "Tu as recu un super objet, une %s, mais a quoi cela sert-il ?",
+             "You received a great item, a %s, but what is it for?"),
+            ("legendary.teleport_overworld", "La pierre de teleportation ne fonctionne que dans l'Overworld.",
+             "The teleportation stone only works in the Overworld."),
+            ("legendary.teleported", "Une chose etrange est arrivee, tu as ete teleporte(e) a un autre endroit !",
+             "Something strange happened: you were teleported somewhere else!"),
+            ("legendary.teleport_failed", "Une chose etrange est arrivee, la teleportation n'a pas fonctionne !",
+             "Something strange happened: the teleportation failed!"),
+            ("legendary.invisible", "Une potion etrange est tombee sur toi, tu es maintenant invisible pendant 2 minutes !",
+             "A strange potion fell on you: you are now invisible for 2 minutes!"),
+            ("legendary.fortune", "La fortune est tombee sur toi !", "Fortune smiled on you!"),
+            ("legendary.power", "Tu as recu un grand pouvoir : tu resistes au feu pendant 30 minutes !",
+             "You received a great power: fire resistance for 30 minutes!"),
+            ("legendary.jobs", "Tu as bien travaille : %s points d'experience de %s. Bravo !",
+             "You worked hard: %s %s experience points. Well done!"),
+            ("legendary.chaos", "Tu viens de lancer le chaos autour de toi !", "You just unleashed chaos around you!"),
+            ("gauntlet.empty", "Il n'y a aucune pierre dans le gant !", "There is no stone in the gauntlet!"),
+            ("gauntlet.selected", "Pierre selectionnee : %s", "Selected stone: %s")):
+        label("message", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("legendary.random", "Surprise, que va-t-il y avoir dedans ?", "Surprise, what could be inside?"),
+            ("legendary.ready", "Prete a l'utilisation !", "Ready to use!"),
+            ("legendary.wait", "Encore %s avant de pouvoir l'utiliser", "%s left before it can be used"),
+            ("gauntlet.stones", "Pierres :", "Stones:"),
+            ("gauntlet.hint", "Accroupi + clic droit : pierre suivante", "Sneak + right-click: next stone")):
+        label("tooltip", key, label_fr, label_en)
+    for key, label_fr, label_en in (("hours", "%s h %s min", "%sh %smin"), ("minutes", "%s min %s s", "%smin %ss"),
+                                    ("seconds", "%s s", "%ss")):
+        label("duration", key, label_fr, label_en)
+
+    # ---- donjons : le coeur jouable (chapitre 18) ----
+    #
+    # Les donjons sont de la V12, posterieurs a la 10.3.0 : rien dans le jar.
+    # Les cles sont la cle en paladium de PalaMod teintee de la couleur du
+    # donjon, les sacs de tier 2 et 3 le sac en cuir teinte ; les bouteilles
+    # d'XP de metier existent telles quelles (items/job_bottle).
+    def tinted(relative, destination, rgb):
+        """Une texture du pack (ou du jar) passee a la couleur rgb, alpha garde."""
+        from PIL import Image
+        pack_root, jar_root = root
+        source = None
+        for base in (pack_root, jar_root):
+            if base:
+                candidate = os.path.join(base, "assets", NS, "textures", PACK_PATHS.get(relative, relative))
+                if os.path.exists(candidate):
+                    source = candidate
+                    break
+        if source is None:
+            missing.append(relative)
+            return
+        image = Image.open(source).convert("RGBA")
+        out = Image.new("RGBA", image.size)
+        pixels, target = image.load(), out.load()
+        for x in range(image.size[0]):
+            for y in range(image.size[1]):
+                r, g, b, a = pixels[x, y]
+                light = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
+                shade = min(1.0, 0.25 + light * 1.1)
+                target[x, y] = (int(rgb[0] * shade), int(rgb[1] * shade), int(rgb[2] * shade), a)
+        full = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        out.save(full)
+
+    for name, rgb, extra, label_fr, label_en in (
+            ("talikus_key", (96, 196, 64), "minecraft:wheat", "Cle de Talikus", "Talikus Key"),
+            ("nimbria_key", (170, 170, 178), "minecraft:cobblestone", "Cle de Nimbria", "Nimbria Key"),
+            ("vitalys_key", (206, 58, 48), "minecraft:rotten_flesh", "Cle de Vitalys", "Vitalys Key"),
+            ("manelios_key", (64, 200, 210), "minecraft:poppy", "Cle de Manelios", "Manelios Key")):
+        tinted("items/paladium_key.png", "item/%s.png" % name, rgb)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+        # Le wiki : lingot de paladium vert, invoker stone, stick en paladium,
+        # lingot de paladium et l'ingredient du metier. La grille n'est que
+        # dans les images ; celle-ci met la pierre en tete et le metier au coeur.
+        shaped(name, [" V ", "SXS", "PGP"], {
+            "V": "%s:invoker_stone" % NS, "S": "%s:paladium_stick" % NS, "X": extra,
+            "P": "%s:paladium_ingot" % NS, "G": "%s:green_paladium_ingot" % NS,
+        }, "%s:%s" % (NS, name))
+
+    tex("items/backpack.png", "item/dungeon_leather_backpack.png")
+    flat_item("dungeon_leather_backpack", "%s:item/dungeon_leather_backpack" % NS)
+    label("item", "dungeon_leather_backpack", "Sac de donjon en cuir", "Dungeon Leather Backpack")
+    shaped("dungeon_leather_backpack", ["LCL", "LHL", "LIL"], {
+        "L": "minecraft:leather", "C": "minecraft:chest", "H": "minecraft:hopper", "I": "%s:invoker_stone" % NS,
+    }, "%s:dungeon_leather_backpack" % NS)
+    for name, rgb, label_fr, label_en in (
+            ("dungeon_backpack_t2", (92, 128, 220), "Sac de donjon tier 2", "Dungeon Backpack Tier 2"),
+            ("dungeon_backpack_t3", (226, 176, 48), "Sac de donjon tier 3", "Dungeon Backpack Tier 3")):
+        tinted("items/backpack.png", "item/%s.png" % name, rgb)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+
+    for job, label_fr, label_en in (("farmer", "fermier", "Farmer"), ("miner", "mineur", "Miner"),
+                                    ("hunter", "chasseur", "Hunter"), ("alchemist", "alchimiste", "Alchemist")):
+        name = "job_bottle_%s" % job
+        tex("items/job_bottle/%s.png" % job, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, "Bouteille d'XP de %s" % label_fr, "%s XP Bottle" % label_en)
+
+    for key, label_fr, label_en in (
+            ("dungeon_key", "Ouvre les paliers du donjon. XP de metier : %s.",
+             "Opens the dungeon's floors. Job XP: %s."),
+            ("dungeon_key.hint", "Clic droit : choisir un palier. Consommee a l'entree.",
+             "Right-click: choose a floor. Consumed on entry."),
+            ("dungeon_backpack", "Sac de donjon : %s piles de butin.", "Dungeon bag: %s stacks of loot."),
+            ("dungeon_backpack.hint", "Il suffit de l'avoir sur soi en entrant.", "Just carry it when you enter."),
+            ("job_bottle", "%s XP de %s", "%s %s XP"),
+            ("job_bottle.hint", "Clic droit : boire. Accroupi : toute la pile.",
+             "Right-click: drink. Sneak: the whole stack.")):
+        label("tooltip", key, label_fr, label_en)
+    fr["message.%s.job_bottle" % NS] = "+%s XP de %s"
+    en["message.%s.job_bottle" % NS] = "+%s %s XP"
+    for key, label_fr, label_en in (
+            ("unavailable", "Les donjons ne sont pas disponibles sur ce serveur.",
+             "Dungeons aren't available on this server."),
+            ("already", "Vous etes deja dans un donjon.", "You're already in a dungeon."),
+            ("locked", "Vous devez d'abord reussir le palier %s.", "You must clear floor %s first."),
+            ("no_key", "Il vous faut une cle de %s en main.", "You need a %s key in hand."),
+            ("start", "%s, palier %s (%s) : bonne chance !", "%s, floor %s (%s): good luck!"),
+            ("party", "Groupe : %s", "Party: %s"),
+            ("wave", "Vague %s/%s !", "Wave %s/%s!"),
+            ("room_cleared", "Salle terminee ! Avancez vers une porte pour choisir la suite.",
+             "Room cleared! Walk into a door to choose what comes next."),
+            ("chest", "Un coffre est apparu au centre de la salle : chacun le sien.",
+             "A chest appeared in the middle of the room: one for each of you."),
+            ("chest_loot", "Coffre : %s", "Chest: %s"),
+            ("chest_done", "Vous avez deja ouvert ce coffre.", "You already opened this chest."),
+            ("chest_auto", "Coffre laisse, ramasse pour vous : %s", "Chest left behind, picked up for you: %s"),
+            ("bag_full", "Sac plein, perdu : %s", "Bag full, lost: %s"),
+            ("door", "%s ouvre la porte : %s", "%s opens the door: %s"),
+            ("puzzle", "Enigme : trouvez et appuyez sur les %s boutons de la salle.",
+             "Puzzle: find and press the room's %s buttons."),
+            ("puzzle_progress", "Bouton trouve (%s/%s)", "Button found (%s/%s)"),
+            ("boost", "Salle de boost : choisissez un bonus a l'autel, au centre.",
+             "Boost room: pick a bonus at the altar in the middle."),
+            ("boost_taken", "Bonus choisi : %s, pour 10 minutes.", "Bonus chosen: %s, for 10 minutes."),
+            ("boost_already", "Vous avez deja choisi votre bonus.", "You already picked your bonus."),
+            ("merchant", "Une marchande vous attend : clic droit pour commercer.",
+             "A merchant is waiting: right-click to trade."),
+            ("bought", "Achat : %s pour %s", "Bought: %s for %s"),
+            ("poor", "Il vous faut %s.", "You need %s."),
+            ("boss", "%s apparait !", "%s appears!"),
+            ("boss_dead", "%s est vaincu !", "%s is defeated!"),
+            ("success", "Palier %s de %s reussi !", "Floor %s of %s cleared!"),
+            ("delivered", "Sac livre : %s piles. +%s XP de %s.", "Bag delivered: %s stacks. +%s %s XP."),
+            ("unique", "Recompense unique : %s", "Unique reward: %s"),
+            ("death", "Vous etes mort : le palier est echoue et votre sac est perdu.",
+             "You died: the floor is failed and your bag is lost."),
+            ("quit", "Vous avez quitte le donjon : le palier est echoue et votre sac est perdu.",
+             "You left the dungeon: the floor is failed and your bag is lost."),
+            ("member_left", "%s a quitte le donjon.", "%s left the dungeon."),
+            ("not_inside", "Vous n'etes pas dans un donjon.", "You aren't in a dungeon."),
+            ("returned", "Le donjon s'est ferme pendant votre absence : vous etes ramene.",
+             "The dungeon closed while you were away: you've been brought back.")):
+        label("message", "dungeon." + key, label_fr, label_en)
+
+    # La dimension des instances : vide (un monde plat sans couche), sans
+    # ciel ni monstre naturel. Toute la lumiere vient des salles.
+    write("data/%s/worldgen/biome/dungeon.json" % NS, {
+        "attributes": {"minecraft:visual/sky_color": "#000000", "minecraft:visual/fog_color": "#0b0b12"},
+        "carvers": [],
+        "downfall": 0.0,
+        "effects": {"water_color": "#3f76e4"},
+        "features": [],
+        "has_precipitation": False,
+        "spawn_costs": {},
+        "spawners": {category: [] for category in (
+            "ambient", "axolotls", "creature", "misc", "monster", "underground_water_creature",
+            "water_ambient", "water_creature")},
+        "temperature": 0.8,
+    })
+    write("data/%s/dimension_type/dungeon.json" % NS, {
+        "ambient_light": 0.15,
+        "attributes": {
+            "minecraft:gameplay/bed_rule": {"can_set_spawn": "never", "can_sleep": "never"},
+            "minecraft:gameplay/can_start_raid": False,
+            "minecraft:gameplay/respawn_anchor_works": False,
+            "minecraft:visual/ambient_light_color": "#141420",
+            "minecraft:visual/fog_color": "#0b0b12",
+            "minecraft:visual/fog_start_distance": 32.0,
+            "minecraft:visual/fog_end_distance": 96.0,
+            "minecraft:visual/sky_color": "#000000",
+        },
+        "coordinate_scale": 1.0,
+        "has_ceiling": False,
+        "has_ender_dragon_fight": False,
+        "has_fixed_time": True,
+        "has_skylight": False,
+        "height": 256,
+        "infiniburn": "#minecraft:infiniburn_overworld",
+        "logical_height": 256,
+        "min_y": 0,
+        "monster_spawn_block_light_limit": 0,
+        "monster_spawn_light_level": 0,
+        "skybox": "none",
+        "timelines": "#minecraft:universal",
+    })
+    write("data/%s/dimension/dungeon.json" % NS, {
+        "type": "%s:dungeon" % NS,
+        "generator": {"type": "minecraft:flat", "settings": {
+            "biome": "%s:dungeon" % NS, "features": False, "lakes": False, "layers": [],
+            "structure_overrides": []}},
+    })
+
+    # ---- donjons : equipement, essences, set antique (chapitre 19) ----
+    #
+    # Textures de Palamod Recreated (SILWOX / Solea Pixel, mod de fans 1.21,
+    # « All Rights Reserved »), au choix du joueur : cinquieme argument, ou le
+    # dossier voisin du jar de PalaMod. Le set antique n'y est pas : c'est le
+    # legendaire de Talikus passe au bronze.
+    recreated_root = sys.argv[5] if len(sys.argv) > 5 else (
+        os.path.join(os.path.dirname(root[1].rstrip("/")), "nf121") if root[1] else None)
+
+    def recreated_path(relative):
+        return os.path.join(recreated_root or "", "assets", NS, "textures", relative)
+
+    def recreated_tex(relative, destination, size=(16, 16)):
+        source = recreated_path(relative)
+        if not recreated_root or not os.path.exists(source):
+            missing.append("recreated:" + relative)
+            return
+        if png_size(source) != size:
+            wrong_size.append("recreated:%s : %s au lieu de %s" % (relative, png_size(source), size))
+            return
+        target = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(source, target)
+
+    def bronze(relative, destination):
+        """Une texture de Palamod Recreated passee au degrade bronze-or, alpha garde."""
+        from PIL import Image
+        source = recreated_path(relative)
+        if not recreated_root or not os.path.exists(source):
+            missing.append("recreated:" + relative)
+            return
+        image = Image.open(source).convert("RGBA")
+        out = Image.new("RGBA", image.size)
+        pixels, target = image.load(), out.load()
+        dark, bright = (58, 34, 14), (255, 214, 110)
+        for x in range(image.size[0]):
+            for y in range(image.size[1]):
+                r, g, b, a = pixels[x, y]
+                light = min(1.0, ((0.299 * r + 0.587 * g + 0.114 * b) / 255.0) * 1.25)
+                target[x, y] = tuple(int(dark[i] + (bright[i] - dark[i]) * light) for i in range(3)) + (a,)
+        full = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        out.save(full)
+
+    def handheld_item(name, texture):
+        write("assets/%s/models/item/%s.json" % (NS, name),
+              {"parent": "minecraft:item/handheld", "textures": {"layer0": texture}})
+        write("assets/%s/items/%s.json" % (NS, name),
+              {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)}})
+
+    def equipment_layers(material, layer_1, layer_2):
+        write("assets/%s/equipment/%s.json" % (NS, material), {"layers": {
+            "humanoid": [{"texture": "%s:%s" % (NS, material)}],
+            "humanoid_leggings": [{"texture": "%s:%s" % (NS, material)}]}})
+
+    # Le nom et le pluriel feminin : « jambieres renforcees », « bottes legendaires ».
+    PIECE_FR = {"helmet": ("Casque", False), "chestplate": ("Plastron", False),
+                "leggings": ("Jambieres", True), "boots": ("Bottes", True)}
+    PIECE_EN = {"helmet": "Helmet", "chestplate": "Chestplate", "leggings": "Leggings", "boots": "Boots"}
+    PIECE_TAG = {"helmet": "head_armor", "chestplate": "chest_armor", "leggings": "leg_armor",
+                 "boots": "foot_armor"}
+    ELEMENTS = (("talikus", "Talikus", "forest", "de foret", "Forest",
+                 ("forest_essence_fragment", "forest_essence", "forest_essence_concentrate")),
+                ("nimbria", "Nimbria", "cavern", "de caverne", "Cavern",
+                 ("cavern_essence_fragment", "cavern_essence", "cavern_essence_concentrate")),
+                ("vitalys", "Vitalys", "flame", "de flamme", "Flame",
+                 ("flame_essence_fragment", "flame_essence", "flame_essence_concentrate")),
+                ("manelios", "Manelios", "aquatic", "aquatique", "Aquatic",
+                 ("essence_aquatique_fragment", "essence_aquatique", "aquatic_essence_concentrate")))
+    TIERS = (("", "", "", "", 0), ("reinforced", "renforce", "renforcee", "Reinforced", 1),
+             ("legendary", "legendaire", "legendaire", "Legendary", 2))
+    concentrates = []
+    for dungeon, display, element, element_fr, element_en, sources in ELEMENTS:
+        essences = []
+        for (suffix, label_fr, label_en), source in zip(
+                (("_fragment", "Fragment d'essence %s", "%s Essence Fragment"),
+                 ("", "Essence %s", "%s Essence"),
+                 ("_concentrate", "Essence %s concentree", "Concentrated %s Essence")), sources):
+            name = "%s_essence%s" % (element, suffix)
+            recreated_tex("item/%s.png" % source, "item/%s.png" % name)
+            flat_item(name, "%s:item/%s" % (NS, name))
+            label("item", name, label_fr % element_fr, label_en % element_en)
+            essences.append(name)
+        concentrates.append(essences[2])
+        for tier, adj_m, adj_f, adj_en, index in TIERS:
+            material = dungeon if not tier else "%s_%s" % (dungeon, tier)
+            for piece in ("helmet", "chestplate", "leggings", "boots"):
+                name = "%s_%s" % (material, piece)
+                recreated_tex("item/%s.png" % name, "item/%s.png" % name)
+                flat_item(name, "%s:item/%s" % (NS, name))
+                noun, plural = PIECE_FR[piece]
+                adjective = "" if not tier else " " + ((adj_f + "s") if plural else adj_m)
+                label("item", name, "%s%s de %s" % (noun, adjective, display),
+                      ("%s %s %s" % (adj_en, display, PIECE_EN[piece])).strip())
+                tag("minecraft/tags/item/%s.json" % PIECE_TAG[piece], ["%s:%s" % (NS, name)])
+                tag("minecraft/tags/item/trimmable_armor.json", ["%s:%s" % (NS, name)])
+            name = "%s_sword" % material
+            recreated_tex("item/%s.png" % name, "item/%s.png" % name)
+            handheld_item(name, "%s:item/%s" % (NS, name))
+            label("item", name, "Epee%s de %s" % ("" if not tier else " " + adj_f, display),
+                  ("%s %s Sword" % (adj_en, display)).strip())
+            tag("minecraft/tags/item/swords.json", ["%s:%s" % (NS, name)])
+            for layer, suffix in (("humanoid", 1), ("humanoid_leggings", 2)):
+                recreated_tex("models/armor/%s_layer_%d.png" % (material, suffix),
+                              "entity/equipment/%s/%s.png" % (layer, material), size=(64, 32))
+            equipment_layers(material, 1, 2)
+            tag("%s/tags/item/repairs/%s.json" % (NS, material), ["%s:%s" % (NS, essences[index])])
+
+    for piece, label_fr in (("helmet", "Casque antique"), ("chestplate", "Plastron antique"),
+                            ("leggings", "Pantalon antique"), ("boots", "Bottes antiques")):
+        name = "antique_%s" % piece
+        bronze("item/talikus_legendary_%s.png" % piece, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, "Antique %s" % PIECE_EN[piece])
+        tag("minecraft/tags/item/%s.json" % PIECE_TAG[piece], ["%s:%s" % (NS, name)])
+        tag("minecraft/tags/item/trimmable_armor.json", ["%s:%s" % (NS, name)])
+    for layer, suffix in (("humanoid", 1), ("humanoid_leggings", 2)):
+        bronze("models/armor/talikus_legendary_layer_%d.png" % suffix,
+               "entity/equipment/%s/antique.png" % layer)
+    equipment_layers("antique", 1, 2)
+    tag("%s/tags/item/repairs/antique.json" % NS, ["%s:%s" % (NS, name) for name in concentrates])
+
+    for key, label_fr, label_en in (
+            ("dungeon_gear.armor", "En donjon : -%s%% de degats des monstres a %s, moitie ailleurs",
+             "In dungeons: -%s%% damage from monsters in %s, half elsewhere"),
+            ("dungeon_gear.sword", "En donjon : +%s%% de degats aux monstres a %s, moitie ailleurs",
+             "In dungeons: +%s%% damage to monsters in %s, half elsewhere"),
+            ("dungeon_gear.antique.armor", "En donjon : -%s%% de degats des monstres, dans tous les donjons",
+             "In dungeons: -%s%% damage from monsters, in every dungeon"),
+            ("dungeon_gear.antique.sword", "En donjon : +%s%% de degats aux monstres",
+             "In dungeons: +%s%% damage to monsters"),
+            ("dungeon_gear.antique_set", "Set complet : -10%% de degats recus, +20%% de degats infliges",
+             "Full set: -10%% damage taken, +20%% damage dealt"),
+            ("dungeon_gear.repair", "Se repare a l'enclume avec : %s", "Repaired at the anvil with: %s"),
+            ("dungeon_gear.repair_any", "Se repare a l'enclume avec une essence concentree",
+             "Repaired at the anvil with any concentrated essence"),
+            ("essence.fragment", "Repare l'equipement basique de %s a l'enclume",
+             "Repairs %s basic gear at the anvil"),
+            ("essence.essence", "Repare l'equipement renforce de %s a l'enclume",
+             "Repairs %s reinforced gear at the anvil"),
+            ("essence.concentrate", "Repare l'equipement legendaire de %s, et l'antique, a l'enclume",
+             "Repairs %s legendary gear, and antique gear, at the anvil"),
+            ("essence.hint", "Tombe dans les coffres des donjons.", "Found in dungeon chests.")):
+        label("tooltip", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("grade", "Note %s : degats %s%%, survie %s%%, implication %s%%.",
+             "Grade %s: damage %s%%, survival %s%%, involvement %s%%."),
+            ("grade_chest", "Coffre de la note : %s", "Grade chest: %s")):
+        label("message", "dungeon." + key, label_fr, label_en)
+
+    # ---- donjons : runes et arbre de competences (chapitre 20) ----
+    #
+    # Aucune texture de rune n'existe, ni dans PalaMod ni dans Palamod
+    # Recreated : une tablette de pierre gravee, dessinee ici pixel par pixel,
+    # dont la gravure prend la couleur de la rarete. Le fragment en est l'eclat
+    # superieur gauche.
+    RUNE_TABLET = (
+        "................",
+        ".....######.....",
+        "....#ssssss#....",
+        "...#sssssssS#...",
+        "...#sGsssGsS#...",
+        "...#sGGsGGsS#...",
+        "...#sGsGsGsS#...",
+        "...#sGsssGsS#...",
+        "...#sGsssGsS#...",
+        "...#ssGsGssS#...",
+        "...#sssGsssS#...",
+        "...#sssssssS#...",
+        "...#ssssssSS#...",
+        "....#SSSSSS#....",
+        ".....######.....",
+        "................")
+    RUNE_SHARD = (
+        "................",
+        "................",
+        ".....####.......",
+        "....#ssss#......",
+        "...#sGsss#......",
+        "...#sGGs#.......",
+        "...#sGsG#.......",
+        "...#sGss##......",
+        "...#sGsss#......",
+        "...#ssGs#.......",
+        "....#ss#........",
+        ".....##.........",
+        "................",
+        "................",
+        "................",
+        "................")
+
+    def rune_texture(name, pattern, glyph):
+        from PIL import Image
+        palette = {"#": (38, 38, 46, 255), "s": (124, 124, 134, 255), "S": (92, 92, 102, 255),
+                   "G": glyph + (255,), ".": (0, 0, 0, 0)}
+        image = Image.new("RGBA", (16, 16))
+        for y, row in enumerate(pattern):
+            for x, cell in enumerate(row):
+                image.putpixel((x, y), palette[cell])
+        full = os.path.join(RES, "assets", NS, "textures", "item", name + ".png")
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        image.save(full)
+
+    for name, pattern, glyph, label_fr, label_en in (
+            ("rune_fragment_common", RUNE_SHARD, (210, 210, 220), "Fragment de rune commune", "Common Rune Fragment"),
+            ("rune_fragment_rare", RUNE_SHARD, (80, 220, 255), "Fragment de rune rare", "Rare Rune Fragment"),
+            ("rune_common", RUNE_TABLET, (236, 236, 244), "Rune commune", "Common Rune"),
+            ("rune_rare", RUNE_TABLET, (80, 220, 255), "Rune rare", "Rare Rune"),
+            ("rune_epic", RUNE_TABLET, (214, 110, 255), "Rune epique", "Epic Rune")):
+        rune_texture(name, pattern, glyph)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+
+    for key, label_fr, label_en in (("common", "commune", "common"), ("rare", "rare", "rare"),
+                                    ("epic", "epique", "epic")):
+        label("rarity", key, label_fr, label_en)
+    for key, label_fr, label_en in (("attack", "Attaque", "Attack"), ("dodge", "Esquive", "Dodge"),
+                                    ("crit", "Critique", "Critical"), ("defense", "Defense", "Defense")):
+        label("rpg", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("rune.unrevealed", "Non revelee : clic droit pour decouvrir ses statistiques",
+             "Unrevealed: right-click to discover its stats"),
+            ("rune.tier", "Rune %s, tier %s", "%s rune, tier %s"),
+            ("rune.hint", "Enclume : avec une rune pareille, tier suivant. Grinder : dans une armure de donjon.",
+             "Anvil: with a matching rune, next tier. Grinder: into dungeon armor."),
+            ("dungeon_gear.rune_slot", "Emplacement de rune libre (au grinder)", "Free rune slot (at the grinder)")):
+        label("tooltip", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("rune.revealed", "La rune revele ses statistiques.", "The rune reveals its stats."),
+            ("rpg.xp", "+%s XP RPG", "+%s RPG XP"),
+            ("rpg.level", "Niveau RPG %s ! Un point de competence de plus (/profil).",
+             "RPG level %s! One more skill point (/profil)."),
+            ("rpg.validated", "Arbre valide : %s points depenses.", "Tree confirmed: %s points spent."),
+            ("rpg.respec", "Arbre reinitialise : vos points sont rendus.", "Tree reset: your points are back."),
+            ("rpg.respec_poor", "Il vous faut 25 000 $ pour reinitialiser l'arbre.",
+             "You need $25,000 to reset the tree."),
+            ("rpg.dodge", "Esquive !", "Dodged!")):
+        label("message", key, label_fr, label_en)
+    fr["button.%s.rpg_profile" % NS] = "Profil RPG"
+    en["button.%s.rpg_profile" % NS] = "RPG Profile"
 
     # ---- les recettes de fabrication ----
     #
@@ -2765,6 +3458,12 @@ def main():
         "COMPRESSED_XP_BERRY": "compressed_xp_berry",
         "GOD_PICKAXE": "god_pickaxe", "GOD_PICKAXE_AUTOSMELT": "god_pickaxe_auto_smelt",
         "PALADIUM_APPLE": "paladium_apple",
+        # PvP (chapitre 16) : a l'etabli, les ingredients de la palamachine et
+        # le deltaplane. Les sticks et les anneaux sortent de la palamachine
+        # (PalamachineRecipes).
+        "ORB_STRENGHT": "strength_orb", "ORB_JUMP": "jump_orb", "WING": "wing",
+        "HANGGLIDER": "hang_glider", "SLIMEPAD_BLOCK": "slimepad", "SPIKE_PALADIUM": "paladium_spike",
+        "PALADIUM_MACHINE_BLOCK": "palamachine",
     }
     # Un meme objet 1.7.10 a plusieurs metas, plusieurs objets en 26.2 : la
     # recette se choisit par (nom, meta). Sans cette table, les quatre outils de
@@ -2848,6 +3547,12 @@ def main():
         ("Items.field_151073_bk", 0): "minecraft:ghast_tear",
         ("PSRegister_Items.HAMMER_PALADIUM", 0): "%s:paladium_hammer" % NS,
         ("ItemsRegister.XP_BERRY", 0): "%s:xp_berry" % NS,
+        # PvP : cuir (aile, deltaplane), verrue du Nether (orbe de saut), boule
+        # de slime (slimepad), pierre (palamachine).
+        ("Items.field_151116_aA", 0): "minecraft:leather",
+        ("Items.field_151075_bm", 0): "minecraft:nether_wart",
+        ("Items.field_151123_aH", 0): "minecraft:slime_ball",
+        ("Blocks.field_150348_b", 0): "minecraft:stone",
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())
@@ -2958,13 +3663,10 @@ def main():
             ],
         })
 
-    # Le minerai de pepites d'endium. En 1.7.10 il ne naissait que dans la
-    # dimension de minage (BaseWorldGenerator, isMinerDimension), qui n'est pas
-    # portee : on le place donc au fond de l'overworld, ou se trouve
-    # l'equivalent de sa couche. Quatre tirages par chunk a 1 chance sur 225
-    # (paladiumgreen_ore_rarety x 3), et un filon de 3 ramene a UN bloc — le
-    # code effacait les autres dans un cube de 17. D'ou replace_single_block,
-    # et une chance de 4/225, soit 1 sur 56.
+    # Le minerai de pepites d'endium : seulement dans la dimension du Mineur,
+    # comme en 1.7.10 (BaseWorldGenerator, isMinerDimension). Un filon de 3
+    # ramene a UN bloc — le code effacait les autres dans un cube de 17 — d'ou
+    # replace_single_block. Le placement est plus bas, avec la dimension.
     nugget_state = {"Name": "%s:endium_nugget_ore" % NS}
     write("data/%s/worldgen/configured_feature/ore_endium_nugget.json" % NS, {
         "type": "minecraft:replace_single_block",
@@ -2977,18 +3679,36 @@ def main():
              "state": nugget_state},
         ]},
     })
-    write("data/%s/worldgen/placed_feature/ore_endium_nugget.json" % NS, {
-        "feature": "%s:ore_endium_nugget" % NS,
-        "placement": [
-            {"type": "minecraft:rarity_filter", "chance": 56},
-            {"type": "minecraft:in_square"},
-            {"type": "minecraft:height_range",
-             "height": {"type": "minecraft:uniform",
-                        "min_inclusive": {"absolute": -64},
-                        "max_inclusive": {"absolute": -54}}},
-            {"type": "minecraft:biome"},
-        ],
+
+    # Le minerai de Pierre d'Invocation : couches du findium, filon de 3. En
+    # 1.7.10, quatre tirages a rand(2 x rarete du findium) == 1, soit 1 sur 10
+    # chacun : 0,4 filon par chunk. Une chance sur deux ici.
+    invoker_state = {"Name": "%s:invoker_ore" % NS}
+    write("data/%s/worldgen/configured_feature/ore_invoker.json" % NS, {
+        "type": "minecraft:ore",
+        "config": {"size": 3, "discard_chance_on_air_exposure": 0.0, "targets": [
+            {"target": {"predicate_type": "minecraft:tag_match", "tag": "minecraft:stone_ore_replaceables"},
+             "state": invoker_state},
+            {"target": {"predicate_type": "minecraft:tag_match", "tag": "minecraft:deepslate_ore_replaceables"},
+             "state": invoker_state}]},
     })
+    findium_min, findium_max = ORE_GEN["findium_ore"][2:]
+
+    def placed(path, feature, frequency, min_y, max_y):
+        write("data/%s/worldgen/placed_feature/%s.json" % (NS, path), {
+            "feature": "%s:%s" % (NS, feature),
+            "placement": frequency + [
+                {"type": "minecraft:in_square"},
+                {"type": "minecraft:height_range",
+                 "height": {"type": "minecraft:uniform",
+                            "min_inclusive": {"absolute": min_y},
+                            "max_inclusive": {"absolute": max_y}}},
+                {"type": "minecraft:biome"},
+            ],
+        })
+
+    placed("ore_invoker", "ore_invoker", [{"type": "minecraft:rarity_filter", "chance": 2}],
+           findium_min, findium_max)
 
     # Un seul modificateur de biome pour tous les minerais : NeoForge les ajoute
     # a l'etape underground_ores de tout biome de l'overworld.
@@ -2996,8 +3716,126 @@ def main():
         "type": "neoforge:add_features",
         "biomes": "#minecraft:is_overworld",
         "features": ["%s:ore_%s" % (NS, name.removesuffix("_ore"))
-                     for name in sorted(ORE_GEN)] + ["%s:ore_endium_nugget" % NS],
+                     for name in sorted(ORE_GEN)] + ["%s:ore_invoker" % NS],
         "step": "underground_ores",
+    })
+
+    # ---- la dimension du Mineur ----
+    #
+    # Le serveur « dimminer » de Paladium etait un overworld ordinaire ou
+    # BaseWorldGenerator tirait les minerais PalaMod avec mult = 3 : essais =
+    # ceil(base x 3), boucle i <= essais, donc ceil(3 base) + 1 tentatives au
+    # lieu de base + 1. On applique ce rapport aux comptes DoHy de l'overworld,
+    # sur les memes configured features. base = valeurs par defaut de
+    # palamod.cfg.
+    ORIGINAL_BASE = {"amethyst_ore": 5, "titane_ore": 4, "paladium_ore": 2, "paladium_green_ore": 1,
+                     "findium_ore": 3, "trixium_ore": 3}
+    dimension_ores = []
+    for name, (_size, count, min_y, max_y) in sorted(ORE_GEN.items()):
+        base = ORIGINAL_BASE[name]
+        boosted = int(count * (math.ceil(base * 3) + 1) / (base + 1) + 0.5)
+        feature = "ore_" + name.removesuffix("_ore")
+        placed("miner/" + feature, feature, [{"type": "minecraft:count", "count": boosted}], min_y, max_y)
+        dimension_ores.append("%s:miner/%s" % (NS, feature))
+    # La pepite d'endium a son taux d'origine : quatre tirages a 1 sur 900,
+    # un chunk sur 225. La Pierre d'Invocation : dix tirages a 1 sur 10.
+    placed("miner/ore_endium_nugget", "ore_endium_nugget",
+           [{"type": "minecraft:rarity_filter", "chance": 225}], -64, -54)
+    placed("miner/ore_invoker", "ore_invoker", [{"type": "minecraft:count", "count": 1}],
+           findium_min, findium_max)
+    # Le buisson a XP : sept essais au lieu de trois, meme chance.
+    placed("miner/xp_bush", "xp_bush", [{"type": "minecraft:count", "count": 7},
+                                        {"type": "minecraft:rarity_filter", "chance": 5}], -32, 40)
+    dimension_ores += ["%s:miner/ore_endium_nugget" % NS, "%s:miner/ore_invoker" % NS,
+                       "%s:miner/xp_bush" % NS]
+
+    # Un seul biome, fixe : les plaines de 26.2 sans pluie, sans aucun mob
+    # (l'original annulait tout EntityMob) et sans salle a monstres. Il n'est
+    # pas dans #minecraft:is_overworld, donc aucun modificateur de biome DoHy
+    # (minerais au taux normal, arbres, montures) ne s'y ajoute.
+    write("data/%s/worldgen/biome/miner.json" % NS, {
+        "attributes": {"minecraft:visual/sky_color": "#000000", "minecraft:visual/fog_color": "#000000"},
+        "carvers": ["minecraft:cave", "minecraft:cave_extra_underground", "minecraft:canyon"],
+        "downfall": 0.4,
+        "effects": {"water_color": "#3f76e4"},
+        "features": [
+            [],
+            ["minecraft:lake_lava_underground", "minecraft:lake_lava_surface"],
+            ["minecraft:amethyst_geode"],
+            [],
+            [],
+            [],
+            ["minecraft:ore_dirt", "minecraft:ore_gravel", "minecraft:ore_granite_upper",
+             "minecraft:ore_granite_lower", "minecraft:ore_diorite_upper", "minecraft:ore_diorite_lower",
+             "minecraft:ore_andesite_upper", "minecraft:ore_andesite_lower", "minecraft:ore_tuff",
+             "minecraft:ore_coal_upper", "minecraft:ore_coal_lower", "minecraft:ore_iron_upper",
+             "minecraft:ore_iron_middle", "minecraft:ore_iron_small", "minecraft:ore_gold",
+             "minecraft:ore_gold_lower", "minecraft:ore_redstone", "minecraft:ore_redstone_lower",
+             "minecraft:ore_diamond", "minecraft:ore_diamond_medium", "minecraft:ore_diamond_large",
+             "minecraft:ore_diamond_buried", "minecraft:ore_lapis", "minecraft:ore_lapis_buried",
+             "minecraft:ore_copper", "minecraft:underwater_magma", "minecraft:disk_sand",
+             "minecraft:disk_clay", "minecraft:disk_gravel"] + dimension_ores,
+            [],
+            ["minecraft:spring_water", "minecraft:spring_lava"],
+            ["minecraft:glow_lichen", "minecraft:patch_tall_grass_2", "minecraft:patch_bush",
+             "minecraft:trees_plains", "minecraft:flower_plains", "minecraft:patch_grass_plain",
+             "minecraft:brown_mushroom_normal", "minecraft:red_mushroom_normal", "minecraft:patch_pumpkin",
+             "minecraft:patch_sugar_cane", "minecraft:patch_firefly_bush_near_water"],
+            ["minecraft:freeze_top_layer"],
+        ],
+        "has_precipitation": False,
+        "spawn_costs": {},
+        "spawners": {category: [] for category in (
+            "ambient", "axolotls", "creature", "misc", "monster", "underground_water_creature",
+            "water_ambient", "water_creature")},
+        "temperature": 0.8,
+    })
+
+    # Le type : l'overworld (memes hauteurs, -64..320, pour reprendre les
+    # placements DoHy) mais une nuit fixe — le client forcait worldTime a
+    # 15000 et videait le ciel. Ciel et brouillard noirs, lumiere du ciel au
+    # niveau de la nuit vanilla (timeline minecraft:day a 18000). Le
+    # brouillard d'origine allait de 40 % de la vue a 10 % selon les points ;
+    # on fixe le premier palier.
+    write("data/%s/dimension_type/miner.json" % NS, {
+        "ambient_light": 0.0,
+        "attributes": {
+            "minecraft:audio/ambient_sounds": {"mood": {
+                "block_search_extent": 8, "offset": 2.0, "sound": "minecraft:ambient.cave",
+                "tick_delay": 6000}},
+            "minecraft:gameplay/bed_rule": {"can_set_spawn": "never", "can_sleep": "never"},
+            "minecraft:gameplay/can_start_raid": False,
+            "minecraft:gameplay/respawn_anchor_works": False,
+            "minecraft:gameplay/sky_light_level": 4.0,
+            "minecraft:visual/ambient_light_color": "#0a0a0a",
+            "minecraft:visual/fog_color": "#000000",
+            "minecraft:visual/fog_start_distance": 8.0,
+            "minecraft:visual/fog_end_distance": 64.0,
+            "minecraft:visual/sky_color": "#000000",
+            "minecraft:visual/sky_light_color": "#7a7aff",
+            "minecraft:visual/sky_light_factor": 0.24,
+        },
+        "coordinate_scale": 1.0,
+        "has_ceiling": False,
+        "has_ender_dragon_fight": False,
+        "has_fixed_time": True,
+        "has_skylight": True,
+        "height": 384,
+        "infiniburn": "#minecraft:infiniburn_overworld",
+        "logical_height": 384,
+        "min_y": -64,
+        "monster_spawn_block_light_limit": 0,
+        "monster_spawn_light_level": 0,
+        "skybox": "none",
+        "timelines": "#minecraft:universal",
+    })
+    # Le terrain de l'overworld (memes reglages de bruit, meme graine), un
+    # seul biome.
+    write("data/%s/dimension/miner.json" % NS, {
+        "type": "%s:miner" % NS,
+        "generator": {"type": "minecraft:noise",
+                      "biome_source": {"type": "minecraft:fixed", "biome": "%s:miner" % NS},
+                      "settings": "minecraft:overworld"},
     })
 
     # ---- ecriture des tags accumules ----

@@ -10,10 +10,15 @@ import fr.atraxterra.dohy.palamod.nature.PalaNature;
 import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
+import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
 import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
 import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
+import fr.atraxterra.dohy.palamod.legendary.PalaLegendary;
+import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
+import fr.atraxterra.dohy.palamod.dungeon.PalaDungeonGear;
 import net.neoforged.bus.api.IEventBus;
 
 /**
@@ -68,9 +73,14 @@ public final class PalaMod {
         PalaGodPickaxe.register(modBus);
         PalaGolem.register(modBus);
         PalaMount.register(modBus);
+        PalaDimMiner.register(modBus);
         PalaEquipment.register(modBus);
         PalaMiner.register(modBus);
         PalaStorage.register(modBus);
+        PalaPvp.register(modBus);
+        PalaLegendary.register(modBus);
+        PalaDungeon.register(modBus);
+        PalaDungeonGear.register(modBus);
         PalaItems.register(modBus);
         PalaTab.register(modBus);
     }
