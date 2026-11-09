@@ -98,6 +98,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 19 | **Donjons, équipement** : 3 armures et 3 épées par donjon (basique, renforcée, légendaire ; fortes surtout en donjon, à plein dans le leur), set antique du palier 100, récompenses uniques du wiki, essences par élément et tier (réparation à l'enclume), note D à S et son coffre — textures de Palamod Recreated | fait |
 | 20 | **Donjons, runes et arbre** : niveau RPG (XP des salles, 100 niveaux), points (niveau, paliers, métiers 1/5), arbre de 4 branches × 8 nœuds en écran de coffre (bouton d'inventaire, `/profil`, `/menu`), statistiques RPG en donjon seulement ; runes commune, rare, épique (coffres, palamachine, enclume, grinder) — sorts et mana sautés au choix du joueur | fait |
 | 20b | **Stuff antique** : icônes et armure portée en 3D de Palamod Recreated (modèles traduits de leur bytecode), vol et invisibilité au set complet hors donjon (patchnotes V11), bonus de donjon dedans | fait |
+| 20c | **Retours en jeu** : pierre aléatoire qui disparaissait, entonnoirs sous le cobblebreaker et le crusher (sorties seulement), entonnoir en paladium qui aspire au sol, minerais qui se rendent eux-mêmes (fonte au four et au haut fourneau) | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -163,6 +164,25 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-09 (suite) — retours en jeu
+
+**Retour du joueur** : affichage, chapitres 15 à 20 et donjons bons. Quatre problèmes, tous
+reproduits puis vérifiés corrigés par un auto-test temporaire sur serveur dédié :
+- **pierre aléatoire** : consommée sans rien donner, en survie comme en créatif. En 26.2, le clic
+  remet dans la main ce que la pile est devenue ; la pierre tirée, ajoutée à l'inventaire, tombait
+  dans cette case vide et était écrasée. Elle passe désormais par le résultat du clic
+  (`ItemUtils.createFilledResult`) ;
+- **entonnoir sous un cobblebreaker** : il vidait la cobblestone de l'entrée avant les
+  particules. `MachineBlockEntity.canTakeItem` laisse chaque machine nommer ses sorties ;
+  cobblebreaker et crusher n'en donnent pas d'autres. La palamachine et le grinder restaient
+  fermés aux entonnoirs, comme dans l'original ;
+- **entonnoir en paladium** : il marchait d'inventaire à inventaire, mais n'aspirait rien au sol,
+  et prenait aussi l'entrée d'un cobblebreaker. Il aspire maintenant les objets au-dessus de lui
+  quand il n'y a pas d'inventaire, et respecte les sorties des machines ;
+- **minerais** : les sept (améthyste, titane, paladium, paladium vert, findium, trixium, pépites
+  d'endium) se rendent eux-mêmes, avec 14 recettes de four et de haut fourneau. La Fortune ne
+  joue plus qu'à la pioche des dieux.
+
 ### 2026-11-09 (suite) — stuff antique et vérification des recettes
 
 **Demande** : « porte le stuff Antique, les bonnes textures et les bons effets tel que sur le
@@ -194,8 +214,11 @@ le rendu 3D, qui ne se voit qu'en client.
 - une seule recette inutilisable en pratique : `green_paladium_ingot_from_particles`, la particule
   de paladium vert ne s'obtenant nulle part (chez Paladium, elle sortait du lucky block d'août, non
   porté). Laissée telle quelle ;
-- pas fait : l'auto-test en jeu de chaque recette (assemblage, palamachine, grinder, chaudron). Il
-  est écrit, mais GitHub Actions ne démarrait plus aucun job ce soir-là.
+- auto-test temporaire sur serveur dédié, recette par recette : chacune reconnaît ses propres
+  ingrédients, donne un résultat et n'est masquée par aucune autre. 218/218 (l'eau angélique et les
+  trois spéciales — mini-golem, sa réparation, gant en endium — avec de vrais objets : potion de
+  régénération, pierre de golem avec ses données, pierre légendaire), palamachine 36/36, grinder
+  19/19, chaudron 4/4.
 
 ### 2026-11-09 (suite) — chapitre 20 : runes et arbre de compétences
 

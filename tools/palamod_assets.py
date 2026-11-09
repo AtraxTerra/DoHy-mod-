@@ -143,6 +143,23 @@ ORES = {
                     "palamod:trixium", "Minerai de trixium", "Trixium Ore"),
 }
 
+# XP de fonte : celle du fer (0,7) pour les deux premiers, de l'or (1,0)
+# pour les autres. PalaMod n'en donnait pas : il lachait le lingot.
+ORE_XP = {
+    "amethyst_ore": 0.7, "titane_ore": 0.7, "paladium_ore": 1.0, "paladium_green_ore": 1.0,
+    "findium_ore": 1.0, "trixium_ore": 1.0, "endium_nugget_ore": 1.0,
+}
+
+
+def smelt(ore, result, xp):
+    """Le minerai au four (200 ticks) et au haut fourneau (100)."""
+    for kind, ticks in (("smelting", 200), ("blasting", 100)):
+        write("data/%s/recipe/%s_from_%s.json" % (NS, result.split(":")[1], kind), {
+            "type": "minecraft:%s" % kind, "category": "misc", "cookingtime": ticks,
+            "experience": xp, "group": result.split(":")[1],
+            "ingredient": "%s:%s" % (NS, ore), "result": {"id": result}})
+
+
 STORAGE = {
     # nom: (texture, lingot correspondant, FR, EN)
     "amethyst_block": ("amethyst/amethyst_block.png", "palamod:amethyst_ingot",
@@ -422,41 +439,20 @@ def main():
     # Un minerai lache son lingot, et le bloc lui-meme a la pioche soie. C'est
     # le comportement de Paladium, et il satisfait la regle de DESIGN.md
     # « minerai != metal » : deux marchandises distinctes, deux tiers.
+    # Demande du joueur (2026-11-09) : le minerai se rend lui-meme, comme le
+    # fer ou l'or bruts d'avant 1.17, et se fond au four ou au haut fourneau.
+    # PalaMod lachait le lingot avec la Fortune (getItemDropped) ; la Fortune
+    # ne joue plus ici, sauf a la pioche des dieux, qui fond ce qu'elle casse.
     for name, (_t, _h, _r, _lvl, drop, _fr, _en) in ORES.items():
         write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
             "type": "minecraft:block",
             "pools": [{
                 "rolls": 1,
-                "entries": [{
-                    "type": "minecraft:alternatives",
-                    "children": [
-                        {
-                            "type": "minecraft:item",
-                            "name": "%s:%s" % (NS, name),
-                            "conditions": [{
-                                "condition": "minecraft:match_tool",
-                                "predicate": {"predicates": {
-                                    "minecraft:enchantments": [
-                                        {"enchantments": "minecraft:silk_touch",
-                                         "levels": {"min": 1}}
-                                    ]
-                                }},
-                            }],
-                        },
-                        {
-                            "type": "minecraft:item",
-                            "name": drop,
-                            "functions": [
-                                {"function": "minecraft:apply_bonus",
-                                 "enchantment": "minecraft:fortune",
-                                 "formula": "minecraft:ore_drops"},
-                                {"function": "minecraft:explosion_decay"},
-                            ],
-                        },
-                    ],
-                }],
+                "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, name)}],
+                "conditions": [{"condition": "minecraft:survives_explosion"}],
             }],
         })
+        smelt(name, drop, ORE_XP[name])
 
     for name in STORAGE:
         write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
@@ -1166,14 +1162,17 @@ def main():
     # demande Mineur 100, par le tag palamod:break_locked que lit JobGateEvents.
     miner_block("endium_nugget_ore", {"all": "blocks/miner/endium_nuggets_ore.png"},
                 "Minerai de pepites d'endium", "Endium Nugget Ore")
+    # Demande du joueur (2026-11-09) : le minerai se rend lui-meme et donne sa
+    # pepite au four, comme les autres.
     write("data/%s/loot_table/blocks/endium_nugget_ore.json" % NS, {
         "type": "minecraft:block",
         "pools": [{
             "rolls": 1,
-            "entries": [{"type": "minecraft:item", "name": "%s:endium_nugget" % NS}],
+            "entries": [{"type": "minecraft:item", "name": "%s:endium_nugget_ore" % NS}],
             "conditions": [{"condition": "minecraft:survives_explosion"}],
         }],
     })
+    smelt("endium_nugget_ore", "%s:endium_nugget" % NS, ORE_XP["endium_nugget_ore"])
     tag("%s/tags/block/break_locked.json" % NS, ["%s:endium_nugget_ore" % NS])
 
     # La Palafurnace et la Palaforge : orientees comme le fourneau vanilla,

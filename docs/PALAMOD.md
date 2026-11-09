@@ -152,6 +152,9 @@ existent (`palamod/textures/items/particle/particle_*.png`), les noms de langue 
 (`item.particle.iron.name` … et un `item.particle.green.paladium.name`, soit un septième
 type non documenté par le wiki).
 
+**Entonnoirs** (vanilla ou en paladium) : ils ne prennent que les particules, jamais la
+cobblestone ni la Voidstone minage de l'entrée. Le crusher, de même, ne lâche que son résultat.
+
 > **À extraire encore** : les probabilités par particule, dans `TileCobbleBreaker`.
 
 ---
@@ -363,6 +366,12 @@ Statistiques de bloc, lues au bytecode (`BlockOre(material, dureté, texture)` p
 | Paladium vert | 5,0 | 5,0 | 3 | `needs_diamond_tool` |
 | Findium | 5,0 | 5,0 | 3 | `needs_diamond_tool` |
 | Trixium | 3,0 | 5,0 | 3 | `needs_diamond_tool` |
+
+**Butin — écart demandé par le joueur (2026-11-09).** PalaMod lâchait directement le lingot (ou
+le findium, le trixium), multiplié par la Fortune. Ici, chaque minerai se rend **lui-même**, comme
+le minerai de pépites d'endium et celui de Pierre d'Invocation, et se fond au four (200 ticks) ou
+au haut fourneau (100) : 0,7 XP pour l'améthyste et le titane, 1 pour les autres. La Fortune ne
+joue plus, sauf à la pioche des dieux, qui fond ce qu'elle casse et multiplie le résultat.
 
 Tailles de filon, lues dans les constructeurs de `WorldGenMinable` :
 améthyste **8**, titane **6**, paladium **4**, paladium vert **3**, findium **3**, trixium **3**.
@@ -854,9 +863,12 @@ qui ne rendait rien brûlait tout le combustible, et le contenu était perdu à 
 
 ### Entonnoir en paladium — `TileEntityPaladiumHopper`
 
-Toutes les 8 ticks, prend **la pile entière** dans l'inventaire du dessus — rien au sol. Une
-chaîne d'entonnoirs en paladium envoie directement au dernier inventaire. **Écart** : l'original
-se bloquait sur la première pile qui ne rentrait pas ; ici on essaie les suivantes.
+Toutes les 8 ticks, prend **la pile entière** dans l'inventaire du dessus. Une chaîne
+d'entonnoirs en paladium envoie directement au dernier inventaire. **Écarts** : l'original se
+bloquait sur la première pile qui ne rentrait pas ; ici on essaie les suivantes. Et sans
+inventaire au-dessus, il aspire les objets au sol, dans la zone de l'entonnoir vanilla —
+l'original n'aspirait rien, et paraissait en panne sous un tas d'objets (retour en jeu du
+2026-11-09). Il respecte ce qu'une machine accepte de lâcher (les particules d'un cobblebreaker).
 
 ### Coffres — `ModdedChestContainer`, `BlockPaladiumEnderChest`, Iron Chests
 
@@ -1770,6 +1782,10 @@ quatre autres n'était jamais écrit dans l'original : on peut enchaîner deux p
   que le lanceur pourrait frapper (PvP, équipes).
 - Le verrou de 10 minutes survit à la mort (l'original le perdait, ce qui l'offrait à une mort
   volontaire).
+- **Pierre aléatoire** : la pierre tirée remplace l'aléatoire dans la main, comme un seau rempli
+  (en créatif, elle s'ajoute à l'inventaire). Retirer puis ajouter ne marche pas en 26.2 : le jeu
+  remettait la pile consommée dans la case où la pierre venait d'arriver, et elle disparaissait
+  (retour en jeu du 2026-11-09).
 
 ### Le gant en endium — `ItemEndiumGauntlet`
 

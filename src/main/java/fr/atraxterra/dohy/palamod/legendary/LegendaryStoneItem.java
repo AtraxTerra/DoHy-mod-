@@ -9,6 +9,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
@@ -54,25 +55,31 @@ public class LegendaryStoneItem extends Item {
         }
         ItemStack stack = player.getItemInHand(hand);
         if (effect == LegendaryEffect.RANDOM) {
-            open(serverPlayer, server, stack);
-            return InteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS.heldItemTransformedTo(open(serverPlayer, server, stack));
         }
         boolean used = LegendaryStones.activate(serverPlayer, server, effect, lastUse(stack),
                 LegendaryStones.STONE_COOLDOWN, now -> stack.set(PalaLegendary.LAST_USE.get(), now));
         return used ? InteractionResult.SUCCESS : InteractionResult.FAIL;
     }
 
-    /** La pierre aleatoire : une des six, au hasard, sans recharge. */
-    private static void open(ServerPlayer player, ServerLevel level, ItemStack stack) {
+    /**
+     * La pierre aleatoire : une des six, au hasard, sans recharge. Rend ce que
+     * la main doit tenir ensuite.
+     *
+     * <p>La pierre tiree passe par le resultat du clic, comme un seau rempli
+     * ({@code ItemUtils.createFilledResult}). La retirer de la main puis
+     * l'ajouter a l'inventaire ne marche pas en 26.2 : l'ajout la pose dans la
+     * case de la main, devenue vide, et le jeu y remet aussitot la pile
+     * consommee — la pierre disparaissait.
+     */
+    private static ItemStack open(ServerPlayer player, ServerLevel level, ItemStack stack) {
         LegendaryEffect drawn = LegendaryEffect.values()[1 + level.getRandom().nextInt(6)];
         ItemStack stone = new ItemStack(PalaLegendary.stone(drawn));
-        stack.shrink(1);
         Component name = stone.getHoverName();
-        if (!player.getInventory().add(stone)) {
-            player.drop(stone, false);
-        }
+        ItemStack held = ItemUtils.createFilledResult(stack, player, stone);
         LegendaryStones.particles(player, level, drawn);
         LegendaryStones.tell(player, Component.translatable("message.palamod.legendary.random", name));
+        return held;
     }
 
     @Override

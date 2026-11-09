@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 1.0,
+  "group": "paladium_ingot",
+  "ingredient": "palamod:paladium_ore",
+  "result": {
+    "id": "palamod:paladium_ingot"
+  }
+}
