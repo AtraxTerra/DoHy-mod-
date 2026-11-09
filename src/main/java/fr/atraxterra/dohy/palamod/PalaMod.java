@@ -15,6 +15,7 @@ import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
 import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import net.neoforged.bus.api.IEventBus;
 
 /**
@@ -73,6 +74,7 @@ public final class PalaMod {
         PalaEquipment.register(modBus);
         PalaMiner.register(modBus);
         PalaStorage.register(modBus);
+        PalaPvp.register(modBus);
         PalaItems.register(modBus);
         PalaTab.register(modBus);
     }

@@ -11,7 +11,10 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -21,7 +24,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Coffre en amethyste ou en titane ({@code BlockModdedChest}).
+ * Coffre de PalaMod ({@code BlockModdedChest}), ou coffre en or d'Iron Chests.
  *
  * <p>Fer, durete 12, resistance 4,8, pioche en fer au moins. Boite de 1/16 a 15/16
  * en largeur et de 0 a 14/16 en hauteur, comme un coffre vanilla. Oriente vers le
@@ -82,6 +85,20 @@ public class PalaChestBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PalaChestBlockEntity(pos, state);
+    }
+
+    /** Les anneaux de reparation travaillent cote serveur ; le coffre en or n'en a pas. */
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+                                                                  BlockEntityType<T> type) {
+        if (level.isClientSide() || tier.ringSlots() == 0) {
+            return null;
+        }
+        return (tickLevel, pos, tickState, entity) -> {
+            if (entity instanceof PalaChestBlockEntity chest && tickLevel instanceof ServerLevel server) {
+                chest.serverTick(server);
+            }
+        };
     }
 
     @Override

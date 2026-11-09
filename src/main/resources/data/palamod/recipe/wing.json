@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  X",
+    " XZ",
+    "XZZ"
+  ],
+  "key": {
+    "X": "palamod:paladium_stick",
+    "Z": "minecraft:leather"
+  },
+  "result": {
+    "id": "palamod:wing",
+    "count": 2
+  }
+}

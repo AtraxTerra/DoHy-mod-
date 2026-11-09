@@ -82,7 +82,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 4 | **Machines** : cobblebreaker 4 paliers, crusher | fait |
 | 4b | **Interfaces de machines** : menu et écran propres, barre de progression | fait |
 | 5a | **Machines du fermier** : totem de fertilité, 5 seedplanters | fait |
-| 5b | **Machines de craft** : palamachine (le grinder est au chapitre 12, la palaforge au chapitre 8) | à faire |
+| 5b | **Machines de craft** : palamachine (chapitre 16 ; le grinder est au chapitre 12, la palaforge au chapitre 8) | fait |
 | 6 | **Intégration économique** : 24 matières de PalaMod au catalogue (onglet PalaMod), aile de musée, contrats, audit des machines (recette d'or du chaudron retirée, plancher de 5 % des blocs de masse), cultures de PalaMod enfin comptées | fait |
 | 7 | **Équipement** : 19 outils, 5 houes à rayon, 6 armures, leurs effets, 49 recettes | fait |
 | 9 | **Fermier** : abattage et incassabilité de la hache en endium, eau angélique (fluide qui soigne, seau) — sans herbes colorées, racinier ni trône | fait |
@@ -92,6 +92,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 13 | **Golem gardien** : golem (40 niveaux, arbre à trois voies, choix, gardien de golem), machine à croquettes, boîte à golem et mini golems, pomme en paladium — sans renommeur, cosmétiques, alerte Discord ni trône | fait |
 | 14 | **Monture** : le Dancarok (capture, gemme, niveaux, vie et énergie sur le joueur, invocation, conduite, cornes qui creusent), l'enclos (gestionnaire, fondation, barrière, couveuse, soins aux bandages), l'orbe de régénération ; les coffres manquants (paladium, paladium vert, endium, coffre de l'End en paladium, coffre en or) — sans Ravirok, Tedarok, palamachine ni éléphant | fait |
 | 15 | **Dimension du Mineur** : obsidienne wither (chargée au paladium, obtenue au piston renforcé), portail du Mineur (propriétaire, Mineur 90), dimension `palamod:miner` (sections de 5 000, 1 000 points, 3 jours, minerais ×3, nuit fixe, sans monstres ni chute), écrans d'entrée et de fin, minerai et Pierre d'Invocation ; la pépite d'endium ne naît plus que dans la dimension — sans boss ni ambiance client | fait |
+| 16 | **Pour le PvP** : palamachine (création et réparation des sticks, anneaux et cornes, enchantements gardés), 7 sticks (effets du code, recharge par type sur le joueur), orbes de force et de saut, 6 anneaux (armure portée, colonne d'anneaux des coffres, capacités de réparation), aile et deltaplane, slimepad, spike en paladium — sans spikes des autres métaux ni modèle 3D du deltaplane | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -156,6 +157,32 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-09 (suite) — chapitre 16 : pour le PvP
+
+**Demande** : « ajoute les sticks, les rings, hang glider, leurs effets, craft », depuis la page
+du wiki « Java – Pour le PvP ». Les sticks et les anneaux ne se fabriquent qu'à la palamachine,
+qui n'était pas portée (chapitre 5b) : elle vient avec. Détail : `docs/PALAMOD.md` § 20.
+
+**Le wiki et le code divergent, et c'est le code qui est porté** : vitesse VII et non III pour le
+stick de vitesse (amplificateur 6), recharges de 10 à 40 s, et un anneau réparé à la palamachine
+**garde** ses enchantements (`ench` recopié), quand le wiki dit qu'il les perd.
+
+**Les anneaux comptent de deux façons.** Portée, une armure consomme sa capacité point par point
+(8 000 à 12 000) ; au coffre, par remise à neuf complète — les « 3 » des outils en paladium sont
+trois remises à neuf. Le coffre en endium ne répare que l'endium, avec des anneaux en endium. Les
+coffres prennent leur colonne d'anneaux, laissée de côté au chapitre 14.
+
+**Où tourne la physique.** Le deltaplane et le slimepad poussent un joueur : c'est son client
+qui calcule son mouvement, la poussée y est donc appliquée (`isLocalInstanceAuthoritative`), le
+serveur ne gardant que l'état et l'annulation de la chute. Les sticks de saut, eux, partent du
+serveur avec le paquet de vitesse, comme l'original.
+
+**Vérifié au démarrage, par RCON** : création d'un stick, réparation qui garde Solidité III et
+passe de 4 à 5, refus de la sixième ; coffre en paladium qui répare les deux rangées du haut et
+pas la troisième, capacité décomptée à la remise à neuf ; coffre en endium qui répare l'épée en
+endium et pas celle en paladium ; spike qui tue un cochon ; slimepad qui projette un objet vers
+l'est. Les sticks et le deltaplane demandent un joueur : non testés en jeu.
 
 ### 2026-11-09 — chapitre 6 : PalaMod entre dans l'économie
 

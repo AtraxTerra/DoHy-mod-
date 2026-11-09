@@ -37,7 +37,7 @@ EXPECTED_PNG = (16, 16)
 # NeoForge. Un nom ajoute ici doit l'etre aussi dans BLOCK_FACTORIES s'il
 # enregistre un bloc.
 ITEM_FACTORIES = ("registerSimpleItem", "registerItem", "simple", "seed", "planter",
-                  "sword", "pickaxe", "axe", "shovel", "hoe", "armor")
+                  "sword", "pickaxe", "axe", "shovel", "hoe", "armor", "stick", "ring")
 BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "crop", "soil")
 
 # Les blocs sans item : on les obtient en semant, comme le ble vanilla. Ils
