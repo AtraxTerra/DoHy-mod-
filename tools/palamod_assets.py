@@ -3252,14 +3252,40 @@ def main():
             equipment_layers(material, 1, 2)
             tag("%s/tags/item/repairs/%s.json" % (NS, material), ["%s:%s" % (NS, essences[index])])
 
+    # L'antique : l'« Ancient armor » de Palamod Recreated, la seule armure
+    # antique dessinee. Icones rendues en 3D (256 a 512 px), ramenees a 32 x 32 ;
+    # armure portee en 3D (AntiqueArmorClient), sur sa texture de 256 x 256. Les
+    # couches plates (le legendaire de Talikus au bronze) ne restent qu'en
+    # secours, si le modele 3D ne se charge pas ; pas de garniture sur un modele 3D.
+    def ancient_icon(relative, destination):
+        from PIL import Image, ImageEnhance
+        source = recreated_path(relative)
+        if not recreated_root or not os.path.exists(source):
+            missing.append("recreated:" + relative)
+            return
+        image = Image.open(source).convert("RGBA")
+        image = image.crop(image.getbbox())
+        side = max(image.size)
+        square = Image.new("RGBA", (side, side))
+        square.paste(image, ((side - image.size[0]) // 2, (side - image.size[1]) // 2))
+        icon = ImageEnhance.Contrast(square.resize((32, 32), Image.LANCZOS)).enhance(1.25)
+        pixels = icon.load()
+        for x in range(32):
+            for y in range(32):
+                r, g, b, a = pixels[x, y]
+                pixels[x, y] = (r, g, b, 255 if a > 100 else 0)
+        full = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        icon.save(full)
+
     for piece, label_fr in (("helmet", "Casque antique"), ("chestplate", "Plastron antique"),
                             ("leggings", "Pantalon antique"), ("boots", "Bottes antiques")):
         name = "antique_%s" % piece
-        bronze("item/talikus_legendary_%s.png" % piece, "item/%s.png" % name)
+        ancient_icon("item/ancient_%s.png" % piece, "item/%s.png" % name)
         flat_item(name, "%s:item/%s" % (NS, name))
         label("item", name, label_fr, "Antique %s" % PIECE_EN[piece])
         tag("minecraft/tags/item/%s.json" % PIECE_TAG[piece], ["%s:%s" % (NS, name)])
-        tag("minecraft/tags/item/trimmable_armor.json", ["%s:%s" % (NS, name)])
+    recreated_tex("entities/ancient_armor.png", "entity/antique_armor.png", size=(256, 256))
     for layer, suffix in (("humanoid", 1), ("humanoid_leggings", 2)):
         bronze("models/armor/talikus_legendary_layer_%d.png" % suffix,
                "entity/equipment/%s/antique.png" % layer)
@@ -3275,8 +3301,10 @@ def main():
              "In dungeons: -%s%% damage from monsters, in every dungeon"),
             ("dungeon_gear.antique.sword", "En donjon : +%s%% de degats aux monstres",
              "In dungeons: +%s%% damage to monsters"),
-            ("dungeon_gear.antique_set", "Set complet : -10%% de degats recus, +20%% de degats infliges",
-             "Full set: -10%% damage taken, +20%% damage dealt"),
+            ("dungeon_gear.antique_set", "Set complet : vol et invisibilite hors des donjons",
+             "Full set: flight and invisibility outside dungeons"),
+            ("dungeon_gear.antique_set.dungeon", "En donjon, set complet : -10%% de degats recus, +20%% de degats",
+             "In dungeons, full set: -10%% damage taken, +20%% damage dealt"),
             ("dungeon_gear.repair", "Se repare a l'enclume avec : %s", "Repaired at the anvil with: %s"),
             ("dungeon_gear.repair_any", "Se repare a l'enclume avec une essence concentree",
              "Repaired at the anvil with any concentrated essence"),

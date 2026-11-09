@@ -148,6 +148,11 @@ MODEL_TEXTURES = {
     "block/xp_bush_ripe.png": (16, 112),
     "item/xp_berry.png": (16, 128),
     "item/compressed_xp_berry.png": (16, 128),
+    # L'armure antique : icones de rendus 3D (Palamod Recreated), en 32 x 32.
+    "item/antique_helmet.png": (32, 32),
+    "item/antique_chestplate.png": (32, 32),
+    "item/antique_leggings.png": (32, 32),
+    "item/antique_boots.png": (32, 32),
     # La machine a croquettes reprend la texture de son FoodMachineModel.
     "block/food_machine.png": (64, 46),
     # Le gestionnaire d'enclos reprend celle de son BarnControllerModel.

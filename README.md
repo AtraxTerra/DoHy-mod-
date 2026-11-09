@@ -59,8 +59,8 @@ Le script vérifie au passage que le revenu horaire reste constant à l'intérie
 
 - **PalaMod** et son pack officiel : Paladium Games. Le contenu du namespace `palamod` en reprend
   les textures.
-- **Équipement et essences des donjons** : *Palamod Recreated*, de SILWOX et Solea Pixel (mod de
-  fans pour 1.21, « All Rights Reserved »). Ces textures ne doivent pas être redistribuées
+- **Équipement, essences et armure antique des donjons** (textures et modèles 3D de l'antique) :
+  *Palamod Recreated*, de SILWOX et Solea Pixel (mod de fans pour 1.21, « All Rights Reserved »). Ces textures ne doivent pas être redistribuées
   publiquement sans leur accord.
 
 ## État
