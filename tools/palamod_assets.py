@@ -3144,6 +3144,156 @@ def main():
             "structure_overrides": []}},
     })
 
+    # ---- donjons : equipement, essences, set antique (chapitre 19) ----
+    #
+    # Textures de Palamod Recreated (SILWOX / Solea Pixel, mod de fans 1.21,
+    # « All Rights Reserved »), au choix du joueur : cinquieme argument, ou le
+    # dossier voisin du jar de PalaMod. Le set antique n'y est pas : c'est le
+    # legendaire de Talikus passe au bronze.
+    recreated_root = sys.argv[5] if len(sys.argv) > 5 else (
+        os.path.join(os.path.dirname(root[1].rstrip("/")), "nf121") if root[1] else None)
+
+    def recreated_path(relative):
+        return os.path.join(recreated_root or "", "assets", NS, "textures", relative)
+
+    def recreated_tex(relative, destination, size=(16, 16)):
+        source = recreated_path(relative)
+        if not recreated_root or not os.path.exists(source):
+            missing.append("recreated:" + relative)
+            return
+        if png_size(source) != size:
+            wrong_size.append("recreated:%s : %s au lieu de %s" % (relative, png_size(source), size))
+            return
+        target = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(source, target)
+
+    def bronze(relative, destination):
+        """Une texture de Palamod Recreated passee au degrade bronze-or, alpha garde."""
+        from PIL import Image
+        source = recreated_path(relative)
+        if not recreated_root or not os.path.exists(source):
+            missing.append("recreated:" + relative)
+            return
+        image = Image.open(source).convert("RGBA")
+        out = Image.new("RGBA", image.size)
+        pixels, target = image.load(), out.load()
+        dark, bright = (58, 34, 14), (255, 214, 110)
+        for x in range(image.size[0]):
+            for y in range(image.size[1]):
+                r, g, b, a = pixels[x, y]
+                light = min(1.0, ((0.299 * r + 0.587 * g + 0.114 * b) / 255.0) * 1.25)
+                target[x, y] = tuple(int(dark[i] + (bright[i] - dark[i]) * light) for i in range(3)) + (a,)
+        full = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        out.save(full)
+
+    def handheld_item(name, texture):
+        write("assets/%s/models/item/%s.json" % (NS, name),
+              {"parent": "minecraft:item/handheld", "textures": {"layer0": texture}})
+        write("assets/%s/items/%s.json" % (NS, name),
+              {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)}})
+
+    def equipment_layers(material, layer_1, layer_2):
+        write("assets/%s/equipment/%s.json" % (NS, material), {"layers": {
+            "humanoid": [{"texture": "%s:%s" % (NS, material)}],
+            "humanoid_leggings": [{"texture": "%s:%s" % (NS, material)}]}})
+
+    # Le nom et le pluriel feminin : « jambieres renforcees », « bottes legendaires ».
+    PIECE_FR = {"helmet": ("Casque", False), "chestplate": ("Plastron", False),
+                "leggings": ("Jambieres", True), "boots": ("Bottes", True)}
+    PIECE_EN = {"helmet": "Helmet", "chestplate": "Chestplate", "leggings": "Leggings", "boots": "Boots"}
+    PIECE_TAG = {"helmet": "head_armor", "chestplate": "chest_armor", "leggings": "leg_armor",
+                 "boots": "foot_armor"}
+    ELEMENTS = (("talikus", "Talikus", "forest", "de foret", "Forest",
+                 ("forest_essence_fragment", "forest_essence", "forest_essence_concentrate")),
+                ("nimbria", "Nimbria", "cavern", "de caverne", "Cavern",
+                 ("cavern_essence_fragment", "cavern_essence", "cavern_essence_concentrate")),
+                ("vitalys", "Vitalys", "flame", "de flamme", "Flame",
+                 ("flame_essence_fragment", "flame_essence", "flame_essence_concentrate")),
+                ("manelios", "Manelios", "aquatic", "aquatique", "Aquatic",
+                 ("essence_aquatique_fragment", "essence_aquatique", "aquatic_essence_concentrate")))
+    TIERS = (("", "", "", "", 0), ("reinforced", "renforce", "renforcee", "Reinforced", 1),
+             ("legendary", "legendaire", "legendaire", "Legendary", 2))
+    concentrates = []
+    for dungeon, display, element, element_fr, element_en, sources in ELEMENTS:
+        essences = []
+        for (suffix, label_fr, label_en), source in zip(
+                (("_fragment", "Fragment d'essence %s", "%s Essence Fragment"),
+                 ("", "Essence %s", "%s Essence"),
+                 ("_concentrate", "Essence %s concentree", "Concentrated %s Essence")), sources):
+            name = "%s_essence%s" % (element, suffix)
+            recreated_tex("item/%s.png" % source, "item/%s.png" % name)
+            flat_item(name, "%s:item/%s" % (NS, name))
+            label("item", name, label_fr % element_fr, label_en % element_en)
+            essences.append(name)
+        concentrates.append(essences[2])
+        for tier, adj_m, adj_f, adj_en, index in TIERS:
+            material = dungeon if not tier else "%s_%s" % (dungeon, tier)
+            for piece in ("helmet", "chestplate", "leggings", "boots"):
+                name = "%s_%s" % (material, piece)
+                recreated_tex("item/%s.png" % name, "item/%s.png" % name)
+                flat_item(name, "%s:item/%s" % (NS, name))
+                noun, plural = PIECE_FR[piece]
+                adjective = "" if not tier else " " + ((adj_f + "s") if plural else adj_m)
+                label("item", name, "%s%s de %s" % (noun, adjective, display),
+                      ("%s %s %s" % (adj_en, display, PIECE_EN[piece])).strip())
+                tag("minecraft/tags/item/%s.json" % PIECE_TAG[piece], ["%s:%s" % (NS, name)])
+                tag("minecraft/tags/item/trimmable_armor.json", ["%s:%s" % (NS, name)])
+            name = "%s_sword" % material
+            recreated_tex("item/%s.png" % name, "item/%s.png" % name)
+            handheld_item(name, "%s:item/%s" % (NS, name))
+            label("item", name, "Epee%s de %s" % ("" if not tier else " " + adj_f, display),
+                  ("%s %s Sword" % (adj_en, display)).strip())
+            tag("minecraft/tags/item/swords.json", ["%s:%s" % (NS, name)])
+            for layer, suffix in (("humanoid", 1), ("humanoid_leggings", 2)):
+                recreated_tex("models/armor/%s_layer_%d.png" % (material, suffix),
+                              "entity/equipment/%s/%s.png" % (layer, material), size=(64, 32))
+            equipment_layers(material, 1, 2)
+            tag("%s/tags/item/repairs/%s.json" % (NS, material), ["%s:%s" % (NS, essences[index])])
+
+    for piece, label_fr in (("helmet", "Casque antique"), ("chestplate", "Plastron antique"),
+                            ("leggings", "Pantalon antique"), ("boots", "Bottes antiques")):
+        name = "antique_%s" % piece
+        bronze("item/talikus_legendary_%s.png" % piece, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, "Antique %s" % PIECE_EN[piece])
+        tag("minecraft/tags/item/%s.json" % PIECE_TAG[piece], ["%s:%s" % (NS, name)])
+        tag("minecraft/tags/item/trimmable_armor.json", ["%s:%s" % (NS, name)])
+    for layer, suffix in (("humanoid", 1), ("humanoid_leggings", 2)):
+        bronze("models/armor/talikus_legendary_layer_%d.png" % suffix,
+               "entity/equipment/%s/antique.png" % layer)
+    equipment_layers("antique", 1, 2)
+    tag("%s/tags/item/repairs/antique.json" % NS, ["%s:%s" % (NS, name) for name in concentrates])
+
+    for key, label_fr, label_en in (
+            ("dungeon_gear.armor", "En donjon : -%s%% de degats des monstres a %s, moitie ailleurs",
+             "In dungeons: -%s%% damage from monsters in %s, half elsewhere"),
+            ("dungeon_gear.sword", "En donjon : +%s%% de degats aux monstres a %s, moitie ailleurs",
+             "In dungeons: +%s%% damage to monsters in %s, half elsewhere"),
+            ("dungeon_gear.antique.armor", "En donjon : -%s%% de degats des monstres, dans tous les donjons",
+             "In dungeons: -%s%% damage from monsters, in every dungeon"),
+            ("dungeon_gear.antique.sword", "En donjon : +%s%% de degats aux monstres",
+             "In dungeons: +%s%% damage to monsters"),
+            ("dungeon_gear.antique_set", "Set complet : -10%% de degats recus, +20%% de degats infliges",
+             "Full set: -10%% damage taken, +20%% damage dealt"),
+            ("dungeon_gear.repair", "Se repare a l'enclume avec : %s", "Repaired at the anvil with: %s"),
+            ("dungeon_gear.repair_any", "Se repare a l'enclume avec une essence concentree",
+             "Repaired at the anvil with any concentrated essence"),
+            ("essence.fragment", "Repare l'equipement basique de %s a l'enclume",
+             "Repairs %s basic gear at the anvil"),
+            ("essence.essence", "Repare l'equipement renforce de %s a l'enclume",
+             "Repairs %s reinforced gear at the anvil"),
+            ("essence.concentrate", "Repare l'equipement legendaire de %s, et l'antique, a l'enclume",
+             "Repairs %s legendary gear, and antique gear, at the anvil"),
+            ("essence.hint", "Tombe dans les coffres des donjons.", "Found in dungeon chests.")):
+        label("tooltip", key, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("grade", "Note %s : degats %s%%, survie %s%%, implication %s%%.",
+             "Grade %s: damage %s%%, survival %s%%, involvement %s%%."),
+            ("grade_chest", "Coffre de la note : %s", "Grade chest: %s")):
+        label("message", "dungeon." + key, label_fr, label_en)
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de

@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "palamod:nimbria_legendary"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "palamod:nimbria_legendary"
+      }
+    ]
+  }
+}

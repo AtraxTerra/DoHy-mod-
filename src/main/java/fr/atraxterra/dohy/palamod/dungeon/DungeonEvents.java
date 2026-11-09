@@ -23,6 +23,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
@@ -172,10 +173,15 @@ public final class DungeonEvents {
     }
 
     /**
-     * Les degats : facteur du palier pour ce que frappe un monstre de partie
-     * (sa fleche et sa boule de feu comprises, la source etant le tireur) ;
-     * part encaissee pour un boss au plafond de vie ; et pas de combat entre
-     * monstres de partie.
+     * Les degats, avant armure.
+     * <ul>
+     *   <li>ce que frappe un monstre de partie (sa fleche et sa boule de feu
+     *       comprises, la source etant le tireur) : facteur du palier, puis la
+     *       reduction de l'equipement de donjon porte par le joueur ;</li>
+     *   <li>ce qu'encaisse un monstre de partie : la part du boss au plafond de
+     *       vie, et le bonus de l'epee de donjon pour un coup porte a la main ;</li>
+     *   <li>pas de combat entre monstres de partie.</li>
+     * </ul>
      */
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onDamage(LivingIncomingDamageEvent event) {
@@ -184,19 +190,48 @@ public final class DungeonEvents {
             return;
         }
         Entity source = event.getSource().getEntity();
-        boolean targetTracked = DungeonManager.runOfMob(target.getUUID()) != null;
-        if (source != null && source != target && DungeonManager.runOfMob(source.getUUID()) != null) {
-            if (targetTracked || target.entityTags().contains(DungeonRun.TAG)) {
+        DungeonRun targetRun = DungeonManager.runOfMob(target.getUUID());
+        DungeonRun sourceRun = source == null || source == target ? null : DungeonManager.runOfMob(source.getUUID());
+        if (sourceRun != null) {
+            if (targetRun != null || target.entityTags().contains(DungeonRun.TAG)) {
                 event.setCanceled(true);
                 return;
             }
-            event.setAmount(event.getAmount() * DungeonManager.runOfMob(source.getUUID()).damageFactor());
+            float amount = event.getAmount() * sourceRun.damageFactor();
+            if (target instanceof ServerPlayer player) {
+                amount *= 1.0f - DungeonGearItem.reduction(player, sourceRun.dungeon);
+            }
+            event.setAmount(amount);
         }
-        if (targetTracked) {
-            event.setAmount(event.getAmount() * DungeonManager.takenFactor(target.getUUID()));
+        if (targetRun != null) {
+            float amount = event.getAmount() * DungeonManager.takenFactor(target.getUUID());
+            if (source instanceof ServerPlayer player && event.getSource().getDirectEntity() == player) {
+                amount *= 1.0f + DungeonGearItem.damageBonus(player, targetRun.dungeon);
+            }
+            event.setAmount(amount);
         }
         if (target.entityTags().contains(DungeonRun.MERCHANT_TAG)) {
             event.setCanceled(true);
+        }
+    }
+
+    /** La note : ce que chacun inflige et perd, une fois l'armure passee. */
+    @SubscribeEvent
+    public static void onDamaged(LivingDamageEvent.Post event) {
+        LivingEntity target = event.getEntity();
+        if (!DungeonManager.inDimension(target) || event.getInflictedDamage() <= 0.0f) {
+            return;
+        }
+        if (target instanceof ServerPlayer player) {
+            DungeonRun run = DungeonManager.runOf(player);
+            if (run != null) {
+                run.recordTaken(player, event.getInflictedDamage());
+            }
+            return;
+        }
+        DungeonRun run = DungeonManager.runOfMob(target.getUUID());
+        if (run != null && event.getSource().getEntity() instanceof ServerPlayer player) {
+            run.recordDealt(player, event.getInflictedDamage());
         }
     }
 
@@ -223,6 +258,10 @@ public final class DungeonEvents {
             player.getFoodData().setFoodLevel(20);
             DungeonManager.leave(player, DungeonRun.Leave.DEATH);
             return;
+        }
+        DungeonRun owner = DungeonManager.runOfMob(entity.getUUID());
+        if (owner != null && event.getSource().getEntity() instanceof ServerPlayer killer) {
+            owner.recordKill(killer);
         }
         if (entity instanceof Mob mob && mob.entityTags().contains(DungeonRun.SPLIT_TAG)) {
             DungeonRun run = DungeonManager.runOfMob(mob.getUUID());

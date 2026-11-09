@@ -2,10 +2,23 @@
   "replace": false,
   "values": [
     "palamod:amethyst_helmet",
+    "palamod:antique_helmet",
     "palamod:endium_helmet",
     "palamod:green_paladium_helmet",
+    "palamod:manelios_helmet",
+    "palamod:manelios_legendary_helmet",
+    "palamod:manelios_reinforced_helmet",
     "palamod:mixed_endium_helmet",
+    "palamod:nimbria_helmet",
+    "palamod:nimbria_legendary_helmet",
+    "palamod:nimbria_reinforced_helmet",
     "palamod:paladium_helmet",
-    "palamod:titane_helmet"
+    "palamod:talikus_helmet",
+    "palamod:talikus_legendary_helmet",
+    "palamod:talikus_reinforced_helmet",
+    "palamod:titane_helmet",
+    "palamod:vitalys_helmet",
+    "palamod:vitalys_legendary_helmet",
+    "palamod:vitalys_reinforced_helmet"
   ]
 }

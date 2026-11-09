@@ -44,8 +44,8 @@ import java.util.function.IntPredicate;
  * </ul>
  *
  * <p>Ce qui n'existe pas encore dans DoHy est laisse de cote, et vient avec
- * les chapitres suivants : equipement de donjon, essences, parchemins de sort,
- * runes, parchemins de craft, pieces antiques. Les objets du wiki qui ne sont
+ * les chapitres suivants : parchemins de sort et runes. Les parchemins de
+ * craft ne sont pas portes. Les objets du wiki qui ne sont
  * ni dans PalaMod ni dans vanilla (Obsidienne infusee, Tete de thirsty, Totem
  * fleuri, Bonbons, Jetpack...) aussi. Une entree introuvable au registre est
  * ignoree, pas une erreur.
@@ -158,6 +158,14 @@ final class DungeonRewards {
                 entries.add(tank(90, Sap.OSTRYA));
             }
         }
+        // Les essences de l'element du donjon, chacune a partir du palier de
+        // l'equipement qu'elle repare. Le wiki ne les liste qu'une fois
+        // (« Essence de tier 2 », Talikus, palier 40) mais en fait l'unique
+        // moyen de reparer l'equipement de donjon : toutes les reserves en ont.
+        String element = "palamod:" + dungeon.element() + "_essence";
+        entries.add(Entry.of(EssenceTier.FRAGMENT.from(), 3, element + EssenceTier.FRAGMENT.suffix(), 1, 2));
+        entries.add(Entry.of(EssenceTier.ESSENCE.from(), 2, element + EssenceTier.ESSENCE.suffix(), 1, 1));
+        entries.add(Entry.of(EssenceTier.CONCENTRATE.from(), 1, element + EssenceTier.CONCENTRATE.suffix(), 1, 1));
         return entries;
     }
 
@@ -267,12 +275,41 @@ final class DungeonRewards {
     }
 
     /**
-     * Les recompenses uniques du palier exact. Seuls les sacs de Nimbria
-     * existent pour l'instant ; epees, armures, parchemins et pieces
-     * antiques viennent avec l'equipement de donjon.
+     * Les recompenses uniques du palier exact, chacune tiree a part une fois
+     * sur deux par l'appelant.
+     *
+     * <ul>
+     *   <li>« Epee de tier 1 » aux paliers 5 et 15, « tier 2 » a 35 et 45,
+     *       « tier 3 » a 65 et 75 — Nimbria n'a ni la 15 ni la 35 ;</li>
+     *   <li>« Armure de tier 1 » de 10 a 20, « tier 2 » de 40 a 50, « tier 3 »
+     *       de 70 a 80 : une piece au hasard du tier ;</li>
+     *   <li>au palier 100, la piece antique du donjon ;</li>
+     *   <li>les sacs de donjon de Nimbria (40 et 50, puis 60 et 70).</li>
+     * </ul>
+     * Parchemins de craft et parchemins de livre enchante ne sont pas portes.
      */
-    static List<ItemStack> unique(Dungeon dungeon, int palier) {
+    static List<ItemStack> unique(Dungeon dungeon, int palier, RandomSource random) {
         List<ItemStack> rewards = new ArrayList<>();
+        DungeonGearTier sword = switch (palier) {
+            case 5 -> DungeonGearTier.BASIC;
+            case 15 -> dungeon == Dungeon.NIMBRIA ? null : DungeonGearTier.BASIC;
+            case 35 -> dungeon == Dungeon.NIMBRIA ? null : DungeonGearTier.REINFORCED;
+            case 45 -> DungeonGearTier.REINFORCED;
+            case 65, 75 -> DungeonGearTier.LEGENDARY;
+            default -> null;
+        };
+        if (sword != null) {
+            rewards.add(new ItemStack(PalaDungeonGear.sword(dungeon, sword)));
+        }
+        DungeonGearTier armor = palier >= 10 && palier <= 20 ? DungeonGearTier.BASIC
+                : palier >= 40 && palier <= 50 ? DungeonGearTier.REINFORCED
+                : palier >= 70 && palier <= 80 ? DungeonGearTier.LEGENDARY : null;
+        if (armor != null) {
+            rewards.add(new ItemStack(PalaDungeonGear.armorPiece(dungeon, armor, random.nextInt(4))));
+        }
+        if (palier == 100) {
+            rewards.add(new ItemStack(PalaDungeonGear.antique(dungeon)));
+        }
         if (dungeon == Dungeon.NIMBRIA) {
             if (palier == 40 || palier == 50) {
                 rewards.add(new ItemStack(PalaDungeon.BACKPACK_T2.get()));
@@ -281,5 +318,23 @@ final class DungeonRewards {
             }
         }
         return rewards;
+    }
+
+    /**
+     * Le coffre de la note (wiki : « une meilleure note debloque un coffre plus
+     * interessant ») : des tirages en plus dans la reserve du donjon, et une
+     * chance d'essence du tier du palier.
+     */
+    static List<ItemStack> gradeChest(ServerLevel level, RandomSource random, Dungeon dungeon, int palier,
+                                      Grade grade) {
+        List<ItemStack> loot = new ArrayList<>();
+        List<Entry> pool = pool(dungeon);
+        for (int i = 0; i < grade.extraRolls(); i++) {
+            draw(pool, level, random, palier).ifPresent(loot::add);
+        }
+        if (random.nextFloat() < grade.essenceChance()) {
+            loot.add(new ItemStack(PalaDungeonGear.essence(dungeon, EssenceTier.forPalier(palier))));
+        }
+        return loot;
     }
 }
