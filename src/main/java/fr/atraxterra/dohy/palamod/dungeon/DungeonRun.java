@@ -970,6 +970,10 @@ final class DungeonRun {
         return merchant != null && merchant == entity;
     }
 
+    boolean isMerchantAlive() {
+        return merchant != null && merchant.isAlive() && !merchant.isRemoved();
+    }
+
     String leaderName() {
         return names.getOrDefault(leader, "?");
     }

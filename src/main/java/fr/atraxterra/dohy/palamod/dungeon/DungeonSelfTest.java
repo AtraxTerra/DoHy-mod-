@@ -101,9 +101,9 @@ public final class DungeonSelfTest {
                     line.append(" | baby=").append(baby == null ? "NULL" : baby.isBaby() + " hp=" + (int) baby.getMaxHealth());
                 }
                 if (type == RoomType.BOSS) {
-                    for (UUID uuid : run.bosses) {
-                        Entity entity = level.getEntity(uuid);
-                        if (entity instanceof LivingEntity boss) {
+                    for (Mob boss : run.bosses) {
+                        UUID uuid = boss.getUUID();
+                        {
                             line.append(" | boss=").append(boss.getType().toShortString()).append(" hp=")
                                     .append((int) boss.getMaxHealth()).append(" scale=")
                                     .append(boss.getAttributeValue(Attributes.SCALE)).append(" taken=")
@@ -157,11 +157,8 @@ public final class DungeonSelfTest {
     }
 
     private static void killAll(ServerLevel level, DungeonRun run) {
-        for (UUID uuid : new ArrayList<>(run.enemies.keySet())) {
-            Entity entity = level.getEntity(uuid);
-            if (entity instanceof LivingEntity living) {
-                living.kill(level);
-            }
+        for (Mob mob : new ArrayList<>(run.enemies.keySet())) {
+            mob.kill(level);
         }
     }
 
@@ -186,7 +183,7 @@ public final class DungeonSelfTest {
         run.begin(List.of());
         log("begin room=" + run.room.type + " phase=" + run.phase + " forced=" + level.getForceLoadedChunks().size());
         ticks(run, 31);
-        log("after 31 ticks enemies=" + run.enemies.size());
+        log("after 31 ticks enemies=" + run.enemies.size() + " " + run.enemies.values());
         for (int round = 0; round < 6 && run.phase == DungeonRun.Phase.FIGHT; round++) {
             killAll(level, run);
             ticks(run, 10);
@@ -198,9 +195,7 @@ public final class DungeonSelfTest {
         choose(run, fake, RoomType.MERCHANT);
         log("room2=" + run.room.type + " phase=" + run.phase + " oldErased=" + level.getBlockState(first.below()).isAir()
                 + " forced=" + level.getForceLoadedChunks().size());
-        long merchants = level.getEntitiesOfClass(net.minecraft.world.entity.npc.villager.Villager.class,
-                run.room.outer()).stream().filter(run::isMerchant).count();
-        log("merchant=" + merchants);
+        log("merchant alive=" + run.isMerchantAlive());
         choose(run, fake, RoomType.BOSS);
         log("room3=" + run.room.type + " phase=" + run.phase + " bosses=" + run.bosses.size());
         for (int round = 0; round < 4 && run.phase == DungeonRun.Phase.FIGHT; round++) {
