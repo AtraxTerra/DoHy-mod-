@@ -155,5 +155,5 @@ jobs:
           fi
           wait
           echo "================ journal (extraits) ================"
-          grep -nE 'ERROR|Exception|Caused by|Failed|Done \(|fin du serveur|palamod' /tmp/server.log | grep -v 'DEBUG' | head -300
+          grep -nE 'ERROR|Exception|Caused by|Failed|Done \(|fin du serveur|palamod|\[dohy/' /tmp/server.log | grep -v 'DEBUG' | head -300
           grep -q 'Done (' /tmp/server.log

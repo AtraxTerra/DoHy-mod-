@@ -10,6 +10,17 @@ sans booster. Consequence : deux items du meme tier rapportent le meme $/h,
 quel que soit leur debit. L'equilibrage global se fait en changeant
 MONEY_MULTIPLIER, pas 150 prix a la main.
 
+Deux colonnes facultatives de rates.csv corrigent un item sans toucher a son
+tier :
+
+    floor       plancher propre, en fraction du prix de base. Les blocs de
+                masse (sable, ardoise, netherrack...) l'ont a 0.05 : les outils
+                de zone et la corne du Dancarok en cassent des centaines par
+                seconde, et le plancher du tier en ferait une rente.
+    buy_markup  multiplicateur d'achat propre ; 0 retire l'item de la vente au
+                shop. Les buches et pousses de PalaMod l'ont a 0 : achetees,
+                leur seve se changerait en lingots.
+
 Usage:
     python3 tools/gen_prices.py                 # multiplicateur 1.0
     python3 tools/gen_prices.py --multiplier 0.6  # economie 40% moins genereuse
@@ -143,14 +154,27 @@ def main() -> None:
 
         base = max(base, FORCED_FLOOR_PRICE.get(item, 1))
 
+        floor = FLOOR[tier]
+        if (row.get("floor") or "").strip():
+            floor = float(row["floor"])
+            if not 0.0 < floor <= FLOOR[tier]:
+                raise SystemExit(f"{item} : plancher {floor} hors de ]0, {FLOOR[tier]}] "
+                                 f"(il ne peut que descendre sous celui du tier)")
+        markup = BUY_MARKUP
+        if (row.get("buy_markup") or "").strip():
+            markup = float(row["buy_markup"])
+            if markup != 0.0 and markup < BUY_MARKUP:
+                raise SystemExit(f"{item} : marge d'achat {markup} sous {BUY_MARKUP}, "
+                                 f"racheter deviendrait rentable")
+
         entry = {
             "category": row["display_category"].strip(),
             "tier": tier,
             "base_price": base,
             "s0": S0[tier],
-            "floor_pct": FLOOR[tier],
+            "floor_pct": floor,
             "ceiling_pct": CEILING,
-            "buy_price": round_sig(base * BUY_MARKUP),
+            "buy_price": round_sig(base * markup) if markup > 0 else 0,
             "sellable": True,
             "rate_per_hour": rate,
         }

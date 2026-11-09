@@ -48,6 +48,18 @@
         }
       ]
     },
+    "PALAMOD": {
+      "display": "PalaMod",
+      "rewards": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "amount": 2.0,
+          "operation": "add_value"
+        }
+      ],
+      "_comment": "Les matieres de PalaMod : minerais, lingots, cultures, fleurs, bois. Une armure de plus, celle d'un plastron de cuir : le minage du paladium se fait loin sous terre."
+    },
     "NTM": {
       "display": "NTM NEXT",
       "rewards": [

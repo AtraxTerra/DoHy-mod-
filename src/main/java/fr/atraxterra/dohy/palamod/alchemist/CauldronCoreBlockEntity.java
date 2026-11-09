@@ -294,7 +294,7 @@ public class CauldronCoreBlockEntity extends BlockEntity {
         return ItemStack.EMPTY;
     }
 
-    /** Les recettes a objets, une pour chaque bois brillant et la poudre lumineuse. */
+    /** Les recettes a objets : un bois brillant par essence (la poudre lumineuse n'en est plus une). */
     private void craft(ServerLevel server, List<ItemEntity> candidates) {
         int crafts = 0;
         while (crafts < MAX_CRAFTS_PER_TICK) {

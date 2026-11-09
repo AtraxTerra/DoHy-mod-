@@ -1110,7 +1110,8 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
 - **Travail** : bassin plein, un joueur à 4,5 blocs qui a le niveau du cœur. Tout objet jeté est
   traité au tick, le résultat ressort au-dessus du centre :
   - potion de foudre + bûche : **2 bois brillants** de l'essence — leur seule source ;
-  - poudre lumineuse : 3 pépites d'or ;
+  - ~~poudre lumineuse : 3 pépites d'or~~ — **retirée au chapitre économique** (§ 19) : la poudre
+    s'achète 4 $ et les pépites se revendent 27 $, de l'argent infini ;
   - coquelicot et ses cousins, pissenlit : par fleur, 1/500 fleur minérale, 1/300 fleur de
     paladium, 1/5 000 harpagophytum, 1/15 000 fleur d'endium, 1/1 754 clathrus ; XP 0,75 à 2
     par fleur dès Alchimiste 15 ;
@@ -1534,3 +1535,83 @@ la dimension. La pierre ne servait qu'aux runes de donjon de PalaRPG, non porté
 - Les écrans ZephyrUI (entrée, fin) deviennent des coffres ; l'overlay, une barre de boss.
 - Les joueurs ne sont pas cachés les uns aux autres. Les permissions, le réseau, les succès et
   `/dimension` (externes) ne sont pas portés.
+
+## 19. Économie : PalaMod dans le marché de DoHy (chapitre 6)
+
+Les objets de PalaMod n'avaient aucun prix : aucun n'est dans les tags `c:` que lisent les règles
+de `tag_prices.json`. Ils entrent maintenant au catalogue par `data/rates.csv`, au modèle de DoHy
+(`prix = cible du tier / taux horaire`, `BALANCE.md` § 1), dans un sixième onglet du shop,
+**PalaMod**. Il a pris la case de la boutique dans le pied du shop ; la boutique reste au menu.
+
+### Ce qui se vend, et ce qui ne se vend pas
+
+La règle de `DESIGN.md` § 3.3 s'applique telle quelle : **seule la matière première se vend**.
+Rien de ce qui sort d'une recette ou d'une machine — outils, armures, blocs de stockage,
+compressés, charbons mixés, particules, pollens, têtes, sèves, croquettes — n'a de prix, comme
+pour les objets fabriqués vanilla. `/dohy scan palamod` en liste donc 241 : c'est voulu.
+
+| Objet | Tier | Taux/h | Prix | Achat | Pourquoi ce taux |
+|---|---|---|---|---|---|
+| Lingot d'améthyste | FARM | 600 | 30 | 120 | sève de jacaranda (6 par bûche), boîte à golem, aubergine, crusher |
+| Lingot de titane | FARM | 400 | 45 | 180 | crusher (15 pour 32 cerfeuils), boîte à golem, sève de judée |
+| Lingot de paladium | FARM | 250 | 72 | 290 | crusher, sève d'érable, boîte à golem, kiwano ; dimension du Mineur |
+| Lingot de paladium vert | FOUND | 80 | 500 | 2 000 | minage seul |
+| Findium | FOUND | 100 | 400 | 1 600 | minage seul |
+| Trixium | FOUND | 50 | 800 | 3 200 | minage seul, un filon par chunk |
+| Pierre d'Invocation, son minerai | FOUND | 20 | 2 000 | 8 000 | un filon pour deux chunks |
+| Pépite d'endium | RARE | 1,5 | 40 000 | 160 000 | une par session de dimension |
+| Minerais (pioche soie) | FOUND | 400 → 25 | 100 → 1 600 | ×4 | améthyste, titane, paladium, vert, findium, trixium |
+| Aubergine, cerfeuil | FARM | 1 200 | 15 | 60 | comme le blé |
+| Kiwano | FARM | 900 | 20 | 80 | pousse à 0,8 |
+| Orangeblue | FARM | 60 | 300 | 1 200 | la graine ne revient qu'une fois sur 15 |
+| Bûches des quatre essences | FARM | 1 200 | 15 | — | **non achetables** : achetée, la sève d'une bûche de jacaranda vaut 6 lingots |
+| Baie d'XP | FARM | 1 000 | 18 | 72 | buisson à XP |
+
+**Les métaux de PalaMod sont renouvelables**, d'où le tier FARM du lingot et FOUND du minerai,
+exactement comme le fer vanilla (lingot à 15, minerai à 100) : le lingot sort aussi du crusher,
+des cultures, de la sève et des golems ; le minerai ne revient jamais. Les rapports que ces
+machines imposent sont respectés : titane ≈ 1,07 améthyste au crusher, paladium ≈ 2,1 titane.
+Le paladium vert, le findium et le trixium ne sortent d'aucune machine : FOUND.
+
+Les **fleurs**, les **pousses** et les graines n'ont pas de prix, comme les fleurs et la plupart
+des graines vanilla. Une pousse plantée donne un arbre de 30 à 35 bûches, donc 190 lingots
+d'améthyste en sève : l'acheter serait une imprimante, la vendre ne sert à rien.
+
+### L'audit des machines
+
+Chaque machine qui produit a été relevée (entrées, sorties, cadence, automatisation) :
+
+| Producteur | Verdict |
+|---|---|
+| Chaudron, poudre lumineuse → 3 pépites d'or | **Retiré** (écart, décision du joueur). La poudre s'achète 4 $ et les pépites se revendent 27 $ : de l'argent infini, jusqu'à 32 recettes par tick |
+| Corne du Dancarok (154 blocs par coup), excavatrices (9), Dollars Stone | Le plancher de 35 % des blocs « trouvables » faisait de chaque bloc de masse une rente. **Plancher de 5 %** pour vingt blocs de masse (sable, ardoise, tuf, granite, netherrack, pierre, cobble, gravier…), sans bonus de plancher des paliers ni du prestige. Le joueur à la main ne le sent pas : il faut vendre des milliers de blocs pour y descendre |
+| Cobblebreaker (1,6 diamant/h par machine au palier paladium) | **Gardé** (décision du joueur). Limité par la pierre fournie et la chute du prix du diamant (S0 = 64) ; le diamant reste à 1 000 |
+| Boîte à golem (10 fer ou 5 améthyste ou 3 titane ou 1 paladium par croquette) | Une ferme, régulée par le prix dynamique comme toutes les fermes. Fixe le taux des lingots |
+| Sève et portails (6 / 3 / 1,5 lingots par bûche) | Une ferme d'arbres, à surveiller : c'est la source d'améthyste la plus rapide. Bûches non achetables |
+| Cultures et crusher | Fermes. Les cultures de PalaMod n'étaient pas dans `#dohy:crops` (voir plus bas) |
+| Grinder, Palafurnace, Palaforge, pioche des dieux, marteau | Neutres : ni gain de matière ni doublement au-delà de la fortune vanilla |
+| Spawner customisé, pierre de capture, aimant, God Villager | Pas une source (âmes finies, piles de mobs qui meurent une à une) |
+| Compresseur à cobblestone (100 pierres → 1 obsidienne) | Une perte : 100 pierres valent plus qu'une obsidienne |
+| Dimension du Mineur | 1 000 points par session : au plus 1 000 minerais de paladium, une pépite d'endium |
+
+**Achat → conversion → revente**, vérifié pour chaque objet achetable : un minerai acheté puis
+cassé à Fortune III rend 2,2 lingots (améthyste 400 $ → 66 $, paladium 1 100 $ → 158 $) ; 32
+aubergines achetées (1 920 $) font 5 améthystes au crusher (150 $) ; 720 cobbles (8 640 $) font
+1,6 diamant au cobblebreaker ; 100 pierres (1 200 $) une obsidienne. Aucune boucle. Les
+croquettes de la boîte à golem coûtent presque rien, achetées ou cultivées : c'est une ferme, pas
+une boucle — le débit tient aux mini golems (une production toutes les 8 minutes).
+
+### Ce qui change ailleurs
+
+- **Les cultures de PalaMod comptent enfin.** Absentes de `#dohy:crops`, celles plantées à la main
+  étaient des blocs posés : ni XP de Fermier, ni collection, ni contrat de récolte. Seules celles
+  du seedplanter comptaient.
+- **Les bonus de récolte ne copient plus leurs graines** (`#dohy:replant_seeds`) : avec le seul tag
+  vanilla, un champ de kiwano grossissait tout seul.
+- **`#c:ores`** reçoit les huit minerais de PalaMod : la chasse aux minerais hebdomadaire les compte.
+- **Contrats** : trois quotidiens (48 minerais d'améthyste, 16 de paladium, 150 récoltes PalaMod)
+  et un hebdomadaire (400 minerais de PalaMod).
+- **Musée** : une aile PalaMod, 23 pièces (la pépite d'endium, RARE, va au panneau mécène). Elle
+  rapporte **+2 points d'armure**.
+- Les récompenses de niveau de PalaJobs pèsent maintenant : 1 050 lingots de paladium (≈ 76 k) et
+  autant de trixium (≈ 840 k) par métier maxé.

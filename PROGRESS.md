@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-03
+Dernière mise à jour : 2026-11-09
 
 ---
 
@@ -83,7 +83,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 4b | **Interfaces de machines** : menu et écran propres, barre de progression | fait |
 | 5a | **Machines du fermier** : totem de fertilité, 5 seedplanters | fait |
 | 5b | **Machines de craft** : palamachine (le grinder est au chapitre 12, la palaforge au chapitre 8) | à faire |
-| 6 | **Intégration économique** : prix, collections, aile de musée, audit anti-exploit | à faire |
+| 6 | **Intégration économique** : 24 matières de PalaMod au catalogue (onglet PalaMod), aile de musée, contrats, audit des machines (recette d'or du chaudron retirée, plancher de 5 % des blocs de masse), cultures de PalaMod enfin comptées | fait |
 | 7 | **Équipement** : 19 outils, 5 houes à rayon, 6 armures, leurs effets, 49 recettes | fait |
 | 9 | **Fermier** : abattage et incassabilité de la hache en endium, eau angélique (fluide qui soigne, seau) — sans herbes colorées, racinier ni trône | fait |
 | 10 | **Chasseur** : canne à pêche en paladium, épée en endium qui ne frappe plus à bout, épée et pierre de capture, marteau de caverne, spawner cassé, spawner customisé (âmes, paliers, créatures empilées) — sans contrôleur, familiers, améliorations ni trône | fait |
@@ -156,6 +156,25 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-09 — chapitre 6 : PalaMod entre dans l'économie
+
+**Demande** : « la refonte de l'économie ». Portée choisie par le joueur : intégrer PalaMod au
+modèle de DoHy, le reste de l'économie ne bouge pas. Détail : `docs/PALAMOD.md` § 19.
+
+**Aucun objet de PalaMod n'avait de prix.** Les règles par tag ne voient que les tags `c:`, et
+PalaMod n'en déclare aucun. Vingt-quatre matières premières entrent au catalogue, dans un sixième
+onglet ; le reste (241 objets fabriqués) n'a pas de prix, comme les objets fabriqués vanilla.
+
+**L'audit des machines** a été fait avant de chiffrer, et trois décisions sont du joueur :
+- la recette du chaudron poudre lumineuse → 3 pépites d'or est **retirée** (argent infini : la
+  poudre s'achète 4 $, les pépites se revendent 27 $) ;
+- les blocs de masse ont un **plancher de 5 %** : la corne du Dancarok en casse 154 par coup ;
+- le cobblebreaker garde ses diamants (1,6/h par machine), limité par la pierre fournie.
+
+**Un trou d'intégration trouvé en route** : les cultures de PalaMod plantées à la main étaient des
+blocs posés, donc sans XP de Fermier, sans collection, sans contrat — depuis le chapitre 3.
+
 
 ### 2026-11-08 (suite) — chapitre 13 : le golem gardien
 

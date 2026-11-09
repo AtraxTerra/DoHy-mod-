@@ -534,6 +534,10 @@ def main():
     tag("%s/tags/item/mixed_coals.json" % NS,
         ["%s:%s" % (NS, n) for n in sorted(MIXED_COALS)])
     tag("%s/tags/block/ores.json" % NS, ["%s:%s" % (NS, n) for n in sorted(ORES)])
+    # Le tag de convention : les contrats « chasse aux minerais » (#c:ores) et
+    # tout mod qui le lit comptent alors les minerais de PalaMod.
+    tag("c/tags/block/ores.json", ["%s:%s" % (NS, n) for n in sorted(ORES)]
+        + ["%s:endium_nugget_ore" % NS, "%s:invoker_ore" % NS])
     tag("%s/tags/block/storage_blocks.json" % NS,
         ["%s:%s" % (NS, n) for n in sorted(STORAGE)])
 
