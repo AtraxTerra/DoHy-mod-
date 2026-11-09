@@ -191,7 +191,7 @@ public final class RecipeSelfTest {
         }
         String chosenId = chosen.get().id().identifier().toString();
         if (!chosenId.equals(id)) {
-            problems.add(id + " : masquee par " + chosenId + " (" + chosen.get().value().assemble(input) + ")");
+            problems.add(id + " : masquee par " + chosenId + " (" + ((Recipe) chosen.get().value()).assemble(input) + ")");
             return 0;
         }
         return 1;
