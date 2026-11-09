@@ -10,6 +10,7 @@ import fr.atraxterra.dohy.palamod.golem.PalaGolem;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
+import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import fr.atraxterra.dohy.palamod.storage.ChestTier;
 import fr.atraxterra.dohy.palamod.storage.PalaChestMenu;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
@@ -110,6 +111,8 @@ public final class DoHyClient {
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "food_machine"));
         event.<MachineMenu, MachineScreen>register(PalaGolem.GOLEM_BOX_MENU.get(),
                 (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "golem_box"));
+        event.<MachineMenu, MachineScreen>register(PalaPvp.PALAMACHINE_MENU.get(),
+                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "palamachine"));
         for (ChestTier tier : ChestTier.values()) {
             event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.menuOf(tier), PalaChestScreen::new);
         }

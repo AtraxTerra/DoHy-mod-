@@ -10,7 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 /**
- * L'ecran des coffres en amethyste et en titane : 12 x 9 cases.
+ * L'ecran des coffres de PalaMod : 12 x 9 cases, et la colonne d'anneaux.
  *
  * <p>Les coordonnees sont celles de {@code ModdedChestContainer} et ne laissent
  * aucune place au titre a l'interieur du panneau : la grille commence a 8 px du
@@ -21,7 +21,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class PalaChestScreen extends AbstractContainerScreen<PalaChestMenu> {
 
     private static final int PANEL_HEIGHT = 256;
-    private static final int TEXTURE_SIZE = 256;
+    private static final int TEXTURE_HEIGHT = 256;
 
     private final Identifier texture;
 
@@ -33,8 +33,11 @@ public class PalaChestScreen extends AbstractContainerScreen<PalaChestMenu> {
 
     @Override
     public void extractBackground(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        // La texture fait 256 de large, ou plus quand la colonne d'anneaux
+        // elargit le panneau (ChestTier.textureWidth, tools/gen_gui.py).
         extractor.blit(RenderPipelines.GUI_TEXTURED, texture, getLeftPos(), getTopPos(),
-                0.0f, 0.0f, getMenu().tier().panelWidth(), PANEL_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
+                0.0f, 0.0f, getMenu().tier().panelWidth(), PANEL_HEIGHT,
+                getMenu().tier().textureWidth(), TEXTURE_HEIGHT);
     }
 
     @Override

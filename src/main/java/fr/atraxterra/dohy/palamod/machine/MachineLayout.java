@@ -197,6 +197,24 @@ public record MachineLayout(List<SlotPos> slots, Sprite arrow, Sprite flame, Tex
             null);
 
     /**
+     * La palamachine ({@code PaladiumMachineContainer}, resserre dans 176 x 166) :
+     * la piece a transformer au centre d'un quinconce, les quatre ingredients
+     * aux coins — 1 et 3 en haut, 2 et 4 en bas, comme dans l'original ou ils
+     * encadraient la piece —, la fleche, le resultat. L'ordre des cases est
+     * celui de {@code PaladiumMachineLogic}.
+     */
+    public static final MachineLayout PALAMACHINE = new MachineLayout(
+            List.of(
+                    new SlotPos(44, 35, true),
+                    new SlotPos(26, 17, true),
+                    new SlotPos(26, 53, true),
+                    new SlotPos(62, 17, true),
+                    new SlotPos(62, 53, true),
+                    new SlotPos(124, 35, false)),
+            new Sprite(89, 34, ARROW_U, ARROW_V, ARROW_FULL_V, ARROW_W, ARROW_H, false, false),
+            null, null);
+
+    /**
      * La boite a golem : trois mini golems en haut, leurs croquettes en bas, la
      * fleche des 8 minutes, cinq sorties a droite.
      */

@@ -2676,18 +2676,9 @@ def main():
             ("fully_healed", "Votre monture ne peut etre soignee d'avantage", "Your mount can't be healed any further")):
         label("message", "mount." + key, label_fr, label_en)
 
-    # Cornes : la palamachine n'est pas portee, ni l'elephant et sa defense.
-    # Substitut a l'etabli, memes ingredients, la defense remplacee par un bloc
-    # d'os. Les recettes « batons + bloc » de la palamachine sont des
-    # reparations : la corne usee en ressort neuve.
-    for metal in ("amethyst", "titane", "paladium"):
-        shaped("%s_horn" % metal, [" I ", "BTB", " I "], {
-            "I": "%s:%s_ingot" % (NS, metal), "B": "%s:%s_block" % (NS, metal), "T": "minecraft:bone_block"},
-               "%s:%s_horn" % (NS, metal))
-        middle = "%s:paladium_core" % NS if metal == "paladium" else "%s:%s_stick" % (NS, metal)
-        shaped("%s_horn_repair" % metal, ["SMS", " H ", " B "], {
-            "S": "%s:%s_stick" % (NS, metal), "M": middle, "H": "%s:%s_horn" % (NS, metal),
-            "B": "%s:%s_block" % (NS, metal)}, "%s:%s_horn" % (NS, metal))
+    # Cornes : elles se fabriquent et se reparent a la palamachine
+    # (PalamachineRecipes, chapitre 16), la defense d'elephant remplacee par un
+    # bloc d'os. Les anciens substituts a l'etabli sont retires.
 
     # Apparition : aucune dans les jars de Paladium (les sauvages etaient poses
     # a la main sur le serveur Farmland). Rare, dans les plaines et savanes.
@@ -2790,6 +2781,123 @@ def main():
             ("not_inside", "Vous n'etes pas dans la dimension mineur.", "You aren't in the miner dimension.")):
         label("message", "dimminer." + key, label_fr, label_en)
 
+    # ---- pour le PvP (chapitre 16) ----
+    #
+    # Les sticks, les anneaux, l'aile et le deltaplane ; la palamachine qui
+    # fabrique et repare les sticks et les anneaux ; les ingredients qui
+    # manquaient (orbes de force et de saut, slimepad, spike en paladium).
+    # Textures : le pack, le jar pour la palamachine, que le pack n'a pas.
+    for name, texture, label_fr, label_en in (
+            ("heal_stick", "HealStick", "Stick de regeneration", "Heal Stick"),
+            ("speed_stick", "SpeedStick", "Stick de vitesse", "Speed Stick"),
+            ("strength_stick", "StrenghtStick", "Stick de force", "Strength Stick"),
+            ("jump_stick", "JumpStick", "Stick de saut", "Jump Stick"),
+            ("god_stick", "StickOfGod", "Baton divin", "Stick of God"),
+            ("damage_stick", "DamageStick", "Stick de dommage", "Damage Stick"),
+            ("hyper_jump_stick", "HyperJumpStick", "Stick de super saut", "Hyper Jump Stick")):
+        # isFull3D : le stick se tient comme un outil.
+        tex("items/%s.png" % texture, "item/%s.png" % name)
+        write("assets/%s/models/item/%s.json" % (NS, name),
+              {"parent": "minecraft:item/handheld", "textures": {"layer0": "%s:item/%s" % (NS, name)}})
+        write("assets/%s/items/%s.json" % (NS, name),
+              {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)}})
+        label("item", name, label_fr, label_en)
+    for name, texture, label_fr, label_en in (
+            ("strength_orb", "machine/orb_strenght", "Orbe de force", "Strength Orb"),
+            ("jump_orb", "machine/orb_jump", "Orbe de saut", "Jump Orb"),
+            ("small_ring", "small_ring", "Small Ring", "Small Ring"),
+            ("medium_ring", "medium_ring", "Medium Ring", "Medium Ring"),
+            ("big_ring", "medium_big", "Big Ring", "Big Ring"),
+            ("endium_small_ring", "ring/endium_small", "Small Ring en endium", "Endium Small Ring"),
+            ("endium_medium_ring", "ring/endium_medium", "Medium Ring en endium", "Endium Medium Ring"),
+            ("endium_big_ring", "ring/endium_big", "Big Ring en endium", "Endium Big Ring"),
+            ("wing", "wing", "Aile", "Wing"),
+            ("hang_glider", "hangglider", "Hang Glider", "Hang Glider")):
+        tex("items/%s.png" % texture, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("stick.repairs", "Reparation : %s / %s", "Repairs: %s / %s"),
+            ("hang_glider.open", "Deploye - clic droit pour replier", "Deployed - right-click to fold"),
+            ("hang_glider.closed", "Replie - clic droit pour deployer", "Folded - right-click to deploy"),
+            ("ring_repair", "Reparation par anneau : %s / %s", "Ring repairs left: %s / %s")):
+        label("tooltip", key, label_fr, label_en)
+    label("message", "stick.cooldown", "Tu dois attendre que le baton se recharge : %s secondes !",
+          "You must wait for the stick to recharge: %s seconds!")
+
+    # La palamachine : cotes, dessus a part, dessous comme les cotes (getIcon).
+    tex("blocks/machines/paladium_machine_block_side.png", "block/palamachine_side.png")
+    tex("blocks/machines/paladium_machine_block_top.png", "block/palamachine_top.png")
+    write("assets/%s/blockstates/palamachine.json" % NS,
+          {"variants": {"": {"model": "%s:block/palamachine" % NS}}})
+    write("assets/%s/models/block/palamachine.json" % NS, {
+        "parent": "minecraft:block/cube_bottom_top",
+        "textures": {"side": "%s:block/palamachine_side" % NS, "bottom": "%s:block/palamachine_side" % NS,
+                     "top": "%s:block/palamachine_top" % NS}})
+    block_item("palamachine")
+    label("block", "palamachine", "Palamachine", "Palamachine")
+
+    # Le slimepad : un coeur opaque dans une gaine translucide, comme le bloc de
+    # slime vanilla, aux dimensions de setBlockBounds. Symetrique : les huit
+    # directions partagent le modele.
+    tex("blocks/slime/slime_green.png", "block/slimepad.png")
+    tex("blocks/slime/slime_transparent_green.png", "block/slimepad_outer.png")
+
+    def box(frm, to, texture):
+        x0, y0, z0 = frm
+        x1, y1, z1 = to
+        horizontal = [x0, 16 - y1, x1, 16 - y0]
+        depth = [z0, 16 - y1, z1, 16 - y0]
+        top = [x0, z0, x1, z1]
+        return {"from": frm, "to": to, "faces": {
+            "down": {"uv": top, "texture": texture}, "up": {"uv": top, "texture": texture},
+            "north": {"uv": horizontal, "texture": texture}, "south": {"uv": horizontal, "texture": texture},
+            "west": {"uv": depth, "texture": texture}, "east": {"uv": depth, "texture": texture}}}
+
+    write("assets/%s/models/block/slimepad.json" % NS, {
+        "parent": "minecraft:block/block",
+        "textures": {"particle": "%s:block/slimepad" % NS, "core": "%s:block/slimepad" % NS,
+                     "outer": "%s:block/slimepad_outer" % NS},
+        "elements": [box([4, 2, 4], [12, 9, 12], "#core"), box([2, 1, 2], [14, 10, 14], "#outer")]})
+    write("assets/%s/blockstates/slimepad.json" % NS, {"variants": {
+        "direction=%d" % direction: {"model": "%s:block/slimepad" % NS} for direction in range(8)}})
+    block_item("slimepad")
+    label("block", "slimepad", "Slimepad", "Slimepad")
+
+    # Le spike en paladium : une pyramide de quatre degres qui pointe hors de
+    # la face qui le porte. Dessus des degres a la texture en carres
+    # concentriques (SpikePaladium_1), cotes a la texture en strates (_2).
+    tex("blocks/spike/SpikePaladium_1.png", "block/paladium_spike_top.png")
+    tex("blocks/spike/SpikePaladium_2.png", "block/paladium_spike_side.png")
+    steps = []
+    for step in range(4):
+        low, high = step * 2, 16 - step * 2
+        element = box([low, step * 4, low], [high, step * 4 + 4, high], "#side")
+        element["faces"]["up"]["texture"] = "#top"
+        element["faces"]["down"]["texture"] = "#top"
+        steps.append(element)
+    write("assets/%s/models/block/paladium_spike.json" % NS, {
+        "parent": "minecraft:block/block",
+        "textures": {"particle": "%s:block/paladium_spike_side" % NS,
+                     "top": "%s:block/paladium_spike_top" % NS, "side": "%s:block/paladium_spike_side" % NS},
+        "elements": steps})
+    # Les rotations de la baguette de l'End, dont le modele pointe aussi vers le haut.
+    write("assets/%s/blockstates/paladium_spike.json" % NS, {"variants": {
+        "facing=%s" % facing: dict({"model": "%s:block/paladium_spike" % NS}, **rotation)
+        for facing, rotation in (("up", {}), ("down", {"x": 180}), ("north", {"x": 90}),
+                                 ("south", {"x": 90, "y": 180}), ("east", {"x": 90, "y": 90}),
+                                 ("west", {"x": 90, "y": 270}))}})
+    block_item("paladium_spike")
+    label("block", "paladium_spike", "Spike en paladium", "Paladium Spike")
+
+    for name in ("palamachine", "slimepad", "paladium_spike"):
+        drops_itself(name)
+    # setHarvestLevel("pickaxe", 2) : pioche en fer.
+    tag("minecraft/tags/block/mineable/pickaxe.json",
+        ["%s:palamachine" % NS, "%s:slimepad" % NS, "%s:paladium_spike" % NS])
+    tag("minecraft/tags/block/needs_iron_tool.json",
+        ["%s:palamachine" % NS, "%s:slimepad" % NS, "%s:paladium_spike" % NS])
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de
@@ -2863,6 +2971,12 @@ def main():
         "COMPRESSED_XP_BERRY": "compressed_xp_berry",
         "GOD_PICKAXE": "god_pickaxe", "GOD_PICKAXE_AUTOSMELT": "god_pickaxe_auto_smelt",
         "PALADIUM_APPLE": "paladium_apple",
+        # PvP (chapitre 16) : a l'etabli, les ingredients de la palamachine et
+        # le deltaplane. Les sticks et les anneaux sortent de la palamachine
+        # (PalamachineRecipes).
+        "ORB_STRENGHT": "strength_orb", "ORB_JUMP": "jump_orb", "WING": "wing",
+        "HANGGLIDER": "hang_glider", "SLIMEPAD_BLOCK": "slimepad", "SPIKE_PALADIUM": "paladium_spike",
+        "PALADIUM_MACHINE_BLOCK": "palamachine",
     }
     # Un meme objet 1.7.10 a plusieurs metas, plusieurs objets en 26.2 : la
     # recette se choisit par (nom, meta). Sans cette table, les quatre outils de
@@ -2946,6 +3060,12 @@ def main():
         ("Items.field_151073_bk", 0): "minecraft:ghast_tear",
         ("PSRegister_Items.HAMMER_PALADIUM", 0): "%s:paladium_hammer" % NS,
         ("ItemsRegister.XP_BERRY", 0): "%s:xp_berry" % NS,
+        # PvP : cuir (aile, deltaplane), verrue du Nether (orbe de saut), boule
+        # de slime (slimepad), pierre (palamachine).
+        ("Items.field_151116_aA", 0): "minecraft:leather",
+        ("Items.field_151075_bm", 0): "minecraft:nether_wart",
+        ("Items.field_151123_aH", 0): "minecraft:slime_ball",
+        ("Blocks.field_150348_b", 0): "minecraft:stone",
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())

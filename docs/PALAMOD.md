@@ -468,7 +468,7 @@ avait noté « ingrédients des charbons mixés inconnus » : je n'avais regard�
 | `smeltery/registerer/PSRegister_Craft` | 29 | table de craft |
 | `hunter/init/Crafts` | 24 | table de craft |
 | `miner/init/Crafts` | 19 | table de craft |
-| `PaladiumMachineRecipies.add` | 38 | **palamachine** → chapitre 5b |
+| `PaladiumMachineRecipies.add` | 38 | **palamachine** → chapitre 16 (33 portées) |
 | `GrinderRecipe.addUpgrade` | 6 | **grinder** → chapitre 5b |
 | alchimie, bow machine | 12 | machines non portées |
 
@@ -1094,8 +1094,8 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
   unités) ; main vide : le contenu. L'objet garde son contenu.
 - **Écarts** : le remplissage était au clic gauche (il casse le bloc ici) ; une fiole vide perd
   son type de sève (l'original le gardait, et la fiole ne s'empilait plus) ; un tank ne remplit
-  plus une fiole avec la sève d'un autre arbre ; l'extracteur usé disparaît (il se réparait à la
-  palamachine, non portée) ; les tanks ne prennent que la sève (eau, lave et eau sulfurique ne
+  plus une fiole avec la sève d'un autre arbre ; l'extracteur usé disparaît (il se rechargeait à la
+  palamachine : elle recharge ici un extracteur entamé, § 20) ; les tanks ne prennent que la sève (eau, lave et eau sulfurique ne
   servaient qu'au pistolet à tank, non porté).
 
 ### Le chaudron — `BlockCauldronCore`, `TileEntityCauldronCore`
@@ -1433,11 +1433,11 @@ horloge s'arrête.
   couveuse (6 terre cuite, 2 verre, 1 orbe de régénération), gestionnaire (6 terre cuite, 2 blocs
   de paladium, 1 **coffre en or**), bandage (6 papier, 2 ficelle, 1 orbe), **orbe de
   régénération** (4 lingots de paladium autour d'une tranche de pastèque scintillante).
-- **Cornes** : la palamachine, l'éléphant et sa défense ne sont pas portés. Substitut à l'établi,
-  mêmes ingrédients, la défense remplacée par un **bloc d'os** : lingot, bloc, os, bloc, lingot.
-  Les recettes « bâtons + bloc » de la palamachine sont des **réparations** : trois bâtons du métal
-  (le bâton du milieu devient un cœur en paladium pour la corne en paladium), la corne usée, un
-  bloc ; elle ressort neuve.
+- **Cornes** : l'éléphant et sa défense ne sont pas portés. Les cornes se fabriquent à la
+  **palamachine** (chapitre 16, § 20), la défense remplacée par un **bloc d'os** : os au centre,
+  lingot, bloc, lingot, bloc. Les recettes « bâtons + bloc » sont des **réparations** : la corne
+  usée au centre, trois bâtons du métal (celui du milieu devient un cœur en paladium pour la corne
+  en paladium) et un bloc ; elle ressort neuve.
 
 ### Ce qui n'est pas porté, et ce qui change de forme
 
@@ -1615,3 +1615,121 @@ une boucle — le débit tient aux mini golems (une production toutes les 8 minu
   rapporte **+2 points d'armure**.
 - Les récompenses de niveau de PalaJobs pèsent maintenant : 1 050 lingots de paladium (≈ 76 k) et
   autant de trixium (≈ 840 k) par métier maxé.
+
+## 20. Pour le PvP : sticks, anneaux, deltaplane, palamachine (chapitre 16)
+
+Relevé dans `ItemStickBase`, `BaseItemRing(Endium)`, `ItemRepairableArmor`, `ARepairable`,
+`BaseItemPickaxe`, `ModdedChestLogic`, `EndiumChestLogic`, `ItemHangGlider`,
+`PaladiumMachineLogic`, `PaladiumMachineRecipies`, `PRegister_Craft`, `BaseBlockSlimePad` et
+`BlockSpike`. Le wiki (« Java – Pour le PvP ») sert de contrôle ; là où il contredit le code,
+c'est le code qui est porté, et l'écart est noté.
+
+### La palamachine — `PaladiumMachineLogic`
+
+Un bloc (fer, dureté 12, pioche en fer), cinq entrées et une sortie, **200 ticks** par
+fabrication, sans combustible. Les cinq entrées sont positionnelles : la pièce au centre, les
+quatre ingrédients aux coins. L'usure de la pièce centrale est ignorée — c'est ce qui permet de
+réparer. Ni entonnoir ni conduit. Recette à l'établi : 8 pierres autour d'un paladium compressé.
+
+- Le résultat **garde les enchantements de la pièce centrale**. Le wiki dit qu'un anneau réparé
+  perd les siens ; le code les recopie.
+- Un stick compte ses réparations (« Réparation : n / 5 ») ; la machine refuse la sixième.
+- **Écarts** : la machine attend quand la sortie contient un autre objet (l'original consommait
+  les entrées et perdait le résultat) ; la première réparation n'est plus gratuite et un stick ne
+  lègue plus son compteur au stick divin qu'il sert à fabriquer.
+- Portées : 12 recettes d'anneaux, 14 de sticks, 6 de cornes de monture, et la recharge de
+  l'extracteur (un extracteur entamé, 3 lingots de paladium et un seau d'eau : il ressort à 144
+  utilisations). La défense d'éléphant devient un **bloc d'os** ; les anciens substituts des
+  cornes à l'établi sont retirés. Laissées : détecteurs de claim, runes de donjon (non portés).
+
+| Création | Pièce centrale | Ingrédients (1, 2, 3, 4) |
+|---|---|---|
+| Stick de régénération | orbe de régénération | bâton de paladium, bloc de paladium, bâton de paladium, bloc de paladium |
+| Stick de vitesse | orbe de vitesse | bâton d'améthyste, améthyste compressée, bâton de titane, titane compressé |
+| Stick de force | orbe de force | bâton de paladium, bloc de paladium, bâton de titane, bloc de paladium |
+| Stick de saut | orbe de saut | bâton de titane, slimepad, bâton de titane, slimepad |
+| Bâton divin | stick de force | stick de régénération, bloc de paladium, stick de vitesse, findium |
+| Stick de super saut | orbe de saut | stick de saut, bloc de paladium, stick de saut, bloc de paladium |
+| Stick de dommage | épée en titane | bâton d'améthyste, spike en paladium, bâton d'améthyste, spike en paladium |
+| Small Ring | bloc de paladium | 4 lingots de paladium |
+| Medium Ring | Small Ring | bloc, lingot, bloc, lingot de paladium |
+| Big Ring | Medium Ring | paladium compressé, 3 lingots de paladium |
+| Small Ring en endium | Medium Ring | 4 fragments d'endium |
+| Medium Ring en endium | Small Ring en endium | bloc de paladium, bloc de findium, bloc de paladium, pépite d'endium |
+| Big Ring en endium | Medium Ring en endium | paladium compressé, pépite, paladium compressé, pépite |
+
+Les réparations ont chacune leur recette (`PalamachineRecipes`). À l'établi : orbe de force
+(4 lingots de paladium autour d'une poudre de blaze), orbe de saut (autour d'une verrue du Nether),
+aile (×2 : 3 bâtons de paladium, 3 cuirs), deltaplane (2 ailes, 2 cuirs), slimepad (6 boules de
+slime), spike en paladium (3 épées en titane sur 3 lingots de paladium).
+
+### Les sticks — `ItemStickBase`
+
+Clic droit : un effet, un point d'usure, une recharge. **La recharge est par type et par joueur**
+(`timer-<type>` sur le joueur) : tous les sticks identiques la partagent. Elle court en temps réel,
+survit à la déconnexion et à la mort, et s'affiche sur la barre d'action. Seul Solidité
+s'applique, à l'enclume.
+
+| Stick | Durabilité | Recharge | Effet (amplificateurs du code) |
+|---|---|---|---|
+| Régénération | 15 | 10 s | +6 points de vie |
+| Vitesse | 15 | 15 s | vitesse VII, 3,5 s |
+| Force | 15 | 15 s | force III, 3,5 s |
+| Saut | 15 | 30 s | +1 de vitesse verticale (environ 5 blocs) |
+| Bâton divin | 8 | 25 s | régénération VI 4 s, 6 points d'absorption, saturation II, vitesse IX 4 s, force III 5 s |
+| Dommage | 16 | 30 s | repousse de 0,7 et soulève de 0,7 tout ce qui vit dans un cube de 3 blocs |
+| Super saut | 8 | 40 s | +2,365 de vitesse verticale (environ 25 blocs) |
+
+Le wiki annonce vitesse III et des recharges un peu plus courtes : ce sont les valeurs du code qui
+sont portées. **Écarts** : l'absorption passe par l'effet Absorption II de deux minutes (en 26.2,
+6 points d'absorption sans effet seraient ramenés à 0) ; le stick de dommage respecte le PvP du
+serveur et les équipes (l'original laissait les modules de protection l'annuler) ; son
+« tremblement de terre » de blocs projetés est rendu par des particules.
+
+### Les anneaux — `BaseItemRing`, `IRepairable`
+
+400, 1 000 ou 3 200 de durabilité. **Dans l'inventaire**, un anneau répare l'armure portée d'un
+point par pièce et par tick, et s'use d'autant. **Dans un coffre**, posé dans la colonne
+d'anneaux, il répare d'un point par tick chaque pièce abîmée des premières rangées.
+
+| Pièce | Où | Anneau | Capacité |
+|---|---|---|---|
+| Armure paladium, paladium vert, endium mixé | portée ; coffre | paladium | casque 8 000, plastron 12 000, jambières 10 000, bottes 7 000 |
+| Armure endium | portée ; coffre en endium | endium | illimitée |
+| Épée, pioche, hache, pelle en paladium | coffre seulement | paladium | 3 remises à neuf |
+| Épée, pioche, hache en endium | coffre en endium seulement | endium | illimitée |
+
+Portée, la capacité se consomme point par point ; au coffre, par remise à neuf complète. Les
+outils en améthyste, titane et paladium vert ne se réparent pas. La capacité restante s'affiche
+une fois entamée (ajout de DoHy).
+
+| Coffre | Rangées réparées | Anneaux |
+|---|---|---|
+| Améthyste | 1 | 1 |
+| Titane | 1 | 2 |
+| Paladium | 2 | 4 |
+| Paladium vert | 6 | 4 |
+| Endium | 9 (toutes) | 4, en endium, et ne répare que l'endium |
+
+La colonne d'anneaux est à droite de la grille ; l'original la posait à cheval sur le bord du
+panneau, qui s'élargit ici. Les entonnoirs n'y ont pas accès. Un filet de la couleur du métal
+marque les rangées réparées.
+
+### Le deltaplane — `ItemHangGlider`
+
+Clic droit pour le déployer ou le replier ; déployé, il brille. Tenu en main et déployé, tant que
+le joueur tombe : vitesse verticale × 0,6 et +0,03 vers l'avant ; accroupi, × 0,8 et +0,1. La chute
+ne compte pas. Il se replie seul au sol : on le déploie donc en l'air (au sol, il se replie au
+tick suivant, comme dans l'original). La physique tourne chez le client (le mouvement d'un
+joueur y est calculé), l'état et l'annulation de la chute sur le serveur. Sans durabilité. Pas
+porté : le modèle tenu au-dessus de la tête.
+
+### Slimepad et spike
+
+- **Slimepad** (`BaseBlockSlimePad`) : on le traverse ; il pousse de 0,2 vers le haut et de 0,2
+  dans la direction du regard au moment de la pose (huit directions, l'inverse accroupi), annule
+  la chute, et ne fait rien sous redstone. Pas porté : la recharge de la Warzone, les couleurs au
+  ciseau.
+- **Spike en paladium** (`BlockSpike`) : posé contre la face cliquée, il inflige 15 points
+  (source cactus) à ce qui s'y appuie. Résistance 60. Seul le spike en paladium est porté : c'est
+  l'ingrédient du stick de dommage.

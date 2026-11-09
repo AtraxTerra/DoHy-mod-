@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "direction=0": {
+      "model": "palamod:block/slimepad"
+    },
+    "direction=1": {
+      "model": "palamod:block/slimepad"
+    },
+    "direction=2": {
+      "model": "palamod:block/slimepad"
+    },
+    "direction=3": {
+      "model": "palamod:block/slimepad"
+    },
+    "direction=4": {
+      "model": "palamod:block/slimepad"
+    },
+    "direction=5": {
+      "model": "palamod:block/slimepad"
+    },
+    "direction=6": {
+      "model": "palamod:block/slimepad"
+    },
+    "direction=7": {
+      "model": "palamod:block/slimepad"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:slime_ball"
+  },
+  "result": {
+    "id": "palamod:slimepad",
+    "count": 1
+  }
+}

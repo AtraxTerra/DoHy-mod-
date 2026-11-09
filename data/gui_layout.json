@@ -277,6 +277,45 @@
         "y": 35
       }
     },
+    "palamachine": {
+      "slots": [
+        {
+          "x": 44,
+          "y": 35,
+          "role": "input"
+        },
+        {
+          "x": 26,
+          "y": 17,
+          "role": "input"
+        },
+        {
+          "x": 26,
+          "y": 53,
+          "role": "input"
+        },
+        {
+          "x": 62,
+          "y": 17,
+          "role": "input"
+        },
+        {
+          "x": 62,
+          "y": 53,
+          "role": "input"
+        },
+        {
+          "x": 124,
+          "y": 35,
+          "role": "output"
+        }
+      ],
+      "arrow": {
+        "x": 89,
+        "y": 34,
+        "vertical": false
+      }
+    },
     "golem_box": {
       "slots": [
         {

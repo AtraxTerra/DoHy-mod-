@@ -15,6 +15,7 @@ import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
 import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -88,6 +89,10 @@ public final class PalaTab {
                         // Puis les outils et objets du Mineur.
                         PalaMiner.ordered().forEach(item -> output.accept(item.get()));
                         PalaStorage.ORDERED.forEach(item -> output.accept(item.get()));
+
+                        // Enfin le PvP : la palamachine, ses sticks et ses anneaux.
+                        PalaPvp.ORDERED_BLOCKS.forEach(block -> output.accept(block.get()));
+                        PalaPvp.ORDERED_ITEMS.forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

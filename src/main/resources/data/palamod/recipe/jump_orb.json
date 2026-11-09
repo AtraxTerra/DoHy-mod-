@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XZX",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot",
+    "Z": "minecraft:nether_wart"
+  },
+  "result": {
+    "id": "palamod:jump_orb",
+    "count": 1
+  }
+}
