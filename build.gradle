@@ -158,12 +158,19 @@ tasks.withType(Test).configureEach {
  * ressemble pas a sa cause.
  *
  *   gradle packMeta
+ *   gradle packMeta -Pfiles=data/minecraft/dimension_type/,data/minecraft/worldgen/biome/plains.json
+ *
+ * Avec -Pfiles, imprime aussi les fichiers de donnees vanilla dont le chemin
+ * commence par l'un des prefixes donnes : le format exact d'un type de
+ * dimension ou d'un biome en 26.2, lu plutot que suppose. Un JSON de monde
+ * faux ne casse pas la compilation, il empeche le monde de charger.
  */
 tasks.register('packMeta') {
     group = 'verification'
     description = 'Lit version.json et pack.mcmeta dans les jars du classpath'
 
     def classpath = sourceSets.main.compileClasspath
+    def prefixes = (project.findProperty('files') ?: '').toString().split(',').findAll { it }
     dependsOn 'compileJava'
 
     doLast {
@@ -180,6 +187,10 @@ tasks.register('packMeta') {
             try {
                 new java.util.zip.ZipFile(jarFile).withCloseable { zip ->
                     zip.entries().each { entry ->
+                        if (!entry.directory && prefixes.any { entry.name.startsWith(it) }) {
+                            println "\n${'=' * 78}\n${jarFile.name} :: ${entry.name}\n${'=' * 78}"
+                            println zip.getInputStream(entry).text
+                        }
                         if (wanted.contains(entry.name)) {
                             println "\n${'=' * 78}\n${jarFile.name} :: ${entry.name}\n${'=' * 78}"
                             println zip.getInputStream(entry).text

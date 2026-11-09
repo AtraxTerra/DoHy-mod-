@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "palamod:block/miner_portal_ns"
+    },
+    "axis=z": {
+      "model": "palamod:block/miner_portal_ew"
+    }
+  }
+}

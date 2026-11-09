@@ -31,6 +31,7 @@ s'appliquent sans rien regenerer.
     `tags/item/`, `tags/block/`.
 """
 import json
+import math
 import re
 import os
 import shutil
@@ -2692,6 +2693,99 @@ def main():
                    "minecraft:savanna_plateau"],
         "spawners": {"type": "%s:dancarok" % NS, "weight": 2, "minCount": 1, "maxCount": 1}})
 
+    # ---- dimension du Mineur (chapitre 15) ----
+    #
+    # modules/miner/dimminer. Textures : blocks/miner du pack (obsidienne,
+    # minerai), le jar pour ce qu'il est seul a avoir — la pierre d'invocation
+    # (items/invockerstone) et la nappe animee du portail.
+    #
+    # L'obsidienne wither : onze textures, une par palier de paladium donne
+    # (icons[feed] ; les paliers 11 a 13 du jar ne sont jamais atteints).
+    for feed in range(11):
+        tex("blocks/miner/withered_obsidian_%d.png" % feed, "block/withered_obsidian_%d.png" % feed)
+        write("assets/%s/models/block/withered_obsidian_%d.json" % (NS, feed), {
+            "parent": "minecraft:block/cube_all",
+            "textures": {"all": "%s:block/withered_obsidian_%d" % (NS, feed)}})
+    write("assets/%s/blockstates/withered_obsidian.json" % NS, {"variants": {
+        "feed=%d" % feed: {"model": "%s:block/withered_obsidian_%d" % (NS, feed)} for feed in range(11)}})
+    write("assets/%s/models/item/withered_obsidian.json" % NS,
+          {"parent": "%s:block/withered_obsidian_0" % NS})
+    write("assets/%s/items/withered_obsidian.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:block/withered_obsidian_0" % NS}})
+    # getDrops : toujours le bloc ; en plus, tant que le portail n'a jamais
+    # ete allume (created), les blocs de paladium donnes.
+    write("data/%s/loot_table/blocks/withered_obsidian.json" % NS, {
+        "type": "minecraft:block",
+        "pools": [
+            {"rolls": 1, "entries": [{"type": "minecraft:item", "name": "%s:withered_obsidian" % NS}],
+             "conditions": [{"condition": "minecraft:survives_explosion"}]},
+            {"rolls": 1, "entries": [{"type": "minecraft:alternatives", "children": [{
+                "type": "minecraft:item", "name": "%s:paladium_block" % NS,
+                "conditions": [{"condition": "minecraft:block_state_property",
+                                "block": "%s:withered_obsidian" % NS,
+                                "properties": {"feed": str(feed), "created": "false"}}],
+                "functions": [{"function": "minecraft:set_count", "count": feed}]}
+                for feed in range(10, 0, -1)]}],
+             "conditions": [{"condition": "minecraft:survives_explosion"}]},
+        ]})
+    label("block", "withered_obsidian", "Obsidienne wither", "Withered Obsidian")
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:withered_obsidian" % NS])
+
+    # Le portail : la nappe de 32 images de 48 x 48 et les deux modeles du
+    # portail du Nether (meme epaisseur, 0.25). Ni objet ni butin.
+    copy_animated("blocks/miner_portal.png", "block/miner_portal.png", (48, 1536))
+    for axis, parent in (("x", "nether_portal_ns"), ("z", "nether_portal_ew")):
+        write("assets/%s/models/block/miner_portal_%s.json" % (NS, parent.rsplit("_", 1)[1]), {
+            "parent": "minecraft:block/%s" % parent,
+            "textures": {"portal": "%s:block/miner_portal" % NS, "particle": "%s:block/miner_portal" % NS}})
+    write("assets/%s/blockstates/miner_portal.json" % NS, {"variants": {
+        "axis=x": {"model": "%s:block/miner_portal_ns" % NS},
+        "axis=z": {"model": "%s:block/miner_portal_ew" % NS}}})
+    write("data/%s/loot_table/blocks/miner_portal.json" % NS, {"type": "minecraft:block", "pools": []})
+    label("block", "miner_portal", "Portail du Mineur", "Miner Portal")
+
+    # Le minerai de Pierre d'Invocation (BlockMiner, durete 5, se rend
+    # lui-meme) et sa pierre, au four (PWorld.addRecipesForFurnace, 1 XP).
+    miner_block("invoker_ore", {"all": "blocks/miner/invoker_ore.png"},
+                "Minerai de Pierre d'Invocation", "Invoker Stone Ore")
+    tex("items/invockerstone.png", "item/invoker_stone.png")
+    flat_item("invoker_stone", "%s:item/invoker_stone" % NS)
+    label("item", "invoker_stone", "Pierre d'Invocation", "Invoker Stone")
+    write("data/%s/recipe/invoker_stone.json" % NS, {
+        "type": "minecraft:smelting", "experience": 1.0,
+        "ingredient": "%s:invoker_ore" % NS, "result": {"id": "%s:invoker_stone" % NS}})
+
+    # Les messages du chat. Les textes viennent du constant pool, prefixe
+    # « [Paladium] » retire ; « 17 » devient le niveau reellement demande.
+    for key, label_fr, label_en in (
+            ("level", "Il vous faut etre niveau %s dans le metier de mineur pour acceder a cette dimension.",
+             "You need to be level %s in the Miner job to enter this dimension."),
+            ("not_owner", "Vous n'etes pas le proprietaire de ce portail.", "You aren't the owner of this portal."),
+            ("no_portal", "Vous ne semblez pas etre dans un portail.", "You don't seem to be in a portal."),
+            ("unavailable", "La dimension mineur n'est pas disponible sur ce serveur.",
+             "The miner dimension isn't available on this server."),
+            ("creating", "Creation de votre dimension mineur en cours", "Creating your miner dimension"),
+            ("teleporting", "Teleportation dans votre dimension mineur en cours",
+             "Teleporting you to your miner dimension"),
+            ("title", "Dimension Mineur", "Miner Dimension"),
+            ("subtitle", "Bienvenue dans la dimension du metier de mineur !", "Welcome to the Miner job's dimension!"),
+            ("collapsing", "Votre dimension mineur va s'effondrer dans 30 secondes.",
+             "Your miner dimension will collapse in 30 seconds."),
+            ("collapsed", "Votre dimension s'est effondree !", "Your dimension has collapsed!"),
+            ("border", "Vous avez atteint la limite de la dimension.", "You've reached the edge of the dimension."),
+            ("bar", "Points restants : %s - Temps restant : %s", "Points left: %s - Time left: %s"),
+            ("saved", "Vous avez failli mourir : vous voila de retour a votre point d'arrivee.",
+             "You nearly died: you're back at your arrival point."),
+            ("closing", "La dimension est entrain de se fermer.", "The dimension is closing."),
+            ("no_container", "Vous ne pouvez pas poser de bloc contenant des items dans cette dimension.",
+             "You can't place blocks that hold items in this dimension."),
+            ("unbreakable", "Vous ne pouvez pas casser ce bloc dans cette dimension.",
+             "You can't break this block in this dimension."),
+            ("not_enough_points", "Vous n'avez pas assez de points pour casser ce bloc.",
+             "You don't have enough points to break this block."),
+            ("not_inside", "Vous n'etes pas dans la dimension mineur.", "You aren't in the miner dimension.")):
+        label("message", "dimminer." + key, label_fr, label_en)
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de
@@ -2958,13 +3052,10 @@ def main():
             ],
         })
 
-    # Le minerai de pepites d'endium. En 1.7.10 il ne naissait que dans la
-    # dimension de minage (BaseWorldGenerator, isMinerDimension), qui n'est pas
-    # portee : on le place donc au fond de l'overworld, ou se trouve
-    # l'equivalent de sa couche. Quatre tirages par chunk a 1 chance sur 225
-    # (paladiumgreen_ore_rarety x 3), et un filon de 3 ramene a UN bloc — le
-    # code effacait les autres dans un cube de 17. D'ou replace_single_block,
-    # et une chance de 4/225, soit 1 sur 56.
+    # Le minerai de pepites d'endium : seulement dans la dimension du Mineur,
+    # comme en 1.7.10 (BaseWorldGenerator, isMinerDimension). Un filon de 3
+    # ramene a UN bloc — le code effacait les autres dans un cube de 17 — d'ou
+    # replace_single_block. Le placement est plus bas, avec la dimension.
     nugget_state = {"Name": "%s:endium_nugget_ore" % NS}
     write("data/%s/worldgen/configured_feature/ore_endium_nugget.json" % NS, {
         "type": "minecraft:replace_single_block",
@@ -2977,18 +3068,36 @@ def main():
              "state": nugget_state},
         ]},
     })
-    write("data/%s/worldgen/placed_feature/ore_endium_nugget.json" % NS, {
-        "feature": "%s:ore_endium_nugget" % NS,
-        "placement": [
-            {"type": "minecraft:rarity_filter", "chance": 56},
-            {"type": "minecraft:in_square"},
-            {"type": "minecraft:height_range",
-             "height": {"type": "minecraft:uniform",
-                        "min_inclusive": {"absolute": -64},
-                        "max_inclusive": {"absolute": -54}}},
-            {"type": "minecraft:biome"},
-        ],
+
+    # Le minerai de Pierre d'Invocation : couches du findium, filon de 3. En
+    # 1.7.10, quatre tirages a rand(2 x rarete du findium) == 1, soit 1 sur 10
+    # chacun : 0,4 filon par chunk. Une chance sur deux ici.
+    invoker_state = {"Name": "%s:invoker_ore" % NS}
+    write("data/%s/worldgen/configured_feature/ore_invoker.json" % NS, {
+        "type": "minecraft:ore",
+        "config": {"size": 3, "discard_chance_on_air_exposure": 0.0, "targets": [
+            {"target": {"predicate_type": "minecraft:tag_match", "tag": "minecraft:stone_ore_replaceables"},
+             "state": invoker_state},
+            {"target": {"predicate_type": "minecraft:tag_match", "tag": "minecraft:deepslate_ore_replaceables"},
+             "state": invoker_state}]},
     })
+    findium_min, findium_max = ORE_GEN["findium_ore"][2:]
+
+    def placed(path, feature, frequency, min_y, max_y):
+        write("data/%s/worldgen/placed_feature/%s.json" % (NS, path), {
+            "feature": "%s:%s" % (NS, feature),
+            "placement": frequency + [
+                {"type": "minecraft:in_square"},
+                {"type": "minecraft:height_range",
+                 "height": {"type": "minecraft:uniform",
+                            "min_inclusive": {"absolute": min_y},
+                            "max_inclusive": {"absolute": max_y}}},
+                {"type": "minecraft:biome"},
+            ],
+        })
+
+    placed("ore_invoker", "ore_invoker", [{"type": "minecraft:rarity_filter", "chance": 2}],
+           findium_min, findium_max)
 
     # Un seul modificateur de biome pour tous les minerais : NeoForge les ajoute
     # a l'etape underground_ores de tout biome de l'overworld.
@@ -2996,8 +3105,126 @@ def main():
         "type": "neoforge:add_features",
         "biomes": "#minecraft:is_overworld",
         "features": ["%s:ore_%s" % (NS, name.removesuffix("_ore"))
-                     for name in sorted(ORE_GEN)] + ["%s:ore_endium_nugget" % NS],
+                     for name in sorted(ORE_GEN)] + ["%s:ore_invoker" % NS],
         "step": "underground_ores",
+    })
+
+    # ---- la dimension du Mineur ----
+    #
+    # Le serveur « dimminer » de Paladium etait un overworld ordinaire ou
+    # BaseWorldGenerator tirait les minerais PalaMod avec mult = 3 : essais =
+    # ceil(base x 3), boucle i <= essais, donc ceil(3 base) + 1 tentatives au
+    # lieu de base + 1. On applique ce rapport aux comptes DoHy de l'overworld,
+    # sur les memes configured features. base = valeurs par defaut de
+    # palamod.cfg.
+    ORIGINAL_BASE = {"amethyst_ore": 5, "titane_ore": 4, "paladium_ore": 2, "paladium_green_ore": 1,
+                     "findium_ore": 3, "trixium_ore": 3}
+    dimension_ores = []
+    for name, (_size, count, min_y, max_y) in sorted(ORE_GEN.items()):
+        base = ORIGINAL_BASE[name]
+        boosted = int(count * (math.ceil(base * 3) + 1) / (base + 1) + 0.5)
+        feature = "ore_" + name.removesuffix("_ore")
+        placed("miner/" + feature, feature, [{"type": "minecraft:count", "count": boosted}], min_y, max_y)
+        dimension_ores.append("%s:miner/%s" % (NS, feature))
+    # La pepite d'endium a son taux d'origine : quatre tirages a 1 sur 900,
+    # un chunk sur 225. La Pierre d'Invocation : dix tirages a 1 sur 10.
+    placed("miner/ore_endium_nugget", "ore_endium_nugget",
+           [{"type": "minecraft:rarity_filter", "chance": 225}], -64, -54)
+    placed("miner/ore_invoker", "ore_invoker", [{"type": "minecraft:count", "count": 1}],
+           findium_min, findium_max)
+    # Le buisson a XP : sept essais au lieu de trois, meme chance.
+    placed("miner/xp_bush", "xp_bush", [{"type": "minecraft:count", "count": 7},
+                                        {"type": "minecraft:rarity_filter", "chance": 5}], -32, 40)
+    dimension_ores += ["%s:miner/ore_endium_nugget" % NS, "%s:miner/ore_invoker" % NS,
+                       "%s:miner/xp_bush" % NS]
+
+    # Un seul biome, fixe : les plaines de 26.2 sans pluie, sans aucun mob
+    # (l'original annulait tout EntityMob) et sans salle a monstres. Il n'est
+    # pas dans #minecraft:is_overworld, donc aucun modificateur de biome DoHy
+    # (minerais au taux normal, arbres, montures) ne s'y ajoute.
+    write("data/%s/worldgen/biome/miner.json" % NS, {
+        "attributes": {"minecraft:visual/sky_color": "#000000", "minecraft:visual/fog_color": "#000000"},
+        "carvers": ["minecraft:cave", "minecraft:cave_extra_underground", "minecraft:canyon"],
+        "downfall": 0.4,
+        "effects": {"water_color": "#3f76e4"},
+        "features": [
+            [],
+            ["minecraft:lake_lava_underground", "minecraft:lake_lava_surface"],
+            ["minecraft:amethyst_geode"],
+            [],
+            [],
+            [],
+            ["minecraft:ore_dirt", "minecraft:ore_gravel", "minecraft:ore_granite_upper",
+             "minecraft:ore_granite_lower", "minecraft:ore_diorite_upper", "minecraft:ore_diorite_lower",
+             "minecraft:ore_andesite_upper", "minecraft:ore_andesite_lower", "minecraft:ore_tuff",
+             "minecraft:ore_coal_upper", "minecraft:ore_coal_lower", "minecraft:ore_iron_upper",
+             "minecraft:ore_iron_middle", "minecraft:ore_iron_small", "minecraft:ore_gold",
+             "minecraft:ore_gold_lower", "minecraft:ore_redstone", "minecraft:ore_redstone_lower",
+             "minecraft:ore_diamond", "minecraft:ore_diamond_medium", "minecraft:ore_diamond_large",
+             "minecraft:ore_diamond_buried", "minecraft:ore_lapis", "minecraft:ore_lapis_buried",
+             "minecraft:ore_copper", "minecraft:underwater_magma", "minecraft:disk_sand",
+             "minecraft:disk_clay", "minecraft:disk_gravel"] + dimension_ores,
+            [],
+            ["minecraft:spring_water", "minecraft:spring_lava"],
+            ["minecraft:glow_lichen", "minecraft:patch_tall_grass_2", "minecraft:patch_bush",
+             "minecraft:trees_plains", "minecraft:flower_plains", "minecraft:patch_grass_plain",
+             "minecraft:brown_mushroom_normal", "minecraft:red_mushroom_normal", "minecraft:patch_pumpkin",
+             "minecraft:patch_sugar_cane", "minecraft:patch_firefly_bush_near_water"],
+            ["minecraft:freeze_top_layer"],
+        ],
+        "has_precipitation": False,
+        "spawn_costs": {},
+        "spawners": {category: [] for category in (
+            "ambient", "axolotls", "creature", "misc", "monster", "underground_water_creature",
+            "water_ambient", "water_creature")},
+        "temperature": 0.8,
+    })
+
+    # Le type : l'overworld (memes hauteurs, -64..320, pour reprendre les
+    # placements DoHy) mais une nuit fixe — le client forcait worldTime a
+    # 15000 et videait le ciel. Ciel et brouillard noirs, lumiere du ciel au
+    # niveau de la nuit vanilla (timeline minecraft:day a 18000). Le
+    # brouillard d'origine allait de 40 % de la vue a 10 % selon les points ;
+    # on fixe le premier palier.
+    write("data/%s/dimension_type/miner.json" % NS, {
+        "ambient_light": 0.0,
+        "attributes": {
+            "minecraft:audio/ambient_sounds": {"mood": {
+                "block_search_extent": 8, "offset": 2.0, "sound": "minecraft:ambient.cave",
+                "tick_delay": 6000}},
+            "minecraft:gameplay/bed_rule": {"can_set_spawn": "never", "can_sleep": "never"},
+            "minecraft:gameplay/can_start_raid": False,
+            "minecraft:gameplay/respawn_anchor_works": False,
+            "minecraft:gameplay/sky_light_level": 4.0,
+            "minecraft:visual/ambient_light_color": "#0a0a0a",
+            "minecraft:visual/fog_color": "#000000",
+            "minecraft:visual/fog_start_distance": 8.0,
+            "minecraft:visual/fog_end_distance": 64.0,
+            "minecraft:visual/sky_color": "#000000",
+            "minecraft:visual/sky_light_color": "#7a7aff",
+            "minecraft:visual/sky_light_factor": 0.24,
+        },
+        "coordinate_scale": 1.0,
+        "has_ceiling": False,
+        "has_ender_dragon_fight": False,
+        "has_fixed_time": True,
+        "has_skylight": True,
+        "height": 384,
+        "infiniburn": "#minecraft:infiniburn_overworld",
+        "logical_height": 384,
+        "min_y": -64,
+        "monster_spawn_block_light_limit": 0,
+        "monster_spawn_light_level": 0,
+        "skybox": "none",
+        "timelines": "#minecraft:universal",
+    })
+    # Le terrain de l'overworld (memes reglages de bruit, meme graine), un
+    # seul biome.
+    write("data/%s/dimension/miner.json" % NS, {
+        "type": "%s:miner" % NS,
+        "generator": {"type": "minecraft:noise",
+                      "biome_source": {"type": "minecraft:fixed", "biome": "%s:miner" % NS},
+                      "settings": "minecraft:overworld"},
     })
 
     # ---- ecriture des tags accumules ----

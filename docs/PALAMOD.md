@@ -833,8 +833,9 @@ Les 64 sortent en une pile plutôt qu'en 64 entités.
 **Le piston renforcé wither n'est pas un piston** : `BlockWitheredReinforcedPiston` est un bloc
 orienté qui ne pousse rien — le wiki se trompe (« poussent 3 blocs de plus »). Il tombe des
 pistons pris dans **l'explosion d'apparition** d'un Wither (source directe : le Wither), si le
-joueur le plus proche à 30 blocs a Mineur 90. Sa conversion de l'obsidienne voisine en
-obsidienne wither (portail de la dimension de minage) n'est pas portée.
+joueur le plus proche à 30 blocs a Mineur 90. Alimenté, il change la première **obsidienne**
+voisine (est, ouest, sud, nord ; jamais dessus ni dessous) en **obsidienne wither**, le cadre du
+portail de la dimension du Mineur (§ 18).
 
 ### Palafurnace — `PaladiumFurnaceLogic`
 
@@ -893,10 +894,12 @@ d'équipe bleue au lieu de `#2537FB`.
 ### Minerai de pépites d'endium — `BlockEndiumNuggetOre`, `BaseWorldGenerator`
 
 Dureté 5, résistance de la bedrock, une seule pépite sans fortune ni toucher de soie ; le casser
-demande Mineur 100 (`#palamod:break_locked`). **Écart** : il ne naissait que dans la dimension
-de minage, non portée. Il est placé au fond de l'overworld (y −64 à −54) : quatre tirages par
-chunk à 1 sur 225, chaque filon ramené à un bloc — d'où `replace_single_block` et 1 chance
-sur 56 par chunk.
+demande Mineur 100 (`#palamod:break_locked`). Il ne naissait que dans la dimension du Mineur,
+portée au chapitre 15 (§ 18) : il n'existe plus que là, à son taux d'origine — quatre tirages à
+1 sur 900 (`rand(3 × rareté du paladium vert)`), un chunk sur 225, y −64 à −54. Un filon de 3
+ramené à un bloc (le code effaçait les autres), d'où `replace_single_block`. Du chapitre 8 au
+chapitre 15 il naissait aussi au fond de l'overworld, à 1 chance sur 56 par chunk : les chunks
+générés pendant cette période en gardent.
 
 ---
 
@@ -1448,3 +1451,86 @@ horloge s'arrête.
 - Les miniatures de montures au-dessus de l'enclos, l'œuf d'apparition, les permissions
   (multiplicateur Trixium), les protections WorldGuard, le multi-serveur, la compétence
   Vétérinaire du mod Pet, le profil web.
+
+## 18. Dimension du Mineur (chapitre 15)
+
+Relevé dans `modules/miner/dimminer` de PalaMod 10.3.0, avec `BaseWorldGenerator` et
+`MinerRegisterer`. Chez Paladium ce n'était **pas une dimension Forge** mais un serveur à part
+(« dimminer ») rejoint par BungeeCord : un overworld ordinaire où PalaMod triplait ses minerais. En
+solo, c'est une vraie dimension, `palamod:miner`, et l'on y entre et en sort par téléportation.
+
+### Le portail — `BlockWitheredObsidian`, `BlockMinerPortal`
+
+1. **Le cadre** : de l'obsidienne wither (aucune recette : un piston renforcé wither alimenté
+   change l'obsidienne voisine, § 11). Un cadre de portail du Nether, intérieur de 2×3 à 21×21.
+2. **Le charger** : chaque bloc du cadre reçoit **10 blocs de paladium**, un par clic droit. Il
+   s'éclaire d'un cran par bloc ; au dixième, tonnerre et éclair (visuel, sans feu ni dégâts).
+3. **L'allumer** : du feu sur le cadre chargé ; il faut que **tout** le cadre soit à 10.
+4. **Entrer** : il faut **Mineur 90** (18 × 5 ; l'original testait 18 au portail et 17 au paquet,
+   et écrivait 17). Le premier joueur à traverser devient propriétaire du portail ; un autre est
+   repoussé. Le portail ouvre un écran (informations, temps et points restants, « Créer » ou
+   « Rejoindre la dimension »).
+
+Cassé, un bloc de cadre rend lui-même et, **tant que le portail n'a jamais été ouvert**, ses blocs
+de paladium. Un piston ne le pousse pas (immobile comme tout bloc à block entity en 1.7.10). Le
+portail se referme si son cadre est incomplet ou sa nappe trouée. Incassable, sans objet.
+
+### La session — `DimMinerPlayer`, `ServerDimMinerEventHandler`
+
+- **1 000 points**, **3 jours de temps réel** (`DURATION`, horloge système). Casser du paladium
+  coûte 1 point, du paladium vert 5, une pépite d'endium 501 — une seule par session. Le reste est
+  gratuit. Sans assez de points, le minerai ne se casse pas. Un bloc posé par un joueur ne coûte
+  rien et ne compte pas.
+- Une **section** de 5 000 × 5 000 par session, attribuée en spirale carrée depuis (0, 0) ; on ne
+  peut pas en sortir. **Écart** : le compteur des sections est sauvegardé (l'original repartait de
+  0 à chaque redémarrage) et la section est gardée toute la session (l'original en donnait une
+  neuve, avec sa plateforme, à chaque connexion).
+- L'arrivée : un sol libre près du centre (spirale de 20 blocs, 7 × 7 × 6 de place), une
+  plateforme 6 × 5 d'obsidienne wither et un cadre. **Écart** : ce cadre était décoratif (le kick
+  ramenait au serveur Faction) ; il porte ici le **portail de sortie**. Après onze sections sans sol
+  (des océans), une plateforme au niveau de la mer.
+- **Dans la dimension** : aucun monstre, pas de dégâts de chute, aucun conteneur posé, l'obsidienne
+  wither ne se casse pas. **Écart** : une explosion n'y casse aucun bloc — la TNT abattrait les
+  minerais sans payer de points. Une barre en haut de l'écran donne les points et le temps restants
+  (`UIDimMinerOverlay`). Le créatif et le spectateur échappent aux règles de pose, de casse et de
+  bordure (`bypass`).
+- **Sortir** : le portail de l'arrivée, ou `/dimminer quitter`. On ressort devant le portail
+  d'entrée ; la session continue. Par la commande, on retrouvera sa place ; par le portail,
+  l'arrivée.
+- **Fin** : points à zéro ou trois jours écoulés → « Votre dimension mineur va s'effondrer dans 30
+  secondes. », plus ni pose ni casse, puis retour devant le portail d'entrée. L'écran de fin
+  (blocs minés, temps passé, minerais, XP de Mineur gagnée) s'ouvre, et **chaque bloc du cadre
+  d'entrée a une chance sur trois d'être détruit**.
+- **Écart** : la mort est évitée — soigné, ramené à l'arrivée. L'original n'avait rien (le serveur
+  de repli s'en chargeait) ; sans lui, on réapparaîtrait dans l'overworld avec une session en plan.
+- La dimension ne donne pas d'XP propre : l'XP de Mineur ordinaire s'y applique.
+
+### Le monde — `BaseWorldGenerator`
+
+Le terrain de l'overworld (mêmes réglages de bruit, même graine), un seul biome `palamod:miner` :
+les plaines sans pluie, sans mobs, sans salle à monstres. Une nuit fixe : ciel et brouillard noirs,
+lumière du ciel de la nuit vanilla, brouillard proche (le client de Paladium forçait l'heure à
+15 000 et vidait le ciel). Lit et ancre de réapparition sans effet.
+
+Les minerais PalaMod y sont multipliés comme sur le serveur dimminer : `mult = 3`, d'où
+`ceil(3 × base) + 1` tentatives au lieu de `base + 1`, rapport appliqué aux comptes de l'overworld
+DoHy — améthyste 8 → 21, titane 6 → 16, paladium 4 → 9, paladium vert 2 → 4, findium 3 → 8,
+trixium 1 → 3, buisson à XP 3 → 7 essais. Pépite d'endium : un chunk sur 225, et seulement ici.
+Les minerais vanilla gardent leur taux.
+
+### Minerai de Pierre d'Invocation — `PWorld.INVOKER_ORE`, `invocker_stone`
+
+Dureté 5, se rend lui-même ; au four, une **Pierre d'Invocation** (1 XP). Couches du findium, filon
+de 3 : une chance sur deux par chunk dans l'overworld (0,4 à l'origine), un filon par chunk dans
+la dimension. La pierre ne servait qu'aux runes de donjon de PalaRPG, non porté.
+
+### Ce qui n'est pas porté, et ce qui change de forme
+
+- Le **boss** `EntityMinerBoss` : enregistré mais jamais invoqué dans l'original, et refusé par le
+  filtre anti-monstres de sa propre dimension.
+- L'ambiance du client : éclairs et chauves-souris aléatoires, tremblement de caméra et brouillard
+  qui se resserrent avec les points, écran de transition. Il reste un ciel noir et un brouillard
+  fixe.
+- Les écrans ZephyrUI (entrée, fin) deviennent des coffres ; l'overlay, une barre de boss.
+- Les joueurs ne sont pas cachés les uns aux autres. Les permissions, le réseau, les succès et
+  `/dimension` (externes) ne sont pas portés.
