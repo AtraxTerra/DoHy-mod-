@@ -39,6 +39,18 @@ public final class DungeonSelfTest {
 
     @SubscribeEvent
     public static void onCommands(RegisterCommandsEvent event) {
+        event.getDispatcher().register(Commands.literal("donjonflow")
+                .then(Commands.argument("palier", IntegerArgumentType.integer(1, 100)).executes(context -> {
+                    int palier = IntegerArgumentType.getInteger(context, "palier");
+                    ServerLevel level = context.getSource().getServer().getLevel(PalaDungeon.DIMENSION);
+                    try {
+                        flow(level, palier);
+                    } catch (Throwable t) {
+                        LOG.error("palamod-test: FLOW FAILED", t);
+                    }
+                    context.getSource().sendSuccess(() -> Component.literal("ok"), false);
+                    return 1;
+                })));
         event.getDispatcher().register(Commands.literal("donjontest")
                 .then(Commands.argument("palier", IntegerArgumentType.integer(1, 100)).executes(context -> {
                     int palier = IntegerArgumentType.getInteger(context, "palier");
@@ -142,6 +154,64 @@ public final class DungeonSelfTest {
             }
         }
         log("draws=" + draws);
+    }
+
+    private static void killAll(ServerLevel level, DungeonRun run) {
+        for (UUID uuid : new ArrayList<>(run.enemies.keySet())) {
+            Entity entity = level.getEntity(uuid);
+            if (entity instanceof LivingEntity living) {
+                living.kill(level);
+            }
+        }
+    }
+
+    private static void ticks(DungeonRun run, int count) {
+        for (int i = 0; i < count; i++) {
+            run.tick();
+        }
+    }
+
+    private static void choose(DungeonRun run, net.minecraft.server.level.ServerPlayer fake, RoomType type)
+            throws Exception {
+        Method method = DungeonRun.class.getDeclaredMethod("choose", net.minecraft.server.level.ServerPlayer.class,
+                RoomType.class);
+        method.setAccessible(true);
+        method.invoke(run, fake, type);
+    }
+
+    private static void flow(ServerLevel level, int palier) throws Exception {
+        var fake = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(level);
+        log("forced before=" + level.getForceLoadedChunks().size());
+        DungeonRun run = new DungeonRun(91_000, level, Dungeon.MANELIOS, palier, new BlockPos(990_000, 64, 0));
+        run.begin(List.of());
+        log("begin room=" + run.room.type + " phase=" + run.phase + " forced=" + level.getForceLoadedChunks().size());
+        ticks(run, 31);
+        log("after 31 ticks enemies=" + run.enemies.size());
+        for (int round = 0; round < 6 && run.phase == DungeonRun.Phase.FIGHT; round++) {
+            killAll(level, run);
+            ticks(run, 10);
+            log("round " + round + " enemies=" + run.enemies.size() + " phase=" + run.phase);
+            ticks(run, 41);
+        }
+        log("room1 phase=" + run.phase + " chest=" + (run.chest != null && level.getBlockState(run.chest).is(Blocks.CHEST)));
+        BlockPos first = run.room.center;
+        choose(run, fake, RoomType.MERCHANT);
+        log("room2=" + run.room.type + " phase=" + run.phase + " oldErased=" + level.getBlockState(first.below()).isAir()
+                + " forced=" + level.getForceLoadedChunks().size());
+        long merchants = level.getEntitiesOfClass(net.minecraft.world.entity.npc.villager.Villager.class,
+                run.room.outer()).stream().filter(run::isMerchant).count();
+        log("merchant=" + merchants);
+        choose(run, fake, RoomType.BOSS);
+        log("room3=" + run.room.type + " phase=" + run.phase + " bosses=" + run.bosses.size());
+        for (int round = 0; round < 4 && run.phase == DungeonRun.Phase.FIGHT; round++) {
+            killAll(level, run);
+            ticks(run, 10);
+        }
+        log("boss done phase=" + run.phase + " chest=" + (run.chest != null && level.getBlockState(run.chest).is(Blocks.CHEST)));
+        BlockPos last = run.room.center;
+        choose(run, fake, RoomType.EXIT);
+        log("exit phase=" + run.phase + " erased=" + level.getBlockState(last.below()).isAir()
+                + " forced=" + level.getForceLoadedChunks().size());
     }
 
     private static List<BossSpec> concat(List<BossSpec> a, List<BossSpec> b) {
