@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -60,7 +61,8 @@ public class DungeonGearItem extends Item {
         return dungeon == null || dungeon == where ? base : base / 2.0f;
     }
 
-    private static boolean antiqueSet(ServerPlayer player) {
+    /** Les quatre pieces antiques portees. */
+    public static boolean antiqueSet(Player player) {
         for (EquipmentSlot slot : ARMOR_SLOTS) {
             if (!(player.getItemBySlot(slot).getItem() instanceof DungeonGearItem gear)
                     || gear.tier != DungeonGearTier.ANTIQUE) {
@@ -105,6 +107,8 @@ public class DungeonGearItem extends Item {
             tooltip.accept(Component.translatable("tooltip.palamod.dungeon_gear.antique." + kind, percent)
                     .withStyle(ChatFormatting.GOLD));
             tooltip.accept(Component.translatable("tooltip.palamod.dungeon_gear.antique_set")
+                    .withStyle(ChatFormatting.YELLOW));
+            tooltip.accept(Component.translatable("tooltip.palamod.dungeon_gear.antique_set.dungeon")
                     .withStyle(ChatFormatting.YELLOW));
         } else {
             tooltip.accept(Component.translatable("tooltip.palamod.dungeon_gear." + kind, percent, dungeon.display())
