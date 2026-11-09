@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " V ",
+    "SXS",
+    "PGP"
+  ],
+  "key": {
+    "V": "palamod:invoker_stone",
+    "S": "palamod:paladium_stick",
+    "X": "minecraft:wheat",
+    "P": "palamod:paladium_ingot",
+    "G": "palamod:green_paladium_ingot"
+  },
+  "result": {
+    "id": "palamod:talikus_key",
+    "count": 1
+  }
+}
