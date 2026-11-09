@@ -1947,3 +1947,85 @@ six types de monstres et leurs variantes, petits noyés, quarante boss créés, 
 vie, boutons de l'énigme qui ouvrent les portes, coffres, tirages de butin aux paliers 1 à 100,
 déroulé complet d'un palier jusqu'à la sortie et effacement de la région, chunks libérés. Le jeu
 avec un joueur (portes, coffres, menus, mort) reste à éprouver en jeu.
+
+## 23. Donjons : équipement, essences, notes D à S (chapitre 19)
+
+Deuxième chapitre des donjons. Le wiki donne les tiers, les paliers d'obtention et la règle de
+réparation, et **aucune statistique**. Choix du joueur : un équipement fort **surtout en donjon**,
+les textures de **Palamod Recreated**, et un **coffre selon la note**.
+
+### L'équipement — trois armures et trois épées par donjon
+
+| Tier (wiki) | Hors donjon, comme | Épée | En donjon, par pièce d'armure | Épée en donjon |
+|---|---|---|---|---|
+| Basique (tier 1) | améthyste | 7 de dégâts | −4 % des dégâts des monstres | +25 % |
+| Renforcée (tier 2) | paladium | 10 | −7 % | +50 % |
+| Légendaire (tier 3) | endium mixte | 10,6 | −10 % | +80 % |
+| Antique (palier 100) | endium | — | −12 % | — |
+
+- Les valeurs hors donjon reprennent les valeurs d'origine du métal correspondant, converties
+  comme les armures de PalaMod (§ 10) ; durabilités 170, 260, 350 et 400.
+- Le bonus de donjon ne joue que dans `palamod:dungeon`, contre ses monstres : **à plein dans son
+  propre donjon, à moitié dans les trois autres**. L'armure plafonne à **−60 %** au total.
+  L'épée compte pour les coups portés à la main.
+- **Set antique** (wiki : une pièce par donjon au palier 100 — plastron à Talikus, bottes à
+  Nimbria, casque à Vitalys, pantalon à Manelios) : bonus à plein dans tous les donjons et, complet,
+  **−10 %** de dégâts reçus et **+20 %** de dégâts en plus. Il n'a pas de texture d'origine : c'est
+  le légendaire de Talikus passé au bronze.
+
+### Obtention — les récompenses uniques du wiki
+
+À la sortie du palier exact, une chance sur deux chacune (comme au chapitre 18) :
+
+| Palier | Récompense |
+|---|---|
+| 5, 15 | épée basique (Nimbria : pas au 15) |
+| 10 à 20 | une pièce d'armure basique au hasard |
+| 35, 45 | épée renforcée (Nimbria : pas au 35) |
+| 40 à 50 | une pièce d'armure renforcée au hasard |
+| 65, 75 | épée légendaire |
+| 70 à 80 | une pièce d'armure légendaire au hasard |
+| 100 | la pièce antique du donjon |
+
+Les paliers se rejouent : on complète un set en rejouant sa tranche. Les parchemins de craft du
+même tableau ne sont pas portés.
+
+### Essences et réparation
+
+Wiki : « Fragment d'essence » répare l'armure basique, « Essence » la renforcée, « Essence
+concentrée » la légendaire, et une essence ne répare que son tier. Les textures de Palamod Recreated
+donnent un **élément par donjon** : forêt (Talikus), caverne (Nimbria), flamme (Vitalys), aquatique
+(Manelios). Une essence répare donc, **à l'enclume**, l'équipement de son donjon et de son tier
+(25 % de durabilité par essence, comme un lingot) ; l'antique prend n'importe quelle essence
+concentrée. Le wiki ne cite qu'une « Essence de tier 2 » (Talikus, palier 40) : toutes les réserves
+de coffre en ont, à partir du palier de l'équipement qu'elles réparent (10, 40, 70).
+
+### La note — D à S
+
+Wiki : une note par joueur à la fin du palier, selon les dégâts, la survie et l'implication ; une
+meilleure note ouvre un meilleur coffre. Seules D et S sont nommées. Calcul de DoHy :
+
+`0,35 × dégâts + 0,45 × survie + 0,20 × implication`, chaque part de 0 à 1 :
+- **dégâts** : sa part des dégâts infligés aux monstres, rapportée à une part égale (seul : 1) ;
+- **survie** : `1 − vie perdue / (40 × salles de combat terminées)` ;
+- **implication** : sa part des monstres tués, rapportée à une part égale (seul : 1, ou 0,5 sans
+  aucun tué).
+
+| Note | Score | Coffre de la note |
+|---|---|---|
+| S | ≥ 0,90 | 4 tirages, 50 % d'essence |
+| A | ≥ 0,75 | 3 tirages, 35 % |
+| B | ≥ 0,60 | 2 tirages, 20 % |
+| C | ≥ 0,40 | 1 tirage, 10 % |
+| D | sinon | rien |
+
+Les tirages viennent de la réserve du donjon ; l'essence est du tier du palier. Le coffre de la
+note est livré avec le sac, hors de sa contenance. La note s'affiche au titre et dans le chat avec
+ses trois parts.
+
+### Textures
+
+Armures, couches portées, épées et essences : **Palamod Recreated** (SILWOX / Solea Pixel, mod de
+fans 1.21, « All Rights Reserved »), au choix du joueur — crédité dans le README, à ne pas
+redistribuer publiquement sans leur accord. Leurs statistiques (des valeurs MCreator identiques
+pour les quatre donjons) ne sont pas reprises.

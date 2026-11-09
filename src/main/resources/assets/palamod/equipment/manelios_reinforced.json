@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "palamod:manelios_reinforced"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "palamod:manelios_reinforced"
+      }
+    ]
+  }
+}

@@ -95,6 +95,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 16 | **Pour le PvP** : palamachine (création et réparation des sticks, anneaux et cornes, enchantements gardés), 7 sticks (effets du code, recharge par type sur le joueur), orbes de force et de saut, 6 anneaux (armure portée, colonne d'anneaux des coffres, capacités de réparation), aile et deltaplane, slimepad, spike en paladium — sans spikes des autres métaux ni modèle 3D du deltaplane | fait |
 | 17 | **Pierres légendaires** : 7 pierres (téléportation, invisibilité, fortune, pouvoir — résistance au feu 30 min —, métier, chaos, et l'aléatoire qui s'ouvre), recharge de 24 h sur la pierre et verrou de 10 min par joueur ; **gant en endium** (établi, grinder, défilement, 12 h complet, Infinity Gauntlet) ; dans les caisses rare et légendaire | fait |
 | 18 | **Donjons, cœur jouable** : 4 clés et l'écran des 100 paliers, groupe de 4, dimension `palamod:dungeon`, salles construites (combat, énigme, boost, marchande, mini-boss en 5, boss en 0), 6 types de monstres renforcés au palier, 40 boss nommés et leurs capacités, coffres individuels, sacs de donjon (9/18/27/36 piles), butin du wiki, XP de métier, mort = palier échoué ; bouteilles d'XP de métier — sans équipement, essences, notes, sorts, runes ni arbre (chapitres 19 à 21) | fait |
+| 19 | **Donjons, équipement** : 3 armures et 3 épées par donjon (basique, renforcée, légendaire ; fortes surtout en donjon, à plein dans le leur), set antique du palier 100, récompenses uniques du wiki, essences par élément et tier (réparation à l'enclume), note D à S et son coffre — textures de Palamod Recreated | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -159,6 +160,21 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-09 (suite) — chapitre 19 : équipement de donjon, essences, notes
+
+**Demande** : « Chapitre 19 ». Trois choix du joueur : un équipement fort **surtout en donjon**
+(hors donjon, il vaut un métal ; dedans, il réduit les dégâts des monstres et l'épée frappe plus
+fort), les textures de **Palamod Recreated** (mod de fans trouvé dans les fichiers fournis,
+crédité), et un **coffre selon la note**. Détail : `docs/PALAMOD.md` § 23.
+
+**Palamod Recreated** a les douze sets, leurs couches et quinze essences en cinq éléments (dont la
+glace d'un cinquième donjon, Frigoria, absent du wiki). Ses statistiques sont des valeurs MCreator
+identiques d'un donjon à l'autre : non reprises.
+
+**Vérifié au démarrage, par un auto-test temporaire** : réductions et bonus par tier, à moitié hors
+de son donjon, plafond, set antique ; réparations acceptées et refusées ; récompenses uniques des
+quatre donjons ; coffres de note ; notes selon la vie perdue.
 
 ### 2026-11-09 (suite) — chapitre 18 : donjons, le cœur jouable
 

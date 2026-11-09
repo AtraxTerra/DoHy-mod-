@@ -74,6 +74,19 @@ public enum Dungeon {
         return color;
     }
 
+    /**
+     * L'element de ses essences, d'apres les textures de Palamod Recreated :
+     * foret, caverne, flamme, eau.
+     */
+    public String element() {
+        return switch (this) {
+            case TALIKUS -> "forest";
+            case NIMBRIA -> "cavern";
+            case VITALYS -> "flame";
+            case MANELIOS -> "aquatic";
+        };
+    }
+
     public static Dungeon byKey(String key) {
         for (Dungeon dungeon : values()) {
             if (dungeon.key.equals(key)) {
