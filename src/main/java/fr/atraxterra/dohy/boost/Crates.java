@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -126,6 +127,7 @@ public final class Crates {
                 return;
             }
             ItemStack stack = new ItemStack(item, Math.max(1, entry.count()));
+            entry.components().ifPresent(stack::applyComponents);
             Component name = stack.getHoverName();
             if (!player.getInventory().add(stack)) {
                 player.drop(stack, false);
@@ -155,14 +157,20 @@ public final class Crates {
         return crate.entries().get(crate.entries().size() - 1);
     }
 
+    /**
+     * Une entree de caisse. {@code components} est facultatif : les composants
+     * de l'objet, au format des commandes — c'est ce qui permet de mettre en
+     * caisse un gant en endium deja garni.
+     */
     public record Entry(int weight, Optional<Identifier> item, int count,
-                        long moneyMin, long moneyMax) {
+                        long moneyMin, long moneyMax, Optional<DataComponentPatch> components) {
         static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.INT.optionalFieldOf("weight", 1).forGetter(Entry::weight),
                 Identifier.CODEC.optionalFieldOf("item").forGetter(Entry::item),
                 Codec.INT.optionalFieldOf("count", 1).forGetter(Entry::count),
                 Codec.LONG.optionalFieldOf("money_min", 0L).forGetter(Entry::moneyMin),
-                Codec.LONG.optionalFieldOf("money_max", 0L).forGetter(Entry::moneyMax)
+                Codec.LONG.optionalFieldOf("money_max", 0L).forGetter(Entry::moneyMax),
+                DataComponentPatch.CODEC.optionalFieldOf("components").forGetter(Entry::components)
         ).apply(instance, Entry::new));
 
         long money(ServerPlayer player) {

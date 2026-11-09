@@ -6,6 +6,9 @@ import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
 import fr.atraxterra.dohy.palamod.godpickaxe.GodPickaxeItem;
 import fr.atraxterra.dohy.palamod.godpickaxe.GodPickaxeLevels;
 import fr.atraxterra.dohy.palamod.godpickaxe.PalaGodPickaxe;
+import fr.atraxterra.dohy.palamod.legendary.EndiumGauntletItem;
+import fr.atraxterra.dohy.palamod.legendary.LegendaryEffect;
+import fr.atraxterra.dohy.palamod.legendary.LegendaryStoneItem;
 import fr.atraxterra.dohy.palamod.smeltery.GrinderModifier;
 import fr.atraxterra.dohy.palamod.smeltery.ModifiableTool;
 import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
@@ -43,7 +46,8 @@ import java.util.Map;
  *   <li><b>forge</b> : 100 ticks, {@link GrinderRecipes} ; le reservoir ne doit
  *       pas etre vide, meme pour une recette gratuite ;</li>
  *   <li><b>amelioration</b> : 100 ticks, gratuite, un modificateur sur un outil
- *       qui en prend ({@link ToolModifiers}).</li>
+ *       qui en prend ({@link ToolModifiers}), ou une pierre legendaire dans le
+ *       gant en endium.</li>
  * </ul>
  * Aucune automatisation : ni entonnoir, ni tuyau. Casse, il rend ses six cases,
  * pas son paladium.
@@ -183,10 +187,13 @@ public class GrinderBlockEntity extends MachineBlockEntity implements WorldlyCon
 
         GrinderModifier modifier = applicable();
         boolean autoSmelt = modifier == null && autoSmeltApplicable();
-        if (modifier != null || autoSmelt) {
+        boolean stone = modifier == null && !autoSmelt && stoneApplicable();
+        if (modifier != null || autoSmelt || stone) {
             if (++workUpgrade >= WORK_GOAL) {
                 if (autoSmelt) {
                     applyAutoSmelt();
+                } else if (stone) {
+                    applyStone();
                 } else {
                     upgrade(modifier);
                 }
@@ -333,6 +340,28 @@ public class GrinderBlockEntity extends MachineBlockEntity implements WorldlyCon
         setChanged();
     }
 
+    /**
+     * Une pierre legendaire dans le gant en endium ({@code GrinderRecipe.addUpgrade}
+     * et {@code canApplyUpgrade}) : une de chaque type au plus, sans paladium.
+     * Le gant garde la recharge la plus recente des deux ({@code transferCooldown}).
+     */
+    private boolean stoneApplicable() {
+        ItemStack stone = items.get(SLOT_MODIFIER);
+        ItemStack gauntlet = items.get(SLOT_TOOL);
+        return LegendaryStoneItem.insertable(stone) && gauntlet.getItem() instanceof EndiumGauntletItem
+                && !EndiumGauntletItem.data(gauntlet).has(((LegendaryStoneItem) stone.getItem()).effect());
+    }
+
+    private void applyStone() {
+        ItemStack stone = items.get(SLOT_MODIFIER);
+        ItemStack gauntlet = items.get(SLOT_TOOL);
+        LegendaryEffect effect = ((LegendaryStoneItem) stone.getItem()).effect();
+        EndiumGauntletItem.store(gauntlet,
+                EndiumGauntletItem.data(gauntlet).withStone(effect, LegendaryStoneItem.lastUse(stone)));
+        stone.shrink(1);
+        setChanged();
+    }
+
     // -- Cases -----------------------------------------------------------------
 
     @Override
@@ -341,9 +370,9 @@ public class GrinderBlockEntity extends MachineBlockEntity implements WorldlyCon
             case SLOT_FIRST -> GrinderRecipes.isFirst(stack);
             case SLOT_SECOND -> GrinderRecipes.isSecond(stack);
             case SLOT_MODIFIER -> GrinderModifier.of(stack.getItem()) != null
-                    || stack.is(PalaGodPickaxe.AUTO_SMELT.get());
+                    || stack.is(PalaGodPickaxe.AUTO_SMELT.get()) || LegendaryStoneItem.insertable(stack);
             case SLOT_TOOL -> stack.getItem() instanceof ModifiableTool tool && tool.modifiable()
-                    || stack.getItem() instanceof GodPickaxeItem;
+                    || stack.getItem() instanceof GodPickaxeItem || stack.getItem() instanceof EndiumGauntletItem;
             case SLOT_FUEL -> isFuel(stack) && paladium < MAX_PALADIUM;
             default -> false;
         };

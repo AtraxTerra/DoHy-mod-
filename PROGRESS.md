@@ -93,6 +93,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 14 | **Monture** : le Dancarok (capture, gemme, niveaux, vie et énergie sur le joueur, invocation, conduite, cornes qui creusent), l'enclos (gestionnaire, fondation, barrière, couveuse, soins aux bandages), l'orbe de régénération ; les coffres manquants (paladium, paladium vert, endium, coffre de l'End en paladium, coffre en or) — sans Ravirok, Tedarok, palamachine ni éléphant | fait |
 | 15 | **Dimension du Mineur** : obsidienne wither (chargée au paladium, obtenue au piston renforcé), portail du Mineur (propriétaire, Mineur 90), dimension `palamod:miner` (sections de 5 000, 1 000 points, 3 jours, minerais ×3, nuit fixe, sans monstres ni chute), écrans d'entrée et de fin, minerai et Pierre d'Invocation ; la pépite d'endium ne naît plus que dans la dimension — sans boss ni ambiance client | fait |
 | 16 | **Pour le PvP** : palamachine (création et réparation des sticks, anneaux et cornes, enchantements gardés), 7 sticks (effets du code, recharge par type sur le joueur), orbes de force et de saut, 6 anneaux (armure portée, colonne d'anneaux des coffres, capacités de réparation), aile et deltaplane, slimepad, spike en paladium — sans spikes des autres métaux ni modèle 3D du deltaplane | fait |
+| 17 | **Pierres légendaires** : 7 pierres (téléportation, invisibilité, fortune, pouvoir — résistance au feu 30 min —, métier, chaos, et l'aléatoire qui s'ouvre), recharge de 24 h sur la pierre et verrou de 10 min par joueur ; **gant en endium** (établi, grinder, défilement, 12 h complet, Infinity Gauntlet) ; dans les caisses rare et légendaire | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -157,6 +158,24 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-09 (suite) — chapitre 17 : pierres légendaires et gant
+
+**Demande** : « les pierres de puissance et le gant ». Ce sont les *legendary stones* de PalaMod et
+l'*Endium Gauntlet* qui les porte. Détail : `docs/PALAMOD.md` § 21.
+
+**Deux décisions du joueur.** Obtention : les caisses (la pierre aléatoire dans la rare et la
+légendaire, le gant complet dans la légendaire), à la place des lucky blocks. Pierre de pouvoir :
+l'eau sulfurique dont elle protégeait n'étant pas portée, elle donne 30 minutes de résistance au
+feu.
+
+**Le code contredit le wiki sur les verrous.** Le chaos se verrouille 10 minutes par joueur, pas
+une heure (l'heure n'est que dans l'infobulle) ; et le verrou d'une heure des quatre autres
+effets n'était jamais écrit — seules les recharges de 24 h par pierre comptent.
+
+**Vérifié au démarrage** : le gant garni et la pierre datée se posent par commande avec leurs
+composants, les caisses se chargent avec le gant complet. L'activation demande un joueur : non
+testée en jeu.
 
 ### 2026-11-09 (suite) — chapitre 16 : pour le PvP
 
