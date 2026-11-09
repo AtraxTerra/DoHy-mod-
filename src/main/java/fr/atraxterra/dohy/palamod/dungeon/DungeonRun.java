@@ -103,9 +103,16 @@ final class DungeonRun {
     private List<DungeonRoom.Door> doors = List.of();
     Phase phase = Phase.FIGHT;
 
-    /** Les monstres vivants de la salle, et leur type. */
-    final Map<UUID, MobKind> enemies = new LinkedHashMap<>();
-    final List<UUID> bosses = new ArrayList<>();
+    /**
+     * Les monstres vivants de la salle, et leur type. On garde les entites
+     * elles-memes, pas leurs UUID : une entite tout juste ajoutee n'est pas
+     * encore visible de {@code ServerLevel.getEntity}, et la croire morte
+     * finirait la salle avant le combat.
+     */
+    final Map<Mob, MobKind> enemies = new LinkedHashMap<>();
+    final List<Mob> bosses = new ArrayList<>();
+    /** Tout ce que la partie a fait apparaitre, pour l'effacer a coup sur. */
+    private final List<Entity> spawned = new ArrayList<>();
     private BossSpec bossSpec;
     private ServerBossEvent bar;
     private int abilityCooldown;
@@ -118,7 +125,7 @@ final class DungeonRun {
     private int buttonsTotal;
     List<Boost> boostOptions = List.of();
     final Set<UUID> boosted = new HashSet<>();
-    private UUID merchant;
+    private Villager merchant;
     private int ticks;
 
     DungeonRun(int id, ServerLevel level, Dungeon dungeon, int palier, ServerPlayer leader, List<ServerPlayer> party,
@@ -407,7 +414,8 @@ final class DungeonRun {
 
     /** Fait d'un monstre un monstre de la partie : compte, facteur de degats. */
     void track(Mob mob, MobKind kind, float taken) {
-        enemies.put(mob.getUUID(), kind);
+        enemies.put(mob, kind);
+        spawned.add(mob);
         DungeonManager.trackMob(mob.getUUID(), this, taken);
     }
 
@@ -419,17 +427,16 @@ final class DungeonRun {
     }
 
     private void checkFight() {
-        Iterator<Map.Entry<UUID, MobKind>> iterator = enemies.entrySet().iterator();
+        Iterator<Map.Entry<Mob, MobKind>> iterator = enemies.entrySet().iterator();
         while (iterator.hasNext()) {
-            UUID uuid = iterator.next().getKey();
-            Entity entity = level.getEntity(uuid);
-            if (entity == null || !entity.isAlive()) {
+            Mob mob = iterator.next().getKey();
+            if (mob.isRemoved() || !mob.isAlive()) {
                 iterator.remove();
-                DungeonManager.untrackMob(uuid);
+                DungeonManager.untrackMob(mob.getUUID());
             }
         }
         if (room.type == RoomType.BOSS) {
-            bosses.removeIf(uuid -> !enemies.containsKey(uuid));
+            bosses.removeIf(boss -> !enemies.containsKey(boss));
             if (bar != null) {
                 updateBar();
             }
@@ -453,8 +460,8 @@ final class DungeonRun {
 
     /** Les monstres retrouvent leur cible : un joueur du groupe. */
     private void retarget() {
-        for (UUID uuid : enemies.keySet()) {
-            if (level.getEntity(uuid) instanceof Mob mob && !mob.isNoAi()) {
+        for (Mob mob : enemies.keySet()) {
+            if (mob.isAlive() && !mob.isNoAi()) {
                 LivingEntity current = mob.getTarget();
                 if (current == null || !current.isAlive() || !(current instanceof Player)) {
                     ServerPlayer target = nearest(mob);
@@ -473,13 +480,14 @@ final class DungeonRun {
      */
     private void magePulse() {
         boolean buff = (ticks / 60) % 2 == 0;
-        for (Map.Entry<UUID, MobKind> entry : enemies.entrySet()) {
-            if (entry.getValue() != MobKind.MAGE || !(level.getEntity(entry.getKey()) instanceof Mob mage)) {
+        for (Map.Entry<Mob, MobKind> entry : enemies.entrySet()) {
+            Mob mage = entry.getKey();
+            if (entry.getValue() != MobKind.MAGE || !mage.isAlive()) {
                 continue;
             }
             if (buff) {
-                for (UUID other : enemies.keySet()) {
-                    if (level.getEntity(other) instanceof Mob ally && ally != mage && ally.distanceTo(mage) <= 10.0f) {
+                for (Mob ally : enemies.keySet()) {
+                    if (ally != mage && ally.isAlive() && ally.distanceTo(mage) <= 10.0f) {
                         ally.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 100, 0));
                         ally.addEffect(new MobEffectInstance(MobEffects.SPEED, 100, 0));
                     }
@@ -500,12 +508,9 @@ final class DungeonRun {
     }
 
     private void clearEnemies() {
-        for (UUID uuid : new ArrayList<>(enemies.keySet())) {
-            Entity entity = level.getEntity(uuid);
-            if (entity != null) {
-                entity.discard();
-            }
-            DungeonManager.untrackMob(uuid);
+        for (Mob mob : new ArrayList<>(enemies.keySet())) {
+            mob.discard();
+            DungeonManager.untrackMob(mob.getUUID());
         }
         enemies.clear();
     }
@@ -553,7 +558,7 @@ final class DungeonRun {
             }
             level.addFreshEntity(boss);
             track(boss, MobKind.TANK, (float) (capped / health));
-            bosses.add(boss.getUUID());
+            bosses.add(boss);
             level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, boss.getX(), boss.getY() + 1.0d, boss.getZ(),
                     1, 0.0d, 0.0d, 0.0d, 0.0d);
         }
@@ -574,8 +579,8 @@ final class DungeonRun {
             updateBar();
         }
         List<Mob> alive = new ArrayList<>();
-        for (UUID uuid : bosses) {
-            if (level.getEntity(uuid) instanceof Mob boss && boss.isAlive()) {
+        for (Mob boss : bosses) {
+            if (boss.isAlive() && !boss.isRemoved()) {
                 alive.add(boss);
             }
         }
@@ -608,8 +613,8 @@ final class DungeonRun {
     private void updateBar() {
         float health = 0.0f;
         float max = 0.0f;
-        for (UUID uuid : bosses) {
-            if (level.getEntity(uuid) instanceof LivingEntity boss && boss.isAlive()) {
+        for (Mob boss : bosses) {
+            if (boss.isAlive() && !boss.isRemoved()) {
                 health += boss.getHealth();
                 max += boss.getMaxHealth();
             }
@@ -683,7 +688,8 @@ final class DungeonRun {
         villager.setCustomName(Component.literal("Marchande").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
         villager.setCustomNameVisible(true);
         level.addFreshEntity(villager);
-        merchant = villager.getUUID();
+        merchant = villager;
+        spawned.add(villager);
     }
 
     // -- Fin de salle, coffre et portes ---------------------------------------------
@@ -826,6 +832,12 @@ final class DungeonRun {
             return;
         }
         DungeonRoom previous = room;
+        for (Entity entity : spawned) {
+            if (!entity.isRemoved()) {
+                entity.discard();
+            }
+        }
+        spawned.clear();
         discardIn(previous.outer());
         roomIndex++;
         room = DungeonRoom.build(level, dungeon, type, roomCenter(roomIndex), random);
@@ -926,10 +938,16 @@ final class DungeonRun {
     void cleanup() {
         phase = Phase.ENDED;
         hideBar();
-        for (UUID uuid : enemies.keySet()) {
-            DungeonManager.untrackMob(uuid);
+        for (Mob mob : enemies.keySet()) {
+            DungeonManager.untrackMob(mob.getUUID());
         }
         enemies.clear();
+        for (Entity entity : spawned) {
+            if (!entity.isRemoved()) {
+                entity.discard();
+            }
+        }
+        spawned.clear();
         if (room != null) {
             discardIn(room.outer().inflate(8.0d));
         }
@@ -940,7 +958,7 @@ final class DungeonRun {
     }
 
     boolean isMerchant(Entity entity) {
-        return merchant != null && merchant.equals(entity.getUUID());
+        return merchant != null && merchant == entity;
     }
 
     String leaderName() {
