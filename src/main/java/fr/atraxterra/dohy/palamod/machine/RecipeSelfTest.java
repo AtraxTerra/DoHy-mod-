@@ -70,13 +70,21 @@ public final class RecipeSelfTest {
         TreeMap<String, Integer> counts = new TreeMap<>();
         int ok = 0;
         List<String> problems = new ArrayList<>();
+        long start = System.currentTimeMillis();
+        int seen = 0;
         for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
+            if (System.currentTimeMillis() - start > 20_000) {
+                log("ARRET : plus de 20 s, " + seen + " recettes vues");
+                break;
+            }
             String id = holder.id().identifier().toString();
             String namespace = holder.id().identifier().getNamespace();
             if (!namespace.equals("palamod") && !namespace.equals("dohy")) {
                 continue;
             }
             Recipe<?> recipe = holder.value();
+            seen++;
+            log("test " + id);
             counts.merge(namespace + " " + recipe.getClass().getSimpleName(), 1, Integer::sum);
             try {
                 if (recipe instanceof ShapedRecipe shaped) {

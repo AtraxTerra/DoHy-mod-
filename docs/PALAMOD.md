@@ -1970,8 +1970,8 @@ les textures de **Palamod Recreated**, et un **coffre selon la note**.
   L'épée compte pour les coups portés à la main.
 - **Set antique** (wiki : une pièce par donjon au palier 100 — plastron à Talikus, bottes à
   Nimbria, casque à Vitalys, pantalon à Manelios) : bonus à plein dans tous les donjons et, complet,
-  **−10 %** de dégâts reçus et **+20 %** de dégâts en plus. Il n'a pas de texture d'origine : c'est
-  le légendaire de Talikus passé au bronze.
+  **−10 %** de dégâts reçus et **+20 %** de dégâts en plus. Hors des donjons, vol et invisibilité,
+  et une armure en 3D : voir § 25.
 
 ### Obtention — les récompenses uniques du wiki
 
@@ -2104,3 +2104,38 @@ n'est pas validé. Ici :
 ### Ce qui n'est pas porté
 
 Les sorts et le mana, au choix du joueur ; les parchemins de sort et de craft.
+
+## 25. Le stuff antique
+
+Demande du joueur : « les bonnes textures et les bons effets ». **Le wiki ne décrit pas l'armure
+antique** : il ne la nomme que comme récompense unique du palier 100 (Plastron antique à Talikus,
+Botte Antique à Nimbria, Casque Antique à Vitalys, Pantalon Antique à Manelios). Les seules traces
+de ses effets sont dans les patchnotes de Paladium V11 :
+- 11.0.0.1 : « correction de la description de l'effet d'invisibilité sur l'armure antique » ;
+- 11.0.2.1 : « correction de pouvoir voler en retirant l'armure antique » ;
+- 11.0.4.1 : « correction de l'affichage de l'armure antique » (elle a un rendu à part).
+
+### Effets (choix du joueur)
+
+- **Set complet, hors des donjons : vol et invisibilité.** Le vol est donné tant que les quatre
+  pièces sont portées ; il est retiré dès qu'une manque (le bogue de la 11.0.2.1), et qui volait
+  reçoit 5 s de chute lente. L'invisibilité est entretenue sans particules ; une potion
+  d'invisibilité bue à côté n'est pas touchée. Le vol n'est retiré qu'à qui l'a reçu de l'armure
+  (créatif et spectateur gardent le leur).
+- **En donjon** : pas de vol (il casserait les salles), le bonus de donjon du § 23 — −12 % par
+  pièce, et au set complet −10 % de dégâts reçus et +20 % de dégâts.
+- Statistiques hors donjon et réparation inchangées (§ 23 : comme l'endium, essence concentrée).
+
+### Textures et modèle
+
+La seule armure antique dessinée est l'« Ancient armor » de **Palamod Recreated** (SILWOX /
+Solea Pixel), déjà source des textures de donjon au choix du joueur :
+- **icônes** : leurs rendus 3D (256 à 512 px), recadrés et ramenés à **32 × 32** ;
+- **armure portée en 3D** : leurs quatre modèles Java (`Modelancien_helmet` et suivants), traduits
+  de leur bytecode par `tools/model2java.py` sans retoucher les cubes, sur leur texture de
+  256 × 256. NeoForge remplace le modèle d'armure plat (`IClientItemExtensions`) et recopie les
+  poses du joueur sur le modèle 3D. Les couches plates au bronze ne restent qu'en secours ; pas de
+  garniture sur l'antique.
+
+Leurs pièces « avancées » (fusionnées avec des pierres légendaires), leur boîte et leur clé
+antiques et leur marteau antique sont leurs propres inventions, pas reprises.
