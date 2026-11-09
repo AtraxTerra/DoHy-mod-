@@ -1799,3 +1799,151 @@ La pierre légendaire corrompue (événement de novembre), les orbes du chaos (8
 chaos), les modules de compétences de familier qui raccourcissaient les recharges, la fiche de
 profil (`/legendarystone`), les particules complètes de `LengendaryStoneFx` (une double hélice de
 la couleur de la pierre les remplace).
+
+## 22. Donjons : le cœur jouable (chapitre 18)
+
+Les donjons sont de la V12 de Paladium, postérieurs à la 10.3.0 de PalaMod : **aucun code
+d'origine**. La source est le wiki (« Univers des donjons » et les quatre pages « Donjon … »),
+qui donne les règles, les noms et les récompenses, mais presque aucun chiffre. Tout ce qui
+manque est de DoHy et noté comme tel. Ce chapitre est le premier de quatre, découpés avec le
+joueur : 18 cœur jouable ; 19 équipement, essences et notes D à S ; 20 sorts et mana ; 21 runes
+et arbre de compétences.
+
+### Les quatre donjons
+
+| Donjon | Métier | Thème des salles | Monstres (mêlée, distance, mage, volant, assassin) |
+|---|---|---|---|
+| Talikus | Fermier | boue tassée, épicéa, champilampes | zombie villageois, squelette, sorcière, blaze, araignée |
+| Nimbria | Mineur | ardoise des abîmes, fer brut | zombie, vagabond, évocateur, blaze, araignée venimeuse |
+| Vitalys | Chasseur | pierre moussue, jungle, os | zombie momifié, squelette des marais, sorcière, blaze, araignée |
+| Manelios | Alchimiste | prismarine, lanternes marines | noyé, noyé au trident, évocateur, blaze, araignée |
+
+### Entrée — la clé fait le hub
+
+Sur Paladium, on entrait par un hub dédié. Ici, **clic droit avec la clé** : un écran de coffre
+de 100 paliers (45 par page). Vert : réussi, rejouable ; jaune : le suivant ; gris : verrouillé.
+Les paliers en 5 et en 0 portent un crâne. Il faut réussir un palier pour ouvrir le suivant
+(wiki). **Le groupe** : le chef et jusqu'à trois joueurs à 6 blocs de lui (« solo ou jusqu'à 4 »).
+Seul le chef a besoin d'une clé (wiki), **consommée à l'entrée** (choix du joueur).
+
+**Clés** (wiki : paladium vert, invoker stone, stick en paladium, lingot de paladium et
+l'ingrédient du métier ; la grille n'est que dans les images) : pierre d'invocation en haut,
+sticks en paladium de part et d'autre de l'ingrédient (blé, cobblestone, chair putréfiée,
+coquelicot), lingots de paladium et lingot de paladium vert en bas. Icône : la clé en paladium
+de PalaMod, teintée.
+
+### Un palier
+
+Une dimension vide, `palamod:dungeon` (monde plat sans couche, sans ciel ni apparition
+naturelle), une **région par partie** (1 024 blocs d'écart, compteur gardé sur l'overworld,
+jamais réutilisée). Les salles sont **construites par le code** dans les blocs du thème, puis
+effacées ; tant qu'une salle existe, elle tient ses chunks chargés.
+
+- **Trois salles.** La première est un **combat** (wiki : « obligatoire »). À la fin d'une
+  salle, des **portes** s'ouvrent dans le mur du fond : **une à trois** au choix (wiki) entre
+  combat, énigme, boost et marchande, chacune vitrée de sa couleur sous un panneau. On choisit en
+  y avançant. La troisième salle d'un palier en 5 est celle du **mini-boss**, d'un palier en 0
+  celle du **boss**. Après la troisième, la porte de **sortie** : le palier est réussi.
+- **Combat** : 2 vagues, 3 à partir du palier 50 ; `3 + palier / 25` monstres par vague, **2 de
+  plus par joueur** au-delà du premier (« plus de joueurs, plus d'ennemis »).
+- **Énigme** : 3 à 5 boutons sur les murs, à trouver et presser.
+- **Boost** : un autel (table d'enchantement) propose 3 bonus tirés parmi force I, résistance I,
+  régénération I, vitesse I, absorption II, vie supplémentaire I, résistance au feu ; un par
+  joueur, 10 minutes, retirés à la fin du palier.
+- **Marchande** : une villageoise immobile vend en argent DoHy, prix × `(1 + palier / 50)` —
+  pomme dorée 1 500, steaks ×16 300, potion de soin II jetable 800, régénération 600, flèches ×32
+  200, perles ×4 400, totem 20 000.
+
+### Monstres
+
+Les six types du wiki, des monstres vanilla du thème, nommés (« Guerrier de Talikus »…), colorés
+selon la tranche du palier — **Jaune** 1–25, **Orange** 26–50, **Rouge** 51–75, **Noire** 76–100
+(le wiki en fait des variantes de difficulté, sans chiffres).
+
+| Type | Vie au palier 1 | Dès le palier | Rôle |
+|---|---|---|---|
+| Mêlée | 22 | 1 | fonce ; **à Manelios, deux petits noyés à sa mort** (wiki : « se démultiplie ») |
+| Distance | 20 | 1 | tire en gardant ses distances |
+| Volant | 20 | 5 | blaze |
+| Mage | 30 | 10 | immobile, **aucun dégât** (wiki) : toutes les 3 s, force et vitesse aux monstres à 10 blocs, ou lenteur et faiblesse aux joueurs, en alternance |
+| Assassin | 18 | 10 | araignée qui bondit |
+| Tank | 60 | 20 | ×1,35 de taille, armure 8, recul presque nul |
+
+Vie × `1 + 0,06 (palier − 1)` (×6,9 au palier 100), dégâts × `1 + 0,03 (palier − 1)`
+(×4 au palier 100), y compris leurs flèches et boules de feu. Ils ne lâchent rien (le butin est
+dans les coffres) et ne se battent pas entre eux. Un monstre né d'un autre (vex, cavalier)
+rejoint la salle.
+
+### Mini-boss et boss
+
+Le wiki en nomme cinq de chaque par donjon, sans dire où ils apparaissent ; la table des
+récompenses de boss va de 5 en 5. **Mini-boss aux paliers en 5, boss aux paliers en 0**, à tour
+de rôle (palier 5 : le mini-boss V11, 15 : le premier de la V12…). Chacun est un monstre vanilla
+agrandi, nommé, avec deux ou trois capacités toutes les 3,5 à 7 s : ruée, onde de choc, renforts,
+salve de boules de feu, attraction, téléportation dans le dos, cercle de feu, enracinement.
+Deux mini-boss sont des **duos** (wiki : Nimbria et Manelios), chacun à 60 % de la vie.
+
+Vie : `120` (mini-boss) ou `250` (boss) × `1 + 0,05 (palier − 1)` × `1 + 0,6 (joueurs − 1)`.
+Au-delà du plafond vanilla de 1 024 points, le boss encaisse moins de dégâts dans la même
+proportion. Barre de boss.
+
+### Coffres et sac
+
+À la fin d'une salle de combat, d'énigme ou de boss, **un coffre au centre, individuel** (wiki :
+« chacun ses récompenses, personne ne peut voler celles d'un autre »). Le butin va dans le
+**sac**, livré **à la fin du palier** (wiki) ; un coffre laissé est ramassé en partant.
+
+| Sac | Contenance |
+|---|---|
+| sans sac | 9 piles |
+| Sac de donjon en cuir (cuir, coffre, entonnoir, invoker stone) | 18 |
+| Sac de donjon tier 2 (Nimbria, paliers 40 et 50) | 27 |
+| Sac de donjon tier 3 (Nimbria, paliers 60 et 70) | 36 |
+
+Le meilleur sac de l'inventaire à l'entrée fixe la contenance ; ce qui dépasse est perdu.
+`/donjon sac` le montre.
+
+**Butin** (wiki, cumulatif : tout ce qui est débloqué au palier ou avant). Le wiki ne donne
+**aucun taux ni aucune quantité** : les poids et les quantités sont de DoHy.
+- un coffre tire `2 + palier / 50` fois dans la réserve du donjon ; quantités × `1 + palier / 50` ;
+- un coffre de boss tire en plus 1 fois (2 après un boss) dans la **table des boss** : armures en
+  paladium P4U3, épées S5U3F2 et S5U3L3, pioche E5U3, blocs, paladium vert, invoker stone,
+  bouteilles d'XP de métier (1 000), fragment d'endium ; puis l'armure d'endium mixte P4U3, l'étoile
+  du Nether, la tête de wither, la pépite d'endium, la pierre légendaire aléatoire et la pioche des
+  dieux niveau 60, aux paliers du tableau du wiki ;
+- les **récompenses uniques** du palier exact tombent une fois sur deux, à la sortie. Seuls les
+  sacs de Nimbria existent pour l'instant.
+
+**Laissés aux chapitres suivants** : épées et armures de donjon, essences, parchemins de sort,
+runes, parchemins de craft, pièces antiques. **Absents de DoHy**, donc ignorés : obsidienne
+infusée, têtes de thirsty et de prédator, totem fleuri, bonbons, jetpack, défense d'éléphant,
+pièce de lune, double XP, têtes de wither passive et suprême.
+
+### Fin du palier
+
+- **Réussite** : sac livré (ou jeté au sol s'il ne tient pas), XP du métier du donjon
+  `600 + 40 × palier` (wiki : « XP Métier » sans chiffre), palier noté, retour au point d'entrée.
+- **Échec** (choix du joueur) : la **mort** fait sortir — soigné, ramené, **inventaire gardé**,
+  sac perdu, clé non rendue. De même `/donjon quitter` et la déconnexion. Sans plus personne
+  dedans, le palier est échoué et la région effacée.
+- Les parties ne vivent qu'en mémoire : un arrêt du serveur ramène tout le monde, sans rien
+  livrer ; qui se reconnecte dans la dimension sans partie y est renvoyé à son entrée.
+
+### Règles de la dimension
+
+Rien ne s'y casse ni ne s'y pose (sauf en créatif), les explosions et les monstres n'y dégradent
+rien, rien ne s'y jette (l'objet revient dans l'inventaire), aucun bloc à interface ne s'y ouvre
+hors du coffre et de l'autel. Un joueur sorti de sa salle (perle, chorus, toit) y est ramené.
+
+### Bouteilles d'XP de métier
+
+`job_bottle_farmer/miner/hunter/alchemist` (textures de PalaMod) : 1 000 XP du métier, clic droit
+pour une, accroupi pour la pile ; l'XP passe par les bonus du joueur.
+
+### Vérifié au démarrage
+
+Par un auto-test temporaire (hors de la PR) : construction des cinq salles des quatre donjons,
+six types de monstres et leurs variantes, petits noyés, quarante boss créés, boss au plafond de
+vie, boutons de l'énigme qui ouvrent les portes, coffres, tirages de butin aux paliers 1 à 100,
+déroulé complet d'un palier jusqu'à la sortie et effacement de la région, chunks libérés. Le jeu
+avec un joueur (portes, coffres, menus, mort) reste à éprouver en jeu.
