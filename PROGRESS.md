@@ -97,6 +97,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 18 | **Donjons, cœur jouable** : 4 clés et l'écran des 100 paliers, groupe de 4, dimension `palamod:dungeon`, salles construites (combat, énigme, boost, marchande, mini-boss en 5, boss en 0), 6 types de monstres renforcés au palier, 40 boss nommés et leurs capacités, coffres individuels, sacs de donjon (9/18/27/36 piles), butin du wiki, XP de métier, mort = palier échoué ; bouteilles d'XP de métier — sans équipement, essences, notes, sorts, runes ni arbre (chapitres 19 à 21) | fait |
 | 19 | **Donjons, équipement** : 3 armures et 3 épées par donjon (basique, renforcée, légendaire ; fortes surtout en donjon, à plein dans le leur), set antique du palier 100, récompenses uniques du wiki, essences par élément et tier (réparation à l'enclume), note D à S et son coffre — textures de Palamod Recreated | fait |
 | 20 | **Donjons, runes et arbre** : niveau RPG (XP des salles, 100 niveaux), points (niveau, paliers, métiers 1/5), arbre de 4 branches × 8 nœuds en écran de coffre (bouton d'inventaire, `/profil`, `/menu`), statistiques RPG en donjon seulement ; runes commune, rare, épique (coffres, palamachine, enclume, grinder) — sorts et mana sautés au choix du joueur | fait |
+| 20b | **Stuff antique** : icônes et armure portée en 3D de Palamod Recreated (modèles traduits de leur bytecode), vol et invisibilité au set complet hors donjon (patchnotes V11), bonus de donjon dedans | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -161,6 +162,40 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-09 (suite) — stuff antique et vérification des recettes
+
+**Demande** : « porte le stuff Antique, les bonnes textures et les bons effets tel que sur le
+wiki », puis « vérifie que toutes les recettes nécessaires sont fonctionnelles ».
+
+**Le wiki ne décrit pas l'antique.** Recherche : wiki (catégories donjons, items, armures,
+événements), patchnotes V9 à V12, site de Paladium. Seules les patchnotes V11 parlent de ses effets
+(invisibilité, vol) et de son rendu à part. Choix du joueur : vol et invisibilité au set complet
+hors donjon, et le bonus de donjon gardé dedans ; l'armure 3D de Palamod Recreated portée en 26.2.
+Détail : `docs/PALAMOD.md` § 25.
+
+**Modèles 3D** : quatre `createBodyLayer` de Blockbench traduits de leur bytecode par un petit
+interpréteur de pile (`tools/model2java.py`), 70 cubes. En 26.2, le chapeau est sous la tête, et
+NeoForge recopie les poses du modèle d'armure d'origine sur le modèle rendu.
+
+**Vérifié au démarrage, par un auto-test temporaire** (joueur factice) : vol et invisibilité au set
+complet hors donjon ; chute lente quand une pièce part en plein vol ; une vraie potion
+d'invisibilité gardée ; en donjon, ni vol ni invisibilité mais le bonus de donjon. **Pas vérifié** :
+le rendu 3D, qui ne se voit qu'en client.
+
+**Recettes** :
+- les 218 recettes JSON (195 avec forme, 19 sans forme, 1 cuisson, 3 spéciales) se chargent : le
+  serveur démarre sans aucune erreur de recette, et `check_assets.py` contrôlait déjà objets,
+  grilles et clés ;
+- aucun conflit entre nos recettes (même grille, miroir compris, ou mêmes ingrédients sans forme),
+  et les 9 recettes faites seulement d'objets vanilla n'imitent aucune recette vanilla ;
+- palamachine : 36 recettes, tous les noms enregistrés, aucune entrée en double ; grinder (19) et
+  chaudron (4) : objets typés, contrôlés à la compilation ;
+- une seule recette inutilisable en pratique : `green_paladium_ingot_from_particles`, la particule
+  de paladium vert ne s'obtenant nulle part (chez Paladium, elle sortait du lucky block d'août, non
+  porté). Laissée telle quelle ;
+- pas fait : l'auto-test en jeu de chaque recette (assemblage, palamachine, grinder, chaudron). Il
+  est écrit, mais GitHub Actions ne démarrait plus aucun job ce soir-là.
 
 ### 2026-11-09 (suite) — chapitre 20 : runes et arbre de compétences
 
