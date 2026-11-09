@@ -43,11 +43,10 @@ import java.util.function.IntPredicate;
  *       du palier exact.</li>
  * </ul>
  *
- * <p>Ce qui n'existe pas encore dans DoHy est laisse de cote, et vient avec
- * les chapitres suivants : parchemins de sort et runes. Les parchemins de
- * craft ne sont pas portes. Les objets du wiki qui ne sont
- * ni dans PalaMod ni dans vanilla (Obsidienne infusee, Tete de thirsty, Totem
- * fleuri, Bonbons, Jetpack...) aussi. Une entree introuvable au registre est
+ * <p>Les parchemins de sort (les sorts sont laisses de cote, au choix du
+ * joueur) et les parchemins de craft ne sont pas portes, ni les objets du
+ * wiki qui ne sont ni dans PalaMod ni dans vanilla (Obsidienne infusee, Tete
+ * de thirsty, Totem fleuri, Bonbons, Jetpack...). Une entree introuvable au registre est
  * ignoree, pas une erreur.
  */
 final class DungeonRewards {
@@ -162,11 +161,25 @@ final class DungeonRewards {
         // l'equipement qu'elle repare. Le wiki ne les liste qu'une fois
         // (« Essence de tier 2 », Talikus, palier 40) mais en fait l'unique
         // moyen de reparer l'equipement de donjon : toutes les reserves en ont.
+        // Les runes (wiki, ligne par ligne) : fragment commun au palier 10, rare
+        // au 25 (Talikus, Nimbria) ou au 30 ; rune commune au 40 (Vitalys : 50),
+        // rare au 50 ; l'epique n'est que dans les exemples du palier 60.
+        boolean late = dungeon == Dungeon.VITALYS || dungeon == Dungeon.MANELIOS;
+        entries.add(Entry.of(10, 4, "palamod:rune_fragment_common", 1, 3));
+        entries.add(Entry.of(late ? 30 : 25, 3, "palamod:rune_fragment_rare", 1, 2));
+        entries.add(rune(dungeon == Dungeon.VITALYS ? 50 : 40, 2, "palamod:rune_common"));
+        entries.add(rune(50, 1, "palamod:rune_rare"));
+        entries.add(rune(60, 1, "palamod:rune_epic"));
         String element = "palamod:" + dungeon.element() + "_essence";
         entries.add(Entry.of(EssenceTier.FRAGMENT.from(), 3, element + EssenceTier.FRAGMENT.suffix(), 1, 2));
         entries.add(Entry.of(EssenceTier.ESSENCE.from(), 2, element + EssenceTier.ESSENCE.suffix(), 1, 1));
         entries.add(Entry.of(EssenceTier.CONCENTRATE.from(), 1, element + EssenceTier.CONCENTRATE.suffix(), 1, 1));
         return entries;
+    }
+
+    /** Une rune tiree avec ses statistiques. */
+    private static Entry rune(int from, int weight, String id) {
+        return Entry.of(from, weight, id, 1, 1).with((level, stack) -> RuneItem.ensure(stack, level.getRandom()));
     }
 
     /** « Tank en amethyste rempli de ... » : plein. */
