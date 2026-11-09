@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SMS",
+    " H ",
+    " B "
+  ],
+  "key": {
+    "S": "palamod:titane_stick",
+    "M": "palamod:titane_stick",
+    "H": "palamod:titane_horn",
+    "B": "palamod:titane_block"
+  },
+  "result": {
+    "id": "palamod:titane_horn",
+    "count": 1
+  }
+}

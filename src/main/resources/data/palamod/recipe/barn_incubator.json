@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "GEG",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:gray_terracotta",
+    "G": "minecraft:glass",
+    "E": "palamod:heal_orb"
+  },
+  "result": {
+    "id": "palamod:barn_incubator",
+    "count": 1
+  }
+}

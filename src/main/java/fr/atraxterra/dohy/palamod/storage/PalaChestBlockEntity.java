@@ -27,14 +27,15 @@ import java.util.stream.IntStream;
  */
 public class PalaChestBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
 
-    private static final int[] ALL_SLOTS = IntStream.range(0, ChestTier.SIZE).toArray();
-
-    private final NonNullList<ItemStack> items = NonNullList.withSize(ChestTier.SIZE, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items;
+    private final int[] allSlots;
     private final ChestTier tier;
 
     public PalaChestBlockEntity(BlockPos pos, BlockState state) {
         super(PalaStorage.CHEST.get(), pos, state);
         this.tier = state.getBlock() instanceof PalaChestBlock chest ? chest.tier() : ChestTier.AMETHYST;
+        this.items = NonNullList.withSize(tier.size(), ItemStack.EMPTY);
+        this.allSlots = IntStream.range(0, tier.size()).toArray();
     }
 
     public ChestTier tier() {
@@ -107,7 +108,7 @@ public class PalaChestBlockEntity extends BlockEntity implements WorldlyContaine
 
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return ALL_SLOTS;
+        return allSlots;
     }
 
     @Override

@@ -20,14 +20,13 @@ import net.minecraft.world.entity.player.Inventory;
  */
 public class PalaChestScreen extends AbstractContainerScreen<PalaChestMenu> {
 
-    private static final int PANEL_WIDTH = 240;
     private static final int PANEL_HEIGHT = 256;
     private static final int TEXTURE_SIZE = 256;
 
     private final Identifier texture;
 
     public PalaChestScreen(PalaChestMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, PANEL_WIDTH, PANEL_HEIGHT);
+        super(menu, inventory, title, menu.tier().panelWidth(), PANEL_HEIGHT);
         this.texture = Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE,
                 "textures/gui/" + menu.tier().key() + ".png");
     }
@@ -35,7 +34,7 @@ public class PalaChestScreen extends AbstractContainerScreen<PalaChestMenu> {
     @Override
     public void extractBackground(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
         extractor.blit(RenderPipelines.GUI_TEXTURED, texture, getLeftPos(), getTopPos(),
-                0.0f, 0.0f, PANEL_WIDTH, PANEL_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
+                0.0f, 0.0f, getMenu().tier().panelWidth(), PANEL_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
     }
 
     @Override

@@ -1,0 +1,92 @@
+{
+  "textures": {
+    "flask": "palamod:block/extractor_flask_0",
+    "particle": "palamod:block/extractor_flask_0"
+  },
+  "elements": [
+    {
+      "from": [
+        4.5,
+        0,
+        3.5
+      ],
+      "to": [
+        11.5,
+        7,
+        3.5
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          3.5
+        ],
+        "axis": "y",
+        "angle": 45
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#flask",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#flask",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        0,
+        0
+      ],
+      "to": [
+        8,
+        7,
+        7
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          3.5
+        ],
+        "axis": "y",
+        "angle": 45
+      },
+      "shade": false,
+      "faces": {
+        "east": {
+          "texture": "#flask",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#flask",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

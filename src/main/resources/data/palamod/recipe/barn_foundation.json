@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XPX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:gray_terracotta",
+    "P": "palamod:paladium_block"
+  },
+  "result": {
+    "id": "palamod:barn_foundation",
+    "count": 1
+  }
+}

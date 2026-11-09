@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    "BTB",
+    " I "
+  ],
+  "key": {
+    "I": "palamod:paladium_ingot",
+    "B": "palamod:paladium_block",
+    "T": "minecraft:bone_block"
+  },
+  "result": {
+    "id": "palamod:paladium_horn",
+    "count": 1
+  }
+}

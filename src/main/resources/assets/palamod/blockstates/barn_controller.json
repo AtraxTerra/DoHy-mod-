@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "palamod:block/barn_controller"
+    }
+  }
+}

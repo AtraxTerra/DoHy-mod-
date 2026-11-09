@@ -20,7 +20,9 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Le portail ({@code TileEntityAlchemistPortalController},
@@ -66,6 +68,8 @@ public class PortalControllerBlockEntity extends BlockEntity {
     /** Le centre du trou quand le portail est ouvert, {@code null} sinon. */
     private BlockPos open;
     private int timer;
+    /** Les objets refuses deja signales : on ne le dit qu'une fois par objet. */
+    private final Set<Integer> hinted = new HashSet<>();
 
     public PortalControllerBlockEntity(BlockPos pos, BlockState state) {
         super(PalaAlchemist.PORTAL_CONTROLLER.get(), pos, state);
@@ -254,6 +258,15 @@ public class PortalControllerBlockEntity extends BlockEntity {
             }
             int units = unitsOf(stack, tier);
             if (units <= 0) {
+                // Rien ne se passait, sans un mot, avec une fiole vide ou la
+                // mauvaise seve : le portail semblait casse.
+                if (hinted.size() > 256) {
+                    hinted.clear();
+                }
+                if (hinted.add(entity.getId())) {
+                    AlchemistXp.actionBar(player, Component.translatable("message.palamod.portal.wrong_item",
+                            tier.sap().displayName()).withStyle(ChatFormatting.GOLD));
+                }
                 continue;
             }
             if (!AlchemistXp.allows(player, getBlockState().getBlock())) {

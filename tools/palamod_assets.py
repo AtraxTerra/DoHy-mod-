@@ -1305,17 +1305,36 @@ def main():
             "east": [0.75, 0.25, 1, 1.25], "up": [0.25, 0, 0.75, 0.25],
             "down": [0.75, 0, 1.25, 0.25], "north": [1, 0.25, 1.5, 1.25]})},
     ]
-    for name, texture, metal, label_fr, label_en in (
-            ("amethyst_chest", "models/AmethystChest.png", "amethyst",
+    # Les cinq coffres de PalaMod, le coffre de l'End en paladium, et le coffre
+    # en or d'Iron Chests (dont la texture n'est que dans son jar).
+    iron_chests = os.path.join(os.path.dirname(root[1].rstrip("/")), "ironchest-prod") if root[1] else None
+    for name, texture, particle, label_fr, label_en in (
+            ("amethyst_chest", "models/AmethystChest.png", "%s:block/amethyst_block" % NS,
              "Coffre en amethyste", "Amethyst Chest"),
-            ("titane_chest", "models/TitaneChest.png", "titane",
-             "Coffre en titane", "Titane Chest")):
-        if not copy_texture(root, texture, "block/%s.png" % name, wrong_size, expected=(64, 64)):
+            ("titane_chest", "models/TitaneChest.png", "%s:block/titane_block" % NS,
+             "Coffre en titane", "Titane Chest"),
+            ("paladium_chest", "models/PaladiumChest.png", "%s:block/paladium_block" % NS,
+             "Coffre en paladium", "Paladium Chest"),
+            ("green_paladium_chest", "models/gpaladium_Chest.png", "%s:block/green_paladium_block" % NS,
+             "Coffre en paladium vert", "Green Paladium Chest"),
+            ("endium_chest", "models/EndiumChest.png", "%s:block/endium_block" % NS,
+             "Coffre en endium", "Endium Chest"),
+            ("paladium_ender_chest", "models/PaladiumEnderChest.png", "minecraft:block/obsidian",
+             "Coffre de l'End en paladium", "Paladium Ender Chest"),
+            ("gold_chest", None, "minecraft:block/gold_block", "Coffre en or", "Gold Chest")):
+        if texture is None:
+            source = os.path.join(iron_chests or "", "assets", "ironchest", "textures", "model", "goldchest.png")
+            if iron_chests and os.path.exists(source) and png_size(source) == (64, 64):
+                target = os.path.join(RES, "assets", NS, "textures", "block", "%s.png" % name)
+                shutil.copyfile(source, target)
+            else:
+                missing.append("ironchest:model/goldchest.png")
+        elif not copy_texture(root, texture, "block/%s.png" % name, wrong_size, expected=(64, 64)):
             missing.append(texture)
         write("assets/%s/models/block/%s.json" % (NS, name), {
             "parent": "minecraft:block/block",
             "textures": {"chest": "%s:block/%s" % (NS, name),
-                         "particle": "%s:block/%s_block" % (NS, metal)},
+                         "particle": particle},
             "elements": chest_elements,
         })
         write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {
@@ -1327,18 +1346,42 @@ def main():
         write("assets/%s/items/%s.json" % (NS, name), {
             "model": {"type": "minecraft:model", "model": "%s:block/%s" % (NS, name)},
         })
-        write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
-            "type": "minecraft:block",
-            "pools": [{
-                "rolls": 1,
-                "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, name)}],
-                "conditions": [{"condition": "minecraft:survives_explosion"}],
-            }],
-        })
+        if name == "paladium_ender_chest":
+            # Comme le coffre de l'End vanilla : 8 obsidiennes, lui-meme au
+            # Toucher de soie.
+            write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
+                "type": "minecraft:block",
+                "pools": [{"rolls": 1, "entries": [{"type": "minecraft:alternatives", "children": [
+                    {"type": "minecraft:item", "name": "%s:%s" % (NS, name), "conditions": [{
+                        "condition": "minecraft:match_tool", "predicate": {"predicates": {
+                            "minecraft:enchantments": [{"enchantments": "minecraft:silk_touch",
+                                                        "levels": {"min": 1}}]}}}]},
+                    {"type": "minecraft:item", "name": "minecraft:obsidian", "functions": [
+                        {"function": "minecraft:set_count", "count": 8},
+                        {"function": "minecraft:explosion_decay"}]}]}]}]})
+        else:
+            write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
+                "type": "minecraft:block",
+                "pools": [{
+                    "rolls": 1,
+                    "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, name)}],
+                    "conditions": [{"condition": "minecraft:survives_explosion"}],
+                }],
+            })
         fr["block.%s.%s" % (NS, name)] = label_fr
         en["block.%s.%s" % (NS, name)] = label_en
         tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
-        tag("minecraft/tags/block/needs_iron_tool.json", ["%s:%s" % (NS, name)])
+        if name != "gold_chest":
+            tag("minecraft/tags/block/needs_iron_tool.json", ["%s:%s" % (NS, name)])
+    fr["container.%s.paladium_ender_chest" % NS] = "Coffre de l'End en paladium"
+    en["container.%s.paladium_ender_chest" % NS] = "Paladium Ender Chest"
+    # PaladiumEnderChest CraftRegistry : un coffre de l'End, sans rien d'autre.
+    shapeless("paladium_ender_chest", ["minecraft:ender_chest"], "%s:paladium_ender_chest" % NS)
+    # Iron Chests : huit lingots d'or autour d'un coffre en fer. Le coffre en fer
+    # n'est pas porte : le coffre vanilla le remplace, entoure de 4 lingots de
+    # fer et 4 d'or — le fer qu'aurait coute le coffre en fer, en partie.
+    shaped("gold_chest", ["GIG", "ICI", "GIG"], {"G": "minecraft:gold_ingot", "I": "minecraft:iron_ingot",
+                                                  "C": "minecraft:chest"}, "%s:gold_chest" % NS)
 
     # Ce qu'aucun outil de zone ne casse (AreaMining.IMMUNE).
     tag("%s/tags/block/area_mining_immune.json" % NS,
@@ -1679,11 +1722,12 @@ def main():
             "config": {"log": {"Name": "%s:%s_log" % (NS, wood), "Properties": {"axis": "y"}},
                        "leaves": {"Name": "%s:%s" % (NS, leaves)}}})
         # BaseWorldGenerator : un essai par essence et par chunk, sur de
-        # l'herbe nue, nextInt(100) <= 8 soit 9 % — une chance sur 11 ici.
+        # l'herbe nue, nextInt(100) <= 8 soit 9 % — une chance sur 11. Divise
+        # par deux a la demande du joueur : une sur 22.
         write("data/%s/worldgen/placed_feature/%s_tree.json" % (NS, wood), {
             "feature": "%s:%s_tree" % (NS, wood),
             "placement": [
-                {"type": "minecraft:rarity_filter", "chance": 11},
+                {"type": "minecraft:rarity_filter", "chance": 22},
                 {"type": "minecraft:in_square"},
                 {"type": "minecraft:surface_water_depth_filter", "max_water_depth": 0},
                 {"type": "minecraft:heightmap", "heightmap": "OCEAN_FLOOR"},
@@ -1797,11 +1841,32 @@ def main():
             "textures": {"tape": "%s:block/extractor_%s" % (NS, state),
                          "particle": "%s:block/extractor_%s" % (NS, state)},
             "elements": extractor_elements})
+    # La fiole : TileEntityExtractorRenderer la dessine au pied de l'extracteur,
+    # de cote (0,5 ; 0,25 pour l'angle 0), a 0,45 de sa taille. Ici deux
+    # plans croises de 7 pixels, comme une fleur, avec l'icone de la fiole.
+    for level in range(7):
+        tex("items/alchimiste/flask%d.png" % level, "block/extractor_flask_%d.png" % level)
+        sprite = "%s:block/extractor_flask_%d" % (NS, level)
+        rotation = {"origin": [8, 0, 3.5], "axis": "y", "angle": 45}
+        write("assets/%s/models/block/extractor_flask_%d.json" % (NS, level), {
+            "textures": {"flask": sprite, "particle": sprite},
+            "elements": [
+                {"from": [4.5, 0, 3.5], "to": [11.5, 7, 3.5], "rotation": rotation, "shade": False, "faces": {
+                    "north": {"texture": "#flask", "uv": [0, 0, 16, 16]},
+                    "south": {"texture": "#flask", "uv": [0, 0, 16, 16]}}},
+                {"from": [8, 0, 0], "to": [8, 7, 7], "rotation": rotation, "shade": False, "faces": {
+                    "east": {"texture": "#flask", "uv": [0, 0, 16, 16]},
+                    "west": {"texture": "#flask", "uv": [0, 0, 16, 16]}}}]})
     rotations = {"east": 0, "south": 90, "west": 180, "north": 270}
-    write("assets/%s/blockstates/extractor.json" % NS, {"variants": {
-        "enabled=%s,facing=%s" % (enabled, facing): {
-            "model": "%s:block/extractor_%s" % (NS, "on" if enabled == "true" else "off"), "y": rotation}
-        for enabled in ("true", "false") for facing, rotation in rotations.items()}})
+    parts = []
+    for facing, rotation in rotations.items():
+        for enabled in ("true", "false"):
+            parts.append({"when": {"facing": facing, "enabled": enabled}, "apply": {
+                "model": "%s:block/extractor_%s" % (NS, "on" if enabled == "true" else "off"), "y": rotation}})
+        for shown in range(1, 8):
+            parts.append({"when": {"facing": facing, "flask": str(shown)}, "apply": {
+                "model": "%s:block/extractor_flask_%d" % (NS, shown - 1), "y": rotation}})
+    write("assets/%s/blockstates/extractor.json" % NS, {"multipart": parts})
     write("assets/%s/models/item/extractor.json" % NS, {"parent": "%s:block/extractor_off" % NS})
     write("assets/%s/items/extractor.json" % NS,
           {"model": {"type": "minecraft:model", "model": "%s:block/extractor_off" % NS}})
@@ -1976,6 +2041,14 @@ def main():
     write("data/%s/loot_table/blocks/alchemist_portal.json" % NS, {"type": "minecraft:block", "pools": []})
     label("block", "alchemist_portal", "Portail d'alchimiste", "Alchemist Portal")
     label("message", "portal.wrong_key", "Cette cle n'ouvre pas ce portail", "This key doesn't open this portal")
+    label("message", "portal.wrong_item", "Ce portail ne prend que de la seve de %s, en fiole pleine ou en tank",
+          "This portal only takes %s sap, in a full flask or a tank")
+    label("message", "cauldron.fill", "Remplissez d'abord le bassin : jetez-y (touche Q) un seau d'eau angelique",
+          "Fill the basin first: drop (Q key) a bucket of angelic water into it")
+    label("message", "cauldron.need_log", "Il manque une buche de jacaranda, de judee, d'erable ou d'ostrya",
+          "Missing a jacaranda, judeecercis, maple or ostrya log")
+    label("message", "cauldron.need_potion", "Il manque une potion de foudre", "Missing a lightning potion")
+    label("message", "cauldron.unknown", "Le chaudron ne transforme pas : %s", "The cauldron does nothing with: %s")
     label("message", "portal.no_key", "Inserez la cle du portail", "Insert the portal key")
     label("message", "portal.sap", "Seve : %s / %s", "Sap: %s / %s")
     label("message", "portal.sap_pollen", "Seve : %s / %s — pollen d'endium : %s / %s",
@@ -2379,6 +2452,246 @@ def main():
     write("data/%s/recipe/mini_golem.json" % NS, {"type": "%s:mini_golem" % NS})
     write("data/%s/recipe/mini_golem_repair.json" % NS, {"type": "%s:mini_golem_repair" % NS})
 
+    # ---- montures (chapitre 14) ----
+    # Mount 6.1.0 : ses textures et ses sons ne sont que dans son jar (le pack
+    # officiel n'a pas d'espace mount). Quatrieme argument, ou le dossier voisin
+    # du jar de PalaMod.
+    mount_root = sys.argv[4] if len(sys.argv) > 4 else (
+        os.path.join(os.path.dirname(root[1].rstrip("/")), "Mount-6.1.0") if root[1] else None)
+
+    def mount_file(relative, destination, size=None):
+        source = os.path.join(mount_root or "", "assets", "mount", relative)
+        if not mount_root or not os.path.exists(source):
+            missing.append("mount:" + relative)
+            return
+        if size is not None and png_size(source) != size:
+            wrong_size.append("mount:%s : %s au lieu de %s" % (relative, png_size(source), size))
+            return
+        target = os.path.join(RES, "assets", NS, destination)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(source, target)
+
+    # Le Dancarok : une texture par corne. La variante en paladium vert du jar
+    # n'est referencee nulle part dans Mount ; elle n'est pas copiee.
+    for source, name in (("dancarok", "dancarok"), ("dancarok_amethyst_helm", "dancarok_amethyst_horn"),
+                         ("dancarok_titane_helm", "dancarok_titane_horn"),
+                         ("dancarok_paladium_helm", "dancarok_paladium_horn")):
+        mount_file("textures/mount/%s.png" % source, "textures/entity/%s.png" % name, (256, 256))
+    label("entity", "dancarok", "Dancarok", "Dancarok")
+
+    # Objets.
+    for name, label_fr, label_en in (("bandage", "Bandage", "Bandage"),
+                                     ("amethyst_horn", "Corne en amethyste", "Amethyst Horn"),
+                                     ("titane_horn", "Corne en titane", "Titanium Horn"),
+                                     ("paladium_horn", "Corne en paladium", "Paladium Horn")):
+        mount_file("textures/items/%s.png" % name, "textures/item/%s.png" % name, (16, 16))
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    mount_file("textures/items/mount_gemstone.png", "textures/item/mount_gemstone.png", (16, 16))
+    mount_file("textures/items/mount_gemstone_tamed.png", "textures/item/mount_gemstone_tamed.png", (16, 16))
+    for model in ("mount_gemstone", "mount_gemstone_tamed"):
+        write("assets/%s/models/item/%s.json" % (NS, model),
+              {"parent": "minecraft:item/generated", "textures": {"layer0": "%s:item/%s" % (NS, model)}})
+    # Grise sauvage, doree apprivoisee : le premier drapeau de custom_model_data.
+    write("assets/%s/items/mount_gemstone.json" % NS, {"model": {
+        "type": "minecraft:condition", "property": "minecraft:custom_model_data", "index": 0,
+        "on_true": {"type": "minecraft:model", "model": "%s:item/mount_gemstone_tamed" % NS},
+        "on_false": {"type": "minecraft:model", "model": "%s:item/mount_gemstone" % NS},
+    }})
+    label("item", "mount_gemstone", "Gemme de monture", "Mount Gem")
+    tex("items/machine/orb_heal.png", "item/heal_orb.png")
+    flat_item("heal_orb", "%s:item/heal_orb" % NS)
+    label("item", "heal_orb", "Orbe de regeneration", "Regeneration Orb")
+    for key, label_fr, label_en in (
+            ("mount_gemstone.of", "Gemme de %s", "%s Gem"),
+            ("mount_gemstone.wild", " sauvage", " (wild)"),
+            ("mount_gemstone.tame_hint", "Mettez cette gemme dans un enclos pour l'apprivoiser.",
+             "Put this gem in a barn to tame your mount."),
+            ("mount_gemstone.name", "Nom : %s", "Name: %s"),
+            ("mount_gemstone.level", "Niv. %s (%s xp / %s)", "Lvl %s (%s xp / %s)"),
+            ("mount_gemstone.health", "Vie : %s", "Health: %s"),
+            ("mount_gemstone.care", "En soin pendant %s", "In care for %s"),
+            ("mount_gemstone.expired", "Cette gemme est perimee", "This gem has expired"),
+            ("mount_gemstone.expires", "Perime dans %s", "Expires in %s"),
+            ("horn.uses", "Utilisations %s/%s", "Uses %s/%s")):
+        label("item", key, label_fr, label_en)
+
+    # Blocs de l'enclos : bois, a la pioche.
+    mount_file("textures/blocks/barn_foundation.png", "textures/block/barn_foundation.png", (16, 16))
+    cube("barn_foundation", "%s:block/barn_foundation" % NS)
+    mount_file("textures/blocks/incubator_side.png", "textures/block/barn_incubator_side.png", (16, 16))
+    mount_file("textures/blocks/incubator_top.png", "textures/block/barn_incubator_top.png", (16, 16))
+    write("assets/%s/blockstates/barn_incubator.json" % NS,
+          {"variants": {"": {"model": "%s:block/barn_incubator" % NS}}})
+    write("assets/%s/models/block/barn_incubator.json" % NS, {
+        "parent": "minecraft:block/cube_bottom_top",
+        "textures": {"top": "%s:block/barn_incubator_top" % NS, "bottom": "%s:block/barn_incubator_side" % NS,
+                     "side": "%s:block/barn_incubator_side" % NS}})
+    # La barriere : les modeles de barriere vanilla, sur sa texture.
+    mount_file("textures/blocks/barn_fence.png", "textures/block/barn_fence.png", (16, 16))
+    for part in ("post", "side", "inventory"):
+        write("assets/%s/models/block/barn_fence_%s.json" % (NS, part),
+              {"parent": "minecraft:block/fence_%s" % part, "textures": {"texture": "%s:block/barn_fence" % NS}})
+    side = "%s:block/barn_fence_side" % NS
+    write("assets/%s/blockstates/barn_fence.json" % NS, {"multipart": [
+        {"apply": {"model": "%s:block/barn_fence_post" % NS}},
+        {"when": {"north": "true"}, "apply": {"model": side, "uvlock": True}},
+        {"when": {"east": "true"}, "apply": {"model": side, "y": 90, "uvlock": True}},
+        {"when": {"south": "true"}, "apply": {"model": side, "y": 180, "uvlock": True}},
+        {"when": {"west": "true"}, "apply": {"model": side, "y": 270, "uvlock": True}},
+    ]})
+    write("assets/%s/items/barn_fence.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:block/barn_fence_inventory" % NS}})
+    tag("minecraft/tags/block/fences.json", ["%s:barn_fence" % NS])
+
+    # Le gestionnaire : le BarnControllerModel (ModelBase 64 x 64) en elements.
+    # Toutes ses boites ont l'origine d'UV (0, 0) dans le code : on garde ce
+    # placement, le socle prend la caisse et les petites pieces le metal du
+    # coin. Le rendu de 1.7.10 tournait le modele de 180 degres autour de Z :
+    # x et y s'inversent, d'ou un angle de -45 pour le groupe incline.
+    mount_file("textures/blocks/barncontroller.png", "textures/block/barn_controller.png", (64, 64))
+
+    def box_faces(w, h, d, flat):
+        quarter = lambda values: [v / 4.0 for v in values]
+        faces = {"up": quarter([d, 0, d + w, d]), "down": quarter([d + w, 0, d + 2 * w, d])}
+        if not flat:
+            faces.update({"east": quarter([0, d, d, d + h]), "west": quarter([d + w, d, 2 * d + w, d + h]),
+                          "north": quarter([d, d, d + w, d + h]),
+                          "south": quarter([2 * d + w, d, 2 * d + 2 * w, d + h])})
+        return {face: {"uv": uv, "texture": "#all"} for face, uv in faces.items()}
+
+    def element(frm, to, size, rotation=None):
+        w, h, d = size
+        payload = {"from": frm, "to": to, "faces": box_faces(w, h, d, h == 0)}
+        if rotation:
+            payload["rotation"] = rotation
+        return payload
+
+    tilt = {"origin": [11.5, 13.5, 12.5], "axis": "x", "angle": -45}
+    write("assets/%s/models/block/barn_controller.json" % NS, {
+        "parent": "minecraft:block/block",
+        "texture_size": [64, 64],
+        "textures": {"all": "%s:block/barn_controller" % NS, "particle": "%s:block/barn_controller" % NS},
+        "elements": [
+            element([0, 0, 0], [16, 8, 16], (16, 8, 16)),
+            element([11, 8.5, 12], [12, 13.5, 13], (1, 5, 1)),
+            element([10.25, 8.5, 10.75], [13.25, 8.5, 13.75], (3, 0, 3)),
+            element([2, 7.75, 5], [7, 8.75, 12], (5, 1, 7)),
+            element([11, 13.5, 12], [12, 15.5, 13], (1, 2, 1), tilt),
+            element([8, 13.5, 9], [15, 13.5, 16], (7, 0, 7), tilt),
+        ]})
+    write("assets/%s/blockstates/barn_controller.json" % NS,
+          {"variants": {"": {"model": "%s:block/barn_controller" % NS}}})
+
+    for name, label_fr, label_en in (("barn_controller", "Gestionnaire d'enclos", "Barn Controller"),
+                                     ("barn_incubator", "Couveuse d'enclos", "Barn Incubator"),
+                                     ("barn_foundation", "Fondation d'enclos", "Barn Foundation"),
+                                     ("barn_fence", "Barriere d'enclos", "Barn Fence")):
+        if name != "barn_fence":
+            block_item(name)
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+
+    # Sons : assets/mount/sounds.json, renommes sous palamod.
+    sounds = {}
+    for event, source in (("dancarok.walk", "dancarok/walk"), ("dancarok.idle", "dancarok/idle"),
+                          ("dancarok.jump", "dancarok/jump"), ("dancarok.destroy", "dancarok/destroy"),
+                          ("mount.summon", "summon"), ("mount.unsummon", "unsummon")):
+        target = "mount/" + source.split("/")[-1] if "/" not in source else source
+        mount_file("sounds/%s.ogg" % source, "sounds/%s.ogg" % target)
+        sounds[event] = {"sounds": ["%s:%s" % (NS, target)]}
+    write("assets/%s/sounds.json" % NS, sounds)
+
+    fr["key.%s.mount" % NS] = "Monture GUI"
+    en["key.%s.mount" % NS] = "Open Mount Menu"
+    for key, label_fr, label_en in (
+            ("tame_in_barn", "Vous devez mettre cette gemme dans une etable pour apprivoiser votre monture.",
+             "You must put this gem in a barn to tame your mount."),
+            ("captured", "Dancarok capture : mettez sa gemme dans un enclos pour l'apprivoiser",
+             "Dancarok captured: put its gem in a barn to tame it"),
+            ("no_energy", "La monture n'a plus d'energie", "Your mount is out of energy"),
+            ("already_used", "Cette monture est deja utilisee.", "This mount is already in use."),
+            ("not_yours", "Cette monture ne vous appartient pas.", "This mount doesn't belong to you."),
+            ("none_equipped", "Aucune monture equipee", "No mount equipped"),
+            ("level_required", "Votre monture doit etre niveau %s pour etre invoquee",
+             "Your mount must be level %s to be summoned"),
+            ("dead", "Votre monture n'a plus de vie", "Your mount has no health left"),
+            ("hungry", "Vous devez nourrir votre monture", "You must feed your mount"),
+            ("must_ride", "Vous devez etre sur votre monture pour cela", "You must be riding your mount"),
+            ("summoning", "Invocation : restez immobile trois secondes", "Summoning: stand still for three seconds"),
+            ("unsummoning", "Desinvocation : restez immobile trois secondes",
+             "Unsummoning: stand still for three seconds"),
+            ("countdown_cancelled", "Invocation annulee", "Summoning cancelled"),
+            ("summoned", "Monture invoquee", "Mount summoned"),
+            ("unsummoned", "Monture desinvoquee", "Mount unsummoned"),
+            ("level_up", "Votre monture est niveau %s", "Your mount is now level %s"),
+            ("not_hungry", "Votre monture n'a plus faim", "Your mount isn't hungry"),
+            ("no_croquette", "Il vous faut des croquettes", "You need croquettes"),
+            ("fed", "%s croquette(s) donnee(s) : energie %s/%s", "%s croquette(s) given: energy %s/%s"),
+            ("not_summoned", "Aucune monture invoquee", "No mount summoned"),
+            ("not_nearby", "Votre monture n'est pas a proximite de vous.", "Your mount isn't nearby."),
+            ("name_length", "Le nom doit etre entre 4 et 16 caracteres", "The name must be 4 to 16 characters long"),
+            ("renamed", "Monture renommee en %s", "Mount renamed to %s"),
+            ("shared_xp_range", "L'XP doit etre entre 0 et 100 %%", "XP must be between 0 and 100%%"),
+            ("shared_xp", "XP partagee a %s %%", "Shared XP set to %s%%"),
+            ("given", "Vous avez recu une monture de niveau %s", "You received a level %s mount"),
+            ("no_horn", "Votre monture ne possede pas de corne", "Your mount has no horn"),
+            ("not_enough_energy", "Votre monture n'a pas assez d'energie (%s par coup)",
+             "Your mount doesn't have enough energy (%s per strike)"),
+            ("horn_broken", "Les cornes de votre monture ont casse", "Your mount's horns broke"),
+            ("horn_worn", "Les cornes de votre monture n'ont plus beaucoup de durabilite",
+             "Your mount's horns are almost worn out"),
+            ("structure_invalid", "La structure de l'etable n'est pas valide", "The barn structure isn't valid"),
+            ("structure_hay", "Votre structure doit etre composee d'un carre central de foin entre 3x3 et 7x7.",
+             "Your structure needs a central square of hay between 3x3 and 7x7."),
+            ("structure_fences", "Vous devez placer des barrieres sur vos fondations.",
+             "You must place fences on your foundations."),
+            ("structure_foundations", "Votre structure doit etre entouree de fondations. %s/%s",
+             "Your structure must be surrounded by foundations. %s/%s"),
+            ("structure_controllers", "Vous ne pouvez pas avoir plus de un centre de controle de monture",
+             "You can't have more than one mount controller"),
+            ("only_gems", "Vous ne pouvez placer que des gemmes", "You can only deposit gems"),
+            ("barn_full", "Nombre de monture maximum atteint", "Maximum number of mounts reached"),
+            ("tamed", "Monture apprivoisee", "Mount tamed"),
+            ("in_care", "Cette monture est en soin", "This mount is in care"),
+            ("already_equipped", "Une monture est deja equipee", "A mount is already equipped"),
+            ("expired", "La gemme de cette monture est perimee", "This mount's gem has expired"),
+            ("equipped", "Monture equipee", "Mount equipped"),
+            ("unequipped", "Monture desequipee", "Mount unequipped"),
+            ("bandage_count", "Nombre de bandage invalide", "Invalid number of bandages"),
+            ("need_incubator", "Vous devez placer une couveuse dans votre etable",
+             "You must place an incubator in your barn"),
+            ("care_full", "Deux montures sont deja en soin", "Two mounts are already in care"),
+            ("already_in_care", "Cette monture est deja en soin", "This mount is already in care"),
+            ("not_enough_bandages", "Vous n'avez pas assez de bandage (%s)", "You don't have enough bandages (%s)"),
+            ("in_care_now", "Monture placee en soin", "Mount placed in care"),
+            ("bandage_min", "Vous ne pouvez pas mettre moins d'un bandage", "You can't use less than one bandage"),
+            ("bandage_owned", "Vous n'avez que %s bandages sur vous", "You only have %s bandages on you"),
+            ("fully_healed", "Votre monture ne peut etre soignee d'avantage", "Your mount can't be healed any further")):
+        label("message", "mount." + key, label_fr, label_en)
+
+    # Cornes : la palamachine n'est pas portee, ni l'elephant et sa defense.
+    # Substitut a l'etabli, memes ingredients, la defense remplacee par un bloc
+    # d'os. Les recettes « batons + bloc » de la palamachine sont des
+    # reparations : la corne usee en ressort neuve.
+    for metal in ("amethyst", "titane", "paladium"):
+        shaped("%s_horn" % metal, [" I ", "BTB", " I "], {
+            "I": "%s:%s_ingot" % (NS, metal), "B": "%s:%s_block" % (NS, metal), "T": "minecraft:bone_block"},
+               "%s:%s_horn" % (NS, metal))
+        middle = "%s:paladium_core" % NS if metal == "paladium" else "%s:%s_stick" % (NS, metal)
+        shaped("%s_horn_repair" % metal, ["SMS", " H ", " B "], {
+            "S": "%s:%s_stick" % (NS, metal), "M": middle, "H": "%s:%s_horn" % (NS, metal),
+            "B": "%s:%s_block" % (NS, metal)}, "%s:%s_horn" % (NS, metal))
+
+    # Apparition : aucune dans les jars de Paladium (les sauvages etaient poses
+    # a la main sur le serveur Farmland). Rare, dans les plaines et savanes.
+    write("data/%s/neoforge/biome_modifier/dancarok.json" % NS, {
+        "type": "neoforge:add_spawns",
+        "biomes": ["minecraft:plains", "minecraft:sunflower_plains", "minecraft:savanna",
+                   "minecraft:savanna_plateau"],
+        "spawners": {"type": "%s:dancarok" % NS, "weight": 2, "minCount": 1, "maxCount": 1}})
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de
@@ -2395,6 +2708,9 @@ def main():
         # Intermediaires
         "STICK_AMETHYST": "amethyst_stick", "STICK_TITANE": "titane_stick",
         "STICK_PALADIUM": "paladium_stick", "PALADIUM_CORE": "paladium_core",
+        # Montures : l'orbe de regeneration, le bandage et l'enclos.
+        "ORB_HEAL": "heal_orb", "BANDAGE": "bandage", "BARN_FOUNDATION": "barn_foundation",
+        "BARN_FENCE": "barn_fence", "INCUBATOR": "barn_incubator", "BARN_CONTROLLER": "barn_controller",
         "MIXED_ENDIUM_INGOT": "mixed_endium_ingot",
         "ORB_SPEED": "speed_orb", "MODIFIER_SPEED": "speed_modifier",
         "MODIFIER_FORTUNE": "fortune_modifier", "VOIDSTONE": "voidstone",
@@ -2418,6 +2734,8 @@ def main():
         "PALADIUM_FURNACE": "paladium_furnace", "FORGE": "palaforge",
         "FURNACE_UPGRADE": "furnace_upgrade", "PALADIUM_HOPPER": "paladium_hopper",
         "AMETHYST_CHEST": "amethyst_chest", "TITANE_CHEST": "titane_chest",
+        "PALADIUM_CHEST": "paladium_chest", "GPALADIUM_CHEST": "green_paladium_chest",
+        "ENDIUM_CHEST": "endium_chest",
         # Alchimiste (chapitre 11) : CraftMod, sans le patron de boule de glu
         # (les boules de glu ne sont pas portees).
         "EXTRACTOR": "extractor", "FLASK": "flask",
@@ -2496,6 +2814,15 @@ def main():
         ("BlocksRegister.BLOCK_TITANE", 0): "%s:titane_block" % NS,
         ("BlocksRegister.BLOCK_PALADIUM", 0): "%s:paladium_block" % NS,
         ("Blocks.field_150359_w", 0): "minecraft:glass",
+        # Argile durcie teintee meta 7 : la terre cuite grise.
+        ("Blocks.field_150406_ce", 7): "minecraft:gray_terracotta",
+        ("Items.field_151121_aF", 0): "minecraft:paper",
+        ("Items.field_151007_F", 0): "minecraft:string",
+        ("Items.field_151060_bw", 0): "minecraft:glistering_melon_slice",
+        # Le gestionnaire d'enclos demande le coffre en or d'Iron Chests : la meta
+        # vient de IronChestType.GOLD.ordinal(), calculee a l'execution, que le
+        # releve lit comme 0 (le coffre en fer). C'est bien l'or (spec Mount §22).
+        ("IronChest.ironChestBlock", 0): "%s:gold_chest" % NS,
         ("Blocks.field_150336_V", 0): "minecraft:bricks",
         ("Items.field_151065_br", 0): "minecraft:blaze_powder",
         ("Blocks.field_150343_Z", 0): "minecraft:obsidian",

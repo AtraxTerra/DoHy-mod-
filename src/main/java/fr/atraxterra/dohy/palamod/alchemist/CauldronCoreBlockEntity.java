@@ -3,8 +3,10 @@ package fr.atraxterra.dohy.palamod.alchemist;
 import fr.atraxterra.dohy.palamod.PalaBlocks;
 import fr.atraxterra.dohy.palamod.PalaItems;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -24,8 +26,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * La vie du chaudron forme ({@code TileEntityCauldronCore.func_145845_h}).
@@ -67,6 +71,12 @@ public class CauldronCoreBlockEntity extends BlockEntity {
 
     private int timer;
     private boolean exploding;
+    /**
+     * Les objets deja signales au joueur, pour ne le dire qu'une fois. Rien ne
+     * se passait, sans un mot, quand on jetait autre chose qu'une recette : le
+     * joueur concluait que le chaudron etait casse.
+     */
+    private final Set<Integer> hinted = new HashSet<>();
 
     public CauldronCoreBlockEntity(BlockPos pos, BlockState state) {
         super(PalaAlchemist.CAULDRON_CORE_ENTITY.get(), pos, state);
@@ -85,12 +95,25 @@ public class CauldronCoreBlockEntity extends BlockEntity {
         List<ItemEntity> items = server.getEntitiesOfClass(ItemEntity.class,
                 new AABB(worldPosition).inflate(1.5d, 0.0d, 1.5d).expandTowards(0.0d, 2.5d, 0.0d),
                 ItemEntity::isAlive);
+        ServerPlayer player = nearestPlayer(server);
         if (!full) {
             fillFromThrownBucket(server, items);
+            if (player != null) {
+                for (ItemEntity item : items) {
+                    if (item.isAlive() && !item.getItem().is(PalaFluids.ANGELIC_WATER_BUCKET.get())) {
+                        hint(player, item, Component.translatable("message.palamod.cauldron.fill"));
+                    }
+                }
+            }
             return;
         }
-        ServerPlayer player = nearestPlayer(server);
-        if (player == null || !AlchemistXp.allows(player, PalaAlchemist.CAULDRON_CORE.get())) {
+        if (player == null) {
+            return;
+        }
+        if (!AlchemistXp.allows(player, PalaAlchemist.CAULDRON_CORE.get())) {
+            if (!items.isEmpty() && timer++ % 100 == 0) {
+                AlchemistXp.refuse(player, PalaAlchemist.CAULDRON_CORE.get());
+            }
             return;
         }
         timer++;
@@ -197,6 +220,54 @@ public class CauldronCoreBlockEntity extends BlockEntity {
             }
         }
         craft(server, candidates);
+        explainLeftovers(player, candidates);
+    }
+
+    /** Ce qui reste dans le bassin sans recette : dire pourquoi, une fois par objet. */
+    private void explainLeftovers(ServerPlayer player, List<ItemEntity> candidates) {
+        candidates.removeIf(entity -> !entity.isAlive() || entity.getItem().isEmpty());
+        if (candidates.isEmpty()) {
+            return;
+        }
+        boolean potion = candidates.stream().anyMatch(entity -> entity.getItem().is(PalaAlchemist.LIGHTNING_POTION.get()));
+        boolean log = candidates.stream().anyMatch(entity -> isPalaLog(entity.getItem()));
+        for (ItemEntity entity : candidates) {
+            ItemStack stack = entity.getItem();
+            Component message;
+            if (stack.is(PalaAlchemist.LIGHTNING_POTION.get()) && !log) {
+                message = Component.translatable("message.palamod.cauldron.need_log");
+            } else if (isPalaLog(stack) && !potion) {
+                message = Component.translatable("message.palamod.cauldron.need_potion");
+            } else {
+                message = Component.translatable("message.palamod.cauldron.unknown", stack.getHoverName());
+            }
+            hint(player, entity, message);
+        }
+    }
+
+    private static boolean isPalaLog(ItemStack stack) {
+        for (Sap sap : new Sap[]{Sap.ERABLE, Sap.JACARANDA, Sap.OSTRYA, Sap.JUDEECERCIS}) {
+            if (stack.is(PalaWoods.log(sap).asItem())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Seuls les objets jetes par un joueur sont signales : ce que le chaudron
+     * produit retombe dans le bassin et ne doit pas etre pris pour une erreur.
+     */
+    private void hint(ServerPlayer player, ItemEntity entity, Component message) {
+        if (entity.getOwner() == null) {
+            return;
+        }
+        if (hinted.size() > 256) {
+            hinted.clear();
+        }
+        if (hinted.add(entity.getId())) {
+            AlchemistXp.actionBar(player, message.copy().withStyle(ChatFormatting.GOLD));
+        }
     }
 
     /**

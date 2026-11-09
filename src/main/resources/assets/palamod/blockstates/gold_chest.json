@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=south": {
+      "model": "palamod:block/gold_chest"
+    },
+    "facing=west": {
+      "model": "palamod:block/gold_chest",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "palamod:block/gold_chest",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "palamod:block/gold_chest",
+      "y": 270
+    }
+  }
+}

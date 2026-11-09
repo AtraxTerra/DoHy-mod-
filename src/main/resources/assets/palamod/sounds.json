@@ -1,0 +1,32 @@
+{
+  "dancarok.walk": {
+    "sounds": [
+      "palamod:dancarok/walk"
+    ]
+  },
+  "dancarok.idle": {
+    "sounds": [
+      "palamod:dancarok/idle"
+    ]
+  },
+  "dancarok.jump": {
+    "sounds": [
+      "palamod:dancarok/jump"
+    ]
+  },
+  "dancarok.destroy": {
+    "sounds": [
+      "palamod:dancarok/destroy"
+    ]
+  },
+  "mount.summon": {
+    "sounds": [
+      "palamod:mount/summon"
+    ]
+  },
+  "mount.unsummon": {
+    "sounds": [
+      "palamod:mount/unsummon"
+    ]
+  }
+}

@@ -13,14 +13,14 @@ import net.minecraft.world.item.ItemStack;
  * Le menu des coffres en amethyste et en titane.
  *
  * <p>Coordonnees de {@code ModdedChestContainer} : case {@code col + row * 12}
- * en (12 + col x 18, 8 + row x 18), inventaire du joueur en (39 + c x 18,
- * 174 + r x 18), barre d'action a y = 232. Le panneau fait 240 x 256.
+ * en (12 + col x 18, 8 + row x 18), inventaire du joueur centre en
+ * (x + c x 18, 174 + r x 18), barre d'action a y = 232. Le panneau fait
+ * 240 x 256 pour 12 colonnes, 186 x 256 pour les 9 du coffre en or.
  */
 public class PalaChestMenu extends AbstractContainerMenu {
 
     public static final int CHEST_X = 12;
     public static final int CHEST_Y = 8;
-    public static final int PLAYER_X = 39;
     public static final int PLAYER_Y = 174;
     public static final int HOTBAR_Y = 232;
 
@@ -29,30 +29,30 @@ public class PalaChestMenu extends AbstractContainerMenu {
 
     /** Cote client : un conteneur vide de la bonne taille, rempli par le serveur. */
     public PalaChestMenu(MenuType<?> type, ChestTier tier, int containerId, Inventory inventory) {
-        this(type, tier, containerId, inventory, new SimpleContainer(ChestTier.SIZE));
+        this(type, tier, containerId, inventory, new SimpleContainer(tier.size()));
     }
 
     public PalaChestMenu(MenuType<?> type, ChestTier tier, int containerId, Inventory inventory,
                          Container chest) {
         super(type, containerId);
-        checkContainerSize(chest, ChestTier.SIZE);
+        checkContainerSize(chest, tier.size());
         this.chest = chest;
         this.tier = tier;
 
         for (int row = 0; row < ChestTier.ROWS; row++) {
-            for (int column = 0; column < ChestTier.COLUMNS; column++) {
-                addSlot(new Slot(chest, column + row * ChestTier.COLUMNS,
+            for (int column = 0; column < tier.columns(); column++) {
+                addSlot(new Slot(chest, column + row * tier.columns(),
                         CHEST_X + column * 18, CHEST_Y + row * 18));
             }
         }
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
                 addSlot(new Slot(inventory, column + row * 9 + 9,
-                        PLAYER_X + column * 18, PLAYER_Y + row * 18));
+                        tier.playerX() + column * 18, PLAYER_Y + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, PLAYER_X + column * 18, HOTBAR_Y));
+            addSlot(new Slot(inventory, column, tier.playerX() + column * 18, HOTBAR_Y));
         }
     }
 
@@ -74,11 +74,12 @@ public class PalaChestMenu extends AbstractContainerMenu {
         }
         ItemStack stack = slot.getItem();
         ItemStack original = stack.copy();
-        if (index < ChestTier.SIZE) {
-            if (!moveItemStackTo(stack, ChestTier.SIZE, slots.size(), true)) {
+        int size = tier.size();
+        if (index < size) {
+            if (!moveItemStackTo(stack, size, slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!moveItemStackTo(stack, 0, ChestTier.SIZE, false)) {
+        } else if (!moveItemStackTo(stack, 0, size, false)) {
             return ItemStack.EMPTY;
         }
         if (stack.isEmpty()) {

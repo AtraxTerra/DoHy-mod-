@@ -64,6 +64,21 @@ public final class AreaMining {
     private AreaMining() {
     }
 
+    /**
+     * Casse sans ouvrir de plan : la corne du Dancarok casse sa propre zone en
+     * passant par les evenements de casse, qu'une excavatrice tenue en main ne
+     * doit pas multiplier.
+     */
+    public static void withoutArea(Runnable action) {
+        boolean was = breaking;
+        breaking = true;
+        try {
+            action.run();
+        } finally {
+            breaking = was;
+        }
+    }
+
     /** Lu par les outils de zone pour ne pas s'user sur les blocs du plan. */
     public static boolean isBreakingExtras() {
         return breaking;

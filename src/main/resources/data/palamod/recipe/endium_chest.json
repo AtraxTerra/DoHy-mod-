@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EEE",
+    "CPC",
+    "CCC"
+  ],
+  "key": {
+    "E": "palamod:endium_ingot",
+    "C": "palamod:compressed_paladium",
+    "P": "palamod:paladium_chest"
+  },
+  "result": {
+    "id": "palamod:endium_chest",
+    "count": 1
+  }
+}

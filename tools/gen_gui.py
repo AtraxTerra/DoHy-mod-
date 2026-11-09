@@ -64,6 +64,7 @@ METAL = {
     "titane": (127, 127, 127, 255),
     "paladium": (239, 57, 38, 255),
     "endium": (77, 121, 255, 255),
+    "green_paladium": (37, 226, 81, 255),
 }
 
 WIDTH, HEIGHT = 176, 166
@@ -202,11 +203,15 @@ LAYOUTS = {
 # puis l'inventaire du joueur centre dessous. Ce ne sont pas des machines —
 # PalaChestScreen a sa propre geometrie, reprise de PalaChestMenu — donc hors
 # du manifeste.
-CHEST_WIDTH, CHEST_HEIGHT = 240, 256
+# Le coffre en or d'Iron Chests a 9 colonnes : panneau de 186 px, l'inventaire
+# recentre. Memes formules que ChestTier.panelWidth et playerX.
+CHEST_HEIGHT = 256
 CHEST_X, CHEST_Y = 12, 8
-CHEST_COLUMNS, CHEST_ROWS = 12, 9
-CHEST_PLAYER_X, CHEST_PLAYER_Y, CHEST_HOTBAR_Y = 39, 174, 232
-CHESTS = {"amethyst_chest": "amethyst", "titane_chest": "titane"}
+CHEST_ROWS = 9
+CHEST_PLAYER_Y, CHEST_HOTBAR_Y = 174, 232
+CHESTS = {"amethyst_chest": ("amethyst", 12), "titane_chest": ("titane", 12),
+          "paladium_chest": ("paladium", 12), "green_paladium_chest": ("green_paladium", 12),
+          "endium_chest": ("endium", 12), "gold_chest": ("gold", 9)}
 
 GHOSTS = {}
 
@@ -374,8 +379,10 @@ def build(name, layout):
     return path
 
 
-def build_chest(name, metal):
+def build_chest(name, metal, columns):
     """Le fond d'un coffre : la grille, l'inventaire, un coin du metal."""
+    CHEST_WIDTH = columns * 18 + 24
+    CHEST_PLAYER_X = (CHEST_WIDTH - 9 * 18) // 2
     image = Image.new("RGBA", (TEXTURE, TEXTURE), TRANSPARENT)
     draw = ImageDraw.Draw(image)
     draw.rectangle([1, 0, CHEST_WIDTH - 2, CHEST_HEIGHT - 1], fill=BACKGROUND)
@@ -388,7 +395,7 @@ def build_chest(name, metal):
     # couleur du metal, en haut a gauche, a la place de celle des machines.
     draw.rectangle([CHEST_X - 1, 3, CHEST_X + 32, 4], fill=METAL[metal])
     for row in range(CHEST_ROWS):
-        for column in range(CHEST_COLUMNS):
+        for column in range(columns):
             slot(image, draw, CHEST_X + column * 18, CHEST_Y + row * 18)
     for row in range(3):
         for column in range(9):
@@ -409,8 +416,8 @@ def main():
     written = []
     for name, layout in LAYOUTS.items():
         written.append(build(name, layout))
-    for name, metal in CHESTS.items():
-        written.append(build_chest(name, metal))
+    for name, (metal, columns) in CHESTS.items():
+        written.append(build_chest(name, metal, columns))
 
     # Le manifeste que la CI compare au code Java.
     manifest = {
