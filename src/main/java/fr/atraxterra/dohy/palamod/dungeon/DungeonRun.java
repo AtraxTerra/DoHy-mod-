@@ -709,6 +709,13 @@ final class DungeonRun {
         if (room.type == RoomType.COMBAT || room.type == RoomType.BOSS) {
             fights++;
         }
+        // XP RPG (wiki : « chaque salle terminee ») ; le triple pour un boss.
+        if (room.type == RoomType.COMBAT || room.type == RoomType.PUZZLE || room.type == RoomType.BOSS) {
+            long xp = (10L + 2L * palier) * (room.type == RoomType.BOSS ? 3L : 1L);
+            for (ServerPlayer player : onlineMembers()) {
+                Rpg.grantXp(player, xp);
+            }
+        }
         if (room.type.loot()) {
             chest = room.chestPos();
             level.setBlock(chest, Blocks.CHEST.defaultBlockState(), 3);

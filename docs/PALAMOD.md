@@ -1805,9 +1805,9 @@ la couleur de la pierre les remplace).
 Les donjons sont de la V12 de Paladium, postérieurs à la 10.3.0 de PalaMod : **aucun code
 d'origine**. La source est le wiki (« Univers des donjons » et les quatre pages « Donjon … »),
 qui donne les règles, les noms et les récompenses, mais presque aucun chiffre. Tout ce qui
-manque est de DoHy et noté comme tel. Ce chapitre est le premier de quatre, découpés avec le
-joueur : 18 cœur jouable ; 19 équipement, essences et notes D à S ; 20 sorts et mana ; 21 runes
-et arbre de compétences.
+manque est de DoHy et noté comme tel. Ce chapitre est le premier de trois : 18 cœur jouable ;
+19 équipement, essences et notes D à S ; 20 runes et arbre de compétences. Les sorts et le mana,
+prévus d'abord, sont laissés de côté au choix du joueur.
 
 ### Les quatre donjons
 
@@ -1914,8 +1914,8 @@ Le meilleur sac de l'inventaire à l'entrée fixe la contenance ; ce qui dépass
 - les **récompenses uniques** du palier exact tombent une fois sur deux, à la sortie. Seuls les
   sacs de Nimbria existent pour l'instant.
 
-**Laissés aux chapitres suivants** : épées et armures de donjon, essences, parchemins de sort,
-runes, parchemins de craft, pièces antiques. **Absents de DoHy**, donc ignorés : obsidienne
+**Venus aux chapitres suivants** : épées et armures de donjon, essences et pièces antiques (§ 23),
+runes (§ 24). **Non portés** : parchemins de sort (sorts sautés) et de craft. **Absents de DoHy**, donc ignorés : obsidienne
 infusée, têtes de thirsty et de prédator, totem fleuri, bonbons, jetpack, défense d'éléphant,
 pièce de lune, double XP, têtes de wither passive et suprême.
 
@@ -2029,3 +2029,78 @@ Armures, couches portées, épées et essences : **Palamod Recreated** (SILWOX /
 fans 1.21, « All Rights Reserved »), au choix du joueur — crédité dans le README, à ne pas
 redistribuer publiquement sans leur accord. Leurs statistiques (des valeurs MCreator identiques
 pour les quatre donjons) ne sont pas reprises.
+
+## 24. Donjons : runes et arbre de compétences (chapitre 20)
+
+Troisième et dernier chapitre des donjons. **Les sorts et le mana sont laissés de côté**, au choix
+du joueur (et les parchemins de sort ne tombent pas). Deux autres choix du joueur : les statistiques
+RPG ne jouent **qu'en donjon**, contre ses monstres, et les métiers donnent **1 point tous les 5
+niveaux** (le wiki dit 1 par niveau).
+
+### Statistiques RPG
+
+Le wiki nomme quatre branches sans les définir. Ici :
+
+| Statistique | Effet (en donjon, contre ses monstres) | Par nœud | Plafond (arbre + runes) |
+|---|---|---|---|
+| Attaque | dégâts infligés en plus | +4 % | 100 % |
+| Esquive | chance d'éviter entièrement un coup | +2 % | 35 % |
+| Critique | chance d'un coup à 150 % | +3 % | 60 % |
+| Défense | dégâts reçus en moins | +3 % | 50 % |
+
+Elles s'ajoutent à l'équipement de donjon (§ 23), par multiplication : armure de donjon puis
+défense RPG.
+
+### Niveau RPG et points de compétence
+
+- **XP RPG** (wiki : chaque salle terminée) : `10 + 2 × palier` par salle de combat ou d'énigme, le
+  triple pour une salle de boss.
+- **Niveau** 1 à 100 : du niveau N au suivant, `50 + 20 N` XP — 103 950 au total pour le niveau 100.
+- **Points** (wiki) : 1 par niveau RPG (100), 1 tous les 5 paliers réussis **de chaque donjon**
+  (80), 1 tous les 5 niveaux de chaque métier (80). **260 au plus**, le prix de l'arbre entier.
+  Les points ne sont pas stockés : ils se recalculent.
+
+### L'arbre — « Profil RPG »
+
+Wiki : depuis l'inventaire, bouton « Profil RPG » ; à gauche les statistiques (onglets Perso et
+Global), à droite l'arbre, dont on achète les cases puis « Valider » ; « Reset » annule ce qui
+n'est pas validé. Ici :
+- un **bouton « Profil RPG »** au-dessus de l'inventaire, **`/profil`**, et une vignette du menu
+  `/menu` ;
+- un écran de coffre : une rangée par branche, **8 nœuds** à acheter dans l'ordre (coûts 2, 4, 5,
+  7, 9, 11, 12, 15 — 65 par branche) ; un clic réserve le nœud suivant, un clic sur le dernier
+  réservé le rend ; **Valider** achète, **Reset** annule les réserves ;
+- tuiles **Perso** (l'arbre seul) et **Global** (arbre, runes de l'armure portée, équipement de
+  donjon) ;
+- **ajout** : « Réinitialiser l'arbre » rend tous les points validés contre **25 000 $** (le wiki
+  ne dit pas si un choix validé se défait).
+
+### Les runes
+
+| Objet | Origine |
+|---|---|
+| Fragment de rune commune | coffres, dès le palier 10 |
+| Fragment de rune rare | coffres, dès 25 (Talikus, Nimbria) ou 30 (Vitalys, Manelios) |
+| Rune commune | coffres dès 40 (Vitalys : 50) ; palamachine : 4 fragments communs + 1 lingot de paladium |
+| Rune rare | coffres dès 50 ; palamachine : 4 fragments rares + 1 bloc de paladium |
+| Rune épique | coffres dès 60 (seulement dans les exemples du wiki) ; palamachine : 3 runes rares + 2 fragments d'endium |
+
+- **Statistiques** (wiki : deux au hasard, une seule possible pour les communes) : parmi les quatre.
+  Une ligne vaut `base × rareté × (1 + 0,5 × (tier − 1 + bonus))` — base attaque 2 %, esquive 1 %,
+  critique et défense 1,5 % ; rareté commune ×1, rare ×1,5, épique ×2. Une rune épique de tier 4
+  bien fusionnée donne ainsi jusqu'à 16 % d'attaque.
+- **Rareté et tier** : le wiki les mélange ; ici, deux axes. La rareté fixe les lignes, le tier
+  (1 à 4) les fait monter.
+- **Amélioration, à l'enclume** (wiki) : une rune et une autre de même rareté et de même tier →
+  tier suivant, pour **10, 15 puis 20 niveaux**. Les lignes qu'elle partage avec la rune sacrifiée
+  gagnent un cran de bonus (wiki : « elle fusionne les statistiques qu'elles partagent »), les
+  autres restent.
+- **Fusion, au grinder** (wiki) : rune dans la case du modificateur, pièce d'armure de donjon dans
+  celle de l'outil. **Une rune par pièce, pour toujours.** Coût en paladium du réservoir : casque 5,
+  plastron 8, jambières 7, bottes 4. Seule l'armure de donjon (et l'antique) en prend.
+- Une rune donnée par commande, sans statistiques, se révèle d'un clic droit. Textures : aucune
+  n'existait, une tablette gravée dessinée pour l'occasion.
+
+### Ce qui n'est pas porté
+
+Les sorts et le mana, au choix du joueur ; les parchemins de sort et de craft.

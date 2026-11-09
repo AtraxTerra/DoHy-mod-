@@ -21,8 +21,8 @@ import java.util.List;
  * <p>Portees : les sticks, les anneaux et les cornes de monture — creation et
  * reparation —, et la recharge de l'extracteur d'alchimiste (l'extracteur
  * entame en ressort a 144 utilisations ; le compteur {@code refill} qu'elle
- * tenait ne servait a rien d'autre). Laissees : les detecteurs de claim et les
- * runes de donjon, non portes.
+ * tenait ne servait a rien d'autre), et les runes de donjon (chapitre 20).
+ * Laisses : les detecteurs de claim.
  *
  * <p>La defense d'elephant ({@code TUSK}), centre des recettes de cornes,
  * n'existe pas ici : un bloc d'os la remplace, comme dans l'ancien substitut
@@ -101,6 +101,13 @@ public final class PalamachineRecipes {
             add(built, "amethyst_horn", "amethyst_horn", "amethyst_stick", "amethyst_stick", "amethyst_stick", "amethyst_block");
             add(built, "titane_horn", "titane_horn", "titane_stick", "titane_stick", "titane_stick", "titane_block");
             add(built, "paladium_horn", "paladium_horn", "paladium_stick", "paladium_core", "paladium_stick", "paladium_block");
+            // Runes de donjon (wiki : « par la palamachine », sans recette) : quatre
+            // fragments et du paladium, ou trois runes rares et deux fragments d'endium.
+            add(built, "rune_common", "rune_fragment_common", "rune_fragment_common", "rune_fragment_common",
+                    "rune_fragment_common", "paladium_ingot");
+            add(built, "rune_rare", "rune_fragment_rare", "rune_fragment_rare", "rune_fragment_rare",
+                    "rune_fragment_rare", "paladium_block");
+            add(built, "rune_epic", "rune_rare", "rune_rare", "endium_fragment", "rune_rare", "endium_fragment");
             // L'extracteur : trois lingots de paladium et un seau d'eau, qui part avec.
             add(built, "extractor", "extractor", "paladium_ingot", "paladium_ingot", Items.WATER_BUCKET, "paladium_ingot");
             recipes = List.copyOf(built);

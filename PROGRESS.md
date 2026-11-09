@@ -96,6 +96,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 17 | **Pierres légendaires** : 7 pierres (téléportation, invisibilité, fortune, pouvoir — résistance au feu 30 min —, métier, chaos, et l'aléatoire qui s'ouvre), recharge de 24 h sur la pierre et verrou de 10 min par joueur ; **gant en endium** (établi, grinder, défilement, 12 h complet, Infinity Gauntlet) ; dans les caisses rare et légendaire | fait |
 | 18 | **Donjons, cœur jouable** : 4 clés et l'écran des 100 paliers, groupe de 4, dimension `palamod:dungeon`, salles construites (combat, énigme, boost, marchande, mini-boss en 5, boss en 0), 6 types de monstres renforcés au palier, 40 boss nommés et leurs capacités, coffres individuels, sacs de donjon (9/18/27/36 piles), butin du wiki, XP de métier, mort = palier échoué ; bouteilles d'XP de métier — sans équipement, essences, notes, sorts, runes ni arbre (chapitres 19 à 21) | fait |
 | 19 | **Donjons, équipement** : 3 armures et 3 épées par donjon (basique, renforcée, légendaire ; fortes surtout en donjon, à plein dans le leur), set antique du palier 100, récompenses uniques du wiki, essences par élément et tier (réparation à l'enclume), note D à S et son coffre — textures de Palamod Recreated | fait |
+| 20 | **Donjons, runes et arbre** : niveau RPG (XP des salles, 100 niveaux), points (niveau, paliers, métiers 1/5), arbre de 4 branches × 8 nœuds en écran de coffre (bouton d'inventaire, `/profil`, `/menu`), statistiques RPG en donjon seulement ; runes commune, rare, épique (coffres, palamachine, enclume, grinder) — sorts et mana sautés au choix du joueur | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -160,6 +161,26 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-09 (suite) — chapitre 20 : runes et arbre de compétences
+
+**Demande** : « Saute sorts et mana ». Le chapitre prévu pour les sorts est abandonné ; les runes
+et l'arbre deviennent le chapitre 20 et ferment les donjons. Deux choix du joueur : statistiques
+RPG **en donjon seulement**, et **1 point tous les 5 niveaux de métier** (le wiki : 1 par niveau,
+soit 400 points pour les seuls métiers). Détail : `docs/PALAMOD.md` § 24.
+
+**Le wiki ne définit rien des statistiques** : ni ce que sont l'attaque, l'esquive, le critique et
+la défense, ni les nœuds de l'arbre, ni les statistiques des runes, ni leurs valeurs. Tout est de
+DoHy, calibré pour que l'arbre entier coûte exactement les 260 points qu'on peut gagner.
+
+**Accès** : le bouton « Profil RPG » du wiki est ajouté à l'inventaire (un écran client qui
+envoie un message au serveur), en plus de `/profil` et du menu.
+
+**Vérifié au démarrage, par un auto-test temporaire** : tirages et améliorations de runes
+jusqu'au tier 4, fusion des lignes partagées, courbe de niveau, points depuis les trois sources,
+statistiques et plafonds avec runes portées, recettes de la palamachine, runes tirées dans les
+coffres. Le bouton d'inventaire, l'écran de l'arbre, l'enclume et le grinder restent à éprouver
+en jeu.
 
 ### 2026-11-09 (suite) — chapitre 19 : équipement de donjon, essences, notes
 
