@@ -166,10 +166,11 @@ public final class RetoursSelfTest {
         // G : objets au sol sur un entonnoir en paladium
         put(X + 6, 199, Z + 4, paladium);
         put(X + 6, 198, Z + 4, chest);
-        world.addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(world, X + 6.5, 200.2, Z + 4.5,
-                new ItemStack(Items.DIRT, 20)));
-        world.addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(world, X + 6.5, 200.2, Z + 4.5,
-                new ItemStack(Items.COBBLESTONE, 7)));
+        for (ItemStack loose : List.of(new ItemStack(Items.DIRT, 20), new ItemStack(Items.COBBLESTONE, 7))) {
+            var entity = new net.minecraft.world.entity.item.ItemEntity(world, X + 6.5, 200.1, Z + 4.5, loose,
+                    0, 0, 0);
+            log("G ajout=" + world.addFreshEntity(entity) + " " + entity.position());
+        }
         // F : entonnoir vanilla sous un crusher
         put(X + 2, 200, Z + 4, crusher);
         put(X + 2, 199, Z + 4, hopper);
@@ -206,7 +207,11 @@ public final class RetoursSelfTest {
         log("E haut=" + contents(at(X + 13, 201, Z)) + " entonnoir=" + contents(at(X + 13, 200, Z))
                 + " bas=" + contents(at(X + 13, 198, Z)));
         log("F crusher=" + contents(at(X + 2, 200, Z + 4)) + " coffre=" + contents(at(X + 2, 198, Z + 4)));
-        log("G coffre=" + contents(at(X + 6, 198, Z + 4)));
+        log("G coffre=" + contents(at(X + 6, 198, Z + 4)) + " au sol=" + world.getEntitiesOfClass(
+                net.minecraft.world.entity.item.ItemEntity.class,
+                new net.minecraft.world.phys.AABB(X + 3, 150, Z + 1, X + 10, 210, Z + 8))
+                .stream().map(e -> e.getItem() + "@" + e.position()).toList()
+                + " entonnoir=" + world.getBlockState(new BlockPos(X + 6, 199, Z + 4)));
         log("fin");
     }
 }
