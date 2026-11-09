@@ -36,9 +36,13 @@ public final class AntiqueEffects {
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player) || player.tickCount % 10 != 0) {
-            return;
+        if (event.getEntity() instanceof ServerPlayer player && player.tickCount % 10 == 0) {
+            update(player);
         }
+    }
+
+    /** Donne ou retire le vol et l'invisibilite selon l'armure portee et le lieu. */
+    static void update(ServerPlayer player) {
         boolean active = DungeonGearItem.antiqueSet(player) && !DungeonManager.inDimension(player);
         Abilities abilities = player.getAbilities();
         if (active) {
