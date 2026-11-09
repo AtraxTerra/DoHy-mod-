@@ -95,7 +95,7 @@ public final class DungeonEvents {
     public static void onJoin(EntityJoinLevelEvent event) {
         if (!(event.getLevel() instanceof ServerLevel level) || !DungeonManager.levelIs(level)
                 || !(event.getEntity() instanceof Mob mob) || !(mob instanceof Enemy)
-                || mob.getTags().contains(DungeonRun.TAG)) {
+                || mob.entityTags().contains(DungeonRun.TAG)) {
             return;
         }
         DungeonRun run = DungeonManager.runAt(level, mob.getX(), mob.getZ());
@@ -158,7 +158,7 @@ public final class DungeonEvents {
         Entity source = event.getSource().getEntity();
         boolean targetTracked = DungeonManager.runOfMob(target.getUUID()) != null;
         if (source != null && source != target && DungeonManager.runOfMob(source.getUUID()) != null) {
-            if (targetTracked || target.getTags().contains(DungeonRun.TAG)) {
+            if (targetTracked || target.entityTags().contains(DungeonRun.TAG)) {
                 event.setCanceled(true);
                 return;
             }
@@ -167,7 +167,7 @@ public final class DungeonEvents {
         if (targetTracked) {
             event.setAmount(event.getAmount() * DungeonManager.takenFactor(target.getUUID()));
         }
-        if (target.getTags().contains(DungeonRun.MERCHANT_TAG)) {
+        if (target.entityTags().contains(DungeonRun.MERCHANT_TAG)) {
             event.setCanceled(true);
         }
     }
@@ -196,7 +196,7 @@ public final class DungeonEvents {
             DungeonManager.leave(player, DungeonRun.Leave.DEATH);
             return;
         }
-        if (entity instanceof Mob mob && mob.getTags().contains(DungeonRun.SPLIT_TAG)) {
+        if (entity instanceof Mob mob && mob.entityTags().contains(DungeonRun.SPLIT_TAG)) {
             DungeonRun run = DungeonManager.runOfMob(mob.getUUID());
             if (run != null && run.phase == DungeonRun.Phase.FIGHT) {
                 for (int i = 0; i < 2; i++) {
@@ -268,7 +268,7 @@ public final class DungeonEvents {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         if (!(event.getEntity() instanceof ServerPlayer player)
-                || !event.getTarget().getTags().contains(DungeonRun.MERCHANT_TAG)) {
+                || !event.getTarget().entityTags().contains(DungeonRun.MERCHANT_TAG)) {
             return;
         }
         event.setCanceled(true);
@@ -276,14 +276,6 @@ public final class DungeonEvents {
         DungeonRun run = DungeonManager.runOf(player);
         if (event.getHand() == InteractionHand.MAIN_HAND && run != null && run.isMerchant(event.getTarget())) {
             DungeonMenus.openMerchant(player, run);
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void onEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
-        if (event.getTarget().getTags().contains(DungeonRun.MERCHANT_TAG)) {
-            event.setCanceled(true);
-            event.setCancellationResult(InteractionResult.SUCCESS);
         }
     }
 

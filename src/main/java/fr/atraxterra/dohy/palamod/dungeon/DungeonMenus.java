@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -122,11 +123,11 @@ public final class DungeonMenus {
             if (boss != null) {
                 item = palier % 10 == 0 ? Items.WITHER_SKELETON_SKULL : Items.SKELETON_SKULL;
             } else if (done) {
-                item = Items.LIME_STAINED_GLASS_PANE;
+                item = Items.STAINED_GLASS_PANE.pick(DyeColor.LIME);
             } else if (next) {
-                item = Items.YELLOW_STAINED_GLASS_PANE;
+                item = Items.STAINED_GLASS_PANE.pick(DyeColor.YELLOW);
             } else {
-                item = Items.GRAY_STAINED_GLASS_PANE;
+                item = Items.STAINED_GLASS_PANE.pick(DyeColor.GRAY);
             }
             ChatFormatting color = done ? ChatFormatting.GREEN : next ? ChatFormatting.YELLOW : ChatFormatting.GRAY;
             List<Component> lore = new ArrayList<>();
@@ -347,7 +348,7 @@ public final class DungeonMenus {
                 if (slot < bag.size()) {
                     set(slot, bag.get(slot).copy());
                 } else if (slot >= capacity) {
-                    set(slot, Gui.button(Items.BLACK_STAINED_GLASS_PANE, Component.literal("Emplacement ferme")
+                    set(slot, Gui.button(Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK), Component.literal("Emplacement ferme")
                             .withStyle(ChatFormatting.DARK_GRAY), Gui.lore(
                             Gui.hint("Un meilleur sac de donjon l'ouvre."))));
                 }

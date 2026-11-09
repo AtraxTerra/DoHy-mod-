@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.palamod.dungeon;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
@@ -16,12 +17,12 @@ import net.minecraft.world.level.block.Blocks;
  */
 public enum RoomType {
 
-    COMBAT("Combat", 12, 8, Blocks.RED_STAINED_GLASS, ChatFormatting.RED, true),
-    PUZZLE("Enigme", 10, 8, Blocks.BLUE_STAINED_GLASS, ChatFormatting.BLUE, true),
-    BOOST("Boost", 7, 6, Blocks.LIME_STAINED_GLASS, ChatFormatting.GREEN, false),
-    MERCHANT("Marchande", 7, 6, Blocks.YELLOW_STAINED_GLASS, ChatFormatting.YELLOW, false),
-    BOSS("Boss", 16, 14, Blocks.PURPLE_STAINED_GLASS, ChatFormatting.DARK_PURPLE, true),
-    EXIT("Sortie", 0, 0, Blocks.WHITE_STAINED_GLASS, ChatFormatting.WHITE, false);
+    COMBAT("Combat", 12, 8, Blocks.STAINED_GLASS.pick(DyeColor.RED), ChatFormatting.RED, true),
+    PUZZLE("Enigme", 10, 8, Blocks.STAINED_GLASS.pick(DyeColor.BLUE), ChatFormatting.BLUE, true),
+    BOOST("Boost", 7, 6, Blocks.STAINED_GLASS.pick(DyeColor.LIME), ChatFormatting.GREEN, false),
+    MERCHANT("Marchande", 7, 6, Blocks.STAINED_GLASS.pick(DyeColor.YELLOW), ChatFormatting.YELLOW, false),
+    BOSS("Boss", 16, 14, Blocks.STAINED_GLASS.pick(DyeColor.PURPLE), ChatFormatting.DARK_PURPLE, true),
+    EXIT("Sortie", 0, 0, Blocks.STAINED_GLASS.pick(DyeColor.WHITE), ChatFormatting.WHITE, false);
 
     private final String label;
     private final int halfWidth;
