@@ -17,6 +17,7 @@ import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
 import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import fr.atraxterra.dohy.palamod.legendary.PalaLegendary;
+import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -95,6 +96,7 @@ public final class PalaTab {
                         PalaPvp.ORDERED_BLOCKS.forEach(block -> output.accept(block.get()));
                         PalaPvp.ORDERED_ITEMS.forEach(item -> output.accept(item.get()));
                         PalaLegendary.ORDERED.forEach(item -> output.accept(item.get()));
+                        PalaDungeon.ORDERED.forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

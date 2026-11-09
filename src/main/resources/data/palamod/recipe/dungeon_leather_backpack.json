@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LCL",
+    "LHL",
+    "LIL"
+  ],
+  "key": {
+    "L": "minecraft:leather",
+    "C": "minecraft:chest",
+    "H": "minecraft:hopper",
+    "I": "palamod:invoker_stone"
+  },
+  "result": {
+    "id": "palamod:dungeon_leather_backpack",
+    "count": 1
+  }
+}

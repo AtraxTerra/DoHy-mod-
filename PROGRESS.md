@@ -94,6 +94,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 15 | **Dimension du Mineur** : obsidienne wither (chargée au paladium, obtenue au piston renforcé), portail du Mineur (propriétaire, Mineur 90), dimension `palamod:miner` (sections de 5 000, 1 000 points, 3 jours, minerais ×3, nuit fixe, sans monstres ni chute), écrans d'entrée et de fin, minerai et Pierre d'Invocation ; la pépite d'endium ne naît plus que dans la dimension — sans boss ni ambiance client | fait |
 | 16 | **Pour le PvP** : palamachine (création et réparation des sticks, anneaux et cornes, enchantements gardés), 7 sticks (effets du code, recharge par type sur le joueur), orbes de force et de saut, 6 anneaux (armure portée, colonne d'anneaux des coffres, capacités de réparation), aile et deltaplane, slimepad, spike en paladium — sans spikes des autres métaux ni modèle 3D du deltaplane | fait |
 | 17 | **Pierres légendaires** : 7 pierres (téléportation, invisibilité, fortune, pouvoir — résistance au feu 30 min —, métier, chaos, et l'aléatoire qui s'ouvre), recharge de 24 h sur la pierre et verrou de 10 min par joueur ; **gant en endium** (établi, grinder, défilement, 12 h complet, Infinity Gauntlet) ; dans les caisses rare et légendaire | fait |
+| 18 | **Donjons, cœur jouable** : 4 clés et l'écran des 100 paliers, groupe de 4, dimension `palamod:dungeon`, salles construites (combat, énigme, boost, marchande, mini-boss en 5, boss en 0), 6 types de monstres renforcés au palier, 40 boss nommés et leurs capacités, coffres individuels, sacs de donjon (9/18/27/36 piles), butin du wiki, XP de métier, mort = palier échoué ; bouteilles d'XP de métier — sans équipement, essences, notes, sorts, runes ni arbre (chapitres 19 à 21) | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -158,6 +159,29 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-09 (suite) — chapitre 18 : donjons, le cœur jouable
+
+**Demande** : « les donjons », depuis le wiki (« Univers des donjons »). Découpage avec le
+joueur en quatre chapitres : 18 cœur jouable, 19 équipement, essences et notes, 20 sorts et mana,
+21 runes et arbre. Choix du joueur : salles générées par le code, monstres vanilla renforcés, mort
+= palier échoué (inventaire gardé), clé consommée. Détail : `docs/PALAMOD.md` § 22.
+
+**Pas de code d'origine.** Les donjons sont de la V12, après la 10.3.0 : le wiki donne les règles,
+les noms et les tables de butin, et ne donne ni taux, ni quantités, ni statistiques, ni contenu des
+salles boost et marchande, ni emplacement des boss. Tous ces chiffres sont de DoHy et documentés.
+
+**26.2 a encore bougé** : les blocs et objets teints sont des `ColorCollection`
+(`Blocks.STAINED_GLASS.pick(DyeColor.RED)`), les étiquettes d'entité sont `entityTags()`, et
+`EntityInteractSpecific` n'existe plus.
+
+**Une entité tout juste ajoutée n'est pas visible** de `ServerLevel.getEntity(UUID)` tant que son
+chunk n'a pas été promu : la croire morte finissait la vague avant le combat. Les parties gardent
+donc leurs monstres par référence, et chaque salle tient ses chunks forcés (libérés à
+l'effacement, et au démarrage du serveur après un arrêt brutal).
+
+**Vérifié au démarrage, par un auto-test temporaire** : salles, monstres, boss, butin, déroulé
+d'un palier jusqu'à la sortie, région effacée. Le jeu avec un joueur reste à éprouver en jeu.
 
 ### 2026-11-09 (suite) — chapitre 17 : pierres légendaires et gant
 

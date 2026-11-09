@@ -2970,6 +2970,180 @@ def main():
                                     ("seconds", "%s s", "%ss")):
         label("duration", key, label_fr, label_en)
 
+    # ---- donjons : le coeur jouable (chapitre 18) ----
+    #
+    # Les donjons sont de la V12, posterieurs a la 10.3.0 : rien dans le jar.
+    # Les cles sont la cle en paladium de PalaMod teintee de la couleur du
+    # donjon, les sacs de tier 2 et 3 le sac en cuir teinte ; les bouteilles
+    # d'XP de metier existent telles quelles (items/job_bottle).
+    def tinted(relative, destination, rgb):
+        """Une texture du pack (ou du jar) passee a la couleur rgb, alpha garde."""
+        from PIL import Image
+        pack_root, jar_root = root
+        source = None
+        for base in (pack_root, jar_root):
+            if base:
+                candidate = os.path.join(base, "assets", NS, "textures", PACK_PATHS.get(relative, relative))
+                if os.path.exists(candidate):
+                    source = candidate
+                    break
+        if source is None:
+            missing.append(relative)
+            return
+        image = Image.open(source).convert("RGBA")
+        out = Image.new("RGBA", image.size)
+        pixels, target = image.load(), out.load()
+        for x in range(image.size[0]):
+            for y in range(image.size[1]):
+                r, g, b, a = pixels[x, y]
+                light = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
+                shade = min(1.0, 0.25 + light * 1.1)
+                target[x, y] = (int(rgb[0] * shade), int(rgb[1] * shade), int(rgb[2] * shade), a)
+        full = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        out.save(full)
+
+    for name, rgb, extra, label_fr, label_en in (
+            ("talikus_key", (96, 196, 64), "minecraft:wheat", "Cle de Talikus", "Talikus Key"),
+            ("nimbria_key", (170, 170, 178), "minecraft:cobblestone", "Cle de Nimbria", "Nimbria Key"),
+            ("vitalys_key", (206, 58, 48), "minecraft:rotten_flesh", "Cle de Vitalys", "Vitalys Key"),
+            ("manelios_key", (64, 200, 210), "minecraft:poppy", "Cle de Manelios", "Manelios Key")):
+        tinted("items/paladium_key.png", "item/%s.png" % name, rgb)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+        # Le wiki : lingot de paladium vert, invoker stone, stick en paladium,
+        # lingot de paladium et l'ingredient du metier. La grille n'est que
+        # dans les images ; celle-ci met la pierre en tete et le metier au coeur.
+        shaped(name, [" V ", "SXS", "PGP"], {
+            "V": "%s:invoker_stone" % NS, "S": "%s:paladium_stick" % NS, "X": extra,
+            "P": "%s:paladium_ingot" % NS, "G": "%s:green_paladium_ingot" % NS,
+        }, "%s:%s" % (NS, name))
+
+    tex("items/backpack.png", "item/dungeon_leather_backpack.png")
+    flat_item("dungeon_leather_backpack", "%s:item/dungeon_leather_backpack" % NS)
+    label("item", "dungeon_leather_backpack", "Sac de donjon en cuir", "Dungeon Leather Backpack")
+    shaped("dungeon_leather_backpack", ["LCL", "LHL", "LIL"], {
+        "L": "minecraft:leather", "C": "minecraft:chest", "H": "minecraft:hopper", "I": "%s:invoker_stone" % NS,
+    }, "%s:dungeon_leather_backpack" % NS)
+    for name, rgb, label_fr, label_en in (
+            ("dungeon_backpack_t2", (92, 128, 220), "Sac de donjon tier 2", "Dungeon Backpack Tier 2"),
+            ("dungeon_backpack_t3", (226, 176, 48), "Sac de donjon tier 3", "Dungeon Backpack Tier 3")):
+        tinted("items/backpack.png", "item/%s.png" % name, rgb)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+
+    for job, label_fr, label_en in (("farmer", "fermier", "Farmer"), ("miner", "mineur", "Miner"),
+                                    ("hunter", "chasseur", "Hunter"), ("alchemist", "alchimiste", "Alchemist")):
+        name = "job_bottle_%s" % job
+        tex("items/job_bottle/%s.png" % job, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, "Bouteille d'XP de %s" % label_fr, "%s XP Bottle" % label_en)
+
+    for key, label_fr, label_en in (
+            ("dungeon_key", "Ouvre les paliers du donjon. XP de metier : %s.",
+             "Opens the dungeon's floors. Job XP: %s."),
+            ("dungeon_key.hint", "Clic droit : choisir un palier. Consommee a l'entree.",
+             "Right-click: choose a floor. Consumed on entry."),
+            ("dungeon_backpack", "Sac de donjon : %s piles de butin.", "Dungeon bag: %s stacks of loot."),
+            ("dungeon_backpack.hint", "Il suffit de l'avoir sur soi en entrant.", "Just carry it when you enter."),
+            ("job_bottle", "%s XP de %s", "%s %s XP"),
+            ("job_bottle.hint", "Clic droit : boire. Accroupi : toute la pile.",
+             "Right-click: drink. Sneak: the whole stack.")):
+        label("tooltip", key, label_fr, label_en)
+    fr["message.%s.job_bottle" % NS] = "+%s XP de %s"
+    en["message.%s.job_bottle" % NS] = "+%s %s XP"
+    for key, label_fr, label_en in (
+            ("unavailable", "Les donjons ne sont pas disponibles sur ce serveur.",
+             "Dungeons aren't available on this server."),
+            ("already", "Vous etes deja dans un donjon.", "You're already in a dungeon."),
+            ("locked", "Vous devez d'abord reussir le palier %s.", "You must clear floor %s first."),
+            ("no_key", "Il vous faut une cle de %s en main.", "You need a %s key in hand."),
+            ("start", "%s, palier %s (%s) : bonne chance !", "%s, floor %s (%s): good luck!"),
+            ("party", "Groupe : %s", "Party: %s"),
+            ("wave", "Vague %s/%s !", "Wave %s/%s!"),
+            ("room_cleared", "Salle terminee ! Avancez vers une porte pour choisir la suite.",
+             "Room cleared! Walk into a door to choose what comes next."),
+            ("chest", "Un coffre est apparu au centre de la salle : chacun le sien.",
+             "A chest appeared in the middle of the room: one for each of you."),
+            ("chest_loot", "Coffre : %s", "Chest: %s"),
+            ("chest_done", "Vous avez deja ouvert ce coffre.", "You already opened this chest."),
+            ("chest_auto", "Coffre laisse, ramasse pour vous : %s", "Chest left behind, picked up for you: %s"),
+            ("bag_full", "Sac plein, perdu : %s", "Bag full, lost: %s"),
+            ("door", "%s ouvre la porte : %s", "%s opens the door: %s"),
+            ("puzzle", "Enigme : trouvez et appuyez sur les %s boutons de la salle.",
+             "Puzzle: find and press the room's %s buttons."),
+            ("puzzle_progress", "Bouton trouve (%s/%s)", "Button found (%s/%s)"),
+            ("boost", "Salle de boost : choisissez un bonus a l'autel, au centre.",
+             "Boost room: pick a bonus at the altar in the middle."),
+            ("boost_taken", "Bonus choisi : %s, pour 10 minutes.", "Bonus chosen: %s, for 10 minutes."),
+            ("boost_already", "Vous avez deja choisi votre bonus.", "You already picked your bonus."),
+            ("merchant", "Une marchande vous attend : clic droit pour commercer.",
+             "A merchant is waiting: right-click to trade."),
+            ("bought", "Achat : %s pour %s", "Bought: %s for %s"),
+            ("poor", "Il vous faut %s.", "You need %s."),
+            ("boss", "%s apparait !", "%s appears!"),
+            ("boss_dead", "%s est vaincu !", "%s is defeated!"),
+            ("success", "Palier %s de %s reussi !", "Floor %s of %s cleared!"),
+            ("delivered", "Sac livre : %s piles. +%s XP de %s.", "Bag delivered: %s stacks. +%s %s XP."),
+            ("unique", "Recompense unique : %s", "Unique reward: %s"),
+            ("death", "Vous etes mort : le palier est echoue et votre sac est perdu.",
+             "You died: the floor is failed and your bag is lost."),
+            ("quit", "Vous avez quitte le donjon : le palier est echoue et votre sac est perdu.",
+             "You left the dungeon: the floor is failed and your bag is lost."),
+            ("member_left", "%s a quitte le donjon.", "%s left the dungeon."),
+            ("not_inside", "Vous n'etes pas dans un donjon.", "You aren't in a dungeon."),
+            ("returned", "Le donjon s'est ferme pendant votre absence : vous etes ramene.",
+             "The dungeon closed while you were away: you've been brought back.")):
+        label("message", "dungeon." + key, label_fr, label_en)
+
+    # La dimension des instances : vide (un monde plat sans couche), sans
+    # ciel ni monstre naturel. Toute la lumiere vient des salles.
+    write("data/%s/worldgen/biome/dungeon.json" % NS, {
+        "attributes": {"minecraft:visual/sky_color": "#000000", "minecraft:visual/fog_color": "#0b0b12"},
+        "carvers": [],
+        "downfall": 0.0,
+        "effects": {"water_color": "#3f76e4"},
+        "features": [],
+        "has_precipitation": False,
+        "spawn_costs": {},
+        "spawners": {category: [] for category in (
+            "ambient", "axolotls", "creature", "misc", "monster", "underground_water_creature",
+            "water_ambient", "water_creature")},
+        "temperature": 0.8,
+    })
+    write("data/%s/dimension_type/dungeon.json" % NS, {
+        "ambient_light": 0.15,
+        "attributes": {
+            "minecraft:gameplay/bed_rule": {"can_set_spawn": "never", "can_sleep": "never"},
+            "minecraft:gameplay/can_start_raid": False,
+            "minecraft:gameplay/respawn_anchor_works": False,
+            "minecraft:visual/ambient_light_color": "#141420",
+            "minecraft:visual/fog_color": "#0b0b12",
+            "minecraft:visual/fog_start_distance": 32.0,
+            "minecraft:visual/fog_end_distance": 96.0,
+            "minecraft:visual/sky_color": "#000000",
+        },
+        "coordinate_scale": 1.0,
+        "has_ceiling": False,
+        "has_ender_dragon_fight": False,
+        "has_fixed_time": True,
+        "has_skylight": False,
+        "height": 256,
+        "infiniburn": "#minecraft:infiniburn_overworld",
+        "logical_height": 256,
+        "min_y": 0,
+        "monster_spawn_block_light_limit": 0,
+        "monster_spawn_light_level": 0,
+        "skybox": "none",
+        "timelines": "#minecraft:universal",
+    })
+    write("data/%s/dimension/dungeon.json" % NS, {
+        "type": "%s:dungeon" % NS,
+        "generator": {"type": "minecraft:flat", "settings": {
+            "biome": "%s:dungeon" % NS, "features": False, "lakes": False, "layers": [],
+            "structure_overrides": []}},
+    })
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de
