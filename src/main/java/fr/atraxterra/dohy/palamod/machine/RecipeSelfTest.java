@@ -43,12 +43,19 @@ public final class RecipeSelfTest {
     @SubscribeEvent
     public static void onCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("recipetest").executes(context -> {
-            try {
-                run(context.getSource().getServer());
-            } catch (Throwable t) {
-                LOG.error("palamod-test: RECIPES FAILED", t);
-            }
-            context.getSource().sendSuccess(() -> Component.literal("ok"), false);
+            MinecraftServer server = context.getSource().getServer();
+            Thread thread = new Thread(() -> {
+                try {
+                    log("debut");
+                    run(server);
+                    log("fin");
+                } catch (Throwable t) {
+                    LOG.error("palamod-test: RECIPES FAILED", t);
+                }
+            }, "recipe-test");
+            thread.setDaemon(true);
+            thread.start();
+            context.getSource().sendSuccess(() -> Component.literal("started"), false);
             return 1;
         }));
     }
@@ -67,6 +74,7 @@ public final class RecipeSelfTest {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static void run(MinecraftServer server) throws Exception {
         ServerLevel level = server.overworld();
+        log("etape : recettes");
         TreeMap<String, Integer> counts = new TreeMap<>();
         int ok = 0;
         List<String> problems = new ArrayList<>();
@@ -84,7 +92,6 @@ public final class RecipeSelfTest {
             }
             Recipe<?> recipe = holder.value();
             seen++;
-            log("test " + id);
             counts.merge(namespace + " " + recipe.getClass().getSimpleName(), 1, Integer::sum);
             try {
                 if (recipe instanceof ShapedRecipe shaped) {
@@ -125,6 +132,7 @@ public final class RecipeSelfTest {
             log("PROBLEME " + problem);
         }
 
+        log("etape : palamachine");
         int machine = 0;
         for (PalamachineRecipes.Recipe recipe : PalamachineRecipes.all()) {
             List<ItemStack> stacks = recipe.inputs().stream().map(ItemStack::new).toList();
@@ -137,6 +145,7 @@ public final class RecipeSelfTest {
             }
         }
         log("palamachine " + machine + "/" + PalamachineRecipes.all().size());
+        log("etape : grinder");
         int grinder = 0;
         for (GrinderRecipes recipe : GrinderRecipes.all()) {
             if (recipe.first() == Items.AIR || recipe.second() == Items.AIR || recipe.result() == Items.AIR) {
@@ -146,6 +155,7 @@ public final class RecipeSelfTest {
             }
         }
         log("grinder " + grinder + "/" + GrinderRecipes.all().size());
+        log("etape : chaudron");
         Class<?> cauldron = Class.forName("fr.atraxterra.dohy.palamod.alchemist.CauldronRecipe");
         Field field = cauldron.getDeclaredField("RECIPES");
         field.setAccessible(true);
