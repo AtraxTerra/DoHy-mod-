@@ -1124,6 +1124,10 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
 - **Fleurs** : six fleurs dans les plaines, les collines venteuses et les forêts. L'original
   tirait une hauteur entre 50 et 74 qui devait tomber pile sur le sol ; le rythme effectif est
   gardé : une fleur de paladium tous les 125 chunks, d'endium tous les 2 500, etc.
+- **Ajout** : l'original ne disait rien quand un objet jeté ne donnait rien, et le chaudron
+  semblait cassé. Un message dans la barre d'action, une fois par objet jeté : bassin à remplir
+  d'abord (seau d'eau angélique jeté), bûche ou potion de foudre manquante, objet sans recette,
+  niveau d'Alchimiste insuffisant. Ce que le chaudron produit et qui retombe n'est pas signalé.
 
 ### Les portails — `TileEntityAlchemistPortalController`, `BlockPortalAlchemist`
 
@@ -1140,6 +1144,8 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
   quatre coins sont vérifiés (un ne l'était pas dans une orientation) ; endium : deux pollens par
   pépite toujours (un tank n'en demandait pas), plusieurs pépites par lancer, la sève en trop
   n'est plus détruite, les pollens sont sauvegardés.
+- **Ajout** : une fiole vide ou d'une autre sève est refusée avec un message qui nomme la sève
+  attendue par ce portail.
 
 ### Les enchantements mystiques — `EnchantMod`, `IMixinEnchantTable`
 

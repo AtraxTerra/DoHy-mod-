@@ -1,14 +1,12 @@
 package fr.atraxterra.dohy.palamod.alchemist;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
-import java.util.Set;
-import java.util.HashSet;
 import fr.atraxterra.dohy.palamod.PalaBlocks;
 import fr.atraxterra.dohy.palamod.PalaItems;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -28,8 +26,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * La vie du chaudron forme ({@code TileEntityCauldronCore.func_145845_h}).
@@ -254,7 +254,14 @@ public class CauldronCoreBlockEntity extends BlockEntity {
         return false;
     }
 
+    /**
+     * Seuls les objets jetes par un joueur sont signales : ce que le chaudron
+     * produit retombe dans le bassin et ne doit pas etre pris pour une erreur.
+     */
     private void hint(ServerPlayer player, ItemEntity entity, Component message) {
+        if (entity.getOwner() == null) {
+            return;
+        }
         if (hinted.size() > 256) {
             hinted.clear();
         }

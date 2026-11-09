@@ -1,7 +1,5 @@
 package fr.atraxterra.dohy.palamod.alchemist;
 
-import java.util.Set;
-import java.util.HashSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,7 +20,9 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Le portail ({@code TileEntityAlchemistPortalController},
