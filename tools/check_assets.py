@@ -51,7 +51,10 @@ ITEMLESS_BLOCKS = ("void_stone", "angelic_water",
                    # Alchimiste : une buche entamee se casse en bois mort, la
                    # surface du portail n'existe que portail ouvert.
                    "tapped_jacaranda_log", "tapped_judeecercis_log", "tapped_erable_log",
-                   "tapped_ostrya_log", "alchemist_portal")
+                   "tapped_ostrya_log", "alchemist_portal",
+                   # Dimension du Mineur : la nappe du portail, comme celle de
+                   # l'alchimiste, n'existe que cadre allume.
+                   "miner_portal")
 
 errors = []
 
@@ -149,6 +152,8 @@ MODEL_TEXTURES = {
     "block/food_machine.png": (64, 46),
     # Le gestionnaire d'enclos reprend celle de son BarnControllerModel.
     "block/barn_controller.png": (64, 64),
+    # Le portail du Mineur : 32 images de 48 x 48 (blocks/miner_portal.png).
+    "block/miner_portal.png": (48, 1536),
 }
 
 

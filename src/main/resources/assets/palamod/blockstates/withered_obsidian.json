@@ -1,0 +1,37 @@
+{
+  "variants": {
+    "feed=0": {
+      "model": "palamod:block/withered_obsidian_0"
+    },
+    "feed=1": {
+      "model": "palamod:block/withered_obsidian_1"
+    },
+    "feed=2": {
+      "model": "palamod:block/withered_obsidian_2"
+    },
+    "feed=3": {
+      "model": "palamod:block/withered_obsidian_3"
+    },
+    "feed=4": {
+      "model": "palamod:block/withered_obsidian_4"
+    },
+    "feed=5": {
+      "model": "palamod:block/withered_obsidian_5"
+    },
+    "feed=6": {
+      "model": "palamod:block/withered_obsidian_6"
+    },
+    "feed=7": {
+      "model": "palamod:block/withered_obsidian_7"
+    },
+    "feed=8": {
+      "model": "palamod:block/withered_obsidian_8"
+    },
+    "feed=9": {
+      "model": "palamod:block/withered_obsidian_9"
+    },
+    "feed=10": {
+      "model": "palamod:block/withered_obsidian_10"
+    }
+  }
+}

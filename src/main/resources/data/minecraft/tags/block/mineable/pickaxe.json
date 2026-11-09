@@ -37,6 +37,7 @@
     "palamod:guardian_box_block",
     "palamod:guardian_box_frame",
     "palamod:guardian_keeper",
+    "palamod:invoker_ore",
     "palamod:mystical_bookshelf",
     "palamod:paladium_block",
     "palamod:paladium_chest",
@@ -60,6 +61,7 @@
     "palamod:trixium_block",
     "palamod:trixium_ore",
     "palamod:void_stone",
+    "palamod:withered_obsidian",
     "palamod:withered_reinforced_piston"
   ]
 }
