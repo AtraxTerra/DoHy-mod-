@@ -136,6 +136,12 @@ public class CrusherBlockEntity extends MachineBlockEntity {
         return index < 0 ? 0 : RECIPES[index].fruitsPerBatch();
     }
 
+    /** Le resultat seulement, ni le fruit ni le combustible. */
+    @Override
+    protected boolean hopperMayTake(int slot) {
+        return slot == SLOT_OUTPUT;
+    }
+
     /**
      * Le fruit a gauche en haut, son charbon en dessous.
      *

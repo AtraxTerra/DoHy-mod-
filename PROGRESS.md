@@ -194,8 +194,11 @@ le rendu 3D, qui ne se voit qu'en client.
 - une seule recette inutilisable en pratique : `green_paladium_ingot_from_particles`, la particule
   de paladium vert ne s'obtenant nulle part (chez Paladium, elle sortait du lucky block d'août, non
   porté). Laissée telle quelle ;
-- pas fait : l'auto-test en jeu de chaque recette (assemblage, palamachine, grinder, chaudron). Il
-  est écrit, mais GitHub Actions ne démarrait plus aucun job ce soir-là.
+- auto-test temporaire sur serveur dédié, recette par recette : chacune reconnaît ses propres
+  ingrédients, donne un résultat et n'est masquée par aucune autre. 218/218 (l'eau angélique et les
+  trois spéciales — mini-golem, sa réparation, gant en endium — avec de vrais objets : potion de
+  régénération, pierre de golem avec ses données, pierre légendaire), palamachine 36/36, grinder
+  19/19, chaudron 4/4.
 
 ### 2026-11-09 (suite) — chapitre 20 : runes et arbre de compétences
 

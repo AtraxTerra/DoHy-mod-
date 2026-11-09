@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "palamod:endium_nugget"
+          "name": "palamod:endium_nugget_ore"
         }
       ],
       "conditions": [

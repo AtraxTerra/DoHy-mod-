@@ -4,10 +4,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,8 +20,8 @@ import java.util.Set;
  * <p>Releve dans {@code TileEntityPaladiumHopper} :
  * <ul>
  *   <li>toutes les 8 ticks ({@code PMiner.HOPPER_RATE}), s'il n'est pas coupe ;</li>
- *   <li>source : l'inventaire <b>directement au-dessus</b>, et lui seul — aucun
- *       objet au sol n'est aspire ;</li>
+ *   <li>source : l'inventaire <b>directement au-dessus</b> ; sans inventaire,
+ *       les objets au sol juste au-dessus (<b>ecart</b>, voir {@link #collect}) ;</li>
  *   <li>destination : l'inventaire que vise l'entonnoir. Si c'est un autre
  *       entonnoir en paladium, on suit la chaine jusqu'au bout : les objets
  *       vont directement au dernier inventaire, les entonnoirs du milieu ne font
@@ -51,16 +53,17 @@ public class PaladiumHopperBlockEntity extends BlockEntity {
         if (level == null || ++ticks % PERIOD != 0 || !state.getValue(PaladiumHopperBlock.ENABLED)) {
             return;
         }
-        Container source = HopperBlockEntity.getContainerAt(level, worldPosition.above());
-        if (source == null) {
-            return;
-        }
         Target target = target(state);
         if (target == null) {
             return;
         }
+        Container source = HopperBlockEntity.getContainerAt(level, worldPosition.above());
+        if (source == null) {
+            collect(target);
+            return;
+        }
 
-        for (int slot : extractable(source)) {
+        for (int slot : extractable(source, target.container())) {
             ItemStack stack = source.getItem(slot);
             if (stack.isEmpty()) {
                 continue;
@@ -103,14 +106,42 @@ public class PaladiumHopperBlockEntity extends BlockEntity {
         return null;
     }
 
-    /** Les cases que la source laisse prendre par sa face du bas. */
-    private static int[] extractable(Container source) {
-        if (source instanceof WorldlyContainer worldly) {
-            int[] slots = worldly.getSlotsForFace(Direction.DOWN);
-            return java.util.Arrays.stream(slots)
-                    .filter(slot -> worldly.canTakeItemThroughFace(slot, source.getItem(slot), Direction.DOWN))
-                    .toArray();
+    /**
+     * Les objets au sol juste au-dessus, quand il n'y a pas d'inventaire.
+     *
+     * <p><b>Ecart</b> : l'entonnoir de PalaMod n'aspirait rien au sol ; pose
+     * sous un tas d'objets ou une ferme, il paraissait en panne. Il les prend
+     * ici dans la meme zone que l'entonnoir vanilla, une pile entiere par
+     * passage.
+     */
+    private void collect(Target target) {
+        AABB above = new AABB(worldPosition.getX(), worldPosition.getY() + 0.6875, worldPosition.getZ(),
+                worldPosition.getX() + 1, worldPosition.getY() + 2, worldPosition.getZ() + 1);
+        for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, above, ItemEntity::isAlive)) {
+            ItemStack stack = entity.getItem();
+            ItemStack remainder = HopperBlockEntity.addItem(null, target.container(), stack.copy(), target.face());
+            if (remainder.getCount() != stack.getCount()) {
+                if (remainder.isEmpty()) {
+                    entity.discard();
+                } else {
+                    entity.setItem(remainder);
+                }
+                target.container().setChanged();
+                return;
+            }
         }
-        return java.util.stream.IntStream.range(0, source.getContainerSize()).toArray();
+    }
+
+    /**
+     * Les cases que la source laisse prendre par sa face du bas — et que la
+     * source accepte de lacher ({@code canTakeItem}) : un cobblebreaker ne
+     * donne que ses particules.
+     */
+    private static int[] extractable(Container source, Container destination) {
+        java.util.stream.IntStream slots = source instanceof WorldlyContainer worldly
+                ? java.util.Arrays.stream(worldly.getSlotsForFace(Direction.DOWN))
+                .filter(slot -> worldly.canTakeItemThroughFace(slot, source.getItem(slot), Direction.DOWN))
+                : java.util.stream.IntStream.range(0, source.getContainerSize());
+        return slots.filter(slot -> source.canTakeItem(destination, slot, source.getItem(slot))).toArray();
     }
 }

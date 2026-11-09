@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.7,
+  "group": "amethyst_ingot",
+  "ingredient": "palamod:amethyst_ore",
+  "result": {
+    "id": "palamod:amethyst_ingot"
+  }
+}
