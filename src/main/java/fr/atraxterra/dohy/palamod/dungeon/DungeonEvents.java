@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +22,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
+import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
@@ -31,6 +33,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -66,8 +69,33 @@ public final class DungeonEvents {
     }
 
     @SubscribeEvent
+    public static void onStarted(ServerStartedEvent event) {
+        DungeonManager.releaseChunks(event.getServer());
+    }
+
+    @SubscribeEvent
     public static void onStopping(ServerStoppingEvent event) {
         DungeonManager.shutdown();
+    }
+
+    /**
+     * Rien ne se jette au donjon : un objet au sol serait efface avec la
+     * salle. Il revient dans l'inventaire.
+     */
+    @SubscribeEvent
+    public static void onToss(ItemTossEvent event) {
+        if (!(event.getPlayer() instanceof ServerPlayer player) || !DungeonManager.inDimension(player)
+                || exempt(player)) {
+            return;
+        }
+        ItemStack stack = event.getEntity().getItem().copy();
+        player.getInventory().add(stack);
+        if (stack.isEmpty()) {
+            event.setCanceled(true);
+        } else {
+            event.getEntity().setItem(stack);
+        }
+        player.inventoryMenu.broadcastChanges();
     }
 
     @SubscribeEvent

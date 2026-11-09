@@ -256,6 +256,20 @@ public final class DungeonManager {
         }
     }
 
+    /**
+     * Au demarrage : aucune partie n'a survecu, donc aucune salle ne doit
+     * tenir de chunk charge (un arret brutal les laisse forces).
+     */
+    static void releaseChunks(MinecraftServer server) {
+        ServerLevel level = server.getLevel(PalaDungeon.DIMENSION);
+        if (level == null) {
+            return;
+        }
+        for (long packed : level.getForceLoadedChunks().toLongArray()) {
+            level.setChunkForced((int) (packed & 0xFFFFFFFFL), (int) (packed >>> 32), false);
+        }
+    }
+
     /** Arret du serveur : tout le monde dehors, rien n'est livre. */
     static void shutdown() {
         for (DungeonRun run : new ArrayList<>(RUNS.values())) {

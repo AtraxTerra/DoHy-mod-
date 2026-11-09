@@ -43,6 +43,7 @@ final class DungeonRoom {
     final int height;
     final AABB interior;
     final List<BlockPos> buttons = new ArrayList<>();
+    private final List<int[]> forced = new ArrayList<>();
 
     private DungeonRoom(RoomType type, BlockPos center, int half, int height) {
         this.type = type;
@@ -80,8 +81,12 @@ final class DungeonRoom {
         int z1 = center.getZ() + half + 1;
         int floor = center.getY() - 1;
         int ceiling = center.getY() + height;
+        // La salle tient ses chunks charges tant qu'elle existe : ses monstres
+        // restent comptables et effacables quoi que fassent les joueurs.
         for (int cx = x0 >> 4; cx <= x1 >> 4; cx++) {
             for (int cz = z0 >> 4; cz <= z1 >> 4; cz++) {
+                level.setChunkForced(cx, cz, true);
+                forced.add(new int[]{cx, cz});
                 level.getChunk(cx, cz);
             }
         }
@@ -217,6 +222,9 @@ final class DungeonRoom {
 
     /** Efface la salle : tout ce qui n'est pas de l'air dans sa boite exterieure. */
     void erase(ServerLevel level) {
+        if (forced.isEmpty()) {
+            return;
+        }
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int x = center.getX() - half - 1; x <= center.getX() + half + 1; x++) {
             for (int z = center.getZ() - half - 1; z <= center.getZ() + half + 1; z++) {
@@ -229,6 +237,10 @@ final class DungeonRoom {
                 }
             }
         }
+        for (int[] chunk : forced) {
+            level.setChunkForced(chunk[0], chunk[1], false);
+        }
+        forced.clear();
     }
 
     AABB outer() {
