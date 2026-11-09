@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.7,
+  "group": "titane_ingot",
+  "ingredient": "palamod:titane_ore",
+  "result": {
+    "id": "palamod:titane_ingot"
+  }
+}

@@ -151,6 +151,12 @@ public class CobblebreakerBlockEntity extends MachineBlockEntity {
                 && (stack.is(Items.COBBLESTONE) || stack.getItem() instanceof VoidstoneMinageItem);
     }
 
+    /** Les particules seulement, jamais la cobblestone ni la Voidstone de l'entree. */
+    @Override
+    protected boolean hopperMayTake(int slot) {
+        return slot >= SLOT_FIRST_OUTPUT;
+    }
+
     @Override
     public void serverTick() {
         if (level == null || !canWork()) {

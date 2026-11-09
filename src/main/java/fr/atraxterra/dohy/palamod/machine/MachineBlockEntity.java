@@ -160,6 +160,23 @@ public abstract class MachineBlockEntity extends BlockEntity
         setChanged();
     }
 
+    /**
+     * Ce qu'un entonnoir — vanilla ou en paladium — peut retirer.
+     *
+     * <p>Les machines qui produisent ne lachent que leurs sorties : sans ce
+     * filtre, un entonnoir sous un cobblebreaker en vidait la cobblestone ou la
+     * Voidstone minage avant les particules.
+     */
+    @Override
+    public boolean canTakeItem(Container target, int slot, ItemStack stack) {
+        return hopperMayTake(slot);
+    }
+
+    /** Toutes les cases par defaut ; une machine qui produit ne nomme que ses sorties. */
+    protected boolean hopperMayTake(int slot) {
+        return true;
+    }
+
     /** Tout l'inventaire, pour le laisser tomber quand la machine est cassee. */
     public NonNullList<ItemStack> contents() {
         return items;
