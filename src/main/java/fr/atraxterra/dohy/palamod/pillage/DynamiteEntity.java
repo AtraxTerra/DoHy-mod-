@@ -52,6 +52,11 @@ public class DynamiteEntity extends ThrowableItemProjectile {
         this.fuse = DynamiteKind.FUSE + level.getRandom().nextInt(DynamiteKind.FUSE_SPREAD);
     }
 
+    /** Une dynamite tiree par un distributeur : sans lanceur, comme la TNT d'un canon. */
+    public DynamiteEntity(Level level, double x, double y, double z, ItemStack stack) {
+        super(PalaPillage.DYNAMITE_ENTITY.get(), x, y, z, level, stack);
+    }
+
     @Override
     protected Item getDefaultItem() {
         return PalaPillage.DYNAMITE.get();

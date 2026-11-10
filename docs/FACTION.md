@@ -246,6 +246,8 @@ ou `/f base generer [1-3]`), une faction ennemie fictive bâtit une place forte 
   murs : on n'y casse, n'y pose ni n'y ouvre rien à la main — **même en créatif**. La TNT ne s'y pose
   donc pas : elle arrive en **dynamite** lancée, tirée par un **canon à TNT** bâti hors des claims, ou
   c'est un **wither** invoqué dehors (le réceptacle veut un chunk libre) qu'on amène au mur. Les
+  distributeurs tirent les dynamites et allument les TNT de PalaMod (grosse, endium, éponge, effet,
+  wither) comme la TNT vanilla : les canons à TNT marchent avec toutes. Les
   explosions et les withers y cassent tout ; le seau extrapolé et le pistolet à liquide y travaillent.
   Ses pièges frappent l'assaillant.
 - **Entrer dans la salle des coffres du donjon, c'est l'avoir pillée** : ELO, argent à la banque de
