@@ -15,8 +15,9 @@ redessine d'apres les rendus du wiki (« Réceptacle à Wither ») :
 Chaque peau part de la texture du wither (le pack, 64 x 64 ; le modele n'en
 lit que la moitie haute) : la luminance de chaque pixel est rendue dans la
 gamme du genre, les dessus de tete eclaircis, les yeux et la bouche repeints.
-La moitie basse porte les pieces ajoutees (cornes, bras, fleches, pousses),
-aux emplacements que PalaWitherGeometry leur donne. A cote, une texture
+Les pieces ajoutees (cornes, bras, fleches, pousses) sont peintes a partir de
+la ligne 36, aux emplacements que PalaWitherGeometry leur donne : au-dessus,
+la colonne vertebrale du vanilla descend jusqu'a la ligne 35. A cote, une texture
 « _eyes » ne garde que ce qui brille, pour la couche lumineuse du rendu.
 
     python3 tools/wither_skins.py <wither.png du pack> <dossier de sortie>
@@ -107,7 +108,7 @@ def build(base, kind):
             if source.getpixel((x, y))[3] > 0 and lum(source.getpixel((x, y))) < 140]
     low, high = min(lums), max(lums)
     for x in range(64):
-        for y in range(32):
+        for y in range(36 if x < 12 else 32):
             pixel = source.getpixel((x, y))
             if pixel[3] == 0:
                 continue
@@ -144,9 +145,9 @@ def build(base, kind):
             eyes.putpixel((RIBCAGE_FRONT[0] + 1, y), (255, 120, 40, 255))
         # Les cornes en L : un moignon lateral, un fut dresse, une pointe.
         bone = lambda fx, fy, face, h: lerp((132, 124, 146), (222, 216, 232), 1.0 if face == "top" else 1.0 - fy / max(1, h))
-        paint_box(skin, 0, 32, 2, 6, 2, lambda fx, fy, face: bone(fx, fy, face, 6))
-        paint_box(skin, 8, 32, 3, 2, 2, lambda fx, fy, face: bone(fx, fy, face, 4))
-        paint_box(skin, 20, 32, 1, 3, 1, lambda fx, fy, face: lerp((236, 232, 242), (196, 188, 208), fy / 3.0))
+        paint_box(skin, 0, 36, 2, 6, 2, lambda fx, fy, face: bone(fx, fy, face, 6))
+        paint_box(skin, 8, 36, 3, 2, 2, lambda fx, fy, face: bone(fx, fy, face, 4))
+        paint_box(skin, 20, 36, 1, 3, 1, lambda fx, fy, face: lerp((236, 232, 242), (196, 188, 208), fy / 3.0))
     elif kind == "supreme_wither":
         # La croix rose de la poitrine.
         cx, cy = RIBCAGE_FRONT[0] + 1, RIBCAGE_FRONT[1] + 1
@@ -155,11 +156,11 @@ def build(base, kind):
             eyes.putpixel((cx + dx, cy + dy), (255, 150, 240, 255))
         dark = (36, 20, 52)
         flesh = lambda base: (lambda fx, fy, face: ramp(palette["ramp"], base + noise(fx, fy, 3) * 0.3))
-        paint_box(skin, 16, 32, 4, 12, 4, flesh(0.35))       # bras
-        paint_box(skin, 32, 32, 3, 12, 3, flesh(0.15))       # avant-bras
-        paint_box(skin, 44, 32, 1, 5, 1, lambda fx, fy, face: lerp(dark, (96, 54, 128), fy / 5.0))
-        paint_box(skin, 48, 32, 1, 4, 1, lambda fx, fy, face: lerp((70, 40, 94), (16, 8, 24), fy / 4.0))
-        paint_box(skin, 0, 48, 5, 5, 5, lambda fx, fy, face: lerp(palette["top"][0], palette["top"][1], 0.3)
+        paint_box(skin, 16, 36, 4, 12, 4, flesh(0.35))       # bras
+        paint_box(skin, 32, 36, 3, 12, 3, flesh(0.15))       # avant-bras
+        paint_box(skin, 44, 36, 1, 5, 1, lambda fx, fy, face: lerp(dark, (96, 54, 128), fy / 5.0))
+        paint_box(skin, 48, 36, 1, 4, 1, lambda fx, fy, face: lerp((70, 40, 94), (16, 8, 24), fy / 4.0))
+        paint_box(skin, 0, 52, 5, 5, 5, lambda fx, fy, face: lerp(palette["top"][0], palette["top"][1], 0.3)
                   if face == "top" else ramp(palette["ramp"], 0.55 + noise(fx, fy, 5) * 0.3))
     elif kind == "thirsty_wither":
         # La fleche : un fut de bois, l'empennage blanc et rouge en haut ; la pointe est dans l'os.
@@ -167,7 +168,7 @@ def build(base, kind):
             if face == "top" or fy < 2:
                 return (238, 236, 230) if (fx + fy) % 2 == 0 else (196, 60, 48)
             return lerp((96, 66, 38), (146, 106, 64), noise(fx, fy, 6))
-        paint_box(skin, 0, 32, 1, 8, 1, arrow)
+        paint_box(skin, 0, 36, 1, 8, 1, arrow)
     elif kind == "passive_wither":
         # La mousse : les dessus verts, des coulures sur les faces avant et laterales.
         for origin, size in ((CENTER_TOP, (8, 8)), (SIDE_TOP, (6, 6))):
@@ -183,9 +184,9 @@ def build(base, kind):
                         continue
                     skin.putpixel((x, y), MOSS[min(2, int(noise(x, y, 9) * 2.99))] + (255,))
         sprout = lambda fx, fy, face: MOSS[2] if fy == 0 else MOSS[1] if fy < 2 else MOSS[0]
-        paint_box(skin, 0, 32, 1, 3, 1, sprout)
-        paint_box(skin, 4, 32, 1, 4, 1, sprout)
-        paint_box(skin, 8, 32, 1, 2, 1, sprout)
+        paint_box(skin, 0, 36, 1, 3, 1, sprout)
+        paint_box(skin, 4, 36, 1, 4, 1, sprout)
+        paint_box(skin, 8, 36, 1, 2, 1, sprout)
     return skin, eyes
 
 
@@ -209,7 +210,7 @@ def invulnerable(skin, vanilla):
     """La peau de charge : celle du vanilla pour le squelette, les pieces ajoutees passees au bleu."""
     out = vanilla.convert("RGBA").copy()
     for x in range(64):
-        for y in range(32, 64):
+        for y in range(36 if x < 12 else 32, 64):
             out.putpixel((x, y), (0, 0, 0, 0))
             pixel = skin.getpixel((x, y))
             if pixel[3]:

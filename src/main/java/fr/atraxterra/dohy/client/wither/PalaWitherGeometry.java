@@ -30,8 +30,9 @@ import java.util.Set;
  *   <li>passif : des pousses d'herbe sur les tetes.</li>
  * </ul>
  * Le baby garde la silhouette vanilla (l'attribut d'echelle le rapetisse) et
- * n'a que sa peau. Les pieces ajoutees lisent la moitie basse de la texture
- * 64 x 64, peinte par {@code tools/wither_skins.py}.
+ * n'a que sa peau. Les pieces ajoutees lisent la texture 64 x 64 a partir de
+ * la ligne 36 (au-dessus, la colonne vertebrale du vanilla descend jusqu'a
+ * la ligne 35), peinte par {@code tools/wither_skins.py}.
  */
 public final class PalaWitherGeometry {
 
@@ -101,12 +102,12 @@ public final class PalaWitherGeometry {
             }
             case SUPREME -> {
                 center.addOrReplaceChild("spikes", CubeListBuilder.create()
-                        .texOffs(44, 32).addBox(-3.5F, -8F, -0.5F, 1F, 5F, 1F)
-                        .texOffs(44, 32).addBox(-0.5F, -8.5F, -2.5F, 1F, 5F, 1F)
-                        .texOffs(44, 32).addBox(2.5F, -8F, -0.5F, 1F, 5F, 1F), PartPose.ZERO);
+                        .texOffs(44, 36).addBox(-3.5F, -8F, -0.5F, 1F, 5F, 1F)
+                        .texOffs(44, 36).addBox(-0.5F, -8.5F, -2.5F, 1F, 5F, 1F)
+                        .texOffs(44, 36).addBox(2.5F, -8F, -0.5F, 1F, 5F, 1F), PartPose.ZERO);
                 for (PartDefinition head : new PartDefinition[]{right, left}) {
                     head.addOrReplaceChild("spikes", CubeListBuilder.create()
-                            .texOffs(44, 32).addBox(-1.5F, -8F, -1.5F, 1F, 5F, 1F), PartPose.ZERO);
+                            .texOffs(44, 36).addBox(-1.5F, -8F, -1.5F, 1F, 5F, 1F), PartPose.ZERO);
                 }
                 arm(root, "right_arm", -1);
                 arm(root, "left_arm", 1);
@@ -120,14 +121,14 @@ public final class PalaWitherGeometry {
             }
             case PASSIVE -> {
                 center.addOrReplaceChild("sprouts", CubeListBuilder.create()
-                        .texOffs(0, 32).addBox(-2.5F, -7F, -1.5F, 1F, 3F, 1F)
-                        .texOffs(4, 32).addBox(1F, -8F, 0.5F, 1F, 4F, 1F)
-                        .texOffs(8, 32).addBox(-0.5F, -6F, 2F, 1F, 2F, 1F)
-                        .texOffs(4, 32).addBox(2.5F, -8F, -2.5F, 1F, 4F, 1F), PartPose.ZERO);
+                        .texOffs(0, 36).addBox(-2.5F, -7F, -1.5F, 1F, 3F, 1F)
+                        .texOffs(4, 36).addBox(1F, -8F, 0.5F, 1F, 4F, 1F)
+                        .texOffs(8, 36).addBox(-0.5F, -6F, 2F, 1F, 2F, 1F)
+                        .texOffs(4, 36).addBox(2.5F, -8F, -2.5F, 1F, 4F, 1F), PartPose.ZERO);
                 for (PartDefinition head : new PartDefinition[]{right, left}) {
                     head.addOrReplaceChild("sprouts", CubeListBuilder.create()
-                            .texOffs(0, 32).addBox(-2.5F, -7F, -2.5F, 1F, 3F, 1F)
-                            .texOffs(8, 32).addBox(0F, -6F, 0F, 1F, 2F, 1F), PartPose.ZERO);
+                            .texOffs(0, 36).addBox(-2.5F, -7F, -2.5F, 1F, 3F, 1F)
+                            .texOffs(8, 36).addBox(0F, -6F, 0F, 1F, 2F, 1F), PartPose.ZERO);
                 }
             }
             default -> {
@@ -142,32 +143,32 @@ public final class PalaWitherGeometry {
         float shaft = side > 0 ? 0F : -2F;
         float tip = side > 0 ? 0.5F : -1.5F;
         head.addOrReplaceChild(name, CubeListBuilder.create()
-                        .texOffs(8, 32).addBox(stub, -1F, -1F, 3F, 2F, 2F)
-                        .texOffs(0, 32).addBox(shaft, -7F, -1F, 2F, 6F, 2F)
-                        .texOffs(20, 32).addBox(tip, -10F, -0.5F, 1F, 3F, 1F),
+                        .texOffs(8, 36).addBox(stub, -1F, -1F, 3F, 2F, 2F)
+                        .texOffs(0, 36).addBox(shaft, -7F, -1F, 2F, 6F, 2F)
+                        .texOffs(20, 36).addBox(tip, -10F, -0.5F, 1F, 3F, 1F),
                 PartPose.offsetAndRotation(side * 5F, -2F, 0F, 0F, 0F, side * 0.2F));
     }
 
     /** Un bras du supreme : epaulette epineuse, bras, avant-bras tendu vers l'avant, trois griffes. */
     private static void arm(PartDefinition root, String name, int side) {
         PartDefinition arm = root.addOrReplaceChild(name, CubeListBuilder.create()
-                        .texOffs(16, 32).addBox(-2F, -1F, -2F, 4F, 12F, 4F)
-                        .texOffs(0, 48).addBox(-2.5F, -3.5F, -2.5F, 5F, 5F, 5F)
-                        .texOffs(44, 32).addBox(-1.5F, -8.5F, -0.5F, 1F, 5F, 1F)
-                        .texOffs(44, 32).addBox(0.5F, -7.5F, -1.5F, 1F, 5F, 1F),
+                        .texOffs(16, 36).addBox(-2F, -1F, -2F, 4F, 12F, 4F)
+                        .texOffs(0, 52).addBox(-2.5F, -3.5F, -2.5F, 5F, 5F, 5F)
+                        .texOffs(44, 36).addBox(-1.5F, -8.5F, -0.5F, 1F, 5F, 1F)
+                        .texOffs(44, 36).addBox(0.5F, -7.5F, -1.5F, 1F, 5F, 1F),
                 PartPose.offsetAndRotation(side * 11.5F, 5.4F, 1F, PalaWitherModel.ARM_PITCH, 0F,
                         -side * PalaWitherModel.ARM_SPREAD));
         arm.addOrReplaceChild("forearm", CubeListBuilder.create()
-                        .texOffs(32, 32).addBox(-1.5F, 0F, -1.5F, 3F, 12F, 3F)
-                        .texOffs(48, 32).addBox(-1.5F, 11.5F, -1.5F, 1F, 4F, 1F)
-                        .texOffs(48, 32).addBox(0.5F, 11.5F, -1.5F, 1F, 4F, 1F)
-                        .texOffs(48, 32).addBox(-0.5F, 11.5F, 0.5F, 1F, 4F, 1F),
+                        .texOffs(32, 36).addBox(-1.5F, 0F, -1.5F, 3F, 12F, 3F)
+                        .texOffs(48, 36).addBox(-1.5F, 11.5F, -1.5F, 1F, 4F, 1F)
+                        .texOffs(48, 36).addBox(0.5F, 11.5F, -1.5F, 1F, 4F, 1F)
+                        .texOffs(48, 36).addBox(-0.5F, 11.5F, 0.5F, 1F, 4F, 1F),
                 PartPose.offsetAndRotation(0F, 10.5F, 0F, -0.45F, 0F, 0F));
     }
 
     /** Une fleche plantee : le fut monte de 6, la pointe s'enfonce de 2. */
     private static void arrow(PartDefinition part, String name, float x, float y, float z, float pitch, float roll) {
-        part.addOrReplaceChild(name, CubeListBuilder.create().texOffs(0, 32).addBox(-0.5F, -6F, -0.5F, 1F, 8F, 1F),
+        part.addOrReplaceChild(name, CubeListBuilder.create().texOffs(0, 36).addBox(-0.5F, -6F, -0.5F, 1F, 8F, 1F),
                 PartPose.offsetAndRotation(x, y, z, pitch, 0F, roll));
     }
 }

@@ -56,8 +56,8 @@ public class WitherReceptacleBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     /** Le socle, la dalle, les quatre piliers et le crane : de quoi viser chaque piece. */
     private static final VoxelShape SHAPE = Shapes.or(box(0, 0, 0, 16, 4, 16),
-            box(0.5, 4, 0.5, 4.5, 16, 4.5), box(11.5, 4, 0.5, 15.5, 16, 4.5),
-            box(0.5, 4, 11.5, 4.5, 16, 15.5), box(11.5, 4, 11.5, 15.5, 16, 15.5),
+            box(1, 4, 1, 4, 16, 4), box(12, 4, 1, 15, 16, 4),
+            box(1, 4, 12, 4, 16, 15), box(12, 4, 12, 15, 16, 15),
             box(4, 4, 4, 12, 13, 12));
 
     public WitherReceptacleBlock(Properties properties) {

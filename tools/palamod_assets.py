@@ -4270,9 +4270,9 @@ def main():
     receptacle = [element([0, 0, 0], [16, 2, 16], "#planks", cull=("north", "south", "east", "west", "down")),
                   element([1, 2, 1], [15, 4, 15], "#obsidian"),
                   element([5, 4, 5], [11, 5, 11], "#quartz")]
-    for x, z in ((1, 1), (12, 1), (1, 12), (12, 12)):
-        receptacle.append(element([x, 4, z], [x + 3, 14, z + 3], "#power"))
-        receptacle.append(element([x - 0.5, 14, z - 0.5], [x + 3.5, 16, z + 3.5], "#quartz",
+    for x, z in ((1.5, 1.5), (12.5, 1.5), (1.5, 12.5), (12.5, 12.5)):
+        receptacle.append(element([x, 4, z], [x + 2, 14, z + 2], "#power"))
+        receptacle.append(element([x - 0.5, 14, z - 0.5], [x + 2.5, 16, z + 2.5], "#quartz",
                                   cull=("up",)))
     receptacle.append(element([4, 5, 4], [12, 13, 12], "#skull", {
         "north": [0, 0, 8, 8], "east": [8, 0, 16, 8], "west": [8, 0, 16, 8], "south": [8, 8, 16, 16],
