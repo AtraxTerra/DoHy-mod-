@@ -67,7 +67,7 @@ public final class PillageEvents {
     @SubscribeEvent
     public static void onJoin(EntityJoinLevelEvent event) {
         if (event.loadedFromDisk() || !(event.getEntity() instanceof AbstractArrow arrow)
-                || !arrow.getTags().contains(BowModifier.RANGE.tag())) {
+                || !arrow.entityTags().contains(BowModifier.RANGE.tag())) {
             return;
         }
         arrow.removeTag(BowModifier.RANGE.tag());
@@ -77,7 +77,7 @@ public final class PillageEvents {
     /** La fleche de Switch, tiree a l'arc en paladium : tireur et cible echangent leur place. */
     @SubscribeEvent
     public static void onImpact(ProjectileImpactEvent event) {
-        if (!(event.getProjectile() instanceof AbstractArrow arrow) || !arrow.getTags().contains(SwitchArrowItem.TAG)
+        if (!(event.getProjectile() instanceof AbstractArrow arrow) || !arrow.entityTags().contains(SwitchArrowItem.TAG)
                 || !(event.getRayTraceResult() instanceof EntityHitResult hit)
                 || !(hit.getEntity() instanceof LivingEntity target)
                 || !(arrow.getOwner() instanceof ServerPlayer player) || target == player) {
