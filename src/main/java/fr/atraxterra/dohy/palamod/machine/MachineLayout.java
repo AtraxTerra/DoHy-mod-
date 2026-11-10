@@ -28,13 +28,13 @@ public record MachineLayout(List<SlotPos> slots) {
 
     /** Le cobblebreaker : la pierre a gauche, les six particules en ligne, de la plus courante a la plus rare. */
     public static final MachineLayout COBBLEBREAKER = new MachineLayout(List.of(
-            new SlotPos(40, 72, true),
-            new SlotPos(104, 72, false),
-            new SlotPos(128, 72, false),
-            new SlotPos(152, 72, false),
-            new SlotPos(176, 72, false),
-            new SlotPos(200, 72, false),
-            new SlotPos(224, 72, false)));
+            new SlotPos(40, 62, true),
+            new SlotPos(104, 62, false),
+            new SlotPos(128, 62, false),
+            new SlotPos(152, 62, false),
+            new SlotPos(176, 62, false),
+            new SlotPos(200, 62, false),
+            new SlotPos(224, 62, false)));
 
     /** Le crusher : les recettes a gauche, le fruit au-dessus du charbon, le resultat a droite. */
     public static final MachineLayout CRUSHER = new MachineLayout(List.of(

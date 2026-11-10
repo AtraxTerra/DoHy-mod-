@@ -15,8 +15,10 @@ import java.util.Locale;
  * d'anneaux, l'inventaire.
  *
  * <p>Les coordonnees sont celles de {@code ModdedChestContainer} et ne laissent
- * aucune place au titre a l'interieur du panneau : la grille commence a 8 px du
- * haut. Le titre est donc ecrit juste au-dessus, a la couleur de son metal.
+ * aucune place au titre en haut du panneau : la grille commence a 8 px du haut,
+ * et le panneau fait deja 256 de haut (toute la hauteur d'un ecran 768 en
+ * interface x3). Le titre va donc a droite de l'inventaire, a la couleur de son
+ * metal ; le coffre en or, sans cette marge, l'ecrit au-dessus s'il y a la place.
  */
 public class PalaChestScreen extends UiContainerScreen<PalaChestMenu> {
 
@@ -30,8 +32,20 @@ public class PalaChestScreen extends UiContainerScreen<PalaChestMenu> {
     protected void drawPanel(UiGraphics g, int mouseX, int mouseY) {
         g.panelPlain(0, 0, imageWidth, imageHeight);
         int color = menu.tier().titleColor();
-        title(g, getTitle().getString().toUpperCase(Locale.ROOT), 2, -13, 10, imageWidth - 4, color,
-                darker(color));
+        String name = getTitle().getString().toUpperCase(Locale.ROOT);
+        int marginX = menu.tier().playerX() + 9 * 18 + 6;
+        int marginWidth = imageWidth - 7 - marginX;
+        if (marginWidth >= 40) {
+            // A droite de l'inventaire, sous la colonne d'anneaux : la seule place
+            // libre, le panneau occupant deja toute la hauteur en interface x4.
+            int lineY = PalaChestMenu.PLAYER_Y + 2;
+            for (String word : name.split(" ")) {
+                title(g, word, marginX, lineY, 7, marginWidth, color, darker(color));
+                lineY += 10;
+            }
+        } else if (getTopPos() >= 14) {
+            title(g, name, 2, -13, 10, imageWidth - 4, color, darker(color));
+        }
         int chestEnd = menu.tier().containerSize();
         for (int index = 0; index < menu.slots.size(); index++) {
             Slot slot = menu.slots.get(index);
