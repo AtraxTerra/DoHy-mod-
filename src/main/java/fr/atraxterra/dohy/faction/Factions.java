@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.faction;
 
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.faction.base.EnemyBase;
+import fr.atraxterra.dohy.faction.reserve.GoldReserve;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -32,6 +33,13 @@ public final class Factions {
     public static final Supplier<AttachmentType<EnemyBase>> ENEMY_BASE = ATTACHMENTS.register("enemy_base",
             () -> AttachmentType.builder(() -> EnemyBase.EMPTY)
                     .serialize(EnemyBase.MAP_CODEC, EnemyBase::exists)
+                    .copyOnDeath()
+                    .build());
+
+    /** La reserve d'or du joueur (lot 22e) : le cube et ses placements, gardes a la mort. */
+    public static final Supplier<AttachmentType<GoldReserve>> RESERVE = ATTACHMENTS.register("gold_reserve",
+            () -> AttachmentType.builder(() -> GoldReserve.EMPTY)
+                    .serialize(GoldReserve.MAP_CODEC, GoldReserve::exists)
                     .copyOnDeath()
                     .build());
 

@@ -18,10 +18,11 @@ import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.nature.PalaNature;
 import fr.atraxterra.dohy.palamod.pillage.PalaPillage;
-import fr.atraxterra.dohy.palamod.wither.PalaWithers;
 import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
+import fr.atraxterra.dohy.palamod.reserve.PalaReserve;
 import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import fr.atraxterra.dohy.palamod.wither.PalaWithers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -106,6 +107,7 @@ public final class PalaTab {
                         PalaDefense.tab().forEach(item -> output.accept(item.get()));
                         PalaPillage.tab().forEach(item -> output.accept(item.get()));
                         PalaWithers.tab().forEach(item -> output.accept(item.get()));
+                        PalaReserve.tab().forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

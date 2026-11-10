@@ -4353,6 +4353,83 @@ def main():
         ("%s:green_paladium_ingot" % NS, 6, 1, 4), ("%s:legendary_stone_random" % NS, 3, 1, 1),
         ("%s:predator_wither_gem" % NS, 1, 1, 1)])
 
+    # ---- reserve d'or (chapitre 22, lot 22e) ----
+    #
+    # Les trois blocs de la reserve, d'apres le wiki (« Investissement Reserve
+    # d'or ») ; le module n'est pas dans les jars. Le coffre-fort reprend la
+    # face du coffre-fort de PalaMod ; la vitre est le verre du pack cerclee
+    # d'acier, a demi transparente ; l'or liquide est la lave du pack passee a
+    # l'or, avec son animation.
+    pack_block = os.path.join(root[0] or "", "assets", "minecraft", "textures", "block")
+    safe_png = os.path.join(root[0] or "", "assets", "palamod", "textures", "blocks", "safechest", "safe_side.png")
+    if os.path.exists(safe_png):
+        save_texture(_Image.open(safe_png).convert("RGBA"), "block/faction_safe.png")
+    else:
+        missing.append("coffre-fort de faction (blocks/safechest/safe_side.png)")
+    glass_png = os.path.join(pack_block, "glass.png")
+    if os.path.exists(glass_png):
+        glass = _Image.open(glass_png).convert("RGBA")
+        vault = _Image.new("RGBA", glass.size)
+        size = glass.size[0]
+        for x in range(size):
+            for y in range(size):
+                edge = min(x, y, size - 1 - x, size - 1 - y)
+                r, g, b, a = glass.getpixel((x, y))
+                if edge == 0:
+                    vault.putpixel((x, y), (92, 98, 108, 255))
+                elif edge == 1:
+                    vault.putpixel((x, y), (148, 156, 168, 255))
+                elif a > 0 and (r + g + b) > 500:
+                    vault.putpixel((x, y), (236, 244, 252, 200))
+                else:
+                    vault.putpixel((x, y), (190, 214, 232, 70))
+        for i in (2, 5, 8):
+            vault.putpixel((min(i + 1, size - 3), size - 3 - i), (255, 230, 150, 150))
+        save_texture(vault, "block/vault_glass.png")
+    else:
+        missing.append("vitre de coffre-fort (block/glass.png)")
+    lava_png = os.path.join(pack_block, "lava_still.png")
+    if os.path.exists(lava_png):
+        lava = _Image.open(lava_png).convert("RGBA")
+        gold = _Image.new("RGBA", lava.size)
+        stops = [(120, 66, 8), (214, 150, 24), (255, 214, 72), (255, 248, 196)]
+        for x in range(lava.size[0]):
+            for y in range(lava.size[1]):
+                r, g, b, a = lava.getpixel((x, y))
+                t = min(1.0, max(0.0, ((0.299 * r + 0.587 * g + 0.114 * b) - 60.0) / 170.0)) * 3.0
+                low = min(2, int(t))
+                f = t - low
+                c = [int(stops[low][k] + (stops[low + 1][k] - stops[low][k]) * f) for k in range(3)]
+                gold.putpixel((x, y), (c[0], c[1], c[2], 255))
+        save_texture(gold, "block/liquid_gold.png")
+        meta = os.path.join(pack_block, "lava_still.png.mcmeta")
+        if os.path.exists(meta):
+            with open(meta, encoding="utf-8") as handle:
+                write("assets/%s/textures/block/liquid_gold.png.mcmeta" % NS, json.load(handle))
+    else:
+        missing.append("or liquide (block/lava_still.png)")
+    for name, label_fr, label_en, tool in (
+            ("faction_safe", "Coffre-fort de faction", "Faction Safe", True),
+            ("vault_glass", "Vitre de coffre-fort", "Vault Glass", True),
+            ("liquid_gold", "Or liquide", "Liquid Gold", False)):
+        write("assets/%s/models/block/%s.json" % (NS, name), {
+            "parent": "minecraft:block/cube_all", "textures": {"all": "%s:block/%s" % (NS, name)}})
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {"": {"model": "%s:block/%s" % (NS, name)}}})
+        block_item(name)
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+        tag("minecraft/tags/block/%s.json" % ("needs_diamond_tool" if tool else "needs_iron_tool"),
+            ["%s:%s" % (NS, name)])
+    # Recettes du wiki ; l'obsidienne infusee (diamant) n'existe pas ici :
+    # l'obsidienne renforcee la remplace.
+    shaped("faction_safe", ["TOT", "OTO", "TOT"],
+           {"T": "%s:compressed_titane" % NS, "O": "%s:hardened_obsidian" % NS}, "%s:faction_safe" % NS)
+    shaped("vault_glass", ["GGG", "GFG", "GGG"],
+           {"G": "minecraft:glass", "F": "%s:findium" % NS}, "%s:vault_glass" % NS)
+    shaped("liquid_gold", ["QQQ", "QNQ", "QQQ"],
+           {"Q": "%s:empowered_quartz" % NS, "N": "%s:endium_nugget" % NS}, "%s:liquid_gold" % NS)
+
     tag("%s/tags/block/wither_slime_blocks.json" % NS,
         ["minecraft:slime_block", "%s:slimepad" % NS, "%s:slime_obsidian" % NS])
 
