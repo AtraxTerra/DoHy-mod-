@@ -30,12 +30,27 @@ public final class UiGraphics {
     private final int screenMouseX;
     private final int screenMouseY;
     private final List<Runnable> overlays = new ArrayList<>();
+    private double designMouseX;
+    private double designMouseY;
+    private int boundsWidth;
+    private int boundsHeight;
 
     public UiGraphics(GuiGraphicsExtractor graphics, Font font, int screenMouseX, int screenMouseY) {
         this.graphics = graphics;
         this.font = font;
         this.screenMouseX = screenMouseX;
         this.screenMouseY = screenMouseY;
+    }
+
+    /**
+     * Le repere de maquette de l'ecran : avec lui, les bulles de texte se
+     * dessinent dans le style du kit plutot qu'avec la bulle du jeu.
+     */
+    void design(double mouseX, double mouseY, int width, int height) {
+        this.designMouseX = mouseX;
+        this.designMouseY = mouseY;
+        this.boundsWidth = width;
+        this.boundsHeight = height;
     }
 
     public GuiGraphicsExtractor raw() {
@@ -265,7 +280,99 @@ public final class UiGraphics {
     }
 
     public void tooltip(List<Component> lines) {
-        graphics.setComponentTooltipForNextFrame(font, lines, screenMouseX, screenMouseY);
+        if (boundsWidth <= 0) {
+            graphics.setComponentTooltipForNextFrame(font, lines, screenMouseX, screenMouseY);
+            return;
+        }
+        List<Component> copy = List.copyOf(lines);
+        overlay(() -> kitTooltip(copy));
+    }
+
+    private record TipRow(FontDescription face, float size, String text, int color, float height) {
+    }
+
+    private static final float TIP_TITLE = 4.4f;
+    private static final float TIP_BODY = 3.7f;
+    private static final float TIP_LINE = 5.4f;
+    private static final int TIP_PAD = 4;
+    private static final float TIP_MAX = 150.0f;
+
+    /** La bulle du kit : la premiere ligne en titre, le reste en texte courant, coupe a la largeur. */
+    private void kitTooltip(List<Component> lines) {
+        List<TipRow> rows = new ArrayList<>();
+        for (int index = 0; index < lines.size(); index++) {
+            Component line = lines.get(index);
+            String text = line.getString();
+            if (text.isBlank()) {
+                rows.add(new TipRow(Ui.BODY, TIP_BODY, "", 0, TIP_LINE / 2.0f));
+                continue;
+            }
+            boolean title = index == 0;
+            FontDescription face = title ? Ui.BOLD : Ui.BODY;
+            float size = title ? TIP_TITLE : TIP_BODY;
+            int color = color(line);
+            for (String part : wrap(face, text, size, TIP_MAX)) {
+                rows.add(new TipRow(face, size, part, color, title ? TIP_LINE + 0.8f : TIP_LINE));
+            }
+        }
+        float inner = 0.0f;
+        float tall = 0.0f;
+        for (TipRow row : rows) {
+            inner = Math.max(inner, row.text().isEmpty() ? 0.0f : width(row.face(), row.text(), row.size()));
+            tall += row.height();
+        }
+        int boxWidth = (int) Math.ceil(inner) + 2 * TIP_PAD;
+        int boxHeight = (int) Math.ceil(tall) + 2 * TIP_PAD - 1;
+        int x = (int) designMouseX + 7;
+        if (x + boxWidth > boundsWidth - 2) {
+            x = (int) designMouseX - 7 - boxWidth;
+        }
+        x = Math.max(2, x);
+        int y = (int) designMouseY - 5;
+        y = Math.max(2, Math.min(y, boundsHeight - 2 - boxHeight));
+        rect(x, y, boxWidth, boxHeight, 0xF615141A);
+        border(x, y, boxWidth, boxHeight, 1, Ui.FRAME);
+        rect(x + 1, y + 1, boxWidth - 2, 1, 0xFF2A2931);
+        float rowY = y + TIP_PAD;
+        for (TipRow row : rows) {
+            if (!row.text().isEmpty()) {
+                text(row.face(), row.text(), x + TIP_PAD, rowY + (row.height() - row.size()) / 2.0f - 0.3f,
+                        row.size(), row.color());
+            }
+            rowY += row.height();
+        }
+    }
+
+    /** La couleur d'une ligne de bulle : la sienne, ou celle de son premier morceau colore. */
+    private static int color(Component line) {
+        if (line.getStyle().getColor() != null) {
+            return 0xFF000000 | line.getStyle().getColor().getValue();
+        }
+        for (Component sibling : line.getSiblings()) {
+            if (sibling.getStyle().getColor() != null) {
+                return 0xFF000000 | sibling.getStyle().getColor().getValue();
+            }
+        }
+        return Ui.TEXT;
+    }
+
+    /** Coupe un texte en lignes d'au plus {@code maxWidth} unites. */
+    public List<String> wrap(FontDescription face, String text, float size, float maxWidth) {
+        List<String> out = new ArrayList<>();
+        StringBuilder line = new StringBuilder();
+        for (String word : text.split(" ")) {
+            String candidate = line.isEmpty() ? word : line + " " + word;
+            if (width(face, candidate, size) > maxWidth && !line.isEmpty()) {
+                out.add(line.toString());
+                line = new StringBuilder(word);
+            } else {
+                line = new StringBuilder(candidate);
+            }
+        }
+        if (!line.isEmpty()) {
+            out.add(line.toString());
+        }
+        return out;
     }
 
     /** Dessine apres tout le reste : listes deroulantes ouvertes. */
