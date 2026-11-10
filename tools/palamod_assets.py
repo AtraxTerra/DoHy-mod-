@@ -5058,8 +5058,19 @@ def main():
                                      ("boss_azhur", "Azhur", "Azhur"),
                                      ("boss_morsula", "Morsula", "Morsula"),
                                      ("boss_arachna", "Arachna", "Arachna"),
-                                     ("rival_fighter", "Combattant rival", "Rival Fighter")):
+                                     ("rival_fighter", "Combattant rival", "Rival Fighter"),
+                                     ("volcania", "Volcania", "Volcania")):
         label("entity", name, label_fr, label_en)
+    # Volcania, le dragon de l'Egg Hunt : la feuille du dragon de l'Ender, recoloree.
+    volcania = os.path.join(root[1] or "", "assets", "palamod", "textures", "entity", "egghunt", "volcania.png")
+    if not root[1] or not os.path.exists(volcania):
+        missing.append("egghunt:volcania")
+    elif png_size(volcania) != (256, 256):
+        wrong_size.append("egghunt:volcania : %s au lieu de (256, 256)" % (png_size(volcania),))
+    else:
+        target = os.path.join(RES, "assets", NS, "textures", "entity", "egghunt", "volcania.png")
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(volcania, target)
     write("data/%s/dimension/warzone.json" % NS, {
         "type": "minecraft:overworld",
         "generator": {

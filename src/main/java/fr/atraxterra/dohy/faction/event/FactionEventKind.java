@@ -20,11 +20,11 @@ import java.util.Set;
  *   <tr><td>Boss</td><td>tous les jours, 1 h et 18 h</td><td>700</td></tr>
  *   <tr><td>Egg Hunt</td><td>mardi et dimanche, 19 h, 60 min</td><td>3 000</td></tr>
  *   <tr><td>Totem</td><td>mercredi, 21 h</td><td>10 000</td></tr>
- *   <tr><td>End</td><td>vendredi, 19 h</td><td>3 000 + 3 000 + 500</td></tr>
  *   <tr><td>KOTH a points</td><td>samedi, 21 h 30, 30 min</td><td>10 000</td></tr>
  * </table>
  *
- * <p>Boss, KOTH et Totem tournent (lot 22f) ; Egg Hunt et End suivent.
+ * <p>Les quatre tournent (lot 22f). L'End du wiki n'est pas repris : choix du
+ * joueur pour sa partie solo.
  */
 public enum FactionEventKind {
 
@@ -32,14 +32,11 @@ public enum FactionEventKind {
             List.of(LocalTime.of(1, 0), LocalTime.of(18, 0)), true,
             "Un des cinq boss, dans l'arene", "700 ELO selon les degats"),
     EGG_HUNT("egg_hunt", "Egg Hunt", Items.DRAGON_EGG, 3_000L, EnumSet.of(DayOfWeek.TUESDAY, DayOfWeek.SUNDAY),
-            List.of(LocalTime.of(19, 0)), false,
-            "Tue le dragon, garde l'oeuf", "60 min de controle"),
+            List.of(LocalTime.of(19, 0)), true,
+            "Abats Volcania, garde l'oeuf", "60 min de chasse"),
     TOTEM("totem", "Totem", Items.TOTEM_OF_UNDYING, 10_000L, EnumSet.of(DayOfWeek.WEDNESDAY),
             List.of(LocalTime.of(21, 0)), true,
             "Casse le totem bloc par bloc", "500 points par bloc depose"),
-    END("end", "End", Items.END_CRYSTAL, 6_500L, EnumSet.of(DayOfWeek.FRIDAY),
-            List.of(LocalTime.of(19, 0)), false,
-            "Cristaux, dragon, puis 20 min", "Chorus ou oeuf"),
     KOTH("koth", "KOTH a points", Items.BEACON, 10_000L, EnumSet.of(DayOfWeek.SATURDAY),
             List.of(LocalTime.of(21, 30)), true,
             "Tiens la zone 30 min", "1 point par seconde");

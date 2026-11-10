@@ -163,6 +163,9 @@ public final class FactionCommand {
                         .then(Commands.literal("quitter")
                                 .executes(ctx -> as(ctx.getSource(), player -> result(player,
                                         FactionEvents.leave(player), "Tu quittes l'arene."))))
+                        .then(Commands.literal("lacher")
+                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                        FactionEvents.dropEgg(player), "Tu laches l'oeuf."))))
                         .then(Commands.literal("arreter")
                                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                 .executes(ctx -> as(ctx.getSource(), player -> result(player,

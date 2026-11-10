@@ -241,7 +241,7 @@ public final class FactionMenus {
         return Card.of(new ItemStack(Items.DRAGON_EGG), "Events de faction", List.of(
                         "Prochain : " + soonest.label() + ", " + day
                                 + String.format("%d h %02d", next.getHour(), next.getMinute()),
-                        "Boss, KOTH, Totem ; Egg Hunt et End a venir"))
+                        "Boss, KOTH, Totem, Egg Hunt"))
                 .accent(0xFFFAC400).action("events|ouvrir");
     }
 

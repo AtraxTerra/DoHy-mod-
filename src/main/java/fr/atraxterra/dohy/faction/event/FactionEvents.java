@@ -4,23 +4,33 @@ import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.faction.Factions;
 import fr.atraxterra.dohy.palamod.boss.BossKind;
+import fr.atraxterra.dohy.palamod.boss.EventBoss;
+import fr.atraxterra.dohy.palamod.boss.RivalFighter;
+import fr.atraxterra.dohy.palamod.boss.VolcaniaDragon;
 import fr.atraxterra.dohy.palamod.dungeon.ReturnPoint;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
@@ -164,6 +174,10 @@ public final class FactionEvents {
                 run = TotemRun.start(server);
                 subtitle = "Casse le totem, depose ses blocs";
             }
+            case EGG_HUNT -> {
+                run = EggHuntRun.start(server);
+                subtitle = "Volcania survole son ile";
+            }
             default -> {
                 return kind.label() + " arrive dans un prochain lot.";
             }
@@ -238,8 +252,19 @@ public final class FactionEvents {
         if (!inWarzone(player)) {
             return "Tu n'es pas dans la Warzone.";
         }
+        if (active() instanceof EggHuntRun hunt) {
+            hunt.onLeave(player);
+        }
         sendBack(player);
         return null;
+    }
+
+    /** {@code /f event lacher} : poser l'oeuf de l'Egg Hunt. */
+    public static String dropEgg(ServerPlayer player) {
+        if (!(active() instanceof EggHuntRun hunt)) {
+            return "Il n'y a pas d'oeuf a lacher.";
+        }
+        return hunt.drop(player);
     }
 
     /** Ramene le joueur d'ou il venait, ou au point d'apparition du monde. */
@@ -327,6 +352,11 @@ public final class FactionEvents {
             event.setCanceled(true);
             return;
         }
+        if (run instanceof EggHuntRun hunt && hunt.isEgg(event.getPos())) {
+            event.setCanceled(true);
+            hunt.tryPickup(player);
+            return;
+        }
         if (run != null && run.breakable(event.getPos())) {
             run.forget(event.getPos());
             return;
@@ -358,6 +388,67 @@ public final class FactionEvents {
         }
         EventRun run = active();
         event.getAffectedBlocks().removeIf(pos -> run == null || !run.breakable(pos));
+    }
+
+    /**
+     * L'oeuf de l'Egg Hunt se prend d'un clic, gauche ou droit. L'oeuf de dragon
+     * vanilla se teleporte quand on le touche : dans la Warzone, jamais.
+     */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
+        touchEgg(event.getEntity(), event.getPos(), event);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onRightClick(PlayerInteractEvent.RightClickBlock event) {
+        touchEgg(event.getEntity(), event.getPos(), event);
+    }
+
+    private static void touchEgg(Player who, BlockPos pos, net.neoforged.bus.api.ICancellableEvent event) {
+        if (!(who instanceof ServerPlayer player) || !inWarzone(player)
+                || !player.level().getBlockState(pos).is(Blocks.DRAGON_EGG)) {
+            return;
+        }
+        event.setCanceled(true);
+        if (active() instanceof EggHuntRun hunt && hunt.isEgg(pos)) {
+            hunt.tryPickup(player);
+        }
+    }
+
+    /** Le porteur de l'oeuf meurt : son tueur le lui vole, sinon l'oeuf retombe. */
+    @SubscribeEvent
+    public static void onAnyDeath(LivingDeathEvent event) {
+        if (event.getEntity().level() instanceof ServerLevel level && level.dimension() == EventArena.DIMENSION
+                && active() instanceof EggHuntRun hunt) {
+            hunt.onDeath(level, event.getEntity(), event.getSource().getEntity());
+        }
+    }
+
+    /** Dans la Warzone, aucun monstre ne casse de bloc : Volcania traverse l'ile sans l'abimer. */
+    @SubscribeEvent
+    public static void onGrief(EntityMobGriefingEvent event) {
+        if (event.getEntity().level().dimension() == EventArena.DIMENSION) {
+            event.setCanGrief(false);
+        }
+    }
+
+    /**
+     * La branche Defense de l'arbre : « -5 a -20 % de degats en event ». Le
+     * PalaMod la donne contre les raids ; il n'y en a pas en solo, elle vaut donc
+     * contre les boss, Volcania, leurs sbires et les combattants rivaux.
+     */
+    @SubscribeEvent
+    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || !inWarzone(player) || !FactionApi.has(player)) {
+            return;
+        }
+        Entity source = event.getSource().getEntity();
+        boolean eventFoe = source instanceof EventBoss || source instanceof VolcaniaDragon
+                || source instanceof RivalFighter
+                || (source != null && source.entityTags().contains(MINION_TAG));
+        if (eventFoe) {
+            event.setAmount(event.getAmount() * FactionApi.perks(player).raidDamage());
+        }
     }
 
     @SubscribeEvent

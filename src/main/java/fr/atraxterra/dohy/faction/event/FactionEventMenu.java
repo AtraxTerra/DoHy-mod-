@@ -89,7 +89,7 @@ public final class FactionEventMenu extends MenuController {
                         .tooltip(boss ? List.of("Ils frappent le boss et lui prennent du classement.",
                                 "Ils ne t'attaquent que si tu les frappes.")
                                 : List.of("Ils se battent entre eux et contre toi.",
-                                "Ils visent la zone, le totem, ou la zone de depot.")));
+                                "Ils visent la zone, le totem ou l'oeuf.")));
             }
             sections.add(new MenuView.Section("EN COURS", "upgrade", MenuView.GRID, running));
         }

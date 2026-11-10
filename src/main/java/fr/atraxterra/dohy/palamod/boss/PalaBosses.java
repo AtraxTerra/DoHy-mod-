@@ -5,6 +5,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -49,6 +50,14 @@ public final class PalaBosses {
                     .clientTrackingRange(10)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
 
+    /** Volcania, le dragon de l'Egg Hunt : la carrure du dragon de l'Ender. */
+    public static final DeferredHolder<EntityType<?>, EntityType<VolcaniaDragon>> VOLCANIA = ENTITIES.register(
+            "volcania", key -> EntityType.Builder.<VolcaniaDragon>of(VolcaniaDragon::new, MobCategory.MONSTER)
+                    .sized(16.0f, 8.0f)
+                    .fireImmune()
+                    .clientTrackingRange(20)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
+
     private PalaBosses() {
     }
 
@@ -62,6 +71,7 @@ public final class PalaBosses {
             event.put(type(kind), EventBoss.createAttributes(kind).build());
         }
         event.put(RIVAL_FIGHTER.get(), Vindicator.createAttributes().build());
+        event.put(VOLCANIA.get(), EnderDragon.createAttributes().build());
     }
 
     public static void register(IEventBus modBus) {

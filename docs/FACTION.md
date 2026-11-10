@@ -5,7 +5,7 @@ PvE**. Choix du joueur :
 
 - **progression seule** : la faction est ta base et ta progression ; pas de faction rivale vivante — seulement des
   **bases ennemies fictives**, générées sur demande pour être pillées (lot 22g) ;
-- **raids sur demande** : ta base n'est attaquée que si tu lances un raid de monstres ;
+- **pas de raids** sur ta base (choix du joueur) ;
 - **tous les objets** de pillage et de défense de PalaMod ;
 - **events aux vraies heures** du calendrier de Paladium.
 
@@ -21,8 +21,7 @@ PvE**. Choix du joueur :
 | 22e | Réserve d'or : multibloc, investissements à intérêts | fait |
 | 22f | Events à heures fixes : le calendrier et le **Boss** | fait |
 | 22f-2 | Events : KOTH à points et Totem | fait |
-| 22f-3 | Events : Egg Hunt et End | à faire |
-| 22h | Raids de monstres sur demande contre ta base | à faire |
+| 22f-3 | Event : Egg Hunt (l'End et les raids ne sont pas repris : choix du joueur) | fait |
 | 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller | fait |
 
 ## Ce qui change en solo
@@ -74,7 +73,7 @@ objet pas encore porté affiche son lot et ne progresse pas.
 
 **Récompenses** : les « emplacements de membre » de la branche Globale deviennent deux claims
 chacun ; la Défense ajoute ses claims (10 à 200 par palier) ; F homes (1, 2 puis 3) et leur délai
-(10, 5, 3 puis 0 s) ; réduction des dégâts de raid (-5 à -20 %) ; XP de donjon (+5 à +20 %) ; blason
+(10, 5, 3 puis 0 s) ; réduction des dégâts en event (-5 à -20 %, contre les raids sur Paladium) ; XP de donjon (+5 à +20 %) ; blason
 personnalisé (palier 4 : copier une bannière à motifs) ; MOTD (palier 6) ; déblocages d'objets
 (`use:dynamite`, `craft:hood_helmet`…, vérifiés par les objets des lots 22c et 22d) ; réserve d'or
 (palier, valeur par or liquide, intérêts).
@@ -98,7 +97,7 @@ ingrédients. Sans faction, rien n'est débloqué ; le créatif passe outre.
 - **Obsidiennes piégées** : empoisonnée, boom, méga boom, de lave, sulfurique, knockback, gelée,
   anti-aggro, compacte, slime, à wither, et une par spike (bois, fer, or, diamant, améthyste,
   titane, paladium). Détruites par un wither, une explosion assez forte (pillage, lot 22d) ou un
-  raid (lot 22f), elles déclenchent leur effet au tick suivant ; l'outil magique ne les déclenche
+  raid, elles déclenchent leur effet au tick suivant ; l'outil magique ne les déclenche
   pas. Valeurs relevées au bytecode (`ObsiEffect`). **Solo** : le piège frappe tout ce qui vit
   autour sauf le propriétaire du claim ; le poison passe en Wither sur les morts-vivants ;
   l'anti-aggro calme tous les monstres à 6 blocs. Plus l'obsidienne à redstone (un fil en bloc)
@@ -326,9 +325,8 @@ en faction est connecté, et un seul à la fois.
 | Event | Quand | ELO | État |
 |---|---|---|---|
 | Boss | tous les jours, 1 h et 18 h | 700 | fait |
-| Egg Hunt | mardi et dimanche, 19 h (60 min) | 3 000 | 22f-3 |
+| Egg Hunt | mardi et dimanche, 19 h (60 min) | 3 000 | fait |
 | Totem | mercredi, 21 h | 10 000 | fait |
-| End | vendredi, 19 h | 3 000 + 3 000 + 500 | 22f-3 |
 | KOTH à points | samedi, 21 h 30 (30 min) | 10 000 | fait |
 
 - **Warzone** : `palamod:warzone`, une dimension vide au biome `the_void` (aucun monstre n'y
@@ -400,3 +398,27 @@ un dôme de 24 blocs de rayon, le totem au centre, la zone de dépôt au nord.
   bloc à la fois.
 - Trente minutes au plus (le wiki ne dit rien), moins si les douze blocs sont déposés. 10 000 ELO par
   rang aux points.
+
+### L'Egg Hunt
+
+Mardi et dimanche, 19 h. L'île volcanique de **Volcania** : 40 blocs de rayon, bordée d'un muret,
+un autel d'obsidienne au centre, quatre bassins de lave autour.
+
+- **Abattre Volcania** : le dragon de l'Egg Hunt (`EntityCustomDragon` du PalaMod, copie du dragon
+  de l'Ender). Ici c'est le dragon de l'Ender de 26.2 avec la texture `volcania.png` du PalaMod. Il
+  tourne autour de l'île et pique toutes les 8 à 14 s sur un joueur ou un rival. Il ne casse rien
+  (aucun monstre ne casse de bloc dans la Warzone). Pas abattu en 20 min : il repart, sans œuf.
+- **L'œuf** apparaît sur l'autel. On le prend d'un clic ; **le porteur fait gagner une seconde par
+  seconde** à sa faction (classement au temps de port, wiki).
+- **Tuer le porteur vole l'œuf** ; mort autrement, ou lâché (`/f event lacher`), il retombe là où il
+  était. Qui l'a perdu ne peut le reprendre qu'après **10 min** (`PICKUP_LOCK_MILLIS` du PalaMod).
+  Tomber dans le vide ou quitter l'arène le renvoie sur l'autel.
+- **60 min de chasse** après la mort du dragon ; 3 000 ELO par rang au temps de port (facteur 1,2,
+  comme `EggHuntManager`).
+- **Rivaux** : ils ramassent l'œuf, s'enfuient avec, et pourchassent quiconque le porte.
+
+### Réduction des dégâts en event
+
+La récompense « dégâts de raid » de la branche Défense (-5, -10, -15, -20 %) protège ici des boss,
+de Volcania, de leurs sbires et des combattants rivaux, dans la Warzone : il n'y a pas de raids en
+solo.

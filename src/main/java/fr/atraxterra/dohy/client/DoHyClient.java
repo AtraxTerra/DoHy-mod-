@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.client;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.client.boss.EventBossModel;
 import fr.atraxterra.dohy.client.boss.EventBossRenderer;
+import fr.atraxterra.dohy.client.boss.VolcaniaRenderer;
 import fr.atraxterra.dohy.client.mount.DancarokGeometry;
 import fr.atraxterra.dohy.client.mount.DancarokModel;
 import fr.atraxterra.dohy.client.mount.DancarokRenderer;
@@ -36,6 +37,7 @@ import net.minecraft.client.renderer.entity.VindicatorRenderer;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.monster.illager.Vindicator;
@@ -108,6 +110,8 @@ public final class DoHyClient {
         }
         event.registerEntityRenderer((EntityType<Vindicator>) (EntityType<?>) PalaBosses.RIVAL_FIGHTER.get(),
                 VindicatorRenderer::new);
+        event.registerEntityRenderer((EntityType<EnderDragon>) (EntityType<?>) PalaBosses.VOLCANIA.get(),
+                VolcaniaRenderer::new);
         // Les withers du pillage : le rendu du wither vanilla, une teinte par genre.
         for (WitherKind kind : WitherKind.values()) {
             event.registerEntityRenderer((EntityType<WitherBoss>) (EntityType<?>) PalaWithers.type(kind).get(),

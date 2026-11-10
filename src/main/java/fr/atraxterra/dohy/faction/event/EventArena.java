@@ -32,6 +32,9 @@ import net.minecraft.world.phys.Vec3;
  *       noire, rempart crenele, huit piliers de lanternes, portes grillagees.</li>
  *   <li><b>KOTH</b> (1 000, 0) : la meme arene en 26 blocs, avec au centre une
  *       colline a trois gradins ; la zone de capture est son sommet.</li>
+ *   <li><b>Egg Hunt</b> (0, 1 000) : l'ile volcanique de Volcania, 40 blocs de
+ *       rayon, bordee d'un muret ; au centre l'autel d'obsidienne ou l'oeuf
+ *       apparait, quatre bassins de lave autour.</li>
  *   <li><b>Totem</b> (-1 000, 0) : une grotte en dome de 24 blocs de rayon, que
  *       l'on gagne par un long escalier depuis la surface — le deroule du wiki.
  *       Au centre, le totem de douze blocs, en bedrock hors event ; au nord, la
@@ -60,6 +63,11 @@ public final class EventArena {
     /** Le haut de l'escalier, ou l'on arrive. */
     private static final int STAIR_TOP = 21;
     private static final int STAIR_START_Z = 36;
+
+    public static final BlockPos EGG_CENTER = new BlockPos(0, 100, 1000);
+    public static final int EGG_RADIUS = 40;
+    /** Ou l'oeuf attend : au sommet de l'autel d'obsidienne. */
+    public static final BlockPos EGG_ALTAR = EGG_CENTER.above(4);
 
     private static final BlockState MARKER = Blocks.LODESTONE.defaultBlockState();
     private static final int FLAGS = Block.UPDATE_CLIENTS;
@@ -201,6 +209,104 @@ public final class EventArena {
                     BlockPos at = c.offset(sx * d + (sz != 0 ? w : 0), 0, sz * d + (sx != 0 ? w : 0));
                     for (int y = 1; y <= 4; y++) {
                         level.setBlock(at.above(y), bars, FLAGS);
+                    }
+                }
+            }
+        }
+        level.setBlock(c.below(2), MARKER, FLAGS);
+    }
+
+    // -- L'ile de Volcania (Egg Hunt) -------------------------------------------
+
+    /** Le bord sud de l'ile, face a l'autel. */
+    public static Vec3 eggEntry() {
+        return Vec3.atBottomCenterOf(EGG_CENTER.offset(0, 1, EGG_RADIUS - 6));
+    }
+
+    /** Les rivaux debarquent a l'est, a l'ouest et au nord. */
+    public static Vec3 eggGate(int index) {
+        int r = EGG_RADIUS - 7;
+        BlockPos pos = switch (index % 3) {
+            case 0 -> EGG_CENTER.offset(r, 1, 0);
+            case 1 -> EGG_CENTER.offset(-r, 1, 0);
+            default -> EGG_CENTER.offset(0, 1, -r);
+        };
+        return Vec3.atBottomCenterOf(pos);
+    }
+
+    /** Le rayon de l'ile dans une direction : un bord ondule. */
+    private static double eggEdge(double angle) {
+        return EGG_RADIUS + 2.5d * Math.sin(angle * 5.0d) + 1.5d * Math.cos(angle * 3.0d);
+    }
+
+    /** Vrai si la position est sur l'ile (en dedans du muret). */
+    public static boolean onEggIsland(BlockPos pos) {
+        double dx = pos.getX() - EGG_CENTER.getX();
+        double dz = pos.getZ() - EGG_CENTER.getZ();
+        return Math.sqrt(dx * dx + dz * dz) < eggEdge(Math.atan2(dz, dx)) - 1.5d
+                && pos.getY() >= EGG_CENTER.getY() - 2 && pos.getY() <= EGG_CENTER.getY() + 40;
+    }
+
+    public static void buildEggArena(ServerLevel level) {
+        BlockPos c = EGG_CENTER;
+        if (level.getBlockState(c.below(2)).is(MARKER.getBlock())) {
+            return;
+        }
+        BlockState blackstone = Blocks.BLACKSTONE.defaultBlockState();
+        BlockState basalt = Blocks.BASALT.defaultBlockState();
+        BlockState smooth = Blocks.SMOOTH_BASALT.defaultBlockState();
+        BlockState magma = Blocks.MAGMA_BLOCK.defaultBlockState();
+        BlockState light = Blocks.SHROOMLIGHT.defaultBlockState();
+        int reach = EGG_RADIUS + 5;
+        for (int dx = -reach; dx <= reach; dx++) {
+            for (int dz = -reach; dz <= reach; dz++) {
+                double d = Math.sqrt(dx * dx + dz * dz);
+                double edge = eggEdge(Math.atan2(dz, dx));
+                if (d > edge + 0.5d) {
+                    continue;
+                }
+                int noise = Math.floorMod(dx * 73 + dz * 37 + dx * dz, 11);
+                // Le dessous : un cone renverse de basalte, veine de magma.
+                int depth = 2 + (int) Math.round((edge - d) * 0.7d);
+                for (int y = 1; y <= depth; y++) {
+                    level.setBlock(c.offset(dx, -y, dz), noise == 3 && y > 2 ? magma : y % 3 == 0 ? basalt
+                            : blackstone, FLAGS);
+                }
+                BlockPos top = c.offset(dx, 0, dz);
+                if (d > edge - 1.5d) {
+                    // Le muret du bord : deux blocs, on ne tombe pas par megarde.
+                    level.setBlock(top, blackstone, FLAGS);
+                    level.setBlock(top.above(), basalt, FLAGS);
+                    level.setBlock(top.above(2), noise < 4 ? basalt : Blocks.BLACKSTONE_SLAB.defaultBlockState(),
+                            FLAGS);
+                    continue;
+                }
+                boolean lamp = Math.floorMod(dx + 2, 7) == 0 && Math.floorMod(dz + 2, 7) == 0 && d > 6.0d;
+                level.setBlock(top, lamp ? light : noise < 3 ? smooth : noise < 5 ? basalt : blackstone, FLAGS);
+            }
+        }
+        // L'autel : trois gradins d'obsidienne, l'oeuf au sommet.
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                level.setBlock(c.offset(dx, 1, dz), Blocks.OBSIDIAN.defaultBlockState(), FLAGS);
+                if (Math.abs(dx) <= 1 && Math.abs(dz) <= 1) {
+                    level.setBlock(c.offset(dx, 2, dz), Blocks.CRYING_OBSIDIAN.defaultBlockState(), FLAGS);
+                }
+            }
+        }
+        level.setBlock(c.above(3), Blocks.OBSIDIAN.defaultBlockState(), FLAGS);
+        // Quatre bassins de lave autour de l'autel, sertis d'un rebord.
+        for (int i = 0; i < 4; i++) {
+            BlockPos basin = c.offset(i % 2 == 0 ? 10 : -10, 0, i < 2 ? 10 : -10);
+            for (int dx = -2; dx <= 2; dx++) {
+                for (int dz = -2; dz <= 2; dz++) {
+                    boolean rim = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+                    BlockPos at = basin.offset(dx, 0, dz);
+                    level.setBlock(at.below(), magma, FLAGS);
+                    level.setBlock(at, rim ? Blocks.POLISHED_BLACKSTONE.defaultBlockState()
+                            : Blocks.LAVA.defaultBlockState(), FLAGS);
+                    if (rim) {
+                        level.setBlock(at.above(), Blocks.POLISHED_BLACKSTONE_BRICKS.defaultBlockState(), FLAGS);
                     }
                 }
             }
