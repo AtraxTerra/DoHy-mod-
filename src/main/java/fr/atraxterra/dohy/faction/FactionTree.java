@@ -113,7 +113,7 @@ public final class FactionTree {
         ServerStatsCounter stats = player.getStats();
         long count = 0L;
         for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
-            if (type != EntityType.PLAYER && stats.getValue(Stats.ENTITY_KILLED.get(type)) > 0) {
+            if (type != net.minecraft.world.entity.EntityTypes.PLAYER && stats.getValue(Stats.ENTITY_KILLED.get(type)) > 0) {
                 count++;
             }
         }
