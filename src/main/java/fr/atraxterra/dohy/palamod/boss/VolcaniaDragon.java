@@ -4,6 +4,8 @@ import fr.atraxterra.dohy.faction.event.FactionEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -29,6 +31,10 @@ import java.util.UUID;
  * autour de l'ile, de point en point, et toutes les 8 a 14 s plonge sur un
  * joueur ou un combattant rival — le choc de sa tete blesse, ses ailes
  * repoussent. Il ne casse rien : la Warzone interdit le saccage aux monstres.
+ *
+ * <p>Le dragon vanilla se pose sur son podium, et c'est la qu'on le frappe a
+ * l'epee. Volcania n'a pas de podium : <b>a 75, 50 et 25 % de vie, il rugit et
+ * plane six secondes juste au-dessus de l'autel</b>, a portee d'epee.
  */
 public class VolcaniaDragon extends EnderDragon {
 
@@ -36,6 +42,10 @@ public class VolcaniaDragon extends EnderDragon {
     private BlockPos home = BlockPos.ZERO;
     private int waypoint;
     private int nextDive = 240;
+    /** Ticks de vol stationnaire restants, et le prochain seuil de vie qui en declenche un. */
+    private int holdTicks;
+    private boolean hovering;
+    private int nextHoldAt = 75;
 
     public VolcaniaDragon(EntityType<? extends EnderDragon> type, Level level) {
         super(type, level);
@@ -79,10 +89,45 @@ public class VolcaniaDragon extends EnderDragon {
         super.aiStep();
     }
 
+    /** Plane au-dessus de l'autel pendant {@code ticks} (apres l'avoir rejoint). */
+    public void hold(int ticks) {
+        holdTicks = Math.max(holdTicks, ticks);
+        hovering = false;
+    }
+
+    /** La ou il plane : juste au-dessus de l'autel, a portee d'epee. */
+    private Vec3 holdSpot() {
+        return Vec3.atCenterOf(home).add(0.0d, 6.0d, 0.0d);
+    }
+
     private void steer(ServerLevel level) {
         EnderDragonPhaseManager phases = getPhaseManager();
         EnderDragonPhase<?> current = phases.getCurrentPhase().getPhase();
         if (current == EnderDragonPhase.DYING) {
+            return;
+        }
+        int percent = (int) (getHealth() * 100.0f / getMaxHealth());
+        if (percent <= nextHoldAt && nextHoldAt > 0) {
+            nextHoldAt -= 25;
+            hold(120);
+            level.playSound(null, blockPosition(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 5.0f, 0.8f);
+        }
+        if (holdTicks > 0) {
+            Vec3 spot = holdSpot();
+            if (!hovering && position().distanceToSqr(spot) > 16.0d) {
+                if (current != EnderDragonPhase.CHARGING_PLAYER) {
+                    phases.setPhase(EnderDragonPhase.CHARGING_PLAYER);
+                    phases.getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(spot);
+                }
+                return;
+            }
+            hovering = true;
+            if (current != EnderDragonPhase.HOVERING) {
+                phases.setPhase(EnderDragonPhase.HOVERING);
+            }
+            if (--holdTicks == 0) {
+                hovering = false;
+            }
             return;
         }
         nextDive--;

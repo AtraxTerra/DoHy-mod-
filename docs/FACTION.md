@@ -406,7 +406,9 @@ un autel d'obsidienne au centre, quatre bassins de lave autour.
 
 - **Abattre Volcania** : le dragon de l'Egg Hunt (`EntityCustomDragon` du PalaMod, copie du dragon
   de l'Ender). Ici c'est le dragon de l'Ender de 26.2 avec la texture `volcania.png` du PalaMod. Il
-  tourne autour de l'île et pique toutes les 8 à 14 s sur un joueur ou un rival. Il ne casse rien
+  tourne autour de l'île et pique toutes les 8 à 14 s sur un joueur ou un rival ; à 75, 50 et 25 %
+  de vie, il rugit et plane 6 s juste au-dessus de l'autel, à portée d'épée (le dragon vanilla se
+  pose sur son podium, Volcania n'en a pas). Il ne casse rien
   (aucun monstre ne casse de bloc dans la Warzone). Pas abattu en 20 min : il repart, sans œuf.
 - **L'œuf** apparaît sur l'autel. On le prend d'un clic ; **le porteur fait gagner une seconde par
   seconde** à sa faction (classement au temps de port, wiki).
