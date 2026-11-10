@@ -4,6 +4,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.level.block.Block;
 
 /**
  * L'enclume vanilla, ouverte sur une enclume de PalaMod.
@@ -25,7 +26,9 @@ public class DefenseAnvilMenu extends AnvilMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return where.evaluate((level, pos) -> level.getBlockState(pos).getBlock() instanceof DefenseAnvilBlock
-                && player.canInteractWithBlock(pos, 4.0d), true);
+        return where.evaluate((level, pos) -> {
+            Block block = level.getBlockState(pos).getBlock();
+            return block instanceof DefenseAnvilBlock && stillValid(where, player, block);
+        }, true);
     }
 }

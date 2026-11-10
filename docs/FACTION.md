@@ -14,7 +14,7 @@ PvE**. Choix du joueur :
 |-----|---------|------|
 | 22a | Cœur : création, claims et protection, banque, homes, ELO et ligues, onglets, `/f` | fait |
 | 22b | Arbre de technologie : Global, Pillage, Défense, Économie | fait (en validation) |
-| 22c | Objets de défense : obsidiennes à effet, spikes obsi, Fake Water, éponges, brouilleur, enclumes, amulettes… | à faire |
+| 22c | Objets de défense : obsidiennes à effet, spikes obsi, Fake Water, éponges, brouilleur, enclumes, amulettes… | fait |
 | 22d | Objets de pillage : dynamites, TNT spéciales, withers custom, Unclaim Finder, arc en paladium, flèche de Switch… | à faire |
 | 22e | Réserve d'or : multibloc, investissements à intérêts | à faire |
 | 22f | Events à heures fixes (Egg Hunt, End, KOTH, Boss, Totem) et raids sur demande | à faire |
@@ -76,3 +76,51 @@ personnalisé (palier 4 : copier une bannière à motifs) ; MOTD (palier 6) ; d�
 **Écrans** : l'arbre (quatre branches et ce qui est acquis), puis une branche : ses paliers, la
 bulle de chaque condition avec sa progression, « PRÊT » quand tout est réuni. `/f arbre` ; pour les
 opérateurs, `/f arbre finir` et `/f arbre palier <branche> <n>`.
+
+## Objets de défense (22c)
+
+Tout est fabricable ; c'est la **pose ou l'usage** qui demande le palier de l'arbre (`DefenseGate`),
+comme les verrous de métier : 26.2 ne sait pas annuler une fabrication sans détruire ses
+ingrédients. Sans faction, rien n'est débloqué ; le créatif passe outre.
+
+- **Obsidienne renforcée** (4 obsidiennes → 4), ses escaliers et sa dalle : on ne la mine pas,
+  la TNT ordinaire ne l'entame pas (résistance 60), un wither la casse. **L'outil magique**
+  (10 000 usages) la retire intacte, comme tout bloc du tag `palamod:magical_tool_removable`.
+- **Obsidiennes piégées** : empoisonnée, boom, méga boom, de lave, sulfurique, knockback, gelée,
+  anti-aggro, compacte, slime, à wither, et une par spike (bois, fer, or, diamant, améthyste,
+  titane, paladium). Détruites par un wither, une explosion assez forte (pillage, lot 22d) ou un
+  raid (lot 22f), elles déclenchent leur effet au tick suivant ; l'outil magique ne les déclenche
+  pas. Valeurs relevées au bytecode (`ObsiEffect`). **Solo** : le piège frappe tout ce qui vit
+  autour sauf le propriétaire du claim ; le poison passe en Wither sur les morts-vivants ;
+  l'anti-aggro calme tous les monstres à 6 blocs. Plus l'obsidienne à redstone (un fil en bloc)
+  et un observateur en obsidienne.
+- **Spikes** en bois, fer, or, diamant, améthyste et titane (2 à 12 points de dégâts), à côté de
+  celui en paladium. Escaliers, dalle, porte (que les zombies n'enfoncent pas) et trappe en
+  obsidienne.
+- **Fake Water** (seau : eau + bâton en paladium) : de l'eau qui ronge, 2 points par seconde, sauf
+  pour le propriétaire du claim. **Éponge à lave** (boit la lave comme l'éponge l'eau, se vide au
+  four) et **éponge compressée** (ingrédient des TNT du pillage).
+- **Enclumes** en améthyste, titane et paladium : l'enclume vanilla, qui ne s'abîme pas, qu'on ne
+  mine pas, et qui encaisse 1, 2 ou 3 coups de wither.
+- **Brouilleur de coordonnées** — Paladium : faux F3 aux joueurs proches. **Solo** : à 16 blocs,
+  les monstres perdent de vue les joueurs à plus de 6 blocs.
+- **Pistolet à liquide** : pompe les sources (eau, lave, eau angélique, Fake Water ; 16 seaux) et
+  les pose à 24 blocs. **Home remover** — Paladium : efface les homes ennemis d'un chunk.
+  **Solo** : efface les monstres du chunk et y empêche leur apparition une heure. **Pierre
+  d'aggro** : un monstre lâche sa cible et te prend pour la sienne (4 usages).
+- **Amulettes**, fondues à l'enclume dans un plastron en paladium ou en endium : magma (résistance
+  au feu, comme Paladium) ; **solo** pour les autres : voyance (les monstres à 24 blocs brillent),
+  discrétion (ils te voient deux fois moins loin), combat (+15 % contre eux), chasseur (+25 % d'XP
+  de Chasseur).
+
+| Clé de l'arbre | Ce qu'elle débloque |
+|----------------|---------------------|
+| `craft:voyance_amulet` | fondre l'amulette de voyance |
+| `craft:hardened_obsidian` | poser l'obsidienne renforcée, ses escaliers, sa dalle |
+| `use:spikes_basic` / `_amethyst` / `_titane` / `_paladium` | poser les spikes et leurs obsidiennes |
+| `use:<effet>_obsidian` | poser l'obsidienne piégée |
+| `craft:coordinate_jammer`, `craft:lava_sponge` | poser le brouilleur, l'éponge à lave |
+| `craft:aggro_stone`, `craft:fake_water` | utiliser la pierre d'aggro, vider le seau de Fake Water |
+| `craft:<métal>_anvil` | poser l'enclume |
+| `use:pistol_tank`, `use:home_remover` | utiliser le pistolet, le home remover |
+
