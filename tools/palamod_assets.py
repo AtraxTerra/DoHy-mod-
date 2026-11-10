@@ -3830,8 +3830,8 @@ def main():
         "fixed": {"rotation": [0, 180, 0], "scale": [0.6, 0.6, 0.6]},
         "thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 2, 1], "scale": [0.55, 0.55, 0.55]},
         "thirdperson_lefthand": {"rotation": [0, -90, 0], "translation": [0, 2, 1], "scale": [0.55, 0.55, 0.55]},
-        "firstperson_righthand": {"rotation": [0, 95, 0], "translation": [1, 2, 0], "scale": [0.6, 0.6, 0.6]},
-        "firstperson_lefthand": {"rotation": [0, -85, 0], "translation": [1, 2, 0], "scale": [0.6, 0.6, 0.6]},
+        "firstperson_righthand": {"rotation": [0, 95, 0], "translation": [2, 1, -2], "scale": [0.38, 0.38, 0.38]},
+        "firstperson_lefthand": {"rotation": [0, -85, 0], "translation": [2, 1, -2], "scale": [0.38, 0.38, 0.38]},
     }
     for variant, source in (("", "pistol_tank_empty"), ("_water", "pistol_tank_water"),
                             ("_lava", "pistol_tank_lava"), ("_fluid", "pistol_tank")):
