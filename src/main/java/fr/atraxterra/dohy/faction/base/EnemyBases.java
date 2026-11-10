@@ -84,26 +84,113 @@ public final class EnemyBases {
         final UUID player;
         final EnemyBaseTier tier;
         final String name;
-        final Site site;
+        final Search search;
         final int retries;
+        Site site;
         boolean forced;
         int ticks;
         EnemyBaseBuilder builder;
 
-        Job(UUID player, EnemyBaseTier tier, String name, Site site, int retries) {
+        Job(UUID player, EnemyBaseTier tier, String name, Search search, int retries) {
             this.player = player;
             this.tier = tier;
             this.name = name;
-            this.site = site;
+            this.search = search;
             this.retries = retries;
+        }
+    }
+
+    /**
+     * La recherche d'un site, etalee sur plusieurs ticks : chaque essai sonde
+     * cinq hauteurs dans le bruit du generateur, ce qui coute quelques
+     * millisecondes. Elle s'arrete au premier terrain assez plat, ou apres 64
+     * essais sur le plus plat trouve.
+     */
+    private static final class Search {
+        final EnemyBaseTier tier;
+        final double ox;
+        final double oz;
+        final List<double[]> claims;
+        int attempts;
+        Site best;
+        int bestSpread = Integer.MAX_VALUE;
+
+        Search(ServerPlayer player, EnemyBaseTier tier) {
+            this.tier = tier;
+            this.ox = player.getX();
+            this.oz = player.getZ();
+            this.claims = new ArrayList<>();
+            for (FactionData.Claim claim : FactionApi.data(player).claims()) {
+                if ("minecraft:overworld".equals(claim.dimension())) {
+                    claims.add(new double[]{(claim.x() << 4) + 8.0d, (claim.z() << 4) + 8.0d});
+                }
+            }
+        }
+
+        /** Essaie des sites pendant {@code budget} ns (un au moins) ; vrai quand la recherche est finie. */
+        boolean step(ServerLevel level, long budget) {
+            long end = System.nanoTime() + budget;
+            RandomSource random = level.getRandom();
+            ChunkGenerator generator = level.getChunkSource().getGenerator();
+            RandomState noise = level.getChunkSource().randomState();
+            WorldBorder border = level.getWorldBorder();
+            int sea = level.getSeaLevel();
+            int half = tier.half();
+            double minimum = MIN_DISTANCE + half + 16.0d;
+            int reach = (tier.claimRadius() + 1) * 16;
+            do {
+                if (attempts++ >= SITE_ATTEMPTS) {
+                    return true;
+                }
+                double angle = random.nextDouble() * Math.PI * 2.0d;
+                double distance = minimum + random.nextDouble() * SPREAD;
+                int cx = (Mth.floor(ox + Math.cos(angle) * distance) >> 4) * 16 + 8;
+                int cz = (Mth.floor(oz + Math.sin(angle) * distance) >> 4) * 16 + 8;
+                if (squared(cx, cz, ox, oz) < minimum * minimum) {
+                    continue;
+                }
+                boolean tooClose = false;
+                for (double[] claim : claims) {
+                    if (squared(cx, cz, claim[0], claim[1]) < minimum * minimum) {
+                        tooClose = true;
+                        break;
+                    }
+                }
+                if (tooClose || !border.isWithinBounds(new BlockPos(cx - reach, sea, cz - reach))
+                        || !border.isWithinBounds(new BlockPos(cx + reach, sea, cz + reach))) {
+                    continue;
+                }
+                Holder<Biome> biome = level.getBiome(new BlockPos(cx, sea, cz));
+                if (biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_DEEP_OCEAN) || biome.is(BiomeTags.IS_RIVER)
+                        || biome.is(BiomeTags.IS_BEACH)) {
+                    continue;
+                }
+                int min = Integer.MAX_VALUE;
+                int max = Integer.MIN_VALUE;
+                for (int[] offset : new int[][]{{0, 0}, {-half, -half}, {half, -half}, {-half, half}, {half, half}}) {
+                    int y = generator.getBaseHeight(cx + offset[0], cz + offset[1], Heightmap.Types.WORLD_SURFACE_WG,
+                            level, noise);
+                    min = Math.min(min, y);
+                    max = Math.max(max, y);
+                }
+                if (min > sea && max - min < bestSpread) {
+                    best = new Site(cx, cz);
+                    bestSpread = max - min;
+                    if (bestSpread <= 6) {
+                        return true;
+                    }
+                }
+            } while (System.nanoTime() < end);
+            return false;
         }
     }
 
     private static final Map<UUID, Job> JOBS = new LinkedHashMap<>();
     /** Les bases finies pendant que leur joueur etait deconnecte : remises a sa connexion. */
     private static final Map<UUID, EnemyBase> READY = new LinkedHashMap<>();
-    /** Le chantier tourne au plus 15 ms par tick. */
+    /** Le chantier tourne au plus 15 ms par tick, la recherche du site 8 ms. */
     private static final long BUILD_BUDGET = 15_000_000L;
+    private static final long SEARCH_BUDGET = 8_000_000L;
 
     private EnemyBases() {
     }
@@ -138,91 +225,13 @@ public final class EnemyBases {
     }
 
     private static String start(ServerPlayer player, EnemyBaseTier tier, int retries) {
-        ServerLevel level = (ServerLevel) player.level();
-        Site site = findSite(level, player, tier);
-        if (site == null) {
-            return "Aucun site libre a plus de " + MoneyFormat.exact(MIN_DISTANCE)
-                    + " blocs : la bordure du monde est trop proche, ou tout est ocean. Reessaie ailleurs";
-        }
-        String name = NAMES.get(level.getRandom().nextInt(NAMES.size()));
-        JOBS.put(player.getUUID(), new Job(player.getUUID(), tier, name, site, retries));
+        String name = NAMES.get(player.getRandom().nextInt(NAMES.size()));
+        JOBS.put(player.getUUID(), new Job(player.getUUID(), tier, name, new Search(player, tier), retries));
         if (retries == 0) {
             FactionApi.tell(player, "Tes eclaireurs partent reperer une base ennemie (" + tier.label()
                     + ") a plus de " + MoneyFormat.exact(MIN_DISTANCE) + " blocs...", ChatFormatting.GOLD);
         }
         return null;
-    }
-
-    /**
-     * Un centre de chunk a plus de 9 000 blocs (emprise comprise) du joueur et
-     * de ses claims du Monde, dans la bordure, hors ocean, riviere et plage, et
-     * le plus plat trouve en 64 essais. Rien n'est genere : la hauteur vient
-     * du bruit du generateur.
-     */
-    private static Site findSite(ServerLevel level, ServerPlayer player, EnemyBaseTier tier) {
-        RandomSource random = level.getRandom();
-        double ox = player.getX();
-        double oz = player.getZ();
-        List<double[]> claims = new ArrayList<>();
-        for (FactionData.Claim claim : FactionApi.data(player).claims()) {
-            if ("minecraft:overworld".equals(claim.dimension())) {
-                claims.add(new double[]{(claim.x() << 4) + 8.0d, (claim.z() << 4) + 8.0d});
-            }
-        }
-        ChunkGenerator generator = level.getChunkSource().getGenerator();
-        RandomState noise = level.getChunkSource().randomState();
-        WorldBorder border = level.getWorldBorder();
-        int sea = level.getSeaLevel();
-        int half = tier.half();
-        double minimum = MIN_DISTANCE + half + 16.0d;
-        int reach = (tier.claimRadius() + 1) * 16;
-        Site best = null;
-        int bestSpread = Integer.MAX_VALUE;
-        for (int attempt = 0; attempt < SITE_ATTEMPTS; attempt++) {
-            double angle = random.nextDouble() * Math.PI * 2.0d;
-            double distance = minimum + random.nextDouble() * SPREAD;
-            int cx = (Mth.floor(ox + Math.cos(angle) * distance) >> 4) * 16 + 8;
-            int cz = (Mth.floor(oz + Math.sin(angle) * distance) >> 4) * 16 + 8;
-            if (squared(cx, cz, ox, oz) < minimum * minimum) {
-                continue;
-            }
-            boolean tooClose = false;
-            for (double[] claim : claims) {
-                if (squared(cx, cz, claim[0], claim[1]) < minimum * minimum) {
-                    tooClose = true;
-                    break;
-                }
-            }
-            if (tooClose || !border.isWithinBounds(new BlockPos(cx - reach, sea, cz - reach))
-                    || !border.isWithinBounds(new BlockPos(cx + reach, sea, cz + reach))) {
-                continue;
-            }
-            Holder<Biome> biome = level.getBiome(new BlockPos(cx, sea, cz));
-            if (biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_DEEP_OCEAN) || biome.is(BiomeTags.IS_RIVER)
-                    || biome.is(BiomeTags.IS_BEACH)) {
-                continue;
-            }
-            int min = Integer.MAX_VALUE;
-            int max = Integer.MIN_VALUE;
-            for (int[] offset : new int[][]{{0, 0}, {-half, -half}, {half, -half}, {-half, half}, {half, half},
-                    {0, -half}, {0, half}, {-half, 0}, {half, 0}}) {
-                int y = generator.getBaseHeight(cx + offset[0], cz + offset[1], Heightmap.Types.WORLD_SURFACE_WG,
-                        level, noise);
-                min = Math.min(min, y);
-                max = Math.max(max, y);
-            }
-            if (min <= sea) {
-                continue;
-            }
-            if (max - min < bestSpread) {
-                best = new Site(cx, cz);
-                bestSpread = max - min;
-                if (bestSpread <= 4) {
-                    break;
-                }
-            }
-        }
-        return best;
     }
 
     private static double squared(double x, double z, double ox, double oz) {
@@ -263,7 +272,9 @@ public final class EnemyBases {
     }
 
     private static void release(ServerLevel level, Job job) {
-        forEachChunk(job, (x, z) -> level.setChunkForced(x, z, false));
+        if (job.forced) {
+            forEachChunk(job, (x, z) -> level.setChunkForced(x, z, false));
+        }
         JOBS.remove(job.player);
     }
 
@@ -279,6 +290,18 @@ public final class EnemyBases {
         if (job.builder == null) {
             if (player == null) {
                 release(level, job);
+                return;
+            }
+            if (job.site == null) {
+                if (job.search.step(level, SEARCH_BUDGET)) {
+                    job.site = job.search.best;
+                    if (job.site == null) {
+                        JOBS.remove(job.player);
+                        FactionApi.tell(player, "Aucun site libre a plus de " + MoneyFormat.exact(MIN_DISTANCE)
+                                + " blocs : la bordure du monde est trop proche, ou tout est ocean. Reessaie ailleurs.",
+                                ChatFormatting.RED);
+                    }
+                }
                 return;
             }
             if (!job.forced) {

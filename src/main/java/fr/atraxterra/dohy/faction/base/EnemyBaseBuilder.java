@@ -255,8 +255,9 @@ final class EnemyBaseBuilder {
                 () -> Blocks.DEEPSLATE_BRICKS.defaultBlockState()));
         keep(14, 22, List.of(Layer.solid(this::hardened), Layer.fluid(() -> Blocks.WATER.defaultBlockState()),
                 Layer.solid(this::anvilLayer), Layer.solid(this::witherLayer),
-                Layer.fluid(() -> Blocks.WATER.defaultBlockState()), Layer.solid(this::hardened),
-                Layer.solid(this::megaBoomObsidian)), () -> Blocks.CRYING_OBSIDIAN.defaultBlockState(), 6, true);
+                Layer.fluid(() -> Blocks.WATER.defaultBlockState()), Layer.solid(this::megaBoomObsidian),
+                Layer.solid(() -> Blocks.POLISHED_BLACKSTONE_BRICKS.defaultBlockState())),
+                () -> Blocks.CRYING_OBSIDIAN.defaultBlockState(), 6, true);
         steps.add(() -> {
             List<int[]> spots = new ArrayList<>();
             for (int i = -6; i <= 6; i += 3) {
