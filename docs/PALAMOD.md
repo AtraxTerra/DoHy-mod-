@@ -2240,3 +2240,76 @@ perdre de l'argent**.
   (et ta ligne), les factions. Une carte du menu principal y mène, avec les paliers à récupérer.
 - `/trixium`, `/trixium deposer` ; pour les opérateurs, `/trixium admin avancer <jours>` (pour
   essayer une fin de saison) et `/trixium admin horloge` (remise à l'heure).
+
+---
+
+## 27. Succès (chapitre 23)
+
+Sources : `AchievementsManager.registerAchievements` (PalaMod) et `CommonProxy` (PalaJobs), relus
+par **`tools/extract_achievements.py`**. L'outil rejoue au bytecode les chaînes de builders
+(`CraftAchievement.builder().id(…).name(…)…build()`, `MultiAchievement.addSubAchievement`,
+`register()`) : **139 succès, 315 avec leurs étapes**, dans six catégories (`HOW_TO_START`,
+`ECONOMY`, `JOBS`, `ATTACK_DEFENSE`, `FACTION`, `OTHERS`). La bibliothèque qui les affichait
+(`fr.paladium.achievement`) n'est pas dans le jar ; le blog de la V8.5 dit seulement « ajout d'un
+système de succès » et d'un module Succès dans Helios. **Aucune récompense n'est déclarée** dans
+le code.
+
+### En solo (choix du joueur)
+
+- **Une prime en argent par succès**, selon sa difficulté : 10 000, 50 000, 250 000, 1 000 000 ou
+  5 000 000 $. Plusieurs succès validés d'un coup (à la première connexion, par exemple) donnent
+  un seul bilan dans le chat.
+- **126 succès** : les 139 de PalaMod et PalaJobs, moins 13 qui reposent sur des systèmes
+  absents (voir plus bas). Les noms, les descriptions et les objectifs sont ceux du code, sauf
+  écart noté.
+- **Écran** : `/succes` (ou `/achievements`, la commande de Paladium) et une carte du menu
+  principal. Six catégories, puis leurs succès, avec les étapes en infobulle.
+
+### Ce qui mesure, et le garde-fou des blocs posés
+
+- **Les statistiques du jeu** quand elles suffisent : objets fabriqués, cassés (usure) et utilisés
+  (blocs posés), créatures tuées, distance parcourue à pied.
+- **Les blocs cassés** (minerais, récoltes) sont comptés à part, **hors blocs posés par un
+  joueur**, comme les contrats et l'XP de métier. La statistique du jeu compterait un minerai posé
+  puis recassé, et le minerai se rend lui-même : « casser 500 000 minerais » se validerait sur
+  place. Une récolte est une culture mûre, ou une citrouille ou une pastèque qui a poussé.
+- **Ce que signalent les objets et les machines** : sève tirée de l'extracteur, âmes du marteau de
+  caverne, lingots donnés au totem, captures, Dancaroks, boss d'event (frappé, vaincu), Egg Hunt
+  (Volcania frappé puis abattu, œuf pris), dynamites, withers invoqués, TNT en endium, pierres
+  légendaires, pierre d'aggro sur un wither, home remover, ventes et achats au shop, argent
+  dépensé, portails de l'alchimiste, chaudron formé, Dimension du Mineur (portail, session),
+  voidstone de minage, duplication au marteau, terre fertilisée labourée, sorties du crusher et du
+  cobblebreaker retirées à la main.
+- **Ce qui se constate toutes les cinq secondes** : la dimension où l'on est, la plus grosse
+  quantité portée de quelques objets (pollens, graines, fleurs, pépite d'endium, tête et marteau du
+  grinder), l'armure complète en endium, les modificateurs du marteau en paladium, une pioche en
+  paladium enchantée. Et chaque seconde : l'Unclaim Finder ou le Spawner Finder en main, la
+  cagoule portée.
+- **Dépenser** (`CresusWithdrawAchievement`) : tout débit consenti (achats au shop, boutique,
+  améliorations, dépôts en banque de faction…), pas la pénalité de mort.
+
+### Les 13 succès retirés
+
+Mailbox (« Écrivain »), sorts (« Apprenti sorcier »), Palapass, échanges entre joueurs (trois
+« Tradeur »), familier niveau 100, blocs camouflage d'un autre mod (« Expert du camouflage »),
+glueballs (« Chewing gum maison »), colle (« Colleur »), bouteilles d'XP scellées (« Mise en
+bouteille »), sac à dos de chasseur (« Transport dominical »), éléphants (« Élevage
+d'éléphants »). Aucun de ces systèmes n'existe dans DoHy.
+
+### Les écarts
+
+| Succès | PalaMod | DoHy |
+|---|---|---|
+| Explorateur dimensionnel | visiter six serveurs (Egopolis… Minage) | visiter six dimensions : monde, Nether, End, Mineur, donjons, Warzone |
+| Premier enchantement II | enchanter une pioche en paladium | avoir en main une pioche en paladium enchantée (table ou enclume) |
+| Une belle omelette II | utiliser le parchemin de dragon | être là quand Volcania tombe (pas de parchemin) |
+| Transdimensionnelle III | la commande `/dimension` trois fois | terminer trois sessions |
+| Chercheur assisté | utiliser 10 fois un spawner finder | 10 min en main (le finder de DoHy s'use à la seconde) |
+| Zoo original | zombie, creeper, tortue, crabe, escargot, dauphin, éléphant | crabe, escargot, éléphant → panda, perroquet, chèvre (capturables) |
+| Petite proie, dur combat | les quatre mini-boss de PalaJobs | les cinq boss d'event |
+| Extermina-home | tuer 10 fantômes du home remover | effacer 10 monstres avec le home remover (celui de DoHy efface les monstres du chunk) |
+| Doux chez soi | posséder un village de faction | bâtir la réserve d'or |
+| Niveaux de faction 10 à 100 | niveau de la faction | 10 % à 100 % de l'arbre de faction débloqué |
+| Tout pile le bon nombre, Oula… | déposer 100 000 / 500 000 trixium | 5 000 / 25 000 (un joueur seul, pas des milliers) |
+| Fleuriste curieux | dont la fleur de chance (lucky blocks) | les trois fleurs de PalaMod et les treize vanilla |
+| Unités de sève | 1 000 par fiole tirée (`ExtractSeveAchievement`) | pareil |

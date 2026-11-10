@@ -147,6 +147,7 @@ public final class SellChestMenu extends ChestMenu {
 
             if (payout > 0L) {
                 long balance = Economy.credit(player, payout);
+                fr.atraxterra.dohy.palamod.achievement.Achievements.sold(player, payout);
                 play(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.6f, 1.4f);
                 report(soldCount, soldKinds, payout, balance, toReturn.size());
             } else if (!toReturn.isEmpty()) {

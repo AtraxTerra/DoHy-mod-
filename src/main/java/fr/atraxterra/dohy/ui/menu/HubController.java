@@ -13,6 +13,8 @@ import fr.atraxterra.dohy.job.JobGate;
 import fr.atraxterra.dohy.job.JobsController;
 import fr.atraxterra.dohy.museum.MuseumApi;
 import fr.atraxterra.dohy.palamod.PalaItems;
+import fr.atraxterra.dohy.palamod.achievement.AchievementMenu;
+import fr.atraxterra.dohy.palamod.achievement.Achievements;
 import fr.atraxterra.dohy.palamod.dungeon.Rpg;
 import fr.atraxterra.dohy.palamod.dungeon.RpgMenu;
 import fr.atraxterra.dohy.palamod.trixium.TrixiumContest;
@@ -123,12 +125,22 @@ public final class HubController extends MenuController {
                         points > 0 ? points + " point(s) a depenser" : "Arbre des donjons"))
                         .accent(0xFFEC4FB5).action("rpg").badge(points > 0 ? "+" + points : ""),
                 factionCard(player),
-                trixiumCard(player));
+                trixiumCard(player),
+                achievementCard(player));
 
         return new MenuView(id(), "DoHy", "Le menu de ton aventure", stats, List.of(
                 new MenuView.Section("ECONOMIE", "resources", MenuView.GRID, economy),
                 new MenuView.Section("PROGRESSION", "upgrade", MenuView.GRID, progress),
                 new MenuView.Section("FIN DE PARTIE", "craft", MenuView.GRID, endgame)), false);
+    }
+
+    /** Les succes : combien sont valides. */
+    private static Card achievementCard(ServerPlayer player) {
+        int done = Achievements.data(player).doneCount();
+        int total = Achievements.total();
+        return Card.of(new ItemStack(Items.GOLDEN_APPLE), "Succes", List.of(done + " / " + total + " valides",
+                        "Une prime par succes"))
+                .accent(0xFFFAC400).action("achievements").progress(done, total);
     }
 
     /** Le concours Trixium : le rang du mois, et les paliers a recuperer. */
@@ -162,6 +174,7 @@ public final class HubController extends MenuController {
         switch (key) {
             case "faction" -> fr.atraxterra.dohy.faction.FactionMenus.Overview.INSTANCE.open(player);
             case "trixium" -> TrixiumMenu.INSTANCE.open(player);
+            case "achievements" -> AchievementMenu.INSTANCE.open(player);
             case "shop" -> ShopController.open(player);
             case "sell" -> {
                 UiNet.forget(player);

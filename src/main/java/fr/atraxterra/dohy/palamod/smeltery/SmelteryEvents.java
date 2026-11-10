@@ -54,6 +54,13 @@ public final class SmelteryEvents {
                 || !(event.getLevel() instanceof ServerLevel level)) {
             return;
         }
+        // Les succes : un minerai « duplique » par un marteau fortune et fusion ({@code HammerDuplicateAchievement}).
+        if (event.getBreaker() instanceof ServerPlayer player && PalaSmeltery.modifiers(tool).level(GrinderModifier.FORTUNE) > 0
+                && event.getState().is(fr.atraxterra.dohy.palamod.achievement.Achievements.ORES)) {
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "hammer:duplicate", 1);
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "hammer:duplicate:"
+                    + net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(event.getState().getBlock()), 1);
+        }
         for (ItemEntity drop : event.getDrops()) {
             ItemStack stack = drop.getItem();
             SingleRecipeInput input = new SingleRecipeInput(stack.copyWithCount(1));

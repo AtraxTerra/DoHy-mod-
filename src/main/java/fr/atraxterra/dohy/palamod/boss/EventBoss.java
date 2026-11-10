@@ -241,6 +241,9 @@ public class EventBoss extends Monster {
             host.addDamage(key, before - getHealth());
             lastHit = tickCount;
         }
+        if (attacker instanceof net.minecraft.server.level.ServerPlayer player) {
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "boss:hurt", 1);
+        }
         if (attacker instanceof LivingEntity living && source.getDirectEntity() == attacker) {
             BossAttacks.onMelee(this, level, living);
         }

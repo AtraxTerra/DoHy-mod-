@@ -44,6 +44,8 @@ public final class Economy {
             return false;
         }
         apply(player, data.debit(amount));
+        // « Depenser » des succes ({@code CresusWithdrawAchievement}) : tout debit consenti.
+        fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, fr.atraxterra.dohy.palamod.achievement.Achievements.SPENT, amount);
         return true;
     }
 

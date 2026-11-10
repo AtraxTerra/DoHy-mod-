@@ -135,6 +135,7 @@ public final class ShopController {
         }
         long payout = DynamicPrice.sell(player, id, entry, removed);
         long balance = Economy.credit(player, payout);
+        fr.atraxterra.dohy.palamod.achievement.Achievements.sold(player, payout);
         play(player, SoundEvents.EXPERIENCE_ORB_PICKUP, 1.4f);
         player.sendSystemMessage(Component.literal("Vendu " + removed + "x pour ")
                 .withStyle(ChatFormatting.GRAY)
@@ -156,6 +157,7 @@ public final class ShopController {
                     + MoneyFormat.exact(cost - Economy.balance(player)) + ".").withStyle(ChatFormatting.RED));
             return;
         }
+        fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, fr.atraxterra.dohy.palamod.achievement.Achievements.PURCHASES, 1);
         int left = wanted;
         int stackSize = new ItemStack(item).getMaxStackSize();
         while (left > 0) {

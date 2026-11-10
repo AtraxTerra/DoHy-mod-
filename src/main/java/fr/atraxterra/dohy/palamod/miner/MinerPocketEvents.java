@@ -128,8 +128,10 @@ public final class MinerPocketEvents {
             }
             if (VoidstoneMinageItem.COUNTED.contains(stack.getItem())) {
                 VoidstoneMinageItem.addStone(minage, stack.getCount());
+                fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "voidstone:absorbed", stack.getCount());
                 inventory.setItem(slot, ItemStack.EMPTY);
             } else if (VoidstoneMinageItem.DESTROYED.contains(stack.getItem())) {
+                fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "voidstone:absorbed", stack.getCount());
                 inventory.setItem(slot, ItemStack.EMPTY);
             }
         }

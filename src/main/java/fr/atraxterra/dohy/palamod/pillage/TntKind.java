@@ -95,6 +95,9 @@ public enum TntKind {
             case ENDIUM -> {
                 explode(level, tnt);
                 breach(level, tnt.blockPosition(), igniter);
+                if (igniter instanceof ServerPlayer player) {
+                    fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "explode:endium_tnt", 1);
+                }
             }
             case SPONGE -> drain(level, tnt.blockPosition(), igniter);
             case EFFECT -> {

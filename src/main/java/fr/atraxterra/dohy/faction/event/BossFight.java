@@ -132,6 +132,12 @@ public final class BossFight extends EventRun {
     }
 
     public void bossKilled(ServerLevel level, EventBoss entity) {
+        // Les succes : chaque joueur qui a frappe ce boss l'a vaincu.
+        for (ServerPlayer player : level.getServer().getPlayerList().getPlayers()) {
+            if (scoreOf(player) > 0) {
+                fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "boss:" + boss.id(), 1);
+            }
+        }
         conclude(level.getServer(), "Le boss " + boss.label() + " a succombe.");
     }
 

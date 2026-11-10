@@ -51,6 +51,7 @@ public class HomeRemoverItem extends Item {
             mob.discard();
             removed++;
         }
+        fr.atraxterra.dohy.palamod.achievement.Achievements.count(serverPlayer, "home_remover:mobs", removed);
         chunk.setData(PalaDefense.SPAWN_WARD.get(), server.getGameTime() + WARD_TICKS);
         chunk.markUnsaved();
         server.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.0f, 1.0f);

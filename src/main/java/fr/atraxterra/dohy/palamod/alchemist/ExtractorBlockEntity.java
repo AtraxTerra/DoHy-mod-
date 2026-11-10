@@ -99,6 +99,10 @@ public class ExtractorBlockEntity extends BlockEntity {
             Sap type = sap.type();
             AlchemistXp.grant(player, type.extractionXp() * sap.level() / (double) FlaskSap.FULL,
                     type.extractionLevel());
+            // Les succes : une fiole tiree de l'extracteur, et son essence.
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "sap:flasks", 1);
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player,
+                    "sap:" + type.name().toLowerCase(java.util.Locale.ROOT), 1);
         }
         ItemStack given = flask;
         flask = ItemStack.EMPTY;

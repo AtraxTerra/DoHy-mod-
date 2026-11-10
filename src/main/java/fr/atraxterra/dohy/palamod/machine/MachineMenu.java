@@ -118,6 +118,18 @@ public class MachineMenu extends AbstractContainerMenu {
             if (crafted && !stack.isEmpty()) {
                 stack.onCraftedBy(player, stack.getCount());
             }
+            if (player instanceof net.minecraft.server.level.ServerPlayer server && !stack.isEmpty()) {
+                String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+                // Les succes : ce que le crusher a broye, les particules du cobblebreaker.
+                if (machine instanceof CrusherBlockEntity && machineIndex == CrusherBlockEntity.SLOT_OUTPUT) {
+                    fr.atraxterra.dohy.palamod.achievement.Achievements.count(server, "crusher:" + id, stack.getCount());
+                }
+                if (machine instanceof CobblebreakerBlockEntity && machineIndex >= CobblebreakerBlockEntity.SLOT_FIRST_OUTPUT
+                        && id.endsWith("_particle")) {
+                    fr.atraxterra.dohy.palamod.achievement.Achievements.count(server, "cobblebreaker:particles",
+                            stack.getCount());
+                }
+            }
         }
     }
 
