@@ -2155,3 +2155,88 @@ Solea Pixel), déjà source des textures de donjon au choix du joueur :
 
 Leurs pièces « avancées » (fusionnées avec des pierres légendaires), leur boîte et leur clé
 antiques et leur marteau antique sont leurs propres inventions, pas reprises.
+
+---
+
+## 26. Concours Trixium (chapitre 23)
+
+Le chapitre 23 réunit le **concours Trixium** (lot 23a) et les **succès** (lot 23b). Les
+**lucky blocks** (module `luckyblock`, 2 008 classes, le plus gros morceau de PalaMod) sont
+**écartés, au choix du joueur** : ni les blocs, ni leurs événements, ni leurs objets, ni le
+Lucky Stats. Les objets que PalaMod ne donnait que par eux restent absents.
+
+Sources : le module `trixium` de PalaMod, le wiki (« Concours Trixium », « Objets exclusifs ») et
+deux articles du blog de Paladium (« Le Classement Trixium est de retour », « Rétrospective de
+la V8 »).
+
+### Ce que dit le code
+
+- **Dépôt** : `/trixium` ouvre l'écran ; un emplacement n'accepte que le trixium et le bloc de
+  trixium (`TrixiumSlot.isItemValid`). Un bloc compte **9** (`onSlotChanged`). Le dépôt part à
+  l'API de Paladium : il ne revient jamais.
+- **Barre de paliers** : chaque palier est `(uuid, value, big, image, commands)`
+  (`TrixiumRewardConfig`) ; atteint, il se récupère par un clic. **Les seuils et les récompenses
+  sont dans la configuration du serveur, pas dans le jar.**
+- **Classement** : joueurs et factions, avec le profil de chacun. Le blog précise que le
+  classement des factions est **pour information**, sans récompense.
+- **Saisons** : la V8 a duré 206 jours (7 juillet 2022 – 29 janvier 2023). Le top 60 était
+  récompensé par tranches : 1er, 2e, 3e, 4e, 5–10, 11–20, 21–30, 31–40, 41–60 (lots réels,
+  grades, Lucky Pass, cosmétiques).
+
+### En solo (choix du joueur)
+
+- **Une saison par mois réel**, du 1er à 5 h au 1er suivant à 5 h, heure du serveur (la bascule à
+  5 h est celle des contrats). La barre repart de zéro à chaque saison.
+- **59 joueurs fictifs** (`TrixiumRivals`) déposent au fil du mois, le soir, à des heures tirées
+  d'avance : tout se déduit du numéro de la saison, rien n'est sauvegardé. Leurs totaux de fin de
+  saison suivent **2 500 × rang^−0,62**, à 15 % près (chiffre de moi) : environ 2 500 pour la
+  1re place, 600 pour la 10e, 300 pour la 30e. Au rythme du minage (50 trixium par heure de
+  minage pur), le podium demande un mois tourné vers le trixium.
+- **Fin de saison** : à la connexion suivante, ou dans la minute pour un joueur présent, le rang
+  final donne sa prime. Les paliers atteints mais pas récupérés sont envoyés d'office (comme le
+  Palapass). Il faut avoir déposé au moins un trixium pour être classé.
+- **Factions** : les joueurs fictifs se répartissent entre huit factions fictives (celles des
+  events) ; ta faction y figure avec ton dépôt. Pour information, comme sur Paladium.
+
+| Palier | Récompense | | Rang | Prime |
+|---|---|---|---|---|
+| 25 | 20 000 $ | | 1er | 2 000 000 $ |
+| 50 | 40 000 $ | | 2e | 1 500 000 $ |
+| 100 | **Fabrique à nuage** | | 3e | 1 000 000 $ |
+| 200 | 120 000 $ | | 4e | 750 000 $ |
+| 300 | 180 000 $ | | 5e – 10e | 400 000 $ |
+| 500 | **Enderchest de poche** | | 11e – 20e | 200 000 $ |
+| 750 | 400 000 $ | | 21e – 30e | 100 000 $ |
+| 1 000 | 600 000 $ | | 31e – 40e | 60 000 $ |
+| 1 500 | **Pierre légendaire aléatoire** | | 41e – 60e | 30 000 $ |
+| 2 000 | 1 200 000 $ | | | |
+
+**Le garde-fou du prix.** Le trixium se vend 800 $ et s'achète 3 200 $ (chapitre économique).
+La barre rapporte 2,56 M$ pour 2 000 trixium, soit 1 280 $ l'unité, plus trois objets ; avec la
+prime de la 1re place, un mois à 2 500 trixium rend environ 1 800 $ l'unité. Déposer vaut donc
+mieux que vendre dès le deuxième palier, mais **acheter du trixium pour le déposer fait toujours
+perdre de l'argent**.
+
+### Les objets exclusifs
+
+- **Fabrique à nuage** (`ItemCloud`, `BlockCloud`, `TileEntityCloud`) : pose un nuage (tissu,
+  dureté 0, ne lâche rien) qui disparaît au bout de la durée choisie. **Maj + clic droit** change
+  la durée : 15 s, 30 s, 1 min, 5 min. La fabrique **n'est jamais consommée**. Désactivée quand on
+  porte l'œuf de l'Egg Hunt, comme l'original.
+  **Écart** : `TileEntityCloud` ne sauvegardait pas sa durée ; un nuage dont le chunk se
+  déchargeait revenait sans compte à rebours et restait pour de bon. Ici le reste est sauvegardé.
+- **Enderchest de poche** (`ItemPocketEnderchest`) : un clic droit ouvre l'ender chest, partout,
+  **sauf en combat**. Paladium lisait son plugin CombatTag ; ici, être en combat, c'est avoir
+  frappé ou été frappé par une créature dans les 10 dernières secondes.
+- **Selle humaine** (`ItemPlayerSaddle`) : ne sert qu'à monter sur un autre joueur. **Écartée**
+  (choix du joueur).
+- **Pinceau de peinture** (`ItemPaintingBrush`) : enregistré dans le jar sans texture ni usage.
+  Rien à porter.
+
+### Écran et commandes
+
+- **Écran** : dépôt (tout le trixium du sac d'un clic, au lieu de la fenêtre à un emplacement),
+  saison et prime actuelle, bilan de la saison précédente, les dix paliers, le top 10 des joueurs
+  (et ta ligne), les factions. Une carte du menu principal y mène, avec les paliers à récupérer.
+- `/trixium`, `/trixium deposer` ; pour les opérateurs, `/trixium admin avancer <jours>` (pour
+  essayer une fin de saison) et `/trixium admin horloge` (remise à l'heure).

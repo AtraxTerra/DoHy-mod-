@@ -23,6 +23,7 @@ import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import fr.atraxterra.dohy.palamod.reserve.PalaReserve;
 import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import fr.atraxterra.dohy.palamod.trixium.PalaTrixium;
 import fr.atraxterra.dohy.palamod.wither.PalaWithers;
 import net.neoforged.bus.api.IEventBus;
 
@@ -91,6 +92,7 @@ public final class PalaMod {
         PalaLegendary.register(modBus);
         PalaDungeon.register(modBus);
         PalaDungeonGear.register(modBus);
+        PalaTrixium.register(modBus);
         PalaItems.register(modBus);
         PalaTab.register(modBus);
     }

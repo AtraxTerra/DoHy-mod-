@@ -89,6 +89,11 @@ public final class FactionEvents {
         return run != null && run.id().equals(id) ? run : null;
     }
 
+    /** Ce joueur porte-t-il l'oeuf de l'Egg Hunt ? (Les objets exclusifs du Trixium s'y refusent.) */
+    public static boolean carriesEgg(net.minecraft.world.entity.player.Player player) {
+        return active() instanceof EggHuntRun hunt && hunt.carries(player.getUUID());
+    }
+
     /** Le combat de boss de ce nom s'il est en cours ; sinon {@code null}, et son boss s'efface. */
     public static BossFight fight(UUID id) {
         return run(id) instanceof BossFight fight ? fight : null;

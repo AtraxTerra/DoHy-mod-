@@ -76,6 +76,15 @@ public abstract class EventRun {
     public record Rival(String name, DyeColor color) {
     }
 
+    /** Toutes les factions fictives, dans l'ordre (le concours Trixium y puise aussi). */
+    public static List<Rival> rivalPool() {
+        List<Rival> pool = new ArrayList<>(NAMES.length);
+        for (int i = 0; i < NAMES.length; i++) {
+            pool.add(new Rival(NAMES[i], COLORS[i]));
+        }
+        return List.copyOf(pool);
+    }
+
     protected final UUID id = UUID.randomUUID();
     protected final FactionEventKind kind;
     protected final List<Rival> rivals = new ArrayList<>();
