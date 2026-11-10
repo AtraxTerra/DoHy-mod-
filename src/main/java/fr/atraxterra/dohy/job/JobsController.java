@@ -7,10 +7,13 @@ import fr.atraxterra.dohy.contract.ContractType;
 import fr.atraxterra.dohy.ui.Hub;
 import fr.atraxterra.dohy.ui.view.JobDetailView;
 import fr.atraxterra.dohy.ui.view.JobsView;
+import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -97,7 +100,7 @@ public final class JobsController {
                 lines.add("Objet pas encore ajoute par le mod");
             }
             unlocks.add(new JobDetailView.Row(icon(unlock.plainId(), acquired ? Items.PAPER : Items.BOOK),
-                    JobApi.name(unlock).getString(), acquired ? "Debloque" : "Verrouille", unlock.level(), state,
+                    MenuView.text(JobApi.name(unlock)), acquired ? "Debloque" : "Verrouille", unlock.level(), state,
                     lines));
         }
 
@@ -122,7 +125,7 @@ public final class JobsController {
             boolean acquired = level >= rewardLevel;
             ItemStack icon = ItemStack.EMPTY;
             List<String> lines = new ArrayList<>();
-            List<String> names = new ArrayList<>();
+            MutableComponent names = Component.empty();
             boolean anyMissing = false;
             for (JobConfig.Reward reward : list) {
                 boolean real = JobConfig.exists(reward.id());
@@ -130,13 +133,16 @@ public final class JobsController {
                 if (real && icon.isEmpty()) {
                     icon = icon(reward.id(), Items.CHEST);
                 }
-                String name = reward.count() + "x " + JobApi.name(reward).getString();
-                names.add(name);
-                lines.add(name + (reward.enchantments().isEmpty() ? "" : " (enchante)")
-                        + (real ? "" : " — pas encore ajoute"));
+                Component name = Component.literal(reward.count() + "x ").append(JobApi.name(reward));
+                if (!names.getSiblings().isEmpty()) {
+                    names.append(", ");
+                }
+                names.append(name);
+                lines.add(MenuView.text(name.copy().append((reward.enchantments().isEmpty() ? "" : " (enchante)")
+                        + (real ? "" : " — pas encore ajoute"))));
             }
             rewards.add(new JobDetailView.Row(icon.isEmpty() ? new ItemStack(Items.CHEST) : icon,
-                    String.join(", ", names), acquired ? "Recu" : "Au niveau " + rewardLevel, rewardLevel,
+                    MenuView.text(names), acquired ? "Recu" : "Au niveau " + rewardLevel, rewardLevel,
                     acquired ? JobDetailView.ACQUIRED : anyMissing ? JobDetailView.MISSING : JobDetailView.LOCKED,
                     lines));
         });

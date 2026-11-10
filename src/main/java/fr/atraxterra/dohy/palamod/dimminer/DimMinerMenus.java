@@ -97,7 +97,7 @@ public final class DimMinerMenus {
                 return new MenuView(id(), "Session finie", "", List.of(), List.of(), false);
             }
             List<String> ores = new ArrayList<>();
-            stats.ores().forEach((block, count) -> ores.add(block.getName().getString() + " x" + count));
+            stats.ores().forEach((block, count) -> ores.add(MenuView.text(block.getName().copy().append(" x" + count))));
             int level = JobApi.level(player, Job.MINER);
             List<Card> cards = List.of(
                     Card.of(new ItemStack(Items.STONE), "Blocs mines", List.of(MoneyFormat.exact(stats.blocks()),

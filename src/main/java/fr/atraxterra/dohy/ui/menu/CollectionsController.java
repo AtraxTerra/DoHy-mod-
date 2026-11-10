@@ -127,7 +127,7 @@ public final class CollectionsController extends MenuController {
                 tooltip.add("Prestige " + prestige);
             }
             boolean canPrestige = CollectionApi.canPrestige(player, id, entry);
-            Card card = Card.of(new ItemStack(item), new ItemStack(item).getHoverName().getString(), lines)
+            Card card = Card.of(new ItemStack(item), MenuView.text(new ItemStack(item).getHoverName()), lines)
                     .tooltip(tooltip)
                     .badge(prestige > 0 ? "P" + prestige : tier >= 0 ? String.valueOf(tier + 1) : "");
             if (next > 0) {

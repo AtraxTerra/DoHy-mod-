@@ -61,6 +61,24 @@ public final class GolemMenus {
         return false;
     }
 
+    /** Une description en deux lignes au plus, coupee aux espaces. */
+    static List<String> wrap(String text, int width) {
+        List<String> lines = new ArrayList<>();
+        StringBuilder line = new StringBuilder();
+        for (String word : text.split(" ")) {
+            if (line.length() > 0 && line.length() + 1 + word.length() > width && lines.isEmpty()) {
+                lines.add(line.toString());
+                line.setLength(0);
+            }
+            if (line.length() > 0) {
+                line.append(' ');
+            }
+            line.append(word);
+        }
+        lines.add(line.toString());
+        return lines;
+    }
+
     /** Les controleurs du golem verifient tous que le golem est la et a portee. */
     private abstract static class GolemScreen extends MenuController {
         GolemScreen(String path) {
@@ -116,7 +134,7 @@ public final class GolemMenus {
             }
             List<Card> cards = new ArrayList<>();
             cards.add(sheet);
-            cards.add(Card.of(new ItemStack(Items.BOOK), "Arbre de competences", List.of(
+            cards.add(Card.of(new ItemStack(Items.BOOK), "Competences", List.of(
                     golem.points() + " point(s) de capacite", "Un point par niveau")).accent(0xFF2F5BEA)
                     .badge(golem.points() > 0 ? String.valueOf(golem.points()) : "").action("tree|ouvrir"));
             boolean choices = choicesAvailable(golem);
@@ -309,8 +327,10 @@ public final class GolemMenus {
                     List<Card> cards = new ArrayList<>();
                     for (int option = 1; option <= choice.options(); option++) {
                         boolean active = golem.choice(choice) == option;
-                        Card card = Card.of(new ItemStack(active ? Items.EMERALD : Items.FLINT), choice.option(option),
-                                List.of(active ? "Choisi" : "Clic pour choisir", choice.label()));
+                        Card card = Card.of(new ItemStack(active ? Items.EMERALD : Items.FLINT),
+                                        active ? "Option " + option + " · choisie" : "Option " + option,
+                                        wrap(choice.option(option), 34))
+                                .tooltip(List.of(choice.option(option), active ? "Choisi" : "Clic : choisir"));
                         cards.add(active ? card.state(MenuView.DONE)
                                 : card.accent(0xFF2F5BEA).action("choice:" + choice.name() + ":" + option + "|choisir"));
                     }

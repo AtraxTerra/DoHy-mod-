@@ -1,6 +1,9 @@
 package fr.atraxterra.dohy.ui.view;
 
+import com.mojang.serialization.JsonOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
@@ -8,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * Un ecran de menu generique : un titre, des chiffres en haut a droite, et des
@@ -38,6 +42,47 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
     public static final int DONE = 2;
 
     /** Un chiffre du cartouche : « LIQUIDE 3.3K ». */
+    /** Marque un texte a traduire par le client : le reste est le composant en JSON. */
+    public static final char TRANSLATED = '\u0001';
+
+    /**
+     * Un texte que le client traduit dans sa langue (nom d'objet, enchantement,
+     * cle de traduction). Un serveur dedie ne connait que l'anglais : traduit
+     * chez lui, le nom arriverait en anglais a un joueur francais.
+     */
+    public static String text(Component component) {
+        return ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, component).result()
+                .map(json -> TRANSLATED + json.toString())
+                .orElseGet(component::getString);
+    }
+
+    /** La meme vue, chaque texte affiche passe par {@code text}. */
+    public MenuView map(UnaryOperator<String> text) {
+        List<Stat> mappedStats = new ArrayList<>();
+        for (Stat stat : stats) {
+            mappedStats.add(new Stat(text.apply(stat.label()), text.apply(stat.value()), stat.color()));
+        }
+        List<Section> mappedSections = new ArrayList<>();
+        for (Section section : sections) {
+            List<Card> cards = new ArrayList<>();
+            for (Card card : section.cards()) {
+                cards.add(new Card(card.icon(), text.apply(card.title()), mapAll(card.lines(), text),
+                        text.apply(card.badge()), card.accent(), card.state(), card.action(), card.rightAction(),
+                        card.progress(), mapAll(card.tooltip(), text)));
+            }
+            mappedSections.add(new Section(text.apply(section.title()), section.icon(), section.layout(), cards));
+        }
+        return new MenuView(view, text.apply(title), text.apply(subtitle), mappedStats, mappedSections, back);
+    }
+
+    private static List<String> mapAll(List<String> values, UnaryOperator<String> text) {
+        List<String> mapped = new ArrayList<>(values.size());
+        for (String value : values) {
+            mapped.add(text.apply(value));
+        }
+        return mapped;
+    }
+
     /** La couleur d'un code de formatage, opaque ; gris pour un style sans couleur. */
     public static int color(net.minecraft.ChatFormatting format) {
         int rgb = switch (format) {
