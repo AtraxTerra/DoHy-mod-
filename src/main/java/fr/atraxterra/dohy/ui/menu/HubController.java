@@ -132,7 +132,7 @@ public final class HubController extends MenuController {
                 UiNet.forget(player);
                 player.openMenu(new SimpleMenuProvider(
                         (containerId, inventory, viewer) -> new SellChestMenu(containerId, inventory, player),
-                        Component.literal("Coffre de vente — ferme pour vendre")));
+                        Component.literal("Coffre de vente")));
             }
             case "boutique" -> BoutiqueController.INSTANCE.open(player);
             case "bank" -> BankController.INSTANCE.open(player);

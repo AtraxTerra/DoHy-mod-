@@ -58,7 +58,7 @@ public final class SellCommand {
         }
         player.openMenu(new SimpleMenuProvider(
                 (containerId, inventory, viewer) -> new SellChestMenu(containerId, inventory, player),
-                Component.literal("Vente — ferme pour encaisser")));
+                Component.literal("Coffre de vente")));
         return 1;
     }
 

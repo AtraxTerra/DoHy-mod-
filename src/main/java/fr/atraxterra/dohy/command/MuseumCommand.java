@@ -50,7 +50,7 @@ public final class MuseumCommand {
         ServerPlayer player = source.getPlayerOrException();
         player.openMenu(new SimpleMenuProvider(
                 (containerId, inventory, viewer) -> new MuseumMenu(containerId, inventory, player),
-                Component.literal("Musee — depose, ferme pour exposer")));
+                Component.literal("Guichet du musee")));
         return 1;
     }
 
