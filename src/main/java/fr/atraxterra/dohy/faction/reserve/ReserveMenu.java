@@ -120,10 +120,10 @@ public final class ReserveMenu extends MenuController {
         int chosen = chosen(player);
         for (int i = 0; i < AMOUNTS.length; i++) {
             long amount = AMOUNTS[i];
-            String title = amount == 0 ? "Le plus possible" : MoneyFormat.exact(amount) + " $";
+            String title = amount == 0 ? "Maximum" : MoneyFormat.exact(amount) + " $";
             amounts.add(Card.of(new ItemStack(amount == 0 ? Items.GOLD_BLOCK : amount >= 10_000_000L
                             ? Items.GOLD_INGOT : Items.GOLD_NUGGET), title, List.of(amount == 0
-                            ? "Place et banque permettant" : "Depuis la banque de faction",
+                            ? "Selon la place et la banque" : "Depuis la banque de faction",
                             "Banque : " + MoneyFormat.shortForm(data.bank()) + " $"))
                     .accent(i == chosen ? 0xFF22E558 : 0xFF55545C).badge(i == chosen ? "CHOISI" : "")
                     .action("amount:" + i + "|choisir"));
@@ -136,7 +136,7 @@ public final class ReserveMenu extends MenuController {
             Card card = Card.of(new ItemStack(Items.CLOCK), "Placer " + term.label(), List.of(
                             "+" + permille / 10 + (permille % 10 == 0 ? "" : "," + permille % 10) + " % a l'echeance",
                             multiplier > 1 ? "Interets x" + multiplier : "Plus c'est long, plus ca rapporte"))
-                    .tooltip(List.of("Montant choisi : " + (AMOUNTS[chosen] == 0 ? "le plus possible"
+                    .tooltip(List.of("Montant choisi : " + (AMOUNTS[chosen] == 0 ? "le maximum"
                                     : MoneyFormat.exact(AMOUNTS[chosen]) + " $"),
                             "Retrait avant l'echeance : la mise moins " + GoldReserves.PENALTY_PERCENT + " %."));
             terms.add(reserve.exists() ? card.accent(0xFFFAC400).action("invest:" + term.name() + "|placer")
