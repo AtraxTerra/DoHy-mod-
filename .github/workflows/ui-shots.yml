@@ -48,7 +48,7 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE: "1"
         run: |
           mkdir -p run
-          printf 'onboardAccessibility:false\nnarrator:0\ntutorialStep:none\njoinedFirstServer:true\nsoundCategory_master:0.0\nguiScale:0\nfullscreen:false\nrenderDistance:3\nsimulationDistance:5\n' > run/options.txt
+          printf 'lang:fr_fr\nonboardAccessibility:false\nnarrator:0\ntutorialStep:none\njoinedFirstServer:true\nsoundCategory_master:0.0\nguiScale:0\nfullscreen:false\nrenderDistance:3\nsimulationDistance:5\n' > run/options.txt
           ( timeout 1500 xvfb-run -a -s "-screen 0 1920x1080x24" gradle runClient --no-daemon > /tmp/client.log 2>&1; echo "fin du client : $?" >> /tmp/client.log ) || true
           grep -nE "dohy-shots|ERROR|Exception|Caused by|OpenGL|GL_|Vulkan|fin du client|BUILD" /tmp/client.log | grep -v DEBUG | head -200
           ls -la run/screenshots || true

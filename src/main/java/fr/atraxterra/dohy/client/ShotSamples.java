@@ -140,5 +140,9 @@ final class ShotSamples {
             player.giveExperienceLevels(40);
             MysticEnchantMenu.INSTANCE.open(player);
         }));
+        ShotHarness.SHOTS.add(server("34_collection_farm", player -> {
+            fr.atraxterra.dohy.ui.menu.CollectionsController.INSTANCE.open(player);
+            click(fr.atraxterra.dohy.ui.menu.CollectionsController.INSTANCE, player, "category:FARM", 0);
+        }));
     }
 }
