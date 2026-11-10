@@ -122,10 +122,10 @@ public enum TntKind {
                 tnt.getZ(), power, false, Level.ExplosionInteraction.TNT);
     }
 
-    /** Un joueur peut-il changer ce bloc : hors claim, ou dans le sien. */
+    /** Un joueur peut-il changer ce bloc : hors claim, dans le sien, ou dans une base ennemie a piller. */
     static boolean mayAlter(ServerLevel level, BlockPos pos, LivingEntity cause) {
         ClaimOwner owner = FactionApi.claimAt(level, pos);
-        return !owner.claimed() || cause instanceof Player player && owner.ownedBy(player.getUUID());
+        return !owner.claimed() || owner.raidable() || cause instanceof Player player && owner.ownedBy(player.getUUID());
     }
 
     /** Les obsidiennes les plus proches cedent, dix au plus. */

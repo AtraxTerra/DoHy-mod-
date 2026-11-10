@@ -1,9 +1,12 @@
 package fr.atraxterra.dohy.faction;
 
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.faction.base.EnemyBase;
+import fr.atraxterra.dohy.faction.base.EnemyBaseMenu;
+import fr.atraxterra.dohy.faction.base.EnemyBases;
 import fr.atraxterra.dohy.ui.menu.MenuController;
-import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
+import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
@@ -166,6 +169,7 @@ public final class FactionMenus {
             List<Card> progression = List.of(
                     treeCard(player, data),
                     home,
+                    enemyBaseCard(player),
                     Card.of(new ItemStack(Items.DRAGON_EGG), "Events de faction", List.of(
                             "Egg Hunt, End, KOTH, Boss, Totem", "Lot 22f")).state(MenuView.DISABLED),
                     Card.of(new ItemStack(Items.COMPARATOR), "Parametres", List.of("Nom, description, MOTD",
@@ -187,6 +191,7 @@ public final class FactionMenus {
                 case "ranking" -> Ranking.INSTANCE.open(player);
                 case "settings" -> Settings.INSTANCE.open(player);
                 case "tree" -> FactionTreeMenus.Tree.INSTANCE.open(player);
+                case "bases" -> EnemyBaseMenu.INSTANCE.open(player);
                 case "home" -> {
                     String refusal = FactionHomes.go(player, 0);
                     if (refusal != null) {
@@ -200,6 +205,17 @@ public final class FactionMenus {
                 }
             }
         }
+    }
+
+    /** Les bases ennemies a piller (lot 22g) : la cible en cours, ou l'invitation a en reperer une. */
+    private static Card enemyBaseCard(ServerPlayer player) {
+        EnemyBase base = EnemyBases.of(player);
+        List<String> lines = base.active()
+                ? List.of("Cible : les " + base.name(), EnemyBases.where(player, base))
+                : EnemyBases.pending(player) ? List.of("Reperage en cours", "Patience...")
+                : List.of("Une faction a piller,", "a plus de 9 000 blocs");
+        return Card.of(new ItemStack(Items.TNT), "Bases ennemies", lines).accent(0xFFEF3826)
+                .badge(base.active() ? "!" : "").action("bases|ouvrir");
     }
 
     private static Card treeCard(ServerPlayer player, FactionData data) {
