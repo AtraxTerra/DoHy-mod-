@@ -18,7 +18,7 @@ PvE**. Choix du joueur :
 | 22c | Objets de défense : obsidiennes à effet, spikes obsi, Fake Water, éponges, brouilleur, enclumes, amulettes… | fait |
 | 22d | Objets de pillage : dynamites, TNT spéciales, Unclaim Finder, explorateur de coffre, arc en paladium, flèche de Switch… | fait |
 | 22d-bis | Withers du pillage : réceptacle, gemmes de wither, améliorations | fait |
-| 22e | Réserve d'or : multibloc, investissements à intérêts | à faire |
+| 22e | Réserve d'or : multibloc, investissements à intérêts | fait |
 | 22f | Events à heures fixes (Egg Hunt, End, KOTH, Boss, Totem) et raids sur demande | à faire |
 | 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller | fait |
 
@@ -67,7 +67,7 @@ jeu » ; « visiter N factions » → « visiter N structures » (villages, temp
 « tuer N joueurs différents » → « tuer N espèces différentes ». Les compteurs viennent des
 statistiques du jeu (blocs parcourus, temps de jeu, blocs cassés, objets fabriqués) ou des compteurs
 de faction (`FactionStats` : stick of god, outil de construction, et ceux des lots suivants). Un
-objet pas encore porté affiche son lot (22e) et ne progresse pas.
+objet pas encore porté affiche son lot et ne progresse pas.
 
 **Récompenses** : les « emplacements de membre » de la branche Globale deviennent deux claims
 chacun ; la Défense ajoute ses claims (10 à 200 par palier) ; F homes (1, 2 puis 3) et leur délai
@@ -275,3 +275,47 @@ Les gardes sont surtout des illageois (pillards, vindicateurs, sorcières, ravag
 brûlent pas au soleil. Ils sont persistants. Les coffres tirent leur butin des tables
 `palamod:chests/enemy_*` à l'ouverture ou à l'explosion : minerais et explosifs à l'avant-poste, paladium
 et TNT en endium à la base, endium, gemmes de wither et pierre légendaire à la forteresse.
+
+## Réserve d'or (22e)
+
+D'après le wiki (« Investissement Réserve d'or ») : la banque de faction place son argent dans une
+réserve bâtie dans tes claims, et récolte des intérêts.
+
+- **Trois blocs** :
+  - **coffre-fort de faction** : 5 titanes compressés et 4 obsidiennes renforcées. L'obsidienne
+    infusée (diamant) du wiki n'existe pas ici ;
+  - **vitre de coffre-fort** : 8 vitres et 1 findium ;
+  - **or liquide** : 8 quartz électrifiés et 1 pépite d'endium.
+
+  Les trois résistent à toutes les explosions : seul un wither en vient à bout.
+- **Le cube** :
+  - 5, 6 ou 7 de côté (paliers 1, 2 et 3, débloqués par la branche Économie de l'arbre) ;
+  - arêtes, dessus et dessous en coffres-forts, centre des quatre flancs en vitres, cœur en or
+    liquide (ou vide) ;
+  - le tout dans tes claims.
+
+  | Palier | Cube | Coffres-forts | Vitres | Or liquide au plus |
+  |--------|------|---------------|--------|--------------------|
+  | 1 | 5 × 5 × 5 | 62 | 36 | 27 |
+  | 2 | 6 × 6 × 6 | 88 | 64 | 64 |
+  | 3 | 7 × 7 × 7 | 118 | 100 | 125 |
+
+  Le palier 2 suit la même règle que les deux autres. Les chiffres du wiki pour lui (66, 48, 36) ne
+  tombent pas juste sur un cube de 6.
+- **Ouvrir** : clic droit mains nues sur un coffre-fort reconnaît le cube et ouvre l'onglet **Réserve
+  d'or** (aussi sur la page de faction et par `/f reserve`). Un bloc en main, le coffre-fort se laisse
+  bâtir contre. Le palier construit alimente le compteur `reserve:tier` de l'arbre.
+- **Placer** :
+  - chaque or liquide du cœur permet de placer 400 000 $, et jusqu'à 800 000 $ avec l'arbre ;
+  - on choisit un montant (100 000, 1 M, 10 M ou le plus possible), puis une durée réelle :
+    1 jour à +1 %, 3 jours à +4 %, 7 jours à +10 %, 14 jours à +25 % ;
+  - le multiplicateur d'intérêts de l'arbre s'applique (×2, ×3) ;
+  - l'argent sort de la banque de faction. Six placements au plus, 10 000 $ au moins ;
+  - chaque placement alimente `reserve:invests`.
+- **Récolter** : à l'échéance, la mise et les intérêts reviennent à la banque. Avant l'échéance, on
+  peut retirer sa mise, moins 5 %, en deux clics.
+- **Le risque** :
+  - tant que de l'argent est placé, la réserve ne se démonte pas à la main ;
+  - si un wither en casse un bloc, tout l'argent placé est perdu ;
+  - un relevé par minute repère aussi une réserve abîmée.
+

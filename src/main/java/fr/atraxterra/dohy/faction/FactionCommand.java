@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.faction.base.EnemyBase;
 import fr.atraxterra.dohy.faction.base.EnemyBaseTier;
 import fr.atraxterra.dohy.faction.base.EnemyBases;
+import fr.atraxterra.dohy.faction.reserve.ReserveMenu;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -142,6 +143,11 @@ public final class FactionCommand {
                                                             IntegerArgumentType.getInteger(ctx, "palier"));
                                                     return result(player, null, "Palier fixe.");
                                                 }))))))
+                .then(Commands.literal("reserve")
+                        .executes(ctx -> as(ctx.getSource(), player -> {
+                            ReserveMenu.INSTANCE.open(player);
+                            return 1;
+                        })))
                 .then(Commands.literal("base")
                         .executes(ctx -> as(ctx.getSource(), FactionCommand::enemyBase))
                         .then(Commands.literal("generer")

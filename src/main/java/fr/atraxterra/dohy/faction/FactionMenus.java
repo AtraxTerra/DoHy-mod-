@@ -4,6 +4,9 @@ import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.faction.base.EnemyBase;
 import fr.atraxterra.dohy.faction.base.EnemyBaseMenu;
 import fr.atraxterra.dohy.faction.base.EnemyBases;
+import fr.atraxterra.dohy.faction.reserve.GoldReserve;
+import fr.atraxterra.dohy.faction.reserve.GoldReserves;
+import fr.atraxterra.dohy.faction.reserve.ReserveMenu;
 import fr.atraxterra.dohy.ui.menu.MenuController;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.ui.view.MenuView;
@@ -170,6 +173,7 @@ public final class FactionMenus {
                     treeCard(player, data),
                     home,
                     enemyBaseCard(player),
+                    reserveCard(player),
                     Card.of(new ItemStack(Items.DRAGON_EGG), "Events de faction", List.of(
                             "Egg Hunt, End, KOTH, Boss, Totem", "Lot 22f")).state(MenuView.DISABLED),
                     Card.of(new ItemStack(Items.COMPARATOR), "Parametres", List.of("Nom, description, MOTD",
@@ -192,6 +196,7 @@ public final class FactionMenus {
                 case "settings" -> Settings.INSTANCE.open(player);
                 case "tree" -> FactionTreeMenus.Tree.INSTANCE.open(player);
                 case "bases" -> EnemyBaseMenu.INSTANCE.open(player);
+                case "reserve" -> ReserveMenu.INSTANCE.open(player);
                 case "home" -> {
                     String refusal = FactionHomes.go(player, 0);
                     if (refusal != null) {
@@ -205,6 +210,19 @@ public final class FactionMenus {
                 }
             }
         }
+    }
+
+    /** La reserve d'or (lot 22e) : ce qui est place, ou comment en batir une. */
+    private static Card reserveCard(ServerPlayer player) {
+        GoldReserve reserve = GoldReserves.of(player);
+        long now = System.currentTimeMillis();
+        boolean ripe = reserve.investments().stream().anyMatch(investment -> investment.ripe(now));
+        List<String> lines = reserve.exists()
+                ? List.of("Palier " + reserve.tier() + " · " + reserve.investments().size() + " placement(s)",
+                        MoneyFormat.shortForm(reserve.invested()) + " $ places")
+                : List.of("Places l'argent de la banque,", "recolte les interets");
+        return Card.of(new ItemStack(Items.GOLD_BLOCK), "Reserve d'or", lines).accent(0xFFFAC400)
+                .badge(ripe ? "PRET" : "").action("reserve|ouvrir");
     }
 
     /** Les bases ennemies a piller (lot 22g) : la cible en cours, ou l'invitation a en reperer une. */

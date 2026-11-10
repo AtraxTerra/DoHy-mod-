@@ -173,6 +173,7 @@ MODEL_TEXTURES = {
     "block/compressed_sponge.png": (32, 32),
     # Le quartz electrifie : 20 images de 16 x 16, animees par son .mcmeta.
     "block/empowered_quartz.png": (16, 320),
+    "block/liquid_gold.png": (16, 320),
 }
 
 

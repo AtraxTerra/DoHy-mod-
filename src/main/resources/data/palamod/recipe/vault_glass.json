@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GGG",
+    "GFG",
+    "GGG"
+  ],
+  "key": {
+    "G": "minecraft:glass",
+    "F": "palamod:findium"
+  },
+  "result": {
+    "id": "palamod:vault_glass",
+    "count": 1
+  }
+}

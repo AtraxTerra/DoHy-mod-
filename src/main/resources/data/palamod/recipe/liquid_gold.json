@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "QQQ",
+    "QNQ",
+    "QQQ"
+  ],
+  "key": {
+    "Q": "palamod:empowered_quartz",
+    "N": "palamod:endium_nugget"
+  },
+  "result": {
+    "id": "palamod:liquid_gold",
+    "count": 1
+  }
+}
