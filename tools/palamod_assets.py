@@ -4129,6 +4129,286 @@ def main():
     shaped("switch_arrow", [" A ", "APA", " A "], {"A": "minecraft:arrow", "P": "minecraft:ender_pearl"},
            "%s:switch_arrow" % NS, 4)
 
+    # ---- withers du pillage (chapitre 22, lot 22d-bis) ----
+    #
+    # Le module PalaWither n'est pas dans les jars : ses recettes sont dans
+    # PPalaWither.init, ses textures manquent sauf la gemme amusante, la tete
+    # passive, la selle, la canne, la fleche de mi-vie et la poudre. Les autres
+    # gemmes sont la gemme amusante teintee ; les peaux des withers et les
+    # tetes sont redessinees d'apres le wiki (tools/wither_skins.py) ; les
+    # ameliorations le
+    # modificateur « more upgrade » teinte ; le laser reprend la boussole en
+    # paladium du chasseur ; le receptacle est compose (obsidienne, crane de
+    # wither, bandes de quartz electrifie).
+    from PIL import Image as _Image, ImageEnhance as _Enhance
+
+    def jar_image(relative):
+        for base in (root[0], root[1]):
+            if base:
+                candidate = os.path.join(base, "assets", NS, "textures", relative)
+                if os.path.exists(candidate):
+                    return _Image.open(candidate).convert("RGBA")
+        missing.append(relative)
+        return None
+
+    def save_texture(image, destination):
+        full = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        image.save(full)
+
+    # Les gemmes : la gemme amusante, teintee aux couleurs du wither qu'elle invoque.
+    WITHER_GEMS = (("wither_gem", (150, 150, 170), "Gemme de wither", "Wither Gem"),
+                   ("baby_wither_gem", (120, 200, 240), "Gemme de baby wither", "Baby Wither Gem"),
+                   ("passive_wither_gem", (150, 210, 110), "Gemme de wither passif", "Passive Wither Gem"),
+                   ("thirsty_wither_gem", (225, 195, 140), "Gemme de wither assoiffe", "Thirsty Wither Gem"),
+                   ("predator_wither_gem", (255, 120, 50), "Gemme de wither predateur", "Predator Wither Gem"),
+                   ("supreme_wither_gem", (200, 120, 255), "Gemme de wither supreme", "Supreme Wither Gem"))
+    tex("items/wither/funny_wither_gem.png", "item/funny_wither_gem.png")
+    flat_item("funny_wither_gem", "%s:item/funny_wither_gem" % NS)
+    label("item", "funny_wither_gem", "Gemme de wither amusant", "Funny Wither Gem")
+    for name, rgb, label_fr, label_en in WITHER_GEMS:
+        tinted("items/wither/funny_wither_gem.png", "item/%s.png" % name, rgb)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+
+    # Les peaux des withers, d'apres les rendus du wiki (tools/wither_skins.py) :
+    # peau, yeux lumineux, peau de charge, et l'icone de la tete a crafter.
+    vanilla_wither = os.path.join(root[0] or "", "assets", "minecraft", "textures", "entity", "wither")
+    if os.path.exists(os.path.join(vanilla_wither, "wither.png")):
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import wither_skins
+        wither_skins.generate(os.path.join(vanilla_wither, "wither.png"),
+                              os.path.join(vanilla_wither, "wither_invulnerable.png"),
+                              os.path.join(RES, "assets", NS, "textures", "entity", "wither"),
+                              os.path.join(RES, "assets", NS, "textures", "item"))
+    else:
+        missing.append("peaux des withers (entity/wither/wither.png du pack)")
+    for name, label_fr, label_en in (
+            ("passive_wither_head", "Tete de wither passif", "Passive Wither Head"),
+            ("thirsty_wither_head", "Tete de wither assoiffe", "Thirsty Wither Head"),
+            ("predator_wither_head", "Tete de wither predateur", "Predator Wither Head"),
+            ("supreme_wither_head", "Tete de wither supreme", "Supreme Wither Head")):
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+
+    for name, rgb, label_fr, label_en in (
+            ("stealth_upgrade", (140, 120, 170), "Amelioration de discretion", "Stealth Upgrade"),
+            ("wither_resistance_upgrade", (200, 200, 210), "Amelioration de resistance de wither",
+             "Wither Resistance Upgrade"),
+            ("wither_slime_upgrade", (120, 220, 110), "Amelioration visqueuse de wither", "Wither Slime Upgrade")):
+        tinted("items/modifier/moreupgrade.png", "item/%s.png" % name, rgb)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+
+    compass = jar_image("items/compass_paladium.png")
+    if compass is not None:
+        save_texture(compass.crop((0, 0, 16, 16)), "item/wither_target_laser.png")
+    flat_item("wither_target_laser", "%s:item/wither_target_laser" % NS)
+    label("item", "wither_target_laser", "Laser de ciblage", "Target Laser")
+    for name, texture, label_fr, label_en in (
+            ("wither_saddle", "items/pillage/effects/wither_saddle.png", "Selle de wither", "Wither Saddle"),
+            ("mid_life_arrow", "items/pillage/effects/mid_life_arrow.png", "Fleche de mi-vie", "Mid-Life Arrow"),
+            ("wither_dust", "items/wither_dust.png", "Poudre de wither", "Wither Dust")):
+        tex(texture, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    tex("items/pillage/effects/wither_fishingrod.png", "item/wither_fishing_rod.png")
+    write("assets/%s/models/item/wither_fishing_rod.json" % NS,
+          {"parent": "minecraft:item/handheld_rod", "textures": {"layer0": "%s:item/wither_fishing_rod" % NS}})
+    write("assets/%s/items/wither_fishing_rod.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:item/wither_fishing_rod" % NS}})
+    label("item", "wither_fishing_rod", "Canne a peche de wither", "Wither Fishing Rod")
+    tag("minecraft/tags/item/arrows.json", ["%s:mid_life_arrow" % NS])
+
+    # Le quartz compresse (premier palier) et le quartz electrifie, anime.
+    tex("blocks/pillage/home_finder/compressed_quartz_0.png", "block/compressed_quartz.png")
+    simple_block("compressed_quartz", "Quartz compresse", "Compressed Quartz",
+                 {"all": "%s:block/compressed_quartz" % NS})
+    empowered = jar_image("blocks/pillage/home_finder/empowered_quartz.png")
+    if empowered is not None:
+        save_texture(empowered, "block/empowered_quartz.png")
+        write("assets/%s/textures/block/empowered_quartz.png.mcmeta" % NS,
+              {"animation": {"frametime": 2}})
+    simple_block("empowered_quartz", "Quartz electrifie", "Empowered Quartz",
+                 {"all": "%s:block/empowered_quartz" % NS})
+    for name in ("compressed_quartz", "empowered_quartz", "wither_receptacle"):
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+        tag("minecraft/tags/block/needs_stone_tool.json", ["%s:%s" % (NS, name)])
+
+    # Le receptacle : un autel qui suit sa recette (planches en bas, quartz
+    # electrifie autour, crane de wither au milieu). Socle de planches de chene
+    # noir, dalle d'obsidienne, quatre piliers de quartz electrifie coiffes de
+    # quartz compresse, et le crane pose sur un coussinet de quartz, les yeux
+    # allumes, tourne vers qui l'a pose (FACING).
+    skull_png = os.path.join(root[0] or "", "assets", "minecraft", "textures", "entity", "skeleton",
+                             "wither_skeleton.png")
+    if os.path.exists(skull_png):
+        head = _Image.open(skull_png).convert("RGBA")
+        skull = _Image.new("RGBA", (16, 16))
+        for box, at in (((8, 8, 16, 16), (0, 0)), ((0, 8, 8, 16), (8, 0)), ((8, 0, 16, 8), (0, 8)),
+                        ((24, 8, 32, 16), (8, 8))):
+            skull.paste(_Enhance.Brightness(head.crop(box)).enhance(1.7), at)
+        for x, y in ((1, 4), (2, 4), (5, 4), (6, 4)):
+            skull.putpixel((x, y), (214, 140, 255, 255))
+        for x in range(2, 6):
+            skull.putpixel((x, 6), (120, 60, 170, 255))
+        save_texture(skull, "block/wither_receptacle_skull.png")
+    else:
+        missing.append("crane du receptacle (entity/skeleton/wither_skeleton.png)")
+
+    def element(origin, to, texture, uvs=None, cull=()):
+        faces = {}
+        for face in ("north", "south", "east", "west", "up", "down"):
+            entry = {"texture": texture}
+            if uvs and face in uvs:
+                entry["uv"] = uvs[face]
+            if face in cull:
+                entry["cullface"] = face
+            faces[face] = entry
+        return {"from": origin, "to": to, "faces": faces}
+
+    receptacle = [element([0, 0, 0], [16, 2, 16], "#planks", cull=("north", "south", "east", "west", "down")),
+                  element([1, 2, 1], [15, 4, 15], "#obsidian"),
+                  element([5, 4, 5], [11, 5, 11], "#quartz")]
+    for x, z in ((1.5, 1.5), (12.5, 1.5), (1.5, 12.5), (12.5, 12.5)):
+        receptacle.append(element([x, 4, z], [x + 2, 14, z + 2], "#power"))
+        receptacle.append(element([x - 0.5, 14, z - 0.5], [x + 2.5, 16, z + 2.5], "#quartz",
+                                  cull=("up",)))
+    receptacle.append(element([4, 5, 4], [12, 13, 12], "#skull", {
+        "north": [0, 0, 8, 8], "east": [8, 0, 16, 8], "west": [8, 0, 16, 8], "south": [8, 8, 16, 16],
+        "up": [0, 8, 8, 16], "down": [0, 8, 8, 16]}))
+    write("assets/%s/models/block/wither_receptacle.json" % NS, {
+        "parent": "minecraft:block/block",
+        "textures": {"particle": "minecraft:block/obsidian", "planks": "minecraft:block/dark_oak_planks",
+                     "obsidian": "minecraft:block/obsidian", "quartz": "%s:block/compressed_quartz" % NS,
+                     "power": "%s:block/empowered_quartz" % NS, "skull": "%s:block/wither_receptacle_skull" % NS},
+        "elements": receptacle})
+    write("assets/%s/blockstates/wither_receptacle.json" % NS, {"variants": {
+        "facing=%s" % facing: dict({"model": "%s:block/wither_receptacle" % NS}, **rotation)
+        for facing, rotation in FACING_ROTATIONS if facing not in ("up", "down")}})
+    block_item("wither_receptacle")
+    drops_itself("wither_receptacle")
+    label("block", "wither_receptacle", "Receptacle a wither", "Wither Receptacle")
+
+    # La peau du wither amusant : 64 x 32 en 1.7.10, le modele de 26.2 en lit 64 x 64.
+    funny = jar_image("entity/wither/funny_wither.png")
+    if funny is not None:
+        padded = _Image.new("RGBA", (64, 64))
+        padded.paste(funny, (0, 0))
+        save_texture(padded, "entity/wither/funny_wither.png")
+
+    # Ses sons : l'invocation, la naissance, le cri.
+    for source, event in (("loop", "funny_wither.loop"), ("spawn", "funny_wither.spawn"),
+                          ("invoke", "funny_wither.invoke")):
+        origin = os.path.join(root[1] or "", "assets", NS, "sounds", "entities", "funny_wither", source + ".ogg")
+        if os.path.exists(origin):
+            destination = os.path.join(RES, "assets", NS, "sounds", "funny_wither", source + ".ogg")
+            os.makedirs(os.path.dirname(destination), exist_ok=True)
+            shutil.copyfile(origin, destination)
+        else:
+            missing.append("sounds/entities/funny_wither/%s.ogg" % source)
+        sounds[event] = {"sounds": ["%s:funny_wither/%s" % (NS, source)]}
+    write("assets/%s/sounds.json" % NS, sounds)
+
+    tag("%s/tags/block/wither_slime_blocks.json" % NS,
+        ["minecraft:slime_block", "%s:slimepad" % NS, "%s:slime_obsidian" % NS])
+
+    for name, label_fr, label_en in (("paladium_wither", "Wither", "Wither"),
+                                     ("funny_wither", "Wither amusant", "Funny Wither"),
+                                     ("baby_wither", "Baby wither", "Baby Wither"),
+                                     ("passive_wither", "Wither passif", "Passive Wither"),
+                                     ("thirsty_wither", "Wither assoiffe", "Thirsty Wither"),
+                                     ("predator_wither", "Wither predateur", "Predator Wither"),
+                                     ("supreme_wither", "Wither supreme", "Supreme Wither")):
+        label("entity", name, label_fr, label_en)
+    for key, label_fr, label_en in (
+            ("wither_gem", "Au receptacle : le wither, a combattre", "In a receptacle: the wither, to fight"),
+            ("funny_wither_gem", "Au receptacle : le wither amusant, meme force, autre allure",
+             "In a receptacle: the funny wither, same strength, new look"),
+            ("baby_wither_gem", "Au receptacle : un petit wither, plus fragile et moins fort",
+             "In a receptacle: a small, weaker wither"),
+            ("passive_wither_gem", "Au receptacle : un wither allie, qui n'attaque que les monstres",
+             "In a receptacle: an allied wither that only attacks monsters"),
+            ("thirsty_wither_gem", "Allie, insensible aux liquides, perce l'obsidienne ; il faut le pousser",
+             "Allied, liquid-proof, breaks obsidian; must be pushed"),
+            ("predator_wither_gem", "Allie, va ou le laser de ciblage l'envoie",
+             "Allied, goes where the target laser sends it"),
+            ("supreme_wither_gem", "Allie, intuable ; appelle des predateurs, saute au bout de 15 min",
+             "Allied, unkillable; calls predators, blows up after 15 min"),
+            ("wither_gem.time", "Invocation : %s", "Summoning: %s"),
+            ("stealth_upgrade", "Sur ton wither : ni barre de vie ni bruit, une heure",
+             "On your wither: no health bar, no sound, for an hour"),
+            ("wither_resistance_upgrade", "Sur ton wither : degats hors joueurs divises par deux, une heure",
+             "On your wither: non-player damage halved, for an hour"),
+            ("wither_slime_upgrade", "Sur ton wither : il mange le slime, +20 PV par bloc, une heure",
+             "On your wither: it eats slime, +20 HP per block, for an hour"),
+            ("wither_target_laser", "Clic droit dans le vide : viser. Clic droit sur un predateur ou un supreme : l'y envoyer",
+             "Right-click air to aim. Right-click a predator or supreme to send it"),
+            ("wither_target_laser.target", "Cible : %s %s %s", "Target: %s %s %s"),
+            ("wither_saddle", "Clic droit sur un wither pour le monter (une fois)",
+             "Right-click a wither to ride it (once)"),
+            ("wither_fishing_rod", "Sur un wither selle : il suit ton regard", "On a saddled wither: it follows your gaze"),
+            ("mid_life_arrow", "Tiree a l'arc en paladium : un wither perd la moitie de sa vie",
+             "Shot from a paladium bow: a wither loses half its health"),
+            ("wither_dust", "Lachee par les sorcieres (Chasseur 20)", "Dropped by witches (Hunter 20)"),
+            ("wither_receptacle", "Une gemme de wither en main, clic droit : l'invocation commence",
+             "Right-click with a wither gem to start summoning")):
+        label("tooltip", key, label_fr, label_en)
+
+    # Les recettes de PPalaWither.init, et celles que le wiki ne donnait qu'en image.
+    skull = "minecraft:wither_skeleton_skull"
+    shaped("nether_star_from_fragments", ["XXX", "YYY", "XXX"],
+           {"X": "%s:wither_skull_fragment" % NS, "Y": skull}, "minecraft:nether_star")
+    shaped("wither_receptacle", [" X ", "XYX", " Z "],
+           {"X": "%s:empowered_quartz" % NS, "Y": skull, "Z": "#minecraft:planks"}, "%s:wither_receptacle" % NS)
+    # Le wither de base : la forme du wither vanilla, qui donne sa gemme au lieu du wither.
+    shaped("wither_gem", ["SSS", "BBB", " B "], {"S": skull, "B": "minecraft:soul_sand"}, "%s:wither_gem" % NS)
+    shaped("funny_wither_gem", [" Y ", "YWY", " Y "],
+           {"Y": "minecraft:yellow_dye", "W": "%s:wither_gem" % NS}, "%s:funny_wither_gem" % NS)
+    shaped("baby_wither_gem", [" X ", "XYX", " X "], {"X": "minecraft:egg", "Y": skull}, "%s:baby_wither_gem" % NS)
+    shaped("passive_wither_head", [" Y ", "YXY", " Y "], {"Y": skull, "X": "minecraft:nether_star"},
+           "%s:passive_wither_head" % NS)
+    shaped("passive_wither_gem", ["XXX", "YYY", " Y "],
+           {"X": "%s:passive_wither_head" % NS, "Y": "minecraft:soul_sand"}, "%s:passive_wither_gem" % NS)
+    shaped("thirsty_wither_head", ["XYX", "YZY", "XYX"],
+           {"X": "%s:empowered_quartz" % NS, "Y": "%s:extrapolated_bucket" % NS, "Z": "%s:passive_wither_head" % NS},
+           "%s:thirsty_wither_head" % NS)
+    shaped("predator_wither_head", ["XXX", "AZA", "XXX"],
+           {"X": "%s:compressed_paladium" % NS, "A": "%s:compressed_endium" % NS,
+            "Z": "%s:passive_wither_head" % NS}, "%s:predator_wither_head" % NS)
+    # Le wiki : quatre pepites d'endium, quatre obsidiennes infusees de paladium
+    # (l'obsidienne compacte, a coeur de paladium), une tete de predateur.
+    shaped("supreme_wither_head", ["NON", "OPO", "NON"],
+           {"N": "%s:endium_nugget" % NS, "O": "%s:big_obsidian" % NS, "P": "%s:predator_wither_head" % NS},
+           "%s:supreme_wither_head" % NS)
+    for gem, head, core in (("thirsty_wither_gem", "thirsty_wither_head", "compressed_endium"),
+                            ("predator_wither_gem", "predator_wither_head", "endium_nugget"),
+                            ("supreme_wither_gem", "supreme_wither_head", "endium_ingot")):
+        shaped(gem, [" X ", "XYX", " X "], {"X": "%s:%s" % (NS, head), "Y": "%s:%s" % (NS, core)},
+               "%s:%s" % (NS, gem))
+    # La pate de camouflage de SecretRooms n'est pas portee : la membrane de phantom.
+    for upgrade, ring in (("stealth_upgrade", "minecraft:phantom_membrane"),
+                          ("wither_resistance_upgrade", "%s:compressed_paladium" % NS),
+                          ("wither_slime_upgrade", "%s:slimepad" % NS)):
+        shaped(upgrade, [" X ", "XYX", " X "], {"X": ring, "Y": "%s:passive_wither_head" % NS},
+               "%s:%s" % (NS, upgrade))
+    # La boussole du chasseur n'est pas portee : une boussole.
+    shaped("wither_target_laser", [" XY", "YZY", " Y "],
+           {"X": "minecraft:redstone_torch", "Y": "%s:empowered_quartz" % NS, "Z": "minecraft:compass"},
+           "%s:wither_target_laser" % NS)
+    shaped("wither_saddle", [" F ", "FSF", " F "],
+           {"F": "%s:wither_skull_fragment" % NS, "S": "minecraft:saddle"}, "%s:wither_saddle" % NS)
+    shapeless("wither_fishing_rod", ["minecraft:fishing_rod", "%s:wither_skull_fragment" % NS,
+                                     "%s:wither_skull_fragment" % NS], "%s:wither_fishing_rod" % NS)
+    shaped("mid_life_arrow", [" D ", "DAD", " D "], {"D": "%s:wither_dust" % NS, "A": "minecraft:arrow"},
+           "%s:mid_life_arrow" % NS)
+    shaped("wither_skull_fragment_from_dust", ["DD", "DD"], {"D": "%s:wither_dust" % NS},
+           "%s:wither_skull_fragment" % NS)
+    shaped("compressed_quartz", ["XXX", "XXX", "XXX"], {"X": "minecraft:quartz_block"}, "%s:compressed_quartz" % NS)
+    shapeless("quartz_block_from_compressed", ["%s:compressed_quartz" % NS], "minecraft:quartz_block", 9)
+    shaped("empowered_quartz", [" X ", "XYX", " X "],
+           {"X": "%s:compressed_quartz" % NS, "Y": "%s:shiny_erable_wood" % NS}, "%s:empowered_quartz" % NS)
+
     # ---- enchantements : outils et cornes ----
     #
     # Demande du joueur (2026-11-10) : armures, outils et cornes s'enchantent.

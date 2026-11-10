@@ -16,7 +16,7 @@ PvE**. Choix du joueur :
 | 22b | Arbre de technologie : Global, Pillage, Défense, Économie | fait |
 | 22c | Objets de défense : obsidiennes à effet, spikes obsi, Fake Water, éponges, brouilleur, enclumes, amulettes… | fait |
 | 22d | Objets de pillage : dynamites, TNT spéciales, Unclaim Finder, explorateur de coffre, arc en paladium, flèche de Switch… | fait |
-| 22d-bis | Withers du pillage : réceptacle, gemmes de wither, améliorations | à faire |
+| 22d-bis | Withers du pillage : réceptacle, gemmes de wither, améliorations | fait |
 | 22e | Réserve d'or : multibloc, investissements à intérêts | à faire |
 | 22f | Events à heures fixes (Egg Hunt, End, KOTH, Boss, Totem) et raids sur demande | à faire |
 
@@ -65,7 +65,7 @@ jeu » ; « visiter N factions » → « visiter N structures » (villages, temp
 « tuer N joueurs différents » → « tuer N espèces différentes ». Les compteurs viennent des
 statistiques du jeu (blocs parcourus, temps de jeu, blocs cassés, objets fabriqués) ou des compteurs
 de faction (`FactionStats` : stick of god, outil de construction, et ceux des lots suivants). Un
-objet pas encore porté affiche son lot (22d-bis, 22e) et ne progresse pas.
+objet pas encore porté affiche son lot (22e) et ne progresse pas.
 
 **Récompenses** : les « emplacements de membre » de la branche Globale deviennent deux claims
 chacun ; la Défense ajoute ses claims (10 à 200 par palier) ; F homes (1, 2 puis 3) et leur délai
@@ -172,3 +172,59 @@ modificateurs posés, secondes de Fake Water évitées, Unclaim Helmet posé, wi
 | `craft:extrapolated_bucket` | utiliser le seau extrapolé |
 | `enchant:fake_water_protection` | l'enchantement à la table de l'Alchimiste |
 | `use:wither` | poser la TNT à wither |
+
+## Withers du pillage (22d-bis)
+
+Le module PalaWither n'est pas dans les jars fournis : ses recettes le sont (`PPalaWither.init`), ses
+comportements viennent du wiki (« Réceptacle à Wither », « Pour le pillage »).
+
+- **Réceptacle à wither** (3 quartz électrifiés, un crâne de wither, des planches) : clic droit
+  avec une gemme, et l'invocation commence. Il faut une faction, la clé de l'arbre de ce wither, le
+  niveau d'Alchimiste des gemmes majeures (assoiffé 70, prédateur 90, suprême 100), et un réceptacle
+  **hors de tout claim**. L'invocateur reste à 6 blocs (5 s à 20 min selon le wither) ; absent plus
+  d'une minute, l'invocation échoue et la gemme est perdue. Le wither naît dans la charge du wither
+  vanilla. **15 000 PV**, entamés par les explosions proches (une TNT à un bloc : environ 350), avec
+  une barre quand on le regarde. Les withers à 6 blocs regagnent 2 PV par seconde.
+- **Withers à combattre** : de base (le wither vanilla), **amusant** (même force, la peau et les sons
+  du « funny wither » de PalaMod), **baby** (deux fois plus petit, 150 PV, des têtes deux fois moins
+  fortes).
+- **Withers alliés** — sur Paladium, « passifs » ou « non agressifs envers leur faction ». **Solo** :
+  ils n'attaquent ni toi ni les joueurs, seulement les monstres, et cassent ce qu'ils touchent.
+  **Passif** (300 PV) ; **assoiffé** (450 PV, insensible aux liquides, ne lance que des têtes
+  bleues qui percent l'obsidienne, n'avance que poussé) ; **prédateur** (600 PV, immobile, va où le
+  **laser de ciblage** l'envoie) ; **suprême** (intuable, guidé au laser, éveillé au bout d'une
+  minute au lieu de douze heures, appelle un prédateur toutes les deux minutes, saute au bout de
+  15 min).
+- **Améliorations** (une par wither, une heure) : **discrétion** (ni barre de vie ni bruit),
+  **résistance** (dégâts hors joueurs divisés par deux), **visqueuse** (casse la slime obsidienne
+  sans la déclencher, +20 PV par bloc de slime). Ni discrétion ni résistance sur le suprême.
+- **Selle de wither** et **canne à pêche de wither** : on s'assoit sur un wither (de base, amusant,
+  baby, passif), la canne en main il suit le regard ; l'eau le desselle, et une selle ne sert qu'une
+  fois. **Flèche de mi-vie** : tirée à l'arc en paladium, un wither perd la moitié de sa vie (ni le
+  prédateur ni le suprême). **Poudre de wither** : une sorcière sur deux, dès Chasseur 20 ; quatre
+  font un fragment de crâne.
+- **Remplacements** : la pâte de camouflage de SecretRooms (amélioration de discrétion) devient la
+  membrane de phantom, la boussole du chasseur (laser) une boussole, l'obsidienne infusée de
+  paladium (tête suprême) l'obsidienne compacte. La gemme de base se fabrique dans la forme du
+  wither vanilla ; l'amusante (Lucky Blocks sur Paladium) avec du colorant jaune.
+- **TNT à wither** : elle invoque désormais le wither de base du pillage, compté à l'allumeur.
+- **Apparence**, d'après les rendus du wiki (`tools/wither_skins.py`, `PalaWitherGeometry`) :
+  **prédateur** anthracite aux dessus lavande, yeux, bouche et braises des côtes incandescents,
+  deux cornes en L ; **suprême** violet, yeux et croix de poitrine roses lumineux, épines sur les
+  têtes, deux grands bras griffus qui se balancent ; **assoiffé** couleur d'os sec, des flèches
+  plantées dans les crânes et les côtes ; **baby** ardoise aux yeux cyan lumineux ; **passif** os
+  pâle couvert de mousse, des pousses sur les têtes. Le wither de base garde la peau vanilla,
+  l'amusant celle de PalaMod. Pendant la charge, chaque genre clignote dans sa peau bleue.
+  Le **réceptacle** est un autel qui suit sa recette : socle de planches, dalle d'obsidienne, quatre
+  piliers de quartz électrifié coiffés de quartz compressé, et le crâne de wither aux yeux allumés,
+  tourné vers qui l'a posé.
+
+| Clé de l'arbre | Ce qu'elle débloque |
+|----------------|---------------------|
+| `craft:receptacle` | poser le réceptacle |
+| `use:baby_wither`, `use:wither`, `use:passive_wither`, `use:funny_wither` | invoquer ces withers |
+| `use:thirsty_wither`, `use:predator_wither`, `use:supreme_wither` | invoquer les withers majeurs |
+| `craft:wither_resistance_upgrade`, `craft:wither_slime_upgrade`, `craft:stealth_upgrade` | poser l'amélioration |
+
+Compteurs branchés : `spawn:<wither>`, `regen:wither`, `wither:obsidian` (obsidiennes cassées ou
+soufflées par un wither que tu as invoqué), `kill:baby_wither`.

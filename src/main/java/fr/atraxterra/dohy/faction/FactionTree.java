@@ -284,7 +284,7 @@ public final class FactionTree {
                 List.of(unlock("use:baby_wither", "Utilisation du baby wither"),
                         unlock("craft:receptacle", "Fabrication du receptacle"))));
         list.add(new Tier(b, 3, 60_000, List.of(), List.of(crafted(P + "cave_block", 100, "cave blocks", D),
-                crafted(P + "receptacle", 2, "receptacles", DB), crafted(P + "baby_wither_gem", 5,
+                crafted(P + "wither_receptacle", 2, "receptacles", DB), crafted(P + "baby_wither_gem", 5,
                         "gemmes de baby wither", DB), crafted(P + "unclaim_finder_red", 1, "un Unclaim Finder rouge", D)),
                 h(12), List.of(unlock("use:ninja_dynamite", "Utilisation de la ninja dynamite"))));
         list.add(new Tier(b, 4, 100_000, List.of(), List.of(counter("use:ninja_dynamite", 1,
@@ -294,7 +294,7 @@ public final class FactionTree {
                 List.of(unlock("craft:chest_explorer", "Fabrication de l'explorateur de coffre"),
                         unlock("use:online_detector", "Utilisation du detecteur de presence"))));
         list.add(new Tier(b, 5, 200_000, List.of(), List.of(counter("regen:wither", 1,
-                        "Regenerer un wither avec un receptacle", DB, P + "receptacle"),
+                        "Regenerer un wither avec un receptacle", DB, P + "wither_receptacle"),
                 counter("wither:obsidian", 100, "Casser 100 obsidiennes avec un wither", DB, P + "baby_wither_gem"),
                 travel(250_000)), d(1, 12), List.of(unlock("use:wither", "Utilisation du wither"),
                 unlock("craft:paladium_bow", "Fabrication de l'arc en paladium"),

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "YYY",
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:wither_skull_fragment",
+    "Y": "minecraft:wither_skeleton_skull"
+  },
+  "result": {
+    "id": "minecraft:nether_star",
+    "count": 1
+  }
+}

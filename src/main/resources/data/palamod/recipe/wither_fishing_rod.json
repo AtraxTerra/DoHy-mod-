@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:fishing_rod",
+    "palamod:wither_skull_fragment",
+    "palamod:wither_skull_fragment"
+  ],
+  "result": {
+    "id": "palamod:wither_fishing_rod",
+    "count": 1
+  }
+}

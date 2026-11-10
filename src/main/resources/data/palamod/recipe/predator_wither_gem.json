@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XYX",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:predator_wither_head",
+    "Y": "palamod:endium_nugget"
+  },
+  "result": {
+    "id": "palamod:predator_wither_gem",
+    "count": 1
+  }
+}

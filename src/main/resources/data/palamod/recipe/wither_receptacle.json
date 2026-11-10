@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XYX",
+    " Z "
+  ],
+  "key": {
+    "X": "palamod:empowered_quartz",
+    "Y": "minecraft:wither_skeleton_skull",
+    "Z": "#minecraft:planks"
+  },
+  "result": {
+    "id": "palamod:wither_receptacle",
+    "count": 1
+  }
+}

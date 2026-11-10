@@ -69,6 +69,11 @@ public final class DefenseGate {
         KEYS.put("extrapolated_bucket", "craft:extrapolated_bucket");
         // La TNT a wither invoque un wither vanilla : le palier qui debloque les withers.
         KEYS.put("wither_tnt", "use:wither");
+        // Les withers (lot 22d-bis) : les gemmes sont verrouillees au receptacle, par genre.
+        KEYS.put("wither_receptacle", "craft:receptacle");
+        KEYS.put("stealth_upgrade", "craft:stealth_upgrade");
+        KEYS.put("wither_resistance_upgrade", "craft:wither_resistance_upgrade");
+        KEYS.put("wither_slime_upgrade", "craft:wither_slime_upgrade");
     }
 
     private DefenseGate() {

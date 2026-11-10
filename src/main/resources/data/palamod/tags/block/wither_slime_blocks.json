@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:slime_block",
+    "palamod:slime_obsidian",
+    "palamod:slimepad"
+  ]
+}

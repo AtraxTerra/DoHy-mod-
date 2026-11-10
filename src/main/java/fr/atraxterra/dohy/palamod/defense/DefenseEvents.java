@@ -1,5 +1,7 @@
 package fr.atraxterra.dohy.palamod.defense;
 
+import fr.atraxterra.dohy.palamod.wither.PalaWither;
+import fr.atraxterra.dohy.palamod.wither.WitherUpgrade;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -98,6 +100,11 @@ public final class DefenseEvents {
                 event.setCanceled(true);
                 level.setBlock(event.getPos(), state.setValue(DefenseAnvilBlock.HITS, hits + 1), Block.UPDATE_ALL);
             }
+            return;
+        }
+        // Le wither visqueux (lot 22d-bis) casse la slime obsidienne sans la declencher.
+        if (event.getEntity() instanceof PalaWither wither && wither.upgrade() == WitherUpgrade.SLIME
+                && state.is(PalaDefense.SLIME_OBSIDIAN.get())) {
             return;
         }
         defer(level, event.getPos(), state);

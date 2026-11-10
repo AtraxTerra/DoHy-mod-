@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:quartz_block"
+  },
+  "result": {
+    "id": "palamod:compressed_quartz",
+    "count": 1
+  }
+}

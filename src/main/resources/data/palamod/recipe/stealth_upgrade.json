@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XYX",
+    " X "
+  ],
+  "key": {
+    "X": "minecraft:phantom_membrane",
+    "Y": "palamod:passive_wither_head"
+  },
+  "result": {
+    "id": "palamod:stealth_upgrade",
+    "count": 1
+  }
+}

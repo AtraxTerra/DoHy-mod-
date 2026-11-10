@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " XY",
+    "YZY",
+    " Y "
+  ],
+  "key": {
+    "X": "minecraft:redstone_torch",
+    "Y": "palamod:empowered_quartz",
+    "Z": "minecraft:compass"
+  },
+  "result": {
+    "id": "palamod:wither_target_laser",
+    "count": 1
+  }
+}

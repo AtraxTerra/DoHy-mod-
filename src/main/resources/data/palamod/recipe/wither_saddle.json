@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " F ",
+    "FSF",
+    " F "
+  ],
+  "key": {
+    "F": "palamod:wither_skull_fragment",
+    "S": "minecraft:saddle"
+  },
+  "result": {
+    "id": "palamod:wither_saddle",
+    "count": 1
+  }
+}

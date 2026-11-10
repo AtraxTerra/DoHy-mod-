@@ -171,6 +171,8 @@ MODEL_TEXTURES = {
     "item/pistol_tank_fluid.png": (64, 64),
     # L'eponge compressee n'existe qu'en 32 x 32, dans le pack comme dans le jar.
     "block/compressed_sponge.png": (32, 32),
+    # Le quartz electrifie : 20 images de 16 x 16, animees par son .mcmeta.
+    "block/empowered_quartz.png": (16, 320),
 }
 
 

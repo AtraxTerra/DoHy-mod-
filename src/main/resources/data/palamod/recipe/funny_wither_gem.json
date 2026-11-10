@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " Y ",
+    "YWY",
+    " Y "
+  ],
+  "key": {
+    "Y": "minecraft:yellow_dye",
+    "W": "palamod:wither_gem"
+  },
+  "result": {
+    "id": "palamod:funny_wither_gem",
+    "count": 1
+  }
+}

@@ -15,9 +15,11 @@
     "palamod:cauldron_core",
     "palamod:cave_block",
     "palamod:cobblebreaker",
+    "palamod:compressed_quartz",
     "palamod:coordinate_jammer",
     "palamod:crusher",
     "palamod:diamond_spike",
+    "palamod:empowered_quartz",
     "palamod:empty_mob_spawner",
     "palamod:endium_angle_portal_block",
     "palamod:endium_block",
@@ -75,6 +77,7 @@
     "palamod:trixium_block",
     "palamod:trixium_ore",
     "palamod:void_stone",
+    "palamod:wither_receptacle",
     "palamod:withered_obsidian",
     "palamod:withered_reinforced_piston"
   ]

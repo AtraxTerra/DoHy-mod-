@@ -18,6 +18,7 @@ import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.nature.PalaNature;
 import fr.atraxterra.dohy.palamod.pillage.PalaPillage;
+import fr.atraxterra.dohy.palamod.wither.PalaWithers;
 import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
@@ -82,6 +83,7 @@ public final class PalaMod {
         PalaPvp.register(modBus);
         PalaDefense.register(modBus);
         PalaPillage.register(modBus);
+        PalaWithers.register(modBus);
         PalaLegendary.register(modBus);
         PalaDungeon.register(modBus);
         PalaDungeonGear.register(modBus);
