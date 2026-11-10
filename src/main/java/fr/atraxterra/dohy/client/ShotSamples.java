@@ -136,11 +136,24 @@ final class ShotSamples {
                     c.setItem(0, item("palamod:paladium_chestplate", 1));
                     c.setItem(2, new ItemStack(Items.COAL, 6));
                 })));
-        ShotHarness.SHOTS.add(server("45_grinder", player -> machine(player, PalaMachines.GRINDER_BLOCK.get(), be -> {
-            Container c = (Container) be;
-            c.setItem(5, item("palamod:paladium_ingot", 10));
-            set(be, "paladium", 37);
-        })));
+        ShotHarness.SHOTS.add(server("45_grinder", player -> {
+            // Le vrai grinder exige sa structure : un menu sur un inventaire d'exemple.
+            inventory(player);
+            SimpleContainer container = new SimpleContainer(6);
+            container.setItem(1, item("palamod:paladium_ingot", 8));
+            container.setItem(4, item("palamod:paladium_pickaxe", 1));
+            container.setItem(5, item("palamod:paladium_ingot", 10));
+            SimpleContainerData data = new SimpleContainerData(MachineMenu.DATA_COUNT);
+            data.set(MachineMenu.DATA_WORK, 30);
+            data.set(MachineMenu.DATA_DURATION, 100);
+            data.set(MachineMenu.DATA_TANK, 37);
+            data.set(MachineMenu.DATA_TANK_GOAL, 100);
+            data.set(MachineMenu.DATA_WORK2, 70);
+            data.set(MachineMenu.DATA_DURATION2, 100);
+            player.openMenu(new SimpleMenuProvider((id, inventory, viewer) -> new MachineMenu(
+                    PalaMenus.GRINDER.get(), id, inventory, container, data, MachineLayout.GRINDER),
+                    Component.literal("Grinder")));
+        }));
         ShotHarness.SHOTS.add(server("46_food_machine", player -> machine(player, PalaGolem.FOOD_MACHINE.get(), be -> {
             Container c = (Container) be;
             c.setItem(1, new ItemStack(Items.MELON_SLICE, 20));
