@@ -100,7 +100,8 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 20b | **Stuff antique** : icônes et armure portée en 3D de Palamod Recreated (modèles traduits de leur bytecode), vol et invisibilité au set complet hors donjon (patchnotes V11), bonus de donjon dedans | fait |
 | 20c | **Retours en jeu** : pierre aléatoire qui disparaissait, entonnoirs sous le cobblebreaker et le crusher (sorties seulement), entonnoir en paladium qui aspire au sol, minerais qui se rendent eux-mêmes (fonte au four et au haut fourneau) | fait |
 | 21a | **Interfaces, lot 1** : kit d'interface DoHy UI (style Paladium, polices TrueType, vues et actions réseau), écran des métiers avec les contrats du jour, fiche d'un métier à onglets, shop à la maquette de l'Admin Shop — voir [docs/INTERFACES.md](docs/INTERFACES.md) | fait |
-| 21b | **Interfaces, lot 2** : menus génériques (`MenuView`) pour le menu principal, la banque, les contrats, la boutique, les améliorations, les collections et le musée | fait (en validation) |
+| 21b | **Interfaces, lot 2** : menus génériques (`MenuView`) pour le menu principal, la banque, les contrats, la boutique, les améliorations, les collections et le musée | fait |
+| 21c | **Interfaces, lot 3** : donjons (paliers, autel de boost, marchande, sac), profil RPG, monture (fiche, enclos, soins), golem (accueil, arbre, choix), dimension du Mineur (entrée, bilan), table de l'alchimiste | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
