@@ -11,7 +11,7 @@ autocrafter, crusher, cobblebreaker, grinder).
 |-----|--------|------|
 | 1 | Kit, métiers et fiche d'un métier, shop | fait |
 | 2 | Économie : menu principal, banque, contrats, boutique de boosters, collections, musée, améliorations | fait |
-| 3 | Palamod : donjons, profil RPG, monture, golem, dimension du Mineur, enchantement mystique | fait (en validation) |
+| 3 | Palamod : donjons, profil RPG, monture, golem, dimension du Mineur, enchantement mystique | fait |
 | 4 | Conteneurs : machines (crusher déjà maquetté), coffres en paladium, coffre de vente, musée | à faire |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
@@ -127,6 +127,11 @@ Les menus en coffre de la partie Palamod passent sur la même `MenuView` :
 Maj + clic gauche arrive au serveur comme bouton 2. Le serveur peut fermer l'écran
 (`UiNet.close`) avant une téléportation : entrée d'un donjon, de la dimension du Mineur. Les vrais
 inventaires (sac de la monture, coffre du golem) restent des conteneurs, pour le lot 4.
+
+Les textes que le serveur ne doit pas traduire lui-même (noms d'objets, d'enchantements, clés de
+traduction) partent en composant JSON (`MenuView.text`) : le client les traduit dans sa langue à
+l'arrivée de la vue. Un serveur dédié ne connaît que l'anglais ; sans cela, un joueur français
+lirait « Diamond Boots ». La fiche d'un métier suit le même chemin.
 
 ## Vérification
 
