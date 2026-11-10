@@ -41,6 +41,19 @@ public class VolcaniaDragon extends EnderDragon {
         super(type, level);
     }
 
+    /**
+     * Le type de Volcania, et non celui du dragon vanilla.
+     *
+     * <p>En 26.2, le constructeur d'{@code EnderDragon} ignore le type qu'on lui
+     * passe et s'inscrit comme {@code minecraft:ender_dragon} (verifie en jeu :
+     * le serveur annoncait ce type). Le client recreait alors un dragon vanilla,
+     * avec son rendu, et une sauvegarde l'aurait rendu vanilla pour de bon.
+     */
+    @Override
+    public EntityType<?> getType() {
+        return PalaBosses.VOLCANIA.get();
+    }
+
     public void bind(UUID run, BlockPos home) {
         this.run = run;
         this.home = home;
