@@ -86,6 +86,10 @@ ingrédients. Sans faction, rien n'est débloqué ; le créatif passe outre.
 - **Obsidienne renforcée** (4 obsidiennes → 4), ses escaliers et sa dalle : on ne la mine pas,
   la TNT ordinaire ne l'entame pas (résistance 60), un wither la casse. **L'outil magique**
   (10 000 usages) la retire intacte, comme tout bloc du tag `palamod:magical_tool_removable`.
+- **Recettes** : celles de PalaMod (`PRegister_Craft`, `ObsiEffect`, `PPRegisterer`, amulettes du
+  Chasseur). Le coffre en fer d'Iron Chests (obsidienne à wither) devient un coffre, la ficelle de
+  diamant (amulette du chasseur) une ficelle ; discrétion et combat, désactivées sur Paladium, et le
+  home remover reçoivent une recette.
 - **Obsidiennes piégées** : empoisonnée, boom, méga boom, de lave, sulfurique, knockback, gelée,
   anti-aggro, compacte, slime, à wither, et une par spike (bois, fer, or, diamant, améthyste,
   titane, paladium). Détruites par un wither, une explosion assez forte (pillage, lot 22d) ou un
@@ -103,7 +107,8 @@ ingrédients. Sans faction, rien n'est débloqué ; le créatif passe outre.
 - **Enclumes** en améthyste, titane et paladium : l'enclume vanilla, qui ne s'abîme pas, qu'on ne
   mine pas, et qui encaisse 1, 2 ou 3 coups de wither.
 - **Brouilleur de coordonnées** — Paladium : faux F3 aux joueurs proches. **Solo** : à 16 blocs,
-  les monstres perdent de vue les joueurs à plus de 6 blocs.
+  les monstres perdent de vue les joueurs à plus de 6 blocs. Sa recette demande l'Unclaim Finder
+  rouge : une boussole le remplace jusqu'au lot 22d.
 - **Pistolet à liquide** : pompe les sources (eau, lave, eau angélique, Fake Water ; 16 seaux) et
   les pose à 24 blocs. **Home remover** — Paladium : efface les homes ennemis d'un chunk.
   **Solo** : efface les monstres du chunk et y empêche leur apparition une heure. **Pierre
