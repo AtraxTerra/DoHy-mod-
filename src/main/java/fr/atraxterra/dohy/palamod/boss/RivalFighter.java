@@ -45,7 +45,7 @@ public class RivalFighter extends Vindicator {
         targetSelector.addGoal(1, new HurtByTargetGoal(this, RivalFighter.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, EventBoss.class, false));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, true,
-                (target, level) -> target.getTags().contains(FactionEvents.MINION_TAG)));
+                (target, level) -> target.entityTags().contains(FactionEvents.MINION_TAG)));
     }
 
     public void bind(UUID fight, int rival) {
