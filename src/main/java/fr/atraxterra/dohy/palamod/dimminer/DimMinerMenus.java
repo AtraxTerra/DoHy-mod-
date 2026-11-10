@@ -50,7 +50,7 @@ public final class DimMinerMenus {
         public MenuView view(ServerPlayer player) {
             DimMinerData data = DimMinerManager.data(player);
             boolean active = data.isActive();
-            int points = active ? data.points() : DimMinerData.TOTAL_POINTS;
+            long points = active ? data.points() : DimMinerData.TOTAL_POINTS;
             List<Card> cards = List.of(
                     Card.of(new ItemStack(Items.BOOK), "La dimension", List.of("Minerais multiplies",
                                     "Pour les joueurs aguerris"))

@@ -52,8 +52,7 @@ public final class DungeonMenus {
     }
 
     private static int color(ChatFormatting format) {
-        Integer value = format.getColor();
-        return value == null ? 0xFF55545C : 0xFF000000 | value;
+        return MenuView.color(format);
     }
 
     // -- Choix du palier --------------------------------------------------------
