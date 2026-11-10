@@ -4,7 +4,7 @@ import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.faction.base.EnemyBase;
 import fr.atraxterra.dohy.faction.base.EnemyBaseMenu;
 import fr.atraxterra.dohy.faction.base.EnemyBases;
-import fr.atraxterra.dohy.faction.event.BossFight;
+import fr.atraxterra.dohy.faction.event.EventRun;
 import fr.atraxterra.dohy.faction.event.FactionEventKind;
 import fr.atraxterra.dohy.faction.event.FactionEventMenu;
 import fr.atraxterra.dohy.faction.event.FactionEvents;
@@ -220,17 +220,28 @@ public final class FactionMenus {
     /** La reserve d'or (lot 22e) : ce qui est place, ou comment en batir une. */
     /** La carte des events : l'event en cours, sinon le prochain depart. */
     private static Card eventsCard() {
-        BossFight fight = FactionEvents.active();
+        EventRun fight = FactionEvents.active();
         if (fight != null && !fight.ended()) {
-            return Card.of(new ItemStack(Items.WITHER_SKELETON_SKULL), "Events de faction", List.of(
-                            "Boss : " + fight.kind().label(), "En cours, rejoins l'arene"))
+            return Card.of(new ItemStack(fight.icon()), "Events de faction", List.of(
+                            fight.title(), "En cours, rejoins l'arene"))
                     .accent(0xFFEF3826).badge("EN COURS").action("events|ouvrir");
         }
         ZonedDateTime now = FactionEvents.now();
-        ZonedDateTime next = FactionEventKind.BOSS.next(now);
+        FactionEventKind soonest = null;
+        ZonedDateTime next = null;
+        for (FactionEventKind kind : FactionEventKind.values()) {
+            ZonedDateTime start = kind.next(now);
+            if (kind.ready() && (next == null || start.isBefore(next))) {
+                soonest = kind;
+                next = start;
+            }
+        }
+        String day = next.toLocalDate().equals(now.toLocalDate()) ? "" : next.getDayOfMonth() + "/"
+                + next.getMonthValue() + " ";
         return Card.of(new ItemStack(Items.DRAGON_EGG), "Events de faction", List.of(
-                        "Prochain : Boss, " + String.format("%d h %02d", next.getHour(), next.getMinute()),
-                        "Egg Hunt, End, KOTH, Totem a venir"))
+                        "Prochain : " + soonest.label() + ", " + day
+                                + String.format("%d h %02d", next.getHour(), next.getMinute()),
+                        "Boss, KOTH, Totem ; Egg Hunt et End a venir"))
                 .accent(0xFFFAC400).action("events|ouvrir");
     }
 

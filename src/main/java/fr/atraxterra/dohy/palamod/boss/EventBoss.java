@@ -2,8 +2,6 @@ package fr.atraxterra.dohy.palamod.boss;
 
 import fr.atraxterra.dohy.faction.event.BossFight;
 import fr.atraxterra.dohy.faction.event.FactionEvents;
-import java.util.List;
-import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -31,6 +29,9 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Un boss de l'event Boss (lot 22f).

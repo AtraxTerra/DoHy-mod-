@@ -20,7 +20,8 @@ PvE**. Choix du joueur :
 | 22d-bis | Withers du pillage : réceptacle, gemmes de wither, améliorations | fait |
 | 22e | Réserve d'or : multibloc, investissements à intérêts | fait |
 | 22f | Events à heures fixes : le calendrier et le **Boss** | fait |
-| 22f-2 | Events : KOTH à points, Totem, Egg Hunt, End | à faire |
+| 22f-2 | Events : KOTH à points et Totem | fait |
+| 22f-3 | Events : Egg Hunt et End | à faire |
 | 22h | Raids de monstres sur demande contre ta base | à faire |
 | 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller | fait |
 
@@ -325,10 +326,10 @@ en faction est connecté, et un seul à la fois.
 | Event | Quand | ELO | État |
 |---|---|---|---|
 | Boss | tous les jours, 1 h et 18 h | 700 | fait |
-| Egg Hunt | mardi et dimanche, 19 h (60 min) | 3 000 | 22f-2 |
-| Totem | mercredi, 21 h | 10 000 | 22f-2 |
-| End | vendredi, 19 h | 3 000 + 3 000 + 500 | 22f-2 |
-| KOTH à points | samedi, 21 h 30 (30 min) | 10 000 | 22f-2 |
+| Egg Hunt | mardi et dimanche, 19 h (60 min) | 3 000 | 22f-3 |
+| Totem | mercredi, 21 h | 10 000 | fait |
+| End | vendredi, 19 h | 3 000 + 3 000 + 500 | 22f-3 |
+| KOTH à points | samedi, 21 h 30 (30 min) | 10 000 | fait |
 
 - **Warzone** : `palamod:warzone`, une dimension vide au biome `the_void` (aucun monstre n'y
   apparaît). Chaque event a son arène, bâtie par le code la première fois. On y entre par l'écran des
@@ -336,8 +337,12 @@ en faction est connecté, et un seul à la fois.
   ou en mourant. **On y garde son inventaire** : en solo, l'arène n'est ouverte que le temps de
   l'event.
 - **Factions rivales** : trois factions fictives par event (noms et couleurs tirés au sort) envoient
-  des combattants — des vindicateurs à leur bannière. Elles visent le boss et ses sbires, et ne
-  t'attaquent que si tu les frappes. Elles prennent leur part du classement.
+  deux combattants chacune, renouvelés toutes les 45 s — des vindicateurs à leur bannière. Au Boss,
+  ils visent le boss et ses sbires et ne t'attaquent que si tu les frappes (hache de fer). Au KOTH et
+  au Totem, c'est du PvP (épée de pierre) : ils se battent entre eux et contre toi, et filent vers
+  la zone ou le totem quand personne n'est à portée. Elles prennent leur part du classement.
+- **Blocs** : dans la Warzone, on ne casse que ce qu'on a posé pendant l'event (et les toiles
+  d'Arachna) ; tout ce qui a été posé disparaît à la fin. Les explosions n'abîment pas les arènes.
 - **ELO par rang** : comme le PalaMod (`ExponentialPool.distribute(n, 1.2, elo)`), chaque rang
   touche 1,2 fois la part du suivant. Seul, tu touches tout le pot ; à quatre factions, le premier
   prend 32 %, le dernier 19 %.
@@ -365,3 +370,33 @@ comptés à 30 % ; Déchaînement fait venir 8 zombies (25), Captoile 4 araigné
 compte les rivaux comme cibles. Le boss repart s'il n'a pas été frappé depuis 5 min, ou après 30 min.
 À sa mort : 700 ELO par rang aux dégâts, bilan dans le chat (« Ta faction » 2e place »), compteur
 `event:boss`.
+
+### Le KOTH à points
+
+Samedi, 21 h 30, trente minutes. Une arène ronde de 26 blocs de rayon, avec au centre une colline à
+trois gradins : la **zone de capture** est son sommet (3,5 blocs de rayon, un phare au milieu).
+
+- **Chaque seconde, un occupant de la zone est tiré au sort** : sa faction marque un point (wiki).
+  Plus une faction a de monde dans la zone, plus elle a de chances ; en solo, il faut vider la zone
+  des combattants rivaux pour marquer à coup sûr.
+- **Après une mort, la zone ne te compte plus pendant 10 min** (wiki).
+- Barre en haut de l'écran : temps restant, qui tient la zone, qui mène. 10 000 ELO par rang aux
+  points ; titre du vainqueur et ta place pour chacun.
+
+### Le Totem
+
+Mercredi, 21 h. On arrive en surface et on **descend un long escalier jusqu'à une grotte** (wiki) :
+un dôme de 24 blocs de rayon, le totem au centre, la zone de dépôt au nord.
+
+- Le totem se casse **bloc par bloc, du sommet à la base** ; il fait douze blocs (or et pierre noire
+  sculptée), et redevient de la bedrock hors event, comme sur Paladium.
+- Le bloc cassé part avec toi (tu brilles) : il faut **rester 20 s d'affilée dans la zone de dépôt**
+  (en sortir remet le compte à zéro). **1 point par seconde** dans la zone avec un bloc, **500 points**
+  au dépôt (wiki).
+- **Mort ou temps écoulé : le bloc retourne sur le totem.** Le wiki ne donne pas le temps de port :
+  90 s.
+- Les combattants rivaux cassent le totem eux aussi (3 s au pied) ; leur porteur brille, ne se bat
+  plus et file à la zone : le tuer renvoie son bloc sur le totem. Une faction rivale ne porte qu'un
+  bloc à la fois.
+- Trente minutes au plus (le wiki ne dit rien), moins si les douze blocs sont déposés. 10 000 ELO par
+  rang aux points.

@@ -1,5 +1,8 @@
 package fr.atraxterra.dohy.faction.event;
 
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -7,8 +10,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 
 /**
  * Les events de faction et leur calendrier, aux heures du wiki (« Java | Event
@@ -23,7 +24,7 @@ import net.minecraft.world.item.Items;
  *   <tr><td>KOTH a points</td><td>samedi, 21 h 30, 30 min</td><td>10 000</td></tr>
  * </table>
  *
- * <p>Le Boss est le premier a tourner (lot 22f) ; les quatre autres suivent.
+ * <p>Boss, KOTH et Totem tournent (lot 22f) ; Egg Hunt et End suivent.
  */
 public enum FactionEventKind {
 
@@ -34,13 +35,13 @@ public enum FactionEventKind {
             List.of(LocalTime.of(19, 0)), false,
             "Tue le dragon, garde l'oeuf", "60 min de controle"),
     TOTEM("totem", "Totem", Items.TOTEM_OF_UNDYING, 10_000L, EnumSet.of(DayOfWeek.WEDNESDAY),
-            List.of(LocalTime.of(21, 0)), false,
+            List.of(LocalTime.of(21, 0)), true,
             "Casse le totem bloc par bloc", "500 points par bloc depose"),
     END("end", "End", Items.END_CRYSTAL, 6_500L, EnumSet.of(DayOfWeek.FRIDAY),
             List.of(LocalTime.of(19, 0)), false,
             "Cristaux, dragon, puis 20 min", "Chorus ou oeuf"),
     KOTH("koth", "KOTH a points", Items.BEACON, 10_000L, EnumSet.of(DayOfWeek.SATURDAY),
-            List.of(LocalTime.of(21, 30)), false,
+            List.of(LocalTime.of(21, 30)), true,
             "Tiens la zone 30 min", "1 point par seconde");
 
     private final String id;

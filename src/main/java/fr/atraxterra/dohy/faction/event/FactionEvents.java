@@ -5,17 +5,6 @@ import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.faction.Factions;
 import fr.atraxterra.dohy.palamod.boss.BossKind;
 import fr.atraxterra.dohy.palamod.dungeon.ReturnPoint;
-import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
@@ -27,12 +16,28 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Le calendrier des events de faction et l'event en cours (lot 22f).
@@ -57,21 +62,26 @@ public final class FactionEvents {
     private static final ZoneId ZONE = ZoneId.systemDefault();
     private static final int[] WARNINGS = {10, 5, 1};
 
-    private static BossFight active;
+    private static EventRun active;
     private static final Set<String> said = new HashSet<>();
     private static final Map<UUID, List<ItemStack>> kept = new HashMap<>();
 
     private FactionEvents() {
     }
 
-    public static BossFight active() {
+    public static EventRun active() {
         return active != null && !active.done() ? active : null;
     }
 
-    /** Le combat de ce nom s'il est en cours ; sinon {@code null}, et son boss s'efface. */
+    /** L'event de ce nom s'il est en cours ; sinon {@code null}, et ses rivaux s'effacent. */
+    public static EventRun run(UUID id) {
+        EventRun run = active();
+        return run != null && run.id().equals(id) ? run : null;
+    }
+
+    /** Le combat de boss de ce nom s'il est en cours ; sinon {@code null}, et son boss s'efface. */
     public static BossFight fight(UUID id) {
-        BossFight fight = active();
-        return fight != null && fight.id().equals(id) ? fight : null;
+        return run(id) instanceof BossFight fight ? fight : null;
     }
 
     public static ZonedDateTime now() {
@@ -138,22 +148,40 @@ public final class FactionEvents {
         if (!anyone) {
             return "Aucun joueur en faction connecte.";
         }
-        BossKind chosen = boss != null ? boss : bossOfTheSlot(now());
-        BossFight fight = BossFight.start(server, chosen);
-        if (fight == null) {
+        EventRun run;
+        String subtitle;
+        switch (kind) {
+            case BOSS -> {
+                BossKind chosen = boss != null ? boss : bossOfTheSlot(now());
+                run = BossFight.start(server, chosen);
+                subtitle = chosen.label() + " est apparu dans l'arene";
+            }
+            case KOTH -> {
+                run = KothRun.start(server);
+                subtitle = "Prends la colline et tiens-la 30 min";
+            }
+            case TOTEM -> {
+                run = TotemRun.start(server);
+                subtitle = "Casse le totem, depose ses blocs";
+            }
+            default -> {
+                return kind.label() + " arrive dans un prochain lot.";
+            }
+        }
+        if (run == null) {
             return "La Warzone est introuvable.";
         }
-        active = fight;
+        active = run;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (!FactionApi.has(player)) {
                 continue;
             }
-            player.connection.send(new ClientboundSetTitleTextPacket(Component.literal("Event Boss")
+            player.connection.send(new ClientboundSetTitleTextPacket(Component.literal("Event " + kind.label())
                     .withStyle(ChatFormatting.GOLD)));
-            player.connection.send(new ClientboundSetSubtitleTextPacket(Component.literal(chosen.label()
-                    + " est apparu").withStyle(ChatFormatting.RED)));
+            player.connection.send(new ClientboundSetSubtitleTextPacket(Component.literal(subtitle)
+                    .withStyle(ChatFormatting.RED)));
         }
-        broadcast(server, Component.literal("[Event] " + chosen.label() + " est apparu dans l'arene ! ")
+        broadcast(server, Component.literal("[Event] " + kind.label() + " : " + subtitle.toLowerCase() + " ! ")
                 .withStyle(ChatFormatting.GOLD)
                 .append(Component.literal("/f event rejoindre").withStyle(ChatFormatting.YELLOW)));
         return null;
@@ -161,14 +189,14 @@ public final class FactionEvents {
 
     /** Arrete l'event en cours (commande d'operateur). */
     public static String stop(MinecraftServer server) {
-        BossFight fight = active();
-        if (fight == null) {
+        EventRun run = active();
+        if (run == null) {
             return "Aucun event en cours.";
         }
         ServerLevel level = EventArena.level(server);
         if (level != null) {
-            fight.stop(level, "L'event a ete arrete.");
-            fight.finish(level);
+            run.stop(level, "L'event a ete arrete.");
+            run.finish(level);
         }
         active = null;
         return null;
@@ -182,8 +210,8 @@ public final class FactionEvents {
 
     /** Rejoint l'arene de l'event en cours. */
     public static String join(ServerPlayer player) {
-        BossFight fight = active();
-        if (fight == null || fight.ended()) {
+        EventRun run = active();
+        if (run == null || run.ended()) {
             return "Aucun event en cours.";
         }
         if (!FactionApi.has(player)) {
@@ -196,7 +224,7 @@ public final class FactionEvents {
         if (!inWarzone(player)) {
             player.setData(Factions.EVENT_RETURN, ReturnPoint.of(player));
         }
-        Vec3 entry = EventArena.bossEntry();
+        Vec3 entry = run.entry();
         player.teleport(new TeleportTransition(arena, entry, Vec3.ZERO, 180.0f, 0.0f,
                 TeleportTransition.DO_NOTHING));
         player.sendSystemMessage(Component.literal("Bienvenue dans l'arene. Tu gardes ton inventaire ici. ")
@@ -245,8 +273,8 @@ public final class FactionEvents {
             if (inWarzone(player) && active() == null) {
                 sendBack(player);
             } else if (active() != null && !active().ended() && FactionApi.has(player)) {
-                player.sendSystemMessage(Component.literal("[Event] " + active().kind().label()
-                        + " est dans l'arene. ").withStyle(ChatFormatting.GOLD)
+                player.sendSystemMessage(Component.literal("[Event] " + active().title()
+                        + " : c'est en cours. ").withStyle(ChatFormatting.GOLD)
                         .append(Component.literal("/f event rejoindre").withStyle(ChatFormatting.YELLOW)));
             }
         }
@@ -263,6 +291,9 @@ public final class FactionEvents {
             }
             kept.put(player.getUUID(), copy);
             inventory.clearContent();
+            if (active() instanceof KothRun koth) {
+                koth.died(player);
+            }
         }
     }
 
@@ -280,6 +311,53 @@ public final class FactionEvents {
             inventory.setItem(i, copy.get(i));
         }
         player.removeData(Factions.EVENT_RETURN);
+    }
+
+    /**
+     * Dans la Warzone, on ne casse que ce qu'on a pose pendant l'event (et les
+     * toiles d'Arachna). Le totem, lui, se casse par le haut : {@link TotemRun}.
+     */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onBreak(BreakBlockEvent event) {
+        if (!(event.getPlayer() instanceof ServerPlayer player) || !inWarzone(player)) {
+            return;
+        }
+        EventRun run = active();
+        if (run instanceof TotemRun totem && totem.onBreak(player, event.getPos())) {
+            event.setCanceled(true);
+            return;
+        }
+        if (run != null && run.breakable(event.getPos())) {
+            run.forget(event.getPos());
+            return;
+        }
+        if (!player.isCreative()) {
+            event.setCanceled(true);
+        }
+    }
+
+    /** On pose pour se proteger (contre le Belier de Tobalt, par exemple) ; tout part a la fin. */
+    @SubscribeEvent
+    public static void onPlace(BlockEvent.EntityPlaceEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || !inWarzone(player) || player.isCreative()) {
+            return;
+        }
+        EventRun run = active();
+        if (run == null || run.ended()) {
+            event.setCanceled(true);
+            return;
+        }
+        run.placed(event.getPos());
+    }
+
+    /** Une explosion dans la Warzone n'abime pas les arenes. */
+    @SubscribeEvent
+    public static void onExplosion(ExplosionEvent.Detonate event) {
+        if (event.getLevel().dimension() != EventArena.DIMENSION) {
+            return;
+        }
+        EventRun run = active();
+        event.getAffectedBlocks().removeIf(pos -> run == null || !run.breakable(pos));
     }
 
     @SubscribeEvent

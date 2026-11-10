@@ -7,16 +7,17 @@ import fr.atraxterra.dohy.faction.FactionLeague;
 import fr.atraxterra.dohy.faction.FactionMenus;
 import fr.atraxterra.dohy.palamod.boss.BossKind;
 import fr.atraxterra.dohy.ui.menu.MenuController;
-import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
+import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.util.MoneyFormat;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 /**
  * L'ecran des events de faction (lot 22f) : l'event en cours, le calendrier de
@@ -62,22 +63,18 @@ public final class FactionEventMenu extends MenuController {
         ZonedDateTime now = FactionEvents.now();
         List<MenuView.Section> sections = new ArrayList<>();
 
-        BossFight fight = FactionEvents.active();
+        EventRun fight = FactionEvents.active();
         if (fight != null) {
             List<Card> running = new ArrayList<>();
-            float health = fight.health(player.level().getServer());
-            int rank = fight.rankOf(player);
-            Card card = Card.of(new ItemStack(Items.WITHER_SKELETON_SKULL), "Boss : " + fight.kind().label(), List.of(
-                            fight.ended() ? "Termine" : health >= 0.0f ? "Vie : " + Math.round(health * 100.0f) + " %"
-                                    : "En cours",
-                            rank > 0 ? "Ta faction : " + (rank == 1 ? "1re" : rank + "e") + " · "
-                                    + Math.round(fight.damageOf(player)) + " degats" : "Pas encore de degats"))
+            float progress = fight.progress(player.level().getServer());
+            Card card = Card.of(new ItemStack(fight.icon()), fight.title(), fight.status(player,
+                            player.level().getServer()))
                     .accent(0xFFEF3826).badge("EN COURS")
                     .tooltip(List.of("Depuis " + fight.seconds() / 60 + " min",
-                            "700 ELO a la mort du boss, selon le rang aux degats",
+                            MoneyFormat.shortForm(fight.kind().elo()) + " ELO a la fin, selon le rang",
                             "Dans l'arene, tu gardes ton inventaire."));
-            if (health >= 0.0f) {
-                card = card.progress(Math.round(health * 1000.0f), 1000);
+            if (progress >= 0.0f) {
+                card = card.progress(Math.round(progress * 1000.0f), 1000);
             }
             if (FactionEvents.inWarzone(player)) {
                 card = card.action("leave|quitter l'arene");
@@ -85,11 +82,14 @@ public final class FactionEventMenu extends MenuController {
                 card = card.action("join|rejoindre l'arene");
             }
             running.add(card);
-            for (BossFight.Rival rival : fight.rivals()) {
+            boolean boss = fight instanceof BossFight;
+            for (EventRun.Rival rival : fight.rivals()) {
                 running.add(Card.of(new ItemStack(Items.BANNER.pick(rival.color())), rival.name(), List.of(
                         "Faction rivale", "Deux combattants a la fois")).accent(0xFF55545C)
-                        .tooltip(List.of("Ils frappent le boss et lui prennent du classement.",
-                                "Ils ne t'attaquent que si tu les frappes.")));
+                        .tooltip(boss ? List.of("Ils frappent le boss et lui prennent du classement.",
+                                "Ils ne t'attaquent que si tu les frappes.")
+                                : List.of("Ils se battent entre eux et contre toi.",
+                                "Ils visent la zone, le totem, ou la zone de depot.")));
             }
             sections.add(new MenuView.Section("EN COURS", "upgrade", MenuView.GRID, running));
         }

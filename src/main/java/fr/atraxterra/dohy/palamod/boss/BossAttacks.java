@@ -1,8 +1,6 @@
 package fr.atraxterra.dohy.palamod.boss;
 
 import fr.atraxterra.dohy.faction.event.BossFight;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -23,6 +21,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Les attaques des cinq boss, telles que le wiki les decrit (« Java | Boss »).

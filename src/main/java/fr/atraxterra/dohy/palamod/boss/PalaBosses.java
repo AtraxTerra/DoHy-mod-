@@ -1,8 +1,6 @@
 package fr.atraxterra.dohy.palamod.boss;
 
 import fr.atraxterra.dohy.palamod.PalaMod;
-import java.util.EnumMap;
-import java.util.Map;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
@@ -14,6 +12,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * Les boss de l'event Boss et les combattants des factions rivales (lot 22f).
