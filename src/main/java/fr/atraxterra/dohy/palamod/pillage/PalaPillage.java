@@ -15,10 +15,12 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -176,5 +178,19 @@ public final class PalaPillage {
         ITEMS.register(modBus);
         ENTITIES.register(modBus);
         COMPONENTS.register(modBus);
+        modBus.addListener(PalaPillage::onSetup);
+    }
+
+    /** Les distributeurs tirent les dynamites et allument les TNT : les canons a TNT marchent. */
+    private static void onSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            for (DeferredItem<? extends Item> dynamite : List.of(DYNAMITE, NINJA_DYNAMITE, BIG_DYNAMITE)) {
+                DispenserBlock.registerProjectileBehavior(dynamite.get());
+            }
+            TntDispenseBehavior behavior = new TntDispenseBehavior();
+            for (DeferredBlock<? extends Block> tnt : List.of(BIG_TNT, ENDIUM_TNT, SPONGE_TNT, EFFECT_TNT, WITHER_TNT)) {
+                DispenserBlock.registerBehavior(tnt.get(), behavior);
+            }
+        });
     }
 }

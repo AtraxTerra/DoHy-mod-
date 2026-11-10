@@ -95,8 +95,12 @@ public final class EnemyBaseMenu extends MenuController {
         List<Card> help = List.of(
                 Card.of(new ItemStack(Items.COMPASS), "La trouver", List.of("Boussole et coordonnees,",
                         "puis l'Unclaim Finder")).accent(0xFF3FA9F5),
-                Card.of(new ItemStack(Items.TNT), "Entrer", List.of("Rien a la main dans ses claims :",
-                        "explosifs et withers y passent")).accent(0xFFEF3826),
+                Card.of(new ItemStack(Items.TNT), "Entrer", List.of("Rien ne se pose dans ses claims :",
+                        "dynamites, canons, withers")).accent(0xFFEF3826)
+                        .tooltip(List.of("Ses claims debordent de deux chunks autour des murs.",
+                                "On n'y casse, n'y pose et n'y ouvre rien, meme en creatif :",
+                                "lance des dynamites, tire au canon a TNT depuis l'exterieur,",
+                                "ou amene un wither invoque hors des claims.")),
                 Card.of(new ItemStack(Items.CHEST), "Piller", List.of("Dans la salle des coffres,",
                         "ses claims tombent")).accent(0xFFFAC400));
         List<MenuView.Stat> stats = List.of(

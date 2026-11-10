@@ -18,7 +18,9 @@ import net.minecraft.world.item.Items;
  * </ul>
  *
  * @param half         demi-cote de l'emprise, en blocs (tours comprises)
- * @param claimRadius  rayon des claims, en chunks, autour du chunk central
+ * @param claimRadius  rayon des claims, en chunks, autour du chunk central :
+ *                     l'emprise plus deux chunks de glacis, ou rien ne se pose —
+ *                     la TNT arrive en dynamite, au canon ou par wither
  * @param clearHeight  hauteur degagee au-dessus du sol de la base
  * @param elo          ELO gagne en la pillant
  * @param money        argent verse a la banque de faction
@@ -27,13 +29,13 @@ import net.minecraft.world.item.Items;
  * @param tools        ce qu'il faudra pour la piller
  */
 public enum EnemyBaseTier {
-    OUTPOST(1, "avant_poste", "Avant-poste", 20, 1, 14, 150L, 25_000L, Items.STONE_BRICKS,
+    OUTPOST(1, "avant_poste", "Avant-poste", 20, 3, 14, 150L, 25_000L, Items.STONE_BRICKS,
             "41 x 41 : douve, enceinte, 4 tours", "Murs a eau, donjon d'obsidienne, 4 coffres, 10 gardes",
             "TNT, seau extrapole, TNT en endium"),
-    BASE(2, "base", "Base", 32, 2, 20, 500L, 120_000L, Items.OBSIDIAN,
+    BASE(2, "base", "Base", 32, 4, 20, 500L, 120_000L, Items.OBSIDIAN,
             "65 x 65 : obsidienne, spikes, casernes", "Donjon a 5 couches, balise, 6 coffres, 2 spawners, 18 gardes",
             "Seau extrapole, TNT en endium, withers"),
-    FORTRESS(3, "forteresse", "Forteresse", 48, 3, 28, 1_500L, 500_000L, Items.CRYING_OBSIDIAN,
+    FORTRESS(3, "forteresse", "Forteresse", 48, 5, 28, 1_500L, 500_000L, Items.CRYING_OBSIDIAN,
             "97 x 97 : place forte, lave, 4 casernes", "Enceinte et donjon a 6-7 couches, enclumes, 11 coffres, 30 gardes",
             "Withers ameliores, TNT en endium, seau extrapole");
 

@@ -54,9 +54,12 @@ public final class ClaimProtection {
                 && Commands.hasPermission(Commands.LEVEL_GAMEMASTERS).test(server.createCommandSourceStack());
     }
 
-    /** Vrai si ce joueur n'a rien a faire dans ce claim. */
+    /**
+     * Vrai si ce joueur n'a rien a faire dans ce claim. Un op en creatif passe
+     * partout, sauf dans une base ennemie : celle-la se pille, meme en creatif.
+     */
     private static boolean foreign(Player player, ClaimOwner owner) {
-        return owner.claimed() && !owner.ownedBy(player.getUUID()) && !exempt(player);
+        return owner.claimed() && !owner.ownedBy(player.getUUID()) && (owner.enemy() || !exempt(player));
     }
 
     private static void warn(ServerPlayer player, ClaimOwner owner) {
@@ -65,7 +68,7 @@ public final class ClaimProtection {
         if (last == null || now - last > 1000L) {
             LAST_WARNING.put(player.getUUID(), now);
             FactionApi.tell(player, owner.enemy()
-                    ? "Base ennemie des " + owner.faction() + " : rien a la main. Fais sauter ses murs (TNT, dynamite, wither)."
+                    ? "Base ennemie des " + owner.faction() + " : rien ne se casse ni ne se pose ici. Dynamites, canon a TNT ou wither."
                     : "Ce territoire appartient a la faction " + owner.faction() + ".", ChatFormatting.RED);
         }
     }
