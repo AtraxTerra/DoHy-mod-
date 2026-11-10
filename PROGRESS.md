@@ -100,6 +100,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 20b | **Stuff antique** : icônes et armure portée en 3D de Palamod Recreated (modèles traduits de leur bytecode), vol et invisibilité au set complet hors donjon (patchnotes V11), bonus de donjon dedans | fait |
 | 20c | **Retours en jeu** : pierre aléatoire qui disparaissait, entonnoirs sous le cobblebreaker et le crusher (sorties seulement), entonnoir en paladium qui aspire au sol, minerais qui se rendent eux-mêmes (fonte au four et au haut fourneau) | fait |
 | 21a | **Interfaces, lot 1** : kit d'interface DoHy UI (style Paladium, polices TrueType, vues et actions réseau), écran des métiers avec les contrats du jour, fiche d'un métier à onglets, shop à la maquette de l'Admin Shop — voir [docs/INTERFACES.md](docs/INTERFACES.md) | fait |
+| 21b | **Interfaces, lot 2** : menus génériques (`MenuView`) pour le menu principal, la banque, les contrats, la boutique, les améliorations, les collections et le musée | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -164,6 +165,16 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-10 (suite) — interfaces, lot 2
+
+**Fait** : une vue de menu générique (`MenuView` / `MenuScreen` : titre, cartouche de chiffres,
+sections de cartes en grille, lignes ou vignettes) et sept contrôleurs qui reprennent les règles
+des menus en coffre, supprimés : menu principal, banque, contrats, boutique, améliorations,
+collections (catégories puis vignettes, prestige au clic droit), musée (ailes puis vitrines).
+
+**Vérifié** : les neuf écrans capturés en jeu, ouverts par le vrai serveur intégré (solde et
+épargne crédités, catalogue et collections réels) ; captures envoyées au joueur.
 
 ### 2026-11-10 — interfaces, lot 1
 

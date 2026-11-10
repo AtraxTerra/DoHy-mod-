@@ -3,7 +3,6 @@ package fr.atraxterra.dohy.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.museum.MuseumApi;
-import fr.atraxterra.dohy.museum.MuseumBrowseMenu;
 import fr.atraxterra.dohy.museum.MuseumConfig;
 import fr.atraxterra.dohy.museum.MuseumMenu;
 import net.minecraft.ChatFormatting;
@@ -43,10 +42,7 @@ public final class MuseumCommand {
 
     private static int browse(CommandSourceStack source) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) ->
-                        new MuseumBrowseMenu(containerId, inventory, player),
-                Component.literal("Musee")));
+        fr.atraxterra.dohy.ui.menu.MuseumController.INSTANCE.open(player);
         return 1;
     }
 

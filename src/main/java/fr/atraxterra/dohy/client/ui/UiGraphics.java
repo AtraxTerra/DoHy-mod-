@@ -129,7 +129,16 @@ public final class UiGraphics {
     // -- Texte -----------------------------------------------------------------
 
     public float width(FontDescription face, String text, float size) {
-        return font.width(Ui.text(face, text)) * size / Ui.FONT_BASE;
+        return font.width(Ui.text(face, clean(text))) * size / Ui.FONT_BASE;
+    }
+
+    /**
+     * Les espaces insecables (celles de {@code MoneyFormat}) n'existent pas dans
+     * les polices du kit : la police de secours les dessinait en double espace.
+     */
+    private static String clean(String text) {
+        return text.indexOf('\u202F') < 0 && text.indexOf('\u00A0') < 0 ? text
+                : text.replace('\u202F', ' ').replace('\u00A0', ' ');
     }
 
     public void text(FontDescription face, String text, float x, float y, float size, int color) {
@@ -137,7 +146,7 @@ public final class UiGraphics {
         pose.pushMatrix();
         pose.translate(x, y);
         pose.scale(size / Ui.FONT_BASE, size / Ui.FONT_BASE);
-        graphics.text(font, Ui.text(face, text), 0, 0, color, false);
+        graphics.text(font, Ui.text(face, clean(text)), 0, 0, color, false);
         pose.popMatrix();
     }
 

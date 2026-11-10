@@ -2,7 +2,6 @@ package fr.atraxterra.dohy.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import fr.atraxterra.dohy.boost.BoutiqueMenu;
 import fr.atraxterra.dohy.ui.Hub;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -49,10 +48,7 @@ public final class MenuCommand {
 
     private static int openBoutique(CommandSourceStack source) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) ->
-                        new BoutiqueMenu(containerId, inventory, player),
-                Component.literal("Boutique")));
+        fr.atraxterra.dohy.ui.menu.BoutiqueController.INSTANCE.open(player);
         return 1;
     }
 }

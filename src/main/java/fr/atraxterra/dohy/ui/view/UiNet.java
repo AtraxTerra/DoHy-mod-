@@ -63,6 +63,11 @@ public final class UiNet {
         PacketDistributor.sendToPlayer(player, new Show(view));
     }
 
+    /** Le joueur regarde-t-il encore cette vue ? */
+    public static boolean isOpen(ServerPlayer player, Identifier view) {
+        return view.equals(OPEN.get(player.getUUID()));
+    }
+
     public static void forget(ServerPlayer player) {
         OPEN.remove(player.getUUID());
     }
@@ -119,6 +124,9 @@ public final class UiNet {
         register(ShopView.ID, ShopView.STREAM_CODEC, fr.atraxterra.dohy.shop.ShopController::handle);
         register(JobsView.ID, JobsView.STREAM_CODEC, fr.atraxterra.dohy.job.JobsController::handle);
         register(JobDetailView.ID, JobDetailView.STREAM_CODEC, fr.atraxterra.dohy.job.JobsController::handleDetail);
+        for (fr.atraxterra.dohy.ui.menu.MenuController menu : fr.atraxterra.dohy.ui.menu.Menus.all()) {
+            register(menu.id(), MenuView.STREAM_CODEC, menu::handle);
+        }
         PayloadRegistrar registrar = event.registrar("1");
         registrar.playToClient(Show.TYPE, Show.STREAM_CODEC);
         registrar.playToServer(Action.TYPE, Action.STREAM_CODEC, (action, context) -> {

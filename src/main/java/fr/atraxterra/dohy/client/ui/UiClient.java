@@ -2,9 +2,11 @@ package fr.atraxterra.dohy.client.ui;
 
 import fr.atraxterra.dohy.client.ui.screen.JobDetailScreen;
 import fr.atraxterra.dohy.client.ui.screen.JobsScreen;
+import fr.atraxterra.dohy.client.ui.screen.MenuScreen;
 import fr.atraxterra.dohy.client.ui.screen.ShopScreen;
 import fr.atraxterra.dohy.ui.view.JobDetailView;
 import fr.atraxterra.dohy.ui.view.JobsView;
+import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.ShopView;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.ui.view.UiView;
@@ -47,6 +49,10 @@ public final class UiClient {
         Screen current = minecraft.gui.screen();
         if (current instanceof ViewScreen screen && current instanceof UiScreen ui && ui.viewId().equals(view.viewId())) {
             screen.accept(view);
+            return;
+        }
+        if (view instanceof MenuView menu) {
+            minecraft.gui.setScreen(new MenuScreen(menu));
             return;
         }
         Function<UiView, Screen> factory = SCREENS.get(view.viewId());
