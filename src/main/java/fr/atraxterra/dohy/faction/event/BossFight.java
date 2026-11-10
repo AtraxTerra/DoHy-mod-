@@ -112,7 +112,7 @@ public final class BossFight {
             return null;
         }
         Vec3 center = Vec3.atBottomCenterOf(EventArena.BOSS_CENTER.above());
-        boss.snapTo(center.x, center.y, center.z, 180.0f, 0.0f);
+        boss.snapTo(center.x, center.y, center.z, 0.0f, 0.0f);
         boss.bind(fight.id);
         level.addFreshEntity(boss);
         fight.bossId = boss.getUUID();
