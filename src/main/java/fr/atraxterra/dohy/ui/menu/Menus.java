@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.ui.menu;
 import fr.atraxterra.dohy.faction.FactionMenus;
 import fr.atraxterra.dohy.faction.FactionTreeMenus;
 import fr.atraxterra.dohy.faction.base.EnemyBaseMenu;
+import fr.atraxterra.dohy.faction.event.FactionEventMenu;
 import fr.atraxterra.dohy.faction.reserve.ReserveMenu;
 import fr.atraxterra.dohy.palamod.alchemist.MysticEnchantMenu;
 import fr.atraxterra.dohy.palamod.dimminer.DimMinerMenus;
@@ -32,6 +33,6 @@ public final class Menus {
                 FactionMenus.Overview.INSTANCE, FactionMenus.Bank.INSTANCE, FactionMenus.Claims.INSTANCE,
                 FactionMenus.Ranking.INSTANCE, FactionMenus.Settings.INSTANCE,
                 FactionTreeMenus.Tree.INSTANCE, FactionTreeMenus.Branch.INSTANCE, ChestExplorerMenu.INSTANCE,
-                EnemyBaseMenu.INSTANCE, ReserveMenu.INSTANCE);
+                EnemyBaseMenu.INSTANCE, ReserveMenu.INSTANCE, FactionEventMenu.INSTANCE);
     }
 }

@@ -5047,6 +5047,58 @@ def main():
                       "settings": "minecraft:overworld"},
     })
 
+    # ---- events de faction (chapitre 22, lot 22f) ----
+    #
+    # Les cinq boss de l'event Boss gardent la texture de leur modele du PalaMod
+    # (entity/boss/), a sa taille d'origine : la geometrie est traduite du
+    # bytecode (tools/modelbase2java.py) et pointe dans ces feuilles telles
+    # quelles. La Warzone est une dimension vide, au biome the_void : aucun
+    # monstre n'y apparait, les arenes y sont baties par le code.
+    boss_sizes = {"beep_boop": (128, 128), "tobalt": (256, 256), "azhur": (128, 128),
+                  "morsula": (192, 192), "arachna": (128, 128)}
+    for name, size in boss_sizes.items():
+        source = os.path.join(root[1] or "", "assets", "palamod", "textures", "entity", "boss", name + ".png")
+        if not root[1] or not os.path.exists(source):
+            missing.append("boss:" + name)
+            continue
+        if png_size(source) != size:
+            wrong_size.append("boss:%s : %s au lieu de %s" % (name, png_size(source), size))
+            continue
+        target = os.path.join(RES, "assets", NS, "textures", "entity", "boss", name + ".png")
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(source, target)
+    for name, label_fr, label_en in (("boss_beep_boop", "Beep Boop", "Beep Boop"),
+                                     ("boss_tobalt", "Tobalt", "Tobalt"),
+                                     ("boss_azhur", "Azhur", "Azhur"),
+                                     ("boss_morsula", "Morsula", "Morsula"),
+                                     ("boss_arachna", "Arachna", "Arachna"),
+                                     ("rival_fighter", "Combattant rival", "Rival Fighter"),
+                                     ("volcania", "Volcania", "Volcania")):
+        label("entity", name, label_fr, label_en)
+    # Volcania, le dragon de l'Egg Hunt : la feuille du dragon de l'Ender, recoloree.
+    volcania = os.path.join(root[1] or "", "assets", "palamod", "textures", "entity", "egghunt", "volcania.png")
+    if not root[1] or not os.path.exists(volcania):
+        missing.append("egghunt:volcania")
+    elif png_size(volcania) != (256, 256):
+        wrong_size.append("egghunt:volcania : %s au lieu de (256, 256)" % (png_size(volcania),))
+    else:
+        target = os.path.join(RES, "assets", NS, "textures", "entity", "egghunt", "volcania.png")
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(volcania, target)
+    write("data/%s/dimension/warzone.json" % NS, {
+        "type": "minecraft:overworld",
+        "generator": {
+            "type": "minecraft:flat",
+            "settings": {
+                "biome": "minecraft:the_void",
+                "features": False,
+                "lakes": False,
+                "layers": [],
+                "structure_overrides": [],
+            },
+        },
+    })
+
     # ---- ecriture des tags accumules ----
     for path, entries in sorted(collected_tags.items()):
         write("data/%s" % path, {"replace": False, "values": sorted(entries)})

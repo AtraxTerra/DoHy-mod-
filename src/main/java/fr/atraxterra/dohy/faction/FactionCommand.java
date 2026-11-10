@@ -8,7 +8,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.faction.base.EnemyBase;
 import fr.atraxterra.dohy.faction.base.EnemyBaseTier;
 import fr.atraxterra.dohy.faction.base.EnemyBases;
+import fr.atraxterra.dohy.faction.event.FactionEventKind;
+import fr.atraxterra.dohy.faction.event.FactionEventMenu;
+import fr.atraxterra.dohy.faction.event.FactionEvents;
 import fr.atraxterra.dohy.faction.reserve.ReserveMenu;
+import fr.atraxterra.dohy.palamod.boss.BossKind;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -148,6 +152,45 @@ public final class FactionCommand {
                             ReserveMenu.INSTANCE.open(player);
                             return 1;
                         })))
+                .then(Commands.literal("event")
+                        .executes(ctx -> as(ctx.getSource(), player -> {
+                            FactionEventMenu.INSTANCE.open(player);
+                            return 1;
+                        }))
+                        .then(Commands.literal("rejoindre")
+                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                        FactionEvents.join(player), "Tu entres dans l'arene."))))
+                        .then(Commands.literal("quitter")
+                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                        FactionEvents.leave(player), "Tu quittes l'arene."))))
+                        .then(Commands.literal("lacher")
+                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                        FactionEvents.dropEgg(player), "Tu laches l'oeuf."))))
+                        .then(Commands.literal("arreter")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                        FactionEvents.stop(ctx.getSource().getServer()), "Event arrete."))))
+                        .then(Commands.literal("lancer")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .then(Commands.argument("event", StringArgumentType.word())
+                                        .suggests((ctx, builder) -> {
+                                            for (FactionEventKind kind : FactionEventKind.values()) {
+                                                builder.suggest(kind.id());
+                                            }
+                                            return builder.buildFuture();
+                                        })
+                                        .executes(ctx -> as(ctx.getSource(), player -> startEvent(player,
+                                                StringArgumentType.getString(ctx, "event"), null)))
+                                        .then(Commands.argument("boss", StringArgumentType.word())
+                                                .suggests((ctx, builder) -> {
+                                                    for (BossKind kind : BossKind.values()) {
+                                                        builder.suggest(kind.id());
+                                                    }
+                                                    return builder.buildFuture();
+                                                })
+                                                .executes(ctx -> as(ctx.getSource(), player -> startEvent(player,
+                                                        StringArgumentType.getString(ctx, "event"),
+                                                        StringArgumentType.getString(ctx, "boss"))))))))
                 .then(Commands.literal("base")
                         .executes(ctx -> as(ctx.getSource(), FactionCommand::enemyBase))
                         .then(Commands.literal("generer")
@@ -183,6 +226,19 @@ public final class FactionCommand {
     }
 
     /** {@code /f base} : la cible en cours, ou comment en demander une. */
+    /** {@code /f event lancer <event> [boss]} : pour tester sans attendre l'heure. */
+    private static int startEvent(ServerPlayer player, String event, String boss) {
+        FactionEventKind kind = FactionEventKind.byId(event);
+        if (kind == null) {
+            return result(player, "Event inconnu", "");
+        }
+        BossKind chosen = boss == null ? null : BossKind.byId(boss);
+        if (boss != null && chosen == null) {
+            return result(player, "Boss inconnu", "");
+        }
+        return result(player, FactionEvents.start(player.level().getServer(), kind, chosen), "Event lance.");
+    }
+
     private static int enemyBase(ServerPlayer player) {
         EnemyBase base = EnemyBases.of(player);
         if (EnemyBases.pending(player)) {

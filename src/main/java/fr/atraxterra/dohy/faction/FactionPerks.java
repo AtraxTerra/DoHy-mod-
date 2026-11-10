@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.faction;
 
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,7 +11,7 @@ import java.util.Set;
  * @param claims       chunks revendicables
  * @param homes        F homes ; aucun avant le palier 5 de la branche Globale, comme sur Paladium
  * @param homeDelay    secondes immobile avant la teleportation au home
- * @param raidDamage   part des degats de raid encaissee par les blocs du claim (1 = tout)
+ * @param raidDamage   part des degats encaissee en event, face aux boss et aux rivaux (1 = tout)
  * @param dungeonXp    bonus d'XP de donjon (0,05 = +5 %)
  * @param unlocks      objets debloques : « use:dynamite », « craft:hood_helmet »...
  * @param customBanner blason personnalise (palier 4 de la branche Globale)

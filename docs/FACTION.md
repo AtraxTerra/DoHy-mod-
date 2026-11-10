@@ -5,7 +5,7 @@ PvE**. Choix du joueur :
 
 - **progression seule** : la faction est ta base et ta progression ; pas de faction rivale vivante — seulement des
   **bases ennemies fictives**, générées sur demande pour être pillées (lot 22g) ;
-- **raids sur demande** : ta base n'est attaquée que si tu lances un raid de monstres ;
+- **pas de raids** sur ta base (choix du joueur) ;
 - **tous les objets** de pillage et de défense de PalaMod ;
 - **events aux vraies heures** du calendrier de Paladium.
 
@@ -19,7 +19,9 @@ PvE**. Choix du joueur :
 | 22d | Objets de pillage : dynamites, TNT spéciales, Unclaim Finder, explorateur de coffre, arc en paladium, flèche de Switch… | fait |
 | 22d-bis | Withers du pillage : réceptacle, gemmes de wither, améliorations | fait |
 | 22e | Réserve d'or : multibloc, investissements à intérêts | fait |
-| 22f | Events à heures fixes (Egg Hunt, End, KOTH, Boss, Totem) et raids sur demande | à faire |
+| 22f | Events à heures fixes : le calendrier et le **Boss** | fait |
+| 22f-2 | Events : KOTH à points et Totem | fait |
+| 22f-3 | Event : Egg Hunt (l'End et les raids ne sont pas repris : choix du joueur) | fait |
 | 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller | fait |
 
 ## Ce qui change en solo
@@ -71,7 +73,7 @@ objet pas encore porté affiche son lot et ne progresse pas.
 
 **Récompenses** : les « emplacements de membre » de la branche Globale deviennent deux claims
 chacun ; la Défense ajoute ses claims (10 à 200 par palier) ; F homes (1, 2 puis 3) et leur délai
-(10, 5, 3 puis 0 s) ; réduction des dégâts de raid (-5 à -20 %) ; XP de donjon (+5 à +20 %) ; blason
+(10, 5, 3 puis 0 s) ; réduction des dégâts en event (-5 à -20 %, contre les raids sur Paladium) ; XP de donjon (+5 à +20 %) ; blason
 personnalisé (palier 4 : copier une bannière à motifs) ; MOTD (palier 6) ; déblocages d'objets
 (`use:dynamite`, `craft:hood_helmet`…, vérifiés par les objets des lots 22c et 22d) ; réserve d'or
 (palier, valeur par or liquide, intérêts).
@@ -95,7 +97,7 @@ ingrédients. Sans faction, rien n'est débloqué ; le créatif passe outre.
 - **Obsidiennes piégées** : empoisonnée, boom, méga boom, de lave, sulfurique, knockback, gelée,
   anti-aggro, compacte, slime, à wither, et une par spike (bois, fer, or, diamant, améthyste,
   titane, paladium). Détruites par un wither, une explosion assez forte (pillage, lot 22d) ou un
-  raid (lot 22f), elles déclenchent leur effet au tick suivant ; l'outil magique ne les déclenche
+  raid, elles déclenchent leur effet au tick suivant ; l'outil magique ne les déclenche
   pas. Valeurs relevées au bytecode (`ObsiEffect`). **Solo** : le piège frappe tout ce qui vit
   autour sauf le propriétaire du claim ; le poison passe en Wither sur les morts-vivants ;
   l'anti-aggro calme tous les monstres à 6 blocs. Plus l'obsidienne à redstone (un fil en bloc)
@@ -319,3 +321,113 @@ réserve bâtie dans tes claims, et récolte des intérêts.
   - si un wither en casse un bloc, tout l'argent placé est perdu ;
   - un relevé par minute repère aussi une réserve abîmée.
 
+## Events de faction (22f)
+
+Le calendrier du wiki (« Java | Event faction », « Java | Boss », « Java | Totem »), **à l'heure du
+serveur** : annonce à 10, 5 et 1 minute, départ à la minute pile. Un event ne part que si un joueur
+en faction est connecté, et un seul à la fois.
+
+| Event | Quand | ELO | État |
+|---|---|---|---|
+| Boss | tous les jours, 1 h et 18 h | 700 | fait |
+| Egg Hunt | mardi et dimanche, 19 h (60 min) | 3 000 | fait |
+| Totem | mercredi, 21 h | 10 000 | fait |
+| KOTH à points | samedi, 21 h 30 (30 min) | 10 000 | fait |
+
+- **Warzone** : `palamod:warzone`, une dimension vide au biome `the_void` (aucun monstre n'y
+  apparaît). Chaque event a son arène, bâtie par le code la première fois. On y entre par l'écran des
+  events ou `/f event rejoindre`, on en sort par `/f event quitter`, à la fin de l'event (30 s après)
+  ou en mourant. **On y garde son inventaire** : en solo, l'arène n'est ouverte que le temps de
+  l'event.
+- **Factions rivales** : trois factions fictives par event (noms et couleurs tirés au sort) envoient
+  deux combattants chacune, renouvelés toutes les 45 s — des vindicateurs à leur bannière. Au Boss,
+  ils visent le boss et ses sbires et ne t'attaquent que si tu les frappes (hache de fer). Au KOTH et
+  au Totem, c'est du PvP (épée de pierre) : ils se battent entre eux et contre toi, et filent vers
+  la zone ou le totem quand personne n'est à portée. Elles prennent leur part du classement.
+- **Blocs** : dans la Warzone, on ne casse que ce qu'on a posé pendant l'event (et les toiles
+  d'Arachna) ; tout ce qui a été posé disparaît à la fin. Les explosions n'abîment pas les arènes.
+- **ELO par rang** : comme le PalaMod (`ExponentialPool.distribute(n, 1.2, elo)`), chaque rang
+  touche 1,2 fois la part du suivant. Seul, tu touches tout le pot ; à quatre factions, le premier
+  prend 32 %, le dernier 19 %.
+- **Écran** : l'event en cours (vie du boss, ton rang, rejoindre ou quitter, les rivaux), le
+  calendrier avec le temps restant, les cinq boss et leurs attaques. Carte sur la vue de faction,
+  `/f event`. Opérateurs : `/f event lancer <event> [boss]`, `/f event arreter`.
+
+### Le Boss
+
+Un des cinq boss du PalaMod, à tour de rôle (deux par jour). Modèles d'origine traduits du bytecode
+(`tools/modelbase2java.py`, exports Blockbench 1.7.10 sans retouche), textures du jar, taille
+`sizeMultiplier` : Beep Boop fait 6 × 11 blocs, Azhur 4 × 10, Tobalt 5,5 × 4,2.
+
+| Boss | Attaques (wiki) |
+|---|---|
+| Beep Boop | Mécabras (saisit à 5 blocs, 3 s, 20/s, puis projette) ; Séisme (à chaque 15 % de vie perdue, 50 blocs, faiblesse et cécité) ; Tic-Tac (engrenage à travers l'armure, 5 à 25 blocs) |
+| Tobalt | Koudboul (qui frappe au contact vole à 15 blocs) ; Éruption (25 blocs, immobilise 5 s) ; Bélier (charge ; un bloc posé sur sa route l'étourdit selon sa résistance) ; Épines IV tant qu'il n'est pas étourdi |
+| Azhur | Jetsable (tornade, 7 blocs) ; Sunami (vague, 25 blocs) ; Déchaînement (à chaque 20 % : repousse à 15 blocs, cécité, zombies du désert) |
+| Morsula | Stupéfreeze (gel, 15 blocs) ; Charge (projette à 7 blocs de haut) ; Picaglagla (pics de glace, dès deux cibles) |
+| Arachna | Exploweb (toiles, Wither I, lenteur, cécité, 25 blocs) ; Morsure (poison II 10 s) ; Captoile (cage de toiles et araignées, 7 à 25 blocs) |
+
+Épines I puis II sous 50 % et 25 % de vie pour tous sauf Tobalt, comme le wiki. **Solo** : 1 000
+points de vie (6 500 sur Paladium, partagés ; l'attribut plafonne à 1 024 en 26.2), dégâts du wiki divisés par quatre, coups des rivaux
+comptés à 30 % ; Déchaînement fait venir 8 zombies (25), Captoile 4 araignées (7), Picaglagla
+compte les rivaux comme cibles. Le boss repart s'il n'a pas été frappé depuis 5 min, ou après 30 min.
+À sa mort : 700 ELO par rang aux dégâts, bilan dans le chat (« Ta faction » 2e place »), compteur
+`event:boss`.
+
+### Le KOTH à points
+
+Samedi, 21 h 30, trente minutes. Une arène ronde de 26 blocs de rayon, avec au centre une colline à
+trois gradins : la **zone de capture** est son sommet (3,5 blocs de rayon, un phare au milieu).
+
+- **Chaque seconde, un occupant de la zone est tiré au sort** : sa faction marque un point (wiki).
+  Plus une faction a de monde dans la zone, plus elle a de chances ; en solo, il faut vider la zone
+  des combattants rivaux pour marquer à coup sûr.
+- **Après une mort, la zone ne te compte plus pendant 10 min** (wiki).
+- Barre en haut de l'écran : temps restant, qui tient la zone, qui mène. 10 000 ELO par rang aux
+  points ; titre du vainqueur et ta place pour chacun.
+
+### Le Totem
+
+Mercredi, 21 h. On arrive en surface et on **descend un long escalier jusqu'à une grotte** (wiki) :
+un dôme de 24 blocs de rayon, le totem au centre, la zone de dépôt au nord.
+
+- Le totem se casse **bloc par bloc, du sommet à la base** ; il fait douze blocs (or et pierre noire
+  sculptée), et redevient de la bedrock hors event, comme sur Paladium.
+- Le bloc cassé part avec toi (tu brilles) : il faut **rester 20 s d'affilée dans la zone de dépôt**
+  (en sortir remet le compte à zéro). **1 point par seconde** dans la zone avec un bloc, **500 points**
+  au dépôt (wiki).
+- **Mort ou temps écoulé : le bloc retourne sur le totem.** Le wiki ne donne pas le temps de port :
+  90 s.
+- Les combattants rivaux cassent le totem eux aussi (3 s au pied) ; leur porteur brille, ne se bat
+  plus et file à la zone : le tuer renvoie son bloc sur le totem. Une faction rivale ne porte qu'un
+  bloc à la fois.
+- Trente minutes au plus (le wiki ne dit rien), moins si les douze blocs sont déposés. 10 000 ELO par
+  rang aux points.
+
+### L'Egg Hunt
+
+Mardi et dimanche, 19 h. L'île volcanique de **Volcania** : 40 blocs de rayon, bordée d'un muret,
+un autel d'obsidienne au centre, quatre bassins de lave autour.
+
+- **Abattre Volcania** : le dragon de l'Egg Hunt (`EntityCustomDragon` du PalaMod, copie du dragon
+  de l'Ender). Ici c'est le dragon de l'Ender de 26.2 avec la texture `volcania.png` du PalaMod. Il
+  tourne autour de l'île et pique toutes les 8 à 14 s sur un joueur ou un rival ; à 75, 50 et 25 %
+  de vie, il rugit et plane 6 s juste au-dessus de l'autel, à portée d'épée (le dragon vanilla se
+  pose sur son podium, Volcania n'en a pas). Il ne casse rien
+  (aucun monstre ne casse de bloc dans la Warzone). Pas abattu en 20 min : il repart, sans œuf.
+- **L'œuf** apparaît sur l'autel. On le prend d'un clic ; **le porteur fait gagner une seconde par
+  seconde** à sa faction (classement au temps de port, wiki).
+- **Tuer le porteur vole l'œuf** ; mort autrement, ou lâché (`/f event lacher`), il retombe là où il
+  était. Qui l'a perdu ne peut le reprendre qu'après **10 min** (`PICKUP_LOCK_MILLIS` du PalaMod).
+  Tomber dans le vide ou quitter l'arène le renvoie sur l'autel.
+- **60 min de chasse** après la mort du dragon ; 3 000 ELO par rang au temps de port (facteur 1,2,
+  comme `EggHuntManager`).
+- **Rivaux** : pendant le combat, ils patrouillent loin de l'autel ; ils ne touchent pas l'œuf
+  dans les 10 s où il apparaît (celui qui a abattu Volcania a sa chance), puis le ramassent,
+  s'enfuient avec, et pourchassent quiconque le porte.
+
+### Réduction des dégâts en event
+
+La récompense « dégâts de raid » de la branche Défense (-5, -10, -15, -20 %) protège ici des boss,
+de Volcania, de leurs sbires et des combattants rivaux, dans la Warzone : il n'y a pas de raids en
+solo.

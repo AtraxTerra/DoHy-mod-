@@ -198,7 +198,7 @@ public final class FactionTree {
     }
 
     private static Reward raids(int percent) {
-        return new Reward("-" + percent + " % de degats de raid", builder -> builder.raidReduction(percent / 100f));
+        return new Reward("-" + percent + " % de degats en event", builder -> builder.raidReduction(percent / 100f));
     }
 
     private static Reward dungeon(int percent) {

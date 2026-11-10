@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.palamod;
 
 import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
+import fr.atraxterra.dohy.palamod.boss.PalaBosses;
 import fr.atraxterra.dohy.palamod.defense.PalaDefense;
 import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
 import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
@@ -86,6 +87,7 @@ public final class PalaMod {
         PalaPillage.register(modBus);
         PalaWithers.register(modBus);
         PalaReserve.register(modBus);
+        PalaBosses.register(modBus);
         PalaLegendary.register(modBus);
         PalaDungeon.register(modBus);
         PalaDungeonGear.register(modBus);
