@@ -4,7 +4,6 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.economy.Bank;
-import fr.atraxterra.dohy.shop.BankMenu;
 import fr.atraxterra.dohy.economy.DeathPenalty;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.PlayerEconomy;
@@ -62,9 +61,7 @@ public final class BankCommand {
 
     private static int open(CommandSourceStack source) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> new BankMenu(containerId, inventory, player),
-                Component.literal("Banque")));
+        fr.atraxterra.dohy.ui.menu.BankController.INSTANCE.open(player);
         return 1;
     }
 

@@ -6,7 +6,6 @@ import fr.atraxterra.dohy.contract.ActiveContract;
 import fr.atraxterra.dohy.contract.ContractApi;
 import fr.atraxterra.dohy.contract.ContractConfig;
 import fr.atraxterra.dohy.contract.ContractData;
-import fr.atraxterra.dohy.contract.ContractsMenu;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -47,10 +46,7 @@ public final class ContractsCommand {
 
     private static int open(CommandSourceStack source) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) ->
-                        new ContractsMenu(containerId, inventory, player),
-                Component.literal("Contrats")));
+        fr.atraxterra.dohy.ui.menu.ContractsController.INSTANCE.open(player);
         return 1;
     }
 
@@ -62,7 +58,7 @@ public final class ContractsCommand {
                         + ContractApi.globalLevel(player))
                 .withStyle(ChatFormatting.LIGHT_PURPLE)
                 .append(Component.literal("  ·  renouvellement dans "
-                                + ContractsMenu.delay(ContractApi.minutesUntilDailyReset())
+                                + fr.atraxterra.dohy.ui.menu.ContractsController.delay(ContractApi.minutesUntilDailyReset())
                                 + "  ·  " + MoneyFormat.exact(data.playtimeMinutes())
                                 + " min de jeu")
                         .withStyle(ChatFormatting.DARK_GRAY)), false);
@@ -79,7 +75,7 @@ public final class ContractsCommand {
                     .append(Component.literal("  x"
                                     + ContractConfig.config().demand().multiplier()
                                     + " · change dans "
-                                    + ContractsMenu.delay(ContractApi.minutesUntilDailyReset()))
+                                    + fr.atraxterra.dohy.ui.menu.ContractsController.delay(ContractApi.minutesUntilDailyReset()))
                             .withStyle(ChatFormatting.DARK_GRAY)), false);
         }
 

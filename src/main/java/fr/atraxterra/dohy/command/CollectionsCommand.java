@@ -3,7 +3,6 @@ package fr.atraxterra.dohy.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.atraxterra.dohy.collection.CollectionApi;
-import fr.atraxterra.dohy.collection.CollectionsMenu;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.util.MoneyFormat;
@@ -62,10 +61,7 @@ public final class CollectionsCommand {
 
     private static int open(CommandSourceStack source) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) ->
-                        new CollectionsMenu(containerId, inventory, player),
-                Component.literal("Collections")));
+        fr.atraxterra.dohy.ui.menu.CollectionsController.INSTANCE.open(player);
         return 1;
     }
 

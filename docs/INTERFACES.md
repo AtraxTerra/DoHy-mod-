@@ -10,7 +10,7 @@ autocrafter, crusher, cobblebreaker, grinder).
 | Lot | Écrans | État |
 |-----|--------|------|
 | 1 | Kit, métiers et fiche d'un métier, shop | fait |
-| 2 | Économie : menu principal, banque, contrats, boutique de boosters, collections, musée, améliorations | à faire |
+| 2 | Économie : menu principal, banque, contrats, boutique de boosters, collections, musée, améliorations | fait (en validation) |
 | 3 | Palamod : donjons, profil RPG, monture, golem, dimension du Mineur, enchantement mystique | à faire |
 | 4 | Conteneurs : machines (crusher déjà maquetté), coffres en paladium, coffre de vente, musée | à faire |
 
@@ -84,6 +84,29 @@ script.
   fiche de l'objet à droite. Les règles sont celles de l'ancien shop : remise d'achat plafonnée à
   25 %, prix de vente dynamique, vente verrouillée tant que la collection n'est pas assez
   avancée. Les anciens `ShopMenu` et `JobsMenu` en coffre sont supprimés.
+
+## Les menus génériques (lot 2)
+
+Le menu principal, la banque, les contrats, la boutique, les collections, le musée et les
+améliorations n'ont pas de maquette Paladium. Ils partagent une vue, `MenuView`, dessinée par
+`MenuScreen` dans le style des autres écrans :
+
+- un titre rouge, qui rétrécit plutôt que d'être coupé ; un sous-titre ;
+- un cartouche de chiffres à cadre vert, en haut à droite (liquide, épargne, niveau global…) ;
+- des **sections** avec un intertitre à losange, chacune dans une disposition :
+  `GRID` (cartes larges, quatre par rangée), `ROWS` (lignes pleine largeur : les contrats),
+  `TILES` (petites vignettes d'objet : collections, vitrines du musée) ;
+- des **cartes** : objet, titre, deux ou trois lignes, pastille, liseré de couleur, barre
+  d'avancement, bulle détaillée, et deux actions (clic gauche, clic droit). Grisée : pas assez
+  d'argent, déjà actif ; verte : terminé, acquis, exposé ;
+- la zone défile à la molette.
+
+Côté serveur, chaque menu est un `MenuController` (`ui/menu`) : il construit sa vue et traite
+les clics sur ses cartes ; après une action, la vue est renvoyée si le joueur est toujours dessus.
+Les sous-pages (une catégorie de collections, une aile du musée) sont un état par joueur dans le
+contrôleur ; l'hexagone de gauche y revient avant de retourner au menu principal. `Hub.open`
+reste le point d'entrée des autres écrans. Les sept anciens menus en coffre sont supprimés ; le
+coffre de vente et le guichet du musée, de vrais conteneurs, viendront au lot 4.
 
 ## Vérification
 
