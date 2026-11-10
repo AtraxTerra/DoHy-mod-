@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XZX",
+    "XXX"
+  ],
+  "key": {
+    "X": "#minecraft:wool",
+    "Z": "palamod:paladium_core"
+  },
+  "result": {
+    "id": "palamod:hood_helmet",
+    "count": 1
+  }
+}

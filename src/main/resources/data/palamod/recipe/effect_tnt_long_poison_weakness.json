@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "ZYA",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:tnt",
+    "Y": "palamod:paladium_core",
+    "Z": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "minecraft:splash_potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:long_poison"
+        }
+      },
+      "strict": false
+    },
+    "A": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "minecraft:splash_potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:weakness"
+        }
+      },
+      "strict": false
+    }
+  },
+  "result": {
+    "id": "palamod:effect_tnt",
+    "count": 2
+  }
+}

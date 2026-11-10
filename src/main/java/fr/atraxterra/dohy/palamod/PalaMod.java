@@ -1,25 +1,26 @@
 package fr.atraxterra.dohy.palamod;
 
+import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
+import fr.atraxterra.dohy.palamod.defense.PalaDefense;
+import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
+import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
+import fr.atraxterra.dohy.palamod.dungeon.PalaDungeonGear;
 import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
 import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
-import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.godpickaxe.PalaGodPickaxe;
 import fr.atraxterra.dohy.palamod.golem.PalaGolem;
-import fr.atraxterra.dohy.palamod.nature.PalaNature;
-import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
+import fr.atraxterra.dohy.palamod.legendary.PalaLegendary;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
-import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
-import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
 import fr.atraxterra.dohy.palamod.miner.PalaMiner;
-import fr.atraxterra.dohy.palamod.storage.PalaStorage;
-import fr.atraxterra.dohy.palamod.defense.PalaDefense;
+import fr.atraxterra.dohy.palamod.mount.PalaMount;
+import fr.atraxterra.dohy.palamod.nature.PalaNature;
+import fr.atraxterra.dohy.palamod.pillage.PalaPillage;
 import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
-import fr.atraxterra.dohy.palamod.legendary.PalaLegendary;
-import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
-import fr.atraxterra.dohy.palamod.dungeon.PalaDungeonGear;
+import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
+import fr.atraxterra.dohy.palamod.storage.PalaStorage;
 import net.neoforged.bus.api.IEventBus;
 
 /**
@@ -80,6 +81,7 @@ public final class PalaMod {
         PalaStorage.register(modBus);
         PalaPvp.register(modBus);
         PalaDefense.register(modBus);
+        PalaPillage.register(modBus);
         PalaLegendary.register(modBus);
         PalaDungeon.register(modBus);
         PalaDungeonGear.register(modBus);

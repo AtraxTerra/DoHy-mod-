@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "palamod:block/big_tnt_top",
+    "side": "palamod:block/big_tnt_side",
+    "bottom": "palamod:block/big_tnt_bottom"
+  }
+}

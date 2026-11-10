@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "palamod:empty_bow_modifier",
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "minecraft:potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:strength"
+        }
+      },
+      "strict": false
+    }
+  ],
+  "result": {
+    "id": "palamod:range_bow_modifier",
+    "count": 1
+  }
+}

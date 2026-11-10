@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " XY",
+    "X Y",
+    " XY"
+  ],
+  "key": {
+    "X": "palamod:paladium_stick",
+    "Y": "palamod:diamond_string"
+  },
+  "result": {
+    "id": "palamod:paladium_bow",
+    "count": 1
+  }
+}

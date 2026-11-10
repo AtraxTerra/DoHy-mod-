@@ -14,14 +14,19 @@ import fr.atraxterra.dohy.palamod.golem.PalaGolem;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
 import fr.atraxterra.dohy.palamod.mount.PalaMount;
+import fr.atraxterra.dohy.palamod.pillage.PalaPillage;
 import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import fr.atraxterra.dohy.palamod.storage.ChestTier;
 import fr.atraxterra.dohy.palamod.storage.PalaChestMenu;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
 import fr.atraxterra.dohy.ui.KitMenus;
 import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.client.renderer.entity.TntRenderer;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.api.distmarker.Dist;
@@ -70,11 +75,21 @@ public final class DoHyClient {
                 PalaDefense.FAKE_WATER, PalaDefense.FLOWING_FAKE_WATER);
     }
 
-    /** Le golem gardien, sur le modele du golem de fer ; le Dancarok, sur le sien. */
+    /**
+     * Le golem gardien, sur le modele du golem de fer ; le Dancarok, sur le sien.
+     * La dynamite se dessine comme une boule de neige, par son objet ; les TNT du
+     * pillage allumees comme la TNT vanilla, par l'etat de bloc qu'elles portent.
+     */
     @SubscribeEvent
+    @SuppressWarnings("unchecked")
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(PalaGolem.GUARDIAN_GOLEM.get(), GuardianGolemRenderer::new);
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
+        event.registerEntityRenderer(PalaPillage.DYNAMITE_ENTITY.get(), ThrownItemRenderer::new);
+        // TntRenderer est type sur PrimedTnt, dont PalaPrimedTnt herite : le
+        // rendu ne lit que l'etat de bloc et la meche, communs aux deux.
+        event.registerEntityRenderer((EntityType<PrimedTnt>) (EntityType<?>) PalaPillage.PRIMED_TNT.get(),
+                TntRenderer::new);
     }
 
     /** Le modele du Dancarok, converti de son fichier Bedrock. */
@@ -88,6 +103,9 @@ public final class DoHyClient {
         event.registerAboveAll(
                 Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "money"),
                 new MoneyHudLayer());
+        event.registerAboveAll(
+                Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "finder"),
+                new FinderHudLayer());
     }
 
     /**

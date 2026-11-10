@@ -1,9 +1,11 @@
 package fr.atraxterra.dohy.palamod.alchemist;
 
+import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.job.JobApi;
+import fr.atraxterra.dohy.palamod.defense.DefenseGate;
 import fr.atraxterra.dohy.ui.menu.MenuController;
-import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
+import fr.atraxterra.dohy.ui.view.MenuView;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -81,6 +83,9 @@ public final class MysticEnchantMenu extends MenuController {
         if (enchant.levelOn(player, held) >= holder.value().getMaxLevel()) {
             return Component.translatable("message.palamod.mystic_enchant.max");
         }
+        if (enchant.unlock() != null && !DefenseGate.allows(player, enchant.unlock())) {
+            return Component.translatable("message.palamod.mystic_enchant.locked");
+        }
         if (enchant.job() != null && !JobApi.meets(player, enchant.job(), enchant.jobLevel())) {
             return Component.translatable("message.palamod.mystic_enchant.job",
                     enchant.job().display(), enchant.jobLevel());
@@ -114,6 +119,9 @@ public final class MysticEnchantMenu extends MenuController {
         EnchantmentHelper.updateEnchantments(held, enchantments -> enchantments.set(holder, next));
         if (!player.getAbilities().instabuild) {
             player.giveExperienceLevels(-MysticEnchant.COST);
+        }
+        if (enchant.counter() != null) {
+            FactionApi.stat(player, enchant.counter(), 1);
         }
         success(player);
         player.sendSystemMessage(Component.translatable("message.palamod.mystic_enchant.done",

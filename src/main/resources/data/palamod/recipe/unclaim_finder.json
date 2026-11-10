@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "YWY",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot",
+    "Y": "palamod:paladium_core",
+    "W": "palamod:findium"
+  },
+  "result": {
+    "id": "palamod:unclaim_finder",
+    "count": 1
+  }
+}

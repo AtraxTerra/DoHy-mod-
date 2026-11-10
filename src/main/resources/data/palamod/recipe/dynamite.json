@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S  ",
+    "X  ",
+    "X  "
+  ],
+  "key": {
+    "X": "minecraft:tnt",
+    "S": "palamod:diamond_string"
+  },
+  "result": {
+    "id": "palamod:dynamite",
+    "count": 4
+  }
+}

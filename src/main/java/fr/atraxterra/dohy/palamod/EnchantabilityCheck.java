@@ -45,7 +45,9 @@ public final class EnchantabilityCheck {
 
     /** Des objets qui s'usent mais ne s'enchantent pas, sur Paladium non plus. */
     private static final List<String> COUNTED_USES = List.of(
-            "_stick", "_ring", "magical_tool", "aggro_stone", "guardian_hammer", "capture_stone");
+            "_stick", "_ring", "magical_tool", "aggro_stone", "guardian_hammer", "capture_stone",
+            // Le pillage (chapitre 22) : les detecteurs s'usent tenus en main, le seau a chaque nappe.
+            "_finder", "_finder_orange", "_finder_red", "_finder_blue", "extrapolated_bucket");
 
     private EnchantabilityCheck() {
     }

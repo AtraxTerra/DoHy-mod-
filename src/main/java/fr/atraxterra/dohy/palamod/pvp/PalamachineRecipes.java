@@ -21,8 +21,8 @@ import java.util.List;
  * <p>Portees : les sticks, les anneaux et les cornes de monture — creation et
  * reparation —, et la recharge de l'extracteur d'alchimiste (l'extracteur
  * entame en ressort a 144 utilisations ; le compteur {@code refill} qu'elle
- * tenait ne servait a rien d'autre), et les runes de donjon (chapitre 20).
- * Laisses : les detecteurs de claim.
+ * tenait ne servait a rien d'autre), les runes de donjon (chapitre 20) et
+ * les Unclaim Finders orange, rouge et bleu (chapitre 22, pillage).
  *
  * <p>La defense d'elephant ({@code TUSK}), centre des recettes de cornes,
  * n'existe pas ici : un bloc d'os la remplace, comme dans l'ancien substitut
@@ -108,6 +108,12 @@ public final class PalamachineRecipes {
             add(built, "rune_rare", "rune_fragment_rare", "rune_fragment_rare", "rune_fragment_rare",
                     "rune_fragment_rare", "paladium_block");
             add(built, "rune_epic", "rune_rare", "rune_rare", "endium_fragment", "rune_rare", "endium_fragment");
+            // Les Unclaim Finders : chacun sort du precedent.
+            add(built, "unclaim_finder_orange", "unclaim_finder", "findium", "findium", "findium", "findium");
+            add(built, "unclaim_finder_red", "unclaim_finder_orange", "findium", "paladium_core", "findium",
+                    "paladium_core");
+            add(built, "unclaim_finder_blue", "big_ring", "findium_block", "unclaim_finder_red", "findium_block",
+                    "unclaim_finder_red");
             // L'extracteur : trois lingots de paladium et un seau d'eau, qui part avec.
             add(built, "extractor", "extractor", "paladium_ingot", "paladium_ingot", Items.WATER_BUCKET, "paladium_ingot");
             recipes = List.copyOf(built);

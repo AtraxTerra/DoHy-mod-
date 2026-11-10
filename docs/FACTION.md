@@ -15,7 +15,8 @@ PvE**. Choix du joueur :
 | 22a | Cœur : création, claims et protection, banque, homes, ELO et ligues, onglets, `/f` | fait |
 | 22b | Arbre de technologie : Global, Pillage, Défense, Économie | fait |
 | 22c | Objets de défense : obsidiennes à effet, spikes obsi, Fake Water, éponges, brouilleur, enclumes, amulettes… | fait |
-| 22d | Objets de pillage : dynamites, TNT spéciales, withers custom, Unclaim Finder, arc en paladium, flèche de Switch… | à faire |
+| 22d | Objets de pillage : dynamites, TNT spéciales, Unclaim Finder, explorateur de coffre, arc en paladium, flèche de Switch… | fait |
+| 22d-bis | Withers du pillage : réceptacle, gemmes de wither, améliorations | à faire |
 | 22e | Réserve d'or : multibloc, investissements à intérêts | à faire |
 | 22f | Events à heures fixes (Egg Hunt, End, KOTH, Boss, Totem) et raids sur demande | à faire |
 
@@ -64,7 +65,7 @@ jeu » ; « visiter N factions » → « visiter N structures » (villages, temp
 « tuer N joueurs différents » → « tuer N espèces différentes ». Les compteurs viennent des
 statistiques du jeu (blocs parcourus, temps de jeu, blocs cassés, objets fabriqués) ou des compteurs
 de faction (`FactionStats` : stick of god, outil de construction, et ceux des lots suivants). Un
-objet pas encore porté affiche son lot (22c, 22d, 22e) et ne progresse pas.
+objet pas encore porté affiche son lot (22d-bis, 22e) et ne progresse pas.
 
 **Récompenses** : les « emplacements de membre » de la branche Globale deviennent deux claims
 chacun ; la Défense ajoute ses claims (10 à 200 par palier) ; F homes (1, 2 puis 3) et leur délai
@@ -87,9 +88,8 @@ ingrédients. Sans faction, rien n'est débloqué ; le créatif passe outre.
   la TNT ordinaire ne l'entame pas (résistance 60), un wither la casse. **L'outil magique**
   (10 000 usages) la retire intacte, comme tout bloc du tag `palamod:magical_tool_removable`.
 - **Recettes** : celles de PalaMod (`PRegister_Craft`, `ObsiEffect`, `PPRegisterer`, amulettes du
-  Chasseur). Le coffre en fer d'Iron Chests (obsidienne à wither) devient un coffre, la ficelle de
-  diamant (amulette du chasseur) une ficelle ; discrétion et combat, désactivées sur Paladium, et le
-  home remover reçoivent une recette.
+  Chasseur). Le coffre en fer d'Iron Chests (obsidienne à wither) devient un coffre ; discrétion et
+  combat, désactivées sur Paladium, et le home remover reçoivent une recette.
 - **Obsidiennes piégées** : empoisonnée, boom, méga boom, de lave, sulfurique, knockback, gelée,
   anti-aggro, compacte, slime, à wither, et une par spike (bois, fer, or, diamant, améthyste,
   titane, paladium). Détruites par un wither, une explosion assez forte (pillage, lot 22d) ou un
@@ -108,7 +108,7 @@ ingrédients. Sans faction, rien n'est débloqué ; le créatif passe outre.
   mine pas, et qui encaisse 1, 2 ou 3 coups de wither.
 - **Brouilleur de coordonnées** — Paladium : faux F3 aux joueurs proches. **Solo** : à 16 blocs,
   les monstres perdent de vue les joueurs à plus de 6 blocs. Sa recette demande l'Unclaim Finder
-  rouge : une boussole le remplace jusqu'au lot 22d.
+  rouge.
 - **Pistolet à liquide** : pompe les sources (eau, lave, eau angélique, Fake Water ; 16 seaux) et
   les pose à 24 blocs. **Home remover** — Paladium : efface les homes ennemis d'un chunk.
   **Solo** : efface les monstres du chunk et y empêche leur apparition une heure. **Pierre
@@ -129,3 +129,46 @@ ingrédients. Sans faction, rien n'est débloqué ; le créatif passe outre.
 | `craft:<métal>_anvil` | poser l'enclume |
 | `use:pistol_tank`, `use:home_remover` | utiliser le pistolet, le home remover |
 
+## Objets de pillage (22d)
+
+Mêmes verrous que la défense (`DefenseGate`) : tout se fabrique, l'usage demande le palier. Les
+compteurs de la branche Pillage sont branchés (dynamites lancées, flèches de Switch, nappes vidées,
+modificateurs posés, secondes de Fake Water évitées, Unclaim Helmet posé, withers invoqués).
+
+- **Dynamites** (normale, ninja, big) : se lancent, se collent au premier bloc ou à la première
+  créature touchée, et sautent 2 à 2,5 s plus tard (puissance 2,5, 3 et 4,5 ; la TNT vaut 4). La
+  ninja est muette. Explosion de TNT : l'obsidienne, les portes renforcées et l'eau tiennent.
+- **TNT du pillage** — compacte (6), en **endium** (8,8, la valeur du wiki ; le code disait 13,2)
+  qui **perce** : jusqu'à dix blocs d'obsidienne à trois blocs cèdent, les obsidiennes piégées se
+  déclenchent ; **éponge** (boit les liquides d'un cube de 5, sans exploser) ; **magique** (4, plus
+  cécité II et poison II à 5 blocs) ; **à wither** (un wither vanilla, un second une fois sur cent).
+  Toutes s'allument comme la TNT ; les claims des autres ne sont ni percés ni asséchés.
+- **Unclaim Finders** vert, orange, rouge et bleu (1, 9, 25, 49 chunks) — Paladium : la part de
+  tile entities, qui trahit une base non claim. **Solo** : les conteneurs (coffres de structures,
+  de donjons, de bases à piller), 10 % par conteneur ; le bleu donne la direction du plus proche.
+  **Spawner Finder** : les spawners de 9 chunks. Tenus en main, ils s'usent (2 h 30) et un
+  cartouche du kit s'affiche au milieu du bord gauche. Orange, rouge et bleu sortent de la
+  palamachine ; ce qui en sort compte maintenant comme fabriqué.
+- **Explorateur de coffre** : accroupi, clic droit sur un conteneur → son contenu en lecture seule,
+  sans l'ouvrir (un coffre de structure scellé tire son butin).
+- **Détecteur de présence** — Paladium : allumé quand un membre d'une faction donnée est
+  connecté. **Solo** : allumé, avec un signal de redstone 15, quand un monstre rôde à 16 blocs.
+- **Seau extrapolé** (32 usages) : vise un liquide, toute la nappe disparaît (512 blocs au plus).
+- **Arc en paladium** (900 usages, flèches à 3 de dégâts) et ses modificateurs **Range** (flèche
+  1,5 fois plus rapide) et **Speed** (se bande 1,5 fois plus vite), posés à l'**enclume** au lieu
+  de la Bow Machine. **Flèche de Switch** : tirée à cet arc, tireur et cible échangent leur place.
+- **Cagoule** (le casque en fer de 26.2, sur la couche de PalaMod). **Solo** : une fois débloquée,
+  les monstres te repèrent à 60 % de leur distance.
+- **Ficelle de diamant** : l'arc, la dynamite ; l'amulette du chasseur la retrouve.
+- **Enchantements** de la table de l'Alchimiste : **Unclaim Helmet** (le casque vaut un finder
+  vert) et **Fake Water Protection** (la Fake Water ne ronge plus ; débloqué au palier 6).
+
+| Clé de l'arbre | Ce qu'elle débloque |
+|----------------|---------------------|
+| `use:dynamite`, `use:ninja_dynamite`, `use:big_dynamite` | lancer la dynamite |
+| `craft:hood_helmet` | l'effet de la cagoule |
+| `craft:chest_explorer`, `use:online_detector` | utiliser l'explorateur, poser le détecteur |
+| `craft:paladium_bow`, `craft:switch_arrow` | tirer à l'arc en paladium, l'échange de la flèche |
+| `craft:extrapolated_bucket` | utiliser le seau extrapolé |
+| `enchant:fake_water_protection` | l'enchantement à la table de l'Alchimiste |
+| `use:wither` | poser la TNT à wither |

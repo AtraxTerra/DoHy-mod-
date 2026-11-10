@@ -69,7 +69,8 @@ public class MachineMenu extends AbstractContainerMenu {
 
         for (int index = 0; index < layout.slots().size(); index++) {
             MachineLayout.SlotPos position = layout.slots().get(index);
-            addSlot(new MachineSlot(container, index, position.x(), position.y()));
+            addSlot(new MachineSlot(container, index, position.x(), position.y(),
+                    crafts(layout) && !position.input()));
         }
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -97,17 +98,38 @@ public class MachineMenu extends AbstractContainerMenu {
 
         private final Container machine;
         private final int machineIndex;
+        private final boolean crafted;
 
-        MachineSlot(Container machine, int index, int x, int y) {
+        MachineSlot(Container machine, int index, int x, int y, boolean crafted) {
             super(machine, index, x, y);
             this.machine = machine;
             this.machineIndex = index;
+            this.crafted = crafted;
         }
 
         @Override
         public boolean mayPlace(ItemStack stack) {
             return machine.canPlaceItem(machineIndex, stack);
         }
+
+        @Override
+        public void onTake(Player player, ItemStack stack) {
+            super.onTake(player, stack);
+            if (crafted && !stack.isEmpty()) {
+                stack.onCraftedBy(player, stack.getCount());
+            }
+        }
+    }
+
+    /**
+     * La palamachine fabrique, comme un etabli : ce qui sort de sa case de
+     * resultat compte dans la statistique « objets fabriques », celle que lit
+     * l'arbre de faction (les Unclaim Finders orange, rouge et bleu). Les autres
+     * machines broient, cuisent, cassent : leurs sorties ne sont pas des
+     * fabrications.
+     */
+    private static boolean crafts(MachineLayout layout) {
+        return layout == MachineLayout.PALAMACHINE;
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
@@ -202,6 +224,10 @@ public class MachineMenu extends AbstractContainerMenu {
         if (index < machineSlots) {
             if (!moveItemStackTo(stack, machineSlots, slots.size(), true)) {
                 return ItemStack.EMPTY;
+            }
+            int moved = original.getCount() - stack.getCount();
+            if (moved > 0 && slot instanceof MachineSlot machineSlot && machineSlot.crafted) {
+                original.copyWithCount(moved).onCraftedBy(player, moved);
             }
         } else if (!insertIntoMachine(stack)) {
             return ItemStack.EMPTY;

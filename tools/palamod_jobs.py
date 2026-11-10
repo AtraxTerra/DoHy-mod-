@@ -230,7 +230,7 @@ REWARD_NAMES = {
     "TRAVEL_SLIMYHELMET": ("travel_slimyhelmet", "Casque gluant"),
     "PALADIUM_CHEST": ("paladium_chest", "Coffre en paladium"),
     "DIAMOND_STRING": ("diamond_string", "Fil de diamant"),
-    "BOWUPGRADE_EMPTY": ("empty_bow_upgrade", "Amelioration d'arc vide"),
+    "BOWUPGRADE_EMPTY": ("empty_bow_modifier", "Modificateur d'arc vide"),
     "TUSK": ("tusk", "Defense"),
     "LIGHTNING_POTION": ("lightning_potion", "Potion de foudre"),
     "EXTRAPOLATED_BUCKET": ("extrapolated_bucket", "Seau extrapole"),

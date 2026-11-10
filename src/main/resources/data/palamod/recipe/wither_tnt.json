@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ZZZ",
+    "XYX",
+    "XXX"
+  ],
+  "key": {
+    "Z": "minecraft:wither_skeleton_skull",
+    "X": "minecraft:tnt",
+    "Y": "palamod:paladium_core"
+  },
+  "result": {
+    "id": "palamod:wither_tnt",
+    "count": 1
+  }
+}

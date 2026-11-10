@@ -8,6 +8,7 @@ import fr.atraxterra.dohy.palamod.dungeon.DungeonMenus;
 import fr.atraxterra.dohy.palamod.dungeon.RpgMenu;
 import fr.atraxterra.dohy.palamod.golem.GolemMenus;
 import fr.atraxterra.dohy.palamod.mount.MountMenus;
+import fr.atraxterra.dohy.palamod.pillage.ChestExplorerMenu;
 
 import java.util.List;
 
@@ -28,6 +29,6 @@ public final class Menus {
                 DimMinerMenus.Entry.INSTANCE, DimMinerMenus.Summary.INSTANCE, MysticEnchantMenu.INSTANCE,
                 FactionMenus.Overview.INSTANCE, FactionMenus.Bank.INSTANCE, FactionMenus.Claims.INSTANCE,
                 FactionMenus.Ranking.INSTANCE, FactionMenus.Settings.INSTANCE,
-                FactionTreeMenus.Tree.INSTANCE, FactionTreeMenus.Branch.INSTANCE);
+                FactionTreeMenus.Tree.INSTANCE, FactionTreeMenus.Branch.INSTANCE, ChestExplorerMenu.INSTANCE);
     }
 }

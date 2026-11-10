@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
@@ -25,13 +26,19 @@ import java.util.Optional;
  *       cassees a l'epee lachent jusqu'a {@code niveau} graines de plus par
  *       graine. L'original le limitait aux epees rapides de PalaMod, non
  *       portees : ici, toute epee.</li>
+ *   <li><b>unclaim helmet</b> (casques, 1 niveau, chapitre 22) : le casque porte
+ *       fait office d'Unclaim Finder vert ;</li>
+ *   <li><b>fake water protection</b> (armures, 1 niveau, chapitre 22) : la Fake
+ *       Water ne ronge plus. L'arbre de faction le debloque (Pillage, palier 6).</li>
  * </ul>
- * Pas portes : le casque d'unclaim (sans unclaim finder ni factions) et la
- * protection contre l'eau sulfurique (sans eau sulfurique).
+ * Les deux derniers alimentent l'arbre de faction : pose du premier, secondes
+ * de degats evitees par le second.
  */
 public enum MysticEnchant {
-    NO_FALL("no_fall", null, 0),
-    GRASS_BREAKER("grass_breaker", Job.FARMER, 20);
+    NO_FALL("no_fall", null, 0, null, null),
+    GRASS_BREAKER("grass_breaker", Job.FARMER, 20, null, null),
+    UNCLAIM_HELMET("unclaim_helmet", null, 0, null, "enchant:unclaim_helmet"),
+    FAKE_WATER_PROTECTION("fake_water_protection", null, 0, "enchant:fake_water_protection", null);
 
     /** {@code experienceLevel -= 30} par application. */
     public static final int COST = 30;
@@ -40,12 +47,26 @@ public enum MysticEnchant {
     private final ResourceKey<Enchantment> key;
     private final Job job;
     private final int jobLevel;
+    private final String unlock;
+    private final String counter;
 
-    MysticEnchant(String id, Job job, int jobLevel) {
+    MysticEnchant(String id, Job job, int jobLevel, String unlock, String counter) {
         this.id = id;
         this.key = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, id));
         this.job = job;
         this.jobLevel = jobLevel;
+        this.unlock = unlock;
+        this.counter = counter;
+    }
+
+    /** La cle de l'arbre de faction qui le debloque, ou {@code null}. */
+    public String unlock() {
+        return unlock;
+    }
+
+    /** Le compteur de l'arbre de faction qu'une pose alimente, ou {@code null}. */
+    public String counter() {
+        return counter;
     }
 
     public String id() {
@@ -65,7 +86,11 @@ public enum MysticEnchant {
     }
 
     public Optional<Holder.Reference<Enchantment>> holder(Player player) {
-        return player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).get(key);
+        return holder(player.level());
+    }
+
+    public Optional<Holder.Reference<Enchantment>> holder(Level level) {
+        return level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).get(key);
     }
 
     /** Le niveau de cet enchantement sur l'objet, 0 s'il ne l'a pas. */
