@@ -253,7 +253,11 @@ public final class EventArena {
                 int noise = Math.floorMod(dx * 31 + dz * 17, 7);
                 BlockState stone = noise == 0 ? tuff : noise < 3 ? cobbled : rock;
                 level.setBlock(at.below(), rock, FLAGS);
-                level.setBlock(at, noise == 4 ? cracked : floor, FLAGS);
+                // Le sol s'eclaire d'une grille de grenouilleres, hors totem, zone de depot et escalier.
+                boolean floorLight = Math.floorMod(dx + 3, 6) == 0 && Math.floorMod(dz + 3, 6) == 0 && d > 3.0d
+                        && d < r - 3.0d && TOTEM_DEPOSIT.distSqr(at) > 36.0d && !(Math.abs(dx) <= 3 && dz > 10);
+                level.setBlock(at, floorLight ? Blocks.OCHRE_FROGLIGHT.defaultBlockState()
+                        : noise == 4 ? cracked : floor, FLAGS);
                 if (d > r - 1.5d) {
                     for (int y = 1; y <= ceiling(r - 1.5d) + 2; y++) {
                         level.setBlock(at.above(y), stone, FLAGS);
@@ -261,15 +265,22 @@ public final class EventArena {
                     continue;
                 }
                 int top = ceiling(d);
-                level.setBlock(at.above(top), (dx % 6 == 0 && dz % 6 == 0) ? light : stone, FLAGS);
+                boolean ceilingLight = Math.floorMod(dx, 4) == 0 && Math.floorMod(dz, 4) == 0;
+                level.setBlock(at.above(top), ceilingLight ? light : stone, FLAGS);
                 level.setBlock(at.above(top + 1), rock, FLAGS);
             }
         }
-        // Le socle du totem.
+        // Le socle du totem, et quatre lanternes aux angles.
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 level.setBlock(c.offset(dx, 0, dz), Blocks.CHISELED_POLISHED_BLACKSTONE.defaultBlockState(), FLAGS);
             }
+        }
+        for (int i = 0; i < 4; i++) {
+            BlockPos post = c.offset(i % 2 == 0 ? 3 : -3, 0, i < 2 ? 3 : -3);
+            level.setBlock(post.above(), Blocks.POLISHED_BLACKSTONE_WALL.defaultBlockState(), FLAGS);
+            level.setBlock(post.above(2), Blocks.POLISHED_BLACKSTONE_WALL.defaultBlockState(), FLAGS);
+            level.setBlock(post.above(3), Blocks.LANTERN.defaultBlockState(), FLAGS);
         }
         // La zone de depot : un disque d'or brut cercle d'or, quatre lanternes.
         for (int dx = -4; dx <= 4; dx++) {
@@ -293,12 +304,12 @@ public final class EventArena {
             int y = STAIR_TOP - step;
             int z = STAIR_START_Z - step;
             double d = Math.abs(z);
-            boolean inside = d < r - 1.5d && y + 4 < ceiling(d);
+            boolean inside = d < r - 1.5d && y + 5 < ceiling(d);
             for (int dx = -2; dx <= 2; dx++) {
                 BlockPos at = c.offset(dx, y, z);
                 if (Math.abs(dx) == 2) {
                     if (!inside) {
-                        for (int h = 0; h <= 4; h++) {
+                        for (int h = 0; h <= 5; h++) {
                             level.setBlock(at.above(h), rock, FLAGS);
                         }
                     } else {
@@ -310,11 +321,11 @@ public final class EventArena {
                 if (y > 0) {
                     level.setBlock(at.below(), rock, FLAGS);
                 }
-                for (int h = 1; h <= 3; h++) {
+                for (int h = 1; h <= 4; h++) {
                     level.setBlock(at.above(h), Blocks.AIR.defaultBlockState(), FLAGS);
                 }
                 if (!inside) {
-                    level.setBlock(at.above(4), step % 4 == 0 ? light : rock, FLAGS);
+                    level.setBlock(at.above(5), step % 3 == 0 ? light : rock, FLAGS);
                 }
             }
         }
@@ -323,11 +334,11 @@ public final class EventArena {
             for (int dz = 1; dz <= 4; dz++) {
                 BlockPos at = c.offset(dx, STAIR_TOP, STAIR_START_Z + dz);
                 level.setBlock(at, Math.abs(dx) == 2 || dz == 4 ? rock : floor, FLAGS);
-                for (int h = 1; h <= 3; h++) {
+                for (int h = 1; h <= 4; h++) {
                     level.setBlock(at.above(h), Math.abs(dx) == 2 || dz == 4 ? rock : Blocks.AIR.defaultBlockState(),
                             FLAGS);
                 }
-                level.setBlock(at.above(4), dx == 0 && dz == 2 ? light : rock, FLAGS);
+                level.setBlock(at.above(5), dx == 0 && dz == 2 ? light : rock, FLAGS);
             }
         }
         setTotem(level, 0, false);
