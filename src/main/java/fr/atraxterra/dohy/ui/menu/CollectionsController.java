@@ -116,7 +116,7 @@ public final class CollectionsController extends MenuController {
             tooltip.add(next > 0 ? "Prochain palier a " + MoneyFormat.exact(next) : "Tous les paliers franchis");
             if (!entry.sellable()) {
                 tooltip.add("Achat seul : pas de vente a debloquer");
-            } else if (tier < 0) {
+            } else if (tier < 0 && CollectionApi.missingToUnlock(player, id, entry) > 0) {
                 tooltip.add("Vente verrouillee : il en manque "
                         + MoneyFormat.exact(CollectionApi.missingToUnlock(player, id, entry)));
             } else {
