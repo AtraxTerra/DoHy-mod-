@@ -29,9 +29,9 @@ public final class MysticEnchantMenu extends MenuController {
     public MenuView view(ServerPlayer player) {
         ItemStack held = player.getMainHandItem();
         List<Card> item = List.of(held.isEmpty()
-                ? Card.of(new ItemStack(Items.BARRIER), Component.translatable("message.palamod.mystic_enchant.no_item")
-                        .getString(), List.of("Prends un objet en main", "puis rouvre la table")).state(MenuView.DISABLED)
-                : Card.of(held.copyWithCount(1), held.getHoverName().getString(), List.of("L'objet tenu en main",
+                ? Card.of(new ItemStack(Items.BARRIER), MenuView.text(Component.translatable(
+                        "message.palamod.mystic_enchant.no_item")), List.of("Prends un objet en main", "puis rouvre la table")).state(MenuView.DISABLED)
+                : Card.of(held.copyWithCount(1), MenuView.text(held.getHoverName()), List.of("L'objet tenu en main",
                         "Niveaux d'XP : " + player.experienceLevel)).accent(0xFFEC4FB5));
         List<Card> enchants = new ArrayList<>();
         for (MysticEnchant enchant : MysticEnchant.values()) {
@@ -41,20 +41,20 @@ public final class MysticEnchantMenu extends MenuController {
             }
             int level = enchant.levelOn(player, held);
             List<String> tooltip = new ArrayList<>();
-            tooltip.add(Component.translatable("enchantment.palamod." + enchant.id() + ".desc").getString());
+            tooltip.add(MenuView.text(Component.translatable("enchantment.palamod." + enchant.id() + ".desc")));
             if (enchant.job() != null) {
-                tooltip.add(Component.translatable("message.palamod.mystic_enchant.requires",
-                        enchant.job().display(), enchant.jobLevel()).getString());
+                tooltip.add(MenuView.text(Component.translatable("message.palamod.mystic_enchant.requires",
+                        enchant.job().display(), enchant.jobLevel())));
             }
             Component refusal = refusal(player, enchant);
             if (refusal != null) {
-                tooltip.add(refusal.getString());
+                tooltip.add(MenuView.text(refusal));
             }
-            Card card = Card.of(new ItemStack(Items.ENCHANTED_BOOK), holder.value().description().getString(), List.of(
-                            Component.translatable("message.palamod.mystic_enchant.level", level,
-                                    holder.value().getMaxLevel()).getString(),
-                            Component.translatable("message.palamod.mystic_enchant.cost", MysticEnchant.COST)
-                                    .getString()))
+            Card card = Card.of(new ItemStack(Items.ENCHANTED_BOOK), MenuView.text(holder.value().description()),
+                            List.of(MenuView.text(Component.translatable("message.palamod.mystic_enchant.level", level,
+                                            holder.value().getMaxLevel())),
+                                    MenuView.text(Component.translatable("message.palamod.mystic_enchant.cost",
+                                            MysticEnchant.COST))))
                     .accent(0xFFEC4FB5).progress(level, holder.value().getMaxLevel()).tooltip(tooltip);
             enchants.add(refusal == null ? card.action("apply:" + enchant.name() + "|enchanter")
                     : card.state(MenuView.DISABLED));

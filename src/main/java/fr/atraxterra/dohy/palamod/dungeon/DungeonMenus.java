@@ -305,7 +305,7 @@ public final class DungeonMenus {
             for (int slot = 0; slot < 36; slot++) {
                 if (slot < bag.size()) {
                     ItemStack stack = bag.get(slot).copy();
-                    tiles.add(Card.of(stack, stack.getHoverName().getString(), List.of("x" + stack.getCount()))
+                    tiles.add(Card.of(stack, MenuView.text(stack.getHoverName()), List.of("x" + stack.getCount()))
                             .badge(stack.getCount() > 1 ? String.valueOf(stack.getCount()) : ""));
                 } else if (slot >= capacity) {
                     tiles.add(Card.of(new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)),

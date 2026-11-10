@@ -297,8 +297,8 @@ public final class MountMenus {
                             .accent(0xFFEF3826).action("less|retirer"),
                     Card.of(new ItemStack(PalaMount.BANDAGE.get(), Math.max(1, state.bandages)),
                                     state.bandages + " bandage(s)", List.of(
-                                    "Duree " + MountTexts.duration(BarnControllerBlockEntity.CARE_MS * state.bandages)
-                                            .getString(),
+                                    MenuView.text(Component.literal("Duree ").append(MountTexts.duration(
+                                            BarnControllerBlockEntity.CARE_MS * state.bandages))),
                                     "Soin +" + Math.round(gem.maxHealth() * 0.1f * state.bandages) + " PV"))
                             .accent(0xFF22E558).badge(String.valueOf(state.bandages))
                             .tooltip(List.of("Sur vous : " + owned(player))),

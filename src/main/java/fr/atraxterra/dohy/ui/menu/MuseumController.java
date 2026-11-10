@@ -144,7 +144,7 @@ public final class MuseumController extends MenuController {
             }
             boolean donated = MuseumApi.data(player).has(id);
             PriceEntry entry = Prices.book().entry(id).orElse(null);
-            String itemName = new ItemStack(item).getHoverName().getString();
+            String itemName = MenuView.text(new ItemStack(item).getHoverName());
             Card card = Card.of(new ItemStack(item), itemName, List.of(donated ? "Expose" : "Manquant"));
             if (donated) {
                 card = card.state(MenuView.DONE).tooltip(entry == null ? List.of()

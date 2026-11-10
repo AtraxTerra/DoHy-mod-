@@ -87,7 +87,7 @@ public final class RpgMenu extends MenuController {
                 .accent(0xFF2F5BEA);
         profile.add(level >= Rpg.MAX_LEVEL ? levelCard.state(MenuView.DONE)
                 : levelCard.progress(Rpg.xpInLevel(data.xp()), Rpg.xpToNext(level)));
-        profile.add(Card.of(new ItemStack(Items.NETHER_STAR), free + " point(s) libre(s)", List.of(
+        profile.add(Card.of(new ItemStack(Items.NETHER_STAR), "Points libres", List.of(
                         "Total " + points.total() + " · depenses " + data.spent(),
                         cost > 0 ? cost + " reserve(s)" : "Aucune reserve"))
                 .accent(0xFFFAC400).badge(String.valueOf(free))
