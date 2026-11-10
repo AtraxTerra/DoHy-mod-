@@ -116,7 +116,8 @@ public final class HubController extends MenuController {
                         .accent(0xFFEC4FB5).action("upgrades").progress(upgrades, upgradesTotal),
                 Card.of(new ItemStack(Items.TOTEM_OF_UNDYING), "Profil RPG", List.of("Niveau RPG " + rpgLevel,
                         points > 0 ? points + " point(s) a depenser" : "Arbre des donjons"))
-                        .accent(0xFFEC4FB5).action("rpg").badge(points > 0 ? "+" + points : ""));
+                        .accent(0xFFEC4FB5).action("rpg").badge(points > 0 ? "+" + points : ""),
+                factionCard(player));
 
         return new MenuView(id(), "DoHy", "Le menu de ton aventure", stats, List.of(
                 new MenuView.Section("ECONOMIE", "resources", MenuView.GRID, economy),
@@ -124,9 +125,24 @@ public final class HubController extends MenuController {
                 new MenuView.Section("FIN DE PARTIE", "craft", MenuView.GRID, endgame)), false);
     }
 
+    private static Card factionCard(ServerPlayer player) {
+        fr.atraxterra.dohy.faction.FactionData faction = fr.atraxterra.dohy.faction.FactionApi.data(player);
+        if (!faction.exists()) {
+            return Card.of(new ItemStack(Items.BANNER.pick(net.minecraft.world.item.DyeColor.WHITE)), "Faction", List.of("Fonde la tienne",
+                    fr.atraxterra.dohy.faction.FactionApi.CREATION_COST + " lingots de paladium"))
+                    .accent(0xFFEC4FB5).action("faction");
+        }
+        fr.atraxterra.dohy.faction.FactionLeague league =
+                fr.atraxterra.dohy.faction.FactionLeague.of(faction.ranking().league());
+        return Card.of(fr.atraxterra.dohy.faction.FactionMenus.banner(faction.banner()), faction.name(), List.of(
+                        "Ligue " + league.label(), MoneyFormat.shortForm(faction.ranking().elo()) + " ELO"))
+                .accent(league.color()).action("faction");
+    }
+
     @Override
     protected void card(ServerPlayer player, String key, int button) {
         switch (key) {
+            case "faction" -> fr.atraxterra.dohy.faction.FactionMenus.Overview.INSTANCE.open(player);
             case "shop" -> ShopController.open(player);
             case "sell" -> {
                 UiNet.forget(player);
