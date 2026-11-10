@@ -278,6 +278,20 @@ def check_loot(blocks):
             fail(f"{name} : bloc sans table de butin, il ne lachera rien")
 
 
+def check_chest_loot(items):
+    """Les coffres generes (bases ennemies) : chaque objet nomme doit exister."""
+    folder = DATA / "loot_table" / "chests"
+    if not folder.is_dir():
+        return
+    for path in sorted(folder.glob("*.json")):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        for pool in payload.get("pools", []):
+            for entry in pool.get("entries", []):
+                name = entry.get("name", "")
+                if name.startswith(NS + ":") and name.split(":", 1)[1] not in items:
+                    fail(f"loot_table/chests/{path.name} : objet inconnu {name}")
+
+
 def check_lang(items, blocks):
     """Une cle de langue manquante affiche l'identifiant brut au joueur."""
     path = ASSETS / "lang" / "fr_fr.json"
@@ -557,6 +571,7 @@ def main():
     check_blockstates(blocks)
     check_items(items, blocks, itemless)
     check_loot(blocks)
+    check_chest_loot(set(items) | set(blocks))
     check_lang(items, blocks)
     check_recipes(items, blocks)
     check_equipment()

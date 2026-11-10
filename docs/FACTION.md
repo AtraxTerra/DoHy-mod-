@@ -3,7 +3,8 @@
 La faction de Paladium (catégorie « Java | Faction » du wiki) remixée pour une partie **solo
 PvE**. Choix du joueur :
 
-- **progression seule** : la faction est ta base et ta progression ; ni factions rivales, ni PNJ ;
+- **progression seule** : la faction est ta base et ta progression ; pas de faction rivale vivante — seulement des
+  **bases ennemies fictives**, générées sur demande pour être pillées (lot 22g) ;
 - **raids sur demande** : ta base n'est attaquée que si tu lances un raid de monstres ;
 - **tous les objets** de pillage et de défense de PalaMod ;
 - **events aux vraies heures** du calendrier de Paladium.
@@ -19,6 +20,7 @@ PvE**. Choix du joueur :
 | 22d-bis | Withers du pillage : réceptacle, gemmes de wither, améliorations | fait |
 | 22e | Réserve d'or : multibloc, investissements à intérêts | à faire |
 | 22f | Events à heures fixes (Egg Hunt, End, KOTH, Boss, Totem) et raids sur demande | à faire |
+| 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller | fait |
 
 ## Ce qui change en solo
 
@@ -228,3 +230,33 @@ comportements viennent du wiki (« Réceptacle à Wither », « Pour le pillage 
 
 Compteurs branchés : `spawn:<wither>`, `regen:wither`, `wither:obsidian` (obsidiennes cassées ou
 soufflées par un wither que tu as invoqué), `kill:baby_wither`.
+
+## Bases ennemies (22g)
+
+Seul, les objets de pillage n'avaient pas de cible. Sur demande (onglet **Bases ennemies** de la faction,
+ou `/f base generer [1-3]`), une faction ennemie fictive s'installe dans le Monde :
+
+- **À plus de 9 000 blocs** de toi *et* de chacun de tes claims (emprise comprise), entre 9 000 et
+  10 500 blocs environ, dans la bordure du monde, hors océan, rivière et plage, sur le terrain le plus
+  plat trouvé en 64 essais — la hauteur est lue dans le bruit du générateur, sans rien générer.
+- Ses chunks se chargent en tâche de fond (ticket forcé), puis la base est bâtie d'un coup ; une
+  **boussole** pointe vers elle (`/f base boussole` pour une autre). Une base à la fois.
+- **Ses claims suivent la règle de Paladium** : rien à la main (casser, poser, ouvrir), mais les
+  explosions (TNT, dynamites, TNT en endium) et les withers y cassent tout ; le seau extrapolé et le
+  pistolet à liquide y travaillent. Ses pièges frappent l'assaillant.
+- **Entrer dans sa salle des coffres, c'est l'avoir pillée** : ELO, argent à la banque de faction, et
+  ses claims tombent — les coffres s'ouvrent. Compteurs `raid:base` et `raid:<taille>`.
+- **Abandonner** (`/f base abandonner`, deux clics dans l'onglet) l'oublie : elle reste en place,
+  claimée, à piller, mais sans récompense.
+
+| Taille | Plan | Il faudra | Récompense |
+|--------|------|-----------|------------|
+| Avant-poste | Bunker de pierre 9 × 9 dans une palissade, 2 coffres, 3 gardes ; 1 claim | TNT ou dynamite | +100 ELO, 15 000 $ |
+| Base | Enceinte d'obsidienne à créneaux, douve de Fake Water, bunker obsidienne (parfois empoisonnée) + pierre, toiles, 4 coffres, 6 gardes ; 3 × 3 claims | TNT en endium ou wither | +300 ELO, 75 000 $ |
+| Forteresse | Enceinte d'obsidienne piégée (poison, boom, knockback, gel), 4 tours, champ de spikes en diamant, double douve, bunker à trois couches (renforcée, à wither, piégée mega boom), 6 coffres + coffre fort, détecteur de présence, 14 gardes ; 5 × 5 claims | Withers et TNT en endium | +1 000 ELO, 300 000 $ |
+
+Les gardes (zombies, squelettes, wither squelettes) sont persistants et casqués contre le soleil. Les
+coffres tirent leur butin des tables `palamod:chests/enemy_*` à l'ouverture ou à l'explosion : minerais
+et explosifs à l'avant-poste, paladium et TNT en endium à la base, endium, gemmes de wither et pierre
+légendaire à la forteresse.
+

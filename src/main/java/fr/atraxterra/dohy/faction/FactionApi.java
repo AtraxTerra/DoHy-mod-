@@ -231,6 +231,7 @@ public final class FactionApi {
             return;
         }
         unclaimAll(player);
+        player.setData(Factions.ENEMY_BASE.get(), fr.atraxterra.dohy.faction.base.EnemyBase.EMPTY);
         String name = data.name;
         data.clear();
         tell(player, "La faction " + name + " est dissoute.", ChatFormatting.RED);
@@ -282,7 +283,7 @@ public final class FactionApi {
         if (data.claims.size() >= cap) {
             return "Plus de claim disponible (" + cap + "). L'arbre de technologie en debloque d'autres";
         }
-        chunk.setData(Factions.CLAIM.get(), new ClaimOwner(java.util.Optional.of(player.getUUID()), data.name, true));
+        chunk.setData(Factions.CLAIM.get(), ClaimOwner.player(player.getUUID(), data.name, true));
         chunk.markUnsaved();
         data.claims.add(new FactionData.Claim(dimension(level), pos.x(), pos.z(), true));
         return null;
@@ -350,7 +351,7 @@ public final class FactionApi {
             LevelChunk chunk = level.getChunk(claim.x(), claim.z());
             ClaimOwner owner = chunk.getData(Factions.CLAIM.get());
             if (owner.ownedBy(player.getUUID())) {
-                chunk.setData(Factions.CLAIM.get(), new ClaimOwner(owner.owner(), owner.faction(), next.monsters()));
+                chunk.setData(Factions.CLAIM.get(), new ClaimOwner(owner.owner(), owner.faction(), next.monsters(), owner.enemy()));
                 chunk.markUnsaved();
             }
         }

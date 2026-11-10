@@ -4310,6 +4310,49 @@ def main():
         sounds[event] = {"sounds": ["%s:funny_wither/%s" % (NS, source)]}
     write("assets/%s/sounds.json" % NS, sounds)
 
+    # ---- bases ennemies (chapitre 22, lot 22g) ----
+    #
+    # Les coffres des bases ennemies generees sur demande : une table par
+    # taille, plus le coffre fort de la forteresse. Le butin suit la difficulte
+    # (et les outils qu'elle demande) : minerais et explosifs a l'avant-poste,
+    # paladium et TNT en endium a la base, endium et gemmes de wither a la
+    # forteresse.
+    def chest_loot(path, rolls, entries):
+        pool_entries = []
+        for item, weight, low, high in entries:
+            entry = {"type": "minecraft:item", "name": item, "weight": weight}
+            if high > 1:
+                entry["functions"] = [{"function": "minecraft:set_count",
+                                       "count": {"type": "minecraft:uniform", "min": low, "max": high}}]
+            pool_entries.append(entry)
+        write("data/%s/loot_table/%s.json" % (NS, path), {
+            "type": "minecraft:chest",
+            "pools": [{"rolls": {"type": "minecraft:uniform", "min": rolls[0], "max": rolls[1]},
+                       "entries": pool_entries}]})
+
+    chest_loot("chests/enemy_avant_poste", (4, 7), [
+        ("minecraft:iron_ingot", 20, 2, 7), ("minecraft:gold_ingot", 14, 1, 5),
+        ("%s:amethyst_ingot" % NS, 16, 1, 4), ("%s:titane_ingot" % NS, 10, 1, 3),
+        ("%s:paladium_ingot" % NS, 5, 1, 2), ("minecraft:tnt", 10, 1, 4), ("%s:dynamite" % NS, 10, 2, 6),
+        ("minecraft:ender_pearl", 8, 1, 2), ("minecraft:emerald", 8, 1, 4), ("minecraft:golden_apple", 4, 1, 1)])
+    chest_loot("chests/enemy_base", (5, 8), [
+        ("%s:amethyst_ingot" % NS, 15, 2, 8), ("%s:titane_ingot" % NS, 15, 2, 6),
+        ("%s:paladium_ingot" % NS, 12, 1, 4), ("%s:endium_nugget" % NS, 4, 1, 2), ("minecraft:diamond", 10, 1, 4),
+        ("%s:dynamite" % NS, 10, 4, 10), ("%s:big_tnt" % NS, 6, 1, 3), ("%s:endium_tnt" % NS, 4, 1, 2),
+        ("minecraft:ender_pearl", 8, 2, 4), ("%s:paladium_apple" % NS, 3, 1, 1),
+        ("%s:baby_wither_gem" % NS, 2, 1, 1)])
+    chest_loot("chests/enemy_forteresse", (6, 10), [
+        ("%s:paladium_ingot" % NS, 15, 2, 8), ("%s:titane_ingot" % NS, 10, 4, 10),
+        ("%s:endium_nugget" % NS, 8, 1, 4), ("%s:green_paladium_ingot" % NS, 4, 1, 2),
+        ("minecraft:diamond", 10, 2, 6), ("%s:endium_tnt" % NS, 8, 1, 4), ("%s:big_dynamite" % NS, 6, 2, 6),
+        ("%s:paladium_apple" % NS, 5, 1, 2), ("%s:wither_gem" % NS, 3, 1, 1),
+        ("%s:passive_wither_gem" % NS, 1, 1, 1), ("%s:legendary_stone_random" % NS, 1, 1, 1),
+        ("minecraft:nether_star", 1, 1, 1)])
+    chest_loot("chests/enemy_coffre_fort", (3, 5), [
+        ("%s:endium_ingot" % NS, 6, 1, 2), ("%s:paladium_block" % NS, 6, 1, 2),
+        ("%s:green_paladium_ingot" % NS, 6, 1, 4), ("%s:legendary_stone_random" % NS, 3, 1, 1),
+        ("%s:predator_wither_gem" % NS, 1, 1, 1)])
+
     tag("%s/tags/block/wither_slime_blocks.json" % NS,
         ["minecraft:slime_block", "%s:slimepad" % NS, "%s:slime_obsidian" % NS])
 

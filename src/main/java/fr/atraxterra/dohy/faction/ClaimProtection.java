@@ -35,6 +35,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *       rien ;</li>
  *   <li>un claim peut refuser l'apparition naturelle des monstres.</li>
  * </ul>
+ *
+ * <p>Les claims des bases ennemies generees (lot 22g) suivent la regle de
+ * Paladium : rien a la main, mais explosions et withers y cassent tout.
  */
 @EventBusSubscriber
 public final class ClaimProtection {
@@ -61,8 +64,9 @@ public final class ClaimProtection {
         Long last = LAST_WARNING.get(player.getUUID());
         if (last == null || now - last > 1000L) {
             LAST_WARNING.put(player.getUUID(), now);
-            FactionApi.tell(player, "Ce territoire appartient a la faction " + owner.faction() + ".",
-                    ChatFormatting.RED);
+            FactionApi.tell(player, owner.enemy()
+                    ? "Base ennemie des " + owner.faction() + " : rien a la main. Fais sauter ses murs (TNT, dynamite, wither)."
+                    : "Ce territoire appartient a la faction " + owner.faction() + ".", ChatFormatting.RED);
         }
     }
 
@@ -110,13 +114,19 @@ public final class ClaimProtection {
     @SubscribeEvent
     public static void onGriefing(EntityMobGriefingEvent event) {
         Entity entity = event.getEntity();
-        if (entity != null && !(entity instanceof Player)
-                && FactionApi.claimAt(entity.level(), entity.blockPosition()).claimed()) {
+        if (entity == null || entity instanceof Player) {
+            return;
+        }
+        ClaimOwner owner = FactionApi.claimAt(entity.level(), entity.blockPosition());
+        if (owner.claimed() && !owner.raidable()) {
             event.setCanGrief(false);
         }
     }
 
-    /** Une explosion du proprietaire (sa TNT, sa dynamite) casse son claim ; les autres, non. */
+    /**
+     * Une explosion du proprietaire (sa TNT, sa dynamite) casse son claim ; les
+     * autres, non. Une base ennemie (lot 22g) se pille a l'explosif : tout y casse.
+     */
     @SubscribeEvent
     public static void onExplosion(ExplosionEvent.Detonate event) {
         if (!(event.getLevel() instanceof ServerLevel level)) {
@@ -126,7 +136,7 @@ public final class ClaimProtection {
         UUID cause = source instanceof Player player ? player.getUUID() : null;
         event.getAffectedBlocks().removeIf(pos -> {
             ClaimOwner owner = FactionApi.claimAt(level, pos);
-            return owner.claimed() && (cause == null || !owner.ownedBy(cause));
+            return owner.claimed() && !owner.raidable() && (cause == null || !owner.ownedBy(cause));
         });
     }
 

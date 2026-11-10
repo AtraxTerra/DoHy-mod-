@@ -104,10 +104,10 @@ public class PistolTankItem extends Item {
         return InteractionResult.SUCCESS;
     }
 
-    /** Pas de pompage ni de tir dans le claim d'un autre joueur. */
+    /** Pas de pompage ni de tir dans le claim d'un autre joueur ; une base ennemie se pille. */
     private static boolean allowed(Player player, Level level, BlockPos pos) {
         ClaimOwner owner = FactionApi.claimAt(level, pos);
-        return !owner.claimed() || owner.ownedBy(player.getUUID()) || player.isCreative();
+        return !owner.claimed() || owner.raidable() || owner.ownedBy(player.getUUID()) || player.isCreative();
     }
 
     /** Le reservoir, et l'icone qui montre ce qu'il contient (eau, lave, autre). */

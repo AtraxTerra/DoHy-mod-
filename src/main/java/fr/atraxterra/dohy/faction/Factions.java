@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.faction;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.faction.base.EnemyBase;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -25,6 +26,13 @@ public final class Factions {
     public static final Supplier<AttachmentType<ClaimOwner>> CLAIM = ATTACHMENTS.register("claim",
             () -> AttachmentType.builder(() -> ClaimOwner.NONE)
                     .serialize(ClaimOwner.MAP_CODEC, ClaimOwner::claimed)
+                    .build());
+
+    /** La base ennemie du joueur (lot 22g) : une a la fois, gardee a la mort. */
+    public static final Supplier<AttachmentType<EnemyBase>> ENEMY_BASE = ATTACHMENTS.register("enemy_base",
+            () -> AttachmentType.builder(() -> EnemyBase.EMPTY)
+                    .serialize(EnemyBase.MAP_CODEC, EnemyBase::exists)
+                    .copyOnDeath()
                     .build());
 
     private Factions() {

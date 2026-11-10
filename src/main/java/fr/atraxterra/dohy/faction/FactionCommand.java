@@ -5,6 +5,9 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import fr.atraxterra.dohy.faction.base.EnemyBase;
+import fr.atraxterra.dohy.faction.base.EnemyBaseTier;
+import fr.atraxterra.dohy.faction.base.EnemyBases;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -139,6 +142,21 @@ public final class FactionCommand {
                                                             IntegerArgumentType.getInteger(ctx, "palier"));
                                                     return result(player, null, "Palier fixe.");
                                                 }))))))
+                .then(Commands.literal("base")
+                        .executes(ctx -> as(ctx.getSource(), FactionCommand::enemyBase))
+                        .then(Commands.literal("generer")
+                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                        EnemyBases.request(player, EnemyBaseTier.OUTPOST), "")))
+                                .then(Commands.argument("palier", IntegerArgumentType.integer(1, 3))
+                                        .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                                EnemyBases.request(player, EnemyBaseTier.byLevel(
+                                                        IntegerArgumentType.getInteger(ctx, "palier"))), "")))))
+                        .then(Commands.literal("boussole")
+                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                        EnemyBases.compass(player), "Boussole recue."))))
+                        .then(Commands.literal("abandonner")
+                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                        EnemyBases.abandon(player), "Base abandonnee.")))))
                 .then(Commands.literal("info")
                         .executes(ctx -> as(ctx.getSource(), FactionCommand::info)))
                 .then(Commands.literal("map")
@@ -156,6 +174,19 @@ public final class FactionCommand {
                                     FactionApi.addElo(player, LongArgumentType.getLong(ctx, "montant"), "commande");
                                     return 1;
                                 }))));
+    }
+
+    /** {@code /f base} : la cible en cours, ou comment en demander une. */
+    private static int enemyBase(ServerPlayer player) {
+        EnemyBase base = EnemyBases.of(player);
+        if (EnemyBases.pending(player)) {
+            return result(player, null, "Tes eclaireurs cherchent encore la base.");
+        }
+        if (!base.active()) {
+            return result(player, null, "Aucune base a piller. /f base generer [1-3] : avant-poste, base, forteresse.");
+        }
+        return result(player, null, "Cible : les " + base.name() + " (" + base.kind().label() + ") en "
+                + base.center().getX() + ", " + base.center().getZ() + " — " + EnemyBases.where(player, base) + ".");
     }
 
     private static int info(ServerPlayer player) {
