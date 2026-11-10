@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.faction.base;
 
+import com.mojang.logging.LogUtils;
 import fr.atraxterra.dohy.faction.ClaimOwner;
 import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.faction.FactionData;
@@ -33,6 +34,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -71,6 +73,7 @@ public final class EnemyBases {
     private static final int RETRIES = 3;
 
     static final String GUARD_TAG = "dohy_enemy_guard";
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final List<String> NAMES = List.of("Corbeaux", "Vautours", "Rapaces", "Spectres", "Chacals",
             "Hyenes", "Goules", "Cendres", "Ronces", "Crocs", "Fauves", "Ombres", "Brigands", "Pillards", "Maraudeurs",
@@ -89,6 +92,9 @@ public final class EnemyBases {
         Site site;
         boolean forced;
         int ticks;
+        int searchTicks;
+        int buildTicks;
+        long buildNanos;
         EnemyBaseBuilder builder;
 
         Job(UUID player, EnemyBaseTier tier, String name, Search search, int retries) {
@@ -293,6 +299,7 @@ public final class EnemyBases {
                 return;
             }
             if (job.site == null) {
+                job.searchTicks++;
                 if (job.search.step(level, SEARCH_BUDGET)) {
                     job.site = job.search.best;
                     if (job.site == null) {
@@ -335,11 +342,18 @@ public final class EnemyBases {
                     .toLowerCase() + "...", ChatFormatting.GOLD);
             return;
         }
-        if (!job.builder.work(BUILD_BUDGET)) {
+        long started = System.nanoTime();
+        boolean done = job.builder.work(BUILD_BUDGET);
+        job.buildNanos += System.nanoTime() - started;
+        job.buildTicks++;
+        if (!done) {
             return;
         }
         EnemyBaseBuilder.Result result = job.builder.result();
         release(level, job);
+        LOGGER.info("Base ennemie des {} ({}) en {} : site en {} essais ({} ticks), chunks en {} ticks, chantier de "
+                        + "{} ms sur {} ticks", job.name, job.tier.key(), result.center(), job.search.attempts,
+                job.searchTicks, job.ticks, job.buildNanos / 1_000_000L, job.buildTicks);
         EnemyBase base = new EnemyBase(job.name, job.tier.level(), EnemyBase.ACTIVE, result.center(),
                 result.coreMin(), result.coreMax(), System.currentTimeMillis());
         if (player == null) {
