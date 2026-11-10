@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BiomeTags;
@@ -23,6 +24,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.LodestoneTracker;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.border.WorldBorder;
@@ -51,7 +53,8 @@ import java.util.UUID;
  * pas de cible. Sur demande, une faction ennemie fictive s'installe <b>a plus
  * de 9 000 blocs</b> de toi et de tous tes claims, dans le Monde, hors de
  * l'ocean, sur un terrain assez plat (la hauteur du generateur est sondee
- * sans rien generer). Ses chunks sont charges en tache de fond, puis la base
+ * sans rien generer). Ses chunks sont charges en tache de fond (un ticket
+ * force, sans attendre), puis la base
  * est batie par etapes, 15 ms par tick ; une boussole pointe vers elle.
  *
  * <p>Ses claims suivent la regle de Paladium : rien a la main, mais les
@@ -279,7 +282,8 @@ public final class EnemyBases {
 
     private static void release(ServerLevel level, Job job) {
         if (job.forced) {
-            forEachChunk(job, (x, z) -> level.setChunkForced(x, z, false));
+            forEachChunk(job, (x, z) -> level.getChunkSource().removeTicketWithRadius(TicketType.FORCED,
+                    new ChunkPos(x, z), 0));
         }
         JOBS.remove(job.player);
     }
@@ -312,7 +316,9 @@ public final class EnemyBases {
                 return;
             }
             if (!job.forced) {
-                forEachChunk(job, (x, z) -> level.setChunkForced(x, z, true));
+                // Un ticket, pas setChunkForced : celui-ci genere chaque chunk sur-le-champ, serveur fige.
+                forEachChunk(job, (x, z) -> level.getChunkSource().addTicketWithRadius(TicketType.FORCED,
+                        new ChunkPos(x, z), 0));
                 job.forced = true;
             }
             job.ticks++;
