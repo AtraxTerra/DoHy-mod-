@@ -14,7 +14,7 @@ import net.minecraft.world.BossEvent;
  * <p><b>Solo.</b> Sur Paladium, 6 500 points de vie se partagent entre des
  * dizaines de joueurs en armure de paladium. Ici :
  * <ul>
- *   <li>1 500 points de vie ({@link EventBoss#SOLO_HEALTH}) ;</li>
+ *   <li>1 000 points de vie ({@link EventBoss#SOLO_HEALTH}) ;</li>
  *   <li>les degats des attaques sont ceux du wiki divises par quatre
  *       ({@link EventBoss#DAMAGE_SCALE}) : la charge de Tobalt, 100 sur le
  *       wiki, fait 25 avant armure ;</li>

@@ -359,8 +359,8 @@ Un des cinq boss du PalaMod, à tour de rôle (deux par jour). Modèles d'origin
 | Morsula | Stupéfreeze (gel, 15 blocs) ; Charge (projette à 7 blocs de haut) ; Picaglagla (pics de glace, dès deux cibles) |
 | Arachna | Exploweb (toiles, Wither I, lenteur, cécité, 25 blocs) ; Morsure (poison II 10 s) ; Captoile (cage de toiles et araignées, 7 à 25 blocs) |
 
-Épines I puis II sous 50 % et 25 % de vie pour tous sauf Tobalt, comme le wiki. **Solo** : 1 500
-points de vie (6 500 sur Paladium, partagés), dégâts du wiki divisés par quatre, coups des rivaux
+Épines I puis II sous 50 % et 25 % de vie pour tous sauf Tobalt, comme le wiki. **Solo** : 1 000
+points de vie (6 500 sur Paladium, partagés ; l'attribut plafonne à 1 024 en 26.2), dégâts du wiki divisés par quatre, coups des rivaux
 comptés à 30 % ; Déchaînement fait venir 8 zombies (25), Captoile 4 araignées (7), Picaglagla
 compte les rivaux comme cibles. Le boss repart s'il n'a pas été frappé depuis 5 min, ou après 30 min.
 À sa mort : 700 ELO par rang aux dégâts, bilan dans le chat (« Ta faction » 2e place »), compteur

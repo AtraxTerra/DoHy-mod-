@@ -47,8 +47,11 @@ import net.minecraft.world.phys.Vec3;
  */
 public class EventBoss extends Monster {
 
-    /** Points de vie en solo ; 6 500 sur Paladium, ou ils se partagent. */
-    public static final float SOLO_HEALTH = 1500.0f;
+    /**
+     * Points de vie en solo ; 6 500 sur Paladium, ou ils se partagent. Mille :
+     * l'attribut de vie de 26.2 plafonne a 1 024, et l'armure (8) fait le reste.
+     */
+    public static final float SOLO_HEALTH = 1000.0f;
 
     /** Les degats d'attaque du wiki, divises par quatre pour le solo. */
     public static final float DAMAGE_SCALE = 0.25f;

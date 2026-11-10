@@ -122,7 +122,8 @@ public enum FactionEventKind {
         } else {
             boolean first = true;
             for (DayOfWeek day : days) {
-                text.append(first ? "" : " et ").append(DAY_NAMES[day.ordinal()]);
+                String name = DAY_NAMES[day.ordinal()];
+                text.append(first ? name : " et " + name.toLowerCase());
                 first = false;
             }
         }
