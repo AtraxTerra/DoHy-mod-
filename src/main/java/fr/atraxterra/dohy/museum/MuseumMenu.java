@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.museum;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.ui.KitMenus;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -11,7 +12,6 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public final class MuseumMenu extends ChestMenu {
     }
 
     private MuseumMenu(int containerId, Inventory inventory, ServerPlayer player, Container deposit) {
-        super(MenuType.GENERIC_9x3, containerId, inventory, deposit, 3);
+        super(KitMenus.Use.MUSEUM_DEPOSIT.type(), containerId, inventory, deposit, 3);
         this.player = player;
         this.deposit = deposit;
     }

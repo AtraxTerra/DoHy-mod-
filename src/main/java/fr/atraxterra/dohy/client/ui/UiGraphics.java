@@ -77,6 +77,43 @@ public final class UiGraphics {
         rect(x + width - inset - 2, y + inset + 1, 2, height - 2 * inset - 2, Ui.FRAME);
     }
 
+    /** Le panneau sans le filet interieur : pour les coffres, dont les cases touchent presque le bord. */
+    public void panelPlain(int x, int y, int width, int height) {
+        rect(x + 3, y, width - 6, height, Ui.OUTER);
+        rect(x, y + 3, width, height - 6, Ui.OUTER);
+        rect(x + 3, y + 3, width - 6, height - 6, Ui.BG);
+    }
+
+    /** Un intertitre : le losange ({@code section_*}), le mot, un filet jusqu'a {@code width}. */
+    public void section(int x, int y, String icon, String label, int width) {
+        texture(Ui.texture(icon), x, y - 2, 10, 10, 56, 56);
+        text(Ui.PIXEL, label, x + 14, y, 6, Ui.WHITE);
+        float end = x + 14 + width(Ui.PIXEL, label, 6) + 5;
+        rect(Math.round(end), y + 3, Math.round(x + width - end), 1, Ui.WHITE);
+    }
+
+    /** Une jauge verticale qui monte jusqu'a {@code progress}, dans un filet sombre. */
+    public void gauge(int x, int y, int width, int height, float progress, int color) {
+        rect(x, y, width, height, 0xFF3D3C46);
+        rect(x + 1, y + 1, width - 2, height - 2, Ui.SLOT_FILL);
+        int filled = Math.round((height - 2) * Math.max(0f, Math.min(1f, progress)));
+        rect(x + 1, y + height - 1 - filled, width - 2, filled, color);
+    }
+
+    /** L'icone de chaleur, grise, coloree depuis le bas jusqu'a {@code progress}. */
+    public void heat(int x, int y, int size, float progress) {
+        texture(Ui.HEAT, x, y, size, size, 44, 44, 0xFF4A4955);
+        float clamped = Math.max(0f, Math.min(1f, progress));
+        if (clamped <= 0f) {
+            return;
+        }
+        int filled = Math.max(1, Math.round(size * clamped));
+        int offset = size - filled;
+        float regionV = 44f * offset / size;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, Ui.HEAT, x, y + offset, 0.0f, regionV, size, filled,
+                44, Math.round(44f * filled / size), 44, 44);
+    }
+
     /** Une case d'objet : filet clair, fond sombre. */
     public void slot(int x, int y, int size, boolean hovered) {
         rect(x, y, size, size, Ui.SLOT_BORDER);

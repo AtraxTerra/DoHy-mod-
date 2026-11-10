@@ -1,12 +1,12 @@
 package fr.atraxterra.dohy.palamod.mount;
 
 import fr.atraxterra.dohy.ui.Gui;
+import fr.atraxterra.dohy.ui.KitMenus;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -37,7 +37,7 @@ public class MountInventoryMenu extends ChestMenu {
     }
 
     private MountInventoryMenu(int containerId, Inventory inventory, ServerPlayer owner, Live container) {
-        super(MenuType.GENERIC_9x5, containerId, inventory, container, ROWS);
+        super(KitMenus.Use.MOUNT_INVENTORY.type(), containerId, inventory, container, ROWS);
         this.owner = owner;
         for (int index = 0; index < ROWS * 9; index++) {
             Slot old = slots.get(index);

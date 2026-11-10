@@ -4,19 +4,25 @@ import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.client.mount.DancarokGeometry;
 import fr.atraxterra.dohy.client.mount.DancarokModel;
 import fr.atraxterra.dohy.client.mount.DancarokRenderer;
+import fr.atraxterra.dohy.client.ui.screen.KitChestScreen;
+import fr.atraxterra.dohy.client.ui.screen.MachineDesigns;
+import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen;
 import fr.atraxterra.dohy.palamod.PalaMod;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.golem.PalaGolem;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
-import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
+import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import fr.atraxterra.dohy.palamod.storage.ChestTier;
 import fr.atraxterra.dohy.palamod.storage.PalaChestMenu;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import fr.atraxterra.dohy.ui.KitMenus;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -95,26 +101,27 @@ public final class DoHyClient {
      */
     @SubscribeEvent
     public static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
-        event.<MachineMenu, MachineScreen>register(PalaMenus.COBBLEBREAKER.get(),
-                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "cobblebreaker"));
-        event.<MachineMenu, MachineScreen>register(PalaMenus.CRUSHER.get(),
-                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "crusher"));
-        event.<MachineMenu, MachineScreen>register(PalaMenus.VOIDSTONE.get(),
-                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "voidstone"));
-        event.<MachineMenu, MachineScreen>register(PalaMenus.PALAFURNACE.get(),
-                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "palafurnace"));
-        event.<MachineMenu, MachineScreen>register(PalaMenus.PALAFORGE.get(),
-                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "palaforge"));
-        event.<MachineMenu, MachineScreen>register(PalaMenus.GRINDER.get(),
-                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "grinder"));
-        event.<MachineMenu, MachineScreen>register(PalaGolem.FOOD_MACHINE_MENU.get(),
-                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "food_machine"));
-        event.<MachineMenu, MachineScreen>register(PalaGolem.GOLEM_BOX_MENU.get(),
-                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "golem_box"));
-        event.<MachineMenu, MachineScreen>register(PalaPvp.PALAMACHINE_MENU.get(),
-                (menu, inventory, title) -> new MachineScreen(menu, inventory, title, "palamachine"));
+        machine(event, PalaMenus.COBBLEBREAKER.get(), MachineDesigns.COBBLEBREAKER);
+        machine(event, PalaMenus.CRUSHER.get(), MachineDesigns.CRUSHER);
+        machine(event, PalaMenus.VOIDSTONE.get(), MachineDesigns.VOIDSTONE);
+        machine(event, PalaMenus.PALAFURNACE.get(), MachineDesigns.PALAFURNACE);
+        machine(event, PalaMenus.PALAFORGE.get(), MachineDesigns.PALAFORGE);
+        machine(event, PalaMenus.GRINDER.get(), MachineDesigns.GRINDER);
+        machine(event, PalaGolem.FOOD_MACHINE_MENU.get(), MachineDesigns.FOOD_MACHINE);
+        machine(event, PalaGolem.GOLEM_BOX_MENU.get(), MachineDesigns.GOLEM_BOX);
+        machine(event, PalaPvp.PALAMACHINE_MENU.get(), MachineDesigns.PALAMACHINE);
+        for (KitMenus.Use use : KitMenus.Use.values()) {
+            event.<ChestMenu, KitChestScreen>register(use.type(),
+                    (menu, inventory, title) -> new KitChestScreen(menu, inventory, title, use));
+        }
         for (ChestTier tier : ChestTier.values()) {
             event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.menuOf(tier), PalaChestScreen::new);
         }
+    }
+
+    private static void machine(RegisterMenuScreensEvent event, MenuType<MachineMenu> type,
+                                MachineKitScreen.Design design) {
+        event.<MachineMenu, MachineKitScreen>register(type,
+                (menu, inventory, title) -> new MachineKitScreen(menu, inventory, title, design));
     }
 }
