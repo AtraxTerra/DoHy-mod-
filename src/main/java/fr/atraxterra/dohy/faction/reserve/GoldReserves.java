@@ -18,7 +18,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.UUID;
@@ -380,7 +380,7 @@ public final class GoldReserves {
 
     /** A la main, une reserve qui porte des placements ne se demonte pas. */
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void onBreak(BlockEvent.BreakEvent event) {
+    public static void onBreak(BreakBlockEvent event) {
         if (!(event.getPlayer() instanceof ServerPlayer player) || !isReserveBlock(event.getState())) {
             return;
         }
