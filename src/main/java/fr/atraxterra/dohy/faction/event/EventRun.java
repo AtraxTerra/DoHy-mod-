@@ -139,6 +139,11 @@ public abstract class EventRun {
     /** La ou entrent les combattants de la faction rivale {@code index}. */
     protected abstract Vec3 gate(int index);
 
+    /** L'inclinaison du regard a l'arrivee : droit devant, sauf au Totem ou l'on regarde l'escalier. */
+    public float entryPitch() {
+        return 0.0f;
+    }
+
     /** Le titre de la carte « EN COURS ». */
     public abstract String title();
 

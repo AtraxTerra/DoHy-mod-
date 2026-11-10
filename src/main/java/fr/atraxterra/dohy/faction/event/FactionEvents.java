@@ -225,7 +225,7 @@ public final class FactionEvents {
             player.setData(Factions.EVENT_RETURN, ReturnPoint.of(player));
         }
         Vec3 entry = run.entry();
-        player.teleport(new TeleportTransition(arena, entry, Vec3.ZERO, 180.0f, 0.0f,
+        player.teleport(new TeleportTransition(arena, entry, Vec3.ZERO, 180.0f, run.entryPitch(),
                 TeleportTransition.DO_NOTHING));
         player.sendSystemMessage(Component.literal("Bienvenue dans l'arene. Tu gardes ton inventaire ici. ")
                 .withStyle(ChatFormatting.GRAY)

@@ -113,6 +113,11 @@ public final class TotemRun extends EventRun {
     }
 
     @Override
+    public float entryPitch() {
+        return 35.0f;
+    }
+
+    @Override
     public String title() {
         return "Totem";
     }
