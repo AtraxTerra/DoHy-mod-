@@ -4134,7 +4134,9 @@ def main():
     # Le module PalaWither n'est pas dans les jars : ses recettes sont dans
     # PPalaWither.init, ses textures manquent sauf la gemme amusante, la tete
     # passive, la selle, la canne, la fleche de mi-vie et la poudre. Les autres
-    # gemmes et tetes sont ces deux-la teintees, les ameliorations le
+    # gemmes sont la gemme amusante teintee ; les peaux des withers et les
+    # tetes sont redessinees d'apres le wiki (tools/wither_skins.py) ; les
+    # ameliorations le
     # modificateur « more upgrade » teinte ; le laser reprend la boussole en
     # paladium du chasseur ; le receptacle est compose (obsidienne, crane de
     # wither, bandes de quartz electrifie).
@@ -4154,12 +4156,13 @@ def main():
         os.makedirs(os.path.dirname(full), exist_ok=True)
         image.save(full)
 
+    # Les gemmes : la gemme amusante, teintee aux couleurs du wither qu'elle invoque.
     WITHER_GEMS = (("wither_gem", (150, 150, 170), "Gemme de wither", "Wither Gem"),
-                   ("baby_wither_gem", (215, 180, 255), "Gemme de baby wither", "Baby Wither Gem"),
-                   ("passive_wither_gem", (170, 240, 180), "Gemme de wither passif", "Passive Wither Gem"),
-                   ("thirsty_wither_gem", (110, 170, 255), "Gemme de wither assoiffe", "Thirsty Wither Gem"),
-                   ("predator_wither_gem", (255, 110, 95), "Gemme de wither predateur", "Predator Wither Gem"),
-                   ("supreme_wither_gem", (255, 210, 80), "Gemme de wither supreme", "Supreme Wither Gem"))
+                   ("baby_wither_gem", (120, 200, 240), "Gemme de baby wither", "Baby Wither Gem"),
+                   ("passive_wither_gem", (150, 210, 110), "Gemme de wither passif", "Passive Wither Gem"),
+                   ("thirsty_wither_gem", (225, 195, 140), "Gemme de wither assoiffe", "Thirsty Wither Gem"),
+                   ("predator_wither_gem", (255, 120, 50), "Gemme de wither predateur", "Predator Wither Gem"),
+                   ("supreme_wither_gem", (200, 120, 255), "Gemme de wither supreme", "Supreme Wither Gem"))
     tex("items/wither/funny_wither_gem.png", "item/funny_wither_gem.png")
     flat_item("funny_wither_gem", "%s:item/funny_wither_gem" % NS)
     label("item", "funny_wither_gem", "Gemme de wither amusant", "Funny Wither Gem")
@@ -4168,14 +4171,23 @@ def main():
         flat_item(name, "%s:item/%s" % (NS, name))
         label("item", name, label_fr, label_en)
 
-    tex("items/passifwither_head.png", "item/passive_wither_head.png")
-    flat_item("passive_wither_head", "%s:item/passive_wither_head" % NS)
-    label("item", "passive_wither_head", "Tete de wither passif", "Passive Wither Head")
-    for name, rgb, label_fr, label_en in (
-            ("thirsty_wither_head", (110, 170, 255), "Tete de wither assoiffe", "Thirsty Wither Head"),
-            ("predator_wither_head", (255, 110, 95), "Tete de wither predateur", "Predator Wither Head"),
-            ("supreme_wither_head", (255, 210, 80), "Tete de wither supreme", "Supreme Wither Head")):
-        tinted("items/passifwither_head.png", "item/%s.png" % name, rgb)
+    # Les peaux des withers, d'apres les rendus du wiki (tools/wither_skins.py) :
+    # peau, yeux lumineux, peau de charge, et l'icone de la tete a crafter.
+    vanilla_wither = os.path.join(root[0] or "", "assets", "minecraft", "textures", "entity", "wither")
+    if os.path.exists(os.path.join(vanilla_wither, "wither.png")):
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import wither_skins
+        wither_skins.generate(os.path.join(vanilla_wither, "wither.png"),
+                              os.path.join(vanilla_wither, "wither_invulnerable.png"),
+                              os.path.join(RES, "assets", NS, "textures", "entity", "wither"),
+                              os.path.join(RES, "assets", NS, "textures", "item"))
+    else:
+        missing.append("peaux des withers (entity/wither/wither.png du pack)")
+    for name, label_fr, label_en in (
+            ("passive_wither_head", "Tete de wither passif", "Passive Wither Head"),
+            ("thirsty_wither_head", "Tete de wither assoiffe", "Thirsty Wither Head"),
+            ("predator_wither_head", "Tete de wither predateur", "Predator Wither Head"),
+            ("supreme_wither_head", "Tete de wither supreme", "Supreme Wither Head")):
         flat_item(name, "%s:item/%s" % (NS, name))
         label("item", name, label_fr, label_en)
 
@@ -4223,22 +4235,60 @@ def main():
         tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
         tag("minecraft/tags/block/needs_stone_tool.json", ["%s:%s" % (NS, name)])
 
-    # Le receptacle : obsidienne, crane de wither, bandes de quartz electrifie.
-    obsidian_png = os.path.join(root[0] or "", "assets", "minecraft", "textures", "block", "obsidian.png")
+    # Le receptacle : un autel qui suit sa recette (planches en bas, quartz
+    # electrifie autour, crane de wither au milieu). Socle de planches de chene
+    # noir, dalle d'obsidienne, quatre piliers de quartz electrifie coiffes de
+    # quartz compresse, et le crane pose sur un coussinet de quartz, les yeux
+    # allumes, tourne vers qui l'a pose (FACING).
     skull_png = os.path.join(root[0] or "", "assets", "minecraft", "textures", "entity", "skeleton",
                              "wither_skeleton.png")
-    if os.path.exists(obsidian_png) and os.path.exists(skull_png) and empowered is not None:
-        side = _Image.open(obsidian_png).convert("RGBA")
-        side.paste(empowered.crop((0, 0, 16, 2)), (0, 0))
-        side.paste(empowered.crop((0, 14, 16, 16)), (0, 14))
-        face = _Enhance.Brightness(_Image.open(skull_png).convert("RGBA").crop((8, 8, 16, 16))).enhance(2.2)
-        side.alpha_composite(face, (4, 4))
-        save_texture(side, "block/wither_receptacle_side.png")
+    if os.path.exists(skull_png):
+        head = _Image.open(skull_png).convert("RGBA")
+        skull = _Image.new("RGBA", (16, 16))
+        for box, at in (((8, 8, 16, 16), (0, 0)), ((0, 8, 8, 16), (8, 0)), ((8, 0, 16, 8), (0, 8)),
+                        ((24, 8, 32, 16), (8, 8))):
+            skull.paste(_Enhance.Brightness(head.crop(box)).enhance(1.7), at)
+        for x, y in ((1, 4), (2, 4), (5, 4), (6, 4)):
+            skull.putpixel((x, y), (214, 140, 255, 255))
+        for x in range(2, 6):
+            skull.putpixel((x, 6), (120, 60, 170, 255))
+        save_texture(skull, "block/wither_receptacle_skull.png")
     else:
-        missing.append("composition du receptacle (obsidienne, crane de wither)")
-    simple_block("wither_receptacle", "Receptacle a wither", "Wither Receptacle",
-                 {"top": "%s:block/empowered_quartz" % NS, "side": "%s:block/wither_receptacle_side" % NS,
-                  "bottom": "minecraft:block/obsidian"}, "minecraft:block/cube_bottom_top")
+        missing.append("crane du receptacle (entity/skeleton/wither_skeleton.png)")
+
+    def element(origin, to, texture, uvs=None, cull=()):
+        faces = {}
+        for face in ("north", "south", "east", "west", "up", "down"):
+            entry = {"texture": texture}
+            if uvs and face in uvs:
+                entry["uv"] = uvs[face]
+            if face in cull:
+                entry["cullface"] = face
+            faces[face] = entry
+        return {"from": origin, "to": to, "faces": faces}
+
+    receptacle = [element([0, 0, 0], [16, 2, 16], "#planks", cull=("north", "south", "east", "west", "down")),
+                  element([1, 2, 1], [15, 4, 15], "#obsidian"),
+                  element([5, 4, 5], [11, 5, 11], "#quartz")]
+    for x, z in ((1, 1), (12, 1), (1, 12), (12, 12)):
+        receptacle.append(element([x, 4, z], [x + 3, 14, z + 3], "#power"))
+        receptacle.append(element([x - 0.5, 14, z - 0.5], [x + 3.5, 16, z + 3.5], "#quartz",
+                                  cull=("up",)))
+    receptacle.append(element([4, 5, 4], [12, 13, 12], "#skull", {
+        "north": [0, 0, 8, 8], "east": [8, 0, 16, 8], "west": [8, 0, 16, 8], "south": [8, 8, 16, 16],
+        "up": [0, 8, 8, 16], "down": [0, 8, 8, 16]}))
+    write("assets/%s/models/block/wither_receptacle.json" % NS, {
+        "parent": "minecraft:block/block",
+        "textures": {"particle": "minecraft:block/obsidian", "planks": "minecraft:block/dark_oak_planks",
+                     "obsidian": "minecraft:block/obsidian", "quartz": "%s:block/compressed_quartz" % NS,
+                     "power": "%s:block/empowered_quartz" % NS, "skull": "%s:block/wither_receptacle_skull" % NS},
+        "elements": receptacle})
+    write("assets/%s/blockstates/wither_receptacle.json" % NS, {"variants": {
+        "facing=%s" % facing: dict({"model": "%s:block/wither_receptacle" % NS}, **rotation)
+        for facing, rotation in FACING_ROTATIONS if facing not in ("up", "down")}})
+    block_item("wither_receptacle")
+    drops_itself("wither_receptacle")
+    label("block", "wither_receptacle", "Receptacle a wither", "Wither Receptacle")
 
     # La peau du wither amusant : 64 x 32 en 1.7.10, le modele de 26.2 en lit 64 x 64.
     funny = jar_image("entity/wither/funny_wither.png")

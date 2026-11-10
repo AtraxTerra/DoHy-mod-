@@ -208,6 +208,16 @@ comportements viennent du wiki (« Réceptacle à Wither », « Pour le pillage 
   paladium (tête suprême) l'obsidienne compacte. La gemme de base se fabrique dans la forme du
   wither vanilla ; l'amusante (Lucky Blocks sur Paladium) avec du colorant jaune.
 - **TNT à wither** : elle invoque désormais le wither de base du pillage, compté à l'allumeur.
+- **Apparence**, d'après les rendus du wiki (`tools/wither_skins.py`, `PalaWitherGeometry`) :
+  **prédateur** anthracite aux dessus lavande, yeux, bouche et braises des côtes incandescents,
+  deux cornes en L ; **suprême** violet, yeux et croix de poitrine roses lumineux, épines sur les
+  têtes, deux grands bras griffus qui se balancent ; **assoiffé** couleur d'os sec, des flèches
+  plantées dans les crânes et les côtes ; **baby** ardoise aux yeux cyan lumineux ; **passif** os
+  pâle couvert de mousse, des pousses sur les têtes. Le wither de base garde la peau vanilla,
+  l'amusant celle de PalaMod. Pendant la charge, chaque genre clignote dans sa peau bleue.
+  Le **réceptacle** est un autel qui suit sa recette : socle de planches, dalle d'obsidienne, quatre
+  piliers de quartz électrifié coiffés de quartz compressé, et le crâne de wither aux yeux allumés,
+  tourné vers qui l'a posé.
 
 | Clé de l'arbre | Ce qu'elle débloque |
 |----------------|---------------------|

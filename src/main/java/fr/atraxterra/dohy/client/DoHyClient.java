@@ -7,6 +7,7 @@ import fr.atraxterra.dohy.client.mount.DancarokRenderer;
 import fr.atraxterra.dohy.client.ui.screen.KitChestScreen;
 import fr.atraxterra.dohy.client.ui.screen.MachineDesigns;
 import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen;
+import fr.atraxterra.dohy.client.wither.PalaWitherGeometry;
 import fr.atraxterra.dohy.client.wither.PalaWitherRenderer;
 import fr.atraxterra.dohy.client.wither.ReceptacleHudLayer;
 import fr.atraxterra.dohy.palamod.PalaMod;
@@ -106,6 +107,7 @@ public final class DoHyClient {
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DancarokModel.LAYER, DancarokGeometry::createBodyLayer);
+        PalaWitherGeometry.register(event);
     }
 
     @SubscribeEvent

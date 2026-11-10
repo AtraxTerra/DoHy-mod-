@@ -21,39 +21,36 @@ import java.util.function.Supplier;
  * </ul>
  *
  * @param summonTicks  temps d'invocation au receptacle (wiki : 5 s a 20 min)
- * @param tint         teinte du rendu sur la texture vanilla (0 : aucune)
  * @param allied       n'attaque que les monstres
  * @param pinned       ne se deplace pas seul (assoiffe : il faut le pousser ;
  *                     predateur, supreme : au laser de ciblage)
  * @param alchemist    niveau d'Alchimiste (sur 100) pour utiliser la gemme
  */
 public enum WitherKind {
-    BASE("paladium_wither", "wither_gem", 10 * 20, 300.0d, 1.0d, 0, false, false, 0),
-    FUNNY("funny_wither", "funny_wither_gem", 5 * 20, 300.0d, 1.0d, 0, false, false, 0),
-    BABY("baby_wither", "baby_wither_gem", 5 * 20, 150.0d, 0.5d, 0xFFE8D8FF, false, false, 0),
-    PASSIVE("passive_wither", "passive_wither_gem", 10 * 20, 300.0d, 1.0d, 0xFFC8F2D0, true, false, 0),
-    THIRSTY("thirsty_wither", "thirsty_wither_gem", 5 * 60 * 20, 450.0d, 1.1d, 0xFF8FC2FF, true, true, 70),
-    PREDATOR("predator_wither", "predator_wither_gem", 10 * 60 * 20, 600.0d, 1.2d, 0xFFFF8A7A, true, true, 90),
-    SUPREME("supreme_wither", "supreme_wither_gem", 20 * 60 * 20, 1000.0d, 1.4d, 0xFFFFD45A, true, true, 100);
+    BASE("paladium_wither", "wither_gem", 10 * 20, 300.0d, 1.0d, false, false, 0),
+    FUNNY("funny_wither", "funny_wither_gem", 5 * 20, 300.0d, 1.0d, false, false, 0),
+    BABY("baby_wither", "baby_wither_gem", 5 * 20, 150.0d, 0.5d, false, false, 0),
+    PASSIVE("passive_wither", "passive_wither_gem", 10 * 20, 300.0d, 1.0d, true, false, 0),
+    THIRSTY("thirsty_wither", "thirsty_wither_gem", 5 * 60 * 20, 450.0d, 1.1d, true, true, 70),
+    PREDATOR("predator_wither", "predator_wither_gem", 10 * 60 * 20, 600.0d, 1.2d, true, true, 90),
+    SUPREME("supreme_wither", "supreme_wither_gem", 20 * 60 * 20, 1000.0d, 1.4d, true, true, 100);
 
     private final String id;
     private final String gem;
     private final int summonTicks;
     private final double maxHealth;
     private final double scale;
-    private final int tint;
     private final boolean allied;
     private final boolean pinned;
     private final int alchemist;
 
-    WitherKind(String id, String gem, int summonTicks, double maxHealth, double scale, int tint, boolean allied,
+    WitherKind(String id, String gem, int summonTicks, double maxHealth, double scale, boolean allied,
                boolean pinned, int alchemist) {
         this.id = id;
         this.gem = gem;
         this.summonTicks = summonTicks;
         this.maxHealth = maxHealth;
         this.scale = scale;
-        this.tint = tint;
         this.allied = allied;
         this.pinned = pinned;
         this.alchemist = alchemist;
@@ -79,9 +76,6 @@ public enum WitherKind {
         return scale;
     }
 
-    public int tint() {
-        return tint;
-    }
 
     public boolean allied() {
         return allied;

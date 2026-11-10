@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "palamod:block/wither_receptacle"
+    },
+    "facing=south": {
+      "model": "palamod:block/wither_receptacle",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "palamod:block/wither_receptacle",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "palamod:block/wither_receptacle",
+      "y": 270
     }
   }
 }
