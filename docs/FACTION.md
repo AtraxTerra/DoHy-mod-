@@ -242,9 +242,12 @@ ou `/f base generer [1-3]`), une faction ennemie fictive bâtit une place forte 
 - Le site est cherché sur plusieurs ticks (8 ms au plus), ses chunks se chargent en tâche de fond (ticket
   forcé), puis la base est **bâtie par étapes**, 15 ms par tick : même la forteresse ne fige pas le serveur. Une **boussole** pointe vers elle (`/f base
   boussole` pour une autre). Une base à la fois.
-- **Ses claims suivent la règle de Paladium** : rien à la main (casser, poser, ouvrir), mais les
-  explosions (TNT, dynamites, TNT en endium) et les withers y cassent tout ; le seau extrapolé et le
-  pistolet à liquide y travaillent. Ses pièges frappent l'assaillant.
+- **Ses claims suivent la règle de Paladium** et débordent de **deux chunks de glacis** autour des
+  murs : on n'y casse, n'y pose ni n'y ouvre rien à la main — **même en créatif**. La TNT ne s'y pose
+  donc pas : elle arrive en **dynamite** lancée, tirée par un **canon à TNT** bâti hors des claims, ou
+  c'est un **wither** invoqué dehors (le réceptacle veut un chunk libre) qu'on amène au mur. Les
+  explosions et les withers y cassent tout ; le seau extrapolé et le pistolet à liquide y travaillent.
+  Ses pièges frappent l'assaillant.
 - **Entrer dans la salle des coffres du donjon, c'est l'avoir pillée** : ELO, argent à la banque de
   faction, et ses claims tombent — les coffres s'ouvrent. Compteurs `raid:base` et `raid:<taille>`.
 - **Abandonner** (`/f base abandonner`, deux clics dans l'onglet) l'oublie : elle reste en place,
@@ -262,9 +265,9 @@ Toutes les bases suivent le même plan, de plus en plus grand et épais :
 
 | Taille | Emprise, claims | Enceinte | Donjon | Défenseurs | Récompense |
 |--------|-----------------|----------|--------|------------|------------|
-| Avant-poste | 41 × 41, 3 × 3 | pierre · eau · pierre, douve d'eau | pierre · eau · obsidienne, 4 coffres | 10 gardes | +150 ELO, 25 000 $ |
-| Base | 65 × 65, 5 × 5 | obsidienne (bandes pleureuses) · eau · obsidienne piégée · renforcée, douve de Fake Water, spikes | renforcée · eau · obsidienne · boom · pierre, balise, 6 coffres | 2 casernes (husks, araignées), 18 gardes | +500 ELO, 120 000 $ |
-| Forteresse | 97 × 97, 7 × 7 | renforcée · eau · piégée (poison, mega boom, slime) · obsidienne · eau · renforcée, douve de Fake Water, deux rangs de spikes, tranchée de lave | renforcée · eau · enclumes en paladium et anti-aggro · obsidiennes à wither et compactes · eau · mega boom · blackstone, balise, 10 coffres + coffre fort | 4 casernes (wither squelettes, husks, araignées venimeuses), 30 gardes dont 2 ravageurs et un évocateur | +1 500 ELO, 500 000 $ |
+| Avant-poste | 41 × 41, 7 × 7 | pierre · eau · pierre, douve d'eau | pierre · eau · obsidienne, 4 coffres | 10 gardes | +150 ELO, 25 000 $ |
+| Base | 65 × 65, 9 × 9 | obsidienne (bandes pleureuses) · eau · obsidienne piégée · renforcée, douve de Fake Water, spikes | renforcée · eau · obsidienne · boom · pierre, balise, 6 coffres | 2 casernes (husks, araignées), 18 gardes | +500 ELO, 120 000 $ |
+| Forteresse | 97 × 97, 11 × 11 | renforcée · eau · piégée (poison, mega boom, slime) · obsidienne · eau · renforcée, douve de Fake Water, deux rangs de spikes, tranchée de lave | renforcée · eau · enclumes en paladium et anti-aggro · obsidiennes à wither et compactes · eau · mega boom · blackstone, balise, 10 coffres + coffre fort | 4 casernes (wither squelettes, husks, araignées venimeuses), 30 gardes dont 2 ravageurs et un évocateur | +1 500 ELO, 500 000 $ |
 
 Les gardes sont surtout des illageois (pillards, vindicateurs, sorcières, ravageurs, évocateur) : ils ne
 brûlent pas au soleil. Ils sont persistants. Les coffres tirent leur butin des tables
