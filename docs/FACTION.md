@@ -415,7 +415,9 @@ un autel d'obsidienne au centre, quatre bassins de lave autour.
   Tomber dans le vide ou quitter l'arène le renvoie sur l'autel.
 - **60 min de chasse** après la mort du dragon ; 3 000 ELO par rang au temps de port (facteur 1,2,
   comme `EggHuntManager`).
-- **Rivaux** : ils ramassent l'œuf, s'enfuient avec, et pourchassent quiconque le porte.
+- **Rivaux** : pendant le combat, ils patrouillent loin de l'autel ; ils ne touchent pas l'œuf
+  dans les 10 s où il apparaît (celui qui a abattu Volcania a sa chance), puis le ramassent,
+  s'enfuient avec, et pourchassent quiconque le porte.
 
 ### Réduction des dégâts en event
 

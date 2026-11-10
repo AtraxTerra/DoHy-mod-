@@ -60,6 +60,11 @@ public final class EggHuntRun extends EventRun {
     static final int PICKUP_LOCK = 12_000;
     /** Les rivaux reprennent plus vite : sans quoi l'oeuf leur echapperait pour de bon. */
     static final int RIVAL_LOCK = 1_200;
+    /**
+     * Les rivaux ne touchent pas l'oeuf dans les 10 s ou il apparait : celui qui
+     * a abattu Volcania, au pied de l'autel, doit avoir sa chance.
+     */
+    static final int RIVAL_GRACE = 200;
 
     private UUID dragonId;
     private int eggSince = -1;
@@ -366,10 +371,11 @@ public final class EggHuntRun extends EventRun {
             return;
         }
         if (ticks % 20 == 0) {
-            Vec3 altar = Vec3.atBottomCenterOf(EventArena.EGG_ALTAR);
+            // Pendant le combat, les rivaux patrouillent loin de l'autel.
+            Vec3 ground = Vec3.atBottomCenterOf(EventArena.EGG_CENTER.above());
             for (RivalFighter fighter : fighters(level)) {
-                double angle = (fighter.getId() % 10) * Math.PI / 5.0d;
-                fighter.setObjective(altar.add(Math.cos(angle) * 6.0d, -3.0d, Math.sin(angle) * 6.0d));
+                double angle = (fighter.getId() % 10) * Math.PI / 5.0d + ticks / 1200.0d;
+                fighter.setObjective(ground.add(Math.cos(angle) * 24.0d, 0.0d, Math.sin(angle) * 24.0d));
             }
             float health = dragon.getHealth() / dragon.getMaxHealth();
             bar.setProgress(Math.clamp(health, 0.0f, 1.0f));
@@ -393,6 +399,12 @@ public final class EggHuntRun extends EventRun {
                 continue;
             }
             if (egg != null) {
+                if (ticks - eggSince < RIVAL_GRACE) {
+                    double angle = (fighter.getId() % 10) * Math.PI / 5.0d;
+                    fighter.setObjective(Vec3.atBottomCenterOf(EventArena.EGG_CENTER.above())
+                            .add(Math.cos(angle) * 12.0d, 0.0d, Math.sin(angle) * 12.0d));
+                    continue;
+                }
                 fighter.setObjective(Vec3.atBottomCenterOf(egg));
                 if (fighter.position().distanceToSqr(Vec3.atBottomCenterOf(egg)) < 4.0d && !locked(fighter)) {
                     pickup(level, fighter);
