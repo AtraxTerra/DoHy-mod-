@@ -335,7 +335,7 @@ public final class EggHuntRun extends EventRun {
         }
         steerRivals(level, held);
         if (egg != null) {
-            level.sendParticles(ParticleTypes.DRAGON_BREATH, egg.getX() + 0.5d, egg.getY() + 0.6d, egg.getZ() + 0.5d,
+            level.sendParticles(ParticleTypes.REVERSE_PORTAL, egg.getX() + 0.5d, egg.getY() + 0.6d, egg.getZ() + 0.5d,
                     10, 0.3d, 0.4d, 0.3d, 0.01d);
         }
         bar.setProgress(progress(level.getServer()));
