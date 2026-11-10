@@ -991,9 +991,8 @@ def main():
     # ---- objets du Mineur (chapitre 8) ----
     #
     # Les excavatrices et les outils de construction se tiennent comme des
-    # outils ; les objets de poche sont plats. Les excavatrices ne vont PAS dans
-    # #minecraft:shovels : ce tag ouvrirait la table d'enchantement et
-    # l'enclume, et ItemExcavator n'est pas enchantable.
+    # outils ; les objets de poche sont plats. Les excavatrices s'enchantent
+    # comme des pelles (voir « enchantements : outils et cornes »).
     MINER_ITEMS = {
         "amethyst_excavator": ("excavator/amethyst.png", True,
                                "Excavatrice en amethyste", "Amethyst Excavator"),
@@ -3952,6 +3951,21 @@ def main():
     write("data/%s/recipe/lava_sponge_from_smelting.json" % NS, {
         "type": "minecraft:smelting", "category": "blocks", "cookingtime": 200, "experience": 0.15,
         "ingredient": "%s:wet_lava_sponge" % NS, "result": {"id": "%s:lava_sponge" % NS}})
+
+    # ---- enchantements : outils et cornes ----
+    #
+    # Demande du joueur (2026-11-10) : armures, outils et cornes s'enchantent.
+    # PalaMod refusait les enchantements aux marteaux, aux excavatrices et aux
+    # armes du grinder ; ils s'enchantent ici comme une pioche, une pelle, une
+    # epee. Les cornes de monture prennent Solidite et Raccommodage (durability),
+    # Fortune et Toucher de soie (mining_loot). EnchantabilityCheck verifie le
+    # tout au demarrage du serveur.
+    for metal in ("amethyst", "titane", "paladium"):
+        tag("minecraft/tags/item/pickaxes.json", ["%s:%s_hammer" % (NS, metal)])
+        tag("minecraft/tags/item/shovels.json", ["%s:%s_excavator" % (NS, metal)])
+        tag("minecraft/tags/item/swords.json", ["%s:%s_broadsword" % (NS, metal), "%s:%s_fastsword" % (NS, metal)])
+        tag("minecraft/tags/item/enchantable/durability.json", ["%s:%s_horn" % (NS, metal)])
+        tag("minecraft/tags/item/enchantable/mining_loot.json", ["%s:%s_horn" % (NS, metal)])
 
     # ---- les recettes de fabrication ----
     #

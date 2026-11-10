@@ -22,19 +22,22 @@ public class MountHornItem extends Item {
 
     /** {@code hornType} 1 a 3 ; 0 veut dire « pas de corne » sur l'entite. */
     public enum Tier {
-        AMETHYST(1, 3, 3999, ChatFormatting.LIGHT_PURPLE),
-        TITANE(2, 4, 5999, ChatFormatting.GRAY),
-        PALADIUM(3, 5, 9999, ChatFormatting.GOLD);
+        AMETHYST(1, 3, 3999, 20, ChatFormatting.LIGHT_PURPLE),
+        TITANE(2, 4, 5999, 20, ChatFormatting.GRAY),
+        PALADIUM(3, 5, 9999, 15, ChatFormatting.GOLD);
 
         private final int id;
         private final int size;
         private final int durability;
+        /** L'enchantabilite des outils du meme metal ({@code PalaToolMaterials}). */
+        private final int enchantability;
         private final ChatFormatting color;
 
-        Tier(int id, int size, int durability, ChatFormatting color) {
+        Tier(int id, int size, int durability, int enchantability, ChatFormatting color) {
             this.id = id;
             this.size = size;
             this.durability = durability;
+            this.enchantability = enchantability;
             this.color = color;
         }
 
@@ -54,8 +57,14 @@ public class MountHornItem extends Item {
 
     private final Tier tier;
 
+    /**
+     * Enchantable comme un outil de son metal : Solidite (l'usure de la frappe),
+     * Fortune et Toucher de soie (le butin, voir {@link HornMining}), Raccommodage
+     * (tenue en main). Les tags {@code enchantable/durability} et
+     * {@code enchantable/mining_loot} ouvrent la table et l'enclume.
+     */
     public MountHornItem(Tier tier, Properties properties) {
-        super(properties.durability(tier.durability()));
+        super(properties.durability(tier.durability()).enchantable(tier.enchantability));
         this.tier = tier;
     }
 

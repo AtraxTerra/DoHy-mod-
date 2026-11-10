@@ -9,8 +9,12 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -120,7 +124,7 @@ public final class HornMining {
         AreaMining.withoutArea(() -> {
             for (BlockPos cursor : BlockPos.betweenClosed(from, to)) {
                 BlockPos pos = cursor.immutable();
-                if (breakBlock(level, player, pos)) {
+                if (breakBlock(level, player, pos, horn)) {
                     broken[0]++;
                 }
             }
@@ -132,7 +136,12 @@ public final class HornMining {
         data.setFood(data.food() - cost);
         level.playSound(null, mount.getX(), mount.getY(), mount.getZ(), PalaMount.DANCAROK_DESTROY.get(),
                 SoundSource.NEUTRAL, 0.4f, 1.0f);
-        int wear = horn.getDamageValue() + 1;
+        // Une frappe, une usure — que Solidite peut epargner, comme sur un outil.
+        int damage = EnchantmentHelper.processDurabilityChange(level, horn, 1);
+        if (damage <= 0) {
+            return;
+        }
+        int wear = horn.getDamageValue() + damage;
         if (wear >= horn.getMaxDamage()) {
             data.setHorn(ItemStack.EMPTY);
             MountTexts.error(player, "horn_broken");
@@ -153,7 +162,7 @@ public final class HornMining {
         return state.is(BlockTags.MINEABLE_WITH_PICKAXE) || state.is(BlockTags.MINEABLE_WITH_SHOVEL);
     }
 
-    private static boolean breakBlock(ServerLevel level, ServerPlayer player, BlockPos pos) {
+    private static boolean breakBlock(ServerLevel level, ServerPlayer player, BlockPos pos, ItemStack horn) {
         BlockState state = level.getBlockState(pos);
         if (state.isAir() || !mineable(state) || state.is(AreaMining.IMMUNE)
                 || state.getDestroySpeed(level, pos) < 0.0f || state.hasBlockEntity()) {
@@ -162,7 +171,15 @@ public final class HornMining {
         if (CommonHooks.fireBlockBreak(level, player.gameMode.getGameModeForPlayer(), player, pos, state).isCanceled()) {
             return false;
         }
-        // destroyBlock lache aussi l'XP du bloc (CommonHooks.handleBlockDrops).
-        return level.destroyBlock(pos, true, player);
+        // destroyBlock, mais avec la corne pour outil : Fortune et Toucher de soie
+        // s'appliquent au butin. dropResources passe par CommonHooks.handleBlockDrops,
+        // qui lache aussi l'XP du bloc.
+        level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(state));
+        Block.dropResources(state, level, pos, null, player, horn);
+        boolean removed = level.setBlock(pos, level.getFluidState(pos).createLegacyBlock(), Block.UPDATE_ALL);
+        if (removed) {
+            level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(player, state));
+        }
+        return removed;
     }
 }

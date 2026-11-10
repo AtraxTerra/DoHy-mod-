@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "palamod:paladium_fishing_rod"
+    "palamod:amethyst_horn",
+    "palamod:paladium_fishing_rod",
+    "palamod:paladium_horn",
+    "palamod:titane_horn"
   ]
 }

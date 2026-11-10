@@ -14,6 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.equipment.Equippable;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -57,7 +59,7 @@ public final class EnchantabilityCheck {
         return false;
     }
 
-    /** Les refus, par objet : vide si tout va bien. Public pour la commande de diagnostic et les tests. */
+    /** Les refus, par objet : vide si tout va bien. */
     public static Map<String, List<String>> problems(HolderLookup.Provider registries) {
         HolderLookup.RegistryLookup<Enchantment> enchantments = registries.lookupOrThrow(Registries.ENCHANTMENT);
         Map<String, List<String>> problems = new TreeMap<>();
@@ -79,15 +81,28 @@ public final class EnchantabilityCheck {
             if (!stack.has(DataComponents.ENCHANTABLE)) {
                 missing.add("table");
             }
+            // En 26.2 une epee a aussi un composant d'outil (la toile d'araignee) et
+            // une pioche un composant d'arme : on classe par ce que l'objet mine.
+            boolean mining = tool && mines(stack);
             refuse(enchantments, stack, damageable, Enchantments.UNBREAKING, missing);
-            refuse(enchantments, stack, tool, Enchantments.EFFICIENCY, missing);
-            refuse(enchantments, stack, weapon, Enchantments.SHARPNESS, missing);
+            refuse(enchantments, stack, mining, Enchantments.EFFICIENCY, missing);
+            refuse(enchantments, stack, weapon && !mining, Enchantments.SHARPNESS, missing);
             refuse(enchantments, stack, armor, Enchantments.PROTECTION, missing);
             if (!missing.isEmpty()) {
                 problems.put(id.getPath(), missing);
             }
         }
         return problems;
+    }
+
+    /** Un outil de minage va plus vite que la main sur la pierre, la terre, le bois ou le foin. */
+    private static boolean mines(ItemStack stack) {
+        for (Block block : new Block[] {Blocks.STONE, Blocks.DIRT, Blocks.OAK_LOG, Blocks.HAY_BLOCK}) {
+            if (stack.getDestroySpeed(block.defaultBlockState()) > 1.0f) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void refuse(HolderLookup.RegistryLookup<Enchantment> enchantments, ItemStack stack, boolean applies,

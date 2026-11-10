@@ -1,11 +1,14 @@
 {
   "replace": false,
   "values": [
+    "palamod:amethyst_hammer",
     "palamod:amethyst_pickaxe",
     "palamod:cavern_hammer",
     "palamod:endium_pickaxe",
     "palamod:green_paladium_pickaxe",
+    "palamod:paladium_hammer",
     "palamod:paladium_pickaxe",
+    "palamod:titane_hammer",
     "palamod:titane_pickaxe"
   ]
 }
