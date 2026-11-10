@@ -54,7 +54,12 @@ public class VolcaniaDragon extends EnderDragon {
                 discard();
                 return;
             }
-            if (isAlive() && dragonDeathTime == 0) {
+            if (isNoAi()) {
+                // Sans IA (commande, photo) : il plane sur place au lieu de foncer.
+                if (getPhaseManager().getCurrentPhase().getPhase() != EnderDragonPhase.HOVERING) {
+                    getPhaseManager().setPhase(EnderDragonPhase.HOVERING);
+                }
+            } else if (isAlive() && dragonDeathTime == 0) {
                 steer(level);
             }
         }
