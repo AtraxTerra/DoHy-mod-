@@ -70,7 +70,7 @@ public final class ContractsController extends MenuController {
                 ? Card.of(new ItemStack(Items.BELL), "Demande du jour", List.of("Aucune demande en cours",
                         "Tiree a la connexion")).state(MenuView.DISABLED)
                 : Card.of(new ItemStack(Items.BELL), "Demande du jour", List.of(
-                        Gui.displayName(demand).getString(), "x" + config.demand().multiplier() + " a la vente"))
+                        MenuView.text(Gui.displayName(demand)), "x" + config.demand().multiplier() + " a la vente"))
                 .accent(0xFFFAC400).tooltip(List.of("Change dans " + delay(ContractApi.minutesUntilDailyReset()),
                         "Se cumule avec le booster")));
         boolean firstSale = ContractApi.firstSaleAvailable(player);

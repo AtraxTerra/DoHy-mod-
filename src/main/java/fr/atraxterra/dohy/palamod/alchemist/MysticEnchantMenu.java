@@ -1,14 +1,13 @@
 package fr.atraxterra.dohy.palamod.alchemist;
 
 import fr.atraxterra.dohy.job.JobApi;
-import fr.atraxterra.dohy.ui.DisplayMenu;
-import fr.atraxterra.dohy.ui.Gui;
+import fr.atraxterra.dohy.ui.menu.MenuController;
+import fr.atraxterra.dohy.ui.view.MenuView;
+import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -17,68 +16,57 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * La table de l'Alchimiste ({@code ContainerEnchantment}, {@code CSEnchantItem}).
- *
- * <p>Elle s'ouvre a la place de la table vanilla quand la puissance des
- * bibliotheques autour depasse 60. Elle enchante <b>l'objet tenu en main</b> —
- * l'original le posait dans une case unique, c'est le meme geste — d'un niveau
- * par clic, 30 niveaux d'experience chaque fois, jusqu'au maximum.
- */
-public final class MysticEnchantMenu extends DisplayMenu {
+/** La table d'enchantement mystique : l'objet tenu, et les deux enchantements de l'alchimiste. */
+public final class MysticEnchantMenu extends MenuController {
 
-    private static final int SLOT_ITEM = 4;
-    private static final int[] SLOTS = {12, 14};
-    private static final int SLOT_CLOSE = 22;
+    public static final MysticEnchantMenu INSTANCE = new MysticEnchantMenu();
 
-    public MysticEnchantMenu(int containerId, Inventory inventory, ServerPlayer player) {
-        super(containerId, inventory, player, 3);
-        refresh();
-    }
-
-    public static void open(ServerPlayer player) {
-        player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> new MysticEnchantMenu(containerId, inventory, player),
-                Component.translatable("container.palamod.mystic_enchant")));
+    private MysticEnchantMenu() {
+        super("mystic_enchant");
     }
 
     @Override
-    protected void onClick(int slot, int button, boolean shift) {
-        if (slot == SLOT_CLOSE) {
-            click(0.6f);
-            player.closeContainer();
-            return;
-        }
-        MysticEnchant[] enchants = MysticEnchant.values();
-        for (int index = 0; index < SLOTS.length && index < enchants.length; index++) {
-            if (SLOTS[index] == slot) {
-                apply(enchants[index]);
-                return;
-            }
-        }
-    }
-
-    private void apply(MysticEnchant enchant) {
-        Component refusal = refusal(enchant);
-        if (refusal != null) {
-            failure();
-            player.sendSystemMessage(refusal.copy().withStyle(ChatFormatting.RED));
-            return;
-        }
+    public MenuView view(ServerPlayer player) {
         ItemStack held = player.getMainHandItem();
-        Holder<Enchantment> holder = enchant.holder(player).orElseThrow();
-        int next = enchant.levelOn(player, held) + 1;
-        EnchantmentHelper.updateEnchantments(held, enchantments -> enchantments.set(holder, next));
-        if (!player.getAbilities().instabuild) {
-            player.giveExperienceLevels(-MysticEnchant.COST);
+        List<Card> item = List.of(held.isEmpty()
+                ? Card.of(new ItemStack(Items.BARRIER), MenuView.text(Component.translatable(
+                        "message.palamod.mystic_enchant.no_item")), List.of("Prends un objet en main", "puis rouvre la table")).state(MenuView.DISABLED)
+                : Card.of(held.copyWithCount(1), MenuView.text(held.getHoverName()), List.of("L'objet tenu en main",
+                        "Niveaux d'XP : " + player.experienceLevel)).accent(0xFFEC4FB5));
+        List<Card> enchants = new ArrayList<>();
+        for (MysticEnchant enchant : MysticEnchant.values()) {
+            Holder<Enchantment> holder = enchant.holder(player).orElse(null);
+            if (holder == null) {
+                continue;
+            }
+            int level = enchant.levelOn(player, held);
+            List<String> tooltip = new ArrayList<>();
+            tooltip.add(MenuView.text(Component.translatable("enchantment.palamod." + enchant.id() + ".desc")));
+            if (enchant.job() != null) {
+                tooltip.add(MenuView.text(Component.translatable("message.palamod.mystic_enchant.requires",
+                        enchant.job().display(), enchant.jobLevel())));
+            }
+            Component refusal = refusal(player, enchant);
+            if (refusal != null) {
+                tooltip.add(MenuView.text(refusal));
+            }
+            Card card = Card.of(new ItemStack(Items.ENCHANTED_BOOK), MenuView.text(holder.value().description()),
+                            List.of(MenuView.text(Component.translatable("message.palamod.mystic_enchant.level", level,
+                                            holder.value().getMaxLevel())),
+                                    MenuView.text(Component.translatable("message.palamod.mystic_enchant.cost",
+                                            MysticEnchant.COST))))
+                    .accent(0xFFEC4FB5).progress(level, holder.value().getMaxLevel()).tooltip(tooltip);
+            enchants.add(refusal == null ? card.action("apply:" + enchant.name() + "|enchanter")
+                    : card.state(MenuView.DISABLED));
         }
-        success();
-        player.sendSystemMessage(Component.translatable("message.palamod.mystic_enchant.done",
-                Enchantment.getFullname(holder, next)).withStyle(ChatFormatting.GREEN));
+        return new MenuView(id(), "Enchantement mystique", "Les enchantements de l'alchimiste", List.of(
+                new MenuView.Stat("NIVEAUX D'XP", String.valueOf(player.experienceLevel), 0xFF22E558)), List.of(
+                new MenuView.Section("OBJET", "resources", MenuView.GRID, item),
+                new MenuView.Section("ENCHANTEMENTS", "upgrade", MenuView.GRID, enchants)), false);
     }
 
     /** Pourquoi l'enchantement ne peut pas se faire, ou {@code null}. */
-    private Component refusal(MysticEnchant enchant) {
+    private static Component refusal(ServerPlayer player, MysticEnchant enchant) {
         ItemStack held = player.getMainHandItem();
         Holder<Enchantment> holder = enchant.holder(player).orElse(null);
         if (holder == null) {
@@ -104,45 +92,31 @@ public final class MysticEnchantMenu extends DisplayMenu {
     }
 
     @Override
-    protected void build() {
-        frame();
-        ItemStack held = player.getMainHandItem();
-        set(SLOT_ITEM, held.isEmpty()
-                ? Gui.button(Items.BARRIER, Component.translatable("message.palamod.mystic_enchant.no_item")
-                        .withStyle(ChatFormatting.RED), List.of())
-                : held.copyWithCount(1));
-        MysticEnchant[] enchants = MysticEnchant.values();
-        for (int index = 0; index < SLOTS.length && index < enchants.length; index++) {
-            set(SLOTS[index], tile(enchants[index]));
+    protected void card(ServerPlayer player, String key, int button) {
+        if (!key.startsWith("apply:")) {
+            return;
         }
-        set(SLOT_CLOSE, Gui.close());
-    }
-
-    private ItemStack tile(MysticEnchant enchant) {
-        Holder<Enchantment> holder = enchant.holder(player).orElse(null);
-        if (holder == null) {
-            return Gui.filler();
+        MysticEnchant enchant;
+        try {
+            enchant = MysticEnchant.valueOf(key.substring(6));
+        } catch (IllegalArgumentException unknown) {
+            return;
+        }
+        Component refusal = refusal(player, enchant);
+        if (refusal != null) {
+            failure(player);
+            player.sendSystemMessage(refusal.copy().withStyle(ChatFormatting.RED));
+            return;
         }
         ItemStack held = player.getMainHandItem();
-        int level = enchant.levelOn(player, held);
-        List<Component> lore = new ArrayList<>();
-        lore.add(Component.translatable("enchantment.palamod." + enchant.id() + ".desc")
-                .withStyle(ChatFormatting.GOLD));
-        lore.add(Component.translatable("message.palamod.mystic_enchant.level", level, holder.value().getMaxLevel())
-                .withStyle(ChatFormatting.GRAY));
-        lore.add(Component.translatable("message.palamod.mystic_enchant.cost", MysticEnchant.COST)
-                .withStyle(ChatFormatting.GRAY));
-        if (enchant.job() != null) {
-            boolean meets = JobApi.meets(player, enchant.job(), enchant.jobLevel());
-            lore.add(Component.translatable("message.palamod.mystic_enchant.requires",
-                    enchant.job().display(), enchant.jobLevel())
-                    .withStyle(meets ? ChatFormatting.GREEN : ChatFormatting.RED));
+        Holder<Enchantment> holder = enchant.holder(player).orElseThrow();
+        int next = enchant.levelOn(player, held) + 1;
+        EnchantmentHelper.updateEnchantments(held, enchantments -> enchantments.set(holder, next));
+        if (!player.getAbilities().instabuild) {
+            player.giveExperienceLevels(-MysticEnchant.COST);
         }
-        Component refusal = refusal(enchant);
-        lore.add(refusal == null
-                ? Component.translatable("message.palamod.mystic_enchant.click").withStyle(ChatFormatting.GREEN)
-                : refusal.copy().withStyle(ChatFormatting.RED));
-        return Gui.button(Items.ENCHANTED_BOOK, holder.value().description().copy()
-                .withStyle(ChatFormatting.LIGHT_PURPLE), lore);
+        success(player);
+        player.sendSystemMessage(Component.translatable("message.palamod.mystic_enchant.done",
+                Enchantment.getFullname(holder, next)).withStyle(ChatFormatting.GREEN));
     }
 }

@@ -368,7 +368,10 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                     if (!action.isEmpty()) {
                         int bar = action.indexOf('|');
                         UiScreen.click(1.0f);
-                        UiClient.send(view.view(), "card", bar < 0 ? action : action.substring(0, bar), button);
+                        // Maj + clic gauche arrive en bouton 2 : l'enclos s'en sert pour les soins.
+                        boolean shift = (UiScreen.modifiers() & org.lwjgl.glfw.GLFW.GLFW_MOD_SHIFT) != 0;
+                        UiClient.send(view.view(), "card", bar < 0 ? action : action.substring(0, bar),
+                                button == 0 && shift ? 2 : button);
                     }
                     return true;
                 }

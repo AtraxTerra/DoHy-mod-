@@ -35,7 +35,7 @@ public final class RpgPayloads {
         PayloadRegistrar registrar = event.registrar("1");
         registrar.playToServer(OpenProfile.TYPE, OpenProfile.STREAM_CODEC, (payload, context) -> {
             if (context.player() instanceof ServerPlayer player) {
-                RpgMenu.open(player);
+                RpgMenu.INSTANCE.open(player);
             }
         });
     }

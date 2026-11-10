@@ -32,6 +32,25 @@ public record JobDetailView(String job, int level, int maxLevel, int progress, l
      *
      * @param lines details pour la bulle
      */
+    /** La meme fiche, chaque texte de ligne passe par {@code text} (voir {@code MenuView.text}). */
+    public JobDetailView map(java.util.function.UnaryOperator<String> text) {
+        return new JobDetailView(job, level, maxLevel, progress, xpInto, xpNeed, totalXp, nextMoney,
+                mapRows(unlocks, text), mapRows(perks, text), mapRows(rewards, text));
+    }
+
+    private static List<Row> mapRows(List<Row> rows, java.util.function.UnaryOperator<String> text) {
+        List<Row> mapped = new java.util.ArrayList<>(rows.size());
+        for (Row row : rows) {
+            List<String> lines = new java.util.ArrayList<>(row.lines().size());
+            for (String line : row.lines()) {
+                lines.add(text.apply(line));
+            }
+            mapped.add(new Row(row.icon(), text.apply(row.title()), text.apply(row.detail()), row.level(),
+                    row.state(), lines));
+        }
+        return mapped;
+    }
+
     public record Row(ItemStack icon, String title, String detail, int level, int state, List<String> lines) {
         public static final StreamCodec<RegistryFriendlyByteBuf, Row> STREAM_CODEC = StreamCodec.of(
                 (buffer, row) -> {

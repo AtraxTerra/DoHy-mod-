@@ -1,5 +1,7 @@
 package fr.atraxterra.dohy.client.ui;
 
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
 import fr.atraxterra.dohy.client.ui.screen.JobDetailScreen;
 import fr.atraxterra.dohy.client.ui.screen.JobsScreen;
 import fr.atraxterra.dohy.client.ui.screen.MenuScreen;
@@ -12,6 +14,8 @@ import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.ui.view.UiView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -41,11 +45,19 @@ public final class UiClient {
     @SubscribeEvent
     public static void onRegister(RegisterClientPayloadHandlersEvent event) {
         event.register(UiNet.Show.TYPE, (payload, context) -> show(payload.view()));
+        event.register(UiNet.Close.TYPE, (payload, context) -> {
+            Minecraft minecraft = Minecraft.getInstance();
+            if (minecraft.gui.screen() instanceof UiScreen) {
+                minecraft.gui.setScreen(null);
+            }
+        });
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static void show(UiView view) {
+    public static void show(UiView received) {
         Minecraft minecraft = Minecraft.getInstance();
+        UiView view = received instanceof MenuView menu ? menu.map(UiClient::translate)
+                : received instanceof JobDetailView detail ? detail.map(UiClient::translate) : received;
         Screen current = minecraft.gui.screen();
         if (current instanceof ViewScreen screen && current instanceof UiScreen ui && ui.viewId().equals(view.viewId())) {
             screen.accept(view);
@@ -58,6 +70,19 @@ public final class UiClient {
         Function<UiView, Screen> factory = SCREENS.get(view.viewId());
         if (factory != null) {
             minecraft.gui.setScreen(factory.apply(view));
+        }
+    }
+
+    /** Un texte marque par {@code MenuView.text}, traduit dans la langue du joueur. */
+    static String translate(String text) {
+        if (text.isEmpty() || text.charAt(0) != MenuView.TRANSLATED) {
+            return text;
+        }
+        try {
+            return ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(text.substring(1)))
+                    .result().map(Component::getString).orElse("");
+        } catch (RuntimeException malformed) {
+            return "";
         }
     }
 

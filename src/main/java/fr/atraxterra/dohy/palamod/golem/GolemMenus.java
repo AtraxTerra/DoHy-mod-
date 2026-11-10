@@ -2,229 +2,270 @@ package fr.atraxterra.dohy.palamod.golem;
 
 import fr.atraxterra.dohy.palamod.PalaItems;
 import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
-import fr.atraxterra.dohy.ui.DisplayMenu;
-import fr.atraxterra.dohy.ui.Gui;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
+import fr.atraxterra.dohy.ui.menu.MenuController;
+import fr.atraxterra.dohy.ui.view.MenuView;
+import fr.atraxterra.dohy.ui.view.MenuView.Card;
+import fr.atraxterra.dohy.ui.view.UiNet;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Les interfaces du golem : l'accueil, l'arbre de competences, les choix, le
- * stockage.
- *
- * <p>GuardianGolem dessinait un arbre sur une image de 3 000 x 4 500 qu'on
- * faisait defiler. Ici l'arbre tient dans un coffre de six rangees, une
- * colonne de trois cases par voie, comme les autres interfaces de DoHy : rien
- * ne s'y deplace, chaque clic est une action.
+ * Les ecrans du golem gardien, dans le kit d'interface : l'accueil, l'arbre de
+ * competences et les choix. L'inventaire du golem reste un vrai conteneur.
  */
 public final class GolemMenus {
+
+    /** Le golem que chaque joueur regarde. */
+    private static final Map<UUID, GuardianGolem> GOLEMS = new ConcurrentHashMap<>();
 
     private GolemMenus() {
     }
 
     public static void openMain(ServerPlayer player, GuardianGolem golem) {
-        player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> new Main(containerId, inventory, player, golem),
-                Component.literal("Golem gardien")));
+        GOLEMS.put(player.getUUID(), golem);
+        Main.INSTANCE.open(player);
     }
 
     static boolean usable(ServerPlayer player, GuardianGolem golem) {
-        return golem.isAlive() && !golem.has(GolemUpgrade.MAD_GOLEM)
+        return golem != null && golem.isAlive() && !golem.has(GolemUpgrade.MAD_GOLEM)
                 && player.distanceToSqr(golem) <= GuardianGolem.MENU_RANGE * GuardianGolem.MENU_RANGE * 4;
     }
 
-    private static ItemStack glint(ItemStack stack) {
-        stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
-        return stack;
-    }
-
-    // -- Accueil ---------------------------------------------------------------
-
-    static final class Main extends DisplayMenu {
-
-        private static final int INFO = 13;
-        private static final int TREE = 29;
-        private static final int CHOICES = 31;
-        private static final int STORAGE = 33;
-        private static final int CLOSE = 40;
-
-        private final GuardianGolem golem;
-
-        Main(int containerId, Inventory inventory, ServerPlayer player, GuardianGolem golem) {
-            super(containerId, inventory, player, 5);
-            this.golem = golem;
-            refresh();
-        }
-
-        @Override
-        protected void build() {
-            frame();
-            int level = golem.golemLevel();
-            List<Component> lore = new ArrayList<>();
-            lore.add(Gui.field("Proprietaire", golem.describeOwner()));
-            lore.add(Gui.field("Niveau", level + " / " + GuardianGolem.MAX_LEVEL));
-            if (level < GuardianGolem.MAX_LEVEL) {
-                lore.add(Gui.bar(golem.subXp(), GuardianGolem.xpForLevel(level + 1), 20));
-            }
-            lore.add(Gui.field("Points de capacite", String.valueOf(golem.points())));
-            lore.add(Gui.field("Vie", Math.round(golem.getHealth()) + " / " + Math.round(golem.getMaxHealth())));
-            lore.add(Gui.field("Degats", String.format(Locale.ROOT, "%.2f",
-                    golem.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE))));
-            if (!golem.whitelist().isEmpty()) {
-                lore.add(Gui.field("Liste blanche", String.join(", ", golem.whitelist())));
-            }
-            if (golem.isLoading()) {
-                lore.add(Gui.bad("En chargement"));
-            }
-            lore.add(Gui.blank());
-            lore.add(Gui.hint("Nourrissez-le de lingots ou de blocs (accroupi : toute la pile)."));
-            set(INFO, Gui.button(PalaGolem.GUARDIAN_STONE.get(), Component.literal("Golem gardien")
-                    .withStyle(ChatFormatting.GOLD), lore));
-            set(TREE, Gui.button(Items.BOOK, "Arbre de competences", List.of(
-                    Gui.field("Points", String.valueOf(golem.points())), Gui.action("Cliquer pour ouvrir"))));
-            if (Choices.available(golem)) {
-                set(CHOICES, Gui.button(Items.COMPARATOR, "Choix", List.of(Gui.action("Cliquer pour ouvrir"))));
-            }
-            if (golem.has(GolemUpgrade.STOCKAGE)) {
-                set(STORAGE, Gui.button(Items.CHEST, "Inventaire du golem", List.of(
-                        Gui.action("Cliquer pour ouvrir"))));
-            }
-            set(CLOSE, Gui.close());
-        }
-
-        @Override
-        protected void onClick(int slot, int button, boolean shift) {
-            if (!usable(player, golem)) {
-                player.closeContainer();
-                return;
-            }
-            switch (slot) {
-                case TREE -> {
-                    click();
-                    open("Arbre de competences", (id, inventory) -> new Tree(id, inventory, player, golem));
-                }
-                case CHOICES -> {
-                    if (Choices.available(golem)) {
-                        click();
-                        open("Choix du golem", (id, inventory) -> new Choices(id, inventory, player, golem));
-                    }
-                }
-                case STORAGE -> {
-                    if (golem.has(GolemUpgrade.STOCKAGE)) {
-                        click();
-                        openStorage(player, golem);
-                    }
-                }
-                case CLOSE -> player.closeContainer();
-                default -> {
-                }
-            }
-        }
-    }
-
     public static void openStorage(ServerPlayer player, GuardianGolem golem) {
+        UiNet.forget(player);
         player.openMenu(new SimpleMenuProvider(
                 (containerId, inventory, viewer) -> new FilteredChestMenu(MenuType.GENERIC_9x2, containerId,
                         inventory, golem.storage(), 2),
                 Component.literal("Inventaire du golem")));
     }
 
+    /** Les choix ne s'ouvrent qu'une fois une competence a choix acquise. */
+    static boolean choicesAvailable(GuardianGolem golem) {
+        for (GolemChoice choice : GolemChoice.values()) {
+            if (golem.has(choice.gate())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Une description en deux lignes au plus, coupee aux espaces. */
+    static List<String> wrap(String text, int width) {
+        List<String> lines = new ArrayList<>();
+        StringBuilder line = new StringBuilder();
+        for (String word : text.split(" ")) {
+            if (line.length() > 0 && line.length() + 1 + word.length() > width && lines.isEmpty()) {
+                lines.add(line.toString());
+                line.setLength(0);
+            }
+            if (line.length() > 0) {
+                line.append(' ');
+            }
+            line.append(word);
+        }
+        lines.add(line.toString());
+        return lines;
+    }
+
+    /** Les controleurs du golem verifient tous que le golem est la et a portee. */
+    private abstract static class GolemScreen extends MenuController {
+        GolemScreen(String path) {
+            super(path);
+        }
+
+        GuardianGolem golem(ServerPlayer player) {
+            GuardianGolem golem = GOLEMS.get(player.getUUID());
+            return usable(player, golem) ? golem : null;
+        }
+
+        @Override
+        protected void back(ServerPlayer player) {
+            Main.INSTANCE.open(player);
+        }
+    }
+
+    // -- Accueil ---------------------------------------------------------------
+
+    public static final class Main extends GolemScreen {
+        public static final Main INSTANCE = new Main();
+
+        private Main() {
+            super("golem_main");
+        }
+
+        @Override
+        public MenuView view(ServerPlayer player) {
+            GuardianGolem golem = GOLEMS.get(player.getUUID());
+            if (golem == null) {
+                return new MenuView(id(), "Golem gardien", "", List.of(), List.of(), false);
+            }
+            int level = golem.golemLevel();
+            List<String> info = new ArrayList<>();
+            info.add("Proprietaire : " + golem.describeOwner());
+            info.add("Degats : " + String.format(Locale.ROOT, "%.2f",
+                    golem.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)));
+            if (!golem.whitelist().isEmpty()) {
+                info.add("Liste blanche : " + String.join(", ", golem.whitelist()));
+            }
+            if (golem.isLoading()) {
+                info.add("En chargement");
+            }
+            info.add("Nourrissez-le de lingots ou de blocs (accroupi : toute la pile).");
+            Card sheet = Card.of(new ItemStack(PalaGolem.GUARDIAN_STONE.get()), "Golem gardien", List.of(
+                            "Niveau " + level + " / " + GuardianGolem.MAX_LEVEL,
+                            "Vie " + Math.round(golem.getHealth()) + " / " + Math.round(golem.getMaxHealth())))
+                    .accent(0xFFFAC400).tooltip(info);
+            if (level < GuardianGolem.MAX_LEVEL) {
+                sheet = sheet.progress(golem.subXp(), GuardianGolem.xpForLevel(level + 1));
+            } else {
+                sheet = sheet.state(MenuView.DONE);
+            }
+            List<Card> cards = new ArrayList<>();
+            cards.add(sheet);
+            cards.add(Card.of(new ItemStack(Items.BOOK), "Competences", List.of(
+                    golem.points() + " point(s) de capacite", "Un point par niveau")).accent(0xFF2F5BEA)
+                    .badge(golem.points() > 0 ? String.valueOf(golem.points()) : "").action("tree|ouvrir"));
+            boolean choices = choicesAvailable(golem);
+            cards.add(Card.of(new ItemStack(Items.COMPARATOR), "Choix", List.of("Reglages des competences",
+                            choices ? "Disponibles" : "Aucune competence a choix"))
+                    .accent(0xFF2F5BEA).action(choices ? "choices|ouvrir" : "")
+                    .state(choices ? MenuView.NORMAL : MenuView.DISABLED));
+            boolean storage = golem.has(GolemUpgrade.STOCKAGE);
+            cards.add(Card.of(new ItemStack(Items.CHEST), "Inventaire", List.of("Le stockage du golem",
+                            storage ? "Disponible" : "Competence Stockage requise"))
+                    .accent(0xFF2F5BEA).action(storage ? "storage|ouvrir" : "")
+                    .state(storage ? MenuView.NORMAL : MenuView.DISABLED));
+            List<MenuView.Stat> stats = List.of(
+                    new MenuView.Stat("NIVEAU", level + " / " + GuardianGolem.MAX_LEVEL, 0xFFFAC400),
+                    new MenuView.Stat("POINTS", String.valueOf(golem.points()), 0xFF22E558));
+            return new MenuView(id(), "Golem gardien", golem.describeOwner(), stats,
+                    List.of(new MenuView.Section("", "", MenuView.GRID, cards)), false);
+        }
+
+        @Override
+        protected void card(ServerPlayer player, String key, int button) {
+            GuardianGolem golem = golem(player);
+            if (golem == null) {
+                UiNet.close(player);
+                return;
+            }
+            switch (key) {
+                case "tree" -> Tree.INSTANCE.open(player);
+                case "choices" -> {
+                    if (choicesAvailable(golem)) {
+                        Choices.INSTANCE.open(player);
+                    }
+                }
+                case "storage" -> {
+                    if (golem.has(GolemUpgrade.STOCKAGE)) {
+                        openStorage(player, golem);
+                    }
+                }
+                default -> {
+                }
+            }
+        }
+    }
+
     // -- Arbre -------------------------------------------------------------
 
-    static final class Tree extends DisplayMenu {
+    public static final class Tree extends GolemScreen {
+        public static final Tree INSTANCE = new Tree();
 
-        private static final int ROOT = 4;
-        private static final int INFO = 0;
-        private static final int BACK = 8;
+        private Tree() {
+            super("golem_tree");
+        }
 
-        private final GuardianGolem golem;
-        private final Map<Integer, GolemUpgrade> bySlot = new java.util.HashMap<>();
-
-        Tree(int containerId, Inventory inventory, ServerPlayer player, GuardianGolem golem) {
-            super(containerId, inventory, player, 6);
-            this.golem = golem;
-            int[] firstColumn = {0, 0, 3, 6};
-            Map<GolemUpgrade.Branch, Integer> placed = new EnumMap<>(GolemUpgrade.Branch.class);
-            for (GolemUpgrade upgrade : GolemUpgrade.values()) {
-                if (upgrade.branch() == GolemUpgrade.Branch.ROOT) {
-                    bySlot.put(ROOT, upgrade);
-                    continue;
+        @Override
+        public MenuView view(ServerPlayer player) {
+            GuardianGolem golem = GOLEMS.get(player.getUUID());
+            if (golem == null) {
+                return new MenuView(id(), "Arbre", "", List.of(), List.of(), true);
+            }
+            List<MenuView.Section> sections = new ArrayList<>();
+            for (GolemUpgrade.Branch branch : GolemUpgrade.Branch.values()) {
+                List<Card> cards = new ArrayList<>();
+                for (GolemUpgrade upgrade : GolemUpgrade.values()) {
+                    if (upgrade.branch() != branch) {
+                        continue;
+                    }
+                    boolean owned = golem.has(upgrade);
+                    boolean buyable = golem.canBuy(upgrade);
+                    List<String> tooltip = new ArrayList<>();
+                    tooltip.add(upgrade.description());
+                    if (upgrade.parent() != null) {
+                        tooltip.add("Pre-requis : " + upgrade.parent().label());
+                    }
+                    Card card = Card.of(new ItemStack(iconItem(upgrade)), upgrade.label(), List.of(
+                                    upgrade.cost() + " point" + (upgrade.cost() > 1 ? "s" : ""),
+                                    owned ? "Acquise" : buyable ? "Disponible" : "Indisponible"))
+                            .badge(String.valueOf(upgrade.cost())).tooltip(tooltip);
+                    if (owned) {
+                        card = card.state(MenuView.DONE);
+                    } else if (buyable) {
+                        card = card.accent(0xFFFAC400).action("buy:" + upgrade.name() + "|acheter");
+                    } else {
+                        card = card.state(MenuView.DISABLED);
+                    }
+                    cards.add(card);
                 }
-                int index = placed.merge(upgrade.branch(), 1, Integer::sum) - 1;
-                int row = 1 + index / 3;
-                int column = firstColumn[upgrade.branch().ordinal()] + index % 3;
-                bySlot.put(row * 9 + column, upgrade);
+                if (!cards.isEmpty()) {
+                    sections.add(new MenuView.Section(branchName(branch), "upgrade", MenuView.GRID, cards));
+                }
             }
-            refresh();
+            List<MenuView.Stat> stats = List.of(new MenuView.Stat("POINTS", String.valueOf(golem.points()),
+                    0xFF22E558));
+            return new MenuView(id(), "Arbre du golem", "Un point de capacite par niveau du golem", stats,
+                    sections, true);
+        }
+
+        private static String branchName(GolemUpgrade.Branch branch) {
+            return switch (branch.ordinal()) {
+                case 0 -> "RACINE";
+                case 1 -> "BRANCHE UTILITAIRE";
+                case 2 -> "BRANCHE GUERRE";
+                default -> "BRANCHE FERMIER";
+            };
         }
 
         @Override
-        protected void build() {
-            set(INFO, Gui.button(Items.EXPERIENCE_BOTTLE, Component.literal("Points de capacite")
-                    .withStyle(ChatFormatting.GOLD), List.of(
-                    Gui.field("Disponibles", String.valueOf(golem.points())),
-                    Gui.hint("Un point par niveau du golem."))));
-            set(BACK, Gui.back("le golem"));
-            bySlot.forEach((slot, upgrade) -> set(slot, icon(upgrade)));
-        }
-
-        private ItemStack icon(GolemUpgrade upgrade) {
-            boolean owned = golem.has(upgrade);
-            boolean buyable = golem.canBuy(upgrade);
-            List<Component> lore = new ArrayList<>();
-            lore.add(Component.literal(upgrade.description()).withStyle(ChatFormatting.GRAY));
-            lore.add(Gui.blank());
-            lore.add(Gui.field("Cout", upgrade.cost() + (upgrade.cost() > 1 ? " points" : " point")));
-            if (upgrade.parent() != null) {
-                lore.add(Gui.field("Pre-requis", upgrade.parent().label()));
-            }
-            if (owned) {
-                lore.add(Gui.good("Acquise"));
-            } else if (buyable) {
-                lore.add(Gui.action("Cliquer pour l'acheter"));
-            } else {
-                lore.add(Gui.bad("Indisponible"));
-            }
-            ChatFormatting color = owned ? ChatFormatting.GREEN : buyable ? ChatFormatting.YELLOW : ChatFormatting.RED;
-            ItemStack stack = Gui.button(iconItem(upgrade), Component.literal(upgrade.label()).withStyle(color), lore);
-            return owned ? glint(stack) : stack;
-        }
-
-        @Override
-        protected void onClick(int slot, int button, boolean shift) {
-            if (!usable(player, golem)) {
-                player.closeContainer();
+        protected void card(ServerPlayer player, String key, int button) {
+            GuardianGolem golem = golem(player);
+            if (golem == null) {
+                UiNet.close(player);
                 return;
             }
-            if (slot == BACK) {
-                click();
-                open("Golem gardien", (id, inventory) -> new Main(id, inventory, player, golem));
+            if (!key.startsWith("buy:")) {
                 return;
             }
-            GolemUpgrade upgrade = bySlot.get(slot);
-            if (upgrade == null || golem.has(upgrade)) {
+            GolemUpgrade upgrade;
+            try {
+                upgrade = GolemUpgrade.valueOf(key.substring(4));
+            } catch (IllegalArgumentException unknown) {
+                return;
+            }
+            if (golem.has(upgrade)) {
                 return;
             }
             if (!golem.canManage(player) || !golem.buy(upgrade)) {
-                failure();
+                failure(player);
                 return;
             }
-            success();
+            success(player);
             if (upgrade == GolemUpgrade.MAD_GOLEM) {
-                player.closeContainer();
+                UiNet.close(player);
             }
         }
     }
@@ -267,74 +308,60 @@ public final class GolemMenus {
 
     // -- Choix ---------------------------------------------------------------
 
-    static final class Choices extends DisplayMenu {
+    public static final class Choices extends GolemScreen {
+        public static final Choices INSTANCE = new Choices();
 
-        private static final int BACK = 45;
-
-        private final GuardianGolem golem;
-
-        Choices(int containerId, Inventory inventory, ServerPlayer player, GuardianGolem golem) {
-            super(containerId, inventory, player, 6);
-            this.golem = golem;
-            refresh();
-        }
-
-        static boolean available(GuardianGolem golem) {
-            for (GolemChoice choice : GolemChoice.values()) {
-                if (golem.has(choice.gate())) {
-                    return true;
-                }
-            }
-            return false;
+        private Choices() {
+            super("golem_choices");
         }
 
         @Override
-        protected void build() {
-            int row = 0;
-            for (GolemChoice choice : GolemChoice.values()) {
-                if (!golem.has(choice.gate())) {
-                    continue;
-                }
-                set(row * 9, Gui.button(iconItem(choice.gate()), Component.literal(choice.label())
-                        .withStyle(ChatFormatting.GOLD), List.of()));
-                for (int option = 1; option <= choice.options(); option++) {
-                    boolean active = golem.choice(choice) == option;
-                    ItemStack stack = Gui.button(active ? Items.EMERALD : Items.FLINT,
-                            Component.literal(choice.option(option))
-                                    .withStyle(active ? ChatFormatting.GREEN : ChatFormatting.GRAY),
-                            List.of(active ? Gui.good("Choisi") : Gui.action("Cliquer pour choisir")));
-                    set(row * 9 + 1 + option, active ? glint(stack) : stack);
-                }
-                row++;
-            }
-            set(BACK, Gui.back("le golem"));
-        }
-
-        @Override
-        protected void onClick(int slot, int button, boolean shift) {
-            if (!usable(player, golem)) {
-                player.closeContainer();
-                return;
-            }
-            if (slot == BACK) {
-                click();
-                open("Golem gardien", (id, inventory) -> new Main(id, inventory, player, golem));
-                return;
-            }
-            int row = slot / 9;
-            int option = slot % 9 - 1;
-            int index = 0;
-            for (GolemChoice choice : GolemChoice.values()) {
-                if (!golem.has(choice.gate())) {
-                    continue;
-                }
-                if (index++ == row) {
-                    if (option >= 1 && option <= choice.options() && golem.canManage(player)) {
-                        golem.setChoice(choice, option);
-                        click();
+        public MenuView view(ServerPlayer player) {
+            GuardianGolem golem = GOLEMS.get(player.getUUID());
+            List<MenuView.Section> sections = new ArrayList<>();
+            if (golem != null) {
+                for (GolemChoice choice : GolemChoice.values()) {
+                    if (!golem.has(choice.gate())) {
+                        continue;
                     }
-                    return;
+                    List<Card> cards = new ArrayList<>();
+                    for (int option = 1; option <= choice.options(); option++) {
+                        boolean active = golem.choice(choice) == option;
+                        Card card = Card.of(new ItemStack(active ? Items.EMERALD : Items.FLINT),
+                                        active ? "Option " + option + " · choisie" : "Option " + option,
+                                        wrap(choice.option(option), 34))
+                                .tooltip(List.of(choice.option(option), active ? "Choisi" : "Clic : choisir"));
+                        cards.add(active ? card.state(MenuView.DONE)
+                                : card.accent(0xFF2F5BEA).action("choice:" + choice.name() + ":" + option + "|choisir"));
+                    }
+                    sections.add(new MenuView.Section(choice.label().toUpperCase(Locale.ROOT), "craft",
+                            MenuView.GRID, cards));
                 }
+            }
+            return new MenuView(id(), "Choix du golem", "Comment ton golem se comporte", List.of(), sections, true);
+        }
+
+        @Override
+        protected void card(ServerPlayer player, String key, int button) {
+            GuardianGolem golem = golem(player);
+            if (golem == null) {
+                UiNet.close(player);
+                return;
+            }
+            String[] parts = key.split(":");
+            if (parts.length != 3 || !parts[0].equals("choice")) {
+                return;
+            }
+            GolemChoice choice;
+            int option;
+            try {
+                choice = GolemChoice.valueOf(parts[1]);
+                option = Integer.parseInt(parts[2]);
+            } catch (IllegalArgumentException malformed) {
+                return;
+            }
+            if (golem.has(choice.gate()) && option >= 1 && option <= choice.options() && golem.canManage(player)) {
+                golem.setChoice(choice, option);
             }
         }
     }

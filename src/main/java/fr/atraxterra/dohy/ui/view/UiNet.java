@@ -72,6 +72,24 @@ public final class UiNet {
         OPEN.remove(player.getUUID());
     }
 
+    /** Ferme l'ecran du kit chez le joueur : avant une teleportation, une invocation. */
+    public static void close(ServerPlayer player) {
+        if (OPEN.remove(player.getUUID()) != null) {
+            PacketDistributor.sendToPlayer(player, new Close());
+        }
+    }
+
+    /** Ferme l'ecran du kit ouvert, s'il y en a un. */
+    public record Close() implements CustomPacketPayload {
+        public static final Type<Close> TYPE = new Type<>(id("ui_close"));
+        public static final StreamCodec<ByteBuf, Close> STREAM_CODEC = StreamCodec.unit(new Close());
+
+        @Override
+        public Type<Close> type() {
+            return TYPE;
+        }
+    }
+
     // -- Messages --------------------------------------------------------------
 
     public record Show(UiView view) implements CustomPacketPayload {
@@ -129,6 +147,7 @@ public final class UiNet {
         }
         PayloadRegistrar registrar = event.registrar("1");
         registrar.playToClient(Show.TYPE, Show.STREAM_CODEC);
+        registrar.playToClient(Close.TYPE, Close.STREAM_CODEC);
         registrar.playToServer(Action.TYPE, Action.STREAM_CODEC, (action, context) -> {
             if (!(context.player() instanceof ServerPlayer player)) {
                 return;

@@ -123,7 +123,7 @@ public final class AlchemistEvents {
         }
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.SUCCESS);
-        MysticEnchantMenu.open(player);
+        MysticEnchantMenu.INSTANCE.open(player);
     }
 
     /** La puissance des bibliotheques autour de la table, sans le plafond de 15 du vanilla. */

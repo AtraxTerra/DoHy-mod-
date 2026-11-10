@@ -405,7 +405,7 @@ public final class DungeonEvents {
     @SubscribeEvent
     public static void onCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("profil").executes(context -> {
-            RpgMenu.open(context.getSource().getPlayerOrException());
+            RpgMenu.INSTANCE.open(context.getSource().getPlayerOrException());
             return 1;
         }));
         event.getDispatcher().register(Commands.literal("donjon")

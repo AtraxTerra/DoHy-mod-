@@ -134,9 +134,10 @@ public final class BoutiqueController extends MenuController {
         int percent = weights <= 0 ? 0 : Math.round(100.0f * entry.weight() / weights);
         if (entry.item().isPresent()) {
             Item item = BuiltInRegistries.ITEM.getOptional(entry.item().get()).orElse(null);
-            String name = item == null ? Gui.prettify(entry.item().get().getPath())
-                    : new ItemStack(item).getHoverName().getString();
-            return percent + " %  " + name + " x" + Math.max(1, entry.count());
+            Component name = item == null ? Component.literal(Gui.prettify(entry.item().get().getPath()))
+                    : new ItemStack(item).getHoverName();
+            return MenuView.text(Component.literal(percent + " %  ").append(name)
+                    .append(" x" + Math.max(1, entry.count())));
         }
         long low = Math.min(entry.moneyMin(), entry.moneyMax());
         long high = Math.max(entry.moneyMin(), entry.moneyMax());

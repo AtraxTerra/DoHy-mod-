@@ -143,7 +143,7 @@ public final class HubController extends MenuController {
             case "upgrades" -> UpgradesController.INSTANCE.open(player);
             case "rpg" -> {
                 UiNet.forget(player);
-                RpgMenu.open(player);
+                RpgMenu.INSTANCE.open(player);
             }
             default -> {
             }

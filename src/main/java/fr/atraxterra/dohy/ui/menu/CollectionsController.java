@@ -116,7 +116,7 @@ public final class CollectionsController extends MenuController {
             tooltip.add(next > 0 ? "Prochain palier a " + MoneyFormat.exact(next) : "Tous les paliers franchis");
             if (!entry.sellable()) {
                 tooltip.add("Achat seul : pas de vente a debloquer");
-            } else if (tier < 0) {
+            } else if (tier < 0 && CollectionApi.missingToUnlock(player, id, entry) > 0) {
                 tooltip.add("Vente verrouillee : il en manque "
                         + MoneyFormat.exact(CollectionApi.missingToUnlock(player, id, entry)));
             } else {
@@ -127,7 +127,7 @@ public final class CollectionsController extends MenuController {
                 tooltip.add("Prestige " + prestige);
             }
             boolean canPrestige = CollectionApi.canPrestige(player, id, entry);
-            Card card = Card.of(new ItemStack(item), new ItemStack(item).getHoverName().getString(), lines)
+            Card card = Card.of(new ItemStack(item), MenuView.text(new ItemStack(item).getHoverName()), lines)
                     .tooltip(tooltip)
                     .badge(prestige > 0 ? "P" + prestige : tier >= 0 ? String.valueOf(tier + 1) : "");
             if (next > 0) {

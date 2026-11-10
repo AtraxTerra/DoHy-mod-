@@ -10,8 +10,8 @@ autocrafter, crusher, cobblebreaker, grinder).
 | Lot | Écrans | État |
 |-----|--------|------|
 | 1 | Kit, métiers et fiche d'un métier, shop | fait |
-| 2 | Économie : menu principal, banque, contrats, boutique de boosters, collections, musée, améliorations | fait (en validation) |
-| 3 | Palamod : donjons, profil RPG, monture, golem, dimension du Mineur, enchantement mystique | à faire |
+| 2 | Économie : menu principal, banque, contrats, boutique de boosters, collections, musée, améliorations | fait |
+| 3 | Palamod : donjons, profil RPG, monture, golem, dimension du Mineur, enchantement mystique | fait |
 | 4 | Conteneurs : machines (crusher déjà maquetté), coffres en paladium, coffre de vente, musée | à faire |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
@@ -107,6 +107,31 @@ Les sous-pages (une catégorie de collections, une aile du musée) sont un état
 contrôleur ; l'hexagone de gauche y revient avant de retourner au menu principal. `Hub.open`
 reste le point d'entrée des autres écrans. Les sept anciens menus en coffre sont supprimés ; le
 coffre de vente et le guichet du musée, de vrais conteneurs, viendront au lot 4.
+
+## Les écrans Palamod (lot 3)
+
+Les menus en coffre de la partie Palamod passent sur la même `MenuView` :
+
+- **donjons** : le choix du palier (cent vignettes, vert réussi, jaune le suivant, gris
+  verrouillé, un crâne aux paliers de boss), l'autel de boost, la marchande et le sac ;
+- **profil RPG** : niveau et points libres, une section par statistique (arbre et runes), les
+  points réservés puis validés, la remise à zéro en deux clics ;
+- **monture** : la fiche de la monture équipée (invoquer, nourrir, XP partagée), l'enclos
+  (clic : équiper, clic droit : récupérer, Maj + clic : soigner) et le soin aux bandages ;
+- **golem** : l'accueil, l'arbre des compétences par branche (racine, utilitaire, guerre,
+  fermier) et les choix des compétences à option ;
+- **dimension du Mineur** : l'entrée (règles, session, rejoindre) et le bilan de fin de session ;
+- **table de l'alchimiste** : l'objet tenu et les deux enchantements mystiques, avec la raison
+  d'un refus dans la bulle.
+
+Maj + clic gauche arrive au serveur comme bouton 2. Le serveur peut fermer l'écran
+(`UiNet.close`) avant une téléportation : entrée d'un donjon, de la dimension du Mineur. Les vrais
+inventaires (sac de la monture, coffre du golem) restent des conteneurs, pour le lot 4.
+
+Les textes que le serveur ne doit pas traduire lui-même (noms d'objets, d'enchantements, clés de
+traduction) partent en composant JSON (`MenuView.text`) : le client les traduit dans sa langue à
+l'arrivée de la vue. Un serveur dédié ne connaît que l'anglais ; sans cela, un joueur français
+lirait « Diamond Boots ». La fiche d'un métier suit le même chemin.
 
 ## Vérification
 
