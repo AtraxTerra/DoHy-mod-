@@ -13,7 +13,7 @@ PvE**. Choix du joueur :
 | Lot | Contenu | État |
 |-----|---------|------|
 | 22a | Cœur : création, claims et protection, banque, homes, ELO et ligues, onglets, `/f` | fait |
-| 22b | Arbre de technologie : Global, Pillage, Défense, Économie | à faire |
+| 22b | Arbre de technologie : Global, Pillage, Défense, Économie | fait (en validation) |
 | 22c | Objets de défense : obsidiennes à effet, spikes obsi, Fake Water, éponges, brouilleur, enclumes, amulettes… | à faire |
 | 22d | Objets de pillage : dynamites, TNT spéciales, withers custom, Unclaim Finder, arc en paladium, flèche de Switch… | à faire |
 | 22e | Réserve d'or : multibloc, investissements à intérêts | à faire |
@@ -51,3 +51,28 @@ PvE**. Choix du joueur :
   la faction, banque, claims, classement, paramètres.
 - **Commandes** : `/f` (ou `/faction`), `create`, `claim`, `unclaim`, `unclaimall confirm`,
   `home [n]`, `sethome [n]`, `bank deposit|withdraw`, `info`, `map`, `disband confirm`.
+
+## Arbre de technologie (22b)
+
+Quatre branches (`FactionTree`), douze paliers (six pour l'Économie). Un palier demande, tous
+ensemble, son coût payé par la banque de faction (et de l'or liquide pour l'Économie), ses
+conditions et le palier précédent ; il s'améliore ensuite pendant une durée réelle (2 h à 14 j),
+une amélioration à la fois par branche. Coûts, durées et récompenses sont ceux du wiki.
+
+**Conditions remixées solo** : « N membres » → « N claims » ; « membres connectés N h » → « N h de
+jeu » ; « visiter N factions » → « visiter N structures » (villages, temples, avant-postes…) ;
+« tuer N joueurs différents » → « tuer N espèces différentes ». Les compteurs viennent des
+statistiques du jeu (blocs parcourus, temps de jeu, blocs cassés, objets fabriqués) ou des compteurs
+de faction (`FactionStats` : stick of god, outil de construction, et ceux des lots suivants). Un
+objet pas encore porté affiche son lot (22c, 22d, 22e) et ne progresse pas.
+
+**Récompenses** : les « emplacements de membre » de la branche Globale deviennent deux claims
+chacun ; la Défense ajoute ses claims (10 à 200 par palier) ; F homes (1, 2 puis 3) et leur délai
+(10, 5, 3 puis 0 s) ; réduction des dégâts de raid (-5 à -20 %) ; XP de donjon (+5 à +20 %) ; blason
+personnalisé (palier 4 : copier une bannière à motifs) ; MOTD (palier 6) ; déblocages d'objets
+(`use:dynamite`, `craft:hood_helmet`…, vérifiés par les objets des lots 22c et 22d) ; réserve d'or
+(palier, valeur par or liquide, intérêts).
+
+**Écrans** : l'arbre (quatre branches et ce qui est acquis), puis une branche : ses paliers, la
+bulle de chaque condition avec sa progression, « PRÊT » quand tout est réuni. `/f arbre` ; pour les
+opérateurs, `/f arbre finir` et `/f arbre palier <branche> <n>`.

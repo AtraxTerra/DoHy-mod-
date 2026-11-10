@@ -104,6 +104,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 21c | **Interfaces, lot 3** : donjons (paliers, autel de boost, marchande, sac), profil RPG, monture (fiche, enclos, soins), golem (accueil, arbre, choix), dimension du Mineur (entrée, bilan), table de l'alchimiste | fait |
 | 21d | **Interfaces, lot 4** : écran de conteneur du kit, les neuf machines (crusher avec ses quatre bacs), coffres en paladium, inventaires en coffre avec leurs propres types de menu (vente, musée, monture, golem, coffre de l'End en paladium) | fait |
 | 22a | **Faction solo, cœur** : création (100 lingots de paladium), claims qui protègent la base contre le monde, banque de faction, F homes, ELO et ligues du lundi, onglets sur le kit, `/f` — voir [docs/FACTION.md](docs/FACTION.md) | fait |
+| 22b | **Faction solo, arbre de technologie** : 4 branches du wiki (coûts, durées réelles, récompenses), conditions remixées solo, déblocages d'objets pour les lots suivants, écrans de l'arbre | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
