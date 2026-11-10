@@ -12,7 +12,7 @@ PvE**. Choix du joueur :
 
 | Lot | Contenu | État |
 |-----|---------|------|
-| 22a | Cœur : création, claims et protection, banque, homes, ELO et ligues, onglets, `/f` | fait (en validation) |
+| 22a | Cœur : création, claims et protection, banque, homes, ELO et ligues, onglets, `/f` | fait |
 | 22b | Arbre de technologie : Global, Pillage, Défense, Économie | à faire |
 | 22c | Objets de défense : obsidiennes à effet, spikes obsi, Fake Water, éponges, brouilleur, enclumes, amulettes… | à faire |
 | 22d | Objets de pillage : dynamites, TNT spéciales, withers custom, Unclaim Finder, arc en paladium, flèche de Switch… | à faire |
