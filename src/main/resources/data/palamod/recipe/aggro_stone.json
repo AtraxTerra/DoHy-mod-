@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "YZY",
+    "ZZZ"
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot",
+    "Y": "palamod:wither_skull_fragment",
+    "Z": "palamod:orangeblue_seeds"
+  },
+  "result": {
+    "id": "palamod:aggro_stone",
+    "count": 1
+  }
+}

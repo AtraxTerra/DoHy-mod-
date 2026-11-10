@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/template_anvil",
+  "textures": {
+    "particle": "palamod:block/amethyst_anvil_body",
+    "body": "palamod:block/amethyst_anvil_body",
+    "top": "palamod:block/amethyst_anvil_top"
+  }
+}

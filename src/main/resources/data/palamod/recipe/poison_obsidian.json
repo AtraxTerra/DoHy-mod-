@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XYX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:obsidian",
+    "Y": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "minecraft:splash_potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:poison"
+        }
+      },
+      "strict": false
+    }
+  },
+  "result": {
+    "id": "palamod:poison_obsidian",
+    "count": 8
+  }
+}

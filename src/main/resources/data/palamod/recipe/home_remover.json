@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OPO",
+    "PEP",
+    "OPO"
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "P": "palamod:paladium_ingot",
+    "E": "minecraft:ender_eye"
+  },
+  "result": {
+    "id": "palamod:home_remover",
+    "count": 1
+  }
+}

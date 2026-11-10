@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XYX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:sponge",
+    "Y": "palamod:paladium_core"
+  },
+  "result": {
+    "id": "palamod:compressed_sponge",
+    "count": 1
+  }
+}

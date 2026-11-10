@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:observer",
+    "palamod:hardened_obsidian"
+  ],
+  "result": {
+    "id": "palamod:observer_obsidian",
+    "count": 1
+  }
+}

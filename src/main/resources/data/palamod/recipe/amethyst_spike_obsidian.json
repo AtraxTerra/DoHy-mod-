@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:obsidian",
+    "palamod:amethyst_spike"
+  ],
+  "result": {
+    "id": "palamod:amethyst_spike_obsidian",
+    "count": 1
+  }
+}

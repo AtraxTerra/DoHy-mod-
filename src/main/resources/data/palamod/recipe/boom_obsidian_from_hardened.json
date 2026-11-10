@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:gunpowder",
+    "palamod:hardened_obsidian"
+  ],
+  "result": {
+    "id": "palamod:boom_obsidian",
+    "count": 1
+  }
+}

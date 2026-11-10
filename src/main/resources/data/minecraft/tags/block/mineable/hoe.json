@@ -1,10 +1,13 @@
 {
   "replace": false,
   "values": [
+    "palamod:compressed_sponge",
     "palamod:erable_leaves",
     "palamod:jacaranda_leaves",
     "palamod:judeecercis_leaves",
+    "palamod:lava_sponge",
     "palamod:ostrya_leaves",
+    "palamod:wet_lava_sponge",
     "palamod:xp_bush"
   ]
 }

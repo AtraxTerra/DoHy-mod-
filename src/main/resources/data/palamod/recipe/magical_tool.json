@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XYX",
+    " Z "
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot",
+    "Y": "palamod:paladium_block",
+    "Z": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:magical_tool",
+    "count": 1
+  }
+}

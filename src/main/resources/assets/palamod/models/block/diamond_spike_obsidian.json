@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "palamod:block/diamond_spike_obsidian",
+    "north": "palamod:block/diamond_spike_obsidian_front",
+    "south": "palamod:block/diamond_spike_obsidian",
+    "east": "palamod:block/diamond_spike_obsidian",
+    "west": "palamod:block/diamond_spike_obsidian",
+    "up": "palamod:block/diamond_spike_obsidian",
+    "down": "palamod:block/diamond_spike_obsidian"
+  }
+}

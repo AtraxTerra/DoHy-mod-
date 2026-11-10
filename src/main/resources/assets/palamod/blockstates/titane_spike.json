@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "palamod:block/titane_spike"
+    },
+    "facing=down": {
+      "model": "palamod:block/titane_spike",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "palamod:block/titane_spike",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "palamod:block/titane_spike",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "palamod:block/titane_spike",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "palamod:block/titane_spike",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

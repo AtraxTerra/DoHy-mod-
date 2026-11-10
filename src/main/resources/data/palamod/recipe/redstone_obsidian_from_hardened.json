@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:redstone",
+    "palamod:hardened_obsidian"
+  ],
+  "result": {
+    "id": "palamod:redstone_obsidian",
+    "count": 1
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "power=0": {
+      "model": "palamod:block/redstone_obsidian_off"
+    },
+    "power=1": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=2": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=3": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=4": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=5": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=6": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=7": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=8": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=9": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=10": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=11": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=12": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=13": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=14": {
+      "model": "palamod:block/redstone_obsidian"
+    },
+    "power=15": {
+      "model": "palamod:block/redstone_obsidian"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "palamod:block/slime_obsidian",
+    "north": "palamod:block/slime_obsidian_front",
+    "south": "palamod:block/slime_obsidian",
+    "east": "palamod:block/slime_obsidian",
+    "west": "palamod:block/slime_obsidian",
+    "up": "palamod:block/slime_obsidian",
+    "down": "palamod:block/slime_obsidian"
+  }
+}

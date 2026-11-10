@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BNB",
+    " S ",
+    " P "
+  ],
+  "key": {
+    "B": "palamod:strength_orb",
+    "N": "palamod:paladium_core",
+    "S": "minecraft:string",
+    "P": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:combat_amulet",
+    "count": 1
+  }
+}

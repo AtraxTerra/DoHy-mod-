@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XNX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:obsidian",
+    "N": "minecraft:nether_star"
+  },
+  "result": {
+    "id": "palamod:anti_aggro_obsidian",
+    "count": 8
+  }
+}

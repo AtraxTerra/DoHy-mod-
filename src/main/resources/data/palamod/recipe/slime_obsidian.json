@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "SOS",
+    "SSS"
+  ],
+  "key": {
+    "S": "palamod:slimepad",
+    "O": "minecraft:obsidian"
+  },
+  "result": {
+    "id": "palamod:slime_obsidian",
+    "count": 2
+  }
+}

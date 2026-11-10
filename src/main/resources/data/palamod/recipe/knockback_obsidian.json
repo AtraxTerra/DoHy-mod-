@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OOO",
+    "OKO",
+    "OOO"
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "K": "palamod:knockback_orb"
+  },
+  "result": {
+    "id": "palamod:knockback_obsidian",
+    "count": 4
+  }
+}

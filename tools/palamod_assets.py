@@ -3412,6 +3412,547 @@ def main():
     fr["button.%s.rpg_profile" % NS] = "Profil RPG"
     en["button.%s.rpg_profile" % NS] = "RPG Profile"
 
+    # ---- defense de faction (chapitre 22, lot 22c) ----
+    #
+    # Obsidiennes renforcee et piegees, spikes et obsidiennes a spike, blocs
+    # d'obsidienne, Fake Water, eponges, brouilleur, enclumes, amulettes et
+    # objets. Textures : le pack, le jar pour ce que le pack n'a pas (les
+    # obsidiennes knockback, gelee et anti-aggro, la porte, les eponges a lave,
+    # le brouilleur, le modele du pistolet).
+    def cube_model(name, textures, parent="minecraft:block/cube_all"):
+        write("assets/%s/models/block/%s.json" % (NS, name), {"parent": parent, "textures": textures})
+
+    def simple_block(name, label_fr, label_en, textures, parent="minecraft:block/cube_all"):
+        cube_model(name, textures, parent)
+        write("assets/%s/blockstates/%s.json" % (NS, name),
+              {"variants": {"": {"model": "%s:block/%s" % (NS, name)}}})
+        block_item(name)
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+
+    # Une face avant (north dans le modele) tournee vers FACING, comme le piston.
+    FACING_ROTATIONS = (("north", {}), ("south", {"y": 180}), ("east", {"y": 90}), ("west", {"y": 270}),
+                        ("up", {"x": 270}), ("down", {"x": 90}))
+
+    def front_model(name, front, side):
+        cube_model(name, {"particle": side, "north": front, "south": side, "east": side, "west": side,
+                          "up": side, "down": side}, "minecraft:block/cube")
+
+    def facing_states(name, model, extra=""):
+        return {"facing=%s%s" % (facing, extra): dict({"model": model}, **rotation)
+                for facing, rotation in FACING_ROTATIONS}
+
+    obsidian = "minecraft:block/obsidian"
+    defense_removable = []
+
+    # L'obsidienne renforcee : la texture de l'obsidienne (setBlockTextureName
+    # « minecraft:obsidian »), ses escaliers et sa dalle.
+    simple_block("hardened_obsidian", "Obsidienne renforcee", "Hardened Obsidian", {"all": obsidian})
+    defense_removable.append("hardened_obsidian")
+
+    def stairs(name, texture, label_fr, label_en):
+        for suffix, parent in (("", "stairs"), ("_inner", "inner_stairs"), ("_outer", "outer_stairs")):
+            write("assets/%s/models/block/%s%s.json" % (NS, name, suffix), {
+                "parent": "minecraft:block/%s" % parent,
+                "textures": {"bottom": texture, "top": texture, "side": texture}})
+        variants = {}
+        for facing, base in (("east", 0), ("south", 90), ("west", 180), ("north", 270)):
+            for half in ("bottom", "top"):
+                for shape in ("straight", "inner_left", "inner_right", "outer_left", "outer_right"):
+                    model = "%s:block/%s%s" % (NS, name, "" if shape == "straight"
+                                               else "_inner" if shape.startswith("inner") else "_outer")
+                    y = base
+                    if shape in ("inner_left", "outer_left"):
+                        y -= 90
+                    if half == "top":
+                        if shape in ("inner_right", "outer_right"):
+                            y += 90
+                        elif shape in ("inner_left", "outer_left"):
+                            y += 90
+                    entry = {"model": model}
+                    if half == "top":
+                        entry["x"] = 180
+                    if y % 360:
+                        entry["y"] = y % 360
+                    if half == "top" or y % 360:
+                        entry["uvlock"] = True
+                    variants["facing=%s,half=%s,shape=%s" % (facing, half, shape)] = entry
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": variants})
+        block_item(name)
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+
+    def slab(name, texture, full_model, label_fr, label_en):
+        write("assets/%s/models/block/%s.json" % (NS, name), {
+            "parent": "minecraft:block/slab", "textures": {"bottom": texture, "top": texture, "side": texture}})
+        write("assets/%s/models/block/%s_top.json" % (NS, name), {
+            "parent": "minecraft:block/slab_top", "textures": {"bottom": texture, "top": texture, "side": texture}})
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {
+            "type=bottom": {"model": "%s:block/%s" % (NS, name)},
+            "type=top": {"model": "%s:block/%s_top" % (NS, name)},
+            "type=double": {"model": full_model}}})
+        block_item(name)
+        # Une dalle double rend deux dalles.
+        write("data/%s/loot_table/blocks/%s.json" % (NS, name), {
+            "type": "minecraft:block",
+            "pools": [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, name),
+                       "functions": [{"function": "minecraft:set_count", "count": 2, "add": False,
+                                      "conditions": [{"condition": "minecraft:block_state_property",
+                                                      "block": "%s:%s" % (NS, name),
+                                                      "properties": {"type": "double"}}]},
+                                     {"function": "minecraft:explosion_decay"}]}]}]})
+        label("block", name, label_fr, label_en)
+
+    stairs("hardened_obsidian_stairs", obsidian, "Escaliers en obsidienne renforcee", "Hardened Obsidian Stairs")
+    slab("hardened_obsidian_slab", obsidian, "%s:block/hardened_obsidian" % NS,
+         "Dalle en obsidienne renforcee", "Hardened Obsidian Slab")
+    stairs("obsidian_stairs", obsidian, "Escaliers en obsidienne", "Obsidian Stairs")
+    slab("obsidian_slab", obsidian, "minecraft:block/obsidian", "Dalle en obsidienne", "Obsidian Slab")
+    defense_removable += ["hardened_obsidian_stairs", "hardened_obsidian_slab"]
+
+    # La porte et la trappe en obsidienne : les modeles de la porte et de la
+    # trappe vanilla, sur les textures de PalaMod.
+    tex("blocks/decorative/obsidianBlockDoor_lower.png", "block/obsidian_door_bottom.png")
+    tex("blocks/decorative/obsidianBlockDoor_upper.png", "block/obsidian_door_top.png")
+    tex("blocks/decorative/obsidianTrapDoor.png", "block/obsidian_trapdoor.png")
+    tex("items/decorative/obsidianItemDoor.png", "item/obsidian_door.png")
+    door_textures = {"bottom": "%s:block/obsidian_door_bottom" % NS, "top": "%s:block/obsidian_door_top" % NS}
+    for part in ("bottom_left", "bottom_left_open", "bottom_right", "bottom_right_open",
+                 "top_left", "top_left_open", "top_right", "top_right_open"):
+        write("assets/%s/models/block/obsidian_door_%s.json" % (NS, part),
+              {"parent": "minecraft:block/door_%s" % part, "textures": door_textures})
+    door_variants = {}
+    for facing, base in (("east", 0), ("south", 90), ("west", 180), ("north", 270)):
+        for half in ("lower", "upper"):
+            for hinge in ("left", "right"):
+                for opened in ("false", "true"):
+                    part = "%s_%s%s" % ("bottom" if half == "lower" else "top", hinge,
+                                        "_open" if opened == "true" else "")
+                    y = base
+                    if opened == "true":
+                        y += 90 if hinge == "left" else 270
+                    entry = {"model": "%s:block/obsidian_door_%s" % (NS, part)}
+                    if y % 360:
+                        entry["y"] = y % 360
+                    door_variants["facing=%s,half=%s,hinge=%s,open=%s" % (facing, half, hinge, opened)] = entry
+    write("assets/%s/blockstates/obsidian_door.json" % NS, {"variants": door_variants})
+    flat_item("obsidian_door", "%s:item/obsidian_door" % NS)
+    write("data/%s/loot_table/blocks/obsidian_door.json" % NS, {
+        "type": "minecraft:block",
+        "pools": [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": "%s:obsidian_door" % NS,
+                   "conditions": [{"condition": "minecraft:block_state_property",
+                                   "block": "%s:obsidian_door" % NS, "properties": {"half": "lower"}}]}],
+                   "conditions": [{"condition": "minecraft:survives_explosion"}]}]})
+    label("block", "obsidian_door", "Porte en obsidienne", "Obsidian Door")
+    trapdoor_texture = {"texture": "%s:block/obsidian_trapdoor" % NS}
+    for part in ("bottom", "top", "open"):
+        write("assets/%s/models/block/obsidian_trapdoor_%s.json" % (NS, part),
+              {"parent": "minecraft:block/template_orientable_trapdoor_%s" % part, "textures": trapdoor_texture})
+    trapdoor_variants = {}
+    for facing, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        for half in ("bottom", "top"):
+            for opened in ("false", "true"):
+                part = "open" if opened == "true" else half
+                entry = {"model": "%s:block/obsidian_trapdoor_%s" % (NS, part)}
+                rotation_y = y
+                if opened == "true" and half == "top":
+                    entry["x"] = 180
+                    rotation_y = (y + 180) % 360
+                if rotation_y:
+                    entry["y"] = rotation_y
+                for powered in ("false", "true"):
+                    for waterlogged in ("false", "true"):
+                        trapdoor_variants["facing=%s,half=%s,open=%s,powered=%s,waterlogged=%s"
+                                          % (facing, half, opened, powered, waterlogged)] = entry
+    write("assets/%s/blockstates/obsidian_trapdoor.json" % NS, {"variants": trapdoor_variants})
+    write("assets/%s/models/item/obsidian_trapdoor.json" % NS, {"parent": "%s:block/obsidian_trapdoor_bottom" % NS})
+    write("assets/%s/items/obsidian_trapdoor.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:item/obsidian_trapdoor" % NS}})
+    drops_itself("obsidian_trapdoor")
+    label("block", "obsidian_trapdoor", "Trappe en obsidienne", "Obsidian Trapdoor")
+    for name in ("obsidian_stairs", "obsidian_slab", "obsidian_door", "obsidian_trapdoor"):
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+        tag("minecraft/tags/block/needs_diamond_tool.json", ["%s:%s" % (NS, name)])
+    tag("minecraft/tags/block/stairs.json", ["%s:obsidian_stairs" % NS, "%s:hardened_obsidian_stairs" % NS])
+    tag("minecraft/tags/item/stairs.json", ["%s:obsidian_stairs" % NS, "%s:hardened_obsidian_stairs" % NS])
+    tag("minecraft/tags/block/slabs.json", ["%s:obsidian_slab" % NS, "%s:hardened_obsidian_slab" % NS])
+    tag("minecraft/tags/item/slabs.json", ["%s:obsidian_slab" % NS, "%s:hardened_obsidian_slab" % NS])
+    tag("minecraft/tags/block/doors.json", ["%s:obsidian_door" % NS])
+    tag("minecraft/tags/item/doors.json", ["%s:obsidian_door" % NS])
+    tag("minecraft/tags/block/trapdoors.json", ["%s:obsidian_trapdoor" % NS])
+    tag("minecraft/tags/item/trapdoors.json", ["%s:obsidian_trapdoor" % NS])
+
+    # Les obsidiennes piegees (blocks/pillage/effects).
+    for name, texture, label_fr, label_en in (
+            ("poison_obsidian", "poison_obsi", "Obsidienne empoisonnee", "Poison Obsidian"),
+            ("lava_obsidian", "lava_obsi", "Obsidienne de lave", "Lava Obsidian"),
+            ("sulfuric_obsidian", "fake_obsi", "Obsidienne sulfurique", "Sulfuric Obsidian"),
+            ("knockback_obsidian", "knockback_obsi", "Knockback obsidienne", "Knockback Obsidian"),
+            ("frozen_obsidian", "frozen_obsi", "Obsidienne gelee", "Frozen Obsidian"),
+            ("anti_aggro_obsidian", "anti_aggro_obsi", "Obsidienne anti-aggro", "Anti-Aggro Obsidian"),
+            ("big_obsidian", "big_obsi", "Obsidienne compacte", "Big Obsidian"),
+            ("wither_obsidian", "wither_obsi", "Obsidienne a wither", "Wither Obsidian")):
+        tex("blocks/pillage/effects/%s.png" % texture, "block/%s.png" % name)
+        simple_block(name, label_fr, label_en, {"all": "%s:block/%s" % (NS, name)})
+        defense_removable.append(name)
+    for name, texture, label_fr, label_en in (
+            ("boom_obsidian", "boom_obsi", "Boom obsidienne", "Boom Obsidian"),
+            ("mega_boom_obsidian", "mega_boom_obsi", "Mega boom obsidienne", "Mega Boom Obsidian")):
+        for face in ("top", "side", "bottom"):
+            tex("blocks/pillage/effects/%s_%s.png" % (texture, face), "block/%s_%s.png" % (name, face))
+        simple_block(name, label_fr, label_en, {face: "%s:block/%s_%s" % (NS, name, face)
+                                               for face in ("top", "side", "bottom")},
+                     "minecraft:block/cube_bottom_top")
+        defense_removable.append(name)
+
+    # La slime obsidienne et les obsidiennes a spike : une face avant.
+    tex("blocks/pillage/effects/slime_obsi.png", "block/slime_obsidian.png")
+    tex("blocks/pillage/effects/slime_obsi_front.png", "block/slime_obsidian_front.png")
+    front_model("slime_obsidian", "%s:block/slime_obsidian_front" % NS, "%s:block/slime_obsidian" % NS)
+    write("assets/%s/blockstates/slime_obsidian.json" % NS,
+          {"variants": facing_states("slime_obsidian", "%s:block/slime_obsidian" % NS)})
+    block_item("slime_obsidian")
+    drops_itself("slime_obsidian")
+    label("block", "slime_obsidian", "Slime obsidienne", "Slime Obsidian")
+    defense_removable.append("slime_obsidian")
+
+    SPIKE_METALS = (("wood", "", "en bois", "Wood"), ("iron", "_1", "en fer", "Iron"),
+                    ("gold", "_2", "en or", "Gold"), ("diamond", "_3", "en diamant", "Diamond"),
+                    ("amethyst", "_4", "en amethyste", "Amethyst"), ("titane", "_5", "en titane", "Titane"),
+                    ("paladium", "_6", "en paladium", "Paladium"))
+    for metal, index, label_fr, label_en in SPIKE_METALS:
+        name = "%s_spike_obsidian" % metal
+        tex("blocks/pillage/effects/spike_obsi%s.png" % index, "block/%s.png" % name)
+        tex("blocks/pillage/effects/spike_obsi%s_front.png" % index, "block/%s_front.png" % name)
+        front_model(name, "%s:block/%s_front" % (NS, name), "%s:block/%s" % (NS, name))
+        write("assets/%s/blockstates/%s.json" % (NS, name),
+              {"variants": facing_states(name, "%s:block/%s" % (NS, name))})
+        block_item(name)
+        drops_itself(name)
+        label("block", name, "Obsidienne a spike %s" % label_fr, "%s Spike Obsidian" % label_en)
+        defense_removable.append(name)
+
+    # L'obsidienne a redstone : rouge allumee, sombre eteinte (le dessus ne change pas).
+    for face in ("top", "side", "bottom", "side_off", "bottom_off"):
+        tex("blocks/pillage/effects/redstone_obsi_%s.png" % face, "block/redstone_obsidian_%s.png" % face)
+    cube_model("redstone_obsidian", {"top": "%s:block/redstone_obsidian_top" % NS,
+                                     "side": "%s:block/redstone_obsidian_side" % NS,
+                                     "bottom": "%s:block/redstone_obsidian_bottom" % NS},
+               "minecraft:block/cube_bottom_top")
+    cube_model("redstone_obsidian_off", {"top": "%s:block/redstone_obsidian_top" % NS,
+                                         "side": "%s:block/redstone_obsidian_side_off" % NS,
+                                         "bottom": "%s:block/redstone_obsidian_bottom_off" % NS},
+               "minecraft:block/cube_bottom_top")
+    write("assets/%s/blockstates/redstone_obsidian.json" % NS, {"variants": {
+        "power=%d" % power: {"model": "%s:block/redstone_obsidian%s" % (NS, "_off" if power == 0 else "")}
+        for power in range(16)}})
+    write("assets/%s/models/item/redstone_obsidian.json" % NS, {"parent": "%s:block/redstone_obsidian_off" % NS})
+    write("assets/%s/items/redstone_obsidian.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:item/redstone_obsidian" % NS}})
+    drops_itself("redstone_obsidian")
+    label("block", "redstone_obsidian", "Obsidienne a redstone", "Redstone Obsidian")
+    defense_removable.append("redstone_obsidian")
+
+    # L'observateur en obsidienne : la face et le dos de l'observateur vanilla,
+    # l'obsidienne autour. PalaMod n'avait pas de texture propre.
+    for powered, back in (("false", "observer_back"), ("true", "observer_back_on")):
+        name = "observer_obsidian" + ("_on" if powered == "true" else "")
+        cube_model(name, {"particle": obsidian, "north": "minecraft:block/observer_front",
+                          "south": "minecraft:block/%s" % back, "east": obsidian, "west": obsidian,
+                          "up": obsidian, "down": obsidian}, "minecraft:block/cube")
+    observer_variants = {}
+    for powered in ("false", "true"):
+        model = "%s:block/observer_obsidian%s" % (NS, "_on" if powered == "true" else "")
+        observer_variants.update(facing_states("observer_obsidian", model, ",powered=%s" % powered))
+    write("assets/%s/blockstates/observer_obsidian.json" % NS, {"variants": observer_variants})
+    block_item("observer_obsidian")
+    drops_itself("observer_obsidian")
+    label("block", "observer_obsidian", "Observateur en obsidienne", "Observer Obsidian")
+    defense_removable.append("observer_obsidian")
+
+    # Les spikes : la pyramide du spike en paladium, par metal. Dessus des
+    # degres : la texture en carres concentriques (3e argument de BlockSpike).
+    for metal, top, side, label_fr, label_en in (
+            ("wood", "SpikeWood_2", "SpikeWood_1", "Spike en bois", "Wood Spike"),
+            ("iron", "SpikeIron_1", "SpikeIron_2", "Spike en fer", "Iron Spike"),
+            ("gold", "SpikeGold_2", "SpikeGold_1", "Spike en or", "Gold Spike"),
+            ("diamond", "SpikeDiamond_2", "SpikeDiamond_1", "Spike en diamant", "Diamond Spike"),
+            ("amethyst", "SpikeAmethyst_1", "SpikeAmethyst_2", "Spike en amethyste", "Amethyst Spike"),
+            ("titane", "SpikeTitane_1", "SpikeTitane_2", "Spike en titane", "Titane Spike")):
+        name = "%s_spike" % metal
+        tex("blocks/spike/%s.png" % top, "block/%s_top.png" % name)
+        tex("blocks/spike/%s.png" % side, "block/%s_side.png" % name)
+        write("assets/%s/models/block/%s.json" % (NS, name), {
+            "parent": "%s:block/paladium_spike" % NS,
+            "textures": {"particle": "%s:block/%s_side" % (NS, name),
+                         "top": "%s:block/%s_top" % (NS, name), "side": "%s:block/%s_side" % (NS, name)}})
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {
+            "facing=%s" % facing: dict({"model": "%s:block/%s" % (NS, name)}, **rotation)
+            for facing, rotation in (("up", {}), ("down", {"x": 180}), ("north", {"x": 90}),
+                                     ("south", {"x": 90, "y": 180}), ("east", {"x": 90, "y": 90}),
+                                     ("west", {"x": 90, "y": 270}))}})
+        block_item(name)
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+        if metal == "wood":
+            tag("minecraft/tags/block/mineable/axe.json", ["%s:%s" % (NS, name)])
+        else:
+            tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+            tag("minecraft/tags/block/needs_iron_tool.json", ["%s:%s" % (NS, name)])
+
+    # Les enclumes : le modele de l'enclume vanilla, corps et dessus de PalaMod.
+    for metal, label_fr, label_en in (("amethyst", "Enclume en amethyste", "Amethyst Anvil"),
+                                      ("titane", "Enclume en titane", "Titane Anvil"),
+                                      ("paladium", "Enclume en paladium", "Paladium Anvil")):
+        name = "%s_anvil" % metal
+        tex("blocks/anvil/anvil_%s_tool_base.png" % metal, "block/%s_body.png" % name)
+        tex("blocks/anvil/anvil_%s_tool_top.png" % metal, "block/%s_top.png" % name)
+        cube_model(name, {"particle": "%s:block/%s_body" % (NS, name), "body": "%s:block/%s_body" % (NS, name),
+                          "top": "%s:block/%s_top" % (NS, name)}, "minecraft:block/template_anvil")
+        variants = {}
+        for facing, y in (("south", 0), ("west", 90), ("north", 180), ("east", 270)):
+            for hits in range(3):
+                entry = {"model": "%s:block/%s" % (NS, name)}
+                if y:
+                    entry["y"] = y
+                variants["facing=%s,hits=%d" % (facing, hits)] = entry
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": variants})
+        block_item(name)
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+        defense_removable.append(name)
+
+    # Eponges et brouilleur.
+    tex("blocks/lava_sponge.png", "block/lava_sponge.png")
+    tex("blocks/lava_sponge_wet.png", "block/wet_lava_sponge.png")
+    # L'eponge compressee n'existe qu'en 32 x 32, dans le pack comme dans le jar.
+    tex("blocks/pillage/compressed_sponge.png", "block/compressed_sponge.png", (32, 32))
+    tex("blocks/pillage/coordinate_jammer.png", "block/coordinate_jammer.png")
+    for name, label_fr, label_en in (("lava_sponge", "Eponge a lave", "Lava Sponge"),
+                                     ("wet_lava_sponge", "Eponge a lave pleine", "Wet Lava Sponge"),
+                                     ("compressed_sponge", "Eponge compressee", "Compressed Sponge"),
+                                     ("coordinate_jammer", "Brouilleur de coordonnees", "Coordinate Jammer")):
+        simple_block(name, label_fr, label_en, {"all": "%s:block/%s" % (NS, name)})
+    for name in ("lava_sponge", "wet_lava_sponge", "compressed_sponge"):
+        tag("minecraft/tags/block/mineable/hoe.json", ["%s:%s" % (NS, name)])
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:coordinate_jammer" % NS])
+    tag("minecraft/tags/block/needs_stone_tool.json", ["%s:coordinate_jammer" % NS])
+
+    tag("%s/tags/block/magical_tool_removable.json" % NS, ["%s:%s" % (NS, name) for name in defense_removable])
+    # Comme l'obsidienne : le dragon ne les traverse pas.
+    tag("minecraft/tags/block/dragon_immune.json", ["%s:%s" % (NS, name) for name in defense_removable])
+
+    # La Fake Water : les textures animees de l'eau sulfurique de PalaMod.
+    for source, target in (("blocks/fluids/sulfuricwater_still", "block/fluid/fake_water_still"),
+                           ("blocks/fluids/sulfuricwater_flowing", "block/fluid/fake_water_flow")):
+        found = False
+        for origin in (root[0], root[1]):
+            if not origin:
+                continue
+            base = os.path.join(origin, "assets", NS, "textures", source)
+            if os.path.exists(base + ".png"):
+                destination = os.path.join(RES, "assets", NS, "textures", target)
+                os.makedirs(os.path.dirname(destination), exist_ok=True)
+                shutil.copyfile(base + ".png", destination + ".png")
+                if os.path.exists(base + ".png.mcmeta"):
+                    shutil.copyfile(base + ".png.mcmeta", destination + ".png.mcmeta")
+                found = True
+                break
+        if not found:
+            missing.append(source + ".png")
+    write("assets/%s/models/block/fake_water.json" % NS,
+          {"textures": {"particle": "%s:block/fluid/fake_water_still" % NS}})
+    write("assets/%s/blockstates/fake_water.json" % NS, {"variants": {"": {"model": "%s:block/fake_water" % NS}}})
+    write("data/%s/loot_table/blocks/fake_water.json" % NS, {"type": "minecraft:block", "pools": []})
+    label("block", "fake_water", "Fake Water", "Fake Water")
+
+    # Les objets.
+    for name, texture, label_fr, label_en in (
+            ("fake_water_bucket", "items/fluids/bucket_sulfuric.png", "Seau de Fake Water", "Fake Water Bucket"),
+            ("aggro_stone", "items/pillage/effects/agro_stone.png", "Pierre d'aggro", "Aggro Stone"),
+            ("wither_skull_fragment", "items/WitherSkullFragment.png", "Fragment de crane de wither",
+             "Wither Skull Fragment"),
+            ("voyance_amulet", "items/voyance_amulet.png", "Amulette de voyance", "Voyance Amulet"),
+            ("discretion_amulet", "items/discretion_amulet.png", "Amulette de discretion", "Discretion Amulet"),
+            ("combat_amulet", "items/combat_amulet.png", "Amulette de combat", "Combat Amulet"),
+            ("magma_amulet", "items/magma_amulet.png", "Amulette de magma", "Magma Amulet"),
+            ("hunter_amulet", "items/hunter_amulet.png", "Amulette du chasseur", "Hunter Amulet")):
+        tex(texture, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    tex("items/magical_tool.png", "item/magical_tool.png")
+    write("assets/%s/models/item/magical_tool.json" % NS,
+          {"parent": "minecraft:item/handheld", "textures": {"layer0": "%s:item/magical_tool" % NS}})
+    write("assets/%s/items/magical_tool.json" % NS,
+          {"model": {"type": "minecraft:model", "model": "%s:item/magical_tool" % NS}})
+    label("item", "magical_tool", "Outil magique", "Magical Tool")
+    # Le home remover : la pierre de foyer du home finder, passee au rouge.
+    tinted("items/pillage/home_finder/housing_stone.png", "item/home_remover.png", (214, 58, 44))
+    flat_item("home_remover", "%s:item/home_remover" % NS)
+    label("item", "home_remover", "Home remover", "Home Remover")
+
+    # Le pistolet a liquide : le ModelPistolTank de PalaMod (Blockbench, 64 x 64),
+    # converti en elements. x est inverse, comme pour la boite a golem ; les deux
+    # pieces inclinees de 32,5 degres passent a 22,5, le pas des modeles.
+    def pistol_uv(u, v, w, h, d):
+        def rect(x0, y0, x1, y1):
+            return [x0 / 4.0, y0 / 4.0, x1 / 4.0, y1 / 4.0]
+        return {"up": rect(u + d, v, u + d + w, v + d), "down": rect(u + d + w, v, u + d + 2 * w, v + d),
+                "west": rect(u + d + w, v + d, u + 2 * d + w, v + d + h), "east": rect(u, v + d, u + d, v + d + h),
+                "north": rect(u + d, v + d, u + d + w, v + d + h),
+                "south": rect(u + 2 * d + w, v + d, u + 2 * d + 2 * w, v + d + h)}
+
+    def pistol_box(u, v, x, y, z, w, h, d, pivot_y, rotation=None, pivot_x=0.0):
+        # Repere du modele : y vers le bas, origine du groupe a pivot_y.
+        x0, x1 = 7.0 - (pivot_x + x + w), 7.0 - (pivot_x + x)
+        y0, y1 = 24.0 - (pivot_y + y + h), 24.0 - (pivot_y + y)
+        z0, z1 = 8.0 + z, 8.0 + z + d
+        element = {"from": [x0, y0, z0], "to": [x1, y1, z1],
+                   "faces": {face: {"texture": "#gun", "uv": uv} for face, uv in pistol_uv(u, v, w, h, d).items()}}
+        if rotation is not None:
+            element["rotation"] = {"origin": [7.0 - pivot_x, 24.0 - pivot_y, 8.0], "axis": "z", "angle": rotation}
+        return element
+
+    pistol_elements = [
+        pistol_box(0, 0, -3, -12, -2, 10, 3, 4, 24),
+        pistol_box(16, 7, -10, -11, -1, 7, 2, 2, 24),
+        pistol_box(0, 7, -11, -12, -2, 6, 4, 4, 24),
+        pistol_box(10, 15, -2, -9, -1, 7, 2, 2, 24),
+        pistol_box(20, 11, 7, -11, -1, 1, 1, 2, 24),
+        pistol_box(14, 22, 8, -12, -2, 1, 3, 4, 24),
+        pistol_box(14, 19, -4, -13, -1, 7, 1, 2, 24),
+        pistol_box(24, 22, 0, -3, -1, 1, 3, 2, 19, 22.5),
+        pistol_box(0, 15, -3, -3, -2, 3, 9, 4, 17, -22.5, -1.0),
+    ]
+    pistol_display = {
+        "gui": {"rotation": [0, 0, 0], "translation": [0, 0.5, 0], "scale": [0.62, 0.62, 0.62]},
+        "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.4, 0.4, 0.4]},
+        "fixed": {"rotation": [0, 180, 0], "scale": [0.6, 0.6, 0.6]},
+        "thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 2, 1], "scale": [0.55, 0.55, 0.55]},
+        "thirdperson_lefthand": {"rotation": [0, -90, 0], "translation": [0, 2, 1], "scale": [0.55, 0.55, 0.55]},
+        "firstperson_righthand": {"rotation": [0, 95, 0], "translation": [1, 2, 0], "scale": [0.6, 0.6, 0.6]},
+        "firstperson_lefthand": {"rotation": [0, -85, 0], "translation": [1, 2, 0], "scale": [0.6, 0.6, 0.6]},
+    }
+    for variant, source in (("", "pistol_tank_empty"), ("_water", "pistol_tank_water"),
+                            ("_lava", "pistol_tank_lava"), ("_fluid", "pistol_tank")):
+        tex("models/%s.png" % source, "item/pistol_tank%s.png" % (variant or "_empty"), (64, 64))
+        write("assets/%s/models/item/pistol_tank%s.json" % (NS, variant), {
+            "texture_size": [64, 64],
+            "textures": {"gun": "%s:item/pistol_tank%s" % (NS, variant or "_empty"),
+                         "particle": "%s:item/pistol_tank%s" % (NS, variant or "_empty")},
+            "elements": pistol_elements, "display": pistol_display})
+    write("assets/%s/items/pistol_tank.json" % NS, {"model": {
+        "type": "minecraft:select", "property": "minecraft:custom_model_data", "index": 0,
+        "cases": [{"when": look, "model": {"type": "minecraft:model", "model": "%s:item/pistol_tank_%s" % (NS, look)}}
+                  for look in ("water", "lava", "fluid")],
+        "fallback": {"type": "minecraft:model", "model": "%s:item/pistol_tank" % NS}}})
+    label("item", "pistol_tank", "Pistolet a liquide", "Liquid Pistol")
+
+    for key, label_fr, label_en in (
+            ("pistol_tank.empty", "Reservoir vide (%s seaux) - clic droit sur une source pour pomper",
+             "Empty tank (%s buckets) - right-click a source to pump"),
+            ("pistol_tank.load", "Reservoir : %s / %s seaux de %s", "Tank: %s / %s buckets of %s"),
+            ("amulet.combine", "Se fond dans un plastron en paladium ou en endium, a l'enclume",
+             "Combine with a paladium or endium chestplate in an anvil"),
+            ("amulet.hunter", "+25 % d'XP de Chasseur", "+25% Hunter XP"),
+            ("amulet.voyance", "Les monstres a 24 blocs brillent", "Monsters within 24 blocks glow"),
+            ("amulet.discretion", "Les monstres te voient deux fois moins loin", "Monsters see you at half range"),
+            ("amulet.combat", "+15 % de degats contre les monstres", "+15% damage against monsters"),
+            ("amulet.magma", "Resistance au feu permanente", "Permanent fire resistance")):
+        label("tooltip", key, label_fr, label_en)
+    # La touche du menu de faction (lot 22a) vit dans ce fichier de langue :
+    # la generer ici evite qu'une regeneration l'efface.
+    fr["key.dohy.faction"] = "Faction (menu)"
+    en["key.dohy.faction"] = "Faction (menu)"
+    label("message", "home_remover", "Repaires effaces : %s monstre(s). Aucun ne naitra ici pendant une heure.",
+          "Lairs cleared: %s monster(s). None will spawn here for an hour.")
+
+    # Les recettes que palamod_crafts.json n'a pas : celles des obsidiennes
+    # (ObsiEffect.registerRecipes, chacune dans sa classe), du pillage
+    # (PPRegisterer) et des amulettes (hunter.init.Crafts).
+    def components(item, potion):
+        return {"neoforge:ingredient_type": "neoforge:components", "items": item,
+                "components": {"minecraft:potion_contents": {"potion": potion}}, "strict": False}
+
+    shapeless("hardened_obsidian", ["minecraft:obsidian"] * 4, "%s:hardened_obsidian" % NS, 4)
+    # Les trois potions jetables de poison (metas 16388, 16420, 16452).
+    for suffix, potion in (("", "minecraft:poison"), ("_strong", "minecraft:strong_poison"),
+                           ("_long", "minecraft:long_poison")):
+        shaped("poison_obsidian%s" % suffix, ["XXX", "XYX", "XXX"],
+               {"X": "minecraft:obsidian", "Y": components("minecraft:splash_potion", potion)},
+               "%s:poison_obsidian" % NS, 8)
+    for name, extra in (("boom_obsidian", "minecraft:gunpowder"), ("lava_obsidian", "minecraft:lava_bucket"),
+                        ("sulfuric_obsidian", "%s:fake_water_bucket" % NS),
+                        ("redstone_obsidian", "minecraft:redstone")):
+        shapeless(name, [extra, "minecraft:obsidian"], "%s:%s" % (NS, name))
+        shapeless("%s_from_hardened" % name, [extra, "%s:hardened_obsidian" % NS], "%s:%s" % (NS, name))
+    shaped("mega_boom_obsidian", [" G ", "TOT", " T "],
+           {"G": "minecraft:gunpowder", "T": "minecraft:tnt", "O": "minecraft:obsidian"}, "%s:mega_boom_obsidian" % NS)
+    shaped("knockback_obsidian", ["OOO", "OKO", "OOO"],
+           {"O": "minecraft:obsidian", "K": "%s:knockback_orb" % NS}, "%s:knockback_obsidian" % NS, 4)
+    shaped("frozen_obsidian", ["IOI", "OIO", "IOI"],
+           {"I": "minecraft:packed_ice", "O": "minecraft:obsidian"}, "%s:frozen_obsidian" % NS, 2)
+    shaped("anti_aggro_obsidian", ["XXX", "XNX", "XXX"],
+           {"X": "minecraft:obsidian", "N": "minecraft:nether_star"}, "%s:anti_aggro_obsidian" % NS, 8)
+    shaped("big_obsidian", ["XXX", "XYX", "XXX"],
+           {"X": "minecraft:obsidian", "Y": "%s:paladium_core" % NS}, "%s:big_obsidian" % NS, 4)
+    shaped("big_obsidian_from_hardened", ["XXX", "XYX", "XXX"],
+           {"X": "%s:hardened_obsidian" % NS, "Y": "%s:paladium_core" % NS}, "%s:big_obsidian" % NS, 4)
+    # Le coffre en fer d'Iron Chests n'est pas porte : un coffre vanilla le remplace.
+    shaped("wither_obsidian", ["XXX", "YXY", "XXX"],
+           {"X": "minecraft:obsidian", "Y": "minecraft:chest"}, "%s:wither_obsidian" % NS, 2)
+    shaped("wither_obsidian_from_hardened", ["XXX", "YXY", "XXX"],
+           {"X": "%s:hardened_obsidian" % NS, "Y": "minecraft:chest"}, "%s:wither_obsidian" % NS, 2)
+    # RecipesSlimeObsidian : une obsidienne au milieu de huit slimepads.
+    shaped("slime_obsidian", ["SSS", "SOS", "SSS"],
+           {"S": "%s:slimepad" % NS, "O": "minecraft:obsidian"}, "%s:slime_obsidian" % NS, 2)
+    # Sans recette dans PalaMod : un observateur sur de l'obsidienne renforcee.
+    shapeless("observer_obsidian", ["minecraft:observer", "%s:hardened_obsidian" % NS],
+              "%s:observer_obsidian" % NS)
+    for metal, _index, _fr, _en in SPIKE_METALS:
+        shapeless("%s_spike_obsidian" % metal, ["minecraft:obsidian", "%s:%s_spike" % (NS, metal)],
+                  "%s:%s_spike_obsidian" % (NS, metal))
+    shaped("compressed_sponge", ["XXX", "XYX", "XXX"],
+           {"X": "minecraft:sponge", "Y": "%s:paladium_core" % NS}, "%s:compressed_sponge" % NS)
+    # L'Unclaim Finder rouge du centre arrive au lot 22d : une boussole le remplace d'ici la.
+    shaped("coordinate_jammer", ["ZXZ", "XYX", "ZXZ"],
+           {"Z": "%s:paladium_block" % NS, "X": "%s:findium" % NS, "Y": "minecraft:compass"},
+           "%s:coordinate_jammer" % NS)
+    shaped("fake_water_bucket", ["Y", "X"],
+           {"Y": "%s:paladium_stick" % NS, "X": "minecraft:water_bucket"}, "%s:fake_water_bucket" % NS)
+    shaped("aggro_stone", ["XXX", "YZY", "ZZZ"],
+           {"X": "%s:paladium_ingot" % NS, "Y": "%s:wither_skull_fragment" % NS,
+            "Z": "%s:orangeblue_seeds" % NS}, "%s:aggro_stone" % NS)
+    shapeless("wither_skull_fragment", ["minecraft:wither_skeleton_skull"], "%s:wither_skull_fragment" % NS, 9)
+    shaped("wither_skeleton_skull_from_fragments", ["YYY", "YYY", "YYY"],
+           {"Y": "%s:wither_skull_fragment" % NS}, "minecraft:wither_skeleton_skull")
+    # La ficelle de diamant n'est pas portee : une ficelle la remplace.
+    shaped("hunter_amulet", ["BNB", " S ", " P "],
+           {"B": "minecraft:blaze_powder", "N": "minecraft:nether_star", "S": "minecraft:string",
+            "P": "%s:paladium_stick" % NS}, "%s:hunter_amulet" % NS)
+    shaped("voyance_amulet", ["ABA", "CDC", "EFE"],
+           {"A": "%s:harpagophytum_flower" % NS, "B": "%s:speed_orb" % NS, "C": "%s:heal_orb" % NS,
+            "D": "%s:voidstone" % NS, "E": "%s:clathrusarcheri_flower" % NS, "F": "%s:strength_orb" % NS},
+           "%s:voyance_amulet" % NS)
+    shaped("magma_amulet", ["MFM", "PCP", "MPM"],
+           {"M": "minecraft:magma_cream", "F": "%s:findium" % NS,
+            "P": components("minecraft:potion", "minecraft:long_fire_resistance"),
+            "C": "%s:paladium_core" % NS}, "%s:magma_amulet" % NS)
+    # Desactivees sur Paladium, sans recette : la meme forme que l'amulette du chasseur.
+    shaped("discretion_amulet", ["BNB", " S ", " P "],
+           {"B": "minecraft:phantom_membrane", "N": "minecraft:ink_sac", "S": "minecraft:string",
+            "P": "%s:paladium_stick" % NS}, "%s:discretion_amulet" % NS)
+    shaped("combat_amulet", ["BNB", " S ", " P "],
+           {"B": "%s:strength_orb" % NS, "N": "%s:paladium_core" % NS, "S": "minecraft:string",
+            "P": "%s:paladium_stick" % NS}, "%s:combat_amulet" % NS)
+    shaped("home_remover", ["OPO", "PEP", "OPO"],
+           {"O": "minecraft:obsidian", "P": "%s:paladium_ingot" % NS, "E": "minecraft:ender_eye"},
+           "%s:home_remover" % NS)
+    # L'eponge a lave pleine se vide au four.
+    write("data/%s/recipe/lava_sponge_from_smelting.json" % NS, {
+        "type": "minecraft:smelting", "category": "blocks", "cookingtime": 200, "experience": 0.15,
+        "ingredient": "%s:wet_lava_sponge" % NS, "result": {"id": "%s:lava_sponge" % NS}})
+
     # ---- les recettes de fabrication ----
     #
     # Une seule source : data/palamod_crafts.json, le relevé de
@@ -3491,6 +4032,14 @@ def main():
         "ORB_STRENGHT": "strength_orb", "ORB_JUMP": "jump_orb", "WING": "wing",
         "HANGGLIDER": "hang_glider", "SLIMEPAD_BLOCK": "slimepad", "SPIKE_PALADIUM": "paladium_spike",
         "PALADIUM_MACHINE_BLOCK": "palamachine",
+        # Defense de faction (chapitre 22, lot 22c) : PRegister_Craft.
+        "SPIKE_WOOD": "wood_spike", "SPIKE_IRON": "iron_spike", "SPIKE_GOLD": "gold_spike",
+        "SPIKE_DIAMOND": "diamond_spike", "SPIKE_AMETHYST": "amethyst_spike", "SPIKE_TITANE": "titane_spike",
+        "ANVIL_AMETHYST": "amethyst_anvil", "ANVIL_TITANE": "titane_anvil", "ANVIL_PALADIUM": "paladium_anvil",
+        "MAGICAL_TOOL": "magical_tool", "LAVA_SPONGE": "lava_sponge", "PISTOL_TANK": "pistol_tank",
+        "OBSIDIAN_STAIRS": "obsidian_stairs", "OBSIDIAN_SLAB": "obsidian_slab",
+        "OBSIDIAN_HARDENED_STAIRS": "hardened_obsidian_stairs", "OBSIDIAN_HARDENED_SLAB": "hardened_obsidian_slab",
+        "OBSIDIAN_ITEM_DOOR": "obsidian_door", "OBSIDIAN_TRAP_DOOR": "obsidian_trapdoor",
     }
     # Un meme objet 1.7.10 a plusieurs metas, plusieurs objets en 26.2 : la
     # recette se choisit par (nom, meta). Sans cette table, les quatre outils de
@@ -3580,6 +4129,19 @@ def main():
         ("Items.field_151075_bm", 0): "minecraft:nether_wart",
         ("Items.field_151123_aH", 0): "minecraft:slime_ball",
         ("Blocks.field_150348_b", 0): "minecraft:stone",
+        # Defense : epees de bois, de fer, d'or et de diamant (spikes), fer,
+        # diamant, seau de lave et sable des ames (eponge a lave), l'eponge de
+        # back2future, le bloc de quartz (pistolet a liquide).
+        ("Items.field_151041_m", 0): "minecraft:wooden_sword",
+        ("Items.field_151040_l", 0): "minecraft:iron_sword",
+        ("Items.field_151010_B", 0): "minecraft:golden_sword",
+        ("Items.field_151048_u", 0): "minecraft:diamond_sword",
+        ("Items.field_151042_j", 0): "minecraft:iron_ingot",
+        ("Items.field_151045_i", 0): "minecraft:diamond",
+        ("Items.field_151129_at", 0): "minecraft:lava_bucket",
+        ("Blocks.field_150425_aM", 0): "minecraft:soul_sand",
+        ("ModBlocks.sponge", 0): "minecraft:sponge",
+        ("Blocks.field_150371_ca", 0): "minecraft:quartz_block",
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())

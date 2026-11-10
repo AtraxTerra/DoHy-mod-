@@ -8,6 +8,7 @@ import fr.atraxterra.dohy.client.ui.screen.KitChestScreen;
 import fr.atraxterra.dohy.client.ui.screen.MachineDesigns;
 import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen;
 import fr.atraxterra.dohy.palamod.PalaMod;
+import fr.atraxterra.dohy.palamod.defense.PalaDefense;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.golem.PalaGolem;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
@@ -60,6 +61,13 @@ public final class DoHyClient {
                         new Material(Identifier.withDefaultNamespace("block/water_overlay")),
                         (FluidTintSource) null),
                 PalaFluids.ANGELIC_WATER, PalaFluids.FLOWING_ANGELIC_WATER);
+        // La Fake Water : les textures de l'eau sulfurique de PalaMod, deja colorees.
+        event.register(new FluidModel.Unbaked(
+                        new Material(Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "block/fluid/fake_water_still")),
+                        new Material(Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "block/fluid/fake_water_flow")),
+                        new Material(Identifier.withDefaultNamespace("block/water_overlay")),
+                        (FluidTintSource) null),
+                PalaDefense.FAKE_WATER, PalaDefense.FLOWING_FAKE_WATER);
     }
 
     /** Le golem gardien, sur le modele du golem de fer ; le Dancarok, sur le sien. */

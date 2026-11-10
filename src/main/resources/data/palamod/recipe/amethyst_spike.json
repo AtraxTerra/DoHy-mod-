@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " Y ",
+    "YXY",
+    "XXX"
+  ],
+  "key": {
+    "Y": "minecraft:diamond_sword",
+    "X": "palamod:amethyst_ingot"
+  },
+  "result": {
+    "id": "palamod:amethyst_spike",
+    "count": 1
+  }
+}

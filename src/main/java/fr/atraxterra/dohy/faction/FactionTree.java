@@ -544,4 +544,23 @@ public final class FactionTree {
     public static boolean unlocked(ServerPlayer player, String key) {
         return FactionPerks.of(FactionApi.data(player)).unlocked(key);
     }
+
+    /** Le palier qui debloque une cle, et le libelle de sa recompense : pour dire au joueur ou aller. */
+    public record Unlock(Tier tier, String label) {
+    }
+
+    public static Optional<Unlock> unlockOf(String key) {
+        for (FactionBranch branch : FactionBranch.values()) {
+            for (Tier tier : tiers(branch)) {
+                for (Reward reward : tier.rewards()) {
+                    FactionPerks.Builder builder = new FactionPerks.Builder();
+                    reward.apply().accept(builder);
+                    if (builder.unlocks.contains(key)) {
+                        return Optional.of(new Unlock(tier, reward.label()));
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
 }

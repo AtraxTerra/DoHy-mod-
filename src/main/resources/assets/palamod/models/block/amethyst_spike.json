@@ -1,0 +1,8 @@
+{
+  "parent": "palamod:block/paladium_spike",
+  "textures": {
+    "particle": "palamod:block/amethyst_spike_side",
+    "top": "palamod:block/amethyst_spike_top",
+    "side": "palamod:block/amethyst_spike_side"
+  }
+}

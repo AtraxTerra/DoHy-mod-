@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "palamod:block/amethyst_spike_obsidian",
+    "north": "palamod:block/amethyst_spike_obsidian_front",
+    "south": "palamod:block/amethyst_spike_obsidian",
+    "east": "palamod:block/amethyst_spike_obsidian",
+    "west": "palamod:block/amethyst_spike_obsidian",
+    "up": "palamod:block/amethyst_spike_obsidian",
+    "down": "palamod:block/amethyst_spike_obsidian"
+  }
+}
