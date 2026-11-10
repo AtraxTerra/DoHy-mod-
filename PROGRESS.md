@@ -102,7 +102,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 21a | **Interfaces, lot 1** : kit d'interface DoHy UI (style Paladium, polices TrueType, vues et actions réseau), écran des métiers avec les contrats du jour, fiche d'un métier à onglets, shop à la maquette de l'Admin Shop — voir [docs/INTERFACES.md](docs/INTERFACES.md) | fait |
 | 21b | **Interfaces, lot 2** : menus génériques (`MenuView`) pour le menu principal, la banque, les contrats, la boutique, les améliorations, les collections et le musée | fait |
 | 21c | **Interfaces, lot 3** : donjons (paliers, autel de boost, marchande, sac), profil RPG, monture (fiche, enclos, soins), golem (accueil, arbre, choix), dimension du Mineur (entrée, bilan), table de l'alchimiste | fait |
-| 21d | **Interfaces, lot 4** : écran de conteneur du kit, les neuf machines (crusher avec ses quatre bacs), coffres en paladium, inventaires en coffre avec leurs propres types de menu (vente, musée, monture, golem, coffre de l'End en paladium) | fait (en validation) |
+| 21d | **Interfaces, lot 4** : écran de conteneur du kit, les neuf machines (crusher avec ses quatre bacs), coffres en paladium, inventaires en coffre avec leurs propres types de menu (vente, musée, monture, golem, coffre de l'End en paladium) | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :

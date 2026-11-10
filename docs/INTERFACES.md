@@ -12,7 +12,7 @@ autocrafter, crusher, cobblebreaker, grinder).
 | 1 | Kit, métiers et fiche d'un métier, shop | fait |
 | 2 | Économie : menu principal, banque, contrats, boutique de boosters, collections, musée, améliorations | fait |
 | 3 | Palamod : donjons, profil RPG, monture, golem, dimension du Mineur, enchantement mystique | fait |
-| 4 | Conteneurs : machines, coffres en paladium, coffre de vente, guichet du musée, sac de la monture, coffres du golem | fait (en validation) |
+| 4 | Conteneurs : machines, coffres en paladium, coffre de vente, guichet du musée, sac de la monture, coffres du golem | fait |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
 
