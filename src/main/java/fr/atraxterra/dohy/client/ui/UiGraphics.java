@@ -111,7 +111,7 @@ public final class UiGraphics {
         int offset = size - filled;
         float regionV = 44f * offset / size;
         graphics.blit(RenderPipelines.GUI_TEXTURED, Ui.HEAT, x, y + offset, 0.0f, regionV, size, filled,
-                44, Math.round(44f * filled / size), 44, 44);
+                44, Math.round(44f * filled / size), 44, 44, 0xFFFF8A1F);
     }
 
     /** Une case d'objet : filet clair, fond sombre. */

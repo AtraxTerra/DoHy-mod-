@@ -101,15 +101,15 @@ public final class MachineDesigns {
     public static final Design COBBLEBREAKER = new Design(Set.of(), (g, menu, mouseX, mouseY) -> {
         g.section(16, 38, "section_resources", "PIERRE", 72);
         g.section(100, 38, "section_melt", "PARTICULES", 146);
-        g.arrow(64, 76, 32, menu.progress());
+        g.arrow(64, 66, 32, menu.progress());
         if (menu.duration() > 0) {
-            note(g, seconds(menu.duration()), 48, 94);
+            note(g, seconds(menu.duration()), 48, 84);
         }
         for (int index = 0; index < PARTICLE_CHANCES.length; index++) {
-            note(g, PARTICLE_CHANCES[index], 112 + index * 24, 94);
+            note(g, PARTICLE_CHANCES[index], 112 + index * 24, 84);
         }
         g.wrapped(Ui.BODY, "Une pierre sur huit rend une particule : du fer, le plus courant, au paladium, "
-                + "le plus rare. Neuf particules font un lingot.", 16, 112, 5.5f, 230, 8, Ui.MUTED, 3);
+                + "le plus rare. Neuf particules font un lingot.", 16, 102, 5.5f, 230, 8, Ui.MUTED, 3);
     }, Map.of(
             0, List.of("Pierre", "Cobblestone, ou une voidstone de minage")));
 
