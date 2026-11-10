@@ -6,6 +6,7 @@ import fr.atraxterra.dohy.ui.view.MenuView;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +15,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Ce que l'explorateur de coffre a vu ({@code UIChestExplorer}) : les cases du
- * conteneur, dans l'ordre, en vignettes. Une photo prise au clic : rien ne s'y
- * prend, rien ne s'y pose.
+ * Ce que l'explorateur de coffre a vu ({@code UIChestExplorer}) : les cases
+ * pleines du conteneur, dans l'ordre, en vignettes. Une photo prise au clic :
+ * rien ne s'y prend, rien ne s'y pose.
  */
 public final class ChestExplorerMenu extends MenuController {
 
@@ -46,15 +47,20 @@ public final class ChestExplorerMenu extends MenuController {
         List<Card> tiles = new ArrayList<>();
         int filled = 0;
         int items = 0;
+        // Les cases pleines seules, dans l'ordre : la grille du kit a treize
+        // colonnes, un coffre neuf ; recopier ses cases vides la decalerait.
         for (ItemStack stack : slots) {
             if (stack.isEmpty()) {
-                tiles.add(Card.of(ItemStack.EMPTY, "Case vide", List.of()));
                 continue;
             }
             filled++;
             items += stack.getCount();
             tiles.add(Card.of(stack.copy(), MenuView.text(stack.getHoverName()), List.of("x" + stack.getCount()))
                     .badge(stack.getCount() > 1 ? String.valueOf(stack.getCount()) : ""));
+        }
+        if (tiles.isEmpty()) {
+            tiles.add(Card.of(new ItemStack(Items.BARRIER), "Vide", List.of("Rien dans ce conteneur"))
+                    .state(MenuView.DISABLED));
         }
         String subtitle = snapshot == null ? "Accroupi, clic droit sur un conteneur"
                 : MenuView.text(snapshot.name());

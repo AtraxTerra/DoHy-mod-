@@ -37,7 +37,7 @@ import net.neoforged.neoforge.client.gui.GuiLayer;
  */
 public final class FinderHudLayer implements GuiLayer {
 
-    private static final int WIDTH = 132;
+    private static final int MIN_WIDTH = 132;
     private static final int MARGIN = 6;
     private static final long REFRESH = 10L;
 
@@ -133,18 +133,9 @@ public final class FinderHudLayer implements GuiLayer {
     }
 
     private void draw(UiGraphics ui, Minecraft minecraft, BlockPos from, FinderType type) {
-        boolean compass = type.direction() && nearest != null;
-        int height = compass ? 46 : 36;
-        int x = MARGIN;
-        int y = (minecraft.getWindow().getGuiScaledHeight() - height) / 2;
-        ui.panelPlain(x, y, WIDTH, height);
-        ui.rect(x + 3, y + 3, 2, height - 6, type.color());
-        ui.item(icon, x + 9, y + (height - 16) / 2.0f, 16, false);
-
-        int textX = x + 31;
-        ui.text(Ui.WIDE, icon.getHoverName().getString(), textX, y + 6, 6, Ui.WHITE);
-        float progress;
+        String title = icon.getHoverName().getString();
         String line;
+        float progress;
         if (type.spawners()) {
             line = found == 0 ? "Aucun spawner" : found == 1 ? "1 spawner détecté" : found + " spawners détectés";
             progress = found > 0 ? 1.0f : 0.0f;
@@ -153,15 +144,35 @@ public final class FinderHudLayer implements GuiLayer {
             line = "Conteneurs : " + percent + " %";
             progress = percent / 100.0f;
         }
+        String compass = null;
+        if (type.direction() && nearest != null) {
+            int distance = (int) Math.round(Math.sqrt(nearest.distSqr(from)));
+            compass = "Plus proche : " + heading(from, nearest) + ", " + distance + (distance > 1 ? " blocs" : " bloc");
+        }
+
+        // Le cartouche s'elargit au texte le plus long.
+        int textOffset = 31;
+        float widest = Math.max(ui.width(Ui.WIDE, title, 6), ui.width(Ui.BODY, line, 7));
+        if (compass != null) {
+            widest = Math.max(widest, ui.width(Ui.BODY, compass, 6.5f));
+        }
+        int width = Math.max(MIN_WIDTH, textOffset + (int) Math.ceil(widest) + 10);
+        int height = compass != null ? 46 : 36;
+        int x = MARGIN;
+        int y = (minecraft.getWindow().getGuiScaledHeight() - height) / 2;
+        ui.panelPlain(x, y, width, height);
+        ui.rect(x + 3, y + 3, 2, height - 6, type.color());
+        ui.item(icon, x + 9, y + (height - 16) / 2.0f, 16, false);
+
+        int textX = x + textOffset;
+        ui.text(Ui.WIDE, title, textX, y + 6, 6, Ui.WHITE);
         ui.text(Ui.BODY, line, textX, y + 15, 7, found > 0 ? Ui.TEXT : Ui.MUTED);
-        int barWidth = WIDTH - (textX - x) - 8;
+        int barWidth = width - textOffset - 8;
         ui.rect(textX, y + 25, barWidth, 5, 0xFF3D3C46);
         ui.rect(textX + 1, y + 26, barWidth - 2, 3, Ui.SLOT_FILL);
         ui.rect(textX + 1, y + 26, Math.round((barWidth - 2) * progress), 3, type.color());
-        if (compass) {
-            int distance = (int) Math.round(Math.sqrt(nearest.distSqr(from)));
-            ui.text(Ui.BODY, "Plus proche : " + heading(from, nearest) + ", " + distance + " blocs",
-                    textX, y + 34, 6.5f, Ui.MUTED);
+        if (compass != null) {
+            ui.text(Ui.BODY, compass, textX, y + 34, 6.5f, Ui.MUTED);
         }
     }
 
