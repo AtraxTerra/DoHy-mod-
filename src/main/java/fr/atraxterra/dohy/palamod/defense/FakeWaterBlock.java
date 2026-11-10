@@ -15,6 +15,10 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 /**
  * La Fake Water, l'eau sulfurique de PalaMod : elle a l'air de l'eau, elle se
  * nage comme l'eau, et elle ronge ce qui s'y baigne.
@@ -28,6 +32,9 @@ import net.minecraft.world.level.material.FlowingFluid;
 public class FakeWaterBlock extends LiquidBlock {
 
     static final float DAMAGE = 2.0f;
+
+    /** Le dernier tic compte pour chaque joueur protege. */
+    private static final Map<UUID, Integer> LAST_COUNTED = new HashMap<>();
 
     public FakeWaterBlock(FlowingFluid fluid, Properties properties) {
         super(fluid, properties);
@@ -46,7 +53,13 @@ public class FakeWaterBlock extends LiquidBlock {
             return;
         }
         if (protectedFrom(server, living)) {
-            if (living instanceof ServerPlayer player) {
+            // Une seconde par seconde : un joueur dans plusieurs blocs a la fois
+            // passe ici une fois par bloc touche.
+            if (living instanceof ServerPlayer player
+                    && !Integer.valueOf(player.tickCount).equals(LAST_COUNTED.put(player.getUUID(), player.tickCount))) {
+                if (LAST_COUNTED.size() > 256) {
+                    LAST_COUNTED.clear();
+                }
                 FactionApi.stat(player, "protect:fake_water", 1);
             }
             return;

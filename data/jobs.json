@@ -1554,9 +1554,9 @@
     {
       "job": "hunter",
       "level": 50,
-      "id": "palamod:empty_bow_upgrade",
+      "id": "palamod:empty_bow_modifier",
       "count": 2,
-      "label": "Amelioration d'arc vide"
+      "label": "Modificateur d'arc vide"
     },
     {
       "job": "hunter",
