@@ -166,11 +166,11 @@ public final class MachineDesigns {
         g.section(16, 90, "section_upgrade", "AMELIORATION", 120);
         g.arrow(46, 112, 34, menu.progress2());
         g.section(150, 38, "section_fuel", "PALADIUM", 96);
-        g.gauge(186, 52, 10, 66, ratio(menu.tank(), menu.tankGoal()), Ui.RED);
-        note(g, menu.tank() + "/" + menu.tankGoal(), 191, 122);
+        g.gauge(206, 52, 10, 66, ratio(menu.tank(), menu.tankGoal()), Ui.RED);
+        note(g, menu.tank() + "/" + menu.tankGoal(), 211, 122);
         small(g, "Reservoir", 152, 80, Ui.MUTED);
         small(g, "de paladium", 152, 88, Ui.MUTED);
-        tip(g, mouseX, mouseY, 186, 52, 10, 66, List.of("Paladium", menu.tank() + " / " + menu.tankGoal(),
+        tip(g, mouseX, mouseY, 206, 52, 10, 66, List.of("Paladium", menu.tank() + " / " + menu.tankGoal(),
                 "Chaque forge et amelioration en consomme"));
     }, Map.of(
             0, List.of("Resultat de la forge"),
