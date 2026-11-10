@@ -128,7 +128,7 @@ public final class HubController extends MenuController {
     private static Card factionCard(ServerPlayer player) {
         fr.atraxterra.dohy.faction.FactionData faction = fr.atraxterra.dohy.faction.FactionApi.data(player);
         if (!faction.exists()) {
-            return Card.of(new ItemStack(Items.WHITE_BANNER), "Faction", List.of("Fonde la tienne",
+            return Card.of(new ItemStack(Items.BANNER.pick(net.minecraft.world.item.DyeColor.WHITE)), "Faction", List.of("Fonde la tienne",
                     fr.atraxterra.dohy.faction.FactionApi.CREATION_COST + " lingots de paladium"))
                     .accent(0xFFEC4FB5).action("faction");
         }

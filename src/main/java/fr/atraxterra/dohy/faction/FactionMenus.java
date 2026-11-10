@@ -8,6 +8,7 @@ import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -29,10 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class FactionMenus {
 
-    private static final Item[] BANNERS = {Items.WHITE_BANNER, Items.ORANGE_BANNER, Items.MAGENTA_BANNER,
-            Items.LIGHT_BLUE_BANNER, Items.YELLOW_BANNER, Items.LIME_BANNER, Items.PINK_BANNER, Items.GRAY_BANNER,
-            Items.LIGHT_GRAY_BANNER, Items.CYAN_BANNER, Items.PURPLE_BANNER, Items.BLUE_BANNER, Items.BROWN_BANNER,
-            Items.GREEN_BANNER, Items.RED_BANNER, Items.BLACK_BANNER};
+    private static final DyeColor[] COLORS = DyeColor.values();
 
     private static final Item[] LEAGUE_ICONS = {Items.COPPER_INGOT, Items.IRON_INGOT, Items.GOLD_INGOT,
             Items.PRISMARINE_CRYSTALS, Items.DIAMOND};
@@ -47,7 +45,7 @@ public final class FactionMenus {
     }
 
     public static ItemStack banner(int color) {
-        return new ItemStack(BANNERS[Math.floorMod(color, BANNERS.length)]);
+        return new ItemStack(Items.BANNER.pick(COLORS[Math.floorMod(color, COLORS.length)]));
     }
 
     static ItemStack leagueIcon(FactionLeague league) {
@@ -156,7 +154,7 @@ public final class FactionMenus {
                 homeLines.add(data.homes().size() + " / " + perks.homes() + " pose(s)");
                 homeLines.add("Delai : " + perks.homeDelay() + " s immobile");
             }
-            Card home = Card.of(new ItemStack(Items.RED_BED), "F home", homeLines).accent(0xFF2F5BEA);
+            Card home = Card.of(new ItemStack(Items.BED.pick(DyeColor.RED)), "F home", homeLines).accent(0xFF2F5BEA);
             home = perks.homes() <= 0 ? home.state(MenuView.DISABLED)
                     : home.action("home|y aller").right("sethome|le poser ici");
             List<Card> progression = List.of(
@@ -409,7 +407,7 @@ public final class FactionMenus {
                     Card.of(new ItemStack(Items.CLOCK), "Lundi minuit", List.of(
                             "Dans " + duration(FactionWeekly.untilReset()), "Recalcul et recompenses"))
                             .accent(0xFFFAC400),
-                    Card.of(new ItemStack(active ? Items.LIME_DYE : Items.GRAY_DYE), "Cette semaine", List.of(
+                    Card.of(new ItemStack(Items.DYE.pick(active ? DyeColor.LIME : DyeColor.GRAY)), "Cette semaine", List.of(
                                     ranking.weekWins() + " victoire(s) ELO", "+" + MoneyFormat.exact(ranking.weekElo())
                                             + " ELO"))
                             .accent(active ? 0xFF22E558 : 0xFFEF3826)
