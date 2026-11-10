@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XYX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:tnt",
+    "Y": "palamod:paladium_core"
+  },
+  "result": {
+    "id": "palamod:big_tnt",
+    "count": 3
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XYX",
+    "XYX",
+    "XYX"
+  ],
+  "key": {
+    "X": "minecraft:string",
+    "Y": "minecraft:diamond"
+  },
+  "result": {
+    "id": "palamod:diamond_string",
+    "count": 9
+  }
+}

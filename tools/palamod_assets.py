@@ -3913,9 +3913,8 @@ def main():
                   "%s:%s_spike_obsidian" % (NS, metal))
     shaped("compressed_sponge", ["XXX", "XYX", "XXX"],
            {"X": "minecraft:sponge", "Y": "%s:paladium_core" % NS}, "%s:compressed_sponge" % NS)
-    # L'Unclaim Finder rouge du centre arrive au lot 22d : une boussole le remplace d'ici la.
     shaped("coordinate_jammer", ["ZXZ", "XYX", "ZXZ"],
-           {"Z": "%s:paladium_block" % NS, "X": "%s:findium" % NS, "Y": "minecraft:compass"},
+           {"Z": "%s:paladium_block" % NS, "X": "%s:findium" % NS, "Y": "%s:unclaim_finder_red" % NS},
            "%s:coordinate_jammer" % NS)
     shaped("fake_water_bucket", ["Y", "X"],
            {"Y": "%s:paladium_stick" % NS, "X": "minecraft:water_bucket"}, "%s:fake_water_bucket" % NS)
@@ -3925,9 +3924,8 @@ def main():
     shapeless("wither_skull_fragment", ["minecraft:wither_skeleton_skull"], "%s:wither_skull_fragment" % NS, 9)
     shaped("wither_skeleton_skull_from_fragments", ["YYY", "YYY", "YYY"],
            {"Y": "%s:wither_skull_fragment" % NS}, "minecraft:wither_skeleton_skull")
-    # La ficelle de diamant n'est pas portee : une ficelle la remplace.
     shaped("hunter_amulet", ["BNB", " S ", " P "],
-           {"B": "minecraft:blaze_powder", "N": "minecraft:nether_star", "S": "minecraft:string",
+           {"B": "minecraft:blaze_powder", "N": "minecraft:nether_star", "S": "%s:diamond_string" % NS,
             "P": "%s:paladium_stick" % NS}, "%s:hunter_amulet" % NS)
     shaped("voyance_amulet", ["ABA", "CDC", "EFE"],
            {"A": "%s:harpagophytum_flower" % NS, "B": "%s:speed_orb" % NS, "C": "%s:heal_orb" % NS,
@@ -3951,6 +3949,185 @@ def main():
     write("data/%s/recipe/lava_sponge_from_smelting.json" % NS, {
         "type": "minecraft:smelting", "category": "blocks", "cookingtime": 200, "experience": 0.15,
         "ingredient": "%s:wet_lava_sponge" % NS, "result": {"id": "%s:lava_sponge" % NS}})
+
+    # ---- pillage de faction (chapitre 22, lot 22d) ----
+    #
+    # Dynamites, TNT du pillage, detecteurs, explorateur de coffre, detecteur
+    # de presence, seau extrapole, arc en paladium et ses modificateurs, fleche
+    # de Switch, cagoule, ficelle de diamant, deux enchantements. Textures : le
+    # pack, le jar pour ce que le pack n'a pas (le detecteur de presence, les
+    # modificateurs d'arc, l'icone de la cagoule).
+    for name, texture, label_fr, label_en in (
+            ("dynamite", "items/explosive/dynamite.png", "Dynamite", "Dynamite"),
+            ("ninja_dynamite", "items/explosive/dynamite_ninja.png", "Ninja dynamite", "Ninja Dynamite"),
+            ("big_dynamite", "items/explosive/dynamite_big.png", "Big dynamite", "Big Dynamite"),
+            ("unclaim_finder", "items/unclaimfinder.png", "Unclaim Finder vert", "Green Unclaim Finder"),
+            ("unclaim_finder_orange", "items/unclaimfinder_orange.png", "Unclaim Finder orange",
+             "Orange Unclaim Finder"),
+            ("unclaim_finder_red", "items/unclaimfinder_rouge.png", "Unclaim Finder rouge", "Red Unclaim Finder"),
+            ("unclaim_finder_blue", "items/unclaimfinder_bleu.png", "Unclaim Finder bleu", "Blue Unclaim Finder"),
+            ("spawner_finder", "items/spawner_finder.png", "Spawner Finder", "Spawner Finder"),
+            ("chest_explorer", "items/chestexplorer.png", "Explorateur de coffre", "Chest Explorer"),
+            ("extrapolated_bucket", "items/extrapolatedbucket.png", "Seau extrapole", "Extrapolated Bucket"),
+            ("switch_arrow", "items/arrow/arrow_switch.png", "Fleche de Switch", "Switch Arrow"),
+            ("empty_bow_modifier", "items/machine/emptyBowModifier.png", "Modificateur d'arc vide",
+             "Empty Bow Modifier"),
+            ("range_bow_modifier", "items/machine/bowRangeModifier.png", "Modificateur Range", "Range Modifier"),
+            ("speed_bow_modifier", "items/machine/bowSpeedModifier.png", "Modificateur Speed", "Speed Modifier"),
+            ("hood_helmet", "items/armor/travel_hood.png", "Cagoule", "Hood"),
+            ("diamond_string", "items/diamondString.png", "Ficelle de diamant", "Diamond String")):
+        tex(texture, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    tag("minecraft/tags/item/arrows.json", ["%s:switch_arrow" % NS])
+    tag("minecraft/tags/item/head_armor.json", ["%s:hood_helmet" % NS])
+
+    # La cagoule portee : la couche HoodHelmet de PalaMod (64 x 32), casque seul.
+    tex("models/HoodHelmet.png", "entity/equipment/humanoid/hood.png", (64, 32))
+    write("assets/%s/equipment/hood.json" % NS, {"layers": {"humanoid": [{"texture": "%s:hood" % NS}]}})
+
+    # L'arc en paladium : le modele de l'arc vanilla et ses trois etapes de tension.
+    for suffix, source in (("", "paladium_bow"), ("_pulling_0", "paladium_bow_0"),
+                           ("_pulling_1", "paladium_bow_1"), ("_pulling_2", "paladium_bow_2")):
+        tex("items/weapons/%s.png" % source, "item/paladium_bow%s.png" % suffix)
+        write("assets/%s/models/item/paladium_bow%s.json" % (NS, suffix),
+              {"parent": "minecraft:item/bow", "textures": {"layer0": "%s:item/paladium_bow%s" % (NS, suffix)}})
+    write("assets/%s/items/paladium_bow.json" % NS, {"model": {
+        "type": "minecraft:condition", "property": "minecraft:using_item",
+        "on_false": {"type": "minecraft:model", "model": "%s:item/paladium_bow" % NS},
+        "on_true": {"type": "minecraft:range_dispatch", "property": "minecraft:use_duration", "scale": 0.05,
+                    "entries": [{"threshold": 0.65, "model": {"type": "minecraft:model",
+                                                              "model": "%s:item/paladium_bow_pulling_1" % NS}},
+                                {"threshold": 0.9, "model": {"type": "minecraft:model",
+                                                             "model": "%s:item/paladium_bow_pulling_2" % NS}}],
+                    "fallback": {"type": "minecraft:model", "model": "%s:item/paladium_bow_pulling_0" % NS}}}})
+    label("item", "paladium_bow", "Arc en paladium", "Paladium Bow")
+    tag("minecraft/tags/item/enchantable/bow.json", ["%s:paladium_bow" % NS])
+    tag("minecraft/tags/item/enchantable/durability.json", ["%s:paladium_bow" % NS])
+
+    # Les TNT : dessus, cote et dessous, comme la TNT vanilla.
+    for name, label_fr, label_en in (("big_tnt", "TNT compacte", "Big TNT"),
+                                     ("endium_tnt", "TNT en endium", "Endium TNT"),
+                                     ("sponge_tnt", "TNT eponge", "Sponge TNT"),
+                                     ("effect_tnt", "TNT magique", "Effect TNT"),
+                                     ("wither_tnt", "TNT a wither", "Wither TNT")):
+        for face in ("top", "side", "bottom"):
+            tex("blocks/pillage/effects/%s_%s.png" % (name, face), "block/%s_%s.png" % (name, face))
+        simple_block(name, label_fr, label_en, {face: "%s:block/%s_%s" % (NS, name, face)
+                                               for face in ("top", "side", "bottom")},
+                     "minecraft:block/cube_bottom_top")
+
+    # Le detecteur de presence : rouge au repos, vert quand un monstre rode.
+    tex("blocks/machines/onlinedetector_off.png", "block/online_detector.png")
+    tex("blocks/machines/onlinedetector_on.png", "block/online_detector_on.png")
+    cube_model("online_detector", {"all": "%s:block/online_detector" % NS})
+    cube_model("online_detector_on", {"all": "%s:block/online_detector_on" % NS})
+    write("assets/%s/blockstates/online_detector.json" % NS, {"variants": {
+        "lit=false": {"model": "%s:block/online_detector" % NS},
+        "lit=true": {"model": "%s:block/online_detector_on" % NS}}})
+    block_item("online_detector")
+    drops_itself("online_detector")
+    label("block", "online_detector", "Detecteur de presence", "Presence Detector")
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:online_detector" % NS])
+    tag("minecraft/tags/block/needs_stone_tool.json", ["%s:online_detector" % NS])
+
+    # Ce que la TNT en endium perce : l'obsidienne, ses blocs, les obsidiennes
+    # de defense. Pas les enclumes : elles encaissent les coups de wither.
+    tag("%s/tags/block/endium_tnt_breakable.json" % NS,
+        ["minecraft:obsidian", "minecraft:crying_obsidian"]
+        + ["%s:%s" % (NS, name) for name in ("obsidian_stairs", "obsidian_slab", "obsidian_door",
+                                             "obsidian_trapdoor")]
+        + ["%s:%s" % (NS, name) for name in defense_removable if not name.endswith("_anvil")])
+
+    # Les deux enchantements du pillage, a la table de l'Alchimiste seulement.
+    write("data/%s/enchantment/unclaim_helmet.json" % NS, {
+        "description": {"translate": "enchantment.%s.unclaim_helmet" % NS},
+        "supported_items": "#minecraft:enchantable/head_armor",
+        "weight": 1, "max_level": 1,
+        "min_cost": {"base": 30, "per_level_above_first": 0},
+        "max_cost": {"base": 50, "per_level_above_first": 0},
+        "anvil_cost": 4, "slots": ["head"]})
+    write("data/%s/enchantment/fake_water_protection.json" % NS, {
+        "description": {"translate": "enchantment.%s.fake_water_protection" % NS},
+        "supported_items": "#minecraft:enchantable/armor",
+        "weight": 1, "max_level": 1,
+        "min_cost": {"base": 30, "per_level_above_first": 0},
+        "max_cost": {"base": 50, "per_level_above_first": 0},
+        "anvil_cost": 4, "slots": ["armor"]})
+    label("enchantment", "unclaim_helmet", "Unclaim Helmet", "Unclaim Helmet")
+    label("enchantment", "unclaim_helmet.desc", "Le casque porte fait office d'Unclaim Finder vert",
+          "The worn helmet works as a green Unclaim Finder")
+    label("enchantment", "fake_water_protection", "Fake Water Protection", "Fake Water Protection")
+    label("enchantment", "fake_water_protection.desc", "La Fake Water ne ronge plus",
+          "Fake Water no longer hurts")
+    label("message", "mystic_enchant.locked", "Verrouille par l'arbre de faction",
+          "Locked by the faction tech tree")
+
+    label("entity", "dynamite", "Dynamite", "Dynamite")
+    label("entity", "primed_tnt", "TNT allumee", "Primed TNT")
+    for key, label_fr, label_en in (
+            ("dynamite", "Clic droit : la lancer. Elle se colle et saute deux secondes plus tard",
+             "Right-click to throw. It sticks and blows two seconds later"),
+            ("ninja_dynamite", "Plus forte que la dynamite, et sans un bruit", "Stronger than dynamite, and silent"),
+            ("big_dynamite", "Presque la force d'une TNT", "Almost as strong as TNT"),
+            ("unclaim_finder", "En main : les conteneurs de ton chunk", "In hand: containers in your chunk"),
+            ("unclaim_finder_orange", "En main : les conteneurs des 9 chunks autour de toi",
+             "In hand: containers in the 9 chunks around you"),
+            ("unclaim_finder_red", "En main : les conteneurs des 25 chunks autour de toi",
+             "In hand: containers in the 25 chunks around you"),
+            ("unclaim_finder_blue", "En main : les conteneurs des 49 chunks, et la direction du plus proche",
+             "In hand: containers in 49 chunks, and the way to the nearest"),
+            ("spawner_finder", "En main : les spawners des 9 chunks autour de toi",
+             "In hand: spawners in the 9 chunks around you"),
+            ("chest_explorer", "Accroupi, clic droit sur un conteneur : son contenu, sans l'ouvrir",
+             "Sneak and right-click a container: see inside without opening it"),
+            ("extrapolated_bucket", "Clic droit sur un liquide : toute la nappe disparait",
+             "Right-click a liquid: the whole pool disappears"),
+            ("switch_arrow", "Tiree a l'arc en paladium : tu echanges ta place avec la cible",
+             "Shot from a paladium bow: you swap places with the target"),
+            ("empty_bow_modifier", "Avec une potion de force (Range) ou de rapidite longue (Speed)",
+             "With a strength potion (Range) or a long swiftness potion (Speed)"),
+            ("range_bow_modifier", "A l'enclume sur un arc en paladium : des fleches plus rapides",
+             "Anvil it onto a paladium bow: faster arrows"),
+            ("speed_bow_modifier", "A l'enclume sur un arc en paladium : il se bande plus vite",
+             "Anvil it onto a paladium bow: it draws faster"),
+            ("hood_helmet", "Une fois debloquee : les monstres te reperent de moins loin",
+             "Once unlocked: monsters spot you from closer"),
+            ("paladium_bow.modifiers", "Modificateurs : %s / %s", "Modifiers: %s / %s")):
+        label("tooltip", key, label_fr, label_en)
+
+    # Les recettes que palamod_crafts.json n'a pas : les TNT (chacune dans sa
+    # classe, ObjectEffect.registerRecipes), les modificateurs d'arc (sans
+    # forme, a potion), la fleche de Switch. Les finders orange, rouge et bleu
+    # sortent de la palamachine (PalamachineRecipes).
+    shaped("big_tnt", ["XXX", "XYX", "XXX"], {"X": "minecraft:tnt", "Y": "%s:paladium_core" % NS},
+           "%s:big_tnt" % NS, 3)
+    shaped("endium_tnt", ["XXX", "XYX", "XXX"], {"X": "minecraft:tnt", "Y": "%s:endium_nugget" % NS},
+           "%s:endium_tnt" % NS, 4)
+    shaped("sponge_tnt", ["XXX", "ZYZ", "XXX"],
+           {"X": "minecraft:tnt", "Y": "%s:extrapolated_bucket" % NS, "Z": "%s:compressed_sponge" % NS},
+           "%s:sponge_tnt" % NS, 2)
+    # Toute potion jetable de poison a gauche, de faiblesse a droite (metas
+    # 16388, 16420, 16452 et 16424, 16456) : six recettes, comme dans EffectTNT.
+    for poison in ("poison", "strong_poison", "long_poison"):
+        for weakness in ("weakness", "long_weakness"):
+            shaped("effect_tnt_%s_%s" % (poison, weakness), ["XXX", "ZYA", "XXX"],
+                   {"X": "minecraft:tnt", "Y": "%s:paladium_core" % NS,
+                    "Z": components("minecraft:splash_potion", "minecraft:%s" % poison),
+                    "A": components("minecraft:splash_potion", "minecraft:%s" % weakness)},
+                   "%s:effect_tnt" % NS, 2)
+    shaped("wither_tnt", ["ZZZ", "XYX", "XXX"],
+           {"Z": "minecraft:wither_skeleton_skull", "X": "minecraft:tnt", "Y": "%s:paladium_core" % NS},
+           "%s:wither_tnt" % NS)
+    # Metas 8258 (rapidite longue) et 8201 (force).
+    shapeless("speed_bow_modifier", ["%s:empty_bow_modifier" % NS,
+                                     components("minecraft:potion", "minecraft:long_swiftness")],
+              "%s:speed_bow_modifier" % NS)
+    shapeless("range_bow_modifier", ["%s:empty_bow_modifier" % NS,
+                                     components("minecraft:potion", "minecraft:strength")],
+              "%s:range_bow_modifier" % NS)
+    shaped("switch_arrow", [" A ", "APA", " A "], {"A": "minecraft:arrow", "P": "minecraft:ender_pearl"},
+           "%s:switch_arrow" % NS, 4)
 
     # ---- enchantements : outils et cornes ----
     #
@@ -4054,6 +4231,12 @@ def main():
         "OBSIDIAN_STAIRS": "obsidian_stairs", "OBSIDIAN_SLAB": "obsidian_slab",
         "OBSIDIAN_HARDENED_STAIRS": "hardened_obsidian_stairs", "OBSIDIAN_HARDENED_SLAB": "hardened_obsidian_slab",
         "OBSIDIAN_ITEM_DOOR": "obsidian_door", "OBSIDIAN_TRAP_DOOR": "obsidian_trapdoor",
+        # Pillage de faction (chapitre 22, lot 22d) : PRegister_Craft.
+        "DIAMOND_STRING": "diamond_string", "PALADIUM_BOW": "paladium_bow", "TRAVEL_HOODHELMET": "hood_helmet",
+        "CHESTEXPLORER": "chest_explorer", "BOWUPGRADE_EMPTY": "empty_bow_modifier",
+        "ONLINE_DETECTOR_BLOCK": "online_detector", "DYNAMITE": "dynamite", "DYNAMITE_BIG": "big_dynamite",
+        "DYNAMITE_NINJA": "ninja_dynamite", "EXTRAPOLATED_BUCKET": "extrapolated_bucket",
+        "UNCLAIMFINDER": "unclaim_finder", "SPAWNER_FINDER": "spawner_finder",
     }
     # Un meme objet 1.7.10 a plusieurs metas, plusieurs objets en 26.2 : la
     # recette se choisit par (nom, meta). Sans cette table, les quatre outils de
@@ -4156,6 +4339,15 @@ def main():
         ("Blocks.field_150425_aM", 0): "minecraft:soul_sand",
         ("ModBlocks.sponge", 0): "minecraft:sponge",
         ("Blocks.field_150371_ca", 0): "minecraft:quartz_block",
+        # Pillage : la TNT, la laine (toutes ses couleurs, passee en Block), le
+        # colorant meta 0 (poche d'encre), le spawner casse du Chasseur.
+        ("Blocks.field_150335_W", 0): "minecraft:tnt",
+        ("Blocks.field_150325_L", 0): "#minecraft:wool",
+        ("Items.field_151100_aR", 0): "minecraft:ink_sac",
+        ("SpawnerBlockRegistry.EMPTY_BROKEN_MOB_SPAWNER", 0): "%s:broken_spawner" % NS,
+        # Cle declaree mais inutilisee du detecteur de presence : elle doit se
+        # resoudre pour que le releve passe, puis le filtre la retire.
+        ("ItemsRegister.WITHER_SKULLFRAGMENT", 0): "%s:wither_skull_fragment" % NS,
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())

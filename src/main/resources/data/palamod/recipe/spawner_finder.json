@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " F ",
+    "PBP",
+    " F "
+  ],
+  "key": {
+    "F": "palamod:findium_block",
+    "P": "palamod:paladium_core",
+    "B": "palamod:broken_spawner"
+  },
+  "result": {
+    "id": "palamod:spawner_finder",
+    "count": 1
+  }
+}

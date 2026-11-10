@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.EquipmentAssets;
@@ -17,7 +18,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Les six materiaux d'armure.
+ * Les materiaux d'armure : les six sets de PalaMod, et la cagoule.
  *
  * <p><b>Les valeurs d'origine sont ecrites ici, et la conversion aussi</b> : on
  * lit dans ce fichier ce que {@code PArmorMaterial} declarait et ce que le jeu
@@ -85,7 +86,25 @@ public final class PalaArmorMaterials {
             400, new int[]{11, 14, 11, 10}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE,
             PalaTags.REPAIRS_ENDIUM);
 
+    /**
+     * La cagoule ({@code ItemArmorTravel}, chapitre 22) : en 1.7.10, le materiau
+     * fer vanilla et sa reparation au fer. Elle reprend donc le casque en fer de
+     * 26.2 tel quel, sans la calibration des sets de PalaMod — qui releverait sa
+     * defense au-dessus du fer —, avec le son du cuir.
+     */
+    public static final ArmorMaterial HOOD = material("hood", ArmorMaterials.IRON, SoundEvents.ARMOR_EQUIP_LEATHER);
+
     private PalaArmorMaterials() {
+    }
+
+    /** Un materiau vanilla repris sous un autre nom : ses couches portees sont celles de PalaMod. */
+    public static ArmorMaterial material(String name, ArmorMaterial base, Holder<SoundEvent> sound) {
+        return new ArmorMaterial(base.durability(), base.defense(), base.enchantmentValue(), sound,
+                base.toughness(), base.knockbackResistance(), base.repairIngredient(), asset(name));
+    }
+
+    private static ResourceKey<EquipmentAsset> asset(String name) {
+        return ResourceKey.create(EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, name));
     }
 
     /**
@@ -114,8 +133,7 @@ public final class PalaArmorMaterials {
         // planter quiconque demanderait les attributs de cet emplacement.
         defense.put(ArmorType.BODY, defense(1, original[1]));
 
-        ResourceKey<EquipmentAsset> asset = ResourceKey.create(EquipmentAssets.ROOT_ID,
-                Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, name));
+        ResourceKey<EquipmentAsset> asset = asset(name);
 
         return new ArmorMaterial(durabilityFactor, defense, enchantability, sound,
                 toughness(total), 0.0f, repair, asset);

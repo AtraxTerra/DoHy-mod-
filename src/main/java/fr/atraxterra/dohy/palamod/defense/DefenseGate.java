@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Les verrous de l'arbre de faction sur les objets de defense.
+ * Les verrous de l'arbre de faction sur les objets de defense et de pillage.
  *
  * <p>Sur Paladium, l'arbre debloque la <i>fabrication</i> de certains objets
  * (« craft: ») et l'<i>utilisation</i> des autres (« use: »). Ici, comme pour
@@ -57,6 +57,18 @@ public final class DefenseGate {
         KEYS.put("pistol_tank", "use:pistol_tank");
         KEYS.put("home_remover", "use:home_remover");
         KEYS.put("voyance_amulet", "craft:voyance_amulet");
+        // Le pillage (lot 22d).
+        KEYS.put("dynamite", "use:dynamite");
+        KEYS.put("ninja_dynamite", "use:ninja_dynamite");
+        KEYS.put("big_dynamite", "use:big_dynamite");
+        KEYS.put("hood_helmet", "craft:hood_helmet");
+        KEYS.put("chest_explorer", "craft:chest_explorer");
+        KEYS.put("online_detector", "use:online_detector");
+        KEYS.put("paladium_bow", "craft:paladium_bow");
+        KEYS.put("switch_arrow", "craft:switch_arrow");
+        KEYS.put("extrapolated_bucket", "craft:extrapolated_bucket");
+        // La TNT a wither invoque un wither vanilla : le palier qui debloque les withers.
+        KEYS.put("wither_tnt", "use:wither");
     }
 
     private DefenseGate() {

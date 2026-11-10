@@ -8,7 +8,7 @@
   "key": {
     "Z": "palamod:paladium_block",
     "X": "palamod:findium",
-    "Y": "minecraft:compass"
+    "Y": "palamod:unclaim_finder_red"
   },
   "result": {
     "id": "palamod:coordinate_jammer",

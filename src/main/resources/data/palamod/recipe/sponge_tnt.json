@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "ZYZ",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:tnt",
+    "Y": "palamod:extrapolated_bucket",
+    "Z": "palamod:compressed_sponge"
+  },
+  "result": {
+    "id": "palamod:sponge_tnt",
+    "count": 2
+  }
+}

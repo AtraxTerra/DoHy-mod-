@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XDX",
+    "XDX",
+    "XDX"
+  ],
+  "key": {
+    "X": "palamod:titane_ingot",
+    "D": "palamod:dynamite"
+  },
+  "result": {
+    "id": "palamod:ninja_dynamite",
+    "count": 1
+  }
+}

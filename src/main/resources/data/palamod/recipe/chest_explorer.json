@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XYX",
+    "XZX",
+    "XYX"
+  ],
+  "key": {
+    "X": "palamod:findium",
+    "Z": "palamod:compressed_paladium",
+    "Y": "palamod:paladium_ingot"
+  },
+  "result": {
+    "id": "palamod:chest_explorer",
+    "count": 1
+  }
+}

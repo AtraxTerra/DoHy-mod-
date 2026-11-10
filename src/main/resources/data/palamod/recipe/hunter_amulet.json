@@ -8,7 +8,7 @@
   "key": {
     "B": "minecraft:blaze_powder",
     "N": "minecraft:nether_star",
-    "S": "minecraft:string",
+    "S": "palamod:diamond_string",
     "P": "palamod:paladium_stick"
   },
   "result": {

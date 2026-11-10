@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " Y ",
+    "X X",
+    " X "
+  ],
+  "key": {
+    "Y": "palamod:paladium_core",
+    "X": "palamod:paladium_ingot"
+  },
+  "result": {
+    "id": "palamod:extrapolated_bucket",
+    "count": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XYX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:tnt",
+    "Y": "palamod:endium_nugget"
+  },
+  "result": {
+    "id": "palamod:endium_tnt",
+    "count": 4
+  }
+}

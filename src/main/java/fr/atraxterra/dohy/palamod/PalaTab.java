@@ -1,25 +1,26 @@
 package fr.atraxterra.dohy.palamod;
 
-import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
-import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
 import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
 import fr.atraxterra.dohy.palamod.alchemist.PalaWoods;
+import fr.atraxterra.dohy.palamod.defense.PalaDefense;
+import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
+import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
+import fr.atraxterra.dohy.palamod.dungeon.PalaDungeonGear;
+import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
+import fr.atraxterra.dohy.palamod.farming.PalaSeedPlanters;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.godpickaxe.PalaGodPickaxe;
 import fr.atraxterra.dohy.palamod.golem.PalaGolem;
-import fr.atraxterra.dohy.palamod.nature.PalaNature;
-import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
-import fr.atraxterra.dohy.palamod.machine.PalaMachines;
-import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
-import fr.atraxterra.dohy.palamod.mount.PalaMount;
-import fr.atraxterra.dohy.palamod.miner.PalaMiner;
-import fr.atraxterra.dohy.palamod.storage.PalaStorage;
-import fr.atraxterra.dohy.palamod.defense.PalaDefense;
-import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import fr.atraxterra.dohy.palamod.legendary.PalaLegendary;
-import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
-import fr.atraxterra.dohy.palamod.dungeon.PalaDungeonGear;
+import fr.atraxterra.dohy.palamod.machine.PalaMachines;
+import fr.atraxterra.dohy.palamod.miner.PalaMiner;
+import fr.atraxterra.dohy.palamod.mount.PalaMount;
+import fr.atraxterra.dohy.palamod.nature.PalaNature;
+import fr.atraxterra.dohy.palamod.pillage.PalaPillage;
+import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
+import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
+import fr.atraxterra.dohy.palamod.storage.PalaStorage;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -100,8 +101,9 @@ public final class PalaTab {
                         PalaLegendary.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaDungeon.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaDungeonGear.ORDERED.forEach(item -> output.accept(item.get()));
-                        // La defense de faction ferme l'onglet.
+                        // La defense, puis le pillage de faction, ferment l'onglet.
                         PalaDefense.tab().forEach(item -> output.accept(item.get()));
+                        PalaPillage.tab().forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

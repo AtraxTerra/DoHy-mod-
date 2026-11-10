@@ -228,6 +228,8 @@ public final class FactionTree {
     private static final String P = "palamod:";
     private static final String C = "lot 22c";
     private static final String D = "lot 22d";
+    /** Les withers du pillage : receptacle, gemmes, ameliorations. */
+    private static final String DB = "lot 22d-bis";
     private static final String E = "lot 22e";
 
     // -- Les branches ----------------------------------------------------------------------
@@ -282,18 +284,18 @@ public final class FactionTree {
                 List.of(unlock("use:baby_wither", "Utilisation du baby wither"),
                         unlock("craft:receptacle", "Fabrication du receptacle"))));
         list.add(new Tier(b, 3, 60_000, List.of(), List.of(crafted(P + "cave_block", 100, "cave blocks", D),
-                crafted(P + "receptacle", 2, "receptacles", D), crafted(P + "baby_wither_gem", 5,
-                        "gemmes de baby wither", D), crafted(P + "unclaim_finder_red", 1, "un Unclaim Finder rouge", D)),
+                crafted(P + "receptacle", 2, "receptacles", DB), crafted(P + "baby_wither_gem", 5,
+                        "gemmes de baby wither", DB), crafted(P + "unclaim_finder_red", 1, "un Unclaim Finder rouge", D)),
                 h(12), List.of(unlock("use:ninja_dynamite", "Utilisation de la ninja dynamite"))));
         list.add(new Tier(b, 4, 100_000, List.of(), List.of(counter("use:ninja_dynamite", 1,
                         "Utiliser une ninja dynamite", D, P + "ninja_dynamite"),
                 crafted(P + "unclaim_finder_blue", 1, "un Unclaim Finder bleu", D),
-                counter("spawn:baby_wither", 3, "Invoquer 3 baby withers", D, P + "baby_wither_gem")), d(1, 0),
+                counter("spawn:baby_wither", 3, "Invoquer 3 baby withers", DB, P + "baby_wither_gem")), d(1, 0),
                 List.of(unlock("craft:chest_explorer", "Fabrication de l'explorateur de coffre"),
                         unlock("use:online_detector", "Utilisation du detecteur de presence"))));
         list.add(new Tier(b, 5, 200_000, List.of(), List.of(counter("regen:wither", 1,
-                        "Regenerer un wither avec un receptacle", D, P + "receptacle"),
-                counter("wither:obsidian", 100, "Casser 100 obsidiennes avec un wither", D, P + "baby_wither_gem"),
+                        "Regenerer un wither avec un receptacle", DB, P + "receptacle"),
+                counter("wither:obsidian", 100, "Casser 100 obsidiennes avec un wither", DB, P + "baby_wither_gem"),
                 travel(250_000)), d(1, 12), List.of(unlock("use:wither", "Utilisation du wither"),
                 unlock("craft:paladium_bow", "Fabrication de l'arc en paladium"),
                 unlock("craft:switch_arrow", "Fabrication de la fleche de Switch"))));
@@ -301,8 +303,8 @@ public final class FactionTree {
                         "Poser les modificateurs Speed et Range sur un arc en paladium", D, P + "paladium_bow"),
                 counter("use:switch_arrow", 3, "Toucher 3 fois un monstre a la fleche de Switch", D,
                         P + "switch_arrow"),
-                counter("spawn:wither", 1, "Invoquer un wither", D, P + "wither_gem"),
-                crafted(P + "baby_wither_gem", 30, "gemmes de baby wither", D)), d(2, 0),
+                counter("spawn:wither", 1, "Invoquer un wither", D, P + "wither_tnt"),
+                crafted(P + "baby_wither_gem", 30, "gemmes de baby wither", DB)), d(2, 0),
                 List.of(unlock("craft:extrapolated_bucket", "Fabrication du seau extrapole"),
                         unlock("enchant:fake_water_protection", "Enchantement Fake Water Protection"))));
         list.add(new Tier(b, 7, 750_000, List.of(), List.of(crafted(P + "extrapolated_bucket", 100, "seaux extrapoles",
@@ -318,24 +320,24 @@ public final class FactionTree {
                 counter("use:big_dynamite", 1, "Utiliser une big dynamite", D, P + "big_dynamite")), d(3, 12),
                 List.of(unlock("use:passive_wither", "Utilisation du wither passif"))));
         list.add(new Tier(b, 9, 2_500_000, List.of(), List.of(counter("spawn:passive_wither", 3,
-                        "Invoquer 3 withers passifs", D, P + "passive_wither_gem"), travel(500_000), visits(7),
-                crafted(P + "passive_wither_gem", 15, "gemmes de wither passif", D)), d(4, 12),
+                        "Invoquer 3 withers passifs", DB, P + "passive_wither_gem"), travel(500_000), visits(7),
+                crafted(P + "passive_wither_gem", 15, "gemmes de wither passif", DB)), d(4, 12),
                 List.of(unlock("use:funny_wither", "Utilisation du wither amusant"))));
         list.add(new Tier(b, 10, 5_000_000, List.of(), List.of(crafted(P + "wither_resistance_upgrade", 10,
-                        "ameliorations de resistance de wither", D), travel(1_000_000), species(30), visits(10)),
+                        "ameliorations de resistance de wither", DB), travel(1_000_000), species(30), visits(10)),
                 d(5, 12), List.of(unlock("use:predator_wither", "Utilisation du wither predateur"),
                 unlock("craft:wither_slime_upgrade", "Fabrication de l'amelioration slime de wither"))));
         list.add(new Tier(b, 11, 10_000_000, List.of(), List.of(counter("spawn:predator_wither", 2,
-                        "Invoquer 2 withers predateurs", D, P + "predator_wither_gem"), species(50), visits(15),
-                crafted(P + "predator_wither_gem", 7, "gemmes de wither predateur", D),
-                crafted(P + "wither_slime_upgrade", 20, "ameliorations slime de wither", D)), d(7, 12),
+                        "Invoquer 2 withers predateurs", DB, P + "predator_wither_gem"), species(50), visits(15),
+                crafted(P + "predator_wither_gem", 7, "gemmes de wither predateur", DB),
+                crafted(P + "wither_slime_upgrade", 20, "ameliorations slime de wither", DB)), d(7, 12),
                 List.of(unlock("use:thirsty_wither", "Utilisation du wither assoiffe"),
                         unlock("craft:stealth_upgrade", "Fabrication de l'amelioration de discretion"))));
         list.add(new Tier(b, 12, 15_000_000, List.of(), List.of(counter("spawn:thirsty_wither", 3,
-                        "Invoquer 3 withers assoiffes", D, P + "thirsty_wither_gem"),
-                crafted(P + "stealth_upgrade", 1, "une amelioration de discretion", D), travel(3_000_000),
-                crafted(P + "thirsty_wither_gem", 50, "gemmes de wither assoiffe", D),
-                crafted(P + "stealth_upgrade", 50, "ameliorations de discretion", D)), d(14, 0),
+                        "Invoquer 3 withers assoiffes", DB, P + "thirsty_wither_gem"),
+                crafted(P + "stealth_upgrade", 1, "une amelioration de discretion", DB), travel(3_000_000),
+                crafted(P + "thirsty_wither_gem", 50, "gemmes de wither assoiffe", DB),
+                crafted(P + "stealth_upgrade", 50, "ameliorations de discretion", DB)), d(14, 0),
                 List.of(unlock("use:supreme_wither", "Utilisation du wither supreme"))));
         return list;
     }
@@ -360,7 +362,7 @@ public final class FactionTree {
                 List.of(unlock("craft:coordinate_jammer", "Fabrication du brouilleur de coordonnees"),
                         unlock("craft:lava_sponge", "Fabrication de l'eponge a lave"),
                         unlock("use:poison_obsidian", "Obsidienne empoisonnee"), claimsReward(30))));
-        list.add(new Tier(b, 4, 100_000, List.of(), List.of(counter("kill:baby_wither", 1, "Tuer un baby wither", D,
+        list.add(new Tier(b, 4, 100_000, List.of(), List.of(counter("kill:baby_wither", 1, "Tuer un baby wither", DB,
                 P + "baby_wither_gem"), mined(Blocks.OBSIDIAN, 75_000, "obsidiennes")), d(1, 0),
                 List.of(unlock("craft:aggro_stone", "Fabrication de la pierre d'aggro"),
                         unlock("use:spikes_amethyst", "Spikes en amethyste (et obsidienne)"), claimsReward(35))));

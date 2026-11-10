@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "YYY",
+    "YXY",
+    "ZZZ"
+  ],
+  "key": {
+    "Y": "minecraft:ink_sac",
+    "X": "palamod:paladium_ingot",
+    "Z": "palamod:titane_ingot"
+  },
+  "result": {
+    "id": "palamod:online_detector",
+    "count": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "palamod:block/online_detector"
+    },
+    "lit=true": {
+      "model": "palamod:block/online_detector_on"
+    }
+  }
+}

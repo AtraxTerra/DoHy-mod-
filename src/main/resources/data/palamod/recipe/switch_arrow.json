@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "APA",
+    " A "
+  ],
+  "key": {
+    "A": "minecraft:arrow",
+    "P": "minecraft:ender_pearl"
+  },
+  "result": {
+    "id": "palamod:switch_arrow",
+    "count": 4
+  }
+}

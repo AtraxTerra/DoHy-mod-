@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XYX",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:paladium_stick",
+    "Y": "minecraft:paper"
+  },
+  "result": {
+    "id": "palamod:empty_bow_modifier",
+    "count": 1
+  }
+}
