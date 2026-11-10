@@ -19,7 +19,9 @@ PvE**. Choix du joueur :
 | 22d | Objets de pillage : dynamites, TNT spéciales, Unclaim Finder, explorateur de coffre, arc en paladium, flèche de Switch… | fait |
 | 22d-bis | Withers du pillage : réceptacle, gemmes de wither, améliorations | fait |
 | 22e | Réserve d'or : multibloc, investissements à intérêts | fait |
-| 22f | Events à heures fixes (Egg Hunt, End, KOTH, Boss, Totem) et raids sur demande | à faire |
+| 22f | Events à heures fixes : le calendrier et le **Boss** | fait |
+| 22f-2 | Events : KOTH à points, Totem, Egg Hunt, End | à faire |
+| 22h | Raids de monstres sur demande contre ta base | à faire |
 | 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller | fait |
 
 ## Ce qui change en solo
@@ -314,3 +316,52 @@ réserve bâtie dans tes claims, et récolte des intérêts.
   - si un wither en casse un bloc, tout l'argent placé est perdu ;
   - un relevé par minute repère aussi une réserve abîmée.
 
+## Events de faction (22f)
+
+Le calendrier du wiki (« Java | Event faction », « Java | Boss », « Java | Totem »), **à l'heure du
+serveur** : annonce à 10, 5 et 1 minute, départ à la minute pile. Un event ne part que si un joueur
+en faction est connecté, et un seul à la fois.
+
+| Event | Quand | ELO | État |
+|---|---|---|---|
+| Boss | tous les jours, 1 h et 18 h | 700 | fait |
+| Egg Hunt | mardi et dimanche, 19 h (60 min) | 3 000 | 22f-2 |
+| Totem | mercredi, 21 h | 10 000 | 22f-2 |
+| End | vendredi, 19 h | 3 000 + 3 000 + 500 | 22f-2 |
+| KOTH à points | samedi, 21 h 30 (30 min) | 10 000 | 22f-2 |
+
+- **Warzone** : `palamod:warzone`, une dimension vide au biome `the_void` (aucun monstre n'y
+  apparaît). Chaque event a son arène, bâtie par le code la première fois. On y entre par l'écran des
+  events ou `/f event rejoindre`, on en sort par `/f event quitter`, à la fin de l'event (30 s après)
+  ou en mourant. **On y garde son inventaire** : en solo, l'arène n'est ouverte que le temps de
+  l'event.
+- **Factions rivales** : trois factions fictives par event (noms et couleurs tirés au sort) envoient
+  des combattants — des vindicateurs à leur bannière. Elles visent le boss et ses sbires, et ne
+  t'attaquent que si tu les frappes. Elles prennent leur part du classement.
+- **ELO par rang** : comme le PalaMod (`ExponentialPool.distribute(n, 1.2, elo)`), chaque rang
+  touche 1,2 fois la part du suivant. Seul, tu touches tout le pot ; à quatre factions, le premier
+  prend 32 %, le dernier 19 %.
+- **Écran** : l'event en cours (vie du boss, ton rang, rejoindre ou quitter, les rivaux), le
+  calendrier avec le temps restant, les cinq boss et leurs attaques. Carte sur la vue de faction,
+  `/f event`. Opérateurs : `/f event lancer <event> [boss]`, `/f event arreter`.
+
+### Le Boss
+
+Un des cinq boss du PalaMod, à tour de rôle (deux par jour). Modèles d'origine traduits du bytecode
+(`tools/modelbase2java.py`, exports Blockbench 1.7.10 sans retouche), textures du jar, taille
+`sizeMultiplier` : Beep Boop fait 6 × 11 blocs, Azhur 4 × 10, Tobalt 5,5 × 4,2.
+
+| Boss | Attaques (wiki) |
+|---|---|
+| Beep Boop | Mécabras (saisit à 5 blocs, 3 s, 20/s, puis projette) ; Séisme (à chaque 15 % de vie perdue, 50 blocs, faiblesse et cécité) ; Tic-Tac (engrenage à travers l'armure, 5 à 25 blocs) |
+| Tobalt | Koudboul (qui frappe au contact vole à 15 blocs) ; Éruption (25 blocs, immobilise 5 s) ; Bélier (charge ; un bloc posé sur sa route l'étourdit selon sa résistance) ; Épines IV tant qu'il n'est pas étourdi |
+| Azhur | Jetsable (tornade, 7 blocs) ; Sunami (vague, 25 blocs) ; Déchaînement (à chaque 20 % : repousse à 15 blocs, cécité, zombies du désert) |
+| Morsula | Stupéfreeze (gel, 15 blocs) ; Charge (projette à 7 blocs de haut) ; Picaglagla (pics de glace, dès deux cibles) |
+| Arachna | Exploweb (toiles, Wither I, lenteur, cécité, 25 blocs) ; Morsure (poison II 10 s) ; Captoile (cage de toiles et araignées, 7 à 25 blocs) |
+
+Épines I puis II sous 50 % et 25 % de vie pour tous sauf Tobalt, comme le wiki. **Solo** : 1 500
+points de vie (6 500 sur Paladium, partagés), dégâts du wiki divisés par quatre, coups des rivaux
+comptés à 30 % ; Déchaînement fait venir 8 zombies (25), Captoile 4 araignées (7), Picaglagla
+compte les rivaux comme cibles. Le boss repart s'il n'a pas été frappé depuis 5 min, ou après 30 min.
+À sa mort : 700 ELO par rang aux dégâts, bilan dans le chat (« Ta faction » 2e place »), compteur
+`event:boss`.
