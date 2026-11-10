@@ -16,7 +16,8 @@ import java.util.function.Consumer;
 
 /**
  * Broadsword et fastsword ({@code ItemBroadsword}, {@code ItemFastsword}) : des
- * armes du grinder, par un, sans enchantement.
+ * armes du grinder, par un. PalaMod ne les enchantait pas ; elles s'enchantent
+ * ici comme des epees ({@code #minecraft:swords}), a la demande du joueur.
  *
  * <ul>
  *   <li><b>broadsword</b> : lourde — une attaque par seconde

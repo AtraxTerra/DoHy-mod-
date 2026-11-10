@@ -3,7 +3,6 @@ package fr.atraxterra.dohy.palamod.smeltery;
 import fr.atraxterra.dohy.palamod.miner.AreaMining;
 import fr.atraxterra.dohy.palamod.miner.AreaTool;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,7 +10,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -19,9 +17,14 @@ import java.util.function.Consumer;
 
 /**
  * Marteau ({@code ItemHammer}) : une pioche qui casse en 3 x 3, neuf fois plus
- * lente ({@code getDigSpeed / 9}), sans enchantement. Celui en paladium prend
- * les modificateurs du grinder : vitesse ({@code x (niveau + 1)}), fortune,
- * fusion ({@link SmelteryEvents}).
+ * lente ({@code getDigSpeed / 9}). Celui en paladium prend les modificateurs du
+ * grinder : vitesse ({@code x (niveau + 1)}), fortune, fusion
+ * ({@link SmelteryEvents}).
+ *
+ * <p><b>Ecart, a la demande du joueur</b> : PalaMod ne l'enchantait pas. Il
+ * s'enchante ici comme une pioche ({@code #minecraft:pickaxes}) ; la Fortune du
+ * grinder s'ajoute a celle de la table sans la baisser ({@code ItemStack.enchant}
+ * garde le plus haut niveau).
  */
 public class HammerItem extends Item implements AreaTool, ModifiableTool {
 
@@ -71,15 +74,7 @@ public class HammerItem extends Item implements AreaTool, ModifiableTool {
         return !AreaMining.isBreakingExtras() && super.mineBlock(stack, level, state, pos, miner);
     }
 
-    @Override
-    public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
-        return false;
-    }
 
-    @Override
-    public boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
-        return false;
-    }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,

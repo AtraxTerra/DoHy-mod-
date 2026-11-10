@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
+    "palamod:amethyst_broadsword",
+    "palamod:amethyst_fastsword",
     "palamod:amethyst_sword",
     "palamod:capture_sword",
     "palamod:endium_sword",
@@ -11,10 +13,14 @@
     "palamod:nimbria_legendary_sword",
     "palamod:nimbria_reinforced_sword",
     "palamod:nimbria_sword",
+    "palamod:paladium_broadsword",
+    "palamod:paladium_fastsword",
     "palamod:paladium_sword",
     "palamod:talikus_legendary_sword",
     "palamod:talikus_reinforced_sword",
     "palamod:talikus_sword",
+    "palamod:titane_broadsword",
+    "palamod:titane_fastsword",
     "palamod:titane_sword",
     "palamod:vitalys_legendary_sword",
     "palamod:vitalys_reinforced_sword",
