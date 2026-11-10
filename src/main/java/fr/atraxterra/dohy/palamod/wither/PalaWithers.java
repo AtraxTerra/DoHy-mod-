@@ -13,7 +13,6 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.MapColor;
@@ -96,7 +95,6 @@ public final class PalaWithers {
     private static DeferredHolder<EntityType<?>, EntityType<PalaWither>> wither(String name) {
         return ENTITIES.register(name, key -> EntityType.Builder.<PalaWither>of(PalaWither::new, MobCategory.MONSTER)
                 .fireImmune()
-                .immuneTo(Blocks.WITHER_ROSE)
                 .sized(0.9f, 3.5f)
                 .clientTrackingRange(10)
                 .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
