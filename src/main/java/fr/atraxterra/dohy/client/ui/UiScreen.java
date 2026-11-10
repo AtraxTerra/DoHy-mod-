@@ -113,6 +113,7 @@ public abstract class UiScreen extends Screen {
         double x = designX(mouseX);
         double y = designY(mouseY);
         UiGraphics ui = new UiGraphics(graphics, font, mouseX, mouseY);
+        ui.design(x, y, designWidth, designHeight);
         Matrix3x2fStack pose = graphics.pose();
         pose.pushMatrix();
         pose.translate(originX, originY);

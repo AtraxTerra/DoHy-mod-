@@ -15,6 +15,7 @@ import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
 import fr.atraxterra.dohy.palamod.mount.PalaMount;
 import fr.atraxterra.dohy.palamod.miner.PalaMiner;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import fr.atraxterra.dohy.palamod.defense.PalaDefense;
 import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import fr.atraxterra.dohy.palamod.legendary.PalaLegendary;
 import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
@@ -99,6 +100,8 @@ public final class PalaTab {
                         PalaLegendary.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaDungeon.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaDungeonGear.ORDERED.forEach(item -> output.accept(item.get()));
+                        // La defense de faction ferme l'onglet.
+                        PalaDefense.tab().forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

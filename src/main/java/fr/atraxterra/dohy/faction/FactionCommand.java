@@ -108,6 +108,37 @@ public final class FactionCommand {
                                         .executes(ctx -> as(ctx.getSource(), player -> result(player,
                                                 FactionApi.withdraw(player, LongArgumentType.getLong(ctx, "montant")),
                                                 "Retrait fait."))))))
+                .then(Commands.literal("arbre")
+                        .executes(ctx -> as(ctx.getSource(), player -> {
+                            FactionTreeMenus.Tree.INSTANCE.open(player);
+                            return 1;
+                        }))
+                        .then(Commands.literal("finir")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .executes(ctx -> as(ctx.getSource(), player -> {
+                                    FactionTree.complete(player, true);
+                                    return 1;
+                                })))
+                        .then(Commands.literal("palier")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .then(Commands.argument("branche", StringArgumentType.word())
+                                        .suggests((ctx, builder) -> {
+                                            for (FactionBranch branch : FactionBranch.values()) {
+                                                builder.suggest(branch.key());
+                                            }
+                                            return builder.buildFuture();
+                                        })
+                                        .then(Commands.argument("palier", IntegerArgumentType.integer(0, 12))
+                                                .executes(ctx -> as(ctx.getSource(), player -> {
+                                                    FactionBranch branch = FactionBranch.byKey(
+                                                            StringArgumentType.getString(ctx, "branche"));
+                                                    if (branch == null) {
+                                                        return result(player, "Branche inconnue", "");
+                                                    }
+                                                    FactionTree.setTier(player, branch,
+                                                            IntegerArgumentType.getInteger(ctx, "palier"));
+                                                    return result(player, null, "Palier fixe.");
+                                                }))))))
                 .then(Commands.literal("info")
                         .executes(ctx -> as(ctx.getSource(), FactionCommand::info)))
                 .then(Commands.literal("map")

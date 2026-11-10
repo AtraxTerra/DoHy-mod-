@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " TQ",
+    "QPQ",
+    " Q "
+  ],
+  "key": {
+    "P": "palamod:paladium_block",
+    "Q": "minecraft:quartz_block",
+    "T": "palamod:paladium_tank"
+  },
+  "result": {
+    "id": "palamod:pistol_tank",
+    "count": 1
+  }
+}

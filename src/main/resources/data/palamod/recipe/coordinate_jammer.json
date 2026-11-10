@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ZXZ",
+    "XYX",
+    "ZXZ"
+  ],
+  "key": {
+    "Z": "palamod:paladium_block",
+    "X": "palamod:findium",
+    "Y": "minecraft:compass"
+  },
+  "result": {
+    "id": "palamod:coordinate_jammer",
+    "count": 1
+  }
+}

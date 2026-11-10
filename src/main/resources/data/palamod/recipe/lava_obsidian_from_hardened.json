@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:lava_bucket",
+    "palamod:hardened_obsidian"
+  ],
+  "result": {
+    "id": "palamod:lava_obsidian",
+    "count": 1
+  }
+}

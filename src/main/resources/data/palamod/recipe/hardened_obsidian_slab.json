@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:obsidian_slab"
+  },
+  "result": {
+    "id": "palamod:hardened_obsidian_slab",
+    "count": 3
+  }
+}

@@ -48,6 +48,12 @@ public final class FactionMenus {
         return new ItemStack(Items.BANNER.pick(COLORS[Math.floorMod(color, COLORS.length)]));
     }
 
+    /** Le blason de la faction : la banniere personnalisee si elle est posee, sinon la couleur. */
+    public static ItemStack banner(FactionData data) {
+        ItemStack custom = data.bannerItem();
+        return custom.isEmpty() ? banner(data.banner()) : custom;
+    }
+
     static ItemStack leagueIcon(FactionLeague league) {
         return new ItemStack(LEAGUE_ICONS[league.ordinal()]);
     }
@@ -130,7 +136,7 @@ public final class FactionMenus {
             }
             identity.add("Tags : " + (data.tags().isEmpty() ? "aucun" : String.join(", ", data.tags())));
             List<Card> faction = List.of(
-                    Card.of(banner(data.banner()), data.name(), List.of("Fondee le " + date(data.created()),
+                    Card.of(banner(data), data.name(), List.of("Fondee le " + date(data.created()),
                                     data.tags().isEmpty() ? "Faction solo" : String.join(" · ", data.tags())))
                             .accent(0xFFEF3826).tooltip(identity),
                     Card.of(new ItemStack(Items.GRASS_BLOCK), "Claims", List.of(
@@ -158,8 +164,7 @@ public final class FactionMenus {
             home = perks.homes() <= 0 ? home.state(MenuView.DISABLED)
                     : home.action("home|y aller").right("sethome|le poser ici");
             List<Card> progression = List.of(
-                    Card.of(new ItemStack(Items.ENCHANTING_TABLE), "Arbre de technologie", List.of(
-                            "Global, Pillage, Defense, Economie", "Lot 22b")).state(MenuView.DISABLED),
+                    treeCard(player, data),
                     home,
                     Card.of(new ItemStack(Items.DRAGON_EGG), "Events de faction", List.of(
                             "Egg Hunt, End, KOTH, Boss, Totem", "Lot 22f")).state(MenuView.DISABLED),
@@ -181,6 +186,7 @@ public final class FactionMenus {
                 case "bank" -> Bank.INSTANCE.open(player);
                 case "ranking" -> Ranking.INSTANCE.open(player);
                 case "settings" -> Settings.INSTANCE.open(player);
+                case "tree" -> FactionTreeMenus.Tree.INSTANCE.open(player);
                 case "home" -> {
                     String refusal = FactionHomes.go(player, 0);
                     if (refusal != null) {
@@ -194,6 +200,26 @@ public final class FactionMenus {
                 }
             }
         }
+    }
+
+    private static Card treeCard(ServerPlayer player, FactionData data) {
+        int done = 0;
+        int total = 0;
+        int running = 0;
+        boolean ready = false;
+        for (FactionBranch branch : FactionBranch.values()) {
+            done += data.tier(branch.key());
+            total += FactionTree.tiers(branch).size();
+            if (data.upgradeEnd(branch.key()) > 0L) {
+                running++;
+            } else if (FactionTree.blocker(player, branch) == null) {
+                ready = true;
+            }
+        }
+        return Card.of(new ItemStack(Items.ENCHANTING_TABLE), "Arbre de technologie", List.of(
+                        "Paliers " + done + " / " + total,
+                        running > 0 ? running + " amelioration(s) en cours" : ready ? "Un palier est pret" : "4 branches"))
+                .accent(0xFFEC4FB5).progress(done, total).badge(ready ? "!" : "").action("tree|ouvrir l'arbre");
     }
 
     // -- Banque -----------------------------------------------------------------
@@ -443,7 +469,14 @@ public final class FactionMenus {
         public MenuView view(ServerPlayer player) {
             FactionData data = FactionApi.data(player);
             boolean disband = armed(player, "disband");
-            List<Card> cards = List.of(
+            FactionPerks perks = FactionPerks.of(data);
+            Card custom = Card.of(data.bannerItem().isEmpty() ? new ItemStack(Items.FLOWER_BANNER_PATTERN)
+                    : data.bannerItem(), "Blason personnalise", perks.customBanner()
+                    ? List.of("Clic : copier la banniere tenue", "Clic droit : retirer")
+                    : List.of("Verrouille", "Palier 4 de la branche Globale"));
+            custom = perks.customBanner() ? custom.accent(0xFFEC4FB5).action("custom|copier la banniere en main")
+                    .right("uncustom|retirer le blason personnalise") : custom.state(MenuView.DISABLED);
+            List<Card> cards = List.of(custom,
                     Card.of(new ItemStack(Items.WRITABLE_BOOK), "Modifier", List.of("Nom, description, MOTD",
                             "Tags et blason")).accent(0xFF2F5BEA).action("edit|modifier"),
                     Card.of(banner(data.banner()), "Blason", List.of("Clic : couleur suivante",
@@ -466,6 +499,10 @@ public final class FactionMenus {
                 int step = Integer.parseInt(key.substring(7));
                 FactionApi.edit(player, data.name(), data.description(), data.motd(), data.tags(), data.banner() + step);
                 success(player);
+            } else if ("custom".equals(key)) {
+                report(player, FactionApi.setCustomBanner(player, player.getMainHandItem()), "Blason personnalise pose.");
+            } else if ("uncustom".equals(key)) {
+                report(player, FactionApi.setCustomBanner(player, ItemStack.EMPTY), "Blason personnalise retire.");
             } else if ("disband".equals(key) && confirmed(player, "disband")) {
                 FactionApi.disband(player);
                 UiNet.close(player);

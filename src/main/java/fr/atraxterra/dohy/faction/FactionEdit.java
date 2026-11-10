@@ -25,7 +25,8 @@ public final class FactionEdit {
         }
         FactionData data = FactionApi.data(player);
         boolean create = !data.exists();
-        UiNet.show(player, new FactionEditView(create, data.name(), data.description(), data.motd(), data.tags(),
+        UiNet.show(player, new FactionEditView(create, data.name(), data.description(), data.motd(),
+                !create && FactionPerks.of(data).motd(), data.tags(),
                 data.banner(), FactionApi.CREATION_COST, FactionApi.canAfford(player), FactionTags.ALL, error));
     }
 

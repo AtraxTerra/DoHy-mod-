@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "palamod:fake_water_bucket",
+    "palamod:hardened_obsidian"
+  ],
+  "result": {
+    "id": "palamod:sulfuric_obsidian",
+    "count": 1
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BNB",
+    " S ",
+    " P "
+  ],
+  "key": {
+    "B": "minecraft:blaze_powder",
+    "N": "minecraft:nether_star",
+    "S": "minecraft:string",
+    "P": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:hunter_amulet",
+    "count": 1
+  }
+}

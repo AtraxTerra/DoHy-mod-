@@ -2,11 +2,15 @@
   "replace": false,
   "values": [
     "palamod:amethyst_chest",
+    "palamod:amethyst_spike",
+    "palamod:diamond_spike",
     "palamod:endium_chest",
+    "palamod:gold_spike",
     "palamod:green_paladium_chest",
     "palamod:grinder",
     "palamod:grinder_casing",
     "palamod:grinder_frame",
+    "palamod:iron_spike",
     "palamod:paladium_chest",
     "palamod:paladium_ender_chest",
     "palamod:paladium_furnace",
@@ -15,6 +19,7 @@
     "palamod:slimepad",
     "palamod:titane_block",
     "palamod:titane_chest",
-    "palamod:titane_ore"
+    "palamod:titane_ore",
+    "palamod:titane_spike"
   ]
 }

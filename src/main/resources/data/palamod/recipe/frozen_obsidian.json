@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IOI",
+    "OIO",
+    "IOI"
+  ],
+  "key": {
+    "I": "minecraft:packed_ice",
+    "O": "minecraft:obsidian"
+  },
+  "result": {
+    "id": "palamod:frozen_obsidian",
+    "count": 2
+  }
+}

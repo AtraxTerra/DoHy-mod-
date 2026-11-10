@@ -37,8 +37,10 @@ EXPECTED_PNG = (16, 16)
 # NeoForge. Un nom ajoute ici doit l'etre aussi dans BLOCK_FACTORIES s'il
 # enregistre un bloc.
 ITEM_FACTORIES = ("registerSimpleItem", "registerItem", "simple", "seed", "planter",
-                  "sword", "pickaxe", "axe", "shovel", "hoe", "armor", "stick", "ring")
-BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "crop", "soil")
+                  "sword", "pickaxe", "axe", "shovel", "hoe", "armor", "stick", "ring", "amulet")
+BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "crop", "soil",
+                   # Les objets de defense (chapitre 22) : obsidiennes piegees, a spike, enclumes.
+                   "effect", "spikeObsidian", "anvil")
 
 # Les blocs sans item : on les obtient en semant, comme le ble vanilla. Ils
 # n'ont donc ni definition d'item ni modele d'item, et c'est normal.
@@ -54,7 +56,9 @@ ITEMLESS_BLOCKS = ("void_stone", "angelic_water",
                    "tapped_ostrya_log", "alchemist_portal",
                    # Dimension du Mineur : la nappe du portail, comme celle de
                    # l'alchimiste, n'existe que cadre allume.
-                   "miner_portal")
+                   "miner_portal",
+                   # La Fake Water (chapitre 22) : son objet est le seau.
+                   "fake_water")
 
 errors = []
 
@@ -159,6 +163,14 @@ MODEL_TEXTURES = {
     "block/barn_controller.png": (64, 64),
     # Le portail du Mineur : 32 images de 48 x 48 (blocks/miner_portal.png).
     "block/miner_portal.png": (48, 1536),
+    # Le pistolet a liquide reprend la texture de son ModelPistolTank, une par
+    # contenu (vide, eau, lave, autre).
+    "item/pistol_tank_empty.png": (64, 64),
+    "item/pistol_tank_water.png": (64, 64),
+    "item/pistol_tank_lava.png": (64, 64),
+    "item/pistol_tank_fluid.png": (64, 64),
+    # L'eponge compressee n'existe qu'en 32 x 32, dans le pack comme dans le jar.
+    "block/compressed_sponge.png": (32, 32),
 }
 
 

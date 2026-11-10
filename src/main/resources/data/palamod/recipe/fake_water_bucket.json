@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "Y",
+    "X"
+  ],
+  "key": {
+    "Y": "palamod:paladium_stick",
+    "X": "minecraft:water_bucket"
+  },
+  "result": {
+    "id": "palamod:fake_water_bucket",
+    "count": 1
+  }
+}

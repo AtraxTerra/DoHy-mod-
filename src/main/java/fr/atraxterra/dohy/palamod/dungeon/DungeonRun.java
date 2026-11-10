@@ -713,7 +713,9 @@ final class DungeonRun {
         if (room.type == RoomType.COMBAT || room.type == RoomType.PUZZLE || room.type == RoomType.BOSS) {
             long xp = (10L + 2L * palier) * (room.type == RoomType.BOSS ? 3L : 1L);
             for (ServerPlayer player : onlineMembers()) {
-                Rpg.grantXp(player, xp);
+                // Arbre de technologie, branche Globale : +5 a +20 % d'XP de donjon.
+                float bonus = fr.atraxterra.dohy.faction.FactionApi.perks(player).dungeonXp();
+                Rpg.grantXp(player, Math.round(xp * (1.0d + bonus)));
             }
         }
         if (room.type.loot()) {

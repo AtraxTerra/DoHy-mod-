@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/template_anvil",
+  "textures": {
+    "particle": "palamod:block/titane_anvil_body",
+    "body": "palamod:block/titane_anvil_body",
+    "top": "palamod:block/titane_anvil_top"
+  }
+}

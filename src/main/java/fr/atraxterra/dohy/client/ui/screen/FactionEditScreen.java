@@ -66,7 +66,7 @@ public class FactionEditScreen extends UiScreen implements ViewScreen<FactionEdi
         name = add(field(22, 62, 196, "Nom de la faction (3 a 16 caracteres)", 16, keptName));
         description = add(field(22, 92, 196, "Description (facultative)", 60, keptDescription));
         motd = add(field(22, 122, 196, "Message a la connexion (facultatif)", 60, keptMotd));
-        motd.visible = !view.create();
+        motd.visible = view.motdUnlocked();
         for (int index = 0; index < view.allTags().size(); index++) {
             add(new TagChip(view.allTags().get(index), 22 + index % 4 * (TAG_W + 4),
                     160 + index / 4 * (TAG_H + 4)));
@@ -90,7 +90,7 @@ public class FactionEditScreen extends UiScreen implements ViewScreen<FactionEdi
 
     private void save() {
         String argument = String.join(FactionEditView.SEPARATOR, name.value(), description.value(),
-                view.create() ? "" : motd.value(), String.join(",", tags));
+                view.motdUnlocked() ? motd.value() : "", String.join(",", tags));
         UiClient.send(FactionEditView.ID, "save", argument, banner);
     }
 
@@ -102,8 +102,10 @@ public class FactionEditScreen extends UiScreen implements ViewScreen<FactionEdi
         g.section(22, 44, "section_craft", "IDENTITÉ", 196);
         g.text(Ui.PIXEL, "NOM", 22, 54, 4.5f, Ui.MUTED);
         g.text(Ui.PIXEL, "DESCRIPTION", 22, 84, 4.5f, Ui.MUTED);
-        if (!view.create()) {
+        if (view.motdUnlocked()) {
             g.text(Ui.PIXEL, "MOTD", 22, 114, 4.5f, Ui.MUTED);
+        } else if (!view.create()) {
+            g.text(Ui.PIXEL, "MOTD : PALIER 6 DE LA BRANCHE GLOBALE", 22, 114, 4.5f, Ui.DISABLED);
         }
         g.section(22, 146, "section_resources", "TAGS (" + tags.size() + "/2)", 196);
         g.section(240, 44, "section_upgrade", "BLASON", 158);

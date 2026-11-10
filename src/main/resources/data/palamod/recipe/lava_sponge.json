@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XYX",
+    "YZY",
+    "XYX"
+  ],
+  "key": {
+    "X": "minecraft:lava_bucket",
+    "Y": "minecraft:soul_sand",
+    "Z": "minecraft:sponge"
+  },
+  "result": {
+    "id": "palamod:lava_sponge",
+    "count": 1
+  }
+}

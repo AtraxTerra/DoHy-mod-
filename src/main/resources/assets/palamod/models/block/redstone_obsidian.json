@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "palamod:block/redstone_obsidian_top",
+    "side": "palamod:block/redstone_obsidian_side",
+    "bottom": "palamod:block/redstone_obsidian_bottom"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BNB",
+    " S ",
+    " P "
+  ],
+  "key": {
+    "B": "minecraft:phantom_membrane",
+    "N": "minecraft:ink_sac",
+    "S": "minecraft:string",
+    "P": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:discretion_amulet",
+    "count": 1
+  }
+}

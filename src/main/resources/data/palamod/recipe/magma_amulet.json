@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MFM",
+    "PCP",
+    "MPM"
+  ],
+  "key": {
+    "M": "minecraft:magma_cream",
+    "F": "palamod:findium",
+    "P": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "minecraft:potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:long_fire_resistance"
+        }
+      },
+      "strict": false
+    },
+    "C": "palamod:paladium_core"
+  },
+  "result": {
+    "id": "palamod:magma_amulet",
+    "count": 1
+  }
+}

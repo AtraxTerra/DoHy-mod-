@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:obsidian"
+  },
+  "result": {
+    "id": "palamod:obsidian_trapdoor",
+    "count": 2
+  }
+}

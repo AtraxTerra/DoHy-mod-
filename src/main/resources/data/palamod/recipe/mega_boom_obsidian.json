@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "TOT",
+    " T "
+  ],
+  "key": {
+    "G": "minecraft:gunpowder",
+    "T": "minecraft:tnt",
+    "O": "minecraft:obsidian"
+  },
+  "result": {
+    "id": "palamod:mega_boom_obsidian",
+    "count": 1
+  }
+}

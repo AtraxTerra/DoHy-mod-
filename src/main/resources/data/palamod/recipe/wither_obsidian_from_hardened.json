@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "YXY",
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:hardened_obsidian",
+    "Y": "minecraft:chest"
+  },
+  "result": {
+    "id": "palamod:wither_obsidian",
+    "count": 2
+  }
+}

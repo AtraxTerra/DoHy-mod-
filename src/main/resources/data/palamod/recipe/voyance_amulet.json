@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": "palamod:harpagophytum_flower",
+    "B": "palamod:speed_orb",
+    "C": "palamod:heal_orb",
+    "D": "palamod:voidstone",
+    "E": "palamod:clathrusarcheri_flower",
+    "F": "palamod:strength_orb"
+  },
+  "result": {
+    "id": "palamod:voyance_amulet",
+    "count": 1
+  }
+}

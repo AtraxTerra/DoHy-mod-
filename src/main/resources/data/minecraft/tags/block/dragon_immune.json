@@ -1,0 +1,31 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:amethyst_anvil",
+    "palamod:amethyst_spike_obsidian",
+    "palamod:anti_aggro_obsidian",
+    "palamod:big_obsidian",
+    "palamod:boom_obsidian",
+    "palamod:diamond_spike_obsidian",
+    "palamod:frozen_obsidian",
+    "palamod:gold_spike_obsidian",
+    "palamod:hardened_obsidian",
+    "palamod:hardened_obsidian_slab",
+    "palamod:hardened_obsidian_stairs",
+    "palamod:iron_spike_obsidian",
+    "palamod:knockback_obsidian",
+    "palamod:lava_obsidian",
+    "palamod:mega_boom_obsidian",
+    "palamod:observer_obsidian",
+    "palamod:paladium_anvil",
+    "palamod:paladium_spike_obsidian",
+    "palamod:poison_obsidian",
+    "palamod:redstone_obsidian",
+    "palamod:slime_obsidian",
+    "palamod:sulfuric_obsidian",
+    "palamod:titane_anvil",
+    "palamod:titane_spike_obsidian",
+    "palamod:wither_obsidian",
+    "palamod:wood_spike_obsidian"
+  ]
+}

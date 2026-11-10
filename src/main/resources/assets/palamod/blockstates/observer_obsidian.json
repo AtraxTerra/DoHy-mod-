@@ -1,0 +1,50 @@
+{
+  "variants": {
+    "facing=north,powered=false": {
+      "model": "palamod:block/observer_obsidian"
+    },
+    "facing=south,powered=false": {
+      "model": "palamod:block/observer_obsidian",
+      "y": 180
+    },
+    "facing=east,powered=false": {
+      "model": "palamod:block/observer_obsidian",
+      "y": 90
+    },
+    "facing=west,powered=false": {
+      "model": "palamod:block/observer_obsidian",
+      "y": 270
+    },
+    "facing=up,powered=false": {
+      "model": "palamod:block/observer_obsidian",
+      "x": 270
+    },
+    "facing=down,powered=false": {
+      "model": "palamod:block/observer_obsidian",
+      "x": 90
+    },
+    "facing=north,powered=true": {
+      "model": "palamod:block/observer_obsidian_on"
+    },
+    "facing=south,powered=true": {
+      "model": "palamod:block/observer_obsidian_on",
+      "y": 180
+    },
+    "facing=east,powered=true": {
+      "model": "palamod:block/observer_obsidian_on",
+      "y": 90
+    },
+    "facing=west,powered=true": {
+      "model": "palamod:block/observer_obsidian_on",
+      "y": 270
+    },
+    "facing=up,powered=true": {
+      "model": "palamod:block/observer_obsidian_on",
+      "x": 270
+    },
+    "facing=down,powered=true": {
+      "model": "palamod:block/observer_obsidian_on",
+      "x": 90
+    }
+  }
+}

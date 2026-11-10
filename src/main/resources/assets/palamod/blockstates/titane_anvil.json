@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "facing=south,hits=0": {
+      "model": "palamod:block/titane_anvil"
+    },
+    "facing=south,hits=1": {
+      "model": "palamod:block/titane_anvil"
+    },
+    "facing=south,hits=2": {
+      "model": "palamod:block/titane_anvil"
+    },
+    "facing=west,hits=0": {
+      "model": "palamod:block/titane_anvil",
+      "y": 90
+    },
+    "facing=west,hits=1": {
+      "model": "palamod:block/titane_anvil",
+      "y": 90
+    },
+    "facing=west,hits=2": {
+      "model": "palamod:block/titane_anvil",
+      "y": 90
+    },
+    "facing=north,hits=0": {
+      "model": "palamod:block/titane_anvil",
+      "y": 180
+    },
+    "facing=north,hits=1": {
+      "model": "palamod:block/titane_anvil",
+      "y": 180
+    },
+    "facing=north,hits=2": {
+      "model": "palamod:block/titane_anvil",
+      "y": 180
+    },
+    "facing=east,hits=0": {
+      "model": "palamod:block/titane_anvil",
+      "y": 270
+    },
+    "facing=east,hits=1": {
+      "model": "palamod:block/titane_anvil",
+      "y": 270
+    },
+    "facing=east,hits=2": {
+      "model": "palamod:block/titane_anvil",
+      "y": 270
+    }
+  }
+}

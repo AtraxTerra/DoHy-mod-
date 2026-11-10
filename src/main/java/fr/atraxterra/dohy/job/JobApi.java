@@ -129,7 +129,8 @@ public final class JobApi {
         }
 
         long boosted = Math.round(amount * (1.0d + JobPerks.xpBonus(player, job)
-                + UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS)));
+                + UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS)
+                + fr.atraxterra.dohy.palamod.defense.Amulets.xpBonus(player, job)));
         int before = level(player, job);
         data(player).addXp(job, boosted);
         int after = level(player, job);

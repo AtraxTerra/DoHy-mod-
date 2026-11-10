@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " Y ",
+    "YXY",
+    "XXX"
+  ],
+  "key": {
+    "Y": "minecraft:wooden_sword",
+    "X": "#minecraft:planks"
+  },
+  "result": {
+    "id": "palamod:wood_spike",
+    "count": 1
+  }
+}

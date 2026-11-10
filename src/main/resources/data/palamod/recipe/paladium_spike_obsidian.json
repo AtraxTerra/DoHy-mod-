@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:obsidian",
+    "palamod:paladium_spike"
+  ],
+  "result": {
+    "id": "palamod:paladium_spike_obsidian",
+    "count": 1
+  }
+}
