@@ -24,11 +24,11 @@ import net.minecraft.world.item.Items;
  */
 public enum EnemyBaseTier {
     OUTPOST(1, "avant_poste", "Avant-poste", 6, 0, 9, 100L, 15_000L, Items.COBBLESTONE,
-            "Bunker de pierre, 2 coffres, 3 gardes", "TNT ou dynamite"),
+            "Bunker de pierre, palissade", "2 coffres, 3 gardes, 1 claim", "TNT ou dynamite"),
     BASE(2, "base", "Base", 12, 1, 11, 300L, 75_000L, Items.OBSIDIAN,
-            "Enceinte d'obsidienne, douve, 4 coffres, 6 gardes", "TNT en endium ou wither"),
+            "Enceinte d'obsidienne, douve", "4 coffres, 6 gardes, 3 x 3 claims", "TNT en endium ou wither"),
     FORTRESS(3, "forteresse", "Forteresse", 22, 2, 16, 1_000L, 300_000L, Items.CRYING_OBSIDIAN,
-            "Tours, spikes, bunker a 3 couches, 7 coffres, 14 gardes", "Withers et TNT en endium");
+            "4 tours, spikes, bunker blinde", "7 coffres, 14 gardes, 5 x 5 claims", "Withers et TNT en endium");
 
     private final int level;
     private final String key;
@@ -40,10 +40,11 @@ public enum EnemyBaseTier {
     private final long money;
     private final Item icon;
     private final String summary;
+    private final String contents;
     private final String tools;
 
     EnemyBaseTier(int level, String key, String label, int half, int claimRadius, int clearHeight, long elo, long money,
-                  Item icon, String summary, String tools) {
+                  Item icon, String summary, String contents, String tools) {
         this.level = level;
         this.key = key;
         this.label = label;
@@ -54,6 +55,7 @@ public enum EnemyBaseTier {
         this.money = money;
         this.icon = icon;
         this.summary = summary;
+        this.contents = contents;
         this.tools = tools;
     }
 
@@ -104,6 +106,10 @@ public enum EnemyBaseTier {
 
     public String summary() {
         return summary;
+    }
+
+    public String contents() {
+        return contents;
     }
 
     public String tools() {

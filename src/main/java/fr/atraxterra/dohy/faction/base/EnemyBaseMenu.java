@@ -86,8 +86,8 @@ public final class EnemyBaseMenu extends MenuController {
         List<Card> tiers = new ArrayList<>();
         for (EnemyBaseTier tier : EnemyBaseTier.values()) {
             Card card = Card.of(new ItemStack(tier.icon()), tier.label(), List.of(tier.summary(),
-                            "+" + MoneyFormat.exact(tier.elo()) + " ELO · +" + MoneyFormat.shortForm(tier.money()) + " $"))
-                    .tooltip(List.of("Il faudra : " + tier.tools(),
+                            "+" + MoneyFormat.exact(tier.elo()) + " ELO · +" + MoneyFormat.exact(tier.money()) + " $"))
+                    .tooltip(List.of(tier.contents(), "Il faudra : " + tier.tools(),
                             "A plus de " + MoneyFormat.exact(EnemyBases.MIN_DISTANCE) + " blocs de toi et de tes claims"));
             tiers.add(base.active() || pending ? card.state(MenuView.DISABLED)
                     : card.accent(0xFFEF3826).action("generate:" + tier.level() + "|reperer"));
