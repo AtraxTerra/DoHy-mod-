@@ -25,10 +25,20 @@ import net.minecraft.world.level.block.state.BlockState;
  * les siens : elle avance donc a peu pres <b>trois fois</b> plus vite.
  *
  * <p>S'y ajoute {@code isFertile} qui rend toujours vrai : la culture touche le
- * bonus de terre labouree <b>irriguee sans aucune eau a proximite</b>. En 26.2
- * ce point est acquis sans code — le bonus d'humidite se lit sur l'etat du bloc
- * de terre labouree, et notre bloc n'en est pas un ; c'est l'acceleration
- * directe qui porte tout l'effet.
+ * bonus de terre labouree <b>irriguee sans aucune eau a proximite</b>. En 26.2,
+ * {@code CropBlock.getGrowthSpeed} donne 3 points a un sol fertile, 1 a un sol
+ * sec et 0 a tout le reste, en deux temps :
+ * <ul>
+ *   <li>le sol doit etre dans le tag {@code minecraft:grows_crops}. NeoForge
+ *       demande bien {@code canSustainPlant}, mais en passant le sol lui-meme
+ *       comme plante : ce bloc ne peut pas reconnaitre une culture et rend
+ *       {@code DEFAULT}. La version labouree est donc ajoutee au tag par
+ *       {@code tools/palamod_assets.py} ;</li>
+ *   <li>puis {@code isFertile}, qui par defaut ne rend vrai que pour une
+ *       {@code FarmlandBlock} humide.</li>
+ * </ul>
+ * Il faut les deux. Avant, la terre fertilisee valait 0 : moins qu'une terre
+ * labouree seche.
  *
  * <p><b>Les deux variantes accelerent</b>, pas seulement la labouree : la
  * version brute nourrit aussi les pousses d'arbre et les fleurs posees dessus.
@@ -86,6 +96,25 @@ public class PalaFertileSoilBlock extends Block {
             }
             current.randomTick(level, above, random);
         }
+    }
+
+    /**
+     * Toujours irriguee, sans eau.
+     *
+     * <p>C'est le {@code isFertile} du PalaMod, qui rendait {@code true} sans
+     * condition. {@code CropBlock.getGrowthSpeed} l'interroge pour chacun des
+     * neuf blocs sous la culture et ses voisines : sol fertile, 3 points ; sol
+     * qui porte la plante mais sec, 1 point. Les tiges de melon et de citrouille
+     * passent par le meme calcul et en profitent aussi.
+     *
+     * <p>Les deux variantes repondent oui, comme l'original. Pour la brute ce
+     * oui n'a aucun effet : elle n'est pas dans {@code grows_crops}, et
+     * {@code getGrowthSpeed} ne consulte {@code isFertile} que sur un sol qui
+     * l'est.
+     */
+    @Override
+    public boolean isFertile(BlockState state, BlockGetter level, BlockPos pos) {
+        return true;
     }
 
     /**

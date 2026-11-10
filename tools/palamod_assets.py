@@ -623,6 +623,20 @@ def main():
     # herbe y poussent alors sans une ligne de code. La version labouree n'y
     # entre pas — ce serait lui faire porter aussi les plantes de surface.
     tag("minecraft/tags/block/dirt.json", ["%s:fertilized_dirt" % NS])
+    # La version labouree entre dans les deux tags de la terre labouree.
+    #
+    # grows_crops : CropBlock.getGrowthSpeed (et les tiges, qui l'appellent)
+    # ne compte un sol que s'il est dans ce tag ; NeoForge lui passe le sol
+    # lui-meme comme « plante », si bien que le canSustainPlant du bloc ne peut
+    # pas repondre a sa place. Hors du tag, la terre fertilisee valait 0 :
+    # moins qu'une terre labouree seche. Le bonus d'irrigation, lui, vient de
+    # isFertile (PalaFertileSoilBlock), qui rend toujours vrai.
+    #
+    # supports_crops : c'est le tag que lisent les tiges de melon et de
+    # citrouille (via supports_stem_crops) pour se poser. Les cultures passent
+    # deja par canSustainPlant ; les tiges non, n'etant pas des CropBlock.
+    tag("minecraft/tags/block/grows_crops.json", ["%s:fertilized_farmland" % NS])
+    tag("minecraft/tags/block/supports_crops.json", ["%s:fertilized_farmland" % NS])
     tag("minecraft/tags/block/mineable/shovel.json",
         ["%s:fertilized_dirt" % NS, "%s:fertilized_farmland" % NS])
 

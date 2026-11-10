@@ -277,6 +277,14 @@ reçoit par elle-même, elle avance environ **trois fois plus vite**. Des partic
 S'y ajoute `isFertile()` qui rend toujours `true` : la culture touche le bonus de terre labourée
 irriguée **sans aucune eau à proximité**.
 
+En 26.2 il faut deux choses pour cela. `CropBlock.getGrowthSpeed` (les tiges de melon et de
+citrouille passent par le même calcul) ne compte un sol que s'il est dans le tag
+`minecraft:grows_crops` — NeoForge interroge bien `canSustainPlant`, mais en passant le sol
+lui-même comme plante, si bien que le bloc ne peut pas répondre à la place du tag. Puis il demande
+`isFertile` : 3 points si oui, 1 si non. La terre fertilisée labourée est donc dans
+`grows_crops` (et `supports_crops`, que lisent les tiges pour se poser) et surcharge `isFertile`.
+Sans le tag, elle valait 0 point, moins qu'une terre labourée sèche.
+
 Deux variantes, un seul `boolean tilled` dans le constructeur :
 
 | Variante | Porte | Obtention |
