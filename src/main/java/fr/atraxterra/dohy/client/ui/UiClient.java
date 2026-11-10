@@ -41,6 +41,12 @@ public final class UiClient {
     @SubscribeEvent
     public static void onRegister(RegisterClientPayloadHandlersEvent event) {
         event.register(UiNet.Show.TYPE, (payload, context) -> show(payload.view()));
+        event.register(UiNet.Close.TYPE, (payload, context) -> {
+            Minecraft minecraft = Minecraft.getInstance();
+            if (minecraft.gui.screen() instanceof UiScreen) {
+                minecraft.gui.setScreen(null);
+            }
+        });
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
