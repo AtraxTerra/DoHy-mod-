@@ -8,7 +8,7 @@ import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.shop.ShopCategory;
-import fr.atraxterra.dohy.shop.ShopMenu;
+import fr.atraxterra.dohy.shop.ShopController;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -65,9 +65,7 @@ public final class ShopCommand {
                     "Catalogue de prix vide. Essaie /dohy reload et regarde les logs."));
             return 0;
         }
-        player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> new ShopMenu(containerId, inventory, player),
-                Component.literal("DoHy — Shop")));
+        ShopController.open(player);
         return 1;
     }
 

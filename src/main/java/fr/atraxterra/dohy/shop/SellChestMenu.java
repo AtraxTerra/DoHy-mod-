@@ -32,7 +32,7 @@ import java.util.Map;
  * Coffre de vente : on y depose ce qu'on veut vendre, et la fermeture regle la
  * transaction.
  *
- * <p>Contrairement a {@link ShopMenu}, ce conteneur est <b>reel</b> : les clics
+ * <p>Contrairement a {@code ShopController}, ce conteneur est <b>reel</b> : les clics
  * sont delegues a {@code super}, donc vanilla gere tout le deplacement d'items —
  * clic, shift-clic, glisser-deposer, double-clic de regroupement. Reecrire cette
  * mecanique serait l'occasion de perdre des items, alors que vanilla la fait

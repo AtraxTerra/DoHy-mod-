@@ -15,12 +15,10 @@ import fr.atraxterra.dohy.job.Job;
 import fr.atraxterra.dohy.job.JobApi;
 import fr.atraxterra.dohy.job.JobConfig;
 import fr.atraxterra.dohy.job.JobGate;
-import fr.atraxterra.dohy.job.JobsMenu;
 import fr.atraxterra.dohy.museum.MuseumApi;
 import fr.atraxterra.dohy.museum.MuseumBrowseMenu;
 import fr.atraxterra.dohy.shop.BankMenu;
 import fr.atraxterra.dohy.shop.SellChestMenu;
-import fr.atraxterra.dohy.shop.ShopMenu;
 import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.upgrade.UpgradeConfig;
 import fr.atraxterra.dohy.upgrade.UpgradeData;
@@ -88,7 +86,7 @@ public final class Hub extends DisplayMenu {
         switch (slot) {
             case SLOT_SHOP -> {
                 click(0.9f);
-                open("Shop", (id, inventory) -> new ShopMenu(id, inventory, player));
+                fr.atraxterra.dohy.shop.ShopController.open(player);
             }
             case SLOT_SELL -> {
                 click(0.9f);
@@ -117,7 +115,7 @@ public final class Hub extends DisplayMenu {
             }
             case SLOT_JOBS -> {
                 click(0.9f);
-                open("Metiers", (id, inventory) -> new JobsMenu(id, inventory, player));
+                fr.atraxterra.dohy.job.JobsController.open(player);
             }
             case SLOT_UPGRADES -> {
                 click(0.9f);
