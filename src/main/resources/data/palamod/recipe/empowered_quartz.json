@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XYX",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:compressed_quartz",
+    "Y": "palamod:shiny_erable_wood"
+  },
+  "result": {
+    "id": "palamod:empowered_quartz",
+    "count": 1
+  }
+}

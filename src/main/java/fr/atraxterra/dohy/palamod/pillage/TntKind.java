@@ -5,6 +5,8 @@ import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.palamod.defense.DefenseAnvilBlock;
 import fr.atraxterra.dohy.palamod.defense.DefenseEvents;
 import fr.atraxterra.dohy.palamod.defense.DefenseObsidianBlock;
+import fr.atraxterra.dohy.palamod.wither.PalaWithers;
+import fr.atraxterra.dohy.palamod.wither.WitherSummons;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -14,7 +16,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
@@ -105,9 +106,9 @@ public enum TntKind {
                 }
             }
             case WITHER -> {
-                summonWither(level, tnt);
+                summonWither(level, tnt, igniter);
                 if (level.getRandom().nextInt(100) == 0) {
-                    summonWither(level, tnt);
+                    summonWither(level, tnt, igniter);
                 }
                 if (igniter instanceof ServerPlayer player) {
                     FactionApi.stat(player, "spawn:wither", 1);
@@ -183,14 +184,20 @@ public enum TntKind {
                 SoundSource.BLOCKS, 1.2f, 0.9f);
     }
 
-    /** {@code WitherTNT.spawnWither} : le wither vanilla, invulnerable le temps de sa charge. */
-    private static void summonWither(ServerLevel level, PalaPrimedTnt tnt) {
-        WitherBoss wither = EntityTypes.WITHER.create(level, EntitySpawnReason.TRIGGERED);
+    /**
+     * {@code WitherTNT.spawnWither} : le wither de base, invulnerable le temps de
+     * sa charge. Celui du pillage (lot 22d-bis), pour qu'il compte a l'allumeur.
+     */
+    private static void summonWither(ServerLevel level, PalaPrimedTnt tnt, LivingEntity igniter) {
+        WitherBoss wither = PalaWithers.PALADIUM_WITHER.get().create(level, EntitySpawnReason.TRIGGERED);
         if (wither == null) {
             return;
         }
         wither.setPos(tnt.getX(), tnt.getY(), tnt.getZ());
         wither.makeInvulnerable();
+        if (igniter instanceof ServerPlayer player) {
+            WitherSummons.mark(wither, player);
+        }
         level.addFreshEntity(wither);
     }
 }

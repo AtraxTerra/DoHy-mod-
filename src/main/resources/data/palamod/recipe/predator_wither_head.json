@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "AZA",
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:compressed_paladium",
+    "A": "palamod:compressed_endium",
+    "Z": "palamod:passive_wither_head"
+  },
+  "result": {
+    "id": "palamod:predator_wither_head",
+    "count": 1
+  }
+}

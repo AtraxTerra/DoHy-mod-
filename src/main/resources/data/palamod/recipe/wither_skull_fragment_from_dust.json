@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DD",
+    "DD"
+  ],
+  "key": {
+    "D": "palamod:wither_dust"
+  },
+  "result": {
+    "id": "palamod:wither_skull_fragment",
+    "count": 1
+  }
+}

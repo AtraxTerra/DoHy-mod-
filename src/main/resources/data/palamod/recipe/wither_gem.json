@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "BBB",
+    " B "
+  ],
+  "key": {
+    "S": "minecraft:wither_skeleton_skull",
+    "B": "minecraft:soul_sand"
+  },
+  "result": {
+    "id": "palamod:wither_gem",
+    "count": 1
+  }
+}

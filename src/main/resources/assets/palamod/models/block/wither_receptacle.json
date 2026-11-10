@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "palamod:block/empowered_quartz",
+    "side": "palamod:block/wither_receptacle_side",
+    "bottom": "minecraft:block/obsidian"
+  }
+}

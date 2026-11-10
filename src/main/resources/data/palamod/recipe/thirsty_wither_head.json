@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XYX",
+    "YZY",
+    "XYX"
+  ],
+  "key": {
+    "X": "palamod:empowered_quartz",
+    "Y": "palamod:extrapolated_bucket",
+    "Z": "palamod:passive_wither_head"
+  },
+  "result": {
+    "id": "palamod:thirsty_wither_head",
+    "count": 1
+  }
+}

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "palamod:mid_life_arrow",
     "palamod:switch_arrow"
   ]
 }

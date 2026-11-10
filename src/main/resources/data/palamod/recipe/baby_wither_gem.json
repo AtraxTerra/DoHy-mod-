@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XYX",
+    " X "
+  ],
+  "key": {
+    "X": "minecraft:egg",
+    "Y": "minecraft:wither_skeleton_skull"
+  },
+  "result": {
+    "id": "palamod:baby_wither_gem",
+    "count": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XYX",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:slimepad",
+    "Y": "palamod:passive_wither_head"
+  },
+  "result": {
+    "id": "palamod:wither_slime_upgrade",
+    "count": 1
+  }
+}

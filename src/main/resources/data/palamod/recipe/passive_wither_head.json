@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " Y ",
+    "YXY",
+    " Y "
+  ],
+  "key": {
+    "Y": "minecraft:wither_skeleton_skull",
+    "X": "minecraft:nether_star"
+  },
+  "result": {
+    "id": "palamod:passive_wither_head",
+    "count": 1
+  }
+}

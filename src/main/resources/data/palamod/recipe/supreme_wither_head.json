@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NON",
+    "OPO",
+    "NON"
+  ],
+  "key": {
+    "N": "palamod:endium_nugget",
+    "O": "palamod:big_obsidian",
+    "P": "palamod:predator_wither_head"
+  },
+  "result": {
+    "id": "palamod:supreme_wither_head",
+    "count": 1
+  }
+}

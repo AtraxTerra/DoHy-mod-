@@ -5,10 +5,13 @@
     "palamod:amethyst_ore",
     "palamod:cave_block",
     "palamod:cobblebreaker",
+    "palamod:compressed_quartz",
     "palamod:coordinate_jammer",
     "palamod:crusher",
+    "palamod:empowered_quartz",
     "palamod:endium_cave_block",
     "palamod:online_detector",
-    "palamod:palaforge"
+    "palamod:palaforge",
+    "palamod:wither_receptacle"
   ]
 }

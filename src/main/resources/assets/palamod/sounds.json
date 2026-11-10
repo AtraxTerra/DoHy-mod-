@@ -28,5 +28,20 @@
     "sounds": [
       "palamod:mount/unsummon"
     ]
+  },
+  "funny_wither.loop": {
+    "sounds": [
+      "palamod:funny_wither/loop"
+    ]
+  },
+  "funny_wither.spawn": {
+    "sounds": [
+      "palamod:funny_wither/spawn"
+    ]
+  },
+  "funny_wither.invoke": {
+    "sounds": [
+      "palamod:funny_wither/invoke"
+    ]
   }
 }

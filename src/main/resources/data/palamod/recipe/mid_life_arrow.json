@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    "DAD",
+    " D "
+  ],
+  "key": {
+    "D": "palamod:wither_dust",
+    "A": "minecraft:arrow"
+  },
+  "result": {
+    "id": "palamod:mid_life_arrow",
+    "count": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XYX",
+    " X "
+  ],
+  "key": {
+    "X": "palamod:thirsty_wither_head",
+    "Y": "palamod:compressed_endium"
+  },
+  "result": {
+    "id": "palamod:thirsty_wither_gem",
+    "count": 1
+  }
+}

@@ -7,6 +7,8 @@ import fr.atraxterra.dohy.client.mount.DancarokRenderer;
 import fr.atraxterra.dohy.client.ui.screen.KitChestScreen;
 import fr.atraxterra.dohy.client.ui.screen.MachineDesigns;
 import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen;
+import fr.atraxterra.dohy.client.wither.PalaWitherRenderer;
+import fr.atraxterra.dohy.client.wither.ReceptacleHudLayer;
 import fr.atraxterra.dohy.palamod.PalaMod;
 import fr.atraxterra.dohy.palamod.defense.PalaDefense;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
@@ -19,6 +21,8 @@ import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import fr.atraxterra.dohy.palamod.storage.ChestTier;
 import fr.atraxterra.dohy.palamod.storage.PalaChestMenu;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import fr.atraxterra.dohy.palamod.wither.PalaWithers;
+import fr.atraxterra.dohy.palamod.wither.WitherKind;
 import fr.atraxterra.dohy.ui.KitMenus;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -26,6 +30,7 @@ import net.minecraft.client.renderer.entity.TntRenderer;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -90,6 +95,11 @@ public final class DoHyClient {
         // rendu ne lit que l'etat de bloc et la meche, communs aux deux.
         event.registerEntityRenderer((EntityType<PrimedTnt>) (EntityType<?>) PalaPillage.PRIMED_TNT.get(),
                 TntRenderer::new);
+        // Les withers du pillage : le rendu du wither vanilla, une teinte par genre.
+        for (WitherKind kind : WitherKind.values()) {
+            event.registerEntityRenderer((EntityType<WitherBoss>) (EntityType<?>) PalaWithers.type(kind).get(),
+                    context -> new PalaWitherRenderer(context, kind));
+        }
     }
 
     /** Le modele du Dancarok, converti de son fichier Bedrock. */
@@ -106,6 +116,9 @@ public final class DoHyClient {
         event.registerAboveAll(
                 Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "finder"),
                 new FinderHudLayer());
+        event.registerAboveAll(
+                Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "wither_receptacle"),
+                new ReceptacleHudLayer());
     }
 
     /**
