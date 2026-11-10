@@ -31,6 +31,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ import java.util.UUID;
  * de 9 000 blocs</b> de toi et de tous tes claims, dans le Monde, hors de
  * l'ocean, sur un terrain assez plat (la hauteur du generateur est sondee
  * sans rien generer). Ses chunks sont charges en tache de fond, puis la base
- * est batie d'un coup ; une boussole pointe vers elle.
+ * est batie par etapes, 15 ms par tick ; une boussole pointe vers elle.
  *
  * <p>Ses claims suivent la regle de Paladium : rien a la main, mais les
  * explosions et les withers y passent. <b>Entrer dans la salle des coffres,
@@ -65,8 +66,8 @@ public final class EnemyBases {
     /** Jusqu'ou au-dela : de 9 000 a 10 500 blocs, plus la demi-emprise. */
     private static final int SPREAD = 1_500;
     private static final int SITE_ATTEMPTS = 64;
-    /** Une minute et demie pour charger les chunks ; au-dela, on abandonne. */
-    private static final int TIMEOUT_TICKS = 90 * 20;
+    /** Trois minutes pour charger (et generer) les chunks ; au-dela, on abandonne. */
+    private static final int TIMEOUT_TICKS = 180 * 20;
     private static final int RETRIES = 3;
 
     static final String GUARD_TAG = "dohy_enemy_guard";
@@ -87,6 +88,7 @@ public final class EnemyBases {
         final int retries;
         boolean forced;
         int ticks;
+        EnemyBaseBuilder builder;
 
         Job(UUID player, EnemyBaseTier tier, String name, Site site, int retries) {
             this.player = player;
@@ -98,6 +100,10 @@ public final class EnemyBases {
     }
 
     private static final Map<UUID, Job> JOBS = new LinkedHashMap<>();
+    /** Les bases finies pendant que leur joueur etait deconnecte : remises a sa connexion. */
+    private static final Map<UUID, EnemyBase> READY = new LinkedHashMap<>();
+    /** Le chantier tourne au plus 15 ms par tick. */
+    private static final long BUILD_BUDGET = 15_000_000L;
 
     private EnemyBases() {
     }
@@ -107,7 +113,7 @@ public final class EnemyBases {
     }
 
     public static boolean pending(ServerPlayer player) {
-        return JOBS.containsKey(player.getUUID());
+        return JOBS.containsKey(player.getUUID()) || READY.containsKey(player.getUUID());
     }
 
     // -- Demande ------------------------------------------------------------------
@@ -261,52 +267,83 @@ public final class EnemyBases {
         JOBS.remove(job.player);
     }
 
-    /** Charge les chunks (sans bloquer : un ticket force), puis bati quand tous sont la. */
+    /**
+     * Charge les chunks (sans bloquer : un ticket force), puis bati la base par
+     * etapes, quelques millisecondes par tick. Un joueur deconnecte avant le
+     * chantier annule la demande ; pendant, le chantier va a son terme et la
+     * base l'attend a sa connexion.
+     */
     private static void advance(MinecraftServer server, Job job) {
         ServerLevel level = server.overworld();
         ServerPlayer player = server.getPlayerList().getPlayer(job.player);
-        if (player == null) {
-            release(level, job);
-            return;
-        }
-        if (!job.forced) {
-            forEachChunk(job, (x, z) -> level.setChunkForced(x, z, true));
-            job.forced = true;
-        }
-        job.ticks++;
-        boolean[] ready = {true};
-        forEachChunk(job, (x, z) -> ready[0] &= level.getChunkSource().hasChunk(x, z));
-        if (!ready[0]) {
-            if (job.ticks > TIMEOUT_TICKS) {
+        if (job.builder == null) {
+            if (player == null) {
                 release(level, job);
-                FactionApi.tell(player, "Tes eclaireurs ne sont pas revenus : le monde met trop de temps a se "
-                        + "generer. Reessaie.", ChatFormatting.RED);
+                return;
             }
+            if (!job.forced) {
+                forEachChunk(job, (x, z) -> level.setChunkForced(x, z, true));
+                job.forced = true;
+            }
+            job.ticks++;
+            boolean[] ready = {true};
+            forEachChunk(job, (x, z) -> ready[0] &= level.getChunkSource().hasChunk(x, z));
+            if (!ready[0]) {
+                if (job.ticks > TIMEOUT_TICKS) {
+                    release(level, job);
+                    FactionApi.tell(player, "Tes eclaireurs ne sont pas revenus : le monde met trop de temps a se "
+                            + "generer. Reessaie.", ChatFormatting.RED);
+                }
+                return;
+            }
+            if (EnemyBaseBuilder.overlapsClaim(level, job.site.x() >> 4, job.site.z() >> 4, job.tier.claimRadius())) {
+                release(level, job);
+                String refusal = job.retries < RETRIES && player.level() == level
+                        ? start(player, job.tier, job.retries + 1) : "Le terrain repere est deja claim. Reessaie.";
+                if (refusal != null) {
+                    FactionApi.tell(player, refusal, ChatFormatting.RED);
+                }
+                return;
+            }
+            job.builder = new EnemyBaseBuilder(level, level.getRandom(), job.tier, job.name, job.site.x(),
+                    job.site.z());
+            job.builder.plan();
+            FactionApi.tell(player, "Terrain trouve : les " + job.name + " batissent leur " + job.tier.label()
+                    .toLowerCase() + "...", ChatFormatting.GOLD);
             return;
         }
-        int chunkX = job.site.x() >> 4;
-        int chunkZ = job.site.z() >> 4;
-        if (EnemyBaseBuilder.overlapsClaim(level, chunkX, chunkZ, job.tier.claimRadius())) {
-            release(level, job);
-            String refusal = job.retries < RETRIES && player.level() == level ? start(player, job.tier, job.retries + 1)
-                    : "Le terrain repere est deja claim. Reessaie.";
-            if (refusal != null) {
-                FactionApi.tell(player, refusal, ChatFormatting.RED);
-            }
+        if (!job.builder.work(BUILD_BUDGET)) {
             return;
         }
-        EnemyBaseBuilder.Result result = new EnemyBaseBuilder(level, level.getRandom(), job.tier, job.name,
-                job.site.x(), job.site.z()).build();
+        EnemyBaseBuilder.Result result = job.builder.result();
         release(level, job);
         EnemyBase base = new EnemyBase(job.name, job.tier.level(), EnemyBase.ACTIVE, result.center(),
                 result.coreMin(), result.coreMax(), System.currentTimeMillis());
+        if (player == null) {
+            READY.put(job.player, base);
+            return;
+        }
+        deliver(player, base);
+    }
+
+    private static void deliver(ServerPlayer player, EnemyBase base) {
         player.setData(Factions.ENEMY_BASE.get(), base);
-        FactionApi.tell(player, "Base reperee : les " + base.name() + " (" + job.tier.label() + ") en "
+        FactionApi.tell(player, "Base reperee : les " + base.name() + " (" + base.kind().label() + ") en "
                 + base.center().getX() + ", " + base.center().getZ() + " — " + where(player, base) + ".",
                 ChatFormatting.GOLD);
-        FactionApi.tell(player, "Il faudra : " + job.tier.tools() + ". Entre dans leur salle des coffres pour "
-                + "piller la base.", ChatFormatting.YELLOW);
+        FactionApi.tell(player, "Il faudra : " + base.kind().tools() + ". Entre dans la salle des coffres de leur "
+                + "donjon pour piller la base.", ChatFormatting.YELLOW);
         compass(player);
+    }
+
+    @SubscribeEvent
+    public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            EnemyBase base = READY.remove(player.getUUID());
+            if (base != null) {
+                deliver(player, base);
+            }
+        }
     }
 
     // -- Pillage --------------------------------------------------------------------
@@ -344,6 +381,9 @@ public final class EnemyBases {
     /** Oublie la base : elle reste claimee, a piller, mais sans recompense. */
     public static String abandon(ServerPlayer player) {
         Job job = JOBS.get(player.getUUID());
+        if (job != null && job.builder != null) {
+            return "Leur base se batit encore : patience";
+        }
         if (job != null) {
             release(((ServerLevel) player.level()).getServer().overworld(), job);
             return null;
