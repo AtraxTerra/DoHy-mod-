@@ -17,8 +17,9 @@ import java.util.List;
  * @param canAfford le joueur a les 100 lingots de paladium sur lui
  * @param error     le dernier refus du serveur, vide sinon
  */
-public record FactionEditView(boolean create, String name, String description, String motd, List<String> tags,
-                              int banner, int cost, boolean canAfford, List<String> allTags, String error)
+public record FactionEditView(boolean create, String name, String description, String motd, boolean motdUnlocked,
+                              List<String> tags, int banner, int cost, boolean canAfford, List<String> allTags,
+                              String error)
         implements UiView {
 
     public static final Identifier ID = UiNet.id("faction_edit");
@@ -32,6 +33,7 @@ public record FactionEditView(boolean create, String name, String description, S
                 buffer.writeUtf(view.name());
                 buffer.writeUtf(view.description());
                 buffer.writeUtf(view.motd());
+                buffer.writeBoolean(view.motdUnlocked());
                 ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()).encode(buffer, view.tags());
                 buffer.writeVarInt(view.banner());
                 buffer.writeVarInt(view.cost());
@@ -40,7 +42,7 @@ public record FactionEditView(boolean create, String name, String description, S
                 buffer.writeUtf(view.error());
             },
             buffer -> new FactionEditView(buffer.readBoolean(), buffer.readUtf(), buffer.readUtf(), buffer.readUtf(),
-                    ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()).decode(buffer), buffer.readVarInt(),
+                    buffer.readBoolean(), ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()).decode(buffer), buffer.readVarInt(),
                     buffer.readVarInt(), buffer.readBoolean(),
                     ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()).decode(buffer), buffer.readUtf()));
 

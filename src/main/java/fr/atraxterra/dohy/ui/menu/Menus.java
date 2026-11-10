@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.ui.menu;
 
 import fr.atraxterra.dohy.faction.FactionMenus;
+import fr.atraxterra.dohy.faction.FactionTreeMenus;
 import fr.atraxterra.dohy.palamod.alchemist.MysticEnchantMenu;
 import fr.atraxterra.dohy.palamod.dimminer.DimMinerMenus;
 import fr.atraxterra.dohy.palamod.dungeon.DungeonMenus;
@@ -26,6 +27,7 @@ public final class Menus {
                 GolemMenus.Main.INSTANCE, GolemMenus.Tree.INSTANCE, GolemMenus.Choices.INSTANCE,
                 DimMinerMenus.Entry.INSTANCE, DimMinerMenus.Summary.INSTANCE, MysticEnchantMenu.INSTANCE,
                 FactionMenus.Overview.INSTANCE, FactionMenus.Bank.INSTANCE, FactionMenus.Claims.INSTANCE,
-                FactionMenus.Ranking.INSTANCE, FactionMenus.Settings.INSTANCE);
+                FactionMenus.Ranking.INSTANCE, FactionMenus.Settings.INSTANCE,
+                FactionTreeMenus.Tree.INSTANCE, FactionTreeMenus.Branch.INSTANCE);
     }
 }

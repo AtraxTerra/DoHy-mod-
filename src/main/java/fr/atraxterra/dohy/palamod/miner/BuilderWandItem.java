@@ -128,6 +128,7 @@ public class BuilderWandItem extends Item {
         }
 
         if (placed > 0) {
+            fr.atraxterra.dohy.faction.FactionApi.stat(serverPlayer, fr.atraxterra.dohy.faction.FactionStats.BUILDER_WAND, 1);
             SoundType sound = clicked.getSoundType();
             server.playSound(null, origin, sound.getPlaceSound(), SoundSource.BLOCKS,
                     (sound.getVolume() + 1.0f) / 2.0f, sound.getPitch() * 0.8f);

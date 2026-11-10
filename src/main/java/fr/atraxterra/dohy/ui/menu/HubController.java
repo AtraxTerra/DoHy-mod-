@@ -134,7 +134,7 @@ public final class HubController extends MenuController {
         }
         fr.atraxterra.dohy.faction.FactionLeague league =
                 fr.atraxterra.dohy.faction.FactionLeague.of(faction.ranking().league());
-        return Card.of(fr.atraxterra.dohy.faction.FactionMenus.banner(faction.banner()), faction.name(), List.of(
+        return Card.of(fr.atraxterra.dohy.faction.FactionMenus.banner(faction), faction.name(), List.of(
                         "Ligue " + league.label(), MoneyFormat.shortForm(faction.ranking().elo()) + " ELO"))
                 .accent(league.color()).action("faction");
     }

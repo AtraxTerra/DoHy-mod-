@@ -197,10 +197,30 @@ public final class FactionApi {
         }
         data.name = name.strip();
         data.description = description.strip();
-        data.motd = motd.strip();
+        data.motd = FactionPerks.of(data).motd() ? motd.strip() : "";
         data.tags.clear();
         data.tags.addAll(tags);
         data.banner = Math.floorMod(banner, 16);
+        return null;
+    }
+
+    /** Pose (ou retire, avec une pile vide) le blason personnalise : une banniere a motifs. */
+    public static String setCustomBanner(ServerPlayer player, ItemStack stack) {
+        FactionData data = data(player);
+        if (!data.exists()) {
+            return "Tu n'as pas de faction";
+        }
+        if (!FactionPerks.of(data).customBanner()) {
+            return "Le blason personnalise se debloque au palier 4 de la branche Globale";
+        }
+        if (stack.isEmpty()) {
+            data.bannerItem = ItemStack.EMPTY;
+            return null;
+        }
+        if (!(stack.getItem() instanceof net.minecraft.world.item.BannerItem)) {
+            return "Tiens une banniere en main";
+        }
+        data.bannerItem = stack.copyWithCount(1);
         return null;
     }
 

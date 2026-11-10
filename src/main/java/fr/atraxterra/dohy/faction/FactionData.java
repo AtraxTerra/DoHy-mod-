@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.faction;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,7 +89,9 @@ public final class FactionData {
             Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("upgrades", Map.of())
                     .forGetter(data -> Map.copyOf(data.upgrades)),
             Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("stats", Map.of())
-                    .forGetter(data -> Map.copyOf(data.stats))
+                    .forGetter(data -> Map.copyOf(data.stats)),
+            ItemStack.OPTIONAL_CODEC.optionalFieldOf("banner_item", ItemStack.EMPTY)
+                    .forGetter(data -> data.bannerItem)
     ).apply(instance, FactionData::new));
 
     /** Lignes d'historique gardees. */
@@ -111,15 +114,18 @@ public final class FactionData {
     final Map<String, Long> upgrades;
     /** Compteurs des conditions de l'arbre : blocs parcourus, obsidienne cassee... */
     final Map<String, Long> stats;
+    /** Le blason personnalise (palier 4 de la branche Globale) : une banniere a motifs ; vide sinon. */
+    ItemStack bannerItem;
 
     public FactionData() {
         this("", "", List.of(), 14, "", 0L, 0L, List.of(), List.of(), List.of(), Ranking.EMPTY, Map.of(), Map.of(),
-                Map.of());
+                Map.of(), ItemStack.EMPTY);
     }
 
     private FactionData(String name, String description, List<String> tags, int banner, String motd, long created,
                         long bank, List<BankEntry> history, List<Claim> claims, List<Home> homes, Ranking ranking,
-                        Map<String, Integer> tiers, Map<String, Long> upgrades, Map<String, Long> stats) {
+                        Map<String, Integer> tiers, Map<String, Long> upgrades, Map<String, Long> stats,
+                        ItemStack bannerItem) {
         this.name = name;
         this.description = description;
         this.tags = new ArrayList<>(tags);
@@ -134,6 +140,7 @@ public final class FactionData {
         this.tiers = new HashMap<>(tiers);
         this.upgrades = new HashMap<>(upgrades);
         this.stats = new HashMap<>(stats);
+        this.bannerItem = bannerItem.copy();
     }
 
     public boolean exists() {
@@ -196,6 +203,10 @@ public final class FactionData {
         return upgrades.getOrDefault(branch, 0L);
     }
 
+    public ItemStack bannerItem() {
+        return bannerItem.copy();
+    }
+
     public long stat(String key) {
         return stats.getOrDefault(key, 0L);
     }
@@ -226,5 +237,6 @@ public final class FactionData {
         ranking = Ranking.EMPTY;
         tiers.clear();
         upgrades.clear();
+        bannerItem = ItemStack.EMPTY;
     }
 }

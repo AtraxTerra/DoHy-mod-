@@ -69,6 +69,9 @@ public class StickItem extends Item {
 
         stack.hurtAndBreak(1, serverPlayer, hand);
         type.apply(serverPlayer, server);
+        if (type == StickType.GOD) {
+            fr.atraxterra.dohy.faction.FactionApi.stat(serverPlayer, fr.atraxterra.dohy.faction.FactionStats.GOD_STICK, 1);
+        }
         timers.put(type.key(), now + type.cooldownSeconds() * 1000L);
         serverPlayer.setData(PalaPvp.STICK_COOLDOWNS, timers);
         serverPlayer.getCooldowns().addCooldown(new ItemStack(this), type.cooldownSeconds() * 20);
