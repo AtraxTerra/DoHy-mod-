@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy;
 
+import fr.atraxterra.dohy.faction.Factions;
 import fr.atraxterra.dohy.palamod.PalaMod;
 import fr.atraxterra.dohy.ui.KitMenus;
 import net.neoforged.bus.api.IEventBus;
@@ -27,6 +28,7 @@ public final class DoHy {
     public DoHy(IEventBus modBus, ModContainer container) {
         DoHyAttachments.register(modBus);
         KitMenus.register(modBus);
+        Factions.register(modBus);
         // Le contenu converti du PalaMod s'enregistre sous son propre
         // namespace, « palamod », pour que le pack de textures officiel de
         // Paladium s'applique tel quel. Voir PalaMod.

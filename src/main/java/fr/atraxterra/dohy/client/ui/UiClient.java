@@ -37,6 +37,9 @@ public final class UiClient {
         SCREENS.put(ShopView.ID, view -> new ShopScreen((ShopView) view));
         SCREENS.put(JobsView.ID, view -> new JobsScreen((JobsView) view));
         SCREENS.put(JobDetailView.ID, view -> new JobDetailScreen((JobDetailView) view));
+        SCREENS.put(fr.atraxterra.dohy.faction.FactionEditView.ID,
+                view -> new fr.atraxterra.dohy.client.ui.screen.FactionEditScreen(
+                        (fr.atraxterra.dohy.faction.FactionEditView) view));
     }
 
     private UiClient() {

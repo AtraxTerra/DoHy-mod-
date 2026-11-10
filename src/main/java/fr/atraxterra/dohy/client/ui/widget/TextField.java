@@ -7,8 +7,12 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
 
-/** Un champ de recherche : texte, curseur en fin de ligne, bouton loupe. */
+/** Un champ de texte : recherche (bouton loupe) ou champ de formulaire. */
 public class TextField extends UiElement {
+
+    /** Le bouton loupe a droite ; sans, un champ de formulaire. */
+    public boolean search = true;
+    public float textSize = 3.6f;
 
     private final String placeholder;
     private final Consumer<String> onChange;
@@ -27,15 +31,25 @@ public class TextField extends UiElement {
         return value;
     }
 
+    /** Le texte initial, sans prevenir l'ecouteur. */
+    public TextField withValue(String initial) {
+        value = initial.length() > maxLength ? initial.substring(0, maxLength) : initial;
+        return this;
+    }
+
     @Override
     public void render(UiGraphics graphics, double mouseX, double mouseY) {
-        int button = height;
+        int button = search ? height : 0;
         graphics.rect(x, y, width - button, height, focused() ? 0xFF3A3940 : Ui.FIELD);
-        graphics.rect(x + width - button, y, button, height, Ui.RED);
-        graphics.rect(x + width - button, y + height - 1, button, 1, Ui.RED_DARK);
-        int icon = height - 5;
-        graphics.texture(Ui.SEARCH, x + width - button + (button - icon) / 2, y + 2, icon, icon, 32, 32);
-        float size = 3.6f;
+        if (search) {
+            graphics.rect(x + width - button, y, button, height, Ui.RED);
+            graphics.rect(x + width - button, y + height - 1, button, 1, Ui.RED_DARK);
+            int icon = height - 5;
+            graphics.texture(Ui.SEARCH, x + width - button + (button - icon) / 2, y + 2, icon, icon, 32, 32);
+        } else {
+            graphics.rect(x, y + height - 1, width, 1, focused() ? Ui.RED : 0xFF55545C);
+        }
+        float size = textSize;
         float textY = y + (height - size) / 2.0f - 0.3f;
         if (value.isEmpty() && !focused()) {
             graphics.text(Ui.BODY, placeholder, x + 3, textY, size, Ui.MUTED);
