@@ -79,13 +79,22 @@ public final class EventArena {
         return server.getLevel(DIMENSION);
     }
 
-    /** Garde l'arene chargee pendant l'event : les rivaux s'y battent meme en ton absence. */
+    /**
+     * Le rayon du ticket de chargement. Un ticket de rayon r ne fait vivre les
+     * entites (niveau 31) qu'a r - 2 chunks du centre : avec 3, Volcania se
+     * figeait des qu'il s'eloignait d'un chunk de l'autel (verifie en jeu : il
+     * avait 181 ticks d'age quand le serveur en comptait 811). Avec 7, tout vit
+     * a 5 chunks (80 blocs) : arenes, ile, et le vol du dragon.
+     */
+    private static final int HOLD_RADIUS = 7;
+
+    /** Garde l'arene vivante pendant l'event : les rivaux s'y battent meme en ton absence. */
     public static void hold(ServerLevel level, BlockPos center, boolean on) {
         ChunkPos chunk = ChunkPos.containing(center);
         if (on) {
-            level.getChunkSource().addTicketWithRadius(TicketType.FORCED, chunk, 3);
+            level.getChunkSource().addTicketWithRadius(TicketType.FORCED, chunk, HOLD_RADIUS);
         } else {
-            level.getChunkSource().removeTicketWithRadius(TicketType.FORCED, chunk, 3);
+            level.getChunkSource().removeTicketWithRadius(TicketType.FORCED, chunk, HOLD_RADIUS);
         }
     }
 
