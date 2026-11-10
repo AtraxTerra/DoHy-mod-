@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.faction;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.faction.base.EnemyBase;
 import fr.atraxterra.dohy.faction.reserve.GoldReserve;
+import fr.atraxterra.dohy.palamod.dungeon.ReturnPoint;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -41,6 +42,15 @@ public final class Factions {
             () -> AttachmentType.builder(() -> GoldReserve.EMPTY)
                     .serialize(GoldReserve.MAP_CODEC, GoldReserve::exists)
                     .copyOnDeath()
+                    .build());
+
+    /**
+     * D'ou le joueur est parti pour l'arene d'un event (lot 22f). Pas garde a la
+     * mort : mourir dans l'arene ramene deja au point de reapparition.
+     */
+    public static final Supplier<AttachmentType<ReturnPoint>> EVENT_RETURN = ATTACHMENTS.register("event_return",
+            () -> AttachmentType.builder(() -> ReturnPoint.NONE)
+                    .serialize(ReturnPoint.MAP_CODEC, point -> !point.isNone())
                     .build());
 
     private Factions() {

@@ -1,6 +1,8 @@
 package fr.atraxterra.dohy.client;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.client.boss.EventBossModel;
+import fr.atraxterra.dohy.client.boss.EventBossRenderer;
 import fr.atraxterra.dohy.client.mount.DancarokGeometry;
 import fr.atraxterra.dohy.client.mount.DancarokModel;
 import fr.atraxterra.dohy.client.mount.DancarokRenderer;
@@ -11,6 +13,8 @@ import fr.atraxterra.dohy.client.wither.PalaWitherGeometry;
 import fr.atraxterra.dohy.client.wither.PalaWitherRenderer;
 import fr.atraxterra.dohy.client.wither.ReceptacleHudLayer;
 import fr.atraxterra.dohy.palamod.PalaMod;
+import fr.atraxterra.dohy.palamod.boss.BossKind;
+import fr.atraxterra.dohy.palamod.boss.PalaBosses;
 import fr.atraxterra.dohy.palamod.defense.PalaDefense;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.golem.PalaGolem;
@@ -28,11 +32,13 @@ import fr.atraxterra.dohy.ui.KitMenus;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.TntRenderer;
+import net.minecraft.client.renderer.entity.VindicatorRenderer;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.api.distmarker.Dist;
@@ -96,6 +102,12 @@ public final class DoHyClient {
         // rendu ne lit que l'etat de bloc et la meche, communs aux deux.
         event.registerEntityRenderer((EntityType<PrimedTnt>) (EntityType<?>) PalaPillage.PRIMED_TNT.get(),
                 TntRenderer::new);
+        // Les boss d'event (lot 22f), sur leurs modeles d'origine ; les rivaux en vindicateurs.
+        for (BossKind kind : BossKind.values()) {
+            event.registerEntityRenderer(PalaBosses.type(kind), context -> new EventBossRenderer(context, kind));
+        }
+        event.registerEntityRenderer((EntityType<Vindicator>) (EntityType<?>) PalaBosses.RIVAL_FIGHTER.get(),
+                VindicatorRenderer::new);
         // Les withers du pillage : le rendu du wither vanilla, une teinte par genre.
         for (WitherKind kind : WitherKind.values()) {
             event.registerEntityRenderer((EntityType<WitherBoss>) (EntityType<?>) PalaWithers.type(kind).get(),
@@ -108,6 +120,9 @@ public final class DoHyClient {
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DancarokModel.LAYER, DancarokGeometry::createBodyLayer);
         PalaWitherGeometry.register(event);
+        for (BossKind kind : BossKind.values()) {
+            event.registerLayerDefinition(EventBossModel.layer(kind), () -> EventBossModel.definition(kind));
+        }
     }
 
     @SubscribeEvent

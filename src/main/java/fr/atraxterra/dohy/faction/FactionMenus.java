@@ -4,6 +4,10 @@ import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.faction.base.EnemyBase;
 import fr.atraxterra.dohy.faction.base.EnemyBaseMenu;
 import fr.atraxterra.dohy.faction.base.EnemyBases;
+import fr.atraxterra.dohy.faction.event.BossFight;
+import fr.atraxterra.dohy.faction.event.FactionEventKind;
+import fr.atraxterra.dohy.faction.event.FactionEventMenu;
+import fr.atraxterra.dohy.faction.event.FactionEvents;
 import fr.atraxterra.dohy.faction.reserve.GoldReserve;
 import fr.atraxterra.dohy.faction.reserve.GoldReserves;
 import fr.atraxterra.dohy.faction.reserve.ReserveMenu;
@@ -22,6 +26,7 @@ import net.minecraft.world.level.ChunkPos;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -174,8 +179,7 @@ public final class FactionMenus {
                     home,
                     enemyBaseCard(player),
                     reserveCard(player),
-                    Card.of(new ItemStack(Items.DRAGON_EGG), "Events de faction", List.of(
-                            "Egg Hunt, End, KOTH, Boss, Totem", "Lot 22f")).state(MenuView.DISABLED),
+                    eventsCard(),
                     Card.of(new ItemStack(Items.COMPARATOR), "Parametres", List.of("Nom, description, MOTD",
                             "Tags, blason, dissolution")).accent(0xFF55545C).action("settings|ouvrir"));
             List<MenuView.Stat> stats = List.of(
@@ -197,6 +201,7 @@ public final class FactionMenus {
                 case "tree" -> FactionTreeMenus.Tree.INSTANCE.open(player);
                 case "bases" -> EnemyBaseMenu.INSTANCE.open(player);
                 case "reserve" -> ReserveMenu.INSTANCE.open(player);
+                case "events" -> FactionEventMenu.INSTANCE.open(player);
                 case "home" -> {
                     String refusal = FactionHomes.go(player, 0);
                     if (refusal != null) {
@@ -213,6 +218,22 @@ public final class FactionMenus {
     }
 
     /** La reserve d'or (lot 22e) : ce qui est place, ou comment en batir une. */
+    /** La carte des events : l'event en cours, sinon le prochain depart. */
+    private static Card eventsCard() {
+        BossFight fight = FactionEvents.active();
+        if (fight != null && !fight.ended()) {
+            return Card.of(new ItemStack(Items.WITHER_SKELETON_SKULL), "Events de faction", List.of(
+                            "Boss : " + fight.kind().label(), "En cours, rejoins l'arene"))
+                    .accent(0xFFEF3826).badge("EN COURS").action("events|ouvrir");
+        }
+        ZonedDateTime now = FactionEvents.now();
+        ZonedDateTime next = FactionEventKind.BOSS.next(now);
+        return Card.of(new ItemStack(Items.DRAGON_EGG), "Events de faction", List.of(
+                        "Prochain : Boss, " + String.format("%d h %02d", next.getHour(), next.getMinute()),
+                        "Egg Hunt, End, KOTH, Totem a venir"))
+                .accent(0xFFFAC400).action("events|ouvrir");
+    }
+
     private static Card reserveCard(ServerPlayer player) {
         GoldReserve reserve = GoldReserves.of(player);
         long now = System.currentTimeMillis();
