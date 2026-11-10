@@ -78,6 +78,42 @@ public class CrusherBlockEntity extends MachineBlockEntity {
         return tanks[recipe];
     }
 
+    /** Fruits qu'il faut pour un lot de la recette. */
+    public static int fruitsPerBatch(int recipe) {
+        return RECIPES[recipe].fruitsPerBatch();
+    }
+
+    public static int recipeCount() {
+        return RECIPES.length;
+    }
+
+    /** Le fruit, le charbon, le resultat et son nombre, pour l'ecran. */
+    public static Item fruit(int recipe) {
+        return RECIPES[recipe].fruit().get();
+    }
+
+    public static Item fuel(int recipe) {
+        return RECIPES[recipe].fuel().get();
+    }
+
+    public static Item result(int recipe) {
+        return RECIPES[recipe].result().get();
+    }
+
+    public static int resultCount(int recipe) {
+        return RECIPES[recipe].resultCount();
+    }
+
+    @Override
+    public int extra(int index) {
+        return index < tanks.length ? tanks[index] : 0;
+    }
+
+    @Override
+    public int selected() {
+        return displayedRecipe();
+    }
+
     // -- Interface -----------------------------------------------------------
 
     @Override

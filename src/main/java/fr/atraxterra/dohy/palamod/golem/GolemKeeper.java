@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.palamod.golem;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import fr.atraxterra.dohy.ui.KitMenus;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -10,7 +11,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -120,7 +120,7 @@ public final class GolemKeeper {
             container.setItem(slot, stacks.get(slot).copy());
         }
         player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> new FilteredChestMenu(MenuType.GENERIC_9x1, containerId,
+                (containerId, inventory, viewer) -> new FilteredChestMenu(KitMenus.Use.GOLEM_KEEPER.type(), containerId,
                         inventory, container, 1),
                 Component.translatable("container.palamod.guardian_keeper")));
     }

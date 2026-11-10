@@ -41,12 +41,17 @@ public class MachineMenu extends AbstractContainerMenu {
     public static final int DATA_TANK_GOAL = 3;
     public static final int DATA_WORK2 = 4;
     public static final int DATA_DURATION2 = 5;
-    public static final int DATA_COUNT = 6;
+    /** Quatre valeurs libres, propres a chaque machine : les bacs du crusher. */
+    public static final int DATA_EXTRA = 6;
+    public static final int EXTRA_COUNT = 4;
+    /** Une valeur libre de plus : la recette affichee par le crusher. */
+    public static final int DATA_SELECTED = DATA_EXTRA + EXTRA_COUNT;
+    public static final int DATA_COUNT = DATA_SELECTED + 1;
 
-    /** Coordonnees vanilla de l'inventaire du joueur. Voir tools/gen_gui.py. */
-    private static final int PLAYER_X = 8;
-    private static final int PLAYER_Y = 84;
-    private static final int HOTBAR_Y = 142;
+    /** L'inventaire du joueur, en bas du panneau du kit (MachineKitScreen, 262 x 236). */
+    public static final int PLAYER_X = 51;
+    public static final int PLAYER_Y = 150;
+    public static final int HOTBAR_Y = 210;
 
     private final Container container;
     private final ContainerData data;
@@ -142,6 +147,23 @@ public class MachineMenu extends AbstractContainerMenu {
 
     public int tank() {
         return data.get(DATA_TANK);
+    }
+
+    /** Duree d'un cycle, en ticks ; 0 quand la machine n'a rien a faire. */
+    public int duration() {
+        return data.get(DATA_DURATION);
+    }
+
+    public int work() {
+        return data.get(DATA_WORK);
+    }
+
+    public int extra(int index) {
+        return data.get(DATA_EXTRA + index);
+    }
+
+    public int selected() {
+        return data.get(DATA_SELECTED);
     }
 
     /** Fruits qu'il faut pour un lot, ou zero si la machine n'accumule rien. */

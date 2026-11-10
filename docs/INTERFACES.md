@@ -12,7 +12,7 @@ autocrafter, crusher, cobblebreaker, grinder).
 | 1 | Kit, métiers et fiche d'un métier, shop | fait |
 | 2 | Économie : menu principal, banque, contrats, boutique de boosters, collections, musée, améliorations | fait |
 | 3 | Palamod : donjons, profil RPG, monture, golem, dimension du Mineur, enchantement mystique | fait |
-| 4 | Conteneurs : machines (crusher déjà maquetté), coffres en paladium, coffre de vente, musée | à faire |
+| 4 | Conteneurs : machines, coffres en paladium, coffre de vente, guichet du musée, sac de la monture, coffres du golem | fait |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
 
@@ -132,6 +132,27 @@ Les textes que le serveur ne doit pas traduire lui-même (noms d'objets, d'encha
 traduction) partent en composant JSON (`MenuView.text`) : le client les traduit dans sa langue à
 l'arrivée de la vue. Un serveur dédié ne connaît que l'anglais ; sans cela, un joueur français
 lirait « Diamond Boots ». La fiche d'un métier suit le même chemin.
+
+## Les machines et les coffres (lot 4)
+
+Les écrans de conteneur passent par `UiContainerScreen` : un `AbstractContainerScreen` dessiné
+avec le kit, sans mise à l'échelle libre (les cases sont celles du menu, que le jeu place et teste au
+pixel d'interface). Le fond passe avant les objets, les bulles après.
+
+- **Machines** (`MachineKitScreen`, 262 x 236) : le titre en haut à gauche, la machine en sections
+  (intertitres à losange), l'inventaire en bas. Le cadre de chaque case est dessiné à la position de
+  la case du `MachineLayout` : il n'y a plus de texture de fond, donc plus de `gen_gui.py` ni de
+  `gui_layout.json` à accorder. `check_assets.py` vérifie toujours la taille des inventaires, les
+  bornes de la zone de la machine et les chevauchements. Chaque machine a son dessin
+  (`MachineDesigns`) : flèches qui suivent le cycle, jauges du combustible ou du réservoir, et une
+  bulle sur chaque case vide qui dit ce qu'on y pose.
+- **Crusher** : les quatre recettes et leurs bacs, synchronisés par quatre valeurs libres du menu
+  (`DATA_EXTRA`) et la recette mise en avant (`DATA_SELECTED`).
+- **Coffres en paladium** : la grille de 12 x 9, les anneaux teintés du métal, le titre au-dessus.
+- **Inventaires en coffre** : coffre de vente, guichet du musée, sac de la monture, coffre et
+  gardien du golem, coffre de l'End en paladium ont chacun leur type de menu (`KitMenus`) pour ouvrir
+  l'écran du kit au lieu du coffre vanilla. Le menu reste un `ChestMenu` ; l'écran affiche la
+  consigne de l'usage (« vendu à la fermeture »...).
 
 ## Vérification
 

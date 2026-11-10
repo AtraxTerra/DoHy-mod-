@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.palamod.storage;
 
 import com.mojang.serialization.MapCodec;
+import fr.atraxterra.dohy.ui.KitMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -14,7 +15,6 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -103,7 +103,7 @@ public class PaladiumEnderChestBlock extends HorizontalDirectionalBlock {
         }
         CompoundContainer container = new CompoundContainer(player.getEnderChestInventory(), extra);
         player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> new ChestMenu(MenuType.GENERIC_9x4, containerId, inventory,
+                (containerId, inventory, viewer) -> new ChestMenu(KitMenus.Use.PALADIUM_ENDER_CHEST.type(), containerId, inventory,
                         container, 4),
                 Component.translatable("container.palamod.paladium_ender_chest")));
     }

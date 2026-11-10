@@ -6,8 +6,10 @@ import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
+import fr.atraxterra.dohy.ui.KitMenus;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,8 +20,6 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -65,7 +65,7 @@ public final class SellChestMenu extends ChestMenu {
     }
 
     private SellChestMenu(int containerId, Inventory inventory, ServerPlayer player, Container deposit) {
-        super(MenuType.GENERIC_9x6, containerId, inventory, deposit, 6);
+        super(KitMenus.Use.SELL_CHEST.type(), containerId, inventory, deposit, 6);
         this.player = player;
         this.deposit = deposit;
     }

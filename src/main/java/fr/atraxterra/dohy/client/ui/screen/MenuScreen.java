@@ -203,7 +203,7 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                     float end = x + g.width(Ui.PIXEL, section.title(), 6) + 5;
                     g.rect(Math.round(end), headerY + 4, Math.round(x + width - 10 - end), 1, 0xFF55545C);
                 } else {
-                    CrusherPanel.section(g, x, headerY + 1, "section_" + section.icon(), section.title(),
+                    g.section(x, headerY + 1, "section_" + section.icon(), section.title(),
                             width - 10);
                 }
             }

@@ -61,7 +61,9 @@ public abstract class MachineBlockEntity extends BlockEntity
                 case MachineMenu.DATA_TANK_GOAL -> tankGoal();
                 case MachineMenu.DATA_WORK2 -> work2();
                 case MachineMenu.DATA_DURATION2 -> cycleDuration2();
-                default -> 0;
+                case MachineMenu.DATA_SELECTED -> selected();
+                default -> index >= MachineMenu.DATA_EXTRA && index < MachineMenu.DATA_SELECTED
+                        ? extra(index - MachineMenu.DATA_EXTRA) : 0;
             };
         }
 
@@ -239,6 +241,16 @@ public abstract class MachineBlockEntity extends BlockEntity
 
     public int cycleDuration2() {
         return 0;
+    }
+
+    /** Une valeur libre pour l'ecran ({@link MachineMenu#DATA_EXTRA}) : les bacs du crusher. */
+    public int extra(int index) {
+        return 0;
+    }
+
+    /** Une valeur libre de plus : la recette que l'ecran met en avant, -1 pour aucune. */
+    public int selected() {
+        return -1;
     }
 
     /**

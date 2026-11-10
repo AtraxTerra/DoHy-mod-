@@ -177,7 +177,7 @@ public final class MuseumController extends MenuController {
             UiNet.forget(player);
             player.openMenu(new SimpleMenuProvider(
                     (containerId, inventory, viewer) -> new MuseumMenu(containerId, inventory, player),
-                    Component.literal("Musee — depose, ferme pour exposer")));
+                    Component.literal("Guichet du musee")));
         }
     }
 }

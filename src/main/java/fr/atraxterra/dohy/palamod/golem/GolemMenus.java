@@ -2,14 +2,14 @@ package fr.atraxterra.dohy.palamod.golem;
 
 import fr.atraxterra.dohy.palamod.PalaItems;
 import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
+import fr.atraxterra.dohy.ui.KitMenus;
 import fr.atraxterra.dohy.ui.menu.MenuController;
-import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
+import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -46,7 +46,7 @@ public final class GolemMenus {
     public static void openStorage(ServerPlayer player, GuardianGolem golem) {
         UiNet.forget(player);
         player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> new FilteredChestMenu(MenuType.GENERIC_9x2, containerId,
+                (containerId, inventory, viewer) -> new FilteredChestMenu(KitMenus.Use.GOLEM_STORAGE.type(), containerId,
                         inventory, golem.storage(), 2),
                 Component.literal("Inventaire du golem")));
     }
