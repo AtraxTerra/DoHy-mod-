@@ -37,7 +37,7 @@ import java.util.UUID;
  *
  * <p><b>Le creatif ne passe pas par les verrous</b>, et l'exemption est ici
  * plutot que dans {@link JobGate#allows}. La distinction compte : {@code allows}
- * repond « ce joueur a-t-il le niveau ? », et le Hub, {@code JobsMenu} et
+ * repond « ce joueur a-t-il le niveau ? », et le Hub, l'ecran des metiers et
  * {@code /metiers} s'en servent pour compter les deverrouillages et afficher la
  * progression. Exempter la-bas afficherait « 70/70 » a un administrateur de
  * niveau 1 et <b>masquerait sa vraie progression</b> des qu'il repasserait en

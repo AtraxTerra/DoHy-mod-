@@ -7,7 +7,6 @@ import fr.atraxterra.dohy.job.JobApi;
 import fr.atraxterra.dohy.job.JobConfig;
 import fr.atraxterra.dohy.job.JobGate;
 import fr.atraxterra.dohy.job.JobProgression;
-import fr.atraxterra.dohy.job.JobsMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -69,10 +68,7 @@ public final class JobsCommand {
     }
 
     private static int open(CommandSourceStack source) throws CommandSyntaxException {
-        ServerPlayer player = source.getPlayerOrException();
-        player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> new JobsMenu(containerId, inventory, player),
-                Component.literal("Metiers")));
+        fr.atraxterra.dohy.job.JobsController.open(source.getPlayerOrException());
         return 1;
     }
 

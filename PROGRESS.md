@@ -99,6 +99,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 20 | **Donjons, runes et arbre** : niveau RPG (XP des salles, 100 niveaux), points (niveau, paliers, métiers 1/5), arbre de 4 branches × 8 nœuds en écran de coffre (bouton d'inventaire, `/profil`, `/menu`), statistiques RPG en donjon seulement ; runes commune, rare, épique (coffres, palamachine, enclume, grinder) — sorts et mana sautés au choix du joueur | fait |
 | 20b | **Stuff antique** : icônes et armure portée en 3D de Palamod Recreated (modèles traduits de leur bytecode), vol et invisibilité au set complet hors donjon (patchnotes V11), bonus de donjon dedans | fait |
 | 20c | **Retours en jeu** : pierre aléatoire qui disparaissait, entonnoirs sous le cobblebreaker et le crusher (sorties seulement), entonnoir en paladium qui aspire au sol, minerais qui se rendent eux-mêmes (fonte au four et au haut fourneau) | fait |
+| 21a | **Interfaces, lot 1** : kit d'interface DoHy UI (style Paladium, polices TrueType, vues et actions réseau), écran des métiers avec les contrats du jour, fiche d'un métier à onglets, shop à la maquette de l'Admin Shop — voir [docs/INTERFACES.md](docs/INTERFACES.md) | fait |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -163,6 +164,27 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-10 — interfaces, lot 1
+
+**Demande du joueur** : refonte complète des interfaces au style de Paladium, sur ses captures
+(métiers, Admin Shop, autocrafter, crusher, cobblebreaker, grinder). Choix : le kit dans DoHy
+(pas de mod séparé), les quêtes quotidiennes = les contrats du jour, quatre lots validés sur
+captures. Les liens envoyés n'étaient pas lisibles d'ici ; les captures les ont remplacés.
+
+**Fait** : le kit (`client/ui`), les vues et le transport (`ui/view`), les contrôleurs du shop et
+des métiers, trois écrans. Les polices et images viennent des jars Paladium-UI et PalaJobs
+(`tools/ui_assets.py`).
+
+**Vérifié** : un vrai client lancé sous Xvfb sur GitHub, dans un monde du serveur dédié, ouvre les
+écrans par le serveur intégré et en prend des captures ; le joueur a validé les maquettes
+(« C'est parfait »), puis les écrans branchés au serveur (catalogue réel, fiche du Mineur).
+
+**Appris (26.2)** : l'écran courant est `minecraft.gui.screen()` / `gui.setScreen()`, la cible de
+rendu `gameRenderer.mainRenderTarget()` ; les composants d'objet ne sont liés qu'une fois un monde
+chargé (« Components not bound yet » à l'écran titre) ; les polices TrueType se déclarent en
+`"type": "ttf"` et s'utilisent par `Style.withFont(new FontDescription.Resource(id))` ; le client
+demande une sauvegarde avant d'ouvrir un monde à dimensions de datapack.
 
 ### 2026-11-09 (suite) — retours en jeu
 

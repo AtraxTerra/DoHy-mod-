@@ -89,6 +89,11 @@ public final class ContractApi {
                 * (1.0d + globalLevel(player) * REWARD_PER_GLOBAL_LEVEL));
     }
 
+    /** Le bonus de recompense que donne le niveau global : 0,35 = +35 %. */
+    public static double rewardBonus(ServerPlayer player) {
+        return globalLevel(player) * REWARD_PER_GLOBAL_LEVEL;
+    }
+
     /** XP de jalon. Les paliers de niveau global sont annonces et payes ici. */
     public static void grantGlobalXp(ServerPlayer player, long amount, String reason) {
         if (amount <= 0) {
