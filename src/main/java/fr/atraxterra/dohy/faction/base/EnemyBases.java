@@ -317,7 +317,7 @@ public final class EnemyBases {
             }
             job.ticks++;
             boolean[] ready = {true};
-            forEachChunk(job, (x, z) -> ready[0] &= level.getChunkSource().hasChunk(x, z));
+            forEachChunk(job, (x, z) -> ready[0] &= level.getChunkSource().getChunkNow(x, z) != null);
             if (!ready[0]) {
                 if (job.ticks > TIMEOUT_TICKS) {
                     release(level, job);
