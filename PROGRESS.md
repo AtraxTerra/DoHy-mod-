@@ -170,6 +170,16 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — monstres de donjon invisibles chez le joueur : Crankshaft
+
+**Signalement** : « pour les mobs des donjons rien n'a changé ». Le jar était le bon (65 modèles
+chargés au journal du serveur). L'instance du joueur a **Crankshaft 1.6.0** (dérivé de Flywheel,
+Vanillin embarqué), qui dessine les créatures vanilla par instances et n'émet jamais
+`RenderLivingEvent.Pre`. Reproduit en CI en chargeant ce jar, puis corrigé par
+`client/rpg/FlywheelCompat` (voir `docs/PALAMOD.md` § 29). **À retenir** : un rendu qui marche
+en CI peut ne rien faire dans le modpack du joueur ; son instance Prism est lisible
+(`mods`, `logs/latest.log`) et c'est là qu'il faut regarder d'abord.
+
 ### 2026-11-11 (suite) — le contrôleur de spawners
 
 **Demande** : « ajoute la partie spawner controller et met à jour les recettes et mécaniques
