@@ -152,7 +152,7 @@ public final class TagPricing {
                 // doit pas retomber sur une autre forme.
                 if (candidate.entry() != null) {
                     generated.put(id, candidate.entry());
-                    DoHy.LOGGER.debug("Tarif par tag : {} = {} {} ({}), vente {}, achat {}",
+                    DoHy.LOGGER.info("Tarif par tag : {} = {} {} ({}), vente {}, achat {}",
                             id, candidate.material(), candidate.rule().tag(), candidate.level(),
                             candidate.entry().sellable() ? candidate.entry().basePrice() : 0L,
                             candidate.entry().buyPrice());
@@ -171,6 +171,7 @@ public final class TagPricing {
                 continue;
             }
             generated.put(id, componentEntry(component.getValue()));
+            DoHy.LOGGER.info("Tarif piece : {} achat {}", id, component.getValue());
             components++;
         }
 
