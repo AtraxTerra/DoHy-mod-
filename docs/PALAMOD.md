@@ -81,7 +81,7 @@ niveau avec sa propre courbe. Ils sont dans `jobs.json` (`rewards`), niveaux ×5
 |---|---|
 | Lingots de paladium et trixium, 5 × le niveau Paladium | chaque palier, 1 050 de chaque au total |
 | Pépite d'endium | 100 |
-| Bonbon de métier (pas encore porté) | 95 |
+| 5 bouteilles d'XP du métier, à la place du bonbon de métier | 95 |
 
 Et par métier, entre autres : la pioche en paladium Efficacité V / Solidité III (Mineur, 30),
 l'armure en paladium Protection IV / Solidité III (Mineur, 55), l'épée en paladium
@@ -97,6 +97,13 @@ les `astore`/`aload`.
 **Tête de dragon** : la récompense du Chasseur au niveau 19 est un crâne vanilla de méta 5,
 qui n'existe pas en 1.7.10 vanilla. C'est le module `back2future` de PalaMod
 (`enableFancySkulls`, repris d'Et Futurum) qui l'ajoute.
+
+**Remplaçants** (2026-11-11) : le bonbon à déballer de PalaMod est un objet d'événement
+communautaire (`ItemCandy`), qui ne sera pas porté ; il devient 5 bouteilles d'XP du métier.
+La défense d'éléphant (Chasseur, 80) devient un bloc d'os, comme dans les recettes de cornes de
+la palamachine. Sans remplaçant, ces récompenses n'étaient pas distribuées. Restent inertes les
+quatre pièces de l'armure de voyage (Fermier, 55), non portée. `tools/palamod_jobs.py` porte la
+règle (`SUBSTITUTES`).
 
 **Joueurs migrés** : à la première connexion après le remplacement des skills, un joueur
 reçoit les objets de tous les paliers qu'il avait déjà franchis — leur argent avait été
@@ -581,6 +588,28 @@ grinder, donc au chapitre 5b.
 
 Le relevé complet est archivé dans `data/palamod_crafts.json` : les 282 recettes, avec leurs
 anomalies, prêtes pour les chapitres suivants.
+
+### Comparaison avec le relevé, 2026-11-11
+
+Toutes les recettes portées ont été rapprochées du relevé : même grille (miroir compris), même
+rendement, et pour chaque ingrédient d'origine, toujours le même objet moderne. Ce qui en est
+sorti :
+
+| Recette | Avant | Maintenant (comme l'original) |
+|---|---|---|
+| Améthyste, titane, paladium compressés | 9 blocs, et retour en 9 blocs | **8 blocs autour d'un lingot**, sans retour (un retour rendrait 8 lingots par tour) |
+| Endium compressé | 9 blocs d'endium (729 pépites) | **4 fragments d'endium aux coins, 5 blocs de paladium en croix** |
+| Vitre de coffre-fort | 8 verres et un findium : la grille du bloc de grotte, l'une masquait l'autre | **8 vitres** et un findium |
+| Épée de capture | 4 bâtons en paladium à la place des sticks | **sticks de vitesse, de force, de soin et de dégâts** (palamachine, chapitre 16) |
+| Orbe de régénération | melon scintillant seulement | **aussi avec un livre**, la seconde recette d'origine |
+| Fragment d'endium | introuvable hors des donjons | **une pépite donne 9 fragments**, 9 fragments une pépite |
+| Particules | seulement 9 particules → 1 lingot | **un lingot (ou un diamant) donne 9 particules**, sauf le fer et l'or : la même case donne déjà leurs pépites vanilla |
+| Sable, obsidienne | — | **1 grès → 4 sable**, **4 obsidiennes renforcées (2 × 2) → 4 obsidiennes** |
+
+Le fragment d'endium entre dans le lingot d'endium mixte : sans sa recette, l'armure d'endium
+mixte ne se fabriquait qu'avec les fragments des donjons. Un auto-test sur serveur dédié (hors de
+la PR) vérifie chaque recette : elle reconnaît ses propres ingrédients, donne son résultat et
+n'est masquée par aucune autre.
 
 ---
 
@@ -1233,7 +1262,7 @@ ni dans PalaMod ni dans PalaJobs.
   de durabilité (portée à 2 000) ; la flamme de la fastsword durait 200 secondes (des ticks pris
   pour des secondes, ramenée à 10).
 - Recettes restaurées : le marteau de caverne reprend son marteau en paladium, l'épée de capture
-  ses trois têtes d'arme (les quatre bâtons à effet restent des bâtons en paladium).
+  ses trois têtes d'arme, puis, le 2026-11-11, ses quatre sticks à effet (§ 9).
 
 ### Le buisson à XP — `BlockXpBush`, `ItemXpBerry`
 

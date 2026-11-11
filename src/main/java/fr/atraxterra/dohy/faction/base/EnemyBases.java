@@ -35,6 +35,7 @@ import net.minecraft.world.level.levelgen.RandomState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.slf4j.Logger;
 
@@ -247,6 +248,17 @@ public final class EnemyBases {
         double dx = x - ox;
         double dz = z - oz;
         return dx * dx + dz * dz;
+    }
+
+    /**
+     * En solo, quitter le monde garde la JVM : un chantier en cours aurait continue
+     * dans le monde ouvert ensuite, et sa demande serait restee « en cours » pour
+     * toujours. Comme a un vrai redemarrage, les chantiers s'arretent avec le serveur.
+     */
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        JOBS.clear();
+        READY.clear();
     }
 
     // -- Chantier -----------------------------------------------------------------

@@ -6,7 +6,7 @@
     "GGG"
   ],
   "key": {
-    "G": "minecraft:glass",
+    "G": "minecraft:glass_pane",
     "F": "palamod:findium"
   },
   "result": {

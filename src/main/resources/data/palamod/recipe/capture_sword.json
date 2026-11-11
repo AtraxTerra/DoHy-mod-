@@ -1,17 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABA",
+    "ABC",
     "DEF",
-    "AHA"
+    "GHI"
   ],
   "key": {
-    "A": "palamod:paladium_stick",
+    "A": "palamod:speed_stick",
     "B": "palamod:broadsword_head",
+    "C": "palamod:strength_stick",
     "D": "palamod:fastsword_head",
     "E": "palamod:compressed_paladium",
     "F": "palamod:sword_head",
-    "H": "palamod:paladium_stick"
+    "G": "palamod:heal_stick",
+    "H": "palamod:paladium_stick",
+    "I": "palamod:damage_stick"
   },
   "result": {
     "id": "palamod:capture_sword",

@@ -162,13 +162,37 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 - **HUD et GUI en mode retenu** : 26.2 a supprimé `GuiGraphics`. Le HUD de la monnaie et le GUI du shop doivent être écrits directement en `extract*` + `GuiGraphicsExtractor`. L'API exacte d'enregistrement d'une couche de HUD côté NeoForge 26.2 est à confirmer en CI (l'ancien `RegisterGuiLayersEvent` n'est pas garanti sous cette forme). → **tranché le 2026-11-08** : relevé par sonde et écrit — `extractBackground` et `extractContents` (il n'y a plus de `renderLabels`), `blit` avec `RenderPipelines.GUI_TEXTURED`, `centeredText` pour le texte, `getLeftPos` / `getTopPos` (`getGuiLeft` / `getGuiTop` sont marqués pour suppression), `RegisterMenuScreensEvent` avec témoins de type explicites. Voir `MachineScreen` et `docs/PALAMOD.md`.
 - **Plafonds villageois** : ~~à confirmer~~ → **tranché le 2026-11-03 : on garde les plafonds.** Ne pas relancer `gen_prices.py` avec `--no-villager-caps`. Audit encore à compléter sur : briques, argile, papier, verre teinté, charbon, fer.
 - ~~**Catégorie COMPONENT** : liste et prix d'achat à établir (phase 3).~~ → **tranché le 2026-11-05 : la catégorie est supprimée.** Elle n'a jamais contenu d'item (aucune ligne de `rates.csv`, aucune règle de `tag_prices.json`), donc l'onglet du shop était vide et l'aile de musée correspondante ne pouvait pas se compléter. L'onglet est remplacé par la boutique ; la remise d'achat de −10 % est passée sur l'aile NTM.
-- **Table de loot des caisses** : non écrite.
+- ~~**Table de loot des caisses** : non écrite.~~ → **écrite le 2026-11-11** (BALANCE § 6 quater).
 - **Barème d'XP du niveau global** par type de jalon : à fixer quand les contrats tournent.
 - **`minecraft:potent_sulfur`** classé farmable sur la base des tags de geyser de 26.2 — **à vérifier en jeu** : si l'éruption ne produit pas de gain net, le reclasser en `FOUND`.
 
 ---
 
 ## Journal des sessions
+
+### 2026-11-11 (suite) — corrections : recettes et bugs
+
+**Demande** : « corrige des bugs, des recettes manquantes ». Méthode : journaux du client et du
+serveur, outils de contrôle, puis rapprochement de chaque recette portée avec le relevé de
+PalaMod (grille, rendement, et même objet moderne pour un même ingrédient d'origine).
+
+**Recettes** (détail : `docs/PALAMOD.md` § 9) : compressés à 8 blocs autour d'un lingot, sans
+retour ; endium compressé à 4 fragments et 5 blocs de paladium (il en coûtait 729 pépites) ;
+vitre de coffre-fort en vitres (elle masquait le bloc de grotte) ; épée de capture avec ses quatre
+sticks ; orbe de régénération au livre ; pépite ↔ 9 fragments d'endium ; lingot → 9 particules
+(sauf fer et or) ; grès → sable, obsidienne renforcée → obsidienne. Auto-test sur serveur dédié :
+346 recettes sur 346 fonctionnelles (plus les 3 spéciales), palamachine 39/39, grinder 19/19,
+chaudron 4/4.
+
+**Bugs** :
+- la texture de la machine à croquettes (64 × 46) coupait les mipmaps de **tout** l'atlas des
+  blocs (« dropping miplevel from 4 to 1 ») : allongée à 64 × 64, UV recalculés ;
+- récompenses de métier jamais distribuées : le bonbon de métier devient 5 bouteilles d'XP du
+  métier (niveau 95, les quatre métiers), la défense un bloc d'os (Chasseur, 80) ;
+- en solo, changer de monde sans quitter le jeu gardait les messages de caisse en attente et
+  les chantiers de base ennemie de l'ancien monde (une demande restait « en cours ») ;
+- le fichier de licence de la police (`montserrat_OFL.txt`) avait une majuscule refusée par le
+  jeu.
 
 ### 2026-11-11 (suite) — caisses : butin PalaMod et NTM, et une roulette
 
