@@ -4,6 +4,7 @@ import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
 import fr.atraxterra.dohy.palamod.alchemist.Sap;
 import fr.atraxterra.dohy.palamod.alchemist.TankSap;
 import fr.atraxterra.dohy.palamod.alchemist.TankTier;
+import fr.atraxterra.dohy.palamod.box.PalaBoxes;
 import fr.atraxterra.dohy.palamod.godpickaxe.GodPickaxeData;
 import fr.atraxterra.dohy.palamod.godpickaxe.GodPickaxeLevels;
 import fr.atraxterra.dohy.palamod.godpickaxe.PalaGodPickaxe;
@@ -357,6 +358,34 @@ final class DungeonRewards {
         if (random.nextFloat() < grade.essenceChance()) {
             loot.add(new ItemStack(PalaDungeonGear.essence(dungeon, EssenceTier.forPalier(palier))));
         }
+        keys(random, palier, grade, loot);
         return loot;
+    }
+
+    /** Chance d'une cle commune, par note de D a S. */
+    private static final float[] KEY_COMMON = {0.0f, 0.0f, 0.10f, 0.20f, 0.35f};
+    /** Chance d'une cle rare, a partir du palier {@link #KEY_RARE_FROM}. */
+    private static final float[] KEY_RARE = {0.0f, 0.0f, 0.0f, 0.005f, 0.015f};
+    private static final int KEY_RARE_FROM = 40;
+    /** Chance d'une cle legendaire, a partir du palier {@link #KEY_LEGENDARY_FROM}. */
+    private static final float[] KEY_LEGENDARY = {0.0f, 0.0f, 0.0f, 0.0f, 0.0025f};
+    private static final int KEY_LEGENDARY_FROM = 80;
+
+    /**
+     * Les cles de caisse du coffre de la note (BALANCE § 6 nonies) : une bonne
+     * note peut en donner une, et les paliers eleves les meilleures. Trois
+     * tirages separes.
+     */
+    private static void keys(RandomSource random, int palier, Grade grade, List<ItemStack> loot) {
+        int rank = grade.ordinal();
+        if (random.nextFloat() < KEY_COMMON[rank]) {
+            loot.add(new ItemStack(PalaBoxes.KEY_COMMON.get()));
+        }
+        if (palier >= KEY_RARE_FROM && random.nextFloat() < KEY_RARE[rank]) {
+            loot.add(new ItemStack(PalaBoxes.KEY_RARE.get()));
+        }
+        if (palier >= KEY_LEGENDARY_FROM && random.nextFloat() < KEY_LEGENDARY[rank]) {
+            loot.add(new ItemStack(PalaBoxes.KEY_LEGENDARY.get()));
+        }
     }
 }

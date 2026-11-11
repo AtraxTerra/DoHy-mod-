@@ -1,6 +1,5 @@
 package fr.atraxterra.dohy.palamod.box;
 
-import fr.atraxterra.dohy.boost.Boosters;
 import fr.atraxterra.dohy.boost.Crates;
 import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
 import fr.atraxterra.dohy.palamod.dungeon.RpgSkin;
@@ -173,8 +172,8 @@ public class BoxBlockEntity extends BlockEntity {
         if (player.isShiftKeyDown()) {
             String refusal = Crates.buyKey(player, tier);
             say(player, refusal != null ? Component.literal(refusal).withStyle(ChatFormatting.RED)
-                    : Component.literal(Crates.keyName(tier) + " achetee : " + Boosters.data(player).keys(tier)
-                    + " en poche.")
+                    : Component.literal(Crates.keyName(tier) + " achetee : " + CrateKeys.count(player, tier)
+                    + " sur toi.")
                     .withStyle(ChatFormatting.GREEN));
             return;
         }
@@ -182,7 +181,7 @@ public class BoxBlockEntity extends BlockEntity {
             say(player, Component.literal("La box est deja en train de s'ouvrir.").withStyle(ChatFormatting.YELLOW));
             return;
         }
-        if (Boosters.data(player).keys(tier) <= 0) {
+        if (CrateKeys.count(player, tier) <= 0) {
             long price = Crates.keyPrice(tier);
             // Dans le tchat : la consigne est trop longue pour la barre d'action.
             player.sendSystemMessage(Component.literal(price < 0 ? "Aucune caisse pour cette box."
@@ -197,7 +196,7 @@ public class BoxBlockEntity extends BlockEntity {
             return;
         }
         begin(server, pull.draw());
-        say(player, Component.literal(Boosters.data(player).keys(tier) + " cle(s) restante(s).")
+        say(player, Component.literal(CrateKeys.count(player, tier) + " cle(s) restante(s).")
                 .withStyle(ChatFormatting.GRAY));
     }
 

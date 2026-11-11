@@ -8,6 +8,7 @@ import fr.atraxterra.dohy.contract.ContractApi;
 import fr.atraxterra.dohy.economy.Bank;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.palamod.box.BoxKind;
+import fr.atraxterra.dohy.palamod.box.CrateKeys;
 import fr.atraxterra.dohy.palamod.box.PalaBoxes;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
@@ -70,10 +71,10 @@ public final class BoutiqueController extends MenuController {
             if (crate == null) {
                 continue;
             }
-            int keys = Boosters.data(player).keys(tier);
+            int keys = CrateKeys.count(player, tier);
             crates.add(Card.of(new ItemStack(keys > 0 ? Items.ENDER_CHEST : Items.TRAPPED_CHEST),
                             Crates.title(tier), List.of("Cle : " + MoneyFormat.exact(crate.price()),
-                                    keys + " cle(s) en poche"))
+                                    keys + " cle(s) sur toi"))
                     .accent(0xFFEF3826).badge(keys > 0 ? keys + " CLE" : "")
                     .action("key:" + tier + "|acheter une cle")
                     .right(keys > 0 ? "crate:" + tier + "|ouvrir une caisse" : "")
@@ -257,7 +258,7 @@ public final class BoutiqueController extends MenuController {
             case "again" -> {
                 String tier = action.argument();
                 String refusal = null;
-                if (Boosters.data(player).keys(tier) <= 0) {
+                if (CrateKeys.count(player, tier) <= 0) {
                     refusal = Crates.buyKey(player, tier);
                 }
                 if (refusal == null) {

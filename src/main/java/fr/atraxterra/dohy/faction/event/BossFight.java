@@ -34,6 +34,8 @@ import java.util.UUID;
 public final class BossFight extends EventRun {
 
     private static final int MAX_TICKS = 36_000;
+    /** La chance qu'un boss vaincu laisse une cle de caisse rare en plus de la commune. */
+    private static final float RARE_KEY_CHANCE = 0.05f;
 
     private final BossKind boss;
     private UUID bossId;
@@ -136,6 +138,16 @@ public final class BossFight extends EventRun {
         for (ServerPlayer player : level.getServer().getPlayerList().getPlayers()) {
             if (scoreOf(player) > 0) {
                 fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "boss:" + boss.id(), 1);
+                // Une cle de caisse commune a qui l'a frappe, et parfois une rare (BALANCE § 6 nonies).
+                boolean rare = level.getRandom().nextFloat() < RARE_KEY_CHANCE;
+                fr.atraxterra.dohy.palamod.box.CrateKeys.give(player, "common", 1);
+                if (rare) {
+                    fr.atraxterra.dohy.palamod.box.CrateKeys.give(player, "rare", 1);
+                }
+                player.sendSystemMessage(net.minecraft.network.chat.Component.literal(rare
+                        ? "Le boss laisse une cle de caisse commune et une cle rare."
+                        : "Le boss laisse une cle de caisse commune.")
+                        .withStyle(net.minecraft.ChatFormatting.GOLD));
             }
         }
         conclude(level.getServer(), "Le boss " + boss.label() + " a succombe.");
