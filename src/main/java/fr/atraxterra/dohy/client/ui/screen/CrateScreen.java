@@ -108,7 +108,7 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
             again.setLabel("ROUVRIR (" + view.keys() + " CLÉ" + (view.keys() > 1 ? "S" : "") + ")");
             again.enabled = revealed;
         } else if (view.affordable()) {
-            again.setLabel("CLÉ À " + MoneyFormat.shortForm(view.price()).toUpperCase(Locale.ROOT));
+            again.setLabel("CLÉ À " + MoneyFormat.compact(view.price()).toUpperCase(Locale.ROOT));
             again.enabled = revealed;
         } else {
             again.setLabel("PLUS DE CLÉ");
@@ -331,6 +331,9 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
     }
 
     private static String percent(int permille) {
+        if (permille <= 0) {
+            return "0 %";
+        }
         if (permille >= 10) {
             return Math.round(permille / 10.0f) + " %";
         }

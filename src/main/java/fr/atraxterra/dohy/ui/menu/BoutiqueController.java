@@ -145,6 +145,9 @@ public final class BoutiqueController extends MenuController {
 
     /** 68 %, 1 %, 0,6 % : une decimale sous 1 %. */
     private static String percent(int permille) {
+        if (permille <= 0) {
+            return "0 %";
+        }
         if (permille >= 10) {
             return Math.round(permille / 10.0f) + " %";
         }

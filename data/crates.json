@@ -125,7 +125,7 @@
           {"item": "hbm:circuit_controller", "count": 64},
           {"item": "hbm:motor_desh", "count": 64}
         ] },
-        {"weight": 7, "rarity": "legendary", "item": "palamod:endium_gauntlet", "components": {"palamod:gauntlet": {"stones": ["teleportation", "invisibility", "fortune", "power", "jobs", "chaos"]}}},
+        {"weight": 7, "rarity": "legendary", "item": "palamod:endium_gauntlet", "components": {"palamod:gauntlet": {"stones": ["teleportation", "invisibility", "fortune", "power", "jobs", "chaos"]}, "minecraft:custom_model_data": {"strings": ["infinity"]}}},
         {"weight": 3, "rarity": "legendary", "money_min": 600000000, "money_max": 900000000}
       ]
     }

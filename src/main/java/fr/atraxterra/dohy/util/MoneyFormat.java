@@ -48,6 +48,34 @@ public final class MoneyFormat {
     }
 
     /**
+     * Forme compacte, trois chiffres au plus et sans zeros inutiles :
+     * {@code 28.9k}, {@code 225k}, {@code 1.25M}. Pour les petites etiquettes
+     * (cases de la roulette des caisses).
+     */
+    public static String compact(long amount) {
+        if (amount == Long.MIN_VALUE) {
+            return shortForm(amount);
+        }
+        String sign = amount < 0 ? "-" : "";
+        long abs = Math.abs(amount);
+        if (abs < 1000L) {
+            return sign + abs;
+        }
+        double value = abs;
+        int unit = -1;
+        while (value >= 999.5d && unit < UNITS.length - 1) {
+            value /= 1000d;
+            unit++;
+        }
+        String digits = String.format(Locale.ROOT, value >= 99.95d ? "%.0f" : value >= 9.995d ? "%.1f" : "%.2f",
+                value);
+        if (digits.indexOf('.') >= 0) {
+            digits = digits.replaceAll("0+$", "").replaceAll("\\.$", "");
+        }
+        return sign + digits + UNITS[unit];
+    }
+
+    /**
      * Forme exacte, groupee par milliers avec une espace fine insecable :
      * {@code 1 240 311}. Utilisee par {@code /money} et les infobulles, pour que
      * la valeur reelle reste consultable malgre l'arrondi du HUD.

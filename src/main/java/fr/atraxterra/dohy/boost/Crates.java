@@ -219,7 +219,7 @@ public final class Crates {
         }
         long low = Math.min(entry.moneyMin(), entry.moneyMax());
         long high = Math.max(entry.moneyMin(), entry.moneyMax());
-        return Component.literal(high > low ? MoneyFormat.shortForm(low) + " a " + MoneyFormat.shortForm(high)
+        return Component.literal(high > low ? MoneyFormat.compact(low) + " a " + MoneyFormat.compact(high)
                 : MoneyFormat.exact(low));
     }
 
@@ -253,7 +253,7 @@ public final class Crates {
         } else if (!stacks.isEmpty()) {
             label = "x" + stacks.get(0).getCount();
         } else {
-            label = MoneyFormat.shortForm(money);
+            label = MoneyFormat.compact(money);
         }
         return new CrateView.Slot(icon, entry.rarityIndex(), label);
     }
