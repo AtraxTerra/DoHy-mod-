@@ -61,7 +61,8 @@ public final class PalaMachines {
     public static final DeferredBlock<Block> TOTEM_BLOCK = BLOCKS.registerBlock(
             "totem_of_fertility", TotemBlock::new, properties -> properties
                     .strength(2.5f)
-                    .sound(SoundType.WOOD));
+                    .sound(SoundType.WOOD)
+                    .noOcclusion());
 
     /**
      * Palafurnace : fer, son de pierre, durete 12, resistance 4,8 (setResistance(8)
