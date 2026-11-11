@@ -65,6 +65,8 @@ public final class HubController extends MenuController {
                 Card.of(new ItemStack(Items.GOLD_BLOCK), "Boutique", List.of("Boosters, caisses, autosell",
                         booster > 1 ? "Booster x" + (long) booster + " actif" : "Aucun booster actif"))
                         .accent(0xFFFAC400).action("boutique"),
+                Card.of(new ItemStack(Items.BELL), "Marche", List.of("Les annonces du jour",
+                        "Stocks limites, prix variables")).accent(0xFFFAC400).action("market"),
                 Card.of(new ItemStack(Items.CHEST_MINECART), "Banque", List.of(
                         "Epargne " + MoneyFormat.shortForm(Bank.banked(player)),
                         MoneyFormat.shortForm(Bank.perDay(player)) + " d'interets / jour"))
@@ -215,6 +217,7 @@ public final class HubController extends MenuController {
                         Component.literal("Coffre de vente")));
             }
             case "boutique" -> BoutiqueController.INSTANCE.open(player);
+            case "market" -> fr.atraxterra.dohy.auction.AuctionController.INSTANCE.open(player);
             case "bank" -> BankController.INSTANCE.open(player);
             case "clicker" -> fr.atraxterra.dohy.palamod.clicker.Clicker.open(player);
             case "contracts" -> ContractsController.INSTANCE.open(player);

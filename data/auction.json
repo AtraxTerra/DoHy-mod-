@@ -1,0 +1,1367 @@
+{
+  "_comment": "GENERE par tools/market_offers.py : la reserve du marche. quote : la cote d'un objet ; lot : combien d'objets par annonce ; stock : combien de lots ; weight : sa chance d'etre tire dans son rayon ; factor : bornes du prix en part de la cote, sinon celles de prices.",
+  "per_reroll": 250000,
+  "max_rerolls": 4,
+  "prices": [
+    {
+      "label": "deal",
+      "chance": 15,
+      "factor": [
+        0.7,
+        0.88
+      ]
+    },
+    {
+      "label": "fair",
+      "chance": 65,
+      "factor": [
+        0.98,
+        1.25
+      ]
+    },
+    {
+      "label": "greedy",
+      "chance": 20,
+      "factor": [
+        1.3,
+        1.6
+      ]
+    }
+  ],
+  "sellers": [
+    "Krolm_",
+    "Zeph1r",
+    "MamieCactus",
+    "LeGrosBill",
+    "Paladinou",
+    "Endiumax",
+    "Trixie_",
+    "BobLeMineur",
+    "CapitaineFer",
+    "Nyxo",
+    "Farmeuse38",
+    "DrPioche",
+    "Sablotin",
+    "OursBleu",
+    "Lun4tik",
+    "Grimoire_",
+    "PatateDouce",
+    "Volt4ge",
+    "Mirabelle",
+    "TontonCreeper",
+    "Azurine",
+    "SireLapin",
+    "Kaktus",
+    "Ombrelune"
+  ],
+  "categories": [
+    {
+      "id": "relics",
+      "title": "RELIQUES",
+      "icon": "upgrade",
+      "count": 3
+    },
+    {
+      "id": "dungeon",
+      "title": "DONJONS",
+      "icon": "armor",
+      "count": 4
+    },
+    {
+      "id": "hunt",
+      "title": "CHASSE ET WITHER",
+      "icon": "melt",
+      "count": 2
+    },
+    {
+      "id": "crates",
+      "title": "CLES ET BOXES",
+      "icon": "resources",
+      "count": 3
+    }
+  ],
+  "offers": [
+    {
+      "category": "relics",
+      "item": "palamod:legendary_stone_random",
+      "quote": 20000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 4
+    },
+    {
+      "category": "relics",
+      "item": "palamod:legendary_stone_teleportation",
+      "quote": 20000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "relics",
+      "item": "palamod:legendary_stone_invisibility",
+      "quote": 20000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "relics",
+      "item": "palamod:legendary_stone_fortune",
+      "quote": 20000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "relics",
+      "item": "palamod:legendary_stone_power",
+      "quote": 20000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "relics",
+      "item": "palamod:legendary_stone_jobs",
+      "quote": 20000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "relics",
+      "item": "palamod:legendary_stone_chaos",
+      "quote": 20000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "relics",
+      "item": "palamod:endium_gauntlet",
+      "quote": 2884340,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 5
+    },
+    {
+      "category": "relics",
+      "item": "palamod:pocket_enderchest",
+      "quote": 1500000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 5
+    },
+    {
+      "category": "relics",
+      "item": "palamod:cloud",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 6
+    },
+    {
+      "category": "relics",
+      "item": "palamod:hunter_amulet",
+      "quote": 61952,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 6
+    },
+    {
+      "category": "relics",
+      "item": "palamod:endium_nugget",
+      "quote": 160000,
+      "lot": [
+        1,
+        4
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 5
+    },
+    {
+      "category": "relics",
+      "item": "palamod:endium_ingot",
+      "quote": 1440000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 3
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:rune_fragment_common",
+      "quote": 40000,
+      "lot": [
+        2,
+        6
+      ],
+      "stock": [
+        1,
+        3
+      ],
+      "weight": 12
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:rune_fragment_rare",
+      "quote": 150000,
+      "lot": [
+        1,
+        4
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 9
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:rune_common",
+      "quote": 170000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 8
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:rune_rare",
+      "quote": 620000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 5
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:rune_epic",
+      "quote": 2500000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:forest_essence_fragment",
+      "quote": 20000,
+      "lot": [
+        2,
+        8
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 3
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:forest_essence",
+      "quote": 80000,
+      "lot": [
+        1,
+        4
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 3
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:forest_essence_concentrate",
+      "quote": 300000,
+      "lot": [
+        1,
+        2
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:cavern_essence_fragment",
+      "quote": 20000,
+      "lot": [
+        2,
+        8
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 3
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:cavern_essence",
+      "quote": 80000,
+      "lot": [
+        1,
+        4
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 3
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:cavern_essence_concentrate",
+      "quote": 300000,
+      "lot": [
+        1,
+        2
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:flame_essence_fragment",
+      "quote": 20000,
+      "lot": [
+        2,
+        8
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 3
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:flame_essence",
+      "quote": 80000,
+      "lot": [
+        1,
+        4
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 3
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:flame_essence_concentrate",
+      "quote": 300000,
+      "lot": [
+        1,
+        2
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:aquatic_essence_fragment",
+      "quote": 20000,
+      "lot": [
+        2,
+        8
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 3
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:aquatic_essence",
+      "quote": 80000,
+      "lot": [
+        1,
+        4
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 3
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:aquatic_essence_concentrate",
+      "quote": 300000,
+      "lot": [
+        1,
+        2
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:talikus_sword",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:talikus_reinforced_sword",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:talikus_helmet",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:talikus_reinforced_helmet",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:talikus_chestplate",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:talikus_reinforced_chestplate",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:talikus_leggings",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:talikus_reinforced_leggings",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:talikus_boots",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:talikus_reinforced_boots",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:nimbria_sword",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:nimbria_reinforced_sword",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:nimbria_helmet",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:nimbria_reinforced_helmet",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:nimbria_chestplate",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:nimbria_reinforced_chestplate",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:nimbria_leggings",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:nimbria_reinforced_leggings",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:nimbria_boots",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:nimbria_reinforced_boots",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:vitalys_sword",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:vitalys_reinforced_sword",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:vitalys_helmet",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:vitalys_reinforced_helmet",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:vitalys_chestplate",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:vitalys_reinforced_chestplate",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:vitalys_leggings",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:vitalys_reinforced_leggings",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:vitalys_boots",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:vitalys_reinforced_boots",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:manelios_sword",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:manelios_reinforced_sword",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:manelios_helmet",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:manelios_reinforced_helmet",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:manelios_chestplate",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:manelios_reinforced_chestplate",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:manelios_leggings",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:manelios_reinforced_leggings",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:manelios_boots",
+      "quote": 400000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "dungeon",
+      "item": "palamod:manelios_reinforced_boots",
+      "quote": 2000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "hunt",
+      "item": "palamod:upgrade_speed",
+      "quote": 43230,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 5
+    },
+    {
+      "category": "hunt",
+      "item": "palamod:upgrade_looting",
+      "quote": 43642,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 5
+    },
+    {
+      "category": "hunt",
+      "item": "palamod:upgrade_slime",
+      "quote": 43720,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 5
+    },
+    {
+      "category": "hunt",
+      "item": "palamod:upgrade_more",
+      "quote": 450000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 3
+    },
+    {
+      "category": "hunt",
+      "item": "palamod:spawner_structure_three",
+      "quote": 321130,
+      "lot": [
+        4,
+        12
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 4
+    },
+    {
+      "category": "hunt",
+      "item": "palamod:spawner_structure_four",
+      "quote": 1288290,
+      "lot": [
+        2,
+        6
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2
+    },
+    {
+      "category": "hunt",
+      "item": "palamod:capture_stone",
+      "quote": 25520,
+      "lot": [
+        1,
+        3
+      ],
+      "stock": [
+        1,
+        3
+      ],
+      "weight": 6
+    },
+    {
+      "category": "hunt",
+      "item": "palamod:passive_wither_gem",
+      "quote": 324480,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 4
+    },
+    {
+      "category": "hunt",
+      "item": "palamod:predator_wither_gem",
+      "quote": 1773369,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2
+    },
+    {
+      "category": "hunt",
+      "item": "palamod:supreme_wither_gem",
+      "quote": 5625889,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1
+    },
+    {
+      "category": "crates",
+      "item": "palamod:crate_key_common",
+      "quote": 100000,
+      "lot": [
+        1,
+        3
+      ],
+      "stock": [
+        1,
+        3
+      ],
+      "weight": 12,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:crate_key_rare",
+      "quote": 5000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 5,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:crate_key_legendary",
+      "quote": 150000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 1,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:box_amethyst",
+      "quote": 25000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:box_paladium",
+      "quote": 25000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:box_endium",
+      "quote": 25000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:box_saharia",
+      "quote": 25000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:box_trixium",
+      "quote": 25000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:box_halloween",
+      "quote": 25000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    }
+  ]
+}
