@@ -64,7 +64,8 @@ import java.util.zip.GZIPOutputStream;
  * <p><b>Le retour.</b> A l'echeance, les chunks sont charges en tache de fond et
  * relus tranche par tranche, 15 ms par tick au plus : seuls les blocs qui ont
  * change sont reposes, de bas en haut, sans mise a jour de voisinage (rien ne
- * tombe, rien ne coule) et sans vider les coffres au sol. Les gardes et les
+ * tombe, rien ne coule) et sans vider les coffres au sol. Une seconde passe
+ * rattrape ce qui a bouge pendant la premiere. Les gardes et les
  * betes de la base disparaissent, ses claims tombent. Un chunk que le joueur a
  * revendique entre-temps est laisse tel quel. Un joueur pris dans la roche est
  * remonte a la surface ; la chute lente couvre celui qui etait sur un mur.
@@ -440,9 +441,12 @@ public final class EnemyBaseRegen {
         boolean forced;
         boolean cleared;
         int waited;
+        int pass = 1;
         int chunk;
         int slab;
         int changed;
+        int again;
+        int kept;
         long nanos;
         int ticks;
 
@@ -509,10 +513,18 @@ public final class EnemyBaseRegen {
             if (chunk < snapshot.chunks()) {
                 return false;
             }
+            if (pass == 1) {
+                // Une seconde passe : l'eau d'une douve pas encore effacee a pu couler dans un chunk deja revenu.
+                pass = 2;
+                chunk = 0;
+                slab = 0;
+                return false;
+            }
             release(level);
             forget(server);
-            LOGGER.info("Terrain de la base des {} ({}) revenu : {} blocs reposes en {} ms sur {} ticks",
-                    pending.name, pending.key, changed, nanos / 1_000_000L, ticks);
+            LOGGER.info("Terrain de la base des {} ({}) revenu : {} blocs reposes, {} a la seconde passe, {} chunks "
+                            + "revendiques laisses, en {} ms sur {} ticks", pending.name, pending.key, changed, again,
+                    kept, nanos / 1_000_000L, ticks);
             ServerPlayer player = pending.player == null ? null : server.getPlayerList().getPlayer(pending.player);
             if (player != null) {
                 EnemyBase base = EnemyBases.of(player);
@@ -577,6 +589,9 @@ public final class EnemyBaseRegen {
             boolean enemy = owner.raidable() && owner.faction().equals(snapshot.name);
             if (owner.claimed() && !enemy) {
                 // Revendique par le joueur depuis : c'est chez lui, on n'y touche pas.
+                if (pass == 1) {
+                    kept++;
+                }
                 chunk++;
                 slab = 0;
                 return;
@@ -596,7 +611,11 @@ public final class EnemyBaseRegen {
                         pos.set(x0 + x, snapshot.minY + y, z0 + z);
                         if (target.getBlockState(pos) != wanted) {
                             level.setBlock(pos, wanted, FLAGS);
-                            changed++;
+                            if (pass == 1) {
+                                changed++;
+                            } else {
+                                again++;
+                            }
                         }
                     }
                 }
