@@ -405,6 +405,88 @@ def totem_elements():
     return elements
 
 
+def read_rgba_png(path):
+    """Lit une PNG RGBA 8 bits non entrelacee : (largeur, hauteur, lignes d'octets)."""
+    import zlib
+    data = open(path, "rb").read()
+    assert data[:8] == b"\x89PNG\r\n\x1a\n", path
+    chunks = []
+    offset = 8
+    while offset < len(data):
+        length = struct.unpack(">I", data[offset:offset + 4])[0]
+        chunks.append((data[offset + 4:offset + 8], data[offset + 8:offset + 8 + length]))
+        offset += 12 + length
+    width, height, depth, color, _, _, interlace = struct.unpack(">IIBBBBB", chunks[0][1])
+    assert (depth, color, interlace) == (8, 6, 0), "PNG RGBA 8 bits attendue : %s" % path
+    raw = zlib.decompress(b"".join(body for kind, body in chunks if kind == b"IDAT"))
+    row = width * 4
+    rows = []
+    previous = bytearray(row)
+    for y in range(height):
+        start = y * (row + 1)
+        kind = raw[start]
+        line = bytearray(raw[start + 1:start + 1 + row])
+        if kind == 1:
+            for x in range(4, row):
+                line[x] = (line[x] + line[x - 4]) & 0xFF
+        elif kind == 2:
+            for x in range(row):
+                line[x] = (line[x] + previous[x]) & 0xFF
+        elif kind == 3:
+            for x in range(row):
+                left = line[x - 4] if x >= 4 else 0
+                line[x] = (line[x] + ((left + previous[x]) >> 1)) & 0xFF
+        elif kind == 4:
+            for x in range(row):
+                left = line[x - 4] if x >= 4 else 0
+                up = previous[x]
+                corner = previous[x - 4] if x >= 4 else 0
+                p = left + up - corner
+                pa, pb, pc = abs(p - left), abs(p - up), abs(p - corner)
+                line[x] = (line[x] + (left if pa <= pb and pa <= pc else up if pb <= pc else corner)) & 0xFF
+        rows.append(line)
+        previous = line
+    return width, height, rows
+
+
+def shrink_icon(source, destination, size):
+    """Reduit une grande vignette en icone carree de `size` pixels.
+
+    La vignette est rognee a ce qu'elle dessine, centree dans un carre, puis
+    chaque pixel de l'icone est la moyenne de sa zone (couleurs ponderees par
+    l'opacite, sinon le transparent noircit les bords).
+    """
+    width, height, rows = read_rgba_png(source)
+    left, top, right, bottom = width, height, 0, 0
+    for y, line in enumerate(rows):
+        for x in range(width):
+            if line[x * 4 + 3]:
+                left, right = min(left, x), max(right, x + 1)
+                top, bottom = min(top, y), max(bottom, y + 1)
+    side = max(right - left, bottom - top)
+    x0 = (left + right - side) // 2
+    y0 = (top + bottom - side) // 2
+    pixels = {}
+    for py in range(size):
+        ya, yb = y0 + py * side // size, y0 + (py + 1) * side // size
+        for px in range(size):
+            xa, xb = x0 + px * side // size, x0 + (px + 1) * side // size
+            r = g = b = a = 0
+            for y in range(max(ya, 0), min(yb, height)):
+                line = rows[y]
+                for x in range(max(xa, 0), min(xb, width)):
+                    alpha = line[x * 4 + 3]
+                    r += line[x * 4] * alpha
+                    g += line[x * 4 + 1] * alpha
+                    b += line[x * 4 + 2] * alpha
+                    a += alpha
+            area = max(1, (yb - ya) * (xb - xa))
+            if a:
+                pixels[(px, py)] = ((r + a // 2) // a, (g + a // 2) // a, (b + a // 2) // a,
+                                    min(255, (a + area // 2) // area))
+    write_rgba_png(destination, size, size, pixels)
+
+
 def pad_png_height(path, height):
     """Allonge une PNG vers le bas jusqu'a `height`, par des lignes vides.
 
@@ -5452,6 +5534,33 @@ def main():
              "Structure %s: %s / %s blocks. Missing: %s at %s %s %s.")):
         fr["message.%s.spawner_controller.%s" % (NS, key)] = label_fr
         en["message.%s.spawner_controller.%s" % (NS, key)] = label_en
+
+    # ---- boxes de la boutique (jar PalaShop) ----
+    # Le bloc ne dessine rien (le coffre anime est une creature, voir
+    # BoxBlockEntity) : son modele ne porte que la texture des eclats de casse.
+    # L'icone est la vignette de la boutique de Paladium (1000 x 1000),
+    # reduite a 32 x 32.
+    shop_root = os.path.join(os.path.dirname(root[1].rstrip("/")), "PalaShop-7.8.0") if root[1] else None
+    for box, label_fr, label_en, particle in (
+            ("amethyst", "Box Amethyste", "Amethyst Box", "%s:block/amethyst_block" % NS),
+            ("paladium", "Box Paladium", "Paladium Box", "%s:block/paladium_block" % NS),
+            ("endium", "Box Endium", "Endium Box", "%s:block/endium_block" % NS),
+            ("saharia", "Box Saharia", "Saharia Box", "minecraft:block/sandstone_top"),
+            ("trixium", "Box Trixium", "Trixium Box", "%s:block/trixium_block" % NS),
+            ("halloween", "Box Halloween", "Halloween Box", "minecraft:block/pumpkin_side")):
+        name = "box_" + box
+        thumbnail = os.path.join(shop_root or "", "assets", "palashop", "boxes", box, "thumbnail.png")
+        if shop_root and os.path.exists(thumbnail):
+            shrink_icon(thumbnail, "assets/%s/textures/item/%s.png" % (NS, name), 32)
+        else:
+            missing.append("palashop:boxes/%s/thumbnail.png" % box)
+        write("assets/%s/blockstates/%s.json" % (NS, name),
+              {"variants": {"": {"model": "%s:block/%s" % (NS, name)}}})
+        write("assets/%s/models/block/%s.json" % (NS, name), {"textures": {"particle": particle}})
+        flat_item(name, "%s:item/%s" % (NS, name))
+        drops_itself(name)
+        label("block", name, label_fr, label_en)
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
 
     # ---- ecriture des tags accumules ----
     for path, entries in sorted(collected_tags.items()):

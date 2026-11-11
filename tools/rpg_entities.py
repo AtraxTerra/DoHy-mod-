@@ -442,9 +442,18 @@ PROP_SOUNDS = {
 }
 
 
+# Les boxes de la boutique de Paladium (jar PalaShop, assets/palashop/boxes) :
+# six coffres animes. On ne garde que l'attente et les quatre ouvertures
+# completes (« fast »), une par classe de lot, avec la bande-son de chacune.
+BOXES = ("amethyst", "paladium", "endium", "trixium", "saharia", "halloween")
+BOX_CLIPS = ("idle", "fast_common", "fast_rare", "fast_epic", "fast_legendary")
+
+
 def main():
     root = sys.argv[1]
     jar = sys.argv[2] if len(sys.argv) > 2 else None
+    # Troisieme argument : le jar PalaShop extrait, pour les boxes.
+    shop = sys.argv[3] if len(sys.argv) > 3 else None
     used = sorted(set(m for table in MOBS.values() for m in table.values()) | set(BOSSES.values()))
     for folder in ("assets/%s/entity" % NS, "assets/%s/textures/entity" % NS, "assets/%s/sounds/entity" % NS):
         shutil.rmtree(os.path.join(RES, folder), ignore_errors=True)
@@ -535,6 +544,48 @@ def main():
             transcode(os.path.join(assets, "sounds", source), target)
             sounds_json[name] = {"sounds": [{"name": "%s:entity/%s" % (NS, name.replace(".", "_"))}]}
             total_sounds += 1
+
+    boxes = {}
+    if shop:
+        for box in BOXES:
+            source = os.path.join(shop, "assets", "palashop", "boxes", box)
+            model = "box_" + box
+            geo = json.load(open(os.path.join(source, "model.json"), encoding="utf-8"))
+            geometry = geo["minecraft:geometry"][0]
+            write("assets/%s/entity/%s/model.json" % (NS, model), {"minecraft:geometry": [geometry]})
+            animations = convert_animations(os.path.join(source, "animation.json"))
+            animations = {name: animations[name] for name in BOX_CLIPS}
+            write("assets/%s/entity/%s/animation.json" % (NS, model), animations)
+            target_dir = os.path.join(RES, "assets", NS, "textures", "entity", model)
+            os.makedirs(target_dir, exist_ok=True)
+            shutil.copyfile(os.path.join(source, "texture.png"), os.path.join(target_dir, "default.png"))
+            index[model] = {
+                "texture_size": [geometry["description"]["texture_width"],
+                                 geometry["description"]["texture_height"]],
+                "textures": {"default": {"frames": 1, "frametime": 1}},
+                "roles": {"pose": None, "idle": "idle", "walk": None,
+                          "attacks": [], "hurt": None, "death": None, "spawn": None},
+                "flying": False}
+            # Les reperes « open » et « close » de chaque ouverture : le moment ou le lot se montre.
+            raw = json.load(open(os.path.join(source, "animation.json"), encoding="utf-8"))["animations"]
+            clips = {}
+            for name in BOX_CLIPS[1:]:
+                marks = {text.strip(" ;"): float(time) for time, text in raw[name].get("timeline", {}).items()}
+                clips[name[5:]] = {"length": animations[name]["length"], "open": marks["open"],
+                                   "close": marks["close"]}
+                stem = "box_%s_%s" % (box, name)
+                transcode(os.path.join(source, "sound", "fast", name[5:] + ".ogg"),
+                          os.path.join(RES, "assets", NS, "sounds", "entity", stem + ".ogg"))
+                sounds_json["box.%s.%s" % (box, name)] = {
+                    "sounds": [{"name": "%s:entity/%s" % (NS, stem)}]}
+                total_sounds += 1
+            boxes[box] = clips
+            print("%-26s %3d os, %2d animations (box)" % (model, len(geometry.get("bones", [])), len(animations)))
+        with open(os.path.join(RES, "data", NS, "boxes.json"), "w", encoding="utf-8") as handle:
+            json.dump({"_comment": "GENERE par tools/rpg_entities.py : les ouvertures des boxes de PalaShop, "
+                                   "par classe de lot. Durees et reperes en secondes.",
+                       "boxes": boxes}, handle, indent=2, ensure_ascii=False)
+            handle.write("\n")
 
     write("assets/%s/entity/index.json" % NS, index)
     with open(sounds_json_path, "w", encoding="utf-8") as handle:

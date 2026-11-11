@@ -1,4 +1,172 @@
 {
+ "box.amethyst.fast_common": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_amethyst_fast_common"
+   }
+  ]
+ },
+ "box.amethyst.fast_epic": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_amethyst_fast_epic"
+   }
+  ]
+ },
+ "box.amethyst.fast_legendary": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_amethyst_fast_legendary"
+   }
+  ]
+ },
+ "box.amethyst.fast_rare": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_amethyst_fast_rare"
+   }
+  ]
+ },
+ "box.endium.fast_common": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_endium_fast_common"
+   }
+  ]
+ },
+ "box.endium.fast_epic": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_endium_fast_epic"
+   }
+  ]
+ },
+ "box.endium.fast_legendary": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_endium_fast_legendary"
+   }
+  ]
+ },
+ "box.endium.fast_rare": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_endium_fast_rare"
+   }
+  ]
+ },
+ "box.halloween.fast_common": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_halloween_fast_common"
+   }
+  ]
+ },
+ "box.halloween.fast_epic": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_halloween_fast_epic"
+   }
+  ]
+ },
+ "box.halloween.fast_legendary": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_halloween_fast_legendary"
+   }
+  ]
+ },
+ "box.halloween.fast_rare": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_halloween_fast_rare"
+   }
+  ]
+ },
+ "box.paladium.fast_common": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_paladium_fast_common"
+   }
+  ]
+ },
+ "box.paladium.fast_epic": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_paladium_fast_epic"
+   }
+  ]
+ },
+ "box.paladium.fast_legendary": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_paladium_fast_legendary"
+   }
+  ]
+ },
+ "box.paladium.fast_rare": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_paladium_fast_rare"
+   }
+  ]
+ },
+ "box.saharia.fast_common": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_saharia_fast_common"
+   }
+  ]
+ },
+ "box.saharia.fast_epic": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_saharia_fast_epic"
+   }
+  ]
+ },
+ "box.saharia.fast_legendary": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_saharia_fast_legendary"
+   }
+  ]
+ },
+ "box.saharia.fast_rare": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_saharia_fast_rare"
+   }
+  ]
+ },
+ "box.trixium.fast_common": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_trixium_fast_common"
+   }
+  ]
+ },
+ "box.trixium.fast_epic": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_trixium_fast_epic"
+   }
+  ]
+ },
+ "box.trixium.fast_legendary": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_trixium_fast_legendary"
+   }
+  ]
+ },
+ "box.trixium.fast_rare": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/box_trixium_fast_rare"
+   }
+  ]
+ },
  "dungeon.jar.break": {
   "sounds": [
    {

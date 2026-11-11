@@ -7,6 +7,8 @@ import fr.atraxterra.dohy.boost.Crates;
 import fr.atraxterra.dohy.contract.ContractApi;
 import fr.atraxterra.dohy.economy.Bank;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.palamod.box.BoxKind;
+import fr.atraxterra.dohy.palamod.box.PalaBoxes;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.ui.view.UiNet;
@@ -23,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-/** La boutique : boosters, caisses, assurance et autosell. */
+/** La boutique : boosters, caisses, boxes, assurance et autosell. */
 public final class BoutiqueController extends MenuController {
 
     public static final BoutiqueController INSTANCE = new BoutiqueController();
@@ -78,6 +80,26 @@ public final class BoutiqueController extends MenuController {
                     .tooltip(crateTooltip(crate)));
         }
 
+        // Les boxes : un coffre anime a poser, qui ouvre les caisses de son palier.
+        List<Card> boxes = new ArrayList<>();
+        for (BoxKind kind : BoxKind.values()) {
+            if (!Crates.config().crates().containsKey(kind.tier())) {
+                continue;
+            }
+            ItemStack icon = new ItemStack(PalaBoxes.item(kind));
+            long missing = PalaBoxes.PRICE - Economy.balance(player);
+            Card card = Card.of(icon, MenuView.text(icon.getHoverName()), List.of(
+                            MoneyFormat.exact(PalaBoxes.PRICE), "Ouvre : " + Crates.title(kind.tier())))
+                    .accent(0xFF9B59E8)
+                    .tooltip(List.of("Un coffre anime a poser chez soi",
+                            "Clic droit : ouvre une caisse avec une cle",
+                            "Accroupi, main vide : achete une cle",
+                            "Meme butin que la caisse, l'ouverture en plus",
+                            missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) : ""));
+            boxes.add(missing > 0 ? card.state(MenuView.DISABLED)
+                    : card.action("box:" + kind.getSerializedName() + "|acheter"));
+        }
+
         int charges = Economy.of(player).insurance();
         BoostData data = Boosters.data(player);
         List<Card> services = new ArrayList<>();
@@ -111,6 +133,7 @@ public final class BoutiqueController extends MenuController {
         return new MenuView(id(), "Boutique", "Ce qui s'achete ici ne se trouve pas en jeu", stats, List.of(
                 new MenuView.Section("BOOSTERS", "upgrade", MenuView.GRID, boosters),
                 new MenuView.Section("CAISSES", "resources", MenuView.GRID, crates),
+                new MenuView.Section("BOXES", "armor", MenuView.GRID, boxes),
                 new MenuView.Section("SERVICES", "craft", MenuView.GRID, services)), true);
     }
 
@@ -181,6 +204,19 @@ public final class BoutiqueController extends MenuController {
         } else if (key.startsWith("key:")) {
             String tier = key.substring(4);
             report(player, Crates.buyKey(player, tier), "Cle " + tier + " achetee.");
+        } else if (key.startsWith("box:")) {
+            for (BoxKind kind : BoxKind.values()) {
+                if (kind.getSerializedName().equals(key.substring(4))) {
+                    ItemStack box = new ItemStack(PalaBoxes.item(kind));
+                    String name = box.getHoverName().getString();
+                    String refusal = Economy.tryDebit(player, PalaBoxes.PRICE) ? null
+                            : "Il te faut " + MoneyFormat.exact(PalaBoxes.PRICE) + " en liquide.";
+                    if (refusal == null && !player.getInventory().add(box)) {
+                        player.drop(box, false);
+                    }
+                    report(player, refusal, name + " achetee : pose-la, puis clic droit avec une cle.");
+                }
+            }
         } else if (key.startsWith("crate:")) {
             // Reussie, l'ouverture remplace la boutique par la roulette.
             String refusal = Crates.open(player, key.substring(6));
