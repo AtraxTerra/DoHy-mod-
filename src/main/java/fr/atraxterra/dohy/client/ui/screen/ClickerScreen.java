@@ -349,10 +349,10 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
         // Le bandeau du bas : ce que vaut un clic, et le jour de la saison.
         g.texture(BANNER, LEFT_X, BOTTOM - 44, COLUMN_W, 44, 509, 179);
         // La piece du bandeau occupe son haut : le texte passe dessous.
-        g.centered(Ui.BOLD, "+" + ClickerFormat.compact(view.click()) + " PAR CLIC", FOOD_X, BOTTOM - 30, 6.5f,
+        g.centered(Ui.BOLD, "+" + ClickerFormat.compact(view.click()) + " PAR CLIC", FOOD_X, BOTTOM - 25, 6.0f,
                 Ui.WHITE);
-        g.centered(Ui.WIDE, "CLIQUE POUR NOURRIR LES NAMUUS", FOOD_X, BOTTOM - 20, 3.4f, Ui.TEXT);
-        g.centered(Ui.BODY, "Jour " + view.day() + " du clicker", FOOD_X, BOTTOM - 12, 4.0f, 0xFFD9C9B8);
+        g.centered(Ui.WIDE, "CLIQUE POUR NOURRIR LES NAMUUS", FOOD_X, BOTTOM - 16.5f, 3.2f, Ui.TEXT);
+        g.centered(Ui.BODY, "Jour " + view.day() + " du clicker", FOOD_X, BOTTOM - 10, 3.8f, 0xFFD9C9B8);
     }
 
     private void drawUpgrades(UiGraphics g, double mouseX, double mouseY, double points) {
