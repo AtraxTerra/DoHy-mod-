@@ -308,7 +308,7 @@ public final class MachineDesigns {
     }, Map.of(
             0, UPGRADE_HINT,
             1, UPGRADE_HINT,
-            2, List.of("Case verrouillee", "S'ouvre avec l'amelioration de capacite"),
-            3, List.of("Case verrouillee", "S'ouvre avec l'amelioration de capacite")),
+            2, List.of("Case supplementaire", "Ouverte par l'amelioration de capacite"),
+            3, List.of("Case supplementaire", "Ouverte par l'amelioration de capacite")),
             List.of(new Button(SpawnerControllerBlockEntity.BUTTON_MODE, MODE_X, MODE_Y, MODE_W, MODE_H)));
 }

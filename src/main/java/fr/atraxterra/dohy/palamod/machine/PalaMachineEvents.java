@@ -92,7 +92,8 @@ public final class PalaMachineEvents {
             return;
         }
         event.setCanceled(true);
-        if (machine.canOpen(player)) {
+        // L'evenement passe pour chaque main : un refus ne se dit qu'une fois.
+        if (event.getHand() == net.minecraft.world.InteractionHand.MAIN_HAND && machine.canOpen(player)) {
             player.openMenu(machine);
         }
     }

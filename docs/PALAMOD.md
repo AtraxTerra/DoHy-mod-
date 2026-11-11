@@ -2666,3 +2666,5 @@ relevé à l'ouverture ; les objets ont aussi leur verrou ordinaire dans `data/j
 - Les six créatures restent celles du marteau de caverne : zombie, squelette, araignée, araignée
   venimeuse, slime, sorcière.
 - Les minuteries des vagues repartent au chargement du tronçon.
+- En difficulté Paisible, la créature du mode manuel disparaît comme tout monstre : seul le mode
+  automatique y est utilisable.
