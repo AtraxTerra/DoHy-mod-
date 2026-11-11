@@ -60,7 +60,7 @@ Le script vérifie au passage que le revenu horaire reste constant à l'intérie
 - **PalaMod** et son pack officiel : Paladium Games. Le contenu du namespace `palamod` en reprend
   les textures.
 - **Interfaces** (polices, hexagones des métiers, boutons, bannière) : les jars Paladium-UI et
-  PalaJobs, de Paladium Games. Montserrat est sous licence SIL OFL (`assets/dohy/font/montserrat_OFL.txt`) ;
+  PalaJobs, de Paladium Games. Montserrat est sous licence SIL OFL (`assets/dohy/font/montserrat_ofl.txt`) ;
   les polices Minecraft Dungeons, Minecraft et Pixel NES sont reprises telles que Paladium les livre.
 - **Équipement, essences et armure antique des donjons** (textures et modèles 3D de l'antique) :
   *Palamod Recreated*, de SILWOX et Solea Pixel (mod de fans pour 1.21, « All Rights Reserved »). Ces textures ne doivent pas être redistribuées

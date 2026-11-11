@@ -60,7 +60,7 @@ def fonts(ui_root):
     }
     for target, relative in copies.items():
         shutil.copyfile(os.path.join(source, relative), os.path.join(FONT, target))
-    shutil.copyfile(os.path.join(source, "Montserrat", "OFL.txt"), os.path.join(FONT, "montserrat_OFL.txt"))
+    shutil.copyfile(os.path.join(source, "Montserrat", "OFL.txt"), os.path.join(FONT, "montserrat_ofl.txt"))
     # Chaque police est definie a la taille 8 : le code la met a l'echelle
     # voulue. Le sur-echantillonnage garde le trait net jusqu'a x2.
     definitions = {

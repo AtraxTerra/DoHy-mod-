@@ -2,11 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "XXX",
-    "XXX",
+    "XYX",
     "XXX"
   ],
   "key": {
-    "X": "palamod:paladium_block"
+    "X": "palamod:paladium_block",
+    "Y": "palamod:paladium_ingot"
   },
   "result": {
     "id": "palamod:compressed_paladium",

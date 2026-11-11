@@ -977,9 +977,9 @@
     {
       "job": "miner",
       "level": 95,
-      "id": "palamod:job_candy",
-      "count": 1,
-      "label": "Bonbon de metier"
+      "id": "palamod:job_bottle_miner",
+      "count": 5,
+      "label": "Bouteille d'XP de metier"
     },
     {
       "job": "miner",
@@ -1355,9 +1355,9 @@
     {
       "job": "farmer",
       "level": 95,
-      "id": "palamod:job_candy",
-      "count": 1,
-      "label": "Bonbon de metier"
+      "id": "palamod:job_bottle_farmer",
+      "count": 5,
+      "label": "Bouteille d'XP de metier"
     },
     {
       "job": "farmer",
@@ -1652,9 +1652,9 @@
     {
       "job": "hunter",
       "level": 80,
-      "id": "palamod:tusk",
+      "id": "minecraft:bone_block",
       "count": 1,
-      "label": "Defense"
+      "label": "Bloc d'os"
     },
     {
       "job": "hunter",
@@ -1701,9 +1701,9 @@
     {
       "job": "hunter",
       "level": 95,
-      "id": "palamod:job_candy",
-      "count": 1,
-      "label": "Bonbon de metier"
+      "id": "palamod:job_bottle_hunter",
+      "count": 5,
+      "label": "Bouteille d'XP de metier"
     },
     {
       "job": "hunter",
@@ -2051,9 +2051,9 @@
     {
       "job": "alchemist",
       "level": 95,
-      "id": "palamod:job_candy",
-      "count": 1,
-      "label": "Bonbon de metier"
+      "id": "palamod:job_bottle_alchemist",
+      "count": 5,
+      "label": "Bouteille d'XP de metier"
     },
     {
       "job": "alchemist",
