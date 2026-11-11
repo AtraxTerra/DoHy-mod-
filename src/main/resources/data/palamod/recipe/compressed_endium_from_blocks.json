@@ -1,12 +1,13 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "XXX",
-    "XXX",
-    "XXX"
+    "XYX",
+    "YYY",
+    "XYX"
   ],
   "key": {
-    "X": "palamod:endium_block"
+    "X": "palamod:endium_fragment",
+    "Y": "palamod:paladium_block"
   },
   "result": {
     "id": "palamod:compressed_endium",

@@ -88,6 +88,9 @@ public final class Crates {
 
     @SubscribeEvent
     public static void onServerStarted(ServerStartedEvent event) {
+        // En solo, quitter un monde et en ouvrir un autre garde la JVM : les
+        // messages en attente datent de l'ancien serveur et de son compteur de ticks.
+        REVEALS.clear();
         load(event.getServer());
     }
 
@@ -274,7 +277,7 @@ public final class Crates {
         while (left > 0) {
             ItemStack part = stack.copyWithCount(Math.min(max, left));
             left -= part.getCount();
-            // add() rend vrai des qu'une partie est rangee : on regarde ce qui reste.
+            // add() vide la pile de ce qu'il range : ce qui reste n'a pas trouve de place.
             player.getInventory().add(part);
             if (!part.isEmpty()) {
                 player.drop(part, false);

@@ -2,11 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "XXX",
-    "XXX",
+    "XYX",
     "XXX"
   ],
   "key": {
-    "X": "palamod:amethyst_block"
+    "X": "palamod:amethyst_block",
+    "Y": "palamod:amethyst_ingot"
   },
   "result": {
     "id": "palamod:compressed_amethyst",

@@ -221,7 +221,7 @@ REWARD_NAMES = {
     "PALADIUM_LEGGINGS": ("paladium_leggings", "Jambieres en paladium"),
     "PALADIUM_BOOTS": ("paladium_boots", "Bottes en paladium"),
     # Pas encore portes : la recompense restera inerte jusqu'a leur chapitre.
-    "JOB_CANDY": ("job_candy", "Bonbon de metier"),
+    # (JOB_CANDY et TUSK ont un remplacant : voir SUBSTITUTES.)
     "WITHER_RECEPTACLE": ("wither_receptacle", "Receptacle de wither"),
     "FURNACE_UPGRADE": ("furnace_upgrade", "Amelioration de four"),
     "TRAVEL_BOOTS": ("travel_boots", "Bottes de voyage"),
@@ -231,7 +231,6 @@ REWARD_NAMES = {
     "PALADIUM_CHEST": ("paladium_chest", "Coffre en paladium"),
     "DIAMOND_STRING": ("diamond_string", "Fil de diamant"),
     "BOWUPGRADE_EMPTY": ("empty_bow_modifier", "Modificateur d'arc vide"),
-    "TUSK": ("tusk", "Defense"),
     "LIGHTNING_POTION": ("lightning_potion", "Potion de foudre"),
     "EXTRAPOLATED_BUCKET": ("extrapolated_bucket", "Seau extrapole"),
     "COMPRESSED_QUARTZ": ("compressed_quartz", "Quartz compresse"),
@@ -239,6 +238,19 @@ REWARD_NAMES = {
     "LOG_JUDEECERCIS": ("judeecercis_log", "Buche d'arbre de Judee"),
     "LOG_OSTRYA": ("ostrya_log", "Buche d'ostrya"),
     "LEAVE_ERABLE": ("erable_leaves", "Feuilles d'erable"),
+}
+
+# Recompenses dont l'objet ne sera pas porte, et leur remplacant :
+#  - le bonbon a deballer (ItemCandy, objet d'evenement communautaire) devient
+#    des bouteilles d'XP du meme metier (1 000 XP chacune, chapitre 18) ;
+#  - la defense d'elephant devient un bloc d'os, comme dans les recettes de
+#    cornes de la palamachine (chapitre 16).
+# Sans remplacant, la recompense n'etait pas distribuee du tout.
+CANDY_BOTTLES = 5
+SUBSTITUTES = {
+    "JOB_CANDY": lambda job, count: ("palamod:job_bottle_%s" % job, "Bouteille d'XP de metier",
+                                     count * CANDY_BOTTLES),
+    "TUSK": lambda job, count: ("minecraft:bone_block", "Bloc d'os", count),
 }
 
 # Enchantements de 1.7.10 par champ SRG. Meme regle de lettre : protection _c,
@@ -277,12 +289,16 @@ def rewards_of(raw):
             if reward.get("type") != "GIVE":
                 continue
             owner, name = reward["item"]
-            item_id, label = reward_item(owner, name, reward.get("meta", 0))
+            count = reward.get("count", 1)
+            if name in SUBSTITUTES:
+                item_id, label, count = SUBSTITUTES[name](job, count)
+            else:
+                item_id, label = reward_item(owner, name, reward.get("meta", 0))
             entry = {
                 "job": job,
                 "level": reward["level"] * SCALE,
                 "id": item_id,
-                "count": reward.get("count", 1),
+                "count": count,
                 "label": label,
             }
             enchantments = []

@@ -282,13 +282,14 @@ PARTICLE_TO_INGOT = {
     "green_paladium_particle": "palamod:green_paladium_ingot",
 }
 
-# Neuf blocs -> un compresse. C'est la progression de Paladium : lingot, bloc,
-# compresse. L'endium n'a pas de minerai classique, son bloc vient des pepites.
+# Les compresses, d'apres PRegister_Craft : huit blocs autour d'un lingot, et pas
+# de retour (un retour a neuf blocs rendrait huit lingots a chaque tour). Le
+# portage du chapitre 2 les faisait de neuf blocs, avec retour, avant le releve
+# des recettes ; corrige le 2026-11-11. L'endium compresse est a part, plus bas.
 COMPRESSED_FROM = {
-    "compressed_amethyst": "palamod:amethyst_block",
-    "compressed_titane": "palamod:titane_block",
-    "compressed_paladium": "palamod:paladium_block",
-    "compressed_endium": "palamod:endium_block",
+    "compressed_amethyst": ("palamod:amethyst_block", "palamod:amethyst_ingot"),
+    "compressed_titane": ("palamod:titane_block", "palamod:titane_ingot"),
+    "compressed_paladium": ("palamod:paladium_block", "palamod:paladium_ingot"),
 }
 
 
@@ -298,6 +299,45 @@ def write(path, payload):
     with open(full, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, indent=2, ensure_ascii=False)
         fh.write("\n")
+
+
+def pad_png_height(path, height):
+    """Allonge une PNG vers le bas jusqu'a `height`, par des lignes vides.
+
+    Un atlas de blocs prend le plus petit exposant de deux de ses textures pour
+    ses niveaux de mipmap : une seule texture de 46 pixels de haut les coupe a
+    un niveau pour TOUS les blocs du jeu (« dropping miplevel from 4 to 1 »).
+    Des lignes ajoutees a la fin, de filtre 0 et d'octets nuls, sont valides
+    quel que soit le type de couleur : inutile de defiltrer l'image existante.
+    """
+    import zlib
+    data = open(path, "rb").read()
+    assert data[:8] == b"\x89PNG\r\n\x1a\n", path
+    chunks = []
+    offset = 8
+    while offset < len(data):
+        length = struct.unpack(">I", data[offset:offset + 4])[0]
+        kind = data[offset + 4:offset + 8]
+        chunks.append((kind, data[offset + 8:offset + 8 + length]))
+        offset += 12 + length
+    ihdr = chunks[0][1]
+    width, old_height, depth, color, _, _, interlace = struct.unpack(">IIBBBBB", ihdr)
+    if old_height >= height:
+        return
+    assert interlace == 0, "PNG entrelacee : %s" % path
+    channels = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}[color]
+    row = (width * channels * depth + 7) // 8
+    raw = zlib.decompress(b"".join(body for kind, body in chunks if kind == b"IDAT"))
+    raw += (b"\x00" * (row + 1)) * (height - old_height)
+    ihdr = struct.pack(">IIBBBBB", width, height, depth, color, 0, 0, 0)
+
+    def chunk(kind, body):
+        return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", zlib.crc32(kind + body) & 0xFFFFFFFF)
+
+    out = [b"\x89PNG\r\n\x1a\n", chunk(b"IHDR", ihdr)]
+    out += [chunk(kind, body) for kind, body in chunks[1:] if kind not in (b"IDAT", b"IEND")]
+    out += [chunk(b"IDAT", zlib.compress(raw, 9)), chunk(b"IEND", b"")]
+    open(path, "wb").write(b"".join(out))
 
 
 def png_size(path):
@@ -510,14 +550,29 @@ def main():
         shapeless("%s_from_block" % ingot.split(":")[1],
                   ["%s:%s" % (NS, name)], ingot, count=9)
 
-    for compressed, block in COMPRESSED_FROM.items():
-        packed("%s_from_blocks" % compressed, block, "%s:%s" % (NS, compressed))
-        shapeless("%s_from_compressed" % block.split(":")[1],
-                  ["%s:%s" % (NS, compressed)], block, count=9)
+    for compressed, (block, ingot) in COMPRESSED_FROM.items():
+        shaped("%s_from_blocks" % compressed, ["XXX", "XYX", "XXX"], {"X": block, "Y": ingot},
+               "%s:%s" % (NS, compressed))
+    # L'endium compresse : quatre fragments d'endium aux coins, cinq blocs de
+    # paladium en croix (le portage demandait neuf blocs d'endium, 729 pepites).
+    shaped("compressed_endium_from_blocks", ["XYX", "YYY", "XYX"],
+           {"X": "%s:endium_fragment" % NS, "Y": "%s:paladium_block" % NS}, "%s:compressed_endium" % NS)
 
     packed("endium_ingot_from_nuggets", "%s:endium_nugget" % NS, "%s:endium_ingot" % NS)
     shapeless("endium_nugget_from_ingot", ["%s:endium_ingot" % NS],
               "%s:endium_nugget" % NS, count=9)
+    # Pepite et fragments, dans les deux sens (PRegister_Craft) : le fragment
+    # entre dans le lingot d'endium mixte.
+    shapeless("endium_fragment_from_nugget", ["%s:endium_nugget" % NS], "%s:endium_fragment" % NS, count=9)
+    packed("endium_nugget_from_fragments", "%s:endium_fragment" % NS, "%s:endium_nugget" % NS)
+
+    # Un lingot rend neuf particules (PRegister_Craft). Pas pour le fer ni l'or :
+    # la meme case vide donne deja leurs pepites vanilla, et deux recettes sur la
+    # meme grille se masquent.
+    for particle, ingot in PARTICLE_TO_INGOT.items():
+        if particle in ("iron_particle", "gold_particle", "green_paladium_particle"):
+            continue
+        shapeless("%s_from_ingot" % particle, [ingot], "%s:%s" % (NS, particle), count=9)
 
     # ---- tags ----
     tag("%s/tags/item/particles.json" % NS,
@@ -1583,15 +1638,13 @@ def main():
     shaped("paladium_fishing_rod", ["  P", " SX", "S X"], {
         "P": "%s:paladium_ingot" % NS, "S": "%s:paladium_stick" % NS, "X": "minecraft:string",
     }, "%s:paladium_fishing_rod" % NS)
-    # RECETTES DE SUBSTITUTION, signalees comme telles : leurs ingredients
-    # d'origine ne sont pas portes.
-    # - Epee de capture : les quatre batons a effet (vitesse, force, soin,
-    #   degats) deviennent des batons en paladium. Les trois tetes d'arme
-    #   (epee large, epee rapide, epee) sont celles du grinder, comme a
-    #   l'origine.
-    shaped("capture_sword", ["ABA", "DEF", "AHA"], {
-        "A": "%s:paladium_stick" % NS, "B": "%s:broadsword_head" % NS, "D": "%s:fastsword_head" % NS,
-        "E": "%s:compressed_paladium" % NS, "F": "%s:sword_head" % NS, "H": "%s:paladium_stick" % NS,
+    # Epee de capture : la recette d'origine. Les quatre sticks a effet
+    # (vitesse, force, soin, degats) sortent de la palamachine depuis le
+    # chapitre 16 ; ils avaient ete remplaces par des batons en paladium.
+    shaped("capture_sword", ["ABC", "DEF", "GHI"], {
+        "A": "%s:speed_stick" % NS, "B": "%s:broadsword_head" % NS, "C": "%s:strength_stick" % NS,
+        "D": "%s:fastsword_head" % NS, "E": "%s:compressed_paladium" % NS, "F": "%s:sword_head" % NS,
+        "G": "%s:heal_stick" % NS, "H": "%s:paladium_stick" % NS, "I": "%s:damage_stick" % NS,
     }, "%s:capture_sword" % NS)
     # Marteau des cavernes : la recette d'origine, maintenant que le marteau en
     # paladium (grinder) existe.
@@ -2341,12 +2394,17 @@ def main():
     label("block", "guardian_keeper", "Gardien de golem", "Guardian Keeper")
 
     # FoodMachineModel : un cube et un couvercle de 10 x 4 x 10, sur une texture
-    # de 64 x 46 lue en boites de modele (uv / 4 en largeur, x 16 / 46 en hauteur).
+    # de 64 x 46 lue en boites de modele. La texture est allongee a 64 x 64 (voir
+    # pad_png_height : 46 pixels coupaient les mipmaps de tout l'atlas des blocs),
+    # d'ou uv / 4 dans les deux sens.
     golem_tex("models/food_machine.png", "block/food_machine.png", (64, 46))
+    food_machine = os.path.join(RES, "assets", NS, "textures", "block", "food_machine.png")
+    if os.path.exists(food_machine):
+        pad_png_height(food_machine, 64)
 
     def box_uv(u, v, w, h, d):
         def rect(x0, y0, x1, y1):
-            return [round(x0 / 4.0, 3), round(y0 * 16.0 / 46.0, 3), round(x1 / 4.0, 3), round(y1 * 16.0 / 46.0, 3)]
+            return [round(x0 / 4.0, 3), round(y0 / 4.0, 3), round(x1 / 4.0, 3), round(y1 / 4.0, 3)]
         return {
             "up": rect(u + d, v, u + d + w, v + d),
             "down": rect(u + d + w, v, u + d + 2 * w, v + d),
@@ -4439,8 +4497,10 @@ def main():
     # l'obsidienne renforcee la remplace.
     shaped("faction_safe", ["TOT", "OTO", "TOT"],
            {"T": "%s:compressed_titane" % NS, "O": "%s:hardened_obsidian" % NS}, "%s:faction_safe" % NS)
+    # Des vitres (Blocks.field_150410_aZ), pas du verre : en verre, la grille
+    # etait celle du bloc de grotte et l'une masquait l'autre.
     shaped("vault_glass", ["GGG", "GFG", "GGG"],
-           {"G": "minecraft:glass", "F": "%s:findium" % NS}, "%s:vault_glass" % NS)
+           {"G": "minecraft:glass_pane", "F": "%s:findium" % NS}, "%s:vault_glass" % NS)
     shaped("liquid_gold", ["QQQ", "QNQ", "QQQ"],
            {"Q": "%s:empowered_quartz" % NS, "N": "%s:endium_nugget" % NS}, "%s:liquid_gold" % NS)
 
@@ -4827,6 +4887,15 @@ def main():
     if missing_recipes:
         raise SystemExit("aucune recette relevee pour : %s" % ", ".join(missing_recipes))
     print("recettes : %d portees depuis data/palamod_crafts.json" % len(emitted))
+    # Les secondes recettes d'un meme objet, que la boucle ecarte : l'orbe de
+    # regeneration a l'origine se fait aussi avec un livre.
+    shaped("heal_orb_from_book", [" X ", "XZX", " X "],
+           {"X": "%s:paladium_ingot" % NS, "Z": "minecraft:book"}, "%s:heal_orb" % NS)
+    # Deux recettes de PRegister_Craft sur des objets vanilla : le gres rendu en
+    # sable, l'obsidienne renforcee rendue en obsidienne (4 pour 4, l'inverse de
+    # sa recette : rien a gagner a l'aller-retour).
+    shapeless("sand_from_sandstone", ["minecraft:sandstone"], "minecraft:sand", count=4)
+    shaped("obsidian_from_hardened", ["XX", "XX"], {"X": "%s:hardened_obsidian" % NS}, "minecraft:obsidian", 4)
 
     # ---- generation du monde ----
     #

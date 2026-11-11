@@ -2,11 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "XXX",
-    "XXX",
+    "XYX",
     "XXX"
   ],
   "key": {
-    "X": "palamod:titane_block"
+    "X": "palamod:titane_block",
+    "Y": "palamod:titane_ingot"
   },
   "result": {
     "id": "palamod:compressed_titane",
