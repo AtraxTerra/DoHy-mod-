@@ -117,6 +117,14 @@ public final class DoHyAttachments {
                     .copyOnDeath()
                     .build());
 
+    /** Le marche : les achats du jour et les renouvellements payes. Conserve a la mort. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.auction.AuctionData>> AUCTION =
+            ATTACHMENT_TYPES.register("auction",
+                    () -> AttachmentType.builder(fr.atraxterra.dohy.auction.AuctionData::new)
+                            .serialize(fr.atraxterra.dohy.auction.AuctionData.MAP_CODEC, data -> !data.isEmpty())
+                            .copyOnDeath()
+                            .build());
+
     /** Le clicker : ClicCoins, batiments, ameliorations, rayons du Clic Shop. Conserve a la mort. */
     public static final Supplier<AttachmentType<fr.atraxterra.dohy.palamod.clicker.ClickerData>> CLICKER =
             ATTACHMENT_TYPES.register("clicker",

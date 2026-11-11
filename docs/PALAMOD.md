@@ -2822,3 +2822,67 @@ et le rechargement d'un monde avec une box posée.
   (cosmétiques, grades, points boutique) n'ont pas d'équivalent ici.
 - Pas de roulette en surimpression ni de vue « caméra » : l'ouverture se regarde dans le monde.
 - Le modèle est dessiné de 0,45 à 0,65 fois sa taille d'origine selon la box, pour tenir sur un bloc.
+
+## 34. Marché — l'hôtel des ventes, pour un joueur seul
+
+Demandé le 2026-11-11 (« un marché remixé pour le solo »). Le mod d'origine est **Market 7.1.0**
+(`palamarket`), trouvé dans le client Paladium du joueur : un hôtel des ventes **entre joueurs**
+(`/market`), dont le client ne contient que l'écran et les paquets — ni prix, ni objets, tout
+vient du serveur de Paladium. Il n'y a donc rien à porter : c'est une conception, faite avec le
+joueur. Ses choix : un **hôtel des ventes simulé**, qui vend des **raretés de PalaMod** et des
+**clés et boxes**, et **n'achète rien** (la vente reste au shop et aux contrats). PalaTrade
+(l'échange direct entre deux joueurs) n'a pas de sens en solo et n'est pas porté.
+
+Tout est dans `fr.atraxterra.dohy.auction` : `AuctionConfig` (la réserve), `AuctionHouse` (les
+annonces du jour, l'achat), `AuctionData` (les achats du jour), `AuctionController` (l'écran).
+
+### Ce que le joueur voit
+
+`/market`, ou la carte « Marché » du menu : douze annonces de vendeurs fictifs, en quatre rayons.
+
+| Rayon | Annonces par jour | Ce qu'on y trouve |
+|---|---|---|
+| Reliques | 3 | pierres légendaires, gant d'endium, enderchest de poche, fabrique à nuage, amulette du chasseur, endium |
+| Donjons | 4 | fragments et runes, essences des quatre éléments, équipement basique et renforcé des quatre donjons |
+| Chasse et wither | 2 | améliorations de spawner, obsidienne infusée, pierre de capture, gemmes de wither |
+| Clés et boxes | 3 | les trois clés de caisse, les six boxes |
+
+Chaque annonce a un **lot** (combien d'objets par achat), un **stock** (combien de lots), un
+vendeur et un **prix**. La bulle donne la cote de l'objet et l'écart du prix à cette cote ; une
+bonne affaire a un liseré vert et sa remise en pastille, un vendeur gourmand un liseré rouge.
+Les annonces changent **chaque jour**, à la bascule des contrats ; « Nouvelles annonces » les
+remplace tout de suite contre de l'argent.
+
+### Comment les annonces sont faites
+
+- **La réserve** est `data/auction.json`, écrit par `tools/market_offers.py` : 89 offres, avec
+  leur cote, leurs bornes de lot et de stock, et leur poids dans le rayon. La **cote** est la
+  valeur boutique de `tools/crate_values.py` (prix d'achat au shop, sinon coût des ingrédients,
+  sinon cote fixée) ; ce qui n'en avait pas en reçoit une dans le script, avec sa raison
+  (`QUOTES` : runes, essences, équipement de donjon).
+- **Le tirage** : par rayon, autant d'offres que d'annonces, sans remise, au poids. Une offre
+  dont l'objet n'existe pas dans la partie sort du tirage.
+- **Le prix** est la cote, fois le lot, fois un facteur : bonne affaire (15 % des annonces,
+  0,70 à 0,88), prix courant (65 %, 0,98 à 1,25), vendeur gourmand (20 %, 1,30 à 1,60), arrondi à
+  trois chiffres. Les **clés et les boxes** ont leurs propres bornes, 0,75 à 1,00 : jamais plus
+  cher qu'à la boutique.
+- **Rien n'est sauvegardé des annonces** : elles se recalculent à l'identique de la graine du
+  monde, du jour et du nombre de renouvellements payés. Seuls les achats du jour et ce compteur
+  sont gardés (`AuctionData`, conservé à la mort).
+- **Le renouvellement payé** : 250 000 $, puis le double à chaque fois, quatre fois par jour.
+  Il remplace toutes les annonces, achetées ou non.
+- `/dohy reload` relit la réserve.
+
+### Ce qui est laissé de côté
+
+- L'équipement de donjon **légendaire et antique** et les **sacs** : ce sont les récompenses des
+  paliers 65 à 100, et les vendre viderait les donjons de leur but.
+- Toute vente par le joueur, et les tiroirs (`Lucky Drawer`) de Paladium.
+
+### Vérifié en jeu (captures, 2026-11-11)
+
+L'écran (rayons, cartes, pastilles de remise, bulle, défilement) ; les annonces identiques à
+deux calculs de suite ; un achat (argent débité, objet dans l'inventaire, stock à zéro, carte
+« vendu ») ; les refus (plus de stock, pas assez d'argent, annonce inexistante) ; les quatre
+renouvellements à 250 k, 500 k, 1 M et 2 M, puis le refus du cinquième ; la carte du menu et
+la commande `/market`. Non vérifié : le changement d'annonces au passage d'un jour réel.

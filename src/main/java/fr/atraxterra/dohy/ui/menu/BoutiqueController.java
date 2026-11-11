@@ -209,13 +209,19 @@ public final class BoutiqueController extends MenuController {
             for (BoxKind kind : BoxKind.values()) {
                 if (kind.getSerializedName().equals(key.substring(4))) {
                     ItemStack box = new ItemStack(PalaBoxes.item(kind));
-                    String name = box.getHoverName().getString();
-                    String refusal = Economy.tryDebit(player, PalaBoxes.PRICE) ? null
-                            : "Il te faut " + MoneyFormat.exact(PalaBoxes.PRICE) + " en liquide.";
-                    if (refusal == null && !player.getInventory().add(box)) {
-                        player.drop(box, false);
+                    // Le nom se traduit chez le client : il reste un composant.
+                    Component name = box.getHoverName();
+                    if (!Economy.tryDebit(player, PalaBoxes.PRICE)) {
+                        report(player, "Il te faut " + MoneyFormat.exact(PalaBoxes.PRICE) + " en liquide.", "");
+                    } else {
+                        if (!player.getInventory().add(box)) {
+                            player.drop(box, false);
+                        }
+                        success(player);
+                        player.sendSystemMessage(Component.empty().append(name)
+                                .append(" achetee : pose-la, puis clic droit avec une cle.")
+                                .withStyle(ChatFormatting.GREEN));
                     }
-                    report(player, refusal, name + " achetee : pose-la, puis clic droit avec une cle.");
                 }
             }
         } else if (key.startsWith("crate:")) {

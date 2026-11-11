@@ -97,8 +97,10 @@ public final class DoHyCommand {
         boolean museum = MuseumConfig.load(source.getServer());
         boolean upgrades = UpgradeConfig.load(source.getServer());
         boolean jobs = JobConfig.load(source.getServer());
+        boolean auction = fr.atraxterra.dohy.auction.AuctionConfig.load(source.getServer());
 
-        if (prices && tiers && progression && contracts && crates && economy && museum && upgrades && jobs) {
+        if (prices && tiers && progression && contracts && crates && economy && museum && upgrades && jobs
+                && auction) {
             source.sendSuccess(() -> Component.literal(
                             "Recharge : " + Prices.book().size() + " items, paliers de collection a jour.")
                     .withStyle(ChatFormatting.GREEN), true);

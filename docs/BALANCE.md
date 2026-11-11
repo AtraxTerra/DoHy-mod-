@@ -648,6 +648,33 @@ dans 5 % des cas — ~77 k en liquide par boss, pour un combat qui peut durer tr
 Les réglages sont les trois tableaux `KEY_*` de `DungeonRewards` et `RARE_KEY_CHANCE` de
 `BossFight`.
 
+## 6 decies. Marché
+
+Le marché **ne paie jamais** : aucune boucle d'argent n'y est possible, c'est un puits. Ce qu'il
+faut tenir, ce sont trois choses.
+
+**Pas de revente gagnante.** Un objet se revend au shop à son prix de base, le quart de sa cote.
+L'annonce la moins chère est à 0,70 fois la cote : acheter au marché pour revendre perd toujours
+au moins 64 %.
+
+**Les clés.** Une clé en promotion coûte de 75 à 100 % de son prix. La caisse rend ~88 % de ce
+prix en valeur boutique et ~22 % en liquide : même à 75 %, ouvrir pour revendre perd de l'argent.
+Ce que la promotion change, c'est le prix d'accès — une clé légendaire à 112 M au lieu de 150 M,
+quand elle passe (une annonce sur trente du rayon).
+
+**Les pierres légendaires.** Cotées 20 M (§ 6 quater), elles étaient le gros lot de la caisse
+rare et ne s'achetaient nulle part. Elles sont maintenant en vente environ **deux jours sur cinq**,
+entre 14 M et 32 M. C'est le changement d'équilibrage du marché, voulu par le joueur (« raretés
+de PalaMod ») : la pierre devient un achat de milieu de partie plutôt qu'un coup de chance. Si
+c'est trop, baisser les poids des pierres dans `tools/market_offers.py`.
+
+| Réglage | Valeur | Où |
+|---|---|---|
+| Annonces par jour | 3 + 4 + 2 + 3 | `CATEGORIES` |
+| Bonne affaire / courant / gourmand | 15 % / 65 % / 20 % | `prices` |
+| Renouvellement payé | 250 k, doublé, 4 par jour (3,75 M au plus) | `per_reroll`, `max_rerolls` |
+| Cotes sans valeur boutique | fragment de rune 40 k et 150 k, rune 170 k, 620 k, 2,5 M ; essence 20 k, 80 k, 300 k ; pièce de donjon 400 k et 2 M ; capacité de spawner 450 k | `QUOTES` |
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas
