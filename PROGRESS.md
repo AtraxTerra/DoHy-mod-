@@ -188,7 +188,9 @@ maintenant avoir un bouton.
 coin, refus et bloc manquant annoncé ; vagues toutes les 12 s (10,8 s avec une vitesse) ; mode
 manuel (créature, compteur, coup : butin, 5 XP, XP de Chasseur, créature suivante) ; mode
 automatique (butin réparti dans deux coffres) ; règles des cases (doublon et case verrouillée
-refusés sans capacité) ; spawners liés puis déliés quand la structure tombe.
+refusés sans capacité) ; spawners liés puis déliés quand la structure tombe. Les gestes du client
+aussi : coup et clic droit sur la créature, clic sur le contrôleur, bouton de mode, refus dit une
+seule fois. Non vérifié : les verrous de métier des améliorations.
 
 **À savoir pour la suite** : hors structure le spawner customisé garde son comportement vanilla
 (demande antérieure du joueur) ; l'original n'y faisait rien. Le contrôleur ne travaille que
