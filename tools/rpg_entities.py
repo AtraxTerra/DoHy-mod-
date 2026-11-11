@@ -203,6 +203,40 @@ def interpolation(value):
     return "linear"
 
 
+# L'ecart tolere en retirant une image cle : degres, pixels, facteur d'echelle.
+TOLERANCE = {"rotation": 0.05, "position": 0.02, "scale": 0.003}
+
+
+def simplify(frames, tolerance):
+    """Retire les images cles qu'une interpolation lineaire de leurs voisines redonne.
+
+    L'echantillonnage du molang a 20 Hz produit des centaines d'images par
+    canal, dont la plupart sont alignees (ou identiques, sur un canal qui ne
+    bouge pas). Une image n'est retiree que si toutes celles sautees depuis la
+    derniere gardee restent a moins de `tolerance` de la corde : l'ecart ne
+    s'accumule pas. Un canal qui n'est pas tout lineaire est laisse tel quel.
+    """
+    if len(frames) < 3 or any(frame[4] != "linear" for frame in frames):
+        return frames
+    kept = [frames[0]]
+    anchor = 0
+    for index in range(1, len(frames) - 1):
+        start, end = frames[anchor], frames[index + 1]
+        span = end[0] - start[0]
+        fits = span > 0
+        if fits:
+            for middle in frames[anchor + 1:index + 1]:
+                mix = (middle[0] - start[0]) / span
+                if any(abs(start[c] + (end[c] - start[c]) * mix - middle[c]) > tolerance for c in (1, 2, 3)):
+                    fits = False
+                    break
+        if not fits:
+            kept.append(frames[index])
+            anchor = index
+    kept.append(frames[-1])
+    return kept
+
+
 def channel_frames(frames, length):
     """[[t, x, y, z, interpolation], ...] pour un canal, molang echantillonne."""
     if not isinstance(frames, dict) or ("vector" in frames and not any(
@@ -243,7 +277,7 @@ def convert_animations(source):
                 if channel in channels:
                     frames = channel_frames(channels[channel], length)
                     last = max(last, frames[-1][0])
-                    converted[channel] = frames
+                    converted[channel] = simplify(frames, TOLERANCE[channel])
             if converted:
                 bones[bone] = converted
         if length <= 0:

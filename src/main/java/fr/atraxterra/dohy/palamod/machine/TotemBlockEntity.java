@@ -64,7 +64,7 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
     /** 10 s dans l'original, donc 200 ticks. */
     private static final int GROWTH_PERIOD = 200;
 
-    /** 1 s dans l'original, donc 20 ticks. */
+    /** Le rythme de l'apparence (visage, etincelles) : une fois par seconde. */
     private static final int SCAN_PERIOD = 20;
 
     /** Le stock de carburant, un lingot de paladium a la fois. */
@@ -155,7 +155,6 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
 
         if (now >= nextScan) {
             nextScan = now + SCAN_PERIOD;
-            scan(server);
             syncCharge();
             // Un totem au travail se voit : quelques etincelles vertes autour du mat.
             if (!soils.isEmpty()) {
@@ -165,6 +164,9 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
         }
         if (now >= nextGrowth) {
             nextGrowth = now + GROWTH_PERIOD;
+            // La zone n'est relue qu'au moment de s'en servir : 225 blocs toutes
+            // les dix secondes, pas toutes les secondes.
+            scan(server);
             grow(server);
         }
     }

@@ -40,6 +40,7 @@ final class RpgAnimator {
     private int nextAttack;
 
     private String pose = "";
+    private String[] steps = new String[0];
     private float poseStart;
 
     /**
@@ -52,10 +53,10 @@ final class RpgAnimator {
             // Au premier regard, une pose en deux temps est deja passee : on montre la seconde.
             poseStart = seen || entity.tickCount < 10 ? age : -1.0e6f;
             pose = skin.pose();
+            steps = pose.split(">");
         }
         seen = true;
         float seconds = (age - poseStart) / 20.0f;
-        String[] steps = pose.split(">");
         RpgModels.Clip current = null;
         for (int i = 0; i < steps.length; i++) {
             RpgModels.Clip step = entry.named().get(steps[i]);
