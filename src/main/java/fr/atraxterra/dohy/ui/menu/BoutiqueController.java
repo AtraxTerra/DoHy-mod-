@@ -7,13 +7,12 @@ import fr.atraxterra.dohy.boost.Crates;
 import fr.atraxterra.dohy.contract.ContractApi;
 import fr.atraxterra.dohy.economy.Bank;
 import fr.atraxterra.dohy.economy.Economy;
-import fr.atraxterra.dohy.ui.Gui;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
+import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -70,20 +69,13 @@ public final class BoutiqueController extends MenuController {
                 continue;
             }
             int keys = Boosters.data(player).keys(tier);
-            List<String> tooltip = new ArrayList<>();
-            tooltip.add("Contenu possible :");
-            int weights = crate.entries().stream().mapToInt(Crates.Entry::weight).sum();
-            crate.entries().stream()
-                    .sorted((left, right) -> Integer.compare(right.weight(), left.weight()))
-                    .limit(6)
-                    .forEach(entry -> tooltip.add("  " + describe(entry, weights)));
             crates.add(Card.of(new ItemStack(keys > 0 ? Items.ENDER_CHEST : Items.TRAPPED_CHEST),
-                            "Caisse " + Gui.prettify(tier), List.of("Cle : " + MoneyFormat.exact(crate.price()),
+                            Crates.title(tier), List.of("Cle : " + MoneyFormat.exact(crate.price()),
                                     keys + " cle(s) en poche"))
                     .accent(0xFFEF3826).badge(keys > 0 ? keys + " CLE" : "")
                     .action("key:" + tier + "|acheter une cle")
                     .right(keys > 0 ? "crate:" + tier + "|ouvrir une caisse" : "")
-                    .tooltip(tooltip));
+                    .tooltip(crateTooltip(crate)));
         }
 
         int charges = Economy.of(player).insurance();
@@ -130,19 +122,33 @@ public final class BoutiqueController extends MenuController {
         };
     }
 
-    private static String describe(Crates.Entry entry, int weights) {
-        int percent = weights <= 0 ? 0 : Math.round(100.0f * entry.weight() / weights);
-        if (entry.item().isPresent()) {
-            Item item = BuiltInRegistries.ITEM.getOptional(entry.item().get()).orElse(null);
-            Component name = item == null ? Component.literal(Gui.prettify(entry.item().get().getPath()))
-                    : new ItemStack(item).getHoverName();
-            return MenuView.text(Component.literal(percent + " %  ").append(name)
-                    .append(" x" + Math.max(1, entry.count())));
+/**
+     * La bulle d'une caisse : la chance de chaque classe de lot, puis les gros
+     * lots (les plus rares d'abord).
+     */
+    private static List<String> crateTooltip(Crates.Crate crate) {
+        List<String> tooltip = new ArrayList<>();
+        List<Integer> odds = crate.odds();
+        tooltip.add("Chances :");
+        for (int rarity = 0; rarity < odds.size(); rarity++) {
+            tooltip.add("  " + Crates.rarityName(rarity) + " : " + percent(odds.get(rarity)));
         }
-        long low = Math.min(entry.moneyMin(), entry.moneyMax());
-        long high = Math.max(entry.moneyMin(), entry.moneyMax());
-        return percent + " %  " + (high > low ? MoneyFormat.shortForm(low) + " a " + MoneyFormat.shortForm(high)
-                : MoneyFormat.exact(low));
+        tooltip.add("Gros lots :");
+        crate.available().stream()
+                .sorted((left, right) -> left.rarityIndex() != right.rarityIndex()
+                        ? Integer.compare(right.rarityIndex(), left.rarityIndex())
+                        : Integer.compare(left.weight(), right.weight()))
+                .limit(4)
+                .forEach(entry -> tooltip.add(MenuView.text(Component.literal("  ").append(Crates.label(entry)))));
+        return tooltip;
+    }
+
+    /** 68 %, 1 %, 0,6 % : une decimale sous 1 %. */
+    private static String percent(int permille) {
+        if (permille >= 10) {
+            return Math.round(permille / 10.0f) + " %";
+        }
+        return "0," + permille + " %";
     }
 
     private static List<String> orderedCrates() {
@@ -173,10 +179,9 @@ public final class BoutiqueController extends MenuController {
             String tier = key.substring(4);
             report(player, Crates.buyKey(player, tier), "Cle " + tier + " achetee.");
         } else if (key.startsWith("crate:")) {
+            // Reussie, l'ouverture remplace la boutique par la roulette.
             String refusal = Crates.open(player, key.substring(6));
-            if (refusal == null) {
-                success(player);
-            } else {
+            if (refusal != null) {
                 failure(player);
                 player.sendSystemMessage(Component.literal(refusal).withStyle(ChatFormatting.RED));
             }
@@ -200,6 +205,32 @@ public final class BoutiqueController extends MenuController {
                 case "upgrades" -> UpgradesController.INSTANCE.open(player);
                 default -> {
                 }
+            }
+        }
+    }
+
+    /**
+     * Les boutons de la roulette : rouvrir (une cle en poche, sinon une cle
+     * achetee d'abord) ou revenir a la boutique.
+     */
+    public static void handleCrate(ServerPlayer player, UiNet.Action action) {
+        switch (action.verb()) {
+            case "again" -> {
+                String tier = action.argument();
+                String refusal = null;
+                if (Boosters.data(player).keys(tier) <= 0) {
+                    refusal = Crates.buyKey(player, tier);
+                }
+                if (refusal == null) {
+                    refusal = Crates.open(player, tier);
+                }
+                if (refusal != null) {
+                    failure(player);
+                    player.sendSystemMessage(Component.literal(refusal).withStyle(ChatFormatting.RED));
+                }
+            }
+            case "back" -> INSTANCE.open(player);
+            default -> {
             }
         }
     }

@@ -142,6 +142,7 @@ public final class UiNet {
         register(ShopView.ID, ShopView.STREAM_CODEC, fr.atraxterra.dohy.shop.ShopController::handle);
         register(JobsView.ID, JobsView.STREAM_CODEC, fr.atraxterra.dohy.job.JobsController::handle);
         register(JobDetailView.ID, JobDetailView.STREAM_CODEC, fr.atraxterra.dohy.job.JobsController::handleDetail);
+        register(CrateView.ID, CrateView.STREAM_CODEC, fr.atraxterra.dohy.ui.menu.BoutiqueController::handleCrate);
         register(fr.atraxterra.dohy.faction.FactionEditView.ID, fr.atraxterra.dohy.faction.FactionEditView.STREAM_CODEC,
                 fr.atraxterra.dohy.faction.FactionEdit::handle);
         for (fr.atraxterra.dohy.ui.menu.MenuController menu : fr.atraxterra.dohy.ui.menu.Menus.all()) {
