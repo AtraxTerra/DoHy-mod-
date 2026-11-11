@@ -2425,3 +2425,48 @@ portails secondaires, tentacules) ne sont pas portés : les attaques restent cel
 vanilla et des capacités de boss du chapitre 18.
 
 **Non repris** : les musiques des salles (non demandées), le sac de frappe.
+
+## 30. Donjons : salles décorées, coffre, jarres, marchands
+
+Demandé le 2026-11-11 : des donjons plus beaux, avec les ressources de Paladium. Le wiki ne
+décrit pas les salles ; il donne à chaque donjon un métier, les textures un élément, et les
+monstres de `rpgentities` une allure. Les thèmes en découlent (`RoomTheme`) :
+
+| Donjon | Thème | Sol | Murs | Aux murs | Au plafond | Meubles |
+|---|---|---|---|---|---|---|
+| Talikus (Fermier) | grange et serres | terre battue, mousse, fleurs | épicéa sur torchis, piliers de chêne | serres vitrées (azalées) | poutres de chêne noir, racines, fleurs à spores | bottes de foin, citrouilles, pastèques |
+| Nimbria (Mineur) | galerie de mine | ardoise, tuf, une voie ferrée | briques d'ardoise, étais de chêne | **filons de minerais de Paladium** (améthyste, titane, paladium) et d'or, diamant, émeraude | étais, stalactites | blocs de minerai brut, améthystes |
+| Vitalys (Chasseur, monstres de feu) | forge | pierre noire, braises affleurantes | briques du Nether, basalte poli | vitraux orange sur de la lave | lianes pleureuses | colonnes de basalte, os |
+| Manelios (Alchimiste) | temple englouti | prismarine, lanternes de mer affleurantes | prismarine, colonnes de quartz | aquariums (eau, coraux) | cristaux d'améthyste | prismarine, cristaux |
+
+Communs à toutes : une bordure et un médaillon au sol, une assise et un couronnement aux murs,
+une fenêtre haute par travée (murs nord, est, ouest ; le mur sud, où s'ouvrent les portes, reste
+nu), un plafond à caissons — une poutre dans l'axe de chaque pilier, une lanterne pendue à
+chaque croisement, au bout d'une chaîne plus longue dans la salle du boss. La salle de boost a
+son autel entre quatre lanternes, la salle du marchand un étal. Les obstacles gardent leur rôle
+de couvert ; plantes, mousse et rails se traversent. **Rien ne change au jeu** : mêmes
+dimensions, mêmes points d'apparition (une case occupée est évitée), mêmes boutons d'énigme
+(les fenêtres sont au-dessus). Les niches des fenêtres dépassent de deux blocs ; la salle les
+efface avec le reste.
+
+### Le décor animé de PalaRPG
+
+Le coffre, la jarre et les deux marchands viennent du jar PalaRPG 2.0.0
+(`assets/palarpg/models/blocks/dungeon`, `…/entities/dungeon/merchant`), modèles, animations et
+sons. Ils passent par le rendu des monstres (§ 29) : `RpgSkin.pose` nomme l'animation jouée, et
+la changer côté serveur la relance chez les clients (`"open>open_idle"` : la première une fois,
+puis la seconde).
+
+- **Coffre** (`DungeonProps`) : à la fin d'une salle, à la place du coffre vanilla. Commun après
+  un combat, rare après une énigme ou un mini-boss, légendaire après un boss — la couleur ne
+  change pas le contenu. Clic droit : le premier joueur l'ouvre, il reste ouvert ; chacun son
+  butin, comme avant. Sons de PalaRPG (apparition, ouverture par rareté).
+- **Jarres** : trois à six par salle de combat, d'énigme ou de boss, contre les murs. Un coup
+  (ou un clic droit) la brise ; **une fois sur quatre** elle lâche un tirage de la réserve du
+  donjon, dans le sac (voir `BALANCE.md`).
+- **Marchands** : Mammon ou Mephisto, au hasard, à la place du villageois. Même boutique.
+
+Coffre et jarres sont portés par une entité immobile, muette et invulnérable (un cochon sans
+IA dont on ne voit que le modèle), qui n'est pas un monstre et ne compte pas pour finir la salle.
+**Écart** : PalaRPG en fait des blocs ; ici ce sont des objets posés, ce qui évite un rendu de
+block entity et réutilise les animations telles quelles. Le « hub » de PalaRPG n'est pas porté.
