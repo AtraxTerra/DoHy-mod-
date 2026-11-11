@@ -227,6 +227,13 @@ final class EnemyBaseBuilder {
     /** Choisit le sol et prepare toutes les etapes. */
     void plan() {
         y0 = ground();
+        // Avant le premier bloc, le releve du terrain : il reviendra apres le raid.
+        EnemyBaseRegen.Snapshot terrain = EnemyBaseRegen.Snapshot.begin(level, name, cx, cz, tier.claimRadius(), y0,
+                tier.clearHeight());
+        for (int i = 0; i < terrain.chunks(); i++) {
+            int index = i;
+            steps.add(() -> terrain.capture(level, index));
+        }
         for (int x = -tier.half(); x <= tier.half(); x++) {
             int column = x;
             steps.add(() -> flatten(column));
@@ -241,6 +248,7 @@ final class EnemyBaseBuilder {
             }
         });
         steps.add(this::claim);
+        steps.add(() -> EnemyBaseRegen.store(level, terrain));
     }
 
     /** Avance le chantier pendant {@code budget} nanosecondes au plus ; vrai quand tout est pose. */
@@ -1676,6 +1684,7 @@ final class EnemyBaseBuilder {
         }
         mob.snapTo(cx + dx + 0.5d, y0, cz + dz + 0.5d, random.nextFloat() * 360.0f, 0.0f);
         mob.setPersistenceRequired();
+        mob.addTag(EnemyBaseRegen.BEAST_TAG);
         level.addFreshEntity(mob);
     }
 

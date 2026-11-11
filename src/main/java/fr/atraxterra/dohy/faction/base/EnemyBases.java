@@ -61,8 +61,9 @@ import java.util.UUID;
  * <p>Ses claims suivent la regle de Paladium : rien a la main, mais les
  * explosions et les withers y passent. <b>Entrer dans la salle des coffres,
  * c'est l'avoir pillee</b> : de l'ELO, de l'argent a la banque de faction, et
- * les claims tombent, les coffres s'ouvrent. Une base a la fois ; l'abandonner
- * la laisse en place, claimee, sans recompense.
+ * les claims tombent, les coffres s'ouvrent. Une base a la fois. Cinq minutes
+ * apres le pillage ou l'abandon, la base s'efface et le terrain revient tel
+ * qu'il etait ({@link EnemyBaseRegen}).
  */
 @EventBusSubscriber
 public final class EnemyBases {
@@ -446,9 +447,13 @@ public final class EnemyBases {
                 ChatFormatting.GREEN);
         FactionApi.stat(player, "raid:base", 1);
         FactionApi.stat(player, "raid:" + tier.key(), 1);
+        if (EnemyBaseRegen.schedule(level.getServer(), player, base)) {
+            FactionApi.tell(player, "Emporte le butin : dans 5 minutes la base s'efface et le terrain reprend "
+                    + "ses droits.", ChatFormatting.YELLOW);
+        }
     }
 
-    /** Oublie la base : elle reste claimee, a piller, mais sans recompense. */
+    /** Oublie la base : sans recompense, et le terrain la reprend dans cinq minutes. */
     public static String abandon(ServerPlayer player) {
         Job job = JOBS.get(player.getUUID());
         if (job != null && job.builder != null) {
@@ -461,7 +466,12 @@ public final class EnemyBases {
         if (!of(player).active()) {
             return "Tu n'as pas de base a piller";
         }
+        EnemyBase base = of(player);
         player.setData(Factions.ENEMY_BASE.get(), EnemyBase.EMPTY);
+        if (EnemyBaseRegen.schedule(((ServerLevel) player.level()).getServer(), player, base)) {
+            FactionApi.tell(player, "Les " + base.name() + " plient bagage : dans 5 minutes leur base s'efface et "
+                    + "le terrain reprend ses droits.", ChatFormatting.YELLOW);
+        }
         return null;
     }
 

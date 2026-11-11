@@ -80,12 +80,13 @@ public final class EnemyBaseMenu extends MenuController {
             boolean armed = armed(player);
             target.add(Card.of(new ItemStack(Items.BARRIER), armed ? "Confirmer ?" : "Abandonner", List.of(
                             armed ? "Clique encore pour confirmer" : "Deux clics",
-                            "Elle reste, sans recompense"))
+                            "Sans recompense : elle s'efface", "au bout de 5 minutes"))
                     .accent(0xFF55545C).action("abandon|abandonner"));
         } else {
             target.add(Card.of(new ItemStack(Items.MAP), base.state() == EnemyBase.LOOTED
                             ? "Les " + base.name() + " : pillee" : "Aucune cible", List.of(
-                            "Demande une base ci-dessous", "Une a la fois"))
+                            EnemyBaseRegen.regenerating(base) ? "Le terrain la reprend bientot"
+                                    : "Demande une base ci-dessous", "Une a la fois"))
                     .state(base.state() == EnemyBase.LOOTED ? MenuView.DONE : MenuView.DISABLED));
         }
         // Le genre : celui que les eclaireurs trouveront, ou celui qu'on leur demande.
