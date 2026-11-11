@@ -400,7 +400,7 @@ public final class DungeonEvents {
 
     /**
      * {@code /donjon quitter} : abandonner le palier ; {@code /donjon sac} : voir
-     * son sac ; {@code /profil} : le profil RPG, comme le bouton de l'inventaire.
+     * son sac ; {@code /profil} : le profil RPG, aussi au menu principal.
      */
     @SubscribeEvent
     public static void onCommands(RegisterCommandsEvent event) {

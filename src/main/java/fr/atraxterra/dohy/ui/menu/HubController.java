@@ -169,6 +169,25 @@ public final class HubController extends MenuController {
                 .accent(league.color()).action("faction");
     }
 
+    /** Les menus que les boutons de l'inventaire peuvent ouvrir. */
+    private static final java.util.Set<String> INVENTORY_TARGETS =
+            java.util.Set.of("shop", "contracts", "bank", "faction", "jobs", "trixium");
+
+    /**
+     * Ouvre le menu demande par un bouton de l'inventaire ({@code InventoryNav}).
+     *
+     * <p>{@code hub} ouvre ce menu-ci ; les autres passent par les memes cartes
+     * que le menu principal, donc par les memes regles. Un nom hors de la liste
+     * ne fait rien : il vient du client.
+     */
+    public static void openTarget(ServerPlayer player, String target) {
+        if ("hub".equals(target)) {
+            INSTANCE.open(player);
+        } else if (INVENTORY_TARGETS.contains(target)) {
+            INSTANCE.card(player, target, 0);
+        }
+    }
+
     @Override
     protected void card(ServerPlayer player, String key, int button) {
         switch (key) {
