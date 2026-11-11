@@ -1,0 +1,6 @@
+{
+  "parent": "palamod:block/totem_of_fertility",
+  "textures": {
+    "face": "palamod:block/totem_of_fertility_face_1"
+  }
+}

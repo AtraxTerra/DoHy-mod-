@@ -1,7 +1,64 @@
 {
   "variants": {
-    "": {
+    "charge=0,facing=north": {
       "model": "palamod:block/totem_of_fertility"
+    },
+    "charge=0,facing=east": {
+      "model": "palamod:block/totem_of_fertility",
+      "y": 90
+    },
+    "charge=0,facing=south": {
+      "model": "palamod:block/totem_of_fertility",
+      "y": 180
+    },
+    "charge=0,facing=west": {
+      "model": "palamod:block/totem_of_fertility",
+      "y": 270
+    },
+    "charge=1,facing=north": {
+      "model": "palamod:block/totem_of_fertility_1"
+    },
+    "charge=1,facing=east": {
+      "model": "palamod:block/totem_of_fertility_1",
+      "y": 90
+    },
+    "charge=1,facing=south": {
+      "model": "palamod:block/totem_of_fertility_1",
+      "y": 180
+    },
+    "charge=1,facing=west": {
+      "model": "palamod:block/totem_of_fertility_1",
+      "y": 270
+    },
+    "charge=2,facing=north": {
+      "model": "palamod:block/totem_of_fertility_2"
+    },
+    "charge=2,facing=east": {
+      "model": "palamod:block/totem_of_fertility_2",
+      "y": 90
+    },
+    "charge=2,facing=south": {
+      "model": "palamod:block/totem_of_fertility_2",
+      "y": 180
+    },
+    "charge=2,facing=west": {
+      "model": "palamod:block/totem_of_fertility_2",
+      "y": 270
+    },
+    "charge=3,facing=north": {
+      "model": "palamod:block/totem_of_fertility_3"
+    },
+    "charge=3,facing=east": {
+      "model": "palamod:block/totem_of_fertility_3",
+      "y": 90
+    },
+    "charge=3,facing=south": {
+      "model": "palamod:block/totem_of_fertility_3",
+      "y": 180
+    },
+    "charge=3,facing=west": {
+      "model": "palamod:block/totem_of_fertility_3",
+      "y": 270
     }
   }
 }

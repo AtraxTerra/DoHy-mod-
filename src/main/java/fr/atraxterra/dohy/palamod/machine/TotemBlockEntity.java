@@ -2,9 +2,11 @@ package fr.atraxterra.dohy.palamod.machine;
 
 import fr.atraxterra.dohy.palamod.PalaBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -110,6 +112,7 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
         if (fuel.isEmpty()) {
             fuel = held.copyWithCount(1);
             setChanged();
+            syncCharge();
             return true;
         }
         if (!ItemStack.isSameItemSameComponents(fuel, held)
@@ -118,7 +121,27 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
         }
         fuel.grow(1);
         setChanged();
+        syncCharge();
         return true;
+    }
+
+    /**
+     * Met le visage du totem a la couleur de son carburant
+     * ({@link TotemBlock#CHARGE}). Un totem pose avant que la propriete
+     * existe se met a jour au premier balayage.
+     */
+    private void syncCharge() {
+        if (level == null || level.isClientSide()) {
+            return;
+        }
+        BlockState state = getBlockState();
+        if (!state.hasProperty(TotemBlock.CHARGE)) {
+            return;
+        }
+        int charge = TotemBlock.chargeOf(fuel.getCount());
+        if (state.getValue(TotemBlock.CHARGE) != charge) {
+            level.setBlock(worldPosition, state.setValue(TotemBlock.CHARGE, charge), Block.UPDATE_CLIENTS);
+        }
     }
 
     // -- Travail -------------------------------------------------------------
@@ -133,6 +156,12 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
         if (now >= nextScan) {
             nextScan = now + SCAN_PERIOD;
             scan(server);
+            syncCharge();
+            // Un totem au travail se voit : quelques etincelles vertes autour du mat.
+            if (!soils.isEmpty()) {
+                server.sendParticles(ParticleTypes.HAPPY_VILLAGER, worldPosition.getX() + 0.5d,
+                        worldPosition.getY() + 1.3d, worldPosition.getZ() + 0.5d, 3, 0.45d, 0.6d, 0.45d, 0.0d);
+            }
         }
         if (now >= nextGrowth) {
             nextGrowth = now + GROWTH_PERIOD;
@@ -212,6 +241,7 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
         }
         boosts = 0;
         fuel.shrink(1);
+        syncCharge();
     }
 
     // -- Sauvegarde ----------------------------------------------------------

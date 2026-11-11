@@ -301,6 +301,110 @@ def write(path, payload):
         fh.write("\n")
 
 
+def write_rgba_png(path, width, height, pixels):
+    """Ecrit une PNG RGBA. pixels : {(x, y): (r, g, b, a)}, le reste transparent."""
+    import zlib
+    raw = bytearray()
+    for y in range(height):
+        raw.append(0)
+        for x in range(width):
+            raw.extend(pixels.get((x, y), (0, 0, 0, 0)))
+
+    def chunk(kind, body):
+        return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", zlib.crc32(kind + body) & 0xFFFFFFFF)
+
+    full = os.path.join(RES, path)
+    os.makedirs(os.path.dirname(full), exist_ok=True)
+    with open(full, "wb") as fh:
+        fh.write(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0))
+                 + chunk(b"IDAT", zlib.compress(bytes(raw), 9)) + chunk(b"IEND", b""))
+
+
+# Le totem de fertilite, d'apres ModelTotem (PalaMod 10.3.0) : decalage de
+# texture, position, taille, miroir. Reperes d'un modele Techne : y descend, le
+# sol est a 24 ; RenderTotem le retourne de 180 degres autour de z.
+TOTEM_BOXES = [
+    ((0, 34), (-7, 23, -7), (14, 1, 14), False),   # le socle
+    ((0, 17), (-4, 14, -4), (8, 9, 8), True),      # la tete du bas
+    ((32, 17), (-3, 12, -3), (6, 2, 6), False),
+    ((0, 0), (-4, 3, -4), (8, 9, 8), False),       # la tete du milieu, visage devant
+    ((32, 25), (-3, 1, -3), (6, 2, 6), False),
+    ((32, 0), (-4, -8, -4), (8, 9, 8), False),     # la tete du haut, visage derriere
+    ((0, 49), (-6, 4, 0), (2, 7, 1), False),       # les ailes, en escalier
+    ((56, 41), (-8, 3, 0), (2, 6, 1), False),
+    ((56, 22), (-10, 2, 0), (2, 5, 1), False),
+    ((56, 17), (-11, 1, 0), (1, 4, 1), False),
+    ((60, 17), (10, 1, 0), (1, 4, 1), False),
+    ((56, 28), (8, 2, 0), (2, 5, 1), False),
+    ((56, 34), (6, 3, 0), (2, 6, 1), False),
+    ((6, 49), (4, 4, 0), (2, 7, 1), False),
+]
+
+# Le visage de totem_layer.png : sept lignes de six pixels, # allume. L'original
+# le peint sur la face avant de la tete du milieu et la face arriere de celle du
+# haut ; ici il a sa propre texture de 16x16, le visage dans le coin.
+TOTEM_FACE = ["######", "..##..", "..##..", "##..##", "#....#", "#.##.#", "######"]
+
+# La couleur du visage par niveau de charge. RenderTotem la tire de la teinte
+# max(lingots / 64 / 3, 0.07), saturation 1 : de l'orange au vert. Eteint sans
+# carburant.
+TOTEM_FACE_COLORS = [(58, 50, 46), (255, 107, 0), (255, 221, 0), (64, 255, 48)]
+
+
+def totem_face_pixels(color):
+    pixels = {}
+    for row, line in enumerate(TOTEM_FACE):
+        for column, lit in enumerate(line):
+            pixels[(column, row)] = color + (255,) if lit == "#" else (16, 10, 8, 255)
+    return pixels
+
+
+def totem_elements():
+    """Les boites de ModelTotem en elements de modele de bloc.
+
+    Un point (x, y, z) du modele arrive en (8 - x, 24 - y, 8 + z) : la face
+    -x du modele est a l'est du bloc, sa face du dessus (y minimal) en haut.
+    Les UV sont ceux d'une boite ModelBox : -x, z0, +x, z1 cote a cote sous le
+    dessus et le dessous. Le dessus est tourne de 180 degres et le dessous
+    retourne, comme le rend le TESR.
+    """
+    def uv(u0, v0, u1, v1):
+        return [u0 / 4.0, v0 / 4.0, u1 / 4.0, v1 / 4.0]
+
+    elements = []
+    for (u, v), (x, y, z), (w, h, d), mirror in TOTEM_BOXES:
+        faces = {
+            "east": (u, v + d, u + d, v + d + h),
+            "north": (u + d, v + d, u + d + w, v + d + h),
+            "west": (u + d + w, v + d, u + d + w + d, v + d + h),
+            "south": (u + d + w + d, v + d, u + d + w + d + w, v + d + h),
+            "up": (u + d, v, u + d + w, v + d),
+            "down": (u + d + w + w, v, u + d + w, v + d),
+        }
+        if mirror:
+            faces["east"], faces["west"] = faces["west"], faces["east"]
+            # Le miroir d'un ModelBox echange les faces est et ouest et retourne les autres.
+            faces = {name: rect if name in ("east", "west") else (rect[2], rect[1], rect[0], rect[3])
+                     for name, rect in faces.items()}
+        element = {
+            "from": [8 - (x + w), 24 - (y + h), 8 + z],
+            "to": [8 - x, 24 - y, 8 + z + d],
+            "faces": {name: {"uv": uv(*rect), "texture": "#wood"} for name, rect in faces.items()},
+        }
+        element["faces"]["up"]["rotation"] = 180
+        elements.append(element)
+    # Les deux visages : un plan devant la face, lumineux.
+    elements.append({
+        "from": [5, 13, 3.98], "to": [11, 20, 3.98], "shade": False, "light_emission": 15,
+        "faces": {"north": {"uv": [0, 0, 6, 7], "texture": "#face"}},
+    })
+    elements.append({
+        "from": [5, 24, 12.02], "to": [11, 31, 12.02], "shade": False, "light_emission": 15,
+        "faces": {"south": {"uv": [0, 0, 6, 7], "texture": "#face"}},
+    })
+    return elements
+
+
 def pad_png_height(path, height):
     """Allonge une PNG vers le bas jusqu'a `height`, par des lignes vides.
 
@@ -886,22 +990,52 @@ def main():
     # ---- chapitre 5 : le totem de fertilite ----
     #
     # L'original le dessine avec un TESR (ModelTotem, RenderTotem) : un mat
-    # sculpte, pas un cube. On s'en tient a un cube texture, parce qu'un
-    # renderer de block entity est le genre de code client que ce mod evite, et
-    # que la texture blocks/totem.png du pack suffit a le rendre
-    # reconnaissable. Note comme un ecart dans docs/PALAMOD.md.
-    if not copy_texture(root, "blocks/totem.png", "block/totem_of_fertility.png", wrong_size):
-        missing.append("blocks/totem.png")
+    # sculpte de deux blocs de haut, trois tetes empilees et deux ailes, et un
+    # visage qui luit de la couleur du carburant. Le portage en faisait un cube
+    # texture ; c'est maintenant le modele d'origine, traduit en modele de bloc
+    # (aucun renderer de block entity) : les quatorze boites de ModelTotem,
+    # relevees au bytecode, et le visage de totem_layer.png en deux plans
+    # lumineux, un par niveau de charge (propriete `charge` du bloc).
+    if not copy_texture(root, "models/totem.png", "block/totem_of_fertility.png", wrong_size, expected=(64, 64)):
+        missing.append("models/totem.png")
+    for charge, color in enumerate(TOTEM_FACE_COLORS):
+        write_rgba_png("assets/%s/textures/block/totem_of_fertility_face_%d.png" % (NS, charge), 16, 16,
+                       totem_face_pixels(color))
     write("assets/%s/models/block/totem_of_fertility.json" % NS, {
-        "parent": "minecraft:block/cube_all",
-        "textures": {"all": "%s:block/totem_of_fertility" % NS},
+        "parent": "minecraft:block/block",
+        "textures": {"wood": "%s:block/totem_of_fertility" % NS,
+                     "face": "%s:block/totem_of_fertility_face_0" % NS,
+                     "particle": "minecraft:block/spruce_log"},
+        "elements": totem_elements(),
+        "display": {
+            "gui": {"rotation": [30, 225, 0], "translation": [0, -3.25, 0], "scale": [0.4, 0.4, 0.4]},
+            "ground": {"rotation": [0, 0, 0], "translation": [0, 1, 0], "scale": [0.25, 0.25, 0.25]},
+            "fixed": {"rotation": [0, 0, 0], "translation": [0, -3.5, 0], "scale": [0.45, 0.45, 0.45]},
+            "thirdperson_righthand": {"rotation": [75, 45, 0], "translation": [0, 1.5, 0],
+                                      "scale": [0.3, 0.3, 0.3]},
+            "firstperson_righthand": {"rotation": [0, 45, 0], "translation": [0, 0, 0],
+                                      "scale": [0.3, 0.3, 0.3]},
+            "firstperson_lefthand": {"rotation": [0, 225, 0], "translation": [0, 0, 0],
+                                     "scale": [0.3, 0.3, 0.3]},
+        },
     })
-    write("assets/%s/blockstates/totem_of_fertility.json" % NS,
-          {"variants": {"": {"model": "%s:block/totem_of_fertility" % NS}}})
+    for charge in range(1, len(TOTEM_FACE_COLORS)):
+        write("assets/%s/models/block/totem_of_fertility_%d.json" % (NS, charge), {
+            "parent": "%s:block/totem_of_fertility" % NS,
+            "textures": {"face": "%s:block/totem_of_fertility_face_%d" % (NS, charge)},
+        })
+    # Le visage regarde celui qui pose le totem : nord sans rotation.
+    write("assets/%s/blockstates/totem_of_fertility.json" % NS, {"variants": {
+        "charge=%d,facing=%s" % (charge, facing): dict(
+            {"model": "%s:block/totem_of_fertility%s" % (NS, "_%d" % charge if charge else "")},
+            **({"y": rot} if rot else {}))
+        for charge in range(len(TOTEM_FACE_COLORS))
+        for facing, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270))
+    }})
     write("assets/%s/models/item/totem_of_fertility.json" % NS,
-          {"parent": "%s:block/totem_of_fertility" % NS})
+          {"parent": "%s:block/totem_of_fertility_3" % NS})
     write("assets/%s/items/totem_of_fertility.json" % NS, {
-        "model": {"type": "minecraft:model", "model": "%s:block/totem_of_fertility" % NS},
+        "model": {"type": "minecraft:model", "model": "%s:block/totem_of_fertility_3" % NS},
     })
     write("data/%s/loot_table/blocks/totem_of_fertility.json" % NS, {
         "type": "minecraft:block",

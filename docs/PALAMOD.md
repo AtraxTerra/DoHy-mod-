@@ -232,6 +232,20 @@ gratuit).
 Alimentation : lingot de paladium en main, clic droit (un lingot par clic). Clic droit à main
 vide : consulter le contenu. Maj + clic droit : afficher la zone. Cassé, il rend les lingots.
 
+**Apparence** (revue le 2026-11-11). L'original le dessine avec un TESR (`ModelTotem`,
+`RenderTotem`) : un mât sculpté de deux blocs de haut — socle, trois têtes empilées, deux ailes
+en escalier — dont le visage luit de la couleur du carburant. Le portage en avait fait un cube ;
+c'est désormais le modèle d'origine, relevé au bytecode (quatorze boîtes, texture
+`models/totem.png`) et traduit en **modèle de bloc**, sans renderer de block entity. Le visage
+de `totem_layer.png` est un plan lumineux sur la tête du milieu (devant) et celle du haut
+(derrière). Deux propriétés de bloc : `facing`, le visage regarde celui qui pose le totem ;
+`charge`, de 0 à 3 — éteint à vide, puis orange (1 à 21 lingots), jaune (22 à 42), vert (43 à
+64), d'après la teinte `max(lingots / 64 / 3, 0,07)` de l'original. Un totem alimenté qui a de
+la terre fertilisée dans sa zone lâche quelques étincelles vertes chaque seconde.
+**Écarts** : la couleur va par paliers et non en continu ; le battement du visage à chaque
+poussée (`timer / 60`) n'est pas repris ; le bloc n'occupe que sa case, la moitié haute du mât
+se traverse.
+
 ---
 
 ## 6. Cultures
