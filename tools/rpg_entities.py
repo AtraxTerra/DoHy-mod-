@@ -447,6 +447,9 @@ PROP_SOUNDS = {
 # completes (« fast »), une par classe de lot, avec la bande-son de chacune.
 BOXES = ("amethyst", "paladium", "endium", "trixium", "saharia", "halloween")
 BOX_CLIPS = ("idle", "fast_common", "fast_rare", "fast_epic", "fast_legendary")
+# Les os translucides d'une box, en plus de ses os « vfx » : ceux dont la
+# texture a des pixels a demi transparents (l'onde de sable, l'aura noire).
+BOX_GLOW = {"saharia": ("wave", "wave2"), "halloween": ("black_aura",)}
 
 
 def main():
@@ -568,7 +571,8 @@ def main():
                 "flying": False,
                 # Les rayons, faisceaux et eclats de l'ouverture : dessines a
                 # part, translucides et en pleine lumiere (RpgEntityModel.drawGlow).
-                "glow": sorted(bone["name"] for bone in geometry["bones"] if "vfx" in bone["name"])}
+                "glow": sorted([bone["name"] for bone in geometry["bones"] if "vfx" in bone["name"]]
+                               + list(BOX_GLOW.get(box, ())))}
             # Les reperes « open » et « close » de chaque ouverture : le moment ou le lot se montre.
             raw = json.load(open(os.path.join(source, "animation.json"), encoding="utf-8"))["animations"]
             clips = {}
