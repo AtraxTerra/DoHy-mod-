@@ -76,7 +76,14 @@ public final class JobXpEvents {
         if (player == null) {
             return;
         }
-        Identifier entityId = BuiltInRegistries.ENTITY_TYPE.getKey(event.getEntity().getType());
+        grantKill(player, BuiltInRegistries.ENTITY_TYPE.getKey(event.getEntity().getType()));
+    }
+
+    /**
+     * L'XP de metier d'une creature tuee. Appele aussi par le controleur de
+     * spawners, dont la creature du mode manuel ne meurt pas vraiment.
+     */
+    public static void grantKill(ServerPlayer player, Identifier entityId) {
         long xp = lookup(JobProgression.config().def(Job.HUNTER).sources()
                 .map(JobProgression.Sources::entities).orElse(Map.of()), entityId, null);
         if (xp > 0) {

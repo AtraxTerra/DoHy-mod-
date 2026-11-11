@@ -160,6 +160,24 @@ public class MachineMenu extends AbstractContainerMenu {
         return layout;
     }
 
+    /**
+     * Une machine a boutons. Le clic d'un bouton de l'ecran
+     * ({@code MachineKitScreen.Button}) arrive ici, cote serveur, par le paquet
+     * que le jeu reserve aux boutons de menu (celui de la table d'enchantement).
+     */
+    public interface Buttons {
+        boolean pressButton(net.minecraft.server.level.ServerPlayer player, int id);
+    }
+
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (container instanceof Buttons buttons
+                && player instanceof net.minecraft.server.level.ServerPlayer server) {
+            return buttons.pressButton(server, id);
+        }
+        return super.clickMenuButton(player, id);
+    }
+
     /** Avancement du cycle, entre 0 et 1. Zero quand la machine ne tourne pas. */
     public float progress() {
         int duration = data.get(DATA_DURATION);

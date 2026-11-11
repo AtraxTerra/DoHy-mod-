@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MOM",
+    "OBO",
+    "MOM"
+  ],
+  "key": {
+    "M": "palamod:amethyst_ingot",
+    "O": "palamod:spawner_structure_one",
+    "B": "palamod:paladium_block"
+  },
+  "result": {
+    "id": "palamod:spawner_structure_two",
+    "count": 1
+  }
+}

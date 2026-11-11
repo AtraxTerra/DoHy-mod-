@@ -12,9 +12,12 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 /**
@@ -34,19 +37,60 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
  *       explosion, et ne lache pas d'XP — sinon poser et casser serait une
  *       ferme a XP.</li>
  * </ul>
+ *
+ * <p><b>Dans une structure</b> ({@code linked}), il ne fait plus apparaitre de
+ * creature : c'est le controleur qui compte ses vagues
+ * ({@link SpawnerControllerBlockEntity}). Le spawner n'a alors plus de tick
+ * serveur, hormis une verification toutes les cinq secondes : si son
+ * controleur a disparu ou si la structure ne tient plus, il redevient un
+ * spawner ordinaire.
  */
 public class CustomSpawnerBlock extends SpawnerBlock {
 
     public static final IntegerProperty TIER = IntegerProperty.create("tier", 0, 4);
+    public static final BooleanProperty LINKED = BooleanProperty.create("linked");
+
+    /** Valeur de {@link PalaHunter#SPAWNER_LINK} d'un spawner sans controleur. */
+    public static final long NO_LINK = Long.MIN_VALUE;
+    private static final int LINK_CHECK = 100;
 
     public CustomSpawnerBlock(Properties properties) {
         super(properties);
-        registerDefaultState(getStateDefinition().any().setValue(TIER, 0));
+        registerDefaultState(getStateDefinition().any().setValue(TIER, 0).setValue(LINKED, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(TIER);
+        builder.add(TIER, LINKED);
+    }
+
+    /** Lie, le spawner ne tourne plus cote serveur ; la cage continue de tourner chez le client. */
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+                                                                  BlockEntityType<T> type) {
+        if (!level.isClientSide() && state.getValue(LINKED)) {
+            return (tickLevel, pos, tickState, entity) -> checkLink(tickLevel, pos, tickState, entity);
+        }
+        return super.getTicker(level, state, type);
+    }
+
+    private static void checkLink(Level level, BlockPos pos, BlockState state, BlockEntity entity) {
+        if (Math.floorMod(level.getGameTime() + pos.asLong(), (long) LINK_CHECK) != 0L) {
+            return;
+        }
+        long link = entity.getData(PalaHunter.SPAWNER_LINK.get());
+        if (link != NO_LINK) {
+            BlockPos controller = BlockPos.of(link);
+            if (!level.isLoaded(controller)) {
+                return;
+            }
+            if (level.getBlockEntity(controller) instanceof SpawnerControllerBlockEntity owner
+                    && owner.covers(pos)) {
+                return;
+            }
+            entity.removeData(PalaHunter.SPAWNER_LINK.get());
+        }
+        level.setBlock(pos, state.setValue(LINKED, false), Block.UPDATE_CLIENTS);
     }
 
     @Override

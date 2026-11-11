@@ -170,6 +170,8 @@ public final class DoHyClient {
         machine(event, PalaGolem.FOOD_MACHINE_MENU.get(), MachineDesigns.FOOD_MACHINE);
         machine(event, PalaGolem.GOLEM_BOX_MENU.get(), MachineDesigns.GOLEM_BOX);
         machine(event, PalaPvp.PALAMACHINE_MENU.get(), MachineDesigns.PALAMACHINE);
+        machine(event, fr.atraxterra.dohy.palamod.hunter.PalaHunter.SPAWNER_CONTROLLER_MENU.get(),
+                MachineDesigns.SPAWNER_CONTROLLER);
         for (KitMenus.Use use : KitMenus.Use.values()) {
             event.<ChestMenu, KitChestScreen>register(use.type(),
                     (menu, inventory, title) -> new KitChestScreen(menu, inventory, title, use));

@@ -543,7 +543,7 @@
       "id": "palamod:upgrade_more",
       "job": "alchemist",
       "level": 90,
-      "label": "Amelioration d'emplacements de spawner"
+      "label": "Amelioration de capacite de spawner"
     },
     {
       "id": "palamod:alchemist_throne",

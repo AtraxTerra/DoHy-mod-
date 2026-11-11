@@ -4,7 +4,10 @@ import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiContainerScreen;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
@@ -37,7 +40,24 @@ public final class MachineKitScreen extends UiContainerScreen<MachineMenu> {
      * @param big   les cases de sortie, a grand cadre
      * @param hints la bulle d'une case vide : ce qu'on y pose
      */
-    public record Design(Set<Integer> big, Painter painter, Map<Integer, List<String>> hints) {
+    public record Design(Set<Integer> big, Painter painter, Map<Integer, List<String>> hints,
+                         List<Button> buttons) {
+
+        public Design(Set<Integer> big, Painter painter, Map<Integer, List<String>> hints) {
+            this(big, painter, hints, List.of());
+        }
+    }
+
+    /**
+     * Une zone cliquable du panneau : le clic part au serveur comme un bouton de
+     * menu ({@code MachineMenu.Buttons}). Le dessin reste a la charge du
+     * {@link Painter}.
+     */
+    public record Button(int id, int x, int y, int width, int height) {
+
+        public boolean contains(double mouseX, double mouseY) {
+            return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
+        }
     }
 
     private final Design design;
@@ -61,6 +81,22 @@ public final class MachineKitScreen extends UiContainerScreen<MachineMenu> {
         playerFrames(g, machineSlots());
         inventoryLabel(g, machineSlots());
         design.painter().paint(g, menu, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double x = event.x() - getLeftPos();
+        double y = event.y() - getTopPos();
+        if (event.button() == 0 && minecraft != null && minecraft.gameMode != null) {
+            for (Button button : design.buttons()) {
+                if (button.contains(x, y)) {
+                    minecraft.gameMode.handleInventoryButtonClick(menu.containerId, button.id());
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
+                    return true;
+                }
+            }
+        }
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override

@@ -94,6 +94,13 @@ public record MachineLayout(List<SlotPos> slots) {
             new SlotPos(82, 101, true),
             new SlotPos(196, 79, false)));
 
+    /** Le controleur de spawners : quatre ameliorations en carre, les deux du bas verrouillees. */
+    public static final MachineLayout SPAWNER_CONTROLLER = new MachineLayout(List.of(
+            new SlotPos(40, 60, true),
+            new SlotPos(64, 60, true),
+            new SlotPos(40, 84, true),
+            new SlotPos(64, 84, true)));
+
     /** La boite a golem : trois mini golems, leurs croquettes dessous, cinq sorties. */
     public static final MachineLayout GOLEM_BOX = new MachineLayout(List.of(
             new SlotPos(24, 56, true),

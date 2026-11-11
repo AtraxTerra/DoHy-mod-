@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MOM",
+    "OBO",
+    "MOM"
+  ],
+  "key": {
+    "M": "palamod:titane_ingot",
+    "O": "palamod:spawner_structure_two",
+    "B": "palamod:paladium_block"
+  },
+  "result": {
+    "id": "palamod:spawner_structure_three",
+    "count": 1
+  }
+}
