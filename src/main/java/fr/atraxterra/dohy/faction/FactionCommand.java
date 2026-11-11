@@ -199,7 +199,24 @@ public final class FactionCommand {
                                 .then(Commands.argument("palier", IntegerArgumentType.integer(1, 3))
                                         .executes(ctx -> as(ctx.getSource(), player -> result(player,
                                                 EnemyBases.request(player, EnemyBaseTier.byLevel(
-                                                        IntegerArgumentType.getInteger(ctx, "palier"))), "")))))
+                                                        IntegerArgumentType.getInteger(ctx, "palier"))), "")))
+                                        .then(Commands.argument("genre", StringArgumentType.word())
+                                                .suggests((ctx, builder) -> {
+                                                    for (fr.atraxterra.dohy.faction.base.EnemyBaseStyle style
+                                                            : fr.atraxterra.dohy.faction.base.EnemyBaseStyle.values()) {
+                                                        builder.suggest(style.key());
+                                                    }
+                                                    return builder.buildFuture();
+                                                })
+                                                .executes(ctx -> as(ctx.getSource(), player -> {
+                                                    var style = fr.atraxterra.dohy.faction.base.EnemyBaseStyle.byKey(
+                                                            StringArgumentType.getString(ctx, "genre"));
+                                                    return result(player, style == null
+                                                            ? "Genre inconnu : citadelle, ferme, entrepot, usine, vitrine"
+                                                            : EnemyBases.request(player, EnemyBaseTier.byLevel(
+                                                                    IntegerArgumentType.getInteger(ctx, "palier")),
+                                                                    style), "");
+                                                })))))
                         .then(Commands.literal("boussole")
                                 .executes(ctx -> as(ctx.getSource(), player -> result(player,
                                         EnemyBases.compass(player), "Boussole recue."))))
@@ -245,7 +262,7 @@ public final class FactionCommand {
             return result(player, null, "Tes eclaireurs cherchent encore la base.");
         }
         if (!base.active()) {
-            return result(player, null, "Aucune base a piller. /f base generer [1-3] : avant-poste, base, forteresse.");
+            return result(player, null, "Aucune base a piller. /f base generer [1-3] [genre] : avant-poste, base, forteresse.");
         }
         return result(player, null, "Cible : les " + base.name() + " (" + base.kind().label() + ") en "
                 + base.center().getX() + ", " + base.center().getZ() + " — " + EnemyBases.where(player, base) + ".");

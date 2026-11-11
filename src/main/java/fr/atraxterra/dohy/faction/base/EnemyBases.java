@@ -90,6 +90,7 @@ public final class EnemyBases {
     private static final class Job {
         final UUID player;
         final EnemyBaseTier tier;
+        final EnemyBaseStyle style;
         final String name;
         final Search search;
         final int retries;
@@ -101,9 +102,10 @@ public final class EnemyBases {
         long buildNanos;
         EnemyBaseBuilder builder;
 
-        Job(UUID player, EnemyBaseTier tier, String name, Search search, int retries) {
+        Job(UUID player, EnemyBaseTier tier, EnemyBaseStyle style, String name, Search search, int retries) {
             this.player = player;
             this.tier = tier;
+            this.style = style;
             this.name = name;
             this.search = search;
             this.retries = retries;
@@ -217,6 +219,15 @@ public final class EnemyBases {
 
     /** Lance la generation ; {@code null} si elle part, sinon le refus. */
     public static String request(ServerPlayer player, EnemyBaseTier tier) {
+        return request(player, tier, null);
+    }
+
+    /**
+     * Lance la generation ; {@code null} si elle part, sinon le refus.
+     *
+     * @param style le genre voulu, ou {@code null} pour celui que les eclaireurs trouveront
+     */
+    public static String request(ServerPlayer player, EnemyBaseTier tier, EnemyBaseStyle style) {
         if (!FactionApi.has(player)) {
             return "Fonde d'abord ta faction";
         }
@@ -231,12 +242,13 @@ public final class EnemyBases {
         if (player.level().dimension() != Level.OVERWORLD) {
             return "Demande une base depuis le Monde";
         }
-        return start(player, tier, 0);
+        EnemyBaseStyle[] styles = EnemyBaseStyle.values();
+        return start(player, tier, style != null ? style : styles[player.getRandom().nextInt(styles.length)], 0);
     }
 
-    private static String start(ServerPlayer player, EnemyBaseTier tier, int retries) {
+    private static String start(ServerPlayer player, EnemyBaseTier tier, EnemyBaseStyle style, int retries) {
         String name = NAMES.get(player.getRandom().nextInt(NAMES.size()));
-        JOBS.put(player.getUUID(), new Job(player.getUUID(), tier, name, new Search(player, tier), retries));
+        JOBS.put(player.getUUID(), new Job(player.getUUID(), tier, style, name, new Search(player, tier), retries));
         if (retries == 0) {
             FactionApi.tell(player, "Tes eclaireurs partent reperer une base ennemie (" + tier.label()
                     + ") a plus de " + MoneyFormat.exact(MIN_DISTANCE) + " blocs...", ChatFormatting.GOLD);
@@ -347,17 +359,18 @@ public final class EnemyBases {
             if (EnemyBaseBuilder.overlapsClaim(level, job.site.x() >> 4, job.site.z() >> 4, job.tier.claimRadius())) {
                 release(level, job);
                 String refusal = job.retries < RETRIES && player.level() == level
-                        ? start(player, job.tier, job.retries + 1) : "Le terrain repere est deja claim. Reessaie.";
+                        ? start(player, job.tier, job.style, job.retries + 1)
+                        : "Le terrain repere est deja claim. Reessaie.";
                 if (refusal != null) {
                     FactionApi.tell(player, refusal, ChatFormatting.RED);
                 }
                 return;
             }
-            job.builder = new EnemyBaseBuilder(level, level.getRandom(), job.tier, job.name, job.site.x(),
-                    job.site.z());
+            job.builder = new EnemyBaseBuilder(level, level.getRandom(), job.tier, job.style, job.name,
+                    job.site.x(), job.site.z());
             job.builder.plan();
-            FactionApi.tell(player, "Terrain trouve : les " + job.name + " batissent leur " + job.tier.label()
-                    .toLowerCase() + "...", ChatFormatting.GOLD);
+            FactionApi.tell(player, "Terrain trouve : les " + job.name + " y batissent " + job.style.label()
+                    + " (" + job.tier.label().toLowerCase() + ")...", ChatFormatting.GOLD);
             return;
         }
         long started = System.nanoTime();
@@ -370,10 +383,11 @@ public final class EnemyBases {
         EnemyBaseBuilder.Result result = job.builder.result();
         release(level, job);
         LOGGER.info("Base ennemie des {} ({}) en {} : site en {} essais ({} ticks), chunks en {} ticks, chantier de "
-                        + "{} ms sur {} ticks", job.name, job.tier.key(), result.center(), job.search.attempts,
+                        + "{} ms sur {} ticks", job.name, job.tier.key() + " " + job.style.key(), result.center(),
+                job.search.attempts,
                 job.searchTicks, job.ticks, job.buildNanos / 1_000_000L, job.buildTicks);
         EnemyBase base = new EnemyBase(job.name, job.tier.level(), EnemyBase.ACTIVE, result.center(),
-                result.coreMin(), result.coreMax(), System.currentTimeMillis());
+                result.coreMin(), result.coreMax(), System.currentTimeMillis(), job.style.key());
         if (player == null) {
             READY.put(job.player, base);
             return;
@@ -383,11 +397,12 @@ public final class EnemyBases {
 
     private static void deliver(ServerPlayer player, EnemyBase base) {
         player.setData(Factions.ENEMY_BASE.get(), base);
-        FactionApi.tell(player, "Base reperee : les " + base.name() + " (" + base.kind().label() + ") en "
-                + base.center().getX() + ", " + base.center().getZ() + " — " + where(player, base) + ".",
-                ChatFormatting.GOLD);
-        FactionApi.tell(player, "Il faudra : " + base.kind().tools() + ". Entre dans la salle des coffres de leur "
-                + "donjon pour piller la base.", ChatFormatting.YELLOW);
+        FactionApi.tell(player, "Base reperee : les " + base.name() + " tiennent " + base.genre().label() + " ("
+                + base.kind().label().toLowerCase() + ") en " + base.center().getX() + ", " + base.center().getZ()
+                + " — " + where(player, base) + ".", ChatFormatting.GOLD);
+        FactionApi.tell(player, base.genre().summary() + ".", ChatFormatting.YELLOW);
+        FactionApi.tell(player, "Il faudra : " + base.kind().tools() + ". Les coffres : " + base.genre().vault()
+                + ". Y entrer, c'est avoir pille la base.", ChatFormatting.YELLOW);
         compass(player);
     }
 
