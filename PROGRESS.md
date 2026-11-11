@@ -176,7 +176,11 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 chargés au journal du serveur). L'instance du joueur a **Crankshaft 1.6.0** (dérivé de Flywheel,
 Vanillin embarqué), qui dessine les créatures vanilla par instances et n'émet jamais
 `RenderLivingEvent.Pre`. Reproduit en CI en chargeant ce jar, puis corrigé par
-`client/rpg/FlywheelCompat` (voir `docs/PALAMOD.md` § 29). **À retenir** : un rendu qui marche
+`client/rpg/FlywheelCompat` (voir `docs/PALAMOD.md` § 29). Second signalement, « textures
+buggées » : **Sodium** redessine chaque boîte de modèle avec sa propre découpe et ignore les
+faces remplacées ; `RpgEntityModel` écrit maintenant ses sommets lui-même. Les deux défauts ont
+été reproduits puis corrigés en CI avec les jars du joueur (`ci-mods/` sur la branche de
+captures ; le harnais passe l'écran d'avertissements de NeoForge). **À retenir** : un rendu qui marche
 en CI peut ne rien faire dans le modpack du joueur ; son instance Prism est lisible
 (`mods`, `logs/latest.log`) et c'est là qu'il faut regarder d'abord.
 
