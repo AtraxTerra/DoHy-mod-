@@ -104,8 +104,16 @@ public final class RpgClient {
         pose.mulPose(Axis.YP.rotationDegrees(180.0f - state.bodyRot));
         pose.scale(-scale, -scale, scale);
         pose.translate(0.0f, -1.501f, 0.0f);
-        collector.submitModel(frame.entry().model(), state, pose, frame.texture(), state.lightCoords,
-                OverlayTexture.pack(0.0f, state.hasRedOverlay), state.outlineColor, null);
+        // Le modele se dessine lui-meme (voir RpgEntityModel) : sa pose est
+        // refaite au moment du dessin, le modele etant partage.
+        RpgEntityModel model = frame.entry().model();
+        int light = state.lightCoords;
+        int overlay = OverlayTexture.pack(0.0f, state.hasRedOverlay);
+        collector.submitCustomGeometry(pose, model.renderType(frame.texture()), (last, buffer) -> {
+            model.resetPose();
+            frame.pose();
+            model.draw(last, buffer, light, overlay);
+        });
         pose.popPose();
 
         if (state.nameTag != null) {
