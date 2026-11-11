@@ -76,13 +76,24 @@ public final class PalaMachineEvents {
             return;
         }
 
+        // Le controleur de spawners : accroupi, main vide, ce qui manque au palier suivant.
+        if (machine instanceof fr.atraxterra.dohy.palamod.hunter.SpawnerControllerBlockEntity controller
+                && player.isShiftKeyDown() && event.getItemStack().isEmpty()) {
+            event.setCanceled(true);
+            if (event.getHand() == net.minecraft.world.InteractionHand.MAIN_HAND) {
+                controller.reportNext(player);
+            }
+            return;
+        }
+
         // Accroupi avec un item en main : on laisse poser le bloc, comme pour
         // un coffre. Sinon l'interface s'ouvre.
         if (player.isShiftKeyDown() && !event.getItemStack().isEmpty()) {
             return;
         }
         event.setCanceled(true);
-        if (machine.canOpen(player)) {
+        // L'evenement passe pour chaque main : un refus ne se dit qu'une fois.
+        if (event.getHand() == net.minecraft.world.InteractionHand.MAIN_HAND && machine.canOpen(player)) {
             player.openMenu(machine);
         }
     }

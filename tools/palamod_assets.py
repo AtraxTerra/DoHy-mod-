@@ -5366,6 +5366,93 @@ def main():
     fr["tooltip.%s.pocket_enderchest" % NS] = "Clic droit : ton ender chest, hors combat"
     en["tooltip.%s.pocket_enderchest" % NS] = "Right-click: your ender chest, out of combat"
 
+    # ---- controleur de spawners (PalaSpawner 7.0.0) ----
+    # Ses textures ne sont que dans son jar : le dossier voisin de celui de
+    # PalaMod, comme pour le golem gardien.
+    spawner_root = os.path.join(os.path.dirname(root[1].rstrip("/")), "PalaSpawner-7.0.0") if root[1] else None
+
+    def spawner_tex(relative, destination):
+        source = os.path.join(spawner_root or "", "assets", "palaspawner", "textures", relative)
+        if not spawner_root or not os.path.exists(source):
+            missing.append("palaspawner:" + relative)
+            return
+        if png_size(source) != (16, 16):
+            wrong_size.append("palaspawner:%s : %s au lieu de 16 x 16" % (relative, png_size(source)))
+            return
+        target = os.path.join(RES, "assets", NS, "textures", destination)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(source, target)
+
+    structure_metals = (("one", "diamant", "Diamond", "minecraft:diamond", "minecraft:obsidian"),
+                        ("two", "amethyste", "Amethyst", "%s:amethyst_ingot" % NS, "%s:spawner_structure_one" % NS),
+                        ("three", "titane", "Titanium", "%s:titane_ingot" % NS, "%s:spawner_structure_two" % NS),
+                        ("four", "paladium", "Paladium", "%s:paladium_ingot" % NS, "%s:spawner_structure_three" % NS))
+    for tier, metal_fr, metal_en, metal, base in structure_metals:
+        name = "spawner_structure_" + tier
+        spawner_tex("blocks/%s.png" % name, "block/%s.png" % name)
+        cube(name, "%s:block/%s" % (NS, name))
+        block_item(name)
+        drops_itself(name)
+        label("block", name, "Obsidienne infusee (%s)" % metal_fr, "Infused Obsidian (%s)" % metal_en)
+        # PPalaSpawnerCommonProxy.registerCrafts : MOM / OBO / MOM.
+        shaped(name, ["MOM", "OBO", "MOM"], {"M": metal, "O": base, "B": "%s:paladium_block" % NS},
+               "%s:%s" % (NS, name))
+        tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
+        tag("minecraft/tags/block/needs_diamond_tool.json", ["%s:%s" % (NS, name)])
+
+    spawner_tex("blocks/spawn_controller.png", "block/spawner_controller.png")
+    cube("spawner_controller", "%s:block/spawner_controller" % NS)
+    block_item("spawner_controller")
+    drops_itself("spawner_controller")
+    label("block", "spawner_controller", "Controleur de spawner", "Spawner Controller")
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:spawner_controller" % NS])
+    shaped("spawner_controller", ["OOO", "PSP", "OOO"], {
+        "O": "minecraft:obsidian", "P": "%s:compressed_paladium" % NS, "S": "%s:empty_mob_spawner" % NS,
+    }, "%s:spawner_controller" % NS)
+
+    spawner_upgrades = (
+        ("speed", "Amelioration de vitesse de spawner", "Spawner Speed Upgrade",
+         "Un dixieme de temps en moins entre deux vagues", "One tenth less time between waves",
+         {"O": "minecraft:obsidian", "P": "%s:compressed_paladium" % NS, "S": "minecraft:sugar"}),
+        ("looting", "Amelioration de butin de spawner", "Spawner Looting Upgrade",
+         "Dix chances sur cent de doubler le butin d'une creature", "10% chance to double a creature's loot",
+         {"O": "minecraft:obsidian", "P": "%s:compressed_paladium" % NS, "S": "%s:paladium_sword" % NS}),
+        ("slime", "Amelioration slime de spawner", "Spawner Slime Upgrade",
+         "Une petite chance d'un slime en plus par creature", "A small chance of an extra slime per creature",
+         {"O": "minecraft:obsidian", "P": "%s:compressed_paladium" % NS, "S": "%s:slimepad" % NS}),
+    )
+    for key, label_fr, label_en, tip_fr, tip_en, keys in spawner_upgrades:
+        name = "upgrade_" + key
+        spawner_tex("items/spawner_upgrade_%s.png" % key, "item/%s.png" % name)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+        fr["item.%s.spawner_upgrade.%s" % (NS, key)] = tip_fr
+        en["item.%s.spawner_upgrade.%s" % (NS, key)] = tip_en
+        shaped(name, ["OOO", "PSP", "OOO"], keys, "%s:%s" % (NS, name))
+    spawner_tex("items/spawner_upgrade_more.png", "item/upgrade_more.png")
+    flat_item("upgrade_more", "%s:item/upgrade_more" % NS)
+    label("item", "upgrade_more", "Amelioration de capacite de spawner", "Spawner Capacity Upgrade")
+    fr["item.%s.spawner_upgrade.more" % NS] = "Ouvre les deux cases verrouillees, autorise les doublons"
+    en["item.%s.spawner_upgrade.more" % NS] = "Opens both locked slots and allows duplicates"
+    fr["item.%s.spawner_upgrade.where" % NS] = "Se pose dans un controleur de spawner"
+    en["item.%s.spawner_upgrade.where" % NS] = "Goes into a spawner controller"
+    # OWO / PSP / OBO : crane de wither squelette, modificateur « plus
+    # d'ameliorations » du grinder, pepites d'endium, spawner vide.
+    shaped("upgrade_more", ["OWO", "PSP", "OBO"], {
+        "O": "minecraft:obsidian", "W": "minecraft:wither_skeleton_skull",
+        "S": "%s:more_upgrade_modifier" % NS, "P": "%s:endium_nugget" % NS, "B": "%s:empty_mob_spawner" % NS,
+    }, "%s:upgrade_more" % NS)
+
+    for key, label_fr, label_en in (
+            ("chunk", "Un seul controleur de spawner travaille par troncon.",
+             "Only one spawner controller works per chunk."),
+            ("invalid", "Votre structure n'est pas valide.", "Your structure is not valid."),
+            ("complete", "La structure IV est complete.", "The tier IV structure is complete."),
+            ("missing", "Structure %s : %s / %s blocs. Il manque : %s en %s %s %s.",
+             "Structure %s: %s / %s blocks. Missing: %s at %s %s %s.")):
+        fr["message.%s.spawner_controller.%s" % (NS, key)] = label_fr
+        en["message.%s.spawner_controller.%s" % (NS, key)] = label_en
+
     # ---- ecriture des tags accumules ----
     for path, entries in sorted(collected_tags.items()):
         write("data/%s" % path, {"replace": False, "values": sorted(entries)})

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OOO",
+    "PSP",
+    "OOO"
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "P": "palamod:compressed_paladium",
+    "S": "minecraft:sugar"
+  },
+  "result": {
+    "id": "palamod:upgrade_speed",
+    "count": 1
+  }
+}

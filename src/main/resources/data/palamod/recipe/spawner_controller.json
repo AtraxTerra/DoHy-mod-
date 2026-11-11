@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OOO",
+    "PSP",
+    "OOO"
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "P": "palamod:compressed_paladium",
+    "S": "palamod:empty_mob_spawner"
+  },
+  "result": {
+    "id": "palamod:spawner_controller",
+    "count": 1
+  }
+}

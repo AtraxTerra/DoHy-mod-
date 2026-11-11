@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OWO",
+    "PSP",
+    "OBO"
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "W": "minecraft:wither_skeleton_skull",
+    "S": "palamod:more_upgrade_modifier",
+    "P": "palamod:endium_nugget",
+    "B": "palamod:empty_mob_spawner"
+  },
+  "result": {
+    "id": "palamod:upgrade_more",
+    "count": 1
+  }
+}

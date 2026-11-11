@@ -1033,7 +1033,10 @@ spawner sur le wiki (« spawner customisé »). Niveaux du code ×5. Périmètre
 | 65 / 70 | Épée de capture, pierre de capture | oui |
 | 100 | Épée en endium (ne frappe plus à bout) | oui (l'épée l'était au chapitre 7) |
 | — | Spawner cassé | oui (pas de verrou dans l'original) |
-| 10 / 15 / 35 / 40–100 | Bateau en bambou, cage et familiers, mini golem, structures et contrôleur de spawner, détecteur, améliorations, clé, étiquette, totem, autel, boussole, poudres | **non, écartés par le joueur** |
+| 40 / 60 / 80 / 100 | Obsidiennes infusées : structures de spawner I à IV | oui — §32 |
+| — | Contrôleur de spawner | oui — §32 (pas de verrou dans l'original) |
+| 75 | Amélioration de butin de spawner (les trois autres : Mineur 85, Alchimiste 75 et 90) | oui — §32 |
+| 10 / 15 / 35 / 45–100 | Bateau en bambou, cage et familiers, mini golem, détecteur, clé, étiquette, totem, autel, boussole, poudres | **non, écartés par le joueur** |
 | 95 | Trône du chasseur | **non — aucun trône** |
 
 Les verrous non portés restent dans `data/jobs.json`, inertes.
@@ -1072,21 +1075,27 @@ elle reste réparable. Même plafond que la pioche et la hache en endium.
 - Casser un spawner de donjon donne 1 250 XP de Chasseur (converties) à partir du niveau 40.
 - **Écarts** : sans marteau, un spawner de donjon se casse normalement ; un spawner customisé
   posé ne donne jamais d'âme (on taperait sans fin le sien).
-- **Recette substituée** : blocs de titane, obsidienne et pioche en paladium.
+- **Recette d'origine** depuis que le marteau en paladium existe : six blocs de titane, deux
+  obsidiennes, un marteau en paladium.
 
 ### Spawner cassé
 
 Chaque spawner de donjon pris dans l'explosion d'un creeper a une chance sur deux de lâcher un
-spawner cassé. Il sert à fabriquer le spawner vide ; **recette substituée** (le gardien de
-pierre, non porté, est remplacé par un cœur de paladium).
+spawner cassé. Il sert à fabriquer le spawner vide ; **recette d'origine** depuis que la pierre
+de gardien existe : crâne de squelette, quatre findiums, paladium compressé, spawner cassé,
+pierre de gardien, crusher.
 
 ### Spawner customisé — wiki, `SpawnerManager`
 
 - Les âmes s'accumulent jusqu'à **250**. Paliers : **100 / 150 / 200 / 250 âmes → I à IV**.
   Sous 100 (palier 0), le spawner posé reste **vide**. La cage prend la couleur du palier
   (améthyste, titane, paladium, endium) ; l'objet aussi, avec le palier et les âmes en info-bulle.
-- Posé, il **fonctionne comme un spawner vanilla** (délai, portée du joueur, lumière), à la
-  demande du joueur. Dans PalaMod, sans contrôleur, il ne faisait rien.
+- Posé **hors d'une structure**, il **fonctionne comme un spawner vanilla** (délai, portée du
+  joueur, lumière), à la demande du joueur. Dans PalaMod, sans contrôleur, il ne faisait rien.
+- Posé **dans une structure**, c'est le contrôleur qui compte ses vagues (§32) : le spawner passe
+  à l'état `linked`, ne fait plus apparaître de créature dans le monde et n'a plus de tick
+  serveur. Toutes les cinq secondes il vérifie que son contrôleur le couvre encore ; sinon il
+  redevient un spawner ordinaire.
 - **Les créatures s'empilent** (demande du joueur, contre le lag) : une vague rejoint la pile de
   sa créature à 16 blocs du spawner et y ajoute 4, au lieu d'apparaître ; le nombre est affiché
   au-dessus (« x7 »). **Plafond par palier : 3 / 6 / 9 / 12.** Tuer une pile n'en tue **qu'une** :
@@ -2562,3 +2571,100 @@ textures (pièce, halo, étals, namuu). Le serveur n'envoie pas une vue par clic
 partent par paquets toutes les 200 ms, et entre deux vues (une toutes les trois secondes, et
 après chaque achat) le compteur avance côté client, puis se recale. Les bâtiments après le
 prochain à acheter restent cachés (« ??? »), comme le dit le wiki.
+
+## 32. Contrôleur de spawners
+
+Demandé le 2026-11-11, d'après le wiki (« Contrôleur de spawners », « Spawner customisé ») et le
+mod d'origine, **PalaSpawner 7.0.0**, trouvé dans le client Paladium du joueur ; les plans des
+structures et les recettes sont dans PalaMod (`modules/aspawner`). Tout est dans
+`palamod/hunter` : `SpawnerBlueprint`, `SpawnerTier`, `SpawnerControllerBlock(Entity)`,
+`SpawnerLoot`, `SpawnerUpgrade(Item)`, `SpawnerControllerEvents`.
+
+### Les structures — `First` à `FourthSpawnerBluePrint`
+
+Quatre plans recopiés étage par étage, chacun contenant le précédent. Le centre est un bloc de
+paladium vert ; le contrôleur est au deuxième étage, sur un bloc de paladium, au milieu d'un
+bord du carré central de 7 × 7. La structure se bâtit dans les quatre sens.
+
+| Palier | Taille | Obsidienne | Obsidiennes infusées | Spawners comptés |
+|---|---|---|---|---|
+| I | 7 × 7 × 3 | 20 | 4 diamant | 27 |
+| II | 11 × 11 × 3 | 36 | + 8 améthyste | 54 |
+| III | 13 × 13 × 4 | 72 | + 12 titane | 81 |
+| IV | 17 × 17 × 5 | 132 | + 16 paladium | 108 |
+
+Toutes demandent en plus 5 blocs de paladium, 1 bloc de paladium vert et 16 sables des âmes. Le
+wiki donne 13 × 13 × 4 au palier IV ; le plan du jar dit 17 × 17 × 5, et les quantités du wiki
+(132 obsidiennes) sont celles du plan. Les plans sont essayés du plus grand au plus petit, comme
+PalaMod les enregistre : une structure IV dont on casse un coin redevient une structure III.
+
+**Ajout** : cliquer un contrôleur dont la structure est incomplète dit combien de blocs sont en
+place, lequel manque et où, et fait scintiller l'endroit. Un plan de 17 × 17 × 5 ne se devine pas.
+Accroupi, main vide, le même message porte sur le palier suivant d'une structure déjà valide.
+
+### Le contrôleur — `TileEntitySpawnerController`
+
+- **Une vérification par seconde** : la structure, puis les spawners customisés du volume de
+  7 × 7 × 3 au-dessus du centre (la colonne du contrôleur exceptée), jusqu'au plafond du palier.
+  Un spawner sous 100 âmes compte dans le plafond mais ne produit rien ; un spawner d'un palier
+  supérieur à la structure travaille au palier de la structure ; un spawner au-delà du plafond
+  est lié lui aussi et ne fait plus rien.
+- **Les vagues**, par palier de spawner : toutes les 12 / 15 / 15 / 7 secondes, 2 à 3 / 3 à 5 /
+  5 à 7 / 6 à 11 créatures par spawner. Un seul tirage par groupe de spawners de la même créature
+  et du même palier, multiplié par leur nombre.
+- **Mode manuel** : les créatures s'accumulent sur une créature immobile posée sur le contrôleur,
+  son nombre au-dessus. Un coup en tue une (un coup toutes les dix ticks au plus) : butin de sa
+  table vanilla — l'enchantement Butin de l'arme compte —, 5 points d'XP (2 pour un slime) et
+  l'XP de métier d'une créature tuée. Le butin va dans un coffre de la structure s'il y en a un,
+  sinon aux pieds du joueur. Clic droit : créature suivante.
+- **Mode automatique** : le butin va droit dans les coffres, sans XP. Sans coffre ayant une case
+  libre, la vague attend. Changer de mode vide les créatures en attente.
+- **Les coffres** : cinq cases en ligne au niveau du sol de la structure, une case au-delà du bord
+  du carré central, sous le contrôleur (`getInventoriesLocations`). Tout inventaire convient.
+- **Un seul contrôleur par tronçon** travaille (celui de plus petite position) ; l'interface ne
+  s'ouvre que sur une structure valide.
+- Le contrôleur ne travaille que dans un tronçon chargé : il faut un joueur à proximité.
+
+### Les améliorations — `SpawnerUpgradeRegistry`
+
+Deux cases libres, deux verrouillées ; une amélioration par case.
+
+| Amélioration | Effet | Métier |
+|---|---|---|
+| Vitesse | un dixième de temps en moins entre deux vagues | Mineur 85 |
+| Butin | 10 % de chances, chacune, qu'une créature rende son butin deux fois (pas un slime) | Chasseur 75 |
+| Slime | 0,11 % de chances, chacune et par créature de la vague, d'un slime en plus | Alchimiste 75 |
+| Capacité | ouvre les deux cases verrouillées et autorise les doublons ; une seule | Alchimiste 90 |
+
+Sans capacité : deux améliorations différentes. Avec : trois autres, doublons permis (trois
+vitesses : 30 % de temps en moins). Retirer la capacité fait tomber ce qu'elle seule permettait.
+Le niveau de métier est celui du **dernier joueur à avoir ouvert le contrôleur** (`putJobData`),
+relevé à l'ouverture ; les objets ont aussi leur verrou ordinaire dans `data/jobs.json`.
+
+### Les recettes — `PPalaSpawnerCommonProxy.registerCrafts`
+
+- **Obsidiennes infusées** : quatre du métal aux coins (diamant, lingot d'améthyste, de titane,
+  de paladium), quatre de l'obsidienne du palier précédent (obsidienne ordinaire pour le I) en
+  croix, un bloc de paladium au centre.
+- **Contrôleur** : six obsidiennes en haut et en bas, deux paladiums compressés, un spawner vide
+  au centre.
+- **Vitesse, butin, slime** : la même grille, avec au centre un sucre, une épée en paladium, un
+  slimepad.
+- **Capacité** : quatre obsidiennes aux coins, un crâne de wither squelette en haut, deux
+  pépites d'endium, le modificateur « plus d'améliorations » du grinder au centre, un spawner
+  vide en bas.
+
+### Écarts avec l'original
+
+- **La créature du mode manuel** est la créature elle-même, sans IA, muette et invulnérable,
+  et non une entité à part. Elle n'est jamais relue du disque : le contrôleur la repose.
+- **Le butin** vient de la table vanilla de la créature, pas d'une copie du butin 1.7.10. En mode
+  automatique, sans joueur, il n'y a donc pas de butin rare (fer, carotte, pomme de terre du
+  zombie) ; l'original en donnait dans 2,5 % des cas.
+- **Hors structure**, le spawner customisé garde son comportement vanilla (voir §13). Posé dans
+  le volume d'une structure valide, il est lié à la pose, sans attendre la seconde suivante.
+- Les six créatures restent celles du marteau de caverne : zombie, squelette, araignée, araignée
+  venimeuse, slime, sorcière.
+- Les minuteries des vagues repartent au chargement du tronçon.
+- En difficulté Paisible, la créature du mode manuel disparaît comme tout monstre : seul le mode
+  automatique y est utilisable.

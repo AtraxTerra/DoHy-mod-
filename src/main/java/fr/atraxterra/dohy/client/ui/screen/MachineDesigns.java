@@ -4,7 +4,11 @@ import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.palamod.machine.CrusherBlockEntity;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
+import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen.Button;
 import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen.Design;
+import fr.atraxterra.dohy.palamod.hunter.SpawnerControllerBlockEntity;
+import fr.atraxterra.dohy.palamod.hunter.SpawnerTier;
+import fr.atraxterra.dohy.palamod.hunter.SpawnerUpgrade;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -234,4 +238,77 @@ public final class MachineDesigns {
             3, List.of("Croquettes"),
             4, List.of("Croquettes"),
             5, List.of("Croquettes")));
+
+    // -- Controleur de spawners -------------------------------------------------
+
+    private static final int MODE_X = 128;
+    private static final int MODE_Y = 110;
+    private static final int MODE_W = 118;
+    private static final int MODE_H = 18;
+
+    private static final List<String> UPGRADE_HINT = List.of("Amelioration",
+            "Vitesse, butin, slime ou capacite", "Le niveau de metier de l'objet est requis");
+
+    public static final Design SPAWNER_CONTROLLER = new Design(Set.of(), (g, menu, mouseX, mouseY) -> {
+        g.section(16, 38, "section_upgrade", "AMELIORATIONS", 96);
+        boolean more = false;
+        for (int slot = 0; slot < SpawnerControllerBlockEntity.SLOT_COUNT; slot++) {
+            more |= SpawnerUpgrade.of(menu.slots.get(slot).getItem()) == SpawnerUpgrade.MORE;
+        }
+        if (!more) {
+            // Les deux cases du bas attendent l'amelioration de capacite.
+            for (int slot = SpawnerControllerBlockEntity.FREE_SLOTS; slot < SpawnerControllerBlockEntity.SLOT_COUNT;
+                 slot++) {
+                net.minecraft.world.inventory.Slot locked = menu.slots.get(slot);
+                g.rect(locked.x, locked.y, 16, 16, 0xFF1A191E);
+                g.texture(Ui.texture("spawner_lock"), locked.x + 3, locked.y + 3, 10, 10, 32, 32, 0xFF8C8B93);
+            }
+        }
+        small(g, more ? "Capacite : 4 cases" : "2 cases sur 4", 16, 108, Ui.MUTED);
+        small(g, more ? "doublons permis" : "sans doublon", 16, 116, Ui.MUTED);
+
+        g.section(128, 38, "section_resources", "STRUCTURE", 118);
+        int level = menu.extra(0);
+        boolean automatic = menu.extra(2) == 1;
+        int waiting = (menu.selected() << 15) | menu.extra(3);
+        if (level <= 0) {
+            small(g, "Structure incomplete", 128, 54, Ui.RED);
+        } else {
+            SpawnerTier tier = SpawnerTier.ofLevel(level);
+            small(g, "Palier " + tier.roman(), 128, 54, Ui.WHITE);
+            small(g, "Spawners : " + menu.extra(1) + " / " + tier.maxSpawners(), 128, 64, Ui.TEXT);
+            if (automatic) {
+                small(g, "Coffres : " + menu.tank() + " / " + menu.tankGoal(), 128, 74,
+                        menu.tank() > 0 ? Ui.TEXT : Ui.RED);
+            } else {
+                small(g, "En attente : " + String.format(Locale.FRANCE, "%,d", waiting), 128, 74, Ui.TEXT);
+            }
+            // La vague suivante du premier groupe de spawners.
+            g.rect(128, 88, MODE_W, 4, 0xFF2E2D34);
+            g.rect(128, 88, Math.round(MODE_W * menu.progress()), 4, Ui.GREEN);
+            if (menu.duration() > 0) {
+                small(g, "Vague : " + seconds(Math.max(0, menu.duration() - menu.work())), 128, 96, Ui.MUTED);
+            } else {
+                small(g, "Aucun spawner charge", 128, 96, Ui.MUTED);
+            }
+        }
+        boolean hovered = mouseX >= MODE_X && mouseX < MODE_X + MODE_W && mouseY >= MODE_Y
+                && mouseY < MODE_Y + MODE_H;
+        g.button(MODE_X, MODE_Y, MODE_W, MODE_H, automatic ? 0xFF2F7DE0 : 0xFFE08A1E,
+                automatic ? 0xFF1B4F94 : 0xFF9A5C10, hovered);
+        g.centered(Ui.PIXEL, automatic ? "MODE AUTOMATIQUE" : "MODE MANUEL", MODE_X + MODE_W / 2.0f, MODE_Y + 5,
+                5.5f, Ui.WHITE);
+        tip(g, mouseX, mouseY, MODE_X, MODE_Y, MODE_W, MODE_H, automatic
+                ? List.of("Mode automatique", "Le butin va dans les coffres, sans XP",
+                        "Coffres : cinq cases en ligne, au pied du bloc de paladium",
+                        "qui porte le controleur, au niveau du sol de la structure", "Clic : passer en manuel")
+                : List.of("Mode manuel", "Frappe la creature posee sur le controleur",
+                        "Butin, XP et XP de metier ; clic droit : creature suivante",
+                        "Clic : passer en automatique (vide les creatures en attente)"));
+    }, Map.of(
+            0, UPGRADE_HINT,
+            1, UPGRADE_HINT,
+            2, List.of("Case supplementaire", "Ouverte par l'amelioration de capacite"),
+            3, List.of("Case supplementaire", "Ouverte par l'amelioration de capacite")),
+            List.of(new Button(SpawnerControllerBlockEntity.BUTTON_MODE, MODE_X, MODE_Y, MODE_W, MODE_H)));
 }
