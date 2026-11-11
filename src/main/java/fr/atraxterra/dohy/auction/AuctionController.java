@@ -6,6 +6,8 @@ import fr.atraxterra.dohy.ui.menu.MenuController;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.util.MoneyFormat;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -77,8 +79,8 @@ public final class AuctionController extends MenuController {
     private static Card card(ServerPlayer player, AuctionHouse.Listing listing, long balance) {
         ItemStack icon = listing.icon();
         int left = AuctionHouse.remaining(player, listing);
-        String name = MenuView.text(new ItemStack(listing.item()).getHoverName());
-        String title = listing.lot() > 1 ? name + " x" + listing.lot() : name;
+        // Le nom se traduit chez le client : le nombre s'ajoute au composant, pas au texte.
+        String title = MenuView.text(name(listing));
         int percent = (int) Math.round((listing.factor() - 1.0d) * 100.0d);
         boolean deal = percent <= -8;
         boolean greedy = percent >= 25;
@@ -108,6 +110,12 @@ public final class AuctionController extends MenuController {
         return card.action("buy:" + listing.index() + "|acheter");
     }
 
+    /** « Fragment de rune commune x4 ». */
+    private static Component name(AuctionHouse.Listing listing) {
+        Component name = new ItemStack(listing.item()).getHoverName();
+        return listing.lot() > 1 ? Component.empty().append(name).append(" x" + listing.lot()) : name;
+    }
+
     @Override
     protected void card(ServerPlayer player, String key, int button) {
         if (key.startsWith("buy:")) {
@@ -118,10 +126,15 @@ public final class AuctionController extends MenuController {
                 return;
             }
             List<AuctionHouse.Listing> listings = AuctionHouse.listings(player);
-            String name = index >= 0 && index < listings.size()
-                    ? new ItemStack(listings.get(index).item()).getHoverName().getString()
-                    + (listings.get(index).lot() > 1 ? " x" + listings.get(index).lot() : "") : "";
-            report(player, AuctionHouse.buy(player, index), "Achete : " + name + ".");
+            Component name = index >= 0 && index < listings.size() ? name(listings.get(index)) : Component.empty();
+            String refusal = AuctionHouse.buy(player, index);
+            if (refusal != null) {
+                report(player, refusal, "");
+            } else {
+                success(player);
+                player.sendSystemMessage(Component.literal("Achete au marche : ").append(name)
+                        .withStyle(ChatFormatting.GREEN));
+            }
         } else if (key.equals("reroll")) {
             report(player, AuctionHouse.reroll(player), "De nouveaux vendeurs sont passes.");
         }

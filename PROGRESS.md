@@ -175,6 +175,25 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — le marché
+
+**Demande** : « un marché remixé pour le solo ». Le Market de Paladium est un hôtel des ventes
+entre joueurs, dont le jar ne contient que l'écran : rien à porter, tout à concevoir. Choix du
+joueur (quatre questions) : **hôtel des ventes simulé**, **raretés de PalaMod** et **clés et
+boxes** à l'achat, **aucune vente**. Détail : `docs/PALAMOD.md` § 34, `docs/BALANCE.md` § 6 decies.
+
+**Fait** (`feat/marche`, par-dessus `feat/cles-objets`) : `fr.atraxterra.dohy.auction` — douze
+annonces par jour en quatre rayons, tirées de `data/auction.json` (`tools/market_offers.py`, 89
+offres cotées), recalculées de la graine du monde et du jour ; achat, stock, renouvellement payé ;
+`/market`, carte du menu, `/dohy reload`. Le paquet s'appelle `auction` parce que `economy.market`
+est déjà la pression de vente du shop.
+
+**À savoir** : un nom d'objet envoyé à un écran passe par `MenuView.text(Component)`, qui rend
+une chaîne marquée que le client traduit. Lui coller du texte (« x3 ») la casse et le titre sort
+vide : composer le `Component` d'abord. Et la branche de captures doit **patcher** `build.gradle`
+(la ligne `programArguments`) au lieu de reprendre l'ancien fichier, sinon un fichier de données
+ajouté par le lot n'est pas copié dans le jeu.
+
 ### 2026-11-11 (suite) — les clés de caisse en objets
 
 **Demande** : après les boxes, le joueur a retenu deux suites sur quatre proposées : les clés en

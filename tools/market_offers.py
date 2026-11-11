@@ -101,15 +101,17 @@ def pool():
     q = QUOTES
     offers = []
     # -- Reliques : ce qui ne s'achete nulle part ailleurs.
-    offers.append(offer("relics", "legendary_stone_random", None, (1, 1), (1, 1), 4))
+    # Les pierres sont le gros lot de la caisse rare : une annonce sur huit du
+    # rayon, soit une pierre en vente deux jours sur cinq.
+    offers.append(offer("relics", "legendary_stone_random", None, (1, 1), (1, 1), 3))
     for stone in STONES:
         offers.append(offer("relics", "legendary_stone_" + stone, None, (1, 1), (1, 1), 1))
-    offers.append(offer("relics", "endium_gauntlet", None, (1, 1), (1, 1), 5))
-    offers.append(offer("relics", "pocket_enderchest", None, (1, 1), (1, 1), 5))
-    offers.append(offer("relics", "cloud", None, (1, 1), (1, 2), 6))
-    offers.append(offer("relics", "hunter_amulet", None, (1, 1), (1, 2), 6))
-    offers.append(offer("relics", "endium_nugget", None, (1, 4), (1, 2), 5))
-    offers.append(offer("relics", "endium_ingot", None, (1, 1), (1, 1), 3))
+    offers.append(offer("relics", "endium_gauntlet", None, (1, 1), (1, 1), 10))
+    offers.append(offer("relics", "pocket_enderchest", None, (1, 1), (1, 1), 10))
+    offers.append(offer("relics", "cloud", None, (1, 1), (1, 2), 12))
+    offers.append(offer("relics", "hunter_amulet", None, (1, 1), (1, 2), 12))
+    offers.append(offer("relics", "endium_nugget", None, (1, 4), (1, 2), 10))
+    offers.append(offer("relics", "endium_ingot", None, (1, 1), (1, 1), 6))
     # -- Donjons : runes, essences, equipement des deux premiers tiers.
     offers.append(offer("dungeon", "rune_fragment_common", q["rune_fragment_common"], (2, 6), (1, 3), 12))
     offers.append(offer("dungeon", "rune_fragment_rare", q["rune_fragment_rare"], (1, 4), (1, 2), 9))

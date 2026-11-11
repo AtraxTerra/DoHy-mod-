@@ -93,7 +93,7 @@
         1,
         1
       ],
-      "weight": 4
+      "weight": 3
     },
     {
       "category": "relics",
@@ -191,7 +191,7 @@
         1,
         1
       ],
-      "weight": 5
+      "weight": 10
     },
     {
       "category": "relics",
@@ -205,7 +205,7 @@
         1,
         1
       ],
-      "weight": 5
+      "weight": 10
     },
     {
       "category": "relics",
@@ -219,7 +219,7 @@
         1,
         2
       ],
-      "weight": 6
+      "weight": 12
     },
     {
       "category": "relics",
@@ -233,7 +233,7 @@
         1,
         2
       ],
-      "weight": 6
+      "weight": 12
     },
     {
       "category": "relics",
@@ -247,7 +247,7 @@
         1,
         2
       ],
-      "weight": 5
+      "weight": 10
     },
     {
       "category": "relics",
@@ -261,7 +261,7 @@
         1,
         1
       ],
-      "weight": 3
+      "weight": 6
     },
     {
       "category": "dungeon",
