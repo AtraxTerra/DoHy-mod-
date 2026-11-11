@@ -196,6 +196,16 @@ modèle (`glow` dans `entity/index.json`) passent maintenant par une seconde pas
 pleine lumière, sans les faces qui tournent le dos à la caméra (`RpgEntityModel.drawGlow`).
 Seules les boxes en déclarent : les monstres de donjon ne changent pas.
 
+**Vérifié en jeu** par captures, sans mod de rendu puis avec les Crankshaft et Sodium du joueur :
+repos, quatre ouvertures, rayons de jour et de nuit, vrai clic du client, achat d'une clé, refus
+sans clé, casse en pleine ouverture, section de la boutique. **Non vérifié** : les sons (pas de
+carte son en CI), l'achat d'une box depuis la boutique, le rechargement d'un monde avec une box
+posée — à regarder en premier si le joueur signale quelque chose.
+
+**À savoir** : la machine de captures a ses paquets graphiques déjà installés ; l'étape `apt` du
+workflow `ui-shots` a bloqué onze minutes un jour où les dépôts d'Ubuntu ne répondaient pas, et
+n'est plus lancée que si `Xvfb` manque (branche de captures uniquement).
+
 ### 2026-11-11 (suite) — monstres de donjon invisibles chez le joueur : Crankshaft
 
 **Signalement** : « pour les mobs des donjons rien n'a changé ». Le jar était le bon (65 modèles

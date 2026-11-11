@@ -2758,6 +2758,42 @@ l'écran reste disponible depuis la boutique ; la box est l'autre façon d'ouvri
   réglages n'ont pas de mutateur public en 26.2 : ils passent par les données de l'entité
   (`load`), l'objet par `getSlot(0)`. De l'argent se montre par une émeraude.
 
+### Les rayons — une seconde passe de rendu
+
+Les effets de l'ouverture sont des os du modèle, animés comme le reste : rayon de la couleur de
+la classe (vert, bleu, violet, rouge), faisceaux, anneau, éclats. Les **rayons** sont faits de
+deux boîtes : une boîte dont la texture est un dégradé d'opacité, dans une coque à peine plus
+grande, de taille **négative** (donc retournée), d'une couleur claire et opaque. Dessiné comme un
+monstre de donjon — en découpe, toutes faces visibles — cela donne un bloc plein de la couleur
+de la coque : c'est ce que montraient les premières captures.
+
+`entity/index.json` porte donc, pour un modèle, la liste de ses os lumineux (`glow` : les os
+`vfx` des boxes, l'onde de Saharia, l'aura d'Halloween ; le générateur l'écrit). Eux et leurs
+descendants sont sautés par le dessin ordinaire et dessinés à part (`RpgEntityModel.drawGlow`,
+second `submitCustomGeometry` de `RpgClient.onRender`) :
+
+- en `entityTranslucent`, pour que le dégradé soit un dégradé ;
+- en **pleine lumière**, pour qu'un rayon éclaire la nuit ;
+- **sans les faces qui tournent le dos à la caméra**, triées à la main puisque le modèle écrit
+  ses sommets lui-même : de la coque retournée il ne reste que le fond, derrière le rayon.
+
+Aucun monstre de donjon ne déclare d'os lumineux : leur rendu est inchangé. Sept d'entre eux ont
+un os nommé `vfx` ; les passer dans cette seconde passe se ferait en une ligne de générateur,
+mais demande de regarder chaque modèle.
+
+### Vérifié en jeu (captures, 2026-11-11)
+
+Sans mod de rendu, puis avec les **Crankshaft 1.6.0 et Sodium 0.9.2** du joueur : les six boxes
+au repos ; les quatre ouvertures (lot montré au bon repère : à 1,5 s seule la box commune montre
+le sien) ; rayons translucides, de face, de côté, de dos, de nuit ; un vrai clic droit du client
+sur le bloc (le viseur touche le bloc, pas le coffre) avec une clé légendaire achetée accroupi
+— clé prise, lot donné, message du gain au repère ; refus sans clé ; box cassée en pleine
+ouverture (coffre et lot montré disparaissent) ; section BOXES de la boutique.
+
+Non vérifié : **les sons** (la machine de captures n'a pas de carte son — les 24 fichiers sont
+convertis et déclarés, rien de plus), l'achat d'une box depuis la boutique jusqu'à l'inventaire,
+et le rechargement d'un monde avec une box posée.
+
 ### Écarts avec l'original
 
 - Une box n'a pas de butin à elle : elle ouvre une caisse de DoHy. Les lots de PalaShop

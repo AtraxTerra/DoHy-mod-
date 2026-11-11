@@ -191,7 +191,7 @@ public class BoxBlockEntity extends BlockEntity {
             return;
         }
         Crates.Pull pull = Crates.openAtBox(player, tier,
-                rarity -> BoxTimings.of(kind, Crates.RARITIES.get(rarity)).open());
+                rarity -> BoxTimings.of(server.getServer(), kind, Crates.RARITIES.get(rarity)).open());
         if (pull.refusal() != null) {
             say(player, Component.literal(pull.refusal()).withStyle(ChatFormatting.RED));
             return;
@@ -206,7 +206,7 @@ public class BoxBlockEntity extends BlockEntity {
         BoxKind kind = kind();
         draw = won;
         String rarity = Crates.RARITIES.get(draw.rarity());
-        clip = BoxTimings.of(kind, rarity);
+        clip = BoxTimings.of(server.getServer(), kind, rarity);
         opening = 0;
         nonce++;
         dropPrize();
