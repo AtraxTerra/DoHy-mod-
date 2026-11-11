@@ -170,6 +170,14 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — inventaire : les menus à portée de clic
+
+**Fait** : sur la maquette fournie, l'inventaire du joueur passe au kit (`KitInventoryScreen`) et
+ouvre les menus sans commande : menu principal (bouton rouge), shop, contrats, banque, faction,
+métiers (colonne de droite), concours Trixium (à la place du Lucky Pass). Le créatif garde son
+inventaire. Le bouton « Profil RPG » de l'ancien inventaire est retiré, le profil reste au menu
+principal et à `/profil`. Détail dans `docs/INTERFACES.md` (lot 5).
+
 ### 2026-11-11 (suite) — métiers : les bonus deviennent des primes
 
 **Fait** : sur demande, les 80 perks des métiers (attributs, double drop, XP, récolte, butin)

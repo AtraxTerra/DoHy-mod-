@@ -2089,8 +2089,8 @@ défense RPG.
 Wiki : depuis l'inventaire, bouton « Profil RPG » ; à gauche les statistiques (onglets Perso et
 Global), à droite l'arbre, dont on achète les cases puis « Valider » ; « Reset » annule ce qui
 n'est pas validé. Ici :
-- un **bouton « Profil RPG »** au-dessus de l'inventaire, **`/profil`**, et une vignette du menu
-  `/menu` ;
+- **`/profil`** et une vignette du menu `/menu` (le bouton « Profil RPG » au-dessus de l'inventaire
+  est parti avec le nouvel inventaire du 2026-11-11, qui ouvre le menu principal) ;
 - un écran de coffre : une rangée par branche, **8 nœuds** à acheter dans l'ordre (coûts 2, 4, 5,
   7, 9, 11, 12, 15 — 65 par branche) ; un clic réserve le nœud suivant, un clic sur le dernier
   réservé le rend ; **Valider** achète, **Reset** annule les réserves ;

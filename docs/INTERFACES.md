@@ -13,6 +13,7 @@ autocrafter, crusher, cobblebreaker, grinder).
 | 2 | Économie : menu principal, banque, contrats, boutique de boosters, collections, musée, améliorations | fait |
 | 3 | Palamod : donjons, profil RPG, monture, golem, dimension du Mineur, enchantement mystique | fait |
 | 4 | Conteneurs : machines, coffres en paladium, coffre de vente, guichet du musée, sac de la monture, coffres du golem | fait |
+| 5 | Inventaire du joueur, avec l'accès aux menus | fait |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
 
@@ -153,6 +154,31 @@ pixel d'interface). Le fond passe avant les objets, les bulles après.
   gardien du golem, coffre de l'End en paladium ont chacun leur type de menu (`KitMenus`) pour ouvrir
   l'écran du kit au lieu du coffre vanilla. Le menu reste un `ChestMenu` ; l'écran affiche la
   consigne de l'usage (« vendu à la fermeture »...).
+
+## L'inventaire du joueur (lot 5)
+
+Demandé le 2026-11-11, sur la maquette de l'inventaire de Paladium : les menus s'ouvrent depuis
+l'inventaire au lieu des commandes. `KitInventoryScreen` remplace l'écran du jeu à l'ouverture
+(`InventoryClient`, `ScreenEvent.Opening`), en survie et en aventure ; le mode créatif garde son
+inventaire.
+
+- **Disposition** : le titre « INVENTAIRE », les intertitres « ARMURE » et « CRAFT » à losange, les
+  quatre cases d'armure et le personnage qui suit la souris, la grille 2 x 2 et son résultat, la
+  main secondaire, l'inventaire et la barre d'action. Les cases sont celles du menu d'inventaire du
+  jeu (`Slot.x` et `Slot.y` sont finals en 26.2) : le panneau se dessine autour, déborde au-dessus et
+  à droite, et l'écran est recentré sur lui.
+- **Accès aux menus** : le bouton rouge en haut à droite ouvre le menu principal ; les cinq cases
+  ouvrent le **shop** (étal), les **contrats** (parchemin), la **banque** (émeraude), la **faction**
+  (château) et les **métiers** (objet doré). Le bouton rouge sous le craft, à la place du Lucky Pass
+  de Paladium, ouvre le **concours Trixium**. Une bulle nomme chaque bouton.
+- **Côté serveur** : un clic ferme l'inventaire (le serveur rend la grille de craft et l'objet tenu
+  à la souris), puis envoie `InventoryNav.Open` ; `HubController.openTarget` n'ouvre que les menus de
+  sa liste, par les mêmes cartes que le menu principal.
+- **Ce qui part** : le livre de recettes, la liste des effets à droite de l'inventaire (ils restent en
+  haut à droite de l'écran de jeu) et le bouton « Profil RPG » au-dessus de l'inventaire ; le profil
+  s'ouvre par le menu principal ou `/profil`.
+- **Icônes** : les cinq raccourcis et le losange de l'armure sont découpés dans la maquette fournie
+  (`inv_*.png`, `section_armor.png`), le fond rendu transparent.
 
 ## Vérification
 
