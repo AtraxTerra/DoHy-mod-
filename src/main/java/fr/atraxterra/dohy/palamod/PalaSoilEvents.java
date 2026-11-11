@@ -33,5 +33,9 @@ public final class PalaSoilEvents {
             return;
         }
         event.setFinalState(PalaBlocks.FERTILIZED_FARMLAND.get().defaultBlockState());
+        if (!event.isSimulated() && event.getPlayer() instanceof net.minecraft.server.level.ServerPlayer player) {
+            // PalaJobsFertilizedDirtHoeAchievement : une terre fertilisee labouree.
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "hoe:fertilized", 1);
+        }
     }
 }

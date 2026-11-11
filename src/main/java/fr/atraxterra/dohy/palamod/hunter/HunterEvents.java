@@ -87,6 +87,7 @@ public final class HunterEvents {
             data.remove("UUID");
             stone.set(PalaHunter.CAPTURED.get(), new CapturedEntity(
                     BuiltInRegistries.ENTITY_TYPE.getKey(victim.getType()), data, victim.getName()));
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "capture:" + BuiltInRegistries.ENTITY_TYPE.getKey(victim.getType()), 1);
         }
         victim.discard();
     }
@@ -109,6 +110,7 @@ public final class HunterEvents {
         }
         stone.shrink(1);
         MountManager.give(player, MountGemstoneItem.stackOf(MountGem.wild()));
+        fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "mount:capture", 1);
         MountTexts.success(player, "captured");
     }
 

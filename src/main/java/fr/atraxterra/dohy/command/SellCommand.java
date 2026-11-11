@@ -93,6 +93,7 @@ public final class SellCommand {
 
         held.shrink(amount);
         long balance = Economy.credit(player, payout);
+        fr.atraxterra.dohy.palamod.achievement.Achievements.sold(player, payout);
 
         int sold = amount;
         source.sendSuccess(() -> Component.literal("Vendu ")

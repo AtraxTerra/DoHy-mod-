@@ -210,6 +210,9 @@ public final class EggHuntRun extends EventRun {
         if (who instanceof RivalFighter fighter) {
             fighter.setCarrying(true);
         }
+        if (who instanceof ServerPlayer player) {
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "egghunt:egg", 1);
+        }
         level.playSound(null, who.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 0.6f);
         tellArena(level, nameOf(carrierKey) + " s'empare de l'oeuf !", ChatFormatting.GOLD);
     }
@@ -363,6 +366,9 @@ public final class EggHuntRun extends EventRun {
             eggSince = ticks;
             dropAt(level, EventArena.EGG_ALTAR);
             for (ServerPlayer player : level.getServer().getPlayerList().getPlayers()) {
+                if (FactionEvents.inWarzone(player)) {
+                    fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "egghunt:kill", 1);
+                }
                 if (fr.atraxterra.dohy.faction.FactionApi.has(player)) {
                     player.sendSystemMessage(Component.literal("[Event] Volcania est vaincu ! L'oeuf attend sur "
                             + "l'autel : 60 min de chasse.").withStyle(ChatFormatting.GOLD));

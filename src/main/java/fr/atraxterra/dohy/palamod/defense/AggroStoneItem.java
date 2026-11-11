@@ -39,6 +39,9 @@ public class AggroStoneItem extends Item {
         }
         mob.setTarget(serverPlayer);
         mob.setLastHurtByMob(serverPlayer);
+        if (mob instanceof net.minecraft.world.entity.boss.wither.WitherBoss) {
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(serverPlayer, "aggro:wither", 1);
+        }
         stack.hurtAndBreak(1, serverPlayer, hand);
         serverPlayer.level().playSound(null, mob.blockPosition(), SoundEvents.EVOKER_PREPARE_ATTACK,
                 SoundSource.PLAYERS, 0.8f, 1.4f);

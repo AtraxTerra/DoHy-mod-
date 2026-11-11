@@ -113,6 +113,7 @@ public final class PalaMachineEvents {
                 return true;
             }
             held.shrink(1);
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "totem:fuel", 1);
             player.level().playSound(null, totem.getBlockPos(),
                     SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.7f, 1.2f);
             report(player, totem);

@@ -88,6 +88,8 @@ public class PortalControllerBlockEntity extends BlockEntity {
             return false;
         }
         key = stack.copyWithCount(1);
+        fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "portal:" + net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(
+                key.getItem()).getPath(), 1);
         if (!player.getAbilities().instabuild) {
             stack.shrink(1);
         }

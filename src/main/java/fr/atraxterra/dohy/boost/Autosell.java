@@ -159,6 +159,7 @@ public final class Autosell {
 
         container.setChanged();
         long balance = Economy.credit(player, payout);
+        fr.atraxterra.dohy.palamod.achievement.Achievements.sold(player, payout);
 
         int finalCount = count;
         long finalPayout = payout;

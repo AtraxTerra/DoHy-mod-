@@ -112,6 +112,7 @@ public class CauldronCoreBlock extends BaseEntityBlock {
         if (player != null) {
             AlchemistXp.actionBar(player, Component.translatable("message.palamod.cauldron.formed")
                     .withStyle(ChatFormatting.GREEN));
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "cauldron:init", 1);
         }
     }
 

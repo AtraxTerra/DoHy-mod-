@@ -156,6 +156,7 @@ public final class DimMinerManager {
         }
         if (!frame.isEmpty()) {
             data.setPortal(new DimMinerData.Portal(level.dimension(), frame, exitOf(level, pos, player)));
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "dimminer:portal", 1);
         }
         DimMinerMenus.openEntry(player);
     }
@@ -387,6 +388,7 @@ public final class DimMinerManager {
             return false;
         }
         DimMinerMenus.openStats(player, data);
+        fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "dimminer:session", 1);
         DimMinerData.Portal portal = data.portal();
         if (portal != null) {
             ServerLevel level = player.level().getServer().getLevel(portal.dimension());

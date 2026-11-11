@@ -435,6 +435,8 @@ public final class FactionApi {
     // -- Stats de l'arbre --------------------------------------------------------
 
     public static void stat(ServerPlayer player, String key, long amount) {
+        // Les succes lisent les memes compteurs, faction ou pas.
+        fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, key, amount);
         FactionData data = data(player);
         if (data.exists()) {
             data.addStat(key, amount);

@@ -115,6 +115,7 @@ public final class SpawnerEvents {
         }
         SpawnerSouls souls = target.getOrDefault(PalaHunter.SOULS.get(), SpawnerSouls.EMPTY);
         CustomSpawnerItem.withSouls(target, souls.withSoul(id));
+        fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "souls", 1);
         return true;
     }
 

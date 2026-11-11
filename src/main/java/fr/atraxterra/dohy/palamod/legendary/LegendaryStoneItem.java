@@ -55,10 +55,14 @@ public class LegendaryStoneItem extends Item {
         }
         ItemStack stack = player.getItemInHand(hand);
         if (effect == LegendaryEffect.RANDOM) {
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(serverPlayer, "legendary:random", 1);
             return InteractionResult.SUCCESS.heldItemTransformedTo(open(serverPlayer, server, stack));
         }
         boolean used = LegendaryStones.activate(serverPlayer, server, effect, lastUse(stack),
                 LegendaryStones.STONE_COOLDOWN, now -> stack.set(PalaLegendary.LAST_USE.get(), now));
+        if (used) {
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(serverPlayer, "legendary:" + effect.name().toLowerCase(java.util.Locale.ROOT), 1);
+        }
         return used ? InteractionResult.SUCCESS : InteractionResult.FAIL;
     }
 
