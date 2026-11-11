@@ -2733,7 +2733,7 @@ l'écran reste disponible depuis la boutique ; la box est l'autre façon d'ouvri
 | Paladium, Trixium | rare |
 | Endium, Halloween | légendaire |
 
-- **Clic droit** : s'il reste une clé du palier, le lot est tiré et donné tout de suite, la box
+- **Clic droit** : s'il y a une clé du palier dans l'inventaire, le lot est tiré et donné tout de suite, la box
   joue l'animation de la classe du lot avec sa bande-son, le lot apparaît au-dessus du coffre au
   repère `open` (et le message du gain tombe à ce moment), puis disparaît au repère `close`.
 - **Accroupi, main vide, clic droit** : achète une clé du palier.
@@ -2757,6 +2757,28 @@ l'écran reste disponible depuis la boutique ; la box est l'autre façon d'ouvri
 - **Le lot montré** est un `Display.ItemDisplay` à mi-taille, tourné vers qui le regarde. Ces
   réglages n'ont pas de mutateur public en 26.2 : ils passent par les données de l'entité
   (`load`), l'objet par `getSlot(0)`. De l'argent se montre par une émeraude.
+
+### Les clés — des objets (2026-11-11)
+
+Les clés de caisse étaient un compteur attaché au joueur. Ce sont maintenant trois objets,
+`palamod:crate_key_common`, `_rare` et `_legendary` (`CrateKeyItem`), avec l'illustration de la
+clé des boxes d'améthyste, de paladium et d'endium de PalaShop. `CrateKeys` est le seul endroit
+qui les compte, les prend et les donne :
+
+- la boutique et `/crate buy` **donnent l'objet** ; ce qui ne tient pas dans l'inventaire tombe
+  aux pieds ;
+- la roulette et les boxes **prennent la clé dans l'inventaire**, celle de la main d'abord ;
+- **clic droit dans le vide** avec une clé : ouvre la caisse à la roulette ;
+- les clés comptées d'un monde d'avant sont **converties à la connexion**, avec un message ;
+- un palier de caisse ajouté par un pack de données n'a pas d'objet : ses clés restent comptées
+  (`BoostData.keys`), et tout le reste marche pareil.
+
+Elles se trouvent en butin : coffre de la note des donjons et boss d'événement (`BALANCE.md`
+§ 6 nonies). Vérifié en jeu par captures : conversion (3 communes et 1 rare comptées → 4 objets,
+compteur vide), icônes dans l'inventaire, clé utilisée dans le vide (roulette ouverte, clé
+prise), clé en main sur une box (vrai clic du client), refus d'achat sans argent, et la
+fréquence des clés sur 20 000 coffres de note par cas. Non vérifié : la clé laissée par un boss
+d'événement.
 
 ### Les rayons — une seconde passe de rendu
 
