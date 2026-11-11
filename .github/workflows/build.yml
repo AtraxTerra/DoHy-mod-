@@ -185,6 +185,11 @@ jobs:
       - name: La chaine d'assets palamod doit etre complete
         run: python3 tools/check_assets.py
 
+      # Le musee nomme ses pieces a la main, et le jeu ignore sans bruit celles
+      # qu'il ne connait pas : une faute de frappe y passerait pour un mod absent.
+      - name: Le musee ne doit nommer que des pieces qui existent
+        run: python3 tools/check_museum.py
+
       - name: Les JSON doivent parser
         run: |
           python3 - <<'PY'

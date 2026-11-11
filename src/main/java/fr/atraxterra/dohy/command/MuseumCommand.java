@@ -58,22 +58,21 @@ public final class MuseumCommand {
         ServerPlayer player = source.getPlayerOrException();
 
         source.sendSuccess(() -> Component.literal("Musee — "
-                        + MuseumApi.data(player).count() + " piece(s) exposee(s)")
+                        + MuseumApi.exposed(player) + " piece(s) exposee(s)")
                 .withStyle(ChatFormatting.GOLD), false);
 
-        for (String category : MuseumApi.categories()) {
-            List<?> expected = MuseumApi.expected(category);
-            int done = MuseumApi.donatedIn(player, category);
-            boolean complete = MuseumApi.isComplete(player, category);
-            MuseumConfig.Section section = MuseumConfig.config().section(category);
-            String display = section.display().isEmpty() ? category : section.display();
+        for (String key : MuseumApi.wings()) {
+            MuseumConfig.Wing wing = MuseumConfig.config().wing(key);
+            int total = wing.pieces().size();
+            int done = MuseumApi.donatedIn(player, key);
+            boolean complete = MuseumApi.isComplete(player, key);
 
             source.sendSuccess(() -> Component.literal("  " + (complete ? "✔ " : "· ")
-                            + display + " " + done + " / " + expected.size())
+                            + wing.name() + " " + done + " / " + total)
                     .withStyle(complete ? ChatFormatting.AQUA : ChatFormatting.GRAY), false);
 
-            if (!complete && !section.rewards().isEmpty()) {
-                section.rewards().forEach(reward -> source.sendSuccess(() ->
+            if (!complete && !wing.rewards().isEmpty()) {
+                wing.rewards().forEach(reward -> source.sendSuccess(() ->
                         Component.literal("      a la cle : " + MuseumApi.describe(reward))
                                 .withStyle(ChatFormatting.DARK_GRAY), false));
             }
@@ -83,8 +82,8 @@ public final class MuseumCommand {
         if (!patron.isEmpty()) {
             boolean complete = MuseumApi.isPatronComplete(player);
             source.sendSuccess(() -> Component.literal("  " + (complete ? "✔ " : "· ")
-                            + MuseumConfig.config().patron().display()
-                            + " (optionnel, items uniques) " + patron.size() + " piece(s)")
+                            + MuseumConfig.config().patron().name()
+                            + " (optionnel, piece unique) " + patron.size() + " piece(s)")
                     .withStyle(complete ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.DARK_GRAY), false);
         }
         return 1;

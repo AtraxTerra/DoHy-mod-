@@ -1,15 +1,11 @@
 package fr.atraxterra.dohy.ui.menu;
 
-import fr.atraxterra.dohy.economy.price.PriceEntry;
-import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.museum.MuseumApi;
 import fr.atraxterra.dohy.museum.MuseumConfig;
 import fr.atraxterra.dohy.museum.MuseumMenu;
-import fr.atraxterra.dohy.shop.ShopCategory;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.ui.view.UiNet;
-import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -27,12 +23,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Le musee : les ailes, puis les vitrines d'une aile — la piece si elle est
- * exposee, grisee sinon. Montrer le manque, c'est dire quoi chercher.
+ * exposee, grisee sinon, avec une ligne qui dit ou la trouver. Montrer le
+ * manque, c'est dire quoi chercher.
  */
 public final class MuseumController extends MenuController {
 
     public static final MuseumController INSTANCE = new MuseumController();
-    private static final String PATRON = "patron";
+    private static final String PATRON = MuseumApi.PATRON;
 
     private final Map<UUID, String> open = new ConcurrentHashMap<>();
 
@@ -52,39 +49,21 @@ public final class MuseumController extends MenuController {
         return wing == null ? wings(player) : wing(player, wing);
     }
 
-    private static List<Identifier> contents(String wing) {
-        return PATRON.equals(wing) ? MuseumApi.patronItems() : MuseumApi.expected(wing);
+    private static MuseumConfig.Wing section(String wing) {
+        return MuseumConfig.config().wing(wing);
     }
 
-    private static MuseumConfig.Section section(String wing) {
-        return PATRON.equals(wing) ? MuseumConfig.config().patron() : MuseumConfig.config().section(wing);
-    }
-
-    private static String name(String wing) {
-        String display = section(wing).display();
-        return display.isEmpty() ? wing : display;
-    }
-
-    private static Item icon(String wing) {
-        if (PATRON.equals(wing)) {
-            return Items.NETHER_STAR;
+    /** L'objet de la carte d'une aile : celui du fichier, sinon sa premiere piece. */
+    private static ItemStack icon(MuseumConfig.Wing wing) {
+        Item item = wing.icon().flatMap(id -> BuiltInRegistries.ITEM.getOptional(id)).orElse(null);
+        if (item == null && !wing.pieces().isEmpty()) {
+            item = BuiltInRegistries.ITEM.getOptional(wing.pieces().get(0)).orElse(null);
         }
-        ShopCategory category = ShopCategory.byKey(wing);
-        return category == null ? Items.BOOK : category.icon();
-    }
-
-    private static int donatedAmong(ServerPlayer player, List<Identifier> ids) {
-        int count = 0;
-        for (Identifier id : ids) {
-            if (MuseumApi.data(player).has(id)) {
-                count++;
-            }
-        }
-        return count;
+        return new ItemStack(item == null ? Items.BOOK : item);
     }
 
     private MenuView wings(ServerPlayer player) {
-        List<String> wings = new ArrayList<>(MuseumApi.categories());
+        List<String> wings = new ArrayList<>(MuseumApi.wings());
         if (!MuseumApi.patronItems().isEmpty()) {
             wings.add(PATRON);
         }
@@ -92,13 +71,14 @@ public final class MuseumController extends MenuController {
         int donated = 0;
         int complete = 0;
         List<Card> cards = new ArrayList<>();
-        for (String wing : wings) {
-            boolean patron = PATRON.equals(wing);
-            List<Identifier> ids = contents(wing);
-            int done = donatedAmong(player, ids);
-            boolean full = !ids.isEmpty() && done == ids.size();
+        for (String key : wings) {
+            boolean patron = PATRON.equals(key);
+            MuseumConfig.Wing wing = section(key);
+            int total = wing.pieces().size();
+            int done = MuseumApi.donatedIn(player, key);
+            boolean full = done == total;
             if (!patron) {
-                expected += ids.size();
+                expected += total;
                 donated += done;
             }
             if (full) {
@@ -106,57 +86,56 @@ public final class MuseumController extends MenuController {
             }
             List<String> tooltip = new ArrayList<>();
             if (patron) {
-                tooltip.add("Optionnel : pieces uniques, aucune aile ne les exige");
+                tooltip.add("Optionnel : piece unique, aucune aile ne l'exige");
             }
-            section(wing).rewards().forEach(reward -> tooltip.add((full ? "Acquis : " : "A la cle : ")
+            wing.rewards().forEach(reward -> tooltip.add((full ? "Acquis : " : "A la cle : ")
                     + MuseumApi.describe(reward)));
-            Card card = Card.of(new ItemStack(icon(wing)), name(wing), List.of(done + " / " + ids.size()
+            Card card = Card.of(icon(wing), wing.name(), List.of(done + " / " + total
                             + " piece(s)", full ? "Aile complete" : "Bonus a la cle"))
-                    .accent(patron ? 0xFFEC4FB5 : 0xFFFAC400).progress(done, ids.size())
-                    .action("wing:" + wing + "|voir les vitrines").tooltip(tooltip);
+                    .accent(patron ? 0xFFEC4FB5 : 0xFFFAC400).progress(done, total)
+                    .action("wing:" + key + "|voir les vitrines").tooltip(tooltip);
             cards.add(full ? card.state(MenuView.DONE) : card);
         }
         cards.add(Card.of(new ItemStack(Items.HOPPER), "Deposer des pieces", List.of("Le guichet de dons",
                         "Un exemplaire preleve, le reste rendu"))
                 .accent(0xFF22E558).action("deposit|ouvrir le guichet"));
-        long value = 0;
-        for (Identifier id : MuseumApi.data(player).all()) {
-            PriceEntry entry = Prices.book().entry(id).orElse(null);
-            if (entry != null) {
-                value += entry.basePrice();
-            }
-        }
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("EXPOSEES", donated + " / " + expected, 0xFFFFFFFF),
                 new MenuView.Stat("AILES", complete + " / " + wings.size(), 0xFF22E558),
-                new MenuView.Stat("VALEUR", MoneyFormat.shortForm(value), 0xFFFAC400));
-        return new MenuView(id(), "Musee", "Un don est definitif ; les bonus d'aile sont permanents", stats,
+                new MenuView.Stat("PAR DON", "+" + MuseumConfig.config().globalXpPerDonation() + " XP",
+                        0xFFFAC400));
+        return new MenuView(id(), "Musee", "Des pieces rares seulement ; un don est definitif", stats,
                 List.of(new MenuView.Section("AILES", "resources", MenuView.GRID, cards)), true);
     }
 
-    private MenuView wing(ServerPlayer player, String wing) {
-        List<Identifier> ids = contents(wing);
+    private MenuView wing(ServerPlayer player, String key) {
+        MuseumConfig.Wing wing = section(key);
         List<Card> tiles = new ArrayList<>();
-        for (Identifier id : ids) {
+        for (Identifier id : wing.pieces()) {
             Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
             if (item == null) {
                 continue;
             }
             boolean donated = MuseumApi.data(player).has(id);
-            PriceEntry entry = Prices.book().entry(id).orElse(null);
             String itemName = MenuView.text(new ItemStack(item).getHoverName());
             Card card = Card.of(new ItemStack(item), itemName, List.of(donated ? "Expose" : "Manquant"));
             if (donated) {
-                card = card.state(MenuView.DONE).tooltip(entry == null ? List.of()
-                        : List.of("Valeur " + MoneyFormat.exact(entry.basePrice())));
+                card = card.state(MenuView.DONE);
             } else {
-                card = card.state(MenuView.DISABLED).tooltip(List.of("Apporte-en un au guichet"));
+                List<String> tooltip = new ArrayList<>();
+                String hint = wing.hints().get(id);
+                if (hint != null && !hint.isEmpty()) {
+                    tooltip.add(hint);
+                }
+                tooltip.add("Apporte-en un au guichet");
+                card = card.state(MenuView.DISABLED).tooltip(tooltip);
             }
             tiles.add(card);
         }
-        int done = donatedAmong(player, ids);
-        List<MenuView.Stat> stats = List.of(new MenuView.Stat("EXPOSEES", done + " / " + ids.size(), 0xFFFFFFFF));
-        return new MenuView(id(), name(wing), "Les pieces grisees manquent encore", stats,
+        int done = MuseumApi.donatedIn(player, key);
+        List<MenuView.Stat> stats = List.of(
+                new MenuView.Stat("EXPOSEES", done + " / " + wing.pieces().size(), 0xFFFFFFFF));
+        return new MenuView(id(), wing.name(), "Les pieces grisees manquent encore", stats,
                 List.of(new MenuView.Section("", "", MenuView.TILES, tiles)), true);
     }
 

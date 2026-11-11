@@ -3,8 +3,6 @@ package fr.atraxterra.dohy.museum;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.DoHyAttachments;
 import fr.atraxterra.dohy.contract.ContractApi;
-import fr.atraxterra.dohy.economy.price.PriceEntry;
-import fr.atraxterra.dohy.economy.price.Prices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,30 +21,36 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Le musee : un exemplaire de chaque item, donne definitivement.
+ * Le musee : un exemplaire de chaque piece rare, donne definitivement.
  *
- * <h2>Pourquoi par categorie et non par item</h2>
+ * <h2>Pourquoi seulement des pieces rares</h2>
  *
- * <p>152 items dans le catalogue, donc 152 micro-bonus si chaque don payait.
- * Chacun serait imperceptible et l'ensemble illisible. Les dons alimentent donc
- * <b>six collections de collections</b>, dont seule la completion accorde un
- * bonus nomme et consequent. Chaque don individuel donne de l'XP globale, ce qui
- * garde une progression continue entre deux paliers.
+ * <p>Le premier musee demandait un exemplaire de chaque objet du catalogue de
+ * prix : du ble, de la pierre, 152 vitrines dont l'essentiel se remplissait en
+ * vidant un coffre. Depuis le 2026-11-11 il n'expose que ce qui se merite — une
+ * etoile du Nether, une pierre legendaire, une bombe de NTM — et chaque piece
+ * est nommee dans {@code museum.json}.
  *
- * <h2>Pourquoi les items uniques sont exclus</h2>
+ * <h2>Pourquoi par aile et non par piece</h2>
+ *
+ * <p>Un bonus par don serait imperceptible. Les dons alimentent des ailes, dont
+ * seule la completion accorde un bonus nomme et consequent. Chaque don donne
+ * de l'XP globale, ce qui garde une progression continue entre deux paliers.
+ *
+ * <h2>Pourquoi l'unique est a part</h2>
  *
  * <p>L'oeuf du dragon est unique par monde. Exiger son sacrifice pour completer
- * une categorie transformerait un systeme de collection en source de regret. Le
- * tier {@code RARE} est donc hors des categories obligatoires et forme le
- * panneau mecene : on peut l'alimenter par choix, jamais par obligation.
+ * une aile transformerait un systeme de collection en source de regret. Il
+ * forme le panneau mecene : on peut l'alimenter par choix, jamais par
+ * obligation.
  */
 @EventBusSubscriber
 public final class MuseumApi {
+
+    public static final String PATRON = MuseumConfig.Config.PATRON;
 
     private MuseumApi() {
     }
@@ -55,90 +59,99 @@ public final class MuseumApi {
         return player.getData(DoHyAttachments.MUSEUM);
     }
 
-    /** Les items attendus dans une categorie, tier exclus mis a part. */
-    public static List<Identifier> expected(String category) {
-        List<Identifier> ids = new ArrayList<>();
-        Prices.book().items().forEach((id, entry) -> {
-            if (!entry.category().equalsIgnoreCase(category)) {
-                return;
-            }
-            if (MuseumConfig.config().isExcludedTier(entry.tier())) {
-                return;
-            }
-            ids.add(id);
-        });
-        ids.sort(Identifier::compareTo);
-        return ids;
+    /** Les pieces d'une aile qui existent dans ce jeu, dans l'ordre des vitrines. */
+    public static List<Identifier> expected(String wing) {
+        return MuseumConfig.config().wing(wing).pieces();
     }
 
-    /** Les items du panneau mecene : ceux des tiers exclus. */
+    /** Les pieces du panneau mecene. */
     public static List<Identifier> patronItems() {
-        List<Identifier> ids = new ArrayList<>();
-        Prices.book().items().forEach((id, entry) -> {
-            if (MuseumConfig.config().isExcludedTier(entry.tier())) {
-                ids.add(id);
-            }
-        });
-        ids.sort(Identifier::compareTo);
-        return ids;
+        return MuseumConfig.config().patron().pieces();
     }
 
-    /** Catégories connues du catalogue, hors panneau mecene. */
-    public static List<String> categories() {
+    /** Les ailes ouvertes, hors panneau mecene : celles dont une piece au moins existe. */
+    public static List<String> wings() {
         List<String> found = new ArrayList<>();
-        Prices.book().items().forEach((id, entry) -> {
-            if (!MuseumConfig.config().isExcludedTier(entry.tier())
-                    && !found.contains(entry.category())) {
-                found.add(entry.category());
+        for (MuseumConfig.Wing wing : MuseumConfig.config().wings()) {
+            if (!wing.pieces().isEmpty()) {
+                found.add(wing.id());
             }
-        });
-        found.sort(String::compareTo);
+        }
         return found;
     }
 
-    public static boolean isComplete(ServerPlayer player, String category) {
-        List<Identifier> expected = expected(category);
-        return !expected.isEmpty() && data(player).all().containsAll(expected);
+    /** L'aile qui expose cette piece, panneau mecene compris ; {@code null} si aucune. */
+    public static String wingOf(Identifier id) {
+        for (MuseumConfig.Wing wing : MuseumConfig.config().wings()) {
+            if (wing.pieces().contains(id)) {
+                return wing.id();
+            }
+        }
+        return patronItems().contains(id) ? PATRON : null;
+    }
+
+    public static boolean isComplete(ServerPlayer player, String wing) {
+        List<Identifier> expected = expected(wing);
+        if (expected.isEmpty()) {
+            return false;
+        }
+        MuseumData data = data(player);
+        for (Identifier id : expected) {
+            if (!data.has(id)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static boolean isPatronComplete(ServerPlayer player) {
-        List<Identifier> expected = patronItems();
-        return !expected.isEmpty() && data(player).all().containsAll(expected);
+        return isComplete(player, PATRON);
     }
 
-    public static int donatedIn(ServerPlayer player, String category) {
+    public static int donatedIn(ServerPlayer player, String wing) {
         int count = 0;
-        for (Identifier id : expected(category)) {
-            if (data(player).has(id)) {
+        MuseumData data = data(player);
+        for (Identifier id : expected(wing)) {
+            if (data.has(id)) {
                 count++;
             }
         }
         return count;
     }
 
-    /** Vrai si cet item manque encore au musee. */
-    public static boolean isWanted(ServerPlayer player, Identifier id) {
-        if (data(player).has(id)) {
-            return false;
+    /**
+     * Le nombre de pieces exposees, panneau mecene compris.
+     *
+     * <p>Compte parmi les pieces d'aujourd'hui : les dons faits a l'ancien
+     * musee (du ble, de la pierre) restent enregistres mais ne sont plus des
+     * pieces.
+     */
+    public static int exposed(ServerPlayer player) {
+        int count = donatedIn(player, PATRON);
+        for (String wing : wings()) {
+            count += donatedIn(player, wing);
         }
-        return Prices.book().entry(id).isPresent();
+        return count;
+    }
+
+    /** Vrai si cet objet est une piece qui manque encore au musee. */
+    public static boolean isWanted(ServerPlayer player, Identifier id) {
+        return !data(player).has(id) && wingOf(id) != null;
     }
 
     /**
-     * Enregistre un don. Retourne {@code true} si l'item manquait.
+     * Enregistre un don. Retourne {@code true} si la piece manquait.
      *
      * <p>N'annonce la completion qu'au moment ou elle survient : le joueur doit
-     * apprendre qu'il a fini une categorie, pas avoir a le verifier.
+     * apprendre qu'il a fini une aile, pas avoir a le verifier.
      */
     public static boolean donate(ServerPlayer player, Identifier id) {
-        PriceEntry entry = Prices.book().entry(id).orElse(null);
-        if (entry == null || !data(player).add(id)) {
+        String wing = wingOf(id);
+        if (wing == null || !data(player).add(id)) {
             return false;
         }
 
-        boolean patron = MuseumConfig.config().isExcludedTier(entry.tier());
-        String category = patron ? "patron" : entry.category();
-        boolean completedNow = patron ? isPatronComplete(player) : isComplete(player, category);
+        boolean completedNow = isComplete(player, wing);
 
         Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
         Component name = item == null
@@ -156,13 +169,10 @@ public final class MuseumApi {
         ContractApi.grantGlobalXp(player, MuseumConfig.config().globalXpPerDonation(), "don au musee");
 
         if (completedNow) {
-            MuseumConfig.Section section = patron
-                    ? MuseumConfig.config().patron()
-                    : MuseumConfig.config().section(category);
+            MuseumConfig.Wing section = MuseumConfig.config().wing(wing);
             player.level().playSound(null, player.blockPosition(),
                     SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.9f, 0.7f);
-            player.sendSystemMessage(Component.literal("Aile complete : "
-                            + (section.display().isEmpty() ? category : section.display()))
+            player.sendSystemMessage(Component.literal("Aile complete : " + section.name())
                     .withStyle(ChatFormatting.GOLD));
             section.rewards().forEach(reward -> player.sendSystemMessage(
                     Component.literal("  " + describe(reward)).withStyle(ChatFormatting.GREEN)));
@@ -188,8 +198,8 @@ public final class MuseumApi {
 
     private static double sum(ServerPlayer player, String type) {
         double total = 0.0d;
-        for (Map.Entry<String, MuseumConfig.Section> line : sections(player).entrySet()) {
-            for (MuseumConfig.Reward reward : line.getValue().rewards()) {
+        for (MuseumConfig.Wing wing : complete(player)) {
+            for (MuseumConfig.Reward reward : wing.rewards()) {
                 if (reward.type().equals(type)) {
                     total += reward.amount();
                 }
@@ -198,16 +208,16 @@ public final class MuseumApi {
         return total;
     }
 
-    /** Les ailes completes du joueur, et leurs recompenses. */
-    private static Map<String, MuseumConfig.Section> sections(ServerPlayer player) {
-        Map<String, MuseumConfig.Section> complete = new LinkedHashMap<>();
-        for (String category : categories()) {
-            if (isComplete(player, category)) {
-                complete.put(category, MuseumConfig.config().section(category));
+    /** Les ailes completes du joueur, panneau mecene compris. */
+    private static List<MuseumConfig.Wing> complete(ServerPlayer player) {
+        List<MuseumConfig.Wing> complete = new ArrayList<>();
+        for (MuseumConfig.Wing wing : MuseumConfig.config().wings()) {
+            if (isComplete(player, wing.id())) {
+                complete.add(wing);
             }
         }
         if (isPatronComplete(player)) {
-            complete.put("patron", MuseumConfig.config().patron());
+            complete.add(MuseumConfig.config().patron());
         }
         return complete;
     }
@@ -235,30 +245,21 @@ public final class MuseumApi {
      * s'empiler les bonus a l'infini.
      */
     public static void apply(ServerPlayer player) {
-        Map<String, MuseumConfig.Section> complete = sections(player);
+        List<MuseumConfig.Wing> all = new ArrayList<>(MuseumConfig.config().wings());
+        all.add(MuseumConfig.config().patron());
 
-        for (String category : allSectionKeys()) {
-            MuseumConfig.Section section = complete.containsKey(category)
-                    ? complete.get(category)
-                    : MuseumConfig.config().section(category);
-            boolean active = complete.containsKey(category);
-
-            for (int index = 0; index < section.rewards().size(); index++) {
-                MuseumConfig.Reward reward = section.rewards().get(index);
+        for (MuseumConfig.Wing wing : all) {
+            boolean active = isComplete(player, wing.id());
+            for (int index = 0; index < wing.rewards().size(); index++) {
+                MuseumConfig.Reward reward = wing.rewards().get(index);
                 if (!"attribute".equals(reward.type()) || reward.attribute().isEmpty()) {
                     continue;
                 }
                 Identifier modifierId = Identifier.fromNamespaceAndPath(DoHy.MOD_ID,
-                        "museum/" + category.toLowerCase() + "/" + index);
+                        "museum/" + wing.id().toLowerCase() + "/" + index);
                 applyOne(player, reward, modifierId, active);
             }
         }
-    }
-
-    private static List<String> allSectionKeys() {
-        List<String> keys = new ArrayList<>(MuseumConfig.config().categories().keySet());
-        keys.add("patron");
-        return keys;
     }
 
     private static void applyOne(ServerPlayer player, MuseumConfig.Reward reward,
