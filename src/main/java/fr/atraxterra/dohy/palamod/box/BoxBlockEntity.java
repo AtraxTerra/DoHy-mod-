@@ -190,11 +190,20 @@ public class BoxBlockEntity extends BlockEntity {
             say(player, Component.literal(pull.refusal()).withStyle(ChatFormatting.RED));
             return;
         }
-        draw = pull.draw();
+        begin(server, pull.draw());
+        say(player, Component.literal(Boosters.data(player).keys(tier) + " cle(s) restante(s).")
+                .withStyle(ChatFormatting.GRAY));
+    }
+
+    /** Lance l'animation et la bande-son de la classe du lot. */
+    void begin(ServerLevel server, Crates.Draw won) {
+        BoxKind kind = kind();
+        draw = won;
         String rarity = Crates.RARITIES.get(draw.rarity());
         clip = BoxTimings.of(kind, rarity);
         opening = 0;
         nonce++;
+        dropPrize();
         keepHost(server);
         if (host != null) {
             host.setData(PalaDungeon.SKIN.get(), new RpgSkin(kind.model(), "default", kind.scale(), pose()));
@@ -203,8 +212,6 @@ public class BoxBlockEntity extends BlockEntity {
                 worldPosition.getZ() + 0.5d, Holder.direct(SoundEvent.createVariableRangeEvent(
                         Identifier.fromNamespaceAndPath("palarpg", kind.sound(rarity)))),
                 SoundSource.BLOCKS, 1.0f, 1.0f);
-        say(player, Component.literal(Boosters.data(player).keys(tier) + " cle(s) restante(s).")
-                .withStyle(ChatFormatting.GRAY));
     }
 
     private static void say(ServerPlayer player, Component message) {
