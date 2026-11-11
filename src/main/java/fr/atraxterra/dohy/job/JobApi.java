@@ -27,7 +27,7 @@ import java.util.List;
  * Les metiers : XP, niveaux, recompenses, et la question « ai-je le droit ».
  *
  * <p>Un niveau rapporte trois choses : de l'argent (la courbe de
- * {@code job_progression.json}), un perk tous les cinq niveaux, et les objets
+ * {@code job_progression.json}), une prime tous les cinq niveaux ({@link JobPrimes}), et les objets
  * que Paladium donnait a ce palier ({@code jobs.json}). L'argent reste
  * volontairement <b>sous</b> le revenu de grind equivalent : un metier est un
  * bonus, jamais une source de revenu — principe 2 de {@code DESIGN.md}.
@@ -120,7 +120,7 @@ public final class JobApi {
     /**
      * Accorde de l'XP, applique les montees de niveau et leurs recompenses.
      *
-     * <p>Le bonus d'XP issu des perks et des ameliorations est applique ici,
+     * <p>Le bonus d'XP des ameliorations et des amulettes est applique ici,
      * donc une seule fois et au meme endroit pour toutes les sources.
      */
     public static void grant(ServerPlayer player, Job job, long amount) {
@@ -128,7 +128,7 @@ public final class JobApi {
             return;
         }
 
-        long boosted = Math.round(amount * (1.0d + JobPerks.xpBonus(player, job)
+        long boosted = Math.round(amount * (1.0d
                 + UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS)
                 + fr.atraxterra.dohy.palamod.defense.Amulets.xpBonus(player, job)));
         int before = level(player, job);
@@ -145,9 +145,6 @@ public final class JobApi {
             }
             ContractApi.grantGlobalXp(player, (after - before) * 20L, "niveau de metier");
             ContractApi.progress(player, ContractType.JOB_LEVELS, target -> true, after - before);
-            // Les perks dependent du niveau : on les recalcule entierement
-            // plutot que d'appliquer un delta, ce qui evite toute derive.
-            JobPerks.apply(player);
         }
     }
 
@@ -165,15 +162,7 @@ public final class JobApi {
                 .append(Component.literal("  · solde " + MoneyFormat.shortForm(balance))
                         .withStyle(ChatFormatting.DARK_GRAY)));
 
-        int perkEvery = JobProgression.config().curve().perkEvery();
-        if (perkEvery > 0 && level % perkEvery == 0) {
-            JobProgression.config().def(job).perks().stream()
-                    .filter(perk -> perk.level() == level)
-                    .forEach(perk -> player.sendSystemMessage(
-                            Component.literal("  Perk : " + describePerk(perk))
-                                    .withStyle(ChatFormatting.AQUA)));
-        }
-
+        JobPrimes.onLevel(player, job, level);
         giveItems(player, job, level);
     }
 
@@ -249,21 +238,6 @@ public final class JobApi {
     }
 
     // -- Textes --------------------------------------------------------------
-
-    /** Un perk en une phrase. Expose pour que l'interface dise la meme chose. */
-    public static String describePerk(JobProgression.Perk perk) {
-        String amount = perk.amount() >= 1 || perk.amount() <= -1
-                ? String.format("%+.1f", perk.amount())
-                : String.format("%+.0f %%", perk.amount() * 100);
-        return switch (perk.type()) {
-            case "attribute" -> perk.attribute().orElse("attribut") + " " + amount;
-            case "double_drop_chance" -> "chance de double drop " + amount;
-            case "xp_bonus" -> "XP de metier " + amount;
-            case "harvest_bonus" -> "recolte accrue " + amount;
-            case "loot_bonus" -> "chance de butin double " + amount;
-            default -> perk.type() + " " + amount + " (pas encore actif)";
-        };
-    }
 
     /**
      * Le nom a montrer pour un deblocage.

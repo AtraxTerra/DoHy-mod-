@@ -1,8 +1,0 @@
-{
-  "_comment": "Graines qui servent a replanter : les bonus de recolte des metiers ne les copient pas, sinon un champ grossirait tout seul. Les graines vanilla, et celles de PalaMod.",
-  "replace": false,
-  "values": [
-    "#minecraft:villager_plantable_seeds",
-    "#palamod:seeds"
-  ]
-}

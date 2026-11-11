@@ -33,7 +33,7 @@ Dernière mise à jour : 2026-11-09
 - [x] `data/rates.csv` — 152 items avec leur taux d'obtention horaire et leur tier
 - [x] `tools/gen_prices.py` — générateur de prix + vérification de cohérence $/h par tier
 - [x] `data/prices.csv` / `data/generated/prices.json` — générés, 152 items
-- [x] `data/job_progression.json` — courbe, sources d'XP et perks des 4 métiers (ex-`skills.json`, 8 skills puis 9 jusqu'au 2026-11-08)
+- [x] `data/job_progression.json` — courbe, primes de palier et sources d'XP des 4 métiers (ex-`skills.json`, 8 skills puis 9 jusqu'au 2026-11-08 ; perks remplacés par les primes le 2026-11-11)
 - [x] `data/collections.json` — 2 courbes de paliers, récompenses, exceptions
 - [x] `data/contracts.json` — pool de 18 quotidiens + 10 hebdos, demande du jour, bonus de première vente
 
@@ -157,7 +157,7 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Points ouverts à trancher
 
-- **IDs d'attributs 26.2** : les perks de `job_progression.json` utilisent des ids plausibles (`minecraft:mining_efficiency`, `minecraft:block_interaction_range`…) qui doivent être validés contre l'API réelle. À faire à la première compilation.
+- ~~**IDs d'attributs 26.2** : les perks de `job_progression.json` utilisent des ids plausibles qui doivent être validés contre l'API réelle.~~ → **sans objet depuis le 2026-11-11** : les perks sont devenus des primes en argent, plus aucun attribut n'est touché par les métiers.
 - **Trocs de villageois en registres de datapack** (nouveauté 26.1 : `data/<ns>/villager_trade/*.json` et `trade_set/*.json`). **Piste à évaluer en phase 3** : plutôt que de plafonner le prix de vente du lapis, de la perle de l'ender et du reste, on peut retirer ou renchérir directement le troc fautif par datapack — et rendre leurs vrais prix à ces items. C'est traiter la cause au lieu du symptôme, et ça rendrait les plafonds inutiles.
 - **HUD et GUI en mode retenu** : 26.2 a supprimé `GuiGraphics`. Le HUD de la monnaie et le GUI du shop doivent être écrits directement en `extract*` + `GuiGraphicsExtractor`. L'API exacte d'enregistrement d'une couche de HUD côté NeoForge 26.2 est à confirmer en CI (l'ancien `RegisterGuiLayersEvent` n'est pas garanti sous cette forme). → **tranché le 2026-11-08** : relevé par sonde et écrit — `extractBackground` et `extractContents` (il n'y a plus de `renderLabels`), `blit` avec `RenderPipelines.GUI_TEXTURED`, `centeredText` pour le texte, `getLeftPos` / `getTopPos` (`getGuiLeft` / `getGuiTop` sont marqués pour suppression), `RegisterMenuScreensEvent` avec témoins de type explicites. Voir `MachineScreen` et `docs/PALAMOD.md`.
 - **Plafonds villageois** : ~~à confirmer~~ → **tranché le 2026-11-03 : on garde les plafonds.** Ne pas relancer `gen_prices.py` avec `--no-villager-caps`. Audit encore à compléter sur : briques, argile, papier, verre teinté, charbon, fer.
@@ -169,6 +169,18 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-11 (suite) — métiers : les bonus deviennent des primes
+
+**Fait** : sur demande, les 80 perks des métiers (attributs, double drop, XP, récolte, butin)
+sont remplacés par une **prime de palier** tous les 5 niveaux : deux fois l'argent du niveau, en
+plus de cet argent. 8,4 M par métier maxé. L'onglet « Bonus » de la fiche devient « Primes » et
+liste les vingt paliers, versés ou à venir. `JobPerks` et `JobEffects` sont retirés ; la chance
+de double drop du musée reste.
+
+**Rattrapage** : le dernier palier payé est noté par métier (`JobData`). À la première
+connexion, un joueur reçoit d'un coup les primes des paliers qu'il avait déjà franchis ; aucune
+ne peut être payée deux fois.
 
 ### 2026-11-11 — NTM NEXT : minerais et pièces de machine
 

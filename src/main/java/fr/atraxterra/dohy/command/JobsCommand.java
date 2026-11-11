@@ -110,7 +110,7 @@ public final class JobsCommand {
         }
 
         source.sendSuccess(() -> Component.literal(
-                        "  Perk tous les " + JobProgression.config().curve().perkEvery()
+                        "  Prime tous les " + JobProgression.config().curve().primeEvery()
                                 + " niveaux, objets aux paliers. Detail : /metiers <metier>.")
                 .withStyle(ChatFormatting.DARK_GRAY), false);
         return Job.values().length;

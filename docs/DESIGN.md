@@ -170,7 +170,7 @@ Quatre métiers, ceux de Paladium : **Mineur**, **Chasseur**, **Fermier**, **Alc
 
 - 100 niveaux, courbe XP : `xp(lvl) = 100 × lvl^1.6` (`job_progression.json`)
 - Récompense money par niveau : `750 × lvl^1.4` → volontairement **sous** le revenu de grind équivalent : c'est un bonus, pas une source
-- **Perk permanent tous les 5 niveaux** via `AttributeModifier` transitoire, recalculé à la connexion : vitesse de minage, portée, PV max, chance de double drop
+- **Prime de palier tous les 5 niveaux** : deux fois l'argent du niveau, versée une fois (`JobPrimes`). Elle a remplacé les perks le 2026-11-11 — vitesse de minage, portée, PV max, chances de double drop — sur demande : un palier paie, il ne modifie plus le personnage
 - **Objets de Paladium aux paliers** (`jobs.json`, relevés dans les `Reward.builder` de PalaMod, niveaux ×5) : lingots de paladium et trixium à chaque palier, pioche et armure enchantées, têtes, pépite d'endium au 100. Un objet pas encore porté est inerte et listé par `/metiers audit`
 - **Déblocages** : machines et outils de PalaMod, verrouillés par niveau (`jobs.json`)
 - XP d'agriculture et d'alchimie **uniquement sur culture mature**
@@ -304,7 +304,7 @@ Points de vigilance : sérialisation compacte (un `LongSet` de positions packée
 3. Shop statique, `/worth`, `/sellall`
 4. Prix dynamiques et oubli
 5. Collections
-6. Métiers et perks
+6. Métiers et primes de palier
 7. Banque et pénalité de mort
 8. Contrats et demande du jour
 9. Boosters, caisses, autosell

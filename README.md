@@ -19,7 +19,7 @@ data/
   rates.csv              <- SOURCE : taux d'obtention horaire par item (édité à la main)
   prices.csv             <- généré, lisible en tableur
   generated/prices.json  <- généré, consommé par le mod
-  job_progression.json   <- courbe, sources d'XP et perks des métiers
+  job_progression.json   <- courbe, primes et sources d'XP des métiers
   collections.json       <- paliers et récompenses
   contracts.json         <- contrats quotidiens et hebdo, demande du jour
 tools/

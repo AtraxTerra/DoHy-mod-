@@ -65,7 +65,7 @@ public final class JobXpEvents {
                 continue;
             }
             JobApi.grant(player, job, xp);
-            maybeDoubleDrop(player, job, event);
+            maybeDoubleDrop(player, event);
         }
     }
 
@@ -121,11 +121,12 @@ public final class JobXpEvents {
         }
     }
 
-    /** Duplique les drops avec la probabilite accordee par les perks. */
-    private static void maybeDoubleDrop(ServerPlayer player, Job job, BlockDropsEvent event) {
-        // Les ailes completes du musee s'ajoutent aux perks de metier.
-        double chance = JobPerks.doubleDropChance(player, job)
-                + fr.atraxterra.dohy.museum.MuseumApi.doubleDropBonus(player);
+    /**
+     * Duplique les drops avec la probabilite accordee par les ailes completes du
+     * musee. Les metiers n'en accordent plus : leurs paliers paient en argent.
+     */
+    private static void maybeDoubleDrop(ServerPlayer player, BlockDropsEvent event) {
+        double chance = fr.atraxterra.dohy.museum.MuseumApi.doubleDropBonus(player);
         if (chance <= 0 || player.getRandom().nextDouble() >= chance) {
             return;
         }

@@ -32,8 +32,7 @@ import java.util.TreeSet;
  *
  * <p>Corollaire assume : une entree peut nommer un item qui n'existe pas encore.
  * Elle est alors inerte, et le chargement la signale. C'est le meme filet que
- * {@code UpgradeApi.EFFECTS} pour les ameliorations et que
- * {@code JobProgression.IMPLEMENTED} pour les perks — une regle d'equilibrage
+ * {@code UpgradeApi.EFFECTS} pour les ameliorations — une regle d'equilibrage
  * posee et jamais appliquee est pire qu'une regle absente, parce qu'elle fait
  * croire que le verrou tient.
  */
@@ -208,7 +207,7 @@ public final class JobConfig {
      * Une recompense en objets, donnee en atteignant un niveau de metier.
      *
      * <p>Relevee dans les {@code Reward.builder} de PalaMod. Elle s'ajoute a
-     * l'argent et aux perks de {@code job_progression.json} : un niveau de
+     * l'argent et aux primes de {@code job_progression.json} : un niveau de
      * Paladium rapportait des objets, un niveau de DoHy rapportait de l'argent,
      * et le remplacement des skills par les metiers garde les deux.
      */

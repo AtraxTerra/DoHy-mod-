@@ -135,7 +135,7 @@
       "icon": "minecraft:experience_bottle",
       "effect": "job_xp_bonus",
       "description": "Tous les metiers gagnent plus d'XP.",
-      "_note": "Se cumule avec les perks d'XP de chaque metier. Rend les cinquante derniers niveaux atteignables sans changer la courbe pour un debutant.",
+      "_note": "Avec les amulettes, le seul bonus d'XP de metier depuis que les perks sont devenus des primes (2026-11-11). Rend les cinquante derniers niveaux atteignables sans changer la courbe pour un debutant.",
       "levels": [
         {
           "price": 150000000,

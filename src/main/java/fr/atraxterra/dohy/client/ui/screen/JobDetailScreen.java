@@ -19,11 +19,11 @@ import java.util.Locale;
 
 /**
  * La fiche d'un metier : l'hexagone et l'XP a gauche, trois onglets a droite
- * (deblocages, bonus, recompenses), chacun une liste qui defile.
+ * (deblocages, primes, recompenses), chacun une liste qui defile.
  */
 public class JobDetailScreen extends UiScreen implements ViewScreen<JobDetailView> {
 
-    private static final String[] TABS = {"DÉBLOCAGES", "BONUS", "RÉCOMPENSES"};
+    private static final String[] TABS = {"DÉBLOCAGES", "PRIMES", "RÉCOMPENSES"};
     private static final int LIST_X = 165;
     private static final int LIST_Y = 70;
 
@@ -54,7 +54,7 @@ public class JobDetailScreen extends UiScreen implements ViewScreen<JobDetailVie
 
     private List<JobDetailView.Row> rows() {
         return switch (tab) {
-            case 1 -> view.perks();
+            case 1 -> view.primes();
             case 2 -> view.rewards();
             default -> view.unlocks();
         };
@@ -151,7 +151,7 @@ public class JobDetailScreen extends UiScreen implements ViewScreen<JobDetailVie
             int face = active ? Ui.RED : hovered ? 0xFF3A3940 : Ui.FIELD;
             g.button(x, y, width, height, face, active ? Ui.RED_DARK : 0xFF1B1A20, false);
             List<JobDetailView.Row> rows = switch (index) {
-                case 1 -> view.perks();
+                case 1 -> view.primes();
                 case 2 -> view.rewards();
                 default -> view.unlocks();
             };

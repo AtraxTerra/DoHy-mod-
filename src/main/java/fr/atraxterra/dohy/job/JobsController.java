@@ -21,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -104,16 +103,19 @@ public final class JobsController {
                     lines));
         }
 
-        List<JobProgression.Perk> perkList = new ArrayList<>(JobProgression.config().def(job).perks());
-        perkList.sort(Comparator.comparingInt(JobProgression.Perk::level));
-        List<JobDetailView.Row> perks = new ArrayList<>();
-        for (JobProgression.Perk perk : perkList) {
-            boolean unlocked = level >= perk.level();
-            boolean active = JobProgression.isImplemented(perk.type());
-            int state = !active ? JobDetailView.MISSING : unlocked ? JobDetailView.ACQUIRED : JobDetailView.LOCKED;
-            perks.add(new JobDetailView.Row(new ItemStack(unlocked ? Items.ENCHANTED_BOOK : Items.BOOK),
-                    capitalize(JobApi.describePerk(perk)), unlocked ? "Acquis" : "Verrouille", perk.level(), state,
-                    active ? List.of() : List.of("Effet pas encore applique par le mod")));
+        // Les primes de palier : versees ou a venir. « Versee » se lit dans les
+        // donnees du joueur et non dans son niveau, pour que la fiche dise ce
+        // qui a vraiment ete paye.
+        int paid = JobApi.data(player).primeLevel(job);
+        List<JobDetailView.Row> primes = new ArrayList<>();
+        for (int milestone : JobPrimes.milestones()) {
+            boolean received = milestone <= paid;
+            long amount = JobPrimes.amount(milestone);
+            primes.add(new JobDetailView.Row(new ItemStack(received ? Items.GOLD_INGOT : Items.GOLD_NUGGET),
+                    "Prime de " + MoneyFormat.exact(amount), received ? "Versee" : "Au niveau " + milestone,
+                    milestone, received ? JobDetailView.ACQUIRED : JobDetailView.LOCKED,
+                    List.of("Versee une fois, au passage du niveau " + milestone,
+                            "En plus des " + MoneyFormat.exact(JobApi.moneyForLevel(milestone)) + " du niveau")));
         }
 
         Map<Integer, List<JobConfig.Reward>> byLevel = new TreeMap<>();
@@ -149,17 +151,13 @@ public final class JobsController {
 
         return new JobDetailView(job.name(), level, maxLevel, (int) Math.round(JobApi.progress(player, job) * 1000),
                 into, need, JobApi.xp(player, job), level >= maxLevel ? 0 : JobApi.moneyForLevel(level + 1),
-                unlocks, perks, rewards);
+                unlocks, primes, rewards);
     }
 
     private static ItemStack icon(String raw, Item fallback) {
         Identifier id = JobConfig.parse(raw);
         Item item = id == null ? fallback : BuiltInRegistries.ITEM.getOptional(id).orElse(fallback);
         return new ItemStack(item);
-    }
-
-    private static String capitalize(String text) {
-        return text.isEmpty() ? text : Character.toUpperCase(text.charAt(0)) + text.substring(1);
     }
 
     public static void handle(ServerPlayer player, UiNet.Action action) {
