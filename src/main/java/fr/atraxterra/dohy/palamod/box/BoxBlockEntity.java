@@ -24,6 +24,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -54,9 +56,9 @@ public class BoxBlockEntity extends BlockEntity {
     static final String TAG = "palamod.box";
     /** Toutes les secondes : le coffre est-il toujours la ? */
     private static final int CHECK = 20;
-    /** Le lot flotte au-dessus du couvercle ouvert. */
-    private static final double PRIZE_HEIGHT = 1.55d;
     private static final float PRIZE_SCALE = 0.55f;
+    /** La taille du coffre-creature : elle ne regle que son ombre, le modele a sa propre echelle. */
+    private static final double HOST_SCALE = 0.7d;
 
     private Mob host;
     private Display.ItemDisplay prize;
@@ -126,6 +128,10 @@ public class BoxBlockEntity extends BlockEntity {
             host.setInvulnerable(true);
             host.setPersistenceRequired();
             host.addTag(TAG);
+            AttributeInstance scale = host.getAttribute(Attributes.SCALE);
+            if (scale != null) {
+                scale.setBaseValue(HOST_SCALE);
+            }
             BoxKind kind = kind();
             host.setData(PalaDungeon.SKIN.get(), new RpgSkin(kind.model(), "default", kind.scale(), pose()));
             server.addFreshEntity(host);
@@ -240,7 +246,8 @@ public class BoxBlockEntity extends BlockEntity {
         transformation.put("right_rotation", floats(0.0f, 0.0f, 0.0f, 1.0f));
         data.put("transformation", transformation);
         display.load(TagValueInput.create(ProblemReporter.DISCARDING, server.registryAccess(), data));
-        display.snapTo(worldPosition.getX() + 0.5d, worldPosition.getY() + PRIZE_HEIGHT,
+        // Au-dessus du couvercle ouvert, qui monte avec l'echelle du modele.
+        display.snapTo(worldPosition.getX() + 0.5d, worldPosition.getY() + 0.35d + 1.9d * kind().scale(),
                 worldPosition.getZ() + 0.5d, yaw(), 0.0f);
         ItemStack icon = draw.icon().isEmpty() ? new ItemStack(Items.EMERALD) : draw.icon().copyWithCount(1);
         display.getSlot(0).set(icon);

@@ -11,12 +11,12 @@ import net.minecraft.util.StringRepresentable;
  * memes paliers.
  */
 public enum BoxKind implements StringRepresentable {
-    AMETHYST("amethyst", "common", 0.6f),
+    AMETHYST("amethyst", "common", 0.65f),
     PALADIUM("paladium", "rare", 0.6f),
-    ENDIUM("endium", "legendary", 0.6f),
-    SAHARIA("saharia", "common", 0.6f),
-    TRIXIUM("trixium", "rare", 0.6f),
-    HALLOWEEN("halloween", "legendary", 0.6f);
+    ENDIUM("endium", "legendary", 0.45f),
+    SAHARIA("saharia", "common", 0.55f),
+    TRIXIUM("trixium", "rare", 0.45f),
+    HALLOWEEN("halloween", "legendary", 0.5f);
 
     public static final Codec<BoxKind> CODEC = StringRepresentable.fromEnum(BoxKind::values);
 
@@ -40,7 +40,10 @@ public enum BoxKind implements StringRepresentable {
         return "box_" + id;
     }
 
-    /** L'echelle du modele : 1 est la taille de Paladium, plus large qu'un bloc. */
+    /**
+     * L'echelle du modele. A 1, la taille de Paladium, les coffres font de 1,4
+     * a 2,7 blocs de large ; chacun est ramene a un peu plus d'un bloc.
+     */
     public float scale() {
         return scale;
     }

@@ -17,6 +17,7 @@ import org.joml.Vector3f;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -126,7 +127,11 @@ public final class RpgModels {
         if (info == null || geometry == null) {
             return null;
         }
-        RpgGeometry.Built built = RpgGeometry.build(geometry);
+        Set<String> glow = new HashSet<>();
+        for (JsonElement bone : GsonHelper.getAsJsonArray(info, "glow", new JsonArray())) {
+            glow.add(bone.getAsString());
+        }
+        RpgGeometry.Built built = RpgGeometry.build(geometry, glow);
 
         Map<String, Texture> textures = new HashMap<>();
         for (var texture : GsonHelper.getAsJsonObject(info, "textures").entrySet()) {

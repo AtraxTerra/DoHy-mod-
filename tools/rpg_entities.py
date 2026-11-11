@@ -565,7 +565,10 @@ def main():
                 "textures": {"default": {"frames": 1, "frametime": 1}},
                 "roles": {"pose": None, "idle": "idle", "walk": None,
                           "attacks": [], "hurt": None, "death": None, "spawn": None},
-                "flying": False}
+                "flying": False,
+                # Les rayons, faisceaux et eclats de l'ouverture : dessines a
+                # part, translucides et en pleine lumiere (RpgEntityModel.drawGlow).
+                "glow": sorted(bone["name"] for bone in geometry["bones"] if "vfx" in bone["name"])}
             # Les reperes « open » et « close » de chaque ouverture : le moment ou le lot se montre.
             raw = json.load(open(os.path.join(source, "animation.json"), encoding="utf-8"))["animations"]
             clips = {}

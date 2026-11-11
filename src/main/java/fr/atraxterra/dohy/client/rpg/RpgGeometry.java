@@ -45,29 +45,39 @@ final class RpgGeometry {
      * ni ses boites ni ses enfants, et {@link RpgEntityModel} les dessine
      * lui-meme.
      */
-    record Node(ModelPart part, ModelPart.Cube[] cubes, Node[] children) {
+    record Node(ModelPart part, ModelPart.Cube[] cubes, Node[] children, boolean glow) {
     }
 
-    /** Le modele monte : sa racine, son arbre, le nom de ses os, sa hauteur au repos en blocs. */
-    record Built(ModelPart root, Node tree, Set<String> bones, float height) {
+    /**
+     * Le modele monte : sa racine, son arbre, le nom de ses os, sa hauteur au
+     * repos en blocs, et s'il a des os lumineux ({@link Node#glow}).
+     */
+    record Built(ModelPart root, Node tree, Set<String> bones, float height, boolean glows) {
     }
 
     private final float textureWidth;
     private final float textureHeight;
     private final Map<String, List<JsonObject>> childrenOf = new HashMap<>();
     private final Set<String> bones = new HashSet<>();
+    private final Set<String> glow;
     private float top;
 
-    private RpgGeometry(float textureWidth, float textureHeight) {
+    private RpgGeometry(float textureWidth, float textureHeight, Set<String> glow) {
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
+        this.glow = glow;
     }
 
-    static Built build(JsonObject file) {
+    /**
+     * @param glow les os lumineux du modele ({@code glow} de l'index) : eux et
+     *             leurs descendants sont dessines a part, voir
+     *             {@link RpgEntityModel#draw}
+     */
+    static Built build(JsonObject file, Set<String> glow) {
         JsonObject geometry = GsonHelper.getAsJsonArray(file, "minecraft:geometry").get(0).getAsJsonObject();
         JsonObject description = GsonHelper.getAsJsonObject(geometry, "description");
         RpgGeometry builder = new RpgGeometry(GsonHelper.getAsFloat(description, "texture_width", 64.0f),
-                GsonHelper.getAsFloat(description, "texture_height", 64.0f));
+                GsonHelper.getAsFloat(description, "texture_height", 64.0f), glow);
         JsonArray list = GsonHelper.getAsJsonArray(geometry, "bones", new JsonArray());
         for (JsonElement element : list) {
             builder.bones.add(GsonHelper.getAsString(element.getAsJsonObject(), "name"));
@@ -90,8 +100,9 @@ final class RpgGeometry {
             children.put(GsonHelper.getAsString(bone, "name"), node.part());
         }
         ModelPart root = new ModelPart(List.of(), children);
-        return new Built(root, new Node(root, new ModelPart.Cube[0], nodes.toArray(Node[]::new)), builder.bones,
-                builder.top / 16.0f);
+        boolean glows = builder.bones.stream().anyMatch(glow::contains);
+        return new Built(root, new Node(root, new ModelPart.Cube[0], nodes.toArray(Node[]::new), false),
+                builder.bones, builder.top / 16.0f, glows);
     }
 
     private Node bone(JsonObject bone, float[] parentPivot) {
@@ -118,7 +129,7 @@ final class RpgGeometry {
                     pose(part, PartPose.offsetAndRotation(center[0] - pivot[0], -(center[1] - pivot[1]),
                             center[2] - pivot[2], turn[0] * RADIANS, turn[1] * RADIANS, turn[2] * RADIANS));
                     children.put(name + "#" + index, part);
-                    nodes.add(new Node(part, new ModelPart.Cube[] {cube}, new Node[0]));
+                    nodes.add(new Node(part, new ModelPart.Cube[] {cube}, new Node[0], false));
                 }
             }
             index++;
@@ -134,7 +145,8 @@ final class RpgGeometry {
         float z = parentPivot == null ? pivot[2] : pivot[2] - parentPivot[2];
         pose(part, PartPose.offsetAndRotation(x, y, z,
                 rotation[0] * RADIANS, rotation[1] * RADIANS, rotation[2] * RADIANS));
-        return new Node(part, cubes.toArray(ModelPart.Cube[]::new), nodes.toArray(Node[]::new));
+        return new Node(part, cubes.toArray(ModelPart.Cube[]::new), nodes.toArray(Node[]::new),
+                glow.contains(name));
     }
 
     private static void pose(ModelPart part, PartPose pose) {
