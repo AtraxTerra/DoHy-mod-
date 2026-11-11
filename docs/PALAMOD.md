@@ -1603,18 +1603,25 @@ monstres. Ces ruines les remplacent, **fréquentes**, chacune autour d'un **spaw
 | Squelette | ossuaire d'ardoise, quatre piliers d'os, crânes | briques d'ardoise, piliers d'os |
 | Sorcière | hutte d'épicéa sous un toit débordant, chaudron | pierre taillée, bibliothèques, chaudron |
 | Creeper | sanctuaire de grès aux piliers ciselés (le visage du creeper) | grès, piliers ciselés |
-| Vache | enclos de chêne, abri à foin | étable de chêne sur herbe, foin |
-| Cochon | porcherie d'épicéa dans la boue, abri à foin | étable d'épicéa sur boue, foin |
+| Vache | enclos de chêne, abri à foin | étable de chêne sur herbe, foin, lanternes |
+| Cochon | porcherie d'épicéa dans la boue, abri à foin | étable d'épicéa sur herbe et boue, foin, lanternes |
 
-- **Fréquence** : en surface, une ruine tous les 20 chunks environ (un tirage par chunk, une chance
-  sur 20), sur un sol à peu près plat et hors de l'eau — une lanterne la signale dans la nuit. Sous
-  terre, deux tirages par chunk à une chance sur 12, entre y = −48 et 48, que la roche valide : une
-  salle ne se taille ni dans une grotte ni dans un lac. Les six créatures sont tirées à parts égales.
-  Réglage : `placed_feature/miner/ruin.json` et `crypt.json` (`tools/palamod_assets.py`).
+- **Fréquence** : en surface, un tirage par chunk à une chance sur 9, sur un sol à peu près plat et
+  hors de l'eau — une lanterne signale la ruine dans la nuit. Sous terre, un tirage par chunk à une
+  chance sur 10, entre y = −48 et 48, que la roche valide : une salle ne se taille ni dans une
+  grotte ni dans un lac. Les six créatures sont tirées à parts égales. Mesuré en plaine sur
+  361 chunks : SURFACE_MESURE. Réglage : `placed_feature/miner/ruin.json` et `crypt.json`
+  (`tools/palamod_assets.py`).
 - **Les spawners marchent** : leurs créatures apparaissent, monstres compris — c'est la seule
   exception à « aucun monstre » (`DimMinerEvents.onJoin` laisse passer une créature née d'un
-  spawner). Ils portent leurs propres règles d'apparition (`custom_spawn_rules`, lumière de 0 à 15) :
-  sans elles, la nuit fixe interdirait les bêtes, et la lumière du ciel les monstres en surface.
+  spawner).
+  - En surface, ils portent leurs propres règles d'apparition (`custom_spawn_rules`, lumière de 0
+    à 15) : sans elles, la nuit fixe interdirait les bêtes (il leur faut de la lumière et de
+    l'herbe) et la lumière du ciel les monstres.
+  - Sous terre, ces règles ne valent rien — elles lisent la lumière du ciel assombrie par la nuit,
+    négative là où le ciel ne porte pas — et les salles suivent les règles ordinaires : **noires**
+    chez les monstres (une torche posée les arrête, comme dans une salle à monstres vanilla),
+    **éclairées et sur herbe** chez les bêtes.
 - **Les âmes** : le marteau des cavernes accepte désormais la **vache**, le **cochon** et le
   **creeper** en plus des six créatures d'origine (**écart**). Casser un spawner ne coûte aucun point
   de session.

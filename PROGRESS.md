@@ -196,6 +196,14 @@ cavernes prend aussi la vache, le cochon et le creeper.
 - La dimension a `monster_spawn_light_level` et `monster_spawn_block_light_limit` à 0 et une
   lumière du ciel de 4 : sans règles propres, un spawner de monstres n'y marche que sous un toit, et
   un spawner de bêtes jamais (il leur faut plus de 8 de lumière et de l'herbe).
+- **`custom_spawn_rules` ne marche pas sous terre dans une dimension de nuit** : mesuré, 0 case
+  valide sur 98 dans une salle fermée (lumière de bloc 3, ciel 0) avec des plages 0 à 15, contre 57
+  à 95 sur 98 en surface. La règle lit la lumière du ciel assombrie (négative sous terre la nuit),
+  et le codec refuse une plage hors de 0 à 15. D'où : règles propres en surface, règles ordinaires
+  sous terre. Le symptôme : un spawner qui flambe, `Delay` bloqué à 0, et rien qui apparaît.
+- Tester le marteau des cavernes demande Chasseur 25 (`JobGateEvents`) et une session de
+  dimension active (`DimMinerEvents.onBreak`) : sans eux, `destroyBlock` rend faux sans autre signe
+  qu'un message dans le chat.
 
 ### 2026-11-11 (suite) — la refonte des bases ennemies
 
