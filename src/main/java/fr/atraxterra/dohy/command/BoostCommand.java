@@ -7,6 +7,7 @@ import fr.atraxterra.dohy.boost.Autosell;
 import fr.atraxterra.dohy.boost.BoostData;
 import fr.atraxterra.dohy.boost.Boosters;
 import fr.atraxterra.dohy.boost.Crates;
+import fr.atraxterra.dohy.palamod.box.CrateKeys;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -107,7 +108,6 @@ public final class BoostCommand {
 
     private static int crateStatus(CommandSourceStack source) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        BoostData data = Boosters.data(player);
 
         source.sendSuccess(() -> Component.literal("Caisses").withStyle(ChatFormatting.GOLD), false);
         Crates.config().crates().forEach((tier, crate) -> source.sendSuccess(() ->
@@ -115,7 +115,7 @@ public final class BoostCommand {
                         .withStyle(ChatFormatting.GRAY)
                         .append(Component.literal(MoneyFormat.exact(crate.price()))
                                 .withStyle(ChatFormatting.GOLD))
-                        .append(Component.literal("  cles : " + data.keys(tier))
+                        .append(Component.literal("  cles : " + CrateKeys.count(player, tier))
                                 .withStyle(ChatFormatting.DARK_GRAY)), false));
         source.sendSuccess(() -> Component.literal("  /crate buy <palier> puis /crate open <palier>")
                 .withStyle(ChatFormatting.DARK_GRAY), false);

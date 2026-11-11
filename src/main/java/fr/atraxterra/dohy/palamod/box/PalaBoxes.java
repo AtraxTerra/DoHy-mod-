@@ -3,6 +3,8 @@ package fr.atraxterra.dohy.palamod.box;
 import fr.atraxterra.dohy.palamod.PalaMod;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -12,12 +14,14 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 /**
  * Les boxes de la boutique (jar PalaShop) : six coffres animes a poser, qui
- * ouvrent les caisses de DoHy. Voir {@link BoxBlock} et {@link BoxBlockEntity}.
+ * ouvrent les caisses de DoHy, et les cles de ces caisses. Voir
+ * {@link BoxBlock}, {@link BoxBlockEntity} et {@link CrateKeys}.
  */
 public final class PalaBoxes {
 
@@ -53,8 +57,27 @@ public final class PalaBoxes {
             TYPES.register("box", () -> new BlockEntityType<>(BoxBlockEntity::new, Set.of(
                     AMETHYST.get(), PALADIUM.get(), ENDIUM.get(), SAHARIA.get(), TRIXIUM.get(), HALLOWEEN.get())));
 
-    public static final List<DeferredItem<BlockItem>> ORDERED = BOXES.stream()
+    public static final List<DeferredItem<BlockItem>> BOX_ITEMS = BOXES.stream()
             .map(block -> ITEMS.registerSimpleBlockItem(block, properties -> properties)).toList();
+
+    /** Les cles de caisse, une par palier ({@link CrateKeys}). */
+    public static final DeferredItem<CrateKeyItem> KEY_COMMON = ITEMS.registerItem(
+            "crate_key_common", properties -> new CrateKeyItem("common", properties),
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<CrateKeyItem> KEY_RARE = ITEMS.registerItem(
+            "crate_key_rare", properties -> new CrateKeyItem("rare", properties),
+            properties -> properties.rarity(Rarity.RARE));
+    public static final DeferredItem<CrateKeyItem> KEY_LEGENDARY = ITEMS.registerItem(
+            "crate_key_legendary", properties -> new CrateKeyItem("legendary", properties),
+            properties -> properties.rarity(Rarity.EPIC));
+
+    public static final List<DeferredItem<? extends Item>> ORDERED = ordered();
+
+    private static List<DeferredItem<? extends Item>> ordered() {
+        List<DeferredItem<? extends Item>> list = new ArrayList<>(BOX_ITEMS);
+        list.addAll(List.of(KEY_COMMON, KEY_RARE, KEY_LEGENDARY));
+        return List.copyOf(list);
+    }
 
     /**
      * Un cube plein qui ne dessine rien : il ne doit ni cacher les faces de ses
@@ -76,7 +99,7 @@ public final class PalaBoxes {
     public static BlockItem item(BoxKind kind) {
         for (int index = 0; index < BOXES.size(); index++) {
             if (BOXES.get(index).get().kind() == kind) {
-                return ORDERED.get(index).get();
+                return BOX_ITEMS.get(index).get();
             }
         }
         throw new IllegalArgumentException("Box inconnue : " + kind);

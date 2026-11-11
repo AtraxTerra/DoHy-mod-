@@ -621,6 +621,33 @@ de clé commune : assez pour être un achat, trop peu pour retarder la première
 ont le même prix pour que le choix entre deux boxes du même palier soit un goût et non un calcul.
 `PalaBoxes.PRICE` est le seul réglage.
 
+## 6 nonies. Clés de caisse en butin
+
+Une clé vaut son prix à la boutique (100 k, 5 M, 150 M), mais ce qu'elle rapporte **en liquide**
+à qui revend tout est bien moindre : la caisse rend ~88 % en valeur boutique et la revente se fait
+au quart, soit ~22 k, ~1,1 M et ~33 M par clé. C'est ce chiffre qui borne les sources.
+
+**Coffre de la note d'un donjon réussi** (trois tirages séparés) :
+
+| Note | Clé commune | Clé rare (palier 40 et plus) | Clé légendaire (palier 80 et plus) |
+|---|---|---|---|
+| D, C | — | — | — |
+| B | 10 % | — | — |
+| A | 20 % | 0,5 % | — |
+| S | 35 % | 1,5 % | 0,25 % |
+
+En liquide, une note S rapporte donc en moyenne ~8 k avant le palier 40, ~24 k ensuite, ~107 k
+à partir du palier 80. À quatre donjons par heure, c'est de 30 k à 430 k par heure : au-dessus
+d'une heure ordinaire du début de partie pour qui tient la note S, et moins d'un sixième du
+revenu de fin de partie (~3 M par heure quand la caisse légendaire devient abordable). Une note
+médiocre ne donne rien.
+
+**Boss d'événement vaincu** : une clé commune à chaque joueur qui l'a frappé, et une clé rare
+dans 5 % des cas — ~77 k en liquide par boss, pour un combat qui peut durer trente minutes.
+
+Les réglages sont les trois tableaux `KEY_*` de `DungeonRewards` et `RARE_KEY_CHANCE` de
+`BossFight`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

@@ -175,6 +175,17 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — les clés de caisse en objets
+
+**Demande** : après les boxes, le joueur a retenu deux suites sur quatre proposées : les clés en
+objets, et un marché remixé pour le solo (lot suivant). Choix du joueur : **tout en objets**, le
+compteur ne sert plus qu'à la conversion.
+
+**Fait** (`feat/cles-objets`) : `CrateKeyItem`, `CrateKeys` (compter, prendre, donner,
+convertir), trois icônes tirées de PalaShop ; boutique, roulette, boxes et `/crate` passent par
+`CrateKeys`. Clés en butin : coffre de la note des donjons, boss d'événement (`BALANCE.md`
+§ 6 nonies). Détail et vérifications : `docs/PALAMOD.md` § 33.
+
 ### 2026-11-11 (suite) — les boxes animées de la boutique
 
 **Demande** : « que me conseilles-tu pour mon mod ? », puis « la boutique », puis, parmi quatre

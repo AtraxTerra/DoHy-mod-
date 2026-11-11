@@ -6,6 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.palamod.box.CrateKeys;
 import fr.atraxterra.dohy.ui.view.CrateView;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.UiNet;
@@ -131,7 +132,7 @@ public final class Crates {
         if (!Economy.tryDebit(player, crate.price())) {
             return "Il te faut " + MoneyFormat.exact(crate.price()) + " en liquide.";
         }
-        Boosters.data(player).addKeys(tier, 1);
+        CrateKeys.give(player, tier, 1);
         return null;
     }
 
@@ -165,7 +166,7 @@ public final class Crates {
         if (pool.isEmpty()) {
             return new Pull("Table de butin vide pour " + tier + ".", null);
         }
-        if (!Boosters.data(player).consumeKey(tier)) {
+        if (!CrateKeys.take(player, tier)) {
             return new Pull("Aucune cle " + tier + ". Achete-en une a la boutique.", null);
         }
 
@@ -210,8 +211,7 @@ public final class Crates {
             }
         }
         List<ItemStack> contents = draw.won().prizes().size() > 1 ? icons(draw.stacks()) : List.of();
-        BoostData data = Boosters.data(player);
-        UiNet.show(player, new CrateView(tier, title(tier), data.keys(tier), crate.price(),
+        UiNet.show(player, new CrateView(tier, title(tier), CrateKeys.count(player, tier), crate.price(),
                 Economy.balance(player) >= crate.price(), reel, REEL_WIN, MenuView.text(draw.name()), draw.detail(),
                 contents, draw.rarity(), crate.odds(), ++spins));
         schedule(player, tier, draw.won(), draw.name(), draw.detail(), REVEAL_TICKS);

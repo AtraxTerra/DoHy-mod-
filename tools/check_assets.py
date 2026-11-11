@@ -156,6 +156,10 @@ MODEL_TEXTURES = {
     "item/box_saharia.png": (32, 32),
     "item/box_trixium.png": (32, 32),
     "item/box_halloween.png": (32, 32),
+    # Les cles de caisse : l'illustration de PalaShop, reduite de la meme facon.
+    "item/crate_key_common.png": (32, 32),
+    "item/crate_key_rare.png": (32, 32),
+    "item/crate_key_legendary.png": (32, 32),
     # Baies et buisson a XP murs : des bandes animees (.mcmeta), 7 et 8 images.
     "block/xp_bush_ripe.png": (16, 112),
     "item/xp_berry.png": (16, 128),

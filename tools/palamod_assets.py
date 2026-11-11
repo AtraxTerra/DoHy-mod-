@@ -5562,6 +5562,25 @@ def main():
         label("block", name, label_fr, label_en)
         tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:%s" % (NS, name)])
 
+    # Les cles de caisse : l'illustration de la cle des trois boxes de metal
+    # (boxes/<nom>/item.png, 1000 x 1000), reduite comme les vignettes.
+    for tier, box, label_fr, label_en in (
+            ("common", "amethyst", "Cle de caisse commune", "Common Crate Key"),
+            ("rare", "paladium", "Cle de caisse rare", "Rare Crate Key"),
+            ("legendary", "endium", "Cle de caisse legendaire", "Legendary Crate Key")):
+        name = "crate_key_" + tier
+        art = os.path.join(shop_root or "", "assets", "palashop", "boxes", box, "item.png")
+        if shop_root and os.path.exists(art):
+            shrink_icon(art, "assets/%s/textures/item/%s.png" % (NS, name), 32)
+        else:
+            missing.append("palashop:boxes/%s/item.png" % box)
+        flat_item(name, "%s:item/%s" % (NS, name))
+        label("item", name, label_fr, label_en)
+    fr["item.%s.crate_key.use" % NS] = "Clic droit : ouvre une caisse a la roulette"
+    en["item.%s.crate_key.use" % NS] = "Right-click: opens a crate on the wheel"
+    fr["item.%s.crate_key.box" % NS] = "Sur une box posee : la box l'ouvre, avec son animation"
+    en["item.%s.crate_key.box" % NS] = "On a placed box: the box opens it, with its animation"
+
     # ---- ecriture des tags accumules ----
     for path, entries in sorted(collected_tags.items()):
         write("data/%s" % path, {"replace": False, "values": sorted(entries)})
