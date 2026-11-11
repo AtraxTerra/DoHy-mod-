@@ -203,6 +203,14 @@ après la fin d'un raid, environ 5 min ». Détail : `docs/FACTION.md` § Bases 
 - Poser un bloc sans effet de bord : `UPDATE_CLIENTS | UPDATE_KNOWN_SHAPE |
   UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS | UPDATE_SKIP_ON_PLACE` (sondé le 2026-11-11) — sans le
   troisième, remplacer un tonneau à table de butin tire son butin et le jette au sol.
+- **Retour du terrain, vérifié** : comparaison bloc à bloc d'un carré de claims avant le chantier et
+  après le retour (6,8 M de blocs) — 463 écarts, tous du monde qui vit (varech qui pousse, colonnes de
+  bulles, lave qui coule) ; trois demandes réelles pillées puis effacées, balayage serveur sans aucun
+  reste. **Une fois sur quatre** (capture 44, une seule passe à l'époque), l'image d'après montrait
+  encore un chunk de la base ; non reproduit ensuite, et le serveur n'avait rien gardé les autres
+  fois. Cause non trouvée. Depuis : seconde passe, et le journal donne les blocs reposés à chaque
+  passe et les chunks revendiqués laissés (`Terrain de la base des … revenu : …`). Si un morceau
+  reste affiché en jeu, regarder cette ligne, puis s'éloigner et revenir (le client recharge le chunk).
 - Le harnais de captures abandonnait à 9 000 ticks : monté à 30 000 sur `tmp/ui-shots43`. Un chantier
   synchrone gèle le serveur plusieurs secondes : attendre sa fin (`ShotHarness.until`) avant la
   capture, sinon les images sont décalées d'une scène.

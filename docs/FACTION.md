@@ -310,7 +310,8 @@ Une base pillée laissait une ruine de 129 blocs de côté et des cratères auto
   à 10 secondes. C'est le temps qu'il reste pour vider les coffres et démonter les machines.
 - **À l'échéance**, les chunks sont chargés en tâche de fond et relus tranche par tranche, 15 ms par
   tick : seuls les blocs qui ont changé sont reposés, de bas en haut, sans mise à jour de voisinage
-  (rien ne tombe, rien ne coule) et sans vider les coffres par terre. Les murs, les machines et les
+  (rien ne tombe, rien ne coule) et sans vider les coffres par terre. Une seconde passe rattrape ce qui a
+  bougé pendant la première. Les murs, les machines et les
   cratères disparaissent ; les collines, les arbres et les rivières reviennent. Les gardes et les bêtes
   de la base disparaissent, ses derniers claims tombent.
 - Un joueur resté sur place reçoit la **chute lente** (45 s) et, s'il se retrouve dans la roche, est
