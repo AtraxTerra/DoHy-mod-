@@ -12,6 +12,7 @@ import fr.atraxterra.dohy.palamod.dungeon.RpgMenu;
 import fr.atraxterra.dohy.palamod.golem.GolemMenus;
 import fr.atraxterra.dohy.palamod.mount.MountMenus;
 import fr.atraxterra.dohy.palamod.pillage.ChestExplorerMenu;
+import fr.atraxterra.dohy.palamod.trixium.TrixiumMenu;
 
 import java.util.List;
 
@@ -33,6 +34,7 @@ public final class Menus {
                 FactionMenus.Overview.INSTANCE, FactionMenus.Bank.INSTANCE, FactionMenus.Claims.INSTANCE,
                 FactionMenus.Ranking.INSTANCE, FactionMenus.Settings.INSTANCE,
                 FactionTreeMenus.Tree.INSTANCE, FactionTreeMenus.Branch.INSTANCE, ChestExplorerMenu.INSTANCE,
-                EnemyBaseMenu.INSTANCE, ReserveMenu.INSTANCE, FactionEventMenu.INSTANCE);
+                EnemyBaseMenu.INSTANCE, ReserveMenu.INSTANCE, FactionEventMenu.INSTANCE,
+                TrixiumMenu.INSTANCE);
     }
 }

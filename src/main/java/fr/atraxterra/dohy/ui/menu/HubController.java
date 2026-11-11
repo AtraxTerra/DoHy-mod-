@@ -12,12 +12,17 @@ import fr.atraxterra.dohy.job.JobConfig;
 import fr.atraxterra.dohy.job.JobGate;
 import fr.atraxterra.dohy.job.JobsController;
 import fr.atraxterra.dohy.museum.MuseumApi;
+import fr.atraxterra.dohy.palamod.PalaItems;
 import fr.atraxterra.dohy.palamod.dungeon.Rpg;
 import fr.atraxterra.dohy.palamod.dungeon.RpgMenu;
+import fr.atraxterra.dohy.palamod.trixium.TrixiumContest;
+import fr.atraxterra.dohy.palamod.trixium.TrixiumData;
+import fr.atraxterra.dohy.palamod.trixium.TrixiumMenu;
+import fr.atraxterra.dohy.palamod.trixium.TrixiumRivals;
 import fr.atraxterra.dohy.shop.SellChestMenu;
 import fr.atraxterra.dohy.shop.ShopController;
-import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
+import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.upgrade.UpgradeConfig;
@@ -117,12 +122,25 @@ public final class HubController extends MenuController {
                 Card.of(new ItemStack(Items.TOTEM_OF_UNDYING), "Profil RPG", List.of("Niveau RPG " + rpgLevel,
                         points > 0 ? points + " point(s) a depenser" : "Arbre des donjons"))
                         .accent(0xFFEC4FB5).action("rpg").badge(points > 0 ? "+" + points : ""),
-                factionCard(player));
+                factionCard(player),
+                trixiumCard(player));
 
         return new MenuView(id(), "DoHy", "Le menu de ton aventure", stats, List.of(
                 new MenuView.Section("ECONOMIE", "resources", MenuView.GRID, economy),
                 new MenuView.Section("PROGRESSION", "upgrade", MenuView.GRID, progress),
                 new MenuView.Section("FIN DE PARTIE", "craft", MenuView.GRID, endgame)), false);
+    }
+
+    /** Le concours Trixium : le rang du mois, et les paliers a recuperer. */
+    private static Card trixiumCard(ServerPlayer player) {
+        TrixiumContest.catchUp(player);
+        TrixiumData data = TrixiumContest.data(player);
+        int claimable = TrixiumContest.claimable(player);
+        return Card.of(new ItemStack(PalaItems.TRIXIUM.get()), "Concours Trixium", List.of(
+                        data.deposited() > 0 ? "Rang " + TrixiumContest.rank(player) + " / "
+                                + (TrixiumRivals.COUNT + 1) : "Pas encore de depot",
+                        MoneyFormat.shortForm(data.deposited()) + " depose(s) ce mois"))
+                .accent(0xFF2BC4C4).action("trixium").badge(claimable > 0 ? "+" + claimable : "");
     }
 
     private static Card factionCard(ServerPlayer player) {
@@ -143,6 +161,7 @@ public final class HubController extends MenuController {
     protected void card(ServerPlayer player, String key, int button) {
         switch (key) {
             case "faction" -> fr.atraxterra.dohy.faction.FactionMenus.Overview.INSTANCE.open(player);
+            case "trixium" -> TrixiumMenu.INSTANCE.open(player);
             case "shop" -> ShopController.open(player);
             case "sell" -> {
                 UiNet.forget(player);

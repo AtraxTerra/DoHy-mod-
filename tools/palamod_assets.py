@@ -5099,6 +5099,39 @@ def main():
         },
     })
 
+    # ---- concours Trixium (lot 23a) ----
+    #
+    # La fabrique a nuage pose un nuage (BlockCloud, texture blocks/cloud.png)
+    # mais s'affiche en icone plate (items/cloud.png), comme dans PalaMod. Le
+    # nuage ne lache rien. L'enderchest de poche est une icone plate.
+    miner_block("cloud", {"all": "blocks/cloud.png"}, "Nuage", "Cloud", drop=False, item=False, pickaxe=False)
+    for name, texture, label_fr, label_en in (
+            ("cloud", "cloud.png", "Fabrique a nuage", "Cloud Factory"),
+            ("pocket_enderchest", "pocket_enderchest.png", "Enderchest de poche", "Pocket Enderchest")):
+        if not copy_texture(root, "items/" + texture, "item/%s.png" % name, wrong_size):
+            missing.append("items/" + texture)
+        write("assets/%s/models/item/%s.json" % (NS, name), {
+            "parent": "minecraft:item/generated",
+            "textures": {"layer0": "%s:item/%s" % (NS, name)},
+        })
+        write("assets/%s/items/%s.json" % (NS, name), {
+            "model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)},
+        })
+        fr["item.%s.%s" % (NS, name)] = label_fr
+        en["item.%s.%s" % (NS, name)] = label_en
+    # La fabrique est un BlockItem : sans cle propre, elle prendrait le nom du
+    # bloc. CloudItem.getName ajoute la duree choisie.
+    fr["block.%s.cloud" % NS] = "Fabrique a nuage"
+    en["block.%s.cloud" % NS] = "Cloud Factory"
+    fr["item.%s.cloud.named" % NS] = "%s [%s]"
+    en["item.%s.cloud.named" % NS] = "%s [%s]"
+    fr["tooltip.%s.cloud.duration" % NS] = "Duree du nuage : %s"
+    en["tooltip.%s.cloud.duration" % NS] = "Cloud duration: %s"
+    fr["tooltip.%s.cloud.cycle" % NS] = "Maj + clic droit : changer la duree"
+    en["tooltip.%s.cloud.cycle" % NS] = "Shift + right-click: change the duration"
+    fr["tooltip.%s.pocket_enderchest" % NS] = "Clic droit : ton ender chest, hors combat"
+    en["tooltip.%s.pocket_enderchest" % NS] = "Right-click: your ender chest, out of combat"
+
     # ---- ecriture des tags accumules ----
     for path, entries in sorted(collected_tags.items()):
         write("data/%s" % path, {"replace": False, "values": sorted(entries)})

@@ -22,6 +22,7 @@ import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
 import fr.atraxterra.dohy.palamod.reserve.PalaReserve;
 import fr.atraxterra.dohy.palamod.smeltery.PalaSmeltery;
 import fr.atraxterra.dohy.palamod.storage.PalaStorage;
+import fr.atraxterra.dohy.palamod.trixium.PalaTrixium;
 import fr.atraxterra.dohy.palamod.wither.PalaWithers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -108,6 +109,8 @@ public final class PalaTab {
                         PalaPillage.tab().forEach(item -> output.accept(item.get()));
                         PalaWithers.tab().forEach(item -> output.accept(item.get()));
                         PalaReserve.tab().forEach(item -> output.accept(item.get()));
+                        // Les objets exclusifs du concours Trixium.
+                        PalaTrixium.ORDERED.forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

@@ -175,6 +175,11 @@ public final class EggHuntRun extends EventRun {
 
     // -- L'oeuf ----------------------------------------------------------------
 
+    /** Ce joueur porte-t-il l'oeuf ? */
+    public boolean carries(UUID player) {
+        return player.equals(carrier);
+    }
+
     /** L'oeuf est-il a cet endroit ? */
     boolean isEgg(BlockPos pos) {
         return egg != null && egg.equals(pos);
