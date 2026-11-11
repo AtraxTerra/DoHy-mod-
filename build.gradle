@@ -50,8 +50,8 @@ neoForge {
 }
 
 dependencies {
-    // NTM NEXT arrivera ici en compileOnly (phase 10), jamais en implementation :
-    // le mod doit tourner sans lui.
+    // Aucune dependance a NTM NEXT : son shop lit les tags et les identifiants
+    // du mod (data/tag_prices.json), et reste inerte s'il n'est pas installe.
 }
 
 tasks.withType(JavaCompile).configureEach {

@@ -331,82 +331,142 @@ Un stack de diamants vendu d'un coup fait déjà tomber le prix à 66 %. Voulu :
 
 ---
 
-## 6 bis. NTM NEXT — rareté de la matière × forme
+## 6 bis. NTM NEXT — minerais et pièces de machine
 
-Un tag ne dit que la **forme** d'un item. La première version ne voyait donc que
-ça, et un lingot de schrabidium coûtait un lingot de cuivre — absurde dans un mod
-où toute la progression tient à la rareté des matières. Le prix a maintenant deux
-dimensions : **ancre de la rareté × facteur de la forme**.
+Révisé le 2026-11-11. La première version mettait au shop tout ce que NTM range sous sept tags
+de forme (brut, gemme, lingot, plaque, poudre, pépite, cristal) : **223 items**, isotopes,
+déchets et alliages exotiques compris, et une matière inconnue y prenait le prix d'une matière
+courante. Il n'en reste que deux familles, **65 items** :
 
-### Les quatre raretés
+- **les minerais** : dix matières brutes minées, à la vente, et leurs lingots, à l'achat ;
+- **les pièces de machine** : plaques, fils, bobines, tuyaux, boulons, moteurs et circuits,
+  à l'achat.
 
-| Rareté | Matières | Lingot à l'achat | Matière brute à la vente |
+Ni alliage, ni plastique, ni isotope, ni matière exotique : ils se fabriquent. Une matière hors
+du catalogue n'a pas de prix du tout. Le rattachement passe par le sous-tag exact
+(`c:ingots/thorium` contient `ingot_th232`), plus par un mot-clé dans l'identifiant : l'ancien
+système classait `ingot_schraranium` comme de l'uranium.
+
+### Les huit crans du wiki
+
+La rareté vient de la ligne *Difficulty of Production* du wiki du mod
+([nucleartech.wiki](https://nucleartech.wiki)). L'achat est multiplié par **5** à chaque cran,
+la vente par **2,83** seulement, pour la même raison qu'avant : un achat est un puits à argent
+qu'on ne peut pas exploiter, une vente est un revenu.
+
+| Cran | Lingot à l'achat | Matière brute à la vente |
+|---|---|---|
+| Very Easy | 900 | 35 |
+| Easy | 4 500 | 100 |
+| Easy-Medium | 22 500 | 283 |
+| Medium | 112 500 | 800 |
+| Medium-Hard | 562 500 | 2 267 |
+| Hard | 2,80 M | 6 400 |
+| Very Hard | 14,00 M | 18 000 |
+| Extremely Hard | 70,00 M | 51 203 |
+
+Les quatre anciennes raretés tombent exactement sur les crans pairs : commune = Easy, peu
+commune = Medium, rare = Hard, très rare = Extremely Hard. Les 70 M du lingot très rare
+demandés à l'origine sont conservés. Les crans intermédiaires du wiki s'intercalent entre eux.
+
+### Les minerais
+
+La matière brute **se vend et ne s'achète pas** : achetée puis traitée, elle donnerait plus
+d'un lingot, donc un lingot moins cher que celui du shop. Le lingot **s'achète et ne se vend
+pas** : vendu, il ferait du rendement des chaînes de traitement un revenu infini.
+
+| Matière | Cote du wiki | Brut, vente | Lingot, achat |
 |---|---|---|---|
-| Commune | uranium, titane, cuivre, plomb, aluminium, fluorite, soufre | 4 500 | 100 |
-| Peu commune | thorium, tungstène, béryllium, cobalt, lithium | 112 500 | 800 |
-| Rare | terres rares, niobium | 2,80 M | 6 400 |
-| Très rare | schrabidium, australium, osmiridium | **70,00 M** | 51 200 |
+| plomb | Very Easy | 35 | 900 |
+| uranium | Easy | 100 | 4 500 |
+| thorium | Easy | 100 | 4 500 |
+| tungstène | Easy | 100 | 4 500 |
+| béryllium | Easy | 100 | 4 500 |
+| titane | *aucune* (Easy retenu) | 100 | 4 500 |
+| aluminium | Easy-Medium | 283 | 22 500 |
+| cobalt | Easy-Medium | 283 | 22 500 |
+| plutonium | Easy-Medium | 283 | 22 500 |
+| lithium | Medium | 800 | 112 500 |
 
-**Deux échelles différentes, et c'est voulu.** L'achat monte de **×25 par cran**
-(4 500 × 25³ = 70,3 M, d'où les 70 M demandés pour le très rare). La vente ne monte
-que de **×8**. Un achat est un puits à argent qu'on ne peut pas exploiter, donc il
-peut être extrême ; une vente est un revenu qu'on peut industrialiser. L'asymétrie
-qui en résulte va de ×30 pour le commun à **×911 pour le très rare** — acheter la
-pièce qui manque reste possible, s'industrialiser au shop jamais.
+Le wiki ne cote pas le titane ; c'est le minerai le plus répandu du mod (veines, amas,
+gisements), d'où Easy. Par rapport à l'ancienne grille, thorium, tungstène et béryllium
+descendent d'un cran, l'aluminium monte d'un, le plomb descend d'un.
 
-### Les sept formes
+**Le schrabidium n'est plus vendable.** L'ancienne grille vendait sa matière brute 51 203
+l'unité au motif qu'il « a un minerai ». Lu dans le source : ce minerai ne se génère pas, il
+naît d'une explosion nucléaire sur du minerai d'uranium (`ExplosionNukeGeneric`). Une bombe sur
+un filon d'uranium aurait imprimé des millions.
 
-Facteur relatif au lingot : matière brute 0,667 · gemme 0,6 · lingot 1,0 ·
-plaque 1,6 · poudre 0,533 · nugget 1/9 · cristal 3,0.
+### Ce que rapporte la matière brute
 
-| Forme | Commune | Peu commune | Rare | Très rare |
-|---|---|---|---|---|
-| matière brute | 3,00 k | 75,00 k | 1,87 M | 46,67 M |
-| nugget | 500 | 12,50 k | 311,08 k | 7,78 M |
-| poudre | 2,40 k | 60,00 k | 1,49 M | 37,33 M |
-| lingot | 4,50 k | 112,50 k | 2,80 M | 70,00 M |
-| plaque | 7,20 k | 180,00 k | 4,48 M | 112,00 M |
-| cristal | 13,50 k | 337,50 k | 8,40 M | 210,00 M |
-
-Trois propriétés vérifiées numériquement :
-
-- **La colonne commune reproduit l'ancien barème** déjà calibré (brute 3 000,
-  lingot 4 500, plaque 7 200, nugget 500, cristal 13 500). Rien ne change pour les
-  matières courantes — un bon signe que le modèle est le bon.
-- **L'échelle reste cohérente** : brute sous le lingot (le traitement ajoute de la
-  valeur), plaque au-dessus (faite de lingots).
-- **9 nuggets = 1 lingot**, à 0,01 % près aux quatre raretés (arrondi). Sans cette
-  neutralité, on achèterait la forme la moins chère pour la convertir.
-
-### Australium et osmiridium ne se vendent jamais
-
-Ils **ne se minent pas** : ils sortent de procédés, donc ils sont *productibles*.
-Les rendre vendables, même sous forme brute, ferait d'une installation une
-imprimante à billets — exactement l'exploit que la règle « seule la matière brute
-se vend » ferme ailleurs. Le schrabidium, lui, a un minerai : sa matière brute
-reste vendable.
-
-### Ce que rapporte vraiment la matière brute très rare
-
-51 203 l'unité au tarif plein, mais le prix dynamique freine (`FOUND` : S0 = 64,
-plancher 35 %) :
+Le lithium, la plus chère des dix, sous le prix dynamique (`FOUND` : S0 = 64, plancher 35 %) :
 
 | Vendu d'un coup | Recette | Par unité | % du prix de base |
 |---|---|---|---|
-| 16 | 0,76 M | 47 804 | 93 % |
-| 64 | 2,62 M | 40 899 | 80 % |
-| 256 | 7,40 M | 28 919 | 56 % |
-| 1 024 | 21,20 M | 20 706 | 40 % |
-| 4 096 | 76,26 M | 18 617 | 36 % |
+| 16 | 12 001 | 750 | 94 % |
+| 64 | 41 034 | 641 | 80 % |
+| 256 | 115 916 | 453 | 57 % |
+| 1 024 | 331 538 | 324 | 40 % |
 
-Le plancher mord à partir de 304 unités écoulées. C'est une belle récompense
-d'expédition, pas une rente.
+Le haut de l'échelle de vente était à 51 203 l'unité ; il est à 800. C'est voulu : les
+matières qui valaient ce prix ne se minent pas.
 
-### Les matières inconnues retombent au commun
+### Les pièces de machine
 
-Une matière que `tag_prices.json` ne connaît pas garde l'ancien comportement et le
-prix d'une matière courante. Si NTM ajoute un métal, le mod continue de
-fonctionner, au défaut prudent.
+**45 pièces, en achat seul.** Leur prix est **115 % de ce que coûtent leurs ingrédients, par la
+recette la moins chère du mod**, calculé hors du jeu par `tools/gen_ntm_prices.py` à partir des
+recettes de NTM NEXT. Une pièce ne coûte donc jamais moins au shop que ce qu'il faut pour la
+fabriquer : le détour se paie 15 %.
+
+Ce que coûte un ingrédient :
+
+- un item vanilla : son prix d'achat de `prices.csv` (lingot de fer 60, de cuivre 120, d'or 330) ;
+- un métal du shop : son lingot ;
+- un alliage ou un plastique, qui ne sont pas au shop : le prix du lingot de son cran, comme
+  s'il y était. Compter leur recette ne marcherait pas : la plupart sortent d'une usine chimique
+  dont les fluides n'ont pas de prix, et le polymère passerait pour gratuit.
+
+| Matière de référence | Cran | Source |
+|---|---|---|
+| acier | Easy | wiki |
+| cuivre rouge | Easy | *non coté* — cuivre et redstone au haut fourneau, comme l'acier |
+| carbone | Easy | *non coté* — du charbon au four |
+| acier rapide, niobium | Easy-Medium | wiki |
+| silicium | Easy-Medium | *non coté* — du sable au four à arc |
+| polymère | Medium | wiki |
+| caoutchouc | Medium | *non coté* — il remplace le polymère dans plusieurs recettes |
+| desh, tantale, tungstène magnétisé | Medium-Hard | wiki |
+
+Les fluides et l'énergie ne comptent pas, d'où les 15 %. Les recettes de recyclage, à sortie
+aléatoire ou derrière une option de NTM désactivée par défaut (mode 528, LBSM, mode cher) sont
+ignorées.
+
+| Famille | Pièces et prix |
+|---|---|
+| plaques | fer 69 · cuivre 140 · or 380 · plomb 1 000 · titane 5 200 · aluminium 26 000 |
+| fils fins | cuivre 17 · or 47 · plomb 130 · tungstène 650 · aluminium 3 200 |
+| fils denses | cuivre 140 · or 380 |
+| bobines | or 450 · or torique 900 · cuivre 5 200 · tungstène 5 200 · cuivre torique 10 000 · tungstène magnétisé 650 000 |
+| tuyaux | fer 210 · cuivre 410 · plomb 3 100 · acier 16 000 · aluminium 78 000 · acier rapide 78 000 · caoutchouc 390 000 |
+| boulons | plomb 130 · tungstène 650 · acier 650 · acier rapide 3 200 |
+| moteurs | moteur 7 900 · moteur en desh 1,6 M |
+| circuits | circuit imprimé 110 · tube à vide 760 · afficheur à sept segments 1 800 · condensateur 3 000 · circuit analogique 9 200 · wafer de silicium imprimé 17 000 · micropuce 17 000 · circuit intégré 70 000 · condensateur au tantale 72 000 · carte de condensateurs 220 000 · circuit militaire 550 000 · boîtier d'unité de contrôle 790 000 · unité de contrôle 3,1 M |
+
+Les écarts suivent les ingrédients : une bobine d'or (or vanilla, 330 le lingot) coûte moins
+qu'une bobine de cuivre, faite de fil de cuivre rouge, un alliage de NTM au cran Easy. C'est la
+règle de toute la grille NTM : ce qui ne demande que du vanilla reste bon marché, ce qui passe
+par une machine de NTM se paie au prix de la machine qu'on n'a pas.
+
+**Hors du shop** : le palier bismuth et au-delà (puces bismoïdes et quantiques, horloge atomique,
+circuits bismoïde, quantique et cristallin, unités de contrôle avancée et quantique, moteur au
+bismuth), contenu de fin de partie. Le fil dense de titane, celui de tungstène et les tuyaux
+d'acier n'ont pas de recette dans NTM NEXT.
+
+**À refaire si NTM change ses recettes** :
+
+```bash
+python3 -I tools/gen_ntm_prices.py <ntm-next>/neoforge/src/main/resources/data
+```
 
 ## 6 ter. PalaMod
 
@@ -420,8 +480,9 @@ produisent le fer à 15. Ce qui ne sort que de la mine est `FOUND` : paladium ve
 
 ## 7. Ce qui n'est pas encore chiffré
 
-- **NTM NEXT** : les quatre raretés couvrent 17 matières nommées ; les autres
-  retombent au commun. À compléter si le mod en apporte d'autres qui méritent un cran.
+- **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas
+  (titane, cuivre rouge, carbone, silicium, caoutchouc) sont les premières à revoir si une
+  partie montre un écart.
 - ~~**COMPONENT**~~ : catégorie supprimée le 2026-11-05, elle n'a jamais contenu d'item
 - **Caisses** : table de loot à écrire
 - **Niveau global** : barème d'XP par type de jalon à fixer une fois les contrats en jeu

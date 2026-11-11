@@ -60,7 +60,7 @@ Deux conséquences structurelles, qui reviennent partout dans ce document :
 | `FOUND` | Non-renouvelable uniquement | Vente |
 | `FARM` | Issu de ferme automatisable | Vente |
 | `COMPONENT` | Composants de base | **Achat seul** |
-| `NTM` | Matières brutes et composants finis NTM NEXT | Achat + vente, voir 3.4 |
+| `NTM` | Minerais et pièces de machine NTM NEXT | Brut à la vente, lingots et pièces à l'achat, voir 3.4 |
 | `MOB_DROP` | Drops de mobs | Vente |
 | `PALAMOD` | Matières premières de PalaMod : minerais, lingots, cultures, bûches (chapitre 6, `PALAMOD.md` § 19) | Achat + vente, les bûches en vente seule |
 
@@ -96,10 +96,21 @@ Le danger : les chaînes de traitement du mod (shredder, crystallizer, acidizer,
 
 Règles :
 
-1. **Achat : matière brute et composants finis uniquement.** Jamais d'intermédiaire.
-2. **Prix calculés par équivalent-minerai d'entrée**, en lisant les recettes réelles dans le source du mod, pas à l'intuition.
-3. **IDs générés depuis les tags** (`c:raw_materials/*`, `c:ingots/*`, `c:plates/*`) via JSON rechargeable. NTM a des centaines d'items et ses IDs bougeront entre versions.
-4. Dépendance **`compileOnly` + soft dependency** : le mod doit tourner sans NTM installé.
+1. **Deux familles au shop, rien d'autre** (tranché le 2026-11-11) : les **minerais** — dix
+   matières brutes minées, vendables, et leurs lingots, achetables — et les **pièces de
+   machine** — plaques, fils, bobines, tuyaux, boulons, moteurs, circuits — achetables. Ni
+   alliage, ni plastique, ni isotope, ni intermédiaire.
+2. **La matière brute se vend, le lingot et la pièce s'achètent.** Jamais l'inverse : la brute
+   achetée puis traitée rendrait plus d'un lingot, le lingot vendu ferait du rendement des
+   chaînes un revenu.
+3. **La rareté vient du wiki du mod** (*Difficulty of Production*), huit crans, ×5 à l'achat,
+   ×2,83 à la vente (`BALANCE.md` § 6 bis).
+4. **Le prix d'une pièce se calcule sur ses recettes réelles**, lues dans les données du mod par
+   `tools/gen_ntm_prices.py` : 115 % du coût de ses ingrédients, par la recette la moins chère.
+5. **Minerais rattachés par sous-tag exact** (`c:raw_materials/<matière>`, `c:ingots/<matière>`),
+   pièces par identifiant. Une matière hors catalogue n'a pas de prix ; un identifiant absent
+   est ignoré.
+6. Dépendance **aucune** : le mod tourne sans NTM installé, les tags sont alors vides.
 
 À traiter **en dernier** (phase 10), quand l'équilibrage vanilla est stable. Un équilibrage NTM posé sur une base vanilla instable est à refaire.
 
@@ -179,19 +190,19 @@ Deux surfaces, toutes deux inertes sans le mod tiers :
 - **XP de minage** : `#dohy:mining_xp/{low,mid,high,elite}`, déclarés vides ici
   et référencés dans `job_progression.json` à 30, 80, 180 et 350. À comparer à l'échelle
   existante : fer 12, diamant 90, émeraude 110, débris antiques 400.
-- **Prix** : rien de spécifique. Le mod range ses items dans les tags `c:`
-  habituels et déclare ses matières dans `materials.assign` de
-  `tag_prices.json`. La règle du mot-clé le plus long fait le reste — c'est
-  elle qui classe `green_paladium` en très rare alors que `paladium` est rare.
+- **Prix** : le mod range ses minerais dans les sous-tags `c:raw_materials/<matière>` et
+  `c:ingots/<matière>` habituels, et la matière s'ajoute au bloc `materials` de
+  `tag_prices.json` avec son cran. Le rattachement se fait par sous-tag exact : une matière non
+  listée n'a pas de prix.
 
-Les formes héritées de `rules` donnent gratuitement la bonne protection : brut
-et gemme vendables, lingot et pépite en achat seul. Le jour où PalaCore livrera
-son broyeur, doubler le minerai ne pourra donc pas se convertir en revenu.
+Les règles donnent gratuitement la bonne protection : brut vendable, lingot en achat seul. Le
+jour où PalaCore livrera son broyeur, doubler le minerai ne pourra donc pas se convertir en
+revenu.
 
-**À vérifier en jeu** : `raw_green_paladium` sort à 51 203 l'unité, le haut de
-l'échelle de vente. C'est cohérent avec sa rareté annoncée, mais aucune partie
-ne l'a encore confirmé. Si sa génération se révèle plus généreuse que prévu,
-c'est le premier chiffre à redescendre.
+Les matières de PalaCore ne sont plus listées depuis le 2026-11-11 : le catalogue se limite aux
+dix métaux de NTM. Elles étaient cotées paladium Hard, paladium vert et endium Extremely Hard,
+titane et findium Medium, améthyste Easy — les mêmes prix qu'avant, sur la nouvelle échelle. À
+remettre le jour où le mod arrive.
 
 ## 8. Collections
 

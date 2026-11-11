@@ -1,87 +1,91 @@
 {
-  "_comment": "Regles de tarification par tag, appliquees a tout item enregistre qui n'a pas de prix explicite dans prices.json. C'est ce qui permet d'integrer un mod de plusieurs centaines d'items sans en lister un seul — et de rester correct si le mod n'est pas installe, puisqu'un tag vide ne produit rien.",
-  "_two_dimensions": "Un item NTM a deux caracteristiques qui comptent pour son prix : sa FORME (matiere brute, lingot, plaque, poudre, nugget, cristal) et la RARETE de sa MATIERE (le cuivre et le schrabidium ne sont pas le meme objet). Les regles par tag ne voyaient que la forme, donc un lingot de schrabidium coutait un lingot de cuivre. Le bloc materials ajoute la seconde dimension : prix = ancre de la rarete x facteur de la forme.",
-  "_why_buy_is_expensive": "Les marges d'achat NTM sont volontairement enormes. NTM NEXT est un mod dont tout l'interet est de construire la chaine : pouvoir acheter ses lingots avec l'argent de fermes vanilla court-circuiterait 200 heures de contenu. L'achat reste possible — pour la piece qui manque — sans jamais permettre de s'industrialiser au shop.",
-  "_why_ntm_sells_only_raw": "NTM NEXT multiplie la matiere : ses chaines de traitement rendent plusieurs lingots par minerai, plus des sous-produits. Rendre les lingots, poudres ou plaques vendables transformerait ce rendement en revenu infini. Seule la matiere brute — le rendement reel du minage, non renouvelable — est donc vendable. Le reste est en achat seul, ce qui ferme l'exploit par construction au lieu de l'auditer recette par recette.",
+  "_comment": "Le shop NTM NEXT. Applique a tout item enregistre qui n'a pas de prix explicite dans prices.json, et inerte si le mod n'est pas installe : un tag vide ne produit rien, un identifiant inconnu est ignore.",
+  "_scope": "Deux familles et rien d'autre. Les MINERAIS : dix matieres brutes minees, vendables, et leurs lingots, achetables. Les PIECES DE MACHINE : plaques et fils de ces metaux, circuits, moteurs, bobines, tuyaux, boulons, en achat seul. Ni alliage, ni plastique, ni isotope, ni dechet, ni matiere exotique : ils se fabriquent. NTM en declare plus de 220 sous les tags que lisait l'ancienne version ; il en reste une soixantaine.",
+  "_why_buy_is_expensive": "Les marges d'achat NTM sont volontairement enormes. Tout l'interet du mod est de construire la chaine : acheter ses lingots avec l'argent de fermes vanilla court-circuiterait des dizaines d'heures de contenu. L'achat reste possible pour la piece qui manque, jamais pour s'industrialiser au shop.",
+  "_why_raw_is_sell_only": "Les chaines de traitement de NTM multiplient la matiere : plusieurs lingots par minerai. La matiere brute se vend et ne s'achete pas (achetee puis traitee, elle donnerait un lingot moins cher que le lingot du shop). Le lingot s'achete et ne se vend pas (vendu, il ferait de ce rendement un revenu infini).",
+  "_levels": "Les huit crans de 'Difficulty of Production' du wiki de NTM (nucleartech.wiki). L'achat est multiplie par 5 a chaque cran, la vente par 2,83 seulement : un achat est un puits a argent qu'on ne peut pas exploiter, une vente est un revenu. Les quatre anciennes raretes tombent exactement sur les crans pairs : commune = EASY, peu commune = MEDIUM, rare = HARD, tres rare = EXTREMELY_HARD (70 M le lingot). buy_unit et sell_unit sont les prix du lingot ; la matiere brute vaut 2/3 de lingot.",
+  "levels": {
+    "VERY_EASY": {
+      "buy_unit": 900,
+      "sell_unit": 53
+    },
+    "EASY": {
+      "buy_unit": 4500,
+      "sell_unit": 150
+    },
+    "EASY_MEDIUM": {
+      "buy_unit": 22500,
+      "sell_unit": 425
+    },
+    "MEDIUM": {
+      "buy_unit": 112500,
+      "sell_unit": 1200
+    },
+    "MEDIUM_HARD": {
+      "buy_unit": 562500,
+      "sell_unit": 3400
+    },
+    "HARD": {
+      "buy_unit": 2800000,
+      "sell_unit": 9600
+    },
+    "VERY_HARD": {
+      "buy_unit": 14000000,
+      "sell_unit": 27000
+    },
+    "EXTREMELY_HARD": {
+      "buy_unit": 70000000,
+      "sell_unit": 76800
+    }
+  },
+  "_forms": "Facteur par forme, relatif au lingot. La matiere brute est sous le lingot : le traitement ajoute de la valeur.",
+  "forms": {
+    "c:raw_materials": 0.6667,
+    "c:ingots": 1.0
+  },
+  "_materials": "Les dix metaux qui sortent d'un minerai de NTM. La cle est le nom du sous-tag (c:raw_materials/<cle>, c:ingots/<cle>) : c'est lui qui rattache ingot_th232 au thorium, sans deviner d'apres l'identifiant. Le champ wiki est la cote relevee sur nucleartech.wiki ; un tiret signale une cote que le wiki ne donne pas, et la raison du choix est dans _note.",
   "materials": {
-    "_comment": "Tarification par matiere. Un item est rattache a une matiere si le chemin de son identifiant contient l'un de ses mots-cles ; la forme vient du tag qui l'a capture. Volontairement par mot-cle et non par identifiant complet : on ne sait pas si le mod nomme ses items ntm:uranium_ingot ou ntm:ingot_uranium, et les deux marchent ainsi.",
-    "_ladder": "x25 d'une rarete a la suivante pour l'ACHAT : 4 500 -> 112 500 -> 2 800 000 -> 70 000 000. Trois crans de x25 font 15 625, ce qui place le tres rare a 70 M le lingot comme demande.",
-    "_sell_ladder": "x8 seulement d'une rarete a la suivante pour la VENTE : 100 -> 800 -> 6 400 -> 51 200 la matiere brute. L'achat est un puits a argent, qu'on ne peut pas exploiter, donc il peut etre extreme. La vente est un revenu : une echelle aussi raide y ferait du minage profond une imprimante. L'asymetrie qui en resulte — 1 367x entre l'achat et la vente du tres rare — est exactement l'intention : acheter la piece qui manque reste possible, s'industrialiser au shop jamais.",
-    "_anchors": "buy_unit et sell_unit sont les prix au facteur de forme 1,0, c'est-a-dire ceux du lingot. Les autres formes en decoulent. Le lingot n'est pas vendable, donc sell_unit est une reference de calcul et pas un prix affiche.",
-    "rarities": {
-      "COMMON": {
-        "buy_unit": 4500,
-        "sell_unit": 150,
-        "_note": "Reproduit l'echelle deja calibree avant ce decoupage : matiere brute a 3 000 a l'achat et 100 a la vente. Rien ne change pour les matieres courantes."
-      },
-      "UNCOMMON": {
-        "buy_unit": 112500,
-        "sell_unit": 1200
-      },
-      "RARE": {
-        "buy_unit": 2800000,
-        "sell_unit": 9600
-      },
-      "VERY_RARE": {
-        "buy_unit": 70000000,
-        "sell_unit": 76800,
-        "_note": "70 M le lingot. Un achat-trophee, pas une voie d'approvisionnement."
-      }
+    "lead": {
+      "level": "VERY_EASY",
+      "wiki": "Very Easy"
     },
-    "_forms": "Facteur par forme, relatif au lingot. L'echelle est coherente de bout en bout : matiere brute sous le lingot (le traitement ajoute de la valeur), plaque au-dessus (faite de lingots). Le nugget vaut exactement un neuvieme du lingot. Sans cette neutralite, on achererait la forme la moins chere pour la convertir dans l'autre sens.",
-    "forms": {
-      "c:raw_materials": 0.6667,
-      "c:gems": 0.6,
-      "c:ingots": 1.0,
-      "c:plates": 1.6,
-      "c:dusts": 0.5333,
-      "c:nuggets": 0.1111,
-      "c:crystals": 3.0
+    "uranium": {
+      "level": "EASY",
+      "wiki": "Easy"
     },
-    "_palacore": "Les matieres de PalaCore sont rattachees ici. green_paladium est plus long que paladium, donc la regle du mot-cle le plus long le classe bien en tres rare et pas en rare. Les formes suivent les tags c: que PalaCore declare : brut et gemme vendables, lingot et pepite en achat seul. C'est la protection qui compte le jour ou le broyeur de PalaCore doublera le minerai.",
-    "_assign": "Mots-cles cherches dans le chemin de l'identifiant. Casse ignoree.",
-    "assign": {
-      "COMMON": [
-        "uranium",
-        "titanium",
-        "copper",
-        "lead",
-        "aluminium",
-        "aluminum",
-        "fluorite",
-        "sulfur",
-        "sulphur",
-        "amethyste"
-      ],
-      "UNCOMMON": [
-        "thorium",
-        "tungsten",
-        "beryllium",
-        "cobalt",
-        "lithium",
-        "titane",
-        "findium"
-      ],
-      "RARE": [
-        "rare_earth",
-        "rareearth",
-        "niobium",
-        "paladium"
-      ],
-      "VERY_RARE": [
-        "schrabidium",
-        "australium",
-        "osmiridium",
-        "green_paladium",
-        "endium"
-      ]
+    "thorium": {
+      "level": "EASY",
+      "wiki": "Easy (Thorium-232)"
     },
-    "never_sellable": {
-      "_comment": "Matieres jamais vendables, meme sous forme brute. Australium et osmiridium ne se minent pas : ils sortent de procedes, donc ils sont PRODUCTIBLES. Les rendre vendables ferait d'une installation une imprimante a billets, exactement l'exploit que la regle sur la matiere brute ferme ailleurs. Le schrabidium, lui, a un minerai : sa matiere brute reste vendable.",
-      "keywords": [
-        "australium",
-        "osmiridium"
-      ]
+    "tungsten": {
+      "level": "EASY",
+      "wiki": "Easy"
+    },
+    "beryllium": {
+      "level": "EASY",
+      "wiki": "Easy"
+    },
+    "titanium": {
+      "level": "EASY",
+      "wiki": "-",
+      "_note": "Pas de cote sur le wiki. Le minerai le plus repandu du mod : veines, amas et gisements."
+    },
+    "aluminum": {
+      "level": "EASY_MEDIUM",
+      "wiki": "Easy-Medium"
+    },
+    "cobalt": {
+      "level": "EASY_MEDIUM",
+      "wiki": "Easy-Medium"
+    },
+    "plutonium": {
+      "level": "EASY_MEDIUM",
+      "wiki": "Easy-Medium",
+      "_note": "Le minerai est dans le Nether. Le lingot est le plutonium naturel ; ses isotopes ne sont pas au shop."
+    },
+    "lithium": {
+      "level": "MEDIUM",
+      "wiki": "Medium"
     }
   },
   "rules": [
@@ -89,61 +93,233 @@
       "tag": "c:raw_materials",
       "category": "NTM",
       "tier": "FOUND",
-      "rate_per_hour": 400,
       "sellable": true,
-      "buy_markup": 30.0,
-      "_note": "Le rendement du minage. Les matieres non reconnues par le bloc materials retombent sur cette regle, qui vaut une rarete courante."
-    },
-    {
-      "tag": "c:gems",
-      "category": "NTM",
-      "tier": "FOUND",
-      "rate_per_hour": 600,
-      "sellable": true,
-      "buy_markup": 40.0,
-      "_note": "Charbon, lignite, cinabre : extraits, pas transformes."
+      "buyable": false,
+      "_note": "Le rendement du minage : vente seule."
     },
     {
       "tag": "c:ingots",
       "category": "NTM",
       "tier": "FARM",
-      "rate_per_hour": 400,
       "sellable": false,
-      "buy_markup": 100.0,
-      "_note": "Achat seul : sortie d'une chaine qui multiplie la matiere."
-    },
-    {
-      "tag": "c:plates",
-      "category": "NTM",
-      "tier": "FARM",
-      "rate_per_hour": 300,
-      "sellable": false,
-      "buy_markup": 120.0
-    },
-    {
-      "tag": "c:dusts",
-      "category": "NTM",
-      "tier": "FARM",
-      "rate_per_hour": 600,
-      "sellable": false,
-      "buy_markup": 80.0
-    },
-    {
-      "tag": "c:nuggets",
-      "category": "NTM",
-      "tier": "FARM",
-      "rate_per_hour": 3600,
-      "sellable": false,
-      "buy_markup": 100.0,
-      "_note": "Neuf nuggets pour un lingot : le taux suit, sinon la conversion serait rentable dans un sens."
-    },
-    {
-      "tag": "c:crystals",
-      "category": "NTM",
-      "tier": "FARM",
-      "rate_per_hour": 200,
-      "sellable": false,
-      "buy_markup": 150.0
+      "buyable": true,
+      "_note": "La sortie d'une chaine qui multiplie la matiere : achat seul."
     }
-  ]
+  ],
+  "_components": "Pieces de machine en achat seul. Prix GENERES par tools/gen_ntm_prices.py, ne pas editer a la main : le prix d'une piece est 115 % de ce que coutent ses ingredients, par la recette la moins chere du mod. Une piece ne coute donc jamais moins que ce qu'il faut pour la fabriquer, et le detour par le shop se paie.",
+  "components": {
+    "hbm:plate_iron": 69,
+    "hbm:plate_copper": 140,
+    "hbm:plate_gold": 380,
+    "hbm:plate_lead": 1000,
+    "hbm:plate_titanium": 5200,
+    "hbm:plate_aluminium": 26000,
+    "hbm:wire_fine_copper": 17,
+    "hbm:wire_fine_gold": 47,
+    "hbm:wire_fine_lead": 130,
+    "hbm:wire_fine_tungsten": 650,
+    "hbm:wire_fine_aluminum": 3200,
+    "hbm:wire_dense_copper": 140,
+    "hbm:wire_dense_gold": 380,
+    "hbm:coil_copper": 5200,
+    "hbm:coil_copper_torus": 10000,
+    "hbm:coil_gold": 450,
+    "hbm:coil_gold_torus": 900,
+    "hbm:coil_tungsten": 5200,
+    "hbm:coil_magnetized_tungsten": 650000,
+    "hbm:pipe_iron": 210,
+    "hbm:pipe_copper": 410,
+    "hbm:pipe_lead": 3100,
+    "hbm:pipe_aluminum": 78000,
+    "hbm:pipe_steel": 16000,
+    "hbm:pipe_dura_steel": 78000,
+    "hbm:pipe_rubber": 390000,
+    "hbm:bolt_lead": 130,
+    "hbm:bolt_tungsten": 650,
+    "hbm:bolt_steel": 650,
+    "hbm:bolt_dura_steel": 3200,
+    "hbm:motor": 7900,
+    "hbm:motor_desh": 1600000,
+    "hbm:circuit_vacuum_tube": 760,
+    "hbm:circuit_numitron": 1800,
+    "hbm:circuit_capacitor": 3000,
+    "hbm:circuit_capacitor_tantalium": 72000,
+    "hbm:circuit_pcb": 110,
+    "hbm:circuit_silicon": 17000,
+    "hbm:circuit_chip": 17000,
+    "hbm:circuit_analog": 9200,
+    "hbm:circuit_basic": 70000,
+    "hbm:circuit_advanced": 550000,
+    "hbm:circuit_capacitor_board": 220000,
+    "hbm:circuit_controller_chassis": 790000,
+    "hbm:circuit_controller": 3100000
+  },
+  "costing": {
+    "_comment": "Lu seulement par tools/gen_ntm_prices.py. Le jeu l'ignore.",
+    "premium": 1.15,
+    "flags": {
+      "_comment": "Les options de NTM, a leur valeur par defaut : les recettes du mode 528, du mode cher et du LBSM ne comptent pas.",
+      "enable_528": false,
+      "enable_528_pressurized": false,
+      "expensive_mode": false,
+      "lbsm_simple_crafting": false,
+      "lbsm_simple_tools": false,
+      "lbsm_simple_centrifuge": false,
+      "lbsm_simple_armor": false,
+      "lbsm_simple_chemistry": false,
+      "lbsm_simple_medicine": false
+    },
+    "_reference": "Les matieres qui entrent dans les pieces sans etre au shop. Elles sont chiffrees a leur cran du wiki, comme si elles y etaient, plutot que par leur recette : la plupart sortent d'une usine chimique dont les fluides n'ont pas de prix, et les compter pour rien rendrait un circuit presque gratuit.",
+    "reference": {
+      "steel": {
+        "level": "EASY",
+        "wiki": "Easy"
+      },
+      "mingrade": {
+        "level": "EASY",
+        "wiki": "-",
+        "_note": "Cuivre rouge : cuivre et redstone au haut fourneau, au meme cran que l'acier."
+      },
+      "carbon": {
+        "level": "EASY",
+        "wiki": "-",
+        "_note": "Graphite : du charbon au four."
+      },
+      "dura_steel": {
+        "level": "EASY_MEDIUM",
+        "wiki": "Easy-Medium (High-Speed Steel)"
+      },
+      "niobium": {
+        "level": "EASY_MEDIUM",
+        "wiki": "Easy-Medium"
+      },
+      "silicon": {
+        "level": "EASY_MEDIUM",
+        "wiki": "-",
+        "_note": "Du sable au four a arc."
+      },
+      "polymer": {
+        "level": "MEDIUM",
+        "wiki": "Medium"
+      },
+      "rubber": {
+        "level": "MEDIUM",
+        "wiki": "-",
+        "_note": "Au cran du polymere, qu'il remplace dans plusieurs recettes."
+      },
+      "workers_alloy": {
+        "level": "MEDIUM_HARD",
+        "wiki": "Medium-Hard (Desh)"
+      },
+      "tantalum": {
+        "level": "MEDIUM_HARD",
+        "wiki": "Medium-Hard (Tantalium)"
+      },
+      "magnetized_tungsten": {
+        "level": "MEDIUM_HARD",
+        "wiki": "Medium-Hard"
+      }
+    },
+    "_reference_forms": "Facteur d'une forme de matiere de reference, relatif au lingot. Une billette de NTM vaut six pepites.",
+    "reference_forms": {
+      "ingots": 1.0,
+      "raw_materials": 1.0,
+      "dusts": 1.0,
+      "nuggets": 0.1111,
+      "tiny_dusts": 0.1111,
+      "billets": 0.6667,
+      "storage_blocks": 9.0
+    },
+    "_vanilla": "Prix d'achat des items vanilla absents de prices.csv, deduits de ceux qui y sont. Les autres viennent de la colonne buy_price de prices.csv.",
+    "vanilla": {
+      "minecraft:oak_planks": 12,
+      "minecraft:stick": 6,
+      "minecraft:glass": 110,
+      "minecraft:glass_pane": 41,
+      "minecraft:paper": 28,
+      "minecraft:flint": 120,
+      "minecraft:brick": 120,
+      "minecraft:blaze_powder": 125,
+      "minecraft:bucket": 180
+    },
+    "_aliases": "Tags vanilla et NeoForge qui ne sont pas dans les donnees de NTM : l'item qui les represente.",
+    "aliases": {
+      "c:ingots/iron": "minecraft:iron_ingot",
+      "c:ingots/copper": "minecraft:copper_ingot",
+      "c:ingots/gold": "minecraft:gold_ingot",
+      "c:nuggets/iron": "minecraft:iron_nugget",
+      "c:nuggets/gold": "minecraft:gold_nugget",
+      "c:dusts/redstone": "minecraft:redstone",
+      "c:dusts/glowstone": "minecraft:glowstone_dust",
+      "c:gems/quartz": "minecraft:quartz",
+      "c:gems/diamond": "minecraft:diamond",
+      "c:gems/emerald": "minecraft:emerald",
+      "c:gems/lapis": "minecraft:lapis_lazuli",
+      "c:glass_panes": "minecraft:glass_pane",
+      "c:glass_blocks": "minecraft:glass",
+      "c:rods/wooden": "minecraft:stick",
+      "c:rods/blaze": "minecraft:blaze_rod",
+      "c:strings": "minecraft:string",
+      "c:slime_balls": "minecraft:slime_ball",
+      "c:leathers": "minecraft:leather",
+      "c:gunpowders": "minecraft:gunpowder",
+      "c:ender_pearls": "minecraft:ender_pearl",
+      "c:obsidians": "minecraft:obsidian",
+      "c:sands": "minecraft:sand",
+      "c:gravels": "minecraft:gravel",
+      "c:cobblestones": "minecraft:cobblestone",
+      "c:stones": "minecraft:stone",
+      "minecraft:planks": "minecraft:oak_planks",
+      "minecraft:logs": "minecraft:oak_log",
+      "minecraft:coals": "minecraft:coal"
+    },
+    "_targets": "Les pieces mises au shop, jusqu'au circuit de controle. Les pieces du palier bismuth et au-dela (puces bismoides et quantiques, horloge atomique, circuits bismoide, quantique et cristallin, unites de controle avancee et quantique, moteur au bismuth) sont de fin de partie et restent a fabriquer. Le fil dense de titane, celui de tungstene et les tuyaux d'acier n'ont pas de recette dans NTM NEXT.",
+    "targets": [
+      "hbm:plate_iron",
+      "hbm:plate_copper",
+      "hbm:plate_gold",
+      "hbm:plate_lead",
+      "hbm:plate_titanium",
+      "hbm:plate_aluminium",
+      "hbm:wire_fine_copper",
+      "hbm:wire_fine_gold",
+      "hbm:wire_fine_lead",
+      "hbm:wire_fine_tungsten",
+      "hbm:wire_fine_aluminum",
+      "hbm:wire_dense_copper",
+      "hbm:wire_dense_gold",
+      "hbm:coil_copper",
+      "hbm:coil_copper_torus",
+      "hbm:coil_gold",
+      "hbm:coil_gold_torus",
+      "hbm:coil_tungsten",
+      "hbm:coil_magnetized_tungsten",
+      "hbm:pipe_iron",
+      "hbm:pipe_copper",
+      "hbm:pipe_lead",
+      "hbm:pipe_aluminum",
+      "hbm:pipe_steel",
+      "hbm:pipe_dura_steel",
+      "hbm:pipe_rubber",
+      "hbm:bolt_lead",
+      "hbm:bolt_tungsten",
+      "hbm:bolt_steel",
+      "hbm:bolt_dura_steel",
+      "hbm:motor",
+      "hbm:motor_desh",
+      "hbm:circuit_vacuum_tube",
+      "hbm:circuit_numitron",
+      "hbm:circuit_capacitor",
+      "hbm:circuit_capacitor_tantalium",
+      "hbm:circuit_pcb",
+      "hbm:circuit_silicon",
+      "hbm:circuit_chip",
+      "hbm:circuit_analog",
+      "hbm:circuit_basic",
+      "hbm:circuit_advanced",
+      "hbm:circuit_capacitor_board",
+      "hbm:circuit_controller_chassis",
+      "hbm:circuit_controller"
+    ]
+  }
 }

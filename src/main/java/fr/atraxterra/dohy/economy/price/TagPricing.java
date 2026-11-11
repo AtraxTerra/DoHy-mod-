@@ -13,45 +13,64 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 
 import java.io.BufferedReader;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Tarification par tag, pour integrer un mod sans enumerer ses items.
  *
  * <h2>Le probleme que ca resout</h2>
  *
- * <p>NTM NEXT apporte des centaines d'items : 92 lingots, 77 poudres, 48
- * nuggets, 14 matieres brutes. Les lister un par un dans {@code prices.json}
- * serait a refaire a chaque version du mod, et faux des la premiere. Mais le mod
- * declare proprement les tags de convention ({@code c:ingots},
- * {@code c:raw_materials}, {@code c:plates}…), donc une regle par tag suffit.
+ * <p>NTM NEXT apporte des centaines d'items : 86 lingots, 71 poudres, 46
+ * nuggets, 11 matieres brutes. Les lister un par un dans {@code prices.json}
+ * serait a refaire a chaque version du mod. Mais le mod declare proprement les
+ * sous-tags de convention ({@code c:ingots/uranium}, {@code c:raw_materials/lead}…),
+ * qui nomment a la fois la forme et la matiere d'un item.
  *
- * <p>Avantage decisif : si le mod n'est pas installe, les tags sont vides et
- * rien n'est genere. Aucune dependance de compilation, aucun chargement
- * conditionnel, aucune classe du mod referencee.
+ * <p>Si le mod n'est pas installe, les tags sont vides et rien n'est genere.
+ * Aucune dependance de compilation, aucune classe du mod referencee.
  *
- * <h2>Pourquoi NTM ne vend que sa matiere brute</h2>
+ * <h2>Un catalogue ferme</h2>
+ *
+ * <p>Seules les matieres <b>cataloguees</b> dans {@code tag_prices.json} entrent
+ * au shop, et seulement sous deux formes : matiere brute et lingot. Un
+ * item est rattache a sa matiere par le sous-tag exact
+ * {@code c:<forme>/<matiere>}, jamais par un mot-cle dans son identifiant :
+ * {@code ingot_th232} est du thorium et {@code ingot_schraranium} n'est pas de
+ * l'uranium. Une matiere absente du catalogue — isotope, dechet, produit
+ * intermediaire, alliage — n'a pas de prix du tout, plutot qu'un prix de
+ * matiere courante qui ne lui correspond pas.
+ *
+ * <h2>On vend ce qu'on mine, on achete ce qui manque</h2>
  *
  * <p>Les chaines de traitement de NTM <b>multiplient la matiere</b> : plusieurs
- * lingots par minerai, plus des sous-produits. Rendre les lingots, poudres ou
- * plaques vendables transformerait ce rendement en revenu infini. Seule la
- * matiere brute est donc vendable, et le reste en achat seul. L'exploit est
- * ferme par construction, sans audit recette par recette.
+ * lingots par minerai. La matiere brute se vend donc et ne s'achete pas (achetee
+ * puis traitee, elle donnerait un lingot moins cher que le lingot), le lingot
+ * s'achete et ne se vend pas (vendu, il ferait de ce rendement un revenu).
+ * L'exploit est ferme par construction, sans audit recette par recette.
+ *
+ * <h2>Les pieces de machine</h2>
+ *
+ * <p>Plaques, fils, bobines, tuyaux, boulons, moteurs et circuits n'ont pas de
+ * sous-tag de matiere utile : ils sont listes un par un dans
+ * {@code components}, avec un prix d'achat calcule hors du jeu par
+ * {@code tools/gen_ntm_prices.py} a partir des recettes du mod. Ils ne se
+ * vendent pas.
+ *
+ * <h2>Le prix suit le wiki de NTM</h2>
+ *
+ * <p>Chaque matiere porte un des huit crans de « Difficulty of Production » du
+ * wiki du mod (nucleartech.wiki), de Very Easy a Extremely Hard. L'achat est
+ * multiplie par 5 a chaque cran, la vente par 2,83 seulement : un achat est un
+ * puits a argent, qu'on ne peut pas exploiter, une vente est un revenu.
  */
 public final class TagPricing {
 
     private static final Identifier LOCATION =
             Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "tag_prices.json");
-
-    /** Revenu horaire vise par tier. Doit suivre {@code tools/gen_prices.py}. */
-    private static final Map<String, Long> TARGET_RATE = Map.of(
-            "FOOD", 12_000L,
-            "FARM", 18_000L,
-            "MOB", 25_000L,
-            "FOUND", 40_000L,
-            "RARE", 60_000L);
 
     private static final Map<String, Integer> S0 = Map.of(
             "FOOD", 2_000,
@@ -67,7 +86,7 @@ public final class TagPricing {
             "FOUND", 0.35d,
             "RARE", 0.50d);
 
-    private static volatile Config config = new Config(List.of(), Materials.NONE);
+    private static volatile Config config = Config.EMPTY;
 
     private TagPricing() {
     }
@@ -76,7 +95,7 @@ public final class TagPricing {
         var resource = server.getResourceManager().getResource(LOCATION);
         if (resource.isEmpty()) {
             // Absence legitime : sans regle, seuls les prix explicites existent.
-            config = new Config(List.of(), Materials.NONE);
+            config = Config.EMPTY;
             return true;
         }
         try (BufferedReader reader = resource.get().openAsReader()) {
@@ -86,7 +105,16 @@ public final class TagPricing {
                         result.error().map(Object::toString).orElse("erreur inconnue"));
                 return false;
             }
-            config = result.getOrThrow();
+            Config loaded = result.getOrThrow();
+            // Un cran mal orthographie ferait disparaitre la matiere du shop sans
+            // bruit : on le dit au chargement plutot qu'au joueur qui la cherche.
+            loaded.materials().forEach((name, material) -> {
+                if (!loaded.levels().containsKey(material.level())) {
+                    DoHy.LOGGER.error("Matiere {} : cran de rarete inconnu {} (connus : {})",
+                            name, material.level(), loaded.levels().keySet());
+                }
+            });
+            config = loaded;
             return true;
         } catch (Exception error) {
             DoHy.LOGGER.error("Echec du chargement des regles de tarification par tag", error);
@@ -95,7 +123,7 @@ public final class TagPricing {
     }
 
     /**
-     * Genere les entrees manquantes a partir des regles.
+     * Genere les entrees des matieres cataloguees et des pieces de machine.
      *
      * <p>Parcourt le registre des items une seule fois, au demarrage, et ne
      * touche jamais a un item deja tarife explicitement : {@code prices.json}
@@ -105,11 +133,8 @@ public final class TagPricing {
      */
     public static Map<Identifier, PriceEntry> generate(Map<Identifier, PriceEntry> explicit) {
         Map<Identifier, PriceEntry> generated = new LinkedHashMap<>();
-        matchedByMaterial = 0;
-        if (config.rules().isEmpty()) {
-            return generated;
-        }
-
+        Config current = config;
+        List<Candidate> candidates = candidates(current);
         for (Holder.Reference<Item> holder : BuiltInRegistries.ITEM.listElements().toList()) {
             // ResourceKey.location() n'existe plus depuis le renommage en
             // Identifier : on passe par le registre, dont getKey est confirme.
@@ -117,200 +142,183 @@ public final class TagPricing {
             if (explicit.containsKey(id)) {
                 continue;
             }
-            for (Rule rule : config.rules()) {
-                TagKey<Item> tag = TagKey.create(BuiltInRegistries.ITEM.key(),
-                        Identifier.bySeparator(rule.tag(), ':'));
-                if (!holder.is(tag)) {
+            for (Candidate candidate : candidates) {
+                if (!holder.is(candidate.tag())) {
                     continue;
                 }
-                generated.put(id, entryFor(rule, id));
-                // Premiere regle qui matche : l'ordre du fichier fait la
-                // priorite, ce qui permet de placer les cas particuliers avant
-                // les regles generales.
+                // Premier sous-tag qui contient l'item : l'ordre des regles fait
+                // la priorite. Une matiere ni vendable ni achetable sous cette
+                // forme (brute et declaree non vendable) n'a pas d'entree, et ne
+                // doit pas retomber sur une autre forme.
+                if (candidate.entry() != null) {
+                    generated.put(id, candidate.entry());
+                    DoHy.LOGGER.debug("Tarif par tag : {} = {} {} ({}), vente {}, achat {}",
+                            id, candidate.material(), candidate.rule().tag(), candidate.level(),
+                            candidate.entry().sellable() ? candidate.entry().basePrice() : 0L,
+                            candidate.entry().buyPrice());
+                }
                 break;
             }
         }
 
+        int components = 0;
+        for (Map.Entry<String, Long> component : current.components().entrySet()) {
+            Identifier id = Identifier.tryParse(component.getKey());
+            // Un identifiant inconnu est une piece d'une autre version du mod, ou
+            // le mod absent : rien a faire, le shop ne montre que ce qui existe.
+            if (id == null || component.getValue() <= 0L || explicit.containsKey(id)
+                    || generated.containsKey(id) || BuiltInRegistries.ITEM.getOptional(id).isEmpty()) {
+                continue;
+            }
+            generated.put(id, componentEntry(component.getValue()));
+            components++;
+        }
+
         if (!generated.isEmpty()) {
             long sellable = generated.values().stream().filter(PriceEntry::sellable).count();
-            DoHy.LOGGER.info("Tarification par tag : {} items generes ({} vendables, {} en achat seul)",
-                    generated.size(), sellable, generated.size() - sellable);
-            if (matchedByMaterial > 0) {
-                DoHy.LOGGER.info("  dont {} tarifes par rarete de matiere", matchedByMaterial);
-            }
+            long buyable = generated.values().stream().filter(entry -> entry.buyPrice() > 0).count();
+            DoHy.LOGGER.info("Tarification par tag : {} items generes ({} a la vente, {} a l'achat), dont {} pieces de machine",
+                    generated.size(), sellable, buyable, components);
         }
         return generated;
     }
 
-    /** Compteur de diagnostic du dernier appel a {@link #generate}. */
-    private static int matchedByMaterial;
-
     /**
-     * L'entree d'un item : par rarete de matiere si elle est reconnue, par la
-     * regle de forme sinon.
+     * Une piece de machine : achat seul, au prix calcule par
+     * {@code tools/gen_ntm_prices.py}.
      *
-     * <p>Une matiere inconnue retombe donc sur l'ancien comportement, ce qui
-     * laisse le mod fonctionner si NTM ajoute un metal que ce fichier ne
-     * connait pas — au prix d'une matiere courante, ce qui est le defaut
-     * prudent.
+     * <p>Le prix de base ne sert qu'au tri du shop, puisque la piece ne se vend
+     * pas. Il garde le rapport achat / vente d'un lingot du cran EASY, pour que
+     * pieces et lingots se rangent dans le meme ordre de valeur.
      */
-    private static PriceEntry entryFor(Rule rule, Identifier id) {
-        Materials materials = config.materials();
-        if (materials.isEmpty()) {
-            return rule.toEntry();
-        }
-        String rarity = materials.rarityOf(id.getPath());
-        if (rarity == null || !materials.rarities().containsKey(rarity)) {
-            return rule.toEntry();
-        }
-        matchedByMaterial++;
-        // Une matiere qui ne se mine pas se produit, donc elle ne se vend
-        // jamais, pas meme sous forme brute.
-        boolean sellable = rule.sellable() && !materials.isNeverSellable(id.getPath());
-        return materials.toEntry(rule, rarity, sellable);
+    private static PriceEntry componentEntry(long buy) {
+        return new PriceEntry(
+                "NTM",
+                "FARM",
+                Math.max(1L, Math.round(buy / 30.0d)),
+                S0.get("FARM"),
+                FLOOR.get("FARM"),
+                1.8d,
+                buy,
+                false);
     }
 
-    public record Rule(String tag, String category, String tier, double ratePerHour,
-                       boolean sellable, double buyMarkup) {
+    /**
+     * Les sous-tags a tester, dans l'ordre : regle par regle, matiere par
+     * matiere. L'entree de prix est calculee une fois ici, pas par item.
+     */
+    private static List<Candidate> candidates(Config current) {
+        List<Candidate> candidates = new ArrayList<>();
+        // TreeMap : un ordre stable d'un demarrage a l'autre, quel que soit
+        // celui du fichier, pour qu'un item dans deux sous-tags tombe toujours
+        // sur la meme matiere.
+        Map<String, Material> sorted = new TreeMap<>(current.materials());
+        for (Rule rule : current.rules()) {
+            Identifier form = Identifier.bySeparator(rule.tag(), ':');
+            for (Map.Entry<String, Material> material : sorted.entrySet()) {
+                Level level = current.levels().get(material.getValue().level());
+                if (level == null) {
+                    continue;
+                }
+                TagKey<Item> tag = TagKey.create(BuiltInRegistries.ITEM.key(),
+                        Identifier.fromNamespaceAndPath(form.getNamespace(),
+                                form.getPath() + "/" + material.getKey()));
+                candidates.add(new Candidate(rule, material.getKey(), material.getValue().level(), tag,
+                        entryFor(rule, material.getValue(), level, current.forms())));
+            }
+        }
+        return candidates;
+    }
+
+    /**
+     * Le prix d'une matiere sous une forme : l'ancre du cran multipliee par le
+     * facteur de la forme. Le prix de vente sert de reference meme quand
+     * l'item ne se vend pas (tri du shop).
+     *
+     * @return {@code null} si l'item ne se vend ni ne s'achete sous cette forme
+     */
+    private static PriceEntry entryFor(Rule rule, Material material, Level level, Map<String, Double> forms) {
+        double form = forms.getOrDefault(rule.tag(), 1.0d);
+        // Une matiere qui ne se mine pas se produit : elle ne se vend jamais,
+        // pas meme sous forme brute.
+        boolean sellable = rule.sellable() && material.sellable();
+        long buy = rule.buyable() ? Math.max(1L, Math.round(level.buyUnit() * form)) : 0L;
+        if (!sellable && buy <= 0L) {
+            return null;
+        }
+        long base = Math.max(1L, Math.round(level.sellUnit() * form));
+        return new PriceEntry(
+                rule.category(),
+                rule.tier(),
+                base,
+                S0.getOrDefault(rule.tier(), 1_000),
+                FLOOR.getOrDefault(rule.tier(), 0.15d),
+                1.8d,
+                buy,
+                sellable);
+    }
+
+    private record Candidate(Rule rule, String material, String level, TagKey<Item> tag, PriceEntry entry) {
+    }
+
+    /**
+     * Une forme mise en vente : le tag parent ({@code c:ingots}) dont les
+     * sous-tags par matiere sont lus, et ce qu'on peut en faire au shop.
+     */
+    public record Rule(String tag, String category, String tier, boolean sellable, boolean buyable) {
 
         static final Codec<Rule> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("tag").forGetter(Rule::tag),
                 Codec.STRING.optionalFieldOf("category", "NTM").forGetter(Rule::category),
                 Codec.STRING.optionalFieldOf("tier", "FARM").forGetter(Rule::tier),
-                Codec.DOUBLE.fieldOf("rate_per_hour").forGetter(Rule::ratePerHour),
                 Codec.BOOL.optionalFieldOf("sellable", false).forGetter(Rule::sellable),
-                Codec.DOUBLE.optionalFieldOf("buy_markup", 4.0d).forGetter(Rule::buyMarkup)
+                Codec.BOOL.optionalFieldOf("buyable", false).forGetter(Rule::buyable)
         ).apply(instance, Rule::new));
-
-        /**
-         * Applique le meme modele que le generateur de prix : le prix decoule du
-         * temps necessaire pour obtenir l'item.
-         */
-        PriceEntry toEntry() {
-            long target = TARGET_RATE.getOrDefault(tier, 18_000L);
-            long base = Math.max(1L, Math.round(target / Math.max(1.0d, ratePerHour)));
-            return new PriceEntry(
-                    category,
-                    tier,
-                    base,
-                    S0.getOrDefault(tier, 1_000),
-                    FLOOR.getOrDefault(tier, 0.15d),
-                    1.8d,
-                    Math.max(1L, Math.round(base * buyMarkup)),
-                    sellable);
-        }
     }
 
-    /** Les deux ancres de prix d'une rarete, au facteur de forme 1,0. */
-    public record Rarity(long buyUnit, long sellUnit) {
-        static final Codec<Rarity> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.LONG.fieldOf("buy_unit").forGetter(Rarity::buyUnit),
-                Codec.LONG.fieldOf("sell_unit").forGetter(Rarity::sellUnit)
-        ).apply(instance, Rarity::new));
-    }
-
-    public record NeverSellable(List<String> keywords) {
-        static final NeverSellable NONE = new NeverSellable(List.of());
-
-        static final Codec<NeverSellable> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.STRING.listOf().optionalFieldOf("keywords", List.of())
-                        .forGetter(NeverSellable::keywords)
-        ).apply(instance, NeverSellable::new));
+    /** Les deux ancres de prix d'un cran, au facteur de forme 1,0 (le lingot). */
+    public record Level(long buyUnit, long sellUnit) {
+        static final Codec<Level> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.LONG.fieldOf("buy_unit").forGetter(Level::buyUnit),
+                Codec.LONG.fieldOf("sell_unit").forGetter(Level::sellUnit)
+        ).apply(instance, Level::new));
     }
 
     /**
-     * La seconde dimension du prix : la rarete de la matiere.
-     *
-     * <p>Les regles par tag ne voient que la <b>forme</b> d'un item, donc un
-     * lingot de schrabidium coutait un lingot de cuivre. Ce bloc rattache un
-     * item a une matiere par mot-cle dans son identifiant, et le prix devient
-     * l'ancre de la rarete multipliee par le facteur de la forme.
-     *
-     * <p>Le rattachement se fait par mot-cle et non par identifiant complet
-     * parce qu'on ne sait pas si le mod nomme ses items {@code uranium_ingot} ou
-     * {@code ingot_uranium} : les deux contiennent « uranium ».
+     * Une matiere cataloguee : son cran de rarete, et si sa forme brute se vend.
+     * Le champ {@code wiki} ne sert qu'a la relecture du fichier.
      */
-    public record Materials(Map<String, Rarity> rarities,
-                            Map<String, Double> forms,
-                            Map<String, List<String>> assign,
-                            NeverSellable neverSellable) {
-
-        static final Materials NONE = new Materials(Map.of(), Map.of(), Map.of(), NeverSellable.NONE);
-
-        static final Codec<Materials> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.unboundedMap(Codec.STRING, Rarity.CODEC)
-                        .optionalFieldOf("rarities", Map.of()).forGetter(Materials::rarities),
-                Codec.unboundedMap(Codec.STRING, Codec.DOUBLE)
-                        .optionalFieldOf("forms", Map.of()).forGetter(Materials::forms),
-                Codec.unboundedMap(Codec.STRING, Codec.STRING.listOf())
-                        .optionalFieldOf("assign", Map.of()).forGetter(Materials::assign),
-                NeverSellable.CODEC.optionalFieldOf("never_sellable", NeverSellable.NONE)
-                        .forGetter(Materials::neverSellable)
-        ).apply(instance, Materials::new));
-
-        boolean isEmpty() {
-            return rarities.isEmpty() || assign.isEmpty();
-        }
-
-        /**
-         * La rarete d'un item, ou {@code null} s'il n'est rattache a aucune
-         * matiere connue.
-         *
-         * <p>Le mot-cle le plus long gagne : sans cette regle, un
-         * « rare_earth_ingot » pourrait etre capture par un mot-cle plus court
-         * d'une autre rarete, et l'ordre d'iteration d'une map decideraient du
-         * prix.
-         */
-        String rarityOf(String path) {
-            String lower = path.toLowerCase(java.util.Locale.ROOT);
-            String best = null;
-            int bestLength = 0;
-            for (Map.Entry<String, List<String>> entry : assign.entrySet()) {
-                for (String keyword : entry.getValue()) {
-                    if (keyword.length() > bestLength && lower.contains(keyword)) {
-                        best = entry.getKey();
-                        bestLength = keyword.length();
-                    }
-                }
-            }
-            return best;
-        }
-
-        boolean isNeverSellable(String path) {
-            String lower = path.toLowerCase(java.util.Locale.ROOT);
-            return neverSellable.keywords().stream().anyMatch(lower::contains);
-        }
-
-        /**
-         * L'entree d'un item rattache a une matiere.
-         *
-         * <p>La forme vient de la regle qui a capture l'item, et c'est elle qui
-         * fournit aussi le tier : le tier porte la demi-saturation, le plancher
-         * et le plafond, qui dependent de la rarete du <i>gisement</i> et non de
-         * la valeur de la matiere.
-         */
-        PriceEntry toEntry(Rule rule, String rarityKey, boolean sellable) {
-            Rarity rarity = rarities.get(rarityKey);
-            double form = forms.getOrDefault(rule.tag(), 1.0d);
-            long base = Math.max(1L, Math.round(rarity.sellUnit() * form));
-            long buy = Math.max(1L, Math.round(rarity.buyUnit() * form));
-            return new PriceEntry(
-                    rule.category(),
-                    rule.tier(),
-                    base,
-                    S0.getOrDefault(rule.tier(), 1_000),
-                    FLOOR.getOrDefault(rule.tier(), 0.15d),
-                    1.8d,
-                    buy,
-                    sellable);
-        }
+    public record Material(String level, boolean sellable, String wiki) {
+        static final Codec<Material> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.STRING.fieldOf("level").forGetter(Material::level),
+                Codec.BOOL.optionalFieldOf("sellable", true).forGetter(Material::sellable),
+                Codec.STRING.optionalFieldOf("wiki", "").forGetter(Material::wiki)
+        ).apply(instance, Material::new));
     }
 
-    public record Config(List<Rule> rules, Materials materials) {
+    /**
+     * Le fichier entier. {@code components} associe un identifiant d'item a son
+     * prix d'achat ; le bloc {@code costing}, qui sert a le calculer, n'est lu
+     * que par l'outil et ignore ici.
+     */
+    public record Config(Map<String, Level> levels,
+                         Map<String, Double> forms,
+                         Map<String, Material> materials,
+                         List<Rule> rules,
+                         Map<String, Long> components) {
+
+        static final Config EMPTY = new Config(Map.of(), Map.of(), Map.of(), List.of(), Map.of());
+
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.unboundedMap(Codec.STRING, Level.CODEC)
+                        .optionalFieldOf("levels", Map.of()).forGetter(Config::levels),
+                Codec.unboundedMap(Codec.STRING, Codec.DOUBLE)
+                        .optionalFieldOf("forms", Map.of()).forGetter(Config::forms),
+                Codec.unboundedMap(Codec.STRING, Material.CODEC)
+                        .optionalFieldOf("materials", Map.of()).forGetter(Config::materials),
                 Rule.CODEC.listOf().optionalFieldOf("rules", List.of()).forGetter(Config::rules),
-                Materials.CODEC.optionalFieldOf("materials", Materials.NONE)
-                        .forGetter(Config::materials)
+                Codec.unboundedMap(Codec.STRING, Codec.LONG)
+                        .optionalFieldOf("components", Map.of()).forGetter(Config::components)
         ).apply(instance, Config::new));
     }
 }
