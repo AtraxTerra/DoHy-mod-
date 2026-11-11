@@ -675,6 +675,25 @@ c'est trop, baisser les poids des pierres dans `tools/market_offers.py`.
 | Renouvellement payé | 250 k, doublé, 4 par jour (3,75 M au plus) | `per_reroll`, `max_rerolls` |
 | Cotes sans valeur boutique | fragment de rune 40 k et 150 k, rune 170 k, 620 k, 2,5 M ; essence 20 k, 80 k, 300 k ; pièce de donjon 400 k et 2 M ; capacité de spawner 450 k | `QUOTES` |
 
+## 6 undecies. Ruines à spawner de la dimension du Mineur
+
+Les ruines (`docs/PALAMOD.md` § 18) sont la source des **âmes** du marteau des cavernes ; leur
+fréquence règle donc le rythme du spawner customisé.
+
+- **Âmes** : un spawner customisé s'éveille à 100 âmes d'une même créature, et plafonne à 250. Six
+  créatures à parts égales : il faut vider environ 600 ruines pour un premier palier d'une créature
+  donnée, 1 500 pour le plafond. Une section de 5 000 × 5 000 (97 656 chunks) porte près de 4 900
+  ruines en surface, soit 800 par créature, et à peu près le double sous terre : une section suffit à
+  monter plusieurs spawners, sans que cela se fasse en une soirée.
+- **XP de Chasseur** : 1 250 XP de PalaJobs par spawner cassé à partir du niveau 40, soit environ
+  446 XP d'ici (rapport 0,357). À une ruine par minute, 27 000 XP à l'heure : 0,4 % de la courbe
+  entière (6 175 195 XP pour le niveau 100). Pas de quoi court-circuiter la chasse.
+- **Argent** : aucun. Les ruines n'ont pas de coffre, et un spawner cassé ne rend rien sans marteau.
+- **Risque** : les spawners de monstres tournent. La mort reste évitée dans la dimension (retour à
+  l'arrivée) et une explosion n'y casse rien ; un creeper ne coûte donc que de la vie.
+
+Leviers : `chance` dans `placed_feature/miner/ruin.json` (20) et `crypt.json` (12).
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

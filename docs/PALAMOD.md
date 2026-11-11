@@ -1069,7 +1069,8 @@ elle reste réparable. Même plafond que la pioche et la hache en endium.
 ### Marteau de caverne et âmes — `ItemCavernHammer`, `SpawnerEventHandler`
 
 - Casser au marteau un **spawner de donjon** de zombie, squelette, araignée, araignée venimeuse,
-  slime ou sorcière ajoute **une âme** au premier spawner vide de cette créature qui a de la place
+  slime ou sorcière — et, **écart**, de vache, de cochon ou de creeper, que portent les ruines de la
+  dimension du Mineur (§ 18) — ajoute **une âme** au premier spawner vide de cette créature qui a de la place
   dans l'inventaire, sinon au dernier spawner vide sans créature. Sans spawner où la mettre, la
   casse est refusée (un message le dit) : l'âme serait perdue.
 - Casser un spawner de donjon donne 1 250 XP de Chasseur (converties) à partir du niveau 40.
@@ -1561,8 +1562,8 @@ portail se referme si son cadre est incomplet ou sa nappe trouée. Incassable, s
   plateforme 6 × 5 d'obsidienne wither et un cadre. **Écart** : ce cadre était décoratif (le kick
   ramenait au serveur Faction) ; il porte ici le **portail de sortie**. Après onze sections sans sol
   (des océans), une plateforme au niveau de la mer.
-- **Dans la dimension** : aucun monstre, pas de dégâts de chute, aucun conteneur posé, l'obsidienne
-  wither ne se casse pas. **Écart** : une explosion n'y casse aucun bloc — la TNT abattrait les
+- **Dans la dimension** : aucun monstre hors de ceux des spawners des ruines (plus bas), pas de dégâts
+  de chute, aucun conteneur posé, l'obsidienne wither ne se casse pas. **Écart** : une explosion n'y casse aucun bloc — la TNT abattrait les
   minerais sans payer de points. Une barre en haut de l'écran donne les points et le temps restants
   (`UIDimMinerOverlay`). Le créatif et le spectateur échappent aux règles de pose, de casse et de
   bordure (`bypass`).
@@ -1580,7 +1581,7 @@ portail se referme si son cadre est incomplet ou sa nappe trouée. Incassable, s
 ### Le monde — `BaseWorldGenerator`
 
 Le terrain de l'overworld (mêmes réglages de bruit, même graine), un seul biome `palamod:miner` :
-les plaines sans pluie, sans mobs, sans salle à monstres. Une nuit fixe : ciel et brouillard noirs,
+les plaines sans pluie, sans mobs, sans salle à monstres — les ruines à spawner en tiennent lieu. Une nuit fixe : ciel et brouillard noirs,
 lumière du ciel de la nuit vanilla, brouillard proche (le client de Paladium forçait l'heure à
 15 000 et vidait le ciel). Lit et ancre de réapparition sans effet.
 
@@ -1589,6 +1590,36 @@ Les minerais PalaMod y sont multipliés comme sur le serveur dimminer : `mult = 
 DoHy — améthyste 8 → 21, titane 6 → 16, paladium 4 → 9, paladium vert 2 → 4, findium 3 → 8,
 trixium 1 → 3, buisson à XP 3 → 7 essais. Pépite d'endium : un chunk sur 225, et seulement ici.
 Les minerais vanilla gardent leur taux.
+
+### Les ruines à spawner — `MinerRuinFeature` (ajout de DoHy)
+
+Sur le serveur de minage de Paladium, les âmes du marteau des cavernes (§ Chasseur) se récoltaient
+dans les salles à monstres du monde. La dimension de DoHy n'en avait pas : un seul biome, sans
+monstres. Ces ruines les remplacent, **fréquentes**, chacune autour d'un **spawner** :
+
+| Créature | En surface | Sous terre (salle fermée de 7 × 7 sur 4) |
+|----------|------------|-------------------------------------------|
+| Zombie | crypte en pierre taillée moussue, murs ébréchés, toiles | pavés moussus, toiles |
+| Squelette | ossuaire d'ardoise, quatre piliers d'os, crânes | briques d'ardoise, piliers d'os |
+| Sorcière | hutte d'épicéa sous un toit débordant, chaudron | pierre taillée, bibliothèques, chaudron |
+| Creeper | sanctuaire de grès aux piliers ciselés (le visage du creeper) | grès, piliers ciselés |
+| Vache | enclos de chêne, abri à foin | étable de chêne sur herbe, foin |
+| Cochon | porcherie d'épicéa dans la boue, abri à foin | étable d'épicéa sur boue, foin |
+
+- **Fréquence** : en surface, une ruine tous les 20 chunks environ (un tirage par chunk, une chance
+  sur 20), sur un sol à peu près plat et hors de l'eau — une lanterne la signale dans la nuit. Sous
+  terre, deux tirages par chunk à une chance sur 12, entre y = −48 et 48, que la roche valide : une
+  salle ne se taille ni dans une grotte ni dans un lac. Les six créatures sont tirées à parts égales.
+  Réglage : `placed_feature/miner/ruin.json` et `crypt.json` (`tools/palamod_assets.py`).
+- **Les spawners marchent** : leurs créatures apparaissent, monstres compris — c'est la seule
+  exception à « aucun monstre » (`DimMinerEvents.onJoin` laisse passer une créature née d'un
+  spawner). Ils portent leurs propres règles d'apparition (`custom_spawn_rules`, lumière de 0 à 15) :
+  sans elles, la nuit fixe interdirait les bêtes, et la lumière du ciel les monstres en surface.
+- **Les âmes** : le marteau des cavernes accepte désormais la **vache**, le **cochon** et le
+  **creeper** en plus des six créatures d'origine (**écart**). Casser un spawner ne coûte aucun point
+  de session.
+- Les mondes déjà créés : seuls les chunks de la dimension générés après la mise à jour portent des
+  ruines. Une section neuve (session suivante) en est pleine.
 
 ### Minerai de Pierre d'Invocation — `PWorld.INVOKER_ORE`, `invocker_stone`
 

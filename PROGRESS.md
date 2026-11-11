@@ -175,6 +175,28 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — des ruines à spawner dans la dimension du Mineur
+
+**Demande** : « dans la dimension mineur, ajoute des structures communes dans lesquelles on peut
+trouver des spawners (sorcière, squelettes, zombie, vaches, cochon, creeper) ». Détail :
+`docs/PALAMOD.md` § 18 « Les ruines à spawner », `docs/BALANCE.md` § 6 undecies.
+
+**Fait** (`feat/dimminer-spawners`, par-dessus `feat/bases-refonte`) : `MinerRuinFeature`, deux
+features enregistrées (`palamod:miner_ruin` en surface, `palamod:miner_crypt` sous terre), six
+créatures et six dessins ; placements et biome dans `tools/palamod_assets.py`. Les monstres nés d'un
+spawner sont admis dans la dimension (`DimMinerEvents.onJoin`, `Mob.getSpawnType()`). Le marteau des
+cavernes prend aussi la vache, le cochon et le creeper.
+
+**À savoir** :
+- Un spawner se configure en génération par `spawner.getSpawner().load(null, pos, TagValueInput…)`
+  avec un `SpawnData` encodé par son codec (`NbtOps`) : c'est le seul moyen d'y mettre des
+  `custom_spawn_rules`. `setEntityId` ne pose que la créature. Niveau `null` : sinon le spawner
+  demande un `sendBlockUpdated` en pleine génération.
+- En génération, ne pas appeler `BlockEntity.setChanged()` (charge le chunk, risque d'interblocage).
+- La dimension a `monster_spawn_light_level` et `monster_spawn_block_light_limit` à 0 et une
+  lumière du ciel de 4 : sans règles propres, un spawner de monstres n'y marche que sous un toit, et
+  un spawner de bêtes jamais (il leur faut plus de 8 de lumière et de l'herbe).
+
 ### 2026-11-11 (suite) — la refonte des bases ennemies
 
 **Demande** : « une grosse refonte des bases ennemies, plus complexes à raid, plus grosses et avec
