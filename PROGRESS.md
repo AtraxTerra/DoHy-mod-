@@ -175,6 +175,46 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — la refonte des bases ennemies
+
+**Demande** : « une grosse refonte des bases ennemies, plus complexes à raid, plus grosses et avec
+des designs variés, la présence de machines comme boîtes à golem, cobblebreaker, grinder… des bases
+de type farm, stockage, démonstration de puissance… », puis « un système de régénération du terrain
+après la fin d'un raid, environ 5 min ». Détail : `docs/FACTION.md` § Bases ennemies (22g).
+
+**Fait** (`feat/bases-refonte`, par-dessus `feat/marche`) :
+- `EnemyBaseStyle` : cinq genres (citadelle, domaine agricole, entrepôt, usine, démonstration de
+  force), choisis dans l'onglet ou par `/f base generer [1-3] [genre]` ; `EnemyBase.style`.
+- `EnemyBaseTier` agrandi (61, 93 et 129 blocs de côté ; 40 000, 200 000 et 800 000 $) ;
+  `EnemyBaseBuilder` réécrit : douve, enceinte à couches, porterie, quartiers tirés au sort, seconde
+  enceinte, fossé, spikes, salle forte propre au genre. Dix-neuf modules de quartier ; grinders et
+  boîtes à golem **montés** (vérifié par `GrinderStructure` / `GolemBoxStructure.isComplete`).
+- `EnemyBaseRegen` : relevé du terrain avant le chantier (`<monde>/dohy/bases/<x>_<z>.terrain`),
+  retour du terrain 5 minutes après le pillage ou l'abandon, par tranches de 15 ms par tick.
+- Cinq tables de butin de quartier (`chests/enemy_vrac`, `_grenier`, `_entrepot`, `_atelier`,
+  `_arsenal`), générées par `tools/palamod_assets.py`.
+
+**À savoir** :
+- Les blocs de la boîte à golem s'appellent `guardian_box_block` et `guardian_box_frame`, pas
+  `golem_box` : `EnemyBaseBuilder.state(chemin, repli)` pose le repli sans rien dire si le nom est
+  faux. Le relevé des captures (`ShotBridge.survey`) compte les structures complètes : s'y fier.
+- `FactionApi.claimAt` rend `ClaimOwner.NONE` pour un chunk **non chargé** : après la livraison
+  d'une base (tickets relâchés, joueur à 9 000 blocs), c'est normal, pas un claim perdu.
+- Poser un bloc sans effet de bord : `UPDATE_CLIENTS | UPDATE_KNOWN_SHAPE |
+  UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS | UPDATE_SKIP_ON_PLACE` (sondé le 2026-11-11) — sans le
+  troisième, remplacer un tonneau à table de butin tire son butin et le jette au sol.
+- **Retour du terrain, vérifié** : comparaison bloc à bloc d'un carré de claims avant le chantier et
+  après le retour (6,8 M de blocs) — 463 écarts, tous du monde qui vit (varech qui pousse, colonnes de
+  bulles, lave qui coule) ; trois demandes réelles pillées puis effacées, balayage serveur sans aucun
+  reste. **Une fois sur quatre** (capture 44, une seule passe à l'époque), l'image d'après montrait
+  encore un chunk de la base ; non reproduit ensuite, et le serveur n'avait rien gardé les autres
+  fois. Cause non trouvée. Depuis : seconde passe, et le journal donne les blocs reposés à chaque
+  passe et les chunks revendiqués laissés (`Terrain de la base des … revenu : …`). Si un morceau
+  reste affiché en jeu, regarder cette ligne, puis s'éloigner et revenir (le client recharge le chunk).
+- Le harnais de captures abandonnait à 9 000 ticks : monté à 30 000 sur `tmp/ui-shots43`. Un chantier
+  synchrone gèle le serveur plusieurs secondes : attendre sa fin (`ShotHarness.until`) avant la
+  capture, sinon les images sont décalées d'une scène.
+
 ### 2026-11-11 (suite) — le marché
 
 **Demande** : « un marché remixé pour le solo ». Le Market de Paladium est un hôtel des ventes

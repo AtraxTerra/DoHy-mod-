@@ -4,20 +4,22 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 /**
- * Les trois tailles de base ennemie (lot 22g). Toutes sont des places fortes
- * a la Paladium — douve, enceinte a couches avec de l'eau prise dans les murs,
- * tours, porterie, donjon a couches sur ses six faces —, de plus en plus
- * grandes et epaisses :
+ * Les trois tailles de base ennemie (lot 22g, refonte du 2026-11-11). La
+ * taille fixe l'enceinte ; le genre ({@link EnemyBaseStyle}) fixe ce qu'il y a
+ * dedans. De l'exterieur vers le centre :
  * <ul>
- *   <li><b>avant-poste</b> (41 x 41) : pierre et eau, un donjon d'obsidienne ;</li>
- *   <li><b>base</b> (65 x 65) : obsidienne, obsidienne renforcee et piegee,
- *       spikes, deux casernes a spawner, une balise sur le donjon ;</li>
- *   <li><b>forteresse</b> (97 x 97) : six couches d'enceinte dont deux d'eau,
- *       douve de Fake Water, tranchee de lave, quatre casernes, donjon a sept
- *       couches (enclumes en paladium, obsidiennes a wither et anti-aggro).</li>
+ *   <li><b>avant-poste</b> (61 x 61) : une enceinte a trois couches, quatre
+ *       tours, sept quartiers, une salle forte a trois couches ;</li>
+ *   <li><b>base</b> (93 x 93) : enceinte a quatre couches et sept tours, puis
+ *       une <b>seconde enceinte</b> autour de la salle forte a cinq couches ;
+ *       douze quartiers ;</li>
+ *   <li><b>forteresse</b> (129 x 129) : enceinte a six couches dont deux
+ *       d'eau, onze tours, seconde enceinte a quatre couches, tranchee de lave,
+ *       salle forte a sept couches ; seize quartiers.</li>
  * </ul>
  *
- * @param half         demi-cote de l'emprise, en blocs (tours comprises)
+ * @param half         demi-cote de l'emprise, en blocs (douve comprise)
+ * @param wall         rayon de la face exterieure de l'enceinte
  * @param claimRadius  rayon des claims, en chunks, autour du chunk central :
  *                     l'emprise plus deux chunks de glacis, ou rien ne se pose —
  *                     la TNT arrive en dynamite, au canon ou par wither
@@ -25,24 +27,25 @@ import net.minecraft.world.item.Items;
  * @param elo          ELO gagne en la pillant
  * @param money        argent verse a la banque de faction
  * @param summary      la taille et l'allure, en une ligne
- * @param contents     ce qu'elle cache, en une ligne
+ * @param contents     ce qui la defend, en une ligne
  * @param tools        ce qu'il faudra pour la piller
  */
 public enum EnemyBaseTier {
-    OUTPOST(1, "avant_poste", "Avant-poste", 20, 3, 14, 150L, 25_000L, Items.STONE_BRICKS,
-            "41 x 41 : douve, enceinte, 4 tours", "Murs a eau, donjon d'obsidienne, 4 coffres, 10 gardes",
+    OUTPOST(1, "avant_poste", "Avant-poste", 30, 23, 4, 18, 150L, 40_000L, Items.STONE_BRICKS,
+            "61 x 61 : douve, enceinte a 3 couches, 4 tours", "7 quartiers, salle forte a 3 couches, 16 gardes",
             "TNT, seau extrapole, TNT en endium"),
-    BASE(2, "base", "Base", 32, 4, 20, 500L, 120_000L, Items.OBSIDIAN,
-            "65 x 65 : obsidienne, spikes, casernes", "Donjon a 5 couches, balise, 6 coffres, 2 spawners, 18 gardes",
+    BASE(2, "base", "Base", 46, 38, 5, 26, 500L, 200_000L, Items.OBSIDIAN,
+            "93 x 93 : deux enceintes, 7 tours, spikes", "12 quartiers, salle forte a 5 couches, 2 casernes, 30 gardes",
             "Seau extrapole, TNT en endium, withers"),
-    FORTRESS(3, "forteresse", "Forteresse", 48, 5, 28, 1_500L, 500_000L, Items.CRYING_OBSIDIAN,
-            "97 x 97 : place forte, lave, 4 casernes", "Enceinte et donjon a 6-7 couches, enclumes, 11 coffres, 30 gardes",
+    FORTRESS(3, "forteresse", "Forteresse", 64, 54, 6, 36, 1_500L, 800_000L, Items.CRYING_OBSIDIAN,
+            "129 x 129 : deux enceintes, 11 tours, lave", "16 quartiers, salle forte a 7 couches, 50 gardes",
             "Withers ameliores, TNT en endium, seau extrapole");
 
     private final int level;
     private final String key;
     private final String label;
     private final int half;
+    private final int wall;
     private final int claimRadius;
     private final int clearHeight;
     private final long elo;
@@ -52,12 +55,13 @@ public enum EnemyBaseTier {
     private final String contents;
     private final String tools;
 
-    EnemyBaseTier(int level, String key, String label, int half, int claimRadius, int clearHeight, long elo, long money,
-                  Item icon, String summary, String contents, String tools) {
+    EnemyBaseTier(int level, String key, String label, int half, int wall, int claimRadius, int clearHeight, long elo,
+                  long money, Item icon, String summary, String contents, String tools) {
         this.level = level;
         this.key = key;
         this.label = label;
         this.half = half;
+        this.wall = wall;
         this.claimRadius = claimRadius;
         this.clearHeight = clearHeight;
         this.elo = elo;
@@ -91,6 +95,10 @@ public enum EnemyBaseTier {
 
     public int half() {
         return half;
+    }
+
+    public int wall() {
+        return wall;
     }
 
     public int claimRadius() {

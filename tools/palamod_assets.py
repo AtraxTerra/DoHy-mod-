@@ -4665,6 +4665,39 @@ def main():
         ("%s:green_paladium_ingot" % NS, 6, 1, 4), ("%s:legendary_stone_random" % NS, 3, 1, 1),
         ("%s:predator_wither_gem" % NS, 1, 1, 1)])
 
+    # Les quartiers des bases ennemies (refonte du 2026-11-11) : des tables
+    # secondaires, par ce que le quartier abrite. Bien en dessous de la salle
+    # forte : c'est ce qu'on ramasse en chemin, pas la recompense.
+    chest_loot("chests/enemy_vrac", (2, 4), [
+        ("minecraft:cobblestone", 20, 16, 64), ("minecraft:coal", 14, 8, 32), ("minecraft:wheat", 10, 8, 32),
+        ("minecraft:bone", 8, 4, 16), ("minecraft:iron_nugget", 10, 8, 32), ("minecraft:gravel", 8, 16, 48),
+        ("minecraft:string", 6, 4, 16), ("minecraft:gunpowder", 6, 2, 8), ("minecraft:arrow", 8, 8, 24)])
+    chest_loot("chests/enemy_grenier", (3, 5), [
+        ("%s:kiwano" % NS, 12, 8, 32), ("%s:eggplant" % NS, 12, 8, 32), ("%s:chervil" % NS, 12, 8, 32),
+        ("%s:orangeblue" % NS, 12, 8, 32), ("%s:kiwano_seeds" % NS, 6, 2, 8),
+        ("%s:eggplant_seeds" % NS, 6, 2, 8), ("%s:chervil_seeds" % NS, 6, 2, 8),
+        ("%s:orangeblue_seeds" % NS, 6, 2, 8), ("%s:xp_berry" % NS, 8, 4, 16),
+        ("minecraft:bone_meal", 10, 8, 32), ("minecraft:hay_block", 8, 4, 16),
+        ("%s:amethyst_seedplanter" % NS, 1, 1, 1)])
+    chest_loot("chests/enemy_entrepot", (3, 6), [
+        ("minecraft:iron_ingot", 14, 8, 24), ("minecraft:gold_ingot", 10, 4, 16),
+        ("%s:amethyst_ingot" % NS, 14, 4, 12), ("%s:titane_ingot" % NS, 12, 3, 9),
+        ("%s:paladium_ingot" % NS, 6, 1, 4), ("minecraft:diamond", 6, 1, 4), ("minecraft:redstone", 8, 8, 32),
+        ("minecraft:lapis_lazuli", 8, 8, 24), ("minecraft:obsidian", 8, 8, 24),
+        ("%s:compressed_amethyst" % NS, 2, 1, 1), ("%s:compressed_titane" % NS, 1, 1, 1)])
+    chest_loot("chests/enemy_atelier", (3, 5), [
+        ("%s:iron_particle" % NS, 12, 4, 16), ("%s:gold_particle" % NS, 10, 4, 12),
+        ("%s:amethyst_particle" % NS, 10, 2, 8), ("%s:titane_particle" % NS, 8, 2, 6),
+        ("%s:paladium_particle" % NS, 4, 1, 4), ("%s:gold_mixed_coal" % NS, 8, 2, 8),
+        ("%s:amethyst_mixed_coal" % NS, 6, 2, 6), ("%s:titane_mixed_coal" % NS, 4, 1, 4),
+        ("%s:pala_mixed_coal" % NS, 2, 1, 2), ("minecraft:coal_block", 8, 2, 8),
+        ("%s:pickaxe_head" % NS, 1, 1, 1), ("%s:sword_head" % NS, 1, 1, 1)])
+    chest_loot("chests/enemy_arsenal", (3, 5), [
+        ("minecraft:tnt", 14, 2, 8), ("%s:dynamite" % NS, 14, 4, 12), ("%s:big_dynamite" % NS, 6, 2, 6),
+        ("%s:big_tnt" % NS, 6, 1, 3), ("%s:endium_tnt" % NS, 2, 1, 2), ("minecraft:arrow", 12, 16, 48),
+        ("minecraft:gunpowder", 10, 8, 24), ("minecraft:iron_sword", 6, 1, 1), ("minecraft:crossbow", 6, 1, 1),
+        ("minecraft:shield", 5, 1, 1), ("minecraft:golden_apple", 3, 1, 2)])
+
     # ---- reserve d'or (chapitre 22, lot 22e) ----
     #
     # Les trois blocs de la reserve, d'apres le wiki (« Investissement Reserve

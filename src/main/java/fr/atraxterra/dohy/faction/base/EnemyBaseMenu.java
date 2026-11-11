@@ -28,6 +28,8 @@ public final class EnemyBaseMenu extends MenuController {
 
     /** L'abandon en deux clics, arme par joueur jusqu'a cette date. */
     private static final Map<UUID, Long> ARMED = new ConcurrentHashMap<>();
+    /** Le genre demande aux eclaireurs ; absent, ils prennent ce qu'ils trouvent. Le temps d'une partie. */
+    private static final Map<UUID, EnemyBaseStyle> CHOICE = new ConcurrentHashMap<>();
 
     private EnemyBaseMenu() {
         super("faction_enemy_bases");
@@ -64,24 +66,42 @@ public final class EnemyBaseMenu extends MenuController {
                     .accent(0xFFFAC400).badge("..."));
         } else if (base.active()) {
             EnemyBaseTier tier = base.kind();
-            target.add(Card.of(new ItemStack(tier.icon()), "Les " + base.name(), List.of(
-                            tier.label() + " · " + base.center().getX() + ", " + base.center().getZ(),
+            EnemyBaseStyle genre = base.genre();
+            target.add(Card.of(new ItemStack(genre.icon()), "Les " + base.name(), List.of(
+                            genre.title() + " · " + tier.label() + " · " + base.center().getX() + ", "
+                                    + base.center().getZ(),
                             EnemyBases.where(player, base)))
                     .accent(0xFFEF3826).badge("CIBLE")
-                    .tooltip(List.of("Il faudra : " + tier.tools(),
+                    .tooltip(List.of(genre.summary(), "Les coffres : " + genre.vault(),
+                            "Il faudra : " + tier.tools(),
                             "Entre dans la salle des coffres pour la piller.",
                             "Clic : une boussole qui pointe vers elle"))
                     .action("compass|recevoir une boussole"));
             boolean armed = armed(player);
             target.add(Card.of(new ItemStack(Items.BARRIER), armed ? "Confirmer ?" : "Abandonner", List.of(
                             armed ? "Clique encore pour confirmer" : "Deux clics",
-                            "Elle reste, sans recompense"))
+                            "Sans recompense : elle s'efface", "au bout de 5 minutes"))
                     .accent(0xFF55545C).action("abandon|abandonner"));
         } else {
             target.add(Card.of(new ItemStack(Items.MAP), base.state() == EnemyBase.LOOTED
                             ? "Les " + base.name() + " : pillee" : "Aucune cible", List.of(
-                            "Demande une base ci-dessous", "Une a la fois"))
+                            EnemyBaseRegen.regenerating(base) ? "Le terrain la reprend bientot"
+                                    : "Demande une base ci-dessous", "Une a la fois"))
                     .state(base.state() == EnemyBase.LOOTED ? MenuView.DONE : MenuView.DISABLED));
+        }
+        // Le genre : celui que les eclaireurs trouveront, ou celui qu'on leur demande.
+        EnemyBaseStyle wanted = CHOICE.get(player.getUUID());
+        List<Card> genres = new ArrayList<>();
+        Card any = Card.of(new ItemStack(Items.SPYGLASS), "Au hasard", List.of("Ce que les eclaireurs",
+                "trouveront")).tooltip(List.of("Un genre tire au sort a chaque reperage"));
+        genres.add(wanted == null ? any.state(MenuView.DONE).badge("CHOISI")
+                : any.accent(0xFF3FA9F5).action("genre:|choisir"));
+        for (EnemyBaseStyle genre : EnemyBaseStyle.values()) {
+            Card card = Card.of(new ItemStack(genre.icon()), genre.title(), List.of(genre.summary()))
+                    .tooltip(List.of("Les coffres : " + genre.vault(),
+                            "Ses machines et ses blocs sont vrais : pillee, elle se demonte"));
+            genres.add(wanted == genre ? card.state(MenuView.DONE).badge("CHOISI")
+                    : card.accent(0xFF3FA9F5).action("genre:" + genre.key() + "|choisir"));
         }
         List<Card> tiers = new ArrayList<>();
         for (EnemyBaseTier tier : EnemyBaseTier.values()) {
@@ -110,6 +130,7 @@ public final class EnemyBaseMenu extends MenuController {
         return new MenuView(id(), "Bases ennemies", "Une faction fictive, a plus de "
                 + MoneyFormat.exact(EnemyBases.MIN_DISTANCE) + " blocs, a piller", stats, List.of(
                 new MenuView.Section("TA CIBLE", "resources", MenuView.GRID, target),
+                new MenuView.Section("GENRE DE BASE", "craft", MenuView.GRID, genres),
                 new MenuView.Section("REPERER UNE BASE", "upgrade", MenuView.GRID, tiers),
                 new MenuView.Section("PILLAGE", "resources", MenuView.GRID, help)), true);
     }
@@ -118,11 +139,18 @@ public final class EnemyBaseMenu extends MenuController {
     protected void card(ServerPlayer player, String key, int button) {
         if (key.startsWith("generate:")) {
             EnemyBaseTier tier = EnemyBaseTier.byLevel(Integer.parseInt(key.substring(9)));
-            String refusal = EnemyBases.request(player, tier);
+            String refusal = EnemyBases.request(player, tier, CHOICE.get(player.getUUID()));
             if (refusal != null) {
                 report(player, refusal, "");
             } else {
                 success(player);
+            }
+        } else if (key.startsWith("genre:")) {
+            EnemyBaseStyle genre = EnemyBaseStyle.byKey(key.substring(6));
+            if (genre == null) {
+                CHOICE.remove(player.getUUID());
+            } else {
+                CHOICE.put(player.getUUID(), genre);
             }
         } else if ("compass".equals(key)) {
             report(player, EnemyBases.compass(player), "Boussole recue.");

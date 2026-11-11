@@ -22,7 +22,7 @@ PvE**. Choix du joueur :
 | 22f | Events à heures fixes : le calendrier et le **Boss** | fait |
 | 22f-2 | Events : KOTH à points et Totem | fait |
 | 22f-3 | Event : Egg Hunt (l'End et les raids ne sont pas repris : choix du joueur) | fait |
-| 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller | fait |
+| 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller : trois tailles, cinq genres, terrain qui revient après le raid | fait |
 
 ## Ce qui change en solo
 
@@ -236,14 +236,14 @@ soufflées par un wither que tu as invoqué), `kill:baby_wither`.
 ## Bases ennemies (22g)
 
 Seul, les objets de pillage n'avaient pas de cible. Sur demande (onglet **Bases ennemies** de la faction,
-ou `/f base generer [1-3]`), une faction ennemie fictive bâtit une place forte dans le Monde :
+ou `/f base generer [1-3] [genre]`), une faction ennemie fictive bâtit une place forte dans le Monde :
 
 - **À plus de 9 000 blocs** de toi *et* de chacun de tes claims (emprise comprise), entre 9 000 et
   10 500 blocs environ, dans la bordure du monde, hors océan, rivière et plage, sur le terrain le plus
   plat trouvé en 64 essais — la hauteur est lue dans le bruit du générateur, sans rien générer.
 - Le site est cherché sur plusieurs ticks (8 ms au plus), ses chunks se chargent en tâche de fond (ticket
-  forcé), puis la base est **bâtie par étapes**, 15 ms par tick : même la forteresse ne fige pas le serveur. Une **boussole** pointe vers elle (`/f base
-  boussole` pour une autre). Une base à la fois.
+  forcé), puis la base est **bâtie par étapes**, 15 ms par tick : même la forteresse ne fige pas le
+  serveur. Une **boussole** pointe vers elle (`/f base boussole` pour une autre). Une base à la fois.
 - **Ses claims suivent la règle de Paladium** et débordent de **deux chunks de glacis** autour des
   murs : on n'y casse, n'y pose ni n'y ouvre rien à la main — **même en créatif**. La TNT ne s'y pose
   donc pas : elle arrive en **dynamite** lancée, tirée par un **canon à TNT** bâti hors des claims, ou
@@ -252,31 +252,75 @@ ou `/f base generer [1-3]`), une faction ennemie fictive bâtit une place forte 
   wither) comme la TNT vanilla : les canons à TNT marchent avec toutes. Les
   explosions et les withers y cassent tout ; le seau extrapolé et le pistolet à liquide y travaillent.
   Ses pièges frappent l'assaillant.
-- **Entrer dans la salle des coffres du donjon, c'est l'avoir pillée** : ELO, argent à la banque de
+- **Entrer dans la salle des coffres, c'est l'avoir pillée** : ELO, argent à la banque de
   faction, et ses claims tombent — les coffres s'ouvrent. Compteurs `raid:base` et `raid:<taille>`.
-- **Abandonner** (`/f base abandonner`, deux clics dans l'onglet) l'oublie : elle reste en place,
-  claimée, à piller, mais sans récompense.
+- **Abandonner** (`/f base abandonner`, deux clics dans l'onglet) l'oublie, sans récompense.
+- **Cinq minutes après la fin du raid** (pillage ou abandon), la base s'efface et **le terrain revient
+  tel qu'il était** — voir plus bas.
 
-Toutes les bases suivent le même plan, de plus en plus grand et épais :
+### La refonte : trois tailles, cinq genres
 
-- une **douve** et un pont devant une **porterie** à herse ;
-- une **enceinte** à couches : de l'eau est prise entre deux murs, donc une TNT qui perce le premier mur
-  explose ensuite dans l'eau sans rien casser ; il faut vider l'eau (seau extrapolé, TNT éponge).
-  L'enceinte a des créneaux, et des **tours** d'angle portent des pillards à arbalète ;
-- une **cour** : spikes, casernes sombres à spawner, tranchée de Fake Water ou de lave ;
-- un **donjon** en cube à couches sur ses six faces, dessous compris, coiffé de créneaux, de tourelles et
-  d'une balise visible de loin. En son cœur, la **salle des coffres**.
+La **taille** fixe l'enceinte, la **récompense** et le nombre de défenseurs ; le **genre** fixe ce qu'il y
+a entre les murs et la façon d'atteindre les coffres. Le genre se choisit dans l'onglet (« Au hasard »
+par défaut) ou en dernier argument de la commande (`citadelle`, `ferme`, `entrepot`, `usine`,
+`vitrine`).
 
-| Taille | Emprise, claims | Enceinte | Donjon | Défenseurs | Récompense |
-|--------|-----------------|----------|--------|------------|------------|
-| Avant-poste | 41 × 41, 7 × 7 | pierre · eau · pierre, douve d'eau | pierre · eau · obsidienne, 4 coffres | 10 gardes | +150 ELO, 25 000 $ |
-| Base | 65 × 65, 9 × 9 | obsidienne (bandes pleureuses) · eau · obsidienne piégée · renforcée, douve de Fake Water, spikes | renforcée · eau · obsidienne · boom · pierre, balise, 6 coffres | 2 casernes (husks, araignées), 18 gardes | +500 ELO, 120 000 $ |
-| Forteresse | 97 × 97, 11 × 11 | renforcée · eau · piégée (poison, mega boom, slime) · obsidienne · eau · renforcée, douve de Fake Water, deux rangs de spikes, tranchée de lave | renforcée · eau · enclumes en paladium et anti-aggro · obsidiennes à wither et compactes · eau · mega boom · blackstone, balise, 10 coffres + coffre fort | 4 casernes (wither squelettes, husks, araignées venimeuses), 30 gardes dont 2 ravageurs et un évocateur | +1 500 ELO, 500 000 $ |
+| Taille | Emprise, claims | Enceintes | Salle forte | Défenseurs | Récompense |
+|--------|-----------------|-----------|-------------|------------|------------|
+| Avant-poste | 61 × 61, 9 × 9 chunks | une : pierre · eau · pierre, 8 de haut, douve d'eau | 3 couches : pierre · eau · obsidienne | 22 à 29 | +150 ELO, 40 000 $ |
+| Base | 93 × 93, 11 × 11 chunks | deux : obsidienne · eau · obsidienne piégée · renforcée (11 de haut), puis pierre · eau · renforcée ; douve et fossé de Fake Water, rang de spikes en diamant | 5 couches : renforcée · eau · obsidienne · boom · pierre | 52 à 66 | +500 ELO, 200 000 $ |
+| Forteresse | 129 × 129, 13 × 13 chunks | deux : renforcée · eau · piégée · obsidienne · eau · renforcée (15 de haut), puis renforcée · eau · piégée · obsidienne ; douve de Fake Water, fossé de lave, rang de spikes en titane | 7 couches : renforcée · eau · enclumes en paladium et anti-aggro · obsidiennes à wither · eau · mega boom · blackstone | 77 à 93 | +1 500 ELO, 800 000 $ |
+
+Le plan commun, du dehors au dedans :
+
+- une **douve** et un pont devant une **porterie** à herse, au nord ;
+- l'**enceinte** à couches : de l'eau est prise entre deux murs, donc une TNT qui perce le premier mur
+  explose ensuite dans l'eau sans rien casser ; il faut vider l'eau (seau extrapolé, TNT éponge). Des
+  **tours** d'angle, et des tours de courtine à partir de la base, portent des pillards ;
+- l'anneau des **quartiers** : des terrains d'une quinzaine de blocs, tirés au sort, où le genre pose
+  ses bâtiments ;
+- à partir de la base, une **seconde enceinte**, un fossé et un rang de spikes ;
+- la **salle forte**, à couches sur ses six faces, dessous compris.
+
+| Genre | Quartiers | Où sont les coffres |
+|-------|-----------|---------------------|
+| **Citadelle** | casernes à spawner, cours à spikes, armurerie, poudrière (TNT, grosse TNT, TNT en endium à la forteresse), forge (palaforge, four en paladium), écurie | donjon au centre, au niveau du sol, coiffé de créneaux et d'une balise |
+| **Domaine agricole** | champs des quatre cultures (kiwano, aubergine, cerfeuil, orangeblue) irrigués, sous des **totems de fertilité**, serres, buissons d'XP, silos (cuves, tonneaux), étable | cave à couches **sous** la grande grange : il faut creuser |
+| **Entrepôt** | halles de tonneaux et de coffres (améthyste, titane, paladium selon la taille), silos, armurerie, réserve d'explosifs | bunker bas à **neuf cellules** : seule celle du milieu compte |
+| **Usine** | ligne de **cobblebreakers** sur trémies en paladium, halle de **crushers**, **grinder** monté (base et forteresse), **boîte à golem** montée avec ses blocs gardiens et sa machine à croquettes (base et forteresse), forge, laboratoire (extracteurs, cuves, cœur de chaudron) | bunker enterré sous la centrale aux cheminées |
+| **Démonstration de force** | pyramides de blocs à balise, galerie de trophées sous vitre de coffre-fort, spawners vides et contrôleurs, autel à wither (réceptacles), boîte à golem, poudrière | salle forte en haut d'une **ziggourat** |
+
+Les grinders et les boîtes à golem sont **montés comme le veulent leurs structures** (`GrinderStructure`,
+`GolemBoxStructure`) : ce sont de vraies machines, à récupérer bloc par bloc une fois les claims tombés.
 
 Les gardes sont surtout des illageois (pillards, vindicateurs, sorcières, ravageurs, évocateur) : ils ne
-brûlent pas au soleil. Ils sont persistants. Les coffres tirent leur butin des tables
-`palamod:chests/enemy_*` à l'ouverture ou à l'explosion : minerais et explosifs à l'avant-poste, paladium
-et TNT en endium à la base, endium, gemmes de wither et pierre légendaire à la forteresse.
+brûlent pas au soleil. Ils sont persistants. Les coffres tirent leur butin à l'ouverture ou à
+l'explosion : les tables de la salle forte (`palamod:chests/enemy_*` par taille), et celles des quartiers
+(`enemy_vrac`, `enemy_grenier`, `enemy_entrepot`, `enemy_atelier`, `enemy_arsenal`).
+
+### Le terrain reprend ses droits
+
+Une base pillée laissait une ruine de 129 blocs de côté et des cratères autour. Désormais :
+
+- **Avant le premier bloc**, le chantier relève tout le carré de claims (l'emprise et son glacis), de
+  48 blocs sous le sol à 24 blocs au-dessus du plus haut relief. Le relevé est écrit, compressé, dans
+  `<monde>/dohy/bases/<x>_<z>.terrain` : il survit aux redémarrages, la base peut attendre des jours.
+- **À la fin du raid** — tu entres dans la salle forte, ou tu abandonnes — un compte à rebours de
+  **5 minutes de jeu** part (`EnemyBaseRegen.DELAY_TICKS`). Le chat le dit, puis prévient à 1 minute et
+  à 10 secondes. C'est le temps qu'il reste pour vider les coffres et démonter les machines.
+- **À l'échéance**, les chunks sont chargés en tâche de fond et relus tranche par tranche, 15 ms par
+  tick : seuls les blocs qui ont changé sont reposés, de bas en haut, sans mise à jour de voisinage
+  (rien ne tombe, rien ne coule) et sans vider les coffres par terre. Une seconde passe rattrape ce qui a
+  bougé pendant la première. Les murs, les machines et les
+  cratères disparaissent ; les collines, les arbres et les rivières reviennent. Les gardes et les bêtes
+  de la base disparaissent, ses derniers claims tombent.
+- Un joueur resté sur place reçoit la **chute lente** (45 s) et, s'il se retrouve dans la roche, est
+  remonté à la surface. Un chunk que tu as **revendiqué entre-temps** n'est pas touché.
+- L'échéance est gardée dans `<x>_<z>.due` : quitter le monde la suspend, le rouvrir la reprend.
+
+**Limites** : ce que tu as posé toi-même dans l'emprise pendant ces cinq minutes part avec la base ; le
+contenu d'un coffre naturel (village, mine) rasé par la base ne revient pas, seulement le bloc ; une
+base bâtie avant ce système n'a pas de relevé et reste en place.
 
 ## Réserve d'or (22e)
 
