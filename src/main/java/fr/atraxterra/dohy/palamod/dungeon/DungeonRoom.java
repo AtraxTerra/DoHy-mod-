@@ -82,6 +82,11 @@ final class DungeonRoom {
     /** Un pilier tous les six blocs le long des murs, une poutre au plafond dans son axe. */
     private static final int BAY = 6;
 
+    /** Les lumieres d'un pilier : a hauteur d'homme, et une seconde dans une salle haute. */
+    private boolean lit(int h) {
+        return h == 3 || (height >= 12 && h == 8);
+    }
+
     private boolean onLine(int offset) {
         return Math.floorMod(offset, BAY) == 0;
     }
@@ -121,7 +126,7 @@ final class DungeonRoom {
                     continue;
                 }
                 // Les murs : une assise, un couronnement, un pilier aux angles
-                // et tous les six blocs avec une lumiere a mi-hauteur.
+                // et tous les six blocs, eclaire comme les piliers de la salle.
                 boolean corner = edgeX && edgeZ;
                 boolean pillar = corner || onLine(edgeX ? dz : dx);
                 for (int y = ground; y < ceiling; y++) {
@@ -132,7 +137,7 @@ final class DungeonRoom {
                     } else if (h == height - 1) {
                         block = theme.trim();
                     } else if (pillar) {
-                        block = h == 3 && !corner ? theme.light() : theme.pillar();
+                        block = lit(h) && !corner ? theme.light() : theme.pillar();
                     } else {
                         int roll = random.nextInt(100);
                         block = roll < 18 ? theme.wallAlt()
@@ -148,8 +153,8 @@ final class DungeonRoom {
             for (int[] at : new int[][]{{q, q}, {-q, q}, {q, -q}, {-q, -q}}) {
                 for (int y = ground; y < ceiling; y++) {
                     int h = y - ground;
-                    set(level, pos.set(cx + at[0], y, cz + at[1]),
-                            h == 0 ? theme.wallBase() : h == height - 1 ? theme.trim() : theme.pillar());
+                    set(level, pos.set(cx + at[0], y, cz + at[1]), h == 0 ? theme.wallBase()
+                            : h == height - 1 ? theme.trim() : lit(h) ? theme.light() : theme.pillar());
                 }
             }
         }
