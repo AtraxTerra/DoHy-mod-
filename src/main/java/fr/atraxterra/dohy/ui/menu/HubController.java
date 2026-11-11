@@ -68,7 +68,8 @@ public final class HubController extends MenuController {
                 Card.of(new ItemStack(Items.CHEST_MINECART), "Banque", List.of(
                         "Epargne " + MoneyFormat.shortForm(Bank.banked(player)),
                         MoneyFormat.shortForm(Bank.perDay(player)) + " d'interets / jour"))
-                        .accent(0xFFFAC400).action("bank"));
+                        .accent(0xFFFAC400).action("bank"),
+                clickerCard(player));
 
         ContractData contracts = ContractApi.data(player);
         int left = 0;
@@ -134,6 +135,18 @@ public final class HubController extends MenuController {
                 new MenuView.Section("FIN DE PARTIE", "craft", MenuView.GRID, endgame)), false);
     }
 
+    /** Le clicker : ses ClicCoins et sa production, s'il a deja servi. */
+    private static Card clickerCard(ServerPlayer player) {
+        var data = player.getExistingDataOrNull(fr.atraxterra.dohy.DoHyAttachments.CLICKER.get());
+        boolean started = data != null && !data.isEmpty();
+        return Card.of(new ItemStack(Items.COOKIE), "Clicker", List.of(
+                        started ? fr.atraxterra.dohy.palamod.clicker.ClickerFormat.compact(data.points())
+                                + " ClicCoins" : "Nourris les namuus",
+                        started ? fr.atraxterra.dohy.palamod.clicker.ClickerFormat.rate(data.rps()) + " par seconde"
+                                : "Batiments, ameliorations, Clic Shop"))
+                .accent(0xFFFAC400).action("clicker");
+    }
+
     /** Les succes : combien sont valides. */
     private static Card achievementCard(ServerPlayer player) {
         int done = Achievements.data(player).doneCount();
@@ -171,7 +184,7 @@ public final class HubController extends MenuController {
 
     /** Les menus que les boutons de l'inventaire peuvent ouvrir. */
     private static final java.util.Set<String> INVENTORY_TARGETS =
-            java.util.Set.of("shop", "contracts", "bank", "faction", "jobs", "trixium");
+            java.util.Set.of("shop", "contracts", "bank", "faction", "jobs", "trixium", "clicker");
 
     /**
      * Ouvre le menu demande par un bouton de l'inventaire ({@code InventoryNav}).
@@ -203,6 +216,7 @@ public final class HubController extends MenuController {
             }
             case "boutique" -> BoutiqueController.INSTANCE.open(player);
             case "bank" -> BankController.INSTANCE.open(player);
+            case "clicker" -> fr.atraxterra.dohy.palamod.clicker.Clicker.open(player);
             case "contracts" -> ContractsController.INSTANCE.open(player);
             case "jobs" -> JobsController.open(player);
             case "collections" -> CollectionsController.INSTANCE.open(player);

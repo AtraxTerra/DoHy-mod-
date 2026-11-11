@@ -40,6 +40,9 @@ public final class UiClient {
         SCREENS.put(JobsView.ID, view -> new JobsScreen((JobsView) view));
         SCREENS.put(JobDetailView.ID, view -> new JobDetailScreen((JobDetailView) view));
         SCREENS.put(CrateView.ID, view -> new CrateScreen((CrateView) view));
+        SCREENS.put(fr.atraxterra.dohy.palamod.clicker.ClickerView.ID,
+                view -> new fr.atraxterra.dohy.client.ui.screen.ClickerScreen(
+                        (fr.atraxterra.dohy.palamod.clicker.ClickerView) view));
         SCREENS.put(fr.atraxterra.dohy.faction.FactionEditView.ID,
                 view -> new fr.atraxterra.dohy.client.ui.screen.FactionEditScreen(
                         (fr.atraxterra.dohy.faction.FactionEditView) view));

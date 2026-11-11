@@ -1,0 +1,5034 @@
+{
+ "_comment": "GENERE par tools/clicker_data.py : le clicker de Paladium (PalaClicker 6.1.2). Noms : traductions du client. Prix et conditions : releves de la communaute et wiki. Clic Shop : ecrit pour DoHy.",
+ "categories": {
+  "miner": "Mineur",
+  "old_civilization": "Ancienne civilisation",
+  "humanoid": "Humanoïde",
+  "farmer": "Fermier",
+  "garden": "Jardin",
+  "alchemist": "Alchimiste",
+  "hostile_creature": "Créature hostile",
+  "forest": "Forêt",
+  "frozen": "Gelé",
+  "on_water": "Sur l'eau",
+  "hot": "Chaud",
+  "hunter": "Chasseur",
+  "strange_world": "Monde étrange",
+  "deep": "Profondeur",
+  "technologic": "Technologique",
+  "robot": "Robotique",
+  "radioactive": "Radioactif",
+  "futuristic": "Futuriste",
+  "under_water": "Sous l'eau",
+  "computer": "Informatique",
+  "old_god": "Ancien dieu"
+ },
+ "buildings": [
+  {
+   "id": "abandoned_mine",
+   "name": "Mine abandonnée",
+   "item": "minecraft:wooden_pickaxe",
+   "price": 1250,
+   "categories": [
+    "miner"
+   ]
+  },
+  {
+   "id": "big_rocks_cave",
+   "name": "Caverne aux gros cailloux",
+   "item": "minecraft:cobblestone",
+   "price": 3500,
+   "categories": [
+    "miner"
+   ]
+  },
+  {
+   "id": "dwarves_mine",
+   "name": "Mine des nains",
+   "item": "minecraft:iron_pickaxe",
+   "price": 6000,
+   "categories": [
+    "miner",
+    "humanoid"
+   ]
+  },
+  {
+   "id": "grandma_garden",
+   "name": "Jardin de mamie",
+   "item": "minecraft:cookie",
+   "price": 12500,
+   "categories": [
+    "farmer",
+    "garden"
+   ]
+  },
+  {
+   "id": "witch_cabin",
+   "name": "Cabane de sorcière",
+   "item": "minecraft:cauldron",
+   "price": 27500,
+   "categories": [
+    "alchemist"
+   ]
+  },
+  {
+   "id": "buzzing_hive",
+   "name": "Ruche bourdonnante",
+   "item": "minecraft:bee_nest",
+   "price": 67500,
+   "categories": [
+    "alchemist",
+    "hostile_creature"
+   ]
+  },
+  {
+   "id": "snowy_forest",
+   "name": "Forêt enneigée",
+   "item": "minecraft:spruce_sapling",
+   "price": 125000,
+   "categories": [
+    "alchemist",
+    "frozen",
+    "forest"
+   ]
+  },
+  {
+   "id": "frozen_iceberg",
+   "name": "Banquise gelée",
+   "item": "minecraft:packed_ice",
+   "price": 315000,
+   "categories": [
+    "frozen",
+    "on_water"
+   ]
+  },
+  {
+   "id": "pirate_port",
+   "name": "Port de pirate",
+   "item": "minecraft:oak_boat",
+   "price": 650000,
+   "categories": [
+    "humanoid",
+    "on_water"
+   ]
+  },
+  {
+   "id": "volcanic_island",
+   "name": "Île volcanique",
+   "item": "minecraft:magma_block",
+   "price": 1575000,
+   "categories": [
+    "farmer",
+    "hot"
+   ]
+  },
+  {
+   "id": "scorching_dunes",
+   "name": "Dunes caniculaires",
+   "item": "minecraft:red_sand",
+   "price": 3150000,
+   "categories": [
+    "hunter",
+    "hot"
+   ]
+  },
+  {
+   "id": "mystical_forest",
+   "name": "Forêt mystique",
+   "item": "minecraft:cherry_sapling",
+   "price": 6000000,
+   "categories": [
+    "hunter",
+    "forest"
+   ]
+  },
+  {
+   "id": "lush_jungle",
+   "name": "Jungle luxuriante",
+   "item": "minecraft:jungle_sapling",
+   "price": 11500000,
+   "categories": [
+    "farmer",
+    "forest"
+   ]
+  },
+  {
+   "id": "forgotten_temple",
+   "name": "Temple oublié",
+   "item": "minecraft:mossy_stone_bricks",
+   "price": 25750000,
+   "categories": [
+    "hunter",
+    "old_civilization"
+   ]
+  },
+  {
+   "id": "millennial_crypt",
+   "name": "Crypte millénaire",
+   "item": "minecraft:skeleton_skull",
+   "price": 55000000,
+   "categories": [
+    "hunter",
+    "old_civilization"
+   ]
+  },
+  {
+   "id": "bottomless_pit",
+   "name": "Gouffre sans fond",
+   "item": "minecraft:coal_block",
+   "price": 95000000,
+   "categories": [
+    "miner",
+    "deep"
+   ]
+  },
+  {
+   "id": "autonomous_mine",
+   "name": "Mine autonome",
+   "item": "minecraft:powered_rail",
+   "price": 185000000,
+   "categories": [
+    "miner",
+    "technologic",
+    "robot"
+   ]
+  },
+  {
+   "id": "golem_farm",
+   "name": "Ferme à Golem",
+   "item": "minecraft:carved_pumpkin",
+   "price": 385000000,
+   "categories": [
+    "robot"
+   ]
+  },
+  {
+   "id": "radioactive_cave",
+   "name": "Grotte radioactive",
+   "item": "palamod:green_paladium_ingot",
+   "price": 750000000,
+   "categories": [
+    "miner",
+    "radioactive"
+   ]
+  },
+  {
+   "id": "biological_lab",
+   "name": "Laboratoire biologique",
+   "item": "minecraft:brewing_stand",
+   "price": 1350000000,
+   "categories": [
+    "technologic"
+   ]
+  },
+  {
+   "id": "thermonuclear_submarine",
+   "name": "Sous-marin thermonucléaire",
+   "item": "minecraft:nautilus_shell",
+   "price": 2550000000,
+   "categories": [
+    "radioactive",
+    "under_water"
+   ]
+  },
+  {
+   "id": "kraken_pit",
+   "name": "Fosse du Kraken",
+   "item": "minecraft:ink_sac",
+   "price": 5950000000,
+   "categories": [
+    "hunter",
+    "hostile_creature",
+    "deep",
+    "under_water"
+   ]
+  },
+  {
+   "id": "enigmatic_fissure",
+   "name": "Faille énigmatique",
+   "item": "minecraft:ender_eye",
+   "price": 9500000000,
+   "categories": [
+    "alchemist",
+    "strange_world"
+   ]
+  },
+  {
+   "id": "corrupted_lands",
+   "name": "Terres corrompues",
+   "item": "minecraft:crying_obsidian",
+   "price": 18500000000,
+   "categories": [
+    "farmer",
+    "strange_world"
+   ]
+  },
+  {
+   "id": "matrix_glitch",
+   "name": "Bug dans la matrice",
+   "item": "minecraft:command_block",
+   "price": 34500000000,
+   "categories": [
+    "strange_world",
+    "computer"
+   ]
+  },
+  {
+   "id": "quantum_computer",
+   "name": "Ordinateur quantique",
+   "item": "minecraft:observer",
+   "price": 75000000000,
+   "categories": [
+    "futuristic",
+    "computer"
+   ]
+  },
+  {
+   "id": "particle_accelerator",
+   "name": "Accélerateur à particules",
+   "item": "minecraft:beacon",
+   "price": 125000000000,
+   "categories": [
+    "technologic",
+    "futuristic"
+   ]
+  },
+  {
+   "id": "time_travel_machine",
+   "name": "Machine à voyager dans le temps",
+   "item": "minecraft:clock",
+   "price": 235000000000,
+   "categories": [
+    "alchemist",
+    "technologic",
+    "futuristic"
+   ]
+  },
+  {
+   "id": "prehistoric_cave",
+   "name": "Caverne préhistorique",
+   "item": "minecraft:bone",
+   "price": 455000000000,
+   "categories": [
+    "hostile_creature"
+   ]
+  },
+  {
+   "id": "extraterrestrial_pyramid",
+   "name": "Pyramide extraterrestre",
+   "item": "minecraft:end_stone",
+   "price": 885000000000,
+   "categories": [
+    "old_civilization"
+   ]
+  },
+  {
+   "id": "atlantis",
+   "name": "Atlantide",
+   "item": "minecraft:prismarine_bricks",
+   "price": 1550000000000,
+   "categories": [
+    "old_civilization",
+    "under_water"
+   ]
+  },
+  {
+   "id": "great_ancients_pantheon",
+   "name": "Panthéon des Grands Anciens",
+   "item": "minecraft:sculk_shrieker",
+   "price": 2950000000000,
+   "categories": [
+    "hunter",
+    "old_god"
+   ]
+  },
+  {
+   "id": "earth_center",
+   "name": "Centre de la terre",
+   "item": "minecraft:lava_bucket",
+   "price": 5500000000000,
+   "categories": [
+    "miner",
+    "hot",
+    "deep"
+   ]
+  },
+  {
+   "id": "devil_lair",
+   "name": "Antre du diable",
+   "item": "minecraft:nether_bricks",
+   "price": 10500000000000,
+   "categories": [
+    "alchemist",
+    "hot",
+    "old_god"
+   ]
+  },
+  {
+   "id": "eden_garden",
+   "name": "Jardin d'Eden",
+   "item": "minecraft:apple",
+   "price": 19500000000000,
+   "categories": [
+    "farmer",
+    "garden",
+    "old_god"
+   ]
+  }
+ ],
+ "upgrades": [
+  {
+   "id": "click_1",
+   "name": "Pastèque Clic",
+   "item": "minecraft:melon_slice",
+   "price": 10000,
+   "type": "click",
+   "target": "",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 100000
+    }
+   ]
+  },
+  {
+   "id": "click_2",
+   "name": "Carotte Clic",
+   "item": "minecraft:carrot",
+   "price": 25000,
+   "type": "click",
+   "target": "",
+   "modifier": 2.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 250000
+    },
+    {
+     "type": "time",
+     "value": 3
+    },
+    {
+     "type": "upgrade",
+     "id": "click_1"
+    }
+   ]
+  },
+  {
+   "id": "click_3",
+   "name": "Patate Clic",
+   "item": "minecraft:baked_potato",
+   "price": 62500,
+   "type": "click",
+   "target": "",
+   "modifier": 4.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 625000
+    },
+    {
+     "type": "time",
+     "value": 6
+    },
+    {
+     "type": "upgrade",
+     "id": "click_2"
+    }
+   ]
+  },
+  {
+   "id": "click_4",
+   "name": "Pain Clic",
+   "item": "minecraft:bread",
+   "price": 156250,
+   "type": "click",
+   "target": "",
+   "modifier": 8.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 1562500
+    },
+    {
+     "type": "time",
+     "value": 8
+    },
+    {
+     "type": "upgrade",
+     "id": "click_3"
+    }
+   ]
+  },
+  {
+   "id": "click_5",
+   "name": "Lait Clic",
+   "item": "minecraft:milk_bucket",
+   "price": 390625,
+   "type": "click",
+   "target": "",
+   "modifier": 16.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 3906250
+    },
+    {
+     "type": "time",
+     "value": 10
+    },
+    {
+     "type": "upgrade",
+     "id": "click_4"
+    }
+   ]
+  },
+  {
+   "id": "click_6",
+   "name": "Choco Clic",
+   "item": "minecraft:cocoa_beans",
+   "price": 975000,
+   "type": "click",
+   "target": "",
+   "modifier": 32.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 9750000
+    },
+    {
+     "type": "time",
+     "value": 13
+    },
+    {
+     "type": "upgrade",
+     "id": "click_5"
+    }
+   ]
+  },
+  {
+   "id": "click_7",
+   "name": "Bonbon Clic",
+   "item": "minecraft:sugar",
+   "price": 2450000,
+   "type": "click",
+   "target": "",
+   "modifier": 64.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 24500000
+    },
+    {
+     "type": "time",
+     "value": 17
+    },
+    {
+     "type": "upgrade",
+     "id": "click_6"
+    }
+   ]
+  },
+  {
+   "id": "click_8",
+   "name": "Cookie Clic",
+   "item": "minecraft:cookie",
+   "price": 6000000,
+   "type": "click",
+   "target": "",
+   "modifier": 128.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 60000000
+    },
+    {
+     "type": "time",
+     "value": 20
+    },
+    {
+     "type": "upgrade",
+     "id": "click_7"
+    }
+   ]
+  },
+  {
+   "id": "click_9",
+   "name": "Glace Clic",
+   "item": "minecraft:snowball",
+   "price": 15250000,
+   "type": "click",
+   "target": "",
+   "modifier": 256.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 152500000
+    },
+    {
+     "type": "time",
+     "value": 23
+    },
+    {
+     "type": "upgrade",
+     "id": "click_8"
+    }
+   ]
+  },
+  {
+   "id": "click_10",
+   "name": "Soupe Click",
+   "item": "minecraft:mushroom_stew",
+   "price": 38500000,
+   "type": "click",
+   "target": "",
+   "modifier": 512.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 385000000
+    },
+    {
+     "type": "time",
+     "value": 29
+    },
+    {
+     "type": "upgrade",
+     "id": "click_9"
+    }
+   ]
+  },
+  {
+   "id": "click_11",
+   "name": "Poisson Clic",
+   "item": "minecraft:cooked_cod",
+   "price": 95000000,
+   "type": "click",
+   "target": "",
+   "modifier": 1024.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 950000000
+    },
+    {
+     "type": "time",
+     "value": 34
+    },
+    {
+     "type": "upgrade",
+     "id": "click_10"
+    }
+   ]
+  },
+  {
+   "id": "click_12",
+   "name": "Poulet Clic",
+   "item": "minecraft:cooked_chicken",
+   "price": 235000000,
+   "type": "click",
+   "target": "",
+   "modifier": 2048.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 2350000000
+    },
+    {
+     "type": "time",
+     "value": 40
+    },
+    {
+     "type": "upgrade",
+     "id": "click_11"
+    }
+   ]
+  },
+  {
+   "id": "click_13",
+   "name": "Jambon Clic",
+   "item": "minecraft:cooked_porkchop",
+   "price": 595000000,
+   "type": "click",
+   "target": "",
+   "modifier": 4096.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 5950000000
+    },
+    {
+     "type": "time",
+     "value": 45
+    },
+    {
+     "type": "upgrade",
+     "id": "click_12"
+    }
+   ]
+  },
+  {
+   "id": "click_14",
+   "name": "Tarte Clic",
+   "item": "minecraft:pumpkin_pie",
+   "price": 1450000000,
+   "type": "click",
+   "target": "",
+   "modifier": 8192.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 14500000000
+    },
+    {
+     "type": "time",
+     "value": 53
+    },
+    {
+     "type": "upgrade",
+     "id": "click_13"
+    }
+   ]
+  },
+  {
+   "id": "click_15",
+   "name": "Gâteau Clic",
+   "item": "minecraft:cake",
+   "price": 3750000000,
+   "type": "click",
+   "target": "",
+   "modifier": 16384.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 37500000000
+    },
+    {
+     "type": "time",
+     "value": 61
+    },
+    {
+     "type": "upgrade",
+     "id": "click_14"
+    }
+   ]
+  },
+  {
+   "id": "click_16",
+   "name": "Côtelette Clic",
+   "item": "minecraft:cooked_mutton",
+   "price": 9350000000,
+   "type": "click",
+   "target": "",
+   "modifier": 32768.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 93500000000
+    },
+    {
+     "type": "time",
+     "value": 68
+    },
+    {
+     "type": "upgrade",
+     "id": "click_15"
+    }
+   ]
+  },
+  {
+   "id": "click_17",
+   "name": "Steak Clic",
+   "item": "minecraft:cooked_beef",
+   "price": 23500000000,
+   "type": "click",
+   "target": "",
+   "modifier": 65536.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 235000000000
+    },
+    {
+     "type": "time",
+     "value": 76
+    },
+    {
+     "type": "upgrade",
+     "id": "click_16"
+    }
+   ]
+  },
+  {
+   "id": "click_18",
+   "name": "Saumon Clic",
+   "item": "minecraft:cooked_salmon",
+   "price": 58500000000,
+   "type": "click",
+   "target": "",
+   "modifier": 131072.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 585000000000
+    },
+    {
+     "type": "time",
+     "value": 87
+    },
+    {
+     "type": "upgrade",
+     "id": "click_17"
+    }
+   ]
+  },
+  {
+   "id": "click_19",
+   "name": "SpeedPomme Clic",
+   "item": "minecraft:golden_apple",
+   "price": 145000000000,
+   "type": "click",
+   "target": "",
+   "modifier": 262144.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 1450000000000
+    },
+    {
+     "type": "time",
+     "value": 96
+    },
+    {
+     "type": "upgrade",
+     "id": "click_18"
+    }
+   ]
+  },
+  {
+   "id": "click_20",
+   "name": "Carpe Clic",
+   "item": "minecraft:tropical_fish",
+   "price": 365000000000,
+   "type": "click",
+   "target": "",
+   "modifier": 524288.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 3650000000000
+    },
+    {
+     "type": "time",
+     "value": 106
+    },
+    {
+     "type": "upgrade",
+     "id": "click_19"
+    }
+   ]
+  },
+  {
+   "id": "click_21",
+   "name": "Bar Clic",
+   "item": "minecraft:pufferfish",
+   "price": 905000000000,
+   "type": "click",
+   "target": "",
+   "modifier": 1048576.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 9050000000000
+    },
+    {
+     "type": "time",
+     "value": 117
+    },
+    {
+     "type": "upgrade",
+     "id": "click_20"
+    }
+   ]
+  },
+  {
+   "id": "click_22",
+   "name": "Burger Clic",
+   "item": "minecraft:rabbit_stew",
+   "price": 2250000000000,
+   "type": "click",
+   "target": "",
+   "modifier": 2097152.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 22500000000000
+    },
+    {
+     "type": "time",
+     "value": 129
+    },
+    {
+     "type": "upgrade",
+     "id": "click_21"
+    }
+   ]
+  },
+  {
+   "id": "click_23",
+   "name": "Clic de la Carotte Divine",
+   "item": "minecraft:golden_carrot",
+   "price": 5650000000000,
+   "type": "click",
+   "target": "",
+   "modifier": 4194304.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 56500000000000
+    },
+    {
+     "type": "time",
+     "value": 140
+    },
+    {
+     "type": "upgrade",
+     "id": "click_22"
+    }
+   ]
+  },
+  {
+   "id": "click_24",
+   "name": "Thon Rouge Clic",
+   "item": "minecraft:salmon",
+   "price": 14500000000000,
+   "type": "click",
+   "target": "",
+   "modifier": 8388608.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 145000000000000
+    },
+    {
+     "type": "time",
+     "value": 152
+    },
+    {
+     "type": "upgrade",
+     "id": "click_23"
+    }
+   ]
+  },
+  {
+   "id": "click_25",
+   "name": "Clic de la Pomme Divine",
+   "item": "minecraft:enchanted_golden_apple",
+   "price": 35500000000000,
+   "type": "click",
+   "target": "",
+   "modifier": 16777216.0,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 355000000000000
+    },
+    {
+     "type": "time",
+     "value": 164
+    },
+    {
+     "type": "upgrade",
+     "id": "click_24"
+    }
+   ]
+  },
+  {
+   "id": "global_1",
+   "name": "Namuu Ecolier",
+   "item": "minecraft:book",
+   "price": 1760000,
+   "type": "global",
+   "target": "",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 17600000
+    },
+    {
+     "type": "time",
+     "value": 10
+    }
+   ]
+  },
+  {
+   "id": "global_2",
+   "name": "Namuu Constructeur",
+   "item": "minecraft:bricks",
+   "price": 14000000,
+   "type": "global",
+   "target": "",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 140000000
+    },
+    {
+     "type": "time",
+     "value": 24
+    },
+    {
+     "type": "upgrade",
+     "id": "global_1"
+    }
+   ]
+  },
+  {
+   "id": "global_3",
+   "name": "Namuu Mécanicien",
+   "item": "minecraft:piston",
+   "price": 102000000,
+   "type": "global",
+   "target": "",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 1020000000
+    },
+    {
+     "type": "time",
+     "value": 40
+    },
+    {
+     "type": "upgrade",
+     "id": "global_2"
+    }
+   ]
+  },
+  {
+   "id": "global_4",
+   "name": "Namuu Scientifique",
+   "item": "minecraft:glass_bottle",
+   "price": 800000000,
+   "type": "global",
+   "target": "",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 8000000000
+    },
+    {
+     "type": "time",
+     "value": 55
+    },
+    {
+     "type": "upgrade",
+     "id": "global_3"
+    }
+   ]
+  },
+  {
+   "id": "global_5",
+   "name": "Namuu Investisseur",
+   "item": "minecraft:gold_ingot",
+   "price": 6200000000,
+   "type": "global",
+   "target": "",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 62000000000
+    },
+    {
+     "type": "time",
+     "value": 70
+    },
+    {
+     "type": "upgrade",
+     "id": "global_4"
+    }
+   ]
+  },
+  {
+   "id": "global_6",
+   "name": "Namuu Magicien",
+   "item": "minecraft:enchanted_book",
+   "price": 48000000000,
+   "type": "global",
+   "target": "",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 480000000000
+    },
+    {
+     "type": "time",
+     "value": 86
+    },
+    {
+     "type": "upgrade",
+     "id": "global_5"
+    }
+   ]
+  },
+  {
+   "id": "global_7",
+   "name": "Namuu Robotique",
+   "item": "minecraft:redstone",
+   "price": 366000000000,
+   "type": "global",
+   "target": "",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 3660000000000
+    },
+    {
+     "type": "time",
+     "value": 101
+    },
+    {
+     "type": "upgrade",
+     "id": "global_6"
+    }
+   ]
+  },
+  {
+   "id": "global_8",
+   "name": "Namuu Extraterrestre",
+   "item": "minecraft:ender_pearl",
+   "price": 2820000000000,
+   "type": "global",
+   "target": "",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 28200000000000
+    },
+    {
+     "type": "time",
+     "value": 117
+    },
+    {
+     "type": "upgrade",
+     "id": "global_7"
+    }
+   ]
+  },
+  {
+   "id": "global_9",
+   "name": "Namuu en Endium",
+   "item": "palamod:endium_ingot",
+   "price": 22000000000000,
+   "type": "global",
+   "target": "",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 220000000000000
+    },
+    {
+     "type": "time",
+     "value": 132
+    },
+    {
+     "type": "upgrade",
+     "id": "global_8"
+    }
+   ]
+  },
+  {
+   "id": "global_10",
+   "name": "Namuu Divin",
+   "item": "minecraft:nether_star",
+   "price": 166000000000000,
+   "type": "global",
+   "target": "",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "quantity",
+     "value": 1660000000000000
+    },
+    {
+     "type": "time",
+     "value": 147
+    },
+    {
+     "type": "upgrade",
+     "id": "global_9"
+    }
+   ]
+  },
+  {
+   "id": "terrain_miner",
+   "name": "Connaissance de terrain - Mineur",
+   "item": "minecraft:diamond_pickaxe",
+   "price": 1890000,
+   "type": "terrain",
+   "target": "miner",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 10
+    }
+   ],
+   "job": "MINER"
+  },
+  {
+   "id": "terrain_farmer",
+   "name": "Connaissance de terrain - Farmer",
+   "item": "minecraft:diamond_hoe",
+   "price": 9000000,
+   "type": "terrain",
+   "target": "farmer",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 10
+    }
+   ],
+   "job": "FARMER"
+  },
+  {
+   "id": "terrain_hunter",
+   "name": "Connaissance de terrain - Hunter",
+   "item": "minecraft:diamond_sword",
+   "price": 10800000,
+   "type": "terrain",
+   "target": "hunter",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 10
+    }
+   ],
+   "job": "HUNTER"
+  },
+  {
+   "id": "terrain_alchemist",
+   "name": "Connaissance de terrain - Alchimiste",
+   "item": "minecraft:brewing_stand",
+   "price": 10800000,
+   "type": "terrain",
+   "target": "alchemist",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 10
+    }
+   ],
+   "job": "ALCHEMIST"
+  },
+  {
+   "id": "abandoned_mine_1",
+   "name": "Lampe frontale",
+   "item": "minecraft:wooden_pickaxe",
+   "price": 5625,
+   "type": "building",
+   "target": "abandoned_mine",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "abandoned_mine",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "big_rocks_cave_1",
+   "name": "Dynamite",
+   "item": "minecraft:cobblestone",
+   "price": 18900,
+   "type": "building",
+   "target": "big_rocks_cave",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "big_rocks_cave",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "dwarves_mine_1",
+   "name": "Musique de nain",
+   "item": "minecraft:iron_pickaxe",
+   "price": 47250,
+   "type": "building",
+   "target": "dwarves_mine",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 3
+    },
+    {
+     "type": "building",
+     "id": "dwarves_mine",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "grandma_garden_1",
+   "name": "Livre de jardinage poussiéreux",
+   "item": "minecraft:cookie",
+   "price": 112500,
+   "type": "building",
+   "target": "grandma_garden",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 5
+    },
+    {
+     "type": "building",
+     "id": "grandma_garden",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "witch_cabin_1",
+   "name": "Chaudron bouillonnant",
+   "item": "minecraft:cauldron",
+   "price": 247500,
+   "type": "building",
+   "target": "witch_cabin",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 8
+    },
+    {
+     "type": "building",
+     "id": "witch_cabin",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "buzzing_hive_1",
+   "name": "Combinaison d'apiculteur",
+   "item": "minecraft:bee_nest",
+   "price": 607500,
+   "type": "building",
+   "target": "buzzing_hive",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 11
+    },
+    {
+     "type": "building",
+     "id": "buzzing_hive",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "snowy_forest_1",
+   "name": "Semelles anti-glissade",
+   "item": "minecraft:spruce_sapling",
+   "price": 1125000,
+   "type": "building",
+   "target": "snowy_forest",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 14
+    },
+    {
+     "type": "building",
+     "id": "snowy_forest",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "frozen_iceberg_1",
+   "name": "Raquettes à neige",
+   "item": "minecraft:packed_ice",
+   "price": 2835000,
+   "type": "building",
+   "target": "frozen_iceberg",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 16
+    },
+    {
+     "type": "building",
+     "id": "frozen_iceberg",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "pirate_port_1",
+   "name": "Canons chargés",
+   "item": "minecraft:oak_boat",
+   "price": 5850000,
+   "type": "building",
+   "target": "pirate_port",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 19
+    },
+    {
+     "type": "building",
+     "id": "pirate_port",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "volcanic_island_1",
+   "name": "Potion de résistance au feu",
+   "item": "minecraft:magma_block",
+   "price": 14175000,
+   "type": "building",
+   "target": "volcanic_island",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 22
+    },
+    {
+     "type": "building",
+     "id": "volcanic_island",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "scorching_dunes_1",
+   "name": "Bottes en cuir épais",
+   "item": "minecraft:red_sand",
+   "price": 28350000,
+   "type": "building",
+   "target": "scorching_dunes",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 24
+    },
+    {
+     "type": "building",
+     "id": "scorching_dunes",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "mystical_forest_1",
+   "name": "Parchemin anti-malédictions",
+   "item": "minecraft:cherry_sapling",
+   "price": 54000000,
+   "type": "building",
+   "target": "mystical_forest",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 27
+    },
+    {
+     "type": "building",
+     "id": "mystical_forest",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "lush_jungle_1",
+   "name": "Machette en paladium",
+   "item": "minecraft:jungle_sapling",
+   "price": 103500000,
+   "type": "building",
+   "target": "lush_jungle",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 30
+    },
+    {
+     "type": "building",
+     "id": "lush_jungle",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "forgotten_temple_1",
+   "name": "Radar à pièges antiques",
+   "item": "minecraft:mossy_stone_bricks",
+   "price": 231750000,
+   "type": "building",
+   "target": "forgotten_temple",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 34
+    },
+    {
+     "type": "building",
+     "id": "forgotten_temple",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "millennial_crypt_1",
+   "name": "Confuseur de cultiste",
+   "item": "minecraft:skeleton_skull",
+   "price": 495000000,
+   "type": "building",
+   "target": "millennial_crypt",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 39
+    },
+    {
+     "type": "building",
+     "id": "millennial_crypt",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "bottomless_pit_1",
+   "name": "Corde en fibre de carbone",
+   "item": "minecraft:coal_block",
+   "price": 855000000,
+   "type": "building",
+   "target": "bottomless_pit",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 43
+    },
+    {
+     "type": "building",
+     "id": "bottomless_pit",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "autonomous_mine_1",
+   "name": "Générateur de Faraday",
+   "item": "minecraft:powered_rail",
+   "price": 1665000000,
+   "type": "building",
+   "target": "autonomous_mine",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 48
+    },
+    {
+     "type": "building",
+     "id": "autonomous_mine",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "golem_farm_1",
+   "name": "Compacteur de golems",
+   "item": "minecraft:carved_pumpkin",
+   "price": 3465000000,
+   "type": "building",
+   "target": "golem_farm",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 54
+    },
+    {
+     "type": "building",
+     "id": "golem_farm",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "radioactive_cave_1",
+   "name": "Robot mineur d'uranium",
+   "item": "palamod:green_paladium_ingot",
+   "price": 6750000000,
+   "type": "building",
+   "target": "radioactive_cave",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 60
+    },
+    {
+     "type": "building",
+     "id": "radioactive_cave",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "biological_lab_1",
+   "name": "Centrifugeuse électronique",
+   "item": "minecraft:brewing_stand",
+   "price": 12150000000,
+   "type": "building",
+   "target": "biological_lab",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 65
+    },
+    {
+     "type": "building",
+     "id": "biological_lab",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "thermonuclear_submarine_1",
+   "name": "Propulseur ionique",
+   "item": "minecraft:nautilus_shell",
+   "price": 22950000000,
+   "type": "building",
+   "target": "thermonuclear_submarine",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 70
+    },
+    {
+     "type": "building",
+     "id": "thermonuclear_submarine",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "kraken_pit_1",
+   "name": "Harpon gravitationnel",
+   "item": "minecraft:ink_sac",
+   "price": 53550000000,
+   "type": "building",
+   "target": "kraken_pit",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 76
+    },
+    {
+     "type": "building",
+     "id": "kraken_pit",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "enigmatic_fissure_1",
+   "name": "Livre de Connaissance énigmatiques",
+   "item": "minecraft:ender_eye",
+   "price": 85500000000,
+   "type": "building",
+   "target": "enigmatic_fissure",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 82
+    },
+    {
+     "type": "building",
+     "id": "enigmatic_fissure",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "corrupted_lands_1",
+   "name": "Potion d'immunité corrompue",
+   "item": "minecraft:crying_obsidian",
+   "price": 166500000000,
+   "type": "building",
+   "target": "corrupted_lands",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 87
+    },
+    {
+     "type": "building",
+     "id": "corrupted_lands",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "matrix_glitch_1",
+   "name": "Restauration des paramètres d'usine",
+   "item": "minecraft:command_block",
+   "price": 310500000000,
+   "type": "building",
+   "target": "matrix_glitch",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 92
+    },
+    {
+     "type": "building",
+     "id": "matrix_glitch",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "quantum_computer_1",
+   "name": "Débuggage quantique",
+   "item": "minecraft:observer",
+   "price": 675000000000,
+   "type": "building",
+   "target": "quantum_computer",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 98
+    },
+    {
+     "type": "building",
+     "id": "quantum_computer",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "particle_accelerator_1",
+   "name": "Condensateur de champs électromagnétiques",
+   "item": "minecraft:beacon",
+   "price": 1125000000000,
+   "type": "building",
+   "target": "particle_accelerator",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 104
+    },
+    {
+     "type": "building",
+     "id": "particle_accelerator",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "time_travel_machine_1",
+   "name": "Calculateur de destination temporelle",
+   "item": "minecraft:clock",
+   "price": 2115000000000,
+   "type": "building",
+   "target": "time_travel_machine",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 109
+    },
+    {
+     "type": "building",
+     "id": "time_travel_machine",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "prehistoric_cave_1",
+   "name": "Dompteur de mammouth",
+   "item": "minecraft:bone",
+   "price": 4095000000000,
+   "type": "building",
+   "target": "prehistoric_cave",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 114
+    },
+    {
+     "type": "building",
+     "id": "prehistoric_cave",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "extraterrestrial_pyramid_1",
+   "name": "Table de clônage énigmatique",
+   "item": "minecraft:end_stone",
+   "price": 7965000000000,
+   "type": "building",
+   "target": "extraterrestrial_pyramid",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 120
+    },
+    {
+     "type": "building",
+     "id": "extraterrestrial_pyramid",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "atlantis_1",
+   "name": "Répulseur de tridents",
+   "item": "minecraft:prismarine_bricks",
+   "price": 13950000000000,
+   "type": "building",
+   "target": "atlantis",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 126
+    },
+    {
+     "type": "building",
+     "id": "atlantis",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "great_ancients_pantheon_1",
+   "name": "Sérum de réalité",
+   "item": "minecraft:sculk_shrieker",
+   "price": 26550000000000,
+   "type": "building",
+   "target": "great_ancients_pantheon",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 131
+    },
+    {
+     "type": "building",
+     "id": "great_ancients_pantheon",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "earth_center_1",
+   "name": "Combinaison mécanique sous haute-pression",
+   "item": "minecraft:lava_bucket",
+   "price": 49500000000000,
+   "type": "building",
+   "target": "earth_center",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 136
+    },
+    {
+     "type": "building",
+     "id": "earth_center",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "devil_lair_1",
+   "name": "Pacte avec le diable",
+   "item": "minecraft:nether_bricks",
+   "price": 94500000000000,
+   "type": "building",
+   "target": "devil_lair",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 142
+    },
+    {
+     "type": "building",
+     "id": "devil_lair",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "eden_garden_1",
+   "name": "Clé des portes du paradis",
+   "item": "minecraft:apple",
+   "price": 175500000000000,
+   "type": "building",
+   "target": "eden_garden",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 148
+    },
+    {
+     "type": "building",
+     "id": "eden_garden",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "id": "abandoned_mine_2",
+   "name": "Potion de vision nocturne",
+   "item": "minecraft:wooden_pickaxe",
+   "price": 11875,
+   "type": "building",
+   "target": "abandoned_mine",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 1
+    },
+    {
+     "type": "building",
+     "id": "abandoned_mine",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "big_rocks_cave_2",
+   "name": "Big dynamite",
+   "item": "minecraft:cobblestone",
+   "price": 46550,
+   "type": "building",
+   "target": "big_rocks_cave",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 1
+    },
+    {
+     "type": "building",
+     "id": "big_rocks_cave",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "dwarves_mine_2",
+   "name": "Suppression des taxes douanières",
+   "item": "minecraft:iron_pickaxe",
+   "price": 99750,
+   "type": "building",
+   "target": "dwarves_mine",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 4
+    },
+    {
+     "type": "building",
+     "id": "dwarves_mine",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "grandma_garden_2",
+   "name": "Cookies faits avec amour",
+   "item": "minecraft:cookie",
+   "price": 237500,
+   "type": "building",
+   "target": "grandma_garden",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 6
+    },
+    {
+     "type": "building",
+     "id": "grandma_garden",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "witch_cabin_2",
+   "name": "Extracteur de bave de crapauds",
+   "item": "minecraft:cauldron",
+   "price": 522500,
+   "type": "building",
+   "target": "witch_cabin",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 9
+    },
+    {
+     "type": "building",
+     "id": "witch_cabin",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "buzzing_hive_2",
+   "name": "Vaccin anti-piqure",
+   "item": "minecraft:bee_nest",
+   "price": 1282500,
+   "type": "building",
+   "target": "buzzing_hive",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 12
+    },
+    {
+     "type": "building",
+     "id": "buzzing_hive",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "snowy_forest_2",
+   "name": "Diplôme de ski",
+   "item": "minecraft:spruce_sapling",
+   "price": 2375000,
+   "type": "building",
+   "target": "snowy_forest",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 15
+    },
+    {
+     "type": "building",
+     "id": "snowy_forest",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "frozen_iceberg_2",
+   "name": "Moto-neige high tech",
+   "item": "minecraft:packed_ice",
+   "price": 5985000,
+   "type": "building",
+   "target": "frozen_iceberg",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 17
+    },
+    {
+     "type": "building",
+     "id": "frozen_iceberg",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "pirate_port_2",
+   "name": "Cuirassé pirate",
+   "item": "minecraft:oak_boat",
+   "price": 12350000,
+   "type": "building",
+   "target": "pirate_port",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 20
+    },
+    {
+     "type": "building",
+     "id": "pirate_port",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "volcanic_island_2",
+   "name": "Usine à lave",
+   "item": "minecraft:magma_block",
+   "price": 29925000,
+   "type": "building",
+   "target": "volcanic_island",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 23
+    },
+    {
+     "type": "building",
+     "id": "volcanic_island",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "scorching_dunes_2",
+   "name": "Bottes d'astronaute",
+   "item": "minecraft:red_sand",
+   "price": 59850000,
+   "type": "building",
+   "target": "scorching_dunes",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 25
+    },
+    {
+     "type": "building",
+     "id": "scorching_dunes",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "mystical_forest_2",
+   "name": "Condensateur de malédiction",
+   "item": "minecraft:cherry_sapling",
+   "price": 114000000,
+   "type": "building",
+   "target": "mystical_forest",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 28
+    },
+    {
+     "type": "building",
+     "id": "mystical_forest",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "lush_jungle_2",
+   "name": "Découpeur de lianes laser",
+   "item": "minecraft:jungle_sapling",
+   "price": 218500000,
+   "type": "building",
+   "target": "lush_jungle",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 31
+    },
+    {
+     "type": "building",
+     "id": "lush_jungle",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "forgotten_temple_2",
+   "name": "Sort de détection omniscient",
+   "item": "minecraft:mossy_stone_bricks",
+   "price": 489250000,
+   "type": "building",
+   "target": "forgotten_temple",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 35
+    },
+    {
+     "type": "building",
+     "id": "forgotten_temple",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "millennial_crypt_2",
+   "name": "Culte du Namuu divin",
+   "item": "minecraft:skeleton_skull",
+   "price": 1045000000,
+   "type": "building",
+   "target": "millennial_crypt",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 40
+    },
+    {
+     "type": "building",
+     "id": "millennial_crypt",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "bottomless_pit_2",
+   "name": "Ascenseur supersonique",
+   "item": "minecraft:coal_block",
+   "price": 1805000000,
+   "type": "building",
+   "target": "bottomless_pit",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 44
+    },
+    {
+     "type": "building",
+     "id": "bottomless_pit",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "autonomous_mine_2",
+   "name": "Générateur électrique dernière génération",
+   "item": "minecraft:powered_rail",
+   "price": 3515000000,
+   "type": "building",
+   "target": "autonomous_mine",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 49
+    },
+    {
+     "type": "building",
+     "id": "autonomous_mine",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "golem_farm_2",
+   "name": "Palado-créateur autonome",
+   "item": "minecraft:carved_pumpkin",
+   "price": 7315000000,
+   "type": "building",
+   "target": "golem_farm",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 55
+    },
+    {
+     "type": "building",
+     "id": "golem_farm",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "radioactive_cave_2",
+   "name": "Drone de minage laser",
+   "item": "palamod:green_paladium_ingot",
+   "price": 14250000000,
+   "type": "building",
+   "target": "radioactive_cave",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 61
+    },
+    {
+     "type": "building",
+     "id": "radioactive_cave",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "biological_lab_2",
+   "name": "Microscope atomique",
+   "item": "minecraft:brewing_stand",
+   "price": 25650000000,
+   "type": "building",
+   "target": "biological_lab",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 66
+    },
+    {
+     "type": "building",
+     "id": "biological_lab",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "thermonuclear_submarine_2",
+   "name": "Hélice en endium",
+   "item": "minecraft:nautilus_shell",
+   "price": 48450000000,
+   "type": "building",
+   "target": "thermonuclear_submarine",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 71
+    },
+    {
+     "type": "building",
+     "id": "thermonuclear_submarine",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "kraken_pit_2",
+   "name": "Mine avauglante abyssale",
+   "item": "minecraft:ink_sac",
+   "price": 113050000000,
+   "type": "building",
+   "target": "kraken_pit",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 77
+    },
+    {
+     "type": "building",
+     "id": "kraken_pit",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "enigmatic_fissure_2",
+   "name": "Carte mystérieuse",
+   "item": "minecraft:ender_eye",
+   "price": 180500000000,
+   "type": "building",
+   "target": "enigmatic_fissure",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 83
+    },
+    {
+     "type": "building",
+     "id": "enigmatic_fissure",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "corrupted_lands_2",
+   "name": "Armure symbiotique",
+   "item": "minecraft:crying_obsidian",
+   "price": 351500000000,
+   "type": "building",
+   "target": "corrupted_lands",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 88
+    },
+    {
+     "type": "building",
+     "id": "corrupted_lands",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "matrix_glitch_2",
+   "name": "Mise à jour universelle",
+   "item": "minecraft:command_block",
+   "price": 655500000000,
+   "type": "building",
+   "target": "matrix_glitch",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 93
+    },
+    {
+     "type": "building",
+     "id": "matrix_glitch",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "quantum_computer_2",
+   "name": "Cité ordinateur",
+   "item": "minecraft:observer",
+   "price": 1425000000000,
+   "type": "building",
+   "target": "quantum_computer",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 99
+    },
+    {
+     "type": "building",
+     "id": "quantum_computer",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "particle_accelerator_2",
+   "name": "Cyclotron ionique",
+   "item": "minecraft:beacon",
+   "price": 2375000000000,
+   "type": "building",
+   "target": "particle_accelerator",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 105
+    },
+    {
+     "type": "building",
+     "id": "particle_accelerator",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "time_travel_machine_2",
+   "name": "Régulateur de paradoxe",
+   "item": "minecraft:clock",
+   "price": 4465000000000,
+   "type": "building",
+   "target": "time_travel_machine",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 110
+    },
+    {
+     "type": "building",
+     "id": "time_travel_machine",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "prehistoric_cave_2",
+   "name": "Armée de T-rex",
+   "item": "minecraft:bone",
+   "price": 8645000000000,
+   "type": "building",
+   "target": "prehistoric_cave",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 115
+    },
+    {
+     "type": "building",
+     "id": "prehistoric_cave",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "extraterrestrial_pyramid_2",
+   "name": "Portail vers Cliperion-4",
+   "item": "minecraft:end_stone",
+   "price": 16815000000000,
+   "type": "building",
+   "target": "extraterrestrial_pyramid",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 121
+    },
+    {
+     "type": "building",
+     "id": "extraterrestrial_pyramid",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "atlantis_2",
+   "name": "Couronne du roi des Atlantes",
+   "item": "minecraft:prismarine_bricks",
+   "price": 29450000000000,
+   "type": "building",
+   "target": "atlantis",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 127
+    },
+    {
+     "type": "building",
+     "id": "atlantis",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "great_ancients_pantheon_2",
+   "name": "Compréhension des aberrations cosmétiques",
+   "item": "minecraft:sculk_shrieker",
+   "price": 56050000000000,
+   "type": "building",
+   "target": "great_ancients_pantheon",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 132
+    },
+    {
+     "type": "building",
+     "id": "great_ancients_pantheon",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "earth_center_2",
+   "name": "Altérateur de pression gravitationnelle",
+   "item": "minecraft:lava_bucket",
+   "price": 104500000000000,
+   "type": "building",
+   "target": "earth_center",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 137
+    },
+    {
+     "type": "building",
+     "id": "earth_center",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "devil_lair_2",
+   "name": "Corrupteur diabolique",
+   "item": "minecraft:nether_bricks",
+   "price": 199500000000000,
+   "type": "building",
+   "target": "devil_lair",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 143
+    },
+    {
+     "type": "building",
+     "id": "devil_lair",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "eden_garden_2",
+   "name": "Bénédiction divine",
+   "item": "minecraft:apple",
+   "price": 370500000000000,
+   "type": "building",
+   "target": "eden_garden",
+   "modifier": 1.0,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 149
+    },
+    {
+     "type": "building",
+     "id": "eden_garden",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "abandoned_mine_many",
+   "name": "Production nombreuse - Mine abandonnée",
+   "item": "minecraft:wooden_pickaxe",
+   "price": 1250,
+   "type": "many",
+   "target": "abandoned_mine",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "abandoned_mine",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "big_rocks_cave_many",
+   "name": "Production nombreuse - Caverne aux gros cailloux",
+   "item": "minecraft:cobblestone",
+   "price": 12000,
+   "type": "many",
+   "target": "big_rocks_cave",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "big_rocks_cave",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "dwarves_mine_many",
+   "name": "Production nombreuse - Mine des nains",
+   "item": "minecraft:iron_pickaxe",
+   "price": 24000,
+   "type": "many",
+   "target": "dwarves_mine",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 2
+    },
+    {
+     "type": "building",
+     "id": "dwarves_mine",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "grandma_garden_many",
+   "name": "Production nombreuse - Jardin de mamie",
+   "item": "minecraft:cookie",
+   "price": 50000,
+   "type": "many",
+   "target": "grandma_garden",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 4
+    },
+    {
+     "type": "building",
+     "id": "grandma_garden",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "witch_cabin_many",
+   "name": "Production nombreuse - Cabane de sorcière",
+   "item": "minecraft:cauldron",
+   "price": 110000,
+   "type": "many",
+   "target": "witch_cabin",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 7
+    },
+    {
+     "type": "building",
+     "id": "witch_cabin",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "buzzing_hive_many",
+   "name": "Production nombreuse - Ruche bourdonnante",
+   "item": "minecraft:bee_nest",
+   "price": 270000,
+   "type": "many",
+   "target": "buzzing_hive",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 10
+    },
+    {
+     "type": "building",
+     "id": "buzzing_hive",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "snowy_forest_many",
+   "name": "Production nombreuse - Forêt enneigée",
+   "item": "minecraft:spruce_sapling",
+   "price": 500000,
+   "type": "many",
+   "target": "snowy_forest",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 13
+    },
+    {
+     "type": "building",
+     "id": "snowy_forest",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "frozen_iceberg_many",
+   "name": "Production nombreuse - Banquise gelée",
+   "item": "minecraft:packed_ice",
+   "price": 1260000,
+   "type": "many",
+   "target": "frozen_iceberg",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 15
+    },
+    {
+     "type": "building",
+     "id": "frozen_iceberg",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "pirate_port_many",
+   "name": "Production nombreuse - Port de pirate",
+   "item": "minecraft:oak_boat",
+   "price": 2600000,
+   "type": "many",
+   "target": "pirate_port",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 18
+    },
+    {
+     "type": "building",
+     "id": "pirate_port",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "volcanic_island_many",
+   "name": "Production nombreuse - Île volcanique",
+   "item": "minecraft:magma_block",
+   "price": 6300000,
+   "type": "many",
+   "target": "volcanic_island",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 21
+    },
+    {
+     "type": "building",
+     "id": "volcanic_island",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "scorching_dunes_many",
+   "name": "Production nombreuse - Dunes caniculaires",
+   "item": "minecraft:red_sand",
+   "price": 12600000,
+   "type": "many",
+   "target": "scorching_dunes",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 23
+    },
+    {
+     "type": "building",
+     "id": "scorching_dunes",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "mystical_forest_many",
+   "name": "Production nombreuse - Forêt mystique",
+   "item": "minecraft:cherry_sapling",
+   "price": 24000000,
+   "type": "many",
+   "target": "mystical_forest",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 26
+    },
+    {
+     "type": "building",
+     "id": "mystical_forest",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "lush_jungle_many",
+   "name": "Production nombreuse - Jungle luxuriante",
+   "item": "minecraft:jungle_sapling",
+   "price": 46000000,
+   "type": "many",
+   "target": "lush_jungle",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 29
+    },
+    {
+     "type": "building",
+     "id": "lush_jungle",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "forgotten_temple_many",
+   "name": "Production nombreuse - Temple oublié",
+   "item": "minecraft:mossy_stone_bricks",
+   "price": 103000000,
+   "type": "many",
+   "target": "forgotten_temple",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 33
+    },
+    {
+     "type": "building",
+     "id": "forgotten_temple",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "millennial_crypt_many",
+   "name": "Production nombreuse - Crypte millénaire",
+   "item": "minecraft:skeleton_skull",
+   "price": 220000000,
+   "type": "many",
+   "target": "millennial_crypt",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 38
+    },
+    {
+     "type": "building",
+     "id": "millennial_crypt",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "bottomless_pit_many",
+   "name": "Production nombreuse - Gouffre sans fond",
+   "item": "minecraft:coal_block",
+   "price": 380000000,
+   "type": "many",
+   "target": "bottomless_pit",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 42
+    },
+    {
+     "type": "building",
+     "id": "bottomless_pit",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "autonomous_mine_many",
+   "name": "Production nombreuse - Mine autonome",
+   "item": "minecraft:powered_rail",
+   "price": 740000000,
+   "type": "many",
+   "target": "autonomous_mine",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 47
+    },
+    {
+     "type": "building",
+     "id": "autonomous_mine",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "golem_farm_many",
+   "name": "Production nombreuse - Ferme à Golem",
+   "item": "minecraft:carved_pumpkin",
+   "price": 1540000000,
+   "type": "many",
+   "target": "golem_farm",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 53
+    },
+    {
+     "type": "building",
+     "id": "golem_farm",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "radioactive_cave_many",
+   "name": "Production nombreuse - Grotte radioactive",
+   "item": "palamod:green_paladium_ingot",
+   "price": 3000000000,
+   "type": "many",
+   "target": "radioactive_cave",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 59
+    },
+    {
+     "type": "building",
+     "id": "radioactive_cave",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "biological_lab_many",
+   "name": "Production nombreuse - Laboratoire technologique",
+   "item": "minecraft:brewing_stand",
+   "price": 5400000000,
+   "type": "many",
+   "target": "biological_lab",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 64
+    },
+    {
+     "type": "building",
+     "id": "biological_lab",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "thermonuclear_submarine_many",
+   "name": "Production nombreuse - Sous-marin thermonucléaire",
+   "item": "minecraft:nautilus_shell",
+   "price": 10200000000,
+   "type": "many",
+   "target": "thermonuclear_submarine",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 69
+    },
+    {
+     "type": "building",
+     "id": "thermonuclear_submarine",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "kraken_pit_many",
+   "name": "Production nombreuse - Fosse du Kraken",
+   "item": "minecraft:ink_sac",
+   "price": 23800000000,
+   "type": "many",
+   "target": "kraken_pit",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 75
+    },
+    {
+     "type": "building",
+     "id": "kraken_pit",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "enigmatic_fissure_many",
+   "name": "Production nombreuse - Faille énigmatique",
+   "item": "minecraft:ender_eye",
+   "price": 38000000000,
+   "type": "many",
+   "target": "enigmatic_fissure",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 81
+    },
+    {
+     "type": "building",
+     "id": "enigmatic_fissure",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "corrupted_lands_many",
+   "name": "Production nombreuse - Terres corrompues",
+   "item": "minecraft:crying_obsidian",
+   "price": 74000000000,
+   "type": "many",
+   "target": "corrupted_lands",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 86
+    },
+    {
+     "type": "building",
+     "id": "corrupted_lands",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "matrix_glitch_many",
+   "name": "Production nombreuse - Bug dans la matrice",
+   "item": "minecraft:command_block",
+   "price": 138000000000,
+   "type": "many",
+   "target": "matrix_glitch",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 91
+    },
+    {
+     "type": "building",
+     "id": "matrix_glitch",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "quantum_computer_many",
+   "name": "Production nombreuse - Ordinateur quantique",
+   "item": "minecraft:observer",
+   "price": 300000000000,
+   "type": "many",
+   "target": "quantum_computer",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 97
+    },
+    {
+     "type": "building",
+     "id": "quantum_computer",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "particle_accelerator_many",
+   "name": "Production nombreuse - Accélerateur à particules",
+   "item": "minecraft:beacon",
+   "price": 500000000000,
+   "type": "many",
+   "target": "particle_accelerator",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 103
+    },
+    {
+     "type": "building",
+     "id": "particle_accelerator",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "time_travel_machine_many",
+   "name": "Production nombreuse - Machine à voyager dans le temps",
+   "item": "minecraft:clock",
+   "price": 940000000000,
+   "type": "many",
+   "target": "time_travel_machine",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 108
+    },
+    {
+     "type": "building",
+     "id": "time_travel_machine",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "prehistoric_cave_many",
+   "name": "Production nombreuse - Caverne préhistorique",
+   "item": "minecraft:bone",
+   "price": 1820000000000,
+   "type": "many",
+   "target": "prehistoric_cave",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 113
+    },
+    {
+     "type": "building",
+     "id": "prehistoric_cave",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "extraterrestrial_pyramid_many",
+   "name": "Production nombreuse - Pyramide extraterrestre",
+   "item": "minecraft:end_stone",
+   "price": 3540000000000,
+   "type": "many",
+   "target": "extraterrestrial_pyramid",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 119
+    },
+    {
+     "type": "building",
+     "id": "extraterrestrial_pyramid",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "atlantis_many",
+   "name": "Production nombreuse - Atlantide",
+   "item": "minecraft:prismarine_bricks",
+   "price": 6200000000000,
+   "type": "many",
+   "target": "atlantis",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 125
+    },
+    {
+     "type": "building",
+     "id": "atlantis",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "great_ancients_pantheon_many",
+   "name": "Production nombreuse - Panthéon des Grands Anciens",
+   "item": "minecraft:sculk_shrieker",
+   "price": 11800000000000,
+   "type": "many",
+   "target": "great_ancients_pantheon",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 130
+    },
+    {
+     "type": "building",
+     "id": "great_ancients_pantheon",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "earth_center_many",
+   "name": "Production nombreuse - Centre de la terre",
+   "item": "minecraft:lava_bucket",
+   "price": 22000000000000,
+   "type": "many",
+   "target": "earth_center",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 135
+    },
+    {
+     "type": "building",
+     "id": "earth_center",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "devil_lair_many",
+   "name": "Production nombreuse - Antre du diable",
+   "item": "minecraft:nether_bricks",
+   "price": 42000000000000,
+   "type": "many",
+   "target": "devil_lair",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 141
+    },
+    {
+     "type": "building",
+     "id": "devil_lair",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "eden_garden_many",
+   "name": "Production nombreuse - Jardin d'Eden",
+   "item": "minecraft:apple",
+   "price": 78000000000000,
+   "type": "many",
+   "target": "eden_garden",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 147
+    },
+    {
+     "type": "building",
+     "id": "eden_garden",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "id": "big_rocks_cave_posterior",
+   "name": "Production postérieure - Caverne aux gros cailloux",
+   "item": "minecraft:cobblestone",
+   "price": 7875,
+   "type": "posterior",
+   "target": "big_rocks_cave",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "big_rocks_cave",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "dwarves_mine_posterior",
+   "name": "Production postérieure - Mine des nains",
+   "item": "minecraft:iron_pickaxe",
+   "price": 13500,
+   "type": "posterior",
+   "target": "dwarves_mine",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 3
+    },
+    {
+     "type": "building",
+     "id": "dwarves_mine",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "witch_cabin_posterior",
+   "name": "Production postérieure - Cabane de sorcière",
+   "item": "minecraft:cauldron",
+   "price": 61875,
+   "type": "posterior",
+   "target": "witch_cabin",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 8
+    },
+    {
+     "type": "building",
+     "id": "witch_cabin",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "buzzing_hive_posterior",
+   "name": "Production postérieure - Ruche bourdonnante",
+   "item": "minecraft:bee_nest",
+   "price": 151875,
+   "type": "posterior",
+   "target": "buzzing_hive",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 11
+    },
+    {
+     "type": "building",
+     "id": "buzzing_hive",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "frozen_iceberg_posterior",
+   "name": "Production postérieure - Banquise gelée",
+   "item": "minecraft:packed_ice",
+   "price": 708750,
+   "type": "posterior",
+   "target": "frozen_iceberg",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 16
+    },
+    {
+     "type": "building",
+     "id": "frozen_iceberg",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "volcanic_island_posterior",
+   "name": "Production postérieure - Île volcanique",
+   "item": "minecraft:magma_block",
+   "price": 3543750,
+   "type": "posterior",
+   "target": "volcanic_island",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 22
+    },
+    {
+     "type": "building",
+     "id": "volcanic_island",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "scorching_dunes_posterior",
+   "name": "Production postérieure - Dunes caniculaires",
+   "item": "minecraft:red_sand",
+   "price": 7087500,
+   "type": "posterior",
+   "target": "scorching_dunes",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 24
+    },
+    {
+     "type": "building",
+     "id": "scorching_dunes",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "lush_jungle_posterior",
+   "name": "Production postérieure - Jungle luxuriante",
+   "item": "minecraft:jungle_sapling",
+   "price": 25875000,
+   "type": "posterior",
+   "target": "lush_jungle",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 30
+    },
+    {
+     "type": "building",
+     "id": "lush_jungle",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "forgotten_temple_posterior",
+   "name": "Production postérieure - Temple oublié",
+   "item": "minecraft:mossy_stone_bricks",
+   "price": 57937500,
+   "type": "posterior",
+   "target": "forgotten_temple",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 35
+    },
+    {
+     "type": "building",
+     "id": "forgotten_temple",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "millennial_crypt_posterior",
+   "name": "Production postérieure - Crypte millénaire",
+   "item": "minecraft:skeleton_skull",
+   "price": 123750000,
+   "type": "posterior",
+   "target": "millennial_crypt",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 39
+    },
+    {
+     "type": "building",
+     "id": "millennial_crypt",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "bottomless_pit_posterior",
+   "name": "Production postérieure - Gouffre sans fond",
+   "item": "minecraft:coal_block",
+   "price": 213750000,
+   "type": "posterior",
+   "target": "bottomless_pit",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 43
+    },
+    {
+     "type": "building",
+     "id": "bottomless_pit",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "autonomous_mine_posterior",
+   "name": "Production postérieure - Mine autonome",
+   "item": "minecraft:powered_rail",
+   "price": 416250000,
+   "type": "posterior",
+   "target": "autonomous_mine",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 48
+    },
+    {
+     "type": "building",
+     "id": "autonomous_mine",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "golem_farm_posterior",
+   "name": "Production postérieure - Ferme à Golem",
+   "item": "minecraft:carved_pumpkin",
+   "price": 866250000,
+   "type": "posterior",
+   "target": "golem_farm",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 54
+    },
+    {
+     "type": "building",
+     "id": "golem_farm",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "biological_lab_posterior",
+   "name": "Production postérieure - Laboratoire biologique",
+   "item": "minecraft:brewing_stand",
+   "price": 3037500000,
+   "type": "posterior",
+   "target": "biological_lab",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 65
+    },
+    {
+     "type": "building",
+     "id": "biological_lab",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "thermonuclear_submarine_posterior",
+   "name": "Production postérieure - Sous-marin thermonucléaire",
+   "item": "minecraft:nautilus_shell",
+   "price": 5737500000,
+   "type": "posterior",
+   "target": "thermonuclear_submarine",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 70
+    },
+    {
+     "type": "building",
+     "id": "thermonuclear_submarine",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "kraken_pit_posterior",
+   "name": "Production postérieure - Fosse du Kraken",
+   "item": "minecraft:ink_sac",
+   "price": 13387500000,
+   "type": "posterior",
+   "target": "kraken_pit",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 76
+    },
+    {
+     "type": "building",
+     "id": "kraken_pit",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "corrupted_lands_posterior",
+   "name": "Production postérieure - Terres corrompues",
+   "item": "minecraft:crying_obsidian",
+   "price": 41625000000,
+   "type": "posterior",
+   "target": "corrupted_lands",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 87
+    },
+    {
+     "type": "building",
+     "id": "corrupted_lands",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "matrix_glitch_posterior",
+   "name": "Production postérieure - Bug dans la matrice",
+   "item": "minecraft:command_block",
+   "price": 77625000000,
+   "type": "posterior",
+   "target": "matrix_glitch",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 92
+    },
+    {
+     "type": "building",
+     "id": "matrix_glitch",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "quantum_computer_posterior",
+   "name": "Production postérieure - Ordinateur quantique",
+   "item": "minecraft:observer",
+   "price": 168750000000,
+   "type": "posterior",
+   "target": "quantum_computer",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 98
+    },
+    {
+     "type": "building",
+     "id": "quantum_computer",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "particle_accelerator_posterior",
+   "name": "Production postérieure - Accélerateur à particules",
+   "item": "minecraft:beacon",
+   "price": 281250000000,
+   "type": "posterior",
+   "target": "particle_accelerator",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 104
+    },
+    {
+     "type": "building",
+     "id": "particle_accelerator",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "time_travel_machine_posterior",
+   "name": "Production postérieure - Machine à voyager dans le temps",
+   "item": "minecraft:clock",
+   "price": 528750000000,
+   "type": "posterior",
+   "target": "time_travel_machine",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 109
+    },
+    {
+     "type": "building",
+     "id": "time_travel_machine",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "prehistoric_cave_posterior",
+   "name": "Production postérieure - Caverne préhistorique",
+   "item": "minecraft:bone",
+   "price": 1023750000000,
+   "type": "posterior",
+   "target": "prehistoric_cave",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 114
+    },
+    {
+     "type": "building",
+     "id": "prehistoric_cave",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "extraterrestrial_pyramid_posterior",
+   "name": "Production postérieure - Pyramide extraterrestre",
+   "item": "minecraft:end_stone",
+   "price": 1991250000000,
+   "type": "posterior",
+   "target": "extraterrestrial_pyramid",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 120
+    },
+    {
+     "type": "building",
+     "id": "extraterrestrial_pyramid",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "great_ancients_pantheon_posterior",
+   "name": "Production postérieure - Panthéon des Grands Anciens",
+   "item": "minecraft:sculk_shrieker",
+   "price": 6637500000000,
+   "type": "posterior",
+   "target": "great_ancients_pantheon",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 131
+    },
+    {
+     "type": "building",
+     "id": "great_ancients_pantheon",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "devil_lair_posterior",
+   "name": "Production postérieure - Antre du diable",
+   "item": "minecraft:nether_bricks",
+   "price": 23625000000000,
+   "type": "posterior",
+   "target": "devil_lair",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 142
+    },
+    {
+     "type": "building",
+     "id": "devil_lair",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "eden_garden_posterior",
+   "name": "Production postérieure - Jardin d'Eden",
+   "item": "minecraft:apple",
+   "price": 43875000000000,
+   "type": "posterior",
+   "target": "eden_garden",
+   "modifier": 0.01,
+   "conditions": [
+    {
+     "type": "time",
+     "value": 148
+    },
+    {
+     "type": "building",
+     "id": "eden_garden",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "id": "category_miner_1",
+   "name": "Pioche en Paladium",
+   "item": "palamod:paladium_pickaxe",
+   "price": 7175,
+   "type": "category",
+   "target": "miner",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "dwarves_mine",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_farmer_1",
+   "name": "Seedplanter en Paladium",
+   "item": "palamod:paladium_seedplanter",
+   "price": 1428750,
+   "type": "category",
+   "target": "farmer",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "volcanic_island",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_hunter_1",
+   "name": "Epée en Paladium",
+   "item": "palamod:paladium_sword",
+   "price": 31400000,
+   "type": "category",
+   "target": "hunter",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "forgotten_temple",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_alchemist_1",
+   "name": "Portail en Paladium",
+   "item": "minecraft:obsidian",
+   "price": 198000,
+   "type": "category",
+   "target": "alchemist",
+   "modifier": 0.1,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "snowy_forest",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_miner_2",
+   "name": "Pioche en Endium",
+   "item": "palamod:endium_pickaxe",
+   "price": 22000000000000,
+   "type": "category",
+   "target": "miner",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "abandoned_mine",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "big_rocks_cave",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "dwarves_mine",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "bottomless_pit",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "autonomous_mine",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "radioactive_cave",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "earth_center",
+     "count": 1
+    },
+    {
+     "type": "upgrade",
+     "id": "category_miner_1"
+    }
+   ]
+  },
+  {
+   "id": "category_farmer_2",
+   "name": "Seedplanter en Endium",
+   "item": "palamod:endium_seedplanter",
+   "price": 78000000000000,
+   "type": "category",
+   "target": "farmer",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "grandma_garden",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "volcanic_island",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "lush_jungle",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "corrupted_lands",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "eden_garden",
+     "count": 1
+    },
+    {
+     "type": "upgrade",
+     "id": "category_farmer_1"
+    }
+   ]
+  },
+  {
+   "id": "category_hunter_2",
+   "name": "Epée en Endium",
+   "item": "palamod:endium_sword",
+   "price": 11800000000000,
+   "type": "category",
+   "target": "hunter",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "scorching_dunes",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "mystical_forest",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "forgotten_temple",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "millennial_crypt",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "kraken_pit",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "great_ancients_pantheon",
+     "count": 1
+    },
+    {
+     "type": "upgrade",
+     "id": "category_hunter_1"
+    }
+   ]
+  },
+  {
+   "id": "category_alchemist_2",
+   "name": "Portail en Endium",
+   "item": "minecraft:crying_obsidian",
+   "price": 42000000000000,
+   "type": "category",
+   "target": "alchemist",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "witch_cabin",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "buzzing_hive",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "snowy_forest",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "enigmatic_fissure",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "time_travel_machine",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "devil_lair",
+     "count": 1
+    },
+    {
+     "type": "upgrade",
+     "id": "category_alchemist_1"
+    }
+   ]
+  },
+  {
+   "id": "category_humanoid",
+   "name": "Technique de persuasion",
+   "item": "minecraft:emerald",
+   "price": 2948625,
+   "type": "category",
+   "target": "humanoid",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "dwarves_mine",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "pirate_port",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_frozen",
+   "name": "Manteau épais",
+   "item": "minecraft:leather_chestplate",
+   "price": 880000,
+   "type": "category",
+   "target": "frozen",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "snowy_forest",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "frozen_iceberg",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_on_water",
+   "name": "Potion contre le mal de mer",
+   "item": "minecraft:potion",
+   "price": 4342500,
+   "type": "category",
+   "target": "on_water",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "frozen_iceberg",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "pirate_port",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_forest",
+   "name": "Lame de hache en Endium",
+   "item": "palamod:endium_axe",
+   "price": 27562500,
+   "type": "category",
+   "target": "forest",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "snowy_forest",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "mystical_forest",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "lush_jungle",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_robot",
+   "name": "Coeur électrostatique",
+   "item": "minecraft:heart_of_the_sea",
+   "price": 1540000000,
+   "type": "category",
+   "target": "robot",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "autonomous_mine",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "golem_farm",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_strange_world",
+   "name": "Boussole dimensionnelle",
+   "item": "minecraft:compass",
+   "price": 138000000000,
+   "type": "category",
+   "target": "strange_world",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "enigmatic_fissure",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "corrupted_lands",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "matrix_glitch",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_radioactive",
+   "name": "Combinaison anti-radiation",
+   "item": "minecraft:iron_chestplate",
+   "price": 10200000000,
+   "type": "category",
+   "target": "radioactive",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "radioactive_cave",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "thermonuclear_submarine",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_garden",
+   "name": "Engrais prodigieux",
+   "item": "minecraft:bone_meal",
+   "price": 78000000000000,
+   "type": "category",
+   "target": "garden",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "grandma_garden",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "eden_garden",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_hot",
+   "name": "Piscine en plastique",
+   "item": "minecraft:water_bucket",
+   "price": 42000000000000,
+   "type": "category",
+   "target": "hot",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "volcanic_island",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "scorching_dunes",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "earth_center",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "devil_lair",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_old_civilization",
+   "name": "Dictionnaire des langues anciennes",
+   "item": "minecraft:writable_book",
+   "price": 6200000000000,
+   "type": "category",
+   "target": "old_civilization",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "forgotten_temple",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "millennial_crypt",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "extraterrestrial_pyramid",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "atlantis",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_hostile_creature",
+   "name": "Epée de capture",
+   "item": "palamod:capture_sword",
+   "price": 1820000000000,
+   "type": "category",
+   "target": "hostile_creature",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "buzzing_hive",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "kraken_pit",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "prehistoric_cave",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_technologic",
+   "name": "Engrenages intelligents",
+   "item": "minecraft:repeater",
+   "price": 940000000000,
+   "type": "category",
+   "target": "technologic",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "autonomous_mine",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "biological_lab",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "particle_accelerator",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "time_travel_machine",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_deep",
+   "name": "Projecteur lumineux laser",
+   "item": "minecraft:sea_lantern",
+   "price": 22000000000000,
+   "type": "category",
+   "target": "deep",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "bottomless_pit",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "kraken_pit",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "earth_center",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_futuristic",
+   "name": "Analyseur synthétique autonome",
+   "item": "minecraft:comparator",
+   "price": 940000000000,
+   "type": "category",
+   "target": "futuristic",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "quantum_computer",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "particle_accelerator",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "time_travel_machine",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_computer",
+   "name": "Supercalculateur autonome",
+   "item": "minecraft:redstone_lamp",
+   "price": 300000000000,
+   "type": "category",
+   "target": "computer",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "matrix_glitch",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "quantum_computer",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_under_water",
+   "name": "Bombonne d'oxygène en Endium",
+   "item": "minecraft:turtle_helmet",
+   "price": 6200000000000,
+   "type": "category",
+   "target": "under_water",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "thermonuclear_submarine",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "kraken_pit",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "atlantis",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "category_old_god",
+   "name": "Codex Divinis",
+   "item": "minecraft:enchanted_book",
+   "price": 78000000000000,
+   "type": "category",
+   "target": "old_god",
+   "modifier": 0.5,
+   "conditions": [
+    {
+     "type": "building",
+     "id": "great_ancients_pantheon",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "devil_lair",
+     "count": 1
+    },
+    {
+     "type": "building",
+     "id": "eden_garden",
+     "count": 1
+    }
+   ]
+  }
+ ],
+ "shop": [
+  {
+   "id": "daily_iron",
+   "type": "daily",
+   "item": "minecraft:iron_ingot",
+   "count": 8,
+   "price": 750,
+   "quantity": 3,
+   "weight": 10,
+   "requirement": {
+    "abandoned_mine": 1
+   },
+   "forbidden": {
+    "volcanic_island": 1
+   }
+  },
+  {
+   "id": "daily_bread",
+   "type": "daily",
+   "item": "minecraft:bread",
+   "count": 16,
+   "price": 500,
+   "quantity": 3,
+   "weight": 10,
+   "requirement": {
+    "abandoned_mine": 1
+   },
+   "forbidden": {
+    "volcanic_island": 1
+   }
+  },
+  {
+   "id": "daily_amethyst",
+   "type": "daily",
+   "item": "palamod:amethyst_ingot",
+   "count": 4,
+   "price": 2100,
+   "quantity": 3,
+   "weight": 10,
+   "requirement": {
+    "big_rocks_cave": 1
+   },
+   "forbidden": {
+    "lush_jungle": 1
+   }
+  },
+  {
+   "id": "daily_gold",
+   "type": "daily",
+   "item": "minecraft:gold_ingot",
+   "count": 4,
+   "price": 3000,
+   "quantity": 3,
+   "weight": 8,
+   "requirement": {
+    "dwarves_mine": 1
+   },
+   "forbidden": {
+    "lush_jungle": 1
+   }
+  },
+  {
+   "id": "daily_titane",
+   "type": "daily",
+   "item": "palamod:titane_ingot",
+   "count": 4,
+   "price": 7500,
+   "quantity": 3,
+   "weight": 10,
+   "requirement": {
+    "grandma_garden": 1
+   },
+   "forbidden": {
+    "autonomous_mine": 1
+   }
+  },
+  {
+   "id": "daily_xp",
+   "type": "daily",
+   "item": "minecraft:experience_bottle",
+   "count": 8,
+   "price": 11000,
+   "quantity": 3,
+   "weight": 8,
+   "requirement": {
+    "witch_cabin": 1
+   }
+  },
+  {
+   "id": "daily_diamond",
+   "type": "daily",
+   "item": "minecraft:diamond",
+   "count": 2,
+   "price": 33750,
+   "quantity": 2,
+   "weight": 6,
+   "requirement": {
+    "buzzing_hive": 1
+   }
+  },
+  {
+   "id": "daily_paladium",
+   "type": "daily",
+   "item": "palamod:paladium_ingot",
+   "count": 4,
+   "price": 62500,
+   "quantity": 3,
+   "weight": 10,
+   "requirement": {
+    "snowy_forest": 1
+   }
+  },
+  {
+   "id": "daily_golden_apple",
+   "type": "daily",
+   "item": "minecraft:golden_apple",
+   "count": 1,
+   "price": 195000,
+   "quantity": 2,
+   "weight": 6,
+   "requirement": {
+    "pirate_port": 1
+   }
+  },
+  {
+   "id": "daily_green_paladium",
+   "type": "daily",
+   "item": "palamod:green_paladium_ingot",
+   "count": 2,
+   "price": 3450000,
+   "quantity": 2,
+   "weight": 6,
+   "requirement": {
+    "lush_jungle": 1
+   }
+  },
+  {
+   "id": "daily_endium_fragment",
+   "type": "daily",
+   "item": "palamod:endium_fragment",
+   "count": 1,
+   "price": 150000000,
+   "quantity": 2,
+   "weight": 4,
+   "requirement": {
+    "radioactive_cave": 1
+   }
+  },
+  {
+   "id": "weekly_iron",
+   "type": "weekly",
+   "item": "minecraft:iron_ingot",
+   "count": 32,
+   "price": 1875,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "abandoned_mine": 1
+   },
+   "forbidden": {
+    "scorching_dunes": 1
+   }
+  },
+  {
+   "id": "weekly_amethyst",
+   "type": "weekly",
+   "item": "palamod:amethyst_ingot",
+   "count": 16,
+   "price": 2500,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "abandoned_mine": 1
+   },
+   "forbidden": {
+    "millennial_crypt": 1
+   }
+  },
+  {
+   "id": "weekly_titane",
+   "type": "weekly",
+   "item": "palamod:titane_ingot",
+   "count": 16,
+   "price": 9000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "dwarves_mine": 1
+   },
+   "forbidden": {
+    "radioactive_cave": 1
+   }
+  },
+  {
+   "id": "weekly_xp",
+   "type": "weekly",
+   "item": "minecraft:experience_bottle",
+   "count": 32,
+   "price": 18750,
+   "quantity": 2,
+   "weight": 8,
+   "requirement": {
+    "grandma_garden": 1
+   }
+  },
+  {
+   "id": "weekly_talikus_key",
+   "type": "weekly",
+   "item": "palamod:talikus_key",
+   "count": 1,
+   "price": 27500,
+   "quantity": 2,
+   "weight": 6,
+   "requirement": {
+    "witch_cabin": 1
+   }
+  },
+  {
+   "id": "weekly_paladium",
+   "type": "weekly",
+   "item": "palamod:paladium_ingot",
+   "count": 16,
+   "price": 101250,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "buzzing_hive": 1
+   }
+  },
+  {
+   "id": "weekly_golden_apple",
+   "type": "weekly",
+   "item": "minecraft:golden_apple",
+   "count": 4,
+   "price": 125000,
+   "quantity": 2,
+   "weight": 6,
+   "requirement": {
+    "snowy_forest": 1
+   }
+  },
+  {
+   "id": "weekly_diamond",
+   "type": "weekly",
+   "item": "minecraft:diamond",
+   "count": 8,
+   "price": 472500,
+   "quantity": 2,
+   "weight": 8,
+   "requirement": {
+    "frozen_iceberg": 1
+   }
+  },
+  {
+   "id": "weekly_nimbria_key",
+   "type": "weekly",
+   "item": "palamod:nimbria_key",
+   "count": 1,
+   "price": 650000,
+   "quantity": 2,
+   "weight": 6,
+   "requirement": {
+    "pirate_port": 1
+   }
+  },
+  {
+   "id": "weekly_paladium_block",
+   "type": "weekly",
+   "item": "palamod:paladium_block",
+   "count": 2,
+   "price": 3150000,
+   "quantity": 2,
+   "weight": 8,
+   "requirement": {
+    "scorching_dunes": 1
+   }
+  },
+  {
+   "id": "weekly_vitalys_key",
+   "type": "weekly",
+   "item": "palamod:vitalys_key",
+   "count": 1,
+   "price": 11500000,
+   "quantity": 2,
+   "weight": 6,
+   "requirement": {
+    "lush_jungle": 1
+   }
+  },
+  {
+   "id": "weekly_green_paladium",
+   "type": "weekly",
+   "item": "palamod:green_paladium_ingot",
+   "count": 8,
+   "price": 55000000,
+   "quantity": 2,
+   "weight": 8,
+   "requirement": {
+    "millennial_crypt": 1
+   }
+  },
+  {
+   "id": "weekly_manelios_key",
+   "type": "weekly",
+   "item": "palamod:manelios_key",
+   "count": 1,
+   "price": 185000000,
+   "quantity": 2,
+   "weight": 6,
+   "requirement": {
+    "autonomous_mine": 1
+   }
+  },
+  {
+   "id": "weekly_endium_fragment",
+   "type": "weekly",
+   "item": "palamod:endium_fragment",
+   "count": 3,
+   "price": 2550000000,
+   "quantity": 2,
+   "weight": 6,
+   "requirement": {
+    "thermonuclear_submarine": 1
+   }
+  },
+  {
+   "id": "weekly_notch_apple",
+   "type": "weekly",
+   "item": "minecraft:enchanted_golden_apple",
+   "count": 1,
+   "price": 9500000000,
+   "quantity": 1,
+   "weight": 4,
+   "requirement": {
+    "enigmatic_fissure": 1
+   }
+  },
+  {
+   "id": "weekly_endium_nugget",
+   "type": "weekly",
+   "item": "palamod:endium_nugget",
+   "count": 1,
+   "price": 34500000000,
+   "quantity": 1,
+   "weight": 4,
+   "requirement": {
+    "matrix_glitch": 1
+   }
+  },
+  {
+   "id": "weekly_endium_ingot",
+   "type": "weekly",
+   "item": "palamod:endium_ingot",
+   "count": 1,
+   "price": 1550000000000,
+   "quantity": 1,
+   "weight": 2,
+   "requirement": {
+    "atlantis": 1
+   }
+  },
+  {
+   "id": "jobs_miner_1",
+   "type": "jobs",
+   "item": "palamod:job_bottle_miner",
+   "count": 1,
+   "price": 6000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "dwarves_mine": 1
+   },
+   "forbidden": {
+    "scorching_dunes": 1
+   }
+  },
+  {
+   "id": "jobs_miner_3",
+   "type": "jobs",
+   "item": "palamod:job_bottle_miner",
+   "count": 3,
+   "price": 3150000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "scorching_dunes": 1
+   },
+   "forbidden": {
+    "thermonuclear_submarine": 1
+   }
+  },
+  {
+   "id": "jobs_miner_5",
+   "type": "jobs",
+   "item": "palamod:job_bottle_miner",
+   "count": 5,
+   "price": 2550000000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "thermonuclear_submarine": 1
+   }
+  },
+  {
+   "id": "jobs_farmer_1",
+   "type": "jobs",
+   "item": "palamod:job_bottle_farmer",
+   "count": 1,
+   "price": 6000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "dwarves_mine": 1
+   },
+   "forbidden": {
+    "scorching_dunes": 1
+   }
+  },
+  {
+   "id": "jobs_farmer_3",
+   "type": "jobs",
+   "item": "palamod:job_bottle_farmer",
+   "count": 3,
+   "price": 3150000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "scorching_dunes": 1
+   },
+   "forbidden": {
+    "thermonuclear_submarine": 1
+   }
+  },
+  {
+   "id": "jobs_farmer_5",
+   "type": "jobs",
+   "item": "palamod:job_bottle_farmer",
+   "count": 5,
+   "price": 2550000000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "thermonuclear_submarine": 1
+   }
+  },
+  {
+   "id": "jobs_hunter_1",
+   "type": "jobs",
+   "item": "palamod:job_bottle_hunter",
+   "count": 1,
+   "price": 6000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "dwarves_mine": 1
+   },
+   "forbidden": {
+    "scorching_dunes": 1
+   }
+  },
+  {
+   "id": "jobs_hunter_3",
+   "type": "jobs",
+   "item": "palamod:job_bottle_hunter",
+   "count": 3,
+   "price": 3150000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "scorching_dunes": 1
+   },
+   "forbidden": {
+    "thermonuclear_submarine": 1
+   }
+  },
+  {
+   "id": "jobs_hunter_5",
+   "type": "jobs",
+   "item": "palamod:job_bottle_hunter",
+   "count": 5,
+   "price": 2550000000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "thermonuclear_submarine": 1
+   }
+  },
+  {
+   "id": "jobs_alchemist_1",
+   "type": "jobs",
+   "item": "palamod:job_bottle_alchemist",
+   "count": 1,
+   "price": 6000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "dwarves_mine": 1
+   },
+   "forbidden": {
+    "scorching_dunes": 1
+   }
+  },
+  {
+   "id": "jobs_alchemist_3",
+   "type": "jobs",
+   "item": "palamod:job_bottle_alchemist",
+   "count": 3,
+   "price": 3150000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "scorching_dunes": 1
+   },
+   "forbidden": {
+    "thermonuclear_submarine": 1
+   }
+  },
+  {
+   "id": "jobs_alchemist_5",
+   "type": "jobs",
+   "item": "palamod:job_bottle_alchemist",
+   "count": 5,
+   "price": 2550000000,
+   "quantity": 2,
+   "weight": 10,
+   "requirement": {
+    "thermonuclear_submarine": 1
+   }
+  }
+ ]
+}
