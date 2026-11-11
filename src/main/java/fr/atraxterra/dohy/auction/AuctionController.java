@@ -79,8 +79,8 @@ public final class AuctionController extends MenuController {
     private static Card card(ServerPlayer player, AuctionHouse.Listing listing, long balance) {
         ItemStack icon = listing.icon();
         int left = AuctionHouse.remaining(player, listing);
-        // Le nom se traduit chez le client : le nombre s'ajoute au composant, pas au texte.
-        String title = MenuView.text(name(listing));
+        // Le nom seul : un titre long est coupe, et le lot avec. Le lot est dit a cote du prix.
+        String title = MenuView.text(new ItemStack(listing.item()).getHoverName());
         int percent = (int) Math.round((listing.factor() - 1.0d) * 100.0d);
         boolean deal = percent <= -8;
         boolean greedy = percent >= 25;
@@ -96,7 +96,8 @@ public final class AuctionController extends MenuController {
         if (left > 0 && listing.price() > balance) {
             tooltip.add("Il te manque " + MoneyFormat.exact(listing.price() - balance));
         }
-        Card card = Card.of(icon, title, List.of(MoneyFormat.exact(listing.price()),
+        Card card = Card.of(icon, title, List.of(
+                        MoneyFormat.exact(listing.price()) + (listing.lot() > 1 ? " les " + listing.lot() : ""),
                         listing.seller() + " · " + (left > 0 ? left + " en stock" : "vendu")))
                 .accent(deal ? DEAL : greedy ? GREEDY : FAIR)
                 .badge(left <= 0 ? "VENDU" : deal ? "-" + (-percent) + " %" : "")
@@ -110,7 +111,7 @@ public final class AuctionController extends MenuController {
         return card.action("buy:" + listing.index() + "|acheter");
     }
 
-    /** « Fragment de rune commune x4 ». */
+    /** « Fragment de rune commune x4 », pour le tchat : le nom se traduit chez le client. */
     private static Component name(AuctionHouse.Listing listing) {
         Component name = new ItemStack(listing.item()).getHoverName();
         return listing.lot() > 1 ? Component.empty().append(name).append(" x" + listing.lot()) : name;

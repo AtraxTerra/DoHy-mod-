@@ -2884,6 +2884,5 @@ remplace tout de suite contre de l'argent.
 L'écran (rayons, cartes, pastilles de remise, bulle, défilement) ; les annonces identiques à
 deux calculs de suite ; un achat (argent débité, objet dans l'inventaire, stock à zéro, carte
 « vendu ») ; les refus (plus de stock, pas assez d'argent, annonce inexistante) ; les quatre
-renouvellements à 250 k, 500 k, 1 M et 2 M, puis le refus du cinquième ; la carte du menu.
-Non vérifié : le changement d'annonces au passage d'un jour réel, et `/market` tapé à la main
-(la commande ouvre le même écran que la carte).
+renouvellements à 250 k, 500 k, 1 M et 2 M, puis le refus du cinquième ; la carte du menu et
+la commande `/market`. Non vérifié : le changement d'annonces au passage d'un jour réel.
