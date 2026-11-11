@@ -56,12 +56,14 @@ public record ClickerView(double points, double rps, double click, int clicks, I
     /**
      * Une amelioration a acheter.
      *
+     * @param badge      deux lettres au coin de l'icone, qui disent son type : plusieurs ameliorations
+     *                   d'un batiment portent son icone
      * @param ready      toutes ses conditions sont remplies
      * @param effect     ce qu'elle fait
      * @param conditions ses conditions ; le premier caractere dit si elle est remplie ({@code +}) ou non ({@code -})
      */
-    public record Upgrade(String id, String name, ItemStack icon, double price, boolean ready, String effect,
-                          List<String> conditions) {
+    public record Upgrade(String id, String name, ItemStack icon, String badge, double price, boolean ready,
+                          String effect, List<String> conditions) {
     }
 
     /** Une offre du Clic Shop. {@code left} : les achats qui restent dans cette rotation. */
@@ -105,6 +107,7 @@ public record ClickerView(double points, double rps, double click, int clicks, I
                     buffer.writeUtf(upgrade.id());
                     buffer.writeUtf(upgrade.name());
                     ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, upgrade.icon());
+                    buffer.writeUtf(upgrade.badge());
                     buffer.writeDouble(upgrade.price());
                     buffer.writeBoolean(upgrade.ready());
                     buffer.writeUtf(upgrade.effect());
@@ -159,8 +162,8 @@ public record ClickerView(double points, double rps, double click, int clicks, I
                 List<Upgrade> upgrades = new ArrayList<>(upgradeSize);
                 for (int index = 0; index < upgradeSize; index++) {
                     upgrades.add(new Upgrade(buffer.readUtf(), buffer.readUtf(),
-                            ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer), buffer.readDouble(), buffer.readBoolean(),
-                            buffer.readUtf(), readStrings(buffer)));
+                            ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer), buffer.readUtf(), buffer.readDouble(),
+                            buffer.readBoolean(), buffer.readUtf(), readStrings(buffer)));
                 }
                 int shelfCount = buffer.readVarInt();
                 List<Shelf> shop = new ArrayList<>(shelfCount);

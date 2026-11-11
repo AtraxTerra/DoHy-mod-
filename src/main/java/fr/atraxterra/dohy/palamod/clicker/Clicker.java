@@ -431,7 +431,7 @@ public final class Clicker {
                 conditions.add((met ? "+" : "-") + describe(condition));
             }
             upgrades.add(new ClickerView.Upgrade(upgrade.id(), upgrade.name(), ClickerConfig.stack(upgrade.item(), 1),
-                    upgrade.price(), ready, effect(upgrade), conditions));
+                    badge(upgrade), upgrade.price(), ready, effect(upgrade), conditions));
         }
         upgrades.sort(Comparator.comparing((ClickerView.Upgrade upgrade) -> !upgrade.ready())
                 .thenComparingDouble(ClickerView.Upgrade::price));
@@ -502,6 +502,19 @@ public final class Clicker {
                 Upgrade upgrade = ClickerConfig.upgrade(condition.id());
                 yield "Posséder l'amélioration " + (upgrade == null ? condition.id() : upgrade.name());
             }
+        };
+    }
+
+    /** Le type en deux lettres, au coin de l'icone. */
+    private static String badge(Upgrade upgrade) {
+        return switch (upgrade.type()) {
+            case CLICK -> "x2";
+            case GLOBAL -> "G";
+            case TERRAIN -> "T";
+            case BUILDING -> upgrade.id().endsWith("_2") ? "II" : "I";
+            case MANY -> "N";
+            case POSTERIOR -> "P";
+            case CATEGORY -> "C";
         };
     }
 

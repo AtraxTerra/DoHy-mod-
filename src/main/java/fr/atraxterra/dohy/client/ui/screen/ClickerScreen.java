@@ -53,12 +53,12 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
     private static final int CELL = 20;
     private static final int UPGRADE_COLUMNS = 10;
     private static final int UPGRADES_Y = 24;
-    private static final int UPGRADE_ROWS = 3;
+    private static final int UPGRADE_ROWS = 4;
     private static final int UPGRADE_ROWS_OPEN = 11;
 
     private static final int SHELF_W = 64;
     private static final int SHELF_GAP = 4;
-    private static final int SHELF_Y = 116;
+    private static final int SHELF_Y = 138;
     private static final int AWNING_H = 42;
     private static final int SLOT = 15;
 
@@ -75,8 +75,6 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
     private static final Identifier NAMUU = texture("namuu");
     private static final Identifier SLOT_TEXTURE = texture("slot");
     private static final Identifier UNKNOWN = texture("unknown");
-    private static final Identifier ARROW_UP = texture("arrow_up");
-    private static final Identifier ARROW_DOWN = texture("arrow_down");
 
     private static final int GOLD = 0xFFF2B33A;
     private static final int AFFORD = 0xFF6FE08A;
@@ -350,19 +348,23 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
 
         // Le bandeau du bas : ce que vaut un clic, et le jour de la saison.
         g.texture(BANNER, LEFT_X, BOTTOM - 44, COLUMN_W, 44, 509, 179);
-        g.centered(Ui.WIDE, "CLIQUE POUR NOURRIR LES NAMUUS", FOOD_X, BOTTOM - 37, 3.6f, Ui.TEXT);
-        g.centered(Ui.BOLD, "+" + ClickerFormat.compact(view.click()) + " PAR CLIC", FOOD_X, BOTTOM - 29, 6.5f,
+        // La piece du bandeau occupe son haut : le texte passe dessous.
+        g.centered(Ui.BOLD, "+" + ClickerFormat.compact(view.click()) + " PAR CLIC", FOOD_X, BOTTOM - 30, 6.5f,
                 Ui.WHITE);
-        g.centered(Ui.BODY, "Jour " + view.day() + " du clicker", FOOD_X, BOTTOM - 17, 4.2f, 0xFFD9C9B8);
+        g.centered(Ui.WIDE, "CLIQUE POUR NOURRIR LES NAMUUS", FOOD_X, BOTTOM - 20, 3.4f, Ui.TEXT);
+        g.centered(Ui.BODY, "Jour " + view.day() + " du clicker", FOOD_X, BOTTOM - 12, 4.0f, 0xFFD9C9B8);
     }
 
     private void drawUpgrades(UiGraphics g, double mouseX, double mouseY, double points) {
         g.text(Ui.WIDE, "AMÉLIORATIONS", CENTER_X + 6, TOP + 6, 6, Ui.WHITE);
         g.right(Ui.BODY, view.owned() + " / " + view.upgradeCount(), CENTER_X + CENTER_W - 18, TOP + 7, 4.6f,
                 Ui.MUTED);
-        boolean arrow = onArrow(mouseX, mouseY);
-        g.texture(upgradesOpen ? ARROW_UP : ARROW_DOWN, CENTER_X + CENTER_W - 13, TOP + 4, 10, 10, 33, 33,
-                arrow ? 0xFFFFFFFF : 0xFFB8B7C0);
+        // La fleche qui deplie les ameliorations : un chevron, vers le bas puis vers le haut.
+        int chevron = onArrow(mouseX, mouseY) ? Ui.WHITE : 0xFFB8B7C0;
+        for (int step = 0; step < 4; step++) {
+            int row = upgradesOpen ? 3 - step : step;
+            g.rect(CENTER_X + CENTER_W - 12 + step, TOP + 7 + row, 8 - 2 * step, 1, chevron);
+        }
 
         int bottom = upgradesBottom();
         List<ClickerView.Upgrade> upgrades = view.upgrades();
@@ -386,6 +388,14 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
             g.item(upgrade.icon(), x + 3, y + 3, 14, false);
         }
         g.raw().nextStratum();
+        // Le type, au coin : plusieurs ameliorations d'un batiment portent son icone.
+        for (int index = 0; index < upgrades.size(); index++) {
+            int x = CENTER_X + 2 + (index % UPGRADE_COLUMNS) * CELL;
+            int y = Math.round(UPGRADES_Y + (index / UPGRADE_COLUMNS) * CELL - upgradeScroll);
+            if (y + CELL >= UPGRADES_Y && y <= bottom) {
+                g.right(Ui.PIXEL, upgrades.get(index).badge(), x + CELL - 2.5f, y + CELL - 7.5f, 4.0f, GOLD);
+            }
+        }
         // Une amelioration dont les conditions ne sont pas remplies est voilee.
         for (int index = 0; index < upgrades.size(); index++) {
             if (upgrades.get(index).ready()) {
