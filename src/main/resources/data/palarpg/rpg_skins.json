@@ -1,0 +1,1396 @@
+{
+  "_comment": "GENERE par tools/rpg_entities.py : le modele de chaque monstre et boss de donjon, ses couleurs et ses sons. Les modeles viennent de config/rpgentities de Paladium.",
+  "mobs": {
+    "talikus": {
+      "melee": "talikus_melee",
+      "ranged": "talikus_distance_bow",
+      "mage": "talikus_mage",
+      "flying": "talikus_flying",
+      "assassin": "talikus_assassin",
+      "tank": "talikus_tank"
+    },
+    "nimbria": {
+      "melee": "nimbria_melee",
+      "ranged": "nimbria_distance",
+      "mage": "nimbria_mage",
+      "flying": "nimbria_flying",
+      "assassin": "nimbria_assassin",
+      "tank": "nimbria_tank"
+    },
+    "vitalys": {
+      "melee": "vitalys_melee",
+      "ranged": "vitalys_distance",
+      "mage": "vitalys_mage",
+      "flying": "vitalys_flying",
+      "assassin": "vitalys_assassin",
+      "tank": "vitalys_tank"
+    },
+    "manelios": {
+      "melee": "manelios_melee",
+      "ranged": "manelios_distance",
+      "mage": "manelios_mage",
+      "flying": "manelios_flying",
+      "assassin": "manelios_assassin",
+      "tank": "manelios_tank",
+      "split": "manelios_melee_tiny"
+    }
+  },
+  "bosses": {
+    "Gardien de Talikus": "talikus_miniboss",
+    "Arbre ancien": "talikus_tree",
+    "Exo-armure": "talikus_exoarmor",
+    "Grand-mere": "talikus_grandma",
+    "Sanglier de guerre": "talikus_warhog",
+    "Seigneur de Talikus": "talikus_boss",
+    "Grappin": "talikus_grappling_hook",
+    "Machine de guerre": "talikus_warmachine",
+    "Dragon de Talikus": "talikus_dragon",
+    "Guerrier": "talikus_warrior",
+    "Freres mineurs": "nimbria_miniboss",
+    "Fileuse": "nimbria_spinner",
+    "Main de pierre": "nimbria_hand",
+    "Lanceur": "nimbria_launcher",
+    "Ancien": "nimbria_ancient",
+    "Seigneur de Nimbria": "nimbria_boss",
+    "Serpent": "nimbria_snake",
+    "Grolem": "nimbria_grolem",
+    "Coeur de paladium": "nimbria_paladium_heart",
+    "Dragon de Nimbria": "nimbria_dragon",
+    "Traqueuse": "vitalys_miniboss",
+    "Chimere": "vitalys_chimera",
+    "Portail": "vitalys_portal",
+    "Marteau": "vitalys_miniboss_hammer",
+    "Marmite": "vitalys_marmite",
+    "Seigneur de Vitalys": "vitalys_boss",
+    "Phenix": "vitalys_phoenix",
+    "Cerbere": "vitalys_cerberus",
+    "Mage de Vitalys": "vitalys_boss_mage",
+    "Dragon de Vitalys": "vitalys_dragon",
+    "Jumeaux noyes": "manelios_shark",
+    "Davy Jones": "manelios_davy_jones",
+    "Poisson-globe": "manelios_pufferfish",
+    "Hydre": "manelios_hydra",
+    "Crabe": "manelios_crab",
+    "Seigneur de Manelios": "manelios_boss",
+    "Leviathan": "manelios_leviathan",
+    "Kraken": "manelios_kraken",
+    "Mage de Manelios": "manelios_totem",
+    "Dragon de Manelios": "manelios_dragon"
+  },
+  "models": {
+    "manelios_assassin": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk1",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "walk"
+      ],
+      "size": [
+        3.06,
+        1.5
+      ]
+    },
+    "manelios_boss": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "spawn"
+      ],
+      "size": [
+        2.31,
+        3.89
+      ]
+    },
+    "manelios_crab": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "walk"
+      ],
+      "size": [
+        6.84,
+        2.18
+      ]
+    },
+    "manelios_davy_jones": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "walk"
+      ],
+      "size": [
+        4.62,
+        3.81
+      ]
+    },
+    "manelios_distance": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        0.97,
+        1.75
+      ]
+    },
+    "manelios_dragon": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk2_flying",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "hurt_flying",
+        "idle",
+        "idle_flying",
+        "walk",
+        "walk_flying"
+      ],
+      "size": [
+        20.12,
+        7.56
+      ]
+    },
+    "manelios_flying": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        2.51,
+        1.25
+      ]
+    },
+    "manelios_hydra": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        7.22,
+        5.04
+      ]
+    },
+    "manelios_kraken": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "tentacle_atk",
+        "tentacle_death",
+        "tentacle_hurt",
+        "tentacle_idle",
+        "tentacle_spawn"
+      ],
+      "size": [
+        12.06,
+        6.19
+      ]
+    },
+    "manelios_leviathan": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "idle2",
+        "walk"
+      ],
+      "size": [
+        14.39,
+        5.83
+      ]
+    },
+    "manelios_mage": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        9.45,
+        7.56
+      ]
+    },
+    "manelios_melee": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.41,
+        1.75
+      ]
+    },
+    "manelios_melee_tiny": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        0.94,
+        1.0
+      ]
+    },
+    "manelios_pufferfish": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "walk"
+      ],
+      "size": [
+        6.19,
+        3.74
+      ]
+    },
+    "manelios_shark": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "walk"
+      ],
+      "size": [
+        4.56,
+        2.75
+      ]
+    },
+    "manelios_tank": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.41,
+        2.12
+      ]
+    },
+    "manelios_totem": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle"
+      ],
+      "size": [
+        2.51,
+        1.69
+      ]
+    },
+    "nimbria_ancient": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk2_spike",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        2.06,
+        4.75
+      ]
+    },
+    "nimbria_assassin": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.5,
+        2.12
+      ]
+    },
+    "nimbria_boss": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3_end",
+        "atk3_idle",
+        "atk3_start",
+        "death",
+        "hurt",
+        "idle",
+        "spawn",
+        "walk"
+      ],
+      "size": [
+        5.75,
+        5.93
+      ]
+    },
+    "nimbria_distance": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        2.05,
+        2.4
+      ]
+    },
+    "nimbria_dragon": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk2_flying",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "hurt_flying",
+        "idle",
+        "idle_flying",
+        "walk",
+        "walk_flying"
+      ],
+      "size": [
+        20.12,
+        7.56
+      ]
+    },
+    "nimbria_flying": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.56,
+        1.03
+      ]
+    },
+    "nimbria_grolem": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "walk"
+      ],
+      "size": [
+        6.75,
+        6.0
+      ]
+    },
+    "nimbria_hand": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        6.12,
+        3.79
+      ]
+    },
+    "nimbria_launcher": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "projectile",
+        "projectile_hit"
+      ],
+      "size": [
+        4.5,
+        4.62
+      ]
+    },
+    "nimbria_mage": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.62,
+        1.91
+      ]
+    },
+    "nimbria_melee": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        2.12,
+        2.12
+      ]
+    },
+    "nimbria_miniboss": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "walk"
+      ],
+      "size": [
+        2.78,
+        4.44
+      ]
+    },
+    "nimbria_paladium_heart": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hit",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        6.88,
+        5.88
+      ]
+    },
+    "nimbria_snake": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        18.38,
+        3.28
+      ]
+    },
+    "nimbria_spinner": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "spin",
+        "walk"
+      ],
+      "size": [
+        2.62,
+        4.0
+      ]
+    },
+    "nimbria_tank": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        2.58,
+        2.14
+      ]
+    },
+    "talikus_assassin": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.26,
+        1.63
+      ]
+    },
+    "talikus_boss": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "spawn",
+        "walk"
+      ],
+      "size": [
+        3.69,
+        3.12
+      ]
+    },
+    "talikus_distance_bow": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.25,
+        1.81
+      ]
+    },
+    "talikus_dragon": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk2_flying",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "hurt_flying",
+        "idle",
+        "idle_flying",
+        "walk",
+        "walk_flying"
+      ],
+      "size": [
+        20.12,
+        7.56
+      ]
+    },
+    "talikus_exoarmor": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "walk"
+      ],
+      "size": [
+        3.44,
+        5.38
+      ]
+    },
+    "talikus_flying": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        2.44,
+        1.69
+      ]
+    },
+    "talikus_grandma": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        4.94,
+        4.12
+      ]
+    },
+    "talikus_grappling_hook": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        8.31,
+        6.62
+      ]
+    },
+    "talikus_mage": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.62,
+        1.25
+      ]
+    },
+    "talikus_melee": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.56,
+        1.62
+      ]
+    },
+    "talikus_miniboss": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        2.97,
+        3.84
+      ]
+    },
+    "talikus_tank": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.4,
+        1.89
+      ]
+    },
+    "talikus_tree": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idleactive"
+      ],
+      "size": [
+        7.88,
+        4.31
+      ]
+    },
+    "talikus_warhog": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        6.38,
+        4.8
+      ]
+    },
+    "talikus_warmachine": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        9.36,
+        6.75
+      ]
+    },
+    "talikus_warrior": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        4.53,
+        7.09
+      ]
+    },
+    "vitalys_assassin": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.5,
+        2.36
+      ]
+    },
+    "vitalys_boss": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        6.12,
+        5.81
+      ]
+    },
+    "vitalys_boss_mage": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        9.45,
+        8.61
+      ]
+    },
+    "vitalys_cerberus": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        8.6,
+        2.5
+      ]
+    },
+    "vitalys_chimera": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "walk"
+      ],
+      "size": [
+        13.86,
+        3.09
+      ]
+    },
+    "vitalys_distance": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.5,
+        1.94
+      ]
+    },
+    "vitalys_dragon": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk2_grounded",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "hurt_flying",
+        "idle",
+        "idleflying",
+        "walk",
+        "walkflying"
+      ],
+      "size": [
+        20.12,
+        7.56
+      ]
+    },
+    "vitalys_flying": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        0.81,
+        1.25
+      ]
+    },
+    "vitalys_mage": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.12,
+        1.93
+      ]
+    },
+    "vitalys_marmite": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle"
+      ],
+      "size": [
+        1.65,
+        3.74
+      ]
+    },
+    "vitalys_melee": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.12,
+        1.93
+      ]
+    },
+    "vitalys_miniboss": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "death",
+        "deathfusion",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        2.41,
+        1.94
+      ]
+    },
+    "vitalys_miniboss_hammer": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3_loop",
+        "atk3_start",
+        "atk3_stop",
+        "death",
+        "hurt",
+        "idle",
+        "run",
+        "walk"
+      ],
+      "size": [
+        5.69,
+        5.34
+      ]
+    },
+    "vitalys_phoenix": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2_end",
+        "atk2_loop",
+        "atk2_start",
+        "atk3",
+        "atk4",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        11.25,
+        5.45
+      ]
+    },
+    "vitalys_portal": {
+      "variants": [
+        "black",
+        "default"
+      ],
+      "sounds": [
+        "atk1",
+        "atk2",
+        "atk3",
+        "death",
+        "hurt",
+        "idle"
+      ],
+      "size": [
+        7.66,
+        7.25
+      ]
+    },
+    "vitalys_tank": {
+      "variants": [
+        "black",
+        "default",
+        "orange",
+        "red",
+        "yellow"
+      ],
+      "sounds": [
+        "atk",
+        "death",
+        "hurt",
+        "idle",
+        "walk"
+      ],
+      "size": [
+        1.47,
+        2.25
+      ]
+    }
+  }
+}
