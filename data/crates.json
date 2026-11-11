@@ -1,9 +1,10 @@
 {
-  "_comment": "Tables de butin des caisses. Les poids sont relatifs au total de chaque palier (1000 ici, donc en pour mille). Une entree donne de l'argent (money_min/money_max), un objet (item ou tag, count, components), ou un lot de plusieurs objets (name, icon, items). Une entree dont un objet n'existe pas dans la partie (mod absent, tag vide) est retiree du tirage : sans NTM NEXT, ses lots disparaissent.",
-  "_rarity": "rarity : common, rare, epic ou legendary. La couleur et le son de l'ouverture, et rien d'autre : la chance vient du poids. Chaque palier tire environ 68 % de commun, 24 % de rare, 7 % d'epique et 1 % de legendaire.",
-  "_value": "Calibrage : python3 -I tools/crate_values.py. Chaque palier rend 80 a 95 % de son prix en valeur boutique (prix d'achat du shop, ou cout des ingredients au shop), avec et sans NTM. Un lot commun vaut environ la moitie du prix, un rare 1,2 fois, un epique 2,5 fois, un legendaire 5 a 14 fois.",
+  "_comment": "Tables de butin des boxes : une par box de PalaMod (amethyst, saharia, paladium, halloween, trixium, endium), de la moins chere a la plus chere. Les poids sont relatifs au total de chaque box (1000 ici, donc en pour mille). Une entree donne de l'argent (money_min/money_max), un objet (item ou tag, count, components), ou un lot de plusieurs objets (name, icon, items). Une entree dont un objet n'existe pas dans la partie (mod absent, tag vide) est retiree du tirage : sans NTM NEXT, ses lots disparaissent.",
+  "_rarity": "rarity : common, rare, epic ou legendary. La couleur et le son de l'ouverture, et rien d'autre : la chance vient du poids. Chaque box tire environ 68 % de commun, 24 % de rare, 7 % d'epique et 1 % de legendaire.",
+  "_value": "Calibrage : python3 -I tools/crate_values.py. Chaque box rend 80 a 95 % de son prix en valeur boutique (prix d'achat du shop, ou cout des ingredients au shop), avec et sans NTM. Un lot commun vaut environ la moitie du prix, un rare 1,2 fois, un epique 2,5 fois, un legendaire 5 a 14 fois.",
+  "_theme": "amethyst : les materiaux du debut. saharia : le pillage (TNT, obsidiennes, spikes, withers de siege). paladium : l'endium en pepites et en outils, la pierre legendaire en gros lot. halloween : la chasse et les withers. trixium : le voyage et l'endium en lingots. endium : les panoplies, les pierres, le gant complet.",
   "crates": {
-    "common": {
+    "amethyst": {
       "price": 100000,
       "entries": [
         {"weight": 144, "rarity": "common", "money_min": 20000, "money_max": 50000},
@@ -18,7 +19,7 @@
           {"item": "palamod:paladium_boots", "components": {"minecraft:enchantments": {"minecraft:protection": 4, "minecraft:unbreaking": 3}}},
           {"item": "palamod:paladium_sword", "components": {"minecraft:enchantments": {"minecraft:sharpness": 5, "minecraft:looting": 3, "minecraft:unbreaking": 3}}},
           {"item": "palamod:paladium_pickaxe", "components": {"minecraft:enchantments": {"minecraft:efficiency": 5, "minecraft:fortune": 3, "minecraft:unbreaking": 3}}}
-        ] },
+        ]},
         {"weight": 80, "rarity": "common", "tag": "c:ingots/lead", "count": 48},
         {"weight": 80, "rarity": "common", "item": "hbm:motor", "count": 5},
         {"weight": 70, "rarity": "rare", "money_min": 90000, "money_max": 160000},
@@ -29,7 +30,7 @@
           {"item": "palamod:green_paladium_axe", "components": {"minecraft:enchantments": {"minecraft:efficiency": 5, "minecraft:unbreaking": 3}}},
           {"item": "palamod:green_paladium_shovel", "components": {"minecraft:enchantments": {"minecraft:efficiency": 5, "minecraft:unbreaking": 3}}},
           {"item": "palamod:green_paladium_block", "count": 4}
-        ] },
+        ]},
         {"weight": 30, "rarity": "rare", "tag": "c:ingots/uranium", "count": 24},
         {"weight": 30, "rarity": "rare", "item": "hbm:circuit_basic", "count": 2},
         {"weight": 20, "rarity": "epic", "money_min": 200000, "money_max": 320000},
@@ -42,32 +43,79 @@
         {"weight": 1, "rarity": "legendary", "money_min": 1000000, "money_max": 1500000}
       ]
     },
-    "rare": {
+    "saharia": {
+      "price": 1000000,
+      "entries": [
+        {"weight": 150, "rarity": "common", "money_min": 350000, "money_max": 700000},
+        {"weight": 100, "rarity": "common", "item": "palamod:endium_tnt", "count": 12},
+        {"weight": 90, "rarity": "common", "item": "palamod:sponge_tnt", "count": 5},
+        {"weight": 90, "rarity": "common", "item": "palamod:wither_tnt", "count": 12},
+        {"weight": 90, "rarity": "common", "name": "Kit du pilleur", "icon": "palamod:chest_explorer", "items": [
+          {"item": "palamod:chest_explorer"},
+          {"item": "palamod:unclaim_finder"},
+          {"item": "palamod:extrapolated_bucket"},
+          {"item": "palamod:pistol_tank"},
+          {"item": "palamod:endium_tnt", "count": 8},
+          {"item": "palamod:big_dynamite", "count": 32},
+          {"item": "palamod:ninja_dynamite", "count": 16}
+        ]},
+        {"weight": 80, "rarity": "common", "name": "Murs pieges", "icon": "palamod:mega_boom_obsidian", "items": [
+          {"item": "palamod:anti_aggro_obsidian", "count": 32},
+          {"item": "palamod:slime_obsidian", "count": 64},
+          {"item": "palamod:mega_boom_obsidian", "count": 64}
+        ]},
+        {"weight": 80, "rarity": "common", "name": "Herse de spikes", "icon": "palamod:paladium_spike", "items": [
+          {"item": "palamod:paladium_spike", "count": 64},
+          {"item": "palamod:paladium_spike_obsidian", "count": 64},
+          {"item": "palamod:titane_spike", "count": 64},
+          {"item": "palamod:titane_spike_obsidian", "count": 64}
+        ]},
+        {"weight": 70, "rarity": "rare", "money_min": 900000, "money_max": 1500000},
+        {"weight": 65, "rarity": "rare", "item": "palamod:endium_tnt", "count": 30},
+        {"weight": 60, "rarity": "rare", "name": "Arsenal de siege", "icon": "palamod:endium_tnt", "items": [
+          {"item": "palamod:endium_tnt", "count": 16},
+          {"item": "palamod:sponge_tnt", "count": 4},
+          {"item": "palamod:wither_tnt", "count": 6}
+        ]},
+        {"weight": 45, "rarity": "rare", "item": "palamod:predator_wither_head", "count": 3},
+        {"weight": 20, "rarity": "epic", "money_min": 2000000, "money_max": 3000000},
+        {"weight": 20, "rarity": "epic", "item": "palamod:endium_tnt", "count": 64},
+        {"weight": 15, "rarity": "epic", "name": "Wither de siege", "icon": "palamod:predator_wither_gem", "items": [
+          {"item": "palamod:predator_wither_gem"},
+          {"item": "palamod:predator_wither_head", "count": 2}
+        ]},
+        {"weight": 15, "rarity": "epic", "item": "palamod:endium_ingot", "count": 2},
+        {"weight": 4, "rarity": "legendary", "item": "palamod:supreme_wither_gem"},
+        {"weight": 3, "rarity": "legendary", "item": "palamod:endium_ingot", "count": 5},
+        {"weight": 3, "rarity": "legendary", "money_min": 8000000, "money_max": 14000000}
+      ]
+    },
+    "paladium": {
       "price": 5000000,
       "entries": [
         {"weight": 160, "rarity": "common", "money_min": 1800000, "money_max": 3400000},
         {"weight": 90, "rarity": "common", "name": "Coffre de trixium", "icon": "palamod:trixium_block", "items": [
           {"item": "palamod:trixium_block", "count": 64},
           {"item": "palamod:findium_block", "count": 32}
-        ] },
+        ]},
         {"weight": 90, "rarity": "common", "item": "palamod:endium_nugget", "count": 16},
         {"weight": 80, "rarity": "common", "item": "palamod:endium_sword", "components": {"minecraft:enchantments": {"minecraft:sharpness": 5, "minecraft:looting": 3, "minecraft:unbreaking": 3, "minecraft:fire_aspect": 2}}},
         {"weight": 80, "rarity": "common", "name": "Poche du voyageur", "icon": "palamod:pocket_enderchest", "items": [
           {"item": "palamod:pocket_enderchest"},
           {"item": "palamod:hang_glider"},
           {"item": "palamod:cloud"}
-        ] },
+        ]},
         {"weight": 90, "rarity": "common", "tag": "c:ingots/lithium", "count": 22},
         {"weight": 90, "rarity": "common", "name": "Machines avancees", "icon": "hbm:motor_desh", "items": [
           {"item": "hbm:motor_desh"},
           {"item": "hbm:circuit_advanced"},
           {"item": "hbm:coil_magnetized_tungsten"}
-        ] },
+        ]},
         {"weight": 50, "rarity": "rare", "money_min": 4500000, "money_max": 7500000},
         {"weight": 40, "rarity": "rare", "name": "Outils en endium", "icon": "palamod:endium_pickaxe", "items": [
           {"item": "palamod:endium_pickaxe", "components": {"minecraft:enchantments": {"minecraft:efficiency": 5, "minecraft:fortune": 3, "minecraft:unbreaking": 3}}},
           {"item": "palamod:endium_sword", "components": {"minecraft:enchantments": {"minecraft:sharpness": 5, "minecraft:looting": 3, "minecraft:unbreaking": 3}}}
-        ] },
+        ]},
         {"weight": 45, "rarity": "rare", "item": "palamod:endium_ingot", "count": 5},
         {"weight": 45, "rarity": "rare", "item": "palamod:endium_boots", "components": {"minecraft:enchantments": {"minecraft:protection": 4, "minecraft:unbreaking": 3, "minecraft:feather_falling": 4}}},
         {"weight": 60, "rarity": "rare", "item": "hbm:circuit_controller", "count": 2},
@@ -80,7 +128,92 @@
         {"weight": 2, "rarity": "legendary", "money_min": 30000000, "money_max": 45000000}
       ]
     },
-    "legendary": {
+    "halloween": {
+      "price": 20000000,
+      "entries": [
+        {"weight": 150, "rarity": "common", "money_min": 7000000, "money_max": 13000000},
+        {"weight": 110, "rarity": "common", "name": "Rituel supreme", "icon": "palamod:supreme_wither_gem", "items": [
+          {"item": "palamod:supreme_wither_gem"},
+          {"item": "palamod:supreme_wither_head", "count": 3},
+          {"item": "palamod:wither_resistance_upgrade", "count": 4}
+        ]},
+        {"weight": 110, "rarity": "common", "item": "palamod:spawner_structure_four", "count": 8},
+        {"weight": 100, "rarity": "common", "name": "Meute de predateurs", "icon": "palamod:predator_wither_gem", "items": [
+          {"item": "palamod:predator_wither_gem", "count": 5},
+          {"item": "palamod:predator_wither_head", "count": 3}
+        ]},
+        {"weight": 110, "rarity": "common", "name": "Trousse du chasseur", "icon": "palamod:capture_stone", "items": [
+          {"item": "palamod:spawner_structure_three", "count": 24},
+          {"item": "palamod:upgrade_speed", "count": 8},
+          {"item": "palamod:upgrade_looting", "count": 8},
+          {"item": "palamod:upgrade_slime", "count": 8},
+          {"item": "palamod:guardian_stone", "count": 16},
+          {"item": "palamod:capture_stone", "count": 4}
+        ]},
+        {"weight": 100, "rarity": "common", "item": "palamod:endium_ingot", "count": 7},
+        {"weight": 70, "rarity": "rare", "money_min": 19000000, "money_max": 29000000},
+        {"weight": 60, "rarity": "rare", "name": "Pierre de l'au-dela", "icon": "palamod:legendary_stone_random", "items": [
+          {"item": "palamod:legendary_stone_random"},
+          {"item": "palamod:supreme_wither_head", "count": 3}
+        ]},
+        {"weight": 55, "rarity": "rare", "item": "palamod:supreme_wither_gem", "count": 4},
+        {"weight": 55, "rarity": "rare", "item": "palamod:spawner_structure_four", "count": 18},
+        {"weight": 25, "rarity": "epic", "money_min": 40000000, "money_max": 60000000},
+        {"weight": 23, "rarity": "epic", "name": "Pacte des deux pierres", "icon": "palamod:legendary_stone_chaos", "items": [
+          {"item": "palamod:legendary_stone_random", "count": 2},
+          {"item": "palamod:supreme_wither_gem", "count": 2}
+        ]},
+        {"weight": 22, "rarity": "epic", "item": "palamod:spawner_structure_four", "count": 40},
+        {"weight": 6, "rarity": "legendary", "name": "Cinq pierres de legende", "icon": "palamod:legendary_stone_random", "items": [
+          {"item": "palamod:legendary_stone_random", "count": 5}
+        ]},
+        {"weight": 4, "rarity": "legendary", "money_min": 150000000, "money_max": 250000000}
+      ]
+    },
+    "trixium": {
+      "price": 50000000,
+      "entries": [
+        {"weight": 150, "rarity": "common", "money_min": 18000000, "money_max": 32000000},
+        {"weight": 110, "rarity": "common", "item": "palamod:endium_ingot", "count": 17},
+        {"weight": 110, "rarity": "common", "item": "palamod:endium_block", "count": 2},
+        {"weight": 110, "rarity": "common", "name": "Malle du voyageur", "icon": "palamod:pocket_enderchest", "items": [
+          {"item": "palamod:pocket_enderchest", "count": 2},
+          {"item": "palamod:cloud", "count": 2},
+          {"item": "palamod:hang_glider"},
+          {"item": "palamod:endium_chest", "count": 4},
+          {"item": "palamod:trixium_block", "count": 64}
+        ]},
+        {"weight": 100, "rarity": "common", "name": "Ferme d'endium", "icon": "palamod:endium_seedplanter", "items": [
+          {"item": "palamod:endium_seedplanter", "count": 2},
+          {"item": "palamod:endium_chest", "count": 4}
+        ]},
+        {"weight": 100, "rarity": "common", "name": "Equipement d'endium", "icon": "palamod:endium_helmet", "items": [
+          {"item": "palamod:endium_helmet", "components": {"minecraft:enchantments": {"minecraft:protection": 4, "minecraft:unbreaking": 3}}},
+          {"item": "palamod:endium_boots", "components": {"minecraft:enchantments": {"minecraft:protection": 4, "minecraft:unbreaking": 3, "minecraft:feather_falling": 4}}},
+          {"item": "palamod:endium_sword", "components": {"minecraft:enchantments": {"minecraft:sharpness": 5, "minecraft:looting": 3, "minecraft:unbreaking": 3}}},
+          {"item": "palamod:endium_ingot", "count": 6}
+        ]},
+        {"weight": 70, "rarity": "rare", "money_min": 48000000, "money_max": 72000000},
+        {"weight": 60, "rarity": "rare", "item": "palamod:endium_block", "count": 5},
+        {"weight": 55, "rarity": "rare", "name": "Trois pierres de legende", "icon": "palamod:legendary_stone_random", "items": [
+          {"item": "palamod:legendary_stone_random", "count": 3}
+        ]},
+        {"weight": 55, "rarity": "rare", "name": "Tresor du voyageur", "icon": "palamod:endium_chest", "items": [
+          {"item": "palamod:endium_chest", "count": 8},
+          {"item": "palamod:endium_seedplanter", "count": 2},
+          {"item": "palamod:pocket_enderchest", "count": 2},
+          {"item": "palamod:endium_ingot", "count": 10}
+        ]},
+        {"weight": 25, "rarity": "epic", "money_min": 100000000, "money_max": 150000000},
+        {"weight": 23, "rarity": "epic", "item": "palamod:endium_block", "count": 10},
+        {"weight": 22, "rarity": "epic", "name": "Six pierres de legende", "icon": "palamod:legendary_stone_random", "items": [
+          {"item": "palamod:legendary_stone_random", "count": 6}
+        ]},
+        {"weight": 6, "rarity": "legendary", "item": "palamod:endium_block", "count": 24},
+        {"weight": 4, "rarity": "legendary", "money_min": 400000000, "money_max": 600000000}
+      ]
+    },
+    "endium": {
       "price": 150000000,
       "entries": [
         {"weight": 160, "rarity": "common", "money_min": 55000000, "money_max": 110000000},
@@ -93,10 +226,10 @@
           {"item": "palamod:endium_sword", "components": {"minecraft:enchantments": {"minecraft:sharpness": 5, "minecraft:looting": 3, "minecraft:unbreaking": 3}}},
           {"item": "palamod:endium_pickaxe", "components": {"minecraft:enchantments": {"minecraft:efficiency": 5, "minecraft:fortune": 3, "minecraft:unbreaking": 3}}},
           {"item": "palamod:endium_block", "count": 3}
-        ] },
+        ]},
         {"weight": 100, "rarity": "common", "name": "Pierres de legende", "icon": "palamod:legendary_stone_random", "items": [
           {"item": "palamod:legendary_stone_random", "count": 4}
-        ] },
+        ]},
         {"weight": 100, "rarity": "common", "item": "hbm:circuit_controller", "count": 24},
         {"weight": 100, "rarity": "common", "item": "hbm:motor_desh", "count": 48},
         {"weight": 70, "rarity": "rare", "money_min": 140000000, "money_max": 220000000},
@@ -109,7 +242,7 @@
           {"item": "palamod:legendary_stone_jobs"},
           {"item": "palamod:legendary_stone_chaos"},
           {"item": "palamod:endium_block", "count": 4}
-        ] },
+        ]},
         {"weight": 60, "rarity": "rare", "name": "Tresor d'endium", "icon": "palamod:endium_block", "items": [
           {"item": "palamod:endium_helmet", "components": {"minecraft:enchantments": {"minecraft:protection": 4, "minecraft:unbreaking": 3}}},
           {"item": "palamod:endium_chestplate", "components": {"minecraft:enchantments": {"minecraft:protection": 4, "minecraft:unbreaking": 3}}},
@@ -118,13 +251,13 @@
           {"item": "palamod:endium_sword", "components": {"minecraft:enchantments": {"minecraft:sharpness": 5, "minecraft:looting": 3, "minecraft:unbreaking": 3}}},
           {"item": "palamod:endium_pickaxe", "components": {"minecraft:enchantments": {"minecraft:efficiency": 5, "minecraft:fortune": 3, "minecraft:unbreaking": 3}}},
           {"item": "palamod:endium_block", "count": 10}
-        ] },
+        ]},
         {"weight": 35, "rarity": "epic", "money_min": 280000000, "money_max": 420000000},
         {"weight": 25, "rarity": "epic", "item": "palamod:endium_block", "count": 28},
         {"weight": 20, "rarity": "epic", "name": "Usine NTM", "icon": "hbm:circuit_controller", "items": [
           {"item": "hbm:circuit_controller", "count": 64},
           {"item": "hbm:motor_desh", "count": 64}
-        ] },
+        ]},
         {"weight": 7, "rarity": "legendary", "item": "palamod:endium_gauntlet", "components": {"palamod:gauntlet": {"stones": ["teleportation", "invisibility", "fortune", "power", "jobs", "chaos"]}, "minecraft:custom_model_data": {"strings": ["infinity"]}}},
         {"weight": 3, "rarity": "legendary", "money_min": 600000000, "money_max": 900000000}
       ]

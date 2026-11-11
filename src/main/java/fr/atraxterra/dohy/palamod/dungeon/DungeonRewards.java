@@ -4,6 +4,7 @@ import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
 import fr.atraxterra.dohy.palamod.alchemist.Sap;
 import fr.atraxterra.dohy.palamod.alchemist.TankSap;
 import fr.atraxterra.dohy.palamod.alchemist.TankTier;
+import fr.atraxterra.dohy.palamod.box.BoxKind;
 import fr.atraxterra.dohy.palamod.box.PalaBoxes;
 import fr.atraxterra.dohy.palamod.godpickaxe.GodPickaxeData;
 import fr.atraxterra.dohy.palamod.godpickaxe.GodPickaxeLevels;
@@ -362,30 +363,37 @@ final class DungeonRewards {
         return loot;
     }
 
-    /** Chance d'une cle commune, par note de D a S. */
-    private static final float[] KEY_COMMON = {0.0f, 0.0f, 0.10f, 0.20f, 0.35f};
-    /** Chance d'une cle rare, a partir du palier {@link #KEY_RARE_FROM}. */
-    private static final float[] KEY_RARE = {0.0f, 0.0f, 0.0f, 0.005f, 0.015f};
-    private static final int KEY_RARE_FROM = 40;
-    /** Chance d'une cle legendaire, a partir du palier {@link #KEY_LEGENDARY_FROM}. */
-    private static final float[] KEY_LEGENDARY = {0.0f, 0.0f, 0.0f, 0.0f, 0.0025f};
-    private static final int KEY_LEGENDARY_FROM = 80;
+    /** Chance d'une cle Amethyste, par note de D a S. */
+    private static final float[] KEY_AMETHYST = {0.0f, 0.0f, 0.10f, 0.20f, 0.35f};
+    /** Chance d'une cle Paladium, a partir du palier {@link #KEY_PALADIUM_FROM}. */
+    private static final float[] KEY_PALADIUM = {0.0f, 0.0f, 0.0f, 0.005f, 0.015f};
+    private static final int KEY_PALADIUM_FROM = 40;
+    /** Chance d'une cle Trixium, a partir du palier {@link #KEY_TRIXIUM_FROM}. */
+    private static final float[] KEY_TRIXIUM = {0.0f, 0.0f, 0.0f, 0.001f, 0.004f};
+    private static final int KEY_TRIXIUM_FROM = 60;
+    /** Chance d'une cle Endium, a partir du palier {@link #KEY_ENDIUM_FROM}. */
+    private static final float[] KEY_ENDIUM = {0.0f, 0.0f, 0.0f, 0.0f, 0.0025f};
+    private static final int KEY_ENDIUM_FROM = 80;
 
     /**
-     * Les cles de caisse du coffre de la note (BALANCE § 6 nonies) : une bonne
-     * note peut en donner une, et les paliers eleves les meilleures. Trois
-     * tirages separes.
+     * Les cles de box du coffre de la note (BALANCE § 6 nonies) : une bonne
+     * note peut en donner une, et les paliers eleves les meilleures. Quatre
+     * tirages separes. Les cles Saharia et Halloween viennent d'ailleurs : des
+     * bases ennemies pillees et des boss d'evenement.
      */
     private static void keys(RandomSource random, int palier, Grade grade, List<ItemStack> loot) {
         int rank = grade.ordinal();
-        if (random.nextFloat() < KEY_COMMON[rank]) {
-            loot.add(new ItemStack(PalaBoxes.KEY_COMMON.get()));
+        if (random.nextFloat() < KEY_AMETHYST[rank]) {
+            loot.add(new ItemStack(PalaBoxes.key(BoxKind.AMETHYST)));
         }
-        if (palier >= KEY_RARE_FROM && random.nextFloat() < KEY_RARE[rank]) {
-            loot.add(new ItemStack(PalaBoxes.KEY_RARE.get()));
+        if (palier >= KEY_PALADIUM_FROM && random.nextFloat() < KEY_PALADIUM[rank]) {
+            loot.add(new ItemStack(PalaBoxes.key(BoxKind.PALADIUM)));
         }
-        if (palier >= KEY_LEGENDARY_FROM && random.nextFloat() < KEY_LEGENDARY[rank]) {
-            loot.add(new ItemStack(PalaBoxes.KEY_LEGENDARY.get()));
+        if (palier >= KEY_TRIXIUM_FROM && random.nextFloat() < KEY_TRIXIUM[rank]) {
+            loot.add(new ItemStack(PalaBoxes.key(BoxKind.TRIXIUM)));
+        }
+        if (palier >= KEY_ENDIUM_FROM && random.nextFloat() < KEY_ENDIUM[rank]) {
+            loot.add(new ItemStack(PalaBoxes.key(BoxKind.ENDIUM)));
         }
     }
 }

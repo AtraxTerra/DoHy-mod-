@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.palamod.box;
 
 import fr.atraxterra.dohy.palamod.PalaMod;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -44,14 +45,14 @@ public final class PalaBoxes {
             "box_halloween", properties -> new BoxBlock(BoxKind.HALLOWEEN, properties), PalaBoxes::box);
 
     /**
-     * Le prix d'une box a la boutique. Elle ne donne rien de plus que la
-     * caisse de son palier : on paie le coffre, une fois, pas le butin.
+     * Le prix du coffre a poser, a la boutique. Il ne donne rien de plus que
+     * la roulette : on paie le coffre, une fois, pas le butin.
      */
     public static final long PRICE = 25_000L;
 
-    /** Dans l'ordre de la boutique : les trois metaux, puis les trois habillages. */
+    /** De la moins chere a la plus chere. */
     public static final List<DeferredBlock<BoxBlock>> BOXES =
-            List.of(AMETHYST, PALADIUM, ENDIUM, SAHARIA, TRIXIUM, HALLOWEEN);
+            List.of(AMETHYST, SAHARIA, PALADIUM, HALLOWEEN, TRIXIUM, ENDIUM);
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BoxBlockEntity>> TYPE =
             TYPES.register("box", () -> new BlockEntityType<>(BoxBlockEntity::new, Set.of(
@@ -60,23 +61,64 @@ public final class PalaBoxes {
     public static final List<DeferredItem<BlockItem>> BOX_ITEMS = BOXES.stream()
             .map(block -> ITEMS.registerSimpleBlockItem(block, properties -> properties)).toList();
 
-    /** Les cles de caisse, une par palier ({@link CrateKeys}). */
-    public static final DeferredItem<CrateKeyItem> KEY_COMMON = ITEMS.registerItem(
-            "crate_key_common", properties -> new CrateKeyItem("common", properties),
+    /**
+     * Les cles, une par box ({@link CrateKeys}). La rarete de l'objet suit le
+     * prix de la box. Les noms sont ecrits en toutes lettres : le controle des
+     * ressources les lit ici.
+     */
+    public static final DeferredItem<CrateKeyItem> KEY_AMETHYST = ITEMS.registerItem(
+            "crate_key_amethyst", properties -> new CrateKeyItem(BoxKind.AMETHYST.crate(), properties),
             properties -> properties.rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<CrateKeyItem> KEY_RARE = ITEMS.registerItem(
-            "crate_key_rare", properties -> new CrateKeyItem("rare", properties),
+    public static final DeferredItem<CrateKeyItem> KEY_SAHARIA = ITEMS.registerItem(
+            "crate_key_saharia", properties -> new CrateKeyItem(BoxKind.SAHARIA.crate(), properties),
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<CrateKeyItem> KEY_PALADIUM = ITEMS.registerItem(
+            "crate_key_paladium", properties -> new CrateKeyItem(BoxKind.PALADIUM.crate(), properties),
             properties -> properties.rarity(Rarity.RARE));
-    public static final DeferredItem<CrateKeyItem> KEY_LEGENDARY = ITEMS.registerItem(
-            "crate_key_legendary", properties -> new CrateKeyItem("legendary", properties),
+    public static final DeferredItem<CrateKeyItem> KEY_HALLOWEEN = ITEMS.registerItem(
+            "crate_key_halloween", properties -> new CrateKeyItem(BoxKind.HALLOWEEN.crate(), properties),
+            properties -> properties.rarity(Rarity.RARE));
+    public static final DeferredItem<CrateKeyItem> KEY_TRIXIUM = ITEMS.registerItem(
+            "crate_key_trixium", properties -> new CrateKeyItem(BoxKind.TRIXIUM.crate(), properties),
             properties -> properties.rarity(Rarity.EPIC));
+    public static final DeferredItem<CrateKeyItem> KEY_ENDIUM = ITEMS.registerItem(
+            "crate_key_endium", properties -> new CrateKeyItem(BoxKind.ENDIUM.crate(), properties),
+            properties -> properties.rarity(Rarity.EPIC));
+
+    /** De la box la moins chere a la plus chere. */
+    public static final List<DeferredItem<CrateKeyItem>> KEYS =
+            List.of(KEY_AMETHYST, KEY_SAHARIA, KEY_PALADIUM, KEY_HALLOWEEN, KEY_TRIXIUM, KEY_ENDIUM);
+
+    static {
+        // Les cles des trois anciennes caisses, restees dans un coffre ou un inventaire.
+        alias("crate_key_common", "crate_key_amethyst");
+        alias("crate_key_rare", "crate_key_paladium");
+        alias("crate_key_legendary", "crate_key_endium");
+    }
+
+    private static void alias(String from, String to) {
+        ITEMS.addAlias(Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, from),
+                Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, to));
+    }
 
     public static final List<DeferredItem<? extends Item>> ORDERED = ordered();
 
     private static List<DeferredItem<? extends Item>> ordered() {
         List<DeferredItem<? extends Item>> list = new ArrayList<>(BOX_ITEMS);
-        list.addAll(List.of(KEY_COMMON, KEY_RARE, KEY_LEGENDARY));
+        list.addAll(KEYS);
         return List.copyOf(list);
+    }
+
+    /** La cle d'une box. */
+    public static CrateKeyItem key(BoxKind kind) {
+        return switch (kind) {
+            case AMETHYST -> KEY_AMETHYST.get();
+            case SAHARIA -> KEY_SAHARIA.get();
+            case PALADIUM -> KEY_PALADIUM.get();
+            case HALLOWEEN -> KEY_HALLOWEEN.get();
+            case TRIXIUM -> KEY_TRIXIUM.get();
+            case ENDIUM -> KEY_ENDIUM.get();
+        };
     }
 
     /**

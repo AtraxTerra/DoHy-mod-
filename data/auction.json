@@ -1203,7 +1203,7 @@
     },
     {
       "category": "crates",
-      "item": "palamod:crate_key_common",
+      "item": "palamod:crate_key_amethyst",
       "quote": 100000,
       "lot": [
         1,
@@ -1221,7 +1221,25 @@
     },
     {
       "category": "crates",
-      "item": "palamod:crate_key_rare",
+      "item": "palamod:crate_key_saharia",
+      "quote": 1000000,
+      "lot": [
+        1,
+        2
+      ],
+      "stock": [
+        1,
+        2
+      ],
+      "weight": 8,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:crate_key_paladium",
       "quote": 5000000,
       "lot": [
         1,
@@ -1239,7 +1257,43 @@
     },
     {
       "category": "crates",
-      "item": "palamod:crate_key_legendary",
+      "item": "palamod:crate_key_halloween",
+      "quote": 20000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 3,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:crate_key_trixium",
+      "quote": 50000000,
+      "lot": [
+        1,
+        1
+      ],
+      "stock": [
+        1,
+        1
+      ],
+      "weight": 2,
+      "factor": [
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "category": "crates",
+      "item": "palamod:crate_key_endium",
       "quote": 150000000,
       "lot": [
         1,

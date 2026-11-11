@@ -40,7 +40,7 @@ import net.minecraft.world.level.storage.TagValueInput;
  * disque — la block entity la refait a son premier tick — donc une box cassee
  * ou un monde recharge ne laissent pas de coffre fantome.
  *
- * <p><b>L'ouverture.</b> Le tirage est celui des caisses ({@link Crates}) :
+ * <p><b>L'ouverture.</b> Le tirage est celui de la roulette ({@link Crates}) :
  * la cle est prise et le lot donne tout de suite, comme a la roulette. La box
  * joue ensuite l'animation de la classe du lot (commune, rare, epique,
  * legendaire : 7 a 13 secondes, de plus en plus de lumiere), avec sa
@@ -168,11 +168,11 @@ public class BoxBlockEntity extends BlockEntity {
             return;
         }
         BoxKind kind = kind();
-        String tier = kind.tier();
+        String tier = kind.crate();
         if (player.isShiftKeyDown()) {
             String refusal = Crates.buyKey(player, tier);
             say(player, refusal != null ? Component.literal(refusal).withStyle(ChatFormatting.RED)
-                    : Component.literal(Crates.keyName(tier) + " achetee : " + CrateKeys.count(player, tier)
+                    : Component.literal("Une " + Crates.keyName(tier) + " achetee : " + CrateKeys.count(player, tier)
                     + " sur toi.")
                     .withStyle(ChatFormatting.GREEN));
             return;
@@ -184,7 +184,7 @@ public class BoxBlockEntity extends BlockEntity {
         if (CrateKeys.count(player, tier) <= 0) {
             long price = Crates.keyPrice(tier);
             // Dans le tchat : la consigne est trop longue pour la barre d'action.
-            player.sendSystemMessage(Component.literal(price < 0 ? "Aucune caisse pour cette box."
+            player.sendSystemMessage(Component.literal(price < 0 ? "Cette box n'a pas de table de butin."
                     : "Il te faut une " + Crates.keyName(tier) + ". Accroupi, main vide, clic droit sur la box : "
                     + "en acheter une (" + MoneyFormat.exact(price) + ").").withStyle(ChatFormatting.RED));
             return;

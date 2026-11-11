@@ -16,10 +16,10 @@ import net.minecraft.world.level.Level;
 import java.util.function.Consumer;
 
 /**
- * Une cle de caisse. Jusqu'ici un compteur attache au joueur ; maintenant un
- * objet, qui se trouve en butin, se range et se pose sur une box.
+ * La cle d'une box : un objet, qui se trouve en butin, se range et se pose sur
+ * sa box. Il y en a une sorte par box.
  *
- * <p>Clic droit dans le vide : ouvre la caisse de son palier a la roulette.
+ * <p>Clic droit dans le vide : ouvre sa box a la roulette.
  * Clic droit sur une box posee : c'est la box qui la prend
  * ({@link BoxBlockEntity}), avec son animation.
  */
@@ -32,7 +32,7 @@ public class CrateKeyItem extends Item {
         this.tier = tier;
     }
 
-    /** Le palier de caisse que cette cle ouvre : {@code common}, {@code rare}, {@code legendary}. */
+    /** La box que cette cle ouvre : son identifiant dans {@code data/crates.json}. */
     public String tier() {
         return tier;
     }

@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Random;
 
 /**
- * L'ouverture d'une caisse : une roulette d'objets qui file, ralentit et
+ * L'ouverture d'une box : une roulette d'objets qui file, ralentit et
  * s'arrete sous le repere, sur le lot que le serveur a deja tire.
  *
  * <p>Chaque case porte la couleur de sa classe (commun, rare, epique,
@@ -62,7 +62,7 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
     private UiButton again;
 
     public CrateScreen(CrateView view) {
-        super(Component.literal("Caisse"), WIDTH, HEIGHT);
+        super(Component.literal("Box"), WIDTH, HEIGHT);
         this.view = view;
         restart();
     }

@@ -26,12 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-/** La boutique : boosters, caisses, boxes, assurance et autosell. */
+/** La boutique : boosters, loot boxes et leurs coffres a poser, assurance et autosell. */
 public final class BoutiqueController extends MenuController {
 
     public static final BoutiqueController INSTANCE = new BoutiqueController();
 
-    private static final List<String> CRATE_ORDER = List.of("common", "rare", "legendary");
 
     private BoutiqueController() {
         super("boutique");
@@ -65,37 +64,39 @@ public final class BoutiqueController extends MenuController {
             boosters.add(card);
         }
 
+        // Les loot boxes : une carte par box, de la moins chere a la plus chere. La cle
+        // s'achete ici et s'ouvre a la roulette, ou sur le coffre pose de la box.
         List<Card> crates = new ArrayList<>();
-        for (String tier : orderedCrates()) {
+        for (String tier : Crates.ordered()) {
             Crates.Crate crate = Crates.config().crates().get(tier);
-            if (crate == null) {
-                continue;
-            }
+            BoxKind kind = BoxKind.byId(tier);
             int keys = CrateKeys.count(player, tier);
-            crates.add(Card.of(new ItemStack(keys > 0 ? Items.ENDER_CHEST : Items.TRAPPED_CHEST),
-                            Crates.title(tier), List.of("Cle : " + MoneyFormat.exact(crate.price()),
-                                    keys + " cle(s) sur toi"))
+            ItemStack icon = kind != null ? new ItemStack(PalaBoxes.key(kind))
+                    : new ItemStack(keys > 0 ? Items.ENDER_CHEST : Items.TRAPPED_CHEST);
+            crates.add(Card.of(icon, Crates.title(tier), List.of("Cle : " + MoneyFormat.exact(crate.price()),
+                            keys + " cle(s) sur toi"))
                     .accent(0xFFEF3826).badge(keys > 0 ? keys + " CLE" : "")
                     .action("key:" + tier + "|acheter une cle")
-                    .right(keys > 0 ? "crate:" + tier + "|ouvrir une caisse" : "")
+                    .right(keys > 0 ? "crate:" + tier + "|ouvrir a la roulette" : "")
                     .tooltip(crateTooltip(crate)));
         }
 
-        // Les boxes : un coffre anime a poser, qui ouvre les caisses de son palier.
+        // Les coffres a poser : l'autre facon d'ouvrir, avec l'animation de Paladium.
         List<Card> boxes = new ArrayList<>();
-        for (BoxKind kind : BoxKind.values()) {
-            if (!Crates.config().crates().containsKey(kind.tier())) {
+        for (String tier : Crates.ordered()) {
+            BoxKind kind = BoxKind.byId(tier);
+            if (kind == null) {
                 continue;
             }
             ItemStack icon = new ItemStack(PalaBoxes.item(kind));
             long missing = PalaBoxes.PRICE - Economy.balance(player);
             Card card = Card.of(icon, MenuView.text(icon.getHoverName()), List.of(
-                            MoneyFormat.exact(PalaBoxes.PRICE), "Ouvre : " + Crates.title(kind.tier())))
+                            MoneyFormat.exact(PalaBoxes.PRICE), "Le coffre anime, a poser"))
                     .accent(0xFF9B59E8)
                     .tooltip(List.of("Un coffre anime a poser chez soi",
-                            "Clic droit : ouvre une caisse avec une cle",
+                            "Clic droit avec une " + Crates.keyName(tier) + " : il s'ouvre",
                             "Accroupi, main vide : achete une cle",
-                            "Meme butin que la caisse, l'ouverture en plus",
+                            "Meme butin qu'a la roulette, l'ouverture en plus",
                             missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) : ""));
             boxes.add(missing > 0 ? card.state(MenuView.DISABLED)
                     : card.action("box:" + kind.getSerializedName() + "|acheter"));
@@ -133,8 +134,8 @@ public final class BoutiqueController extends MenuController {
 
         return new MenuView(id(), "Boutique", "Ce qui s'achete ici ne se trouve pas en jeu", stats, List.of(
                 new MenuView.Section("BOOSTERS", "upgrade", MenuView.GRID, boosters),
-                new MenuView.Section("CAISSES", "resources", MenuView.GRID, crates),
-                new MenuView.Section("BOXES", "armor", MenuView.GRID, boxes),
+                new MenuView.Section("BOXES", "resources", MenuView.GRID, crates),
+                new MenuView.Section("COFFRES A POSER", "armor", MenuView.GRID, boxes),
                 new MenuView.Section("SERVICES", "craft", MenuView.GRID, services)), true);
     }
 
@@ -147,7 +148,7 @@ public final class BoutiqueController extends MenuController {
     }
 
 /**
-     * La bulle d'une caisse : la chance de chaque classe de lot, puis les gros
+     * La bulle d'une box : la chance de chaque classe de lot, puis les gros
      * lots (les plus rares d'abord).
      */
     private static List<String> crateTooltip(Crates.Crate crate) {
@@ -178,22 +179,6 @@ public final class BoutiqueController extends MenuController {
         return "0," + permille + " %";
     }
 
-    private static List<String> orderedCrates() {
-        var available = Crates.config().crates().keySet();
-        List<String> ordered = new ArrayList<>();
-        for (String tier : CRATE_ORDER) {
-            if (available.contains(tier)) {
-                ordered.add(tier);
-            }
-        }
-        for (String tier : new TreeSet<>(available)) {
-            if (!ordered.contains(tier)) {
-                ordered.add(tier);
-            }
-        }
-        return ordered;
-    }
-
     @Override
     protected void card(ServerPlayer player, String key, int button) {
         if (key.startsWith("booster:")) {
@@ -204,7 +189,7 @@ public final class BoutiqueController extends MenuController {
             }
         } else if (key.startsWith("key:")) {
             String tier = key.substring(4);
-            report(player, Crates.buyKey(player, tier), "Cle " + tier + " achetee.");
+            report(player, Crates.buyKey(player, tier), "Une " + Crates.keyName(tier) + " achetee.");
         } else if (key.startsWith("box:")) {
             for (BoxKind kind : BoxKind.values()) {
                 if (kind.getSerializedName().equals(key.substring(4))) {

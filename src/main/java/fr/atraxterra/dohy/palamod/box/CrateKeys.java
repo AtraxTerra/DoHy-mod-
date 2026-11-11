@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.palamod.box;
 
 import fr.atraxterra.dohy.boost.BoostData;
 import fr.atraxterra.dohy.boost.Boosters;
+import fr.atraxterra.dohy.boost.Crates;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,13 +16,14 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import java.util.Map;
 
 /**
- * Les cles de caisse du joueur : des objets dans son inventaire
- * ({@link CrateKeyItem}).
+ * Les cles des boxes du joueur : des objets dans son inventaire
+ * ({@link CrateKeyItem}), une sorte par box.
  *
  * <p>Avant, c'etait un compteur ({@link BoostData#keys}). Il reste pour deux
- * choses : les cles d'un monde d'avant, converties en objets a la connexion,
- * et un palier de caisse ajoute par un pack de donnees, qui n'a pas d'objet —
- * ses cles restent comptees.
+ * choses : les cles d'un monde d'avant, converties en objets a la connexion
+ * (celles des caisses commune, rare et legendaire deviennent des cles
+ * d'amethyste, de paladium et d'endium), et une table ajoutee par un pack de
+ * donnees, qui n'a pas d'objet — ses cles restent comptees.
  */
 @EventBusSubscriber
 public final class CrateKeys {
@@ -29,17 +31,13 @@ public final class CrateKeys {
     private CrateKeys() {
     }
 
-    /** L'objet cle d'un palier, ou {@code null} si le palier n'en a pas. */
-    public static Item item(String tier) {
-        return switch (tier) {
-            case "common" -> PalaBoxes.KEY_COMMON.get();
-            case "rare" -> PalaBoxes.KEY_RARE.get();
-            case "legendary" -> PalaBoxes.KEY_LEGENDARY.get();
-            default -> null;
-        };
+    /** L'objet cle d'une box, ou {@code null} si cette table n'en a pas (pack de donnees). */
+    public static Item item(String crate) {
+        BoxKind kind = BoxKind.byId(Crates.canonical(crate));
+        return kind == null ? null : PalaBoxes.key(kind);
     }
 
-    /** Les cles de ce palier que le joueur a sur lui. */
+    /** Les cles de cette box que le joueur a sur lui. */
     public static int count(ServerPlayer player, String tier) {
         int total = Boosters.data(player).keys(tier);
         Item item = item(tier);
@@ -113,7 +111,7 @@ public final class CrateKeys {
             }
         }
         if (converted > 0) {
-            player.sendSystemMessage(Component.literal("Tes " + converted + " cle(s) de caisse sont maintenant "
+            player.sendSystemMessage(Component.literal("Tes " + converted + " cle(s) de box sont maintenant "
                     + "des objets, dans ton inventaire.").withStyle(ChatFormatting.GOLD));
         }
     }

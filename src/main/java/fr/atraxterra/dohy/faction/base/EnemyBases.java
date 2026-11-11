@@ -5,6 +5,7 @@ import fr.atraxterra.dohy.faction.ClaimOwner;
 import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.faction.FactionData;
 import fr.atraxterra.dohy.faction.Factions;
+import fr.atraxterra.dohy.palamod.box.CrateKeys;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -75,6 +76,8 @@ public final class EnemyBases {
     private static final int SITE_ATTEMPTS = 64;
     /** Trois minutes pour charger (et generer) les chunks ; au-dela, on abandonne. */
     private static final int TIMEOUT_TICKS = 180 * 20;
+    /** La chance qu'un avant-poste pille laisse une cle Saharia ; une base en laisse une, une forteresse trois. */
+    private static final float OUTPOST_KEY_CHANCE = 0.25f;
     private static final int RETRIES = 3;
 
     static final String GUARD_TAG = "dohy_enemy_guard";
@@ -447,6 +450,16 @@ public final class EnemyBases {
                 ChatFormatting.GREEN);
         FactionApi.stat(player, "raid:base", 1);
         FactionApi.stat(player, "raid:" + tier.key(), 1);
+        // Les cles Saharia, la box du pillage : de quoi preparer le raid suivant.
+        int keys = switch (tier) {
+            case OUTPOST -> player.getRandom().nextFloat() < OUTPOST_KEY_CHANCE ? 1 : 0;
+            case BASE -> 1;
+            default -> 3;
+        };
+        if (keys > 0) {
+            CrateKeys.give(player, "saharia", keys);
+            FactionApi.tell(player, "Dans leurs coffres : " + keys + " cle(s) Saharia.", ChatFormatting.GREEN);
+        }
         if (EnemyBaseRegen.schedule(level.getServer(), player, base)) {
             FactionApi.tell(player, "Emporte le butin : dans 5 minutes la base s'efface et le terrain reprend "
                     + "ses droits.", ChatFormatting.YELLOW);
