@@ -538,6 +538,14 @@ Une entrée dont un objet n'existe pas (mod absent, tag vide) sort du tirage, et
 répartissent sur le reste. Les lots NTM sont répartis entre les classes pour que le rendement bouge
 peu : les deux colonnes du tableau restent dans la fourchette.
 
+## 6 quinquies. Donjons — les jarres
+
+Une jarre brisée donne, une fois sur quatre, **un** tirage de la réserve du donjon (la même que
+celle des coffres, bornée par le palier). Une salle en compte de 3 à 6 : en moyenne un tirage de
+plus par salle de combat, à comparer aux `2 + palier / 50` tirages du coffre de chaque joueur. La
+jarre est au premier qui la casse, pas à chacun : en groupe, le gain par joueur baisse d'autant.
+Les récompenses uniques, le butin des boss et les notes ne passent jamais par une jarre.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

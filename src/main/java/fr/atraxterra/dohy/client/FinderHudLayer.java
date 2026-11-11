@@ -47,6 +47,8 @@ public final class FinderHudLayer implements GuiLayer {
     private int found;
     private BlockPos nearest;
     private boolean loggedFailure;
+    private ItemStack active = ItemStack.EMPTY;
+    private long activeAt = Long.MIN_VALUE;
 
     @Override
     public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
@@ -67,7 +69,14 @@ public final class FinderHudLayer implements GuiLayer {
         if (player == null || level == null) {
             return;
         }
-        ItemStack held = activeStack(player, level);
+        // Ce que le joueur tient ne change pas entre deux ticks : on ne relit pas
+        // ses mains et l'enchantement de son casque a chaque image.
+        long tick = level.getGameTime();
+        if (tick != activeAt) {
+            activeAt = tick;
+            active = activeStack(player, level);
+        }
+        ItemStack held = active;
         if (held.isEmpty()) {
             shown = null;
             return;

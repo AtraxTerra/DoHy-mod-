@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X X",
+    "YZY",
+    "YZY"
+  ],
+  "key": {
+    "X": "minecraft:feather",
+    "Z": "minecraft:iron_ingot",
+    "Y": "minecraft:leather"
+  },
+  "result": {
+    "id": "palamod:travel_jumpchest",
+    "count": 1
+  }
+}

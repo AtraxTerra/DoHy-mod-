@@ -170,6 +170,46 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — donjons de Paladium, totem, optimisation
+
+Cinq lots, une PR chacun, empilés dans cet ordre après les caisses (#79) et les corrections (#80) :
+
+1. **Armure de voyage** (`feat/armure-voyage`, PALAMOD § 28) : bottes, jambières, plastron de saut,
+   casques en slime et de plongée — la récompense du Fermier 55 est enfin distribuée.
+2. **Modèles des donjons** (`feat/donjons-modeles`, § 29) : les 65 modèles Bedrock de
+   `config/rpgentities` (monstres, mini-boss, boss), animations, couleurs par palier, sons. Le
+   monstre reste vanilla ; le client dessine le modèle à sa place (`client/rpg`). Convertisseur :
+   `tools/rpg_entities.py`, espace de noms `palarpg`.
+3. **Totem de fertilité** (`feat/totem-fertilite`, § 5) : le mât sculpté de `ModelTotem` à la
+   place du cube, en modèle de bloc ; le visage luit selon le carburant (`charge`), il regarde
+   celui qui le pose (`facing`).
+4. **Donjons embellis** (`feat/donjons-embellis`, § 30) : un thème de salle par donjon
+   (`RoomTheme`), le coffre et les jarres de PalaRPG, les marchands Mammon et Mephisto.
+5. **Optimisation** (`feat/optimisation`) — ce qui a été mesuré à la lecture du code, tous les
+   gestionnaires de tick passés en revue (14 par joueur, 15 par serveur) :
+   - `EndiumCaveVision` parcourait les block entities de 81 chunks toutes les 10 ticks **pour
+     chaque joueur**, cave block ou non : elle ne cherche plus que s'il y en a un de chargé dans
+     la zone (registre tenu par `EndiumCaveBlockEntity`). C'était le seul coût par joueur non
+     borné du mod.
+   - Le totem relit ses 225 blocs avant chaque poussée (10 s) et non chaque seconde.
+   - Animations des monstres : images clés redondantes retirées à la conversion, 12 Mo → 8 Mo.
+   - Sons des monstres : 54 Mo → 13 Mo (mono 44,1 kHz) ; le jar passe d'environ 62 Mo prévus à
+     une vingtaine.
+   - HUD : solde reformaté seulement quand il change ; finder actif cherché une fois par tick.
+   Le reste est déjà cadencé (toutes les 20 à 1 200 ticks) ou sort tôt ; rien d'autre à reprendre.
+
+**Vérifié en jeu** (captures CI) : les 65 modèles dans une galerie, un palier réel de Talikus et
+de Nimbria, les quatre thèmes de salle, le coffre ouvert, les jarres, les deux marchands, le
+totem à ses quatre niveaux de charge. **Non vérifié** : les sons (la CI n'a pas de carte son),
+les animations d'attaque et de mort en mouvement (une capture est une image fixe), le gain réel
+de l'optimisation sur un serveur chargé.
+
+**Pièges relevés** : `Blocks.CHAIN` est devenu `IRON_CHAIN` ; un bloc de couleur se prend par
+`Blocks.STAINED_GLASS.pick(DyeColor)` ; `RenderLivingEvent.Pre` annulé supprime aussi le nom
+au-dessus de la tête (on le resoumet, la caméra se lit dans
+`gameRenderer.gameRenderState().levelRenderState.cameraRenderState`) ; `ffmpeg` tire au hasard le
+numéro de série Ogg sans `-fflags +bitexact` (même son, autre fichier à chaque génération).
+
 ### 2026-11-11 (suite) — corrections : recettes et bugs
 
 **Demande** : « corrige des bugs, des recettes manquantes ». Méthode : journaux du client et du

@@ -94,6 +94,11 @@ public final class EndiumCaveVision {
     }
 
     private static List<BlockPos> visible(ServerPlayer player, ServerLevel level) {
+        // Sans cave block charge dans la zone, rien a voir : on ne parcourt pas
+        // les block entities de 81 chunks deux fois par seconde pour chaque joueur.
+        if (!EndiumCaveBlockEntity.anyNear(level, player.blockPosition(), (CHUNK_RADIUS + 1) * 16)) {
+            return List.of();
+        }
         List<BlockPos> caves = new ArrayList<>();
         List<BlockPos> containers = new ArrayList<>();
         int centerX = SectionPos.blockToSectionCoord(player.getBlockX());

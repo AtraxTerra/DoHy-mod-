@@ -49,6 +49,10 @@ public final class MoneyHudLayer implements GuiLayer {
         }
     }
 
+    private Component balanceLabel;
+    private long labelBalance;
+    private int labelWidth;
+
     private void renderInner(GuiGraphicsExtractor graphics) {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
@@ -67,18 +71,23 @@ public final class MoneyHudLayer implements GuiLayer {
         trackDelta(data.balance());
 
         Font font = minecraft.font;
-        String balanceText = MoneyFormat.shortForm(data.balance());
+        // Le texte ne change qu'avec le solde : on ne le reformate pas a chaque image.
+        if (balanceLabel == null || data.balance() != labelBalance) {
+            labelBalance = data.balance();
+            balanceLabel = Component.literal(MoneyFormat.shortForm(labelBalance));
+            labelWidth = font.width(balanceLabel);
+        }
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
         int screenHeight = minecraft.getWindow().getGuiScaledHeight();
 
-        int textWidth = font.width(balanceText);
+        int textWidth = labelWidth;
         int x = screenWidth - MARGIN - textWidth;
         // Centre vertical du bord droit : hors du chemin de la barre d'effets en
         // haut a droite, et loin de la hotbar et du chat en bas.
         int y = (screenHeight - font.lineHeight) / 2;
 
         graphics.fill(x - 4, y - 3, screenWidth - MARGIN + 2, y + font.lineHeight + 1, COLOR_BACKDROP);
-        graphics.text(font, Component.literal(balanceText), x, y, COLOR_BALANCE);
+        graphics.text(font, balanceLabel, x, y, COLOR_BALANCE);
 
         renderDelta(graphics, font, screenWidth, y + font.lineHeight + 4);
     }

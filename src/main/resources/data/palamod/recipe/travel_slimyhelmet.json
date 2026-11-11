@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "Y Y"
+  ],
+  "key": {
+    "X": "minecraft:slime_ball",
+    "Y": "minecraft:diamond"
+  },
+  "result": {
+    "id": "palamod:travel_slimyhelmet",
+    "count": 1
+  }
+}

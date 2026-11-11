@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XZX",
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:titane_ingot",
+    "Z": "minecraft:glass_pane"
+  },
+  "result": {
+    "id": "palamod:travel_scubahelmet",
+    "count": 1
+  }
+}

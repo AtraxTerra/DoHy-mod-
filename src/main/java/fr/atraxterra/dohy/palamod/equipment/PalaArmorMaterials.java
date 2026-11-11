@@ -94,6 +94,22 @@ public final class PalaArmorMaterials {
      */
     public static final ArmorMaterial HOOD = material("hood", ArmorMaterials.IRON, SoundEvents.ARMOR_EQUIP_LEATHER);
 
+    /**
+     * Le reste de l'armure de voyage ({@code ItemArmorTravel}) : le meme fer
+     * vanilla que la cagoule, un materiau par piece parce que chacune a sa
+     * couche portee ({@code getArmorTexture}).
+     */
+    public static final ArmorMaterial TRAVEL_BOOTS = material("travel_boots", ArmorMaterials.IRON,
+            SoundEvents.ARMOR_EQUIP_IRON);
+    public static final ArmorMaterial TRAVEL_LEGGINGS = material("travel_leggings", ArmorMaterials.IRON,
+            SoundEvents.ARMOR_EQUIP_IRON);
+    public static final ArmorMaterial TRAVEL_JUMP = material("travel_jump", ArmorMaterials.IRON,
+            SoundEvents.ARMOR_EQUIP_IRON);
+    public static final ArmorMaterial TRAVEL_SLIMY = material("travel_slimy", ArmorMaterials.IRON,
+            SoundEvents.ARMOR_EQUIP_IRON);
+    public static final ArmorMaterial TRAVEL_SCUBA = material("travel_scuba", ArmorMaterials.IRON,
+            SoundEvents.ARMOR_EQUIP_IRON);
+
     private PalaArmorMaterials() {
     }
 

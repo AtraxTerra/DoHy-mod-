@@ -35,6 +35,7 @@ import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
@@ -331,14 +332,6 @@ public final class DungeonEvents {
         BlockState state = event.getLevel().getBlockState(pos);
         DungeonRun run = DungeonManager.runOf(player);
         boolean main = event.getHand() == InteractionHand.MAIN_HAND;
-        if (state.is(Blocks.CHEST)) {
-            event.setCanceled(true);
-            event.setCancellationResult(InteractionResult.SUCCESS);
-            if (main && run != null) {
-                run.openChest(player, pos);
-            }
-            return;
-        }
         if (state.is(Blocks.ENCHANTING_TABLE)) {
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
@@ -361,15 +354,46 @@ public final class DungeonEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)
-                || !event.getTarget().entityTags().contains(DungeonRun.MERCHANT_TAG)) {
+        Entity target = event.getTarget();
+        boolean prop = DungeonProps.is(target, DungeonProps.TAG);
+        if (!prop && !target.entityTags().contains(DungeonRun.MERCHANT_TAG)) {
+            return;
+        }
+        // Rien d'autre ne se fait sur un objet de decor : ni laisse, ni selle, ni nourriture.
+        event.setCanceled(true);
+        event.setCancellationResult(InteractionResult.SUCCESS);
+        if (!(event.getEntity() instanceof ServerPlayer player) || event.getHand() != InteractionHand.MAIN_HAND) {
+            return;
+        }
+        DungeonRun run = DungeonManager.runOf(player);
+        if (run == null) {
+            return;
+        }
+        if (prop) {
+            if (DungeonProps.is(target, DungeonProps.CHEST_TAG)) {
+                run.openChest(player, target);
+            } else if (DungeonProps.is(target, DungeonProps.JAR_TAG)) {
+                run.breakJar(player, target);
+            }
+        } else if (run.isMerchant(target)) {
+            run.greet(target);
+            DungeonMenus.openMerchant(player, run);
+        }
+    }
+
+    /** Une jarre se casse d'un coup : elle est invulnerable, le coup n'irait pas plus loin. */
+    @SubscribeEvent
+    public static void onAttackProp(AttackEntityEvent event) {
+        Entity target = event.getTarget();
+        if (!DungeonProps.is(target, DungeonProps.TAG)) {
             return;
         }
         event.setCanceled(true);
-        event.setCancellationResult(InteractionResult.SUCCESS);
-        DungeonRun run = DungeonManager.runOf(player);
-        if (event.getHand() == InteractionHand.MAIN_HAND && run != null && run.isMerchant(event.getTarget())) {
-            DungeonMenus.openMerchant(player, run);
+        if (event.getEntity() instanceof ServerPlayer player && DungeonProps.is(target, DungeonProps.JAR_TAG)) {
+            DungeonRun run = DungeonManager.runOf(player);
+            if (run != null) {
+                run.breakJar(player, target);
+            }
         }
     }
 

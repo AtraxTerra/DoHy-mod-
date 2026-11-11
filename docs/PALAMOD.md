@@ -101,9 +101,8 @@ qui n'existe pas en 1.7.10 vanilla. C'est le module `back2future` de PalaMod
 **Remplaçants** (2026-11-11) : le bonbon à déballer de PalaMod est un objet d'événement
 communautaire (`ItemCandy`), qui ne sera pas porté ; il devient 5 bouteilles d'XP du métier.
 La défense d'éléphant (Chasseur, 80) devient un bloc d'os, comme dans les recettes de cornes de
-la palamachine. Sans remplaçant, ces récompenses n'étaient pas distribuées. Restent inertes les
-quatre pièces de l'armure de voyage (Fermier, 55), non portée. `tools/palamod_jobs.py` porte la
-règle (`SUBSTITUTES`).
+la palamachine. Sans remplaçant, ces récompenses n'étaient pas distribuées. L'armure de voyage (Fermier, 55)
+est portée depuis (§ 28). `tools/palamod_jobs.py` porte la règle (`SUBSTITUTES`).
 
 **Joueurs migrés** : à la première connexion après le remplacement des skills, un joueur
 reçoit les objets de tous les paliers qu'il avait déjà franchis — leur argent avait été
@@ -232,6 +231,20 @@ gratuit).
 
 Alimentation : lingot de paladium en main, clic droit (un lingot par clic). Clic droit à main
 vide : consulter le contenu. Maj + clic droit : afficher la zone. Cassé, il rend les lingots.
+
+**Apparence** (revue le 2026-11-11). L'original le dessine avec un TESR (`ModelTotem`,
+`RenderTotem`) : un mât sculpté de deux blocs de haut — socle, trois têtes empilées, deux ailes
+en escalier — dont le visage luit de la couleur du carburant. Le portage en avait fait un cube ;
+c'est désormais le modèle d'origine, relevé au bytecode (quatorze boîtes, texture
+`models/totem.png`) et traduit en **modèle de bloc**, sans renderer de block entity. Le visage
+de `totem_layer.png` est un plan lumineux sur la tête du milieu (devant) et celle du haut
+(derrière). Deux propriétés de bloc : `facing`, le visage regarde celui qui pose le totem ;
+`charge`, de 0 à 3 — éteint à vide, puis orange (1 à 21 lingots), jaune (22 à 42), vert (43 à
+64), d'après la teinte `max(lingots / 64 / 3, 0,07)` de l'original. Un totem alimenté qui a de
+la terre fertilisée dans sa zone lâche quelques étincelles vertes chaque seconde.
+**Écarts** : la couleur va par paliers et non en continu ; le battement du visage à chaque
+poussée (`timer / 60`) n'est pas repris ; le bloc n'occupe que sa case, la moitié haute du mât
+se traverse.
 
 ---
 
@@ -2351,3 +2364,109 @@ d'éléphants »). Aucun de ces systèmes n'existe dans DoHy.
 | Tout pile le bon nombre, Oula… | déposer 100 000 / 500 000 trixium | 5 000 / 25 000 (un joueur seul, pas des milliers) |
 | Fleuriste curieux | dont la fleur de chance (lucky blocks) | les trois fleurs de PalaMod et les treize vanilla |
 | Unités de sève | 1 000 par fiole tirée (`ExtractSeveAchievement`) | pareil |
+
+## 28. Armure de voyage
+
+Relevé dans `ItemArmorTravel` : six pièces, toutes au matériau fer vanilla (défense, durabilité
+et réparation au fer). La cagoule était portée depuis le pillage (chapitre 22) ; les cinq autres
+le sont le 2026-11-11, avec leurs recettes de `PRegister_Craft` et leur couche portée
+(`getArmorTexture`).
+
+| Pièce | Effet | Recette |
+|---|---|---|
+| Bottes de voyage | monter d'un bloc sans sauter (`stepHeight = 1`) | 2 plumes, 2 lingots de titane |
+| Jambières de voyage | vitesse III | 3 cuirs, 2 plumes, 2 lingots de titane |
+| Plastron de saut | saut III | 2 plumes, 4 cuirs, 2 lingots de fer |
+| Casque en slime | aucune chute | 3 boules de slime, 2 diamants |
+| Casque de plongée | l'air reste plein sous l'eau (respiration aquatique) | 8 lingots de titane autour d'une vitre |
+
+Les effets passent par `ArmorEffects`, comme ceux des autres armures. Écart : le casque en slime
+freinait aussi la chute quand la tête était dans un bloc plein (sauter pour remonter) ; ce cas de
+bord n'est pas porté. Les bottes, les jambières, le plastron et le casque en slime sont la
+récompense du Fermier au niveau 55, qui est maintenant distribuée.
+
+
+## 29. Donjons : les modèles de Paladium
+
+Les monstres des donjons étaient des monstres vanilla renommés. Ils portent maintenant les
+modèles de Paladium (`config/rpgentities`, fournis par le joueur le 2026-11-11) : les six monstres
+de chaque donjon (le petit noyé de Manelios en plus), les vingt mini-boss et les vingt boss —
+**65 modèles**, leurs animations, leurs textures par palier (jaune, orange, rouge, noir, comme
+la couleur du nom) et leurs sons.
+
+**Le monstre reste un monstre vanilla.** Rien ne change à son IA, à sa boîte de collision ni
+aux combats. Le serveur lui pose une *apparence* à l'apparition (`RpgSkins`, attachement
+synchronisé `palamod:rpg_skin` : modèle, couleur, échelle) ; le client annule son rendu
+(`RenderLivingEvent.Pre`) et dessine le modèle à sa place (`client/rpg`).
+
+| Étape | Où | Ce qui est fait |
+|---|---|---|
+| Conversion | `tools/rpg_entities.py` | Géométrie Bedrock copiée telle quelle ; animations normalisées (le molang est échantillonné à 20 Hz, les images clés redondantes retirées) ; textures animées découpées en images ; sons réencodés en mono 44,1 kHz (54 Mo → 13 Mo — le jeu ne place dans l'espace qu'un son mono) |
+| Géométrie | `RpgGeometry` | Montée en `ModelPart` vanilla à la lecture : conventions de `bedrock_model.py`, UV par face, boîtes tournées en pièces enfants |
+| Animation | `RpgAnimator` | D'après ce que le jeu synchronise déjà : attente et marche mélangées selon la vitesse ; attaque (bras balancé, arc bandé, sort, attaque propre du golem, du ravageur, du zoglin, du gardien) ; blessure ; mort, jouée dans la seconde que le jeu laisse ; apparition |
+| Sons | `RpgSkins` | Les cris vanilla (attente, blessure, mort) d'un monstre habillé sont remplacés par ceux de son modèle ; ses pas sont tus ; l'attaque joue quand son coup porte |
+
+Tout est dans l'espace de noms `palarpg` (assets et `data/palarpg/rpg_skins.json`, la table
+« quel modèle pour quel monstre »), régénérable par
+`python3 -I tools/rpg_entities.py <rpgentities> <jar PalaRPG extrait>`.
+
+**Tailles.** Un monstre a la taille de son modèle (le colosse, grossi par son attribut
+d'échelle, l'est aussi à l'écran). Un boss garde la taille de Paladium, ramenée à ce que la
+salle contient (6,5 blocs de haut, 11 de large : les dragons font 20 blocs d'envergure).
+**Écart assumé** : la boîte de collision d'un boss reste celle de son monstre vanilla, plus
+petite que le modèle ; on le frappe au corps.
+
+**Attribution des modèles.** Les noms des boss viennent du wiki, les modèles de leurs dossiers
+(`talikus_warhog` pour le Sanglier de guerre, `nimbria_spinner` pour la Fileuse…). Deux
+correspondances sont des choix : le mage de Manelios est `manelios_totem` (`manelios_mage`,
+7,5 blocs de haut, est le boss « Mage de Manelios », comme `vitalys_boss_mage`) ; les
+« Jumeaux noyés » sont `manelios_shark`. Les projectiles et les effets de Paladium (nuages,
+portails secondaires, tentacules) ne sont pas portés : les attaques restent celles du monstre
+vanilla et des capacités de boss du chapitre 18.
+
+**Non repris** : les musiques des salles (non demandées), le sac de frappe.
+
+## 30. Donjons : salles décorées, coffre, jarres, marchands
+
+Demandé le 2026-11-11 : des donjons plus beaux, avec les ressources de Paladium. Le wiki ne
+décrit pas les salles ; il donne à chaque donjon un métier, les textures un élément, et les
+monstres de `rpgentities` une allure. Les thèmes en découlent (`RoomTheme`) :
+
+| Donjon | Thème | Sol | Murs | Aux murs | Au plafond | Meubles |
+|---|---|---|---|---|---|---|
+| Talikus (Fermier) | grange et serres | terre battue, mousse, fleurs | épicéa sur torchis, piliers de chêne | serres vitrées (azalées) | poutres de chêne noir, racines, fleurs à spores | bottes de foin, citrouilles, pastèques |
+| Nimbria (Mineur) | galerie de mine | ardoise, tuf, une voie ferrée | briques d'ardoise, étais de chêne | **filons de minerais de Paladium** (améthyste, titane, paladium) et d'or, diamant, émeraude | étais, stalactites | blocs de minerai brut, améthystes |
+| Vitalys (Chasseur, monstres de feu) | forge | pierre noire, braises affleurantes | briques du Nether, basalte poli | vitraux orange sur de la lave | lianes pleureuses | colonnes de basalte, os |
+| Manelios (Alchimiste) | temple englouti | prismarine, lanternes de mer affleurantes | prismarine, colonnes de quartz | aquariums (eau, coraux) | cristaux d'améthyste | prismarine, cristaux |
+
+Communs à toutes : une bordure et un médaillon au sol, une assise et un couronnement aux murs,
+une fenêtre haute par travée (murs nord, est, ouest ; le mur sud, où s'ouvrent les portes, reste
+nu), un plafond à caissons — une poutre dans l'axe de chaque pilier, une lanterne pendue à
+chaque croisement, au bout d'une chaîne plus longue dans la salle du boss. La salle de boost a
+son autel entre quatre lanternes, la salle du marchand un étal. Les obstacles gardent leur rôle
+de couvert ; plantes, mousse et rails se traversent. **Rien ne change au jeu** : mêmes
+dimensions, mêmes points d'apparition (une case occupée est évitée), mêmes boutons d'énigme
+(les fenêtres sont au-dessus). Les niches des fenêtres dépassent de deux blocs ; la salle les
+efface avec le reste.
+
+### Le décor animé de PalaRPG
+
+Le coffre, la jarre et les deux marchands viennent du jar PalaRPG 2.0.0
+(`assets/palarpg/models/blocks/dungeon`, `…/entities/dungeon/merchant`), modèles, animations et
+sons. Ils passent par le rendu des monstres (§ 29) : `RpgSkin.pose` nomme l'animation jouée, et
+la changer côté serveur la relance chez les clients (`"open>open_idle"` : la première une fois,
+puis la seconde).
+
+- **Coffre** (`DungeonProps`) : à la fin d'une salle, à la place du coffre vanilla. Commun après
+  un combat, rare après une énigme ou un mini-boss, légendaire après un boss — la couleur ne
+  change pas le contenu. Clic droit : le premier joueur l'ouvre, il reste ouvert ; chacun son
+  butin, comme avant. Sons de PalaRPG (apparition, ouverture par rareté).
+- **Jarres** : trois à six par salle de combat, d'énigme ou de boss, contre les murs. Un coup
+  (ou un clic droit) la brise ; **une fois sur quatre** elle lâche un tirage de la réserve du
+  donjon, dans le sac (voir `BALANCE.md`).
+- **Marchands** : Mammon ou Mephisto, au hasard, à la place du villageois. Même boutique.
+
+Coffre et jarres sont portés par une entité immobile, muette et invulnérable (un cochon sans
+IA dont on ne voit que le modèle), qui n'est pas un monstre et ne compte pas pour finir la salle.
+**Écart** : PalaRPG en fait des blocs ; ici ce sont des objets posés, ce qui évite un rendu de
+block entity et réutilise les animations telles quelles. Le « hub » de PalaRPG n'est pas porté.
