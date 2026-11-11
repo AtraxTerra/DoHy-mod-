@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-09
+Dernière mise à jour : 2026-11-11
 
 ---
 
@@ -169,6 +169,19 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-11 (suite) — caisses : butin PalaMod et NTM, et une roulette
+
+**Fait** : les trois caisses gardent leurs prix (100 k, 5 M, 150 M) et reçoivent un butin PalaMod
+(paladium, paladium vert, trixium, findium, endium, panoplies et outils enchantés, pierres
+légendaires, gant complet) et NTM NEXT (lingots par tag, pièces de machine), en quatre classes :
+commun, rare, épique, légendaire. Une entrée accepte un tag (`c:ingots/lead`) et un lot de plusieurs
+objets (`items`) ; une entrée dont un objet manque sort du tirage. Chaque palier rend 80 à 95 % de
+son prix en valeur boutique, avec et sans NTM : `tools/crate_values.py`. L'ouverture affiche une
+roulette (`CrateScreen`) qui s'arrête sur le lot tiré par le serveur, couleur et son selon la
+classe ; le message du gain attend la fin, et un lot épique ou légendaire est annoncé à tous.
+Vérifié : avec NTM, les 55 entrées sont tirables ; sans, 41. Détail dans `docs/BALANCE.md`
+(§ 6 quater) et `docs/INTERFACES.md` (lot 6).
 
 ### 2026-11-11 (suite) — inventaire : les menus à portée de clic
 

@@ -496,11 +496,53 @@ produisent le fer à 15. Ce qui ne sort que de la mine est `FOUND` : paladium ve
 40 000. Les rapports de conversion des machines sont tenus : au crusher, 15 titanes coûtent
 16 améthystes et 15 paladiums 32 titanes, donc aucun prix ne rend une conversion gratuite.
 
+## 6 quater. Caisses — le butin
+
+Trois paliers, aux prix du chapitre de progression : clé commune **100 k**, rare **5 M**, légendaire
+**150 M**. Le butin vient de PalaMod (lingots et blocs, paladium vert, trixium, findium, endium,
+panoplies et outils enchantés, pierres légendaires, gant complet) et de NTM NEXT (lingots par tag,
+pièces de machine), plus de l'argent.
+
+### La règle
+
+Chaque palier rend **80 à 95 % de son prix en valeur boutique** : le prix d'achat au shop, ou, pour
+un objet qui ne s'achète pas, ce que coûtent ses ingrédients au shop. `tools/crate_values.py` le
+calcule et sort en erreur hors de la fourchette. En liquide, la caisse prend bien plus : un objet
+se revend au prix de base, le quart du prix boutique, et seule une partie du butin est de l'argent.
+
+| Classe | Chance | Lot moyen | Exemples |
+|---|---|---|---|
+| Commun | ~68 % | ~0,5 × le prix | 16 blocs de paladium, 12 trixium, 22 lingots de lithium, 6 blocs d'endium |
+| Rare | ~24 % | ~1,2 × | outils en paladium vert enchantés, 5 lingots d'endium, les six pierres |
+| Épique | ~7 % | ~2,5 × | 2 pépites d'endium, plastron en endium, 28 blocs d'endium |
+| Légendaire | ~1 % | 5 à 14 × | lingot d'endium, pierre légendaire aléatoire, gant complet, argent |
+
+| Palier | Avec NTM | Sans NTM |
+|---|---|---|
+| Commune (100 k) | 87,8 % | 89,0 % |
+| Rare (5 M) | 87,5 % | 88,0 % |
+| Légendaire (150 M) | 84,5 % | 90,2 % |
+
+### Les cotes fixées à la main
+
+- **Pierre légendaire** : 20 M. Elle ne s'achète pas ; c'est quatre clés rares, et le gros lot de
+  la caisse rare.
+- **Gant complet** : six pierres plus sa recette, ~123 M. C'est le lot légendaire de la caisse
+  légendaire, en dessous du prix de la clé : sa rareté (0,7 %) et ses effets font sa valeur.
+- **Enderchest de poche** 1,5 M et **fabrique à nuage** 400 k : les récompenses du concours Trixium.
+- **Enchantement** : 1 500 par niveau. Un outil en paladium enchanté vaut surtout son enchantement.
+
+### Sans NTM NEXT
+
+Une entrée dont un objet n'existe pas (mod absent, tag vide) sort du tirage, et les chances se
+répartissent sur le reste. Les lots NTM sont répartis entre les classes pour que le rendement bouge
+peu : les deux colonnes du tableau restent dans la fourchette.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas
   (titane, cuivre rouge, carbone, silicium, caoutchouc) sont les premières à revoir si une
   partie montre un écart.
 - ~~**COMPONENT**~~ : catégorie supprimée le 2026-11-05, elle n'a jamais contenu d'item
-- **Caisses** : table de loot à écrire
+- ~~**Caisses**~~ : tables écrites le 2026-11-11 (§ 6 quater)
 - **Niveau global** : barème d'XP par type de jalon à fixer une fois les contrats en jeu

@@ -1812,10 +1812,11 @@ quatre autres n'était jamais écrit dans l'original : on peut enchaîner deux p
 
 ### Obtention — au choix du joueur
 
-Les lucky blocks et les événements de Paladium n'existent pas ici. La pierre aléatoire est dans la
-**caisse rare** (poids 4 sur 104) et la **caisse légendaire** (10 sur 112), le gant complet dans la
-**caisse légendaire** (2 sur 112). Une entrée de caisse accepte maintenant des composants
-(`components`), ce qui permet le gant garni.
+Les lucky blocks et les événements de Paladium n'existent pas ici. La pierre aléatoire est le gros
+lot de la **caisse rare** (6 pour mille) ; la **caisse légendaire** en donne quatre d'un coup (lot
+commun), les six pierres d'un coup (lot rare), et le **gant complet** (7 pour mille). Une entrée de
+caisse accepte des composants (`components`), ce qui permet le gant garni, et un lot de plusieurs
+objets (`items`). Voir BALANCE § 6 quater.
 
 ### Ce qui n'est pas porté
 
