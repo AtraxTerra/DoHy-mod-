@@ -2786,7 +2786,8 @@ ouvertes à la roulette, et six boxes de PalaMod qui les ouvraient deux par deux
 demandé de tout regrouper dans les boxes de PalaMod, avec **six butins** et **la roulette
 gardée**. Les trois caisses sont donc devenues les boxes d'améthyste, de paladium et d'endium —
 mêmes prix, mêmes tables — et Saharia, Halloween et Trixium ont reçu chacune une table et un prix
-(`BALANCE.md` § 6 quater). Rien n'est perdu d'un monde d'avant :
+(`BALANCE.md` § 6 quater). Les six portent des lots de NTM NEXT, qui sortent du tirage si le mod
+n'est pas là. Rien n'est perdu d'un monde d'avant :
 
 - les objets `crate_key_common`, `_rare` et `_legendary` restés dans un coffre ou un inventaire
   deviennent `crate_key_amethyst`, `_paladium` et `_endium` au chargement (alias de registre,

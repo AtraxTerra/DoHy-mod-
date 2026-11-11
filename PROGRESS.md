@@ -186,7 +186,10 @@ trois boxes et trois habillages) et **la roulette gardée**. Détail : `docs/PAL
 - `data/crates.json` : six tables sous l'identifiant de la box. Améthyste, paladium et endium
   reprennent telles quelles les caisses commune, rare et légendaire ; Saharia (1 M, le pillage),
   Halloween (20 M, la chasse et les withers) et Trixium (50 M, le voyage et l'endium) sont neuves.
-  `tools/crate_values.py` : les six rendent de 84,5 à 90,2 % de leur prix.
+  `tools/crate_values.py` : les six rendent de 84,5 à 90,3 % de leur prix. Les trois neuves ont
+  reçu ensuite leurs lots **NTM NEXT** (« et les loot de NTM NEXT dans ces box ? ») : plutonium,
+  lithium et pièces de machine pour Saharia, contrôleurs et moteurs en desh pour Halloween et
+  Trixium, 14,5 % du tirage, répartis entre les classes.
 - Six clés (`crate_key_<box>`), l'illustration de chaque box de PalaShop. `BoxKind.crate()` : une
   box ouvre sa propre table.
 - Boutique : la section CAISSES disparaît ; BOXES (clés et roulette) et COFFRES À POSER.

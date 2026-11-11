@@ -516,9 +516,17 @@ boxes, six butins »).
 | Trixium | 50 M | le voyage et l'endium en lingots : enderchests de poche, coffres et seedplanters en endium, pierres légendaires | 24 blocs d'endium |
 | Endium | 150 M | panoplies en endium, pierres, usine NTM | gant en endium complet |
 
-Le butin vient de PalaMod et, pour les trois boxes de métal, de NTM NEXT (lingots par tag, pièces
-de machine), plus de l'argent. Les trois boxes à thème n'ont pas de lot NTM : elles rendent la
-même chose avec et sans.
+Le butin vient de PalaMod et de **NTM NEXT** (lingots par tag, pièces de machine), plus de
+l'argent. Les six boxes portent des lots NTM :
+
+| Box | Lots NTM NEXT | Part du tirage |
+|---|---|---|
+| Améthyste | lingots de plomb, d'uranium et d'aluminium, moteurs, circuits de base et avancés | 24 % |
+| Saharia | 22 lingots de plutonium, pièces de machine (carte à condensateurs, circuits, moteurs), 11 lingots de lithium, 5 circuits avancés | 14,5 % |
+| Paladium | lingots de lithium, machines avancées, contrôleurs | 26 % |
+| Halloween | 3 contrôleurs, 6 moteurs en desh, l'automate (5 et 5), 16 contrôleurs | 14,5 % |
+| Trixium | 8 contrôleurs, 16 moteurs en desh, la chaîne de montage (12 et 15), l'atelier (24 et 32) | 14,5 % |
+| Endium | 24 contrôleurs, 48 moteurs en desh, l'usine (64 et 64) | 22 % |
 
 ### La règle
 
@@ -537,10 +545,10 @@ se revend au prix de base, le quart du prix boutique, et seule une partie du but
 | Box | Avec NTM | Sans NTM |
 |---|---|---|
 | Améthyste (100 k) | 87,8 % | 89,0 % |
-| Saharia (1 M) | 89,1 % | 89,1 % |
+| Saharia (1 M) | 89,3 % | 90,3 % |
 | Paladium (5 M) | 87,5 % | 88,0 % |
-| Halloween (20 M) | 86,3 % | 86,3 % |
-| Trixium (50 M) | 88,3 % | 88,3 % |
+| Halloween (20 M) | 86,0 % | 87,4 % |
+| Trixium (50 M) | 88,4 % | 89,5 % |
 | Endium (150 M) | 84,5 % | 90,2 % |
 
 ### Les pierres légendaires, box par box
@@ -549,11 +557,11 @@ La pierre est cotée 20 M. Trois boxes de plus en donnent, ce qui les rend moins
 mais jamais moins chères qu'au marché, où elles passent deux jours sur cinq entre 14 M et 32 M
 (§ 6 decies) :
 
-| Box | Pierres par clé, en moyenne | Soit, par pierre |
+| Box | Pierres par clé, en moyenne (avec NTM) | Soit, par pierre |
 |---|---|---|
 | Paladium | 0,006 | ~830 M |
-| Halloween | 0,136 | ~150 M |
-| Trixium | 0,30 | ~170 M |
+| Halloween | 0,12 | ~170 M |
+| Trixium | 0,26 | ~190 M |
 | Endium | 0,76 (et le gant : 0,04 de plus) | ~190 M |
 
 ### Les cotes fixées à la main
