@@ -2435,6 +2435,15 @@ vanilla et des capacités de boss du chapitre 18.
 
 **Non repris** : les musiques des salles (non demandées), le sac de frappe.
 
+**Avec Flywheel** (et ses dérivés : Crankshaft, Vanillin). Ces moteurs dessinent les créatures
+vanilla par instances, sans passer par le rendu du jeu : `RenderLivingEvent.Pre` n'est jamais
+émis, et le monstre de donjon restait un zombie ordinaire. `FlywheelCompat` enveloppe, par
+réflexion, le « visualiseur » des types de créature qui portent une apparence : pour une créature
+habillée il ne crée rien et rend la main au jeu, pour les autres il laisse faire l'original.
+Sans Flywheel, la classe ne fait rien. Vérifié avec Crankshaft 1.6.0 chargé (captures : sans
+l'adaptation, six zombies ; avec, les six modèles). L'extraction des états de rendu passe sous
+verrou, Crankshaft la faisant sur plusieurs fils.
+
 ## 30. Donjons : salles décorées, coffre, jarres, marchands
 
 Demandé le 2026-11-11 : des donjons plus beaux, avec les ressources de Paladium. Le wiki ne
