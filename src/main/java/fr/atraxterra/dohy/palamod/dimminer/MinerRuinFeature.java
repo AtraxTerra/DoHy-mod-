@@ -44,12 +44,22 @@ import java.util.Optional;
  * </ul>
  * En surface ({@code buried} faux), la ruine se pose sur un sol a peu pres
  * plat et hors de l'eau, une lanterne pour la voir dans la nuit. Sous terre,
- * c'est une salle fermee de 7 x 7, taillee dans la roche, aux memes materiaux.
+ * c'est une salle fermee de 7 x 7, taillee dans la roche, aux memes materiaux,
+ * sans lumiere chez les monstres.
  *
- * <p>Le spawner porte des regles d'apparition a lui ({@code
- * custom_spawn_rules}, lumiere de 0 a 15) : sans elles, la nuit fixe de la
- * dimension interdirait les betes (il leur faut de la lumiere et de l'herbe)
- * et sa lumiere du ciel les monstres en surface.
+ * <p><b>Les regles d'apparition.</b> La dimension est une nuit fixe ou aucun
+ * monstre n'apparait a la lumiere du ciel, et ou les betes n'ont jamais assez
+ * de lumiere.
+ * <ul>
+ *   <li>En surface, le spawner porte ses propres regles ({@code
+ *       custom_spawn_rules}, lumiere de 0 a 15) : elles remplacent celles de la
+ *       creature.</li>
+ *   <li>Sous terre, ces regles ne valent rien : elles lisent la lumiere du ciel
+ *       <i>assombrie par la nuit</i>, negative la ou le ciel ne porte pas, donc
+ *       hors de toute plage permise (verifie en jeu : aucune case valide). Les
+ *       salles suivent donc les regles ordinaires : noires pour les monstres,
+ *       eclairees et sur herbe pour les betes.</li>
+ * </ul>
  */
 public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
 
@@ -104,7 +114,7 @@ public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
                 default -> pen(site, Blocks.SPRUCE_FENCE, Blocks.SPRUCE_PLANKS, Blocks.SPRUCE_SLAB, true);
             }
         }
-        site.spawner(0, 0, 0, kind.type());
+        site.spawner(0, 0, 0, kind.type(), !buried);
         site.settle();
         return true;
     }
@@ -249,9 +259,15 @@ public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
                 }
             }
         }
-        BlockState light = kind == Kind.COW || kind == Kind.PIG ? Blocks.LANTERN.defaultBlockState()
-                : Blocks.SOUL_LANTERN.defaultBlockState();
-        site.set(HALF, 0, HALF, light);
+        if (kind == Kind.COW || kind == Kind.PIG) {
+            // Quatre lanternes au plafond : plus de 8 de lumiere sur tout le sol, il en faut aux betes.
+            BlockState lantern = Blocks.LANTERN.defaultBlockState().setValue(BlockStateProperties.HANGING, true);
+            for (int x = -2; x <= 2; x += 4) {
+                for (int z = -2; z <= 2; z += 4) {
+                    site.set(x, 3, z, lantern);
+                }
+            }
+        }
         switch (kind) {
             case ZOMBIE -> {
                 for (int[] corner : new int[][]{{-HALF, -HALF}, {HALF, -HALF}, {-HALF, HALF}}) {
@@ -308,7 +324,8 @@ public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
                     : site.pick(Blocks.SANDSTONE, Blocks.CUT_SANDSTONE, Blocks.SANDSTONE);
             case COW -> y == -1 ? Blocks.GRASS_BLOCK.defaultBlockState()
                     : site.pick(Blocks.OAK_PLANKS, Blocks.OAK_PLANKS, Blocks.STRIPPED_OAK_LOG);
-            case PIG -> y == -1 ? site.pick(Blocks.MUD, Blocks.COARSE_DIRT)
+            // Le sol reste surtout de l'herbe : un cochon n'apparait que sur elle.
+            case PIG -> y == -1 ? site.pick(Blocks.GRASS_BLOCK, Blocks.GRASS_BLOCK, Blocks.GRASS_BLOCK, Blocks.MUD)
                     : site.pick(Blocks.SPRUCE_PLANKS, Blocks.SPRUCE_PLANKS, Blocks.STRIPPED_SPRUCE_LOG);
         };
     }
@@ -445,11 +462,18 @@ public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
             set(0, 1, -HALF, Blocks.AIR.defaultBlockState());
         }
 
-        /** Le spawner, avec ses propres regles d'apparition : toute lumiere, tout sol. */
-        void spawner(int x, int y, int z, EntityType<?> type) {
+        /**
+         * Le spawner. {@code free} : avec ses propres regles d'apparition (toute
+         * lumiere, tout sol), pour la surface ; sinon celles de la creature.
+         */
+        void spawner(int x, int y, int z, EntityType<?> type, boolean free) {
             BlockPos pos = at(x, y, z).immutable();
             level.setBlock(pos, Blocks.SPAWNER.defaultBlockState(), Block.UPDATE_CLIENTS);
             if (!(level.getBlockEntity(pos) instanceof SpawnerBlockEntity spawner)) {
+                return;
+            }
+            if (!free) {
+                spawner.setEntityId(type, random);
                 return;
             }
             CompoundTag entity = new CompoundTag();
@@ -459,6 +483,7 @@ public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
                     Optional.empty());
             CompoundTag tag = new CompoundTag();
             SpawnData.CODEC.encodeStart(NbtOps.INSTANCE, data).result().ifPresent(encoded -> tag.put("SpawnData", encoded));
+            // Niveau nul : sinon le spawner demande une mise a jour du bloc en pleine generation.
             spawner.getSpawner().load(null, pos, TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(),
                     tag));
         }

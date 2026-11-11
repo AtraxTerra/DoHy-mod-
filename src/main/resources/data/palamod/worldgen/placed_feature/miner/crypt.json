@@ -2,12 +2,8 @@
   "feature": "palamod:miner_crypt",
   "placement": [
     {
-      "type": "minecraft:count",
-      "count": 2
-    },
-    {
       "type": "minecraft:rarity_filter",
-      "chance": 12
+      "chance": 10
     },
     {
       "type": "minecraft:in_square"

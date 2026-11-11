@@ -5309,23 +5309,23 @@ def main():
 
     # Les ruines a spawner (MinerRuinFeature) : les salles a monstres que la
     # dimension n'a pas, ou le marteau des cavernes recolte ses ames. En
-    # surface, une ruine tous les 20 chunks environ, posee sur le sol ; sous
-    # terre, deux essais par chunk a une chance sur 12, que la roche valide
-    # (une salle ne se taille ni dans une grotte ni dans un lac).
+    # surface, un essai par chunk a une chance sur 9, que le sol valide une
+    # fois sur deux en plaine (mesure : une ruine tous les 18 chunks) ; sous
+    # terre, une chance sur 10, que la roche valide presque toujours (une
+    # salle ne se taille ni dans une grotte ni dans un lac).
     for feature in ("miner_ruin", "miner_crypt"):
         write("data/%s/worldgen/configured_feature/%s.json" % (NS, feature),
               {"type": "%s:%s" % (NS, feature), "config": {}})
     write("data/%s/worldgen/placed_feature/miner/ruin.json" % NS, {
         "feature": "%s:miner_ruin" % NS,
         "placement": [
-            {"type": "minecraft:rarity_filter", "chance": 20},
+            {"type": "minecraft:rarity_filter", "chance": 9},
             {"type": "minecraft:in_square"},
             {"type": "minecraft:heightmap", "heightmap": "OCEAN_FLOOR_WG"},
             {"type": "minecraft:biome"},
         ],
     })
-    placed("miner/crypt", "miner_crypt", [{"type": "minecraft:count", "count": 2},
-                                          {"type": "minecraft:rarity_filter", "chance": 12}], -48, 48)
+    placed("miner/crypt", "miner_crypt", [{"type": "minecraft:rarity_filter", "chance": 10}], -48, 48)
 
     # Un seul biome, fixe : les plaines de 26.2 sans pluie, sans aucun mob
     # (l'original annulait tout EntityMob) et sans salle a monstres — les
