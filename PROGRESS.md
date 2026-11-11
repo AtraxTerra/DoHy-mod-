@@ -170,6 +170,22 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — le clicker
+
+**Demande** : « ajoute le clicker, aide-toi du wiki et des fichiers à ta disposition ». Le mod
+d'origine, PalaClicker 6.1.2, était dans le client Paladium du joueur (`.paladium/mods`), avec ses
+traductions (`config/translations/fr_FR.trad`) : règles relevées au bytecode, tables
+reconstituées par `tools/clicker_data.py` (traductions, relevés de la communauté, wiki). Détail :
+`docs/PALAMOD.md` § 31, `docs/BALANCE.md` § 6 sexies.
+
+**Fait** (`feat/clicker`) : `palamod/clicker` (tables, données du joueur, règles, vue),
+`ClickerScreen`, la carte « Clicker » du menu et `/clicker`. 35 bâtiments, 195 améliorations,
+40 offres de Clic Shop.
+
+**À savoir pour la suite** : la production ne tourne qu'en jeu, comme l'original — en solo, un
+joueur occasionnel n'ira pas au bout des 35 bâtiments. Une production hors ligne serait un écart
+de plus ; elle n'est pas faite.
+
 ### 2026-11-11 (suite) — donjons de Paladium, totem, optimisation
 
 Cinq lots, une PR chacun, empilés dans cet ordre après les caisses (#79) et les corrections (#80) :

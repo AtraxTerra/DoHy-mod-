@@ -117,6 +117,15 @@ public final class DoHyAttachments {
                     .copyOnDeath()
                     .build());
 
+    /** Le clicker : ClicCoins, batiments, ameliorations, rayons du Clic Shop. Conserve a la mort. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.palamod.clicker.ClickerData>> CLICKER =
+            ATTACHMENT_TYPES.register("clicker",
+                    () -> AttachmentType.builder(fr.atraxterra.dohy.palamod.clicker.ClickerData::new)
+                            .serialize(fr.atraxterra.dohy.palamod.clicker.ClickerData.MAP_CODEC,
+                                    data -> !data.isEmpty())
+                            .copyOnDeath()
+                            .build());
+
     /** Pieces exposees au musee. Conservees a la mort : un don est definitif. */
     /**
      * Les ameliorations permanentes achetees.

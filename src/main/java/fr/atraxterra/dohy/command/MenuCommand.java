@@ -29,6 +29,11 @@ public final class MenuCommand {
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(menu());
         event.getDispatcher().register(boutique());
+        // Le clicker : le raccourci « clicker » de Paladium.
+        event.getDispatcher().register(Commands.literal("clicker").executes(ctx -> {
+            fr.atraxterra.dohy.palamod.clicker.Clicker.open(ctx.getSource().getPlayerOrException());
+            return 1;
+        }));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> menu() {
