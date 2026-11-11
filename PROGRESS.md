@@ -170,6 +170,22 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 — NTM NEXT : minerais et pièces de machine
+
+**Fait** : le shop NTM passe de 223 items à 65, sur demande. Deux familles : les minerais (dix
+matières brutes à la vente, leurs lingots à l'achat) et 45 pièces de machine à l'achat
+(plaques, fils, bobines, tuyaux, boulons, moteurs, circuits jusqu'à l'unité de contrôle). La
+rareté suit la cote *Difficulty of Production* du wiki de NTM, sur huit crans qui gardent les
+quatre anciens prix aux crans pairs. Les minerais se rattachent par sous-tag exact, plus par
+mot-clé. Le prix d'une pièce est 115 % du coût de ses ingrédients par la recette la moins chère,
+calculé par `tools/gen_ntm_prices.py` sur les recettes du mod.
+
+**Corrigé au passage** : la matière brute de schrabidium se vendait 51 203 l'unité, alors que son
+minerai ne naît que d'une explosion nucléaire sur de l'uranium. Elle n'est plus au shop.
+
+**Cotes choisies faute de wiki** : titane (Easy), cuivre rouge, carbone (Easy), silicium
+(Easy-Medium), caoutchouc (Medium). Les premières à revoir.
+
 ### 2026-11-10 (suite) — interfaces, lot 2
 
 **Fait** : une vue de menu générique (`MenuView` / `MenuScreen` : titre, cartouche de chiffres,
