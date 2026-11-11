@@ -561,7 +561,7 @@ retour) ; à 3 h par jour, 13 et 21. Les offres ouvertes à ces rangs :
 
 | Rang atteint | Offres de la semaine les plus chères (valeur boutique) |
 |---|---|
-| 6 à 8 | 64 lingots de paladium (18,6 k), 16 diamants (64 k), une clé de Talikus ou de Nimbria (11 k) |
+| 5 à 9 | 64 lingots de paladium (18,6 k), 16 diamants (64 k), une clé de Talikus ou de Nimbria (11 k) |
 | 11 à 15 | 8 blocs de paladium (20,9 k), 16 lingots de paladium vert (32 k), clé de Vitalys |
 | 21 et plus | 3 fragments d'endium (53 k), puis une pépite (160 k), puis un lingot d'endium (1,44 M) au rang 31 |
 
