@@ -28,7 +28,7 @@
     "manelios": {
       "melee": "manelios_melee",
       "ranged": "manelios_distance",
-      "mage": "manelios_mage",
+      "mage": "manelios_totem",
       "flying": "manelios_flying",
       "assassin": "manelios_assassin",
       "tank": "manelios_tank",
@@ -74,7 +74,7 @@
     "Seigneur de Manelios": "manelios_boss",
     "Leviathan": "manelios_leviathan",
     "Kraken": "manelios_kraken",
-    "Mage de Manelios": "manelios_totem",
+    "Mage de Manelios": "manelios_mage",
     "Dragon de Manelios": "manelios_dragon"
   },
   "models": {

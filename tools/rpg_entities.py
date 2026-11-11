@@ -47,7 +47,7 @@ MOBS = {
                 "flying": "nimbria_flying", "assassin": "nimbria_assassin", "tank": "nimbria_tank"},
     "vitalys": {"melee": "vitalys_melee", "ranged": "vitalys_distance", "mage": "vitalys_mage",
                 "flying": "vitalys_flying", "assassin": "vitalys_assassin", "tank": "vitalys_tank"},
-    "manelios": {"melee": "manelios_melee", "ranged": "manelios_distance", "mage": "manelios_mage",
+    "manelios": {"melee": "manelios_melee", "ranged": "manelios_distance", "mage": "manelios_totem",
                  "flying": "manelios_flying", "assassin": "manelios_assassin", "tank": "manelios_tank",
                  # Les deux petits noyes qui naissent d'un guerrier de Manelios.
                  "split": "manelios_melee_tiny"},
@@ -72,7 +72,7 @@ BOSSES = {
     "Jumeaux noyes": "manelios_shark", "Davy Jones": "manelios_davy_jones",
     "Poisson-globe": "manelios_pufferfish", "Hydre": "manelios_hydra", "Crabe": "manelios_crab",
     "Seigneur de Manelios": "manelios_boss", "Leviathan": "manelios_leviathan", "Kraken": "manelios_kraken",
-    "Mage de Manelios": "manelios_totem", "Dragon de Manelios": "manelios_dragon",
+    "Mage de Manelios": "manelios_mage", "Dragon de Manelios": "manelios_dragon",
 }
 
 # Les montures volantes jouent leurs variantes « _flying » quand elles existent.
