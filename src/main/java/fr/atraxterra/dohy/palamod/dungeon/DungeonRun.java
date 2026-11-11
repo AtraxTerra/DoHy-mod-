@@ -412,11 +412,13 @@ final class DungeonRun {
         mob.setPersistenceRequired();
         mob.addTag(TAG);
         mob.setCustomName(Component.literal(dungeon.mobName(kind)).withStyle(band().color()));
+        RpgSkins.dress(mob, dungeon, kind, baby, band());
         ServerPlayer target = nearest(mob);
         if (target != null && kind != MobKind.MAGE) {
             mob.setTarget(target);
         }
         level.addFreshEntity(mob);
+        RpgSkins.playSpawn(mob);
         track(mob, kind, 1.0f);
         level.sendParticles(ParticleTypes.LARGE_SMOKE, mob.getX(), mob.getY() + 0.5d, mob.getZ(),
                 8, 0.3d, 0.5d, 0.3d, 0.01d);
@@ -563,11 +565,13 @@ final class DungeonRun {
             boss.addTag(TAG);
             boss.setCustomName(Component.literal(bossSpec.name()).withStyle(dungeon.color(), ChatFormatting.BOLD));
             boss.setCustomNameVisible(true);
+            RpgSkins.dressBoss(boss, bossSpec.name(), band());
             ServerPlayer target = nearest(boss);
             if (target != null) {
                 boss.setTarget(target);
             }
             level.addFreshEntity(boss);
+            RpgSkins.playSpawn(boss);
             track(boss, MobKind.TANK, (float) (capped / health));
             bosses.add(boss);
             level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, boss.getX(), boss.getY() + 1.0d, boss.getZ(),

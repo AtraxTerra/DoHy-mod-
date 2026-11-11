@@ -87,6 +87,16 @@ public final class PalaDungeon {
                     .copyOnDeath()
                     .build());
 
+    /**
+     * Le modele de Paladium d'un monstre de donjon ({@link RpgSkins}) : gardee
+     * avec le monstre, envoyee aux joueurs qui le voient.
+     */
+    public static final Supplier<AttachmentType<RpgSkin>> SKIN = ATTACHMENTS.register(
+            "rpg_skin", () -> AttachmentType.builder(() -> RpgSkin.NONE)
+                    .serialize(RpgSkin.MAP_CODEC, skin -> !skin.isNone())
+                    .sync(RpgSkin.STREAM_CODEC)
+                    .build());
+
     /** La prochaine region libre de la dimension, gardee sur l'overworld. */
     public static final Supplier<AttachmentType<Integer>> NEXT_REGION = ATTACHMENTS.register(
             "dungeon_next_region", () -> AttachmentType.builder(() -> 0)

@@ -2371,3 +2371,43 @@ freinait aussi la chute quand la tête était dans un bloc plein (sauter pour re
 bord n'est pas porté. Les bottes, les jambières, le plastron et le casque en slime sont la
 récompense du Fermier au niveau 55, qui est maintenant distribuée.
 
+
+## 29. Donjons : les modèles de Paladium
+
+Les monstres des donjons étaient des monstres vanilla renommés. Ils portent maintenant les
+modèles de Paladium (`config/rpgentities`, fournis par le joueur le 2026-11-11) : les six monstres
+de chaque donjon (le petit noyé de Manelios en plus), les vingt mini-boss et les vingt boss —
+**65 modèles**, leurs animations, leurs textures par palier (jaune, orange, rouge, noir, comme
+la couleur du nom) et leurs sons.
+
+**Le monstre reste un monstre vanilla.** Rien ne change à son IA, à sa boîte de collision ni
+aux combats. Le serveur lui pose une *apparence* à l'apparition (`RpgSkins`, attachement
+synchronisé `palamod:rpg_skin` : modèle, couleur, échelle) ; le client annule son rendu
+(`RenderLivingEvent.Pre`) et dessine le modèle à sa place (`client/rpg`).
+
+| Étape | Où | Ce qui est fait |
+|---|---|---|
+| Conversion | `tools/rpg_entities.py` | Géométrie Bedrock copiée telle quelle ; animations normalisées (le molang est échantillonné à 20 Hz, les images clés redondantes retirées) ; textures animées découpées en images ; sons réencodés en mono 44,1 kHz (54 Mo → 13 Mo — le jeu ne place dans l'espace qu'un son mono) |
+| Géométrie | `RpgGeometry` | Montée en `ModelPart` vanilla à la lecture : conventions de `bedrock_model.py`, UV par face, boîtes tournées en pièces enfants |
+| Animation | `RpgAnimator` | D'après ce que le jeu synchronise déjà : attente et marche mélangées selon la vitesse ; attaque (bras balancé, arc bandé, sort, attaque propre du golem, du ravageur, du zoglin, du gardien) ; blessure ; mort, jouée dans la seconde que le jeu laisse ; apparition |
+| Sons | `RpgSkins` | Les cris vanilla (attente, blessure, mort) d'un monstre habillé sont remplacés par ceux de son modèle ; ses pas sont tus ; l'attaque joue quand son coup porte |
+
+Tout est dans l'espace de noms `palarpg` (assets et `data/palarpg/rpg_skins.json`, la table
+« quel modèle pour quel monstre »), régénérable par
+`python3 -I tools/rpg_entities.py <rpgentities> <jar PalaRPG extrait>`.
+
+**Tailles.** Un monstre a la taille de son modèle (le colosse, grossi par son attribut
+d'échelle, l'est aussi à l'écran). Un boss garde la taille de Paladium, ramenée à ce que la
+salle contient (6,5 blocs de haut, 11 de large : les dragons font 20 blocs d'envergure).
+**Écart assumé** : la boîte de collision d'un boss reste celle de son monstre vanilla, plus
+petite que le modèle ; on le frappe au corps.
+
+**Attribution des modèles.** Les noms des boss viennent du wiki, les modèles de leurs dossiers
+(`talikus_warhog` pour le Sanglier de guerre, `nimbria_spinner` pour la Fileuse…). Deux
+correspondances sont des choix : le mage de Manelios est `manelios_totem` (`manelios_mage`,
+7,5 blocs de haut, est le boss « Mage de Manelios », comme `vitalys_boss_mage`) ; les
+« Jumeaux noyés » sont `manelios_shark`. Les projectiles et les effets de Paladium (nuages,
+portails secondaires, tentacules) ne sont pas portés : les attaques restent celles du monstre
+vanilla et des capacités de boss du chapitre 18.
+
+**Non repris** : les musiques des salles (non demandées), le sac de frappe.

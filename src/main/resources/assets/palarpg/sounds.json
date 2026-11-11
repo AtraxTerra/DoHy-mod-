@@ -1,0 +1,3194 @@
+{
+ "entity.manelios_assassin.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_assassin/atk1"
+   }
+  ]
+ },
+ "entity.manelios_assassin.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_assassin/death"
+   }
+  ]
+ },
+ "entity.manelios_assassin.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_assassin/hurt"
+   }
+  ]
+ },
+ "entity.manelios_assassin.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_assassin/idle"
+   }
+  ]
+ },
+ "entity.manelios_assassin.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_assassin/run"
+   }
+  ]
+ },
+ "entity.manelios_assassin.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_assassin/walk"
+   }
+  ]
+ },
+ "entity.manelios_boss.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_boss/atk1"
+   }
+  ]
+ },
+ "entity.manelios_boss.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_boss/atk2"
+   }
+  ]
+ },
+ "entity.manelios_boss.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_boss/atk3"
+   }
+  ]
+ },
+ "entity.manelios_boss.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_boss/death"
+   }
+  ]
+ },
+ "entity.manelios_boss.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_boss/hurt"
+   }
+  ]
+ },
+ "entity.manelios_boss.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_boss/idle"
+   }
+  ]
+ },
+ "entity.manelios_boss.spawn": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_boss/spawn"
+   }
+  ]
+ },
+ "entity.manelios_crab.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_crab/atk1"
+   }
+  ]
+ },
+ "entity.manelios_crab.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_crab/atk2"
+   }
+  ]
+ },
+ "entity.manelios_crab.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_crab/atk3"
+   }
+  ]
+ },
+ "entity.manelios_crab.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_crab/death"
+   }
+  ]
+ },
+ "entity.manelios_crab.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_crab/hurt"
+   }
+  ]
+ },
+ "entity.manelios_crab.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_crab/idle"
+   }
+  ]
+ },
+ "entity.manelios_crab.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_crab/run"
+   }
+  ]
+ },
+ "entity.manelios_crab.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_crab/walk"
+   }
+  ]
+ },
+ "entity.manelios_davy_jones.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_davy_jones/atk1"
+   }
+  ]
+ },
+ "entity.manelios_davy_jones.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_davy_jones/atk2"
+   }
+  ]
+ },
+ "entity.manelios_davy_jones.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_davy_jones/atk3"
+   }
+  ]
+ },
+ "entity.manelios_davy_jones.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_davy_jones/death"
+   }
+  ]
+ },
+ "entity.manelios_davy_jones.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_davy_jones/hurt"
+   }
+  ]
+ },
+ "entity.manelios_davy_jones.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_davy_jones/idle"
+   }
+  ]
+ },
+ "entity.manelios_davy_jones.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_davy_jones/run"
+   }
+  ]
+ },
+ "entity.manelios_davy_jones.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_davy_jones/walk"
+   }
+  ]
+ },
+ "entity.manelios_distance.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_distance/atk"
+   }
+  ]
+ },
+ "entity.manelios_distance.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_distance/death"
+   }
+  ]
+ },
+ "entity.manelios_distance.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_distance/hurt"
+   }
+  ]
+ },
+ "entity.manelios_distance.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_distance/idle"
+   }
+  ]
+ },
+ "entity.manelios_distance.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_distance/walk"
+   }
+  ]
+ },
+ "entity.manelios_dragon.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/atk1"
+   }
+  ]
+ },
+ "entity.manelios_dragon.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/atk2"
+   }
+  ]
+ },
+ "entity.manelios_dragon.atk2_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/atk2_flying"
+   }
+  ]
+ },
+ "entity.manelios_dragon.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/atk3"
+   }
+  ]
+ },
+ "entity.manelios_dragon.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/atk4"
+   }
+  ]
+ },
+ "entity.manelios_dragon.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/death"
+   }
+  ]
+ },
+ "entity.manelios_dragon.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/hurt"
+   }
+  ]
+ },
+ "entity.manelios_dragon.hurt_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/hurt_flying"
+   }
+  ]
+ },
+ "entity.manelios_dragon.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/idle"
+   }
+  ]
+ },
+ "entity.manelios_dragon.idle_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/idle_flying"
+   }
+  ]
+ },
+ "entity.manelios_dragon.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/walk"
+   }
+  ]
+ },
+ "entity.manelios_dragon.walk_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_dragon/walk_flying"
+   }
+  ]
+ },
+ "entity.manelios_flying.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_flying/atk"
+   }
+  ]
+ },
+ "entity.manelios_flying.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_flying/death"
+   }
+  ]
+ },
+ "entity.manelios_flying.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_flying/hurt"
+   }
+  ]
+ },
+ "entity.manelios_flying.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_flying/idle"
+   }
+  ]
+ },
+ "entity.manelios_flying.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_flying/walk"
+   }
+  ]
+ },
+ "entity.manelios_hydra.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_hydra/atk1"
+   }
+  ]
+ },
+ "entity.manelios_hydra.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_hydra/atk2"
+   }
+  ]
+ },
+ "entity.manelios_hydra.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_hydra/atk3"
+   }
+  ]
+ },
+ "entity.manelios_hydra.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_hydra/death"
+   }
+  ]
+ },
+ "entity.manelios_hydra.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_hydra/hurt"
+   }
+  ]
+ },
+ "entity.manelios_hydra.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_hydra/idle"
+   }
+  ]
+ },
+ "entity.manelios_hydra.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_hydra/walk"
+   }
+  ]
+ },
+ "entity.manelios_kraken.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_kraken/atk2"
+   }
+  ]
+ },
+ "entity.manelios_kraken.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_kraken/atk3"
+   }
+  ]
+ },
+ "entity.manelios_kraken.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_kraken/death"
+   }
+  ]
+ },
+ "entity.manelios_kraken.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_kraken/hurt"
+   }
+  ]
+ },
+ "entity.manelios_kraken.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_kraken/idle"
+   }
+  ]
+ },
+ "entity.manelios_kraken.tentacle_atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_kraken/tentacle_atk"
+   }
+  ]
+ },
+ "entity.manelios_kraken.tentacle_death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_kraken/tentacle_death"
+   }
+  ]
+ },
+ "entity.manelios_kraken.tentacle_hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_kraken/tentacle_hurt"
+   }
+  ]
+ },
+ "entity.manelios_kraken.tentacle_idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_kraken/tentacle_idle"
+   }
+  ]
+ },
+ "entity.manelios_kraken.tentacle_spawn": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_kraken/tentacle_spawn"
+   }
+  ]
+ },
+ "entity.manelios_leviathan.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_leviathan/atk1"
+   }
+  ]
+ },
+ "entity.manelios_leviathan.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_leviathan/atk2"
+   }
+  ]
+ },
+ "entity.manelios_leviathan.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_leviathan/atk3"
+   }
+  ]
+ },
+ "entity.manelios_leviathan.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_leviathan/atk4"
+   }
+  ]
+ },
+ "entity.manelios_leviathan.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_leviathan/death"
+   }
+  ]
+ },
+ "entity.manelios_leviathan.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_leviathan/hurt"
+   }
+  ]
+ },
+ "entity.manelios_leviathan.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_leviathan/idle"
+   }
+  ]
+ },
+ "entity.manelios_leviathan.idle2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_leviathan/idle2"
+   }
+  ]
+ },
+ "entity.manelios_leviathan.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_leviathan/walk"
+   }
+  ]
+ },
+ "entity.manelios_mage.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_mage/atk1"
+   }
+  ]
+ },
+ "entity.manelios_mage.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_mage/atk2"
+   }
+  ]
+ },
+ "entity.manelios_mage.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_mage/atk3"
+   }
+  ]
+ },
+ "entity.manelios_mage.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_mage/atk4"
+   }
+  ]
+ },
+ "entity.manelios_mage.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_mage/death"
+   }
+  ]
+ },
+ "entity.manelios_mage.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_mage/hurt"
+   }
+  ]
+ },
+ "entity.manelios_mage.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_mage/idle"
+   }
+  ]
+ },
+ "entity.manelios_mage.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_mage/walk"
+   }
+  ]
+ },
+ "entity.manelios_melee.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_melee/atk"
+   }
+  ]
+ },
+ "entity.manelios_melee.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_melee/death"
+   }
+  ]
+ },
+ "entity.manelios_melee.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_melee/hurt"
+   }
+  ]
+ },
+ "entity.manelios_melee.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_melee/idle"
+   }
+  ]
+ },
+ "entity.manelios_melee.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_melee/walk"
+   }
+  ]
+ },
+ "entity.manelios_melee_tiny.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_melee_tiny/atk"
+   }
+  ]
+ },
+ "entity.manelios_melee_tiny.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_melee_tiny/death"
+   }
+  ]
+ },
+ "entity.manelios_melee_tiny.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_melee_tiny/hurt"
+   }
+  ]
+ },
+ "entity.manelios_melee_tiny.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_melee_tiny/idle"
+   }
+  ]
+ },
+ "entity.manelios_melee_tiny.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_melee_tiny/walk"
+   }
+  ]
+ },
+ "entity.manelios_pufferfish.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_pufferfish/atk1"
+   }
+  ]
+ },
+ "entity.manelios_pufferfish.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_pufferfish/atk2"
+   }
+  ]
+ },
+ "entity.manelios_pufferfish.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_pufferfish/atk3"
+   }
+  ]
+ },
+ "entity.manelios_pufferfish.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_pufferfish/death"
+   }
+  ]
+ },
+ "entity.manelios_pufferfish.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_pufferfish/hurt"
+   }
+  ]
+ },
+ "entity.manelios_pufferfish.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_pufferfish/idle"
+   }
+  ]
+ },
+ "entity.manelios_pufferfish.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_pufferfish/run"
+   }
+  ]
+ },
+ "entity.manelios_pufferfish.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_pufferfish/walk"
+   }
+  ]
+ },
+ "entity.manelios_shark.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_shark/atk1"
+   }
+  ]
+ },
+ "entity.manelios_shark.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_shark/atk2"
+   }
+  ]
+ },
+ "entity.manelios_shark.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_shark/death"
+   }
+  ]
+ },
+ "entity.manelios_shark.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_shark/hurt"
+   }
+  ]
+ },
+ "entity.manelios_shark.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_shark/idle"
+   }
+  ]
+ },
+ "entity.manelios_shark.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_shark/run"
+   }
+  ]
+ },
+ "entity.manelios_shark.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_shark/walk"
+   }
+  ]
+ },
+ "entity.manelios_tank.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_tank/atk"
+   }
+  ]
+ },
+ "entity.manelios_tank.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_tank/death"
+   }
+  ]
+ },
+ "entity.manelios_tank.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_tank/hurt"
+   }
+  ]
+ },
+ "entity.manelios_tank.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_tank/idle"
+   }
+  ]
+ },
+ "entity.manelios_tank.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_tank/walk"
+   }
+  ]
+ },
+ "entity.manelios_totem.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_totem/atk"
+   }
+  ]
+ },
+ "entity.manelios_totem.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_totem/death"
+   }
+  ]
+ },
+ "entity.manelios_totem.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_totem/hurt"
+   }
+  ]
+ },
+ "entity.manelios_totem.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/manelios_totem/idle"
+   }
+  ]
+ },
+ "entity.nimbria_ancient.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_ancient/atk1"
+   }
+  ]
+ },
+ "entity.nimbria_ancient.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_ancient/atk2"
+   }
+  ]
+ },
+ "entity.nimbria_ancient.atk2_spike": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_ancient/atk2_spike"
+   }
+  ]
+ },
+ "entity.nimbria_ancient.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_ancient/atk3"
+   }
+  ]
+ },
+ "entity.nimbria_ancient.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_ancient/death"
+   }
+  ]
+ },
+ "entity.nimbria_ancient.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_ancient/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_ancient.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_ancient/idle"
+   }
+  ]
+ },
+ "entity.nimbria_ancient.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_ancient/walk"
+   }
+  ]
+ },
+ "entity.nimbria_assassin.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_assassin/atk"
+   }
+  ]
+ },
+ "entity.nimbria_assassin.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_assassin/death"
+   }
+  ]
+ },
+ "entity.nimbria_assassin.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_assassin/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_assassin.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_assassin/idle"
+   }
+  ]
+ },
+ "entity.nimbria_assassin.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_assassin/walk"
+   }
+  ]
+ },
+ "entity.nimbria_boss.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_boss/atk1"
+   }
+  ]
+ },
+ "entity.nimbria_boss.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_boss/atk2"
+   }
+  ]
+ },
+ "entity.nimbria_boss.atk3_end": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_boss/atk3_end"
+   }
+  ]
+ },
+ "entity.nimbria_boss.atk3_idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_boss/atk3_idle"
+   }
+  ]
+ },
+ "entity.nimbria_boss.atk3_start": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_boss/atk3_start"
+   }
+  ]
+ },
+ "entity.nimbria_boss.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_boss/death"
+   }
+  ]
+ },
+ "entity.nimbria_boss.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_boss/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_boss.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_boss/idle"
+   }
+  ]
+ },
+ "entity.nimbria_boss.spawn": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_boss/spawn"
+   }
+  ]
+ },
+ "entity.nimbria_boss.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_boss/walk"
+   }
+  ]
+ },
+ "entity.nimbria_distance.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_distance/atk"
+   }
+  ]
+ },
+ "entity.nimbria_distance.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_distance/death"
+   }
+  ]
+ },
+ "entity.nimbria_distance.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_distance/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_distance.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_distance/idle"
+   }
+  ]
+ },
+ "entity.nimbria_distance.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_distance/walk"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/atk1"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/atk2"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.atk2_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/atk2_flying"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/atk3"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/atk4"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/death"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.hurt_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/hurt_flying"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/idle"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.idle_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/idle_flying"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/walk"
+   }
+  ]
+ },
+ "entity.nimbria_dragon.walk_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_dragon/walk_flying"
+   }
+  ]
+ },
+ "entity.nimbria_flying.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_flying/atk"
+   }
+  ]
+ },
+ "entity.nimbria_flying.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_flying/death"
+   }
+  ]
+ },
+ "entity.nimbria_flying.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_flying/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_flying.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_flying/idle"
+   }
+  ]
+ },
+ "entity.nimbria_flying.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_flying/walk"
+   }
+  ]
+ },
+ "entity.nimbria_grolem.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_grolem/atk1"
+   }
+  ]
+ },
+ "entity.nimbria_grolem.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_grolem/atk2"
+   }
+  ]
+ },
+ "entity.nimbria_grolem.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_grolem/atk3"
+   }
+  ]
+ },
+ "entity.nimbria_grolem.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_grolem/atk4"
+   }
+  ]
+ },
+ "entity.nimbria_grolem.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_grolem/death"
+   }
+  ]
+ },
+ "entity.nimbria_grolem.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_grolem/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_grolem.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_grolem/idle"
+   }
+  ]
+ },
+ "entity.nimbria_grolem.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_grolem/run"
+   }
+  ]
+ },
+ "entity.nimbria_grolem.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_grolem/walk"
+   }
+  ]
+ },
+ "entity.nimbria_hand.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_hand/atk1"
+   }
+  ]
+ },
+ "entity.nimbria_hand.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_hand/atk2"
+   }
+  ]
+ },
+ "entity.nimbria_hand.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_hand/atk3"
+   }
+  ]
+ },
+ "entity.nimbria_hand.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_hand/death"
+   }
+  ]
+ },
+ "entity.nimbria_hand.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_hand/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_hand.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_hand/idle"
+   }
+  ]
+ },
+ "entity.nimbria_hand.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_hand/walk"
+   }
+  ]
+ },
+ "entity.nimbria_launcher.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_launcher/atk1"
+   }
+  ]
+ },
+ "entity.nimbria_launcher.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_launcher/atk2"
+   }
+  ]
+ },
+ "entity.nimbria_launcher.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_launcher/atk3"
+   }
+  ]
+ },
+ "entity.nimbria_launcher.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_launcher/death"
+   }
+  ]
+ },
+ "entity.nimbria_launcher.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_launcher/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_launcher.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_launcher/idle"
+   }
+  ]
+ },
+ "entity.nimbria_launcher.projectile": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_launcher/projectile"
+   }
+  ]
+ },
+ "entity.nimbria_launcher.projectile_hit": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_launcher/projectile_hit"
+   }
+  ]
+ },
+ "entity.nimbria_mage.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_mage/atk"
+   }
+  ]
+ },
+ "entity.nimbria_mage.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_mage/death"
+   }
+  ]
+ },
+ "entity.nimbria_mage.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_mage/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_mage.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_mage/idle"
+   }
+  ]
+ },
+ "entity.nimbria_mage.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_mage/walk"
+   }
+  ]
+ },
+ "entity.nimbria_melee.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_melee/atk"
+   }
+  ]
+ },
+ "entity.nimbria_melee.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_melee/death"
+   }
+  ]
+ },
+ "entity.nimbria_melee.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_melee/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_melee.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_melee/idle"
+   }
+  ]
+ },
+ "entity.nimbria_melee.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_melee/walk"
+   }
+  ]
+ },
+ "entity.nimbria_miniboss.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_miniboss/atk"
+   }
+  ]
+ },
+ "entity.nimbria_miniboss.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_miniboss/death"
+   }
+  ]
+ },
+ "entity.nimbria_miniboss.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_miniboss/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_miniboss.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_miniboss/idle"
+   }
+  ]
+ },
+ "entity.nimbria_miniboss.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_miniboss/run"
+   }
+  ]
+ },
+ "entity.nimbria_miniboss.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_miniboss/walk"
+   }
+  ]
+ },
+ "entity.nimbria_paladium_heart.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_paladium_heart/atk1"
+   }
+  ]
+ },
+ "entity.nimbria_paladium_heart.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_paladium_heart/atk2"
+   }
+  ]
+ },
+ "entity.nimbria_paladium_heart.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_paladium_heart/atk3"
+   }
+  ]
+ },
+ "entity.nimbria_paladium_heart.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_paladium_heart/atk4"
+   }
+  ]
+ },
+ "entity.nimbria_paladium_heart.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_paladium_heart/death"
+   }
+  ]
+ },
+ "entity.nimbria_paladium_heart.hit": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_paladium_heart/hit"
+   }
+  ]
+ },
+ "entity.nimbria_paladium_heart.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_paladium_heart/idle"
+   }
+  ]
+ },
+ "entity.nimbria_paladium_heart.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_paladium_heart/walk"
+   }
+  ]
+ },
+ "entity.nimbria_snake.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_snake/atk1"
+   }
+  ]
+ },
+ "entity.nimbria_snake.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_snake/atk2"
+   }
+  ]
+ },
+ "entity.nimbria_snake.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_snake/atk3"
+   }
+  ]
+ },
+ "entity.nimbria_snake.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_snake/atk4"
+   }
+  ]
+ },
+ "entity.nimbria_snake.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_snake/death"
+   }
+  ]
+ },
+ "entity.nimbria_snake.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_snake/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_snake.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_snake/idle"
+   }
+  ]
+ },
+ "entity.nimbria_snake.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_snake/walk"
+   }
+  ]
+ },
+ "entity.nimbria_spinner.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_spinner/atk1"
+   }
+  ]
+ },
+ "entity.nimbria_spinner.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_spinner/atk2"
+   }
+  ]
+ },
+ "entity.nimbria_spinner.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_spinner/atk3"
+   }
+  ]
+ },
+ "entity.nimbria_spinner.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_spinner/death"
+   }
+  ]
+ },
+ "entity.nimbria_spinner.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_spinner/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_spinner.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_spinner/idle"
+   }
+  ]
+ },
+ "entity.nimbria_spinner.spin": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_spinner/spin"
+   }
+  ]
+ },
+ "entity.nimbria_spinner.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_spinner/walk"
+   }
+  ]
+ },
+ "entity.nimbria_tank.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_tank/atk"
+   }
+  ]
+ },
+ "entity.nimbria_tank.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_tank/death"
+   }
+  ]
+ },
+ "entity.nimbria_tank.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_tank/hurt"
+   }
+  ]
+ },
+ "entity.nimbria_tank.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_tank/idle"
+   }
+  ]
+ },
+ "entity.nimbria_tank.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/nimbria_tank/walk"
+   }
+  ]
+ },
+ "entity.talikus_assassin.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_assassin/atk"
+   }
+  ]
+ },
+ "entity.talikus_assassin.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_assassin/death"
+   }
+  ]
+ },
+ "entity.talikus_assassin.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_assassin/hurt"
+   }
+  ]
+ },
+ "entity.talikus_assassin.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_assassin/idle"
+   }
+  ]
+ },
+ "entity.talikus_assassin.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_assassin/walk"
+   }
+  ]
+ },
+ "entity.talikus_boss.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_boss/atk1"
+   }
+  ]
+ },
+ "entity.talikus_boss.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_boss/atk2"
+   }
+  ]
+ },
+ "entity.talikus_boss.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_boss/atk3"
+   }
+  ]
+ },
+ "entity.talikus_boss.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_boss/death"
+   }
+  ]
+ },
+ "entity.talikus_boss.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_boss/hurt"
+   }
+  ]
+ },
+ "entity.talikus_boss.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_boss/idle"
+   }
+  ]
+ },
+ "entity.talikus_boss.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_boss/run"
+   }
+  ]
+ },
+ "entity.talikus_boss.spawn": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_boss/spawn"
+   }
+  ]
+ },
+ "entity.talikus_boss.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_boss/walk"
+   }
+  ]
+ },
+ "entity.talikus_distance_bow.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_distance_bow/atk"
+   }
+  ]
+ },
+ "entity.talikus_distance_bow.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_distance_bow/death"
+   }
+  ]
+ },
+ "entity.talikus_distance_bow.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_distance_bow/hurt"
+   }
+  ]
+ },
+ "entity.talikus_distance_bow.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_distance_bow/idle"
+   }
+  ]
+ },
+ "entity.talikus_distance_bow.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_distance_bow/walk"
+   }
+  ]
+ },
+ "entity.talikus_dragon.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/atk1"
+   }
+  ]
+ },
+ "entity.talikus_dragon.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/atk2"
+   }
+  ]
+ },
+ "entity.talikus_dragon.atk2_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/atk2_flying"
+   }
+  ]
+ },
+ "entity.talikus_dragon.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/atk3"
+   }
+  ]
+ },
+ "entity.talikus_dragon.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/atk4"
+   }
+  ]
+ },
+ "entity.talikus_dragon.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/death"
+   }
+  ]
+ },
+ "entity.talikus_dragon.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/hurt"
+   }
+  ]
+ },
+ "entity.talikus_dragon.hurt_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/hurt_flying"
+   }
+  ]
+ },
+ "entity.talikus_dragon.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/idle"
+   }
+  ]
+ },
+ "entity.talikus_dragon.idle_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/idle_flying"
+   }
+  ]
+ },
+ "entity.talikus_dragon.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/walk"
+   }
+  ]
+ },
+ "entity.talikus_dragon.walk_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_dragon/walk_flying"
+   }
+  ]
+ },
+ "entity.talikus_exoarmor.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_exoarmor/atk1"
+   }
+  ]
+ },
+ "entity.talikus_exoarmor.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_exoarmor/atk2"
+   }
+  ]
+ },
+ "entity.talikus_exoarmor.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_exoarmor/atk3"
+   }
+  ]
+ },
+ "entity.talikus_exoarmor.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_exoarmor/death"
+   }
+  ]
+ },
+ "entity.talikus_exoarmor.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_exoarmor/hurt"
+   }
+  ]
+ },
+ "entity.talikus_exoarmor.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_exoarmor/idle"
+   }
+  ]
+ },
+ "entity.talikus_exoarmor.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_exoarmor/run"
+   }
+  ]
+ },
+ "entity.talikus_exoarmor.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_exoarmor/walk"
+   }
+  ]
+ },
+ "entity.talikus_flying.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_flying/atk"
+   }
+  ]
+ },
+ "entity.talikus_flying.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_flying/death"
+   }
+  ]
+ },
+ "entity.talikus_flying.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_flying/hurt"
+   }
+  ]
+ },
+ "entity.talikus_flying.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_flying/idle"
+   }
+  ]
+ },
+ "entity.talikus_flying.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_flying/walk"
+   }
+  ]
+ },
+ "entity.talikus_grandma.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grandma/atk1"
+   }
+  ]
+ },
+ "entity.talikus_grandma.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grandma/atk2"
+   }
+  ]
+ },
+ "entity.talikus_grandma.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grandma/atk3"
+   }
+  ]
+ },
+ "entity.talikus_grandma.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grandma/death"
+   }
+  ]
+ },
+ "entity.talikus_grandma.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grandma/hurt"
+   }
+  ]
+ },
+ "entity.talikus_grandma.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grandma/idle"
+   }
+  ]
+ },
+ "entity.talikus_grandma.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grandma/walk"
+   }
+  ]
+ },
+ "entity.talikus_grappling_hook.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grappling_hook/atk1"
+   }
+  ]
+ },
+ "entity.talikus_grappling_hook.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grappling_hook/atk2"
+   }
+  ]
+ },
+ "entity.talikus_grappling_hook.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grappling_hook/atk3"
+   }
+  ]
+ },
+ "entity.talikus_grappling_hook.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grappling_hook/atk4"
+   }
+  ]
+ },
+ "entity.talikus_grappling_hook.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grappling_hook/death"
+   }
+  ]
+ },
+ "entity.talikus_grappling_hook.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grappling_hook/hurt"
+   }
+  ]
+ },
+ "entity.talikus_grappling_hook.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grappling_hook/idle"
+   }
+  ]
+ },
+ "entity.talikus_grappling_hook.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_grappling_hook/walk"
+   }
+  ]
+ },
+ "entity.talikus_mage.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_mage/atk"
+   }
+  ]
+ },
+ "entity.talikus_mage.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_mage/death"
+   }
+  ]
+ },
+ "entity.talikus_mage.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_mage/hurt"
+   }
+  ]
+ },
+ "entity.talikus_mage.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_mage/idle"
+   }
+  ]
+ },
+ "entity.talikus_mage.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_mage/walk"
+   }
+  ]
+ },
+ "entity.talikus_melee.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_melee/atk"
+   }
+  ]
+ },
+ "entity.talikus_melee.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_melee/death"
+   }
+  ]
+ },
+ "entity.talikus_melee.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_melee/hurt"
+   }
+  ]
+ },
+ "entity.talikus_melee.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_melee/idle"
+   }
+  ]
+ },
+ "entity.talikus_melee.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_melee/walk"
+   }
+  ]
+ },
+ "entity.talikus_miniboss.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_miniboss/atk1"
+   }
+  ]
+ },
+ "entity.talikus_miniboss.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_miniboss/atk2"
+   }
+  ]
+ },
+ "entity.talikus_miniboss.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_miniboss/atk3"
+   }
+  ]
+ },
+ "entity.talikus_miniboss.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_miniboss/atk4"
+   }
+  ]
+ },
+ "entity.talikus_miniboss.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_miniboss/death"
+   }
+  ]
+ },
+ "entity.talikus_miniboss.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_miniboss/hurt"
+   }
+  ]
+ },
+ "entity.talikus_miniboss.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_miniboss/idle"
+   }
+  ]
+ },
+ "entity.talikus_miniboss.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_miniboss/walk"
+   }
+  ]
+ },
+ "entity.talikus_tank.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tank/atk"
+   }
+  ]
+ },
+ "entity.talikus_tank.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tank/death"
+   }
+  ]
+ },
+ "entity.talikus_tank.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tank/hurt"
+   }
+  ]
+ },
+ "entity.talikus_tank.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tank/idle"
+   }
+  ]
+ },
+ "entity.talikus_tank.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tank/walk"
+   }
+  ]
+ },
+ "entity.talikus_tree.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tree/atk1"
+   }
+  ]
+ },
+ "entity.talikus_tree.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tree/atk2"
+   }
+  ]
+ },
+ "entity.talikus_tree.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tree/atk3"
+   }
+  ]
+ },
+ "entity.talikus_tree.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tree/death"
+   }
+  ]
+ },
+ "entity.talikus_tree.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tree/hurt"
+   }
+  ]
+ },
+ "entity.talikus_tree.idleactive": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_tree/idleactive"
+   }
+  ]
+ },
+ "entity.talikus_warhog.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warhog/atk1"
+   }
+  ]
+ },
+ "entity.talikus_warhog.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warhog/atk2"
+   }
+  ]
+ },
+ "entity.talikus_warhog.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warhog/atk3"
+   }
+  ]
+ },
+ "entity.talikus_warhog.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warhog/death"
+   }
+  ]
+ },
+ "entity.talikus_warhog.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warhog/hurt"
+   }
+  ]
+ },
+ "entity.talikus_warhog.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warhog/idle"
+   }
+  ]
+ },
+ "entity.talikus_warhog.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warhog/walk"
+   }
+  ]
+ },
+ "entity.talikus_warmachine.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warmachine/atk1"
+   }
+  ]
+ },
+ "entity.talikus_warmachine.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warmachine/atk2"
+   }
+  ]
+ },
+ "entity.talikus_warmachine.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warmachine/atk3"
+   }
+  ]
+ },
+ "entity.talikus_warmachine.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warmachine/atk4"
+   }
+  ]
+ },
+ "entity.talikus_warmachine.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warmachine/death"
+   }
+  ]
+ },
+ "entity.talikus_warmachine.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warmachine/hurt"
+   }
+  ]
+ },
+ "entity.talikus_warmachine.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warmachine/idle"
+   }
+  ]
+ },
+ "entity.talikus_warmachine.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warmachine/walk"
+   }
+  ]
+ },
+ "entity.talikus_warrior.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warrior/atk1"
+   }
+  ]
+ },
+ "entity.talikus_warrior.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warrior/atk2"
+   }
+  ]
+ },
+ "entity.talikus_warrior.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warrior/atk3"
+   }
+  ]
+ },
+ "entity.talikus_warrior.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warrior/atk4"
+   }
+  ]
+ },
+ "entity.talikus_warrior.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warrior/death"
+   }
+  ]
+ },
+ "entity.talikus_warrior.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warrior/hurt"
+   }
+  ]
+ },
+ "entity.talikus_warrior.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warrior/idle"
+   }
+  ]
+ },
+ "entity.talikus_warrior.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/talikus_warrior/walk"
+   }
+  ]
+ },
+ "entity.vitalys_assassin.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_assassin/atk"
+   }
+  ]
+ },
+ "entity.vitalys_assassin.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_assassin/death"
+   }
+  ]
+ },
+ "entity.vitalys_assassin.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_assassin/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_assassin.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_assassin/idle"
+   }
+  ]
+ },
+ "entity.vitalys_assassin.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_assassin/walk"
+   }
+  ]
+ },
+ "entity.vitalys_boss.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss/atk1"
+   }
+  ]
+ },
+ "entity.vitalys_boss.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss/atk2"
+   }
+  ]
+ },
+ "entity.vitalys_boss.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss/atk3"
+   }
+  ]
+ },
+ "entity.vitalys_boss.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss/death"
+   }
+  ]
+ },
+ "entity.vitalys_boss.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_boss.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss/idle"
+   }
+  ]
+ },
+ "entity.vitalys_boss.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss/walk"
+   }
+  ]
+ },
+ "entity.vitalys_boss_mage.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss_mage/atk1"
+   }
+  ]
+ },
+ "entity.vitalys_boss_mage.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss_mage/atk2"
+   }
+  ]
+ },
+ "entity.vitalys_boss_mage.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss_mage/atk3"
+   }
+  ]
+ },
+ "entity.vitalys_boss_mage.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss_mage/atk4"
+   }
+  ]
+ },
+ "entity.vitalys_boss_mage.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss_mage/death"
+   }
+  ]
+ },
+ "entity.vitalys_boss_mage.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss_mage/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_boss_mage.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss_mage/idle"
+   }
+  ]
+ },
+ "entity.vitalys_boss_mage.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_boss_mage/walk"
+   }
+  ]
+ },
+ "entity.vitalys_cerberus.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_cerberus/atk1"
+   }
+  ]
+ },
+ "entity.vitalys_cerberus.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_cerberus/atk2"
+   }
+  ]
+ },
+ "entity.vitalys_cerberus.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_cerberus/atk3"
+   }
+  ]
+ },
+ "entity.vitalys_cerberus.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_cerberus/atk4"
+   }
+  ]
+ },
+ "entity.vitalys_cerberus.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_cerberus/death"
+   }
+  ]
+ },
+ "entity.vitalys_cerberus.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_cerberus/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_cerberus.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_cerberus/idle"
+   }
+  ]
+ },
+ "entity.vitalys_cerberus.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_cerberus/walk"
+   }
+  ]
+ },
+ "entity.vitalys_chimera.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_chimera/atk1"
+   }
+  ]
+ },
+ "entity.vitalys_chimera.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_chimera/atk2"
+   }
+  ]
+ },
+ "entity.vitalys_chimera.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_chimera/atk3"
+   }
+  ]
+ },
+ "entity.vitalys_chimera.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_chimera/death"
+   }
+  ]
+ },
+ "entity.vitalys_chimera.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_chimera/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_chimera.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_chimera/idle"
+   }
+  ]
+ },
+ "entity.vitalys_chimera.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_chimera/run"
+   }
+  ]
+ },
+ "entity.vitalys_chimera.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_chimera/walk"
+   }
+  ]
+ },
+ "entity.vitalys_distance.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_distance/atk"
+   }
+  ]
+ },
+ "entity.vitalys_distance.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_distance/death"
+   }
+  ]
+ },
+ "entity.vitalys_distance.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_distance/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_distance.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_distance/idle"
+   }
+  ]
+ },
+ "entity.vitalys_distance.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_distance/walk"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/atk1"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/atk2"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.atk2_grounded": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/atk2_grounded"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/atk3"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/atk4"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/death"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.hurt_flying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/hurt_flying"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/idle"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.idleflying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/idleflying"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/walk"
+   }
+  ]
+ },
+ "entity.vitalys_dragon.walkflying": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_dragon/walkflying"
+   }
+  ]
+ },
+ "entity.vitalys_flying.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_flying/atk"
+   }
+  ]
+ },
+ "entity.vitalys_flying.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_flying/death"
+   }
+  ]
+ },
+ "entity.vitalys_flying.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_flying/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_flying.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_flying/idle"
+   }
+  ]
+ },
+ "entity.vitalys_flying.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_flying/walk"
+   }
+  ]
+ },
+ "entity.vitalys_mage.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_mage/atk"
+   }
+  ]
+ },
+ "entity.vitalys_mage.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_mage/death"
+   }
+  ]
+ },
+ "entity.vitalys_mage.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_mage/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_mage.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_mage/idle"
+   }
+  ]
+ },
+ "entity.vitalys_mage.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_mage/walk"
+   }
+  ]
+ },
+ "entity.vitalys_marmite.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_marmite/atk1"
+   }
+  ]
+ },
+ "entity.vitalys_marmite.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_marmite/atk2"
+   }
+  ]
+ },
+ "entity.vitalys_marmite.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_marmite/atk3"
+   }
+  ]
+ },
+ "entity.vitalys_marmite.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_marmite/death"
+   }
+  ]
+ },
+ "entity.vitalys_marmite.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_marmite/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_marmite.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_marmite/idle"
+   }
+  ]
+ },
+ "entity.vitalys_melee.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_melee/atk"
+   }
+  ]
+ },
+ "entity.vitalys_melee.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_melee/death"
+   }
+  ]
+ },
+ "entity.vitalys_melee.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_melee/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_melee.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_melee/idle"
+   }
+  ]
+ },
+ "entity.vitalys_melee.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_melee/walk"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss/atk1"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss/atk2"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss/death"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss.deathfusion": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss/deathfusion"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss/idle"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss/walk"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss_hammer.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss_hammer/atk1"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss_hammer.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss_hammer/atk2"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss_hammer.atk3_loop": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss_hammer/atk3_loop"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss_hammer.atk3_start": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss_hammer/atk3_start"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss_hammer.atk3_stop": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss_hammer/atk3_stop"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss_hammer.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss_hammer/death"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss_hammer.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss_hammer/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss_hammer.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss_hammer/idle"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss_hammer.run": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss_hammer/run"
+   }
+  ]
+ },
+ "entity.vitalys_miniboss_hammer.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_miniboss_hammer/walk"
+   }
+  ]
+ },
+ "entity.vitalys_phoenix.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_phoenix/atk1"
+   }
+  ]
+ },
+ "entity.vitalys_phoenix.atk2_end": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_phoenix/atk2_end"
+   }
+  ]
+ },
+ "entity.vitalys_phoenix.atk2_loop": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_phoenix/atk2_loop"
+   }
+  ]
+ },
+ "entity.vitalys_phoenix.atk2_start": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_phoenix/atk2_start"
+   }
+  ]
+ },
+ "entity.vitalys_phoenix.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_phoenix/atk3"
+   }
+  ]
+ },
+ "entity.vitalys_phoenix.atk4": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_phoenix/atk4"
+   }
+  ]
+ },
+ "entity.vitalys_phoenix.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_phoenix/death"
+   }
+  ]
+ },
+ "entity.vitalys_phoenix.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_phoenix/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_phoenix.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_phoenix/idle"
+   }
+  ]
+ },
+ "entity.vitalys_phoenix.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_phoenix/walk"
+   }
+  ]
+ },
+ "entity.vitalys_portal.atk1": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_portal/atk1"
+   }
+  ]
+ },
+ "entity.vitalys_portal.atk2": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_portal/atk2"
+   }
+  ]
+ },
+ "entity.vitalys_portal.atk3": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_portal/atk3"
+   }
+  ]
+ },
+ "entity.vitalys_portal.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_portal/death"
+   }
+  ]
+ },
+ "entity.vitalys_portal.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_portal/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_portal.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_portal/idle"
+   }
+  ]
+ },
+ "entity.vitalys_tank.atk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_tank/atk"
+   }
+  ]
+ },
+ "entity.vitalys_tank.death": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_tank/death"
+   }
+  ]
+ },
+ "entity.vitalys_tank.hurt": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_tank/hurt"
+   }
+  ]
+ },
+ "entity.vitalys_tank.idle": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_tank/idle"
+   }
+  ]
+ },
+ "entity.vitalys_tank.walk": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/vitalys_tank/walk"
+   }
+  ]
+ }
+}
