@@ -900,9 +900,9 @@ final class EnemyBaseBuilder {
                     if (x == 0 && y == 0 && z == 0) {
                         state = state("angelic_water", Blocks.WATER);
                     } else if (y == 0 && x == front.getStepX() && z == front.getStepZ()) {
-                        state = facing(state("golem_box", Blocks.IRON_BLOCK), front);
+                        state = facing(state("guardian_box_block", Blocks.IRON_BLOCK), front);
                     } else {
-                        state = state("golem_box_frame", Blocks.IRON_BLOCK);
+                        state = state("guardian_box_frame", Blocks.IRON_BLOCK);
                     }
                     set(lot.mx() + x, y0 + 1 + y, lot.mz() + z, state);
                 }
