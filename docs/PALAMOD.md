@@ -2470,3 +2470,95 @@ Coffre et jarres sont portés par une entité immobile, muette et invulnérable 
 IA dont on ne voit que le modèle), qui n'est pas un monstre et ne compte pas pour finir la salle.
 **Écart** : PalaRPG en fait des blocs ; ici ce sont des objets posés, ce qui évite un rendu de
 block entity et réutilise les animations telles quelles. Le « hub » de PalaRPG n'est pas porté.
+
+## 31. Le clicker
+
+Demandé le 2026-11-11, d'après le wiki (« Le Clicker ») et le mod d'origine, **PalaClicker 6.1.2**,
+trouvé dans le client Paladium du joueur. On clique un aliment pour nourrir les namuus ; les
+**ClicCoins** achètent des bâtiments qui en produisent chaque seconde, des améliorations, et les
+offres tournantes du Clic Shop. `/clicker`, ou la carte « Clicker » du menu.
+
+### Les règles — relevées au bytecode du jar
+
+| Règle | Valeur | Source |
+|---|---|---|
+| Valeur d'un clic | `1 × (1 + somme des améliorations du clic)` : 1, 2, 4… jusqu'à 2²⁵ | `PlayerClickerData.getClickValue` |
+| Cadence | un clic par 50 ms au plus (vingt par seconde) | `BBPacketClickerClick` |
+| Production d'un bâtiment | `0,1 × 1,8^rang × exemplaires × (1 + somme de ses améliorations)` par seconde | `ClickerBuilding.getRPS`, `PlayerClickerData.getRPS` |
+| Production totale | 0,5 par seconde, plus les bâtiments ; seulement en jeu | `ClickerTask` |
+| Prix d'un bâtiment | prix de base × 1,1^exemplaires, 99 exemplaires au plus | `ClickerBuilding.getPrice`, `CSPacketClickerBuildingBuy` |
+| Prix d'une offre | prix + un tiers du prix par achat déjà fait | `ClickerShopItem.getPrice` |
+| Rayons du Clic Shop | semaine : 8 offres, 168 h ; jour : 4 offres, 24 h ; métier : 4 offres, 168 h | `ClickerShopType` |
+| Tirage d'un rayon | autant de tirages pondérés que de places, parmi les offres que les bâtiments du joueur ouvrent (`requirement`) et n'ont pas retirées (`forbidden`) ; un doublon ne compte pas | `ShopGlobalConfig.getRandomItem` |
+
+Les sept types d'amélioration (`ClickerUpgrade.apply`) et leurs conditions
+(`checkConditions` : pièces récoltées, jours de saison, bâtiments possédés, amélioration possédée) :
+
+| Type | Effet | Exemplaires demandés (wiki) |
+|---|---|---|
+| Clic (25) | double le clic | l'amélioration précédente |
+| Production globale (10) | +10 % sur tout | la précédente |
+| Connaissance de terrain (4) | +1 % par niveau du métier, sur sa catégorie | aucun |
+| Amélioration de bâtiment (70) | +100 % | 5 (niveau 1), 10 (niveau 2) |
+| Production nombreuse (35) | +1 % par exemplaire | 7 |
+| Production postérieure (26) | +1 % par exemplaire du bâtiment précédent | 4 |
+| Amélioration de catégorie (25) | +50 % | un de chaque bâtiment de la catégorie |
+
+### Les tables — reconstituées
+
+Le jar ne contient pas les tables : chez Paladium, ce sont trois fichiers du serveur.
+`tools/clicker_data.py` écrit `data/palamod/clicker.json` à partir de trois sources.
+
+- **Les traductions du client** (`config/translations/fr_FR.trad`) : les identifiants et les noms
+  des 35 bâtiments, des 21 catégories et des 195 améliorations. Ce sont elles qui disent
+  lesquelles existent (26 bâtiments seulement ont une production postérieure).
+- **Les relevés de la communauté** ([BroMinee/PaladiumClicker](https://github.com/BroMinee/PaladiumClicker),
+  `src/assets`) : le prix des 35 bâtiments ; le prix et les conditions des 25 améliorations du
+  clic, des 10 globales, des 4 de terrain, de celles des seize premiers bâtiments, et de huit
+  catégories.
+- **Le wiki** : l'effet de chaque type et le nombre d'exemplaires demandé (tableau ci-dessus).
+
+**Ce qui est prolongé ou choisi**, faute de relevé :
+
+- Bâtiments 17 à 35 : le prix de leurs améliorations suit le multiple que les relevés suivent dès
+  le quatrième bâtiment (×9, ×19, ×4, ×2,25 du prix du bâtiment), et leur jour avance de 5,5 par
+  bâtiment — le dernier tombe au jour 147, celui de la dernière amélioration globale relevée.
+- Catégories : huit sont relevées, les treize autres sont déduites du nom des bâtiments (le
+  Kraken est « Créature hostile », « Profondeur » et « Sous l'eau »). Une amélioration de
+  catégorie sans prix relevé vaut quatre fois le dernier bâtiment de sa catégorie. Les quatre
+  outils en paladium gardent leur relevé (+10 %, un seul bâtiment demandé).
+- Quand le wiki et les relevés divergent sur un nombre d'exemplaires (5 et 10 contre 3 et 7), le
+  wiki l'emporte : c'est la source demandée.
+- Les icônes : PalaClicker montre un objet par bâtiment et par amélioration, donné par le
+  serveur. Ici, un objet du jeu ou du mod qui dit la même chose (une pioche en bois pour la Mine
+  abandonnée, la pioche en paladium pour « Pioche en Paladium »).
+- La production de base suit la formule du jar (`0,1 × 1,8^rang`), pas les relevés, qui s'en
+  écartent de moins de 1 %.
+
+### Le Clic Shop
+
+Ses offres ne sont relevées nulle part : la table est écrite pour DoHy (`SHOP` dans le script),
+avec les objets du mod — lingots, diamants, bouteilles d'XP, clés de donjon, bouteilles d'XP de
+métier, puis endium. Chaque offre s'ouvre avec un bâtiment et coûte une part de son prix de
+base ; les premières se retirent quand le joueur avance. Détail et garde-fous : `BALANCE.md`
+§ 6 sexies.
+
+### Écarts avec l'original
+
+1. **La production ne commence qu'à la première ouverture.** L'original crédite 0,5 par seconde
+   à tout joueur connecté, clicker ouvert ou non.
+2. **Il faut posséder un bâtiment pour acheter le suivant.** L'original ne faisait que le cacher
+   dans l'écran ; son serveur acceptait l'achat.
+3. **La « saison » est l'âge du clicker du joueur**, en jours réels depuis sa première ouverture.
+   Chez Paladium c'est une date commune à tout le serveur.
+4. **Un achat du Clic Shop se confirme d'un second clic**, au lieu d'une fenêtre.
+5. Le classement « ClicCoins gagnés » et l'onglet du profil ne sont pas portés.
+
+### L'écran
+
+`ClickerScreen` reprend la disposition de `UIClicker` (portefeuille, production et aliment à
+gauche ; améliorations sous leur flèche et Clic Shop au centre ; bâtiments à droite) et ses
+textures (pièce, halo, étals, namuu). Le serveur n'envoie pas une vue par clic : les clics
+partent par paquets toutes les 200 ms, et entre deux vues (une toutes les trois secondes, et
+après chaque achat) le compteur avance côté client, puis se recale. Les bâtiments après le
+prochain à acheter restent cachés (« ??? »), comme le dit le wiki.

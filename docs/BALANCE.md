@@ -546,6 +546,34 @@ plus par salle de combat, à comparer aux `2 + palier / 50` tirages du coffre de
 jarre est au premier qui la casse, pas à chacun : en groupe, le gain par joueur baisse d'autant.
 Les récompenses uniques, le butin des boss et les notes ne passent jamais par une jarre.
 
+## 6 sexies. Clicker — le Clic Shop
+
+Le clicker a sa propre monnaie, les ClicCoins, qui ne se convertit pas en argent et ne sort du
+clicker que par le Clic Shop. C'est donc lui, et lui seul, qu'il faut borner.
+
+**La règle.** Une offre s'ouvre avec un bâtiment et coûte une part de son prix de base (de 0,2 à
+2 fois) : acheter une offre, c'est renoncer à un bâtiment. Elle se paie un tiers de plus à chaque
+achat et s'épuise après 1 à 3 achats par rotation.
+
+**Ce que ça donne.** La production ne tourne qu'en jeu. À 1 h 30 par jour et quelques minutes de
+clic, un joueur possède 9 bâtiments au jour 30 et 14 au jour 90 (simulation, achats au meilleur
+retour) ; à 3 h par jour, 13 et 21. Les offres ouvertes à ces rangs :
+
+| Rang atteint | Offres de la semaine les plus chères (valeur boutique) |
+|---|---|
+| 6 à 8 | 64 lingots de paladium (18,6 k), 16 diamants (64 k), une clé de Talikus ou de Nimbria (11 k) |
+| 11 à 15 | 8 blocs de paladium (20,9 k), 16 lingots de paladium vert (32 k), clé de Vitalys |
+| 21 et plus | 3 fragments d'endium (53 k), puis une pépite (160 k), puis un lingot d'endium (1,44 M) au rang 31 |
+
+Huit offres par semaine, deux achats au plus de chacune : quelques centaines de milliers par
+semaine au milieu du jeu, soit moins d'une heure de revenu. Le lingot d'endium demande le 31ᵉ
+bâtiment (1 550 milliards de ClicCoins), hors de portée d'un joueur qui ne laisse pas tourner le
+jeu. **Le Clic Shop est un bonus, pas un revenu** ; s'il devait le devenir, baisser `quantity`
+dans `tools/clicker_data.py` suffit.
+
+Le rayon des métiers vend des bouteilles d'XP (1 000 XP chacune) : 1, 3 puis 5 par offre, deux
+achats par semaine et par métier tiré — au plus 40 000 XP par semaine, tous métiers confondus.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas
