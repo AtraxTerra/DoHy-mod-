@@ -25,9 +25,9 @@ import java.util.Set;
  * <h2>Pourquoi les effets sont nommes ici</h2>
  *
  * <p>{@link #EFFECTS} liste les effets que le code lit reellement, et le
- * chargement du datapack previent pour tout effet absent de cette liste. C'est
- * le meme filet que pour les perks de metier, pose apres avoir decouvert que
- * trente-trois perks etaient declares et inertes. Une amelioration payee
+ * chargement du datapack previent pour tout effet absent de cette liste. Ce
+ * filet a ete pose apres avoir decouvert que trente-trois perks de metier
+ * etaient declares et inertes. Une amelioration payee
  * plusieurs milliards doit faire quelque chose.
  */
 public final class UpgradeApi {

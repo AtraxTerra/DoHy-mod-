@@ -174,7 +174,8 @@ public final class MuseumApi {
     /**
      * Somme des bonus de double drop accordes par les ailes completes.
      *
-     * <p>Lu par les systemes de drop, au meme titre que les perks de metier.
+     * <p>Lu par les systemes de drop. Depuis que les perks de metier sont
+     * devenus des primes, c'est la seule chance de double drop du mod.
      */
     public static double doubleDropBonus(ServerPlayer player) {
         return sum(player, "double_drop_chance");
@@ -229,9 +230,9 @@ public final class MuseumApi {
     /**
      * Applique les bonus d'attribut des ailes completes.
      *
-     * <p>Transitoires et recalcules depuis l'etat du musee, comme les perks de
-     * metier : un modificateur permanent survivrait a la sauvegarde, et le
-     * moindre bug de recalcul ferait s'empiler les bonus a l'infini.
+     * <p>Transitoires et recalcules depuis l'etat du musee : un modificateur
+     * permanent survivrait a la sauvegarde, et le moindre bug de recalcul ferait
+     * s'empiler les bonus a l'infini.
      */
     public static void apply(ServerPlayer player) {
         Map<String, MuseumConfig.Section> complete = sections(player);

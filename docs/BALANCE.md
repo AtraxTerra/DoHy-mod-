@@ -121,25 +121,43 @@ Le niveau 50 devient un **jalon de milieu de partie** (69 h au lieu de 140) et l
 
 Lecture pour le rythme de jeu visé :
 
-- **Niveau 10 en ~1 h** → la première soirée donne déjà 2 perks
+- **Niveau 10 en ~1 h** → la première soirée donne déjà 2 primes de palier
 - **Niveau 25 en ~12 h** → première semaine
 - **Niveau 50 en ~69 h** → premier mois, et il reste la moitié de l'échelle
 - **Niveau 100 en ~412 h** → ~21 semaines de jeu *entièrement consacrées à ce métier*. En pratique le temps se répartit, donc un favori se maxe sur une saison ou deux et les autres suivent.
-- **Un métier maxé rapporte 20 M cumulés.** Les 4 métiers réunis ≈ **80 M**, à comparer aux 500 M de l'autosell : les métiers restent un bonus, jamais la source de revenu. C'est le principe 2 de `DESIGN.md`. Les 8 skills d'avant le remplacement (2026-11-08) en donnaient 160 M ; la courbe par niveau n'a pas bougé, il y a seulement moins de progressions.
+- **Un métier maxé rapporte 20 M cumulés par ses niveaux, 28 M avec ses primes.** Les 4 métiers réunis ≈ **113 M**, à comparer aux 500 M de l'autosell : les métiers restent un bonus, jamais la source de revenu. C'est le principe 2 de `DESIGN.md`. Les 8 skills d'avant le remplacement (2026-11-08) en donnaient 160 M ; la courbe par niveau n'a pas bougé, il y a seulement moins de progressions.
 - **Les objets de Paladium s'y ajoutent** (`jobs.json`) : 1 050 lingots de paladium et autant de trixium par métier maxé, plus une pioche, une épée et une armure en paladium enchantées. Aux prix du chapitre économique, environ 76 k de paladium et 840 k de trixium par métier : l'argent des niveaux reste la part principale.
 
 Levier unique : `xp_base` dans `data/job_progression.json`. Le passer à 75 réduit tout de 25 %.
 
-### Perks
+### Primes de palier
 
-**20 perks par métier**, un tous les 5 niveaux jusqu'à 100. Les 10 ajoutés au-delà
-du niveau 50 n'utilisent **que les trois types réellement appliqués** par le mod
-(`attribute`, `double_drop_chance`, `xp_bonus`) : un perk annoncé dans l'interface
-mais sans effet en jeu est pire que pas de perk. Les types inertes des cinquante
-premiers niveaux restent à implémenter.
+Les perks ont été remplacés par de l'argent le 2026-11-11. Tous les 5 niveaux, le palier verse
+une **prime de deux fois l'argent du niveau**, en plus de cet argent, arrondie à deux chiffres
+significatifs (`prime_factor` et `prime_every_n_levels` dans `job_progression.json`).
 
-`nuclear` n'avait **aucun** perk ; il reçoit une échelle complète de 20, tous
-appliqués.
+| Niveau | Argent du niveau | Prime | Primes cumulées |
+|---|---|---|---|
+| 5 | 7 139 | 14 000 | 14 000 |
+| 10 | 18 839 | 38 000 | 52 000 |
+| 15 | 33 234 | 66 000 | 118 000 |
+| 25 | 67 948 | 140 000 | 357 000 |
+| 35 | 108 832 | 220 000 | 757 000 |
+| 50 | 179 316 | 360 000 | 1 687 000 |
+| 65 | 258 905 | 520 000 | 3 077 000 |
+| 75 | 316 335 | 630 000 | 4 277 000 |
+| 90 | 408 320 | 820 000 | 6 537 000 |
+| 100 | 473 218 | 950 000 | 8 367 000 |
+
+**8,4 M par métier maxé, 33 M pour les quatre.** Ce qui disparaît avec les perks : vitesse de
+minage, portée, points de vie, armure et dégâts, chances de double drop sur les minerais et les
+cultures (jusqu'à 35 %), récolte accrue, butin double, bonus d'XP de métier (jusqu'à +25 %). Le
+musée garde sa propre chance de double drop, l'amélioration *Apprentissage* et les amulettes
+leur bonus d'XP.
+
+**Rattrapage** : un joueur qui avait déjà franchi des paliers reçoit leurs primes à sa première
+connexion, en une fois. Le dernier palier payé est noté par métier, si bien qu'une prime ne se
+paie jamais deux fois, même si la courbe est rééquilibrée.
 
 ---
 

@@ -26,8 +26,9 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
  * n'aurait jamais les lingots des paliers 10 a 60, alors qu'un nouveau venu
  * les recevrait.
  *
- * <p>Priorite la plus haute : les perks se recalculent a la connexion, et ils
- * doivent lire les niveaux migres, pas des niveaux a zero.
+ * <p>Priorite la plus haute : les primes de palier se rattrapent a la
+ * connexion ({@link JobPrimes}), et elles doivent lire les niveaux migres, pas
+ * des niveaux a zero.
  */
 @EventBusSubscriber
 public final class JobMigration {

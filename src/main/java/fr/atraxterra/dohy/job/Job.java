@@ -9,7 +9,7 @@ package fr.atraxterra.dohy.job;
  * metiers ont <b>remplace</b> les skills : les cinq sans equivalent Paladium
  * (bucheronnage, peche, forge, construction, nucleaire) ont ete retires avec
  * leurs sources d'XP et leurs perks, et chaque metier porte desormais sa propre
- * XP, sa courbe, ses perks, ses deblocages et ses recompenses.
+ * XP, sa courbe, ses primes de palier, ses deblocages et ses recompenses.
  *
  * <p>{@link #legacyKey()} est la cle du skill d'origine. Elle ne sert qu'a
  * relire les sauvegardes d'avant le remplacement ({@link JobData}) : l'XP de

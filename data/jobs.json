@@ -1,5 +1,5 @@
 {
-  "_comment": "Deblocages et recompenses en objets par metier. GENERE par tools/palamod_jobs.py depuis le bytecode de PalaMod 10.3.0 — ne pas editer a la main. Les metiers sont la progression de DoHy : leur courbe, leurs sources d'XP et leurs perks sont dans job_progression.json.",
+  "_comment": "Deblocages et recompenses en objets par metier. GENERE par tools/palamod_jobs.py depuis le bytecode de PalaMod 10.3.0 — ne pas editer a la main. Les metiers sont la progression de DoHy : leur courbe, leurs primes de palier et leurs sources d'XP sont dans job_progression.json.",
   "_echelle": "PalaMod compte 20 niveaux par metier, DoHy en compte 100 : les niveaux du mod sont multiplies par 5. Valide deux fois contre le wiki Java, qui est deja gradue sur 100 : cobblebreaker niveau 5 dans le code -> 25, annonce 25 ; crusher niveau 8 -> 40, annonce 40.",
   "_portee": "Le verrou porte sur la pose et l'usage, pas sur le craft : PlayerEvent.ItemCraftedEvent n'est pas annulable en 26.2 (verifie a la sonde), et tous les contournements font perdre les ingredients au joueur. Voir JobGateEvents.",
   "_syntaxe": "id peut commencer par # pour viser un tag, meme convention que les sources d'XP de job_progression.json. label sert aux messages quand l'item n'est pas encore enregistre.",
@@ -600,7 +600,7 @@
       "label": "Bois d'ostrya brillant"
     }
   ],
-  "_recompenses": "Objets donnes en atteignant un niveau, en plus de l'argent et des perks de job_progression.json. Releves dans les Reward.builder de PalaMod, niveaux multiplies par 5 comme les verrous. Les recompenses en argent de Paladium ne sont pas portees : DoHy paie deja chaque niveau. Un objet non enregistre est inerte.",
+  "_recompenses": "Objets donnes en atteignant un niveau, en plus de l'argent et des primes de job_progression.json. Releves dans les Reward.builder de PalaMod, niveaux multiplies par 5 comme les verrous. Les recompenses en argent de Paladium ne sont pas portees : DoHy paie deja chaque niveau. Un objet non enregistre est inerte.",
   "rewards": [
     {
       "job": "miner",

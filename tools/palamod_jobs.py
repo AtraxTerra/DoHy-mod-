@@ -331,8 +331,8 @@ def main():
         "_comment": (
             "Deblocages et recompenses en objets par metier. GENERE par tools/palamod_jobs.py "
             "depuis le bytecode de PalaMod 10.3.0 — ne pas editer a la main. Les metiers sont "
-            "la progression de DoHy : leur courbe, leurs sources d'XP et leurs perks sont dans "
-            "job_progression.json."
+            "la progression de DoHy : leur courbe, leurs primes de palier et leurs sources d'XP "
+            "sont dans job_progression.json."
         ),
         "_echelle": (
             f"PalaMod compte 20 niveaux par metier, DoHy en compte 100 : les "
@@ -356,7 +356,7 @@ def main():
         ),
         "unlocks": unlocks,
         "_recompenses": (
-            "Objets donnes en atteignant un niveau, en plus de l'argent et des perks de "
+            "Objets donnes en atteignant un niveau, en plus de l'argent et des primes de "
             "job_progression.json. Releves dans les Reward.builder de PalaMod, niveaux "
             "multiplies par 5 comme les verrous. Les recompenses en argent de Paladium ne sont "
             "pas portees : DoHy paie deja chaque niveau. Un objet non enregistre est inerte."

@@ -149,10 +149,9 @@ public final class UpgradeConfig {
         /**
          * Signale un effet qu'aucune partie du code ne lit.
          *
-         * <p>Meme filet que pour les perks de metier, et pour la meme raison : un
-         * effet annonce au joueur mais branche nulle part est pire que pas
+         * <p>Un effet annonce au joueur mais branche nulle part est pire que pas
          * d'effet. Ce controle a ete ajoute apres avoir decouvert trente-trois
-         * perks inertes.
+         * perks de metier inertes, a l'epoque ou les metiers en avaient.
          */
         void warnUnknownEffects() {
             upgrades.forEach((id, upgrade) -> {

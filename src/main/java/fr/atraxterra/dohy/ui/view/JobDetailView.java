@@ -9,14 +9,14 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 /**
- * La fiche d'un metier : niveau, XP, et les trois listes — deblocages, bonus,
- * recompenses. Les onglets se changent cote client : tout part d'un coup.
+ * La fiche d'un metier : niveau, XP, et les trois listes — deblocages, primes
+ * de palier, recompenses. Les onglets se changent cote client : tout part d'un coup.
  *
  * @param progress  avancement dans le niveau, en pour mille
  * @param nextMoney argent verse au prochain niveau, 0 au maximum
  */
 public record JobDetailView(String job, int level, int maxLevel, int progress, long xpInto, long xpNeed,
-                            long totalXp, long nextMoney, List<Row> unlocks, List<Row> perks,
+                            long totalXp, long nextMoney, List<Row> unlocks, List<Row> primes,
                             List<Row> rewards) implements UiView {
 
     public static final Identifier ID = UiNet.id("job_detail");
@@ -24,7 +24,7 @@ public record JobDetailView(String job, int level, int maxLevel, int progress, l
     /** Etat d'une ligne. */
     public static final int LOCKED = 0;
     public static final int ACQUIRED = 1;
-    /** Declare mais absent du mod : objet pas encore porte, effet pas applique. */
+    /** Declare mais absent du mod : objet pas encore porte. */
     public static final int MISSING = 2;
 
     /**
@@ -35,7 +35,7 @@ public record JobDetailView(String job, int level, int maxLevel, int progress, l
     /** La meme fiche, chaque texte de ligne passe par {@code text} (voir {@code MenuView.text}). */
     public JobDetailView map(java.util.function.UnaryOperator<String> text) {
         return new JobDetailView(job, level, maxLevel, progress, xpInto, xpNeed, totalXp, nextMoney,
-                mapRows(unlocks, text), mapRows(perks, text), mapRows(rewards, text));
+                mapRows(unlocks, text), mapRows(primes, text), mapRows(rewards, text));
     }
 
     private static List<Row> mapRows(List<Row> rows, java.util.function.UnaryOperator<String> text) {
@@ -90,7 +90,7 @@ public record JobDetailView(String job, int level, int maxLevel, int progress, l
                 buffer.writeVarLong(view.totalXp());
                 buffer.writeVarLong(view.nextMoney());
                 Row.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.unlocks());
-                Row.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.perks());
+                Row.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.primes());
                 Row.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.rewards());
             },
             buffer -> new JobDetailView(buffer.readUtf(), buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(),
