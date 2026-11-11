@@ -2841,6 +2841,15 @@ Elles se trouvent en butin, chacune à sa source : coffre de la note des donjons
 Paladium, Trixium, Endium), boss d'événement (Améthyste, Paladium, Halloween), base ennemie pillée
 (Saharia) — `BALANCE.md` § 6 nonies. Et au marché, en promotion (§ 34).
 
+Vérifié en jeu par captures (regroupement, 2026-11-11) : les six tables chargées, toutes
+tirables ; les trois anciens identifiants de clé rechargés sous les nouveaux (registre et pile
+sauvegardée) ; 3 communes, 1 rare et 2 légendaires comptées → 3 clés Améthyste, 1 Paladium,
+2 Endium, compteur vide ; achat sous l'ancien nom (`rare`) ; refus d'une box inconnue ; la
+boutique et ses deux sections ; la roulette des trois boxes neuves ; un vrai clic du client, clé
+Saharia en main, sur le coffre Saharia ; une clé Saharia refusée par le coffre Halloween ; la
+fréquence des clés sur 40 000 coffres de note par cas. Non vérifié : la clé Saharia d'une base
+pillée, la clé Halloween d'un boss, et l'annonce d'une clé au marché.
+
 ### Les rayons — une seconde passe de rendu
 
 Les effets de l'ouverture sont des os du modèle, animés comme le reste : rayon de la couleur de
