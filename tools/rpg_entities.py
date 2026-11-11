@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Porte les modeles des monstres de donjon de Paladium (config/rpgentities).
 
-    python3 -I tools/rpg_entities.py <dossier rpgentities>
+    python3 -I tools/rpg_entities.py <dossier rpgentities> [<jar PalaRPG extrait>]
+
+Avec le jar PalaRPG (son dossier assets/), le decor des donjons est porte
+aussi : coffre, jarre, marchands Mammon et Mephisto, et leurs sons (PROPS).
 
 Paladium dessine ses monstres de donjon en Bedrock (format GeckoLib), rendus
 par Lindworm, sa bibliotheque maison. On garde la geometrie telle quelle (le
@@ -357,7 +360,9 @@ def transcode(source, target):
     """
     if FFMPEG:
         done = subprocess.run([FFMPEG, "-nostdin", "-v", "error", "-y", "-i", source, "-vn", "-map_metadata", "-1",
-                               "-ac", "1", "-ar", "44100", "-c:a", "libvorbis", "-q:a", "4", target])
+                               "-ac", "1", "-ar", "44100", "-c:a", "libvorbis", "-q:a", "4",
+                               # Sans cela le numero de serie Ogg est tire au hasard : meme son, autre fichier.
+                               "-fflags", "+bitexact", "-flags:a", "+bitexact", target])
         if done.returncode == 0:
             return
     shutil.copyfile(source, target)
@@ -378,8 +383,34 @@ def extent(geometry):
     return [round(width, 2), round(max(ys) / 16.0, 2)]
 
 
+# Le decor des donjons, pris dans le jar PalaRPG (assets/palarpg) : modele ->
+# (dossier du modele, {couleur: texture}). Ces objets jouent une pose donnee
+# par le serveur (RpgSkin.pose), pas les roles d'un monstre.
+PROPS = {
+    "dungeon_chest": ("models/blocks/dungeon/chest", {
+        "default": "textures/blocks/dungeon/chest/common.png",
+        "rare": "textures/blocks/dungeon/chest/rare.png",
+        "legendary": "textures/blocks/dungeon/chest/legendary.png"}),
+    "dungeon_jar": ("models/blocks/dungeon/jar", {"default": "textures/blocks/dungeon/jar/texture.png"}),
+    "merchant_mammon": ("models/entities/dungeon/merchant/mammon", {
+        "default": "models/entities/dungeon/merchant/mammon/texture.png"}),
+    "merchant_mephisto": ("models/entities/dungeon/merchant/mephisto", {
+        "default": "models/entities/dungeon/merchant/mephisto/texture.png"}),
+}
+
+# Les sons du decor : identifiant -> fichier sous assets/palarpg/sounds du jar.
+PROP_SOUNDS = {
+    "dungeon.loot.common": "dungeon/loot/common.ogg",
+    "dungeon.loot.rare": "dungeon/loot/rare.ogg",
+    "dungeon.loot.legendary": "dungeon/loot/legendary.ogg",
+    "dungeon.loot.spawn": "dungeon/loot/spawn.ogg",
+    "dungeon.jar.break": "dungeon/block/jar/break.ogg",
+}
+
+
 def main():
     root = sys.argv[1]
+    jar = sys.argv[2] if len(sys.argv) > 2 else None
     used = sorted(set(m for table in MOBS.values() for m in table.values()) | set(BOSSES.values()))
     for folder in ("assets/%s/entity" % NS, "assets/%s/textures/entity" % NS, "assets/%s/sounds/entity" % NS):
         shutil.rmtree(os.path.join(RES, folder), ignore_errors=True)
@@ -441,6 +472,35 @@ def main():
         skins[model] = {"variants": sorted(textures), "sounds": sound_names, "size": extent(geometry)}
         print("%-26s %3d os, %2d animations, %d textures, %2d sons" % (
             model, len(geometry.get("bones", [])), len(animations), len(textures), len(sound_names)))
+
+    if jar:
+        assets = os.path.join(jar, "assets", NS)
+        for model, (folder, files) in PROPS.items():
+            geo = json.load(open(os.path.join(assets, folder, "model.json"), encoding="utf-8"))
+            geometry = geo["minecraft:geometry"][0]
+            write("assets/%s/entity/%s/model.json" % (NS, model), {"minecraft:geometry": [geometry]})
+            animations = convert_animations(os.path.join(assets, folder, "animation.json"))
+            write("assets/%s/entity/%s/animation.json" % (NS, model), animations)
+            target_dir = os.path.join(RES, "assets", NS, "textures", "entity", model)
+            os.makedirs(target_dir, exist_ok=True)
+            textures = {}
+            for variant, name in files.items():
+                shutil.copyfile(os.path.join(assets, name), os.path.join(target_dir, variant + ".png"))
+                textures[variant] = {"frames": 1, "frametime": 1}
+            index[model] = {
+                "texture_size": [geometry["description"]["texture_width"],
+                                 geometry["description"]["texture_height"]],
+                "textures": textures,
+                "roles": {"pose": None, "idle": "idle" if "idle" in animations else None, "walk": None,
+                          "attacks": [], "hurt": None, "death": None, "spawn": None},
+                "flying": False}
+            print("%-26s %3d os, %2d animations, %d textures (decor)" % (
+                model, len(geometry.get("bones", [])), len(animations), len(textures)))
+        for name, source in PROP_SOUNDS.items():
+            target = os.path.join(RES, "assets", NS, "sounds", "entity", name.replace(".", "_") + ".ogg")
+            transcode(os.path.join(assets, "sounds", source), target)
+            sounds_json[name] = {"sounds": [{"name": "%s:entity/%s" % (NS, name.replace(".", "_"))}]}
+            total_sounds += 1
 
     write("assets/%s/entity/index.json" % NS, index)
     with open(sounds_json_path, "w", encoding="utf-8") as handle:

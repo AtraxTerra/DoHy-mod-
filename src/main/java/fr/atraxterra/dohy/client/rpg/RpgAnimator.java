@@ -39,8 +39,47 @@ final class RpgAnimator {
     private int lastHurtTime;
     private int nextAttack;
 
+    private String pose = "";
+    private float poseStart;
+
+    /**
+     * Un objet de decor : il joue la pose que le serveur lui donne. Une pose
+     * {@code "a>b"} joue {@code a} une fois puis {@code b} ; la derniere
+     * boucle ou tient sa derniere image selon son fichier.
+     */
+    private RpgFrame posed(LivingEntity entity, RpgSkin skin, RpgModels.Entry entry, float age) {
+        if (!skin.pose().equals(pose)) {
+            // Au premier regard, une pose en deux temps est deja passee : on montre la seconde.
+            poseStart = seen || entity.tickCount < 10 ? age : -1.0e6f;
+            pose = skin.pose();
+        }
+        seen = true;
+        float seconds = (age - poseStart) / 20.0f;
+        String[] steps = pose.split(">");
+        RpgModels.Clip current = null;
+        for (int i = 0; i < steps.length; i++) {
+            RpgModels.Clip step = entry.named().get(steps[i]);
+            if (step == null) {
+                continue;
+            }
+            current = step;
+            if (i == steps.length - 1 || seconds < step.length()) {
+                break;
+            }
+            seconds -= step.length();
+        }
+        if (current != null && !current.loop()) {
+            seconds = Math.min(seconds, current.length());
+        }
+        return new RpgFrame(entry, entry.texture(skin.variant()).at(age), skin.scale(), 0L, 0.0f,
+                current, (long) (seconds * 1000.0f), 1.0f);
+    }
+
     RpgFrame frame(LivingEntity entity, RpgSkin skin, RpgModels.Entry entry, float partialTick, float walkSpeed) {
         float age = entity.tickCount + partialTick;
+        if (!skin.pose().isEmpty()) {
+            return posed(entity, skin, entry, age);
+        }
         if (!seen) {
             seen = true;
             if (entity.tickCount < 10 && entry.spawn() != null && !entity.isDeadOrDying()) {

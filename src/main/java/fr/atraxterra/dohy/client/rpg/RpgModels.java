@@ -32,8 +32,8 @@ public final class RpgModels {
     private static final String NAMESPACE = "palarpg";
     private static final float RADIANS = (float) Math.PI / 180.0f;
 
-    /** Une animation et sa duree en secondes. */
-    public record Clip(KeyframeAnimation animation, float length) {
+    /** Une animation, sa duree en secondes, et si elle boucle. */
+    public record Clip(KeyframeAnimation animation, float length, boolean loop) {
     }
 
     /** Une texture : une image, ou les images d'une texture animee. */
@@ -46,10 +46,33 @@ public final class RpgModels {
 
     /** Un modele pret a dessiner. Une animation absente est {@code null}. */
     public record Entry(RpgEntityModel model, float height, Map<String, Texture> textures,
-                        Clip idle, Clip walk, List<Clip> attacks, Clip hurt, Clip death, Clip spawn) {
+                        Clip idle, Clip walk, List<Clip> attacks, Clip hurt, Clip death, Clip spawn,
+                        Named named) {
         public Texture texture(String variant) {
             Texture texture = textures.get(variant);
             return texture != null ? texture : textures.get("default");
+        }
+    }
+
+    /** Les animations du modele par leur nom, cuites a la demande : les poses des objets de decor. */
+    public static final class Named {
+        private final JsonObject animations;
+        private final RpgGeometry.Built built;
+        private final Map<String, Clip> clips = new HashMap<>();
+
+        private Named(JsonObject animations, RpgGeometry.Built built) {
+            this.animations = animations;
+            this.built = built;
+        }
+
+        /** L'animation, bouclee ou non comme le dit son fichier ; {@code null} si le modele ne l'a pas. */
+        public Clip get(String name) {
+            if (!clips.containsKey(name)) {
+                boolean loop = animations.has(name)
+                        && GsonHelper.getAsBoolean(animations.getAsJsonObject(name), "loop", false);
+                clips.put(name, clip(animations, name, built, loop));
+            }
+            return clips.get(name);
         }
     }
 
@@ -138,7 +161,8 @@ public final class RpgModels {
                 attacks,
                 clip(animations, role(roles, "hurt"), built, false),
                 clip(animations, role(roles, "death"), built, false),
-                clip(animations, role(roles, "spawn"), built, false));
+                clip(animations, role(roles, "spawn"), built, false),
+                new Named(animations, built));
     }
 
     private static String role(JsonObject roles, String key) {
@@ -196,6 +220,6 @@ public final class RpgModels {
                 builder.addAnimation(bone.getKey(), new AnimationChannel(target, keyframes));
             }
         }
-        return new Clip(builder.build().bake(built.root()), length);
+        return new Clip(builder.build().bake(built.root()), length, loop);
     }
 }
