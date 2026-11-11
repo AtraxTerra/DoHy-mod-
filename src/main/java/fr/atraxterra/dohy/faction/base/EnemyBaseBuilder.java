@@ -1439,7 +1439,7 @@ final class EnemyBaseBuilder {
         return switch (style) {
             case FARM -> Blocks.STRIPPED_SPRUCE_WOOD.defaultBlockState();
             case STORAGE -> Blocks.POLISHED_DEEPSLATE.defaultBlockState();
-            case FACTORY -> Blocks.WAXED_CUT_COPPER.defaultBlockState();
+            case FACTORY -> Blocks.MUD_BRICKS.defaultBlockState();
             case SHOWCASE -> Blocks.PURPUR_BLOCK.defaultBlockState();
             default -> Blocks.CRYING_OBSIDIAN.defaultBlockState();
         };
