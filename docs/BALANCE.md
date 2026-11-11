@@ -682,8 +682,9 @@ fréquence règle donc le rythme du spawner customisé.
 
 - **Âmes** : un spawner customisé s'éveille à 100 âmes d'une même créature, et plafonne à 250. Six
   créatures à parts égales : il faut vider environ 600 ruines pour un premier palier d'une créature
-  donnée, 1 500 pour le plafond. Une section de 5 000 × 5 000 (97 656 chunks) porte près de 4 900
-  ruines en surface, soit 800 par créature, et à peu près le double sous terre : une section suffit à
+  donnée, 1 500 pour le plafond. Mesuré : une ruine tous les 18 chunks en surface, une salle tous
+  les 12 chunks sous terre. Une section de 5 000 × 5 000 (97 656 chunks) de terre ferme porterait
+  donc environ 5 400 ruines et 7 900 salles, soit 900 et 1 300 par créature : une section suffit à
   monter plusieurs spawners, sans que cela se fasse en une soirée.
 - **XP de Chasseur** : 1 250 XP de PalaJobs par spawner cassé à partir du niveau 40, soit environ
   446 XP d'ici (rapport 0,357). À une ruine par minute, 27 000 XP à l'heure : 0,4 % de la courbe
@@ -692,7 +693,7 @@ fréquence règle donc le rythme du spawner customisé.
 - **Risque** : les spawners de monstres tournent. La mort reste évitée dans la dimension (retour à
   l'arrivée) et une explosion n'y casse rien ; un creeper ne coûte donc que de la vie.
 
-Leviers : `chance` dans `placed_feature/miner/ruin.json` (20) et `crypt.json` (12).
+Leviers : `chance` dans `placed_feature/miner/ruin.json` (9) et `crypt.json` (10).
 
 ## 7. Ce qui n'est pas encore chiffré
 

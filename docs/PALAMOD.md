@@ -1610,7 +1610,8 @@ monstres. Ces ruines les remplacent, **fréquentes**, chacune autour d'un **spaw
   hors de l'eau — une lanterne signale la ruine dans la nuit. Sous terre, un tirage par chunk à une
   chance sur 10, entre y = −48 et 48, que la roche valide : une salle ne se taille ni dans une
   grotte ni dans un lac. Les six créatures sont tirées à parts égales. Mesuré en plaine sur
-  361 chunks : SURFACE_MESURE. Réglage : `placed_feature/miner/ruin.json` et `crypt.json`
+  361 chunks (304 × 304 blocs) : 20 ruines en surface, une tous les 18 chunks, et 29 salles sous
+  terre, une tous les 12 chunks. Réglage : `placed_feature/miner/ruin.json` et `crypt.json`
   (`tools/palamod_assets.py`).
 - **Les spawners marchent** : leurs créatures apparaissent, monstres compris — c'est la seule
   exception à « aucun monstre » (`DimMinerEvents.onJoin` laisse passer une créature née d'un
