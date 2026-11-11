@@ -40,7 +40,8 @@ import java.util.Set;
  * {@code SpawnerManager} :
  * <ul>
  *   <li><b>ame</b> : casser au marteau un spawner de donjon de zombie, squelette,
- *       araignee, araignee venimeuse, slime ou sorciere donne une ame au premier
+ *       araignee, araignee venimeuse, slime ou sorciere (et, ecart, de vache, de
+ *       cochon ou de creeper) donne une ame au premier
  *       spawner customise de la meme creature qui a de la place dans
  *       l'inventaire, sinon au dernier spawner vide. Sans spawner disponible, la
  *       casse est refusee — l'ame serait perdue ;</li>
@@ -60,10 +61,15 @@ import java.util.Set;
 @EventBusSubscriber
 public final class SpawnerEvents {
 
-    /** {@code SpawnerManager} : CaveSpider, Skeleton, Slime, Spider, Witch, Zombie. */
+    /**
+     * {@code SpawnerManager} : CaveSpider, Skeleton, Slime, Spider, Witch, Zombie.
+     * <b>Ecart</b> : plus la vache, le cochon et le creeper, dont les spawners se
+     * trouvent dans les ruines de la dimension du Mineur.
+     */
     private static final Set<EntityType<?>> SOUL_TYPES = Set.of(
             EntityTypes.CAVE_SPIDER, EntityTypes.SKELETON, EntityTypes.SLIME,
-            EntityTypes.SPIDER, EntityTypes.WITCH, EntityTypes.ZOMBIE);
+            EntityTypes.SPIDER, EntityTypes.WITCH, EntityTypes.ZOMBIE,
+            EntityTypes.COW, EntityTypes.PIG, EntityTypes.CREEPER);
 
     /** 1 250 XP de PalaJobs, a partir du niveau 8 de Chasseur. */
     private static final double SPAWNER_XP = 1250.0d;

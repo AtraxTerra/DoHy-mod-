@@ -8,6 +8,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
@@ -76,9 +78,15 @@ public final class DimMinerEvents {
         }
     }
 
+    /**
+     * Aucun monstre dans la dimension, sauf ceux qu'un spawner fait apparaitre :
+     * ses ruines en portent ({@link MinerRuinFeature}), et un spawner qui tourne a
+     * vide ne se remarquerait pas.
+     */
     @SubscribeEvent
     public static void onJoin(EntityJoinLevelEvent event) {
-        if (event.getEntity() instanceof Enemy && DimMinerManager.levelIs(event.getLevel())) {
+        if (event.getEntity() instanceof Enemy && DimMinerManager.levelIs(event.getLevel())
+                && !(event.getEntity() instanceof Mob mob && mob.getSpawnType() == EntitySpawnReason.SPAWNER)) {
             event.setCanceled(true);
         }
     }

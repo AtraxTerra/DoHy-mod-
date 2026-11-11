@@ -5307,8 +5307,29 @@ def main():
     dimension_ores += ["%s:miner/ore_endium_nugget" % NS, "%s:miner/ore_invoker" % NS,
                        "%s:miner/xp_bush" % NS]
 
+    # Les ruines a spawner (MinerRuinFeature) : les salles a monstres que la
+    # dimension n'a pas, ou le marteau des cavernes recolte ses ames. En
+    # surface, un essai par chunk a une chance sur 9, que le sol valide une
+    # fois sur deux en plaine (mesure : une ruine tous les 18 chunks) ; sous
+    # terre, une chance sur 10, que la roche valide presque toujours (une
+    # salle ne se taille ni dans une grotte ni dans un lac).
+    for feature in ("miner_ruin", "miner_crypt"):
+        write("data/%s/worldgen/configured_feature/%s.json" % (NS, feature),
+              {"type": "%s:%s" % (NS, feature), "config": {}})
+    write("data/%s/worldgen/placed_feature/miner/ruin.json" % NS, {
+        "feature": "%s:miner_ruin" % NS,
+        "placement": [
+            {"type": "minecraft:rarity_filter", "chance": 9},
+            {"type": "minecraft:in_square"},
+            {"type": "minecraft:heightmap", "heightmap": "OCEAN_FLOOR_WG"},
+            {"type": "minecraft:biome"},
+        ],
+    })
+    placed("miner/crypt", "miner_crypt", [{"type": "minecraft:rarity_filter", "chance": 10}], -48, 48)
+
     # Un seul biome, fixe : les plaines de 26.2 sans pluie, sans aucun mob
-    # (l'original annulait tout EntityMob) et sans salle a monstres. Il n'est
+    # (l'original annulait tout EntityMob) et sans salle a monstres — les
+    # ruines a spawner en tiennent lieu. Il n'est
     # pas dans #minecraft:is_overworld, donc aucun modificateur de biome DoHy
     # (minerais au taux normal, arbres, montures) ne s'y ajoute.
     write("data/%s/worldgen/biome/miner.json" % NS, {
@@ -5320,8 +5341,8 @@ def main():
             [],
             ["minecraft:lake_lava_underground", "minecraft:lake_lava_surface"],
             ["minecraft:amethyst_geode"],
-            [],
-            [],
+            ["%s:miner/crypt" % NS],
+            ["%s:miner/ruin" % NS],
             [],
             ["minecraft:ore_dirt", "minecraft:ore_gravel", "minecraft:ore_granite_upper",
              "minecraft:ore_granite_lower", "minecraft:ore_diorite_upper", "minecraft:ore_diorite_lower",
