@@ -262,7 +262,7 @@ Règle qui les gouverne : **un effet déclaré est un effet branché.** `Upgrade
 | **Contrat hebdo** | 1 contrat lourd, infaisable en une soirée, grosse récompense | Structure le week-end |
 | **Première vente du jour** | ×1,5 sur la première transaction | Récompense sans punir l'absence (pas de streak) |
 | **Niveau global** | XP uniquement sur les **jalons** (niveau de métier, palier de collection, contrat hebdo). Récompense tous les 5 niveaux | Un seul chiffre qui résume la partie |
-| **Caisses** | Clé commune 100 k · rare 5 M · légendaire 150 M | Sink principal du milieu de partie |
+| **Loot boxes** | Six boxes de PalaMod, une clé chacune : Améthyste 100 k · Saharia 1 M · Paladium 5 M · Halloween 20 M · Trixium 50 M · Endium 150 M | Sink principal du milieu de partie |
 | **Autosell** | Coffre lié qui vend son contenu. Déblocage très tard (500 M) | Transforme les fermes de week-end en revenu passif de semaine |
 | **`/stats`** | Argent gagné à vie, blocs minés, mobs tués, temps de jeu, top 5 des ventes | Lisibilité de la progression longue |
 | **`/ecoreload`** | Recharge prix et data sans relancer le jeu | Confort de dev et d'équilibrage |

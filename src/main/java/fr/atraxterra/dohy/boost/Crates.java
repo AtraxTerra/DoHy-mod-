@@ -6,6 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.palamod.box.BoxKind;
 import fr.atraxterra.dohy.palamod.box.CrateKeys;
 import fr.atraxterra.dohy.ui.view.CrateView;
 import fr.atraxterra.dohy.ui.view.MenuView;
@@ -41,9 +42,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Les caisses : le puits a argent du milieu de partie.
+ * Les loot boxes : le puits a argent du milieu de partie. Il y en a six, celles
+ * de PalaMod ({@link BoxKind}), chacune avec sa cle, son prix et sa table.
  *
- * <p>Une caisse est un pari : elle coute un montant fixe et rend une valeur
+ * <p>Une box est un pari : sa cle coute un montant fixe et rend une valeur
  * aleatoire. Les tables sont calibrees pour rendre un peu moins que leur prix en
  * moyenne — c'est ce qui en fait un sink et non une source
  * ({@code tools/crate_values.py} le verifie). Elles vivent dans le datapack,
@@ -115,7 +117,7 @@ public final class Crates {
             List<String> summary = new ArrayList<>();
             config.crates().forEach((tier, crate) -> summary.add(tier + " " + crate.available().size()
                     + "/" + crate.entries().size()));
-            DoHy.LOGGER.info("Caisses chargees (lots disponibles) : {}", summary);
+            DoHy.LOGGER.info("Boxes chargees (lots disponibles) : {}", summary);
             return true;
         } catch (Exception error) {
             DoHy.LOGGER.error("Echec du chargement des caisses", error);
@@ -124,10 +126,11 @@ public final class Crates {
     }
 
     /** Achete une cle. Retourne la raison du refus, ou {@code null} si reussi. */
-    public static String buyKey(ServerPlayer player, String tier) {
+    public static String buyKey(ServerPlayer player, String name) {
+        String tier = canonical(name);
         Crate crate = config.crates().get(tier);
         if (crate == null) {
-            return "Palier inconnu : " + tier;
+            return "Box inconnue : " + name;
         }
         if (!Economy.tryDebit(player, crate.price())) {
             return "Il te faut " + MoneyFormat.exact(crate.price()) + " en liquide.";
@@ -160,14 +163,14 @@ public final class Crates {
     private static Pull pull(ServerPlayer player, String tier) {
         Crate crate = config.crates().get(tier);
         if (crate == null) {
-            return new Pull("Palier inconnu : " + tier, null);
+            return new Pull("Box inconnue : " + tier, null);
         }
         List<Entry> pool = crate.available();
         if (pool.isEmpty()) {
-            return new Pull("Table de butin vide pour " + tier + ".", null);
+            return new Pull("Table de butin vide pour la " + title(tier) + ".", null);
         }
         if (!CrateKeys.take(player, tier)) {
-            return new Pull("Aucune cle " + tier + ". Achete-en une a la boutique.", null);
+            return new Pull("Il te faut une " + keyName(tier) + " : la boutique en vend.", null);
         }
 
         RandomSource random = player.getRandom();
@@ -183,16 +186,17 @@ public final class Crates {
         Component name = name(won, money, stacks);
         Draw draw = new Draw(won, money, stacks, name, detail(won, money, stacks),
                 slot(won, money, stacks).icon(), won.rarityIndex());
-        DoHy.LOGGER.info("Caisse {} ouverte par {} : {} ({})", tier, player.getName().getString(),
+        DoHy.LOGGER.info("Box {} ouverte par {} : {} ({})", tier, player.getName().getString(),
                 name.getString(), RARITIES.get(draw.rarity()));
         return new Pull(null, draw);
     }
 
     /**
-     * Ouvre une caisse : tire le lot, le donne, et lance la roulette chez le
-     * joueur. Retourne la raison du refus, ou {@code null} si reussi.
+     * Ouvre une box a la roulette : tire le lot, le donne, et lance la roulette
+     * chez le joueur. Retourne la raison du refus, ou {@code null} si reussi.
      */
-    public static String open(ServerPlayer player, String tier) {
+    public static String open(ServerPlayer player, String name) {
+        String tier = canonical(name);
         Pull pull = pull(player, tier);
         if (pull.refusal() != null) {
             return pull.refusal();
@@ -219,11 +223,12 @@ public final class Crates {
     }
 
     /**
-     * Ouvre une caisse devant une box posee : meme tirage, sans roulette. Le
+     * Ouvre une box devant son coffre pose : meme tirage, sans roulette. Le
      * message du gain attend {@code revealTicks}, le moment ou la box montre
      * le lot.
      */
-    public static Pull openAtBox(ServerPlayer player, String tier, java.util.function.IntUnaryOperator revealTicks) {
+    public static Pull openAtBox(ServerPlayer player, String name, java.util.function.IntUnaryOperator revealTicks) {
+        String tier = canonical(name);
         Pull pull = pull(player, tier);
         if (pull.refusal() == null) {
             Draw draw = pull.draw();
@@ -232,30 +237,45 @@ public final class Crates {
         return pull;
     }
 
-    /** Le prix d'une cle de ce palier, ou -1 si le palier n'existe pas. */
+    /** Le prix d'une cle de cette box, ou -1 si elle n'a pas de table. */
     public static long keyPrice(String tier) {
-        Crate crate = config.crates().get(tier);
+        Crate crate = config.crates().get(canonical(tier));
         return crate == null ? -1L : crate.price();
     }
 
-    /** « Caisse rare » : le nom affiche d'un palier. */
-    /** « cle rare » : le nom d'une cle, en minuscules, pour une phrase. */
-    public static String keyName(String tier) {
-        return switch (tier) {
-            case "common" -> "cle commune";
-            case "rare" -> "cle rare";
-            case "legendary" -> "cle legendaire";
-            default -> "cle " + tier;
+    /**
+     * L'identifiant d'une box, tel que les tables le portent. Les trois caisses
+     * d'avant (commune, rare, legendaire) sont devenues les boxes d'amethyste,
+     * de paladium et d'endium : leurs anciens noms restent compris, pour une
+     * commande tapee de memoire ou un compteur de cles d'un monde d'avant.
+     */
+    public static String canonical(String crate) {
+        return switch (crate) {
+            case "common" -> "amethyst";
+            case "rare" -> "paladium";
+            case "legendary" -> "endium";
+            default -> crate;
         };
     }
 
-    public static String title(String tier) {
-        return switch (tier) {
-            case "common" -> "Caisse commune";
-            case "rare" -> "Caisse rare";
-            case "legendary" -> "Caisse legendaire";
-            default -> "Caisse " + tier;
-        };
+    /** Les boxes, de la moins chere a la plus chere. */
+    public static List<String> ordered() {
+        return config.crates().entrySet().stream()
+                .sorted(Map.Entry.<String, Crate>comparingByValue(java.util.Comparator.comparingLong(Crate::price))
+                        .thenComparing(Map.Entry.comparingByKey()))
+                .map(Map.Entry::getKey).toList();
+    }
+
+    /** « cle Paladium » : le nom d'une cle, pour une phrase. */
+    public static String keyName(String crate) {
+        BoxKind kind = BoxKind.byId(canonical(crate));
+        return "cle " + (kind == null ? crate : kind.label());
+    }
+
+    /** « Box Paladium » : le nom affiche d'une box. */
+    public static String title(String crate) {
+        BoxKind kind = BoxKind.byId(canonical(crate));
+        return "Box " + (kind == null ? crate : kind.label());
     }
 
     /** Le nom d'un lot : la somme, le nom du lot groupe, ou celui de l'objet. */
@@ -375,7 +395,7 @@ public final class Crates {
         Component message = Component.literal(title(tier) + " : ").withStyle(ChatFormatting.GRAY)
                 .append(prize)
                 .append(Component.literal(" · " + rarityName(rarity)).withStyle(color));
-        Component broadcast = rarity < 2 ? null : Component.literal("[Caisses] ").withStyle(ChatFormatting.GOLD)
+        Component broadcast = rarity < 2 ? null : Component.literal("[Boxes] ").withStyle(ChatFormatting.GOLD)
                 .append(Component.literal(player.getName().getString() + " a obtenu ").withStyle(ChatFormatting.GRAY))
                 .append(name.copy().withStyle(color))
                 .append(Component.literal(" (" + rarityName(rarity) + ") dans une " + title(tier).toLowerCase()

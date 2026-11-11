@@ -175,6 +175,37 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — les caisses regroupées dans les six boxes de PalaMod
+
+**Demande** : « mettre à jour les loot box en regroupant toutes les caisses dans celles du
+PalaMod ». Deux questions posées, deux choix du joueur : **six boxes, six butins** (plutôt que
+trois boxes et trois habillages) et **la roulette gardée**. Détail : `docs/PALAMOD.md` § 33,
+`docs/BALANCE.md` § 6 quater, octies et nonies.
+
+**Fait** (`feat/boxes-six`) :
+- `data/crates.json` : six tables sous l'identifiant de la box. Améthyste, paladium et endium
+  reprennent telles quelles les caisses commune, rare et légendaire ; Saharia (1 M, le pillage),
+  Halloween (20 M, la chasse et les withers) et Trixium (50 M, le voyage et l'endium) sont neuves.
+  `tools/crate_values.py` : les six rendent de 84,5 à 90,3 % de leur prix. Les trois neuves ont
+  reçu ensuite leurs lots **NTM NEXT** (« et les loot de NTM NEXT dans ces box ? ») : plutonium,
+  lithium et pièces de machine pour Saharia, contrôleurs et moteurs en desh pour Halloween et
+  Trixium, 14,5 % du tirage, répartis entre les classes.
+- Six clés (`crate_key_<box>`), l'illustration de chaque box de PalaShop. `BoxKind.crate()` : une
+  box ouvre sa propre table.
+- Boutique : la section CAISSES disparaît ; BOXES (clés et roulette) et COFFRES À POSER.
+- Sources de clés : donjons (Trixium à partir du palier 60), boss d'événement (Halloween, 1 %),
+  **bases ennemies pillées (Saharia)**. Marché : les six clés au rayon.
+- Un monde d'avant : alias de registre pour les trois anciens objets, conversion des compteurs,
+  anciens noms compris par `/crate`.
+
+**À savoir** :
+- `DeferredRegister.addAlias(ancien, nouveau)` (sondé) : une pile sauvegardée sous l'ancien
+  identifiant se recharge sous le nouveau. À poser dans un bloc `static` après les enregistrements.
+- `tools/check_assets.py` lit les noms d'objets **en toutes lettres** dans `registerItem("...")` :
+  un nom composé (`"crate_key_" + ...`) est lu « crate_key_ » et le contrôle échoue.
+- Les non-empilables d'un lot (`count` > 1) partent pile par pile (`Crates.give`) : garder leur
+  nombre petit. La pierre de capture, l'enderchest de poche et les pierres légendaires en sont.
+
 ### 2026-11-11 (suite) — des ruines à spawner dans la dimension du Mineur
 
 **Demande** : « dans la dimension mineur, ajoute des structures communes dans lesquelles on peut

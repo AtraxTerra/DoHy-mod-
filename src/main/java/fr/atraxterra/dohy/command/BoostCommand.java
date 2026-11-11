@@ -48,13 +48,21 @@ public final class BoostCommand {
         return Commands.literal("crate")
                 .executes(ctx -> crateStatus(ctx.getSource()))
                 .then(Commands.literal("buy")
-                        .then(Commands.argument("palier", StringArgumentType.word())
+                        .then(Commands.argument("box", StringArgumentType.word())
+                                .suggests((ctx, builder) -> {
+                                    Crates.ordered().forEach(builder::suggest);
+                                    return builder.buildFuture();
+                                })
                                 .executes(ctx -> buyKey(ctx.getSource(),
-                                        StringArgumentType.getString(ctx, "palier")))))
+                                        StringArgumentType.getString(ctx, "box")))))
                 .then(Commands.literal("open")
-                        .then(Commands.argument("palier", StringArgumentType.word())
+                        .then(Commands.argument("box", StringArgumentType.word())
+                                .suggests((ctx, builder) -> {
+                                    Crates.ordered().forEach(builder::suggest);
+                                    return builder.buildFuture();
+                                })
                                 .executes(ctx -> openCrate(ctx.getSource(),
-                                        StringArgumentType.getString(ctx, "palier")))));
+                                        StringArgumentType.getString(ctx, "box")))));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> autosell() {
@@ -109,15 +117,16 @@ public final class BoostCommand {
     private static int crateStatus(CommandSourceStack source) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
 
-        source.sendSuccess(() -> Component.literal("Caisses").withStyle(ChatFormatting.GOLD), false);
-        Crates.config().crates().forEach((tier, crate) -> source.sendSuccess(() ->
-                Component.literal("  " + tier + " — ")
-                        .withStyle(ChatFormatting.GRAY)
-                        .append(Component.literal(MoneyFormat.exact(crate.price()))
-                                .withStyle(ChatFormatting.GOLD))
-                        .append(Component.literal("  cles : " + CrateKeys.count(player, tier))
-                                .withStyle(ChatFormatting.DARK_GRAY)), false));
-        source.sendSuccess(() -> Component.literal("  /crate buy <palier> puis /crate open <palier>")
+        source.sendSuccess(() -> Component.literal("Boxes").withStyle(ChatFormatting.GOLD), false);
+        for (String tier : Crates.ordered()) {
+            long price = Crates.keyPrice(tier);
+            source.sendSuccess(() -> Component.literal("  " + tier + " (" + Crates.title(tier) + ") — ")
+                    .withStyle(ChatFormatting.GRAY)
+                    .append(Component.literal(MoneyFormat.exact(price)).withStyle(ChatFormatting.GOLD))
+                    .append(Component.literal("  cles : " + CrateKeys.count(player, tier))
+                            .withStyle(ChatFormatting.DARK_GRAY)), false);
+        }
+        source.sendSuccess(() -> Component.literal("  /crate buy <box> puis /crate open <box>")
                 .withStyle(ChatFormatting.DARK_GRAY), false);
         return 1;
     }
@@ -129,7 +138,8 @@ public final class BoostCommand {
             source.sendFailure(Component.literal(refusal));
             return 0;
         }
-        source.sendSuccess(() -> Component.literal("Cle " + tier + " achetee — /crate open " + tier)
+        source.sendSuccess(() -> Component.literal("Une " + Crates.keyName(tier) + " achetee — /crate open "
+                        + Crates.canonical(tier))
                 .withStyle(ChatFormatting.GREEN), false);
         return 1;
     }

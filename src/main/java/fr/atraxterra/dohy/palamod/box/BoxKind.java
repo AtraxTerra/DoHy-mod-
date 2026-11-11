@@ -5,34 +5,51 @@ import net.minecraft.util.StringRepresentable;
 
 /**
  * Les six boxes de la boutique de Paladium (jar PalaShop,
- * {@code assets/palashop/boxes}). Chacune ouvre une caisse de DoHy : son
- * palier decide de la cle qu'elle prend et de la table de butin qu'elle tire
- * ({@code data/crates.json}). Trois metaux, puis trois habillages des
- * memes paliers.
+ * {@code assets/palashop/boxes}). Chacune est une loot box a part entiere : sa
+ * cle, son prix et sa table de butin, sous son identifiant dans
+ * {@code data/crates.json} ({@link fr.atraxterra.dohy.boost.Crates}). Avant, il
+ * y avait trois caisses (commune, rare, legendaire) que les boxes ouvraient
+ * deux par deux : elles sont devenues les boxes d'amethyste, de paladium et
+ * d'endium.
  */
 public enum BoxKind implements StringRepresentable {
-    AMETHYST("amethyst", "common", 0.65f),
-    PALADIUM("paladium", "rare", 0.6f),
-    ENDIUM("endium", "legendary", 0.45f),
-    SAHARIA("saharia", "common", 0.55f),
-    TRIXIUM("trixium", "rare", 0.45f),
-    HALLOWEEN("halloween", "legendary", 0.5f);
+    AMETHYST("amethyst", "Amethyste", 0.65f),
+    PALADIUM("paladium", "Paladium", 0.6f),
+    ENDIUM("endium", "Endium", 0.45f),
+    SAHARIA("saharia", "Saharia", 0.55f),
+    TRIXIUM("trixium", "Trixium", 0.45f),
+    HALLOWEEN("halloween", "Halloween", 0.5f);
 
     public static final Codec<BoxKind> CODEC = StringRepresentable.fromEnum(BoxKind::values);
 
     private final String id;
-    private final String tier;
+    private final String label;
     private final float scale;
 
-    BoxKind(String id, String tier, float scale) {
+    BoxKind(String id, String label, float scale) {
         this.id = id;
-        this.tier = tier;
+        this.label = label;
         this.scale = scale;
     }
 
-    /** Le palier de caisse que cette box ouvre : {@code common}, {@code rare}, {@code legendary}. */
-    public String tier() {
-        return tier;
+    /** La box de cet identifiant, ou {@code null}. */
+    public static BoxKind byId(String id) {
+        for (BoxKind kind : values()) {
+            if (kind.id.equals(id)) {
+                return kind;
+            }
+        }
+        return null;
+    }
+
+    /** L'identifiant de sa table de butin et de sa cle : celui de la box. */
+    public String crate() {
+        return id;
+    }
+
+    /** « Amethyste » : le nom de la box, sans accent, pour le tchat et les menus. */
+    public String label() {
+        return label;
     }
 
     /** Le modele anime, sous {@code assets/palarpg/entity}. */

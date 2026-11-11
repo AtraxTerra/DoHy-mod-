@@ -171,10 +171,13 @@ Revenu effectif estimé : 25 k/h au début (le prix dynamique et les déplacemen
 | Premier palier de collection | — | soirée 1 | 2 |
 | 3 contrats quotidiens + hebdo | — | semaine 1 | 20 |
 | **Booster x2** | 2 M | fin semaine 2 | ~40 |
-| **Caisse rare** | 5 M | semaine 3-4 | ~70 |
+| **Box Saharia** | 1 M | semaine 2 (estimé) | ~30 |
+| **Box Paladium** | 5 M | semaine 3-4 | ~70 |
 | Banque rentable (dépôt > 10 M) | — | mois 2 | ~110 |
 | **Booster x3** | 25 M | mois 2 | ~130 |
-| **Caisse légendaire** | 150 M | mois 3 | ~200 |
+| **Box Halloween** | 20 M | mois 2 (estimé) | ~120 |
+| **Box Trixium** | 50 M | mois 2-3 (estimé) | ~160 |
+| **Box Endium** | 150 M | mois 3 | ~200 |
 | **Booster x4** | 300 M | mois 3-4 | ~250 |
 | **Autosell** | 500 M | mois 4 | ~300 |
 
@@ -496,39 +499,77 @@ produisent le fer à 15. Ce qui ne sort que de la mine est `FOUND` : paladium ve
 40 000. Les rapports de conversion des machines sont tenus : au crusher, 15 titanes coûtent
 16 améthystes et 15 paladiums 32 titanes, donc aucun prix ne rend une conversion gratuite.
 
-## 6 quater. Caisses — le butin
+## 6 quater. Loot boxes — le butin
 
-Trois paliers, aux prix du chapitre de progression : clé commune **100 k**, rare **5 M**, légendaire
-**150 M**. Le butin vient de PalaMod (lingots et blocs, paladium vert, trixium, findium, endium,
-panoplies et outils enchantés, pierres légendaires, gant complet) et de NTM NEXT (lingots par tag,
-pièces de machine), plus de l'argent.
+Six boxes, celles de PalaMod, chacune avec sa clé, son prix et sa table (`data/crates.json`). Les
+trois caisses d'avant — commune, rare, légendaire — sont devenues les boxes d'**améthyste**, de
+**paladium** et d'**endium**, sans changer de prix ni de butin ; **Saharia**, **Halloween** et
+**Trixium** s'intercalent, chacune avec un thème. Décidé par le joueur le 2026-11-11 (« six
+boxes, six butins »).
+
+| Box | Clé | Le thème | Gros lot |
+|---|---|---|---|
+| Améthyste | 100 k | les matériaux du début : paladium, paladium vert, trixium, findium, panoplie en paladium, pièces NTM | lingot d'endium, enderchest de poche |
+| Saharia | 1 M | le pillage : TNT en endium, éponge et à wither, kit du pilleur, obsidiennes piégées, spikes, withers de siège | gemme de wither suprême, 5 lingots d'endium |
+| Paladium | 5 M | l'endium en pépites et en outils, la poche du voyageur, les machines NTM avancées | pierre légendaire aléatoire |
+| Halloween | 20 M | la chasse et les withers : rituels suprêmes, obsidiennes infusées, améliorations de spawner, pierre légendaire | cinq pierres légendaires |
+| Trixium | 50 M | le voyage et l'endium en lingots : enderchests de poche, coffres et seedplanters en endium, pierres légendaires | 24 blocs d'endium |
+| Endium | 150 M | panoplies en endium, pierres, usine NTM | gant en endium complet |
+
+Le butin vient de PalaMod et de **NTM NEXT** (lingots par tag, pièces de machine), plus de
+l'argent. Les six boxes portent des lots NTM :
+
+| Box | Lots NTM NEXT | Part du tirage |
+|---|---|---|
+| Améthyste | lingots de plomb, d'uranium et d'aluminium, moteurs, circuits de base et avancés | 24 % |
+| Saharia | 22 lingots de plutonium, pièces de machine (carte à condensateurs, circuits, moteurs), 11 lingots de lithium, 5 circuits avancés | 14,5 % |
+| Paladium | lingots de lithium, machines avancées, contrôleurs | 26 % |
+| Halloween | 3 contrôleurs, 6 moteurs en desh, l'automate (5 et 5), 16 contrôleurs | 14,5 % |
+| Trixium | 8 contrôleurs, 16 moteurs en desh, la chaîne de montage (12 et 15), l'atelier (24 et 32) | 14,5 % |
+| Endium | 24 contrôleurs, 48 moteurs en desh, l'usine (64 et 64) | 22 % |
 
 ### La règle
 
-Chaque palier rend **80 à 95 % de son prix en valeur boutique** : le prix d'achat au shop, ou, pour
+Chaque box rend **80 à 95 % de son prix en valeur boutique** : le prix d'achat au shop, ou, pour
 un objet qui ne s'achète pas, ce que coûtent ses ingrédients au shop. `tools/crate_values.py` le
-calcule et sort en erreur hors de la fourchette. En liquide, la caisse prend bien plus : un objet
+calcule et sort en erreur hors de la fourchette. En liquide, la box prend bien plus : un objet
 se revend au prix de base, le quart du prix boutique, et seule une partie du butin est de l'argent.
 
 | Classe | Chance | Lot moyen | Exemples |
 |---|---|---|---|
-| Commun | ~68 % | ~0,5 × le prix | 16 blocs de paladium, 12 trixium, 22 lingots de lithium, 6 blocs d'endium |
-| Rare | ~24 % | ~1,2 × | outils en paladium vert enchantés, 5 lingots d'endium, les six pierres |
-| Épique | ~7 % | ~2,5 × | 2 pépites d'endium, plastron en endium, 28 blocs d'endium |
-| Légendaire | ~1 % | 5 à 14 × | lingot d'endium, pierre légendaire aléatoire, gant complet, argent |
+| Commun | ~68 % | ~0,5 × le prix | 16 blocs de paladium, 12 TNT en endium, 22 lingots de lithium, 17 lingots d'endium |
+| Rare | ~24 % | ~1,2 × | outils en paladium vert enchantés, arsenal de siège, trois pierres, les six pierres |
+| Épique | ~7 % | ~2,5 × | 2 pépites d'endium, 64 TNT en endium, plastron en endium, 28 blocs d'endium |
+| Légendaire | ~1 % | 5 à 14 × (2 × pour l'endium) | lingot d'endium, pierre légendaire aléatoire, gant complet, argent |
 
-| Palier | Avec NTM | Sans NTM |
+| Box | Avec NTM | Sans NTM |
 |---|---|---|
-| Commune (100 k) | 87,8 % | 89,0 % |
-| Rare (5 M) | 87,5 % | 88,0 % |
-| Légendaire (150 M) | 84,5 % | 90,2 % |
+| Améthyste (100 k) | 87,8 % | 89,0 % |
+| Saharia (1 M) | 89,3 % | 90,3 % |
+| Paladium (5 M) | 87,5 % | 88,0 % |
+| Halloween (20 M) | 86,0 % | 87,4 % |
+| Trixium (50 M) | 88,4 % | 89,5 % |
+| Endium (150 M) | 84,5 % | 90,2 % |
+
+### Les pierres légendaires, box par box
+
+La pierre est cotée 20 M. Trois boxes de plus en donnent, ce qui les rend moins rares qu'avant —
+mais jamais moins chères qu'au marché, où elles passent deux jours sur cinq entre 14 M et 32 M
+(§ 6 decies) :
+
+| Box | Pierres par clé, en moyenne (avec NTM) | Soit, par pierre |
+|---|---|---|
+| Paladium | 0,006 | ~830 M |
+| Halloween | 0,12 | ~170 M |
+| Trixium | 0,26 | ~190 M |
+| Endium | 0,76 (et le gant : 0,04 de plus) | ~190 M |
 
 ### Les cotes fixées à la main
 
-- **Pierre légendaire** : 20 M. Elle ne s'achète pas ; c'est quatre clés rares, et le gros lot de
-  la caisse rare.
-- **Gant complet** : six pierres plus sa recette, ~123 M. C'est le lot légendaire de la caisse
-  légendaire, en dessous du prix de la clé : sa rareté (0,7 %) et ses effets font sa valeur.
+- **Pierre légendaire** : 20 M. Elle ne s'achète pas à la boutique ; c'est quatre clés Paladium,
+  et le gros lot de la box Paladium.
+- **Gant complet** : six pierres plus sa recette, ~123 M. C'est le lot légendaire de la box
+  Endium, en dessous du prix de la clé : sa rareté (0,7 %) et ses effets font sa valeur.
 - **Enderchest de poche** 1,5 M et **fabrique à nuage** 400 k : les récompenses du concours Trixium.
 - **Enchantement** : 1 500 par niveau. Un outil en paladium enchanté vaut surtout son enchantement.
 
@@ -606,47 +647,63 @@ pas d'un autre ordre.
 Si un serveur voyait ses prix de butin s'effondrer, les quatre lignes de `SpawnerTier` sont le
 seul réglage à toucher.
 
-## 6 octies. Boxes de la boutique
+## 6 octies. Les coffres à poser
 
-Une box posée ouvre la caisse de son palier avec les mêmes clés et la même table de butin :
-elle ne change **aucune** espérance de gain (§ 6 quater). Ce qu'on paie est le coffre.
+Le coffre animé d'une box, posé chez soi, ouvre la même table que la roulette avec la même clé :
+il ne change **aucune** espérance de gain (§ 6 quater). Ce qu'on paie est le coffre.
 
 | | Prix |
 |---|---|
-| Une box, n'importe laquelle | 25 000 $, une fois |
-| Une clé | celui de la caisse : 100 000 $, 5 M$, 150 M$ |
+| Un coffre à poser, n'importe lequel | 25 000 $, une fois |
+| Une clé | celui de sa box : 100 k, 1 M, 5 M, 20 M, 50 M, 150 M |
 
 25 000 $, c'est une heure d'activité ordinaire au début du jeu (24 000 $ par heure) et un quart
-de clé commune : assez pour être un achat, trop peu pour retarder la première caisse. Les six
-ont le même prix pour que le choix entre deux boxes du même palier soit un goût et non un calcul.
-`PalaBoxes.PRICE` est le seul réglage.
+de clé Améthyste : assez pour être un achat, trop peu pour retarder la première box. Les six ont
+le même prix : le coffre est un décor, la clé est le pari. `PalaBoxes.PRICE` est le seul réglage.
 
-## 6 nonies. Clés de caisse en butin
+## 6 nonies. Clés en butin
 
-Une clé vaut son prix à la boutique (100 k, 5 M, 150 M), mais ce qu'elle rapporte **en liquide**
-à qui revend tout est bien moindre : la caisse rend ~88 % en valeur boutique et la revente se fait
-au quart, soit ~22 k, ~1,1 M et ~33 M par clé. C'est ce chiffre qui borne les sources.
+Une clé vaut son prix à la boutique, mais ce qu'elle rapporte **en liquide** à qui revend tout
+est bien moindre : la box rend ~88 % en valeur boutique et la revente se fait au quart. C'est ce
+chiffre qui borne les sources.
 
-**Coffre de la note d'un donjon réussi** (trois tirages séparés) :
+| Clé | Prix | En liquide |
+|---|---|---|
+| Améthyste | 100 k | ~22 k |
+| Saharia | 1 M | ~220 k |
+| Paladium | 5 M | ~1,1 M |
+| Halloween | 20 M | ~4,3 M |
+| Trixium | 50 M | ~11 M |
+| Endium | 150 M | ~33 M |
 
-| Note | Clé commune | Clé rare (palier 40 et plus) | Clé légendaire (palier 80 et plus) |
-|---|---|---|---|
-| D, C | — | — | — |
-| B | 10 % | — | — |
-| A | 20 % | 0,5 % | — |
-| S | 35 % | 1,5 % | 0,25 % |
+Chaque box à thème a sa source, en plus de la boutique et du marché.
 
-En liquide, une note S rapporte donc en moyenne ~8 k avant le palier 40, ~24 k ensuite, ~107 k
-à partir du palier 80. À quatre donjons par heure, c'est de 30 k à 430 k par heure : au-dessus
-d'une heure ordinaire du début de partie pour qui tient la note S, et moins d'un sixième du
-revenu de fin de partie (~3 M par heure quand la caisse légendaire devient abordable). Une note
-médiocre ne donne rien.
+**Coffre de la note d'un donjon réussi** (quatre tirages séparés) :
 
-**Boss d'événement vaincu** : une clé commune à chaque joueur qui l'a frappé, et une clé rare
-dans 5 % des cas — ~77 k en liquide par boss, pour un combat qui peut durer trente minutes.
+| Note | Clé Améthyste | Clé Paladium (palier 40 et plus) | Clé Trixium (palier 60 et plus) | Clé Endium (palier 80 et plus) |
+|---|---|---|---|---|
+| D, C | — | — | — | — |
+| B | 10 % | — | — | — |
+| A | 20 % | 0,5 % | 0,1 % | — |
+| S | 35 % | 1,5 % | 0,4 % | 0,25 % |
 
-Les réglages sont les trois tableaux `KEY_*` de `DungeonRewards` et `RARE_KEY_CHANCE` de
-`BossFight`.
+En liquide, une note S rapporte donc en moyenne ~8 k avant le palier 40, ~24 k ensuite, ~68 k à
+partir du palier 60, ~150 k à partir du palier 80. À quatre donjons par heure, c'est de 30 k à
+600 k par heure : au-dessus d'une heure ordinaire du début de partie pour qui tient la note S, et
+un cinquième du revenu de fin de partie (~3 M par heure quand la box Endium devient abordable).
+Une note médiocre ne donne rien.
+
+**Boss d'événement vaincu** : une clé Améthyste à chaque joueur qui l'a frappé, une clé Paladium
+dans 5 % des cas, une clé **Halloween** dans 1 % — ~120 k en liquide par boss, pour un combat qui
+peut durer trente minutes.
+
+**Base ennemie pillée** : des clés **Saharia**, la box du pillage — de quoi préparer le raid
+suivant. Un avant-poste en laisse une une fois sur quatre, une base une, une forteresse trois :
+~56 k, ~220 k et ~670 k en liquide, à côté des 40 k, 200 k et 800 k versés à la banque de faction.
+Le butin d'un raid double à peu près, en TNT plutôt qu'en argent.
+
+Les réglages sont les quatre tableaux `KEY_*` de `DungeonRewards`, `PALADIUM_KEY_CHANCE` et
+`HALLOWEEN_KEY_CHANCE` de `BossFight`, et `OUTPOST_KEY_CHANCE` de `EnemyBases`.
 
 ## 6 decies. Marché
 
@@ -657,13 +714,14 @@ faut tenir, ce sont trois choses.
 L'annonce la moins chère est à 0,70 fois la cote : acheter au marché pour revendre perd toujours
 au moins 64 %.
 
-**Les clés.** Une clé en promotion coûte de 75 à 100 % de son prix. La caisse rend ~88 % de ce
+**Les clés.** Une clé en promotion coûte de 75 à 100 % de son prix. La box rend ~88 % de ce
 prix en valeur boutique et ~22 % en liquide : même à 75 %, ouvrir pour revendre perd de l'argent.
-Ce que la promotion change, c'est le prix d'accès — une clé légendaire à 112 M au lieu de 150 M,
-quand elle passe (une annonce sur trente du rayon).
+Ce que la promotion change, c'est le prix d'accès — une clé Endium à 112 M au lieu de 150 M,
+quand elle passe (une annonce sur quarante-trois du rayon). Les six clés sont au rayon, d'autant
+plus rares que la box est chère (`KEY_OFFERS`).
 
-**Les pierres légendaires.** Cotées 20 M (§ 6 quater), elles étaient le gros lot de la caisse
-rare et ne s'achetaient nulle part. Elles sont maintenant en vente environ **deux jours sur cinq**,
+**Les pierres légendaires.** Cotées 20 M (§ 6 quater), elles étaient le gros lot de la box
+Paladium (alors « caisse rare ») et ne s'achetaient nulle part. Elles sont maintenant en vente environ **deux jours sur cinq**,
 entre 14 M et 32 M. C'est le changement d'équilibrage du marché, voulu par le joueur (« raretés
 de PalaMod ») : la pierre devient un achat de milieu de partie plutôt qu'un coup de chance. Si
 c'est trop, baisser les poids des pierres dans `tools/market_offers.py`.
@@ -701,5 +759,5 @@ Leviers : `chance` dans `placed_feature/miner/ruin.json` (9) et `crypt.json` (10
   (titane, cuivre rouge, carbone, silicium, caoutchouc) sont les premières à revoir si une
   partie montre un écart.
 - ~~**COMPONENT**~~ : catégorie supprimée le 2026-11-05, elle n'a jamais contenu d'item
-- ~~**Caisses**~~ : tables écrites le 2026-11-11 (§ 6 quater)
+- ~~**Caisses**~~ : tables écrites le 2026-11-11, devenues six boxes le même jour (§ 6 quater)
 - **Niveau global** : barème d'XP par type de jalon à fixer une fois les contrats en jeu

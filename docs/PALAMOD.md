@@ -1903,10 +1903,12 @@ quatre autres n'était jamais écrit dans l'original : on peut enchaîner deux p
 ### Obtention — au choix du joueur
 
 Les lucky blocks et les événements de Paladium n'existent pas ici. La pierre aléatoire est le gros
-lot de la **caisse rare** (6 pour mille) ; la **caisse légendaire** en donne quatre d'un coup (lot
-commun), les six pierres d'un coup (lot rare), et le **gant complet** (7 pour mille). Une entrée de
-caisse accepte des composants (`components`), ce qui permet le gant garni, et un lot de plusieurs
-objets (`items`). Voir BALANCE § 6 quater.
+lot de la **box Paladium** (6 pour mille, l'ancienne caisse rare) ; la **box Endium** (l'ancienne
+caisse légendaire) en donne quatre d'un coup (lot commun), les six pierres d'un coup (lot rare), et
+le **gant complet** (7 pour mille). Depuis le regroupement des caisses dans les boxes (§ 33), les
+boxes **Halloween** et **Trixium** en donnent aussi, d'une à six. Une entrée de box accepte des
+composants (`components`), ce qui permet le gant garni, et un lot de plusieurs objets (`items`).
+Voir BALANCE § 6 quater.
 
 ### Ce qui n'est pas porté
 
@@ -2761,22 +2763,46 @@ GeckoLib et une bande-son par classe de lot. Tout est dans `palamod/box` : `BoxK
 ### Ce que c'est dans DoHy
 
 Dans Paladium, la box est une entité (`EntityBox`) que la boutique fait apparaître devant le
-joueur, le temps d'une ouverture payée en argent réel. Ici c'est **un bloc à poser**, acheté une
-fois à la boutique (25 000 $, section BOXES) et gardé. Il ouvre **les caisses de DoHy** : mêmes
-clés, mêmes tables de butin (`data/crates.json`), même tirage (`Crates.pull`). La roulette de
-l'écran reste disponible depuis la boutique ; la box est l'autre façon d'ouvrir.
+joueur, le temps d'une ouverture payée en argent réel. Ici, **les six boxes sont les loot boxes du
+mod** : chacune a sa clé, son prix et sa table de butin (`data/crates.json`, sous l'identifiant de
+la box). Il y a deux façons d'en ouvrir une, avec la même clé et le même tirage (`Crates.pull`) :
 
-| Box | Caisse ouverte |
-|---|---|
-| Améthyste, Saharia | commune |
-| Paladium, Trixium | rare |
-| Endium, Halloween | légendaire |
+- **à la roulette** : la carte de la box à la boutique (section BOXES), `/crate open <box>`, ou
+  clic droit dans le vide avec la clé ;
+- **sur son coffre posé** : un bloc acheté une fois à la boutique (25 000 $, section COFFRES À
+  POSER) et gardé, qui joue l'animation de Paladium.
 
-- **Clic droit** : s'il y a une clé du palier dans l'inventaire, le lot est tiré et donné tout de suite, la box
-  joue l'animation de la classe du lot avec sa bande-son, le lot apparaît au-dessus du coffre au
+| Box | Clé | Thème | Avant |
+|---|---|---|---|
+| Améthyste | 100 000 $ | matériaux du début | la caisse commune |
+| Saharia | 1 M$ | pillage | — (ouvrait la caisse commune) |
+| Paladium | 5 M$ | endium, voyage | la caisse rare |
+| Halloween | 20 M$ | chasse et withers | — (ouvrait la caisse légendaire) |
+| Trixium | 50 M$ | voyage, endium en lingots | — (ouvrait la caisse rare) |
+| Endium | 150 M$ | panoplies, pierres, gant | la caisse légendaire |
+
+**Le regroupement (2026-11-11).** Il y avait trois caisses de DoHy (commune, rare, légendaire),
+ouvertes à la roulette, et six boxes de PalaMod qui les ouvraient deux par deux. Le joueur a
+demandé de tout regrouper dans les boxes de PalaMod, avec **six butins** et **la roulette
+gardée**. Les trois caisses sont donc devenues les boxes d'améthyste, de paladium et d'endium —
+mêmes prix, mêmes tables — et Saharia, Halloween et Trixium ont reçu chacune une table et un prix
+(`BALANCE.md` § 6 quater). Les six portent des lots de NTM NEXT, qui sortent du tirage si le mod
+n'est pas là. Rien n'est perdu d'un monde d'avant :
+
+- les objets `crate_key_common`, `_rare` et `_legendary` restés dans un coffre ou un inventaire
+  deviennent `crate_key_amethyst`, `_paladium` et `_endium` au chargement (alias de registre,
+  `PalaBoxes`) ;
+- les clés encore comptées sous les anciens noms sont converties en objets à la connexion
+  (`CrateKeys.convert`) ;
+- `/crate open rare` et les anciens noms restent compris (`Crates.canonical`).
+
+Sur le coffre posé :
+
+- **Clic droit** : s'il y a une clé de cette box dans l'inventaire, le lot est tiré et donné tout de suite, le coffre
+  joue l'animation de la classe du lot avec sa bande-son, le lot apparaît au-dessus au
   repère `open` (et le message du gain tombe à ce moment), puis disparaît au repère `close`.
-- **Accroupi, main vide, clic droit** : achète une clé du palier.
-- Une box déjà en train de s'ouvrir refuse un second clic ; sans clé, elle dit le prix.
+- **Accroupi, main vide, clic droit** : achète une clé de cette box.
+- Un coffre déjà en train de s'ouvrir refuse un second clic ; sans la bonne clé, il dit le prix.
 
 ### Comment c'est fait
 
@@ -2799,25 +2825,31 @@ l'écran reste disponible depuis la boutique ; la box est l'autre façon d'ouvri
 
 ### Les clés — des objets (2026-11-11)
 
-Les clés de caisse étaient un compteur attaché au joueur. Ce sont maintenant trois objets,
-`palamod:crate_key_common`, `_rare` et `_legendary` (`CrateKeyItem`), avec l'illustration de la
-clé des boxes d'améthyste, de paladium et d'endium de PalaShop. `CrateKeys` est le seul endroit
-qui les compte, les prend et les donne :
+Les clés étaient un compteur attaché au joueur. Ce sont six objets, un par box :
+`palamod:crate_key_amethyst`, `_saharia`, `_paladium`, `_halloween`, `_trixium` et `_endium`
+(`CrateKeyItem`), avec l'illustration de la clé de chaque box dans PalaShop (`boxes/<nom>/item.png`).
+`CrateKeys` est le seul endroit qui les compte, les prend et les donne :
 
 - la boutique et `/crate buy` **donnent l'objet** ; ce qui ne tient pas dans l'inventaire tombe
   aux pieds ;
-- la roulette et les boxes **prennent la clé dans l'inventaire**, celle de la main d'abord ;
-- **clic droit dans le vide** avec une clé : ouvre la caisse à la roulette ;
-- les clés comptées d'un monde d'avant sont **converties à la connexion**, avec un message ;
-- un palier de caisse ajouté par un pack de données n'a pas d'objet : ses clés restent comptées
+- la roulette et les coffres posés **prennent la clé dans l'inventaire**, celle de la main d'abord ;
+- **clic droit dans le vide** avec une clé : ouvre sa box à la roulette ;
+- une clé n'ouvre que sa box : une clé Saharia ne fait rien sur le coffre Halloween ;
+- une table ajoutée par un pack de données n'a pas d'objet : ses clés restent comptées
   (`BoostData.keys`), et tout le reste marche pareil.
 
-Elles se trouvent en butin : coffre de la note des donjons et boss d'événement (`BALANCE.md`
-§ 6 nonies). Vérifié en jeu par captures : conversion (3 communes et 1 rare comptées → 4 objets,
-compteur vide), icônes dans l'inventaire, clé utilisée dans le vide (roulette ouverte, clé
-prise), clé en main sur une box (vrai clic du client), refus d'achat sans argent, et la
-fréquence des clés sur 20 000 coffres de note par cas. Non vérifié : la clé laissée par un boss
-d'événement.
+Elles se trouvent en butin, chacune à sa source : coffre de la note des donjons (Améthyste,
+Paladium, Trixium, Endium), boss d'événement (Améthyste, Paladium, Halloween), base ennemie pillée
+(Saharia) — `BALANCE.md` § 6 nonies. Et au marché, en promotion (§ 34).
+
+Vérifié en jeu par captures (regroupement, 2026-11-11) : les six tables chargées, toutes
+tirables ; les trois anciens identifiants de clé rechargés sous les nouveaux (registre et pile
+sauvegardée) ; 3 communes, 1 rare et 2 légendaires comptées → 3 clés Améthyste, 1 Paladium,
+2 Endium, compteur vide ; achat sous l'ancien nom (`rare`) ; refus d'une box inconnue ; la
+boutique et ses deux sections ; la roulette des trois boxes neuves ; un vrai clic du client, clé
+Saharia en main, sur le coffre Saharia ; une clé Saharia refusée par le coffre Halloween ; la
+fréquence des clés sur 40 000 coffres de note par cas. Non vérifié : la clé Saharia d'une base
+pillée, la clé Halloween d'un boss, et l'annonce d'une clé au marché.
 
 ### Les rayons — une seconde passe de rendu
 
@@ -2857,8 +2889,9 @@ et le rechargement d'un monde avec une box posée.
 
 ### Écarts avec l'original
 
-- Une box n'a pas de butin à elle : elle ouvre une caisse de DoHy. Les lots de PalaShop
-  (cosmétiques, grades, points boutique) n'ont pas d'équivalent ici.
+- Le butin de chaque box est celui de DoHy : les lots de PalaShop (cosmétiques, grades, points
+  boutique) n'ont pas d'équivalent ici. Les thèmes de Saharia, Halloween et Trixium sont un choix
+  de DoHy, pas un relevé.
 - Pas de roulette en surimpression ni de vue « caméra » : l'ouverture se regarde dans le monde.
 - Le modèle est dessiné de 0,45 à 0,65 fois sa taille d'origine selon la box, pour tenir sur un bloc.
 
@@ -2884,7 +2917,7 @@ annonces du jour, l'achat), `AuctionData` (les achats du jour), `AuctionControll
 | Reliques | 3 | pierres légendaires, gant d'endium, enderchest de poche, fabrique à nuage, amulette du chasseur, endium |
 | Donjons | 4 | fragments et runes, essences des quatre éléments, équipement basique et renforcé des quatre donjons |
 | Chasse et wither | 2 | améliorations de spawner, obsidienne infusée, pierre de capture, gemmes de wither |
-| Clés et boxes | 3 | les trois clés de caisse, les six boxes |
+| Clés et boxes | 3 | les six clés, les six coffres à poser |
 
 Chaque annonce a un **lot** (combien d'objets par achat), un **stock** (combien de lots), un
 vendeur et un **prix**. La bulle donne la cote de l'objet et l'écart du prix à cette cote ; une

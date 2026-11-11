@@ -62,7 +62,7 @@ public final class HubController extends MenuController {
                         .accent(0xFFEF3826).action("shop"),
                 Card.of(new ItemStack(Items.CHEST), "Coffre de vente", List.of("Depose, ferme : vendu",
                         "Le reste te revient")).accent(0xFFEF3826).action("sell"),
-                Card.of(new ItemStack(Items.GOLD_BLOCK), "Boutique", List.of("Boosters, caisses, autosell",
+                Card.of(new ItemStack(Items.GOLD_BLOCK), "Boutique", List.of("Boosters, boxes, autosell",
                         booster > 1 ? "Booster x" + (long) booster + " actif" : "Aucun booster actif"))
                         .accent(0xFFFAC400).action("boutique"),
                 Card.of(new ItemStack(Items.BELL), "Marche", List.of("Les annonces du jour",

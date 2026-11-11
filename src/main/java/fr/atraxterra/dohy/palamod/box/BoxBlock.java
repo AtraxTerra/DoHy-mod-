@@ -30,7 +30,7 @@ import net.minecraft.world.phys.BlockHitResult;
  * anime est une creature immobile que sa block entity tient en son centre
  * ({@link BoxBlockEntity}), et le cube plein du bloc recoit les clics.
  *
- * <p>Clic droit : ouvre une caisse du palier de la box, s'il reste une cle.
+ * <p>Clic droit : ouvre la box, s'il reste une de ses cles.
  * Accroupi, main vide : achete une cle.
  */
 public class BoxBlock extends BaseEntityBlock {

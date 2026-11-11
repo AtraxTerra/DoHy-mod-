@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "palamod:item/crate_key_legendary"
+    "layer0": "palamod:item/crate_key_endium"
   }
 }

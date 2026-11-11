@@ -183,8 +183,10 @@ inventaire.
 
 ## L'ouverture des caisses (lot 6)
 
-Demandée le 2026-11-11 avec la refonte du butin. Ouvrir une caisse (carte de la boutique, bouton
-« Rouvrir », ou `/crate open`) affiche `CrateScreen` à la place du message dans le chat.
+Demandée le 2026-11-11 avec la refonte du butin. Les caisses sont depuis devenues les six boxes de
+PalaMod (`docs/PALAMOD.md` § 33) : la roulette est la même, elle porte le nom de la box. Ouvrir
+une box (carte de la boutique, clé en main, bouton « Rouvrir », ou `/crate open`) affiche
+`CrateScreen` à la place du message dans le chat.
 
 - **Le tirage reste au serveur** : `Crates.open` tire le lot, le donne tout de suite (argent au
   liquide, objets à l'inventaire, le surplus au sol), puis envoie `CrateView` : 46 cases tirées
@@ -196,9 +198,9 @@ Demandée le 2026-11-11 avec la refonte du butin. Ouvrir une caisse (carte de la
   (violet), légendaire (or). À l'arrêt, la case gagnante s'illumine, les autres s'éteignent, et un
   son marque la classe : l'orbe d'XP, la montée de niveau, l'améthyste, la fanfare du défi.
 - **Sous la roulette** : la classe, le nom du lot, sa quantité, et pour un lot groupé ses objets en
-  ligne (avec leur bulle). En bas, la chance de chaque classe pour ce palier.
+  ligne (avec leur bulle). En bas, la chance de chaque classe pour cette box.
 - **Les boutons** : « Rouvrir » consomme une clé, ou, sans clé et avec assez de liquide, en achète
-  une au prix affiché sur le bouton ; « Boutique » revient aux cartes des caisses.
+  une au prix affiché sur le bouton ; « Boutique » revient aux cartes des boxes.
 - **Le chat** : le message du gain attend la fin de l'animation (`REVEAL_TICKS`), pour ne pas la
   gâcher. Un lot épique ou légendaire est annoncé aux autres joueurs.
 

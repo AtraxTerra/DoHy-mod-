@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 /**
- * L'ouverture d'une caisse : la roulette, deja tiree par le serveur.
+ * L'ouverture d'une box : la roulette, deja tiree par le serveur.
  *
  * <p>Le serveur tire le lot, le donne, puis envoie cette vue : une bande de
  * cases tirees au hasard dans la table, et le lot gagne a la case {@code win}.
  * Le client ne fait que la faire defiler jusqu'a cette case. Fermer l'ecran en
  * cours de route ne change rien au lot.
  *
- * @param title      le nom du palier, « Caisse rare »
+ * @param title      le nom de la box, « Box Paladium »
  * @param keys       les cles qui restent pour ce palier
  * @param affordable assez de liquide pour acheter une cle de plus
  * @param prize      le nom du lot (texte marque par {@code MenuView.text} pour un objet)

@@ -56,12 +56,21 @@ QUOTES = {
     # L'amelioration de capacite de spawner : un crane de wither squelette, un
     # modificateur de grinder, des pepites d'endium et un spawner vide.
     "upgrade_more": 450_000,
-    # Cles et boxes : leur prix a la boutique.
-    "crate_key_common": 100_000,
-    "crate_key_rare": 5_000_000,
-    "crate_key_legendary": 150_000_000,
+    # Le coffre a poser d'une box : son prix a la boutique. Les cles prennent
+    # le prix de leur box dans data/crates.json (KEY_OFFERS).
     "box": 25_000,
 }
+
+# Les cles en promotion : la box, la taille du lot, le stock, le poids. Plus la
+# box est chere, plus sa cle est rare au marche.
+KEY_OFFERS = (
+    ("amethyst", (1, 3), (1, 3), 12),
+    ("saharia", (1, 2), (1, 2), 8),
+    ("paladium", (1, 1), (1, 1), 5),
+    ("halloween", (1, 1), (1, 1), 3),
+    ("trixium", (1, 1), (1, 1), 2),
+    ("endium", (1, 1), (1, 1), 1),
+)
 
 DUNGEONS = ("talikus", "nimbria", "vitalys", "manelios")
 ELEMENTS = ("forest", "cavern", "flame", "aquatic")
@@ -138,9 +147,10 @@ def pool():
     offers.append(offer("hunt", "predator_wither_gem", None, (1, 1), (1, 1), 2))
     offers.append(offer("hunt", "supreme_wither_gem", None, (1, 1), (1, 1), 1))
     # -- Cles et boxes : des promotions.
-    offers.append(offer("crates", "crate_key_common", q["crate_key_common"], (1, 3), (1, 3), 12, PROMO))
-    offers.append(offer("crates", "crate_key_rare", q["crate_key_rare"], (1, 1), (1, 1), 5, PROMO))
-    offers.append(offer("crates", "crate_key_legendary", q["crate_key_legendary"], (1, 1), (1, 1), 1, PROMO))
+    with open(os.path.join(ROOT, "data", "crates.json")) as handle:
+        crates = json.load(handle)["crates"]
+    for box, lot, stock, weight in KEY_OFFERS:
+        offers.append(offer("crates", "crate_key_" + box, crates[box]["price"], lot, stock, weight, PROMO))
     for box in BOXES:
         offers.append(offer("crates", "box_" + box, q["box"], (1, 1), (1, 1), 2, PROMO))
     return offers
