@@ -32,9 +32,7 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.io.BufferedReader;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,8 +73,8 @@ public final class Crates {
     private static volatile Config config = new Config(Map.of());
     /** Le premier objet de chaque tag, resolu une fois par chargement. */
     private static final Map<String, Optional<Item>> TAGS = new ConcurrentHashMap<>();
-    /** Les messages de gain en attente, dans l'ordre : le delai est le meme pour tous. */
-    private static final Deque<Reveal> REVEALS = new ArrayDeque<>();
+    /** Les messages de gain en attente. */
+    private static final List<Reveal> REVEALS = new ArrayList<>();
     private static int spins;
 
     private Crates() {
@@ -138,20 +136,37 @@ public final class Crates {
     }
 
     /**
-     * Ouvre une caisse : tire le lot, le donne, et lance la roulette chez le
-     * joueur. Retourne la raison du refus, ou {@code null} si reussi.
+     * Un lot tire et deja donne.
+     *
+     * @param name   le nom du lot
+     * @param detail la ligne sous le nom : la quantite, le nombre d'objets
+     * @param icon   l'objet qui le represente ; vide pour de l'argent
+     * @param rarity la classe du lot, de 0 (commun) a 3 (legendaire)
      */
-    public static String open(ServerPlayer player, String tier) {
+    public record Draw(Entry won, long money, List<ItemStack> stacks, Component name, String detail,
+                       ItemStack icon, int rarity) {
+    }
+
+    /** Un tirage, ou la raison de son refus. */
+    public record Pull(String refusal, Draw draw) {
+    }
+
+    /**
+     * Prend une cle, tire le lot et le donne. Ce que le joueur voit ensuite —
+     * la roulette de l'ecran ou l'ouverture d'une box posee — est l'affaire de
+     * l'appelant.
+     */
+    private static Pull pull(ServerPlayer player, String tier) {
         Crate crate = config.crates().get(tier);
         if (crate == null) {
-            return "Palier inconnu : " + tier;
+            return new Pull("Palier inconnu : " + tier, null);
         }
         List<Entry> pool = crate.available();
         if (pool.isEmpty()) {
-            return "Table de butin vide pour " + tier + ".";
+            return new Pull("Table de butin vide pour " + tier + ".", null);
         }
         if (!Boosters.data(player).consumeKey(tier)) {
-            return "Aucune cle " + tier + ". Achete-en une a la boutique.";
+            return new Pull("Aucune cle " + tier + ". Achete-en une a la boutique.", null);
         }
 
         RandomSource random = player.getRandom();
@@ -164,32 +179,76 @@ public final class Crates {
         for (ItemStack stack : stacks) {
             give(player, stack.copy());
         }
+        Component name = name(won, money, stacks);
+        Draw draw = new Draw(won, money, stacks, name, detail(won, money, stacks),
+                slot(won, money, stacks).icon(), won.rarityIndex());
+        DoHy.LOGGER.info("Caisse {} ouverte par {} : {} ({})", tier, player.getName().getString(),
+                name.getString(), RARITIES.get(draw.rarity()));
+        return new Pull(null, draw);
+    }
 
+    /**
+     * Ouvre une caisse : tire le lot, le donne, et lance la roulette chez le
+     * joueur. Retourne la raison du refus, ou {@code null} si reussi.
+     */
+    public static String open(ServerPlayer player, String tier) {
+        Pull pull = pull(player, tier);
+        if (pull.refusal() != null) {
+            return pull.refusal();
+        }
+        Draw draw = pull.draw();
+        Crate crate = config.crates().get(tier);
+        List<Entry> pool = crate.available();
+        RandomSource random = player.getRandom();
         List<CrateView.Slot> reel = new ArrayList<>(REEL_LENGTH);
         for (int index = 0; index < REEL_LENGTH; index++) {
             if (index == REEL_WIN) {
-                reel.add(slot(won, money, stacks));
+                reel.add(slot(draw.won(), draw.money(), draw.stacks()));
             } else {
                 Entry shown = roll(random, pool);
                 reel.add(slot(shown, shown.money(random), shown.stacks()));
             }
         }
-        int rarity = won.rarityIndex();
-        Component name = name(won, money, stacks);
-        String detail = detail(won, money, stacks);
-        List<ItemStack> contents = won.prizes().size() > 1 ? icons(stacks) : List.of();
+        List<ItemStack> contents = draw.won().prizes().size() > 1 ? icons(draw.stacks()) : List.of();
         BoostData data = Boosters.data(player);
         UiNet.show(player, new CrateView(tier, title(tier), data.keys(tier), crate.price(),
-                Economy.balance(player) >= crate.price(), reel, REEL_WIN, MenuView.text(name), detail, contents,
-                rarity, crate.odds(), ++spins));
-
-        DoHy.LOGGER.info("Caisse {} ouverte par {} : {} ({})", tier, player.getName().getString(),
-                name.getString(), RARITIES.get(rarity));
-        schedule(player, tier, won, name, detail);
+                Economy.balance(player) >= crate.price(), reel, REEL_WIN, MenuView.text(draw.name()), draw.detail(),
+                contents, draw.rarity(), crate.odds(), ++spins));
+        schedule(player, tier, draw.won(), draw.name(), draw.detail(), REVEAL_TICKS);
         return null;
     }
 
+    /**
+     * Ouvre une caisse devant une box posee : meme tirage, sans roulette. Le
+     * message du gain attend {@code revealTicks}, le moment ou la box montre
+     * le lot.
+     */
+    public static Pull openAtBox(ServerPlayer player, String tier, java.util.function.IntUnaryOperator revealTicks) {
+        Pull pull = pull(player, tier);
+        if (pull.refusal() == null) {
+            Draw draw = pull.draw();
+            schedule(player, tier, draw.won(), draw.name(), draw.detail(), revealTicks.applyAsInt(draw.rarity()));
+        }
+        return pull;
+    }
+
+    /** Le prix d'une cle de ce palier, ou -1 si le palier n'existe pas. */
+    public static long keyPrice(String tier) {
+        Crate crate = config.crates().get(tier);
+        return crate == null ? -1L : crate.price();
+    }
+
     /** « Caisse rare » : le nom affiche d'un palier. */
+    /** « cle rare » : le nom d'une cle, en minuscules, pour une phrase. */
+    public static String keyName(String tier) {
+        return switch (tier) {
+            case "common" -> "cle commune";
+            case "rare" -> "cle rare";
+            case "legendary" -> "cle legendaire";
+            default -> "cle " + tier;
+        };
+    }
+
     public static String title(String tier) {
         return switch (tier) {
             case "common" -> "Caisse commune";
@@ -305,7 +364,8 @@ public final class Crates {
     private record Reveal(UUID player, long due, Component message, Component broadcast) {
     }
 
-    private static void schedule(ServerPlayer player, String tier, Entry won, Component name, String detail) {
+    private static void schedule(ServerPlayer player, String tier, Entry won, Component name, String detail,
+                                 int delay) {
         int rarity = won.rarityIndex();
         ChatFormatting color = rarityColor(rarity);
         MutableComponent prize = name.copy().withStyle(color);
@@ -320,7 +380,7 @@ public final class Crates {
                 .append(name.copy().withStyle(color))
                 .append(Component.literal(" (" + rarityName(rarity) + ") dans une " + title(tier).toLowerCase()
                         + " !").withStyle(ChatFormatting.GRAY));
-        REVEALS.addLast(new Reveal(player.getUUID(), player.level().getServer().getTickCount() + REVEAL_TICKS,
+        REVEALS.add(new Reveal(player.getUUID(), player.level().getServer().getTickCount() + delay,
                 message, broadcast));
     }
 
@@ -328,8 +388,13 @@ public final class Crates {
     public static void onServerTick(ServerTickEvent.Post event) {
         MinecraftServer server = event.getServer();
         long now = server.getTickCount();
-        while (!REVEALS.isEmpty() && REVEALS.peekFirst().due() <= now) {
-            Reveal reveal = REVEALS.pollFirst();
+        // Les delais different (roulette, box posee) : la liste n'est pas ordonnee.
+        for (java.util.Iterator<Reveal> iterator = REVEALS.iterator(); iterator.hasNext(); ) {
+            Reveal reveal = iterator.next();
+            if (reveal.due() > now) {
+                continue;
+            }
+            iterator.remove();
             ServerPlayer player = server.getPlayerList().getPlayer(reveal.player());
             if (player != null) {
                 player.sendSystemMessage(reveal.message());

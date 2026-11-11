@@ -20,7 +20,12 @@ Dernière mise à jour : 2026-11-11
 | Mappings | mojmap, **pas de remap** |
 | Pack formats | assets **88**, data **107** (ils divergent depuis 26.x) |
 | Mod optionnel | NTM NEXT 1.0.x (26.2, NeoForge) — phase 10 |
-| Mode de jeu | Solo, monde normal |
+| Mode de jeu | **Solo uniquement** (confirmé par le joueur le 2026-11-11), monde normal |
+
+**Le joueur joue uniquement en solo** (dit le 2026-11-11, à garder en tête) : pas de serveur dédié
+à viser, pas de fonction qui n'a de sens qu'à plusieurs (échange entre joueurs, hôtel des ventes
+de joueurs, classements). Quand un mod de Paladium est multijoueur par nature, on en porte ce qui
+se joue seul, ou on le remixe pour un joueur — comme la faction (chapitres 22a et 22b).
 
 **Choix d'architecture : un seul module NeoForge**, pas de découpage multiloader Architectury. La cible est NeoForge uniquement ; le surcoût de scaffolding common/fabric/forge ne se rentabilise que si le mod doit sortir sur plusieurs loaders.
 
@@ -169,6 +174,37 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-11 (suite) — les boxes animées de la boutique
+
+**Demande** : « que me conseilles-tu pour mon mod ? », puis « la boutique », puis, parmi quatre
+pistes, « boxes animées », avec la consigne de retenir que le joueur joue **uniquement en solo**
+(notée en tête de ce fichier). Le mod d'origine, PalaShop 7.8.0, était dans le client Paladium du
+joueur. Détail : `docs/PALAMOD.md` § 33, `docs/BALANCE.md` § 6 octies.
+
+**Fait** (`feat/boxes`) : `palamod/box` — six blocs à poser (améthyste, paladium, endium,
+saharia, trixium, halloween) qui ouvrent les caisses de DoHy avec les mêmes clés. Le coffre animé
+est une créature immobile tenue par la block entity et dessinée par le rendu des monstres de
+donjon ; le lot se montre au-dessus (`Display.ItemDisplay`) au repère `open` de l'animation.
+`Crates.pull` sépare le tirage de sa présentation (roulette ou box). Section BOXES de la boutique
+(25 000 $). `tools/rpg_entities.py` prend le jar PalaShop en troisième argument ;
+`tools/palamod_assets.py` réduit les vignettes en icônes.
+
+**Rendu** : les rayons d'ouverture sont une boîte translucide dans une coque retournée. Dessinés
+comme le reste (découpe, sans tri des faces), ils sortaient en blocs pleins. Les os lumineux d'un
+modèle (`glow` dans `entity/index.json`) passent maintenant par une seconde passe, translucide, en
+pleine lumière, sans les faces qui tournent le dos à la caméra (`RpgEntityModel.drawGlow`).
+Seules les boxes en déclarent : les monstres de donjon ne changent pas.
+
+**Vérifié en jeu** par captures, sans mod de rendu puis avec les Crankshaft et Sodium du joueur :
+repos, quatre ouvertures, rayons de jour et de nuit, vrai clic du client, achat d'une clé, refus
+sans clé, casse en pleine ouverture, section de la boutique. **Non vérifié** : les sons (pas de
+carte son en CI), l'achat d'une box depuis la boutique, le rechargement d'un monde avec une box
+posée — à regarder en premier si le joueur signale quelque chose.
+
+**À savoir** : la machine de captures a ses paquets graphiques déjà installés ; l'étape `apt` du
+workflow `ui-shots` a bloqué onze minutes un jour où les dépôts d'Ubuntu ne répondaient pas, et
+n'est plus lancée que si `Xvfb` manque (branche de captures uniquement).
 
 ### 2026-11-11 (suite) — monstres de donjon invisibles chez le joueur : Crankshaft
 

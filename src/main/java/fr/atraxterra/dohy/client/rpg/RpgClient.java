@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
@@ -114,6 +115,14 @@ public final class RpgClient {
             frame.pose();
             model.draw(last, buffer, light, overlay);
         });
+        if (model.glows()) {
+            // Les os lumineux (les rayons des boxes) : translucides, en pleine lumiere.
+            collector.submitCustomGeometry(pose, RenderTypes.entityTranslucent(frame.texture()), (last, buffer) -> {
+                model.resetPose();
+                frame.pose();
+                model.drawGlow(last, buffer, overlay);
+            });
+        }
         pose.popPose();
 
         if (state.nameTag != null) {

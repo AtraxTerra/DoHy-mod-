@@ -606,6 +606,21 @@ pas d'un autre ordre.
 Si un serveur voyait ses prix de butin s'effondrer, les quatre lignes de `SpawnerTier` sont le
 seul réglage à toucher.
 
+## 6 octies. Boxes de la boutique
+
+Une box posée ouvre la caisse de son palier avec les mêmes clés et la même table de butin :
+elle ne change **aucune** espérance de gain (§ 6 quater). Ce qu'on paie est le coffre.
+
+| | Prix |
+|---|---|
+| Une box, n'importe laquelle | 25 000 $, une fois |
+| Une clé | celui de la caisse : 100 000 $, 5 M$, 150 M$ |
+
+25 000 $, c'est une heure d'activité ordinaire au début du jeu (24 000 $ par heure) et un quart
+de clé commune : assez pour être un achat, trop peu pour retarder la première caisse. Les six
+ont le même prix pour que le choix entre deux boxes du même palier soit un goût et non un calcul.
+`PalaBoxes.PRICE` est le seul réglage.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

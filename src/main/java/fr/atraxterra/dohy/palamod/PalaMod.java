@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.palamod;
 import fr.atraxterra.dohy.palamod.achievement.PalaAchievements;
 import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
 import fr.atraxterra.dohy.palamod.boss.PalaBosses;
+import fr.atraxterra.dohy.palamod.box.PalaBoxes;
 import fr.atraxterra.dohy.palamod.defense.PalaDefense;
 import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
 import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
@@ -93,6 +94,7 @@ public final class PalaMod {
         PalaLegendary.register(modBus);
         PalaDungeon.register(modBus);
         PalaDungeonGear.register(modBus);
+        PalaBoxes.register(modBus);
         PalaTrixium.register(modBus);
         PalaAchievements.register(modBus);
         PalaItems.register(modBus);

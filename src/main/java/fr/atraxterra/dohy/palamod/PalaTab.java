@@ -4,6 +4,7 @@ import fr.atraxterra.dohy.palamod.alchemist.PalaAlchemist;
 import fr.atraxterra.dohy.palamod.alchemist.PalaWoods;
 import fr.atraxterra.dohy.palamod.defense.PalaDefense;
 import fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner;
+import fr.atraxterra.dohy.palamod.box.PalaBoxes;
 import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
 import fr.atraxterra.dohy.palamod.dungeon.PalaDungeonGear;
 import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
@@ -104,6 +105,7 @@ public final class PalaTab {
                         PalaLegendary.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaDungeon.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaDungeonGear.ORDERED.forEach(item -> output.accept(item.get()));
+                        PalaBoxes.ORDERED.forEach(item -> output.accept(item.get()));
                         // La defense, puis le pillage de faction, ferment l'onglet.
                         PalaDefense.tab().forEach(item -> output.accept(item.get()));
                         PalaPillage.tab().forEach(item -> output.accept(item.get()));

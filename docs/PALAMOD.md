@@ -2686,3 +2686,117 @@ relevé à l'ouverture ; les objets ont aussi leur verrou ordinaire dans `data/j
 - Les minuteries des vagues repartent au chargement du tronçon.
 - En difficulté Paisible, la créature du mode manuel disparaît comme tout monstre : seul le mode
   automatique y est utilisable.
+
+## 33. Boxes de la boutique
+
+Demandé le 2026-11-11 (« la boutique », puis « boxes animées »). Le mod d'origine est
+**PalaShop 7.8.0**, trouvé dans le client Paladium du joueur : six boxes sous
+`assets/palashop/boxes/<nom>` (améthyste, paladium, endium, trixium, saharia, halloween), chacune
+avec un modèle Bedrock de 78 à 112 os, une texture de 128 × 128, des animations au format
+GeckoLib et une bande-son par classe de lot. Tout est dans `palamod/box` : `BoxKind`,
+`BoxBlock`, `BoxBlockEntity`, `BoxTimings`, `BoxEvents`, `PalaBoxes`.
+
+### Ce qui est repris
+
+- **Les six modèles**, leur texture et cinq animations chacun : l'attente (`idle`) et les quatre
+  ouvertures complètes (`fast_common`, `fast_rare`, `fast_epic`, `fast_legendary`), avec leurs
+  rayons, particules et faisceaux, qui sont des os du modèle. Les ouvertures « lentes », en
+  plusieurs temps, que Paladium pilotait depuis sa roulette en surimpression, ne sont pas reprises.
+- **Les quatre bandes-son** de chaque box (`sound/fast/<classe>.ogg`), soit 24 sons
+  `palarpg:box.<nom>.fast_<classe>`.
+- **Les repères** `open` et `close` de la ligne de temps de chaque animation : le moment où le lot
+  se montre et celui où le coffre se referme. `tools/rpg_entities.py` les écrit dans
+  `data/palarpg/boxes.json`, que le serveur lit (`BoxTimings`) — il n'a pas les animations.
+  Ils sont les mêmes pour les six boxes :
+
+| Classe du lot | Durée | Le lot se montre | Le coffre se referme |
+|---|---|---|---|
+| Commune | 7 s | 0,9 s | 6,25 s |
+| Rare | 7 s | 1,85 s | 6,3 s |
+| Épique | 10 s | 4,15 s | 9,25 s |
+| Légendaire | 13 s | 4,45 s | 12,25 s |
+
+- **Les vignettes** de la boutique (1000 × 1000), réduites à 32 × 32 pour l'icône de l'objet
+  (`tools/palamod_assets.py`, `shrink_icon`).
+
+### Ce que c'est dans DoHy
+
+Dans Paladium, la box est une entité (`EntityBox`) que la boutique fait apparaître devant le
+joueur, le temps d'une ouverture payée en argent réel. Ici c'est **un bloc à poser**, acheté une
+fois à la boutique (25 000 $, section BOXES) et gardé. Il ouvre **les caisses de DoHy** : mêmes
+clés, mêmes tables de butin (`data/crates.json`), même tirage (`Crates.pull`). La roulette de
+l'écran reste disponible depuis la boutique ; la box est l'autre façon d'ouvrir.
+
+| Box | Caisse ouverte |
+|---|---|
+| Améthyste, Saharia | commune |
+| Paladium, Trixium | rare |
+| Endium, Halloween | légendaire |
+
+- **Clic droit** : s'il reste une clé du palier, le lot est tiré et donné tout de suite, la box
+  joue l'animation de la classe du lot avec sa bande-son, le lot apparaît au-dessus du coffre au
+  repère `open` (et le message du gain tombe à ce moment), puis disparaît au repère `close`.
+- **Accroupi, main vide, clic droit** : achète une clé du palier.
+- Une box déjà en train de s'ouvrir refuse un second clic ; sans clé, elle dit le prix.
+
+### Comment c'est fait
+
+- **Le bloc ne dessine rien** (`RenderShape.INVISIBLE`, modèle réduit à sa texture d'éclats).
+  C'est un cube plein qui reçoit les clics, non occultant pour ne pas assombrir ce qu'il contient.
+- **Le coffre est une créature** : un cochon sans IA, sans gravité, muet et invulnérable, au
+  centre du bloc, qui porte le modèle par `RpgSkin` — le rendu des monstres de donjon (§ 29) le
+  dessine et l'anime, et il passe donc par les mêmes compatibilités Crankshaft et Sodium. Sa
+  boîte de collision tient dans le cube : on ne peut ni le viser ni le pousser.
+- **Rien n'est sauvegardé** : ni le coffre ni le lot montré ne reviennent du disque
+  (`BoxEvents.onJoin`), la block entity refait le coffre à son premier tick. Le lot est déjà
+  dans l'inventaire au moment où l'animation commence : un monde quitté en pleine ouverture ne
+  perd rien.
+- **Rejouer une animation** : la pose envoyée est `n<compteur>>fast_<classe>>idle`. Le premier
+  terme n'existe pas dans le modèle et est sauté ; il ne sert qu'à changer la chaîne, pour que
+  deux lots de même classe à la suite relancent l'animation chez le client.
+- **Le lot montré** est un `Display.ItemDisplay` à mi-taille, tourné vers qui le regarde. Ces
+  réglages n'ont pas de mutateur public en 26.2 : ils passent par les données de l'entité
+  (`load`), l'objet par `getSlot(0)`. De l'argent se montre par une émeraude.
+
+### Les rayons — une seconde passe de rendu
+
+Les effets de l'ouverture sont des os du modèle, animés comme le reste : rayon de la couleur de
+la classe (vert, bleu, violet, rouge), faisceaux, anneau, éclats. Les **rayons** sont faits de
+deux boîtes : une boîte dont la texture est un dégradé d'opacité, dans une coque à peine plus
+grande, de taille **négative** (donc retournée), d'une couleur claire et opaque. Dessiné comme un
+monstre de donjon — en découpe, toutes faces visibles — cela donne un bloc plein de la couleur
+de la coque : c'est ce que montraient les premières captures.
+
+`entity/index.json` porte donc, pour un modèle, la liste de ses os lumineux (`glow` : les os
+`vfx` des boxes, l'onde de Saharia, l'aura d'Halloween ; le générateur l'écrit). Eux et leurs
+descendants sont sautés par le dessin ordinaire et dessinés à part (`RpgEntityModel.drawGlow`,
+second `submitCustomGeometry` de `RpgClient.onRender`) :
+
+- en `entityTranslucent`, pour que le dégradé soit un dégradé ;
+- en **pleine lumière**, pour qu'un rayon éclaire la nuit ;
+- **sans les faces qui tournent le dos à la caméra**, triées à la main puisque le modèle écrit
+  ses sommets lui-même : de la coque retournée il ne reste que le fond, derrière le rayon.
+
+Aucun monstre de donjon ne déclare d'os lumineux : leur rendu est inchangé. Sept d'entre eux ont
+un os nommé `vfx` ; les passer dans cette seconde passe se ferait en une ligne de générateur,
+mais demande de regarder chaque modèle.
+
+### Vérifié en jeu (captures, 2026-11-11)
+
+Sans mod de rendu, puis avec les **Crankshaft 1.6.0 et Sodium 0.9.2** du joueur : les six boxes
+au repos ; les quatre ouvertures (lot montré au bon repère : à 1,5 s seule la box commune montre
+le sien) ; rayons translucides, de face, de côté, de dos, de nuit ; un vrai clic droit du client
+sur le bloc (le viseur touche le bloc, pas le coffre) avec une clé légendaire achetée accroupi
+— clé prise, lot donné, message du gain au repère ; refus sans clé ; box cassée en pleine
+ouverture (coffre et lot montré disparaissent) ; section BOXES de la boutique.
+
+Non vérifié : **les sons** (la machine de captures n'a pas de carte son — les 24 fichiers sont
+convertis et déclarés, rien de plus), l'achat d'une box depuis la boutique jusqu'à l'inventaire,
+et le rechargement d'un monde avec une box posée.
+
+### Écarts avec l'original
+
+- Une box n'a pas de butin à elle : elle ouvre une caisse de DoHy. Les lots de PalaShop
+  (cosmétiques, grades, points boutique) n'ont pas d'équivalent ici.
+- Pas de roulette en surimpression ni de vue « caméra » : l'ouverture se regarde dans le monde.
+- Le modèle est dessiné de 0,45 à 0,65 fois sa taille d'origine selon la box, pour tenir sur un bloc.

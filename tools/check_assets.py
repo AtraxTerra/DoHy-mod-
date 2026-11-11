@@ -148,6 +148,14 @@ MODEL_TEXTURES = {
     "block/extractor_off.png": (64, 32),
     # La surface du portail : 32 images de 16 x 16, animees par son .mcmeta.
     "block/alchemist_portal.png": (16, 512),
+    # Les boxes : la vignette de la boutique de Paladium, reduite. A 16 x 16
+    # le coffre n'est plus lisible.
+    "item/box_amethyst.png": (32, 32),
+    "item/box_paladium.png": (32, 32),
+    "item/box_endium.png": (32, 32),
+    "item/box_saharia.png": (32, 32),
+    "item/box_trixium.png": (32, 32),
+    "item/box_halloween.png": (32, 32),
     # Baies et buisson a XP murs : des bandes animees (.mcmeta), 7 et 8 images.
     "block/xp_bush_ripe.png": (16, 112),
     "item/xp_berry.png": (16, 128),
