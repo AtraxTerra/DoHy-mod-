@@ -756,7 +756,7 @@ Leviers : `chance` dans `placed_feature/miner/ruin.json` (9) et `crypt.json` (10
 ## 6 duodecies. Musée — des pièces rares seulement
 
 Jusqu'au 2026-11-11 le musée demandait un exemplaire de **chaque objet du catalogue de prix** :
-six ailes calquées sur les onglets du shop, 152 vitrines puis davantage avec PalaMod et les
+six ailes calquées sur les onglets du shop, 152 vitrines au départ, 176 avec PalaMod, 241 avec les
 65 pièces de machine de NTM. L'essentiel se remplissait en vidant un coffre de blé et de pierre.
 Il n'expose plus que ce qui se mérite. Les pièces sont **nommées une à une** dans
 `data/museum.json` : la rareté ne se déduit pas d'un prix.
@@ -782,7 +782,8 @@ Il n'expose plus que ce qui se mérite. Les pièces sont **nommées une à une**
   aléatoires), un lingot d'endium (1,44 M), un gant. Les donjons demandent le palier 65 des quatre
   donjons. L'aile NTM demande d'assembler quatre bombes atomiques et de ne pas s'en servir.
 - **XP globale** : 100 par don au lieu de 25 (un niveau global = 500). 37 dons donnent 3 700 XP,
-  autant que les 152 dons d'avant à 25 : le musée pèse le même poids dans le niveau global.
+  à peu près ce que donnaient les 176 dons d'avant à 25 (4 400) : le musée pèse un poids comparable
+  dans le niveau global.
 - **L'œuf du dragon reste à part** : unique par monde, il se donne par choix. Les **pièces
   antiques** (palier 100 d'un donjon, une par donjon) ne sont pas demandées, pour la même raison.
 - **Sans NTM NEXT**, les quatre bombes n'existent pas : l'aile ne s'ouvre pas, et le musée compte

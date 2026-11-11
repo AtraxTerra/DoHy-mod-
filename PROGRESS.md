@@ -186,11 +186,11 @@ ailes : `docs/BALANCE.md` § 6 duodecies.
   aile (`wings`), avec pour chacune une ligne « où la trouver » (`hints`) affichée sur la vitrine
   vide. Cinq ailes — trésors du monde (6), trophées (6), reliques de PalaMod (11), donjons et
   pillage (9), NTM NEXT (4) — et le panneau mécène (l'œuf du dragon). 36 pièces, 37 avec l'œuf,
-  contre plus de 250 avant.
+  contre les 176 objets du catalogue avant, 241 avec NTM.
 - **NTM NEXT** : `hbm:nuke_gadget`, `hbm:nuke_boy`, `hbm:nuke_man`, `hbm:nuke_mike`. « Heavy
   Mike » est l'**Ivy Mike** de NTM (`block.hbm.nuke_mike`).
 - Les sept bonus de l'ancien musée sont tous gardés, à la même valeur, répartis sur les nouvelles
-  ailes. 100 XP globale par don au lieu de 25 : le musée pèse autant qu'avant dans le niveau global.
+  ailes. 100 XP globale par don au lieu de 25 : 3 700 XP au total, contre 4 400 avant.
 - `MuseumConfig` : une aile garde la liste des pièces **qui existent dans ce jeu** (calculée au
   démarrage du serveur). Une aile sans pièce ne s'ouvre pas — c'est le cas de NTM NEXT sans NTM.
 - En-tête de l'écran : pièces exposées, ailes complètes (hors mécène), XP par don. La « valeur »
