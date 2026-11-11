@@ -21,8 +21,12 @@
     [
       "minecraft:amethyst_geode"
     ],
-    [],
-    [],
+    [
+      "palamod:miner/crypt"
+    ],
+    [
+      "palamod:miner/ruin"
+    ],
     [],
     [
       "minecraft:ore_dirt",

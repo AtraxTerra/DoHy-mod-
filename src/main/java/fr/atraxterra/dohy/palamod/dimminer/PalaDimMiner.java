@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -29,9 +30,9 @@ import java.util.function.Supplier;
  *
  * <p>Dans Paladium, c'etait un serveur a part du reseau, rejoint par
  * BungeeCord. En solo, c'est une vraie dimension, {@code palamod:miner} :
- * un overworld genere normalement, de nuit, sans monstres, ou les minerais de
- * Paladium sont trois fois plus nombreux (donnees dans
- * {@code data/palamod/dimension}).
+ * un overworld genere normalement, de nuit, sans monstres hors de ceux des
+ * spawners de ses ruines, ou les minerais de Paladium sont trois fois plus
+ * nombreux (donnees dans {@code data/palamod/dimension}).
  */
 public final class PalaDimMiner {
 
@@ -44,6 +45,14 @@ public final class PalaDimMiner {
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, PalaMod.NAMESPACE);
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, PalaMod.NAMESPACE);
+    private static final DeferredRegister<Feature<?>> FEATURES =
+            DeferredRegister.create(Registries.FEATURE, PalaMod.NAMESPACE);
+
+    /** Les ruines a spawner de la dimension, en surface et sous terre ({@link MinerRuinFeature}). */
+    public static final DeferredHolder<Feature<?>, MinerRuinFeature> RUIN =
+            FEATURES.register("miner_ruin", () -> new MinerRuinFeature(false));
+    public static final DeferredHolder<Feature<?>, MinerRuinFeature> CRYPT =
+            FEATURES.register("miner_crypt", () -> new MinerRuinFeature(true));
 
     /**
      * {@code BlockWitheredObsidian} : roche, durete 50 ({@code Blocks.register}
@@ -115,5 +124,6 @@ public final class PalaDimMiner {
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         ATTACHMENTS.register(modBus);
+        FEATURES.register(modBus);
     }
 }
