@@ -162,11 +162,15 @@ public final class PalaHunter {
         return properties.strength(50.0f, 1200.0f).requiresCorrectToolForDrops().sound(SoundType.STONE);
     }
 
-    /** {@code BlockSpawnerController} : roche, durete 2, resistance 10 de 1.7.10. */
+    /**
+     * {@code BlockSpawnerController} : roche, durete 2, resistance 10 de 1.7.10.
+     * Sa texture est une cage a jour : il n'occulte pas ses voisins.
+     */
     public static final DeferredBlock<SpawnerControllerBlock> SPAWNER_CONTROLLER = BLOCKS.registerBlock(
             "spawner_controller", SpawnerControllerBlock::new, properties -> properties
                     .strength(2.0f, 6.0f)
-                    .sound(SoundType.STONE));
+                    .sound(SoundType.STONE)
+                    .noOcclusion());
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SpawnerControllerBlockEntity>>
             SPAWNER_CONTROLLER_TYPE = TYPES.register("spawner_controller",

@@ -116,6 +116,9 @@ public class CustomSpawnerBlock extends SpawnerBlock {
         }
         spawner.setChanged();
         level.sendBlockUpdated(pos, state, state, Block.UPDATE_ALL);
+        if (level instanceof net.minecraft.server.level.ServerLevel server) {
+            SpawnerControllerBlockEntity.linkOnPlace(server, pos);
+        }
     }
 
     /** Pas d'XP a la casse : ce spawner se repose a volonte. */

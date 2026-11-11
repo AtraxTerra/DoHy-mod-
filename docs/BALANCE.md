@@ -574,6 +574,38 @@ dans `tools/clicker_data.py` suffit.
 Le rayon des métiers vend des bouteilles d'XP (1 000 XP chacune) : 1, 3 puis 5 par offre, deux
 achats par semaine et par métier tiré — au plus 40 000 XP par semaine, tous métiers confondus.
 
+## 6 septies. Contrôleur de spawners
+
+Les chiffres sont ceux de PalaSpawner, non retouchés. Ce que rend **un** spawner customisé
+compté par un contrôleur, à son palier :
+
+| Palier | Âmes | Créatures par vague | Vague | Créatures par heure |
+|---|---|---|---|---|
+| I | 100 | 2 à 3 | 12 s | 750 |
+| II | 150 | 3 à 5 | 15 s | 960 |
+| III | 200 | 5 à 7 | 15 s | 1 440 |
+| IV | 250 | 6 à 11 | 7 s | 4 370 |
+
+Une structure pleine (27 à 108 spawners) irait de 20 000 à 470 000 créatures par heure, soit
+dix à deux cents fois les 2 000 chairs putréfiées par heure du modèle des prix. Trois choses
+bornent ce chiffre :
+
+- **les âmes** : une âme, c'est un spawner de donjon cassé au marteau (256 coups par marteau).
+  Un spawner de palier I en demande 100, une structure IV pleine 27 000 — la ressource rare est
+  là, et elle ne se fabrique pas ;
+- **le prix plancher** : les butins de créatures saturent vite (`s0` = 256, plancher 20 %). Dix
+  spawners de palier I en automatique, c'est 7 500 chairs par heure vendues 2,40 $ pièce au
+  plancher : 18 000 $ par heure, moins qu'une heure d'activité ordinaire (24 000 $) ;
+- **les coffres** : cinq inventaires ; pleins, la production s'arrête. Et le contrôleur ne
+  travaille que tronçon chargé.
+
+Le mode manuel donne en plus l'XP et l'XP de métier d'une créature tuée, à deux coups par
+seconde au plus : 7 200 créatures par heure, clic tenu. C'est mieux qu'une ferme à créatures,
+pas d'un autre ordre.
+
+Si un serveur voyait ses prix de butin s'effondrer, les quatre lignes de `SpawnerTier` sont le
+seul réglage à toucher.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

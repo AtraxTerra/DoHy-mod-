@@ -5447,6 +5447,7 @@ def main():
             ("chunk", "Un seul controleur de spawner travaille par troncon.",
              "Only one spawner controller works per chunk."),
             ("invalid", "Votre structure n'est pas valide.", "Your structure is not valid."),
+            ("complete", "La structure IV est complete.", "The tier IV structure is complete."),
             ("missing", "Structure %s : %s / %s blocs. Il manque : %s en %s %s %s.",
              "Structure %s: %s / %s blocks. Missing: %s at %s %s %s.")):
         fr["message.%s.spawner_controller.%s" % (NS, key)] = label_fr

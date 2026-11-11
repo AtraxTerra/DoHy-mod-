@@ -300,7 +300,8 @@ public final class MachineDesigns {
                 5.5f, Ui.WHITE);
         tip(g, mouseX, mouseY, MODE_X, MODE_Y, MODE_W, MODE_H, automatic
                 ? List.of("Mode automatique", "Le butin va dans les coffres, sans XP",
-                        "Cinq cases au sol, sous le controleur", "Clic : passer en manuel")
+                        "Coffres : cinq cases en ligne, au pied du bloc de paladium",
+                        "qui porte le controleur, au niveau du sol de la structure", "Clic : passer en manuel")
                 : List.of("Mode manuel", "Frappe la creature posee sur le controleur",
                         "Butin, XP et XP de metier ; clic droit : creature suivante",
                         "Clic : passer en automatique (vide les creatures en attente)"));

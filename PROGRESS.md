@@ -170,6 +170,30 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — le contrôleur de spawners
+
+**Demande** : « ajoute la partie spawner controller et met à jour les recettes et mécaniques
+associés en t'aidant des fichiers et du wiki ». Le mod d'origine, PalaSpawner 7.0.0, était dans
+le client Paladium du joueur ; les plans des quatre structures et les recettes sont dans PalaMod
+(`modules/aspawner`). Détail : `docs/PALAMOD.md` § 32 (et § 13 mis à jour), `docs/BALANCE.md`
+§ 6 septies.
+
+**Fait** (`feat/spawner-controller`) : les quatre obsidiennes infusées, le contrôleur (deux
+modes, quatre cases d'amélioration), les quatre améliorations, leurs neuf recettes d'origine ;
+`SpawnerBlueprint` (plans recopiés, quatre sens, diagnostic du bloc manquant) ; l'état `linked`
+du spawner customisé. `MachineMenu.Buttons` et `MachineKitScreen.Button` : une machine peut
+maintenant avoir un bouton.
+
+**Vérifié en jeu** (captures) : structures I et IV reconnues, IV rétrogradée en III en cassant un
+coin, refus et bloc manquant annoncé ; vagues toutes les 12 s (10,8 s avec une vitesse) ; mode
+manuel (créature, compteur, coup : butin, 5 XP, XP de Chasseur, créature suivante) ; mode
+automatique (butin réparti dans deux coffres) ; règles des cases (doublon et case verrouillée
+refusés sans capacité) ; spawners liés puis déliés quand la structure tombe.
+
+**À savoir pour la suite** : hors structure le spawner customisé garde son comportement vanilla
+(demande antérieure du joueur) ; l'original n'y faisait rien. Le contrôleur ne travaille que
+tronçon chargé. Les chiffres de production sont ceux de Paladium (`SpawnerTier`).
+
 ### 2026-11-11 (suite) — le clicker
 
 **Demande** : « ajoute le clicker, aide-toi du wiki et des fichiers à ta disposition ». Le mod

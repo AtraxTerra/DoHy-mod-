@@ -228,6 +228,44 @@ public class SpawnerControllerBlockEntity extends MachineBlockEntity implements 
         return true;
     }
 
+    /**
+     * Accroupi, main vide : ou en est le palier suivant. Une structure III
+     * valide s'ouvre sans rien dire de ce qui manque a la IV.
+     */
+    public void reportNext(ServerPlayer player) {
+        ServerLevel server = (ServerLevel) player.level();
+        SpawnerBlueprint.Missing missing = SpawnerBlueprint.missing(server, worldPosition);
+        if (missing == null) {
+            player.sendSystemMessage(Component.translatable("message.palamod.spawner_controller.complete")
+                    .withStyle(ChatFormatting.GREEN));
+            return;
+        }
+        BlockPos at = missing.pos();
+        player.sendSystemMessage(Component.translatable("message.palamod.spawner_controller.missing",
+                missing.tier().roman(), missing.placed(), missing.total(),
+                missing.expected().getName(), at.getX(), at.getY(), at.getZ()).withStyle(ChatFormatting.GRAY));
+        server.sendParticles(ParticleTypes.HAPPY_VILLAGER, at.getX() + 0.5d, at.getY() + 0.5d,
+                at.getZ() + 0.5d, 12, 0.3d, 0.3d, 0.3d, 0.0d);
+    }
+
+    /**
+     * Un spawner pose dans le volume d'une structure valide est lie tout de
+     * suite : sans cela il aurait une seconde pour lacher une vague dans le monde.
+     */
+    static void linkOnPlace(ServerLevel server, BlockPos spawner) {
+        for (BlockPos near : BlockPos.betweenClosed(spawner.offset(-2 * REACH, -1, -2 * REACH),
+                spawner.offset(2 * REACH, 1, 2 * REACH))) {
+            if (server.getBlockEntity(near) instanceof SpawnerControllerBlockEntity controller
+                    && controller.verified && controller.match != null && controller.covers(spawner)
+                    && server.getBlockEntity(spawner) instanceof SpawnerBlockEntity placed) {
+                placed.setData(PalaHunter.SPAWNER_LINK.get(), near.asLong());
+                BlockState state = server.getBlockState(spawner);
+                server.setBlock(spawner, state.setValue(CustomSpawnerBlock.LINKED, true), Block.UPDATE_CLIENTS);
+                return;
+            }
+        }
+    }
+
     /** {@code CSChangeSpawnerController} : changer de mode vide les creatures en attente. */
     @Override
     public boolean pressButton(ServerPlayer player, int id) {
@@ -365,7 +403,6 @@ public class SpawnerControllerBlockEntity extends MachineBlockEntity implements 
         int counted = 0;
         Map<Long, Group> groups = new LinkedHashMap<>();
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        scan:
         for (int dy = 1; dy <= HEIGHT; dy++) {
             for (int dx = -REACH; dx <= REACH; dx++) {
                 for (int dz = -REACH; dz <= REACH; dz++) {
@@ -378,20 +415,22 @@ public class SpawnerControllerBlockEntity extends MachineBlockEntity implements 
                             || !(server.getBlockEntity(pos) instanceof SpawnerBlockEntity spawner)) {
                         continue;
                     }
-                    if (counted >= max) {
-                        break scan;
-                    }
                     long link = spawner.getData(PalaHunter.SPAWNER_LINK.get());
                     if (link != CustomSpawnerBlock.NO_LINK && link != worldPosition.asLong()
                             && server.getBlockEntity(BlockPos.of(link)) instanceof SpawnerControllerBlockEntity) {
                         continue;
                     }
+                    // Tout spawner du volume est lie, meme au-dela du plafond : il
+                    // ne fait alors rien du tout, comme dans l'original.
                     if (link != worldPosition.asLong()) {
                         spawner.setData(PalaHunter.SPAWNER_LINK.get(), worldPosition.asLong());
                         spawner.setChanged();
                     }
                     if (!state.getValue(CustomSpawnerBlock.LINKED)) {
                         server.setBlock(pos, state.setValue(CustomSpawnerBlock.LINKED, true), Block.UPDATE_CLIENTS);
+                    }
+                    if (counted >= max) {
+                        continue;
                     }
                     counted++;
                     SpawnerSouls souls = spawner.getData(PalaHunter.SPAWNER_SOULS.get());

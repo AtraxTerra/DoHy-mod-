@@ -788,6 +788,7 @@
   "message.palamod.rpg.xp": "+%s XP RPG",
   "message.palamod.rune.revealed": "La rune revele ses statistiques.",
   "message.palamod.spawner_controller.chunk": "Un seul controleur de spawner travaille par troncon.",
+  "message.palamod.spawner_controller.complete": "La structure IV est complete.",
   "message.palamod.spawner_controller.invalid": "Votre structure n'est pas valide.",
   "message.palamod.spawner_controller.missing": "Structure %s : %s / %s blocs. Il manque : %s en %s %s %s.",
   "message.palamod.stick.cooldown": "Tu dois attendre que le baton se recharge : %s secondes !",

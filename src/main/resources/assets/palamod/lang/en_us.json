@@ -788,6 +788,7 @@
   "message.palamod.rpg.xp": "+%s RPG XP",
   "message.palamod.rune.revealed": "The rune reveals its stats.",
   "message.palamod.spawner_controller.chunk": "Only one spawner controller works per chunk.",
+  "message.palamod.spawner_controller.complete": "The tier IV structure is complete.",
   "message.palamod.spawner_controller.invalid": "Your structure is not valid.",
   "message.palamod.spawner_controller.missing": "Structure %s: %s / %s blocks. Missing: %s at %s %s %s.",
   "message.palamod.stick.cooldown": "You must wait for the stick to recharge: %s seconds!",
