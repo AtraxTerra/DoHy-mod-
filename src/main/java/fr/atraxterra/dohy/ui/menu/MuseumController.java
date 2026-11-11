@@ -77,12 +77,13 @@ public final class MuseumController extends MenuController {
             int total = wing.pieces().size();
             int done = MuseumApi.donatedIn(player, key);
             boolean full = done == total;
+            // L'en-tete compte ce qui est demande : le panneau mecene, optionnel, n'y entre pas.
             if (!patron) {
                 expected += total;
                 donated += done;
-            }
-            if (full) {
-                complete++;
+                if (full) {
+                    complete++;
+                }
             }
             List<String> tooltip = new ArrayList<>();
             if (patron) {
@@ -101,7 +102,7 @@ public final class MuseumController extends MenuController {
                 .accent(0xFF22E558).action("deposit|ouvrir le guichet"));
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("EXPOSEES", donated + " / " + expected, 0xFFFFFFFF),
-                new MenuView.Stat("AILES", complete + " / " + wings.size(), 0xFF22E558),
+                new MenuView.Stat("AILES", complete + " / " + MuseumApi.wings().size(), 0xFF22E558),
                 new MenuView.Stat("PAR DON", "+" + MuseumConfig.config().globalXpPerDonation() + " XP",
                         0xFFFAC400));
         return new MenuView(id(), "Musee", "Des pieces rares seulement ; un don est definitif", stats,

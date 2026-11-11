@@ -175,6 +175,50 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-11 (suite) — le musée n'expose plus que des pièces rares
+
+**Demande** : « mets à jour la partie Musée en faisant un tri, en ne mettant uniquement des items
+rares, et pour NTM NEXT : Gadget, Fat Man, Little Boy et Heavy Mike ». Détail et tableau des
+ailes : `docs/BALANCE.md` § 6 duodecies.
+
+**Fait** (`feat/musee-rares`) :
+- Le musée ne lit plus le catalogue de prix. `data/museum.json` nomme les pièces une à une, par
+  aile (`wings`), avec pour chacune une ligne « où la trouver » (`hints`) affichée sur la vitrine
+  vide. Cinq ailes — trésors du monde (6), trophées (6), reliques de PalaMod (11), donjons et
+  pillage (9), NTM NEXT (4) — et le panneau mécène (l'œuf du dragon). 36 pièces, 37 avec l'œuf,
+  contre plus de 250 avant.
+- **NTM NEXT** : `hbm:nuke_gadget`, `hbm:nuke_boy`, `hbm:nuke_man`, `hbm:nuke_mike`. « Heavy
+  Mike » est l'**Ivy Mike** de NTM (`block.hbm.nuke_mike`).
+- Les sept bonus de l'ancien musée sont tous gardés, à la même valeur, répartis sur les nouvelles
+  ailes. 100 XP globale par don au lieu de 25 : le musée pèse autant qu'avant dans le niveau global.
+- `MuseumConfig` : une aile garde la liste des pièces **qui existent dans ce jeu** (calculée au
+  démarrage du serveur). Une aile sans pièce ne s'ouvre pas — c'est le cas de NTM NEXT sans NTM.
+- En-tête de l'écran : pièces exposées, ailes complètes (hors mécène), XP par don. La « valeur »
+  des dons disparaît, les reliques n'ayant pas de prix au catalogue.
+- `tools/check_museum.py`, branché dans la CI.
+
+**Vérifié en jeu** (client de la CI, sans NTM) : les 32 pièces vanilla et PalaMod existent toutes ;
+le guichet prélève un exemplaire de chaque pièce manquante et rend le reste (3 étoiles du Nether
+déposées, 2 rendues ; le blé, les diamants et les lingots de paladium rendus intacts) ; une pièce
+déjà exposée n'est pas reprise ; l'aile des trophées complète donne +1,5 dégât (1,0 → 2,5), l'œuf
++2 chance ; un don de l'ancien musée (blé, pierre) reste enregistré et ne compte plus ; 12 dons
+font 1 200 XP, niveau global 2.
+
+**Non vérifié** : l'aile NTM NEXT en jeu — la machine de test n'a pas NTM. Les identifiants des
+quatre bombes sont lus dans les sources de NTM NEXT 1.0.3 (`ModBlocks`, `Reg.blockItem` : l'objet
+porte le nom du bloc), et le journal confirme le chemin « mod absent » (« pièces absentes de ce
+jeu, ignorées : [hbm:nuke_gadget, …] », 4 ailes ouvertes sur 5). La bulle d'indice d'une vitrine
+vide n'a pas été capturée (elle demande un survol).
+
+**À savoir** :
+- Un monde d'avant garde ses dons, mais **perd les bonus des anciennes ailes** : elles n'existent
+  plus. Les dons qui sont encore des pièces (étoile du Nether, élytres…) comptent d'office.
+- Une pièce nommée dans deux ailes n'est gardée que par la première (`Wing.resolved`).
+- Une faute de frappe dans un identifiant `minecraft:` ou d'un autre mod ne se voit que dans le
+  journal du serveur ; pour `palamod:`, `check_museum.py` l'arrête.
+- Le 2026-11-11 vers 20 h 30 UTC, quatre runs GitHub Actions sont restés « queued » sans job
+  (incident côté GitHub) : un nouveau push relance, l'ancien run reste orphelin.
+
 ### 2026-11-11 (suite) — les caisses regroupées dans les six boxes de PalaMod
 
 **Demande** : « mettre à jour les loot box en regroupant toutes les caisses dans celles du
