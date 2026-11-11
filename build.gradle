@@ -13,6 +13,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url = 'https://cursemaven.com'; content { includeGroup 'curse.maven' } }
 }
 
 neoForge {
@@ -50,6 +51,7 @@ neoForge {
 }
 
 dependencies {
+    runtimeOnly('curse.maven:ntm-next-1699386:9093015') { transitive = false }
     // Aucune dependance a NTM NEXT : son shop lit les tags et les identifiants
     // du mod (data/tag_prices.json), et reste inerte s'il n'est pas installe.
 }
