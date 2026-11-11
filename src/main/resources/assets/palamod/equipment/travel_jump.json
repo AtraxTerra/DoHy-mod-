@@ -1,0 +1,9 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "palamod:travel_jump"
+      }
+    ]
+  }
+}

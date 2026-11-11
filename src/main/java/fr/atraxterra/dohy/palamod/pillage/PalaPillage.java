@@ -146,6 +146,21 @@ public final class PalaPillage {
     /** La cagoule : les monstres te voient de moins loin ({@code PillageEvents.onVisibility}). */
     public static final DeferredItem<Item> HOOD_HELMET = ITEMS.registerItem(
             "hood_helmet", properties -> new Item(properties.humanoidArmor(PalaArmorMaterials.HOOD, ArmorType.HELMET)));
+    /**
+     * L'armure de voyage ({@code ItemArmorTravel}) : chaque piece a son effet
+     * ({@code TravelArmorEvents}) — monter d'un bloc sans sauter, vitesse, saut,
+     * pas de degats de chute, respiration sous l'eau.
+     */
+    public static final DeferredItem<Item> TRAVEL_BOOTS = ITEMS.registerItem("travel_boots",
+            properties -> new Item(properties.humanoidArmor(PalaArmorMaterials.TRAVEL_BOOTS, ArmorType.BOOTS)));
+    public static final DeferredItem<Item> TRAVEL_LEGGINGS = ITEMS.registerItem("travel_leggings",
+            properties -> new Item(properties.humanoidArmor(PalaArmorMaterials.TRAVEL_LEGGINGS, ArmorType.LEGGINGS)));
+    public static final DeferredItem<Item> TRAVEL_JUMPCHEST = ITEMS.registerItem("travel_jumpchest",
+            properties -> new Item(properties.humanoidArmor(PalaArmorMaterials.TRAVEL_JUMP, ArmorType.CHESTPLATE)));
+    public static final DeferredItem<Item> TRAVEL_SLIMYHELMET = ITEMS.registerItem("travel_slimyhelmet",
+            properties -> new Item(properties.humanoidArmor(PalaArmorMaterials.TRAVEL_SLIMY, ArmorType.HELMET)));
+    public static final DeferredItem<Item> TRAVEL_SCUBAHELMET = ITEMS.registerItem("travel_scubahelmet",
+            properties -> new Item(properties.humanoidArmor(PalaArmorMaterials.TRAVEL_SCUBA, ArmorType.HELMET)));
     /** La ficelle de diamant : l'arc, la dynamite, l'amulette du chasseur. */
     public static final DeferredItem<Item> DIAMOND_STRING = ITEMS.registerItem("diamond_string", Item::new);
 
@@ -161,7 +176,8 @@ public final class PalaPillage {
             UNCLAIM_FINDER, UNCLAIM_FINDER_ORANGE, UNCLAIM_FINDER_RED, UNCLAIM_FINDER_BLUE, SPAWNER_FINDER,
             CHEST_EXPLORER, EXTRAPOLATED_BUCKET,
             PALADIUM_BOW, SWITCH_ARROW, EMPTY_BOW_MODIFIER, RANGE_BOW_MODIFIER, SPEED_BOW_MODIFIER,
-            HOOD_HELMET, DIAMOND_STRING);
+            HOOD_HELMET, TRAVEL_SLIMYHELMET, TRAVEL_SCUBAHELMET, TRAVEL_JUMPCHEST, TRAVEL_LEGGINGS, TRAVEL_BOOTS,
+            DIAMOND_STRING);
 
     private PalaPillage() {
     }

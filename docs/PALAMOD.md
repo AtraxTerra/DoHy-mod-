@@ -101,9 +101,8 @@ qui n'existe pas en 1.7.10 vanilla. C'est le module `back2future` de PalaMod
 **Remplaçants** (2026-11-11) : le bonbon à déballer de PalaMod est un objet d'événement
 communautaire (`ItemCandy`), qui ne sera pas porté ; il devient 5 bouteilles d'XP du métier.
 La défense d'éléphant (Chasseur, 80) devient un bloc d'os, comme dans les recettes de cornes de
-la palamachine. Sans remplaçant, ces récompenses n'étaient pas distribuées. Restent inertes les
-quatre pièces de l'armure de voyage (Fermier, 55), non portée. `tools/palamod_jobs.py` porte la
-règle (`SUBSTITUTES`).
+la palamachine. Sans remplaçant, ces récompenses n'étaient pas distribuées. L'armure de voyage (Fermier, 55)
+est portée depuis (§ 28). `tools/palamod_jobs.py` porte la règle (`SUBSTITUTES`).
 
 **Joueurs migrés** : à la première connexion après le remplacement des skills, un joueur
 reçoit les objets de tous les paliers qu'il avait déjà franchis — leur argent avait été
@@ -2351,3 +2350,24 @@ d'éléphants »). Aucun de ces systèmes n'existe dans DoHy.
 | Tout pile le bon nombre, Oula… | déposer 100 000 / 500 000 trixium | 5 000 / 25 000 (un joueur seul, pas des milliers) |
 | Fleuriste curieux | dont la fleur de chance (lucky blocks) | les trois fleurs de PalaMod et les treize vanilla |
 | Unités de sève | 1 000 par fiole tirée (`ExtractSeveAchievement`) | pareil |
+
+## 28. Armure de voyage
+
+Relevé dans `ItemArmorTravel` : six pièces, toutes au matériau fer vanilla (défense, durabilité
+et réparation au fer). La cagoule était portée depuis le pillage (chapitre 22) ; les cinq autres
+le sont le 2026-11-11, avec leurs recettes de `PRegister_Craft` et leur couche portée
+(`getArmorTexture`).
+
+| Pièce | Effet | Recette |
+|---|---|---|
+| Bottes de voyage | monter d'un bloc sans sauter (`stepHeight = 1`) | 2 plumes, 2 lingots de titane |
+| Jambières de voyage | vitesse III | 3 cuirs, 2 plumes, 2 lingots de titane |
+| Plastron de saut | saut III | 2 plumes, 4 cuirs, 2 lingots de fer |
+| Casque en slime | aucune chute | 3 boules de slime, 2 diamants |
+| Casque de plongée | l'air reste plein sous l'eau (respiration aquatique) | 8 lingots de titane autour d'une vitre |
+
+Les effets passent par `ArmorEffects`, comme ceux des autres armures. Écart : le casque en slime
+freinait aussi la chute quand la tête était dans un bloc plein (sauter pour remonter) ; ce cas de
+bord n'est pas porté. Les bottes, les jambières, le plastron et le casque en slime sont la
+récompense du Fermier au niveau 55, qui est maintenant distribuée.
+

@@ -4047,6 +4047,12 @@ def main():
             ("range_bow_modifier", "items/machine/bowRangeModifier.png", "Modificateur Range", "Range Modifier"),
             ("speed_bow_modifier", "items/machine/bowSpeedModifier.png", "Modificateur Speed", "Speed Modifier"),
             ("hood_helmet", "items/armor/travel_hood.png", "Cagoule", "Hood"),
+            # Le reste de l'armure de voyage (ItemArmorTravel) : voir plus bas.
+            ("travel_boots", "items/armor/travel_boots.png", "Bottes de voyage", "Travel Boots"),
+            ("travel_leggings", "items/armor/travel_leggings.png", "Jambieres de voyage", "Travel Leggings"),
+            ("travel_jumpchest", "items/armor/travel_jumpchest.png", "Plastron de saut", "Jump Chestplate"),
+            ("travel_slimyhelmet", "items/armor/travel_slimy.png", "Casque en slime", "Slimy Helmet"),
+            ("travel_scubahelmet", "items/armor/travel_scuba.png", "Casque de plongee", "Scuba Helmet"),
             ("diamond_string", "items/diamondString.png", "Ficelle de diamant", "Diamond String")):
         tex(texture, "item/%s.png" % name)
         flat_item(name, "%s:item/%s" % (NS, name))
@@ -4057,6 +4063,23 @@ def main():
     # La cagoule portee : la couche HoodHelmet de PalaMod (64 x 32), casque seul.
     tex("models/HoodHelmet.png", "entity/equipment/humanoid/hood.png", (64, 32))
     write("assets/%s/equipment/hood.json" % NS, {"layers": {"humanoid": [{"texture": "%s:hood" % NS}]}})
+
+    # L'armure de voyage (ItemArmorTravel) : une couche portee par piece, comme
+    # getArmorTexture la choisissait. Les bottes et les jambieres du pack sont en
+    # 64 x 32 (le jar les a en 128 x 64), les trois autres ne sont que dans le jar.
+    for name, source, layer in (
+            ("travel_boots", "models/travel_boots.png", "humanoid"),
+            ("travel_leggings", "models/travel_leggings.png", "humanoid_leggings"),
+            ("travel_jump", "models/JumpArmor.png", "humanoid"),
+            ("travel_slimy", "models/Slimy_Helmet.png", "humanoid"),
+            ("travel_scuba", "models/ScubaArmor.png", "humanoid")):
+        tex(source, "entity/equipment/%s/%s.png" % (layer, name), (64, 32))
+        write("assets/%s/equipment/%s.json" % (NS, name),
+              {"layers": {layer: [{"texture": "%s:%s" % (NS, name)}]}})
+    tag("minecraft/tags/item/foot_armor.json", ["%s:travel_boots" % NS])
+    tag("minecraft/tags/item/leg_armor.json", ["%s:travel_leggings" % NS])
+    tag("minecraft/tags/item/chest_armor.json", ["%s:travel_jumpchest" % NS])
+    tag("minecraft/tags/item/head_armor.json", ["%s:travel_slimyhelmet" % NS, "%s:travel_scubahelmet" % NS])
 
     # L'arc en paladium : le modele de l'arc vanilla et ses trois etapes de tension.
     for suffix, source in (("", "paladium_bow"), ("_pulling_0", "paladium_bow_0"),
@@ -4707,6 +4730,10 @@ def main():
         "OBSIDIAN_ITEM_DOOR": "obsidian_door", "OBSIDIAN_TRAP_DOOR": "obsidian_trapdoor",
         # Pillage de faction (chapitre 22, lot 22d) : PRegister_Craft.
         "DIAMOND_STRING": "diamond_string", "PALADIUM_BOW": "paladium_bow", "TRAVEL_HOODHELMET": "hood_helmet",
+        # Armure de voyage (2026-11-11) : la recompense du Fermier au niveau 55.
+        "TRAVEL_BOOTS": "travel_boots", "TRAVEL_LEGGINGS": "travel_leggings",
+        "TRAVEL_JUMPCHEST": "travel_jumpchest", "TRAVEL_SLIMYHELMET": "travel_slimyhelmet",
+        "TRAVEL_SCUBAHELMET": "travel_scubahelmet",
         "CHESTEXPLORER": "chest_explorer", "BOWUPGRADE_EMPTY": "empty_bow_modifier",
         "ONLINE_DETECTOR_BLOCK": "online_detector", "DYNAMITE": "dynamite", "DYNAMITE_BIG": "big_dynamite",
         "DYNAMITE_NINJA": "ninja_dynamite", "EXTRAPOLATED_BUCKET": "extrapolated_bucket",
@@ -4822,6 +4849,9 @@ def main():
         # Cle declaree mais inutilisee du detecteur de presence : elle doit se
         # resoudre pour que le releve passe, puis le filtre la retire.
         ("ItemsRegister.WITHER_SKULLFRAGMENT", 0): "%s:wither_skull_fragment" % NS,
+        # Armure de voyage : la plume, et la vitre du casque de plongee.
+        ("Items.field_151008_G", 0): "minecraft:feather",
+        ("Blocks.field_150410_aZ", 0): "minecraft:glass_pane",
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())

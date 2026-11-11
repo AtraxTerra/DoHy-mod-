@@ -1,6 +1,11 @@
 package fr.atraxterra.dohy.palamod.equipment;
 
+import fr.atraxterra.dohy.palamod.pillage.PalaPillage;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -37,6 +42,14 @@ import java.util.Map;
  * <p>L'amethyste et le titane n'ont aucun effet : ce sont des
  * {@code BaseItemArmor} nues.
  *
+ * <p><b>L'armure de voyage</b> ({@code ItemArmorTravel}) : les bottes montent
+ * d'un bloc sans sauter ({@code stepHeight = 1}), les jambieres donnent
+ * vitesse III et le plastron saut III (reappliques avant expiration, comme
+ * l'original), le casque en slime annule les chutes, le casque de plongee
+ * garde l'air plein. Ecart : le casque en slime de l'original freinait aussi
+ * la chute quand la tete etait dans un bloc plein (saut pour remonter) ; ce cas
+ * de bord n'est pas porte.
+ *
  * <p><b>Ce qui n'est pas porte, et pourquoi.</b> Le code d'endium contient,
  * apres le bloc d'invisibilite, une force et une vitesse II qu'aucun saut
  * n'atteint : un {@code goto} les enjambe. Elles ne s'appliquaient jamais. Les
@@ -63,6 +76,8 @@ public final class ArmorEffects {
      * rendre visible presque aussitot. Deux passages de marge.
      */
     private static final int INVISIBILITY_DURATION = PERIOD * 2;
+
+    private static final Identifier TRAVEL_STEP = Identifier.fromNamespaceAndPath("palamod", "travel_boots_step");
 
     private record Effect(Holder<MobEffect> effect, int amplifier) {
     }
@@ -100,6 +115,11 @@ public final class ArmorEffects {
         map.put(PalaEquipment.ENDIUM_LEGGINGS.get(), List.of(nightVision));
         map.put(PalaEquipment.ENDIUM_BOOTS.get(), List.of(nightVision));
 
+        map.put(PalaPillage.TRAVEL_LEGGINGS.get(), List.of(new Effect(MobEffects.SPEED, 2)));
+        map.put(PalaPillage.TRAVEL_JUMPCHEST.get(), List.of(new Effect(MobEffects.JUMP_BOOST, 2)));
+        // setAir(300) a chaque tick : la respiration aquatique fait la meme chose.
+        map.put(PalaPillage.TRAVEL_SCUBAHELMET.get(), List.of(new Effect(MobEffects.WATER_BREATHING, 0)));
+
         table = map;
         return map;
     }
@@ -133,6 +153,21 @@ public final class ArmorEffects {
             player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY,
                     INVISIBILITY_DURATION, 0, true, false, true));
         }
+        travelStep(player);
+    }
+
+    /** Les bottes de voyage : un bloc de marche au lieu de 0,6 ; l'attribut suit le joueur. */
+    private static void travelStep(Player player) {
+        AttributeInstance step = player.getAttribute(Attributes.STEP_HEIGHT);
+        if (step == null) {
+            return;
+        }
+        boolean worn = player.getItemBySlot(EquipmentSlot.FEET).is(PalaPillage.TRAVEL_BOOTS.get());
+        if (worn && !step.hasModifier(TRAVEL_STEP)) {
+            step.addTransientModifier(new AttributeModifier(TRAVEL_STEP, 0.4d, AttributeModifier.Operation.ADD_VALUE));
+        } else if (!worn && step.hasModifier(TRAVEL_STEP)) {
+            step.removeModifier(TRAVEL_STEP);
+        }
     }
 
     /**
@@ -163,7 +198,8 @@ public final class ArmorEffects {
     @SubscribeEvent
     public static void onFall(LivingFallEvent event) {
         LivingEntity entity = event.getEntity();
-        if (entity.getItemBySlot(EquipmentSlot.FEET).is(PalaEquipment.MIXED_ENDIUM_BOOTS.get())) {
+        if (entity.getItemBySlot(EquipmentSlot.FEET).is(PalaEquipment.MIXED_ENDIUM_BOOTS.get())
+                || entity.getItemBySlot(EquipmentSlot.HEAD).is(PalaPillage.TRAVEL_SLIMYHELMET.get())) {
             event.setDamageMultiplier(0.0f);
         }
     }
