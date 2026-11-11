@@ -123,7 +123,7 @@ public final class TagPricing {
     }
 
     /**
-     * Genere les entrees des matieres cataloguees.
+     * Genere les entrees des matieres cataloguees et des pieces de machine.
      *
      * <p>Parcourt le registre des items une seule fois, au demarrage, et ne
      * touche jamais a un item deja tarife explicitement : {@code prices.json}
