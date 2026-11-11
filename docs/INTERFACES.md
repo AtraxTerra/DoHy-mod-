@@ -14,6 +14,7 @@ autocrafter, crusher, cobblebreaker, grinder).
 | 3 | Palamod : donjons, profil RPG, monture, golem, dimension du Mineur, enchantement mystique | fait |
 | 4 | Conteneurs : machines, coffres en paladium, coffre de vente, guichet du musée, sac de la monture, coffres du golem | fait |
 | 5 | Inventaire du joueur, avec l'accès aux menus | fait |
+| 6 | Ouverture des caisses : la roulette | fait |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
 
@@ -179,6 +180,27 @@ inventaire.
   s'ouvre par le menu principal ou `/profil`.
 - **Icônes** : les cinq raccourcis et le losange de l'armure sont découpés dans la maquette fournie
   (`inv_*.png`, `section_armor.png`), le fond rendu transparent.
+
+## L'ouverture des caisses (lot 6)
+
+Demandée le 2026-11-11 avec la refonte du butin. Ouvrir une caisse (carte de la boutique, bouton
+« Rouvrir », ou `/crate open`) affiche `CrateScreen` à la place du message dans le chat.
+
+- **Le tirage reste au serveur** : `Crates.open` tire le lot, le donne tout de suite (argent au
+  liquide, objets à l'inventaire, le surplus au sol), puis envoie `CrateView` : 46 cases tirées
+  dans la table et le lot gagné à la case 39. Fermer l'écran en route ne change rien au lot.
+- **La roulette** : la bande file, puis ralentit sur un peu plus de cinq secondes et s'arrête sous
+  le repère, au hasard dans la case et pas toujours au milieu. Un tic à chaque case qui passe, plus
+  aigu en fin de course. Un clic sur la roulette, ou Espace, saute l'animation.
+- **Les classes** : chaque case porte la couleur de sa classe, commun (gris), rare (bleu), épique
+  (violet), légendaire (or). À l'arrêt, la case gagnante s'illumine, les autres s'éteignent, et un
+  son marque la classe : l'orbe d'XP, la montée de niveau, l'améthyste, la fanfare du défi.
+- **Sous la roulette** : la classe, le nom du lot, sa quantité, et pour un lot groupé ses objets en
+  ligne (avec leur bulle). En bas, la chance de chaque classe pour ce palier.
+- **Les boutons** : « Rouvrir » consomme une clé, ou, sans clé et avec assez de liquide, en achète
+  une au prix affiché sur le bouton ; « Boutique » revient aux cartes des caisses.
+- **Le chat** : le message du gain attend la fin de l'animation (`REVEAL_TICKS`), pour ne pas la
+  gâcher. Un lot épique ou légendaire est annoncé aux autres joueurs.
 
 ## Vérification
 
