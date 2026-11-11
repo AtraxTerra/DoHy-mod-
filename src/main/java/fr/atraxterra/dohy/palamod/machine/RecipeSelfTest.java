@@ -67,13 +67,26 @@ public final class RecipeSelfTest {
         return first(ingredient.get());
     }
 
+    static ServerLevel LEVEL;
+
     private static ItemStack first(Ingredient ingredient) {
+        // L'affichage resout les ingredients a composants (potions) en vraies piles.
+        try {
+            List<ItemStack> shown = ingredient.display().resolveForStacks(
+                    net.minecraft.world.item.crafting.display.SlotDisplayContext.fromLevel(LEVEL));
+            if (!shown.isEmpty()) {
+                return shown.get(0);
+            }
+        } catch (Throwable t) {
+            log("affichage impossible : " + t);
+        }
         return ingredient.items().findFirst().map(Holder::value).map(ItemStack::new).orElse(ItemStack.EMPTY);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static void run(MinecraftServer server) throws Exception {
         ServerLevel level = server.overworld();
+        LEVEL = level;
         log("etape : recettes");
         TreeMap<String, Integer> counts = new TreeMap<>();
         int ok = 0;
