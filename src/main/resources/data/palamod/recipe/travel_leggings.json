@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "Y Y",
+    "Z Z"
+  ],
+  "key": {
+    "X": "minecraft:leather",
+    "Y": "minecraft:feather",
+    "Z": "palamod:titane_ingot"
+  },
+  "result": {
+    "id": "palamod:travel_leggings",
+    "count": 1
+  }
+}

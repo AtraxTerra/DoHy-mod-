@@ -221,6 +221,7 @@ REWARD_NAMES = {
     "PALADIUM_LEGGINGS": ("paladium_leggings", "Jambieres en paladium"),
     "PALADIUM_BOOTS": ("paladium_boots", "Bottes en paladium"),
     # Pas encore portes : la recompense restera inerte jusqu'a leur chapitre.
+    # (L'armure de voyage l'est depuis le 2026-11-11.)
     # (JOB_CANDY et TUSK ont un remplacant : voir SUBSTITUTES.)
     "WITHER_RECEPTACLE": ("wither_receptacle", "Receptacle de wither"),
     "FURNACE_UPGRADE": ("furnace_upgrade", "Amelioration de four"),
