@@ -22,8 +22,10 @@ import java.util.List;
 /**
  * Une salle de donjon, construite par le mod dans la dimension des donjons.
  *
- * <p>Une boite fermee aux blocs du theme : sol en damier, murs scandes de
- * piliers et de lumieres, plafond eclaire. On entre par le nord (z minimal) ;
+ * <p>Une boite fermee, decoree au theme du donjon ({@link RoomTheme}) : sol
+ * a medaillon, murs a assise et couronnement scandes de piliers, fenetres
+ * hautes ou filons, plafond a caissons d'ou pendent des lanternes, et de
+ * quoi meubler — obstacles, plantes, rails. On entre par le nord (z minimal) ;
  * les portes s'ouvrent dans le mur sud une fois la salle finie, chacune vitree de
  * la couleur de ce qu'elle cache et surmontee d'un panneau.
  *
@@ -70,71 +72,348 @@ final class DungeonRoom {
     /** Construit la salle, centre du sol en {@code center}. */
     static DungeonRoom build(ServerLevel level, Dungeon dungeon, RoomType type, BlockPos center, RandomSource random) {
         DungeonRoom room = new DungeonRoom(type, center, type.halfWidth(), type.height());
-        room.place(level, dungeon.palette(), random);
+        room.place(level, RoomTheme.of(dungeon), random);
         return room;
     }
 
-    private void place(ServerLevel level, Dungeon.Palette palette, RandomSource random) {
-        int x0 = center.getX() - half - 1;
-        int x1 = center.getX() + half + 1;
-        int z0 = center.getZ() - half - 1;
-        int z1 = center.getZ() + half + 1;
-        int floor = center.getY() - 1;
-        int ceiling = center.getY() + height;
+    /** Ce qui depasse des murs : les niches des fenetres. La salle l'efface avec le reste. */
+    private static final int MARGIN = 2;
+
+    /** Un pilier tous les six blocs le long des murs, une poutre au plafond dans son axe. */
+    private static final int BAY = 6;
+
+    /** Les lumieres d'un pilier : a hauteur d'homme, et une seconde dans une salle haute. */
+    private boolean lit(int h) {
+        return h == 3 || (height >= 12 && h == 8);
+    }
+
+    private boolean onLine(int offset) {
+        return Math.floorMod(offset, BAY) == 0;
+    }
+
+    private void place(ServerLevel level, RoomTheme theme, RandomSource random) {
+        int cx = center.getX();
+        int cz = center.getZ();
+        int x0 = cx - half - 1;
+        int x1 = cx + half + 1;
+        int z0 = cz - half - 1;
+        int z1 = cz + half + 1;
+        int ground = center.getY();
+        int floor = ground - 1;
+        int ceiling = ground + height;
         // La salle tient ses chunks charges tant qu'elle existe : ses monstres
         // restent comptables et effacables quoi que fassent les joueurs.
-        for (int cx = x0 >> 4; cx <= x1 >> 4; cx++) {
-            for (int cz = z0 >> 4; cz <= z1 >> 4; cz++) {
-                level.setChunkForced(cx, cz, true);
-                forced.add(new int[]{cx, cz});
-                level.getChunk(cx, cz);
+        for (int chunkX = (x0 - MARGIN) >> 4; chunkX <= (x1 + MARGIN) >> 4; chunkX++) {
+            for (int chunkZ = (z0 - MARGIN) >> 4; chunkZ <= (z1 + MARGIN) >> 4; chunkZ++) {
+                level.setChunkForced(chunkX, chunkZ, true);
+                forced.add(new int[]{chunkX, chunkZ});
+                level.getChunk(chunkX, chunkZ);
             }
         }
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
+                int dx = x - cx;
+                int dz = z - cz;
                 boolean edgeX = x == x0 || x == x1;
                 boolean edgeZ = z == z0 || z == z1;
-                // Sol en damier, plafond eclaire tous les cinq blocs.
-                set(level, pos.set(x, floor, z), (x + z & 1) == 0 ? palette.floor() : palette.floorAlt());
-                boolean lamp = !edgeX && !edgeZ && Math.floorMod(x - center.getX(), 5) == 0
-                        && Math.floorMod(z - center.getZ(), 5) == 0;
-                set(level, pos.set(x, ceiling, z), lamp ? palette.light() : palette.ceiling());
+                set(level, pos.set(x, floor, z), floorBlock(theme, random, dx, dz));
+                // Le plafond : une lumiere encastree au milieu de chaque caisson.
+                boolean lamp = !edgeX && !edgeZ && Math.floorMod(dx, BAY) == BAY / 2
+                        && Math.floorMod(dz, BAY) == BAY / 2;
+                set(level, pos.set(x, ceiling, z), lamp ? theme.light() : theme.ceiling());
                 if (!edgeX && !edgeZ) {
                     continue;
                 }
-                // Murs : un pilier aux angles et tous les six blocs, une lumiere a mi-hauteur.
-                boolean pillar = (edgeX && edgeZ) || Math.floorMod(edgeX ? z - center.getZ() : x - center.getX(), 6) == 0;
-                for (int y = center.getY(); y < ceiling; y++) {
-                    Block block = pillar ? palette.pillar() : palette.wall();
-                    if (pillar && y == center.getY() + 3 && !(edgeX && edgeZ)) {
-                        block = palette.light();
+                // Les murs : une assise, un couronnement, un pilier aux angles
+                // et tous les six blocs, eclaire comme les piliers de la salle.
+                boolean corner = edgeX && edgeZ;
+                boolean pillar = corner || onLine(edgeX ? dz : dx);
+                for (int y = ground; y < ceiling; y++) {
+                    int h = y - ground;
+                    Block block;
+                    if (h == 0) {
+                        block = theme.wallBase();
+                    } else if (h == height - 1) {
+                        block = theme.trim();
+                    } else if (pillar) {
+                        block = lit(h) && !corner ? theme.light() : theme.pillar();
+                    } else {
+                        int roll = random.nextInt(100);
+                        block = roll < 18 ? theme.wallAlt()
+                                : roll < 22 && !theme.veins().isEmpty() ? pick(theme.veins(), random) : theme.wall();
                     }
                     set(level, pos.set(x, y, z), block);
                 }
             }
         }
         if (type == RoomType.COMBAT || type == RoomType.BOSS) {
-            // Quatre piliers pour se mettre a couvert, et quelques obstacles du theme.
+            // Quatre piliers pour se mettre a couvert, et des obstacles du theme.
             int q = half / 2;
-            for (int[] corner : new int[][]{{q, q}, {-q, q}, {q, -q}, {-q, -q}}) {
-                for (int y = center.getY(); y < ceiling; y++) {
-                    set(level, pos.set(center.getX() + corner[0], y, center.getZ() + corner[1]), palette.pillar());
+            for (int[] at : new int[][]{{q, q}, {-q, q}, {q, -q}, {-q, -q}}) {
+                for (int y = ground; y < ceiling; y++) {
+                    int h = y - ground;
+                    set(level, pos.set(cx + at[0], y, cz + at[1]), h == 0 ? theme.wallBase()
+                            : h == height - 1 ? theme.trim() : lit(h) ? theme.light() : theme.pillar());
                 }
             }
-            int obstacles = 4 + random.nextInt(5);
-            for (int i = 0; i < obstacles; i++) {
-                int x = center.getX() - half + 1 + random.nextInt(2 * half - 1);
-                int z = center.getZ() - half + 4 + random.nextInt(2 * half - 4);
-                if (Math.abs(x - center.getX()) <= 1 && Math.abs(z - center.getZ()) <= 1) {
+        }
+        placeBeams(level, theme, cx, cz, ground, ceiling);
+        placeWindows(level, theme, random, x0, x1, z0, ground);
+        if (type == RoomType.COMBAT || type == RoomType.BOSS || type == RoomType.PUZZLE) {
+            placeObstacles(level, theme, random, type == RoomType.BOSS ? 6 + random.nextInt(6)
+                    : type == RoomType.PUZZLE ? 3 + random.nextInt(3) : 4 + random.nextInt(5));
+        }
+        placeGround(level, theme, random);
+        placeHanging(level, theme, random, ceiling);
+        if (type == RoomType.BOOST) {
+            // L'autel, entre quatre lanternes.
+            set(level, center, Blocks.ENCHANTING_TABLE);
+            for (int[] at : new int[][]{{2, 2}, {-2, 2}, {2, -2}, {-2, -2}}) {
+                set(level, pos.set(cx + at[0], ground, cz + at[1]), theme.wallBase());
+                set(level, pos.set(cx + at[0], ground + 1, cz + at[1]), theme.lantern());
+            }
+        }
+        if (type == RoomType.MERCHANT) {
+            // L'etal du marchand, qui se tient deux blocs au sud du centre : deux
+            // poteaux, un auvent, un comptoir ouvert en son milieu.
+            for (int side = -1; side <= 1; side += 2) {
+                for (int h = 0; h < 3; h++) {
+                    set(level, pos.set(cx + 2 * side, ground + h, cz + 3), theme.pillar());
+                }
+                set(level, pos.set(cx + side, ground, cz + 1), theme.trim());
+                set(level, pos.set(cx + 2 * side, ground, cz + 1), theme.trim());
+                set(level, pos.set(cx + 2 * side, ground + 1, cz + 1), theme.lantern());
+            }
+            for (int dx = -2; dx <= 2; dx++) {
+                for (int dz = 2; dz <= 3; dz++) {
+                    level.setBlock(pos.set(cx + dx, ground + 3, cz + dz), axis(theme.beam(), Direction.Axis.X), FLAGS);
+                }
+            }
+        }
+    }
+
+    /**
+     * Le sol : une bordure, un medaillon au centre (un disque et un anneau),
+     * et un appareil irregulier ou affleure parfois une lumiere.
+     */
+    private Block floorBlock(RoomTheme theme, RandomSource random, int dx, int dz) {
+        if (Math.max(Math.abs(dx), Math.abs(dz)) >= half) {
+            return theme.floorEdge();
+        }
+        int distance = dx * dx + dz * dz;
+        if (distance <= 2) {
+            return theme.medallion();
+        }
+        if (distance >= 9 && distance <= 13) {
+            return theme.floorEdge();
+        }
+        int roll = random.nextInt(100);
+        if (roll < 22) {
+            return theme.floorAlt();
+        }
+        if (roll < 28) {
+            return theme.floorAccent();
+        }
+        return roll < 30 && theme.floorLight() != null ? theme.floorLight() : theme.floor();
+    }
+
+    /**
+     * Le plafond a caissons : une poutre sous le plafond dans l'axe de chaque
+     * pilier, et une lanterne pendue a chaque croisement, au bout d'une
+     * chaine d'autant plus longue que la salle est haute.
+     */
+    private void placeBeams(ServerLevel level, RoomTheme theme, int cx, int cz, int ground, int ceiling) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        int chain = height >= 12 ? 3 : height >= 8 ? 1 : 0;
+        for (int dx = -half; dx <= half; dx++) {
+            for (int dz = -half; dz <= half; dz++) {
+                boolean alongX = onLine(dz);
+                boolean alongZ = onLine(dx);
+                if (!alongX && !alongZ) {
                     continue;
                 }
-                set(level, pos.set(x, center.getY(), z), palette.decor());
+                pos.set(cx + dx, ceiling - 1, cz + dz);
+                if (!level.getBlockState(pos).isAir()) {
+                    continue;
+                }
+                if (alongX && alongZ) {
+                    set(level, pos, theme.trim());
+                    for (int link = 1; link <= chain; link++) {
+                        set(level, pos.set(cx + dx, ceiling - 1 - link, cz + dz), Blocks.IRON_CHAIN);
+                    }
+                    level.setBlock(pos.set(cx + dx, ceiling - 2 - chain, cz + dz), RoomTheme.with(
+                            theme.lantern().defaultBlockState(), BlockStateProperties.HANGING, true), FLAGS);
+                } else {
+                    level.setBlock(pos, axis(theme.beam(), alongX ? Direction.Axis.X : Direction.Axis.Z), FLAGS);
+                }
             }
         }
-        if (type == RoomType.BOOST) {
-            set(level, center, Blocks.ENCHANTING_TABLE);
+    }
+
+    private static BlockState axis(Block block, Direction.Axis axis) {
+        return RoomTheme.with(block.defaultBlockState(), BlockStateProperties.AXIS, axis);
+    }
+
+    /**
+     * Les fenetres hautes des murs nord, est et ouest, une par travee : trois
+     * blocs de vitrage sur deux, une niche derriere et une lumiere au fond.
+     * Un theme sans vitrage a des plaques de filon a la place. Le mur sud, ou
+     * s'ouvrent les portes, reste nu.
+     */
+    private void placeWindows(ServerLevel level, RoomTheme theme, RandomSource random, int x0, int x1, int z0,
+                              int ground) {
+        if (theme.window() == null && theme.veins().isEmpty()) {
+            return;
         }
+        int sill = ground + (height >= 8 ? 3 : 2);
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        for (int offset = -half + BAY / 2; offset <= half - BAY / 2; offset++) {
+            if (Math.floorMod(offset, BAY) != BAY / 2) {
+                continue;
+            }
+            // Chaque mur : son plan, et le pas qui s'en eloigne vers l'exterieur.
+            int[][] walls = {
+                    {center.getX() + offset, z0, 1, 0, 0, -1},
+                    {x0, center.getZ() + offset, 0, 1, -1, 0},
+                    {x1, center.getZ() + offset, 0, 1, 1, 0},
+            };
+            for (int[] wall : walls) {
+                for (int along = -2; along <= 2; along++) {
+                    for (int up = -1; up <= 2; up++) {
+                        int x = wall[0] + wall[2] * along;
+                        int z = wall[1] + wall[3] * along;
+                        boolean opening = Math.abs(along) <= 1 && up >= 0 && up <= 1;
+                        if (theme.window() == null) {
+                            if (opening) {
+                                set(level, pos.set(x, sill + up, z), pick(theme.veins(), random));
+                            }
+                            continue;
+                        }
+                        if (opening) {
+                            set(level, pos.set(x, sill + up, z), theme.window());
+                        }
+                        // La niche : fermee de toutes parts, garnie au milieu.
+                        BlockState inside = theme.wallBase().defaultBlockState();
+                        if (opening) {
+                            List<BlockState> behind = theme.behind();
+                            inside = up == 0 && along != 0 && behind.size() > 1
+                                    ? behind.get(1 + random.nextInt(behind.size() - 1)) : behind.get(0);
+                        }
+                        level.setBlock(pos.set(x + wall[4], sill + up, z + wall[5]), inside, FLAGS);
+                        set(level, pos.set(x + 2 * wall[4], sill + up, z + 2 * wall[5]),
+                                along == 0 && up == 0 ? theme.light() : theme.wallBase());
+                    }
+                }
+            }
+        }
+    }
+
+    /** Des obstacles du theme, parfois empiles, parfois coiffes. */
+    private void placeObstacles(ServerLevel level, RoomTheme theme, RandomSource random, int count) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        for (int i = 0; i < count; i++) {
+            int x = center.getX() - half + 1 + random.nextInt(2 * half - 1);
+            int z = center.getZ() - half + 4 + random.nextInt(2 * half - 4);
+            if (Math.abs(x - center.getX()) <= 3 && Math.abs(z - center.getZ()) <= 3) {
+                continue;
+            }
+            if (!level.getBlockState(pos.set(x, center.getY(), z)).isAir()) {
+                continue;
+            }
+            Block block = pick(theme.obstacles(), random);
+            int stack = random.nextInt(3) == 0 ? 2 : 1;
+            for (int h = 0; h < stack; h++) {
+                set(level, pos.set(x, center.getY() + h, z), block);
+            }
+            if (theme.obstacleTop() != null && random.nextInt(3) == 0) {
+                level.setBlock(pos.set(x, center.getY() + stack, z), theme.obstacleTop(), FLAGS);
+            }
+        }
+    }
+
+    /** Au sol : des plantes sur leur terre, de la mousse, une voie ferree. */
+    private void placeGround(ServerLevel level, RoomTheme theme, RandomSource random) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        if (theme.soil() != null) {
+            for (int dx = -half + 1; dx <= half - 1; dx++) {
+                for (int dz = -half + 1; dz <= half - 1; dz++) {
+                    if (dx * dx + dz * dz <= 16 || !level.getBlockState(
+                            pos.set(center.getX() + dx, center.getY(), center.getZ() + dz)).isAir()) {
+                        continue;
+                    }
+                    int roll = random.nextInt(100);
+                    if (roll < 7 && !theme.plants().isEmpty()) {
+                        Block plant = pick(theme.plants(), random);
+                        set(level, pos.set(center.getX() + dx, center.getY() - 1, center.getZ() + dz), theme.soil());
+                        set(level, pos.set(center.getX() + dx, center.getY(), center.getZ() + dz), plant);
+                    } else if (roll < 12 && theme.carpet() != null) {
+                        set(level, pos, theme.carpet());
+                    }
+                }
+            }
+        }
+        if (theme.rails() && half >= 8) {
+            int x = center.getX() + BAY / 2;
+            for (int dz = -half; dz <= half; dz++) {
+                if (level.getBlockState(pos.set(x, center.getY(), center.getZ() + dz)).isAir()) {
+                    set(level, pos, Blocks.RAIL);
+                }
+            }
+        }
+    }
+
+    /** Ce qui pend du plafond, entre les poutres. */
+    private void placeHanging(ServerLevel level, RoomTheme theme, RandomSource random, int ceiling) {
+        if (theme.hanging().isEmpty()) {
+            return;
+        }
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        for (int dx = -half; dx <= half; dx++) {
+            for (int dz = -half; dz <= half; dz++) {
+                if (onLine(dx) || onLine(dz) || random.nextInt(100) >= 4) {
+                    continue;
+                }
+                if (level.getBlockState(pos.set(center.getX() + dx, ceiling - 1, center.getZ() + dz)).isAir()) {
+                    level.setBlock(pos, theme.hanging().get(random.nextInt(theme.hanging().size())), FLAGS);
+                }
+            }
+        }
+    }
+
+    private static Block pick(List<Block> blocks, RandomSource random) {
+        return blocks.get(random.nextInt(blocks.size()));
+    }
+
+    /**
+     * Des emplacements libres pour des jarres : contre les murs nord, est et
+     * ouest, loin de l'entree et les unes des autres.
+     */
+    List<BlockPos> jarSpots(ServerLevel level, RandomSource random, int count) {
+        List<BlockPos> spots = new ArrayList<>();
+        for (int attempt = 0; attempt < 80 && spots.size() < count; attempt++) {
+            int along = -half + 2 + random.nextInt(2 * half - 3);
+            int side = random.nextInt(3);
+            if (side == 2 && Math.abs(along) <= 3) {
+                continue;
+            }
+            BlockPos spot = switch (side) {
+                case 0 -> new BlockPos(center.getX() - half + 1, center.getY(), center.getZ() + along);
+                case 1 -> new BlockPos(center.getX() + half - 1, center.getY(), center.getZ() + along);
+                default -> new BlockPos(center.getX() + along, center.getY(), center.getZ() - half + 1);
+            };
+            if (!level.getBlockState(spot).isAir() || !level.getBlockState(spot.above()).isAir()) {
+                continue;
+            }
+            boolean crowded = false;
+            for (BlockPos other : spots) {
+                crowded |= other.distManhattan(spot) < 3;
+            }
+            if (!crowded) {
+                spots.add(spot);
+            }
+        }
+        return spots;
     }
 
     /** Les boutons de l'enigme, sur la face interieure des murs est, ouest et sud. */
@@ -226,8 +505,9 @@ final class DungeonRoom {
             return;
         }
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        for (int x = center.getX() - half - 1; x <= center.getX() + half + 1; x++) {
-            for (int z = center.getZ() - half - 1; z <= center.getZ() + half + 1; z++) {
+        int reach = half + 1 + MARGIN;
+        for (int x = center.getX() - reach; x <= center.getX() + reach; x++) {
+            for (int z = center.getZ() - reach; z <= center.getZ() + reach; z++) {
                 for (int y = center.getY() - 1; y <= center.getY() + height; y++) {
                     pos.set(x, y, z);
                     if (!level.getBlockState(pos).isAir()) {

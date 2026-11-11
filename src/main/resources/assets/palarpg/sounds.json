@@ -1,4 +1,39 @@
 {
+ "dungeon.jar.break": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/dungeon_jar_break"
+   }
+  ]
+ },
+ "dungeon.loot.common": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/dungeon_loot_common"
+   }
+  ]
+ },
+ "dungeon.loot.legendary": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/dungeon_loot_legendary"
+   }
+  ]
+ },
+ "dungeon.loot.rare": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/dungeon_loot_rare"
+   }
+  ]
+ },
+ "dungeon.loot.spawn": {
+  "sounds": [
+   {
+    "name": "palarpg:entity/dungeon_loot_spawn"
+   }
+  ]
+ },
  "entity.manelios_assassin.atk1": {
   "sounds": [
    {

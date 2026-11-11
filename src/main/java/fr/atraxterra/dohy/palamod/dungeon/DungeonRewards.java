@@ -269,6 +269,15 @@ final class DungeonRewards {
         return Optional.empty();
     }
 
+    /** Une jarre brisee : un tirage de la reserve du donjon, une fois sur quatre. */
+    static List<ItemStack> jar(ServerLevel level, RandomSource random, Dungeon dungeon, int palier) {
+        List<ItemStack> loot = new ArrayList<>();
+        if (random.nextInt(4) == 0) {
+            draw(pool(dungeon), level, random, palier).ifPresent(loot::add);
+        }
+        return loot;
+    }
+
     /** Le contenu du coffre d'une salle, tire pour un joueur. */
     static List<ItemStack> chest(ServerLevel level, RandomSource random, Dungeon dungeon, int palier, boolean boss) {
         List<ItemStack> loot = new ArrayList<>();

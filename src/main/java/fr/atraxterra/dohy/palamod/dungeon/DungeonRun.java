@@ -120,7 +120,10 @@ final class DungeonRun {
     private int waves;
     private int nextWaveIn;
 
-    BlockPos chest;
+    /** Le coffre de la salle finie ({@link DungeonProps}), ou {@code null}. */
+    Mob chest;
+    /** Les jarres cassees, et le tick ou leurs eclats disparaissent. */
+    private final Map<Entity, Integer> brokenJars = new HashMap<>();
     final Set<UUID> looted = new HashSet<>();
     private int buttonsTotal;
     List<Boost> boostOptions = List.of();
@@ -255,17 +258,20 @@ final class DungeonRun {
         doors = List.of();
         chest = null;
         looted.clear();
+        brokenJars.clear();
         boostOptions = List.of();
         boosted.clear();
         merchant = null;
         switch (room.type) {
             case COMBAT -> {
+                placeJars(3 + random.nextInt(3));
                 phase = Phase.FIGHT;
                 wave = 0;
                 waves = palier >= 50 ? 3 : 2;
                 nextWaveIn = 30;
             }
             case PUZZLE -> {
+                placeJars(2 + random.nextInt(3));
                 phase = Phase.PUZZLE;
                 room.placeButtons(level, dungeon.palette(), random, 3 + random.nextInt(3));
                 buttonsTotal = room.buttons.size();
@@ -284,6 +290,7 @@ final class DungeonRun {
                 openDoors();
             }
             case BOSS -> {
+                placeJars(4 + random.nextInt(3));
                 phase = Phase.FIGHT;
                 spawnBosses();
             }
@@ -297,6 +304,9 @@ final class DungeonRun {
             return;
         }
         ticks++;
+        if (!brokenJars.isEmpty()) {
+            sweepJars();
+        }
         if (ticks % 20 == 0) {
             keepInside();
         }
@@ -700,7 +710,13 @@ final class DungeonRun {
         villager.setPersistenceRequired();
         villager.addTag(TAG);
         villager.addTag(MERCHANT_TAG);
-        villager.setCustomName(Component.literal("Marchande").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
+        // Les deux marchands de PalaRPG, au hasard : le villageois n'est plus que leur support.
+        boolean mammon = random.nextBoolean();
+        villager.setSilent(true);
+        villager.setData(PalaDungeon.SKIN.get(),
+                new RpgSkin(mammon ? "merchant_mammon" : "merchant_mephisto", "default", 1.0f, "spawn>idle"));
+        villager.setCustomName(Component.literal(mammon ? "Mammon" : "Mephisto")
+                .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
         villager.setCustomNameVisible(true);
         level.addFreshEntity(villager);
         merchant = villager;
@@ -723,10 +739,15 @@ final class DungeonRun {
             }
         }
         if (room.type.loot()) {
-            chest = room.chestPos();
-            level.setBlock(chest, Blocks.CHEST.defaultBlockState(), 3);
-            level.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, chest.getX() + 0.5d, chest.getY() + 1.0d,
-                    chest.getZ() + 0.5d, 30, 0.4d, 0.6d, 0.4d, 0.2d);
+            BlockPos at = room.chestPos();
+            chest = DungeonProps.spawn(level, at.getX() + 0.5d, at.getY(), at.getZ() + 0.5d, 180.0f,
+                    new RpgSkin("dungeon_chest", chestTier(), 1.0f, "idle"), 1.25d, DungeonProps.CHEST_TAG);
+            if (chest != null) {
+                spawned.add(chest);
+                DungeonProps.sound(level, chest, "dungeon.loot.spawn", 1.0f);
+            }
+            level.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, at.getX() + 0.5d, at.getY() + 1.0d,
+                    at.getZ() + 0.5d, 30, 0.4d, 0.6d, 0.4d, 0.2d);
             broadcast(ChatFormatting.GOLD, "chest");
         }
         level.playSound(null, room.center, SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.8f, 1.0f);
@@ -752,9 +773,59 @@ final class DungeonRun {
         return List.copyOf(pool.subList(0, 1 + random.nextInt(3)));
     }
 
+    // -- Jarres -------------------------------------------------------------------
+
+    /** Des jarres le long des murs : a casser pour un petit butin. */
+    private void placeJars(int count) {
+        for (BlockPos spot : room.jarSpots(level, random, count)) {
+            Mob jar = DungeonProps.spawn(level, spot.getX() + 0.5d, spot.getY(), spot.getZ() + 0.5d,
+                    random.nextInt(4) * 90.0f, new RpgSkin("dungeon_jar", "default", 1.0f, "idle"), 0.95d,
+                    DungeonProps.JAR_TAG);
+            if (jar != null) {
+                spawned.add(jar);
+            }
+        }
+    }
+
+    /** Un joueur frappe une jarre : elle se brise, et une fois sur quatre lache un tirage du donjon. */
+    void breakJar(ServerPlayer player, Entity jar) {
+        if (!members.contains(player.getUUID()) || brokenJars.containsKey(jar) || jar.isRemoved()) {
+            return;
+        }
+        brokenJars.put(jar, ticks + 50);
+        DungeonProps.pose(jar, "breaking>destroyed");
+        DungeonProps.sound(level, jar, "dungeon.jar.break", 0.9f);
+        List<ItemStack> loot = DungeonRewards.jar(level, random, dungeon, palier);
+        if (!loot.isEmpty()) {
+            DungeonManager.message(player, ChatFormatting.GOLD, "jar_loot", describe(loot));
+            addToBag(player, loot);
+        }
+    }
+
+    private void sweepJars() {
+        brokenJars.entrySet().removeIf(entry -> {
+            if (ticks < entry.getValue()) {
+                return false;
+            }
+            entry.getKey().discard();
+            return true;
+        });
+    }
+
+    /**
+     * La couleur du coffre : legendaire pour un boss, rare pour un mini-boss
+     * ou une enigme, commun sinon. Elle ne change pas son contenu.
+     */
+    private String chestTier() {
+        if (room.type == RoomType.BOSS) {
+            return palier % 10 == 0 ? "legendary" : "rare";
+        }
+        return room.type == RoomType.PUZZLE ? "rare" : "default";
+    }
+
     /** Le coffre de la salle, pour un joueur : son butin, une fois. */
-    boolean openChest(ServerPlayer player, BlockPos pos) {
-        if (chest == null || !chest.equals(pos)) {
+    boolean openChest(ServerPlayer player, Entity target) {
+        if (chest == null || chest != target) {
             return false;
         }
         if (!members.contains(player.getUUID())) {
@@ -765,7 +836,12 @@ final class DungeonRun {
             return true;
         }
         List<ItemStack> loot = DungeonRewards.chest(level, random, dungeon, palier, room.type == RoomType.BOSS);
-        level.playSound(null, pos, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.6f, 1.0f);
+        if (looted.size() == 1) {
+            // Le premier l'ouvre ; il reste ouvert pour les suivants.
+            DungeonProps.pose(chest, "open>open_idle");
+        }
+        String tier = RpgSkins.skin(chest).variant();
+        DungeonProps.sound(level, chest, "dungeon.loot." + (tier.equals("default") ? "common" : tier), 1.0f);
         DungeonManager.message(player, ChatFormatting.GOLD, "chest_loot", describe(loot));
         addToBag(player, loot);
         return true;
@@ -1044,6 +1120,15 @@ final class DungeonRun {
 
     boolean isMerchant(Entity entity) {
         return merchant != null && merchant == entity;
+    }
+
+    /**
+     * Le marchand salue qui lui parle. La pose change de nom a chaque fois —
+     * la meme, c'est ne rien changer, et les clients ne la rejoueraient pas.
+     */
+    void greet(Entity entity) {
+        String pose = RpgSkins.skin(entity).pose();
+        DungeonProps.pose(entity, pose.equals("interact>idle") ? "interact>idle>idle" : "interact>idle");
     }
 
     String leaderName() {

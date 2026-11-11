@@ -644,6 +644,7 @@
   "message.palamod.dungeon.door": "%s opens the door: %s",
   "message.palamod.dungeon.grade": "Grade %s: damage %s%%, survival %s%%, involvement %s%%.",
   "message.palamod.dungeon.grade_chest": "Grade chest: %s",
+  "message.palamod.dungeon.jar_loot": "Jar: %s",
   "message.palamod.dungeon.locked": "You must clear floor %s first.",
   "message.palamod.dungeon.member_left": "%s left the dungeon.",
   "message.palamod.dungeon.merchant": "A merchant is waiting: right-click to trade.",
