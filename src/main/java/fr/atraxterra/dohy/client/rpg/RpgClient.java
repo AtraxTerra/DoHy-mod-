@@ -52,8 +52,10 @@ public final class RpgClient {
     public static void onReloadListeners(AddClientReloadListenersEvent event) {
         event.addListener(Identifier.fromNamespaceAndPath("palarpg", "models"),
                 (ResourceManagerReloadListener) manager -> {
-                    RpgModels.clear();
-                    ANIMATORS.clear();
+                    synchronized (ANIMATORS) {
+                        RpgModels.clear();
+                        ANIMATORS.clear();
+                    }
                 });
     }
 
@@ -63,17 +65,25 @@ public final class RpgClient {
         }, RpgClient::extract);
     }
 
+    /**
+     * Sous verrou : certains moteurs de rendu (Crankshaft) extraient les etats
+     * des creatures sur plusieurs fils a la fois, et ni le cache des modeles ni
+     * la table des animateurs ne le supportent.
+     */
     private static void extract(LivingEntity entity, LivingEntityRenderState state) {
         RpgSkin skin = entity.getExistingDataOrNull(PalaDungeon.SKIN.get());
         if (skin == null || skin.isNone()) {
             return;
         }
-        RpgModels.Entry entry = RpgModels.get(skin.model());
-        if (entry == null) {
-            return;
+        synchronized (ANIMATORS) {
+            RpgModels.Entry entry = RpgModels.get(skin.model());
+            if (entry == null) {
+                return;
+            }
+            RpgAnimator animator = ANIMATORS.computeIfAbsent(entity, key -> new RpgAnimator());
+            state.setRenderData(FRAME,
+                    animator.frame(entity, skin, entry, state.partialTick, state.walkAnimationSpeed));
         }
-        RpgAnimator animator = ANIMATORS.computeIfAbsent(entity, key -> new RpgAnimator());
-        state.setRenderData(FRAME, animator.frame(entity, skin, entry, state.partialTick, state.walkAnimationSpeed));
     }
 
     @SubscribeEvent
