@@ -155,7 +155,7 @@ public final class RpgModels {
                 attacks.add(clip);
             }
         }
-        return new Entry(new RpgEntityModel(built.root()), built.height(), textures,
+        return new Entry(new RpgEntityModel(built), built.height(), textures,
                 clip(animations, role(roles, "idle"), built, true),
                 clip(animations, role(roles, "walk"), built, true),
                 attacks,

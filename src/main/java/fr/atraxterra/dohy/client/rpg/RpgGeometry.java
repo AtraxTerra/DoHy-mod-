@@ -40,8 +40,16 @@ final class RpgGeometry {
     private static final Set<Direction> ALL = EnumSet.allOf(Direction.class);
     private static final float RADIANS = (float) Math.PI / 180.0f;
 
-    /** Le modele monte : sa racine, le nom de ses os, sa hauteur au repos en blocs. */
-    record Built(ModelPart root, Set<String> bones, float height) {
+    /**
+     * Une piece et ce qu'elle porte, gardes a part : {@link ModelPart} ne rend
+     * ni ses boites ni ses enfants, et {@link RpgEntityModel} les dessine
+     * lui-meme.
+     */
+    record Node(ModelPart part, ModelPart.Cube[] cubes, Node[] children) {
+    }
+
+    /** Le modele monte : sa racine, son arbre, le nom de ses os, sa hauteur au repos en blocs. */
+    record Built(ModelPart root, Node tree, Set<String> bones, float height) {
     }
 
     private final float textureWidth;
@@ -75,18 +83,24 @@ final class RpgGeometry {
             }
         }
         Map<String, ModelPart> children = new LinkedHashMap<>();
+        List<Node> nodes = new ArrayList<>();
         for (JsonObject bone : roots) {
-            children.put(GsonHelper.getAsString(bone, "name"), builder.bone(bone, null));
+            Node node = builder.bone(bone, null);
+            nodes.add(node);
+            children.put(GsonHelper.getAsString(bone, "name"), node.part());
         }
-        return new Built(new ModelPart(List.of(), children), builder.bones, builder.top / 16.0f);
+        ModelPart root = new ModelPart(List.of(), children);
+        return new Built(root, new Node(root, new ModelPart.Cube[0], nodes.toArray(Node[]::new)), builder.bones,
+                builder.top / 16.0f);
     }
 
-    private ModelPart bone(JsonObject bone, float[] parentPivot) {
+    private Node bone(JsonObject bone, float[] parentPivot) {
         String name = GsonHelper.getAsString(bone, "name");
         float[] pivot = vector(bone, "pivot");
         float[] rotation = vector(bone, "rotation");
         List<ModelPart.Cube> cubes = new ArrayList<>();
         Map<String, ModelPart> children = new LinkedHashMap<>();
+        List<Node> nodes = new ArrayList<>();
         int index = 0;
         for (JsonElement element : GsonHelper.getAsJsonArray(bone, "cubes", new JsonArray())) {
             JsonObject json = element.getAsJsonObject();
@@ -104,12 +118,15 @@ final class RpgGeometry {
                     pose(part, PartPose.offsetAndRotation(center[0] - pivot[0], -(center[1] - pivot[1]),
                             center[2] - pivot[2], turn[0] * RADIANS, turn[1] * RADIANS, turn[2] * RADIANS));
                     children.put(name + "#" + index, part);
+                    nodes.add(new Node(part, new ModelPart.Cube[] {cube}, new Node[0]));
                 }
             }
             index++;
         }
         for (JsonObject child : childrenOf.getOrDefault(name, List.of())) {
-            children.put(GsonHelper.getAsString(child, "name"), bone(child, pivot));
+            Node node = bone(child, pivot);
+            nodes.add(node);
+            children.put(GsonHelper.getAsString(child, "name"), node.part());
         }
         ModelPart part = new ModelPart(cubes, children);
         float x = parentPivot == null ? pivot[0] : pivot[0] - parentPivot[0];
@@ -117,7 +134,7 @@ final class RpgGeometry {
         float z = parentPivot == null ? pivot[2] : pivot[2] - parentPivot[2];
         pose(part, PartPose.offsetAndRotation(x, y, z,
                 rotation[0] * RADIANS, rotation[1] * RADIANS, rotation[2] * RADIANS));
-        return part;
+        return new Node(part, cubes.toArray(ModelPart.Cube[]::new), nodes.toArray(Node[]::new));
     }
 
     private static void pose(ModelPart part, PartPose pose) {

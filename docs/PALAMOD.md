@@ -2444,6 +2444,15 @@ Sans Flywheel, la classe ne fait rien. Vérifié avec Crankshaft 1.6.0 chargé (
 l'adaptation, six zombies ; avec, les six modèles). L'extraction des états de rendu passe sous
 verrou, Crankshaft la faisant sur plusieurs fils.
 
+**Avec Sodium.** Les modèles de Paladium donnent une zone de texture à chaque face ; on les pose
+en remplaçant les faces des boîtes vanilla (`Cube.polygons`). Sodium garde, à la construction de
+chaque boîte, sa propre copie dépliée « en croix » et dessine celle-là : les faces remplacées
+étaient ignorées et les textures sortaient mélangées. `RpgEntityModel` écrit donc ses sommets
+lui-même (`draw`, par `submitCustomGeometry`), avec le même calcul que `Cube.compile`, et ne
+dépend plus de qui accélère le rendu des boîtes. Vérifié avec Sodium 0.9.2 et Crankshaft chargés
+ensemble (captures : ancien rendu, textures mélangées ; nouveau, correctes). **Perdu au passage** :
+le contour d'un monstre de donjon sous l'effet Surbrillance, que `submitModel` dessinait.
+
 ## 30. Donjons : salles décorées, coffre, jarres, marchands
 
 Demandé le 2026-11-11 : des donjons plus beaux, avec les ressources de Paladium. Le wiki ne
