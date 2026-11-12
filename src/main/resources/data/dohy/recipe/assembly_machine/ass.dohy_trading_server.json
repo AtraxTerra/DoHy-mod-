@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "hbm"
+    }
+  ],
+  "type": "hbm:assembly_machine",
+  "duration": 600,
+  "input_items": [
+    {
+      "count": 8,
+      "ingredient": "#c:plates/steel"
+    },
+    {
+      "count": 4,
+      "ingredient": "hbm:circuit_advanced"
+    },
+    {
+      "count": 2,
+      "ingredient": "hbm:crt_display"
+    },
+    {
+      "ingredient": "hbm:motor"
+    },
+    {
+      "count": 4,
+      "ingredient": "palamod:paladium_ingot"
+    }
+  ],
+  "order": 60000,
+  "output_items": [
+    "dohy:trading_server"
+  ],
+  "power": 500
+}

@@ -38,6 +38,7 @@ public final class Menus {
                 FactionTreeMenus.Tree.INSTANCE, FactionTreeMenus.Branch.INSTANCE, ChestExplorerMenu.INSTANCE,
                 EnemyBaseMenu.INSTANCE, ReserveMenu.INSTANCE, FactionEventMenu.INSTANCE,
                 TrixiumMenu.INSTANCE, AchievementMenu.INSTANCE,
+                fr.atraxterra.dohy.tech.TradingServerMenu.INSTANCE,
                 fr.atraxterra.dohy.auction.AuctionController.INSTANCE);
     }
 }

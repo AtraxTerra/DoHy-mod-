@@ -1570,6 +1570,9 @@ def main():
     fr["block.%s.paladium_hopper" % NS] = "Entonnoir en paladium"
     en["block.%s.paladium_hopper" % NS] = "Paladium Hopper"
     tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:paladium_hopper" % NS])
+    # Les blocs propres a DoHy (tools/dohy_assets.py) : ce fichier de tag est ecrit ici,
+    # un second generateur ne peut pas y ajouter sa ligne sans que celui-ci l'efface.
+    tag("minecraft/tags/block/mineable/pickaxe.json", ["dohy:trading_server"])
 
     # Les coffres en amethyste et en titane. L'original les dessine avec le
     # ModelChest de 1.7.10 (TileEntityModdedChestRenderer) ; le meme modele en

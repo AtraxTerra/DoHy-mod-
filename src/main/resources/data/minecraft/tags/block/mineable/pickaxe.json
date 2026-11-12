@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "dohy:trading_server",
     "palamod:amethyst_block",
     "palamod:amethyst_chest",
     "palamod:amethyst_ore",
