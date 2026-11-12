@@ -36,6 +36,8 @@ public final class SpawnApi {
 
     /** Blocs poses par tick pendant la construction. */
     private static final int PER_TICK = 5000;
+    /** Tranches de x videes par tick avant une reconstruction : environ 50 000 blocs lus chacune. */
+    private static final int CLEAR_SLICES = 6;
 
     private static Job job;
 
@@ -147,7 +149,7 @@ public final class SpawnApi {
         private final ObjectIterator<Long2ObjectMap.Entry<BlockState>> placing;
         private final List<BlockPos> shaped = new ArrayList<>();
         private boolean clearing;
-        private int clearX = -SpawnBuilder.CLEAR_XZ;
+        private int clearX = -SpawnBuilder.CLEAR_X;
         private int shapeIndex;
         private boolean labelled;
 
@@ -202,22 +204,23 @@ public final class SpawnApi {
         }
 
         /**
-         * Vide le volume bati de l'ancienne version, une tranche de x par tick :
-         * ce qui n'est pas dans le nouveau plan redevient de l'air. La roche
-         * autour n'est pas touchee.
+         * Vide tout le volume ou une version du spawn a pu batir, quelques
+         * tranches de x par tick : ce qui n'est pas dans le nouveau plan
+         * redevient de l'air, pitons de l'ancien dessin compris.
          */
         private void clear() {
-            for (int slice = 0; slice < 4 && clearX <= SpawnBuilder.CLEAR_XZ; slice++, clearX++) {
-                for (int z = -SpawnBuilder.CLEAR_XZ; z <= SpawnBuilder.PAD_Z + 16; z++) {
+            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+            for (int slice = 0; slice < CLEAR_SLICES && clearX <= SpawnBuilder.CLEAR_X; slice++, clearX++) {
+                for (int z = SpawnBuilder.CLEAR_Z_MIN; z <= SpawnBuilder.CLEAR_Z_MAX; z++) {
                     for (int y = SpawnBuilder.CLEAR_Y_MIN; y <= SpawnBuilder.CLEAR_Y_MAX; y++) {
-                        BlockPos pos = new BlockPos(clearX, y, z);
-                        if (!plan.blocks().containsKey(pos.asLong()) && !level.getBlockState(pos).isAir()) {
+                        pos.set(clearX, y, z);
+                        if (!level.getBlockState(pos).isAir() && !plan.blocks().containsKey(pos.asLong())) {
                             level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
                         }
                     }
                 }
             }
-            if (clearX > SpawnBuilder.CLEAR_XZ) {
+            if (clearX > SpawnBuilder.CLEAR_X) {
                 clearing = false;
             }
         }

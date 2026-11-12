@@ -216,16 +216,25 @@ passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, c
 
 - Un **massif rocheux flottant** au-dessus des nuages, entouré de treize pitons ; des mâts
   d'éclairage sur certains.
-- La **plateforme d'arrivée**, ronde, sur son propre piton, reliée à la place par un **pont** à
+- La **plateforme d'arrivée**, ronde, sur son propre piton, reliée au parvis par un **pont** à
   portiques d'acier.
-- La **place**, une dalle de béton à pans coupés, avec ses lampes de sol et la borne du retour.
-- Le **hall des box** : six travées entre des voiles de béton, sous un toit en porte-à-faux fendu
-  de puits de jour, adossé à une **tour** en gradins. Une box par travée (améthyste, paladium,
-  endium, saharia, trixium, halloween) : un clic avec sa clé l'ouvre, comme une box posée chez soi.
-- Deux **pavillons de bornes** : COMMERCE (shop, boutique, marché) et CARRIÈRE (banque, contrats,
-  musée). Une borne ouvre le même écran que le menu.
-- Deux **cheminées** qui fument, des cuves et leurs tuyaux.
-- Le ciel et l'heure sont ceux de l'Overworld ; les nuages passent sous la place.
+- Le **parvis**, une dalle ovale de béton : une allée entre deux jardinières, des lampes de sol.
+- Un seul **bâtiment**, brutaliste, en pierre : trois **gradins** aux bouts arrondis, en retrait
+  l'un sur l'autre, cernés de bandeaux vitrés et de **terrasses** plantées ; au-dessus, une **masse
+  haute** rayée d'ailettes ; à l'est, un **anneau** en porte-à-faux sur pilotis, un épicéa en son
+  centre ; à l'ouest, un **pylône** relié aux gradins par trois passerelles superposées, avec une
+  échelle jusqu'à son belvédère.
+- Dedans, tout en béton : une **nef** basse à plafond à caissons, puis l'**atrium** — un puits de
+  46 blocs sous une verrière, une lame de lumière sur toute sa hauteur. Les **six box** y sont, dans
+  des niches à leur couleur (améthyste, saharia, paladium à l'ouest ; halloween, trixium, endium à
+  l'est) : un clic avec sa clé ouvre une box, comme chez soi.
+- De part et d'autre de l'atrium, deux **travées de bornes** : COMMERCE à l'est (shop, boutique,
+  marché), CARRIÈRE à l'ouest (banque, contrats, musée). Une borne ouvre le même écran que le menu.
+  La borne RETOUR est à côté de l'entrée (et sur la plateforme d'arrivée).
+- Deux **étages de galeries** regardent l'atrium ; des escaliers de pierre y montent depuis chaque
+  travée. Chaque galerie ouvre sur sa terrasse, sur l'anneau et sur les passerelles.
+- Derrière le bâtiment, deux **cheminées** qui fument, des cuves et leurs tuyaux.
+- Le ciel et l'heure sont ceux de l'Overworld ; les nuages passent sous le parvis.
 
 ### Les règles
 
@@ -237,7 +246,8 @@ passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, c
 
 - `spawn/DoHySpawn` (dimension, borne, étiquette, pièces jointes), `SpawnApi` (aller, revenir,
   construire par tranches de 5 000 blocs par tick), `SpawnBuilder` (le dessin : tout est calculé,
-  aucun fichier de structure ; `VERSION` à augmenter pour faire reconstruire), `SpawnEvents`
+  aucun fichier de structure ; `VERSION` à augmenter pour faire reconstruire — un spawn d'une autre
+  version est d'abord vidé, pitons compris, puis rebâti à la visite suivante), `SpawnEvents`
   (règles, `/spawn`), `SpawnTerminalBlock` (`dohy:terminal`, une propriété `kind` par service),
   `HologramBlock` (`dohy:hologram`, les textes flottants).
 - `data/dohy/dimension/spawn.json`, `dimension_type/spawn.json`, `worldgen/biome/spawn.json`,
