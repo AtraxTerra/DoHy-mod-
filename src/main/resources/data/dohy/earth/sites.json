@@ -4,7 +4,7 @@
   "sites": [
     {
       "id": "chernobyl",
-      "name": "Zone d'exclusion de Tchernobyl",
+      "name": "Tchernobyl",
       "kind": "irradiated",
       "latitude": 51.196,
       "longitude": 29.919,
@@ -15,7 +15,7 @@
     },
     {
       "id": "fukushima",
-      "name": "Zone d'exclusion de Fukushima",
+      "name": "Fukushima",
       "kind": "irradiated",
       "latitude": 37.381,
       "longitude": 140.817,
@@ -26,7 +26,7 @@
     },
     {
       "id": "baikonur",
-      "name": "Cosmodrome de Baikonour",
+      "name": "Baikonour",
       "kind": "launch",
       "latitude": 45.937,
       "longitude": 63.235,
@@ -42,7 +42,7 @@
     },
     {
       "id": "kourou",
-      "name": "Centre spatial guyanais",
+      "name": "Kourou",
       "kind": "launch",
       "latitude": 5.184,
       "longitude": -52.789,
@@ -50,7 +50,7 @@
     },
     {
       "id": "jiuquan",
-      "name": "Centre de lancement de Jiuquan",
+      "name": "Jiuquan",
       "kind": "launch",
       "latitude": 40.962,
       "longitude": 100.278,

@@ -145,8 +145,9 @@ public final class EarthEvents {
             return;
         }
         boolean radiation = site.site().irradiated();
+        // un titre court : un nom long deborde de l'ecran
         String detail = radiation
-                ? (ModList.get().isLoaded("hbm") ? "Zone irradiee : combinaison et RadAway conseillees"
+                ? (ModList.get().isLoaded("hbm") ? "Zone d'exclusion : radiation, combinaison conseillee"
                 : "Zone d'exclusion")
                 : "Base de lancement : les fusees decollent d'ici";
         player.connection.send(new ClientboundSetTitlesAnimationPacket(8, 60, 16));
@@ -154,7 +155,7 @@ public final class EarthEvents {
                 .withStyle(radiation ? ChatFormatting.RED : ChatFormatting.YELLOW)));
         player.connection.send(new ClientboundSetSubtitleTextPacket(
                 Component.literal(detail).withStyle(ChatFormatting.GRAY)));
-        player.sendSystemMessage(Component.literal(site.site().name() + " : " + detail + ".")
+        player.sendSystemMessage(Component.literal(site.site().name() + " - " + detail + ".")
                 .withStyle(radiation ? ChatFormatting.RED : ChatFormatting.YELLOW));
         // le titre du lieu passe devant celui du pays de la meme seconde
         PENDING.remove(player.getUUID());

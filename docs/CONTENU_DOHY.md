@@ -347,8 +347,8 @@ Deux zones d'exclusion, données par leur latitude et leur longitude (`data/dohy
 - **Les minerais rares** : ceux d'un cratère de Sellafield, qu'on ne trouve nulle part ailleurs sur
   la Terre — schrabidium, radgem, uranium brûlé, diamant et émeraude de Sellafield (gisements à
   champ `sites`).
-- **Un message** à l'entrée : « Zone d'exclusion de Tchernobyl — Zone irradiée : combinaison et
-  RadAway conseillées ».
+- **Un message** à l'entrée : « Tchernobyl — Zone d'exclusion : radiation, combinaison
+  conseillée ».
 - Sans NTM NEXT, la zone n'est qu'un décor (les biomes et le message) : ni radiation, ni corium,
   ni minerais de Sellafield.
 
@@ -362,8 +362,7 @@ Baïkonour, Cap Canaveral, Kourou (Centre spatial guyanais) et Jiuquan, 48 blocs
   distance et sa direction. Sur la Lune ou Mars, rien ne change.
 - Au centre de chaque base, une **aire de lancement** : un chunk à plat, en béton, cerclé de jaune,
   dégagé au-dessus, et le nom de la base. On s'y installe : il faut y construire l'usine à fusées.
-- Un message à l'entrée : « Cosmodrome de Baïkonour — Base de lancement : les fusées décollent
-  d'ici ».
+- Un message à l'entrée : « Baïkonour — Base de lancement : les fusées décollent d'ici ».
 
 **Les centres.** Une carte de la Terre met 1,6 km dans un bloc : un chunk fait 25 km, et la
 centrale de Tchernobyl tombe dans le chunk de la Pripiat, Cap Canaveral et Fukushima dans la mer.

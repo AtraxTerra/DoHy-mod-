@@ -76,12 +76,12 @@ def site(name, label, kind, latitude, longitude, radius, core=0):
 # (au plus 37 km) :
 # la centrale de Tchernobyl tombe dans le chunk de la Pripiat, Cap Canaveral et Fukushima dans la mer.
 SITES = [
-    site("chernobyl", "Zone d'exclusion de Tchernobyl", "irradiated", 51.196, 29.919, 40, 12),
-    site("fukushima", "Zone d'exclusion de Fukushima", "irradiated", 37.381, 140.817, 28, 8),
-    site("baikonur", "Cosmodrome de Baikonour", "launch", 45.937, 63.235, 48),
+    site("chernobyl", "Tchernobyl", "irradiated", 51.196, 29.919, 40, 12),
+    site("fukushima", "Fukushima", "irradiated", 37.381, 140.817, 28, 8),
+    site("baikonur", "Baikonour", "launch", 45.937, 63.235, 48),
     site("canaveral", "Cap Canaveral", "launch", 28.195, -80.747, 48),
-    site("kourou", "Centre spatial guyanais", "launch", 5.184, -52.789, 48),
-    site("jiuquan", "Centre de lancement de Jiuquan", "launch", 40.962, 100.278, 48),
+    site("kourou", "Kourou", "launch", 5.184, -52.789, 48),
+    site("jiuquan", "Jiuquan", "launch", 40.962, 100.278, 48),
 ]
 
 LAUNCH_BLOCKS = ["hbmspace:launch_pad_rocket", "hbmspace:transporter_rocket",
