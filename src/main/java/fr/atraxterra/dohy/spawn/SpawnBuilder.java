@@ -46,9 +46,9 @@ final class SpawnBuilder {
     /** En dessous, un joueur est tombe : il est remis sur la plateforme. */
     static final int VOID_Y = 140;
     /** Le volume bati, vide avant une reconstruction : x et z de part et d'autre, puis y. */
-    static final int CLEAR_XZ = 46;
+    static final int CLEAR_XZ = 54;
     static final int CLEAR_Y_MIN = 197;
-    static final int CLEAR_Y_MAX = 264;
+    static final int CLEAR_Y_MAX = 282;
 
     /** Une etiquette a poser : ou, quoi, de quelle couleur, a quelle taille. */
     record Label(BlockPos pos, String text, int color, float scale) {
@@ -195,14 +195,15 @@ final class SpawnBuilder {
 
     /** La roche d'abord : tout le reste se pose dessus et la remplace ou elle gene. */
     private void rocks() {
-        spire(0, 0, 122, FLOOR - 4, 20.0d, 41.0d, 1);
+        spire(0, 0, 118, FLOOR - 4, 24.0d, 48.0d, 1);
         spire(0, PAD_Z, 128, FLOOR - 3, 8.0d, 15.5d, 2);
         int[][] ring = {
                 // x, z, sommet, ventre, couronne, mat (1) ou non (0)
-                {-74, -52, 252, 15, 8, 1}, {78, -46, 238, 13, 7, 0}, {-98, 22, 217, 12, 7, 1},
-                {100, 30, 262, 16, 9, 1}, {-62, 88, 230, 12, 7, 0}, {66, 98, 207, 11, 7, 1},
-                {0, -108, 276, 17, 10, 0}, {-118, -72, 199, 11, 6, 0}, {120, -82, 224, 12, 7, 1},
-                {42, -90, 242, 10, 6, 0}, {-36, -94, 214, 9, 6, 0},
+                {-58, -38, 246, 15, 8, 1}, {60, -34, 236, 14, 8, 0}, {-72, 18, 222, 13, 7, 1},
+                {74, 24, 258, 16, 9, 1}, {-52, 62, 232, 13, 7, 0}, {54, 70, 214, 12, 7, 1},
+                {0, -84, 286, 19, 11, 0}, {-90, -62, 206, 12, 7, 0}, {92, -66, 228, 13, 8, 1},
+                {36, -74, 252, 11, 6, 0}, {-32, -76, 226, 10, 6, 0}, {-34, 106, 210, 10, 6, 1},
+                {36, 110, 226, 11, 7, 0},
         };
         int seed = 3;
         for (int[] rock : ring) {
@@ -281,6 +282,14 @@ final class SpawnBuilder {
                     lampPost(3 * side, FLOOR + 3, z, 2);
                 }
             }
+        }
+        // des portiques d'acier, un tous les huit blocs
+        for (int z = 38; z <= 62; z += 8) {
+            for (int side = -1; side <= 1; side += 2) {
+                fill(4 * side, FLOOR - 1, z, 4 * side, FLOOR + 6, z, steel);
+                put(2 * side, FLOOR + 6, z, lamp);
+            }
+            fill(-4, FLOOR + 7, z, 4, FLOOR + 7, z, steel);
         }
         // deux beches de beton sous le milieu du pont
         for (int side = -1; side <= 1; side += 2) {
@@ -361,13 +370,14 @@ final class SpawnBuilder {
 
     /**
      * Le hall des box : un mur, sept voiles de beton au sommet en biseau, six
-     * travees, un toit epais qui deborde. Chaque travee a sa box sur un socle,
-     * sa bande de couleur et son nom.
+     * travees, un toit epais qui deborde, fendu au-dessus de chaque box pour
+     * que le jour y tombe. Chaque travee a sa box sur un socle, sa bande de
+     * couleur, ses lampes et son nom.
      */
     private void hall() {
         int back = -30;
-        // le sol du hall
-        fill(-25, FLOOR, back, 25, FLOOR, -15, darkConcrete);
+        // le sol du hall, avec un joint sombre devant chaque voile
+        fill(-25, FLOOR, back, 25, FLOOR, -15, concrete);
         for (int x = -25; x <= 25; x++) {
             put(x, FLOOR, -15, ((x & 1) == 0) ? yellow : black);
         }
@@ -375,58 +385,116 @@ final class SpawnBuilder {
         for (int y = FLOOR + 1; y <= FLOOR + 15; y++) {
             fill(-25, y, back, 25, y, back + 2, (y - FLOOR) % 4 == 0 ? darkConcrete : concrete);
         }
-        // les voiles
+        // les voiles, une lampe encastree dans chacun
         for (int fin = -24; fin <= 24; fin += 8) {
             for (int z = back + 3; z <= -19; z++) {
                 int height = z <= -23 ? 14 : 14 - (z + 23) * 2;
                 fill(fin, FLOOR + 1, z, fin, FLOOR + height, z, concrete);
             }
+            fill(fin, FLOOR, back + 3, fin, FLOOR, -16, darkConcrete);
+            put(fin, FLOOR + 4, -25, flood);
+            put(fin, FLOOR + 4, -21, flood);
         }
-        // le toit, en porte-a-faux
-        fill(-27, FLOOR + 16, back - 1, 27, FLOOR + 18, -14, darkConcrete);
+        // le toit, en porte-a-faux : dessous clair, dessus sombre
+        fill(-27, FLOOR + 16, back - 1, 27, FLOOR + 16, -14, concrete);
+        fill(-27, FLOOR + 17, back - 1, 27, FLOOR + 18, -14, darkConcrete);
         fill(-27, FLOOR + 17, -14, 27, FLOOR + 17, -14, concrete);
-        fill(-27, FLOOR + 19, back - 1, 27, FLOOR + 19, -22, concrete);
+        // des caissons de ventilation sur le toit
+        for (int unit = -20; unit <= 20; unit += 10) {
+            if (unit == 0) {
+                continue;
+            }
+            fill(unit - 1, FLOOR + 19, -18, unit + 1, FLOOR + 20, -16, steel);
+            fill(unit - 1, FLOOR + 21, -18, unit + 1, FLOOR + 21, -16, bars);
+        }
         // les travees
         List<DeferredBlock<BoxBlock>> boxes = PalaBoxes.BOXES;
         for (int index = 0; index < boxes.size() && index < 6; index++) {
             int cx = -20 + index * 8;
             BoxBlock box = boxes.get(index).get();
             BoxKind kind = box.kind();
-            fill(cx - 2, FLOOR + 4, back + 2, cx + 2, FLOOR + 5, back + 2, accent(kind));
-            fill(cx - 3, FLOOR + 10, back + 2, cx + 3, FLOOR + 10, back + 2, accent(kind));
+            // le puits de jour au-dessus de la box
+            fill(cx - 1, FLOOR + 16, -27, cx + 1, FLOOR + 18, -21, Blocks.AIR.defaultBlockState());
+            // la bande de couleur, soulignee de lumiere
+            fill(cx - 2, FLOOR + 5, back + 2, cx + 2, FLOOR + 6, back + 2, accent(kind));
+            fill(cx - 2, FLOOR + 4, back + 2, cx + 2, FLOOR + 4, back + 2, flood);
+            fill(cx - 3, FLOOR + 11, back + 2, cx + 3, FLOOR + 11, back + 2, accent(kind));
+            // le socle, ses quatre lampes de sol
             fill(cx - 1, FLOOR + 1, -25, cx + 1, FLOOR + 1, -23, steel);
+            put(cx - 2, FLOOR, -22, lamp);
+            put(cx + 2, FLOOR, -22, lamp);
+            put(cx - 2, FLOOR, -26, lamp);
+            put(cx + 2, FLOOR, -26, lamp);
             put(cx, FLOOR + 2, -24, box.defaultBlockState().setValue(BoxBlock.FACING, Direction.SOUTH));
-            put(cx, FLOOR + 15, -21, lamp);
-            put(cx, FLOOR + 15, -17, lamp);
-            labels.add(new Label(new BlockPos(cx, FLOOR + 7, -24), "BOX " + kind.label().toUpperCase(),
-                    accentColor(kind), 1.6f));
+            put(cx - 3, FLOOR + 15, -18, lamp);
+            put(cx + 3, FLOOR + 15, -18, lamp);
+            labels.add(new Label(new BlockPos(cx, FLOOR + 8, -22), "BOX " + kind.label().toUpperCase(),
+                    accentColor(kind), 2.0f));
         }
-        labels.add(new Label(new BlockPos(0, FLOOR + 21, -15), "HALL DES BOX", 0xFFFFFF, 4.0f));
-        labels.add(new Label(new BlockPos(0, FLOOR + 3, -14), "Clic sur une box avec sa cle  -  les cles sont a la borne BOUTIQUE",
-                0xC9D2DA, 0.9f));
+        labels.add(new Label(new BlockPos(0, FLOOR + 21, -13), "HALL DES BOX", 0xFFFFFF, 4.0f));
+        labels.add(new Label(new BlockPos(0, FLOOR + 3, -13),
+                "Clic sur une box avec sa cle  -  les cles sont a la borne BOUTIQUE", 0xC9D2DA, 0.9f));
     }
 
-    /** La tour derriere le hall : une masse de beton fendue de lumiere, une antenne. */
-    private void tower() {
-        fill(-9, FLOOR - 3, -45, 9, FLOOR + 45, -32, concrete);
-        for (int y = FLOOR + 1; y <= FLOOR + 45; y += 5) {
-            fill(-9, y, -45, 9, y, -32, darkConcrete);
+    /** Un bloc de la tour : une masse de beton, ses joints, ses fentes de lumiere sur les quatre faces. */
+    private void mass(int x1, int z1, int x2, int z2, int y1, int y2, boolean slits) {
+        fill(x1, y1, z1, x2, y2, z2, concrete);
+        for (int y = y1; y <= y2; y += 5) {
+            fill(x1, y, z1, x2, y, z2, darkConcrete);
         }
-        for (int x = -6; x <= 6; x += 3) {
-            for (int y = FLOOR + 22; y <= FLOOR + 42; y++) {
-                if ((y - FLOOR) % 5 == 1) {
-                    continue;
+        if (!slits) {
+            return;
+        }
+        for (int y = y1 + 2; y <= y2 - 2; y++) {
+            if ((y - y1) % 5 == 0) {
+                continue;
+            }
+            // les fentes partent du milieu de chaque face, pour rester symetriques
+            int midX = (x1 + x2) / 2;
+            int midZ = (z1 + z2) / 2;
+            for (int offset = 0; midX + offset <= x2 - 2; offset += 3) {
+                for (int x : new int[] {midX + offset, midX - offset}) {
+                    put(x, y, z2, glass);
+                    put(x, y, z2 - 1, flood);
+                    put(x, y, z1, glass);
+                    put(x, y, z1 + 1, flood);
                 }
-                put(x, y, -32, glass);
-                put(x, y, -33, flood);
-                put(x, y, -45, glass);
-                put(x, y, -44, flood);
+            }
+            for (int offset = 0; midZ + offset <= z2 - 2; offset += 3) {
+                for (int z : new int[] {midZ + offset, midZ - offset}) {
+                    put(x1, y, z, glass);
+                    put(x1 + 1, y, z, flood);
+                    put(x2, y, z, glass);
+                    put(x2 - 1, y, z, flood);
+                }
             }
         }
-        fill(-11, FLOOR + 46, -47, 11, FLOOR + 47, -30, darkConcrete);
-        fill(0, FLOOR + 48, -38, 0, FLOOR + 62, -38, bars);
-        fill(-1, FLOOR + 48, -39, 1, FLOOR + 50, -37, steel);
-        put(0, FLOOR + 63, -38, red);
+    }
+
+    /**
+     * La tour derriere le hall : trois masses de beton en retrait l'une sur
+     * l'autre, separees par des dalles qui debordent, fendues de lumiere,
+     * coiffees d'une antenne.
+     */
+    private void tower() {
+        mass(-14, -46, 14, -32, FLOOR - 3, FLOOR + 24, false);
+        fill(-17, FLOOR + 25, -49, 17, FLOOR + 26, -29, darkConcrete);
+        mass(-10, -44, 10, -34, FLOOR + 27, FLOOR + 46, true);
+        fill(-13, FLOOR + 47, -47, 13, FLOOR + 48, -31, darkConcrete);
+        mass(-6, -42, 6, -36, FLOOR + 49, FLOOR + 62, true);
+        fill(-9, FLOOR + 63, -45, 9, FLOOR + 64, -33, darkConcrete);
+        fill(-1, FLOOR + 65, -40, 1, FLOOR + 67, -38, steel);
+        fill(0, FLOOR + 68, -39, 0, FLOOR + 80, -39, bars);
+        put(0, FLOOR + 81, -39, red);
+        // trois contreforts en biseau de chaque cote de la premiere masse
+        for (int side = -1; side <= 1; side += 2) {
+            for (int z = -44; z <= -34; z += 5) {
+                for (int out = 0; out <= 6; out++) {
+                    fill((15 + out) * side, FLOOR - 3, z, (15 + out) * side, FLOOR + 22 - out * 3, z, concrete);
+                }
+            }
+        }
+        labels.add(new Label(new BlockPos(0, FLOOR + 34, -31), "DOHY", 0xEF3826, 7.0f));
     }
 
     /** Les deux pavillons de bornes : un toit plat sur quatre gros poteaux, trois guichets. */
@@ -437,10 +505,15 @@ final class SpawnBuilder {
         };
         for (int index = 0; index < 2; index++) {
             int side = index == 0 ? 1 : -1;
-            fill(21 * side, FLOOR, -9, 32 * side, FLOOR, 9, darkConcrete);
+            fill(21 * side, FLOOR, -9, 32 * side, FLOOR, 9, concrete);
             fill(32 * side, FLOOR + 1, -9, 32 * side, FLOOR + 5, 9, concrete);
-            fill(20 * side, FLOOR + 6, -10, 33 * side, FLOOR + 7, 10, darkConcrete);
+            fill(20 * side, FLOOR + 6, -10, 33 * side, FLOOR + 6, 10, concrete);
+            fill(20 * side, FLOOR + 7, -10, 33 * side, FLOOR + 7, 10, darkConcrete);
             fill(20 * side, FLOOR + 7, -10, 20 * side, FLOOR + 7, 10, concrete);
+            for (int light = -7; light <= 7; light += 5) {
+                put(32 * side, FLOOR + 4, light + 2, flood);
+                put(25 * side, FLOOR, light, lamp);
+            }
             for (int corner = -1; corner <= 1; corner += 2) {
                 fill(21 * side, FLOOR + 1, 8 * corner, 22 * side, FLOOR + 5, 9 * corner, concrete);
                 fill(30 * side, FLOOR + 1, 8 * corner, 31 * side, FLOOR + 5, 9 * corner, concrete);
@@ -451,6 +524,7 @@ final class SpawnBuilder {
                 terminal(30 * side, FLOOR + 2, z, side > 0 ? Direction.WEST : Direction.EAST, kinds[index][slot]);
                 put(31 * side, FLOOR + 3, z, accentFor(kinds[index][slot]));
                 put(27 * side, FLOOR + 5, z, lamp);
+                put(23 * side, FLOOR + 5, z, lamp);
             }
             labels.add(new Label(new BlockPos(20 * side, FLOOR + 9, 0), index == 0 ? "COMMERCE" : "CARRIERE",
                     0xFFFFFF, 2.2f));
@@ -496,23 +570,21 @@ final class SpawnBuilder {
         }
     }
 
-    /** Le centre de la place : un pylone de beton eclaire, et le mot de bienvenue. */
+    /** Le centre de la place : une estrade basse, la borne du retour, un cercle de lampadaires. */
     private void centre() {
         cylinder(0, 0, FLOOR + 1, FLOOR + 1, 5.2d, false, steel);
-        fill(-1, FLOOR + 2, -1, 1, FLOOR + 12, 1, concrete);
-        for (int y = FLOOR + 4; y <= FLOOR + 10; y += 3) {
-            put(1, y, 0, lamp);
-            put(-1, y, 0, lamp);
-            put(0, y, 1, lamp);
-            put(0, y, -1, lamp);
+        cylinder(0, 0, FLOOR + 1, FLOOR + 1, 3.2d, false, concrete);
+        for (int arm = 1; arm <= 4; arm++) {
+            put(arm, FLOOR + 1, 0, arm == 4 ? lamp : yellow);
+            put(-arm, FLOOR + 1, 0, arm == 4 ? lamp : yellow);
+            put(0, FLOOR + 1, arm, arm == 4 ? lamp : yellow);
+            put(0, FLOOR + 1, -arm, arm == 4 ? lamp : yellow);
         }
-        fill(-2, FLOOR + 13, -2, 2, FLOOR + 13, 2, darkConcrete);
+        put(0, FLOOR + 2, 0, steel);
+        terminal(0, FLOOR + 3, 0, Direction.SOUTH, SpawnTerminalBlock.Kind.RETURN);
         for (int corner = 0; corner < 8; corner++) {
             double angle = Math.PI / 4 * corner + Math.PI / 8;
             lampPost((int) Math.round(Math.cos(angle) * 13), FLOOR + 1, (int) Math.round(Math.sin(angle) * 13), 3);
         }
-        terminal(0, FLOOR + 2, 4, Direction.SOUTH, SpawnTerminalBlock.Kind.RETURN);
-        put(0, FLOOR + 1, 4, steel);
-        labels.add(new Label(new BlockPos(0, FLOOR + 15, 0), "DOHY", 0xEF3826, 5.0f));
     }
 }

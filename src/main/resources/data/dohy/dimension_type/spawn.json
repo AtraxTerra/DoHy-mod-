@@ -1,5 +1,5 @@
 {
-  "ambient_light": 0.06,
+  "ambient_light": 0.12,
   "attributes": {
     "minecraft:visual/sky_color": "#7fa8e8",
     "minecraft:visual/fog_color": "#c9d8ee",

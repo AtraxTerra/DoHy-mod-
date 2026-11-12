@@ -1099,7 +1099,7 @@ def spawn():
     })
     # Le ciel de l'Overworld, son horloge et son cycle ; les nuages plus bas que la place.
     write("data/%s/dimension_type/spawn.json" % NS, {
-        "ambient_light": 0.06,
+        "ambient_light": 0.12,
         "attributes": dict(sky, **{
             "minecraft:gameplay/bed_rule": {"can_set_spawn": "never", "can_sleep": "never"},
             "minecraft:gameplay/can_start_raid": False,
