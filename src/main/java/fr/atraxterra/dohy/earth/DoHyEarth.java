@@ -26,6 +26,12 @@ public final class DoHyEarth {
                     .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
                     .build());
 
+    /** La version de la table des lieux deja servie a un chunk ; 0 tant qu'il n'a rien recu. */
+    public static final Supplier<AttachmentType<Integer>> SITES = ATTACHMENTS.register(
+            "earth_sites", () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
+                    .build());
+
     private DoHyEarth() {
     }
 

@@ -324,6 +324,52 @@ La grille des 256 pays et territoires vient de Natural Earth (domaine public), u
   son propre interrupteur (`hbm/world_config/worldgen.json`) et ne viennent plus que des
   gisements. Le charbon, le fer et le cuivre restent partout.
 
+### Les zones irradiées : Tchernobyl et Fukushima
+
+Deux zones d'exclusion, données par leur latitude et leur longitude (`data/dohy/earth/sites.json`,
+écrit par `tools/earth_deposits.py`) : elles valent pour toute carte calée sur le globe.
+
+| Zone | Rayon | Cœur | Radiation (NTM NEXT) |
+|---|---|---|---|
+| Tchernobyl | 40 blocs | 12 blocs | 0,5 RAD/s dans la zone, 4 RAD/s au cœur ; ×4 et ×2 sous la pluie |
+| Fukushima | 28 blocs | 8 blocs | idem |
+
+- **La radiation est celle de NTM NEXT**, pas du code de DoHy : à leur arrivée, les chunks de la
+  zone prennent deux biomes à DoHy (`dohy:exclusion_zone`, `dohy:exclusion_core` : herbe jaunie,
+  « forêt rousse » au cœur), et NTM NEXT irradie ces biomes par ses propres données
+  (`data/dohy/hbm/biome_radiation/`). Ses combinaisons, son RadAway et son compteur Geiger
+  marchent donc comme partout. 4 RAD/s au cœur, c'est la mort en un peu plus de quatre minutes
+  sans protection ; la zone, une demi-heure. Les biomes ne changent que sur les terres : la mer
+  garde le sien.
+- **Au cœur**, la terre, les arbres, les feuilles et les plantes deviennent ceux, morts, de NTM
+  NEXT. **Au site du réacteur**, une enceinte de béton éventrée autour d'un tas de corium et de
+  gravats de corium (les blocs de NTM NEXT : les tenir en main irradie), et une étiquette.
+- **Les minerais rares** : ceux d'un cratère de Sellafield, qu'on ne trouve nulle part ailleurs sur
+  la Terre — schrabidium, radgem, uranium brûlé, diamant et émeraude de Sellafield (gisements à
+  champ `sites`).
+- **Un message** à l'entrée : « Tchernobyl — Zone d'exclusion : radiation, combinaison
+  conseillée ».
+- Sans NTM NEXT, la zone n'est qu'un décor (les biomes et le message) : ni radiation, ni corium,
+  ni minerais de Sellafield.
+
+### Les bases de lancement
+
+Baïkonour, Cap Canaveral, Kourou (Centre spatial guyanais) et Jiuquan, 48 blocs de rayon chacune.
+
+- **Les pas de tir des fusées ne se posent que là** : pas de tir de fusée, fusée de transport,
+  lanceur de station orbitale et lanceur Dyson de NTM NEXT: Space (`launch_blocks`). Ailleurs sur
+  la carte, la pose est refusée — l'objet reste au joueur — avec la base la plus proche, sa
+  distance et sa direction. Sur la Lune ou Mars, rien ne change.
+- Au centre de chaque base, une **aire de lancement** : un chunk à plat, en béton, cerclé de jaune,
+  dégagé au-dessus, et le nom de la base. On s'y installe : il faut y construire l'usine à fusées.
+- Un message à l'entrée : « Baïkonour — Base de lancement : les fusées décollent d'ici ».
+
+**Les centres.** Une carte de la Terre met 1,6 km dans un bloc : un chunk fait 25 km, et la
+centrale de Tchernobyl tombe dans le chunk de la Pripiat, Cap Canaveral et Fukushima dans la mer.
+Chaque lieu est donc centré sur le chunk sec le plus proche, dans le bon pays, sur la carte
+Earth24k (37 km au plus du lieu réel). Les zones sont à l'échelle du jeu : celle de Tchernobyl
+réelle ferait 19 blocs de rayon.
+
 ### Les cartes WorldPainter en 26.2
 
 Une carte dont les chunks attendent leur décoration est enregistrée à l'étape `liquid_carvers`.
@@ -335,7 +381,8 @@ les données du chunk avant leur lecture : le jeu reprend à la décoration.
 ### Code
 
 - `earth/` : `EarthData` (calage, grille, pays), `EarthEvents` (chargement avant les mondes,
-  frontières, file des gisements), `EarthJump` (le saut), `EarthDeposits` (la table et la pose),
+  frontières, lieux, pose des pas de tir, file des gisements), `EarthJump` (le saut),
+  `EarthDeposits` (la table et la pose), `EarthSites` (zones irradiées et bases de lancement),
   `DoHyEarth` (la marque des chunks).
 - `spawn/SpawnBuilder.worldMap` : la dalle et le puits ; le spawn est redessiné quand une carte de
   la Terre apparaît ou disparaît (sa version vaut alors celle du dessin plus mille).

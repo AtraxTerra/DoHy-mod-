@@ -1,0 +1,66 @@
+{
+  "_comment": "Les lieux de la Terre, GENERE par tools/earth_deposits.py : zones irradiees et bases de lancement, par latitude et longitude. Ils ne servent que dans un monde dont un datapack decrit la carte. 'launch_blocks' : les blocs qui ne se posent que sur une base de lancement. Change 'version' pour resservir les chunks deja visites.",
+  "version": 1,
+  "sites": [
+    {
+      "id": "chernobyl",
+      "name": "Tchernobyl",
+      "kind": "irradiated",
+      "latitude": 51.196,
+      "longitude": 29.919,
+      "radius": 40,
+      "core_radius": 12,
+      "biome": "dohy:exclusion_zone",
+      "core_biome": "dohy:exclusion_core"
+    },
+    {
+      "id": "fukushima",
+      "name": "Fukushima",
+      "kind": "irradiated",
+      "latitude": 37.381,
+      "longitude": 140.817,
+      "radius": 28,
+      "core_radius": 8,
+      "biome": "dohy:exclusion_zone",
+      "core_biome": "dohy:exclusion_core"
+    },
+    {
+      "id": "baikonur",
+      "name": "Baikonour",
+      "kind": "launch",
+      "latitude": 45.937,
+      "longitude": 63.235,
+      "radius": 48
+    },
+    {
+      "id": "canaveral",
+      "name": "Cap Canaveral",
+      "kind": "launch",
+      "latitude": 28.195,
+      "longitude": -80.747,
+      "radius": 48
+    },
+    {
+      "id": "kourou",
+      "name": "Kourou",
+      "kind": "launch",
+      "latitude": 5.184,
+      "longitude": -52.789,
+      "radius": 48
+    },
+    {
+      "id": "jiuquan",
+      "name": "Jiuquan",
+      "kind": "launch",
+      "latitude": 40.962,
+      "longitude": 100.278,
+      "radius": 48
+    }
+  ],
+  "launch_blocks": [
+    "hbmspace:launch_pad_rocket",
+    "hbmspace:transporter_rocket",
+    "hbmspace:orbital_station_launcher",
+    "hbmspace:dyson_launcher"
+  ]
+}

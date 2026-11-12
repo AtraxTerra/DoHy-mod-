@@ -816,6 +816,71 @@
       "size": 3
     },
     {
+      "id": "zone_schrabidium",
+      "ore": "hbm:ore_sellafield_schrabidium",
+      "countries": [],
+      "sites": [
+        "chernobyl",
+        "fukushima"
+      ],
+      "min_y": -56,
+      "max_y": 40,
+      "veins": 0.3,
+      "size": 3
+    },
+    {
+      "id": "zone_radgem",
+      "ore": "hbm:ore_sellafield_radgem",
+      "countries": [],
+      "sites": [
+        "chernobyl",
+        "fukushima"
+      ],
+      "min_y": -56,
+      "max_y": 48,
+      "veins": 0.8,
+      "size": 3
+    },
+    {
+      "id": "zone_uranium",
+      "ore": "hbm:ore_sellafield_uranium_scorched",
+      "countries": [],
+      "sites": [
+        "chernobyl",
+        "fukushima"
+      ],
+      "min_y": -56,
+      "max_y": 56,
+      "veins": 2.0,
+      "size": 5
+    },
+    {
+      "id": "zone_diamond",
+      "ore": "hbm:ore_sellafield_diamond",
+      "countries": [],
+      "sites": [
+        "chernobyl",
+        "fukushima"
+      ],
+      "min_y": -56,
+      "max_y": 24,
+      "veins": 1.0,
+      "size": 4
+    },
+    {
+      "id": "zone_emerald",
+      "ore": "hbm:ore_sellafield_emerald",
+      "countries": [],
+      "sites": [
+        "chernobyl",
+        "fukushima"
+      ],
+      "min_y": -40,
+      "max_y": 56,
+      "veins": 0.8,
+      "size": 3
+    },
+    {
       "id": "zinc",
       "ore": "create:zinc_ore",
       "deepslate": "create:deepslate_zinc_ore",

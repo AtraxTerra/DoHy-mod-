@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ecrit la table des gisements de la Terre : data/dohy/earth/deposits.json.
+"""Ecrit la table des gisements et des lieux de la Terre : data/dohy/earth/deposits.json et sites.json.
 
 Chaque gisement est pose la ou le monde reel exploite la ressource : une liste
 de pays (codes a trois lettres de Natural Earth) et, pour une region d'un grand
@@ -17,21 +17,25 @@ import json
 import os
 import sys
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "main", "resources", "data", "dohy",
-                   "earth", "deposits.json")
+EARTH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "main", "resources", "data", "dohy",
+                     "earth")
+OUT = os.path.join(EARTH, "deposits.json")
+SITES_OUT = os.path.join(EARTH, "sites.json")
 
 
 def box(south, north, west, east):
     return {"south": south, "north": north, "west": west, "east": east}
 
 
-def deposit(name, ore, deepslate, countries, veins, size=6, min_y=-56, max_y=32, boxes=(), radius=0):
+def deposit(name, ore, deepslate, countries, veins, size=6, min_y=-56, max_y=32, boxes=(), radius=0, sites=()):
     entry = {"id": name, "ore": ore}
     if deepslate:
         entry["deepslate"] = deepslate
     entry["countries"] = countries.split()
     if boxes:
         entry["boxes"] = list(boxes)
+    if sites:
+        entry["sites"] = list(sites)
     entry.update({"min_y": min_y, "max_y": max_y, "veins": veins})
     if radius:
         entry["radius"] = radius
@@ -55,6 +59,33 @@ GULF_OF_MEXICO = box(26, 29.5, -95, -88)
 NORTH_SEA = box(56, 62, 0, 5)
 PERSIAN_GULF = box(24, 30, 48, 54)
 CASPIAN = box(38, 47, 49, 55)
+
+ZONES = ("chernobyl", "fukushima")
+
+
+def site(name, label, kind, latitude, longitude, radius, core=0):
+    entry = {"id": name, "name": label, "kind": kind, "latitude": latitude, "longitude": longitude, "radius": radius}
+    if kind == "irradiated":
+        entry.update({"core_radius": core, "biome": "dohy:exclusion_zone", "core_biome": "dohy:exclusion_core"})
+    return entry
+
+
+# Une carte de la Terre au 1:110 000 environ (68,7 blocs par degre) : un bloc fait 1,6 km. Les zones sont
+# donc a l'echelle du jeu plutot que du terrain — celle de Tchernobyl reelle ne ferait que 19 blocs de rayon.
+# Chaque centre est celui du chunk sec le plus proche du lieu reel, dans le bon pays, sur la carte Earth24k
+# (au plus 37 km) :
+# la centrale de Tchernobyl tombe dans le chunk de la Pripiat, Cap Canaveral et Fukushima dans la mer.
+SITES = [
+    site("chernobyl", "Tchernobyl", "irradiated", 51.196, 29.919, 40, 12),
+    site("fukushima", "Fukushima", "irradiated", 37.381, 140.817, 28, 8),
+    site("baikonur", "Baikonour", "launch", 45.937, 63.235, 48),
+    site("canaveral", "Cap Canaveral", "launch", 28.195, -80.747, 48),
+    site("kourou", "Kourou", "launch", 5.184, -52.789, 48),
+    site("jiuquan", "Jiuquan", "launch", 40.962, 100.278, 48),
+]
+
+LAUNCH_BLOCKS = ["hbmspace:launch_pad_rocket", "hbmspace:transporter_rocket",
+                 "hbmspace:orbital_station_launcher", "hbmspace:dyson_launcher"]
 
 DEPOSITS = [
     # -- Les minerais du jeu. Le charbon, le fer et le cuivre poussent partout ; ici, ils abondent.
@@ -132,6 +163,13 @@ DEPOSITS = [
                    box(-40, -37, -70, -68)]),
     deposit("bedrock_oil", "hbm:ore_bedrock_oil", None, "SAU IRQ IRN KWT ARE QAT VEN",
             0.03, 3, -63, -61, boxes=[WEST_SIBERIA, TEXAS]),
+    # -- Les zones irradiees : les minerais de NTM NEXT qu'on ne trouve nulle part ailleurs sur la Terre.
+    # Ceux d'un cratere de Sellafield : la radiation les a faits ; il faut une combinaison pour les prendre.
+    deposit("zone_schrabidium", "hbm:ore_sellafield_schrabidium", None, "", 0.3, 3, -56, 40, sites=ZONES),
+    deposit("zone_radgem", "hbm:ore_sellafield_radgem", None, "", 0.8, 3, -56, 48, sites=ZONES),
+    deposit("zone_uranium", "hbm:ore_sellafield_uranium_scorched", None, "", 2.0, 5, -56, 56, sites=ZONES),
+    deposit("zone_diamond", "hbm:ore_sellafield_diamond", None, "", 1.0, 4, -56, 24, sites=ZONES),
+    deposit("zone_emerald", "hbm:ore_sellafield_emerald", None, "", 0.8, 3, -40, 56, sites=ZONES),
     # -- Create ------------------------------------------------------------------------
     deposit("zinc", "create:zinc_ore", "create:deepslate_zinc_ore", "CHN PER AUS IND USA MEX BOL KAZ SWE IRL",
             3.0, 8, -60, 70),
@@ -164,7 +202,23 @@ def main():
     with open(OUT, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, indent=2, ensure_ascii=False)
         fh.write("\n")
-    print("%d gisements ecrits." % len(DEPOSITS))
+    known_sites = {entry["id"] for entry in SITES}
+    for entry in DEPOSITS:
+        for name in entry.get("sites", ()):
+            if name not in known_sites:
+                raise SystemExit("gisement %s : lieu inconnu : %s" % (entry["id"], name))
+    with open(SITES_OUT, "w", encoding="utf-8") as fh:
+        json.dump({
+            "_comment": "Les lieux de la Terre, GENERE par tools/earth_deposits.py : zones irradiees et bases de "
+                        "lancement, par latitude et longitude. Ils ne servent que dans un monde dont un datapack "
+                        "decrit la carte. 'launch_blocks' : les blocs qui ne se posent que sur une base de lancement. "
+                        "Change 'version' pour resservir les chunks deja visites.",
+            "version": 1,
+            "sites": SITES,
+            "launch_blocks": LAUNCH_BLOCKS,
+        }, fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
+    print("%d gisements et %d lieux ecrits." % (len(DEPOSITS), len(SITES)))
 
 
 if __name__ == "__main__":
