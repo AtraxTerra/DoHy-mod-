@@ -983,6 +983,27 @@ n'est plus vrai pour tout : ce qui change, c'est **le trajet**.
 - Leviers : `tools/earth_deposits.py` (pays, rectangles, `veins`, `size`), puis `version` dans
   `deposits.json` pour resservir les chunks déjà visités.
 
+**Les zones irradiées.** Leurs minerais de Sellafield ne sortent nulle part ailleurs sur la Terre.
+Tchernobyl couvre une vingtaine de chunks, Fukushima une dizaine :
+
+| Minerai | Filons par chunk | Blocs par filon | Sur Tchernobyl (≈ 20 chunks) |
+|---|---|---|---|
+| Schrabidium de Sellafield | 0,3 | 3 | ≈ 6 filons, ≈ 18 blocs |
+| Radgem | 0,8 | 3 | ≈ 16 filons |
+| Uranium brûlé | 2 | 5 | ≈ 40 filons |
+| Diamant, émeraude de Sellafield | 1 et 0,8 | 4 et 3 | ≈ 20 et 16 filons |
+
+- Le schrabidium est le matériau le plus cher de NTM NEXT ; il n'existait jusqu'ici que dans les
+  cratères de Sellafield, les météorites et le Nether. Une zone en contient une poignée, une fois :
+  les filons ne repoussent pas.
+- **Le prix du risque** : 0,5 RAD/s dans la zone, 4 RAD/s au cœur (1 000 RAD tuent). Une heure de
+  minage sans protection dans la zone, c'est 1 800 RAD : il faut la combinaison de NTM NEXT, ou le
+  RadAway. Le cœur, sans combinaison, tue en quatre minutes. Leviers : `rad_per_second` dans
+  `data/dohy/hbm/biome_radiation/`.
+
+**Les bases de lancement** ne rapportent rien : elles obligent à s'installer loin. De Paris,
+Baïkonour est à environ 4 200 blocs, Kourou à 5 000.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

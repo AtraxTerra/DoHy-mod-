@@ -186,7 +186,7 @@ public final class EarthEvents {
             EarthSites.Placed base = EarthSites.nearestBase(pos.getX(), pos.getZ());
             String where = base == null ? "Aucune base de lancement sur cette carte."
                     : "La plus proche : " + base.site().name() + ", a " + (int) base.distance(pos.getX(), pos.getZ())
-                    + " blocs au " + EarthSites.direction(pos.getX(), pos.getZ(), base) + ".";
+                    + " blocs " + EarthSites.direction(pos.getX(), pos.getZ(), base) + ".";
             player.sendSystemMessage(Component.literal("Les fusees ne decollent que d'une base de lancement. " + where)
                     .withStyle(ChatFormatting.RED));
         }

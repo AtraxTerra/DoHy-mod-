@@ -220,10 +220,11 @@ public final class EarthSites {
         return best;
     }
 
-    /** « nord-est », du point vers le lieu ; le nord vers les z negatifs. */
+    /** « au nord-est », « a l'est » : du point vers le lieu ; le nord vers les z negatifs. */
     public static String direction(double fromX, double fromZ, Placed to) {
         double angle = Math.toDegrees(Math.atan2(to.x() - fromX, -(to.z() - fromZ)));
-        String[] names = {"nord", "nord-est", "est", "sud-est", "sud", "sud-ouest", "ouest", "nord-ouest"};
+        String[] names = {"au nord", "au nord-est", "a l'est", "au sud-est", "au sud", "au sud-ouest", "a l'ouest",
+                "au nord-ouest"};
         return names[Math.floorMod((int) Math.round(angle / 45.0d), 8)];
     }
 
