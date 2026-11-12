@@ -289,6 +289,12 @@ public final class EarthSites {
                 .get(ResourceKey.create(Registries.BIOME, key)));
     }
 
+    /** Un bloc du jeu par son nom : les couleurs n'ont plus chacune leur champ dans {@code Blocks} en 26.2. */
+    private static BlockState vanilla(String name) {
+        return BuiltInRegistries.BLOCK.getOptional(Identifier.withDefaultNamespace(name))
+                .map(Block::defaultBlockState).orElse(Blocks.STONE.defaultBlockState());
+    }
+
     private static Optional<BlockState> ntm(String name) {
         if (!ModList.get().isLoaded("hbm")) {
             return Optional.empty();
@@ -389,7 +395,7 @@ public final class EarthSites {
         int centerZ = chunk.getPos().getMinBlockZ() + 8;
         int ground = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR, 8, 8) + 1;
         RandomSource random = RandomSource.create(level.getSeed() ^ site.site().id().hashCode());
-        BlockState concrete = Blocks.GRAY_CONCRETE.defaultBlockState();
+        BlockState concrete = vanilla("gray_concrete");
         BlockState cracked = Blocks.CRACKED_STONE_BRICKS.defaultBlockState();
         for (int dx = -6; dx <= 6; dx++) {
             for (int dz = -6; dz <= 6; dz++) {
@@ -443,9 +449,9 @@ public final class EarthSites {
         }
         java.util.Arrays.sort(heights);
         int ground = Math.max(level.getSeaLevel(), heights[128]);
-        BlockState concrete = Blocks.LIGHT_GRAY_CONCRETE.defaultBlockState();
-        BlockState rim = Blocks.GRAY_CONCRETE.defaultBlockState();
-        BlockState mark = Blocks.YELLOW_CONCRETE.defaultBlockState();
+        BlockState concrete = vanilla("light_gray_concrete");
+        BlockState rim = vanilla("gray_concrete");
+        BlockState mark = vanilla("yellow_concrete");
         BlockState light = Blocks.SEA_LANTERN.defaultBlockState();
         BlockState stone = Blocks.STONE.defaultBlockState();
         for (int dx = 0; dx < 16; dx++) {
