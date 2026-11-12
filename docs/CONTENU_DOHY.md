@@ -218,21 +218,25 @@ passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, c
   d'éclairage sur certains.
 - La **plateforme d'arrivée**, ronde, sur son propre piton, reliée au parvis par un **pont** à
   portiques d'acier.
-- Le **parvis**, une dalle ovale de béton : une allée entre deux jardinières, des lampes de sol.
-- Un seul **bâtiment**, brutaliste, en pierre : trois **gradins** aux bouts arrondis, en retrait
-  l'un sur l'autre, cernés de bandeaux vitrés et de **terrasses** plantées ; au-dessus, une **masse
-  haute** rayée d'ailettes ; à l'est, un **anneau** en porte-à-faux sur pilotis, un épicéa en son
-  centre ; à l'ouest, un **pylône** relié aux gradins par trois passerelles superposées, avec une
-  échelle jusqu'à son belvédère.
-- Dedans, tout en béton : une **nef** basse à plafond à caissons, puis l'**atrium** — un puits de
-  46 blocs sous une verrière, une lame de lumière sur toute sa hauteur. Les **six box** y sont, dans
-  des niches à leur couleur (améthyste, saharia, paladium à l'ouest ; halloween, trixium, endium à
-  l'est) : un clic avec sa clé ouvre une box, comme chez soi.
+- Le **parvis**, un plateau ovale de terre et d'herbe tenu par un mur de pierre : une allée dallée
+  du pont au porche, des épicéas, des lampadaires.
+- Un seul **bâtiment**, brutaliste, en pierre, posé sur un **socle planté** en deux marches courbes :
+  trois **gradins** aux bouts arrondis, en retrait l'un sur l'autre, cernés de bandeaux vitrés et de
+  **terrasses** plantées ; au-dessus, une **masse haute** épaulée de contreforts en pente ; à l'est,
+  un **anneau** en porte-à-faux sur pilotis, un épicéa en son centre ; à l'ouest, un **pylône** à
+  pilastres relié aux gradins par trois passerelles superposées, qui butent sur une dalle debout
+  portant le signe « D ». Une échelle monte dans le pylône jusqu'à son belvédère.
+- Dedans, de la pierre et du bois : murs carrelés, plafonds à caissons, mains courantes de bois,
+  lanternes. Une **nef** basse, ses colonnes et leurs plantes en pot, puis l'**atrium** — un puits
+  de 46 blocs sous une verrière, une lame de lumière sur toute sa hauteur entre deux **murs verts**.
+  Son sol est de brique ; au centre, un **jardin** (un massif, quatre jardinières, deux bancs). Les
+  **six box** sont dans des niches à leur couleur (améthyste, saharia, paladium à l'ouest ;
+  halloween, trixium, endium à l'est) : un clic avec sa clé ouvre une box, comme chez soi.
 - De part et d'autre de l'atrium, deux **travées de bornes** : COMMERCE à l'est (shop, boutique,
   marché), CARRIÈRE à l'ouest (banque, contrats, musée). Une borne ouvre le même écran que le menu.
   La borne RETOUR est à côté de l'entrée (et sur la plateforme d'arrivée).
-- Deux **étages de galeries** regardent l'atrium ; des escaliers de pierre y montent depuis chaque
-  travée. Chaque galerie ouvre sur sa terrasse, sur l'anneau et sur les passerelles.
+- Deux **étages de galeries** regardent l'atrium, de la verdure retombe de leurs garde-corps ; des
+  escaliers de pierre taillée, entre deux limons massifs, y montent depuis chaque travée. Chaque galerie ouvre sur sa terrasse, sur l'anneau et sur les passerelles.
 - Derrière le bâtiment, deux **cheminées** qui fument, des cuves et leurs tuyaux.
 - Le ciel et l'heure sont ceux de l'Overworld ; les nuages passent sous le parvis.
 

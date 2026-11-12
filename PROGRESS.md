@@ -175,6 +175,63 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 8) — le spawn : l'intérieur d'après les inspirations
+
+**Demande** : dix images « en inspirations » — les intérieurs d'un bâtiment brutaliste (atrium au
+sol de brique avec jardinières, plafonds à caissons, galeries à mains courantes de bois, grands
+escaliers à limons pleins, murs verts, verrière, plantes en pot) et une vue extérieure avec un
+tablier devant l'entrée. Elles servent d'inspiration : rien n'est recopié bloc à bloc.
+
+**Fait** (même branche `feat/spawn-silhouette`, `SpawnBuilder` version 4) :
+- Atrium : sol de brique quadrillé de pierre, jardin central (massif, quatre jardinières, deux
+  bancs), deux murs verts de trente blocs de part et d'autre de la lame de lumière, verdure qui
+  retombe des galeries.
+- Finitions : murs intérieurs carrelés (andésite polie) à assises de pierre taillée, plafonds à
+  caissons croisés tous les trois blocs, garde-corps de pierre à main courante d'épicéa, lanternes
+  suspendues sous les linteaux des galeries, bancs de bois.
+- Escaliers : sept marches de pierre taillée (vrais blocs d'escalier) entre deux limons pleins, à
+  la place des demi-marches en dalles.
+- Nef : colonnes de pierre taillée, une plante en pot au pied de chacune ; stèles carrelées.
+- Dehors : l'allée s'évase en tablier devant le porche.
+
+**Vérifié hors jeu** (outil de prévisualisation local, qui sait maintenant monter les blocs
+d'escalier) : tous les lieux restent accessibles à pied sans sauter ; aucune étiquette dans un bloc.
+
+**Vérifié en jeu** (client de la CI) : construction en 12 secondes, règles, ouverture d'une box,
+borne SHOP, chute, retour ; reconstruction en 6 secondes, 22 textes flottants. Vues de la nef, de
+l'atrium, de la verrière, d'un escalier et des galeries contrôlées.
+
+**Non vérifié** : le rendu à grande distance d'affichage ; la reconstruction d'un vrai spawn d'une
+version antérieure gardé dans une sauvegarde ; la tenue du feuillage dans la durée n'a été vue que
+sur quelques minutes (il est posé « persistant », il ne devrait pas dépérir).
+
+### 2026-11-12 (suite 7) — le spawn : une silhouette plus proche de la référence
+
+**Demande** : « parfait, j'aimerais qu'il ressemble à celui de la photo ». Aucune nouvelle image
+n'accompagnait le message : la référence est celle du lot précédent. Le bâtiment s'en rapproche par
+ses traits d'ensemble ; il reste un dessin fait ici, pas une copie bloc à bloc (la photo, petite,
+ne le permettrait d'ailleurs pas).
+
+**Fait** (`feat/spawn-silhouette`, `SpawnBuilder` version 3) :
+- Masse haute : deux épaules basses et des contreforts en pente sur les flancs et à l'arrière.
+- Gradins : un corbeau sous chaque débord, une couvertine sur chaque garde-corps, davantage de
+  bandeaux de pierre taillée.
+- Socle : deux bandes plantées en marches, tenues par des murs courbes (une seule derrière, pour
+  laisser passer devant les cheminées et les cuves).
+- Pylône à pilastres ; le signe « D » passe sur une dalle debout au bout des passerelles.
+- Parvis : terre, herbe, épicéas et lampadaires à la place de la dalle de béton ; allée dallée.
+
+**Vérifié hors jeu** (outil de prévisualisation local) : sans sauter, on atteint toujours les six
+box, les sept bornes, les galeries, les terrasses, l'anneau, les passerelles, le toit du troisième
+gradin, le belvédère et l'arrière du parvis ; aucune étiquette dans un bloc.
+
+**Vérifié en jeu** (client de la CI) : construction en 14 secondes, règles, ouverture d'une box,
+borne SHOP, chute, retour au bloc de départ ; reconstruction depuis une version marquée ancienne en
+6 secondes, restes effacés, 22 textes flottants. Vues extérieures contrôlées.
+
+**Non vérifié** : le rendu à grande distance d'affichage ; la reconstruction d'un vrai spawn de
+version 1 ou 2 gardé dans une sauvegarde.
+
 ### 2026-11-12 (suite 6) — le spawn : un bâtiment brutaliste
 
 **Demande** : après avoir vu le spawn, le joueur a joint l'image d'un bâtiment brutaliste (des
