@@ -36,6 +36,7 @@ public final class DoHy {
         // Les machines propres a DoHy, sous l'espace de noms « dohy ».
         fr.atraxterra.dohy.tech.DoHyTech.register(modBus);
         fr.atraxterra.dohy.agri.DoHyAgri.register(modBus);
+        fr.atraxterra.dohy.spawn.DoHySpawn.register(modBus);
         LOGGER.info("DoHy charge");
     }
 }

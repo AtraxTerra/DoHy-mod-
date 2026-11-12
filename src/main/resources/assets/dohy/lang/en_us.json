@@ -2,6 +2,8 @@
   "itemGroup.dohy.machines": "DoHy — machines",
   "itemGroup.dohy.agriculture": "DoHy — farming",
   "block.dohy.trading_server": "Trading Server",
+  "block.dohy.terminal": "Spawn Terminal",
+  "block.dohy.hologram": "Floating Label",
   "block.dohy.trough": "Trough",
   "block.dohy.water_dispenser": "Water Dispenser",
   "block.dohy.gmo_machine": "GMO Machine",

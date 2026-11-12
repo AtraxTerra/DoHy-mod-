@@ -198,3 +198,47 @@ Les grains, les farines, les pains, la crème et le saindoux sont au shop, ongle
   `FeederBlockEntity` ; `AgriEvents` (herbe, flair du mineur) ; `AgriConfig`.
 - `tools/dohy_assets.py` dessine tout ; `tools/check_agri_prices.py` (CI) vérifie qu'aucune
   recette ne devient rentable en achetant ses ingrédients au cours le plus bas.
+
+## Le spawn (dimension `dohy:spawn`)
+
+Un lieu à part, comme le spawn des serveurs dont le mod s'inspire : on y vient ouvrir ses box et
+passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, cheminées, tuyaux.
+
+### Y aller, en revenir
+
+- **`/spawn`**, ou la carte « Spawn » du menu : on arrive sur la plateforme ronde. La même commande,
+  ou une borne « RETOUR », ramène d'où l'on venait, au bloc près.
+- On ne le rejoint que depuis l'Overworld, le Nether ou l'End (pas depuis un donjon ou une arène).
+- La première visite **construit** le lieu : quelques secondes, pendant lesquelles on attend où
+  l'on est ; on y est envoyé dès que c'est fini. Les visites suivantes sont immédiates.
+
+### Le lieu
+
+- Un **massif rocheux flottant** au-dessus des nuages, entouré de treize pitons ; des mâts
+  d'éclairage sur certains.
+- La **plateforme d'arrivée**, ronde, sur son propre piton, reliée à la place par un **pont** à
+  portiques d'acier.
+- La **place**, une dalle de béton à pans coupés, avec ses lampes de sol et la borne du retour.
+- Le **hall des box** : six travées entre des voiles de béton, sous un toit en porte-à-faux fendu
+  de puits de jour, adossé à une **tour** en gradins. Une box par travée (améthyste, paladium,
+  endium, saharia, trixium, halloween) : un clic avec sa clé l'ouvre, comme une box posée chez soi.
+- Deux **pavillons de bornes** : COMMERCE (shop, boutique, marché) et CARRIÈRE (banque, contrats,
+  musée). Une borne ouvre le même écran que le menu.
+- Deux **cheminées** qui fument, des cuves et leurs tuyaux.
+- Le ciel et l'heure sont ceux de l'Overworld ; les nuages passent sous la place.
+
+### Les règles
+
+- On n'y casse rien et on n'y pose rien (sauf en créatif), les explosions n'abîment rien.
+- On n'y prend aucun dégât. Qui tombe dans le vide est reposé sur la plateforme d'arrivée.
+- Aucune créature n'y apparaît.
+
+### Code
+
+- `spawn/DoHySpawn` (dimension, borne, étiquette, pièces jointes), `SpawnApi` (aller, revenir,
+  construire par tranches de 5 000 blocs par tick), `SpawnBuilder` (le dessin : tout est calculé,
+  aucun fichier de structure ; `VERSION` à augmenter pour faire reconstruire), `SpawnEvents`
+  (règles, `/spawn`), `SpawnTerminalBlock` (`dohy:terminal`, une propriété `kind` par service),
+  `HologramBlock` (`dohy:hologram`, les textes flottants).
+- `data/dohy/dimension/spawn.json`, `dimension_type/spawn.json`, `worldgen/biome/spawn.json`,
+  écrits par `tools/dohy_assets.py`.

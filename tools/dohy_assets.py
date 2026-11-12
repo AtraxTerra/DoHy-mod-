@@ -1027,11 +1027,150 @@ def agriculture():
     })
 
 
+# -- Le spawn ------------------------------------------------------------------------
+#
+# La dimension (type, biome, generateur vide), la borne et ses sept ecrans, le bloc
+# invisible des etiquettes. Le lieu lui-meme est dessine par spawn/SpawnBuilder.java.
+
+# service, couleur de l'ecran, pictogramme 8 x 8
+TERMINALS = [
+    ("shop", 0x3DFF6A, ["..XXXX..", ".X.XX.X.", ".X.XX...", "..XXXX..", "...XX.X.", ".X.XX.X.", "..XXXX..", "...XX..."]),
+    ("boutique", 0xFAC400, ["........", ".XXX....", "X...X...", "X...XXXX", "X...X.XX", ".XXX..X.", "........", "........"]),
+    ("market", 0xFFB52E, ["......X.", "......X.", "...X..X.", "...X..X.", "X..X..X.", "X..X..X.", "X..X..X.", "XXXXXXXX"]),
+    ("bank", 0x36A3FF, ["..XXXX..", ".X....X.", "X..XX..X", "X.X....X", "X.X....X", "X..XX..X", ".X....X.", "..XXXX.."]),
+    ("contracts", 0x7C9BFF, [".XXXXX..", ".X...XX.", ".X.XX.X.", ".X....X.", ".X.XX.X.", ".X....X.", ".X.XX.X.", ".XXXXXX."]),
+    ("museum", 0xEC4FB5, ["...XX...", "..XXXX..", ".XXXXXX.", ".X.XX.X.", ".X.XX.X.", ".X.XX.X.", ".XXXXXX.", "XXXXXXXX"]),
+    ("return", 0xFF5A4A, ["........", "...X....", "..XX....", ".XXXXXXX", ".XXXXXXX", "..XX....", "...X....", "........"]),
+]
+
+
+def terminal_front(color, glyph):
+    rows = canvas(PANEL)
+    frame(rows)
+    screen, glow = rgb(0x0E1114), rgb(color)
+    for y in range(2, 12):                   # l'ecran
+        for x in range(2, 14):
+            border = x in (2, 13) or y in (2, 11)
+            rows[y][x] = DARK if border else screen
+    for y, line in enumerate(glyph):         # le pictogramme
+        for x, cell in enumerate(line):
+            if cell == "X":
+                rows[3 + y][4 + x] = glow
+    for x in range(3, 13):                   # la tablette et son voyant
+        rows[13][x] = SHADE
+    rows[13][12] = glow
+    rows[13][3] = SHINE
+    return rows
+
+
+def terminal_side():
+    rows = canvas(PANEL)
+    frame(rows)
+    for y in (4, 6, 8):
+        for x in range(4, 12):
+            rows[y][x] = DARK
+            rows[y + 1][x] = SHINE
+    return rows
+
+
+def terminal_top():
+    rows = canvas(PANEL)
+    frame(rows)
+    for y in range(4, 12):
+        for x in range(4, 12):
+            rows[y][x] = SHADE if (x + y) % 2 else DARK
+    return rows
+
+
+def spawn():
+    sky = {"minecraft:visual/sky_color": "#7fa8e8", "minecraft:visual/fog_color": "#c9d8ee"}
+    write("data/%s/worldgen/biome/spawn.json" % NS, {
+        "attributes": sky,
+        "carvers": [],
+        "downfall": 0.0,
+        "effects": {"water_color": "#3f76e4"},
+        "features": [],
+        "has_precipitation": False,
+        "spawn_costs": {},
+        "spawners": {group: [] for group in (
+            "ambient", "axolotls", "creature", "misc", "monster", "underground_water_creature",
+            "water_ambient", "water_creature")},
+        "temperature": 0.8,
+    })
+    # Le ciel de l'Overworld, son horloge et son cycle ; les nuages plus bas que la place.
+    write("data/%s/dimension_type/spawn.json" % NS, {
+        "ambient_light": 0.12,
+        "attributes": dict(sky, **{
+            "minecraft:gameplay/bed_rule": {"can_set_spawn": "never", "can_sleep": "never"},
+            "minecraft:gameplay/can_start_raid": False,
+            "minecraft:gameplay/respawn_anchor_works": False,
+            "minecraft:visual/ambient_light_color": "#0a0a0a",
+            "minecraft:visual/cloud_color": "#e6ffffff",
+            "minecraft:visual/cloud_height": 168.33,
+        }),
+        "coordinate_scale": 1.0,
+        "default_clock": "minecraft:overworld",
+        "has_ceiling": False,
+        "has_ender_dragon_fight": False,
+        "has_skylight": True,
+        "height": 384,
+        "infiniburn": "#minecraft:infiniburn_overworld",
+        "logical_height": 384,
+        "min_y": 0,
+        "monster_spawn_block_light_limit": 0,
+        "monster_spawn_light_level": 0,
+        "timelines": "#minecraft:in_overworld",
+    })
+    write("data/%s/dimension/spawn.json" % NS, {
+        "type": "%s:spawn" % NS,
+        "generator": {
+            "type": "minecraft:flat",
+            "settings": {
+                "biome": "%s:spawn" % NS,
+                "features": False,
+                "lakes": False,
+                "layers": [],
+                "structure_overrides": [],
+            },
+        },
+    })
+
+    write_png("assets/%s/textures/block/terminal_side.png" % NS, terminal_side())
+    write_png("assets/%s/textures/block/terminal_top.png" % NS, terminal_top())
+    variants = {}
+    for (kind, color, glyph) in TERMINALS:
+        write_png("assets/%s/textures/block/terminal_%s.png" % (NS, kind), terminal_front(color, glyph))
+        write("assets/%s/models/block/terminal_%s.json" % (NS, kind), {
+            "parent": "minecraft:block/orientable",
+            "textures": {
+                "top": "%s:block/terminal_top" % NS,
+                "front": "%s:block/terminal_%s" % (NS, kind),
+                "side": "%s:block/terminal_side" % NS,
+            },
+        })
+        for facing, angle in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+            variant = {"model": "%s:block/terminal_%s" % (NS, kind)}
+            if angle:
+                variant["y"] = angle
+            variants["facing=%s,kind=%s" % (facing, kind)] = variant
+    write("assets/%s/blockstates/terminal.json" % NS, {"variants": variants})
+    write("assets/%s/items/terminal.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:block/terminal_shop" % NS},
+    })
+    block_drops_itself("terminal")
+
+    # l'etiquette flottante : un bloc sans forme, il lui faut quand meme un modele
+    write("assets/%s/models/block/hologram.json" % NS, {"textures": {"particle": "%s:block/terminal_top" % NS}})
+    write("assets/%s/blockstates/hologram.json" % NS, {"variants": {"": {"model": "%s:block/hologram" % NS}}})
+
+
 def lang():
     fr = {
         "itemGroup.dohy.machines": "DoHy — machines",
         "itemGroup.dohy.agriculture": "DoHy — agriculture",
         "block.dohy.trading_server": "Serveur de trading",
+        "block.dohy.terminal": "Borne du spawn",
+        "block.dohy.hologram": "Etiquette flottante",
         "block.dohy.trough": "Mangeoire",
         "block.dohy.water_dispenser": "Abreuvoir",
         "block.dohy.gmo_machine": "Machine a OGM",
@@ -1042,6 +1181,8 @@ def lang():
         "itemGroup.dohy.machines": "DoHy — machines",
         "itemGroup.dohy.agriculture": "DoHy — farming",
         "block.dohy.trading_server": "Trading Server",
+        "block.dohy.terminal": "Spawn Terminal",
+        "block.dohy.hologram": "Floating Label",
         "block.dohy.trough": "Trough",
         "block.dohy.water_dispenser": "Water Dispenser",
         "block.dohy.gmo_machine": "GMO Machine",
@@ -1100,6 +1241,7 @@ def lang():
 def main():
     trading_server()
     agriculture()
+    spawn()
     lang()
     print("Ressources dohy ecrites.")
 

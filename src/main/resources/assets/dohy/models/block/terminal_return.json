@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "dohy:block/terminal_top",
+    "front": "dohy:block/terminal_return",
+    "side": "dohy:block/terminal_side"
+  }
+}

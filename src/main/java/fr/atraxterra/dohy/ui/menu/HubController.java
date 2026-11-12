@@ -71,7 +71,9 @@ public final class HubController extends MenuController {
                         "Epargne " + MoneyFormat.shortForm(Bank.banked(player)),
                         MoneyFormat.shortForm(Bank.perDay(player)) + " d'interets / jour"))
                         .accent(0xFFFAC400).action("bank"),
-                clickerCard(player));
+                clickerCard(player),
+                Card.of(new ItemStack(Items.BEACON), "Spawn", List.of("Le hall des box", "et les bornes"))
+                        .accent(0xFFEF3826).action("spawn"));
 
         ContractData contracts = ContractApi.data(player);
         int left = 0;
@@ -205,6 +207,10 @@ public final class HubController extends MenuController {
             case "faction" -> fr.atraxterra.dohy.faction.FactionMenus.Overview.INSTANCE.open(player);
             case "trixium" -> TrixiumMenu.INSTANCE.open(player);
             case "achievements" -> AchievementMenu.INSTANCE.open(player);
+            case "spawn" -> {
+                UiNet.close(player);
+                fr.atraxterra.dohy.spawn.SpawnApi.toggle(player);
+            }
             case "shop" -> ShopController.open(player);
             case "sell" -> {
                 UiNet.forget(player);

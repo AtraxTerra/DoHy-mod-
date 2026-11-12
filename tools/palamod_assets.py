@@ -1574,7 +1574,7 @@ def main():
     # un second generateur ne peut pas y ajouter sa ligne sans que celui-ci l'efface.
     tag("minecraft/tags/block/mineable/pickaxe.json",
         ["dohy:trading_server", "dohy:gmo_machine", "dohy:water_dispenser", "dohy:flour_mill",
-         "dohy:bread_machine", "dohy:biogenerator"])
+         "dohy:bread_machine", "dohy:biogenerator", "dohy:terminal"])
     tag("minecraft/tags/block/mineable/axe.json", ["dohy:trough"])
     # Les cereales de DoHy sont des cultures comme les autres : le tag vanilla
     # les fait pietiner, fertiliser et recolter par les villageois.
