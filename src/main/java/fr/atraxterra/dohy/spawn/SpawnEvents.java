@@ -118,7 +118,9 @@ public final class SpawnEvents {
                 && Math.abs(player.getY() - (SpawnBuilder.FLOOR + 1)) < 0.6d) {
             EarthData.Country country = SpawnApi.countryOnMap(player.getX(), player.getZ());
             if (country != null) {
-                player.sendSystemMessage(Component.literal(country.name()).withStyle(ChatFormatting.GOLD), true);
+                player.sendSystemMessage(Component.literal(country.name()).withStyle(ChatFormatting.GOLD)
+                        .append(Component.literal(" · " + fr.atraxterra.dohy.earth.EarthNations.holderName(player,
+                                country.id())).withStyle(ChatFormatting.GRAY)), true);
             }
         }
     }

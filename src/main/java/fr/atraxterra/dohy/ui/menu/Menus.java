@@ -37,6 +37,7 @@ public final class Menus {
                 FactionMenus.Settings.INSTANCE,
                 FactionTreeMenus.Tree.INSTANCE, FactionTreeMenus.Branch.INSTANCE, ChestExplorerMenu.INSTANCE,
                 EnemyBaseMenu.INSTANCE, ReserveMenu.INSTANCE, FactionEventMenu.INSTANCE,
+                fr.atraxterra.dohy.earth.NationMenu.INSTANCE,
                 TrixiumMenu.INSTANCE, AchievementMenu.INSTANCE,
                 fr.atraxterra.dohy.tech.TradingServerMenu.INSTANCE,
                 fr.atraxterra.dohy.agri.GmoMachineMenu.INSTANCE,

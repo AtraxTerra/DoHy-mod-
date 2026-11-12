@@ -99,15 +99,41 @@ public abstract class EventRun {
     protected int endedAt = -1;
     protected boolean done;
 
+    /**
+     * Les factions que le prochain event doit aligner, par leur nom : sur la
+     * carte de la Terre, celles qui tiennent un pays vise par un joueur. Posees
+     * par {@link FactionEvents#start} le temps de creer l'event.
+     */
+    private static List<String> wanted = List.of();
+
+    static void want(List<String> names) {
+        wanted = List.copyOf(names);
+    }
+
     protected EventRun(FactionEventKind kind, RandomSource random) {
         this.kind = kind;
+        java.util.Random shuffle = new java.util.Random(random.nextLong());
         List<Integer> picks = new ArrayList<>();
         for (int i = 0; i < NAMES.length; i++) {
             picks.add(i);
         }
-        Collections.shuffle(picks, new java.util.Random(random.nextLong()));
-        for (int i = 0; i < RIVALS; i++) {
-            rivals.add(new Rival(NAMES[picks.get(i)], COLORS[picks.get(i)]));
+        Collections.shuffle(picks, shuffle);
+        List<Integer> chosen = new ArrayList<>();
+        for (String name : wanted) {
+            for (int i = 0; i < NAMES.length; i++) {
+                if (NAMES[i].equals(name) && !chosen.contains(i) && chosen.size() < RIVALS) {
+                    chosen.add(i);
+                }
+            }
+        }
+        for (int pick : picks) {
+            if (chosen.size() < RIVALS && !chosen.contains(pick)) {
+                chosen.add(pick);
+            }
+        }
+        Collections.shuffle(chosen, shuffle);
+        for (int index : chosen) {
+            rivals.add(new Rival(NAMES[index], COLORS[index]));
         }
     }
 
@@ -437,6 +463,10 @@ public abstract class EventRun {
         ranking.removeIf(entry -> entry.getValue() <= 0.0f);
         ranking.sort((a, b) -> Float.compare(b.getValue(), a.getValue()));
         long[] elo = shares(ranking.size(), ELO_FACTOR, kind.elo());
+        List<String> keys = new ArrayList<>();
+        for (Map.Entry<String, Float> entry : ranking) {
+            keys.add(entry.getKey());
+        }
 
         List<Component> lines = new ArrayList<>();
         Component rule = Component.literal("----------------------------------------")
@@ -485,6 +515,7 @@ public abstract class EventRun {
                 FactionApi.addElo(player, elo[place], kind.label());
                 FactionApi.stat(player, "event:" + kind.id(), 1);
             }
+            fr.atraxterra.dohy.earth.EarthNations.afterEvent(player, keys, rivals, key, place >= 0 ? elo[place] : 0L);
         }
     }
 

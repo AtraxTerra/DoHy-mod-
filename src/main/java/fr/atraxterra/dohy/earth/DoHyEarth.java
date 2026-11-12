@@ -32,6 +32,19 @@ public final class DoHyEarth {
                     .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
                     .build());
 
+    /** Les pays pris par des joueurs, sur le monde de la carte ; rien n'est ecrit tant qu'aucun n'est pris. */
+    public static final Supplier<AttachmentType<EarthNations.Ledger>> LEDGER = ATTACHMENTS.register(
+            "earth_nations", () -> AttachmentType.builder(() -> EarthNations.Ledger.EMPTY)
+                    .serialize(EarthNations.Ledger.MAP_CODEC, EarthNations.Ledger::exists)
+                    .build());
+
+    /** La capitale, le pays vise et les points de conquete d'une faction ; gardes a la mort. */
+    public static final Supplier<AttachmentType<EarthNations.Nation>> NATION = ATTACHMENTS.register(
+            "earth_nation", () -> AttachmentType.builder(() -> EarthNations.Nation.EMPTY)
+                    .serialize(EarthNations.Nation.MAP_CODEC, EarthNations.Nation::exists)
+                    .copyOnDeath()
+                    .build());
+
     private DoHyEarth() {
     }
 

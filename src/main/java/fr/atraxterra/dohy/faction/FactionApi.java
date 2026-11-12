@@ -201,6 +201,7 @@ public final class FactionApi {
         data.tags.clear();
         data.tags.addAll(tags);
         data.banner = Math.floorMod(banner, 16);
+        fr.atraxterra.dohy.earth.EarthNations.renamed(player);
         return null;
     }
 
@@ -232,6 +233,7 @@ public final class FactionApi {
         }
         unclaimAll(player);
         player.setData(Factions.ENEMY_BASE.get(), fr.atraxterra.dohy.faction.base.EnemyBase.EMPTY);
+        fr.atraxterra.dohy.earth.EarthNations.release(player);
         String name = data.name;
         data.clear();
         tell(player, "La faction " + name + " est dissoute.", ChatFormatting.RED);
@@ -251,6 +253,11 @@ public final class FactionApi {
     public static ClaimOwner claimAt(LevelAccessor level, BlockPos pos) {
         LevelChunk chunk = chunkAt(level, pos);
         return chunk == null ? ClaimOwner.NONE : chunk.getData(Factions.CLAIM.get());
+    }
+
+    /** Les claims permis : ceux de l'arbre, plus un par pays tenu sur la carte de la Terre. */
+    public static int claimCap(ServerPlayer player) {
+        return perks(player).claims() + fr.atraxterra.dohy.earth.EarthNations.claimBonus(player);
     }
 
     public static boolean claimable(Level level) {
@@ -279,7 +286,7 @@ public final class FactionApi {
         if (owner.claimed()) {
             return "Ce chunk appartient a la faction " + owner.faction();
         }
-        int cap = perks(player).claims();
+        int cap = claimCap(player);
         if (data.claims.size() >= cap) {
             return "Plus de claim disponible (" + cap + "). L'arbre de technologie en debloque d'autres";
         }
