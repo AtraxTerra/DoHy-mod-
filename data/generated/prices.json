@@ -2260,6 +2260,17 @@
       "sellable": true,
       "rate_per_hour": 74.0
     },
+    "dohy:gingerbread": {
+      "category": "AGRI",
+      "tier": "MOB",
+      "base_price": 240,
+      "s0": 256,
+      "floor_pct": 0.2,
+      "ceiling_pct": 1.8,
+      "buy_price": 960,
+      "sellable": true,
+      "rate_per_hour": 104.0
+    },
     "dohy:fonio_bread": {
       "category": "AGRI",
       "tier": "FOUND",

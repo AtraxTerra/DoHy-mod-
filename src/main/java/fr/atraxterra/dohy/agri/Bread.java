@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Les dix pains, un par cereale. Ils sortent tous de la machine a pain
+ * Les pains : un par cereale, plus le pain d'epices du Fermier confirme. Ils
+ * sortent tous de la machine a pain
  * ({@link BreadMachineMenu}) ; leurs fournees sont dans {@code agriculture.json}.
  *
  * <p>La gamme suit celle de NationsGlory : trois pains qui ne font que
@@ -29,6 +30,8 @@ public enum Bread {
     SOY("soy_bread", "Pain de soja", 6, 3, Rarity.UNCOMMON, 1),
     SUNFLOWER("sunflower_bread", "Pain de tournesol", 4, 0, Rarity.UNCOMMON, 1),
     MINER("miner_bread", "Pain du mineur", 4, 0, Rarity.UNCOMMON, 1),
+    /** Le pain du Fermier confirme : sa fournee demande le niveau 50 et ne se cuit qu'a la main. */
+    GINGER("gingerbread", "Pain d'epices", 8, 4, Rarity.UNCOMMON, 1),
     FONIO("fonio_bread", "Pain de fonio", 6, 4, Rarity.RARE, 1),
     SORGHUM("sorghum_bread", "Pain de sorgho", 2, 4, Rarity.RARE, 2),
     KAMUT("kamut_bread", "Pain de kamut", 4, 0, Rarity.RARE, 1);
@@ -94,6 +97,8 @@ public enum Bread {
             case SOY -> List.of(new MobEffectInstance(MobEffects.REGENERATION, 100, 1));
             case SUNFLOWER -> List.of(new MobEffectInstance(AgriEffects.LIFE_STEAL, 1200, 0));
             case MINER -> List.of(new MobEffectInstance(AgriEffects.PROSPECTING, 6000, 0));
+            case GINGER -> List.of(new MobEffectInstance(MobEffects.REGENERATION, 200, 0),
+                    new MobEffectInstance(MobEffects.RESISTANCE, 1200, 0));
             case FONIO -> List.of(new MobEffectInstance(MobEffects.ABSORPTION, 600, 0),
                     new MobEffectInstance(AgriEffects.LAST_STAND, 600, 0));
             case SORGHUM -> List.of(new MobEffectInstance(MobEffects.STRENGTH, 2400, 1),

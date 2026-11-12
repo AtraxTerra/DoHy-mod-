@@ -19,6 +19,8 @@ public enum ContractType {
     COLLECTION_TIER,
     /** Gagner des niveaux de metier, tous metiers confondus. */
     JOB_LEVELS,
+    /** Produire a une machine : moudre une farine, cuire un pain. La cible est l'objet produit, ou son tag. */
+    PRODUCE,
     UNKNOWN;
 
     public static ContractType byName(String raw) {

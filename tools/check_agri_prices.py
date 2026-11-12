@@ -96,7 +96,7 @@ def main():
         grain = "minecraft:wheat" if key == "wheat" else "dohy:" + key
         recipe("moulin %s" % key, {grain: machines["mill_ratio"]}, {"dohy:%s_flour" % key: 1})
 
-    known = set(re.findall(r'\("([a-z_]+_bread)"', BREADS.read_text(encoding="utf-8")))
+    known = set(re.findall(r'^\s+[A-Z_]+\("([a-z_]+)"', BREADS.read_text(encoding="utf-8"), re.MULTILINE))
     seen = set()
     for batch in agri["breads"]:
         name = batch["id"]

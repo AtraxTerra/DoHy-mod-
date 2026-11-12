@@ -133,15 +133,19 @@
     "max_input": 1000,
     "mill_ratio": 3,
     "mill_energy": 120,
+    "_automate": "Alimentes par entonnoir ou tuyau, le moulin et la machine a pain travaillent seuls : mill_ticks par farine, bake_ticks par fournee. A la main, c'est immediat et ca donne de l'XP de Fermier (mill_xp par farine, xp de chaque fournee) ; l'automate n'en donne pas.",
+    "mill_ticks": 10,
+    "mill_xp": 2,
+    "bake_ticks": 40,
     "biogen_per_cereal": 400,
     "biogen_per_tick": 20,
     "biogen_hopper": 64,
     "biogen_push": 200,
-    "_bonus": "A partir de bonus_bread_level en Fermier, chaque fournee a bonus_bread_chance de rendre un pain de plus.",
+    "_bonus": "A partir de bonus_bread_level en Fermier, chaque fournee faite a la main a bonus_bread_chance de rendre un pain de plus.",
     "bonus_bread_level": 40,
     "bonus_bread_chance": 0.1
   },
-  "_breads": "Les fournees de la machine a pain : ce qu'elles consomment, combien de pains elles rendent, leur cout en FE. Les effets des pains sont dans le code (agri/Bread.java).",
+  "_breads": "Les fournees de la machine a pain : ce qu'elles consomment, combien de pains elles rendent, leur cout en FE, l'XP de Fermier quand on les cuit a la main. min_level reserve une fournee a un niveau de Fermier : elle ne se cuit alors qu'a la main. Les effets des pains sont dans le code (agri/Bread.java).",
   "breads": [
     {
       "id": "corn_bread",
@@ -149,7 +153,8 @@
         "dohy:corn_flour": 4
       },
       "count": 4,
-      "energy": 1000
+      "energy": 1000,
+      "xp": 12
     },
     {
       "id": "oat_bread",
@@ -157,7 +162,8 @@
         "dohy:oat_flour": 4
       },
       "count": 4,
-      "energy": 1000
+      "energy": 1000,
+      "xp": 12
     },
     {
       "id": "rye_bread",
@@ -165,7 +171,8 @@
         "dohy:rye_flour": 4
       },
       "count": 4,
-      "energy": 1000
+      "energy": 1000,
+      "xp": 12
     },
     {
       "id": "barley_bread",
@@ -174,7 +181,8 @@
         "minecraft:sugar": 1
       },
       "count": 1,
-      "energy": 400
+      "energy": 400,
+      "xp": 8
     },
     {
       "id": "soy_bread",
@@ -183,7 +191,8 @@
         "minecraft:egg": 1
       },
       "count": 1,
-      "energy": 400
+      "energy": 400,
+      "xp": 8
     },
     {
       "id": "sunflower_bread",
@@ -192,7 +201,8 @@
         "dohy:cream": 1
       },
       "count": 1,
-      "energy": 400
+      "energy": 400,
+      "xp": 10
     },
     {
       "id": "miner_bread",
@@ -202,7 +212,20 @@
         "minecraft:glow_berries": 2
       },
       "count": 1,
-      "energy": 600
+      "energy": 600,
+      "xp": 12
+    },
+    {
+      "id": "gingerbread",
+      "inputs": {
+        "dohy:rye_flour": 2,
+        "minecraft:honeycomb": 1,
+        "minecraft:sugar": 1
+      },
+      "count": 2,
+      "energy": 600,
+      "min_level": 50,
+      "xp": 20
     },
     {
       "id": "fonio_bread",
@@ -212,7 +235,8 @@
         "dohy:lard": 1
       },
       "count": 1,
-      "energy": 800
+      "energy": 800,
+      "xp": 30
     },
     {
       "id": "sorghum_bread",
@@ -223,7 +247,8 @@
         "minecraft:egg": 1
       },
       "count": 1,
-      "energy": 1200
+      "energy": 1200,
+      "xp": 40
     },
     {
       "id": "kamut_bread",
@@ -233,7 +258,8 @@
         "minecraft:glistering_melon_slice": 1
       },
       "count": 1,
-      "energy": 800
+      "energy": 800,
+      "xp": 30
     }
   ],
   "effects": {

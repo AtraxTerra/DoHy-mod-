@@ -107,8 +107,23 @@ devinettes, puis les quantités une à une) : **28 essais en moyenne avec un ind
 | **Machine à pain** (`dohy:bread_machine`) | la liste des pains ; un clic par fournée, clic droit huit fournées. |
 | **Biogénérateur** (`dohy:biogenerator`) | brûle des céréales (clic avec la céréale en main, 64 en attente) : 400 FE par céréale, 20 FE par tick, poussés vers les machines qui le touchent. |
 
-- Le moulin et la machine à pain n'ont pas de coffre : ils puisent dans l'inventaire du joueur et
-  y rendent leur produit. Seule l'énergie est dans le bloc (réserve de 20 000 FE).
+- **À la main** : un clic sur une recette de l'écran puise dans l'inventaire du joueur et y rend
+  le produit, tout de suite. C'est ce travail-là qui donne de l'XP de Fermier (2 par farine, 8 à
+  40 par fournée) et le pain en plus du métier.
+- **En automate** : le moulin et la machine à pain ont six cases d'entrée et trois de sortie. Un
+  **entonnoir dessus ou sur un côté** les remplit, un **entonnoir dessous** les vide ; les tuyaux
+  des mods passent par la capacité d'objets de NeoForge, avec les mêmes faces. Tant qu'elle a de
+  quoi faire et de l'énergie, la machine travaille seule : une farine en 10 ticks, une fournée en
+  40. Elle moud la première farine possible et cuit la première fournée dont tous les ingrédients
+  sont là.
+- **Une sorte d'objet n'occupe qu'une case d'entrée** (64 au plus) : un entonnoir de farine ne
+  peut pas boucher la place de la crème.
+- L'écran montre ce que la machine contient (section « Dans la machine ») : « Charger » y dépose
+  ce qu'elle accepte depuis le sac, « Tout reprendre » le rend, un clic sur une pile la reprend.
+- Le biogénérateur prend aussi ses céréales par entonnoir.
+- Cassée, une machine rend ce qu'elle contenait. La réserve d'énergie est de 20 000 FE.
+- Ce que l'automate ne fait pas : donner de l'XP, sortir le pain en plus, cuire le pain d'épices.
+  Ce qu'il produit compte quand même pour les **contrats** de celui qui l'a posée.
 - **Énergie** : la capacité FE de NeoForge, sur toutes les faces, comme le serveur de trading. Le
   moulin et la machine à pain reçoivent, le biogénérateur donne. Un câble de NTM NEXT les alimente
   (5 HE = 1 FE) ; sans autre mod, le biogénérateur posé contre elles suffit.
@@ -118,9 +133,9 @@ devinettes, puis les quantités une à une) : **28 essais en moyenne avec un ind
 - Vérifié sans NTM, comme pour le serveur : la capacité répond comme à un câble, mais ni un câble
   réel ni la machine d'assemblage n'ont été essayés.
 
-### Les dix pains
+### Les pains
 
-Ils ne sortent que de la machine à pain. La gamme est celle du wiki (nourriture, soin en
+Dix pains, un par céréale, plus le pain d'épices. Ils ne sortent que de la machine à pain. La gamme est celle du wiki (nourriture, soin en
 demi-cœurs, effets) ; les noms et les recettes sont de DoHy.
 
 | Pain | Fournée | Faim | Effet |
@@ -132,6 +147,7 @@ demi-cœurs, effets) ; les noms et les recettes sont de DoHy.
 | Pain de soja | 2 farines, 1 œuf | 6 | +1,5 cœur, Régénération II 5 s |
 | Pain de tournesol | 2 farines, 1 crème | 4 | Vol de vigueur I 1 min |
 | Pain du mineur | 2 farines de blé, 1 saindoux, 2 baies lumineuses | 4 | Flair du mineur 5 min |
+| Pain d'épices | 2 farines de seigle, 1 rayon de miel, 1 sucre → 2 | 8 | +2 cœurs, Régénération I 10 s, Résistance I 1 min. **Fermier niveau 50, à la main seulement.** |
 | Pain de fonio | 2 farines, 1 crème, 1 saindoux | 6 | +2 cœurs, Absorption I et Dernier rempart 30 s |
 | Pain de sorgho | 3 farines, 1 crème, 1 saindoux, 1 œuf | 2 | +2 cœurs, Force II, Rapidité II et Absorption I 2 min, Régénération II 30 s, Vol de vigueur II 1 min |
 | Pain de kamut | 2 farines, 1 crème, 1 melon scintillant | 4 | lève les effets néfastes, Immunité 2 min |
@@ -156,6 +172,15 @@ Inchangé dans son principe : une **mangeoire** (64 céréales) et un **abreuvoi
 **4 céréales** et laisse un produit : la vache de la **crème**, le cochon du **saindoux**, la poule
 un œuf. Une tournée coûte une dose d'eau.
 
+### Contrats et commandes
+
+- Un nouveau type de contrat, **`PRODUCE`** : produire à une machine. Sa cible est l'objet produit
+  ou son tag (`#dohy:flours`, `#dohy:breads`). Il avance à la main comme en automate.
+- Contrats du jour : « Récolter des céréales mûres » (300), « Moudre de la farine » (120),
+  « Cuire des pains » (60). Contrat de la semaine : « Grande fournée » (600 pains).
+- **Commande de trixium** : dix commandes de plus (maïs, avoine, tournesol, farine de blé, pains
+  de maïs, de seigle, d'orge, de soja, crème, saindoux), soit 52. Toutes s'achètent au shop.
+
 ### En vente, au cours de l'heure
 
 Les grains, les farines, les pains, la crème et le saindoux sont au shop, onglet
@@ -168,7 +193,8 @@ Les grains, les farines, les pains, la crème et le saindoux sont au shop, ongle
 
 - `agri/` : `Cereal`, `Climate`, `AgriCropBlock`, `SeedItem` ; `GmoResearch`, `GmoMachineMenu`,
   `AgriData` (le carnet, attaché au joueur) ; `AgriMachineBlock`, `AgriMachineBlockEntity`,
-  `MillMenu`, `BreadMachineMenu` ; `Bread`, `BreadItem`, `AgriEffects` ; `FeederBlock`,
+  `MillMenu`, `BreadMachineMenu`, `AgriProduction` (contrats) ; `Bread`, `BreadItem`,
+  `AgriEffects` ; `FeederBlock`,
   `FeederBlockEntity` ; `AgriEvents` (herbe, flair du mineur) ; `AgriConfig`.
 - `tools/dohy_assets.py` dessine tout ; `tools/check_agri_prices.py` (CI) vérifie qu'aucune
   recette ne devient rentable en achetant ses ingrédients au cours le plus bas.

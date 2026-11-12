@@ -808,8 +808,8 @@ métiers » — lié à la commande, à son choix.
 - **Elle bascule à midi**, heure de la machine, et non à 5 h comme les autres contrats.
 - **L'objet du jour se calcule**, il ne se tire pas : il se déduit du numéro du jour. Rien n'est
   sauvegardé, il ne peut pas être relancé, et il est le même après un redémarrage. Les
-  42 commandes sont battues une fois par tour : chacune passe une fois en 42 jours, jamais deux
-  jours de suite.
+  commandes (42 à l'origine, 52 avec l'agriculture) sont battues une fois par tour : chacune
+  passe une fois par tour, jamais deux jours de suite.
 - **Quantités** : un quart d'heure de production au taux du catalogue (`rate_per_hour / 4`,
   arrondi en piles) — 256 blés, 320 bûches, 128 lingots d'améthyste, 64 lingots de paladium,
   10 diamants, 24 findiums… Au prix de vente, une commande pèse entre 640 $ (perles de l'ender)
@@ -909,6 +909,21 @@ marge d'achat de 4 : au pire, acheter au plus bas et revendre au plus haut rend 
 - **Le pain du mineur** rend au plus un minerai toutes les 20 secondes, soit 15 par pain, pour
   une valeur moyenne d'environ 110 $ pièce. Sans ce délai, un outil de zone en aurait fait une
   rente.
+
+**L'automate et le métier.** Le moulin et la machine à pain travaillent seuls quand on les
+alimente par entonnoir (une farine en 10 ticks, une fournée en 40) ; en pratique c'est l'entonnoir
+(un objet toutes les 8 ticks) et l'énergie qui limitent. **L'XP de Fermier ne vient que du travail
+à la main** : 2 par farine, 12 par fournée de pain simple (soit 3 par pain, moins qu'une récolte),
+8 à 12 pour un pain à effet, 30 à 40 pour un pain d'OGM, 20 pour le pain d'épices. Une chaîne
+automatique ne fait donc pas monter le métier pendant que le joueur est ailleurs ; elle fait
+avancer ses contrats, qui sont bornés.
+
+**Contrats** : 300 céréales, 120 farines (360 céréales) ou 60 pains par jour, 600 pains par
+semaine — la même échelle que « récolter 400 cultures ». **Commandes de trixium** : 52 au lieu de
+42, les dix nouvelles au même calibrage (un quart d'heure de production).
+
+**Le pain d'épices** (240 $) demande Fermier niveau 50 et ne se cuit qu'à la main : c'est la
+récompense du métier, pas un produit de chaîne.
 
 Leviers : `data/agriculture.json` (recherche, machines, fournées, effets, élevage), bloc `course`
 de `data/economy.json`, lignes `dohy:` de `data/rates.csv`.

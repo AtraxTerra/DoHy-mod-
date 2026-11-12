@@ -41,13 +41,15 @@ public final class BreadMachineMenu extends MachineMenu {
         AgriConfig.Config config = AgriConfig.config();
         AgriMachineBlockEntity machine = machine(player);
         int energy = machine == null ? 0 : machine.energyStored();
+        int level = JobApi.level(player, Job.FARMER);
         List<Card> cards = new ArrayList<>();
         for (AgriConfig.Batch batch : config.breads()) {
             Bread bread = Bread.byKey(batch.id());
             if (bread == null) {
                 continue;
             }
-            int possible = possible(player, batch, energy);
+            boolean locked = level < batch.minLevel();
+            int possible = locked ? 0 : possible(player, batch, energy);
             List<String> lines = new ArrayList<>();
             for (Map.Entry<Identifier, Integer> input : batch.inputs().entrySet()) {
                 Item item = BuiltInRegistries.ITEM.getOptional(input.getKey()).orElse(null);
@@ -58,28 +60,31 @@ public final class BreadMachineMenu extends MachineMenu {
                         + " / " + input.getValue() + " ").append(new ItemStack(item).getHoverName())));
             }
             List<String> tooltip = new ArrayList<>();
-            tooltip.add(batch.energy() + " FE la fournee");
+            tooltip.add(batch.energy() + " FE la fournee  ·  +" + batch.xp() + " XP de Fermier");
+            if (batch.minLevel() > 0) {
+                tooltip.add("Fermier niveau " + batch.minLevel() + "  ·  ne se cuit qu'a la main");
+            }
             for (int line = 1; line <= bread.loreLines(); line++) {
                 tooltip.add(MenuView.text(Component.translatable("tooltip.dohy." + bread.key() + "." + line)));
             }
             Card card = Card.of(new ItemStack(DoHyAgri.bread(bread), batch.count()),
                             MenuView.text(new ItemStack(DoHyAgri.bread(bread)).getHoverName()), lines)
-                    .accent(possible > 0 ? GREEN : 0xFF55545C).badge("x" + batch.count()).tooltip(tooltip);
+                    .accent(possible > 0 ? GREEN : locked ? RED : 0xFF55545C)
+                    .badge(locked ? "NIV. " + batch.minLevel() : "x" + batch.count()).tooltip(tooltip);
             cards.add(possible > 0
                     ? card.action("one:" + batch.id() + "|cuire une fournee")
                     .right("many:" + batch.id() + "|cuire " + MANY + " fournees")
                     : card.state(MenuView.DISABLED));
         }
-        int level = JobApi.level(player, Job.FARMER);
         boolean bonus = level >= config.machines().bonusBreadLevel();
-        List<MenuView.Stat> stats = List.of(energyStat(machine),
-                new MenuView.Stat("FERMIER", "NIV. " + level, 0xFFFFFFFF),
+        List<MenuView.Stat> stats = List.of(energyStat(machine), workStat(machine),
                 new MenuView.Stat("PAIN EN PLUS", bonus
                         ? Math.round(config.machines().bonusBreadChance() * 100.0d) + " %"
                         : "NIV. " + config.machines().bonusBreadLevel(), bonus ? GREEN : GOLD));
         return new MenuView(id(), "Machine a pain", "Clic gauche : une fournee  ·  clic droit : " + MANY
                 + " fournees", stats,
-                List.of(new MenuView.Section("PAINS", "resources", MenuView.GRID, cards)), true);
+                List.of(stock(player, machine),
+                        new MenuView.Section("CUIRE A LA MAIN", "resources", MenuView.GRID, cards)), true);
     }
 
     /** Fournees possibles avec l'inventaire du joueur et l'energie de la machine. */
@@ -100,6 +105,9 @@ public final class BreadMachineMenu extends MachineMenu {
         AgriMachineBlockEntity machine = machine(player);
         if (machine == null) {
             UiNet.close(player);
+            return;
+        }
+        if (stockCard(player, machine, key)) {
             return;
         }
         int colon = key.indexOf(':');
@@ -128,6 +136,9 @@ public final class BreadMachineMenu extends MachineMenu {
         if (bread == null) {
             return "Ce pain n'existe pas.";
         }
+        if (JobApi.level(player, Job.FARMER) < batch.minLevel()) {
+            return "Il faut etre Fermier niveau " + batch.minLevel() + " pour cuire ce pain.";
+        }
         int count = Math.min(wanted, possible(player, batch, machine.energyStored()));
         if (count <= 0) {
             return machine.energyStored() < batch.energy()
@@ -154,6 +165,11 @@ public final class BreadMachineMenu extends MachineMenu {
             }
         }
         AgriInv.give(player, DoHyAgri.bread(bread), made);
+        // Le travail a la main paie en XP de Fermier ; l'automate, non.
+        if (batch.xp() > 0) {
+            JobApi.grant(player, Job.FARMER, batch.xp() * count);
+        }
+        AgriProduction.produced(player, DoHyAgri.bread(bread), made);
         return null;
     }
 }

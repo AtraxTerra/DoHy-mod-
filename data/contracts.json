@@ -12,6 +12,7 @@
     "_comment": "Un objet a livrer, different chaque jour, paye en trixium. La carte de l'ecran des contrats prend dans le sac ce que le joueur porte ; une livraison partielle compte.",
     "_horloge": "reset_hour est l'heure reelle ou l'objet demande change : midi, et non la bascule de 5 h des autres contrats. L'objet du jour se deduit du numero du jour : chaque commande du pool passe une fois avant qu'aucune ne revienne, jamais deux jours de suite.",
     "_calibrage": "Chaque quantite vaut un quart d'heure de production au taux du catalogue (rate_per_hour / 4, arrondi vers une quantite qui se compte en piles). La recompense, 16 trixium, vaut vingt minutes de minage pur (50 par heure) : la commande echange du temps de metier contre du temps de mine.",
+    "_agriculture": "Dix commandes viennent de l'agriculture de DoHy : trois cereales (une par climat), une farine, quatre pains, creme et saindoux. Meme calibrage. Toutes s'achetent au shop : un jour ou la ferme du bon climat manque, la serie de sept jours peut se sauver a l'argent.",
     "_god_villager": "god_villager_streak commandes livrees de suite font apparaitre le God Villager sur le joueur, sans condition de niveau, puis la serie repart de zero. Un jour manque remet la serie a zero et ne retire rien d'autre. 0 coupe la serie.",
     "reset_hour": 12,
     "reward_item": "palamod:trixium",
@@ -60,7 +61,17 @@
       { "item": "palamod:eggplant", "amount": 256 },
       { "item": "palamod:kiwano", "amount": 192 },
       { "item": "palamod:findium", "amount": 24 },
-      { "item": "palamod:green_paladium_ingot", "amount": 20 }
+      { "item": "palamod:green_paladium_ingot", "amount": 20 },
+      { "item": "dohy:corn", "amount": 256 },
+      { "item": "dohy:oat", "amount": 256 },
+      { "item": "dohy:sunflower", "amount": 256 },
+      { "item": "dohy:wheat_flour", "amount": 96 },
+      { "item": "dohy:corn_bread", "amount": 48 },
+      { "item": "dohy:rye_bread", "amount": 48 },
+      { "item": "dohy:barley_bread", "amount": 32 },
+      { "item": "dohy:soy_bread", "amount": 32 },
+      { "item": "dohy:cream", "amount": 64 },
+      { "item": "dohy:lard", "amount": 64 }
     ]
   },
   "daily": {
@@ -234,6 +245,32 @@
         "amount": 150,
         "label": "Recolter des cultures de PalaMod",
         "icon": "palamod:kiwano"
+      },
+      {
+        "id": "harvest_cereals",
+        "type": "HARVEST",
+        "target": "#dohy:cereal_crops",
+        "amount": 300,
+        "label": "Recolter des cereales mures",
+        "icon": "dohy:corn"
+      },
+      {
+        "id": "mill_flour",
+        "type": "PRODUCE",
+        "target": "#dohy:flours",
+        "amount": 120,
+        "_note": "moulin, a la main ou en automate",
+        "label": "Moudre de la farine",
+        "icon": "dohy:wheat_flour"
+      },
+      {
+        "id": "bake_bread",
+        "type": "PRODUCE",
+        "target": "#dohy:breads",
+        "amount": 60,
+        "_note": "machine a pain, a la main ou en automate",
+        "label": "Cuire des pains",
+        "icon": "dohy:corn_bread"
       }
     ]
   },
@@ -274,6 +311,14 @@
         "amount": 5000,
         "label": "Grande moisson",
         "icon": "minecraft:hay_block"
+      },
+      {
+        "id": "w_bake_mass",
+        "type": "PRODUCE",
+        "target": "#dohy:breads",
+        "amount": 600,
+        "label": "Grande fournee",
+        "icon": "dohy:rye_bread"
       },
       {
         "id": "w_ore_hunt",

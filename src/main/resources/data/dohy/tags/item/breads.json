@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "dohy:corn_bread",
+    "dohy:oat_bread",
+    "dohy:rye_bread",
+    "dohy:barley_bread",
+    "dohy:soy_bread",
+    "dohy:sunflower_bread",
+    "dohy:miner_bread",
+    "dohy:gingerbread",
+    "dohy:fonio_bread",
+    "dohy:sorghum_bread",
+    "dohy:kamut_bread"
+  ]
+}
