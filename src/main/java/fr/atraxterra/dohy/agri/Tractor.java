@@ -497,7 +497,7 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
             }
             server.startRiding(this);
             say(server, "Carburant : " + fuel() + " / " + tank() + (tool() == TractorTool.NONE ? "."
-                    : "  ·  " + tool().label() + (working() ? " en marche" : " a l'arret") + " (saut).", true);
+                    : "  ·  " + tool().label() + (working() ? " en marche" : " a l'arret") + " (saut)."), true);
         }
         return InteractionResult.SUCCESS;
     }

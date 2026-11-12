@@ -172,6 +172,74 @@ Inchangé dans son principe : une **mangeoire** (64 céréales) et un **abreuvoi
 **4 céréales** et laisse un produit : la vache de la **crème**, le cochon du **saindoux**, la poule
 un œuf. Une tournée coûte une dose d'eau.
 
+### Le tracteur, ses outils, le silo et la pompe
+
+Le fonctionnement suit celui des engins agricoles de NationsGlory (tracteur, charrue, semoir,
+épandeur, moissonneuse, silo) tel que le décrit son wiki public ; **le modèle, la texture, les
+icônes et le code sont dessinés et écrits pour DoHy** (`tools/tractor_model.py`,
+`tools/dohy_assets.py`), rien n'est repris de leurs fichiers.
+
+**Le tracteur** (`dohy:tractor`, Fermier niveau 10 pour le poser et le conduire) est une entité.
+
+- Un clic sur le sol le pose ; un clic dessus fait monter. Il se conduit comme on marche : il
+  tourne vers où l'on regarde, avance, recule au ralenti, grimpe un bloc. Environ 8,5 blocs par
+  seconde à vide, 5 quand l'outil travaille.
+- **Carburant** : un réservoir de 4 000 unités, une unité par bloc parcouru, deux quand l'outil
+  travaille. À sec, il ne bouge plus. On fait le plein d'un clic, le carburant en main : un
+  **bidon de NTM NEXT** (diesel, essence, pétroil, kérosène, biocarburant, fioul, éthanol — 0,6 à
+  1,1 unité par mB), un seau de lave (250), du charbon (250 la pièce), un bloc de charbon, une
+  tige de blaze. Ou en le garant à côté d'une pompe.
+- **Un outil à la fois**, large de trois blocs, qui agit derrière lui. Clic sur le tracteur,
+  l'outil en main, pour l'atteler (l'ancien revient dans le sac). Un outil attelé travaille ; au
+  volant, la touche de saut tenue un instant l'arrête et le remet en marche.
+
+| Outil | Ce qu'il fait |
+|---|---|
+| **Charrue** (`dohy:tractor_plow`) | l'herbe, la terre et les chemins deviennent de la terre labourée ; les herbes hautes sont arrachées. |
+| **Semoir** (`dohy:tractor_seeder`) | sème sur la terre labourée libre les semences chargées (1 152 au plus) : blé et les neuf céréales. Par défaut, la première semence chargée qui pousse dans le climat du champ ; l'écran permet d'en imposer une. |
+| **Épandeur** (`dohy:tractor_spreader`) | une poudre d'os par pousse, une fois par passage (576 au plus). |
+| **Moissonneuse** (`dohy:tractor_harvester`) | coupe le blé et les céréales **mûrs**. Le grain va dans la trémie (2 304), les semences rendues retournent au semoir. |
+
+- **La moisson compte comme une récolte à la main** : elle passe par la casse normale du bloc, au
+  nom du conducteur. XP de Fermier, contrats de récolte et collections s'appliquent sans code à
+  part.
+- **L'écran** (accroupi + clic, ou la touche d'inventaire au volant) : le réservoir, l'outil
+  (l'atteler, le dételer, l'arrêter), charger les semences et l'engrais du sac, choisir la
+  semence, reprendre une pile de la trémie.
+- **Accroupi + coup** le démonte : il rend le tracteur (qui garde son carburant), l'outil, les
+  semences, l'engrais et la récolte. Rien d'autre ne l'abîme. Ses roues ne piétinent pas la terre
+  labourée.
+
+**Le silo** (`dohy:silo`) stocke 16 384 céréales, toutes sortes confondues (blé et les neuf
+d'ici).
+
+- Un tracteur qui passe à moins de 4 blocs **y vide sa trémie tout seul**.
+- Un clic avec une céréale en main la dépose ; un clic ouvre l'écran : le stock, « Tout déposer »,
+  un clic pour prendre une pile, un clic droit pour **acheter un lot de 16** au prix de la boutique
+  (cours de l'heure et remises compris), versé directement dans le silo.
+- **Automatisation** : entonnoir, convoyeur ou tuyau d'objets dessus ou sur un côté pour entrer,
+  dessous pour sortir — la même règle que le moulin, par la capacité d'objets de NeoForge. Un
+  entonnoir sous le silo alimente donc un moulin ou un biogénérateur.
+- Cassé, il rend tout son grain.
+
+**La pompe à carburant** (`dohy:fuel_pump`) a une cuve de 16 000 mB qui n'accepte que les
+carburants de la table.
+
+- Elle fait le plein de tout tracteur garé à moins de 3 blocs, à 40 mB par tick.
+- On la remplit à la main (bidon, seau) ou **par un tuyau de fluide** : sa cuve est offerte à la
+  capacité de fluide de NeoForge sur toutes ses faces, celle que cherchent les tuyaux de NTM NEXT.
+- Un clic à main nue dit ce qu'elle contient.
+
+**Compatibilité NTM NEXT**, en résumé : les carburants sont ses fluides (`hbm:diesel`,
+`hbm:gasoline`…), lus par la capacité de fluide des objets (ses bidons) et des blocs (ses
+tuyaux) ; le silo parle à ses convoyeurs par la capacité d'objets ; les sept recettes passent par
+sa machine d'assemblage (plaques d'acier, moteurs, circuit) sous condition `neoforge:mod_loaded`
+`hbm`, avec une recette d'établi sous la condition inverse. Sans NTM NEXT, tout marche au charbon
+et à la lave.
+
+Réglages : bloc `farming` et `tractor_level` de `data/agriculture.json` (réservoir, consommation,
+vitesses, capacités, portées, table des carburants).
+
 ### Contrats et commandes
 
 - Un nouveau type de contrat, **`PRODUCE`** : produire à une machine. Sa cible est l'objet produit
@@ -196,6 +264,10 @@ Les grains, les farines, les pains, la crème et le saindoux sont au shop, ongle
   `MillMenu`, `BreadMachineMenu`, `AgriProduction` (contrats) ; `Bread`, `BreadItem`,
   `AgriEffects` ; `FeederBlock`,
   `FeederBlockEntity` ; `AgriEvents` (herbe, flair du mineur) ; `AgriConfig`.
+- Le tracteur : `Tractor` (l'entité), `TractorTool`, `TractorToolItem`, `TractorItem`,
+  `TractorFuel`, `TractorMenu`, `TractorEvents` ; `SiloBlock`, `SiloBlockEntity`, `SiloMenu` ;
+  `FuelPumpBlock`, `FuelPumpBlockEntity` ; côté client `client/agri/` (`TractorGeometry` est
+  écrit par `tools/tractor_model.py`).
 - `tools/dohy_assets.py` dessine tout ; `tools/check_agri_prices.py` (CI) vérifie qu'aucune
   recette ne devient rentable en achetant ses ingrédients au cours le plus bas.
 
