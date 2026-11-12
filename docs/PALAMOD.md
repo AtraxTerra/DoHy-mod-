@@ -1722,7 +1722,10 @@ une boucle — le débit tient aux mini golems (une production toutes les 8 minu
 - **Contrats** : trois quotidiens (48 minerais d'améthyste, 16 de paladium, 150 récoltes PalaMod)
   et un hebdomadaire (400 minerais de PalaMod).
 - **Musée** : une aile PalaMod, 23 pièces (la pépite d'endium, RARE, va au panneau mécène). Elle
-  rapporte **+2 points d'armure**.
+  rapporte **+2 points d'armure**. **Refondu le 2026-11-11** : le musée n'expose plus que des
+  pièces rares, et PalaMod y tient deux ailes — « Reliques de PalaMod » (11 pièces, +2 armure et
+  +15 % d'efficacité de minage) et « Donjons et pillage » (9 pièces, +4 points de vie). Détail :
+  `docs/BALANCE.md` § 6 duodecies.
 - Les récompenses de niveau de PalaJobs pèsent maintenant : 1 050 lingots de paladium (≈ 76 k) et
   autant de trixium (≈ 840 k) par métier maxé.
 

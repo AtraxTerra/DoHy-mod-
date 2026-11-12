@@ -753,6 +753,49 @@ fréquence règle donc le rythme du spawner customisé.
 
 Leviers : `chance` dans `placed_feature/miner/ruin.json` (9) et `crypt.json` (10).
 
+## 6 duodecies. Musée — des pièces rares seulement
+
+Jusqu'au 2026-11-11 le musée demandait un exemplaire de **chaque objet du catalogue de prix** :
+six ailes calquées sur les onglets du shop, 152 vitrines au départ, 176 avec PalaMod, 241 avec les
+65 pièces de machine de NTM. L'essentiel se remplissait en vidant un coffre de blé et de pierre.
+Il n'expose plus que ce qui se mérite. Les pièces sont **nommées une à une** dans
+`data/museum.json` : la rareté ne se déduit pas d'un prix.
+
+| Aile | Pièces | Ce qu'on y expose | Bonus de l'aile complète |
+|---|---|---|---|
+| Trésors du monde | 6 | élytres, cœur de la mer, pomme dorée enchantée, noyau lourd, éclat d'écho, éponge | +12 % de double drop |
+| Trophées | 6 | étoile du Nether, tête de dragon, crâne de wither squelette, totem d'immortalité, trident, carapace de shulker | +1,5 dégât |
+| Reliques de PalaMod | 11 | lingot d'endium, les six pierres légendaires, gant en endium, enderchest de poche, fabrique à nuage, amulette du chasseur | +2 armure, +15 % d'efficacité de minage |
+| Donjons et pillage | 9 | les quatre épées légendaires de donjon, rune épique, les quatre têtes de wither (passif, assoiffé, prédateur, suprême) | +4 points de vie |
+| NTM NEXT | 4 | The Gadget, Little Boy, Fat Man, Ivy Mike | +1 de portée, −10 % à l'achat |
+| Mécène (optionnel) | 1 | œuf du dragon | +2 chance |
+
+**36 pièces obligatoires, 37 avec l'œuf.**
+
+- **Les bonus n'ont pas changé, ils ont changé d'aile.** Les sept bonus de l'ancien musée sont
+  tous là, à la même valeur. Le double drop des « trouvables » va aux trésors, les dégâts des
+  « drops de mobs » aux trophées, l'armure de l'aile PalaMod et l'efficacité des « fermes » aux
+  reliques, les points de vie de la « nourriture » aux donjons, la portée et la remise restent sur
+  NTM, la chance sur le mécène.
+- **Ce que coûte une aile.** Les trésors et les trophées se trouvent sans rien acheter. Les
+  reliques pèsent le plus : six pierres légendaires (le marché, la box Endium ou des pierres
+  aléatoires), un lingot d'endium (1,44 M), un gant. Les donjons demandent le palier 65 des quatre
+  donjons. L'aile NTM demande d'assembler quatre bombes atomiques et de ne pas s'en servir.
+- **XP globale** : 100 par don au lieu de 25 (un niveau global = 500). 37 dons donnent 3 700 XP,
+  à peu près ce que donnaient les 176 dons d'avant à 25 (4 400) : le musée pèse un poids comparable
+  dans le niveau global.
+- **L'œuf du dragon reste à part** : unique par monde, il se donne par choix. Les **pièces
+  antiques** (palier 100 d'un donjon, une par donjon) ne sont pas demandées, pour la même raison.
+- **Sans NTM NEXT**, les quatre bombes n'existent pas : l'aile ne s'ouvre pas, et le musée compte
+  quatre ailes et 32 pièces. La remise d'achat de 10 % est alors hors d'atteinte, comme l'était
+  l'ancienne aile NTM.
+- **Un monde d'avant** : les dons déjà faits restent enregistrés. Ceux qui sont encore des pièces
+  (étoile du Nether, élytres…) comptent ; les autres ne comptent plus. **Les bonus des anciennes
+  ailes tombent** jusqu'à ce que les nouvelles soient complètes.
+
+Leviers : la liste `items` de chaque aile, `rewards`, et `global_xp_per_donation`.
+`tools/check_museum.py` vérifie le fichier (pièce inconnue, doublon, ligne d'indice manquante).
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

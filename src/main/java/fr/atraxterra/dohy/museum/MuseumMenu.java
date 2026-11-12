@@ -25,8 +25,8 @@ import java.util.List;
  * tout le deplacement d'items. Reecrire cette mecanique serait l'occasion de
  * perdre un item — ici, un item que le joueur ne pourra peut-etre pas retrouver.
  *
- * <p>A la fermeture, le musee preleve <b>un seul exemplaire</b> de chaque item
- * qui lui manque, et rend tout le reste. On ne peut donc pas donner par erreur
+ * <p>A la fermeture, le musee preleve <b>un seul exemplaire</b> de chaque piece
+ * rare qui lui manque, et rend tout le reste. On ne peut donc pas donner par erreur
  * une pile entiere, ni perdre le surplus.
  */
 public final class MuseumMenu extends ChestMenu {
@@ -96,12 +96,12 @@ public final class MuseumMenu extends ChestMenu {
 
             if (donated == 0) {
                 player.sendSystemMessage(Component.literal(
-                                "Le musee a deja tout ce que tu as apporte.")
+                                "Rien ici ne manque au musee : il n'expose que des pieces rares.")
                         .withStyle(ChatFormatting.GRAY));
             } else {
                 int finalDonated = donated;
                 player.sendSystemMessage(Component.literal(finalDonated
-                                + " piece(s) exposee(s) — " + MuseumApi.data(player).count()
+                                + " piece(s) exposee(s) — " + MuseumApi.exposed(player)
                                 + " au total.")
                         .withStyle(ChatFormatting.AQUA));
             }

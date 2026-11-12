@@ -1,24 +1,30 @@
 {
-  "_comment": "Le musee. Chaque don est definitif et porte sur UN exemplaire. Ce n'est pas la somme de 152 micro-bonus — ce serait illisible et chacun imperceptible — mais six collections de collections, dont seule la completion paie. Chaque don individuel donne de l'XP globale, pour que la progression reste continue entre deux paliers.",
-  "_exclude_tiers": "Les items du tier RARE sont exclus des categories obligatoires : l'oeuf du dragon est unique par monde, et exiger son sacrifice transformerait un systeme de collection en source de regret. Ils forment le panneau mecene, optionnel, avec son propre bonus.",
-  "global_xp_per_donation": 25,
-  "exclude_tiers": [
-    "RARE"
-  ],
-  "categories": {
-    "FOOD": {
-      "display": "Nourriture",
-      "rewards": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:max_health",
-          "amount": 4.0,
-          "operation": "add_value"
-        }
-      ]
-    },
-    "FOUND": {
-      "display": "Trouvables",
+  "_comment": "Le musee n'expose que des pieces rares, nommees une a une. Chaque don est definitif et porte sur UN exemplaire. Seule la completion d'une aile paie ; chaque don donne de l'XP globale, pour que la progression reste continue entre deux ailes.",
+  "_why_named": "Jusqu'au 2026-11-11 le musee demandait un exemplaire de chaque objet du catalogue de prix (du ble, de la pierre, 65 pieces de machine NTM) : l'essentiel se remplissait en vidant un coffre. La rarete ne se deduit pas d'un prix, donc les pieces sont listees ici. Une piece inconnue du jeu (NTM NEXT absent) est ignoree, et une aile sans piece ne s'ouvre pas.",
+  "_hints": "Une ligne par piece, affichee sur la vitrine vide : ou la trouver. Sans accents, comme le reste des textes envoyes par le serveur.",
+  "global_xp_per_donation": 100,
+  "wings": [
+    {
+      "id": "tresors",
+      "display": "Tresors du monde",
+      "icon": "minecraft:heart_of_the_sea",
+      "_comment": "Ce qui se trouve et ne se fabrique pas. La chance de double drop vivait sur l'aile des trouvables.",
+      "items": [
+        "minecraft:elytra",
+        "minecraft:heart_of_the_sea",
+        "minecraft:enchanted_golden_apple",
+        "minecraft:heavy_core",
+        "minecraft:echo_shard",
+        "minecraft:sponge"
+      ],
+      "hints": {
+        "minecraft:elytra": "Dans les navires des cites de l'End",
+        "minecraft:heart_of_the_sea": "Dans un tresor enfoui, carte des epaves en main",
+        "minecraft:enchanted_golden_apple": "Dans les coffres : donjons, bastions, cites antiques",
+        "minecraft:heavy_core": "Dans les chambres des epreuves, sous mauvais presage",
+        "minecraft:echo_shard": "Dans les coffres des cites antiques",
+        "minecraft:sponge": "Dans les monuments oceaniques, a faire secher"
+      },
       "rewards": [
         {
           "type": "double_drop_chance",
@@ -26,19 +32,27 @@
         }
       ]
     },
-    "FARM": {
-      "display": "Fermes auto",
-      "rewards": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:mining_efficiency",
-          "amount": 0.15,
-          "operation": "add_multiplied_base"
-        }
-      ]
-    },
-    "MOB_DROP": {
-      "display": "Drops de mobs",
+    {
+      "id": "trophees",
+      "display": "Trophees",
+      "icon": "minecraft:nether_star",
+      "_comment": "Ce qu'il faut tuer pour l'avoir. Les degats vivaient sur l'aile des drops de mobs.",
+      "items": [
+        "minecraft:nether_star",
+        "minecraft:dragon_head",
+        "minecraft:wither_skeleton_skull",
+        "minecraft:totem_of_undying",
+        "minecraft:trident",
+        "minecraft:shulker_shell"
+      ],
+      "hints": {
+        "minecraft:nether_star": "Sur un wither",
+        "minecraft:dragon_head": "A la proue des navires des cites de l'End",
+        "minecraft:wither_skeleton_skull": "Sur les wither squelettes des forteresses du Nether",
+        "minecraft:totem_of_undying": "Sur les evocateurs",
+        "minecraft:trident": "Sur les noyes qui en tiennent un",
+        "minecraft:shulker_shell": "Sur les shulkers des cites de l'End"
+      },
       "rewards": [
         {
           "type": "attribute",
@@ -48,20 +62,105 @@
         }
       ]
     },
-    "PALAMOD": {
-      "display": "PalaMod",
+    {
+      "id": "reliques",
+      "display": "Reliques de PalaMod",
+      "icon": "palamod:legendary_stone_power",
+      "_comment": "Le rayon Reliques du marche : l'endium, les six pierres legendaires, le gant et les objets de voyage. Elle porte l'armure de l'ancienne aile PalaMod et l'efficacite de minage de l'ancienne aile des fermes.",
+      "items": [
+        "palamod:endium_ingot",
+        "palamod:legendary_stone_teleportation",
+        "palamod:legendary_stone_invisibility",
+        "palamod:legendary_stone_fortune",
+        "palamod:legendary_stone_power",
+        "palamod:legendary_stone_jobs",
+        "palamod:legendary_stone_chaos",
+        "palamod:endium_gauntlet",
+        "palamod:pocket_enderchest",
+        "palamod:cloud",
+        "palamod:hunter_amulet"
+      ],
+      "hints": {
+        "palamod:endium_ingot": "Neuf pepites d'endium, ou dans les boxes",
+        "palamod:legendary_stone_teleportation": "Une pierre legendaire aleatoire, la box Endium ou le marche",
+        "palamod:legendary_stone_invisibility": "Une pierre legendaire aleatoire, la box Endium ou le marche",
+        "palamod:legendary_stone_fortune": "Une pierre legendaire aleatoire, la box Endium ou le marche",
+        "palamod:legendary_stone_power": "Une pierre legendaire aleatoire, la box Endium ou le marche",
+        "palamod:legendary_stone_jobs": "Une pierre legendaire aleatoire, la box Endium ou le marche",
+        "palamod:legendary_stone_chaos": "Une pierre legendaire aleatoire, la box Endium ou le marche",
+        "palamod:endium_gauntlet": "A fabriquer autour d'une pierre legendaire, ou dans la box Endium",
+        "palamod:pocket_enderchest": "Dans les boxes Amethyste, Paladium et Trixium",
+        "palamod:cloud": "Dans les boxes Paladium et Trixium",
+        "palamod:hunter_amulet": "A fabriquer, ou au rayon Reliques du marche"
+      },
       "rewards": [
         {
           "type": "attribute",
           "attribute": "minecraft:armor",
           "amount": 2.0,
           "operation": "add_value"
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:mining_efficiency",
+          "amount": 0.15,
+          "operation": "add_multiplied_base"
         }
-      ],
-      "_comment": "Les matieres de PalaMod : minerais, lingots, cultures, fleurs, bois. Une armure de plus, celle d'un plastron de cuir : le minage du paladium se fait loin sous terre."
+      ]
     },
-    "NTM": {
+    {
+      "id": "conquetes",
+      "display": "Donjons et pillage",
+      "icon": "palamod:supreme_wither_head",
+      "_comment": "Ce que rapportent les donjons de Paladium et les withers du pillage. Les quatre coeurs vivaient sur l'aile de la nourriture. Les pieces antiques (palier 100) n'y sont pas : une par donjon, les donner serait un regret.",
+      "items": [
+        "palamod:talikus_legendary_sword",
+        "palamod:nimbria_legendary_sword",
+        "palamod:vitalys_legendary_sword",
+        "palamod:manelios_legendary_sword",
+        "palamod:rune_epic",
+        "palamod:passive_wither_head",
+        "palamod:thirsty_wither_head",
+        "palamod:predator_wither_head",
+        "palamod:supreme_wither_head"
+      ],
+      "hints": {
+        "palamod:talikus_legendary_sword": "Donjon de Talikus, paliers 65 et 75",
+        "palamod:nimbria_legendary_sword": "Donjon de Nimbria, paliers 65 et 75",
+        "palamod:vitalys_legendary_sword": "Donjon de Vitalys, paliers 65 et 75",
+        "palamod:manelios_legendary_sword": "Donjon de Manelios, paliers 65 et 75",
+        "palamod:rune_epic": "Coffres de donjon des le palier 60, ou trois runes rares a la palamachine",
+        "palamod:passive_wither_head": "A fabriquer : la tete du wither passif",
+        "palamod:thirsty_wither_head": "A fabriquer : la tete du wither assoiffe",
+        "palamod:predator_wither_head": "A fabriquer, ou dans les boxes Saharia et Halloween",
+        "palamod:supreme_wither_head": "A fabriquer, ou dans la box Halloween"
+      },
+      "rewards": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "amount": 4.0,
+          "operation": "add_value"
+        }
+      ]
+    },
+    {
+      "id": "ntm",
       "display": "NTM NEXT",
+      "icon": "hbm:nuke_man",
+      "_comment": "Les quatre bombes historiques de NTM NEXT, et rien d'autre : The Gadget, Little Boy, Fat Man, Ivy Mike. L'aile garde la portee et la remise d'achat de l'ancienne aile des 65 pieces de machine. Sans NTM, l'aile ne s'ouvre pas.",
+      "items": [
+        "hbm:nuke_gadget",
+        "hbm:nuke_boy",
+        "hbm:nuke_man",
+        "hbm:nuke_mike"
+      ],
+      "hints": {
+        "hbm:nuke_gadget": "NTM NEXT : la premiere bombe, a assembler",
+        "hbm:nuke_boy": "NTM NEXT : la bombe a l'uranium, a assembler",
+        "hbm:nuke_man": "NTM NEXT : la bombe au plutonium, a assembler",
+        "hbm:nuke_mike": "NTM NEXT : la bombe a hydrogene, a assembler"
+      },
       "rewards": [
         {
           "type": "attribute",
@@ -73,13 +172,19 @@
           "type": "buy_discount",
           "amount": 0.1
         }
-      ],
-      "_comment": "L'aile des 65 items NTM du shop, minerais et pieces de machine, jusqu'a l'unite de controle a 3,1 M. Elle porte deux recompenses, dont la remise d'achat qui vivait sur l'aile COMPONENT, laquelle n'a jamais existe faute d'items."
+      ]
     }
-  },
+  ],
   "patron": {
     "display": "Mecene",
-    "_comment": "Les items uniques ou quasi uniques, donnes par choix et non par obligation.",
+    "icon": "minecraft:dragon_egg",
+    "_comment": "L'oeuf du dragon est unique par monde : il se donne par choix, jamais par obligation, et aucune aile ne l'exige.",
+    "items": [
+      "minecraft:dragon_egg"
+    ],
+    "hints": {
+      "minecraft:dragon_egg": "Sur le portail de sortie, apres le premier dragon"
+    },
     "rewards": [
       {
         "type": "attribute",
@@ -88,6 +193,5 @@
         "operation": "add_value"
       }
     ]
-  },
-  "_component": "L'aile COMPONENT a ete retiree : la categorie n'a jamais contenu d'item, donc l'aile ne pouvait pas se completer et sa remise d'achat etait inatteignable. Elle est passee sur l'aile NTM."
+  }
 }

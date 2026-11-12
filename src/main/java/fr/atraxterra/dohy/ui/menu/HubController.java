@@ -92,13 +92,9 @@ public final class HubController extends MenuController {
         }
         int expected = 0;
         int donated = 0;
-        for (String wing : MuseumApi.categories()) {
-            for (var id : MuseumApi.expected(wing)) {
-                expected++;
-                if (MuseumApi.data(player).has(id)) {
-                    donated++;
-                }
-            }
+        for (String wing : MuseumApi.wings()) {
+            expected += MuseumApi.expected(wing).size();
+            donated += MuseumApi.donatedIn(player, wing);
         }
         List<Card> progress = List.of(
                 Card.of(new ItemStack(Items.WRITABLE_BOOK), "Contrats", List.of(
