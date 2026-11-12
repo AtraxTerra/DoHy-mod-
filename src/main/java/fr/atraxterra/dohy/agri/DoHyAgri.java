@@ -55,12 +55,6 @@ public final class DoHyAgri {
     private static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DoHy.MOD_ID);
 
-    /** Les farines et les pains, pour les contrats de production. */
-    public static final TagKey<Item> FLOURS =
-            TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "flours"));
-    public static final TagKey<Item> BREADS_TAG =
-            TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "breads"));
-
     /** Tout ce qu'une mangeoire et un biogenerateur acceptent : les grains d'ici et le ble. */
     public static final TagKey<Item> CEREALS =
             TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "cereals"));
