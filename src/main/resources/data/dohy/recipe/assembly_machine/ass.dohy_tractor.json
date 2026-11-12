@@ -1,0 +1,31 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "hbm"
+    }
+  ],
+  "type": "hbm:assembly_machine",
+  "duration": 300,
+  "input_items": [
+    {
+      "count": 16,
+      "ingredient": "#c:plates/steel"
+    },
+    {
+      "count": 2,
+      "ingredient": "hbm:motor"
+    },
+    {
+      "ingredient": "hbm:circuit_basic"
+    },
+    {
+      "ingredient": "minecraft:minecart"
+    }
+  ],
+  "order": 60020,
+  "output_items": [
+    "dohy:tractor"
+  ],
+  "power": 100
+}

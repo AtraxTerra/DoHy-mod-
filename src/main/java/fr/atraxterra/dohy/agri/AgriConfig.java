@@ -223,12 +223,63 @@ public final class AgriConfig {
         ).apply(instance, Effects::new));
     }
 
+    /**
+     * Le tracteur, le silo et la pompe a carburant.
+     *
+     * @param tank               reservoir du tracteur, en unites de carburant
+     * @param moveCost           unites brulees par bloc parcouru
+     * @param workFactor         multiplicateur de consommation quand l'outil travaille
+     * @param speed              vitesse du tracteur (attribut de deplacement)
+     * @param workSpeed          part de cette vitesse quand l'outil travaille
+     * @param cropCapacity       recolte que porte le tracteur, en objets
+     * @param seedCapacity       semences qu'il porte
+     * @param fertilizerCapacity engrais qu'il porte
+     * @param siloRange          distance a laquelle il se vide dans un silo
+     * @param siloCapacity       ce qu'un silo garde de chaque cereale
+     * @param siloBuyBatch       taille d'un achat de cereales au silo
+     * @param pumpTank           cuve de la pompe, en mB
+     * @param pumpRate           debit de la pompe vers un tracteur, en mB par tick
+     * @param pumpRange          distance a laquelle la pompe sert un tracteur
+     * @param fluids             carburants liquides : unites par mB, par identifiant de fluide
+     * @param items              carburants solides : unites par objet
+     */
+    public record Farming(int tank, double moveCost, double workFactor, double speed, double workSpeed,
+                          int cropCapacity, int seedCapacity, int fertilizerCapacity, int siloRange,
+                          int siloCapacity, int siloBuyBatch, int pumpTank, int pumpRate, int pumpRange,
+                          Map<Identifier, Double> fluids, Map<Identifier, Integer> items) {
+        static final Farming FALLBACK = new Farming(4000, 1.0d, 2.0d, 0.2d, 0.6d, 2304, 1152, 576, 4,
+                16384, 16, 16000, 40, 3, Map.of(), Map.of(Identifier.withDefaultNamespace("coal"), 250));
+
+        static final Codec<Farming> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.intRange(1, 1_000_000).optionalFieldOf("tank", 4000).forGetter(Farming::tank),
+                Codec.doubleRange(0.0d, 1000.0d).optionalFieldOf("move_cost", 1.0d).forGetter(Farming::moveCost),
+                Codec.doubleRange(1.0d, 100.0d).optionalFieldOf("work_factor", 2.0d).forGetter(Farming::workFactor),
+                Codec.doubleRange(0.05d, 1.0d).optionalFieldOf("speed", 0.2d).forGetter(Farming::speed),
+                Codec.doubleRange(0.1d, 1.0d).optionalFieldOf("work_speed", 0.6d).forGetter(Farming::workSpeed),
+                Codec.intRange(1, 1_000_000).optionalFieldOf("crop_capacity", 2304).forGetter(Farming::cropCapacity),
+                Codec.intRange(1, 1_000_000).optionalFieldOf("seed_capacity", 1152).forGetter(Farming::seedCapacity),
+                Codec.intRange(1, 1_000_000).optionalFieldOf("fertilizer_capacity", 576)
+                        .forGetter(Farming::fertilizerCapacity),
+                Codec.intRange(1, 16).optionalFieldOf("silo_range", 4).forGetter(Farming::siloRange),
+                Codec.intRange(64, 10_000_000).optionalFieldOf("silo_capacity", 16384).forGetter(Farming::siloCapacity),
+                Codec.intRange(1, 2304).optionalFieldOf("silo_buy_batch", 16).forGetter(Farming::siloBuyBatch),
+                Codec.intRange(1000, 10_000_000).optionalFieldOf("pump_tank", 16000).forGetter(Farming::pumpTank),
+                Codec.intRange(1, 100_000).optionalFieldOf("pump_rate", 40).forGetter(Farming::pumpRate),
+                Codec.intRange(1, 16).optionalFieldOf("pump_range", 3).forGetter(Farming::pumpRange),
+                Codec.unboundedMap(Identifier.CODEC, Codec.doubleRange(0.0d, 1000.0d))
+                        .optionalFieldOf("fluids", Map.of()).forGetter(Farming::fluids),
+                Codec.unboundedMap(Identifier.CODEC, Codec.intRange(1, 1_000_000))
+                        .optionalFieldOf("items", FALLBACK.items()).forGetter(Farming::items)
+        ).apply(instance, Farming::new));
+    }
+
     public record Config(double grassSeedChance, Climate climate, Gmo gmo, Machines machines, List<Batch> breads,
                          Effects effects, int feedIntervalTicks, int feedRadius, int feedMaxAnimals, int feedRation,
-                         int troughCapacity, int waterCapacity, int waterPerBucket) {
+                         int troughCapacity, int waterCapacity, int waterPerBucket, Farming farming,
+                         int tractorLevel) {
 
         static final Config FALLBACK = new Config(0.04d, Climate.FALLBACK, Gmo.FALLBACK, Machines.FALLBACK,
-                List.of(), Effects.FALLBACK, 2400, 6, 6, 4, 64, 32, 8);
+                List.of(), Effects.FALLBACK, 2400, 6, 6, 4, 64, 32, 8, Farming.FALLBACK, 10);
 
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.DOUBLE.optionalFieldOf("grass_seed_chance", 0.04d).forGetter(Config::grassSeedChance),
@@ -243,7 +294,10 @@ public final class AgriConfig {
                 Codec.intRange(1, 64).optionalFieldOf("feed_ration", 4).forGetter(Config::feedRation),
                 Codec.INT.optionalFieldOf("trough_capacity", 64).forGetter(Config::troughCapacity),
                 Codec.INT.optionalFieldOf("water_capacity", 32).forGetter(Config::waterCapacity),
-                Codec.INT.optionalFieldOf("water_per_bucket", 8).forGetter(Config::waterPerBucket)
+                Codec.INT.optionalFieldOf("water_per_bucket", 8).forGetter(Config::waterPerBucket),
+                Farming.CODEC.optionalFieldOf("farming", Farming.FALLBACK).forGetter(Config::farming),
+                // a cote de « farming » et non dedans : un codec de record s'arrete a seize champs
+                Codec.intRange(0, 1_000).optionalFieldOf("tractor_level", 10).forGetter(Config::tractorLevel)
         ).apply(instance, Config::new));
 
         /** La fournee d'un pain, ou {@code null}. */

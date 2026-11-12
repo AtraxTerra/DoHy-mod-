@@ -2,11 +2,17 @@ package fr.atraxterra.dohy.agri;
 
 import fr.atraxterra.dohy.DoHy;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -19,9 +25,11 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
@@ -54,6 +62,10 @@ public final class DoHyAgri {
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, DoHy.MOD_ID);
     private static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DoHy.MOD_ID);
+    private static final DeferredRegister<EntityType<?>> ENTITIES =
+            DeferredRegister.create(Registries.ENTITY_TYPE, DoHy.MOD_ID);
+    private static final DeferredRegister.DataComponents COMPONENTS =
+            DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, DoHy.MOD_ID);
 
     /** Tout ce qu'une mangeoire et un biogenerateur acceptent : les grains d'ici et le ble. */
     public static final TagKey<Item> CEREALS =
@@ -143,6 +155,56 @@ public final class DoHyAgri {
                         .lightLevel(state -> state.getValue(AgriMachineBlock.LIT) ? 7 : 0));
     }
 
+    // -- Le tracteur, ses outils, le silo et la pompe ---------------------------------------
+
+    /** Le carburant que garde un tracteur demonte, en unites. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> FUEL =
+            COMPONENTS.registerComponentType("tractor_fuel", builder -> builder
+                    .persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /**
+     * Une machine, pas une bete : hors des categories d'apparition, pour ne pas
+     * compter dans le plafond des animaux ni disparaitre en mode paisible.
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<Tractor>> TRACTOR = ENTITIES.register(
+            "tractor", key -> EntityType.Builder.<Tractor>of(Tractor::new, MobCategory.MISC)
+                    .sized(1.9f, 1.9f)
+                    .passengerAttachments(new Vec3(0.0d, 0.95d, -0.55d))
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
+
+    public static final DeferredItem<TractorItem> TRACTOR_ITEM =
+            ITEMS.registerItem("tractor", TractorItem::new, properties -> properties.stacksTo(1));
+
+    private static final Map<TractorTool, DeferredItem<TractorToolItem>> TOOLS = new EnumMap<>(TractorTool.class);
+
+    static {
+        for (TractorTool tool : TractorTool.values()) {
+            if (tool != TractorTool.NONE) {
+                TOOLS.put(tool, ITEMS.registerItem("tractor_" + tool.key(),
+                        properties -> new TractorToolItem(properties.stacksTo(1), tool)));
+            }
+        }
+    }
+
+    public static final DeferredBlock<SiloBlock> SILO = BLOCKS.registerBlock("silo", SiloBlock::new,
+            properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                    .noOcclusion());
+    public static final DeferredBlock<FuelPumpBlock> FUEL_PUMP = BLOCKS.registerBlock("fuel_pump",
+            FuelPumpBlock::new,
+            properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                    .noOcclusion());
+    public static final DeferredItem<BlockItem> SILO_ITEM =
+            ITEMS.registerSimpleBlockItem(SILO, properties -> properties);
+    public static final DeferredItem<BlockItem> FUEL_PUMP_ITEM =
+            ITEMS.registerSimpleBlockItem(FUEL_PUMP, properties -> properties);
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SiloBlockEntity>> SILO_TYPE =
+            TYPES.register("silo", () -> new BlockEntityType<>(SiloBlockEntity::new, Set.of(SILO.get())));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FuelPumpBlockEntity>> PUMP_TYPE =
+            TYPES.register("fuel_pump", () -> new BlockEntityType<>(FuelPumpBlockEntity::new,
+                    Set.of(FUEL_PUMP.get())));
+
     // -- L'onglet ------------------------------------------------------------------------
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = TABS.register("agriculture",
@@ -160,8 +222,15 @@ public final class DoHyAgri {
         ITEMS.register(modBus);
         TYPES.register(modBus);
         TABS.register(modBus);
+        ENTITIES.register(modBus);
+        COMPONENTS.register(modBus);
         AgriEffects.register(modBus);
         modBus.addListener(DoHyAgri::onCapabilities);
+        modBus.addListener(DoHyAgri::onAttributes);
+    }
+
+    private static void onAttributes(EntityAttributeCreationEvent event) {
+        event.put(TRACTOR.get(), Tractor.createAttributes().build());
     }
 
     /**
@@ -172,11 +241,19 @@ public final class DoHyAgri {
      * directement, mais les tuyaux et convoyeurs des mods passent par cette
      * capacite, avec les memes regles de faces (dessous pour sortir, ailleurs
      * pour entrer).
+     *
+     * <p>Le silo offre son stock de la meme facon : un convoyeur ou un tuyau
+     * d'objets le remplit par le haut et les cotes, le vide par le dessous. La
+     * pompe offre sa cuve a la capacite de fluide : c'est a elle que se
+     * branchent les tuyaux de NTM NEXT pour l'alimenter en carburant.
      */
     private static void onCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, MACHINE_TYPE.get(), (machine, side) -> machine.energy());
         event.registerBlockEntity(Capabilities.Item.BLOCK, MACHINE_TYPE.get(), (machine, side) ->
                 side == null ? VanillaContainerWrapper.of(machine) : new WorldlyContainerWrapper(machine, side));
+        event.registerBlockEntity(Capabilities.Item.BLOCK, SILO_TYPE.get(), (silo, side) ->
+                side == null ? VanillaContainerWrapper.of(silo) : new WorldlyContainerWrapper(silo, side));
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, PUMP_TYPE.get(), (pump, side) -> pump.tank());
     }
 
     /** L'onglet, dans l'ordre de la filiere : semences, grains, farines, pains, elevage, machines. */
@@ -200,6 +277,10 @@ public final class DoHyAgri {
         list.add(FLOUR_MILL_ITEM);
         list.add(BREAD_MACHINE_ITEM);
         list.add(BIOGENERATOR_ITEM);
+        list.add(TRACTOR_ITEM);
+        list.addAll(TOOLS.values());
+        list.add(SILO_ITEM);
+        list.add(FUEL_PUMP_ITEM);
         return list;
     }
 
@@ -217,6 +298,12 @@ public final class DoHyAgri {
 
     public static Item bread(Bread bread) {
         return BREADS.get(bread).get();
+    }
+
+    /** L'objet d'un outil de tracteur ; l'air pour « aucun outil ». */
+    public static Item tool(TractorTool tool) {
+        DeferredItem<TractorToolItem> item = TOOLS.get(tool);
+        return item == null ? Items.AIR : item.get();
     }
 
     /** Les cles des farines, ble en tete : {@code wheat}, puis une par cereale. */

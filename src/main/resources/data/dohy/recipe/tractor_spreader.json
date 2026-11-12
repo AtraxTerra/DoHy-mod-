@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "hbm"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "ICI",
+    "III"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:cauldron"
+  },
+  "result": {
+    "id": "dohy:tractor_spreader",
+    "count": 1
+  }
+}

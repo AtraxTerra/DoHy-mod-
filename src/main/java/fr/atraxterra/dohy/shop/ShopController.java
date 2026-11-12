@@ -182,6 +182,20 @@ public final class ShopController {
                 .append(Component.literal(MoneyFormat.exact(cost)).withStyle(ChatFormatting.GOLD)));
     }
 
+    /**
+     * Le prix d'achat d'une piece pour ce joueur, cours de l'heure et remise
+     * compris — le meme calcul que la boutique, pour ce qui vend ailleurs
+     * qu'a son ecran (le silo). Zero si l'objet n'est pas en vente.
+     */
+    public static long buyPrice(ServerPlayer player, Identifier id) {
+        PriceEntry entry = Prices.book().entry(id).orElse(null);
+        if (entry == null || entry.buyPrice() <= 0L) {
+            return 0L;
+        }
+        return Math.max(1L, Math.round(entry.buyPrice() * HourlyCourse.factor(id, entry)
+                * (1.0d - discount(player))));
+    }
+
     private static void refuse(ServerPlayer player, String message) {
         play(player, SoundEvents.VILLAGER_NO, 1.0f);
         player.sendSystemMessage(Component.literal(message).withStyle(ChatFormatting.GRAY));

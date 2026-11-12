@@ -41,6 +41,8 @@ public final class Menus {
                 fr.atraxterra.dohy.tech.TradingServerMenu.INSTANCE,
                 fr.atraxterra.dohy.agri.GmoMachineMenu.INSTANCE,
                 fr.atraxterra.dohy.agri.MillMenu.INSTANCE,
+                fr.atraxterra.dohy.agri.TractorMenu.INSTANCE,
+                fr.atraxterra.dohy.agri.SiloMenu.INSTANCE,
                 fr.atraxterra.dohy.agri.BreadMachineMenu.INSTANCE,
                 fr.atraxterra.dohy.auction.AuctionController.INSTANCE,
                 fr.atraxterra.dohy.spawn.SpawnDaily.INSTANCE,
