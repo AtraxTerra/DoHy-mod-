@@ -105,7 +105,8 @@ public class FeederBlockEntity extends BlockEntity {
      * @return le nombre de betes nourries
      */
     int feed(ServerLevel server, AgriConfig.Config config) {
-        if (amount <= 0) {
+        int ration = Math.max(1, config.feedRation());
+        if (amount < ration) {
             return 0;
         }
         FeederBlockEntity water = water(server, config.feedRadius());
@@ -117,10 +118,10 @@ public class FeederBlockEntity extends BlockEntity {
                 animal -> animal.isAlive() && !animal.isBaby() && product(animal.getType()) != null);
         int fed = 0;
         for (Mob animal : animals) {
-            if (fed >= config.feedMaxAnimals() || amount <= 0) {
+            if (fed >= config.feedMaxAnimals() || amount < ration) {
                 break;
             }
-            amount--;
+            amount -= ration;
             fed++;
             ItemEntity drop = new ItemEntity(server, animal.getX(), animal.getY() + 0.3d, animal.getZ(),
                     new ItemStack(product(animal.getType())));

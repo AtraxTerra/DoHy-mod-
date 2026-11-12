@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "dohy:block/bread_machine_top",
+    "front": "dohy:block/bread_machine_front",
+    "side": "dohy:block/bread_machine_side"
+  }
+}

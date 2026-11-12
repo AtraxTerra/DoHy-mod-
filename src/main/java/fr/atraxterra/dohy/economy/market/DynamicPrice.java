@@ -105,9 +105,16 @@ public final class DynamicPrice {
         return Math.min(entry.ceilingPct(), Math.max(floor, raw));
     }
 
-    /** Prix unitaire affiche, arrondi. Jamais zero. */
+    /**
+     * Prix unitaire affiche, arrondi. Jamais zero.
+     *
+     * <p>Le cours de l'heure ({@link HourlyCourse}) multiplie la pression du
+     * marche : les deux sont independants, l'un vient de ce que le joueur a
+     * vendu, l'autre de l'heure qu'il est.
+     */
     public static long unitPrice(ServerPlayer player, Identifier id, PriceEntry entry) {
-        return Math.max(1L, Math.round(entry.basePrice() * multiplier(player, id, entry)));
+        return Math.max(1L, Math.round(entry.basePrice() * multiplier(player, id, entry)
+                * HourlyCourse.factor(id, entry)));
     }
 
     /**
@@ -120,7 +127,8 @@ public final class DynamicPrice {
         }
         double start = market(player).soldOf(id);
         long base = Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry,
-                effectiveFloor(player, id, entry), effectiveS0(player, id, entry))));
+                effectiveFloor(player, id, entry), effectiveS0(player, id, entry))
+                * HourlyCourse.factor(id, entry)));
         return Math.max(1L, Math.round(base * Bonuses.preview(player, id)));
     }
 
@@ -137,7 +145,8 @@ public final class DynamicPrice {
         PlayerMarket market = market(player);
         double start = market.soldOf(id);
         long base = Math.max(1L, Math.round(payoutBetween(start, start + quantity, entry,
-                effectiveFloor(player, id, entry), effectiveS0(player, id, entry))));
+                effectiveFloor(player, id, entry), effectiveS0(player, id, entry))
+                * HourlyCourse.factor(id, entry)));
 
         // La pression enregistree est celle de la quantite reellement vendue :
         // un bonus ne doit pas accelerer la chute du prix, sinon il s'annule.

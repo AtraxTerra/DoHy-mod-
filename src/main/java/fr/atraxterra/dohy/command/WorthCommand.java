@@ -79,6 +79,11 @@ public final class WorthCommand {
 
         source.sendSuccess(() -> held.getHoverName().copy().withStyle(ChatFormatting.WHITE)
                 .append(Component.literal("  [" + entry.category() + "]").withStyle(ChatFormatting.DARK_GRAY)), false);
+        int course = fr.atraxterra.dohy.economy.market.HourlyCourse.percent(id, entry);
+        if (course > 0) {
+            source.sendSuccess(() -> line("cours de l'heure", (course >= 100 ? "+" : "") + (course - 100) + " %, change dans "
+                    + fr.atraxterra.dohy.economy.market.HourlyCourse.minutesLeft() + " min"), false);
+        }
         source.sendSuccess(() -> line("a l'unite", MoneyFormat.exact(unit)), false);
         source.sendSuccess(() -> line("le stack (64)", MoneyFormat.exact(stack)), false);
         source.sendSuccess(() -> line("ton inventaire (" + inInventory + ")", MoneyFormat.exact(total)), false);

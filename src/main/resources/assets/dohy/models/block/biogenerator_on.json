@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "dohy:block/biogenerator_top",
+    "front": "dohy:block/biogenerator_front_on",
+    "side": "dohy:block/biogenerator_side"
+  }
+}

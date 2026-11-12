@@ -183,6 +183,14 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         String name = offer.stack().getHoverName().getString().toUpperCase(Locale.ROOT);
         g.textShaded(Ui.TITLE, g.fit(Ui.TITLE, name, 14, 172), 270, detailY + 8, 14, Ui.WHITE, 0xFF8C8B93, 0.8f);
 
+        if (offer.course() > 0) {
+            // Le cours de l'heure : au-dessus du prix de base en vert, en dessous en rouge.
+            int delta = offer.course() - 100;
+            String course = "COURS DE L'HEURE " + (delta >= 0 ? "+" : "") + delta + " %  ·  CHANGE DANS "
+                    + view.courseMinutes() + " MIN";
+            g.text(Ui.WIDE, course, 270, detailY + 23, 3.4f, delta >= 0 ? Ui.GREEN : Ui.RED);
+        }
+
         g.border(269, detailY + 30, 60, 57, 2, Ui.RED);
         g.rect(271, detailY + 32, 56, 53, 0xFF2A1B1C);
         g.item(offer.stack(), 281, detailY + 40, 36, false);
@@ -203,7 +211,7 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         } else if (offer.locked()) {
             sell = "COLLECTE " + MoneyFormat.shortForm(offer.lockMissing()) + " DE PLUS";
         } else {
-            sell = MoneyFormat.exact(offer.sell()) + (offer.sellPercent() < 100 ? "  (" + offer.sellPercent() + " %)" : "");
+            sell = MoneyFormat.exact(offer.sell()) + (offer.sellPercent() != 100 ? "  (" + offer.sellPercent() + " %)" : "");
         }
         price(g, 343, detailY + 62, "PRIX DE VENTE", Ui.GREEN, sell);
 

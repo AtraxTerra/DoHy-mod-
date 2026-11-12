@@ -1,12 +1,12 @@
 package fr.atraxterra.dohy.agri;
 
 import fr.atraxterra.dohy.DoHy;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -14,13 +14,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.component.Consumables;
-import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -28,19 +29,20 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * L'agriculture avancee de DoHy, sous l'espace de noms {@code dohy} et dans son
- * propre onglet — pas dans celui de PalaMod : rien ici ne vient de Paladium.
+ * L'agriculture de DoHy, sous l'espace de noms {@code dohy} et dans son propre
+ * onglet — pas dans celui de PalaMod : rien ici ne vient de Paladium.
  *
- * <p>Reprise de NationsGlory : des cereales (huit, plus le ble du jeu), dont
- * trois OGM qui ne sortent que de la machine a OGM ; un pain par cereale, a
- * effet ; et un elevage a nourrir, mangeoire et abreuvoir, dont les produits
- * entrent dans les pains d'OGM.
+ * <p>La filiere reprend celle de NationsGlory : dix cereales (neuf ici, plus
+ * le ble du jeu), dont six liees a un climat et trois OGM a chercher ; un
+ * moulin et une machine a pain electriques ; dix pains ; un elevage a nourrir
+ * dont les produits entrent dans les meilleurs pains.
  */
 public final class DoHyAgri {
 
@@ -51,18 +53,23 @@ public final class DoHyAgri {
     private static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DoHy.MOD_ID);
 
-    /** Tout ce qu'une mangeoire accepte : les grains d'ici et le ble. */
+    /** Tout ce qu'une mangeoire et un biogenerateur acceptent : les grains d'ici et le ble. */
     public static final TagKey<Item> CEREALS =
             TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "cereals"));
 
-    // -- Les cereales : une culture, une semence, un grain --------------------------
+    /** La cle du ble de Minecraft dans les tables de farines. */
+    public static final String WHEAT = "wheat";
+
+    // -- Les cereales : une culture, une semence, un grain, une farine ---------------
 
     private static final Map<Cereal, DeferredBlock<AgriCropBlock>> CROPS = new EnumMap<>(Cereal.class);
-    private static final Map<Cereal, DeferredItem<BlockItem>> SEEDS = new EnumMap<>(Cereal.class);
+    private static final Map<Cereal, DeferredItem<SeedItem>> SEEDS = new EnumMap<>(Cereal.class);
     private static final Map<Cereal, DeferredItem<Item>> GRAINS = new EnumMap<>(Cereal.class);
-    private static final Map<Cereal, DeferredItem<Item>> BREADS = new EnumMap<>(Cereal.class);
+    private static final Map<String, DeferredItem<Item>> FLOURS = new LinkedHashMap<>();
+    private static final Map<Bread, DeferredItem<BreadItem>> BREADS = new EnumMap<>(Bread.class);
 
     static {
+        FLOURS.put(WHEAT, ITEMS.registerItem(WHEAT + "_flour", Item::new));
         for (Cereal cereal : Cereal.values()) {
             DeferredBlock<AgriCropBlock> crop = BLOCKS.registerBlock(cereal.key() + "_crop",
                     properties -> new AgriCropBlock(properties, cereal),
@@ -70,11 +77,17 @@ public final class DoHyAgri {
                             .sound(SoundType.CROP).pushReaction(PushReaction.DESTROY));
             CROPS.put(cereal, crop);
             SEEDS.put(cereal, ITEMS.registerItem(cereal.key() + "_seeds",
-                    properties -> new BlockItem(crop.get(), properties),
-                    properties -> cereal.gmo() ? properties.rarity(Rarity.UNCOMMON) : properties));
+                    properties -> new SeedItem(crop.get(), properties, cereal),
+                    properties -> (cereal.gmo() ? properties.rarity(Rarity.UNCOMMON) : properties)
+                            .component(DataComponents.LORE, lore("tooltip.dohy.climate."
+                                    + (cereal.gmo() ? "gmo" : cereal.climate().key())))));
             GRAINS.put(cereal, ITEMS.registerItem(cereal.key(), Item::new,
                     properties -> cereal.gmo() ? properties.rarity(Rarity.UNCOMMON) : properties));
-            BREADS.put(cereal, ITEMS.registerItem(cereal.key() + "_bread", properties -> bread(cereal, properties)));
+            FLOURS.put(cereal.key(), ITEMS.registerItem(cereal.key() + "_flour", Item::new,
+                    properties -> cereal.gmo() ? properties.rarity(Rarity.UNCOMMON) : properties));
+        }
+        for (Bread bread : Bread.values()) {
+            BREADS.put(bread, ITEMS.registerItem(bread.key(), properties -> bread(bread, properties)));
         }
     }
 
@@ -98,13 +111,35 @@ public final class DoHyAgri {
             TYPES.register("feeder", () -> new BlockEntityType<>(FeederBlockEntity::new,
                     Set.of(TROUGH.get(), WATER_DISPENSER.get())));
 
-    // -- La machine a OGM ---------------------------------------------------------------
+    // -- Les machines --------------------------------------------------------------------
 
     public static final DeferredBlock<GmoMachineBlock> GMO_MACHINE = BLOCKS.registerBlock("gmo_machine",
             GmoMachineBlock::new,
             properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL));
     public static final DeferredItem<BlockItem> GMO_MACHINE_ITEM =
             ITEMS.registerSimpleBlockItem(GMO_MACHINE, properties -> properties.rarity(Rarity.UNCOMMON));
+
+    public static final DeferredBlock<AgriMachineBlock> FLOUR_MILL = machine("flour_mill", AgriMachineBlock.Kind.MILL);
+    public static final DeferredBlock<AgriMachineBlock> BREAD_MACHINE =
+            machine("bread_machine", AgriMachineBlock.Kind.OVEN);
+    public static final DeferredBlock<AgriMachineBlock> BIOGENERATOR =
+            machine("biogenerator", AgriMachineBlock.Kind.BIOGEN);
+    public static final DeferredItem<BlockItem> FLOUR_MILL_ITEM =
+            ITEMS.registerSimpleBlockItem(FLOUR_MILL, properties -> properties);
+    public static final DeferredItem<BlockItem> BREAD_MACHINE_ITEM =
+            ITEMS.registerSimpleBlockItem(BREAD_MACHINE, properties -> properties);
+    public static final DeferredItem<BlockItem> BIOGENERATOR_ITEM =
+            ITEMS.registerSimpleBlockItem(BIOGENERATOR, properties -> properties);
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AgriMachineBlockEntity>> MACHINE_TYPE =
+            TYPES.register("agri_machine", () -> new BlockEntityType<>(AgriMachineBlockEntity::new,
+                    Set.of(FLOUR_MILL.get(), BREAD_MACHINE.get(), BIOGENERATOR.get())));
+
+    private static DeferredBlock<AgriMachineBlock> machine(String name, AgriMachineBlock.Kind kind) {
+        return BLOCKS.registerBlock(name, properties -> new AgriMachineBlock(properties, kind),
+                properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                        .lightLevel(state -> state.getValue(AgriMachineBlock.LIT) ? 7 : 0));
+    }
 
     // -- L'onglet ------------------------------------------------------------------------
 
@@ -123,9 +158,20 @@ public final class DoHyAgri {
         ITEMS.register(modBus);
         TYPES.register(modBus);
         TABS.register(modBus);
+        AgriEffects.register(modBus);
+        modBus.addListener(DoHyAgri::onCapabilities);
     }
 
-    /** L'onglet, dans l'ordre de la filiere : semences, grains, pains, elevage, machine. */
+    /**
+     * L'energie des trois machines, offerte sur toutes leurs faces : c'est par
+     * la que les cables de NTM NEXT — et de tout mod qui parle FE — les
+     * trouvent.
+     */
+    private static void onCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, MACHINE_TYPE.get(), (machine, side) -> machine.energy());
+    }
+
+    /** L'onglet, dans l'ordre de la filiere : semences, grains, farines, pains, elevage, machines. */
     private static List<Supplier<? extends Item>> ordered() {
         List<Supplier<? extends Item>> list = new ArrayList<>();
         for (Cereal cereal : Cereal.values()) {
@@ -134,14 +180,18 @@ public final class DoHyAgri {
         for (Cereal cereal : Cereal.values()) {
             list.add(GRAINS.get(cereal));
         }
-        for (Cereal cereal : Cereal.values()) {
-            list.add(BREADS.get(cereal));
+        list.addAll(FLOURS.values());
+        for (Bread bread : Bread.values()) {
+            list.add(BREADS.get(bread));
         }
         list.add(CREAM);
         list.add(LARD);
         list.add(TROUGH_ITEM);
         list.add(WATER_DISPENSER_ITEM);
         list.add(GMO_MACHINE_ITEM);
+        list.add(FLOUR_MILL_ITEM);
+        list.add(BREAD_MACHINE_ITEM);
+        list.add(BIOGENERATOR_ITEM);
         return list;
     }
 
@@ -153,61 +203,65 @@ public final class DoHyAgri {
         return GRAINS.get(cereal).get();
     }
 
-    public static Item bread(Cereal cereal) {
-        return BREADS.get(cereal).get();
+    public static Item seeds(Cereal cereal) {
+        return SEEDS.get(cereal).get();
     }
 
-    /** Les semences d'une cereale par sa cle ; {@code wheat} rend celles du ble de Minecraft. */
-    public static Item seeds(String key) {
-        for (Cereal cereal : Cereal.values()) {
-            if (cereal.key().equals(key)) {
-                return SEEDS.get(cereal).get();
-            }
-        }
-        return Items.WHEAT_SEEDS;
+    public static Item bread(Bread bread) {
+        return BREADS.get(bread).get();
     }
 
-    /** Les semences qui peuvent tomber de l'herbe : celles des cereales naturelles. */
-    public static List<Item> naturalSeeds() {
+    /** Les cles des farines, ble en tete : {@code wheat}, puis une par cereale. */
+    public static List<String> flourKeys() {
+        return List.copyOf(FLOURS.keySet());
+    }
+
+    /** Le grain d'une cle de farine ; {@code wheat} rend le ble de Minecraft. */
+    public static Item grain(String key) {
+        Cereal cereal = Cereal.byKey(key);
+        return cereal == null ? Items.WHEAT : grain(cereal);
+    }
+
+    public static Item flour(String key) {
+        return FLOURS.getOrDefault(key, FLOURS.get(WHEAT)).get();
+    }
+
+    /** Les semences que l'herbe d'un climat peut lacher : celles des cereales qui y poussent. */
+    public static List<Item> seedsOf(Climate climate) {
         List<Item> list = new ArrayList<>();
         for (Cereal cereal : Cereal.values()) {
-            if (!cereal.gmo()) {
+            if (cereal.climate() == climate) {
                 list.add(SEEDS.get(cereal).get());
             }
         }
         return list;
     }
 
-    /**
-     * Le pain d'une cereale.
-     *
-     * <p>Un pain naturel nourrit comme le pain du jeu et donne un petit effet
-     * d'une minute ou deux. Un pain d'OGM, qui demande en plus un produit
-     * d'elevage, nourrit mieux et donne des effets de niveau II pendant trois
-     * minutes : c'est une potion qui se mange, et il est toujours mangeable.
-     */
-    private static Item bread(Cereal cereal, Item.Properties properties) {
-        List<MobEffectInstance> effects = switch (cereal) {
-            case CORN -> List.of(new MobEffectInstance(MobEffects.HASTE, 1800, 0));
-            case OAT -> List.of(new MobEffectInstance(MobEffects.SPEED, 1800, 0));
-            case RYE -> List.of(new MobEffectInstance(MobEffects.RESISTANCE, 1200, 0));
-            case BARLEY -> List.of(new MobEffectInstance(MobEffects.STRENGTH, 1200, 0));
-            case SOY -> List.of(new MobEffectInstance(MobEffects.REGENERATION, 300, 0));
-            case FONIO -> List.of(new MobEffectInstance(MobEffects.SPEED, 3600, 1),
-                    new MobEffectInstance(MobEffects.JUMP_BOOST, 3600, 1));
-            case SORGHUM -> List.of(new MobEffectInstance(MobEffects.STRENGTH, 3600, 1),
-                    new MobEffectInstance(MobEffects.HASTE, 3600, 1));
-            case KAMUT -> List.of(new MobEffectInstance(MobEffects.REGENERATION, 400, 1),
-                    new MobEffectInstance(MobEffects.ABSORPTION, 3600, 1),
-                    new MobEffectInstance(MobEffects.RESISTANCE, 3600, 0));
-        };
-        FoodProperties.Builder food = new FoodProperties.Builder()
-                .nutrition(cereal.gmo() ? 8 : 5).saturationModifier(cereal.gmo() ? 0.8f : 0.6f);
-        if (cereal.gmo()) {
-            food.alwaysEdible();
-            properties = properties.rarity(Rarity.RARE);
+    /** Une infobulle d'une ligne, grise et droite. */
+    private static ItemLore lore(String... keys) {
+        List<Component> lines = new ArrayList<>();
+        for (String key : keys) {
+            lines.add(Component.translatable(key)
+                    .withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GRAY)));
         }
-        return new Item(properties.food(food.build(),
-                Consumables.defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(effects)).build()));
+        return new ItemLore(lines);
+    }
+
+    /**
+     * Un pain. Les trois pains simples se mangent quand on a faim ; les autres
+     * a tout moment, puisqu'on les mange pour leur effet.
+     */
+    private static BreadItem bread(Bread bread, Item.Properties properties) {
+        FoodProperties.Builder food = new FoodProperties.Builder().nutrition(bread.nutrition())
+                .saturationModifier(0.6f);
+        if (!bread.plain()) {
+            food.alwaysEdible();
+        }
+        String[] keys = new String[bread.loreLines()];
+        for (int line = 0; line < keys.length; line++) {
+            keys[line] = "tooltip.dohy." + bread.key() + "." + (line + 1);
+        }
+        return new BreadItem(properties.rarity(bread.rarity()).food(food.build())
+                .component(DataComponents.LORE, lore(keys)), bread);
     }
 }

@@ -1,21 +1,291 @@
 {
-  "_comment": "L'agriculture avancee, reprise de NationsGlory : des cereales, des pains a effets, des OGM qui ne se trouvent pas dans la nature, et un elevage a nourrir.",
-  "_graines": "Casser de l'herbe a une chance grass_seed_chance de donner une graine de cereale naturelle, en plus de ce que donne le jeu.",
-  "_ogm": "La machine a OGM croise deux semences (gmo_parent_seeds de chaque) et de la poudre d'os (gmo_bone_meal). La chance de reussite part de gmo_base_chance et gagne gmo_chance_per_level par niveau de Fermier, jusqu'a gmo_max_chance. Une reussite rend gmo_yield graines, une de plus a partir du niveau gmo_bonus_level. Il faut le niveau gmo_min_level pour s'en servir.",
-  "_elevage": "Toutes les feed_interval_ticks, une mangeoire qui a des rations et un abreuvoir en eau a feed_radius blocs nourrit jusqu'a feed_max_animals vaches, cochons et poules adultes. Chaque bete nourrie coute une ration et laisse son produit ; la tournee coute une dose d'eau.",
+  "_comment": "L'agriculture de DoHy. Rechargeable par /dohy reload. Voir docs/CONTENU_DOHY.md.",
+  "_grass_seed_chance": "Chance qu'une herbe cassee lache une semence de cereale du climat local.",
   "grass_seed_chance": 0.04,
-  "gmo_min_level": 20,
-  "gmo_parent_seeds": 16,
-  "gmo_bone_meal": 4,
-  "gmo_base_chance": 0.20,
-  "gmo_chance_per_level": 0.005,
-  "gmo_max_chance": 0.70,
-  "gmo_yield": 2,
-  "gmo_bonus_level": 60,
-  "gmo_farmer_xp": 60,
+  "climate": {
+    "_comment": "Temperature de base du biome. Sous cold_below : froid (avoine, seigle). A partir de hot_from : chaud (tournesol, soja). Entre les deux : tempere (mais, orge). Le ble et les OGM poussent partout.",
+    "cold_below": 0.4,
+    "hot_from": 0.9
+  },
+  "gmo": {
+    "_comment": "La recherche de la machine a OGM. Une recette = ingredients objets differents du pool, chacun en quantite de 1 a max_quantity, tires du monde, du joueur et de l'OGM. Un essai consomme tout, juste ou faux. Un echec dit quelle part de la composition est dans la recette et donne un indice : la devinette d'un ingredient manquant, ou la fourchette (large de range_width) d'une quantite fausse. La recette change apres recipe_lifetime graines fabriquees.",
+    "min_level": 20,
+    "ingredients": 9,
+    "max_quantity": 16,
+    "range_width": 4,
+    "seeds_per_craft": 8,
+    "recipe_lifetime": 2000,
+    "craft_xp": 60,
+    "discovery_xp": 600,
+    "_levels": "Niveaux de Fermier : a count_hint_level un echec dit aussi combien de quantites sont justes ; a second_clue_level il donne un second indice.",
+    "count_hint_level": 30,
+    "second_clue_level": 60,
+    "pool": [
+      {
+        "item": "minecraft:bamboo",
+        "clue": "Une tige creuse qui pousse plus vite que tout le reste"
+      },
+      {
+        "item": "minecraft:sugar_cane",
+        "clue": "Un roseau qui ne pousse qu'au bord de l'eau"
+      },
+      {
+        "item": "minecraft:cactus",
+        "clue": "Une plante du desert qu'on ne touche pas"
+      },
+      {
+        "item": "minecraft:kelp",
+        "clue": "Une algue qui monte du fond de la mer"
+      },
+      {
+        "item": "minecraft:carrot",
+        "clue": "Une racine orange"
+      },
+      {
+        "item": "minecraft:potato",
+        "clue": "Un tubercule qu'on mange cuit"
+      },
+      {
+        "item": "minecraft:beetroot",
+        "clue": "Une racine rouge sombre"
+      },
+      {
+        "item": "minecraft:melon_slice",
+        "clue": "Une tranche d'un gros fruit raye"
+      },
+      {
+        "item": "minecraft:pumpkin",
+        "clue": "Une courge qu'on sculpte a l'automne"
+      },
+      {
+        "item": "minecraft:apple",
+        "clue": "Un fruit qui tombe des chenes"
+      },
+      {
+        "item": "minecraft:sweet_berries",
+        "clue": "Des baies qui piquent celui qui les cueille"
+      },
+      {
+        "item": "minecraft:glow_berries",
+        "clue": "Des baies qui eclairent les grottes"
+      },
+      {
+        "item": "minecraft:cocoa_beans",
+        "clue": "Des feves qui poussent sur les troncs de la jungle"
+      },
+      {
+        "item": "minecraft:brown_mushroom",
+        "clue": "Un champignon brun, sans histoire"
+      },
+      {
+        "item": "minecraft:red_mushroom",
+        "clue": "Un champignon rouge a points blancs"
+      },
+      {
+        "item": "minecraft:nether_wart",
+        "clue": "Une verrue qui ne pousse que sur le sable des ames"
+      },
+      {
+        "item": "minecraft:bone_meal",
+        "clue": "Une poudre blanche qui fait pousser"
+      },
+      {
+        "item": "minecraft:wheat_seeds",
+        "clue": "Les graines les plus communes du monde"
+      },
+      {
+        "item": "minecraft:egg",
+        "clue": "Ce que pond la basse-cour"
+      },
+      {
+        "item": "minecraft:feather",
+        "clue": "Ce que perd la basse-cour"
+      },
+      {
+        "item": "minecraft:honeycomb",
+        "clue": "Un rayon pris aux abeilles"
+      },
+      {
+        "item": "minecraft:sugar",
+        "clue": "Une poudre blanche et sucree"
+      },
+      {
+        "item": "minecraft:dandelion",
+        "clue": "Une fleur jaune des prairies"
+      },
+      {
+        "item": "minecraft:lily_pad",
+        "clue": "Une feuille qui flotte sur les marais"
+      },
+      {
+        "item": "minecraft:vine",
+        "clue": "Une liane qui pend des arbres"
+      },
+      {
+        "item": "minecraft:sea_pickle",
+        "clue": "Un cornichon qui luit sous l'eau"
+      }
+    ]
+  },
+  "machines": {
+    "_comment": "Moulin, machine a pain et biogenerateur. L'energie est du FE : 1 FE = 5 HE de NTM NEXT. Le biogenerateur brule des cereales et pousse son energie vers les machines qui le touchent.",
+    "capacity": 20000,
+    "max_input": 1000,
+    "mill_ratio": 3,
+    "mill_energy": 120,
+    "biogen_per_cereal": 400,
+    "biogen_per_tick": 20,
+    "biogen_hopper": 64,
+    "biogen_push": 200,
+    "_bonus": "A partir de bonus_bread_level en Fermier, chaque fournee a bonus_bread_chance de rendre un pain de plus.",
+    "bonus_bread_level": 40,
+    "bonus_bread_chance": 0.1
+  },
+  "_breads": "Les fournees de la machine a pain : ce qu'elles consomment, combien de pains elles rendent, leur cout en FE. Les effets des pains sont dans le code (agri/Bread.java).",
+  "breads": [
+    {
+      "id": "corn_bread",
+      "inputs": {
+        "dohy:corn_flour": 4
+      },
+      "count": 4,
+      "energy": 1000
+    },
+    {
+      "id": "oat_bread",
+      "inputs": {
+        "dohy:oat_flour": 4
+      },
+      "count": 4,
+      "energy": 1000
+    },
+    {
+      "id": "rye_bread",
+      "inputs": {
+        "dohy:rye_flour": 4
+      },
+      "count": 4,
+      "energy": 1000
+    },
+    {
+      "id": "barley_bread",
+      "inputs": {
+        "dohy:barley_flour": 2,
+        "minecraft:sugar": 1
+      },
+      "count": 1,
+      "energy": 400
+    },
+    {
+      "id": "soy_bread",
+      "inputs": {
+        "dohy:soy_flour": 2,
+        "minecraft:egg": 1
+      },
+      "count": 1,
+      "energy": 400
+    },
+    {
+      "id": "sunflower_bread",
+      "inputs": {
+        "dohy:sunflower_flour": 2,
+        "dohy:cream": 1
+      },
+      "count": 1,
+      "energy": 400
+    },
+    {
+      "id": "miner_bread",
+      "inputs": {
+        "dohy:wheat_flour": 2,
+        "dohy:lard": 1,
+        "minecraft:glow_berries": 2
+      },
+      "count": 1,
+      "energy": 600
+    },
+    {
+      "id": "fonio_bread",
+      "inputs": {
+        "dohy:fonio_flour": 2,
+        "dohy:cream": 1,
+        "dohy:lard": 1
+      },
+      "count": 1,
+      "energy": 800
+    },
+    {
+      "id": "sorghum_bread",
+      "inputs": {
+        "dohy:sorghum_flour": 3,
+        "dohy:cream": 1,
+        "dohy:lard": 1,
+        "minecraft:egg": 1
+      },
+      "count": 1,
+      "energy": 1200
+    },
+    {
+      "id": "kamut_bread",
+      "inputs": {
+        "dohy:kamut_flour": 2,
+        "dohy:cream": 1,
+        "minecraft:glistering_melon_slice": 1
+      },
+      "count": 1,
+      "energy": 800
+    }
+  ],
+  "effects": {
+    "_comment": "Vol de vigueur : part des degats de melee rendue en vie, par niveau. Dernier rempart : vie laissee par le coup qui aurait tue. Flair du mineur : chance qu'une pierre cassee lache un minerai, au plus un tous les prospect_cooldown_ticks.",
+    "life_steal_per_level": 0.1,
+    "last_stand_health": 2.0,
+    "prospect_chance": 0.15,
+    "prospect_cooldown_ticks": 400,
+    "prospect_drops": [
+      {
+        "item": "minecraft:raw_iron",
+        "weight": 35
+      },
+      {
+        "item": "minecraft:raw_copper",
+        "weight": 20
+      },
+      {
+        "item": "minecraft:raw_gold",
+        "weight": 15
+      },
+      {
+        "item": "palamod:amethyst_ore",
+        "weight": 12
+      },
+      {
+        "item": "palamod:titane_ore",
+        "weight": 8
+      },
+      {
+        "item": "palamod:paladium_ore",
+        "weight": 5
+      },
+      {
+        "item": "palamod:findium",
+        "weight": 3
+      },
+      {
+        "item": "minecraft:diamond",
+        "weight": 1
+      },
+      {
+        "item": "palamod:trixium",
+        "weight": 1
+      }
+    ]
+  },
+  "_husbandry": "L'elevage : toutes les feed_interval_ticks, la mangeoire nourrit jusqu'a feed_max_animals betes adultes dans feed_radius blocs, s'il y a de l'eau dans un abreuvoir. Chaque bete mange feed_ration cereales et rend un produit.",
   "feed_interval_ticks": 2400,
   "feed_radius": 6,
   "feed_max_animals": 6,
+  "feed_ration": 4,
   "trough_capacity": 64,
   "water_capacity": 32,
   "water_per_bucket": 8

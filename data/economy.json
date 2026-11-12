@@ -17,5 +17,13 @@
     "cap_base": 50000,
     "cap_lifetime_rate": 0.01,
     "insurance_reduction": 0.5
+  },
+  "course": {
+    "_comment": "Le cours de l'heure. Chaque objet des categories listees tire un facteur entre min et max, le meme pour la vente et pour l'achat, qui change toutes les period_minutes minutes reelles. Le tirage est la moyenne de deux des : les cours extremes sont rares. tools/check_agri_prices.py verifie qu'aucune recette ne devient rentable en achetant au cours le plus bas pour revendre au plus haut.",
+    "period_minutes": 60,
+    "min": 0.7,
+    "max": 1.4,
+    "salt": 2611,
+    "categories": ["AGRI"]
   }
 }

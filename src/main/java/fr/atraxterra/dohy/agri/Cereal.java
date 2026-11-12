@@ -1,39 +1,39 @@
 package fr.atraxterra.dohy.agri;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+
 /**
- * Les cereales de DoHy. Le ble de Minecraft en est la neuvieme : il n'est pas
- * redeclare ici, mais il sert de parent au kamut et nourrit la mangeoire.
+ * Les cereales de DoHy. Le ble de Minecraft est la dixieme : il n'est pas
+ * redeclare ici, mais il se moud, nourrit la mangeoire et pousse partout.
  *
- * <p>Les trois OGM ne poussent pas dans la nature et ne tombent pas de
- * l'herbe : leurs graines sortent de la machine a OGM, qui croise deux
- * semences naturelles.
+ * <p>Six cereales naturelles, deux par climat ({@link Climate}) : on trouve
+ * leurs semences dans l'herbe de leur climat, et elles ne poussent que la.
+ * Trois OGM, qui poussent partout mais ne rendent <b>jamais de semence</b> :
+ * leurs graines sortent de la machine a OGM, et il faut y retourner a chaque
+ * recolte.
  *
- * @see GmoMachineMenu
+ * @see GmoResearch
  */
 public enum Cereal {
-    CORN("corn", "Mais", false, 1.0f, null, null),
-    OAT("oat", "Avoine", false, 1.0f, null, null),
-    RYE("rye", "Seigle", false, 1.0f, null, null),
-    BARLEY("barley", "Orge", false, 1.0f, null, null),
-    SOY("soy", "Soja", false, 1.0f, null, null),
-    FONIO("fonio", "Fonio", true, 0.6f, "oat", "soy"),
-    SORGHUM("sorghum", "Sorgho", true, 0.6f, "corn", "rye"),
-    KAMUT("kamut", "Kamut", true, 0.6f, "barley", "wheat");
+    CORN("corn", "Mais", Climate.TEMPERATE),
+    BARLEY("barley", "Orge", Climate.TEMPERATE),
+    OAT("oat", "Avoine", Climate.COLD),
+    RYE("rye", "Seigle", Climate.COLD),
+    SUNFLOWER("sunflower", "Tournesol", Climate.HOT),
+    SOY("soy", "Soja", Climate.HOT),
+    FONIO("fonio", "Fonio", null),
+    SORGHUM("sorghum", "Sorgho", null),
+    KAMUT("kamut", "Kamut", null);
 
     private final String key;
     private final String label;
-    private final boolean gmo;
-    private final float growth;
-    private final String parentA;
-    private final String parentB;
+    private final Climate climate;
 
-    Cereal(String key, String label, boolean gmo, float growth, String parentA, String parentB) {
+    Cereal(String key, String label, Climate climate) {
         this.key = key;
         this.label = label;
-        this.gmo = gmo;
-        this.growth = growth;
-        this.parentA = parentA;
-        this.parentB = parentB;
+        this.climate = climate;
     }
 
     /** Le nom du grain ; la culture est {@code <key>_crop}, la semence {@code <key>_seeds}. */
@@ -45,22 +45,33 @@ public enum Cereal {
         return label;
     }
 
+    /** Un OGM : pas de climat, pas de semence a la recolte. */
     public boolean gmo() {
-        return gmo;
+        return climate == null;
+    }
+
+    /** Le climat ou la cereale pousse ; {@code null} pour un OGM, qui pousse partout. */
+    public Climate climate() {
+        return climate;
     }
 
     /** La part des ticks de croissance que la culture accepte : un OGM pousse moins vite. */
     public float growth() {
-        return growth;
+        return gmo() ? 0.6f : 1.0f;
     }
 
-    /** La premiere cereale parente d'un OGM, par sa cle ; {@code null} pour une cereale naturelle. */
-    public String parentA() {
-        return parentA;
+    /** Vrai si la cereale pousse a cet endroit. */
+    public boolean growsAt(LevelReader level, BlockPos pos) {
+        return climate == null || Climate.at(level, pos) == climate;
     }
 
-    /** La seconde ; {@code wheat} designe le ble de Minecraft. */
-    public String parentB() {
-        return parentB;
+    /** La cereale d'une cle, ou {@code null} ({@code wheat} n'en est pas une ici). */
+    public static Cereal byKey(String key) {
+        for (Cereal cereal : values()) {
+            if (cereal.key.equals(key)) {
+                return cereal;
+            }
+        }
+        return null;
     }
 }

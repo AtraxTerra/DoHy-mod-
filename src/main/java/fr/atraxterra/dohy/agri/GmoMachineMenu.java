@@ -6,13 +6,11 @@ import fr.atraxterra.dohy.ui.menu.MenuController;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.ui.view.UiNet;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -24,12 +22,12 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Les croisements de la machine a OGM.
+ * L'ecran de la machine a OGM : choisir une souche, composer, lancer l'essai,
+ * relire le carnet. Les regles sont dans {@link GmoResearch}.
  *
- * <p>Un OGM ne se trouve pas : il se tente. Un essai consomme deux lots de
- * semences naturelles et de la poudre d'os, qu'il reussisse ou non, et reussit
- * avec une chance qui monte avec le niveau de Fermier. NationsGlory en fait une
- * recherche ; ici c'est le metier qui tient lieu de laboratoire.
+ * <p>La composition se regle carte par carte — clic gauche pour un de plus,
+ * clic droit pour un de moins — et l'essai puise dans l'inventaire : la machine
+ * n'a pas de coffre a elle.
  */
 public final class GmoMachineMenu extends MenuController {
 
@@ -37,7 +35,9 @@ public final class GmoMachineMenu extends MenuController {
 
     private static final Map<UUID, BlockPos> OPEN = new ConcurrentHashMap<>();
     private static final double REACH = 8.0d;
-    private static final int CARRIED_SLOTS = 36;
+    private static final int GREEN = 0xFF22E558;
+    private static final int GOLD = 0xFFFAC400;
+    private static final int RED = 0xFFE5484D;
 
     private GmoMachineMenu() {
         super("gmo_machine");
@@ -54,75 +54,111 @@ public final class GmoMachineMenu extends MenuController {
                 && player.distanceToSqr(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d) <= REACH * REACH;
     }
 
-    private static int carried(ServerPlayer player, Item item) {
-        int count = 0;
-        Inventory inventory = player.getInventory();
-        for (int slot = 0; slot < CARRIED_SLOTS; slot++) {
-            ItemStack stack = inventory.getItem(slot);
-            if (stack.is(item)) {
-                count += stack.getCount();
-            }
-        }
-        return count;
-    }
-
-    private static void take(ServerPlayer player, Item item, int wanted) {
-        int left = wanted;
-        Inventory inventory = player.getInventory();
-        for (int slot = 0; slot < CARRIED_SLOTS && left > 0; slot++) {
-            ItemStack stack = inventory.getItem(slot);
-            if (stack.is(item)) {
-                int part = Math.min(left, stack.getCount());
-                stack.shrink(part);
-                left -= part;
-            }
-        }
-        inventory.setChanged();
+    /** L'OGM vise ; le premier tant que le joueur n'a rien choisi. */
+    static Cereal target(ServerPlayer player) {
+        Cereal chosen = Cereal.byKey(GmoResearch.data(player).target());
+        return chosen != null && chosen.gmo() ? chosen : Cereal.FONIO;
     }
 
     @Override
     public MenuView view(ServerPlayer player) {
-        AgriConfig.Config config = AgriConfig.config();
+        AgriConfig.Gmo config = AgriConfig.config().gmo();
+        AgriData data = GmoResearch.data(player);
         int level = JobApi.level(player, Job.FARMER);
-        boolean allowed = level >= config.gmoMinLevel();
-        double chance = config.gmoChance(level);
-        int yield = config.gmoYield() + (level >= config.gmoBonusLevel() ? 1 : 0);
+        boolean allowed = level >= config.minLevel();
+        Cereal target = target(player);
+        Map<Identifier, Integer> composition = data.composition();
 
-        List<Card> cards = new ArrayList<>();
+        // -- Les souches ------------------------------------------------------------
+        List<Card> strains = new ArrayList<>();
         for (Cereal cereal : Cereal.values()) {
             if (!cereal.gmo()) {
                 continue;
             }
-            Item first = DoHyAgri.seeds(cereal.parentA());
-            Item second = DoHyAgri.seeds(cereal.parentB());
-            int haveFirst = carried(player, first);
-            int haveSecond = carried(player, second);
-            int haveMeal = carried(player, Items.BONE_MEAL);
-            boolean ready = allowed && haveFirst >= config.gmoParentSeeds() && haveSecond >= config.gmoParentSeeds()
-                    && haveMeal >= config.gmoBoneMeal();
-            String firstName = MenuView.text(Component.literal(Math.min(haveFirst, config.gmoParentSeeds()) + " / "
-                    + config.gmoParentSeeds() + " ").append(new ItemStack(first).getHoverName()));
-            String secondName = MenuView.text(Component.literal(Math.min(haveSecond, config.gmoParentSeeds()) + " / "
-                    + config.gmoParentSeeds() + " ").append(new ItemStack(second).getHoverName()));
-            Card card = Card.of(new ItemStack(DoHyAgri.seeds(cereal.key())), cereal.label(), List.of(
-                            firstName, secondName,
-                            Math.min(haveMeal, config.gmoBoneMeal()) + " / " + config.gmoBoneMeal()
-                                    + " poudre d'os"))
-                    .accent(0xFF22E558).badge(Math.round(chance * 100.0d) + " %")
-                    .tooltip(List.of("Un essai consomme tout, reussi ou non",
-                            "Reussite : " + yield + " graines de " + cereal.label().toLowerCase()));
-            cards.add(ready ? card.action("cross:" + cereal.key() + "|tenter le croisement")
-                    : card.state(MenuView.DISABLED));
+            boolean known = GmoResearch.knows(player, cereal);
+            Card card = Card.of(new ItemStack(DoHyAgri.seeds(cereal)), cereal.label(), List.of(
+                            known ? "Recette connue" : "Recette a decouvrir",
+                            data.attempts(cereal.key()) + " essais  ·  mute dans "
+                                    + GmoResearch.untilMutation(player, cereal) + " graines"))
+                    .accent(known ? GREEN : GOLD)
+                    .tooltip(List.of("Une fabrication rend " + config.seedsPerCraft() + " graines",
+                            "La recolte ne rend aucune semence"));
+            if (cereal == target) {
+                card = card.badge("CIBLE").state(MenuView.DONE);
+            }
+            strains.add(card.action("target:" + cereal.key() + "|viser cette souche"));
+        }
+
+        // -- La composition -----------------------------------------------------------
+        List<Card> chosen = new ArrayList<>();
+        boolean complete = true;
+        for (Map.Entry<Identifier, Integer> entry : composition.entrySet()) {
+            Item item = BuiltInRegistries.ITEM.getOptional(entry.getKey()).orElse(Items.AIR);
+            int have = AgriInv.count(player, item);
+            boolean enough = have >= entry.getValue();
+            complete &= enough;
+            chosen.add(Card.of(new ItemStack(item, entry.getValue()),
+                            MenuView.text(new ItemStack(item).getHoverName()),
+                            List.of("Quantite : " + entry.getValue(), "Tu en as " + have))
+                    .accent(enough ? GREEN : RED).badge("x" + entry.getValue())
+                    .action("more:" + entry.getKey() + "|un de plus")
+                    .right("less:" + entry.getKey() + "|un de moins"));
+        }
+        boolean ready = allowed && !composition.isEmpty() && complete;
+        Card run = Card.of(new ItemStack(DoHyAgri.GMO_MACHINE_ITEM.get()), "Lancer l'essai", List.of(
+                        composition.size() + " / " + config.ingredients() + " ingredients",
+                        "Tout est consomme, juste ou faux"))
+                .accent(GOLD)
+                .tooltip(List.of("Reussi : " + config.seedsPerCraft() + " graines de " + target.label().toLowerCase(),
+                        "Rate : un indice dans le carnet"));
+        chosen.add(ready ? run.action("run|lancer l'essai") : run.state(MenuView.DISABLED));
+        if (GmoResearch.knows(player, target)) {
+            chosen.add(Card.of(new ItemStack(Items.WRITABLE_BOOK), "Recette connue", List.of(
+                            "Recharge la composition", "qui a reussi"))
+                    .accent(GREEN).action("load|recharger la recette"));
+        }
+        if (!composition.isEmpty()) {
+            chosen.add(Card.of(new ItemStack(Items.BARRIER), "Vider", List.of("Retire tout", "de la composition"))
+                    .action("clear|vider la composition"));
+        }
+
+        // -- Les ingredients possibles ----------------------------------------------
+        List<Card> pool = new ArrayList<>();
+        boolean full = composition.size() >= config.ingredients();
+        for (AgriConfig.Ingredient ingredient : config.pool()) {
+            Item item = BuiltInRegistries.ITEM.getOptional(ingredient.item()).orElse(null);
+            if (item == null || composition.containsKey(ingredient.item())) {
+                continue;
+            }
+            Card card = Card.of(new ItemStack(item), MenuView.text(new ItemStack(item).getHoverName()),
+                    List.of("Tu en as " + AgriInv.count(player, item)));
+            pool.add(full ? card.state(MenuView.DISABLED) : card.action("add:" + ingredient.item() + "|ajouter"));
+        }
+
+        // -- Le carnet ----------------------------------------------------------------
+        List<Card> notes = new ArrayList<>();
+        for (String note : data.notes(target.key())) {
+            String[] parts = note.split(AgriData.NOTE_SEPARATOR);
+            notes.add(Card.of(new ItemStack(Items.PAPER), parts[0], List.of(parts).subList(1, parts.length)));
+        }
+        if (notes.isEmpty()) {
+            notes.add(Card.of(new ItemStack(Items.PAPER), "Aucun essai pour l'instant", List.of(
+                    "Un essai rate laisse ici son indice")).state(MenuView.DISABLED));
         }
 
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("FERMIER", "NIV. " + level, 0xFFFFFFFF),
-                new MenuView.Stat("REUSSITE", Math.round(chance * 100.0d) + " %", 0xFF22E558),
-                new MenuView.Stat("RECOLTE", yield + " GRAINES", 0xFFFAC400));
-        String subtitle = allowed ? "Croise deux semences ; la chance monte avec ton niveau de Fermier"
-                : "Il faut etre Fermier niveau " + config.gmoMinLevel();
-        return new MenuView(id(), "Machine a OGM", subtitle, stats,
-                List.of(new MenuView.Section("CROISEMENTS", "resources", MenuView.GRID, cards)), true);
+                new MenuView.Stat("CIBLE", target.label().toUpperCase(), GREEN),
+                new MenuView.Stat("ESSAIS", String.valueOf(data.attempts(target.key())), GOLD));
+        String subtitle = allowed
+                ? "Neuf ingredients, chacun en quantite precise : cherche la recette de la souche"
+                : "Il faut etre Fermier niveau " + config.minLevel();
+        return new MenuView(id(), "Machine a OGM", subtitle, stats, List.of(
+                new MenuView.Section("SOUCHES", "resources", MenuView.GRID, strains),
+                new MenuView.Section("COMPOSITION", "resources", MenuView.GRID, chosen),
+                new MenuView.Section("INGREDIENTS POSSIBLES", "resources", MenuView.GRID, pool),
+                new MenuView.Section("CARNET : " + target.label().toUpperCase(), "resources", MenuView.ROWS, notes)),
+                true);
     }
 
     @Override
@@ -131,64 +167,70 @@ public final class GmoMachineMenu extends MenuController {
             UiNet.close(player);
             return;
         }
-        if (!key.startsWith("cross:")) {
-            return;
-        }
-        Cereal target = null;
-        for (Cereal cereal : Cereal.values()) {
-            if (cereal.gmo() && cereal.key().equals(key.substring("cross:".length()))) {
-                target = cereal;
+        AgriConfig.Gmo config = AgriConfig.config().gmo();
+        AgriData data = GmoResearch.data(player);
+        Map<Identifier, Integer> composition = data.composition();
+        int colon = key.indexOf(':');
+        String verb = colon < 0 ? key : key.substring(0, colon);
+        String argument = colon < 0 ? "" : key.substring(colon + 1);
+        switch (verb) {
+            case "target" -> {
+                Cereal cereal = Cereal.byKey(argument);
+                if (cereal != null && cereal.gmo()) {
+                    data.target(cereal.key());
+                }
             }
-        }
-        if (target == null) {
-            return;
-        }
-        String refusal = cross(player, target);
-        if (refusal != null) {
-            report(player, refusal, "");
+            case "add" -> {
+                Identifier id = Identifier.tryParse(argument);
+                if (id != null && composition.size() < config.ingredients() && inPool(id)) {
+                    composition.putIfAbsent(id, 1);
+                }
+            }
+            case "more" -> {
+                Identifier id = Identifier.tryParse(argument);
+                if (id != null && composition.containsKey(id)) {
+                    int most = Math.min(config.maxQuantity(),
+                            new ItemStack(BuiltInRegistries.ITEM.getValue(id)).getMaxStackSize());
+                    composition.put(id, Math.min(most, composition.get(id) + 1));
+                }
+            }
+            case "less" -> {
+                Identifier id = Identifier.tryParse(argument);
+                if (id != null && composition.containsKey(id)) {
+                    int left = composition.get(id) - 1;
+                    if (left <= 0) {
+                        composition.remove(id);
+                    } else {
+                        composition.put(id, left);
+                    }
+                }
+            }
+            case "clear" -> composition.clear();
+            case "load" -> {
+                Cereal target = target(player);
+                if (GmoResearch.knows(player, target)) {
+                    composition.clear();
+                    composition.putAll(GmoResearch.recipe(player, target).parts());
+                }
+            }
+            case "run" -> {
+                String refusal = GmoResearch.attempt(player, target(player));
+                if (refusal != null) {
+                    report(player, refusal, "");
+                }
+            }
+            default -> {
+            }
         }
     }
 
-    /**
-     * Tente un croisement.
-     *
-     * @return le refus a afficher, ou {@code null} si l'essai a eu lieu (reussi ou non)
-     */
-    static String cross(ServerPlayer player, Cereal target) {
-        AgriConfig.Config config = AgriConfig.config();
-        int level = JobApi.level(player, Job.FARMER);
-        if (level < config.gmoMinLevel()) {
-            return "Il faut etre Fermier niveau " + config.gmoMinLevel() + ".";
+    private static boolean inPool(Identifier id) {
+        for (AgriConfig.Ingredient ingredient : AgriConfig.config().gmo().pool()) {
+            if (ingredient.item().equals(id)) {
+                return true;
+            }
         }
-        Item first = DoHyAgri.seeds(target.parentA());
-        Item second = DoHyAgri.seeds(target.parentB());
-        if (carried(player, first) < config.gmoParentSeeds() || carried(player, second) < config.gmoParentSeeds()
-                || carried(player, Items.BONE_MEAL) < config.gmoBoneMeal()) {
-            return "Il te manque des semences ou de la poudre d'os.";
-        }
-        take(player, first, config.gmoParentSeeds());
-        take(player, second, config.gmoParentSeeds());
-        take(player, Items.BONE_MEAL, config.gmoBoneMeal());
-
-        if (player.getRandom().nextDouble() >= config.gmoChance(level)) {
-            player.level().playSound(null, player.blockPosition(), SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS,
-                    0.6f, 0.8f);
-            player.sendSystemMessage(Component.literal("Machine a OGM : le croisement n'a rien donne.")
-                    .withStyle(ChatFormatting.RED));
-            return null;
-        }
-        int yield = config.gmoYield() + (level >= config.gmoBonusLevel() ? 1 : 0);
-        ItemStack seeds = new ItemStack(DoHyAgri.seeds(target.key()), yield);
-        player.getInventory().add(seeds);
-        if (!seeds.isEmpty()) {
-            player.drop(seeds, false);
-        }
-        player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS,
-                0.7f, 1.4f);
-        player.sendSystemMessage(Component.literal("Machine a OGM : " + yield + " graines de "
-                + target.label().toLowerCase() + " !").withStyle(ChatFormatting.GREEN));
-        JobApi.grant(player, Job.FARMER, config.gmoFarmerXp());
-        return null;
+        return false;
     }
 
     @Override

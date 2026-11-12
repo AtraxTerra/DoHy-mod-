@@ -40,6 +40,8 @@ public final class Menus {
                 TrixiumMenu.INSTANCE, AchievementMenu.INSTANCE,
                 fr.atraxterra.dohy.tech.TradingServerMenu.INSTANCE,
                 fr.atraxterra.dohy.agri.GmoMachineMenu.INSTANCE,
+                fr.atraxterra.dohy.agri.MillMenu.INSTANCE,
+                fr.atraxterra.dohy.agri.BreadMachineMenu.INSTANCE,
                 fr.atraxterra.dohy.auction.AuctionController.INSTANCE);
     }
 }

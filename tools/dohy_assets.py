@@ -224,33 +224,68 @@ def trading_server():
 
 # -- L'agriculture -----------------------------------------------------------------
 #
-# Huit cereales, chacune avec sa culture (huit stades), sa semence, son grain et
-# son pain ; deux produits d'elevage ; une mangeoire, un abreuvoir, une machine a
-# OGM. Tous les sprites sont traces ici a partir de quelques couleurs par cereale.
+# Neuf cereales, chacune avec sa culture (huit stades), sa semence, son grain et
+# sa farine ; dix pains ; deux produits d'elevage ; une mangeoire, un abreuvoir,
+# une machine a OGM, un moulin, une machine a pain, un biogenerateur. Tous les
+# sprites sont traces ici a partir de quelques couleurs par cereale : rien ne
+# vient d'un autre mod.
 
 # cle, nom francais, nom anglais, OGM, tige jeune, tige mure, epi, epi sombre, forme de l'epi
 CEREALS = [
     ("corn", "Mais", "Corn", False, 0x4E9A3A, 0x7FA33C, 0xF2C230, 0xC8931E, "cob"),
+    ("barley", "Orge", "Barley", False, 0x5FA544, 0xCDA945, 0xE3BE4E, 0xB08A2C, "awn"),
     ("oat", "Avoine", "Oat", False, 0x5AA548, 0xBFB36A, 0xE8DCA0, 0xBFB070, "drop"),
     ("rye", "Seigle", "Rye", False, 0x4F8F4A, 0xA89A5E, 0xC9B27A, 0x8F7A4A, "long"),
-    ("barley", "Orge", "Barley", False, 0x5FA544, 0xCDA945, 0xE3BE4E, 0xB08A2C, "awn"),
+    ("sunflower", "Tournesol", "Sunflower", False, 0x4E9A3A, 0x6C9A3A, 0xF6C21E, 0x5E3F1A, "disk"),
     ("soy", "Soja", "Soy", False, 0x3F8E3B, 0x6C9A3A, 0x9BBF4A, 0x6E8F30, "pod"),
     ("fonio", "Fonio", "Fonio", True, 0x4CA36A, 0x9FC58A, 0xF1EEDC, 0xBFC0A8, "spray"),
     ("sorghum", "Sorgho", "Sorghum", True, 0x4A9440, 0x8E8A3C, 0xB2452F, 0x7C2A1E, "cluster"),
     ("kamut", "Kamut", "Kamut", True, 0x58A04A, 0xD0A040, 0xF0A63A, 0xB5741E, "big"),
 ]
 
-# Ce que le pain d'un OGM demande en plus de ses trois grains.
-GMO_EXTRA = {"fonio": "minecraft:egg", "sorghum": "dohy:lard", "kamut": "dohy:cream"}
+# La couleur du ble, pour sa farine et le pain du mineur.
+WHEAT_HEAD = 0xDCC27A
 
-# Les effets, pour le nom affiche sous le pain (le code fait foi : DoHyAgri.bread).
-BREAD_FR = {
-    "corn": "Pain de mais", "oat": "Pain d'avoine", "rye": "Pain de seigle", "barley": "Pain d'orge",
-    "soy": "Pain de soja", "fonio": "Pain de fonio", "sorghum": "Pain de sorgho", "kamut": "Pain de kamut",
+# Les pains : cle, nom francais, nom anglais, couleur de mie, brille (pain d'OGM), garniture.
+BREADS = [
+    ("corn_bread", "Pain de mais", "Cornbread", 0xF2C230, False, None),
+    ("oat_bread", "Pain d'avoine", "Oat Bread", 0xE8DCA0, False, None),
+    ("rye_bread", "Pain de seigle", "Rye Bread", 0x8F7A4A, False, None),
+    ("barley_bread", "Pain d'orge", "Barley Bread", 0xE3BE4E, False, None),
+    ("soy_bread", "Pain de soja", "Soy Bread", 0x9BBF4A, False, None),
+    ("sunflower_bread", "Pain de tournesol", "Sunflower Bread", 0xF6C21E, False, 0x3A2A16),
+    ("miner_bread", "Pain du mineur", "Miner's Bread", WHEAT_HEAD, False, 0x4FD0E0),
+    ("fonio_bread", "Pain de fonio", "Fonio Bread", 0xF1EEDC, True, None),
+    ("sorghum_bread", "Pain de sorgho", "Sorghum Bread", 0xB2452F, True, None),
+    ("kamut_bread", "Pain de kamut", "Kamut Bread", 0xF0A63A, True, None),
+]
+
+# Les infobulles des pains (le code fait foi : agri/Bread.java).
+BREAD_LORE_FR = {
+    "corn_bread": ["Un pain simple"],
+    "oat_bread": ["Un pain simple, plus nourrissant"],
+    "rye_bread": ["Le plus nourrissant des pains simples"],
+    "barley_bread": ["Rapidite I et Celerite I, 20 s  -  +2 coeurs"],
+    "soy_bread": ["Regeneration II, 5 s  -  +3 coeurs"],
+    "sunflower_bread": ["Vol de vigueur I, 1 min"],
+    "miner_bread": ["Flair du mineur, 5 min"],
+    "fonio_bread": ["Absorption I et Dernier rempart, 30 s  -  +4 coeurs"],
+    "sorghum_bread": ["Force II, Rapidite II, Absorption I, 2 min  -  +4 coeurs",
+                      "Regeneration II 30 s  -  Vol de vigueur II 1 min"],
+    "kamut_bread": ["Leve les effets nefastes, puis Immunite 2 min"],
 }
-BREAD_EN = {
-    "corn": "Cornbread", "oat": "Oat Bread", "rye": "Rye Bread", "barley": "Barley Bread",
-    "soy": "Soy Bread", "fonio": "Fonio Bread", "sorghum": "Sorghum Bread", "kamut": "Kamut Bread",
+BREAD_LORE_EN = {
+    "corn_bread": ["A plain bread"],
+    "oat_bread": ["A plain bread, more filling"],
+    "rye_bread": ["The most filling plain bread"],
+    "barley_bread": ["Speed I and Haste I, 20 s  -  +2 hearts"],
+    "soy_bread": ["Regeneration II, 5 s  -  +3 hearts"],
+    "sunflower_bread": ["Life Steal I, 1 min"],
+    "miner_bread": ["Prospecting, 5 min"],
+    "fonio_bread": ["Absorption I and Last Stand, 30 s  -  +4 hearts"],
+    "sorghum_bread": ["Strength II, Speed II, Absorption I, 2 min  -  +4 hearts",
+                      "Regeneration II 30 s  -  Life Steal II 1 min"],
+    "kamut_bread": ["Clears harmful effects, then Immunity 2 min"],
 }
 
 
@@ -336,6 +371,13 @@ def crop_stage(cereal, stage):
                 put(rows, x, top - 1 + dy, tone)
                 put(rows, x - 1, top + dy, dark if dy % 2 else tone)
                 put(rows, x + 1, top + dy, tone if dy % 2 else dark)
+        elif shape == "disk":
+            # le capitule du tournesol : un coeur sombre, des petales autour
+            put(rows, x, top - 1, dark if grown > 1 else tone)
+            if grown > 1:
+                petal = head if grown == 3 else tone
+                for (dx, dy) in ((-1, -1), (1, -1), (0, -2), (0, 0)):
+                    put(rows, x + dx, top + dy, petal)
         else:  # big
             for dy in range(grown + 1):
                 put(rows, x, top - 1 + dy, tone if dy % 2 == 0 else dark)
@@ -376,6 +418,16 @@ def grain_icon(cereal):
             put(rows, 7 + i + 2, 8 - i, OUTLINE)
         put(rows, 5, 10, shade(ripe, 1.1))
         put(rows, 6, 11, shade(ripe, 1.1))
+    elif shape == "disk":
+        # un capitule vu de face : coeur sombre, couronne de petales
+        for y in range(1, 12):
+            for x in range(4, 15):
+                dx, dy = x - 9, y - 6
+                distance = dx * dx + dy * dy
+                if distance <= 6:
+                    put(rows, x, y, head_dark if (x + y) % 3 else shade(head_dark, 1.35))
+                elif distance <= 26 and (abs(dx) != abs(dy) or distance <= 13):
+                    put(rows, x, y, head if (x + y) % 2 == 0 else shade(head, 0.86))
     elif shape == "pod":
         for i in range(7):
             put(rows, 6 + i, 9 - i + (1 if i in (2, 3, 4) else 0), head)
@@ -398,8 +450,8 @@ def grain_icon(cereal):
     return rows
 
 
-def bread_icon(cereal):
-    head = rgb(cereal[6])
+def bread_icon(crumb, sparkle, topping):
+    head = rgb(crumb)
     crust = mix(rgb(0xB8782E), head, 0.35)
     rows = blank()
     for y in range(5, 12):
@@ -415,13 +467,212 @@ def bread_icon(cereal):
         put(rows, x - 1, 8, shade(head, 1.15))
     for x in range(3, 13):
         put(rows, x, 12, OUTLINE)
-    if cereal[3]:                            # un pain d'OGM brille
+    if topping is not None:                  # des graines ou des eclats sur la croute
+        for (x, y) in ((4, 6), (7, 9), (10, 6), (12, 9), (6, 10), (9, 7)):
+            put(rows, x, y, rgb(topping))
+    if sparkle:                              # un pain d'OGM brille
         for (x, y) in ((3, 3), (12, 4), (14, 9)):
             put(rows, x, y, rgb(0xFFFFFF))
         put(rows, 3, 2, rgb(0xCFF5D0))
         put(rows, 2, 3, rgb(0xCFF5D0))
         put(rows, 4, 3, rgb(0xCFF5D0))
         put(rows, 3, 4, rgb(0xCFF5D0))
+    return rows
+
+
+def flour_icon(color, sparkle):
+    """Un sac de toile ouvert, la farine a ras bord, une pastille de la couleur du grain."""
+    cloth, cloth_dark, cloth_light = rgb(0xC9B48A), rgb(0x8F7B55), rgb(0xE2D2AC)
+    grain = rgb(color)
+    flour = mix(rgb(0xFBF7EC), grain, 0.22)
+    rows = blank()
+    for y in range(5, 14):
+        inset = 1 if y in (5, 13) else 0
+        for x in range(3 + inset, 13 - inset):
+            edge = x in (3 + inset, 12 - inset) or y == 13
+            put(rows, x, y, cloth_dark if edge else (cloth_light if x < 6 else cloth))
+    for x in range(4, 12):                   # la farine, bombee
+        put(rows, x, 4, flour)
+    for x in range(5, 11):
+        put(rows, x, 3, flour if x % 2 else shade(flour, 0.93))
+    for x in range(6, 10):
+        put(rows, x, 2, flour)
+    for x in range(4, 12):                   # l'ourlet du sac
+        put(rows, x, 5, cloth_dark if x % 2 else cloth)
+    for y in range(8, 11):                   # la pastille
+        for x in range(6, 10):
+            put(rows, x, y, grain if (x, y) not in ((6, 8), (9, 8), (6, 10), (9, 10)) else cloth)
+    put(rows, 7, 9, shade(grain, 0.75))
+    if sparkle:
+        put(rows, 13, 2, rgb(0xFFFFFF))
+        put(rows, 2, 7, rgb(0xCFF5D0))
+    return rows
+
+
+def effect_icon(kind):
+    """Une icone d'effet, 18 x 18 comme celles du jeu."""
+    rows = [[None for _ in range(18)] for _ in range(18)]
+
+    def dot(x, y, color):
+        if 0 <= x < 18 and 0 <= y < 18:
+            rows[y][x] = rgb(color)
+
+    if kind == "life_steal":                 # un coeur, une goutte qui y monte
+        heart = ["..XX...XX..", ".XXXX.XXXX.", "XXXXXXXXXXX", "XXXXXXXXXXX", "XXXXXXXXXXX", ".XXXXXXXXX.",
+                 "..XXXXXXX..", "...XXXXX...", "....XXX....", ".....X....."]
+        for y, line in enumerate(heart):
+            for x, cell in enumerate(line):
+                if cell == "X":
+                    dot(3 + x, 3 + y, 0xC2374B if (x + y) % 5 else 0xE0566A)
+        for (x, y) in ((5, 5), (6, 4), (6, 5)):
+            dot(x, y, 0xFFB3BF)
+        for (x, y) in ((14, 13), (14, 14), (13, 15), (14, 15), (15, 15), (14, 16)):
+            dot(x, y, 0xFF8496)
+    elif kind == "last_stand":               # un bouclier fendu qui tient
+        for y in range(2, 16):
+            half = 6 if y < 9 else max(0, 6 - (y - 8))
+            for x in range(9 - half, 9 + half):
+                border = x in (9 - half, 9 + half - 1) or y == 2
+                dot(x, y, 0x8A6A1C if border else (0xE8C34A if x < 9 else 0xC9A130))
+        for (x, y) in ((9, 4), (8, 5), (9, 6), (10, 7), (9, 8), (8, 9), (9, 10)):
+            dot(x, y, 0x3A2A08)
+    elif kind == "immunity":                 # une croix dans un halo
+        for y in range(1, 17):
+            for x in range(1, 17):
+                dx, dy = x - 8.5, y - 8.5
+                distance = dx * dx + dy * dy
+                if 42 <= distance <= 58:
+                    dot(x, y, 0x7FD8C8)
+        for y in range(4, 14):
+            for x in range(4, 14):
+                if 7 <= x <= 10 or 7 <= y <= 10:
+                    dot(x, y, 0xF4FFFB if (7 <= x <= 10 and 7 <= y <= 10) else 0xB9F0E4)
+    else:                                    # prospecting : une pioche et un eclat
+        for i in range(9):
+            dot(4 + i, 13 - i, 0x8B5A2B)
+            dot(5 + i, 13 - i, 0x6A421C)
+        for (x, y) in ((8, 3), (9, 3), (10, 3), (11, 4), (12, 4), (13, 5), (14, 6), (14, 7), (15, 8), (15, 9)):
+            dot(x, y, 0xC9D2DA)
+            dot(x, y + 1, 0x8E99A3)
+        for (x, y) in ((3, 4), (4, 3), (4, 4), (4, 5), (5, 4)):
+            dot(x, y, 0x8E7CC3)
+        dot(4, 4, 0xE4DBFF)
+        for (x, y) in ((13, 14), (14, 13), (14, 14), (14, 15), (15, 14)):
+            dot(x, y, 0x4FD0E0)
+    return rows
+
+
+def enamel(color):
+    """Une tole emaillee : la couleur, une arete claire en haut a gauche, sombre en bas a droite."""
+    base = rgb(color)
+    rows = [[base if (x * 5 + y * 3) % 17 else shade(base, 0.96) for x in range(16)] for y in range(16)]
+    for i in range(16):
+        rows[0][i] = shade(base, 1.18)
+        rows[i][0] = shade(base, 1.18)
+        rows[15][i] = shade(base, 0.62)
+        rows[i][15] = shade(base, 0.62)
+    for (x, y) in ((2, 2), (13, 2), (2, 13), (13, 13)):
+        rows[y][x] = shade(base, 0.55)
+    return rows
+
+
+def machine_side(color):
+    rows = enamel(color)
+    base = rgb(color)
+    for y in (5, 7, 9):                      # des ouies
+        for x in range(4, 12):
+            rows[y][x] = shade(base, 0.45)
+            rows[y + 1][x] = shade(base, 1.12)
+    return rows
+
+
+def machine_top(color, kind):
+    rows = enamel(color)
+    base = rgb(color)
+    if kind == "flour_mill":                 # la tremie : un entonnoir carre
+        for y in range(3, 13):
+            for x in range(3, 13):
+                ring = min(x - 3, 12 - x, y - 3, 12 - y)
+                rows[y][x] = shade(base, (0.5, 0.42, 0.34, 0.26, 0.2)[min(ring, 4)])
+        for (x, y) in ((7, 7), (8, 8), (7, 8), (8, 7)):
+            rows[y][x] = rgb(0xE8D9A8)
+    elif kind == "bread_machine":            # une plaque chauffante
+        for y in range(3, 13):
+            for x in range(3, 13):
+                rows[y][x] = rgb(0x2E2A28) if (x + y) % 2 else rgb(0x3A3532)
+        for x in range(4, 12):
+            rows[5][x] = rgb(0x5A4A40)
+            rows[10][x] = rgb(0x5A4A40)
+    else:                                    # le biogenerateur : une trappe et son joint
+        for y in range(4, 12):
+            for x in range(4, 12):
+                dx, dy = x - 7.5, y - 7.5
+                distance = dx * dx + dy * dy
+                if distance <= 17:
+                    rows[y][x] = shade(base, 0.5) if distance > 11 else rgb(0x2E4A2C)
+        rows[7][7] = rgb(0x9BE08A)
+        rows[8][8] = rgb(0x9BE08A)
+    return rows
+
+
+def machine_front(color, kind, lit):
+    rows = enamel(color)
+    base = rgb(color)
+    dark = shade(base, 0.4)
+    if kind == "flour_mill":
+        # la meule, vue de face, et la goulotte ou tombe la farine
+        stone, stone_dark = rgb(0xB8B4AA), rgb(0x7E7A70)
+        for y in range(2, 12):
+            for x in range(3, 13):
+                dx, dy = x - 7.5, y - 6.5
+                distance = dx * dx + dy * dy
+                if distance <= 22:
+                    spoke = (x + y) % 4 == (1 if lit else 0)
+                    rows[y][x] = stone_dark if distance > 17 or spoke else stone
+        rows[6][7] = dark
+        rows[6][8] = dark
+        rows[7][7] = dark
+        rows[7][8] = dark
+        for x in range(6, 10):
+            rows[12][x] = dark
+            rows[13][x] = rgb(0xF6EFD8) if lit else shade(base, 0.7)
+    elif kind == "bread_machine":
+        # la porte du four et sa vitre
+        for y in range(3, 12):
+            for x in range(3, 13):
+                border = x in (3, 12) or y in (3, 11)
+                if border:
+                    rows[y][x] = dark
+                elif lit:
+                    rows[y][x] = rgb(0xFFB02E) if (x + y) % 3 else rgb(0xFFD76A)
+                else:
+                    rows[y][x] = rgb(0x231B18) if (x + y) % 3 else rgb(0x2E2420)
+        for x in range(5, 11):                # la miche derriere la vitre
+            rows[9][x] = rgb(0xB8782E) if lit else rgb(0x3A2A20)
+        for x in range(6, 10):
+            rows[8][x] = rgb(0xD99A48) if lit else rgb(0x40302A)
+        for x in range(4, 12):                # la poignee
+            rows[13][x] = rgb(0xD8DCE0)
+    else:
+        # la cuve vitree du biogenerateur, et son voyant
+        liquid = rgb(0x8FE86A) if lit else rgb(0x3B6A34)
+        liquid_dark = rgb(0x4FB83C) if lit else rgb(0x2A4A26)
+        for y in range(3, 13):
+            for x in range(3, 10):
+                border = x in (3, 9) or y in (3, 12)
+                if border:
+                    rows[y][x] = dark
+                elif y < 6:
+                    rows[y][x] = rgb(0xBFE4EA)
+                else:
+                    rows[y][x] = liquid if (x * 3 + y) % 4 else liquid_dark
+        if lit:
+            for (x, y) in ((5, 8), (7, 10), (6, 6)):
+                rows[y][x] = rgb(0xEAFFD8)
+        bolt = rgb(0xFFE14A) if lit else shade(base, 0.55)
+        for (x, y) in ((12, 4), (11, 5), (11, 6), (12, 6), (13, 6), (12, 7), (12, 8), (11, 9)):
+            rows[y][x] = bolt
+        rows[12][12] = rgb(0x3DFF6A) if lit else rgb(0x1D3A24)
     return rows
 
 
@@ -583,52 +834,52 @@ def agriculture():
             variants["age=%d" % stage] = {"model": "%s:block/%s_stage_%d" % (NS, crop, stage)}
         write("assets/%s/blockstates/%s.json" % (NS, crop), {"variants": variants})
 
-        # le butin : mure, un a deux grains ; la semence revient toujours, et la
-        # culture mure en rend d'autres (un OGM en rend bien moins : il se merite)
-        mature = [{"condition": "minecraft:block_state_property", "block": "%s:%s" % (NS, crop),
-                   "properties": {"age": "7"}}]
-        extra_seeds = ({"extra": 1, "probability": 0.25} if gmo else {"extra": 2, "probability": 0.5714286})
-        write("data/%s/loot_table/blocks/%s.json" % (NS, crop), {
-            "type": "minecraft:block",
-            "pools": [
-                {"rolls": 1, "conditions": mature, "entries": [{
-                    "type": "minecraft:item", "name": "%s:%s" % (NS, key),
-                    "functions": [
-                        {"function": "minecraft:set_count",
-                         "count": {"type": "minecraft:uniform", "min": 1, "max": 1 if gmo else 2}},
-                        {"function": "minecraft:explosion_decay"},
-                    ],
-                }]},
-                {"rolls": 1, "entries": [{"type": "minecraft:item", "name": "%s:%s_seeds" % (NS, key)}]},
-                {"rolls": 1, "conditions": mature, "entries": [{
-                    "type": "minecraft:item", "name": "%s:%s_seeds" % (NS, key),
-                    "functions": [{
-                        "function": "minecraft:apply_bonus", "enchantment": "minecraft:fortune",
-                        "formula": "minecraft:binomial_with_bonus_count", "parameters": extra_seeds,
-                    }, {"function": "minecraft:explosion_decay"}],
-                }]},
+        # le butin. Une cereale naturelle : mure, un a deux grains ; la semence
+        # revient toujours, et la culture mure en rend d'autres. Un OGM : mure,
+        # deux a quatre grains et AUCUNE semence — elle ne revient que si la
+        # culture est arrachee avant d'etre mure.
+        mature = {"condition": "minecraft:block_state_property", "block": "%s:%s" % (NS, crop),
+                  "properties": {"age": "7"}}
+        grain_pool = {"rolls": 1, "conditions": [mature], "entries": [{
+            "type": "minecraft:item", "name": "%s:%s" % (NS, key),
+            "functions": [
+                {"function": "minecraft:set_count",
+                 "count": {"type": "minecraft:uniform", "min": 2 if gmo else 1, "max": 4 if gmo else 2}},
+                {"function": "minecraft:explosion_decay"},
             ],
-        })
+        }]}
+        seed_entry = {"type": "minecraft:item", "name": "%s:%s_seeds" % (NS, key)}
+        if gmo:
+            pools = [grain_pool, {
+                "rolls": 1, "conditions": [{"condition": "minecraft:inverted", "term": mature}],
+                "entries": [seed_entry],
+            }]
+        else:
+            pools = [grain_pool, {"rolls": 1, "entries": [seed_entry]}, {
+                "rolls": 1, "conditions": [mature], "entries": [dict(seed_entry, functions=[{
+                    "function": "minecraft:apply_bonus", "enchantment": "minecraft:fortune",
+                    "formula": "minecraft:binomial_with_bonus_count",
+                    "parameters": {"extra": 2, "probability": 0.5714286},
+                }, {"function": "minecraft:explosion_decay"}])],
+            }]
+        write("data/%s/loot_table/blocks/%s.json" % (NS, crop), {"type": "minecraft:block", "pools": pools})
 
         write_png("assets/%s/textures/item/%s_seeds.png" % (NS, key), seeds_icon(cereal))
         write_png("assets/%s/textures/item/%s.png" % (NS, key), grain_icon(cereal))
-        write_png("assets/%s/textures/item/%s_bread.png" % (NS, key), bread_icon(cereal))
-        for item in (key + "_seeds", key, key + "_bread"):
+        write_png("assets/%s/textures/item/%s_flour.png" % (NS, key), flour_icon(cereal[6], gmo))
+        for item in (key + "_seeds", key, key + "_flour"):
             generated_item(item)
 
-        grain = "%s:%s" % (NS, key)
-        if gmo:
-            write("data/%s/recipe/%s_bread.json" % (NS, key), {
-                "type": "minecraft:crafting_shapeless", "category": "misc",
-                "ingredients": [grain, grain, grain, GMO_EXTRA[key]],
-                "result": {"id": "%s:%s_bread" % (NS, key), "count": 1},
-            })
-        else:
-            write("data/%s/recipe/%s_bread.json" % (NS, key), {
-                "type": "minecraft:crafting_shaped", "category": "misc",
-                "pattern": ["GGG"], "key": {"G": grain},
-                "result": {"id": "%s:%s_bread" % (NS, key), "count": 1},
-            })
+    write_png("assets/%s/textures/item/wheat_flour.png" % NS, flour_icon(WHEAT_HEAD, False))
+    generated_item("wheat_flour")
+
+    # les pains : ils ne sortent que de la machine a pain, il n'y a donc pas de recette d'etabli
+    for (key, _fr, _en, crumb, sparkle, topping) in BREADS:
+        write_png("assets/%s/textures/item/%s.png" % (NS, key), bread_icon(crumb, sparkle, topping))
+        generated_item(key)
+
+    for effect in ("life_steal", "last_stand", "immunity", "prospecting"):
+        write_png("assets/%s/textures/mob_effect/%s.png" % (NS, effect), effect_icon(effect))
 
     write_png("assets/%s/textures/item/cream.png" % NS, cream_icon())
     write_png("assets/%s/textures/item/lard.png" % NS, lard_icon())
@@ -692,7 +943,67 @@ def agriculture():
         "result": {"id": "%s:gmo_machine" % NS, "count": 1},
     })
 
-    # ce qu'une mangeoire accepte : les grains d'ici, et le ble
+    # le moulin, la machine a pain, le biogenerateur : trois toles emaillees, une facade chacune
+    machines = (
+        ("flour_mill", 0xCBBE9E, "minecraft:grindstone", "minecraft:smooth_stone"),
+        ("bread_machine", 0xA65A45, "minecraft:furnace", "minecraft:bricks"),
+        ("biogenerator", 0x5E8C5A, "minecraft:composter", "minecraft:glass"),
+    )
+    for order, (name, color, core, shell) in enumerate(machines):
+        write_png("assets/%s/textures/block/%s_front.png" % (NS, name), machine_front(color, name, False))
+        write_png("assets/%s/textures/block/%s_front_on.png" % (NS, name), machine_front(color, name, True))
+        write_png("assets/%s/textures/block/%s_side.png" % (NS, name), machine_side(color))
+        write_png("assets/%s/textures/block/%s_top.png" % (NS, name), machine_top(color, name))
+        for suffix, front in (("", "_front"), ("_on", "_front_on")):
+            write("assets/%s/models/block/%s%s.json" % (NS, name, suffix), {
+                "parent": "minecraft:block/orientable",
+                "textures": {
+                    "top": "%s:block/%s_top" % (NS, name),
+                    "front": "%s:block/%s%s" % (NS, name, front),
+                    "side": "%s:block/%s_side" % (NS, name),
+                },
+            })
+        variants = {}
+        for facing, angle in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+            for lit in (False, True):
+                variant = {"model": "%s:block/%s%s" % (NS, name, "_on" if lit else "")}
+                if angle:
+                    variant["y"] = angle
+                variants["facing=%s,lit=%s" % (facing, "true" if lit else "false")] = variant
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": variants})
+        write("assets/%s/items/%s.json" % (NS, name), {
+            "model": {"type": "minecraft:model", "model": "%s:block/%s" % (NS, name)},
+        })
+        block_drops_itself(name)
+
+        # Avec NTM NEXT : la machine d'assemblage. Sans : l'etabli.
+        write("data/%s/recipe/assembly_machine/ass.dohy_%s.json" % (NS, name), {
+            "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "hbm"}],
+            "type": "hbm:assembly_machine",
+            "duration": 200,
+            "input_items": [
+                {"count": 6, "ingredient": "#c:plates/steel"},
+                {"ingredient": "hbm:circuit_basic"},
+                {"ingredient": "hbm:motor"},
+                {"ingredient": core},
+            ],
+            "order": 60010 + order,
+            "output_items": ["%s:%s" % (NS, name)],
+            "power": 100,
+        })
+        write("data/%s/recipe/%s.json" % (NS, name), {
+            "neoforge:conditions": [{
+                "type": "neoforge:not",
+                "value": {"type": "neoforge:mod_loaded", "modid": "hbm"},
+            }],
+            "type": "minecraft:crafting_shaped",
+            "category": "redstone",
+            "pattern": ["ISI", "SCS", "IRI"],
+            "key": {"I": "minecraft:iron_ingot", "S": shell, "C": core, "R": "minecraft:redstone_block"},
+            "result": {"id": "%s:%s" % (NS, name), "count": 1},
+        })
+
+    # ce qu'une mangeoire et un biogenerateur acceptent : les grains d'ici, et le ble
     write("data/%s/tags/item/cereals.json" % NS, {
         "replace": False,
         "values": ["minecraft:wheat"] + ["%s:%s" % (NS, cereal[0]) for cereal in CEREALS],
@@ -720,15 +1031,51 @@ def lang():
         "item.dohy.cream": "Cream",
         "item.dohy.lard": "Lard",
     }
+    fr.update({
+        "block.dohy.flour_mill": "Moulin",
+        "block.dohy.bread_machine": "Machine a pain",
+        "block.dohy.biogenerator": "Biogenerateur",
+        "item.dohy.wheat_flour": "Farine de ble",
+        "effect.dohy.life_steal": "Vol de vigueur",
+        "effect.dohy.last_stand": "Dernier rempart",
+        "effect.dohy.immunity": "Immunite",
+        "effect.dohy.prospecting": "Flair du mineur",
+        "tooltip.dohy.climate.cold": "Climat froid : taiga, toundra, sommets",
+        "tooltip.dohy.climate.temperate": "Climat tempere : plaines, forets, marais",
+        "tooltip.dohy.climate.hot": "Climat chaud : jungle, savane, desert",
+        "tooltip.dohy.climate.gmo": "OGM : pousse partout, ne rend aucune semence",
+    })
+    en.update({
+        "block.dohy.flour_mill": "Flour Mill",
+        "block.dohy.bread_machine": "Bread Machine",
+        "block.dohy.biogenerator": "Biogenerator",
+        "item.dohy.wheat_flour": "Wheat Flour",
+        "effect.dohy.life_steal": "Life Steal",
+        "effect.dohy.last_stand": "Last Stand",
+        "effect.dohy.immunity": "Immunity",
+        "effect.dohy.prospecting": "Prospecting",
+        "tooltip.dohy.climate.cold": "Cold climate: taiga, tundra, peaks",
+        "tooltip.dohy.climate.temperate": "Temperate climate: plains, forests, swamps",
+        "tooltip.dohy.climate.hot": "Hot climate: jungle, savanna, desert",
+        "tooltip.dohy.climate.gmo": "GMO: grows anywhere, never gives seeds back",
+    })
     for (key, name_fr, name_en, gmo, *_rest) in CEREALS:
-        fr["block.dohy.%s_crop" % key] = "Culture de %s" % name_fr.lower()
+        of = "d'" if name_fr[0] in "AEIOU" else "de "
+        fr["block.dohy.%s_crop" % key] = "Culture %s%s" % (of, name_fr.lower())
         en["block.dohy.%s_crop" % key] = "%s Crop" % name_en
-        fr["item.dohy.%s_seeds" % key] = "Graines de %s" % name_fr.lower()
+        fr["item.dohy.%s_seeds" % key] = "Semences %s%s" % (of, name_fr.lower())
         en["item.dohy.%s_seeds" % key] = "%s Seeds" % name_en
         fr["item.dohy.%s" % key] = name_fr
         en["item.dohy.%s" % key] = name_en
-        fr["item.dohy.%s_bread" % key] = BREAD_FR[key]
-        en["item.dohy.%s_bread" % key] = BREAD_EN[key]
+        fr["item.dohy.%s_flour" % key] = "Farine %s%s" % (of, name_fr.lower())
+        en["item.dohy.%s_flour" % key] = "%s Flour" % name_en
+    for (key, name_fr, name_en, *_rest) in BREADS:
+        fr["item.dohy.%s" % key] = name_fr
+        en["item.dohy.%s" % key] = name_en
+        for index, line in enumerate(BREAD_LORE_FR[key]):
+            fr["tooltip.dohy.%s.%d" % (key, index + 1)] = line
+        for index, line in enumerate(BREAD_LORE_EN[key]):
+            en["tooltip.dohy.%s.%d" % (key, index + 1)] = line
     write("assets/%s/lang/fr_fr.json" % NS, fr)
     write("assets/%s/lang/en_us.json" % NS, en)
 

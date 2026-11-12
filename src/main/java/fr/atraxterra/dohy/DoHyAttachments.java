@@ -155,6 +155,14 @@ public final class DoHyAttachments {
                     .copyOnDeath()
                     .build());
 
+    /** Le carnet de recherche de la machine a OGM. Conserve a la mort. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.agri.AgriData>> AGRICULTURE =
+            ATTACHMENT_TYPES.register("agriculture",
+                    () -> AttachmentType.builder(fr.atraxterra.dohy.agri.AgriData::new)
+                            .serialize(fr.atraxterra.dohy.agri.AgriData.MAP_CODEC, data -> !data.isEmpty())
+                            .copyOnDeath()
+                            .build());
+
     private DoHyAttachments() {
     }
 

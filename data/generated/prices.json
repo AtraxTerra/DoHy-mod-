@@ -1953,29 +1953,7 @@
       "rate_per_hour": 1000.0
     },
     "dohy:corn": {
-      "category": "FARM",
-      "tier": "FARM",
-      "base_price": 15,
-      "s0": 2000,
-      "floor_pct": 0.15,
-      "ceiling_pct": 1.8,
-      "buy_price": 60,
-      "sellable": true,
-      "rate_per_hour": 1200.0
-    },
-    "dohy:oat": {
-      "category": "FARM",
-      "tier": "FARM",
-      "base_price": 15,
-      "s0": 2000,
-      "floor_pct": 0.15,
-      "ceiling_pct": 1.8,
-      "buy_price": 60,
-      "sellable": true,
-      "rate_per_hour": 1200.0
-    },
-    "dohy:rye": {
-      "category": "FARM",
+      "category": "AGRI",
       "tier": "FARM",
       "base_price": 15,
       "s0": 2000,
@@ -1986,7 +1964,40 @@
       "rate_per_hour": 1200.0
     },
     "dohy:barley": {
-      "category": "FARM",
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 15,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 60,
+      "sellable": true,
+      "rate_per_hour": 1200.0
+    },
+    "dohy:oat": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 15,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 60,
+      "sellable": true,
+      "rate_per_hour": 1200.0
+    },
+    "dohy:rye": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 15,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 60,
+      "sellable": true,
+      "rate_per_hour": 1200.0
+    },
+    "dohy:sunflower": {
+      "category": "AGRI",
       "tier": "FARM",
       "base_price": 15,
       "s0": 2000,
@@ -1997,7 +2008,7 @@
       "rate_per_hour": 1200.0
     },
     "dohy:soy": {
-      "category": "FARM",
+      "category": "AGRI",
       "tier": "FARM",
       "base_price": 15,
       "s0": 2000,
@@ -2008,7 +2019,7 @@
       "rate_per_hour": 1200.0
     },
     "dohy:fonio": {
-      "category": "FARM",
+      "category": "AGRI",
       "tier": "FARM",
       "base_price": 60,
       "s0": 2000,
@@ -2019,7 +2030,7 @@
       "rate_per_hour": 300.0
     },
     "dohy:sorghum": {
-      "category": "FARM",
+      "category": "AGRI",
       "tier": "FARM",
       "base_price": 60,
       "s0": 2000,
@@ -2030,7 +2041,7 @@
       "rate_per_hour": 300.0
     },
     "dohy:kamut": {
-      "category": "FARM",
+      "category": "AGRI",
       "tier": "FARM",
       "base_price": 60,
       "s0": 2000,
@@ -2039,6 +2050,248 @@
       "buy_price": 0,
       "sellable": true,
       "rate_per_hour": 300.0
+    },
+    "dohy:wheat_flour": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 50,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 200,
+      "sellable": true,
+      "rate_per_hour": 360.0
+    },
+    "dohy:corn_flour": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 50,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 200,
+      "sellable": true,
+      "rate_per_hour": 360.0
+    },
+    "dohy:barley_flour": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 50,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 200,
+      "sellable": true,
+      "rate_per_hour": 360.0
+    },
+    "dohy:oat_flour": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 50,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 200,
+      "sellable": true,
+      "rate_per_hour": 360.0
+    },
+    "dohy:rye_flour": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 50,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 200,
+      "sellable": true,
+      "rate_per_hour": 360.0
+    },
+    "dohy:sunflower_flour": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 50,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 200,
+      "sellable": true,
+      "rate_per_hour": 360.0
+    },
+    "dohy:soy_flour": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 50,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 200,
+      "sellable": true,
+      "rate_per_hour": 360.0
+    },
+    "dohy:fonio_flour": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 200,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 0,
+      "sellable": true,
+      "rate_per_hour": 90.0
+    },
+    "dohy:sorghum_flour": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 200,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 0,
+      "sellable": true,
+      "rate_per_hour": 90.0
+    },
+    "dohy:kamut_flour": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 200,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 0,
+      "sellable": true,
+      "rate_per_hour": 90.0
+    },
+    "dohy:cream": {
+      "category": "AGRI",
+      "tier": "MOB",
+      "base_price": 100,
+      "s0": 256,
+      "floor_pct": 0.2,
+      "ceiling_pct": 1.8,
+      "buy_price": 400,
+      "sellable": true,
+      "rate_per_hour": 250.0
+    },
+    "dohy:lard": {
+      "category": "AGRI",
+      "tier": "MOB",
+      "base_price": 100,
+      "s0": 256,
+      "floor_pct": 0.2,
+      "ceiling_pct": 1.8,
+      "buy_price": 400,
+      "sellable": true,
+      "rate_per_hour": 250.0
+    },
+    "dohy:corn_bread": {
+      "category": "AGRI",
+      "tier": "FOOD",
+      "base_price": 60,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 240,
+      "sellable": true,
+      "rate_per_hour": 200.0
+    },
+    "dohy:oat_bread": {
+      "category": "AGRI",
+      "tier": "FOOD",
+      "base_price": 65,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 260,
+      "sellable": true,
+      "rate_per_hour": 185.0
+    },
+    "dohy:rye_bread": {
+      "category": "AGRI",
+      "tier": "FOOD",
+      "base_price": 70,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 280,
+      "sellable": true,
+      "rate_per_hour": 171.0
+    },
+    "dohy:barley_bread": {
+      "category": "AGRI",
+      "tier": "MOB",
+      "base_price": 180,
+      "s0": 256,
+      "floor_pct": 0.2,
+      "ceiling_pct": 1.8,
+      "buy_price": 720,
+      "sellable": true,
+      "rate_per_hour": 139.0
+    },
+    "dohy:soy_bread": {
+      "category": "AGRI",
+      "tier": "MOB",
+      "base_price": 160,
+      "s0": 256,
+      "floor_pct": 0.2,
+      "ceiling_pct": 1.8,
+      "buy_price": 640,
+      "sellable": true,
+      "rate_per_hour": 156.0
+    },
+    "dohy:sunflower_bread": {
+      "category": "AGRI",
+      "tier": "MOB",
+      "base_price": 260,
+      "s0": 256,
+      "floor_pct": 0.2,
+      "ceiling_pct": 1.8,
+      "buy_price": 1000,
+      "sellable": true,
+      "rate_per_hour": 96.0
+    },
+    "dohy:miner_bread": {
+      "category": "AGRI",
+      "tier": "MOB",
+      "base_price": 340,
+      "s0": 256,
+      "floor_pct": 0.2,
+      "ceiling_pct": 1.8,
+      "buy_price": 1400,
+      "sellable": true,
+      "rate_per_hour": 74.0
+    },
+    "dohy:fonio_bread": {
+      "category": "AGRI",
+      "tier": "FOUND",
+      "base_price": 800,
+      "s0": 64,
+      "floor_pct": 0.35,
+      "ceiling_pct": 1.8,
+      "buy_price": 4800,
+      "sellable": true,
+      "rate_per_hour": 50.0
+    },
+    "dohy:sorghum_bread": {
+      "category": "AGRI",
+      "tier": "FOUND",
+      "base_price": 1100,
+      "s0": 64,
+      "floor_pct": 0.35,
+      "ceiling_pct": 1.8,
+      "buy_price": 6600,
+      "sellable": true,
+      "rate_per_hour": 36.0
+    },
+    "dohy:kamut_bread": {
+      "category": "AGRI",
+      "tier": "FOUND",
+      "base_price": 910,
+      "s0": 64,
+      "floor_pct": 0.35,
+      "ceiling_pct": 1.8,
+      "buy_price": 5500,
+      "sellable": true,
+      "rate_per_hour": 44.0
     }
   }
 }

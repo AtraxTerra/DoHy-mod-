@@ -92,6 +92,7 @@
           "dohy:rye_crop": 4,
           "dohy:barley_crop": 4,
           "dohy:soy_crop": 4,
+          "dohy:sunflower_crop": 4,
           "dohy:fonio_crop": 14,
           "dohy:sorghum_crop": 14,
           "dohy:kamut_crop": 14
