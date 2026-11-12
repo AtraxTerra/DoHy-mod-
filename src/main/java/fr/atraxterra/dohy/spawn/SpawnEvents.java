@@ -1,5 +1,10 @@
 package fr.atraxterra.dohy.spawn;
 
+import fr.atraxterra.dohy.earth.EarthData;
+import fr.atraxterra.dohy.palamod.dungeon.ReturnPoint;
+import fr.atraxterra.dohy.earth.EarthJump;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.minecraft.world.level.block.BarrelBlock;
@@ -83,12 +88,38 @@ public final class SpawnEvents {
         }
     }
 
-    /** Le vide : qui tombe sous le spawn est remis sur la plateforme d'arrivee. */
+    /**
+     * Le vide : qui tombe sous le spawn est remis sur la plateforme d'arrivee —
+     * sauf par le puits de la carte du monde, qui parachute au hasard sur la
+     * Terre. Et qui marche sur la carte lit le pays qu'il a sous les pieds.
+     */
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (event.getEntity() instanceof ServerPlayer player && SpawnApi.inSpawn(player)
-                && player.getY() < SpawnBuilder.VOID_Y && player.level() instanceof ServerLevel level) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || !SpawnApi.inSpawn(player)
+                || !(player.level() instanceof ServerLevel level)) {
+            return;
+        }
+        SpawnBuilder.MapSite site = SpawnApi.mapSite();
+        if (site != null && player.getY() < SpawnBuilder.FLOOR - 3 && site.inPit(player.getX(), player.getZ())) {
+            if (EarthJump.jump(player)) {
+                player.setData(DoHySpawn.RETURN.get(), ReturnPoint.NONE);
+                return;
+            }
             SpawnApi.toPad(player, level);
+            player.sendSystemMessage(Component.literal("Le saut n'a trouve aucune terre ou te poser. Reessaie.")
+                    .withStyle(ChatFormatting.RED));
+            return;
+        }
+        if (player.getY() < SpawnBuilder.VOID_Y) {
+            SpawnApi.toPad(player, level);
+            return;
+        }
+        if (site != null && player.tickCount % 10 == 0 && player.onGround()
+                && Math.abs(player.getY() - (SpawnBuilder.FLOOR + 1)) < 0.6d) {
+            EarthData.Country country = SpawnApi.countryOnMap(player.getX(), player.getZ());
+            if (country != null) {
+                player.sendSystemMessage(Component.literal(country.name()).withStyle(ChatFormatting.GOLD), true);
+            }
         }
     }
 

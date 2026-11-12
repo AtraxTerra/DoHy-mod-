@@ -1,0 +1,4 @@
+{
+  "_comment": "La carte de la Terre. Eteinte par defaut : un monde ordinaire n'en a pas. Un datapack qui decrit une carte remplace ce fichier (enabled, projection, blocks_per_degree, origin_x, equator_z, grid, countries) et fournit la grille des pays. Voir docs/CONTENU_DOHY.md, section « La Terre ».",
+  "enabled": false
+}

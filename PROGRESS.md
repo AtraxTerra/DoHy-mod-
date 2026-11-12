@@ -175,6 +175,68 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 11) — la Terre : pays, saut, gisements, carte du monde au spawn
+
+**Demande** : sur la carte `Earth24kChaosCubed` (WorldPainter) de l'instance du joueur, une
+génération « entre l'esprit de NationsGlory et une Terre réaliste », le joueur qui apparaît au
+spawn de DoHy, une carte du monde au spawn, un trou où sauter pour être téléporté au hasard sur
+la carte, et un message quand on change de pays.
+Description : `docs/CONTENU_DOHY.md`, section « La Terre » ; chiffrage : `docs/BALANCE.md`
+§ 6 octodecies.
+
+**La carte, mesurée sur place** (lecture seule des régions, sur le PC du joueur) : 1 560 régions,
+7,3 Go, jamais ouverte en jeu ; chunks à l'étape `liquid_carvers`. Un relevé terre/mer par chunk
+(1 664 × 960) a été ajusté sur les côtes de Natural Earth : **projection de Miller, 68,6755 blocs
+par degré, Greenwich en x = 1,33, équateur en z = 700,35**, 99,0 % de concordance hors
+Antarctique (un décalage d'un demi-chunk fait déjà perdre 0,2 point). La carte n'a pas été copiée
+hors du PC : seul ce relevé l'a été, pour le calage.
+
+**Règles tenues** : la configuration de NationsGlory n'est pas publique et n'a pas été prise dans
+le dossier du client ; la répartition suit les producteurs réels. La carte elle-même n'est pas
+sur GitHub (7,3 Go, œuvre d'un tiers, dépôt public) : seul le datapack y est.
+
+**Fait** (`feat/terre`) :
+- `earth/` : `EarthData` (calage et grille des pays, lus du datapack avant le chargement des
+  mondes), `EarthEvents` (titre au passage d'une frontière), `EarthJump` (saut en parachute sur
+  une terre tirée au hasard), `EarthDeposits` (28 gisements posés à l'arrivée des chunks).
+- Spawn version 6 : la dalle de la carte du monde et le puits (`SpawnBuilder.worldMap`), la
+  barre d'action qui dit le pays sous les pieds. Sans carte de la Terre, le spawn ne change pas.
+- `mixin/SerializableChunkDataMixin` : voir ci-dessous.
+- Datapack de la carte sur la branche `datapack-terre` : calage, grille des 256 pays, retrait de
+  l'or, du diamant, de l'émeraude, du lapis et de la redstone du jeu, interrupteur
+  `overworld_ores` de NTM NEXT coupé.
+
+**Le piège de la carte, trouvé en chemin.** En 26.2 (version de données 4903), l'étape
+`liquid_carvers` n'existe plus : `ChunkStatus.byName` la rend `empty`, les correcteurs de données
+ne touchent pas un chunk daté 4786, et le jeu **régénère par-dessus** le chunk dessiné. Essayé en
+jeu sur un chunk complet recopié ailleurs à cette étape : biome changé (plaine → rivière), 53 %
+de blocs identiques seulement. Avec le mixin (l'étape renommée `carvers` dans les données du
+chunk, à l'entrée de `SerializableChunkData.parse` et `getChunkStatusFromTag`) : biome conservé,
+97 % des hauteurs et 85 % des blocs identiques — le reste est la décoration, qui est justement ce
+que l'étape demande. Un premier mixin sur `ChunkStatus.byName` n'avait rien changé : l'étape n'est
+pas lue par cette méthode.
+
+**Vérifié en jeu** (client de CI, monde ordinaire avec le jeu de données de la carte) :
+- dix points du globe retrouvés dans le bon pays (Paris, Berlin, Almaty, Riyad, New York, Rio,
+  Tokyo, Reykjavik ; haute mer au milieu de l'Atlantique) et aller-retour latitude/longitude ;
+- spawn reconstruit en version 1006 avec la dalle (46 s), carte lisible depuis la plateforme,
+  « Kazakhstan » dans la barre d'action en marchant dessus ;
+- saut par le puits : lâché à 96 blocs au-dessus de la Russie, chute lente, posé sans dégât ;
+- frontières : « Allemagne — Tu quittes : France », puis les eaux internationales ;
+- retrait des minerais rares : aucun diamant, lapis ni or à Paris ; gisements : 1 010 diamants
+  sur 81 chunks au Botswana, 380 émeraudes en Colombie, 1 326 lapis en Afghanistan.
+
+**Non vérifié** : la carte elle-même en jeu (le PC du joueur était éteint) — son `level.dat`
+WorldPainter, le temps de décoration de ses chunks, le rendu de ses côtes face à la grille ;
+les 20 gisements de NTM NEXT et de Create (mods absents du client de CI : seule leur mise à
+l'écart « minerai absent » a été vue) ; l'interrupteur `overworld_ores` de NTM NEXT (lu dans ses
+sources, version 1.0.3, pas essayé) ; un monde sans datapack après ce lot (le spawn y repasse en
+version 6, sans dalle).
+
+**26.2, relevé** : `ChunkPos.toLong()` n'existe plus ; `SerializableChunkData.copyOf(level,
+chunk).write()` rend les données d'un chunk ; `SimpleRegionStorage.write(ChunkPos, Supplier)` ;
+les statuts sont `empty … carvers, features, initialize_light, light, spawn, full`.
+
 ### 2026-11-12 (suite 10) — le tracteur, ses outils, le silo et la pompe
 
 **Demande** : « pour le tracteur et silo j'ai des fichiers et des assets à te fournir » (le

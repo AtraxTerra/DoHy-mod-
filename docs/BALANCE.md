@@ -954,6 +954,35 @@ déjà ce cas. Les grains d'OGM, qui ne s'achètent pas, ne s'y achètent pas no
 Leviers : `data/agriculture.json` (recherche, machines, fournées, effets, élevage, bloc `farming`
 du tracteur), bloc `course` de `data/economy.json`, lignes `dohy:` de `data/rates.csv`.
 
+## 6 octodecies. La Terre — où sont les minerais
+
+Description : `docs/CONTENU_DOHY.md`, section « La Terre ». Ne vaut que dans un monde dont un
+datapack décrit la carte.
+
+**Le principe.** Les prix ne bougent pas : ils sont générés depuis un rythme de production
+(`rates.csv`) qui suppose qu'on trouve un minerai en creusant là où l'on est. Sur la Terre, ce
+n'est plus vrai pour tout : ce qui change, c'est **le trajet**.
+
+| Ressource | Sur la carte | Où |
+|---|---|---|
+| Charbon, fer, cuivre | partout (génération du jeu), plus riches dans leurs pays (4 filons de plus par chunk) | — |
+| Or, diamant, émeraude, lapis, redstone | **gisements seulement** (1,5 à 4 filons par chunk) | 3 à 15 pays chacun ; et la dimension du Mineur |
+| Métaux courants de NTM NEXT | gisements seulement (2 à 6 filons par chunk, proches de ses densités d'origine) | 10 à 21 pays chacun, sur chaque continent |
+| Uranium, thorium, terres rares, lithium, cobalt, coltan | gisements seulement | 7 à 13 pays ou régions |
+| Pétrole | ses poches rares partout (NTM NEXT), une poche pour 7 chunks dans les bassins pétroliers | 29 pays, 13 bassins dont 4 en mer |
+| Minerais de PalaMod | inchangés (leur génération, et la dimension du Mineur) | — |
+
+- **Un gisement est riche** : dans son pays, un minerai stratégique sort à la densité que NTM NEXT
+  lui donne d'ordinaire partout. On ne trouve pas moins, on trouve *ailleurs*. Le revenu horaire
+  d'un mineur installé sur un gisement est donc celui du chiffrage existant ; hors gisement, il
+  est nul pour cette ressource, et c'est voulu.
+- **La dimension du Mineur** reste la mine de secours des minerais du jeu et de PalaMod : ses
+  1 000 points par session bornent déjà ce qu'on en sort (§ 6 undecies).
+- **Le saut** est gratuit et aléatoire : il ne permet pas de choisir un gisement. Rejoindre le
+  Kazakhstan depuis la France, c'est 5 000 blocs.
+- Leviers : `tools/earth_deposits.py` (pays, rectangles, `veins`, `size`), puis `version` dans
+  `deposits.json` pour resservir les chunks déjà visités.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

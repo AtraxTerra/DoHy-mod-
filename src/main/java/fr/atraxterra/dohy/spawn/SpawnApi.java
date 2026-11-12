@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.spawn;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.earth.EarthData;
 import fr.atraxterra.dohy.palamod.dungeon.ReturnPoint;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
@@ -39,11 +40,59 @@ public final class SpawnApi {
     /** Tranches de x videes par tick avant une reconstruction : environ 50 000 blocs lus chacune. */
     private static final int CLEAR_SLICES = 6;
 
+    /** Largeur de la carte du monde dessinee au spawn, en blocs (la hauteur suit la carte). */
+    private static final int MOSAIC_COLUMNS = 104;
+
     private static Job job;
+    /** La carte du monde du spawn, et la carte de la Terre dont elle a ete tiree. */
+    private static EarthData mapSource;
+    private static int[][] mapMosaic;
+    private static SpawnBuilder.MapSite mapSite;
     /** Ceux qu'il faut envoyer au spawn au prochain tick : une connexion ou une reapparition n'est pas le moment. */
     private static final Set<UUID> ARRIVALS = new LinkedHashSet<>();
 
     private SpawnApi() {
+    }
+
+    /** Le dessin de la carte du monde, refait quand la carte de la Terre change ; {@code null} sans carte. */
+    private static int[][] mosaic() {
+        EarthData earth = EarthData.get();
+        if (earth != mapSource) {
+            mapSource = earth;
+            mapMosaic = earth == null ? null : earth.mosaic(MOSAIC_COLUMNS);
+            mapSite = SpawnBuilder.site(mapMosaic);
+        }
+        return mapMosaic;
+    }
+
+    /** Ou la carte du monde est posee dans le spawn ; {@code null} si ce monde n'a pas de carte de la Terre. */
+    static SpawnBuilder.MapSite mapSite() {
+        mosaic();
+        return mapSite;
+    }
+
+    /** Le pays dessine sous ce point de la dalle, ou {@code null} (la mer, ou hors de la carte). */
+    static EarthData.Country countryOnMap(double x, double z) {
+        SpawnBuilder.MapSite site = mapSite();
+        EarthData earth = EarthData.get();
+        if (site == null || earth == null) {
+            return null;
+        }
+        int column = site.column((int) Math.floor(x));
+        int row = site.row((int) Math.floor(z));
+        if (column < 0 || row < 0 || mapMosaic[row][column] == 0) {
+            return null;
+        }
+        return earth.countryOfPixel(MOSAIC_COLUMNS, column, row);
+    }
+
+    /**
+     * La version du spawn que ce monde doit avoir : celle du dessin, plus mille
+     * quand une carte de la Terre s'y ajoute — poser ou retirer le datapack
+     * d'une carte fait donc redessiner le lieu.
+     */
+    static int target() {
+        return SpawnBuilder.VERSION + (mosaic() == null ? 0 : 1000);
     }
 
     public static boolean inSpawn(net.minecraft.world.entity.Entity entity) {
@@ -76,10 +125,10 @@ public final class SpawnApi {
             tell(player, "Le spawn n'existe pas dans ce monde.", ChatFormatting.RED);
             return;
         }
-        if (level.getData(DoHySpawn.BUILT.get()) != SpawnBuilder.VERSION) {
+        if (level.getData(DoHySpawn.BUILT.get()) != target()) {
             if (job == null) {
                 job = new Job(level, level.getData(DoHySpawn.BUILT.get()) > 0);
-                DoHy.LOGGER.info("Spawn : construction de la version {} ({} blocs)", SpawnBuilder.VERSION,
+                DoHy.LOGGER.info("Spawn : construction de la version {} ({} blocs)", target(),
                         job.plan.blocks().size());
             }
             job.waiting.add(player.getUUID());
@@ -144,7 +193,7 @@ public final class SpawnApi {
         if (job.step()) {
             Job done = job;
             job = null;
-            done.level.setData(DoHySpawn.BUILT.get(), SpawnBuilder.VERSION);
+            done.level.setData(DoHySpawn.BUILT.get(), done.version);
             DoHy.LOGGER.info("Spawn : construit");
             for (UUID id : done.waiting) {
                 ServerPlayer player = server.getPlayerList().getPlayer(id);
@@ -158,6 +207,9 @@ public final class SpawnApi {
     static void stop() {
         ARRIVALS.clear();
         job = null;
+        mapSource = null;
+        mapMosaic = null;
+        mapSite = null;
     }
 
     /** Vrai tant qu'une construction est en cours. */
@@ -169,6 +221,8 @@ public final class SpawnApi {
     private static final class Job {
         private final ServerLevel level;
         private final SpawnBuilder.Plan plan;
+        /** La version en cours de construction : celle du moment ou le plan a ete tire. */
+        private final int version;
         private final Set<UUID> waiting = new LinkedHashSet<>();
         private final ObjectIterator<Long2ObjectMap.Entry<BlockState>> placing;
         private final List<BlockPos> shaped = new ArrayList<>();
@@ -179,7 +233,8 @@ public final class SpawnApi {
 
         Job(ServerLevel level, boolean rebuild) {
             this.level = level;
-            this.plan = SpawnBuilder.plan();
+            this.version = target();
+            this.plan = SpawnBuilder.plan(mosaic());
             this.placing = plan.blocks().long2ObjectEntrySet().iterator();
             this.clearing = rebuild;
         }

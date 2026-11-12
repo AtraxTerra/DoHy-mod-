@@ -37,6 +37,7 @@ public final class DoHy {
         fr.atraxterra.dohy.tech.DoHyTech.register(modBus);
         fr.atraxterra.dohy.agri.DoHyAgri.register(modBus);
         fr.atraxterra.dohy.spawn.DoHySpawn.register(modBus);
+        fr.atraxterra.dohy.earth.DoHyEarth.register(modBus);
         LOGGER.info("DoHy charge");
     }
 }
