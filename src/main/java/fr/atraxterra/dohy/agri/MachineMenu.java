@@ -101,8 +101,8 @@ abstract class MachineMenu extends MenuController {
                 }
                 boolean output = slot >= AgriMachineBlockEntity.INPUTS;
                 Card card = Card.of(stack.copy(), MenuView.text(stack.getHoverName()), List.of(
-                                output ? "Produit, pret a sortir" : "En attente d'etre travaille"))
-                        .accent(output ? GREEN : 0xFF55545C).badge((output ? "SORTIE x" : "ENTREE x") + stack.getCount())
+                                output ? "Sortie  ·  pret a prendre" : "Entree  ·  en attente"))
+                        .accent(output ? GREEN : 0xFF55545C).badge("x" + stack.getCount())
                         .action("take:" + slot + "|reprendre");
                 cards.add(card);
             }
