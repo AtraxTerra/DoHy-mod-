@@ -220,8 +220,8 @@ public final class NationMenu extends MenuController {
         return new MenuView(id(), "Pays a prendre", "Prends les pays de la Terre aux nations rivales", stats, List.of(
                 new MenuView.Section("TA NATION", "resources", MenuView.GRID, own),
                 new MenuView.Section("ICI", "craft", MenuView.GRID, here),
-                new MenuView.Section(targets.size() > shown ? "VOISINS A PRENDRE (" + shown + " PLUS PROCHES SUR "
-                        + targets.size() + ")" : "VOISINS A PRENDRE", "upgrade", MenuView.GRID, next),
+                new MenuView.Section(targets.size() > shown ? "VOISINS A PRENDRE - LES " + shown + " PLUS PROCHES SUR "
+                        + targets.size() : "VOISINS A PRENDRE", "upgrade", MenuView.GRID, next),
                 new MenuView.Section("NATIONS RIVALES", "resources", MenuView.GRID, rivals)), true);
     }
 
