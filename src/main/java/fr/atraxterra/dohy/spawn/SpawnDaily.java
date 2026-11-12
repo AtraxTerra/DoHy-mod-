@@ -96,7 +96,7 @@ public final class SpawnDaily extends MenuController {
         return true;
     }
 
-    private static String wait(long minutes) {
+    private static String delay(long minutes) {
         return minutes >= 60 ? minutes / 60 + " h " + minutes % 60 + " min" : minutes + " min";
     }
 
@@ -108,7 +108,7 @@ public final class SpawnDaily extends MenuController {
         long minutes = ContractApi.minutesUntilDailyReset();
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("SERIE", streak(player) + " jour(s)", 0xFFFAC400),
-                new MenuView.Stat(claimed ? "PROCHAINE DANS" : "A PRENDRE", claimed ? wait(minutes)
+                new MenuView.Stat(claimed ? "PROCHAINE DANS" : "A PRENDRE", claimed ? delay(minutes)
                         : MoneyFormat.shortForm(amount(player, next)), claimed ? 0xFFFFFFFF : 0xFF22E558));
         List<Card> days = new ArrayList<>();
         for (int index = 0; index < amounts.size(); index++) {
@@ -126,7 +126,7 @@ public final class SpawnDaily extends MenuController {
             days.add(card);
         }
         List<Card> rules = List.of(
-                Card.of(new ItemStack(Items.CLOCK), "Le jour", List.of("Change dans " + wait(minutes),
+                Card.of(new ItemStack(Items.CLOCK), "Le jour", List.of("Change dans " + delay(minutes),
                         "A la meme heure que les contrats")).accent(0xFF2F5BEA),
                 Card.of(new ItemStack(Items.BEACON), "La serie", List.of("Un jour saute : retour au jour 1",
                         "Apres le dernier jour, elle reprend")).accent(0xFF2F5BEA)
@@ -147,7 +147,7 @@ public final class SpawnDaily extends MenuController {
         } else {
             failure(player);
             player.sendSystemMessage(Component.literal(SpawnApi.inSpawn(player)
-                    ? "Deja prise aujourd'hui. Reviens dans " + wait(ContractApi.minutesUntilDailyReset()) + "."
+                    ? "Deja prise aujourd'hui. Reviens dans " + delay(ContractApi.minutesUntilDailyReset()) + "."
                     : "La recompense se prend au spawn.").withStyle(ChatFormatting.RED));
         }
     }
