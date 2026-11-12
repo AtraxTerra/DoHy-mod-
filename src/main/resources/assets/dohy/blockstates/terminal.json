@@ -1,0 +1,109 @@
+{
+  "variants": {
+    "facing=north,kind=shop": {
+      "model": "dohy:block/terminal_shop"
+    },
+    "facing=east,kind=shop": {
+      "model": "dohy:block/terminal_shop",
+      "y": 90
+    },
+    "facing=south,kind=shop": {
+      "model": "dohy:block/terminal_shop",
+      "y": 180
+    },
+    "facing=west,kind=shop": {
+      "model": "dohy:block/terminal_shop",
+      "y": 270
+    },
+    "facing=north,kind=boutique": {
+      "model": "dohy:block/terminal_boutique"
+    },
+    "facing=east,kind=boutique": {
+      "model": "dohy:block/terminal_boutique",
+      "y": 90
+    },
+    "facing=south,kind=boutique": {
+      "model": "dohy:block/terminal_boutique",
+      "y": 180
+    },
+    "facing=west,kind=boutique": {
+      "model": "dohy:block/terminal_boutique",
+      "y": 270
+    },
+    "facing=north,kind=market": {
+      "model": "dohy:block/terminal_market"
+    },
+    "facing=east,kind=market": {
+      "model": "dohy:block/terminal_market",
+      "y": 90
+    },
+    "facing=south,kind=market": {
+      "model": "dohy:block/terminal_market",
+      "y": 180
+    },
+    "facing=west,kind=market": {
+      "model": "dohy:block/terminal_market",
+      "y": 270
+    },
+    "facing=north,kind=bank": {
+      "model": "dohy:block/terminal_bank"
+    },
+    "facing=east,kind=bank": {
+      "model": "dohy:block/terminal_bank",
+      "y": 90
+    },
+    "facing=south,kind=bank": {
+      "model": "dohy:block/terminal_bank",
+      "y": 180
+    },
+    "facing=west,kind=bank": {
+      "model": "dohy:block/terminal_bank",
+      "y": 270
+    },
+    "facing=north,kind=contracts": {
+      "model": "dohy:block/terminal_contracts"
+    },
+    "facing=east,kind=contracts": {
+      "model": "dohy:block/terminal_contracts",
+      "y": 90
+    },
+    "facing=south,kind=contracts": {
+      "model": "dohy:block/terminal_contracts",
+      "y": 180
+    },
+    "facing=west,kind=contracts": {
+      "model": "dohy:block/terminal_contracts",
+      "y": 270
+    },
+    "facing=north,kind=museum": {
+      "model": "dohy:block/terminal_museum"
+    },
+    "facing=east,kind=museum": {
+      "model": "dohy:block/terminal_museum",
+      "y": 90
+    },
+    "facing=south,kind=museum": {
+      "model": "dohy:block/terminal_museum",
+      "y": 180
+    },
+    "facing=west,kind=museum": {
+      "model": "dohy:block/terminal_museum",
+      "y": 270
+    },
+    "facing=north,kind=return": {
+      "model": "dohy:block/terminal_return"
+    },
+    "facing=east,kind=return": {
+      "model": "dohy:block/terminal_return",
+      "y": 90
+    },
+    "facing=south,kind=return": {
+      "model": "dohy:block/terminal_return",
+      "y": 180
+    },
+    "facing=west,kind=return": {
+      "model": "dohy:block/terminal_return",
+      "y": 270
+    }
+  }
+}

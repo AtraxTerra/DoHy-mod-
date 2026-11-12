@@ -1,0 +1,13 @@
+{
+  "type": "dohy:spawn",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "dohy:spawn",
+      "features": false,
+      "lakes": false,
+      "layers": [],
+      "structure_overrides": []
+    }
+  }
+}

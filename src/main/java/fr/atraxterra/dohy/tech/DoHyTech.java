@@ -56,7 +56,10 @@ public final class DoHyTech {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup." + DoHy.MOD_ID + ".machines"))
                     .icon(() -> new ItemStack(TRADING_SERVER_ITEM.get()))
-                    .displayItems((parameters, output) -> output.accept(TRADING_SERVER_ITEM.get()))
+                    .displayItems((parameters, output) -> {
+                        output.accept(TRADING_SERVER_ITEM.get());
+                        output.accept(fr.atraxterra.dohy.spawn.DoHySpawn.TERMINAL_ITEM.get());
+                    })
                     .build());
 
     private DoHyTech() {
