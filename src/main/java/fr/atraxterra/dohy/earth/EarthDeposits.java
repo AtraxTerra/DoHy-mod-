@@ -164,15 +164,20 @@ public final class EarthDeposits {
         if (ready.isEmpty() || chunk.getData(DoHyEarth.DEPOSITS.get()) >= version) {
             return;
         }
-        QUEUE.add(chunk.getPos().toLong());
+        QUEUE.add(key(chunk.getPos().getMinBlockX() >> 4, chunk.getPos().getMinBlockZ() >> 4));
+    }
+
+    /** Un chunk en un seul nombre : x dans les 32 bits bas, z dans les 32 bits hauts. */
+    private static long key(int chunkX, int chunkZ) {
+        return (chunkX & 0xFFFFFFFFL) | ((long) chunkZ << 32);
     }
 
     /** Sert quelques chunks en attente. */
     static void tick(ServerLevel level, EarthData earth) {
         for (int count = 0; count < perTick && !QUEUE.isEmpty(); count++) {
             long key = QUEUE.removeFirstLong();
-            int chunkX = ChunkPos.getX(key);
-            int chunkZ = ChunkPos.getZ(key);
+            int chunkX = (int) key;
+            int chunkZ = (int) (key >> 32);
             LevelChunk chunk = level.getChunkSource().getChunkNow(chunkX, chunkZ);
             if (chunk == null || chunk.getData(DoHyEarth.DEPOSITS.get()) >= version) {
                 continue;
@@ -196,7 +201,8 @@ public final class EarthDeposits {
             if (!applies(rule, country, latitude, longitude)) {
                 continue;
             }
-            RandomSource random = RandomSource.create(level.getSeed() ^ pos.toLong() * 0x5DEECE66DL ^ rule.salt());
+            RandomSource random = RandomSource.create(level.getSeed()
+                    ^ key(pos.getMinBlockX() >> 4, pos.getMinBlockZ() >> 4) * 0x5DEECE66DL ^ rule.salt());
             double veins = rule.deposit().veins();
             int count = (int) veins + (random.nextDouble() < veins - (int) veins ? 1 : 0);
             for (int vein = 0; vein < count; vein++) {
