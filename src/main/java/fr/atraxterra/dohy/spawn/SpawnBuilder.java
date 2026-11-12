@@ -967,9 +967,9 @@ final class SpawnBuilder {
         }
         labels.add(new Label(BOARD_CONTEST, "...", 0xFFFFFF, BOARD_SCALE));
         labels.add(new Label(BOARD_PROFILE, "...", 0xFFFFFF, BOARD_SCALE));
-        labels.add(new Label(new BlockPos(BOARD_CONTEST.getX(), FLOOR + 11, -19), "CONCOURS DE TRIXIUM", 0xC77DFF,
+        labels.add(new Label(new BlockPos(BOARD_CONTEST.getX(), FLOOR + 12, -19), "CONCOURS DE TRIXIUM", 0xC77DFF,
                 1.1f));
-        labels.add(new Label(new BlockPos(BOARD_PROFILE.getX(), FLOOR + 11, -19), "TON PROFIL", 0xFAC400, 1.1f));
+        labels.add(new Label(new BlockPos(BOARD_PROFILE.getX(), FLOOR + 12, -19), "TON PROFIL", 0xFAC400, 1.1f));
     }
 
     /**
