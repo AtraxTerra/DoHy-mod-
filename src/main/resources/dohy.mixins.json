@@ -4,6 +4,7 @@
   "package": "fr.atraxterra.dohy.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ChunkStatusMixin",
     "PlayerEdgeMixin"
   ],
   "injectors": {
