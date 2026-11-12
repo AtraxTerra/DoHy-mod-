@@ -977,6 +977,8 @@ def main():
     # recolte, les villageois les reconnaissent, et le tag DoHy des cultures
     # sert deja a l'XP d'agriculture.
     tag("minecraft/tags/block/crops.json", ["%s:%s" % (NS, c) for c in sorted(CROPS)])
+    # Une culture retient sa terre labouree, meme seche, comme en 1.7.10 ou toute plante le faisait.
+    tag("minecraft/tags/block/maintains_farmland.json", ["%s:%s" % (NS, c) for c in sorted(CROPS)])
 
     # ---- machines ----
     #
@@ -1578,9 +1580,12 @@ def main():
     tag("minecraft/tags/block/mineable/axe.json", ["dohy:trough"])
     # Les cereales de DoHy sont des cultures comme les autres : le tag vanilla
     # les fait pietiner, fertiliser et recolter par les villageois.
-    tag("minecraft/tags/block/crops.json", ["dohy:%s_crop" % cereal for cereal in
-                                           ("corn", "barley", "oat", "rye", "sunflower", "soy", "fonio", "sorghum",
-                                            "kamut")])
+    cereal_crops = ["dohy:%s_crop" % cereal for cereal in
+                    ("corn", "barley", "oat", "rye", "sunflower", "soy", "fonio", "sorghum", "kamut")]
+    tag("minecraft/tags/block/crops.json", cereal_crops)
+    # Et elles retiennent leur terre : sans ce tag, une terre labouree seche redevient
+    # de la terre sous la culture, qui saute — vu en semant au tracteur loin de l'eau.
+    tag("minecraft/tags/block/maintains_farmland.json", cereal_crops)
 
     # Les coffres en amethyste et en titane. L'original les dessine avec le
     # ModelChest de 1.7.10 (TileEntityModdedChestRenderer) ; le meme modele en

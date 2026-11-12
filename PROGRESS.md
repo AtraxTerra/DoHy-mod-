@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-11
+Dernière mise à jour : 2026-11-12
 
 ---
 
@@ -204,6 +204,37 @@ sont décrits boîte par boîte dans `tools/tractor_model.py`, les icônes et le
 - **NTM NEXT** : carburants `hbm:*` par la capacité de fluide des objets (bidons) et des blocs ;
   recettes de machine d'assemblage, recettes d'établi sous la condition inverse.
 - Réglages : bloc `farming` et `tractor_level` de `data/agriculture.json`.
+- **Trouvé en passant** : les céréales de DoHy et les cultures de PalaMod n'étaient pas dans le tag
+  `minecraft:maintains_farmland`. Loin de l'eau, la terre labourée redevenait de la terre sous la
+  culture, qui sautait. Elles y sont (`tools/palamod_assets.py`).
+
+**Vérifié en jeu** (client de CI, un champ de 3 × 32 conduit au clavier, joueur en survie) :
+- pose refusée au niveau 0 de Fermier, acceptée au niveau 12 ; le composant de carburant de
+  l'objet est repris par l'entité, et rendu au démontage ;
+- plein à la main : charbon (+250), seau de lave (+250, le seau vide reste en main), seau d'eau
+  refusé ;
+- pompe : par la capacité de fluide, l'eau est refusée (0 mB) et la lave acceptée ; un seau à la
+  main la remplit ; elle verse ses 4 000 mB de lave dans le tracteur (+1 000 unités) ;
+- labour : 96 cases sur 96, 79 unités pour 40 blocs ; semis : la semence hors climat (avoine en
+  tempéré) est sautée, le maïs puis le blé sont semés ; épandage : une poudre d'os par pousse ;
+- moisson : le grain dans la trémie, les semences rendues au semoir, **l'XP de Fermier créditée**
+  (+140 pour 45 cultures) ; une pile reprise par l'écran ; la trémie vidée dans le silo à l'arrivée ;
+- silo : entonnoir du dessus (le blé et le maïs entrent, la pierre reste), entonnoir du dessous
+  vers un coffre, capacité d'objets (entrée par le côté, refus par le dessous et pour la pierre),
+  achat d'un lot (16 maïs, 1 216 $ au cours du moment), prise d'une pile, « Tout déposer » ;
+- touches : saut tenu six ticks → l'outil s'arrête ; le regard tourné à l'arret ne fait pas
+  tourner le tracteur, en roulant il prend le cap ; la touche d'inventaire ouvre son écran ;
+- démontage : un coup debout ne fait rien ; accroupi, tout est rendu.
+
+**Non vérifié** : tout ce qui demande NTM NEXT installé (ses bidons, ses tuyaux sur la pompe, ses
+convoyeurs sur le silo, ses sept recettes d'assemblage) — seules les capacités de NeoForge par
+lesquelles il passe ont été essayées ; la marche arrière ; un silo plein ; la sauvegarde et le
+rechargement d'un tracteur chargé ; plusieurs tracteurs près d'une même pompe.
+
+**26.2, relevé** : `Mob.interact(Player, InteractionHand, Vec3)` ; `Options.hideGui` n'existe plus ;
+`FluidUtil.interactWithFluidHandler` à quatre arguments est dépréciée, la variante à cinq prend un
+`TransactionContext` ; `EntityType.Builder.passengerAttachments(Vec3...)` existe ; un codec de
+record s'arrête à seize champs (`tractor_level` est donc à côté du bloc `farming`).
 
 ### 2026-11-12 (suite 9) — le spawn : le faire vivre, y arriver, finir le décor
 
