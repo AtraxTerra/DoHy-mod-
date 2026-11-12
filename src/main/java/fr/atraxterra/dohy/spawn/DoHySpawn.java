@@ -28,9 +28,9 @@ import java.util.function.Supplier;
  * ses box et passer aux guichets.
  *
  * <p>Comme sur les serveurs dont le mod s'inspire, c'est un lieu et non un
- * menu : un complexe de beton brut et d'acier pose sur des pitons rocheux
- * au-dessus des nuages. On y arrive par {@code /spawn} (ou la carte du menu),
- * sur une plateforme ronde ; un pont mene a la place, au hall des six box et
+ * menu : un batiment brutaliste pose sur un massif rocheux au-dessus des
+ * nuages. On y arrive par {@code /spawn} (ou la carte du menu), sur une
+ * plateforme ronde ; un pont mene au parvis, puis a l'atrium des six box et
  * aux bornes. Rien ne s'y casse, rien ne s'y pose, on n'y prend aucun degat.
  *
  * <p>Le lieu n'est pas un fichier de structure : {@link SpawnBuilder} le

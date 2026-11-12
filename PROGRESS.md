@@ -175,6 +175,38 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 6) — le spawn : un bâtiment brutaliste
+
+**Demande** : après avoir vu le spawn, le joueur a joint l'image d'un bâtiment brutaliste (des
+terrasses courbes empilées, une masse haute à contreforts, un anneau sur pilotis, un pylône et ses
+galeries) : « j'aimerais plutôt un bâtiment comme ça avec un intérieur brutaliste ». L'image donne
+le caractère ; le bâtiment est dessiné ici, il n'en est pas la copie.
+Description : `docs/CONTENU_DOHY.md`, section « Le spawn ».
+
+**Fait** (`feat/spawn-batiment`) :
+- `SpawnBuilder`, version 2 : le hall ouvert, la tour et les pavillons sont remplacés par un seul
+  bâtiment — trois gradins à bouts arrondis, masse haute à ailettes, anneau sur pilotis, pylône et
+  trois passerelles ; dedans, nef, atrium de 46 blocs sous verrière avec les six box dans des
+  niches, deux travées de bornes, deux étages de galeries, escaliers, terrasses. Parvis ovale,
+  jardinières, épicéas ; les cheminées passent derrière. 313 000 blocs.
+- `SpawnApi` : un spawn d'une version passée est vidé avant d'être rebâti — tout le volume où une
+  version a pu bâtir, pitons compris (six tranches de x par tick).
+
+**Vérifié hors jeu** (un outil de prévisualisation local, non versionné, qui compile `SpawnBuilder`
+contre des classes factices) : sans sauter, on atteint depuis la plateforme les six box, les sept
+bornes, les deux galeries, les trois terrasses, l'anneau, les trois passerelles et le belvédère du
+pylône ; aucune étiquette n'est dans un bloc.
+
+**Vérifié en jeu** (client de la CI) : construction en 14 secondes ; casse et dégâts refusés ;
+22 textes flottants, 6 coffres de box ; une box ouverte avec sa clé ; la borne SHOP ouvre le shop ;
+une chute ramène sur la plateforme ; `/spawn` ramène au bloc de départ. **Reconstruction** : avec
+la version remise à 1 et cinq blocs étrangers posés (dont un à l'emplacement d'un ancien piton et
+un dans l'atrium), le spawn est vidé puis rebâti en 5 secondes, les cinq blocs ont disparu, les box
+et les bornes sont en place, 22 textes flottants (pas de double). Vues de jour et de nuit contrôlées.
+
+**Non vérifié** : le rendu à grande distance d'affichage ; la reconstruction d'un vrai spawn de
+version 1 gardé dans une sauvegarde (l'essai part d'un spawn de version 2 marqué 1).
+
 ### 2026-11-12 (suite 5) — le spawn
 
 **Demande** : « une dimension "spawn" comme sur paladium et nationglory, où on peut ouvrir des
