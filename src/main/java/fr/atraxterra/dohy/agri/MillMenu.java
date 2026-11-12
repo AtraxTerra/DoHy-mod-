@@ -71,11 +71,7 @@ public final class MillMenu extends MachineMenu {
         if (colon < 0) {
             return;
         }
-        String cereal = key.substring(colon + 1);
-        if (!DoHyAgri.flourKeys().contains(cereal)) {
-            return;
-        }
-        String refusal = mill(player, machine, cereal, key.startsWith("all:") ? STACK : 1);
+        String refusal = mill(player, machine, key.substring(colon + 1), key.startsWith("all:") ? STACK : 1);
         if (refusal != null) {
             report(player, refusal, "");
         } else {
@@ -89,6 +85,9 @@ public final class MillMenu extends MachineMenu {
      * @return le refus, ou {@code null} si au moins une farine est sortie
      */
     static String mill(ServerPlayer player, AgriMachineBlockEntity machine, String cereal, int wanted) {
+        if (!DoHyAgri.flourKeys().contains(cereal)) {
+            return "Le moulin ne connait pas cette cereale.";
+        }
         AgriConfig.Machines config = AgriConfig.config().machines();
         Item grain = DoHyAgri.grain(cereal);
         int count = Math.min(wanted, possible(AgriInv.count(player, grain), machine.energyStored(), config));

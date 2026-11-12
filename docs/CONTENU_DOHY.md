@@ -43,3 +43,132 @@ lingot de paladium, bloc d'or) ; il faut alors un autre mod qui fournit du FE po
   `energy_max_input`, `buffer_hours`, `max_per_player`.
 - Le tag `minecraft:mineable/pickaxe` est écrit par `tools/palamod_assets.py`, qui y inscrit
   aussi les blocs d'ici.
+
+## Agriculture (onglet « DoHy — agriculture »)
+
+Reprise de la filière agricole de **NationsGlory** (wiki, catégorie « Agriculture ») : des
+céréales, des OGM à chercher, un moulin, une machine à pain, des pains à effets, un élevage à
+nourrir. Le tracteur et le silo n'en font pas partie (le shop tient lieu de silo). Réglages :
+`data/agriculture.json` ; chiffres : `docs/BALANCE.md` § 6 sexdecies.
+
+### Les dix céréales
+
+Neuf sous `dohy`, plus le blé de Minecraft. Chacune a sa culture (huit stades), sa semence, son
+grain, sa farine.
+
+| Climat | Céréales | Où on trouve les semences |
+|---|---|---|
+| Tempéré (température de biome de 0,4 à 0,9 : plaines, forêts, marais) | maïs, orge | l'herbe de ces biomes |
+| Froid (sous 0,4 : taïga, toundra, sommets) | avoine, seigle | l'herbe de ces biomes |
+| Chaud (0,9 et plus : jungle, savane, désert) | tournesol, soja | l'herbe de ces biomes |
+| Partout | blé | comme d'habitude |
+| Partout | **fonio, sorgho, kamut** (OGM) | la machine à OGM, nulle part ailleurs |
+
+- NationsGlory réserve six céréales à des continents ; ici le **climat du biome** en tient lieu.
+  Il se lit sur la température de base du biome : un biome de mod se range tout seul.
+- **Hors de son climat, une semence refuse d'être plantée** et le dit dans la barre d'action
+  (« Maïs : ne pousse qu'en climat tempéré (ici : froid) »). Une culture posée autrement ne
+  pousse pas et la poudre d'os n'y fait rien.
+- Une herbe cassée a 4 % de chance de lâcher une semence d'une céréale **du climat où elle
+  pousse**.
+- Une céréale naturelle mûre rend 1 à 2 grains et ses semences, comme le blé.
+- **Un OGM mûr rend 2 à 4 grains et aucune semence.** Arraché avant maturité, il rend sa semence.
+  Il pousse plus lentement (60 % des ticks de croissance).
+
+### La machine à OGM : une recherche
+
+Un OGM ne se trouve pas, il se cherche (Fermier niveau 20).
+
+- La recette d'une souche est **secrète** : 9 objets différents parmi 26 (bambou, canne à sucre,
+  cactus, œuf, sucre…), chacun en quantité précise de 1 à 16. Elle se tire de la graine du monde,
+  du joueur et de la souche : rien n'est stocké, et elle n'est écrite nulle part.
+- L'écran de la machine compose : on ajoute un ingrédient d'un clic, **clic gauche un de plus,
+  clic droit un de moins**. « Lancer l'essai » puise dans l'inventaire.
+- **Un essai consomme toute la composition, juste ou fausse.**
+- Raté, il dit **quelle part de la composition est dans la recette** et donne **un indice** sur la
+  première erreur : la devinette d'un ingrédient qui manque (« Un roseau qui ne pousse qu'au bord
+  de l'eau »), ou la fourchette d'une quantité fausse (« il en faut entre 5 et 8 », puis « un peu
+  plus » ou « un peu moins » une fois dans la fourchette). Les six derniers verdicts restent dans
+  le carnet de l'écran.
+- Le métier aide : au niveau 30 un échec dit aussi combien de quantités sont justes, au niveau 60
+  il donne deux indices.
+- Réussi, il rend **8 graines** et la recette est connue : une carte la recharge d'un clic.
+- **Après 2 000 graines fabriquées, la souche mute** : la recette change et la recherche reprend.
+
+Simulée sur 4 000 recettes avec une méthode simple (un intrus en tête pour faire sortir les
+devinettes, puis les quantités une à une) : **28 essais en moyenne avec un indice (1 450 objets),
+18 avec deux (800 objets)**.
+
+### Les machines électriques
+
+| Bloc | Rôle |
+|---|---|
+| **Moulin** (`dohy:flour_mill`) | 3 céréales + 120 FE → 1 farine. Clic gauche une farine, clic droit jusqu'à une pile. |
+| **Machine à pain** (`dohy:bread_machine`) | la liste des pains ; un clic par fournée, clic droit huit fournées. |
+| **Biogénérateur** (`dohy:biogenerator`) | brûle des céréales (clic avec la céréale en main, 64 en attente) : 400 FE par céréale, 20 FE par tick, poussés vers les machines qui le touchent. |
+
+- Le moulin et la machine à pain n'ont pas de coffre : ils puisent dans l'inventaire du joueur et
+  y rendent leur produit. Seule l'énergie est dans le bloc (réserve de 20 000 FE).
+- **Énergie** : la capacité FE de NeoForge, sur toutes les faces, comme le serveur de trading. Le
+  moulin et la machine à pain reçoivent, le biogénérateur donne. Un câble de NTM NEXT les alimente
+  (5 HE = 1 FE) ; sans autre mod, le biogénérateur posé contre elles suffit.
+- **Recettes** : machine d'assemblage de NTM NEXT (6 plaques d'acier, 1 circuit de base, 1 moteur,
+  et une meule, un four ou un composteur) sous condition `neoforge:mod_loaded` `hbm` ; recette
+  d'établi sous la condition inverse.
+- Vérifié sans NTM, comme pour le serveur : la capacité répond comme à un câble, mais ni un câble
+  réel ni la machine d'assemblage n'ont été essayés.
+
+### Les dix pains
+
+Ils ne sortent que de la machine à pain. La gamme est celle du wiki (nourriture, soin en
+demi-cœurs, effets) ; les noms et les recettes sont de DoHy.
+
+| Pain | Fournée | Faim | Effet |
+|---|---|---|---|
+| Pain de maïs | 4 farines → 4 | 4 | — |
+| Pain d'avoine | 4 farines → 4 | 5 | — |
+| Pain de seigle | 4 farines → 4 | 6 | — |
+| Pain d'orge | 2 farines, 1 sucre | 4 | +1 cœur, Rapidité I et Célérité I 20 s |
+| Pain de soja | 2 farines, 1 œuf | 6 | +1,5 cœur, Régénération II 5 s |
+| Pain de tournesol | 2 farines, 1 crème | 4 | Vol de vigueur I 1 min |
+| Pain du mineur | 2 farines de blé, 1 saindoux, 2 baies lumineuses | 4 | Flair du mineur 5 min |
+| Pain de fonio | 2 farines, 1 crème, 1 saindoux | 6 | +2 cœurs, Absorption I et Dernier rempart 30 s |
+| Pain de sorgho | 3 farines, 1 crème, 1 saindoux, 1 œuf | 2 | +2 cœurs, Force II, Rapidité II et Absorption I 2 min, Régénération II 30 s, Vol de vigueur II 1 min |
+| Pain de kamut | 2 farines, 1 crème, 1 melon scintillant | 4 | lève les effets néfastes, Immunité 2 min |
+
+Quatre effets n'existent pas dans Minecraft (`agri/AgriEffects`) :
+
+- **Vol de vigueur** (le « Power Steal » du wiki) : un coup de mêlée rend en vie 10 % des dégâts
+  infligés, par niveau.
+- **Dernier rempart** (« Last Stand ») : le coup qui aurait tué laisse un cœur, et l'effet s'en va.
+- **Immunité** : aucun effet néfaste ne tient. Sur NationsGlory ce pain guérit la « Contagion »
+  d'un missile ; DoHy n'a pas cette maladie, le pain lève donc tous les effets néfastes.
+- **Flair du mineur** : une pierre cassée a 15 % de chance de lâcher un minerai (fer, cuivre, or,
+  améthyste, titane, paladium, findium, diamant, trixium, du plus courant au plus rare), **au plus
+  un toutes les 20 secondes**.
+
+Un Fermier de niveau 40 a 10 % de chance de sortir un pain de plus par fournée.
+
+### L'élevage
+
+Inchangé dans son principe : une **mangeoire** (64 céréales) et un **abreuvoir** (4 seaux) à
+6 blocs. Toutes les 2 minutes, la mangeoire nourrit jusqu'à 6 bêtes adultes ; chacune mange
+**4 céréales** et laisse un produit : la vache de la **crème**, le cochon du **saindoux**, la poule
+un œuf. Une tournée coûte une dose d'eau.
+
+### En vente, au cours de l'heure
+
+Les grains, les farines, les pains, la crème et le saindoux sont au shop, onglet
+**« Agriculture »**. Leur prix **change chaque heure réelle**, objet par objet : un facteur entre
+0,7 et 1,4, le même à la vente et à l'achat (`economy/market/HourlyCourse`, bloc `course` de
+`data/economy.json`). La fiche du shop l'affiche (« COURS DE L'HEURE +18 % · CHANGE DANS 23 MIN »),
+`/worth` aussi. Les grains et farines d'OGM ne s'achètent pas ; les semences ne sont pas au shop.
+
+### Code
+
+- `agri/` : `Cereal`, `Climate`, `AgriCropBlock`, `SeedItem` ; `GmoResearch`, `GmoMachineMenu`,
+  `AgriData` (le carnet, attaché au joueur) ; `AgriMachineBlock`, `AgriMachineBlockEntity`,
+  `MillMenu`, `BreadMachineMenu` ; `Bread`, `BreadItem`, `AgriEffects` ; `FeederBlock`,
+  `FeederBlockEntity` ; `AgriEvents` (herbe, flair du mineur) ; `AgriConfig`.
+- `tools/dohy_assets.py` dessine tout ; `tools/check_agri_prices.py` (CI) vérifie qu'aucune
+  recette ne devient rentable en achetant ses ingrédients au cours le plus bas.

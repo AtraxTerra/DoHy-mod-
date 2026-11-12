@@ -147,7 +147,11 @@ public class AgriMachineBlockEntity extends BlockEntity {
         if (energy.amount <= 0 || config.biogenPush() <= 0) {
             return;
         }
-        for (Direction side : Direction.values()) {
+        // Le premier voisin servi tourne a chaque tick : a 20 FE par tick, un ordre
+        // fixe donnerait tout au meme, et la seconde machine attendrait qu'il soit plein.
+        Direction[] sides = Direction.values();
+        for (int step = 0; step < sides.length; step++) {
+            Direction side = sides[(ticks + step) % sides.length];
             if (energy.amount <= 0) {
                 return;
             }

@@ -869,6 +869,50 @@ Description : `docs/CONTENU_DOHY.md`.
 Leviers : `data/trading_server.json`. Si NTM rend l'énergie triviale, monter `energy_per_tick`
 plutôt que baisser le revenu.
 
+## 6 sexdecies. Agriculture — une filière, et des prix qui bougent
+
+Description : `docs/CONTENU_DOHY.md`.
+
+**Le cours de l'heure.** Chaque objet de la catégorie `AGRI` tire, chaque heure réelle, un facteur
+entre 0,7 et 1,4 (moyenne de deux tirages : les extrêmes sont rares, la moyenne est 1,05). Il
+multiplie la vente **et** l'achat, et s'ajoute à la pression de vente habituelle. Le shop garde sa
+marge d'achat de 4 : au pire, acheter au plus bas et revendre au plus haut rend 1,4 / (0,7 × 4)
+= 50 %.
+
+**Les prix de base** (générés depuis `rates.csv`) :
+
+| Objet | Vente | Achat |
+|---|---|---|
+| Céréale naturelle | 15 $ | 60 $ |
+| Grain d'OGM | 60 $ | — |
+| Farine | 50 $ (OGM : 200 $) | 200 $ (OGM : —) |
+| Crème, saindoux | 100 $ | 400 $ |
+| Pains simples | 60 à 70 $ | 240 à 280 $ |
+| Pains d'orge, de soja, de tournesol, du mineur | 160 à 340 $ | 640 à 1 400 $ |
+| Pains d'OGM | 800 à 1 100 $ | 4 800 à 6 600 $ (marge de 6) |
+
+- **Transformer ajoute de la valeur** : 3 céréales (45 $) font une farine (50 $), une farine fait
+  un pain simple (60 $). C'est peu, mais chaque étape repart d'une courbe de vente neuve : là où
+  1 200 grains d'une même céréale écrasent leur prix, les mêmes en farine puis en pain ne
+  l'écrasent pas.
+- **Aucune recette n'est une pompe** : `tools/check_agri_prices.py` rejoue les 50 recettes
+  (moulin, fournées, bêtes nourries) en achetant chaque ingrédient au cours le plus bas et en
+  vendant le produit au plus haut. La ration de 4 céréales par bête vient de là : à 1 céréale, la
+  crème revendue aurait payé plus que la céréale achetée.
+- **Les pains d'OGM** valent cher parce qu'ils demandent une recherche (une trentaine d'essais,
+  environ 1 500 objets courants), puis 9 ingrédients pour 8 graines, qui ne rendent que 2 à 4
+  grains chacune et aucune semence. Ils sont au tier `FOUND` : leur prix s'effondre vite si on en
+  vend beaucoup.
+- **L'énergie** : une farine coûte 120 FE, un pain simple 250 FE, un pain d'OGM jusqu'à 1 200 FE.
+  Une céréale brûlée en rend 400 : le biogénérateur mange à peu près une céréale par pain. Sur un
+  réseau NTM NEXT, 120 FE font 600 HE.
+- **Le pain du mineur** rend au plus un minerai toutes les 20 secondes, soit 15 par pain, pour
+  une valeur moyenne d'environ 110 $ pièce. Sans ce délai, un outil de zone en aurait fait une
+  rente.
+
+Leviers : `data/agriculture.json` (recherche, machines, fournées, effets, élevage), bloc `course`
+de `data/economy.json`, lignes `dohy:` de `data/rates.csv`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

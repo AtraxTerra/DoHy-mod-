@@ -156,8 +156,8 @@ public final class GmoMachineMenu extends MenuController {
         return new MenuView(id(), "Machine a OGM", subtitle, stats, List.of(
                 new MenuView.Section("SOUCHES", "resources", MenuView.GRID, strains),
                 new MenuView.Section("COMPOSITION", "resources", MenuView.GRID, chosen),
-                new MenuView.Section("INGREDIENTS POSSIBLES", "resources", MenuView.GRID, pool),
-                new MenuView.Section("CARNET : " + target.label().toUpperCase(), "resources", MenuView.ROWS, notes)),
+                new MenuView.Section("CARNET : " + target.label().toUpperCase(), "resources", MenuView.ROWS, notes),
+                new MenuView.Section("INGREDIENTS POSSIBLES", "resources", MenuView.GRID, pool)),
                 true);
     }
 
