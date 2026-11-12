@@ -43,7 +43,7 @@ import java.util.List;
 final class SpawnBuilder {
 
     /** A augmenter des que le dessin change : un spawn d'une autre version est reconstruit. */
-    static final int VERSION = 2;
+    static final int VERSION = 3;
 
     /** Le niveau du sol du parvis : on marche a {@code FLOOR + 1}. */
     static final int FLOOR = 200;
@@ -101,6 +101,11 @@ final class SpawnBuilder {
     private final BlockState window = block("gray_stained_glass");
     private final BlockState skylight = block("glass");
     private final BlockState half = block("smooth_stone_slab");
+    private final BlockState corbel = with(block("stone_brick_slab"), "type", "top");
+    private final BlockState lowWall = block("stone_brick_wall");
+    private final BlockState dirt = block("dirt");
+    private final BlockState coarse = block("coarse_dirt");
+    private final BlockState podzol = block("podzol");
     private final BlockState full = with(block("smooth_stone_slab"), "type", "double");
     private final BlockState bush = with(block("oak_leaves"), "persistent", "true");
     private final BlockState shrub = with(block("azalea_leaves"), "persistent", "true");
@@ -325,7 +330,15 @@ final class SpawnBuilder {
         return plaza(x, z) <= 1.0d;
     }
 
-    /** Le parvis : une dalle ovale, ses joints, ses lampes de sol, son garde-corps, l'allee et ses jardinieres. */
+    private BlockState soil(int x, int z) {
+        int roll = hash(x, 11, z) % 100;
+        return roll < 68 ? grass : roll < 80 ? moss : roll < 91 ? coarse : podzol;
+    }
+
+    /**
+     * Le parvis : un plateau ovale de terre et d'herbe, tenu par un mur de
+     * pierre, avec une allee dallee du pont au porche et des epiceas.
+     */
     private void forecourt() {
         for (int x = -55; x <= 55; x++) {
             for (int z = -51; z <= 39; z++) {
@@ -335,45 +348,48 @@ final class SpawnBuilder {
                 boolean rim = !inPlaza(x + 1, z) || !inPlaza(x - 1, z) || !inPlaza(x, z + 1) || !inPlaza(x, z - 1);
                 boolean nearRim = !inPlaza(x + 2, z) || !inPlaza(x - 2, z) || !inPlaza(x, z + 2)
                         || !inPlaza(x, z - 2);
-                fill(x, FLOOR - 3, z, x, FLOOR - 1, z, rim ? steel : darkConcrete);
-                boolean joint = Math.floorMod(x, 6) == 0 || Math.floorMod(z, 6) == 0;
-                BlockState top = joint ? darkConcrete : concrete;
-                if (Math.floorMod(x, 6) == 0 && Math.floorMod(z, 6) == 0 && Math.floorMod(x + z, 12) == 0) {
-                    top = lamp;
-                }
-                if (nearRim && !rim) {
-                    top = ((x + z) & 1) == 0 ? yellow : black;
-                }
-                put(x, FLOOR, z, rim ? steel : top);
-                // le garde-corps, ouvert sur le pont
+                fill(x, FLOOR - 3, z, x, FLOOR - 1, z, rim ? rib : nearRim ? wall : dirt);
+                put(x, FLOOR, z, rim || nearRim ? rib : soil(x, z));
+                // le muret, ouvert sur le pont
                 if (rim && !(z > 30 && Math.abs(x) <= 2)) {
-                    put(x, FLOOR + 1, z, darkConcrete);
-                    put(x, FLOOR + 2, z, bars);
+                    put(x, FLOOR + 1, z, lowWall);
                 }
             }
         }
         // l'allee, du pont au porche
         for (int z = 7; z <= 36; z++) {
             for (int x = -3; x <= 3; x++) {
-                put(x, FLOOR, z, Math.abs(x) == 3 ? darkConcrete : x == 0 && Math.floorMod(z, 4) < 2 ? yellow : paving);
+                put(x, FLOOR, z, Math.abs(x) == 3 ? rib : x == 0 && Math.floorMod(z, 6) == 3 ? lamp : paving);
             }
         }
         for (int side = -1; side <= 1; side += 2) {
             for (int z = 16; z <= 34; z += 6) {
                 lampPost(5 * side, FLOOR + 1, z, 3);
             }
-            // une jardiniere de beton, deux epiceas
-            for (int x = 7; x <= 17; x++) {
-                for (int z = 15; z <= 31; z++) {
-                    boolean border = x == 7 || x == 17 || z == 15 || z == 31;
-                    put(x * side, FLOOR + 1, z, border ? edge : hash(x * side, 3, z) % 5 == 0 ? moss : grass);
-                    if (!border && hash(x * side, 5, z) % 100 < 22) {
-                        put(x * side, FLOOR + 2, z, hash(x, 9, z) % 2 == 0 ? bush : shrub);
-                    }
+        }
+        // des lampadaires en couronne sur le plateau
+        for (int step = 0; step < 16; step++) {
+            double angle = Math.PI / 8 * step + Math.PI / 16;
+            int x = (int) Math.round(Math.cos(angle) * 42.0d);
+            int z = -6 + (int) Math.round(Math.sin(angle) * 34.0d);
+            if (reach(0, x, z) > TIERS[0][2] + 10.5d && Math.abs(x) > 7) {
+                lampPost(x, FLOOR + 1, z, 3);
+            }
+        }
+        // des epiceas et des buissons, la ou rien d'autre ne viendra
+        for (int x = -50; x <= 50; x++) {
+            for (int z = -34; z <= 34; z++) {
+                if (plaza(x, z) > 0.84d || reach(0, x, z) < TIERS[0][2] + 10.5d || Math.abs(x) < 7
+                        || (x < -36 && z > -26 && z < -6) || Math.hypot(x - 35, z + 15) < 16.5d) {
+                    continue;
+                }
+                int roll = hash(x, 13, z) % 1000;
+                if (roll < 22 && Math.floorMod(x, 3) == 0 && Math.floorMod(z, 3) == 0) {
+                    spruce(x, FLOOR + 1, z, 5 + roll % 4);
+                } else if (roll >= 940 && !has(x, FLOOR + 1, z)) {
+                    put(x, FLOOR + 1, z, roll % 2 == 0 ? bush : shrub);
                 }
             }
-            spruce(12 * side, FLOOR + 2, 19, 6);
-            spruce(12 * side, FLOOR + 2, 27, 8);
         }
     }
 
@@ -578,8 +594,10 @@ final class SpawnBuilder {
                     }
                     if (zone == LEDGE) {
                         // le debord et son garde-corps, ponctue de lampes
+                        put(x, roof - 1, z, corbel);
                         put(x, roof, z, edge);
                         put(x, roof + 1, z, Math.floorMod(seam(tier, x, z), 6) == 3 ? lamp : rib);
+                        put(x, roof + 2, z, half);
                         continue;
                     }
                     int above = tier + 1 < TIERS.length ? zone(tier + 1, x, z) : inCore(x, z) ? INSIDE : OUT;
@@ -608,7 +626,7 @@ final class SpawnBuilder {
                         boolean band = row >= 2 && row <= 4;
                         if (zone == SKIN) {
                             if (!band) {
-                                put(x, base + row, z, row == 1 || row == 5 ? rib : wall);
+                                put(x, base + row, z, row == 2 ? wall : rib);
                             } else if (pier) {
                                 put(x, base + row, z, wall);
                             }
@@ -681,12 +699,15 @@ final class SpawnBuilder {
             }
         }
         int low = FLOOR + 3 * STOREY + 1;
+        int shoulder = FLOOR + 34;
         // les fentes : le verre au nu interieur, la pierre creusee devant
         for (int y = low + 2; y <= CORE_TOP - 2; y++) {
             for (int offset = -6; offset <= 6; offset += 4) {
-                for (int side = -1; side <= 1; side += 2) {
-                    put(9 * side, y, -19 + offset, window);
-                    carve(10 * side, y, -19 + offset, 10 * side, y, -19 + offset);
+                if (y > shoulder + 1) {
+                    for (int side = -1; side <= 1; side += 2) {
+                        put(9 * side, y, -19 + offset, window);
+                        carve(10 * side, y, -19 + offset, 10 * side, y, -19 + offset);
+                    }
                 }
                 put(offset, y, CORE_NORTH + 1, window);
                 carve(offset, y, CORE_NORTH, offset, y, CORE_NORTH);
@@ -696,17 +717,31 @@ final class SpawnBuilder {
                 carve(x, y, CORE_SOUTH, x, y, CORE_SOUTH);
             }
         }
-        // les ailettes : des contreforts qui s'amincissent en montant
-        for (int offset = -8; offset <= 8; offset += 4) {
-            for (int side = -1; side <= 1; side += 2) {
-                fill(11 * side, low, -19 + offset, 11 * side, CORE_TOP + 3, -19 + offset, wall);
-                fill(12 * side, low, -19 + offset, 12 * side, FLOOR + 36, -19 + offset, wall);
-                fill(13 * side, low, -19 + offset, 13 * side, FLOOR + 28, -19 + offset, wall);
-                put(11 * side, CORE_TOP + 3, -19 + offset, rib);
-                put(12 * side, FLOOR + 36, -19 + offset, rib);
-                put(13 * side, FLOOR + 28, -19 + offset, rib);
+        // les epaules : deux masses basses contre les flancs, et leurs contreforts en pente
+        for (int side = -1; side <= 1; side += 2) {
+            fill(11 * side, low, CORE_NORTH + 2, 14 * side, shoulder, CORE_SOUTH - 2, wall);
+            fill(11 * side, shoulder, CORE_NORTH + 2, 14 * side, shoulder, CORE_SOUTH - 2, rib);
+            fill(11 * side, shoulder + 1, CORE_NORTH + 2, 14 * side, shoulder + 1, CORE_SOUTH - 2, half);
+            for (int offset = -8; offset <= 8; offset += 4) {
+                int z = -19 + offset;
+                for (int y = low; y <= shoulder + 2; y++) {
+                    // les deux du bout sont plus courts : on passe entre eux et le garde-corps
+                    int reach = 15 + (shoulder + 2 - y) / (Math.abs(offset) == 8 ? 7 : 3);
+                    fill(15 * side, y, z, reach * side, y, z, y > shoulder ? rib : wall);
+                    put(reach * side, y, z, rib);
+                }
+                // au-dessus de l'epaule, l'ailette continue jusqu'au toit
+                fill(11 * side, shoulder + 1, z, 11 * side, CORE_TOP + 3, z, wall);
+                fill(12 * side, shoulder + 1, z, 12 * side, shoulder + 6, z, wall);
+                put(11 * side, CORE_TOP + 3, z, rib);
+                put(12 * side, shoulder + 6, z, rib);
             }
-            fill(offset, low, CORE_NORTH - 1, offset, CORE_TOP + 3, CORE_NORTH - 1, wall);
+        }
+        for (int offset = -8; offset <= 8; offset += 4) {
+            for (int y = low; y <= CORE_TOP + 3; y++) {
+                int reach = CORE_NORTH - 1 - Math.max(0, (FLOOR + 27 - y) / 3);
+                fill(offset, y, CORE_NORTH - 1, offset, y, Math.max(reach, CORE_NORTH - 2), wall);
+            }
             put(offset, CORE_TOP + 3, CORE_NORTH - 1, rib);
         }
         // au sud, deux piles en avant de la facade, plus hautes que le toit
@@ -854,26 +889,39 @@ final class SpawnBuilder {
     }
 
     /**
-     * Le socle : une bande plantee au pied du premier gradin, tenue par un
-     * muret qui en suit la courbe. Elle s'interrompt devant le porche et sous
-     * les passerelles.
+     * Le socle : deux bandes plantees au pied du premier gradin, en marches,
+     * tenues par des murs de pierre qui en suivent la courbe. Elles
+     * s'interrompent devant le porche et autour du pylone ; derriere, il n'y
+     * en a qu'une.
      */
     private void base() {
-        for (int x = -46; x <= 46; x++) {
-            for (int z = -40; z <= 12; z++) {
+        for (int x = -50; x <= 50; x++) {
+            for (int z = -44; z <= 16; z++) {
                 double distance = reach(0, x, z) - TIERS[0][2];
-                if (distance <= 0.5d || distance > 4.5d || (Math.abs(x) <= 10 && z > 0)
-                        || (x < 0 && z >= -21 && z <= -11) || !inPlaza(x, z) || plaza(x, z) > 0.93d) {
+                // derriere le batiment, une seule bande : l'industrie a besoin de place
+                if (distance <= 0.5d || distance > (z < -26 ? 4.5d : 8.5d) || !inPlaza(x, z)
+                        || plaza(x, z) > 0.9d || Math.hypot(Math.abs(x) - 34, z + 39) < 7.0d) {
                     continue;
                 }
-                if (distance > 3.5d) {
-                    put(x, FLOOR + 1, z, rib);
+                boolean porch = z > 0 && Math.abs(x) <= 11;
+                boolean passage = x < 0 && z >= -22 && z <= -10;
+                boolean cheek = (porch && Math.abs(x) == 11) || (passage && (z == -22 || z == -10))
+                        || (distance > 4.5d && z == -26);
+                if ((porch || passage) && !cheek) {
                     continue;
                 }
-                put(x, FLOOR + 1, z, hash(x, 2, z) % 4 == 0 ? moss : grass);
+                int height = distance <= 4.5d ? 2 : 1;
+                boolean kerb = cheek || (distance > 3.5d && distance <= 4.5d) || distance > 7.5d;
+                if (kerb) {
+                    fill(x, FLOOR + 1, z, x, FLOOR + height, z, rib);
+                    put(x, FLOOR + height + 1, z, half);
+                    continue;
+                }
+                fill(x, FLOOR + 1, z, x, FLOOR + height, z, dirt);
+                put(x, FLOOR + height, z, hash(x, 2, z) % 4 == 0 ? moss : grass);
                 int roll = hash(x, 4, z) % 100;
-                if (roll < 30) {
-                    put(x, FLOOR + 2, z, roll < 18 ? bush : shrub);
+                if (roll < 28) {
+                    put(x, FLOOR + height + 1, z, roll < 17 ? bush : shrub);
                 }
             }
         }
@@ -896,13 +944,15 @@ final class SpawnBuilder {
         for (int side = -1; side <= 1; side += 2) {
             fill(8 * side, FLOOR + 1, 7, 8 * side, FLOOR + 6, 12, wall);
             fill(8 * side, FLOOR + 8, 8, 8 * side, FLOOR + 8, 12, rib);
+            fill(8 * side, FLOOR + 9, 8, 8 * side, FLOOR + 9, 12, half);
             put(4 * side, FLOOR + 7, 10, lamp);
             put(6 * side, FLOOR, 9, lamp);
         }
         fill(-8, FLOOR + 7, 7, 8, FLOOR + 7, 12, edge);
         fill(-7, FLOOR + 6, 12, 7, FLOOR + 6, 12, rib);
         fill(-8, FLOOR + 8, 12, 8, FLOOR + 8, 12, rib);
-        carve(-7, FLOOR + 8, 7, 7, FLOOR + 8, 7);
+        fill(-8, FLOOR + 9, 12, 8, FLOOR + 9, 12, half);
+        carve(-7, FLOOR + 8, 7, 7, FLOOR + 9, 7);
         for (int side = -1; side <= 1; side += 2) {
             put(4 * side, FLOOR + 7, 10, lamp);
         }
@@ -927,7 +977,7 @@ final class SpawnBuilder {
             int roof = FLOOR + TIERS[tier][3] + STOREY;
             for (int x = -span; x <= span; x++) {
                 for (int z = axis - TIERS[tier][2] + 5; z <= axis + TIERS[tier][2]; z++) {
-                    if (zone(tier, x, z) != SKIN || (tier == 0 && Math.abs(x) <= 9 && z > 0)
+                    if (zone(tier, x, z) != SKIN || (tier == 0 && Math.abs(x) <= 9 && z > 0) || (tier == 2 && z < -8)
                             || (x < 0 && z >= -20 && z <= -12) || (x > 0 && Math.hypot(x - 35, z + 15) < 15.0d)) {
                         continue;
                     }
@@ -943,8 +993,8 @@ final class SpawnBuilder {
         }
         int[][] trees = {
                 // x, z, niveau du toit au-dessus de FLOOR, hauteur
-                {35, -15, 7, 10}, {-34, -4, 7, 6}, {-24, -6, 14, 5}, {25, -26, 14, 6}, {17, -25, 21, 5},
-                {-17, -25, 21, 6}, {30, 0, 7, 5},
+                {35, -15, 7, 10}, {-34, -4, 7, 6}, {-24, -6, 14, 5}, {25, -26, 14, 6}, {20, -21, 21, 5},
+                {-20, -21, 21, 6}, {30, 0, 7, 5},
         };
         for (int[] tree : trees) {
             put(tree[0], FLOOR + tree[2], tree[1], moss);
@@ -983,6 +1033,7 @@ final class SpawnBuilder {
                 if (lip) {
                     put(x, level - 1, z, wall);
                     put(x, level + 1, z, rib);
+                    put(x, level + 2, z, half);
                 }
             }
         }
@@ -1043,14 +1094,10 @@ final class SpawnBuilder {
             put(x1, y, -18, window);
             put(x1, y, -14, window);
         }
-        // le signe, sur la face qui regarde l'arrivee
-        String[] glyph = {"XXXX.", "X...X", "X...X", "X...X", "X...X", "X...X", "XXXX."};
-        for (int row = 0; row < glyph.length; row++) {
-            for (int column = 0; column < 5; column++) {
-                if (glyph[row].charAt(column) == 'X') {
-                    put(-47 + column, FLOOR + 35 - row, z2, white);
-                }
-            }
+        // des pilastres sur les faces nord et sud
+        for (int x = x1; x <= x2; x += 2) {
+            fill(x, FLOOR + 1, z2 + 1, x, top - 1, z2 + 1, wall);
+            fill(x, FLOOR + 1, z1 - 1, x, top - 1, z1 - 1, wall);
         }
         int[] levels = {STOREY, 2 * STOREY, 3 * STOREY};
         int[] ends = {-31, -23, -23};
@@ -1090,6 +1137,18 @@ final class SpawnBuilder {
         }
         // l'entree du pylone, au pied
         carve(x2, FLOOR + 1, -17, x2, FLOOR + 3, -15);
+        // le signe : une dalle debout au bout des passerelles, face a l'arrivee
+        fill(-37, FLOOR + STOREY + 1, -12, -31, FLOOR + 27, -11, wall);
+        fill(-37, FLOOR + 27, -12, -31, FLOOR + 27, -11, rib);
+        carve(-35, FLOOR + STOREY + 1, -12, -34, FLOOR + STOREY + 3, -11);
+        String[] glyph = {"XXXX.", "X...X", "X...X", "X...X", "X...X", "X...X", "XXXX."};
+        for (int row = 0; row < glyph.length; row++) {
+            for (int column = 0; column < 5; column++) {
+                if (glyph[row].charAt(column) == 'X') {
+                    put(-36 + column, FLOOR + 24 - row, -11, white);
+                }
+            }
+        }
     }
 
     /** L'industrie, derriere le batiment : deux cheminees qui fument, deux cuves, les tuyaux qui les relient. */
