@@ -14,6 +14,9 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * L'entite des machines de l'agriculture : une reserve d'energie, et pour le
  * biogenerateur une tremie de cereales qu'il brule.
@@ -142,26 +145,30 @@ public class AgriMachineBlockEntity extends BlockEntity {
         }
     }
 
-    /** Pousse l'energie vers ce qui touche le biogenerateur et en accepte. */
+    /**
+     * Pousse l'energie vers ce qui touche le biogenerateur et en accepte, a parts
+     * egales : a 20 FE par tick, servir les voisins dans un ordre fixe donnerait
+     * tout au premier, et la seconde machine attendrait qu'il soit plein.
+     */
     private void push(ServerLevel server, AgriConfig.Machines config) {
         if (energy.amount <= 0 || config.biogenPush() <= 0) {
             return;
         }
-        // Le premier voisin servi tourne a chaque tick : a 20 FE par tick, un ordre
-        // fixe donnerait tout au meme, et la seconde machine attendrait qu'il soit plein.
-        Direction[] sides = Direction.values();
-        for (int step = 0; step < sides.length; step++) {
-            Direction side = sides[(ticks + step) % sides.length];
-            if (energy.amount <= 0) {
-                return;
-            }
+        List<EnergyHandler> neighbors = new ArrayList<>();
+        for (Direction side : Direction.values()) {
             EnergyHandler neighbor = Capabilities.Energy.BLOCK.getCapability(server, worldPosition.relative(side),
                     null, null, side.getOpposite());
-            if (neighbor == null) {
-                continue;
+            if (neighbor != null) {
+                neighbors.add(neighbor);
             }
+        }
+        // Le premier servi tourne a chaque tick, pour que le reste d'une division ne profite pas toujours au meme.
+        for (int step = 0; step < neighbors.size() && energy.amount > 0; step++) {
+            EnergyHandler neighbor = neighbors.get((ticks + step) % neighbors.size());
+            int left = neighbors.size() - step;
+            int share = Math.min(config.biogenPush(), (energy.amount + left - 1) / left);
             try (Transaction transaction = Transaction.openRoot()) {
-                int accepted = neighbor.insert(Math.min(config.biogenPush(), energy.amount), transaction);
+                int accepted = neighbor.insert(share, transaction);
                 if (accepted > 0) {
                     energy.amount -= accepted;
                     dirty = true;
