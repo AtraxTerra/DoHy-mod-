@@ -43,7 +43,7 @@ import java.util.List;
 final class SpawnBuilder {
 
     /** A augmenter des que le dessin change : un spawn d'une autre version est reconstruit. */
-    static final int VERSION = 3;
+    static final int VERSION = 4;
 
     /** Le niveau du sol du parvis : on marche a {@code FLOOR + 1}. */
     static final int FLOOR = 200;
@@ -102,6 +102,12 @@ final class SpawnBuilder {
     private final BlockState skylight = block("glass");
     private final BlockState half = block("smooth_stone_slab");
     private final BlockState corbel = with(block("stone_brick_slab"), "type", "top");
+    /** L'interieur : des murs carreles, un sol de brique dans l'atrium, du bois pour les mains courantes. */
+    private final BlockState tile = block("polished_andesite");
+    private final BlockState brick = block("bricks");
+    private final BlockState rail = block("spruce_slab");
+    private final BlockState pot = block("chiseled_stone_bricks");
+    private final BlockState blossom = with(block("flowering_azalea_leaves"), "persistent", "true");
     private final BlockState lowWall = block("stone_brick_wall");
     private final BlockState dirt = block("dirt");
     private final BlockState coarse = block("coarse_dirt");
@@ -255,6 +261,7 @@ final class SpawnBuilder {
         builder.pad();
         builder.tiers();
         builder.core();
+        builder.garden();
         builder.boxes();
         builder.nave();
         builder.doors();
@@ -360,6 +367,15 @@ final class SpawnBuilder {
         for (int z = 7; z <= 36; z++) {
             for (int x = -3; x <= 3; x++) {
                 put(x, FLOOR, z, Math.abs(x) == 3 ? rib : x == 0 && Math.floorMod(z, 6) == 3 ? lamp : paving);
+            }
+        }
+        // devant le porche, l'allee s'evase en tablier
+        for (int z = 13; z <= 24; z++) {
+            int width = Math.min(10, 3 + 24 - z);
+            for (int x = -width; x <= width; x++) {
+                if (Math.abs(x) >= 3) {
+                    put(x, FLOOR, z, Math.abs(x) == width ? rib : paving);
+                }
             }
         }
         for (int side = -1; side <= 1; side += 2) {
@@ -567,10 +583,10 @@ final class SpawnBuilder {
     }
 
     private BlockState floorAt(int x, int z) {
-        if (Math.floorMod(x, 6) == 3 && Math.floorMod(z, 6) == 3) {
+        if (Math.floorMod(x, 6) == 1 && Math.floorMod(z, 6) == 1) {
             return lamp;
         }
-        return Math.floorMod(x, 6) == 0 || Math.floorMod(z, 6) == 0 ? darkConcrete : paving;
+        return Math.floorMod(x, 6) == 0 || Math.floorMod(z, 6) == 0 ? rib : edge;
     }
 
     /**
@@ -601,11 +617,11 @@ final class SpawnBuilder {
                         continue;
                     }
                     int above = tier + 1 < TIERS.length ? zone(tier + 1, x, z) : inCore(x, z) ? INSIDE : OUT;
-                    boolean bulb = Math.floorMod(x, 6) == 3 && Math.floorMod(z, 6) == 3;
+                    boolean bulb = Math.floorMod(x, 6) == 1 && Math.floorMod(z, 6) == 1;
                     if (above == INSIDE) {
                         put(x, roof, z, floorAt(x, z));
                     } else if (above == SKIN || above == LINING) {
-                        put(x, roof, z, bulb ? lamp : concrete);
+                        put(x, roof, z, bulb ? lamp : rib);
                     } else {
                         put(x, roof, z, bulb ? lamp : Math.floorMod(x, 6) == 0 || Math.floorMod(z, 6) == 0 ? rib : edge);
                     }
@@ -613,9 +629,9 @@ final class SpawnBuilder {
                         if (tier == 0) {
                             put(x, base, z, floorAt(x, z));
                         }
-                        // le plafond a caissons : une poutre tous les six blocs
-                        if (Math.floorMod(x, 6) == 0) {
-                            put(x, roof - 1, z, concrete);
+                        // le plafond a caissons : des poutres croisees tous les trois blocs
+                        if (Math.floorMod(x, 3) == 0 || Math.floorMod(z, 3) == 0) {
+                            put(x, roof - 1, z, wall);
                         }
                         continue;
                     }
@@ -631,7 +647,7 @@ final class SpawnBuilder {
                                 put(x, base + row, z, wall);
                             }
                         } else {
-                            put(x, base + row, z, band && !mullion ? window : concrete);
+                            put(x, base + row, z, band && !mullion ? window : row == 1 || row == 6 ? rib : tile);
                         }
                     }
                 }
@@ -651,18 +667,15 @@ final class SpawnBuilder {
                 if (inVoid(x, z)) {
                     carve(x, FLOOR + 1, z, x, CORE_TOP, z);
                     boolean beam = Math.floorMod(x, 4) == 0 || Math.floorMod(z + 19, 4) == 0;
-                    put(x, CORE_TOP + 1, z, beam ? concrete : skylight);
-                    int ax = Math.abs(x);
-                    int az = Math.abs(z + 19);
-                    BlockState ground = ax <= 2 && az <= 2 ? flood : ax <= 3 && az <= 3 ? steel
-                            : ax == 8 || az == 8 ? darkConcrete : Math.floorMod(x, 4) == 0 || Math.floorMod(z + 19, 4) == 0
-                                    ? darkConcrete : paving;
-                    put(x, FLOOR, z, ground);
+                    put(x, CORE_TOP + 1, z, beam ? wall : skylight);
+                    boolean line = Math.abs(x) == 8 || Math.abs(z + 19) == 8 || Math.floorMod(x, 4) == 0
+                            || Math.floorMod(z + 19, 4) == 0;
+                    put(x, FLOOR, z, line ? rib : brick);
                     continue;
                 }
                 boolean skin = Math.abs(x) == CORE_X || z == CORE_NORTH || z == CORE_SOUTH;
                 for (int y = FLOOR + 1; y <= CORE_TOP; y++) {
-                    put(x, y, z, skin && y > FLOOR + 3 * STOREY ? wall : concrete);
+                    put(x, y, z, skin && y > FLOOR + 3 * STOREY ? wall : (y - FLOOR) % STOREY == 0 ? rib : tile);
                 }
                 put(x, CORE_TOP + 1, z, edge);
                 if (skin) {
@@ -670,14 +683,11 @@ final class SpawnBuilder {
                 }
             }
         }
-        // le portail de l'atrium, sous un linteau sombre
+        // le portail de l'atrium, sous un linteau de pierre taillee
         carve(-8, FLOOR + 1, CORE_SOUTH - 1, 8, FLOOR + 5, CORE_SOUTH);
-        fill(-8, FLOOR + 6, CORE_SOUTH, 8, FLOOR + 6, CORE_SOUTH, darkConcrete);
-        for (int x = -8; x <= 8; x++) {
-            put(x, FLOOR, CORE_SOUTH, (x & 1) == 0 ? yellow : black);
-            put(x, FLOOR, CORE_SOUTH - 1, darkConcrete);
-        }
-        // les galeries : de grandes baies sur l'atrium, un garde-corps eclaire
+        fill(-8, FLOOR + 6, CORE_SOUTH - 1, 8, FLOOR + 6, CORE_SOUTH, rib);
+        fill(-8, FLOOR, CORE_SOUTH - 1, 8, FLOOR, CORE_SOUTH, rib);
+        // les galeries : de grandes baies sur l'atrium, une main courante de bois, des lanternes
         for (int level = 1; level <= 2; level++) {
             int base = FLOOR + level * STOREY;
             for (int side = -1; side <= 1; side += 2) {
@@ -687,15 +697,19 @@ final class SpawnBuilder {
                     }
                     carve(9 * side, base + 2, z, 9 * side, base + 5, z);
                     carve(10 * side, base + 1, z, 10 * side, base + 5, z);
-                    if (Math.floorMod(z, 3) == 2) {
-                        put(9 * side, base + 1, z, lamp);
+                    put(9 * side, base + 1, z, rib);
+                    put(9 * side, base + 2, z, rail);
+                    if (Math.floorMod(z, 2) == 0 && Math.abs(z + 19) != 8) {
+                        put(9 * side, base + 5, z, lantern);
                     }
                 }
             }
             carve(-8, base + 2, CORE_SOUTH - 1, 8, base + 5, CORE_SOUTH - 1);
             carve(-8, base + 1, CORE_SOUTH, 8, base + 5, CORE_SOUTH);
-            for (int x = -6; x <= 6; x += 3) {
-                put(x, base + 1, CORE_SOUTH - 1, lamp);
+            fill(-8, base + 1, CORE_SOUTH - 1, 8, base + 1, CORE_SOUTH - 1, rib);
+            fill(-8, base + 2, CORE_SOUTH - 1, 8, base + 2, CORE_SOUTH - 1, rail);
+            for (int x = -6; x <= 6; x += 4) {
+                put(x, base + 5, CORE_SOUTH - 1, lantern);
             }
         }
         int low = FLOOR + 3 * STOREY + 1;
@@ -754,8 +768,8 @@ final class SpawnBuilder {
         // la lame de lumiere : toute la hauteur du mur du fond
         for (int y = FLOOR + 2; y <= CORE_TOP - 1; y++) {
             put(0, y, CORE_NORTH + 1, flood);
-            put(-1, y, CORE_NORTH + 1, darkConcrete);
-            put(1, y, CORE_NORTH + 1, darkConcrete);
+            put(-1, y, CORE_NORTH + 1, steel);
+            put(1, y, CORE_NORTH + 1, steel);
         }
         // la coursive derriere l'atrium : des appliques a chaque niveau
         for (int level = 0; level <= 2; level++) {
@@ -765,10 +779,10 @@ final class SpawnBuilder {
         }
         // des poutres en travers du puits, des lanternes au bout de leurs chaines
         for (int z = -23; z <= -15; z += 8) {
-            fill(-8, FLOOR + 27, z, 8, FLOOR + 28, z, concrete);
+            fill(-8, FLOOR + 27, z, 8, FLOOR + 28, z, wall);
         }
         for (int side = -1; side <= 1; side += 2) {
-            fill(4 * side, FLOOR + 37, CORE_NORTH + 2, 4 * side, FLOOR + 38, CORE_SOUTH - 2, concrete);
+            fill(4 * side, FLOOR + 37, CORE_NORTH + 2, 4 * side, FLOOR + 38, CORE_SOUTH - 2, wall);
             for (int z = -23; z <= -15; z += 8) {
                 fill(4 * side, FLOOR + 23, z, 4 * side, FLOOR + 26, z, chain);
                 put(4 * side, FLOOR + 22, z, lantern);
@@ -781,6 +795,72 @@ final class SpawnBuilder {
         fill(-9, CORE_TOP + 5, CORE_NORTH + 1, -9, CORE_TOP + 16, CORE_NORTH + 1, bars);
         put(-9, CORE_TOP + 17, CORE_NORTH + 1, red);
         labels.add(new Label(new BlockPos(0, FLOOR + 13, -24), "DOHY", 0xEF3826, 6.0f));
+    }
+
+    /** Une jardiniere de pierre taillee, de trois blocs de cote, plantee en son milieu. */
+    private void planter(int cx, int cz, int height) {
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                boolean centre = dx == 0 && dz == 0;
+                fill(cx + dx, FLOOR + 1, cz + dz, cx + dx, FLOOR + height, cz + dz, centre ? dirt : rib);
+            }
+        }
+        put(cx, FLOOR + height, cz, moss);
+        put(cx, FLOOR + height + 1, cz, shrub);
+        put(cx, FLOOR + height + 2, cz, blossom);
+    }
+
+    /**
+     * Le jardin de l'atrium : un massif au centre, quatre jardinieres, deux
+     * bancs de bois, deux murs verts de part et d'autre de la lame de lumiere,
+     * et de la verdure qui retombe des galeries.
+     */
+    private void garden() {
+        // le massif central : un bac de deux blocs de haut, un buisson en boule
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                boolean ring = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+                fill(dx, FLOOR + 1, -19 + dz, dx, FLOOR + 2, -19 + dz, ring ? rib : dirt);
+                if (!ring) {
+                    put(dx, FLOOR + 2, -19 + dz, hash(dx, 6, dz) % 3 == 0 ? moss : grass);
+                    put(dx, FLOOR + 3, -19 + dz, hash(dx, 8, dz) % 3 == 0 ? blossom : shrub);
+                    if (dx == 0 || dz == 0) {
+                        put(dx, FLOOR + 4, -19 + dz, hash(dx, 9, dz) % 2 == 0 ? blossom : bush);
+                    }
+                }
+            }
+        }
+        put(0, FLOOR + 5, -19, shrub);
+        for (int side = -1; side <= 1; side += 2) {
+            planter(4 * side, -24, 1);
+            planter(4 * side, -14, 1);
+            fill(3 * side, FLOOR + 1, -20, 3 * side, FLOOR + 1, -18, rail);
+            // un mur vert : un bac, puis du feuillage sur trente blocs
+            fill(4 * side, FLOOR + 1, CORE_NORTH + 2, 5 * side, FLOOR + 2, CORE_NORTH + 2, rib);
+            for (int y = FLOOR + 3; y <= FLOOR + 32; y++) {
+                for (int x = 4; x <= 5; x++) {
+                    put(x * side, y, CORE_NORTH + 2, hash(x * side, y, 3) % 4 == 0 ? shrub : bush);
+                }
+            }
+        }
+        // la verdure des galeries : elle deborde du garde-corps et retombe d'un bloc ou deux
+        for (int level = 1; level <= 2; level++) {
+            int base = FLOOR + level * STOREY;
+            for (int along = -8; along <= 8; along++) {
+                int[][] spots = {{8, -19 + along}, {-8, -19 + along}, {along, CORE_SOUTH - 2}};
+                for (int[] spot : spots) {
+                    int roll = hash(spot[0], base, spot[1]) % 100;
+                    if (roll >= 42 || (spot[0] != along && Math.abs(along) <= 1)) {
+                        continue;
+                    }
+                    for (int drop = 0; drop <= roll % 2; drop++) {
+                        if (!has(spot[0], base + 1 - drop, spot[1])) {
+                            put(spot[0], base + 1 - drop, spot[1], roll % 3 == 0 ? shrub : bush);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -814,8 +894,8 @@ final class SpawnBuilder {
 
     /**
      * La nef et ses deux travees : une colonnade sous une poutre, trois steles
-     * de bornes par travee, et les escaliers — de gros blocs de pierre, deux
-     * par cote, du sol a la premiere galerie puis a la seconde.
+     * de bornes par travee, des plantes en pot, et les escaliers — deux par
+     * cote, du sol a la premiere galerie puis a la seconde.
      */
     private void nave() {
         SpawnTerminalBlock.Kind[][] kinds = {
@@ -825,66 +905,82 @@ final class SpawnBuilder {
         for (int index = 0; index < 2; index++) {
             int side = index == 0 ? 1 : -1;
             for (int x = 11; zone(0, x, CORE_SOUTH) == INSIDE; x++) {
-                fill(x * side, FLOOR + 6, CORE_SOUTH - 1, x * side, FLOOR + 6, CORE_SOUTH, concrete);
+                fill(x * side, FLOOR + 6, CORE_SOUTH - 1, x * side, FLOOR + 6, CORE_SOUTH, wall);
             }
             for (int column = 16; column <= 30; column += 7) {
-                fill(column * side, FLOOR + 1, CORE_SOUTH - 1, (column + 1) * side, FLOOR + 5, CORE_SOUTH, concrete);
+                fill(column * side, FLOOR + 1, CORE_SOUTH - 1, (column + 1) * side, FLOOR + 5, CORE_SOUTH, rib);
+                // une plante en pot au pied de chaque colonne
+                put(column * side, FLOOR + 1, CORE_SOUTH + 1, pot);
+                put(column * side, FLOOR + 2, CORE_SOUTH + 1, shrub);
+                put(column * side, FLOOR + 3, CORE_SOUTH + 1, blossom);
             }
             for (int slot = 0; slot < 3; slot++) {
                 int x = (13 + 7 * slot) * side;
                 SpawnTerminalBlock.Kind kind = kinds[index][slot];
-                fill(x - 1, FLOOR + 1, -20, x + 1, FLOOR + 3, -20, concrete);
+                fill(x - 1, FLOOR + 1, -20, x + 1, FLOOR + 3, -20, tile);
                 fill(x - 1, FLOOR + 4, -20, x + 1, FLOOR + 4, -20, accentFor(kind));
-                fill(x - 1, FLOOR + 1, -20, x + 1, FLOOR + 1, -20, steel);
+                fill(x - 1, FLOOR + 1, -20, x + 1, FLOOR + 1, -20, rib);
                 terminal(x, FLOOR + 2, -20, Direction.SOUTH, kind, new BlockPos(x, FLOOR + 5, -20));
                 put(x, FLOOR, -18, lamp);
             }
             labels.add(new Label(new BlockPos(20 * side, FLOOR + 5, CORE_SOUTH + 2),
                     index == 0 ? "COMMERCE" : "CARRIERE", 0xFFFFFF, 2.0f));
-            stair(side, -29, -28, 26, FLOOR + 1);
-            stair(side, -21, -20, 26, FLOOR + 1 + STOREY);
-            // deux bancs de pierre par galerie, face a l'atrium
+            stair(side, -29, -28, 19, FLOOR + 1);
+            stair(side, -21, -20, 19, FLOOR + 1 + STOREY);
+            // deux bancs de bois par galerie, face a l'atrium
             for (int level = 1; level <= 2; level++) {
-                fill(3 * side, FLOOR + level * STOREY + 1, -6, 7 * side, FLOOR + level * STOREY + 1, -6, half);
+                fill(3 * side, FLOOR + level * STOREY + 1, -6, 7 * side, FLOOR + level * STOREY + 1, -6, rail);
             }
         }
         // la borne du retour, a droite en sortant
-        put(-6, FLOOR + 1, 3, steel);
+        put(-6, FLOOR + 1, 3, rib);
         terminal(-6, FLOOR + 2, 3, Direction.NORTH, SpawnTerminalBlock.Kind.RETURN, new BlockPos(-6, FLOOR + 3, 3));
     }
 
     /**
-     * Un escalier d'un etage : quatorze demi-marches vers le centre du
-     * batiment, pleines jusqu'au sol. La dalle et la poutre du dessus sont
-     * ouvertes la ou la tete passerait ; la tremie recoit un garde-corps.
+     * Un escalier d'un etage : sept marches de pierre taillee vers le centre
+     * du batiment, pleines jusqu'au sol, entre deux limons massifs. La dalle
+     * et les poutres du dessus sont ouvertes la ou la tete passerait ; la
+     * tremie recoit un garde-corps.
      */
     private void stair(int side, int z1, int z2, int bottom, int base) {
-        for (int step = 0; step < 14; step++) {
+        BlockState tread = with(block("stone_brick_stairs"), "facing", side > 0 ? "west" : "east");
+        for (int step = 0; step < STOREY; step++) {
             int x = (bottom - step) * side;
-            int level = base + step / 2;
-            for (int z = z1; z <= z2; z++) {
-                if (step >= 6) {
+            int level = base + step;
+            for (int z = z1 - 1; z <= z2 + 1; z++) {
+                if (z < z1 || z > z2) {
+                    // le limon : un bloc plus haut que la marche
+                    fill(x, base, z, x, level + 1, z, rib);
+                    if (step >= 1) {
+                        guard(x, base + 7, z);
+                    }
+                    continue;
+                }
+                if (step >= 2) {
                     carve(x, base + 5, z, x, base + 6, z);
                 }
-                if (level > base) {
-                    fill(x, base, z, x, level - 1, z, full);
+                if (step > 0) {
+                    fill(x, base, z, x, level - 1, z, rib);
                 }
-                put(x, level, z, step % 2 == 0 ? half : full);
-            }
-            if (step >= 5 && step <= 12) {
-                guard(x, base + 7, z1 - 1);
-                guard(x, base + 7, z2 + 1);
+                put(x, level, z, tread);
             }
         }
-        for (int z = z1; z <= z2; z++) {
-            guard((bottom - 5) * side, base + 7, z);
+        for (int z = z1 - 1; z <= z2 + 1; z++) {
+            guard((bottom - 1) * side, base + 7, z);
         }
+        // en haut, le limon arrive a hauteur de garde-corps : il recoit sa main courante
+        put((bottom - 6) * side, base + 8, z1 - 1, rail);
+        put((bottom - 6) * side, base + 8, z2 + 1, rail);
     }
 
-    /** Un bloc de garde-corps, la ou il y a un sol et rien dessus. */
+    /** Un garde-corps de pierre sous une main courante de bois, la ou il y a un sol et rien dessus. */
     private void guard(int x, int y, int z) {
         if (has(x, y - 1, z) && !has(x, y, z)) {
-            put(x, y, z, concrete);
+            put(x, y, z, rib);
+            if (!has(x, y + 1, z)) {
+                put(x, y + 1, z, rail);
+            }
         }
     }
 
@@ -1044,7 +1140,7 @@ final class SpawnBuilder {
             if (zone(1, x, z) != OUT) {
                 continue;
             }
-            fill(x, zone(0, x, z) != OUT ? FLOOR + STOREY + 1 : FLOOR + 1, z, x, level - 1, z, concrete);
+            fill(x, zone(0, x, z) != OUT ? FLOOR + STOREY + 1 : FLOOR + 1, z, x, level - 1, z, wall);
             put(x, level, z, lamp);
         }
     }
