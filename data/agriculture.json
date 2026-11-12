@@ -1,0 +1,22 @@
+{
+  "_comment": "L'agriculture avancee, reprise de NationsGlory : des cereales, des pains a effets, des OGM qui ne se trouvent pas dans la nature, et un elevage a nourrir.",
+  "_graines": "Casser de l'herbe a une chance grass_seed_chance de donner une graine de cereale naturelle, en plus de ce que donne le jeu.",
+  "_ogm": "La machine a OGM croise deux semences (gmo_parent_seeds de chaque) et de la poudre d'os (gmo_bone_meal). La chance de reussite part de gmo_base_chance et gagne gmo_chance_per_level par niveau de Fermier, jusqu'a gmo_max_chance. Une reussite rend gmo_yield graines, une de plus a partir du niveau gmo_bonus_level. Il faut le niveau gmo_min_level pour s'en servir.",
+  "_elevage": "Toutes les feed_interval_ticks, une mangeoire qui a des rations et un abreuvoir en eau a feed_radius blocs nourrit jusqu'a feed_max_animals vaches, cochons et poules adultes. Chaque bete nourrie coute une ration et laisse son produit ; la tournee coute une dose d'eau.",
+  "grass_seed_chance": 0.04,
+  "gmo_min_level": 20,
+  "gmo_parent_seeds": 16,
+  "gmo_bone_meal": 4,
+  "gmo_base_chance": 0.20,
+  "gmo_chance_per_level": 0.005,
+  "gmo_max_chance": 0.70,
+  "gmo_yield": 2,
+  "gmo_bonus_level": 60,
+  "gmo_farmer_xp": 60,
+  "feed_interval_ticks": 2400,
+  "feed_radius": 6,
+  "feed_max_animals": 6,
+  "trough_capacity": 64,
+  "water_capacity": 32,
+  "water_per_bucket": 8
+}

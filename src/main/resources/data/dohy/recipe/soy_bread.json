@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GGG"
+  ],
+  "key": {
+    "G": "dohy:soy"
+  },
+  "result": {
+    "id": "dohy:soy_bread",
+    "count": 1
+  }
+}

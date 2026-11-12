@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GGG"
+  ],
+  "key": {
+    "G": "dohy:barley"
+  },
+  "result": {
+    "id": "dohy:barley_bread",
+    "count": 1
+  }
+}

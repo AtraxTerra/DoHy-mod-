@@ -1951,6 +1951,94 @@
       "buy_price": 72,
       "sellable": true,
       "rate_per_hour": 1000.0
+    },
+    "dohy:corn": {
+      "category": "FARM",
+      "tier": "FARM",
+      "base_price": 15,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 60,
+      "sellable": true,
+      "rate_per_hour": 1200.0
+    },
+    "dohy:oat": {
+      "category": "FARM",
+      "tier": "FARM",
+      "base_price": 15,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 60,
+      "sellable": true,
+      "rate_per_hour": 1200.0
+    },
+    "dohy:rye": {
+      "category": "FARM",
+      "tier": "FARM",
+      "base_price": 15,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 60,
+      "sellable": true,
+      "rate_per_hour": 1200.0
+    },
+    "dohy:barley": {
+      "category": "FARM",
+      "tier": "FARM",
+      "base_price": 15,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 60,
+      "sellable": true,
+      "rate_per_hour": 1200.0
+    },
+    "dohy:soy": {
+      "category": "FARM",
+      "tier": "FARM",
+      "base_price": 15,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 60,
+      "sellable": true,
+      "rate_per_hour": 1200.0
+    },
+    "dohy:fonio": {
+      "category": "FARM",
+      "tier": "FARM",
+      "base_price": 60,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 0,
+      "sellable": true,
+      "rate_per_hour": 300.0
+    },
+    "dohy:sorghum": {
+      "category": "FARM",
+      "tier": "FARM",
+      "base_price": 60,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 0,
+      "sellable": true,
+      "rate_per_hour": 300.0
+    },
+    "dohy:kamut": {
+      "category": "FARM",
+      "tier": "FARM",
+      "base_price": 60,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 0,
+      "sellable": true,
+      "rate_per_hour": 300.0
     }
   }
 }

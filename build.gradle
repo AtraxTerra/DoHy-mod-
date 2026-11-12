@@ -114,6 +114,9 @@ tasks.named('processResources', ProcessResources).configure {
     from(rootProject.file('data/trading_server.json')) {
         into "data/${mod_id}"
     }
+    from(rootProject.file('data/agriculture.json')) {
+        into "data/${mod_id}"
+    }
     from(rootProject.file('data/upgrades.json')) {
         into "data/${mod_id}"
     }

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "S S",
+    "SBS"
+  ],
+  "key": {
+    "S": "minecraft:cobblestone",
+    "B": "minecraft:bucket"
+  },
+  "result": {
+    "id": "dohy:water_dispenser",
+    "count": 1
+  }
+}

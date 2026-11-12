@@ -39,6 +39,7 @@ public final class Menus {
                 EnemyBaseMenu.INSTANCE, ReserveMenu.INSTANCE, FactionEventMenu.INSTANCE,
                 TrixiumMenu.INSTANCE, AchievementMenu.INSTANCE,
                 fr.atraxterra.dohy.tech.TradingServerMenu.INSTANCE,
+                fr.atraxterra.dohy.agri.GmoMachineMenu.INSTANCE,
                 fr.atraxterra.dohy.auction.AuctionController.INSTANCE);
     }
 }

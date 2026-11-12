@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
+    "dohy:barley_crop",
+    "dohy:corn_crop",
+    "dohy:fonio_crop",
+    "dohy:kamut_crop",
+    "dohy:oat_crop",
+    "dohy:rye_crop",
+    "dohy:sorghum_crop",
+    "dohy:soy_crop",
     "palamod:chervil_crop",
     "palamod:eggplant_crop",
     "palamod:kiwano_crop",

@@ -86,7 +86,15 @@
           "palamod:eggplant_crop": 8,
           "palamod:chervil_crop": 15,
           "palamod:kiwano_crop": 30,
-          "palamod:orangeblue_crop": 60
+          "palamod:orangeblue_crop": 60,
+          "dohy:corn_crop": 4,
+          "dohy:oat_crop": 4,
+          "dohy:rye_crop": 4,
+          "dohy:barley_crop": 4,
+          "dohy:soy_crop": 4,
+          "dohy:fonio_crop": 14,
+          "dohy:sorghum_crop": 14,
+          "dohy:kamut_crop": 14
         },
         "entities": {
           "minecraft:cow": 3,

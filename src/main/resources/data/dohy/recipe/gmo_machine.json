@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IGI",
+    "DBD",
+    "IRI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:glass",
+    "D": "minecraft:diamond",
+    "B": "minecraft:bone_block",
+    "R": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "dohy:gmo_machine",
+    "count": 1
+  }
+}

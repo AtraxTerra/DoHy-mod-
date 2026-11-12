@@ -175,3 +175,11 @@ palamod:judeecercis_log,PALAMOD,FARM,1200.0,15,2000,0.15,0,non achetable : la se
 palamod:erable_log,PALAMOD,FARM,1200.0,15,2000,0.15,0,"non achetable : la seve d'une buche vaut 1,5 lingot de paladium"
 palamod:ostrya_log,PALAMOD,FARM,1200.0,15,2000,0.15,0,"non achetable, comme les trois autres"
 palamod:xp_berry,PALAMOD,FARM,1000.0,18,2000,0.15,72,buisson a XP
+dohy:corn,FARM,FARM,1200.0,15,2000,0.15,60,cereale : comme le ble
+dohy:oat,FARM,FARM,1200.0,15,2000,0.15,60,cereale : comme le ble
+dohy:rye,FARM,FARM,1200.0,15,2000,0.15,60,cereale : comme le ble
+dohy:barley,FARM,FARM,1200.0,15,2000,0.15,60,cereale : comme le ble
+dohy:soy,FARM,FARM,1200.0,15,2000,0.15,60,cereale : comme le ble
+dohy:fonio,FARM,FARM,300.0,60,2000,0.15,0,OGM : pousse lentement et se resseme mal ; non achetable
+dohy:sorghum,FARM,FARM,300.0,60,2000,0.15,0,OGM : pousse lentement et se resseme mal ; non achetable
+dohy:kamut,FARM,FARM,300.0,60,2000,0.15,0,OGM : pousse lentement et se resseme mal ; non achetable

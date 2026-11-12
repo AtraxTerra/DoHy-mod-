@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "dohy:trough",
     "palamod:dead_wood",
     "palamod:dead_wood_planks",
     "palamod:erable_log",

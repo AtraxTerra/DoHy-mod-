@@ -34,14 +34,17 @@ def write(path, payload):
 
 
 def write_png(path, rows):
-    """Ecrit une PNG RGBA 16x16 depuis des lignes de couleurs (r, g, b)."""
+    """Ecrit une PNG RGBA depuis des lignes de couleurs (r, g, b) ; None est transparent."""
     height = len(rows)
     width = len(rows[0])
     raw = bytearray()
     for row in rows:
         raw.append(0)
-        for (r, g, b) in row:
-            raw.extend((r, g, b, 255))
+        for pixel in row:
+            if pixel is None:
+                raw.extend((0, 0, 0, 0))
+            else:
+                raw.extend((pixel[0], pixel[1], pixel[2], 255))
 
     def chunk(kind, body):
         return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", zlib.crc32(kind + body) & 0xFFFFFFFF)
@@ -219,21 +222,520 @@ def trading_server():
     })
 
 
+# -- L'agriculture -----------------------------------------------------------------
+#
+# Huit cereales, chacune avec sa culture (huit stades), sa semence, son grain et
+# son pain ; deux produits d'elevage ; une mangeoire, un abreuvoir, une machine a
+# OGM. Tous les sprites sont traces ici a partir de quelques couleurs par cereale.
+
+# cle, nom francais, nom anglais, OGM, tige jeune, tige mure, epi, epi sombre, forme de l'epi
+CEREALS = [
+    ("corn", "Mais", "Corn", False, 0x4E9A3A, 0x7FA33C, 0xF2C230, 0xC8931E, "cob"),
+    ("oat", "Avoine", "Oat", False, 0x5AA548, 0xBFB36A, 0xE8DCA0, 0xBFB070, "drop"),
+    ("rye", "Seigle", "Rye", False, 0x4F8F4A, 0xA89A5E, 0xC9B27A, 0x8F7A4A, "long"),
+    ("barley", "Orge", "Barley", False, 0x5FA544, 0xCDA945, 0xE3BE4E, 0xB08A2C, "awn"),
+    ("soy", "Soja", "Soy", False, 0x3F8E3B, 0x6C9A3A, 0x9BBF4A, 0x6E8F30, "pod"),
+    ("fonio", "Fonio", "Fonio", True, 0x4CA36A, 0x9FC58A, 0xF1EEDC, 0xBFC0A8, "spray"),
+    ("sorghum", "Sorgho", "Sorghum", True, 0x4A9440, 0x8E8A3C, 0xB2452F, 0x7C2A1E, "cluster"),
+    ("kamut", "Kamut", "Kamut", True, 0x58A04A, 0xD0A040, 0xF0A63A, 0xB5741E, "big"),
+]
+
+# Ce que le pain d'un OGM demande en plus de ses trois grains.
+GMO_EXTRA = {"fonio": "minecraft:egg", "sorghum": "dohy:lard", "kamut": "dohy:cream"}
+
+# Les effets, pour le nom affiche sous le pain (le code fait foi : DoHyAgri.bread).
+BREAD_FR = {
+    "corn": "Pain de mais", "oat": "Pain d'avoine", "rye": "Pain de seigle", "barley": "Pain d'orge",
+    "soy": "Pain de soja", "fonio": "Pain de fonio", "sorghum": "Pain de sorgho", "kamut": "Pain de kamut",
+}
+BREAD_EN = {
+    "corn": "Cornbread", "oat": "Oat Bread", "rye": "Rye Bread", "barley": "Barley Bread",
+    "soy": "Soy Bread", "fonio": "Fonio Bread", "sorghum": "Sorghum Bread", "kamut": "Kamut Bread",
+}
+
+
+def blank():
+    return [[None for _ in range(16)] for _ in range(16)]
+
+
+def mix(a, b, t):
+    return tuple(int(round(a[i] + (b[i] - a[i]) * t)) for i in range(3))
+
+
+def shade(color, factor):
+    return tuple(max(0, min(255, int(round(c * factor)))) for c in color)
+
+
+def put(rows, x, y, color):
+    if 0 <= x < 16 and 0 <= y < 16:
+        rows[y][x] = color
+
+
+STALKS = (2, 5, 8, 11, 14)
+WOBBLE = (0, -1, 1, -1, 0)
+HEIGHTS = (2, 4, 5, 7, 9, 11, 12, 13)
+
+
+def crop_stage(cereal, stage):
+    """Un stade de culture : cinq tiges qui montent, puis l'epi qui se forme et murit."""
+    key, _, _, _, young, ripe, head, head_dark, shape = cereal
+    young, ripe, head, head_dark = rgb(young), rgb(ripe), rgb(head), rgb(head_dark)
+    rows = blank()
+    ripeness = (0.0, 0.0, 0.0, 0.0, 0.1, 0.3, 0.65, 1.0)[stage]
+    stalk = mix(young, ripe, ripeness)
+    leaf = shade(stalk, 1.15)
+    height_cap = 9 if shape == "pod" else 13
+    for index, x in enumerate(STALKS):
+        height = max(1, min(height_cap, HEIGHTS[stage] + WOBBLE[index]))
+        top = 16 - height
+        for y in range(top, 16):
+            put(rows, x, y, stalk if (y + index) % 4 else shade(stalk, 0.85))
+        # des feuilles, d'un cote puis de l'autre
+        for step, y in enumerate(range(15, top + 1, -3)):
+            side = -1 if (step + index) % 2 else 1
+            put(rows, x + side, y - 1, leaf)
+        if stage < 5:
+            continue
+        grown = stage - 4            # 1, 2, 3 : l'epi grossit
+        tone = mix(mix(young, head, 0.5), head, (grown - 1) / 2.0)
+        dark = mix(mix(young, head_dark, 0.5), head_dark, (grown - 1) / 2.0)
+        if shape == "cob":
+            # l'epi de mais pousse a mi-tige, dans sa gaine ; une aigrette en haut
+            base = top + 4
+            for dy in range(grown + 1):
+                put(rows, x + 1, base + dy, tone if dy % 2 == 0 else dark)
+            put(rows, x + 1, base - 1, leaf)
+            put(rows, x, top - 1, shade(head, 1.1))
+        elif shape == "drop":
+            for dy in range(grown):
+                put(rows, x + (1 if dy % 2 == 0 else -1), top + dy, tone if dy % 2 == 0 else dark)
+        elif shape == "long":
+            for dy in range(grown + 1):
+                put(rows, x, top - 1 + dy, tone if dy % 2 == 0 else dark)
+            put(rows, x, top - 2, dark)
+        elif shape == "awn":
+            for dy in range(grown):
+                put(rows, x, top + dy, tone if dy % 2 == 0 else dark)
+            put(rows, x - 1, top - 1, shade(head, 1.15))
+            put(rows, x + 1, top - 1, shade(head, 1.15))
+            if grown == 3:
+                put(rows, x, top - 2, shade(head, 1.15))
+        elif shape == "pod":
+            for dy in range(grown):
+                put(rows, x + (1 if index % 2 == 0 else -1), top + 2 + dy * 2, tone)
+                put(rows, x + (1 if index % 2 == 0 else -1), top + 3 + dy * 2, dark)
+        elif shape == "spray":
+            put(rows, x, top - 1, tone)
+            put(rows, x - 1, top, tone if grown > 1 else dark)
+            put(rows, x + 1, top, tone if grown > 1 else dark)
+            if grown == 3:
+                put(rows, x - 1, top - 2, dark)
+                put(rows, x + 1, top - 2, dark)
+        elif shape == "cluster":
+            for dy in range(grown):
+                put(rows, x, top - 1 + dy, tone)
+                put(rows, x - 1, top + dy, dark if dy % 2 else tone)
+                put(rows, x + 1, top + dy, tone if dy % 2 else dark)
+        else:  # big
+            for dy in range(grown + 1):
+                put(rows, x, top - 1 + dy, tone if dy % 2 == 0 else dark)
+                put(rows, x + 1, top - 1 + dy, dark if dy % 2 == 0 else tone)
+    return rows
+
+
+OUTLINE = rgb(0x2A2118)
+
+
+def seeds_icon(cereal):
+    head, head_dark = rgb(cereal[6]), rgb(cereal[7])
+    rows = blank()
+    for (x, y) in ((4, 5), (9, 4), (6, 8), (11, 8), (4, 11), (9, 11)):
+        put(rows, x, y, head)
+        put(rows, x + 1, y, shade(head, 1.12))
+        put(rows, x, y + 1, head_dark)
+        put(rows, x + 1, y + 1, head)
+        put(rows, x - 1, y + 1, OUTLINE)
+        put(rows, x + 2, y + 1, OUTLINE)
+        put(rows, x, y + 2, OUTLINE)
+        put(rows, x + 1, y + 2, OUTLINE)
+    return rows
+
+
+def grain_icon(cereal):
+    """Un epi en diagonale, sa tige en bas a gauche ; le mais et le soja ont leur forme."""
+    ripe, head, head_dark, shape = rgb(cereal[5]), rgb(cereal[6]), rgb(cereal[7]), cereal[8]
+    rows = blank()
+    for i in range(5):                       # la tige
+        put(rows, 2 + i, 13 - i, ripe)
+        put(rows, 2 + i, 14 - i, shade(ripe, 0.75))
+    if shape == "cob":
+        for i in range(7):
+            for w in (-1, 0, 1):
+                put(rows, 7 + i + w, 8 - i, head if (i + w) % 2 == 0 else head_dark)
+            put(rows, 7 + i - 2, 8 - i, OUTLINE)
+            put(rows, 7 + i + 2, 8 - i, OUTLINE)
+        put(rows, 5, 10, shade(ripe, 1.1))
+        put(rows, 6, 11, shade(ripe, 1.1))
+    elif shape == "pod":
+        for i in range(7):
+            put(rows, 6 + i, 9 - i + (1 if i in (2, 3, 4) else 0), head)
+            put(rows, 6 + i, 10 - i + (1 if i in (2, 3, 4) else 0), head_dark)
+        for (x, y) in ((8, 8), (10, 6)):
+            put(rows, x, y, shade(head, 1.2))
+    else:
+        for i in range(8):                   # les grains, de part et d'autre de l'axe
+            put(rows, 6 + i, 9 - i, head_dark)
+            if i % 2 == 0:
+                put(rows, 5 + i, 8 - i, head)
+                put(rows, 7 + i, 10 - i, head)
+            else:
+                put(rows, 5 + i, 8 - i, shade(head, 1.12))
+                put(rows, 7 + i, 10 - i, shade(head, 0.9))
+        if shape in ("awn", "spray", "long"):
+            put(rows, 14, 0, shade(head, 1.15))
+            put(rows, 13, 0, shade(head, 1.15))
+            put(rows, 15, 2, shade(head, 1.15))
+    return rows
+
+
+def bread_icon(cereal):
+    head = rgb(cereal[6])
+    crust = mix(rgb(0xB8782E), head, 0.35)
+    rows = blank()
+    for y in range(5, 12):
+        for x in range(2, 14):
+            corner = (x in (2, 13) and y in (5, 11))
+            if corner:
+                continue
+            edge = x in (2, 13) or y in (5, 11)
+            color = shade(crust, 0.7) if edge else (shade(crust, 1.12) if y < 8 else crust)
+            put(rows, x, y, color)
+    for x in (5, 8, 11):                     # les entailles du boulanger
+        put(rows, x, 7, shade(head, 1.15))
+        put(rows, x - 1, 8, shade(head, 1.15))
+    for x in range(3, 13):
+        put(rows, x, 12, OUTLINE)
+    if cereal[3]:                            # un pain d'OGM brille
+        for (x, y) in ((3, 3), (12, 4), (14, 9)):
+            put(rows, x, y, rgb(0xFFFFFF))
+        put(rows, 3, 2, rgb(0xCFF5D0))
+        put(rows, 2, 3, rgb(0xCFF5D0))
+        put(rows, 4, 3, rgb(0xCFF5D0))
+        put(rows, 3, 4, rgb(0xCFF5D0))
+    return rows
+
+
+def cream_icon():
+    rows = blank()
+    bowl, bowl_dark, cream, cream_dark = rgb(0x9A6B3F), rgb(0x6E4A29), rgb(0xFFF6DF), rgb(0xE6D8B4)
+    for y in range(8, 13):
+        inset = (0, 0, 1, 2, 3)[y - 8]
+        for x in range(2 + inset, 14 - inset):
+            put(rows, x, y, bowl if y < 11 else bowl_dark)
+    for x in range(2, 14):
+        put(rows, x, 7, bowl_dark)
+    for x in range(3, 13):
+        put(rows, x, 6, cream)
+    for x in range(4, 12):
+        put(rows, x, 5, cream if x % 3 else cream_dark)
+    for x in range(6, 10):
+        put(rows, x, 4, cream)
+    put(rows, 7, 3, cream)
+    return rows
+
+
+def lard_icon():
+    rows = blank()
+    fat, fat_dark, edge = rgb(0xFBEFE6), rgb(0xE9CFC0), rgb(0xB89684)
+    for y in range(5, 12):
+        for x in range(3, 13):
+            border = x in (3, 12) or y in (5, 11)
+            put(rows, x, y, edge if border else (fat if (x + y) % 5 else fat_dark))
+    for x in range(4, 12):
+        put(rows, x, 6, rgb(0xFFFFFF))
+    return rows
+
+
+def wood_texture(seed_color):
+    base = rgb(seed_color)
+    rows = [[base for _ in range(16)] for _ in range(16)]
+    for y in range(16):
+        for x in range(16):
+            tone = 1.0
+            if y % 4 == 3:
+                tone = 0.72                  # le joint entre deux planches
+            elif (x * 7 + y * 3) % 11 == 0:
+                tone = 0.88                  # une veine
+            elif (x + y * 5) % 13 == 0:
+                tone = 1.1
+            rows[y][x] = shade(base, tone)
+    return rows
+
+
+def stone_texture():
+    base = rgb(0x8A8D91)
+    rows = [[base for _ in range(16)] for _ in range(16)]
+    for y in range(16):
+        for x in range(16):
+            tone = 1.0
+            if y % 8 == 7 or (x + (4 if (y // 8) % 2 else 0)) % 8 == 7:
+                tone = 0.7                   # le mortier
+            elif (x * 5 + y * 9) % 7 == 0:
+                tone = 0.9
+            elif (x * 3 + y * 11) % 17 == 0:
+                tone = 1.1
+            rows[y][x] = shade(base, tone)
+    return rows
+
+
+def fill_texture(color, light):
+    base, bright = rgb(color), rgb(light)
+    rows = [[base for _ in range(16)] for _ in range(16)]
+    for y in range(16):
+        for x in range(16):
+            if (x * 3 + y * 7) % 9 == 0:
+                rows[y][x] = bright
+            elif (x * 5 + y * 2) % 11 == 0:
+                rows[y][x] = shade(base, 0.82)
+    return rows
+
+
+def basin_model(shell, fill, level):
+    """Un bac : un fond, quatre parois, et le contenu a la hauteur du niveau."""
+    all_faces = {face: {"texture": "#shell"} for face in ("north", "south", "east", "west", "up", "down")}
+    elements = [
+        {"from": [0, 0, 0], "to": [16, 2, 16], "faces": all_faces},
+        {"from": [0, 2, 0], "to": [16, 8, 2], "faces": all_faces},
+        {"from": [0, 2, 14], "to": [16, 8, 16], "faces": all_faces},
+        {"from": [0, 2, 2], "to": [2, 8, 14], "faces": all_faces},
+        {"from": [14, 2, 2], "to": [16, 8, 14], "faces": all_faces},
+    ]
+    textures = {"shell": shell, "particle": shell}
+    if level > 0:
+        textures["fill"] = fill
+        elements.append({"from": [2, 2, 2], "to": [14, 2 + level * 1.75, 14],
+                         "faces": {"up": {"texture": "#fill"}}})
+    return {"parent": "minecraft:block/block", "textures": textures, "elements": elements}
+
+
+def gmo_textures():
+    panel, edge, dark = rgb(0xD9DEE2), rgb(0xAEB6BD), rgb(0x6F7880)
+    glass, liquid, liquid_light = rgb(0x9FD8E8), rgb(0x3FBF5A), rgb(0x8FE8A0)
+    side = [[panel for _ in range(16)] for _ in range(16)]
+    for i in range(16):
+        side[0][i] = edge
+        side[15][i] = dark
+        side[i][0] = edge
+        side[i][15] = dark
+    for y in range(3, 13):                   # l'eprouvette
+        for x in range(5, 11):
+            border = x in (5, 10) or y in (3, 12)
+            side[y][x] = dark if border else (glass if y < 7 else (liquid_light if (x + y) % 3 == 0 else liquid))
+    for (x, y) in ((2, 3), (13, 3), (2, 12), (13, 12)):
+        side[y][x] = dark
+    side[5][12] = rgb(0x3DFF6A)
+    side[7][12] = rgb(0xFFB52E)
+    top = [[panel for _ in range(16)] for _ in range(16)]
+    for i in range(16):
+        top[0][i] = edge
+        top[15][i] = dark
+        top[i][0] = edge
+        top[i][15] = dark
+    for y in range(4, 12):                   # la boite de culture
+        for x in range(4, 12):
+            dx, dy = x - 7.5, y - 7.5
+            distance = dx * dx + dy * dy
+            if distance <= 16:
+                top[y][x] = dark if distance > 10.5 else (liquid_light if (x * 3 + y) % 4 == 0 else liquid)
+    bottom = [[shade(dark, 0.8) for _ in range(16)] for _ in range(16)]
+    return side, top, bottom
+
+
+def block_drops_itself(name, survives=True):
+    entry = {"rolls": 1, "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, name)}]}
+    if survives:
+        entry["conditions"] = [{"condition": "minecraft:survives_explosion"}]
+    write("data/%s/loot_table/blocks/%s.json" % (NS, name), {"type": "minecraft:block", "pools": [entry]})
+
+
+def generated_item(name):
+    write("assets/%s/models/item/%s.json" % (NS, name), {
+        "parent": "minecraft:item/generated",
+        "textures": {"layer0": "%s:item/%s" % (NS, name)},
+    })
+    write("assets/%s/items/%s.json" % (NS, name), {
+        "model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)},
+    })
+
+
+def agriculture():
+    for cereal in CEREALS:
+        key, gmo = cereal[0], cereal[3]
+        crop = key + "_crop"
+        # la culture : huit stades, huit textures, comme le ble
+        variants = {}
+        for stage in range(8):
+            write_png("assets/%s/textures/block/%s_stage_%d.png" % (NS, crop, stage), crop_stage(cereal, stage))
+            write("assets/%s/models/block/%s_stage_%d.json" % (NS, crop, stage), {
+                "parent": "minecraft:block/crop",
+                "textures": {"crop": "%s:block/%s_stage_%d" % (NS, crop, stage)},
+            })
+            variants["age=%d" % stage] = {"model": "%s:block/%s_stage_%d" % (NS, crop, stage)}
+        write("assets/%s/blockstates/%s.json" % (NS, crop), {"variants": variants})
+
+        # le butin : mure, un a deux grains ; la semence revient toujours, et la
+        # culture mure en rend d'autres (un OGM en rend bien moins : il se merite)
+        mature = [{"condition": "minecraft:block_state_property", "block": "%s:%s" % (NS, crop),
+                   "properties": {"age": "7"}}]
+        extra_seeds = ({"extra": 1, "probability": 0.25} if gmo else {"extra": 2, "probability": 0.5714286})
+        write("data/%s/loot_table/blocks/%s.json" % (NS, crop), {
+            "type": "minecraft:block",
+            "pools": [
+                {"rolls": 1, "conditions": mature, "entries": [{
+                    "type": "minecraft:item", "name": "%s:%s" % (NS, key),
+                    "functions": [
+                        {"function": "minecraft:set_count",
+                         "count": {"type": "minecraft:uniform", "min": 1, "max": 1 if gmo else 2}},
+                        {"function": "minecraft:explosion_decay"},
+                    ],
+                }]},
+                {"rolls": 1, "entries": [{"type": "minecraft:item", "name": "%s:%s_seeds" % (NS, key)}]},
+                {"rolls": 1, "conditions": mature, "entries": [{
+                    "type": "minecraft:item", "name": "%s:%s_seeds" % (NS, key),
+                    "functions": [{
+                        "function": "minecraft:apply_bonus", "enchantment": "minecraft:fortune",
+                        "formula": "minecraft:binomial_with_bonus_count", "parameters": extra_seeds,
+                    }, {"function": "minecraft:explosion_decay"}],
+                }]},
+            ],
+        })
+
+        write_png("assets/%s/textures/item/%s_seeds.png" % (NS, key), seeds_icon(cereal))
+        write_png("assets/%s/textures/item/%s.png" % (NS, key), grain_icon(cereal))
+        write_png("assets/%s/textures/item/%s_bread.png" % (NS, key), bread_icon(cereal))
+        for item in (key + "_seeds", key, key + "_bread"):
+            generated_item(item)
+
+        grain = "%s:%s" % (NS, key)
+        if gmo:
+            write("data/%s/recipe/%s_bread.json" % (NS, key), {
+                "type": "minecraft:crafting_shapeless", "category": "misc",
+                "ingredients": [grain, grain, grain, GMO_EXTRA[key]],
+                "result": {"id": "%s:%s_bread" % (NS, key), "count": 1},
+            })
+        else:
+            write("data/%s/recipe/%s_bread.json" % (NS, key), {
+                "type": "minecraft:crafting_shaped", "category": "misc",
+                "pattern": ["GGG"], "key": {"G": grain},
+                "result": {"id": "%s:%s_bread" % (NS, key), "count": 1},
+            })
+
+    write_png("assets/%s/textures/item/cream.png" % NS, cream_icon())
+    write_png("assets/%s/textures/item/lard.png" % NS, lard_icon())
+    generated_item("cream")
+    generated_item("lard")
+
+    # la mangeoire et l'abreuvoir : le meme bac, en bois ou en pierre
+    write_png("assets/%s/textures/block/trough.png" % NS, wood_texture(0x9A6B3F))
+    write_png("assets/%s/textures/block/trough_feed.png" % NS, fill_texture(0xD9B24A, 0xF1D67C))
+    write_png("assets/%s/textures/block/water_dispenser.png" % NS, stone_texture())
+    write_png("assets/%s/textures/block/water_dispenser_water.png" % NS, fill_texture(0x3B6FD0, 0x6FA0EC))
+    for name, fill in (("trough", "trough_feed"), ("water_dispenser", "water_dispenser_water")):
+        variants = {}
+        for level in range(4):
+            write("assets/%s/models/block/%s_%d.json" % (NS, name, level),
+                  basin_model("%s:block/%s" % (NS, name), "%s:block/%s" % (NS, fill), level))
+            variants["fill=%d" % level] = {"model": "%s:block/%s_%d" % (NS, name, level)}
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": variants})
+        write("assets/%s/items/%s.json" % (NS, name), {
+            "model": {"type": "minecraft:model", "model": "%s:block/%s_0" % (NS, name)},
+        })
+        block_drops_itself(name)
+
+    write("data/%s/recipe/trough.json" % NS, {
+        "type": "minecraft:crafting_shaped", "category": "misc",
+        "pattern": ["P P", "PPP"], "key": {"P": "#minecraft:planks"},
+        "result": {"id": "%s:trough" % NS, "count": 1},
+    })
+    write("data/%s/recipe/water_dispenser.json" % NS, {
+        "type": "minecraft:crafting_shaped", "category": "misc",
+        "pattern": ["S S", "SBS"], "key": {"S": "minecraft:cobblestone", "B": "minecraft:bucket"},
+        "result": {"id": "%s:water_dispenser" % NS, "count": 1},
+    })
+
+    # la machine a OGM
+    side, top, bottom = gmo_textures()
+    write_png("assets/%s/textures/block/gmo_machine_side.png" % NS, side)
+    write_png("assets/%s/textures/block/gmo_machine_top.png" % NS, top)
+    write_png("assets/%s/textures/block/gmo_machine_bottom.png" % NS, bottom)
+    write("assets/%s/models/block/gmo_machine.json" % NS, {
+        "parent": "minecraft:block/cube_bottom_top",
+        "textures": {
+            "top": "%s:block/gmo_machine_top" % NS,
+            "bottom": "%s:block/gmo_machine_bottom" % NS,
+            "side": "%s:block/gmo_machine_side" % NS,
+        },
+    })
+    write("assets/%s/blockstates/gmo_machine.json" % NS,
+          {"variants": {"": {"model": "%s:block/gmo_machine" % NS}}})
+    write("assets/%s/items/gmo_machine.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:block/gmo_machine" % NS},
+    })
+    block_drops_itself("gmo_machine")
+    write("data/%s/recipe/gmo_machine.json" % NS, {
+        "type": "minecraft:crafting_shaped", "category": "misc",
+        "pattern": ["IGI", "DBD", "IRI"],
+        "key": {
+            "I": "minecraft:iron_ingot", "G": "minecraft:glass", "D": "minecraft:diamond",
+            "B": "minecraft:bone_block", "R": "minecraft:redstone_block",
+        },
+        "result": {"id": "%s:gmo_machine" % NS, "count": 1},
+    })
+
+    # ce qu'une mangeoire accepte : les grains d'ici, et le ble
+    write("data/%s/tags/item/cereals.json" % NS, {
+        "replace": False,
+        "values": ["minecraft:wheat"] + ["%s:%s" % (NS, cereal[0]) for cereal in CEREALS],
+    })
+
+
 def lang():
     fr = {
         "itemGroup.dohy.machines": "DoHy — machines",
+        "itemGroup.dohy.agriculture": "DoHy — agriculture",
         "block.dohy.trading_server": "Serveur de trading",
+        "block.dohy.trough": "Mangeoire",
+        "block.dohy.water_dispenser": "Abreuvoir",
+        "block.dohy.gmo_machine": "Machine a OGM",
+        "item.dohy.cream": "Creme",
+        "item.dohy.lard": "Saindoux",
     }
     en = {
         "itemGroup.dohy.machines": "DoHy — machines",
+        "itemGroup.dohy.agriculture": "DoHy — farming",
         "block.dohy.trading_server": "Trading Server",
+        "block.dohy.trough": "Trough",
+        "block.dohy.water_dispenser": "Water Dispenser",
+        "block.dohy.gmo_machine": "GMO Machine",
+        "item.dohy.cream": "Cream",
+        "item.dohy.lard": "Lard",
     }
+    for (key, name_fr, name_en, gmo, *_rest) in CEREALS:
+        fr["block.dohy.%s_crop" % key] = "Culture de %s" % name_fr.lower()
+        en["block.dohy.%s_crop" % key] = "%s Crop" % name_en
+        fr["item.dohy.%s_seeds" % key] = "Graines de %s" % name_fr.lower()
+        en["item.dohy.%s_seeds" % key] = "%s Seeds" % name_en
+        fr["item.dohy.%s" % key] = name_fr
+        en["item.dohy.%s" % key] = name_en
+        fr["item.dohy.%s_bread" % key] = BREAD_FR[key]
+        en["item.dohy.%s_bread" % key] = BREAD_EN[key]
     write("assets/%s/lang/fr_fr.json" % NS, fr)
     write("assets/%s/lang/en_us.json" % NS, en)
 
 
 def main():
     trading_server()
+    agriculture()
     lang()
     print("Ressources dohy ecrites.")
 

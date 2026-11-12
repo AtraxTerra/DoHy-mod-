@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "dohy:block/kamut_crop_stage_6"
+  }
+}

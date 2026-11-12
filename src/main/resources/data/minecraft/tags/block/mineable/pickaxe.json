@@ -1,7 +1,9 @@
 {
   "replace": false,
   "values": [
+    "dohy:gmo_machine",
     "dohy:trading_server",
+    "dohy:water_dispenser",
     "palamod:amethyst_block",
     "palamod:amethyst_chest",
     "palamod:amethyst_ore",

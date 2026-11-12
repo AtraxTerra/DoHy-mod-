@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:wheat",
+    "dohy:corn",
+    "dohy:oat",
+    "dohy:rye",
+    "dohy:barley",
+    "dohy:soy",
+    "dohy:fonio",
+    "dohy:sorghum",
+    "dohy:kamut"
+  ]
+}
