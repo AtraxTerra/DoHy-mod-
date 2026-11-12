@@ -175,6 +175,36 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 10) — le tracteur, ses outils, le silo et la pompe
+
+**Demande** : « pour le tracteur et silo j'ai des fichiers et des assets à te fournir » (le
+dossier du client NationsGlory), puis, la reprise de ces fichiers ayant été refusée : « d'accord,
+mais cela doit être compatible avec NTM NEXT ».
+Description : `docs/CONTENU_DOHY.md`, section « Le tracteur, ses outils, le silo et la pompe » ;
+chiffrage : `docs/BALANCE.md` § 6 sexdecies.
+
+**Règle tenue** : rien n'est repris du client NationsGlory — ni code, ni modèle, ni texture ; le
+dossier n'a été ni ouvert ni copié. Le comportement suit le wiki public ; le modèle et la texture
+sont décrits boîte par boîte dans `tools/tractor_model.py`, les icônes et les blocs dans
+`tools/dohy_assets.py`.
+
+**Fait** (`feat/tracteur-silo`) :
+- **`Tractor`**, une entité conduite (même patron que le Dancarok : `PlayerRideableJumping`,
+  `tickRidden`, `getRiddenInput`). Réservoir en unités, brûlé à la distance ; un outil à la fois,
+  large de trois blocs, qui agit 2,4 blocs derrière : charrue, semoir, épandeur, moissonneuse.
+  La moisson passe par `destroyBlock` au nom du conducteur, et `TractorEvents` (priorité la plus
+  basse sur `BlockDropsEvent`) range le butin dans la trémie après que l'XP, les contrats et les
+  collections l'ont lu.
+- **Silo** (`SiloBlockEntity`) : 16 384 céréales. Une « vitrine » d'une demi-pile par céréale pour
+  les entonnoirs et les mods, une réserve comptée derrière ; capacité d'objets, faces comme les
+  machines.
+- **Pompe** (`FuelPumpBlockEntity`) : une `FluidStacksResourceHandler` qui ne prend que les
+  carburants de la table, offerte à la capacité de fluide (tuyaux de NTM NEXT), et qui remplit
+  les tracteurs à portée.
+- **NTM NEXT** : carburants `hbm:*` par la capacité de fluide des objets (bidons) et des blocs ;
+  recettes de machine d'assemblage, recettes d'établi sous la condition inverse.
+- Réglages : bloc `farming` et `tractor_level` de `data/agriculture.json`.
+
 ### 2026-11-12 (suite 9) — le spawn : le faire vivre, y arriver, finir le décor
 
 **Demande** : « fais 1, 2 et 3 ensemble » — une raison de revenir au spawn (récompense, classements,

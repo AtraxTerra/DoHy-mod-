@@ -94,7 +94,7 @@ public final class SiloMenu extends MenuController {
                 List<String> lines = new ArrayList<>();
                 lines.add(stored > 0 ? "Clic : prendre une pile" : "Aucune en stock");
                 if (price > 0L) {
-                    lines.add("Clic droit : " + batch + " pour " + MoneyFormat.exact(price));
+                    lines.add("Clic droit : " + batch + " pour " + MoneyFormat.exact(price) + " $");
                 }
                 Card card = Card.of(new ItemStack(item), MenuView.text(new ItemStack(item).getHoverName()), lines)
                         .accent(stored > 0 ? GREEN : GREY).badge(stored > 0 ? "x" + stored : "");
@@ -167,7 +167,7 @@ public final class SiloMenu extends MenuController {
         } else if (SiloBlockEntity.capacity() - silo.total() < batch) {
             report(player, "Le silo n'a plus la place pour un lot.", "");
         } else if (!Economy.tryDebit(player, price)) {
-            report(player, "Il te manque " + MoneyFormat.exact(price - Economy.balance(player)) + ".", "");
+            report(player, "Il te manque " + MoneyFormat.exact(price - Economy.balance(player)) + " $.", "");
         } else {
             silo.deposit(item, batch);
             success(player);

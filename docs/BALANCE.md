@@ -925,8 +925,34 @@ semaine — la même échelle que « récolter 400 cultures ». **Commandes de t
 **Le pain d'épices** (240 $) demande Fermier niveau 50 et ne se cuit qu'à la main : c'est la
 récompense du métier, pas un produit de chaîne.
 
-Leviers : `data/agriculture.json` (recherche, machines, fournées, effets, élevage), bloc `course`
-de `data/economy.json`, lignes `dohy:` de `data/rates.csv`.
+**Le tracteur** (description : `docs/CONTENU_DOHY.md`). Il ne change ni le prix d'une céréale ni
+ce que rend une culture : il change **la surface qu'un joueur peut tenir**. Les prix sont
+générés pour 1 200 céréales à l'heure ; au travail, un tracteur traite trois rangs à 5 blocs par
+seconde, soit une quinzaine de cases par seconde — un champ de 64 × 64 (4 096 cases) se moissonne
+en cinq minutes. Ce qui borne alors le revenu, dans l'ordre :
+
+- **la pousse** : le tracteur ne fait pas mûrir plus vite (l'épandeur donne une poudre d'os par
+  pousse et par passage, payée au prix de la poudre d'os) ;
+- **la pression de vente** (§ 6) : chaque céréale a sa courbe, S₀ = 2 000. Vendues d'un coup,
+  1 200 céréales rapportent 15 500 $ (86 % du prix de base en moyenne), 4 096 en rapportent
+  42 100 $ (69 %), 10 000 en rapportent 78 600 $ (52 %). Trois fois et demie la récolte ne fait
+  pas trois fois et demie le revenu, et l'oubli demande une nuit ;
+- **le carburant** : 2 unités par bloc au travail, soit 0,67 unité par case. Le champ de 4 096
+  cases coûte 2 700 unités par passage — 11 charbons, ou 2,7 seaux de diesel. C'est un coût
+  d'usage, pas un mur : le mur est la recette (16 plaques d'acier, 2 moteurs, 1 circuit avec
+  NTM NEXT) et le niveau 10 de Fermier, celui de la houe en améthyste qui récolte déjà en zone.
+
+**L'XP de Fermier** d'une moisson au tracteur est celle d'une récolte à la main, case par case :
+le métier monte donc avec la surface, comme avec les houes de zone de PalaMod. Si la courbe
+s'avère trop rapide en jeu, le levier est `tractor_level`, puis `work_speed` (le débit) et
+`move_cost` / `work_factor` (le coût), dans `data/agriculture.json`.
+
+**Le silo** achète au prix d'achat de la boutique (marge de 4, cours de l'heure et remises
+compris) : il n'ouvre aucun arbitrage que la boutique n'ouvre pas, `check_agri_prices.py` couvre
+déjà ce cas. Les grains d'OGM, qui ne s'achètent pas, ne s'y achètent pas non plus.
+
+Leviers : `data/agriculture.json` (recherche, machines, fournées, effets, élevage, bloc `farming`
+du tracteur), bloc `course` de `data/economy.json`, lignes `dohy:` de `data/rates.csv`.
 
 ## 7. Ce qui n'est pas encore chiffré
 
