@@ -222,7 +222,7 @@ sont décrits boîte par boîte dans `tools/tractor_model.py`, les icônes et le
 - silo : entonnoir du dessus (le blé et le maïs entrent, la pierre reste), entonnoir du dessous
   vers un coffre, capacité d'objets (entrée par le côté, refus par le dessous et pour la pierre),
   achat d'un lot (16 maïs, 1 216 $ au cours du moment), prise d'une pile, « Tout déposer » ;
-- touches : saut tenu six ticks → l'outil s'arrête ; le regard tourné à l'arret ne fait pas
+- touches : saut tenu six ticks → l'outil s'arrête ; le regard tourné à l'arrêt ne fait pas
   tourner le tracteur, en roulant il prend le cap ; la touche d'inventaire ouvre son écran ;
 - démontage : un coup debout ne fait rien ; accroupi, tout est rendu.
 
