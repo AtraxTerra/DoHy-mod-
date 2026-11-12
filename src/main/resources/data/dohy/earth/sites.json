@@ -6,7 +6,7 @@
       "id": "chernobyl",
       "name": "Zone d'exclusion de Tchernobyl",
       "kind": "irradiated",
-      "latitude": 51.547,
+      "latitude": 51.196,
       "longitude": 29.919,
       "radius": 40,
       "core_radius": 12,

@@ -72,10 +72,11 @@ def site(name, label, kind, latitude, longitude, radius, core=0):
 
 # Une carte de la Terre au 1:110 000 environ (68,7 blocs par degre) : un bloc fait 1,6 km. Les zones sont
 # donc a l'echelle du jeu plutot que du terrain — celle de Tchernobyl reelle ne ferait que 19 blocs de rayon.
-# Chaque centre est celui du chunk sec le plus proche du lieu reel sur la carte Earth24k (au plus 37 km) :
+# Chaque centre est celui du chunk sec le plus proche du lieu reel, dans le bon pays, sur la carte Earth24k
+# (au plus 37 km) :
 # la centrale de Tchernobyl tombe dans le chunk de la Pripiat, Cap Canaveral et Fukushima dans la mer.
 SITES = [
-    site("chernobyl", "Zone d'exclusion de Tchernobyl", "irradiated", 51.547, 29.919, 40, 12),
+    site("chernobyl", "Zone d'exclusion de Tchernobyl", "irradiated", 51.196, 29.919, 40, 12),
     site("fukushima", "Zone d'exclusion de Fukushima", "irradiated", 37.381, 140.817, 28, 8),
     site("baikonur", "Cosmodrome de Baikonour", "launch", 45.937, 63.235, 48),
     site("canaveral", "Cap Canaveral", "launch", 28.195, -80.747, 48),
