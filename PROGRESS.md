@@ -175,6 +175,33 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 7) — le spawn : une silhouette plus proche de la référence
+
+**Demande** : « parfait, j'aimerais qu'il ressemble à celui de la photo ». Aucune nouvelle image
+n'accompagnait le message : la référence est celle du lot précédent. Le bâtiment s'en rapproche par
+ses traits d'ensemble ; il reste un dessin fait ici, pas une copie bloc à bloc (la photo, petite,
+ne le permettrait d'ailleurs pas).
+
+**Fait** (`feat/spawn-silhouette`, `SpawnBuilder` version 3) :
+- Masse haute : deux épaules basses et des contreforts en pente sur les flancs et à l'arrière.
+- Gradins : un corbeau sous chaque débord, une couvertine sur chaque garde-corps, davantage de
+  bandeaux de pierre taillée.
+- Socle : deux bandes plantées en marches, tenues par des murs courbes (une seule derrière, pour
+  laisser passer devant les cheminées et les cuves).
+- Pylône à pilastres ; le signe « D » passe sur une dalle debout au bout des passerelles.
+- Parvis : terre, herbe, épicéas et lampadaires à la place de la dalle de béton ; allée dallée.
+
+**Vérifié hors jeu** (outil de prévisualisation local) : sans sauter, on atteint toujours les six
+box, les sept bornes, les galeries, les terrasses, l'anneau, les passerelles, le toit du troisième
+gradin, le belvédère et l'arrière du parvis ; aucune étiquette dans un bloc.
+
+**Vérifié en jeu** (client de la CI) : construction en 14 secondes, règles, ouverture d'une box,
+borne SHOP, chute, retour au bloc de départ ; reconstruction depuis une version marquée ancienne en
+6 secondes, restes effacés, 22 textes flottants. Vues extérieures contrôlées.
+
+**Non vérifié** : le rendu à grande distance d'affichage ; la reconstruction d'un vrai spawn de
+version 1 ou 2 gardé dans une sauvegarde.
+
 ### 2026-11-12 (suite 6) — le spawn : un bâtiment brutaliste
 
 **Demande** : après avoir vu le spawn, le joueur a joint l'image d'un bâtiment brutaliste (des

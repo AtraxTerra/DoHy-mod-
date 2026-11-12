@@ -218,12 +218,14 @@ passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, c
   d'éclairage sur certains.
 - La **plateforme d'arrivée**, ronde, sur son propre piton, reliée au parvis par un **pont** à
   portiques d'acier.
-- Le **parvis**, une dalle ovale de béton : une allée entre deux jardinières, des lampes de sol.
-- Un seul **bâtiment**, brutaliste, en pierre : trois **gradins** aux bouts arrondis, en retrait
-  l'un sur l'autre, cernés de bandeaux vitrés et de **terrasses** plantées ; au-dessus, une **masse
-  haute** rayée d'ailettes ; à l'est, un **anneau** en porte-à-faux sur pilotis, un épicéa en son
-  centre ; à l'ouest, un **pylône** relié aux gradins par trois passerelles superposées, avec une
-  échelle jusqu'à son belvédère.
+- Le **parvis**, un plateau ovale de terre et d'herbe tenu par un mur de pierre : une allée dallée
+  du pont au porche, des épicéas, des lampadaires.
+- Un seul **bâtiment**, brutaliste, en pierre, posé sur un **socle planté** en deux marches courbes :
+  trois **gradins** aux bouts arrondis, en retrait l'un sur l'autre, cernés de bandeaux vitrés et de
+  **terrasses** plantées ; au-dessus, une **masse haute** épaulée de contreforts en pente ; à l'est,
+  un **anneau** en porte-à-faux sur pilotis, un épicéa en son centre ; à l'ouest, un **pylône** à
+  pilastres relié aux gradins par trois passerelles superposées, qui butent sur une dalle debout
+  portant le signe « D ». Une échelle monte dans le pylône jusqu'à son belvédère.
 - Dedans, tout en béton : une **nef** basse à plafond à caissons, puis l'**atrium** — un puits de
   46 blocs sous une verrière, une lame de lumière sur toute sa hauteur. Les **six box** y sont, dans
   des niches à leur couleur (améthyste, saharia, paladium à l'ouest ; halloween, trixium, endium à
