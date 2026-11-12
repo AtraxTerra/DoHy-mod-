@@ -29,6 +29,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 /**
  * La pompe a carburant : une cuve qui fait le plein des tracteurs gares a
@@ -109,7 +110,14 @@ public class FuelPumpBlock extends BaseEntityBlock {
         if (level.isClientSide()) {
             return TractorFuel.isFuel(player, hand) ? InteractionResult.SUCCESS : InteractionResult.TRY_WITH_EMPTY_HAND;
         }
-        if (!FluidUtil.interactWithFluidHandler(player, hand, pos, pump.tank())) {
+        boolean moved;
+        try (Transaction transaction = Transaction.openRoot()) {
+            moved = FluidUtil.interactWithFluidHandler(player, hand, pos, pump.tank(), transaction);
+            if (moved) {
+                transaction.commit();
+            }
+        }
+        if (!moved) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         tell(player, pump);

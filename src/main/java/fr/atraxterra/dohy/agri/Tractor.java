@@ -57,7 +57,8 @@ import java.util.Map;
  * fois plus quand son outil travaille. Un seul outil a la fois, large de trois
  * blocs, qui agit derriere lui : la charrue laboure, le semoir seme les
  * semences chargees, l'epandeur epand l'engrais, la moissonneuse coupe les
- * cereales mures. La touche de saut met l'outil en marche ou a l'arret.
+ * cereales mures. Un outil attele travaille ; la touche de saut, tenue un
+ * instant, l'arrete et le remet en marche (pour traverser sans labourer).
  *
  * <p>Ce qu'il moissonne reste dans sa tremie. Elle se vide toute seule dans
  * un silo des qu'il passe a cote ; a la main, c'est pile par pile, depuis son
@@ -132,12 +133,11 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
         return TractorTool.byId(entityData.get(TOOL));
     }
 
+    /** Attelle un outil, en marche : c'est l'arreter qui demande un geste, pas s'en servir. */
     public void setTool(TractorTool tool) {
         entityData.set(TOOL, tool.ordinal());
+        entityData.set(WORKING, tool != TractorTool.NONE);
         done.clear();
-        if (tool == TractorTool.NONE) {
-            entityData.set(WORKING, false);
-        }
     }
 
     public int fuel() {
@@ -496,8 +496,8 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
                 return InteractionResult.SUCCESS;
             }
             server.startRiding(this);
-            say(server, tool() == TractorTool.NONE ? "Carburant : " + fuel() + " / " + tank() + "."
-                    : tool().label() + " : touche de saut pour la mise en marche.", true);
+            say(server, "Carburant : " + fuel() + " / " + tank() + (tool() == TractorTool.NONE ? "."
+                    : "  ·  " + tool().label() + (working() ? " en marche" : " a l'arret") + " (saut).", true);
         }
         return InteractionResult.SUCCESS;
     }
@@ -525,7 +525,7 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
         detach(player);
         setTool(tool);
         level().playSound(null, blockPosition(), SoundEvents.IRON_TRAPDOOR_CLOSE, SoundSource.NEUTRAL, 0.8f, 0.8f);
-        say(player, tool.label() + " attelee.", true);
+        say(player, "Outil attele : " + tool.label() + ".", true);
     }
 
     /** Detelle l'outil et le rend au joueur. */
@@ -745,6 +745,7 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
         super.addAdditionalSaveData(output);
         output.putInt("Fuel", fuel());
         output.putInt("Tool", tool().ordinal());
+        output.putBoolean("Working", working());
         output.putInt("Fertilizer", fertilizer);
         output.store("Seeds", STOCK, ids(seeds));
         output.store("Crops", STOCK, ids(crops));
@@ -757,6 +758,7 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         entityData.set(TOOL, TractorTool.byId(input.getIntOr("Tool", 0)).ordinal());
+        entityData.set(WORKING, tool() != TractorTool.NONE && input.getBooleanOr("Working", true));
         setFuel(input.getIntOr("Fuel", 0));
         fertilizer = Math.max(0, input.getIntOr("Fertilizer", 0));
         items(input.read("Seeds", STOCK).orElse(Map.of()), seeds);

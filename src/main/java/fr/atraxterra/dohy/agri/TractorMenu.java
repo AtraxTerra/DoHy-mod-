@@ -81,7 +81,7 @@ public final class TractorMenu extends MenuController {
             sections.add(seeder(player, tractor, config));
             sections.add(hopper(tractor, config));
         }
-        return new MenuView(id(), "Tracteur", "Touche de saut au volant : outil en marche ou a l'arret", stats,
+        return new MenuView(id(), "Tracteur", "Au volant, saut tenu un instant : outil en marche ou a l'arret", stats,
                 sections, true);
     }
 
