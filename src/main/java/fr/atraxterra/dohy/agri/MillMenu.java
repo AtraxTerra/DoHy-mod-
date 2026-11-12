@@ -55,8 +55,8 @@ public final class MillMenu extends MachineMenu {
                         0xFFFFFFFF),
                 workStat(machine));
         return new MenuView(id(), "Moulin", "Clic gauche : une farine  ·  clic droit : jusqu'a une pile", stats,
-                List.of(new MenuView.Section("MOUDRE A LA MAIN", "resources", MenuView.GRID, cards),
-                        stock(player, machine)), true);
+                List.of(stock(player, machine),
+                        new MenuView.Section("MOUDRE A LA MAIN", "resources", MenuView.GRID, cards)), true);
     }
 
     private static int possible(int grains, int energy, AgriConfig.Machines config) {

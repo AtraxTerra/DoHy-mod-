@@ -83,8 +83,8 @@ public final class BreadMachineMenu extends MachineMenu {
                         : "NIV. " + config.machines().bonusBreadLevel(), bonus ? GREEN : GOLD));
         return new MenuView(id(), "Machine a pain", "Clic gauche : une fournee  ·  clic droit : " + MANY
                 + " fournees", stats,
-                List.of(new MenuView.Section("CUIRE A LA MAIN", "resources", MenuView.GRID, cards),
-                        stock(player, machine)), true);
+                List.of(stock(player, machine),
+                        new MenuView.Section("CUIRE A LA MAIN", "resources", MenuView.GRID, cards)), true);
     }
 
     /** Fournees possibles avec l'inventaire du joueur et l'energie de la machine. */
