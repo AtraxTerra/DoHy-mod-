@@ -966,8 +966,8 @@ n'est plus vrai pour tout : ce qui change, c'est **le trajet**.
 | Ressource | Sur la carte | Où |
 |---|---|---|
 | Charbon, fer, cuivre | partout (génération du jeu), plus riches dans leurs pays (4 filons de plus par chunk) | — |
-| Or, diamant, émeraude, lapis, redstone | **gisements seulement** (2,5 à 4 filons par chunk) | 6 à 16 pays chacun ; et la dimension du Mineur |
-| Métaux courants de NTM NEXT | gisements seulement (4 à 6 filons par chunk, ses densités d'origine) | 12 à 21 pays chacun, sur chaque continent |
+| Or, diamant, émeraude, lapis, redstone | **gisements seulement** (1,5 à 4 filons par chunk) | 3 à 15 pays chacun ; et la dimension du Mineur |
+| Métaux courants de NTM NEXT | gisements seulement (2 à 6 filons par chunk, proches de ses densités d'origine) | 10 à 21 pays chacun, sur chaque continent |
 | Uranium, thorium, terres rares, lithium, cobalt, coltan | gisements seulement | 7 à 13 pays ou régions |
 | Pétrole | ses poches rares partout (NTM NEXT), une poche pour 7 chunks dans les bassins pétroliers | 29 pays, 13 bassins dont 4 en mer |
 | Minerais de PalaMod | inchangés (leur génération, et la dimension du Mineur) | — |

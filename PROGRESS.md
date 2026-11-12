@@ -219,7 +219,7 @@ pas lue par cette méthode.
 **Vérifié en jeu** (client de CI, monde ordinaire avec le jeu de données de la carte) :
 - dix points du globe retrouvés dans le bon pays (Paris, Berlin, Almaty, Riyad, New York, Rio,
   Tokyo, Reykjavik ; haute mer au milieu de l'Atlantique) et aller-retour latitude/longitude ;
-- spawn reconstruit en version 1006 avec la dalle (38 s), carte lisible depuis la plateforme,
+- spawn reconstruit en version 1006 avec la dalle (46 s), carte lisible depuis la plateforme,
   « Kazakhstan » dans la barre d'action en marchant dessus ;
 - saut par le puits : lâché à 96 blocs au-dessus de la Russie, chute lente, posé sans dégât ;
 - frontières : « Allemagne — Tu quittes : France », puis les eaux internationales ;
