@@ -87,8 +87,11 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
     private static final double TOOL_REACH = 2.4d;
     /** Degres par tick : le tracteur ne pivote pas sur place comme un cheval. */
     private static final float TURN = 6.0f;
-    /** Les dernieres cases traitees : un epandeur ne doit pas vider sa cuve sur la meme pousse. */
-    private static final int MEMORY = 96;
+    /**
+     * Les dernieres cases epandues : l'epandeur passe plusieurs ticks sur la meme case et ne
+     * doit pas y vider sa cuve. Huit blocs de memoire : un second passage, lui, compte.
+     */
+    private static final int MEMORY = 24;
 
     /** Le tracteur en train de moissonner : ce que lache le bloc casse lui revient ({@link TractorEvents}). */
     static Tractor harvesting;
@@ -341,11 +344,15 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
         TractorTool tool = tool();
         for (int side = -1; side <= 1; side++) {
             BlockPos ground = BlockPos.containing(baseX - forwardZ * side, getY() - 0.5d, baseZ + forwardX * side);
-            if (!done.add(ground.asLong())) {
-                continue;
-            }
-            if (done.size() > MEMORY) {
-                done.remove(done.iterator().next());
+            // Seul l'epandeur a besoin de se souvenir : les autres outils lisent l'etat du bloc,
+            // et repasser sur une case deja faite n'y change rien.
+            if (tool == TractorTool.SPREADER) {
+                if (!done.add(ground.asLong())) {
+                    continue;
+                }
+                if (done.size() > MEMORY) {
+                    done.remove(done.iterator().next());
+                }
             }
             BlockPos above = ground.above();
             switch (tool) {
@@ -609,12 +616,17 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
         return getFirstPassenger() instanceof Player player ? player : super.getControllingPassenger();
     }
 
-    /** Il tourne vers le regard du conducteur, sans pivoter d'un coup. */
+    /**
+     * Il tourne vers le regard du conducteur, sans pivoter d'un coup, et seulement
+     * quand il roule : regarder autour de soi a l'arret ne le fait pas tourner sur place.
+     */
     @Override
     protected void tickRidden(Player player, Vec3 input) {
         super.tickRidden(player, input);
-        float turn = Mth.wrapDegrees(player.getYRot() - getYRot());
-        setRot(getYRot() + Mth.clamp(turn, -TURN, TURN), 0.0f);
+        if (player.zza != 0.0f && fuel() > 0) {
+            float turn = Mth.wrapDegrees(player.getYRot() - getYRot());
+            setRot(getYRot() + Mth.clamp(turn, -TURN, TURN), 0.0f);
+        }
         yBodyRot = getYRot();
         yHeadRot = getYRot();
     }
