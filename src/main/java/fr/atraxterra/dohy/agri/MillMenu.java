@@ -1,5 +1,7 @@
 package fr.atraxterra.dohy.agri;
 
+import fr.atraxterra.dohy.job.Job;
+import fr.atraxterra.dohy.job.JobApi;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.ui.view.UiNet;
@@ -13,9 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Le moulin : trois cereales et un peu d'energie font une farine. Clic gauche,
- * une farine ; clic droit, tout ce que l'inventaire et la reserve permettent,
- * jusqu'a une pile.
+ * Le moulin : trois cereales et un peu d'energie font une farine. A la main :
+ * clic gauche, une farine ; clic droit, tout ce que l'inventaire et la reserve
+ * permettent, jusqu'a une pile — et de l'XP de Fermier. En automate : ce qui est
+ * depose dans la machine est moulu tout seul ({@link AgriMachineBlockEntity}).
  */
 public final class MillMenu extends MachineMenu {
 
@@ -48,10 +51,12 @@ public final class MillMenu extends MachineMenu {
                     : card.state(MenuView.DISABLED));
         }
         List<MenuView.Stat> stats = List.of(energyStat(machine),
-                new MenuView.Stat("UNE FARINE", config.millRatio() + " CEREALES", 0xFFFFFFFF),
-                new MenuView.Stat("COUT", config.millEnergy() + " FE", GOLD));
+                new MenuView.Stat("UNE FARINE", config.millRatio() + " CEREALES, " + config.millEnergy() + " FE",
+                        0xFFFFFFFF),
+                workStat(machine));
         return new MenuView(id(), "Moulin", "Clic gauche : une farine  ·  clic droit : jusqu'a une pile", stats,
-                List.of(new MenuView.Section("FARINES", "resources", MenuView.GRID, cards)), true);
+                List.of(new MenuView.Section("MOUDRE A LA MAIN", "resources", MenuView.GRID, cards),
+                        stock(player, machine)), true);
     }
 
     private static int possible(int grains, int energy, AgriConfig.Machines config) {
@@ -65,6 +70,9 @@ public final class MillMenu extends MachineMenu {
         AgriMachineBlockEntity machine = machine(player);
         if (machine == null) {
             UiNet.close(player);
+            return;
+        }
+        if (stockCard(player, machine, key)) {
             return;
         }
         int colon = key.indexOf(':');
@@ -100,6 +108,11 @@ public final class MillMenu extends MachineMenu {
         }
         AgriInv.take(player, grain, count * config.millRatio());
         AgriInv.give(player, DoHyAgri.flour(cereal), count);
+        // Le travail a la main paie en XP de Fermier ; l'automate, non.
+        if (config.millXp() > 0) {
+            JobApi.grant(player, Job.FARMER, config.millXp() * count);
+        }
+        AgriProduction.produced(player, DoHyAgri.flour(cereal), count);
         return null;
     }
 }

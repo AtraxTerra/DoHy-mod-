@@ -140,23 +140,29 @@ public final class AgriConfig {
      * @param maxInput         FE acceptes par tick
      * @param millRatio        cereales moulues pour une farine
      * @param millEnergy       FE par farine
+     * @param millTicks        ticks que l'automate met a moudre une farine
+     * @param millXp           XP de Fermier par farine moulue a la main
+     * @param bakeTicks        ticks que l'automate met a cuire une fournee
      * @param biogenPerCereal  FE tires d'une cereale brulee
      * @param biogenPerTick    FE produits par tick pendant la combustion
      * @param biogenHopper     cereales que le biogenerateur garde en attente
      * @param biogenPush       FE pousses par tick vers chaque machine voisine
-     * @param bonusBreadLevel  niveau de Fermier ou une fournee peut rendre un pain de plus
+     * @param bonusBreadLevel  niveau de Fermier ou une fournee faite a la main peut rendre un pain de plus
      * @param bonusBreadChance chance de ce pain de plus
      */
-    public record Machines(int capacity, int maxInput, int millRatio, int millEnergy, int biogenPerCereal,
-                           int biogenPerTick, int biogenHopper, int biogenPush, int bonusBreadLevel,
-                           double bonusBreadChance) {
-        static final Machines FALLBACK = new Machines(20_000, 1_000, 3, 120, 400, 20, 64, 200, 40, 0.10d);
+    public record Machines(int capacity, int maxInput, int millRatio, int millEnergy, int millTicks, long millXp,
+                           int bakeTicks, int biogenPerCereal, int biogenPerTick, int biogenHopper, int biogenPush,
+                           int bonusBreadLevel, double bonusBreadChance) {
+        static final Machines FALLBACK = new Machines(20_000, 1_000, 3, 120, 10, 2L, 40, 400, 20, 64, 200, 40, 0.10d);
 
         static final Codec<Machines> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.intRange(1, 100_000_000).optionalFieldOf("capacity", 20_000).forGetter(Machines::capacity),
                 Codec.intRange(1, 100_000_000).optionalFieldOf("max_input", 1_000).forGetter(Machines::maxInput),
                 Codec.intRange(1, 64).optionalFieldOf("mill_ratio", 3).forGetter(Machines::millRatio),
                 Codec.intRange(0, 1_000_000).optionalFieldOf("mill_energy", 120).forGetter(Machines::millEnergy),
+                Codec.intRange(1, 72_000).optionalFieldOf("mill_ticks", 10).forGetter(Machines::millTicks),
+                Codec.LONG.optionalFieldOf("mill_xp", 2L).forGetter(Machines::millXp),
+                Codec.intRange(1, 72_000).optionalFieldOf("bake_ticks", 40).forGetter(Machines::bakeTicks),
                 Codec.intRange(1, 1_000_000).optionalFieldOf("biogen_per_cereal", 400).forGetter(Machines::biogenPerCereal),
                 Codec.intRange(1, 1_000_000).optionalFieldOf("biogen_per_tick", 20).forGetter(Machines::biogenPerTick),
                 Codec.intRange(1, 4096).optionalFieldOf("biogen_hopper", 64).forGetter(Machines::biogenHopper),
@@ -169,17 +175,21 @@ public final class AgriConfig {
     /**
      * Une fournee de la machine a pain.
      *
-     * @param id     le pain, sans espace de noms ({@code corn_bread})
-     * @param inputs ce qu'une fournee consomme
-     * @param count  pains rendus
-     * @param energy FE de la fournee
+     * @param id       le pain, sans espace de noms ({@code corn_bread})
+     * @param inputs   ce qu'une fournee consomme
+     * @param count    pains rendus
+     * @param energy   FE de la fournee
+     * @param minLevel niveau de Fermier pour la cuire ; au-dessus de 0, elle ne se cuit qu'a la main
+     * @param xp       XP de Fermier d'une fournee cuite a la main
      */
-    public record Batch(String id, Map<Identifier, Integer> inputs, int count, int energy) {
+    public record Batch(String id, Map<Identifier, Integer> inputs, int count, int energy, int minLevel, long xp) {
         static final Codec<Batch> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("id").forGetter(Batch::id),
                 Codec.unboundedMap(Identifier.CODEC, Codec.intRange(1, 64)).fieldOf("inputs").forGetter(Batch::inputs),
                 Codec.intRange(1, 64).optionalFieldOf("count", 1).forGetter(Batch::count),
-                Codec.intRange(0, 1_000_000).optionalFieldOf("energy", 300).forGetter(Batch::energy)
+                Codec.intRange(0, 1_000_000).optionalFieldOf("energy", 300).forGetter(Batch::energy),
+                Codec.intRange(0, 1_000).optionalFieldOf("min_level", 0).forGetter(Batch::minLevel),
+                Codec.LONG.optionalFieldOf("xp", 0L).forGetter(Batch::xp)
         ).apply(instance, Batch::new));
     }
 

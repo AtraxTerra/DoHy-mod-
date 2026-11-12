@@ -69,6 +69,8 @@
   "tooltip.dohy.sunflower_bread.1": "Life Steal I, 1 min",
   "item.dohy.miner_bread": "Miner's Bread",
   "tooltip.dohy.miner_bread.1": "Prospecting, 5 min",
+  "item.dohy.gingerbread": "Gingerbread",
+  "tooltip.dohy.gingerbread.1": "Regeneration I 10 s, Resistance I 1 min  -  +2 hearts",
   "item.dohy.fonio_bread": "Fonio Bread",
   "tooltip.dohy.fonio_bread.1": "Absorption I and Last Stand, 30 s  -  +2 hearts",
   "item.dohy.sorghum_bread": "Sorghum Bread",

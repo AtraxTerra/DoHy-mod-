@@ -203,6 +203,7 @@ dohy:barley_bread,AGRI,MOB,139.0,180,256,0.2,720,machine a pain : 2 farines et 1
 dohy:soy_bread,AGRI,MOB,156.0,160,256,0.2,640,machine a pain : 2 farines et 1 oeuf
 dohy:sunflower_bread,AGRI,MOB,96.0,260,256,0.2,1000,machine a pain : 2 farines et 1 creme
 dohy:miner_bread,AGRI,MOB,74.0,340,256,0.2,1400,machine a pain : 2 farines de ble 1 saindoux 2 baies lumineuses
+dohy:gingerbread,AGRI,MOB,104.0,240,256,0.2,960,machine a pain : 2 farines de seigle 1 rayon de miel 1 sucre pour 2 pains ; Fermier niveau 50
 dohy:fonio_bread,AGRI,FOUND,50.0,800,64,0.35,4800,pain d'OGM : 2 farines 1 creme 1 saindoux ; achat dissuasif
 dohy:sorghum_bread,AGRI,FOUND,36.0,1100,64,0.35,6600,pain d'OGM : 3 farines 1 creme 1 saindoux 1 oeuf ; achat dissuasif
 dohy:kamut_bread,AGRI,FOUND,44.0,910,64,0.35,5500,pain d'OGM : 2 farines 1 creme 1 melon scintillant ; achat dissuasif

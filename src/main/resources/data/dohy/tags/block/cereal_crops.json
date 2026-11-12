@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "dohy:corn_crop",
+    "dohy:barley_crop",
+    "dohy:oat_crop",
+    "dohy:rye_crop",
+    "dohy:sunflower_crop",
+    "dohy:soy_crop",
+    "dohy:fonio_crop",
+    "dohy:sorghum_crop",
+    "dohy:kamut_crop"
+  ]
+}

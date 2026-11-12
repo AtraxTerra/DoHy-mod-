@@ -69,6 +69,8 @@
   "tooltip.dohy.sunflower_bread.1": "Vol de vigueur I, 1 min",
   "item.dohy.miner_bread": "Pain du mineur",
   "tooltip.dohy.miner_bread.1": "Flair du mineur, 5 min",
+  "item.dohy.gingerbread": "Pain d'epices",
+  "tooltip.dohy.gingerbread.1": "Regeneration I 10 s, Resistance I 1 min  -  +2 coeurs",
   "item.dohy.fonio_bread": "Pain de fonio",
   "tooltip.dohy.fonio_bread.1": "Absorption I et Dernier rempart, 30 s  -  +2 coeurs",
   "item.dohy.sorghum_bread": "Pain de sorgho",

@@ -255,6 +255,7 @@ BREADS = [
     ("soy_bread", "Pain de soja", "Soy Bread", 0x9BBF4A, False, None),
     ("sunflower_bread", "Pain de tournesol", "Sunflower Bread", 0xF6C21E, False, 0x3A2A16),
     ("miner_bread", "Pain du mineur", "Miner's Bread", WHEAT_HEAD, False, 0x4FD0E0),
+    ("gingerbread", "Pain d'epices", "Gingerbread", 0x7A3F12, False, 0xFFF3D6),
     ("fonio_bread", "Pain de fonio", "Fonio Bread", 0xF1EEDC, True, None),
     ("sorghum_bread", "Pain de sorgho", "Sorghum Bread", 0xB2452F, True, None),
     ("kamut_bread", "Pain de kamut", "Kamut Bread", 0xF0A63A, True, None),
@@ -269,6 +270,7 @@ BREAD_LORE_FR = {
     "soy_bread": ["Regeneration II, 5 s  -  +1,5 coeur"],
     "sunflower_bread": ["Vol de vigueur I, 1 min"],
     "miner_bread": ["Flair du mineur, 5 min"],
+    "gingerbread": ["Regeneration I 10 s, Resistance I 1 min  -  +2 coeurs"],
     "fonio_bread": ["Absorption I et Dernier rempart, 30 s  -  +2 coeurs"],
     "sorghum_bread": ["Force II, Rapidite II, Absorption I, 2 min  -  +2 coeurs",
                       "Regeneration II 30 s  -  Vol de vigueur II 1 min"],
@@ -282,6 +284,7 @@ BREAD_LORE_EN = {
     "soy_bread": ["Regeneration II, 5 s  -  +1.5 hearts"],
     "sunflower_bread": ["Life Steal I, 1 min"],
     "miner_bread": ["Prospecting, 5 min"],
+    "gingerbread": ["Regeneration I 10 s, Resistance I 1 min  -  +2 hearts"],
     "fonio_bread": ["Absorption I and Last Stand, 30 s  -  +2 hearts"],
     "sorghum_bread": ["Strength II, Speed II, Absorption I, 2 min  -  +2 hearts",
                       "Regeneration II 30 s  -  Life Steal II 1 min"],
@@ -1002,6 +1005,20 @@ def agriculture():
             "key": {"I": "minecraft:iron_ingot", "S": shell, "C": core, "R": "minecraft:redstone_block"},
             "result": {"id": "%s:%s" % (NS, name), "count": 1},
         })
+
+    # les farines et les pains, pour les contrats de production ; les cultures de cereales, pour ceux de recolte
+    write("data/%s/tags/item/flours.json" % NS, {
+        "replace": False,
+        "values": ["%s:wheat_flour" % NS] + ["%s:%s_flour" % (NS, cereal[0]) for cereal in CEREALS],
+    })
+    write("data/%s/tags/item/breads.json" % NS, {
+        "replace": False,
+        "values": ["%s:%s" % (NS, bread[0]) for bread in BREADS],
+    })
+    write("data/%s/tags/block/cereal_crops.json" % NS, {
+        "replace": False,
+        "values": ["%s:%s_crop" % (NS, cereal[0]) for cereal in CEREALS],
+    })
 
     # ce qu'une mangeoire et un biogenerateur acceptent : les grains d'ici, et le ble
     write("data/%s/tags/item/cereals.json" % NS, {

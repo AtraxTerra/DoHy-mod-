@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -114,6 +115,15 @@ public class AgriMachineBlock extends BaseEntityBlock {
                 machine.serverTick();
             }
         };
+    }
+
+    /** Celui qui pose la machine en est le proprietaire : ce qu'elle produit seule compte pour ses contrats. */
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (placer instanceof ServerPlayer player && level.getBlockEntity(pos) instanceof AgriMachineBlockEntity machine) {
+            machine.setOwner(player);
+        }
     }
 
     /** Le biogenerateur se charge une cereale a la main ; les deux autres n'ont rien a recevoir ainsi. */

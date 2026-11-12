@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "dohy:wheat_flour",
+    "dohy:corn_flour",
+    "dohy:barley_flour",
+    "dohy:oat_flour",
+    "dohy:rye_flour",
+    "dohy:sunflower_flour",
+    "dohy:soy_flour",
+    "dohy:fonio_flour",
+    "dohy:sorghum_flour",
+    "dohy:kamut_flour"
+  ]
+}

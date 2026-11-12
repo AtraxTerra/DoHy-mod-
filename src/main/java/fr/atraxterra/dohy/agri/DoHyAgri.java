@@ -23,6 +23,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
+import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -52,6 +54,12 @@ public final class DoHyAgri {
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, DoHy.MOD_ID);
     private static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DoHy.MOD_ID);
+
+    /** Les farines et les pains, pour les contrats de production. */
+    public static final TagKey<Item> FLOURS =
+            TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "flours"));
+    public static final TagKey<Item> BREADS_TAG =
+            TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "breads"));
 
     /** Tout ce qu'une mangeoire et un biogenerateur acceptent : les grains d'ici et le ble. */
     public static final TagKey<Item> CEREALS =
@@ -163,12 +171,18 @@ public final class DoHyAgri {
     }
 
     /**
-     * L'energie des trois machines, offerte sur toutes leurs faces : c'est par
-     * la que les cables de NTM NEXT — et de tout mod qui parle FE — les
-     * trouvent.
+     * Ce que les trois machines offrent aux autres mods, sur toutes leurs faces.
+     *
+     * <p>L'energie : c'est par la que les cables de NTM NEXT — et de tout mod
+     * qui parle FE — les trouvent. L'inventaire : les entonnoirs le lisent
+     * directement, mais les tuyaux et convoyeurs des mods passent par cette
+     * capacite, avec les memes regles de faces (dessous pour sortir, ailleurs
+     * pour entrer).
      */
     private static void onCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, MACHINE_TYPE.get(), (machine, side) -> machine.energy());
+        event.registerBlockEntity(Capabilities.Item.BLOCK, MACHINE_TYPE.get(), (machine, side) ->
+                side == null ? VanillaContainerWrapper.of(machine) : new WorldlyContainerWrapper(machine, side));
     }
 
     /** L'onglet, dans l'ordre de la filiere : semences, grains, farines, pains, elevage, machines. */
