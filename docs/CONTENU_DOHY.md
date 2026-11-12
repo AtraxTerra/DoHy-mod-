@@ -271,6 +271,75 @@ Les grains, les farines, les pains, la crème et le saindoux sont au shop, ongle
 - `tools/dohy_assets.py` dessine tout ; `tools/check_agri_prices.py` (CI) vérifie qu'aucune
   recette ne devient rentable en achetant ses ingrédients au cours le plus bas.
 
+## La Terre (une carte du monde réel)
+
+DoHy sait jouer sur une carte de la Terre faite d'avance (une carte WorldPainter, par exemple) :
+il dit dans quel pays on se trouve, lâche le joueur au hasard sur une terre, et pose les minerais
+là où le monde réel les exploite. **Rien de cela n'existe dans un monde ordinaire** : c'est un
+datapack, posé dans la sauvegarde de la carte, qui l'allume.
+
+### Le datapack d'une carte
+
+Il remplace `data/dohy/earth/earth.json` (livré éteint par le mod) par le **calage** de sa carte
+et fournit la grille des pays :
+
+- `projection` (`miller` ou `equirectangular`), `blocks_per_degree`, `origin_x` (le x du méridien de
+  Greenwich), `equator_z` (le z de l'équateur) ;
+- `grid` : un fichier binaire compressé, une case pour quelques blocs, deux octets par case (le
+  numéro du pays ; le bit de poids fort marque des eaux côtières) ;
+- `countries` : numéro, code à trois lettres, nom, teinte de carte.
+
+Le datapack de la carte **Earth24k** est sur la branche `datapack-terre` du dépôt. Calage mesuré
+sur la carte elle-même : projection de Miller, 68,6755 blocs par degré, Greenwich en x = 1,33,
+équateur en z = 700,35 — 99 % de concordance avec les côtes de Natural Earth (hors Antarctique).
+La grille des 256 pays et territoires vient de Natural Earth (domaine public), une case pour
+8 blocs.
+
+### Ce que ça change en jeu
+
+- **Le pays.** Une fois par seconde, le mod regarde où est le joueur. Au passage d'une frontière,
+  un titre s'affiche (« Allemagne — Tu quittes : France ») avec une ligne dans le chat ; en haute
+  mer, « Eaux internationales ». Un pays ne s'annonce qu'après deux relevés de suite : longer une
+  frontière ne fait pas clignoter l'écran. Les eaux à moins de 32 blocs d'une côte sont celles du
+  pays ; au sud du 60ᵉ parallèle, tout est l'Antarctique.
+- **Le saut.** Au spawn, derrière la plateforme d'arrivée, une dalle porte **la carte du monde**
+  en blocs (un pixel pour 232 blocs de la carte, chaque pays d'une des sept teintes d'une carte
+  politique). On y marche : la barre d'action dit le pays qu'on a sous les pieds. Un **puits** y
+  est ouvert dans l'Atlantique : qui y saute est lâché 96 blocs au-dessus d'une terre tirée au
+  hasard — la même chance pour chaque parcelle de terre du globe — et descend en chute lente ; la
+  réception ne blesse pas. Le point est vérifié avant le saut : jamais sur l'eau.
+- **Les gisements** (`data/dohy/earth/deposits.json`, écrit par `tools/earth_deposits.py`).
+  28 ressources posées par pays ou par rectangle du globe : l'uranium au Kazakhstan, en Australie,
+  au Niger, dans la Saskatchewan ; le pétrole dans le Golfe, en Sibérie occidentale, au Texas et
+  sous la mer du Nord ; le diamant au Botswana et en Iakoutie ; le lapis en Afghanistan…
+  - Les métaux courants de NTM NEXT (aluminium, titane, plomb, soufre, salpêtre, tungstène,
+    fluorine, béryllium) ont assez de pays pour qu'il y en ait sur chaque continent ; les
+    ressources stratégiques (uranium, thorium, terres rares, lithium, cobalt, coltan) en ont peu.
+  - Les filons sont posés **à l'arrivée du chunk**, pas à sa génération : une carte faite d'avance
+    a déjà ses chunks sur le disque. Chaque chunk servi en garde la marque ; le tirage est fixé
+    par la graine et la place du chunk. Un minerai d'un mod absent est ignoré.
+- **Ce que le datapack retire.** Sur la carte, l'or, le diamant, l'émeraude, le lapis et la
+  redstone du jeu ne sont plus générés partout (`neoforge:remove_features`) : ils viennent des
+  gisements, et de la dimension du Mineur. Les minerais d'overworld de NTM NEXT sont coupés par
+  son propre interrupteur (`hbm/world_config/worldgen.json`) et ne viennent plus que des
+  gisements. Le charbon, le fer et le cuivre restent partout.
+
+### Les cartes WorldPainter en 26.2
+
+Une carte dont les chunks attendent leur décoration est enregistrée à l'étape `liquid_carvers`.
+Cette étape n'existe plus : en 26.2 elle se lit `empty`, et le jeu repasse sa propre génération
+par-dessus le chunk dessiné (essayé sur un chunk copié à cette étape : son biome change et la
+moitié de ses blocs aussi). `mixin/SerializableChunkDataMixin` renomme l'étape en `carvers` dans
+les données du chunk avant leur lecture : le jeu reprend à la décoration.
+
+### Code
+
+- `earth/` : `EarthData` (calage, grille, pays), `EarthEvents` (chargement avant les mondes,
+  frontières, file des gisements), `EarthJump` (le saut), `EarthDeposits` (la table et la pose),
+  `DoHyEarth` (la marque des chunks).
+- `spawn/SpawnBuilder.worldMap` : la dalle et le puits ; le spawn est redessiné quand une carte de
+  la Terre apparaît ou disparaît (sa version vaut alors celle du dessin plus mille).
+
 ## Le spawn (dimension `dohy:spawn`)
 
 Un lieu à part, comme le spawn des serveurs dont le mod s'inspire : on y vient ouvrir ses box et
