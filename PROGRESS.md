@@ -175,6 +175,47 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 12) — la Terre : zones irradiées et bases de lancement
+
+**Demande** : « Avec NTM NEXT et hbmspace : 6. Zones irradiées réelles. Tchernobyl et Fukushima en
+zone de radiation NTM, avec des minerais rares en récompense du risque. 7. Bases de lancement. Les
+fusées de hbmspace ne décollent que depuis Baïkonour, Cap Canaveral, Kourou ou Jiuquan. » Puis :
+« Et ensuite le 1. Pays à prendre » (lot suivant).
+Description : `docs/CONTENU_DOHY.md`, sections « Les zones irradiées » et « Les bases de
+lancement » ; chiffrage : `docs/BALANCE.md` § 6 octodecies.
+
+**Lu dans les sources** (sans rien exécuter) : NTM NEXT 1.0.3 (`Warfactory-Official/ntm-next`)
+irradie les biomes par des données (`hbm:biome_radiation` : `targets`, `rad_per_second`,
+`wet_multiplier`) et les blocs par d'autres (`hbm:rad_source`) ; 1 000 RAD tuent. NTM NEXT: Space
+(`Warfactory-Official/ntm-next-space`, mod `hbmspace`) fait décoller ses fusées d'un pas de tir
+(`hbmspace:launch_pad_rocket`) ; ses autres lanceurs sont `transporter_rocket`,
+`orbital_station_launcher` et `dyson_launcher`. Aucun des deux n'est une dépendance de compilation.
+
+**Fait** (`feat/terre-lieux`, sur `feat/terre`) :
+- `earth/EarthSites` : six lieux par latitude et longitude (`sites.json`, écrit par
+  `tools/earth_deposits.py`), servis à l'arrivée des chunks (marque `earth_sites`).
+- Zones : biomes `dohy:exclusion_zone` et `dohy:exclusion_core` posés sur les terres, irradiés par
+  NTM NEXT via `data/dohy/hbm/biome_radiation/` (0,5 et 4 RAD/s) ; au cœur, la terre et les arbres
+  morts de NTM NEXT ; au réacteur, une enceinte éventrée et un tas de corium ; cinq gisements de
+  Sellafield réservés aux zones (champ `sites` des gisements).
+- Bases : une aire de béton par base, et la pose des quatre lanceurs refusée ailleurs sur la carte,
+  avec la base la plus proche, sa distance et sa direction.
+- Un titre à l'entrée d'un lieu.
+- Les centres sont ceux du chunk sec le plus proche, dans le bon pays, sur Earth24k : la centrale
+  de Tchernobyl tombait dans le chunk de la Pripiat (et un premier choix en Biélorussie), Cap
+  Canaveral et Fukushima en mer.
+
+**Vérifié en jeu** (client de CI, sans NTM NEXT ni Space : ni l'un ni l'autre n'a de jar publié
+que la CI puisse prendre) : les deux biomes enregistrés et posés (cœur à 10 blocs, zone à 25,
+plaine hors zone, mer intacte), herbe rousse au cœur ; aire de Baïkonour (152 bétons, cercle
+jaune, étiquette) ; titres d'entrée ; refus de pose loin d'une base avec « La plus proche :
+Baikonour, a 4188 blocs a l'est », et pose acceptée sur l'aire — essayés avec une pierre d'aimant
+inscrite comme lanceur, pour le test seulement.
+
+**Non vérifié** : tout ce qui demande NTM NEXT — la dose réelle dans les biomes, la terre morte,
+le corium, les minerais de Sellafield — et Space (les vrais blocs de lanceur, et le jar 1.0.0 du
+joueur, quand les sources lues sont en 0.1.0).
+
 ### 2026-11-12 (suite 11) — la Terre : pays, saut, gisements, carte du monde au spawn
 
 **Demande** : sur la carte `Earth24kChaosCubed` (WorldPainter) de l'instance du joueur, une
