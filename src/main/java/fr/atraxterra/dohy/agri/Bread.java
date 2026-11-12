@@ -36,15 +36,16 @@ public enum Bread {
     private final String key;
     private final String label;
     private final int nutrition;
-    private final int hearts;
+    /** Vie rendue a la bouchee, en demi-coeurs. */
+    private final int heal;
     private final Rarity rarity;
     private final int loreLines;
 
-    Bread(String key, String label, int nutrition, int hearts, Rarity rarity, int loreLines) {
+    Bread(String key, String label, int nutrition, int heal, Rarity rarity, int loreLines) {
         this.key = key;
         this.label = label;
         this.nutrition = nutrition;
-        this.hearts = hearts;
+        this.heal = heal;
         this.rarity = rarity;
         this.loreLines = loreLines;
     }
@@ -105,8 +106,8 @@ public enum Bread {
 
     /** Ce que le pain fait a celui qui vient de le manger, en plus de le nourrir. */
     public void apply(LivingEntity eater) {
-        if (hearts > 0) {
-            eater.heal(hearts * 2.0f);
+        if (heal > 0) {
+            eater.heal(heal);
         }
         if (this == KAMUT) {
             // Le pain qui soigne : il leve ce qui fait du mal, puis en protege.
