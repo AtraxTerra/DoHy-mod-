@@ -95,12 +95,13 @@ public final class DoHyCommand {
         boolean crates = Crates.load(source.getServer());
         boolean economy = EconomyConfig.load(source.getServer());
         boolean museum = MuseumConfig.load(source.getServer());
+        boolean notations = fr.atraxterra.dohy.faction.NotationConfig.load(source.getServer());
         boolean upgrades = UpgradeConfig.load(source.getServer());
         boolean jobs = JobConfig.load(source.getServer());
         boolean auction = fr.atraxterra.dohy.auction.AuctionConfig.load(source.getServer());
 
         if (prices && tiers && progression && contracts && crates && economy && museum && upgrades && jobs
-                && auction) {
+                && auction && notations) {
             source.sendSuccess(() -> Component.literal(
                             "Recharge : " + Prices.book().size() + " items, paliers de collection a jour.")
                     .withStyle(ChatFormatting.GREEN), true);
@@ -115,7 +116,8 @@ public final class DoHyCommand {
                 + (economy ? "economie ok" : "economie en echec") + ", "
                 + (museum ? "musee ok" : "musee en echec") + ", "
                 + (upgrades ? "ameliorations ok" : "ameliorations en echec") + ", "
-                + (jobs ? "metiers ok" : "metiers en echec")
+                + (jobs ? "metiers ok" : "metiers en echec") + ", "
+                + (notations ? "notations ok" : "notations en echec")
                 + "). Les anciennes donnees restent en service. Voir les logs."));
         return 0;
     }

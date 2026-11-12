@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.contract;
 
+import fr.atraxterra.dohy.faction.FactionNotation;
 import fr.atraxterra.dohy.palamod.miner.GodVillager;
 import fr.atraxterra.dohy.util.RealClock;
 import net.minecraft.ChatFormatting;
@@ -241,6 +242,7 @@ public final class TrixiumOrder {
         }
         player.sendSystemMessage(line);
         ContractApi.grantGlobalXp(player, config.globalXp(), "commande de trixium livree");
+        FactionNotation.count(player, FactionNotation.ORDERS);
 
         if (summon) {
             player.sendSystemMessage(Component.literal(goal + " commandes de suite : le God Villager vient a toi.")

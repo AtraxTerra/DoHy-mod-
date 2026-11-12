@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.contract;
 
 import fr.atraxterra.dohy.DoHyAttachments;
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.faction.FactionNotation;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.upgrade.UpgradeApi;
@@ -256,6 +257,7 @@ public final class ContractApi {
 
         long money = rewardFor(player, contract);
         long balance = Economy.credit(player, money);
+        FactionNotation.count(player, contract.weekly() ? FactionNotation.WEEKLY : FactionNotation.DAILY);
 
         player.level().playSound(null, player.blockPosition(),
                 SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.8f, 1.0f);

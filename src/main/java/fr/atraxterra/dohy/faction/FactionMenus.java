@@ -161,7 +161,8 @@ public final class FactionMenus {
                     Card.of(leagueIcon(league), "Ligue " + league.label(), List.of(
                                     MoneyFormat.exact(data.ranking().elo()) + " ELO",
                                     "Semaine : +" + MoneyFormat.exact(data.ranking().weekElo())))
-                            .accent(league.color()).action("ranking|voir le classement"));
+                            .accent(league.color()).action("ranking|voir le classement"),
+                    notationCard(player));
 
             List<String> homeLines = new ArrayList<>();
             if (perks.homes() <= 0) {
@@ -197,6 +198,7 @@ public final class FactionMenus {
                 case "claims" -> Claims.INSTANCE.open(player);
                 case "bank" -> Bank.INSTANCE.open(player);
                 case "ranking" -> Ranking.INSTANCE.open(player);
+                case "notation" -> Notation.INSTANCE.open(player);
                 case "settings" -> Settings.INSTANCE.open(player);
                 case "tree" -> FactionTreeMenus.Tree.INSTANCE.open(player);
                 case "bases" -> EnemyBaseMenu.INSTANCE.open(player);
@@ -515,6 +517,98 @@ public final class FactionMenus {
             return new MenuView(id(), "Classement", "Les events et les raids rapportent l'ELO", stats, List.of(
                     new MenuView.Section("LIGUES", "upgrade", MenuView.GRID, leagues),
                     new MenuView.Section("SEMAINE", "resources", MenuView.GRID, week)), true);
+        }
+
+        @Override
+        protected void card(ServerPlayer player, String key, int button) {
+        }
+    }
+
+    // -- Notation ---------------------------------------------------------------
+
+    private static final Item[] CRITERION_ICONS = {Items.CLOCK, Items.EMERALD, Items.IRON_PICKAXE, Items.PAPER,
+            Items.IRON_SWORD, Items.PAINTING, Items.GOLD_BLOCK};
+
+    /** La carte de la page de faction : la note en cours et la bourse qu'elle vaudrait. */
+    private static Card notationCard(ServerPlayer player) {
+        FactionNotation.Score score = FactionNotation.current(player);
+        return Card.of(new ItemStack(Items.WRITABLE_BOOK), "Notation " + score.grade(), List.of(
+                        FactionNotation.points(score.total()) + " / " + FactionNotation.points(score.max())
+                                + " cette semaine",
+                        "Lundi : +" + MoneyFormat.shortForm(score.bourse()) + " $"))
+                .accent(0xFF8F5BEA).progress(Math.round(score.total()), Math.round(score.max()))
+                .action("notation|voir la notation");
+    }
+
+    /** La notation : la semaine en cours critere par critere, et la derniere semaine notee. */
+    public static final class Notation extends Tab {
+        public static final Notation INSTANCE = new Notation();
+
+        private static final List<List<String>> HELP = List.of(
+                List.of("Chaque jour ou tu te connectes compte", "Repart de zero le lundi"),
+                List.of("Ventes, primes, contrats et butins de la semaine", "Chaque x10 rapporte autant de points",
+                        "Les retraits de la banque de faction ne comptent pas"),
+                List.of("La somme des niveaux de tes metiers", "Ne redescend jamais"),
+                List.of("Contrats du jour, contrat de la semaine", "et commandes de trixium termines"),
+                List.of("Les victoires ELO de la semaine :", "bases ennemies pillees, events gagnes"),
+                List.of("Moitie musee : pieces exposees", "Moitie territoire : claims poses"),
+                List.of("La banque de faction au moment de la notation", "Chaque x10 rapporte autant de points"));
+
+        private Notation() {
+            super("faction_notation");
+        }
+
+        @Override
+        public MenuView view(ServerPlayer player) {
+            FactionData data = FactionApi.data(player);
+            FactionNotation.Score score = FactionNotation.current(player);
+            List<Card> week = new ArrayList<>();
+            for (FactionNotation.Line line : score.lines()) {
+                int index = line.criterion().ordinal();
+                boolean full = line.points() >= line.max();
+                Card card = Card.of(new ItemStack(CRITERION_ICONS[index]), line.criterion().label(), List.of(
+                                FactionNotation.points(line.points()) + " / " + FactionNotation.points(line.max()),
+                                line.measure()))
+                        .accent(0xFF8F5BEA).progress(Math.round(line.points() * 10.0d), Math.round(line.max() * 10.0d))
+                        .tooltip(HELP.get(index));
+                week.add(full ? card.state(MenuView.DONE) : card);
+            }
+
+            List<Card> last = new ArrayList<>();
+            if (FactionNotation.hasLast(data)) {
+                List<String> detail = new ArrayList<>();
+                for (FactionNotation.Criterion criterion : FactionNotation.Criterion.values()) {
+                    detail.add(criterion.label() + " : " + FactionNotation.points(
+                            FactionNotation.lastPoints(data, criterion)));
+                }
+                double total = FactionNotation.lastTotal(data);
+                last.add(Card.of(new ItemStack(Items.WRITTEN_BOOK), "Semaine close le "
+                                + DATE.format(java.time.LocalDate.ofEpochDay(FactionNotation.lastMonday(data))),
+                        List.of(FactionNotation.points(total) + " / " + FactionNotation.points(score.max()) + "  ·  "
+                                        + NotationConfig.config().grade(total),
+                                "Bourse : +" + MoneyFormat.exact(FactionNotation.lastBourse(data)) + " $"))
+                        .accent(0xFFFAC400).tooltip(detail));
+                last.add(Card.of(new ItemStack(Items.NETHER_STAR), "Meilleure semaine", List.of(
+                                FactionNotation.points(FactionNotation.best(data)) + " / "
+                                        + FactionNotation.points(score.max()),
+                                FactionNotation.count(data) + " semaine(s) notee(s)"))
+                        .accent(0xFF27C4E8));
+            } else {
+                last.add(Card.of(new ItemStack(Items.BOOK), "Pas encore notee", List.of(
+                        "La premiere notation tombe lundi", "avec sa bourse")).state(MenuView.DISABLED));
+            }
+            last.add(Card.of(new ItemStack(Items.CLOCK), "Lundi minuit", List.of(
+                            "Dans " + duration(FactionWeekly.untilReset()), "Note et bourse a la banque de faction"))
+                    .accent(0xFFFAC400));
+
+            List<MenuView.Stat> stats = List.of(
+                    new MenuView.Stat("NOTE", FactionNotation.points(score.total()) + " / "
+                            + FactionNotation.points(score.max()), 0xFFFFFFFF),
+                    new MenuView.Stat("RANG", score.grade(), 0xFF8F5BEA),
+                    new MenuView.Stat("BOURSE", MoneyFormat.shortForm(score.bourse()), 0xFFFAC400));
+            return new MenuView(id(), "Notation", "Une note chaque lundi, une bourse a la banque de faction", stats,
+                    List.of(new MenuView.Section("CETTE SEMAINE", "resources", MenuView.GRID, week),
+                            new MenuView.Section("BILAN", "upgrade", MenuView.GRID, last)), true);
         }
 
         @Override
