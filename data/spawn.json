@@ -1,0 +1,13 @@
+{
+  "_comment": "Reglages du spawn (dimension dohy:spawn). Lus au demarrage du monde.",
+  "_first_join": "Un joueur qui arrive dans le monde pour la premiere fois est envoye au spawn. /spawn le ramene a son point d'apparition.",
+  "first_join": true,
+  "_respawn": "Apres une mort, un joueur sans lit ni ancre reapparait au spawn au lieu du point d'apparition du monde.",
+  "respawn": true,
+  "daily": {
+    "_comment": "La recompense quotidienne de la borne RECOMPENSE. Un montant par jour de serie ; apres le dernier, la serie reprend au premier. Un jour saute remet la serie a zero. Le jour change a la meme heure que les contrats (contracts.json, reset.daily_hour).",
+    "amounts": [2000, 3000, 4000, 5000, 6000, 7000, 15000],
+    "_level_bonus": "Part ajoutee par niveau global, comme la formule des contrats : montant * (1 + niveau * level_bonus). Une semaine complete vaut 42 000 $ au niveau 0, soit environ 22 % de ce que rapportent les trois contrats quotidiens sur la meme semaine.",
+    "level_bonus": 0.35
+  }
+}

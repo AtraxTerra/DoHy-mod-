@@ -45,6 +45,11 @@ public class HologramBlockEntity extends BlockEntity {
         super(DoHySpawn.HOLOGRAM_TYPE.get(), pos, state);
     }
 
+    /** Le texte affiche. */
+    public String text() {
+        return text;
+    }
+
     /** Regle le texte ; l'affichage se refait au tick suivant. */
     public void set(String text, int color, float scale) {
         this.text = text;
@@ -72,6 +77,7 @@ public class HologramBlockEntity extends BlockEntity {
         ComponentSerialization.CODEC.encodeStart(server.registryAccess().createSerializationContext(NbtOps.INSTANCE),
                 line).result().ifPresent(tag -> data.put("text", tag));
         data.putString("billboard", "center");
+        data.putInt("line_width", 320);
         data.putInt("background", 0x90101014);
         data.putBoolean("shadow", true);
         CompoundTag transformation = new CompoundTag();

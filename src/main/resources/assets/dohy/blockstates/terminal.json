@@ -104,6 +104,36 @@
     "facing=west,kind=return": {
       "model": "dohy:block/terminal_return",
       "y": 270
+    },
+    "facing=north,kind=daily": {
+      "model": "dohy:block/terminal_daily"
+    },
+    "facing=east,kind=daily": {
+      "model": "dohy:block/terminal_daily",
+      "y": 90
+    },
+    "facing=south,kind=daily": {
+      "model": "dohy:block/terminal_daily",
+      "y": 180
+    },
+    "facing=west,kind=daily": {
+      "model": "dohy:block/terminal_daily",
+      "y": 270
+    },
+    "facing=north,kind=portals": {
+      "model": "dohy:block/terminal_portals"
+    },
+    "facing=east,kind=portals": {
+      "model": "dohy:block/terminal_portals",
+      "y": 90
+    },
+    "facing=south,kind=portals": {
+      "model": "dohy:block/terminal_portals",
+      "y": 180
+    },
+    "facing=west,kind=portals": {
+      "model": "dohy:block/terminal_portals",
+      "y": 270
     }
   }
 }

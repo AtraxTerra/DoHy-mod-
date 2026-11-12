@@ -37,7 +37,9 @@ public class SpawnTerminalBlock extends Block {
         BANK("bank", "BANQUE", 0x36A3FF),
         CONTRACTS("contracts", "CONTRATS", 0x7C9BFF),
         MUSEUM("museum", "MUSEE", 0xEC4FB5),
-        RETURN("return", "RETOUR", 0xFF5A4A);
+        RETURN("return", "RETOUR", 0xFF5A4A),
+        DAILY("daily", "RECOMPENSE", 0xFFD83A),
+        PORTALS("portals", "DONJONS", 0xC77DFF);
 
         private final String name;
         private final String label;
@@ -119,6 +121,8 @@ public class SpawnTerminalBlock extends Block {
             case CONTRACTS -> ContractsController.INSTANCE.open(server);
             case MUSEUM -> MuseumController.INSTANCE.open(server);
             case RETURN -> SpawnApi.leave(server);
+            case DAILY -> SpawnDaily.INSTANCE.open(server);
+            case PORTALS -> SpawnPortals.INSTANCE.open(server);
         }
         return InteractionResult.SUCCESS;
     }
