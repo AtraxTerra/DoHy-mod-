@@ -1,6 +1,9 @@
 package fr.atraxterra.dohy.earth;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
@@ -36,6 +39,8 @@ public final class EarthEvents {
     /** Un pays ne s'annonce qu'apres deux releves de suite : longer une frontiere ne fait pas clignoter l'ecran. */
     private static final Map<UUID, Integer> PENDING = new ConcurrentHashMap<>();
     private static final int SEA = 0;
+    /** Le lieu ou chaque joueur a ete vu ; la chaine vide hors de tout lieu. */
+    private static final Map<UUID, String> SITE = new ConcurrentHashMap<>();
 
     private EarthEvents() {
     }
@@ -44,15 +49,18 @@ public final class EarthEvents {
     public static void onAboutToStart(ServerAboutToStartEvent event) {
         EarthData.load(event.getServer());
         EarthDeposits.load(event.getServer());
+        EarthSites.load(event.getServer());
     }
 
     @SubscribeEvent
     public static void onServerStopped(ServerStoppedEvent event) {
         EarthData.unload();
         EarthDeposits.clear();
+        EarthSites.clear();
         EarthJump.clear();
         LAST.clear();
         PENDING.clear();
+        SITE.clear();
     }
 
     @SubscribeEvent
@@ -60,6 +68,7 @@ public final class EarthEvents {
         UUID id = event.getEntity().getUUID();
         LAST.remove(id);
         PENDING.remove(id);
+        SITE.remove(id);
         EarthJump.forget(id);
     }
 
@@ -69,6 +78,7 @@ public final class EarthEvents {
         if (earth != null && event.getLevel() instanceof ServerLevel level && earth.covers(level)
                 && event.getChunk() instanceof LevelChunk chunk) {
             EarthDeposits.arrived(chunk);
+            EarthSites.arrived(chunk);
         }
     }
 
@@ -80,6 +90,8 @@ public final class EarthEvents {
         }
         ServerLevel level = event.getServer().getLevel(earth.dimension());
         if (level != null) {
+            // les lieux d'abord : leurs gisements comptent sur des biomes et une surface deja poses
+            EarthSites.tick(level);
             EarthDeposits.tick(level, earth);
         }
     }
@@ -100,8 +112,10 @@ public final class EarthEvents {
         if (earth == null || !earth.covers(player.level())) {
             LAST.remove(player.getUUID());
             PENDING.remove(player.getUUID());
+            SITE.remove(player.getUUID());
             return;
         }
+        site(player);
         EarthData.Country country = earth.countryAt(player.getBlockX(), player.getBlockZ());
         int now = country == null ? SEA : country.id();
         Integer before = LAST.get(player.getUUID());
@@ -116,6 +130,66 @@ public final class EarthEvents {
         PENDING.remove(player.getUUID());
         LAST.put(player.getUUID(), now);
         announce(player, earth, before, country);
+    }
+
+    /** Les lieux : une zone irradiee ou une base de lancement s'annoncent a l'entree, comme un pays. */
+    private static void site(ServerPlayer player) {
+        EarthSites.Placed site = EarthSites.at(player.getX(), player.getZ());
+        String now = site == null ? "" : site.site().id();
+        String before = SITE.put(player.getUUID(), now);
+        if (before == null || before.equals(now)) {
+            return;
+        }
+        if (site == null) {
+            player.sendSystemMessage(Component.literal("Tu quittes le lieu.").withStyle(ChatFormatting.GRAY), true);
+            return;
+        }
+        boolean radiation = site.site().irradiated();
+        String detail = radiation
+                ? (ModList.get().isLoaded("hbm") ? "Zone irradiee : combinaison et RadAway conseillees"
+                : "Zone d'exclusion")
+                : "Base de lancement : les fusees decollent d'ici";
+        player.connection.send(new ClientboundSetTitlesAnimationPacket(8, 60, 16));
+        player.connection.send(new ClientboundSetTitleTextPacket(Component.literal(site.site().name())
+                .withStyle(radiation ? ChatFormatting.RED : ChatFormatting.YELLOW)));
+        player.connection.send(new ClientboundSetSubtitleTextPacket(
+                Component.literal(detail).withStyle(ChatFormatting.GRAY)));
+        player.sendSystemMessage(Component.literal(site.site().name() + " : " + detail + ".")
+                .withStyle(radiation ? ChatFormatting.RED : ChatFormatting.YELLOW));
+        // le titre du lieu passe devant celui du pays de la meme seconde
+        PENDING.remove(player.getUUID());
+        EarthData earth = EarthData.get();
+        EarthData.Country country = earth == null ? null : earth.countryAt(player.getBlockX(), player.getBlockZ());
+        LAST.put(player.getUUID(), country == null ? SEA : country.id());
+    }
+
+    /**
+     * Les pas de tir des fusees ne se posent que sur une base de lancement.
+     * Ailleurs sur la carte, la pose est refusee — l'objet reste au joueur —
+     * et il apprend ou est la base la plus proche. Hors de la carte (la Lune,
+     * Mars…), rien ne change.
+     */
+    @SubscribeEvent
+    public static void onPlace(BlockEvent.EntityPlaceEvent event) {
+        EarthData earth = EarthData.get();
+        if (earth == null || !(event.getLevel() instanceof ServerLevel level) || !earth.covers(level)
+                || !EarthSites.isLaunchBlock(event.getPlacedBlock().getBlock())) {
+            return;
+        }
+        BlockPos pos = event.getPos();
+        EarthSites.Placed here = EarthSites.at(pos.getX() + 0.5d, pos.getZ() + 0.5d);
+        if (here != null && here.site().launch()) {
+            return;
+        }
+        event.setCanceled(true);
+        if (event.getEntity() instanceof ServerPlayer player) {
+            EarthSites.Placed base = EarthSites.nearestBase(pos.getX(), pos.getZ());
+            String where = base == null ? "Aucune base de lancement sur cette carte."
+                    : "La plus proche : " + base.site().name() + ", a " + (int) base.distance(pos.getX(), pos.getZ())
+                    + " blocs au " + EarthSites.direction(pos.getX(), pos.getZ(), base) + ".";
+            player.sendSystemMessage(Component.literal("Les fusees ne decollent que d'une base de lancement. " + where)
+                    .withStyle(ChatFormatting.RED));
+        }
     }
 
     /** Le joueur vient d'etre pose dans ce pays par un saut : il le sait deja. */

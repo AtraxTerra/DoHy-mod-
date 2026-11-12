@@ -223,6 +223,21 @@ public final class EarthData {
         return Math.toDegrees(2.5d * Math.atan(Math.exp(0.8d * radians)) - 0.625d * Math.PI);
     }
 
+    /** Le x d'une longitude. */
+    public double x(double longitude) {
+        return config.originX() + longitude * config.blocksPerDegree();
+    }
+
+    /** Le z d'une latitude : la projection, le nord vers les z negatifs. */
+    public double z(double latitude) {
+        double projected = latitude;
+        if (miller) {
+            double radians = Math.toRadians(Math.max(-89.0d, Math.min(89.0d, latitude)));
+            projected = Math.toDegrees(1.25d * Math.log(Math.tan(Math.PI / 4.0d + 0.4d * radians)));
+        }
+        return config.equatorZ() - projected * config.blocksPerDegree();
+    }
+
     /** « 48,9° N  2,3° E ». */
     public String coordinates(double x, double z) {
         double latitude = latitude(z);

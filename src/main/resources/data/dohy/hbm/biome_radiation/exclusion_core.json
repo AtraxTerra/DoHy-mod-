@@ -1,0 +1,5 @@
+{
+  "targets": "dohy:exclusion_core",
+  "rad_per_second": 4.0,
+  "wet_multiplier": 2.0
+}

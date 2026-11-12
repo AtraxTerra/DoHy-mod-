@@ -72,18 +72,21 @@ public final class EarthDeposits {
      * @param deepslate sa forme dans l'ardoise des abimes ; sans elle, le meme bloc
      * @param countries les pays ou il se trouve, par leur code a trois lettres
      * @param boxes     et les rectangles du globe ou il se trouve aussi (une region d'un grand pays)
+     * @param sites     et les lieux de la Terre ou il se trouve ({@link EarthSites}), dans leur rayon
      * @param veins     filons par chunk, en moyenne
      * @param size      blocs d'un filon ; ignore si {@code radius} est pose
      * @param radius    au-dessus de zero : une poche ronde de ce rayon, au lieu d'un filon
      */
     public record Deposit(String id, Identifier ore, Optional<Identifier> deepslate, List<String> countries,
-                          List<Box> boxes, int minY, int maxY, double veins, int size, int radius) {
+                          List<Box> boxes, List<String> sites, int minY, int maxY, double veins, int size,
+                          int radius) {
         static final Codec<Deposit> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("id").forGetter(Deposit::id),
                 Identifier.CODEC.fieldOf("ore").forGetter(Deposit::ore),
                 Identifier.CODEC.optionalFieldOf("deepslate").forGetter(Deposit::deepslate),
                 Codec.STRING.listOf().optionalFieldOf("countries", List.of()).forGetter(Deposit::countries),
                 Box.CODEC.listOf().optionalFieldOf("boxes", List.of()).forGetter(Deposit::boxes),
+                Codec.STRING.listOf().optionalFieldOf("sites", List.of()).forGetter(Deposit::sites),
                 Codec.INT.optionalFieldOf("min_y", -56).forGetter(Deposit::minY),
                 Codec.INT.optionalFieldOf("max_y", 32).forGetter(Deposit::maxY),
                 Codec.doubleRange(0.0d, 64.0d).optionalFieldOf("veins", 1.0d).forGetter(Deposit::veins),
@@ -198,7 +201,7 @@ public final class EarthDeposits {
         double longitude = earth.longitude(centerX);
         int drawn = 0;
         for (Ready rule : ready) {
-            if (!applies(rule, country, latitude, longitude)) {
+            if (!applies(rule, country, latitude, longitude, centerX, centerZ)) {
                 continue;
             }
             RandomSource random = RandomSource.create(level.getSeed()
@@ -213,9 +216,16 @@ public final class EarthDeposits {
         return drawn;
     }
 
-    private static boolean applies(Ready rule, EarthData.Country country, double latitude, double longitude) {
+    private static boolean applies(Ready rule, EarthData.Country country, double latitude, double longitude,
+                                   int x, int z) {
         if (country != null && rule.countries().contains(country.code())) {
             return true;
+        }
+        for (String id : rule.deposit().sites()) {
+            EarthSites.Placed site = EarthSites.byId(id);
+            if (site != null && site.contains(x, z)) {
+                return true;
+            }
         }
         for (Box box : rule.deposit().boxes()) {
             if (box.contains(latitude, longitude)) {
