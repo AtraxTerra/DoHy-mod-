@@ -29,7 +29,10 @@ public final class NationMenu extends MenuController {
 
     public static final NationMenu INSTANCE = new NationMenu();
 
-    /** Combien de voisins a l'ecran : les moins chers. */
+    private static final java.time.format.DateTimeFormatter DATE =
+            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    /** Combien de voisins a l'ecran : les plus proches. */
     private static final int SHOWN = 12;
 
     /** Le pays a rendre, arme par joueur jusqu'a cette date (deux clics). */
@@ -120,10 +123,10 @@ public final class NationMenu extends MenuController {
             long cost = EarthNations.cost(server, target);
             long points = nation.pointsOn(target);
             own.add(Card.of(new ItemStack(Items.IRON_SWORD), EarthNations.countryName(target), List.of(
-                            "Aux mains de " + holder.name(),
+                            "Aux mains " + EarthNations.de(holder.name()),
                             MoneyFormat.exact(points) + " / " + MoneyFormat.exact(cost) + " points"))
                     .accent(color(holder.rival())).badge("CIBLE").progress(points, cost)
-                    .tooltip(List.of("Aux events de faction, " + holder.name() + " est de la partie.",
+                    .tooltip(List.of("Ses defenseurs, " + holder.name() + ", sont de la partie aux events.",
                             "Finis devant eux : l'ELO gagne compte en points.",
                             "Le pays tombe quand ses points sont reunis.",
                             "Clic : renoncer (les points restent acquis)"))
@@ -141,12 +144,16 @@ public final class NationMenu extends MenuController {
         } else {
             EarthNations.Holder holder = EarthNations.holder(server, under.id());
             Card card = Card.of(holder.player() ? FactionMenus.banner(data) : banner(holder.rival()), under.name(),
-                    List.of("Aux mains de " + EarthNations.holderName(player, under.id()),
+                    List.of("Aux mains " + EarthNations.de(EarthNations.holderName(player, under.id())),
                             MoneyFormat.exact(EarthNations.cost(server, under.id())) + " points"))
                     .accent(holder.player() ? 0xFF22E558 : color(holder.rival()));
             if (holder.ownedBy(player.getUUID())) {
                 boolean armed = armed(player, under.id());
-                card = card.badge("A TOI").tooltip(List.of("Deux clics : le rendre a la nation de sa region"))
+                card = Card.of(FactionMenus.banner(data), under.name(), List.of("Aux mains de ta faction",
+                                "Depuis le " + DATE.format(java.time.Instant.ofEpochMilli(holder.held().since())
+                                        .atZone(java.time.ZoneId.systemDefault()))))
+                        .accent(0xFF22E558).badge("A TOI")
+                        .tooltip(List.of("Deux clics : le rendre a la nation de sa region"))
                         .action("abandon:" + under.id() + "|" + (armed ? "confirmer" : "rendre"));
                 if (armed) {
                     card = card.badge("RENDRE ?");
@@ -158,7 +165,7 @@ public final class NationMenu extends MenuController {
             } else {
                 card = card.state(MenuView.DISABLED).tooltip(List.of(holder.player() ? "La faction d'un joueur"
                         : mine.isEmpty() ? "Ton premier pays est celui de ta capitale"
-                        : "Pas voisin de tes terres"));
+                        : "Trop loin de tes terres"));
             }
             here.add(card);
         }
@@ -166,7 +173,8 @@ public final class NationMenu extends MenuController {
         // -- Voisins a prendre
         List<Card> next = new ArrayList<>();
         List<Integer> targets = EarthNations.targets(player);
-        for (int id : targets.subList(0, Math.min(SHOWN, targets.size()))) {
+        int shown = Math.min(SHOWN, targets.size());
+        for (int id : targets.subList(0, shown)) {
             EarthNations.Holder holder = EarthNations.holder(server, id);
             long cost = EarthNations.cost(server, id);
             long points = nation.pointsOn(id);
@@ -212,7 +220,8 @@ public final class NationMenu extends MenuController {
         return new MenuView(id(), "Pays a prendre", "Prends les pays de la Terre aux nations rivales", stats, List.of(
                 new MenuView.Section("TA NATION", "resources", MenuView.GRID, own),
                 new MenuView.Section("ICI", "craft", MenuView.GRID, here),
-                new MenuView.Section("VOISINS A PRENDRE", "upgrade", MenuView.GRID, next),
+                new MenuView.Section(targets.size() > shown ? "VOISINS A PRENDRE (" + shown + " PLUS PROCHES SUR "
+                        + targets.size() + ")" : "VOISINS A PRENDRE", "upgrade", MenuView.GRID, next),
                 new MenuView.Section("NATIONS RIVALES", "resources", MenuView.GRID, rivals)), true);
     }
 
@@ -225,13 +234,13 @@ public final class NationMenu extends MenuController {
         } else if (key.startsWith("target:")) {
             int id = Integer.parseInt(key.substring(7));
             String refusal = EarthNations.target(player, id);
-            report(player, refusal, refusal == null ? "Cible : " + EarthNations.countryName(id) + ", aux mains de "
-                    + EarthNations.holderName(player, id) + "." : "");
+            report(player, refusal, refusal == null ? "Cible : " + EarthNations.countryName(id) + ", aux mains "
+                    + EarthNations.de(EarthNations.holderName(player, id)) + "." : "");
         } else if (key.startsWith("abandon:")) {
             int id = Integer.parseInt(key.substring(8));
             if (armed(player, id)) {
                 ARMED.remove(player.getUUID());
-                report(player, EarthNations.abandon(player, id), EarthNations.countryName(id) + " rendu.");
+                report(player, EarthNations.abandon(player, id), "Pays rendu : " + EarthNations.countryName(id) + ".");
             } else {
                 ARMED.put(player.getUUID(), new long[] {id, System.currentTimeMillis() + 5000L});
             }

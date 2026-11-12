@@ -238,7 +238,7 @@ public final class EarthEvents {
         ChatFormatting tone = ChatFormatting.GRAY;
         if (holder != null) {
             boolean mine = holder.equals("ta faction");
-            detail = "Aux mains de " + holder;
+            detail = "Aux mains " + EarthNations.de(holder);
             tone = mine ? ChatFormatting.GREEN : ChatFormatting.GRAY;
             EarthNations.Nation nation = EarthNations.nation(player);
             if (nation.target() == country.id()) {
@@ -253,7 +253,7 @@ public final class EarthEvents {
         player.connection.send(new ClientboundSetSubtitleTextPacket(
                 Component.literal(detail).withStyle(tone)));
         String line = country == null ? "Tu entres dans les eaux internationales."
-                : "Tu entres en territoire : " + name + (holder == null ? "" : ", aux mains de " + holder) + "."
+                : "Tu entres en territoire : " + name + (holder == null ? "" : ", aux mains " + EarthNations.de(holder)) + "."
                 + (left == null ? "" : " Tu quittes : " + left + ".");
         player.sendSystemMessage(Component.literal(line).withStyle(ChatFormatting.GRAY));
     }

@@ -102,7 +102,7 @@ public final class NationCommand {
                                     }
                                     EarthNations.Holder holder = EarthNations.holder(player.level().getServer(), id);
                                     if (holder.player()) {
-                                        return "Ce pays est deja aux mains de " + holder.name();
+                                        return "Ce pays est deja aux mains " + EarthNations.de(holder.name());
                                     }
                                     EarthNations.conquer(player, id, holder);
                                     return null;
@@ -116,8 +116,8 @@ public final class NationCommand {
         }
         MinecraftServer server = player.level().getServer();
         int target = EarthNations.nation(player).target();
-        FactionApi.tell(player, "Cible : " + EarthNations.countryName(target) + ", aux mains de "
-                + EarthNations.holderName(player, target) + ". Finis devant eux aux events de faction : "
+        FactionApi.tell(player, "Cible : " + EarthNations.countryName(target) + ", aux mains "
+                + EarthNations.de(EarthNations.holderName(player, target)) + ". Finis devant eux aux events de faction : "
                 + MoneyFormat.exact(EarthNations.nation(player).pointsOn(target)) + " / "
                 + MoneyFormat.exact(EarthNations.cost(server, target)) + " points de conquete.", ChatFormatting.GREEN);
         return null;

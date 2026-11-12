@@ -565,6 +565,31 @@ public final class EarthNations {
         return new Holder(country, rival, held);
     }
 
+    /** « de Nordheim », « d'Arcanum », « des Corbeaux », « de ta faction ». */
+    public static String de(String name) {
+        if (name.startsWith("Les ")) {
+            return "des " + name.substring(4);
+        }
+        if (name.startsWith("Le ")) {
+            return "du " + name.substring(3);
+        }
+        if (!name.isEmpty() && "AEIOUYaeiouyÀÂÉÈÊÎÔÛ".indexOf(name.charAt(0)) >= 0) {
+            return "d'" + name;
+        }
+        return "de " + name;
+    }
+
+    /** « a Nordheim », « aux Corbeaux », « au Kraken ». */
+    public static String a(String name) {
+        if (name.startsWith("Les ")) {
+            return "aux " + name.substring(4);
+        }
+        if (name.startsWith("Le ")) {
+            return "au " + name.substring(3);
+        }
+        return "a " + name;
+    }
+
     /** « ta faction », « Nordheim », ou le nom de la faction d'un autre joueur. */
     public static String holderName(ServerPlayer viewer, int country) {
         Holder holder = holder(viewer.level().getServer(), country);
@@ -644,7 +669,7 @@ public final class EarthNations {
         return false;
     }
 
-    /** Les pays qu'on peut viser maintenant, les moins chers d'abord. */
+    /** Les pays qu'on peut viser maintenant, les plus proches de ses terres d'abord. */
     public static List<Integer> targets(ServerPlayer player) {
         MinecraftServer server = player.level().getServer();
         Atlas atlas = atlas(server);
@@ -658,7 +683,26 @@ public final class EarthNations {
                 out.add(id);
             }
         }
-        out.sort(Comparator.comparingLong((Integer id) -> cost(server, id)).thenComparingInt(id -> id));
+        // d'ou l'on part : la capitale, et le cœur de chaque pays tenu
+        List<long[]> homes = new ArrayList<>();
+        Nation nation = nation(player);
+        if (nation.capital() != 0) {
+            homes.add(new long[] {nation.capitalX(), nation.capitalZ()});
+        }
+        for (int id : ledger.of(player.getUUID())) {
+            homes.add(new long[] {atlas.heartX[id], atlas.heartZ[id]});
+        }
+        long[] distance = new long[atlas.cells.length];
+        for (int id : out) {
+            long best = Long.MAX_VALUE;
+            for (long[] home : homes) {
+                long dx = atlas.heartX[id] - home[0];
+                long dz = atlas.heartZ[id] - home[1];
+                best = Math.min(best, dx * dx + dz * dz);
+            }
+            distance[id] = best;
+        }
+        out.sort(Comparator.comparingLong((Integer id) -> distance[id]).thenComparingInt(id -> id));
         return out;
     }
 
@@ -728,7 +772,7 @@ public final class EarthNations {
             return "Ta capitale se deplace dans un pays que tu tiens";
         }
         if (holder.player() && !holder.ownedBy(player.getUUID())) {
-            return country.name() + " est aux mains de " + holder.name() + ", la faction d'un joueur";
+            return country.name() + " est aux mains " + de(holder.name()) + ", la faction d'un joueur";
         }
         Nation nation = nation(player).withCapital(country.id(), player.getBlockX(), player.getBlockZ());
         if (mine.isEmpty()) {
@@ -737,8 +781,8 @@ public final class EarthNations {
         save(player, nation);
         SpawnApi.paintNations(server);
         if (mine.isEmpty()) {
-            FactionApi.tell(player, "Capitale posee : " + country.name() + " sera ton premier pays. Il est aux mains de "
-                    + holder.name() + " : finis devant eux aux events de faction pour reunir "
+            FactionApi.tell(player, "Premier pays a prendre : " + country.name() + ", aux mains " + de(holder.name())
+                    + ". Finis devant eux aux events de faction pour reunir "
                     + MoneyFormat.exact(cost(server, country.id())) + " points de conquete.", ChatFormatting.GREEN);
         }
         return null;
@@ -761,7 +805,7 @@ public final class EarthNations {
             return name + " est deja a toi";
         }
         if (holder.player()) {
-            return name + " est aux mains de " + holder.name() + ", la faction d'un joueur : pas de guerre entre joueurs";
+            return name + " est aux mains " + de(holder.name()) + ", la faction d'un joueur : pas de guerre entre joueurs";
         }
         Nation nation = nation(player);
         if (ledger(server).of(player.getUUID()).isEmpty()) {
@@ -772,7 +816,7 @@ public final class EarthNations {
                 return "Ton premier pays est celui de ta capitale : " + countryName(nation.capital());
             }
         } else if (!reachable(player, country)) {
-            return name + " n'est pas voisin de tes terres (a " + NEAR_DISTANCE + " blocs environ)";
+            return "Trop loin de tes terres : " + name + " (on vise un pays a " + NEAR_DISTANCE + " blocs environ)";
         }
         save(player, nation.withTarget(country));
         return null;
@@ -874,7 +918,7 @@ public final class EarthNations {
             Holder holder = holder(server, target);
             boolean present = rivals.stream().anyMatch(rival -> rival.name().equals(holder.name()));
             if (!holder.player() && present) {
-                FactionApi.tell(player, holder.name() + " defend " + countryName(target) + " : finis devant eux ("
+                FactionApi.tell(player, "Cible " + countryName(target) + " : finis devant " + holder.name() + " ("
                         + MoneyFormat.exact(nation(player).pointsOn(target)) + " / "
                         + MoneyFormat.exact(cost(server, target)) + " points de conquete).", ChatFormatting.GOLD);
             }
@@ -910,7 +954,7 @@ public final class EarthNations {
         }
         if (holder.player()) {
             save(player, nation.withTarget(0));
-            FactionApi.tell(player, name + " est passe aux mains de " + holder.name() + " : cible abandonnee.",
+            FactionApi.tell(player, "Cible abandonnee : " + name + " appartient desormais " + a(holder.name()) + ".",
                     ChatFormatting.RED);
             return;
         }
@@ -928,14 +972,14 @@ public final class EarthNations {
         long cost = cost(server, target);
         long before = nation.pointsOn(target);
         if (place < 0 || earned <= 0 || (theirs >= 0 && theirs < place)) {
-            FactionApi.tell(player, holder.name() + " a fini devant toi : " + name + " tient bon ("
+            FactionApi.tell(player, "Tu as fini derriere " + holder.name() + " : " + name + " tient bon ("
                     + MoneyFormat.exact(before) + " / " + MoneyFormat.exact(cost) + ").", ChatFormatting.RED);
             return;
         }
         long after = before + earned;
         if (after < cost) {
             save(player, nation.withPoints(target, after));
-            FactionApi.tell(player, "Conquete de " + name + " : +" + MoneyFormat.exact(earned) + " points ("
+            FactionApi.tell(player, "Conquete, " + name + " : +" + MoneyFormat.exact(earned) + " points ("
                     + MoneyFormat.exact(after) + " / " + MoneyFormat.exact(cost) + ").", ChatFormatting.GREEN);
             return;
         }
@@ -957,9 +1001,10 @@ public final class EarthNations {
         player.connection.send(new ClientboundSetTitleTextPacket(Component.literal(name)
                 .withStyle(ChatFormatting.GOLD)));
         player.connection.send(new ClientboundSetSubtitleTextPacket(Component.literal(
-                "Pris a " + from.name() + " · +1 claim").withStyle(ChatFormatting.YELLOW)));
+                "Victoire sur " + from.name() + " · +1 claim").withStyle(ChatFormatting.YELLOW)));
         server.getPlayerList().broadcastSystemMessage(FactionApi.prefix().append(Component.literal(
-                data.name() + " prend " + name + " a " + from.name() + ".").withStyle(ChatFormatting.YELLOW)), false);
+                name + " : " + data.name() + " l'emporte sur " + from.name() + ".").withStyle(ChatFormatting.YELLOW)),
+                false);
         FactionApi.stat(player, "earth:countries", 1);
         DoHy.LOGGER.info("Pays a prendre : {} prend {} a {}", data.name(), name, from.name());
     }
