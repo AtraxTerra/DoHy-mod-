@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.atraxterra.dohy.DoHy;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.GsonHelper;
@@ -12,6 +13,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
 import java.io.BufferedReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,9 +52,16 @@ public final class ContractConfig {
                         result.error().map(Object::toString).orElse("erreur inconnue"));
                 return false;
             }
-            config = result.getOrThrow();
-            DoHy.LOGGER.info("Contrats charges : {} quotidiens, {} hebdos",
-                    config.daily().pool().size(), config.weekly().pool().size());
+            Config parsed = result.getOrThrow();
+            List<Identifier> absent = new ArrayList<>();
+            config = new Config(parsed.daily(), parsed.weekly(), parsed.demand(), parsed.firstSale(),
+                    parsed.reset(), parsed.trixiumOrder().resolved(absent));
+            DoHy.LOGGER.info("Contrats charges : {} quotidiens, {} hebdos, {} commandes de trixium",
+                    config.daily().pool().size(), config.weekly().pool().size(),
+                    config.trixiumOrder().pool().size());
+            if (!absent.isEmpty()) {
+                DoHy.LOGGER.warn("Commande de trixium : objets inconnus de ce jeu, ignores : {}", absent);
+            }
             return true;
         } catch (Exception error) {
             DoHy.LOGGER.error("Echec du chargement des contrats", error);
@@ -110,6 +119,58 @@ public final class ContractConfig {
         ).apply(instance, FirstSale::new));
     }
 
+    /** Une commande possible : l'objet a livrer et combien. */
+    public record OrderEntry(Identifier item, int amount) {
+        static final Codec<OrderEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Identifier.CODEC.fieldOf("item").forGetter(OrderEntry::item),
+                Codec.INT.fieldOf("amount").forGetter(OrderEntry::amount)
+        ).apply(instance, OrderEntry::new));
+    }
+
+    /**
+     * La commande de trixium : un objet a livrer, qui change chaque jour.
+     *
+     * <p>Elle a <b>sa propre bascule</b>, a midi, et non celle de 5 h des autres
+     * contrats : c'est la demande du joueur. Le reste — objet du jour, livraison,
+     * serie — est dans {@link TrixiumOrder}.
+     *
+     * @param resetHour  l'heure reelle ou l'objet demande change
+     * @param rewardItem ce que paie la commande
+     * @param reward     combien
+     * @param globalXp   l'XP globale d'une commande livree
+     * @param streak     le nombre de jours de suite qui fait venir le God Villager ; 0 le coupe
+     * @param pool       les commandes possibles ; apres chargement, celles dont l'objet existe
+     */
+    public record TrixiumOrderConfig(int resetHour, Identifier rewardItem, int reward, long globalXp,
+                                     int streak, List<OrderEntry> pool) {
+
+        static final Identifier TRIXIUM = Identifier.fromNamespaceAndPath("palamod", "trixium");
+
+        static final TrixiumOrderConfig FALLBACK = new TrixiumOrderConfig(12, TRIXIUM, 16, 15L, 7, List.of());
+
+        static final Codec<TrixiumOrderConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.INT.optionalFieldOf("reset_hour", 12).forGetter(TrixiumOrderConfig::resetHour),
+                Identifier.CODEC.optionalFieldOf("reward_item", TRIXIUM).forGetter(TrixiumOrderConfig::rewardItem),
+                Codec.INT.optionalFieldOf("reward", 16).forGetter(TrixiumOrderConfig::reward),
+                Codec.LONG.optionalFieldOf("global_xp", 15L).forGetter(TrixiumOrderConfig::globalXp),
+                Codec.INT.optionalFieldOf("god_villager_streak", 7).forGetter(TrixiumOrderConfig::streak),
+                OrderEntry.CODEC.listOf().optionalFieldOf("pool", List.of()).forGetter(TrixiumOrderConfig::pool)
+        ).apply(instance, TrixiumOrderConfig::new));
+
+        /** La meme configuration, reduite aux commandes dont l'objet existe et dont la quantite est positive. */
+        TrixiumOrderConfig resolved(List<Identifier> absent) {
+            List<OrderEntry> found = new ArrayList<>();
+            for (OrderEntry entry : pool) {
+                if (!BuiltInRegistries.ITEM.containsKey(entry.item())) {
+                    absent.add(entry.item());
+                } else if (entry.amount() > 0) {
+                    found.add(entry);
+                }
+            }
+            return new TrixiumOrderConfig(resetHour, rewardItem, reward, globalXp, streak, List.copyOf(found));
+        }
+    }
+
     /**
      * Les frontieres de periode, en temps reel.
      *
@@ -125,21 +186,25 @@ public final class ContractConfig {
         ).apply(instance, Reset::new));
     }
 
-    public record Config(Pool daily, Pool weekly, Demand demand, FirstSale firstSale, Reset reset) {
+    public record Config(Pool daily, Pool weekly, Demand demand, FirstSale firstSale, Reset reset,
+                         TrixiumOrderConfig trixiumOrder) {
 
         static final Config FALLBACK = new Config(
                 new Pool(3, 9000.0d, 15L, List.of()),
                 new Pool(1, 110000.0d, 250L, List.of()),
                 new Demand(2.5d, List.of("FARM", "FOOD", "MOB", "FOUND"), 1L),
                 new FirstSale(1.5d),
-                new Reset(5, "MONDAY"));
+                new Reset(5, "MONDAY"),
+                TrixiumOrderConfig.FALLBACK);
 
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Pool.codec(3, 9000.0d).optionalFieldOf("daily", FALLBACK.daily()).forGetter(Config::daily),
                 Pool.codec(1, 110000.0d).optionalFieldOf("weekly", FALLBACK.weekly()).forGetter(Config::weekly),
                 Demand.CODEC.optionalFieldOf("daily_demand", FALLBACK.demand()).forGetter(Config::demand),
                 FirstSale.CODEC.optionalFieldOf("first_sale_bonus", FALLBACK.firstSale()).forGetter(Config::firstSale),
-                Reset.CODEC.optionalFieldOf("reset", FALLBACK.reset()).forGetter(Config::reset)
+                Reset.CODEC.optionalFieldOf("reset", FALLBACK.reset()).forGetter(Config::reset),
+                TrixiumOrderConfig.CODEC.optionalFieldOf("trixium_order", TrixiumOrderConfig.FALLBACK)
+                        .forGetter(Config::trixiumOrder)
         ).apply(instance, Config::new));
     }
 }

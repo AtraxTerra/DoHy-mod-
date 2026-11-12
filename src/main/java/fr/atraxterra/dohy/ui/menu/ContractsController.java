@@ -7,19 +7,22 @@ import fr.atraxterra.dohy.contract.ContractConfig;
 import fr.atraxterra.dohy.contract.ContractData;
 import fr.atraxterra.dohy.contract.ContractDisplay;
 import fr.atraxterra.dohy.contract.ContractType;
+import fr.atraxterra.dohy.contract.TrixiumOrder;
 import fr.atraxterra.dohy.ui.Gui;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.util.MoneyFormat;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** Les contrats : ceux du jour, celui de la semaine, la demande et la premiere vente. */
+/** Les contrats : ceux du jour, la commande de trixium, celui de la semaine, la demande et la premiere vente. */
 public final class ContractsController extends MenuController {
 
     public static final ContractsController INSTANCE = new ContractsController();
@@ -63,6 +66,8 @@ public final class ContractsController extends MenuController {
                     List.of("Le tirage a lieu a la connexion")).state(MenuView.DISABLED));
         }
 
+        List<Card> order = List.of(order(player));
+
         List<Card> bonus = new ArrayList<>();
         Identifier demand = ContractApi.demandItem(player);
         ContractConfig.Config config = ContractConfig.config();
@@ -87,8 +92,10 @@ public final class ContractsController extends MenuController {
                 .accent(0xFF2F5BEA)
                 .progress(ContractApi.globalXpIntoLevel(player), ContractApi.globalXpPerLevel()));
 
-        return new MenuView(id(), "Contrats", "Ils se terminent tout seuls : rien a reclamer", stats, List.of(
+        return new MenuView(id(), "Contrats", "Ils se terminent tout seuls ; seule la commande se livre", stats,
+                List.of(
                 new MenuView.Section("CONTRATS DU JOUR", "resources", MenuView.ROWS, daily),
+                new MenuView.Section("COMMANDE DE TRIXIUM", "resources", MenuView.ROWS, order),
                 new MenuView.Section("CONTRAT DE LA SEMAINE", "upgrade", MenuView.ROWS, weekly),
                 new MenuView.Section("BONUS", "craft", MenuView.GRID, bonus)), true);
     }
@@ -107,7 +114,60 @@ public final class ContractsController extends MenuController {
         return contract.done() ? card.state(MenuView.DONE) : card;
     }
 
+    /**
+     * La commande de trixium : l'objet du jour, ce qui est livre, ce qu'elle paie.
+     *
+     * <p>C'est la seule carte de l'ecran qui se clique : elle prend dans le sac
+     * ce que le joueur porte de l'objet demande.
+     */
+    private static Card order(ServerPlayer player) {
+        TrixiumOrder.refresh(player);
+        ContractConfig.OrderEntry entry = TrixiumOrder.today();
+        if (entry == null) {
+            return Card.of(new ItemStack(Items.PAPER), "Aucune commande", List.of("Le fichier n'en propose aucune"))
+                    .state(MenuView.DISABLED);
+        }
+        ContractConfig.TrixiumOrderConfig config = ContractConfig.config().trixiumOrder();
+        Item item = BuiltInRegistries.ITEM.getOptional(entry.item()).orElse(Items.PAPER);
+        String reward = config.reward() + " " + MenuView.text(Gui.displayName(config.rewardItem()));
+        int goal = TrixiumOrder.streakGoal();
+        int streak = TrixiumOrder.streak(player);
+        String change = "Change dans " + delay(TrixiumOrder.minutesUntilChange());
+        List<String> tooltip = new ArrayList<>();
+        tooltip.add("L'objet demande change chaque jour a " + config.resetHour() + " h");
+        tooltip.add("Une livraison partielle compte");
+        if (goal > 0) {
+            tooltip.add(goal + " commandes de suite : le God Villager apparait");
+            tooltip.add("Un jour manque remet la serie a zero, rien d'autre");
+        }
+        String series = goal > 0 ? "  ·  serie " + streak + " / " + goal : "";
+        String title = "Livrer " + entry.amount() + " " + MenuView.text(Gui.displayName(entry.item()));
+
+        if (TrixiumOrder.done(player)) {
+            return Card.of(new ItemStack(item), title, List.of(
+                            entry.amount() + " / " + entry.amount() + "  ·  livree, " + reward + " verses",
+                            change + series))
+                    .accent(0xFF27C4E8).badge(reward).progress(entry.amount(), entry.amount())
+                    .state(MenuView.DONE).tooltip(tooltip);
+        }
+        int delivered = TrixiumOrder.delivered(player);
+        int carried = TrixiumOrder.carried(player, entry.item());
+        Card card = Card.of(new ItemStack(item), title, List.of(
+                        delivered + " / " + entry.amount() + "  ·  tu en portes " + carried,
+                        change + series))
+                .accent(0xFF27C4E8).badge(reward).progress(delivered, entry.amount()).tooltip(tooltip);
+        return carried > 0 ? card.action("order|livrer ce que tu portes") : card;
+    }
+
     @Override
     protected void card(ServerPlayer player, String key, int button) {
+        if ("order".equals(key)) {
+            String refusal = TrixiumOrder.deliver(player);
+            if (refusal == null) {
+                success(player);
+            } else {
+                report(player, refusal, "");
+            }
+        }
     }
 }

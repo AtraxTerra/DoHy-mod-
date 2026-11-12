@@ -47,7 +47,13 @@ public final class ContractData {
             Codec.LONG.optionalFieldOf("demand_period", -1L).forGetter(data -> data.demandPeriod),
             Codec.LONG.optionalFieldOf("first_sale_period", -1L).forGetter(data -> data.firstSalePeriod),
             Codec.LONG.optionalFieldOf("last_seen_minute", -1L).forGetter(data -> data.lastSeenMinute),
-            Codec.LONG.optionalFieldOf("global_xp", 0L).forGetter(data -> data.globalXp)
+            Codec.LONG.optionalFieldOf("global_xp", 0L).forGetter(data -> data.globalXp),
+            // La commande de trixium. Absents des anciens fichiers : -1 et 0, soit
+            // « rien de livre, aucune serie », ce qui est exact.
+            Codec.LONG.optionalFieldOf("order_period", -1L).forGetter(data -> data.orderPeriod),
+            Codec.INT.optionalFieldOf("order_progress", 0).forGetter(data -> data.orderProgress),
+            Codec.LONG.optionalFieldOf("order_done_period", -1L).forGetter(data -> data.orderDonePeriod),
+            Codec.INT.optionalFieldOf("order_streak", 0).forGetter(data -> data.orderStreak)
     ).apply(instance, ContractData::new));
 
     private final List<ActiveContract> daily = new ArrayList<>();
@@ -61,6 +67,10 @@ public final class ContractData {
     private long firstSalePeriod = -1L;
     private long lastSeenMinute = -1L;
     private long globalXp;
+    private long orderPeriod = -1L;
+    private int orderProgress;
+    private long orderDonePeriod = -1L;
+    private int orderStreak;
 
     public ContractData() {
     }
@@ -68,7 +78,8 @@ public final class ContractData {
     private ContractData(List<ActiveContract> daily, List<ActiveContract> weekly,
                          long playtimeMinutes, long dailyPeriod, long weeklyPeriod,
                          Optional<Identifier> demandItem, long demandPeriod,
-                         long firstSalePeriod, long lastSeenMinute, long globalXp) {
+                         long firstSalePeriod, long lastSeenMinute, long globalXp,
+                         long orderPeriod, int orderProgress, long orderDonePeriod, int orderStreak) {
         this.daily.addAll(daily);
         this.weekly.addAll(weekly);
         this.playtimeMinutes = playtimeMinutes;
@@ -79,6 +90,10 @@ public final class ContractData {
         this.firstSalePeriod = firstSalePeriod;
         this.lastSeenMinute = lastSeenMinute;
         this.globalXp = globalXp;
+        this.orderPeriod = orderPeriod;
+        this.orderProgress = orderProgress;
+        this.orderDonePeriod = orderDonePeriod;
+        this.orderStreak = orderStreak;
     }
 
     public List<ActiveContract> daily() {
@@ -176,6 +191,40 @@ public final class ContractData {
         if (amount > 0) {
             globalXp += amount;
         }
+    }
+
+    // -- Commande de trixium ---------------------------------------------------
+    // Des champs bruts, comme la demande du jour : c'est TrixiumOrder qui sait
+    // quelle est la periode courante et ce que vaut une serie.
+
+    /** La periode a laquelle se rapporte {@link #orderProgress()}. */
+    public long orderPeriod() {
+        return orderPeriod;
+    }
+
+    /** Ce qui a deja ete livre pendant {@link #orderPeriod()}. */
+    public int orderProgress() {
+        return orderProgress;
+    }
+
+    public void setOrder(long period, int progress) {
+        orderPeriod = period;
+        orderProgress = progress;
+    }
+
+    /** La derniere periode dont la commande a ete livree en entier, ou -1. */
+    public long orderDonePeriod() {
+        return orderDonePeriod;
+    }
+
+    /** Le nombre de commandes livrees de suite, a la date de {@link #orderDonePeriod()}. */
+    public int orderStreak() {
+        return orderStreak;
+    }
+
+    public void setOrderDone(long period, int streak) {
+        orderDonePeriod = period;
+        orderStreak = streak;
     }
 
     public boolean isEmpty() {
