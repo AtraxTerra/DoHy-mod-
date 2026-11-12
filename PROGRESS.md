@@ -211,10 +211,11 @@ NationsGlory ne sont pas recopiés ; tout est dessiné par `tools/dohy_assets.py
 - dernier rempart : un coup de 500 laisse 2 PV, le suivant tue ; vol de vigueur II : 20 % des
   dégâts infligés ; flair : 300 pierres dans le même tick, un seul minerai ;
 - élevage : 22 céréales, 5 bêtes nourries (20 céréales, 1 dose d'eau), rien sans eau ;
-- machines : le biogénérateur chargé à la main alimente ses voisines ; capacité d'énergie comme un
+- machines : le biogénérateur chargé à la main alimente ses deux voisines à parts égales
+  (3 400 FE chacune après 17 céréales) ; capacité d'énergie comme un
   câble (20 000 FE acceptés par le moulin, extraction refusée ; biogénérateur : insertion refusée,
-  extraction simulée puis annulée sans effet, extraction validée) ; moulin 64 maïs → 21 farines et
-  2 640 FE ; les dix fournées, énergie comprise ; 200 fournées au niveau 45 → 821 pains ; à sec,
+  extraction simulée puis annulée sans effet, extraction validée) ; moulin : 63 maïs et 3 blés → 22 farines
+  pour 2 640 FE ; les dix fournées, énergie comprise ; 200 fournées au niveau 45 → 821 pains ; à sec,
   refus ;
 - recherche : refus sous le niveau 20, composition vide, objets manquants (rien de consommé) ;
   intrus → devinette ; quantité loin → fourchette ; dans la fourchette → « un peu plus » ; ingrédient
