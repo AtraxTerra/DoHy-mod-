@@ -796,6 +796,39 @@ Il n'expose plus que ce qui se mérite. Les pièces sont **nommées une à une**
 Leviers : la liste `items` de chaque aile, `rewards`, et `global_xp_per_donation`.
 `tools/check_museum.py` vérifie le fichier (pièce inconnue, doublon, ligne d'indice manquante).
 
+## 6 terdecies. Commande de trixium, et le God Villager au bout de sept jours
+
+Demande du joueur (2026-11-12) : « dans les contrats, ajoutes-en un pour obtenir du trixium, où
+l'item demandé change tous les jours à midi », puis « ajoute aussi le God Villager issu des
+métiers » — lié à la commande, à son choix.
+
+- **Une commande par jour** : un objet à livrer, payé **16 trixium** et 15 XP globale. Elle se
+  livre depuis l'écran des contrats, qui prend dans le sac ce que le joueur porte ; une livraison
+  partielle compte, on peut apporter en plusieurs fois.
+- **Elle bascule à midi**, heure de la machine, et non à 5 h comme les autres contrats.
+- **L'objet du jour se calcule**, il ne se tire pas : il se déduit du numéro du jour. Rien n'est
+  sauvegardé, il ne peut pas être relancé, et il est le même après un redémarrage. Les
+  42 commandes sont battues une fois par tour : chacune passe une fois en 42 jours, jamais deux
+  jours de suite.
+- **Quantités** : un quart d'heure de production au taux du catalogue (`rate_per_hour / 4`,
+  arrondi en piles) — 256 blés, 320 bûches, 128 lingots d'améthyste, 64 lingots de paladium,
+  10 diamants, 24 findiums… Au prix de vente, une commande pèse entre 640 $ (perles de l'ender)
+  et 10 000 $ (diamants, lingots de paladium vert), 4 700 $ en moyenne.
+- **Récompense** : 16 trixium, soit vingt minutes de minage pur (50 par heure) et 12 800 $ à la
+  vente. La commande échange donc du temps de métier contre du temps de mine, avec un gain net.
+  **Un mois sans rien manquer donne 480 trixium** : entre la 10e place du concours (600) et la
+  30e (300), sans avoir miné. C'est le levier à surveiller ; le podium (≈ 2 500) reste un mois
+  de mine.
+- **La série** : sept commandes livrées de suite font apparaître le **God Villager** sur le
+  joueur, puis le compte repart de zéro. Un jour manqué remet la série à zéro et **ne retire rien
+  d'autre**. Par cette voie il ne demande pas le Mineur 95 de son apparition au hasard, qui reste
+  inchangée (une chance sur 500 000 000 par tick). Son échange est le même : 64 blocs de
+  paladium contre une pépite d'endium (40 000 $), et environ 5 350 XP de Mineur. Au mieux,
+  **une pépite d'endium par semaine**, pour 576 lingots de paladium.
+
+Leviers, dans `data/contracts.json` → `trixium_order` : `reset_hour`, `reward`, `reward_item`,
+`god_villager_streak` (0 coupe la série), et le `pool`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

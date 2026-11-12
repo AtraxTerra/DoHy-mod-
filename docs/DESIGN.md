@@ -260,6 +260,7 @@ Règle qui les gouverne : **un effet déclaré est un effet branché.** `Upgrade
 | **Demande du jour** | Un item tiré au hasard à **×2,5** pour la journée, jusqu'à la bascule de 5 h, annoncé à la connexion | Donne un objectif immédiat à une soirée de 2 h |
 | **Contrats quotidiens** | 3 contrats faisables en ~2 h (ex. « miner 500 deepslate », « tuer 60 mobs ») | Structure la session de semaine |
 | **Contrat hebdo** | 1 contrat lourd, infaisable en une soirée, grosse récompense | Structure le week-end |
+| **Commande de trixium** | 1 objet à livrer, qui change chaque jour à midi, payé 16 trixium ; 7 jours de suite font venir le God Villager | Donne une raison d'ouvrir ses coffres, et une autre source de trixium que la mine |
 | **Première vente du jour** | ×1,5 sur la première transaction | Récompense sans punir l'absence (pas de streak) |
 | **Niveau global** | XP uniquement sur les **jalons** (niveau de métier, palier de collection, contrat hebdo). Récompense tous les 5 niveaux | Un seul chiffre qui résume la partie |
 | **Loot boxes** | Six boxes de PalaMod, une clé chacune : Améthyste 100 k · Saharia 1 M · Paladium 5 M · Halloween 20 M · Trixium 50 M · Endium 150 M | Sink principal du milieu de partie |

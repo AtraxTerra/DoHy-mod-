@@ -175,6 +175,45 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 — la commande de trixium, et le God Villager au bout de sept jours
+
+**Demande** : « dans les contrats, ajoutes-en un pour obtenir du trixium, où l'item demandé change
+tous les jours à midi », puis « ajoute aussi le God Villager issu des métiers ». Le God Villager
+existait déjà (Mineur 95, une chance sur 500 000 000 par tick) ; question posée, réponse du
+joueur : **le lier au contrat**. Chiffres et raisons : `docs/BALANCE.md` § 6 terdecies.
+
+**Fait** (`feat/contrat-trixium`, posée sur `feat/musee-rares`) :
+- `contract/TrixiumOrder` : une commande par jour, un objet à livrer, payée 16 trixium et 15 XP
+  globale. Sa bascule est à **midi** (`trixium_order.reset_hour`), pas à 5 h.
+- **L'objet du jour se calcule** depuis le numéro du jour : 42 commandes battues une fois par tour
+  (`java.util.Random` semé par le numéro du tour), chacune passe une fois en 42 jours, jamais
+  deux jours de suite. Rien n'est sauvegardé pour lui.
+- **Livraison** depuis l'écran des contrats (section « COMMANDE DE TRIXIUM », seule carte
+  cliquable de l'écran) : elle prend dans les 36 cases du sac ce que le joueur porte ; une
+  livraison partielle compte.
+- **Série** : sept commandes de suite appellent `GodVillager.spawn`, sans condition de niveau,
+  puis la série repart de zéro. Un jour manqué remet la série à zéro et ne retire rien d'autre.
+- `ContractData` : quatre champs (`order_period`, `order_progress`, `order_done_period`,
+  `order_streak`). Les anciens fichiers retombent sur « rien livré, aucune série ».
+- `data/contracts.json` → `trixium_order` : le pool, calibré à un quart d'heure de production.
+
+**Vérifié en jeu** (client de la CI) : les 42 objets existent ; sur 420 jours, aucune répétition
+d'un jour sur l'autre et dix tours complets ; livraison en deux fois (5 puis 5 diamants, 45 rendus
+sur 50) ; 16 trixium et 15 XP à la livraison ; second clic refusé ; le lendemain, la commande
+repart de zéro et la série tient ; à la septième, le God Villager apparaît et la série repart ;
+après trois jours sans livrer, la série affichée est 0 et la livraison suivante la remet à 1.
+
+**Non vérifié** : la bascule à midi **en temps réel** (les jours sont simulés en reculant l'état
+sauvegardé ; l'heure elle-même vient de `RealClock`, déjà utilisé par les contrats). L'échange
+avec le God Villager n'a pas été rejoué : il n'a pas changé.
+
+**À savoir** :
+- Un nom d'objet dans une carte doit faire partie d'**un seul composant** passé à
+  `MenuView.text` : collé à du texte brut, il arrive en JSON à l'écran (vu à la première capture).
+- Changer la taille du pool décale l'objet du jour : l'ordre dépend du nombre de commandes.
+- 480 trixium par mois sans manquer un jour : entre la 10e et la 30e place du concours. À revoir
+  si le concours devient trop facile.
+
 ### 2026-11-11 (suite) — le musée n'expose plus que des pièces rares
 
 **Demande** : « mets à jour la partie Musée en faisant un tri, en ne mettant uniquement des items

@@ -61,6 +61,8 @@ public final class ContractEvents {
             data.setLastSeenMinute(now);
             ContractApi.rollIfDue(player);
             ContractApi.refreshDemand(player);
+            // Sa bascule est a midi : c'est ce battement d'une minute qui l'annonce a un joueur present.
+            TrixiumOrder.refresh(player);
         }
     }
 
@@ -70,6 +72,7 @@ public final class ContractEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             ContractApi.rollIfDue(player);
             ContractApi.refreshDemand(player);
+            TrixiumOrder.refresh(player);
         }
     }
 
