@@ -13,6 +13,7 @@ import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -129,7 +130,10 @@ public final class ContractsController extends MenuController {
         }
         ContractConfig.TrixiumOrderConfig config = ContractConfig.config().trixiumOrder();
         Item item = BuiltInRegistries.ITEM.getOptional(entry.item()).orElse(Items.PAPER);
-        String reward = config.reward() + " " + MenuView.text(Gui.displayName(config.rewardItem()));
+        // Un nom d'objet est traduit par le client : la phrase entiere doit etre un composant,
+        // un nom colle a du texte brut arriverait en JSON.
+        Component rewardName = Gui.displayName(config.rewardItem());
+        String reward = MenuView.text(Component.literal(config.reward() + " ").append(rewardName));
         int goal = TrixiumOrder.streakGoal();
         int streak = TrixiumOrder.streak(player);
         String change = "Change dans " + delay(TrixiumOrder.minutesUntilChange());
@@ -141,11 +145,13 @@ public final class ContractsController extends MenuController {
             tooltip.add("Un jour manque remet la serie a zero, rien d'autre");
         }
         String series = goal > 0 ? "  ·  serie " + streak + " / " + goal : "";
-        String title = "Livrer " + entry.amount() + " " + MenuView.text(Gui.displayName(entry.item()));
+        String title = MenuView.text(Component.literal("Livrer " + entry.amount() + " ")
+                .append(Gui.displayName(entry.item())));
 
         if (TrixiumOrder.done(player)) {
             return Card.of(new ItemStack(item), title, List.of(
-                            entry.amount() + " / " + entry.amount() + "  ·  livree, " + reward + " verses",
+                            MenuView.text(Component.literal(entry.amount() + " / " + entry.amount()
+                                    + "  ·  livree, " + config.reward() + " ").append(rewardName).append(" verses")),
                             change + series))
                     .accent(0xFF27C4E8).badge(reward).progress(entry.amount(), entry.amount())
                     .state(MenuView.DONE).tooltip(tooltip);

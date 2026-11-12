@@ -41,7 +41,9 @@ import java.util.function.Predicate;
  *
  * <p>Aucun de ces systemes ne se casse si on saute un soir : sauter trois jours
  * ne produit pas trois tirages de rattrapage, juste un seul. C'est la raison
- * pour laquelle il n'y a pas de serie a entretenir.
+ * pour laquelle il n'y a pas de serie a entretenir — sauf celle, voulue par le
+ * joueur, de la commande de trixium ({@link TrixiumOrder}), qui ne retire rien
+ * a qui la rompt.
  */
 public final class ContractApi {
 

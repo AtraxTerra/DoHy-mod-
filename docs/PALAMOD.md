@@ -950,6 +950,8 @@ d'équipe bleue au lieu de `#2537FB`.
 - **God Villager** : une chance sur 500 000 000 par tick de joueur Mineur 95. Un échange :
   64 blocs de paladium contre une pépite d'endium, puis il disparaît et donne 15 000 XP de
   PalaJobs. **Écart d'apparence** : un marchand ambulant vanilla nommé, pas l'entité d'origine.
+  **Depuis le 2026-11-12**, il vient aussi au bout de **sept commandes de trixium livrées de
+  suite** (écran des contrats), sans condition de niveau : `docs/BALANCE.md` § 6 terdecies.
 - Les gains d'XP codés en dur sont des XP de PalaJobs, **convertis au rapport 0,357** (§ 1) :
   4 → 1,43 (partie fractionnaire tirée au sort), 15 000 → environ 5 350.
 
@@ -2289,6 +2291,8 @@ la V8 »).
 
 ### En solo (choix du joueur)
 
+- **Le trixium ne vient plus seulement de la mine** : la commande de trixium des contrats en paie
+  16 par jour (`docs/BALANCE.md` § 6 terdecies), soit 480 sur un mois sans manque.
 - **Une saison par mois réel**, du 1er à 5 h au 1er suivant à 5 h, heure du serveur (la bascule à
   5 h est celle des contrats). La barre repart de zéro à chaque saison.
 - **59 joueurs fictifs** (`TrixiumRivals`) déposent au fil du mois, le soir, à des heures tirées
