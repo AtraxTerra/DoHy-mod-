@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.shop;
 
 import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
+import fr.atraxterra.dohy.economy.market.HourlyCourse;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
@@ -68,7 +69,9 @@ public final class ShopController {
         for (Identifier id : ids) {
             PriceEntry entry = book.entry(id).orElseThrow();
             Item item = BuiltInRegistries.ITEM.getValue(id);
-            long buy = entry.buyPrice() > 0 ? Math.max(1L, Math.round(entry.buyPrice() * (1.0d - discount))) : 0L;
+            double course = HourlyCourse.factor(id, entry);
+            long buy = entry.buyPrice() > 0
+                    ? Math.max(1L, Math.round(entry.buyPrice() * course * (1.0d - discount))) : 0L;
             long sell = 0;
             int percent = 100;
             long missing = 0;
@@ -82,9 +85,10 @@ public final class ShopController {
             offers.add(new ShopView.Offer(new ItemStack(item), entry.category(), buy,
                     entry.buyPrice() > 0 ? (int) Math.round(discount * 100) : 0, sell, percent, missing,
                     countOwned(player, item), CollectionApi.countOf(player, id),
-                    Math.max(0L, CollectionApi.nextThreshold(player, id, entry))));
+                    Math.max(0L, CollectionApi.nextThreshold(player, id, entry)),
+                    HourlyCourse.percent(id, entry)));
         }
-        return new ShopView(Economy.balance(player), offers);
+        return new ShopView(Economy.balance(player), offers, HourlyCourse.minutesLeft());
     }
 
     public static void handle(ServerPlayer player, UiNet.Action action) {
@@ -99,7 +103,7 @@ public final class ShopController {
             return;
         }
         switch (action.verb()) {
-            case "buy" -> buy(player, item, entry, amount);
+            case "buy" -> buy(player, id, item, entry, amount);
             case "sell" -> sell(player, id, item, entry, amount);
             default -> {
                 return;
@@ -144,12 +148,14 @@ public final class ShopController {
                         .withStyle(ChatFormatting.DARK_GRAY)));
     }
 
-    private static void buy(ServerPlayer player, Item item, PriceEntry entry, int wanted) {
+    private static void buy(ServerPlayer player, Identifier id, Item item, PriceEntry entry, int wanted) {
         if (entry.buyPrice() <= 0L) {
             refuse(player, "Cet item n'est pas en vente.");
             return;
         }
-        long unitPrice = Math.max(1L, Math.round(entry.buyPrice() * (1.0d - discount(player))));
+        // Le cours de l'heure touche l'achat comme la vente : voir HourlyCourse.
+        long unitPrice = Math.max(1L, Math.round(entry.buyPrice() * HourlyCourse.factor(id, entry)
+                * (1.0d - discount(player))));
         long cost = unitPrice * wanted;
         if (!Economy.tryDebit(player, cost)) {
             play(player, SoundEvents.VILLAGER_NO, 1.0f);

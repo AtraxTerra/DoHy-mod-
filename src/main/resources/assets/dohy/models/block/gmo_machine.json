@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "dohy:block/gmo_machine_top",
+    "bottom": "dohy:block/gmo_machine_bottom",
+    "side": "dohy:block/gmo_machine_side"
+  }
+}

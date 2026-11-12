@@ -175,6 +175,60 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 3) — l'agriculture, et le cours de l'heure
+
+**Demandes** : « la partie agriculture (dans un onglet à part du palamod) », « aide toi du wiki de
+nationglory », « ajoute aussi les pains et items à la vente, leurs prix doit varier chaque heure ».
+Le joueur a aussi demandé, trois fois, les images du wiki : **refusé**, les sprites de
+NationsGlory ne sont pas recopiés ; tout est dessiné par `tools/dohy_assets.py`. Description :
+`docs/CONTENU_DOHY.md` ; chiffres : `docs/BALANCE.md` § 6 sexdecies.
+
+**Fait** (`feat/agriculture`, posée sur `feat/serveur-trading`) :
+- **Dix céréales** (neuf sous `dohy`, plus le blé) : six liées à un **climat** lu sur la température
+  du biome (`Climate`), trois **OGM** qui poussent partout et ne rendent aucune semence.
+- **Machine à OGM en recherche** (`GmoResearch`) : recette secrète de 9 objets en quantités
+  précises, tirée du monde, du joueur et de la souche ; un essai consomme tout ; raté, il donne la
+  part juste et un indice ; la recette mute après 2 000 graines. Carnet attaché au joueur
+  (`AgriData`, attachement `agriculture`).
+- **Moulin, machine à pain, biogénérateur** (`AgriMachineBlock`) : énergie FE de NeoForge comme le
+  serveur de trading, recettes NTM NEXT sous condition et recettes d'établi sinon.
+- **Dix pains** (`Bread`) et quatre effets neufs (`AgriEffects`) : vol de vigueur, dernier rempart,
+  immunité, flair du mineur.
+- **Élevage** : la ration passe à 4 céréales par bête (anti-arbitrage).
+- **Cours de l'heure** (`economy/market/HourlyCourse`, bloc `course` de `economy.json`) : facteur
+  0,7 à 1,4 par objet et par heure réelle, à la vente et à l'achat, branché dans `DynamicPrice` (donc
+  shop, `/worth`, coffre de vente, autosell). Nouvelle catégorie de shop `AGRI`.
+- `tools/check_agri_prices.py` en CI : aucune des 50 recettes ne paie en achetant ses ingrédients.
+
+**Vérifié en jeu** (client de la CI, sans NTM) :
+- climats : `fillbiome` plaine / taïga / jungle → tempéré / froid / chaud ; chaque semence ne se
+  plante que dans son climat, les OGM partout ; une avoine posée de force en plaine reste à l'âge 0
+  après 5 000 ticks et refuse la poudre d'os ;
+- butin sur 300 cultures : naturelle 1,5 grain et 3,1 semences ; OGM 3 grains, **0 semence** ;
+  jeune, la semence revient ; 1 500 herbes rendent une soixantaine de semences du climat local ;
+- les dix pains : faim, soin (6 → 8, 9 ou 10 PV) et effets conformes ; le pain de kamut lève
+  poison et wither, garde la rapidité, et un poison redonné tombe en une seconde ;
+- dernier rempart : un coup de 500 laisse 2 PV, le suivant tue ; vol de vigueur II : 20 % des
+  dégâts infligés ; flair : 300 pierres dans le même tick, un seul minerai ;
+- élevage : 22 céréales, 5 bêtes nourries (20 céréales, 1 dose d'eau), rien sans eau ;
+- machines : le biogénérateur chargé à la main alimente ses deux voisines à parts égales
+  (3 400 FE chacune après 17 céréales) ; capacité d'énergie comme un
+  câble (20 000 FE acceptés par le moulin, extraction refusée ; biogénérateur : insertion refusée,
+  extraction simulée puis annulée sans effet, extraction validée) ; moulin : 63 maïs et 3 blés → 22 farines
+  pour 2 640 FE ; les dix fournées, énergie comprise ; 200 fournées au niveau 45 → 821 pains ; à sec,
+  refus ;
+- recherche : refus sous le niveau 20, composition vide, objets manquants (rien de consommé) ;
+  intrus → devinette ; quantité loin → fourchette ; dans la fourchette → « un peu plus » ; ingrédient
+  manquant → devinette ; bonne composition → 8 graines, recette connue, +660 XP ; mutation à
+  2 000 graines → nouvelle recette, carnet vidé ;
+- cours : sur 20 000 heures, de 0,70 à 1,40, moyenne 1,05 ; vente de 64 pains et achat de 10 maïs
+  au cours ; un grain d'OGM ne s'achète pas ; le blé (hors cours) n'est pas touché.
+
+**Non vérifié** : un câble NTM NEXT réel et la machine d'assemblage (pas de NTM sur la machine de
+test) ; le passage réel d'une heure à l'autre (le tirage est testé sur des heures simulées).
+
+**Pas dans ce lot** : le tracteur et le silo de NationsGlory (le shop tient lieu de silo).
+
 ### 2026-11-12 (suite 2) — le serveur de trading, compatible NTM NEXT
 
 **Demande** : « ajouter la machine "serveur" qui génère de l'argent passif et qui est compatible

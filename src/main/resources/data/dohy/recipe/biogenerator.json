@@ -1,0 +1,28 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "hbm"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "ISI",
+    "SCS",
+    "IRI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "S": "minecraft:glass",
+    "C": "minecraft:composter",
+    "R": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "dohy:biogenerator",
+    "count": 1
+  }
+}

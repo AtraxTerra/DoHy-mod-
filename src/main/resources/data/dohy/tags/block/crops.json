@@ -1,5 +1,5 @@
 {
-  "_comment": "Cultures qui murissent sur place. Sert aux contrats de recolte, et placement_exempt l'inclut. Les quatre cultures de PalaMod y sont : sans elles, une culture plantee a la main etait un bloc pose, donc sans XP de Fermier, sans collection ni contrat.",
+  "_comment": "Cultures qui murissent sur place. Sert aux contrats de recolte, et placement_exempt l'inclut. Les quatre cultures de PalaMod y sont : sans elles, une culture plantee a la main etait un bloc pose, donc sans XP de Fermier, sans collection ni contrat. Les neuf cereales de DoHy y sont pour la meme raison.",
   "values": [
     "minecraft:wheat",
     "minecraft:carrots",
@@ -13,6 +13,15 @@
     "palamod:eggplant_crop",
     "palamod:chervil_crop",
     "palamod:kiwano_crop",
-    "palamod:orangeblue_crop"
+    "palamod:orangeblue_crop",
+    "dohy:corn_crop",
+    "dohy:barley_crop",
+    "dohy:oat_crop",
+    "dohy:rye_crop",
+    "dohy:sunflower_crop",
+    "dohy:soy_crop",
+    "dohy:fonio_crop",
+    "dohy:sorghum_crop",
+    "dohy:kamut_crop"
   ]
 }

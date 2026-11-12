@@ -1572,7 +1572,15 @@ def main():
     tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:paladium_hopper" % NS])
     # Les blocs propres a DoHy (tools/dohy_assets.py) : ce fichier de tag est ecrit ici,
     # un second generateur ne peut pas y ajouter sa ligne sans que celui-ci l'efface.
-    tag("minecraft/tags/block/mineable/pickaxe.json", ["dohy:trading_server"])
+    tag("minecraft/tags/block/mineable/pickaxe.json",
+        ["dohy:trading_server", "dohy:gmo_machine", "dohy:water_dispenser", "dohy:flour_mill",
+         "dohy:bread_machine", "dohy:biogenerator"])
+    tag("minecraft/tags/block/mineable/axe.json", ["dohy:trough"])
+    # Les cereales de DoHy sont des cultures comme les autres : le tag vanilla
+    # les fait pietiner, fertiliser et recolter par les villageois.
+    tag("minecraft/tags/block/crops.json", ["dohy:%s_crop" % cereal for cereal in
+                                           ("corn", "barley", "oat", "rye", "sunflower", "soy", "fonio", "sorghum",
+                                            "kamut")])
 
     # Les coffres en amethyste et en titane. L'original les dessine avec le
     # ModelChest de 1.7.10 (TileEntityModdedChestRenderer) ; le meme modele en

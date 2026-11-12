@@ -8,7 +8,7 @@ import net.minecraft.world.item.Items;
 import java.util.function.Supplier;
 
 /**
- * Les six onglets du shop.
+ * Les onglets du shop.
  *
  * <p>La cle correspond au champ {@code category} du catalogue de prix, genere
  * par {@code tools/gen_prices.py}. Un item dont la categorie n'est reconnue par
@@ -25,6 +25,10 @@ import java.util.function.Supplier;
  * boutique dans le pied du shop ; la boutique reste au menu principal. Son
  * icone est un objet du mod, donc cherchee dans le registre a l'usage : une
  * constante d'enum s'initialise avant que les objets du mod existent.
+ *
+ * <p>{@code AGRI} regroupe l'agriculture de DoHy : cereales, farines, pains,
+ * produits d'elevage. C'est la seule categorie dont les prix suivent le cours
+ * de l'heure ({@code HourlyCourse}).
  */
 public enum ShopCategory {
 
@@ -34,7 +38,9 @@ public enum ShopCategory {
     MOB_DROP("MOB_DROP", "Drops de mobs", () -> Items.ROTTEN_FLESH),
     PALAMOD("PALAMOD", "PalaMod", () -> BuiltInRegistries.ITEM
             .getOptional(Identifier.fromNamespaceAndPath("palamod", "paladium_ingot")).orElse(Items.NETHERITE_SCRAP)),
-    NTM("NTM", "NTM NEXT", () -> Items.ANVIL);
+    NTM("NTM", "NTM NEXT", () -> Items.ANVIL),
+    AGRI("AGRI", "Agriculture", () -> BuiltInRegistries.ITEM
+            .getOptional(Identifier.fromNamespaceAndPath("dohy", "corn")).orElse(Items.WHEAT_SEEDS));
 
     private final String key;
     private final String display;

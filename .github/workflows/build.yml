@@ -190,6 +190,12 @@ jobs:
       - name: Le musee ne doit nommer que des pieces qui existent
         run: python3 tools/check_museum.py
 
+      # Les prix de l'agriculture changent chaque heure, objet par objet : une
+      # recette ne doit pas devenir rentable quand ses ingredients sont au plus
+      # bas et son produit au plus haut.
+      - name: L'agriculture ne doit pas offrir d'argent gratuit
+        run: python3 tools/check_agri_prices.py
+
       - name: Les JSON doivent parser
         run: |
           python3 - <<'PY'

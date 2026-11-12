@@ -175,3 +175,34 @@ palamod:judeecercis_log,PALAMOD,FARM,1200,non achetable : la seve d'une buche va
 palamod:erable_log,PALAMOD,FARM,1200,"non achetable : la seve d'une buche vaut 1,5 lingot de paladium",,0
 palamod:ostrya_log,PALAMOD,FARM,1200,"non achetable, comme les trois autres",,0
 palamod:xp_berry,PALAMOD,FARM,1000,buisson a XP,,
+dohy:corn,AGRI,FARM,1200,cereale : comme le ble ; suit le cours de l'heure,,
+dohy:barley,AGRI,FARM,1200,cereale : comme le ble ; suit le cours de l'heure,,
+dohy:oat,AGRI,FARM,1200,cereale : comme le ble ; suit le cours de l'heure,,
+dohy:rye,AGRI,FARM,1200,cereale : comme le ble ; suit le cours de l'heure,,
+dohy:sunflower,AGRI,FARM,1200,cereale : comme le ble ; suit le cours de l'heure,,
+dohy:soy,AGRI,FARM,1200,cereale : comme le ble ; suit le cours de l'heure,,
+dohy:fonio,AGRI,FARM,300,OGM : graines a chercher et sans semence a la recolte ; non achetable,,0
+dohy:sorghum,AGRI,FARM,300,OGM : graines a chercher et sans semence a la recolte ; non achetable,,0
+dohy:kamut,AGRI,FARM,300,OGM : graines a chercher et sans semence a la recolte ; non achetable,,0
+dohy:wheat_flour,AGRI,FARM,360,moulin : 3 cereales et 120 FE,,
+dohy:corn_flour,AGRI,FARM,360,moulin : 3 cereales et 120 FE,,
+dohy:barley_flour,AGRI,FARM,360,moulin : 3 cereales et 120 FE,,
+dohy:oat_flour,AGRI,FARM,360,moulin : 3 cereales et 120 FE,,
+dohy:rye_flour,AGRI,FARM,360,moulin : 3 cereales et 120 FE,,
+dohy:sunflower_flour,AGRI,FARM,360,moulin : 3 cereales et 120 FE,,
+dohy:soy_flour,AGRI,FARM,360,moulin : 3 cereales et 120 FE,,
+dohy:fonio_flour,AGRI,FARM,90,moulin : 3 grains d'OGM ; non achetable,,0
+dohy:sorghum_flour,AGRI,FARM,90,moulin : 3 grains d'OGM ; non achetable,,0
+dohy:kamut_flour,AGRI,FARM,90,moulin : 3 grains d'OGM ; non achetable,,0
+dohy:cream,AGRI,MOB,250,elevage : 4 cereales par vache nourrie,,
+dohy:lard,AGRI,MOB,250,elevage : 4 cereales par cochon nourri,,
+dohy:corn_bread,AGRI,FOOD,200,machine a pain : 1 farine par pain,,
+dohy:oat_bread,AGRI,FOOD,185,machine a pain : 1 farine par pain,,
+dohy:rye_bread,AGRI,FOOD,171,machine a pain : 1 farine par pain,,
+dohy:barley_bread,AGRI,MOB,139,machine a pain : 2 farines et 1 sucre,,
+dohy:soy_bread,AGRI,MOB,156,machine a pain : 2 farines et 1 oeuf,,
+dohy:sunflower_bread,AGRI,MOB,96,machine a pain : 2 farines et 1 creme,,
+dohy:miner_bread,AGRI,MOB,74,machine a pain : 2 farines de ble 1 saindoux 2 baies lumineuses,,
+dohy:fonio_bread,AGRI,FOUND,50,pain d'OGM : 2 farines 1 creme 1 saindoux ; achat dissuasif,,6
+dohy:sorghum_bread,AGRI,FOUND,36,pain d'OGM : 3 farines 1 creme 1 saindoux 1 oeuf ; achat dissuasif,,6
+dohy:kamut_bread,AGRI,FOUND,44,pain d'OGM : 2 farines 1 creme 1 melon scintillant ; achat dissuasif,,6

@@ -44,6 +44,10 @@ public final class EconomyConfig {
         return config.death();
     }
 
+    public static Course course() {
+        return config.course();
+    }
+
     @SubscribeEvent
     public static void onServerStarted(ServerStartedEvent event) {
         load(event.getServer());
@@ -116,16 +120,41 @@ public final class EconomyConfig {
         ).apply(instance, Death::new));
     }
 
-    public record Config(Bank bank, Death death) {
+    /**
+     * Le cours de l'heure : un facteur tire pour chaque objet des categories
+     * listees, qui change a chaque periode.
+     *
+     * @param periodMinutes duree d'un cours, en minutes reelles
+     * @param min           facteur le plus bas
+     * @param max           facteur le plus haut
+     * @param salt          graine du tirage, pour que deux mondes n'aient pas les memes cours
+     * @param categories    categories du catalogue qui suivent un cours
+     * @see fr.atraxterra.dohy.economy.market.HourlyCourse
+     */
+    public record Course(int periodMinutes, double min, double max, long salt, java.util.List<String> categories) {
+        static final Course NONE = new Course(60, 1.0d, 1.0d, 0L, java.util.List.of());
+
+        static final Codec<Course> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.INT.optionalFieldOf("period_minutes", 60).forGetter(Course::periodMinutes),
+                Codec.DOUBLE.optionalFieldOf("min", 0.7d).forGetter(Course::min),
+                Codec.DOUBLE.optionalFieldOf("max", 1.4d).forGetter(Course::max),
+                Codec.LONG.optionalFieldOf("salt", 0L).forGetter(Course::salt),
+                Codec.STRING.listOf().optionalFieldOf("categories", java.util.List.of()).forGetter(Course::categories)
+        ).apply(instance, Course::new));
+    }
+
+    public record Config(Bank bank, Death death, Course course) {
 
         /** Repli : les valeurs retenues dans {@code BALANCE.md}. */
         static final Config FALLBACK = new Config(
                 new Bank(0.03d, 0.02d, 2_000_000L, 50_000L),
-                new Death(3, 0.08d, 50_000L, 0.01d, 0.5d));
+                new Death(3, 0.08d, 50_000L, 0.01d, 0.5d),
+                Course.NONE);
 
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Bank.CODEC.optionalFieldOf("bank", FALLBACK.bank()).forGetter(Config::bank),
-                Death.CODEC.optionalFieldOf("death", FALLBACK.death()).forGetter(Config::death)
+                Death.CODEC.optionalFieldOf("death", FALLBACK.death()).forGetter(Config::death),
+                Course.CODEC.optionalFieldOf("course", Course.NONE).forGetter(Config::course)
         ).apply(instance, Config::new));
     }
 }

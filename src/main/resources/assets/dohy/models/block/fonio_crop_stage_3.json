@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "dohy:block/fonio_crop_stage_3"
+  }
+}

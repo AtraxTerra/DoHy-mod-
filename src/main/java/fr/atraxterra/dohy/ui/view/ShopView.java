@@ -15,9 +15,10 @@ import java.util.List;
  * categorie, la recherche et la selection se font cote client sans aller-retour.
  * Seuls l'achat et la vente passent par le serveur, qui renvoie la vue a jour.
  *
- * @param balance solde du joueur, en centimes
+ * @param balance       solde du joueur, en centimes
+ * @param courseMinutes minutes avant le prochain cours de l'heure
  */
-public record ShopView(long balance, List<Offer> offers) implements UiView {
+public record ShopView(long balance, List<Offer> offers, int courseMinutes) implements UiView {
 
     public static final Identifier ID = UiNet.id("shop");
 
@@ -33,9 +34,10 @@ public record ShopView(long balance, List<Offer> offers) implements UiView {
      * @param owned       exemplaires dans l'inventaire
      * @param collected   exemplaires deja collectes
      * @param nextStep    prochain palier de collection, 0 si complet
+     * @param course      cours de l'heure en pour cent du prix de base, 0 si l'objet n'en suit pas
      */
     public record Offer(ItemStack stack, String category, long buy, int discount, long sell, int sellPercent,
-                        long lockMissing, int owned, long collected, long nextStep) {
+                        long lockMissing, int owned, long collected, long nextStep, int course) {
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Offer> STREAM_CODEC = StreamCodec.of(
                 (buffer, offer) -> {
@@ -49,10 +51,11 @@ public record ShopView(long balance, List<Offer> offers) implements UiView {
                     buffer.writeVarInt(offer.owned());
                     buffer.writeVarLong(offer.collected());
                     buffer.writeVarLong(offer.nextStep());
+                    buffer.writeVarInt(offer.course());
                 },
                 buffer -> new Offer(ItemStack.STREAM_CODEC.decode(buffer), buffer.readUtf(), buffer.readVarLong(),
                         buffer.readVarInt(), buffer.readVarLong(), buffer.readVarInt(), buffer.readVarLong(),
-                        buffer.readVarInt(), buffer.readVarLong(), buffer.readVarLong()));
+                        buffer.readVarInt(), buffer.readVarLong(), buffer.readVarLong(), buffer.readVarInt()));
 
         public boolean sellable() {
             return sell > 0;
@@ -66,6 +69,7 @@ public record ShopView(long balance, List<Offer> offers) implements UiView {
     public static final StreamCodec<RegistryFriendlyByteBuf, ShopView> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_LONG, ShopView::balance,
             Offer.STREAM_CODEC.apply(ByteBufCodecs.list()), ShopView::offers,
+            ByteBufCodecs.VAR_INT, ShopView::courseMinutes,
             ShopView::new);
 
     @Override
