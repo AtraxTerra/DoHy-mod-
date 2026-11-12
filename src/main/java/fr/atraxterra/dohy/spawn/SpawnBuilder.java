@@ -61,9 +61,13 @@ final class SpawnBuilder {
     static final int CLEAR_Y_MIN = 106;
     static final int CLEAR_Y_MAX = 300;
 
-    /** Les deux tableaux de l'atrium : {@link SpawnBoards} en reecrit le texte. */
-    static final BlockPos BOARD_CONTEST = new BlockPos(-8, FLOOR + 9, -19);
-    static final BlockPos BOARD_PROFILE = new BlockPos(8, FLOOR + 9, -19);
+    /**
+     * Les deux tableaux de l'atrium : {@link SpawnBoards} en reecrit le texte.
+     * Ils flottent a trois blocs du mur : un texte tourne vers le joueur, pose
+     * contre une paroi, s'y enfonce des qu'on le regarde de biais.
+     */
+    static final BlockPos BOARD_CONTEST = new BlockPos(-6, FLOOR + 9, -19);
+    static final BlockPos BOARD_PROFILE = new BlockPos(6, FLOOR + 9, -19);
     static final float BOARD_SCALE = 0.9f;
 
     /** Une etiquette a poser : ou, quoi, de quelle couleur, a quelle taille. */

@@ -175,6 +175,48 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 9) — le spawn : le faire vivre, y arriver, finir le décor
+
+**Demande** : « fais 1, 2 et 3 ensemble » — une raison de revenir au spawn (récompense, classements,
+départs vers les donjons), y arriver à la première connexion et y réapparaître, et les éléments
+des images d'inspiration laissés de côté.
+Description : `docs/CONTENU_DOHY.md`, section « Le spawn » ; chiffrage : `docs/BALANCE.md` § 6 septdecies.
+
+**Fait** (`feat/spawn-vie`, `SpawnBuilder` version 5) :
+- **Récompense quotidienne** (`SpawnDaily`, borne RÉCOMPENSE) : une somme par jour réel, à prendre
+  au spawn, sur une série de sept jours (42 000 $ la semaine au niveau global 0, même multiplicateur
+  que les contrats). Pièce jointe `spawn_daily`. Pas de clé offerte : voir BALANCE.
+- **Départs** (`SpawnPortals`, borne DONJONS) : les quatre donjons — la borne met la clé en main et
+  ouvre le choix du palier —, les événements de faction, le profil RPG.
+- **Tableaux de l'atrium** (`SpawnBoards`) : classement du concours de trixium et profil du joueur,
+  recalculés toutes les cinq secondes. Le mod se jouant seul, un classement « des plus riches »
+  n'aurait eu qu'une ligne : le concours a déjà ses 59 rivaux.
+- **Arrivée** : un joueur de moins d'une minute de jeu est envoyé au spawn à sa connexion (pièce
+  jointe `spawn_welcomed`) ; sans lit ni ancre, on y réapparaît après une mort. Les deux se coupent
+  dans `data/spawn.json` (`SpawnConfig`).
+- **Décor** : tapis rouge, deux bassins de brique, murs de tonneaux (qui ne s'ouvrent pas), salon à
+  écran et deux bibliothèques au premier étage, jardinières et bancs au second.
+- Deux pictogrammes de borne de plus (`tools/dohy_assets.py`).
+
+**Choix à signaler** : pas de cartes aux murs (il faudrait des objets-cartes dans des cadres, donc
+des entités à entretenir) — les deux tableaux tiennent ce rôle. Un joueur déjà en jeu avant ce lot
+n'est pas envoyé au spawn à sa prochaine connexion : on ne l'arrache pas à sa base.
+
+**Vérifié hors jeu** : accessibilité à pied de tous les lieux, y compris les deux nouvelles bornes,
+la coursive arrière, la bibliothèque, le salon et le second étage.
+
+**Vérifié en jeu** (client de la CI) : dans un monde neuf, le joueur arrive au spawn sans rien
+faire ; la borne RÉCOMPENSE ouvre son écran, la prise crédite 2 000 $ (série 1), la seconde est
+refusée ; la borne DONJONS ouvre les départs, un clic sur Talikus avec la clé dans l'inventaire met
+la clé en main, range le bâton tenu à sa place et ouvre l'écran des paliers ; les deux tableaux
+portent leur texte ; un tonneau ne s'ouvre pas ; une mort dans l'Overworld sans lit fait réapparaître
+au spawn, et `/spawn` ramène dans l'Overworld.
+
+**Non vérifié** : la série sur plusieurs jours réels (le changement de jour et la remise à zéro
+sont écrits sur l'horloge des contrats, pas essayés) ; la réapparition avec un lit (elle ne doit
+rien changer) ; un départ de donjon complet depuis le spawn puis le retour (seule l'ouverture de
+l'écran des paliers est essayée) ; les événements de faction ouverts depuis la borne.
+
 ### 2026-11-12 (suite 8) — le spawn : l'intérieur d'après les inspirations
 
 **Demande** : dix images « en inspirations » — les intérieurs d'un bâtiment brutaliste (atrium au
