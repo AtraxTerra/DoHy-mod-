@@ -20,11 +20,12 @@
         "KAZ",
         "COL",
         "UKR",
-        "MNG"
+        "MNG",
+        "GBR"
       ],
       "min_y": 0,
       "max_y": 120,
-      "veins": 3.0,
+      "veins": 4.0,
       "size": 14
     },
     {
@@ -49,7 +50,7 @@
       ],
       "min_y": -32,
       "max_y": 72,
-      "veins": 3.0,
+      "veins": 4.0,
       "size": 9
     },
     {
@@ -72,7 +73,7 @@
       ],
       "min_y": -16,
       "max_y": 96,
-      "veins": 3.0,
+      "veins": 4.0,
       "size": 10
     },
     {
@@ -106,7 +107,7 @@
       ],
       "min_y": -56,
       "max_y": 32,
-      "veins": 2.0,
+      "veins": 4.0,
       "size": 8
     },
     {
@@ -145,7 +146,7 @@
       ],
       "min_y": -60,
       "max_y": 8,
-      "veins": 1.5,
+      "veins": 2.5,
       "size": 6
     },
     {
@@ -170,7 +171,7 @@
       ],
       "min_y": -16,
       "max_y": 120,
-      "veins": 1.0,
+      "veins": 1.5,
       "size": 4
     },
     {
@@ -192,7 +193,7 @@
       ],
       "min_y": -40,
       "max_y": 40,
-      "veins": 2.0,
+      "veins": 3.0,
       "size": 7
     },
     {
@@ -206,12 +207,310 @@
         "TJK",
         "MEX",
         "ITA",
-        "SVN"
+        "SVN",
+        "USA",
+        "RUS"
       ],
       "min_y": -60,
       "max_y": 16,
-      "veins": 2.5,
+      "veins": 4.0,
       "size": 8
+    },
+    {
+      "id": "aluminium",
+      "ore": "hbm:ore_aluminium",
+      "deepslate": "hbm:ore_aluminium_deepslate",
+      "countries": [
+        "AUS",
+        "GIN",
+        "CHN",
+        "BRA",
+        "IND",
+        "JAM",
+        "IDN",
+        "KAZ",
+        "SAU",
+        "VNM",
+        "GRC",
+        "FRA",
+        "RUS",
+        "USA",
+        "CAN",
+        "GHA",
+        "SUR",
+        "GUY",
+        "HUN",
+        "TUR",
+        "MOZ"
+      ],
+      "min_y": -32,
+      "max_y": 96,
+      "veins": 6.0,
+      "size": 6
+    },
+    {
+      "id": "titanium",
+      "ore": "hbm:ore_titanium",
+      "deepslate": "hbm:ore_titanium_deepslate",
+      "countries": [
+        "CHN",
+        "ZAF",
+        "AUS",
+        "MOZ",
+        "NOR",
+        "UKR",
+        "IND",
+        "MDG",
+        "KEN",
+        "SEN",
+        "VNM",
+        "CAN",
+        "USA",
+        "BRA",
+        "RUS",
+        "KAZ",
+        "JPN",
+        "SLE"
+      ],
+      "min_y": -56,
+      "max_y": 48,
+      "veins": 5.0,
+      "size": 6
+    },
+    {
+      "id": "lead",
+      "ore": "hbm:ore_lead",
+      "deepslate": "hbm:ore_lead_deepslate",
+      "countries": [
+        "CHN",
+        "AUS",
+        "USA",
+        "PER",
+        "MEX",
+        "IND",
+        "BOL",
+        "SWE",
+        "POL",
+        "IRL",
+        "RUS",
+        "KAZ",
+        "CAN",
+        "MAR",
+        "ZAF",
+        "TUR",
+        "ESP",
+        "DEU",
+        "BRA"
+      ],
+      "min_y": -56,
+      "max_y": 64,
+      "veins": 5.0,
+      "size": 9
+    },
+    {
+      "id": "sulfur",
+      "ore": "hbm:ore_sulfur",
+      "deepslate": "hbm:ore_sulfur_deepslate",
+      "countries": [
+        "CHN",
+        "USA",
+        "SAU",
+        "KAZ",
+        "ARE",
+        "ITA",
+        "JPN",
+        "IDN",
+        "POL",
+        "RUS",
+        "CAN",
+        "MEX",
+        "CHL",
+        "IRN",
+        "IRQ",
+        "DEU",
+        "IND",
+        "TUR",
+        "ETH"
+      ],
+      "min_y": -56,
+      "max_y": 64,
+      "veins": 4.0,
+      "size": 8
+    },
+    {
+      "id": "niter",
+      "ore": "hbm:ore_niter",
+      "deepslate": "hbm:ore_niter_deepslate",
+      "countries": [
+        "CHL",
+        "IND",
+        "PER",
+        "BOL",
+        "EGY",
+        "CHN",
+        "USA",
+        "ESP",
+        "DZA",
+        "ZAF",
+        "RUS",
+        "UKR",
+        "IRN",
+        "AUS",
+        "ARG"
+      ],
+      "min_y": -32,
+      "max_y": 64,
+      "veins": 5.0,
+      "size": 6
+    },
+    {
+      "id": "tungsten",
+      "ore": "hbm:ore_tungsten",
+      "deepslate": "hbm:ore_tungsten_deepslate",
+      "countries": [
+        "CHN",
+        "VNM",
+        "BOL",
+        "RWA",
+        "AUT",
+        "PRT",
+        "ESP",
+        "PRK",
+        "RUS",
+        "CAN",
+        "USA",
+        "AUS",
+        "BRA",
+        "GBR",
+        "MNG",
+        "KAZ"
+      ],
+      "min_y": -56,
+      "max_y": 64,
+      "veins": 6.0,
+      "size": 8
+    },
+    {
+      "id": "fluorite",
+      "ore": "hbm:ore_fluorite",
+      "deepslate": "hbm:ore_fluorite_deepslate",
+      "countries": [
+        "CHN",
+        "MEX",
+        "MNG",
+        "ZAF",
+        "VNM",
+        "ESP",
+        "GBR",
+        "FRA",
+        "DEU",
+        "USA",
+        "RUS",
+        "KEN",
+        "MAR",
+        "IRN",
+        "BRA",
+        "ARG",
+        "THA"
+      ],
+      "min_y": -32,
+      "max_y": 80,
+      "veins": 5.0,
+      "size": 4
+    },
+    {
+      "id": "beryllium",
+      "ore": "hbm:ore_beryllium",
+      "deepslate": "hbm:ore_beryllium_deepslate",
+      "countries": [
+        "CHN",
+        "MOZ",
+        "BRA",
+        "MDG",
+        "RWA",
+        "USA",
+        "RUS",
+        "KAZ",
+        "IND",
+        "ARG",
+        "PRT",
+        "UGA"
+      ],
+      "min_y": -56,
+      "max_y": 32,
+      "veins": 4.0,
+      "size": 4
+    },
+    {
+      "id": "lignite",
+      "ore": "hbm:ore_lignite",
+      "deepslate": "hbm:ore_lignite_deepslate",
+      "countries": [
+        "DEU",
+        "POL",
+        "CZE",
+        "GRC",
+        "TUR",
+        "AUS",
+        "SRB",
+        "BGR",
+        "ROU",
+        "RUS",
+        "USA",
+        "CHN",
+        "IND",
+        "IDN",
+        "CAN",
+        "THA"
+      ],
+      "min_y": 0,
+      "max_y": 96,
+      "veins": 2.0,
+      "size": 20
+    },
+    {
+      "id": "asbestos",
+      "ore": "hbm:ore_asbestos",
+      "deepslate": "hbm:ore_asbestos_deepslate",
+      "countries": [
+        "KAZ",
+        "CHN",
+        "BRA",
+        "ZWE",
+        "RUS",
+        "CAN",
+        "ZAF",
+        "IND",
+        "ITA",
+        "GRC"
+      ],
+      "min_y": -32,
+      "max_y": 64,
+      "veins": 3.0,
+      "size": 4
+    },
+    {
+      "id": "cinnabar",
+      "ore": "hbm:ore_cinnabar",
+      "deepslate": "hbm:ore_cinnabar_deepslate",
+      "countries": [
+        "ESP",
+        "CHN",
+        "KGZ",
+        "TJK",
+        "MEX",
+        "ITA",
+        "SVN",
+        "PER",
+        "USA",
+        "RUS",
+        "TUR",
+        "DZA"
+      ],
+      "min_y": -56,
+      "max_y": 32,
+      "veins": 2.0,
+      "size": 4
     },
     {
       "id": "uranium",
@@ -251,8 +550,8 @@
       ],
       "min_y": -56,
       "max_y": 32,
-      "veins": 2.0,
-      "size": 6
+      "veins": 6.0,
+      "size": 5
     },
     {
       "id": "thorium",
@@ -269,7 +568,7 @@
       ],
       "min_y": -56,
       "max_y": 48,
-      "veins": 1.5,
+      "veins": 5.0,
       "size": 5
     },
     {
@@ -302,7 +601,7 @@
       ],
       "min_y": -56,
       "max_y": 32,
-      "veins": 1.5,
+      "veins": 5.0,
       "size": 5
     },
     {
@@ -319,7 +618,7 @@
       ],
       "min_y": 0,
       "max_y": 48,
-      "veins": 1.5,
+      "veins": 5.0,
       "size": 6
     },
     {
@@ -345,220 +644,7 @@
       ],
       "min_y": -60,
       "max_y": -20,
-      "veins": 1.5,
-      "size": 4
-    },
-    {
-      "id": "titanium",
-      "ore": "hbm:ore_titanium",
-      "deepslate": "hbm:ore_titanium_deepslate",
-      "countries": [
-        "CHN",
-        "ZAF",
-        "AUS",
-        "MOZ",
-        "NOR",
-        "UKR",
-        "IND",
-        "MDG",
-        "KEN",
-        "SEN",
-        "VNM"
-      ],
-      "min_y": -56,
-      "max_y": 48,
       "veins": 2.0,
-      "size": 6
-    },
-    {
-      "id": "aluminium",
-      "ore": "hbm:ore_aluminium",
-      "deepslate": "hbm:ore_aluminium_deepslate",
-      "countries": [
-        "AUS",
-        "GIN",
-        "CHN",
-        "BRA",
-        "IND",
-        "JAM",
-        "IDN",
-        "KAZ",
-        "SAU",
-        "VNM",
-        "GRC",
-        "FRA"
-      ],
-      "min_y": -32,
-      "max_y": 96,
-      "veins": 2.5,
-      "size": 6
-    },
-    {
-      "id": "tungsten",
-      "ore": "hbm:ore_tungsten",
-      "deepslate": "hbm:ore_tungsten_deepslate",
-      "countries": [
-        "CHN",
-        "VNM",
-        "BOL",
-        "RWA",
-        "AUT",
-        "PRT",
-        "ESP",
-        "PRK"
-      ],
-      "min_y": -56,
-      "max_y": 64,
-      "veins": 2.0,
-      "size": 8
-    },
-    {
-      "id": "lead",
-      "ore": "hbm:ore_lead",
-      "deepslate": "hbm:ore_lead_deepslate",
-      "countries": [
-        "CHN",
-        "AUS",
-        "USA",
-        "PER",
-        "MEX",
-        "IND",
-        "BOL",
-        "SWE",
-        "POL",
-        "IRL"
-      ],
-      "min_y": -56,
-      "max_y": 64,
-      "veins": 2.0,
-      "size": 9
-    },
-    {
-      "id": "beryllium",
-      "ore": "hbm:ore_beryllium",
-      "deepslate": "hbm:ore_beryllium_deepslate",
-      "countries": [
-        "CHN",
-        "MOZ",
-        "BRA",
-        "MDG",
-        "RWA"
-      ],
-      "boxes": [
-        {
-          "south": 37,
-          "north": 42,
-          "west": -114,
-          "east": -109
-        }
-      ],
-      "min_y": -56,
-      "max_y": 32,
-      "veins": 1.5,
-      "size": 4
-    },
-    {
-      "id": "sulfur",
-      "ore": "hbm:ore_sulfur",
-      "deepslate": "hbm:ore_sulfur_deepslate",
-      "countries": [
-        "CHN",
-        "USA",
-        "SAU",
-        "KAZ",
-        "ARE",
-        "ITA",
-        "JPN",
-        "IDN",
-        "POL"
-      ],
-      "min_y": -56,
-      "max_y": 64,
-      "veins": 2.0,
-      "size": 8
-    },
-    {
-      "id": "niter",
-      "ore": "hbm:ore_niter",
-      "deepslate": "hbm:ore_niter_deepslate",
-      "countries": [
-        "CHL",
-        "IND",
-        "PER",
-        "BOL",
-        "EGY"
-      ],
-      "min_y": -32,
-      "max_y": 64,
-      "veins": 2.5,
-      "size": 6
-    },
-    {
-      "id": "fluorite",
-      "ore": "hbm:ore_fluorite",
-      "deepslate": "hbm:ore_fluorite_deepslate",
-      "countries": [
-        "CHN",
-        "MEX",
-        "MNG",
-        "ZAF",
-        "VNM",
-        "ESP",
-        "GBR",
-        "FRA",
-        "DEU"
-      ],
-      "min_y": -32,
-      "max_y": 80,
-      "veins": 2.0,
-      "size": 4
-    },
-    {
-      "id": "asbestos",
-      "ore": "hbm:ore_asbestos",
-      "deepslate": "hbm:ore_asbestos_deepslate",
-      "countries": [
-        "KAZ",
-        "CHN",
-        "BRA",
-        "ZWE"
-      ],
-      "boxes": [
-        {
-          "south": 45,
-          "north": 49,
-          "west": -73,
-          "east": -70
-        },
-        {
-          "south": 56,
-          "north": 60,
-          "west": 58,
-          "east": 62
-        }
-      ],
-      "min_y": -32,
-      "max_y": 64,
-      "veins": 1.5,
-      "size": 4
-    },
-    {
-      "id": "cinnabar",
-      "ore": "hbm:ore_cinnabar",
-      "deepslate": "hbm:ore_cinnabar_deepslate",
-      "countries": [
-        "ESP",
-        "CHN",
-        "KGZ",
-        "TJK",
-        "MEX",
-        "ITA",
-        "SVN",
-        "PER"
-      ],
-      "min_y": -56,
-      "max_y": 32,
-      "veins": 1.5,
       "size": 4
     },
     {
@@ -576,28 +662,8 @@
       ],
       "min_y": -40,
       "max_y": 40,
-      "veins": 1.5,
+      "veins": 2.0,
       "size": 4
-    },
-    {
-      "id": "lignite",
-      "ore": "hbm:ore_lignite",
-      "deepslate": "hbm:ore_lignite_deepslate",
-      "countries": [
-        "DEU",
-        "POL",
-        "CZE",
-        "GRC",
-        "TUR",
-        "AUS",
-        "SRB",
-        "BGR",
-        "ROU"
-      ],
-      "min_y": 0,
-      "max_y": 96,
-      "veins": 1.5,
-      "size": 20
     },
     {
       "id": "oil",
@@ -767,7 +833,7 @@
       ],
       "min_y": -60,
       "max_y": 70,
-      "veins": 2.0,
+      "veins": 3.0,
       "size": 8
     }
   ]
