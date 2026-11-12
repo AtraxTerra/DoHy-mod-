@@ -175,6 +175,33 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 5) — le spawn
+
+**Demande** : « une dimension "spawn" comme sur paladium et nationglory, où on peut ouvrir des
+box, sur un thème brutaliste, industriel ». Le joueur a joint une image de spawn de serveur comme
+référence d'ambiance (un complexe sur des pitons au-dessus des nuages, une plateforme ronde, un
+pont, des mâts) : elle n'est pas recopiée, le lieu est dessiné ici dans le thème demandé.
+Description : `docs/CONTENU_DOHY.md`, section « Le spawn ».
+
+**Fait** (`feat/spawn`) :
+- Dimension `dohy:spawn` (vide, ciel et horloge de l'Overworld, nuages à 168) ; `/spawn` et carte
+  « Spawn » du menu pour y aller et en revenir (`ReturnPoint`, pièce jointe `spawn_return`).
+- `SpawnBuilder` : le lieu est calculé (289 000 blocs), posé par tranches de 5 000 par tick ; sa
+  version est gardée sur la dimension (`spawn_built`).
+- Hall des six box, bornes (`dohy:terminal`) du shop, de la boutique, du marché, de la banque, des
+  contrats, du musée et du retour, étiquettes flottantes (`dohy:hologram`).
+- Règles : ni casse ni pose hors créatif, aucun dégât, retour sur la plateforme après une chute.
+
+**Vérifié en jeu** (client de la CI) : construction en 9 secondes à la première visite, arrivée sur
+la plateforme ; casser et poser refusés en survie ; 8 points de dégâts sans effet ; 21 textes
+flottants et 6 coffres de box présents ; une box d'améthyste ouverte avec sa clé (lot donné, clé
+prise) ; la borne SHOP ouvre le shop ; une chute dans le vide ramène sur la plateforme ; `/spawn`
+ramène au bloc de départ ; le second aller est immédiat. Vues de jour et de nuit contrôlées.
+
+**Non vérifié** : le rendu à grande distance d'affichage (le client de test voit à une centaine
+de blocs) ; une reconstruction après changement de version (le vidage de l'ancien volume est écrit,
+pas essayé).
+
 ### 2026-11-12 (suite 4) — les machines de l'agriculture en automates, contrats et pain d'épices
 
 **Demande** : « enchaîne 1 et 2 » — automatiser le moulin et la machine à pain, puis brancher
