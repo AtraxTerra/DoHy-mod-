@@ -582,8 +582,9 @@ public final class FactionMenus {
                             FactionNotation.lastPoints(data, criterion)));
                 }
                 double total = FactionNotation.lastTotal(data);
-                last.add(Card.of(new ItemStack(Items.WRITTEN_BOOK), "Semaine close le "
-                                + DATE.format(java.time.LocalDate.ofEpochDay(FactionNotation.lastMonday(data))),
+                detail.add("Close le " + DATE.format(java.time.LocalDate.ofEpochDay(
+                        FactionNotation.lastMonday(data))));
+                last.add(Card.of(new ItemStack(Items.WRITTEN_BOOK), "Derniere semaine",
                         List.of(FactionNotation.points(total) + " / " + FactionNotation.points(score.max()) + "  ·  "
                                         + NotationConfig.config().grade(total),
                                 "Bourse : +" + MoneyFormat.exact(FactionNotation.lastBourse(data)) + " $"))

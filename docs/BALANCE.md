@@ -829,6 +829,27 @@ métiers » — lié à la commande, à son choix.
 Leviers, dans `data/contracts.json` → `trixium_order` : `reset_hour`, `reward`, `reward_item`,
 `god_villager_streak` (0 coupe la série), et le `pool`.
 
+## 6 quaterdecies. Notation de la semaine — ce que vaut la bourse
+
+Détail des critères : `docs/FACTION.md` § Notation de la semaine (22h).
+
+- **2 500 $ le point**, à la banque de faction : 250 000 $ pour 100 points. À comparer au contrat
+  de la semaine (110 000 $) et aux récompenses de ligue (25 000 $ en Bronze, 1,25 M $ en Diamant).
+- **Une semaine ordinaire** — cinq soirs, 300 000 $ gagnés, une dizaine de contrats, deux
+  victoires — tourne autour de 45 à 55 points en milieu de partie, soit 110 000 à 140 000 $ :
+  un second contrat de la semaine.
+- **Un début de partie** (aucun niveau de métier, banque vide, musée vide) plafonne vers 65 : les
+  35 points des critères d'état sont à construire.
+- **L'argent va à la banque de faction**, pas au joueur : il paie l'arbre de technologie, et un
+  retrait ne compte pas comme un gain de la semaine suivante (sinon la bourse se noterait
+  elle-même).
+- **Échelles logarithmiques** pour l'économie et le trésor : multiplier ses gains par dix
+  rapporte toujours le même nombre de points (6,7 pour l'économie, 3,3 pour le trésor). Le
+  critère reste lisible à 50 000 $ comme à 5 M $ par semaine.
+
+Leviers : `data/notations.json` — `bourse_per_point`, le `max` de chaque critère, les bornes
+`zero_at` / `full_at`, `full_days`, `full_claims`, les trois valeurs de contrat, `per_win`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas
