@@ -175,6 +175,39 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite) — la notation de la semaine
+
+**Demande** : après lecture du wiki de NationsGlory, « la partie notation me convient ». Détail :
+`docs/FACTION.md` § Notation de la semaine (22h), chiffres dans `docs/BALANCE.md` § 6 quaterdecies.
+
+**Fait** (`feat/notations`) :
+- `faction/FactionNotation` : une note sur 100 en sept critères (activité, économie, métiers,
+  contrats, militaire, patrimoine, trésor), close le lundi à minuit **avant** la ligue (le critère
+  militaire lit les victoires de la semaine, que la ligue remet à zéro). Bourse de 2 500 $ le
+  point à la banque de faction.
+- `faction/NotationConfig` + `data/notations.json` : plafonds, échelles, valeur du point, rangs.
+- Compteurs dans les stats de la faction, préfixe `note:`. Branchements : `FactionWeekly`
+  (bascule, jour joué), `FactionApi.withdraw` (retrait déduit des gains), `ContractApi.complete`
+  et `TrixiumOrder.complete` (contrats).
+- Écran : carte « Notation » sur la page de faction, page `FactionMenus.Notation`.
+
+**Vérifié en jeu** (client de la CI) : faction neuve notée 2,3 ; une semaine remplie notée 47,6 ;
+un retrait de 300 000 $ de la banque de faction ne change pas le critère d'économie, seulement le
+trésor ; au lundi, note 48, bourse de 120 000 $ et récompense de ligue de 25 000 $ versées
+(400 000 → 545 000 $), compteurs de semaine remis à zéro, critères d'état conservés ; trois lundis
+d'absence donnent une seule notation ; un second passage le même lundi ne fait rien.
+
+**Non vérifié** : la bascule un vrai lundi à minuit (les lundis sont simulés en reculant le
+dernier lundi traité, comme pour la ligue). Les valeurs — 2 500 $ le point, les plafonds — sont
+un premier réglage, pas le fruit d'une semaine de jeu.
+
+**À savoir** :
+- Sans faction, pas de notation : tout vit dans `FactionData`.
+- Les gains de la semaine se lisent sur `lifetime_earned` du joueur, relevé au début de la
+  semaine (`note:earned_start`, stocké +1 pour distinguer « pas encore relevé » de zéro).
+- Les succès et les primes de niveau créditent le joueur : ils comptent dans l'économie de la
+  semaine, comme une vente.
+
 ### 2026-11-12 — la commande de trixium, et le God Villager au bout de sept jours
 
 **Demande** : « dans les contrats, ajoutes-en un pour obtenir du trixium, où l'item demandé change

@@ -16,8 +16,8 @@ import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 
 /**
- * Le lundi minuit de Paladium : la ligue se recalcule et les recompenses
- * tombent dans la banque de faction.
+ * Le lundi minuit de Paladium : la ligue se recalcule, la semaine est notee
+ * ({@link FactionNotation}) et les recompenses tombent dans la banque de faction.
  *
  * <p>Sur Paladium, une faction sans aucune victoire ELO dans la semaine descend
  * d'une ligue et ne touche rien. Ici, pareil, a l'heure du serveur. Un joueur
@@ -59,12 +59,18 @@ public final class FactionWeekly {
         if (ranking.lastMonday() == 0L) {
             data.ranking = new FactionData.Ranking(ranking.elo(), ranking.weekElo(), ranking.weekWins(),
                     ranking.league(), monday);
+            FactionNotation.touch(player);
             return;
         }
         int weeks = (int) Math.min(MAX_CATCH_UP, (monday - ranking.lastMonday()) / 7);
         if (weeks <= 0) {
+            FactionNotation.touch(player);
             return;
         }
+        // La notation se clot avant la ligue : son critere militaire lit les victoires
+        // de la semaine, que la boucle ci-dessous remet a zero. Seule la semaine qui
+        // vient de finir est notee ; les lundis rattrapes n'ont rien a noter.
+        FactionNotation.close(player, monday, true);
         for (int week = 0; week < weeks; week++) {
             FactionData.Ranking current = data.ranking;
             FactionLeague league = FactionLeague.of(current.league());
@@ -87,6 +93,7 @@ public final class FactionWeekly {
         }
         FactionData.Ranking done = data.ranking;
         data.ranking = new FactionData.Ranking(done.elo(), done.weekElo(), done.weekWins(), done.league(), monday);
+        FactionNotation.touch(player);
     }
 
     @SubscribeEvent

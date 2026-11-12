@@ -387,6 +387,8 @@ public final class FactionApi {
         long taken = Math.min(amount, data.bank);
         data.bank -= taken;
         Economy.credit(player, taken);
+        // Un retrait credite le joueur comme un gain : la notation le deduit de son critere d'economie.
+        FactionNotation.withdrawn(data, taken);
         data.log(-taken, "Retrait");
         return null;
     }

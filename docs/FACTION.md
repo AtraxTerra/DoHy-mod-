@@ -23,6 +23,7 @@ PvE**. Choix du joueur :
 | 22f-2 | Events : KOTH à points et Totem | fait |
 | 22f-3 | Event : Egg Hunt (l'End et les raids ne sont pas repris : choix du joueur) | fait |
 | 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller : trois tailles, cinq genres, terrain qui revient après le raid | fait |
+| 22h | Notation de la semaine : une note sur 100 chaque lundi, une bourse à la banque de faction (repris de NationsGlory) | fait |
 
 ## Ce qui change en solo
 
@@ -475,3 +476,39 @@ un autel d'obsidienne au centre, quatre bassins de lave autour.
 La récompense « dégâts de raid » de la branche Défense (-5, -10, -15, -20 %) protège ici des boss,
 de Volcania, de leurs sbires et des combattants rivaux, dans la Warzone : il n'y a pas de raids en
 solo.
+
+## Notation de la semaine (22h)
+
+Repris des **notations de pays de NationsGlory**, où chaque pays est noté toutes les semaines
+(activité, gestion, compétences, économie, militaire, architecture) et touche une bourse le lundi
+selon son rang. Seul, il n'y a pas de rang : la note se lit pour elle-même, et la bourse lui est
+proportionnelle.
+
+**Ce qu'elle ajoute à la ligue.** La ligue ne regarde que l'ELO : une semaine sans raid ni event
+ne rapporte rien, et fait même descendre. La notation regarde tout ce que le joueur a fait, et
+paie donc aussi une semaine paisible. Les deux tombent ensemble, le lundi à minuit.
+
+| Critère | Plafond | Ce qui est mesuré | Sorte |
+|---|---|---|---|
+| Activité | 10 | Jours de la semaine où le joueur s'est connecté ; 5 jours donnent le plafond | semaine |
+| Économie | 20 | Argent gagné dans la semaine, retraits de la banque de faction déduits ; échelle logarithmique de 10 k à 10 M | semaine |
+| Métiers | 15 | Somme des niveaux des quatre métiers, sur le maximum possible | état |
+| Contrats | 15 | 0,5 par contrat du jour, 3,5 pour celui de la semaine, 0,5 par commande de trixium | semaine |
+| Militaire | 20 | 4 points par victoire ELO de la semaine (base ennemie pillée, event gagné) | semaine |
+| Patrimoine | 10 | Moitié musée (pièces exposées), moitié territoire (16 claims donnent le plafond) | état |
+| Trésor | 10 | Banque de faction ; échelle logarithmique de 100 k à 100 M | état |
+
+- **Bourse** : 2 500 $ le point, versés à la banque de faction. 100 points font 250 000 $.
+- **Rang** : S dès 85, A dès 70, B dès 50, C dès 30, D en dessous. Il n'a pas d'effet, il se lit.
+- **Critères de semaine** : ils repartent de zéro le lundi. **Critères d'état** : ils se lisent
+  tels quels et ne redescendent pas ; une partie avancée a donc un socle (jusqu'à 35 points) que
+  le début n'a pas.
+- **Absence** : seule la semaine qui vient de finir est notée. Trois lundis manqués donnent une
+  notation, pas trois.
+- **Pas d'architecture** : NationsGlory la fait noter à la main. Un programme ne juge pas une
+  construction ; le patrimoine (musée, territoire) tient sa place.
+- **Écran** : carte « Notation » sur la page de faction, puis une page qui montre la semaine en
+  cours critère par critère, la dernière semaine notée, la meilleure, et le temps avant lundi.
+
+Les compteurs vivent dans les stats de la faction, sous le préfixe `note:`. Réglages :
+`data/notations.json`. Code : `FactionNotation`, `NotationConfig`, branchés dans `FactionWeekly`.
