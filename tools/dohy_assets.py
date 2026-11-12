@@ -1168,6 +1168,300 @@ def spawn():
     write("assets/%s/blockstates/hologram.json" % NS, {"variants": {"": {"model": "%s:block/hologram" % NS}}})
 
 
+# -- Le tracteur, ses outils, le silo et la pompe ------------------------------------------
+
+FARM_PALETTE = {
+    ".": None,
+    "B": rgb(0x267680), "b": rgb(0x1D5A62), "c": rgb(0xE4D6B6),   # carrosserie, ombre, filet creme
+    "D": rgb(0x34363C), "P": rgb(0x585A60), "G": rgb(0x222428),   # arceau, echappement, calandre
+    "T": rgb(0x1C1C1E), "t": rgb(0x35353A), "h": rgb(0xE4D6B6),   # pneu, crampon, jante
+    "S": rgb(0x969CA4), "L": rgb(0xC4CAD0), "s": rgb(0x6E747C),   # acier, lame, acier sombre
+    "O": rgb(0xC4582C), "o": rgb(0x8E3E1E), "Y": rgb(0xFFB028),   # outil, son ombre, gyrophare
+}
+
+FARM_ICONS = {
+    "tractor": (
+        "................",
+        "..DDDDDY........",
+        "..D...D..P......",
+        "..D...D..P......",
+        "..D..GD..P......",
+        "..D.GG..BBBBBB..",
+        ".BBBBBBBBccccBG.",
+        ".BBBBBBBBBBBBBG.",
+        ".TTTTbbbbbbbbbG.",
+        "TTttTTbbbbbTTT..",
+        "TthhtTDDDDTTtTT.",
+        "TthhtTDDDDTthtT.",
+        "TTttTT....TTtTT.",
+        ".TTTT......TTT..",
+        "................",
+        "................",
+    ),
+    "tractor_plow": (
+        "................",
+        "................",
+        ".DD.............",
+        "..DD............",
+        "...OOOOOOOOOOOO.",
+        "...ooooooooooooo",
+        "....S....S....S.",
+        "....S....S....S.",
+        "...LS...LS...LS.",
+        "..LLLs.LLLs.LLLs",
+        ".LLLs.LLLs.LLLs.",
+        ".LLs..LLs..LLs..",
+        "................",
+        "................",
+        "................",
+        "................",
+    ),
+    "tractor_seeder": (
+        "................",
+        "................",
+        ".SSSSSSSSSSSSSS.",
+        ".OOOOOOOOOOOOOO.",
+        ".OOOOOOOOOOOOOO.",
+        ".oOOOOOOOOOOOOo.",
+        "..oooooooooooo..",
+        ".TT.P..P..P.TT..",
+        "TttTP..P..PTttT.",
+        "ThhTP..P..PThhT.",
+        "TttT.......TttT.",
+        ".TT.........TT..",
+        "................",
+        "................",
+        "................",
+        "................",
+    ),
+    "tractor_spreader": (
+        "................",
+        "...SSSSSSSSSS...",
+        "...OOOOOOOOOO...",
+        "...OOOOOOOOOO...",
+        "...OOOOOOOOOO...",
+        "....oOOOOOOo....",
+        ".....oooooo.....",
+        "..TT...PP...TT..",
+        ".TttT..PP..TttT.",
+        ".ThhT..PP..ThhT.",
+        ".TttT.ssss.TttT.",
+        "SSSSSSSSSSSSSSSS",
+        ".L..L..L..L..L..",
+        "................",
+        "................",
+        "................",
+    ),
+    "tractor_harvester": (
+        "................",
+        "................",
+        "..S...S...S...S.",
+        ".SSSSSSSSSSSSSSS",
+        "..S...S...S...S.",
+        ".DDDDDDDDDDDDDDD",
+        "..S...S...S...S.",
+        ".SSSSSSSSSSSSSSS",
+        "OOOOOOOOOOOOOOOO",
+        "OOOOOOOOOOOOOOOO",
+        "oooooooooooooooo",
+        "LLLLLLLLLLLLLLLL",
+        "L.L.L.L.L.L.L.L.",
+        "................",
+        "................",
+        "................",
+    ),
+}
+
+
+def farm_icon(name):
+    rows = []
+    for line in FARM_ICONS[name]:
+        assert len(line) == 16, (name, line)
+        rows.append([FARM_PALETTE[ch] for ch in line])
+    assert len(rows) == 16, name
+    return rows
+
+
+def corrugated(color, window=None):
+    """Une tole ondulee : des nervures verticales ; `window` y ouvre un regard sur le grain."""
+    base = rgb(color)
+    rows = [[shade(base, (1.10, 1.0, 0.86, 0.94)[x % 4]) for x in range(16)] for _y in range(16)]
+    for x in range(16):
+        rows[0][x] = shade(base, 0.7)
+        rows[15][x] = shade(base, 0.6)
+    for y in (5, 10):                        # deux cerclages
+        for x in range(16):
+            rows[y][x] = shade(base, 0.72)
+    if window is not None:
+        grain, grain_light = rgb(window), shade(rgb(window), 1.2)
+        for y in range(2, 14):
+            rows[y][6] = shade(base, 0.5)
+            rows[y][9] = shade(base, 0.5)
+            for x in (7, 8):
+                rows[y][x] = rgb(0x20262C) if y < 6 else (grain_light if (x + y) % 3 == 0 else grain)
+        for x in range(6, 10):
+            rows[1][x] = shade(base, 0.5)
+            rows[14][x] = shade(base, 0.5)
+    return rows
+
+
+def silo_roof(color):
+    """Le toit vu de dessus : des anneaux qui montent vers le chapeau."""
+    base = rgb(color)
+    rows = []
+    for y in range(16):
+        row = []
+        for x in range(16):
+            ring = min(x, 15 - x, y, 15 - y)
+            row.append(shade(base, 0.78 + 0.05 * ring if ring % 2 else 0.70 + 0.05 * ring))
+        rows.append(row)
+    for (x, y) in ((7, 7), (8, 7), (7, 8), (8, 8)):
+        rows[y][x] = shade(base, 0.5)
+    return rows
+
+
+def pump_front(lit_color):
+    rows = enamel(0xE6DEC8)
+    teal, dark = rgb(0x267680), rgb(0x23262A)
+    for y in range(0, 3):                    # le bandeau
+        for x in range(16):
+            rows[y][x] = shade(teal, 1.1 if y == 0 else 1.0)
+    for y in range(4, 9):                    # l'afficheur
+        for x in range(5, 11):
+            rows[y][x] = dark
+    for (x, y) in ((6, 5), (7, 5), (9, 5), (6, 7), (8, 7), (9, 7)):
+        rows[y][x] = rgb(lit_color)
+    for y in range(10, 13):                  # la trappe
+        for x in range(6, 10):
+            rows[y][x] = shade(rgb(0xE6DEC8), 0.78)
+    rows[11][9] = dark
+    return rows
+
+
+def pump_side():
+    rows = enamel(0xE6DEC8)
+    teal = rgb(0x267680)
+    for y in range(0, 3):
+        for x in range(16):
+            rows[y][x] = shade(teal, 1.1 if y == 0 else 1.0)
+    for y in range(5, 12, 2):                # des ouies
+        for x in range(6, 10):
+            rows[y][x] = shade(rgb(0xE6DEC8), 0.6)
+    return rows
+
+
+def farm_machine(name, order, plates, extras, pattern, key):
+    """Les deux recettes d'un engin : la machine d'assemblage avec NTM NEXT, l'etabli sans."""
+    write("data/%s/recipe/assembly_machine/ass.dohy_%s.json" % (NS, name), {
+        "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "hbm"}],
+        "type": "hbm:assembly_machine",
+        "duration": 300,
+        "input_items": [{"count": plates, "ingredient": "#c:plates/steel"}]
+                       + [({"count": count, "ingredient": item} if count > 1 else {"ingredient": item})
+                          for (item, count) in extras],
+        "order": order,
+        "output_items": ["%s:%s" % (NS, name)],
+        "power": 100,
+    })
+    write("data/%s/recipe/%s.json" % (NS, name), {
+        "neoforge:conditions": [{
+            "type": "neoforge:not",
+            "value": {"type": "neoforge:mod_loaded", "modid": "hbm"},
+        }],
+        "type": "minecraft:crafting_shaped",
+        "category": "redstone",
+        "pattern": pattern,
+        "key": key,
+        "result": {"id": "%s:%s" % (NS, name), "count": 1},
+    })
+
+
+def farming():
+    for name in FARM_ICONS:
+        write_png("assets/%s/textures/item/%s.png" % (NS, name), farm_icon(name))
+        generated_item(name)
+
+    # le silo : une cuve en tole ondulee sous un toit a gradins
+    write_png("assets/%s/textures/block/silo_side.png" % NS, corrugated(0xAEB6BE, 0xD9B24A))
+    write_png("assets/%s/textures/block/silo_roof.png" % NS, silo_roof(0xC2C9D0))
+    write_png("assets/%s/textures/block/silo_base.png" % NS, corrugated(0x4A4E56))
+    side, roof, base = ("%s:block/silo_%s" % (NS, part) for part in ("side", "roof", "base"))
+
+    def box(start, end, texture, faces="nsewud"):
+        names = {"n": "north", "s": "south", "e": "east", "w": "west", "u": "up", "d": "down"}
+        return {"from": start, "to": end,
+                "faces": {names[face]: {"texture": texture} for face in faces}}
+
+    write("assets/%s/models/block/silo.json" % NS, {
+        "parent": "minecraft:block/block",
+        "textures": {"particle": side, "side": side, "roof": roof, "base": base},
+        "elements": [
+            box([1, 0, 1], [15, 1, 15], "#base"),
+            box([2, 1, 2], [14, 12, 14], "#side", "nsew"),
+            box([1, 12, 1], [15, 13, 15], "#roof"),
+            box([3, 13, 3], [13, 14, 13], "#roof", "nsewu"),
+            box([5, 14, 5], [11, 15, 11], "#roof", "nsewu"),
+            box([7, 15, 7], [9, 16, 9], "#base", "nsewu"),
+        ],
+    })
+    write("assets/%s/blockstates/silo.json" % NS, {"variants": {"": {"model": "%s:block/silo" % NS}}})
+    write("assets/%s/items/silo.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:block/silo" % NS},
+    })
+    block_drops_itself("silo")
+
+    # la pompe a carburant : une borne creme a bandeau bleu petrole, son pistolet sur le flanc
+    write_png("assets/%s/textures/block/fuel_pump_front.png" % NS, pump_front(0x7CF08A))
+    write_png("assets/%s/textures/block/fuel_pump_side.png" % NS, pump_side())
+    write_png("assets/%s/textures/block/fuel_pump_dark.png" % NS, corrugated(0x34363C))
+    front, flank, dark = ("%s:block/fuel_pump_%s" % (NS, part) for part in ("front", "side", "dark"))
+    write("assets/%s/models/block/fuel_pump.json" % NS, {
+        "parent": "minecraft:block/block",
+        "textures": {"particle": flank, "front": front, "side": flank, "dark": dark},
+        "elements": [
+            box([2, 0, 2], [14, 2, 14], "#dark"),
+            {"from": [3, 2, 4], "to": [13, 16, 12], "faces": {
+                "north": {"texture": "#front", "uv": [3, 0, 13, 14]},
+                "south": {"texture": "#side", "uv": [3, 0, 13, 14]},
+                "east": {"texture": "#side", "uv": [4, 0, 12, 14]},
+                "west": {"texture": "#side", "uv": [4, 0, 12, 14]},
+                "up": {"texture": "#side", "uv": [3, 0, 13, 3]},
+            }},
+            box([13, 7, 7], [15, 12, 9], "#dark"),          # le pistolet
+            box([13, 3, 7.5], [14, 7, 8.5], "#dark", "nsewd"),  # son tuyau
+        ],
+    })
+    variants = {}
+    for facing, angle in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        variant = {"model": "%s:block/fuel_pump" % NS}
+        if angle:
+            variant["y"] = angle
+        variants["facing=%s" % facing] = variant
+    write("assets/%s/blockstates/fuel_pump.json" % NS, {"variants": variants})
+    write("assets/%s/items/fuel_pump.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:block/fuel_pump" % NS},
+    })
+    block_drops_itself("fuel_pump")
+
+    iron = "minecraft:iron_ingot"
+    farm_machine("tractor", 60020, 16,
+                 [("hbm:motor", 2), ("hbm:circuit_basic", 1), ("minecraft:minecart", 1)],
+                 ["IFI", "BMB", "I I"],
+                 {"I": iron, "F": "minecraft:furnace", "B": "minecraft:iron_block", "M": "minecraft:minecart"})
+    farm_machine("tractor_plow", 60021, 6, [("minecraft:iron_hoe", 3)],
+                 ["III", "HHH"], {"I": iron, "H": "minecraft:iron_hoe"})
+    farm_machine("tractor_seeder", 60022, 6, [("minecraft:hopper", 2)],
+                 ["IHI", "III"], {"I": iron, "H": "minecraft:hopper"})
+    farm_machine("tractor_spreader", 60023, 6, [("minecraft:cauldron", 1), ("hbm:motor", 1)],
+                 ["ICI", "III"], {"I": iron, "C": "minecraft:cauldron"})
+    farm_machine("tractor_harvester", 60024, 8, [("minecraft:shears", 3), ("hbm:motor", 1)],
+                 ["SSS", "IRI", "III"], {"I": iron, "S": "minecraft:shears", "R": "minecraft:redstone_block"})
+    farm_machine("silo", 60025, 8, [("minecraft:barrel", 2), ("minecraft:hopper", 1)],
+                 ["III", "IBI", "IHI"], {"I": iron, "B": "minecraft:barrel", "H": "minecraft:hopper"})
+    farm_machine("fuel_pump", 60026, 6, [("minecraft:bucket", 1), ("hbm:motor", 1)],
+                 ["III", "IUI", "IRI"], {"I": iron, "U": "minecraft:bucket", "R": "minecraft:redstone_block"})
+
+
 def lang():
     fr = {
         "itemGroup.dohy.machines": "DoHy — machines",
@@ -1221,6 +1515,26 @@ def lang():
         "tooltip.dohy.climate.hot": "Hot climate: jungle, savanna, desert",
         "tooltip.dohy.climate.gmo": "GMO: grows anywhere, never gives seeds back",
     })
+    fr.update({
+        "entity.dohy.tractor": "Tracteur",
+        "item.dohy.tractor": "Tracteur",
+        "item.dohy.tractor_plow": "Charrue",
+        "item.dohy.tractor_seeder": "Semoir",
+        "item.dohy.tractor_spreader": "Epandeur",
+        "item.dohy.tractor_harvester": "Moissonneuse",
+        "block.dohy.silo": "Silo",
+        "block.dohy.fuel_pump": "Pompe a carburant",
+    })
+    en.update({
+        "entity.dohy.tractor": "Tractor",
+        "item.dohy.tractor": "Tractor",
+        "item.dohy.tractor_plow": "Plow",
+        "item.dohy.tractor_seeder": "Seeder",
+        "item.dohy.tractor_spreader": "Spreader",
+        "item.dohy.tractor_harvester": "Harvester",
+        "block.dohy.silo": "Silo",
+        "block.dohy.fuel_pump": "Fuel Pump",
+    })
     for (key, name_fr, name_en, gmo, *_rest) in CEREALS:
         of = "d'" if name_fr[0] in "AEIOU" else "de "
         fr["block.dohy.%s_crop" % key] = "Culture %s%s" % (of, name_fr.lower())
@@ -1245,6 +1559,7 @@ def lang():
 def main():
     trading_server()
     agriculture()
+    farming()
     spawn()
     lang()
     print("Ressources dohy ecrites.")

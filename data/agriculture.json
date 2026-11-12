@@ -314,5 +314,40 @@
   "feed_ration": 4,
   "trough_capacity": 64,
   "water_capacity": 32,
-  "water_per_bucket": 8
+  "water_per_bucket": 8,
+  "_farming": "Le tracteur, le silo et la pompe a carburant. Le carburant se compte en unites : un fluide en rend 'fluids[id]' par mB, un objet 'items[id]' par piece. Les fluides hbm:* sont ceux de NTM NEXT ; sans ce mod ils sont simplement ignores, et il reste le charbon et la lave. move_cost est en unites par bloc parcouru : un reservoir plein (4000) fait 4000 blocs a vide, 2000 au travail.",
+  "_tractor_level": "Niveau de Fermier pour poser et conduire un tracteur (le creatif en est dispense). 0 : aucun.",
+  "tractor_level": 10,
+  "farming": {
+    "tank": 4000,
+    "move_cost": 1.0,
+    "work_factor": 2.0,
+    "speed": 0.2,
+    "work_speed": 0.6,
+    "crop_capacity": 2304,
+    "seed_capacity": 1152,
+    "fertilizer_capacity": 576,
+    "silo_range": 4,
+    "silo_capacity": 16384,
+    "silo_buy_batch": 16,
+    "pump_tank": 16000,
+    "pump_rate": 40,
+    "pump_range": 3,
+    "fluids": {
+      "hbm:diesel": 1.0,
+      "hbm:petroil": 0.9,
+      "hbm:gasoline": 1.1,
+      "hbm:kerosene": 1.0,
+      "hbm:biofuel": 0.8,
+      "hbm:heatingoil": 0.7,
+      "hbm:ethanol": 0.6,
+      "minecraft:lava": 0.25
+    },
+    "items": {
+      "minecraft:coal": 250,
+      "minecraft:charcoal": 250,
+      "minecraft:coal_block": 2250,
+      "minecraft:blaze_rod": 400
+    }
+  }
 }

@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "hbm"
+    }
+  ],
+  "type": "hbm:assembly_machine",
+  "duration": 300,
+  "input_items": [
+    {
+      "count": 6,
+      "ingredient": "#c:plates/steel"
+    },
+    {
+      "ingredient": "minecraft:cauldron"
+    },
+    {
+      "ingredient": "hbm:motor"
+    }
+  ],
+  "order": 60023,
+  "output_items": [
+    "dohy:tractor_spreader"
+  ],
+  "power": 100
+}

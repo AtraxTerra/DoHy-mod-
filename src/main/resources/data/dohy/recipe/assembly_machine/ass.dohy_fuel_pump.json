@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "hbm"
+    }
+  ],
+  "type": "hbm:assembly_machine",
+  "duration": 300,
+  "input_items": [
+    {
+      "count": 6,
+      "ingredient": "#c:plates/steel"
+    },
+    {
+      "ingredient": "minecraft:bucket"
+    },
+    {
+      "ingredient": "hbm:motor"
+    }
+  ],
+  "order": 60026,
+  "output_items": [
+    "dohy:fuel_pump"
+  ],
+  "power": 100
+}

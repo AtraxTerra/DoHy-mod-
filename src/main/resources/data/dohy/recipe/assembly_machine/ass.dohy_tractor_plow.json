@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "hbm"
+    }
+  ],
+  "type": "hbm:assembly_machine",
+  "duration": 300,
+  "input_items": [
+    {
+      "count": 6,
+      "ingredient": "#c:plates/steel"
+    },
+    {
+      "count": 3,
+      "ingredient": "minecraft:iron_hoe"
+    }
+  ],
+  "order": 60021,
+  "output_items": [
+    "dohy:tractor_plow"
+  ],
+  "power": 100
+}

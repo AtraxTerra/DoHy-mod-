@@ -4,6 +4,10 @@ import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.client.boss.EventBossModel;
 import fr.atraxterra.dohy.client.boss.EventBossRenderer;
 import fr.atraxterra.dohy.client.boss.VolcaniaRenderer;
+import fr.atraxterra.dohy.agri.DoHyAgri;
+import fr.atraxterra.dohy.client.agri.TractorGeometry;
+import fr.atraxterra.dohy.client.agri.TractorModel;
+import fr.atraxterra.dohy.client.agri.TractorRenderer;
 import fr.atraxterra.dohy.client.mount.DancarokGeometry;
 import fr.atraxterra.dohy.client.mount.DancarokModel;
 import fr.atraxterra.dohy.client.mount.DancarokRenderer;
@@ -99,6 +103,7 @@ public final class DoHyClient {
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(PalaGolem.GUARDIAN_GOLEM.get(), GuardianGolemRenderer::new);
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
+        event.registerEntityRenderer(DoHyAgri.TRACTOR.get(), TractorRenderer::new);
         event.registerEntityRenderer(PalaPillage.DYNAMITE_ENTITY.get(), ThrownItemRenderer::new);
         // TntRenderer est type sur PrimedTnt, dont PalaPrimedTnt herite : le
         // rendu ne lit que l'etat de bloc et la meche, communs aux deux.
@@ -123,6 +128,7 @@ public final class DoHyClient {
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DancarokModel.LAYER, DancarokGeometry::createBodyLayer);
+        event.registerLayerDefinition(TractorModel.LAYER, TractorGeometry::createBodyLayer);
         PalaWitherGeometry.register(event);
         for (BossKind kind : BossKind.values()) {
             event.registerLayerDefinition(EventBossModel.layer(kind), () -> EventBossModel.definition(kind));
