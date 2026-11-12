@@ -175,6 +175,47 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 4) — les machines de l'agriculture en automates, contrats et pain d'épices
+
+**Demande** : « enchaîne 1 et 2 » — automatiser le moulin et la machine à pain, puis brancher
+l'agriculture sur les contrats et le métier de Fermier. Le joueur a validé en jeu le lot précédent
+(« c'est testé, parfait ») ; le tracteur et le silo attendent des fichiers qu'il fournira.
+
+**Fait** (`feat/agri-automatisation`) :
+- `AgriMachineBlockEntity` devient un `WorldlyContainer` : six cases d'entrée, trois de sortie,
+  entonnoir dessus ou de côté pour entrer, dessous pour sortir. Une sorte d'objet n'occupe qu'une
+  case d'entrée. La capacité d'objets de NeoForge (`Capabilities.Item.BLOCK`,
+  `WorldlyContainerWrapper`) est enregistrée pour les tuyaux des mods.
+- Cycle automatique : une farine en 10 ticks, une fournée en 40, sans XP ni pain en plus. Le
+  biogénérateur prend ses céréales par entonnoir. Une machine cassée rend son contenu.
+- Écrans : section « Dans la machine » (charger, tout reprendre, reprendre une pile).
+- Travail à la main : XP de Fermier (2 par farine, 8 à 40 par fournée).
+- `ContractType.PRODUCE` et `AgriProduction` : trois contrats du jour, un de la semaine ; la
+  production automatique compte pour celui qui a posé la machine. Dix commandes de trixium de plus
+  (52).
+- **Pain d'épices** : Fermier niveau 50, à la main seulement (`min_level` d'une fournée).
+
+**Vérifié en jeu** (client de la CI) :
+- chaîne entonnoir → moulin → entonnoir : 30 maïs, 12 blés, 6 kamuts → 10, 4 et 2 farines dans
+  l'entonnoir du dessous, 1 920 FE dépensés, la terre reste dans l'entonnoir du dessus ;
+- chaîne de la machine à pain : 16 farines de maïs → 16 pains, un pain de sorgho dont l'œuf est
+  arrivé par la capacité d'objets ; le rayon de miel (pain d'épices) n'entre pas ; 5 200 FE ;
+- capacité d'objets : terre et rayon de miel refusés, rien n'entre par dessous, rien ne sort par
+  dessus ;
+- biogénérateur : 20 avoines par entonnoir → 8 000 FE ;
+- contrats : la chaîne seule les fait avancer (16 farines sur 120, 17 pains sur 60), l'XP de
+  Fermier reste à 0 ; à la main +2 XP par farine, +12 par fournée ; contrat fini → 15 300 $ ;
+- « Charger » ne prend qu'une pile par sorte et laisse la terre ; reprendre une pile, tout
+  reprendre ; machine cassée → contenu au sol ;
+- pain d'épices : refusé au niveau 45, cuit au niveau 50 (+20 XP), 6 → 10 PV, faim +8, effets ;
+- commandes de trixium : 52, aucune répétition d'un jour sur l'autre sur 520 jours.
+
+**Non vérifié** : un tuyau ou un convoyeur de NTM NEXT réel (la capacité d'objets répond comme à
+un tuyau, mais NTM n'est pas sur la machine de test).
+
+**À savoir** : le pool des commandes de trixium passant de 42 à 52, la commande du jour de la mise
+à jour peut ne pas être celle affichée la veille.
+
 ### 2026-11-12 (suite 3) — l'agriculture, et le cours de l'heure
 
 **Demandes** : « la partie agriculture (dans un onglet à part du palamod) », « aide toi du wiki de
