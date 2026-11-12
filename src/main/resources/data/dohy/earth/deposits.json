@@ -1,0 +1,774 @@
+{
+  "_comment": "Les gisements de la Terre, GENERE par tools/earth_deposits.py. Ils ne servent que dans un monde dont un datapack decrit la carte (earth.json). 'veins' : filons par chunk, en moyenne ; 'radius' : une poche ronde au lieu d'un filon. Change 'version' pour resservir les chunks deja visites.",
+  "version": 1,
+  "per_tick": 12,
+  "deposits": [
+    {
+      "id": "coal",
+      "ore": "minecraft:coal_ore",
+      "deepslate": "minecraft:deepslate_coal_ore",
+      "countries": [
+        "CHN",
+        "IND",
+        "USA",
+        "IDN",
+        "AUS",
+        "RUS",
+        "ZAF",
+        "DEU",
+        "POL",
+        "KAZ",
+        "COL",
+        "UKR",
+        "MNG"
+      ],
+      "min_y": 0,
+      "max_y": 120,
+      "veins": 3.0,
+      "size": 14
+    },
+    {
+      "id": "iron",
+      "ore": "minecraft:iron_ore",
+      "deepslate": "minecraft:deepslate_iron_ore",
+      "countries": [
+        "AUS",
+        "BRA",
+        "CHN",
+        "IND",
+        "RUS",
+        "UKR",
+        "SWE",
+        "ZAF",
+        "CAN",
+        "USA",
+        "KAZ",
+        "IRN",
+        "MRT",
+        "LBR"
+      ],
+      "min_y": -32,
+      "max_y": 72,
+      "veins": 3.0,
+      "size": 9
+    },
+    {
+      "id": "copper",
+      "ore": "minecraft:copper_ore",
+      "deepslate": "minecraft:deepslate_copper_ore",
+      "countries": [
+        "CHL",
+        "PER",
+        "COD",
+        "ZMB",
+        "CHN",
+        "USA",
+        "AUS",
+        "IDN",
+        "MEX",
+        "RUS",
+        "KAZ",
+        "POL"
+      ],
+      "min_y": -16,
+      "max_y": 96,
+      "veins": 3.0,
+      "size": 10
+    },
+    {
+      "id": "gold",
+      "ore": "minecraft:gold_ore",
+      "deepslate": "minecraft:deepslate_gold_ore",
+      "countries": [
+        "CHN",
+        "AUS",
+        "USA",
+        "CAN",
+        "ZAF",
+        "GHA",
+        "PER",
+        "MEX",
+        "UZB",
+        "IDN",
+        "BRA",
+        "MLI",
+        "BFA",
+        "TZA",
+        "PNG"
+      ],
+      "boxes": [
+        {
+          "south": 50,
+          "north": 66,
+          "west": 100,
+          "east": 160
+        }
+      ],
+      "min_y": -56,
+      "max_y": 32,
+      "veins": 2.0,
+      "size": 8
+    },
+    {
+      "id": "diamond",
+      "ore": "minecraft:diamond_ore",
+      "deepslate": "minecraft:deepslate_diamond_ore",
+      "countries": [
+        "BWA",
+        "COD",
+        "ZAF",
+        "AGO",
+        "NAM",
+        "SLE",
+        "LSO",
+        "ZWE"
+      ],
+      "boxes": [
+        {
+          "south": 58,
+          "north": 72,
+          "west": 105,
+          "east": 135
+        },
+        {
+          "south": 60,
+          "north": 68,
+          "west": -120,
+          "east": -100
+        },
+        {
+          "south": -20,
+          "north": -14,
+          "west": 123,
+          "east": 130
+        }
+      ],
+      "min_y": -60,
+      "max_y": 8,
+      "veins": 1.5,
+      "size": 6
+    },
+    {
+      "id": "emerald",
+      "ore": "minecraft:emerald_ore",
+      "deepslate": "minecraft:deepslate_emerald_ore",
+      "countries": [
+        "COL",
+        "ZMB",
+        "ZWE",
+        "AFG",
+        "PAK",
+        "MDG"
+      ],
+      "boxes": [
+        {
+          "south": -22,
+          "north": -10,
+          "west": -46,
+          "east": -38
+        }
+      ],
+      "min_y": -16,
+      "max_y": 120,
+      "veins": 1.0,
+      "size": 4
+    },
+    {
+      "id": "lapis",
+      "ore": "minecraft:lapis_ore",
+      "deepslate": "minecraft:deepslate_lapis_ore",
+      "countries": [
+        "AFG",
+        "CHL",
+        "PAK"
+      ],
+      "boxes": [
+        {
+          "south": 50,
+          "north": 54,
+          "west": 100,
+          "east": 108
+        }
+      ],
+      "min_y": -40,
+      "max_y": 40,
+      "veins": 2.0,
+      "size": 7
+    },
+    {
+      "id": "redstone",
+      "ore": "minecraft:redstone_ore",
+      "deepslate": "minecraft:deepslate_redstone_ore",
+      "countries": [
+        "ESP",
+        "CHN",
+        "KGZ",
+        "TJK",
+        "MEX",
+        "ITA",
+        "SVN"
+      ],
+      "min_y": -60,
+      "max_y": 16,
+      "veins": 2.5,
+      "size": 8
+    },
+    {
+      "id": "uranium",
+      "ore": "hbm:ore_uranium",
+      "deepslate": "hbm:ore_uranium_deepslate",
+      "countries": [
+        "KAZ",
+        "AUS",
+        "NAM",
+        "NER",
+        "UZB",
+        "UKR",
+        "ZAF",
+        "CHN",
+        "IND",
+        "CZE"
+      ],
+      "boxes": [
+        {
+          "south": 54,
+          "north": 60,
+          "west": -110,
+          "east": -102
+        },
+        {
+          "south": 37,
+          "north": 45,
+          "west": -110,
+          "east": -103
+        },
+        {
+          "south": 50,
+          "north": 56,
+          "west": 108,
+          "east": 120
+        }
+      ],
+      "min_y": -56,
+      "max_y": 32,
+      "veins": 2.0,
+      "size": 6
+    },
+    {
+      "id": "thorium",
+      "ore": "hbm:ore_thorium",
+      "deepslate": "hbm:ore_thorium_deepslate",
+      "countries": [
+        "IND",
+        "BRA",
+        "AUS",
+        "EGY",
+        "TUR",
+        "NOR",
+        "VEN"
+      ],
+      "min_y": -56,
+      "max_y": 48,
+      "veins": 1.5,
+      "size": 5
+    },
+    {
+      "id": "rare_earth",
+      "ore": "hbm:ore_rare",
+      "deepslate": "hbm:ore_rare_deepslate",
+      "countries": [
+        "CHN",
+        "AUS",
+        "MMR",
+        "VNM",
+        "BRA",
+        "IND",
+        "GRL",
+        "SWE"
+      ],
+      "boxes": [
+        {
+          "south": 33,
+          "north": 37,
+          "west": -118,
+          "east": -113
+        },
+        {
+          "south": 66,
+          "north": 70,
+          "west": 30,
+          "east": 40
+        }
+      ],
+      "min_y": -56,
+      "max_y": 32,
+      "veins": 1.5,
+      "size": 5
+    },
+    {
+      "id": "lithium",
+      "ore": "hbm:ore_gneiss_lithium",
+      "countries": [
+        "CHL",
+        "ARG",
+        "BOL",
+        "AUS",
+        "CHN",
+        "ZWE",
+        "PRT"
+      ],
+      "min_y": 0,
+      "max_y": 48,
+      "veins": 1.5,
+      "size": 6
+    },
+    {
+      "id": "cobalt",
+      "ore": "hbm:ore_cobalt",
+      "deepslate": "hbm:ore_cobalt_deepslate",
+      "countries": [
+        "COD",
+        "ZMB",
+        "AUS",
+        "PHL",
+        "CUB",
+        "MDG",
+        "MAR"
+      ],
+      "boxes": [
+        {
+          "south": 66,
+          "north": 70,
+          "west": 86,
+          "east": 92
+        }
+      ],
+      "min_y": -60,
+      "max_y": -20,
+      "veins": 1.5,
+      "size": 4
+    },
+    {
+      "id": "titanium",
+      "ore": "hbm:ore_titanium",
+      "deepslate": "hbm:ore_titanium_deepslate",
+      "countries": [
+        "CHN",
+        "ZAF",
+        "AUS",
+        "MOZ",
+        "NOR",
+        "UKR",
+        "IND",
+        "MDG",
+        "KEN",
+        "SEN",
+        "VNM"
+      ],
+      "min_y": -56,
+      "max_y": 48,
+      "veins": 2.0,
+      "size": 6
+    },
+    {
+      "id": "aluminium",
+      "ore": "hbm:ore_aluminium",
+      "deepslate": "hbm:ore_aluminium_deepslate",
+      "countries": [
+        "AUS",
+        "GIN",
+        "CHN",
+        "BRA",
+        "IND",
+        "JAM",
+        "IDN",
+        "KAZ",
+        "SAU",
+        "VNM",
+        "GRC",
+        "FRA"
+      ],
+      "min_y": -32,
+      "max_y": 96,
+      "veins": 2.5,
+      "size": 6
+    },
+    {
+      "id": "tungsten",
+      "ore": "hbm:ore_tungsten",
+      "deepslate": "hbm:ore_tungsten_deepslate",
+      "countries": [
+        "CHN",
+        "VNM",
+        "BOL",
+        "RWA",
+        "AUT",
+        "PRT",
+        "ESP",
+        "PRK"
+      ],
+      "min_y": -56,
+      "max_y": 64,
+      "veins": 2.0,
+      "size": 8
+    },
+    {
+      "id": "lead",
+      "ore": "hbm:ore_lead",
+      "deepslate": "hbm:ore_lead_deepslate",
+      "countries": [
+        "CHN",
+        "AUS",
+        "USA",
+        "PER",
+        "MEX",
+        "IND",
+        "BOL",
+        "SWE",
+        "POL",
+        "IRL"
+      ],
+      "min_y": -56,
+      "max_y": 64,
+      "veins": 2.0,
+      "size": 9
+    },
+    {
+      "id": "beryllium",
+      "ore": "hbm:ore_beryllium",
+      "deepslate": "hbm:ore_beryllium_deepslate",
+      "countries": [
+        "CHN",
+        "MOZ",
+        "BRA",
+        "MDG",
+        "RWA"
+      ],
+      "boxes": [
+        {
+          "south": 37,
+          "north": 42,
+          "west": -114,
+          "east": -109
+        }
+      ],
+      "min_y": -56,
+      "max_y": 32,
+      "veins": 1.5,
+      "size": 4
+    },
+    {
+      "id": "sulfur",
+      "ore": "hbm:ore_sulfur",
+      "deepslate": "hbm:ore_sulfur_deepslate",
+      "countries": [
+        "CHN",
+        "USA",
+        "SAU",
+        "KAZ",
+        "ARE",
+        "ITA",
+        "JPN",
+        "IDN",
+        "POL"
+      ],
+      "min_y": -56,
+      "max_y": 64,
+      "veins": 2.0,
+      "size": 8
+    },
+    {
+      "id": "niter",
+      "ore": "hbm:ore_niter",
+      "deepslate": "hbm:ore_niter_deepslate",
+      "countries": [
+        "CHL",
+        "IND",
+        "PER",
+        "BOL",
+        "EGY"
+      ],
+      "min_y": -32,
+      "max_y": 64,
+      "veins": 2.5,
+      "size": 6
+    },
+    {
+      "id": "fluorite",
+      "ore": "hbm:ore_fluorite",
+      "deepslate": "hbm:ore_fluorite_deepslate",
+      "countries": [
+        "CHN",
+        "MEX",
+        "MNG",
+        "ZAF",
+        "VNM",
+        "ESP",
+        "GBR",
+        "FRA",
+        "DEU"
+      ],
+      "min_y": -32,
+      "max_y": 80,
+      "veins": 2.0,
+      "size": 4
+    },
+    {
+      "id": "asbestos",
+      "ore": "hbm:ore_asbestos",
+      "deepslate": "hbm:ore_asbestos_deepslate",
+      "countries": [
+        "KAZ",
+        "CHN",
+        "BRA",
+        "ZWE"
+      ],
+      "boxes": [
+        {
+          "south": 45,
+          "north": 49,
+          "west": -73,
+          "east": -70
+        },
+        {
+          "south": 56,
+          "north": 60,
+          "west": 58,
+          "east": 62
+        }
+      ],
+      "min_y": -32,
+      "max_y": 64,
+      "veins": 1.5,
+      "size": 4
+    },
+    {
+      "id": "cinnabar",
+      "ore": "hbm:ore_cinnabar",
+      "deepslate": "hbm:ore_cinnabar_deepslate",
+      "countries": [
+        "ESP",
+        "CHN",
+        "KGZ",
+        "TJK",
+        "MEX",
+        "ITA",
+        "SVN",
+        "PER"
+      ],
+      "min_y": -56,
+      "max_y": 32,
+      "veins": 1.5,
+      "size": 4
+    },
+    {
+      "id": "coltan",
+      "ore": "hbm:ore_coltan",
+      "deepslate": "hbm:ore_coltan_deepslate",
+      "countries": [
+        "COD",
+        "RWA",
+        "BRA",
+        "NGA",
+        "MOZ",
+        "ETH",
+        "BDI"
+      ],
+      "min_y": -40,
+      "max_y": 40,
+      "veins": 1.5,
+      "size": 4
+    },
+    {
+      "id": "lignite",
+      "ore": "hbm:ore_lignite",
+      "deepslate": "hbm:ore_lignite_deepslate",
+      "countries": [
+        "DEU",
+        "POL",
+        "CZE",
+        "GRC",
+        "TUR",
+        "AUS",
+        "SRB",
+        "BGR",
+        "ROU"
+      ],
+      "min_y": 0,
+      "max_y": 96,
+      "veins": 1.5,
+      "size": 20
+    },
+    {
+      "id": "oil",
+      "ore": "hbm:ore_oil",
+      "countries": [
+        "SAU",
+        "IRQ",
+        "IRN",
+        "KWT",
+        "ARE",
+        "QAT",
+        "OMN",
+        "VEN",
+        "NGA",
+        "LBY",
+        "DZA",
+        "AGO",
+        "AZE",
+        "IDN",
+        "MYS",
+        "BRN",
+        "GAB",
+        "COG",
+        "GNQ",
+        "SDN",
+        "SDS",
+        "EGY",
+        "SYR",
+        "YEM",
+        "TKM",
+        "ECU",
+        "COL",
+        "ROU",
+        "TTO"
+      ],
+      "boxes": [
+        {
+          "south": 56,
+          "north": 68,
+          "west": 60,
+          "east": 85
+        },
+        {
+          "south": 26,
+          "north": 36,
+          "west": -106,
+          "east": -93
+        },
+        {
+          "south": 26,
+          "north": 29.5,
+          "west": -95,
+          "east": -88
+        },
+        {
+          "south": 56,
+          "north": 62,
+          "west": 0,
+          "east": 5
+        },
+        {
+          "south": 24,
+          "north": 30,
+          "west": 48,
+          "east": 54
+        },
+        {
+          "south": 38,
+          "north": 47,
+          "west": 49,
+          "east": 55
+        },
+        {
+          "south": 68,
+          "north": 71,
+          "west": -156,
+          "east": -146
+        },
+        {
+          "south": 46,
+          "north": 49,
+          "west": -104,
+          "east": -100
+        },
+        {
+          "south": 18,
+          "north": 21,
+          "west": -94,
+          "east": -90
+        },
+        {
+          "south": -26,
+          "north": -22,
+          "west": -44,
+          "east": -40
+        },
+        {
+          "south": 54,
+          "north": 58,
+          "west": -115,
+          "east": -110
+        },
+        {
+          "south": 45,
+          "north": 47,
+          "west": 123,
+          "east": 126
+        },
+        {
+          "south": -40,
+          "north": -37,
+          "west": -70,
+          "east": -68
+        }
+      ],
+      "min_y": 15,
+      "max_y": 39,
+      "veins": 0.15,
+      "radius": 6
+    },
+    {
+      "id": "bedrock_oil",
+      "ore": "hbm:ore_bedrock_oil",
+      "countries": [
+        "SAU",
+        "IRQ",
+        "IRN",
+        "KWT",
+        "ARE",
+        "QAT",
+        "VEN"
+      ],
+      "boxes": [
+        {
+          "south": 56,
+          "north": 68,
+          "west": 60,
+          "east": 85
+        },
+        {
+          "south": 26,
+          "north": 36,
+          "west": -106,
+          "east": -93
+        }
+      ],
+      "min_y": -63,
+      "max_y": -61,
+      "veins": 0.03,
+      "size": 3
+    },
+    {
+      "id": "zinc",
+      "ore": "create:zinc_ore",
+      "deepslate": "create:deepslate_zinc_ore",
+      "countries": [
+        "CHN",
+        "PER",
+        "AUS",
+        "IND",
+        "USA",
+        "MEX",
+        "BOL",
+        "KAZ",
+        "SWE",
+        "IRL"
+      ],
+      "min_y": -60,
+      "max_y": 70,
+      "veins": 2.0,
+      "size": 8
+    }
+  ]
+}

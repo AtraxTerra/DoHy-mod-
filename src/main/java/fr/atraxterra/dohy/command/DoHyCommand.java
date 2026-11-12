@@ -98,12 +98,14 @@ public final class DoHyCommand {
         boolean notations = fr.atraxterra.dohy.faction.NotationConfig.load(source.getServer());
         boolean server = fr.atraxterra.dohy.tech.TradingServerConfig.load(source.getServer());
         boolean agriculture = fr.atraxterra.dohy.agri.AgriConfig.load(source.getServer());
+        boolean earth = fr.atraxterra.dohy.earth.EarthData.load(source.getServer())
+                && fr.atraxterra.dohy.earth.EarthDeposits.load(source.getServer());
         boolean upgrades = UpgradeConfig.load(source.getServer());
         boolean jobs = JobConfig.load(source.getServer());
         boolean auction = fr.atraxterra.dohy.auction.AuctionConfig.load(source.getServer());
 
         if (prices && tiers && progression && contracts && crates && economy && museum && upgrades && jobs
-                && auction && notations && server && agriculture) {
+                && auction && notations && server && agriculture && earth) {
             source.sendSuccess(() -> Component.literal(
                             "Recharge : " + Prices.book().size() + " items, paliers de collection a jour.")
                     .withStyle(ChatFormatting.GREEN), true);
@@ -121,7 +123,8 @@ public final class DoHyCommand {
                 + (jobs ? "metiers ok" : "metiers en echec") + ", "
                 + (notations ? "notations ok" : "notations en echec") + ", "
                 + (server ? "serveur de trading ok" : "serveur de trading en echec") + ", "
-                + (agriculture ? "agriculture ok" : "agriculture en echec")
+                + (agriculture ? "agriculture ok" : "agriculture en echec") + ", "
+                + (earth ? "terre ok" : "terre en echec")
                 + "). Les anciennes donnees restent en service. Voir les logs."));
         return 0;
     }

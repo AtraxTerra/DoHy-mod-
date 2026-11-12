@@ -43,7 +43,7 @@ import java.util.List;
 final class SpawnBuilder {
 
     /** A augmenter des que le dessin change : un spawn d'une autre version est reconstruit. */
-    static final int VERSION = 5;
+    static final int VERSION = 6;
 
     /** Le niveau du sol du parvis : on marche a {@code FLOOR + 1}. */
     static final int FLOOR = 200;
@@ -57,7 +57,7 @@ final class SpawnBuilder {
      */
     static final int CLEAR_X = 118;
     static final int CLEAR_Z_MIN = -118;
-    static final int CLEAR_Z_MAX = 132;
+    static final int CLEAR_Z_MAX = 164;
     static final int CLEAR_Y_MIN = 106;
     static final int CLEAR_Y_MAX = 300;
 
@@ -262,7 +262,186 @@ final class SpawnBuilder {
 
     // -- Le plan ---------------------------------------------------------------------------
 
-    static Plan plan() {
+    // -- La carte du monde ------------------------------------------------------------------
+
+    /** La dalle de la carte commence ici, au bout de la passerelle qui part de la plateforme. */
+    static final int MAP_Z = 98;
+    /** Le puits de saut : un carre de cinq blocs, quelque part dans l'ocean de la carte. */
+    static final int PIT_HALF = 2;
+
+    /** Ou tombe la carte dans le spawn, et ou s'ouvre son puits. */
+    record MapSite(int width, int height, int pitX, int pitZ) {
+        /** Le x du pixel le plus a l'ouest : la carte est centree, l'ouest a la gauche de qui arrive. */
+        int west() {
+            return (width - 1) / 2;
+        }
+
+        /** Le z du pixel le plus au nord : le nord est au fond. */
+        int north() {
+            return MAP_Z + height - 1;
+        }
+
+        /** La colonne de la carte sous ce x, ou -1. */
+        int column(int x) {
+            int column = west() - x;
+            return column >= 0 && column < width ? column : -1;
+        }
+
+        /** La ligne de la carte sous ce z, ou -1. */
+        int row(int z) {
+            int row = north() - z;
+            return row >= 0 && row < height ? row : -1;
+        }
+
+        boolean inPit(double x, double z) {
+            return Math.abs(Math.floor(x) - pitX) <= PIT_HALF && Math.abs(Math.floor(z) - pitZ) <= PIT_HALF;
+        }
+    }
+
+    /**
+     * Ou poser la carte et son puits pour ce dessin, ou {@code null} sans dessin.
+     * Le puits s'ouvre dans la plus grande etendue de mer proche du centre : on
+     * ne perce pas un continent.
+     */
+    static MapSite site(int[][] mosaic) {
+        if (mosaic == null || mosaic.length == 0 || mosaic[0].length == 0) {
+            return null;
+        }
+        int height = mosaic.length;
+        int width = mosaic[0].length;
+        int bestRow = height / 2;
+        int bestColumn = width / 2;
+        double bestScore = Double.NEGATIVE_INFINITY;
+        for (int row = 4; row < height - 4; row++) {
+            for (int column = 4; column < width - 4; column++) {
+                int sea = 0;
+                for (int dz = -4; dz <= 4; dz++) {
+                    for (int dx = -4; dx <= 4; dx++) {
+                        if (mosaic[row + dz][column + dx] == 0) {
+                            sea++;
+                        }
+                    }
+                }
+                if (sea < 81) {
+                    continue;
+                }
+                // au plus pres du tiers gauche de la carte, a mi-hauteur : l'Atlantique d'une carte du monde
+                double score = -Math.hypot(column - width * 0.38d, (row - height * 0.42d) * 1.5d);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestRow = row;
+                    bestColumn = column;
+                }
+            }
+        }
+        MapSite site = new MapSite(width, height, 0, 0);
+        return new MapSite(width, height, site.west() - bestColumn, site.north() - bestRow);
+    }
+
+    /**
+     * La carte du monde : une dalle posee derriere la plateforme d'arrivee,
+     * un pixel par bloc, chaque pays d'une des sept teintes d'une carte
+     * politique, la mer en bleu. On y entre par le sud, le nord au fond : elle
+     * se lit a l'endroit en arrivant. Un puits y est ouvert dans l'ocean.
+     */
+    private void worldMap(int[][] mosaic) {
+        MapSite site = site(mosaic);
+        if (site == null) {
+            return;
+        }
+        BlockState[] tints = {block("blue_concrete"), block("lime_concrete"), block("yellow_concrete"),
+                block("orange_terracotta"), block("pink_concrete"), block("white_concrete"),
+                block("light_gray_concrete"), block("green_concrete")};
+        BlockState sea = block("blue_concrete");
+        BlockState shallows = block("light_blue_concrete");
+        BlockState seaLight = block("blue_stained_glass");
+        int west = site.west();
+        int east = west - site.width() + 1;
+        int south = MAP_Z;
+        int north = site.north();
+        // la place d'abord : aucun piton ne traverse la dalle ni ne la surplombe
+        carve(east - 3, FLOOR - 1, PAD_Z + 15, west + 3, CLEAR_Y_MAX, north + 3);
+        // la passerelle, de la plateforme a la dalle
+        for (int z = PAD_Z + 12; z < south - 2; z++) {
+            for (int x = -3; x <= 3; x++) {
+                put(x, FLOOR, z, Math.abs(x) == 3 ? steel : x == 0 && Math.floorMod(z, 4) < 2 ? yellow : concrete);
+                put(x, FLOOR - 1, z, Math.abs(x) == 3 ? steel : darkConcrete);
+            }
+            put(3, FLOOR + 1, z, darkConcrete);
+            put(-3, FLOOR + 1, z, darkConcrete);
+        }
+        carve(-2, FLOOR + 1, PAD_Z + 12, 2, FLOOR + 2, PAD_Z + 14);
+        // la dalle : un cadre d'acier, un marchepied tout autour, la carte au milieu
+        for (int x = east - 3; x <= west + 3; x++) {
+            for (int z = south - 3; z <= north + 3; z++) {
+                boolean frame = x < east - 1 || x > west + 1 || z < south - 1 || z > north + 1;
+                boolean rim = x == east - 3 || x == west + 3 || z == south - 3 || z == north + 3;
+                put(x, FLOOR - 1, z, rim || Math.floorMod(x + z, 8) == 0 ? steel : darkConcrete);
+                put(x, FLOOR, z, rim ? steel : frame ? concrete : darkConcrete);
+                if (rim && !(z == south - 3 && Math.abs(x) <= 2)) {
+                    put(x, FLOOR + 1, z, darkConcrete);
+                    if (Math.floorMod(x + z, 6) == 0) {
+                        put(x, FLOOR + 2, z, lamp);
+                    }
+                }
+            }
+        }
+        for (int row = 0; row < site.height(); row++) {
+            for (int column = 0; column < site.width(); column++) {
+                int x = west - column;
+                int z = north - row;
+                int tint = mosaic[row][column];
+                if (tint > 0) {
+                    put(x, FLOOR, z, tints[Math.min(tint, tints.length - 1)]);
+                    continue;
+                }
+                boolean coast = false;
+                for (int[] side : new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+                    int r = row + side[1];
+                    int c = column + side[0];
+                    coast |= r >= 0 && c >= 0 && r < site.height() && c < site.width() && mosaic[r][c] > 0;
+                }
+                // la mer : plus claire le long des cotes, eclairee par en dessous de loin en loin
+                if (!coast && Math.floorMod(x, 7) == 3 && Math.floorMod(z, 7) == 3) {
+                    put(x, FLOOR, z, seaLight);
+                    put(x, FLOOR - 1, z, flood);
+                } else {
+                    put(x, FLOOR, z, coast ? shallows : sea);
+                }
+            }
+        }
+        // le puits : un trou de cinq blocs, cercle de jaune, par ou l'on saute
+        int pitX = site.pitX();
+        int pitZ = site.pitZ();
+        for (int x = pitX - PIT_HALF - 1; x <= pitX + PIT_HALF + 1; x++) {
+            for (int z = pitZ - PIT_HALF - 1; z <= pitZ + PIT_HALF + 1; z++) {
+                boolean hole = Math.abs(x - pitX) <= PIT_HALF && Math.abs(z - pitZ) <= PIT_HALF;
+                if (hole) {
+                    carve(x, FLOOR - 1, z, x, FLOOR, z);
+                } else {
+                    put(x, FLOOR, z, Math.floorMod(x + z, 2) == 0 ? yellow : black);
+                    put(x, FLOOR - 1, z, steel);
+                }
+            }
+        }
+        for (int corner = 0; corner < 4; corner++) {
+            int x = pitX + (corner % 2 == 0 ? -1 : 1) * (PIT_HALF + 1);
+            int z = pitZ + (corner < 2 ? -1 : 1) * (PIT_HALF + 1);
+            lampPost(x, FLOOR + 1, z, 2);
+        }
+        labels.add(new Label(new BlockPos(pitX, FLOOR + 5, pitZ), "SAUT", 0xFAC400, 3.0f));
+        labels.add(new Label(new BlockPos(pitX, FLOOR + 3, pitZ), "Saute : tu seras parachute au hasard sur la Terre",
+                0xFFFFFF, 1.0f));
+        labels.add(new Label(new BlockPos(0, FLOOR + 4, south - 4), "LA TERRE", 0xFFFFFF, 2.5f));
+        labels.add(new Label(new BlockPos(0, FLOOR + 2, south - 4), "Marche sur la carte : elle te dit le pays",
+                0xFAC400, 1.0f));
+    }
+
+    /**
+     * @param mosaic la carte du monde a dessiner derriere la plateforme, une teinte par pixel
+     *               (0 : la mer), le nord en premiere ligne ; {@code null} : pas de carte
+     */
+    static Plan plan(int[][] mosaic) {
         SpawnBuilder builder = new SpawnBuilder();
         builder.rocks();
         builder.forecourt();
@@ -282,6 +461,7 @@ final class SpawnBuilder {
         builder.ring();
         builder.pylon();
         builder.industry();
+        builder.worldMap(mosaic);
         return new Plan(builder.blocks, builder.labels);
     }
 
