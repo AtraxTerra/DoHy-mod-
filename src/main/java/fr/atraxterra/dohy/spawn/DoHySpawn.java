@@ -73,6 +73,20 @@ public final class DoHySpawn {
                     .copyOnDeath()
                     .build());
 
+    /** Ou en est la recompense quotidienne du joueur. */
+    public static final Supplier<AttachmentType<SpawnDaily.State>> DAILY = ATTACHMENTS.register(
+            "spawn_daily", () -> AttachmentType.builder(() -> SpawnDaily.State.NONE)
+                    .serialize(SpawnDaily.State.MAP_CODEC, state -> !state.isNone())
+                    .copyOnDeath()
+                    .build());
+
+    /** Vrai des la premiere connexion : un joueur n'est accueilli au spawn qu'une fois. */
+    public static final Supplier<AttachmentType<Boolean>> WELCOMED = ATTACHMENTS.register(
+            "spawn_welcomed", () -> AttachmentType.builder(() -> false)
+                    .serialize(Codec.BOOL.fieldOf("welcomed"), value -> value)
+                    .copyOnDeath()
+                    .build());
+
     /** La version du spawn construit, gardee sur sa dimension ; 0 tant qu'il n'existe pas. */
     public static final Supplier<AttachmentType<Integer>> BUILT = ATTACHMENTS.register(
             "spawn_built", () -> AttachmentType.builder(() -> 0)

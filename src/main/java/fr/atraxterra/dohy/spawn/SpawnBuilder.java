@@ -43,7 +43,7 @@ import java.util.List;
 final class SpawnBuilder {
 
     /** A augmenter des que le dessin change : un spawn d'une autre version est reconstruit. */
-    static final int VERSION = 4;
+    static final int VERSION = 5;
 
     /** Le niveau du sol du parvis : on marche a {@code FLOOR + 1}. */
     static final int FLOOR = 200;
@@ -60,6 +60,11 @@ final class SpawnBuilder {
     static final int CLEAR_Z_MAX = 132;
     static final int CLEAR_Y_MIN = 106;
     static final int CLEAR_Y_MAX = 300;
+
+    /** Les deux tableaux de l'atrium : {@link SpawnBoards} en reecrit le texte. */
+    static final BlockPos BOARD_CONTEST = new BlockPos(-8, FLOOR + 9, -19);
+    static final BlockPos BOARD_PROFILE = new BlockPos(8, FLOOR + 9, -19);
+    static final float BOARD_SCALE = 0.9f;
 
     /** Une etiquette a poser : ou, quoi, de quelle couleur, a quelle taille. */
     record Label(BlockPos pos, String text, int color, float scale) {
@@ -264,6 +269,8 @@ final class SpawnBuilder {
         builder.garden();
         builder.boxes();
         builder.nave();
+        builder.services();
+        builder.decor();
         builder.doors();
         builder.porch();
         builder.base();
@@ -524,6 +531,8 @@ final class SpawnBuilder {
             case CONTRACTS -> "blue_concrete";
             case MUSEUM -> "magenta_concrete";
             case RETURN -> "red_concrete";
+            case DAILY -> "yellow_concrete";
+            case PORTALS -> "purple_concrete";
         });
     }
 
@@ -798,16 +807,16 @@ final class SpawnBuilder {
     }
 
     /** Une jardiniere de pierre taillee, de trois blocs de cote, plantee en son milieu. */
-    private void planter(int cx, int cz, int height) {
+    private void planter(int cx, int cz, int floor, int height) {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 boolean centre = dx == 0 && dz == 0;
-                fill(cx + dx, FLOOR + 1, cz + dz, cx + dx, FLOOR + height, cz + dz, centre ? dirt : rib);
+                fill(cx + dx, floor + 1, cz + dz, cx + dx, floor + height, cz + dz, centre ? dirt : rib);
             }
         }
-        put(cx, FLOOR + height, cz, moss);
-        put(cx, FLOOR + height + 1, cz, shrub);
-        put(cx, FLOOR + height + 2, cz, blossom);
+        put(cx, floor + height, cz, moss);
+        put(cx, floor + height + 1, cz, shrub);
+        put(cx, floor + height + 2, cz, blossom);
     }
 
     /**
@@ -832,8 +841,8 @@ final class SpawnBuilder {
         }
         put(0, FLOOR + 5, -19, shrub);
         for (int side = -1; side <= 1; side += 2) {
-            planter(4 * side, -24, 1);
-            planter(4 * side, -14, 1);
+            planter(4 * side, -24, FLOOR, 1);
+            planter(4 * side, -14, FLOOR, 1);
             fill(3 * side, FLOOR + 1, -20, 3 * side, FLOOR + 1, -18, rail);
             // un mur vert : un bac, puis du feuillage sur trente blocs
             fill(4 * side, FLOOR + 1, CORE_NORTH + 2, 5 * side, FLOOR + 2, CORE_NORTH + 2, rib);
@@ -927,14 +936,88 @@ final class SpawnBuilder {
                     index == 0 ? "COMMERCE" : "CARRIERE", 0xFFFFFF, 2.0f));
             stair(side, -29, -28, 19, FLOOR + 1);
             stair(side, -21, -20, 19, FLOOR + 1 + STOREY);
-            // deux bancs de bois par galerie, face a l'atrium
-            for (int level = 1; level <= 2; level++) {
-                fill(3 * side, FLOOR + level * STOREY + 1, -6, 7 * side, FLOOR + level * STOREY + 1, -6, rail);
-            }
+            // un banc de bois sur la premiere galerie, face a l'atrium
+            fill(3 * side, FLOOR + STOREY + 1, -6, 7 * side, FLOOR + STOREY + 1, -6, rail);
         }
         // la borne du retour, a droite en sortant
         put(-6, FLOOR + 1, 3, rib);
         terminal(-6, FLOOR + 2, 3, Direction.NORTH, SpawnTerminalBlock.Kind.RETURN, new BlockPos(-6, FLOOR + 3, 3));
+    }
+
+    /**
+     * Les services du portail et les tableaux de l'atrium : la borne de la
+     * recompense quotidienne et celle des departs, encastrees dans les deux
+     * piles du portail ; au premier etage, deux panneaux noirs sur les piles
+     * du milieu, devant lesquels flottent le classement du concours et le
+     * profil du joueur.
+     */
+    private void services() {
+        SpawnTerminalBlock.Kind[] kinds = {SpawnTerminalBlock.Kind.DAILY, SpawnTerminalBlock.Kind.PORTALS};
+        for (int index = 0; index < 2; index++) {
+            int x = index == 0 ? -9 : 9;
+            terminal(x, FLOOR + 2, CORE_SOUTH, Direction.SOUTH, kinds[index],
+                    new BlockPos(x, FLOOR + 4, CORE_SOUTH + 1));
+            put(x, FLOOR + 3, CORE_SOUTH, accentFor(kinds[index]));
+            put(x, FLOOR, CORE_SOUTH + 2, lamp);
+            fill(x, FLOOR + 9, -20, x, FLOOR + 12, -18, black);
+        }
+        labels.add(new Label(BOARD_CONTEST, "...", 0xFFFFFF, BOARD_SCALE));
+        labels.add(new Label(BOARD_PROFILE, "...", 0xFFFFFF, BOARD_SCALE));
+        labels.add(new Label(new BlockPos(BOARD_CONTEST.getX(), FLOOR + 11, -19), "CONCOURS DE TRIXIUM", 0xC77DFF,
+                1.1f));
+        labels.add(new Label(new BlockPos(BOARD_PROFILE.getX(), FLOOR + 11, -19), "TON PROFIL", 0xFAC400, 1.1f));
+    }
+
+    /**
+     * Le decor : un tapis rouge de l'entree a l'atrium, des murs de tonneaux
+     * dans les travees, deux bassins de brique dans la nef ; au premier etage
+     * un salon (un ecran, des bancs) et deux bibliotheques ; au second, des
+     * jardinieres et des bancs.
+     */
+    private void decor() {
+        BlockState barrel = with(block("barrel"), "facing", "up");
+        BlockState shelf = block("bookshelf");
+        BlockState carpet = block("red_carpet");
+        BlockState water = block("water");
+        BlockState lily = block("lily_pad");
+        BlockState table = with(rail, "type", "top");
+        int first = FLOOR + STOREY;
+        int second = FLOOR + 2 * STOREY;
+        fill(-1, FLOOR + 1, -15, 1, FLOOR + 1, 6, carpet);
+        for (int side = -1; side <= 1; side += 2) {
+            // les tonneaux : un mur de reserve contre la masse haute, rythme de pilastres
+            for (int z = -26; z <= -12; z++) {
+                fill(11 * side, FLOOR + 1, z, 11 * side, FLOOR + 4, z, Math.floorMod(z, 5) == 4 ? rib : barrel);
+                put(11 * side, FLOOR + 5, z, rib);
+            }
+            // le bassin : une margelle de brique, de l'eau, deux nenuphars
+            for (int x = 9; x <= 14; x++) {
+                for (int z = 0; z <= 3; z++) {
+                    put(x * side, FLOOR + 1, z, x == 9 || x == 14 || z == 0 || z == 3 ? brick : water);
+                }
+            }
+            put(11 * side, FLOOR + 2, 1, lily);
+            put(13 * side, FLOOR + 2, 2, lily);
+            // la bibliotheque du premier etage : deux rayonnages, une table, une jardiniere
+            for (int row = 15; row <= 21; row += 6) {
+                fill(row * side, first + 1, -12, row * side, first + 3, -6, shelf);
+                fill(row * side, first + 4, -12, row * side, first + 4, -6, rail);
+            }
+            fill(18 * side, first + 1, -10, 18 * side, first + 1, -8, table);
+            planter(25 * side, -10, first, 1);
+            // le second etage : une jardiniere et son banc
+            planter(15 * side, -11, second, 1);
+            fill(13 * side, second + 1, -9, 16 * side, second + 1, -9, rail);
+        }
+        // le salon du premier etage : un ecran a mire, un banc devant
+        fill(-3, first + 1, -2, 3, first + 4, -2, black);
+        String[] bars = {"white_concrete", "yellow_concrete", "light_blue_concrete", "lime_concrete",
+                "magenta_concrete"};
+        for (int index = 0; index < bars.length; index++) {
+            fill(index - 2, first + 2, -2, index - 2, first + 3, -2, block(bars[index]));
+        }
+        fill(-2, first + 1, -5, 2, first + 1, -5, rail);
+        fill(-2, second + 1, -7, 2, second + 1, -7, rail);
     }
 
     /**

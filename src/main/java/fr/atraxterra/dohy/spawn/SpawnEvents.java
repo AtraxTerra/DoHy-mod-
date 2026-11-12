@@ -1,5 +1,10 @@
 package fr.atraxterra.dohy.spawn;
 
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.minecraft.world.level.block.BarrelBlock;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.stats.Stats;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,6 +29,9 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  */
 @EventBusSubscriber
 public final class SpawnEvents {
+
+    /** En dessous d'une minute de jeu, un joueur est un nouveau venu. */
+    private static final int NEWCOMER_TICKS = 1200;
 
     private SpawnEvents() {
     }
@@ -81,6 +89,42 @@ public final class SpawnEvents {
         if (event.getEntity() instanceof ServerPlayer player && SpawnApi.inSpawn(player)
                 && player.getY() < SpawnBuilder.VOID_Y && player.level() instanceof ServerLevel level) {
             SpawnApi.toPad(player, level);
+        }
+    }
+
+    /**
+     * La premiere connexion : un joueur qui n'a encore rien fait dans ce monde
+     * est envoye au spawn. Celui qui jouait deja avant que le spawn existe est
+     * seulement marque : on ne l'arrache pas a sa base.
+     */
+    @SubscribeEvent
+    public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || player.getData(DoHySpawn.WELCOMED.get())) {
+            return;
+        }
+        player.setData(DoHySpawn.WELCOMED.get(), true);
+        boolean fresh = player.getStats().getValue(Stats.CUSTOM.get(Stats.PLAY_TIME)) < NEWCOMER_TICKS;
+        if (fresh && SpawnConfig.config().firstJoin()) {
+            SpawnApi.arriveSoon(player);
+        }
+    }
+
+    /** Apres une mort, sans lit ni ancre, on reapparait au spawn. */
+    @SubscribeEvent
+    public static void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player && !event.isEndConquered()
+                && SpawnConfig.config().respawn() && player.getRespawnConfig() == null) {
+            SpawnApi.arriveSoon(player);
+        }
+    }
+
+    /** Les tonneaux du spawn sont un decor : ils ne s'ouvrent pas. */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onUseBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getEntity() instanceof ServerPlayer player && SpawnApi.inSpawn(player) && !player.isCreative()
+                && event.getLevel().getBlockState(event.getPos()).getBlock() instanceof BarrelBlock) {
+            event.setCancellationResult(InteractionResult.FAIL);
+            event.setCanceled(true);
         }
     }
 

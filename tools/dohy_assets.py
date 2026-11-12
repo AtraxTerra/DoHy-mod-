@@ -1041,6 +1041,10 @@ TERMINALS = [
     ("contracts", 0x7C9BFF, [".XXXXX..", ".X...XX.", ".X.XX.X.", ".X....X.", ".X.XX.X.", ".X....X.", ".X.XX.X.", ".XXXXXX."]),
     ("museum", 0xEC4FB5, ["...XX...", "..XXXX..", ".XXXXXX.", ".X.XX.X.", ".X.XX.X.", ".X.XX.X.", ".XXXXXX.", "XXXXXXXX"]),
     ("return", 0xFF5A4A, ["........", "...X....", "..XX....", ".XXXXXXX", ".XXXXXXX", "..XX....", "...X....", "........"]),
+    # un paquet cadeau
+    ("daily", 0xFFD83A, [".XX..XX.", "X..XX..X", ".XXXXXX.", "XXXXXXXX", "X..XX..X", "X..XX..X", "X..XX..X", "XXXXXXXX"]),
+    # une arche et ses marches
+    ("portals", 0xC77DFF, ["..XXXX..", ".X....X.", "X......X", "X..XX..X", "X.X..X.X", "X.X..X.X", "X.X..X.X", "XXX..XXX"]),
 ]
 
 

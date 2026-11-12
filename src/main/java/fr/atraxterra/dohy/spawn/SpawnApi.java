@@ -40,6 +40,8 @@ public final class SpawnApi {
     private static final int CLEAR_SLICES = 6;
 
     private static Job job;
+    /** Ceux qu'il faut envoyer au spawn au prochain tick : une connexion ou une reapparition n'est pas le moment. */
+    private static final Set<UUID> ARRIVALS = new LinkedHashSet<>();
 
     private SpawnApi() {
     }
@@ -57,9 +59,14 @@ public final class SpawnApi {
         }
     }
 
+    /** Le spawn ne se rejoint que depuis les trois dimensions du jeu : ni d'un donjon, ni d'une arene. */
+    private static boolean reachable(ServerPlayer player) {
+        return player.level().dimension() == Level.OVERWORLD || player.level().dimension() == Level.NETHER
+                || player.level().dimension() == Level.END;
+    }
+
     public static void enter(ServerPlayer player) {
-        if (player.level().dimension() != Level.OVERWORLD && player.level().dimension() != Level.NETHER
-                && player.level().dimension() != Level.END) {
+        if (!reachable(player)) {
             tell(player, "Le spawn ne se rejoint pas d'ici.", ChatFormatting.RED);
             return;
         }
@@ -113,8 +120,24 @@ public final class SpawnApi {
         player.sendSystemMessage(Component.literal(text).withStyle(color));
     }
 
-    /** Un tick de construction, s'il y en a une en cours. */
+    /** Envoie le joueur au spawn au prochain tick. */
+    static void arriveSoon(ServerPlayer player) {
+        ARRIVALS.add(player.getUUID());
+    }
+
+    /** Un tick : les arrivees en attente, les tableaux, puis la construction s'il y en a une en cours. */
     static void tick(MinecraftServer server) {
+        if (!ARRIVALS.isEmpty()) {
+            List<UUID> due = new ArrayList<>(ARRIVALS);
+            ARRIVALS.clear();
+            for (UUID id : due) {
+                ServerPlayer player = server.getPlayerList().getPlayer(id);
+                if (player != null && player.isAlive() && reachable(player)) {
+                    enter(player);
+                }
+            }
+        }
+        SpawnBoards.tick(server);
         if (job == null) {
             return;
         }
@@ -133,6 +156,7 @@ public final class SpawnApi {
     }
 
     static void stop() {
+        ARRIVALS.clear();
         job = null;
     }
 
