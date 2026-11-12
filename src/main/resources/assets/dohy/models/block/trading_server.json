@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "dohy:block/trading_server_top",
+    "front": "dohy:block/trading_server_front",
+    "side": "dohy:block/trading_server_side"
+  }
+}

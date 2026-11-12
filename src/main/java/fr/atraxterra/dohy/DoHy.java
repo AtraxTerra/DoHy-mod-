@@ -33,6 +33,8 @@ public final class DoHy {
         // namespace, « palamod », pour que le pack de textures officiel de
         // Paladium s'applique tel quel. Voir PalaMod.
         PalaMod.register(modBus);
+        // Les machines propres a DoHy, sous l'espace de noms « dohy ».
+        fr.atraxterra.dohy.tech.DoHyTech.register(modBus);
         LOGGER.info("DoHy charge");
     }
 }

@@ -175,6 +175,45 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 2) — le serveur de trading, compatible NTM NEXT
+
+**Demande** : « ajouter la machine "serveur" qui génère de l'argent passif et qui est compatible
+avec NTM NEXT en terme de craft et d'alimentation en énergie ». Le joueur a donné le dépôt
+(`Warfactory-Official/ntm-next`). Description : `docs/CONTENU_DOHY.md` ; chiffres :
+`docs/BALANCE.md` § 6 quindecies.
+
+**Fait** (`feat/serveur-trading`, posée sur `feat/notations`) :
+- Premier contenu sous l'espace de noms **`dohy`** : `tech/DoHyTech`, onglet créatif
+  « DoHy — machines », bloc `dohy:trading_server`.
+- **Énergie** : capacité FE de NeoForge (`net.neoforged.neoforge.transfer.energy.EnergyHandler`,
+  `Capabilities.Energy.BLOCK`), réception seule, journal de transaction (`SnapshotJournal`).
+  C'est ce que les câbles de NTM NEXT alimentent (`PowerNetwork`, `ForeignEnergyEndpoint` :
+  5 HE = 1 FE). Aucune dépendance à NTM.
+- **Recette** : type `hbm:assembly_machine` sous condition `neoforge:mod_loaded`, et recette
+  d'établi sous la condition inverse.
+- **Production** : 9 000 $ par heure, caisse de 8 h, 4 serveurs à la fois par joueur.
+- `tools/dohy_assets.py` : textures dessinées en code, modèles, états de bloc, butin, recettes,
+  noms. `data/trading_server.json` pour les réglages.
+
+**Vérifié en jeu** (client de la CI, sans NTM) : la capacité d'énergie répond sur le bloc ; une
+insertion simulée puis abandonnée ne laisse rien ; l'extraction est refusée ; 100 000 FE acceptés ;
+quatre serveurs produisent (17 $ en 5 s, soit 0,125 $ par tick), le cinquième attend puis prend la
+place du premier une fois celui-ci cassé ; l'encaissement crédite le joueur ; casser le bloc rend
+la caisse ; la recette d'établi est chargée, celle d'assemblage ignorée sans erreur.
+
+**Non vérifié** : **tout ce qui demande NTM NEXT en jeu** — un câble NTM branché sur le serveur,
+et la recette dans la machine d'assemblage. NTM NEXT ne publie pas de jar sur GitHub (artefacts
+sur `repo.warfactory.co`, compilation avec un compilateur C++26), il n'a pas été monté dans la CI.
+La compatibilité repose sur la lecture de ses sources (commit `05496ec4`, 2026-11-11).
+
+**À savoir** :
+- NeoForge 26.2 : l'énergie est dans `neoforge.transfer.energy` (`EnergyHandler`,
+  `SimpleEnergyHandler`), avec des transactions (`Transaction.openRoot()`), plus dans
+  `IEnergyStorage`. `event.registerBlockEntity(Capabilities.Energy.BLOCK, type, (be, side) -> …)`.
+- Une recette de machine NTM tire son nom du dernier segment de son fichier : il doit rester
+  unique entre mods (`ass.dohy_trading_server`).
+- La liste des serveurs « en service » est en mémoire, vidée à l'arrêt du serveur de jeu.
+
 ### 2026-11-12 (suite) — la notation de la semaine
 
 **Demande** : après lecture du wiki de NationsGlory, « la partie notation me convient ». Détail :

@@ -850,6 +850,25 @@ Détail des critères : `docs/FACTION.md` § Notation de la semaine (22h).
 Leviers : `data/notations.json` — `bourse_per_point`, le `max` de chaque critère, les bornes
 `zero_at` / `full_at`, `full_days`, `full_claims`, les trois valeurs de contrat, `per_win`.
 
+## 6 quindecies. Serveur de trading — un revenu passif borné
+
+Description : `docs/CONTENU_DOHY.md`.
+
+- **9 000 $ par heure et par serveur**, soit un contrat du jour par heure de fonctionnement.
+  **Quatre serveurs au plus** : 36 000 $ par heure, dans l'ordre de grandeur d'un métier de début
+  de partie pratiqué activement, et très en dessous d'une ferme de fin de partie.
+- **Il coûte de l'énergie** : 50 FE par tick, soit 250 HE par tick sur un réseau NTM NEXT, 1 000
+  pour quatre. Il demande donc une production d'énergie installée, pas seulement sa recette.
+- **Il ne tourne que chunk chargé**, et sa caisse plafonne à 8 h (72 000 $). En solo, le monde ne
+  tourne que quand on joue : sur une soirée de 2 h, quatre serveurs rapportent 72 000 $.
+- **Ce qu'il n'est pas** : l'autosell (500 M $), qui vend la production de fermes entières. Le
+  serveur arrive bien plus tôt et rapporte bien moins.
+- L'argent encaissé est un gain comme un autre : il compte dans le critère d'économie de la
+  notation et dans les gains cumulés (pénalité de mort).
+
+Leviers : `data/trading_server.json`. Si NTM rend l'énergie triviale, monter `energy_per_tick`
+plutôt que baisser le revenu.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

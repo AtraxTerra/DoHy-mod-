@@ -1,0 +1,12 @@
+{
+  "_comment": "Le serveur de trading : une machine posee, alimentee en energie, qui produit de l'argent tant qu'elle tourne. Inspire des serveurs de trading de NationsGlory. L'argent s'accumule dans la machine et s'encaisse d'un clic.",
+  "_energie": "L'energie est celle de NeoForge (FE), que les cables de NTM NEXT alimentent directement : NTM convertit 5 HE en 1 FE. energy_per_tick 50 FE, c'est donc 250 HE par tick tire sur le reseau NTM.",
+  "_revenu": "income_per_hour vaut un contrat du jour par heure de fonctionnement. max_per_player serveurs tournent a la fois ; les suivants attendent. La machine ne tourne que dans un chunk charge, comme toute machine.",
+  "_tampon": "buffer_hours heures de production au plus restent dans la machine : au-dela elle s'arrete, et il faut venir encaisser.",
+  "income_per_hour": 9000,
+  "energy_per_tick": 50,
+  "energy_capacity": 100000,
+  "energy_max_input": 2000,
+  "buffer_hours": 8,
+  "max_per_player": 4
+}
