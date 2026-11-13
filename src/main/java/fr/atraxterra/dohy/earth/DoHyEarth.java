@@ -27,6 +27,15 @@ public final class DoHyEarth {
                     .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
                     .build());
 
+    /**
+     * La version du sol deja servie a un chunk : ses minerais d'origine retires, sa part des gisements
+     * geants posee ; 0 tant qu'il n'a rien recu.
+     */
+    public static final Supplier<AttachmentType<Integer>> GROUND = ATTACHMENTS.register(
+            "earth_ground", () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
+                    .build());
+
     /** La version de la table des lieux deja servie a un chunk ; 0 tant qu'il n'a rien recu. */
     public static final Supplier<AttachmentType<Integer>> SITES = ATTACHMENTS.register(
             "earth_sites", () -> AttachmentType.builder(() -> 0)

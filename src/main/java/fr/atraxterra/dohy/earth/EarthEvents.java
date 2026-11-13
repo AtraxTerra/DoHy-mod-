@@ -49,6 +49,11 @@ public final class EarthEvents {
     }
 
     @SubscribeEvent
+    public static void onRegisterCommands(net.neoforged.neoforge.event.RegisterCommandsEvent event) {
+        event.getDispatcher().register(EarthBodyCommand.build());
+    }
+
+    @SubscribeEvent
     public static void onAboutToStart(ServerAboutToStartEvent event) {
         EarthData.load(event.getServer());
         EarthDeposits.load(event.getServer());
@@ -256,6 +261,10 @@ public final class EarthEvents {
                 : "Tu entres en territoire : " + name + (holder == null ? "" : ", aux mains " + EarthNations.de(holder)) + "."
                 + (left == null ? "" : " Tu quittes : " + left + ".");
         player.sendSystemMessage(Component.literal(line).withStyle(ChatFormatting.GRAY));
+        String resources = EarthDeposits.summary(country);
+        if (!resources.isEmpty()) {
+            player.sendSystemMessage(Component.literal(resources).withStyle(ChatFormatting.DARK_GRAY));
+        }
     }
 
     /** La reception d'un saut ne blesse pas, meme si le parachute s'est eteint avant le sol. */
