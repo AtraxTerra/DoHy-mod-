@@ -81,13 +81,18 @@ import java.util.function.Supplier;
  * hasard : deux bases du meme genre n'ont pas le meme plan.
  *
  * <p><b>Avec NTM NEXT</b> ({@link NtmDefenses}), les defenses sont celles du
- * mod : des tourelles armees sur les miradors, la porterie, la salle forte et
- * les casemates (mitrailleuses « Mister Friendly » et « Chekhov », MASER
- * « Maxwell » a la forteresse : toutes portent a 32 blocs, le Maxwell a 64,
- * moins que le glacis — on peut s'installer hors de leur portee), des mines
- * dans le glacis, du barbele sur les parapets et devant les tranchees, des
- * projecteurs halogenes, une porte blindee, des trappes de silo, le grand
- * radar. Sans le mod, la base garde ses gardes, ses spikes et ses lanternes.
+ * mod : des tourelles armees (mitrailleuses « Mister Friendly » et « Chekhov »,
+ * MASER « Maxwell » a la forteresse : elles portent a 32 blocs, le Maxwell a
+ * 64, moins que le glacis — on peut s'installer hors de leur portee), des
+ * mines dans le glacis, du barbele sur les parapets et devant les tranchees,
+ * des projecteurs halogenes, une porte blindee, des trappes de silo, le grand
+ * radar. Une tourelle de NTM ne vise qu'a 30 degres sous l'horizon (35 pour le
+ * Maxwell) : posee haut, elle ne voit personne au sol. Elles sont donc basses —
+ * sur des balcons de tir au pied des miradors et de la porterie, dans des nids
+ * de mitrailleuse et des casemates, au ras du tablier du silo, aux coins du toit
+ * du blockhaus, sur des balcons du donjon et de la station radar — sauf les
+ * MASER de la forteresse, en surplomb aux coins du toit. Sans le mod, la base
+ * garde ses gardes, ses spikes et ses lanternes.
  *
  * <p>Tout ce qui est pose est vrai : les tourelles tirent, les coffres et les
  * palettes ont leur butin, les machines marchent. La base pillee, ses claims
@@ -339,11 +344,10 @@ final class EnemyBaseBuilder {
         }
         gate(wall, moatOuter, wallHeight);
         if (innerWall > 0) {
-            curtain(innerWall, innerHeight, inner, true, grade == 3);
+            curtain(innerWall, innerHeight, inner, true, true);
             int[][] innerCorners = corners(innerWall - 1);
             for (int i = 0; i < innerCorners.length; i++) {
-                String turret = grade == 3 || i == 0 || i == 3 ? "turret_friendly" : null;
-                tower(innerCorners[i][0], innerCorners[i][1], 2, innerHeight + 3, turret, outs[i]);
+                tower(innerCorners[i][0], innerCorners[i][1], 2, innerHeight + 3, null, outs[i]);
             }
             // Le fosse entre la seconde enceinte et la salle forte, puis un rang de barbele.
             int ditch = keep + 2;
@@ -353,7 +357,7 @@ final class EnemyBaseBuilder {
                     wireRing(ditch + 4, y0, true);
                 } else {
                     ditch(ditch, ditch, 1, () -> PalaDefense.FAKE_WATER_BLOCK.get().defaultBlockState());
-                    wireRing(ditch + 2, y0, false);
+                    wireRing(ditch + 1, y0, false);
                 }
             });
         }
@@ -363,7 +367,8 @@ final class EnemyBaseBuilder {
      * Une enceinte : une couche par anneau, de l'exterieur (rayon {@code r}) vers
      * l'interieur. Les liquides vont du sol a l'avant-derniere rangee, coiffes
      * par la couche exterieure ; sous l'enceinte, deux rangees pleines. Au-dessus,
-     * un parapet de beton coiffe de barbele.
+     * un chemin de ronde de beton sur toute l'epaisseur, puis un parapet coiffe
+     * de barbele.
      *
      * @param front un parement de beton devant les couches (rayon {@code r + 1})
      * @param back  un parement derriere elles, cote cour
@@ -371,15 +376,21 @@ final class EnemyBaseBuilder {
     private void curtain(int r, int height, List<Layer> layers, boolean front, boolean back) {
         int outside = front ? r + 1 : r;
         int inside = r - layers.size();
-        for (int y = y0 - 2; y <= y0 + height + 1; y++) {
+        for (int y = y0 - 2; y <= y0 + height + 2; y++) {
             int row = y;
             steps.add(() -> {
-                if (row == y0 + height + 1) {
+                if (row == y0 + height + 2) {
                     wireRing(outside, row, false);
                     return;
                 }
-                if (row == y0 + height) {
+                if (row == y0 + height + 1) {
                     ringAt(outside, row, (x, z) -> skin());
+                    return;
+                }
+                if (row == y0 + height) {
+                    for (int ring = back ? inside : inside + 1; ring <= outside; ring++) {
+                        ringAt(ring, row, (x, z) -> accent());
+                    }
                     return;
                 }
                 for (int i = 0; i < layers.size(); i++) {
@@ -404,9 +415,11 @@ final class EnemyBaseBuilder {
 
     /**
      * Un mirador : un fut de beton plein a bandes aux couleurs du genre, un
-     * toit-terrasse a garde-corps grillage. Dessus, la tourelle de NTM que la
-     * taille lui donne, ou un garde ; un projecteur sur le bord, tourne vers
-     * {@code out} ; le drapeau du genre.
+     * toit-terrasse a garde-corps grillage, un garde, un projecteur sur le bord
+     * tourne vers {@code out}, le drapeau du genre. La tourelle de NTM que la
+     * taille lui donne n'est pas en haut — elle ne peut viser qu'a 30 degres
+     * sous l'horizon, d'en haut elle ne verrait personne au sol — mais sur un
+     * balcon de tir au pied du mirador, a trois blocs du sol, cote exterieur.
      */
     private void tower(int tx, int tz, int radius, int height, String turret, Direction out) {
         steps.add(() -> {
@@ -434,13 +447,48 @@ final class EnemyBaseBuilder {
             }
             floodlight(spotX, top + 1, spotZ, out, side.getOpposite());
             set(tx, top + 1, tz + lateral, Blocks.BANNER.pick(banner()).defaultBlockState());
-            boolean armed = turret(tx, top + 1, tz, turret);
-            if (radius >= 3) {
-                guard(EntityTypes.PILLAGER, tx - lateral, top + 1, tz - lateral, false);
-            } else if (!armed) {
-                guard(EntityTypes.PILLAGER, tx, top + 1, tz, false);
-            }
+            guard(EntityTypes.PILLAGER, radius >= 3 ? tx - lateral : tx, top + 1, radius >= 3 ? tz - lateral : tz,
+                    false);
+            balcony(tx + out.getStepX() * radius, tz + out.getStepZ() * radius, out, y0 + 2, turret);
         });
+    }
+
+    /**
+     * Un balcon de tir accroche a une facade : une dalle de beton qui deborde de
+     * deux cases, des garde-corps sur les cotes, la tourelle de NTM dessus.
+     * {@code (fx, fz)} est une case de la facade, {@code out} la direction de
+     * l'exterieur ; la dalle est en {@code y}, la tourelle en {@code y + 1}. Rien
+     * sans tourelle, ou si la place est prise. Rend vrai si la tourelle est posee.
+     */
+    private boolean balcony(int fx, int fz, Direction out, int y, String id) {
+        if (id == null) {
+            return false;
+        }
+        Direction side = out.getAxis() == Direction.Axis.X ? Direction.SOUTH : Direction.EAST;
+        int coreX = switch (out) {
+            case WEST -> fx - 1;
+            case EAST -> fx + 2;
+            default -> fx;
+        };
+        int coreZ = switch (out) {
+            case NORTH -> fz - 1;
+            case SOUTH -> fz + 2;
+            default -> fz;
+        };
+        if (!turret(coreX, y + 1, coreZ, id)) {
+            return false;
+        }
+        for (int depth = 1; depth <= 2; depth++) {
+            for (int across = -2; across <= 1; across++) {
+                int x = fx + out.getStepX() * depth + side.getStepX() * across;
+                int z = fz + out.getStepZ() * depth + side.getStepZ() * across;
+                set(x, y, z, accent());
+                if (across == -2 || across == 1) {
+                    shape(x, y + 1, z, railing());
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -545,16 +593,22 @@ final class EnemyBaseBuilder {
 
     // -- Les quartiers ---------------------------------------------------------------
 
-    /** Les modules du genre, dans l'ordre ou ils sont distribues aux terrains tires au hasard. */
+    /**
+     * Les modules du genre, dans l'ordre ou ils sont distribues aux terrains tires
+     * au hasard (7, 12 ou 16 terrains : la liste reprend au debut). Chaque genre a
+     * ses nids de mitrailleuse (les casemates, au bunker) : ce sont eux qui tiennent
+     * l'anneau des quartiers sous leur feu.
+     */
     private List<String> modules() {
         return switch (style) {
-            case SILO -> List.of("launch", "fuel", "barracks", "control", "launch", "armory", "generator", "arsenal");
-            case BUNKER -> List.of("pillbox", "trench", "barracks", "arsenal", "pillbox", "armory", "generator",
+            case SILO -> List.of("launch", "fuel", "nest", "arsenal", "barracks", "launch", "control", "armory",
+                    "generator");
+            case BUNKER -> List.of("pillbox", "trench", "arsenal", "barracks", "pillbox", "armory", "generator",
                     "depot");
-            case SOVIET -> List.of("mirador", "barracks", "garage", "parade", "depot", "armory", "mirador",
-                    "arsenal");
-            case RADAR -> List.of("radome", "antenna", "barracks", "dish", "generator", "control", "helipad",
+            case SOVIET -> List.of("mirador", "barracks", "nest", "garage", "arsenal", "parade", "mirador", "armory",
                     "depot");
+            case RADAR -> List.of("radome", "antenna", "nest", "dish", "arsenal", "barracks", "radome", "control",
+                    "helipad", "generator", "depot");
         };
     }
 
@@ -614,6 +668,7 @@ final class EnemyBaseBuilder {
             case "fuel" -> fuel(lot);
             case "control" -> control(lot);
             case "pillbox" -> pillbox(lot);
+            case "nest" -> nest(lot);
             case "trench" -> trench(lot);
             case "mirador" -> mirador(lot);
             case "garage" -> garage(lot);
@@ -1048,12 +1103,44 @@ final class EnemyBaseBuilder {
         guard(EntityTypes.VINDICATOR, mx + face.getStepZ(), y0, mz + face.getStepX(), false);
     }
 
+    /**
+     * Un nid de mitrailleuse : la tourelle de NTM au ras du sol, sur une dalle a
+     * bord raye, derriere un muret de sacs de sable ouvert du cote de la cour ;
+     * une palette de cartouches, un servant, un lampadaire. Sans NTM, deux
+     * tireurs. Au ras du sol, la tourelle voit tout l'anneau des quartiers.
+     */
+    private void nest(Lot lot) {
+        int mx = lot.mx();
+        int mz = lot.mz();
+        Direction in = lot.inward();
+        for (int x = -3; x <= 3; x++) {
+            for (int z = -3; z <= 3; z++) {
+                int ring = Math.max(Math.abs(x), Math.abs(z));
+                set(mx + x, y0 - 1, mz + z, ring == 3 ? hazard(mx + x, mz + z) : accent());
+                boolean opening = in.getAxis() == Direction.Axis.X
+                        ? x == in.getStepX() * 2 && Math.abs(z) <= 1
+                        : z == in.getStepZ() * 2 && Math.abs(x) <= 1;
+                if (ring == 2 && !opening) {
+                    shape(mx + x, y0, mz + z, sandbag());
+                }
+            }
+        }
+        String id = grade == 1 ? "turret_friendly" : "turret_chekhov";
+        boolean armed = turret(mx + 1, y0, mz + 1, id);
+        pallet(mx - 1, y0, mz - 1, in, ROUNDS, Items.ARROW, 3 + grade);
+        guard(EntityTypes.PILLAGER, mx - 1, y0, mz + 1, false);
+        if (!armed) {
+            guard(EntityTypes.PILLAGER, mx + 1, y0, mz, false);
+        }
+        post(lot.x0() + 1, lot.z0() + 1);
+    }
+
     // -- Le bunker --------------------------------------------------------------------
 
     /**
      * Une casemate : un blockhaus bas de beton a meurtrieres dans un talus de
-     * terre, l'entree a l'arriere ; sur le toit, des sacs de sable et la
-     * tourelle de NTM (un tireur sans le mod) ; dedans, le servant et ses
+     * terre, l'entree a l'arriere ; un toit borde de sacs de sable, la tourelle
+     * de NTM dessus (un tireur sans le mod) ; dedans, le servant et ses
      * munitions.
      */
     private void pillbox(Lot lot) {
@@ -1082,7 +1169,8 @@ final class EnemyBaseBuilder {
                     set(mx + x, y, mz + z, state);
                 }
                 if (edge) {
-                    shape(mx + x, y0 + 4, mz + z, sandbag());
+                    // Au niveau du toit, pas au-dessus : un muret plus haut boucherait la vue de la tourelle.
+                    shape(mx + x, y0 + 3, mz + z, sandbag());
                 }
             }
         }
@@ -1573,16 +1661,74 @@ final class EnemyBaseBuilder {
         }
     }
 
-    /** Les tourelles du toit de la salle forte : deux aux coins opposes, quatre a la forteresse. */
-    private void vaultTurrets(int y) {
-        String id = grade == 1 ? "turret_friendly" : grade == 2 ? "turret_chekhov" : "turret_maxwell";
-        int at = keep - 2;
-        int[][] spots = grade == 3 ? corners(at) : new int[][]{{-at, -at}, {at, at}};
-        for (int[] spot : spots) {
-            if (!turret(spot[0], y, spot[1], id)) {
-                guard(EntityTypes.PILLAGER, spot[0], y, spot[1], false);
+    /** La tourelle de la salle forte : mitrailleuse legere, lourde, MASER a la forteresse. */
+    private String vaultTurret() {
+        return grade == 1 ? "turret_friendly" : grade == 2 ? "turret_chekhov" : "turret_maxwell";
+    }
+
+    /** Des tourelles de la salle forte, leurs coeurs en {@code cores} ; un garde la ou l'une ne passe pas. */
+    private void turretsAt(int y, int[][] cores) {
+        for (int[] core : cores) {
+            if (!turret(core[0], y, core[1], vaultTurret())) {
+                guard(EntityTypes.PILLAGER, core[0], y, core[1], false);
             }
         }
+    }
+
+    /** Les tourelles du tablier du silo, au ras du sol : deux aux coins opposes, quatre a la forteresse. */
+    private void vaultTurrets(int y) {
+        int at = keep - 2;
+        turretsAt(y, grade == 3 ? corners(at) : new int[][]{{-at, -at}, {at, at}});
+    }
+
+    /**
+     * Les coeurs des tourelles posees a cheval sur le bord du toit, aux coins
+     * (deux, quatre a la forteresse) : au bord, rien ne leur cache le sol.
+     *
+     * @param outer la tourelle deborde du cube d'une case (sur le parement)
+     */
+    private int[][] cornerCores(boolean outer) {
+        int far = outer ? keep + 1 : keep;
+        int near = outer ? -keep : -keep + 1;
+        int[][] all = {{far, far}, {near, near}, {far, near}, {near, far}};
+        return grade == 3 ? all : new int[][]{all[0], all[1]};
+    }
+
+    /** Vrai si la case est sous l'une des tourelles de {@code cores} (une tourelle tient 2 x 2). */
+    private static boolean under(int x, int z, int[][] cores) {
+        for (int[] core : cores) {
+            if (x >= core[0] - 1 && x <= core[0] && z >= core[1] - 1 && z <= core[1]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Les tourelles d'une salle forte hors sol (donjon, station radar). A la
+     * forteresse, quatre MASER aux coins du toit, en surplomb : ils portent a
+     * 64 blocs, assez pour voir les quartiers d'en haut. Aux autres tailles, le
+     * toit est trop haut pour une mitrailleuse : deux balcons de tir bas, au nord
+     * et au sud, a cote de la porte.
+     */
+    private void keepTurrets(int top) {
+        if (grade == 3) {
+            turretsAt(top + 2, cornerCores(true));
+            return;
+        }
+        int r = keep + 1;
+        int off = keep - 3;
+        if (!balcony(-off, -r, Direction.NORTH, y0 + 1, vaultTurret())) {
+            guard(EntityTypes.PILLAGER, -off, y0, -r - 2, false);
+        }
+        if (!balcony(off, r, Direction.SOUTH, y0 + 1, vaultTurret())) {
+            guard(EntityTypes.PILLAGER, off, y0, r + 2, false);
+        }
+    }
+
+    /** L'acrotere du toit, sauf aux coins ou les MASER de la forteresse se posent en surplomb. */
+    private boolean parapetGap(int x, int z) {
+        return grade == 3 && Math.abs(x) >= keep && Math.abs(z) >= keep;
     }
 
     /**
@@ -1621,10 +1767,12 @@ final class EnemyBaseBuilder {
      * Le bunker : sur la salle forte enterree, un blockhaus de beton a
      * meurtrieres dans un talus de terre, sa porte blindee au nord ; dedans, le
      * poste de commandement (ecrans radar, table des cartes, classeurs,
-     * coffres) ; sur le toit, des sacs de sable, les tourelles, un periscope.
+     * coffres) ; sur le toit, borde de sacs de sable, les tourelles aux coins,
+     * un periscope.
      */
     private void commandPost() {
         int half = keep;
+        int[][] cores = cornerCores(false);
         for (int x = -half - 1; x <= half + 1; x++) {
             for (int z = -half - 1; z <= half + 1; z++) {
                 int ring = Math.max(Math.abs(x), Math.abs(z));
@@ -1647,9 +1795,10 @@ final class EnemyBaseBuilder {
                         set(x, y, z, carpet(DyeColor.GRAY));
                     }
                 }
-                if (edge) {
-                    shape(x, y0 + 5, z, sandbag());
-                } else if (Math.floorMod(x, 4) == 2 && Math.floorMod(z, 4) == 2) {
+                if (edge && !under(x, z, cores)) {
+                    // Au niveau du toit : plus haut, les sacs boucheraient la vue des tourelles.
+                    shape(x, y0 + 4, z, sandbag());
+                } else if (!edge && Math.floorMod(x, 4) == 2 && Math.floorMod(z, 4) == 2) {
                     set(x, y0 + 4, z, Blocks.SEA_LANTERN.defaultBlockState());
                 }
             }
@@ -1667,7 +1816,7 @@ final class EnemyBaseBuilder {
         }
         chest(half - 1, y0, -1, Direction.WEST, "chests/enemy_atelier");
         chest(half - 1, y0, 1, Direction.WEST, "chests/enemy_atelier");
-        vaultTurrets(y0 + 5);
+        turretsAt(y0 + 5, cores);
         for (int y = y0 + 5; y <= y0 + 7; y++) {
             set(0, y, 0, rod(Direction.UP));
         }
@@ -1678,7 +1827,8 @@ final class EnemyBaseBuilder {
     /**
      * Le donjon sovietique : un parement de beton clair autour du cube, des
      * bandes rouges, de fausses fenetres, l'etoile rouge au-dessus de la porte
-     * blindee ; sur le toit, l'acrotere, le mat au drapeau rouge, les tourelles.
+     * blindee ; sur le toit, l'acrotere, le mat au drapeau rouge ; les tourelles
+     * ({@link #keepTurrets}).
      */
     private void sovietKeep(int top) {
         int r = keep + 1;
@@ -1687,7 +1837,7 @@ final class EnemyBaseBuilder {
                 return accent();
             }
             if (y > top) {
-                return skin();
+                return y == top + 2 && parapetGap(x, z) ? Blocks.AIR.defaultBlockState() : skin();
             }
             int floor = Math.floorMod(y - y0, 5);
             if (floor == 4) {
@@ -1706,6 +1856,11 @@ final class EnemyBaseBuilder {
             boolean[][] star = star(size);
             int c = size / 2;
             int center = y0 + 3 + c;
+            for (int x = -c - 1; x <= c + 1; x++) {
+                for (int y = center - c - 1; y <= center + c + 1; y++) {
+                    set(x, y, -r, skin());
+                }
+            }
             for (int row = 0; row < size; row++) {
                 for (int col = 0; col < size; col++) {
                     if (star[row][col]) {
@@ -1723,7 +1878,7 @@ final class EnemyBaseBuilder {
                 set(0, y, 0, Blocks.POLISHED_BASALT.defaultBlockState());
             }
             set(0, top + 5, 0, Blocks.BANNER.pick(DyeColor.RED).defaultBlockState());
-            vaultTurrets(top + 2);
+            keepTurrets(top);
             guard(EntityTypes.PILLAGER, 2, top + 2, -2, false);
             guard(EntityTypes.PILLAGER, -2, top + 2, 2, false);
         });
@@ -1732,11 +1887,15 @@ final class EnemyBaseBuilder {
     /**
      * La station radar : un parement de beton autour du cube, des bandes aux
      * couleurs du genre, des baies vitrees ; sur le toit, le grand radar de NTM
-     * (une parabole sans le mod), les tourelles, des antennes.
+     * (une parabole sans le mod), des antennes ; les tourelles
+     * ({@link #keepTurrets}).
      */
     private void radarStation(int top) {
         int r = keep + 1;
         facade(y0 - 1, top + 2, (x, y, z) -> {
+            if (y == top + 2 && parapetGap(x, z)) {
+                return Blocks.AIR.defaultBlockState();
+            }
             if (y < y0 || y > top) {
                 return accent();
             }
@@ -1760,7 +1919,7 @@ final class EnemyBaseBuilder {
             if (!NtmDefenses.multiblock(level, at(0, top + 2, 0), "machine_radar_large", Direction.SOUTH)) {
                 parabola(0, top + 2, 0);
             }
-            vaultTurrets(top + 2);
+            keepTurrets(top);
             for (int[] spot : new int[][]{{keep - 1, 0}, {-(keep - 1), 0}, {0, keep - 1}}) {
                 for (int y = top + 2; y <= top + 4; y++) {
                     set(spot[0], y, spot[1], rod(Direction.UP));
@@ -1807,26 +1966,27 @@ final class EnemyBaseBuilder {
     private void garrison() {
         int walk = wall - 1;
         for (int at = -walk + 8; at <= walk - 8; at += 16) {
-            guard(EntityTypes.PILLAGER, at, y0 + wallHeight, walk, false);
-            guard(EntityTypes.PILLAGER, walk, y0 + wallHeight, at, false);
-            guard(EntityTypes.PILLAGER, -walk, y0 + wallHeight, at, false);
+            guard(EntityTypes.PILLAGER, at, y0 + wallHeight + 1, walk, false);
+            guard(EntityTypes.PILLAGER, walk, y0 + wallHeight + 1, at, false);
+            guard(EntityTypes.PILLAGER, -walk, y0 + wallHeight + 1, at, false);
             if (Math.abs(at) > 8) {
-                guard(EntityTypes.PILLAGER, at, y0 + wallHeight, -walk, false);
+                guard(EntityTypes.PILLAGER, at, y0 + wallHeight + 1, -walk, false);
             }
         }
         int yard = lotsIn;
         guard(EntityTypes.WITCH, 2, y0, yard, false);
         guard(EntityTypes.ZOMBIE, -2, y0, -yard, true);
         if (innerWall > 0) {
-            // Entre le fosse et le barbele.
-            int ditch = keep + (grade == 3 ? 5 : 3);
-            for (int[] corner : corners(ditch)) {
-                guard(EntityTypes.VINDICATOR, corner[0], y0, corner[1], false);
+            if (grade == 3) {
+                // Entre la lave et le barbele.
+                for (int[] corner : corners(keep + 5)) {
+                    guard(EntityTypes.VINDICATOR, corner[0], y0, corner[1], false);
+                }
             }
             guard(EntityTypes.WITCH, -2, y0, yard, false);
             for (int at = -innerWall + 6; at <= innerWall - 6; at += 12) {
-                guard(EntityTypes.PILLAGER, at, y0 + innerHeight, innerWall - 1, false);
-                guard(EntityTypes.PILLAGER, at, y0 + innerHeight, -(innerWall - 1), false);
+                guard(EntityTypes.PILLAGER, at, y0 + innerHeight + 1, innerWall - 1, false);
+                guard(EntityTypes.PILLAGER, at, y0 + innerHeight + 1, -(innerWall - 1), false);
             }
         }
         if (grade >= 3) {
