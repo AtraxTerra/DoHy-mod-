@@ -780,6 +780,10 @@ public final class EarthNations {
         }
         save(player, nation);
         SpawnApi.paintNations(server);
+        EarthCities.Placed city = EarthCities.at(player.getX(), player.getZ());
+        if (city != null) {
+            FactionApi.tell(player, "Ta capitale s'installe a " + city.entry().name() + ".", ChatFormatting.GOLD);
+        }
         if (mine.isEmpty()) {
             FactionApi.tell(player, "Premier pays a prendre : " + country.name() + ", aux mains " + de(holder.name())
                     + ". Finis devant eux aux events de faction pour reunir "

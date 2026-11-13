@@ -32,6 +32,18 @@ public final class DoHyEarth {
                     .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
                     .build());
 
+    /** La version de la liste des capitales deja posee dans un chunk ; 0 tant qu'il n'a rien recu. */
+    public static final Supplier<AttachmentType<Integer>> CITY = ATTACHMENTS.register(
+            "earth_city", () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
+                    .build());
+
+    /** La hauteur de chaque capitale et l'avancement de sa place, sur le monde de la carte. */
+    public static final Supplier<AttachmentType<EarthCities.States>> CITY_STATES = ATTACHMENTS.register(
+            "earth_cities", () -> AttachmentType.builder(() -> EarthCities.States.EMPTY)
+                    .serialize(EarthCities.States.MAP_CODEC, EarthCities.States::exists)
+                    .build());
+
     /** Les pays pris par des joueurs, sur le monde de la carte ; rien n'est ecrit tant qu'aucun n'est pris. */
     public static final Supplier<AttachmentType<EarthNations.Ledger>> LEDGER = ATTACHMENTS.register(
             "earth_nations", () -> AttachmentType.builder(() -> EarthNations.Ledger.EMPTY)

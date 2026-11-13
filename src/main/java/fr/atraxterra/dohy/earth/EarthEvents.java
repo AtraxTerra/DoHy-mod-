@@ -53,6 +53,7 @@ public final class EarthEvents {
         EarthData.load(event.getServer());
         EarthDeposits.load(event.getServer());
         EarthSites.load(event.getServer());
+        EarthCities.load(event.getServer());
     }
 
     /** Le partage du monde entre les nations rivales se calcule une fois les mondes ouverts. */
@@ -79,6 +80,7 @@ public final class EarthEvents {
         EarthData.unload();
         EarthDeposits.clear();
         EarthSites.clear();
+        EarthCities.clear();
         EarthJump.clear();
         LAST.clear();
         PENDING.clear();
@@ -91,6 +93,7 @@ public final class EarthEvents {
         LAST.remove(id);
         PENDING.remove(id);
         SITE.remove(id);
+        EarthCities.forget(id);
         EarthJump.forget(id);
     }
 
@@ -101,6 +104,7 @@ public final class EarthEvents {
                 && event.getChunk() instanceof LevelChunk chunk) {
             EarthDeposits.arrived(chunk);
             EarthSites.arrived(chunk);
+            EarthCities.arrived(chunk);
         }
     }
 
@@ -115,6 +119,7 @@ public final class EarthEvents {
             // les lieux d'abord : leurs gisements comptent sur des biomes et une surface deja poses
             EarthSites.tick(level);
             EarthDeposits.tick(level, earth);
+            EarthCities.tick(level);
         }
     }
 
@@ -138,6 +143,7 @@ public final class EarthEvents {
             return;
         }
         site(player);
+        EarthCities.track(player);
         EarthData.Country country = earth.countryAt(player.getBlockX(), player.getBlockZ());
         int now = country == null ? SEA : country.id();
         Integer before = LAST.get(player.getUUID());
