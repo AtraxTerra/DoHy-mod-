@@ -121,6 +121,15 @@ public final class EnemyBaseMenu extends MenuController {
                                 "On n'y casse, n'y pose et n'y ouvre rien, meme en creatif :",
                                 "lance des dynamites, tire au canon a TNT depuis l'exterieur,",
                                 "ou amene un wither invoque hors des claims.")),
+                NtmDefenses.present()
+                        ? Card.of(new ItemStack(Items.CROSSBOW), "Ses defenses", List.of("Tourelles, mines,",
+                                "barbeles de NTM")).accent(0xFFEF3826)
+                        .tooltip(List.of("Ses tourelles tirent sur toi a 32 blocs (le Maxwell a 64) :",
+                                "detruis-les de loin, a la dynamite, au canon ou au wither.",
+                                "Des mines attendent dans le glacis, hors de la route de la porterie.",
+                                "Pillee, la base eteint ses tourelles."))
+                        : Card.of(new ItemStack(Items.CROSSBOW), "Ses defenses", List.of("Gardes, spikes,",
+                                "obsidiennes piegees")).accent(0xFFEF3826),
                 Card.of(new ItemStack(Items.CHEST), "Piller", List.of("Dans la salle des coffres,",
                         "ses claims tombent")).accent(0xFFFAC400));
         List<MenuView.Stat> stats = List.of(

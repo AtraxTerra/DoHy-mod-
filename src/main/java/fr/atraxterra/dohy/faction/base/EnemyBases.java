@@ -28,6 +28,7 @@ import net.minecraft.world.item.component.LodestoneTracker;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -79,6 +80,8 @@ public final class EnemyBases {
     /** La chance qu'un avant-poste pille laisse une cle Saharia ; une base en laisse une, une forteresse trois. */
     private static final float OUTPOST_KEY_CHANCE = 0.25f;
     private static final int RETRIES = 3;
+    /** Les tourelles de NTM d'une base active sont rechargees toutes les deux secondes. */
+    private static final int UPKEEP_TICKS = 40;
 
     static final String GUARD_TAG = "dohy_enemy_guard";
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -293,6 +296,50 @@ public final class EnemyBases {
                 }
             }
         }
+        if (server.getTickCount() % UPKEEP_TICKS == 0 && NtmDefenses.present()) {
+            for (ServerPlayer player : server.overworld().players()) {
+                EnemyBase base = of(player);
+                if (base.active()) {
+                    turrets(server.overworld(), base, true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Les tourelles de NTM d'une base dont les chunks sont charges : armees et
+     * remises a plein ({@code armed}), ou eteintes. Leur batterie tient cinq
+     * secondes ; une base active les recharge toutes les deux secondes.
+     *
+     * @return le nombre de tourelles trouvees
+     */
+    static int turrets(ServerLevel level, EnemyBase base, boolean armed) {
+        int chunkX = base.center().getX() >> 4;
+        int chunkZ = base.center().getZ() >> 4;
+        if (level.getChunkSource().getChunkNow(chunkX, chunkZ) == null) {
+            return 0;
+        }
+        int radius = base.kind().claimRadius();
+        int found = 0;
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(chunkX + dx, chunkZ + dz);
+                if (chunk == null) {
+                    continue;
+                }
+                for (BlockEntity entity : List.copyOf(chunk.getBlockEntities().values())) {
+                    if (NtmDefenses.isTurret(entity)) {
+                        found++;
+                        if (armed) {
+                            NtmDefenses.arm(entity, true);
+                        } else {
+                            NtmDefenses.disarm(entity);
+                        }
+                    }
+                }
+            }
+        }
+        return found;
     }
 
     private static void forEachChunk(Job job, ChunkAction action) {
@@ -387,9 +434,9 @@ public final class EnemyBases {
         EnemyBaseBuilder.Result result = job.builder.result();
         release(level, job);
         LOGGER.info("Base ennemie des {} ({}) en {} : site en {} essais ({} ticks), chunks en {} ticks, chantier de "
-                        + "{} ms sur {} ticks", job.name, job.tier.key() + " " + job.style.key(), result.center(),
-                job.search.attempts,
-                job.searchTicks, job.ticks, job.buildNanos / 1_000_000L, job.buildTicks);
+                        + "{} ms sur {} ticks, {} tourelles, {} mines", job.name, job.tier.key() + " " + job.style.key(),
+                result.center(), job.search.attempts, job.searchTicks, job.ticks, job.buildNanos / 1_000_000L,
+                job.buildTicks, result.turrets(), result.mines());
         EnemyBase base = new EnemyBase(job.name, job.tier.level(), EnemyBase.ACTIVE, result.center(),
                 result.coreMin(), result.coreMax(), System.currentTimeMillis(), job.style.key());
         if (player == null) {
@@ -444,6 +491,9 @@ public final class EnemyBases {
                 1.0f, 1.0f);
         FactionApi.tell(player, "Base des " + base.name() + " pillee ! Leurs claims tombent : les coffres sont a toi.",
                 ChatFormatting.GOLD);
+        if (turrets(level, base, false) > 0) {
+            FactionApi.tell(player, "Leurs tourelles s'eteignent.", ChatFormatting.YELLOW);
+        }
         FactionApi.addElo(player, tier.elo(), "pillage des " + base.name());
         FactionApi.creditBank(player, tier.money(), "Pillage des " + base.name());
         FactionApi.tell(player, "+" + MoneyFormat.exact(tier.money()) + " $ a la banque de faction.",
@@ -481,6 +531,7 @@ public final class EnemyBases {
         }
         EnemyBase base = of(player);
         player.setData(Factions.ENEMY_BASE.get(), EnemyBase.EMPTY);
+        turrets(((ServerLevel) player.level()).getServer().overworld(), base, false);
         if (EnemyBaseRegen.schedule(((ServerLevel) player.level()).getServer(), player, base)) {
             FactionApi.tell(player, "Les " + base.name() + " plient bagage : dans 5 minutes leur base s'efface et "
                     + "le terrain reprend ses droits.", ChatFormatting.YELLOW);

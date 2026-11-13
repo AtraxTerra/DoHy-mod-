@@ -23,13 +23,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * Les blocs et les defenses de NTM NEXT dans les bases ennemies, sans en
  * dependre a la compilation : tout passe par le registre (les blocs, par leur
- * nom) et par reflexion (les multiblocs et les tourelles). Sans le mod, rien
- * n'est pose et chaque appel rend {@code false} ou le bloc de remplacement.
+ * nom) et par reflexion (les multiblocs, les tourelles, les mines). Sans le
+ * mod, rien n'est pose et chaque appel rend {@code false}, {@code null} ou le
+ * bloc de remplacement.
  *
  * <p><b>Les multiblocs</b> (tourelles, radars, trappes de silo, portes
  * blindees) se posent comme le fait NTM quand un joueur les pose : le bloc
@@ -41,18 +43,26 @@ import java.util.Set;
  * champs publics : allumees ({@code isOn}), ne visant que les joueurs
  * ({@code targetPlayers} ; ni les mobs — les gardes de la base en sont —, ni
  * les betes, ni les machines), batterie pleine ({@code setPower(getMaxPower())})
- * et les cases 1 a 9 pleines de leur premiere munition
+ * et deux cases de munitions pleines de leur premiere munition
  * ({@code getAmmoTypesForDisplay}). Elles ignorent d'elles-memes les joueurs en
- * creatif ou en spectateur. {@link #refill} les remet a plein : tant que la
- * base tient, leurs munitions ne s'epuisent pas.
+ * creatif ou en spectateur. Leur batterie se vide en cinq secondes : tant que
+ * la base tient, {@link EnemyBases} les remet a plein toutes les deux
+ * secondes. Le Maxwell (MASER) ne tire que sur sa batterie : ses cases sont
+ * celles des ameliorations, on n'y touche pas.
+ *
+ * <p><b>Les mines</b> se posent armees ({@code isPrimed}) : sans cela chacune
+ * s'armerait avec son bip a l'arrivee du joueur, des dizaines a la fois.
  */
 public final class NtmDefenses {
 
     public static final String MOD = "hbm";
 
+    /** Le nombre de cases de munitions tenues pleines : de quoi tirer entre deux recharges. */
+    private static final int AMMO_SLOTS = 2;
+
     private static final Map<String, Block> BLOCKS = new HashMap<>();
     private static final Set<String> WARNED = new HashSet<>();
-    private static final Map<Class<?>, Turret> TURRETS = new HashMap<>();
+    private static final Map<Class<?>, Optional<Turret>> TURRETS = new HashMap<>();
 
     private NtmDefenses() {
     }
@@ -87,6 +97,22 @@ public final class NtmDefenses {
         return state;
     }
 
+    /** L'etat avec la propriete {@code name} a la valeur nommee {@code value}, si le bloc l'a et l'accepte. */
+    public static BlockState with(BlockState state, String name, String value) {
+        Property<?> property = state.getBlock().getStateDefinition().getProperty(name);
+        return property == null ? state : with(state, property, value);
+    }
+
+    private static <T extends Comparable<T>> BlockState with(BlockState state, Property<T> property, String value) {
+        return property.getValue(value).map(found -> state.setValue(property, found)).orElse(state);
+    }
+
+    /** Un barbele de NTM ({@code barbed_wire}, {@code barbed_wire_poison}...) couche selon {@code axis}, ou {@code null}. */
+    public static BlockState wire(String id, Direction.Axis axis) {
+        Block block = block(id);
+        return block == null ? null : with(block.defaultBlockState(), "axis", axis.getSerializedName());
+    }
+
     /**
      * Pose un multibloc de NTM, son coeur en {@code core}, tourne vers
      * {@code facing}. Rend vrai s'il est pose ; faux sans NTM, sans la place,
@@ -110,6 +136,40 @@ public final class NtmDefenses {
             warn("multibloc " + id, error);
             return false;
         }
+    }
+
+    /**
+     * Pose une mine de NTM sur le sol, deja armee ; vrai si elle est posee.
+     * La mine antipersonnel prend la couleur du sol sous elle (herbe, sable,
+     * neige, pierre).
+     */
+    public static boolean mine(ServerLevel level, BlockPos pos, String id) {
+        Block block = block(id);
+        if (block == null) {
+            return false;
+        }
+        BlockState state = block.defaultBlockState();
+        level.setBlock(pos, state, Block.UPDATE_CLIENTS);
+        try {
+            block.getClass().getMethod("refreshGround", Level.class, BlockPos.class, BlockState.class)
+                    .invoke(null, level, pos, state);
+        } catch (NoSuchMethodException absent) {
+            // Seule la mine antipersonnel change de sol.
+        } catch (ReflectiveOperationException | RuntimeException error) {
+            warn("sol de " + id, error);
+        }
+        BlockEntity entity = level.getBlockEntity(pos);
+        if (entity != null) {
+            try {
+                Field primed = entity.getClass().getDeclaredField("isPrimed");
+                primed.setAccessible(true);
+                primed.setBoolean(entity, true);
+                entity.setChanged();
+            } catch (ReflectiveOperationException | RuntimeException error) {
+                warn("amorce de " + id, error);
+            }
+        }
+        return true;
     }
 
     /** Une tourelle de NTM ? (son entite, au coeur du multibloc) */
@@ -147,6 +207,8 @@ public final class NtmDefenses {
             turret.targetMachines.setBoolean(entity, false);
             if (on) {
                 refill(entity);
+            } else if (turret.target != null) {
+                turret.target.set(entity, null);
             }
             entity.setChanged();
         } catch (ReflectiveOperationException | RuntimeException error) {
@@ -154,7 +216,12 @@ public final class NtmDefenses {
         }
     }
 
-    /** Remet une tourelle a plein : batterie, et ses neuf cases de munitions. */
+    /** Eteint une tourelle : la base est tombee. Ses munitions restent, elles font partie du butin. */
+    public static void disarm(BlockEntity entity) {
+        arm(entity, false);
+    }
+
+    /** Remet une tourelle a plein : batterie, et ses premieres cases de munitions. */
     @SuppressWarnings("unchecked")
     public static void refill(BlockEntity entity) {
         Turret turret = turret(entity.getClass());
@@ -167,7 +234,9 @@ public final class NtmDefenses {
             List<ItemStack> ammo = (List<ItemStack>) turret.getAmmoTypes.invoke(entity);
             if (entity instanceof Container container && ammo != null && !ammo.isEmpty()) {
                 ItemStack type = ammo.get(0);
-                for (int slot = 1; slot <= 9 && slot < container.getContainerSize(); slot++) {
+                // Le Maxwell affiche ses ameliorations a la place de munitions : il ne tire que sur sa batterie.
+                boolean upgrades = BuiltInRegistries.ITEM.getKey(type.getItem()).getPath().startsWith("upgrade");
+                for (int slot = 1; !upgrades && slot <= AMMO_SLOTS && slot < container.getContainerSize(); slot++) {
                     ItemStack here = container.getItem(slot);
                     if (here.isEmpty() || ItemStack.isSameItemSameComponents(here, type)) {
                         container.setItem(slot, type.copyWithCount(type.getMaxStackSize()));
@@ -198,7 +267,7 @@ public final class NtmDefenses {
         if (!type.getName().startsWith("com.hbm.")) {
             return null;
         }
-        return TURRETS.computeIfAbsent(type, NtmDefenses::lookup);
+        return TURRETS.computeIfAbsent(type, key -> Optional.ofNullable(lookup(key))).orElse(null);
     }
 
     private static Turret lookup(Class<?> type) {

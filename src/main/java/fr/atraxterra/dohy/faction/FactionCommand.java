@@ -212,7 +212,8 @@ public final class FactionCommand {
                                                     var style = fr.atraxterra.dohy.faction.base.EnemyBaseStyle.byKey(
                                                             StringArgumentType.getString(ctx, "genre"));
                                                     return result(player, style == null
-                                                            ? "Genre inconnu : citadelle, ferme, entrepot, usine, vitrine"
+                                                            ? "Genre inconnu : " + fr.atraxterra.dohy.faction.base
+                                                                    .EnemyBaseStyle.keys()
                                                             : EnemyBases.request(player, EnemyBaseTier.byLevel(
                                                                     IntegerArgumentType.getInteger(ctx, "palier")),
                                                                     style), "");

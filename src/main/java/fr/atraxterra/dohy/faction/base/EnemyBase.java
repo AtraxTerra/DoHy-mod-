@@ -17,7 +17,8 @@ import net.minecraft.world.phys.AABB;
  * @param coreMax  le coin haut de la salle des coffres
  * @param created  sa date de generation, en millisecondes
  * @param style    son genre ({@link EnemyBaseStyle#key()}) ; une base d'avant
- *                 la refonte est une citadelle
+ *                 la refonte militaire (citadelle, ferme...) s'affiche en
+ *                 forteresse sovietique
  */
 public record EnemyBase(String name, int tier, int state, BlockPos center, BlockPos coreMin, BlockPos coreMax,
                         long created, String style) {
@@ -27,7 +28,7 @@ public record EnemyBase(String name, int tier, int state, BlockPos center, Block
     public static final int LOOTED = 2;
 
     public static final EnemyBase EMPTY = new EnemyBase("", 1, NONE, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, 0L,
-            EnemyBaseStyle.CITADEL.key());
+            EnemyBaseStyle.SOVIET.key());
 
     public static final MapCodec<EnemyBase> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("name", "").forGetter(EnemyBase::name),
@@ -37,7 +38,7 @@ public record EnemyBase(String name, int tier, int state, BlockPos center, Block
             BlockPos.CODEC.optionalFieldOf("core_min", BlockPos.ZERO).forGetter(EnemyBase::coreMin),
             BlockPos.CODEC.optionalFieldOf("core_max", BlockPos.ZERO).forGetter(EnemyBase::coreMax),
             Codec.LONG.optionalFieldOf("created", 0L).forGetter(EnemyBase::created),
-            Codec.STRING.optionalFieldOf("style", EnemyBaseStyle.CITADEL.key()).forGetter(EnemyBase::style)
+            Codec.STRING.optionalFieldOf("style", EnemyBaseStyle.SOVIET.key()).forGetter(EnemyBase::style)
     ).apply(instance, EnemyBase::new));
 
     public boolean exists() {
@@ -54,7 +55,7 @@ public record EnemyBase(String name, int tier, int state, BlockPos center, Block
 
     public EnemyBaseStyle genre() {
         EnemyBaseStyle found = EnemyBaseStyle.byKey(style);
-        return found == null ? EnemyBaseStyle.CITADEL : found;
+        return found == null ? EnemyBaseStyle.SOVIET : found;
     }
 
     public EnemyBase looted() {

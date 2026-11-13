@@ -4,35 +4,33 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 /**
- * Le genre d'une base ennemie : ce qu'elle abrite entre ses murs, et la forme
- * de sa salle forte. Les tailles ({@link EnemyBaseTier}) fixent l'enceinte ;
- * le genre fixe les quartiers et la facon dont on atteint les coffres.
+ * Le genre d'une base ennemie (refonte militaire du 2026-11-13) : ce qu'elle
+ * abrite entre ses murs, et la forme de sa salle forte. Les tailles
+ * ({@link EnemyBaseTier}) fixent l'enceinte ; le genre fixe les quartiers, les
+ * couleurs du beton et la facon dont on atteint les coffres. Avec NTM NEXT,
+ * toutes ont des tourelles, des mines, des barbeles et des projecteurs.
  *
- * @param label    son nom, avec son article (« une citadelle »)
+ * @param label    son nom, avec son article (« un silo de missiles »)
  * @param summary  ce qu'on y voit, en une ligne
  * @param vault    ou sont les coffres, en une ligne
  */
 public enum EnemyBaseStyle {
-    /** La place forte d'avant la refonte, en plus grand : casernes, spikes, armurerie. */
-    CITADEL("citadelle", "Citadelle", "une citadelle", Items.CRYING_OBSIDIAN,
-            "Casernes, cours a spikes, armurerie, poudriere",
-            "Donjon a couches au centre, les coffres au niveau du sol"),
-    /** Une base de farm : champs sous totem, serres, silos, etable. */
-    FARM("ferme", "Domaine agricole", "un domaine agricole", Items.WHEAT,
-            "Champs des quatre cultures, totems, serres, silos",
-            "Cave a couches sous la grande grange : il faut creuser"),
-    /** Une base de stockage : des halles de coffres, et un coffre-fort a cellules. */
-    STORAGE("entrepot", "Entrepot", "un entrepot", Items.CHEST,
-            "Halles de coffres, silos, reserve d'explosifs",
-            "Bunker a neuf cellules : seule celle du milieu compte"),
-    /** Une base de machines : cobblebreakers, crushers, grinder, boite a golem, forge. */
-    FACTORY("usine", "Usine", "une usine", Items.BLAST_FURNACE,
-            "Cobblebreakers, crushers, grinder, boite a golem, forge",
-            "Bunker enterre sous la centrale"),
-    /** Une demonstration de force : pyramides a balise, trophees, autel a wither. */
-    SHOWCASE("vitrine", "Demonstration de force", "une demonstration de force", Items.BEACON,
-            "Pyramides a balise, galerie de trophees, autel a wither",
-            "Salle forte en haut d'une ziggourat");
+    /** Des puits de lancement sous leurs trappes, du carburant, un poste de tir enterre. */
+    SILO("silo", "Silo de missiles", "un silo de missiles", Items.FIREWORK_ROCKET,
+            "Puits de lancement sous trappe, depot de carburant, poste de tir, groupe electrogene",
+            "Poste de tir enterre sous la grande trappe du silo : il faut creuser"),
+    /** Des casemates a tourelle, des tranchees, des sacs de sable et du barbele. */
+    BUNKER("bunker", "Bunker", "un bunker", Items.IRON_DOOR,
+            "Casemates a tourelle, tranchees, sacs de sable, barbeles, depot de munitions",
+            "Poste de commandement enterre sous le blockhaus : il faut creuser"),
+    /** Des miradors, des casernes, un garage de blindes, la place d'armes a l'etoile rouge. */
+    SOVIET("sovietique", "Forteresse sovietique", "une forteresse sovietique", Items.BANNER.red(),
+            "Miradors a projecteur, casernes, garage de blindes, place d'armes a l'etoile rouge",
+            "Donjon de beton au centre, tourelles sur le toit, les coffres au niveau du sol"),
+    /** Un grand radar, des radomes, un mat d'antennes, un heliport. */
+    RADAR("radar", "Base radar", "une base radar", Items.COMPASS,
+            "Grand radar, radomes, mat d'antennes, heliport, salle de controle",
+            "Salle des operations sous le grand radar, au niveau du sol");
 
     private final String key;
     private final String title;
@@ -57,6 +55,15 @@ public enum EnemyBaseStyle {
             }
         }
         return null;
+    }
+
+    /** Les cles des genres, pour l'aide de la commande : « silo, bunker, sovietique, radar ». */
+    public static String keys() {
+        StringBuilder out = new StringBuilder();
+        for (EnemyBaseStyle style : values()) {
+            out.append(out.isEmpty() ? "" : ", ").append(style.key);
+        }
+        return out.toString();
     }
 
     public String key() {
