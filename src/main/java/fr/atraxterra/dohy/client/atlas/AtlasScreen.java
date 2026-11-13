@@ -1,5 +1,8 @@
 package fr.atraxterra.dohy.client.atlas;
 
+import fr.atraxterra.dohy.client.ui.Ui;
+import fr.atraxterra.dohy.client.ui.UiGraphics;
+import fr.atraxterra.dohy.client.ui.UiScreen;
 import fr.atraxterra.dohy.earth.EarthAtlas;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,7 +23,7 @@ import java.util.List;
  */
 public final class AtlasScreen extends Screen {
 
-    private static final int BAR = 18;
+    private static final int BAR = 22;
     private static final double MIN_SCALE = 0.125d;
     private static final double MAX_SCALE = 128.0d;
 
@@ -57,7 +60,7 @@ public final class AtlasScreen extends Screen {
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.fill(0, 0, width, height, 0xFF0B0E12);
+        graphics.fill(0, 0, width, height, Ui.INSET);
     }
 
     @Override
@@ -80,39 +83,57 @@ public final class AtlasScreen extends Screen {
                 AtlasView.player(graphics, px, py, player.getYRot(), 14);
             }
         }
-        topBar(graphics);
+        topBar(graphics, mouseX, mouseY);
         bottomBar(graphics, mouseX, mouseY, mapTop, mapHeight, dimension);
     }
 
-    private void topBar(GuiGraphicsExtractor graphics) {
-        graphics.fill(0, 0, width, BAR, 0xE0101014);
-        graphics.text(font, Component.literal("Atlas"), 6, 5, 0xFFFFD24A, false);
+    /** La barre du haut, dans le style des panneaux du kit : le titre, les calques, la croix. */
+    private void topBar(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        UiGraphics ui = new UiGraphics(graphics, font, mouseX, mouseY);
+        ui.rect(0, 0, width, BAR, Ui.OUTER);
+        ui.rect(0, 0, width, BAR - 2, Ui.BG);
+        ui.rect(0, BAR - 3, width, 1, Ui.FRAME);
+        ui.textShaded(Ui.TITLE, "ATLAS", 8, 5, 11.0f, Ui.RED, Ui.RED_SHADE, 1.0f);
         AtlasClient.Options options = AtlasClient.options();
         toggles.clear();
-        int x = 50;
-        x = toggle("Pays tenus", x, options.holders, () -> options.holders = !options.holders);
-        x = toggle("Gisements", x, options.marks, () -> options.marks = !options.marks);
-        x = toggle("Points", x, options.waypoints, () -> options.waypoints = !options.waypoints);
-        x = toggle("Points dans le monde", x, options.markers, () -> options.markers = !options.markers);
-        x = toggle("Minimap", x, options.minimap, () -> options.minimap = !options.minimap);
-        toggle("Centrer (C)", x, false, this::recenter);
+        int x = 8 + Math.round(ui.width(Ui.TITLE, "ATLAS", 11.0f)) + 12;
+        x = toggle(ui, "PAYS TENUS", x, options.holders, () -> options.holders = !options.holders);
+        x = toggle(ui, "GISEMENTS", x, options.marks, () -> options.marks = !options.marks);
+        x = toggle(ui, "POINTS", x, options.waypoints, () -> options.waypoints = !options.waypoints);
+        x = toggle(ui, "POINTS EN JEU", x, options.markers, () -> options.markers = !options.markers);
+        x = toggle(ui, "MINIMAP", x, options.minimap, () -> options.minimap = !options.minimap);
+        toggle(ui, "CENTRER (C)", x, false, this::recenter);
         for (Toggle toggle : toggles) {
-            graphics.fill(toggle.x(), 3, toggle.x() + toggle.width(), BAR - 3, toggle.on() ? 0xFF2E5E36 : 0xFF2B2A33);
-            graphics.text(font, Component.literal(toggle.label()), toggle.x() + 4, 5,
-                    toggle.on() ? 0xFFFFFFFF : 0xFFB0B0B8, false);
+            boolean hovered = mouseY >= 4 && mouseY < 18 && mouseX >= toggle.x() && mouseX < toggle.x() + toggle.width();
+            if (toggle.on()) {
+                ui.button(toggle.x(), 4, toggle.width(), 14, Ui.GREEN_DARK, 0xFF094A1C, hovered);
+            } else {
+                ui.button(toggle.x(), 4, toggle.width(), 14, Ui.GRAY_BUTTON, Ui.GRAY_BUTTON_DARK, hovered);
+            }
+            ui.centered(Ui.WIDE, toggle.label(), toggle.x() + toggle.width() / 2.0f, 8, 4.5f,
+                    toggle.on() ? Ui.WHITE : Ui.TEXT);
         }
+        // la croix rouge du coin, comme les autres ecrans du kit
+        int close = width - 18;
+        boolean hovered = mouseX >= close && mouseX < close + 12 && mouseY >= 5 && mouseY < 17;
+        ui.rect(close, 6, 12, 11, Ui.RED_DARK);
+        ui.rect(close, 5, 12, 10, hovered ? UiGraphics.lighten(Ui.RED) : Ui.RED);
+        ui.texture(Ui.CLOSE, close + 2, 6, 8, 8, 32, 32);
     }
 
-    private int toggle(String label, int x, boolean on, Runnable action) {
-        int width = font.width(label) + 8;
+    private int toggle(UiGraphics ui, String label, int x, boolean on, Runnable action) {
+        int width = Math.round(ui.width(Ui.WIDE, label, 4.5f)) + 10;
         toggles.add(new Toggle(label, x, width, action, on));
         return x + width + 4;
     }
 
     private void bottomBar(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int mapTop, int mapHeight,
                            String dimension) {
+        UiGraphics ui = new UiGraphics(graphics, font, mouseX, mouseY);
         int top = height - BAR;
-        graphics.fill(0, top, width, height, 0xE0101014);
+        ui.rect(0, top, width, BAR, Ui.OUTER);
+        ui.rect(0, top + 2, width, BAR - 2, Ui.BG);
+        ui.rect(0, top + 2, width, 1, Ui.FRAME);
         StringBuilder text = new StringBuilder();
         if (mouseY >= mapTop && mouseY < mapTop + mapHeight) {
             double wx = AtlasView.worldX(mouseX, 0, width, centerX, scale);
@@ -122,7 +143,7 @@ public final class AtlasScreen extends Screen {
             if (globe != null && "minecraft:overworld".equals(dimension)) {
                 EarthAtlas.Country country = globe.country(wx, wz);
                 if (country != null) {
-                    text.append("  ").append(country.name());
+                    text.append("   ").append(country.name());
                     EarthAtlas.Owner owner = AtlasData.owner(country.id());
                     if (owner != null) {
                         text.append(" (").append(owner.holder()).append(')');
@@ -130,19 +151,19 @@ public final class AtlasScreen extends Screen {
                 }
                 EarthAtlas.Mark mark = markAt(mouseX, mouseY, mapTop, mapHeight);
                 if (mark != null) {
-                    text.append("  |  ").append(mark.name()).append(", ").append(mark.resource());
+                    text.append("   |   ").append(mark.name()).append(", ").append(mark.resource());
                 }
             }
             Waypoints.Point point = pointAt(mouseX, mouseY, mapTop, mapHeight, dimension);
             if (point != null) {
-                text.append("  |  ").append(point.name()).append(" (").append(point.y()).append(')');
+                text.append("   |   ").append(point.name()).append(" (").append(point.y()).append(')');
             }
         }
-        graphics.text(font, Component.literal(text.toString()), 6, top + 5, 0xFFE9E8EE, false);
-        String help = "Glisser : bouger  Molette : zoom  Clic droit : point  1 px = "
+        ui.text(Ui.BODY, text.toString(), 8, top + 8, 6.5f, Ui.TEXT);
+        String help = "Glisser : bouger   Molette : zoom   Clic droit : point   1 px = "
                 + (scale < 1.0d ? String.format(java.util.Locale.ROOT, "%.2f", scale) : String.valueOf((int) scale))
                 + " bloc(s)";
-        graphics.text(font, Component.literal(help), width - font.width(help) - 6, top + 5, 0xFF8C8B93, false);
+        ui.right(Ui.BODY, help, width - 8, top + 8, 6.0f, Ui.MUTED);
     }
 
     private EarthAtlas.Mark markAt(double mouseX, double mouseY, int mapTop, int mapHeight) {
@@ -190,8 +211,14 @@ public final class AtlasScreen extends Screen {
         double mx = event.x();
         double my = event.y();
         if (my < BAR) {
+            if (mx >= width - 18 && mx < width - 6) {
+                UiScreen.click(0.8f);
+                onClose();
+                return true;
+            }
             for (Toggle toggle : toggles) {
                 if (mx >= toggle.x() && mx < toggle.x() + toggle.width()) {
+                    UiScreen.click(1.0f);
                     toggle.action().run();
                     AtlasClient.saveOptions();
                     return true;

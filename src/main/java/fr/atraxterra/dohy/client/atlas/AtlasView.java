@@ -1,11 +1,12 @@
 package fr.atraxterra.dohy.client.atlas;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.client.ui.Ui;
+import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.earth.EarthAtlas;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2fStack;
 
@@ -171,11 +172,17 @@ final class AtlasView {
         }
     }
 
+    /** Une etiquette dans la police du kit, sur un fond sombre. */
     static void label(GuiGraphicsExtractor graphics, Font font, String text, int centerX, int top, int color) {
-        int width = font.width(text);
-        graphics.fill(centerX - width / 2 - 2, top - 1, centerX + width / 2 + 2, top + 9, 0x99000000);
-        graphics.text(font, Component.literal(text), centerX - width / 2, top, color, false);
+        UiGraphics ui = new UiGraphics(graphics, font, 0, 0);
+        float width = ui.width(Ui.BODY, text, LABEL);
+        int left = Math.round(centerX - width / 2.0f);
+        ui.rect(left - 2, top - 1, Math.round(width) + 4, 8, 0xCC15141A);
+        ui.text(Ui.BODY, text, left, top, LABEL, color);
     }
+
+    /** La taille des etiquettes de la carte. */
+    static final float LABEL = 6.0f;
 
     /** La fleche du joueur, tournee selon son regard (le nord en haut de la vue). */
     static void player(GuiGraphicsExtractor graphics, int x, int y, float yaw, int size) {

@@ -1,13 +1,14 @@
 package fr.atraxterra.dohy.client.atlas;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.client.ui.Ui;
+import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.earth.EarthAtlas;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 
@@ -29,8 +30,7 @@ final class AtlasHud implements GuiLayer {
         try {
             Minecraft minecraft = Minecraft.getInstance();
             LocalPlayer player = minecraft.player;
-            if (player == null || minecraft.level == null || minecraft.options.hideGui
-                    || minecraft.gui.screen() instanceof AtlasScreen) {
+            if (player == null || minecraft.level == null || minecraft.gui.screen() instanceof AtlasScreen) {
                 return;
             }
             AtlasMap map = AtlasClient.map();
@@ -55,24 +55,35 @@ final class AtlasHud implements GuiLayer {
 
     private static void minimap(GuiGraphicsExtractor graphics, Minecraft minecraft, LocalPlayer player, AtlasMap map,
                                 AtlasClient.Options options, String dimension) {
-        int x0 = MARGIN;
-        int y0 = MARGIN;
-        graphics.fill(x0 - 2, y0 - 2, x0 + SIZE + 2, y0 + SIZE + 2, 0xFF15141A);
-        graphics.fill(x0 - 1, y0 - 1, x0 + SIZE + 1, y0 + SIZE + 1, 0xFF40404A);
+        int x0 = MARGIN + 3;
+        int y0 = MARGIN + 3;
+        UiGraphics ui = new UiGraphics(graphics, minecraft.font, 0, 0);
+        // le cadre des panneaux du kit : bord sombre aux coins crantes, filet gris
+        ui.rect(x0 - 3, y0 - 6, SIZE + 6, SIZE + 12, Ui.OUTER);
+        ui.rect(x0 - 6, y0 - 3, SIZE + 12, SIZE + 6, Ui.OUTER);
+        ui.border(x0 - 2, y0 - 2, SIZE + 4, SIZE + 4, 2, Ui.FRAME);
         AtlasView.draw(graphics, minecraft.font, map, x0, y0, SIZE, SIZE, player.getX(), player.getZ(),
                 options.minimapScale, new AtlasView.Layers(options.holders, options.marks, options.waypoints, false),
                 dimension);
         AtlasView.player(graphics, x0 + SIZE / 2, y0 + SIZE / 2, player.getYRot(), 12);
-        graphics.text(minecraft.font, Component.literal("N"), x0 + SIZE / 2 - 2, y0 + 2, 0xFFFFFFFF, true);
-        String coordinates = player.getBlockX() + " " + player.getBlockY() + " " + player.getBlockZ();
-        AtlasView.label(graphics, minecraft.font, coordinates, x0 + SIZE / 2, y0 + SIZE + 4, 0xFFE9E8EE);
+        ui.centered(Ui.WIDE, "N", x0 + SIZE / 2.0f, y0 + 2, 5.0f, Ui.WHITE);
+        int panelTop = y0 + SIZE + 5;
         AtlasData.Globe globe = AtlasData.globe();
+        String where = null;
+        int color = Ui.MUTED;
         if (globe != null && "minecraft:overworld".equals(dimension)) {
             EarthAtlas.Country country = globe.country(player.getX(), player.getZ());
-            String where = country == null ? "Eaux internationales" : country.name();
+            where = country == null ? "Eaux internationales" : country.name();
             EarthAtlas.Owner owner = country == null ? null : AtlasData.owner(country.id());
-            int color = owner == null ? 0xFFB0B0B8 : owner.kind() == 1 ? AtlasGlobe.MINE : 0xFFB0B0B8;
-            AtlasView.label(graphics, minecraft.font, where, x0 + SIZE / 2, y0 + SIZE + 15, color);
+            color = owner != null && owner.kind() == 1 ? AtlasGlobe.MINE : Ui.TEXT;
+        }
+        int panelHeight = where == null ? 12 : 21;
+        ui.rect(x0 - 3, panelTop, SIZE + 6, panelHeight, Ui.OUTER);
+        ui.rect(x0 - 2, panelTop + 1, SIZE + 4, panelHeight - 2, Ui.BG);
+        String coordinates = player.getBlockX() + "  " + player.getBlockY() + "  " + player.getBlockZ();
+        ui.centered(Ui.PIXEL, coordinates, x0 + SIZE / 2.0f, panelTop + 3, 5.5f, Ui.TEXT);
+        if (where != null) {
+            ui.centered(Ui.BOLD, ui.fit(Ui.BOLD, where, 6.0f, SIZE), x0 + SIZE / 2.0f, panelTop + 11, 6.0f, color);
         }
     }
 

@@ -1,13 +1,21 @@
 package fr.atraxterra.dohy.client.atlas;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
+import fr.atraxterra.dohy.client.ui.Ui;
+import fr.atraxterra.dohy.client.ui.UiElement;
+import fr.atraxterra.dohy.client.ui.UiGraphics;
+import fr.atraxterra.dohy.client.ui.UiScreen;
+import fr.atraxterra.dohy.client.ui.widget.CloseButton;
+import fr.atraxterra.dohy.client.ui.widget.TextField;
+import fr.atraxterra.dohy.client.ui.widget.UiButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-/** Poser ou modifier un point de passage : son nom, sa couleur ; le supprimer. */
-final class WaypointScreen extends Screen {
+/** Poser ou modifier un point de passage, dans les panneaux du kit : son nom, sa couleur ; le supprimer. */
+final class WaypointScreen extends UiScreen {
+
+    private static final int WIDTH = 240;
+    private static final int HEIGHT = 150;
+    private static final int SWATCH = 16;
 
     private final Screen parent;
     private final Waypoints.Point existing;
@@ -16,10 +24,10 @@ final class WaypointScreen extends Screen {
     private final int z;
     private final String dimension;
     private int color;
-    private EditBox name;
+    private TextField name;
 
     WaypointScreen(Screen parent, Waypoints.Point existing, int x, int y, int z, String dimension) {
-        super(Component.literal(existing == null ? "Nouveau point" : "Point de passage"));
+        super(Component.literal("Point de passage"), WIDTH, HEIGHT);
         this.parent = parent;
         this.existing = existing;
         this.x = x;
@@ -31,38 +39,26 @@ final class WaypointScreen extends Screen {
     }
 
     @Override
-    protected void init() {
-        int left = width / 2 - 100;
-        int top = height / 2 - 40;
-        name = new EditBox(font, left, top, 200, 20, Component.literal("Nom"));
-        name.setMaxLength(32);
-        name.setValue(existing == null ? "Point " + x + " " + z : existing.name());
-        addRenderableWidget(name);
-        setInitialFocus(name);
-        addRenderableWidget(Button.builder(Component.literal("Couleur"), button -> nextColor())
-                .bounds(left, top + 26, 98, 20).build());
-        addRenderableWidget(Button.builder(Component.literal("Enregistrer"), button -> save())
-                .bounds(left + 102, top + 26, 98, 20).build());
+    protected void build() {
+        String kept = name == null ? (existing == null ? "Point " + x + " " + z : existing.name()) : name.value();
+        add(new CloseButton(WIDTH - 26, 16, this::onClose));
+        name = new TextField(22, 62, WIDTH - 44, 16, "Nom du point", 32, text -> {
+        });
+        name.search = false;
+        name.textSize = 5.5f;
+        add(name.withValue(kept));
+        for (int index = 0; index < Waypoints.COLORS.length; index++) {
+            add(new Swatch(Waypoints.COLORS[index], 22 + index * (SWATCH + 6), 96));
+        }
+        add(new UiButton(WIDTH - 22 - 90, HEIGHT - 32, 90, 18, "ENREGISTRER", UiButton.Style.GREEN, this::save));
+        add(new UiButton(WIDTH - 22 - 90 - 66, HEIGHT - 32, 60, 18, "ANNULER", UiButton.Style.GRAY, this::onClose));
         if (existing != null) {
-            addRenderableWidget(Button.builder(Component.literal("Supprimer"), button -> delete())
-                    .bounds(left, top + 50, 98, 20).build());
+            add(new UiButton(22, HEIGHT - 32, 70, 18, "SUPPRIMER", UiButton.Style.RED, this::delete));
         }
-        addRenderableWidget(Button.builder(Component.literal("Annuler"), button -> onClose())
-                .bounds(left + 102, top + 50, 98, 20).build());
-    }
-
-    private void nextColor() {
-        int index = 0;
-        for (int i = 0; i < Waypoints.COLORS.length; i++) {
-            if (Waypoints.COLORS[i] == color) {
-                index = i;
-            }
-        }
-        color = Waypoints.COLORS[(index + 1) % Waypoints.COLORS.length];
     }
 
     private void save() {
-        String text = name.getValue().isBlank() ? "Point" : name.getValue().trim();
+        String text = name.value().isBlank() ? "Point" : name.value().trim();
         Waypoints.Point point = new Waypoints.Point(text, x, y, z, color, dimension,
                 existing != null && existing.death() && text.equals(existing.name()));
         if (existing == null) {
@@ -84,18 +80,39 @@ final class WaypointScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-        int left = width / 2 - 100;
-        int top = height / 2 - 40;
-        graphics.text(font, title, left, top - 24, 0xFFFFD24A, false);
-        graphics.text(font, Component.literal(x + ", " + y + ", " + z), left, top - 12, 0xFF8C8B93, false);
-        AtlasView.diamond(graphics, left + 200 - 8, top - 16, 5, 0xFF000000);
-        AtlasView.diamond(graphics, left + 200 - 8, top - 16, 4, color);
+    protected void drawBackground(UiGraphics g, double mouseX, double mouseY) {
+        g.panel(0, 0, WIDTH, HEIGHT);
+        g.textShaded(Ui.TITLE, existing == null ? "NOUVEAU POINT" : "POINT DE PASSAGE", 22, 16, 14, Ui.RED,
+                Ui.RED_SHADE, 1.0f);
+        g.section(22, 44, "section_craft", "NOM", WIDTH - 44);
+        g.text(Ui.PIXEL, x + "  " + y + "  " + z, 22, 54, 4.5f, Ui.MUTED);
+        g.section(22, 86, "section_resources", "COULEUR", WIDTH - 44);
     }
 
-    @Override
-    public boolean isPauseScreen() {
-        return false;
+    /** Une case de couleur : un clic la choisit, la case choisie a un filet blanc. */
+    private final class Swatch extends UiElement {
+        private final int value;
+
+        Swatch(int value, int x, int y) {
+            super(x, y, SWATCH, SWATCH);
+            this.value = value;
+        }
+
+        @Override
+        public void render(UiGraphics graphics, double mouseX, double mouseY) {
+            boolean chosen = value == color;
+            graphics.rect(x, y, width, height, chosen ? Ui.WHITE : contains(mouseX, mouseY) ? 0xFF8C8B93 : Ui.OUTER);
+            graphics.rect(x + 2, y + 2, width - 4, height - 4, value);
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (!contains(mouseX, mouseY)) {
+                return false;
+            }
+            UiScreen.click(1.2f);
+            color = value;
+            return true;
+        }
     }
 }
