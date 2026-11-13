@@ -1045,6 +1045,8 @@ TERMINALS = [
     ("daily", 0xFFD83A, [".XX..XX.", "X..XX..X", ".XXXXXX.", "XXXXXXXX", "X..XX..X", "X..XX..X", "X..XX..X", "XXXXXXXX"]),
     # une arche et ses marches
     ("portals", 0xC77DFF, ["..XXXX..", ".X....X.", "X......X", "X..XX..X", "X.X..X.X", "X.X..X.X", "X.X..X.X", "XXX..XXX"]),
+    # une pioche
+    ("mine", 0x5FD8E8, ["..XXXX..", ".X.XX.X.", "X..XX..X", "...XX...", "...XX...", "...XX...", "...XX...", "...XX..."]),
 ]
 
 
@@ -1556,11 +1558,159 @@ def lang():
     write("assets/%s/lang/en_us.json" % NS, en)
 
 
+# Les minerais de la Mine : ceux du jeu (emeraude comprise) et ceux du PalaMod a leur taux normal.
+# La pepite d'endium reste propre a la dimension du Mineur.
+MINE_ORES = [
+    "minecraft:ore_dirt", "minecraft:ore_gravel", "minecraft:ore_granite_upper", "minecraft:ore_granite_lower",
+    "minecraft:ore_diorite_upper", "minecraft:ore_diorite_lower", "minecraft:ore_andesite_upper",
+    "minecraft:ore_andesite_lower", "minecraft:ore_tuff", "minecraft:ore_coal_upper", "minecraft:ore_coal_lower",
+    "minecraft:ore_iron_upper", "minecraft:ore_iron_middle", "minecraft:ore_iron_small", "minecraft:ore_gold",
+    "minecraft:ore_gold_lower", "minecraft:ore_redstone", "minecraft:ore_redstone_lower", "minecraft:ore_diamond",
+    "minecraft:ore_diamond_medium", "minecraft:ore_diamond_large", "minecraft:ore_diamond_buried",
+    "minecraft:ore_lapis", "minecraft:ore_lapis_buried", "minecraft:ore_copper", "minecraft:ore_emerald",
+    "minecraft:underwater_magma", "minecraft:disk_sand", "minecraft:disk_clay", "minecraft:disk_gravel",
+    "palamod:ore_amethyst", "palamod:ore_findium", "palamod:ore_paladium_green", "palamod:ore_paladium",
+    "palamod:ore_titane", "palamod:ore_trixium", "palamod:ore_invoker", "palamod:xp_bush",
+]
+
+# Les minerais des mods, poses s'ils existent (entrees facultatives d'un tag) : le zinc de Create et
+# les minerais du monde normal de NTM NEXT, releves dans ses sources (HbmPlacedFeatures).
+MINE_MOD_ORES = [
+    "create:zinc_ore", "create:striated_ores_overworld",
+    "hbm:ore_uranium", "hbm:ore_thorium", "hbm:ore_titanium", "hbm:ore_sulfur", "hbm:ore_aluminium",
+    "hbm:ore_fluorite", "hbm:ore_niter", "hbm:ore_tungsten", "hbm:ore_lead", "hbm:ore_beryllium", "hbm:ore_rare",
+    "hbm:ore_lignite", "hbm:ore_asbestos", "hbm:ore_cinnabar", "hbm:ore_cobalt", "hbm:ore_coltan",
+    "hbm:ore_alexandrite", "hbm:stratum_gneiss", "hbm:ore_gneiss_iron", "hbm:ore_gneiss_gold",
+    "hbm:ore_gneiss_copper", "hbm:ore_gneiss_asbestos", "hbm:ore_gneiss_lithium", "hbm:ore_gneiss_uranium",
+    "hbm:ore_gneiss_rare", "hbm:stratum_hematite", "hbm:stratum_bauxite", "hbm:stratum_malachite",
+    "hbm:ore_limestone", "hbm:cluster_iron", "hbm:cluster_titanium", "hbm:cluster_aluminium",
+    "hbm:cluster_copper", "hbm:deposit_iron", "hbm:deposit_titanium", "hbm:deposit_tungsten",
+    "hbm:deposit_cinnabar", "hbm:deposit_zirconium", "hbm:deposit_borax", "hbm:deposit_coltan",
+    "hbm:ore_cave_sulfur", "hbm:ore_cave_asbestos",
+]
+
+
+def mine():
+    """La Mine (`dohy:mine`) : un monde tout en roche, sans surface, un seul biome, aucun monstre.
+
+    Demande du joueur (2026-11-13) : « uniquement sous terre, pas de surface ». Le terrain est plein
+    du fond au plafond (densite constante) : pierre, ardoise des abimes sous y = 0 a 8, bedrock au
+    fond et au plafond (y 123 a 127). Les galeries sont celles des carvers du jeu (cavernes, boyaux,
+    ravins) ; la lave n'occupe que le bas des galeries les plus profondes, l'eau ne vient que des
+    sources. Pas de ciel : aucune lumiere du jour, seulement celle des torches et du lichen.
+    """
+    write("data/%s/dimension_type/mine.json" % NS, {
+        "ambient_light": 0.0,
+        "attributes": {
+            "minecraft:audio/ambient_sounds": {
+                "mood": {"block_search_extent": 8, "offset": 2.0, "sound": "minecraft:ambient.cave",
+                         "tick_delay": 6000},
+            },
+            "minecraft:gameplay/bed_rule": {"can_set_spawn": "never", "can_sleep": "never"},
+            "minecraft:gameplay/can_start_raid": False,
+            "minecraft:gameplay/respawn_anchor_works": False,
+            "minecraft:visual/ambient_light_color": "#0a0a0a",
+            "minecraft:visual/fog_color": "#101114",
+        },
+        "coordinate_scale": 1.0,
+        "default_clock": "minecraft:overworld",
+        "has_ceiling": True,
+        "has_ender_dragon_fight": False,
+        "has_skylight": False,
+        "height": 192,
+        "infiniburn": "#minecraft:infiniburn_overworld",
+        "logical_height": 192,
+        "min_y": -64,
+        "monster_spawn_block_light_limit": 0,
+        "monster_spawn_light_level": 0,
+        "skybox": "none",
+        "timelines": "#minecraft:in_overworld",
+    })
+    bedrock = {"type": "minecraft:block", "result_state": {"Name": "minecraft:bedrock"}}
+    write("data/%s/worldgen/noise_settings/mine.json" % NS, {
+        "aquifers_enabled": False,
+        "default_block": {"Name": "minecraft:stone"},
+        "default_fluid": {"Name": "minecraft:water", "Properties": {"level": "0"}},
+        "disable_mob_generation": True,
+        "legacy_random_source": False,
+        "noise": {"height": 192, "min_y": -64, "size_horizontal": 1, "size_vertical": 2},
+        # Une densite constante : de la roche partout ; les galeries viennent des carvers.
+        "noise_router": {
+            "barrier": 0.0, "continents": 0.0, "depth": 0.0, "erosion": 0.0, "final_density": 1.0,
+            "fluid_level_floodedness": 0.0, "fluid_level_spread": 0.0, "lava": 0.0,
+            "preliminary_surface_level": 0.0, "ridges": 0.0, "temperature": 0.0, "vegetation": 0.0,
+            "vein_gap": 0.0, "vein_ridged": 0.0, "vein_toggle": 0.0,
+        },
+        "ore_veins_enabled": False,
+        # Le niveau de la mer sous le monde : aucune galerie ne se remplit d'eau.
+        "sea_level": -64,
+        "spawn_target": [],
+        "surface_rule": {"type": "minecraft:sequence", "sequence": [
+            {"type": "minecraft:condition",
+             "if_true": {"type": "minecraft:not", "invert": {
+                 "type": "minecraft:vertical_gradient", "random_name": "minecraft:bedrock_roof",
+                 "true_at_and_below": {"below_top": 5}, "false_at_and_above": {"below_top": 0}}},
+             "then_run": bedrock},
+            {"type": "minecraft:condition",
+             "if_true": {"type": "minecraft:vertical_gradient", "random_name": "minecraft:bedrock_floor",
+                         "true_at_and_below": {"above_bottom": 0}, "false_at_and_above": {"above_bottom": 5}},
+             "then_run": bedrock},
+            {"type": "minecraft:condition",
+             "if_true": {"type": "minecraft:vertical_gradient", "random_name": "minecraft:deepslate",
+                         "true_at_and_below": {"absolute": 0}, "false_at_and_above": {"absolute": 8}},
+             "then_run": {"type": "minecraft:block",
+                          "result_state": {"Name": "minecraft:deepslate", "Properties": {"axis": "y"}}}},
+        ]},
+    })
+    write("data/%s/dimension/mine.json" % NS, {
+        "type": "%s:mine" % NS,
+        "generator": {
+            "type": "minecraft:noise",
+            "biome_source": {"type": "minecraft:fixed", "biome": "%s:mine" % NS},
+            "settings": "%s:mine" % NS,
+        },
+    })
+    write("data/%s/worldgen/biome/mine.json" % NS, {
+        "carvers": ["minecraft:cave", "minecraft:cave_extra_underground", "minecraft:canyon"],
+        "downfall": 0.4,
+        "effects": {"water_color": "#3f76e4"},
+        "features": [
+            [],
+            ["minecraft:lake_lava_underground"],
+            ["minecraft:amethyst_geode"],
+            [],
+            [],
+            [],
+            MINE_ORES,
+            # Sous terre, rien de la surface : quelques stalactites, du lichen luisant.
+            ["minecraft:pointed_dripstone"],
+            ["minecraft:spring_water", "minecraft:spring_lava"],
+            ["minecraft:glow_lichen"],
+            [],
+        ],
+        "has_precipitation": False,
+        "spawn_costs": {},
+        "spawners": {kind: [] for kind in ("ambient", "axolotls", "creature", "misc", "monster",
+                                           "underground_water_creature", "water_ambient", "water_creature")},
+        "temperature": 0.8,
+    })
+    write("data/%s/tags/worldgen/placed_feature/mine_mod_ores.json" % NS, {
+        "values": [{"id": feature, "required": False} for feature in MINE_MOD_ORES],
+    })
+    write("data/%s/neoforge/biome_modifier/mine_mod_ores.json" % NS, {
+        "type": "neoforge:add_features",
+        "biomes": "%s:mine" % NS,
+        "features": "#%s:mine_mod_ores" % NS,
+        "step": "underground_ores",
+    })
+
+
 def main():
     trading_server()
     agriculture()
     farming()
     spawn()
+    mine()
     lang()
     print("Ressources dohy ecrites.")
 

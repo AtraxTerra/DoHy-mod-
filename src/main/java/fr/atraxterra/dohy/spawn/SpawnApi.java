@@ -177,10 +177,21 @@ public final class SpawnApi {
         }
     }
 
-    /** Le spawn ne se rejoint que depuis les trois dimensions du jeu : ni d'un donjon, ni d'une arene. */
+    /**
+     * Le spawn ne se rejoint que depuis les trois dimensions du jeu et la Mine : ni d'un donjon, ni
+     * d'une arene.
+     */
     private static boolean reachable(ServerPlayer player) {
         return player.level().dimension() == Level.OVERWORLD || player.level().dimension() == Level.NETHER
-                || player.level().dimension() == Level.END;
+                || player.level().dimension() == Level.END || fr.atraxterra.dohy.mine.MineService.inMine(player);
+    }
+
+    /**
+     * Depuis la Mine, vers la plateforme du spawn. Le point de retour reste celui d'avant la Mine :
+     * la borne RETOUR du spawn ramene la ou l'on etait avant d'y descendre.
+     */
+    public static void backToPad(ServerPlayer player) {
+        enter(player);
     }
 
     public static void enter(ServerPlayer player) {
@@ -208,7 +219,9 @@ public final class SpawnApi {
     }
 
     private static void send(ServerPlayer player, ServerLevel level) {
-        player.setData(DoHySpawn.RETURN.get(), ReturnPoint.of(player));
+        if (!fr.atraxterra.dohy.mine.MineService.inMine(player)) {
+            player.setData(DoHySpawn.RETURN.get(), ReturnPoint.of(player));
+        }
         player.closeContainer();
         toPad(player, level);
         tell(player, "Bienvenue au spawn. /spawn pour repartir.", ChatFormatting.GREEN);

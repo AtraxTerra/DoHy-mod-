@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "dohy:mine",
+  "features": "#dohy:mine_mod_ores",
+  "step": "underground_ores"
+}

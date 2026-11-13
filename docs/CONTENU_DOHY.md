@@ -649,6 +649,60 @@ passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, c
 - `data/dohy/dimension/spawn.json`, `dimension_type/spawn.json`, `worldgen/biome/spawn.json`,
   écrits par `tools/dohy_assets.py`.
 
+## La Mine (dimension `dohy:mine`, 2026-11-13)
+
+Un monde de minage public, **remis à neuf chaque jour**, dans l'esprit de la mine de NationsGlory —
+à part de la dimension du Mineur du PalaMod. **Uniquement sous terre** (demandé par le joueur) :
+de la roche du fond au plafond, ni ciel ni surface.
+
+### Y aller, en revenir
+
+- On n'y entre que par la **borne MINE** (cyan) de l'atrium du spawn, près de l'entrée, en face de
+  la borne RETOUR.
+- On arrive dans une **salle creusée** en pleine roche, à y = 30 : sol de pierre polie, quatre
+  lanternes, la **borne RETOUR** contre la paroi nord. Ses parois sont bouchées là où il le faut
+  (galerie, lave, eau, gravier) : on arrive toujours au sec, et on en sort à la pioche.
+- Pour revenir : la borne RETOUR de la salle, ou `/spawn` — on retrouve la plateforme du spawn.
+
+### Le lieu
+
+- De la **roche partout** : pierre, ardoise des abîmes sous y = 0 à 8, **bedrock** au fond
+  (y = −64 à −60) et au **plafond** (y = 123 à 127). Pas de lumière du jour : prendre des torches.
+- Les **galeries** sont celles du jeu : cavernes, boyaux, ravins. De la lave au fond des plus
+  profondes (sous y = −56), quelques lacs de lave, des sources d'eau et de lave dans les parois ;
+  du lichen luisant et des stalactites. Aucune galerie n'est noyée.
+- Les **minerais** : ceux du jeu (émeraude comprise), ceux du PalaMod à leur taux normal
+  (améthyste, titane, paladium, paladium vert, findium, trixium, invocateur) et le buisson
+  d'expérience, ceux des mods présents — zinc de Create, minerais de NTM NEXT (entrées
+  facultatives, sans effet si le mod manque).
+- Une **zone de 2 000 × 2 000 blocs** par jour ; on n'en sort pas par les côtés.
+
+### Les règles (choix du joueur)
+
+- **Une mine neuve chaque matin à 5 h** (heure de Paris) : une nouvelle zone, loin de la précédente,
+  dans une roche que personne n'a touchée. Les joueurs présents sont prévenus à 10, 5 et 1 minute ;
+  à 5 h, ils sont ramenés au spawn. Qui se reconnecte dans une zone passée est ramené au spawn. Les
+  fichiers des zones passées sont effacés au démarrage suivant du serveur.
+- **Pas de cobblestone** : la pierre, l'ardoise et leurs pavés ne donnent rien — ni le granite, la
+  diorite, l'andésite et le tuf, qu'on perce sans cesse dans une mine toute en roche.
+- **Mourir ne fait rien perdre** : inventaire et expérience rendus à la réapparition.
+- **Aucun monstre.**
+
+### Administration
+
+- `/mine admin info` : le jour, le centre de la zone, le temps avant la remise à neuf.
+- `/mine admin remise` : passe tout de suite à la zone suivante (pour essayer sans attendre 5 h).
+
+### Code
+
+- `mine/MineService` (calendrier, zone du jour, salle d'arrivée, règles, ménage des fichiers,
+  commande) ; `spawn/SpawnTerminalBlock` (la borne MINE), `SpawnBuilder` (la borne dans l'atrium,
+  `VERSION` 7), `SpawnApi.backToPad`.
+- `data/dohy/dimension/mine.json`, `dimension_type/mine.json` (plafond, pas de ciel),
+  `worldgen/noise_settings/mine.json` (densité constante : de la roche partout ; surface : bedrock et
+  ardoise), `worldgen/biome/mine.json`, le tag `worldgen/placed_feature/mine_mod_ores` et le
+  modificateur de biome `mine_mod_ores` : écrits par `tools/dohy_assets.py`.
+
 ## Sur un serveur dédié (2026-11-13)
 
 Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les

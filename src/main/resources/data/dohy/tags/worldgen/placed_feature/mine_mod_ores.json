@@ -1,0 +1,180 @@
+{
+  "values": [
+    {
+      "id": "create:zinc_ore",
+      "required": false
+    },
+    {
+      "id": "create:striated_ores_overworld",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_uranium",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_thorium",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_titanium",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_sulfur",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_aluminium",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_fluorite",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_niter",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_tungsten",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_lead",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_beryllium",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_rare",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_lignite",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_asbestos",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_cinnabar",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_cobalt",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_coltan",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_alexandrite",
+      "required": false
+    },
+    {
+      "id": "hbm:stratum_gneiss",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_gneiss_iron",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_gneiss_gold",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_gneiss_copper",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_gneiss_asbestos",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_gneiss_lithium",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_gneiss_uranium",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_gneiss_rare",
+      "required": false
+    },
+    {
+      "id": "hbm:stratum_hematite",
+      "required": false
+    },
+    {
+      "id": "hbm:stratum_bauxite",
+      "required": false
+    },
+    {
+      "id": "hbm:stratum_malachite",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_limestone",
+      "required": false
+    },
+    {
+      "id": "hbm:cluster_iron",
+      "required": false
+    },
+    {
+      "id": "hbm:cluster_titanium",
+      "required": false
+    },
+    {
+      "id": "hbm:cluster_aluminium",
+      "required": false
+    },
+    {
+      "id": "hbm:cluster_copper",
+      "required": false
+    },
+    {
+      "id": "hbm:deposit_iron",
+      "required": false
+    },
+    {
+      "id": "hbm:deposit_titanium",
+      "required": false
+    },
+    {
+      "id": "hbm:deposit_tungsten",
+      "required": false
+    },
+    {
+      "id": "hbm:deposit_cinnabar",
+      "required": false
+    },
+    {
+      "id": "hbm:deposit_zirconium",
+      "required": false
+    },
+    {
+      "id": "hbm:deposit_borax",
+      "required": false
+    },
+    {
+      "id": "hbm:deposit_coltan",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_cave_sulfur",
+      "required": false
+    },
+    {
+      "id": "hbm:ore_cave_asbestos",
+      "required": false
+    }
+  ]
+}

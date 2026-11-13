@@ -181,6 +181,38 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-13 (suite 23) — la Mine, uniquement sous terre
+
+**Demande** : « comme NationsGlory, une dimension Mine, séparée de la dimension du Mineur ». Choix du
+joueur : **remise à neuf toutes les 24 h**, minerais **du jeu, des mods et du PalaMod**, accès par
+**la borne du spawn seulement**, **inventaire gardé à la mort**, **pas de cobblestone** (et pas de
+monstres). Puis, en cours de route : « **uniquement sous terre, pas de surface** ». Description :
+`docs/CONTENU_DOHY.md`, « La Mine ».
+
+**Fait** (`feat/mine`) : `mine/MineService` — une zone de 2 000 × 2 000 par jour (une dimension ne se
+régénère pas pendant que le serveur tourne : on change de terrain, pas de graine), avertissements,
+évacuation à 5 h, bords, règles (drops, mort, monstres), ménage des régions passées au démarrage,
+`/mine admin remise|info` ; borne MINE dans l'atrium (`SpawnBuilder` v7) ; datapack de la dimension
+par `tools/dohy_assets.py` : bruit à densité constante (roche partout, galeries des carvers),
+bedrock au fond et au plafond, pas de ciel ; biome sans végétation de surface (lichen,
+stalactites) ; minerais des mods par tag facultatif et modificateur de biome.
+
+**Vérifié en jeu** (client de CI) : arrivée par la borne dans la Mine ; minerais autour de
+l'arrivée (charbon, fer, cuivre, or, redstone, lapis, diamant, émeraude, et les sept du PalaMod) ;
+pierre cassée : rien au sol, minerai de charbon : du charbon ; mort avec 5 diamants et le niveau
+10 : tout rendu, réapparition au spawn, rien au sol ; zombie refusé ; remise à neuf : le joueur
+ramené au spawn, la zone suivante 20 400 blocs plus loin, sur un terrain neuf ; sortie par
+`/spawn`.
+
+**Sous terre, vérifié en jeu** : arrivée dans la salle (y = 30, lanternes, borne RETOUR en face) ;
+la dimension a un plafond et pas de ciel, de y = −64 à 127 ; au-dessus de la salle, de la roche
+jusqu'au bedrock (y = 124 à 127) ; sur 49 × 49 et toute la hauteur : 2,6 % d'air (les galeries),
+159 blocs de lave, 7 d'eau, **aucun bloc de surface** (herbe, feuilles, bûches) ; minerais du jeu
+et du PalaMod partout (3 120 charbon, 990 fer, 240 diamants, 55 émeraudes, 395 améthyste,
+209 titane, 85 paladium…) ; une galerie à 14 blocs de la salle (vue de nuit : boyau de pierre,
+cuivre et charbon aux parois). La diorite cassée donnait encore un bloc : le granite, la diorite,
+l'andésite et le tuf ne donnent plus rien non plus.
+
 ### 2026-11-13 (suite 22) — les saisons selon la latitude
 
 **Demande** : « un système de saisons selon la latitude, comme le mod Serene Seasons ; que la neige
