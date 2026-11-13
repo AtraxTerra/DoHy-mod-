@@ -70,7 +70,7 @@ public final class EarthBodies {
         }
 
         /** La distance au centre, dans le plan, en rayons (1 = le bord de l'ellipse). */
-        double flat(double x, double z) {
+        public double flat(double x, double z) {
             double dx = x - centerX;
             double dz = z - centerZ;
             double u = (dx * cos + dz * sin) / rx;
