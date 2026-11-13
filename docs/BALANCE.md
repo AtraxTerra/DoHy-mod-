@@ -1004,6 +1004,59 @@ Tchernobyl couvre une vingtaine de chunks, Fukushima une dizaine :
 **Les bases de lancement** ne rapportent rien : elles obligent à s'installer loin. De Paris,
 Baïkonour est à environ 4 200 blocs, Kourou à 5 000.
 
+## 6 novodecies. Pays à prendre — ce que coûte un pays
+
+Un pays se paie en **points de conquête** : l'ELO gagné aux events de faction en finissant devant
+la nation qui le tient (`docs/CONTENU_DOHY.md`, « Les pays à prendre »).
+
+**Le prix** : 200 + 37 × √(cases de terre du pays sur la grille), arrondi à la centaine, 200 au
+moins. La racine tient l'écart entre un micro-État et un continent dans un rapport de 1 à 110, au
+lieu de 1 à 350 000 en surface. La grille est celle de la carte (projection de Miller) : les pays
+du Nord y sont plus grands qu'en vrai, et donc un peu plus chers.
+
+| Pays | Cases de terre | Points |
+|---|---|---|
+| Cité du Vatican, Monaco | 1 et 2 | 200 et 300 |
+| Luxembourg | 33 | 400 |
+| Belgique | 395 | 900 |
+| Suisse, Pays-Bas | 531 et 605 | 1 100 |
+| Royaume-Uni, Japon | 4 000 environ | 2 500 |
+| Allemagne | 4 545 | 2 700 |
+| France | 6 606 | 3 200 |
+| Brésil | 53 728 | 8 800 |
+| Chine | 80 852 | 10 700 |
+| États-Unis | 108 560 | 12 400 |
+| Canada | 207 352 | 17 000 |
+| Russie | 346 282 | 22 000 |
+
+Les 256 pays valent 459 700 points en tout ; la moitié coûte 1 100 ou moins, 84 coûtent 500 ou
+moins (des îles, surtout).
+
+**Ce que rapporte un event.** Quatre factions y jouent (toi et trois rivales) ; le pot se partage
+par rang, chaque rang touchant 1,2 fois le suivant :
+
+| Event | Pot | 1er | 2e | 3e | 4e |
+|---|---|---|---|---|---|
+| Boss | 700 | 227 | 187 | 156 | 130 |
+| Egg Hunt | 3 000 | 968 | 804 | 670 | 558 |
+| Totem, KOTH | 10 000 | 3 221 | 2 682 | 2 235 | 1 862 |
+
+Ne compte que ce qui est gagné **devant** la nation qui tient le pays : 2e derrière une autre
+rivale compte, derrière elle non.
+
+**Le rythme.** Une semaine où l'on gagne tout (14 Boss, 2 Egg Hunt, le Totem et le KOTH) rapporte
+environ 11 500 points ; en ne jouant que le soir (un Boss par jour, le KOTH du samedi), environ
+4 800. La France tombe en un KOTH gagné, ou en quinze Boss ; la Russie demande deux semaines
+pleines ; le monde entier, une quarantaine de semaines pleines. C'est le but long de la partie.
+
+**Ce que donne un pays.** Un claim de plus (sans plafond : 256 pays, 256 claims), et quatre claims
+de territoire dans la notation : quatre pays tenus remplissent la moitié « territoire » du
+patrimoine (5 points sur 100, soit 12 500 $ de bourse par semaine). Pas d'argent : les revenus de
+territoire n'ont pas été retenus. Le gain est d'abord la carte qui se dore.
+
+Leviers : `EarthNations.cost` (la formule), `NEAR_BLOCKS` (la portée des voisins, quatre carreaux
+de 64 blocs), `FactionNotation.COUNTRY_CLAIMS` (le poids d'un pays dans la notation).
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

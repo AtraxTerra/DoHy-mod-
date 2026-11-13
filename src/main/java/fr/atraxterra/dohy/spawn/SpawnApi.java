@@ -47,6 +47,8 @@ public final class SpawnApi {
     /** La carte du monde du spawn, et la carte de la Terre dont elle a ete tiree. */
     private static EarthData mapSource;
     private static int[][] mapMosaic;
+    /** Le pays de chaque pixel de la carte du monde (0 : la mer), pour y dessiner les pays pris. */
+    private static int[][] mapCountries;
     private static SpawnBuilder.MapSite mapSite;
     /** Ceux qu'il faut envoyer au spawn au prochain tick : une connexion ou une reapparition n'est pas le moment. */
     private static final Set<UUID> ARRIVALS = new LinkedHashSet<>();
@@ -61,6 +63,18 @@ public final class SpawnApi {
             mapSource = earth;
             mapMosaic = earth == null ? null : earth.mosaic(MOSAIC_COLUMNS);
             mapSite = SpawnBuilder.site(mapMosaic);
+            mapCountries = null;
+            if (mapMosaic != null) {
+                mapCountries = new int[mapMosaic.length][];
+                for (int row = 0; row < mapMosaic.length; row++) {
+                    mapCountries[row] = new int[mapMosaic[row].length];
+                    for (int column = 0; column < mapMosaic[row].length; column++) {
+                        EarthData.Country country = mapMosaic[row][column] == 0 ? null
+                                : earth.countryOfPixel(MOSAIC_COLUMNS, column, row);
+                        mapCountries[row][column] = country == null ? 0 : country.id();
+                    }
+                }
+            }
         }
         return mapMosaic;
     }
@@ -84,6 +98,61 @@ public final class SpawnApi {
             return null;
         }
         return earth.countryOfPixel(MOSAIC_COLUMNS, column, row);
+    }
+
+    /**
+     * Les pays a prendre sur la carte du monde : ceux que tiennent des joueurs
+     * en or, les capitales en rouge, le reste dans sa teinte. Ne touche qu'aux
+     * pixels qui changent ; rien tant que le spawn n'est pas construit.
+     */
+    public static void paintNations(MinecraftServer server) {
+        int[][] mosaic = mosaic();
+        SpawnBuilder.MapSite site = mapSite;
+        EarthData earth = EarthData.get();
+        if (mosaic == null || site == null || earth == null || job != null) {
+            return;
+        }
+        ServerLevel level = server.getLevel(DoHySpawn.DIMENSION);
+        if (level == null || level.getData(DoHySpawn.BUILT.get()) != target()) {
+            return;
+        }
+        Set<Integer> held = new java.util.HashSet<>();
+        for (fr.atraxterra.dohy.earth.EarthNations.Held entry : fr.atraxterra.dohy.earth.EarthNations.ledger(server)
+                .held()) {
+            held.add(entry.country());
+        }
+        EarthData.Grid grid = earth.config().grid();
+        int step = Math.max(1, grid.width() / MOSAIC_COLUMNS);
+        Set<Integer> capitals = new java.util.HashSet<>();
+        for (int[] capital : fr.atraxterra.dohy.earth.EarthNations.capitals(server)) {
+            int column = Math.floorDiv(capital[0] - grid.minX(), grid.cell()) / step;
+            int row = Math.floorDiv(capital[1] - grid.minZ(), grid.cell()) / step;
+            if (row >= 0 && row < mosaic.length && column >= 0 && column < mosaic[row].length) {
+                capitals.add(row << 12 | column);
+            }
+        }
+        BlockState gold = Blocks.GOLD_BLOCK.defaultBlockState();
+        BlockState red = Blocks.REDSTONE_BLOCK.defaultBlockState();
+        int changed = 0;
+        for (int row = 0; row < mosaic.length; row++) {
+            for (int column = 0; column < mosaic[row].length; column++) {
+                int tint = mosaic[row][column];
+                if (tint == 0) {
+                    continue;
+                }
+                BlockState wanted = capitals.contains(row << 12 | column) ? red
+                        : held.contains(mapCountries[row][column]) ? gold : SpawnBuilder.mapTint(tint);
+                BlockPos pos = new BlockPos(site.west() - column, SpawnBuilder.FLOOR, site.north() - row);
+                if (!level.getBlockState(pos).equals(wanted)) {
+                    level.setBlock(pos, wanted, Block.UPDATE_CLIENTS);
+                    changed++;
+                }
+            }
+        }
+        if (changed > 0) {
+            DoHy.LOGGER.info("Spawn : {} pixel(s) de la carte du monde redessines ({} pays pris, {} capitale(s))",
+                    changed, held.size(), capitals.size());
+        }
     }
 
     /**
@@ -195,6 +264,7 @@ public final class SpawnApi {
             job = null;
             done.level.setData(DoHySpawn.BUILT.get(), done.version);
             DoHy.LOGGER.info("Spawn : construit");
+            paintNations(server);
             for (UUID id : done.waiting) {
                 ServerPlayer player = server.getPlayerList().getPlayer(id);
                 if (player != null && !inSpawn(player)) {
@@ -209,6 +279,7 @@ public final class SpawnApi {
         job = null;
         mapSource = null;
         mapMosaic = null;
+        mapCountries = null;
         mapSite = null;
     }
 

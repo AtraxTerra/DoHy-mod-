@@ -223,6 +223,7 @@ public final class FactionCommand {
                         .then(Commands.literal("abandonner")
                                 .executes(ctx -> as(ctx.getSource(), player -> result(player,
                                         EnemyBases.abandon(player), "Base abandonnee.")))))
+                .then(fr.atraxterra.dohy.earth.NationCommand.build())
                 .then(Commands.literal("info")
                         .executes(ctx -> as(ctx.getSource(), FactionCommand::info)))
                 .then(Commands.literal("map")
@@ -278,8 +279,14 @@ public final class FactionCommand {
         player.sendSystemMessage(FactionApi.prefix().append(Component.literal(data.name()).withStyle(ChatFormatting.WHITE)));
         player.sendSystemMessage(Component.literal(" Ligue " + league.label() + " · "
                 + MoneyFormat.exact(data.ranking().elo()) + " ELO").withStyle(league.format()));
-        player.sendSystemMessage(Component.literal(" Claims " + data.claims().size() + "/" + perks.claims()
+        player.sendSystemMessage(Component.literal(" Claims " + data.claims().size() + "/" + FactionApi.claimCap(player)
                 + " · banque " + MoneyFormat.exact(data.bank()) + " $").withStyle(ChatFormatting.GRAY));
+        if (fr.atraxterra.dohy.earth.EarthNations.active()) {
+            int target = fr.atraxterra.dohy.earth.EarthNations.nation(player).target();
+            player.sendSystemMessage(Component.literal(" Pays " + fr.atraxterra.dohy.earth.EarthNations.heldBy(player)
+                    .size() + (target == 0 ? "" : " · cible " + fr.atraxterra.dohy.earth.EarthNations.countryName(target)))
+                    .withStyle(ChatFormatting.GRAY));
+        }
         return 1;
     }
 

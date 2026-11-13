@@ -209,6 +209,21 @@ public final class EarthData {
         return byCode.get(code);
     }
 
+    /** Le pays de ce numero, ou {@code null}. */
+    public Country country(int id) {
+        return id > 0 && id < byId.length ? byId[id] : null;
+    }
+
+    /** Un de plus que le plus grand numero de pays : la taille d'un tableau indexe par pays. */
+    int countrySlots() {
+        return byId.length;
+    }
+
+    /** La grille brute, ligne par ligne du nord au sud ; a lire seulement. */
+    short[] cells() {
+        return cells;
+    }
+
     public double longitude(double x) {
         return (x - config.originX()) / config.blocksPerDegree();
     }

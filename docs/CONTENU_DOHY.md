@@ -298,8 +298,8 @@ La grille des 256 pays et territoires vient de Natural Earth (domaine public), u
 ### Ce que ça change en jeu
 
 - **Le pays.** Une fois par seconde, le mod regarde où est le joueur. Au passage d'une frontière,
-  un titre s'affiche (« Allemagne — Tu quittes : France ») avec une ligne dans le chat ; en haute
-  mer, « Eaux internationales ». Un pays ne s'annonce qu'après deux relevés de suite : longer une
+  un titre s'affiche (« Allemagne — Aux mains d'Arcanum », la nation qui le tient) avec une
+  ligne dans le chat (« … Tu quittes : France. ») ; en haute mer, « Eaux internationales ». Un pays ne s'annonce qu'après deux relevés de suite : longer une
   frontière ne fait pas clignoter l'écran. Les eaux à moins de 32 blocs d'une côte sont celles du
   pays ; au sud du 60ᵉ parallèle, tout est l'Antarctique.
 - **Le saut.** Au spawn, derrière la plateforme d'arrivée, une dalle porte **la carte du monde**
@@ -370,6 +370,50 @@ Chaque lieu est donc centré sur le chunk sec le plus proche, dans le bon pays, 
 Earth24k (37 km au plus du lieu réel). Les zones sont à l'échelle du jeu : celle de Tchernobyl
 réelle ferait 19 blocs de rayon.
 
+### Les pays à prendre
+
+L'esprit de NationsGlory sur une partie solo : ta faction prend des pays entiers de la grille, un
+par un, aux **nations rivales** que le jeu fait vivre.
+
+- **Les nations rivales** sont les douze factions fictives des events (Les Corbeaux, Nordheim,
+  Arcanum…). Elles se partagent le monde **par régions** : chaque pays est rattaché à la nation
+  la plus proche de son cœur, après un regroupement des pays sur le globe (k-moyennes, chaque pays
+  pesant la racine de sa taille), tiré de la graine du monde. Sur la carte Earth24k et la graine de
+  l'essai : Arcanum tient l'Europe et la Scandinavie (49 pays), Kraken le Canada et les
+  États-Unis, Nordheim la Russie et l'Asie centrale, Basilic la Chine, l'Inde et le Japon… Rien de
+  ce partage n'est sauvegardé : seuls les pays pris par des joueurs le sont.
+- **La capitale.** Dans un de tes claims, sur la carte, `/f pays capitale` (ou la carte de
+  l'écran). Son pays devient ta **première cible**. Tant que tu ne tiens aucun pays, elle se
+  déplace où tu veux ; ensuite, seulement dans un pays que tu tiens. Elle est marquée en rouge sur
+  la carte du monde du spawn.
+- **Viser un pays** (`/f pays viser`, ici ou par son nom, ou l'écran) : d'abord celui de ta
+  capitale ; ensuite un **voisin** de tes terres — un pays dont la terre est à 300 blocs environ
+  d'un pays que tu tiens. La France tient l'outre-mer : la tenir ouvre aussi les Antilles, la
+  Guyane, l'océan Indien. Une île sans voisin (les Bermudes, Sainte-Hélène…) se vise de partout.
+  Un pays à la fois ; changer de cible ne perd rien.
+- **Le prendre, aux events de faction.** Au prochain event (Boss, Egg Hunt, Totem, KOTH), la
+  nation qui tient ta cible est **de la partie**, parmi les trois factions rivales. Si tu finis
+  **devant elle**, l'ELO que tu gagnes à cet event compte en **points de conquête** sur ce pays.
+  Derrière elle, rien ne bouge. Le pays tombe quand ses points sont réunis : titre, annonce dans
+  le chat, et il passe à ta faction.
+- **Le prix d'un pays** dépend de sa terre sur la grille : de 200 points pour le Vatican à 3 200
+  pour la France et 22 000 pour la Russie (chiffrage : `docs/BALANCE.md` § 6 novodecies).
+- **Ce que donne un pays** : **un claim de plus** par pays tenu, et dans la notation de la semaine,
+  chaque pays compte pour quatre claims du territoire. Les pays tenus sont **en or** sur la carte
+  du monde du spawn.
+- **Les frontières** disent qui tient le pays : « France — Aux mains d'Arcanum · ta cible (227 /
+  3 200) », « France — Aux mains de ta faction ». Sur la carte du spawn, la barre d'action aussi.
+- **Rendre un pays** : `/f pays abandonner <pays>`, ou deux clics dans l'écran ; il retourne à la
+  nation de sa région, et la capitale part avec s'il la portait. Dissoudre la faction rend tous
+  ses pays.
+- **Entre joueurs** (sur un serveur) : un pays tenu par la faction d'un joueur ne se vise pas — pas
+  de guerre entre joueurs, comme pour les raids.
+- **Écran** : carte « Pays » sur la page de faction (avec une carte du monde de la Terre) : ta
+  nation (capitale, pays tenus, cible et ses points), le pays sous tes pieds, les douze voisins les
+  plus proches avec leur prix, et ce que tient chaque nation rivale. Commandes : `/f pays`,
+  `capitale`, `viser [pays]`, `renoncer`, `abandonner <pays>`, `liste` ; pour les opérateurs,
+  `donner <pays>`.
+
 ### Les cartes WorldPainter en 26.2
 
 Une carte dont les chunks attendent leur décoration est enregistrée à l'étape `liquid_carvers`.
@@ -383,9 +427,14 @@ les données du chunk avant leur lecture : le jeu reprend à la décoration.
 - `earth/` : `EarthData` (calage, grille, pays), `EarthEvents` (chargement avant les mondes,
   frontières, lieux, pose des pas de tir, file des gisements), `EarthJump` (le saut),
   `EarthDeposits` (la table et la pose), `EarthSites` (zones irradiées et bases de lancement),
-  `DoHyEarth` (la marque des chunks).
+  `EarthNations` (les pays à prendre : partage du monde, voisins, capitale, conquête),
+  `NationMenu` et `NationCommand` (l'onglet et `/f pays`), `DoHyEarth` (la marque des chunks, les
+  pays pris sur le monde de la carte, la nation du joueur).
+- `faction/event/EventRun` : la nation qui tient un pays visé est mise parmi les rivaux de
+  l'event, et la fin de l'event compte les points de conquête.
 - `spawn/SpawnBuilder.worldMap` : la dalle et le puits ; le spawn est redessiné quand une carte de
   la Terre apparaît ou disparaît (sa version vaut alors celle du dessin plus mille).
+  `SpawnApi.paintNations` repeint les pixels des pays pris et des capitales.
 
 ## Le spawn (dimension `dohy:spawn`)
 

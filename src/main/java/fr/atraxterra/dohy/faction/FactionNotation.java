@@ -49,6 +49,9 @@ import java.util.Locale;
  */
 public final class FactionNotation {
 
+    /** Un pays tenu sur la carte de la Terre vaut quatre claims dans le critere de patrimoine. */
+    static final int COUNTRY_CLAIMS = 4;
+
     /** Les criteres, dans l'ordre de l'ecran. */
     public enum Criterion {
         ACTIVITY("activity", "Activite"),
@@ -220,10 +223,14 @@ public final class FactionNotation {
             exposed += MuseumApi.donatedIn(player, wing);
         }
         int claims = data.claims().size();
+        // Sur la carte de la Terre, un pays tenu compte pour quatre claims dans le territoire.
+        int countries = fr.atraxterra.dohy.earth.EarthNations.heldBy(player).size();
         double museumPart = pieces == 0 ? 0.0d : (double) exposed / pieces;
-        double claimPart = Math.min(1.0d, (double) claims / Math.max(1, heritage.fullClaims()));
+        double claimPart = Math.min(1.0d, (double) (claims + COUNTRY_CLAIMS * countries)
+                / Math.max(1, heritage.fullClaims()));
         lines.add(new Line(Criterion.HERITAGE, cap(heritage.max() * (museumPart + claimPart) / 2.0d, heritage.max()),
-                heritage.max(), exposed + " / " + pieces + " au musee, " + claims + " claim(s)"));
+                heritage.max(), exposed + " / " + pieces + " au musee, " + claims + " claim(s)"
+                        + (countries > 0 ? ", " + countries + " pays" : "")));
 
         lines.add(new Line(Criterion.TREASURY, round(config.treasury().points(data.bank())), config.treasury().max(),
                 MoneyFormat.shortForm(data.bank()) + " $ en banque"));

@@ -269,6 +269,15 @@ final class SpawnBuilder {
     /** Le puits de saut : un carre de cinq blocs, quelque part dans l'ocean de la carte. */
     static final int PIT_HALF = 2;
 
+    /** Les teintes des pays sur la carte du monde, par numero de teinte (la 0 ne sert pas : la mer a les siennes). */
+    private static final String[] MAP_TINTS = {"blue_concrete", "lime_concrete", "yellow_concrete",
+            "orange_terracotta", "pink_concrete", "white_concrete", "light_gray_concrete", "green_concrete"};
+
+    /** Le bloc d'un pays de cette teinte sur la carte du monde. */
+    static BlockState mapTint(int tint) {
+        return block(MAP_TINTS[Math.max(0, Math.min(tint, MAP_TINTS.length - 1))]);
+    }
+
     /** Ou tombe la carte dans le spawn, et ou s'ouvre son puits. */
     record MapSite(int width, int height, int pitX, int pitZ) {
         /** Le x du pixel le plus a l'ouest : la carte est centree, l'ouest a la gauche de qui arrive. */
@@ -349,9 +358,10 @@ final class SpawnBuilder {
         if (site == null) {
             return;
         }
-        BlockState[] tints = {block("blue_concrete"), block("lime_concrete"), block("yellow_concrete"),
-                block("orange_terracotta"), block("pink_concrete"), block("white_concrete"),
-                block("light_gray_concrete"), block("green_concrete")};
+        BlockState[] tints = new BlockState[MAP_TINTS.length];
+        for (int tint = 0; tint < tints.length; tint++) {
+            tints[tint] = mapTint(tint);
+        }
         BlockState sea = block("blue_concrete");
         BlockState shallows = block("light_blue_concrete");
         BlockState seaLight = block("blue_stained_glass");

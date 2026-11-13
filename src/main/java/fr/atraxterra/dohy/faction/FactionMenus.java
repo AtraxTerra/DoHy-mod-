@@ -151,9 +151,9 @@ public final class FactionMenus {
                                     data.tags().isEmpty() ? "Faction solo" : String.join(" · ", data.tags())))
                             .accent(0xFFEF3826).tooltip(identity),
                     Card.of(new ItemStack(Items.GRASS_BLOCK), "Claims", List.of(
-                                    data.claims().size() + " / " + perks.claims() + " chunks",
+                                    data.claims().size() + " / " + FactionApi.claimCap(player) + " chunks",
                                     "Ta base, a l'abri du monde"))
-                            .accent(0xFF22E558).progress(data.claims().size(), perks.claims())
+                            .accent(0xFF22E558).progress(data.claims().size(), FactionApi.claimCap(player))
                             .action("claims|gerer les claims"),
                     Card.of(new ItemStack(Items.GOLD_INGOT), "Banque de faction", List.of(
                                     MoneyFormat.exact(data.bank()) + " $", "Paie l'arbre de technologie"))
@@ -175,14 +175,17 @@ public final class FactionMenus {
             Card home = Card.of(new ItemStack(Items.BED.pick(DyeColor.RED)), "F home", homeLines).accent(0xFF2F5BEA);
             home = perks.homes() <= 0 ? home.state(MenuView.DISABLED)
                     : home.action("home|y aller").right("sethome|le poser ici");
-            List<Card> progression = List.of(
+            List<Card> progression = new ArrayList<>(List.of(
                     treeCard(player, data),
                     home,
                     enemyBaseCard(player),
                     reserveCard(player),
-                    eventsCard(),
-                    Card.of(new ItemStack(Items.COMPARATOR), "Parametres", List.of("Nom, description, MOTD",
-                            "Tags, blason, dissolution")).accent(0xFF55545C).action("settings|ouvrir"));
+                    eventsCard()));
+            if (fr.atraxterra.dohy.earth.EarthNations.active()) {
+                progression.add(nationCard(player));
+            }
+            progression.add(Card.of(new ItemStack(Items.COMPARATOR), "Parametres", List.of("Nom, description, MOTD",
+                    "Tags, blason, dissolution")).accent(0xFF55545C).action("settings|ouvrir"));
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("LIGUE", league.label().toUpperCase(), league.color()),
                     new MenuView.Stat("ELO", MoneyFormat.shortForm(data.ranking().elo()), 0xFFFFFFFF),
@@ -204,6 +207,7 @@ public final class FactionMenus {
                 case "bases" -> EnemyBaseMenu.INSTANCE.open(player);
                 case "reserve" -> ReserveMenu.INSTANCE.open(player);
                 case "events" -> FactionEventMenu.INSTANCE.open(player);
+                case "nations" -> fr.atraxterra.dohy.earth.NationMenu.INSTANCE.open(player);
                 case "home" -> {
                     String refusal = FactionHomes.go(player, 0);
                     if (refusal != null) {
@@ -217,6 +221,22 @@ public final class FactionMenus {
                 }
             }
         }
+    }
+
+    /** Les pays a prendre, sur une carte de la Terre : combien on en tient, et la cible. */
+    private static Card nationCard(ServerPlayer player) {
+        fr.atraxterra.dohy.earth.EarthNations.Nation nation = fr.atraxterra.dohy.earth.EarthNations.nation(player);
+        int held = fr.atraxterra.dohy.earth.EarthNations.heldBy(player).size();
+        int target = nation.target();
+        String second = target != 0 ? "Cible : " + fr.atraxterra.dohy.earth.EarthNations.countryName(target)
+                : nation.capital() == 0 ? "Pose ta capitale" : "Vise un voisin";
+        Card card = Card.of(new ItemStack(Items.FILLED_MAP), "Pays", List.of(held + " pays tenu(s)", second))
+                .accent(0xFFFAC400).action("nations|ouvrir");
+        if (target != 0) {
+            card = card.progress(nation.pointsOn(target),
+                    fr.atraxterra.dohy.earth.EarthNations.cost(player.level().getServer(), target));
+        }
+        return nation.capital() == 0 ? card.badge("NOUVEAU") : card;
     }
 
     /** La reserve d'or (lot 22e) : ce qui est place, ou comment en batir une. */
@@ -396,8 +416,8 @@ public final class FactionMenus {
                         "Monde, Nether ou End seulement")).state(MenuView.DISABLED));
             } else {
                 Card claim = Card.of(new ItemStack(Items.GRASS_BLOCK), "Revendiquer ce chunk", List.of(hereLine,
-                        data.claims().size() + " / " + perks.claims() + " utilises"));
-                actions.add(data.claims().size() < perks.claims() ? claim.accent(0xFF22E558).action("claim|revendiquer")
+                        data.claims().size() + " / " + FactionApi.claimCap(player) + " utilises"));
+                actions.add(data.claims().size() < FactionApi.claimCap(player) ? claim.accent(0xFF22E558).action("claim|revendiquer")
                         : claim.state(MenuView.DISABLED).tooltip(List.of("Plus de claim disponible")));
             }
             boolean armed = armed(player, "unclaimall");
@@ -427,7 +447,7 @@ public final class FactionMenus {
                         "ou tu te tiens")).state(MenuView.DISABLED));
             }
             List<MenuView.Stat> stats = List.of(
-                    new MenuView.Stat("CLAIMS", data.claims().size() + " / " + perks.claims(), 0xFF22E558),
+                    new MenuView.Stat("CLAIMS", data.claims().size() + " / " + FactionApi.claimCap(player), 0xFF22E558),
                     new MenuView.Stat("ICI", owner.ownedBy(player.getUUID()) ? "A TOI" : owner.claimed() ? "PRIS"
                             : "LIBRE", owner.claimed() ? 0xFFEF3826 : 0xFFFFFFFF));
             return new MenuView(id(), "Claims", "Clic : monstres oui/non · clic droit : rendre", stats, List.of(

@@ -1,5 +1,7 @@
 package fr.atraxterra.dohy.earth;
 
+import fr.atraxterra.dohy.spawn.SpawnApi;
+import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.neoforged.fml.ModList;
@@ -18,6 +20,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -52,8 +55,27 @@ public final class EarthEvents {
         EarthSites.load(event.getServer());
     }
 
+    /** Le partage du monde entre les nations rivales se calcule une fois les mondes ouverts. */
+    @SubscribeEvent
+    public static void onStarted(ServerStartedEvent event) {
+        if (EarthData.get() != null) {
+            EarthNations.atlas(event.getServer());
+            SpawnApi.paintNations(event.getServer());
+        }
+    }
+
+    /** Une capitale se dessine sur la carte du spawn quand sa faction est en ligne. */
+    @SubscribeEvent
+    public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (EarthData.get() != null && event.getEntity() instanceof ServerPlayer player
+                && EarthNations.nation(player).capital() != 0) {
+            SpawnApi.paintNations(player.level().getServer());
+        }
+    }
+
     @SubscribeEvent
     public static void onServerStopped(ServerStoppedEvent event) {
+        EarthNations.clear();
         EarthData.unload();
         EarthDeposits.clear();
         EarthSites.clear();
@@ -211,13 +233,29 @@ public final class EarthEvents {
             }
         }
         String detail = left == null ? earth.coordinates(player.getX(), player.getZ()) : "Tu quittes : " + left;
+        // Les pays a prendre : qui tient celui-ci, et ou en est la conquete s'il est vise.
+        String holder = country == null ? null : EarthNations.holderName(player, country.id());
+        ChatFormatting tone = ChatFormatting.GRAY;
+        if (holder != null) {
+            boolean mine = holder.equals("ta faction");
+            detail = "Aux mains " + EarthNations.de(holder);
+            tone = mine ? ChatFormatting.GREEN : ChatFormatting.GRAY;
+            EarthNations.Nation nation = EarthNations.nation(player);
+            if (nation.target() == country.id()) {
+                detail += " · ta cible (" + MoneyFormat.exact(nation.pointsOn(country.id())) + " / "
+                        + MoneyFormat.exact(EarthNations.cost(player.level().getServer(), country.id())) + ")";
+                tone = ChatFormatting.YELLOW;
+            }
+        }
         player.connection.send(new ClientboundSetTitlesAnimationPacket(8, 50, 16));
         player.connection.send(new ClientboundSetTitleTextPacket(Component.literal(name)
                 .withStyle(country == null ? ChatFormatting.AQUA : ChatFormatting.GOLD)));
         player.connection.send(new ClientboundSetSubtitleTextPacket(
-                Component.literal(detail).withStyle(ChatFormatting.GRAY)));
-        player.sendSystemMessage(Component.literal(country == null ? "Tu entres dans les eaux internationales."
-                : "Tu entres en territoire : " + name + ".").withStyle(ChatFormatting.GRAY));
+                Component.literal(detail).withStyle(tone)));
+        String line = country == null ? "Tu entres dans les eaux internationales."
+                : "Tu entres en territoire : " + name + (holder == null ? "" : ", aux mains " + EarthNations.de(holder)) + "."
+                + (left == null ? "" : " Tu quittes : " + left + ".");
+        player.sendSystemMessage(Component.literal(line).withStyle(ChatFormatting.GRAY));
     }
 
     /** La reception d'un saut ne blesse pas, meme si le parachute s'est eteint avant le sol. */

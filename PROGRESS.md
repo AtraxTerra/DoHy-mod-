@@ -175,6 +175,45 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-12 (suite 13) — la Terre : les pays à prendre
+
+**Demande** : « Et ensuite le 1. Pays à prendre » — ta faction revendique un pays entier de la
+grille, avec une capitale ; le message de frontière dit qui le tient ; les autres pays sont tenus
+par des nations rivales gérées par le jeu, prises par les events de faction ; réutiliser les
+claims et la notation. (L'idée 2, des revenus de territoire, n'a pas été retenue.)
+Description : `docs/CONTENU_DOHY.md`, « Les pays à prendre » ; `docs/FACTION.md`, lot 22i ;
+chiffrage : `docs/BALANCE.md` § 6 novodecies.
+
+**Fait** (`feat/terre-pays`) :
+- `earth/EarthNations` : l'atlas de la partie (taille de chaque pays, son cœur, ses voisins à
+  300 blocs environ, sur une grille de carreaux de 64 blocs), et le partage du monde entre les
+  douze factions fictives des events par régions (k-moyennes sur le globe, tirées de la graine).
+  Seuls les pays pris par des joueurs sont sauvegardés (`earth_nations`, sur le monde de la
+  carte) ; la capitale, la cible et les points d'une faction vont sur le joueur (`earth_nation`).
+- Capitale dans un claim ; première cible : son pays ; ensuite les voisins de ses terres, et les
+  îles sans voisin. Au départ d'un event, la nation qui tient une cible est mise parmi les trois
+  rivaux (`EventRun.want`) ; à la fin, l'ELO gagné devant elle compte en points ; le pays tombe
+  quand son prix est atteint (200 + 37 × √cases, arrondi).
+- Un claim de plus par pays ; un pays vaut quatre claims dans le patrimoine de la notation.
+- Frontières : « France — Aux mains d'Arcanum · ta cible (227 / 3 200) » ; accords « d'Arcanum »,
+  « des Corbeaux ». Carte du monde du spawn : pays pris en or, capitales en rouge
+  (`SpawnApi.paintNations`), et le détenteur dans la barre d'action.
+- Onglet « Pays » de la faction (`NationMenu`) et `/f pays` (`capitale`, `viser`, `renoncer`,
+  `abandonner`, `liste`, `donner` pour les opérateurs). Dissoudre la faction rend ses pays.
+
+**Vérifié en jeu** (client de CI, grille Earth24k sur un monde ordinaire) : partage en douze
+nations (Arcanum : l'Europe, 49 pays ; Kraken : Canada et États-Unis ; Nordheim : Russie et Asie
+centrale…), prix (France 3 200, Belgique 900, Russie 22 000) ; capitale refusée hors claim, posée
+à Paris ; viser la Belgique refusé tant qu'on n'a pas de pays ; à chaque event, Arcanum présente
+parmi les rivaux ; Boss gagné devant elle : +227 points ; Boss perdu derrière elle : rien ; KOTH
+gagné : la France tombe (titre, annonce), un claim de plus ; ensuite Japon refusé (trop loin),
+Bermudes (île isolée) et Belgique acceptés, 54 pays à viser, les plus proches d'abord ; carte du
+spawn : la France en or, Paris en rouge ; dissolution : registre vide, carte repeinte. Les events
+de l'essai sont lancés pour de bon, et leurs scores posés à la main avant la fin.
+
+**Non vérifié** : un event joué jusqu'au bout avec la cible (la fin est la même que dans l'essai),
+et la carte Earth24k elle-même (le CI n'a que la grille).
+
 ### 2026-11-12 (suite 12) — la Terre : zones irradiées et bases de lancement
 
 **Demande** : « Avec NTM NEXT et hbmspace : 6. Zones irradiées réelles. Tchernobyl et Fukushima en

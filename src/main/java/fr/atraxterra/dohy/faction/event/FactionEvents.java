@@ -165,27 +165,33 @@ public final class FactionEvents {
         }
         EventRun run;
         String subtitle;
-        switch (kind) {
-            case BOSS -> {
-                BossKind chosen = boss != null ? boss : bossOfTheSlot(now());
-                run = BossFight.start(server, chosen);
-                subtitle = chosen.label() + " est apparu dans l'arene";
+        // Sur la carte de la Terre, les nations qui tiennent un pays vise sont de la partie.
+        EventRun.want(fr.atraxterra.dohy.earth.EarthNations.wanted(server));
+        try {
+            switch (kind) {
+                case BOSS -> {
+                    BossKind chosen = boss != null ? boss : bossOfTheSlot(now());
+                    run = BossFight.start(server, chosen);
+                    subtitle = chosen.label() + " est apparu dans l'arene";
+                }
+                case KOTH -> {
+                    run = KothRun.start(server);
+                    subtitle = "Prends la colline et tiens-la 30 min";
+                }
+                case TOTEM -> {
+                    run = TotemRun.start(server);
+                    subtitle = "Casse le totem, depose ses blocs";
+                }
+                case EGG_HUNT -> {
+                    run = EggHuntRun.start(server);
+                    subtitle = "Volcania survole son ile";
+                }
+                default -> {
+                    return kind.label() + " arrive dans un prochain lot.";
+                }
             }
-            case KOTH -> {
-                run = KothRun.start(server);
-                subtitle = "Prends la colline et tiens-la 30 min";
-            }
-            case TOTEM -> {
-                run = TotemRun.start(server);
-                subtitle = "Casse le totem, depose ses blocs";
-            }
-            case EGG_HUNT -> {
-                run = EggHuntRun.start(server);
-                subtitle = "Volcania survole son ile";
-            }
-            default -> {
-                return kind.label() + " arrive dans un prochain lot.";
-            }
+        } finally {
+            EventRun.want(List.of());
         }
         if (run == null) {
             return "La Warzone est introuvable.";
@@ -203,6 +209,7 @@ public final class FactionEvents {
         broadcast(server, Component.literal("[Event] " + kind.label() + " : " + subtitle.toLowerCase() + " ! ")
                 .withStyle(ChatFormatting.GOLD)
                 .append(Component.literal("/f event rejoindre").withStyle(ChatFormatting.YELLOW)));
+        fr.atraxterra.dohy.earth.EarthNations.eventStarted(server, run.rivals());
         return null;
     }
 

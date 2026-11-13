@@ -24,6 +24,7 @@ PvE**. Choix du joueur :
 | 22f-3 | Event : Egg Hunt (l'End et les raids ne sont pas repris : choix du joueur) | fait |
 | 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller : trois tailles, cinq genres, terrain qui revient après le raid | fait |
 | 22h | Notation de la semaine : une note sur 100 chaque lundi, une bourse à la banque de faction (repris de NationsGlory) | fait |
+| 22i | Pays à prendre, sur une carte de la Terre : capitale, conquête des pays aux events contre les nations rivales | fait |
 
 ## Ce qui change en solo
 
@@ -495,7 +496,7 @@ paie donc aussi une semaine paisible. Les deux tombent ensemble, le lundi à min
 | Métiers | 15 | Somme des niveaux des quatre métiers, sur le maximum possible | état |
 | Contrats | 15 | 0,5 par contrat du jour, 3,5 pour celui de la semaine, 0,5 par commande de trixium | semaine |
 | Militaire | 20 | 4 points par victoire ELO de la semaine (base ennemie pillée, event gagné) | semaine |
-| Patrimoine | 10 | Moitié musée (pièces exposées), moitié territoire (16 claims donnent le plafond) | état |
+| Patrimoine | 10 | Moitié musée (pièces exposées), moitié territoire (16 claims donnent le plafond ; un pays tenu compte pour 4 claims) | état |
 | Trésor | 10 | Banque de faction ; échelle logarithmique de 100 k à 100 M | état |
 
 - **Bourse** : 2 500 $ le point, versés à la banque de faction. 100 points font 250 000 $.
@@ -512,3 +513,17 @@ paie donc aussi une semaine paisible. Les deux tombent ensemble, le lundi à min
 
 Les compteurs vivent dans les stats de la faction, sous le préfixe `note:`. Réglages :
 `data/notations.json`. Code : `FactionNotation`, `NotationConfig`, branchés dans `FactionWeekly`.
+
+## Pays à prendre (22i)
+
+Sur une carte de la Terre seulement (le datapack de la carte). La faction pose une **capitale**
+dans un de ses claims, puis prend des pays entiers aux douze **nations rivales** — les factions
+fictives des events, qui se partagent le monde par régions. La nation qui tient le pays visé est
+mise parmi les trois rivaux du prochain event ; finir devant elle fait compter l'ELO gagné en
+points de conquête, et le pays tombe quand ses points sont réunis. Chaque pays tenu ajoute un
+claim, et compte pour quatre claims dans la notation. Pas de guerre entre joueurs : un pays tenu
+par un joueur ne se vise pas.
+
+Description complète : `docs/CONTENU_DOHY.md`, section « Les pays à prendre » ; chiffrage :
+`docs/BALANCE.md` § 6 novodecies. Code : `earth/EarthNations`, `NationMenu`, `NationCommand` ;
+`/f pays`.
