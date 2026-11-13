@@ -476,10 +476,14 @@ public class PaletteBlockEntity extends BlockEntity implements WorldlyContainer 
     /**
      * Une palette cassee rend ses propres piles (pas celles du groupe), et ses
      * voisines du groupe se regroupent sans elle au tick suivant.
+     *
+     * <p>Sans appel a la version du jeu : pour une entite qui est un
+     * {@code Container}, elle vide ce conteneur au sol — ici le stock du groupe
+     * entier. Vu en jeu : casser une palette d'un groupe de 3 x 3 jetait les
+     * 6 400 objets des neuf palettes.
      */
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
         if (level == null || level.isClientSide()) {
             return;
         }
