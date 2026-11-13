@@ -181,6 +181,46 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-13 (suite 22) — les saisons selon la latitude
+
+**Demande** : « un système de saisons selon la latitude, comme le mod Serene Seasons ; que la neige
+disparaisse toute seule même si aucun joueur n'est connecté ». Choix du joueur : **une saison par
+semaine réelle**, neige **réaliste** (durable au-delà de ~50° et en montagne, rare en France),
+**cultures**, **couleurs des feuilles et de l'herbe**, **saison dans l'atlas**. Description :
+`docs/CONTENU_DOHY.md`, « Les saisons ».
+
+**Fait** (`feat/saisons`, posée sur `feat/serveur-24h`) : `season/SeasonMath` (calendrier, froid
+par latitude, pousse, couleurs, noms — sans Minecraft, testé seul en CI par
+`tools/SeasonMathTest.java`), `SeasonClimate` (table de décalage par bande de 16 blocs, contextes
+serveur et client), `Seasons` (ancre : lundi 16/11/2026 5 h, hiver du nord ; `SeasonSync` ;
+`/saison`, `/saison admin avancer|remettre`), `SeasonGround` (balayage des chunks chargés +
+rattrapage au chargement, colonne entière du dessus des arbres au sol ; marque de chunk
+`season_ground`), `SeasonCrops` (`CropGrowEvent.Pre`) ; mixins `BiomeTemperatureMixin` (la saison
+dans `Biome.getTemperature`, privée en 26.2), `BiomeAccessor` (invocateur), `BiomeColorsMixin`
+(client : herbe, feuillage, feuillage sec) ; `client/season/ClientSeasons` (synchro, paliers de
+couleur : `ClientLevel.setSectionRangeDirty`, l'ancien rendu reste affiché), `SeasonColors` ;
+ligne de l'atlas sous le pays.
+
+**Vérifié en jeu** (client de CI, grille Earth24k sur un monde ordinaire, quatre passes) :
+- « Saisons : Automne au nord, Printemps au sud » au démarrage le 13/11 ; décalages et noms justes
+  (60° N : -0,72 en plein hiver, +0,22 en plein été ; 62° N à mi-printemps : 0).
+- **Hiver rattrapé** : une forêt de bouleaux jamais chargée, ouverte en plein hiver — 6 162
+  colonnes enneigées sur 6 561, aucune là où il fait doux ; la pluie y tombe en neige.
+- **Printemps rattrapé, chunk déchargé** : le même coin quitté (déchargé), saison passée à l'été,
+  retrouvé : **0** neige, **0** glace (au premier essai, des chunks entiers gardaient leur neige :
+  un chunk pas encore servi par le jeu était oublié ; corrigé, il repasse en queue). Les 33 plaques
+  posées sur des branches basses fondent aussi (deuxième correction : la colonne entière).
+- **Fonte sur place** : plaines et mer gelée à 62° N, chargées ; 90 s de printemps : neige
+  3 433 → 798, glace 2 242 → 524 (tout le reste là où il fait doux : ça continue).
+- **Cultures** en plein hiver, pousse accélérée 30 s : blé dehors âge 0, sous verre âge 4 à 6.
+- **Couleurs** relevées côté client (chêne, herbe, 60° N) : été `6BA940`/`88BB66`, automne
+  `A6842C`/`99B15B`, hiver `7B9352`/`91A86B`, printemps `6CAF40`/`85BF5F`.
+- Ligne de l'atlas (« Hiver j4/7 -9 °C », couleur par saison) et `/saison` (« Printemps
+  (hemisphere nord), jour 4 sur 7 / Il fait 15 °C ici. Ete dans 3 j 11 h. »).
+
+**Non vérifié** : sur la vraie carte Earth24k (biomes de WorldPainter) — les chiffres de neige
+dépendent des biomes posés par la carte ; à regarder sur le serveur du joueur.
+
 ### 2026-11-13 (suite 21) — sur un serveur qui tourne 24 h/24
 
 **Dit par le joueur** : « je joue désormais sur un serveur qui tourne 24h/24 », puis « je peux
