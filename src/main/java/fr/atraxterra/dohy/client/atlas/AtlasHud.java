@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.client.atlas;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.client.season.ClientSeasons;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.earth.EarthAtlas;
@@ -77,7 +78,10 @@ final class AtlasHud implements GuiLayer {
             EarthAtlas.Owner owner = country == null ? null : AtlasData.owner(country.id());
             color = owner != null && owner.kind() == 1 ? AtlasGlobe.MINE : Ui.TEXT;
         }
-        int panelHeight = where == null ? 12 : 21;
+        // la saison et la temperature du lieu, sous le pays
+        ClientSeasons.Line season = where == null ? null
+                : ClientSeasons.line(minecraft.level, player.blockPosition());
+        int panelHeight = 12 + (where == null ? 0 : 9) + (season == null ? 0 : 9);
         ui.rect(x0 - 3, panelTop, size + 6, panelHeight, Ui.OUTER);
         ui.rect(x0 - 2, panelTop + 1, size + 4, panelHeight - 2, Ui.BG);
         String coordinates = player.getBlockX() + "  " + player.getBlockY() + "  " + player.getBlockZ();
@@ -85,6 +89,10 @@ final class AtlasHud implements GuiLayer {
                 Ui.TEXT);
         if (where != null) {
             ui.centered(Ui.BOLD, ui.fit(Ui.BOLD, where, 5.5f, size + 2), x0 + size / 2.0f, panelTop + 11, 5.5f, color);
+        }
+        if (season != null) {
+            ui.centered(Ui.BOLD, ui.fit(Ui.BOLD, season.text(), 5.0f, size + 2), x0 + size / 2.0f, panelTop + 20,
+                    5.0f, season.color());
         }
     }
 

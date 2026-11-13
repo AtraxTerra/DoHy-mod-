@@ -5,7 +5,12 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "PlayerEdgeMixin",
-    "SerializableChunkDataMixin"
+    "SerializableChunkDataMixin",
+    "BiomeAccessor",
+    "BiomeTemperatureMixin"
+  ],
+  "client": [
+    "BiomeColorsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

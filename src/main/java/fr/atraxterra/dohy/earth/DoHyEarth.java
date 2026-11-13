@@ -42,6 +42,15 @@ public final class DoHyEarth {
                     .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
                     .build());
 
+    /**
+     * Le palier de saison auquel un chunk a ete remis a la saison (neige, glace) ; -1 tant qu'il ne
+     * l'a jamais ete. Voir {@code season.SeasonGround}.
+     */
+    public static final Supplier<AttachmentType<Integer>> SEASON_GROUND = ATTACHMENTS.register(
+            "season_ground", () -> AttachmentType.builder(() -> -1)
+                    .serialize(Codec.INT.fieldOf("step"), value -> value >= 0)
+                    .build());
+
     /*
      * Les villes des capitales ont ete retirees (2026-11-13). Leurs deux marques restent enregistrees
      * pour lire sans erreur les chunks et le monde qui les portent encore ; elles ne sont plus jamais

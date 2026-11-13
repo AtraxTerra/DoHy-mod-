@@ -95,6 +95,15 @@ jobs:
             tools/RealClockTest.java
           java -cp /tmp/clock fr.atraxterra.dohy.util.RealClockTest
 
+      # Les saisons en chiffres : le calendrier (une saison par semaine, le sud a
+      # contre-temps) et le reglage « realiste » de la neige selon la latitude.
+      - name: Les saisons doivent passer leur test
+        run: |
+          javac -d /tmp/season \
+            src/main/java/fr/atraxterra/dohy/season/SeasonMath.java \
+            tools/SeasonMathTest.java
+          java -cp /tmp/season fr.atraxterra.dohy.season.SeasonMathTest
+
       - name: Regenerer les prix
         run: python3 tools/gen_prices.py
 
