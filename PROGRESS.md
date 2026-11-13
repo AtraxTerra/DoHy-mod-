@@ -210,7 +210,10 @@ Kiruna — 40 % de fer dans la roche du gisement, blocs de fer brut au cœur ; b
 85 % de pétrole dans la nappe ; Jwaneng — cheminée de tuf, 430 diamants ; Tchad (aucune
 ressource) — 25 chunks servis, plus un seul minerai du jeu ; Escondida — 5 604 minerais retirés
 et 6 945 blocs posés en 9 chunks, 8 ms en tout. `/gisements` et les ressources par pays
-répondent. Le pétrole des chunks pour Create Diesel Generators n'a pas pu être essayé (mod absent
+répondent. Monde créé avec le datapack : il se charge (un premier essai l'avait refusé :
+`neoforge:none` n'existe pas en 26.2, le zinc de Create est coupé par un `remove_features` vide), et
+les minerais du jeu n'y sont plus générés (85 minerais à retirer sur 9 chunks, contre 5 600 sans
+lui). Le pétrole des chunks pour Create Diesel Generators n'a pas pu être essayé (mod absent
 de la CI) : appel vérifié sur le bytecode du mod (statique, `ServerLevel, ChunkPos, int`).
 
 ### 2026-11-13 (suite 17) — PalaMod : les feuilles tombent, les Dancaroks apparaissent
