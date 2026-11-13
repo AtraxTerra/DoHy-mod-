@@ -225,7 +225,7 @@ public final class EarthCities {
             return;
         }
         placed();
-        long key = key(chunk.getPos().x, chunk.getPos().z);
+        long key = key(chunk.getPos().getMinBlockX() >> 4, chunk.getPos().getMinBlockZ() >> 4);
         if (INDEX.get(key) >= 0) {
             QUEUE.add(key);
         }
