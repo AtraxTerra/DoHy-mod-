@@ -175,6 +175,38 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-13 (suite 17) — PalaMod : les feuilles tombent, les Dancaroks apparaissent
+
+**Demande** : « Vérifie l'apparition des dancarok et la dégradation rapides des feuilles des arbres
+du palamod ». Le joueur a **Leaves Be Gone** ; sa carte de la Terre est déjà générée.
+
+**Constat** : les feuilles de PalaMod étaient des blocs simples (comme l'original) : elles ne
+tombaient jamais, et Leaves Be Gone ne traite que les vraies feuilles. Le Dancarok n'apparaissait
+que par la règle vanilla (poids 2 parmi 46) : à la génération des chunks — il n'y en a pas sur une
+carte faite d'avance — et par le tirage des créatures plafonné à une dizaine de bêtes, que les
+moutons et les vaches remplissent.
+
+**Fait** (`feat/feuilles-dancarok`) :
+- `PalaLeavesBlock` : vraies feuilles ; distance par les 26 voisines (les patrons sont clairsemés :
+  un cinquième de leurs feuilles ne touche rien par une face), bûches et feuilles de la même
+  essence seulement ; défaut « distance 1 » pour les feuilles sauvegardées avant, qui tiennent
+  jusqu'à ce qu'un voisin bouge ; particules de feuilles à la couleur de l'essence. Les pixels
+  transparents des quatre textures ont une teinte sombre (rendu sans découpe).
+- `PalaTreeFeature` pose les feuilles avec leur distance aux bûches posées ; bûches entamées
+  dans `#minecraft:logs`.
+- Tag de biomes `palamod:dancarok_spawns` (plaines, tournesols, prairie, savanes,
+  `#c:is_savanna`), règle vanilla au poids 3, et `DancarokSpawner` : une fois par minute, une
+  chance sur huit par joueur, un sauvage à 32-64 blocs hors de vue s'il n'y en a aucun à 128.
+
+**Vérifié en jeu** (client de CI avec Leaves Be Gone et Puzzles Lib de Modrinth) : un jacaranda
+posé (97 feuilles, toutes à distance 1 ou 2) ne perd rien en 10 s de ticks aléatoires ×333 ;
+abattus, le jacaranda, un chêne et une colonne aux feuilles « d'avant » sont nus **en moins de
+52 ticks** ; un bouquet « d'avant » sans tronc reste, puis tombe en entier quand on en casse une
+feuille ; un bouquet posé à la main reste. Bûche de PalaMod : distance vanilla 0 (le tag
+`#minecraft:logs` sert bien en 26.2). Plaine : 55 animaux et 1 Dancarok à la génération ; ce
+sauvage retiré, `DancarokSpawner` en pose un au premier essai, à 46 blocs, sur l'herbe ; un second
+essai est refusé (un sauvage à 128 blocs).
+
 ### 2026-11-13 (suite 16) — les villes des capitales retirées
 
 **Demande** : « supprime les structures villes ». Choix du joueur : **retirer du mod seulement** ;
