@@ -100,7 +100,7 @@ import java.util.function.Supplier;
  */
 final class EnemyBaseBuilder {
 
-    record Result(BlockPos center, BlockPos coreMin, BlockPos coreMax, int turrets, int mines) {
+    record Result(BlockPos center, BlockPos coreMin, BlockPos coreMax, int turrets, int mines, int guards) {
     }
 
     /** Une couche de mur : un bloc, ou un liquide pris entre deux couches pleines. */
@@ -167,6 +167,7 @@ final class EnemyBaseBuilder {
     private int coreFloor;
     private int turrets;
     private int mines;
+    private int guards;
     private final ArrayDeque<Runnable> steps = new ArrayDeque<>();
     private final List<BlockPos> shaped = new ArrayList<>();
     private final Map<String, Block> blocks = new HashMap<>();
@@ -304,7 +305,7 @@ final class EnemyBaseBuilder {
 
     Result result() {
         return new Result(new BlockPos(cx, y0, cz), new BlockPos(cx - coreRadius, coreFloor, cz - coreRadius),
-                new BlockPos(cx + coreRadius, coreFloor + coreHeight - 1, cz + coreRadius), turrets, mines);
+                new BlockPos(cx + coreRadius, coreFloor + coreHeight - 1, cz + coreRadius), turrets, mines, guards);
     }
 
     // -- L'enceinte, commune a tous les genres ---------------------------------------
@@ -2512,7 +2513,9 @@ final class EnemyBaseBuilder {
         mob.setPersistenceRequired();
         mob.addTag(EnemyBases.GUARD_TAG);
         mob.setCustomName(Component.literal("Garde des " + name));
-        level.addFreshEntity(mob);
+        if (level.addFreshEntity(mob)) {
+            guards++;
+        }
     }
 
     /** Les claims de la faction ennemie, sur tout le carre de chunks. */

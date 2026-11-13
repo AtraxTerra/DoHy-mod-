@@ -455,9 +455,9 @@ public final class EnemyBases {
         EnemyBaseBuilder.Result result = job.builder.result();
         release(level, job);
         LOGGER.info("Base ennemie des {} ({}) en {} : site en {} essais ({} ticks), chunks en {} ticks, chantier de "
-                        + "{} ms sur {} ticks, {} tourelles, {} mines", job.name, job.tier.key() + " " + job.style.key(),
-                result.center(), job.search.attempts, job.searchTicks, job.ticks, job.buildNanos / 1_000_000L,
-                job.buildTicks, result.turrets(), result.mines());
+                        + "{} ms sur {} ticks, {} gardes, {} tourelles, {} mines", job.name,
+                job.tier.key() + " " + job.style.key(), result.center(), job.search.attempts, job.searchTicks, job.ticks,
+                job.buildNanos / 1_000_000L, job.buildTicks, result.guards(), result.turrets(), result.mines());
         EnemyBase base = new EnemyBase(job.name, job.tier.level(), EnemyBase.ACTIVE, result.center(),
                 result.coreMin(), result.coreMax(), System.currentTimeMillis(), job.style.key());
         if (player == null) {
