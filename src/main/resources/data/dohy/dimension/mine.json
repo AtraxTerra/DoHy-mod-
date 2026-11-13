@@ -1,0 +1,11 @@
+{
+  "type": "dohy:mine",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "dohy:mine"
+    },
+    "settings": "minecraft:overworld"
+  }
+}

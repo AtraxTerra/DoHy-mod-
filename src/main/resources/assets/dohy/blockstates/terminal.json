@@ -134,6 +134,21 @@
     "facing=west,kind=portals": {
       "model": "dohy:block/terminal_portals",
       "y": 270
+    },
+    "facing=north,kind=mine": {
+      "model": "dohy:block/terminal_mine"
+    },
+    "facing=east,kind=mine": {
+      "model": "dohy:block/terminal_mine",
+      "y": 90
+    },
+    "facing=south,kind=mine": {
+      "model": "dohy:block/terminal_mine",
+      "y": 180
+    },
+    "facing=west,kind=mine": {
+      "model": "dohy:block/terminal_mine",
+      "y": 270
     }
   }
 }

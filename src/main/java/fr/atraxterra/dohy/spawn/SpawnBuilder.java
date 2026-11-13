@@ -43,7 +43,7 @@ import java.util.List;
 final class SpawnBuilder {
 
     /** A augmenter des que le dessin change : un spawn d'une autre version est reconstruit. */
-    static final int VERSION = 6;
+    static final int VERSION = 7;
 
     /** Le niveau du sol du parvis : on marche a {@code FLOOR + 1}. */
     static final int FLOOR = 200;
@@ -727,6 +727,7 @@ final class SpawnBuilder {
             case RETURN -> "red_concrete";
             case DAILY -> "yellow_concrete";
             case PORTALS -> "purple_concrete";
+            case MINE -> "cyan_concrete";
         });
     }
 
@@ -1133,9 +1134,11 @@ final class SpawnBuilder {
             // un banc de bois sur la premiere galerie, face a l'atrium
             fill(3 * side, FLOOR + STOREY + 1, -6, 7 * side, FLOOR + STOREY + 1, -6, rail);
         }
-        // la borne du retour, a droite en sortant
+        // la borne du retour, a droite en sortant ; celle de la Mine, a gauche
         put(-6, FLOOR + 1, 3, rib);
         terminal(-6, FLOOR + 2, 3, Direction.NORTH, SpawnTerminalBlock.Kind.RETURN, new BlockPos(-6, FLOOR + 3, 3));
+        put(6, FLOOR + 1, 3, rib);
+        terminal(6, FLOOR + 2, 3, Direction.NORTH, SpawnTerminalBlock.Kind.MINE, new BlockPos(6, FLOOR + 3, 3));
     }
 
     /**

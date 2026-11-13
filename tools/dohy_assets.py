@@ -1045,6 +1045,8 @@ TERMINALS = [
     ("daily", 0xFFD83A, [".XX..XX.", "X..XX..X", ".XXXXXX.", "XXXXXXXX", "X..XX..X", "X..XX..X", "X..XX..X", "XXXXXXXX"]),
     # une arche et ses marches
     ("portals", 0xC77DFF, ["..XXXX..", ".X....X.", "X......X", "X..XX..X", "X.X..X.X", "X.X..X.X", "X.X..X.X", "XXX..XXX"]),
+    # une pioche
+    ("mine", 0x5FD8E8, ["..XXXX..", ".X.XX.X.", "X..XX..X", "...XX...", "...XX...", "...XX...", "...XX...", "...XX..."]),
 ]
 
 
@@ -1556,11 +1558,120 @@ def lang():
     write("assets/%s/lang/en_us.json" % NS, en)
 
 
+# Les minerais de la Mine : ceux du jeu (emeraude comprise) et ceux du PalaMod a leur taux normal.
+# La pepite d'endium reste propre a la dimension du Mineur.
+MINE_ORES = [
+    "minecraft:ore_dirt", "minecraft:ore_gravel", "minecraft:ore_granite_upper", "minecraft:ore_granite_lower",
+    "minecraft:ore_diorite_upper", "minecraft:ore_diorite_lower", "minecraft:ore_andesite_upper",
+    "minecraft:ore_andesite_lower", "minecraft:ore_tuff", "minecraft:ore_coal_upper", "minecraft:ore_coal_lower",
+    "minecraft:ore_iron_upper", "minecraft:ore_iron_middle", "minecraft:ore_iron_small", "minecraft:ore_gold",
+    "minecraft:ore_gold_lower", "minecraft:ore_redstone", "minecraft:ore_redstone_lower", "minecraft:ore_diamond",
+    "minecraft:ore_diamond_medium", "minecraft:ore_diamond_large", "minecraft:ore_diamond_buried",
+    "minecraft:ore_lapis", "minecraft:ore_lapis_buried", "minecraft:ore_copper", "minecraft:ore_emerald",
+    "minecraft:underwater_magma", "minecraft:disk_sand", "minecraft:disk_clay", "minecraft:disk_gravel",
+    "palamod:ore_amethyst", "palamod:ore_findium", "palamod:ore_paladium_green", "palamod:ore_paladium",
+    "palamod:ore_titane", "palamod:ore_trixium", "palamod:ore_invoker", "palamod:xp_bush",
+]
+
+# Les minerais des mods, poses s'ils existent (entrees facultatives d'un tag) : le zinc de Create et
+# les minerais du monde normal de NTM NEXT, releves dans ses sources (HbmPlacedFeatures).
+MINE_MOD_ORES = [
+    "create:zinc_ore", "create:striated_ores_overworld",
+    "hbm:ore_uranium", "hbm:ore_thorium", "hbm:ore_titanium", "hbm:ore_sulfur", "hbm:ore_aluminium",
+    "hbm:ore_fluorite", "hbm:ore_niter", "hbm:ore_tungsten", "hbm:ore_lead", "hbm:ore_beryllium", "hbm:ore_rare",
+    "hbm:ore_lignite", "hbm:ore_asbestos", "hbm:ore_cinnabar", "hbm:ore_cobalt", "hbm:ore_coltan",
+    "hbm:ore_alexandrite", "hbm:stratum_gneiss", "hbm:ore_gneiss_iron", "hbm:ore_gneiss_gold",
+    "hbm:ore_gneiss_copper", "hbm:ore_gneiss_asbestos", "hbm:ore_gneiss_lithium", "hbm:ore_gneiss_uranium",
+    "hbm:ore_gneiss_rare", "hbm:stratum_hematite", "hbm:stratum_bauxite", "hbm:stratum_malachite",
+    "hbm:ore_limestone", "hbm:cluster_iron", "hbm:cluster_titanium", "hbm:cluster_aluminium",
+    "hbm:cluster_copper", "hbm:deposit_iron", "hbm:deposit_titanium", "hbm:deposit_tungsten",
+    "hbm:deposit_cinnabar", "hbm:deposit_zirconium", "hbm:deposit_borax", "hbm:deposit_coltan",
+    "hbm:ore_cave_sulfur", "hbm:ore_cave_asbestos",
+]
+
+
+def mine():
+    """La Mine (`dohy:mine`) : le relief du monde normal, un seul biome, aucun monstre."""
+    write("data/%s/dimension_type/mine.json" % NS, {
+        "ambient_light": 0.0,
+        "attributes": {
+            "minecraft:audio/ambient_sounds": {
+                "mood": {"block_search_extent": 8, "offset": 2.0, "sound": "minecraft:ambient.cave",
+                         "tick_delay": 6000},
+            },
+            "minecraft:gameplay/bed_rule": {"can_set_spawn": "never", "can_sleep": "never"},
+            "minecraft:gameplay/can_start_raid": False,
+            "minecraft:gameplay/respawn_anchor_works": False,
+            "minecraft:visual/ambient_light_color": "#0a0a0a",
+            "minecraft:visual/cloud_color": "#ccffffff",
+            "minecraft:visual/cloud_height": 192.33,
+            "minecraft:visual/fog_color": "#c0d8ff",
+            "minecraft:visual/sky_color": "#78a7ff",
+        },
+        "coordinate_scale": 1.0,
+        "default_clock": "minecraft:overworld",
+        "has_ceiling": False,
+        "has_ender_dragon_fight": False,
+        "has_skylight": True,
+        "height": 384,
+        "infiniburn": "#minecraft:infiniburn_overworld",
+        "logical_height": 384,
+        "min_y": -64,
+        "monster_spawn_block_light_limit": 0,
+        "monster_spawn_light_level": 0,
+        "timelines": "#minecraft:in_overworld",
+    })
+    write("data/%s/dimension/mine.json" % NS, {
+        "type": "%s:mine" % NS,
+        "generator": {
+            "type": "minecraft:noise",
+            "biome_source": {"type": "minecraft:fixed", "biome": "%s:mine" % NS},
+            "settings": "minecraft:overworld",
+        },
+    })
+    write("data/%s/worldgen/biome/mine.json" % NS, {
+        "carvers": ["minecraft:cave", "minecraft:cave_extra_underground", "minecraft:canyon"],
+        "downfall": 0.4,
+        "effects": {"water_color": "#3f76e4"},
+        "features": [
+            [],
+            ["minecraft:lake_lava_underground"],
+            ["minecraft:amethyst_geode"],
+            [],
+            [],
+            [],
+            MINE_ORES,
+            [],
+            ["minecraft:spring_water", "minecraft:spring_lava"],
+            ["minecraft:glow_lichen", "minecraft:patch_tall_grass_2", "minecraft:patch_bush",
+             "minecraft:trees_plains", "minecraft:flower_plains", "minecraft:patch_grass_plain",
+             "minecraft:brown_mushroom_normal", "minecraft:red_mushroom_normal", "minecraft:patch_pumpkin",
+             "minecraft:patch_sugar_cane"],
+            ["minecraft:freeze_top_layer"],
+        ],
+        "has_precipitation": False,
+        "spawn_costs": {},
+        "spawners": {kind: [] for kind in ("ambient", "axolotls", "creature", "misc", "monster",
+                                           "underground_water_creature", "water_ambient", "water_creature")},
+        "temperature": 0.8,
+    })
+    write("data/%s/tags/worldgen/placed_feature/mine_mod_ores.json" % NS, {
+        "values": [{"id": feature, "required": False} for feature in MINE_MOD_ORES],
+    })
+    write("data/%s/neoforge/biome_modifier/mine_mod_ores.json" % NS, {
+        "type": "neoforge:add_features",
+        "biomes": "%s:mine" % NS,
+        "features": "#%s:mine_mod_ores" % NS,
+        "step": "underground_ores",
+    })
+
+
 def main():
     trading_server()
     agriculture()
     farming()
     spawn()
+    mine()
     lang()
     print("Ressources dohy ecrites.")
 

@@ -39,7 +39,8 @@ public class SpawnTerminalBlock extends Block {
         MUSEUM("museum", "MUSEE", 0xEC4FB5),
         RETURN("return", "RETOUR", 0xFF5A4A),
         DAILY("daily", "RECOMPENSE", 0xFFD83A),
-        PORTALS("portals", "DONJONS", 0xC77DFF);
+        PORTALS("portals", "DONJONS", 0xC77DFF),
+        MINE("mine", "MINE", 0x5FD8E8);
 
         private final String name;
         private final String label;
@@ -120,9 +121,17 @@ public class SpawnTerminalBlock extends Block {
             case BANK -> BankController.INSTANCE.open(server);
             case CONTRACTS -> ContractsController.INSTANCE.open(server);
             case MUSEUM -> MuseumController.INSTANCE.open(server);
-            case RETURN -> SpawnApi.leave(server);
+            case RETURN -> {
+                // a l'arrivee de la Mine, la borne ramene au spawn ; au spawn, d'ou l'on venait
+                if (fr.atraxterra.dohy.mine.MineService.inMine(server)) {
+                    fr.atraxterra.dohy.mine.MineService.leave(server);
+                } else {
+                    SpawnApi.leave(server);
+                }
+            }
             case DAILY -> SpawnDaily.INSTANCE.open(server);
             case PORTALS -> SpawnPortals.INSTANCE.open(server);
+            case MINE -> fr.atraxterra.dohy.mine.MineService.enter(server);
         }
         return InteractionResult.SUCCESS;
     }
