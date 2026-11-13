@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.earth;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import fr.atraxterra.dohy.DoHy;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -32,16 +33,18 @@ public final class DoHyEarth {
                     .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
                     .build());
 
-    /** La version de la liste des capitales deja posee dans un chunk ; 0 tant qu'il n'a rien recu. */
-    public static final Supplier<AttachmentType<Integer>> CITY = ATTACHMENTS.register(
+    /*
+     * Les villes des capitales ont ete retirees (2026-11-13). Leurs deux marques restent enregistrees
+     * pour lire sans erreur les chunks et le monde qui les portent encore ; elles ne sont plus jamais
+     * ecrites, et disparaissent a la sauvegarde suivante. Les villes deja posees restent en place.
+     */
+    private static final Supplier<AttachmentType<Integer>> OLD_CITY = ATTACHMENTS.register(
             "earth_city", () -> AttachmentType.builder(() -> 0)
-                    .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
+                    .serialize(MapCodec.unit(0), value -> false)
                     .build());
-
-    /** La hauteur de chaque capitale et l'avancement de sa place, sur le monde de la carte. */
-    public static final Supplier<AttachmentType<EarthCities.States>> CITY_STATES = ATTACHMENTS.register(
-            "earth_cities", () -> AttachmentType.builder(() -> EarthCities.States.EMPTY)
-                    .serialize(EarthCities.States.MAP_CODEC, EarthCities.States::exists)
+    private static final Supplier<AttachmentType<Integer>> OLD_CITY_STATES = ATTACHMENTS.register(
+            "earth_cities", () -> AttachmentType.builder(() -> 0)
+                    .serialize(MapCodec.unit(0), value -> false)
                     .build());
 
     /** Les pays pris par des joueurs, sur le monde de la carte ; rien n'est ecrit tant qu'aucun n'est pris. */

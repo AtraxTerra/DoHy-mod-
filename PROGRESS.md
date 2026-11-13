@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-12
+Dernière mise à jour : 2026-11-13
 
 ---
 
@@ -174,6 +174,20 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-13 (suite 16) — les villes des capitales retirées
+
+**Demande** : « supprime les structures villes ». Choix du joueur : **retirer du mod seulement** ;
+les villes déjà bâties dans son monde Earth24kChaosCubed restent telles quelles (les effacer aurait
+voulu dire remettre ces chunks d'origine depuis la carte, et perdre ce qu'il y a construit).
+
+**Fait** (`feat/sans-villes`) : `EarthCities`, `CityBuilder`, `CityLayouts`, `CityMonuments`,
+`CityBlocks`, `data/dohy/earth/capitals.json` et `tools/earth_capitals.py` supprimés ; plus de
+pose au chargement des chunks, plus de titre d'entrée de ville ; le message de capitale et la
+carte « Capitale » de l'écran des pays ne nomment plus de ville. La capitale de faction, la
+conquête et la carte du spawn ne changent pas. Les marques `earth_city` (chunks) et
+`earth_cities` (monde) restent enregistrées, sans rien écrire, pour que les sauvegardes qui les
+portent se chargent sans erreur ; elles disparaissent à la sauvegarde suivante.
 
 ### 2026-11-13 (suite 15) — refonte : nation, marché international, notation
 

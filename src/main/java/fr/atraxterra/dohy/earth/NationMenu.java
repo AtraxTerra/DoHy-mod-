@@ -88,10 +88,8 @@ public final class NationMenu extends MenuController {
                             "Son pays sera ta premiere cible.", "Clic : la poser ici"))
                     .action("capital|poser ici"));
         } else {
-            EarthCities.Placed city = EarthCities.at(nation.capitalX(), nation.capitalZ());
-            own.add(Card.of(FactionMenus.banner(data), "Capitale", List.of(city != null
-                            ? city.entry().name() + ", " + EarthNations.countryName(nation.capital())
-                            : EarthNations.countryName(nation.capital()),
+            own.add(Card.of(FactionMenus.banner(data), "Capitale", List.of(
+                            EarthNations.countryName(nation.capital()),
                             nation.capitalX() + ", " + nation.capitalZ()))
                     .accent(0xFFEF3826)
                     .tooltip(List.of("En rouge sur la carte du monde du spawn.",
