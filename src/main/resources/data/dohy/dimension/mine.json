@@ -6,6 +6,6 @@
       "type": "minecraft:fixed",
       "biome": "dohy:mine"
     },
-    "settings": "minecraft:overworld"
+    "settings": "dohy:mine"
   }
 }

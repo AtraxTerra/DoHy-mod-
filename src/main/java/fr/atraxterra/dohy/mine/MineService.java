@@ -28,7 +28,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
@@ -60,12 +59,20 @@ import java.util.stream.Stream;
  * l'esprit de la mine de NationsGlory), a part de la dimension du Mineur du
  * PalaMod.
  *
+ * <h2>Uniquement sous terre</h2>
+ *
+ * <p>Demande du joueur : « uniquement sous terre, pas de surface ». La Mine est
+ * un monde de roche du fond au plafond — pierre, ardoise des abimes en bas,
+ * bedrock au fond et au plafond (y = 123 a 127), aucun ciel. Les galeries sont
+ * celles des carvers du jeu : cavernes, boyaux, ravins. On arrive dans une salle
+ * creusee a y = 30, eclairee de lanternes, la borne RETOUR contre la paroi nord.
+ *
  * <h2>Une mine neuve chaque matin</h2>
  *
  * <p>Une dimension ne se regenere pas pendant que le serveur tourne. La Mine
  * change donc de <b>terrain</b> plutot que de graine : chaque jour (a 5 h,
  * heure de {@link RealClock}) ouvre une nouvelle zone de 2 000 × 2 000 blocs,
- * loin des precedentes, sur un relief que personne n'a touche. Celle de la
+ * loin des precedentes, dans une roche que personne n'a touchee. Celle de la
  * veille n'est plus jamais rejointe ; ses fichiers sont effaces au demarrage
  * suivant du serveur ({@link #onAboutToStart}).
  *
@@ -102,10 +109,14 @@ public final class MineService {
     /** L'heure de la remise a neuf. */
     static final int RESET_HOUR = 5;
 
-    /** L'ecart entre les zones de deux jours, et la largeur de la bande ou l'on cherche la terre ferme. */
+    /** L'ecart entre les zones de deux jours. */
     static final int SPACING = 20_000;
-    static final int SEARCH = 12_000;
-    private static final int SEARCH_STEP = 400;
+
+    /** La hauteur de la salle d'arrivee, en pleine roche (la Mine va de y = -64 a 127). */
+    static final int ARRIVAL_Y = 30;
+    /** La salle d'arrivee : 7 × 7 a l'interieur, 4 de haut. */
+    private static final int ROOM = 3;
+    private static final int ROOM_HEIGHT = 4;
 
     /** Les avertissements avant la remise a neuf, en minutes. */
     private static final int[] WARNINGS = {10, 5, 1};
@@ -141,7 +152,7 @@ public final class MineService {
         return RealClock.dayKey(RESET_HOUR) + shift;
     }
 
-    /** Le debut de la bande de recherche de la zone d'un jour. */
+    /** Le centre, en x, de la zone d'un jour. */
     static int base(long day) {
         return 200_000 + (int) Math.floorMod(day, 500L) * SPACING;
     }
@@ -154,30 +165,15 @@ public final class MineService {
         return entity.level().dimension() == DIMENSION;
     }
 
-    /**
-     * Le centre de la zone du jour : le premier point de terre ferme de la
-     * bande, lu dans le generateur sans rien generer (une mine au milieu de
-     * l'ocean ne servirait a rien).
-     */
+    /** Le centre de la zone du jour, a la hauteur de la salle d'arrivee. */
     static BlockPos center(ServerLevel level) {
         long day = day();
         if (center != null && centerDay == day) {
             return center;
         }
-        int sea = level.getSeaLevel();
-        int start = base(day);
-        BlockPos found = new BlockPos(start, sea, 0);
-        for (int x = start; x <= start + SEARCH; x += SEARCH_STEP) {
-            int floor = level.getChunkSource().getGenerator().getBaseHeight(x, 0, Heightmap.Types.OCEAN_FLOOR_WG,
-                    level, level.getChunkSource().randomState());
-            if (floor >= sea) {
-                found = new BlockPos(x, floor, 0);
-                break;
-            }
-        }
-        center = found;
+        center = new BlockPos(base(day), ARRIVAL_Y, 0);
         centerDay = day;
-        return found;
+        return center;
     }
 
     static boolean contains(BlockPos middle, double x, double z) {
@@ -197,8 +193,9 @@ public final class MineService {
         player.closeContainer();
         player.fallDistance = 0.0f;
         player.teleport(new TeleportTransition(level, new Vec3(pad.getX() + 0.5d, pad.getY(), pad.getZ() + 0.5d),
-                Vec3.ZERO, 0.0f, 0.0f, TeleportTransition.DO_NOTHING));
-        tell(player, "Bienvenue a la Mine. Elle sera remise a neuf demain a 5 h.", ChatFormatting.GOLD);
+                Vec3.ZERO, 180.0f, 0.0f, TeleportTransition.DO_NOTHING));
+        tell(player, "Bienvenue a la Mine : de la roche a perte de vue, prends des torches. "
+                + "Elle sera remise a neuf demain a 5 h.", ChatFormatting.GOLD);
         tell(player, "Pas de cobblestone ici, et mourir ne fait rien perdre. Sortie : la borne RETOUR ou /spawn.",
                 ChatFormatting.GRAY);
     }
@@ -210,8 +207,11 @@ public final class MineService {
     }
 
     /**
-     * L'arrivee du jour : une dalle de 5 × 5 au centre de la zone, la place
-     * degagee au-dessus, et la borne RETOUR. Posee une fois par jour.
+     * L'arrivee du jour : une salle de 7 × 7 creusee en pleine roche au centre
+     * de la zone, sol de pierre polie, quatre lanternes, la borne RETOUR contre
+     * la paroi nord. Les parois sont bouchees ou il le faut (galerie, lave, eau,
+     * gravier qui tomberait) : on arrive toujours dans une salle close et sure,
+     * dont on sort a la pioche. Posee une fois par jour.
      */
     private static BlockPos prepare(ServerLevel level) {
         BlockPos middle = center(level);
@@ -219,26 +219,41 @@ public final class MineService {
         if (arrival != null && preparedDay == day) {
             return arrival;
         }
-        level.getChunk(middle.getX() >> 4, middle.getZ() >> 4);
-        int ground = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, middle).getY();
-        int y = Math.max(ground, level.getSeaLevel() + 1);
-        BlockState slab = Blocks.SMOOTH_STONE.defaultBlockState();
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dz = -2; dz <= 2; dz++) {
-                level.setBlock(new BlockPos(middle.getX() + dx, y - 1, middle.getZ() + dz), slab, Block.UPDATE_ALL);
-                for (int dy = 0; dy < 4; dy++) {
-                    level.setBlock(new BlockPos(middle.getX() + dx, y + dy, middle.getZ() + dz),
-                            Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+        BlockState wall = Blocks.STONE.defaultBlockState();
+        BlockState floor = Blocks.SMOOTH_STONE.defaultBlockState();
+        BlockState air = Blocks.AIR.defaultBlockState();
+        int edge = ROOM + 1;
+        for (int dx = -edge; dx <= edge; dx++) {
+            for (int dz = -edge; dz <= edge; dz++) {
+                for (int dy = -1; dy <= ROOM_HEIGHT; dy++) {
+                    BlockPos at = middle.offset(dx, dy, dz);
+                    boolean side = Math.abs(dx) == edge || Math.abs(dz) == edge;
+                    if (dy == -1 && !side) {
+                        level.setBlock(at, floor, Block.UPDATE_ALL);
+                    } else if (side || dy == -1 || dy == ROOM_HEIGHT) {
+                        BlockState here = level.getBlockState(at);
+                        if (here.isAir() || !here.getFluidState().isEmpty()
+                                || here.getBlock() instanceof net.minecraft.world.level.block.FallingBlock) {
+                            level.setBlock(at, wall, Block.UPDATE_ALL);
+                        }
+                    } else {
+                        level.setBlock(at, air, Block.UPDATE_ALL);
+                    }
                 }
             }
         }
-        level.setBlock(new BlockPos(middle.getX(), y, middle.getZ() - 2), DoHySpawn.TERMINAL.get().defaultBlockState()
+        for (int dx = -ROOM; dx <= ROOM; dx += 2 * ROOM) {
+            for (int dz = -ROOM; dz <= ROOM; dz += 2 * ROOM) {
+                level.setBlock(middle.offset(dx, 0, dz), Blocks.LANTERN.defaultBlockState(), Block.UPDATE_ALL);
+            }
+        }
+        level.setBlock(middle.offset(0, 0, -ROOM), DoHySpawn.TERMINAL.get().defaultBlockState()
                 .setValue(SpawnTerminalBlock.FACING, Direction.SOUTH)
                 .setValue(SpawnTerminalBlock.KIND, SpawnTerminalBlock.Kind.RETURN), Block.UPDATE_ALL);
-        arrival = new BlockPos(middle.getX(), y, middle.getZ());
+        arrival = middle;
         preparedDay = day;
-        DoHy.LOGGER.info("Mine : zone du jour {} autour de {} {}, arrivee a y = {}", day, middle.getX(),
-                middle.getZ(), y);
+        DoHy.LOGGER.info("Mine : zone du jour {} autour de {} {}, salle d'arrivee a y = {}", day, middle.getX(),
+                middle.getZ(), middle.getY());
         return arrival;
     }
 
@@ -397,7 +412,7 @@ public final class MineService {
         }
         int start = base(day());
         int minRegionX = Math.floorDiv(start - HALF, 512) - 1;
-        int maxRegionX = Math.floorDiv(start + SEARCH + HALF, 512) + 1;
+        int maxRegionX = Math.floorDiv(start + HALF, 512) + 1;
         int minRegionZ = Math.floorDiv(-HALF, 512) - 1;
         int maxRegionZ = Math.floorDiv(HALF, 512) + 1;
         int removed = 0;

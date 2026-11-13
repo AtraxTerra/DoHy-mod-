@@ -1591,7 +1591,14 @@ MINE_MOD_ORES = [
 
 
 def mine():
-    """La Mine (`dohy:mine`) : le relief du monde normal, un seul biome, aucun monstre."""
+    """La Mine (`dohy:mine`) : un monde tout en roche, sans surface, un seul biome, aucun monstre.
+
+    Demande du joueur (2026-11-13) : « uniquement sous terre, pas de surface ». Le terrain est plein
+    du fond au plafond (densite constante) : pierre, ardoise des abimes sous y = 0 a 8, bedrock au
+    fond et au plafond (y 123 a 127). Les galeries sont celles des carvers du jeu (cavernes, boyaux,
+    ravins) ; la lave n'occupe que le bas des galeries les plus profondes, l'eau ne vient que des
+    sources. Pas de ciel : aucune lumiere du jour, seulement celle des torches et du lichen.
+    """
     write("data/%s/dimension_type/mine.json" % NS, {
         "ambient_light": 0.0,
         "attributes": {
@@ -1603,30 +1610,64 @@ def mine():
             "minecraft:gameplay/can_start_raid": False,
             "minecraft:gameplay/respawn_anchor_works": False,
             "minecraft:visual/ambient_light_color": "#0a0a0a",
-            "minecraft:visual/cloud_color": "#ccffffff",
-            "minecraft:visual/cloud_height": 192.33,
-            "minecraft:visual/fog_color": "#c0d8ff",
-            "minecraft:visual/sky_color": "#78a7ff",
+            "minecraft:visual/fog_color": "#101114",
         },
         "coordinate_scale": 1.0,
         "default_clock": "minecraft:overworld",
-        "has_ceiling": False,
+        "has_ceiling": True,
         "has_ender_dragon_fight": False,
-        "has_skylight": True,
-        "height": 384,
+        "has_skylight": False,
+        "height": 192,
         "infiniburn": "#minecraft:infiniburn_overworld",
-        "logical_height": 384,
+        "logical_height": 192,
         "min_y": -64,
         "monster_spawn_block_light_limit": 0,
         "monster_spawn_light_level": 0,
+        "skybox": "none",
         "timelines": "#minecraft:in_overworld",
+    })
+    bedrock = {"type": "minecraft:block", "result_state": {"Name": "minecraft:bedrock"}}
+    write("data/%s/worldgen/noise_settings/mine.json" % NS, {
+        "aquifers_enabled": False,
+        "default_block": {"Name": "minecraft:stone"},
+        "default_fluid": {"Name": "minecraft:water", "Properties": {"level": "0"}},
+        "disable_mob_generation": True,
+        "legacy_random_source": False,
+        "noise": {"height": 192, "min_y": -64, "size_horizontal": 1, "size_vertical": 2},
+        # Une densite constante : de la roche partout ; les galeries viennent des carvers.
+        "noise_router": {
+            "barrier": 0.0, "continents": 0.0, "depth": 0.0, "erosion": 0.0, "final_density": 1.0,
+            "fluid_level_floodedness": 0.0, "fluid_level_spread": 0.0, "lava": 0.0,
+            "preliminary_surface_level": 0.0, "ridges": 0.0, "temperature": 0.0, "vegetation": 0.0,
+            "vein_gap": 0.0, "vein_ridged": 0.0, "vein_toggle": 0.0,
+        },
+        "ore_veins_enabled": False,
+        # Le niveau de la mer sous le monde : aucune galerie ne se remplit d'eau.
+        "sea_level": -64,
+        "spawn_target": [],
+        "surface_rule": {"type": "minecraft:sequence", "sequence": [
+            {"type": "minecraft:condition",
+             "if_true": {"type": "minecraft:not", "invert": {
+                 "type": "minecraft:vertical_gradient", "random_name": "minecraft:bedrock_roof",
+                 "true_at_and_below": {"below_top": 5}, "false_at_and_above": {"below_top": 0}}},
+             "then_run": bedrock},
+            {"type": "minecraft:condition",
+             "if_true": {"type": "minecraft:vertical_gradient", "random_name": "minecraft:bedrock_floor",
+                         "true_at_and_below": {"above_bottom": 0}, "false_at_and_above": {"above_bottom": 5}},
+             "then_run": bedrock},
+            {"type": "minecraft:condition",
+             "if_true": {"type": "minecraft:vertical_gradient", "random_name": "minecraft:deepslate",
+                         "true_at_and_below": {"absolute": 0}, "false_at_and_above": {"absolute": 8}},
+             "then_run": {"type": "minecraft:block",
+                          "result_state": {"Name": "minecraft:deepslate", "Properties": {"axis": "y"}}}},
+        ]},
     })
     write("data/%s/dimension/mine.json" % NS, {
         "type": "%s:mine" % NS,
         "generator": {
             "type": "minecraft:noise",
             "biome_source": {"type": "minecraft:fixed", "biome": "%s:mine" % NS},
-            "settings": "minecraft:overworld",
+            "settings": "%s:mine" % NS,
         },
     })
     write("data/%s/worldgen/biome/mine.json" % NS, {
@@ -1641,13 +1682,11 @@ def mine():
             [],
             [],
             MINE_ORES,
-            [],
+            # Sous terre, rien de la surface : quelques stalactites, du lichen luisant.
+            ["minecraft:pointed_dripstone"],
             ["minecraft:spring_water", "minecraft:spring_lava"],
-            ["minecraft:glow_lichen", "minecraft:patch_tall_grass_2", "minecraft:patch_bush",
-             "minecraft:trees_plains", "minecraft:flower_plains", "minecraft:patch_grass_plain",
-             "minecraft:brown_mushroom_normal", "minecraft:red_mushroom_normal", "minecraft:patch_pumpkin",
-             "minecraft:patch_sugar_cane"],
-            ["minecraft:freeze_top_layer"],
+            ["minecraft:glow_lichen"],
+            [],
         ],
         "has_precipitation": False,
         "spawn_costs": {},
