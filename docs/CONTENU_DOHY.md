@@ -597,8 +597,9 @@ passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, c
 
 ## Sur un serveur dédié (2026-11-13)
 
-Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : la CI
-démarre un serveur dédié à chaque build, et aucun code client n'est appelé côté serveur.
+Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les
+vérifications en jeu de la CI tournent déjà sur un serveur dédié (le client de capture s'y
+connecte), et aucun code client n'est appelé côté serveur.
 
 ### Installer
 

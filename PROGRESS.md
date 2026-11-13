@@ -189,14 +189,19 @@ désactiver le server pause ».
 **Revu** : aucun code client hors de `client/` (ni import, ni `Minecraft.getInstance()`), aucune
 hypothèse bloquante d'un seul joueur (les tableaux de l'atrium prennent le premier joueur du
 spawn, c'est tout), cartes par joueur bornées au nombre de joueurs, sauvegardes de secours en
-trois copies glissantes. La CI démarre déjà un serveur dédié à chaque build.
+trois copies glissantes. Les vérifications en jeu de la CI tournent déjà sur un serveur dédié.
 
 **Fait** (`feat/serveur-24h`) : un seul fuseau pour tout le mod, `RealClock.zone()`, à l'heure
 de Paris par défaut (option `-Ddohy.fuseau=…`). Avant, six endroits prenaient le fuseau de la
 machine : contrats et commande trixium, classement du lundi, events de faction, saisons du
 trixium, dates des menus de nation et de la pierre de golem. Le journal donne l'heure retenue au
-démarrage ; menus et docs disent « heure de Paris ». Doc : `docs/CONTENU_DOHY.md`, « Sur un
+démarrage (`util/ClockReport` : `RealClock` doit rester compilable sans Minecraft, la CI le
+teste seul) ; menus et docs disent « heure de Paris ». Doc : `docs/CONTENU_DOHY.md`, « Sur un
 serveur dédié » (installation, heure, pause d'un serveur vide).
+
+**Vérifié** : build vert ; `RealClockTest` étendu au fuseau (Paris sans option ou avec une option
+inconnue, nom IANA, « systeme »), qui passe aussi sur une machine en UTC. Le joueur a désactivé
+la pause du serveur vide (`pause-when-empty-seconds=-1`) : le monde tourne sans lui.
 
 ### 2026-11-13 (suite 20) — l'atlas
 
