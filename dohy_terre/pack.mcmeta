@@ -1,6 +1,6 @@
 {
   "pack": {
-    "description": "DoHy - la Terre (carte Earth24k) : pays, gisements par region",
+    "description": "DoHy - la Terre (carte Earth24k) : pays, vraies mines, petrole et ressources par region",
     "min_format": [107, 1],
     "max_format": [107, 1]
   }
