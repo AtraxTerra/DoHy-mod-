@@ -181,6 +181,22 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-13 (suite 24) — les palettes d'armement
+
+**Demande** : « un multiblock "palettes" pour y poser des obus ou munitions, qui seront en 3D des
+caisses d'armement », « compatible Create et NTM NEXT ». Choix du joueur : **palettes qui
+s'assemblent** (jusqu'à 3 × 3, un stock, une pile de caisses), **obus, munitions et missiles de
+NTM**, **une caisse par famille**, **16 piles par palette**. Description : `docs/CONTENU_DOHY.md`,
+« Les palettes d'armement ».
+
+**Fait** (`feat/palettes`, posée sur `feat/mine`) : stock propre à chaque palette, vue du groupe
+pour les entonnoirs et les mods, pile de caisses calculée par le coin nord-ouest et envoyée au
+client seulement quand elle change ; regroupement par groupes complets autour d'une palette posée
+ou cassée ; rendu des caisses en géométrie propre (une image 128 × 64 dessinée par le générateur) ;
+écran à défilement ; tags des familles relevés dans le jar de NTM NEXT 1.0.3 (hbm) ; tag Create
+pour les machines mobiles. Relu dans les jars de Create (6.0.11 adapté) et de NTM NEXT : leurs
+entonnoirs, bras, grues et convoyeurs passent tous par `Capabilities.Item.BLOCK`.
+
 ### 2026-11-13 (suite 23) — la Mine, uniquement sous terre
 
 **Demande** : « comme NationsGlory, une dimension Mine, séparée de la dimension du Mineur ». Choix du
