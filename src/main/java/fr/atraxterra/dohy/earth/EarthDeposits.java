@@ -186,9 +186,14 @@ public final class EarthDeposits {
         return (chunkX & 0xFFFFFFFFL) | ((long) chunkZ << 32);
     }
 
+    /** Le temps de service par tick : un chunk au moins, puis d'autres tant qu'il en reste. */
+    private static final long BUDGET_NANOS = 15_000_000L;
+
     /** Sert quelques chunks en attente. */
     static void tick(ServerLevel level, EarthData earth) {
-        for (int count = 0; count < perTick && !QUEUE.isEmpty(); count++) {
+        long deadline = System.nanoTime() + BUDGET_NANOS;
+        for (int count = 0; count < perTick && !QUEUE.isEmpty() && (count == 0 || System.nanoTime() < deadline);
+             count++) {
             long key = QUEUE.removeFirstLong();
             int chunkX = (int) key;
             int chunkZ = (int) (key >> 32);
@@ -204,8 +209,10 @@ public final class EarthDeposits {
                 serve(level, earth, chunk);
                 chunk.setData(DoHyEarth.GROUND.get(), groundVersion);
                 chunk.setData(DoHyEarth.DEPOSITS.get(), version);
+                EarthBodies.done(chunk);
             } else if (serve(level, earth, chunk) > 0) {
                 chunk.setData(DoHyEarth.DEPOSITS.get(), version);
+                EarthBodies.done(chunk);
             }
         }
     }
@@ -253,7 +260,7 @@ public final class EarthDeposits {
             double veins = rule.deposit().veins();
             int count = (int) veins + (random.nextDouble() < veins - (int) veins ? 1 : 0);
             for (int vein = 0; vein < count; vein++) {
-                place(level, pos, rule, random);
+                place(level, chunk, rule, random);
                 drawn++;
             }
         }
@@ -279,7 +286,8 @@ public final class EarthDeposits {
         return false;
     }
 
-    private static void place(ServerLevel level, ChunkPos chunk, Ready rule, RandomSource random) {
+    private static void place(ServerLevel level, LevelChunk levelChunk, Ready rule, RandomSource random) {
+        ChunkPos chunk = levelChunk.getPos();
         Deposit deposit = rule.deposit();
         int margin = Math.max(1, deposit.radius());
         int x = chunk.getMinBlockX() + margin + random.nextInt(16 - 2 * margin);
@@ -297,7 +305,7 @@ public final class EarthDeposits {
                 for (int dy = -radius; dy <= radius; dy++) {
                     for (int dz = -radius; dz <= radius; dz++) {
                         if (dx * dx + dy * dy + dz * dz <= radius * radius + 1) {
-                            swap(level, pos.set(x + dx, y + dy, z + dz), rule);
+                            swap(level, levelChunk, pos.set(x + dx, y + dy, z + dz), rule);
                         }
                     }
                 }
@@ -306,7 +314,7 @@ public final class EarthDeposits {
         }
         // un filon : une marche au hasard qui reste dans son chunk
         for (int block = 0; block < deposit.size(); block++) {
-            swap(level, pos.set(x, y, z), rule);
+            swap(level, levelChunk, pos.set(x, y, z), rule);
             x = Math.max(chunk.getMinBlockX(), Math.min(chunk.getMaxBlockX(), x + random.nextInt(3) - 1));
             y = Math.max(floor, Math.min(roof, y + random.nextInt(3) - 1));
             z = Math.max(chunk.getMinBlockZ(), Math.min(chunk.getMaxBlockZ(), z + random.nextInt(3) - 1));
@@ -314,15 +322,15 @@ public final class EarthDeposits {
     }
 
     /** Ne remplace que la roche : un filon ne flotte pas dans une grotte et ne perce pas le sol. */
-    private static void swap(ServerLevel level, BlockPos pos, Ready rule) {
+    private static void swap(ServerLevel level, LevelChunk chunk, BlockPos pos, Ready rule) {
         if (pos.getY() <= level.getMinY() || pos.getY() >= level.getMaxY()) {
             return;
         }
-        BlockState state = level.getBlockState(pos);
+        BlockState state = chunk.getBlockState(pos);
         if (state.is(BlockTags.STONE_ORE_REPLACEABLES)) {
-            level.setBlock(pos, rule.ore(), Block.UPDATE_CLIENTS);
+            EarthBodies.put(level, chunk, pos, rule.ore());
         } else if (state.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES)) {
-            level.setBlock(pos, rule.deepslate(), Block.UPDATE_CLIENTS);
+            EarthBodies.put(level, chunk, pos, rule.deepslate());
         }
     }
 }

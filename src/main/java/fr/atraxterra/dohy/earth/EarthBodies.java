@@ -226,7 +226,7 @@ public final class EarthBodies {
                             continue;
                         }
                         pos.set(minX + lx, baseY + ly, minZ + lz);
-                        level.setBlock(pos, rock(chunk, pos, targets), Block.UPDATE_CLIENTS);
+                        put(level, chunk, pos, rock(chunk, pos, targets));
                         removed++;
                     }
                 }
@@ -272,6 +272,29 @@ public final class EarthBodies {
     }
 
     // -- La pose -------------------------------------------------------------------------------
+
+    /**
+     * Ecrit un bloc dans la section du chunk, sans passer par {@code Level.setBlock} : un minerai qui
+     * remplace de la roche ne change ni la lumiere ni les hauteurs, et le chemin complet coutait un
+     * dixieme de milliseconde par bloc. Le client est prevenu comme pour tout changement de bloc ; la
+     * lumiere n'est revue que si de l'air apparait ou disparait (les geodes). Le chunk est a marquer
+     * modifie ensuite ({@link #done}).
+     */
+    static void put(ServerLevel level, LevelChunk chunk, BlockPos pos, BlockState state) {
+        LevelChunkSection section = chunk.getSection(chunk.getSectionIndex(pos.getY()));
+        BlockState before = section.setBlockState(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15, state, false);
+        if (before != state) {
+            level.getChunkSource().blockChanged(pos);
+            if (before.isAir() != state.isAir()) {
+                level.getChunkSource().getLightEngine().checkBlock(pos);
+            }
+        }
+    }
+
+    /** Le chunk a change : a sauvegarder. */
+    static void done(LevelChunk chunk) {
+        chunk.markUnsaved();
+    }
 
     /** Pose dans ce chunk la part de chaque gisement qui le touche ; rend le nombre de blocs poses. */
     public static int place(ServerLevel level, LevelChunk chunk) {
@@ -339,12 +362,12 @@ public final class EarthBodies {
                     }
                     pos.set(x, y, z);
                     BlockState host = chunk.getBlockState(pos);
-                    if (!(body.surface() > 0 ? natural(host) : rock(host))) {
+                    if (!natural(host)) {
                         continue;
                     }
                     BlockState put = pick(body, host, hash(body.salt(), x, y, z), flat + dy * dy < 0.25d);
                     if (put != null) {
-                        level.setBlock(pos, put, Block.UPDATE_CLIENTS);
+                        put(level, chunk, pos, put);
                         placed++;
                     }
                 }
@@ -395,14 +418,14 @@ public final class EarthBodies {
                     }
                     pos.set(x, y, z);
                     BlockState host = chunk.getBlockState(pos);
-                    if (!rock(host)) {
+                    if (!natural(host)) {
                         continue;
                     }
                     BlockState put = hash(body.salt(), x, y, z) < body.density()
                             ? (deep(host) ? body.deepslate() : body.ore())
                             : body.filler();
                     if (put != null) {
-                        level.setBlock(pos, put, Block.UPDATE_CLIENTS);
+                        put(level, chunk, pos, put);
                         placed++;
                     }
                 }
@@ -427,7 +450,7 @@ public final class EarthBodies {
                 for (int y = floor - 2; y >= floor - 2 - 2 * body.ry(); y--) {
                     pos.set(x, y, z);
                     if (natural(chunk.getBlockState(pos)) && hash(body.salt(), x, y, z) < body.density()) {
-                        level.setBlock(pos, body.ore(), Block.UPDATE_CLIENTS);
+                        put(level, chunk, pos, body.ore());
                         placed++;
                     }
                 }
@@ -466,7 +489,7 @@ public final class EarthBodies {
                         BlockState put = distance < r - 1.2d ? Blocks.AIR.defaultBlockState()
                                 : hash(body.salt() ^ 0x1234L, x, y, z) < geodes.buddingChance() ? geodes.budding()
                                 : geodes.shell();
-                        level.setBlock(pos, put, Block.UPDATE_CLIENTS);
+                        put(level, chunk, pos, put);
                         placed++;
                     }
                 }
