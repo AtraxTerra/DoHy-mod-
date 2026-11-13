@@ -73,7 +73,7 @@ public final class SeasonClimate {
      * Ce que lisent le mixin et les couleurs.
      *
      * @param offsets   le decalage de temperature de chaque bande
-     * @param strengths la force des saisons de chaque bande, positive au nord, negative au sud
+     * @param strengths la force des couleurs de saison de chaque bande, positive au nord, negative au sud
      */
     private record Table(Frame frame, float[] offsets, float[] strengths, double phase) {
 
@@ -171,7 +171,7 @@ public final class SeasonClimate {
         for (int band = 0; band < bands; band++) {
             double latitude = current.latitude(current.minZ() + (band << BAND_SHIFT) + 8);
             offsets[band] = (float) SeasonMath.offset(latitude, phase);
-            float strength = (float) SeasonMath.strength(latitude);
+            float strength = (float) SeasonMath.colorStrength(latitude);
             strengths[band] = latitude >= 0.0d ? strength : -strength;
         }
         table = new Table(current, offsets, strengths, phase);
@@ -190,8 +190,8 @@ public final class SeasonClimate {
     }
 
     /**
-     * La force des saisons en (x, z), signee : positive au nord, negative au
-     * sud ; zero hors de la carte ou si ce contexte ne tourne pas.
+     * La force des couleurs de saison en (x, z), signee : positive au nord,
+     * negative au sud ; zero hors de la carte ou si ce contexte ne tourne pas.
      */
     public float strength(int x, int z) {
         Table current = table;

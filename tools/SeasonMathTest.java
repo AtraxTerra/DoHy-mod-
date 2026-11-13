@@ -100,6 +100,13 @@ public final class SeasonMathTest {
         check("a 45° en plein hiver, entre les deux",
                 SeasonMath.growth(45.0d, MID_WINTER) > 0.2d && SeasonMath.growth(45.0d, MID_WINTER) < 1.0d);
 
+        // La force des couleurs : nulle sous les tropiques, entiere des 45° (la France).
+        near("pas de couleurs de saison sous les tropiques", SeasonMath.colorStrength(20.0d), 0.0d);
+        near("toutes les couleurs a Paris", SeasonMath.colorStrength(48.85d), 1.0d);
+        near("toutes les couleurs a 45° sud", SeasonMath.colorStrength(-45.0d), 1.0d);
+        check("les couleurs viennent avant le froid",
+                SeasonMath.colorStrength(35.0d) > SeasonMath.strength(35.0d));
+
         // Les couleurs : deux saisons voisines se partagent toujours le tout.
         for (double local = 0.0d; local < 1.0d; local += 0.01d) {
             double sum = 0.0d;

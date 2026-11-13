@@ -114,6 +114,25 @@ public final class SeasonMath {
         return x * x * (3.0d - 2.0d * x);
     }
 
+    /** A partir de cette latitude, les couleurs de saison ont toute leur force. */
+    public static final double COLOR_FULL = 45.0d;
+
+    /**
+     * La force des couleurs de saison : 0 sous les tropiques, 1 des 45°. Plus
+     * tot que le froid ({@link #strength}) : les couleurs ne coutent rien a
+     * l'equilibre du jeu, et l'automne de France doit se voir.
+     */
+    public static double colorStrength(double latitude) {
+        double x = (Math.abs(latitude) - TROPIC) / (COLOR_FULL - TROPIC);
+        if (x <= 0.0d) {
+            return 0.0d;
+        }
+        if (x >= 1.0d) {
+            return 1.0d;
+        }
+        return x * x * (3.0d - 2.0d * x);
+    }
+
     /** Le decalage de temperature, en unites du jeu, a ajouter a celle d'un biome. */
     public static double offset(double latitude, double phase) {
         double strength = strength(latitude);
