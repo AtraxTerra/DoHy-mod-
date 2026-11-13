@@ -175,6 +175,37 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-13 (suite 14) — la Terre : les capitales
+
+**Demande** : « Peux-tu pour les capitales ajouter une reproduction des villes ? », précisée en
+trois temps : des villes jouables agrandies dans les capitales des pays ; « rends-les
+réalistes » — le plan de la vraie ville pour les grandes ; « et bâtiment réaliste et grand ».
+Description : `docs/CONTENU_DOHY.md`, « Les capitales ».
+
+**Fait** (`feat/terre-capitales`, sur `feat/terre-pays`) :
+- `tools/earth_capitals.py` → `capitals.json` : 215 capitales (Natural Earth), taille selon la
+  population, style selon la région, décalage des villes qui se chevauchent.
+- `CityBuilder` : le plan d'un chunk (terrain à plat, rues, îlots, parcs, immeubles, tours,
+  maisons, fleuve et ponts, avenue) ; grands immeubles à cheval sur deux îlots ; six styles.
+- `CityLayouts` : le plan des onze grandes capitales (fleuve, parcs, avenue, monuments placés).
+- `CityMonuments` : 11 grands monuments, 11 petits (cathédrale, arc, palais, église à coupole,
+  grande roue, donjon, temple, temple rond, tour de télévision, enceinte, colonne), un palais
+  national pour les autres capitales.
+- `EarthCities` : file des chunks, 4 000 blocs par tick, hauteur de ville gardée sur le monde,
+  monument quand sa place est posée et chargée ; jamais de chargement forcé de chunk.
+- Titre d'entrée, hologrammes des noms, nom de la ville pour la capitale de faction.
+
+**Vérifié** : hors jeu, au prévisualiseur (`/home/claude/city_preview`), chaque monument, les six
+styles, le fleuve et ses ponts ; en jeu (client de CI, grille Earth24k sur un monde ordinaire) :
+Paris, Londres, Le Caire, Tokyo, Rome et Luxembourg posées entières en 4 à 8 secondes chacune,
+monuments et noms compris, aucun bloc inconnu en 26.2, titre d'entrée. Un premier essai figeait
+le serveur près de cinq minutes au Caire (relief) : la pose ne force plus aucun chargement de
+chunk et dégage de haut en bas, et le même essai passe en 8 secondes.
+
+**Non vérifié** : la carte Earth24k elle-même (relief réel, villes en montagne), et les sept
+autres grandes capitales en jeu depuis les grands immeubles (elles l'étaient avant). Sur l'eau,
+un grand immeuble peut n'avoir que sa moitié si l'autre îlot est noyé.
+
 ### 2026-11-12 (suite 13) — la Terre : les pays à prendre
 
 **Demande** : « Et ensuite le 1. Pays à prendre » — ta faction revendique un pays entier de la

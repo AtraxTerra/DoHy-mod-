@@ -425,8 +425,13 @@ en dix blocs : les villes sont **agrandies** une dizaine de fois.
   sans les coins. Deux capitales trop proches : la plus petite est décalée dans son pays (au plus
   six chunks) ou rétrécie ; huit n'ont pas de ville, faute de place (le Vatican dans Rome, Monaco,
   Beyrouth, Gaza, Macao, Gibraltar, Avarua, la base McMurdo).
-- **La ville** : des îlots de 10 × 10 blocs bordés de trottoirs, de réverbères et de rues de
-  quatre blocs ; tours ou hauts immeubles au centre, immeubles autour, maisons au bord, des parcs.
+- **La ville** : des îlots bordés de trottoirs, de réverbères et de rues de quatre blocs ; tours
+  ou hauts immeubles au centre, immeubles autour, maisons au bord, des parcs. Trois fois sur
+  quatre, deux îlots voisins se réunissent en **un grand immeuble de 26 × 10 blocs**. Étages de
+  cinq blocs : cinq à sept étages en Europe, jusqu'à douze en Asie, des tours de verre jusqu'à 22
+  étages (110 blocs) dans les plus grandes villes. Les grands immeubles ont des boutiques vitrées
+  et une enseigne au rez-de-chaussée, des balcons à garde-corps, une corniche, et en Europe un
+  dernier étage mansardé en ardoise avec ses cheminées.
   Les murs, les toits et les couleurs suivent la région : Europe (pierre, brique, toits
   d'ardoise), Orient (grès, toits plats, mosquées), Afrique (terre cuite, brique crue), Asie
   (béton clair, tours de verre), Amérique du Nord et Océanie (verre, brique), Amérique latine
