@@ -1526,6 +1526,7 @@ def lang():
         "item.dohy.tractor_harvester": "Moissonneuse",
         "block.dohy.silo": "Silo",
         "block.dohy.fuel_pump": "Pompe a carburant",
+        "block.dohy.palette": "Palette d'armement",
     })
     en.update({
         "entity.dohy.tractor": "Tractor",
@@ -1536,6 +1537,7 @@ def lang():
         "item.dohy.tractor_harvester": "Harvester",
         "block.dohy.silo": "Silo",
         "block.dohy.fuel_pump": "Fuel Pump",
+        "block.dohy.palette": "Ammunition Pallet",
     })
     for (key, name_fr, name_en, gmo, *_rest) in CEREALS:
         of = "d'" if name_fr[0] in "AEIOU" else "de "
@@ -1705,12 +1707,305 @@ def mine():
     })
 
 
+
+# -- Les palettes d'armement ---------------------------------------------------------
+#
+# Une palette de bois clair : cinq planches de dessus, neuf des, trois semelles.
+# Les caisses qui s'y empilent sont dessinees par le rendu de l'entite, depuis
+# une seule image : la caisse longue des obus (bois peint kaki, deux poignees de
+# corde), la boite metallique des munitions (tole olive, poignee, levier), la
+# caisse geante des missiles (bois sable cercle de fer, plaque de danger sur le
+# troncon du milieu). Tout est dessine ici.
+
+# Les objets de NTM NEXT par famille, releves dans son jar (hbm 1.0.3) ; entrees
+# facultatives : sans le mod, elles ne font rien.
+PALETTE_OBUS = (
+    ["ammo_arty", "ammo_arty_cargo", "ammo_arty_chlorine", "ammo_arty_classic", "ammo_arty_he",
+     "ammo_arty_mini_nuke", "ammo_arty_mini_nuke_multi", "ammo_arty_mustard_gas", "ammo_arty_nuke",
+     "ammo_arty_phosgene", "ammo_arty_phosphorus", "ammo_arty_phosphorus_multi",
+     "ammo_shell", "ammo_shell_apfsds_du", "ammo_shell_apfsds_t", "ammo_shell_explosive", "ammo_shell_w9"]
+    + ["ammo_standard_nuke_%s" % k for k in ("balefire", "demo", "high", "hive", "standard", "tots")]
+    + ["ammo_standard_rocket_%s" % k for k in ("demo", "he", "heat", "inc", "phosphorus")]
+)
+PALETTE_MUNITIONS = (
+    ["ammo_standard_%s" % k for k in (
+        "b75 b75_exp b75_inc bmg50_ap bmg50_du bmg50_fmj bmg50_he bmg50_jhp bmg50_sm bmg50_sp capacitor "
+        "capacitor_ir capacitor_overcharge coil_ferrouranium coil_tungsten ct_hook ct_mortar ct_mortar_charge "
+        "flame_balefire flame_diesel flame_gas flame_napalm g10 g10_du g10_explosive g10_shrapnel g10_slug g12 "
+        "g12_bp g12_bp_magnum g12_bp_slug g12_explosive g12_flechette g12_magnum g12_phosphorus g12_slug "
+        "g26_flare g26_flare_supply g26_flare_weapon g40_demo g40_he g40_heat g40_inc g40_phosphorus m357_ap "
+        "m357_bp m357_express m357_fmj m357_jhp m357_sp m44_ap m44_bp m44_express m44_fmj m44_jhp m44_sp "
+        "p22_ap p22_fmj p22_jhp p22_sp p45_ap p45_du p45_fmj p45_jhp p45_sp p9_ap p9_fmj p9_jhp p9_sp "
+        "r556_ap r556_fmj r556_jhp r556_sp r762_ap r762_du r762_fmj r762_he r762_jhp r762_sp stone stone_ap "
+        "stone_iron stone_shot tau_uranium").split()]
+    + ["ammo_container", "ammo_container_alt", "ammo_dgk"]
+    + ["ammo_secret_%s" % k for k in ("bmg50_black", "bmg50_equestrian", "folly_nuke", "folly_sm",
+                                      "g12_equestrian", "m44_equestrian", "p35_800", "p35_800_bl")]
+)
+PALETTE_MISSILES = (
+    ["ammo_himars_%s" % k for k in ("single", "single_tb", "standard", "standard_he", "standard_lava",
+                                    "standard_mini_nuke", "standard_tb", "standard_wp")]
+    + ["missile_%s" % k for k in (
+        "anti_ballistic bhole burst buster buster_strong cluster cluster_strong custom decoy doomsday "
+        "doomsday_rusted drill emp emp_strong generic incendiary incendiary_strong inferno micro nuclear "
+        "nuclear_cluster rain schrabidium shuttle soyuz_0 soyuz_1 soyuz_2 soyuz_lander stealth strong taint "
+        "test volcano").split()]
+)
+
+
+class Atlas:
+    """Une image RGBA a dessiner au pixel ; None est transparent."""
+
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.rows = [[None for _ in range(width)] for _ in range(height)]
+
+    def put(self, x, y, color):
+        if 0 <= x < self.width and 0 <= y < self.height:
+            self.rows[y][x] = color
+
+    def fill(self, x0, y0, x1, y1, color):
+        """Remplit le rectangle [x0, x1[ x [y0, y1[."""
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                self.put(x, y, color)
+
+    def grain(self, x0, y0, x1, y1, base, seed, depth=0.06):
+        """Du bois ou de la tole : la couleur de base, a peine variee pixel par pixel."""
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                noise = ((x * 73856093) ^ (y * 19349663) ^ (seed * 83492791)) & 0xFF
+                self.put(x, y, shade(base, 1.0 + depth * ((noise / 255.0) * 2.0 - 1.0)))
+
+    def frame(self, x0, y0, x1, y1, color):
+        for x in range(x0, x1):
+            self.put(x, y0, color)
+            self.put(x, y1 - 1, color)
+        for y in range(y0, y1):
+            self.put(x0, y, color)
+            self.put(x1 - 1, y, color)
+
+
+def pallet_wood(base, seed):
+    """Le pin d'une palette : des fibres en longues trainees le long de x, un noeud."""
+    color = rgb(base)
+    rows = [[color for _ in range(16)] for _ in range(16)]
+    for y in range(16):
+        streak = ((y * 2654435761 + seed * 97) >> 7) % 4 == 0
+        for x in range(16):
+            noise = ((x * 7919) ^ (y * 104729) ^ seed) % 97
+            tone = 1.0 + (noise - 48) / 48.0 * 0.04
+            if streak and (x + y * 3 + seed) % 11 < 8:
+                tone *= 0.86                  # une fibre
+            rows[y][x] = shade(color, tone)
+    if seed % 2 == 0:                         # un noeud, cerne d'un anneau plus clair que lui
+        for (x, y) in ((4, 11), (5, 11), (4, 12), (5, 12)):
+            rows[y][x] = shade(color, 0.62)
+        for (x, y) in ((3, 11), (6, 12), (4, 10), (5, 13), (3, 12), (6, 11)):
+            rows[y][x] = shade(color, 0.8)
+    return rows
+
+
+def crate_atlas():
+    """Les trois caisses, deux texels par pixel de modele (voir PaletteRenderer)."""
+    a = Atlas(128, 64)
+
+    # -- La caisse longue des obus : bois peint kaki --------------------------------
+    olive, olive_dark, olive_light = rgb(0x5E683A), rgb(0x424A28), rgb(0x78834D)
+    edge, yellow, tan = rgb(0x363C21), rgb(0xD6B446), rgb(0xC4BA8C)
+    rope, rope_dark, steel, steel_dark = rgb(0x9A7A46), rgb(0x6E5532), rgb(0x8C8E87), rgb(0x5A5C58)
+    # flanc (0,0)-(28,10)
+    a.grain(0, 0, 28, 10, olive, 1)
+    a.fill(1, 5, 27, 6, olive_dark)                       # le joint des deux planches
+    for x0 in (1, 24):
+        a.grain(x0, 1, x0 + 3, 9, olive_light, 2)          # les tasseaux des bouts
+    for x in (4, 23):
+        a.fill(x, 1, x + 1, 9, olive_dark)
+    a.fill(9, 2, 19, 3, yellow)                           # la bande jaune des explosifs
+    for i, x in enumerate(range(8, 20)):
+        if i % 4 != 3:
+            a.put(x, 7, tan)                              # le marquage
+    a.frame(0, 0, 28, 10, edge)
+    for (x, y) in ((1, 1), (26, 1), (1, 8), (26, 8)):
+        a.put(x, y, steel)
+    # dessus (0,10)-(28,23)
+    a.grain(0, 10, 28, 23, olive, 3)
+    for y in (14, 18):
+        a.fill(1, y, 27, y + 1, olive_dark)
+    for x0 in (1, 24):
+        a.grain(x0, 11, x0 + 3, 22, olive_light, 4)
+    for x0 in (6, 20):                                    # les fermoirs
+        a.fill(x0, 15, x0 + 2, 18, steel)
+        a.fill(x0, 17, x0 + 2, 18, steel_dark)
+    for x in range(11, 17):
+        a.put(x, 12, tan)
+        a.put(x, 20, tan)
+    a.fill(13, 16, 15, 17, yellow)
+    a.frame(0, 10, 28, 23, edge)
+    # bout (28,0)-(41,10) : la poignee de corde
+    a.grain(28, 0, 41, 10, olive, 5)
+    a.fill(29, 5, 40, 6, olive_dark)
+    a.fill(32, 3, 37, 4, rope)
+    a.fill(32, 4, 33, 6, rope)
+    a.fill(36, 4, 37, 6, rope)
+    a.fill(33, 4, 36, 5, rope_dark)
+    a.frame(28, 0, 41, 10, edge)
+    for (x, y) in ((29, 1), (39, 1), (29, 8), (39, 8)):
+        a.put(x, y, steel)
+
+    # -- La boite metallique des munitions : tole olive ----------------------------------
+    tin, tin_dark, tin_light = rgb(0x55602F), rgb(0x3A4220), rgb(0x707C42)
+    stencil = rgb(0xE2C450)
+    # flanc (0,24)-(13,33)
+    a.grain(0, 24, 13, 33, tin, 6, 0.04)
+    a.fill(1, 25, 12, 26, tin_light)                      # le bord du couvercle
+    a.fill(1, 26, 12, 27, tin_dark)                       # la jointure
+    a.frame(2, 28, 11, 32, tin_light)                     # le panneau embouti
+    for x in range(3, 10):
+        if x != 6:
+            a.put(x, 29, stencil)
+    a.put(4, 30, stencil)
+    a.put(5, 30, stencil)
+    a.frame(0, 24, 13, 33, tin_dark)
+    # dessus (13,24)-(26,32) : la poignee
+    a.grain(13, 24, 26, 32, tin, 7, 0.04)
+    a.frame(13, 24, 26, 32, tin_light)
+    a.fill(16, 27, 23, 29, steel_dark)
+    a.fill(16, 27, 23, 28, steel)
+    a.put(15, 28, tin_dark)
+    a.put(23, 28, tin_dark)
+    # bout (26,24)-(34,33) : le levier
+    a.grain(26, 24, 34, 33, tin, 8, 0.04)
+    a.fill(27, 26, 33, 27, tin_dark)
+    a.fill(28, 27, 32, 29, steel)
+    a.fill(28, 28, 32, 29, steel_dark)
+    a.frame(26, 24, 34, 33, tin_dark)
+
+    # -- La caisse geante des missiles : bois sable cercle de fer -------------------------
+    sand, sand_dark, sand_light = rgb(0x9C8C5C), rgb(0x766842), rgb(0xB6A674)
+    band, rivet, red, white, ink = rgb(0x343638), rgb(0x585A5E), rgb(0xB22E26), rgb(0xDEDACD), rgb(0x282622)
+
+    def side(x0, marked, seed):
+        a.grain(x0, 34, x0 + 32, 48, sand, seed)
+        for y in (38, 43):
+            a.fill(x0, y, x0 + 32, y + 1, sand_dark)
+        a.fill(x0, 34, x0 + 32, 35, sand_dark)
+        a.fill(x0, 47, x0 + 32, 48, sand_dark)
+        for bx in (x0, x0 + 30):                          # les cercles de fer
+            a.fill(bx, 34, bx + 2, 48, band)
+            for y in (36, 41, 46):
+                a.put(bx + (0 if bx == x0 else 1), y, rivet)
+        if marked:                                        # la plaque de danger
+            a.fill(x0 + 9, 37, x0 + 23, 45, white)
+            a.frame(x0 + 9, 37, x0 + 23, 45, ink)
+            for y in range(38, 44):
+                for x in range(x0 + 10, x0 + 22):
+                    if (x + y) % 4 < 2:
+                        a.put(x, y, red)
+            for x in range(x0 + 10, x0 + 22, 2):
+                a.put(x, 46, ink)
+
+    def top(x0, marked, seed):
+        a.grain(x0, 0, x0 + 32, 28, sand, seed)
+        for y in (4, 9, 14, 19, 24):
+            a.fill(x0, y, x0 + 32, y + 1, sand_dark)
+        a.frame(x0, 0, x0 + 32, 28, sand_dark)
+        for bx in (x0, x0 + 30):
+            a.fill(bx, 0, bx + 2, 28, band)
+            for y in (2, 13, 25):
+                a.put(bx + (0 if bx == x0 else 1), y, rivet)
+        if marked:                                        # une fleche au pochoir, et le carre rouge
+            a.fill(x0 + 10, 13, x0 + 21, 15, ink)
+            for i in range(4):
+                a.fill(x0 + 21 + i, 10 + i, x0 + 22 + i, 18 - i, ink)
+            a.fill(x0 + 5, 12, x0 + 8, 16, red)
+
+    side(0, False, 9)
+    side(32, True, 10)
+    top(64, False, 11)
+    top(96, True, 12)
+    # bout (64,34)-(92,48) : planches, une diagonale, des coins de fer
+    a.grain(64, 34, 92, 48, sand, 13)
+    for y in (38, 43):
+        a.fill(64, y, 92, y + 1, sand_dark)
+    for i in range(24):
+        x = 66 + i
+        y = 46 - (i * 11) // 23
+        a.put(x, y, sand_light)
+        a.put(x, y - 1, sand_light)
+    a.frame(64, 34, 92, 48, sand_dark)
+    for (x, y) in ((64, 34), (89, 34), (64, 45), (89, 45)):
+        a.fill(x, y, x + 3, y + 3, band)
+    return a.rows
+
+
+def palettes():
+    write_png("assets/%s/textures/block/palette.png" % NS, pallet_wood(0xCDAA70, 2))
+    write_png("assets/%s/textures/block/palette_bloc.png" % NS, pallet_wood(0xA9824D, 5))
+    write_png("assets/%s/textures/entity/palette/caisses.png" % NS, crate_atlas())
+
+    def box(start, end, texture):
+        return {"from": start, "to": end,
+                "faces": {face: {"texture": texture}
+                          for face in ("north", "south", "east", "west", "up", "down")}}
+
+    elements = []
+    for z in (0, 6.5, 13):                                # les trois semelles, le long de x
+        elements.append(box([0, 0, z], [16, 1, z + 3], "#bloc"))
+    for x in (0, 6.5, 13):                                # les neuf des
+        for z in (0, 6.5, 13):
+            elements.append(box([x, 1, z], [x + 3, 2, z + 3], "#bloc"))
+    for z0 in (0, 3.375, 6.75, 10.125, 13.5):             # les cinq planches du dessus
+        elements.append(box([0, 2, z0], [16, 3, z0 + 2.5], "#wood"))
+    wood = "%s:block/palette" % NS
+    write("assets/%s/models/block/palette.json" % NS, {
+        "parent": "minecraft:block/block",
+        "textures": {"particle": wood, "wood": wood, "bloc": "%s:block/palette_bloc" % NS},
+        "elements": elements,
+    })
+    variants = {}
+    for facing, angle in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        variant = {"model": "%s:block/palette" % NS}
+        if angle:
+            variant["y"] = angle
+        variants["facing=%s" % facing] = variant
+    write("assets/%s/blockstates/palette.json" % NS, {"variants": variants})
+    write("assets/%s/items/palette.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:block/palette" % NS},
+    })
+    block_drops_itself("palette")
+    # Trois dalles et deux planches : deux palettes.
+    write("data/%s/recipe/palette.json" % NS, {
+        "type": "minecraft:crafting_shaped",
+        "category": "misc",
+        "pattern": ["SSS", "P P"],
+        "key": {"S": "#minecraft:wooden_slabs", "P": "#minecraft:planks"},
+        "result": {"id": "%s:palette" % NS, "count": 2},
+    })
+
+    def family(name, ids, vanilla):
+        write("data/%s/tags/item/palette/%s.json" % (NS, name), {
+            "replace": False,
+            "values": vanilla + [{"id": "hbm:%s" % item, "required": False} for item in ids],
+        })
+
+    family("obus", PALETTE_OBUS, ["minecraft:firework_rocket"])
+    family("munitions", PALETTE_MUNITIONS, ["#minecraft:arrows"])
+    family("missiles", PALETTE_MISSILES, [])
+    # Create embarque les palettes chargees sur ses machines mobiles, contenu compris.
+    write("data/create/tags/block/simple_mounted_storage.json", {
+        "replace": False,
+        "values": ["%s:palette" % NS],
+    })
+
 def main():
     trading_server()
     agriculture()
     farming()
     spawn()
     mine()
+    palettes()
     lang()
     print("Ressources dohy ecrites.")
 

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dohy:block/palette"
+    },
+    "facing=east": {
+      "model": "dohy:block/palette",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dohy:block/palette",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dohy:block/palette",
+      "y": 270
+    }
+  }
+}
