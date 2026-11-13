@@ -64,11 +64,25 @@ public final class ClientSeasons {
             colorStep = step;
             onMap = here;
             SeasonColors.update(climate.phase());
-            // un chunk garde les couleurs de sa construction : on les fait toutes reconstruire
-            level.clearTintCaches();
-            minecraft.levelRenderer.invalidateCompiledGeometry(level, minecraft.options,
-                    minecraft.gameRenderer.mainCamera(), minecraft.getBlockColors());
+            redraw(minecraft, level);
         }
+    }
+
+    /**
+     * Un chunk garde les couleurs de sa construction : on fait reconstruire
+     * tout ce qui est a portee de vue. Comme pour un bloc pose, l'ancien rendu
+     * reste affiche jusqu'a ce que le nouveau soit pret : rien ne clignote.
+     */
+    private static void redraw(Minecraft minecraft, ClientLevel level) {
+        level.clearTintCaches();
+        if (minecraft.player == null) {
+            return;
+        }
+        int radius = minecraft.options.getEffectiveRenderDistance() + 1;
+        int x = minecraft.player.getBlockX() >> 4;
+        int z = minecraft.player.getBlockZ() >> 4;
+        level.setSectionRangeDirty(x - radius, level.getMinY() >> 4, z - radius, x + radius, level.getMaxY() >> 4,
+                z + radius);
     }
 
     /** La saison sous les pieds du joueur, en une ligne courte : « Hiver  j3/7  -3 °C ». */

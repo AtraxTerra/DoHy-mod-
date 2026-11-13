@@ -129,10 +129,20 @@ public final class SeasonGround {
 
     private static void catchUp(ServerLevel level, int step) {
         long deadline = System.nanoTime() + BUDGET_NANOS;
-        while (!PENDING.isEmpty() && System.nanoTime() < deadline) {
+        // un tour de file au plus par tick : un chunk pas encore accessible repasse en queue
+        for (int tries = PENDING.size(); tries > 0 && System.nanoTime() < deadline; tries--) {
             long key = PENDING.removeFirstLong();
+            if (!LOADED.contains(key)) {
+                continue;
+            }
             LevelChunk chunk = level.getChunkSource().getChunkNow((int) key, (int) (key >> 32));
-            if (chunk == null || chunk.getData(DoHyEarth.SEASON_GROUND.get()) == step) {
+            if (chunk == null) {
+                // charge mais pas encore servi par le jeu (l'evenement de chargement le precede) :
+                // on le reprendra, sinon il garderait sa neige jusqu'a son prochain retour
+                PENDING.add(key);
+                continue;
+            }
+            if (chunk.getData(DoHyEarth.SEASON_GROUND.get()) == step) {
                 continue;
             }
             int minX = chunk.getPos().getMinBlockX();
