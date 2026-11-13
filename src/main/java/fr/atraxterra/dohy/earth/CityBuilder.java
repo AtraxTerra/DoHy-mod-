@@ -28,8 +28,8 @@ public final class CityBuilder {
     public static final int OUTSIDE = 0;
     public static final int DISTRICT = 1;
     public static final int BLOCK = 2;
-    /** La hauteur d'un etage : trois blocs d'air et un plancher. */
-    public static final int STOREY = 4;
+    /** La hauteur d'un etage : quatre blocs d'air et un plancher. */
+    public static final int STOREY = 5;
 
     private CityBuilder() {
     }
@@ -55,7 +55,23 @@ public final class CityBuilder {
         public final Long2ObjectLinkedOpenHashMap<BlockState> blocks = new Long2ObjectLinkedOpenHashMap<>();
         public final List<Label> labels = new ArrayList<>();
 
+        private int minX = Integer.MIN_VALUE;
+        private int maxX = Integer.MAX_VALUE;
+        private int minZ = Integer.MIN_VALUE;
+        private int maxZ = Integer.MAX_VALUE;
+
+        /** Borne le plan a un chunk : ce qui deborde n'est pas pose (le voisin pose sa moitie). */
+        void clip(int minX, int minZ) {
+            this.minX = minX;
+            this.maxX = minX + 15;
+            this.minZ = minZ;
+            this.maxZ = minZ + 15;
+        }
+
         public void set(int x, int y, int z, BlockState state) {
+            if (x < minX || x > maxX || z < minZ || z > maxZ) {
+                return;
+            }
             long key = BlockPos.asLong(x, y, z);
             blocks.remove(key);
             blocks.put(key, state);
@@ -218,10 +234,12 @@ public final class CityBuilder {
         /** Combien d'etages pour un immeuble de cette region. */
         int storeys(Random random) {
             return switch (id) {
-                case "afrique" -> 2 + random.nextInt(2);
-                case "orient", "latam" -> 2 + random.nextInt(3);
-                case "asie" -> 3 + random.nextInt(5);
-                default -> 3 + random.nextInt(4);
+                case "afrique" -> 2 + random.nextInt(3);
+                case "orient" -> 3 + random.nextInt(3);
+                case "latam" -> 3 + random.nextInt(4);
+                case "asie" -> 6 + random.nextInt(7);
+                case "ameriques" -> 4 + random.nextInt(6);
+                default -> 5 + random.nextInt(3);
             };
         }
     }
@@ -269,6 +287,7 @@ public final class CityBuilder {
                 return;
             }
         }
+        plan.clip(minX, minZ);
         Style style = Style.of(city.style());
         Random random = random(city, cx, cz);
         // les rues bordent l'ilot ; la place n'en a qu'au bord, face aux ilots
@@ -277,6 +296,15 @@ public final class CityBuilder {
         boolean south = role == BLOCK || city.role(cx, cz + 1) == OUTSIDE || city.site(cx, cz + 1) != site;
         boolean west = role == BLOCK || city.role(cx - 1, cz) == OUTSIDE || city.site(cx - 1, cz) != site;
         boolean east = role == BLOCK || city.role(cx + 1, cz) == OUTSIDE || city.site(cx + 1, cz) != site;
+        // deux ilots reunis : pas de rue entre eux, un seul grand batiment
+        int left = pairLeft(city, cx);
+        if (role == BLOCK && merged(city, left, cz)) {
+            if (cx == left) {
+                east = false;
+            } else {
+                west = false;
+            }
+        }
         boolean[] rim = {city.role(cx, cz - 1) == OUTSIDE, city.role(cx, cz + 1) == OUTSIDE,
                 city.role(cx - 1, cz) == OUTSIDE, city.role(cx + 1, cz) == OUTSIDE};
         terrain(plan, minX, minZ, baseY, ground, rim);
@@ -330,7 +358,7 @@ public final class CityBuilder {
                 }
                 plan.set(x, baseY, z, edge ? wall : b("grass_block"));
                 int clear = top >= baseY ? top + 8 : baseY + 2;
-                for (int y = baseY + 1; y <= clear; y++) {
+                for (int y = clear; y > baseY; y--) {
                     plan.set(x, y, z, air);
                 }
             }
@@ -401,17 +429,31 @@ public final class CityBuilder {
             }
         }
         float roll = random.nextFloat();
-        // le fleuve ou une grande avenue traverse l'ilot : un quai plante, pas de batiment
-        boolean crossed = false;
-        for (int x = x0; x < x0 + 10 && !crossed; x++) {
-            for (int z = z0; z < z0 + 10; z++) {
-                if (city.river(x, z) <= riverHalf(city) + 1.0d || city.avenue(x, z) <= 4.0d) {
-                    crossed = true;
-                    break;
+        int cx = minX >> 4;
+        int cz = minZ >> 4;
+        int left = pairLeft(city, cx);
+        if (merged(city, left, cz)) {
+            // un grand batiment a cheval sur deux ilots : chaque chunk en pose sa moitie, tiree de la meme graine
+            Random pair = random(city, left, cz);
+            pair.nextFloat();
+            int fx = (left << 4) + 3;
+            int zone = Math.min(zone(city, left, cz), zone(city, left + 1, cz));
+            for (int x = fx; x < fx + 26; x++) {
+                for (int z = z0; z < z0 + 10; z++) {
+                    plan.set(x, baseY, z, b("smooth_stone"));
                 }
             }
+            if (zone == 0 && modern(style, pair)) {
+                glassTower(plan, fx + 1, z0 + 1, 24, 8, baseY, towerStoreys(city, left, cz, pair), style, pair);
+            } else {
+                int storeys = zone == 0 ? Math.max(6, Math.min(9, towerStoreys(city, left, cz, pair)))
+                        : style.storeys(pair);
+                building(plan, fx, z0, 26, 10, baseY, storeys, style, pair, false);
+            }
+            return;
         }
-        if (crossed) {
+        if (crossed(city, cx, cz)) {
+            // le fleuve ou une grande avenue traverse l'ilot : un quai plante, pas de batiment
             pave(plan, x0, z0, 10, 10, baseY);
             for (int i = 0; i < 4; i++) {
                 int tx = x0 + 2 + (i % 2) * 5;
@@ -420,26 +462,20 @@ public final class CityBuilder {
                     tree(plan, tx, baseY + 1, tz, random, "oak");
                 }
             }
-        } else if (city.park((minX >> 4), (minZ >> 4)) || roll < (t > 0.7d ? 0.16f : 0.08f)) {
+        } else if (city.park(cx, cz) || roll < parkChance(t)) {
             park(plan, x0, z0, baseY, random);
-        } else if (city.radius() >= 3 && t < 0.42d) {
-            // le centre : des tours de verre la ou les villes en ont, de hauts immeubles ailleurs
-            int max = city.radius() >= 4 ? 15 : 10;
-            int storeys = 5 + (int) Math.round((max - 5) * (1.0d - t / 0.42d) * (0.55d + 0.45d * random.nextDouble()));
+        } else if (zone(city, cx, cz) == 0) {
             pave(plan, x0, z0, 10, 10, baseY);
-            boolean modern = switch (style.id()) {
-                case "asie", "ameriques", "orient" -> random.nextInt(10) < 7;
-                default -> random.nextInt(4) == 0;
-            };
-            if (modern) {
+            int storeys = towerStoreys(city, cx, cz, random);
+            if (modern(style, random)) {
                 glassTower(plan, x0 + 1, z0 + 1, 8, 8, baseY, storeys, style, random);
             } else {
-                building(plan, x0, z0, 10, 10, baseY, Math.min(storeys, 8), style, random, false);
+                building(plan, x0, z0, 10, 10, baseY, Math.max(6, Math.min(storeys, 9)), style, random, false);
             }
-        } else if (t < 0.72d || (city.radius() <= 2 && t < 0.9d)) {
+        } else if (zone(city, cx, cz) == 1) {
             int layout = random.nextInt(3);
             // une petite capitale reste basse
-            int cap = city.radius() <= 1 ? 4 : 8;
+            int cap = city.radius() <= 1 ? 4 : 12;
             pave(plan, x0, z0, 10, 10, baseY);
             if (layout == 0) {
                 building(plan, x0, z0, 10, 10, baseY, Math.min(cap, style.storeys(random)), style, random, false);
@@ -455,6 +491,69 @@ public final class CityBuilder {
         } else {
             houses(plan, x0, z0, baseY, style, random);
         }
+    }
+
+    private static float parkChance(double t) {
+        return t > 0.7d ? 0.16f : 0.08f;
+    }
+
+    private static double ring(City city, int cx, int cz) {
+        return Math.hypot(cx - city.chunkX(), cz - city.chunkZ()) / (city.radius() + 0.5d);
+    }
+
+    /** 0 : le centre et ses tours ; 1 : les immeubles ; 2 : les maisons du bord. */
+    private static int zone(City city, int cx, int cz) {
+        double t = ring(city, cx, cz);
+        if (city.radius() >= 3 && t < 0.42d) {
+            return 0;
+        }
+        return t < 0.72d || (city.radius() <= 2 && t < 0.9d) ? 1 : 2;
+    }
+
+    /** Les villes d'Asie, d'Amerique et d'Orient ont des tours de verre ; les autres, peu. */
+    private static boolean modern(Style style, Random random) {
+        return switch (style.id()) {
+            case "asie", "ameriques", "orient" -> random.nextInt(10) < 7;
+            default -> random.nextInt(4) == 0;
+        };
+    }
+
+    private static int towerStoreys(City city, int cx, int cz, Random random) {
+        int max = city.radius() >= 4 ? 22 : 13;
+        return 8 + (int) Math.round((max - 8) * (1.0d - ring(city, cx, cz) / 0.42d) * (0.5d + 0.5d * random.nextDouble()));
+    }
+
+    private static boolean crossed(City city, int cx, int cz) {
+        if (city.layout() == null) {
+            return false;
+        }
+        int x0 = (cx << 4) + 3;
+        int z0 = (cz << 4) + 3;
+        for (int x = x0; x < x0 + 10; x++) {
+            for (int z = z0; z < z0 + 10; z++) {
+                if (city.river(x, z) <= riverHalf(city) + 1.0d || city.avenue(x, z) <= 4.0d) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Un ilot ordinaire, a batir : ni parc, ni quai, ni maisons. */
+    private static boolean plain(City city, int cx, int cz) {
+        return city.role(cx, cz) == BLOCK && !city.park(cx, cz) && zone(city, cx, cz) != 2
+                && !crossed(city, cx, cz) && random(city, cx, cz).nextFloat() >= parkChance(ring(city, cx, cz));
+    }
+
+    /** Les ilots vont par deux d'ouest en est : le chunk de gauche de la paire de celui-ci. */
+    private static int pairLeft(City city, int cx) {
+        return Math.floorMod(cx - city.chunkX(), 2) == 0 ? cx : cx - 1;
+    }
+
+    /** Vrai si les deux ilots de la paire se reunissent en un grand batiment (trois fois sur quatre). */
+    private static boolean merged(City city, int left, int cz) {
+        return city.radius() >= 2 && plain(city, left, cz) && plain(city, left + 1, cz)
+                && (random(city, left, cz).nextInt() >>> 8 & 3) != 0;
     }
 
     private static double riverHalf(City city) {
@@ -590,11 +689,20 @@ public final class CityBuilder {
         BlockState glass = b(style.glass());
         BlockState floor = b(style.floor());
         BlockState air = b("air");
+        String[] signs = {"red_terracotta", "green_terracotta", "blue_terracotta", "yellow_terracotta",
+                "black_terracotta"};
+        BlockState sign = b(signs[random.nextInt(signs.length)]);
+        boolean large = w >= 8 && d >= 8;
+        boolean shops = large && storeys >= 3;
+        boolean mansard = large && "europe".equals(style.id()) && storeys >= 4;
+        boolean balconies = large && storeys >= 4 && !"orient".equals(style.id()) && random.nextInt(3) > 0;
+        BlockState slate = b("deepslate_tiles");
         int top = baseY + storeys * STOREY;
         int x1 = x0 + w - 1;
         int z1 = z0 + d - 1;
         for (int y = baseY + 1; y <= top; y++) {
             int level = (y - baseY) % STOREY;
+            int storey = (y - baseY - 1) / STOREY + 1;
             for (int x = x0; x <= x1; x++) {
                 for (int z = z0; z <= z1; z++) {
                     boolean side = x == x0 || x == x1 || z == z0 || z == z1;
@@ -608,16 +716,43 @@ public final class CityBuilder {
                         continue;
                     }
                     int along = (x == x0 || x == x1) ? z - z0 : x - x0;
+                    if (shops && storey == 1) {
+                        // les boutiques : des vitrines entre des piliers, une enseigne en bandeau
+                        plan.set(x, y, z, level == 4 ? sign : along % 4 == 0 ? trim : level <= 3 ? glass : wall);
+                        continue;
+                    }
                     boolean window = (level == 2 || level == 3) && along % 2 == 1;
-                    plan.set(x, y, z, window ? glass : wall);
+                    boolean attic = mansard && storey == storeys;
+                    plan.set(x, y, z, window ? glass : attic ? slate : wall);
+                }
+            }
+        }
+        // les balcons : une dalle et un garde-corps, un etage sur deux, sur les grands cotes
+        if (balconies) {
+            BlockState slab = b("smooth_stone_slab");
+            BlockState rail = b("iron_bars");
+            for (int storey = 3; storey <= storeys - (mansard ? 1 : 0); storey += 2) {
+                int y = baseY + (storey - 1) * STOREY + 1;
+                for (int x = x0 + 1; x < x1; x++) {
+                    if ((x - x0) % 4 != 0) {
+                        plan.set(x, y - 1, z0 - 1, with("smooth_stone_slab", "type", "top"));
+                        plan.set(x, y, z0 - 1, rail);
+                        plan.set(x, y - 1, z1 + 1, with("smooth_stone_slab", "type", "top"));
+                        plan.set(x, y, z1 + 1, rail);
+                    }
                 }
             }
         }
         // l'entree : au rez-de-chaussee, au milieu du cote sud (ou nord si l'ilot est au nord du chunk)
         int doorX = x0 + w / 2;
         int doorZ = (z0 & 15) < 8 ? z0 : z1;
-        plan.set(doorX, baseY + 1, doorZ, air);
-        plan.set(doorX, baseY + 2, doorZ, air);
+        for (int dx = 0; dx <= (large ? 1 : 0); dx++) {
+            plan.set(doorX + dx, baseY + 1, doorZ, air);
+            plan.set(doorX + dx, baseY + 2, doorZ, air);
+            if (large) {
+                plan.set(doorX + dx, baseY + 3, doorZ, air);
+            }
+        }
         // l'echelle, contre le mur ouest, et un trou dans chaque plancher
         int ladderX = x0 + 1;
         int ladderZ = z0 + 1;
@@ -634,17 +769,43 @@ public final class CityBuilder {
                 for (int z = z0; z <= z1; z++) {
                     boolean side = x == x0 || x == x1 || z == z0 || z == z1;
                     plan.set(x, top, z, (x == ladderX && z == ladderZ) ? with("ladder", "facing", "east")
-                            : b(style.roof()));
+                            : b(mansard ? "deepslate_tiles" : style.roof()));
                     if (side) {
-                        plan.set(x, top + 1, z, trim);
+                        plan.set(x, top + 1, z, mansard ? slate : trim);
+                    }
+                }
+            }
+            if (large) {
+                // la corniche deborde d'un bloc
+                BlockState ledge = with("stone_brick_slab", "type", "top");
+                for (int x = x0 - 1; x <= x1 + 1; x++) {
+                    plan.set(x, top, z0 - 1, ledge);
+                    plan.set(x, top, z1 + 1, ledge);
+                }
+                for (int z = z0; z <= z1; z++) {
+                    plan.set(x0 - 1, top, z, ledge);
+                    plan.set(x1 + 1, top, z, ledge);
+                }
+                // sur le toit : des cheminees en Europe, des blocs techniques ailleurs
+                for (int x = x0 + 3; x < x1 - 1; x += 7) {
+                    if (mansard) {
+                        plan.set(x, top + 1, z0 + 2, b("bricks"));
+                        plan.set(x, top + 2, z0 + 2, b("bricks"));
+                        plan.set(x, top + 3, z0 + 2, b("flower_pot"));
+                    } else {
+                        plan.set(x, top + 1, z0 + 3, b("smooth_stone"));
+                        plan.set(x + 1, top + 1, z0 + 3, b("smooth_stone"));
+                        plan.set(x, top + 2, z0 + 3, b("iron_bars"));
                     }
                 }
             }
         }
-        // une lanterne sous chaque plafond
+        // une lanterne sous chaque plafond, tous les huit blocs
         for (int storey = 1; storey <= storeys; storey++) {
             int y = baseY + storey * STOREY - 1;
-            plan.set(x0 + w / 2, y, z0 + d / 2, with("lantern", "hanging", "true"));
+            for (int x = x0 + Math.min(4, w / 2); x < x1; x += 8) {
+                plan.set(x, y, z0 + d / 2, with("lantern", "hanging", "true"));
+            }
         }
     }
 
@@ -735,7 +896,9 @@ public final class CityBuilder {
             plan.set(x0 + 3, y, z0 + 3, with("ladder", "facing", "east"));
         }
         for (int storey = 1; storey <= storeys; storey++) {
-            plan.set(x0 + w / 2, baseY + storey * STOREY - 1, z0 + d / 2, with("lantern", "hanging", "true"));
+            for (int x = x0 + 4; x < x1; x += 8) {
+                plan.set(x, baseY + storey * STOREY - 1, z0 + d / 2, with("lantern", "hanging", "true"));
+            }
         }
         if (storeys >= 12) {
             for (int y = top + 1; y <= top + 7; y++) {
