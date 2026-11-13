@@ -255,12 +255,27 @@ public final class EarthBodies {
     private static final Direction[] NEIGHBOURS = {Direction.DOWN, Direction.NORTH, Direction.SOUTH, Direction.WEST,
             Direction.EAST, Direction.UP};
 
+    /**
+     * Les roches qu'aucun tag ne range avec la pierre : le cinabre et le soufre de la 26.2 (des poches
+     * entieres sous terre), la calcite, la dripstone, le basalte lisse.
+     */
+    private static final Set<Block> OTHER_ROCKS = rocks("minecraft:cinnabar", "minecraft:sulfur",
+            "minecraft:calcite", "minecraft:dripstone_block", "minecraft:smooth_basalt", "minecraft:red_sandstone");
+
+    private static Set<Block> rocks(String... ids) {
+        Set<Block> set = new HashSet<>();
+        for (String id : ids) {
+            BuiltInRegistries.BLOCK.getOptional(Identifier.parse(id)).ifPresent(set::add);
+        }
+        return Set.copyOf(set);
+    }
+
     /** De la roche ou de la terre en place : ce qu'un gisement ou un nettoyage peut prendre. */
     private static boolean natural(BlockState state) {
         return state.is(BlockTags.STONE_ORE_REPLACEABLES) || state.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES)
                 || state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(BlockTags.DIRT) || state.is(BlockTags.SAND)
                 || state.is(Blocks.GRAVEL) || state.is(Blocks.SANDSTONE) || state.is(Blocks.CLAY)
-                || state.is(BlockTags.TERRACOTTA);
+                || state.is(BlockTags.TERRACOTTA) || OTHER_ROCKS.contains(state.getBlock());
     }
 
     private static boolean rock(BlockState state) {
