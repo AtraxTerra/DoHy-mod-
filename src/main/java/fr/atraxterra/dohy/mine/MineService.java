@@ -84,7 +84,7 @@ import java.util.stream.Stream;
  *   <li>on n'y entre que par la borne MINE de l'atrium du spawn ; on en sort
  *       par la borne RETOUR de l'arrivee ou {@code /spawn} ;</li>
  *   <li>la pierre cassee ne donne rien : ni pierre, ni cobblestone, ni
- *       cobblestone des abimes ;</li>
+ *       ardoise des abimes, ni granite, diorite, andesite ou tuf ;</li>
  *   <li>mourir a la Mine ne fait rien perdre : l'inventaire et l'experience
  *       sont rendus a la reapparition ;</li>
  *   <li>aucun monstre ;</li>
@@ -121,9 +121,14 @@ public final class MineService {
     /** Les avertissements avant la remise a neuf, en minutes. */
     private static final int[] WARNINGS = {10, 5, 1};
 
-    /** Les pierres qui ne donnent rien. */
+    /**
+     * Les pierres qui ne donnent rien : la pierre et l'ardoise, et les poches
+     * de granite, diorite, andesite et tuf qu'on y perce sans cesse — dans une
+     * mine toute en roche, elles rempliraient le sac autant que la cobblestone.
+     */
     private static final List<net.minecraft.world.item.Item> RUBBLE = List.of(Items.COBBLESTONE,
-            Items.COBBLED_DEEPSLATE, Items.STONE, Items.DEEPSLATE);
+            Items.COBBLED_DEEPSLATE, Items.STONE, Items.DEEPSLATE, Items.GRANITE, Items.DIORITE, Items.ANDESITE,
+            Items.TUFF);
 
     /** Les jours avances par {@code /mine admin remise}, pour essayer sans attendre 5 h. */
     private static int shift;

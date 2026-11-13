@@ -204,6 +204,15 @@ pierre cassée : rien au sol, minerai de charbon : du charbon ; mort avec 5 diam
 ramené au spawn, la zone suivante 20 400 blocs plus loin, sur un terrain neuf ; sortie par
 `/spawn`.
 
+**Sous terre, vérifié en jeu** : arrivée dans la salle (y = 30, lanternes, borne RETOUR en face) ;
+la dimension a un plafond et pas de ciel, de y = −64 à 127 ; au-dessus de la salle, de la roche
+jusqu'au bedrock (y = 124 à 127) ; sur 49 × 49 et toute la hauteur : 2,6 % d'air (les galeries),
+159 blocs de lave, 7 d'eau, **aucun bloc de surface** (herbe, feuilles, bûches) ; minerais du jeu
+et du PalaMod partout (3 120 charbon, 990 fer, 240 diamants, 55 émeraudes, 395 améthyste,
+209 titane, 85 paladium…) ; une galerie à 14 blocs de la salle (vue de nuit : boyau de pierre,
+cuivre et charbon aux parois). La diorite cassée donnait encore un bloc : le granite, la diorite,
+l'andésite et le tuf ne donnent plus rien non plus.
+
 ### 2026-11-13 (suite 22) — les saisons selon la latitude
 
 **Demande** : « un système de saisons selon la latitude, comme le mod Serene Seasons ; que la neige

@@ -683,7 +683,8 @@ de la roche du fond au plafond, ni ciel ni surface.
   dans une roche que personne n'a touchée. Les joueurs présents sont prévenus à 10, 5 et 1 minute ;
   à 5 h, ils sont ramenés au spawn. Qui se reconnecte dans une zone passée est ramené au spawn. Les
   fichiers des zones passées sont effacés au démarrage suivant du serveur.
-- **Pas de cobblestone** : la pierre, l'ardoise et leurs pavés ne donnent rien.
+- **Pas de cobblestone** : la pierre, l'ardoise et leurs pavés ne donnent rien — ni le granite, la
+  diorite, l'andésite et le tuf, qu'on perce sans cesse dans une mine toute en roche.
 - **Mourir ne fait rien perdre** : inventaire et expérience rendus à la réapparition.
 - **Aucun monstre.**
 
