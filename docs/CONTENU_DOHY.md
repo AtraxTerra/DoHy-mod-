@@ -645,5 +645,8 @@ joueurs) — ce serait un lot à part.
 ### Code
 
 - `util/RealClock` : `zone()`, le fuseau de tout le mod (option `dohy.fuseau`, Paris par
-  défaut), et la ligne du journal au démarrage. `FactionWeekly.zone()`, `FactionEvents`,
+  défaut). Il ne dépend que de `java.time` : la CI le compile seul et le teste
+  (`tools/RealClockTest.java`, fuseau compris). `FactionWeekly.zone()`, `FactionEvents`,
   `TrixiumSeason`, `NationMenu` et `GuardianStoneItem` passent par lui.
+- `util/ClockReport` : la ligne du journal au démarrage, et l'avertissement si l'option
+  `dohy.fuseau` n'est pas comprise.
