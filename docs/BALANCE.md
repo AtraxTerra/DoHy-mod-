@@ -805,7 +805,7 @@ métiers » — lié à la commande, à son choix.
 - **Une commande par jour** : un objet à livrer, payé **16 trixium** et 15 XP globale. Elle se
   livre depuis l'écran des contrats, qui prend dans le sac ce que le joueur porte ; une livraison
   partielle compte, on peut apporter en plusieurs fois.
-- **Elle bascule à midi**, heure de la machine, et non à 5 h comme les autres contrats.
+- **Elle bascule à midi**, heure de Paris, et non à 5 h comme les autres contrats.
 - **L'objet du jour se calcule**, il ne se tire pas : il se déduit du numéro du jour. Rien n'est
   sauvegardé, il ne peut pas être relancé, et il est le même après un redémarrage. Les
   commandes (42 à l'origine, 52 avec l'agriculture) sont battues une fois par tour : chacune

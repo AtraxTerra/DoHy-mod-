@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.palamod.golem;
 
+import fr.atraxterra.dohy.util.RealClock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -8,7 +9,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public class GuardianStoneItem extends Item {
 
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-            .withZone(ZoneId.systemDefault());
+            .withZone(RealClock.zone());
 
     public GuardianStoneItem(Properties properties) {
         super(properties);

@@ -1,10 +1,18 @@
 package fr.atraxterra.dohy.util;
 
+import fr.atraxterra.dohy.DoHy;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 
 /**
@@ -30,12 +38,70 @@ import java.time.temporal.TemporalAdjusters;
  * de ceux qu'il etait en train de finir. Une bascule au petit matin place la
  * frontiere la ou personne ne joue.
  *
- * <p>Le fuseau est celui de la machine qui fait tourner le monde, ce qui en solo
- * est la machine du joueur.
+ * <h2>Le fuseau : celui du joueur, pas celui de la machine</h2>
+ *
+ * <p>Toutes les heures du mod — la bascule de 5 h, le lundi du classement, les
+ * events de faction, les saisons du trixium, les dates affichees — se lisent
+ * dans un seul fuseau, {@link #zone()}. Par defaut, c'est l'heure de Paris, et
+ * non celle de la machine : en solo les deux se confondent, mais un serveur
+ * loue tourne souvent en UTC, et l'event de 21 h y tomberait a 22 h ou 23 h.
+ *
+ * <p>Un serveur ailleurs peut le changer au lancement, par une option de la
+ * JVM : {@code -Ddohy.fuseau=America/Montreal} (un nom de fuseau IANA), ou
+ * {@code -Ddohy.fuseau=systeme} pour reprendre le fuseau de la machine.
  */
+@EventBusSubscriber
 public final class RealClock {
 
+    /** Le fuseau par defaut : celui du joueur. */
+    private static final ZoneId PARIS = ZoneId.of("Europe/Paris");
+
+    /** Lu une fois : changer de fuseau en cours de partie decalerait toutes les cles de periode. */
+    private static final ZoneId ZONE = resolve(System.getProperty("dohy.fuseau"));
+
     private RealClock() {
+    }
+
+    /** Le fuseau de toutes les horloges du mod. */
+    public static ZoneId zone() {
+        return ZONE;
+    }
+
+    /**
+     * Lit l'option {@code dohy.fuseau}.
+     *
+     * <p>Un nom inconnu rend Paris plutot que d'echouer, comme {@link #parseDay} :
+     * une faute de frappe dans la ligne de lancement ne doit pas empecher le
+     * serveur de demarrer.
+     */
+    static ZoneId resolve(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return PARIS;
+        }
+        String value = raw.trim();
+        if (value.equalsIgnoreCase("systeme") || value.equalsIgnoreCase("system")) {
+            return ZoneId.systemDefault();
+        }
+        try {
+            return ZoneId.of(value);
+        } catch (DateTimeException unknown) {
+            DoHy.LOGGER.warn("Fuseau '{}' inconnu (option dohy.fuseau) : heure de Paris a la place.", value);
+            return PARIS;
+        }
+    }
+
+    /**
+     * Dit au demarrage quelle heure le mod croit qu'il est.
+     *
+     * <p>C'est la premiere chose a regarder si un event ou une bascule tombe a
+     * la mauvaise heure : la ligne donne le fuseau retenu et celui de la
+     * machine, cote a cote.
+     */
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        DoHy.LOGGER.info("Horloge DoHy : {} ({}), machine en {}", ZONE,
+                ZonedDateTime.now(ZONE).format(DateTimeFormatter.ofPattern("dd/MM HH:mm")),
+                ZoneId.systemDefault());
     }
 
     /** Minutes depuis l'epoque. L'unite commune de tous les rattrapages. */
@@ -117,9 +183,5 @@ public final class RealClock {
 
     private static int clamp(int resetHour) {
         return Math.max(0, Math.min(23, resetHour));
-    }
-
-    private static ZoneId zone() {
-        return ZoneId.systemDefault();
     }
 }

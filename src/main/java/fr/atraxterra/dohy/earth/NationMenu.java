@@ -174,7 +174,7 @@ public final class NationMenu extends MenuController {
                 boolean armed = armed(player, under.id());
                 card = Card.of(FactionMenus.banner(data), under.name(), List.of("Aux mains de ta faction",
                                 "Depuis le " + DATE.format(java.time.Instant.ofEpochMilli(holder.held().since())
-                                        .atZone(java.time.ZoneId.systemDefault()))))
+                                        .atZone(fr.atraxterra.dohy.util.RealClock.zone()))))
                         .accent(0xFF22E558).badge("A TOI")
                         .tooltip(List.of("Deux clics : le rendre a la nation de sa region"))
                         .action("abandon:" + under.id() + "|" + (armed ? "confirmer" : "rendre"));
