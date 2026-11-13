@@ -72,20 +72,13 @@ public final class NationMenu extends MenuController {
         return rival < 0 ? 0xFF55545C : 0xFF000000 | EventRun.rivalPool().get(rival).color().getTextColor();
     }
 
-    @Override
-    public MenuView view(ServerPlayer player) {
+    /** La capitale, les pays tenus et la cible : les trois cartes de la nation, aussi sur la page de faction. */
+    public static List<Card> ownCards(ServerPlayer player) {
         MinecraftServer server = player.level().getServer();
         FactionData data = FactionApi.data(player);
-        if (!EarthNations.active()) {
-            return new MenuView(id(), "Pays", "Il faut une carte de la Terre", List.of(), List.of(
-                    new MenuView.Section("PAYS A PRENDRE", "resources", MenuView.GRID, List.of(
-                            Card.of(new ItemStack(Items.MAP), "Pas de carte", List.of("Ce monde n'a pas de carte",
-                                    "de la Terre (datapack)")).state(MenuView.DISABLED)))), true);
-        }
         EarthNations.Nation nation = EarthNations.nation(player);
         List<Integer> mine = EarthNations.heldBy(player);
-
-        // -- Ta nation
+        int target = nation.target();
         List<Card> own = new ArrayList<>();
         if (nation.capital() == 0) {
             own.add(Card.of(FactionMenus.banner(data), "Capitale", List.of("Aucune",
@@ -95,7 +88,10 @@ public final class NationMenu extends MenuController {
                             "Son pays sera ta premiere cible.", "Clic : la poser ici"))
                     .action("capital|poser ici"));
         } else {
-            own.add(Card.of(FactionMenus.banner(data), "Capitale", List.of(EarthNations.countryName(nation.capital()),
+            EarthCities.Placed city = EarthCities.at(nation.capitalX(), nation.capitalZ());
+            own.add(Card.of(FactionMenus.banner(data), "Capitale", List.of(city != null
+                            ? city.entry().name() + ", " + EarthNations.countryName(nation.capital())
+                            : EarthNations.countryName(nation.capital()),
                             nation.capitalX() + ", " + nation.capitalZ()))
                     .accent(0xFFEF3826)
                     .tooltip(List.of("En rouge sur la carte du monde du spawn.",
@@ -113,7 +109,6 @@ public final class NationMenu extends MenuController {
                         "+" + mine.size() + " claim(s)"))
                 .accent(0xFFFAC400).tooltip(held.isEmpty() ? List.of("Chaque pays tenu ajoute un claim",
                         "et compte pour quatre claims dans la notation") : held.subList(0, Math.min(16, held.size()))));
-        int target = nation.target();
         if (target == 0) {
             own.add(Card.of(new ItemStack(Items.IRON_SWORD), "Aucune cible", List.of(
                     nation.capital() == 0 ? "Pose d'abord ta capitale" : "Vise un voisin ci-dessous",
@@ -132,6 +127,36 @@ public final class NationMenu extends MenuController {
                             "Clic : renoncer (les points restent acquis)"))
                     .action("drop|renoncer"));
         }
+        return own;
+    }
+
+    /** Les gestes de ces cartes, d'ou qu'on clique : vrai si la cle en etait une. */
+    public static boolean act(ServerPlayer player, String key) {
+        if ("capital".equals(key)) {
+            report(player, EarthNations.setCapital(player), "Capitale posee ici.");
+            return true;
+        }
+        if ("drop".equals(key)) {
+            report(player, EarthNations.dropTarget(player), "Plus de cible : les points restent acquis.");
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public MenuView view(ServerPlayer player) {
+        MinecraftServer server = player.level().getServer();
+        FactionData data = FactionApi.data(player);
+        if (!EarthNations.active()) {
+            return new MenuView(id(), "Pays", "Il faut une carte de la Terre", List.of(), List.of(
+                    new MenuView.Section("PAYS A PRENDRE", "resources", MenuView.GRID, List.of(
+                            Card.of(new ItemStack(Items.MAP), "Pas de carte", List.of("Ce monde n'a pas de carte",
+                                    "de la Terre (datapack)")).state(MenuView.DISABLED)))), true);
+        }
+        EarthNations.Nation nation = EarthNations.nation(player);
+        List<Integer> mine = EarthNations.heldBy(player);
+        int target = nation.target();
+        List<Card> own = ownCards(player);
 
         // -- Ici
         List<Card> here = new ArrayList<>();
@@ -227,11 +252,10 @@ public final class NationMenu extends MenuController {
 
     @Override
     protected void card(ServerPlayer player, String key, int button) {
-        if ("capital".equals(key)) {
-            report(player, EarthNations.setCapital(player), "Capitale posee ici.");
-        } else if ("drop".equals(key)) {
-            report(player, EarthNations.dropTarget(player), "Plus de cible : les points restent acquis.");
-        } else if (key.startsWith("target:")) {
+        if (act(player, key)) {
+            return;
+        }
+        if (key.startsWith("target:")) {
             int id = Integer.parseInt(key.substring(7));
             String refusal = EarthNations.target(player, id);
             report(player, refusal, refusal == null ? "Cible : " + EarthNations.countryName(id) + ", aux mains "

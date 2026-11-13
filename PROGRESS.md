@@ -175,6 +175,70 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-13 (suite 15) — refonte : nation, marché international, notation
+
+**Demande** : « Une petite refonte du système de factions, de pays, et des notations, avec un
+marché international qui varie en gros stock ». Précisée par quatre choix : la faction est une
+nation ; un stock mondial par ressource ; vente possible mais plafonnée ; notation simplifiée, qui
+compte les pays et le commerce, classe face aux nations, avec des récompenses revues.
+Description : `docs/FACTION.md` (lot 22j) ; chiffrage : `docs/BALANCE.md` § 6 vicies.
+
+**Fait** (`feat/nation-marche`, sur `feat/terre-capitales`) :
+- `NationRank` : six rangs selon les pays tenus, qui fixent la taxe du marché (15 à 6 %).
+- Page de faction : rang, section « Territoire » (capitale, pays, cible, voisins) sur une carte
+  de la Terre, carte « Marché international ».
+- `faction/market/WorldMarket` et `WorldMarketMenu` : 25 ressources, cours = (R / stock)^0,6
+  borné à [0,4 ; 2], paiement à l'intégrale, saturation et pénurie, achat à 2,8 × le cours
+  (plancher 2,6 × la base), gros lots des nations toutes les dix minutes de jeu, retour à la
+  référence, dépêches ; `/f marche`.
+- `FactionNotation` / `NotationConfig` / `data/notations.json` : cinq critères (activité 20,
+  économie 20, commerce 15, militaire 20, territoire 25), classement face aux douze nations (note
+  tirée de la graine et de la semaine, plus leur part de pays gardés), récompenses : bourse,
+  points de conquête, lots du podium, claim de la première place.
+
+**Vérifié en jeu** (client de CI) : rangs Faction → Cité → État et taxe 15 → 14 → 12 % ; vente de
+1 000 fer puis 1 000 = 24 648 $, le devis des 2 000 d'un coup ; saturation à -60 %, le marché
+refuse et le fer reste en main ; achat de diamants jusqu'à la pénurie (+99 %), refus ensuite ;
+boucle achat-revente : -453 304 $ ; fer bradé : achat 39 $ pièce contre une vente à 30 $ au plus ;
+quatre lots de nations avec leurs dépêches ; notation : commerce 13,5 / 15 pour 1,09 M $,
+territoire 6,8 / 25, 13e sur 13 ; lundi forcé : bourse 50 750 $, 102 points sur la Belgique,
+volume remis à zéro ; les trois écrans.
+
+**Non vérifié** : un vrai lundi (la bascule est forcée dans l'essai), le retour des stocks sur
+plusieurs heures de jeu, et l'équilibre sur une vraie partie — le marché ajoute un débouché à la
+boutique, à surveiller.
+
+### 2026-11-13 (suite 14) — la Terre : les capitales
+
+**Demande** : « Peux-tu pour les capitales ajouter une reproduction des villes ? », précisée en
+trois temps : des villes jouables agrandies dans les capitales des pays ; « rends-les
+réalistes » — le plan de la vraie ville pour les grandes ; « et bâtiment réaliste et grand ».
+Description : `docs/CONTENU_DOHY.md`, « Les capitales ».
+
+**Fait** (`feat/terre-capitales`, sur `feat/terre-pays`) :
+- `tools/earth_capitals.py` → `capitals.json` : 215 capitales (Natural Earth), taille selon la
+  population, style selon la région, décalage des villes qui se chevauchent.
+- `CityBuilder` : le plan d'un chunk (terrain à plat, rues, îlots, parcs, immeubles, tours,
+  maisons, fleuve et ponts, avenue) ; grands immeubles à cheval sur deux îlots ; six styles.
+- `CityLayouts` : le plan des onze grandes capitales (fleuve, parcs, avenue, monuments placés).
+- `CityMonuments` : 11 grands monuments, 11 petits (cathédrale, arc, palais, église à coupole,
+  grande roue, donjon, temple, temple rond, tour de télévision, enceinte, colonne), un palais
+  national pour les autres capitales.
+- `EarthCities` : file des chunks, 4 000 blocs par tick, hauteur de ville gardée sur le monde,
+  monument quand sa place est posée et chargée ; jamais de chargement forcé de chunk.
+- Titre d'entrée, hologrammes des noms, nom de la ville pour la capitale de faction.
+
+**Vérifié** : hors jeu, au prévisualiseur (`/home/claude/city_preview`), chaque monument, les six
+styles, le fleuve et ses ponts ; en jeu (client de CI, grille Earth24k sur un monde ordinaire) :
+Paris, Londres, Le Caire, Tokyo, Rome et Luxembourg posées entières en 4 à 8 secondes chacune,
+monuments et noms compris, aucun bloc inconnu en 26.2, titre d'entrée. Un premier essai figeait
+le serveur près de cinq minutes au Caire (relief) : la pose ne force plus aucun chargement de
+chunk et dégage de haut en bas, et le même essai passe en 8 secondes.
+
+**Non vérifié** : la carte Earth24k elle-même (relief réel, villes en montagne), et les sept
+autres grandes capitales en jeu depuis les grands immeubles (elles l'étaient avant). Sur l'eau,
+un grand immeuble peut n'avoir que sa moitié si l'autre îlot est noyé.
+
 ### 2026-11-12 (suite 13) — la Terre : les pays à prendre
 
 **Demande** : « Et ensuite le 1. Pays à prendre » — ta faction revendique un pays entier de la

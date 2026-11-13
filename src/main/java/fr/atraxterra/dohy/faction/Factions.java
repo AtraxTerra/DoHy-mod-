@@ -53,6 +53,14 @@ public final class Factions {
                     .serialize(ReturnPoint.MAP_CODEC, point -> !point.isNone())
                     .build());
 
+    /** Le marche international : les stocks mondiaux et les dernieres depeches, sur le monde principal. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.faction.market.WorldMarket.State>> WORLD_MARKET =
+            ATTACHMENTS.register("world_market", () -> AttachmentType.builder(
+                            () -> fr.atraxterra.dohy.faction.market.WorldMarket.State.EMPTY)
+                    .serialize(fr.atraxterra.dohy.faction.market.WorldMarket.State.MAP_CODEC,
+                            fr.atraxterra.dohy.faction.market.WorldMarket.State::exists)
+                    .build());
+
     private Factions() {
     }
 

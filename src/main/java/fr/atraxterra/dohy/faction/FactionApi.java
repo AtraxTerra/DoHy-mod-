@@ -255,9 +255,10 @@ public final class FactionApi {
         return chunk == null ? ClaimOwner.NONE : chunk.getData(Factions.CLAIM.get());
     }
 
-    /** Les claims permis : ceux de l'arbre, plus un par pays tenu sur la carte de la Terre. */
+    /** Les claims permis : ceux de l'arbre, un par pays tenu, et ceux gagnes en finissant premier de la notation. */
     public static int claimCap(ServerPlayer player) {
-        return perks(player).claims() + fr.atraxterra.dohy.earth.EarthNations.claimBonus(player);
+        return perks(player).claims() + fr.atraxterra.dohy.earth.EarthNations.claimBonus(player)
+                + (int) data(player).stat(FactionNotation.PRESTIGE_CLAIMS);
     }
 
     public static boolean claimable(Level level) {
