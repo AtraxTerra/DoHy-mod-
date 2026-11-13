@@ -34,7 +34,8 @@ import net.neoforged.neoforge.event.level.ChunkEvent;
  * <ul>
  *   <li><b>Le balayage</b> : a chaque tick, une cinquantaine de chunks charges,
  *       deux colonnes au hasard dans chacun. Une couche de neige ou une glace
- *       ou il fait doux fond. Tous les chunks charges y passent, ceux du spawn
+ *       ou il fait doux fond, du dessus des arbres jusqu'au sol. Tous les
+ *       chunks charges y passent, ceux du spawn
  *       et les chunks forces compris : la fonte continue serveur sans joueur.
  *       Une plaque de neige disparait ainsi en quelques minutes.</li>
  *   <li><b>Le rattrapage</b> : un chunk qui revient en memoire est remis a la
@@ -192,13 +193,12 @@ public final class SeasonGround {
      */
     private static void column(ServerLevel level, int x, int z, boolean catchUp) {
         BlockPos top = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, 0, z));
-        melt(level, top, catchUp);
-        melt(level, top.below(), catchUp);
-        // la neige au sol sous les arbres : le premier releve s'arrete aux feuilles
+        // du sommet de la colonne au sol : le dessus des arbres, les branches basses ou la neige a pu
+        // se poser, le sol sous les feuilles, et le bloc du sol lui-meme (neige epaisse, glace)
         BlockPos ground = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(x, 0, z));
-        if (ground.getY() != top.getY()) {
-            melt(level, ground, catchUp);
-            melt(level, ground.below(), catchUp);
+        int lowest = Math.min(top.getY(), ground.getY()) - 1;
+        for (int y = top.getY(); y >= lowest; y--) {
+            melt(level, new BlockPos(x, y, z), catchUp);
         }
         if (catchUp) {
             winter(level, top);
