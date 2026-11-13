@@ -467,6 +467,23 @@ joueur : plus aucune ne se construit. Celles déjà posées dans un monde y rest
 avec leurs hologrammes ; leurs deux marques de sauvegarde (`earth_city`, `earth_cities`) sont lues
 sans erreur puis effacées à la sauvegarde suivante.
 
+### La faune (2026-11-13)
+
+Le jeu pose les animaux paisibles surtout à la génération des chunks ; ensuite, il n'en ajoute que
+toutes les 20 secondes, jamais plus d'une dizaine autour du joueur, et ceux qu'on chasse ne
+reviennent guère. Sur la carte de la Terre, faite d'avance, des régions entières restaient vides.
+`world/Wildlife` (tout l'overworld, carte de la Terre ou non) :
+
+- Toutes les 20 secondes (décalé de 10 s du tirage du jeu), pour chaque joueur : s'il y a moins
+  de **24 animaux à 96 blocs**, **deux groupes** au plus arrivent à 32-80 blocs, jamais à moins
+  de 24 blocs d'un joueur, dans un chunk déjà chargé.
+- L'espèce est tirée dans la liste du biome, comme le fait le jeu : les animaux des mods compris
+  (les pigeons de NTM NEXT dans les plaines et les savanes), sauf le **Dancarok**, qui garde son
+  propre tirage (un sauvage par 128 blocs). Chaque bête passe la règle d'apparition de son espèce
+  (le bon sol, la lumière, la place) : pas de mouton dans le désert. Groupes de quatre au plus.
+- La règle `spawn_mobs` l'arrête. Les animaux ne disparaissent pas : chaque coin où l'on passe
+  garde sa vingtaine de bêtes.
+
 ### Les cartes WorldPainter en 26.2
 
 Une carte dont les chunks attendent leur décoration est enregistrée à l'étape `liquid_carvers`.

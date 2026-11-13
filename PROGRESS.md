@@ -175,6 +175,26 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-13 (suite 19) — la faune revient
+
+**Demande** : « fais également une passe sur le spawn des animaux ». Choix du joueur : il y en a
+trop peu ; revoir les animaux des mods. Description : `docs/CONTENU_DOHY.md`, « La faune ».
+
+**Constat** : les animaux paisibles viennent surtout de la génération des chunks (aucune sur une
+carte faite d'avance) ; ensuite le jeu en ajoute toutes les 20 s, plafonné à une dizaine, et la
+chasse vide un coin pour de bon. Animaux des mods de la partie : le Dancarok (DoHy, son propre
+tirage depuis la suite 17), les pigeons de NTM NEXT (plaines et savanes, groupes de 5 à 10) et
+ses sacs plastiques en mer ; aucun autre mod de la liste n'en ajoute.
+
+**Fait** (`feat/faune`) : `world/Wildlife` — toutes les 20 s, moins de 24 animaux à 96 blocs d'un
+joueur de l'overworld : deux groupes au plus, de quatre au plus, à 32-80 blocs hors de vue, tirés
+dans la liste du biome (mods compris, Dancarok exclu), chaque bête selon la règle de son espèce.
+
+**Vérifié en jeu** (client de CI) : chaque coin vidé de ses animaux puis 12 passages (4 min de
+jeu) — plaine : 28 (poules, vaches, cochons, tortues de la plage voisine), plein en quatre
+passages ; forêt : 27 (moutons, poules, cochons) ; désert : 21 lapins ; plaine enneigée : 26
+(lapins, renards, vaches…). Plus rien au-delà de 24 : le restockage s'arrête.
+
 ### 2026-11-13 (suite 18) — la Terre : vraies mines géantes, tout selon la géographie, pétrole en nappes
 
 **Demande** : « un gros changement sur la génération des ressources sur la Terre ». Choix du
