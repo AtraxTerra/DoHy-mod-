@@ -1,52 +1,75 @@
 {
-  "_comment": "La notation de la faction : une note sur 100 calculee chaque lundi, a la bascule de la ligue, et une bourse versee a la banque de faction. Adapte des notations de pays de NationsGlory, ou les pays sont notes chaque semaine sur plusieurs criteres et payes le lundi. Seul, il n'y a personne a classer : la note se suffit, et la bourse la suit.",
-  "_criteres": "Chaque critere a un plafond (max) ; la somme des plafonds fait 100. Les criteres de semaine repartent de zero le lundi ; ceux d'etat (metiers, patrimoine, tresor) se lisent tels qu'ils sont au moment de la notation.",
-  "_echelles": "Economie et tresor suivent une echelle logarithmique : chaque fois que le montant est multiplie par dix, la note monte du meme nombre de points. Un debut de partie n'est donc pas ecrase par la fin, et la fin ne plafonne pas en une heure.",
+  "_comment": "La notation de la nation : une note sur 100 calculee chaque lundi, a la bascule de la ligue ; un rang face aux douze nations rivales ; une bourse versee a la banque de faction et des recompenses. Adapte des notations de pays de NationsGlory.",
+  "_criteres": "Cinq criteres ; la somme des plafonds fait 100 : activite 20, economie 20, commerce 15, militaire 20, territoire 25. Les quatre premiers repartent de zero le lundi ; le territoire se lit tel qu'il est.",
+  "_echelles": "Economie et commerce suivent une echelle logarithmique : chaque fois que le montant est multiplie par dix, la note monte du meme nombre de points.",
   "bourse_per_point": 2500,
-  "_bourse": "100 points font 250 000 $ : un peu plus de deux contrats de la semaine. Une semaine moyenne (50 points) en vaut un.",
+  "_bourse": "100 points font 250 000 $ : un peu plus de deux contrats de la semaine.",
   "grades": [
-    { "label": "S", "from": 85 },
-    { "label": "A", "from": 70 },
-    { "label": "B", "from": 50 },
-    { "label": "C", "from": 30 },
-    { "label": "D", "from": 0 }
+    {
+      "label": "S",
+      "from": 85
+    },
+    {
+      "label": "A",
+      "from": 70
+    },
+    {
+      "label": "B",
+      "from": 50
+    },
+    {
+      "label": "C",
+      "from": 30
+    },
+    {
+      "label": "D",
+      "from": 0
+    }
   ],
   "activity": {
+    "_comment": "max : les points des jours joues (full_days jours donnent le plafond : cinq, pas sept). contracts_max : les points des contrats termines ; 21 quotidiens, 1 hebdo et 7 commandes feraient 14,2.",
     "max": 10,
-    "_comment": "Les jours de la semaine ou le joueur s'est connecte. full_days jours donnent le plafond : cinq, pas sept, pour qu'une semaine avec deux soirs de repos ne coute rien.",
-    "full_days": 5
+    "full_days": 5,
+    "contracts_max": 10,
+    "per_daily": 0.4,
+    "per_weekly": 3.0,
+    "per_order": 0.4
   },
   "economy": {
+    "_comment": "L'argent gagne dans la semaine, retraits de la banque de faction deduits : 10 k, 100 k, 1 M, 10 M donnent 0, 6,7, 13,3 et 20.",
     "max": 20,
-    "_comment": "L'argent gagne dans la semaine (ventes, primes, contrats, butins), retraits de la banque de faction deduits. zero_at et moins : 0 point. full_at et plus : le plafond. Entre les deux, logarithmique : 10 k, 100 k, 1 M, 10 M donnent 0, 6,7, 13,3 et 20.",
     "zero_at": 10000,
     "full_at": 10000000
   },
-  "jobs": {
+  "trade": {
+    "_comment": "Le volume vendu et achete au marche international dans la semaine : 5 k donnent 0, 100 k 7,5, 2 M le plafond.",
     "max": 15,
-    "_comment": "La somme des niveaux des quatre metiers, rapportee au maximum possible."
-  },
-  "contracts": {
-    "max": 15,
-    "_comment": "Les contrats termines dans la semaine. 21 quotidiens, 1 hebdo et 7 commandes de trixium feraient 17,5 : le plafond s'atteint sans tout faire.",
-    "per_daily": 0.5,
-    "per_weekly": 3.5,
-    "per_order": 0.5
+    "zero_at": 5000,
+    "full_at": 2000000
   },
   "military": {
+    "_comment": "Les victoires ELO de la semaine : cinq donnent le plafond.",
     "max": 20,
-    "_comment": "Les victoires ELO de la semaine : bases ennemies pillees, events de faction gagnes. Cinq victoires donnent le plafond.",
     "per_win": 4.0
   },
-  "heritage": {
-    "max": 10,
-    "_comment": "Ce que la faction possede : la moitie pour le musee (pieces exposees sur pieces demandees), la moitie pour le territoire (claims poses ; full_claims donnent le plafond).",
-    "full_claims": 16
+  "territory": {
+    "_comment": "La capitale posee, les pays tenus (racine du nombre sur full_countries : 1 pays 3,5 points, 3 pays 6, 12 pays 12), les claims (full_claims donnent le plafond) et le musee. Sans carte de la Terre, les points de la capitale et des pays vont pour moitie aux claims, pour moitie au musee.",
+    "capital": 3,
+    "countries": 12,
+    "full_countries": 12,
+    "claims": 5,
+    "full_claims": 16,
+    "museum": 5
   },
-  "treasury": {
-    "max": 10,
-    "_comment": "La banque de faction au moment de la notation, sur une echelle logarithmique : 100 k, 1 M, 10 M, 100 M donnent 0, 3,3, 6,7 et 10.",
-    "zero_at": 100000,
-    "full_at": 100000000
+  "rewards": {
+    "_comment": "En plus de la bourse : conquest_per_point points de conquete par point de note sur le pays vise, multiplies pour le podium ; trois, deux ou un lot de ressources de lot_value dollars au prix de base ; la premiere place donne un claim, au plus prestige_claims.",
+    "conquest_per_point": 5,
+    "podium": [
+      2.0,
+      1.5,
+      1.25
+    ],
+    "lot_value": 10000,
+    "prestige_claims": 8
   }
 }

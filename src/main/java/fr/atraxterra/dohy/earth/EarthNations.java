@@ -644,6 +644,60 @@ public final class EarthNations {
         return out;
     }
 
+    /** La part de ses pays d'origine que chaque nation rivale tient encore ; 1 sans carte de la Terre. */
+    public static double[] rivalShares(MinecraftServer server) {
+        int nations = EventRun.rivalPool().size();
+        double[] shares = new double[nations];
+        java.util.Arrays.fill(shares, 1.0d);
+        Atlas atlas = atlas(server);
+        if (atlas == null) {
+            return shares;
+        }
+        int[] original = new int[nations];
+        int[] kept = new int[nations];
+        Ledger ledger = ledger(server);
+        for (int id = 1; id < atlas.rival.length; id++) {
+            if (atlas.rival[id] >= 0) {
+                original[atlas.rival[id]]++;
+                if (ledger.of(id) == null) {
+                    kept[atlas.rival[id]]++;
+                }
+            }
+        }
+        for (int i = 0; i < nations; i++) {
+            shares[i] = original[i] == 0 ? 1.0d : (double) kept[i] / original[i];
+        }
+        return shares;
+    }
+
+    /**
+     * Des points de conquete offerts sur le pays vise (la notation de la
+     * semaine) : le pays tombe s'ils suffisent. Vrai s'ils ont ete donnes.
+     */
+    public static boolean award(ServerPlayer player, long points, String reason) {
+        Nation nation = nation(player);
+        int target = nation.target();
+        if (!active() || target == 0 || points <= 0 || !FactionApi.has(player)) {
+            return false;
+        }
+        MinecraftServer server = player.level().getServer();
+        Holder holder = holder(server, target);
+        if (holder.player()) {
+            return false;
+        }
+        long cost = cost(server, target);
+        long after = nation.pointsOn(target) + points;
+        if (after >= cost) {
+            conquer(player, target, holder);
+        } else {
+            save(player, nation.withPoints(target, after));
+            FactionApi.tell(player, reason + " : +" + MoneyFormat.exact(points) + " points de conquete sur "
+                    + countryName(target) + " (" + MoneyFormat.exact(after) + " / " + MoneyFormat.exact(cost) + ").",
+                    ChatFormatting.GREEN);
+        }
+        return true;
+    }
+
     /**
      * Ce qu'on peut viser : sans pays, celui de la capitale ; ensuite, les
      * voisins de ses terres, et les iles trop isolees pour avoir un voisin.
