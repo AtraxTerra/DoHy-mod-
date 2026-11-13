@@ -451,7 +451,9 @@ public final class WorldMarket {
         EventRun.Rival nation = EventRun.rivalPool().get(random.nextInt(EventRun.rivalPool().size()));
         double factor = factorAt(after, reference);
         PriceEntry entry = entry(id);
-        String line = nation.name() + (sells ? " vend " : " achete ") + MoneyFormat.exact(moved) + " x " + name(id)
+        boolean plural = nation.name().startsWith("Les ");
+        String line = nation.name() + (sells ? (plural ? " vendent " : " vend ") : (plural ? " achetent " : " achete "))
+                + MoneyFormat.exact(moved) + " x " + name(id)
                 + " : le cours " + (sells ? "tombe" : "monte") + " a " + percent(factor) + " ("
                 + MoneyFormat.exact(Math.round(entry.basePrice() * factor)) + " $)";
         List<String> news = new ArrayList<>(state(server).news());
