@@ -416,57 +416,12 @@ par un, aux **nations rivales** que le jeu fait vivre.
 
 ### Les capitales
 
-Chaque pays a sa **capitale réelle**, à sa vraie place : 215 villes jouables (Natural Earth,
-domaine public, pour les positions et les populations). À l'échelle de la carte, Paris tiendrait
-en dix blocs : les villes sont **agrandies** une dizaine de fois.
-
-- **Taille selon la population** : 3 × 3 chunks sous 300 000 habitants (Luxembourg), 5 × 5 sous
-  un million, 7 × 7 sous cinq millions (Rome, Berlin), 9 × 9 au-delà (Paris, Londres, Tokyo) —
-  sans les coins. Deux capitales trop proches : la plus petite est décalée dans son pays (au plus
-  six chunks) ou rétrécie ; huit n'ont pas de ville, faute de place (le Vatican dans Rome, Monaco,
-  Beyrouth, Gaza, Macao, Gibraltar, Avarua, la base McMurdo).
-- **La ville** : des îlots bordés de trottoirs, de réverbères et de rues de quatre blocs ; tours
-  ou hauts immeubles au centre, immeubles autour, maisons au bord, des parcs. Trois fois sur
-  quatre, deux îlots voisins se réunissent en **un grand immeuble de 26 × 10 blocs**. Étages de
-  cinq blocs : cinq à sept étages en Europe, jusqu'à douze en Asie, des tours de verre jusqu'à 22
-  étages (110 blocs) dans les plus grandes villes. Les grands immeubles ont des boutiques vitrées
-  et une enseigne au rez-de-chaussée, des balcons à garde-corps, une corniche, et en Europe un
-  dernier étage mansardé en ardoise avec ses cheminées.
-  Les murs, les toits et les couleurs suivent la région : Europe (pierre, brique, toits
-  d'ardoise), Orient (grès, toits plats, mosquées), Afrique (terre cuite, brique crue), Asie
-  (béton clair, tours de verre), Amérique du Nord et Océanie (verre, brique), Amérique latine
-  (façades de couleur). Chaque immeuble a ses étages, une échelle jusqu'au toit, une lanterne par
-  étage.
-- **Onze grandes capitales suivent le plan de la vraie ville** — le fleuve et ses ponts, les
-  parcs, une grande avenue, et plusieurs monuments à leur place les uns par rapport aux autres :
-
-  | Ville | Fleuve | Monuments |
-  |---|---|---|
-  | Paris | la Seine | Tour Eiffel (rive gauche, à l'ouest), Notre-Dame, le Louvre, l'Arc de Triomphe au bout de son avenue, le Sacré-Cœur au nord |
-  | Londres | la Tamise | Westminster (tour de l'horloge et palais), Saint-Paul, la Tour de Londres, la grande roue rive sud, Buckingham, Trafalgar |
-  | Rome | le Tibre | le Colisée, Saint-Pierre outre-Tibre, le Panthéon, la Piazza del Popolo |
-  | Moscou | la Moskova | Saint-Basile, le Kremlin, le Bolchoï, le Christ-Sauveur |
-  | Washington | le Potomac | l'obélisque et le Capitole, le mémorial Lincoln, la Maison-Blanche, le mémorial Jefferson |
-  | Pékin | — (l'avenue est-ouest) | Tian'anmen, la Cité interdite au nord, le temple du Ciel au sud |
-  | Le Caire | le Nil | les pyramides de Gizeh à l'ouest, la Citadelle, la tour du Caire |
-  | Berlin | la Sprée | la porte de Brandebourg, la tour de télévision, la cathédrale, le château |
-  | Athènes | — | l'Acropole, le temple de Zeus, le Parlement |
-  | New Delhi | la Yamuna | la porte de l'Inde, le palais présidentiel, le Fort Rouge |
-  | Tokyo | la Sumida | le Sensō-ji et sa pagode, le palais impérial, la tour de Tokyo |
-
-  Ce sont des schémas dressés à la main et des évocations dessinées pour le jeu, pas des
-  relevés : la ville fait 144 blocs, pas trente kilomètres. Les autres capitales ont un damier et
-  un **palais national** sur leur place, dans le style de leur région.
-- **La pose** : la ville se pose quand on s'en approche, chunk par chunk (4 000 blocs par tick au
-  plus). Le terrain est mis à plat à la hauteur du centre, mesurée une fois ; un mur de quai borde
-  la ville là où le sol est plus bas ; un îlot presque tout dans l'eau reste à l'eau. Les monuments
-  d'une place viennent quand toute la place est posée.
-- **En jeu** : un titre à l'entrée (« Paris — Capitale · France, aux mains d'Arcanum »), le nom
-  de la ville et de chaque monument en hologramme. Ta faction peut y poser sa capitale : le
-  message et l'écran des pays disent alors le nom de la ville.
-
-Les capitales viennent de `tools/earth_capitals.py` (`data/dohy/earth/capitals.json`) ; les plans
-des onze grandes sont dans `earth/CityLayouts.java`.
+Ta faction pose **sa** capitale dans un de ses claims (voir plus haut) ; elle est en rouge sur la
+carte du monde du spawn. Les **villes des capitales réelles** (215 villes agrandies, onze sur le
+plan de la vraie ville, ajoutées le 2026-11-13) ont été **retirées le jour même**, à la demande du
+joueur : plus aucune ne se construit. Celles déjà posées dans un monde y restent telles quelles,
+avec leurs hologrammes ; leurs deux marques de sauvegarde (`earth_city`, `earth_cities`) sont lues
+sans erreur puis effacées à la sauvegarde suivante.
 
 ### Les cartes WorldPainter en 26.2
 
@@ -484,10 +439,6 @@ les données du chunk avant leur lecture : le jeu reprend à la décoration.
   `EarthNations` (les pays à prendre : partage du monde, voisins, capitale, conquête),
   `NationMenu` et `NationCommand` (l'onglet et `/f pays`), `DoHyEarth` (la marque des chunks, les
   pays pris sur le monde de la carte, la nation du joueur).
-- `earth/EarthCities` (la file des chunks de ville, la pose par tick, la hauteur et l'avancement
-  de chaque ville), `CityBuilder` (le plan d'un chunk : rues, îlots, immeubles, fleuve),
-  `CityLayouts` (les plans des onze grandes capitales), `CityMonuments` (les monuments),
-  `CityBlocks` (les blocs par leur nom : le plan se lance aussi hors du jeu).
 - `faction/event/EventRun` : la nation qui tient un pays visé est mise parmi les rivaux de
   l'event, et la fin de l'event compte les points de conquête.
 - `spawn/SpawnBuilder.worldMap` : la dalle et le puits ; le spawn est redessiné quand une carte de
