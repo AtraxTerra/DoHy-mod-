@@ -175,8 +175,9 @@ public class PaletteMenu extends AbstractContainerMenu {
                 return false;
             }
         }
+        net.minecraft.core.BlockPos pos = origin.getBlockPos();
         return origin.members().size() == members.size()
-                && player.distanceToSqr(origin.getBlockPos().getCenter()) <= REACH * REACH;
+                && player.distanceToSqr(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d) <= REACH * REACH;
     }
 
     /** Des palettes vers le sac ; du sac vers les rangees montrees. */
