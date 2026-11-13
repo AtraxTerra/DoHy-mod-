@@ -3,9 +3,16 @@ package fr.atraxterra.dohy.palamod.alchemist;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Un arbre de PalaMod ({@code WorldTree1Gen}, {@code WorldTree2Gen}).
@@ -96,20 +103,75 @@ public class PalaTreeFeature extends Feature<PalaTreeConfiguration> {
         BlockPos origin = context.origin();
         WorldGenLevel level = context.level();
         PalaTreeConfiguration config = context.config();
-        place(level, origin, first ? TREE1_LOGS : TREE2_LOGS, config.log());
-        place(level, origin, first ? TREE1_LEAVES : TREE2_LEAVES, config.leaves());
+        Set<Long> logs = place(level, origin, first ? TREE1_LOGS : TREE2_LOGS, config.log());
+        placeLeaves(level, origin, first ? TREE1_LEAVES : TREE2_LEAVES, config.leaves(), logs);
         return true;
     }
 
-    private void place(WorldGenLevel level, BlockPos origin, int[] cells, BlockState state) {
+    /** Pose les cases libres du patron ; rend celles qui portent le bloc. */
+    private Set<Long> place(WorldGenLevel level, BlockPos origin, int[] cells, BlockState state) {
+        Set<Long> placed = new HashSet<>();
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int i = 0; i < cells.length; i += 3) {
             pos.setWithOffset(origin, cells[i], cells[i + 1] - 1, cells[i + 2]);
-            BlockState current = level.getBlockState(pos);
-            if (current.isAir() || current.canBeReplaced() || current.is(BlockTags.LEAVES)
-                    || current.getBlock() == state.getBlock()) {
+            if (free(level.getBlockState(pos), state)) {
                 setBlock(level, pos, state);
+                placed.add(pos.asLong());
             }
         }
+        return placed;
+    }
+
+    /**
+     * Les feuilles, avec leur distance aux buches posees (26 voisins, comme
+     * {@link PalaLeavesBlock#distance}) : naturelles, elles tomberont quand on
+     * abattra l'arbre.
+     */
+    private void placeLeaves(WorldGenLevel level, BlockPos origin, int[] cells, BlockState state, Set<Long> logs) {
+        Set<Long> free = new HashSet<>();
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        for (int i = 0; i < cells.length; i += 3) {
+            pos.setWithOffset(origin, cells[i], cells[i + 1] - 1, cells[i + 2]);
+            if (!logs.contains(pos.asLong()) && free(level.getBlockState(pos), state)) {
+                free.add(pos.asLong());
+            }
+        }
+        Map<Long, Integer> distance = new HashMap<>();
+        ArrayDeque<Long> queue = new ArrayDeque<>();
+        for (long log : logs) {
+            distance.put(log, 0);
+            queue.add(log);
+        }
+        while (!queue.isEmpty()) {
+            long at = queue.poll();
+            int next = distance.get(at) + 1;
+            if (next > 6) {
+                continue;
+            }
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    for (int dz = -1; dz <= 1; dz++) {
+                        long near = BlockPos.offset(at, dx, dy, dz);
+                        if (free.contains(near) && !distance.containsKey(near)) {
+                            distance.put(near, next);
+                            queue.add(near);
+                        }
+                    }
+                }
+            }
+        }
+        for (long cell : free) {
+            BlockState leaf = state;
+            if (leaf.getBlock() instanceof LeavesBlock) {
+                leaf = leaf.setValue(LeavesBlock.PERSISTENT, false)
+                        .setValue(LeavesBlock.DISTANCE, distance.getOrDefault(cell, 7));
+            }
+            setBlock(level, pos.set(cell), leaf);
+        }
+    }
+
+    private static boolean free(BlockState current, BlockState state) {
+        return current.isAir() || current.canBeReplaced() || current.is(BlockTags.LEAVES)
+                || current.getBlock() == state.getBlock();
     }
 }

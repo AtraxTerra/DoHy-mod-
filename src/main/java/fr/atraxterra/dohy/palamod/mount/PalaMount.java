@@ -158,8 +158,10 @@ public final class PalaMount {
     /**
      * Aucun code d'apparition dans les jars de Paladium : les sauvages y etaient
      * poses a la main sur le serveur « Farmland ». Ici, une apparition rare dans
-     * les plaines et les savanes (biome_modifier/dancarok.json), sur un sol ou
-     * un animal pourrait apparaitre.
+     * les plaines et les savanes (tag palamod:dancarok_spawns, regle vanilla de
+     * biome_modifier/dancarok.json), sur un sol ou un animal pourrait
+     * apparaitre — et {@link DancarokSpawner}, qui en pose aussi sur une carte
+     * deja generee.
      */
     @SubscribeEvent
     public static void onSpawnPlacements(RegisterSpawnPlacementsEvent event) {
