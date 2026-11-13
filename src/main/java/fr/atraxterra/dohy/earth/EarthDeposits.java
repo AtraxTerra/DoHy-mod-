@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.earth;
 
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -76,12 +77,14 @@ public final class EarthDeposits {
      * @param veins     filons par chunk, en moyenne
      * @param size      blocs d'un filon ; ignore si {@code radius} est pose
      * @param radius    au-dessus de zero : une poche ronde de ce rayon, au lieu d'un filon
+     * @param label     le nom de la ressource dans le chat ; vide, elle ne se cite pas
      */
-    public record Deposit(String id, Identifier ore, Optional<Identifier> deepslate, List<String> countries,
-                          List<Box> boxes, List<String> sites, int minY, int maxY, double veins, int size,
-                          int radius) {
+    public record Deposit(String id, String label, Identifier ore, Optional<Identifier> deepslate,
+                          List<String> countries, List<Box> boxes, List<String> sites, int minY, int maxY,
+                          double veins, int size, int radius) {
         static final Codec<Deposit> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("id").forGetter(Deposit::id),
+                Codec.STRING.optionalFieldOf("label", "").forGetter(Deposit::label),
                 Identifier.CODEC.fieldOf("ore").forGetter(Deposit::ore),
                 Identifier.CODEC.optionalFieldOf("deepslate").forGetter(Deposit::deepslate),
                 Codec.STRING.listOf().optionalFieldOf("countries", List.of()).forGetter(Deposit::countries),
@@ -96,12 +99,14 @@ public final class EarthDeposits {
     }
 
     /**
-     * @param version change-la pour que les chunks deja servis le soient a nouveau
-     * @param perTick chunks traites par tick
+     * @param version       change-la pour que les chunks deja servis recoivent a nouveau leurs filons
+     * @param groundVersion change-la pour tout resservir : nettoyage, gisements geants, filons
+     * @param perTick       chunks traites par tick
      */
-    public record Config(int version, int perTick, List<Deposit> deposits) {
+    public record Config(int version, int groundVersion, int perTick, List<Deposit> deposits) {
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.intRange(1, 1_000_000).optionalFieldOf("version", 1).forGetter(Config::version),
+                Codec.intRange(0, 1_000_000).optionalFieldOf("ground_version", 0).forGetter(Config::groundVersion),
                 Codec.intRange(1, 256).optionalFieldOf("per_tick", 12).forGetter(Config::perTick),
                 Deposit.CODEC.listOf().optionalFieldOf("deposits", List.of()).forGetter(Config::deposits)
         ).apply(instance, Config::new));
@@ -112,6 +117,7 @@ public final class EarthDeposits {
     }
 
     private static volatile int version = 1;
+    private static volatile int groundVersion = 0;
     private static volatile int perTick = 12;
     private static volatile List<Ready> ready = List.of();
     private static final LongLinkedOpenHashSet QUEUE = new LongLinkedOpenHashSet();
@@ -121,13 +127,16 @@ public final class EarthDeposits {
 
     public static boolean load(MinecraftServer server) {
         ready = List.of();
+        groundVersion = 0;
+        EarthBodies.unload();
         QUEUE.clear();
         var resource = server.getResourceManager().getResource(LOCATION);
         if (resource.isEmpty()) {
             return true;
         }
         try (BufferedReader reader = resource.get().openAsReader()) {
-            var result = Config.CODEC.parse(JsonOps.INSTANCE, GsonHelper.parse(reader));
+            JsonObject root = GsonHelper.parse(reader);
+            var result = Config.CODEC.parse(JsonOps.INSTANCE, root);
             if (result.isError()) {
                 DoHy.LOGGER.error("Gisements de la Terre illisibles : {}",
                         result.error().map(Object::toString).orElse("erreur inconnue"));
@@ -149,6 +158,8 @@ public final class EarthDeposits {
             version = config.version();
             perTick = config.perTick();
             ready = List.copyOf(list);
+            EarthBodies.load(root, EarthData.get());
+            groundVersion = config.groundVersion();
             DoHy.LOGGER.info("Gisements de la Terre : {} en service, {} ignores (minerai absent du jeu)",
                     list.size(), skipped);
             return true;
@@ -164,7 +175,7 @@ public final class EarthDeposits {
 
     /** Un chunk de la carte vient d'arriver : a examiner s'il n'a pas deja ete servi. */
     static void arrived(LevelChunk chunk) {
-        if (ready.isEmpty() || chunk.getData(DoHyEarth.DEPOSITS.get()) >= version) {
+        if (!due(chunk)) {
             return;
         }
         QUEUE.add(key(chunk.getPos().getMinBlockX() >> 4, chunk.getPos().getMinBlockZ() >> 4));
@@ -175,20 +186,60 @@ public final class EarthDeposits {
         return (chunkX & 0xFFFFFFFFL) | ((long) chunkZ << 32);
     }
 
+    /** Le temps de service par tick : un chunk au moins, puis d'autres tant qu'il en reste. */
+    private static final long BUDGET_NANOS = 15_000_000L;
+
     /** Sert quelques chunks en attente. */
     static void tick(ServerLevel level, EarthData earth) {
-        for (int count = 0; count < perTick && !QUEUE.isEmpty(); count++) {
+        long deadline = System.nanoTime() + BUDGET_NANOS;
+        for (int count = 0; count < perTick && !QUEUE.isEmpty() && (count == 0 || System.nanoTime() < deadline);
+             count++) {
             long key = QUEUE.removeFirstLong();
             int chunkX = (int) key;
             int chunkZ = (int) (key >> 32);
             LevelChunk chunk = level.getChunkSource().getChunkNow(chunkX, chunkZ);
-            if (chunk == null || chunk.getData(DoHyEarth.DEPOSITS.get()) >= version) {
+            if (chunk == null || !due(chunk)) {
                 continue;
             }
-            if (serve(level, earth, chunk) > 0) {
+            if (groundVersion > 0 && chunk.getData(DoHyEarth.GROUND.get()) < groundVersion) {
+                // le sol d'abord : la carte repart sans minerai, puis gisements geants et filons
+                EarthBodies.clean(level, chunk);
+                EarthBodies.place(level, chunk);
+                EarthBodies.oil(level, chunk.getPos());
+                serve(level, earth, chunk);
+                chunk.setData(DoHyEarth.GROUND.get(), groundVersion);
                 chunk.setData(DoHyEarth.DEPOSITS.get(), version);
+                EarthBodies.done(chunk);
+            } else if (serve(level, earth, chunk) > 0) {
+                chunk.setData(DoHyEarth.DEPOSITS.get(), version);
+                EarthBodies.done(chunk);
             }
         }
+    }
+
+    /** Vrai si ce chunk attend son sol (nettoyage et gisements geants) ou ses filons. */
+    private static boolean due(LevelChunk chunk) {
+        return groundVersion > 0 && chunk.getData(DoHyEarth.GROUND.get()) < groundVersion
+                || !ready.isEmpty() && chunk.getData(DoHyEarth.DEPOSITS.get()) < version;
+    }
+
+    /** Les ressources d'un pays pour le chat : « charbon, fer ; gisements geants : Kiruna (fer) », ou vide. */
+    public static String summary(EarthData.Country country) {
+        if (country == null) {
+            return "";
+        }
+        java.util.LinkedHashSet<String> labels = new java.util.LinkedHashSet<>();
+        for (Ready rule : ready) {
+            if (!rule.deposit().label().isEmpty() && rule.countries().contains(country.code())) {
+                labels.add(rule.deposit().label());
+            }
+        }
+        String mines = EarthBodies.inCountry(country.code());
+        if (labels.isEmpty() && mines.isEmpty()) {
+            return "";
+        }
+        return "Ressources : " + (labels.isEmpty() ? "aucune en filons" : String.join(", ", labels))
+                + (mines.isEmpty() ? "" : " ; gisements geants : " + mines) + ".";
     }
 
     /** Pose les filons d'un chunk ; rend le nombre de filons tires (poses ou non : la roche peut manquer). */
@@ -209,7 +260,7 @@ public final class EarthDeposits {
             double veins = rule.deposit().veins();
             int count = (int) veins + (random.nextDouble() < veins - (int) veins ? 1 : 0);
             for (int vein = 0; vein < count; vein++) {
-                place(level, pos, rule, random);
+                place(level, chunk, rule, random);
                 drawn++;
             }
         }
@@ -235,7 +286,8 @@ public final class EarthDeposits {
         return false;
     }
 
-    private static void place(ServerLevel level, ChunkPos chunk, Ready rule, RandomSource random) {
+    private static void place(ServerLevel level, LevelChunk levelChunk, Ready rule, RandomSource random) {
+        ChunkPos chunk = levelChunk.getPos();
         Deposit deposit = rule.deposit();
         int margin = Math.max(1, deposit.radius());
         int x = chunk.getMinBlockX() + margin + random.nextInt(16 - 2 * margin);
@@ -253,7 +305,7 @@ public final class EarthDeposits {
                 for (int dy = -radius; dy <= radius; dy++) {
                     for (int dz = -radius; dz <= radius; dz++) {
                         if (dx * dx + dy * dy + dz * dz <= radius * radius + 1) {
-                            swap(level, pos.set(x + dx, y + dy, z + dz), rule);
+                            swap(level, levelChunk, pos.set(x + dx, y + dy, z + dz), rule);
                         }
                     }
                 }
@@ -262,7 +314,7 @@ public final class EarthDeposits {
         }
         // un filon : une marche au hasard qui reste dans son chunk
         for (int block = 0; block < deposit.size(); block++) {
-            swap(level, pos.set(x, y, z), rule);
+            swap(level, levelChunk, pos.set(x, y, z), rule);
             x = Math.max(chunk.getMinBlockX(), Math.min(chunk.getMaxBlockX(), x + random.nextInt(3) - 1));
             y = Math.max(floor, Math.min(roof, y + random.nextInt(3) - 1));
             z = Math.max(chunk.getMinBlockZ(), Math.min(chunk.getMaxBlockZ(), z + random.nextInt(3) - 1));
@@ -270,15 +322,15 @@ public final class EarthDeposits {
     }
 
     /** Ne remplace que la roche : un filon ne flotte pas dans une grotte et ne perce pas le sol. */
-    private static void swap(ServerLevel level, BlockPos pos, Ready rule) {
+    private static void swap(ServerLevel level, LevelChunk chunk, BlockPos pos, Ready rule) {
         if (pos.getY() <= level.getMinY() || pos.getY() >= level.getMaxY()) {
             return;
         }
-        BlockState state = level.getBlockState(pos);
+        BlockState state = chunk.getBlockState(pos);
         if (state.is(BlockTags.STONE_ORE_REPLACEABLES)) {
-            level.setBlock(pos, rule.ore(), Block.UPDATE_CLIENTS);
+            EarthBodies.put(level, chunk, pos, rule.ore());
         } else if (state.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES)) {
-            level.setBlock(pos, rule.deepslate(), Block.UPDATE_CLIENTS);
+            EarthBodies.put(level, chunk, pos, rule.deepslate());
         }
     }
 }

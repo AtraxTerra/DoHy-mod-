@@ -175,6 +175,47 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-13 (suite 18) — la Terre : vraies mines géantes, tout selon la géographie, pétrole en nappes
+
+**Demande** : « un gros changement sur la génération des ressources sur la Terre ». Choix du
+joueur : vraies mines géantes, tout selon la géographie (charbon, fer, cuivre, zinc, quartz
+compris), pétrole et gaz en nappes (NTM NEXT et Create Diesel Generators). Puis : « envoie le jar
+et le datapack ».
+Description : `docs/CONTENU_DOHY.md`, « Les ressources ».
+
+**Constat** : la carte Earth24k porte déjà, posés par WorldPainter, du fer, de l'or, du diamant,
+du charbon et du quartz du Nether à peu près partout (relevé sur sept régions de l'archive : 50 à
+70 quartz par chunk partout, 80 fers au Brésil, 60 charbons en Chine, de l'or en Europe) : la
+géographie des gisements s'y noyait.
+
+**Fait** (`feat/terre-ressources`) :
+- `EarthBodies` : nettoyage de chaque chunk à sa première visite (la liste `clear`), puis
+  245 gisements géants posés à leur vraie place — mines (ellipsoïdes bosselés de trois rangs,
+  allongés et tournés), cheminées de kimberlite, nappes de pétrole et de gaz, sables bitumineux,
+  géodes de quartz d'AE2 —, et le pétrole des chunks de champ pour Create Diesel Generators (par
+  réflexion : `OilChunksSavedData.setChunkOilAmount`).
+- `EarthDeposits` : marque `earth_ground` en plus de `earth_deposits` ; un chunk servi avant est
+  repris une fois (nettoyage, gisements, filons) ; blocs écrits dans les sections (172 ms par
+  chunk avec `Level.setBlock`, 1 ms ainsi) ; 15 ms de service au plus par tick. Charbon, fer,
+  cuivre et quartz par pays (vieux bassins d'Europe compris), les autres filons à 60 %.
+- `/gisements [ressource]` ; au passage d'une frontière, les ressources du pays.
+- `tools/earth_deposits.py` : la table des gisements géants, vérifiée sur la grille de la carte
+  (chaque centre dans son pays, ou en mer pour les champs au large ; aucun chevauchement).
+- Datapack (`datapack-terre`) : tous les minerais du jeu retirés, zinc de Create coupé, pétrole
+  au hasard de Create Diesel Generators interdit dans l'overworld.
+
+**Vérifié en jeu** (client de CI, grille Earth24k sur un monde ordinaire ; NTM NEXT n'est plus
+téléchargeable par la CI, le pétrole y était remplacé par du béton noir pour l'essai) :
+Kiruna — 40 % de fer dans la roche du gisement, blocs de fer brut au cœur ; bassin permien —
+85 % de pétrole dans la nappe ; Jwaneng — cheminée de tuf, 430 diamants ; Tchad (aucune
+ressource) — 25 chunks servis, plus un seul minerai du jeu ; Escondida — 5 604 minerais retirés
+et 6 945 blocs posés en 9 chunks, 8 ms en tout. `/gisements` et les ressources par pays
+répondent. Monde créé avec le datapack : il se charge (un premier essai l'avait refusé :
+`neoforge:none` n'existe pas en 26.2, le zinc de Create est coupé par un `remove_features` vide), et
+les minerais du jeu n'y sont plus générés (85 minerais à retirer sur 9 chunks, contre 5 600 sans
+lui). Le pétrole des chunks pour Create Diesel Generators n'a pas pu être essayé (mod absent
+de la CI) : appel vérifié sur le bytecode du mod (statique, `ServerLevel, ChunkPos, int`).
+
 ### 2026-11-13 (suite 17) — PalaMod : les feuilles tombent, les Dancaroks apparaissent
 
 **Demande** : « Vérifie l'apparition des dancarok et la dégradation rapides des feuilles des arbres

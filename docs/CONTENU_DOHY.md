@@ -308,21 +308,65 @@ La grille des 256 pays et territoires vient de Natural Earth (domaine public), u
   est ouvert dans l'Atlantique : qui y saute est lâché 96 blocs au-dessus d'une terre tirée au
   hasard — la même chance pour chaque parcelle de terre du globe — et descend en chute lente ; la
   réception ne blesse pas. Le point est vérifié avant le saut : jamais sur l'eau.
-- **Les gisements** (`data/dohy/earth/deposits.json`, écrit par `tools/earth_deposits.py`).
-  28 ressources posées par pays ou par rectangle du globe : l'uranium au Kazakhstan, en Australie,
-  au Niger, dans la Saskatchewan ; le pétrole dans le Golfe, en Sibérie occidentale, au Texas et
-  sous la mer du Nord ; le diamant au Botswana et en Iakoutie ; le lapis en Afghanistan…
-  - Les métaux courants de NTM NEXT (aluminium, titane, plomb, soufre, salpêtre, tungstène,
-    fluorine, béryllium) ont assez de pays pour qu'il y en ait sur chaque continent ; les
-    ressources stratégiques (uranium, thorium, terres rares, lithium, cobalt, coltan) en ont peu.
-  - Les filons sont posés **à l'arrivée du chunk**, pas à sa génération : une carte faite d'avance
-    a déjà ses chunks sur le disque. Chaque chunk servi en garde la marque ; le tirage est fixé
-    par la graine et la place du chunk. Un minerai d'un mod absent est ignoré.
-- **Ce que le datapack retire.** Sur la carte, l'or, le diamant, l'émeraude, le lapis et la
-  redstone du jeu ne sont plus générés partout (`neoforge:remove_features`) : ils viennent des
-  gisements, et de la dimension du Mineur. Les minerais d'overworld de NTM NEXT sont coupés par
-  son propre interrupteur (`hbm/world_config/worldgen.json`) et ne viennent plus que des
-  gisements. Le charbon, le fer et le cuivre restent partout.
+- **Les ressources** (`data/dohy/earth/deposits.json`, écrit par `tools/earth_deposits.py`) ;
+  refonte du 2026-11-13 : **plus rien n'est semé partout**.
+  - **Le nettoyage.** La carte Earth24k portait déjà, posés par WorldPainter, du fer, de l'or, du
+    diamant, du charbon et surtout du quartz du Nether (50 à 70 par chunk) à peu près partout.
+    À sa première visite, chaque chunk en est vidé, avec tout ce que le jeu ou les mods y auraient
+    encore posé (la liste `clear` : les minerais du jeu, de NTM NEXT, de Create, le pétrole) ;
+    chaque minerai prend la roche d'un voisin du même chunk. Puis viennent les gisements géants,
+    puis les filons.
+  - **Filons par pays** (34 ressources). Le charbon, le fer et le cuivre ne sont plus que dans les
+    pays qui les exploitent ou les ont exploités — les vieux bassins d'Europe compris (France,
+    Belgique, Allemagne, Royaume-Uni, Espagne…) ; le quartz du Nether au Brésil, aux États-Unis, à
+    Madagascar, en Inde, en Chine, en Russie, en Norvège et en Allemagne. Les autres ressources
+    gardent leurs pays et **60 % de leurs filons** : les gisements géants prennent le relais.
+  - **245 gisements géants** (`bodies`), de vraies mines et de vrais champs, posés à leur place
+    (latitude et longitude du site réel, à quelques kilomètres près), chacun sur plusieurs chunks :
+    - **Mines** : un ellipsoïde bosselé de 22, 16 ou 11 blocs de rayon selon le rang mondial
+      (12, 9 ou 7 de haut), allongé et tourné quand le gisement l'est (Kiruna, le Witwatersrand,
+      le bassin de Bowen). Densité selon la ressource : 40 % de charbon, 35 % de fer, 30 % de
+      cuivre, 10 % d'or, 12 % d'uranium… ; au cœur, un tiers de plus, et des blocs de minerai brut
+      (fer, cuivre, or). Certaines mêlent des minerais : Olympic Dam (cuivre, uranium, or),
+      Kolwezi (cuivre, cobalt), Mount Isa (cuivre, plomb, zinc), Grasberg (cuivre, or)… Sous la
+      surface : le centre à 24 blocs de haut pour le fer et le cuivre, plus bas pour l'or et
+      l'uranium, et jamais à moins de quatre blocs du sol ; la bauxite, le salpêtre et le lignite
+      à fleur de sol, comme dans leurs mines à ciel ouvert.
+    - **Diamant** : des **cheminées de kimberlite** (tuf semé de 2,5 % de diamant), de 8, 6 ou
+      5 blocs de rayon, plus larges en haut, du fond du monde jusqu'à six blocs sous la surface :
+      Jwaneng, Orapa, Mir, Oudatchny, Argyle, Kimberley, Catoca, Ekati, Mbuji-Mayi, Venetia.
+    - **Pétrole et gaz** : des **nappes** de pétrole de NTM NEXT (85 %), minces (six blocs) et
+      larges, à 10 blocs de haut ou sous le fond de la mer : Ghawar (12 × 75 blocs, du nord au
+      sud), Burgan, Safaniya, Rumaila, Kirkouk, South Pars, Samotlor, Ourengoï, Tengiz, Kashagan,
+      le bassin permien, Prudhoe Bay, le golfe du Mexique, Cantarell, la ceinture de l'Orénoque,
+      Maracaibo, Brent, Forties, Troll, Groningue, Hassi Messaoud, le delta du Niger, Daqing, le
+      pré-sal de Santos… (47 champs). Le derrick de NTM en tire pétrole et gaz. Les **sables
+      bitumineux de l'Athabasca** sont une couche de sable bitumineux de NTM de 2 à 14 blocs
+      sous la surface.
+    - **Create Diesel Generators** : les chunks d'un champ ont du pétrole pour sa pompe, 4 à
+      9 millions de mB par point de richesse du bord au centre ; Ghawar et South Pars ont un cœur
+      inépuisable (plus de 10 millions). Ailleurs, le datapack lui retire le pétrole au hasard.
+    - **Quartz** : quatre mines de quartz du Nether (Spruce Pine, Diamantina, Hot Springs,
+      Madagascar), avec des **géodes de quartz d'AE2** (une coque de quartz certus semée de 12 %
+      de quartz bourgeonnant, creuse) : 6, 4 ou 2 selon le rang.
+    - Leur forme ne dépend que de leur nom : chaque chunk en pose sa part quand il arrive, et rien
+      n'est lu hors de ce chunk. Aucun ne déborde sur un autre ; chacun tombe dans son pays sur la
+      grille de la carte (vérifié par le script, `earth_deposits.py countries.json grille.npy`).
+  - **Les trouver** : `/gisements [ressource]` donne les six plus proches, leur pays, leur
+    direction et leur distance (« Kiruna, fer (Suède) : 412 blocs au nord ») ; au passage d'une
+    frontière, le chat dit les ressources du pays (« Ressources : charbon, fer ; gisements géants :
+    Bassin lorrain (fer), Bassin du Nord (charbon). »).
+  - Tout est posé **à l'arrivée du chunk**, pas à sa génération : une carte faite d'avance a déjà
+    ses chunks sur le disque. Chaque chunk servi en garde deux marques (`earth_ground` pour le
+    nettoyage et les gisements géants, `earth_deposits` pour les filons) ; un chunk visité avant
+    la refonte est repris une fois en entier. Les blocs sont écrits dans les sections du chunk
+    (un minerai qui remplace de la roche ne change ni la lumière ni les hauteurs) : un millième de
+    seconde par chunk, et 15 ms au plus de service par tick. Un minerai d'un mod absent est ignoré.
+- **Ce que le datapack retire.** Sur la carte, tous les minerais du jeu (charbon, fer, cuivre, or,
+  redstone, diamant, lapis, émeraude) ne sont plus générés (`neoforge:remove_features`), ni le
+  zinc de Create ; les minerais d'overworld de NTM NEXT sont coupés par son propre interrupteur
+  (`hbm/world_config/worldgen.json`) ; le pétrole au hasard du Create Diesel Generators aussi
+  (`deny_oil_biomes`). Tout vient des filons, des gisements géants et de la dimension du Mineur.
 
 ### Les zones irradiées : Tchernobyl et Fukushima
 
@@ -435,7 +479,7 @@ les données du chunk avant leur lecture : le jeu reprend à la décoration.
 
 - `earth/` : `EarthData` (calage, grille, pays), `EarthEvents` (chargement avant les mondes,
   frontières, lieux, pose des pas de tir, file des gisements), `EarthJump` (le saut),
-  `EarthDeposits` (la table et la pose), `EarthSites` (zones irradiées et bases de lancement),
+  `EarthDeposits` (la table, la file des chunks, les filons), `EarthBodies` (le nettoyage, les gisements géants, le pétrole de Create Diesel Generators), `EarthBodyCommand` (`/gisements`), `EarthSites` (zones irradiées et bases de lancement),
   `EarthNations` (les pays à prendre : partage du monde, voisins, capitale, conquête),
   `NationMenu` et `NationCommand` (l'onglet et `/f pays`), `DoHyEarth` (la marque des chunks, les
   pays pris sur le monde de la carte, la nation du joueur).
