@@ -197,6 +197,24 @@ ou cassée ; rendu des caisses en géométrie propre (une image 128 × 64 dessin
 pour les machines mobiles. Relu dans les jars de Create (6.0.11 adapté) et de NTM NEXT : leurs
 entonnoirs, bras, grues et convoyeurs passent tous par `Capabilities.Item.BLOCK`.
 
+**Vérifié en jeu** (client de CI, deux passes ; la TNT ajoutée au tag des missiles pour la
+capture, faute de NTM dans la CI) :
+- Groupes : 3 × 3 → un groupe de 144 cases ; 1 × 3 ; seule ; 2 × 2 ; quatre en ligne → 3 + 1.
+- Chargement : rien de refusé, la terre refusée ; piles justes (100 piles de missiles sur 3 × 3 :
+  sept caisses géantes, dont six qui courent sur trois palettes ; 16 piles de flèches sur une
+  palette : 18 boîtes, 16,5 px ; un mélange sur 2 × 2 : missiles, puis obus, puis munitions) ;
+  hauteur de collision par case (24 px sous trois étages de caisses géantes, 3 px sur une palette
+  nue).
+- Capacité d'objets : 144 cases par une face, 16 sans face. Un entonnoir posé dessus y verse ses
+  flèches (+30 en 10 s).
+- Écran : neuf rangées, six visibles, compte par famille ; défilement de trois rangées.
+- Casse : la palette du milieu d'un 3 × 3 rend ses 1 024 objets et rien d'autre (au premier essai,
+  les 6 400 du groupe : `preRemoveSideEffects` du jeu vide le conteneur entier — corrigé) ; les huit
+  restantes se regroupent (3 × 1, 1 × 2, 1 × 2, 1 × 1), leurs 6 336 objets en place.
+
+**Non vérifié en jeu** : avec Create et NTM NEXT chargés (pas dans la CI) — la compatibilité tient
+à la capacité d'objets, que leurs jars interrogent.
+
 ### 2026-11-13 (suite 23) — la Mine, uniquement sous terre
 
 **Demande** : « comme NationsGlory, une dimension Mine, séparée de la dimension du Mineur ». Choix du
