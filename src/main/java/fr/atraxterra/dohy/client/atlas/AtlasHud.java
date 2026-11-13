@@ -19,7 +19,6 @@ import net.neoforged.neoforge.client.gui.GuiLayer;
  */
 final class AtlasHud implements GuiLayer {
 
-    private static final int SIZE = 112;
     private static final int MARGIN = 6;
     private static final double MAX_MARKER_DISTANCE = 6000.0d;
 
@@ -55,19 +54,20 @@ final class AtlasHud implements GuiLayer {
 
     private static void minimap(GuiGraphicsExtractor graphics, Minecraft minecraft, LocalPlayer player, AtlasMap map,
                                 AtlasClient.Options options, String dimension) {
+        int size = Math.max(48, Math.min(160, options.minimapSize));
         int x0 = MARGIN + 3;
         int y0 = MARGIN + 3;
         UiGraphics ui = new UiGraphics(graphics, minecraft.font, 0, 0);
         // le cadre des panneaux du kit : bord sombre aux coins crantes, filet gris
-        ui.rect(x0 - 3, y0 - 6, SIZE + 6, SIZE + 12, Ui.OUTER);
-        ui.rect(x0 - 6, y0 - 3, SIZE + 12, SIZE + 6, Ui.OUTER);
-        ui.border(x0 - 2, y0 - 2, SIZE + 4, SIZE + 4, 2, Ui.FRAME);
-        AtlasView.draw(graphics, minecraft.font, map, x0, y0, SIZE, SIZE, player.getX(), player.getZ(),
+        ui.rect(x0 - 3, y0 - 6, size + 6, size + 12, Ui.OUTER);
+        ui.rect(x0 - 6, y0 - 3, size + 12, size + 6, Ui.OUTER);
+        ui.border(x0 - 2, y0 - 2, size + 4, size + 4, 2, Ui.FRAME);
+        AtlasView.draw(graphics, minecraft.font, map, x0, y0, size, size, player.getX(), player.getZ(),
                 options.minimapScale, new AtlasView.Layers(options.holders, options.marks, options.waypoints, false),
                 dimension);
-        AtlasView.player(graphics, x0 + SIZE / 2, y0 + SIZE / 2, player.getYRot(), 12);
-        ui.centered(Ui.WIDE, "N", x0 + SIZE / 2.0f, y0 + 2, 5.0f, Ui.WHITE);
-        int panelTop = y0 + SIZE + 5;
+        AtlasView.player(graphics, x0 + size / 2, y0 + size / 2, player.getYRot(), size >= 80 ? 12 : 9);
+        ui.centered(Ui.WIDE, "N", x0 + size / 2.0f, y0 + 2, 5.0f, Ui.WHITE);
+        int panelTop = y0 + size + 5;
         AtlasData.Globe globe = AtlasData.globe();
         String where = null;
         int color = Ui.MUTED;
@@ -78,12 +78,13 @@ final class AtlasHud implements GuiLayer {
             color = owner != null && owner.kind() == 1 ? AtlasGlobe.MINE : Ui.TEXT;
         }
         int panelHeight = where == null ? 12 : 21;
-        ui.rect(x0 - 3, panelTop, SIZE + 6, panelHeight, Ui.OUTER);
-        ui.rect(x0 - 2, panelTop + 1, SIZE + 4, panelHeight - 2, Ui.BG);
+        ui.rect(x0 - 3, panelTop, size + 6, panelHeight, Ui.OUTER);
+        ui.rect(x0 - 2, panelTop + 1, size + 4, panelHeight - 2, Ui.BG);
         String coordinates = player.getBlockX() + "  " + player.getBlockY() + "  " + player.getBlockZ();
-        ui.centered(Ui.PIXEL, coordinates, x0 + SIZE / 2.0f, panelTop + 3, 5.5f, Ui.TEXT);
+        ui.centered(Ui.PIXEL, ui.fit(Ui.PIXEL, coordinates, 5.0f, size + 2), x0 + size / 2.0f, panelTop + 3, 5.0f,
+                Ui.TEXT);
         if (where != null) {
-            ui.centered(Ui.BOLD, ui.fit(Ui.BOLD, where, 6.0f, SIZE), x0 + SIZE / 2.0f, panelTop + 11, 6.0f, color);
+            ui.centered(Ui.BOLD, ui.fit(Ui.BOLD, where, 5.5f, size + 2), x0 + size / 2.0f, panelTop + 11, 5.5f, color);
         }
     }
 

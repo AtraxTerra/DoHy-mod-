@@ -474,7 +474,8 @@ Une carte faite maison, à la place de Xaero ou de JourneyMap (`client/atlas/`),
 
 - **Minimap** en haut à gauche : le nord en haut, ta flèche au milieu, tes coordonnées et le pays
   dessous (en or s'il est à ta faction). **N** l'affiche ou la cache, **=** et **-** zooment
-  (de 4 pixels par bloc à 16 blocs par pixel).
+  (de 4 pixels par bloc à 16 blocs par pixel). Quatre tailles (56, 72, 96 ou 112 pixels
+  d'interface de côté, **72** par défaut), au bouton TAILLE de la grande carte.
 - **Grande carte** (**M**) : glisser pour se déplacer, la molette pour le zoom (de 8 pixels par
   bloc à 128 blocs par pixel), **C** pour revenir sur soi ; la barre du bas dit les coordonnées,
   le pays et qui le tient, le gisement ou le point sous la souris. En haut, les calques : pays

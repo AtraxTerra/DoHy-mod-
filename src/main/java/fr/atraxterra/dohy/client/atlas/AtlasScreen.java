@@ -102,6 +102,7 @@ public final class AtlasScreen extends Screen {
         x = toggle(ui, "POINTS", x, options.waypoints, () -> options.waypoints = !options.waypoints);
         x = toggle(ui, "POINTS EN JEU", x, options.markers, () -> options.markers = !options.markers);
         x = toggle(ui, "MINIMAP", x, options.minimap, () -> options.minimap = !options.minimap);
+        x = toggle(ui, "TAILLE " + options.minimapSize, x, false, () -> options.minimapSize = nextSize(options.minimapSize));
         toggle(ui, "CENTRER (C)", x, false, this::recenter);
         for (Toggle toggle : toggles) {
             boolean hovered = mouseY >= 4 && mouseY < 18 && mouseX >= toggle.x() && mouseX < toggle.x() + toggle.width();
@@ -119,6 +120,16 @@ public final class AtlasScreen extends Screen {
         ui.rect(close, 6, 12, 11, Ui.RED_DARK);
         ui.rect(close, 5, 12, 10, hovered ? UiGraphics.lighten(Ui.RED) : Ui.RED);
         ui.texture(Ui.CLOSE, close + 2, 6, 8, 8, 32, 32);
+    }
+
+    /** La taille de minimap suivante, en boucle. */
+    private static int nextSize(int current) {
+        for (int size : AtlasClient.SIZES) {
+            if (size > current) {
+                return size;
+            }
+        }
+        return AtlasClient.SIZES[0];
     }
 
     private int toggle(UiGraphics ui, String label, int x, boolean on, Runnable action) {

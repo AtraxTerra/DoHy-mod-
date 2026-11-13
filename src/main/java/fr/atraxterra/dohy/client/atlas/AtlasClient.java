@@ -46,11 +46,16 @@ public final class AtlasClient {
     public static final class Options {
         public boolean minimap = true;
         public double minimapScale = 1.0d;
+        /** Le cote de la minimap, en pixels d'interface (voir {@link #SIZES}). */
+        public int minimapSize = 72;
         public boolean holders = true;
         public boolean marks = true;
         public boolean waypoints = true;
         public boolean markers = true;
     }
+
+    /** Les tailles de minimap proposees par le bouton TAILLE de la grande carte. */
+    public static final int[] SIZES = {56, 72, 96, 112};
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static KeyMapping atlasKey;
