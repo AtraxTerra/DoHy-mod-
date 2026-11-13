@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.palamod.trixium;
 
+import fr.atraxterra.dohy.util.RealClock;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.time.ZonedDateTime;
 
 /**
  * Les saisons du concours Trixium : <b>un mois reel</b> (choix du joueur), du
- * 1er a 5 h au 1er du mois suivant a 5 h, heure du serveur.
+ * 1er a 5 h au 1er du mois suivant a 5 h, a l'heure de {@link RealClock}.
  *
  * <p>Paladium faisait des saisons de version (la V8 a dure 206 jours) ; en solo,
  * un mois donne un classement a viser sans le faire attendre six mois. La
@@ -17,7 +18,7 @@ import java.time.ZonedDateTime;
  */
 public final class TrixiumSeason {
 
-    private static final ZoneId ZONE = ZoneId.systemDefault();
+    private static final ZoneId ZONE = RealClock.zone();
     private static final int SWITCH_HOUR = 5;
 
     /** Decalage d'horloge, pour essayer une fin de saison ({@code /trixium admin avancer}). */

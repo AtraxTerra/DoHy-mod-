@@ -8,6 +8,7 @@ import fr.atraxterra.dohy.palamod.boss.EventBoss;
 import fr.atraxterra.dohy.palamod.boss.RivalFighter;
 import fr.atraxterra.dohy.palamod.boss.VolcaniaDragon;
 import fr.atraxterra.dohy.palamod.dungeon.ReturnPoint;
+import fr.atraxterra.dohy.util.RealClock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -53,7 +54,7 @@ import java.util.UUID;
  * Le calendrier des events de faction et l'event en cours (lot 22f).
  *
  * <p>Toutes les secondes, chaque event pret regarde son prochain depart, a
- * l'heure du serveur : annonce a 10, 5 et 1 minute, puis depart a la minute
+ * l'heure de {@link RealClock} : annonce a 10, 5 et 1 minute, puis depart a la minute
  * pile. Un event ne se lance que si au moins un joueur en faction est
  * connecte — personne pour le voir, personne pour le gagner. Un seul event a la
  * fois, comme le boss unique de Paladium.
@@ -69,7 +70,7 @@ public final class FactionEvents {
     /** L'etiquette des sbires du boss, que les rivaux attaquent et que la fin efface. */
     public static final String MINION_TAG = "palamod_boss_minion";
 
-    private static final ZoneId ZONE = ZoneId.systemDefault();
+    private static final ZoneId ZONE = RealClock.zone();
     private static final int[] WARNINGS = {10, 5, 1};
 
     private static EventRun active;

@@ -13,7 +13,8 @@ import java.util.Set;
 
 /**
  * Les events de faction et leur calendrier, aux heures du wiki (« Java | Event
- * faction », « Java | Boss », « Java | Totem »), heure du serveur.
+ * faction », « Java | Boss », « Java | Totem »), a l'heure de Paris
+ * ({@link fr.atraxterra.dohy.util.RealClock}).
  *
  * <table>
  *   <tr><th>Event</th><th>Quand</th><th>ELO</th></tr>

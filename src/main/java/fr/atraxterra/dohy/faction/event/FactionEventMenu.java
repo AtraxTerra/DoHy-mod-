@@ -131,7 +131,7 @@ public final class FactionEventMenu extends MenuController {
                 new MenuView.Stat("ELO", MoneyFormat.shortForm(data.ranking().elo()), 0xFFFFFFFF),
                 new MenuView.Stat("PROCHAIN", fight != null && !fight.ended() ? "EN COURS"
                         : soonest == null ? "-" : until(now, soonest), 0xFFFAC400));
-        return new MenuView(id(), "Events de faction", "Aux heures de Paladium, heure du serveur", stats,
+        return new MenuView(id(), "Events de faction", "Aux heures de Paladium, heure de Paris", stats,
                 sections, true);
     }
 

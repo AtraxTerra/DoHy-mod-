@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.faction;
 
 import fr.atraxterra.dohy.util.MoneyFormat;
+import fr.atraxterra.dohy.util.RealClock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,7 +21,7 @@ import java.time.temporal.TemporalAdjusters;
  * ({@link FactionNotation}) et les recompenses tombent dans la banque de faction.
  *
  * <p>Sur Paladium, une faction sans aucune victoire ELO dans la semaine descend
- * d'une ligue et ne touche rien. Ici, pareil, a l'heure du serveur. Un joueur
+ * d'une ligue et ne touche rien. Ici, pareil, a l'heure de {@link RealClock}. Un joueur
  * absent plusieurs lundis les rattrape a sa connexion, un par un : seule la
  * premiere semaine peut compter des victoires.
  */
@@ -34,7 +35,7 @@ public final class FactionWeekly {
     }
 
     public static ZoneId zone() {
-        return ZoneId.systemDefault();
+        return RealClock.zone();
     }
 
     /** Le lundi de la semaine en cours, en jour epoch. */

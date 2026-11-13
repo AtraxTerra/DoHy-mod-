@@ -20,12 +20,18 @@ Dernière mise à jour : 2026-11-13
 | Mappings | mojmap, **pas de remap** |
 | Pack formats | assets **88**, data **107** (ils divergent depuis 26.x) |
 | Mod optionnel | NTM NEXT 1.0.x (26.2, NeoForge) — phase 10 |
-| Mode de jeu | **Solo uniquement** (confirmé par le joueur le 2026-11-11), monde normal |
+| Mode de jeu | **Serveur dédié qui tourne 24 h/24** (dit par le joueur le 2026-11-13) ; solo jusque-là |
 
-**Le joueur joue uniquement en solo** (dit le 2026-11-11, à garder en tête) : pas de serveur dédié
-à viser, pas de fonction qui n'a de sens qu'à plusieurs (échange entre joueurs, hôtel des ventes
-de joueurs, classements). Quand un mod de Paladium est multijoueur par nature, on en porte ce qui
-se joue seul, ou on le remixe pour un joueur — comme la faction (chapitres 22a et 22b).
+**Le joueur joue désormais sur un serveur dédié qui tourne 24 h/24** (dit le 2026-11-13 ; jusque-là,
+solo uniquement, dit le 2026-11-11). Seul ou avec d'autres : pas encore dit. Le mod reste pensé
+pour un joueur — pas de fonction qui n'a de sens qu'à plusieurs (échange entre joueurs, hôtel des
+ventes de joueurs, classements) ; quand un mod de Paladium est multijoueur par nature, on en porte
+ce qui se joue seul, ou on le remixe pour un joueur, comme la faction (chapitres 22a et 22b).
+**Ce qui change, c'est la façon d'écrire** : tout doit tourner sur un serveur dédié (rien de
+`client/` hors du client), ce qui avance hors ligne suit l'horloge réelle (`RealClock`, à l'heure
+de Paris), et ce qui touche physiquement au monde n'agit que près d'un joueur connecté — jamais
+sur une base laissée seule. Installation et réglages : `docs/CONTENU_DOHY.md`, « Sur un serveur
+dédié ».
 
 **Choix d'architecture : un seul module NeoForge**, pas de découpage multiloader Architectury. La cible est NeoForge uniquement ; le surcoût de scaffolding common/fabric/forge ne se rentabilise que si le mod doit sortir sur plusieurs loaders.
 
@@ -174,6 +180,28 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-13 (suite 21) — sur un serveur qui tourne 24 h/24
+
+**Dit par le joueur** : « je joue désormais sur un serveur qui tourne 24h/24 », puis « je peux
+désactiver le server pause ».
+
+**Revu** : aucun code client hors de `client/` (ni import, ni `Minecraft.getInstance()`), aucune
+hypothèse bloquante d'un seul joueur (les tableaux de l'atrium prennent le premier joueur du
+spawn, c'est tout), cartes par joueur bornées au nombre de joueurs, sauvegardes de secours en
+trois copies glissantes. Les vérifications en jeu de la CI tournent déjà sur un serveur dédié.
+
+**Fait** (`feat/serveur-24h`) : un seul fuseau pour tout le mod, `RealClock.zone()`, à l'heure
+de Paris par défaut (option `-Ddohy.fuseau=…`). Avant, six endroits prenaient le fuseau de la
+machine : contrats et commande trixium, classement du lundi, events de faction, saisons du
+trixium, dates des menus de nation et de la pierre de golem. Le journal donne l'heure retenue au
+démarrage (`util/ClockReport` : `RealClock` doit rester compilable sans Minecraft, la CI le
+teste seul) ; menus et docs disent « heure de Paris ». Doc : `docs/CONTENU_DOHY.md`, « Sur un
+serveur dédié » (installation, heure, pause d'un serveur vide).
+
+**Vérifié** : build vert ; `RealClockTest` étendu au fuseau (Paris sans option ou avec une option
+inconnue, nom IANA, « systeme »), qui passe aussi sur une machine en UTC. Le joueur a désactivé
+la pause du serveur vide (`pause-when-empty-seconds=-1`) : le monde tourne sans lui.
 
 ### 2026-11-13 (suite 20) — l'atlas
 

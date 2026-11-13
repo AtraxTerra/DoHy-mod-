@@ -474,7 +474,8 @@ Une carte faite maison, à la place de Xaero ou de JourneyMap (`client/atlas/`),
 
 - **Minimap** en haut à gauche : le nord en haut, ta flèche au milieu, tes coordonnées et le pays
   dessous (en or s'il est à ta faction). **N** l'affiche ou la cache, **=** et **-** zooment
-  (de 4 pixels par bloc à 16 blocs par pixel).
+  (de 4 pixels par bloc à 16 blocs par pixel). Quatre tailles (56, 72, 96 ou 112 pixels
+  d'interface de côté, **72** par défaut), au bouton TAILLE de la grande carte.
 - **Grande carte** (**M**) : glisser pour se déplacer, la molette pour le zoom (de 8 pixels par
   bloc à 128 blocs par pixel), **C** pour revenir sur soi ; la barre du bas dit les coordonnées,
   le pays et qui le tient, le gisement ou le point sous la souris. En haut, les calques : pays
@@ -593,3 +594,60 @@ passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, c
   `HologramBlock` (`dohy:hologram`, les textes flottants).
 - `data/dohy/dimension/spawn.json`, `dimension_type/spawn.json`, `worldgen/biome/spawn.json`,
   écrits par `tools/dohy_assets.py`.
+
+## Sur un serveur dédié (2026-11-13)
+
+Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les
+vérifications en jeu de la CI tournent déjà sur un serveur dédié (le client de capture s'y
+connecte), et aucun code client n'est appelé côté serveur.
+
+### Installer
+
+- **Le jar** dans `mods/` du serveur **et** de chaque client : le mod a des blocs, des écrans et
+  des paquets des deux côtés. Les mods purement client (shaders, etc.) restent côté client.
+- **Le datapack de la carte** (`dohy_terre.zip`) dans `world/datapacks/` du serveur (le dossier
+  du monde est `level-name` dans `server.properties`).
+- **Les sauvegardes de secours de l'économie** s'écrivent dans `world/dohy/` : trois copies
+  glissantes, toutes les cinq minutes tant qu'un joueur est connecté, et à l'arrêt.
+
+### L'heure
+
+Toutes les heures du mod — la bascule de 5 h des contrats, midi pour la commande trixium, le
+lundi minuit du classement, les events de faction, les saisons du trixium, les dates des menus —
+sont à **l'heure de Paris**, quelle que soit la machine : un hébergeur tourne souvent en UTC, et
+l'event de 21 h y tomberait à 22 h ou 23 h. Un serveur ailleurs la change au lancement, par une
+option Java (dans `user_jvm_args.txt`) : `-Ddohy.fuseau=America/Montreal` (un nom de fuseau
+IANA), ou `-Ddohy.fuseau=systeme` pour l'heure de la machine. Au démarrage, le journal dit
+l'heure retenue : `Horloge DoHy : Europe/Paris (13/11 17:42), machine en UTC`.
+
+### La pause d'un serveur vide
+
+Par défaut, un serveur se met en pause une minute après le départ du dernier joueur
+(`pause-when-empty-seconds=60` dans `server.properties`) ; `-1` la désactive. Pour DoHy, ça
+change peu :
+
+- ce qui doit avancer pendant l'absence suit déjà l'horloge réelle, pause ou pas : contrats,
+  cours du marché, intérêts d'épargne (rattrapés à la connexion), saison du trixium, classement
+  du lundi ;
+- les machines d'une base ne tournent pas sans joueur, pause ou pas : ses chunks se déchargent.
+  DoHy ne force le chargement que des donjons, de l'arène d'event et des bases ennemies en
+  reconstruction, le temps de l'action ;
+- sans pause, le temps de jeu continue : jour et nuit, météo, et les minuteries comptées en
+  ticks (la protection du Home Remover, l'amélioration du Wither) s'écoulent pendant l'absence.
+
+### Ce qui reste pensé pour un joueur
+
+La faction n'a qu'un membre, les rivaux et les bases ennemies sont fictifs, les tableaux de
+l'atrium montrent le premier joueur présent au spawn, et le boss d'event a ses points de vie du
+solo. Chaque joueur a sa propre économie, sa faction et ses contrats : un ami qui rejoint le
+serveur joue sans gêner personne, mais sans vraie interaction (faction commune, pillage entre
+joueurs) — ce serait un lot à part.
+
+### Code
+
+- `util/RealClock` : `zone()`, le fuseau de tout le mod (option `dohy.fuseau`, Paris par
+  défaut). Il ne dépend que de `java.time` : la CI le compile seul et le teste
+  (`tools/RealClockTest.java`, fuseau compris). `FactionWeekly.zone()`, `FactionEvents`,
+  `TrixiumSeason`, `NationMenu` et `GuardianStoneItem` passent par lui.
+- `util/ClockReport` : la ligne du journal au démarrage, et l'avertissement si l'option
+  `dohy.fuseau` n'est pas comprise.

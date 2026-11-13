@@ -34,7 +34,7 @@ PvE**. Choix du joueur :
 | Membres, grades, recrutement, annuaire | Pas d'objet : un seul membre, le chef |
 | Claims protégés contre les autres factions | Claims protégés contre le monde : explosions de monstres, endermen, champs piétinés, intrus sur un serveur ; chaque claim peut refuser l'apparition des monstres |
 | Classement : part des factions actives (5 % en Diamant…) | Paliers d'ELO cumulé (Argent 5 000, Or 15 000, Platine 35 000, Diamant 75 000) |
-| Semaine sans victoire : une ligue plus bas, pas de récompense | Pareil, le lundi à minuit (heure du serveur) ; l'ELO revient au seuil de la ligue |
+| Semaine sans victoire : une ligue plus bas, pas de récompense | Pareil, le lundi à minuit (heure de Paris) ; l'ELO revient au seuil de la ligue |
 | Récompenses : Points Boutique et 2 % de l'argent du serveur | Argent versé à la banque de faction (25 k à 1,25 M $ selon la ligue) |
 | Touche F | Touche G par défaut (F échange les mains en vanilla) |
 

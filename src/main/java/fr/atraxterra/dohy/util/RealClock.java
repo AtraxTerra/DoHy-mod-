@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.util;
 
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -30,12 +31,68 @@ import java.time.temporal.TemporalAdjusters;
  * de ceux qu'il etait en train de finir. Une bascule au petit matin place la
  * frontiere la ou personne ne joue.
  *
- * <p>Le fuseau est celui de la machine qui fait tourner le monde, ce qui en solo
- * est la machine du joueur.
+ * <h2>Le fuseau : celui du joueur, pas celui de la machine</h2>
+ *
+ * <p>Toutes les heures du mod — la bascule de 5 h, le lundi du classement, les
+ * events de faction, les saisons du trixium, les dates affichees — se lisent
+ * dans un seul fuseau, {@link #zone()}. Par defaut, c'est l'heure de Paris, et
+ * non celle de la machine : en solo les deux se confondent, mais un serveur
+ * loue tourne souvent en UTC, et l'event de 21 h y tomberait a 22 h ou 23 h.
+ *
+ * <p>Un serveur ailleurs peut le changer au lancement, par une option de la
+ * JVM : {@code -Ddohy.fuseau=America/Montreal} (un nom de fuseau IANA), ou
+ * {@code -Ddohy.fuseau=systeme} pour reprendre le fuseau de la machine.
+ * {@link ClockReport} ecrit au demarrage le fuseau retenu dans le journal.
+ *
+ * <p>Cette classe ne depend que de {@code java.time} : la CI la compile seule
+ * pour son test ({@code tools/RealClockTest.java}). Rien de Minecraft ici.
  */
 public final class RealClock {
 
+    /** Le fuseau par defaut : celui du joueur. */
+    static final ZoneId PARIS = ZoneId.of("Europe/Paris");
+
+    /** L'option de lancement telle qu'ecrite, ou {@code null}. */
+    private static final String OPTION = System.getProperty("dohy.fuseau");
+
+    /** Lu une fois : changer de fuseau en cours de partie decalerait toutes les cles de periode. */
+    private static final ZoneId ZONE = resolve(OPTION);
+
     private RealClock() {
+    }
+
+    /** Le fuseau de toutes les horloges du mod. */
+    public static ZoneId zone() {
+        return ZONE;
+    }
+
+    /** L'option {@code dohy.fuseau} si elle n'a pas ete comprise, pour le journal ; sinon {@code null}. */
+    public static String unknownOption() {
+        return OPTION != null && !OPTION.isBlank() && parse(OPTION) == null ? OPTION.trim() : null;
+    }
+
+    /**
+     * Lit l'option {@code dohy.fuseau}.
+     *
+     * <p>Un nom inconnu rend Paris plutot que d'echouer, comme {@link #parseDay} :
+     * une faute de frappe dans la ligne de lancement ne doit pas empecher le
+     * serveur de demarrer. Le journal le signale ({@link #unknownOption()}).
+     */
+    static ZoneId resolve(String raw) {
+        ZoneId parsed = raw == null || raw.isBlank() ? null : parse(raw);
+        return parsed != null ? parsed : PARIS;
+    }
+
+    private static ZoneId parse(String raw) {
+        String value = raw.trim();
+        if (value.equalsIgnoreCase("systeme") || value.equalsIgnoreCase("system")) {
+            return ZoneId.systemDefault();
+        }
+        try {
+            return ZoneId.of(value);
+        } catch (DateTimeException unknown) {
+            return null;
+        }
     }
 
     /** Minutes depuis l'epoque. L'unite commune de tous les rattrapages. */
@@ -117,9 +174,5 @@ public final class RealClock {
 
     private static int clamp(int resetHour) {
         return Math.max(0, Math.min(23, resetHour));
-    }
-
-    private static ZoneId zone() {
-        return ZoneId.systemDefault();
     }
 }

@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.util;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * Test de l'horloge reelle, sans Minecraft.
@@ -80,6 +81,15 @@ public final class RealClockTest {
         eq("un jour de la semaine se lit sans tenir compte de la casse",
                 RealClock.parseDay("sunday").getValue(), DayOfWeek.SUNDAY.getValue());
 
+        // Le fuseau : l'heure de Paris par defaut, quelle que soit la machine.
+        zone("sans option, l'heure de Paris", RealClock.resolve(null), "Europe/Paris");
+        zone("une option vide, l'heure de Paris", RealClock.resolve("  "), "Europe/Paris");
+        zone("un nom IANA est pris tel quel", RealClock.resolve("America/Montreal"), "America/Montreal");
+        zone("les espaces autour ne comptent pas", RealClock.resolve(" UTC "), "UTC");
+        zone("un nom inconnu retombe sur Paris", RealClock.resolve("Paris/Lune"), "Europe/Paris");
+        zone("systeme reprend le fuseau de la machine", RealClock.resolve("Systeme"),
+                ZoneId.systemDefault().getId());
+
         if (failures > 0) {
             System.out.println(failures + " echec(s)");
             System.exit(1);
@@ -105,6 +115,10 @@ public final class RealClockTest {
 
     private static void eq(String what, long actual, long expected) {
         report(actual == expected, what, actual + " vs " + expected);
+    }
+
+    private static void zone(String what, ZoneId actual, String expected) {
+        report(actual.getId().equals(expected), what, actual.getId() + " vs " + expected);
     }
 
     private static void ne(String what, long actual, long other) {
