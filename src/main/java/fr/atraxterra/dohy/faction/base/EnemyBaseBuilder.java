@@ -567,7 +567,7 @@ final class EnemyBaseBuilder {
                 : grade == 2 ? new String[]{"mine_ap", "mine_ap", "mine_shrap"}
                 : new String[]{"mine_ap", "mine_shrap", "mine_shrap", "mine_he"};
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        for (int attempt = 0; attempt < wanted * 4 && mines < wanted; attempt++) {
+        for (int attempt = 0; attempt < wanted * 6 && mines < wanted; attempt++) {
             int x = random.nextInt(2 * to + 1) - to;
             int z = random.nextInt(2 * to + 1) - to;
             int ring = Math.max(Math.abs(x), Math.abs(z));
@@ -580,10 +580,7 @@ final class EnemyBaseBuilder {
             }
             pos.set(cx + x, y - 1, cz + z);
             BlockState ground = level.getBlockState(pos);
-            boolean natural = ground.is(BlockTags.DIRT) || ground.is(BlockTags.SAND) || ground.is(Blocks.GRAVEL)
-                    || ground.is(BlockTags.BASE_STONE_OVERWORLD) || ground.is(BlockTags.TERRACOTTA)
-                    || ground.is(Blocks.SNOW_BLOCK);
-            if (!natural || !ground.isFaceSturdy(level, pos, Direction.UP)) {
+            if (!naturalGround(ground) || !ground.isFaceSturdy(level, pos, Direction.UP)) {
                 continue;
             }
             pos.set(cx + x, y, cz + z);
@@ -594,10 +591,28 @@ final class EnemyBaseBuilder {
             if (!free || !here.getFluidState().isEmpty()) {
                 continue;
             }
+            if (here.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF)) {
+                // Pas de haut d'herbe haute flottant au-dessus de la mine.
+                level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+            }
             if (NtmDefenses.mine(level, pos.immutable(), kinds[random.nextInt(kinds.length)])) {
                 mines++;
             }
         }
+    }
+
+    /**
+     * Le sol naturel du glacis. En 26.2, le tag {@code minecraft:dirt} ne compte plus
+     * que la terre, la terre sterile et la terre racineuse : l'herbe, le podzol, le
+     * mycelium, la mousse et la boue sont nommes un par un.
+     */
+    private static boolean naturalGround(BlockState ground) {
+        return ground.is(BlockTags.DIRT) || ground.is(Blocks.GRASS_BLOCK) || ground.is(Blocks.PODZOL)
+                || ground.is(Blocks.MYCELIUM) || ground.is(Blocks.MOSS_BLOCK) || ground.is(Blocks.MUD)
+                || ground.is(Blocks.CLAY) || ground.is(BlockTags.SAND) || ground.is(Blocks.GRAVEL)
+                || ground.is(Blocks.SANDSTONE) || ground.is(Blocks.RED_SANDSTONE)
+                || ground.is(BlockTags.BASE_STONE_OVERWORLD) || ground.is(BlockTags.TERRACOTTA)
+                || ground.is(Blocks.SNOW_BLOCK);
     }
 
     // -- Les quartiers ---------------------------------------------------------------
