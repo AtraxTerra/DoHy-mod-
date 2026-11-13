@@ -1057,6 +1057,49 @@ territoire n'ont pas été retenus. Le gain est d'abord la carte qui se dore.
 Leviers : `EarthNations.cost` (la formule), `NEAR_BLOCKS` (la portée des voisins, quatre carreaux
 de 64 blocs), `FactionNotation.COUNTRY_CLAIMS` (le poids d'un pays dans la notation).
 
+## 6 vicies. Marché international
+
+Règles : `docs/FACTION.md`, « Marché international ». Cours = (R / stock)^0,6, borné à [0,4 ; 2],
+R = 4 × la demi-saturation de la fiche de prix.
+
+**Ce que rapporte une vente** (fer, base 15 $, R = 8 000, taxe 12 % d'un État) :
+
+| Vendu d'un coup, stock à la référence | Cours après | Reçu | Par lingot |
+|---|---|---|---|
+| 1 000 | -7 % | 12 700 $ | 12,7 $ |
+| 2 000 | -13 % | 24 700 $ | 12,3 $ |
+| 8 000 | -34 % | 84 400 $ | 10,5 $ |
+| 28 800 (jusqu'à saturation) | -60 % | 222 000 $ | 7,7 $ |
+
+Pour comparer, 8 000 lingots à la boutique (pression de vente personnelle) rapportent environ
+67 700 $ : le marché international paie mieux le gros, tant qu'une nation n'a pas inondé le cours.
+Les deux débouchés s'ajoutent : c'est voulu, la boutique pour le courant, le marché pour les
+stocks. Le retour à la référence (10 % de l'écart par vingt minutes de jeu) borne le revenu par
+ressource au même ordre que celui de la boutique.
+
+**Pas de boucle d'argent** :
+- vendre rapporte au plus 2 × la base, moins la taxe (au mieux 1,88 ×) ;
+- acheter coûte au moins 2,6 × la base : acheter pour revendre au marché perd toujours au moins
+  28 % ;
+- à la boutique, la revente monte au plus à 2,5 × la base (demande du jour) et retombe aussitôt
+  avec la pression de vente ; seule la première vente du jour (× 1,5 en plus) passe au-dessus de
+  2,6, sur une vente ;
+- la boutique vend à 4 × la base : rien à gagner à y acheter pour vendre au marché ;
+- le marché saturé n'achète plus : pas de vente infinie au plancher.
+
+**Les lots des nations** : 15 à 40 % de R toutes les dix minutes de jeu, sur une des 25
+ressources. Une ressource donnée bouge donc en moyenne toutes les quatre heures de jeu, d'un
+facteur 0,82 à 1,22 sur le cours quand elle part de la référence.
+
+**Notation** (`data/notations.json`) : les nations rivales notent entre 38 et 80 (moyenne 59 avec
+tous leurs pays). Une semaine moyenne du joueur (50 points) le place vers la 9e place, 65 points
+dans le premier tiers, 80 en tête presque à coup sûr. Récompenses à 60 points : 150 000 $ de
+bourse et 300 points de conquête (un Boss gagné en vaut 227) ; en 1re place, 600 points, trois
+lots (30 000 $ au prix de base) et un claim.
+
+Leviers : `WorldMarket` (`GOODS`, `K`, `MIN_FACTOR`, `MAX_FACTOR`, `REFERENCE_PER_S0`,
+`BUY_MARKUP`, `BUY_FLOOR`, `MOVE_MINUTES`), `NationRank` (les taxes), `notations.json`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

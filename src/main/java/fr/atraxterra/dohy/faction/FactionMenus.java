@@ -146,10 +146,18 @@ public final class FactionMenus {
                 identity.add("MOTD : " + data.motd());
             }
             identity.add("Tags : " + (data.tags().isEmpty() ? "aucun" : String.join(", ", data.tags())));
+            NationRank rank = NationRank.of(player);
+            boolean earth = fr.atraxterra.dohy.earth.EarthNations.active();
+            if (earth) {
+                NationRank next = rank.next();
+                identity.add("Rang : " + rank.label() + (next == null ? "" : " ; " + next.label() + " a "
+                        + next.countries() + " pays"));
+            }
             List<Card> faction = List.of(
-                    Card.of(banner(data), data.name(), List.of("Fondee le " + date(data.created()),
+                    Card.of(banner(data), data.name(), List.of(rank.label() + " · fondee le "
+                                    + date(data.created()),
                                     data.tags().isEmpty() ? "Faction solo" : String.join(" · ", data.tags())))
-                            .accent(0xFFEF3826).tooltip(identity),
+                            .accent(rank.color()).tooltip(identity),
                     Card.of(new ItemStack(Items.GRASS_BLOCK), "Claims", List.of(
                                     data.claims().size() + " / " + FactionApi.claimCap(player) + " chunks",
                                     "Ta base, a l'abri du monde"))
@@ -181,23 +189,38 @@ public final class FactionMenus {
                     enemyBaseCard(player),
                     reserveCard(player),
                     eventsCard()));
-            if (fr.atraxterra.dohy.earth.EarthNations.active()) {
-                progression.add(nationCard(player));
-            }
+            progression.add(Card.of(new ItemStack(Items.CHEST), "Marche international", List.of(
+                            "Cours selon le stock mondial", "Taxe : " + Math.round(rank.fee() * 100.0d) + " %"))
+                    .accent(0xFF27C4E8).action("market|ouvrir"));
             progression.add(Card.of(new ItemStack(Items.COMPARATOR), "Parametres", List.of("Nom, description, MOTD",
                     "Tags, blason, dissolution")).accent(0xFF55545C).action("settings|ouvrir"));
             List<MenuView.Stat> stats = List.of(
-                    new MenuView.Stat("LIGUE", league.label().toUpperCase(), league.color()),
+                    earth ? new MenuView.Stat("RANG", rank.label().toUpperCase(), rank.color())
+                            : new MenuView.Stat("LIGUE", league.label().toUpperCase(), league.color()),
                     new MenuView.Stat("ELO", MoneyFormat.shortForm(data.ranking().elo()), 0xFFFFFFFF),
                     new MenuView.Stat("BANQUE", MoneyFormat.shortForm(data.bank()), 0xFFFAC400));
-            return new MenuView(id(), data.name(), data.description().isEmpty() ? "Ta faction" : data.description(),
-                    stats, List.of(new MenuView.Section("TA FACTION", "resources", MenuView.GRID, faction),
-                    new MenuView.Section("PROGRESSION", "upgrade", MenuView.GRID, progression)), true);
+            List<MenuView.Section> sections = new ArrayList<>();
+            sections.add(new MenuView.Section(earth ? "TA NATION" : "TA FACTION", "resources", MenuView.GRID, faction));
+            if (earth) {
+                // la capitale, les pays et la cible : la faction est une nation, tout tient sur une page
+                List<Card> lands = new ArrayList<>(fr.atraxterra.dohy.earth.NationMenu.ownCards(player));
+                lands.add(Card.of(new ItemStack(Items.COMPASS), "Voisins et rivales", List.of(
+                                "Les pays a viser", "Ce que tient chaque nation"))
+                        .accent(0xFFFAC400).action("nations|ouvrir"));
+                sections.add(new MenuView.Section("TERRITOIRE", "craft", MenuView.GRID, lands));
+            }
+            sections.add(new MenuView.Section("PROGRESSION", "upgrade", MenuView.GRID, progression));
+            return new MenuView(id(), data.name(), data.description().isEmpty() ? (earth ? "Ta nation"
+                    : "Ta faction") : data.description(), stats, sections, true);
         }
 
         @Override
         protected void card(ServerPlayer player, String key, int button) {
+            if (fr.atraxterra.dohy.earth.NationMenu.act(player, key)) {
+                return;
+            }
             switch (key) {
+                case "market" -> fr.atraxterra.dohy.faction.market.WorldMarketMenu.INSTANCE.open(player);
                 case "claims" -> Claims.INSTANCE.open(player);
                 case "bank" -> Bank.INSTANCE.open(player);
                 case "ranking" -> Ranking.INSTANCE.open(player);
@@ -221,22 +244,6 @@ public final class FactionMenus {
                 }
             }
         }
-    }
-
-    /** Les pays a prendre, sur une carte de la Terre : combien on en tient, et la cible. */
-    private static Card nationCard(ServerPlayer player) {
-        fr.atraxterra.dohy.earth.EarthNations.Nation nation = fr.atraxterra.dohy.earth.EarthNations.nation(player);
-        int held = fr.atraxterra.dohy.earth.EarthNations.heldBy(player).size();
-        int target = nation.target();
-        String second = target != 0 ? "Cible : " + fr.atraxterra.dohy.earth.EarthNations.countryName(target)
-                : nation.capital() == 0 ? "Pose ta capitale" : "Vise un voisin";
-        Card card = Card.of(new ItemStack(Items.FILLED_MAP), "Pays", List.of(held + " pays tenu(s)", second))
-                .accent(0xFFFAC400).action("nations|ouvrir");
-        if (target != 0) {
-            card = card.progress(nation.pointsOn(target),
-                    fr.atraxterra.dohy.earth.EarthNations.cost(player.level().getServer(), target));
-        }
-        return nation.capital() == 0 ? card.badge("NOUVEAU") : card;
     }
 
     /** La reserve d'or (lot 22e) : ce qui est place, ou comment en batir une. */
@@ -546,15 +553,17 @@ public final class FactionMenus {
 
     // -- Notation ---------------------------------------------------------------
 
-    private static final Item[] CRITERION_ICONS = {Items.CLOCK, Items.EMERALD, Items.IRON_PICKAXE, Items.PAPER,
-            Items.IRON_SWORD, Items.PAINTING, Items.GOLD_BLOCK};
+    private static final Item[] CRITERION_ICONS = {Items.CLOCK, Items.EMERALD, Items.CHEST, Items.IRON_SWORD,
+            Items.FILLED_MAP};
 
     /** La carte de la page de faction : la note en cours et la bourse qu'elle vaudrait. */
     private static Card notationCard(ServerPlayer player) {
         FactionNotation.Score score = FactionNotation.current(player);
+        List<FactionNotation.Standing> standings = FactionNotation.standings(player);
+        int rank = FactionNotation.rank(standings);
         return Card.of(new ItemStack(Items.WRITABLE_BOOK), "Notation " + score.grade(), List.of(
                         FactionNotation.points(score.total()) + " / " + FactionNotation.points(score.max())
-                                + " cette semaine",
+                                + " · " + FactionNotation.ordinal(rank) + " sur " + standings.size(),
                         "Lundi : +" + MoneyFormat.shortForm(score.bourse()) + " $"))
                 .accent(0xFF8F5BEA).progress(Math.round(score.total()), Math.round(score.max()))
                 .action("notation|voir la notation");
@@ -565,14 +574,14 @@ public final class FactionMenus {
         public static final Notation INSTANCE = new Notation();
 
         private static final List<List<String>> HELP = List.of(
-                List.of("Chaque jour ou tu te connectes compte", "Repart de zero le lundi"),
+                List.of("Dix points pour les jours joues (cinq jours suffisent),", "dix pour les contrats termines",
+                        "Repart de zero le lundi"),
                 List.of("Ventes, primes, contrats et butins de la semaine", "Chaque x10 rapporte autant de points",
                         "Les retraits de la banque de faction ne comptent pas"),
-                List.of("La somme des niveaux de tes metiers", "Ne redescend jamais"),
-                List.of("Contrats du jour, contrat de la semaine", "et commandes de trixium termines"),
+                List.of("Ce que tu as vendu et achete au marche international", "Chaque x10 rapporte autant de points"),
                 List.of("Les victoires ELO de la semaine :", "bases ennemies pillees, events gagnes"),
-                List.of("Moitie musee : pieces exposees", "Moitie territoire : claims poses"),
-                List.of("La banque de faction au moment de la notation", "Chaque x10 rapporte autant de points"));
+                List.of("Ta capitale, les pays que tu tiens,", "tes claims et les pieces du musee",
+                        "Ne repart pas de zero"));
 
         private Notation() {
             super("faction_notation");
@@ -606,7 +615,9 @@ public final class FactionMenus {
                         FactionNotation.lastMonday(data))));
                 last.add(Card.of(new ItemStack(Items.WRITTEN_BOOK), "Derniere semaine",
                         List.of(FactionNotation.points(total) + " / " + FactionNotation.points(score.max()) + "  ·  "
-                                        + NotationConfig.config().grade(total),
+                                        + NotationConfig.config().grade(total)
+                                        + (FactionNotation.lastRank(data) > 0 ? "  ·  "
+                                        + FactionNotation.ordinal(FactionNotation.lastRank(data)) : ""),
                                 "Bourse : +" + MoneyFormat.exact(FactionNotation.lastBourse(data)) + " $"))
                         .accent(0xFFFAC400).tooltip(detail));
                 last.add(Card.of(new ItemStack(Items.NETHER_STAR), "Meilleure semaine", List.of(
@@ -622,14 +633,45 @@ public final class FactionMenus {
                             "Dans " + duration(FactionWeekly.untilReset()), "Note et bourse a la banque de faction"))
                     .accent(0xFFFAC400));
 
+            // le classement face aux douze nations, et ce que vaudrait le rang
+            List<FactionNotation.Standing> standings = FactionNotation.standings(player);
+            int rank = FactionNotation.rank(standings);
+            NotationConfig.Rewards rewards = NotationConfig.config().rewards();
+            List<Card> table = new ArrayList<>();
+            for (int i = 0; i < standings.size(); i++) {
+                FactionNotation.Standing standing = standings.get(i);
+                Card card = Card.of(standing.mine() ? banner(data) : new ItemStack(i < 3 ? Items.GOLD_INGOT
+                                : Items.IRON_INGOT), FactionNotation.ordinal(i + 1) + " " + standing.name(),
+                                List.of(FactionNotation.points(standing.score()) + " / "
+                                        + FactionNotation.points(score.max()), standing.mine() ? "Ta nation"
+                                        : "Nation rivale"))
+                        .accent(standing.color()).progress(Math.round(standing.score()), Math.round(score.max()));
+                table.add(standing.mine() ? card.badge("TOI") : card);
+            }
+            List<String> gains = new ArrayList<>();
+            gains.add("Bourse : +" + MoneyFormat.exact(score.bourse()) + " $ a la banque de faction");
+            gains.add("Conquete : +" + MoneyFormat.exact(FactionNotation.conquestPoints(score.total(), rank))
+                    + " points sur ton pays vise");
+            gains.add("Podium : 3, 2 ou 1 lot(s) de ressources (" + MoneyFormat.shortForm(rewards.lotValue())
+                    + " $ piece)");
+            gains.add("Premiere place : +1 claim (au plus " + rewards.prestigeClaims() + ")");
+            last.add(0, Card.of(new ItemStack(Items.CHEST), "Recompenses", List.of(
+                            FactionNotation.ordinal(rank) + " : +" + MoneyFormat.shortForm(score.bourse()) + " $",
+                            "+" + MoneyFormat.exact(FactionNotation.conquestPoints(score.total(), rank))
+                                    + " points de conquete" + (rewards.lots(rank) > 0 ? ", " + rewards.lots(rank)
+                                    + " lot(s)" : "")))
+                    .accent(0xFF22E558).tooltip(gains));
+
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("NOTE", FactionNotation.points(score.total()) + " / "
                             + FactionNotation.points(score.max()), 0xFFFFFFFF),
-                    new MenuView.Stat("RANG", score.grade(), 0xFF8F5BEA),
+                    new MenuView.Stat("RANG", FactionNotation.ordinal(rank).toUpperCase() + " / " + standings.size(),
+                            0xFF8F5BEA),
                     new MenuView.Stat("BOURSE", MoneyFormat.shortForm(score.bourse()), 0xFFFAC400));
-            return new MenuView(id(), "Notation", "Une note chaque lundi, une bourse a la banque de faction", stats,
+            return new MenuView(id(), "Notation", "Une note chaque lundi, un rang face aux douze nations", stats,
                     List.of(new MenuView.Section("CETTE SEMAINE", "resources", MenuView.GRID, week),
-                            new MenuView.Section("BILAN", "upgrade", MenuView.GRID, last)), true);
+                            new MenuView.Section("BILAN", "upgrade", MenuView.GRID, last),
+                            new MenuView.Section("CLASSEMENT DES NATIONS", "craft", MenuView.GRID, table)), true);
         }
 
         @Override

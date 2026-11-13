@@ -54,9 +54,8 @@ public final class NotationConfig {
                 return false;
             }
             config = result.getOrThrow();
-            double total = config.activity().max() + config.economy().max() + config.jobs().max()
-                    + config.contracts().max() + config.military().max() + config.heritage().max()
-                    + config.treasury().max();
+            double total = config.activity().total() + config.economy().max() + config.trade().max()
+                    + config.military().max() + config.territory().max();
             DoHy.LOGGER.info("Notations chargees : note sur {}, {} $ le point", total, config.boursePerPoint());
             return true;
         } catch (Exception error) {
@@ -73,14 +72,22 @@ public final class NotationConfig {
         ).apply(instance, Grade::new));
     }
 
-    public record Activity(double max, int fullDays) {
+    public record Activity(double max, int fullDays, double contractsMax, double perDaily, double perWeekly,
+                           double perOrder) {
         static final Codec<Activity> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.DOUBLE.optionalFieldOf("max", 10.0d).forGetter(Activity::max),
-                Codec.INT.optionalFieldOf("full_days", 5).forGetter(Activity::fullDays)
+                Codec.INT.optionalFieldOf("full_days", 5).forGetter(Activity::fullDays),
+                Codec.DOUBLE.optionalFieldOf("contracts_max", 10.0d).forGetter(Activity::contractsMax),
+                Codec.DOUBLE.optionalFieldOf("per_daily", 0.4d).forGetter(Activity::perDaily),
+                Codec.DOUBLE.optionalFieldOf("per_weekly", 3.0d).forGetter(Activity::perWeekly),
+                Codec.DOUBLE.optionalFieldOf("per_order", 0.4d).forGetter(Activity::perOrder)
         ).apply(instance, Activity::new));
+
+        public double total() {
+            return max + contractsMax;
+        }
     }
 
-    /** Une echelle logarithmique : 0 point a {@code zeroAt}, le plafond a {@code fullAt}. */
     public record LogScale(double max, long zeroAt, long fullAt) {
         static Codec<LogScale> codec(double max, long zeroAt, long fullAt) {
             return RecordCodecBuilder.create(instance -> instance.group(
@@ -99,21 +106,6 @@ public final class NotationConfig {
         }
     }
 
-    public record Jobs(double max) {
-        static final Codec<Jobs> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.DOUBLE.optionalFieldOf("max", 15.0d).forGetter(Jobs::max)
-        ).apply(instance, Jobs::new));
-    }
-
-    public record Contracts(double max, double perDaily, double perWeekly, double perOrder) {
-        static final Codec<Contracts> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.DOUBLE.optionalFieldOf("max", 15.0d).forGetter(Contracts::max),
-                Codec.DOUBLE.optionalFieldOf("per_daily", 0.5d).forGetter(Contracts::perDaily),
-                Codec.DOUBLE.optionalFieldOf("per_weekly", 3.5d).forGetter(Contracts::perWeekly),
-                Codec.DOUBLE.optionalFieldOf("per_order", 0.5d).forGetter(Contracts::perOrder)
-        ).apply(instance, Contracts::new));
-    }
-
     public record Military(double max, double perWin) {
         static final Codec<Military> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.DOUBLE.optionalFieldOf("max", 20.0d).forGetter(Military::max),
@@ -121,39 +113,75 @@ public final class NotationConfig {
         ).apply(instance, Military::new));
     }
 
-    public record Heritage(double max, int fullClaims) {
-        static final Codec<Heritage> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.DOUBLE.optionalFieldOf("max", 10.0d).forGetter(Heritage::max),
-                Codec.INT.optionalFieldOf("full_claims", 16).forGetter(Heritage::fullClaims)
-        ).apply(instance, Heritage::new));
+    /**
+     * Le territoire : la capitale, les pays (racine du nombre tenu sur
+     * {@code fullCountries}), les claims et le musee. Sans carte de la Terre,
+     * les points de la capitale et des pays vont aux claims et au musee.
+     */
+    public record Territory(double capital, double countries, int fullCountries, double claims, int fullClaims,
+                            double museum) {
+        static final Codec<Territory> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.DOUBLE.optionalFieldOf("capital", 3.0d).forGetter(Territory::capital),
+                Codec.DOUBLE.optionalFieldOf("countries", 12.0d).forGetter(Territory::countries),
+                Codec.INT.optionalFieldOf("full_countries", 12).forGetter(Territory::fullCountries),
+                Codec.DOUBLE.optionalFieldOf("claims", 5.0d).forGetter(Territory::claims),
+                Codec.INT.optionalFieldOf("full_claims", 16).forGetter(Territory::fullClaims),
+                Codec.DOUBLE.optionalFieldOf("museum", 5.0d).forGetter(Territory::museum)
+        ).apply(instance, Territory::new));
+
+        public double max() {
+            return capital + countries + claims + museum;
+        }
     }
 
-    public record Config(long boursePerPoint, List<Grade> grades, Activity activity, LogScale economy, Jobs jobs,
-                         Contracts contracts, Military military, Heritage heritage, LogScale treasury) {
+    /**
+     * Ce que rapporte la semaine en plus de la bourse.
+     *
+     * @param conquestPerPoint points de conquete sur le pays vise, par point de note
+     * @param podium           le multiplicateur de ces points pour le 1er, le 2e et le 3e
+     * @param lotValue         la valeur d'un lot de ressources, au prix de base
+     * @param prestigeClaims   le plafond des claims gagnes en finissant premier
+     */
+    public record Rewards(double conquestPerPoint, List<Double> podium, long lotValue, int prestigeClaims) {
+        static final Rewards DEFAULT = new Rewards(5.0d, List.of(2.0d, 1.5d, 1.25d), 10_000L, 8);
+        static final Codec<Rewards> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.DOUBLE.optionalFieldOf("conquest_per_point", 5.0d).forGetter(Rewards::conquestPerPoint),
+                Codec.DOUBLE.listOf().optionalFieldOf("podium", DEFAULT.podium()).forGetter(Rewards::podium),
+                Codec.LONG.optionalFieldOf("lot_value", 10_000L).forGetter(Rewards::lotValue),
+                Codec.INT.optionalFieldOf("prestige_claims", 8).forGetter(Rewards::prestigeClaims)
+        ).apply(instance, Rewards::new));
 
+        /** Le multiplicateur de ce rang (1 pour le premier) ; 1 hors du podium. */
+        public double multiplier(int rank) {
+            return rank >= 1 && rank <= podium.size() ? podium.get(rank - 1) : 1.0d;
+        }
+
+        /** Les lots de ressources de ce rang : trois, deux, un, puis rien. */
+        public int lots(int rank) {
+            return rank >= 1 && rank <= 3 ? 4 - rank : 0;
+        }
+    }
+
+    public record Config(long boursePerPoint, List<Grade> grades, Activity activity, LogScale economy,
+                         LogScale trade, Military military, Territory territory, Rewards rewards) {
         private static final List<Grade> GRADES = List.of(new Grade("S", 85.0d), new Grade("A", 70.0d),
                 new Grade("B", 50.0d), new Grade("C", 30.0d), new Grade("D", 0.0d));
-
-        static final Config FALLBACK = new Config(2500L, GRADES, new Activity(10.0d, 5),
-                new LogScale(20.0d, 10_000L, 10_000_000L), new Jobs(15.0d),
-                new Contracts(15.0d, 0.5d, 3.5d, 0.5d), new Military(20.0d, 4.0d), new Heritage(10.0d, 16),
-                new LogScale(10.0d, 100_000L, 100_000_000L));
-
+        static final Config FALLBACK = new Config(2500L, GRADES, new Activity(10.0d, 5, 10.0d, 0.4d, 3.0d, 0.4d),
+                new LogScale(20.0d, 10_000L, 10_000_000L), new LogScale(15.0d, 5_000L, 2_000_000L),
+                new Military(20.0d, 4.0d), new Territory(3.0d, 12.0d, 12, 5.0d, 16, 5.0d), Rewards.DEFAULT);
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.LONG.optionalFieldOf("bourse_per_point", 2500L).forGetter(Config::boursePerPoint),
                 Grade.CODEC.listOf().optionalFieldOf("grades", GRADES).forGetter(Config::grades),
                 Activity.CODEC.optionalFieldOf("activity", FALLBACK.activity()).forGetter(Config::activity),
                 LogScale.codec(20.0d, 10_000L, 10_000_000L).optionalFieldOf("economy", FALLBACK.economy())
                         .forGetter(Config::economy),
-                Jobs.CODEC.optionalFieldOf("jobs", FALLBACK.jobs()).forGetter(Config::jobs),
-                Contracts.CODEC.optionalFieldOf("contracts", FALLBACK.contracts()).forGetter(Config::contracts),
+                LogScale.codec(15.0d, 5_000L, 2_000_000L).optionalFieldOf("trade", FALLBACK.trade())
+                        .forGetter(Config::trade),
                 Military.CODEC.optionalFieldOf("military", FALLBACK.military()).forGetter(Config::military),
-                Heritage.CODEC.optionalFieldOf("heritage", FALLBACK.heritage()).forGetter(Config::heritage),
-                LogScale.codec(10.0d, 100_000L, 100_000_000L).optionalFieldOf("treasury", FALLBACK.treasury())
-                        .forGetter(Config::treasury)
+                Territory.CODEC.optionalFieldOf("territory", FALLBACK.territory()).forGetter(Config::territory),
+                Rewards.CODEC.optionalFieldOf("rewards", Rewards.DEFAULT).forGetter(Config::rewards)
         ).apply(instance, Config::new));
 
-        /** La lettre d'une note : la premiere dont le seuil est atteint, dans l'ordre du fichier. */
         public String grade(double total) {
             for (Grade grade : grades) {
                 if (total >= grade.from()) {

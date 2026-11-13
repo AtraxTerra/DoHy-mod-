@@ -25,6 +25,7 @@ PvE**. Choix du joueur :
 | 22g | Bases ennemies sur demande, à plus de 9 000 blocs, à piller : trois tailles, cinq genres, terrain qui revient après le raid | fait |
 | 22h | Notation de la semaine : une note sur 100 chaque lundi, une bourse à la banque de faction (repris de NationsGlory) | fait |
 | 22i | Pays à prendre, sur une carte de la Terre : capitale, conquête des pays aux events contre les nations rivales | fait |
+| 22j | Refonte : la faction est une nation (rangs, page unifiée), marché international à stock mondial, notation à cinq critères avec classement face aux nations | fait |
 
 ## Ce qui change en solo
 
@@ -478,41 +479,90 @@ La récompense « dégâts de raid » de la branche Défense (-5, -10, -15, -20 
 de Volcania, de leurs sbires et des combattants rivaux, dans la Warzone : il n'y a pas de raids en
 solo.
 
-## Notation de la semaine (22h)
+## Notation de la semaine (22h, refondue en 22j)
 
-Repris des **notations de pays de NationsGlory**, où chaque pays est noté toutes les semaines
-(activité, gestion, compétences, économie, militaire, architecture) et touche une bourse le lundi
-selon son rang. Seul, il n'y a pas de rang : la note se lit pour elle-même, et la bourse lui est
-proportionnelle.
+Reprise des **notations de pays de NationsGlory**, où chaque pays est noté toutes les semaines et
+payé le lundi selon son rang. La note tombe le lundi à minuit, avec la ligue.
 
-**Ce qu'elle ajoute à la ligue.** La ligue ne regarde que l'ELO : une semaine sans raid ni event
-ne rapporte rien, et fait même descendre. La notation regarde tout ce que le joueur a fait, et
-paie donc aussi une semaine paisible. Les deux tombent ensemble, le lundi à minuit.
+**Cinq critères**, 100 points :
 
 | Critère | Plafond | Ce qui est mesuré | Sorte |
 |---|---|---|---|
-| Activité | 10 | Jours de la semaine où le joueur s'est connecté ; 5 jours donnent le plafond | semaine |
-| Économie | 20 | Argent gagné dans la semaine, retraits de la banque de faction déduits ; échelle logarithmique de 10 k à 10 M | semaine |
-| Métiers | 15 | Somme des niveaux des quatre métiers, sur le maximum possible | état |
-| Contrats | 15 | 0,5 par contrat du jour, 3,5 pour celui de la semaine, 0,5 par commande de trixium | semaine |
-| Militaire | 20 | 4 points par victoire ELO de la semaine (base ennemie pillée, event gagné) | semaine |
-| Patrimoine | 10 | Moitié musée (pièces exposées), moitié territoire (16 claims donnent le plafond ; un pays tenu compte pour 4 claims) | état |
-| Trésor | 10 | Banque de faction ; échelle logarithmique de 100 k à 100 M | état |
+| Activité | 20 | 10 pour les jours joués (5 jours donnent le plafond), 10 pour les contrats (0,4 par contrat du jour ou commande de trixium, 3 pour celui de la semaine) | semaine |
+| Économie | 20 | Argent gagné dans la semaine, retraits de la banque de faction déduits ; logarithmique de 10 k à 10 M | semaine |
+| Commerce | 15 | Volume vendu et acheté au marché international ; logarithmique de 5 k à 2 M | semaine |
+| Militaire | 20 | 4 points par victoire ELO de la semaine | semaine |
+| Territoire | 25 | Capitale posée 3 ; pays tenus 12 (racine du nombre sur 12 : 1 pays 3,5, 3 pays 6) ; claims 5 (16 donnent le plafond) ; musée 5 | état |
 
-- **Bourse** : 2 500 $ le point, versés à la banque de faction. 100 points font 250 000 $.
-- **Rang** : S dès 85, A dès 70, B dès 50, C dès 30, D en dessous. Il n'a pas d'effet, il se lit.
-- **Critères de semaine** : ils repartent de zéro le lundi. **Critères d'état** : ils se lisent
-  tels quels et ne redescendent pas ; une partie avancée a donc un socle (jusqu'à 35 points) que
-  le début n'a pas.
-- **Absence** : seule la semaine qui vient de finir est notée. Trois lundis manqués donnent une
-  notation, pas trois.
-- **Pas d'architecture** : NationsGlory la fait noter à la main. Un programme ne juge pas une
-  construction ; le patrimoine (musée, territoire) tient sa place.
-- **Écran** : carte « Notation » sur la page de faction, puis une page qui montre la semaine en
-  cours critère par critère, la dernière semaine notée, la meilleure, et le temps avant lundi.
+Les métiers et le trésor ne comptent plus : ils ne faisaient que monter. Sans carte de la Terre,
+les 15 points de la capitale et des pays vont pour moitié aux claims, pour moitié au musée.
 
-Les compteurs vivent dans les stats de la faction, sous le préfixe `note:`. Réglages :
-`data/notations.json`. Code : `FactionNotation`, `NotationConfig`, branchés dans `FactionWeekly`.
+**Le classement.** Chaque semaine, les douze nations rivales ont leur note, tirée de la graine du
+monde et de la semaine : 38 à 72 au hasard, plus 8 points selon la part de leurs pays d'origine
+qu'elles tiennent encore. Leur prendre des pays les fait reculer. La faction se classe parmi
+elles, de 1re à 13e ; à note égale elle passe devant.
+
+**Les récompenses** :
+- **Bourse** : 2 500 $ le point, à la banque de faction (inchangée).
+- **Conquête** : 5 points de conquête par point de note sur le pays visé ; × 2 pour la 1re place,
+  × 1,5 pour la 2e, × 1,25 pour la 3e. Le pays tombe s'ils suffisent.
+- **Podium** : trois, deux ou un lot de ressources du marché international, 10 000 $ pièce au
+  prix de base.
+- **Première place** : un claim de plus, qui reste (au plus 8).
+
+- **Rang de note** : S dès 85, A dès 70, B dès 50, C dès 30, D en dessous.
+- **Absence** : seule la semaine qui vient de finir est notée.
+- **Écran** : carte « Notation » sur la page de faction (note et rang), puis la semaine critère
+  par critère, les récompenses à ce rang, la dernière semaine, et le classement des treize.
+
+Compteurs dans les stats de la faction, préfixe `note:` ; claims gagnés : `prestige:claims`.
+Réglages : `data/notations.json`. Code : `FactionNotation`, `NotationConfig`, `FactionWeekly`.
+
+## La faction est une nation (22j)
+
+Sur une carte de la Terre, la page de faction devient celle d'une nation : une section
+« Territoire » y montre la capitale, les pays tenus et la cible (clic : poser la capitale,
+renoncer à la cible), avec un accès aux voisins et aux nations rivales. La faction a un **rang**,
+selon les pays qu'elle tient :
+
+| Rang | Condition | Taxe du marché international |
+|---|---|---|
+| Faction | pas de capitale | 15 % |
+| Cité | une capitale, aucun pays | 14 % |
+| État | 1 pays | 12 % |
+| Royaume | 5 pays | 10 % |
+| Empire | 15 pays | 8 % |
+| Superpuissance | 40 pays | 6 % |
+
+Code : `NationRank`.
+
+## Marché international (22j)
+
+Un stock mondial par ressource, et un cours qui le suit. Ouvert à toute faction : carte « Marché
+international » de la page de faction, ou `/f marche`.
+
+- **25 ressources cotées** : fer, or, cuivre, charbon, diamant, émeraude, redstone, lapis,
+  quartz, obsidienne, chêne, blé, pomme de terre, carotte, canne à sucre, cuir, os, ficelle,
+  poudre, slime, perle de l'Ender, bâton de blaze, améthyste, titane, paladium.
+- **Le cours** vaut (stock de référence / stock)^0,6 : 1 à la référence (quatre fois la
+  demi-saturation de la ressource : 8 000 pour le fer, 256 pour le diamant), jusqu'à 2 en pénurie,
+  0,4 quand le marché est saturé.
+- **Vendre** (clic : tout ce que tu portes) paie le prix de base × le cours, moins la taxe du
+  rang. La vente gonfle le stock : le cours baisse à mesure, et l'échange est payé à l'intégrale
+  — mille d'un coup ou en dix fois, même somme. **À 0,4 le marché est saturé : il n'achète plus.**
+- **Acheter** (clic droit : une pile) coûte 2,8 fois le cours, jamais moins de 2,6 fois le prix
+  de base. C'est moins cher que la boutique (4 fois) tant que le stock est là ; en pénurie, le
+  marché n'a plus rien.
+- **Les gros lots des nations.** Toutes les dix minutes de jeu, une nation rivale achète ou vend
+  15 à 40 % du stock de référence d'une ressource : le cours saute, et la dépêche passe dans le
+  chat (« Nordheim vend 2 400 × Lingot de fer : le cours tombe à -14 % »). Une nation vend plutôt
+  ce qui est cher et achète plutôt ce qui est bradé.
+- **Le retour.** Entre deux lots, chaque stock revient vers sa référence : 10 % de l'écart par
+  vingt minutes de jeu, le rythme d'oubli des ventes à la boutique.
+- **Notation** : le volume échangé fait le critère Commerce.
+
+Chiffrage et garde-fous : `docs/BALANCE.md` § 6 vicies. Code : `faction/market/WorldMarket`,
+`WorldMarketMenu` ; l'état est sur le monde principal (`world_market`).
 
 ## Pays à prendre (22i)
 

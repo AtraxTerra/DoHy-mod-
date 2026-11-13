@@ -175,6 +175,39 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-13 (suite 15) — refonte : nation, marché international, notation
+
+**Demande** : « Une petite refonte du système de factions, de pays, et des notations, avec un
+marché international qui varie en gros stock ». Précisée par quatre choix : la faction est une
+nation ; un stock mondial par ressource ; vente possible mais plafonnée ; notation simplifiée, qui
+compte les pays et le commerce, classe face aux nations, avec des récompenses revues.
+Description : `docs/FACTION.md` (lot 22j) ; chiffrage : `docs/BALANCE.md` § 6 vicies.
+
+**Fait** (`feat/nation-marche`, sur `feat/terre-capitales`) :
+- `NationRank` : six rangs selon les pays tenus, qui fixent la taxe du marché (15 à 6 %).
+- Page de faction : rang, section « Territoire » (capitale, pays, cible, voisins) sur une carte
+  de la Terre, carte « Marché international ».
+- `faction/market/WorldMarket` et `WorldMarketMenu` : 25 ressources, cours = (R / stock)^0,6
+  borné à [0,4 ; 2], paiement à l'intégrale, saturation et pénurie, achat à 2,8 × le cours
+  (plancher 2,6 × la base), gros lots des nations toutes les dix minutes de jeu, retour à la
+  référence, dépêches ; `/f marche`.
+- `FactionNotation` / `NotationConfig` / `data/notations.json` : cinq critères (activité 20,
+  économie 20, commerce 15, militaire 20, territoire 25), classement face aux douze nations (note
+  tirée de la graine et de la semaine, plus leur part de pays gardés), récompenses : bourse,
+  points de conquête, lots du podium, claim de la première place.
+
+**Vérifié en jeu** (client de CI) : rangs Faction → Cité → État et taxe 15 → 14 → 12 % ; vente de
+1 000 fer puis 1 000 = 24 648 $, le devis des 2 000 d'un coup ; saturation à -60 %, le marché
+refuse et le fer reste en main ; achat de diamants jusqu'à la pénurie (+99 %), refus ensuite ;
+boucle achat-revente : -453 304 $ ; fer bradé : achat 39 $ pièce contre une vente à 30 $ au plus ;
+quatre lots de nations avec leurs dépêches ; notation : commerce 13,5 / 15 pour 1,09 M $,
+territoire 6,8 / 25, 13e sur 13 ; lundi forcé : bourse 50 750 $, 102 points sur la Belgique,
+volume remis à zéro ; les trois écrans.
+
+**Non vérifié** : un vrai lundi (la bascule est forcée dans l'essai), le retour des stocks sur
+plusieurs heures de jeu, et l'équilibre sur une vraie partie — le marché ajoute un débouché à la
+boutique, à surveiller.
+
 ### 2026-11-13 (suite 14) — la Terre : les capitales
 
 **Demande** : « Peux-tu pour les capitales ajouter une reproduction des villes ? », précisée en
