@@ -83,12 +83,12 @@ public final class EarthCities {
     }
 
     /** Ce que le monde retient d'une ville : sa hauteur, les chunks de sa place deja poses, son monument. */
-    public record State(String id, int baseY, int square, boolean monument) {
+    public record State(String id, int baseY, long square, int monuments) {
         static final Codec<State> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("id").forGetter(State::id),
                 Codec.INT.fieldOf("base_y").forGetter(State::baseY),
-                Codec.INT.optionalFieldOf("square", 0).forGetter(State::square),
-                Codec.BOOL.optionalFieldOf("monument", false).forGetter(State::monument)
+                Codec.LONG.optionalFieldOf("square", 0L).forGetter(State::square),
+                Codec.INT.optionalFieldOf("monuments", 0).forGetter(State::monuments)
         ).apply(instance, State::new));
     }
 
@@ -125,6 +125,7 @@ public final class EarthCities {
     private static final LongLinkedOpenHashSet QUEUE = new LongLinkedOpenHashSet();
     private static final Deque<Job> JOBS = new ArrayDeque<>();
     private static final Map<UUID, String> INSIDE = new ConcurrentHashMap<>();
+    private static final java.util.Set<String> FINISHED = ConcurrentHashMap.newKeySet();
 
     private EarthCities() {
     }
@@ -157,6 +158,7 @@ public final class EarthCities {
         JOBS.clear();
         INDEX.clear();
         INSIDE.clear();
+        FINISHED.clear();
         placed = List.of();
         placedFor = null;
     }
@@ -235,16 +237,16 @@ public final class EarthCities {
     private static final class Job {
         final Placed city;
         final long chunk;
-        final boolean monument;
+        final int site;
         final long[] positions;
         final BlockState[] states;
         final List<CityBuilder.Label> labels;
         int cursor;
 
-        Job(Placed city, long chunk, boolean monument, CityBuilder.Plan plan) {
+        Job(Placed city, long chunk, int site, CityBuilder.Plan plan) {
             this.city = city;
             this.chunk = chunk;
-            this.monument = monument;
+            this.site = site;
             this.positions = new long[plan.blocks.size()];
             this.states = new BlockState[plan.blocks.size()];
             int i = 0;
@@ -303,7 +305,7 @@ public final class EarthCities {
             int baseY = baseY(level, city);
             CityBuilder.Plan plan = new CityBuilder.Plan();
             CityBuilder.chunk(plan, city.city(), cx, cz, baseY, ground(level));
-            JOBS.addLast(new Job(city, key, false, plan));
+            JOBS.addLast(new Job(city, key, -1, plan));
             return true;
         }
         return false;
@@ -351,7 +353,7 @@ public final class EarthCities {
         }
         Arrays.sort(heights);
         int baseY = Math.max(level.getSeaLevel() + 1, heights[40] + 1);
-        level.setData(DoHyEarth.CITY_STATES.get(), states.with(new State(city.entry().id(), baseY, 0, false)));
+        level.setData(DoHyEarth.CITY_STATES.get(), states.with(new State(city.entry().id(), baseY, 0L, 0)));
         DoHy.LOGGER.info("Villes : {} se pose a y = {}", city.entry().name(), baseY);
         return baseY;
     }
@@ -370,28 +372,42 @@ public final class EarthCities {
         if (state == null) {
             return;
         }
-        if (job.monument) {
+        if (job.site >= 0) {
+            int built = state.monuments() | 1 << job.site;
             level.setData(DoHyEarth.CITY_STATES.get(), states.with(new State(state.id(), state.baseY(),
-                    state.square(), true)));
-            DoHy.LOGGER.info("Villes : monument de {} pose", city.name());
+                    state.square(), built)));
+            if (built == (1 << city.sites().size()) - 1) {
+                FINISHED.add(city.id());
+            }
+            DoHy.LOGGER.info("Villes : {}, {} pose", city.name(), city.sites().get(job.site).label());
             return;
         }
         int cx = (int) job.chunk;
         int cz = (int) (job.chunk >> 32);
         level.getChunk(cx, cz).setData(DoHyEarth.CITY.get(), config.version());
-        if (city.role(cx, cz) != CityBuilder.DISTRICT) {
+        int index = city.site(cx, cz);
+        if (city.role(cx, cz) != CityBuilder.DISTRICT || index < 0) {
             return;
         }
-        int bit = 1 << ((cx - city.chunkX() + 1) * 3 + (cz - city.chunkZ() + 1));
-        int square = state.square() | bit;
-        int full = city.radius() >= 2 ? 0x1FF : 1 << 4;
+        // la place est complete quand tous ses chunks sont poses : le monument peut venir
+        CityLayouts.Site site = city.sites().get(index);
+        int local = (cx - city.chunkX() - site.dx() + 1) * 3 + (cz - city.chunkZ() - site.dz() + 1);
+        long square = state.square() | 1L << (index * 9 + local);
         level.setData(DoHyEarth.CITY_STATES.get(), states.with(new State(state.id(), state.baseY(), square,
-                state.monument())));
-        if ((square & full) == full && !state.monument()) {
+                state.monuments())));
+        long full = (site.half() >= 1 ? 0x1FFL : 1L << 4) << (index * 9);
+        // les chunks de la place hors de la ville (un coin rogne) ne viendront jamais : ils comptent pour poses
+        for (int dx = -site.half(); dx <= site.half(); dx++) {
+            for (int dz = -site.half(); dz <= site.half(); dz++) {
+                if (city.role(city.chunkX() + site.dx() + dx, city.chunkZ() + site.dz() + dz) == CityBuilder.OUTSIDE) {
+                    full &= ~(1L << (index * 9 + (dx + 1) * 3 + dz + 1));
+                }
+            }
+        }
+        if ((square & full) == full && (state.monuments() & 1 << index) == 0) {
             CityBuilder.Plan plan = new CityBuilder.Plan();
-            String country = countryName(city.country());
-            CityMonuments.build(plan, city, state.baseY(), country);
-            JOBS.addLast(new Job(job.city, job.chunk, true, plan));
+            CityMonuments.build(plan, city, site, state.baseY(), countryName(city.country()));
+            JOBS.addLast(new Job(job.city, job.chunk, index, plan));
         }
     }
 
@@ -428,6 +444,29 @@ public final class EarthCities {
 
     static void forget(UUID player) {
         INSIDE.remove(player);
+    }
+
+    /** Vrai quand rien n'attend d'etre pose. */
+    public static boolean idle() {
+        return QUEUE.isEmpty() && JOBS.isEmpty();
+    }
+
+    /** Vrai quand le monument de cette ville est pose (depuis le demarrage). */
+    public static boolean finished(String id) {
+        return FINISHED.contains(id);
+    }
+
+    /** La hauteur de cette ville, ou -1 tant qu'elle n'est pas mesuree. */
+    public static int baseY(MinecraftServer server, String id) {
+        EarthData earth = EarthData.get();
+        ServerLevel level = earth == null ? null : server.getLevel(earth.dimension());
+        State state = level == null ? null : states(level).of(id);
+        return state == null ? -1 : state.baseY();
+    }
+
+    /** Les noms de blocs inconnus de cette version, remplaces par de la pierre. */
+    public static java.util.Set<String> missingBlocks() {
+        return CityBlocks.missing();
     }
 
     /** Pour les essais : combien de chunks et de monuments restent a poser. */

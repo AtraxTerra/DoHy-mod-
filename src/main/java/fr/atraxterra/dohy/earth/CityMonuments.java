@@ -34,16 +34,17 @@ public final class CityMonuments {
         return state;
     }
 
-    /** Pose le monument de la ville et son nom ; la place est deja pavee. */
-    public static void build(CityBuilder.Plan plan, CityBuilder.City city, int baseY, String countryName) {
-        int x = city.centerX();
-        int z = city.centerZ();
+    /** Pose le monument d'une place et son nom ; la place est deja pavee. */
+    public static void build(CityBuilder.Plan plan, CityBuilder.City city, CityLayouts.Site site, int baseY,
+                             String countryName) {
+        int x = city.centerX() + site.dx() * 16;
+        int z = city.centerZ() + site.dz() * 16;
         int y = baseY + 1;
-        Random random = new Random(city.seed());
-        String monument = city.monument() == null ? "" : city.monument();
+        Random random = new Random(city.seed() ^ site.label().hashCode());
         int labelZ;
-        switch (monument) {
-            case "lattice_tower" -> labelZ = latticeTower(plan, x, y, z);
+        switch (site.monument()) {
+            case "lattice_tower" -> labelZ = latticeTower(plan, x, y, z, "brown_terracotta", "brown_terracotta");
+            case "lattice_red" -> labelZ = latticeTower(plan, x, y, z, "red_concrete", "white_concrete");
             case "clock_tower" -> labelZ = clockTower(plan, x, y, z);
             case "amphitheatre" -> labelZ = amphitheatre(plan, x, y, z);
             case "onion_domes" -> labelZ = onionDomes(plan, x, y, z);
@@ -54,11 +55,311 @@ public final class CityMonuments {
             case "acropolis" -> labelZ = acropolis(plan, x, y, z);
             case "triumph_arch" -> labelZ = triumphArch(plan, x, y, z);
             case "pagoda" -> labelZ = pagoda(plan, x, y, z);
-            default -> labelZ = palace(plan, city, x, y, z, random);
+            case "cathedral" -> labelZ = cathedral(plan, x, y, z);
+            case "long_palace" -> labelZ = longPalace(plan, city, x, y, z);
+            case "arch" -> labelZ = arch(plan, x, y, z);
+            case "domed_church" -> labelZ = domedChurch(plan, city, x, y, z);
+            case "wheel" -> labelZ = wheel(plan, x, y, z);
+            case "keep" -> labelZ = keep(plan, x, y, z);
+            case "temple" -> labelZ = temple(plan, x, y, z);
+            case "round_temple" -> labelZ = roundTemple(plan, x, y, z);
+            case "tv_tower" -> labelZ = tvTower(plan, x, y, z);
+            case "fortress" -> labelZ = fortress(plan, x, y, z);
+            case "column" -> labelZ = pillar(plan, x, y, z);
+            default -> labelZ = palace(plan, city, site.half() < 1, x, y, z, random);
         }
-        labelZ = Math.min(labelZ, z + (city.radius() >= 2 ? 20 : 3));
-        plan.label(x, y + 4, labelZ, city.name().toUpperCase(java.util.Locale.ROOT), 0xFFFFFF, 3.0f);
-        plan.label(x, y + 2, labelZ, "Capitale : " + countryName, 0xFAC400, 1.5f);
+        labelZ = Math.min(labelZ, z + (site.half() >= 1 ? 20 : 4));
+        if (site.main()) {
+            plan.label(x, y + 5, labelZ, city.name().toUpperCase(java.util.Locale.ROOT), 0xFFFFFF, 3.0f);
+            plan.label(x, y + 3, labelZ, "Capitale : " + countryName, 0xFAC400, 1.5f);
+        }
+        if (!site.label().equals(city.name())) {
+            plan.label(x, y + (site.main() ? 2 : 3), labelZ, site.label(), 0xE0E0E0, 1.2f);
+        }
+    }
+
+    // -- Les petits monuments : une place d'un chunk, dix blocs de cote ----------------------
+
+    /** Une cathedrale gothique : deux tours en facade, une nef, une fleche. */
+    private static int cathedral(CityBuilder.Plan plan, int x, int y, int z) {
+        BlockState stone = b("stone_bricks");
+        BlockState light = b("smooth_stone");
+        BlockState roof = b("deepslate_tiles");
+        for (int side = -1; side <= 1; side += 2) {
+            int tx = x + side * 3 - (side < 0 ? 0 : 1);
+            box(plan, tx - 1, y, z + 2, tx + 1, y + 15, z + 4, stone);
+            box(plan, tx, y + 10, z + 4, tx, y + 13, z + 4, b("air"));
+            box(plan, tx - 1, y + 16, z + 2, tx + 1, y + 16, z + 4, light);
+        }
+        box(plan, x - 2, y, z - 5, x + 1, y + 9, z + 3, stone);
+        box(plan, x - 1, y, z - 4, x, y + 8, z + 2, b("air"));
+        for (int level = 0; level < 3; level++) {
+            box(plan, x - 2 + level, y + 10 + level, z - 5, x + 1 - level, y + 10 + level, z + 3, roof);
+        }
+        for (int pz = z - 4; pz <= z + 1; pz += 2) {
+            plan.set(x - 2, y + 4, pz, b("blue_stained_glass"));
+            plan.set(x + 1, y + 4, pz, b("blue_stained_glass"));
+            plan.set(x - 2, y + 5, pz, b("blue_stained_glass"));
+            plan.set(x + 1, y + 5, pz, b("blue_stained_glass"));
+        }
+        // la rosace et le portail
+        box(plan, x - 1, y + 6, z + 3, x, y + 7, z + 3, b("magenta_stained_glass"));
+        box(plan, x - 1, y, z + 3, x, y + 2, z + 4, b("air"));
+        column(plan, x, y + 12, y + 20, z - 2, roof);
+        plan.set(x, y + 21, z - 2, b("lightning_rod"));
+        return z + 5;
+    }
+
+    /** Un palais en long, aux couleurs de la region. */
+    private static int longPalace(CityBuilder.Plan plan, CityBuilder.City city, int x, int y, int z) {
+        boolean east = "asie".equals(city.style());
+        BlockState wall = b(east ? "red_terracotta" : "orient".equals(city.style()) ? "smooth_sandstone"
+                : "ameriques".equals(city.style()) ? "white_concrete" : "smooth_sandstone");
+        BlockState trim = b(east ? "yellow_terracotta" : "ameriques".equals(city.style()) ? "smooth_quartz"
+                : "cut_sandstone");
+        BlockState roof = b(east ? "yellow_terracotta" : "deepslate_tiles");
+        box(plan, x - 5, y, z - 3, x + 4, y + 6, z + 1, wall);
+        box(plan, x - 4, y, z - 2, x + 3, y + 5, z, b("air"));
+        for (int px = x - 4; px <= x + 3; px += 2) {
+            plan.set(px, y + 1, z + 1, b("glass"));
+            plan.set(px, y + 4, z + 1, b("glass"));
+            plan.set(px, y + 1, z - 3, b("glass"));
+            plan.set(px, y + 4, z - 3, b("glass"));
+        }
+        box(plan, x - 5, y + 3, z - 3, x + 4, y + 3, z + 1, trim);
+        box(plan, x - 4, y + 3, z - 2, x + 3, y + 3, z, b("spruce_planks"));
+        box(plan, x - 5, y + 7, z - 3, x + 4, y + 7, z + 1, roof);
+        box(plan, x - 4, y + 8, z - 2, x + 3, y + 8, z, roof);
+        // le pavillon central et sa porte
+        box(plan, x - 2, y, z + 1, x + 1, y + 8, z + 2, trim);
+        box(plan, x - 1, y, z + 1, x, y + 2, z + 2, b("air"));
+        box(plan, x - 2, y + 9, z, x + 1, y + 9, z + 2, roof);
+        return z + 4;
+    }
+
+    /** Un arc de triomphe a une arche. */
+    private static int arch(CityBuilder.Plan plan, int x, int y, int z) {
+        BlockState stone = b("smooth_sandstone");
+        BlockState cut = b("cut_sandstone");
+        box(plan, x - 4, y, z - 2, x + 3, y + 11, z + 1, stone);
+        for (int i = -2; i <= 1; i++) {
+            int height = 6 + ((i == -2 || i == 1) ? 0 : 1);
+            box(plan, x + i, y, z - 2, x + i, y + height, z + 1, b("air"));
+        }
+        box(plan, x - 4, y + 4, z - 1, x + 3, y + 5, z, b("air"));
+        box(plan, x - 4, y, z - 2, x - 3, y + 11, z + 1, stone);
+        box(plan, x + 2, y, z - 2, x + 3, y + 11, z + 1, stone);
+        box(plan, x - 4, y + 9, z - 2, x + 3, y + 9, z + 1, cut);
+        box(plan, x - 5, y + 12, z - 3, x + 4, y + 12, z + 2, cut);
+        box(plan, x - 4, y + 13, z - 2, x + 3, y + 13, z + 1, stone);
+        return z + 4;
+    }
+
+    /** Une eglise a coupole ; une mosquee a minarets en Orient. */
+    private static int domedChurch(CityBuilder.Plan plan, CityBuilder.City city, int x, int y, int z) {
+        boolean orient = "orient".equals(city.style());
+        BlockState wall = b(orient ? "smooth_sandstone" : "smooth_quartz");
+        BlockState domeBlock = b(orient ? "cyan_terracotta" : "europe".equals(city.style()) ? "light_gray_concrete"
+                : "smooth_quartz");
+        box(plan, x - 4, y, z - 4, x + 3, y + 6, z + 3, wall);
+        box(plan, x - 3, y, z - 3, x + 2, y + 5, z + 2, b("air"));
+        for (int i = -3; i <= 2; i += 2) {
+            plan.set(x + i, y + 3, z + 3, b("glass"));
+            plan.set(x + i, y + 3, z - 4, b("glass"));
+            plan.set(x - 4, y + 3, z + i, b("glass"));
+            plan.set(x + 3, y + 3, z + i, b("glass"));
+        }
+        for (int i = -3; i <= 2; i++) {
+            for (int j = -3; j <= 2; j++) {
+                double d = Math.hypot(i + 0.5d, j + 0.5d);
+                if (d <= 3.6d && d > 2.4d) {
+                    column(plan, x + i, y + 7, y + 9, z + j, wall);
+                }
+            }
+        }
+        for (int dy = 0; dy <= 4; dy++) {
+            double r = Math.sqrt(Math.max(0.0d, 3.6d * 3.6d - dy * dy * 0.9d));
+            for (int i = -4; i <= 3; i++) {
+                for (int j = -4; j <= 3; j++) {
+                    if (Math.hypot(i + 0.5d, j + 0.5d) <= r) {
+                        plan.set(x + i, y + 10 + dy, z + j, domeBlock);
+                    }
+                }
+            }
+        }
+        column(plan, x, y + 15, y + 16, z, wall);
+        plan.set(x, y + 17, z, b("gold_block"));
+        box(plan, x - 1, y, z + 3, x, y + 2, z + 3, b("air"));
+        if (orient) {
+            for (int side = -1; side <= 1; side += 2) {
+                int mx = side < 0 ? x - 5 : x + 4;
+                column(plan, mx, y, y + 16, z + 4, wall);
+                plan.set(mx, y + 17, z + 4, domeBlock);
+            }
+        }
+        return z + 5;
+    }
+
+    /** Une grande roue. */
+    private static int wheel(CityBuilder.Plan plan, int x, int y, int z) {
+        BlockState steel = b("white_concrete");
+        BlockState spoke = b("iron_bars");
+        int cy = y + 14;
+        for (int i = -12; i <= 12; i++) {
+            for (int j = -12; j <= 12; j++) {
+                double d = Math.hypot(i, j);
+                if (d <= 11.6d && d >= 10.6d) {
+                    plan.set(x + i / 1, cy + j, z, steel);
+                } else if (d < 10.6d && (i == 0 || j == 0 || Math.abs(i) == Math.abs(j))) {
+                    plan.set(x + i, cy + j, z, spoke);
+                }
+            }
+        }
+        for (int k = 0; k < 16; k++) {
+            double a = k * Math.PI / 8.0d;
+            int i = (int) Math.round(Math.cos(a) * 11.6d);
+            int j = (int) Math.round(Math.sin(a) * 11.6d);
+            plan.set(x + i, cy + j, z + 1, b("light_blue_stained_glass"));
+        }
+        for (int dy = 0; dy < 14; dy++) {
+            plan.set(x - 3 + dy / 5, y + dy, z - 1, steel);
+            plan.set(x + 3 - dy / 5, y + dy, z - 1, steel);
+        }
+        plan.set(x, cy, z - 1, steel);
+        return z + 4;
+    }
+
+    /** Un donjon : une tour carree a creneaux, quatre tourelles. */
+    private static int keep(CityBuilder.Plan plan, int x, int y, int z) {
+        BlockState stone = b("stone_bricks");
+        BlockState pale = b("smooth_stone");
+        box(plan, x - 4, y, z - 4, x + 3, y + 9, z + 3, stone);
+        box(plan, x - 3, y + 1, z - 3, x + 2, y + 9, z + 2, b("air"));
+        box(plan, x - 3, y + 5, z - 3, x + 2, y + 5, z + 2, b("spruce_planks"));
+        for (int i = -4; i <= 3; i++) {
+            if (Math.floorMod(i, 2) == 0) {
+                plan.set(x + i, y + 10, z - 4, stone);
+                plan.set(x + i, y + 10, z + 3, stone);
+                plan.set(x - 4, y + 10, z + i, stone);
+                plan.set(x + 3, y + 10, z + i, stone);
+            }
+        }
+        int[][] corners = {{-5, -5}, {4, -5}, {-5, 4}, {4, 4}};
+        for (int[] corner : corners) {
+            column(plan, x + corner[0], y, y + 12, z + corner[1], pale);
+            plan.set(x + corner[0], y + 13, z + corner[1], b("deepslate_tiles"));
+        }
+        box(plan, x - 1, y, z + 3, x, y + 2, z + 3, b("air"));
+        return z + 5;
+    }
+
+    /** Un temple a colonnes et fronton. */
+    private static int temple(CityBuilder.Plan plan, int x, int y, int z) {
+        BlockState marble = b("smooth_quartz");
+        BlockState pillar = b("quartz_pillar");
+        box(plan, x - 5, y, z - 4, x + 4, y, z + 3, marble);
+        for (int px = x - 5; px <= x + 4; px += 3) {
+            column(plan, px, y + 1, y + 6, z + 3, pillar);
+            column(plan, px, y + 1, y + 6, z - 4, pillar);
+        }
+        column(plan, x - 5, y + 1, y + 6, z, pillar);
+        column(plan, x + 4, y + 1, y + 6, z, pillar);
+        box(plan, x - 3, y + 1, z - 2, x + 2, y + 6, z + 1, marble);
+        box(plan, x - 2, y + 1, z - 1, x + 1, y + 5, z + 1, b("air"));
+        box(plan, x - 5, y + 7, z - 4, x + 4, y + 7, z + 3, marble);
+        for (int level = 0; level < 3; level++) {
+            box(plan, x - 5 + level * 2, y + 8 + level, z - 4, x + 4 - level * 2, y + 8 + level, z + 3, marble);
+        }
+        return z + 5;
+    }
+
+    /** Un temple rond a trois toits. */
+    private static int roundTemple(CityBuilder.Plan plan, int x, int y, int z) {
+        BlockState white = b("smooth_quartz");
+        BlockState red = b("red_terracotta");
+        BlockState blue = b("blue_terracotta");
+        disc(plan, x, y, z, 4.8d, white);
+        disc(plan, x, y + 1, z, 4.0d, white);
+        double[] radii = {3.4d, 2.6d, 1.8d};
+        int level = y + 2;
+        for (double radius : radii) {
+            for (int dy = 0; dy < 3; dy++) {
+                for (int i = -4; i <= 4; i++) {
+                    for (int j = -4; j <= 4; j++) {
+                        double d = Math.hypot(i, j);
+                        if (d <= radius && d > radius - 1.1d) {
+                            plan.set(x + i, level + dy, z + j, red);
+                        }
+                    }
+                }
+            }
+            disc(plan, x, level + 3, z, radius + 1.2d, blue);
+            level += 4;
+        }
+        plan.set(x, level, z, b("gold_block"));
+        return z + 5;
+    }
+
+    /** Une tour de television : un fut, une boule, une antenne. */
+    private static int tvTower(CityBuilder.Plan plan, int x, int y, int z) {
+        BlockState shaft = b("light_gray_concrete");
+        for (int dy = 0; dy < 34; dy++) {
+            double r = dy < 6 ? 2.2d - dy * 0.2d : 1.0d;
+            disc(plan, x, y + dy, z, r, shaft);
+        }
+        for (int dy = -3; dy <= 3; dy++) {
+            double r = Math.sqrt(Math.max(0.0d, 12.5d - dy * dy));
+            disc(plan, x, y + 37 + dy, z, r, dy == 0 ? b("light_blue_stained_glass") : b("white_concrete"));
+        }
+        column(plan, x, y + 41, y + 52, z, b("iron_bars"));
+        column(plan, x, y + 41, y + 44, z, b("red_concrete"));
+        plan.set(x, y + 53, z, b("lightning_rod"));
+        return z + 4;
+    }
+
+    /** Une enceinte de brique a creneaux, une tour a fleche au milieu de la courtine. */
+    private static int fortress(CityBuilder.Plan plan, int x, int y, int z) {
+        BlockState brick = b("bricks");
+        BlockState dark = b("red_nether_bricks");
+        for (int i = -5; i <= 4; i++) {
+            for (int dy = 0; dy < 6; dy++) {
+                plan.set(x + i, y + dy, z - 5, brick);
+                plan.set(x + i, y + dy, z + 4, brick);
+                plan.set(x - 5, y + dy, z + i, brick);
+                plan.set(x + 4, y + dy, z + i, brick);
+            }
+            if (Math.floorMod(i, 2) == 0) {
+                plan.set(x + i, y + 6, z - 5, brick);
+                plan.set(x + i, y + 6, z + 4, brick);
+                plan.set(x - 5, y + 6, z + i, brick);
+                plan.set(x + 4, y + 6, z + i, brick);
+            }
+        }
+        box(plan, x - 1, y, z + 4, x, y + 3, z + 4, b("air"));
+        box(plan, x - 2, y, z + 3, x + 1, y + 13, z + 4, brick);
+        box(plan, x - 1, y, z + 3, x, y + 3, z + 4, b("air"));
+        for (int level = 0; level < 5; level++) {
+            int half = level < 2 ? 1 : 0;
+            box(plan, x - 1 - half + (half == 0 ? 1 : 0), y + 14 + level, z + 3, x + half, y + 14 + level, z + 4,
+                    b("green_terracotta"));
+        }
+        plan.set(x, y + 19, z + 3, b("gold_block"));
+        box(plan, x - 3, y, z - 3, x + 2, y + 4, z - 1, dark);
+        box(plan, x - 2, y + 5, z - 3, x + 1, y + 5, z - 1, b("gold_block"));
+        return z + 6;
+    }
+
+    /** Une colonne sur son socle, une statue en haut. */
+    private static int pillar(CityBuilder.Plan plan, int x, int y, int z) {
+        box(plan, x - 2, y, z - 2, x + 1, y + 1, z + 1, b("smooth_stone"));
+        box(plan, x - 1, y + 2, z - 1, x, y + 3, z, b("polished_andesite"));
+        column(plan, x, y + 4, y + 17, z, b("quartz_pillar"));
+        column(plan, x - 1, y + 4, y + 17, z - 1, b("quartz_pillar"));
+        column(plan, x, y + 4, y + 17, z - 1, b("quartz_pillar"));
+        column(plan, x - 1, y + 4, y + 17, z, b("quartz_pillar"));
+        box(plan, x - 2, y + 18, z - 2, x + 1, y + 18, z + 1, b("smooth_quartz"));
+        column(plan, x, y + 19, y + 21, z, b("oxidized_copper"));
+        return z + 4;
     }
 
     // -- Les outils -------------------------------------------------------------------------
@@ -141,8 +442,9 @@ public final class CityMonuments {
 
     // -- Paris : une tour en treillis --------------------------------------------------------
 
-    private static int latticeTower(CityBuilder.Plan plan, int x, int y, int z) {
-        BlockState iron = b("brown_terracotta");
+    private static int latticeTower(CityBuilder.Plan plan, int x, int y, int z, String main, String second) {
+        BlockState iron = b(main);
+        BlockState band = b(second);
         BlockState lattice = b("iron_bars");
         BlockState deck = b("dark_oak_planks");
         BlockState rail = b("dark_oak_fence");
@@ -156,7 +458,7 @@ public final class CityMonuments {
                 for (int sz = -1; sz <= 1; sz += 2) {
                     for (int a = 0; a <= thick; a++) {
                         for (int c = 0; c <= thick; c++) {
-                            plan.set(x + sx * (o - a), y + dy, z + sz * (o - c), iron);
+                            plan.set(x + sx * (o - a), y + dy, z + sz * (o - c), dy / 8 % 2 == 0 ? iron : band);
                         }
                     }
                 }
@@ -687,8 +989,8 @@ public final class CityMonuments {
 
     // -- Les autres : le palais national -----------------------------------------------------
 
-    private static int palace(CityBuilder.Plan plan, CityBuilder.City city, int x, int y, int z, Random random) {
-        boolean small = city.radius() < 2;
+    private static int palace(CityBuilder.Plan plan, CityBuilder.City city, boolean small, int x, int y, int z,
+                              Random random) {
         String style = city.style();
         BlockState wall = b(switch (style) {
             case "orient" -> "smooth_sandstone";

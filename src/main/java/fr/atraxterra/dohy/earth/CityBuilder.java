@@ -73,22 +73,34 @@ public final class CityBuilder {
      * @param radius  1 a 4 : 3 x 3 a 9 x 9 chunks, sans les coins
      */
     public record City(String id, String name, String country, int chunkX, int chunkZ, int radius, String style,
-                       String monument, long seed) {
+                       String monument, long seed, CityLayouts.Layout layout, List<CityLayouts.Site> sites) {
 
-        /** Ce qu'est ce chunk pour la ville : dehors, sa place, ou un ilot. */
+        public City(String id, String name, String country, int chunkX, int chunkZ, int radius, String style,
+                    String monument, long seed) {
+            this(id, name, country, chunkX, chunkZ, radius, style, monument, seed, CityLayouts.of(id),
+                    CityLayouts.of(id) != null ? CityLayouts.of(id).sites()
+                            : List.of(new CityLayouts.Site(0, 0, radius >= 2 ? 1 : 0, monument == null ? "palace"
+                            : monument, name, true)));
+        }
+
+        /** La place qui tient ce chunk, ou -1. */
+        public int site(int cx, int cz) {
+            for (int i = 0; i < sites.size(); i++) {
+                if (sites.get(i).covers(cx - chunkX, cz - chunkZ)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        /** Ce qu'est ce chunk pour la ville : dehors, une place, ou un ilot. */
         public int role(int cx, int cz) {
             int dx = cx - chunkX;
             int dz = cz - chunkZ;
             if (dx * dx + dz * dz > radius * radius + radius) {
                 return OUTSIDE;
             }
-            int square = radius >= 2 ? 1 : 0;
-            return Math.abs(dx) <= square && Math.abs(dz) <= square ? DISTRICT : BLOCK;
-        }
-
-        /** Le demi-cote de la place en blocs, depuis le centre du chunk du milieu. */
-        public int squareHalf() {
-            return radius >= 2 ? 24 : 8;
+            return site(cx, cz) >= 0 ? DISTRICT : BLOCK;
         }
 
         public int centerX() {
@@ -97,6 +109,62 @@ public final class CityBuilder {
 
         public int centerZ() {
             return (chunkZ << 4) + 8;
+        }
+
+        /** Vrai si ce chunk est un parc du plan. */
+        boolean park(int cx, int cz) {
+            if (layout != null) {
+                for (int[] park : layout.parks()) {
+                    if (park[0] == cx - chunkX && park[1] == cz - chunkZ) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /** La distance de ce point au fleuve, en blocs ; tres grande sans fleuve. */
+        double river(int x, int z) {
+            return layout == null ? 1.0e9d : distance(layout.river(), x - centerX(), z - centerZ());
+        }
+
+        /** Vrai si le fleuve coule plutot d'est en ouest pres de ce point. */
+        boolean riverEastWest(int x, int z) {
+            int[][] line = layout.river();
+            double best = 1.0e9d;
+            boolean flat = true;
+            for (int i = 0; i + 1 < line.length; i++) {
+                double d = distance(new int[][] {line[i], line[i + 1]}, x - centerX(), z - centerZ());
+                if (d < best) {
+                    best = d;
+                    flat = Math.abs(line[i + 1][0] - line[i][0]) >= Math.abs(line[i + 1][1] - line[i][1]);
+                }
+            }
+            return flat;
+        }
+
+        /** La distance de ce point a la grande avenue la plus proche. */
+        double avenue(int x, int z) {
+            double best = 1.0e9d;
+            if (layout != null) {
+                for (int[][] avenue : layout.avenues()) {
+                    best = Math.min(best, distance(avenue, x - centerX(), z - centerZ()));
+                }
+            }
+            return best;
+        }
+
+        private static double distance(int[][] line, int x, int z) {
+            double best = 1.0e9d;
+            for (int i = 0; i + 1 < line.length; i++) {
+                double ax = line[i][0];
+                double az = line[i][1];
+                double bx = line[i + 1][0] - ax;
+                double bz = line[i + 1][1] - az;
+                double t = Math.max(0.0d, Math.min(1.0d, ((x - ax) * bx + (z - az) * bz) / (bx * bx + bz * bz)));
+                best = Math.min(best, Math.hypot(x - ax - t * bx, z - az - t * bz));
+            }
+            return best;
         }
     }
 
@@ -204,10 +272,11 @@ public final class CityBuilder {
         Style style = Style.of(city.style());
         Random random = random(city, cx, cz);
         // les rues bordent l'ilot ; la place n'en a qu'au bord, face aux ilots
-        boolean north = role == BLOCK || city.role(cx, cz - 1) != DISTRICT;
-        boolean south = role == BLOCK || city.role(cx, cz + 1) != DISTRICT;
-        boolean west = role == BLOCK || city.role(cx - 1, cz) != DISTRICT;
-        boolean east = role == BLOCK || city.role(cx + 1, cz) != DISTRICT;
+        int site = city.site(cx, cz);
+        boolean north = role == BLOCK || city.role(cx, cz - 1) == OUTSIDE || city.site(cx, cz - 1) != site;
+        boolean south = role == BLOCK || city.role(cx, cz + 1) == OUTSIDE || city.site(cx, cz + 1) != site;
+        boolean west = role == BLOCK || city.role(cx - 1, cz) == OUTSIDE || city.site(cx - 1, cz) != site;
+        boolean east = role == BLOCK || city.role(cx + 1, cz) == OUTSIDE || city.site(cx + 1, cz) != site;
         boolean[] rim = {city.role(cx, cz - 1) == OUTSIDE, city.role(cx, cz + 1) == OUTSIDE,
                 city.role(cx - 1, cz) == OUTSIDE, city.role(cx + 1, cz) == OUTSIDE};
         terrain(plan, minX, minZ, baseY, ground, rim);
@@ -230,6 +299,7 @@ public final class CityBuilder {
         } else {
             double t = Math.hypot(cx - city.chunkX(), cz - city.chunkZ()) / (city.radius() + 0.5d);
             lot(plan, city, style, minX, minZ, baseY, t, random);
+            waterways(plan, city, minX, minZ, baseY, rim);
         }
         // reverberes aux coins des trottoirs
         int[][] corners = {{2, 2}, {13, 2}, {2, 13}, {13, 13}};
@@ -297,9 +367,10 @@ public final class CityBuilder {
             }
         }
         // jardins aux coins de la grande place
-        int dx = cx - city.chunkX();
-        int dz = cz - city.chunkZ();
-        if (city.radius() >= 2 && dx != 0 && dz != 0) {
+        CityLayouts.Site place = city.sites().get(city.site(cx, cz));
+        int dx = cx - city.chunkX() - place.dx();
+        int dz = cz - city.chunkZ() - place.dz();
+        if (place.half() >= 1 && dx != 0 && dz != 0) {
             int gx = minX + (dx < 0 ? 4 : 3);
             int gz = minZ + (dz < 0 ? 4 : 3);
             for (int x = gx; x < gx + 9; x++) {
@@ -330,7 +401,26 @@ public final class CityBuilder {
             }
         }
         float roll = random.nextFloat();
-        if (roll < (t > 0.7d ? 0.16f : 0.08f)) {
+        // le fleuve ou une grande avenue traverse l'ilot : un quai plante, pas de batiment
+        boolean crossed = false;
+        for (int x = x0; x < x0 + 10 && !crossed; x++) {
+            for (int z = z0; z < z0 + 10; z++) {
+                if (city.river(x, z) <= riverHalf(city) + 1.0d || city.avenue(x, z) <= 4.0d) {
+                    crossed = true;
+                    break;
+                }
+            }
+        }
+        if (crossed) {
+            pave(plan, x0, z0, 10, 10, baseY);
+            for (int i = 0; i < 4; i++) {
+                int tx = x0 + 2 + (i % 2) * 5;
+                int tz = z0 + 2 + (i / 2) * 5;
+                if (city.river(tx, tz) > riverHalf(city) + 3.0d && city.avenue(tx, tz) > 6.0d) {
+                    tree(plan, tx, baseY + 1, tz, random, "oak");
+                }
+            }
+        } else if (city.park((minX >> 4), (minZ >> 4)) || roll < (t > 0.7d ? 0.16f : 0.08f)) {
             park(plan, x0, z0, baseY, random);
         } else if (city.radius() >= 3 && t < 0.42d) {
             // le centre : des tours de verre la ou les villes en ont, de hauts immeubles ailleurs
@@ -364,6 +454,65 @@ public final class CityBuilder {
             }
         } else {
             houses(plan, x0, z0, baseY, style, random);
+        }
+    }
+
+    private static double riverHalf(City city) {
+        return city.layout() == null ? 0.0d : city.layout().riverHalf();
+    }
+
+    /**
+     * Le fleuve et les grandes avenues du plan, par-dessus l'ilot. Le fleuve
+     * ne creuse que hors des rues : chaque rue qui le croise fait un pont.
+     */
+    private static void waterways(Plan plan, City city, int minX, int minZ, int baseY, boolean[] rim) {
+        if (city.layout() == null) {
+            return;
+        }
+        double half = riverHalf(city);
+        BlockState water = b("water");
+        BlockState air = b("air");
+        BlockState quay = b("stone_bricks");
+        for (int lx = 0; lx < 16; lx++) {
+            for (int lz = 0; lz < 16; lz++) {
+                int x = minX + lx;
+                int z = minZ + lz;
+                boolean edge = (rim[0] && lz == 0) || (rim[1] && lz == 15) || (rim[2] && lx == 0)
+                        || (rim[3] && lx == 15);
+                boolean street = lx <= 2 || lx >= 13 || lz <= 2 || lz >= 13;
+                double river = city.river(x, z);
+                // un pont : une rue sur deux qui croise le fleuve garde sa chaussee, l'eau passe dessous
+                boolean flat = half > 0 && river <= half + 1.0d && city.riverEastWest(x, z);
+                boolean across = half > 0 && river <= half + 1.0d && (flat
+                        ? (lx <= 1 || lx >= 14) && ((x + 2) >> 4 & 1) == 0
+                        : (lz <= 1 || lz >= 14) && ((z + 2) >> 4 & 1) == 0);
+                if (half > 0 && river <= half && !edge) {
+                    if (across) {
+                        plan.set(x, baseY - 3, z, quay);
+                        plan.set(x, baseY - 2, z, water);
+                        plan.set(x, baseY - 1, z, quay);
+                        boolean side = flat ? (lx == 1 || lx == 14) : (lz == 1 || lz == 14);
+                        if (side) {
+                            plan.set(x, baseY + 1, z, b("stone_brick_wall"));
+                        }
+                        continue;
+                    }
+                    plan.set(x, baseY - 3, z, quay);
+                    plan.set(x, baseY - 2, z, water);
+                    plan.set(x, baseY - 1, z, water);
+                    for (int y = baseY; y <= baseY + 12; y++) {
+                        plan.set(x, y, z, air);
+                    }
+                } else if (half > 0 && river <= half + 1.0d && !edge && !across) {
+                    plan.set(x, baseY, z, quay);
+                    plan.set(x, baseY + 1, z, b("stone_brick_wall"));
+                } else if (city.avenue(x, z) <= 2.5d && !edge) {
+                    plan.set(x, baseY, z, b("gray_concrete"));
+                    for (int y = baseY + 1; y <= baseY + 12; y++) {
+                        plan.set(x, y, z, air);
+                    }
+                }
+            }
         }
     }
 
