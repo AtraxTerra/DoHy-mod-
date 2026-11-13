@@ -1,0 +1,169 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "hbm:ammo_himars_single",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_himars_single_tb",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_himars_standard",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_himars_standard_he",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_himars_standard_lava",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_himars_standard_mini_nuke",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_himars_standard_tb",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_himars_standard_wp",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_anti_ballistic",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_bhole",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_burst",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_buster",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_buster_strong",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_cluster",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_cluster_strong",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_custom",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_decoy",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_doomsday",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_doomsday_rusted",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_drill",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_emp",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_emp_strong",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_generic",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_incendiary",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_incendiary_strong",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_inferno",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_micro",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_nuclear",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_nuclear_cluster",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_rain",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_schrabidium",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_shuttle",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_soyuz_0",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_soyuz_1",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_soyuz_2",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_soyuz_lander",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_stealth",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_strong",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_taint",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_test",
+      "required": false
+    },
+    {
+      "id": "hbm:missile_volcano",
+      "required": false
+    }
+  ]
+}

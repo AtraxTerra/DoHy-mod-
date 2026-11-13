@@ -104,6 +104,9 @@ public final class DoHyClient {
         event.registerEntityRenderer(PalaGolem.GUARDIAN_GOLEM.get(), GuardianGolemRenderer::new);
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
         event.registerEntityRenderer(DoHyAgri.TRACTOR.get(), TractorRenderer::new);
+        // Les caisses des palettes d'armement, dessinees par le coin nord-ouest de chaque groupe.
+        event.registerBlockEntityRenderer(fr.atraxterra.dohy.palette.DoHyPalette.TYPE.get(),
+                fr.atraxterra.dohy.client.palette.PaletteRenderer::new);
         event.registerEntityRenderer(PalaPillage.DYNAMITE_ENTITY.get(), ThrownItemRenderer::new);
         // TntRenderer est type sur PrimedTnt, dont PalaPrimedTnt herite : le
         // rendu ne lit que l'etat de bloc et la meche, communs aux deux.
@@ -185,6 +188,8 @@ public final class DoHyClient {
         for (ChestTier tier : ChestTier.values()) {
             event.<PalaChestMenu, PalaChestScreen>register(PalaStorage.menuOf(tier), PalaChestScreen::new);
         }
+        event.<fr.atraxterra.dohy.palette.PaletteMenu, fr.atraxterra.dohy.client.palette.PaletteScreen>register(
+                fr.atraxterra.dohy.palette.DoHyPalette.MENU.get(), fr.atraxterra.dohy.client.palette.PaletteScreen::new);
     }
 
     private static void machine(RegisterMenuScreensEvent event, MenuType<MachineMenu> type,

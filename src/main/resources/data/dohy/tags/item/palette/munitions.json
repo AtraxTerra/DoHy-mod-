@@ -1,0 +1,386 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:arrows",
+    {
+      "id": "hbm:ammo_standard_b75",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_b75_exp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_b75_inc",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_bmg50_ap",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_bmg50_du",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_bmg50_fmj",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_bmg50_he",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_bmg50_jhp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_bmg50_sm",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_bmg50_sp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_capacitor",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_capacitor_ir",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_capacitor_overcharge",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_coil_ferrouranium",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_coil_tungsten",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_ct_hook",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_ct_mortar",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_ct_mortar_charge",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_flame_balefire",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_flame_diesel",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_flame_gas",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_flame_napalm",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g10",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g10_du",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g10_explosive",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g10_shrapnel",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g10_slug",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g12",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g12_bp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g12_bp_magnum",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g12_bp_slug",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g12_explosive",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g12_flechette",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g12_magnum",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g12_phosphorus",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g12_slug",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g26_flare",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g26_flare_supply",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g26_flare_weapon",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g40_demo",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g40_he",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g40_heat",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g40_inc",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_g40_phosphorus",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m357_ap",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m357_bp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m357_express",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m357_fmj",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m357_jhp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m357_sp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m44_ap",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m44_bp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m44_express",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m44_fmj",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m44_jhp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_m44_sp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p22_ap",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p22_fmj",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p22_jhp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p22_sp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p45_ap",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p45_du",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p45_fmj",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p45_jhp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p45_sp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p9_ap",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p9_fmj",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p9_jhp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_p9_sp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_r556_ap",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_r556_fmj",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_r556_jhp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_r556_sp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_r762_ap",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_r762_du",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_r762_fmj",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_r762_he",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_r762_jhp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_r762_sp",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_stone",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_stone_ap",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_stone_iron",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_stone_shot",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_tau_uranium",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_container",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_container_alt",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_dgk",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_secret_bmg50_black",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_secret_bmg50_equestrian",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_secret_folly_nuke",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_secret_folly_sm",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_secret_g12_equestrian",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_secret_m44_equestrian",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_secret_p35_800",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_secret_p35_800_bl",
+      "required": false
+    }
+  ]
+}

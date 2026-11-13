@@ -1577,7 +1577,7 @@ def main():
     tag("minecraft/tags/block/mineable/pickaxe.json",
         ["dohy:trading_server", "dohy:gmo_machine", "dohy:water_dispenser", "dohy:flour_mill",
          "dohy:bread_machine", "dohy:biogenerator", "dohy:terminal", "dohy:silo", "dohy:fuel_pump"])
-    tag("minecraft/tags/block/mineable/axe.json", ["dohy:trough"])
+    tag("minecraft/tags/block/mineable/axe.json", ["dohy:trough", "dohy:palette"])
     # Les cereales de DoHy sont des cultures comme les autres : le tag vanilla
     # les fait pietiner, fertiliser et recolter par les villageois.
     cereal_crops = ["dohy:%s_crop" % cereal for cereal in

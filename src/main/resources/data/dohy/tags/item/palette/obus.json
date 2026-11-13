@@ -1,0 +1,118 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:firework_rocket",
+    {
+      "id": "hbm:ammo_arty",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_cargo",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_chlorine",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_classic",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_he",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_mini_nuke",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_mini_nuke_multi",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_mustard_gas",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_nuke",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_phosgene",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_phosphorus",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_arty_phosphorus_multi",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_shell",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_shell_apfsds_du",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_shell_apfsds_t",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_shell_explosive",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_shell_w9",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_nuke_balefire",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_nuke_demo",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_nuke_high",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_nuke_hive",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_nuke_standard",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_nuke_tots",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_rocket_demo",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_rocket_he",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_rocket_heat",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_rocket_inc",
+      "required": false
+    },
+    {
+      "id": "hbm:ammo_standard_rocket_phosphorus",
+      "required": false
+    }
+  ]
+}

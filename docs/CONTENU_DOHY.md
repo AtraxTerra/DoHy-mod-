@@ -703,6 +703,72 @@ de la roche du fond au plafond, ni ciel ni surface.
   ardoise), `worldgen/biome/mine.json`, le tag `worldgen/placed_feature/mine_mod_ores` et le
   modificateur de biome `mine_mod_ores` : écrits par `tools/dohy_assets.py`.
 
+## Les palettes d'armement (2026-11-13)
+
+Une palette de bois (`dohy:palette`) où l'on range obus, munitions et missiles, montrés en **caisses
+d'armement en 3D**. Compatible **Create** et **NTM NEXT**.
+
+### Le bloc
+
+- **Recette** : trois dalles de bois sur deux planches (`SSS` / `P P`) → deux palettes. Hache.
+- Une palette porte **16 piles**. Posées côte à côte au même niveau, les palettes **s'assemblent**
+  jusqu'à **3 × 3** : un seul stock (16 piles par palette, 144 pour un groupe de neuf) et une seule
+  pile de caisses. Au-delà, l'ensemble est coupé en plusieurs groupes (du nord-ouest vers le
+  sud-est, le plus grand rectangle d'abord : quatre palettes en ligne font un groupe de trois et
+  une palette seule).
+- Chaque palette garde ses propres piles : assembler ou séparer des palettes ne déplace rien, et une
+  palette cassée ne rend que ce qu'elle portait.
+- **Accepte trois familles** (tags `dohy:palette/obus`, `dohy:palette/munitions`,
+  `dohy:palette/missiles`, qu'un pack de données peut compléter) :
+  - **obus** : obus d'artillerie de 16 pouces, obus de 240 mm, mini-nukes, roquettes de NTM NEXT ;
+    les fusées du jeu ;
+  - **munitions** : toutes les cartouches et munitions standard de NTM NEXT, la bande du Goalkeeper,
+    les caisses de munitions ; les flèches du jeu ;
+  - **missiles** : tous les missiles de NTM NEXT (missile sur mesure compris) et les nacelles de
+    roquettes du HIMARS.
+
+### Les caisses
+
+- **Obus** : caisse longue de bois peint kaki, deux par étage, poignées de corde, bande jaune.
+- **Munitions** : boîte métallique olive, six par étage, poignée et levier.
+- **Missiles** : caisse géante de bois sable cerclée de fer, une par palette et par étage ; sur des
+  palettes alignées, la caisse **court sur toute la rangée** (trois palettes : une caisse de près de
+  trois blocs), plaque de danger et flèche au pochoir sur le tronçon du milieu.
+- **Jusqu'à trois étages** ; un étage d'une palette vaut un tiers de ses 16 piles. On monte une pile
+  jusqu'à trois caisses avant d'entamer la palette suivante, les missiles en bas, puis les obus,
+  puis les munitions ; rien ne flotte. Les caisses suivent l'axe long du groupe (pour un groupe
+  carré, celui de la palette posée).
+- On marche sur les caisses : la forme suit la pile de chaque case (3 px pour une palette nue,
+  un bloc et demi pour trois étages de caisses géantes).
+
+### Les mains
+
+- Clic avec un obus, une munition ou un missile : rangé dans le groupe ; **accroupi**, tout ce que le
+  sac en contient. Le compte s'affiche (« Palettes : 23 / 144 piles »).
+- Clic sans, ou avec autre chose : le **stock du groupe**, une rangée de 16 cases par palette, le
+  compte par famille en haut ; au-delà de six palettes, la molette ou les flèches font défiler.
+- Un comparateur lit le remplissage du groupe.
+
+### Create et NTM NEXT
+
+- Par n'importe quelle face, la **capacité d'objets** de NeoForge donne le stock du groupe entier :
+  entonnoirs, glissières, bras mécaniques de Create, grues et convoyeurs de NTM NEXT chargent et
+  déchargent une palette comme un coffre (relu dans leurs jars : tous deux interrogent cette
+  capacité). Les entonnoirs du jeu aussi.
+- Le tag `create:simple_mounted_storage` laisse Create **embarquer les palettes chargées** sur ses
+  machines mobiles (trains, chariots), contenu compris : sans face, la capacité ne donne que les
+  piles de la palette elle-même, pour que rien ne compte deux fois.
+
+### Code
+
+- `palette/DoHyPalette` (enregistrement, capacité), `PaletteBlock`, `PaletteBlockEntity` (stock
+  propre, vue du groupe, pile de caisses du contrôleur — le coin nord-ouest), `PaletteGroups`
+  (regroupement autour d'une palette posée ou cassée), `PalettePlan` et `CrateLayout` (découpage
+  et pile de caisses, sans Minecraft : testés seuls en CI par `tools/PaletteLayoutTest.java`),
+  `PaletteFamily`, `PaletteMenu` ; `client/palette/PaletteRenderer` (les caisses),
+  `PaletteScreen`.
+- Modèle, textures (palette et image des caisses), recette, tags : `tools/dohy_assets.py`.
+
 ## Sur un serveur dédié (2026-11-13)
 
 Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les

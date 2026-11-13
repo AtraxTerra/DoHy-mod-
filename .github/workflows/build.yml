@@ -104,6 +104,16 @@ jobs:
             tools/SeasonMathTest.java
           java -cp /tmp/season fr.atraxterra.dohy.season.SeasonMathTest
 
+      # Les palettes : le decoupage en groupes d'au plus 3 x 3 et la pile de caisses
+      # (rien ne flotte, tout tient dans l'emprise du groupe).
+      - name: Les palettes doivent passer leur test
+        run: |
+          javac -d /tmp/palette \
+            src/main/java/fr/atraxterra/dohy/palette/PalettePlan.java \
+            src/main/java/fr/atraxterra/dohy/palette/CrateLayout.java \
+            tools/PaletteLayoutTest.java
+          java -cp /tmp/palette fr.atraxterra.dohy.palette.PaletteLayoutTest
+
       - name: Regenerer les prix
         run: python3 tools/gen_prices.py
 

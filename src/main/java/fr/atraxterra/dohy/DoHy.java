@@ -38,6 +38,8 @@ public final class DoHy {
         fr.atraxterra.dohy.agri.DoHyAgri.register(modBus);
         fr.atraxterra.dohy.spawn.DoHySpawn.register(modBus);
         fr.atraxterra.dohy.earth.DoHyEarth.register(modBus);
+        // Les palettes d'armement : obus, munitions et missiles de NTM NEXT en caisses.
+        fr.atraxterra.dohy.palette.DoHyPalette.register(modBus);
         LOGGER.info("DoHy charge");
     }
 }
