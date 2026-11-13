@@ -388,8 +388,12 @@ final class EnemyBaseBuilder {
                     return;
                 }
                 if (row == y0 + height) {
-                    for (int ring = back ? inside : inside + 1; ring <= outside; ring++) {
-                        ringAt(ring, row, (x, z) -> accent());
+                    // Le chemin de ronde, et des lanternes marines dans sa dalle : la nuit, le mur reste eclaire.
+                    int walk = back ? inside : inside + 1;
+                    for (int ring = walk; ring <= outside; ring++) {
+                        int at = ring;
+                        ringAt(ring, row, (x, z) -> at == walk && Math.floorMod(Math.abs(z) == at ? x : z, 8) == 4
+                                ? Blocks.SEA_LANTERN.defaultBlockState() : accent());
                     }
                     return;
                 }
@@ -548,7 +552,8 @@ final class EnemyBaseBuilder {
      * Le champ de mines du glacis, avec NTM : des mines posees sur le terrain
      * naturel, en couronne autour de l'emprise, armees. La route de la porterie
      * reste libre. Antipersonnel ; plus des mines a eclats a partir de la base,
-     * des mines antichar a la forteresse.
+     * des mines antichar a la forteresse. Le terrain decide : une plaine en prend
+     * autant qu'il en faut, une foret dense (troncs, champignons geants) moins.
      */
     private void minefield() {
         if (NtmDefenses.block("mine_ap") == null) {
@@ -582,7 +587,10 @@ final class EnemyBaseBuilder {
             }
             pos.set(cx + x, y, cz + z);
             BlockState here = level.getBlockState(pos);
-            if (!here.isAir() && !here.canBeReplaced() || !here.getFluidState().isEmpty()) {
+            // L'herbe, les fleurs, les buissons, la litiere de feuilles cedent la place ; pas les feuillages.
+            boolean free = here.isAir() || here.canBeReplaced()
+                    || here.is(BlockTags.REPLACEABLE_BY_TREES) && !here.is(BlockTags.LEAVES);
+            if (!free || !here.getFluidState().isEmpty()) {
                 continue;
             }
             if (NtmDefenses.mine(level, pos.immutable(), kinds[random.nextInt(kinds.length)])) {

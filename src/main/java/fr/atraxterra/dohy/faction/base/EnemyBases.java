@@ -278,6 +278,7 @@ public final class EnemyBases {
     public static void onServerStopped(ServerStoppedEvent event) {
         JOBS.clear();
         READY.clear();
+        FALLEN.clear();
     }
 
     // -- Chantier -----------------------------------------------------------------
@@ -297,29 +298,49 @@ public final class EnemyBases {
             }
         }
         if (server.getTickCount() % UPKEEP_TICKS == 0 && NtmDefenses.present()) {
-            for (ServerPlayer player : server.overworld().players()) {
+            ServerLevel level = server.overworld();
+            for (ServerPlayer player : level.players()) {
                 EnemyBase base = of(player);
                 if (base.active()) {
-                    turrets(server.overworld(), base, true);
+                    turrets(level, base.center(), base.kind().claimRadius(), true);
                 }
+            }
+            // Les bases tombees : leurs tourelles des chunks qui dormaient au pillage s'eteignent en se chargeant.
+            long now = level.getGameTime();
+            FALLEN.entrySet().removeIf(entry -> entry.getValue().until() < now);
+            for (Map.Entry<BlockPos, Fallen> entry : FALLEN.entrySet()) {
+                turrets(level, entry.getKey(), entry.getValue().radius(), false);
             }
         }
     }
 
+    /** Une base pillee ou abandonnee, le temps que son terrain revienne. */
+    private record Fallen(int radius, long until) {
+    }
+
+    /** Les bases tombees dont des tourelles peuvent encore dormir, allumees, dans un chunk decharge. */
+    private static final Map<BlockPos, Fallen> FALLEN = new LinkedHashMap<>();
+
+    /** Eteint les tourelles d'une base qui tombe, maintenant et a mesure que ses chunks se chargent. */
+    private static int silence(ServerLevel level, EnemyBase base) {
+        int radius = base.kind().claimRadius();
+        FALLEN.put(base.center(), new Fallen(radius, level.getGameTime() + 2L * EnemyBaseRegen.DELAY_TICKS));
+        return turrets(level, base.center(), radius, false);
+    }
+
     /**
-     * Les tourelles de NTM d'une base dont les chunks sont charges : armees et
+     * Les tourelles de NTM d'une base, dans ses chunks charges : armees et
      * remises a plein ({@code armed}), ou eteintes. Leur batterie tient cinq
      * secondes ; une base active les recharge toutes les deux secondes.
      *
      * @return le nombre de tourelles trouvees
      */
-    static int turrets(ServerLevel level, EnemyBase base, boolean armed) {
-        int chunkX = base.center().getX() >> 4;
-        int chunkZ = base.center().getZ() >> 4;
+    static int turrets(ServerLevel level, BlockPos center, int radius, boolean armed) {
+        int chunkX = center.getX() >> 4;
+        int chunkZ = center.getZ() >> 4;
         if (level.getChunkSource().getChunkNow(chunkX, chunkZ) == null) {
             return 0;
         }
-        int radius = base.kind().claimRadius();
         int found = 0;
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
@@ -491,7 +512,7 @@ public final class EnemyBases {
                 1.0f, 1.0f);
         FactionApi.tell(player, "Base des " + base.name() + " pillee ! Leurs claims tombent : les coffres sont a toi.",
                 ChatFormatting.GOLD);
-        if (turrets(level, base, false) > 0) {
+        if (silence(level, base) > 0) {
             FactionApi.tell(player, "Leurs tourelles s'eteignent.", ChatFormatting.YELLOW);
         }
         FactionApi.addElo(player, tier.elo(), "pillage des " + base.name());
@@ -531,7 +552,7 @@ public final class EnemyBases {
         }
         EnemyBase base = of(player);
         player.setData(Factions.ENEMY_BASE.get(), EnemyBase.EMPTY);
-        turrets(((ServerLevel) player.level()).getServer().overworld(), base, false);
+        silence(((ServerLevel) player.level()).getServer().overworld(), base);
         if (EnemyBaseRegen.schedule(((ServerLevel) player.level()).getServer(), player, base)) {
             FactionApi.tell(player, "Les " + base.name() + " plient bagage : dans 5 minutes leur base s'efface et "
                     + "le terrain reprend ses droits.", ChatFormatting.YELLOW);

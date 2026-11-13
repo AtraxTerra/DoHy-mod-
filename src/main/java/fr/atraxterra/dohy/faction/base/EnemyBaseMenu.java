@@ -97,8 +97,8 @@ public final class EnemyBaseMenu extends MenuController {
         genres.add(wanted == null ? any.state(MenuView.DONE).badge("CHOISI")
                 : any.accent(0xFF3FA9F5).action("genre:|choisir"));
         for (EnemyBaseStyle genre : EnemyBaseStyle.values()) {
-            Card card = Card.of(new ItemStack(genre.icon()), genre.title(), List.of(genre.summary()))
-                    .tooltip(List.of("Les coffres : " + genre.vault(),
+            Card card = Card.of(new ItemStack(genre.icon()), genre.title(), wrap(genre.summary(), 40, 2))
+                    .tooltip(List.of(genre.summary(), "Les coffres : " + genre.vault(),
                             "Ses machines et ses blocs sont vrais : pillee, elle se demonte"));
             genres.add(wanted == genre ? card.state(MenuView.DONE).badge("CHOISI")
                     : card.accent(0xFF3FA9F5).action("genre:" + genre.key() + "|choisir"));
@@ -142,6 +142,28 @@ public final class EnemyBaseMenu extends MenuController {
                 new MenuView.Section("GENRE DE BASE", "craft", MenuView.GRID, genres),
                 new MenuView.Section("REPERER UNE BASE", "upgrade", MenuView.GRID, tiers),
                 new MenuView.Section("PILLAGE", "resources", MenuView.GRID, help)), true);
+    }
+
+    /** Coupe un texte en lignes de {@code width} caracteres au plus, aux espaces ; {@code lines} lignes au plus. */
+    static List<String> wrap(String text, int width, int lines) {
+        List<String> out = new ArrayList<>();
+        StringBuilder line = new StringBuilder();
+        for (String word : text.split(" ")) {
+            if (!line.isEmpty() && line.length() + 1 + word.length() > width) {
+                out.add(line.toString());
+                line.setLength(0);
+            }
+            line.append(line.isEmpty() ? "" : " ").append(word);
+        }
+        if (!line.isEmpty()) {
+            out.add(line.toString());
+        }
+        if (out.size() > lines) {
+            List<String> kept = new ArrayList<>(out.subList(0, lines));
+            kept.set(lines - 1, kept.get(lines - 1) + "...");
+            return kept;
+        }
+        return out;
     }
 
     @Override
