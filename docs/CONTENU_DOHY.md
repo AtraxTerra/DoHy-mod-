@@ -467,6 +467,36 @@ joueur : plus aucune ne se construit. Celles déjà posées dans un monde y rest
 avec leurs hologrammes ; leurs deux marques de sauvegarde (`earth_city`, `earth_cities`) sont lues
 sans erreur puis effacées à la sauvegarde suivante.
 
+### L'atlas (2026-11-13)
+
+Une carte faite maison, à la place de Xaero ou de JourneyMap (`client/atlas/`), dans le style des
+écrans du kit de PalaMod (panneaux, boutons, polices et croix du kit de DoHy).
+
+- **Minimap** en haut à gauche : le nord en haut, ta flèche au milieu, tes coordonnées et le pays
+  dessous (en or s'il est à ta faction). **N** l'affiche ou la cache, **=** et **-** zooment
+  (de 4 pixels par bloc à 16 blocs par pixel).
+- **Grande carte** (**M**) : glisser pour se déplacer, la molette pour le zoom (de 8 pixels par
+  bloc à 128 blocs par pixel), **C** pour revenir sur soi ; la barre du bas dit les coordonnées,
+  le pays et qui le tient, le gisement ou le point sous la souris. En haut, les calques : pays
+  tenus, gisements, points, points en jeu, minimap.
+- **Le terrain exploré** : chaque chunk reçu est relevé (la couleur de carte du bloc du dessus,
+  éclaircie ou assombrie selon la pente, l'eau plus sombre quand elle est profonde ; sous un
+  plafond comme le Nether, le premier sol sous la place libre), quelques chunks par tick du plus
+  proche au plus loin, ceux d'autour du joueur relus toutes les 5 s. Gardé sur le disque dans
+  `dohy_atlas/<monde>/<dimension>/`, en dalles de 256 blocs (un pixel par bloc) et en dalles
+  d'ensemble de 4 096 blocs (un pixel pour 16) pour voir loin.
+- **Sur la carte de la Terre**, le serveur envoie ce que le client ne peut pas voir : le **globe**
+  (la grille des pays, visible d'avance sous le terrain exploré : mers, pays, frontières), les
+  **pays tenus** (ta faction en or, chaque nation rivale à sa couleur, ta cible en jaune), les
+  **245 gisements géants** et les lieux (une case à la couleur de la ressource), et ta
+  **capitale** (case rouge).
+- **Points de passage** : clic droit sur la grande carte pour en poser un (nom, couleur parmi
+  huit), clic sur un point pour le modifier ou le supprimer ; le **point de mort** est posé tout
+  seul à chaque mort (un seul, remplacé). Dans le monde, chaque point de la dimension s'affiche à
+  sa place à l'écran avec sa distance (jusqu'à 6 000 blocs). Gardés dans
+  `dohy_atlas/<monde>/points.json`.
+- Si Xaero's World Map reste installé, sa carte prend aussi **M** : changer une des deux touches.
+
 ### La faune (2026-11-13)
 
 Le jeu pose les animaux paisibles surtout à la génération des chunks ; ensuite, il n'en ajoute que

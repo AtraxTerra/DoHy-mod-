@@ -175,6 +175,27 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-13 (suite 20) — l'atlas
+
+**Demande** : « je vire Xaero et tu crées ton atlas comme JourneyMap ». Choix du joueur : minimap,
+grande carte plein écran, points de passage, calques DoHy ; fond : le globe d'avance et le
+détail exploré. Puis : « pour les textures prends les mêmes textures que pour le palamod » —
+les panneaux, boutons, polices et icônes du kit de DoHy, celui des écrans de PalaMod.
+Description : `docs/CONTENU_DOHY.md`, « L'atlas ».
+
+**Fait** (`feat/atlas`) : `earth/EarthAtlas` (le globe compressé, les lieux, les pays tenus et
+la capitale, envoyés au client ; les pays tenus revus toutes les 5 s et renvoyés s'ils changent) ;
+`client/atlas/` — `AtlasScanner` (relevé des chunks), `AtlasTiles`/`AtlasMap` (dalles fines et
+d'ensemble, sur le disque), `AtlasGlobe` (carte politique et calque des pays tenus),
+`AtlasView` (le dessin commun), `AtlasHud` (minimap, points dans le monde), `AtlasScreen` (M),
+`WaypointScreen`, `Waypoints` (points et point de mort), `AtlasClient` (touches M, N, =, -).
+
+**Vérifié en jeu** (client de CI, grille Earth24k sur un monde ordinaire) : globe reçu (256 pays
+tenus par les nations, 121 lieux — ceux de NTM manquent à la CI), minimap avec coordonnées et
+« France » ; grande carte au bloc près, puis à 96 blocs par pixel (le monde entier, les pays,
+les gisements) ; deux points posés, visibles sur la carte et dans le monde (« Base (94 m) ») ;
+dalles écrites sur le disque.
+
 ### 2026-11-13 (suite 19) — la faune revient
 
 **Demande** : « fais également une passe sur le spawn des animaux ». Choix du joueur : il y en a

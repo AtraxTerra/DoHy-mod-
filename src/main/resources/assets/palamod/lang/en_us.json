@@ -911,5 +911,9 @@
   "tooltip.palamod.wither_saddle": "Right-click a wither to ride it (once)",
   "tooltip.palamod.wither_slime_upgrade": "On your wither: it eats slime, +20 HP per block, for an hour",
   "tooltip.palamod.wither_target_laser": "Right-click air to aim. Right-click a predator or supreme to send it",
-  "tooltip.palamod.wither_target_laser.target": "Target: %s %s %s"
+  "tooltip.palamod.wither_target_laser.target": "Target: %s %s %s",
+  "key.dohy.atlas": "Atlas (world map)",
+  "key.dohy.minimap": "Minimap (toggle)",
+  "key.dohy.minimap_zoom_in": "Minimap: zoom in",
+  "key.dohy.minimap_zoom_out": "Minimap: zoom out"
 }

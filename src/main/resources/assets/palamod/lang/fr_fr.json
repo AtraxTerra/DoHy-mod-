@@ -911,5 +911,9 @@
   "tooltip.palamod.wither_saddle": "Clic droit sur un wither pour le monter (une fois)",
   "tooltip.palamod.wither_slime_upgrade": "Sur ton wither : il mange le slime, +20 PV par bloc, une heure",
   "tooltip.palamod.wither_target_laser": "Clic droit dans le vide : viser. Clic droit sur un predateur ou un supreme : l'y envoyer",
-  "tooltip.palamod.wither_target_laser.target": "Cible : %s %s %s"
+  "tooltip.palamod.wither_target_laser.target": "Cible : %s %s %s",
+  "key.dohy.atlas": "Atlas (grande carte)",
+  "key.dohy.minimap": "Minimap (afficher)",
+  "key.dohy.minimap_zoom_in": "Minimap : zoom +",
+  "key.dohy.minimap_zoom_out": "Minimap : zoom -"
 }
