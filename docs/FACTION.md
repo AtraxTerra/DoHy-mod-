@@ -273,9 +273,9 @@ encore en cours s'affiche comme une forteresse soviétique.
 
 | Taille | Emprise, claims | Enceintes | Salle forte | Défenseurs | Récompense |
 |--------|-----------------|-----------|-------------|------------|------------|
-| Avant-poste | 61 × 61, 9 × 9 chunks | une : béton · eau · béton, 8 de haut, fossé d'eau | 3 couches : béton · eau · obsidienne | DEF1 | +150 ELO, 40 000 $ |
-| Base | 93 × 93, 11 × 11 chunks | deux : obsidienne · eau · obsidienne piégée · renforcée (11 de haut), puis béton · eau · renforcée, chacune entre deux parements de béton ; fossé et douve de Fake Water, rang de barbelés | 5 couches : renforcée · eau · obsidienne · boom · béton | DEF2 | +500 ELO, 200 000 $ |
-| Forteresse | 129 × 129, 13 × 13 chunks | deux : renforcée · eau · piégée · obsidienne · eau · renforcée (15 de haut), puis renforcée · eau · piégée · obsidienne, entre deux parements ; douve de Fake Water, fossé de lave, rang de barbelés empoisonnés | 7 couches : renforcée · eau · enclumes en paladium et anti-aggro · obsidiennes à wither · eau · mega boom · blackstone | DEF3 | +1 500 ELO, 800 000 $ |
+| Avant-poste | 61 × 61, 9 × 9 chunks | une : béton · eau · béton, 8 de haut, fossé d'eau | 3 couches : béton · eau · obsidienne | une trentaine | +150 ELO, 40 000 $ |
+| Base | 93 × 93, 11 × 11 chunks | deux : obsidienne · eau · obsidienne piégée · renforcée (11 de haut), puis béton · eau · renforcée, chacune entre deux parements de béton ; fossé et douve de Fake Water, rang de barbelés | 5 couches : renforcée · eau · obsidienne · boom · béton | une cinquantaine | +500 ELO, 200 000 $ |
+| Forteresse | 129 × 129, 13 × 13 chunks | deux : renforcée · eau · piégée · obsidienne · eau · renforcée (15 de haut), puis renforcée · eau · piégée · obsidienne, entre deux parements ; douve de Fake Water, fossé de lave, rang de barbelés empoisonnés | 7 couches : renforcée · eau · enclumes en paladium et anti-aggro · obsidiennes à wither · eau · mega boom · blackstone | quatre-vingts environ | +1 500 ELO, 800 000 $ |
 
 Le béton est du **béton du jeu** (et du grès pour la base radar) : il se casse à la TNT comme la pierre
 qu'il remplace, et les parements s'ajoutent aux couches sans en retirer — une base n'est pas plus
