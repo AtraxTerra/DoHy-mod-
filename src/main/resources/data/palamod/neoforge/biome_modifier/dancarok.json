@@ -1,14 +1,9 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": [
-    "minecraft:plains",
-    "minecraft:sunflower_plains",
-    "minecraft:savanna",
-    "minecraft:savanna_plateau"
-  ],
+  "biomes": "#palamod:dancarok_spawns",
   "spawners": {
     "type": "palamod:dancarok",
-    "weight": 2,
+    "weight": 3,
     "minCount": 1,
     "maxCount": 1
   }

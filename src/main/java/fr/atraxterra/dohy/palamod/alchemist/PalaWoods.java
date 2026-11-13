@@ -90,15 +90,19 @@ public final class PalaWoods {
             "dead_wood_planks", Block::new, properties -> properties
                     .strength(3.0f).sound(SoundType.WOOD).mapColor(MapColor.COLOR_GRAY));
 
-    // -- Feuilles : un bloc simple, sans pourrissement -----------------------
-    public static final DeferredBlock<Block> JACARANDA_LEAVES = BLOCKS.registerBlock(
-            "jacaranda_leaves", Block::new, properties -> leaves(properties, MapColor.COLOR_PURPLE));
-    public static final DeferredBlock<Block> JUDEECERCIS_LEAVES = BLOCKS.registerBlock(
-            "judeecercis_leaves", Block::new, properties -> leaves(properties, MapColor.COLOR_PINK));
-    public static final DeferredBlock<Block> ERABLE_LEAVES = BLOCKS.registerBlock(
-            "erable_leaves", Block::new, properties -> leaves(properties, MapColor.COLOR_RED));
-    public static final DeferredBlock<Block> OSTRYA_LEAVES = BLOCKS.registerBlock(
-            "ostrya_leaves", Block::new, properties -> leaves(properties, MapColor.PLANT));
+    // -- Feuilles : elles tombent loin du tronc (PalaLeavesBlock) ------------
+    public static final DeferredBlock<PalaLeavesBlock> JACARANDA_LEAVES = BLOCKS.registerBlock(
+            "jacaranda_leaves", properties -> new PalaLeavesBlock(0xA9ACE6, properties),
+            properties -> leaves(properties, MapColor.COLOR_PURPLE));
+    public static final DeferredBlock<PalaLeavesBlock> JUDEECERCIS_LEAVES = BLOCKS.registerBlock(
+            "judeecercis_leaves", properties -> new PalaLeavesBlock(0xE6A0C3, properties),
+            properties -> leaves(properties, MapColor.COLOR_PINK));
+    public static final DeferredBlock<PalaLeavesBlock> ERABLE_LEAVES = BLOCKS.registerBlock(
+            "erable_leaves", properties -> new PalaLeavesBlock(0x8C2C2C, properties),
+            properties -> leaves(properties, MapColor.COLOR_RED));
+    public static final DeferredBlock<PalaLeavesBlock> OSTRYA_LEAVES = BLOCKS.registerBlock(
+            "ostrya_leaves", properties -> new PalaLeavesBlock(0x40532A, properties),
+            properties -> leaves(properties, MapColor.PLANT));
 
     // -- Pousses ---------------------------------------------------------------
     public static final DeferredBlock<SaplingBlock> JACARANDA_SAPLING = BLOCKS.registerBlock(
@@ -157,7 +161,7 @@ public final class PalaWoods {
     }
 
     private static BlockBehaviour.Properties leaves(BlockBehaviour.Properties properties, MapColor color) {
-        return properties.strength(0.2f).sound(SoundType.GRASS).mapColor(color).noOcclusion()
+        return properties.strength(0.2f).randomTicks().sound(SoundType.GRASS).mapColor(color).noOcclusion()
                 .isValidSpawn((state, level, pos, entity) -> false)
                 .isSuffocating((state, level, pos) -> false)
                 .isViewBlocking((state, level, pos) -> false)

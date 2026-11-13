@@ -993,7 +993,7 @@ l'obsidienne renforcée), recette à base de **bûches** de bois mort. Leurs ver
 ### Hache en endium — `BaseItemAxe.onBlockDestroyed`, `breakTree`
 
 Une bûche cassée abat toutes les bûches qui la touchent, par les 26 voisines, jusqu'à 15 pas,
-sans limite de nombre ; les feuilles restent et pourrissent d'elles-mêmes. **Une usure par
+sans limite de nombre ; les feuilles restent et tombent d'elles-mêmes. **Une usure par
 arbre.** L'usure est plafonnée : à bout, la hache ne fait plus qu'abattre, elle coupe et frappe
 toujours (seule l'épée en endium refusait vraiment de servir). Plafond un point sous le maximum,
 comme la pioche en endium. **Écart** : chaque bûche passe par la casse d'un joueur, donc
@@ -1141,8 +1141,25 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
 - Les **générateurs sont des patrons figés**, communs aux quatre essences : 30 bûches et 97
   feuilles (11 de haut) deux fois sur trois, 35 et 129 (12 de haut) sinon ; les patrons 3 et 4
   ne sont jamais tirés. Coordonnées recopiées du bytecode (`PalaTreeFeature`).
-- Les **feuilles ne pourrissent pas** (un bloc simple) : 1,01 % de pousse, la feuille à la
-  cisaille ou au toucher de soie. La pousse suit la croissance vanilla.
+- Les feuilles : 1,01 % de pousse, la feuille à la cisaille ou au toucher de soie. La pousse suit
+  la croissance vanilla.
+- **Écart : les feuilles tombent** (2026-11-13 ; l'original : un bloc simple, qui ne pourrissait
+  jamais). Ce sont de vraies feuilles (`PalaLeavesBlock`) : à plus de six pas d'une bûche, elles
+  tombent, et vite avec **Leaves Be Gone**, qui ne traite que les vraies feuilles. Posées à la
+  main, elles restent.
+  - **Distance par les 26 voisines**, coins compris, et seulement par les bûches et les feuilles
+    de la même essence : les patrons sont clairsemés, un cinquième de leurs feuilles ne touche
+    rien par une face et serait tombé dès la pousse avec le calcul vanilla. Ainsi, chaque feuille
+    des deux patrons est à un ou deux pas d'une bûche. L'arbre est posé avec ses distances.
+  - **Feuilles d'avant ce changement** : sauvegardées sans propriété, elles reviennent à l'état
+    par défaut, « distance 1 » : elles tiennent tant que rien ne bouge autour. Dès qu'une bûche
+    ou une feuille voisine change, la vraie distance se recalcule de proche en proche : abattre un
+    vieil arbre le déplume comme un neuf ; un bouquet déjà sans tronc tombe quand on en touche
+    une feuille. Celles qu'on avait posées à la main avant ne se distinguent pas : loin d'une
+    bûche, elles tombent aussi si on touche leur voisine.
+  - Les bûches entamées par l'extracteur comptent comme des bûches (`#minecraft:logs`).
+  - Une feuille sur cent qui pend dans le vide lâche une particule de feuille à la couleur de
+    l'essence ; ses pixels transparents ont une teinte sombre, pour le rendu sans découpe.
 - XP : 10 par bûche de jacaranda, judée ou érable coupée (aucune pour l'ostrya), converties.
 - **Écart : génération activée.** L'original ne générait ces arbres que sur le serveur de minage
   (`Server Minage`, désactivé par défaut) : sans eux, rien de l'Alchimiste ne s'obtient. Rythme
@@ -1447,9 +1464,19 @@ horloge s'arrête.
 ### Le Dancarok — `EntityDancarokMount`, `EntityMount`
 
 - 2,5 × 1,9. **Sauvage** : 53 PV, immobile (il regarde les joueurs, rien d'autre), ne disparaît
-  jamais, ne se monte pas. Il apparaît, rarement, dans les plaines et les savanes : **aucun code
-  d'apparition dans les jars**, les sauvages étaient posés à la main sur le serveur « Farmland » ;
-  la règle d'apparition est donc un ajout.
+  jamais, ne se monte pas. **Aucun code d'apparition dans les jars**, les sauvages étaient posés
+  à la main sur le serveur « Farmland » ; la règle d'apparition est donc un ajout. Biomes :
+  plaines, plaines de tournesols, prairie, savanes (et `#c:is_savanna` des autres mods), tag
+  `palamod:dancarok_spawns` ; sur de l'herbe, au jour.
+  - **Règle vanilla** : poids 3 parmi les créatures (moutons 12, cochons 10, poules 10,
+    vaches 8, chevaux 5, ânes 1), un à la fois. Elle joue surtout à la génération des chunks.
+  - **`DancarokSpawner`** (2026-11-13) : sur une carte déjà générée (la Terre), il n'y a pas de
+    génération de chunks, et le tirage des créatures toutes les 20 secondes est plafonné à une
+    dizaine de bêtes que moutons et vaches remplissent : un Dancarok n'y venait presque jamais.
+    Une fois par minute, une chance sur huit par joueur dans l'overworld : un sauvage apparaît à
+    32-64 blocs, hors de vue, dans un de ces biomes, s'il n'y en a aucun autre à 128 blocs. On en
+    croise un par coin de plaine où l'on passe un peu de temps (huit minutes en moyenne). La règle
+    `spawn_mobs` l'arrête.
 - **Niveaux** : 1 à 100, seuil du niveau L = somme de `i^2,5` tronquée pas à pas (749 XP au niveau
   10, plafond 2 907 301). Seule source : les orbes d'XP ramassées, partagées selon le réglage
   (50 % par défaut, `/mount xp <0-100>` ou le menu) — que la monture soit invoquée ou non.
