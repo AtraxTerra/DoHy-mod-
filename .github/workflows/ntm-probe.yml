@@ -1,0 +1,19 @@
+name: ntm-probe
+on:
+  push:
+    branches: ["ci/ntm-probe"]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Releases de NTM NEXT
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list -R Warfactory-Official/ntm-next -L 15 || true
+          echo "-----"
+          gh api repos/Warfactory-Official/ntm-next/releases --jq '.[0:6][] | "\(.tag_name) | " + ([.assets[] | .name + " " + (.size|tostring) + " " + .browser_download_url] | join(" ; "))' || true
+          echo "-----"
+          curl -sL "https://api.modrinth.com/v2/search?query=ntm%20next&limit=5" | head -c 3000 || true
+          echo
+          curl -sL "https://api.modrinth.com/v2/project/ntm-next/version" | head -c 3000 || true
