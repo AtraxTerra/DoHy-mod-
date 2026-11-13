@@ -515,6 +515,60 @@ reviennent guère. Sur la carte de la Terre, faite d'avance, des régions entiè
 - La règle `spawn_mobs` l'arrête. Les animaux ne disparaissent pas : chaque coin où l'on passe
   garde sa vingtaine de bêtes.
 
+### Les saisons (2026-11-13)
+
+Des saisons selon la latitude, dans l'esprit de Serene Seasons (qui, lui, donne la même saison
+au monde entier). Choix du joueur : **une saison par semaine réelle**, neige **réaliste**,
+cultures, couleurs et atlas.
+
+- **Le calendrier** : l'année dure quatre semaines ; chaque saison s'ouvre le **lundi à 5 h**
+  (heure de Paris, comme les contrats). Le 16 novembre 2026 ouvre l'hiver du nord. Le **sud** vit
+  la même année à contre-temps : son hiver est l'été du nord. Sous les **tropiques** (moins de
+  23,44°) pas d'hiver, mais une saison sèche et une saison des pluies (un nom, sans effet : la
+  pluie du jeu est la même partout). Le temps est celui de l'horloge réelle : les saisons
+  avancent serveur éteint.
+- **Le froid** : la saison s'ajoute à la température des biomes. Sa force monte des tropiques
+  (rien) à 65° (toute) ; le plein hiver retire 0,75, le plein été ajoute trois fois moins. Le jeu
+  fait le reste avec ses propres règles : la pluie devient neige (à l'écran aussi), l'eau gèle,
+  la neige tient. **Réglage réaliste**, vérifié par `tools/SeasonMathTest.java` : en plaine et en
+  forêt, pas de neige à Paris ; un peu à Berlin au cœur de l'hiver ; franchement à Moscou,
+  Stockholm, Ushuaia ; la taïga et la montagne blanchissent plus bas (le jeu refroidit déjà
+  l'air avec l'altitude) ; la toundra dégèle l'été, les glaciers tiennent.
+- **La fonte, même sans joueur** : le jeu ne fait jamais fondre la neige au redoux, et ne touche
+  qu'aux chunks proches du joueur. `SeasonGround` le fait :
+  - **le balayage** : à chaque tick, 48 chunks chargés, deux colonnes au hasard dans chacun ;
+    neige et glace fondent où il fait doux (température ≥ 0,18, un peu au-dessus de la limite de
+    la neige pour qu'un bloc ne gèle et ne fonde pas tour à tour). Tous les chunks chargés y
+    passent, ceux du spawn et les chunks forcés compris : la fonte continue serveur sans joueur
+    (pause du serveur vide désactivée) ;
+  - **le rattrapage** : un chunk qui revient en mémoire est remis à la saison avant d'être vu —
+    toute sa neige fond s'il fait doux ; s'il fait froid, il reçoit la couche de neige et la
+    glace de rive que l'hiver lui aurait données. Une fois par palier (64 par année, ~10 h).
+  - Un chunk que personne ne charge ne peut pas être modifié : c'est le rattrapage qui le remet
+    d'aplomb à son retour. Ne fondent que les couches de neige et la glace simple de surface ;
+    jamais un bloc posé par un joueur, ni un bloc de neige, ni la glace compacte ou bleue.
+- **Les cultures** : à l'abri (sous un toit, une verrière : pas de vue sur le ciel), tout pousse.
+  Dehors, rien ne pousse s'il gèle ; sinon la part des pousses baisse avec l'hiver, jusqu'à une
+  sur cinq au cœur de l'hiver au-delà de 65°. Tropiques et été : tout pousse. La poudre d'os
+  n'est pas freinée. Toutes les cultures qui passent par l'événement de pousse de NeoForge sont
+  concernées (céréales DoHy, PalaMod, blé, canne, baies...).
+- **Les couleurs** (client, accentuées à la demande du joueur) : en automne le feuillage rougit
+  franchement, et pas d'une seule couleur — rouge, orange, jaune ou roux selon le bosquet (une
+  tache par 4 blocs, à peu près un arbre) — et l'herbe tourne à la paille ; en hiver feuillage
+  brun gris et herbe sèche ; au printemps un vert tendre et vif ; l'été, les couleurs du jeu.
+  Force entière dès 45° (la France comprise), nulle sous les tropiques. Sapins et bouleaux gardent
+  leur couleur fixe. Les couleurs avancent par paliers (~10 h) : à chaque palier, les chunks
+  affichés se reconstruisent, l'ancien rendu restant affiché jusqu'au nouveau.
+- **L'atlas** : sous le pays, la saison, le jour de la semaine de saison et la température du
+  lieu — « Hiver  j3/7  -4 °C ». **`/saison`** donne le détail et le temps avant la suivante.
+  `/saison admin avancer <jours>` / `remettre` décale l'horloge pour essayer (op, jamais
+  sauvegardé).
+- **Code** : `season/SeasonMath` (les chiffres, sans Minecraft, testés seuls en CI),
+  `SeasonClimate` (table de décalage par bande de 16 blocs, serveur et client), `Seasons`
+  (calendrier, envoi `SeasonSync`, commande), `SeasonGround`, `SeasonCrops` ;
+  `mixin/BiomeTemperatureMixin` (la saison dans `Biome.getTemperature`), `BiomeAccessor` ;
+  `client/season/ClientSeasons`, `SeasonColors`, `mixin/BiomeColorsMixin` (client).
+
 ### Les cartes WorldPainter en 26.2
 
 Une carte dont les chunks attendent leur décoration est enregistrée à l'étape `liquid_carvers`.
