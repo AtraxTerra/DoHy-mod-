@@ -921,8 +921,10 @@ final class SiegePlanner {
             Step step = steps.get(i);
             if (step.move() == M_LADDER) {
                 Step base = steps.get(i - 1);
-                Direction facing = Direction.fromDelta(Integer.signum(base.pos().getX() - step.pos().getX()), 0,
-                        Integer.signum(base.pos().getZ() - step.pos().getZ()));
+                int dx = base.pos().getX() - step.pos().getX();
+                int dz = base.pos().getZ() - step.pos().getZ();
+                Direction facing = dx > 0 ? Direction.EAST : dx < 0 ? Direction.WEST : dz > 0 ? Direction.SOUTH
+                        : Direction.NORTH;
                 List<BlockPos> rungs = new ArrayList<>();
                 for (int k = 0; k < step.arg(); k++) {
                     rungs.add(base.pos().above(k));

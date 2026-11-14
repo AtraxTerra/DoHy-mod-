@@ -542,11 +542,6 @@ public class Soldier extends Monster implements RangedAttackMob {
     }
 
     @Override
-    public boolean shouldDespawnInPeaceful() {
-        return false;
-    }
-
-    @Override
     public boolean canPickUpLoot() {
         return false;
     }

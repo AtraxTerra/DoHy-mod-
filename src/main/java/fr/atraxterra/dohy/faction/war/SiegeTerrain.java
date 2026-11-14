@@ -39,7 +39,7 @@ import java.util.List;
  * ecrit avec le monde : un serveur qui tombe en plein siege rend le terrain au
  * demarrage suivant.
  */
-final class SiegeTerrain {
+public final class SiegeTerrain {
 
     /** Sans voisinage, sans {@code onPlace}, sans vider de conteneur. */
     static final int FLAGS = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE
