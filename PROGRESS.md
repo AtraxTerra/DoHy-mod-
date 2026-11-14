@@ -229,7 +229,13 @@ suite : pass au **thème du mois réel avec un objet exclusif au dernier niveau*
   d'action « Grinder · 13 / 27 blocs · 2 a retirer » ; l'aperçu blanc d'un plan tenu sur le bloc
   visé ;
 - l'annonce « [Encyclopedie] Nouvelle fiche : … [Lire] » après avoir ramassé une obsidienne
-  wither.
+  wither ;
+- un clic sur la commande `/money` d'une fiche : l'écran se ferme, « > /money », le solde ; une
+  commande absente de la fiche ouverte (`/op`) est refusée ; un plan déjà dans le sac n'est pas
+  donné une seconde fois ;
+- les couleurs de l'hologramme : blocs à poser translucides dans leur coque bleue, coques rouges
+  sur les deux blocs faux du grinder, jaunes sur l'obsidienne non chargée, voile vert sur ce qui
+  est en place.
 
 **Corrigé en route** (vu dans les captures) : les titres coupés par la pastille NOUVEAU (titres
 courts, et le titre de carte qui rétrécit) ; l'hologramme teinté qui assombrissait les blocs et
@@ -238,8 +244,8 @@ de la guerre (compté sur les douze nations) ; le cœur de la réserve d'or qui 
 quel bloc dans le plan (or liquide ou vide seulement).
 
 **Non vérifié en jeu** : la touche J sur un vrai clavier (la capture ouvre les menus côté
-serveur) ; une commande lancée d'un clic depuis une fiche ; le rechargement à chaud ; un plan posé
-en survie sur un serveur dédié ; le serveur de Minestrator.
+serveur) ; le rechargement à chaud ; un plan posé à la main en survie sur un serveur dédié ; le
+serveur de Minestrator.
 
 ### 2026-11-14 (suite) — la guerre des nations
 
