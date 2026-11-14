@@ -33,7 +33,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *       cassent les portes, champs pietines) ;</li>
  *   <li>les autres joueurs, sur un serveur, n'y cassent, ne posent et n'ouvrent
  *       rien ;</li>
- *   <li>un claim peut refuser l'apparition naturelle des monstres.</li>
+ *   <li>un claim peut refuser l'apparition naturelle des monstres ;</li>
+ *   <li>la foudre naturelle n'y tombe pas : la base, qui tourne aussi en
+ *       l'absence du joueur (lot 22k), ne prend pas feu sous l'orage.</li>
  * </ul>
  *
  * <p>Les claims des bases ennemies generees (lot 22g) suivent la regle de
@@ -141,6 +143,23 @@ public final class ClaimProtection {
             ClaimOwner owner = FactionApi.claimAt(level, pos);
             return owner.claimed() && !owner.raidable() && (cause == null || !owner.ownedBy(cause));
         });
+    }
+
+    /**
+     * La foudre naturelle (sans joueur a l'origine, comme un trident a
+     * canalisation) ne tombe pas dans un claim : depuis que la base tourne sans
+     * son joueur, un orage la nuit y mettrait le feu sans personne pour
+     * l'eteindre. Les bases ennemies, elles, la recoivent.
+     */
+    @SubscribeEvent
+    public static void onLightning(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof net.minecraft.world.entity.LightningBolt bolt
+                && event.getLevel() instanceof ServerLevel level && bolt.getCause() == null) {
+            ClaimOwner owner = FactionApi.claimAt(level, bolt.blockPosition());
+            if (owner.claimed() && !owner.raidable()) {
+                event.setCanceled(true);
+            }
+        }
     }
 
     @SubscribeEvent
