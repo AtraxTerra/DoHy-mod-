@@ -81,7 +81,7 @@ niveau avec sa propre courbe. Ils sont dans `jobs.json` (`rewards`), niveaux ×5
 |---|---|
 | Lingots de paladium et trixium, 5 × le niveau Paladium | chaque palier, 1 050 de chaque au total |
 | Pépite d'endium | 100 |
-| 5 bouteilles d'XP du métier, à la place du bonbon de métier | 95 |
+| Bonbon à déballer (5 bouteilles d'XP du métier jusqu'au 2026-11-14) | 95 |
 
 Et par métier, entre autres : la pioche en paladium Efficacité V / Solidité III (Mineur, 30),
 l'armure en paladium Protection IV / Solidité III (Mineur, 55), l'épée en paladium
@@ -98,8 +98,9 @@ les `astore`/`aload`.
 qui n'existe pas en 1.7.10 vanilla. C'est le module `back2future` de PalaMod
 (`enableFancySkulls`, repris d'Et Futurum) qui l'ajoute.
 
-**Remplaçants** (2026-11-11) : le bonbon à déballer de PalaMod est un objet d'événement
-communautaire (`ItemCandy`), qui ne sera pas porté ; il devient 5 bouteilles d'XP du métier.
+**Remplaçants** (2026-11-11) : le bonbon à déballer de PalaMod (`ItemCandy`) devenait 5
+bouteilles d'XP du métier. **Porté le 2026-11-14** (« Les bonbons de métier », plus bas) : la
+récompense du niveau 95 est de nouveau le bonbon à déballer.
 La défense d'éléphant (Chasseur, 80) devient un bloc d'os, comme dans les recettes de cornes de
 la palamachine. Sans remplaçant, ces récompenses n'étaient pas distribuées. L'armure de voyage (Fermier, 55)
 est portée depuis (§ 28). `tools/palamod_jobs.py` porte la règle (`SUBSTITUTES`).
@@ -107,6 +108,21 @@ est portée depuis (§ 28). `tools/palamod_jobs.py` porte la règle (`SUBSTITUTE
 **Joueurs migrés** : à la première connexion après le remplacement des skills, un joueur
 reçoit les objets de tous les paliers qu'il avait déjà franchis — leur argent avait été
 versé, les objets n'existaient pas.
+
+### Les bonbons de métier (2026-11-14)
+
+Demandés le 2026-11-14, d'après le wiki Java (pages « Évolution du métier », 19/06/2026) : cinq
+bonbons donnent **50 000 XP de PalaJobs d'un coup** — le vert au Fermier, le jaune au Mineur, le
+bleu au Chasseur, le mauve à l'Alchimiste, le multicolore aux quatre — et le **bonbon à déballer**
+donne un bonbon. Objets `palamod:candy_green`, `_yellow`, `_blue`, `_purple`, `_rainbow`,
+`_wrapped` (`CandyItem`, `WrappedCandyItem`), textures originales (`tools/candy_assets.py`).
+
+| Point | DoHy | Source |
+|---|---|---|
+| XP d'un bonbon | **17 850** (50 000 × 0,357, § 1), par `JobApi.grant` | wiki : 50 000 |
+| Bonbon à déballer | multicolore 10 %, sinon une couleur (22,5 % chacune) | chances absentes du wiki : DoHy |
+| Où | pass du mois (niveaux 5, 11, 17, 21, à la place des bouteilles d'XP) ; métiers niveau 95 ; coffres de boss dès le palier 50 | wiki : Palapass ; patch note V8.5 (niveau 90 du wiki Java) ; récompenses de boss (« Bonbon emballée » au 50, « à déballer » aux 85 et 95) |
+| Double XP | absent de DoHy | wiki : la potion double l'XP du bonbon |
 
 ### Types d'objectifs et de quêtes
 
@@ -2070,7 +2086,7 @@ Le meilleur sac de l'inventaire à l'entrée fixe la contenance ; ce qui dépass
 
 **Venus aux chapitres suivants** : épées et armures de donjon, essences et pièces antiques (§ 23),
 runes (§ 24). **Non portés** : parchemins de sort (sorts sautés) et de craft. **Absents de DoHy**, donc ignorés : obsidienne
-infusée, têtes de thirsty et de prédator, totem fleuri, bonbons, jetpack, défense d'éléphant,
+infusée, têtes de thirsty et de prédator, totem fleuri, jetpack, défense d'éléphant,
 pièce de lune, double XP, têtes de wither passive et suprême.
 
 ### Fin du palier

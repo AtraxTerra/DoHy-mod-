@@ -241,16 +241,15 @@ REWARD_NAMES = {
     "LEAVE_ERABLE": ("erable_leaves", "Feuilles d'erable"),
 }
 
-# Recompenses dont l'objet ne sera pas porte, et leur remplacant :
-#  - le bonbon a deballer (ItemCandy, objet d'evenement communautaire) devient
-#    des bouteilles d'XP du meme metier (1 000 XP chacune, chapitre 18) ;
+# Recompenses dont l'objet n'est pas porte tel quel, et leur remplacant :
+#  - le bonbon a deballer (ItemCandy) est porte depuis le 2026-11-14 : c'est
+#    palamod:candy_wrapped, qui donne un bonbon de metier au hasard (il etait
+#    remplace par 5 bouteilles d'XP du metier) ;
 #  - la defense d'elephant devient un bloc d'os, comme dans les recettes de
 #    cornes de la palamachine (chapitre 16).
 # Sans remplacant, la recompense n'etait pas distribuee du tout.
-CANDY_BOTTLES = 5
 SUBSTITUTES = {
-    "JOB_CANDY": lambda job, count: ("palamod:job_bottle_%s" % job, "Bouteille d'XP de metier",
-                                     count * CANDY_BOTTLES),
+    "JOB_CANDY": lambda job, count: ("palamod:candy_wrapped", "Bonbon a deballer", count),
     "TUSK": lambda job, count: ("minecraft:bone_block", "Bloc d'os", count),
 }
 

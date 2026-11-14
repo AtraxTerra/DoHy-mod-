@@ -61,7 +61,9 @@ public final class JobBossMenu extends MenuController {
 
     private static String status(ServerPlayer player, Job job) {
         return switch (JobBossApi.state(player, job)) {
-            case OFFERING -> "Offrande : " + Math.round(JobBossApi.progress(player, job) * 100) + " %";
+            case OFFERING -> JobBossApi.resting(player, job) > 0L
+                    ? "Au repos : " + JobBossApi.when(JobBossApi.resting(player, job))
+                    : "Offrande : " + Math.round(JobBossApi.progress(player, job) * 100) + " %";
             case COMING -> "Arrive dans " + JobBossApi.when(JobBossApi.remaining(player, job));
             case READY -> "T'attend dans l'arene";
         };
@@ -113,7 +115,11 @@ public final class JobBossMenu extends MenuController {
         }
 
         List<Card> actions = new ArrayList<>();
-        if (state == JobBossApi.State.OFFERING) {
+        if (state == JobBossApi.State.OFFERING && JobBossApi.resting(player, selected) > 0L) {
+            actions.add(Card.of(new ItemStack(Items.RED_BED), "Au repos", List.of(
+                    "Prochaine offrande dans " + JobBossApi.when(JobBossApi.resting(player, selected)),
+                    "Huit heures apres chaque victoire")).accent(color(selected)).state(MenuView.DISABLED));
+        } else if (state == JobBossApi.State.OFFERING) {
             Card give = Card.of(new ItemStack(Items.CHEST), "Offrir", List.of(
                     "Deposer ce que tu as de l'offrande", "Le reste plus tard, autant de fois qu'il faut"))
                     .accent(color(selected));

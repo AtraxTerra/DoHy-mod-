@@ -1248,6 +1248,12 @@ Choix du joueur : **des offrandes au spawn ; le boss arrive une heure après, da
 | Alchimiste | 96 verrues du Nether, 64 poudre de glowstone, 16 bâtons de blaze, 16 crèmes de magma, 16 yeux d'araignée, 4 larmes de ghast |
 
   On la dépose en autant de fois qu'il faut (« Offrir » prend dans le sac ce qu'il manque).
+- **D'après le wiki** (« Boss métier », mis à jour le 23/04/2026), deux règles de Paladium sont
+  reprises : le gardien **se soigne de 2,5 % de sa vie par seconde s'il n'est pas frappé pendant
+  une minute** (250 points sur 10 000 chez Paladium), et **après une victoire, l'autel n'accepte
+  pas d'offrande pour lui pendant huit heures** (écran : « Au repos »). Non repris : les dix mille
+  points de vie fixes, la récompense en XP selon l'offrande et les dégâts (DoHy : XP, argent et
+  coffre par niveau, le choix du joueur), la limite de trois heures (l'arène est privée).
 - **Une heure** après l'offrande complète (heure réelle, redémarrages compris), le gardien
   **arrive** : l'autel prévient dans le chat dix minutes avant, puis à l'arrivée avec un lien
   **[Combattre]** (et à chaque connexion tant qu'il attend). **Il attend sans limite.**

@@ -218,6 +218,19 @@ shop du clicker, sans avoir à attendre la première semaine, le premier jour et
 - **Pousses** : les feuilles de PalaMod lâchent une pousse sur vingt (Fortune : 6,25 / 8,3 / 10 %),
   comme le chêne, au lieu d'une sur 99 : un arbre n'en donnait aucune une fois sur trois.
 
+- **Bonbons** (demandés ensuite, même PR) : les cinq bonbons de métier du wiki (vert, jaune, bleu,
+  mauve, multicolore : 17 850 XP, soit 50 000 XP de PalaJobs) et le bonbon à déballer — pass du
+  mois (niveaux 5, 11, 17, 21), récompense de métier du niveau 95, coffres de boss dès le palier
+  50 ; fiche « Les bonbons ». Le joueur demandait de reprendre des textures existantes : elles sont
+  dessinées ici, originales.
+- **Wiki des métiers** (relu le 2026-11-14 : pages Mineur et Chasseur du 19/06/2026, Alchimiste du
+  15/11/2025, Boss métier du 23/04/2026) : repris pour les gardiens, le soin après une minute sans
+  coup et les huit heures de repos après une victoire. **Pas encore dans DoHy** : les quêtes de
+  métier (trois par jour, +1 % d'XP par jour d'assiduité, divisé par deux si l'on en manque une),
+  les jetons de métier (trois récompenses au choix, commune, rare ou épique), les créatures et la
+  pêche des Farmlands. Les tables d'XP du wiki sont celles de PalaJobs (DoHy a sa propre courbe,
+  § 1 de PALAMOD.md).
+
 **Non vérifié en jeu** : le combat complet contre chaque gardien et chaque élite (capacités, rage)
 sur le serveur dédié ; la reconstruction du spawn en version 9 sur le monde du joueur.
 

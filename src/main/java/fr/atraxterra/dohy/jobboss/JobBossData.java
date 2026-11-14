@@ -24,7 +24,8 @@ public final class JobBossData {
                         .forGetter(guardian -> Map.copyOf(guardian.deposited)),
                 Codec.LONG.optionalFieldOf("arrival", 0L).forGetter(guardian -> guardian.arrival),
                 Codec.INT.optionalFieldOf("notices", 0).forGetter(guardian -> guardian.notices),
-                Codec.INT.optionalFieldOf("kills", 0).forGetter(guardian -> guardian.kills)
+                Codec.INT.optionalFieldOf("kills", 0).forGetter(guardian -> guardian.kills),
+                Codec.LONG.optionalFieldOf("rest", 0L).forGetter(guardian -> guardian.rest)
         ).apply(instance, Guardian::new));
 
         /** L'annonce « dans dix minutes » est faite. */
@@ -37,17 +38,24 @@ public final class JobBossData {
         long arrival;
         int notices;
         int kills;
+        /** Jusqu'a quand l'autel n'accepte pas d'offrande pour lui (millisecondes, 0 : jamais). */
+        long rest;
 
         Guardian() {
-            this(1, Map.of(), 0L, 0, 0);
+            this(1, Map.of(), 0L, 0, 0, 0L);
         }
 
-        private Guardian(int level, Map<String, Integer> deposited, long arrival, int notices, int kills) {
+        private Guardian(int level, Map<String, Integer> deposited, long arrival, int notices, int kills, long rest) {
             this.level = Math.max(1, level);
             this.deposited = new HashMap<>(deposited);
             this.arrival = arrival;
             this.notices = notices;
             this.kills = kills;
+            this.rest = rest;
+        }
+
+        public long rest() {
+            return rest;
         }
 
         public int level() {
@@ -67,7 +75,7 @@ public final class JobBossData {
         }
 
         boolean blank() {
-            return level <= 1 && deposited.isEmpty() && arrival == 0L && kills == 0;
+            return level <= 1 && deposited.isEmpty() && arrival == 0L && kills == 0 && rest == 0L;
         }
     }
 

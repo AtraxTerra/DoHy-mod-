@@ -915,5 +915,18 @@
   "key.dohy.atlas": "Atlas (world map)",
   "key.dohy.minimap": "Minimap (toggle)",
   "key.dohy.minimap_zoom_in": "Minimap: zoom in",
-  "key.dohy.minimap_zoom_out": "Minimap: zoom out"
+  "key.dohy.minimap_zoom_out": "Minimap: zoom out",
+  "item.palamod.candy_green": "Green Candy",
+  "item.palamod.candy_yellow": "Yellow Candy",
+  "item.palamod.candy_blue": "Blue Candy",
+  "item.palamod.candy_purple": "Purple Candy",
+  "item.palamod.candy_rainbow": "Rainbow Candy",
+  "item.palamod.candy_wrapped": "Wrapped Candy",
+  "tooltip.palamod.candy": "+%s %s XP",
+  "tooltip.palamod.candy.all": "+%s XP in every job",
+  "tooltip.palamod.candy.hint": "Right-click: crunch it. Sneak: the whole stack.",
+  "tooltip.palamod.candy_wrapped": "A random job candy, sometimes a rainbow one",
+  "tooltip.palamod.candy_wrapped.hint": "Right-click: unwrap it.",
+  "message.palamod.candy": "[Candy] +%s %s XP",
+  "message.palamod.candy_wrapped": "[Candy] Inside the wrapper: %s!"
 }
