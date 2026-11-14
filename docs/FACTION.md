@@ -772,26 +772,38 @@ prendre. Sans coffre désigné, c'est le cœur du claim le plus garni en machine
    première vague arrive au son du cor. Le chat dit où, et le plan de bataille.
 3. **L'armée** : 8 à 24 soldats selon son armée et son agressivité, composés selon sa doctrine.
    **Fantassins** (cuir à ses couleurs, casque de fer), **archers** (ils couvrent les travaux de
-   loin et gardent leurs distances), **sapeurs** (une caisse de TNT sous le bras), **ingénieurs**
+   loin et gardent leurs distances), **sapeurs** (un briquet à la main, de la dynamite au côté —
+   pas de TNT à la main : avec NTM, un soldat qui prend feu avec de la TNT sur lui explose),
+   **ingénieurs**
    (casque d'or, pioche, échelle), **médecins** (tunique blanche, potions de soin pour les
    blessés), le **commandant** (la bannière de sa nation sur la tête) et le **trésorier** (tout en
    or, un coffre dans les mains). Des textures originales, quatre visages.
-4. **Les obstacles, l'un après l'autre.** La troupe se range à distance de l'obstacle ; un
-   **sapeur** pose sa charge contre le mur (TNT, TNT compacte ou TNT en endium selon le bloc) et
-   court s'abriter ; un **ingénieur** creuse, pose les échelles de bas en haut ou jette un pont de
-   deux de large. Ce que tu rebouches se reperce. Trois soldats égarés (tombés d'une échelle, coincés
-   dans une cour), des morts au même endroit, ou un coffre qui ne se prend pas : le commandant
-   refait son plan depuis le front.
+4. **Les obstacles, l'un après l'autre.** La troupe se range à distance de l'obstacle — jamais
+   sur un pont ni au bord de la lave — et recule davantage quand une charge va sauter. Un
+   **sapeur** attend que personne ne soit à moins de six blocs, colle sa charge contre le bloc qui
+   la demande (TNT, TNT compacte ou TNT en endium selon le bloc ; une brèche mêlée de pierre et de
+   fer se perce en deux temps, la pioche puis la charge) et court s'abriter. Un **ingénieur**
+   creuse, pose les échelles de bas en haut ou jette un pont de deux de large ; là où l'armée se
+   laisse tomber de plus de deux blocs, il pose une **échelle de descente**, par laquelle elle
+   remontera en repartant. On monte une échelle un par un. Ce que tu rebouches se reperce. Trois
+   soldats égarés en une minute (tombés d'une échelle, coincés dans une cour), trois morts au même
+   endroit, ou un coffre qui ne se prend pas : le commandant refait son plan depuis le front (au
+   plus une fois par minute, huit fois par siège). Un siège qui n'avance plus depuis trois minutes
+   **s'enlise** : le moral perd 6 points par minute.
 5. **Le coffre** est pris quand des soldats le tiennent sans défenseur (toi, tes golems gardiens)
    pendant une demi-minute. **Le trésorier** vient alors **vider ta banque** : une part toutes les
    trois secondes, jusqu'à ce qu'il en ait assez (55 à 100 % selon l'avidité) ou que le moral
-   flanche. Il repart au camp, escorté, brillant à travers les murs. **Arrivé, l'argent est
-   perdu** (il grossit leur trésor) ; **tué en route, il le rend**. Pendant l'assaut, rien ne sort
-   de ta banque (retraits, achats) : tout y est sous scellé.
+   flanche (sous 40). Il repart au camp par le chemin de l'aller, en remontant les échelles de
+   descente, escorté à distance, une arrière-garde tenant le coffre derrière lui, brillant à
+   travers les murs. **Arrivé, l'argent est perdu** (il grossit leur trésor) ; **tué en route, il
+   le rend**. Tu as six minutes pour l'abattre ; un trésorier égaré que tu ne vois pas (à plus de
+   24 blocs de toi) depuis 25 secondes trouve un autre chemin et reparaît au camp. Pendant
+   l'assaut, rien ne sort de ta banque (retraits, achats) : tout y est sous scellé.
 6. **Le moral** tient l'armée : chaque mort l'entame (davantage pour un sapeur qu'un fantassin,
    beaucoup pour le commandant), une brèche ouverte ou un coffre tenu le relèvent, ta mort l'exalte.
    Sous 35, la troupe hésite et ne monte plus à l'assaut ; sous 15, c'est la déroute. Tant que
-   l'étendard tient et que le moral suit, des renforts arrivent du camp toutes les deux minutes.
+   l'étendard tient et que le moral reste au-dessus de 25, des renforts arrivent du camp toutes les
+   deux minutes (16 soldats au plus en même temps).
 
 ### Ta riposte
 
@@ -821,3 +833,21 @@ répondre, les heures à choisir et le prix de la paix, les douze nations (humeu
 trésor estimés, caractère, griefs, assauts), ta base vue par elles, et l'histoire de tes guerres.
 Les guerres s'écrivent aussi au journal des nations du rapport d'absence. Opérateurs :
 `/guerre admin menace|declarer|assaut <nation>`, `hostilite <nation> <valeur>`, `fin`, `etat`.
+
+### Vérifié en jeu
+
+Sur une forteresse de test bâtie par le CI (quatre claims, des douves de lave, une muraille de
+pierre de six de haut, un socle, un donjon de fer fermé autour du coffre, 60 000 $ en banque), deux
+assauts des Titans de bout en bout (le camp y durait 20 s au lieu d'une minute) :
+
+- **le plan** : six obstacles — une échelle de 5 blocs, un pont de deux planches sur la lave, trois
+  passages à creuser, une brèche à la TNT dans le fer — en 33 étapes depuis un camp dressé à
+  33 blocs à l'ouest du coffre (82 470 cases explorées) ;
+- **sans riposte** : 16 soldats, aucun tué par ses propres charges ; le coffre pris, le trésorier a
+  vidé 46 500 $ sur 60 000, remonté l'échelle de descente et rejoint le camp — « pillage », une
+  trêve, le trésor des Titans grossi d'autant ;
+- **avec riposte** : l'étendard abattu (moral de 76 à 58, plus de renforts), puis le trésorier tué
+  dans sa fuite — les 46 500 $ reviennent à la banque, « assaut brisé », +44 ELO, 150 $ de primes ;
+- dans les deux cas, le terrain est revenu comme avant quinze secondes après la fin ;
+- le serveur dédié démarre jusqu'à « Done » avec le lot, et `/summon dohy:soldier` y fait
+  apparaître un soldat.

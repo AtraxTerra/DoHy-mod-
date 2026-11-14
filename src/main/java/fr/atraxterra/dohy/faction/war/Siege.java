@@ -371,7 +371,8 @@ final class Siege {
         phase(Phase.CAMP);
         horn();
         int distance = (int) Math.sqrt(camp.distSqr(vault));
-        tell(traits.verb("dresse", "dressent") + " son camp a " + distance + " blocs " + bearing(camp)
+        String their = traits.plural() ? " leur camp a " : " son camp a ";
+        tell(traits.verb("dresse", "dressent") + their + distance + " blocs " + bearing(camp)
                 + " de ton coffre. L'assaut part dans " + (CAMP_TICKS / 20) + " s.", ChatFormatting.RED);
         tell("Plan de bataille : " + found.summary() + ". Abats l'etendard, le commandant ou le tresorier.",
                 ChatFormatting.GRAY);
@@ -400,7 +401,10 @@ final class Siege {
 
     /** Recalcule le plan depuis le front : une breche rebouchee, un mur qui ne cede pas, des morts. */
     private void replan(String why) {
-        if (commanderDead || pending != null || tick - lastReplan < 1200 || plan == null || replans >= 8) {
+        // Seulement a l'assaut : au pillage et a la retraite, la troupe suit deja son chemin, et un
+        // nouveau bout de plan deplacerait les etapes sous les pieds du tresorier.
+        if (phase != Phase.ASSAULT || commanderDead || pending != null || tick - lastReplan < 1200 || plan == null
+                || replans >= 8) {
             return;
         }
         lastReplan = tick;
@@ -415,6 +419,9 @@ final class Siege {
         }
         SiegePlanner.Plan found = pending.getNow(null);
         pending = null;
+        if (phase != Phase.ASSAULT) {
+            return;
+        }
         if (found == null || found.steps().size() < 2) {
             if (job != null && job.attempts >= 3) {
                 tell("Le commandant ne trouve plus de passage.", ChatFormatting.GRAY);
