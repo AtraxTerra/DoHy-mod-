@@ -476,6 +476,14 @@ public final class DungeonEvents {
                                                                     IntegerArgumentType.getInteger(context, "palier"),
                                                                     InteractionHand.MAIN_HAND, mode, true) ? 1 : 0;
                                                         })))))
+                        .then(Commands.literal("finir").executes(context -> {
+                            DungeonRun run = DungeonManager.runOf(context.getSource().getPlayerOrException());
+                            if (run == null) {
+                                return 0;
+                            }
+                            run.finishRoom();
+                            return 1;
+                        }))
                         .then(Commands.literal("salle").then(Commands.argument("type", StringArgumentType.word())
                                 .executes(context -> {
                                     ServerPlayer player = context.getSource().getPlayerOrException();

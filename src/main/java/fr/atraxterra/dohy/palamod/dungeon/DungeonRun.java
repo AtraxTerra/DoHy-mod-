@@ -40,7 +40,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DripstoneThickness;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -470,10 +469,9 @@ final class DungeonRun {
                 for (BlockPos tile : row) {
                     BlockPos above = tile.above();
                     if (level.getBlockState(above).isAir() && !occupied(above)) {
+                        // l'etat par defaut est une pointe ; on la tourne vers le haut
                         level.setBlock(above, Blocks.POINTED_DRIPSTONE.defaultBlockState()
-                                .setValue(BlockStateProperties.VERTICAL_DIRECTION, Direction.UP)
-                                .setValue(BlockStateProperties.DRIPSTONE_THICKNESS, DripstoneThickness.TIP),
-                                Block.UPDATE_CLIENTS);
+                                .setValue(BlockStateProperties.VERTICAL_DIRECTION, Direction.UP), Block.UPDATE_CLIENTS);
                         spikes.add(above);
                     }
                 }
@@ -1486,6 +1484,37 @@ final class DungeonRun {
                     choose(player, door.type());
                     return;
                 }
+            }
+        }
+    }
+
+    /**
+     * Essai ({@code /donjon admin finir}) : la salle en cours est reussie comme
+     * si on l'avait finie — monstres et boss abattus, piege desarme, compte a
+     * rebours ecoule, boutons trouves.
+     */
+    void finishRoom() {
+        if (phase == Phase.TRAP && trapButton != null) {
+            pressButton(trapButton);
+            return;
+        }
+        if (phase == Phase.PUZZLE) {
+            room.buttons.clear();
+            roomCleared();
+            return;
+        }
+        if (phase != Phase.FIGHT) {
+            return;
+        }
+        if (room.type == RoomType.SURVIVAL) {
+            survivalLeft = Math.min(survivalLeft, 1);
+            return;
+        }
+        wave = waves;
+        nextWaveIn = 0;
+        for (Mob mob : new ArrayList<>(enemies.keySet())) {
+            if (mob.isAlive()) {
+                mob.hurtServer(level, level.damageSources().genericKill(), Float.MAX_VALUE);
             }
         }
     }
