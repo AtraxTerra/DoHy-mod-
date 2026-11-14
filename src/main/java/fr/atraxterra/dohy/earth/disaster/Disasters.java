@@ -264,7 +264,7 @@ public final class Disasters {
             if (!inside.isEmpty() && RANDOM.nextDouble() < settings.hurricaneTargetShare()) {
                 target = inside.get(RANDOM.nextInt(inside.size()));
             }
-            hurricane(level, basin, target, 0, 300 + RANDOM.nextInt(180));
+            hurricane(level, basin, target, 0, 300 + RANDOM.nextInt(180), false);
         }
         // les nouvelles lointaines
         if (!full() && !DisasterConfig.placed().zones().isEmpty()
@@ -386,13 +386,13 @@ public final class Disasters {
     }
 
     static Hurricane hurricane(ServerLevel level, DisasterConfig.Basin basin, ServerPlayer target, int category,
-                               int passSeconds) {
+                               int passSeconds, boolean exact) {
         EarthData earth = EarthData.get();
         int cat = category > 0 ? category : category();
         List<String> names = DisasterConfig.data().names();
         String stormName = names.isEmpty() ? "Alice" : names.get(nameIndex++ % names.size());
         Hurricane hurricane = Hurricane.create(nextId++, earth, basin, stormName, cat, target, passSeconds,
-                1800.0d + (target == null ? 0.0d : passSeconds * 20.0d * Hurricane.SPEED), RANDOM);
+                1800.0d + (target == null ? 0.0d : passSeconds * 20.0d * Hurricane.SPEED), exact, RANDOM);
         hurricane.begin(level, target, passSeconds);
         add(hurricane);
         DoHy.LOGGER.info("{} (categorie {}) dans le bassin {}{}", hurricane.name, cat, basin.name(),
@@ -788,7 +788,7 @@ public final class Disasters {
             context.getSource().sendFailure(Component.literal("Aucun bassin cyclonique dans les donnees."));
             return 0;
         }
-        Hurricane hurricane = hurricane(level, basin, player, category, seconds);
+        Hurricane hurricane = hurricane(level, basin, player, category, seconds, true);
         context.getSource().sendSuccess(() -> Component.literal(hurricane.name + " (categorie " + hurricane.category
                 + ") passera sur toi dans " + duration(seconds) + "."), true);
         return 1;

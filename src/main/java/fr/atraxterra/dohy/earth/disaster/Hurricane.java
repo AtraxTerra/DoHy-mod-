@@ -103,7 +103,8 @@ final class Hurricane extends Disaster {
      * (a quelques blocs pres) {@code passSeconds} apres sa naissance.
      */
     static Hurricane create(int id, EarthData earth, DisasterConfig.Basin basin, String stormName, int category,
-                            ServerPlayer target, int passSeconds, double lifeBlocks, RandomSource random) {
+                            ServerPlayer target, int passSeconds, double lifeBlocks, boolean exact,
+                            RandomSource random) {
         DisasterConfig.Genesis genesis = basin.genesis().get(random.nextInt(basin.genesis().size()));
         double heading = genesis.heading() + random.nextDouble() * 20.0d - 10.0d;
         double startX;
@@ -115,7 +116,8 @@ final class Hurricane extends Disaster {
                     : latitude >= basin.recurveLatitude();
             double local = beyond ? (basin.southern() ? 145.0d : 35.0d) : heading;
             double back = passSeconds * 20.0d * SPEED;
-            double offset = random.nextDouble() * 24.0d - 12.0d;
+            // a quelques blocs du joueur, ou droit sur lui (commande d'essai)
+            double offset = exact ? 0.0d : random.nextDouble() * 24.0d - 12.0d;
             double rad = Math.toRadians(local);
             startX = target.getX() - Math.sin(rad) * back + Math.cos(rad) * offset;
             startZ = target.getZ() + Math.cos(rad) * back + Math.sin(rad) * offset;
