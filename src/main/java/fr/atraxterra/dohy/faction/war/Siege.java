@@ -613,7 +613,7 @@ final class Siege {
 
     /** Des renforts du camp, si l'etendard tient et que le moral suit. */
     private void reinforce() {
-        if (bannerDown || morale < 35.0d || reserveCount() == 0 || phase != Phase.ASSAULT && phase != Phase.PILLAGE) {
+        if (bannerDown || morale < 25.0d || reserveCount() == 0 || phase != Phase.ASSAULT && phase != Phase.PILLAGE) {
             return;
         }
         int room = MAX_ALIVE - alive().size();
@@ -649,6 +649,7 @@ final class Siege {
         }
         if (sent > 0) {
             waves++;
+            morale = Math.min(100.0d, morale + 4.0d);
             horn();
             tell("Des renforts arrivent au camp : " + sent + " soldat(s).", ChatFormatting.RED);
         }
@@ -840,8 +841,27 @@ final class Siege {
         }
     }
 
+    /** Le dernier progres : un obstacle leve, le coffre qui se prend. */
+    private int progressAt;
+    private int progressMark = -1;
+
+    /** Un siege qui n'avance plus s'enlise : le moral s'use, jusqu'a la retraite. */
+    private void fatigue() {
+        int mark = obstacle * 1000 + (int) Math.round(capture * 100.0d);
+        if (mark != progressMark || phase != Phase.ASSAULT) {
+            progressMark = mark;
+            progressAt = tick;
+            return;
+        }
+        if (tick - progressAt > 3600 && (tick - progressAt) % 1200 < 20) {
+            morale -= 6.0d;
+            tell("Le siege s'enlise...", ChatFormatting.GRAY);
+        }
+    }
+
     /** Le coffre ne se prend pas alors que plus rien ne barre la route : un autre chemin. */
     private void stalled() {
+        fatigue();
         if (!storming() || phase != Phase.ASSAULT) {
             capturedAt = tick;
             capturePeak = capture;
@@ -878,7 +898,8 @@ final class Siege {
         }
         int front = front();
         boolean storm = storming() && phase != Phase.CAMP && morale >= 35.0d;
-        int rally = phase == Phase.CAMP ? 0 : storm ? last() : Math.max(0, front - 5);
+        boolean blasting = job != null && job.charge > 0.0f;
+        int rally = phase == Phase.CAMP ? 0 : storm ? last() : Math.max(0, front - (blasting ? 9 : 5));
         Soldier treasurer = soldier(paymaster);
         UUID worker = job == null ? null : job.worker;
         List<Soldier> escort = new ArrayList<>();
@@ -893,14 +914,14 @@ final class Siege {
             }
             if (phase == Phase.CAMP) {
                 if (role == SoldierRole.COMMANDANT || role == SoldierRole.TRESORIER) {
-                    soldier.orderHold(banner == null ? camp : banner.below(2), 2.5d);
+                    soldier.orderHold(camp, 2.5d);
                 } else {
                     soldier.orderHold(camp, 4.5d);
                 }
                 continue;
             }
             switch (role) {
-                case COMMANDANT -> soldier.orderHold(banner == null ? camp : banner.below(2), 3.0d);
+                case COMMANDANT -> soldier.orderHold(camp, 3.0d);
                 case TRESORIER -> {
                     if (!soldier.getUUID().equals(paymaster)) {
                         soldier.orderHold(camp, 3.0d);
@@ -909,7 +930,7 @@ final class Siege {
                     } else if (phase == Phase.EXTRACT) {
                         soldier.orderRoute(0, 1.3d);
                     } else {
-                        soldier.orderHold(banner == null ? camp : banner.below(2), 3.0d);
+                        soldier.orderHold(camp, 3.0d);
                     }
                 }
                 case FANTASSIN -> {
@@ -1005,6 +1026,7 @@ final class Siege {
                 if (worker.near(spot, 1.2d)) {
                     job.stage = WORK;
                     job.timer = 0;
+                    job.waited = 0;
                 } else {
                     worker.orderRoute(stage, 1.15d);
                     if (++job.waited > 1200) {
@@ -1111,6 +1133,20 @@ final class Siege {
     private void arm(SiegePlanner.Obstacle next, Soldier worker, int stage) {
         BlockPos spot = steps().get(stage).pos();
         worker.orderHold(spot, 0.8d);
+        // Personne a moins de six blocs : le sapeur attend (dix secondes au plus) que ses camarades reculent.
+        boolean crowded = false;
+        for (Soldier other : alive()) {
+            if (other != worker && other.distanceToSqr(spot.getX() + 0.5d, spot.getY(), spot.getZ() + 0.5d) < 36.0d) {
+                crowded = true;
+                if (!other.lost) {
+                    other.orderRoute(Math.max(0, stage - 9), 1.2d);
+                }
+            }
+        }
+        if (crowded && ++job.waited < 200) {
+            job.timer = 0;
+            return;
+        }
         worker.setPose(Pose.CROUCHING);
         BlockPos target = next.cells().getFirst();
         worker.getLookControl().setLookAt(target.getX() + 0.5d, target.getY() + 0.5d, target.getZ() + 0.5d);
@@ -1169,8 +1205,11 @@ final class Siege {
                 return super.getBlockExplosionResistance(explosion, getter, pos, state, fluid);
             }
         };
+        int before = terrain.size();
         level.explode(tnt, Explosion.getDefaultDamageSource(level, tnt), calculator, cx, cy, cz, power, false,
                 Level.ExplosionInteraction.TNT);
+        DoHy.LOGGER.info("Guerre : une charge {} saute en {} {} {} (puissance {}, {} blocs souffles)", traits.de(),
+                Math.round(cx), Math.round(cy), Math.round(cz), power, terrain.size() - before);
         tnt.discard();
         Sieges.forget(current.tnt);
         current.tnt = null;

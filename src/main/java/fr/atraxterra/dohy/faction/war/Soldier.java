@@ -535,6 +535,11 @@ public class Soldier extends Monster implements RangedAttackMob {
 
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        // Les charges du siege : la troupe sait quand elles sautent, elle n'en prend que les eclats.
+        if (source.getDirectEntity() instanceof net.minecraft.world.entity.item.PrimedTnt tnt
+                && tnt.entityTags().contains(Sieges.CHARGE_TAG)) {
+            return super.hurtServer(level, source, amount * 0.1f);
+        }
         // Pas de tir ami : les fleches des archers, les coups de leurs camarades.
         if (source.getEntity() instanceof Soldier other && siege != null && siege.equals(other.siege)) {
             if (source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION)) {

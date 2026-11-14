@@ -939,7 +939,19 @@ final class SiegePlanner {
             py = y;
             pz = z;
         }
-        List<Obstacle> obstacles = obstacles(steps);
+        List<Obstacle> obstacles = new ArrayList<>();
+        for (Obstacle next : obstacles(steps)) {
+            // La charge que demande une breche, d'apres le releve : pour le plan annonce.
+            float charge = 0.0f;
+            if (next.kind() == Kind.BREACH) {
+                for (BlockPos pos : next.cells()) {
+                    byte cls = s.cls(pos.getX() - s.x0, pos.getY() - s.y0, pos.getZ() - s.z0);
+                    charge = Math.max(charge, cls == OBSIDIAN ? CHARGE_ENDIUM : cls == HEAVY ? CHARGE_BIG
+                            : cls == BLAST ? CHARGE_TNT : 0.0f);
+                }
+            }
+            obstacles.add(new Obstacle(next.kind(), next.first(), next.cells(), charge, next.facing()));
+        }
         BlockPos camp = steps.getFirst().pos();
         double straight = Math.max(1.0d, Math.sqrt(camp.distSqr(s.world(s.vx, s.vy, s.vz))));
         double hardness = Math.max(0.0d, Math.min(1.0d, Math.log(Math.max(1.0d, total / (straight * 4.0d)))
