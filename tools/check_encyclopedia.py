@@ -15,7 +15,7 @@ Controles :
     dimensions connues du datapack, cles de progression connues
     d'EncyclopediaProgress.java ;
   - commandes « /racine ... : description » dont la racine est enregistree ;
-  - lignes de carte courtes (elles se coupent sinon), resume non vide.
+  - titres et lignes de carte courts (ils se coupent sinon), resume non vide.
 
 Usage : python3 -I tools/check_encyclopedia.py
 """
@@ -32,6 +32,9 @@ RESOURCES = ROOT / "src" / "main" / "resources"
 
 CARD_LINES = 2
 CARD_CHARS = 30
+# Le titre d'une carte du sommaire partage sa ligne avec la pastille NOUVEAU :
+# au-dela de 16 caracteres, il serait coupe (il retrecit un peu avant).
+TITLE_CHARS = 16
 ID = re.compile(r"^[a-z0-9_]+$")
 ITEM = re.compile(r"^#?[a-z0-9_.-]+:[a-z0-9_./-]+$")
 VANILLA_DIMENSIONS = {"minecraft:overworld", "minecraft:the_nether", "minecraft:the_end"}
@@ -159,6 +162,9 @@ def main():
             errors.append(f"{eid} : icone {entry.get('icon')!r} : {problem}")
         if not entry.get("title"):
             errors.append(f"{eid} : titre vide")
+        elif len(entry["title"]) > TITLE_CHARS:
+            errors.append(f"{eid} : titre trop long pour une carte ({len(entry['title'])} > {TITLE_CHARS}) : "
+                          f"{entry['title']!r}")
         card = entry.get("card", [])
         if len(card) > CARD_LINES:
             errors.append(f"{eid} : carte de {len(card)} lignes (au plus {CARD_LINES})")

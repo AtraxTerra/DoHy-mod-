@@ -354,8 +354,15 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
             g.item(card.icon(), cardX + 5, cardY + 6, 16, false);
             int titleColor = card.state() == MenuView.DISABLED ? Ui.MUTED : Ui.WHITE;
             float titleMax = cardWidth - 28 - (card.badge().isEmpty() ? 0 : g.width(Ui.WIDE, card.badge(), 3.4f) + 6);
-            g.text(Ui.WIDE, g.fit(Ui.WIDE, card.title().toUpperCase(java.util.Locale.ROOT), 4.4f, titleMax),
-                    cardX + 25, cardY + 8, 4.4f, titleColor);
+            String title = card.title().toUpperCase(java.util.Locale.ROOT);
+            // Un titre un peu trop long retrecit d'abord (jusqu'a 3,8), et n'est coupe qu'au-dela.
+            float titleSize = 4.4f;
+            float natural = g.width(Ui.WIDE, title, titleSize);
+            if (natural > titleMax) {
+                titleSize = Math.max(3.8f, titleSize * titleMax / natural);
+            }
+            g.text(Ui.WIDE, g.fit(Ui.WIDE, title, titleSize, titleMax), cardX + 25,
+                    cardY + 8 + (4.4f - titleSize) / 2.0f, titleSize, titleColor);
             badge(g, card, cardX + cardWidth - 3, cardY + 5);
             int lineY = cardY + 25;
             for (int index = 0; index < Math.min(3, card.lines().size()); index++) {

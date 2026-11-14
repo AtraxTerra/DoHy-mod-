@@ -206,7 +206,8 @@ public final class EncyclopediaProgress {
         }
         String conflict = data.conflict().map(relation -> relation.traits().name().toUpperCase()).orElse("AUCUNE");
         return new Result(List.of(
-                new MenuView.Stat("HOSTILES", hostile + " / " + data.relations().size(), hostile > 0 ? 0xFFEF3826 : WHITE),
+                new MenuView.Stat("HOSTILES", hostile + " / " + fr.atraxterra.dohy.faction.war.NationTraits.count(),
+                        hostile > 0 ? 0xFFEF3826 : WHITE),
                 new MenuView.Stat("GUERRE", conflict, data.conflict().isPresent() ? 0xFFEF3826 : MUTED)), List.of());
     }
 

@@ -67,7 +67,7 @@
       "category": "debuter",
       "order": 0,
       "icon": "minecraft:oak_sapling",
-      "title": "Bienvenue sur DoHy",
+      "title": "Bienvenue",
       "card": [
         "Par ou commencer",
         "Les grandes lignes"
@@ -116,7 +116,7 @@
       "category": "debuter",
       "order": 1,
       "icon": "minecraft:compass",
-      "title": "Les menus et les touches",
+      "title": "Menus et touches",
       "card": [
         "Touches et raccourcis",
         "Ou tout se trouve"
@@ -162,7 +162,7 @@
       "category": "debuter",
       "order": 2,
       "icon": "minecraft:gold_ingot",
-      "title": "L'argent et la mort",
+      "title": "Argent et mort",
       "card": [
         "Gagner, garder, perdre",
         "La penalite de mort"
@@ -205,7 +205,7 @@
       "category": "debuter",
       "order": 3,
       "icon": "minecraft:clock",
-      "title": "Ton serveur 24 h sur 24",
+      "title": "Serveur 24 h/24",
       "card": [
         "La base tourne sans toi",
         "Les heures de Paris"
@@ -247,7 +247,7 @@
       "category": "debuter",
       "order": 4,
       "icon": "dohy:plan",
-      "title": "Les plans de construction",
+      "title": "Les plans",
       "card": [
         "Des hologrammes",
         "Batir sans erreur"
@@ -319,7 +319,7 @@
       "category": "economie",
       "order": 0,
       "icon": "minecraft:emerald",
-      "title": "Le shop et les prix",
+      "title": "Le shop",
       "card": [
         "Acheter et vendre",
         "Des prix qui bougent"
@@ -413,7 +413,7 @@
       "category": "economie",
       "order": 2,
       "icon": "minecraft:writable_book",
-      "title": "Contrats et demande du jour",
+      "title": "Les contrats",
       "card": [
         "Quotidiens et hebdo",
         "Le niveau global"
@@ -523,7 +523,7 @@
       "category": "economie",
       "order": 5,
       "icon": "minecraft:gold_block",
-      "title": "Boutique : boosters et boxes",
+      "title": "La boutique",
       "card": [
         "Boosters et boxes",
         "L'autosell"
@@ -595,7 +595,7 @@
       "category": "economie",
       "order": 7,
       "icon": "minecraft:nether_star",
-      "title": "Les ameliorations",
+      "title": "Ameliorations",
       "card": [
         "Achats definitifs",
         "Huit branches"
@@ -622,7 +622,7 @@
       "category": "economie",
       "order": 8,
       "icon": "dohy:trading_server",
-      "title": "Le serveur de trading",
+      "title": "Le trading",
       "card": [
         "Un revenu passif",
         "Sous tension"
@@ -657,7 +657,7 @@
       "category": "metiers",
       "order": 0,
       "icon": "minecraft:iron_pickaxe",
-      "title": "Les quatre metiers",
+      "title": "Les metiers",
       "card": [
         "Mineur, Chasseur...",
         "100 niveaux chacun"
@@ -824,7 +824,7 @@
       "category": "palamod",
       "order": 0,
       "icon": "palamod:paladium_ingot",
-      "title": "Minerais et materiaux",
+      "title": "Les minerais",
       "card": [
         "Paladium, titane...",
         "Les metaux du mod"
@@ -866,7 +866,7 @@
       "category": "palamod",
       "order": 1,
       "icon": "palamod:cobblebreaker",
-      "title": "Les machines de PalaMod",
+      "title": "Les machines",
       "card": [
         "Cobblebreaker, crusher",
         "Palafurnace, palaforge"
@@ -911,7 +911,7 @@
       "category": "palamod",
       "order": 2,
       "icon": "palamod:paladium_sword",
-      "title": "Outils, armes et armures",
+      "title": "L'equipement",
       "card": [
         "Du plus faible",
         "au plus fort"
@@ -1105,7 +1105,7 @@
       "category": "palamod",
       "order": 6,
       "icon": "palamod:mount_gemstone",
-      "title": "Le Dancarok et l'enclos",
+      "title": "Monture, enclos",
       "card": [
         "Une monture qui creuse",
         "L'enclos, 5 tailles"
@@ -1157,7 +1157,7 @@
       "category": "palamod",
       "order": 7,
       "icon": "palamod:spawner_controller",
-      "title": "Spawners et controleur",
+      "title": "Les spawners",
       "card": [
         "Des ames, 4 paliers",
         "Une grande structure"
@@ -1200,7 +1200,7 @@
       "category": "palamod",
       "order": 8,
       "icon": "palamod:withered_obsidian",
-      "title": "La dimension du Mineur",
+      "title": "Dimension Mineur",
       "card": [
         "Mineur 90",
         "Les pepites d'endium"
@@ -1254,7 +1254,7 @@
       "category": "palamod",
       "order": 9,
       "icon": "palamod:legendary_stone_random",
-      "title": "Pierres legendaires et gant",
+      "title": "Pierres et gant",
       "card": [
         "Sept pierres",
         "Le gant en endium"
@@ -1289,7 +1289,7 @@
       "category": "palamod",
       "order": 10,
       "icon": "palamod:strength_stick",
-      "title": "Sticks, anneaux, deltaplane",
+      "title": "Objets de combat",
       "card": [
         "Les objets de combat",
         "La palamachine"
@@ -1349,7 +1349,7 @@
       "category": "palamod",
       "order": 12,
       "icon": "palamod:trixium",
-      "title": "Le concours Trixium",
+      "title": "Concours Trixium",
       "card": [
         "Chaque mois",
         "Un classement"
@@ -1406,7 +1406,7 @@
       "category": "palamod",
       "order": 14,
       "icon": "palamod:wither_receptacle",
-      "title": "Les withers du pillage",
+      "title": "Les withers",
       "card": [
         "Le receptacle",
         "Six gemmes"
@@ -1495,7 +1495,7 @@
       "category": "donjons",
       "order": 1,
       "icon": "palamod:manelios_legendary_sword",
-      "title": "Equipement de donjon",
+      "title": "Stuff de donjon",
       "card": [
         "Basique, renforce",
         "puis legendaire"
@@ -1531,7 +1531,7 @@
       "category": "donjons",
       "order": 2,
       "icon": "minecraft:totem_of_undying",
-      "title": "Profil RPG, arbre et runes",
+      "title": "Profil RPG",
       "card": [
         "Le niveau RPG",
         "Un arbre, des runes"
@@ -1658,7 +1658,7 @@
       "category": "faction",
       "order": 2,
       "icon": "minecraft:enchanted_book",
-      "title": "L'arbre de technologie",
+      "title": "Arbre de techno",
       "card": [
         "Global, Pillage",
         "Defense, Economie"
@@ -1694,7 +1694,7 @@
       "category": "faction",
       "order": 3,
       "icon": "palamod:hardened_obsidian",
-      "title": "Objets de defense",
+      "title": "La defense",
       "card": [
         "Obsidiennes, spikes",
         "Fake Water, amulettes"
@@ -1728,7 +1728,7 @@
       "category": "faction",
       "order": 4,
       "icon": "palamod:dynamite",
-      "title": "Objets de pillage",
+      "title": "Le pillage",
       "card": [
         "Dynamites, TNT",
         "Unclaim Finder"
@@ -1766,7 +1766,7 @@
       "category": "faction",
       "order": 5,
       "icon": "palamod:liquid_gold",
-      "title": "La reserve d'or",
+      "title": "Reserve d'or",
       "card": [
         "Placer l'argent",
         "Un cube de 5 a 7"
@@ -1818,7 +1818,7 @@
       "category": "faction",
       "order": 6,
       "icon": "minecraft:end_crystal",
-      "title": "Les events de faction",
+      "title": "Les events",
       "card": [
         "Boss, KOTH, Totem",
         "Egg Hunt"
@@ -1864,7 +1864,7 @@
       "category": "faction",
       "order": 7,
       "icon": "minecraft:tnt",
-      "title": "Les bases ennemies",
+      "title": "Bases ennemies",
       "card": [
         "A piller",
         "Silo, bunker, radar..."
@@ -1900,7 +1900,7 @@
       "category": "faction",
       "order": 8,
       "icon": "minecraft:map",
-      "title": "La notation de la semaine",
+      "title": "La notation",
       "card": [
         "Une note sur 100",
         "Chaque lundi"
@@ -1924,7 +1924,7 @@
       "category": "faction",
       "order": 9,
       "icon": "minecraft:respawn_anchor",
-      "title": "La base tourne sans toi",
+      "title": "Base sans toi",
       "card": [
         "Tes claims charges",
         "Le rapport d'absence"
@@ -1951,7 +1951,7 @@
       "category": "faction",
       "order": 10,
       "icon": "minecraft:crossbow",
-      "title": "La guerre des nations",
+      "title": "La guerre",
       "card": [
         "Ultimatum, assaut",
         "Ta riposte"
@@ -2011,7 +2011,7 @@
       "category": "faction",
       "order": 11,
       "icon": "minecraft:emerald_block",
-      "title": "Le marche international",
+      "title": "Marche mondial",
       "card": [
         "25 ressources",
         "Un stock mondial"
@@ -2037,7 +2037,7 @@
       "category": "terre",
       "order": 0,
       "icon": "minecraft:filled_map",
-      "title": "La carte de la Terre",
+      "title": "La Terre",
       "card": [
         "Le monde reel",
         "Pays, minerais, saisons"
@@ -2074,7 +2074,7 @@
       "category": "terre",
       "order": 1,
       "icon": "minecraft:lodestone",
-      "title": "Les pays a prendre",
+      "title": "Les pays",
       "card": [
         "Ta capitale",
         "Conquerir des pays"
@@ -2106,7 +2106,7 @@
       "category": "terre",
       "order": 2,
       "icon": "minecraft:recovery_compass",
-      "title": "L'atlas et la minicarte",
+      "title": "Atlas, minicarte",
       "card": [
         "La carte du monde",
         "Touches M et N"
@@ -2164,7 +2164,7 @@
       "category": "terre",
       "order": 4,
       "icon": "minecraft:magma_block",
-      "title": "Les catastrophes",
+      "title": "Catastrophes",
       "card": [
         "Seismes, eruptions",
         "Ouragans, mousson"
@@ -2202,7 +2202,7 @@
       "category": "terre",
       "order": 6,
       "icon": "minecraft:sculk",
-      "title": "Tchernobyl et Fukushima",
+      "title": "Zones irradiees",
       "card": [
         "Zones d'exclusion",
         "Minerais rares"
@@ -2220,7 +2220,7 @@
       "category": "terre",
       "order": 7,
       "icon": "minecraft:firework_rocket",
-      "title": "Les bases de lancement",
+      "title": "Bases spatiales",
       "card": [
         "Baikonour, Kourou...",
         "Les seuls pas de tir"
@@ -2238,7 +2238,7 @@
       "category": "terre",
       "order": 8,
       "icon": "minecraft:raw_iron_block",
-      "title": "Gisements et petrole",
+      "title": "Gisements",
       "card": [
         "Les vraies mines",
         "Petrole et gaz"
@@ -2339,7 +2339,7 @@
       "category": "agriculture",
       "order": 0,
       "icon": "palamod:eggplant",
-      "title": "Les cultures de PalaMod",
+      "title": "Les cultures",
       "card": [
         "Aubergine, kiwano...",
         "Parfois un lingot"
@@ -2376,7 +2376,7 @@
       "category": "agriculture",
       "order": 1,
       "icon": "minecraft:wheat",
-      "title": "Cereales, OGM et pains",
+      "title": "Cereales, pains",
       "card": [
         "Dix cereales",
         "OGM, pains, elevage"
@@ -2438,7 +2438,7 @@
       "category": "agriculture",
       "order": 2,
       "icon": "dohy:tractor",
-      "title": "Le tracteur et ses outils",
+      "title": "Le tracteur",
       "card": [
         "Fermier 10",
         "Charrue, semoir..."
@@ -2465,7 +2465,7 @@
       "category": "technique",
       "order": 0,
       "icon": "dohy:palette",
-      "title": "Les palettes d'armement",
+      "title": "Les palettes",
       "card": [
         "Obus et munitions",
         "Create et NTM"
@@ -2496,7 +2496,7 @@
       "category": "technique",
       "order": 1,
       "icon": "minecraft:lightning_rod",
-      "title": "NTM NEXT dans DoHy",
+      "title": "NTM NEXT",
       "card": [
         "Minerais et pieces",
         "Dans l'economie"
