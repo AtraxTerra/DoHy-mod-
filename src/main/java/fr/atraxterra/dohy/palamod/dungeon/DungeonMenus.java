@@ -123,7 +123,7 @@ public final class DungeonMenus {
                 BossSpec boss = dungeon.bossFor(palier);
                 boolean dark = boss != null && palier % 10 == 0 && mode.darkBosses();
                 ItemStack icon = boss != null
-                        ? new ItemStack(dark ? Items.WITHER_ROSE : palier % 10 == 0 ? Items.WITHER_SKELETON_SKULL
+                        ? new ItemStack(dark ? Items.DRAGON_HEAD : palier % 10 == 0 ? Items.WITHER_SKELETON_SKULL
                                 : Items.SKELETON_SKULL)
                         : new ItemStack(Items.STAINED_GLASS_PANE.pick(cleared ? DyeColor.LIME
                                 : open ? DyeColor.YELLOW : DyeColor.GRAY));

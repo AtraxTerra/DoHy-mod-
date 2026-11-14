@@ -299,6 +299,8 @@ final class DungeonRun {
 
     /** Ce que la salle courante contient, a l'arrivee. */
     private void enter() {
+        // Une vague en attente dans la salle d'avant ne doit pas sortir ici.
+        nextWaveIn = 0;
         enemies.clear();
         bosses.clear();
         doors = List.of();
@@ -1530,9 +1532,6 @@ final class DungeonRun {
             disarmTrap();
         }
         bosses.clear();
-        if (roomIndex >= 2) {
-            roomIndex = 1;
-        }
         choose(chooser, type);
     }
 

@@ -31,7 +31,7 @@ public enum DungeonMode {
 
     FACILE("facile", "Facile", ChatFormatting.GREEN, Items.WOODEN_SWORD, 0.6d, 0.6f, -1, 0.6d, 0.5d, -1, 0.25f),
     NORMAL("", "Normal", ChatFormatting.YELLOW, Items.IRON_SWORD, 1.0d, 1.0f, 0, 1.0d, 1.0d, 0, 0.5f),
-    DIFFICILE("difficile", "Difficile", ChatFormatting.DARK_RED, Items.NETHERITE_SWORD, 1.5d, 1.35f, 1, 1.6d, 1.5d,
+    DIFFICILE("difficile", "Difficile", ChatFormatting.RED, Items.NETHERITE_SWORD, 1.5d, 1.35f, 1, 1.6d, 1.5d,
             1, 1.0f);
 
     private final String suffix;
