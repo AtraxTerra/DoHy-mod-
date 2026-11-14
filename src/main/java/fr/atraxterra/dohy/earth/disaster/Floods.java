@@ -16,8 +16,8 @@ import net.minecraft.world.level.material.FluidState;
  * <p>Au-dessus de l'eau d'origine (la mer, la riviere, le lac), le niveau ne
  * monte que pres de la rive — la terre qui depasse de l'eau, pas un banc de
  * sable a fleur d'eau —, de proche en proche depuis le bord, et la nappe
- * descend vers le large en marches puis en pente : une eau courante figee, a
- * mi-hauteur. Sur la terre, un bloc d'eau ne se pose que sur un sol plein ou
+ * redescend vers le large en pente douce, un tiers de bloc a la fois : des
+ * couches pleines dessous, une eau courante figee au-dessus. Sur la terre, un bloc d'eau ne se pose que sur un sol plein ou
  * sur de l'eau, a cote d'une eau au meme niveau, ou dans un creux d'un bloc a
  * cote d'une eau juste au-dessus.
  *
@@ -26,13 +26,19 @@ import net.minecraft.world.level.material.FluidState;
  */
 final class Floods {
 
-    /** Jusqu'a combien de blocs de la rive monte la marche du haut. */
+    /** Jusqu'a combien de blocs de la rive l'eau monte de toute sa hauteur. */
     static final int BAND = 4;
     static final BlockState SOURCE = Blocks.WATER.defaultBlockState();
-    /** Le bord en pente : une eau courante a mi-hauteur. */
-    static final BlockState EDGE = Blocks.WATER.defaultBlockState().setValue(BlockStateProperties.LEVEL, 4);
+    /** Le bord en pente : une eau courante aux deux tiers, puis au tiers d'un bloc. */
+    private static final BlockState HIGH = flowing(6);
+    private static final BlockState LOW = flowing(3);
 
     private Floods() {
+    }
+
+    /** Une eau courante figee de cette hauteur (1 a 7 huitiemes de source). */
+    private static BlockState flowing(int amount) {
+        return Blocks.WATER.defaultBlockState().setValue(BlockStateProperties.LEVEL, 8 - amount);
     }
 
     /** Vrai si l'eau peut prendre cette place : de l'air ou une plante, sans eau. */
@@ -87,7 +93,7 @@ final class Floods {
     static boolean anchored(ServerLevel level, BlockPos pos) {
         for (Direction direction : Direction.Plane.HORIZONTAL) {
             BlockPos side = pos.relative(direction);
-            if (source(level, side) || land(level, side) || land(level, side.below())) {
+            if (level.getFluidState(side).is(FluidTags.WATER) || land(level, side) || land(level, side.below())) {
                 return true;
             }
         }
@@ -95,19 +101,34 @@ final class Floods {
     }
 
     /**
-     * L'eau a poser au-dessus de l'eau d'origine, ou null. La marche k (1 au
-     * premier bloc au-dessus du niveau d'origine) va jusqu'a BAND + rise - k blocs
-     * de la rive, et son bord est en pente : la nappe descend vers le large.
+     * L'eau a poser au-dessus de l'eau d'origine, ou null. Jusqu'a BAND blocs de
+     * la rive, l'eau monte de rise blocs ; au-dela, la surface redescend d'un
+     * tiers de bloc a chaque bloc vers le large (3 blocs de pente par bloc de
+     * montee) : des couches pleines dessous, une eau courante figee au-dessus.
      */
     static BlockState over(ServerLevel level, BlockPos pos, int surface, int rise) {
         int k = pos.getY() - surface;
         if (k < 1 || k > rise || !overWater(level, pos, surface) || !free(level, pos)
-                || !source(level, pos.below()) || !anchored(level, pos)) {
+                || !level.getFluidState(pos.below()).is(FluidTags.WATER) || !anchored(level, pos)) {
             return null;
         }
-        int reach = BAND + rise - k;
-        int d = bank(level, pos.getX(), surface, pos.getZ(), reach + 1);
-        return d <= reach ? SOURCE : d == reach + 1 ? EDGE : null;
+        int d = bank(level, pos.getX(), surface, pos.getZ(), BAND + 3 * rise);
+        if (d <= BAND) {
+            return SOURCE;
+        }
+        // la hauteur de la surface au-dessus du niveau d'origine, en tiers de bloc
+        int thirds = 3 * rise - (d - BAND);
+        if (thirds <= 0) {
+            return null;
+        }
+        int full = thirds / 3;
+        if (k <= full) {
+            return SOURCE;
+        }
+        if (k == full + 1 && thirds % 3 != 0) {
+            return thirds % 3 == 2 ? HIGH : LOW;
+        }
+        return null;
     }
 
     /**

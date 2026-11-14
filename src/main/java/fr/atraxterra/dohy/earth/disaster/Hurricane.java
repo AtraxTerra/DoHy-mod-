@@ -524,8 +524,8 @@ final class Hurricane extends Disaster {
         DisasterTerrain.Ledger ledger = ledger();
         ArrayDeque<BlockPos> grown = new ArrayDeque<>();
         for (int i = 0; i < 6 * category; i++) {
-            int bx = (int) Math.floor(player.getX() + random.nextInt(65) - 32);
-            int bz = (int) Math.floor(player.getZ() + random.nextInt(65) - 32);
+            int bx = (int) Math.floor(player.getX() + random.nextInt(73) - 36);
+            int bz = (int) Math.floor(player.getZ() + random.nextInt(73) - 36);
             int ground = ground(level, bx, bz);
             // un creux de plus d'un bloc sous la mer reste sec : l'eau ne s'y deverse pas d'un coup
             if (ground < surface - 1 || ground >= top) {
@@ -547,7 +547,7 @@ final class Hurricane extends Disaster {
             }
             for (Direction direction : Direction.Plane.HORIZONTAL) {
                 BlockPos next = from.relative(direction);
-                if (Math.abs(next.getX() - player.getX()) > 40.0d || Math.abs(next.getZ() - player.getZ()) > 40.0d) {
+                if (Math.abs(next.getX() - player.getX()) > 48.0d || Math.abs(next.getZ() - player.getZ()) > 48.0d) {
                     continue;
                 }
                 if (Floods.free(level, next) && surgeAt(level, ledger, next.below(), surface, rise)) {
@@ -560,7 +560,7 @@ final class Hurricane extends Disaster {
         }
     }
 
-    /** Pose l'eau de la maree ici si elle y tient ; vrai si c'est une eau pleine, qui peut gagner plus loin. */
+    /** Pose l'eau de la maree ici si elle y tient ; vrai si c'est fait (la maree peut gagner plus loin). */
     private boolean surgeAt(ServerLevel level, DisasterTerrain.Ledger ledger, BlockPos pos, int surface, int rise) {
         if (pos.getY() > surface + rise) {
             return false;
@@ -572,7 +572,7 @@ final class Hurricane extends Disaster {
         }
         surge.add(pos);
         flooded++;
-        return water.getFluidState().isSource();
+        return true;
     }
 
     /** Derriere la tempete, la mer redescend. */
@@ -588,7 +588,9 @@ final class Hurricane extends Disaster {
     }
 
     private void revert(ServerLevel level, BlockPos pos) {
-        if (ledger == null || !level.isLoaded(pos) || !level.getFluidState(pos).is(FluidTags.WATER)) {
+        // l'eau de la maree, ou la glace qu'elle est devenue dans un biome froid
+        if (ledger == null || !level.isLoaded(pos) || !level.getFluidState(pos).is(FluidTags.WATER)
+                && !level.getBlockState(pos).is(Blocks.ICE)) {
             return;
         }
         BlockState before = DisasterTerrain.original(ledger, pos);

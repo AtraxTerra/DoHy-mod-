@@ -167,7 +167,7 @@ final class Monsoon extends Disaster {
         for (int step = 0; step < 48 && !grown.isEmpty() && base.size() < cap; step++) {
             BlockPos water = grown.poll();
             if (Math.abs(water.getX() - player.getX()) <= 56.0d && Math.abs(water.getZ() - player.getZ()) <= 56.0d
-                    && Floods.source(level, water) && level.getBlockState(water.above()).isAir()) {
+                    && level.getFluidState(water).is(FluidTags.WATER) && level.getBlockState(water.above()).isAir()) {
                 grow(level, ledger, water, rise, grown);
             }
         }
@@ -204,16 +204,16 @@ final class Monsoon extends Disaster {
         if (DisasterTerrain.set(level, ledger, pos, water, DisasterTerrain.FLAGS)) {
             flood.add(pos);
             base.put(pos, surface);
-            if (water.getFluidState().isSource()) {
-                grown.add(pos);
-            }
+            grown.add(pos);
         }
     }
 
     /** Un bloc d'eau se retire ; sur la terre qu'il couvrait, parfois du limon. */
     private void recedeOne(ServerLevel level) {
         BlockPos pos = flood.remove(flood.size() - 1);
-        if (!level.isLoaded(pos) || !level.getFluidState(pos).is(FluidTags.WATER)) {
+        // l'eau de la crue, ou la glace qu'elle est devenue dans un biome froid
+        if (!level.isLoaded(pos) || !level.getFluidState(pos).is(FluidTags.WATER)
+                && !level.getBlockState(pos).is(Blocks.ICE)) {
             return;
         }
         BlockState before = DisasterTerrain.original(ledger, pos);
