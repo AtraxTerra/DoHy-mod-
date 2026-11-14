@@ -78,6 +78,11 @@ public final class PlanMenu extends MenuController {
         for (Blueprint.Cell cell : variant.cells()) {
             Blueprint.Expect expect = cell.expect();
             if (!expect.required()) {
+                if (here && expect.exclusive() && expect.status(level,
+                        Blueprint.place(anchor.pos(), anchor.quarter(), cell.x(), cell.y(), cell.z()))
+                        == Blueprint.Status.WRONG) {
+                    wrong++;
+                }
                 continue;
             }
             int[] counts = materials.computeIfAbsent(expect, key -> new int[2]);
@@ -97,7 +102,7 @@ public final class PlanMenu extends MenuController {
 
         List<MenuView.Stat> stats = new ArrayList<>();
         stats.add(new MenuView.Stat("BLOCS", here ? done + " / " + total : String.valueOf(total),
-                here && done == total ? 0xFF22E558 : 0xFFFFFFFF));
+                here && done == total && wrong == 0 ? 0xFF22E558 : 0xFFFFFFFF));
         stats.add(new MenuView.Stat("TAILLE", variant.width() + "x" + variant.depth() + "x" + variant.height(),
                 0xFFFFFFFF));
         stats.add(new MenuView.Stat("POSE", anchor == null ? "NON" : FACING[anchor.quarter() & 3].toUpperCase(),

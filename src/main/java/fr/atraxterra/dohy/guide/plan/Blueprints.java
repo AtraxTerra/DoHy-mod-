@@ -229,7 +229,8 @@ public final class Blueprints {
                         boolean iz = z > 0 && z < n - 1;
                         offsets.add(new int[]{x, y, z});
                         if (ix && iy && iz) {
-                            expects.add(Expect.optional(
+                            // Le coeur : de l'or liquide, ou rien ; tout autre bloc casse la reserve.
+                            expects.add(Expect.emptyOr(
                                     BuiltInRegistries.BLOCK.getKey(PalaReserve.LIQUID_GOLD.get()).toString(),
                                     PalaReserve.LIQUID_GOLD.get()));
                         } else if (iy && (ix || iz) && (!ix || !iz)) {

@@ -104,7 +104,7 @@ public final class PlanRenderer {
         Blueprint.Variant variant = data.resolve().variant(data.variant());
         for (Blueprint.Cell cell : variant.cells()) {
             Blueprint.Expect expect = cell.expect();
-            if (!expect.required()) {
+            if (!expect.required() && !expect.exclusive()) {
                 continue;
             }
             BlockPos pos = Blueprint.place(anchor.pos(), anchor.quarter(), cell.x(), cell.y(), cell.z());
@@ -112,6 +112,9 @@ public final class PlanRenderer {
                 continue;
             }
             Blueprint.Status status = expect.status(level, pos);
+            if (status == Blueprint.Status.OPTIONAL) {
+                continue;
+            }
             int color;
             float inset;
             switch (status) {

@@ -92,32 +92,38 @@ public record Blueprint(String id, String name, String entry, Block icon, List<V
      * @param block    le bloc attendu, ou {@code null} pour un liquide
      * @param fluid    le liquide attendu (une source), ou {@code null}
      * @param ready    pour un bloc : l'etat qu'il doit avoir en plus (charge...), ou {@code null}
-     * @param required compte dans la structure ; sinon case libre, montree en pale
+     * @param required compte dans la structure ; sinon case libre
+     * @param exclusive pour une case libre : ce bloc ou rien, tout autre bloc est a retirer
      */
     public record Expect(String label, BlockState display, Block block, Fluid fluid, Predicate<BlockState> ready,
-                         boolean required) {
+                         boolean required, boolean exclusive) {
 
         public static Expect block(String label, Block block) {
-            return new Expect(label, block.defaultBlockState(), block, null, null, true);
+            return new Expect(label, block.defaultBlockState(), block, null, null, true, false);
         }
 
         public static Expect charged(String label, Block block, Predicate<BlockState> ready, BlockState display) {
-            return new Expect(label, display, block, null, ready, true);
+            return new Expect(label, display, block, null, ready, true, false);
         }
 
         public static Expect fluid(String label, Fluid fluid) {
-            return new Expect(label, fluid.defaultFluidState().createLegacyBlock(), null, fluid, null, true);
+            return new Expect(label, fluid.defaultFluidState().createLegacyBlock(), null, fluid, null, true, false);
         }
 
-        /** Une case libre : on peut y mettre ce bloc, ou la laisser vide. */
+        /** Une case libre : n'importe quel bloc, ou rien (un coin de portail). */
         public static Expect optional(String label, Block block) {
-            return new Expect(label, block.defaultBlockState(), block, null, null, false);
+            return new Expect(label, block.defaultBlockState(), block, null, null, false, false);
+        }
+
+        /** Une case libre, mais seulement pour ce bloc : vide, ou ce bloc (le coeur d'une reserve d'or). */
+        public static Expect emptyOr(String label, Block block) {
+            return new Expect(label, block.defaultBlockState(), block, null, null, false, true);
         }
 
         public Status status(BlockGetter level, BlockPos pos) {
             BlockState state = level.getBlockState(pos);
             if (!required) {
-                return Status.OPTIONAL;
+                return !exclusive || state.isAir() || state.is(block) ? Status.OPTIONAL : Status.WRONG;
             }
             if (fluid != null) {
                 FluidState liquid = state.getFluidState();
@@ -158,7 +164,7 @@ public record Blueprint(String id, String name, String entry, Block icon, List<V
                 right.getStepZ() * x + forward.getStepZ() * z);
     }
 
-    /** Les cases en place, sur celles qui comptent. */
+    /** Les cases en place, sur celles qui comptent (une case libre occupee a tort n'y entre pas). */
     public static int[] progress(BlockGetter level, Variant variant, BlockPos anchor, int quarter) {
         int done = 0;
         int total = 0;

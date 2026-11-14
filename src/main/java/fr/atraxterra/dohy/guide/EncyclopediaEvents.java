@@ -232,10 +232,9 @@ public final class EncyclopediaEvents {
         int partial = 0;
         int total = 0;
         for (Blueprint.Cell cell : variant.cells()) {
-            if (!cell.expect().required()) {
-                continue;
+            if (cell.expect().required()) {
+                total++;
             }
-            total++;
             BlockPos pos = Blueprint.place(anchor.pos(), anchor.quarter(), cell.x(), cell.y(), cell.z());
             switch (cell.expect().status(player.level(), pos)) {
                 case CORRECT -> done++;
@@ -245,9 +244,10 @@ public final class EncyclopediaEvents {
                 }
             }
         }
+        boolean complete = done == total && wrong == 0;
         MutableComponent line = Component.literal(blueprint.name() + " · " + done + " / " + total + " blocs")
-                .withStyle(done == total ? ChatFormatting.GREEN : ChatFormatting.AQUA);
-        if (done == total) {
+                .withStyle(complete ? ChatFormatting.GREEN : ChatFormatting.AQUA);
+        if (complete) {
             line.append(Component.literal(" · structure complete !").withStyle(ChatFormatting.GREEN));
         }
         if (wrong > 0) {
