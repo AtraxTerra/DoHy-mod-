@@ -137,7 +137,10 @@ public final class RpgSkins {
         String model = bosses.get(name);
         Model info = model == null ? null : models.get(model);
         if (info != null) {
-            set(mob, model, band, Math.min(1.0f, Math.min(MAX_HEIGHT / info.height(), MAX_WIDTH / info.width())));
+            // Un modele de monstre (il a les couleurs des paliers) porte par un
+            // elite est grossi comme lui, par son attribut d'echelle.
+            float grown = info.variants().size() > 2 ? (float) mob.getAttributeValue(Attributes.SCALE) : 1.0f;
+            set(mob, model, band, Math.min(grown, Math.min(MAX_HEIGHT / info.height(), MAX_WIDTH / info.width())));
         }
     }
 

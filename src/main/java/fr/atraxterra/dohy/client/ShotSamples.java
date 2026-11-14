@@ -14,7 +14,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.zombie.Husk;
 import net.minecraft.world.level.block.Blocks;
@@ -138,7 +138,7 @@ final class ShotSamples {
                 double size = Math.max(width, height) * scale;
                 double distance = size * 1.15d + 3.5d;
                 view(player, level, X, Y + height * scale * 0.45d, Z + distance, X, Y + height * scale * 0.45d, Z);
-                Husk husk = EntityType.HUSK.create(level, EntitySpawnReason.COMMAND);
+                Husk husk = EntityTypes.HUSK.create(level, EntitySpawnReason.COMMAND);
                 if (husk == null) {
                     return;
                 }

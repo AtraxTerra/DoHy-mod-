@@ -1993,7 +1993,10 @@ def main():
         tag("minecraft/tags/block/mineable/hoe.json", ["%s:%s" % (NS, leaves)])
         tag("minecraft/tags/block/leaves.json", ["%s:%s" % (NS, leaves)])
         # BlockLeaveBase : la feuille a la cisaille ou au toucher de soie, sinon
-        # (int)(Math.random() * 10000) <= 100, une pousse sur 99.
+        # (int)(Math.random() * 10000) <= 100, une pousse sur 99. Ecart (demande
+        # le 2026-11-14) : une pousse sur vingt, plus avec Fortune, comme le chene
+        # vanilla. A une sur 99, un arbre de PalaMod (97 ou 129 feuilles) n'en
+        # donnait aucune une fois sur trois.
         write("data/%s/loot_table/blocks/%s.json" % (NS, leaves), {
             "type": "minecraft:block",
             "pools": [{"rolls": 1, "entries": [{"type": "minecraft:alternatives", "children": [
@@ -2004,7 +2007,9 @@ def main():
                             "minecraft:enchantments": [{"enchantments": "minecraft:silk_touch",
                                                         "levels": {"min": 1}}]}}}]}]},
                 {"type": "minecraft:item", "name": "%s:%s_sapling" % (NS, wood),
-                 "conditions": [{"condition": "minecraft:random_chance", "chance": 0.0101}]},
+                 "conditions": [{"condition": "minecraft:survives_explosion"},
+                                {"condition": "minecraft:table_bonus", "enchantment": "minecraft:fortune",
+                                 "chances": [0.05, 0.0625, 0.083333336, 0.1]}]},
             ]}]}]})
 
         sapling = "%s_sapling" % wood

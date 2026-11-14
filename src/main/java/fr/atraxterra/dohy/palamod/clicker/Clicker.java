@@ -382,48 +382,84 @@ public final class Clicker {
     // -- Clic Shop -------------------------------------------------------------
 
     /** Le rayon du joueur, retire s'il a expire ({@code PlayerClickerData.getShopItems}). */
+    /**
+     * Le rayon du joueur, tire a nouveau a chaque rotation. <b>Ecart</b>
+     * (demande le 2026-11-14) : un rayon incomplet se complete des que des
+     * offres s'ouvrent. Chez Paladium, un rayon tire avant le premier batiment
+     * restait vide jusqu'a la rotation suivante : une semaine pour l'offre de
+     * la semaine et l'offre metier, un jour pour l'offre du jour. Un rayon
+     * vide qui recoit ses premieres offres commence une rotation entiere.
+     */
     private static ClickerData.Shelf shelf(ServerPlayer player, ClickerData data, ShopType type) {
         ClickerData.Shelf shelf = data.shop.get(type.key());
         if (shelf == null || now() - shelf.updated > type.seconds()) {
             shelf = new ClickerData.Shelf();
             shelf.updated = now();
-            shelf.items.addAll(draw(type, data, player.getRandom()));
+            shelf.items.addAll(draw(type, data, player.getRandom(), List.of()));
             data.shop.put(type.key(), shelf);
+        } else if (shelf.items.size() < type.size()) {
+            List<String> more = draw(type, data, player.getRandom(), shelf.items);
+            if (!more.isEmpty()) {
+                if (shelf.items.isEmpty()) {
+                    shelf.updated = now();
+                }
+                shelf.items.addAll(more);
+            }
         }
         return shelf;
     }
 
     /**
-     * {@code ShopGlobalConfig.getRandomItem} : autant de tirages ponderes que
-     * le rayon a de places, parmi les offres que les batiments du joueur
-     * ouvrent ; un doublon ne compte pas, donc un rayon peut sortir incomplet.
+     * {@code ShopGlobalConfig.getRandomItem} : des tirages ponderes parmi les
+     * offres que les batiments du joueur ouvrent, jusqu'a remplir le rayon.
+     * Une offre deja tiree sort du tirage : le rayon n'est incomplet que s'il
+     * y a moins d'offres ouvertes que de places (chez Paladium, un doublon
+     * laissait une place vide).
      */
-    private static List<String> draw(ShopType type, ClickerData data, RandomSource random) {
+    private static List<String> draw(ShopType type, ClickerData data, RandomSource random, List<String> already) {
         List<ShopItem> pool = new ArrayList<>();
         int total = 0;
         for (ShopItem item : ClickerConfig.shop()) {
-            if (item.type() == type && item.eligible(data.buildings)) {
+            if (item.type() == type && item.eligible(data.buildings) && !already.contains(item.id())) {
                 pool.add(item);
                 total += item.weight();
             }
         }
         List<String> drawn = new ArrayList<>();
-        if (pool.isEmpty()) {
-            return drawn;
-        }
-        for (int slot = 0; slot < type.size(); slot++) {
+        while (!pool.isEmpty() && total > 0 && already.size() + drawn.size() < type.size()) {
             int pick = random.nextInt(total);
-            for (ShopItem item : pool) {
+            for (int index = 0; index < pool.size(); index++) {
+                ShopItem item = pool.get(index);
                 pick -= item.weight();
                 if (pick < 0) {
-                    if (!drawn.contains(item.id())) {
-                        drawn.add(item.id());
-                    }
+                    drawn.add(item.id());
+                    total -= item.weight();
+                    pool.remove(index);
                     break;
                 }
             }
         }
         return drawn;
+    }
+
+    /**
+     * Le batiment qui ouvre un rayon encore vide : le premier, dans l'ordre
+     * du jeu, que demande une de ses offres. Vide si aucun ne l'ouvre.
+     */
+    private static String opener(ShopType type) {
+        Building best = null;
+        for (ShopItem item : ClickerConfig.shop()) {
+            if (item.type() != type) {
+                continue;
+            }
+            for (String id : item.requirement().keySet()) {
+                Building building = ClickerConfig.building(id);
+                if (building != null && (best == null || building.index() < best.index())) {
+                    best = building;
+                }
+            }
+        }
+        return best == null ? "" : best.name();
     }
 
     /** L'argument est « rayon:offre ». */
@@ -539,7 +575,8 @@ public final class Clicker {
                 }
             }
             shop.add(new ClickerView.Shelf(type.key(), type.label(),
-                    Math.max(0L, type.seconds() - (now() - shelf.updated)), offers));
+                    Math.max(0L, type.seconds() - (now() - shelf.updated)), offers,
+                    offers.isEmpty() ? opener(type) : ""));
         }
 
         return new ClickerView(data.points, data.rps(), clickValue(data), data.clicks, clickItem(data),

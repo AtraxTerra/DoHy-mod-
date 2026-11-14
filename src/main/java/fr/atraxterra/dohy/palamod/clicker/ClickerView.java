@@ -70,8 +70,11 @@ public record ClickerView(double points, double rps, double click, int clicks, I
     public record Offer(String id, ItemStack stack, double price, int left) {
     }
 
-    /** Un rayon du Clic Shop. {@code seconds} : le temps avant le prochain tirage. */
-    public record Shelf(String type, String title, long seconds, List<Offer> offers) {
+    /**
+     * Un rayon du Clic Shop. {@code seconds} : le temps avant le prochain
+     * tirage ; {@code opener} : pour un rayon vide, le batiment qui l'ouvre.
+     */
+    public record Shelf(String type, String title, long seconds, List<Offer> offers, String opener) {
     }
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ClickerView> STREAM_CODEC = StreamCodec.of(
@@ -125,6 +128,7 @@ public record ClickerView(double points, double rps, double click, int clicks, I
                         buffer.writeDouble(offer.price());
                         buffer.writeVarInt(offer.left());
                     }
+                    buffer.writeUtf(shelf.opener());
                 }
             },
             buffer -> {
@@ -177,7 +181,7 @@ public record ClickerView(double points, double rps, double click, int clicks, I
                         offers.add(new Offer(buffer.readUtf(), ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer),
                                 buffer.readDouble(), buffer.readVarInt()));
                     }
-                    shop.add(new Shelf(type, title, seconds, offers));
+                    shop.add(new Shelf(type, title, seconds, offers, buffer.readUtf()));
                 }
                 return new ClickerView(points, rps, click, clicks, clickItem, day, owned, upgradeCount, buildings,
                         more, upgrades, shop);
