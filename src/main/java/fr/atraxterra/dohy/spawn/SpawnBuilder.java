@@ -43,12 +43,15 @@ import java.util.List;
 final class SpawnBuilder {
 
     /** A augmenter des que le dessin change : un spawn d'une autre version est reconstruit. */
-    static final int VERSION = 8;
+    static final int VERSION = 9;
 
     /** Le niveau du sol du parvis : on marche a {@code FLOOR + 1}. */
     static final int FLOOR = 200;
     /** Le centre de la plateforme d'arrivee. */
     static final int PAD_Z = 78;
+    /** Le centre de l'autel des offrandes, sur le parvis, a gauche de l'allee en arrivant. */
+    static final int ALTAR_X = -22;
+    static final int ALTAR_Z = 22;
     /** En dessous, un joueur est tombe : il est remis sur la plateforme. */
     static final int VOID_Y = 140;
     /**
@@ -457,6 +460,7 @@ final class SpawnBuilder {
         builder.forecourt();
         builder.bridge();
         builder.blackMarket();
+        builder.altar();
         builder.pad();
         builder.tiers();
         builder.core();
@@ -590,7 +594,8 @@ final class SpawnBuilder {
             double angle = Math.PI / 8 * step + Math.PI / 16;
             int x = (int) Math.round(Math.cos(angle) * 42.0d);
             int z = -6 + (int) Math.round(Math.sin(angle) * 34.0d);
-            if (reach(0, x, z) > TIERS[0][2] + 10.5d && Math.abs(x) > 7) {
+            if (reach(0, x, z) > TIERS[0][2] + 10.5d && Math.abs(x) > 7
+                    && Math.hypot(x - ALTAR_X, z - ALTAR_Z) > 8.0d) {
                 lampPost(x, FLOOR + 1, z, 3);
             }
         }
@@ -598,7 +603,8 @@ final class SpawnBuilder {
         for (int x = -50; x <= 50; x++) {
             for (int z = -34; z <= 34; z++) {
                 if (plaza(x, z) > 0.84d || reach(0, x, z) < TIERS[0][2] + 10.5d || Math.abs(x) < 7
-                        || (x < -36 && z > -26 && z < -6) || Math.hypot(x - 35, z + 15) < 16.5d) {
+                        || (x < -36 && z > -26 && z < -6) || Math.hypot(x - 35, z + 15) < 16.5d
+                        || Math.hypot(x - ALTAR_X, z - ALTAR_Z) < 9.5d) {
                     continue;
                 }
                 int roll = hash(x, 13, z) % 1000;
@@ -715,6 +721,52 @@ final class SpawnBuilder {
     }
 
     /** La plateforme d'arrivee : un disque marque d'un cercle jaune, ouvert vers le pont. */
+    /**
+     * L'autel des offrandes, sur le parvis : un dallage rond borde de pierre,
+     * une estrade, la borne AUTEL au milieu, tournee vers l'allee, et aux quatre
+     * coins un pilier par metier — foin, fer brut, os, amethyste — sous une
+     * lanterne.
+     */
+    private void altar() {
+        BlockState chiseled = block("chiseled_stone_bricks");
+        BlockState stepSlab = with(block("smooth_stone_slab"), "type", "bottom");
+        BlockState postLantern = with(block("lantern"), "hanging", "false");
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -6; dz <= 6; dz++) {
+                double distance = Math.sqrt(dx * dx + dz * dz);
+                int x = ALTAR_X + dx;
+                int z = ALTAR_Z + dz;
+                if (distance <= 5.5d) {
+                    put(x, FLOOR, z, distance > 4.5d ? rib : Math.floorMod(dx + dz, 2) == 0 ? paving : edge);
+                    carve(x, FLOOR + 1, z, x, FLOOR + 3, z);
+                }
+                if (distance <= 3.5d) {
+                    put(x, FLOOR + 1, z, stepSlab);
+                }
+            }
+        }
+        // les quatre piliers des metiers
+        String[] tops = {"hay_block", "raw_iron_block", "bone_block", "amethyst_block"};
+        String[] names = {"FERMIER", "MINEUR", "CHASSEUR", "ALCHIMISTE"};
+        int[][] corners = {{-3, -3}, {3, -3}, {3, 3}, {-3, 3}};
+        for (int i = 0; i < 4; i++) {
+            int x = ALTAR_X + corners[i][0];
+            int z = ALTAR_Z + corners[i][1];
+            put(x, FLOOR + 1, z, chiseled);
+            put(x, FLOOR + 2, z, block(tops[i]));
+            put(x, FLOOR + 3, z, postLantern);
+            labels.add(new Label(new BlockPos(x, FLOOR + 4, z), names[i], 0xE0E0E0, 0.6f));
+        }
+        // la borne, sur son socle, tournee vers l'allee
+        put(ALTAR_X, FLOOR + 1, ALTAR_Z, rib);
+        terminal(ALTAR_X, FLOOR + 2, ALTAR_Z, Direction.EAST, SpawnTerminalBlock.Kind.JOB_ALTAR,
+                new BlockPos(ALTAR_X, FLOOR + 4, ALTAR_Z));
+        put(ALTAR_X, FLOOR + 3, ALTAR_Z, accentFor(SpawnTerminalBlock.Kind.JOB_ALTAR));
+        labels.add(new Label(new BlockPos(ALTAR_X, FLOOR + 7, ALTAR_Z), "AUTEL DES OFFRANDES", 0xFF8A3D, 1.4f));
+        labels.add(new Label(new BlockPos(ALTAR_X, FLOOR + 6, ALTAR_Z), "Une offrande, une heure, un gardien",
+                0xFAC400, 0.7f));
+    }
+
     private void pad() {
         for (int dx = -14; dx <= 14; dx++) {
             for (int dz = -14; dz <= 14; dz++) {
@@ -792,6 +844,7 @@ final class SpawnBuilder {
             case PORTALS -> "purple_concrete";
             case MINE -> "cyan_concrete";
             case BLACK_MARKET -> "black_concrete";
+            case JOB_ALTAR -> "orange_concrete";
         });
     }
 

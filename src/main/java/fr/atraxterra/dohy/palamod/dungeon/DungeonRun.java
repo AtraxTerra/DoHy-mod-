@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.palamod.dungeon;
 import fr.atraxterra.dohy.job.JobApi;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -35,7 +36,11 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DripstoneThickness;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -68,7 +73,7 @@ import java.util.UUID;
  */
 final class DungeonRun {
 
-    enum Phase { FIGHT, PUZZLE, OPEN, ENDED }
+    enum Phase { FIGHT, PUZZLE, TRAP, OPEN, ENDED }
 
     /** Pourquoi un joueur quitte la partie. */
     enum Leave { DEATH, QUIT, LOGOUT, ESCAPED }
@@ -86,6 +91,10 @@ final class DungeonRun {
     final int id;
     final Dungeon dungeon;
     final int palier;
+    /** Facile, Normal ou Difficile ; toujours Normal pour un boss de metier. */
+    final DungeonMode mode;
+    /** Le boss de metier de cette partie, ou {@code null} pour un palier. */
+    final JobBosses.Fight jobBoss;
     final UUID leader;
     final BlockPos origin;
     final RandomSource random = RandomSource.create();
@@ -142,12 +151,36 @@ final class DungeonRun {
     /** Les salles de combat et de boss terminees. */
     private int fights;
 
+    // -- Salles et boss des modes (DoHy) ------------------------------------------
+
+    /** Un boss Dark est passe dans sa seconde phase ; un boss de metier, enrage. */
+    private boolean secondPhase;
+    /** Les dalles de la salle piegee, par rangee, et ce qu'elles etaient. */
+    private List<List<BlockPos>> trapRows = List.of();
+    private final Map<BlockPos, BlockState> trapFloor = new HashMap<>();
+    private final Set<BlockPos> spikes = new HashSet<>();
+    private BlockPos trapButton;
+    /** La salle de survie : ticks restants, sur combien. */
+    private int survivalLeft;
+    private int survivalTotal;
+    /** Une zone nocive au sol (nuage toxique) : centre, rayon, tick de fin. */
+    private record Hazard(Vec3 center, double radius, int until) {
+    }
+
+    private final List<Hazard> hazards = new ArrayList<>();
+    /** Des blocs poses pour un temps (toiles), et le tick ou ils partent. */
+    private final Map<BlockPos, Integer> temporary = new HashMap<>();
+    /** Les ombres d'un boss Dark, et le tick ou elles s'effacent. */
+    private final Map<Mob, Integer> shadows = new HashMap<>();
+
     DungeonRun(int id, ServerLevel level, Dungeon dungeon, int palier, ServerPlayer leader, List<ServerPlayer> party,
-               BlockPos origin) {
+               BlockPos origin, DungeonMode mode, JobBosses.Fight jobBoss) {
         this.id = id;
         this.level = level;
         this.dungeon = dungeon;
         this.palier = palier;
+        this.mode = mode;
+        this.jobBoss = jobBoss;
         this.leader = leader.getUUID();
         this.origin = origin;
         for (ServerPlayer player : party) {
@@ -166,11 +199,11 @@ final class DungeonRun {
     // -- Chiffres ---------------------------------------------------------------
 
     float damageFactor() {
-        return 1.0f + 0.03f * (palier - 1);
+        return (1.0f + 0.03f * (palier - 1)) * mode.mobDamage();
     }
 
     double healthFactor() {
-        return 1.0d + 0.06d * (palier - 1);
+        return (1.0d + 0.06d * (palier - 1)) * mode.mobHealth();
     }
 
     Band band() {
@@ -233,7 +266,8 @@ final class DungeonRun {
 
     /** Construit la premiere salle et y conduit le groupe. */
     void begin(List<ServerPlayer> party) {
-        room = DungeonRoom.build(level, dungeon, RoomType.COMBAT, roomCenter(0), random);
+        room = DungeonRoom.build(level, dungeon, jobBoss != null ? RoomType.BOSS : RoomType.COMBAT, roomCenter(0),
+                random);
         built.add(room);
         Vec3 entrance = room.entrance();
         int index = 0;
@@ -242,9 +276,22 @@ final class DungeonRun {
             player.teleport(new net.minecraft.world.level.portal.TeleportTransition(level, spot, Vec3.ZERO,
                     0.0f, 0.0f, net.minecraft.world.level.portal.TeleportTransition.DO_NOTHING));
         }
-        title(Component.literal(dungeon.display()).withStyle(dungeon.color(), ChatFormatting.BOLD),
-                Component.literal("Palier " + palier + " — " + band().label()).withStyle(band().color()));
+        if (jobBoss != null) {
+            title(Component.literal(jobBoss.spec().name()).withStyle(dungeon.color(), ChatFormatting.BOLD),
+                    Component.literal("Boss de metier · niveau " + jobBoss.level()).withStyle(ChatFormatting.GRAY));
+        } else {
+            title(Component.literal(dungeon.display()).withStyle(dungeon.color(), ChatFormatting.BOLD),
+                    Component.literal("Palier " + palier + " — " + band().label() + " · " + mode.label())
+                            .withStyle(band().color()));
+        }
         enter();
+    }
+
+    /** Un message en toutes lettres a tout le groupe. */
+    void say(ChatFormatting color, String text) {
+        for (ServerPlayer player : onlineMembers()) {
+            player.sendSystemMessage(Component.literal(text).withStyle(color));
+        }
     }
 
     private BlockPos roomCenter(int index) {
@@ -289,14 +336,48 @@ final class DungeonRun {
                 broadcast(ChatFormatting.YELLOW, "merchant");
                 openDoors();
             }
-            case BOSS -> {
-                placeJars(4 + random.nextInt(3));
+            case BOSS, ELITE -> {
+                placeJars(room.type == RoomType.BOSS ? 4 + random.nextInt(3) : 2 + random.nextInt(2));
                 phase = Phase.FIGHT;
                 spawnBosses();
+            }
+            case TRAP -> {
+                phase = Phase.TRAP;
+                trapRows = room.trapRows();
+                trapFloor.clear();
+                spikes.clear();
+                for (List<BlockPos> row : trapRows) {
+                    for (BlockPos tile : row) {
+                        trapFloor.put(tile, level.getBlockState(tile));
+                    }
+                }
+                trapButton = room.placeTrapButton(level, dungeon.palette());
+                say(ChatFormatting.DARK_GRAY, "Salle piegee : le sol s'embrase par rangees. Traverse jusqu'au bouton"
+                        + " du fond.");
+            }
+            case SURVIVAL -> {
+                placeJars(2 + random.nextInt(2));
+                phase = Phase.FIGHT;
+                survivalTotal = 20 * (40 + Math.min(20, palier / 5));
+                survivalLeft = survivalTotal;
+                nextWaveIn = 0;
+                bar = new ServerBossEvent(UUID.randomUUID(), survivalTitle(), BossEvent.BossBarColor.PINK,
+                        BossEvent.BossBarOverlay.PROGRESS);
+                for (ServerPlayer player : onlineMembers()) {
+                    bar.addPlayer(player);
+                }
+                say(ChatFormatting.LIGHT_PURPLE, "Salle de survie : tiens " + survivalTotal / 20
+                        + " secondes, les renforts ne s'arretent pas.");
+                level.playSound(null, room.center, SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 0.6f, 0.8f);
             }
             case EXIT -> {
             }
         }
+    }
+
+    private Component survivalTitle() {
+        return Component.literal("Survie · " + Math.max(0, (survivalLeft + 19) / 20) + " s")
+                .withStyle(ChatFormatting.LIGHT_PURPLE);
     }
 
     void tick() {
@@ -309,6 +390,23 @@ final class DungeonRun {
         }
         if (ticks % 20 == 0) {
             keepInside();
+        }
+        if (!hazards.isEmpty() && ticks % 10 == 0) {
+            tickHazards();
+        }
+        if (!temporary.isEmpty() && ticks % 5 == 0) {
+            sweepTemporary();
+        }
+        if (!shadows.isEmpty() && ticks % 10 == 0) {
+            sweepShadows();
+        }
+        if (phase == Phase.TRAP) {
+            tickTrap();
+            return;
+        }
+        if (phase == Phase.FIGHT && room.type == RoomType.SURVIVAL) {
+            tickSurvival();
+            return;
         }
         if (phase == Phase.FIGHT) {
             if (nextWaveIn > 0 && --nextWaveIn == 0) {
@@ -346,12 +444,297 @@ final class DungeonRun {
         }
     }
 
+    // -- Salle piegee ------------------------------------------------------------
+
+    /** Une periode du sol piege : alerte, puis piques, puis repos. */
+    private static final int TRAP_PERIOD = 60;
+    private static final int TRAP_WARN = 15;
+    private static final int TRAP_ACTIVE = 35;
+
+    /**
+     * Les rangees s'embrasent l'une apres l'autre, decalees de douze ticks : une
+     * vague qui avance vers le fond. En alerte, la dalle devient du magma ; puis
+     * des piques en sortent et blessent qui s'y tient ; puis le sol revient.
+     */
+    private void tickTrap() {
+        for (int index = 0; index < trapRows.size(); index++) {
+            int local = Math.floorMod(ticks + index * 12, TRAP_PERIOD);
+            List<BlockPos> row = trapRows.get(index);
+            if (local == 0) {
+                for (BlockPos tile : row) {
+                    level.setBlock(tile, Blocks.MAGMA_BLOCK.defaultBlockState(), Block.UPDATE_CLIENTS);
+                }
+                level.playSound(null, row.get(row.size() / 2), SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS,
+                        0.4f, 1.6f);
+            } else if (local == TRAP_WARN) {
+                for (BlockPos tile : row) {
+                    BlockPos above = tile.above();
+                    if (level.getBlockState(above).isAir() && !occupied(above)) {
+                        level.setBlock(above, Blocks.POINTED_DRIPSTONE.defaultBlockState()
+                                .setValue(BlockStateProperties.VERTICAL_DIRECTION, Direction.UP)
+                                .setValue(BlockStateProperties.DRIPSTONE_THICKNESS, DripstoneThickness.TIP),
+                                Block.UPDATE_CLIENTS);
+                        spikes.add(above);
+                    }
+                }
+                level.playSound(null, row.get(row.size() / 2), SoundEvents.POINTED_DRIPSTONE_LAND, SoundSource.BLOCKS,
+                        0.8f, 0.8f);
+            } else if (local == TRAP_ACTIVE) {
+                lowerRow(row);
+            }
+            if (local >= TRAP_WARN && local < TRAP_ACTIVE && ticks % 5 == 0) {
+                BlockPos middle = row.get(row.size() / 2);
+                level.sendParticles(ParticleTypes.FLAME, middle.getX() + 0.5d, middle.getY() + 1.1d,
+                        middle.getZ() + 0.5d, 6, room.half / 2.0d, 0.05d, 0.2d, 0.01d);
+            }
+        }
+        if (ticks % 5 == 0) {
+            for (ServerPlayer player : onlineMembers()) {
+                if (player.isSpectator() || player.isCreative()) {
+                    continue;
+                }
+                BlockPos below = BlockPos.containing(player.getX(), player.getY() - 0.2d, player.getZ());
+                int rowIndex = trapRowOf(below);
+                if (rowIndex >= 0) {
+                    int local = Math.floorMod(ticks + rowIndex * 12, TRAP_PERIOD);
+                    if (local >= TRAP_WARN && local < TRAP_ACTIVE) {
+                        float damage = 4.0f * (1.0f + palier / 50.0f) * mode.mobDamage();
+                        player.hurtServer(level, level.damageSources().generic(), damage);
+                        player.setDeltaMovement(player.getDeltaMovement().x, 0.45d, player.getDeltaMovement().z);
+                        player.hurtMarked = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private int trapRowOf(BlockPos floor) {
+        for (int index = 0; index < trapRows.size(); index++) {
+            List<BlockPos> row = trapRows.get(index);
+            BlockPos first = row.get(0);
+            if (floor.getZ() == first.getZ() && floor.getY() == first.getY() && floor.getX() >= first.getX()
+                    && floor.getX() <= row.get(row.size() - 1).getX()) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    private boolean occupied(BlockPos pos) {
+        AABB box = new AABB(pos);
+        for (ServerPlayer player : onlineMembers()) {
+            if (player.getBoundingBox().intersects(box)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Une rangee revient a son sol : piques rentres, dalles d'origine. */
+    private void lowerRow(List<BlockPos> row) {
+        for (BlockPos tile : row) {
+            BlockPos above = tile.above();
+            if (spikes.remove(above) && level.getBlockState(above).is(Blocks.POINTED_DRIPSTONE)) {
+                level.setBlock(above, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+            }
+            BlockState original = trapFloor.get(tile);
+            if (original != null) {
+                level.setBlock(tile, original, Block.UPDATE_CLIENTS);
+            }
+        }
+    }
+
+    /** Le sol piege s'eteint pour de bon : la salle est traversee. */
+    private void disarmTrap() {
+        for (List<BlockPos> row : trapRows) {
+            lowerRow(row);
+        }
+        trapRows = List.of();
+        trapFloor.clear();
+        spikes.clear();
+        if (trapButton != null
+                && level.getBlockState(trapButton).getBlock() instanceof net.minecraft.world.level.block.ButtonBlock) {
+            level.setBlock(trapButton, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+        }
+        trapButton = null;
+    }
+
+    // -- Salle de survie ------------------------------------------------------------
+
+    /**
+     * Des renforts toutes les trois secondes, douze monstres au plus en meme
+     * temps, jusqu'a la fin du compte a rebours : alors ils s'effacent.
+     */
+    private void tickSurvival() {
+        survivalLeft--;
+        if (ticks % 10 == 0) {
+            enemies.keySet().removeIf(mob -> {
+                if (mob.isRemoved() || !mob.isAlive()) {
+                    DungeonManager.untrackMob(mob.getUUID());
+                    return true;
+                }
+                return false;
+            });
+        }
+        if (ticks % 40 == 0) {
+            retarget();
+        }
+        if (ticks % 60 == 0) {
+            magePulse();
+            int alive = enemies.size();
+            int count = Math.max(1, 2 + palier / 40 + Math.max(0, onlineMembers().size() - 1) + mode.extraMobs());
+            for (int i = 0; i < count && alive + i < 12; i++) {
+                spawnMob(room.spawnPoint(level, random), pickKind(), false);
+            }
+        }
+        if (bar != null && ticks % 10 == 0) {
+            bar.setName(survivalTitle());
+            bar.setProgress(Math.clamp((float) survivalLeft / Math.max(1, survivalTotal), 0.0f, 1.0f));
+            for (ServerPlayer player : onlineMembers()) {
+                if (!bar.getPlayers().contains(player)) {
+                    bar.addPlayer(player);
+                }
+            }
+        }
+        if (survivalLeft <= 0) {
+            for (Mob mob : enemies.keySet()) {
+                level.sendParticles(ParticleTypes.POOF, mob.getX(), mob.getY() + 0.5d, mob.getZ(), 10, 0.3d, 0.5d,
+                        0.3d, 0.02d);
+            }
+            clearEnemies();
+            hideBar();
+            say(ChatFormatting.LIGHT_PURPLE, "Tu as tenu : les renforts reculent.");
+            roomCleared();
+        }
+    }
+
+    /** Un type de monstre tire au poids, parmi ceux du palier ; deux mages au plus par appel. */
+    private MobKind pickKind() {
+        List<MobKind> open = new ArrayList<>();
+        int total = 0;
+        for (MobKind kind : MobKind.values()) {
+            if (palier >= kind.from() && kind != MobKind.MAGE) {
+                open.add(kind);
+                total += kind.weight();
+            }
+        }
+        int pick = random.nextInt(Math.max(1, total));
+        for (MobKind candidate : open) {
+            pick -= candidate.weight();
+            if (pick < 0) {
+                return candidate;
+            }
+        }
+        return MobKind.MELEE;
+    }
+
+    // -- Effets de boss poses dans la salle -----------------------------------------
+
+    /** Un nuage toxique : poison a qui s'y tient, jusqu'au tick dit. */
+    void addHazard(Vec3 center, double radius, int duration, boolean ignored) {
+        hazards.add(new Hazard(center, radius, ticks + duration));
+    }
+
+    private void tickHazards() {
+        hazards.removeIf(hazard -> ticks >= hazard.until());
+        for (Hazard hazard : hazards) {
+            level.sendParticles(ParticleTypes.SNEEZE, hazard.center().x, hazard.center().y + 0.3d, hazard.center().z,
+                    14, hazard.radius() * 0.6d, 0.2d, hazard.radius() * 0.6d, 0.01d);
+            for (ServerPlayer player : onlineMembers()) {
+                if (player.position().distanceTo(hazard.center()) <= hazard.radius()) {
+                    player.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 1));
+                }
+            }
+        }
+    }
+
+    /** Pose un bloc pour un temps, s'il y a de l'air ; il part tout seul. */
+    void placeTemporary(BlockPos pos, BlockState state, int duration) {
+        if (room == null || !insideRoom(Vec3.atBottomCenterOf(pos)) || !level.getBlockState(pos).isAir()) {
+            return;
+        }
+        level.setBlock(pos, state, Block.UPDATE_CLIENTS);
+        temporary.put(pos.immutable(), ticks + duration);
+    }
+
+    private void sweepTemporary() {
+        temporary.entrySet().removeIf(entry -> {
+            if (ticks < entry.getValue()) {
+                return false;
+            }
+            if (level.getBlockState(entry.getKey()).is(Blocks.COBWEB)) {
+                level.setBlock(entry.getKey(), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+            }
+            return true;
+        });
+    }
+
+    /**
+     * Les ombres d'un boss Dark : deux copies plus petites, a 15 % de sa vie,
+     * qui s'effacent au bout de vingt secondes si personne ne les abat.
+     */
+    void spawnShadows(Mob boss) {
+        float health = Math.max(20.0f, boss.getMaxHealth() * 0.15f);
+        for (int i = 0; i < 2; i++) {
+            Mob shadow = bossSpec.type().create(level, EntitySpawnReason.MOB_SUMMONED);
+            if (shadow == null) {
+                continue;
+            }
+            Vec3 at = boss.position().add(i == 0 ? -2.5d : 2.5d, 0.0d, 0.0d);
+            if (!insideRoom(at)) {
+                at = boss.position();
+            }
+            shadow.snapTo(at.x, at.y, at.z, boss.getYRot(), 0.0f);
+            shadow.finalizeSpawn(level, level.getCurrentDifficultyAt(boss.blockPosition()),
+                    EntitySpawnReason.MOB_SUMMONED, null);
+            if (shadow instanceof Zombie zombie) {
+                zombie.setBaby(false);
+            }
+            base(shadow, Attributes.MAX_HEALTH, health);
+            base(shadow, Attributes.SCALE, Math.max(0.6d, bossSpec.scale() * 0.6d));
+            base(shadow, Attributes.FOLLOW_RANGE, 48.0d);
+            shadow.setHealth(shadow.getMaxHealth());
+            shadow.setPersistenceRequired();
+            shadow.addTag(TAG);
+            shadow.setCustomName(Component.literal("Ombre").withStyle(ChatFormatting.DARK_PURPLE));
+            shadow.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 30, 0, false, false));
+            ServerPlayer target = nearest(shadow);
+            if (target != null) {
+                shadow.setTarget(target);
+            }
+            level.addFreshEntity(shadow);
+            track(shadow, MobKind.ASSASSIN, 1.0f);
+            shadows.put(shadow, ticks + 400);
+            level.sendParticles(ParticleTypes.SQUID_INK, at.x, at.y + 1.0d, at.z, 20, 0.4d, 0.8d, 0.4d, 0.05d);
+        }
+        level.playSound(null, boss.blockPosition(), SoundEvents.ILLUSIONER_MIRROR_MOVE, SoundSource.HOSTILE, 1.0f,
+                0.7f);
+    }
+
+    private void sweepShadows() {
+        shadows.entrySet().removeIf(entry -> {
+            Mob shadow = entry.getKey();
+            if (shadow.isRemoved() || !shadow.isAlive()) {
+                return true;
+            }
+            if (ticks < entry.getValue()) {
+                return false;
+            }
+            level.sendParticles(ParticleTypes.SQUID_INK, shadow.getX(), shadow.getY() + 1.0d, shadow.getZ(),
+                    12, 0.3d, 0.6d, 0.3d, 0.02d);
+            enemies.remove(shadow);
+            DungeonManager.untrackMob(shadow.getUUID());
+            shadow.discard();
+            return true;
+        });
+    }
+
     // -- Combat -----------------------------------------------------------------
 
     private void spawnWave() {
         wave++;
         List<ServerPlayer> players = onlineMembers();
-        int count = 3 + palier / 25 + 2 * Math.max(0, players.size() - 1);
+        int count = Math.max(2, 3 + palier / 25 + 2 * Math.max(0, players.size() - 1) + mode.extraMobs());
         List<MobKind> open = new ArrayList<>();
         int total = 0;
         for (MobKind kind : MobKind.values()) {
@@ -458,7 +841,7 @@ final class DungeonRun {
                 DungeonManager.untrackMob(mob.getUUID());
             }
         }
-        if (room.type == RoomType.BOSS) {
+        if (room.type == RoomType.BOSS || room.type == RoomType.ELITE) {
             bosses.removeIf(boss -> !enemies.containsKey(boss));
             if (bar != null) {
                 updateBar();
@@ -467,6 +850,13 @@ final class DungeonRun {
                 broadcast(ChatFormatting.GOLD, "boss_dead", bossSpec.name());
                 clearEnemies();
                 hideBar();
+                if (jobBoss != null) {
+                    // Le gardien tombe : niveau, XP de metier et argent tout de suite, le coffre au centre.
+                    for (ServerPlayer player : onlineMembers()) {
+                        fr.atraxterra.dohy.jobboss.JobBossApi.defeated(player, jobBoss.job(), jobBoss.level(),
+                                player.getUUID().equals(leader));
+                    }
+                }
                 roomCleared();
             }
             return;
@@ -541,14 +931,34 @@ final class DungeonRun {
     // -- Boss -------------------------------------------------------------------
 
     private void spawnBosses() {
-        bossSpec = dungeon.bossFor(palier);
-        if (bossSpec == null) {
-            roomCleared();
-            return;
+        boolean mini;
+        double health;
+        if (jobBoss != null) {
+            bossSpec = jobBoss.spec();
+            mini = false;
+            health = JobBosses.health(jobBoss.level());
+        } else if (room.type == RoomType.ELITE) {
+            List<BossSpec> elites = dungeon.elites();
+            bossSpec = elites.get(random.nextInt(elites.size()));
+            mini = true;
+            health = 120.0d * (1.0d + 0.05d * (palier - 1)) * mode.bossHealth();
+        } else {
+            bossSpec = dungeon.bossFor(palier);
+            if (bossSpec == null) {
+                roomCleared();
+                return;
+            }
+            mini = palier % 10 != 0;
+            if (!mini && mode.darkBosses()) {
+                bossSpec = bossSpec.darkForm();
+            }
+            health = (mini ? 120.0d : 250.0d) * (1.0d + 0.05d * (palier - 1)) * mode.bossHealth()
+                    * (bossSpec.dark() ? 1.4d : 1.0d);
         }
-        boolean mini = palier % 10 != 0;
+        secondPhase = false;
         int players = Math.max(1, onlineMembers().size());
-        double health = (mini ? 120.0d : 250.0d) * (1.0d + 0.05d * (palier - 1)) * (1.0d + 0.6d * (players - 1));
+        health *= 1.0d + 0.6d * (players - 1);
+        ChatFormatting nameColor = bossSpec.dark() ? ChatFormatting.DARK_PURPLE : dungeon.color();
         int count = bossSpec.duo() ? 2 : 1;
         if (bossSpec.duo()) {
             health *= 0.6d;
@@ -573,9 +983,10 @@ final class DungeonRun {
             boss.setHealth(boss.getMaxHealth());
             boss.setPersistenceRequired();
             boss.addTag(TAG);
-            boss.setCustomName(Component.literal(bossSpec.name()).withStyle(dungeon.color(), ChatFormatting.BOLD));
+            boss.setCustomName(Component.literal(bossSpec.name()).withStyle(nameColor, ChatFormatting.BOLD));
             boss.setCustomNameVisible(true);
-            RpgSkins.dressBoss(boss, bossSpec.name(), band());
+            RpgSkins.dressBoss(boss, bossSpec.skin(), bossSpec.dark() ? Band.BLACK : band());
+            equip(boss, bossSpec);
             ServerPlayer target = nearest(boss);
             if (target != null) {
                 boss.setTarget(target);
@@ -587,16 +998,40 @@ final class DungeonRun {
             level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, boss.getX(), boss.getY() + 1.0d, boss.getZ(),
                     1, 0.0d, 0.0d, 0.0d, 0.0d);
         }
-        bar = new ServerBossEvent(UUID.randomUUID(), Component.literal(bossSpec.name()).withStyle(dungeon.color()),
-                mini ? BossEvent.BossBarColor.RED : BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.NOTCHED_10);
+        BossEvent.BossBarColor color = jobBoss != null ? switch (jobBoss.job()) {
+            case FARMER -> BossEvent.BossBarColor.GREEN;
+            case MINER -> BossEvent.BossBarColor.WHITE;
+            case HUNTER -> BossEvent.BossBarColor.RED;
+            case ALCHEMIST -> BossEvent.BossBarColor.BLUE;
+        } : bossSpec.dark() ? BossEvent.BossBarColor.PURPLE : room.type == RoomType.ELITE
+                ? BossEvent.BossBarColor.YELLOW : mini ? BossEvent.BossBarColor.RED : BossEvent.BossBarColor.PURPLE;
+        bar = new ServerBossEvent(UUID.randomUUID(), Component.literal(bossSpec.name()).withStyle(nameColor), color,
+                bossSpec.dark() ? BossEvent.BossBarOverlay.NOTCHED_20 : BossEvent.BossBarOverlay.NOTCHED_10);
         for (ServerPlayer player : onlineMembers()) {
             bar.addPlayer(player);
         }
         abilityCooldown = 100;
-        title(Component.literal(bossSpec.name()).withStyle(dungeon.color(), ChatFormatting.BOLD),
-                Component.literal(mini ? "Mini-boss" : "Boss").withStyle(ChatFormatting.GRAY));
+        String kind = jobBoss != null ? "Boss de metier · niveau " + jobBoss.level()
+                : room.type == RoomType.ELITE ? "Elite" : bossSpec.dark() ? "Boss Dark" : mini ? "Mini-boss" : "Boss";
+        title(Component.literal(bossSpec.name()).withStyle(nameColor, ChatFormatting.BOLD),
+                Component.literal(kind).withStyle(bossSpec.dark() ? ChatFormatting.DARK_PURPLE : ChatFormatting.GRAY));
         broadcast(ChatFormatting.DARK_PURPLE, "boss", bossSpec.name());
         level.playSound(null, room.center, SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 0.5f, 1.0f);
+    }
+
+    /** Ce que porte un elite pour se reconnaitre : une tete de citrouille, des outils. */
+    private static void equip(Mob boss, BossSpec spec) {
+        switch (spec.name()) {
+            case "Epouvantail" -> boss.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CARVED_PUMPKIN));
+            case "Faucheuse" -> boss.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_HOE));
+            case "Contremaitre" -> {
+                boss.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
+                boss.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
+            }
+            case "Sirene" -> boss.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.TRIDENT));
+            default -> {
+            }
+        }
     }
 
     private void tickBosses() {
@@ -611,6 +1046,18 @@ final class DungeonRun {
         }
         if (alive.isEmpty()) {
             return;
+        }
+        if (bossSpec.dark() && ticks % 10 == 0) {
+            for (Mob boss : alive) {
+                level.sendParticles(ParticleTypes.SMOKE, boss.getX(), boss.getY() + boss.getBbHeight() * 0.5d,
+                        boss.getZ(), 8, boss.getBbWidth() * 0.6d, boss.getBbHeight() * 0.4d, boss.getBbWidth() * 0.6d,
+                        0.01d);
+                level.sendParticles(ParticleTypes.SOUL, boss.getX(), boss.getY() + 0.2d, boss.getZ(), 2,
+                        boss.getBbWidth() * 0.6d, 0.1d, boss.getBbWidth() * 0.6d, 0.02d);
+            }
+        }
+        if (!secondPhase && ticks % 10 == 0) {
+            checkSecondPhase(alive);
         }
         if (ticks % 20 == 0) {
             for (Mob boss : alive) {
@@ -627,11 +1074,57 @@ final class DungeonRun {
             return;
         }
         abilityCooldown = Math.max(70, 140 - palier / 2) + random.nextInt(40);
+        if (secondPhase) {
+            abilityCooldown = Math.round(abilityCooldown * (bossSpec.dark() ? 0.6f : 0.7f));
+        }
         Mob boss = alive.get(random.nextInt(alive.size()));
         ServerPlayer target = nearest(boss);
         if (target != null && !bossSpec.abilities().isEmpty()) {
             BossAbility ability = bossSpec.abilities().get(random.nextInt(bossSpec.abilities().size()));
             ability.perform(this, boss, level, target);
+        }
+    }
+
+    /**
+     * La seconde phase : un boss Dark sous la moitie de sa vie s'eveille
+     * (resistance, vitesse, capacites plus frequentes) ; un boss de metier sous
+     * le tiers s'enrage (force, capacites plus frequentes).
+     */
+    private void checkSecondPhase(List<Mob> alive) {
+        if (!bossSpec.dark() && jobBoss == null) {
+            return;
+        }
+        float health = 0.0f;
+        float max = 0.0f;
+        for (Mob boss : bosses) {
+            if (boss.isAlive() && !boss.isRemoved()) {
+                health += boss.getHealth();
+                max += boss.getMaxHealth();
+            }
+        }
+        float threshold = bossSpec.dark() ? 0.5f : 0.35f;
+        if (max <= 0.0f || health / max > threshold) {
+            return;
+        }
+        secondPhase = true;
+        for (Mob boss : alive) {
+            if (bossSpec.dark()) {
+                boss.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 20 * 60 * 30, 0));
+                boss.addEffect(new MobEffectInstance(MobEffects.SPEED, 20 * 60 * 30, 0));
+            } else {
+                boss.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 20 * 60 * 30, 0));
+            }
+            level.sendParticles(ParticleTypes.SONIC_BOOM, boss.getX(), boss.getY() + boss.getBbHeight() * 0.5d,
+                    boss.getZ(), 1, 0.0d, 0.0d, 0.0d, 0.0d);
+        }
+        if (bossSpec.dark()) {
+            title(Component.literal("Forme Dark").withStyle(ChatFormatting.DARK_PURPLE, ChatFormatting.BOLD),
+                    Component.literal(bossSpec.name() + " s'eveille").withStyle(ChatFormatting.GRAY));
+            say(ChatFormatting.DARK_PURPLE, bossSpec.name() + " s'eveille : plus vite, plus dur, plus souvent.");
+            level.playSound(null, room.center, SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 0.6f, 0.6f);
+        } else {
+            say(ChatFormatting.RED, bossSpec.name() + " entre en rage !");
+            level.playSound(null, room.center, SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1.0f, 0.8f);
         }
     }
 
@@ -663,6 +1156,14 @@ final class DungeonRun {
 
     /** Un bouton presse ; vrai s'il etait de l'enigme. */
     boolean pressButton(BlockPos pos) {
+        if (phase == Phase.TRAP && pos.equals(trapButton)) {
+            disarmTrap();
+            level.sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d,
+                    16, 0.4d, 0.4d, 0.4d, 0.0d);
+            say(ChatFormatting.GREEN, "Le piege s'eteint.");
+            roomCleared();
+            return true;
+        }
         if (phase != Phase.PUZZLE || !room.buttons.remove(pos)) {
             return false;
         }
@@ -726,16 +1227,17 @@ final class DungeonRun {
     // -- Fin de salle, coffre et portes ---------------------------------------------
 
     private void roomCleared() {
-        if (room.type == RoomType.COMBAT || room.type == RoomType.BOSS) {
+        if (room.type == RoomType.COMBAT || room.type == RoomType.BOSS || room.type == RoomType.ELITE
+                || room.type == RoomType.SURVIVAL) {
             fights++;
         }
-        // XP RPG (wiki : « chaque salle terminee ») ; le triple pour un boss.
-        if (room.type == RoomType.COMBAT || room.type == RoomType.PUZZLE || room.type == RoomType.BOSS) {
-            long xp = (10L + 2L * palier) * (room.type == RoomType.BOSS ? 3L : 1L);
+        // XP RPG (wiki : « chaque salle terminee ») ; le triple pour un boss, le double pour un elite.
+        if (room.type != RoomType.BOOST && room.type != RoomType.MERCHANT && room.type != RoomType.EXIT) {
+            long xp = (10L + 2L * palier) * (room.type == RoomType.BOSS ? 3L : room.type == RoomType.ELITE ? 2L : 1L);
             for (ServerPlayer player : onlineMembers()) {
                 // Arbre de technologie, branche Globale : +5 a +20 % d'XP de donjon.
                 float bonus = fr.atraxterra.dohy.faction.FactionApi.perks(player).dungeonXp();
-                Rpg.grantXp(player, Math.round(xp * (1.0d + bonus)));
+                Rpg.grantXp(player, Math.round(xp * (1.0d + bonus) * mode.rewards()));
             }
         }
         if (room.type.loot()) {
@@ -760,17 +1262,51 @@ final class DungeonRun {
         doors = room.openDoors(level, nextOptions());
     }
 
+    /**
+     * Les portes de la salle suivante : une a trois, tirees au poids parmi les
+     * salles ouvertes au palier — l'elite des le palier 3, le piege des le 2, la
+     * survie des le 8 (DoHy). Un boss de metier n'a que la sortie.
+     */
     private List<RoomType> nextOptions() {
-        if (roomIndex >= 2) {
+        if (jobBoss != null || roomIndex >= 2) {
             return List.of(RoomType.EXIT);
         }
         if (roomIndex == 1 && dungeon.bossFor(palier) != null) {
             return List.of(RoomType.BOSS);
         }
-        List<RoomType> pool = new ArrayList<>(List.of(RoomType.COMBAT, RoomType.PUZZLE, RoomType.BOOST,
-                RoomType.MERCHANT));
-        Collections.shuffle(pool, new java.util.Random(random.nextLong()));
-        return List.copyOf(pool.subList(0, 1 + random.nextInt(3)));
+        Map<RoomType, Integer> weights = new LinkedHashMap<>();
+        weights.put(RoomType.COMBAT, 30);
+        weights.put(RoomType.PUZZLE, 15);
+        weights.put(RoomType.BOOST, 15);
+        weights.put(RoomType.MERCHANT, 14);
+        if (palier >= 3) {
+            weights.put(RoomType.ELITE, 12);
+        }
+        if (palier >= 2) {
+            weights.put(RoomType.TRAP, 12);
+        }
+        if (palier >= 8) {
+            weights.put(RoomType.SURVIVAL, 10);
+        }
+        int wanted = 1 + random.nextInt(3);
+        List<RoomType> chosen = new ArrayList<>();
+        while (chosen.size() < wanted && !weights.isEmpty()) {
+            int total = 0;
+            for (int weight : weights.values()) {
+                total += weight;
+            }
+            int pick = random.nextInt(total);
+            for (Map.Entry<RoomType, Integer> entry : weights.entrySet()) {
+                pick -= entry.getValue();
+                if (pick < 0) {
+                    chosen.add(entry.getKey());
+                    weights.remove(entry.getKey());
+                    break;
+                }
+            }
+        }
+        Collections.shuffle(chosen, new java.util.Random(random.nextLong()));
+        return List.copyOf(chosen);
     }
 
     // -- Jarres -------------------------------------------------------------------
@@ -818,9 +1354,38 @@ final class DungeonRun {
      */
     private String chestTier() {
         if (room.type == RoomType.BOSS) {
-            return palier % 10 == 0 ? "legendary" : "rare";
+            return jobBoss != null || palier % 10 == 0 ? "legendary" : "rare";
         }
-        return room.type == RoomType.PUZZLE ? "rare" : "default";
+        return room.type == RoomType.PUZZLE || room.type == RoomType.ELITE || room.type == RoomType.TRAP
+                || room.type == RoomType.SURVIVAL ? "rare" : "default";
+    }
+
+    /**
+     * Le butin du coffre de la salle, pour un joueur : la reserve du donjon,
+     * un tirage de plus ou de moins selon le mode, et la table des boss pour un
+     * boss (deux tirages apres un boss de palier en 0 ou un boss de metier, un
+     * de plus pour un Dark), un elite (un tirage), un piege ou une survie (un
+     * tirage de reserve en plus). Un boss Dark ajoute sa rune et son essence.
+     */
+    private List<ItemStack> roomLoot() {
+        int extra = mode.extraRolls();
+        int bossRolls = 0;
+        switch (room.type) {
+            case BOSS -> bossRolls = jobBoss != null || palier % 10 == 0 ? 2 : 1;
+            case ELITE -> bossRolls = 1;
+            case TRAP, SURVIVAL -> extra++;
+            default -> {
+            }
+        }
+        boolean dark = room.type == RoomType.BOSS && bossSpec != null && bossSpec.dark();
+        if (dark) {
+            bossRolls++;
+        }
+        List<ItemStack> loot = DungeonRewards.chest(level, random, dungeon, palier, bossRolls, extra);
+        if (dark) {
+            loot.addAll(DungeonRewards.dark(level, random, dungeon, palier));
+        }
+        return loot;
     }
 
     /** Le coffre de la salle, pour un joueur : son butin, une fois. */
@@ -835,7 +1400,7 @@ final class DungeonRun {
             DungeonManager.message(player, ChatFormatting.GRAY, "chest_done");
             return true;
         }
-        List<ItemStack> loot = DungeonRewards.chest(level, random, dungeon, palier, room.type == RoomType.BOSS);
+        List<ItemStack> loot = roomLoot();
         if (looted.size() == 1) {
             // Le premier l'ouvre ; il reste ouvert pour les suivants.
             DungeonProps.pose(chest, "open>open_idle");
@@ -854,8 +1419,7 @@ final class DungeonRun {
         }
         for (ServerPlayer player : onlineMembers()) {
             if (looted.add(player.getUUID())) {
-                List<ItemStack> loot = DungeonRewards.chest(level, random, dungeon, palier,
-                        room.type == RoomType.BOSS);
+                List<ItemStack> loot = roomLoot();
                 DungeonManager.message(player, ChatFormatting.GOLD, "chest_auto", describe(loot));
                 addToBag(player, loot);
             }
@@ -924,6 +1488,23 @@ final class DungeonRun {
                 }
             }
         }
+    }
+
+    /**
+     * Essai ({@code /donjon admin salle}) : la salle en cours s'arrete et la
+     * suivante est celle demandee.
+     */
+    void forceNext(ServerPlayer chooser, RoomType type) {
+        clearEnemies();
+        hideBar();
+        if (phase == Phase.TRAP) {
+            disarmTrap();
+        }
+        bosses.clear();
+        if (roomIndex >= 2) {
+            roomIndex = 1;
+        }
+        choose(chooser, type);
     }
 
     private void choose(ServerPlayer chooser, RoomType type) {
@@ -1016,14 +1597,16 @@ final class DungeonRun {
     /** La porte de sortie : sacs livres, XP de metier, progression. */
     private void succeed() {
         phase = Phase.ENDED;
-        long jobXp = 600L + 40L * palier;
+        long jobXp = Math.round((600L + 40L * palier) * mode.rewards());
         List<ServerPlayer> party = onlineMembers();
         for (ServerPlayer player : party) {
             List<ItemStack> delivered = new ArrayList<>(bags.getOrDefault(player.getUUID(), List.of()));
-            for (ItemStack unique : DungeonRewards.unique(dungeon, palier, random)) {
-                if (random.nextBoolean()) {
-                    DungeonManager.message(player, ChatFormatting.LIGHT_PURPLE, "unique", unique.getHoverName());
-                    delivered.add(unique);
+            if (jobBoss == null) {
+                for (ItemStack unique : DungeonRewards.unique(dungeon, palier, random)) {
+                    if (random.nextFloat() < mode.unique()) {
+                        DungeonManager.message(player, ChatFormatting.LIGHT_PURPLE, "unique", unique.getHoverName());
+                        delivered.add(unique);
+                    }
                 }
             }
             Mark mark = mark(player, party);
@@ -1041,18 +1624,26 @@ final class DungeonRun {
                     player.drop(copy, false);
                 }
             }
-            DungeonManager.message(player, ChatFormatting.GREEN, "success", palier, dungeon.display());
-            DungeonManager.message(player, ChatFormatting.GOLD, "delivered", delivered.size(), jobXp,
-                    dungeon.job().display());
-            JobApi.grant(player, dungeon.job(), jobXp);
-            DungeonManager.recordCleared(player, dungeon, palier);
+            if (jobBoss != null) {
+                player.sendSystemMessage(Component.literal("Butin du gardien livre : " + delivered.size()
+                        + " pile(s).").withStyle(ChatFormatting.GOLD));
+            } else {
+                DungeonManager.message(player, ChatFormatting.GREEN, "success", palier, dungeon.display());
+                DungeonManager.message(player, ChatFormatting.GOLD, "delivered", delivered.size(), jobXp,
+                        dungeon.job().display());
+                JobApi.grant(player, dungeon.job(), jobXp);
+                DungeonManager.recordCleared(player, dungeon, palier, mode);
+            }
             removeBoosts(player);
             player.connection.send(new ClientboundSetTitlesAnimationPacket(10, 50, 15));
-            player.connection.send(new ClientboundSetTitleTextPacket(
-                    Component.literal("Palier " + palier + " reussi !").withStyle(ChatFormatting.GREEN,
-                            ChatFormatting.BOLD)));
+            player.connection.send(new ClientboundSetTitleTextPacket(jobBoss != null
+                    ? Component.literal(jobBoss.spec().name() + " vaincu !").withStyle(ChatFormatting.GOLD,
+                    ChatFormatting.BOLD)
+                    : Component.literal("Palier " + palier + " reussi !").withStyle(ChatFormatting.GREEN,
+                    ChatFormatting.BOLD)));
             player.connection.send(new ClientboundSetSubtitleTextPacket(
-                    Component.literal(dungeon.display() + " — note ").withStyle(dungeon.color())
+                    Component.literal((jobBoss != null ? "Boss de metier" : dungeon.display() + " · "
+                                    + mode.label()) + " — note ").withStyle(dungeon.color())
                             .append(Component.literal(mark.grade().name())
                                     .withStyle(mark.grade().color(), ChatFormatting.BOLD))));
             DungeonManager.sendBack(player);
@@ -1075,10 +1666,19 @@ final class DungeonRun {
         if (bar != null) {
             bar.removePlayer(player);
         }
-        switch (reason) {
-            case DEATH -> DungeonManager.message(player, ChatFormatting.RED, "death");
-            case QUIT -> DungeonManager.message(player, ChatFormatting.RED, "quit");
-            default -> {
+        if (jobBoss != null && (reason == Leave.DEATH || reason == Leave.QUIT)) {
+            boolean beaten = bosses.isEmpty() && phase != Phase.FIGHT;
+            player.sendSystemMessage(Component.literal(beaten
+                    ? "Tu quittes l'arene : le butin du coffre est perdu, la victoire reste."
+                    : reason == Leave.DEATH ? jobBoss.spec().name() + " t'a mis a terre. Il t'attend encore : reviens"
+                    + " par l'autel quand tu veux." : "Tu quittes l'arene. " + jobBoss.spec().name()
+                    + " t'attend encore.").withStyle(ChatFormatting.RED));
+        } else {
+            switch (reason) {
+                case DEATH -> DungeonManager.message(player, ChatFormatting.RED, "death");
+                case QUIT -> DungeonManager.message(player, ChatFormatting.RED, "quit");
+                default -> {
+                }
             }
         }
         if (reason != Leave.LOGOUT && reason != Leave.ESCAPED) {

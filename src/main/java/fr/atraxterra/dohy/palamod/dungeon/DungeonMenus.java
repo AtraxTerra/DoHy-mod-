@@ -32,7 +32,8 @@ public final class DungeonMenus {
     }
 
     public static void openPaliers(ServerPlayer player, Dungeon dungeon, InteractionHand hand) {
-        Paliers.INSTANCE.context.put(player.getUUID(), new PaliersContext(dungeon, hand));
+        DungeonMode mode = Paliers.INSTANCE.lastMode.getOrDefault(player.getUUID(), DungeonMode.NORMAL);
+        Paliers.INSTANCE.context.put(player.getUUID(), new PaliersContext(dungeon, hand, mode));
         Paliers.INSTANCE.open(player);
     }
 
@@ -57,32 +58,56 @@ public final class DungeonMenus {
 
     // -- Choix du palier --------------------------------------------------------
 
-    private record PaliersContext(Dungeon dungeon, InteractionHand hand) {
+    private record PaliersContext(Dungeon dungeon, InteractionHand hand, DungeonMode mode) {
     }
 
     /**
-     * Les cent paliers en vignettes. Vert : reussi, rejouable. Jaune : le
-     * suivant. Gris : verrouille. Les paliers en 5 et en 0 portent un crane.
+     * Le mode, puis les cent paliers en vignettes. Vert : reussi dans ce mode,
+     * rejouable. Jaune : le suivant. Gris : verrouille. Les paliers en 5 et en 0
+     * portent un crane ; en Difficile, ceux en 0 annoncent leur boss Dark.
      */
     public static final class Paliers extends MenuController {
         public static final Paliers INSTANCE = new Paliers();
         final Map<UUID, PaliersContext> context = new ConcurrentHashMap<>();
+        /** Le dernier mode choisi, pour la prochaine ouverture (en memoire). */
+        final Map<UUID, DungeonMode> lastMode = new ConcurrentHashMap<>();
 
         private Paliers() {
             super("dungeon_paliers");
+        }
+
+        private static List<String> describe(DungeonMode mode) {
+            return switch (mode) {
+                case FACILE -> List.of("Monstres et boss a 60 %", "XP moitie, un tirage de moins");
+                case NORMAL -> List.of("Le donjon tel quel", "Ta progression d'avant les modes");
+                case DIFFICILE -> List.of("Monstres +50 %, degats +35 %", "XP +50 %, boss Dark aux paliers en 0");
+            };
         }
 
         @Override
         public MenuView view(ServerPlayer player) {
             PaliersContext here = context.get(player.getUUID());
             Dungeon dungeon = here == null ? Dungeon.values()[0] : here.dungeon();
-            int cleared = DungeonManager.cleared(player, dungeon);
+            DungeonMode mode = here == null ? DungeonMode.NORMAL : here.mode();
+            int done = DungeonManager.best(player, dungeon, mode);
+            int highest = DungeonManager.highest(player, dungeon, mode);
             List<ServerPlayer> party = DungeonManager.party(player);
             List<String> members = new ArrayList<>();
             for (ServerPlayer member : party) {
                 members.add("- " + member.getDisplayName().getString());
             }
             members.add("Les joueurs a 6 blocs de vous entrent avec vous.");
+            List<Card> modes = new ArrayList<>();
+            for (DungeonMode candidate : DungeonMode.values()) {
+                Card card = Card.of(new ItemStack(candidate.icon()), candidate.label(), describe(candidate))
+                        .accent(color(candidate.color()))
+                        .tooltip(List.of(candidate == DungeonMode.FACILE
+                                        ? "Sa progression a lui ; Normal et Difficile la font avancer aussi"
+                                        : "Normal et Difficile partagent leur progression",
+                                "Dernier palier reussi : " + DungeonManager.best(player, dungeon, candidate)));
+                modes.add(candidate == mode ? card.badge("CHOISI").state(MenuView.DONE)
+                        : card.action("mode:" + candidate.name() + "|choisir ce mode"));
+            }
             List<Card> info = List.of(
                     Card.of(new ItemStack(Items.PLAYER_HEAD), "Groupe", List.of(
                                     party.size() + " / " + DungeonManager.MAX_PARTY + " joueur(s)", "A 6 blocs de vous"))
@@ -93,41 +118,60 @@ public final class DungeonMenus {
                             .tooltip(List.of("Le sac est perdu, l'inventaire est garde.")));
             List<Card> tiles = new ArrayList<>();
             for (int palier = 1; palier <= DungeonManager.MAX_PALIER; palier++) {
-                boolean done = palier <= cleared;
-                boolean next = palier == cleared + 1;
+                boolean cleared = palier <= done;
+                boolean open = palier <= highest;
                 BossSpec boss = dungeon.bossFor(palier);
+                boolean dark = boss != null && palier % 10 == 0 && mode.darkBosses();
                 ItemStack icon = boss != null
-                        ? new ItemStack(palier % 10 == 0 ? Items.WITHER_SKELETON_SKULL : Items.SKELETON_SKULL)
-                        : new ItemStack(Items.STAINED_GLASS_PANE.pick(done ? DyeColor.LIME
-                                : next ? DyeColor.YELLOW : DyeColor.GRAY));
+                        ? new ItemStack(dark ? Items.WITHER_ROSE : palier % 10 == 0 ? Items.WITHER_SKELETON_SKULL
+                                : Items.SKELETON_SKULL)
+                        : new ItemStack(Items.STAINED_GLASS_PANE.pick(cleared ? DyeColor.LIME
+                                : open ? DyeColor.YELLOW : DyeColor.GRAY));
                 List<String> lines = new ArrayList<>();
-                lines.add("Difficulte : " + Band.of(palier).label());
+                lines.add("Difficulte : " + Band.of(palier).label() + " · " + mode.label());
                 if (boss != null) {
-                    lines.add((palier % 10 == 0 ? "Boss : " : "Mini-boss : ") + boss.name());
+                    lines.add((dark ? "Boss Dark : " : palier % 10 == 0 ? "Boss : " : "Mini-boss : ") + boss.name());
                 }
                 Card card = Card.of(icon, "Palier " + palier, lines).badge(String.valueOf(palier));
-                if (done) {
+                if (cleared) {
                     card = card.state(MenuView.DONE).action("palier:" + palier + "|rejouer");
-                } else if (next) {
-                    card = card.accent(0xFFFAC400).action("palier:" + palier + "|lancer le palier");
+                } else if (open) {
+                    card = card.accent(dark ? 0xFF8E44AD : 0xFFFAC400).action("palier:" + palier + "|lancer le palier");
                 } else {
                     card = card.state(MenuView.DISABLED)
-                            .tooltip(List.of("Verrouille : reussissez le palier " + (cleared + 1)));
+                            .tooltip(List.of("Verrouille : reussissez le palier " + highest
+                                    + (mode == DungeonMode.FACILE ? "" : " en Normal ou en Difficile")));
                 }
                 tiles.add(card);
             }
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("METIER", dungeon.job().display().toUpperCase(), 0xFFFFFFFF),
-                    new MenuView.Stat("DERNIER REUSSI", cleared == 0 ? "-" : String.valueOf(cleared), 0xFF22E558));
-            return new MenuView(id(), "Donjon " + dungeon.display(), "Choisis ton palier", stats, List.of(
+                    new MenuView.Stat("MODE", mode.label().toUpperCase(), color(mode.color())),
+                    new MenuView.Stat(mode == DungeonMode.DIFFICILE ? "RECORD" : "DERNIER REUSSI",
+                            done == 0 ? "-" : String.valueOf(done), 0xFF22E558));
+            return new MenuView(id(), "Donjon " + dungeon.display(), "Choisis ton mode et ton palier", stats, List.of(
+                    new MenuView.Section("MODE", "armor", MenuView.GRID, modes),
                     new MenuView.Section("AVANT D'ENTRER", "resources", MenuView.GRID, info),
-                    new MenuView.Section("PALIERS", "upgrade", MenuView.TILES, tiles)), false);
+                    new MenuView.Section("PALIERS · " + mode.label().toUpperCase(), "upgrade", MenuView.TILES, tiles)),
+                    false);
         }
 
         @Override
         protected void card(ServerPlayer player, String key, int button) {
             PaliersContext here = context.get(player.getUUID());
-            if (here == null || !key.startsWith("palier:")) {
+            if (here == null) {
+                return;
+            }
+            if (key.startsWith("mode:")) {
+                DungeonMode mode = DungeonMode.byName(key.substring(5));
+                if (mode != null) {
+                    context.put(player.getUUID(), new PaliersContext(here.dungeon(), here.hand(), mode));
+                    lastMode.put(player.getUUID(), mode);
+                    success(player);
+                }
+                return;
+            }
+            if (!key.startsWith("palier:")) {
                 return;
             }
             int palier;
@@ -136,13 +180,12 @@ public final class DungeonMenus {
             } catch (NumberFormatException malformed) {
                 return;
             }
-            if (palier < 1 || palier > DungeonManager.MAX_PALIER
-                    || palier > DungeonManager.cleared(player, here.dungeon()) + 1) {
+            if (palier < 1 || palier > DungeonManager.highest(player, here.dungeon(), here.mode())) {
                 failure(player);
                 return;
             }
             UiNet.close(player);
-            if (DungeonManager.start(player, here.dungeon(), palier, here.hand())) {
+            if (DungeonManager.start(player, here.dungeon(), palier, here.hand(), here.mode())) {
                 success(player);
             } else {
                 failure(player);

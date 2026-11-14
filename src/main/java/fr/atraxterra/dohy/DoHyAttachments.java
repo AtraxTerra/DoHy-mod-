@@ -134,7 +134,6 @@ public final class DoHyAttachments {
                             .copyOnDeath()
                             .build());
 
-    /** L'encyclopedie : fiches decouvertes et lues, accueil fait. Conservee a la mort. */
     /** Le pass mensuel : saison, XP, recompenses recuperees, quetes. Garde a la mort. */
     public static final Supplier<AttachmentType<fr.atraxterra.dohy.pass.PassData>> PASS =
             ATTACHMENT_TYPES.register("pass",
@@ -151,6 +150,15 @@ public final class DoHyAttachments {
                             .copyOnDeath()
                             .build());
 
+    /** Les boss de metier : niveau de chaque gardien, offrande en cours, heure d'arrivee. Garde a la mort. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.jobboss.JobBossData>> JOB_BOSS =
+            ATTACHMENT_TYPES.register("job_boss",
+                    () -> AttachmentType.builder(fr.atraxterra.dohy.jobboss.JobBossData::new)
+                            .serialize(fr.atraxterra.dohy.jobboss.JobBossData.MAP_CODEC, data -> !data.isEmpty())
+                            .copyOnDeath()
+                            .build());
+
+    /** L'encyclopedie : fiches decouvertes et lues, accueil fait. Conservee a la mort. */
     public static final Supplier<AttachmentType<fr.atraxterra.dohy.guide.EncyclopediaData>> ENCYCLOPEDIA =
             ATTACHMENT_TYPES.register("encyclopedia",
                     () -> AttachmentType.builder(fr.atraxterra.dohy.guide.EncyclopediaData::new)

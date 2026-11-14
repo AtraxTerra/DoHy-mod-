@@ -147,7 +147,8 @@ final class DungeonRoom {
                 }
             }
         }
-        if (type == RoomType.COMBAT || type == RoomType.BOSS) {
+        if (type == RoomType.COMBAT || type == RoomType.BOSS || type == RoomType.ELITE
+                || type == RoomType.SURVIVAL) {
             // Quatre piliers pour se mettre a couvert, et des obstacles du theme.
             int q = half / 2;
             for (int[] at : new int[][]{{q, q}, {-q, q}, {q, -q}, {-q, -q}}) {
@@ -160,11 +161,15 @@ final class DungeonRoom {
         }
         placeBeams(level, theme, cx, cz, ground, ceiling);
         placeWindows(level, theme, random, x0, x1, z0, ground);
-        if (type == RoomType.COMBAT || type == RoomType.BOSS || type == RoomType.PUZZLE) {
+        if (type == RoomType.COMBAT || type == RoomType.BOSS || type == RoomType.PUZZLE || type == RoomType.ELITE
+                || type == RoomType.SURVIVAL) {
             placeObstacles(level, theme, random, type == RoomType.BOSS ? 6 + random.nextInt(6)
                     : type == RoomType.PUZZLE ? 3 + random.nextInt(3) : 4 + random.nextInt(5));
         }
-        placeGround(level, theme, random);
+        if (type != RoomType.TRAP) {
+            // Le sol piege reste nu : rien ne doit cacher une dalle.
+            placeGround(level, theme, random);
+        }
         placeHanging(level, theme, random, ceiling);
         if (type == RoomType.BOOST) {
             // L'autel, entre quatre lanternes.
@@ -448,6 +453,35 @@ final class DungeonRoom {
             level.setBlock(button, state, FLAGS);
             buttons.add(button);
         }
+    }
+
+    /**
+     * Le bouton de la salle piegee : au milieu du mur du fond, a hauteur de
+     * main. Il est retire quand les portes s'ouvrent.
+     */
+    BlockPos placeTrapButton(ServerLevel level, Dungeon.Palette palette) {
+        BlockPos button = new BlockPos(center.getX(), center.getY() + 1, center.getZ() + half);
+        level.setBlock(button, palette.button().defaultBlockState()
+                .setValue(BlockStateProperties.ATTACH_FACE, AttachFace.WALL)
+                .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH), FLAGS);
+        return button;
+    }
+
+    /**
+     * Les rangees de dalles piegees, de l'entree au mur du fond : toute la
+     * largeur, en laissant trois rangees sures a l'entree et deux devant le
+     * bouton.
+     */
+    List<List<BlockPos>> trapRows() {
+        List<List<BlockPos>> rows = new ArrayList<>();
+        for (int z = center.getZ() - half + 3; z <= center.getZ() + half - 2; z++) {
+            List<BlockPos> row = new ArrayList<>();
+            for (int x = center.getX() - half; x <= center.getX() + half; x++) {
+                row.add(new BlockPos(x, center.getY() - 1, z));
+            }
+            rows.add(row);
+        }
+        return rows;
     }
 
     /**

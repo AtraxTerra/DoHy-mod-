@@ -8,8 +8,9 @@ import net.minecraft.world.level.block.Blocks;
 /**
  * Les salles d'un palier (« Donjon Talikus » et suivants) : une salle de
  * combat obligatoire, puis, a chaque porte, le choix entre une et trois
- * salles — combat, enigme, boost ou marchande. Mini-boss et boss ferment les
- * paliers en 5 et en 0 ; la sortie, tous les paliers.
+ * salles — combat, enigme, boost ou marchande, et depuis les modes elite,
+ * piege et survie (DoHy). Mini-boss et boss ferment les paliers en 5 et en 0 ;
+ * la sortie, tous les paliers.
  *
  * @param halfWidth  demi-largeur interieure (x et z)
  * @param height     hauteur interieure
@@ -22,6 +23,12 @@ public enum RoomType {
     BOOST("Boost", 7, 6, Blocks.STAINED_GLASS.pick(DyeColor.LIME), ChatFormatting.GREEN, false),
     MERCHANT("Marchande", 7, 6, Blocks.STAINED_GLASS.pick(DyeColor.YELLOW), ChatFormatting.YELLOW, false),
     BOSS("Boss", 16, 14, Blocks.STAINED_GLASS.pick(DyeColor.PURPLE), ChatFormatting.DARK_PURPLE, true),
+    /** Un des elites du donjon ({@link Dungeon#elites()}) : un mini-boss a tout palier. */
+    ELITE("Elite", 12, 9, Blocks.STAINED_GLASS.pick(DyeColor.ORANGE), ChatFormatting.GOLD, true),
+    /** Un sol piege qui s'embrase par rangees : traverser jusqu'au levier du fond. */
+    TRAP("Piege", 9, 7, Blocks.STAINED_GLASS.pick(DyeColor.BLACK), ChatFormatting.DARK_GRAY, true),
+    /** Tenir jusqu'au bout du compte a rebours, sous des renforts sans fin. */
+    SURVIVAL("Survie", 12, 8, Blocks.STAINED_GLASS.pick(DyeColor.MAGENTA), ChatFormatting.LIGHT_PURPLE, true),
     EXIT("Sortie", 0, 0, Blocks.STAINED_GLASS.pick(DyeColor.WHITE), ChatFormatting.WHITE, false);
 
     private final String label;

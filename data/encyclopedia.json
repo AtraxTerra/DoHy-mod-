@@ -759,7 +759,8 @@
         "mineur",
         "chasseur",
         "fermier",
-        "alchimiste"
+        "alchimiste",
+        "boss_metier"
       ],
       "progress": "metiers",
       "discover": {
@@ -767,6 +768,67 @@
         "views": [
           "dohy:jobs",
           "dohy:job_detail"
+        ]
+      }
+    },
+    {
+      "id": "boss_metier",
+      "category": "metiers",
+      "order": 5,
+      "icon": "minecraft:bell",
+      "title": "Boss de metier",
+      "card": [
+        "Une offrande, une heure",
+        "Quatre gardiens"
+      ],
+      "summary": [
+        "Chaque metier a son gardien. Depose les ressources de ton metier sur l'autel du spawn : une heure plus tard, le gardien arrive et t'attend dans son arene. Battu, il rapporte de l'XP du metier, de l'argent et un coffre, puis monte d'un niveau."
+      ],
+      "sections": [
+        {
+          "title": "Les gardiens",
+          "text": [
+            "- Fermier : le Gardien des moissons, dans la grange de Talikus.",
+            "- Mineur : le Colosse de fer, dans la galerie de Nimbria.",
+            "- Chasseur : la Bete sauvage, dans la forge de Vitalys.",
+            "- Alchimiste : la Sorciere des fioles, dans le temple de Manelios."
+          ]
+        },
+        {
+          "title": "L'offrande",
+          "text": [
+            "Des recoltes pour le Fermier, des lingots pour le Mineur, des butins de monstres pour le Chasseur, des ingredients de potion pour l'Alchimiste. On la depose en autant de fois qu'il faut, a la borne AUTEL sur le parvis du spawn.",
+            "! Une heure apres l'offrande complete, l'autel previent dans le chat ; un clic sur [Combattre] t'emmene dans l'arene."
+          ]
+        },
+        {
+          "title": "Le combat",
+          "text": [
+            "Une salle de boss : sa barre, ses capacites, ses renforts, une rage sous le tiers de sa vie. Une defaite ne coute rien : il t'attend encore."
+          ]
+        },
+        {
+          "title": "Les recompenses",
+          "text": [
+            "- 20 000 XP du metier et 15 000 $ par niveau du gardien, des qu'il tombe.",
+            "- Son coffre au centre de l'arene : la reserve du donjon et deux tirages de la table des boss.",
+            "- Dix niveaux : a chaque victoire, une offrande plus grosse, un gardien plus fort."
+          ]
+        }
+      ],
+      "commands": [
+        "/autel : les gardiens et leurs offrandes"
+      ],
+      "see": [
+        "metiers",
+        "spawn",
+        "donjons"
+      ],
+      "progress": "boss_metier",
+      "discover": {
+        "always": true,
+        "views": [
+          "dohy:autel"
         ]
       }
     },
@@ -1518,22 +1580,46 @@
       "title": "Les donjons",
       "card": [
         "4 donjons, 100 paliers",
-        "Des boss nommes"
+        "3 modes, boss Dark"
       ],
       "summary": [
-        "Quatre donjons de 100 paliers, ouverts par leur cle. Un palier enchaine des salles de combat, d'enigme, de boost et une marchande ; un mini-boss garde les paliers en 5, un boss ceux en 0. Mourir fait echouer le palier."
+        "Quatre donjons de 100 paliers, ouverts par leur cle, en mode Facile, Normal ou Difficile. Un palier enchaine trois salles choisies aux portes ; un mini-boss garde les paliers en 5, un boss ceux en 0. Mourir fait echouer le palier."
       ],
       "sections": [
         {
+          "title": "Les modes",
+          "text": [
+            "- Facile : monstres et boss a 60 %, XP moitie, un tirage de moins par coffre. Il a sa propre progression.",
+            "- Normal : le donjon tel quel. Ta progression d'avant les modes y compte.",
+            "- Difficile : monstres +50 %, degats +35 %, un monstre de plus par vague ; XP +50 %, un tirage de plus par coffre, les recompenses uniques a coup sur.",
+            "Normal et Difficile partagent leur progression : un palier reussi dans l'un ouvre le suivant dans les deux."
+          ]
+        },
+        {
+          "title": "Les boss Dark",
+          "text": [
+            "En Difficile, les boss des paliers en 0 sont Dark : leur forme noire, plus de vie, une capacite sombre de plus (pulsation, ombres ou drain de vie) et une seconde phase a mi-vie. Leur coffre donne une rune, une essence et un tirage de boss de plus."
+          ]
+        },
+        {
+          "title": "Les salles",
+          "text": [
+            "- Combat, enigme, boost, marchande, comme avant.",
+            "- Elite (porte orange) : un des trois elites du donjon, un mini-boss a tout palier.",
+            "- Piege (porte noire) : le sol s'embrase par rangees ; traverse jusqu'au bouton du fond.",
+            "- Survie (porte rose) : tiens 40 a 60 secondes sous des renforts sans fin."
+          ]
+        },
+        {
           "title": "Les monstres",
           "text": [
-            "Six types de monstres, plus durs avec le palier et colores par tranche : jaune (1 a 25), orange, rouge, puis noir (76 a 100). Quarante boss nommes."
+            "Six types de monstres, plus durs avec le palier et colores par tranche : jaune (1 a 25), orange, rouge, puis noir (76 a 100). Quarante boss nommes, douze elites."
           ]
         },
         {
           "title": "Les recompenses",
           "text": [
-            "- Un coffre en fin de palier, et une note de D a S qui ouvre un meilleur coffre.",
+            "- Un coffre en fin de salle, et une note de D a S qui ouvre un meilleur coffre.",
             "- De l'XP de metier et de l'XP RPG.",
             "- Les sacs de donjon gardent le butin."
           ]
@@ -1544,7 +1630,8 @@
       ],
       "see": [
         "equipement_donjon",
-        "rpg"
+        "rpg",
+        "boss_metier"
       ],
       "discover": {
         "items": [
@@ -2361,6 +2448,12 @@
           "text": [
             "Une trappe de bois dans le pont du spawn mene a la planque du receleur : le marche noir."
           ]
+        },
+        {
+          "title": "L'autel",
+          "text": [
+            "Sur le parvis, a gauche de l'allee en arrivant : l'autel des offrandes, ou l'on appelle les boss de metier."
+          ]
         }
       ],
       "commands": [
@@ -2369,7 +2462,8 @@
       "see": [
         "mine",
         "boutique",
-        "marche_noir"
+        "marche_noir",
+        "boss_metier"
       ],
       "discover": {
         "always": true,

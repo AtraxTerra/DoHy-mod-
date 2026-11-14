@@ -12,12 +12,15 @@ import java.util.List;
 
 import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.CHARGE;
 import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.FIRE_RING;
+import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.POISON;
 import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.PULL;
+import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.QUAKE;
 import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.ROOT;
 import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.SLAM;
 import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.SUMMON;
 import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.TELEPORT;
 import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.VOLLEY;
+import static fr.atraxterra.dohy.palamod.dungeon.BossAbility.WEB;
 
 /**
  * Les quatre donjons (« Java | Donjon v12 ») : chacun lie a un metier, dont il
@@ -203,6 +206,42 @@ public enum Dungeon {
                     BossSpec.of("Mage de Manelios", EntityTypes.EVOKER, 1.8f, TELEPORT, SUMMON, ROOT),
                     BossSpec.of("Dragon de Manelios", EntityTypes.PHANTOM, 4.0f, VOLLEY, FIRE_RING));
         };
+    }
+
+    /**
+     * Les elites (DoHy) : trois mini-boss de plus par donjon, qui gardent les
+     * salles d'elite — une porte orange, a tout palier. Ils ne sont pas dans le
+     * wiki : ce sont les « nouveaux mini-boss » du lot des modes.
+     */
+    public List<BossSpec> elites() {
+        return switch (this) {
+            case TALIKUS -> List.of(
+                    BossSpec.of("Epouvantail", EntityTypes.SKELETON, 1.6f, ROOT, SUMMON),
+                    BossSpec.of("Faucheuse", EntityTypes.WITHER_SKELETON, 1.5f, PULL, QUAKE),
+                    BossSpec.of("Corbeau geant", EntityTypes.PHANTOM, 2.2f, CHARGE, VOLLEY));
+            case NIMBRIA -> List.of(
+                    BossSpec.of("Ver des galeries", EntityTypes.SILVERFISH, 4.5f, CHARGE, QUAKE),
+                    BossSpec.of("Contremaitre", EntityTypes.ZOMBIE, 1.6f, SLAM, SUMMON),
+                    BossSpec.of("Mineur maudit", EntityTypes.STRAY, 1.5f, WEB, VOLLEY));
+            case VITALYS -> List.of(
+                    BossSpec.of("Braconnier", EntityTypes.PILLAGER, 1.5f, TELEPORT, WEB),
+                    BossSpec.of("Mante", EntityTypes.CAVE_SPIDER, 3.0f, CHARGE, POISON),
+                    BossSpec.of("Brasier", EntityTypes.BLAZE, 2.0f, FIRE_RING, VOLLEY));
+            case MANELIOS -> List.of(
+                    BossSpec.of("Sirene", EntityTypes.DROWNED, 1.6f, PULL, POISON),
+                    BossSpec.of("Tempete", EntityTypes.BREEZE, 1.8f, PULL, CHARGE),
+                    BossSpec.of("Alchimiste fou", EntityTypes.WITCH, 1.4f, POISON, TELEPORT));
+        };
+    }
+
+    /** Le donjon d'un metier : son decor sert d'arene a son boss de metier. */
+    public static Dungeon of(Job job) {
+        for (Dungeon dungeon : values()) {
+            if (dungeon.job == job) {
+                return dungeon;
+            }
+        }
+        return TALIKUS;
     }
 
     /** Le boss du palier, ou {@code null} hors des paliers en 5 et en 0. */

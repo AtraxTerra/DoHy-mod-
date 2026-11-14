@@ -1,5 +1,7 @@
 package fr.atraxterra.dohy.palamod.dungeon;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -451,6 +453,45 @@ public final class DungeonEvents {
                     }
                     DungeonMenus.openBag(player, run);
                     return 1;
-                })));
+                }))
+                // Essais : un palier sans cle ni progression, puis la salle de son choix.
+                .then(Commands.literal("admin")
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .then(Commands.literal("lancer")
+                                .then(Commands.argument("donjon", StringArgumentType.word())
+                                        .then(Commands.argument("palier", IntegerArgumentType.integer(1,
+                                                        DungeonManager.MAX_PALIER))
+                                                .then(Commands.argument("mode", StringArgumentType.word())
+                                                        .executes(context -> {
+                                                            ServerPlayer player = context.getSource()
+                                                                    .getPlayerOrException();
+                                                            Dungeon dungeon = Dungeon.byKey(StringArgumentType
+                                                                    .getString(context, "donjon"));
+                                                            DungeonMode mode = DungeonMode.byName(StringArgumentType
+                                                                    .getString(context, "mode"));
+                                                            if (dungeon == null || mode == null) {
+                                                                return 0;
+                                                            }
+                                                            return DungeonManager.start(player, dungeon,
+                                                                    IntegerArgumentType.getInteger(context, "palier"),
+                                                                    InteractionHand.MAIN_HAND, mode, true) ? 1 : 0;
+                                                        })))))
+                        .then(Commands.literal("salle").then(Commands.argument("type", StringArgumentType.word())
+                                .executes(context -> {
+                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                    DungeonRun run = DungeonManager.runOf(player);
+                                    RoomType type;
+                                    try {
+                                        type = RoomType.valueOf(StringArgumentType.getString(context, "type")
+                                                .toUpperCase(java.util.Locale.ROOT));
+                                    } catch (IllegalArgumentException unknown) {
+                                        return 0;
+                                    }
+                                    if (run == null || type == RoomType.EXIT) {
+                                        return 0;
+                                    }
+                                    run.forceNext(player, type);
+                                    return 1;
+                                })))));
     }
 }
