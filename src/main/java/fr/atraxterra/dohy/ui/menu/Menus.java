@@ -50,6 +50,8 @@ public final class Menus {
                 fr.atraxterra.dohy.auction.AuctionController.INSTANCE,
                 fr.atraxterra.dohy.spawn.SpawnDaily.INSTANCE,
                 fr.atraxterra.dohy.spawn.SpawnPortals.INSTANCE,
-                fr.atraxterra.dohy.faction.absence.AbsenceMenu.INSTANCE);
+                fr.atraxterra.dohy.faction.absence.AbsenceMenu.INSTANCE,
+                fr.atraxterra.dohy.guide.EncyclopediaMenu.INSTANCE,
+                fr.atraxterra.dohy.guide.plan.PlanMenu.INSTANCE);
     }
 }

@@ -34,6 +34,13 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
     public static final int ROWS = 1;
     /** Petites vignettes d'objet, treize par rangee. */
     public static final int TILES = 2;
+    /**
+     * Du texte sur toute la largeur : le titre de la carte en intertitre (vide
+     * pour aucun), chacune de ses lignes en paragraphe, coupe a la largeur. Une
+     * ligne qui commence par « - » est une puce, par « / » une commande, par
+     * « ! » une astuce. L'encyclopedie s'en sert pour ses fiches.
+     */
+    public static final int TEXT = 3;
 
     public static final int NORMAL = 0;
     /** Grise : pas assez d'argent, deja actif, verrouille. */

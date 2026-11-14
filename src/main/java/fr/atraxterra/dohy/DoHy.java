@@ -42,6 +42,7 @@ public final class DoHy {
         fr.atraxterra.dohy.palette.DoHyPalette.register(modBus);
         // La guerre des nations : les soldats des nations rivales.
         fr.atraxterra.dohy.faction.war.DoHyWar.register(modBus);
+        fr.atraxterra.dohy.guide.DoHyGuide.register(modBus);
         LOGGER.info("DoHy charge");
     }
 }

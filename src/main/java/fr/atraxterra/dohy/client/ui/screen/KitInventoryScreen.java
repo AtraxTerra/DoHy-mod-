@@ -54,6 +54,8 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
     private static final int MENU_X = 192;
     private static final int MENU_Y = -34;
     private static final int MENU_SIZE = 21;
+    /** L'encyclopedie, a gauche du menu principal. */
+    private static final int HELP_X = MENU_X - 25;
 
     /** Le bouton du concours, sous le craft. */
     private static final int PASS_X = 97;
@@ -120,6 +122,11 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
             g.rect(MENU_X + 8, y, 9, 3, Ui.WHITE);
         }
 
+        // L'encyclopedie : un point d'interrogation.
+        boolean helpHovered = inside(mouseX, mouseY, HELP_X, MENU_Y, MENU_SIZE, MENU_SIZE);
+        g.button(HELP_X, MENU_Y, MENU_SIZE, MENU_SIZE, Ui.GREEN, Ui.GREEN_DARK, helpHovered);
+        g.centered(Ui.TITLE, "?", HELP_X + MENU_SIZE / 2.0f + 0.5f, MENU_Y + 4.5f, 12, Ui.WHITE);
+
         // Les cinq raccourcis.
         for (int index = 0; index < SHORTCUTS.size(); index++) {
             Shortcut shortcut = SHORTCUTS.get(index);
@@ -143,6 +150,8 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
     @Override
     protected void drawForeground(UiGraphics g, int mouseX, int mouseY) {
         tip(g, mouseX, mouseY, MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE, List.of("Menu principal", "Tous les menus"));
+        tip(g, mouseX, mouseY, HELP_X, MENU_Y, MENU_SIZE, MENU_SIZE,
+                List.of("Encyclopédie", "Tout DoHy, fiche par fiche (touche J)"));
         tip(g, mouseX, mouseY, PASS_X, PASS_Y, PASS_W, PASS_H,
                 List.of("Concours Trixium", "La saison du mois et ses paliers"));
         for (int index = 0; index < SHORTCUTS.size(); index++) {
@@ -180,6 +189,9 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
     private static String target(double x, double y) {
         if (inside(x, y, MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE)) {
             return "hub";
+        }
+        if (inside(x, y, HELP_X, MENU_Y, MENU_SIZE, MENU_SIZE)) {
+            return "encyclopedia";
         }
         if (inside(x, y, PASS_X, PASS_Y, PASS_W, PASS_H)) {
             return "trixium";

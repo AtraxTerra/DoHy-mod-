@@ -15,6 +15,7 @@ autocrafter, crusher, cobblebreaker, grinder).
 | 4 | Conteneurs : machines, coffres en paladium, coffre de vente, guichet du musée, sac de la monture, coffres du golem | fait |
 | 5 | Inventaire du joueur, avec l'accès aux menus | fait |
 | 6 | Ouverture des caisses : la roulette | fait |
+| 7 | Encyclopédie : mise en page `TEXT`, menu du plan de construction, bouton « ? » de l'inventaire | fait |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
 
@@ -97,9 +98,11 @@ améliorations n'ont pas de maquette Paladium. Ils partagent une vue, `MenuView`
 - un cartouche de chiffres à cadre vert, en haut à droite (liquide, épargne, niveau global…) ;
 - des **sections** avec un intertitre à losange, chacune dans une disposition :
   `GRID` (cartes larges, quatre par rangée), `ROWS` (lignes pleine largeur : les contrats),
-  `TILES` (petites vignettes d'objet : collections, vitrines du musée) ;
+  `TILES` (petites vignettes d'objet : collections, vitrines du musée), `TEXT` (du texte qui
+  se lit : les fiches de l'encyclopédie, voir plus bas) ;
 - des **cartes** : objet, titre, deux ou trois lignes, pastille, liseré de couleur, barre
-  d'avancement, bulle détaillée, et deux actions (clic gauche, clic droit). Grisée : pas assez
+  d'avancement, bulle détaillée, et deux actions (clic gauche, clic droit). Un titre un peu trop
+  long rétrécit (de 4,4 à 3,8) avant d'être coupé (depuis le lot 7). Grisée : pas assez
   d'argent, déjà actif ; verte : terminé, acquis, exposé ;
 - la zone défile à la molette.
 
@@ -203,6 +206,23 @@ une box (carte de la boutique, clé en main, bouton « Rouvrir », ou `/crate op
   une au prix affiché sur le bouton ; « Boutique » revient aux cartes des boxes.
 - **Le chat** : le message du gain attend la fin de l'animation (`REVEAL_TICKS`), pour ne pas la
   gâcher. Un lot épique ou légendaire est annoncé aux autres joueurs.
+
+## L'encyclopédie (lot 7)
+
+Demandée le 2026-11-14 (contenu : `docs/CONTENU_DOHY.md`, « L'encyclopédie et les plans de
+construction »). Elle passe par `MenuView`, avec une mise en page de plus :
+
+- **`TEXT`** : une carte par bloc de texte, pleine largeur. Le titre de la carte est l'intertitre
+  (en gras) ; chaque ligne est un paragraphe, coupé à la largeur (`UiGraphics.wrap`, utilisable
+  hors du dessin, comme `measure`). Une ligne qui commence par `- ` est une puce (carré de la
+  couleur du liseré), par `/` une commande (en gras, cyan), par `! ` une astuce (« ! » et texte en
+  or). L'objet de la carte, s'il y en a un, se met à gauche et décale le texte. La hauteur de la
+  carte suit son texte ; une carte de texte sans action n'a pas de bulle.
+- **Le menu du plan** (`PlanMenu`) : `GRID` pour les structures, les tailles et les actions,
+  `ROWS` pour le matériel (barre d'avancement : les blocs en place).
+- **Le bouton « ? »** de l'inventaire, vert, à gauche du bouton du menu principal, ouvre le
+  sommaire ; `encyclopedia` rejoint la liste des cibles de `HubController.openTarget`. La
+  touche J envoie la même demande (`InventoryNav.Open`).
 
 ## Vérification
 

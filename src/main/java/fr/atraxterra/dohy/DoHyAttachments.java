@@ -134,6 +134,14 @@ public final class DoHyAttachments {
                             .copyOnDeath()
                             .build());
 
+    /** L'encyclopedie : fiches decouvertes et lues, accueil fait. Conservee a la mort. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.guide.EncyclopediaData>> ENCYCLOPEDIA =
+            ATTACHMENT_TYPES.register("encyclopedia",
+                    () -> AttachmentType.builder(fr.atraxterra.dohy.guide.EncyclopediaData::new)
+                            .serialize(fr.atraxterra.dohy.guide.EncyclopediaData.MAP_CODEC, data -> !data.isEmpty())
+                            .copyOnDeath()
+                            .build());
+
     /** Pieces exposees au musee. Conservees a la mort : un don est definitif. */
     /**
      * Les ameliorations permanentes achetees.

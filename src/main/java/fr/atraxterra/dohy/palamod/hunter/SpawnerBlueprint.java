@@ -319,6 +319,20 @@ public final class SpawnerBlueprint {
         return tier;
     }
 
+    /** Une case du plan, pour l'hologramme : relative au controleur, avant rotation, avec son bloc. */
+    public record PlanCell(int dx, int dy, int dz, Block block) {
+    }
+
+    /** Toutes les cases du plan, le controleur compris (en 0, 0, 0). */
+    public List<PlanCell> planCells() {
+        List<PlanCell> out = new ArrayList<>(cells.size() + 1);
+        out.add(new PlanCell(0, 0, 0, PalaHunter.SPAWNER_CONTROLLER.get()));
+        for (Cell cell : cells) {
+            out.add(new PlanCell(cell.dx(), cell.dy(), cell.dz(), block(cell.symbol())));
+        }
+        return out;
+    }
+
     public int blockCount() {
         return cells.size();
     }

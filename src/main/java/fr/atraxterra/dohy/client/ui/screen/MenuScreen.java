@@ -120,7 +120,68 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
 
     /** Une carte placee : sa section, son indice, son rectangle en coordonnees de contenu. */
     private record Placed(MenuView.Section section, MenuView.Card card, int layout, int x, int y, int width,
-                          int height) {
+                          int height, List<TextLine> text) {
+
+        Placed(MenuView.Section section, MenuView.Card card, int layout, int x, int y, int width, int height) {
+            this(section, card, layout, x, y, width, height, List.of());
+        }
+    }
+
+    // -- Les cartes de texte -----------------------------------------------------------------
+
+    private static final float TEXT_SIZE = 3.8f;
+    private static final float TEXT_LEADING = 5.4f;
+    private static final float TEXT_GAP = 2.4f;
+    private static final float HEADING_SIZE = 4.8f;
+    private static final int NORMAL_LINE = 0;
+    private static final int BULLET_LINE = 1;
+    private static final int COMMAND_LINE = 2;
+    private static final int TIP_LINE = 3;
+
+    /** Une ligne coupee d'un paragraphe : son texte, sa sorte, et si elle ouvre le paragraphe. */
+    private record TextLine(String text, int kind, boolean first, float y) {
+    }
+
+    /** La marge gauche du texte d'une carte : le liseré, et l'icone s'il y en a une. */
+    private static float textLeft(MenuView.Card card) {
+        return card.icon().isEmpty() ? 8 : 27;
+    }
+
+    /** Coupe les paragraphes d'une carte de texte ; rend les lignes placees et la hauteur totale. */
+    private static List<TextLine> wrapText(MenuView.Card card, int width, float[] height) {
+        net.minecraft.client.gui.Font font = net.minecraft.client.Minecraft.getInstance().font;
+        List<TextLine> out = new ArrayList<>();
+        float left = textLeft(card);
+        float y = 5;
+        if (!card.title().isEmpty()) {
+            y += 9;
+        }
+        for (int index = 0; index < card.lines().size(); index++) {
+            String paragraph = card.lines().get(index);
+            int kind = NORMAL_LINE;
+            String body = paragraph;
+            if (paragraph.startsWith("- ")) {
+                kind = BULLET_LINE;
+                body = paragraph.substring(2);
+            } else if (paragraph.startsWith("/")) {
+                kind = COMMAND_LINE;
+            } else if (paragraph.startsWith("! ")) {
+                kind = TIP_LINE;
+                body = paragraph.substring(2);
+            }
+            float indent = kind == BULLET_LINE || kind == TIP_LINE ? 6 : 0;
+            float room = width - left - 7 - indent;
+            List<String> lines = UiGraphics.wrap(font, kind == COMMAND_LINE ? Ui.BOLD : Ui.BODY, body, TEXT_SIZE, room);
+            for (int line = 0; line < lines.size(); line++) {
+                out.add(new TextLine(lines.get(line), kind, line == 0, y));
+                y += TEXT_LEADING;
+            }
+            if (index < card.lines().size() - 1) {
+                y += TEXT_GAP;
+            }
+        }
+        height[0] = y + 4;
+        return out;
     }
 
     /** La zone de contenu : mise en page, defilement, dessin et clics. */
@@ -151,6 +212,15 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                         for (MenuView.Card card : cards) {
                             placed.add(new Placed(section, card, MenuView.ROWS, 0, cursor, usable, 24));
                             cursor += 27;
+                        }
+                    }
+                    case MenuView.TEXT -> {
+                        for (MenuView.Card card : cards) {
+                            float[] height = new float[1];
+                            List<TextLine> lines = wrapText(card, usable, height);
+                            int cardHeight = Math.max(18, (int) Math.ceil(height[0]));
+                            placed.add(new Placed(section, card, MenuView.TEXT, 0, cursor, usable, cardHeight, lines));
+                            cursor += cardHeight + 4;
                         }
                     }
                     case MenuView.TILES -> {
@@ -221,6 +291,7 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                     hovered = card;
                 }
                 switch (card.layout()) {
+                    case MenuView.TEXT -> text(g, card, cardX, cardY, over);
                     case MenuView.ROWS -> row(g, card.card(), cardX, cardY, card.width(), card.height(), over);
                     case MenuView.TILES -> tile(g, card.card(), cardX, cardY, card.width(), over);
                     default -> grid(g, card.card(), cardX, cardY, card.width(), card.height(), over);
@@ -235,7 +306,7 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                 int thumbY = y + (height - thumb) * scroll / Math.max(1, total - height);
                 g.rect(barX, thumbY, 3, thumb, Ui.SCROLL_THUMB);
             }
-            if (hovered != null) {
+            if (hovered != null && (hovered.layout() != MenuView.TEXT || !hovered.card().action().isEmpty())) {
                 tooltip(g, hovered.card());
             }
         }
@@ -283,8 +354,15 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
             g.item(card.icon(), cardX + 5, cardY + 6, 16, false);
             int titleColor = card.state() == MenuView.DISABLED ? Ui.MUTED : Ui.WHITE;
             float titleMax = cardWidth - 28 - (card.badge().isEmpty() ? 0 : g.width(Ui.WIDE, card.badge(), 3.4f) + 6);
-            g.text(Ui.WIDE, g.fit(Ui.WIDE, card.title().toUpperCase(java.util.Locale.ROOT), 4.4f, titleMax),
-                    cardX + 25, cardY + 8, 4.4f, titleColor);
+            String title = card.title().toUpperCase(java.util.Locale.ROOT);
+            // Un titre un peu trop long retrecit d'abord (jusqu'a 3,8), et n'est coupe qu'au-dela.
+            float titleSize = 4.4f;
+            float natural = g.width(Ui.WIDE, title, titleSize);
+            if (natural > titleMax) {
+                titleSize = Math.max(3.8f, titleSize * titleMax / natural);
+            }
+            g.text(Ui.WIDE, g.fit(Ui.WIDE, title, titleSize, titleMax), cardX + 25,
+                    cardY + 8 + (4.4f - titleSize) / 2.0f, titleSize, titleColor);
             badge(g, card, cardX + cardWidth - 3, cardY + 5);
             int lineY = cardY + 25;
             for (int index = 0; index < Math.min(3, card.lines().size()); index++) {
@@ -296,6 +374,40 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                 g.rect(cardX + 5, cardY + cardHeight - 4, cardWidth - 10, 2, 0xFF2E2D34);
                 g.rect(cardX + 5, cardY + cardHeight - 4, (cardWidth - 10) * card.progress() / 1000, 2,
                         card.state() == MenuView.DONE ? Ui.GREEN : 0xFF39CF44);
+            }
+        }
+
+        /** Une carte de texte : intertitre, puis les paragraphes deja coupes. */
+        private void text(UiGraphics g, Placed placed, int cardX, int cardY, boolean over) {
+            MenuView.Card card = placed.card();
+            boolean clickable = !card.action().isEmpty();
+            g.rect(cardX, cardY, placed.width(), placed.height(), clickable && over ? 0xFF24232A : 0xFF19181E);
+            g.rect(cardX, cardY, 2, placed.height(), card.accent());
+            if (!card.icon().isEmpty()) {
+                g.item(card.icon(), cardX + 7, cardY + 5, 16, false);
+            }
+            float left = cardX + textLeft(card);
+            if (!card.title().isEmpty()) {
+                g.text(Ui.BOLD, card.title(), left, cardY + 5, HEADING_SIZE, Ui.WHITE);
+            }
+            for (TextLine line : placed.text()) {
+                float y = cardY + line.y();
+                switch (line.kind()) {
+                    case BULLET_LINE -> {
+                        if (line.first()) {
+                            g.rect(Math.round(left + 1), Math.round(y + 1.4f), 2, 2, card.accent());
+                        }
+                        g.text(Ui.BODY, line.text(), left + 6, y, TEXT_SIZE, Ui.TEXT);
+                    }
+                    case COMMAND_LINE -> g.text(Ui.BOLD, line.text(), left, y, TEXT_SIZE, 0xFF55E5FF);
+                    case TIP_LINE -> {
+                        if (line.first()) {
+                            g.text(Ui.BOLD, "!", left + 1, y, TEXT_SIZE, 0xFFFAC400);
+                        }
+                        g.text(Ui.BODY, line.text(), left + 6, y, TEXT_SIZE, 0xFFF3D27A);
+                    }
+                    default -> g.text(Ui.BODY, line.text(), left, y, TEXT_SIZE, Ui.TEXT);
+                }
             }
         }
 

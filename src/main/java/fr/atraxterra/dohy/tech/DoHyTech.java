@@ -60,6 +60,7 @@ public final class DoHyTech {
                         output.accept(TRADING_SERVER_ITEM.get());
                         output.accept(fr.atraxterra.dohy.spawn.DoHySpawn.TERMINAL_ITEM.get());
                         output.accept(fr.atraxterra.dohy.palette.DoHyPalette.PALETTE_ITEM.get());
+                        output.accept(fr.atraxterra.dohy.guide.DoHyGuide.PLAN.get());
                     })
                     .build());
 

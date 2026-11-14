@@ -61,6 +61,7 @@ public final class UiNet {
     public static void show(ServerPlayer player, UiView view) {
         OPEN.put(player.getUUID(), view.viewId());
         PacketDistributor.sendToPlayer(player, new Show(view));
+        fr.atraxterra.dohy.guide.EncyclopediaEvents.viewed(player, view.viewId());
     }
 
     /** Le joueur regarde-t-il encore cette vue ? */
