@@ -99,7 +99,7 @@ final class Siege {
     static final int ASSAULT_LIMIT = 30 * 60 * 20;
     static final int RETREAT_LIMIT = 90 * 20;
     static final int MAX_ALIVE = 16;
-    static final double ZONE = 4.5d;
+    static final double ZONE = 2.5d;
     static final int CAPTURE_TICKS = 600;
     static final int DRAIN_PERIOD = 60;
     static final int FUSE = 70;
@@ -400,7 +400,7 @@ final class Siege {
 
     /** Recalcule le plan depuis le front : une breche rebouchee, un mur qui ne cede pas, des morts. */
     private void replan(String why) {
-        if (commanderDead || pending != null || tick - lastReplan < 400 || plan == null) {
+        if (commanderDead || pending != null || tick - lastReplan < 1200 || plan == null || replans >= 8) {
             return;
         }
         lastReplan = tick;
@@ -575,8 +575,7 @@ final class Siege {
         for (int tries = 0; tries < 12; tries++) {
             int x = camp.getX() + random.nextInt(9) - 4;
             int z = camp.getZ() + random.nextInt(9) - 4;
-            int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-            BlockPos pos = new BlockPos(x, y, z);
+            BlockPos pos = ground(new BlockPos(x, camp.getY(), z));
             if (level.getBlockState(pos).getCollisionShape(level, pos).isEmpty()
                     && level.getBlockState(pos.above()).getCollisionShape(level, pos.above()).isEmpty()
                     && level.getFluidState(pos.below()).isEmpty()) {
@@ -709,7 +708,19 @@ final class Siege {
         }
     }
 
+    /** Le sol pres de la hauteur du camp (pas le chapeau d'un champignon geant, ni la cime d'un arbre). */
     private BlockPos ground(BlockPos pos) {
+        int base = camp == null ? pos.getY() : camp.getY();
+        BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+        for (int dy = 3; dy >= -4; dy--) {
+            at.set(pos.getX(), base + dy, pos.getZ());
+            BlockState here = level.getBlockState(at);
+            BlockState below = level.getBlockState(at.below());
+            if ((here.isAir() || here.canBeReplaced() && here.getFluidState().isEmpty())
+                    && below.isFaceSturdy(level, at.below(), Direction.UP)) {
+                return at.immutable();
+            }
+        }
         return new BlockPos(pos.getX(), level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos.getX(),
                 pos.getZ()), pos.getZ());
     }
@@ -808,16 +819,40 @@ final class Siege {
         }
     }
 
-    /** Des soldats bloques en route : on cherche un autre chemin. */
-    private void stalled() {
-        int stuck = 0;
-        for (Soldier soldier : alive()) {
-            if (soldier.stuck >= 8) {
-                stuck++;
-            }
+    /** Les egares recents : trois en une minute, le chemin est casse quelque part. */
+    private final List<Integer> lostAt = new ArrayList<>();
+    private int capturedAt;
+    private double capturePeak;
+
+    void onLost(Soldier soldier) {
+        lostAt.add(tick);
+        lostAt.removeIf(at -> tick - at > 1200);
+        DoHy.LOGGER.info("Guerre : un {} {} s'egare en {}", soldier.role().label().toLowerCase(java.util.Locale.ROOT),
+                traits.de(), soldier.blockPosition().toShortString());
+        if (job != null && soldier.getUUID().equals(job.worker) && (job.stage == GOTO || job.stage == WORK)) {
+            soldier.setPose(Pose.STANDING);
+            job.worker = null;
+            job.stage = ASSIGN;
         }
-        if (stuck >= 3) {
-            replan("soldats bloques");
+        if (lostAt.size() >= 3) {
+            lostAt.clear();
+            replan("soldats egares");
+        }
+    }
+
+    /** Le coffre ne se prend pas alors que plus rien ne barre la route : un autre chemin. */
+    private void stalled() {
+        if (!storming() || phase != Phase.ASSAULT) {
+            capturedAt = tick;
+            capturePeak = capture;
+            return;
+        }
+        if (capture > capturePeak + 0.05d) {
+            capturePeak = capture;
+            capturedAt = tick;
+        } else if (tick - capturedAt > 2400) {
+            capturedAt = tick;
+            replan("coffre hors d'atteinte");
         }
     }
 
@@ -850,6 +885,10 @@ final class Siege {
         for (Soldier soldier : alive()) {
             SoldierRole role = soldier.role();
             if (soldier.getUUID().equals(worker)) {
+                continue;
+            }
+            if (soldier.lost && phase != Phase.CAMP) {
+                soldier.orderHold(soldier.blockPosition(), 2.0d);
                 continue;
             }
             if (phase == Phase.CAMP) {
@@ -969,8 +1008,11 @@ final class Siege {
                 } else {
                     worker.orderRoute(stage, 1.15d);
                     if (++job.waited > 1200) {
-                        replan("ouvrier bloque");
+                        // Il n'arrive pas a son poste : un autre s'en charge.
                         job.waited = 0;
+                        worker.lost = true;
+                        worker.lostTicks = 0;
+                        onLost(worker);
                     }
                 }
             }
@@ -1038,7 +1080,7 @@ final class Siege {
         Soldier best = null;
         double distance = Double.MAX_VALUE;
         for (Soldier soldier : alive()) {
-            if (soldier.role() != role || guards.contains(soldier.getUUID())) {
+            if (soldier.role() != role || guards.contains(soldier.getUUID()) || soldier.lost) {
                 continue;
             }
             double d = soldier.distanceToSqr(to.getX() + 0.5d, to.getY(), to.getZ() + 0.5d);
@@ -1226,14 +1268,36 @@ final class Siege {
         if (job.timer % 8 != 0) {
             return;
         }
-        BlockState here = level.getBlockState(fill);
-        if (here.getCollisionShape(level, fill).isEmpty()) {
-            boolean lava = here.getFluidState().is(net.minecraft.tags.FluidTags.LAVA);
-            terrain.place(fill, lava ? Blocks.COBBLESTONE.defaultBlockState() : Blocks.OAK_PLANKS.defaultBlockState());
-            worker.swing(InteractionHand.MAIN_HAND);
-            level.playSound(null, fill, SoundEvents.WOOD_PLACE, SoundSource.HOSTILE, 1.0f, 1.0f);
+        plank(fill);
+        // Un pont de deux de large : sur une planche seule, la troupe se pousse dans le vide.
+        int index = Math.min(next.first() + job.cell, last());
+        BlockPos from = steps().get(Math.max(0, index - 1)).pos();
+        BlockPos to = steps().get(index).pos();
+        int dx = Integer.signum(to.getX() - from.getX());
+        int dz = Integer.signum(to.getZ() - from.getZ());
+        if (dx != 0 || dz != 0) {
+            BlockPos side = fill.offset(-dz, 0, dx);
+            ClaimOwner owner = FactionApi.claimAt(level, side);
+            if (!owner.claimed() || owner.ownedBy(player) && !owner.enemy()) {
+                plank(side);
+            }
         }
+        worker.swing(InteractionHand.MAIN_HAND);
+        level.playSound(null, fill, SoundEvents.WOOD_PLACE, SoundSource.HOSTILE, 1.0f, 1.0f);
         job.cell++;
+    }
+
+    /** Une planche (de la pierre sur la lave) dans une case vide ou liquide. */
+    private void plank(BlockPos pos) {
+        BlockState here = level.getBlockState(pos);
+        if (!here.getCollisionShape(level, pos).isEmpty() || here.hasBlockEntity()) {
+            return;
+        }
+        if (!here.isAir() && here.getFluidState().isEmpty() && !here.canBeReplaced()) {
+            return;
+        }
+        boolean lava = here.getFluidState().is(net.minecraft.tags.FluidTags.LAVA);
+        terrain.place(pos, lava ? Blocks.COBBLESTONE.defaultBlockState() : Blocks.OAK_PLANKS.defaultBlockState());
     }
 
     private void finishObstacle() {
@@ -1259,7 +1323,7 @@ final class Siege {
     private boolean inZone(Entity entity) {
         double dx = entity.getX() - (vault.getX() + 0.5d);
         double dz = entity.getZ() - (vault.getZ() + 0.5d);
-        return dx * dx + dz * dz <= ZONE * ZONE && Math.abs(entity.getY() - vault.getY()) <= 3.5d;
+        return dx * dx + dz * dz <= ZONE * ZONE && Math.abs(entity.getY() - vault.getY()) <= 2.0d;
     }
 
     private void tickZone() {
@@ -1278,7 +1342,7 @@ final class Siege {
                 && target.level() == level && inZone(target)) {
             defenders++;
         }
-        AABB box = new AABB(vault).inflate(ZONE, 3.5d, ZONE);
+        AABB box = new AABB(vault).inflate(ZONE, 2.0d, ZONE);
         for (GuardianGolem golem : level.getEntitiesOfClass(GuardianGolem.class, box, GuardianGolem::isAlive)) {
             if (golem.owner().map(player::equals).orElse(false)) {
                 defenders++;
@@ -1439,6 +1503,8 @@ final class Siege {
         SoldierRole role = soldier.role();
         fallen++;
         killed.merge(role, 1, Integer::sum);
+        DoHy.LOGGER.info("Guerre : un {} {} tombe en {} ({})", role.label().toLowerCase(java.util.Locale.ROOT),
+                traits.de(), soldier.blockPosition().toShortString(), source.getMsgId());
         deaths.add(soldier.blockPosition());
         guards.remove(soldier.getUUID());
         double hit = role.weight() * (alive().stream().anyMatch(s -> s.role() == SoldierRole.MEDECIN) ? 0.8d : 1.0d);

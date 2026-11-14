@@ -798,7 +798,10 @@ final class SiegePlanner {
         if (!passable(floor)) {
             return;
         }
-        // Le vide sous le pas : on tombe jusqu'au premier sol, ou l'on jette une planche.
+        // Le vide sous le pas : on tombe jusqu'au premier sol. Une planche ne se jette que
+        // sur un vrai gouffre (ou sur la lave) : un pont suspendu au-dessus d'un sol ou l'on
+        // peut descendre, les soldats s'en feraient tomber les uns les autres.
+        boolean landed = false;
         for (int drop = 1; drop <= MAX_DROP; drop++) {
             int ty = y - drop;
             if (!s.inside(nx, ty, nz)) {
@@ -809,14 +812,18 @@ final class SiegePlanner {
                 break;
             }
             byte under = s.cls(nx, ty - 1, nz);
+            if (under == LAVA) {
+                break;
+            }
             if (cell == WATER || under == WATER || standable(s, nx, ty - 1, nz)) {
                 float fall = 4.0f + drop + (drop > 3 ? 10.0f * (drop - 3) : 0.0f);
                 relax(s, nx, ty, nz, g + fall + clear, from, M_DROP, 0, cost, parent, move, open, closed);
+                landed = true;
                 break;
             }
         }
-        if (floor == AIR && (s.flags(nx, y - 1, nz) & FORBID) == 0) {
-            relax(s, nx, y, nz, g + 14.0f + clear, from, M_BRIDGE, 0, cost, parent, move, open, closed);
+        if (!landed && floor == AIR && (s.flags(nx, y - 1, nz) & FORBID) == 0) {
+            relax(s, nx, y, nz, g + 16.0f + clear, from, M_BRIDGE, 0, cost, parent, move, open, closed);
         }
     }
 

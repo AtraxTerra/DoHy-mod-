@@ -100,6 +100,13 @@ public class Soldier extends Monster implements RangedAttackMob {
     private Vec3 lastCheck = Vec3.ZERO;
     /** Les verifications de suite (toutes les 2 s) sans avancer alors qu'il a un ordre de marche. */
     int stuck;
+    /**
+     * Egare : tombe du chemin (pousse dans une cour, d'une echelle), il n'y retrouve plus de
+     * passage. Il tient sa place et se bat si on vient le chercher ; il retente sa chance de
+     * temps en temps.
+     */
+    boolean lost;
+    int lostTicks;
     private int healCooldown = 60;
     private boolean goalsInstalled;
 
@@ -511,6 +518,17 @@ public class Soldier extends Monster implements RangedAttackMob {
                     || order.kind() == Order.HOLD && !near(order.pos(), order.radius());
             stuck = moving && getTarget() == null && here.distanceToSqr(lastCheck) < 0.25d ? stuck + 1 : 0;
             lastCheck = here;
+            if (stuck >= 10 && !lost) {
+                lost = true;
+                lostTicks = 0;
+                stuck = 0;
+                current.onLost(this);
+            }
+        }
+        if (lost && ++lostTicks > 600) {
+            // Le terrain a pu changer (une echelle posee, une breche) : il retente.
+            lost = false;
+            routeIndex = -1;
         }
         super.customServerAiStep(level);
     }
