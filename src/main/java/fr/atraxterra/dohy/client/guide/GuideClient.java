@@ -31,8 +31,9 @@ public final class GuideClient {
         if (encyclopediaKey == null) {
             return;
         }
+        // Une touche ne compte de clic qu'en jeu, aucun ecran ouvert.
         while (encyclopediaKey.consumeClick()) {
-            if (Minecraft.getInstance().player != null && Minecraft.getInstance().screen == null) {
+            if (Minecraft.getInstance().player != null) {
                 ClientPacketDistributor.sendToServer(new InventoryNav.Open("encyclopedia"));
             }
         }
