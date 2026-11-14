@@ -42,6 +42,12 @@ public final class DoHyEarth {
                     .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
                     .build());
 
+    /** La version du cone de volcan deja servie a un chunk ; 0 tant qu'il n'a rien recu. Voir {@code disaster.Volcanoes}. */
+    public static final Supplier<AttachmentType<Integer>> VOLCANO = ATTACHMENTS.register(
+            "earth_volcano", () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
+                    .build());
+
     /**
      * Le palier de saison auquel un chunk a ete remis a la saison (neige, glace) ; -1 tant qu'il ne
      * l'a jamais ete. Voir {@code season.SeasonGround}.

@@ -3,7 +3,9 @@ package fr.atraxterra.dohy.client.atlas;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
+import fr.atraxterra.dohy.client.disaster.DisasterClient;
 import fr.atraxterra.dohy.earth.EarthAtlas;
+import fr.atraxterra.dohy.earth.disaster.DisasterNet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -32,10 +34,10 @@ final class AtlasView {
             Map.entry("bauxite", 0xFFC0603A), Map.entry("titane", 0xFFB0B8C0), Map.entry("plomb", 0xFF60607A),
             Map.entry("zinc", 0xFFA0B0A8), Map.entry("emeraude", 0xFF20D060), Map.entry("lapis", 0xFF2040C0),
             Map.entry("redstone", 0xFFD02020), Map.entry("quartz", 0xFFF0EAE0), Map.entry("zone irradiee", 0xFFB6FF00),
-            Map.entry("base de lancement", 0xFF80C8FF));
+            Map.entry("base de lancement", 0xFF80C8FF), Map.entry("volcan", 0xFFFF5A1F));
 
     /** Ce que la vue montre. */
-    record Layers(boolean holders, boolean marks, boolean waypoints, boolean labels) {
+    record Layers(boolean holders, boolean marks, boolean waypoints, boolean labels, boolean disasters) {
     }
 
     private AtlasView() {
@@ -69,6 +71,9 @@ final class AtlasView {
         }
         if (overworld && layers.marks()) {
             marks(graphics, font, x0, y0, width, height, centerX, centerZ, scale, layers.labels());
+        }
+        if (overworld && layers.disasters()) {
+            disasters(graphics, font, x0, y0, width, height, centerX, centerZ, scale, layers.labels());
         }
         if (layers.waypoints()) {
             waypoints(graphics, font, x0, y0, width, height, centerX, centerZ, scale, dimension, layers.labels());
@@ -124,6 +129,14 @@ final class AtlasView {
             }
             int color = resourceColor(mark.resource());
             int size = mark.kind() >= 10 ? 3 : 2;
+            if (mark.kind() == 12) {
+                triangle(graphics, sx, sy, 4, 0xFF000000);
+                triangle(graphics, sx, sy, 3, color);
+                if (labels && scale <= 4.0d) {
+                    label(graphics, font, mark.name(), sx, sy + 5, 0xFFFFB08A);
+                }
+                continue;
+            }
             graphics.fill(sx - size - 1, sy - size - 1, sx + size + 1, sy + size + 1, 0xFF000000);
             graphics.fill(sx - size, sy - size, sx + size, sy + size, color);
             if (mark.kind() == 2 || mark.kind() == 3) {
@@ -161,6 +174,102 @@ final class AtlasView {
             if (labels) {
                 label(graphics, font, point.name(), sx, sy + 5, point.color());
             }
+        }
+    }
+
+    /** Les catastrophes en cours : leur zone, leur centre, la route a venir d'un ouragan. */
+    private static void disasters(GuiGraphicsExtractor graphics, Font font, int x0, int y0, int width, int height,
+                                  double centerX, double centerZ, double scale, boolean labels) {
+        for (DisasterNet.Entry entry : DisasterClient.entries()) {
+            int color = DisasterClient.color(entry.kind());
+            int sx = screenX(entry.x(), x0, width, centerX, scale);
+            int sy = screenY(entry.z(), y0, height, centerZ, scale);
+            int radius = (int) Math.round(entry.radius() / scale);
+            if (sx + radius < x0 || sy + radius < y0 || sx - radius > x0 + width || sy - radius > y0 + height) {
+                continue;
+            }
+            if (radius >= 3 && radius < 2000) {
+                disk(graphics, sx, sy, radius, (color & 0x00FFFFFF) | 0x38000000);
+                ring(graphics, sx, sy, radius, (color & 0x00FFFFFF) | 0xB0000000);
+            }
+            if (entry.kind() == DisasterNet.HURRICANE) {
+                int[] track = entry.track();
+                int px = sx;
+                int py = sy;
+                for (int i = 0; i + 1 < track.length; i += 2) {
+                    int tx = screenX(track[i], x0, width, centerX, scale);
+                    int ty = screenY(track[i + 1], y0, height, centerZ, scale);
+                    dotted(graphics, px, py, tx, ty, (color & 0x00FFFFFF) | 0xE0000000);
+                    px = tx;
+                    py = ty;
+                }
+                int eye = Math.max(2, (int) Math.round(entry.eye() / scale));
+                if (eye < 400) {
+                    disk(graphics, sx, sy, eye, 0xFF0B0D12);
+                    ring(graphics, sx, sy, eye + 1, 0xFFFFFFFF);
+                }
+            } else if (entry.kind() == DisasterNet.ERUPTION) {
+                triangle(graphics, sx, sy, 5, 0xFF000000);
+                triangle(graphics, sx, sy, 4, color);
+            } else {
+                graphics.fill(sx - 3, sy - 1, sx + 4, sy + 2, 0xFF000000);
+                graphics.fill(sx - 1, sy - 3, sx + 2, sy + 4, 0xFF000000);
+                graphics.fill(sx - 2, sy, sx + 3, sy + 1, color);
+                graphics.fill(sx, sy - 2, sx + 1, sy + 3, color);
+            }
+            if (labels) {
+                String text = switch (entry.kind()) {
+                    case DisasterNet.QUAKE -> "Seisme M" + entry.level() / 10 + "," + entry.level() % 10;
+                    case DisasterNet.HURRICANE -> entry.name() + " (cat. " + entry.level() + ")";
+                    case DisasterNet.ERUPTION -> entry.place();
+                    default -> "Mousson";
+                };
+                label(graphics, font, text, sx, sy + 7, 0xFFFFFFFF);
+            }
+        }
+    }
+
+    /** Un disque plein, ligne par ligne. */
+    static void disk(GuiGraphicsExtractor graphics, int x, int y, int radius, int color) {
+        for (int dy = -radius; dy <= radius; dy++) {
+            int half = (int) Math.round(Math.sqrt((double) radius * radius - (double) dy * dy));
+            graphics.fill(x - half, y + dy, x + half + 1, y + dy + 1, color);
+        }
+    }
+
+    /** Un cercle d'un pixel d'epaisseur. */
+    static void ring(GuiGraphicsExtractor graphics, int x, int y, int radius, int color) {
+        int steps = Math.max(24, Math.min(720, radius * 6));
+        int lastX = Integer.MIN_VALUE;
+        int lastY = Integer.MIN_VALUE;
+        for (int i = 0; i < steps; i++) {
+            double a = i * Math.PI * 2.0d / steps;
+            int px = x + (int) Math.round(Math.cos(a) * radius);
+            int py = y + (int) Math.round(Math.sin(a) * radius);
+            if (px != lastX || py != lastY) {
+                graphics.fill(px, py, px + 1, py + 1, color);
+                lastX = px;
+                lastY = py;
+            }
+        }
+    }
+
+    /** Un trait en pointilles. */
+    static void dotted(GuiGraphicsExtractor graphics, int x1, int y1, int x2, int y2, int color) {
+        int length = (int) Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1));
+        for (int i = 0; i <= length; i += 3) {
+            double t = length == 0 ? 0.0d : i / (double) length;
+            int px = (int) Math.round(x1 + (x2 - x1) * t);
+            int py = (int) Math.round(y1 + (y2 - y1) * t);
+            graphics.fill(px, py, px + 2, py + 2, color);
+        }
+    }
+
+    /** Un triangle plein, pointe en haut. */
+    static void triangle(GuiGraphicsExtractor graphics, int x, int y, int radius, int color) {
+        for (int dy = -radius; dy <= radius; dy++) {
+            int half = (dy + radius) / 2;
+            graphics.fill(x - half, y + dy, x + half + 1, y + dy + 1, color);
         }
     }
 

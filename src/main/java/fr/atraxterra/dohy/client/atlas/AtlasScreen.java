@@ -3,7 +3,9 @@ package fr.atraxterra.dohy.client.atlas;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.client.ui.UiScreen;
+import fr.atraxterra.dohy.client.disaster.DisasterClient;
 import fr.atraxterra.dohy.earth.EarthAtlas;
+import fr.atraxterra.dohy.earth.disaster.DisasterNet;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -74,7 +76,7 @@ public final class AtlasScreen extends Screen {
         int mapTop = BAR;
         int mapHeight = height - BAR * 2;
         AtlasView.draw(graphics, font, map, 0, mapTop, width, mapHeight, centerX, centerZ, scale,
-                new AtlasView.Layers(options.holders, options.marks, options.waypoints, true), dimension);
+                new AtlasView.Layers(options.holders, options.marks, options.waypoints, true, options.disasters), dimension);
         LocalPlayer player = minecraft.player;
         if (player != null) {
             int px = AtlasView.screenX(player.getX(), 0, width, centerX, scale);
@@ -101,6 +103,7 @@ public final class AtlasScreen extends Screen {
         x = toggle(ui, "GISEMENTS", x, options.marks, () -> options.marks = !options.marks);
         x = toggle(ui, "POINTS", x, options.waypoints, () -> options.waypoints = !options.waypoints);
         x = toggle(ui, "POINTS EN JEU", x, options.markers, () -> options.markers = !options.markers);
+        x = toggle(ui, "CATASTROPHES", x, options.disasters, () -> options.disasters = !options.disasters);
         x = toggle(ui, "MINIMAP", x, options.minimap, () -> options.minimap = !options.minimap);
         x = toggle(ui, "TAILLE " + options.minimapSize, x, false, () -> options.minimapSize = nextSize(options.minimapSize));
         toggle(ui, "CENTRER (C)", x, false, this::recenter);
@@ -164,6 +167,12 @@ public final class AtlasScreen extends Screen {
                 if (mark != null) {
                     text.append("   |   ").append(mark.name()).append(", ").append(mark.resource());
                 }
+                DisasterNet.Entry disaster = AtlasClient.options().disasters ? disasterAt(wx, wz) : null;
+                if (disaster != null) {
+                    text.append("   |   ").append(disaster.name()).append(" (").append(disaster.place())
+                            .append(disaster.kind() == DisasterNet.HURRICANE ? ", cat. " + disaster.level() : "")
+                            .append(')');
+                }
             }
             Waypoints.Point point = pointAt(mouseX, mouseY, mapTop, mapHeight, dimension);
             if (point != null) {
@@ -175,6 +184,17 @@ public final class AtlasScreen extends Screen {
                 + (scale < 1.0d ? String.format(java.util.Locale.ROOT, "%.2f", scale) : String.valueOf((int) scale))
                 + " bloc(s)";
         ui.right(Ui.BODY, help, width - 8, top + 8, 6.0f, Ui.MUTED);
+    }
+
+    /** La catastrophe dont la zone couvre ce point (la plus petite, s'il y en a plusieurs). */
+    private static DisasterNet.Entry disasterAt(double x, double z) {
+        DisasterNet.Entry best = null;
+        for (DisasterNet.Entry entry : DisasterClient.entries()) {
+            if (entry.covers(x, z) && (best == null || entry.radius() < best.radius())) {
+                best = entry;
+            }
+        }
+        return best;
     }
 
     private EarthAtlas.Mark markAt(double mouseX, double mouseY, int mapTop, int mapHeight) {

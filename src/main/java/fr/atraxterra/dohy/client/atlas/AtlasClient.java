@@ -52,6 +52,8 @@ public final class AtlasClient {
         public boolean marks = true;
         public boolean waypoints = true;
         public boolean markers = true;
+        /** Le calque des catastrophes en cours (seismes, eruptions, ouragans, mousson). */
+        public boolean disasters = true;
     }
 
     /** Les tailles de minimap proposees par le bouton TAILLE de la grande carte. */

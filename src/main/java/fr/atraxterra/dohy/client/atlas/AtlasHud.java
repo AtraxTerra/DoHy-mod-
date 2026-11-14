@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.client.atlas;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.client.disaster.DisasterClient;
 import fr.atraxterra.dohy.client.season.ClientSeasons;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
@@ -64,7 +65,8 @@ final class AtlasHud implements GuiLayer {
         ui.rect(x0 - 6, y0 - 3, size + 12, size + 6, Ui.OUTER);
         ui.border(x0 - 2, y0 - 2, size + 4, size + 4, 2, Ui.FRAME);
         AtlasView.draw(graphics, minecraft.font, map, x0, y0, size, size, player.getX(), player.getZ(),
-                options.minimapScale, new AtlasView.Layers(options.holders, options.marks, options.waypoints, false),
+                options.minimapScale, new AtlasView.Layers(options.holders, options.marks, options.waypoints, false,
+                        options.disasters),
                 dimension);
         AtlasView.player(graphics, x0 + size / 2, y0 + size / 2, player.getYRot(), size >= 80 ? 12 : 9);
         ui.centered(Ui.WIDE, "N", x0 + size / 2.0f, y0 + 2, 5.0f, Ui.WHITE);
@@ -81,7 +83,9 @@ final class AtlasHud implements GuiLayer {
         // la saison et la temperature du lieu, sous le pays
         ClientSeasons.Line season = where == null ? null
                 : ClientSeasons.line(minecraft.level, player.blockPosition());
-        int panelHeight = 12 + (where == null ? 0 : 9) + (season == null ? 0 : 9);
+        // une catastrophe ici ou qui menace : une ligne d'alerte
+        DisasterClient.Alert alert = where == null ? null : DisasterClient.alert(player.getX(), player.getZ());
+        int panelHeight = 12 + (where == null ? 0 : 9) + (season == null ? 0 : 9) + (alert == null ? 0 : 9);
         ui.rect(x0 - 3, panelTop, size + 6, panelHeight, Ui.OUTER);
         ui.rect(x0 - 2, panelTop + 1, size + 4, panelHeight - 2, Ui.BG);
         String coordinates = player.getBlockX() + "  " + player.getBlockY() + "  " + player.getBlockZ();
@@ -93,6 +97,12 @@ final class AtlasHud implements GuiLayer {
         if (season != null) {
             ui.centered(Ui.BOLD, ui.fit(Ui.BOLD, season.text(), 5.0f, size + 2), x0 + size / 2.0f, panelTop + 20,
                     5.0f, season.color());
+        }
+        if (alert != null) {
+            // clignote doucement : une seconde allumee, un quart de seconde attenuee
+            boolean dim = (System.currentTimeMillis() / 250L) % 5L == 4L;
+            ui.centered(Ui.BOLD, ui.fit(Ui.BOLD, alert.text(), 5.0f, size + 2), x0 + size / 2.0f,
+                    panelTop + 20 + (season == null ? 0 : 9), 5.0f, dim ? Ui.MUTED : alert.color());
         }
     }
 

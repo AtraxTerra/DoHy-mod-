@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-13
+Dernière mise à jour : 2026-11-14
 
 ---
 
@@ -184,6 +184,78 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-14 — les catastrophes de la Terre
+
+**Demande** : « Et côté Terre ? », puis « 3 » : **les catastrophes de la Terre** — séismes,
+éruptions, ouragans, mousson, selon le lieu et la saison, annoncés et visibles sur l'atlas. Choix
+du joueur : des dégâts **qui reviennent** (« Oui, puis il revient »), **des ressources** à aller
+chercher, **les quatre d'un coup**. Description : `docs/CONTENU_DOHY.md`, « Les catastrophes ».
+
+**Fait** (`feat/catastrophes`) :
+- `tools/earth_disasters.py` → `data/dohy/earth/disasters.json` : 27 volcans actifs (posés sur la
+  terre de la grille, à 30 km au plus du sommet réel ; le Krakatoa retiré), 23 zones sismiques
+  (lignes de failles et de fosses), 6 bassins cycloniques avec leur saison, leur latitude de
+  recourbure et leurs zones de naissance, 6 régions de mousson, les réglages.
+- `earth/disaster/` : `Disasters` (le tirage toutes les 20 s, les départs, la météo voulue, la lave
+  sans feu, les cultures de la mousson, `/catastrophes`), les quatre familles `Quake`, `Eruption`,
+  `Hurricane`, `Monsoon`, `Volcanoes` (les cônes à l'arrivée des chunks), `Floods` (l'eau qui monte
+  d'un seul tenant), `DisasterTerrain` (relevés par chunk, retour à 3 h écrit sur disque, en deux
+  passes sans voisinage, chunks revendiqués et blocs posés par un joueur épargnés), `LocalWeather`
+  (la pluie et l'orage d'un seul joueur), `DisasterNet` (la liste pour l'atlas et l'alerte ; la
+  secousse, la cendre et le vent).
+- Client : `DisasterClient` (la caméra qui tremble, le brouillard et la couleur de la cendre, le
+  vent appliqué au joueur), le calque **CATASTROPHES** de l'atlas (zone, anneau, route pointillée
+  et œil d'un ouragan, triangles des volcans, croix des séismes), la ligne d'alerte clignotante sous
+  la minimap.
+- `EarthDeposits.oresAt` (les filons d'un point, pour la faille), marque de chunk `earth_volcano`,
+  marques de volcans dans l'atlas.
+
+**Relu dans le jar de Minecraft 26.2** (sonde) : la foudre se crée par
+`EntityTypes.LIGHTNING_BOLT.create(level, EntitySpawnReason.TRIGGERED)` puis `snapTo` et
+`setVisualOnly(true)` ; `ViewportEvent` (angles de caméra, brouillard, couleur du brouillard) et
+`FogType.ATMOSPHERIC` existent ; `FluidPlaceBlockEvent` est annulable (la lave sans feu) ; le jeu a
+`minecraft:sulfur`, `potent_sulfur` et `sulfur_spike` ; les blocs de couleur n'ont plus de champ
+dans `Blocks` (`YELLOW_TERRACOTTA` n'existe pas) : ils se cherchent par leur nom.
+
+**Vérifié en jeu** (client de CI avec NTM NEXT 1.0.3, cinq passes, catastrophes lancées par les
+commandes d'administration) :
+- **séisme** M7,4 (Russie) : 56 chunks relevés, faille de 28 colonnes, 84 blocs de minerai dans les
+  parois, 124 éboulis, 954 blocs changés ; la caméra tremble, l'alerte et le chat sont justes.
+- **Etna** : cône, cratère, lac de lave, soufre sur le rebord et nom, bâtis à l'arrivée des chunks.
+  **Éruption** (alerte de 12 s) : cratère à y = 91, deux ou trois coulées, 232 à 241 bombes,
+  brouillard de cendre, lueur la nuit. **Refroidissement** : la première passe laissait des langues
+  de lave sans source (la lave des chunks pas encore figés coulait dans ceux déjà vus) ; en deux ou
+  trois passages, 193 blocs de lave versée → 0 hors du cratère (3 blocs réapparus vingt secondes plus
+  tard au bord du lac du cratère : il déborde, ce n'est pas un reste).
+- **ouragan** Alice, catégorie 4, droit sur le joueur : pluie et orage pour lui seul, œil clair, mur,
+  vent (un joueur de catégorie 4 dérivait de 13 blocs en 10 s : vent réduit d'un cinquième, et
+  presque rien en l'air), feuilles et arbres arrachés, épave (coffre de trésor, tonneau de vivres,
+  bois flotté). **Marée** : la première version posait des cubes d'eau seuls sur la plage et noyait
+  le joueur ; puis une nappe d'un seul tenant mais en plateaux autour des bancs de sable (9 blocs
+  sans voisin sur 3 261) ; enfin la rive prise un bloc au-dessus de l'eau, la nappe partie du
+  rivage et la pente d'un tiers de bloc : 3 753 blocs au passage de l'œil, 627 en pente, **aucun
+  sans voisin** (golfe du Bengale).
+- **mousson** : la première version dépensait ses 1 500 blocs à monter l'eau au milieu de la
+  rivière et la seconde marche n'arrivait jamais. Au Bangladesh : 499 blocs en une minute, 1 528 à
+  la seconde marche, aucun sans voisin ; tout se retire (1 697 blocs), 17 de limon. Dans un biome
+  froid (Russie), 105 blocs de crue avaient gelé et restaient en glace : le retrait enlève aussi la
+  glace.
+- calque **CATASTROPHES** de l'atlas (zone, route pointillée et œil, triangles des volcans), ligne
+  d'alerte sous la minimap, `/catastrophes`.
+- **retour** (`/catastrophes admin retour`) : quatre terrains reposés (1 601, 991, 3 598 et 5 414
+  blocs), moins de 100 ms chacun ; faille refermée, coulées et plage revenues sur les captures.
+
+**Non vérifié en jeu** : le tirage naturel sur de longues heures (fréquences, saisons des bassins) ;
+le retour à trois heures réelles après un redémarrage du serveur (le mécanisme, lui, a tourné avec
+`retour`, relevés relus du disque compris) ; la météo locale sur un serveur dédié et à plusieurs
+joueurs (vérifiée sur le serveur intégré du client de CI) ; le rangement à l'arrêt (`fin` et arrêt
+du serveur : marée et crue redescendues, lave figée d'un coup), écrit après la dernière passe avec
+les mêmes fonctions que le retrait et le refroidissement vérifiés.
+
+**Limites connues** : la marée monte jusqu'à 48 blocs autour d'un joueur ; le long de la côte, la
+nappe finit là par une marche d'un ou deux blocs. L'eau montée dans un chunk que plus personne ne
+charge ne redescend qu'au retour du terrain (elle ne coule pas : posée sans réveil).
 
 ### 2026-11-13 (suite 25) — bases ennemies militaires, défenses de NTM NEXT
 
