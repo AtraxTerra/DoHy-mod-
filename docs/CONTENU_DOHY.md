@@ -569,6 +569,120 @@ cultures, couleurs et atlas.
   `mixin/BiomeTemperatureMixin` (la saison dans `Biome.getTemperature`), `BiomeAccessor` ;
   `client/season/ClientSeasons`, `SeasonColors`, `mixin/BiomeColorsMixin` (client).
 
+### Les catastrophes (2026-11-14)
+
+Séismes, éruptions, ouragans et pluies de mousson, là où et quand le monde réel les connaît
+(choix du joueur : les quatre d'un coup, des dégâts qui reviennent, des ressources à aller
+chercher). La table vient de `tools/earth_disasters.py` → `data/dohy/earth/disasters.json`, en
+latitude et longitude.
+
+- **Où.** 23 **zones sismiques** — des lignes de failles ou de fosses avec leur demi-largeur :
+  Japon, Kamtchatka, Taïwan, Philippines, Indonésie, Papouasie, Nouvelle-Zélande, Chili, Pérou,
+  Amérique centrale, Mexique, Californie, Alaska, Caraïbes, Portugal, Atlas, Italie, Grèce,
+  Turquie, Iran, Hindou Kouch, Himalaya, Sichuan. 27 **volcans actifs**, posés par l'outil sur la
+  terre de la grille (à 30 km au plus du sommet réel ; le Krakatoa, trop petit pour la grille, est
+  retiré) : Etna, Vésuve, Stromboli, Santorin, Teide, Hekla, Fuji, Sakurajima, Merapi, Tambora,
+  Pinatubo, Mayon, Popocatépetl, Colima, Saint Helens, Kīlauea, Arenal, Masaya, Cotopaxi,
+  Villarrica, Nyiragongo, Erta Ale, Ol Doinyo Lengai, Klioutchevskoï, Ruapehu, le Piton de la
+  Fournaise et la Montagne Pelée. 6 **bassins cycloniques** : Atlantique Nord et Pacifique
+  Nord-Est (ouragans), Pacifique Nord-Ouest (typhons), océan Indien Nord et Sud-Ouest, Australie et
+  Pacifique Sud (cyclones). 6 **régions de mousson** : Inde, Bangladesh et Birmanie, Asie du
+  Sud-Est, Chine du Sud, Afrique de l'Ouest, nord de l'Australie.
+- **Quand.** Toutes les vingt secondes, le jeu tire au sort. Un joueur dans une zone sismique y
+  attend un séisme toutes les **45 minutes** en moyenne ; à moins de 400 blocs d'un volcan, une
+  éruption toutes les **75 minutes** ; dans une région de mousson pendant sa saison des pluies (le
+  cœur de la moitié chaude de l'année), une averse toutes les **25 minutes**. Chaque bassin,
+  pendant sa saison (la fin de l'été et l'automne de son hémisphère, d'après les saisons de la
+  Terre), lance une tempête toutes les **80 minutes** ; si un joueur est dans sa région, deux fois
+  sur trois elle passe sur lui. Loin des joueurs, des séismes (toutes les 2 h 30) et des éruptions
+  (toutes les 5 h) lointains font les nouvelles. Six catastrophes au plus à la fois. Tout se règle
+  dans `settings`.
+- **Annonce et atlas.** Un titre pour qui est touché, une ligne dans le chat pour tous (distance
+  et direction), un calque **CATASTROPHES** sur l'atlas (la zone, l'œil et la route à venir d'un
+  ouragan, le triangle d'un volcan en éruption, un triangle orange pour chaque volcan de la carte)
+  et une **ligne d'alerte** sous la minimap (« OURAGAN ALICE CAT. 4 », « ERUPTION DANS 4:12 »).
+  **`/catastrophes`** : celles en cours, le dernier séisme, les terrains qui attendent leur
+  retour ; `/catastrophes volcans` : les six volcans les plus proches.
+
+**Le séisme.** Une première secousse, le choc principal (10 s pour une magnitude 5, 30 s pour 8),
+puis trois répliques en quatre minutes. Magnitude de 5 à la plus forte de la zone, surtout des 5
+et des 6. Il se ressent jusqu'à 40 blocs pour une magnitude 5, deux fois plus loin à chaque degré
+(320 blocs à 8) : **la caméra tremble**. Il abîme le terrain dans un rayon de 8 blocs plus 8 par
+degré : une **faille** s'ouvre depuis l'épicentre, de plus en plus longue, large (1 à 3 blocs) et
+profonde (5 à 15) avec la magnitude, du magma au fond des plus forts ; ses parois **mettent à nu
+les filons du pays** (ceux de ses gisements ; ailleurs du charbon, du fer, du cuivre, et dès 6,5
+de l'or et de la redstone). Les pentes s'éboulent, les arbres perdent des feuilles, ce qui est
+debout est bousculé. La faille ne s'ouvre jamais sous les pieds d'un joueur ni sous un arbre.
+
+**L'éruption.** Chaque volcan a reçu, à l'arrivée de ses chunks, un **cône** (18 blocs au plus, 28
+de rayon, posé sur le terrain tel qu'il est), un **cratère** et son lac de lave, du soufre sur le
+rebord et son nom au-dessus — une fois pour toutes, comme le réacteur de Tchernobyl. L'éruption :
+le volcan se réveille (fumée visible de loin, secousses, **cinq minutes** d'alerte), puis douze
+minutes de **bombes de lave** (une sur sept retombe en minerai volcanique de NTM NEXT), de
+**coulées** qui descendent les pentes (deux ou trois, figées en obsidienne au contact de l'eau),
+de **cendres** (le brouillard se referme à 20 blocs près du cratère) et d'éclairs dans le panache.
+Puis la lave refroidit (en deux ou trois passages : aucune langue de lave ne reste sans
+source) : du **basalte** où affleurent le **soufre, la fluorine, l'amiante, la
+molybdénite et les gemmes volcaniques** de NTM NEXT (sans lui : soufre, blackstone dorée,
+obsidienne pleureuse), et trois minutes de fumerolles. Autour des volcans, la lave ne met le feu à
+rien. Les dégâts ne se font que si un joueur est à moins de 192 blocs.
+
+**L'ouragan.** Il naît en mer (ou sur la route d'un joueur), file à **un bloc par seconde**,
+remonte vers le pôle passée la latitude de son bassin et perd une catégorie tous les 220 blocs de
+terre. Catégorie 1 (30 %) à 5 (10 %). Un **œil** calme et clair (9 à 13 blocs), un **mur** où le
+vent et l'orage sont au plus fort, des bandes de pluie jusqu'à 105 blocs (catégorie 1) ou 165
+(catégorie 5). Il tourne à l'envers des aiguilles d'une montre au nord, dans l'autre sens au sud.
+Son **vent pousse** le joueur, les bêtes et les objets qui sont dehors, et rien de ce qui est à
+l'abri (sous un toit) ; accroupi, on tient mieux, et un saut ne t'emporte pas. Autour des joueurs : feuilles arrachées, **arbres
+déracinés** dès la catégorie 3 (couchés dans le sens du vent), la **mer qui monte** d'un à trois
+blocs sur la côte, des éclairs. La marée est une seule nappe qui part du rivage : la mer monte
+près de la terre qui dépasse de l'eau (pas autour d'un banc de sable à fleur d'eau), en marches
+puis en pente douce vers le large, et déborde sur la terre de proche en proche (jamais un cube
+d'eau posé seul sur la plage, 12 000 blocs au plus) ; elle redescend derrière la tempête. Quand il est passé, **une
+épave s'échoue** sur la plage la plus proche : un coffre de trésor et un tonneau de vivres (les
+tables des épaves du jeu), du bois flotté.
+
+**La mousson.** Autour d'un joueur (160 blocs), le ciel s'assombrit en une minute, la pluie tombe
+huit à douze minutes, et les **rivières, les lacs et la mer montent** d'un bloc sur leurs berges,
+de deux dans la seconde moitié (1 500 blocs d'eau pendant la première moitié, 2 500 en tout) :
+l'eau ne monte que près des berges (jamais une nappe au milieu d'un lac), de proche en proche
+depuis le bord, avec un bord en pente, et gagne la terre. Puis l'eau se retire en deux minutes
+et laisse du **limon** (boue et argile) sur les berges. Pendant la saison des pluies, les cultures
+des régions de mousson, dehors, **poussent plus vite** (une pousse en plus une fois sur trois).
+
+**La météo locale.** Dans le jeu, la pluie est la même dans tout le monde. Un joueur dans un
+ouragan ou une averse de mousson reçoit sa propre pluie et son propre orage, et lui seul ; il
+retrouve la météo du monde en sortant. L'œil d'un ouragan est clair même s'il pleut ailleurs.
+
+**Le terrain revient.** Avant qu'une catastrophe ne touche un chunk, le chunk est relevé (de 28
+blocs sous son point le plus bas à 40 au-dessus du plus haut) ; un séisme et une éruption relèvent
+d'avance toute leur zone. Elle n'y touche **jamais** : un chunk revendiqué (ta faction, une base
+ennemie), un bloc posé par un joueur, un conteneur, un chunk déjà relevé par une autre
+catastrophe. Quand elle est finie, ses relevés sont écrits dans `<monde>/dohy/catastrophes/` et le
+terrain revient **trois heures plus tard** (temps réel, serveur éteint compris) : les blocs changés
+sont reposés tranche par tranche, un chunk revendiqué entre-temps et un bloc posé par un joueur
+entre-temps restent tels quels, un joueur pris dans la roche remonte. Ce qu'on a ramassé reste à
+soi ; le contenu restant d'une épave disparaît avec elle. Une minute avant, les joueurs de la zone
+sont prévenus.
+
+**Administration** (op) : `/catastrophes admin seisme [magnitude] [distance]` (devant soi, la
+faille en travers du regard), `eruption [volcan] [alerte en secondes]`, `ouragan [catégorie]
+[secondes avant le passage]` (droit sur soi), `mousson`, `fin` (tout arrêter : la mer et les
+rivières redescendent, la lave fige), `retour` (tous les terrains maintenant). Un arrêt du serveur
+arrête de même les catastrophes en cours ; leur terrain revient à l'heure prévue.
+
+**Vérifié en jeu** (client de CI avec NTM NEXT 1.0.3, catastrophes lancées par les commandes
+d'administration) : un séisme de magnitude 7,4 ouvre une faille de 28 colonnes, 84 blocs de minerai
+dans ses parois et 124 éboulis ; le cône de l'Etna, son cratère, son lac de lave et son nom ;
+l'éruption (bombes, coulées, cendre et brouillard, lueur la nuit), puis le refroidissement : les 193
+blocs de lave versée deviennent basalte, minerais et air, il n'en reste aucun hors du cratère ;
+l'ouragan Alice de catégorie 4 (pluie et orage pour le seul joueur, œil clair, vent, arbres
+arrachés), sa marée de 3 753 blocs d'eau d'un seul tenant au passage de l'œil — aucun bloc sans
+voisin, 627 en pente — et son épave avec coffre et tonneau ; la mousson au Bangladesh : la rivière
+déborde sur deux marches (1 528 blocs, aucun sans voisin), se retire entièrement et laisse du limon ;
+le calque de l'atlas, l'alerte sous la minimap, `/catastrophes` ; `retour` repose quatre terrains
+(1 601, 991, 3 598 et 5 414 blocs) en moins de 100 ms chacun.
+
 ### Les cartes WorldPainter en 26.2
 
 Une carte dont les chunks attendent leur décoration est enregistrée à l'étape `liquid_carvers`.
@@ -585,6 +699,14 @@ les données du chunk avant leur lecture : le jeu reprend à la décoration.
   `EarthNations` (les pays à prendre : partage du monde, voisins, capitale, conquête),
   `NationMenu` et `NationCommand` (l'onglet et `/f pays`), `DoHyEarth` (la marque des chunks, les
   pays pris sur le monde de la carte, la nation du joueur).
+- `earth/disaster/` : `DisasterConfig` (la table, ses positions sur la carte), `Disasters` (le
+  tirage, les départs, la météo locale voulue, la lave sans feu, les cultures de la mousson,
+  `/catastrophes`), `Disaster` et ses quatre familles `Quake`, `Eruption`, `Hurricane`, `Monsoon`,
+  `Volcanoes` (les cônes, marque `earth_volcano`), `Floods` (l'eau qui monte d'un seul tenant :
+  marée et crue), `DisasterTerrain` (les relevés et le retour du terrain), `LocalWeather` (la pluie par joueur), `DisasterNet` (la liste pour l'atlas, la secousse,
+  la cendre et le vent) ; `EarthDeposits.oresAt` (les filons d'un point).
+- `client/disaster/DisasterClient` : la caméra qui tremble, le brouillard de cendres, le vent
+  appliqué au joueur, l'alerte sous la minimap ; le calque dans `client/atlas/AtlasView`.
 - `faction/event/EventRun` : la nation qui tient un pays visé est mise parmi les rivaux de
   l'event, et la fin de l'event compte les points de conquête.
 - `spawn/SpawnBuilder.worldMap` : la dalle et le puits ; le spawn est redessiné quand une carte de
