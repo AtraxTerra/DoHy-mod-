@@ -215,6 +215,12 @@ jobs:
       - name: L'agriculture ne doit pas offrir d'argent gratuit
         run: python3 tools/check_agri_prices.py
 
+      # L'encyclopedie renvoie a des fiches, des objets, des menus, des plans et
+      # des commandes : une faute de frappe y donne une icone en livre ou une
+      # fiche qui ne se decouvre jamais, sans aucune erreur.
+      - name: L'encyclopedie ne doit renvoyer qu'a ce qui existe
+        run: python3 tools/check_encyclopedia.py
+
       - name: Les JSON doivent parser
         run: |
           python3 - <<'PY'

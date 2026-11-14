@@ -89,5 +89,11 @@
   "tooltip.dohy.sorghum_bread.1": "Force II, Rapidite II, Absorption I, 2 min  -  +2 coeurs",
   "tooltip.dohy.sorghum_bread.2": "Regeneration II 30 s  -  Vol de vigueur II 1 min",
   "item.dohy.kamut_bread": "Pain de kamut",
-  "tooltip.dohy.kamut_bread.1": "Leve les effets nefastes, puis Immunite 2 min"
+  "tooltip.dohy.kamut_bread.1": "Leve les effets nefastes, puis Immunite 2 min",
+  "item.dohy.plan": "Plan de construction",
+  "item.dohy.plan.of": "Plan : %s",
+  "item.dohy.plan.help.place": "Clic droit sur un bloc : poser le plan",
+  "item.dohy.plan.help.turn": "Accroupi + clic droit : tourner d'un quart",
+  "item.dohy.plan.help.menu": "Clic droit en l'air : le menu du plan",
+  "key.dohy.encyclopedia": "Encyclopedie"
 }

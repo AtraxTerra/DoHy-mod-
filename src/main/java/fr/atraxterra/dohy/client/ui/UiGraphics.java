@@ -181,7 +181,31 @@ public final class UiGraphics {
     // -- Texte -----------------------------------------------------------------
 
     public float width(FontDescription face, String text, float size) {
+        return measure(font, face, text, size);
+    }
+
+    /** La largeur d'un texte hors du dessin : la mise en page la demande avant le premier rendu. */
+    public static float measure(Font font, FontDescription face, String text, float size) {
         return font.width(Ui.text(face, clean(text))) * size / Ui.FONT_BASE;
+    }
+
+    /** Coupe un texte en lignes d'au plus {@code maxWidth} unites, hors du dessin. */
+    public static List<String> wrap(Font font, FontDescription face, String text, float size, float maxWidth) {
+        List<String> out = new ArrayList<>();
+        StringBuilder line = new StringBuilder();
+        for (String word : text.split(" ")) {
+            String candidate = line.isEmpty() ? word : line + " " + word;
+            if (measure(font, face, candidate, size) > maxWidth && !line.isEmpty()) {
+                out.add(line.toString());
+                line = new StringBuilder(word);
+            } else {
+                line = new StringBuilder(candidate);
+            }
+        }
+        if (!line.isEmpty()) {
+            out.add(line.toString());
+        }
+        return out;
     }
 
     /**
@@ -358,21 +382,7 @@ public final class UiGraphics {
 
     /** Coupe un texte en lignes d'au plus {@code maxWidth} unites. */
     public List<String> wrap(FontDescription face, String text, float size, float maxWidth) {
-        List<String> out = new ArrayList<>();
-        StringBuilder line = new StringBuilder();
-        for (String word : text.split(" ")) {
-            String candidate = line.isEmpty() ? word : line + " " + word;
-            if (width(face, candidate, size) > maxWidth && !line.isEmpty()) {
-                out.add(line.toString());
-                line = new StringBuilder(word);
-            } else {
-                line = new StringBuilder(candidate);
-            }
-        }
-        if (!line.isEmpty()) {
-            out.add(line.toString());
-        }
-        return out;
+        return wrap(font, face, text, size, maxWidth);
     }
 
     /** Dessine apres tout le reste : listes deroulantes ouvertes. */

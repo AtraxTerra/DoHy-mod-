@@ -89,5 +89,11 @@
   "tooltip.dohy.sorghum_bread.1": "Strength II, Speed II, Absorption I, 2 min  -  +2 hearts",
   "tooltip.dohy.sorghum_bread.2": "Regeneration II 30 s  -  Life Steal II 1 min",
   "item.dohy.kamut_bread": "Kamut Bread",
-  "tooltip.dohy.kamut_bread.1": "Clears harmful effects, then Immunity 2 min"
+  "tooltip.dohy.kamut_bread.1": "Clears harmful effects, then Immunity 2 min",
+  "item.dohy.plan": "Construction Plan",
+  "item.dohy.plan.of": "Plan: %s",
+  "item.dohy.plan.help.place": "Right-click a block: place the plan",
+  "item.dohy.plan.help.turn": "Sneak + right-click: turn a quarter",
+  "item.dohy.plan.help.menu": "Right-click in the air: plan menu",
+  "key.dohy.encyclopedia": "Encyclopedia"
 }

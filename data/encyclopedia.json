@@ -1,0 +1,2515 @@
+{
+  "categories": [
+    {
+      "id": "debuter",
+      "name": "Debuter",
+      "color": "22E558",
+      "icon": "minecraft:oak_sapling"
+    },
+    {
+      "id": "economie",
+      "name": "Economie",
+      "color": "FAC400",
+      "icon": "minecraft:emerald"
+    },
+    {
+      "id": "metiers",
+      "name": "Metiers",
+      "color": "2F5BEA",
+      "icon": "minecraft:iron_pickaxe"
+    },
+    {
+      "id": "palamod",
+      "name": "PalaMod",
+      "color": "EF3826",
+      "icon": "palamod:paladium_ingot"
+    },
+    {
+      "id": "donjons",
+      "name": "Donjons",
+      "color": "EC4FB5",
+      "icon": "palamod:manelios_key"
+    },
+    {
+      "id": "faction",
+      "name": "Faction",
+      "color": "FF7A2E",
+      "icon": "minecraft:white_banner"
+    },
+    {
+      "id": "terre",
+      "name": "La Terre",
+      "color": "2BC4C4",
+      "icon": "minecraft:filled_map"
+    },
+    {
+      "id": "lieux",
+      "name": "Lieux",
+      "color": "A9A9B3",
+      "icon": "dohy:terminal"
+    },
+    {
+      "id": "agriculture",
+      "name": "Agriculture",
+      "color": "8BC34A",
+      "icon": "minecraft:wheat"
+    },
+    {
+      "id": "technique",
+      "name": "Technique",
+      "color": "9E9E9E",
+      "icon": "minecraft:piston"
+    }
+  ],
+  "entries": [
+    {
+      "id": "bienvenue",
+      "category": "debuter",
+      "order": 0,
+      "icon": "minecraft:oak_sapling",
+      "title": "Bienvenue sur DoHy",
+      "card": [
+        "Par ou commencer",
+        "Les grandes lignes"
+      ],
+      "summary": [
+        "DoHy est un mod d'economie et de progression pense pour jouer seul : tu gagnes de l'argent en vendant ce que tu recoltes, tu montes quatre metiers, tu fondes ta faction et tu prends des pays sur une carte de la Terre.",
+        "Cette encyclopedie explique chaque systeme. Une fiche marquee NOUVEAU vient d'etre decouverte : tu viens de croiser son systeme en jouant."
+      ],
+      "sections": [
+        {
+          "title": "Tes premieres heures",
+          "text": [
+            "- Vends tes recoltes au shop ou dans le coffre de vente. Les prix baissent si tu vends trop du meme objet : varie.",
+            "- Fais les contrats du jour : ils changent chaque matin a 5 h.",
+            "- Chaque activite fait monter un metier : miner (Mineur), tuer (Chasseur), cultiver (Fermier), l'alchimie (Alchimiste).",
+            "- Mets ton argent a la banque : il rapporte des interets et ne se perd pas a la mort."
+          ]
+        },
+        {
+          "title": "Ensuite",
+          "text": [
+            "- Le PalaMod : paladium, titane, amethyste, leurs outils et leurs machines.",
+            "- Les donjons : 100 paliers par donjon, de l'equipement et un arbre de competences.",
+            "- La faction : fonde-la avec 100 lingots de paladium, protege ta base, monte en ligue.",
+            "- La Terre : sur la carte du monde reel, prends des pays aux nations rivales."
+          ]
+        }
+      ],
+      "commands": [
+        "J : ouvrir l'encyclopedie",
+        "/menu : le menu principal",
+        "/encyclopedie : le sommaire"
+      ],
+      "see": [
+        "menus",
+        "argent",
+        "shop",
+        "metiers"
+      ],
+      "discover": {
+        "always": true
+      }
+    },
+    {
+      "id": "menus",
+      "category": "debuter",
+      "order": 1,
+      "icon": "minecraft:compass",
+      "title": "Les menus et les touches",
+      "card": [
+        "Touches et raccourcis",
+        "Ou tout se trouve"
+      ],
+      "summary": [
+        "Tout DoHy passe par des menus : le menu principal regroupe les autres, et l'inventaire a ses raccourcis."
+      ],
+      "sections": [
+        {
+          "title": "Les touches",
+          "text": [
+            "- J : l'encyclopedie.",
+            "- G : ta faction.",
+            "- M : l'atlas, la carte du monde. N affiche ou cache la minicarte, = et - la zooment.",
+            "- K : ta monture.",
+            "! Les touches se changent dans les commandes du jeu."
+          ]
+        },
+        {
+          "title": "L'inventaire",
+          "text": [
+            "Le bouton rouge en haut a droite ouvre le menu principal, le bouton vert ? l'encyclopedie. La colonne de droite mene au shop, aux contrats, a la banque, a la faction et aux metiers. Le bouton CONCOURS ouvre le concours Trixium."
+          ]
+        }
+      ],
+      "commands": [
+        "/menu : le menu principal",
+        "/profil : ton profil RPG",
+        "/f : ta faction",
+        "/spawn : aller au spawn, ou en revenir"
+      ],
+      "see": [
+        "bienvenue",
+        "plans",
+        "spawn"
+      ],
+      "discover": {
+        "always": true
+      }
+    },
+    {
+      "id": "argent",
+      "category": "debuter",
+      "order": 2,
+      "icon": "minecraft:gold_ingot",
+      "title": "L'argent et la mort",
+      "card": [
+        "Gagner, garder, perdre",
+        "La penalite de mort"
+      ],
+      "summary": [
+        "L'argent se gagne surtout en vendant au shop, en finissant des contrats et en montant tes metiers. Ton solde s'affiche a l'ecran."
+      ],
+      "sections": [
+        {
+          "title": "La mort",
+          "text": [
+            "Tes trois premieres morts ne coutent rien. Ensuite, mourir te fait perdre 8 % de ton argent liquide, avec un plafond qui suit tes gains cumules.",
+            "- L'argent en banque ne se perd jamais.",
+            "- L'assurance, achetee a la banque, divise la perte par deux."
+          ]
+        },
+        {
+          "title": "Ou va l'argent",
+          "text": [
+            "Boosters, boxes, ameliorations definitives, autosell, faction, reserve d'or... Les grandes depenses de fin de partie sont les ameliorations."
+          ]
+        }
+      ],
+      "commands": [
+        "/money : ton solde",
+        "/bank : la banque"
+      ],
+      "see": [
+        "banque",
+        "shop",
+        "ameliorations"
+      ],
+      "progress": "argent",
+      "discover": {
+        "always": true
+      }
+    },
+    {
+      "id": "serveur",
+      "category": "debuter",
+      "order": 3,
+      "icon": "minecraft:clock",
+      "title": "Ton serveur 24 h sur 24",
+      "card": [
+        "La base tourne sans toi",
+        "Les heures de Paris"
+      ],
+      "summary": [
+        "Le mod est pense pour un serveur qui ne s'arrete jamais : tes claims restent charges quand tu n'es pas la, et toutes les heures du mod sont a l'heure de Paris."
+      ],
+      "sections": [
+        {
+          "title": "Pendant ton absence",
+          "text": [
+            "- Jusqu'a 64 chunks de tes claims restent charges : tes machines et tes fermes tournent.",
+            "- Rien ne t'attaque en ton absence : les nations n'assiegent que quand tu es connecte.",
+            "- A ton retour, apres plus de 30 minutes d'absence, un rapport resume ce que ta base a produit, l'argent, les nations et le monde."
+          ]
+        },
+        {
+          "title": "Les heures",
+          "text": [
+            "Les contrats et la Mine changent a 5 h, le classement de faction tombe le lundi a minuit, les events suivent le calendrier de Paladium."
+          ]
+        }
+      ],
+      "commands": [
+        "/rapport : le dernier rapport d'absence",
+        "/f charge : les chunks tenus"
+      ],
+      "see": [
+        "base_sans_toi",
+        "contrats",
+        "events"
+      ],
+      "discover": {
+        "always": true
+      }
+    },
+    {
+      "id": "plans",
+      "category": "debuter",
+      "order": 4,
+      "icon": "dohy:plan",
+      "title": "Les plans de construction",
+      "card": [
+        "Des hologrammes",
+        "Batir sans erreur"
+      ],
+      "summary": [
+        "Un plan de construction pose dans le monde l'hologramme d'une structure a plusieurs blocs : tu vois ou va chaque bloc, et ce qui manque. Il se recoit ici, ou se fabrique avec trois papiers et un lapis-lazuli."
+      ],
+      "sections": [
+        {
+          "title": "S'en servir",
+          "text": [
+            "- Clic droit sur un bloc : le plan se pose devant toi, dans le sens de ton regard. Un nouveau clic le deplace.",
+            "- Accroupi et clic droit : un quart de tour.",
+            "- Clic droit en l'air : le menu du plan, pour changer de structure ou de taille, le tourner, le retirer et voir la liste du materiel.",
+            "- Plan en main, la barre d'action compte les blocs en place.",
+            "- Tenu en main et pas encore pose, il montre ou il irait, sur le bloc vise."
+          ]
+        },
+        {
+          "title": "Les couleurs",
+          "text": [
+            "- Bleu : un bloc a poser.",
+            "- Rouge : un bloc a retirer, ce n'est pas le bon.",
+            "- Jaune : le bon bloc, pas encore pret (une obsidienne a charger, de l'eau qui coule).",
+            "- Voile vert : le bloc est en place."
+          ]
+        },
+        {
+          "title": "Les structures",
+          "text": [
+            "Le grinder, le chaudron de l'alchimiste, la boite a golem, l'enclos (cinq tailles), les structures de spawners (quatre paliers), le portail du Mineur et la reserve d'or (trois paliers)."
+          ]
+        }
+      ],
+      "commands": [
+        "/plan : cette fiche",
+        "/plan <structure> : recevoir le plan d'une structure"
+      ],
+      "see": [
+        "grinder",
+        "alchimie",
+        "golem",
+        "monture",
+        "spawners",
+        "dimension_mineur",
+        "reserve_or"
+      ],
+      "plans": [
+        "grinder",
+        "chaudron",
+        "boite_golem",
+        "enclos",
+        "spawners",
+        "portail_mineur",
+        "reserve"
+      ],
+      "discover": {
+        "always": true,
+        "items": [
+          "dohy:plan"
+        ],
+        "views": [
+          "dohy:plan"
+        ]
+      }
+    },
+    {
+      "id": "shop",
+      "category": "economie",
+      "order": 0,
+      "icon": "minecraft:emerald",
+      "title": "Le shop et les prix",
+      "card": [
+        "Acheter et vendre",
+        "Des prix qui bougent"
+      ],
+      "summary": [
+        "Le shop achete ce que tu recoltes et vend le reste. Chaque objet a un prix de base, mais plus tu en vends, plus il baisse ; la pression s'efface ensuite avec le temps, 10 % toutes les 20 minutes."
+      ],
+      "sections": [
+        {
+          "title": "Les regles",
+          "text": [
+            "- Ce qui se fabrique s'achete seulement : on ne revend pas un objet fabrique.",
+            "- Un minerai vaut plus que le metal que tu en tires a la main.",
+            "- Certains prix suivent un cours qui change chaque heure (l'agriculture).",
+            "! Varie ce que tu vends : la 10 000e pierre ne vaut plus grand-chose."
+          ]
+        },
+        {
+          "title": "Vendre vite",
+          "text": [
+            "Le coffre de vente du menu principal : depose, ferme, c'est vendu ; ce qui ne se vend pas te revient. L'autosell vend tout seul : c'est un achat de fin de partie."
+          ]
+        }
+      ],
+      "commands": [
+        "/shop : ouvrir le shop",
+        "/sell : le coffre de vente",
+        "/sell hand : vendre l'objet en main",
+        "/sellall : tout vendre d'un coup",
+        "/worth : ce que vaut l'objet en main"
+      ],
+      "see": [
+        "boutique",
+        "marche",
+        "collections",
+        "argent"
+      ],
+      "discover": {
+        "always": true,
+        "views": [
+          "dohy:shop"
+        ]
+      }
+    },
+    {
+      "id": "banque",
+      "category": "economie",
+      "order": 1,
+      "icon": "minecraft:chest_minecart",
+      "title": "La banque",
+      "card": [
+        "Epargne et interets",
+        "A l'abri de la mort"
+      ],
+      "summary": [
+        "La banque garde ton argent a l'abri de la penalite de mort et le fait fructifier : 0,25 % par jour reel, plafonne a 250 000 $ par jour, meme serveur ferme."
+      ],
+      "sections": [
+        {
+          "title": "Les frais",
+          "text": [
+            "Chaque depot coute 3 % : la banque est un coffre-fort, pas un compte courant."
+          ]
+        },
+        {
+          "title": "L'assurance",
+          "text": [
+            "L'assurance divise par deux ce que tu perds a ta prochaine mort."
+          ]
+        }
+      ],
+      "commands": [
+        "/bank : ouvrir la banque",
+        "/bank deposit <montant> : deposer",
+        "/bank withdraw <montant> : retirer",
+        "/bank insurance : acheter une assurance"
+      ],
+      "see": [
+        "argent",
+        "ameliorations"
+      ],
+      "progress": "argent",
+      "discover": {
+        "views": [
+          "dohy:bank"
+        ]
+      }
+    },
+    {
+      "id": "contrats",
+      "category": "economie",
+      "order": 2,
+      "icon": "minecraft:writable_book",
+      "title": "Contrats et demande du jour",
+      "card": [
+        "Quotidiens et hebdo",
+        "Le niveau global"
+      ],
+      "summary": [
+        "Chaque matin a 5 h, de nouveaux contrats quotidiens, et un contrat pour la semaine : recolter, miner, produire... Les finir rapporte de l'argent et fait monter ton niveau global."
+      ],
+      "sections": [
+        {
+          "title": "La demande du jour",
+          "text": [
+            "Certains objets sont plus demandes que d'autres ce jour-la : les vendre rapporte davantage."
+          ]
+        },
+        {
+          "title": "Le niveau global",
+          "text": [
+            "Il resume ta progression et s'affiche dans le menu principal."
+          ]
+        }
+      ],
+      "commands": [
+        "/contracts : tes contrats"
+      ],
+      "see": [
+        "shop",
+        "metiers",
+        "trixium"
+      ],
+      "progress": "contrats",
+      "discover": {
+        "always": true,
+        "views": [
+          "dohy:contracts"
+        ]
+      }
+    },
+    {
+      "id": "collections",
+      "category": "economie",
+      "order": 3,
+      "icon": "minecraft:bookshelf",
+      "title": "Les collections",
+      "card": [
+        "Recolter fait monter",
+        "25 paliers par objet"
+      ],
+      "summary": [
+        "Chaque objet recolte compte dans sa collection : 25 paliers, rapides au debut puis de plus en plus longs. Un palier releve le plancher du prix de vente de l'objet."
+      ],
+      "sections": [
+        {
+          "title": "Le prestige",
+          "text": [
+            "Une collection au bout peut passer en prestige, pour ecouler davantage sans faire chuter son prix."
+          ]
+        },
+        {
+          "title": "Ce qui ne compte pas",
+          "text": [
+            "Un bloc pose puis recasse ne compte pas : le mod retient les blocs que tu as poses."
+          ]
+        }
+      ],
+      "commands": [
+        "/collections : tes collections"
+      ],
+      "see": [
+        "shop",
+        "musee"
+      ],
+      "discover": {
+        "views": [
+          "dohy:collections"
+        ]
+      }
+    },
+    {
+      "id": "musee",
+      "category": "economie",
+      "order": 4,
+      "icon": "minecraft:enchanting_table",
+      "title": "Le musee",
+      "card": [
+        "Des pieces rares",
+        "Ailes completes : bonus"
+      ],
+      "summary": [
+        "Le musee expose des pieces rares, rangees par ailes. Un don est definitif ; une aile complete donne un bonus durable."
+      ],
+      "commands": [
+        "/museum : le musee"
+      ],
+      "see": [
+        "collections",
+        "ameliorations"
+      ],
+      "progress": "musee",
+      "discover": {
+        "views": [
+          "dohy:museum"
+        ]
+      }
+    },
+    {
+      "id": "boutique",
+      "category": "economie",
+      "order": 5,
+      "icon": "minecraft:gold_block",
+      "title": "Boutique : boosters et boxes",
+      "card": [
+        "Boosters et boxes",
+        "L'autosell"
+      ],
+      "summary": [
+        "La boutique vend les boosters (le prix de vente multiplie pendant 20 minutes), les boxes de PalaMod a ouvrir avec leurs cles, et l'autosell."
+      ],
+      "sections": [
+        {
+          "title": "Les boosters",
+          "text": [
+            "Un seul a la fois, et son minuteur continue a la deconnexion. Le montant booste ne pese pas sur les prix : constitue un stock avant de le lancer."
+          ]
+        },
+        {
+          "title": "Les boxes",
+          "text": [
+            "Amethyste, titane, paladium, endium, trixium... Leurs cles tombent en jouant (contrats, events, bases ennemies), et une roulette tire le lot. Le hall des boxes est au spawn."
+          ]
+        }
+      ],
+      "commands": [
+        "/boutique : la boutique",
+        "/spawn : le hall des boxes"
+      ],
+      "see": [
+        "shop",
+        "spawn",
+        "pierres_legendaires"
+      ],
+      "discover": {
+        "items": [
+          "palamod:crate_key_paladium"
+        ],
+        "views": [
+          "dohy:boutique",
+          "dohy:crate"
+        ]
+      }
+    },
+    {
+      "id": "marche",
+      "category": "economie",
+      "order": 6,
+      "icon": "minecraft:bell",
+      "title": "Le marche",
+      "card": [
+        "Les annonces du jour",
+        "Stocks limites"
+      ],
+      "summary": [
+        "Le marche imite un hotel des ventes pour un joueur seul : chaque jour, des annonces de vendeurs fictifs, en quantites limitees, a des prix qui varient."
+      ],
+      "commands": [
+        "/market : le marche"
+      ],
+      "see": [
+        "shop",
+        "marche_international"
+      ],
+      "discover": {
+        "views": [
+          "dohy:auction"
+        ]
+      }
+    },
+    {
+      "id": "ameliorations",
+      "category": "economie",
+      "order": 7,
+      "icon": "minecraft:nether_star",
+      "title": "Les ameliorations",
+      "card": [
+        "Achats definitifs",
+        "Huit branches"
+      ],
+      "summary": [
+        "Huit branches d'ameliorations permanentes, achetees en argent et de plus en plus cheres : c'est la grande destination de l'argent en fin de partie."
+      ],
+      "commands": [
+        "/menu : le menu principal, carte Ameliorations"
+      ],
+      "see": [
+        "argent",
+        "banque"
+      ],
+      "progress": "ameliorations",
+      "discover": {
+        "views": [
+          "dohy:upgrades"
+        ]
+      }
+    },
+    {
+      "id": "serveur_trading",
+      "category": "economie",
+      "order": 8,
+      "icon": "dohy:trading_server",
+      "title": "Le serveur de trading",
+      "card": [
+        "Un revenu passif",
+        "Sous tension"
+      ],
+      "summary": [
+        "Une machine qui change l'energie en argent : sous tension, elle produit 9 000 $ par heure dans sa caisse. Caisse pleine, apres 8 heures, elle s'arrete : il faut passer encaisser."
+      ],
+      "sections": [
+        {
+          "title": "Les regles",
+          "text": [
+            "- Quatre serveurs tournent a la fois par joueur ; les suivants attendent.",
+            "- Il s'alimente en energie de NTM NEXT, ou en FE d'un autre mod."
+          ]
+        }
+      ],
+      "see": [
+        "ntm",
+        "argent"
+      ],
+      "discover": {
+        "items": [
+          "dohy:trading_server"
+        ],
+        "views": [
+          "dohy:trading_server"
+        ]
+      }
+    },
+    {
+      "id": "metiers",
+      "category": "metiers",
+      "order": 0,
+      "icon": "minecraft:iron_pickaxe",
+      "title": "Les quatre metiers",
+      "card": [
+        "Mineur, Chasseur...",
+        "100 niveaux chacun"
+      ],
+      "summary": [
+        "Quatre metiers, ceux de Paladium : Mineur, Chasseur, Fermier et Alchimiste. Chacun a 100 niveaux ; chaque niveau paie de l'argent et parfois des objets de Paladium, et tous les 5 niveaux tombe une prime."
+      ],
+      "sections": [
+        {
+          "title": "Les deblocages",
+          "text": [
+            "Beaucoup d'objets de PalaMod demandent un niveau de metier pour etre utilises ou poses, pas pour etre fabriques. La fiche de chaque metier montre les prochains."
+          ]
+        },
+        {
+          "title": "La barre",
+          "text": [
+            "Une barre en haut de l'ecran montre le metier, son niveau et l'XP qui vient d'arriver."
+          ]
+        }
+      ],
+      "commands": [
+        "/metiers : tes metiers"
+      ],
+      "see": [
+        "mineur",
+        "chasseur",
+        "fermier",
+        "alchimiste"
+      ],
+      "progress": "metiers",
+      "discover": {
+        "always": true,
+        "views": [
+          "dohy:jobs",
+          "dohy:job_detail"
+        ]
+      }
+    },
+    {
+      "id": "mineur",
+      "category": "metiers",
+      "order": 1,
+      "icon": "palamod:paladium_pickaxe",
+      "title": "Mineur",
+      "card": [
+        "Miner et fondre",
+        "Outils de zone, aimant"
+      ],
+      "summary": [
+        "Le Mineur gagne son XP en minant et en fondant. Il debloque les outils de zone, l'aimant, les coffres de PalaMod, le compresseur a cobblestone et, tout au bout, le minerai de pepites d'endium."
+      ],
+      "sections": [
+        {
+          "title": "A retenir",
+          "text": [
+            "- Les minerais de PalaMod se rendent eux-memes : fonds-les au four ou au haut fourneau.",
+            "- La pioche des dieux monte de niveau avec les blocs casses, jusqu'au niveau 100.",
+            "- Mineur 90 : le portail de la dimension du Mineur.",
+            "- Mineur 95 : une chance infime de croiser le God Villager."
+          ]
+        }
+      ],
+      "see": [
+        "metiers",
+        "minerais",
+        "machines",
+        "dimension_mineur"
+      ],
+      "progress": "metier:miner"
+    },
+    {
+      "id": "chasseur",
+      "category": "metiers",
+      "order": 2,
+      "icon": "palamod:capture_sword",
+      "title": "Chasseur",
+      "card": [
+        "Tuer des creatures",
+        "Capture, spawners"
+      ],
+      "summary": [
+        "Le Chasseur gagne son XP en tuant des creatures. Il debloque la canne a peche en paladium, l'epee et la pierre de capture, le marteau de caverne et les spawners customises."
+      ],
+      "sections": [
+        {
+          "title": "A retenir",
+          "text": [
+            "- L'epee de capture enferme la creature tuee dans une pierre de capture vide.",
+            "- Le marteau de caverne recolte les ames des spawners de donjon pour remplir un spawner vide.",
+            "- Capturer une monture demande l'epee et la pierre de capture."
+          ]
+        }
+      ],
+      "see": [
+        "metiers",
+        "spawners",
+        "monture"
+      ],
+      "progress": "metier:hunter"
+    },
+    {
+      "id": "fermier",
+      "category": "metiers",
+      "order": 3,
+      "icon": "palamod:paladium_radius_hoe",
+      "title": "Fermier",
+      "card": [
+        "Recolter et produire",
+        "Houes, crusher, OGM"
+      ],
+      "summary": [
+        "Le Fermier gagne son XP en recoltant les cultures mures et en faisant tourner les machines de l'agriculture. Il debloque les houes a rayon, les seedplanters, le crusher, la hache en endium, le tracteur et la machine a OGM."
+      ],
+      "sections": [
+        {
+          "title": "A retenir",
+          "text": [
+            "- Les cultures de PalaMod donnent parfois un lingot a la place du fruit.",
+            "- La terre fertilisee fait pousser environ trois fois plus vite.",
+            "- Fermier 10 : le tracteur. Fermier 20 : la machine a OGM."
+          ]
+        }
+      ],
+      "see": [
+        "metiers",
+        "cultures",
+        "agriculture",
+        "tracteur"
+      ],
+      "progress": "metier:farmer"
+    },
+    {
+      "id": "alchimiste",
+      "category": "metiers",
+      "order": 4,
+      "icon": "minecraft:brewing_stand",
+      "title": "Alchimiste",
+      "card": [
+        "Seve et chaudron",
+        "Portails, enchantements"
+      ],
+      "summary": [
+        "L'Alchimiste gagne son XP avec la seve, le chaudron et les portails. Il debloque les arbres de PalaMod, l'extracteur, le chaudron, les potions, les portails a seve et les enchantements mystiques."
+      ],
+      "sections": [
+        {
+          "title": "A retenir",
+          "text": [
+            "- La seve se recolte a la fiole, avec l'extracteur.",
+            "- Les gemmes des withers les plus forts demandent un haut niveau d'Alchimiste."
+          ]
+        }
+      ],
+      "see": [
+        "metiers",
+        "alchimie",
+        "withers"
+      ],
+      "progress": "metier:alchemist"
+    },
+    {
+      "id": "minerais",
+      "category": "palamod",
+      "order": 0,
+      "icon": "palamod:paladium_ingot",
+      "title": "Minerais et materiaux",
+      "card": [
+        "Paladium, titane...",
+        "Les metaux du mod"
+      ],
+      "summary": [
+        "Le PalaMod ajoute l'amethyste, le titane, le paladium, le paladium vert, le findium, le trixium et l'endium. Leurs minerais se rendent eux-memes : il faut les fondre."
+      ],
+      "sections": [
+        {
+          "title": "Les grandes lignes",
+          "text": [
+            "- Amethyste, titane, paladium : les metaux des outils et des armures, du moins fort au plus fort.",
+            "- Findium : un minerai rare, demande par de nombreuses recettes.",
+            "- Endium : le metal de fin de partie ; ses pepites naissent dans la dimension du Mineur.",
+            "- Trixium : le minerai du concours Trixium.",
+            "! Sur la carte de la Terre, les minerais suivent la geologie reelle."
+          ]
+        }
+      ],
+      "see": [
+        "equipement",
+        "machines",
+        "gisements",
+        "trixium"
+      ],
+      "discover": {
+        "items": [
+          "palamod:paladium_ingot",
+          "palamod:titane_ingot",
+          "palamod:amethyst_ingot",
+          "palamod:paladium_ore",
+          "palamod:titane_ore",
+          "palamod:amethyst_ore"
+        ]
+      }
+    },
+    {
+      "id": "machines",
+      "category": "palamod",
+      "order": 1,
+      "icon": "palamod:cobblebreaker",
+      "title": "Les machines de PalaMod",
+      "card": [
+        "Cobblebreaker, crusher",
+        "Palafurnace, palaforge"
+      ],
+      "summary": [
+        "Les machines de PalaMod transforment la pierre et les fruits en metaux, et recyclent l'equipement."
+      ],
+      "sections": [
+        {
+          "title": "Les machines",
+          "text": [
+            "- Cobblebreaker : casse de la cobblestone et sort des particules de minerai ; trois ameliorations l'accelerent.",
+            "- Crusher : fond les fruits des cultures avec des charbons mixes et rend des lingots.",
+            "- Palafurnace : un four qui accelere avec ses ameliorations.",
+            "- Palaforge : refond un equipement en lingots, selon son usure.",
+            "- Entonnoir en paladium : prend la pile entiere, et aspire les objets au sol."
+          ]
+        },
+        {
+          "title": "Automatiser",
+          "text": [
+            "Un entonnoir sous le cobblebreaker et le crusher ne recupere que leurs produits."
+          ]
+        }
+      ],
+      "see": [
+        "minerais",
+        "cultures",
+        "grinder"
+      ],
+      "discover": {
+        "items": [
+          "palamod:cobblebreaker",
+          "palamod:crusher",
+          "palamod:paladium_furnace",
+          "palamod:palaforge"
+        ]
+      }
+    },
+    {
+      "id": "equipement",
+      "category": "palamod",
+      "order": 2,
+      "icon": "palamod:paladium_sword",
+      "title": "Outils, armes et armures",
+      "card": [
+        "Du plus faible",
+        "au plus fort"
+      ],
+      "summary": [
+        "Chaque metal de PalaMod a ses outils, ses armes et son armure : amethyste, titane, paladium, puis l'endium. Les outils creusent deux a quatre fois plus vite que ceux de Minecraft."
+      ],
+      "sections": [
+        {
+          "title": "A savoir",
+          "text": [
+            "- Chaque objet se repare avec son metal, sauf l'armure en paladium, qui se repare au titane.",
+            "- Certaines panoplies donnent des effets : les bottes en endium mixe annulent toute chute.",
+            "- Houes a rayon et seedplanters labourent et sement par zones."
+          ]
+        }
+      ],
+      "see": [
+        "minerais",
+        "grinder",
+        "pvp"
+      ],
+      "discover": {
+        "items": [
+          "palamod:paladium_sword",
+          "palamod:paladium_chestplate",
+          "palamod:titane_sword",
+          "palamod:amethyst_sword"
+        ]
+      }
+    },
+    {
+      "id": "grinder",
+      "category": "palamod",
+      "order": 3,
+      "icon": "palamod:grinder",
+      "title": "Le grinder",
+      "card": [
+        "Multibloc 3 x 3 x 3",
+        "Forge les outils"
+      ],
+      "summary": [
+        "Le grinder forge les outils en paladium et leurs modificateurs : marteaux, broadswords, fastswords. C'est un multibloc : un cube de 3 x 3 x 3, le grinder au milieu d'une face, une source de lave au centre."
+      ],
+      "sections": [
+        {
+          "title": "La structure",
+          "text": [
+            "- 1 grinder, 5 casings au milieu des autres faces, 20 cadres sur les aretes et les coins, 1 source de lave au centre.",
+            "- Le cube peut partir de n'importe quel cote du grinder.",
+            "! Le plan de construction montre ou va chaque bloc."
+          ]
+        },
+        {
+          "title": "La machine",
+          "text": [
+            "Six cases : sortie, deux entrees, modificateur, outil, carburant. Le reservoir tient 100 paladium, rempli par des lingots, des blocs ou de l'equipement en paladium.",
+            "- Les marteaux creusent en 3 x 3.",
+            "- La pioche des dieux est incassable et monte jusqu'au niveau 100 en cassant des blocs."
+          ]
+        }
+      ],
+      "see": [
+        "equipement",
+        "machines",
+        "plans"
+      ],
+      "plans": [
+        "grinder"
+      ],
+      "discover": {
+        "items": [
+          "palamod:grinder",
+          "palamod:grinder_frame",
+          "palamod:grinder_casing"
+        ]
+      }
+    },
+    {
+      "id": "alchimie",
+      "category": "palamod",
+      "order": 4,
+      "icon": "palamod:cauldron_core",
+      "title": "L'alchimie",
+      "card": [
+        "Seve et chaudron",
+        "Portails, potions"
+      ],
+      "summary": [
+        "L'alchimie de PalaMod part de quatre arbres (jacaranda, judee, erable, ostrya) dont on tire la seve, et mene au chaudron, aux potions, aux portails a seve et aux enchantements mystiques."
+      ],
+      "sections": [
+        {
+          "title": "La seve",
+          "text": [
+            "L'extracteur, tourne vers une buche a seve, remplit peu a peu une fiole. Une fiole pleine vaut un seau."
+          ]
+        },
+        {
+          "title": "Le chaudron",
+          "text": [
+            "- Un plancher de 7 x 7 blocs du chaudron, un anneau de 5 x 5 au-dessus, puis le coeur pose en dernier au centre du plancher : la foudre tombe et le chaudron est forme.",
+            "- Le bassin de 3 x 3 dans l'anneau se remplit d'eau angelique.",
+            "! Le plan de construction montre la forme complete."
+          ]
+        },
+        {
+          "title": "Plus loin",
+          "text": [
+            "- Les portails a seve sont des autels : une cle inseree emplit leur centre.",
+            "- Seize bibliotheques mystiques autour d'une table d'enchantement ouvrent la table de l'Alchimiste."
+          ]
+        }
+      ],
+      "see": [
+        "alchimiste",
+        "withers",
+        "plans"
+      ],
+      "plans": [
+        "chaudron"
+      ],
+      "discover": {
+        "items": [
+          "palamod:cauldron_core",
+          "palamod:cauldron",
+          "palamod:extractor",
+          "palamod:flask"
+        ],
+        "views": [
+          "dohy:mystic_enchant"
+        ]
+      }
+    },
+    {
+      "id": "golem",
+      "category": "palamod",
+      "order": 5,
+      "icon": "palamod:guardian_stone",
+      "title": "Le golem gardien",
+      "card": [
+        "Il garde ta base",
+        "40 niveaux, 3 voies"
+      ],
+      "summary": [
+        "Le golem gardien defend ta base et monte de niveau : 40 niveaux et un arbre a trois voies. Il s'eveille d'une pierre de gardien frappee sur un bloc gardien pose sur un T renverse de blocs de paladium."
+      ],
+      "sections": [
+        {
+          "title": "Le golem",
+          "text": [
+            "- Il se nourrit de croquettes, faites par la machine a croquettes.",
+            "- Ses voies : utilitaire, guerriere ou farmeur ; les deux dernieres s'excluent.",
+            "- Il attaque les soldats des nations qui assiegent ta base."
+          ]
+        },
+        {
+          "title": "La boite a golem",
+          "text": [
+            "Un cube de 3 x 3 x 3 : 25 cadres, la boite au milieu d'une face, une source d'eau angelique au centre. Trois mini golems y produisent du metal en mangeant des croquettes.",
+            "! Le plan de construction montre la boite."
+          ]
+        }
+      ],
+      "commands": [
+        "/guardiangolem : les commandes du golem"
+      ],
+      "see": [
+        "guerre",
+        "plans"
+      ],
+      "plans": [
+        "boite_golem"
+      ],
+      "discover": {
+        "items": [
+          "palamod:guardian_stone",
+          "palamod:guardian_block",
+          "palamod:guardian_box_block",
+          "palamod:mini_golem"
+        ],
+        "views": [
+          "dohy:golem_main",
+          "dohy:golem_tree",
+          "dohy:golem_choices"
+        ]
+      }
+    },
+    {
+      "id": "monture",
+      "category": "palamod",
+      "order": 6,
+      "icon": "palamod:mount_gemstone",
+      "title": "Le Dancarok et l'enclos",
+      "card": [
+        "Une monture qui creuse",
+        "L'enclos, 5 tailles"
+      ],
+      "summary": [
+        "Le Dancarok est une monture lente et solide. Avec une corne, il creuse devant lui comme un marteau. On le capture a l'epee et a la pierre de capture, puis on l'apprivoise dans un enclos."
+      ],
+      "sections": [
+        {
+          "title": "L'enclos",
+          "text": [
+            "- Un carre de foin de 3 x 3 a 7 x 7, tout autour un anneau de fondations d'enclos portant chacune une barriere d'enclos, et le gestionnaire pose sur le foin.",
+            "- Une couveuse posee sur le foin permet les soins aux bandages.",
+            "! Le plan de construction propose les cinq tailles."
+          ]
+        },
+        {
+          "title": "La monture",
+          "text": [
+            "Sa gemme la garde ; elle a ses niveaux, sa vie et son energie. Les cornes d'amethyste, de titane et de paladium creusent de plus en plus large."
+          ]
+        }
+      ],
+      "commands": [
+        "K : la touche de la monture",
+        "/mount : les commandes de la monture"
+      ],
+      "see": [
+        "chasseur",
+        "plans"
+      ],
+      "plans": [
+        "enclos"
+      ],
+      "discover": {
+        "items": [
+          "palamod:mount_gemstone",
+          "palamod:barn_controller"
+        ],
+        "views": [
+          "dohy:mount_home",
+          "dohy:mount_barn",
+          "dohy:mount_heal"
+        ]
+      }
+    },
+    {
+      "id": "spawners",
+      "category": "palamod",
+      "order": 7,
+      "icon": "palamod:spawner_controller",
+      "title": "Spawners et controleur",
+      "card": [
+        "Des ames, 4 paliers",
+        "Une grande structure"
+      ],
+      "summary": [
+        "Un spawner customise se remplit d'ames, jusqu'a 250, et passe du palier I au palier IV. Le controleur de spawners, au coeur d'une structure, les fait tourner ensemble."
+      ],
+      "sections": [
+        {
+          "title": "Les ames",
+          "text": [
+            "Le marteau de caverne recolte une ame sur un spawner de donjon ; elle va dans un spawner vide de la meme creature. Paliers : 100, 150, 200 et 250 ames."
+          ]
+        },
+        {
+          "title": "La structure",
+          "text": [
+            "Quatre structures, de 7 x 7 a 17 x 17 : paladium, paladium vert au centre, obsidienne, sable des ames et les obsidiennes infusees du palier. Les spawners et les coffres vont dans les cases libres.",
+            "! Le plan de construction montre les quatre paliers, etage par etage."
+          ]
+        }
+      ],
+      "see": [
+        "chasseur",
+        "plans"
+      ],
+      "plans": [
+        "spawners"
+      ],
+      "discover": {
+        "items": [
+          "palamod:spawner_controller",
+          "palamod:empty_mob_spawner",
+          "palamod:broken_spawner"
+        ]
+      }
+    },
+    {
+      "id": "dimension_mineur",
+      "category": "palamod",
+      "order": 8,
+      "icon": "palamod:withered_obsidian",
+      "title": "La dimension du Mineur",
+      "card": [
+        "Mineur 90",
+        "Les pepites d'endium"
+      ],
+      "summary": [
+        "Une dimension de minage pour les Mineurs de niveau 90 : minerais trois fois plus abondants, nuit fixe, ni monstres ni degats de chute. C'est la seule source de pepites d'endium."
+      ],
+      "sections": [
+        {
+          "title": "Le portail",
+          "text": [
+            "- Un cadre d'obsidienne wither, de 2 x 3 a 21 x 21 a l'interieur, les coins libres.",
+            "- Chaque obsidienne wither se charge avec dix blocs de paladium.",
+            "- Elle s'obtient au piston renforce wither.",
+            "! Le plan de construction montre le plus petit cadre."
+          ]
+        },
+        {
+          "title": "Les regles",
+          "text": [
+            "Des sections de 5 000 blocs, 1 000 points a gagner, trois jours."
+          ]
+        }
+      ],
+      "commands": [
+        "/dimminer : les commandes de la dimension"
+      ],
+      "see": [
+        "mineur",
+        "minerais",
+        "plans"
+      ],
+      "plans": [
+        "portail_mineur"
+      ],
+      "discover": {
+        "items": [
+          "palamod:withered_obsidian"
+        ],
+        "dimensions": [
+          "palamod:miner"
+        ],
+        "views": [
+          "dohy:dimminer_entry",
+          "dohy:dimminer_summary"
+        ]
+      }
+    },
+    {
+      "id": "pierres_legendaires",
+      "category": "palamod",
+      "order": 9,
+      "icon": "palamod:legendary_stone_random",
+      "title": "Pierres legendaires et gant",
+      "card": [
+        "Sept pierres",
+        "Le gant en endium"
+      ],
+      "summary": [
+        "Sept pierres legendaires : teleportation, invisibilite, fortune, pouvoir, metier, chaos, et l'aleatoire. Chacune se recharge en 24 heures. Le gant en endium les rassemble."
+      ],
+      "sections": [
+        {
+          "title": "A savoir",
+          "text": [
+            "- On les trouve dans les boxes rare et legendaire.",
+            "- La pierre de pouvoir donne 30 minutes de resistance au feu."
+          ]
+        }
+      ],
+      "see": [
+        "boutique",
+        "pvp"
+      ],
+      "discover": {
+        "items": [
+          "palamod:legendary_stone_random",
+          "palamod:legendary_stone_chaos",
+          "palamod:legendary_stone_fortune",
+          "palamod:endium_gauntlet"
+        ]
+      }
+    },
+    {
+      "id": "pvp",
+      "category": "palamod",
+      "order": 10,
+      "icon": "palamod:strength_stick",
+      "title": "Sticks, anneaux, deltaplane",
+      "card": [
+        "Les objets de combat",
+        "La palamachine"
+      ],
+      "summary": [
+        "Les objets de combat de PalaMod : sept sticks a effets, des orbes, six anneaux, l'aile et le deltaplane, le slimepad. La palamachine les cree et les repare."
+      ],
+      "sections": [
+        {
+          "title": "A savoir",
+          "text": [
+            "- Chaque stick a sa recharge.",
+            "- Les anneaux se portent dans une colonne des coffres de PalaMod, et se reparent un nombre limite de fois."
+          ]
+        }
+      ],
+      "see": [
+        "equipement",
+        "pierres_legendaires"
+      ],
+      "discover": {
+        "items": [
+          "palamod:palamachine",
+          "palamod:strength_stick",
+          "palamod:small_ring",
+          "palamod:hang_glider"
+        ]
+      }
+    },
+    {
+      "id": "clicker",
+      "category": "palamod",
+      "order": 11,
+      "icon": "minecraft:cookie",
+      "title": "Le clicker",
+      "card": [
+        "Nourris les namuus",
+        "Le Clic Shop"
+      ],
+      "summary": [
+        "Le clicker de Paladium : nourris les namuus, achete des batiments et des ameliorations, et depense tes ClicCoins au Clic Shop."
+      ],
+      "commands": [
+        "/clicker : ouvrir le clicker"
+      ],
+      "see": [
+        "boutique"
+      ],
+      "discover": {
+        "views": [
+          "dohy:clicker"
+        ]
+      }
+    },
+    {
+      "id": "trixium",
+      "category": "palamod",
+      "order": 12,
+      "icon": "palamod:trixium",
+      "title": "Le concours Trixium",
+      "card": [
+        "Chaque mois",
+        "Un classement"
+      ],
+      "summary": [
+        "Chaque mois, depose du trixium pour grimper au classement face a des rivaux, et recupere les paliers de recompenses. Des commandes de trixium tombent aussi chaque jour a midi."
+      ],
+      "commands": [
+        "/trixium : le concours"
+      ],
+      "see": [
+        "minerais",
+        "contrats"
+      ],
+      "discover": {
+        "items": [
+          "palamod:trixium"
+        ],
+        "views": [
+          "dohy:trixium"
+        ]
+      }
+    },
+    {
+      "id": "succes",
+      "category": "palamod",
+      "order": 13,
+      "icon": "minecraft:golden_apple",
+      "title": "Les succes",
+      "card": [
+        "Partout dans le mod",
+        "Une prime chacun"
+      ],
+      "summary": [
+        "Des succes a valider partout dans le mod, chacun avec une prime en argent selon sa difficulte."
+      ],
+      "commands": [
+        "/menu : le menu principal, carte Succes"
+      ],
+      "see": [
+        "metiers",
+        "donjons"
+      ],
+      "progress": "succes",
+      "discover": {
+        "always": true,
+        "views": [
+          "dohy:achievements"
+        ]
+      }
+    },
+    {
+      "id": "withers",
+      "category": "palamod",
+      "order": 14,
+      "icon": "palamod:wither_receptacle",
+      "title": "Les withers du pillage",
+      "card": [
+        "Le receptacle",
+        "Six gemmes"
+      ],
+      "summary": [
+        "Le receptacle a wither invoque des withers a partir de gemmes, du bebe wither au wither supreme. Il faut une faction et la cle de l'arbre de ce wither."
+      ],
+      "sections": [
+        {
+          "title": "A savoir",
+          "text": [
+            "- Les withers assoiffe, predateur et supreme demandent un haut niveau d'Alchimiste.",
+            "- Le laser guide les withers predateur et supreme vers un point.",
+            "- La selle de wither monte les plus doux, pas l'assoiffe, le predateur ni le supreme."
+          ]
+        }
+      ],
+      "see": [
+        "pillage",
+        "alchimiste",
+        "arbre_techno"
+      ],
+      "discover": {
+        "items": [
+          "palamod:wither_receptacle",
+          "palamod:wither_gem"
+        ]
+      }
+    },
+    {
+      "id": "donjons",
+      "category": "donjons",
+      "order": 0,
+      "icon": "palamod:manelios_key",
+      "title": "Les donjons",
+      "card": [
+        "4 donjons, 100 paliers",
+        "Des boss nommes"
+      ],
+      "summary": [
+        "Quatre donjons de 100 paliers, ouverts par leur cle. Un palier enchaine des salles de combat, d'enigme, de boost et une marchande ; un mini-boss garde les paliers en 5, un boss ceux en 0. Mourir fait echouer le palier."
+      ],
+      "sections": [
+        {
+          "title": "Les monstres",
+          "text": [
+            "Six types de monstres, plus durs avec le palier et colores par tranche : jaune (1 a 25), orange, rouge, puis noir (76 a 100). Quarante boss nommes."
+          ]
+        },
+        {
+          "title": "Les recompenses",
+          "text": [
+            "- Un coffre en fin de palier, et une note de D a S qui ouvre un meilleur coffre.",
+            "- De l'XP de metier et de l'XP RPG.",
+            "- Les sacs de donjon gardent le butin."
+          ]
+        }
+      ],
+      "commands": [
+        "/donjon : les commandes des donjons"
+      ],
+      "see": [
+        "equipement_donjon",
+        "rpg"
+      ],
+      "discover": {
+        "items": [
+          "palamod:manelios_key",
+          "palamod:nimbria_key",
+          "palamod:talikus_key",
+          "palamod:vitalys_key"
+        ],
+        "dimensions": [
+          "palamod:dungeon"
+        ],
+        "views": [
+          "dohy:dungeon_paliers",
+          "dohy:dungeon_bag",
+          "dohy:dungeon_boost",
+          "dohy:dungeon_merchant"
+        ]
+      }
+    },
+    {
+      "id": "equipement_donjon",
+      "category": "donjons",
+      "order": 1,
+      "icon": "palamod:manelios_legendary_sword",
+      "title": "Equipement de donjon",
+      "card": [
+        "Basique, renforce",
+        "puis legendaire"
+      ],
+      "summary": [
+        "Chaque donjon a ses armures et ses epees, basiques, renforcees puis legendaires : fortes surtout en donjon, et a plein dans le leur. Le set antique du palier 100 vient en plus."
+      ],
+      "sections": [
+        {
+          "title": "A savoir",
+          "text": [
+            "- Les essences de chaque element reparent l'equipement a l'enclume.",
+            "- Le set antique complet donne le vol et l'invisibilite hors donjon."
+          ]
+        }
+      ],
+      "see": [
+        "donjons",
+        "rpg"
+      ],
+      "discover": {
+        "items": [
+          "palamod:manelios_sword",
+          "palamod:nimbria_sword",
+          "palamod:talikus_sword",
+          "palamod:vitalys_sword",
+          "palamod:antique_chestplate"
+        ]
+      }
+    },
+    {
+      "id": "rpg",
+      "category": "donjons",
+      "order": 2,
+      "icon": "minecraft:totem_of_undying",
+      "title": "Profil RPG, arbre et runes",
+      "card": [
+        "Le niveau RPG",
+        "Un arbre, des runes"
+      ],
+      "summary": [
+        "Les donjons ont leur propre progression : le niveau RPG, sur 100 niveaux, donne des points a placer dans un arbre de quatre branches. Les statistiques RPG ne valent qu'en donjon."
+      ],
+      "sections": [
+        {
+          "title": "Les runes",
+          "text": [
+            "Communes, rares et epiques, elles se trouvent dans les coffres et se posent a la palamachine, a l'enclume ou au grinder."
+          ]
+        }
+      ],
+      "commands": [
+        "/profil : ton profil RPG"
+      ],
+      "see": [
+        "donjons",
+        "equipement_donjon"
+      ],
+      "progress": "rpg",
+      "discover": {
+        "items": [
+          "palamod:rune_common",
+          "palamod:rune_rare",
+          "palamod:rune_epic"
+        ],
+        "views": [
+          "dohy:rpg"
+        ]
+      }
+    },
+    {
+      "id": "faction",
+      "category": "faction",
+      "order": 0,
+      "icon": "minecraft:white_banner",
+      "title": "Ta faction",
+      "card": [
+        "Fonder, claimer",
+        "Banque et homes"
+      ],
+      "summary": [
+        "Seul, ta faction est ta base et ta progression. Elle se fonde avec 100 lingots de paladium : un nom, une description, deux tags et un blason."
+      ],
+      "sections": [
+        {
+          "title": "Les claims",
+          "text": [
+            "- Un claim protege un chunk contre le monde : explosions de monstres, endermen, champs pietines, foudre.",
+            "- Chaque claim peut refuser l'apparition des monstres."
+          ]
+        },
+        {
+          "title": "La banque de faction",
+          "text": [
+            "Elle paie l'arbre de technologie, la reserve d'or et les bases ennemies. Pendant un assaut des nations, rien n'en sort."
+          ]
+        },
+        {
+          "title": "Les homes",
+          "text": [
+            "Des points de retour, dans tes claims."
+          ]
+        }
+      ],
+      "commands": [
+        "G : la page de ta faction",
+        "/f : ta faction",
+        "/f create : fonder ta faction",
+        "/f claim : claimer le chunk ou tu es",
+        "/f home : rentrer a ton home",
+        "/f sethome : poser un home ici"
+      ],
+      "see": [
+        "elo",
+        "arbre_techno",
+        "reserve_or",
+        "guerre"
+      ],
+      "progress": "faction",
+      "discover": {
+        "views": [
+          "dohy:faction",
+          "dohy:faction_bank",
+          "dohy:faction_claims",
+          "dohy:faction_open",
+          "dohy:faction_edit"
+        ]
+      }
+    },
+    {
+      "id": "elo",
+      "category": "faction",
+      "order": 1,
+      "icon": "minecraft:golden_sword",
+      "title": "ELO et ligues",
+      "card": [
+        "Gagner de l'ELO",
+        "Argent, Or, Platine..."
+      ],
+      "summary": [
+        "Chaque victoire de faction, aux events, contre les bases ennemies ou face a un assaut des nations, rapporte de l'ELO. Les ligues se fixent le lundi : Argent a 5 000, Or a 15 000, Platine a 35 000 et Diamant a 75 000 d'ELO cumule."
+      ],
+      "commands": [
+        "/f elo : ton ELO"
+      ],
+      "see": [
+        "events",
+        "bases_ennemies",
+        "notation"
+      ],
+      "progress": "faction",
+      "discover": {
+        "views": [
+          "dohy:faction_ranking"
+        ]
+      }
+    },
+    {
+      "id": "arbre_techno",
+      "category": "faction",
+      "order": 2,
+      "icon": "minecraft:enchanted_book",
+      "title": "L'arbre de technologie",
+      "card": [
+        "Global, Pillage",
+        "Defense, Economie"
+      ],
+      "summary": [
+        "Quatre branches : Global, Pillage, Defense et Economie. Un palier se paie avec la banque de faction (et de l'or liquide pour l'Economie), demande ses conditions, puis s'ameliore pendant une duree reelle, de 2 heures a 14 jours."
+      ],
+      "sections": [
+        {
+          "title": "Les deblocages",
+          "text": [
+            "Les objets de defense et de pillage se fabriquent librement, mais leur pose ou leur usage demande le palier qui les debloque."
+          ]
+        }
+      ],
+      "commands": [
+        "/f arbre : l'arbre de technologie"
+      ],
+      "see": [
+        "defense",
+        "pillage",
+        "reserve_or"
+      ],
+      "discover": {
+        "views": [
+          "dohy:faction_tree",
+          "dohy:faction_branch"
+        ]
+      }
+    },
+    {
+      "id": "defense",
+      "category": "faction",
+      "order": 3,
+      "icon": "palamod:hardened_obsidian",
+      "title": "Objets de defense",
+      "card": [
+        "Obsidiennes, spikes",
+        "Fake Water, amulettes"
+      ],
+      "summary": [
+        "Obsidiennes a effets, obsidienne renforcee, spikes, Fake Water, eponges, brouilleur, enclumes, amulettes... de quoi proteger ta base."
+      ],
+      "sections": [
+        {
+          "title": "A savoir",
+          "text": [
+            "- L'obsidienne renforcee ne se mine pas et resiste a la TNT ordinaire ; un wither la casse.",
+            "- Leur pose demande le palier Defense de l'arbre."
+          ]
+        }
+      ],
+      "see": [
+        "arbre_techno",
+        "guerre"
+      ],
+      "discover": {
+        "items": [
+          "palamod:hardened_obsidian",
+          "palamod:boom_obsidian",
+          "palamod:fake_water_bucket"
+        ]
+      }
+    },
+    {
+      "id": "pillage",
+      "category": "faction",
+      "order": 4,
+      "icon": "palamod:dynamite",
+      "title": "Objets de pillage",
+      "card": [
+        "Dynamites, TNT",
+        "Unclaim Finder"
+      ],
+      "summary": [
+        "Dynamites, TNT speciales, Unclaim Finder, explorateur de coffre, arc en paladium, fleche de Switch... pour piller les bases ennemies."
+      ],
+      "sections": [
+        {
+          "title": "A savoir",
+          "text": [
+            "- Les dynamites se collent au premier bloc ou a la premiere creature touches, et sautent peu apres.",
+            "- Leur usage demande le palier Pillage de l'arbre."
+          ]
+        }
+      ],
+      "see": [
+        "bases_ennemies",
+        "withers",
+        "arbre_techno"
+      ],
+      "discover": {
+        "items": [
+          "palamod:dynamite",
+          "palamod:big_dynamite",
+          "palamod:unclaim_finder"
+        ],
+        "views": [
+          "dohy:chest_explorer"
+        ]
+      }
+    },
+    {
+      "id": "reserve_or",
+      "category": "faction",
+      "order": 5,
+      "icon": "palamod:liquid_gold",
+      "title": "La reserve d'or",
+      "card": [
+        "Placer l'argent",
+        "Un cube de 5 a 7"
+      ],
+      "summary": [
+        "La banque de faction place son argent dans une reserve batie dans tes claims, et recolte des interets. La reserve est un cube de 5, 6 ou 7 de cote."
+      ],
+      "sections": [
+        {
+          "title": "Le cube",
+          "text": [
+            "- Le dessus, le dessous et les aretes : coffres-forts de faction.",
+            "- L'interieur de chaque face laterale : vitres de coffre-fort.",
+            "- Dedans : de l'or liquide, qui fixe ce que la reserve peut accueillir.",
+            "! Le plan de construction montre les trois tailles."
+          ]
+        },
+        {
+          "title": "Les placements",
+          "text": [
+            "Choisis un montant et une duree ; a l'echeance, la mise revient avec ses interets."
+          ]
+        }
+      ],
+      "commands": [
+        "/f reserve : la reserve d'or"
+      ],
+      "see": [
+        "faction",
+        "arbre_techno",
+        "plans"
+      ],
+      "plans": [
+        "reserve"
+      ],
+      "discover": {
+        "items": [
+          "palamod:faction_safe",
+          "palamod:vault_glass",
+          "palamod:liquid_gold"
+        ],
+        "views": [
+          "dohy:faction_reserve"
+        ]
+      }
+    },
+    {
+      "id": "events",
+      "category": "faction",
+      "order": 6,
+      "icon": "minecraft:end_crystal",
+      "title": "Les events de faction",
+      "card": [
+        "Boss, KOTH, Totem",
+        "Egg Hunt"
+      ],
+      "summary": [
+        "Des events aux heures fixes du calendrier de Paladium, dans la Warzone, contre des factions rivales : le Boss, le KOTH, le Totem et l'Egg Hunt. Ils ne partent que si tu es connecte et en faction."
+      ],
+      "sections": [
+        {
+          "title": "Les events",
+          "text": [
+            "- Le Boss : un des cinq boss du PalaMod, deux fois par jour.",
+            "- Le KOTH, le samedi a 21 h 30 : tenir la zone au sommet de la colline.",
+            "- Le Totem, le mercredi a 21 h : casser le totem bloc par bloc et rapporter chaque bloc.",
+            "- L'Egg Hunt, le mardi et le dimanche a 19 h : abattre Volcania, le dragon de l'ile."
+          ]
+        },
+        {
+          "title": "La Warzone",
+          "text": [
+            "Une dimension a part, une arene par event. Annonces 10, 5 et 1 minute avant le depart."
+          ]
+        }
+      ],
+      "commands": [
+        "/f event : les events"
+      ],
+      "see": [
+        "elo",
+        "pays"
+      ],
+      "discover": {
+        "dimensions": [
+          "palamod:warzone"
+        ],
+        "views": [
+          "dohy:faction_events"
+        ]
+      }
+    },
+    {
+      "id": "bases_ennemies",
+      "category": "faction",
+      "order": 7,
+      "icon": "minecraft:tnt",
+      "title": "Les bases ennemies",
+      "card": [
+        "A piller",
+        "Silo, bunker, radar..."
+      ],
+      "summary": [
+        "Sur demande, une faction fictive batit une place forte a plus de 9 000 blocs de toi : un silo, un bunker, une forteresse sovietique ou une base radar, en trois tailles. A toi de la piller."
+      ],
+      "sections": [
+        {
+          "title": "A savoir",
+          "text": [
+            "- Gardes, tourelles et mines de NTM NEXT la defendent.",
+            "- La salle forte garde le butin ; y entrer termine le raid.",
+            "- Le terrain revient comme avant apres le raid."
+          ]
+        }
+      ],
+      "commands": [
+        "/f base generer : generer une base ennemie"
+      ],
+      "see": [
+        "pillage",
+        "elo"
+      ],
+      "discover": {
+        "views": [
+          "dohy:faction_enemy_bases"
+        ]
+      }
+    },
+    {
+      "id": "notation",
+      "category": "faction",
+      "order": 8,
+      "icon": "minecraft:map",
+      "title": "La notation de la semaine",
+      "card": [
+        "Une note sur 100",
+        "Chaque lundi"
+      ],
+      "summary": [
+        "Chaque lundi a minuit, ta faction recoit une note sur 100, comme les pays de NationsGlory : activite, economie, commerce, militaire et territoire. Ton rang face aux douze nations fixe une bourse versee a la banque de faction."
+      ],
+      "see": [
+        "faction",
+        "pays",
+        "marche_international"
+      ],
+      "discover": {
+        "views": [
+          "dohy:faction_notation"
+        ]
+      }
+    },
+    {
+      "id": "base_sans_toi",
+      "category": "faction",
+      "order": 9,
+      "icon": "minecraft:respawn_anchor",
+      "title": "La base tourne sans toi",
+      "card": [
+        "Tes claims charges",
+        "Le rapport d'absence"
+      ],
+      "summary": [
+        "Tes claims restent charges en ton absence, 64 chunks au plus, les plus actifs d'abord : machines et fermes tournent. A ton retour, un rapport resume ce que ta base a produit, l'argent gagne, les nations et le monde."
+      ],
+      "commands": [
+        "/rapport : le dernier rapport",
+        "/f charge : les chunks tenus"
+      ],
+      "see": [
+        "serveur",
+        "faction"
+      ],
+      "discover": {
+        "views": [
+          "dohy:absence"
+        ]
+      }
+    },
+    {
+      "id": "guerre",
+      "category": "faction",
+      "order": 10,
+      "icon": "minecraft:crossbow",
+      "title": "La guerre des nations",
+      "card": [
+        "Ultimatum, assaut",
+        "Ta riposte"
+      ],
+      "summary": [
+        "Les douze nations rivales jugent ta base : ta banque, tes claims, leurs griefs, ta force. Une nation hostile t'envoie un ultimatum ou te declare la guerre, et c'est toi qui fixes l'heure de l'assaut."
+      ],
+      "sections": [
+        {
+          "title": "La diplomatie",
+          "text": [
+            "- Ultimatum : payer, negocier ou refuser. Refuser, c'est la guerre.",
+            "- Guerre declaree : choisis l'heure de l'assaut, entre 30 minutes et 48 heures plus tard.",
+            "- La paix s'achete, et un cadeau adoucit une nation.",
+            "- Jamais d'assaut en ton absence."
+          ]
+        },
+        {
+          "title": "L'assaut",
+          "text": [
+            "L'armee campe, perce tes murs, pose des echelles, jette des ponts, et son tresorier vient vider ta banque de faction. Le terrain revient apres la bataille."
+          ]
+        },
+        {
+          "title": "Ta riposte",
+          "text": [
+            "- Abats l'etendard du camp : plus de renforts.",
+            "- Tue le commandant : plus de nouveau plan.",
+            "- Tue le tresorier : ton argent revient.",
+            "! Designe ton coffre avec /guerre coffre, debout dans un de tes claims."
+          ]
+        }
+      ],
+      "commands": [
+        "/guerre : l'ecran de la guerre",
+        "/guerre coffre : designer ton coffre ici",
+        "/guerre heure <heure> : fixer l'heure de l'assaut",
+        "/guerre payer : payer un ultimatum",
+        "/guerre negocier : negocier un ultimatum",
+        "/guerre refuser : refuser un ultimatum"
+      ],
+      "see": [
+        "faction",
+        "golem",
+        "defense",
+        "pays"
+      ],
+      "progress": "guerre",
+      "discover": {
+        "views": [
+          "dohy:guerre"
+        ]
+      }
+    },
+    {
+      "id": "marche_international",
+      "category": "faction",
+      "order": 11,
+      "icon": "minecraft:emerald_block",
+      "title": "Le marche international",
+      "card": [
+        "25 ressources",
+        "Un stock mondial"
+      ],
+      "summary": [
+        "Un stock mondial pour 25 ressources, et un cours qui le suit : vendre fait baisser le cours, acheter le fait monter. Ouvert a toute faction."
+      ],
+      "commands": [
+        "/f marche : le marche international"
+      ],
+      "see": [
+        "marche",
+        "notation"
+      ],
+      "discover": {
+        "views": [
+          "dohy:faction_world_market"
+        ]
+      }
+    },
+    {
+      "id": "terre",
+      "category": "terre",
+      "order": 0,
+      "icon": "minecraft:filled_map",
+      "title": "La carte de la Terre",
+      "card": [
+        "Le monde reel",
+        "Pays, minerais, saisons"
+      ],
+      "summary": [
+        "Sur une carte du monde reel, avec son datapack, DoHy sait dans quel pays tu es, te lache au hasard sur une terre, et pose les minerais la ou le monde reel les exploite."
+      ],
+      "sections": [
+        {
+          "title": "En jeu",
+          "text": [
+            "- Au passage d'une frontiere, un titre annonce le pays et la nation qui le tient.",
+            "- Les minerais, le petrole et les gisements suivent la geographie.",
+            "- Les saisons suivent la latitude, et les catastrophes les vraies zones a risque."
+          ]
+        },
+        {
+          "title": "Hors de la carte",
+          "text": [
+            "Dans un monde ordinaire, ces systemes restent eteints."
+          ]
+        }
+      ],
+      "see": [
+        "pays",
+        "atlas",
+        "gisements",
+        "saisons"
+      ],
+      "progress": "terre"
+    },
+    {
+      "id": "pays",
+      "category": "terre",
+      "order": 1,
+      "icon": "minecraft:lodestone",
+      "title": "Les pays a prendre",
+      "card": [
+        "Ta capitale",
+        "Conquerir des pays"
+      ],
+      "summary": [
+        "Ta faction pose sa capitale dans un de ses claims, puis prend des pays entiers aux douze nations rivales : finir devant la nation qui tient le pays vise, aux events, rapporte des points de conquete. Chaque pays tenu ajoute un claim."
+      ],
+      "commands": [
+        "/pays : ta nation et tes pays",
+        "/pays capitale : poser ta capitale ici",
+        "/pays viser <pays> : viser un pays",
+        "/pays liste : les nations et leurs pays"
+      ],
+      "see": [
+        "terre",
+        "events",
+        "guerre",
+        "notation"
+      ],
+      "progress": "terre",
+      "discover": {
+        "views": [
+          "dohy:faction_nations"
+        ]
+      }
+    },
+    {
+      "id": "atlas",
+      "category": "terre",
+      "order": 2,
+      "icon": "minecraft:recovery_compass",
+      "title": "L'atlas et la minicarte",
+      "card": [
+        "La carte du monde",
+        "Touches M et N"
+      ],
+      "summary": [
+        "Une carte faite maison : la minicarte en haut a gauche (le nord en haut, tes coordonnees, le pays, la saison) et l'atlas en plein ecran."
+      ],
+      "commands": [
+        "M : l'atlas",
+        "N : afficher ou cacher la minicarte",
+        "= et - : zoomer la minicarte"
+      ],
+      "see": [
+        "terre",
+        "saisons"
+      ],
+      "discover": {
+        "always": true
+      }
+    },
+    {
+      "id": "saisons",
+      "category": "terre",
+      "order": 3,
+      "icon": "minecraft:snow_block",
+      "title": "Les saisons",
+      "card": [
+        "Selon la latitude",
+        "Une par semaine"
+      ],
+      "summary": [
+        "Une saison par semaine reelle, selon la latitude : l'hiver du nord est l'ete du sud. Chaque saison s'ouvre le lundi a 5 h."
+      ],
+      "sections": [
+        {
+          "title": "Ce qui change",
+          "text": [
+            "- La neige et la glace fondent hors saison.",
+            "- Les cultures poussent selon la saison.",
+            "- Les couleurs du monde et de l'atlas suivent."
+          ]
+        }
+      ],
+      "see": [
+        "terre",
+        "agriculture",
+        "catastrophes"
+      ],
+      "discover": {
+        "always": true
+      }
+    },
+    {
+      "id": "catastrophes",
+      "category": "terre",
+      "order": 4,
+      "icon": "minecraft:magma_block",
+      "title": "Les catastrophes",
+      "card": [
+        "Seismes, eruptions",
+        "Ouragans, mousson"
+      ],
+      "summary": [
+        "Seismes, eruptions, ouragans et pluies de mousson frappent la ou le monde reel les connait. Les degats reviennent avec le temps, et chaque catastrophe laisse des ressources a aller chercher."
+      ],
+      "commands": [
+        "/catastrophes : les catastrophes"
+      ],
+      "see": [
+        "terre",
+        "saisons"
+      ]
+    },
+    {
+      "id": "faune",
+      "category": "terre",
+      "order": 5,
+      "icon": "minecraft:lead",
+      "title": "La faune",
+      "card": [
+        "Les animaux",
+        "reviennent"
+      ],
+      "summary": [
+        "Les animaux reviennent la ou ils vivent : toutes les 20 secondes, DoHy repeuple l'Overworld autour de toi, selon les biomes."
+      ],
+      "see": [
+        "terre"
+      ]
+    },
+    {
+      "id": "zones_irradiees",
+      "category": "terre",
+      "order": 6,
+      "icon": "minecraft:sculk",
+      "title": "Tchernobyl et Fukushima",
+      "card": [
+        "Zones d'exclusion",
+        "Minerais rares"
+      ],
+      "summary": [
+        "Deux zones d'exclusion, la ou elles sont sur la vraie carte : la radiation est celle de NTM NEXT. Au coeur, des minerais rares a aller chercher, bien protege."
+      ],
+      "see": [
+        "terre",
+        "ntm"
+      ]
+    },
+    {
+      "id": "bases_lancement",
+      "category": "terre",
+      "order": 7,
+      "icon": "minecraft:firework_rocket",
+      "title": "Les bases de lancement",
+      "card": [
+        "Baikonour, Kourou...",
+        "Les seuls pas de tir"
+      ],
+      "summary": [
+        "Les fusees de NTM NEXT: Space ne decollent que de quatre bases : Baikonour, Cap Canaveral, Kourou et Jiuquan. Ailleurs, la pose d'un pas de tir est refusee, et le jeu indique la base la plus proche."
+      ],
+      "see": [
+        "terre",
+        "ntm"
+      ]
+    },
+    {
+      "id": "gisements",
+      "category": "terre",
+      "order": 8,
+      "icon": "minecraft:raw_iron_block",
+      "title": "Gisements et petrole",
+      "card": [
+        "Les vraies mines",
+        "Petrole et gaz"
+      ],
+      "summary": [
+        "Sur la carte de la Terre, les vraies mines geantes et les champs de petrole et de gaz existent la ou ils sont dans le monde reel."
+      ],
+      "commands": [
+        "/gisements : les gisements geants"
+      ],
+      "see": [
+        "terre",
+        "minerais",
+        "mine"
+      ]
+    },
+    {
+      "id": "spawn",
+      "category": "lieux",
+      "order": 0,
+      "icon": "dohy:terminal",
+      "title": "Le spawn",
+      "card": [
+        "Au-dessus des nuages",
+        "Boxes et bornes"
+      ],
+      "summary": [
+        "Un lieu a part, au-dessus des nuages : on y vient ouvrir ses boxes et passer aux bornes. On n'y prend aucun degat, et rien ne s'y casse."
+      ],
+      "sections": [
+        {
+          "title": "Y aller",
+          "text": [
+            "/spawn t'y emmene depuis l'Overworld, le Nether ou l'End ; la meme commande, ou la borne RETOUR, te ramene d'ou tu venais."
+          ]
+        },
+        {
+          "title": "Les bornes",
+          "text": [
+            "- La borne MINE mene a la Mine.",
+            "- Le hall des boxes, les bornes du jour et les portails."
+          ]
+        }
+      ],
+      "commands": [
+        "/spawn : aller au spawn, ou en revenir"
+      ],
+      "see": [
+        "mine",
+        "boutique"
+      ],
+      "discover": {
+        "always": true,
+        "dimensions": [
+          "dohy:spawn"
+        ],
+        "views": [
+          "dohy:spawn_daily",
+          "dohy:spawn_portals"
+        ]
+      }
+    },
+    {
+      "id": "mine",
+      "category": "lieux",
+      "order": 1,
+      "icon": "minecraft:deepslate_iron_ore",
+      "title": "La Mine",
+      "card": [
+        "Neuve chaque matin",
+        "Sous terre"
+      ],
+      "summary": [
+        "Un monde de minage remis a neuf chaque matin a 5 h, uniquement sous terre. On y entre par la borne MINE du spawn."
+      ],
+      "sections": [
+        {
+          "title": "Les regles",
+          "text": [
+            "- Une mine neuve chaque jour ; a 5 h, les joueurs presents sont ramenes au spawn, prevenus 10, 5 et 1 minute avant.",
+            "- Pas de lumiere du jour : prends des torches.",
+            "- La pierre et l'ardoise n'y donnent pas de cobblestone."
+          ]
+        }
+      ],
+      "see": [
+        "spawn",
+        "gisements"
+      ],
+      "discover": {
+        "dimensions": [
+          "dohy:mine"
+        ]
+      }
+    },
+    {
+      "id": "cultures",
+      "category": "agriculture",
+      "order": 0,
+      "icon": "palamod:eggplant",
+      "title": "Les cultures de PalaMod",
+      "card": [
+        "Aubergine, kiwano...",
+        "Parfois un lingot"
+      ],
+      "summary": [
+        "Quatre plantes : aubergine, cerfeuil, kiwano et orangeblue. A maturite, une recolte sur des milliers donne un lingot a la place du fruit : l'agriculture est une autre voie vers les metaux."
+      ],
+      "sections": [
+        {
+          "title": "A savoir",
+          "text": [
+            "- La terre fertilisee les fait pousser environ trois fois plus vite.",
+            "- Le totem de fertilite fait pousser autour de lui.",
+            "- Les fruits se fondent au crusher en lingots."
+          ]
+        }
+      ],
+      "see": [
+        "fermier",
+        "machines",
+        "agriculture"
+      ],
+      "discover": {
+        "items": [
+          "palamod:eggplant_seeds",
+          "palamod:chervil_seeds",
+          "palamod:kiwano_seeds",
+          "palamod:orangeblue_seeds"
+        ]
+      }
+    },
+    {
+      "id": "agriculture",
+      "category": "agriculture",
+      "order": 1,
+      "icon": "minecraft:wheat",
+      "title": "Cereales, OGM et pains",
+      "card": [
+        "Dix cereales",
+        "OGM, pains, elevage"
+      ],
+      "summary": [
+        "La filiere agricole de NationsGlory : dix cereales, des OGM a chercher, un moulin, une machine a pain et un elevage a nourrir."
+      ],
+      "sections": [
+        {
+          "title": "Les cereales",
+          "text": [
+            "Neuf cereales de DoHy, et le ble. Chacune ne pousse que dans son climat : hors climat, la semence refuse d'etre plantee."
+          ]
+        },
+        {
+          "title": "Les OGM",
+          "text": [
+            "Fermier 20 : la machine a OGM cherche la recette secrete d'une souche, neuf ingredients en quantites precises."
+          ]
+        },
+        {
+          "title": "Moulin, pains, elevage",
+          "text": [
+            "- Le moulin fait la farine, la machine a pain cuit les dix pains et le pain d'epices, avec leurs effets.",
+            "- Une mangeoire et un abreuvoir nourrissent les betes : creme, saindoux, oeufs."
+          ]
+        },
+        {
+          "title": "En vente",
+          "text": [
+            "Grains, farines et pains sont au shop, a un cours qui change chaque heure."
+          ]
+        }
+      ],
+      "see": [
+        "tracteur",
+        "fermier",
+        "saisons"
+      ],
+      "discover": {
+        "items": [
+          "dohy:corn_seeds",
+          "dohy:barley_seeds",
+          "dohy:oat_seeds",
+          "dohy:rye_seeds",
+          "dohy:flour_mill",
+          "dohy:bread_machine",
+          "dohy:gmo_machine"
+        ],
+        "views": [
+          "dohy:gmo_machine",
+          "dohy:flour_mill",
+          "dohy:bread_machine"
+        ]
+      }
+    },
+    {
+      "id": "tracteur",
+      "category": "agriculture",
+      "order": 2,
+      "icon": "dohy:tractor",
+      "title": "Le tracteur et ses outils",
+      "card": [
+        "Fermier 10",
+        "Charrue, semoir..."
+      ],
+      "summary": [
+        "Un tracteur a conduire, des le niveau 10 de Fermier, avec sa charrue, son semoir, son epandeur et sa moissonneuse, un silo et une pompe a carburant."
+      ],
+      "see": [
+        "agriculture",
+        "fermier"
+      ],
+      "discover": {
+        "items": [
+          "dohy:tractor"
+        ],
+        "views": [
+          "dohy:tractor",
+          "dohy:silo"
+        ]
+      }
+    },
+    {
+      "id": "palettes",
+      "category": "technique",
+      "order": 0,
+      "icon": "dohy:palette",
+      "title": "Les palettes d'armement",
+      "card": [
+        "Obus et munitions",
+        "Create et NTM"
+      ],
+      "summary": [
+        "Une palette de bois ou ranger obus, munitions et missiles, montres en caisses en 3D. Posees cote a cote, les palettes s'assemblent jusqu'a 3 x 3 en un seul stock."
+      ],
+      "sections": [
+        {
+          "title": "A savoir",
+          "text": [
+            "- Clic avec une munition : elle est rangee ; accroupi, tout ce que le sac en contient.",
+            "- Les entonnoirs, Create et NTM NEXT chargent et dechargent une palette comme un coffre."
+          ]
+        }
+      ],
+      "see": [
+        "ntm"
+      ],
+      "discover": {
+        "items": [
+          "dohy:palette"
+        ]
+      }
+    },
+    {
+      "id": "ntm",
+      "category": "technique",
+      "order": 1,
+      "icon": "minecraft:lightning_rod",
+      "title": "NTM NEXT dans DoHy",
+      "card": [
+        "Minerais et pieces",
+        "Dans l'economie"
+      ],
+      "summary": [
+        "Avec NTM NEXT installe, ses minerais et ses pieces entrent dans l'economie de DoHy : le shop les connait, avec des regles contre les chaines de traitement qui multiplient la matiere."
+      ],
+      "see": [
+        "shop",
+        "serveur_trading",
+        "palettes",
+        "zones_irradiees"
+      ]
+    }
+  ]
+}

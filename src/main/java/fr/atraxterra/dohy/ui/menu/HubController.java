@@ -129,7 +129,23 @@ public final class HubController extends MenuController {
                 trixiumCard(player),
                 achievementCard(player));
 
+        fr.atraxterra.dohy.guide.EncyclopediaData guide = fr.atraxterra.dohy.guide.EncyclopediaEvents.data(player);
+        int fresh = 0;
+        for (String id : guide.freshIds()) {
+            if (fr.atraxterra.dohy.guide.Encyclopedia.entry(id) != null) {
+                fresh++;
+            }
+        }
+        List<Card> help = List.of(
+                Card.of(new ItemStack(Items.KNOWLEDGE_BOOK), "Encyclopedie", List.of("Tout DoHy, fiche par fiche",
+                                fresh > 0 ? fresh + " fiche(s) nouvelle(s)" : "Touche J"))
+                        .accent(0xFF22E558).action("encyclopedia").badge(fresh > 0 ? "+" + fresh : ""),
+                Card.of(new ItemStack(fr.atraxterra.dohy.guide.DoHyGuide.PLAN.get()), "Plans", List.of(
+                                "Hologrammes des structures", "Grinder, chaudron, enclos..."))
+                        .accent(0xFF2BC4C4).action("plans"));
+
         return new MenuView(id(), "DoHy", "Le menu de ton aventure", stats, List.of(
+                new MenuView.Section("AIDE", "upgrade", MenuView.GRID, help),
                 new MenuView.Section("ECONOMIE", "resources", MenuView.GRID, economy),
                 new MenuView.Section("PROGRESSION", "upgrade", MenuView.GRID, progress),
                 new MenuView.Section("FIN DE PARTIE", "craft", MenuView.GRID, endgame)), false);
@@ -184,7 +200,7 @@ public final class HubController extends MenuController {
 
     /** Les menus que les boutons de l'inventaire peuvent ouvrir. */
     private static final java.util.Set<String> INVENTORY_TARGETS =
-            java.util.Set.of("shop", "contracts", "bank", "faction", "jobs", "trixium", "clicker");
+            java.util.Set.of("shop", "contracts", "bank", "faction", "jobs", "trixium", "clicker", "encyclopedia");
 
     /**
      * Ouvre le menu demande par un bouton de l'inventaire ({@code InventoryNav}).
@@ -204,6 +220,8 @@ public final class HubController extends MenuController {
     @Override
     protected void card(ServerPlayer player, String key, int button) {
         switch (key) {
+            case "encyclopedia" -> fr.atraxterra.dohy.guide.EncyclopediaMenu.openIndex(player);
+            case "plans" -> fr.atraxterra.dohy.guide.EncyclopediaMenu.openEntry(player, "plans");
             case "faction" -> fr.atraxterra.dohy.faction.FactionMenus.Overview.INSTANCE.open(player);
             case "trixium" -> TrixiumMenu.INSTANCE.open(player);
             case "achievements" -> AchievementMenu.INSTANCE.open(player);
