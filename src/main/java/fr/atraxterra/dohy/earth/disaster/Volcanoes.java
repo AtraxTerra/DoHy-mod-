@@ -101,7 +101,7 @@ final class Volcanoes {
         int minX = chunk.getPos().getMinBlockX();
         int minZ = chunk.getPos().getMinBlockZ();
         BlockState basalt = Eruption.hbm("basalt", Blocks.BASALT.defaultBlockState());
-        BlockState sulfur = Eruption.vanilla("sulfur", Blocks.YELLOW_TERRACOTTA.defaultBlockState());
+        BlockState sulfur = Eruption.vanilla("sulfur", Eruption.vanilla("yellow_terracotta", Blocks.SANDSTONE.defaultBlockState()));
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         boolean centerChunk = chunk.getPos().getMinBlockX() <= volcano.x() && volcano.x() < minX + 16
                 && chunk.getPos().getMinBlockZ() <= volcano.z() && volcano.z() < minZ + 16;
