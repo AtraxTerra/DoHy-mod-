@@ -71,6 +71,8 @@ final class Hurricane extends Disaster {
     private final Map<UUID, Double> closest = new HashMap<>();
     private final Set<UUID> wrecked = new HashSet<>();
     private final List<BlockPos> surge = new ArrayList<>();
+    /** La derniere epave echouee, ou {@code null}. */
+    BlockPos wreckAt;
     private int stripped;
     private int uprooted;
     private int flooded;
@@ -612,6 +614,7 @@ final class Hurricane extends Disaster {
             }
             if (build(level, ledger, bx, ground + 1, bz)) {
                 wrecks++;
+                wreckAt = new BlockPos(bx, ground + 1, bz);
                 tell(player, "Une epave s'est echouee sur la plage, a " + (int) Math.hypot(bx - player.getX(),
                         bz - player.getZ()) + " blocs " + Disasters.direction(player.getX(), player.getZ(), bx, bz)
                         + " : fouille-la avant le retour du terrain.", ChatFormatting.GOLD);

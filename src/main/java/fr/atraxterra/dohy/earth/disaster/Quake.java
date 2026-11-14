@@ -44,7 +44,7 @@ final class Quake extends Disaster {
     final String zone;
     private final double felt;
     private final double damage;
-    private final double angle;
+    final double angle;
     private final int length;
     private final int width;
     private final int depth;

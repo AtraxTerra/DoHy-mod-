@@ -50,7 +50,7 @@ final class Eruption extends Disaster {
     private boolean prepared;
     private int top;
     private final List<int[]> heads = new ArrayList<>();
-    private final List<BlockPos> cooled = new ArrayList<>();
+    final List<BlockPos> cooled = new ArrayList<>();
     private int bombs;
     private int lava;
     private int ores;

@@ -76,6 +76,8 @@ import java.util.UUID;
 public final class Disasters {
 
     private static final List<Disaster> ACTIVE = new ArrayList<>();
+    /** La derniere catastrophe de chaque famille, finie ou non. */
+    static final Map<DisasterKind, Disaster> LAST = new java.util.EnumMap<>(DisasterKind.class);
     private static final Map<String, Long> COOLDOWN = new HashMap<>();
     private static final Map<UUID, DisasterNet.Feel> FELT = new HashMap<>();
     private static final RandomSource RANDOM = RandomSource.create();
@@ -118,6 +120,7 @@ public final class Disasters {
     @SubscribeEvent
     public static void onStopped(ServerStoppedEvent event) {
         ACTIVE.clear();
+        LAST.clear();
         COOLDOWN.clear();
         FELT.clear();
         LocalWeather.clear();
@@ -364,7 +367,7 @@ public final class Disasters {
             mark("zone:" + zone.zone().id());
         }
         quake.begin(level);
-        ACTIVE.add(quake);
+        add(quake);
         DoHy.LOGGER.info("Seisme M{} ({}) en {} {}", Quake.magnitude(m), place, (int) x, (int) z);
         return quake;
     }
@@ -377,7 +380,7 @@ public final class Disasters {
                 RANDOM);
         mark("volcan:" + volcano.volcano().id());
         eruption.begin(level);
-        ACTIVE.add(eruption);
+        add(eruption);
         DoHy.LOGGER.info("Eruption {} : alerte de {} s", volcano.volcano().name(), warningTicks / 20);
         return eruption;
     }
@@ -391,10 +394,15 @@ public final class Disasters {
         Hurricane hurricane = Hurricane.create(nextId++, earth, basin, stormName, cat, target, passSeconds,
                 1800.0d + (target == null ? 0.0d : passSeconds * 20.0d * Hurricane.SPEED), RANDOM);
         hurricane.begin(level, target, passSeconds);
-        ACTIVE.add(hurricane);
+        add(hurricane);
         DoHy.LOGGER.info("{} (categorie {}) dans le bassin {}{}", hurricane.name, cat, basin.name(),
                 target == null ? "" : ", sur " + target.getGameProfile().name());
         return hurricane;
+    }
+
+    private static void add(Disaster disaster) {
+        ACTIVE.add(disaster);
+        LAST.put(disaster.kind, disaster);
     }
 
     /** La categorie d'une tempete : 1 trois fois sur dix, 5 une fois sur dix. */
@@ -406,7 +414,7 @@ public final class Disasters {
     static Monsoon monsoon(ServerLevel level, DisasterConfig.PlacedMonsoon region, double x, double z) {
         Monsoon monsoon = new Monsoon(nextId++, region, x, z, RANDOM);
         monsoon.begin(level);
-        ACTIVE.add(monsoon);
+        add(monsoon);
         DoHy.LOGGER.info("Pluies de mousson ({}) en {} {}", region.monsoon().name(), (int) x, (int) z);
         return monsoon;
     }
@@ -677,6 +685,12 @@ public final class Disasters {
                     + state + ") : " + blocks((int) distance) + " blocs " + direction(player.getX(), player.getZ(),
                     disaster.x, disaster.z) + ".").withStyle(distance <= disaster.radius() ? ChatFormatting.RED
                     : ChatFormatting.GOLD)));
+        }
+        Disaster quake = LAST.get(DisasterKind.QUAKE);
+        if (quake != null && quake.done) {
+            long ago = (System.currentTimeMillis() - quake.started) / 1000L;
+            player.sendSystemMessage(prefix().append(Component.literal("Dernier seisme : " + quake.name + " ("
+                    + quake.place + "), il y a " + duration((int) ago) + ".").withStyle(ChatFormatting.GRAY)));
         }
         int pending = DisasterTerrain.pending();
         if (pending > 0) {
