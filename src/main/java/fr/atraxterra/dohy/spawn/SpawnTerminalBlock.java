@@ -40,7 +40,8 @@ public class SpawnTerminalBlock extends Block {
         RETURN("return", "RETOUR", 0xFF5A4A),
         DAILY("daily", "RECOMPENSE", 0xFFD83A),
         PORTALS("portals", "DONJONS", 0xC77DFF),
-        MINE("mine", "MINE", 0x5FD8E8);
+        MINE("mine", "MINE", 0x5FD8E8),
+        BLACK_MARKET("black_market", "MARCHE NOIR", 0x9B6BFF);
 
         private final String name;
         private final String label;
@@ -132,6 +133,7 @@ public class SpawnTerminalBlock extends Block {
             case DAILY -> SpawnDaily.INSTANCE.open(server);
             case PORTALS -> SpawnPortals.INSTANCE.open(server);
             case MINE -> fr.atraxterra.dohy.mine.MineService.enter(server);
+            case BLACK_MARKET -> fr.atraxterra.dohy.blackmarket.BlackMarketMenu.INSTANCE.open(server);
         }
         return InteractionResult.SUCCESS;
     }

@@ -66,6 +66,7 @@ public final class EncyclopediaProgress {
                 case "guerre" -> war(player);
                 case "terre" -> earth(player);
                 case "ameliorations" -> upgrades(player);
+                case "pass" -> pass(player);
                 default -> Result.NONE;
             };
         } catch (RuntimeException error) {
@@ -217,6 +218,20 @@ public final class EncyclopediaProgress {
         }
         int held = fr.atraxterra.dohy.earth.EarthNations.heldBy(player).size();
         return new Result(List.of(new MenuView.Stat("PAYS TENUS", String.valueOf(held), GREEN)), List.of());
+    }
+
+    private static Result pass(ServerPlayer player) {
+        fr.atraxterra.dohy.pass.PassApi.rollIfDue(player);
+        fr.atraxterra.dohy.pass.PassData data = fr.atraxterra.dohy.pass.PassApi.data(player);
+        int levels = fr.atraxterra.dohy.pass.PassConfig.config().levels();
+        int level = fr.atraxterra.dohy.pass.PassApi.level(data);
+        int claimable = fr.atraxterra.dohy.pass.PassApi.claimable(player);
+        int season = data.isEmpty() ? fr.atraxterra.dohy.pass.PassSeason.current() : data.season();
+        return new Result(List.of(
+                new MenuView.Stat("NIVEAU", level + " / " + levels, level >= levels ? GREEN : WHITE),
+                new MenuView.Stat("A RECUPERER", String.valueOf(claimable), claimable > 0 ? 0xFFFAC400 : MUTED),
+                new MenuView.Stat("FIN", fr.atraxterra.dohy.pass.PassSeason.remaining(season).toUpperCase(), WHITE)),
+                List.of());
     }
 
     private static Result upgrades(ServerPlayer player) {

@@ -4,7 +4,6 @@ import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiContainerScreen;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.client.ui.UiScreen;
-import fr.atraxterra.dohy.palamod.PalaItems;
 import fr.atraxterra.dohy.ui.InventoryNav;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -70,11 +69,13 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
             new Shortcut("faction", "inv_faction", "Faction", "Ta faction, ses claims, sa ligue"),
             new Shortcut("jobs", "inv_jobs", "Métiers", "Niveaux, déblocages, primes"));
 
-    private final ItemStack trixium;
+    /** La relique du mois : l'icone du bouton du pass. */
+    private final ItemStack passIcon;
 
     public KitInventoryScreen(Player player) {
         super(player.inventoryMenu, player.getInventory(), Component.translatable("container.inventory"), 176, 166);
-        this.trixium = new ItemStack(PalaItems.TRIXIUM.get());
+        this.passIcon = new ItemStack(fr.atraxterra.dohy.pass.DoHyPass.relicItem(fr.atraxterra.dohy.pass.Relic.of(
+                fr.atraxterra.dohy.pass.PassSeason.month(fr.atraxterra.dohy.pass.PassSeason.current()))));
     }
 
     @Override
@@ -108,10 +109,10 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
         // Le concours Trixium, a la place du Lucky Pass.
         boolean passHovered = inside(mouseX, mouseY, PASS_X, PASS_Y, PASS_W, PASS_H);
         g.button(PASS_X, PASS_Y, PASS_W, PASS_H, Ui.RED, Ui.RED_DARK, passHovered);
-        g.text(Ui.WIDE, "CONCOURS", PASS_X + 7, PASS_Y + 4.5f, 4.6f, Ui.WHITE);
+        g.text(Ui.WIDE, "PASS", PASS_X + 7, PASS_Y + 4.5f, 4.6f, Ui.WHITE);
         int boxX = PASS_X + PASS_W - 15;
         g.border(boxX, PASS_Y + 2, 11, 10, 1, Ui.WHITE);
-        g.item(trixium, boxX + 1.5f, PASS_Y + 3, 8, false);
+        g.item(passIcon, boxX + 1.5f, PASS_Y + 3, 8, false);
 
         // Le menu principal.
         boolean menuHovered = inside(mouseX, mouseY, MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE);
@@ -153,7 +154,7 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
         tip(g, mouseX, mouseY, HELP_X, MENU_Y, MENU_SIZE, MENU_SIZE,
                 List.of("Encyclopédie", "Tout DoHy, fiche par fiche (touche J)"));
         tip(g, mouseX, mouseY, PASS_X, PASS_Y, PASS_W, PASS_H,
-                List.of("Concours Trixium", "La saison du mois et ses paliers"));
+                List.of("Pass du mois", "Quetes du jour et du mois, 35 recompenses"));
         for (int index = 0; index < SHORTCUTS.size(); index++) {
             Shortcut shortcut = SHORTCUTS.get(index);
             tip(g, mouseX, mouseY, COLUMN_X, shortcutY(index), BUTTON, BUTTON,
@@ -194,7 +195,7 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
             return "encyclopedia";
         }
         if (inside(x, y, PASS_X, PASS_Y, PASS_W, PASS_H)) {
-            return "trixium";
+            return "pass";
         }
         for (int index = 0; index < SHORTCUTS.size(); index++) {
             if (inside(x, y, COLUMN_X, shortcutY(index), BUTTON, BUTTON)) {

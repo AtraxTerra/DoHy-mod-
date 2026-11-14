@@ -21,6 +21,8 @@ public enum ContractType {
     JOB_LEVELS,
     /** Produire a une machine : moudre une farine, cuire un pain. La cible est l'objet produit, ou son tag. */
     PRODUCE,
+    /** Jouer : une unite par minute de jeu, serveur en marche. */
+    PLAYTIME,
     UNKNOWN;
 
     public static ContractType byName(String raw) {

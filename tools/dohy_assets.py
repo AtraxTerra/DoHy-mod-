@@ -1047,6 +1047,8 @@ TERMINALS = [
     ("portals", 0xC77DFF, ["..XXXX..", ".X....X.", "X......X", "X..XX..X", "X.X..X.X", "X.X..X.X", "X.X..X.X", "XXX..XXX"]),
     # une pioche
     ("mine", 0x5FD8E8, ["..XXXX..", ".X.XX.X.", "X..XX..X", "...XX...", "...XX...", "...XX...", "...XX...", "...XX..."]),
+    # une capuche et un regard : le receleur
+    ("black_market", 0x9B6BFF, ["..XXXX..", ".XXXXXX.", "XX....XX", "X.X..X.X", "X......X", "XX....XX", ".XXXXXX.", "XXXXXXXX"]),
 ]
 
 
@@ -1464,6 +1466,24 @@ def farming():
                  ["III", "IUI", "IRI"], {"I": iron, "U": "minecraft:bucket", "R": "minecraft:redstone_block"})
 
 
+# Les douze reliques du pass mensuel (pass/Relic.java) : leurs noms. Leurs textures sont
+# dessinees par tools/pass_assets.py.
+RELICS = [
+    ("relic_janvier", "Cristal de givre", "Frost Crystal"),
+    ("relic_fevrier", "Coeur de cristal", "Crystal Heart"),
+    ("relic_mars", "Trefle porte-bonheur", "Lucky Clover"),
+    ("relic_avril", "Oeuf d'or", "Golden Egg"),
+    ("relic_mai", "Brin de muguet", "Lily of the Valley"),
+    ("relic_juin", "Lyre de l'ete", "Summer Lyre"),
+    ("relic_juillet", "Coquillage des vacances", "Holiday Seashell"),
+    ("relic_aout", "Soleil de plomb", "Scorching Sun"),
+    ("relic_septembre", "Lanterne de la rentree", "Back-to-School Lantern"),
+    ("relic_octobre", "Citrouille maudite", "Cursed Pumpkin"),
+    ("relic_novembre", "Feuille d'automne", "Autumn Leaf"),
+    ("relic_decembre", "Etoile de Noel", "Christmas Star"),
+]
+
+
 def lang():
     fr = {
         "itemGroup.dohy.machines": "DoHy — machines",
@@ -1539,6 +1559,28 @@ def lang():
         "block.dohy.fuel_pump": "Fuel Pump",
         "block.dohy.palette": "Ammunition Pallet",
     })
+    # La guerre des nations (lot 22l), l'encyclopedie et les plans (lot 23a), le pass mensuel (lot 23b).
+    fr.update({
+        "entity.dohy.soldier": "Soldat",
+        "item.dohy.plan": "Plan de construction",
+        "item.dohy.plan.of": "Plan : %s",
+        "item.dohy.plan.help.place": "Clic droit sur un bloc : poser le plan",
+        "item.dohy.plan.help.turn": "Accroupi + clic droit : tourner d'un quart",
+        "item.dohy.plan.help.menu": "Clic droit en l'air : le menu du plan",
+        "key.dohy.encyclopedia": "Encyclopedie",
+    })
+    en.update({
+        "entity.dohy.soldier": "Soldier",
+        "item.dohy.plan": "Construction Plan",
+        "item.dohy.plan.of": "Plan: %s",
+        "item.dohy.plan.help.place": "Right-click a block: place the plan",
+        "item.dohy.plan.help.turn": "Sneak + right-click: turn a quarter",
+        "item.dohy.plan.help.menu": "Right-click in the air: plan menu",
+        "key.dohy.encyclopedia": "Encyclopedia",
+    })
+    for (path, name_fr, name_en) in RELICS:
+        fr["item.dohy.%s" % path] = name_fr
+        en["item.dohy.%s" % path] = name_en
     for (key, name_fr, name_en, gmo, *_rest) in CEREALS:
         of = "d'" if name_fr[0] in "AEIOU" else "de "
         fr["block.dohy.%s_crop" % key] = "Culture %s%s" % (of, name_fr.lower())

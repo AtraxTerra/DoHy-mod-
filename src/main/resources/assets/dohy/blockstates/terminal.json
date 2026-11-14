@@ -149,6 +149,21 @@
     "facing=west,kind=mine": {
       "model": "dohy:block/terminal_mine",
       "y": 270
+    },
+    "facing=north,kind=black_market": {
+      "model": "dohy:block/terminal_black_market"
+    },
+    "facing=east,kind=black_market": {
+      "model": "dohy:block/terminal_black_market",
+      "y": 90
+    },
+    "facing=south,kind=black_market": {
+      "model": "dohy:block/terminal_black_market",
+      "y": 180
+    },
+    "facing=west,kind=black_market": {
+      "model": "dohy:block/terminal_black_market",
+      "y": 270
     }
   }
 }

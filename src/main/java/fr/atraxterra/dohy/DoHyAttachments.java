@@ -135,6 +135,22 @@ public final class DoHyAttachments {
                             .build());
 
     /** L'encyclopedie : fiches decouvertes et lues, accueil fait. Conservee a la mort. */
+    /** Le pass mensuel : saison, XP, recompenses recuperees, quetes. Garde a la mort. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.pass.PassData>> PASS =
+            ATTACHMENT_TYPES.register("pass",
+                    () -> AttachmentType.builder(fr.atraxterra.dohy.pass.PassData::new)
+                            .serialize(fr.atraxterra.dohy.pass.PassData.MAP_CODEC, data -> !data.isEmpty())
+                            .copyOnDeath()
+                            .build());
+
+    /** Le marche noir : ce que le joueur a achete et revendu au receleur aujourd'hui. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.blackmarket.BlackMarketData>> BLACK_MARKET =
+            ATTACHMENT_TYPES.register("black_market",
+                    () -> AttachmentType.builder(fr.atraxterra.dohy.blackmarket.BlackMarketData::new)
+                            .serialize(fr.atraxterra.dohy.blackmarket.BlackMarketData.MAP_CODEC, data -> !data.isEmpty())
+                            .copyOnDeath()
+                            .build());
+
     public static final Supplier<AttachmentType<fr.atraxterra.dohy.guide.EncyclopediaData>> ENCYCLOPEDIA =
             ATTACHMENT_TYPES.register("encyclopedia",
                     () -> AttachmentType.builder(fr.atraxterra.dohy.guide.EncyclopediaData::new)

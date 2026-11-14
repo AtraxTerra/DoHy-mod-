@@ -1,0 +1,946 @@
+{
+  "_comment": "GENERE par tools/black_market.py : le marche noir du spawn. value : la valeur boutique d'un objet ; lot : combien d'objets par offre ; stock : combien de lots par jour ; cap : combien de pieces le receleur rachete par jour ; factor : le prix en part de la valeur.",
+  "grief": 4.0,
+  "stolen": {
+    "count": 4,
+    "factor": [
+      0.5,
+      0.7
+    ],
+    "offers": [
+      {
+        "item": "palamod:paladium_ingot",
+        "value": 290,
+        "lot": [
+          32,
+          64
+        ],
+        "stock": [
+          1,
+          2
+        ],
+        "weight": 10
+      },
+      {
+        "item": "palamod:paladium_block",
+        "value": 2610,
+        "lot": [
+          8,
+          16
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 6
+      },
+      {
+        "item": "palamod:green_paladium_ingot",
+        "value": 2000,
+        "lot": [
+          8,
+          24
+        ],
+        "stock": [
+          1,
+          2
+        ],
+        "weight": 8
+      },
+      {
+        "item": "palamod:findium",
+        "value": 1600,
+        "lot": [
+          8,
+          16
+        ],
+        "stock": [
+          1,
+          2
+        ],
+        "weight": 8
+      },
+      {
+        "item": "palamod:trixium",
+        "value": 3200,
+        "lot": [
+          16,
+          48
+        ],
+        "stock": [
+          1,
+          2
+        ],
+        "weight": 8
+      },
+      {
+        "item": "palamod:trixium_ore",
+        "value": 6400,
+        "lot": [
+          4,
+          12
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 4
+      },
+      {
+        "item": "palamod:invoker_stone",
+        "value": 8000,
+        "lot": [
+          2,
+          6
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 5
+      },
+      {
+        "item": "palamod:endium_nugget",
+        "value": 160000,
+        "lot": [
+          1,
+          2
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 3
+      },
+      {
+        "item": "palamod:capture_stone",
+        "value": 25520,
+        "lot": [
+          1,
+          3
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 4
+      },
+      {
+        "item": "palamod:passive_wither_gem",
+        "value": 324480,
+        "lot": [
+          1,
+          1
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:upgrade_speed",
+        "value": 43230,
+        "lot": [
+          1,
+          1
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:upgrade_looting",
+        "value": 43642,
+        "lot": [
+          1,
+          1
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:rune_fragment_common",
+        "value": 40000,
+        "lot": [
+          1,
+          3
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 4
+      },
+      {
+        "item": "palamod:rune_fragment_rare",
+        "value": 150000,
+        "lot": [
+          1,
+          1
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:forest_essence",
+        "value": 80000,
+        "lot": [
+          1,
+          2
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:cavern_essence",
+        "value": 80000,
+        "lot": [
+          1,
+          2
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:flame_essence",
+        "value": 80000,
+        "lot": [
+          1,
+          2
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:aquatic_essence",
+        "value": 80000,
+        "lot": [
+          1,
+          2
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:crate_key_amethyst",
+        "value": 100000,
+        "lot": [
+          1,
+          1
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 3
+      },
+      {
+        "item": "palamod:crate_key_saharia",
+        "value": 1000000,
+        "lot": [
+          1,
+          1
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 1
+      }
+    ]
+  },
+  "contraband": {
+    "count": 2,
+    "factor": [
+      1.3,
+      1.7
+    ],
+    "offers": [
+      {
+        "item": "palamod:job_bottle_miner",
+        "value": 40000,
+        "lot": [
+          1,
+          2
+        ],
+        "stock": [
+          1,
+          3
+        ],
+        "weight": 3,
+        "job_xp": 10000
+      },
+      {
+        "item": "palamod:job_bottle_hunter",
+        "value": 40000,
+        "lot": [
+          1,
+          2
+        ],
+        "stock": [
+          1,
+          3
+        ],
+        "weight": 3,
+        "job_xp": 10000
+      },
+      {
+        "item": "palamod:job_bottle_farmer",
+        "value": 40000,
+        "lot": [
+          1,
+          2
+        ],
+        "stock": [
+          1,
+          3
+        ],
+        "weight": 3,
+        "job_xp": 10000
+      },
+      {
+        "item": "palamod:job_bottle_alchemist",
+        "value": 40000,
+        "lot": [
+          1,
+          2
+        ],
+        "stock": [
+          1,
+          3
+        ],
+        "weight": 3,
+        "job_xp": 10000
+      },
+      {
+        "item": "minecraft:totem_of_undying",
+        "value": 8000,
+        "lot": [
+          1,
+          1
+        ],
+        "stock": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "minecraft:enchanted_golden_apple",
+        "value": 60000,
+        "lot": [
+          1,
+          1
+        ],
+        "stock": [
+          1,
+          1
+        ],
+        "weight": 1
+      }
+    ]
+  },
+  "mystery": {
+    "price": 135000,
+    "stock": 3,
+    "outcomes": [
+      {
+        "label": "De la ferraille",
+        "weight": 30,
+        "items": [
+          {
+            "item": "minecraft:rotten_flesh",
+            "count": 32
+          },
+          {
+            "item": "minecraft:iron_ingot",
+            "count": 8
+          }
+        ]
+      },
+      {
+        "label": "Un petit lot",
+        "weight": 25,
+        "items": [
+          {
+            "item": "palamod:paladium_ingot",
+            "count": 32
+          },
+          {
+            "item": "palamod:findium",
+            "count": 8
+          }
+        ]
+      },
+      {
+        "label": "Un bon lot",
+        "weight": 20,
+        "items": [
+          {
+            "item": "palamod:trixium",
+            "count": 16
+          },
+          {
+            "item": "palamod:green_paladium_ingot",
+            "count": 16
+          }
+        ]
+      },
+      {
+        "label": "Un beau lot",
+        "weight": 13,
+        "items": [
+          {
+            "item": "palamod:crate_key_amethyst",
+            "count": 1
+          },
+          {
+            "item": "palamod:rune_fragment_rare",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "label": "Un tres beau lot",
+        "weight": 8,
+        "items": [
+          {
+            "item": "palamod:endium_nugget",
+            "count": 2
+          }
+        ]
+      },
+      {
+        "label": "Le gros lot",
+        "weight": 3,
+        "items": [
+          {
+            "item": "palamod:crate_key_saharia",
+            "count": 1
+          },
+          {
+            "item": "palamod:endium_nugget",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "buyback": {
+    "count": 3,
+    "factor": [
+      0.25,
+      0.4
+    ],
+    "demands": [
+      {
+        "item": "palamod:talikus_sword",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:talikus_reinforced_sword",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:talikus_helmet",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:talikus_reinforced_helmet",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:talikus_chestplate",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:talikus_reinforced_chestplate",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:talikus_leggings",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:talikus_reinforced_leggings",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:talikus_boots",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:talikus_reinforced_boots",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:nimbria_sword",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:nimbria_reinforced_sword",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:nimbria_helmet",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:nimbria_reinforced_helmet",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:nimbria_chestplate",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:nimbria_reinforced_chestplate",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:nimbria_leggings",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:nimbria_reinforced_leggings",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:nimbria_boots",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:nimbria_reinforced_boots",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:vitalys_sword",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:vitalys_reinforced_sword",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:vitalys_helmet",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:vitalys_reinforced_helmet",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:vitalys_chestplate",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:vitalys_reinforced_chestplate",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:vitalys_leggings",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:vitalys_reinforced_leggings",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:vitalys_boots",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:vitalys_reinforced_boots",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:manelios_sword",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:manelios_reinforced_sword",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:manelios_helmet",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:manelios_reinforced_helmet",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:manelios_chestplate",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:manelios_reinforced_chestplate",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:manelios_leggings",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:manelios_reinforced_leggings",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:manelios_boots",
+        "value": 400000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:manelios_reinforced_boots",
+        "value": 2000000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:rune_common",
+        "value": 170000,
+        "cap": [
+          1,
+          3
+        ],
+        "weight": 6
+      },
+      {
+        "item": "palamod:rune_rare",
+        "value": 620000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 3
+      },
+      {
+        "item": "palamod:rune_epic",
+        "value": 2500000,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:passive_wither_gem",
+        "value": 324480,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 3
+      },
+      {
+        "item": "palamod:predator_wither_gem",
+        "value": 1773369,
+        "cap": [
+          1,
+          1
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:forest_essence",
+        "value": 80000,
+        "cap": [
+          2,
+          4
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:forest_essence_concentrate",
+        "value": 300000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:cavern_essence",
+        "value": 80000,
+        "cap": [
+          2,
+          4
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:cavern_essence_concentrate",
+        "value": 300000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:flame_essence",
+        "value": 80000,
+        "cap": [
+          2,
+          4
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:flame_essence_concentrate",
+        "value": 300000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 1
+      },
+      {
+        "item": "palamod:aquatic_essence",
+        "value": 80000,
+        "cap": [
+          2,
+          4
+        ],
+        "weight": 2
+      },
+      {
+        "item": "palamod:aquatic_essence_concentrate",
+        "value": 300000,
+        "cap": [
+          1,
+          2
+        ],
+        "weight": 1
+      }
+    ]
+  },
+  "quotes": [
+    "Ce qui tombe du camion ne se rend pas.",
+    "Pas de nom, pas de question, pas de facture.",
+    "En liquide. La banque, ca laisse des traces.",
+    "Si on te demande, tu n'es jamais descendu ici.",
+    "Tout part avant 5 h. Demain, autre arrivage.",
+    "Je rachete ce que le shop refuse. Sans poser de questions.",
+    "Un lot sans etiquette ? Parfois de l'or, parfois du vent.",
+    "Les nations comptent leurs caisses. Moi, je compte les miennes."
+  ]
+}
