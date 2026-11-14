@@ -214,22 +214,24 @@ public enum Dungeon {
      * wiki : ce sont les « nouveaux mini-boss » du lot des modes.
      */
     public List<BossSpec> elites() {
+        // Chaque elite porte, en plus grand et aux couleurs du palier, le modele d'un
+        // monstre de son donjon (RpgSkins) : son monstre vanilla en a la silhouette.
         return switch (this) {
             case TALIKUS -> List.of(
-                    BossSpec.of("Epouvantail", EntityTypes.SKELETON, 1.6f, ROOT, SUMMON),
-                    BossSpec.of("Faucheuse", EntityTypes.WITHER_SKELETON, 1.5f, PULL, QUAKE),
-                    BossSpec.of("Corbeau geant", EntityTypes.PHANTOM, 2.2f, CHARGE, VOLLEY));
+                    BossSpec.of("Sentinelle", EntityTypes.SKELETON, 1.6f, ROOT, SUMMON),
+                    BossSpec.of("Lame masquee", EntityTypes.VINDICATOR, 1.4f, PULL, QUAKE),
+                    BossSpec.of("Frelon noir", EntityTypes.PHANTOM, 1.8f, CHARGE, VOLLEY));
             case NIMBRIA -> List.of(
-                    BossSpec.of("Ver des galeries", EntityTypes.SILVERFISH, 4.5f, CHARGE, QUAKE),
+                    BossSpec.of("Golem de braise", EntityTypes.VINDICATOR, 1.5f, CHARGE, QUAKE),
                     BossSpec.of("Contremaitre", EntityTypes.ZOMBIE, 1.6f, SLAM, SUMMON),
-                    BossSpec.of("Mineur maudit", EntityTypes.STRAY, 1.5f, WEB, VOLLEY));
+                    BossSpec.of("Golem d'amethyste", EntityTypes.STRAY, 1.5f, WEB, VOLLEY));
             case VITALYS -> List.of(
                     BossSpec.of("Braconnier", EntityTypes.PILLAGER, 1.5f, TELEPORT, WEB),
-                    BossSpec.of("Mante", EntityTypes.CAVE_SPIDER, 3.0f, CHARGE, POISON),
+                    BossSpec.of("Lame ardente", EntityTypes.HUSK, 1.5f, CHARGE, SLAM),
                     BossSpec.of("Brasier", EntityTypes.BLAZE, 2.0f, FIRE_RING, VOLLEY));
             case MANELIOS -> List.of(
-                    BossSpec.of("Sirene", EntityTypes.DROWNED, 1.6f, PULL, POISON),
-                    BossSpec.of("Tempete", EntityTypes.BREEZE, 1.8f, PULL, CHARGE),
+                    BossSpec.of("Triton", EntityTypes.DROWNED, 1.6f, PULL, POISON),
+                    BossSpec.of("Trombe", EntityTypes.BREEZE, 1.8f, PULL, CHARGE),
                     BossSpec.of("Alchimiste fou", EntityTypes.WITCH, 1.4f, POISON, TELEPORT));
         };
     }

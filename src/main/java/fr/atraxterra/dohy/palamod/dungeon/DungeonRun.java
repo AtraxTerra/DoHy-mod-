@@ -1019,16 +1019,17 @@ final class DungeonRun {
         level.playSound(null, room.center, SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 0.5f, 1.0f);
     }
 
-    /** Ce que porte un elite pour se reconnaitre : une tete de citrouille, des outils. */
+    /**
+     * Ce que tient un elite. Son modele cache l'objet, mais l'objet compte : la
+     * pioche frappe plus fort, le trident se lance.
+     */
     private static void equip(Mob boss, BossSpec spec) {
         switch (spec.name()) {
-            case "Epouvantail" -> boss.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CARVED_PUMPKIN));
-            case "Faucheuse" -> boss.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_HOE));
             case "Contremaitre" -> {
                 boss.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
                 boss.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
             }
-            case "Sirene" -> boss.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.TRIDENT));
+            case "Triton" -> boss.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.TRIDENT));
             default -> {
             }
         }

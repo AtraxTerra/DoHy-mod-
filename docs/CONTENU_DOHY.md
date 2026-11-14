@@ -1176,14 +1176,26 @@ Les portes proposent toujours une à trois salles, maintenant tirées au poids p
 ### Les élites (nouveaux mini-boss)
 
 Trois par donjon, DoHy, avec les six capacités nouvelles des boss (séisme, nuage toxique, toiles —
-et les trois sombres des Dark) :
+et les trois sombres des Dark). **Chacun porte le modèle d'un monstre de son donjon** (§ 29 de
+`PALAMOD.md`), grossi comme lui et aux couleurs du palier : c'est le champion de la salle. Son
+monstre vanilla, qui ne se voit plus, en a la silhouette et le comportement (l'archer tire, le
+volant vole). Les noms suivent les modèles (2026-11-14, avant toute livraison : ils remplacent
+Épouvantail, Faucheuse, Corbeau géant, Ver des galeries, Mineur maudit, Mante, Sirène et Tempête).
 
-| Donjon | Élites |
-|---|---|
-| Talikus | Épouvantail (squelette, tête de citrouille), Faucheuse (squelette wither, houe), Corbeau géant (phantom) |
-| Nimbria | Ver des galeries (poisson d'argent géant), Contremaître (zombie, pioche et casque), Mineur maudit (vagabond) |
-| Vitalys | Braconnier (pillard), Mante (araignée venimeuse géante), Brasier (blaze) |
-| Manelios | Sirène (noyée au trident), Tempête (breeze), Alchimiste fou (sorcière) |
+| Donjon | Élite | Modèle | Monstre vanilla |
+|---|---|---|---|
+| Talikus | Sentinelle | `talikus_distance_bow` (l'archer) | squelette × 1,6 |
+| Talikus | Lame masquée | `talikus_assassin` | vindicateur × 1,4 |
+| Talikus | Frelon noir | `talikus_flying` | phantom × 1,8 |
+| Nimbria | Golem de braise | `nimbria_melee` (cristaux de feu) | vindicateur × 1,5 |
+| Nimbria | Contremaître | `nimbria_tank` (cristaux verts) | zombie × 1,6, pioche et casque d'or |
+| Nimbria | Golem d'améthyste | `nimbria_distance` (lance des pierres) | vagabond × 1,5 |
+| Vitalys | Braconnier | `vitalys_distance` | pillard × 1,5 |
+| Vitalys | Lame ardente | `vitalys_assassin` | zombie momifié × 1,5 |
+| Vitalys | Brasier | `vitalys_flying` (le diablotin à la boule de feu) | blaze × 2 |
+| Manelios | Triton | `manelios_melee` (au trident) | noyé × 1,6, trident |
+| Manelios | Trombe | `manelios_flying` (la goutte) | breeze × 1,8 |
+| Manelios | Alchimiste fou | `manelios_distance` (lance des poissons-globes) | sorcière × 1,4 |
 
 ### Les capacités nouvelles
 
@@ -1210,12 +1222,16 @@ Choix du joueur : **des offrandes au spawn ; le boss arrive une heure après, da
 
 - **Les gardiens**, un par métier, chacun dans le **décor du donjon de son métier** :
 
-| Métier | Gardien | Monstre | Arène | Capacités |
-|---|---|---|---|---|
-| Fermier | Gardien des moissons | ravageur × 1,25 | grange de Talikus | ruée, onde de choc, enracinement, renforts |
-| Mineur | Colosse de fer | golem de fer × 1,7 | galerie de Nimbria | onde de choc, séisme, ruée |
-| Chasseur | Bête sauvage | zoglin × 2,4 | forge de Vitalys | ruée, renforts, attraction |
-| Alchimiste | Sorcière des fioles | sorcière × 2 | temple de Manelios | nuage toxique, téléportation, enracinement, renforts |
+| Métier | Gardien | Modèle | Monstre | Arène | Capacités |
+|---|---|---|---|---|---|
+| Fermier | Gardien des moissons | `talikus_miniboss` (le gardien à la hache et à la hotte) | ravageur × 1,25 | grange de Talikus | ruée, onde de choc, enracinement, renforts |
+| Mineur | Colosse de fer | `nimbria_grolem` (le golem de pierre) | golem de fer × 1,7 | galerie de Nimbria | onde de choc, séisme, ruée |
+| Chasseur | Bête sauvage | `vitalys_cerberus` (le chien à trois têtes) | zoglin × 2,4 | forge de Vitalys | ruée, renforts, attraction |
+| Alchimiste | Sorcière des fioles | `talikus_grandma` (la sorcière au chaudron) | sorcière × 2 | temple de Manelios | nuage toxique, téléportation, enracinement, renforts |
+
+  Les modèles sont ceux des boss de donjon (`rpgentities` du joueur, § 29 de `PALAMOD.md`), aux
+  textures de leur couleur de palier (noire au-delà du palier 75, soit le gardien niveau 8 et plus) ;
+  le gardien garde la taille de Paladium, sa boîte de collision celle de son monstre vanilla.
 
 - **L'autel des offrandes** : sur le **parvis du spawn, à gauche de l'allée en arrivant** (spawn
   version 9, reconstruit tout seul) : un dallage rond, une estrade, la **borne AUTEL** au milieu et un

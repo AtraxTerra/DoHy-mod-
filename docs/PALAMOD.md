@@ -1141,8 +1141,13 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
 - Les **générateurs sont des patrons figés**, communs aux quatre essences : 30 bûches et 97
   feuilles (11 de haut) deux fois sur trois, 35 et 129 (12 de haut) sinon ; les patrons 3 et 4
   ne sont jamais tirés. Coordonnées recopiées du bytecode (`PalaTreeFeature`).
-- Les feuilles : 1,01 % de pousse, la feuille à la cisaille ou au toucher de soie. La pousse suit
+- Les feuilles : la feuille à la cisaille ou au toucher de soie, sinon une pousse. La pousse suit
   la croissance vanilla.
+- **Écart : une pousse sur vingt** (demandé le 2026-11-14), plus avec Fortune (6,25 %, 8,3 %,
+  10 %), comme le chêne vanilla ; aussi quand la feuille tombe seule. L'original : une sur 99
+  (1,01 %). Un arbre de PalaMod n'en rendait alors qu'une en moyenne, et aucune une fois sur
+  trois (0,99⁹⁷ ≈ 37 % pour le premier patron) ; à 5 %, environ cinq (97 feuilles) ou six (129),
+  et presque jamais aucune.
 - **Écart : les feuilles tombent** (2026-11-13 ; l'original : un bloc simple, qui ne pourrissait
   jamais). Ce sont de vraies feuilles (`PalaLeavesBlock`) : à plus de six pas d'une bûche, elles
   tombent, et vite avec **Leaves Be Gone**, qui ne traite que les vraies feuilles. Posées à la
@@ -2674,6 +2679,14 @@ base ; les premières se retirent quand le joueur avance. Détail et garde-fous 
    Chez Paladium c'est une date commune à tout le serveur.
 4. **Un achat du Clic Shop se confirme d'un second clic**, au lieu d'une fenêtre.
 5. Le classement « ClicCoins gagnés » et l'onglet du profil ne sont pas portés.
+6. **Le Clic Shop se remplit sans attendre** (demandé le 2026-11-14). Chez Paladium, un rayon
+   n'est tiré qu'à sa rotation : tiré à la première ouverture, quand aucun bâtiment n'ouvre encore
+   d'offre, il restait vide une semaine (offre de la semaine, offre métier) ou un jour (offre du
+   jour). Ici, un rayon incomplet prend aussitôt les offres qui s'ouvrent — achats et minuterie
+   gardés ; un rayon vide qui reçoit ses premières offres commence une rotation entière. Une offre
+   déjà tirée sort du tirage : le rayon n'a de place vide que s'il y a moins d'offres ouvertes que
+   de places (chez Paladium, un doublon laissait une place vide). Un rayon vide dit quel bâtiment
+   l'ouvre (« S'ouvre avec Mine des nains »).
 
 ### L'écran
 

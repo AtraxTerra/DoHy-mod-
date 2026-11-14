@@ -76,6 +76,15 @@ BOSSES = {
     "Poisson-globe": "manelios_pufferfish", "Hydre": "manelios_hydra", "Crabe": "manelios_crab",
     "Seigneur de Manelios": "manelios_boss", "Leviathan": "manelios_leviathan", "Kraken": "manelios_kraken",
     "Mage de Manelios": "manelios_mage", "Dragon de Manelios": "manelios_dragon",
+    # Les boss de metier (2026-11-14) : un modele de boss de leur donjon d'arene.
+    "Gardien des moissons": "talikus_miniboss", "Colosse de fer": "nimbria_grolem",
+    "Bete sauvage": "vitalys_cerberus", "Sorciere des fioles": "talikus_grandma",
+    # Les elites des donjons V12 : le modele d'un monstre de leur donjon, que
+    # RpgSkins.dressBoss grossit comme le monstre (ses couleurs de palier gardees).
+    "Sentinelle": "talikus_distance_bow", "Lame masquee": "talikus_assassin", "Frelon noir": "talikus_flying",
+    "Golem de braise": "nimbria_melee", "Contremaitre": "nimbria_tank", "Golem d'amethyste": "nimbria_distance",
+    "Braconnier": "vitalys_distance", "Lame ardente": "vitalys_assassin", "Brasier": "vitalys_flying",
+    "Triton": "manelios_melee", "Trombe": "manelios_flying", "Alchimiste fou": "manelios_distance",
 }
 
 # Les montures volantes jouent leurs variantes « _flying » quand elles existent.
