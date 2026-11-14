@@ -102,6 +102,9 @@ public final class DoHyClient {
     @SuppressWarnings("unchecked")
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(PalaGolem.GUARDIAN_GOLEM.get(), GuardianGolemRenderer::new);
+        // Les soldats des nations rivales (lot 22l) : corps humain, textures originales, equipement de leur role.
+        event.registerEntityRenderer(fr.atraxterra.dohy.faction.war.DoHyWar.SOLDIER.get(),
+                fr.atraxterra.dohy.client.war.SoldierRenderer::new);
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
         event.registerEntityRenderer(DoHyAgri.TRACTOR.get(), TractorRenderer::new);
         // Les caisses des palettes d'armement, dessinees par le coin nord-ouest de chaque groupe.

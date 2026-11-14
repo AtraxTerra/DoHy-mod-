@@ -5,7 +5,8 @@ PvE**. Choix du joueur :
 
 - **progression seule** : la faction est ta base et ta progression ; pas de faction rivale vivante — seulement des
   **bases ennemies fictives**, générées sur demande pour être pillées (lot 22g) ;
-- **pas de raids** sur ta base (choix du joueur) ;
+- **pas de raids** de joueurs sur ta base (choix du joueur) ; depuis le lot 22l, ce sont les
+  **nations rivales** qui l'assiègent, à l'heure que tu fixes (demandé le 2026-11-14) ;
 - **tous les objets** de pillage et de défense de PalaMod ;
 - **events aux vraies heures** du calendrier de Paladium.
 
@@ -27,6 +28,8 @@ PvE**. Choix du joueur :
 | 22i | Pays à prendre, sur une carte de la Terre : capitale, conquête des pays aux events contre les nations rivales | fait |
 | 22j | Refonte : la faction est une nation (rangs, page unifiée), marché international à stock mondial, notation à cinq critères avec classement face aux nations | fait |
 | 22k | La base tourne sans toi : claims tenus chargés (64 au plus, les plus actifs), le serveur vide ne se met plus en pause, rapport d'absence à la connexion | fait |
+| 22l | La guerre des nations : IA stratégique des douze nations, diplomatie (ultimatum, tribut, paix), assaut à l'heure que tu fixes, siège tactique (plan de brèche, sapeurs, ingénieurs, moral), pillage de la banque, riposte, terrain qui revient | fait |
+| 22l-2 | Éclaireurs, IA qui apprend de tes défenses d'un assaut à l'autre, alliances de nations, contre-offensive | à faire |
 
 ## Ce qui change en solo
 
@@ -686,3 +689,165 @@ Code : `faction/absence/` — `KeptBases` (les chunks tenus, le ticket), `BaseSt
 coffres et machines), `AbsenceJournal` (le journal du monde), `AbsenceReport` (les relevés, le
 retour, `/rapport`, `/f charge`), `AbsenceMenu` (l'écran) ; `mixin/DedicatedServerPauseMixin`.
 
+## La guerre des nations (22l)
+
+Les douze nations rivales (celles des events et de la carte de la Terre) ne se contentent plus de
+tenir des pays : elles viennent chez toi. Demandé le 2026-11-14 (« je veux une IA réaliste et très
+compliquée »), choix du joueur : **toi qui fixes l'heure de l'assaut**, leur objectif est de
+**vider ta banque de faction**, **le terrain revient** après la bataille, et l'IA couvre **la
+stratégie des nations, la tactique sur le terrain, la diplomatie et ta riposte**. Ce lot est le
+premier des deux ; le second ajoutera les éclaireurs, une IA qui apprend de tes défenses d'un
+assaut à l'autre, les alliances de nations contre toi et la contre-offensive sur leurs bases.
+
+### Douze nations, douze caractères
+
+Chaque nation a un caractère fixe : **agressivité**, **avidité**, **prudence**, **rancune**,
+**honneur**, **ruse**, une **doctrine** (équilibrée, de siège, d'archers, de choc) qui fixe la
+composition de son armée, un trésor et une armée de départ, et une **voix** (brutale, courtoise,
+mielleuse, froide) qui colore ses messages. Nordheim et Fer de Lance sont belliqueux, les Corbeaux
+et le Kraken avides, Solaris et Arcanum prudents, Valkyr d'honneur, Ombre Pourpre et le Basilic
+sans parole et rancuniers, les Titans des hommes de siège.
+
+### L'IA stratégique
+
+Toutes les demi-heures que tu passes en ligne (décalées d'une nation à l'autre), chaque nation
+pèse :
+
+- **l'attrait de ta banque**, selon son avidité — il croît comme le logarithme de la banque : dix
+  fois plus d'argent ne fait pas dix fois plus envie ;
+- **ta croissance** (tes claims), qui fait de toi un rival à abattre pour une nation belliqueuse ;
+- **ses griefs** : un pays que tu lui as pris sur la carte de la Terre, ses soldats tombés chez
+  toi, un tribut refusé. Ils s'effacent avec les jours, lentement chez les rancuniers ;
+- **sa confiance**, la taille de son armée ;
+- **ce qui la retient** : tes défenses telles qu'elle les a vues à son dernier assaut, ta force
+  (armure, vie), la crainte que tu lui inspires — d'autant plus qu'elle est prudente.
+
+De quoi tirer une humeur cible ; son **hostilité** s'en approche par tiers, jamais d'un coup.
+Au-delà de 58, si elle a une armée et de quoi la payer, elle passe à l'acte. **Son économie**
+tourne même en ton absence : son trésor grandit de ses terres (les pays qu'elle tient encore sur la
+carte de la Terre), son armée se reconstitue en recrutant ; les pertes d'un assaut se paient
+longtemps. Une seule guerre à la fois, et un jour de calme après chacune.
+
+### La diplomatie
+
+- **L'ultimatum** (nation d'honneur, ou qui t'a déjà vu payer) : un tribut de 8 à 25 % de ta
+  banque selon son avidité, sous 24 h. Trois boutons dans le chat : **payer** (une trêve de 3 à
+  7 jours, plus longue chez les nations d'honneur), **négocier** (proposer la moitié : une nation
+  peu avide, ou qui te craint, accepte plus volontiers ; un refus raccourcit le délai), **refuser**
+  (c'est la guerre, et un grief).
+- **La déclaration de guerre** (directe chez les nations sans parole). **Tu fixes l'heure de
+  l'assaut** entre 30 minutes et 48 heures plus tard : dans l'écran de la guerre (des heures
+  proposées, dont 18 h et 21 h des jours qui viennent) ou par `/guerre heure 21:00`,
+  `/guerre heure demain 18h`. Sans choix en 24 h, la nation prend la fin de la fenêtre. Rappels
+  à 30, 10 et 1 minute.
+- **La paix** s'achète pendant une guerre (une part de ta banque) — sauf chez les rancuniers trop
+  hostiles, qui veulent l'assaut. **Un cadeau** (`/guerre cadeau <nation> <montant>`, ou un clic
+  sur sa carte : 1 000 $) adoucit une nation en paix ; le même cadeau compte moins pour un riche.
+- **Jamais en ton absence** : un ultimatum qui expire hors ligne est prolongé de deux heures à ton
+  retour ; un assaut dont l'heure passe hors ligne part **cinq minutes après ta connexion**. Te
+  déconnecter en plein assaut le coupe : l'argent en route revient, l'armée rentre, le terrain
+  revient ; la guerre continue, il faudra fixer une nouvelle heure.
+
+### Ton coffre
+
+`/guerre coffre` le pose là où tu te tiens, dans un de tes claims : c'est lui que l'armée vient
+prendre. Sans coffre désigné, c'est le cœur du claim le plus garni en machines et coffres.
+
+### L'assaut, la tactique sur le terrain
+
+1. **Le plan.** Le commandant étudie ta base : un cube autour du coffre, de la hauteur de tes
+   murs, où chaque bloc devient un coût — marcher, nager, sauter, se laisser tomber (au-delà de
+   trois blocs la chute se paie), jeter une planche sur la lave ou sur un gouffre, creuser ce qui
+   se creuse (terre, bois, pierre), faire sauter ce qui ne se creuse pas (fer, et l'obsidienne à
+   la TNT en endium si la nation en a), poser une échelle contre un mur de 2 à 12 blocs, creuser
+   vers le bas pour passer sous une muraille. Les pics, le magma, les cactus coûtent cher ; les
+   pièges cachés (obsidiennes piégées, mines, plaques) aussi, s'ils sont connus — une nation rusée
+   en connaît davantage ; les tourelles marquent ce qu'elles couvrent. Un A* cherche le chemin le
+   moins cher depuis tout endroit où un camp peut se dresser (hors de tes claims, à 16 à 48 blocs de
+   leur bord) : il dit où camper, où percer, où grimper, où jeter un pont. Une porte en bois
+   s'ouvre, une porte en fer saute, un tunnel sous un mur d'obsidienne sort de lui-même. Les
+   conteneurs et les machines ne sont jamais touchés. Une base sans aucune entrée est
+   **imprenable** : la nation lève le siège avant de commencer, et te craint.
+2. **Le camp** (une minute) : des tentes à ses couleurs, un feu, son **étendard** sur un mât ; la
+   première vague arrive au son du cor. Le chat dit où, et le plan de bataille.
+3. **L'armée** : 8 à 24 soldats selon son armée et son agressivité, composés selon sa doctrine.
+   **Fantassins** (cuir à ses couleurs, casque de fer), **archers** (ils couvrent les travaux de
+   loin et gardent leurs distances), **sapeurs** (un briquet à la main, de la dynamite au côté —
+   pas de TNT à la main : avec NTM, un soldat qui prend feu avec de la TNT sur lui explose),
+   **ingénieurs**
+   (casque d'or, pioche, échelle), **médecins** (tunique blanche, potions de soin pour les
+   blessés), le **commandant** (la bannière de sa nation sur la tête) et le **trésorier** (tout en
+   or, un coffre dans les mains). Des textures originales, quatre visages.
+4. **Les obstacles, l'un après l'autre.** La troupe se range à distance de l'obstacle — jamais
+   sur un pont ni au bord de la lave — et recule davantage quand une charge va sauter. Un
+   **sapeur** attend que personne ne soit à moins de six blocs, colle sa charge contre le bloc qui
+   la demande (TNT, TNT compacte ou TNT en endium selon le bloc ; une brèche mêlée de pierre et de
+   fer se perce en deux temps, la pioche puis la charge) et court s'abriter. Un **ingénieur**
+   creuse, pose les échelles de bas en haut ou jette un pont de deux de large ; là où l'armée se
+   laisse tomber de plus de deux blocs, il pose une **échelle de descente**, par laquelle elle
+   remontera en repartant. On monte une échelle un par un. Ce que tu rebouches se reperce. Trois
+   soldats égarés en une minute (tombés d'une échelle, coincés dans une cour), trois morts au même
+   endroit, ou un coffre qui ne se prend pas : le commandant refait son plan depuis le front (au
+   plus une fois par minute, huit fois par siège). Un siège qui n'avance plus depuis trois minutes
+   **s'enlise** : le moral perd 6 points par minute.
+5. **Le coffre** est pris quand des soldats le tiennent sans défenseur (toi, tes golems gardiens)
+   pendant une demi-minute. **Le trésorier** vient alors **vider ta banque** : une part toutes les
+   trois secondes, jusqu'à ce qu'il en ait assez (55 à 100 % selon l'avidité) ou que le moral
+   flanche (sous 40). Il repart au camp par le chemin de l'aller, en remontant les échelles de
+   descente, escorté à distance, une arrière-garde tenant le coffre derrière lui, brillant à
+   travers les murs. **Arrivé, l'argent est perdu** (il grossit leur trésor) ; **tué en route, il
+   le rend**. Tu as six minutes pour l'abattre ; un trésorier égaré que tu ne vois pas (à plus de
+   24 blocs de toi) depuis 25 secondes trouve un autre chemin et reparaît au camp. Pendant
+   l'assaut, rien ne sort de ta banque (retraits, achats) : tout y est sous scellé.
+6. **Le moral** tient l'armée : chaque mort l'entame (davantage pour un sapeur qu'un fantassin,
+   beaucoup pour le commandant), une brèche ouverte ou un coffre tenu le relèvent, ta mort l'exalte.
+   Sous 35, la troupe hésite et ne monte plus à l'assaut ; sous 15, c'est la déroute. Tant que
+   l'étendard tient et que le moral reste au-dessus de 25, des renforts arrivent du camp toutes les
+   deux minutes (16 soldats au plus en même temps).
+
+### Ta riposte
+
+- **Abats l'étendard** (un bloc de bannière sur son mât, au camp) : plus de renforts, et le moral
+  s'effondre. Tu gardes la bannière en trophée.
+- **Tue le commandant** : la troupe perd sa tête — plus de nouveau plan.
+- **Tue le trésorier** : ton argent revient.
+- **Tes golems gardiens** attaquent les soldats d'eux-mêmes.
+- Chaque soldat tué rapporte une prime (25 à 400 $). Un assaut brisé te vaut de l'ELO, la
+  crainte de la nation, une trêve, et des **réparations** si c'est une nation d'honneur dont le
+  commandant est tombé ou l'armée a fui.
+
+### Le terrain revient
+
+Tout ce que l'armée change — un mur soufflé, un bloc creusé, une échelle, une planche, une tente —
+passe par un registre qui garde l'état d'origine. Aucun objet ne tombe (le mur qui revient ne
+double pas sa pierre), rien ne s'écroule pendant la bataille (une torche reste accrochée, le sable
+ne coule pas). Quinze secondes après la fin, le terrain revient, quelques dizaines de blocs par
+tick ; un bloc que tu as posé entre-temps (une brèche rebouchée à la main) reste le tien. Le
+registre est écrit avec le monde : un serveur qui tombe en plein siège rend le terrain au
+démarrage suivant (et l'argent en route à ta connexion).
+
+### L'écran
+
+**`/guerre`** : l'assaut en cours (moral, soldats, étendard, ton coffre), l'ultimatum à
+répondre, les heures à choisir et le prix de la paix, les douze nations (humeur, posture, armée et
+trésor estimés, caractère, griefs, assauts), ta base vue par elles, et l'histoire de tes guerres.
+Les guerres s'écrivent aussi au journal des nations du rapport d'absence. Opérateurs :
+`/guerre admin menace|declarer|assaut <nation>`, `hostilite <nation> <valeur>`, `fin`, `etat`.
+
+### Vérifié en jeu
+
+Sur une forteresse de test bâtie par le CI (quatre claims, des douves de lave, une muraille de
+pierre de six de haut, un socle, un donjon de fer fermé autour du coffre, 60 000 $ en banque), deux
+assauts des Titans de bout en bout (le camp y durait 20 s au lieu d'une minute) :
+
+- **le plan** : six obstacles — une échelle de 5 blocs, un pont de deux planches sur la lave, trois
+  passages à creuser, une brèche à la TNT dans le fer — en 33 étapes depuis un camp dressé à
+  33 blocs à l'ouest du coffre (82 470 cases explorées) ;
+- **sans riposte** : 16 soldats, aucun tué par ses propres charges ; le coffre pris, le trésorier a
+  vidé 46 500 $ sur 60 000, remonté l'échelle de descente et rejoint le camp — « pillage », une
+  trêve, le trésor des Titans grossi d'autant ;
+- **avec riposte** : l'étendard abattu (moral de 76 à 58, plus de renforts), puis le trésorier tué
+  dans sa fuite — les 46 500 $ reviennent à la banque, « assaut brisé », +44 ELO, 150 $ de primes ;
+- dans les deux cas, le terrain est revenu comme avant quinze secondes après la fin ;
+- le serveur dédié démarre jusqu'à « Done » avec le lot, et `/summon dohy:soldier` y fait
+  apparaître un soldat.

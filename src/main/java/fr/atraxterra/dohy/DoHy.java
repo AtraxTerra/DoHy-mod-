@@ -40,6 +40,8 @@ public final class DoHy {
         fr.atraxterra.dohy.earth.DoHyEarth.register(modBus);
         // Les palettes d'armement : obus, munitions et missiles de NTM NEXT en caisses.
         fr.atraxterra.dohy.palette.DoHyPalette.register(modBus);
+        // La guerre des nations : les soldats des nations rivales.
+        fr.atraxterra.dohy.faction.war.DoHyWar.register(modBus);
         LOGGER.info("DoHy charge");
     }
 }

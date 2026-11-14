@@ -31,7 +31,7 @@ ce qui se joue seul, ou on le remixe pour un joueur, comme la faction (chapitres
 `client/` hors du client), ce qui avance hors ligne suit l'horloge réelle (`RealClock`, à l'heure
 de Paris), et ce qui touche physiquement au monde n'agit que près d'un joueur connecté — jamais
 sur une base laissée seule (la base, elle, tourne sans son joueur depuis le lot 22k : ce sont ses
-propres machines, dans ses claims protégés). Installation et réglages : `docs/CONTENU_DOHY.md`, « Sur un serveur
+propres machines, dans ses claims protégés ; et les nations n'attaquent que joueur connecté, lot 22l). Installation et réglages : `docs/CONTENU_DOHY.md`, « Sur un serveur
 dédié ».
 
 **Choix d'architecture : un seul module NeoForge**, pas de découpage multiloader Architectury. La cible est NeoForge uniquement ; le surcoût de scaffolding common/fabric/forge ne se rentabilise que si le mod doit sortir sur plusieurs loaders.
@@ -185,6 +185,115 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-14 (suite) — la guerre des nations
+
+**Demande** : « 1 je veux une ia réaliste et très compliqué » — les nations rivales attaquent ta
+base. Choix du joueur : **toi qui fixes le rendez-vous** de l'assaut, leur objectif est de **vider
+ta banque de faction**, **le terrain revient** après la bataille, et l'IA couvre **la stratégie des
+nations, la tactique sur le terrain, la diplomatie et ta riposte**. Description : `docs/FACTION.md`,
+lot 22l. Coupé en deux lots : celui-ci (la guerre de bout en bout) et le 22l-2 (éclaireurs, IA qui
+apprend d'un assaut à l'autre, alliances, contre-offensive).
+
+**Fait** (`feat/guerre-des-nations`, paquet `faction/war/`) :
+- `NationTraits` : le caractère fixe des douze nations (agressivité, avidité, prudence, rancune,
+  honneur, ruse), leur doctrine (composition de l'armée), trésor et armée de départ, leur voix.
+- `WarData` (attachement `war` du joueur, gardé à la mort) : une relation par nation — hostilité,
+  crainte, trésor, armée, posture (paix, menace, guerre, trêve) et échéances, mémoire (griefs qui
+  s'effacent, assauts gagnés et perdus, butin, tributs) —, le coffre désigné, l'histoire, l'argent
+  en route.
+- `WarStrategy` : l'IA stratégique (une réflexion par nation et par demi-heure en ligne, une humeur
+  cible tirée de la banque, des claims, des griefs, de l'armée, des défenses vues et de la crainte,
+  approchée par tiers), l'économie des nations (revenus de leurs pays de la Terre, recrutement,
+  rattrapage à la connexion), la diplomatie (ultimatum et tribut, négociation, déclaration, choix
+  de l'heure, paix, cadeaux, rappels), jamais en ton absence, la fin d'un assaut (trêve,
+  réparations, ELO, griefs). `WarCommand` (`/guerre`), `WarMenu` (écran kit DoHy UI).
+- `SiegePlanner` : le relevé (classes de blocs : air, eau, lave, porte en bois, tendre, moyen, dur,
+  à la TNT, à la TNT compacte, à l'endium, infranchissable ; marques : trop haut, dangereux,
+  piège, grimpable, ton claim, claim d'autrui ; tourelles NTM et morts du siège par colonne ;
+  pièges cachés selon la ruse) et un A* multi-départ sur les positions debout (marcher, nager,
+  sauter, tomber, planche, creuser, faire sauter, échelle, creuser vers le bas), en tâche de fond.
+  Le plan : un camp, des étapes, des obstacles (brèche à la pioche, brèche à la charge, échelle,
+  échelle de descente là où l'armée se laisse tomber, pont). Replanification depuis le front,
+  raccordée au chemin déjà tenu, à l'assaut seulement.
+- `Siege` : le cerveau tactique — chunks tenus (`TicketController` `dohy:siege`), camp
+  (tentes, feu, étendard à motifs), armée composée selon la doctrine et le plan, vagues et
+  renforts, ordres par rôle (la troupe attend loin des ponts et de la lave, et plus loin quand une
+  charge va sauter), obstacles levés un à un (le sapeur attend que personne ne soit à six blocs,
+  colle sa charge au bloc qui la demande et court s'abriter ; l'ingénieur creuse avec la fissure,
+  pose les échelles, jette des ponts de deux de large), moral (morts, étendard, brèches, coffre, ta
+  mort, enlisement), coffre à tenir sans défenseur, pillage de la banque sous scellé, fuite du
+  trésorier (escorte à distance, arrière-garde au coffre, échelles de descente remontées),
+  retraite, retour du terrain ; soldats égarés (ils tiennent leur place, retentent, et ceux qui
+  doivent rentrer filent quand personne ne les voit) ; coupé à la déconnexion et à l'arrêt.
+- `Soldier` (entité `dohy:soldier`, monstre, `RangedAttackMob`) : sept rôles (`SoldierRole`),
+  l'équipement de chacun (le sapeur porte la dynamite de Palamod, pas de TNT), quatre textures
+  originales (générées par `tools/soldier_textures.py`), le suivi du chemin du plan (navigation
+  vanilla entre des étapes rapprochées, les échelles montées et descendues à la main, un soldat à
+  la fois par échelle), le tir à l'arc, le soin à la potion, pas de tir ami. Rendu :
+  `client/war/SoldierRenderer` (modèle humain, armure, objets).
+- `SiegeTerrain` : le registre du terrain (attachement `siege_terrain` du niveau) — blocs changés
+  sans voisinage ni objet lâché, jamais un conteneur ou une machine ; retour progressif, et au
+  démarrage après un arrêt brutal.
+- `Sieges` : les sièges en cours, les explosions des charges (hors protection des claims, notées),
+  les morts, connexion et déconnexion, arrêt du serveur.
+- Ailleurs : `FactionApi` (banque sous scellé pendant un assaut, `seize`), les golems gardiens
+  attaquent les soldats, un pays pris sur la carte de la Terre est un grief.
+
+**Relu dans les jars de 26.2** (sonde) : `HumanoidMobRenderer(Context, M, float)`,
+`HumanoidArmorLayer(parent, ArmorModelSet, EquipmentLayerRenderer)`, `ArmorModelSet.bake`,
+`ModelLayers.ZOMBIE`/`ZOMBIE_ARMOR`, `ArmedEntityRenderState.rightArmPose` ; `PrimedTnt(Level, x, y,
+z, LivingEntity)`, `ExplosionDamageCalculator` ; `ProjectileUtil.getMobArrow`,
+`Projectile.spawnProjectileUsingShoot` (flèches, potions) ; `RangedBowAttackGoal`, `OpenDoorGoal`,
+`GroundPathNavigation.setCanOpenDoors` ; `Attributes.SAFE_FALL_DISTANCE`, `FALL_DAMAGE_MULTIPLIER` ;
+`DyedItemColor(int)`, `BannerPatternLayers.Builder.addIfRegistered`. Pas de
+`Mob.shouldDespawnInPeaceful` ni de `Direction.fromDelta` en 26.2.
+
+**Vérifié en jeu** (client de CI, serveur intégré ; forteresse de test : quatre claims, douves de
+lave, muraille de pierre de six de haut, socle, donjon de fer fermé autour du coffre, 60 000 $ en
+banque ; assaut des Titans lancé par `/guerre admin assaut titans`, camp raccourci à 20 s sur la
+branche de capture) :
+- **le plan** : 33 étapes, six obstacles (une échelle de 5 blocs, un pont de deux planches sur la
+  lave, trois passages à creuser, une brèche à la TNT dans le fer), camp à 33 blocs à l'ouest du
+  coffre, 82 470 cases explorées ;
+- **sans riposte** : 16 soldats, aucun mort ; deux charges (1 bloc, puis 24 blocs soufflés) ; le
+  coffre pris, le trésorier vide 46 500 $ sur 60 000, remonte l'échelle de descente et rentre au
+  camp — « pillage », trêve des Titans affichée dans l'écran, leur trésor grossi d'autant ;
+- **avec riposte** (simulée par la capture : bannière retirée, trésorier frappé pendant sa fuite) :
+  « Notre etendard est tombe ! », moral de 76 à 58 ; « 46 500 $ reviennent a ta banque. Tu as
+  abattu le tresorier des Titans ! », « assaut brisé : 1 soldat tombé, 150 $ de primes », +44 ELO,
+  le porte-monnaie à 20 150 $ ;
+- dans les deux cas, « Le terrain du siege revient comme avant » et le fort est intact ;
+- **serveur dédié de la sonde** : démarre jusqu'à « Done » avec le lot ; `summon dohy:soldier`
+  répond « Summoned new Soldier ».
+
+**Corrigé en route** (vu dans les captures) :
+- des morts en masse près du pont sur la lave : avec NTM, une entité en feu qui tient de la TNT
+  vanilla explose — les sapeurs portent la dynamite de Palamod, et la troupe ne s'arrête plus sur
+  un pont ni au bord de la lave ;
+- des ponts de planches jetés en hauteur par-dessus les murs (les soldats en tombaient) : un pont
+  seulement au-dessus d'un vrai vide ou de la lave ;
+- la TNT qui tombait dans son cratère et soufflait trop large : une brèche par méthode, la charge
+  collée au bloc et sans gravité, des puissances revues ;
+- une chute de plusieurs blocs à l'aller qui fermait la retraite : les échelles de descente ;
+- le trésorier bousculé au pied d'une échelle : un grimpeur à la fois, l'escorte à distance,
+  l'arrière-garde ;
+- de faux « coincés » pendant l'attente au point de ralliement, des replanifications en rafale
+  (dont une pendant la retraite) : un soldat arrivé n'est plus bloqué, une replanification par
+  minute au plus, huit par siège, à l'assaut seulement ;
+- un camp dressé sur des chapeaux de champignons géants : le sol est cherché près de la hauteur
+  du camp ;
+- le coffre « tenu » par des soldats hors du donjon : zone de 2,5 blocs au même étage, et un
+  joueur en créatif ne défend pas ;
+- un siège figé à 33 de moral : renforts dès 25, et l'enlisement ;
+- « Les Titans dressent son camp » : « leur camp ».
+
+**Non vérifié en jeu** : l'ultimatum, la négociation, le choix de l'heure et les rappels (la
+capture lance l'assaut par la commande d'opérateur) ; l'économie des nations hors ligne et les
+échéances prolongées à la connexion ; une vraie déconnexion en plein assaut et un arrêt brutal du
+serveur (le terrain rendu au démarrage) ; les charges de TNT compacte et d'endium ; les tourelles
+et pièges de NTM dans le plan ; les golems gardiens contre les soldats ; archers et médecins face
+à un vrai joueur ; le serveur de Minestrator.
 
 ### 2026-11-14 (suite) — la base tourne sans toi
 

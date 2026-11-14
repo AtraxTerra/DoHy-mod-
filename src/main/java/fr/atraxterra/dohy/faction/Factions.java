@@ -89,6 +89,22 @@ public final class Factions {
                     .copyOnDeath()
                     .build());
 
+    /** Ce que les nations rivales pensent du joueur, et ses guerres (lot 22l). Garde a la mort. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.faction.war.WarData>> WAR =
+            ATTACHMENTS.register("war", () -> AttachmentType.builder(fr.atraxterra.dohy.faction.war.WarData::empty)
+                    .serialize(fr.atraxterra.dohy.faction.war.WarData.MAP_CODEC,
+                            fr.atraxterra.dohy.faction.war.WarData::exists)
+                    .copyOnDeath()
+                    .build());
+
+    /** Le terrain qu'un siege a change et qui doit revenir, par dimension (lot 22l). */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.faction.war.SiegeTerrain.State>> SIEGE_TERRAIN =
+            ATTACHMENTS.register("siege_terrain", () -> AttachmentType.builder(
+                            () -> fr.atraxterra.dohy.faction.war.SiegeTerrain.State.EMPTY)
+                    .serialize(fr.atraxterra.dohy.faction.war.SiegeTerrain.State.MAP_CODEC,
+                            fr.atraxterra.dohy.faction.war.SiegeTerrain.State::exists)
+                    .build());
+
     private Factions() {
     }
 

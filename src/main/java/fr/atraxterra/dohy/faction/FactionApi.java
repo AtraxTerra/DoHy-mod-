@@ -392,6 +392,9 @@ public final class FactionApi {
         if (amount <= 0 || data.bank <= 0) {
             return "La banque de faction est vide";
         }
+        if (fr.atraxterra.dohy.faction.war.Sieges.besieged(player.getUUID())) {
+            return "Ta base est assiegee : rien ne sort de ta banque tant que dure l'assaut";
+        }
         long taken = Math.min(amount, data.bank);
         data.bank -= taken;
         Economy.credit(player, taken);
@@ -411,10 +414,26 @@ public final class FactionApi {
         data.log(amount, label);
     }
 
-    /** Paie depuis la banque de faction : l'arbre de technologie. */
+    /** Paie depuis la banque de faction : l'arbre de technologie. Rien ne sort d'une banque assiegee. */
     public static boolean payFromBank(ServerPlayer player, long amount, String label) {
         FactionData data = data(player);
         if (!data.exists() || data.bank < amount) {
+            return false;
+        }
+        if (fr.atraxterra.dohy.faction.war.Sieges.besieged(player.getUUID())) {
+            tell(player, "Ta base est assiegee : rien ne sort de ta banque tant que dure l'assaut",
+                    ChatFormatting.RED);
+            return false;
+        }
+        data.bank -= amount;
+        data.log(-amount, label);
+        return true;
+    }
+
+    /** Ce qu'un tresorier ennemi emporte de la banque pendant un siege (lot 22l). */
+    public static boolean seize(ServerPlayer player, long amount, String label) {
+        FactionData data = data(player);
+        if (!data.exists() || amount <= 0 || data.bank < amount) {
             return false;
         }
         data.bank -= amount;

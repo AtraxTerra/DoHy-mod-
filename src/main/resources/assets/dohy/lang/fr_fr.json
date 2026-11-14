@@ -22,6 +22,7 @@
   "tooltip.dohy.climate.hot": "Climat chaud : jungle, savane, desert",
   "tooltip.dohy.climate.gmo": "OGM : pousse partout, ne rend aucune semence",
   "entity.dohy.tractor": "Tracteur",
+  "entity.dohy.soldier": "Soldat",
   "item.dohy.tractor": "Tracteur",
   "item.dohy.tractor_plow": "Charrue",
   "item.dohy.tractor_seeder": "Semoir",
