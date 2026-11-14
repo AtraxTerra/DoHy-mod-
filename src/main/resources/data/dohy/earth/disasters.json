@@ -1,0 +1,1007 @@
+{
+ "_comment": "Ecrit par tools/earth_disasters.py : les volcans, les zones sismiques, les bassins cycloniques et les regions de mousson de la Terre, en latitude et longitude. Les volcans sont poses sur la terre de la grille Earth24k.",
+ "version": 1,
+ "settings": {
+  "check_seconds": 20,
+  "quake_minutes": 45,
+  "quake_news_minutes": 150,
+  "eruption_minutes": 75,
+  "eruption_near_blocks": 400,
+  "eruption_news_minutes": 300,
+  "eruption_warning_seconds": 300,
+  "hurricane_minutes": 80,
+  "hurricane_target_share": 0.65,
+  "monsoon_minutes": 25,
+  "restore_hours": 3.0,
+  "max_active": 6
+ },
+ "volcanoes": [
+  {
+   "id": "etna",
+   "name": "Etna",
+   "country": "ITA",
+   "latitude": 37.734,
+   "longitude": 14.9496
+  },
+  {
+   "id": "vesuve",
+   "name": "Vesuve",
+   "country": "ITA",
+   "latitude": 40.8153,
+   "longitude": 14.4836
+  },
+  {
+   "id": "stromboli",
+   "name": "Stromboli",
+   "country": "ITA",
+   "latitude": 38.8366,
+   "longitude": 15.1826
+  },
+  {
+   "id": "santorin",
+   "name": "Santorin",
+   "country": "GRC",
+   "latitude": 36.4181,
+   "longitude": 25.4337
+  },
+  {
+   "id": "teide",
+   "name": "Teide",
+   "country": "ESP",
+   "latitude": 28.2488,
+   "longitude": -16.6192
+  },
+  {
+   "id": "hekla",
+   "name": "Hekla",
+   "country": "ISL",
+   "latitude": 63.9542,
+   "longitude": -19.6479
+  },
+  {
+   "id": "fuji",
+   "name": "Mont Fuji",
+   "country": "JPN",
+   "latitude": 35.3966,
+   "longitude": 138.7783
+  },
+  {
+   "id": "sakurajima",
+   "name": "Sakurajima",
+   "country": "JPN",
+   "latitude": 31.6547,
+   "longitude": 130.624
+  },
+  {
+   "id": "merapi",
+   "name": "Merapi",
+   "country": "IDN",
+   "latitude": -7.5527,
+   "longitude": 110.4713
+  },
+  {
+   "id": "tambora",
+   "name": "Tambora",
+   "country": "IDN",
+   "latitude": -8.2474,
+   "longitude": 118.0431
+  },
+  {
+   "id": "pinatubo",
+   "name": "Pinatubo",
+   "country": "PHL",
+   "latitude": 15.151,
+   "longitude": 120.3729
+  },
+  {
+   "id": "mayon",
+   "name": "Mayon",
+   "country": "PHL",
+   "latitude": 13.2094,
+   "longitude": 123.6346
+  },
+  {
+   "id": "popocatepetl",
+   "name": "Popocatepetl",
+   "country": "MEX",
+   "latitude": 18.9991,
+   "longitude": -98.628
+  },
+  {
+   "id": "colima",
+   "name": "Colima",
+   "country": "MEX",
+   "latitude": 19.5606,
+   "longitude": -103.6371
+  },
+  {
+   "id": "saint_helens",
+   "name": "Mont Saint Helens",
+   "country": "USA",
+   "latitude": 46.1699,
+   "longitude": -122.159
+  },
+  {
+   "id": "kilauea",
+   "name": "Kilauea",
+   "country": "USA",
+   "latitude": 19.4484,
+   "longitude": -155.2421
+  },
+  {
+   "id": "arenal",
+   "name": "Arenal",
+   "country": "CRI",
+   "latitude": 10.4519,
+   "longitude": -84.6493
+  },
+  {
+   "id": "masaya",
+   "name": "Masaya",
+   "country": "NIC",
+   "latitude": 11.9477,
+   "longitude": -86.1636
+  },
+  {
+   "id": "cotopaxi",
+   "name": "Cotopaxi",
+   "country": "ECU",
+   "latitude": -0.6938,
+   "longitude": -78.4753
+  },
+  {
+   "id": "villarrica",
+   "name": "Villarrica",
+   "country": "CHL",
+   "latitude": -39.4251,
+   "longitude": -71.9519
+  },
+  {
+   "id": "nyiragongo",
+   "name": "Nyiragongo",
+   "country": "COD",
+   "latitude": -1.5092,
+   "longitude": 29.1613
+  },
+  {
+   "id": "erta_ale",
+   "name": "Erta Ale",
+   "country": "ETH",
+   "latitude": 13.5528,
+   "longitude": 40.6938
+  },
+  {
+   "id": "lengai",
+   "name": "Ol Doinyo Lengai",
+   "country": "TZA",
+   "latitude": -2.79,
+   "longitude": 35.9178
+  },
+  {
+   "id": "klioutchevskoi",
+   "name": "Klioutchevskoi",
+   "country": "RUS",
+   "latitude": 56.0159,
+   "longitude": 160.6784
+  },
+  {
+   "id": "ruapehu",
+   "name": "Ruapehu",
+   "country": "NZL",
+   "latitude": -39.3258,
+   "longitude": 175.5891
+  },
+  {
+   "id": "fournaise",
+   "name": "Piton de la Fournaise",
+   "country": "FRA",
+   "latitude": -21.2277,
+   "longitude": 55.721
+  },
+  {
+   "id": "pelee",
+   "name": "Montagne Pelee",
+   "country": "FRA",
+   "latitude": 14.6951,
+   "longitude": -61.0018
+  }
+ ],
+ "zones": [
+  {
+   "id": "japon",
+   "name": "Japon",
+   "points": [
+    [
+     45.0,
+     142.5
+    ],
+    [
+     41.5,
+     141.5
+    ],
+    [
+     38.3,
+     141.0
+    ],
+    [
+     35.5,
+     139.8
+    ],
+    [
+     33.5,
+     133.5
+    ],
+    [
+     31.5,
+     130.8
+    ]
+   ],
+   "width_km": 220,
+   "max_magnitude": 9.0,
+   "weight": 3.0
+  },
+  {
+   "id": "kamtchatka",
+   "name": "Kamtchatka et Kouriles",
+   "points": [
+    [
+     56.0,
+     162.0
+    ],
+    [
+     52.0,
+     158.5
+    ],
+    [
+     47.0,
+     153.0
+    ]
+   ],
+   "width_km": 180,
+   "max_magnitude": 9.0,
+   "weight": 1.0
+  },
+  {
+   "id": "taiwan",
+   "name": "Taiwan",
+   "points": [
+    [
+     25.0,
+     121.6
+    ],
+    [
+     22.0,
+     120.8
+    ]
+   ],
+   "width_km": 120,
+   "max_magnitude": 7.7,
+   "weight": 1.0
+  },
+  {
+   "id": "philippines",
+   "name": "Philippines",
+   "points": [
+    [
+     18.5,
+     121.0
+    ],
+    [
+     14.5,
+     121.0
+    ],
+    [
+     10.5,
+     124.5
+    ],
+    [
+     6.5,
+     126.0
+    ]
+   ],
+   "width_km": 180,
+   "max_magnitude": 8.0,
+   "weight": 2.0
+  },
+  {
+   "id": "indonesie",
+   "name": "Indonesie",
+   "points": [
+    [
+     5.0,
+     95.0
+    ],
+    [
+     -1.0,
+     99.5
+    ],
+    [
+     -6.5,
+     106.0
+    ],
+    [
+     -8.0,
+     112.0
+    ],
+    [
+     -8.5,
+     118.0
+    ]
+   ],
+   "width_km": 200,
+   "max_magnitude": 9.1,
+   "weight": 3.0
+  },
+  {
+   "id": "papouasie",
+   "name": "Papouasie",
+   "points": [
+    [
+     -4.0,
+     141.0
+    ],
+    [
+     -6.0,
+     147.5
+    ],
+    [
+     -5.5,
+     152.0
+    ]
+   ],
+   "width_km": 180,
+   "max_magnitude": 8.2,
+   "weight": 1.0
+  },
+  {
+   "id": "nouvelle_zelande",
+   "name": "Nouvelle-Zelande",
+   "points": [
+    [
+     -37.0,
+     176.0
+    ],
+    [
+     -41.5,
+     174.5
+    ],
+    [
+     -45.0,
+     168.0
+    ]
+   ],
+   "width_km": 150,
+   "max_magnitude": 8.0,
+   "weight": 1.0
+  },
+  {
+   "id": "chili",
+   "name": "Chili",
+   "points": [
+    [
+     -18.0,
+     -70.3
+    ],
+    [
+     -27.0,
+     -70.8
+    ],
+    [
+     -33.5,
+     -71.8
+    ],
+    [
+     -38.0,
+     -73.4
+    ],
+    [
+     -43.0,
+     -73.8
+    ]
+   ],
+   "width_km": 200,
+   "max_magnitude": 9.5,
+   "weight": 3.0
+  },
+  {
+   "id": "perou",
+   "name": "Perou et Equateur",
+   "points": [
+    [
+     -1.0,
+     -80.3
+    ],
+    [
+     -6.0,
+     -80.5
+    ],
+    [
+     -12.0,
+     -77.2
+    ],
+    [
+     -16.5,
+     -73.0
+    ]
+   ],
+   "width_km": 180,
+   "max_magnitude": 8.8,
+   "weight": 2.0
+  },
+  {
+   "id": "amerique_centrale",
+   "name": "Amerique centrale",
+   "points": [
+    [
+     7.0,
+     -77.5
+    ],
+    [
+     9.5,
+     -84.0
+    ],
+    [
+     12.5,
+     -87.5
+    ],
+    [
+     14.5,
+     -91.5
+    ]
+   ],
+   "width_km": 160,
+   "max_magnitude": 8.0,
+   "weight": 2.0
+  },
+  {
+   "id": "mexique",
+   "name": "Mexique",
+   "points": [
+    [
+     16.0,
+     -95.0
+    ],
+    [
+     17.0,
+     -100.5
+    ],
+    [
+     19.0,
+     -104.5
+    ]
+   ],
+   "width_km": 180,
+   "max_magnitude": 8.2,
+   "weight": 2.0
+  },
+  {
+   "id": "californie",
+   "name": "Californie",
+   "points": [
+    [
+     32.5,
+     -115.5
+    ],
+    [
+     34.5,
+     -118.5
+    ],
+    [
+     37.5,
+     -122.3
+    ],
+    [
+     40.3,
+     -124.3
+    ]
+   ],
+   "width_km": 140,
+   "max_magnitude": 8.0,
+   "weight": 2.0
+  },
+  {
+   "id": "alaska",
+   "name": "Alaska",
+   "points": [
+    [
+     61.0,
+     -147.5
+    ],
+    [
+     58.0,
+     -153.0
+    ],
+    [
+     55.0,
+     -161.0
+    ]
+   ],
+   "width_km": 200,
+   "max_magnitude": 9.2,
+   "weight": 1.0
+  },
+  {
+   "id": "haiti",
+   "name": "Caraibes",
+   "points": [
+    [
+     19.0,
+     -74.5
+    ],
+    [
+     18.5,
+     -72.5
+    ],
+    [
+     18.5,
+     -68.5
+    ]
+   ],
+   "width_km": 120,
+   "max_magnitude": 7.5,
+   "weight": 1.0
+  },
+  {
+   "id": "portugal",
+   "name": "Portugal",
+   "points": [
+    [
+     38.7,
+     -9.2
+    ],
+    [
+     37.0,
+     -8.5
+    ]
+   ],
+   "width_km": 120,
+   "max_magnitude": 7.5,
+   "weight": 0.5
+  },
+  {
+   "id": "atlas",
+   "name": "Atlas et Tell",
+   "points": [
+    [
+     36.5,
+     3.0
+    ],
+    [
+     35.0,
+     -1.0
+    ],
+    [
+     31.0,
+     -8.0
+    ]
+   ],
+   "width_km": 120,
+   "max_magnitude": 7.3,
+   "weight": 1.0
+  },
+  {
+   "id": "italie",
+   "name": "Italie",
+   "points": [
+    [
+     44.5,
+     11.0
+    ],
+    [
+     42.5,
+     13.4
+    ],
+    [
+     40.8,
+     15.3
+    ],
+    [
+     38.2,
+     15.6
+    ],
+    [
+     37.5,
+     14.8
+    ]
+   ],
+   "width_km": 120,
+   "max_magnitude": 7.0,
+   "weight": 2.0
+  },
+  {
+   "id": "grece",
+   "name": "Grece",
+   "points": [
+    [
+     39.5,
+     20.5
+    ],
+    [
+     37.5,
+     22.0
+    ],
+    [
+     35.3,
+     25.0
+    ],
+    [
+     37.8,
+     26.8
+    ]
+   ],
+   "width_km": 140,
+   "max_magnitude": 7.0,
+   "weight": 1.0
+  },
+  {
+   "id": "turquie",
+   "name": "Turquie",
+   "points": [
+    [
+     40.7,
+     30.0
+    ],
+    [
+     39.8,
+     39.5
+    ],
+    [
+     38.0,
+     38.5
+    ],
+    [
+     36.5,
+     36.2
+    ]
+   ],
+   "width_km": 150,
+   "max_magnitude": 7.8,
+   "weight": 2.0
+  },
+  {
+   "id": "iran",
+   "name": "Iran",
+   "points": [
+    [
+     36.5,
+     52.0
+    ],
+    [
+     34.0,
+     47.5
+    ],
+    [
+     30.0,
+     51.5
+    ],
+    [
+     27.5,
+     57.0
+    ]
+   ],
+   "width_km": 200,
+   "max_magnitude": 7.5,
+   "weight": 2.0
+  },
+  {
+   "id": "hindou_kouch",
+   "name": "Hindou Kouch",
+   "points": [
+    [
+     36.5,
+     70.8
+    ],
+    [
+     34.0,
+     71.5
+    ],
+    [
+     30.0,
+     67.0
+    ]
+   ],
+   "width_km": 150,
+   "max_magnitude": 7.6,
+   "weight": 1.0
+  },
+  {
+   "id": "himalaya",
+   "name": "Himalaya",
+   "points": [
+    [
+     34.5,
+     73.5
+    ],
+    [
+     31.0,
+     78.5
+    ],
+    [
+     28.0,
+     84.5
+    ],
+    [
+     27.5,
+     88.5
+    ],
+    [
+     26.5,
+     93.0
+    ]
+   ],
+   "width_km": 180,
+   "max_magnitude": 8.6,
+   "weight": 2.0
+  },
+  {
+   "id": "sichuan",
+   "name": "Sichuan et Yunnan",
+   "points": [
+    [
+     32.0,
+     103.5
+    ],
+    [
+     28.0,
+     102.5
+    ],
+    [
+     24.0,
+     101.0
+    ]
+   ],
+   "width_km": 150,
+   "max_magnitude": 7.9,
+   "weight": 1.0
+  }
+ ],
+ "basins": [
+  {
+   "id": "atlantique_nord",
+   "name": "Atlantique Nord",
+   "word": "ouragan",
+   "season": [
+    0.55,
+    0.88
+   ],
+   "weight": 3.0,
+   "recurve_latitude": 28.0,
+   "area": [
+    8.0,
+    42.0,
+    -100.0,
+    -25.0
+   ],
+   "genesis": [
+    {
+     "south": 10.0,
+     "north": 18.0,
+     "west": -55.0,
+     "east": -35.0,
+     "heading": 285.0
+    },
+    {
+     "south": 14.0,
+     "north": 21.0,
+     "west": -84.0,
+     "east": -68.0,
+     "heading": 300.0
+    }
+   ]
+  },
+  {
+   "id": "pacifique_nord_est",
+   "name": "Pacifique Nord-Est",
+   "word": "ouragan",
+   "season": [
+    0.55,
+    0.85
+   ],
+   "weight": 1.5,
+   "recurve_latitude": 21.0,
+   "area": [
+    8.0,
+    32.0,
+    -125.0,
+    -85.0
+   ],
+   "genesis": [
+    {
+     "south": 10.0,
+     "north": 15.0,
+     "west": -104.0,
+     "east": -92.0,
+     "heading": 292.0
+    }
+   ]
+  },
+  {
+   "id": "pacifique_nord_ouest",
+   "name": "Pacifique Nord-Ouest",
+   "word": "typhon",
+   "season": [
+    0.5,
+    0.9
+   ],
+   "weight": 3.0,
+   "recurve_latitude": 24.0,
+   "area": [
+    5.0,
+    45.0,
+    100.0,
+    160.0
+   ],
+   "genesis": [
+    {
+     "south": 8.0,
+     "north": 18.0,
+     "west": 130.0,
+     "east": 152.0,
+     "heading": 290.0
+    }
+   ]
+  },
+  {
+   "id": "indien_nord",
+   "name": "Ocean Indien Nord",
+   "word": "cyclone",
+   "season": [
+    0.4,
+    0.85
+   ],
+   "weight": 1.5,
+   "recurve_latitude": 30.0,
+   "area": [
+    6.0,
+    28.0,
+    55.0,
+    100.0
+   ],
+   "genesis": [
+    {
+     "south": 10.0,
+     "north": 16.0,
+     "west": 85.0,
+     "east": 92.0,
+     "heading": 330.0
+    },
+    {
+     "south": 12.0,
+     "north": 18.0,
+     "west": 62.0,
+     "east": 70.0,
+     "heading": 305.0
+    }
+   ]
+  },
+  {
+   "id": "indien_sud_ouest",
+   "name": "Ocean Indien Sud-Ouest",
+   "word": "cyclone",
+   "season": [
+    0.55,
+    0.85
+   ],
+   "weight": 1.5,
+   "recurve_latitude": -21.0,
+   "area": [
+    -32.0,
+    -8.0,
+    30.0,
+    90.0
+   ],
+   "genesis": [
+    {
+     "south": -15.0,
+     "north": -9.0,
+     "west": 55.0,
+     "east": 80.0,
+     "heading": 245.0
+    }
+   ]
+  },
+  {
+   "id": "australie",
+   "name": "Australie et Pacifique Sud",
+   "word": "cyclone",
+   "season": [
+    0.55,
+    0.85
+   ],
+   "weight": 1.5,
+   "recurve_latitude": -21.0,
+   "area": [
+    -32.0,
+    -8.0,
+    110.0,
+    185.0
+   ],
+   "genesis": [
+    {
+     "south": -16.0,
+     "north": -10.0,
+     "west": 148.0,
+     "east": 175.0,
+     "heading": 235.0
+    },
+    {
+     "south": -14.0,
+     "north": -10.0,
+     "west": 118.0,
+     "east": 128.0,
+     "heading": 225.0
+    }
+   ]
+  }
+ ],
+ "monsoons": [
+  {
+   "id": "inde",
+   "name": "Inde",
+   "latitude": 22.0,
+   "longitude": 79.0,
+   "radius_km": 1300
+  },
+  {
+   "id": "bengale",
+   "name": "Bangladesh et Birmanie",
+   "latitude": 22.5,
+   "longitude": 92.0,
+   "radius_km": 600
+  },
+  {
+   "id": "indochine",
+   "name": "Asie du Sud-Est",
+   "latitude": 15.5,
+   "longitude": 103.0,
+   "radius_km": 800
+  },
+  {
+   "id": "chine_sud",
+   "name": "Chine du Sud",
+   "latitude": 25.0,
+   "longitude": 112.0,
+   "radius_km": 800
+  },
+  {
+   "id": "afrique_ouest",
+   "name": "Afrique de l'Ouest",
+   "latitude": 11.0,
+   "longitude": -2.0,
+   "radius_km": 1400
+  },
+  {
+   "id": "australie_nord",
+   "name": "Australie du Nord",
+   "latitude": -15.0,
+   "longitude": 133.0,
+   "radius_km": 900
+  }
+ ],
+ "names": [
+  "Alice",
+  "Bruno",
+  "Celine",
+  "Damien",
+  "Elsa",
+  "Fabien",
+  "Gisele",
+  "Hugo",
+  "Ines",
+  "Jules",
+  "Karine",
+  "Leon",
+  "Maelle",
+  "Nestor",
+  "Odile",
+  "Pascal",
+  "Rosalie",
+  "Simon",
+  "Tania",
+  "Victor",
+  "Wanda",
+  "Xavier",
+  "Yvette",
+  "Zacharie"
+ ]
+}

@@ -242,6 +242,27 @@ public final class EarthDeposits {
                 + (mines.isEmpty() ? "" : " ; gisements geants : " + mines) + ".";
     }
 
+    /** Un minerai et sa variante de deepslate. */
+    public record Ore(BlockState ore, BlockState deepslate) {
+    }
+
+    /**
+     * Les minerais qu'on trouve en filons en ce point : ceux de son pays et des regions qui le couvrent. Les
+     * catastrophes s'en servent pour les filons qu'un seisme met a nu.
+     */
+    public static List<Ore> oresAt(EarthData earth, int x, int z) {
+        EarthData.Country country = earth.countryAt(x, z);
+        double latitude = earth.latitude(z);
+        double longitude = earth.longitude(x);
+        List<Ore> ores = new ArrayList<>();
+        for (Ready rule : ready) {
+            if (applies(rule, country, latitude, longitude, x, z)) {
+                ores.add(new Ore(rule.ore(), rule.deepslate()));
+            }
+        }
+        return ores;
+    }
+
     /** Pose les filons d'un chunk ; rend le nombre de filons tires (poses ou non : la roche peut manquer). */
     static int serve(ServerLevel level, EarthData earth, LevelChunk chunk) {
         ChunkPos pos = chunk.getPos();

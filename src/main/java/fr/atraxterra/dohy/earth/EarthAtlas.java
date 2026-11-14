@@ -84,7 +84,7 @@ public final class EarthAtlas {
      * Un lieu de l'atlas : un gisement geant ou un lieu de la Terre.
      *
      * @param kind 0 mine, 1 cheminee de diamant, 2 nappe de petrole ou de gaz, 3 sables bitumineux,
-     *             10 zone irradiee, 11 base de lancement
+     *             10 zone irradiee, 11 base de lancement, 12 volcan
      */
     public record Mark(int kind, String name, String resource, int x, int z, float rx, float rz, float angle) {
     }
@@ -261,6 +261,10 @@ public final class EarthAtlas {
             boolean zone = EarthSites.IRRADIATED.equals(placed.site().kind());
             marks.add(new Mark(zone ? 10 : 11, placed.site().name(), zone ? "zone irradiee" : "base de lancement",
                     placed.x(), placed.z(), placed.site().radius(), placed.site().radius(), 0.0f));
+        }
+        for (fr.atraxterra.dohy.earth.disaster.DisasterConfig.PlacedVolcano volcano
+                : fr.atraxterra.dohy.earth.disaster.DisasterConfig.placed().volcanoes()) {
+            marks.add(new Mark(12, volcano.volcano().name(), "volcan", volcano.x(), volcano.z(), 28.0f, 28.0f, 0.0f));
         }
         return new Layers(marks);
     }
