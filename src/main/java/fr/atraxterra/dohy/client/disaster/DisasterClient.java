@@ -72,6 +72,9 @@ public final class DisasterClient {
         double factor = player.isShiftKeyDown() ? 0.4d : 1.0d;
         if (player.isInWater()) {
             factor *= 0.5d;
+        } else if (!player.onGround()) {
+            // en l'air, rien ne freine : un saut ne doit pas devenir un envol
+            factor *= 0.35d;
         }
         player.addDeltaMovement(new Vec3(target.windX() * factor, 0.0d, target.windZ() * factor));
     }

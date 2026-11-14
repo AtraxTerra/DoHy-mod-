@@ -55,6 +55,9 @@ final class Eruption extends Disaster {
     private int lava;
     private int ores;
     private int cooling = -1;
+    /** Le passage du refroidissement (0, 1, 2), et les blocs figes pendant celui-ci. */
+    private int pass;
+    private int converted;
     private int boom;
 
     Eruption(int id, DisasterConfig.PlacedVolcano volcano, String country, int warningTicks, RandomSource random) {
@@ -413,7 +416,12 @@ final class Eruption extends Disaster {
         }
     }
 
-    /** La lave refroidit, quelques chunks par tick : en roche volcanique et en minerais. */
+    /**
+     * La lave refroidit, quelques chunks par tick : en roche volcanique et en
+     * minerais. Pendant le premier passage, la lave des chunks pas encore vus
+     * coule encore un peu dans ceux deja figes ; un second passage (un troisieme
+     * au besoin) enleve ces langues de lave restees sans source.
+     */
     private void cool(ServerLevel level) {
         if (cooling < 0) {
             cooling = 0;
@@ -434,7 +442,7 @@ final class Eruption extends Disaster {
                     for (int lx = 0; lx < 16; lx++) {
                         pos.set(x0 + lx, y, z0 + lz);
                         FluidState fluid = chunk.getFluidState(pos);
-                        if (!fluid.is(FluidTags.LAVA) || Math.hypot(pos.getX() - x, pos.getZ() - z) > AREA + 8.0d) {
+                        if (!fluid.is(FluidTags.LAVA) || Math.hypot(pos.getX() - x, pos.getZ() - z) > AREA + 16.0d) {
                             continue;
                         }
                         // le lac du cratere reste : c'est le volcan
@@ -449,18 +457,29 @@ final class Eruption extends Disaster {
                         BlockState rock;
                         if (fluid.isSource()) {
                             rock = rock();
-                        } else if (fluid.getAmount() >= 5) {
+                        } else if (pass == 0 && fluid.getAmount() >= 5) {
                             rock = hbm("basalt", Blocks.BASALT.defaultBlockState());
                         } else {
+                            // une langue de lave sans source : elle disparait
                             rock = Blocks.AIR.defaultBlockState();
                         }
                         level.setBlock(pos, rock, Block.UPDATE_CLIENTS);
+                        converted++;
                         if (!rock.isAir() && cooled.size() < 96 && random.nextInt(4) == 0) {
                             cooled.add(pos.immutable());
                         }
                     }
                 }
             }
+        }
+        if (cooling >= chunks.size() && converted > 0 && pass < 2) {
+            // un autre passage, pour la lave qui a coule pendant celui-ci
+            DoHy.LOGGER.debug("Eruption {} : passage {} du refroidissement, {} blocs figes", volcano.volcano().name(),
+                    pass, converted);
+            pass++;
+            converted = 0;
+            cooling = 0;
+            return;
         }
         if (cooling >= chunks.size()) {
             cooling = Integer.MAX_VALUE;

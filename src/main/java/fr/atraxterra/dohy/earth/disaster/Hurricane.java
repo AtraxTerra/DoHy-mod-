@@ -209,7 +209,7 @@ final class Hurricane extends Disaster {
         double dx = tx / distance - rx / distance * 0.25d;
         double dz = tz / distance - rz / distance * 0.25d;
         double norm = Math.hypot(dx, dz);
-        double push = (0.012d + 0.01d * category) * factor;
+        double push = (0.01d + 0.008d * category) * factor;
         return new double[] {dx / norm * push, dz / norm * push, factor};
     }
 
@@ -506,40 +506,67 @@ final class Hurricane extends Disaster {
         }
     }
 
-    /** La mer monte sur la cote : d'un bloc (categories 1 et 2) a trois (categorie 5). */
+    /**
+     * La mer monte sur la cote : d'un bloc (categories 1 et 2) a trois (categorie
+     * 5). Une seule nappe, qui part de la mer : la mer monte pres du rivage, avec
+     * un bord en pente vers le large, et deborde sur la terre de proche en proche.
+     */
     private void flood(ServerLevel level, ServerPlayer player) {
-        int sea = level.getSeaLevel();
+        int surface = level.getSeaLevel() - 1;
         int rise = category <= 2 ? 1 : category <= 4 ? 2 : 3;
+        int top = surface + rise;
         DisasterTerrain.Ledger ledger = ledger();
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        ArrayDeque<BlockPos> grown = new ArrayDeque<>();
         for (int i = 0; i < 6 * category; i++) {
-            int bx = (int) Math.floor(player.getX() + random.nextInt(49) - 24);
-            int bz = (int) Math.floor(player.getZ() + random.nextInt(49) - 24);
+            int bx = (int) Math.floor(player.getX() + random.nextInt(65) - 32);
+            int bz = (int) Math.floor(player.getZ() + random.nextInt(65) - 32);
             int ground = ground(level, bx, bz);
-            int y = ground + 1;
-            if (ground < sea - 2 || y > sea + rise - 1) {
+            // un creux de plus d'un bloc sous la mer reste sec : l'eau ne s'y deverse pas d'un coup
+            if (ground < surface - 1 || ground >= top) {
                 continue;
             }
-            pos.set(bx, y, bz);
-            BlockState here = level.getBlockState(pos);
-            if (!here.isAir() && !soft(here) || !here.getFluidState().isEmpty()) {
-                continue;
-            }
-            boolean wet = false;
-            for (Direction direction : Direction.Plane.HORIZONTAL) {
-                BlockPos side = pos.relative(direction);
-                if (level.getFluidState(side).is(FluidTags.WATER)
-                        || level.getFluidState(side.below()).is(FluidTags.WATER) && side.getY() - 1 >= sea - 1) {
-                    wet = true;
+            for (int y = ground + 1; y <= top; y++) {
+                BlockPos pos = new BlockPos(bx, y, bz);
+                if (!surgeAt(level, ledger, pos, surface, rise)) {
                     break;
                 }
-            }
-            if (wet && DisasterTerrain.set(level, ledger, pos.immutable(), Blocks.WATER.defaultBlockState(),
-                    DisasterTerrain.FLAGS)) {
-                surge.add(pos.immutable());
-                flooded++;
+                grown.add(pos);
             }
         }
+        // la mer gagne de proche en proche autour de ce qui vient de monter
+        for (int step = 0; step < 8 * category && !grown.isEmpty(); step++) {
+            BlockPos from = grown.poll();
+            if (surgeAt(level, ledger, from.above(), surface, rise)) {
+                grown.add(from.above());
+            }
+            for (Direction direction : Direction.Plane.HORIZONTAL) {
+                BlockPos next = from.relative(direction);
+                if (Math.abs(next.getX() - player.getX()) > 40.0d || Math.abs(next.getZ() - player.getZ()) > 40.0d) {
+                    continue;
+                }
+                if (Floods.free(level, next) && surgeAt(level, ledger, next.below(), surface, rise)) {
+                    grown.add(next.below());
+                }
+                if (surgeAt(level, ledger, next, surface, rise)) {
+                    grown.add(next);
+                }
+            }
+        }
+    }
+
+    /** Pose l'eau de la maree ici si elle y tient ; vrai si c'est une eau pleine, qui peut gagner plus loin. */
+    private boolean surgeAt(ServerLevel level, DisasterTerrain.Ledger ledger, BlockPos pos, int surface, int rise) {
+        if (pos.getY() > surface + rise) {
+            return false;
+        }
+        BlockState water = Floods.overWater(level, pos, surface) ? Floods.over(level, pos, surface, rise)
+                : Floods.beside(level, pos);
+        if (water == null || !DisasterTerrain.set(level, ledger, pos, water, DisasterTerrain.FLAGS)) {
+            return false;
+        }
+        surge.add(pos);
+        flooded++;
+        return water.getFluidState().isSource();
     }
 
     /** Derriere la tempete, la mer redescend. */

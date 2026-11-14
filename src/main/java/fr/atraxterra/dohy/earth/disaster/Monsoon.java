@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -135,49 +136,72 @@ final class Monsoon extends Disaster {
         }
     }
 
-    /** L'eau monte sur les berges autour du joueur. */
+    /**
+     * L'eau monte autour du joueur : la riviere (ou le lac, ou la mer) monte pres
+     * de ses berges, avec un bord en pente vers le milieu, et deborde sur la terre
+     * de proche en proche. Jamais de nappe au milieu d'un lac : l'eau va ou on la voit.
+     */
     private void rise(ServerLevel level, ServerPlayer player) {
         if (base.size() >= LIMIT) {
             return;
         }
         int rise = ticks < BUILD + rain / 2 ? 1 : 2;
         DisasterTerrain.Ledger ledger = ledger();
+        ArrayDeque<BlockPos> grown = new ArrayDeque<>();
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int attempt = 0; attempt < 32 && base.size() < LIMIT; attempt++) {
             int bx = (int) Math.floor(player.getX() + random.nextInt(81) - 40);
             int bz = (int) Math.floor(player.getZ() + random.nextInt(81) - 40);
             int top = level.getHeight(Heightmap.Types.MOTION_BLOCKING, bx, bz) - 1;
             pos.set(bx, top, bz);
-            if (!level.getFluidState(pos).is(FluidTags.WATER) || !level.getBlockState(pos.above()).isAir()) {
-                continue;
+            if (Floods.source(level, pos) && level.getBlockState(pos.above()).isAir()) {
+                grow(level, ledger, pos.immutable(), rise, grown);
             }
-            BlockPos water = pos.immutable();
-            int level0 = base.getOrDefault(water, top);
-            for (Direction direction : Direction.Plane.HORIZONTAL) {
-                BlockPos side = water.relative(direction);
-                spread(level, ledger, side, level0, rise);
-                spread(level, ledger, side.above(), level0, rise);
+        }
+        // l'eau gagne de proche en proche autour de ce qui vient de monter
+        for (int step = 0; step < 48 && !grown.isEmpty() && base.size() < LIMIT; step++) {
+            BlockPos water = grown.poll();
+            if (Math.abs(water.getX() - player.getX()) <= 56.0d && Math.abs(water.getZ() - player.getZ()) <= 56.0d
+                    && Floods.source(level, water) && level.getBlockState(water.above()).isAir()) {
+                grow(level, ledger, water, rise, grown);
             }
-            spread(level, ledger, water.above(), level0, rise);
         }
     }
 
-    private void spread(ServerLevel level, DisasterTerrain.Ledger ledger, BlockPos pos, int level0, int rise) {
-        if (pos.getY() > level0 + rise || base.containsKey(pos)) {
+    /** Autour d'une eau : elle monte (pres des berges), et deborde sur ses cotes. */
+    private void grow(ServerLevel level, DisasterTerrain.Ledger ledger, BlockPos water, int rise,
+            ArrayDeque<BlockPos> grown) {
+        // le niveau d'origine de cette eau : le sien, ou celui de la riviere d'ou elle est partie
+        int surface = base.getOrDefault(water, water.getY());
+        BlockPos up = water.above();
+        place(level, ledger, up, Floods.over(level, up, surface, rise), surface, rise, grown);
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            BlockPos side = water.relative(direction);
+            if (!Floods.free(level, side)) {
+                continue;
+            }
+            if (Floods.overWater(level, side, surface)) {
+                place(level, ledger, side, Floods.over(level, side, surface, rise), surface, rise, grown);
+                continue;
+            }
+            // un creux d'un bloc au bord se remplit d'abord
+            BlockPos dip = side.below();
+            place(level, ledger, dip, Floods.beside(level, dip), surface, rise, grown);
+            place(level, ledger, side, Floods.beside(level, side), surface, rise, grown);
+        }
+    }
+
+    private void place(ServerLevel level, DisasterTerrain.Ledger ledger, BlockPos pos, BlockState water, int surface,
+            int rise, ArrayDeque<BlockPos> grown) {
+        if (water == null || pos.getY() > surface + rise || base.size() >= LIMIT || base.containsKey(pos)) {
             return;
         }
-        BlockState here = level.getBlockState(pos);
-        if (!here.isAir() && !soft(here) || !here.getFluidState().isEmpty()) {
-            return;
-        }
-        BlockState below = level.getBlockState(pos.below());
-        boolean held = below.getFluidState().is(FluidTags.WATER) || below.isFaceSturdy(level, pos.below(), Direction.UP);
-        if (!held) {
-            return;
-        }
-        if (DisasterTerrain.set(level, ledger, pos, Blocks.WATER.defaultBlockState(), DisasterTerrain.FLAGS)) {
+        if (DisasterTerrain.set(level, ledger, pos, water, DisasterTerrain.FLAGS)) {
             flood.add(pos);
-            base.put(pos, level0);
+            base.put(pos, surface);
+            if (water.getFluidState().isSource()) {
+                grown.add(pos);
+            }
         }
     }
 
