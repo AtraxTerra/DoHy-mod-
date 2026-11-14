@@ -384,7 +384,16 @@ final class Siege {
 
     private void requestPlan() {
         List<BlockPos> memory = List.copyOf(deaths);
-        SiegePlanner.Snapshot snapshot = SiegePlanner.capture(level, vault, player, radius, memory, intel, salt);
+        // Une replanification part des etapes deja tenues : du camp jusqu'au front.
+        List<BlockPos> from = null;
+        if (plan != null) {
+            from = new ArrayList<>();
+            int front = Math.min(front(), last());
+            for (int i = 0; i <= front; i++) {
+                from.add(plan.steps().get(i).pos());
+            }
+        }
+        SiegePlanner.Snapshot snapshot = SiegePlanner.capture(level, vault, player, radius, memory, intel, salt, from);
         SiegePlanner.Capabilities caps = capabilities;
         pending = CompletableFuture.supplyAsync(() -> SiegePlanner.search(snapshot, caps), PLANNER);
     }
@@ -413,9 +422,14 @@ final class Siege {
             }
             return;
         }
-        // Le nouveau chemin part du meme camp ; chaque soldat se recale sur le pas le plus proche.
-        plan = found;
+        // Le nouveau chemin se raccorde a l'ancien : meme camp, meme chemin jusqu'au front.
+        SiegePlanner.Plan joined = SiegePlanner.splice(plan, found);
+        int joint = joined.steps().size() - found.steps().size();
+        plan = joined;
         obstacle = 0;
+        while (obstacle < plan.obstacles().size() && plan.obstacles().get(obstacle).first() <= joint) {
+            obstacle++;
+        }
         job = null;
         for (Soldier soldier : alive()) {
             soldier.routeIndex = -1;

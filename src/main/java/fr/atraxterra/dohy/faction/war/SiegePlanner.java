@@ -129,6 +129,8 @@ final class SiegePlanner {
         final int[] surface;
         /** Les colonnes d'ou un camp peut partir. */
         final boolean[] seed;
+        /** Les cases de depart imposees (une replanification part du front), ou vide. */
+        int[] starts = new int[0];
         final int vx;
         final int vy;
         final int vz;
@@ -236,7 +238,7 @@ final class SiegePlanner {
      * @param intel  la part des pieges que la nation connait (sa ruse)
      */
     static Snapshot capture(ServerLevel level, BlockPos vault, UUID owner, int radius, List<BlockPos> deaths,
-                            double intel, long salt) {
+                            double intel, long salt, List<BlockPos> from) {
         int x0 = vault.getX() - radius;
         int z0 = vault.getZ() - radius;
         int w = radius * 2 + 1;
@@ -381,6 +383,20 @@ final class SiegePlanner {
                     }
                 }
             }
+        }
+
+        if (from != null && !from.isEmpty()) {
+            int[] starts = new int[from.size()];
+            int count = 0;
+            for (BlockPos pos : from) {
+                int x = pos.getX() - x0;
+                int yy = pos.getY() - bottom;
+                int z = pos.getZ() - z0;
+                if (snap.inside(x, yy, z) && yy >= 1 && yy < h - 2) {
+                    starts[count++] = snap.index(x, yy, z);
+                }
+            }
+            snap.starts = java.util.Arrays.copyOf(starts, count);
         }
 
         // Le danger des colonnes : ce que couvrent les tourelles, ou sont tombes les soldats.
@@ -657,21 +673,39 @@ final class SiegePlanner {
         Int2ByteOpenHashMap move = new Int2ByteOpenHashMap();
         IntOpenHashSet closed = new IntOpenHashSet();
         Heap open = new Heap();
-        for (int z = 0; z < s.l; z++) {
-            for (int x = 0; x < s.w; x++) {
-                if (s.seed[z * s.w + x]) {
-                    int y = s.surface[z * s.w + x];
-                    int index = s.index(x, y, z);
-                    cost.put(index, 0.0f);
+        int plane = s.w * s.l;
+        if (s.starts.length > 0) {
+            // Depuis le front : chaque etape deja tenue est un depart, la plus avancee coute le moins.
+            for (int i = 0; i < s.starts.length; i++) {
+                int index = s.starts[i];
+                int y = index / plane;
+                int rest = index - y * plane;
+                int z = rest / s.w;
+                int x = rest - z * s.w;
+                float start = (s.starts.length - 1 - i) * 0.5f;
+                if (start < cost.get(index)) {
+                    cost.put(index, start);
                     parent.put(index, -1);
                     move.put(index, M_START);
-                    open.push(heuristic(s, x, y, z), index);
+                    open.push(start + heuristic(s, x, y, z), index);
+                }
+            }
+        } else {
+            for (int z = 0; z < s.l; z++) {
+                for (int x = 0; x < s.w; x++) {
+                    if (s.seed[z * s.w + x]) {
+                        int y = s.surface[z * s.w + x];
+                        int index = s.index(x, y, z);
+                        cost.put(index, 0.0f);
+                        parent.put(index, -1);
+                        move.put(index, M_START);
+                        open.push(heuristic(s, x, y, z), index);
+                    }
                 }
             }
         }
         int expanded = 0;
         int found = -1;
-        int plane = s.w * s.l;
         while (open.size > 0 && expanded < MAX_EXPANDED) {
             long item = open.pop();
             int index = (int) item;
@@ -957,6 +991,30 @@ final class SiegePlanner {
             i++;
         }
         return out;
+    }
+
+    /**
+     * Raccorde un nouveau plan, parti d'une etape de l'ancien, a son debut : le
+     * camp reste le meme, le chemin deja parcouru aussi.
+     *
+     * @return le plan raccorde, et l'indice de l'etape de raccord
+     */
+    static Plan splice(Plan old, Plan tail) {
+        BlockPos joint = tail.steps().getFirst().pos();
+        int at = -1;
+        for (int i = old.steps().size() - 1; i >= 0; i--) {
+            if (old.steps().get(i).pos().equals(joint)) {
+                at = i;
+                break;
+            }
+        }
+        if (at < 0) {
+            return tail;
+        }
+        List<Step> steps = new ArrayList<>(old.steps().subList(0, at));
+        steps.addAll(tail.steps());
+        return new Plan(List.copyOf(steps), List.copyOf(obstacles(steps)), old.cost() + tail.cost(),
+                tail.expanded(), Math.max(old.hardness(), tail.hardness()));
     }
 
     /** La charge qu'il faut pour ces blocs : 0 s'ils se creusent tous, sinon la plus forte. */
