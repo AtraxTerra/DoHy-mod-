@@ -415,7 +415,7 @@ public class Soldier extends Monster implements RangedAttackMob {
         }
         target = Math.max(0, Math.min(steps.size() - 1, target));
         int at = locate(steps);
-        arrived = Math.abs(at - target) <= 1 && near(steps.get(target).pos(), 2.0d);
+        arrived = Math.abs(at - target) <= 2 && near(steps.get(target).pos(), 3.0d);
         if (at == target && near(steps.get(target).pos(), 1.3d)) {
             getNavigation().stop();
             return;
@@ -440,6 +440,19 @@ public class Soldier extends Monster implements RangedAttackMob {
         } else {
             int next = Math.max(target, at - 8);
             for (int k = at; k > next; k--) {
+                if (steps.get(k).move() == SiegePlanner.M_DROP
+                        && steps.get(k - 1).pos().getY() - steps.get(k).pos().getY() >= 2) {
+                    // Remonter une descente : l'echelle posee contre la falaise.
+                    if (k == at || climbingUp(steps, k)) {
+                        climb(steps.get(k - 1).pos(), speed);
+                        if (getY() >= steps.get(k - 1).pos().getY() - 0.2d) {
+                            routeIndex = k - 1;
+                        }
+                        return;
+                    }
+                    next = k;
+                    break;
+                }
                 if (steps.get(k).move() == SiegePlanner.M_LADDER) {
                     BlockPos top = steps.get(k).pos();
                     BlockPos base = steps.get(k - 1).pos();
@@ -467,6 +480,15 @@ public class Soldier extends Monster implements RangedAttackMob {
         double dx = getX() - (base.getX() + 0.5d);
         double dz = getZ() - (base.getZ() + 0.5d);
         return dx * dx + dz * dz < 0.8d && getY() > base.getY() + 0.4d && getY() < top.getY() + 0.5d;
+    }
+
+    /** Dans la colonne d'une echelle de descente, en train de la remonter. */
+    private boolean climbingUp(List<SiegePlanner.Step> steps, int drop) {
+        BlockPos landing = steps.get(drop).pos();
+        BlockPos top = steps.get(drop - 1).pos();
+        double dx = getX() - (landing.getX() + 0.5d);
+        double dz = getZ() - (landing.getZ() + 0.5d);
+        return dx * dx + dz * dz < 0.8d && getY() > landing.getY() + 0.3d && getY() < top.getY() + 0.5d;
     }
 
     /** Monte a l'echelle : pousse vers le haut du mur, l'echelle hisse. */

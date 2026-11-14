@@ -816,7 +816,9 @@ final class SiegePlanner {
                 break;
             }
             if (cell == WATER || under == WATER || standable(s, nx, ty - 1, nz)) {
-                float fall = 4.0f + drop + (drop > 3 ? 10.0f * (drop - 3) : 0.0f);
+                // Au-dela d'un bloc, une echelle de descente : elle amortit la chute et sert au retour.
+                float fall = 4.0f + drop + (drop > 3 ? 10.0f * (drop - 3) : 0.0f)
+                        + (drop >= 2 && cell != WATER && under != WATER ? 8.0f + 5.0f * drop : 0.0f);
                 relax(s, nx, ty, nz, g + fall + clear, from, M_DROP, 0, cost, parent, move, open, closed);
                 landed = true;
                 break;
@@ -980,6 +982,28 @@ final class SiegePlanner {
                 out.add(new Obstacle(Kind.LADDER, i, List.copyOf(rungs), 0.0f, facing));
                 i++;
                 continue;
+            }
+            if (step.move() == M_DROP && i > 0) {
+                // Une descente de deux blocs ou plus : une echelle contre la falaise, pour redescendre sans
+                // se briser les jambes et surtout pour remonter (la retraite, la fuite du tresorier).
+                Step top = steps.get(i - 1);
+                int height = top.pos().getY() - step.pos().getY();
+                if (height >= 2) {
+                    int dx = step.pos().getX() - top.pos().getX();
+                    int dz = step.pos().getZ() - top.pos().getZ();
+                    Direction facing = dx > 0 ? Direction.EAST : dx < 0 ? Direction.WEST : dz > 0 ? Direction.SOUTH
+                            : Direction.NORTH;
+                    List<BlockPos> rungs = new ArrayList<>();
+                    for (int k = 0; k < height; k++) {
+                        rungs.add(step.pos().above(k));
+                    }
+                    if (!step.broken().isEmpty()) {
+                        out.add(new Obstacle(Kind.BREACH, i, List.copyOf(step.broken()), step.charge(), null));
+                    }
+                    out.add(new Obstacle(Kind.LADDER, i, List.copyOf(rungs), 0.0f, facing));
+                    i++;
+                    continue;
+                }
             }
             if (!step.broken().isEmpty()) {
                 // Une breche par methode : ce qui se creuse d'un cote, ce qui saute de l'autre.
