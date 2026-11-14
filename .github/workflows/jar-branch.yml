@@ -1,0 +1,26 @@
+name: jar-branch
+# Temporaire : construit le jar et le pousse sur la branche jar-out, pour le
+# recuperer par git quand le stockage des artefacts est injoignable.
+on:
+  push:
+    branches: [ci/jar]
+permissions:
+  contents: write
+jobs:
+  jar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.1.0"
+      - run: gradle build --no-daemon
+      - run: |
+          mkdir out && cp build/libs/*.jar out/ && cd out
+          git init -q && git checkout -q -b jar-out && git add .
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "jar ${GITHUB_SHA}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" jar-out
