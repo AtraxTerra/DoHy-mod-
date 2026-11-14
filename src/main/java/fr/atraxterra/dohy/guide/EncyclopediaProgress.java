@@ -67,6 +67,7 @@ public final class EncyclopediaProgress {
                 case "terre" -> earth(player);
                 case "ameliorations" -> upgrades(player);
                 case "pass" -> pass(player);
+                case "boss_metier" -> jobBosses(player);
                 default -> Result.NONE;
             };
         } catch (RuntimeException error) {
@@ -231,6 +232,25 @@ public final class EncyclopediaProgress {
                 new MenuView.Stat("NIVEAU", level + " / " + levels, level >= levels ? GREEN : WHITE),
                 new MenuView.Stat("A RECUPERER", String.valueOf(claimable), claimable > 0 ? 0xFFFAC400 : MUTED),
                 new MenuView.Stat("FIN", fr.atraxterra.dohy.pass.PassSeason.remaining(season).toUpperCase(), WHITE)),
+                List.of());
+    }
+
+    private static Result jobBosses(ServerPlayer player) {
+        int ready = 0;
+        int coming = 0;
+        for (fr.atraxterra.dohy.job.Job job : fr.atraxterra.dohy.job.Job.values()) {
+            fr.atraxterra.dohy.jobboss.JobBossApi.State state = fr.atraxterra.dohy.jobboss.JobBossApi.state(player, job);
+            if (state == fr.atraxterra.dohy.jobboss.JobBossApi.State.READY) {
+                ready++;
+            } else if (state == fr.atraxterra.dohy.jobboss.JobBossApi.State.COMING) {
+                coming++;
+            }
+        }
+        return new Result(List.of(
+                new MenuView.Stat("VICTOIRES", String.valueOf(fr.atraxterra.dohy.jobboss.JobBossApi.data(player)
+                        .totalKills()), WHITE),
+                new MenuView.Stat("PRETS", String.valueOf(ready), ready > 0 ? 0xFFFAC400 : MUTED),
+                new MenuView.Stat("EN ROUTE", String.valueOf(coming), coming > 0 ? WHITE : MUTED)),
                 List.of());
     }
 

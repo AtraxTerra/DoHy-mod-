@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.palamod.dungeon;
 
+import fr.atraxterra.dohy.DoHy;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -60,14 +61,41 @@ public final class DungeonManager {
 
     // -- Progression ----------------------------------------------------------------
 
+    /** Le dernier palier reussi en Normal ou en Difficile : la progression du donjon. */
     public static int cleared(ServerPlayer player, Dungeon dungeon) {
-        return player.getData(PalaDungeon.PROGRESS.get()).getOrDefault(dungeon.key(), 0);
+        return best(player, dungeon, DungeonMode.NORMAL);
     }
 
-    static void recordCleared(ServerPlayer player, Dungeon dungeon, int palier) {
+    private static int raw(ServerPlayer player, Dungeon dungeon, DungeonMode mode) {
+        return player.getData(PalaDungeon.PROGRESS.get()).getOrDefault(mode.progressKey(dungeon), 0);
+    }
+
+    /**
+     * Le dernier palier reussi qui compte pour ce mode : le Facile compte aussi
+     * les paliers reussis en Normal et en Difficile, le Normal ceux du
+     * Difficile ; le Difficile n'a que les siens (son record).
+     */
+    public static int best(ServerPlayer player, Dungeon dungeon, DungeonMode mode) {
+        int difficile = raw(player, dungeon, DungeonMode.DIFFICILE);
+        return switch (mode) {
+            case FACILE -> Math.max(raw(player, dungeon, DungeonMode.FACILE),
+                    Math.max(raw(player, dungeon, DungeonMode.NORMAL), difficile));
+            case NORMAL -> Math.max(raw(player, dungeon, DungeonMode.NORMAL), difficile);
+            case DIFFICILE -> difficile;
+        };
+    }
+
+    /** Le plus haut palier qu'on peut lancer dans ce mode : Normal et Difficile partagent leur progression. */
+    public static int highest(ServerPlayer player, Dungeon dungeon, DungeonMode mode) {
+        DungeonMode track = mode == DungeonMode.FACILE ? DungeonMode.FACILE : DungeonMode.NORMAL;
+        return Math.min(MAX_PALIER, best(player, dungeon, track) + 1);
+    }
+
+    static void recordCleared(ServerPlayer player, Dungeon dungeon, int palier, DungeonMode mode) {
         Map<String, Integer> progress = new HashMap<>(player.getData(PalaDungeon.PROGRESS.get()));
-        if (progress.getOrDefault(dungeon.key(), 0) < palier) {
-            progress.put(dungeon.key(), palier);
+        String key = mode.progressKey(dungeon);
+        if (progress.getOrDefault(key, 0) < palier) {
+            progress.put(key, palier);
             player.setData(PalaDungeon.PROGRESS.get(), progress);
         }
     }
@@ -136,7 +164,16 @@ public final class DungeonManager {
      * Lance un palier. La cle du chef est consommee a l'entree (le wiki :
      * « seul le leader du groupe doit posseder une cle »).
      */
-    static boolean start(ServerPlayer leader, Dungeon dungeon, int palier, InteractionHand hand) {
+    static boolean start(ServerPlayer leader, Dungeon dungeon, int palier, InteractionHand hand, DungeonMode mode) {
+        return start(leader, dungeon, palier, hand, mode, false);
+    }
+
+    /**
+     * {@code admin} : sans cle ni progression ({@code /donjon admin lancer}),
+     * pour essayer un palier ou un mode.
+     */
+    static boolean start(ServerPlayer leader, Dungeon dungeon, int palier, InteractionHand hand, DungeonMode mode,
+                         boolean admin) {
         if (BY_PLAYER.containsKey(leader.getUUID()) || inDimension(leader)) {
             message(leader, ChatFormatting.RED, "already");
             return false;
@@ -144,13 +181,13 @@ public final class DungeonManager {
         if (palier < 1 || palier > MAX_PALIER) {
             return false;
         }
-        int cleared = cleared(leader, dungeon);
-        if (palier > cleared + 1) {
-            message(leader, ChatFormatting.RED, "locked", cleared + 1);
+        int highest = highest(leader, dungeon, mode);
+        if (palier > highest && !admin) {
+            message(leader, ChatFormatting.RED, "locked", highest);
             return false;
         }
         ItemStack key = leader.getItemInHand(hand);
-        if (!key.is(PalaDungeon.key(dungeon))) {
+        if (!admin && !key.is(PalaDungeon.key(dungeon))) {
             message(leader, ChatFormatting.RED, "no_key", dungeon.display());
             return false;
         }
@@ -160,7 +197,7 @@ public final class DungeonManager {
             message(leader, ChatFormatting.RED, "unavailable");
             return false;
         }
-        if (!leader.isCreative()) {
+        if (!leader.isCreative() && !admin) {
             key.shrink(1);
         }
         List<ServerPlayer> party = party(leader);
@@ -168,7 +205,7 @@ public final class DungeonManager {
         int region = overworld.getData(PalaDungeon.NEXT_REGION.get());
         overworld.setData(PalaDungeon.NEXT_REGION.get(), region + 1);
         BlockPos origin = new BlockPos((region + 1) * REGION_SPACING, ROOM_Y, 0);
-        DungeonRun run = new DungeonRun(region, level, dungeon, palier, leader, party, origin);
+        DungeonRun run = new DungeonRun(region, level, dungeon, palier, leader, party, origin, mode, null);
         RUNS.put(run.id, run);
         List<Component> names = new ArrayList<>();
         for (ServerPlayer member : party) {
@@ -185,8 +222,46 @@ public final class DungeonManager {
             }
             list = list.copy().append(names.get(i));
         }
-        run.broadcast(ChatFormatting.GOLD, "start", dungeon.display(), palier, run.band().label());
+        run.broadcast(ChatFormatting.GOLD, "start", dungeon.display(), palier, run.band().label() + ", " + mode.label());
         run.broadcast(ChatFormatting.GRAY, "party", list);
+        DoHy.LOGGER.info("Donjon : {} lance {} palier {} en {}", leader.getGameProfile().name(), dungeon.display(),
+                palier, mode.label());
+        return true;
+    }
+
+    /**
+     * Lance le combat d'un boss de metier : une partie d'une salle, sans cle, au
+     * decor du donjon du metier. Le joueur revient ensuite d'ou il est parti.
+     */
+    static boolean startJobBoss(ServerPlayer leader, fr.atraxterra.dohy.job.Job job, int level) {
+        if (BY_PLAYER.containsKey(leader.getUUID()) || inDimension(leader)) {
+            message(leader, ChatFormatting.RED, "already");
+            return false;
+        }
+        MinecraftServer server = leader.level().getServer();
+        ServerLevel dimension = server.getLevel(PalaDungeon.DIMENSION);
+        if (dimension == null) {
+            message(leader, ChatFormatting.RED, "unavailable");
+            return false;
+        }
+        List<ServerPlayer> party = party(leader);
+        ServerLevel overworld = server.overworld();
+        int region = overworld.getData(PalaDungeon.NEXT_REGION.get());
+        overworld.setData(PalaDungeon.NEXT_REGION.get(), region + 1);
+        BlockPos origin = new BlockPos((region + 1) * REGION_SPACING, ROOM_Y, 0);
+        JobBosses.Fight fight = new JobBosses.Fight(job, level, JobBosses.spec(job));
+        DungeonRun run = new DungeonRun(region, dimension, JobBosses.arena(job), JobBosses.palier(level), leader,
+                party, origin, DungeonMode.NORMAL, fight);
+        RUNS.put(run.id, run);
+        for (ServerPlayer member : party) {
+            BY_PLAYER.put(member.getUUID(), run);
+            member.setData(PalaDungeon.RETURN.get(), ReturnPoint.of(member));
+            member.closeContainer();
+        }
+        run.begin(party);
+        run.say(ChatFormatting.GOLD, fight.spec().name() + ", niveau " + level + " : il t'attendait.");
+        DoHy.LOGGER.info("Boss de metier : {} affronte {} niveau {}", leader.getGameProfile().name(),
+                fight.spec().name(), level);
         return true;
     }
 

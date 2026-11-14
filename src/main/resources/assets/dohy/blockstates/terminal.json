@@ -164,6 +164,21 @@
     "facing=west,kind=black_market": {
       "model": "dohy:block/terminal_black_market",
       "y": 270
+    },
+    "facing=north,kind=job_altar": {
+      "model": "dohy:block/terminal_job_altar"
+    },
+    "facing=east,kind=job_altar": {
+      "model": "dohy:block/terminal_job_altar",
+      "y": 90
+    },
+    "facing=south,kind=job_altar": {
+      "model": "dohy:block/terminal_job_altar",
+      "y": 180
+    },
+    "facing=west,kind=job_altar": {
+      "model": "dohy:block/terminal_job_altar",
+      "y": 270
     }
   }
 }

@@ -282,19 +282,42 @@ final class DungeonRewards {
 
     /** Le contenu du coffre d'une salle, tire pour un joueur. */
     static List<ItemStack> chest(ServerLevel level, RandomSource random, Dungeon dungeon, int palier, boolean boss) {
+        return chest(level, random, dungeon, palier, boss ? (x0(palier) ? 2 : 1) : 0, 0);
+    }
+
+    /**
+     * Un coffre de salle : {@code 2 + palier / 50 + extraRolls} tirages dans la
+     * reserve du donjon (au moins un), puis {@code bossRolls} dans la table des
+     * boss. Les modes ajoutent ou retirent un tirage ; une salle d'elite en
+     * donne un dans la table des boss.
+     */
+    static List<ItemStack> chest(ServerLevel level, RandomSource random, Dungeon dungeon, int palier, int bossRolls,
+                                 int extraRolls) {
         List<ItemStack> loot = new ArrayList<>();
         List<Entry> pool = pool(dungeon);
-        int rolls = 2 + palier / 50;
+        int rolls = Math.max(1, 2 + palier / 50 + extraRolls);
         for (int i = 0; i < rolls; i++) {
             draw(pool, level, random, palier).ifPresent(loot::add);
         }
-        if (boss) {
-            List<Entry> table = bossPool();
-            int bossRolls = x0(palier) ? 2 : 1;
-            for (int i = 0; i < bossRolls; i++) {
-                draw(table, level, random, palier).ifPresent(loot::add);
-            }
+        List<Entry> table = bossPool();
+        for (int i = 0; i < bossRolls; i++) {
+            draw(table, level, random, palier).ifPresent(loot::add);
         }
+        return loot;
+    }
+
+    /**
+     * Le butin en plus d'un boss Dark (DoHy) : une rune — rare, epique une fois
+     * sur trois — et une essence de l'element du donjon au tier du palier. Le
+     * coffre lui-meme tire une fois de plus dans la table des boss.
+     */
+    static List<ItemStack> dark(ServerLevel level, RandomSource random, Dungeon dungeon, int palier) {
+        List<ItemStack> loot = new ArrayList<>();
+        ItemStack rune = new ItemStack(random.nextInt(3) == 0 ? PalaDungeon.RUNE_EPIC.get()
+                : PalaDungeon.RUNE_RARE.get());
+        RuneItem.ensure(rune, level.getRandom());
+        loot.add(rune);
+        loot.add(new ItemStack(PalaDungeonGear.essence(dungeon, EssenceTier.forPalier(palier))));
         return loot;
     }
 

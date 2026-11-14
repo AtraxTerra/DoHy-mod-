@@ -427,7 +427,12 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
                     x + SHELF_W / 2f, SHELF_Y + 3.5f, 3.5f, 0xFF1B1A20);
             g.centered(Ui.BODY, remaining(shelf.seconds() - (now - viewAt) / 1000L), x + SHELF_W / 2f,
                     SHELF_Y + 28.5f, 3.4f, Ui.WHITE);
-            if (shelf.offers().isEmpty()) {
+            if (shelf.offers().isEmpty() && !shelf.opener().isEmpty()) {
+                // Le rayon se remplit des que ce batiment est achete.
+                g.centered(Ui.BODY, "S'ouvre avec", x + SHELF_W / 2f, SHELF_Y + AWNING_H + 6, 3.6f, Ui.DISABLED);
+                g.centered(Ui.BODY, g.fit(Ui.BODY, shelf.opener(), 3.6f, SHELF_W - 6), x + SHELF_W / 2f,
+                        SHELF_Y + AWNING_H + 11, 3.6f, Ui.WHITE);
+            } else if (shelf.offers().isEmpty()) {
                 g.centered(Ui.BODY, "Rien pour l'instant", x + SHELF_W / 2f, SHELF_Y + AWNING_H + 8, 3.8f,
                         Ui.DISABLED);
             }

@@ -17,7 +17,9 @@ import java.util.Set;
  *
  * <p>Les echeances sont en secondes reelles, comme chez Paladium : une offre
  * du jour dure un jour, que l'on joue ou non, et la « saison » — l'age du
- * clicker, qui ouvre les ameliorations — avance de meme.
+ * clicker, qui ouvre les ameliorations — avance de meme. La production aussi,
+ * dans DoHy : {@code paid} dit jusqu'a quelle seconde elle est versee, et ce
+ * qui manque se rattrape a la connexion ({@link Clicker}).
  */
 public final class ClickerData {
 
@@ -55,7 +57,8 @@ public final class ClickerData {
                     .forGetter(data -> Map.copyOf(data.production)),
             Codec.STRING.listOf().optionalFieldOf("upgrades", List.of()).forGetter(data -> List.copyOf(data.upgrades)),
             Codec.unboundedMap(Codec.STRING, Shelf.CODEC).optionalFieldOf("shop", Map.of())
-                    .forGetter(data -> Map.copyOf(data.shop))
+                    .forGetter(data -> Map.copyOf(data.shop)),
+            Codec.LONG.optionalFieldOf("paid", 0L).forGetter(data -> data.paid)
     ).apply(instance, ClickerData::new));
 
     double points;
@@ -67,6 +70,11 @@ public final class ClickerData {
     final Map<String, Double> production = new HashMap<>();
     final Set<String> upgrades = new LinkedHashSet<>();
     final Map<String, Shelf> shop = new HashMap<>();
+    /**
+     * La production est versee jusqu'a cette seconde (depuis l'epoque) ; 0 pour
+     * un clicker d'avant la production hors ligne : il repart de sa connexion.
+     */
+    long paid;
 
     // Rien de ce qui suit n'est sauvegarde.
     /** La production par seconde, recalculee apres un achat et de temps en temps. */
@@ -81,7 +89,8 @@ public final class ClickerData {
     }
 
     private ClickerData(double points, double total, long started, Map<String, Integer> buildings,
-                        Map<String, Double> production, List<String> upgrades, Map<String, Shelf> shop) {
+                        Map<String, Double> production, List<String> upgrades, Map<String, Shelf> shop, long paid) {
+        this.paid = paid;
         this.points = points;
         this.total = total;
         this.started = started;

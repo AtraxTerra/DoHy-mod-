@@ -119,6 +119,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 22b | **Faction solo, arbre de technologie** : 4 branches du wiki (coûts, durées réelles, récompenses), conditions remixées solo, déblocages d'objets pour les lots suivants, écrans de l'arbre | fait (en validation) |
 | 23a | **Aide au joueur** : encyclopédie en jeu (65 fiches en 10 catégories, découverte en jouant, progression du joueur, commandes lancées d'un clic, touche J, bouton « ? »), plans de construction en hologramme (7 structures, couleurs par état, barre d'action, menu du plan) — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
 | 23b | **Pass et marché noir** : pass du mois réel (35 niveaux, 3 quêtes du jour et 6 du mois au thème du mois, une relique exclusive au dernier niveau, bascule le 1er à 5 h), marché noir du receleur sous le pont du spawn (marchandise volée avec grief, contrebande, lot sans étiquette, rachat de ce que le shop refuse), objectifs de contrat PLAYTIME et TRAVEL — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
+| 23c | **Boss de métier et donjons V12** : modes Facile/Normal/Difficile (progression Normal inchangée), boss Dark aux paliers en 0 du Difficile, salles d'élite, de piège et de survie, douze élites, six capacités de boss ; autel des offrandes sur le parvis du spawn, quatre gardiens qui arrivent une heure après l'offrande et attendent dans une salle de boss au décor de leur donjon, dix niveaux ; gardiens et élites aux modèles des donjons de Paladium. Livrés avec : clicker joueur déconnecté, Clic Shop sans attente, pousses des arbres PalaMod — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -187,6 +188,55 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-14 (suite) — boss de métier, donjons V12, modèles des boss, Clic Shop, pousses
+
+**Demandes** : le lot 3 (« Boss de métier », « Donjons façon V12 » : offrandes au spawn ; modes,
+boss « Dark », nouvelles salles et mini-boss), puis pendant les captures : « Prends des textures et
+models customs pour les boss, dans les wiki et fichiers à ta disposition », « corrige le fait que les
+arbres du palamod ne donnent pas de pousses quand ils decay », « met directement les offres dans le
+shop du clicker, sans avoir à attendre la première semaine, le premier jour et métier », et
+« compile tout dans une même PR et jar ».
+
+**Fait** (`feat/boss-metier-donjons`, une PR) :
+- **Lot 3** — voir CONTENU_DOHY.md (« Les donjons façon V12 », « Les boss de métier ») : modes,
+  boss Dark, salles d'élite, de piège et de survie, douze élites, six capacités ; autel des
+  offrandes (spawn version 9), quatre gardiens, dix niveaux, carte du menu, fiche « Boss de métier ».
+  Correctifs vus en capture : la salle forcée (`/donjon admin salle`) retombait sur l'emplacement de
+  la précédente et l'effaçait (pièges et survie sans sol) ; une vague en attente sortait dans la
+  salle suivante (« Vague 1/2 » chez un boss) ; Difficile en rouge (le rouge sombre se lisait mal),
+  tuile Dark en tête de dragon.
+- **Modèles des nouveaux boss** : les gardiens portent un modèle de boss de leur donjon, les élites
+  celui d'un monstre de leur donjon, grossi comme eux (`RpgSkins.dressBoss` : un modèle de monstre
+  suit l'attribut d'échelle), aux couleurs du palier ; les Dark, la texture noire de leur boss. Les
+  modèles viennent des `rpgentities` du joueur, déjà portés (§ 29 de PALAMOD.md) : la table
+  `rpg_skins.json` les pointe, aucun fichier nouveau. Choix sur une galerie capturée des 32 modèles
+  candidats ; les élites ont pris les noms de leurs modèles (Sentinelle, Lame masquée, Frelon noir,
+  Golem de braise, Golem d'améthyste, Lame ardente, Triton, Trombe).
+- **Clic Shop** : un rayon incomplet se complète dès que des offres s'ouvrent (un rayon tiré avant
+  le premier bâtiment restait vide une semaine ou un jour) ; un rayon vide dit quel bâtiment l'ouvre.
+- **Pousses** : les feuilles de PalaMod lâchent une pousse sur vingt (Fortune : 6,25 / 8,3 / 10 %),
+  comme le chêne, au lieu d'une sur 99 : un arbre n'en donnait aucune une fois sur trois.
+
+**Non vérifié en jeu** : le combat complet contre chaque gardien et chaque élite (capacités, rage)
+sur le serveur dédié ; la reconstruction du spawn en version 9 sur le monde du joueur.
+
+### 2026-11-14 (suite) — le clicker tourne joueur déconnecté
+
+**Demande** : « Modifie le clicker pour qu'il fonctionne même joueur déconnecté » (pendant le lot 3 ;
+livré avec lui, le joueur ayant demandé une seule PR et un seul jar).
+
+**Fait** : la production du clicker est versée à la seconde réelle
+(`ClickerData.paid`, sauvegardé) ; chaque seconde de jeu verse le temps écoulé, la connexion rattrape
+toute l'absence au rythme des bâtiments (serveur éteint compris, trente jours au plus) et l'annonce
+dans le chat (« Pendant ton absence (3 h 12), tes namuus ont rapporte … ClicCoins ») ; la
+déconnexion verse jusqu'à la dernière seconde. La fiche de l'encyclopédie et PALAMOD.md (§ 31) le
+disent.
+
+**Vérifié par capture** : 3 h 12 d'absence simulée → +142 526 ClicCoins, soit 12,372 par seconde
+× 11 520 s, et le message à la connexion.
+
+**Non vérifié en jeu** : une vraie absence sur le serveur dédié.
 
 ### 2026-11-14 (suite) — pass mensuel et marché noir
 

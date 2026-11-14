@@ -1049,6 +1049,8 @@ TERMINALS = [
     ("mine", 0x5FD8E8, ["..XXXX..", ".X.XX.X.", "X..XX..X", "...XX...", "...XX...", "...XX...", "...XX...", "...XX..."]),
     # une capuche et un regard : le receleur
     ("black_market", 0x9B6BFF, ["..XXXX..", ".XXXXXX.", "XX....XX", "X.X..X.X", "X......X", "XX....XX", ".XXXXXX.", "XXXXXXXX"]),
+    # une flamme sur un autel : l'autel des offrandes
+    ("job_altar", 0xFF8A3D, ["...X....", "..XX.X..", "..XXXX..", ".XXXXXX.", ".XX..XX.", "..XXXX..", "XXXXXXXX", ".XXXXXX."]),
 ]
 
 

@@ -1141,8 +1141,13 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
 - Les **générateurs sont des patrons figés**, communs aux quatre essences : 30 bûches et 97
   feuilles (11 de haut) deux fois sur trois, 35 et 129 (12 de haut) sinon ; les patrons 3 et 4
   ne sont jamais tirés. Coordonnées recopiées du bytecode (`PalaTreeFeature`).
-- Les feuilles : 1,01 % de pousse, la feuille à la cisaille ou au toucher de soie. La pousse suit
+- Les feuilles : la feuille à la cisaille ou au toucher de soie, sinon une pousse. La pousse suit
   la croissance vanilla.
+- **Écart : une pousse sur vingt** (demandé le 2026-11-14), plus avec Fortune (6,25 %, 8,3 %,
+  10 %), comme le chêne vanilla ; aussi quand la feuille tombe seule. L'original : une sur 99
+  (1,01 %). Un arbre de PalaMod n'en rendait alors qu'une en moyenne, et aucune une fois sur
+  trois (0,99⁹⁷ ≈ 37 % pour le premier patron) ; à 5 %, environ cinq (97 feuilles) ou six (129),
+  et presque jamais aucune.
 - **Écart : les feuilles tombent** (2026-11-13 ; l'original : un bloc simple, qui ne pourrissait
   jamais). Ce sont de vraies feuilles (`PalaLeavesBlock`) : à plus de six pas d'une bûche, elles
   tombent, et vite avec **Leaves Be Gone**, qui ne traite que les vraies feuilles. Posées à la
@@ -2078,6 +2083,14 @@ pièce de lune, double XP, têtes de wither passive et suprême.
 - Les parties ne vivent qu'en mémoire : un arrêt du serveur ramène tout le monde, sans rien
   livrer ; qui se reconnecte dans la dimension sans partie y est renvoyé à son entrée.
 
+### Depuis le 2026-11-14 : modes, boss Dark, nouvelles salles
+
+Tout ce qui précède décrit le **mode Normal**. Les modes Facile et Difficile, les boss Dark (paliers
+en 0 du Difficile), les salles d'élite, de piège et de survie, les douze élites et six capacités de
+boss de plus sont décrits dans `docs/CONTENU_DOHY.md` (« Les donjons façon V12 ») ; les boss de
+métier, qui se battent dans une salle de boss de ces donjons, au même endroit (« Les boss de
+métier »).
+
 ### Règles de la dimension
 
 Rien ne s'y casse ni ne s'y pose (sauf en créatif), les explosions et les monstres n'y dégradent
@@ -2587,7 +2600,7 @@ offres tournantes du Clic Shop. `/clicker`, ou la carte « Clicker » du menu.
 | Valeur d'un clic | `1 × (1 + somme des améliorations du clic)` : 1, 2, 4… jusqu'à 2²⁵ | `PlayerClickerData.getClickValue` |
 | Cadence | un clic par 50 ms au plus (vingt par seconde) | `BBPacketClickerClick` |
 | Production d'un bâtiment | `0,1 × 1,8^rang × exemplaires × (1 + somme de ses améliorations)` par seconde | `ClickerBuilding.getRPS`, `PlayerClickerData.getRPS` |
-| Production totale | 0,5 par seconde, plus les bâtiments ; seulement en jeu | `ClickerTask` |
+| Production totale | 0,5 par seconde, plus les bâtiments ; seulement en jeu chez Paladium, **aussi hors ligne dans DoHy** (voir plus bas) | `ClickerTask` |
 | Prix d'un bâtiment | prix de base × 1,1^exemplaires, 99 exemplaires au plus | `ClickerBuilding.getPrice`, `CSPacketClickerBuildingBuy` |
 | Prix d'une offre | prix + un tiers du prix par achat déjà fait | `ClickerShopItem.getPrice` |
 | Rayons du Clic Shop | semaine : 8 offres, 168 h ; jour : 4 offres, 24 h ; métier : 4 offres, 168 h | `ClickerShopType` |
@@ -2605,6 +2618,17 @@ Les sept types d'amélioration (`ClickerUpgrade.apply`) et leurs conditions
 | Production nombreuse (35) | +1 % par exemplaire | 7 |
 | Production postérieure (26) | +1 % par exemplaire du bâtiment précédent | 4 |
 | Amélioration de catégorie (25) | +50 % | un de chaque bâtiment de la catégorie |
+
+### La production hors ligne (DoHy, 2026-11-14)
+
+Demandé par le joueur : « modifie le clicker pour qu'il fonctionne même joueur déconnecté ». Chez
+Paladium, `ClickerTask` ne crédite que les joueurs connectés. Dans DoHy, la production est **versée à
+la seconde réelle** : le clicker garde jusqu'à quelle seconde elle est payée (`paid`), chaque seconde
+de jeu verse ce qui s'est écoulé (un serveur qui rame ne la ralentit plus), et **à la connexion
+toute l'absence est rattrapée** au rythme des bâtiments, serveur éteint compris — **trente jours au
+plus**, garde-fou contre une horloge qui saute. Le chat dit ce que l'absence a rapporté (au-delà
+d'une minute). Un clicker d'avant ce changement repart de la première connexion qui suit : rien
+n'est versé pour le temps d'avant.
 
 ### Les tables — reconstituées
 
@@ -2655,6 +2679,14 @@ base ; les premières se retirent quand le joueur avance. Détail et garde-fous 
    Chez Paladium c'est une date commune à tout le serveur.
 4. **Un achat du Clic Shop se confirme d'un second clic**, au lieu d'une fenêtre.
 5. Le classement « ClicCoins gagnés » et l'onglet du profil ne sont pas portés.
+6. **Le Clic Shop se remplit sans attendre** (demandé le 2026-11-14). Chez Paladium, un rayon
+   n'est tiré qu'à sa rotation : tiré à la première ouverture, quand aucun bâtiment n'ouvre encore
+   d'offre, il restait vide une semaine (offre de la semaine, offre métier) ou un jour (offre du
+   jour). Ici, un rayon incomplet prend aussitôt les offres qui s'ouvrent — achats et minuterie
+   gardés ; un rayon vide qui reçoit ses premières offres commence une rotation entière. Une offre
+   déjà tirée sort du tirage : le rayon n'a de place vide que s'il y a moins d'offres ouvertes que
+   de places (chez Paladium, un doublon laissait une place vide). Un rayon vide dit quel bâtiment
+   l'ouvre (« S'ouvre avec Mine des nains »).
 
 ### L'écran
 

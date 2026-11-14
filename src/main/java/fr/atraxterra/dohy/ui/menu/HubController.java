@@ -113,7 +113,8 @@ public final class HubController extends MenuController {
                         "Prestige : plus d'ecoulement")).accent(0xFF2F5BEA).action("collections"),
                 Card.of(new ItemStack(Items.ENCHANTING_TABLE), "Musee", List.of(
                         "Pieces exposees " + donated + " / " + expected, "Ailes completes : bonus"))
-                        .accent(0xFF2F5BEA).action("museum").progress(donated, expected));
+                        .accent(0xFF2F5BEA).action("museum").progress(donated, expected),
+                altarCard(player));
 
         int rpgLevel = Rpg.level(Rpg.data(player).xp());
         int points = Rpg.available(player);
@@ -174,6 +175,26 @@ public final class HubController extends MenuController {
     }
 
     /** Le pass du mois : le niveau, et les recompenses a recuperer. */
+    /** Les boss de metier : combien attendent dans l'arene, combien sont en route. */
+    private static Card altarCard(ServerPlayer player) {
+        int ready = 0;
+        int coming = 0;
+        for (fr.atraxterra.dohy.job.Job job : fr.atraxterra.dohy.job.Job.values()) {
+            switch (fr.atraxterra.dohy.jobboss.JobBossApi.state(player, job)) {
+                case READY -> ready++;
+                case COMING -> coming++;
+                default -> {
+                }
+            }
+        }
+        int kills = fr.atraxterra.dohy.jobboss.JobBossApi.data(player).totalKills();
+        return Card.of(new ItemStack(Items.BELL), "Boss de metier", List.of(
+                        ready > 0 ? ready + " gardien(s) t'attendent" : coming > 0 ? coming + " gardien(s) en route"
+                                : "Une offrande a l'autel du spawn",
+                        kills + " victoire(s)"))
+                .accent(0xFFFF8A3D).action("altar").badge(ready > 0 ? "PRET" : "");
+    }
+
     private static Card passCard(ServerPlayer player) {
         fr.atraxterra.dohy.pass.PassApi.rollIfDue(player);
         fr.atraxterra.dohy.pass.PassData data = fr.atraxterra.dohy.pass.PassApi.data(player);
@@ -242,6 +263,7 @@ public final class HubController extends MenuController {
         switch (key) {
             case "encyclopedia" -> fr.atraxterra.dohy.guide.EncyclopediaMenu.openIndex(player);
             case "pass" -> fr.atraxterra.dohy.pass.PassMenu.INSTANCE.open(player);
+            case "altar" -> fr.atraxterra.dohy.jobboss.JobBossMenu.INSTANCE.openFromAfar(player);
             case "plans" -> fr.atraxterra.dohy.guide.EncyclopediaMenu.openEntry(player, "plans");
             case "faction" -> fr.atraxterra.dohy.faction.FactionMenus.Overview.INSTANCE.open(player);
             case "trixium" -> TrixiumMenu.INSTANCE.open(player);
