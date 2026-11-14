@@ -99,6 +99,7 @@ public final class HubController extends MenuController {
             donated += MuseumApi.donatedIn(player, wing);
         }
         List<Card> progress = List.of(
+                passCard(player),
                 Card.of(new ItemStack(Items.WRITABLE_BOOK), "Contrats", List.of(
                         left == 0 ? "Quotidiens termines" : left + " quotidien(s) restant(s)",
                         "Niveau global " + ContractApi.globalLevel(player)))
@@ -172,6 +173,24 @@ public final class HubController extends MenuController {
                 .accent(0xFFFAC400).action("achievements").progress(done, total);
     }
 
+    /** Le pass du mois : le niveau, et les recompenses a recuperer. */
+    private static Card passCard(ServerPlayer player) {
+        fr.atraxterra.dohy.pass.PassApi.rollIfDue(player);
+        fr.atraxterra.dohy.pass.PassData data = fr.atraxterra.dohy.pass.PassApi.data(player);
+        int season = data.isEmpty() ? fr.atraxterra.dohy.pass.PassSeason.current() : data.season();
+        int level = fr.atraxterra.dohy.pass.PassApi.level(data);
+        int levels = fr.atraxterra.dohy.pass.PassConfig.config().levels();
+        int claimable = fr.atraxterra.dohy.pass.PassApi.claimable(player);
+        fr.atraxterra.dohy.pass.Relic relic = fr.atraxterra.dohy.pass.PassApi.relic(season);
+        return Card.of(fr.atraxterra.dohy.pass.DoHyPass.relic(relic, season),
+                        "Pass " + fr.atraxterra.dohy.pass.PassSeason.ofMonth(season), List.of(
+                        "Niveau " + level + " / " + levels,
+                        claimable > 0 ? claimable + " recompense(s) a recuperer" : "Au niveau " + levels + " : "
+                                + relic.title()))
+                .accent(0xFFEC4FB5).action("pass").progress(level, levels)
+                .badge(claimable > 0 ? "+" + claimable : "");
+    }
+
     /** Le concours Trixium : le rang du mois, et les paliers a recuperer. */
     private static Card trixiumCard(ServerPlayer player) {
         TrixiumContest.catchUp(player);
@@ -200,7 +219,8 @@ public final class HubController extends MenuController {
 
     /** Les menus que les boutons de l'inventaire peuvent ouvrir. */
     private static final java.util.Set<String> INVENTORY_TARGETS =
-            java.util.Set.of("shop", "contracts", "bank", "faction", "jobs", "trixium", "clicker", "encyclopedia");
+            java.util.Set.of("shop", "contracts", "bank", "faction", "jobs", "trixium", "clicker", "encyclopedia",
+                    "pass");
 
     /**
      * Ouvre le menu demande par un bouton de l'inventaire ({@code InventoryNav}).
@@ -221,6 +241,7 @@ public final class HubController extends MenuController {
     protected void card(ServerPlayer player, String key, int button) {
         switch (key) {
             case "encyclopedia" -> fr.atraxterra.dohy.guide.EncyclopediaMenu.openIndex(player);
+            case "pass" -> fr.atraxterra.dohy.pass.PassMenu.INSTANCE.open(player);
             case "plans" -> fr.atraxterra.dohy.guide.EncyclopediaMenu.openEntry(player, "plans");
             case "faction" -> fr.atraxterra.dohy.faction.FactionMenus.Overview.INSTANCE.open(player);
             case "trixium" -> TrixiumMenu.INSTANCE.open(player);

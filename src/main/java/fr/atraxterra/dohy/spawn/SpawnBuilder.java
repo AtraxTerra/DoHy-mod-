@@ -43,7 +43,7 @@ import java.util.List;
 final class SpawnBuilder {
 
     /** A augmenter des que le dessin change : un spawn d'une autre version est reconstruit. */
-    static final int VERSION = 7;
+    static final int VERSION = 8;
 
     /** Le niveau du sol du parvis : on marche a {@code FLOOR + 1}. */
     static final int FLOOR = 200;
@@ -456,6 +456,7 @@ final class SpawnBuilder {
         builder.rocks();
         builder.forecourt();
         builder.bridge();
+        builder.blackMarket();
         builder.pad();
         builder.tiers();
         builder.core();
@@ -646,6 +647,68 @@ final class SpawnBuilder {
         }
     }
 
+    /**
+     * Le marche noir : la planque du receleur, sous le tablier du pont. Une
+     * trappe de bois dans le beton du pont, une echelle, et en dessous une
+     * piece basse eclairee aux lanternes d'ames : des tonneaux, un tapis, des
+     * toiles d'araignee, et la borne du receleur contre le mur du fond.
+     */
+    private void blackMarket() {
+        int top = FLOOR - 2;
+        int bottom = FLOOR - 7;
+        BlockState plank = block("dark_oak_planks");
+        BlockState log = block("dark_oak_log");
+        BlockState ceiling = block("spruce_planks");
+        // la boite : plancher, plafond, murs, poteaux d'angle
+        fill(-4, bottom, 41, 4, bottom, 49, plank);
+        fill(-4, top, 41, 4, top, 49, ceiling);
+        fill(-4, bottom + 1, 41, 4, top - 1, 41, plank);
+        fill(-4, bottom + 1, 49, 4, top - 1, 49, plank);
+        fill(-4, bottom + 1, 41, -4, top - 1, 49, plank);
+        fill(4, bottom + 1, 41, 4, top - 1, 49, plank);
+        for (int x = -4; x <= 4; x += 8) {
+            for (int z = 41; z <= 49; z += 8) {
+                fill(x, bottom, z, x, top, z, log);
+            }
+        }
+        carve(-3, bottom + 1, 42, 3, top - 1, 48);
+        // la trappe dans le pont, l'echelle et son poteau
+        put(-2, FLOOR, 45, with(with(with(block("spruce_trapdoor"), "half", "top"), "facing", "south"),
+                "open", "false"));
+        put(-2, FLOOR - 1, 45, ladder);
+        put(-2, top, 45, ladder);
+        for (int y = bottom + 1; y <= top - 1; y++) {
+            put(-2, y, 45, ladder);
+            put(-3, y, 45, log);
+        }
+        // le decor : un tapis, des tonneaux, des toiles, une bougie, deux lanternes d'ames
+        fill(-1, bottom + 1, 43, 1, bottom + 1, 47, block("purple_carpet"));
+        BlockState barrel = with(block("barrel"), "facing", "up");
+        put(-3, bottom + 1, 42, barrel);
+        put(-3, bottom + 2, 42, barrel);
+        put(-2, bottom + 1, 42, barrel);
+        put(-3, bottom + 1, 48, barrel);
+        put(3, bottom + 1, 42, barrel);
+        put(3, bottom + 1, 48, barrel);
+        put(3, bottom + 2, 48, barrel);
+        put(2, bottom + 1, 48, barrel);
+        put(3, bottom + 3, 48, with(with(block("candle"), "lit", "true"), "candles", "3"));
+        put(-3, top - 1, 48, block("cobweb"));
+        put(3, top - 1, 42, block("cobweb"));
+        put(-3, top - 1, 43, block("cobweb"));
+        BlockState soul = with(block("soul_lantern"), "hanging", "true");
+        put(0, top - 1, 43, soul);
+        put(0, top - 1, 47, soul);
+        // le comptoir du receleur, contre le mur du fond, et son etiquette
+        put(3, bottom + 1, 45, barrel);
+        put(3, bottom + 1, 44, block("dark_oak_slab"));
+        put(3, bottom + 1, 46, block("dark_oak_slab"));
+        terminal(3, bottom + 2, 45, Direction.WEST, SpawnTerminalBlock.Kind.BLACK_MARKET,
+                new BlockPos(3, top - 1, 45));
+        // sur le pont, un mot discret au-dessus de la trappe
+        labels.add(new Label(new BlockPos(-2, FLOOR + 2, 45), "trappe du receleur", 0x9B6BFF, 0.6f));
+    }
+
     private void lampPost(int x, int y, int z, int height) {
         fill(x, y, z, x, y + height - 1, z, post);
         put(x, y + height, z, lamp);
@@ -728,6 +791,7 @@ final class SpawnBuilder {
             case DAILY -> "yellow_concrete";
             case PORTALS -> "purple_concrete";
             case MINE -> "cyan_concrete";
+            case BLACK_MARKET -> "black_concrete";
         });
     }
 

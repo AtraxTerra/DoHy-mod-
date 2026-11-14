@@ -118,6 +118,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 22a | **Faction solo, cœur** : création (100 lingots de paladium), claims qui protègent la base contre le monde, banque de faction, F homes, ELO et ligues du lundi, onglets sur le kit, `/f` — voir [docs/FACTION.md](docs/FACTION.md) | fait |
 | 22b | **Faction solo, arbre de technologie** : 4 branches du wiki (coûts, durées réelles, récompenses), conditions remixées solo, déblocages d'objets pour les lots suivants, écrans de l'arbre | fait (en validation) |
 | 23a | **Aide au joueur** : encyclopédie en jeu (65 fiches en 10 catégories, découverte en jouant, progression du joueur, commandes lancées d'un clic, touche J, bouton « ? »), plans de construction en hologramme (7 structures, couleurs par état, barre d'action, menu du plan) — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
+| 23b | **Pass et marché noir** : pass du mois réel (35 niveaux, 3 quêtes du jour et 6 du mois au thème du mois, une relique exclusive au dernier niveau, bascule le 1er à 5 h), marché noir du receleur sous le pont du spawn (marchandise volée avec grief, contrebande, lot sans étiquette, rachat de ce que le shop refuse), objectifs de contrat PLAYTIME et TRAVEL — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -186,6 +187,73 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-14 (suite) — pass mensuel et marché noir
+
+**Demande** : le deuxième des trois lots (« Super passe au lot 2 ») : le **pass mensuel** (thème du
+mois réel et objet exclusif au dernier niveau) et le **marché noir au spawn** (toujours ouvert).
+
+**Fait** (`feat/pass-marche-noir`, paquets `pass/` et `blackmarket/`, description dans
+`docs/CONTENU_DOHY.md`) :
+- **Le pass** : `data/pass.json` (35 niveaux de 1 000 XP, pool de 22 quêtes du jour, 35 récompenses,
+  douze thèmes de six quêtes) ; les quêtes avancent par `ContractApi.progress` (mêmes gestes que
+  les contrats) ; bascule du jour et du mois à 5 h (`PassSeason`), récompenses atteintes et pas
+  récupérées données à la fin du mois ; attachement `pass` (gardé à la mort) ; écran `PassMenu`
+  (tuiles des 35 niveaux, quêtes), `/pass` et son administration ; annonces cliquables ([Ouvrir],
+  [Récupérer]).
+- **Les reliques** : douze objets `dohy:relic_<mois>` (icônes originales, `tools/pass_assets.py`),
+  composant `dohy:relic_season` (le mois gagné), effet de niveau I en main secondaire.
+- **Le marché noir** : `data/black_market.json` généré par `tools/black_market.py` (valeurs boutique
+  et cotes du marché, sans boucle d'argent, vérifié en CI) ; arrivage du jour recalculé de la graine
+  (marchandise volée avec grief contre la faction, contrebande, lot sans étiquette, rachat) ;
+  attachement `black_market` ; écran `BlackMarketMenu`.
+- **La planque** sous le pont du spawn (version 8 : reconstruit tout seul) : trappe, échelle, pièce
+  basse, borne MARCHÉ NOIR (texture par `tools/dohy_assets.py`).
+- **Partout** : bouton PASS de l'inventaire (à la place du concours, qui reste au menu principal),
+  carte du pass dans PROGRESSION du menu principal, fiches « Le pass du mois » et « Le marché noir »
+  (67 fiches), `tools/check_pass.py` et deux étapes de CI.
+- **Les contrats** : objectif `PLAYTIME` (minutes de jeu) ; **`TRAVEL` comptait zéro** (le contrat
+  « Parcourir des blocs à pied » n'avançait jamais) : il lit maintenant les statistiques de marche,
+  de course et d'accroupi.
+- `tools/dohy_assets.py` réécrivait les fichiers de langue sans les noms des soldats, des plans et
+  de la touche de l'encyclopédie : ils y sont, avec ceux des reliques.
+
+**Vérifié en jeu** (client de CI, monde de test) :
+- le pass de novembre à l'ouverture (« Brumes d'automne », fin dans 16 j 9 h), 12 400 XP → niveau
+  12, six niveaux récupérés (liseré vert), six à récupérer (liseré or), « Tout récupérer +6 » ;
+  quêtes du jour et du mois avec leurs barres ; une quête du jour finie (« +300 XP » dans le chat) ;
+- la relique en main secondaire : l'effet Chute lente apparaît ;
+- **la bascule** (horloge avancée de 20 jours) : « Le pass de novembre est termine, niveau 12 / 35 :
+  6 recompense(s) oubliee(s), donnee(s) maintenant », l'argent et les objets arrivent, le pass de
+  décembre (« Noel », Étoile de Noël, fin dans 27 j 9 h) repart de zéro avec ses quêtes ;
+- `/pass admin avancer 20` refusé tant que le mois a de la progression (« Essai d'une vraie
+  bascule... »), accepté avec `confirmer` ; `/pass admin horloge` ramène au pass de novembre ;
+- « Tout récupérer » cliqué dans le menu : « 12 recompense(s) recuperee(s) », douze tuiles vertes ;
+- la fiche du pass, le bouton PASS de l'inventaire (la relique du mois dessus), la carte « Pass de
+  novembre » du menu principal (niveau 12 / 35 et sa barre) ;
+- la trappe sur le pont et son étiquette, la planque (échelle, tonneaux, bougies, lanternes
+  d'âmes, la borne) ;
+- le marché noir : 4 offres volées (Kraken, Solaris, les Titans), 2 de contrebande, 3 rachats ;
+  achat d'un lot volé avec une faction (« Kraken finira par savoir... »), de contrebande, un lot
+  sans étiquette (« Un petit lot : 32 Lingot de paladium, 8 Findium »), une revente (« 1 Epee de
+  Vitalys : +122 000 $ »), la seconde refusée (« Il en a assez pour aujourd'hui »), l'offre épuisée
+  marquée VENDU ;
+- les mêmes gestes par les clics du menu (l'écran se rafraîchit, VENDU) : deux lots volés avec une
+  faction donnent « Kraken : grief : recel : Findium » et « … : Cle Amethyste » dans l'histoire
+  des guerres ; trois lots sans étiquette par jour, le quatrième refusé (« Reviens demain ») ;
+- la fiche du marché noir ; le journal du serveur : « Marche noir charge : 20 offres volees, 6 de
+  contrebande, 53 rachats possibles ».
+
+**Corrigé en route** (vu dans les captures) : le titre « PASS DE NOVEMB... » (l'arrondi des glyphes ;
+le titre de page rétrécit encore un peu) ; « 9 x · 8 180 $ » et la pastille « x1 » ambiguë des
+cartes du receleur (« 9 pour 8 180 $ · reste 1 ») ; le lot sans étiquette seul dans sa section (avec
+la contrebande) ; l'argent des niveaux 10 et 13 dans le désordre ; « Bouteille d'XP de
+alchimiste » ; `/pass admin avancer` qui closait sans prévenir le vrai mois en cours (il demande
+`confirmer`).
+
+**Non vérifié en jeu** : la vraie bascule du 1er décembre à 5 h sur le serveur dédié ; les
+quêtes remplies en jouant (la capture les avance par le code) ; un mois entier de quêtes du jour ;
+le serveur de Minestrator.
 
 ### 2026-11-14 (suite) — encyclopédie et plans en hologramme
 

@@ -6,6 +6,7 @@ import fr.atraxterra.dohy.world.PlacedBlocks;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -21,6 +22,9 @@ import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 /**
@@ -34,6 +38,14 @@ public final class ContractEvents {
     private static final int STEP_TICKS = 20 * 60;
 
     private static int tickCounter;
+
+    /**
+     * La distance a pied deja comptee, en centimetres, par joueur : les
+     * statistiques du jeu la tiennent, on n'en compte que l'ecart d'une minute
+     * a l'autre. Rien de sauve : a un redemarrage, on repart de la valeur du
+     * jour sans rien compter deux fois.
+     */
+    private static final Map<UUID, Long> WALKED = new ConcurrentHashMap<>();
 
     private ContractEvents() {
     }
@@ -63,7 +75,36 @@ public final class ContractEvents {
             ContractApi.refreshDemand(player);
             // Sa bascule est a midi : c'est ce battement d'une minute qui l'annonce a un joueur present.
             TrixiumOrder.refresh(player);
+            ContractApi.progress(player, ContractType.PLAYTIME, target -> true, 1L);
+            countWalk(player);
         }
+    }
+
+    /**
+     * Les blocs parcourus a pied depuis la derniere minute (marche, course,
+     * accroupi) : l'objectif {@code TRAVEL}, qui ne comptait rien jusque-la.
+     * Le reste de moins d'un bloc est garde pour la minute suivante.
+     */
+    private static void countWalk(ServerPlayer player) {
+        var stats = player.getStats();
+        long walked = (long) stats.getValue(Stats.CUSTOM.get(Stats.WALK_ONE_CM))
+                + stats.getValue(Stats.CUSTOM.get(Stats.SPRINT_ONE_CM))
+                + stats.getValue(Stats.CUSTOM.get(Stats.CROUCH_ONE_CM));
+        Long last = WALKED.get(player.getUUID());
+        if (last == null || walked < last) {
+            WALKED.put(player.getUUID(), walked);
+            return;
+        }
+        long blocks = (walked - last) / 100L;
+        if (blocks > 0) {
+            WALKED.put(player.getUUID(), last + blocks * 100L);
+            ContractApi.progress(player, ContractType.TRAVEL, target -> true, blocks);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        WALKED.remove(event.getEntity().getUUID());
     }
 
     /** A la connexion : contrats et demande sont proposes sans attendre. */

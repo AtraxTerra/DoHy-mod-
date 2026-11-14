@@ -229,6 +229,8 @@ public final class ContractApi {
         ContractData data = data(player);
         advance(player, data, data.daily(), false, type, targetTest, delta);
         advance(player, data, data.weekly(), true, type, targetTest, delta);
+        // Le pass du mois compte les memes gestes, avec ses propres quetes.
+        fr.atraxterra.dohy.pass.PassApi.progress(player, type, targetTest, delta);
     }
 
     private static void advance(ServerPlayer player, ContractData data, List<ActiveContract> list,

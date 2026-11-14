@@ -221,6 +221,17 @@ jobs:
       - name: L'encyclopedie ne doit renvoyer qu'a ce qui existe
         run: python3 tools/check_encyclopedia.py
 
+      # Le pass : douze themes, des quetes dont le type et la cible existent,
+      # une recompense par niveau et la relique au dernier, assez d'XP dans le
+      # mois pour finir le pass sans tout faire.
+      - name: Le pass mensuel doit etre complet et finissable
+        run: python3 tools/check_pass.py
+
+      # Le receleur ne doit offrir aucune boucle d'argent (il vend toujours plus
+      # cher qu'il ne rachete) et son lot sans etiquette doit rester un pari.
+      - name: Le marche noir doit etre a jour et sans boucle d'argent
+        run: python3 tools/black_market.py --check
+
       - name: Les JSON doivent parser
         run: |
           python3 - <<'PY'

@@ -1,0 +1,1184 @@
+{
+  "_comment": "Le pass mensuel : 35 niveaux de 1 000 XP, trois quetes du jour (pool daily), six quetes du mois au theme du mois reel (themes, month 1 a 12), une recompense par niveau et la relique du mois au dernier (pass/Relic.java). Les quetes comptent les memes gestes que les contrats (types de ContractType, cibles en identifiant ou en #tag). Verifie par tools/check_pass.py.",
+  "_calibrage": "Un mois : 3 quetes du jour d'environ 300 XP (~900 par jour, ~27 000 sur 30 jours) et 6 quetes du mois de 4 000 XP (24 000) : 51 000 XP possibles pour 35 000 necessaires. Finir le pass demande environ deux tiers des quetes : on peut manquer des jours.",
+  "levels": 35,
+  "xp_per_level": 1000,
+  "daily": {
+    "count": 3,
+    "pool": [
+      {
+        "id": "d_stone",
+        "type": "MINE_BLOCK",
+        "target": "#minecraft:base_stone_overworld",
+        "amount": 1000,
+        "xp": 300,
+        "label": "Miner de la pierre",
+        "icon": "minecraft:stone"
+      },
+      {
+        "id": "d_iron",
+        "type": "MINE_BLOCK",
+        "target": "#c:iron_ores",
+        "amount": 16,
+        "xp": 300,
+        "label": "Miner du minerai de fer",
+        "icon": "minecraft:raw_iron"
+      },
+      {
+        "id": "d_ores",
+        "type": "MINE_BLOCK",
+        "target": "#c:ores",
+        "amount": 40,
+        "xp": 300,
+        "label": "Miner des minerais",
+        "icon": "minecraft:raw_gold"
+      },
+      {
+        "id": "d_palamod",
+        "type": "MINE_BLOCK",
+        "target": "#palamod:ores",
+        "amount": 24,
+        "xp": 350,
+        "label": "Miner du PalaMod",
+        "icon": "palamod:paladium_ingot"
+      },
+      {
+        "id": "d_logs",
+        "type": "MINE_BLOCK",
+        "target": "#minecraft:logs",
+        "amount": 80,
+        "xp": 300,
+        "label": "Abattre des buches",
+        "icon": "minecraft:oak_log"
+      },
+      {
+        "id": "d_hostiles",
+        "type": "KILL_ENTITY",
+        "target": "#minecraft:hostile",
+        "amount": 40,
+        "xp": 300,
+        "label": "Abattre des monstres",
+        "icon": "minecraft:iron_sword"
+      },
+      {
+        "id": "d_zombies",
+        "type": "KILL_ENTITY",
+        "target": "minecraft:zombie",
+        "amount": 20,
+        "xp": 300,
+        "label": "Abattre des zombies",
+        "icon": "minecraft:rotten_flesh"
+      },
+      {
+        "id": "d_skeletons",
+        "type": "KILL_ENTITY",
+        "target": "minecraft:skeleton",
+        "amount": 20,
+        "xp": 300,
+        "label": "Abattre des squelettes",
+        "icon": "minecraft:bone"
+      },
+      {
+        "id": "d_creepers",
+        "type": "KILL_ENTITY",
+        "target": "minecraft:creeper",
+        "amount": 10,
+        "xp": 300,
+        "label": "Abattre des creepers",
+        "icon": "minecraft:gunpowder"
+      },
+      {
+        "id": "d_spiders",
+        "type": "KILL_ENTITY",
+        "target": "minecraft:spider",
+        "amount": 15,
+        "xp": 300,
+        "label": "Abattre des araignees",
+        "icon": "minecraft:string"
+      },
+      {
+        "id": "d_crops",
+        "type": "HARVEST",
+        "target": "#dohy:crops",
+        "amount": 250,
+        "xp": 300,
+        "label": "Recolter des cultures mures",
+        "icon": "minecraft:wheat"
+      },
+      {
+        "id": "d_palacrops",
+        "type": "HARVEST",
+        "target": "#palamod:crops",
+        "amount": 80,
+        "xp": 300,
+        "label": "Recolter les cultures de PalaMod",
+        "icon": "palamod:kiwano"
+      },
+      {
+        "id": "d_cereals",
+        "type": "HARVEST",
+        "target": "#dohy:cereal_crops",
+        "amount": 150,
+        "xp": 300,
+        "label": "Recolter des cereales",
+        "icon": "dohy:corn"
+      },
+      {
+        "id": "d_fish",
+        "type": "FISH",
+        "amount": 20,
+        "xp": 300,
+        "label": "Remonter des prises a la peche",
+        "icon": "minecraft:fishing_rod"
+      },
+      {
+        "id": "d_smelt",
+        "type": "SMELT",
+        "amount": 120,
+        "xp": 300,
+        "label": "Cuire des items au four",
+        "icon": "minecraft:furnace"
+      },
+      {
+        "id": "d_sell",
+        "type": "SELL_VALUE",
+        "amount": 40000,
+        "xp": 300,
+        "label": "Vendre au shop",
+        "icon": "minecraft:gold_ingot"
+      },
+      {
+        "id": "d_walk",
+        "type": "TRAVEL",
+        "amount": 1500,
+        "xp": 300,
+        "label": "Parcourir des blocs a pied",
+        "icon": "minecraft:leather_boots"
+      },
+      {
+        "id": "d_place",
+        "type": "PLACE_BLOCK",
+        "amount": 200,
+        "xp": 300,
+        "label": "Poser des blocs",
+        "icon": "minecraft:bricks"
+      },
+      {
+        "id": "d_play",
+        "type": "PLAYTIME",
+        "amount": 45,
+        "xp": 350,
+        "label": "Jouer 45 minutes",
+        "icon": "minecraft:clock"
+      },
+      {
+        "id": "d_bread",
+        "type": "PRODUCE",
+        "target": "#dohy:breads",
+        "amount": 30,
+        "xp": 300,
+        "label": "Cuire des pains",
+        "icon": "dohy:corn_bread"
+      },
+      {
+        "id": "d_flour",
+        "type": "PRODUCE",
+        "target": "#dohy:flours",
+        "amount": 60,
+        "xp": 300,
+        "label": "Moudre de la farine",
+        "icon": "dohy:wheat_flour"
+      },
+      {
+        "id": "d_jobs",
+        "type": "JOB_LEVELS",
+        "amount": 1,
+        "xp": 350,
+        "label": "Gagner un niveau de metier",
+        "icon": "minecraft:experience_bottle"
+      }
+    ]
+  },
+  "rewards": [
+    {
+      "level": 1,
+      "money": 5000
+    },
+    {
+      "level": 2,
+      "items": [
+        {
+          "item": "palamod:paladium_ingot",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "items": [
+        {
+          "item": "palamod:crate_key_amethyst",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "money": 10000
+    },
+    {
+      "level": 5,
+      "items": [
+        {
+          "item": "palamod:job_bottle_miner",
+          "count": 1,
+          "job_xp": 10000
+        }
+      ]
+    },
+    {
+      "level": 6,
+      "items": [
+        {
+          "item": "palamod:titane_ingot",
+          "count": 32
+        }
+      ]
+    },
+    {
+      "level": 7,
+      "money": 15000
+    },
+    {
+      "level": 8,
+      "items": [
+        {
+          "item": "palamod:findium",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "level": 9,
+      "items": [
+        {
+          "item": "palamod:crate_key_amethyst",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "money": 20000
+    },
+    {
+      "level": 11,
+      "items": [
+        {
+          "item": "palamod:job_bottle_hunter",
+          "count": 1,
+          "job_xp": 10000
+        }
+      ]
+    },
+    {
+      "level": 12,
+      "items": [
+        {
+          "item": "palamod:paladium_ingot",
+          "count": 64
+        }
+      ]
+    },
+    {
+      "level": 13,
+      "money": 25000
+    },
+    {
+      "level": 14,
+      "items": [
+        {
+          "item": "palamod:green_paladium_ingot",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "items": [
+        {
+          "item": "palamod:crate_key_amethyst",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "level": 16,
+      "money": 30000
+    },
+    {
+      "level": 17,
+      "items": [
+        {
+          "item": "palamod:job_bottle_farmer",
+          "count": 1,
+          "job_xp": 10000
+        }
+      ]
+    },
+    {
+      "level": 18,
+      "items": [
+        {
+          "item": "palamod:trixium",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "level": 19,
+      "money": 35000
+    },
+    {
+      "level": 20,
+      "items": [
+        {
+          "item": "palamod:crate_key_saharia",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "level": 21,
+      "items": [
+        {
+          "item": "palamod:job_bottle_alchemist",
+          "count": 1,
+          "job_xp": 10000
+        }
+      ]
+    },
+    {
+      "level": 22,
+      "items": [
+        {
+          "item": "palamod:rune_fragment_common",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "level": 23,
+      "money": 40000
+    },
+    {
+      "level": 24,
+      "items": [
+        {
+          "item": "palamod:invoker_stone",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "level": 25,
+      "items": [
+        {
+          "item": "palamod:crate_key_amethyst",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "level": 26,
+      "money": 60000
+    },
+    {
+      "level": 27,
+      "items": [
+        {
+          "item": "palamod:rune_fragment_rare",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "level": 28,
+      "items": [
+        {
+          "item": "palamod:trixium",
+          "count": 32
+        }
+      ]
+    },
+    {
+      "level": 29,
+      "money": 75000
+    },
+    {
+      "level": 30,
+      "items": [
+        {
+          "item": "palamod:endium_nugget",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "level": 31,
+      "items": [
+        {
+          "item": "palamod:rune_common",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "level": 32,
+      "money": 100000
+    },
+    {
+      "level": 33,
+      "items": [
+        {
+          "item": "palamod:crate_key_saharia",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "level": 34,
+      "money": 150000
+    },
+    {
+      "level": 35,
+      "money": 250000,
+      "relic": true
+    }
+  ],
+  "themes": [
+    {
+      "month": 1,
+      "name": "Grand froid",
+      "color": "8FD3FF",
+      "icon": "minecraft:snowball",
+      "tagline": "Le feu de la forge ne s'eteint pas",
+      "quests": [
+        {
+          "id": "jan_smelt",
+          "type": "SMELT",
+          "amount": 1500,
+          "xp": 4000,
+          "label": "Garder la forge allumee",
+          "icon": "minecraft:blast_furnace"
+        },
+        {
+          "id": "jan_hostile",
+          "type": "KILL_ENTITY",
+          "target": "#minecraft:hostile",
+          "amount": 400,
+          "xp": 4000,
+          "label": "Chasser dans la nuit d'hiver",
+          "icon": "minecraft:iron_sword"
+        },
+        {
+          "id": "jan_logs",
+          "type": "MINE_BLOCK",
+          "target": "#minecraft:logs",
+          "amount": 600,
+          "xp": 4000,
+          "label": "Couper du bois de chauffage",
+          "icon": "minecraft:spruce_log"
+        },
+        {
+          "id": "jan_fish",
+          "type": "FISH",
+          "amount": 150,
+          "xp": 4000,
+          "label": "Pecher sous la glace",
+          "icon": "minecraft:cod"
+        },
+        {
+          "id": "jan_iron",
+          "type": "MINE_BLOCK",
+          "target": "#c:iron_ores",
+          "amount": 200,
+          "xp": 4000,
+          "label": "Miner du fer pour l'hiver",
+          "icon": "minecraft:raw_iron"
+        },
+        {
+          "id": "jan_jobs",
+          "type": "JOB_LEVELS",
+          "amount": 8,
+          "xp": 4000,
+          "label": "Gagner des niveaux de metier",
+          "icon": "minecraft:experience_bottle"
+        }
+      ]
+    },
+    {
+      "month": 2,
+      "name": "Saint-Valentin",
+      "color": "FF5A8A",
+      "icon": "minecraft:poppy",
+      "tagline": "Des pains pour deux, des fleurs pour tous",
+      "quests": [
+        {
+          "id": "feb_bread",
+          "type": "PRODUCE",
+          "target": "#dohy:breads",
+          "amount": 300,
+          "xp": 4000,
+          "label": "Cuire des pains pour deux",
+          "icon": "dohy:corn_bread"
+        },
+        {
+          "id": "feb_crops",
+          "type": "HARVEST",
+          "target": "#dohy:crops",
+          "amount": 2000,
+          "xp": 4000,
+          "label": "Cueillir les recoltes",
+          "icon": "minecraft:wheat"
+        },
+        {
+          "id": "feb_hostile",
+          "type": "KILL_ENTITY",
+          "target": "#minecraft:hostile",
+          "amount": 400,
+          "xp": 4000,
+          "label": "Proteger l'etre aime",
+          "icon": "minecraft:iron_sword"
+        },
+        {
+          "id": "feb_sell",
+          "type": "SELL_VALUE",
+          "amount": 1500000,
+          "xp": 4000,
+          "label": "Vendre pour offrir un cadeau",
+          "icon": "minecraft:gold_ingot"
+        },
+        {
+          "id": "feb_walk",
+          "type": "TRAVEL",
+          "amount": 30000,
+          "xp": 4000,
+          "label": "Se promener a deux",
+          "icon": "minecraft:leather_boots"
+        },
+        {
+          "id": "feb_fish",
+          "type": "FISH",
+          "amount": 150,
+          "xp": 4000,
+          "label": "Pecher au bord du lac",
+          "icon": "minecraft:fishing_rod"
+        }
+      ]
+    },
+    {
+      "month": 3,
+      "name": "Printemps",
+      "color": "7BD957",
+      "icon": "minecraft:oak_sapling",
+      "tagline": "Tout repousse, tout se recolte",
+      "quests": [
+        {
+          "id": "mar_cereals",
+          "type": "HARVEST",
+          "target": "#dohy:cereal_crops",
+          "amount": 1500,
+          "xp": 4000,
+          "label": "Semer et moissonner les cereales",
+          "icon": "dohy:corn"
+        },
+        {
+          "id": "mar_palacrops",
+          "type": "HARVEST",
+          "target": "#palamod:crops",
+          "amount": 800,
+          "xp": 4000,
+          "label": "Recolter les cultures de PalaMod",
+          "icon": "palamod:kiwano"
+        },
+        {
+          "id": "mar_place",
+          "type": "PLACE_BLOCK",
+          "amount": 1500,
+          "xp": 4000,
+          "label": "Batir au soleil revenu",
+          "icon": "minecraft:bricks"
+        },
+        {
+          "id": "mar_logs",
+          "type": "MINE_BLOCK",
+          "target": "#minecraft:logs",
+          "amount": 600,
+          "xp": 4000,
+          "label": "Eclaircir la foret",
+          "icon": "minecraft:oak_log"
+        },
+        {
+          "id": "mar_fish",
+          "type": "FISH",
+          "amount": 150,
+          "xp": 4000,
+          "label": "Pecher les poissons du degel",
+          "icon": "minecraft:salmon"
+        },
+        {
+          "id": "mar_collection",
+          "type": "COLLECTION_TIER",
+          "amount": 6,
+          "xp": 4000,
+          "label": "Franchir des paliers de collection",
+          "icon": "minecraft:chest"
+        }
+      ]
+    },
+    {
+      "month": 4,
+      "name": "Chasse aux oeufs",
+      "color": "FFD84A",
+      "icon": "minecraft:egg",
+      "tagline": "Les oeufs sont caches partout",
+      "quests": [
+        {
+          "id": "apr_walk",
+          "type": "TRAVEL",
+          "amount": 40000,
+          "xp": 4000,
+          "label": "Battre la campagne",
+          "icon": "minecraft:leather_boots"
+        },
+        {
+          "id": "apr_creeper",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:creeper",
+          "amount": 80,
+          "xp": 4000,
+          "label": "Chasser les creepers des buissons",
+          "icon": "minecraft:gunpowder"
+        },
+        {
+          "id": "apr_crops",
+          "type": "HARVEST",
+          "target": "#dohy:crops",
+          "amount": 2000,
+          "xp": 4000,
+          "label": "Recolter les cultures",
+          "icon": "minecraft:carrot"
+        },
+        {
+          "id": "apr_ores",
+          "type": "MINE_BLOCK",
+          "target": "#c:ores",
+          "amount": 600,
+          "xp": 4000,
+          "label": "Denicher des minerais",
+          "icon": "minecraft:raw_gold"
+        },
+        {
+          "id": "apr_flour",
+          "type": "PRODUCE",
+          "target": "#dohy:flours",
+          "amount": 400,
+          "xp": 4000,
+          "label": "Moudre la farine des gateaux",
+          "icon": "dohy:wheat_flour"
+        },
+        {
+          "id": "apr_sell",
+          "type": "SELL_VALUE",
+          "amount": 1500000,
+          "xp": 4000,
+          "label": "Vendre au shop",
+          "icon": "minecraft:gold_ingot"
+        }
+      ]
+    },
+    {
+      "month": 5,
+      "name": "Fete du travail",
+      "color": "F2F2F2",
+      "icon": "minecraft:iron_pickaxe",
+      "tagline": "Le muguet pour ceux qui travaillent",
+      "quests": [
+        {
+          "id": "may_stone",
+          "type": "MINE_BLOCK",
+          "target": "#minecraft:base_stone_overworld",
+          "amount": 15000,
+          "xp": 4000,
+          "label": "Miner de la pierre",
+          "icon": "minecraft:stone"
+        },
+        {
+          "id": "may_palamod",
+          "type": "MINE_BLOCK",
+          "target": "#palamod:ores",
+          "amount": 400,
+          "xp": 4000,
+          "label": "Miner du PalaMod",
+          "icon": "palamod:paladium_pickaxe"
+        },
+        {
+          "id": "may_jobs",
+          "type": "JOB_LEVELS",
+          "amount": 10,
+          "xp": 4000,
+          "label": "Gagner des niveaux de metier",
+          "icon": "minecraft:experience_bottle"
+        },
+        {
+          "id": "may_smelt",
+          "type": "SMELT",
+          "amount": 1500,
+          "xp": 4000,
+          "label": "Faire tourner les fours",
+          "icon": "minecraft:furnace"
+        },
+        {
+          "id": "may_bread",
+          "type": "PRODUCE",
+          "target": "#dohy:breads",
+          "amount": 300,
+          "xp": 4000,
+          "label": "Cuire le pain des ouvriers",
+          "icon": "dohy:rye_bread"
+        },
+        {
+          "id": "may_play",
+          "type": "PLAYTIME",
+          "amount": 900,
+          "xp": 4000,
+          "label": "Jouer 15 heures dans le mois",
+          "icon": "minecraft:clock"
+        }
+      ]
+    },
+    {
+      "month": 6,
+      "name": "Fete de la musique",
+      "color": "B57CFF",
+      "icon": "minecraft:note_block",
+      "tagline": "Toute la ville joue dehors",
+      "quests": [
+        {
+          "id": "jun_walk",
+          "type": "TRAVEL",
+          "amount": 50000,
+          "xp": 4000,
+          "label": "Courir d'une scene a l'autre",
+          "icon": "minecraft:leather_boots"
+        },
+        {
+          "id": "jun_skeleton",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:skeleton",
+          "amount": 250,
+          "xp": 4000,
+          "label": "Faire danser les squelettes",
+          "icon": "minecraft:bone"
+        },
+        {
+          "id": "jun_fish",
+          "type": "FISH",
+          "amount": 200,
+          "xp": 4000,
+          "label": "Pecher au bord de l'eau",
+          "icon": "minecraft:tropical_fish"
+        },
+        {
+          "id": "jun_crops",
+          "type": "HARVEST",
+          "target": "#dohy:crops",
+          "amount": 2000,
+          "xp": 4000,
+          "label": "Recolter les cultures",
+          "icon": "minecraft:melon_slice"
+        },
+        {
+          "id": "jun_sell",
+          "type": "SELL_VALUE",
+          "amount": 2000000,
+          "xp": 4000,
+          "label": "Vendre au shop",
+          "icon": "minecraft:gold_ingot"
+        },
+        {
+          "id": "jun_place",
+          "type": "PLACE_BLOCK",
+          "amount": 2000,
+          "xp": 4000,
+          "label": "Monter une scene",
+          "icon": "minecraft:jukebox"
+        }
+      ]
+    },
+    {
+      "month": 7,
+      "name": "Vacances",
+      "color": "3FC8FF",
+      "icon": "minecraft:nautilus_shell",
+      "tagline": "Le sable, l'eau, le soleil",
+      "quests": [
+        {
+          "id": "jul_fish",
+          "type": "FISH",
+          "amount": 250,
+          "xp": 4000,
+          "label": "Pecher en mer",
+          "icon": "minecraft:tropical_fish"
+        },
+        {
+          "id": "jul_drowned",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:drowned",
+          "amount": 80,
+          "xp": 4000,
+          "label": "Chasser les noyes de la plage",
+          "icon": "minecraft:trident"
+        },
+        {
+          "id": "jul_walk",
+          "type": "TRAVEL",
+          "amount": 50000,
+          "xp": 4000,
+          "label": "Partir en randonnee",
+          "icon": "minecraft:leather_boots"
+        },
+        {
+          "id": "jul_guardian",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:guardian",
+          "amount": 40,
+          "xp": 4000,
+          "label": "Plonger chez les gardiens",
+          "icon": "minecraft:prismarine_shard"
+        },
+        {
+          "id": "jul_crops",
+          "type": "HARVEST",
+          "target": "#dohy:crops",
+          "amount": 2000,
+          "xp": 4000,
+          "label": "Recolter les cultures",
+          "icon": "minecraft:sweet_berries"
+        },
+        {
+          "id": "jul_play",
+          "type": "PLAYTIME",
+          "amount": 900,
+          "xp": 4000,
+          "label": "Jouer 15 heures dans le mois",
+          "icon": "minecraft:clock"
+        }
+      ]
+    },
+    {
+      "month": 8,
+      "name": "Canicule",
+      "color": "FF8A2E",
+      "icon": "minecraft:blaze_powder",
+      "tagline": "Il fait plus chaud dans le Nether",
+      "quests": [
+        {
+          "id": "aug_netherrack",
+          "type": "MINE_BLOCK",
+          "target": "minecraft:netherrack",
+          "amount": 5000,
+          "xp": 4000,
+          "label": "Miner de la roche du Nether",
+          "icon": "minecraft:netherrack"
+        },
+        {
+          "id": "aug_blaze",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:blaze",
+          "amount": 80,
+          "xp": 4000,
+          "label": "Abattre des blazes",
+          "icon": "minecraft:blaze_rod"
+        },
+        {
+          "id": "aug_magma",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:magma_cube",
+          "amount": 100,
+          "xp": 4000,
+          "label": "Abattre des cubes de magma",
+          "icon": "minecraft:magma_cream"
+        },
+        {
+          "id": "aug_smelt",
+          "type": "SMELT",
+          "amount": 2000,
+          "xp": 4000,
+          "label": "Rester devant les fours",
+          "icon": "minecraft:blast_furnace"
+        },
+        {
+          "id": "aug_cereals",
+          "type": "HARVEST",
+          "target": "#dohy:cereal_crops",
+          "amount": 1500,
+          "xp": 4000,
+          "label": "Moissonner avant l'orage",
+          "icon": "dohy:corn"
+        },
+        {
+          "id": "aug_sell",
+          "type": "SELL_VALUE",
+          "amount": 2000000,
+          "xp": 4000,
+          "label": "Vendre au shop",
+          "icon": "minecraft:gold_ingot"
+        }
+      ]
+    },
+    {
+      "month": 9,
+      "name": "Rentree",
+      "color": "5B8DEF",
+      "icon": "minecraft:book",
+      "tagline": "Les jours raccourcissent, on s'y remet",
+      "quests": [
+        {
+          "id": "sep_jobs",
+          "type": "JOB_LEVELS",
+          "amount": 10,
+          "xp": 4000,
+          "label": "Gagner des niveaux de metier",
+          "icon": "minecraft:experience_bottle"
+        },
+        {
+          "id": "sep_collection",
+          "type": "COLLECTION_TIER",
+          "amount": 6,
+          "xp": 4000,
+          "label": "Franchir des paliers de collection",
+          "icon": "minecraft:chest"
+        },
+        {
+          "id": "sep_ores",
+          "type": "MINE_BLOCK",
+          "target": "#c:ores",
+          "amount": 600,
+          "xp": 4000,
+          "label": "Miner des minerais",
+          "icon": "minecraft:raw_gold"
+        },
+        {
+          "id": "sep_smelt",
+          "type": "SMELT",
+          "amount": 1500,
+          "xp": 4000,
+          "label": "Cuire des items au four",
+          "icon": "minecraft:furnace"
+        },
+        {
+          "id": "sep_sell",
+          "type": "SELL_VALUE",
+          "amount": 2000000,
+          "xp": 4000,
+          "label": "Vendre au shop",
+          "icon": "minecraft:gold_ingot"
+        },
+        {
+          "id": "sep_play",
+          "type": "PLAYTIME",
+          "amount": 900,
+          "xp": 4000,
+          "label": "Jouer 15 heures dans le mois",
+          "icon": "minecraft:clock"
+        }
+      ]
+    },
+    {
+      "month": 10,
+      "name": "Halloween",
+      "color": "FF7A00",
+      "icon": "minecraft:carved_pumpkin",
+      "tagline": "Les morts se levent plus tot",
+      "quests": [
+        {
+          "id": "oct_zombie",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:zombie",
+          "amount": 400,
+          "xp": 4000,
+          "label": "Abattre des zombies",
+          "icon": "minecraft:rotten_flesh"
+        },
+        {
+          "id": "oct_skeleton",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:skeleton",
+          "amount": 300,
+          "xp": 4000,
+          "label": "Abattre des squelettes",
+          "icon": "minecraft:bone"
+        },
+        {
+          "id": "oct_witch",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:witch",
+          "amount": 40,
+          "xp": 4000,
+          "label": "Abattre des sorcieres",
+          "icon": "minecraft:glass_bottle"
+        },
+        {
+          "id": "oct_spider",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:spider",
+          "amount": 200,
+          "xp": 4000,
+          "label": "Abattre des araignees",
+          "icon": "minecraft:spider_eye"
+        },
+        {
+          "id": "oct_pumpkin",
+          "type": "MINE_BLOCK",
+          "target": "minecraft:pumpkin",
+          "amount": 200,
+          "xp": 4000,
+          "label": "Recolter des citrouilles",
+          "icon": "minecraft:pumpkin"
+        },
+        {
+          "id": "oct_enderman",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:enderman",
+          "amount": 60,
+          "xp": 4000,
+          "label": "Abattre des endermen",
+          "icon": "minecraft:ender_pearl"
+        }
+      ]
+    },
+    {
+      "month": 11,
+      "name": "Brumes d'automne",
+      "color": "C08A4A",
+      "icon": "minecraft:oak_leaves",
+      "tagline": "Les feuilles tombent, les reserves montent",
+      "quests": [
+        {
+          "id": "nov_logs",
+          "type": "MINE_BLOCK",
+          "target": "#minecraft:logs",
+          "amount": 800,
+          "xp": 4000,
+          "label": "Couper le bois de l'hiver",
+          "icon": "minecraft:oak_log"
+        },
+        {
+          "id": "nov_crops",
+          "type": "HARVEST",
+          "target": "#dohy:crops",
+          "amount": 2500,
+          "xp": 4000,
+          "label": "Rentrer les recoltes",
+          "icon": "minecraft:pumpkin_pie"
+        },
+        {
+          "id": "nov_phantom",
+          "type": "KILL_ENTITY",
+          "target": "minecraft:phantom",
+          "amount": 40,
+          "xp": 4000,
+          "label": "Abattre des phantoms dans la brume",
+          "icon": "minecraft:phantom_membrane"
+        },
+        {
+          "id": "nov_fish",
+          "type": "FISH",
+          "amount": 200,
+          "xp": 4000,
+          "label": "Pecher dans la brume",
+          "icon": "minecraft:salmon"
+        },
+        {
+          "id": "nov_flour",
+          "type": "PRODUCE",
+          "target": "#dohy:flours",
+          "amount": 400,
+          "xp": 4000,
+          "label": "Moudre les reserves de farine",
+          "icon": "dohy:wheat_flour"
+        },
+        {
+          "id": "nov_jobs",
+          "type": "JOB_LEVELS",
+          "amount": 8,
+          "xp": 4000,
+          "label": "Gagner des niveaux de metier",
+          "icon": "minecraft:experience_bottle"
+        }
+      ]
+    },
+    {
+      "month": 12,
+      "name": "Noel",
+      "color": "E8323C",
+      "icon": "minecraft:spruce_sapling",
+      "tagline": "Des cadeaux sous le sapin",
+      "quests": [
+        {
+          "id": "dec_spruce",
+          "type": "MINE_BLOCK",
+          "target": "minecraft:spruce_log",
+          "amount": 400,
+          "xp": 4000,
+          "label": "Couper des sapins",
+          "icon": "minecraft:spruce_log"
+        },
+        {
+          "id": "dec_bread",
+          "type": "PRODUCE",
+          "target": "#dohy:breads",
+          "amount": 400,
+          "xp": 4000,
+          "label": "Cuire les pains du reveillon",
+          "icon": "dohy:corn_bread"
+        },
+        {
+          "id": "dec_sell",
+          "type": "SELL_VALUE",
+          "amount": 2500000,
+          "xp": 4000,
+          "label": "Vendre pour les cadeaux",
+          "icon": "minecraft:gold_ingot"
+        },
+        {
+          "id": "dec_hostile",
+          "type": "KILL_ENTITY",
+          "target": "#minecraft:hostile",
+          "amount": 500,
+          "xp": 4000,
+          "label": "Garder la maison au chaud",
+          "icon": "minecraft:iron_sword"
+        },
+        {
+          "id": "dec_collection",
+          "type": "COLLECTION_TIER",
+          "amount": 6,
+          "xp": 4000,
+          "label": "Franchir des paliers de collection",
+          "icon": "minecraft:chest"
+        },
+        {
+          "id": "dec_play",
+          "type": "PLAYTIME",
+          "amount": 1200,
+          "xp": 4000,
+          "label": "Jouer 20 heures dans le mois",
+          "icon": "minecraft:clock"
+        }
+      ]
+    }
+  ]
+}

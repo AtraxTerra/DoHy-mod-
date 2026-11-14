@@ -144,6 +144,7 @@ public final class ContractDisplay {
             case COLLECTION_TIER -> Items.CHEST;
             case JOB_LEVELS -> Items.EXPERIENCE_BOTTLE;
             case PRODUCE -> Items.CRAFTING_TABLE;
+            case PLAYTIME -> Items.CLOCK;
             case UNKNOWN -> Items.PAPER;
         };
     }
@@ -161,6 +162,7 @@ public final class ContractDisplay {
             case COLLECTION_TIER -> "Franchir des paliers de collection";
             case JOB_LEVELS -> "Gagner des niveaux de metier";
             case PRODUCE -> "Produire a la machine";
+            case PLAYTIME -> "Jouer (minutes)";
             case UNKNOWN -> "Contrat inconnu";
         };
     }

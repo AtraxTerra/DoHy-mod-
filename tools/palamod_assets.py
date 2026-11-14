@@ -3334,12 +3334,12 @@ def main():
         flat_item(name, "%s:item/%s" % (NS, name))
         label("item", name, label_fr, label_en)
 
-    for job, label_fr, label_en in (("farmer", "fermier", "Farmer"), ("miner", "mineur", "Miner"),
-                                    ("hunter", "chasseur", "Hunter"), ("alchemist", "alchimiste", "Alchemist")):
+    for job, label_fr, label_en in (("farmer", "de fermier", "Farmer"), ("miner", "de mineur", "Miner"),
+                                    ("hunter", "de chasseur", "Hunter"), ("alchemist", "d'alchimiste", "Alchemist")):
         name = "job_bottle_%s" % job
         tex("items/job_bottle/%s.png" % job, "item/%s.png" % name)
         flat_item(name, "%s:item/%s" % (NS, name))
-        label("item", name, "Bouteille d'XP de %s" % label_fr, "%s XP Bottle" % label_en)
+        label("item", name, "Bouteille d'XP %s" % label_fr, "%s XP Bottle" % label_en)
 
     for key, label_fr, label_en in (
             ("dungeon_key", "Ouvre les paliers du donjon. XP de metier : %s.",
