@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -171,7 +172,7 @@ public final class PlanRenderer {
     /** Une coque d'une couleur unie : le centre de la texture du beton blanc. */
     private static Ghost shell(Minecraft minecraft, BlockPos pos, Vec3 camera, int color, float inset) {
         TextureAtlasSprite sprite = minecraft.getModelManager().getBlockStateModelSet()
-                .getParticleMaterial(Blocks.WHITE_CONCRETE.defaultBlockState()).sprite();
+                .getParticleMaterial(Blocks.CONCRETE.pick(DyeColor.WHITE).defaultBlockState()).sprite();
         return new Ghost((float) (pos.getX() - camera.x), (float) (pos.getY() - camera.y),
                 (float) (pos.getZ() - camera.z), sprite, color, inset, true);
     }

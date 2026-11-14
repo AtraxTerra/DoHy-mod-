@@ -117,6 +117,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 21d | **Interfaces, lot 4** : écran de conteneur du kit, les neuf machines (crusher avec ses quatre bacs), coffres en paladium, inventaires en coffre avec leurs propres types de menu (vente, musée, monture, golem, coffre de l'End en paladium) | fait |
 | 22a | **Faction solo, cœur** : création (100 lingots de paladium), claims qui protègent la base contre le monde, banque de faction, F homes, ELO et ligues du lundi, onglets sur le kit, `/f` — voir [docs/FACTION.md](docs/FACTION.md) | fait |
 | 22b | **Faction solo, arbre de technologie** : 4 branches du wiki (coûts, durées réelles, récompenses), conditions remixées solo, déblocages d'objets pour les lots suivants, écrans de l'arbre | fait (en validation) |
+| 23a | **Aide au joueur** : encyclopédie en jeu (65 fiches en 10 catégories, découverte en jouant, progression du joueur, commandes lancées d'un clic, touche J, bouton « ? »), plans de construction en hologramme (7 structures, couleurs par état, barre d'action, menu du plan) — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -185,6 +186,60 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-14 (suite) — encyclopédie et plans en hologramme
+
+**Demande** : après un bilan comparé avec Paladium et NationsGlory, « Une encyclopédie en jeu, Pass
+mensuel (changeant chaque mois), Plans en hologramme, Marché noir (au spawn), Boss de métier,
+Donjons façon V12 ». Coupé en trois lots, une PR chacun : **encyclopédie et plans** (celui-ci),
+puis pass mensuel et marché noir, puis boss de métier et donjons V12. Choix du joueur pour la
+suite : pass au **thème du mois réel avec un objet exclusif au dernier niveau** ; marché noir
+**toujours ouvert** au spawn, stock du jour ; boss de métier par **offrandes sur un autel au spawn**
+(il arrive une heure après, dans une arène) ; donjons avec **modes Facile/Normal/Difficile, boss
+« Dark », nouvelles salles et mini-boss**.
+
+**Fait** (`feat/encyclopedie-plans`, paquets `guide/` et `guide/plan/`, description dans
+`docs/CONTENU_DOHY.md`) :
+- **L'encyclopédie** : `data/encyclopedia.json` (65 fiches, 10 catégories, sans accents), chargée au
+  démarrage du serveur et rechargeable (`/encyclopedie admin recharger`) ; sommaire (À LIRE, puis
+  les catégories) et fiche (texte, TA PROGRESSION, PLANS DE CONSTRUCTION, COMMANDES ET TOUCHES,
+  VOIR AUSSI) en `MenuView` ; découverte par objet ou tag dans le sac, dimension, menu ouvert, avec
+  annonce cliquable dans le chat et accueil à la première connexion ; attachement `encyclopedia`.
+  Entrées : touche J, bouton « ? » de l'inventaire, section AIDE du menu principal,
+  `/encyclopedie`, `/wiki`.
+- **Les plans** : objet `dohy:plan` et composant `dohy:plan` (structure, taille, pose) ; sept plans
+  (`Blueprints`) qui reprennent les formes vérifiées par le code des structures ; hologramme chez le
+  client (`PlanRenderer`, `SubmitCustomGeometryEvent`) ; barre d'action ; menu du plan (structure,
+  taille, tourner, retirer, matériel) ; `/plan` ; recette (trois papiers, un lapis-lazuli).
+- **Le kit** : mise en page `MenuView.TEXT` ; un titre de carte un peu trop long rétrécit avant
+  d'être coupé.
+- **`tools/check_encyclopedia.py`** et son étape de CI : tout ce que nomment les fiches existe
+  (voisins, objets et tags, plans, menus, dimensions, progressions, racines des commandes), textes
+  sans accents, titres et lignes de carte courts.
+
+**Vérifié en jeu** (client de CI, monde de test) :
+- **les 7 plans, toutes tailles, dans les 4 sens : 64 constructions bâties à l'identique, toutes
+  reconnues par la structure du jeu** (`GrinderStructure`, `CauldronStructure`,
+  `GolemBoxStructure`, `BarnStructure` avec la bonne taille, `SpawnerBlueprint` au bon palier,
+  `MinerPortalShape`, la réserve d'or de `GoldReserves`) ;
+- au démarrage : « Encyclopedie : 65 fiches en 10 categories », sans problème signalé ;
+- sommaire, fiches (texte, progression, plans, commandes, voisins), menu principal, inventaire et
+  son bouton « ? », menu du plan (« 13 / 27 », « 2 bloc(s) a retirer », matériel avec barres) ;
+- l'hologramme d'un grinder à moitié fait, d'un portail non chargé, d'un enclos commencé ; la barre
+  d'action « Grinder · 13 / 27 blocs · 2 a retirer » ; l'aperçu blanc d'un plan tenu sur le bloc
+  visé ;
+- l'annonce « [Encyclopedie] Nouvelle fiche : … [Lire] » après avoir ramassé une obsidienne
+  wither.
+
+**Corrigé en route** (vu dans les captures) : les titres coupés par la pastille NOUVEAU (titres
+courts, et le titre de carte qui rétrécit) ; l'hologramme teinté qui assombrissait les blocs et
+dont le rouge se perdait sur le grinder (coques de couleur unie) ; « HOSTILES 0 / 0 » sur la fiche
+de la guerre (compté sur les douze nations) ; le cœur de la réserve d'or qui acceptait n'importe
+quel bloc dans le plan (or liquide ou vide seulement).
+
+**Non vérifié en jeu** : la touche J sur un vrai clavier (la capture ouvre les menus côté
+serveur) ; une commande lancée d'un clic depuis une fiche ; le rechargement à chaud ; un plan posé
+en survie sur un serveur dédié ; le serveur de Minestrator.
 
 ### 2026-11-14 (suite) — la guerre des nations
 
