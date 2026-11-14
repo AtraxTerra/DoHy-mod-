@@ -226,7 +226,11 @@ mois réel et objet exclusif au dernier niveau) et le **marché noir au spawn** 
 - **la bascule** (horloge avancée de 20 jours) : « Le pass de novembre est termine, niveau 12 / 35 :
   6 recompense(s) oubliee(s), donnee(s) maintenant », l'argent et les objets arrivent, le pass de
   décembre (« Noel », Étoile de Noël, fin dans 27 j 9 h) repart de zéro avec ses quêtes ;
-- la fiche du pass, le bouton PASS de l'inventaire (sa bulle) ;
+- `/pass admin avancer 20` refusé tant que le mois a de la progression (« Essai d'une vraie
+  bascule... »), accepté avec `confirmer` ; `/pass admin horloge` ramène au pass de novembre ;
+- « Tout récupérer » cliqué dans le menu : « 12 recompense(s) recuperee(s) », douze tuiles vertes ;
+- la fiche du pass, le bouton PASS de l'inventaire (la relique du mois dessus), la carte « Pass de
+  novembre » du menu principal (niveau 12 / 35 et sa barre) ;
 - la trappe sur le pont et son étiquette, la planque (échelle, tonneaux, bougies, lanternes
   d'âmes, la borne) ;
 - le marché noir : 4 offres volées (Kraken, Solaris, les Titans), 2 de contrebande, 3 rachats ;
@@ -234,6 +238,9 @@ mois réel et objet exclusif au dernier niveau) et le **marché noir au spawn** 
   sans étiquette (« Un petit lot : 32 Lingot de paladium, 8 Findium »), une revente (« 1 Epee de
   Vitalys : +122 000 $ »), la seconde refusée (« Il en a assez pour aujourd'hui »), l'offre épuisée
   marquée VENDU ;
+- les mêmes gestes par les clics du menu (l'écran se rafraîchit, VENDU) : deux lots volés avec une
+  faction donnent « Kraken : grief : recel : Findium » et « … : Cle Amethyste » dans l'histoire
+  des guerres ; trois lots sans étiquette par jour, le quatrième refusé (« Reviens demain ») ;
 - la fiche du marché noir ; le journal du serveur : « Marche noir charge : 20 offres volees, 6 de
   contrebande, 53 rachats possibles ».
 
