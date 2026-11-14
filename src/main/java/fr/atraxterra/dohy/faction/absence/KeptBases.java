@@ -112,15 +112,16 @@ public final class KeptBases {
         }
     }
 
-    /** Le ticket de la base : le chunk tourne comme si un joueur etait la. */
-    static final TicketController CONTROLLER = new TicketController(
-            Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "base"), KeptBases::validate);
-
     /** Les chunks tenus en ce moment, par joueur : ce que le ticket a recu. */
     private static final Map<UUID, Set<Spot>> HELD = new HashMap<>();
     private static volatile boolean any;
     /** Quand le serveur a demarre : avant, la base ne tournait pas. */
     private static long started;
+
+    /** Le ticket de la base : le chunk tourne comme si un joueur etait la. */
+    static final TicketController CONTROLLER = new TicketController(
+            Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "base"), KeptBases::validate);
+
 
     private KeptBases() {
     }
