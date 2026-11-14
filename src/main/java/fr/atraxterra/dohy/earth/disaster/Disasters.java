@@ -107,9 +107,14 @@ public final class Disasters {
 
     @SubscribeEvent
     public static void onStopping(ServerStoppingEvent event) {
-        // les catastrophes en cours s'arretent : leur terrain reviendra comme prevu
+        // les catastrophes en cours s'arretent (la mer redescend, la lave fige) : leur terrain reviendra
+        // comme prevu
+        ServerLevel level = level(event.getServer());
         for (Disaster disaster : ACTIVE) {
             if (!disaster.done) {
+                if (level != null) {
+                    disaster.halt(level);
+                }
                 disaster.finish(event.getServer());
             }
         }
@@ -636,7 +641,14 @@ public final class Disasters {
                         .then(Commands.literal("mousson").executes(Disasters::adminMonsoon))
                         .then(Commands.literal("fin").executes(context -> {
                             int count = 0;
+                            ServerLevel level = level(context.getSource().getServer());
                             for (Disaster disaster : new ArrayList<>(ACTIVE)) {
+                                if (disaster.done) {
+                                    continue;
+                                }
+                                if (level != null) {
+                                    disaster.halt(level);
+                                }
                                 disaster.finish(context.getSource().getServer());
                                 count++;
                             }

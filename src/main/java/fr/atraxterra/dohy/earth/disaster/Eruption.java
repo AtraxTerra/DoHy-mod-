@@ -204,6 +204,16 @@ final class Eruption extends Disaster {
         }
     }
 
+    @Override
+    void halt(ServerLevel level) {
+        // toute la lave fige d'un coup : rien ne doit couler jusqu'au retour du terrain
+        if (physical && prepared && ledger != null) {
+            while (cooling < Integer.MAX_VALUE) {
+                cool(level);
+            }
+        }
+    }
+
     /** L'eruption ne touche au terrain que si le cone est la et qu'un joueur est a moins de 192 blocs. */
     private boolean canStart(ServerLevel level) {
         LevelChunk chunk = level.getChunkSource().getChunkNow(volcano.x() >> 4, volcano.z() >> 4);

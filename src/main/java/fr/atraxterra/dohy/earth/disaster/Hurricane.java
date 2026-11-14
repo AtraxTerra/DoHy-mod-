@@ -376,6 +376,14 @@ final class Hurricane extends Disaster {
         finish(level.getServer());
     }
 
+    @Override
+    void halt(ServerLevel level) {
+        for (BlockPos pos : surge) {
+            revert(level, pos);
+        }
+        surge.clear();
+    }
+
     /** Pres d'un joueur : la pluie de debris, les feuilles, les arbres, la mer qui monte, les eclairs. */
     private void effects(ServerLevel level, ServerPlayer player, double distance) {
         double factor = windFactor(distance);

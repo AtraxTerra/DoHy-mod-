@@ -208,6 +208,13 @@ final class Monsoon extends Disaster {
         }
     }
 
+    @Override
+    void halt(ServerLevel level) {
+        while (!flood.isEmpty()) {
+            recedeOne(level);
+        }
+    }
+
     /** Un bloc d'eau se retire ; sur la terre qu'il couvrait, parfois du limon. */
     private void recedeOne(ServerLevel level) {
         BlockPos pos = flood.remove(flood.size() - 1);

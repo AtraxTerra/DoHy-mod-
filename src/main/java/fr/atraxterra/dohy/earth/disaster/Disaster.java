@@ -94,6 +94,14 @@ abstract class Disaster {
     }
 
     /** La fin : le terrain reviendra dans le delai des reglages. */
+    /**
+     * La catastrophe s'arrete avant sa fin (la commande {@code fin}, l'arret du
+     * serveur) : elle range ce qui ne doit pas rester vivant jusqu'au retour du
+     * terrain — la mer et la riviere redescendent, la lave fige.
+     */
+    void halt(ServerLevel level) {
+    }
+
     void finish(MinecraftServer server) {
         done = true;
         if (ledger != null) {
