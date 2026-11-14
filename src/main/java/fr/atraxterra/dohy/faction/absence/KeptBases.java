@@ -352,6 +352,19 @@ public final class KeptBases {
         any = !HELD.isEmpty();
     }
 
+    /** Temporaire : une base d'essai, sans joueur, qui tient un chunk. */
+    public static void testKeep(MinecraftServer server, String dimension, int x, int z) {
+        UUID owner = new UUID(0L, 1L);
+        List<Base> bases = new ArrayList<>(state(server).bases());
+        bases.removeIf(base -> base.owner().equals(owner));
+        Base base = new Base(owner, "Essai", System.currentTimeMillis(), true,
+                List.of(new Spot(dimension, x, z, 0, true)));
+        bases.add(base);
+        save(server, bases);
+        hold(server, base);
+        DoHy.LOGGER.info("Base d'essai : chunk {} {} tenu, base tenue {}", x, z, any);
+    }
+
     /** Une signature des claims : un claim pose ou rendu la change. */
     static int signature(FactionData data) {
         if (!data.exists()) {

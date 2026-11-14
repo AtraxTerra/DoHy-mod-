@@ -120,7 +120,7 @@ jobs:
         run: |
           mkdir -p run
           echo "eula=true" > run/eula.txt
-          printf 'online-mode=false\nenable-rcon=true\nrcon.password=sonde\nrcon.port=25575\nlevel-seed=dohy\npause-when-empty-seconds=100000\n' \
+          printf 'online-mode=false\nenable-rcon=true\nrcon.password=sonde\nrcon.port=25575\nlevel-seed=dohy\npause-when-empty-seconds=60\n' \
             > run/server.properties
           ( timeout 1200 gradle runServer --no-daemon > /tmp/server.log 2>&1; echo "fin du serveur : $?" >> /tmp/server.log ) &
           for i in $(seq 1 1100); do
@@ -155,5 +155,5 @@ jobs:
           fi
           wait
           echo "================ journal (extraits) ================"
-          grep -nE 'ERROR|Exception|Caused by|Failed|Done \(|fin du serveur|palamod|\[dohy/' /tmp/server.log | grep -v 'DEBUG' | head -300
+          grep -nE 'ERROR|Exception|Caused by|Failed|Done \(|fin du serveur|palamod|\[dohy/|pausing|empty' /tmp/server.log | grep -v 'DEBUG' | head -300
           grep -q 'Done (' /tmp/server.log
