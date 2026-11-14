@@ -1,0 +1,147 @@
+name: ui-shots
+# Temporaire : lance le client sous Xvfb, capture des ecrans et pousse les
+# images sur la branche shots-out.
+on:
+  push:
+    branches: [ci/shots]
+permissions:
+  contents: write
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.1.0"
+      - name: Paquets graphiques
+        run: |
+          # L'image du runner a deja Xvfb et Mesa (llvmpipe) : les depots
+          # d'Ubuntu ne sont consultes que s'ils manquent.
+          if which Xvfb xvfb-run && ls /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so /usr/lib/x86_64-linux-gnu/libgallium* 2>/dev/null | head -3; then
+            echo "paquets graphiques deja presents"
+          else
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq xvfb libgl1-mesa-dri > /dev/null
+          fi
+      - name: Mods de test (NTM NEXT et Space)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p ci-mods run/mods
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.parse
+          def get(url, headers=None):
+              req = urllib.request.Request(url, headers=dict({"User-Agent": "dohy-ci"}, **(headers or {})))
+              with urllib.request.urlopen(req, timeout=60) as r:
+                  return r.read()
+          def save(url, name):
+              data = get(url)
+              open(os.path.join("ci-mods", name), "wb").write(data)
+              print("telecharge", name, len(data))
+          found = {}
+          # 1) les versions publiees sur GitHub
+          for repo, key in (("Warfactory-Official/ntm-next", "hbm"), ("Warfactory-Official/ntm-next-space", "hbmspace")):
+              try:
+                  rel = json.loads(get("https://api.github.com/repos/%s/releases?per_page=10" % repo,
+                                       {"Authorization": "Bearer " + os.environ["GH_TOKEN"]}))
+                  for r in rel:
+                      print(repo, r["tag_name"], "fichiers", [a["name"] for a in r["assets"]])
+                      jars = [a for a in r["assets"] if a["name"].endswith(".jar") and "fabric" not in a["name"].lower()
+                              and "source" not in a["name"].lower() and "dev" not in a["name"].lower()]
+                      jars.sort(key=lambda a: "neoforge" not in a["name"].lower())
+                      if jars:
+                          save(jars[0]["browser_download_url"], jars[0]["name"]); found[key] = jars[0]["name"]; break
+                  print(repo, "releases", [r["tag_name"] for r in rel][:5])
+              except Exception as e:
+                  print("github", repo, e)
+          # 2) Modrinth
+          for query, key in (("NTM NEXT", "hbm"), ("NTM NEXT Space", "hbmspace")):
+              if key in found:
+                  continue
+              try:
+                  facets = urllib.parse.quote(json.dumps([["versions:26.2"], ["categories:neoforge"]]))
+                  hits = json.loads(get("https://api.modrinth.com/v2/search?limit=10&query=%s&facets=%s"
+                                        % (urllib.parse.quote(query), facets)))["hits"]
+                  print("modrinth", query, [(h["slug"], h["title"]) for h in hits])
+                  for h in hits:
+                      title = h["title"].lower()
+                      if ("space" in title) != (key == "hbmspace") or "ntm" not in title:
+                          continue
+                      vers = json.loads(get("https://api.modrinth.com/v2/project/%s/version?loaders=%s&game_versions=%s"
+                                            % (h["project_id"], urllib.parse.quote('["neoforge"]'),
+                                               urllib.parse.quote('["26.2"]'))))
+                      if vers:
+                          f = [x for x in vers[0]["files"] if x.get("primary")] or vers[0]["files"]
+                          save(f[0]["url"], f[0]["filename"]); found[key] = f[0]["filename"]; break
+              except Exception as e:
+                  print("modrinth", query, e)
+          print("mods de test :", found)
+          PY
+          cp ci-mods/*.jar run/mods/ 2>/dev/null || true
+          ls -la run/mods
+      - name: Leaves Be Gone
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.parse
+          def get(url):
+              req = urllib.request.Request(url, headers={"User-Agent": "dohy-ci"})
+              with urllib.request.urlopen(req, timeout=60) as r:
+                  return r.read()
+          for slug in ("puzzles-lib", "leaves-be-gone"):
+              try:
+                  vers = json.loads(get("https://api.modrinth.com/v2/project/%s/version?loaders=%s&game_versions=%s"
+                                        % (slug, urllib.parse.quote('["neoforge"]'), urllib.parse.quote('["26.2"]'))))
+                  f = [x for x in vers[0]["files"] if x.get("primary")] or vers[0]["files"]
+                  open(os.path.join("ci-mods", f[0]["filename"]), "wb").write(get(f[0]["url"]))
+                  print("telecharge", f[0]["filename"], vers[0]["version_number"])
+              except Exception as e:
+                  print("modrinth", slug, e)
+          PY
+          cp ci-mods/*.jar run/mods/
+          ls -la run/mods
+      - name: Monde
+        run: |
+          mkdir -p run
+          echo "eula=true" > run/eula.txt
+          printf 'online-mode=false\nenable-rcon=true\nrcon.password=shots\nrcon.port=25575\nlevel-seed=dohy\nspawn-protection=0\n' > run/server.properties
+          ( timeout 900 gradle runServer --no-daemon > /tmp/server.log 2>&1; echo "fin du serveur : $?" >> /tmp/server.log ) &
+          for i in $(seq 1 120); do grep -qE 'Done \(|fin du serveur' /tmp/server.log && break; sleep 5; done
+          grep -q 'Done (' /tmp/server.log || { grep -vE '^\s+at ' /tmp/server.log | tail -80; exit 1; }
+          python3 - <<'RCON'
+          import socket, struct
+          s = socket.create_connection(("127.0.0.1", 25575), timeout=60)
+          def send(kind, body, rid):
+              data = struct.pack("<ii", rid, kind) + body.encode() + b"\x00\x00"
+              s.sendall(struct.pack("<i", len(data)) + data)
+              size = struct.unpack("<i", s.recv(4))[0]
+              s.recv(size)
+          send(3, "shots", 1)
+          send(2, "stop", 2)
+          RCON
+          for i in $(seq 1 60); do grep -q 'fin du serveur' /tmp/server.log && break; sleep 2; done
+          grep -nE 'Done \(|fin du serveur|ERROR' /tmp/server.log | head -20
+          mkdir -p run/saves && cp -r run/world run/saves/shots && ls run/saves/shots
+      - name: Client
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          mkdir -p run/mods && (cp ci-mods/*.jar run/mods/ 2>/dev/null || true) && ls -la run/mods
+          printf 'lang:fr_fr\nonboardAccessibility:false\nnarrator:0\ntutorialStep:none\njoinedFirstServer:true\nsoundCategory_master:0.0\nguiScale:0\nfullscreen:false\nrenderDistance:6\nsimulationDistance:5\n' > run/options.txt
+          ( timeout 2400 xvfb-run -a -s "-screen 0 1920x1080x24" gradle runClient --no-daemon > /tmp/client.log 2>&1; echo "fin du client : $?" >> /tmp/client.log ) || true
+          grep -nE "dohy-shots|ERROR|Exception|Caused by|OpenGL|GL_|Vulkan|fin du client|BUILD|[Ff]lywheel|[Cc]rankshaft|anillin" /tmp/client.log | grep -v DEBUG | head -400
+          ls -la run/screenshots || true
+      - name: Pousser
+        if: always()
+        run: |
+          mkdir out && cp run/screenshots/*.png out/ 2>/dev/null || true
+          cp /tmp/client.log out/client.log 2>/dev/null || true
+          cp /tmp/server.log out/server.log 2>/dev/null || true
+          cd out
+          git init -q && git checkout -q -b shots-out && git add .
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "shots ${GITHUB_SHA}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" shots-out
