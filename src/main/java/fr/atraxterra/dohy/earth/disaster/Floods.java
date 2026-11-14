@@ -14,18 +14,20 @@ import net.minecraft.world.level.material.FluidState;
  * d'un seul tenant, sans cube d'eau qui flotte.
  *
  * <p>Au-dessus de l'eau d'origine (la mer, la riviere, le lac), le niveau ne
- * monte que pres de la rive, et le bord vers le large descend en marches puis
- * en pente : une eau courante figee, a mi-hauteur. Sur la terre, un bloc d'eau
- * ne se pose que sur un sol plein ou sur de l'eau, a cote d'une eau au meme
- * niveau, ou dans un creux d'un bloc a cote d'une eau juste au-dessus.
+ * monte que pres de la rive — la terre qui depasse de l'eau, pas un banc de
+ * sable a fleur d'eau —, de proche en proche depuis le bord, et la nappe
+ * descend vers le large en marches puis en pente : une eau courante figee, a
+ * mi-hauteur. Sur la terre, un bloc d'eau ne se pose que sur un sol plein ou
+ * sur de l'eau, a cote d'une eau au meme niveau, ou dans un creux d'un bloc a
+ * cote d'une eau juste au-dessus.
  *
  * <p>L'eau posee ne coule pas (elle n'est pas reveillee) : elle reste ou on la
  * met, et repart quand la catastrophe passe.
  */
 final class Floods {
 
-    /** Jusqu'a combien de blocs de la rive monte la premiere marche. */
-    static final int BAND = 3;
+    /** Jusqu'a combien de blocs de la rive monte la marche du haut. */
+    static final int BAND = 4;
     static final BlockState SOURCE = Blocks.WATER.defaultBlockState();
     /** Le bord en pente : une eau courante a mi-hauteur. */
     static final BlockState EDGE = Blocks.WATER.defaultBlockState().setValue(BlockStateProperties.LEVEL, 4);
@@ -51,27 +53,45 @@ final class Floods {
                 .is(FluidTags.WATER);
     }
 
+    /** Vrai si ce bloc porte : de la terre ou de la roche, pas une plante, un nenuphar ou de la neige. */
+    static boolean land(ServerLevel level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        return state.getFluidState().isEmpty() && state.isFaceSturdy(level, pos, Direction.UP);
+    }
+
     /**
-     * La distance de la rive : la terre la plus proche, a la hauteur de l'eau
-     * d'origine, en blocs (le plus grand ecart sur x ou z), au plus max ; max + 1
-     * s'il n'y en a pas.
+     * La distance de la rive : la terre la plus proche qui depasse de l'eau
+     * d'origine (un bloc au-dessus de son niveau), en blocs (le plus grand ecart
+     * sur x ou z), au plus max ; max + 1 s'il n'y en a pas. Un banc de sable a
+     * fleur d'eau n'est pas une rive : la mer ne monte pas en plateau autour.
      */
     static int bank(ServerLevel level, int x, int surface, int z, int max) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int d = 0; d <= max; d++) {
             for (int dx = -d; dx <= d; dx++) {
                 for (int dz = -d; dz <= d; dz++) {
-                    if (Math.max(Math.abs(dx), Math.abs(dz)) != d) {
-                        continue;
-                    }
-                    BlockState state = level.getBlockState(pos.set(x + dx, surface, z + dz));
-                    if (!state.isAir() && state.getFluidState().isEmpty()) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) == d && land(level, pos.set(x + dx, surface + 1, z + dz))) {
                         return d;
                     }
                 }
             }
         }
         return max + 1;
+    }
+
+    /**
+     * Vrai si l'eau qui monte ici tient a quelque chose au meme niveau : une eau
+     * deja montee, la terre, ou le bord de l'eau (de la terre juste en dessous,
+     * a cote). Ainsi la nappe part du rivage et gagne le large, jamais l'inverse.
+     */
+    static boolean anchored(ServerLevel level, BlockPos pos) {
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            BlockPos side = pos.relative(direction);
+            if (source(level, side) || land(level, side) || land(level, side.below())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -82,7 +102,7 @@ final class Floods {
     static BlockState over(ServerLevel level, BlockPos pos, int surface, int rise) {
         int k = pos.getY() - surface;
         if (k < 1 || k > rise || !overWater(level, pos, surface) || !free(level, pos)
-                || !source(level, pos.below())) {
+                || !source(level, pos.below()) || !anchored(level, pos)) {
             return null;
         }
         int reach = BAND + rise - k;

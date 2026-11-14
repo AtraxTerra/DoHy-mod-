@@ -71,6 +71,8 @@ final class Hurricane extends Disaster {
     private final Map<UUID, Double> closest = new HashMap<>();
     private final Set<UUID> wrecked = new HashSet<>();
     private final List<BlockPos> surge = new ArrayList<>();
+    /** La maree au plus, en blocs d'eau. */
+    private static final int SURGE = 12000;
     /** La derniere epave echouee, ou {@code null}. */
     BlockPos wreckAt;
     private int stripped;
@@ -512,6 +514,10 @@ final class Hurricane extends Disaster {
      * un bord en pente vers le large, et deborde sur la terre de proche en proche.
      */
     private void flood(ServerLevel level, ServerPlayer player) {
+        // assez d'eau pour une longue cote ; au-dela, la mer ne monte plus
+        if (surge.size() >= SURGE) {
+            return;
+        }
         int surface = level.getSeaLevel() - 1;
         int rise = category <= 2 ? 1 : category <= 4 ? 2 : 3;
         int top = surface + rise;

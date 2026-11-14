@@ -29,7 +29,7 @@ import java.util.Map;
  * douze minutes, puis se calme.
  *
  * <p>Les rivieres, les lacs et la mer montent d'un bloc sur leurs berges, de
- * deux dans la seconde moitie de l'averse (1 500 blocs d'eau au plus). Quand
+ * deux dans la seconde moitie de l'averse (2 500 blocs d'eau au plus). Quand
  * l'averse se calme, l'eau se retire en deux minutes et laisse du limon sur
  * les berges — de la boue et de l'argile — jusqu'au retour du terrain.
  */
@@ -38,7 +38,9 @@ final class Monsoon extends Disaster {
     static final double RADIUS = 160.0d;
     private static final int BUILD = 60 * 20;
     private static final int RECEDE = 2 * 60 * 20;
-    private static final int LIMIT = 1500;
+    /** L'eau posee au plus : 1 500 blocs pendant la premiere moitie de l'averse, 2 500 en tout. */
+    private static final int LIMIT = 2500;
+    private static final int FIRST = 1500;
 
     final DisasterConfig.PlacedMonsoon region;
     private final int rain;
@@ -47,6 +49,8 @@ final class Monsoon extends Disaster {
     private final Map<BlockPos, Integer> base = new HashMap<>();
     private int silt;
     private int receded;
+    /** Le plafond du moment (voir LIMIT). */
+    private int cap = FIRST;
 
     Monsoon(int id, DisasterConfig.PlacedMonsoon region, double x, double z, RandomSource random) {
         super(id, DisasterKind.MONSOON, "Pluies de mousson", region.monsoon().name(), x, z, random);
@@ -142,14 +146,15 @@ final class Monsoon extends Disaster {
      * de proche en proche. Jamais de nappe au milieu d'un lac : l'eau va ou on la voit.
      */
     private void rise(ServerLevel level, ServerPlayer player) {
-        if (base.size() >= LIMIT) {
+        int rise = ticks < BUILD + rain / 2 ? 1 : 2;
+        cap = rise == 1 ? FIRST : LIMIT;
+        if (base.size() >= cap) {
             return;
         }
-        int rise = ticks < BUILD + rain / 2 ? 1 : 2;
         DisasterTerrain.Ledger ledger = ledger();
         ArrayDeque<BlockPos> grown = new ArrayDeque<>();
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        for (int attempt = 0; attempt < 32 && base.size() < LIMIT; attempt++) {
+        for (int attempt = 0; attempt < 32 && base.size() < cap; attempt++) {
             int bx = (int) Math.floor(player.getX() + random.nextInt(81) - 40);
             int bz = (int) Math.floor(player.getZ() + random.nextInt(81) - 40);
             int top = level.getHeight(Heightmap.Types.MOTION_BLOCKING, bx, bz) - 1;
@@ -159,7 +164,7 @@ final class Monsoon extends Disaster {
             }
         }
         // l'eau gagne de proche en proche autour de ce qui vient de monter
-        for (int step = 0; step < 48 && !grown.isEmpty() && base.size() < LIMIT; step++) {
+        for (int step = 0; step < 48 && !grown.isEmpty() && base.size() < cap; step++) {
             BlockPos water = grown.poll();
             if (Math.abs(water.getX() - player.getX()) <= 56.0d && Math.abs(water.getZ() - player.getZ()) <= 56.0d
                     && Floods.source(level, water) && level.getBlockState(water.above()).isAir()) {
@@ -193,7 +198,7 @@ final class Monsoon extends Disaster {
 
     private void place(ServerLevel level, DisasterTerrain.Ledger ledger, BlockPos pos, BlockState water, int surface,
             int rise, ArrayDeque<BlockPos> grown) {
-        if (water == null || pos.getY() > surface + rise || base.size() >= LIMIT || base.containsKey(pos)) {
+        if (water == null || pos.getY() > surface + rise || base.size() >= cap || base.containsKey(pos)) {
             return;
         }
         if (DisasterTerrain.set(level, ledger, pos, water, DisasterTerrain.FLAGS)) {
