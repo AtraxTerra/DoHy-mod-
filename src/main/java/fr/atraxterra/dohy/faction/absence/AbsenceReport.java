@@ -11,6 +11,7 @@ import fr.atraxterra.dohy.faction.FactionNotation;
 import fr.atraxterra.dohy.faction.Factions;
 import fr.atraxterra.dohy.faction.event.FactionEventKind;
 import fr.atraxterra.dohy.faction.market.WorldMarket;
+import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import fr.atraxterra.dohy.util.RealClock;
 import net.minecraft.ChatFormatting;
@@ -23,6 +24,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -383,7 +385,9 @@ public final class AbsenceReport {
             if (Math.abs(to - from) < 0.01d) {
                 break;
             }
-            nations.add(new AbsenceData.Line(good, WorldMarket.name(good), List.of(
+            // le nom traduit chez le joueur : un serveur dedie ne connait que l'anglais
+            Item item = BuiltInRegistries.ITEM.getOptional(good).orElse(Items.PAPER);
+            nations.add(new AbsenceData.Line(good, MenuView.text(new ItemStack(item).getHoverName()), List.of(
                     (to > from ? "En hausse : " : "En baisse : ") + WorldMarket.percent(from) + " > "
                             + WorldMarket.percent(to)), to > from ? 0xFF55FF55 : 0xFFFF5555, "market"));
         }
