@@ -314,6 +314,9 @@ public class GuardianGolem extends PathfinderMob {
                 (target, world) -> isHostileTo(target)));
         targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, GuardianGolem.class, true,
                 (target, world) -> isHostileTo(target)));
+        // Les soldats des nations rivales venus assieger la base (lot 22l).
+        targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this,
+                fr.atraxterra.dohy.faction.war.Soldier.class, true, (target, world) -> isHostileTo(target)));
     }
 
     /** {@code EntityAIGuardian.shouldExecute}, et qui le golem fou attaque : tout le monde. */

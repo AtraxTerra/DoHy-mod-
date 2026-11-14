@@ -22,6 +22,7 @@
   "tooltip.dohy.climate.hot": "Hot climate: jungle, savanna, desert",
   "tooltip.dohy.climate.gmo": "GMO: grows anywhere, never gives seeds back",
   "entity.dohy.tractor": "Tractor",
+  "entity.dohy.soldier": "Soldier",
   "item.dohy.tractor": "Tractor",
   "item.dohy.tractor_plow": "Plow",
   "item.dohy.tractor_seeder": "Seeder",

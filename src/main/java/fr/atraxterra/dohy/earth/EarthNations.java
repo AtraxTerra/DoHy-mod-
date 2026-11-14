@@ -1051,6 +1051,10 @@ public final class EarthNations {
         }
         save(player, nation);
         String name = countryName(country);
+        if (!from.player() && from.rival() >= 0) {
+            // La nation depossedee s'en souviendra (lot 22l).
+            fr.atraxterra.dohy.faction.war.WarStrategy.grieve(player, from.rival(), "pays pris : " + name, 25.0d);
+        }
         player.connection.send(new ClientboundSetTitlesAnimationPacket(10, 70, 20));
         player.connection.send(new ClientboundSetTitleTextPacket(Component.literal(name)
                 .withStyle(ChatFormatting.GOLD)));
