@@ -1462,10 +1462,18 @@
       "title": "Le clicker",
       "card": [
         "Nourris les namuus",
-        "Le Clic Shop"
+        "Meme deconnecte"
       ],
       "summary": [
         "Le clicker de Paladium : nourris les namuus, achete des batiments et des ameliorations, et depense tes ClicCoins au Clic Shop."
+      ],
+      "sections": [
+        {
+          "title": "Meme deconnecte",
+          "text": [
+            "Tes batiments produisent aussi quand tu n'es pas la, serveur eteint compris : a la connexion, toute l'absence est payee au rythme de tes batiments (trente jours au plus), et le chat te dit combien."
+          ]
+        }
       ],
       "commands": [
         "/clicker : ouvrir le clicker"

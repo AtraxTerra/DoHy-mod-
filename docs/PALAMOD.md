@@ -2595,7 +2595,7 @@ offres tournantes du Clic Shop. `/clicker`, ou la carte « Clicker » du menu.
 | Valeur d'un clic | `1 × (1 + somme des améliorations du clic)` : 1, 2, 4… jusqu'à 2²⁵ | `PlayerClickerData.getClickValue` |
 | Cadence | un clic par 50 ms au plus (vingt par seconde) | `BBPacketClickerClick` |
 | Production d'un bâtiment | `0,1 × 1,8^rang × exemplaires × (1 + somme de ses améliorations)` par seconde | `ClickerBuilding.getRPS`, `PlayerClickerData.getRPS` |
-| Production totale | 0,5 par seconde, plus les bâtiments ; seulement en jeu | `ClickerTask` |
+| Production totale | 0,5 par seconde, plus les bâtiments ; seulement en jeu chez Paladium, **aussi hors ligne dans DoHy** (voir plus bas) | `ClickerTask` |
 | Prix d'un bâtiment | prix de base × 1,1^exemplaires, 99 exemplaires au plus | `ClickerBuilding.getPrice`, `CSPacketClickerBuildingBuy` |
 | Prix d'une offre | prix + un tiers du prix par achat déjà fait | `ClickerShopItem.getPrice` |
 | Rayons du Clic Shop | semaine : 8 offres, 168 h ; jour : 4 offres, 24 h ; métier : 4 offres, 168 h | `ClickerShopType` |
@@ -2613,6 +2613,17 @@ Les sept types d'amélioration (`ClickerUpgrade.apply`) et leurs conditions
 | Production nombreuse (35) | +1 % par exemplaire | 7 |
 | Production postérieure (26) | +1 % par exemplaire du bâtiment précédent | 4 |
 | Amélioration de catégorie (25) | +50 % | un de chaque bâtiment de la catégorie |
+
+### La production hors ligne (DoHy, 2026-11-14)
+
+Demandé par le joueur : « modifie le clicker pour qu'il fonctionne même joueur déconnecté ». Chez
+Paladium, `ClickerTask` ne crédite que les joueurs connectés. Dans DoHy, la production est **versée à
+la seconde réelle** : le clicker garde jusqu'à quelle seconde elle est payée (`paid`), chaque seconde
+de jeu verse ce qui s'est écoulé (un serveur qui rame ne la ralentit plus), et **à la connexion
+toute l'absence est rattrapée** au rythme des bâtiments, serveur éteint compris — **trente jours au
+plus**, garde-fou contre une horloge qui saute. Le chat dit ce que l'absence a rapporté (au-delà
+d'une minute). Un clicker d'avant ce changement repart de la première connexion qui suit : rien
+n'est versé pour le temps d'avant.
 
 ### Les tables — reconstituées
 

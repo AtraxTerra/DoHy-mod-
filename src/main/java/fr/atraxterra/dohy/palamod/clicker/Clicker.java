@@ -10,6 +10,8 @@ import fr.atraxterra.dohy.palamod.clicker.ClickerConfig.ShopType;
 import fr.atraxterra.dohy.palamod.clicker.ClickerConfig.Upgrade;
 import fr.atraxterra.dohy.palamod.clicker.ClickerConfig.UpgradeType;
 import fr.atraxterra.dohy.ui.view.UiNet;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.ArrayList;
@@ -41,15 +44,19 @@ import java.util.Locale;
  *       ameliorations)} par seconde, ou {@code base = 0,1 x 1,8 ^ rang}
  *       ({@code PlayerClickerData.getRPS}) ;</li>
  *   <li>la production totale part de 0,5 par seconde ({@code ClickerTask}) et
- *       ne tourne que pour un joueur connecte ;</li>
+ *       ne tourne, chez Paladium, que pour un joueur connecte ;</li>
  *   <li>un exemplaire de plus coute 10 % de plus, 99 au plus par batiment ;
  *       une offre du Clic Shop, un tiers de plus a chaque achat.</li>
  * </ul>
  *
- * <p>Deux ecarts. La production ne commence qu'a la premiere ouverture du
+ * <p>Trois ecarts. La production ne commence qu'a la premiere ouverture du
  * clicker (l'original credite 0,5 par seconde a tout joueur connecte, meme
- * s'il ne l'ouvre jamais). Et il faut posseder un batiment pour acheter le
+ * s'il ne l'ouvre jamais). Il faut posseder un batiment pour acheter le
  * suivant : l'original ne le cachait que dans l'ecran, le serveur l'acceptait.
+ * Et <b>la production tourne aussi joueur deconnecte</b> (demande du joueur,
+ * 2026-11-14) : elle est versee a la seconde reelle, et a la connexion tout
+ * le temps d'absence est rattrape au rythme des batiments, serveur eteint
+ * compris — trente jours au plus, garde-fou contre une horloge qui saute.
  */
 @EventBusSubscriber
 public final class Clicker {
@@ -64,6 +71,10 @@ public final class Clicker {
     private static final int REFRESH_TICKS = 60;
     /** Les ameliorations montrees a la fois : les pretes d'abord, puis les moins cheres. */
     private static final int MAX_UPGRADES_SHOWN = 42;
+    /** Le rattrapage d'une absence s'arrete la : trente jours (une horloge qui saute ne paie pas des annees). */
+    private static final long MAX_CATCH_UP = 30L * 86_400L;
+    /** En dessous, une absence ne merite pas de message. */
+    private static final long REPORTED_ABSENCE = 60L;
 
     private Clicker() {
     }
@@ -163,6 +174,35 @@ public final class Clicker {
         data.rpsAt = now();
     }
 
+    /**
+     * Verse la production jusqu'a maintenant : les secondes reelles ecoulees
+     * depuis le dernier versement, au rythme actuel des batiments. En jeu,
+     * c'est une seconde a chaque fois (le serveur qui rame ne la ralentit
+     * plus) ; a la connexion, c'est toute l'absence. Rend les secondes versees.
+     */
+    static long settle(ServerPlayer player, ClickerData data) {
+        if (data.isEmpty()) {
+            return 0L;
+        }
+        long now = now();
+        if (data.paid <= 0L || data.paid > now) {
+            // un clicker d'avant la production hors ligne, ou une horloge revenue en arriere
+            data.paid = now;
+            return 0L;
+        }
+        long elapsed = Math.min(MAX_CATCH_UP, now - data.paid);
+        data.paid = now;
+        if (elapsed <= 0L) {
+            return 0L;
+        }
+        if (data.rps < 0.0d || now - data.rpsAt >= 60L) {
+            recompute(player, data);
+        }
+        data.rpsByBuilding.forEach((id, rps) -> data.production.merge(id, rps * elapsed, Double::sum));
+        data.add(data.rps * elapsed);
+        return elapsed;
+    }
+
     /** Une fois par seconde : la production des batiments de chaque joueur dont le clicker a servi. */
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
@@ -175,15 +215,60 @@ public final class Clicker {
             if (data == null || data.isEmpty()) {
                 continue;
             }
-            if (data.rps < 0.0d || now() - data.rpsAt >= 60L) {
-                recompute(player, data);
-            }
-            data.rpsByBuilding.forEach((id, rps) -> data.production.merge(id, rps, Double::sum));
-            data.add(data.rps);
+            settle(player, data);
             if (tick % REFRESH_TICKS == 0 && UiNet.isOpen(player, ClickerView.ID)) {
                 UiNet.show(player, view(player, data));
             }
         }
+    }
+
+    /**
+     * A la connexion : ce que les namuus ont rapporte pendant l'absence, au
+     * rythme des batiments (recalcule d'abord : un niveau de metier peut avoir
+     * change le bonus de terrain).
+     */
+    @SubscribeEvent
+    public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        ClickerData data = player.getExistingDataOrNull(DoHyAttachments.CLICKER.get());
+        if (data == null || data.isEmpty()) {
+            return;
+        }
+        recompute(player, data);
+        double before = data.points;
+        long away = settle(player, data);
+        if (away >= REPORTED_ABSENCE) {
+            player.sendSystemMessage(Component.literal("[Clicker] ").withStyle(ChatFormatting.GOLD)
+                    .append(Component.literal("Pendant ton absence (" + duration(away) + "), tes namuus ont rapporte "
+                            + ClickerFormat.compact(data.points - before) + " ClicCoins (" + ClickerFormat.rate(data.rps)
+                            + " par seconde).").withStyle(ChatFormatting.YELLOW)));
+        }
+    }
+
+    /** A la deconnexion : la production versee jusqu'a la derniere seconde. */
+    @SubscribeEvent
+    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            ClickerData data = player.getExistingDataOrNull(DoHyAttachments.CLICKER.get());
+            if (data != null && !data.isEmpty()) {
+                settle(player, data);
+            }
+        }
+    }
+
+    /** « 3 h 12 », « 2 j 4 h », « 45 min ». */
+    static String duration(long seconds) {
+        long minutes = seconds / 60L;
+        if (minutes < 60L) {
+            return Math.max(1L, minutes) + " min";
+        }
+        long hours = minutes / 60L;
+        if (hours < 24L) {
+            return hours + " h " + String.format(Locale.ROOT, "%02d", minutes % 60L);
+        }
+        return hours / 24L + " j " + hours % 24L + " h";
     }
 
     // -- Ecran et actions ------------------------------------------------------
@@ -195,8 +280,10 @@ public final class Clicker {
         ClickerData data = data(player);
         if (data.started == 0L) {
             data.started = now();
+            data.paid = data.started;
         }
         recompute(player, data);
+        settle(player, data);
         UiNet.show(player, view(player, data));
     }
 

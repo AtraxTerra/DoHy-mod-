@@ -189,6 +189,20 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-14 (suite) — le clicker tourne joueur déconnecté
+
+**Demande** : « Modifie le clicker pour qu'il fonctionne même joueur déconnecté » (pendant le lot 3,
+livré à part).
+
+**Fait** (`feat/clicker-hors-ligne`) : la production du clicker est versée à la seconde réelle
+(`ClickerData.paid`, sauvegardé) ; chaque seconde de jeu verse le temps écoulé, la connexion rattrape
+toute l'absence au rythme des bâtiments (serveur éteint compris, trente jours au plus) et l'annonce
+dans le chat (« Pendant ton absence (3 h 12), tes namuus ont rapporte … ClicCoins ») ; la
+déconnexion verse jusqu'à la dernière seconde. La fiche de l'encyclopédie et PALAMOD.md (§ 31) le
+disent.
+
+**Non vérifié en jeu** : une vraie absence sur le serveur dédié.
+
 ### 2026-11-14 (suite) — pass mensuel et marché noir
 
 **Demande** : le deuxième des trois lots (« Super passe au lot 2 ») : le **pass mensuel** (thème du
