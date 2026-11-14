@@ -257,7 +257,7 @@ public final class AbsenceReport {
 
     // -- Le retour ----------------------------------------------------------------------------
 
-    private static void arrive(ServerPlayer player) {
+    static void arrive(ServerPlayer player) {
         AbsenceData data = player.getData(Factions.ABSENCE.get());
         CatchUp caught = CAUGHT_UP.remove(player.getUUID());
         SIGNATURES.put(player.getUUID(), KeptBases.signature(FactionApi.data(player)));
