@@ -82,6 +82,10 @@ public final class OfflineCatchUp {
         long interest = Bank.accrue(player, elapsed);
         int restored = forget(player, elapsed);
 
+        // revenu apres plus d'une demi-heure avec un releve de depart : le rapport d'absence s'en charge
+        if (fr.atraxterra.dohy.faction.absence.AbsenceReport.catchUp(player, interest, restored)) {
+            return;
+        }
         if (elapsed < WORTH_REPORTING_MINUTES || (interest <= 0 && restored == 0)) {
             return;
         }

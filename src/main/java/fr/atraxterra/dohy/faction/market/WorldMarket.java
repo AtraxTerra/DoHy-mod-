@@ -398,7 +398,8 @@ public final class WorldMarket {
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
         MinecraftServer server = event.getServer();
-        if (++ticks < 20 * 60 || server.getPlayerList().getPlayers().isEmpty()) {
+        // le marche vit aussi quand personne n'est la : le rapport d'absence raconte ce qu'ont fait les nations
+        if (++ticks < 20 * 60) {
             return;
         }
         ticks = 0;
@@ -462,6 +463,9 @@ public final class WorldMarket {
             news.remove(news.size() - 1);
         }
         save(server, stocks, news, 0);
+        fr.atraxterra.dohy.faction.absence.AbsenceJournal.post(server,
+                fr.atraxterra.dohy.faction.absence.AbsenceJournal.NATIONS, line,
+                BuiltInRegistries.ITEM.getOptional(id).orElse(net.minecraft.world.item.Items.PAPER));
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (FactionApi.has(player)) {
                 player.sendSystemMessage(Component.literal("[Marche] ").withStyle(ChatFormatting.AQUA)

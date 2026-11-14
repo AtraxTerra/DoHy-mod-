@@ -525,6 +525,10 @@ public final class EnemyBaseRegen {
             LOGGER.info("Terrain de la base des {} ({}) revenu : {} blocs reposes, {} a la seconde passe, {} chunks "
                             + "revendiques laisses, en {} ms sur {} ticks", pending.name, pending.key, changed, again,
                     kept, nanos / 1_000_000L, ticks);
+            fr.atraxterra.dohy.faction.absence.AbsenceJournal.post(server,
+                    fr.atraxterra.dohy.faction.absence.AbsenceJournal.WORLD, "La base des " + pending.name
+                            + " s'est effacee : le terrain a repris ses droits",
+                    net.minecraft.world.item.Items.MOSSY_COBBLESTONE);
             ServerPlayer player = pending.player == null ? null : server.getPlayerList().getPlayer(pending.player);
             if (player != null) {
                 EnemyBase base = EnemyBases.of(player);

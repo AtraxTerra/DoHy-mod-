@@ -919,17 +919,23 @@ l'heure retenue : `Horloge DoHy : Europe/Paris (13/11 17:42), machine en UTC`.
 ### La pause d'un serveur vide
 
 Par défaut, un serveur se met en pause une minute après le départ du dernier joueur
-(`pause-when-empty-seconds=60` dans `server.properties`) ; `-1` la désactive. Pour DoHy, ça
-change peu :
+(`pause-when-empty-seconds=60` dans `server.properties`). **Depuis le 2026-11-14, la base tourne
+sans toi** (`docs/FACTION.md`, lot 22k) : tant qu'une base de faction est tenue chargée, DoHy
+empêche cette pause, quel que soit le réglage — sans quoi plus rien ne tournerait la nuit. Sans
+faction ni claim, le réglage s'applique comme avant.
 
-- ce qui doit avancer pendant l'absence suit déjà l'horloge réelle, pause ou pas : contrats,
-  cours du marché, intérêts d'épargne (rattrapés à la connexion), saison du trixium, classement
-  du lundi ;
-- les machines d'une base ne tournent pas sans joueur, pause ou pas : ses chunks se déchargent.
-  DoHy ne force le chargement que des donjons, de l'arène d'event et des bases ennemies en
-  reconstruction, le temps de l'action ;
-- sans pause, le temps de jeu continue : jour et nuit, météo, et les minuteries comptées en
-  ticks (la protection du Home Remover, l'amélioration du Wither) s'écoulent pendant l'absence.
+- **Les claims de ta faction restent chargés** (64 chunks au plus, les plus actifs) et tournent
+  comme si tu étais là : machines, fours, entonnoirs, champs, golem. DoHy force aussi le
+  chargement des donjons, de l'arène d'event et des bases ennemies en reconstruction, le temps
+  de l'action.
+- Ce qui suit l'horloge réelle avance comme avant : contrats, intérêts d'épargne (rattrapés à la
+  connexion), saison du trixium, classement du lundi. Le marché international vit maintenant
+  serveur vide : les nations y achètent et vendent, et le rapport d'absence le raconte.
+- Le temps de jeu continue : jour et nuit, météo, et les minuteries comptées en ticks (la
+  protection du Home Remover, l'amélioration du Wither) s'écoulent pendant l'absence.
+- Un hébergeur qui **éteint** le serveur quand il est vide (une option de certains panneaux)
+  l'arrête pour de bon : la base ne tourne alors pas, et le rapport dit combien de temps elle a
+  vraiment tourné.
 
 ### Ce qui reste pensé pour un joueur
 

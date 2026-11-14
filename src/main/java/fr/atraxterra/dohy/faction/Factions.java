@@ -61,6 +61,34 @@ public final class Factions {
                             fr.atraxterra.dohy.faction.market.WorldMarket.State::exists)
                     .build());
 
+    /**
+     * La base qui tourne sans son joueur : les claims tenus charges, par faction,
+     * sur le monde principal (le joueur hors ligne n'est pas charge).
+     */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.faction.absence.KeptBases.State>> KEPT_BASES =
+            ATTACHMENTS.register("kept_bases", () -> AttachmentType.builder(
+                            () -> fr.atraxterra.dohy.faction.absence.KeptBases.State.EMPTY)
+                    .serialize(fr.atraxterra.dohy.faction.absence.KeptBases.State.MAP_CODEC,
+                            fr.atraxterra.dohy.faction.absence.KeptBases.State::exists)
+                    .build());
+
+    /** Le journal du monde (nations, catastrophes, terrains revenus), sur le monde principal. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.faction.absence.AbsenceJournal.State>>
+            ABSENCE_JOURNAL = ATTACHMENTS.register("absence_journal", () -> AttachmentType.builder(
+                            () -> fr.atraxterra.dohy.faction.absence.AbsenceJournal.State.EMPTY)
+                    .serialize(fr.atraxterra.dohy.faction.absence.AbsenceJournal.State.MAP_CODEC,
+                            fr.atraxterra.dohy.faction.absence.AbsenceJournal.State::exists)
+                    .build());
+
+    /** Le releve de depart du joueur et son dernier rapport d'absence. Garde a la mort. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.faction.absence.AbsenceData>> ABSENCE =
+            ATTACHMENTS.register("absence", () -> AttachmentType.builder(
+                            () -> fr.atraxterra.dohy.faction.absence.AbsenceData.EMPTY)
+                    .serialize(fr.atraxterra.dohy.faction.absence.AbsenceData.MAP_CODEC,
+                            fr.atraxterra.dohy.faction.absence.AbsenceData::exists)
+                    .copyOnDeath()
+                    .build());
+
     private Factions() {
     }
 

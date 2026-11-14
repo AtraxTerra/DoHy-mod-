@@ -20,17 +20,18 @@ Dernière mise à jour : 2026-11-14
 | Mappings | mojmap, **pas de remap** |
 | Pack formats | assets **88**, data **107** (ils divergent depuis 26.x) |
 | Mod optionnel | NTM NEXT 1.0.x (26.2, NeoForge) — phase 10 |
-| Mode de jeu | **Serveur dédié qui tourne 24 h/24** (dit par le joueur le 2026-11-13) ; solo jusque-là |
+| Mode de jeu | **Serveur dédié qui tourne 24 h/24** (dit par le joueur le 2026-11-13), **joué seul** (« ma partie solo », 2026-11-14) |
 
 **Le joueur joue désormais sur un serveur dédié qui tourne 24 h/24** (dit le 2026-11-13 ; jusque-là,
-solo uniquement, dit le 2026-11-11). Seul ou avec d'autres : pas encore dit. Le mod reste pensé
+solo uniquement, dit le 2026-11-11). **Il y joue seul** (« ma partie solo », dit le 2026-11-14). Le mod reste pensé
 pour un joueur — pas de fonction qui n'a de sens qu'à plusieurs (échange entre joueurs, hôtel des
 ventes de joueurs, classements) ; quand un mod de Paladium est multijoueur par nature, on en porte
 ce qui se joue seul, ou on le remixe pour un joueur, comme la faction (chapitres 22a et 22b).
 **Ce qui change, c'est la façon d'écrire** : tout doit tourner sur un serveur dédié (rien de
 `client/` hors du client), ce qui avance hors ligne suit l'horloge réelle (`RealClock`, à l'heure
 de Paris), et ce qui touche physiquement au monde n'agit que près d'un joueur connecté — jamais
-sur une base laissée seule. Installation et réglages : `docs/CONTENU_DOHY.md`, « Sur un serveur
+sur une base laissée seule (la base, elle, tourne sans son joueur depuis le lot 22k : ce sont ses
+propres machines, dans ses claims protégés). Installation et réglages : `docs/CONTENU_DOHY.md`, « Sur un serveur
 dédié ».
 
 **Choix d'architecture : un seul module NeoForge**, pas de découpage multiloader Architectury. La cible est NeoForge uniquement ; le surcoût de scaffolding common/fabric/forge ne se rentabilise que si le mod doit sortir sur plusieurs loaders.
@@ -184,6 +185,66 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-14 (suite) — la base tourne sans toi
+
+**Demande** : « qu'ajouterais-tu pour ma partie solo ? », puis « 3 » : **ta base tourne sans toi**
+— les claims restent chargés, et un rapport à la connexion. Choix du joueur : **les claims les plus
+actifs**, **64 chunks au plus**, **un écran à la connexion**, et dans le rapport **la production,
+l'argent, les nations et le monde**. Description : `docs/FACTION.md`, lot 22k.
+
+**Fait** (`feat/base-sans-toi`) :
+- `faction/absence/KeptBases` : un `TicketController` de NeoForge (`dohy:base`, chunks « ticking »)
+  tient les claims de la faction, tous jusqu'à 64, au-delà les plus riches en blocs à données ; la
+  liste vit sur le monde principal (attachement `kept_bases`) — le joueur hors ligne n'est pas
+  chargé —, les anciens tickets sont jetés au démarrage et la liste reposée, puis recalée chaque
+  minute ; une base sans son joueur depuis 30 jours s'endort. `/f charge [on|off]`.
+- `mixin/DedicatedServerPauseMixin` (mixin « server ») : `DedicatedServer.pauseWhenEmptySeconds()`
+  répond 0 tant qu'une base est tenue.
+- `AbsenceReport` : relevé à la déconnexion et toutes les cinq minutes (attachement `absence` sur
+  le joueur : argent, contenu des coffres et machines des chunks tenus, cours du marché, ligue,
+  notation) ; à la connexion après plus de 30 min, le rapport s'écrit trois secondes plus tard
+  (après les rattrapages de la connexion), s'ouvre (`AbsenceMenu`, kit DoHy UI : vignettes
+  produit / consommé, cartes argent, nations, monde) et se résume dans le chat ; `/rapport`.
+  `OfflineCatchUp` lui passe intérêts et prix revenus au lieu de son ancien message.
+- `BaseStock` : la somme des conteneurs (`Container`) et des capacités d'objets (sans doublon de
+  multibloc, sans réseau de plus de 512 cases) des chunks tenus. `AbsenceJournal` (attachement
+  `absence_journal`) : gros lots des nations, catastrophes, terrains revenus, bases ennemies
+  effacées. Le marché international vit maintenant serveur vide.
+- `ClaimProtection` : la foudre naturelle ne tombe plus dans un claim (la base tourne la nuit sans
+  personne pour éteindre un feu).
+
+**Relu dans les jars de 26.2** (sonde) : `TicketController(Identifier, LoadingValidationCallback)`,
+`forceChunk(ServerLevel, UUID, x, z, ajout, ticking)`, `RegisterTicketControllersEvent` ;
+`ServerLevel.tick` garde le monde éveillé si `hasActiveTickets()` ou
+`ForcedChunkManager.hasForcedChunks` ; les ticks aléatoires passent par
+`ChunkMap.forEachBlockTickingChunk` ; `MinecraftServer.tickServer` se met en pause au bout de
+`pauseWhenEmptySeconds()` × 20 ticks sans joueur, sans regarder les chunks forcés, et
+`DedicatedServer` redéfinit cette méthode pour lire `server.properties` ; l'API d'objets est
+`Capabilities.Item.BLOCK` → `ResourceHandler<ItemResource>` (`size`, `getResource`,
+`getAmountAsLong`).
+
+**Vérifié en jeu** :
+- **serveur dédié de la sonde, vide** (`pause-when-empty-seconds=60`, commande d'essai qui tient un
+  chunk pour un joueur fictif) : le mixin « server » s'applique ; en 110 s sans joueur, un four
+  passe de 64 minerais de fer à 53 et sort 11 lingots, un blé passe de l'âge 0 à 7 (ticks
+  aléatoires dans le chunk tenu) ; aucune ligne « Server empty … pausing ».
+- **client de CI** (serveur intégré) : faction fondée, 4 claims, base « 4 tenus sur 4, 6 blocs à
+  données » ; joueur téléporté à 5 000 blocs deux minutes : les deux fours 63 → 51, les coffres
+  sous les entonnoirs 1 → 13 lingots, le blé à l'âge 7. Rapport (absence de 2 h 19 simulée, et le
+  rattrapage de la connexion passé au rapport) : 24 objets produits, 26 consommés, cartes Épargne
+  (+1 840 $) et Prix de vente, Marché international (4 gros lots), Lingot d'or −15 %, Poudre à
+  canon +13 % (noms traduits chez le client), Events (aucun manqué, prochain : Boss 18 h), au
+  monde le séisme de magnitude 6,8 ; le sous-titre dit que le serveur n'a tourné que 3 min de
+  l'absence (le client venait de démarrer). `/f charge` et `/rapport` justes.
+- Deux pièges de la capture, pas du code : le relevé périodique (toutes les cinq minutes, joueur
+  connecté) écrasait le départ simulé — la capture tient le joueur « absent » ; et
+  `/catastrophes admin seisme` refuse une distance de plus de 200 blocs.
+
+**Non vérifié en jeu** : une vraie déconnexion suivie d'une reconnexion sur le serveur de
+Minestrator (le rapport a été écrit par les mêmes fonctions, appelées par la capture) ; une base de
+plus de 64 claims (le tri par machines et coffres) ; une base avec des machines de NTM ou de Create
+(lues par la capacité d'objets) ; la foudre refusée dans un claim.
 
 ### 2026-11-14 — les catastrophes de la Terre
 
