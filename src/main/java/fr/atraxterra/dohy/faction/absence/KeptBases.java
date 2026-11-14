@@ -142,7 +142,7 @@ public final class KeptBases {
         long now = System.currentTimeMillis();
         for (Base base : state(server).bases()) {
             if (base.awake(now)) {
-                apply(server, base);
+                hold(server, base);
             } else if (HELD.containsKey(base.owner())) {
                 DoHy.LOGGER.info("Base de {} endormie : {} jours sans son joueur", base.name(), ASLEEP_DAYS);
                 release(server, base.owner());
@@ -205,7 +205,7 @@ public final class KeptBases {
         int chunks = 0;
         for (Base base : state(server).bases()) {
             if (base.awake(now)) {
-                apply(server, base);
+                hold(server, base);
                 bases++;
                 chunks += base.kept();
             }
@@ -280,7 +280,7 @@ public final class KeptBases {
             bases.add(base);
         }
         save(server, bases);
-        apply(server, base);
+        hold(server, base);
         return base;
     }
 
@@ -304,7 +304,7 @@ public final class KeptBases {
     }
 
     /** Fait coller les tickets a la base : ajoute les nouveaux chunks tenus, lache les autres. */
-    private static void apply(MinecraftServer server, Base base) {
+    private static void hold(MinecraftServer server, Base base) {
         UUID owner = base.owner();
         Set<Spot> held = HELD.computeIfAbsent(owner, key -> new HashSet<>());
         Set<Spot> wanted = new HashSet<>();
