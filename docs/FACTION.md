@@ -254,52 +254,106 @@ ou `/f base generer [1-3] [genre]`), une faction ennemie fictive bâtit une plac
   distributeurs tirent les dynamites et allument les TNT de PalaMod (grosse, endium, éponge, effet,
   wither) comme la TNT vanilla : les canons à TNT marchent avec toutes. Les
   explosions et les withers y cassent tout ; le seau extrapolé et le pistolet à liquide y travaillent.
-  Ses pièges frappent l'assaillant.
+  Ses pièges — et, avec NTM NEXT, ses tourelles, ses mines et ses barbelés — frappent l'assaillant.
 - **Entrer dans la salle des coffres, c'est l'avoir pillée** : ELO, argent à la banque de
   faction, et ses claims tombent — les coffres s'ouvrent. Compteurs `raid:base` et `raid:<taille>`.
 - **Abandonner** (`/f base abandonner`, deux clics dans l'onglet) l'oublie, sans récompense.
 - **Cinq minutes après la fin du raid** (pillage ou abandon), la base s'efface et **le terrain revient
   tel qu'il était** — voir plus bas.
 
-### La refonte : trois tailles, cinq genres
+### Trois tailles, quatre genres militaires (refonte du 2026-11-13)
 
 La **taille** fixe l'enceinte, la **récompense** et le nombre de défenseurs ; le **genre** fixe ce qu'il y
-a entre les murs et la façon d'atteindre les coffres. Le genre se choisit dans l'onglet (« Au hasard »
-par défaut) ou en dernier argument de la commande (`citadelle`, `ferme`, `entrepot`, `usine`,
-`vitrine`).
+a entre les murs, la couleur du béton et la façon d'atteindre les coffres. Le genre se choisit dans
+l'onglet (« Au hasard » par défaut) ou en dernier argument de la commande (`silo`, `bunker`,
+`sovietique`, `radar`). La refonte du 2026-11-13 a remplacé les cinq genres d'avant (citadelle, domaine
+agricole, entrepôt, usine, démonstration de force) par des bases militaires ; **le système de raid, lui,
+n'a pas bougé** : mêmes couches, mêmes tailles, même salle des coffres. Une base d'avant la refonte
+encore en cours s'affiche comme une forteresse soviétique.
 
 | Taille | Emprise, claims | Enceintes | Salle forte | Défenseurs | Récompense |
 |--------|-----------------|-----------|-------------|------------|------------|
-| Avant-poste | 61 × 61, 9 × 9 chunks | une : pierre · eau · pierre, 8 de haut, douve d'eau | 3 couches : pierre · eau · obsidienne | 22 à 29 | +150 ELO, 40 000 $ |
-| Base | 93 × 93, 11 × 11 chunks | deux : obsidienne · eau · obsidienne piégée · renforcée (11 de haut), puis pierre · eau · renforcée ; douve et fossé de Fake Water, rang de spikes en diamant | 5 couches : renforcée · eau · obsidienne · boom · pierre | 52 à 66 | +500 ELO, 200 000 $ |
-| Forteresse | 129 × 129, 13 × 13 chunks | deux : renforcée · eau · piégée · obsidienne · eau · renforcée (15 de haut), puis renforcée · eau · piégée · obsidienne ; douve de Fake Water, fossé de lave, rang de spikes en titane | 7 couches : renforcée · eau · enclumes en paladium et anti-aggro · obsidiennes à wither · eau · mega boom · blackstone | 77 à 93 | +1 500 ELO, 800 000 $ |
+| Avant-poste | 61 × 61, 9 × 9 chunks | une : béton · eau · béton, 8 de haut, fossé d'eau | 3 couches : béton · eau · obsidienne | une trentaine | +150 ELO, 40 000 $ |
+| Base | 93 × 93, 11 × 11 chunks | deux : obsidienne · eau · obsidienne piégée · renforcée (11 de haut), puis béton · eau · renforcée, chacune entre deux parements de béton ; fossé et douve de Fake Water, rang de barbelés | 5 couches : renforcée · eau · obsidienne · boom · béton | une cinquantaine | +500 ELO, 200 000 $ |
+| Forteresse | 129 × 129, 13 × 13 chunks | deux : renforcée · eau · piégée · obsidienne · eau · renforcée (15 de haut), puis renforcée · eau · piégée · obsidienne, entre deux parements ; douve de Fake Water, fossé de lave, rang de barbelés empoisonnés | 7 couches : renforcée · eau · enclumes en paladium et anti-aggro · obsidiennes à wither · eau · mega boom · blackstone | quatre-vingts environ | +1 500 ELO, 800 000 $ |
+
+Le béton est du **béton du jeu** (et du grès pour la base radar) : il se casse à la TNT comme la pierre
+qu'il remplace, et les parements s'ajoutent aux couches sans en retirer — une base n'est pas plus
+facile qu'avant. Le béton de NTM, presque insensible aux explosifs, n'est jamais employé.
 
 Le plan commun, du dehors au dedans :
 
-- une **douve** et un pont devant une **porterie** à herse, au nord ;
+- un **fossé** en eau et un pont d'asphalte bordé de grillage, devant la **porterie** au nord : la
+  porte blindée coulissante de NTM (une herse sans le mod) entre deux miradors, un linteau, un seuil
+  rayé ;
 - l'**enceinte** à couches : de l'eau est prise entre deux murs, donc une TNT qui perce le premier mur
-  explose ensuite dans l'eau sans rien casser ; il faut vider l'eau (seau extrapolé, TNT éponge). Des
-  **tours** d'angle, et des tours de courtine à partir de la base, portent des pillards ;
+  explose ensuite dans l'eau sans rien casser ; il faut vider l'eau (seau extrapolé, TNT éponge).
+  Dessus, un **chemin de ronde de béton**, un parapet et du **barbelé**. Des **miradors** d'angle, et
+  de courtine à partir de la base : un fût de béton plein à bandes, un toit-terrasse à grillage, un
+  garde, le drapeau du genre, un **projecteur halogène** allumé par un levier ; leur tourelle est sur
+  un **balcon de tir** à leur pied ;
 - l'anneau des **quartiers** : des terrains d'une quinzaine de blocs, tirés au sort, où le genre pose
-  ses bâtiments ;
-- à partir de la base, une **seconde enceinte**, un fossé et un rang de spikes ;
+  ses bâtiments, dont ses **nids de mitrailleuse** ;
+- derrière la porterie, un **bastion** de béton et d'obsidienne renforcée en travers de l'allée ;
+- à partir de la base, une **seconde enceinte**, un fossé et un rang de barbelés ;
 - la **salle forte**, à couches sur ses six faces, dessous compris.
 
-| Genre | Quartiers | Où sont les coffres |
-|-------|-----------|---------------------|
-| **Citadelle** | casernes à spawner, cours à spikes, armurerie, poudrière (TNT, grosse TNT, TNT en endium à la forteresse), forge (palaforge, four en paladium), écurie | donjon au centre, au niveau du sol, coiffé de créneaux et d'une balise |
-| **Domaine agricole** | champs des quatre cultures (kiwano, aubergine, cerfeuil, orangeblue) irrigués, sous des **totems de fertilité**, serres, buissons d'XP, silos (cuves, tonneaux), étable | cave à couches **sous** la grande grange : il faut creuser |
-| **Entrepôt** | halles de tonneaux et de coffres (améthyste, titane, paladium selon la taille), silos, armurerie, réserve d'explosifs | bunker bas à **neuf cellules** : seule celle du milieu compte |
-| **Usine** | ligne de **cobblebreakers** sur trémies en paladium, halle de **crushers**, **grinder** monté (base et forteresse), **boîte à golem** montée avec ses blocs gardiens et sa machine à croquettes (base et forteresse), forge, laboratoire (extracteurs, cuves, cœur de chaudron) | bunker enterré sous la centrale aux cheminées |
-| **Démonstration de force** | pyramides de blocs à balise, galerie de trophées sous vitre de coffre-fort, spawners vides et contrôleurs, autel à wither (réceptacles), boîte à golem, poudrière | salle forte en haut d'une **ziggourat** |
+| Genre | Béton | Quartiers | Où sont les coffres |
+|-------|-------|-----------|---------------------|
+| **Silo de missiles** | blanc, bandes rayées jaune et noir | **puits de lancement** creusés dans le sol (un missile en blocs au fond, la **trappe de silo** de NTM au ras du sol), **dépôt de carburant** (cuves, échelles, canalisations, fûts, grillage), poste de tir (écrans radar), nid de mitrailleuse, caserne, armurerie, groupe électrogène, dépôt de munitions | poste de tir **enterré** sous un tablier de béton rayé et la **grande trappe** du silo : il faut creuser |
+| **Bunker** | gris, bandes vert armée | **casemates** (blockhaus à meurtrières dans un talus, tourelle sur le toit), **tranchées** (parois et caillebotis de sapin, sacs de sable, sape couverte, barbelé devant), caserne, armurerie, groupe électrogène, entrepôt, dépôt de munitions ; sol de boue et de gravier | poste de commandement **enterré** sous le **blockhaus** (talus de terre, porte de bunker, écrans radar, table des cartes, classeurs) : il faut creuser |
+| **Forteresse soviétique** | gris clair, bandes rouges | **miradors** de bois à projecteur, **garage de blindés** (un char en blocs, palaforge, établi), **place d'armes** à la grande étoile rouge, mâts à drapeau rouge, tribune sur les grands terrains, caserne, nid, armurerie, entrepôt, dépôt de munitions ; dalles de béton | **donjon de béton** au centre, au niveau du sol : fausses fenêtres, bandes rouges, **l'étoile rouge** au-dessus de la porte blindée, drapeau rouge sur le toit |
+| **Base radar** | grès, bandes bleues | **radômes** (coupoles blanches), **mât d'antennes** en treillis à feu d'obstacle, **grand radar** de NTM sur son socle, **héliport** (cercle, H, balises, manche à air), salle de contrôle, nid, caserne, groupe électrogène, entrepôt, dépôt de munitions | **salle des opérations** au niveau du sol, sous le grand radar du toit |
 
-Les grinders et les boîtes à golem sont **montés comme le veulent leurs structures** (`GrinderStructure`,
-`GolemBoxStructure`) : ce sont de vraies machines, à récupérer bloc par bloc une fois les claims tombés.
+Les **armureries** chargent des **palettes d'armement** (les caisses d'obus et de cartouches de NTM —
+jamais de munitions nucléaires — ou des flèches et des fusées sans le mod) ; leurs caisses s'empilent
+dès que le chunk tourne.
+
+### Les défenses de NTM NEXT
+
+Avec NTM NEXT installé, la base se défend avec les armes du mod (`NtmDefenses`, sans dépendance de
+compilation : tout passe par le registre et la réflexion ; sans le mod, rien de tout cela n'est posé
+et la base garde ses gardes, ses spikes et ses lanternes) :
+
+- **Des tourelles armées** : la mitrailleuse « Mister Friendly » (5,56 mm), la mitrailleuse lourde
+  « Chekhov's Gun » (.50 BMG), et à la forteresse le MASER « Maxwell » sur la salle forte. Elles ne visent
+  **que les joueurs** (ni les gardes, ni les bêtes, ni les withers), en survie ou en aventure : jamais en
+  créatif ni en spectateur. Les mitrailleuses portent à **32 blocs**, le Maxwell à **64** — moins que le
+  glacis : on peut bâtir son canon à TNT hors de leur portée.
+- **Basses, pour voir le sol** : une tourelle de NTM ne vise qu'à 30° sous l'horizon (35° pour le
+  Maxwell). Posée en haut d'un mirador, elle ne verrait personne au sol. Les tourelles sont donc sur
+  des **balcons de tir** à trois blocs du sol, au pied des miradors d'angle et de la porterie (et du
+  mirador sud de la forteresse), dans les **nids de mitrailleuse** et sur les **casemates** des
+  quartiers, et sur la salle forte : au ras du tablier du silo, aux coins du toit du blockhaus, sur
+  deux balcons du donjon ou de la station radar — sauf les Maxwell de la forteresse, en surplomb aux
+  coins du toit, assez hauts et assez longs pour tenir les quartiers.
+- **Chargées et entretenues** : batterie pleine et deux piles de munitions à la pose. Leur batterie se
+  vide en cinq secondes ; tant que la base est ta cible et que ses chunks sont chargés, elles sont
+  **rechargées toutes les deux secondes** (batterie et munitions) : il faut les **détruire** — à la
+  dynamite, au canon, au wither — ou les **éviter**. Le Maxwell ne tire que sur sa batterie.
+- **Éteintes à la fin** : la base pillée (ou abandonnée, si ses chunks sont chargés), ses tourelles
+  s'éteignent ; comme tout le reste, elles se démontent, leurs munitions comprises.
+
+| Taille | Tourelles |
+|--------|-----------|
+| Avant-poste | 2 balcons d'angle (Friendly), 1 nid (ou 2 casemates au bunker), 2 sur la salle forte (Friendly) |
+| Base | 4 balcons d'angle (Chekhov), 2 balcons de porterie (Friendly), 1 ou 2 nids (3 casemates au bunker), 2 sur la salle forte (Chekhov) |
+| Forteresse | 4 balcons d'angle et 2 de porterie (Chekhov), 1 balcon au mirador sud (Friendly), 2 nids (4 casemates au bunker), 4 Maxwell sur la salle forte |
+
+- **Un champ de mines** dans le glacis, sur le terrain naturel, en couronne de 3 blocs au-delà de
+  l'emprise jusqu'à 17 (avant-poste), 21 (base) ou 25 blocs (forteresse), armé d'avance : mines antipersonnel (40 à l'avant-poste), plus des mines à éclats à
+  partir de la base (90), plus des mines antichar à la forteresse (160). La **route de la porterie**
+  reste libre. Elles sautent au passage d'un joueur… ou d'une bête du glacis. Jamais de mine nucléaire.
+- **Du barbelé** sur tous les parapets, devant les tranchées, devant le bastion et en anneau autour de la
+  salle forte (empoisonné à la forteresse).
+- **Le décor du mod** : projecteurs halogènes, porte blindée coulissante, portes de bunker, trappes de
+  silo, grand radar, écrans radar, classeurs, caisses d'acier, fûts, asphalte, béton rayé, sacs de
+  sable, grillage.
 
 Les gardes sont surtout des illageois (pillards, vindicateurs, sorcières, ravageurs, évocateur) : ils ne
 brûlent pas au soleil. Ils sont persistants. Les coffres tirent leur butin à l'ouverture ou à
 l'explosion : les tables de la salle forte (`palamod:chests/enemy_*` par taille), et celles des quartiers
-(`enemy_vrac`, `enemy_grenier`, `enemy_entrepot`, `enemy_atelier`, `enemy_arsenal`).
+(`enemy_vrac`, `enemy_entrepot`, `enemy_atelier`, `enemy_arsenal`).
 
 ### Le terrain reprend ses droits
 

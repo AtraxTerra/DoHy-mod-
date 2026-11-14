@@ -175,11 +175,75 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 - ~~**Catégorie COMPONENT** : liste et prix d'achat à établir (phase 3).~~ → **tranché le 2026-11-05 : la catégorie est supprimée.** Elle n'a jamais contenu d'item (aucune ligne de `rates.csv`, aucune règle de `tag_prices.json`), donc l'onglet du shop était vide et l'aile de musée correspondante ne pouvait pas se compléter. L'onglet est remplacé par la boutique ; la remise d'achat de −10 % est passée sur l'aile NTM.
 - ~~**Table de loot des caisses** : non écrite.~~ → **écrite le 2026-11-11** (BALANCE § 6 quater).
 - **Barème d'XP du niveau global** par type de jalon : à fixer quand les contrats tournent.
+- **Tag `minecraft:dirt` réduit en 26.2** (relevé le 2026-11-13 : `dirt`, `coarse_dirt`, `rooted_dirt`
+  seulement). Deux usages restent à revoir : `EarthBodies.natural()` (l'herbe n'y compte pas comme
+  terre en place) et `EarthSites` (une plante morte n'est gardée que sur de la terre, plus sur de
+  l'herbe). Le champ de mines des bases ennemies a été corrigé.
 - **`minecraft:potent_sulfur`** classé farmable sur la base des tags de geyser de 26.2 — **à vérifier en jeu** : si l'éruption ne produit pas de gain net, le reclasser en `FOUND`.
 
 ---
 
 ## Journal des sessions
+
+### 2026-11-13 (suite 25) — bases ennemies militaires, défenses de NTM NEXT
+
+**Demande** : « remplace les bases claim "moches" par des bases plus réalistes (silo de missiles,
+bunkers, forteresse soviétique) avec des défenses de NTM NEXT ». Choix du joueur : **quatre genres**
+(silo de missiles, bunker, forteresse soviétique, base radar), **tous les anciens remplacés**,
+tourelles **actives et chargées** ; « en fait c'est **mettre à jour le système de raid existant** ».
+Description : `docs/FACTION.md`, « Trois tailles, quatre genres militaires » et « Les défenses de NTM
+NEXT ».
+
+**Fait** (`feat/bases-militaires`) :
+- `EnemyBaseStyle` : `silo`, `bunker`, `sovietique`, `radar` (une base d'avant s'affiche en forteresse
+  soviétique). Le système de raid ne bouge pas : mêmes tailles, mêmes couches, même salle des
+  coffres ; la pierre des couches devient du béton **du jeu** (aussi fragile), et les grandes
+  tailles gagnent des parements de béton devant et derrière leurs couches, un chemin de ronde de
+  béton, un parapet et du barbelé.
+- `EnemyBaseBuilder` : porterie à porte blindée de NTM, miradors à projecteur (levier) et balcon de
+  tir, bastion ; 18 modules de quartier (puits de lancement sous trappe, dépôt de carburant, poste de
+  contrôle, casemate, tranchée, nid de mitrailleuse, mirador de bois, garage à char, place d'armes à
+  l'étoile rouge, radôme, mât d'antennes, grand radar, héliport, caserne, armurerie à palettes,
+  dépôt de munitions, groupe électrogène, entrepôt) ; quatre salles fortes (tablier et grande
+  trappe du silo, blockhaus, donjon à l'étoile rouge, station radar).
+- `NtmDefenses` : multiblocs (tourelles, radar, trappes, porte), tourelles armées / rechargées /
+  éteintes, mines posées armées (et à la couleur du sol), barbelés, projecteurs ; tout par registre
+  et réflexion. `EnemyBases` : recharge toutes les 40 ticks des tourelles de la base active, extinction
+  au pillage et à l'abandon (et, jusqu'au retour du terrain, dans les chunks qui se chargent ensuite) ;
+  le journal compte gardes, tourelles et mines.
+- Onglet : carte « Ses défenses », résumés des genres sur deux lignes ; aide de la commande tirée des
+  clés.
+
+**Relu dans le jar de NTM NEXT 1.0.3** (javap) : une tourelle ne vise qu'à **30° sous l'horizon**
+(35° pour le Maxwell) — d'où des tourelles basses ; portées : Friendly et Chekhov 32, Maxwell 64,
+Tauon 128, Howard 250 (ces deux-là écartés : ils tireraient bien au-delà du glacis) ; batterie vidée en
+100 ticks ; les cases de munitions du Maxwell sont des cases d'amélioration (on n'y touche pas) ; une
+mine s'arme quand plus aucune créature n'est à portée, puis saute au passage de toute créature
+vivante ; le projecteur s'allume sur un signal de redstone.
+
+**Relu dans le jar de Minecraft 26.2** (sonde) : le tag `minecraft:dirt` ne compte plus que `dirt`,
+`coarse_dirt` et `rooted_dirt` — l'herbe, le podzol et le mycélium en sont sortis. Le champ de mines
+s'y fiait : les premières passes ne posaient que 0 à 7 mines par base. Le sol naturel est maintenant
+nommé bloc par bloc (voir « Points ouverts » pour les deux autres usages du tag).
+
+**Vérifié en jeu** (client de CI avec NTM NEXT 1.0.3, cinq passes, bases demandées comme un joueur,
+sites choisis par le jeu) :
+- avant-poste bunker : 27 gardes, 6 tourelles, 40 mines ; base silo : 51 gardes, 10 tourelles, 90
+  mines ; base radar : 54 gardes, 9 tourelles, 90 mines ; forteresse soviétique : 80 gardes, 13
+  tourelles dont 4 Maxwell, 160 mines (47 antipersonnel, 81 à éclats, 38 antichar). Les projecteurs
+  sont allumés (13 au silo, 21 à la forteresse).
+- le joueur en survie posé sur la route devant la porterie du silo : un balcon de la porterie
+  (Friendly) le prend pour cible et le blesse (128 → 124 cartouches) ; à huit blocs d'un nid du silo,
+  le Chekhov tire (→ 118) ; devant l'avant-poste bunker, le balcon d'angle nord-ouest (→ 125). La
+  batterie reste entre 6 500 et 8 000 entre deux recharges.
+- un pas sur une mine de chaque base : elle saute.
+- à l'abandon, les tourelles s'éteignent ; à la forteresse, celles de chunks non chargés restent
+  allumées, et le balayage les éteint quand leurs chunks se chargent.
+
+**Non vérifié en jeu** : un raid complet contre les tourelles (dynamite, canon, wither) ; les faisceaux
+des projecteurs (allumés, mais aucun bloc de faisceau relevé : leur lumière vient du projecteur
+seul) ; le retour du terrain par-dessus les multiblocs de NTM (même mécanisme que pour le reste :
+pose sans voisinage).
 
 ### 2026-11-13 (suite 24) — les palettes d'armement
 

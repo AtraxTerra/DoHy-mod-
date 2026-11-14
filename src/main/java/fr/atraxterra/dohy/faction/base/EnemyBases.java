@@ -28,6 +28,7 @@ import net.minecraft.world.item.component.LodestoneTracker;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -79,6 +80,8 @@ public final class EnemyBases {
     /** La chance qu'un avant-poste pille laisse une cle Saharia ; une base en laisse une, une forteresse trois. */
     private static final float OUTPOST_KEY_CHANCE = 0.25f;
     private static final int RETRIES = 3;
+    /** Les tourelles de NTM d'une base active sont rechargees toutes les deux secondes. */
+    private static final int UPKEEP_TICKS = 40;
 
     static final String GUARD_TAG = "dohy_enemy_guard";
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -275,6 +278,7 @@ public final class EnemyBases {
     public static void onServerStopped(ServerStoppedEvent event) {
         JOBS.clear();
         READY.clear();
+        FALLEN.clear();
     }
 
     // -- Chantier -----------------------------------------------------------------
@@ -293,6 +297,70 @@ public final class EnemyBases {
                 }
             }
         }
+        if (server.getTickCount() % UPKEEP_TICKS == 0 && NtmDefenses.present()) {
+            ServerLevel level = server.overworld();
+            for (ServerPlayer player : level.players()) {
+                EnemyBase base = of(player);
+                if (base.active()) {
+                    turrets(level, base.center(), base.kind().claimRadius(), true);
+                }
+            }
+            // Les bases tombees : leurs tourelles des chunks qui dormaient au pillage s'eteignent en se chargeant.
+            long now = level.getGameTime();
+            FALLEN.entrySet().removeIf(entry -> entry.getValue().until() < now);
+            for (Map.Entry<BlockPos, Fallen> entry : FALLEN.entrySet()) {
+                turrets(level, entry.getKey(), entry.getValue().radius(), false);
+            }
+        }
+    }
+
+    /** Une base pillee ou abandonnee, le temps que son terrain revienne. */
+    private record Fallen(int radius, long until) {
+    }
+
+    /** Les bases tombees dont des tourelles peuvent encore dormir, allumees, dans un chunk decharge. */
+    private static final Map<BlockPos, Fallen> FALLEN = new LinkedHashMap<>();
+
+    /** Eteint les tourelles d'une base qui tombe, maintenant et a mesure que ses chunks se chargent. */
+    private static int silence(ServerLevel level, EnemyBase base) {
+        int radius = base.kind().claimRadius();
+        FALLEN.put(base.center(), new Fallen(radius, level.getGameTime() + 2L * EnemyBaseRegen.DELAY_TICKS));
+        return turrets(level, base.center(), radius, false);
+    }
+
+    /**
+     * Les tourelles de NTM d'une base, dans ses chunks charges : armees et
+     * remises a plein ({@code armed}), ou eteintes. Leur batterie tient cinq
+     * secondes ; une base active les recharge toutes les deux secondes.
+     *
+     * @return le nombre de tourelles trouvees
+     */
+    static int turrets(ServerLevel level, BlockPos center, int radius, boolean armed) {
+        int chunkX = center.getX() >> 4;
+        int chunkZ = center.getZ() >> 4;
+        if (level.getChunkSource().getChunkNow(chunkX, chunkZ) == null) {
+            return 0;
+        }
+        int found = 0;
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(chunkX + dx, chunkZ + dz);
+                if (chunk == null) {
+                    continue;
+                }
+                for (BlockEntity entity : List.copyOf(chunk.getBlockEntities().values())) {
+                    if (NtmDefenses.isTurret(entity)) {
+                        found++;
+                        if (armed) {
+                            NtmDefenses.arm(entity, true);
+                        } else {
+                            NtmDefenses.disarm(entity);
+                        }
+                    }
+                }
+            }
+        }
+        return found;
     }
 
     private static void forEachChunk(Job job, ChunkAction action) {
@@ -387,9 +455,9 @@ public final class EnemyBases {
         EnemyBaseBuilder.Result result = job.builder.result();
         release(level, job);
         LOGGER.info("Base ennemie des {} ({}) en {} : site en {} essais ({} ticks), chunks en {} ticks, chantier de "
-                        + "{} ms sur {} ticks", job.name, job.tier.key() + " " + job.style.key(), result.center(),
-                job.search.attempts,
-                job.searchTicks, job.ticks, job.buildNanos / 1_000_000L, job.buildTicks);
+                        + "{} ms sur {} ticks, {} gardes, {} tourelles, {} mines", job.name,
+                job.tier.key() + " " + job.style.key(), result.center(), job.search.attempts, job.searchTicks, job.ticks,
+                job.buildNanos / 1_000_000L, job.buildTicks, result.guards(), result.turrets(), result.mines());
         EnemyBase base = new EnemyBase(job.name, job.tier.level(), EnemyBase.ACTIVE, result.center(),
                 result.coreMin(), result.coreMax(), System.currentTimeMillis(), job.style.key());
         if (player == null) {
@@ -444,6 +512,9 @@ public final class EnemyBases {
                 1.0f, 1.0f);
         FactionApi.tell(player, "Base des " + base.name() + " pillee ! Leurs claims tombent : les coffres sont a toi.",
                 ChatFormatting.GOLD);
+        if (silence(level, base) > 0) {
+            FactionApi.tell(player, "Leurs tourelles s'eteignent.", ChatFormatting.YELLOW);
+        }
         FactionApi.addElo(player, tier.elo(), "pillage des " + base.name());
         FactionApi.creditBank(player, tier.money(), "Pillage des " + base.name());
         FactionApi.tell(player, "+" + MoneyFormat.exact(tier.money()) + " $ a la banque de faction.",
@@ -481,6 +552,7 @@ public final class EnemyBases {
         }
         EnemyBase base = of(player);
         player.setData(Factions.ENEMY_BASE.get(), EnemyBase.EMPTY);
+        silence(((ServerLevel) player.level()).getServer().overworld(), base);
         if (EnemyBaseRegen.schedule(((ServerLevel) player.level()).getServer(), player, base)) {
             FactionApi.tell(player, "Les " + base.name() + " plient bagage : dans 5 minutes leur base s'efface et "
                     + "le terrain reprend ses droits.", ChatFormatting.YELLOW);
