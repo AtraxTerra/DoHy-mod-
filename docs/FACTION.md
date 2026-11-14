@@ -26,13 +26,14 @@ PvE**. Choix du joueur :
 | 22h | Notation de la semaine : une note sur 100 chaque lundi, une bourse à la banque de faction (repris de NationsGlory) | fait |
 | 22i | Pays à prendre, sur une carte de la Terre : capitale, conquête des pays aux events contre les nations rivales | fait |
 | 22j | Refonte : la faction est une nation (rangs, page unifiée), marché international à stock mondial, notation à cinq critères avec classement face aux nations | fait |
+| 22k | La base tourne sans toi : claims tenus chargés (64 au plus, les plus actifs), le serveur vide ne se met plus en pause, rapport d'absence à la connexion | fait |
 
 ## Ce qui change en solo
 
 | Paladium | DoHy solo |
 |----------|-----------|
 | Membres, grades, recrutement, annuaire | Pas d'objet : un seul membre, le chef |
-| Claims protégés contre les autres factions | Claims protégés contre le monde : explosions de monstres, endermen, champs piétinés, intrus sur un serveur ; chaque claim peut refuser l'apparition des monstres |
+| Claims protégés contre les autres factions | Claims protégés contre le monde : explosions de monstres, endermen, champs piétinés, foudre naturelle, intrus sur un serveur ; chaque claim peut refuser l'apparition des monstres ; tes claims tournent sans toi (22k) |
 | Classement : part des factions actives (5 % en Diamant…) | Paliers d'ELO cumulé (Argent 5 000, Or 15 000, Platine 35 000, Diamant 75 000) |
 | Semaine sans victoire : une ligue plus bas, pas de récompense | Pareil, le lundi à minuit (heure de Paris) ; l'ELO revient au seuil de la ligue |
 | Récompenses : Points Boutique et 2 % de l'argent du serveur | Argent versé à la banque de faction (25 k à 1,25 M $ selon la ligue) |
@@ -607,7 +608,8 @@ international » de la page de faction, ou `/f marche`.
 - **Acheter** (clic droit : une pile) coûte 2,8 fois le cours, jamais moins de 2,6 fois le prix
   de base. C'est moins cher que la boutique (4 fois) tant que le stock est là ; en pénurie, le
   marché n'a plus rien.
-- **Les gros lots des nations.** Toutes les dix minutes de jeu, une nation rivale achète ou vend
+- **Les gros lots des nations.** Toutes les dix minutes de jeu — que des joueurs soient là ou non
+  (lot 22k) —, une nation rivale achète ou vend
   15 à 40 % du stock de référence d'une ressource : le cours saute, et la dépêche passe dans le
   chat (« Nordheim vend 2 400 × Lingot de fer : le cours tombe à -14 % »). Une nation vend plutôt
   ce qui est cher et achète plutôt ce qui est bradé.
@@ -631,3 +633,56 @@ par un joueur ne se vise pas.
 Description complète : `docs/CONTENU_DOHY.md`, section « Les pays à prendre » ; chiffrage :
 `docs/BALANCE.md` § 6 novodecies. Code : `earth/EarthNations`, `NationMenu`, `NationCommand` ;
 `/f pays`.
+
+## La base tourne sans toi (22k)
+
+Le serveur tourne 24 h/24 ; la base aussi. Demandé le 2026-11-14 (« ta base tourne sans toi »),
+choix du joueur : **les claims les plus actifs**, **64 chunks au plus**, **un écran à la
+connexion**, et dans le rapport **la production, l'argent, les nations et le monde**.
+
+- **Ce qui reste chargé.** Tous les claims de ta faction, jusqu'à **64 chunks** ; au-delà, ceux
+  qui ont le plus de machines et de coffres (les blocs à données du chunk, recomptés chaque fois que
+  tu y passes). Un ticket de NeoForge les fait tourner comme si tu étais à côté : machines, fours,
+  entonnoirs, Create, NTM, golem, et les **champs poussent** (ticks aléatoires). Ça tourne quand tu
+  es loin, hors ligne, et la nuit quand le serveur est vide. Un claim posé ou rendu suit dans les
+  cinq secondes.
+- **Le serveur vide ne se met plus en pause.** Depuis 1.21.2, un serveur dédié sans joueur s'arrête
+  de tourner au bout de `pause-when-empty-seconds` (60 s par défaut) : plus rien n'avancerait. Tant
+  qu'une base est tenue, le mod lui répond « jamais de pause » ; sans base, le réglage du serveur
+  s'applique comme avant.
+- **La foudre naturelle ne tombe plus dans tes claims** (celle d'un trident à canalisation, si) :
+  la base tourne la nuit sans personne pour éteindre un feu sous l'orage. Les explosions et les
+  monstres y étaient déjà sans effet.
+- **`/f charge`** : ce que la base tient (chunks, claims, machines et coffres) ; `/f charge off`
+  l'éteint, `/f charge on` la rallume. Une base dont le joueur n'est pas revenu depuis **30 jours**
+  s'endort, et repart à sa connexion.
+- **Le rapport d'absence.** À la déconnexion (et toutes les cinq minutes en jeu, au cas où le
+  serveur s'arrêterait net), le jeu relève l'heure, ton argent, le contenu des coffres et machines
+  de la base, les cours du marché, ta ligue et ta notation. Revenu après **plus d'une demi-heure**,
+  tu trouves trois secondes plus tard l'écran **« Pendant ton absence »** :
+  - **ce que ta base a produit** et **ce qu'elle a consommé**, objet par objet, en vignettes (la
+    différence entre les deux relevés, coffres et machines des chunks tenus) ;
+  - **l'argent** : les intérêts de l'épargne, la banque de faction et ses lignes (récompense de
+    ligue…), les prix revenus au plein tarif ;
+  - **les nations** : leurs gros lots au marché international et les ressources qui ont le plus
+    bougé, la notation de la semaine et la ligue si un lundi est passé, les events de faction joués
+    sans toi (ils ne se lancent qu'avec un joueur connecté) et le prochain ;
+  - **le monde** : les catastrophes, les terrains revenus, les bases ennemies effacées.
+
+  Une ligne du chat le résume (cliquable), et **`/rapport`** le rouvre. Si le serveur s'est arrêté
+  pendant l'absence, le rapport dit combien de temps la base a vraiment tourné.
+
+**Vérifié en jeu** (2026-11-14) : sur un **serveur dédié vide** (`pause-when-empty-seconds=60`,
+aucun joueur), une base tenue a cuit 11 lingots de fer en 110 s et fait mûrir un blé de l'âge 0 à
+7, sans que le serveur se mette en pause. Dans le client de CI, une faction de 4 claims (4 chunks
+tenus sur 64), le joueur parti à 5 000 blocs pendant deux minutes : les deux fours ont cuit 12
+lingots chacun, passés par les entonnoirs dans les coffres, et le champ a mûri. Au retour
+(absence de 2 h 19 simulée), l'écran : 24 objets produits (12 lingots de fer, 12 de cuivre), 26
+consommés (minerais et charbon), les intérêts et les prix revenus, 4 gros lots des nations et les
+deux cours qui ont le plus bougé, les events (aucun manqué, le prochain), le séisme de magnitude
+6,8 au monde ; `/f charge` et `/rapport`.
+
+Code : `faction/absence/` — `KeptBases` (les chunks tenus, le ticket), `BaseStock` (le contenu des
+coffres et machines), `AbsenceJournal` (le journal du monde), `AbsenceReport` (les relevés, le
+retour, `/rapport`, `/f charge`), `AbsenceMenu` (l'écran) ; `mixin/DedicatedServerPauseMixin`.
+
