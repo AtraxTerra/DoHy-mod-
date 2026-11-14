@@ -825,11 +825,13 @@ final class Siege {
     private int capturedAt;
     private double capturePeak;
 
-    void onLost(Soldier soldier) {
+    void onLost(Soldier soldier, boolean first) {
         lostAt.add(tick);
         lostAt.removeIf(at -> tick - at > 1200);
-        DoHy.LOGGER.info("Guerre : un {} {} s'egare en {}", soldier.role().label().toLowerCase(java.util.Locale.ROOT),
-                traits.de(), soldier.blockPosition().toShortString());
+        if (first) {
+            DoHy.LOGGER.info("Guerre : un {} {} s'egare en {}", soldier.role().label().toLowerCase(java.util.Locale.ROOT),
+                    traits.de(), soldier.blockPosition().toShortString());
+        }
         if (job != null && soldier.getUUID().equals(job.worker) && (job.stage == GOTO || job.stage == WORK)) {
             soldier.setPose(Pose.STANDING);
             job.worker = null;
@@ -1034,7 +1036,7 @@ final class Siege {
                         job.waited = 0;
                         worker.lost = true;
                         worker.lostTicks = 0;
-                        onLost(worker);
+                        onLost(worker, true);
                     }
                 }
             }
@@ -1148,7 +1150,14 @@ final class Siege {
             return;
         }
         worker.setPose(Pose.CROUCHING);
+        // La charge va contre le bloc qui la demande (pas contre la terre qui l'entoure).
         BlockPos target = next.cells().getFirst();
+        for (BlockPos cell : next.cells()) {
+            if (!open(cell) && SiegePlanner.charge(level, List.of(cell)) > 0.0f) {
+                target = cell;
+                break;
+            }
+        }
         worker.getLookControl().setLookAt(target.getX() + 0.5d, target.getY() + 0.5d, target.getZ() + 0.5d);
         if (job.timer % 8 == 0) {
             worker.swing(InteractionHand.MAIN_HAND);
@@ -1156,12 +1165,17 @@ final class Siege {
         if (job.timer < 30) {
             return;
         }
-        // La charge, tout contre la face du mur.
-        double x = spot.getX() + 0.5d + (target.getX() - spot.getX()) * 0.35d;
-        double z = spot.getZ() + 0.5d + (target.getZ() - spot.getZ()) * 0.35d;
-        double y = Math.min(spot.getY(), target.getY());
+        // La charge, collee a la face du bloc, du cote du sapeur : elle ne tombe pas dans le trou.
+        double fx = spot.getX() + 0.5d - (target.getX() + 0.5d);
+        double fy = spot.getY() + 0.5d - (target.getY() + 0.5d);
+        double fz = spot.getZ() + 0.5d - (target.getZ() + 0.5d);
+        double length = Math.max(0.001d, Math.sqrt(fx * fx + fy * fy + fz * fz));
+        double x = target.getX() + 0.5d + fx / length * 0.75d;
+        double y = target.getY() + 0.5d + fy / length * 0.75d - 0.5d;
+        double z = target.getZ() + 0.5d + fz / length * 0.75d;
         PrimedTnt tnt = new PrimedTnt(level, x, y, z, worker);
         tnt.setFuse(FUSE + 10);
+        tnt.setNoGravity(true);
         tnt.setDeltaMovement(0.0d, 0.0d, 0.0d);
         tnt.setBlockState(job.charge >= SiegePlanner.CHARGE_ENDIUM ? PalaPillage.ENDIUM_TNT.get().defaultBlockState()
                 : job.charge >= SiegePlanner.CHARGE_BIG ? PalaPillage.BIG_TNT.get().defaultBlockState()
@@ -1188,8 +1202,9 @@ final class Siege {
             Sieges.forget(current.tnt);
             return;
         }
-        float power = current.charge >= SiegePlanner.CHARGE_ENDIUM ? 5.0f
-                : current.charge >= SiegePlanner.CHARGE_BIG ? 5.5f : 4.0f;
+        // Des charges de sape, pas des bombes : de quoi percer le bloc et ses voisins, sans raser la base.
+        float power = current.charge >= SiegePlanner.CHARGE_ENDIUM ? 4.0f
+                : current.charge >= SiegePlanner.CHARGE_BIG ? 4.5f : 3.0f;
         boolean endium = current.charge >= SiegePlanner.CHARGE_ENDIUM;
         double cx = tnt.getX();
         double cy = tnt.getY(0.0625d);

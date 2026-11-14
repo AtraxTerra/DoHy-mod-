@@ -107,6 +107,9 @@ public class Soldier extends Monster implements RangedAttackMob {
      */
     boolean lost;
     int lostTicks;
+    /** Arrive a l'etape que son ordre de marche visait : il attend, il n'est pas bloque. */
+    boolean arrived;
+    private boolean reported;
     private int healCooldown = 60;
     private boolean goalsInstalled;
 
@@ -357,6 +360,7 @@ public class Soldier extends Monster implements RangedAttackMob {
             order = next;
             navTarget = null;
             navCooldown = 0;
+            arrived = false;
         }
     }
 
@@ -411,6 +415,7 @@ public class Soldier extends Monster implements RangedAttackMob {
         }
         target = Math.max(0, Math.min(steps.size() - 1, target));
         int at = locate(steps);
+        arrived = Math.abs(at - target) <= 1 && near(steps.get(target).pos(), 2.0d);
         if (at == target && near(steps.get(target).pos(), 1.3d)) {
             getNavigation().stop();
             return;
@@ -514,15 +519,17 @@ public class Soldier extends Monster implements RangedAttackMob {
         }
         if (tickCount % 40 == 0) {
             Vec3 here = position();
-            boolean moving = order.kind() == Order.ROUTE || order.kind() == Order.GOTO
-                    || order.kind() == Order.HOLD && !near(order.pos(), order.radius());
+            boolean moving = order.kind() == Order.ROUTE && !arrived || order.kind() == Order.GOTO
+                    && !near(order.pos(), order.radius() + 0.5d)
+                    || order.kind() == Order.HOLD && !near(order.pos(), order.radius() + 0.5d);
             stuck = moving && getTarget() == null && here.distanceToSqr(lastCheck) < 0.25d ? stuck + 1 : 0;
             lastCheck = here;
             if (stuck >= 10 && !lost) {
                 lost = true;
                 lostTicks = 0;
                 stuck = 0;
-                current.onLost(this);
+                current.onLost(this, !reported);
+                reported = true;
             }
         }
         if (lost && ++lostTicks > 600) {

@@ -174,7 +174,7 @@ final class SiegePlanner {
     }
 
     /** Un pas du chemin : ou l'on arrive, comment, et ce qu'il a fallu ouvrir. */
-    record Step(BlockPos pos, byte move, int arg, List<BlockPos> broken, BlockPos fill) {
+    record Step(BlockPos pos, byte move, int arg, List<BlockPos> broken, BlockPos fill, float charge) {
     }
 
     enum Kind {
@@ -934,24 +934,19 @@ final class SiegePlanner {
                 }
             }
             broken += open.size();
-            steps.add(new Step(s.world(x, y, z), kind, arg, List.copyOf(open), fill));
+            // La charge qu'il faut pour ce pas : 0 si ce qu'il ouvre se creuse.
+            float charge = 0.0f;
+            for (BlockPos pos : open) {
+                byte cls = s.cls(pos.getX() - s.x0, pos.getY() - s.y0, pos.getZ() - s.z0);
+                charge = Math.max(charge, cls == OBSIDIAN ? CHARGE_ENDIUM : cls == HEAVY ? CHARGE_BIG
+                        : cls == BLAST ? CHARGE_TNT : 0.0f);
+            }
+            steps.add(new Step(s.world(x, y, z), kind, arg, List.copyOf(open), fill, charge));
             px = x;
             py = y;
             pz = z;
         }
-        List<Obstacle> obstacles = new ArrayList<>();
-        for (Obstacle next : obstacles(steps)) {
-            // La charge que demande une breche, d'apres le releve : pour le plan annonce.
-            float charge = 0.0f;
-            if (next.kind() == Kind.BREACH) {
-                for (BlockPos pos : next.cells()) {
-                    byte cls = s.cls(pos.getX() - s.x0, pos.getY() - s.y0, pos.getZ() - s.z0);
-                    charge = Math.max(charge, cls == OBSIDIAN ? CHARGE_ENDIUM : cls == HEAVY ? CHARGE_BIG
-                            : cls == BLAST ? CHARGE_TNT : 0.0f);
-                }
-            }
-            obstacles.add(new Obstacle(next.kind(), next.first(), next.cells(), charge, next.facing()));
-        }
+        List<Obstacle> obstacles = obstacles(steps);
         BlockPos camp = steps.getFirst().pos();
         double straight = Math.max(1.0d, Math.sqrt(camp.distSqr(s.world(s.vx, s.vy, s.vz))));
         double hardness = Math.max(0.0d, Math.min(1.0d, Math.log(Math.max(1.0d, total / (straight * 4.0d)))
@@ -987,14 +982,19 @@ final class SiegePlanner {
                 continue;
             }
             if (!step.broken().isEmpty()) {
+                // Une breche par methode : ce qui se creuse d'un cote, ce qui saute de l'autre.
+                // Le sapeur pose alors sa charge au plus pres du bloc qui la demande.
                 int first = i;
+                boolean blast = step.charge() > 0.0f;
+                float charge = 0.0f;
                 List<BlockPos> cells = new ArrayList<>();
                 while (i < steps.size() && !steps.get(i).broken().isEmpty() && cells.size() < 8
-                        && steps.get(i).move() != M_LADDER) {
+                        && steps.get(i).move() != M_LADDER && (steps.get(i).charge() > 0.0f) == blast) {
                     cells.addAll(steps.get(i).broken());
+                    charge = Math.max(charge, steps.get(i).charge());
                     i++;
                 }
-                out.add(new Obstacle(Kind.BREACH, first, List.copyOf(cells), 0.0f, null));
+                out.add(new Obstacle(Kind.BREACH, first, List.copyOf(cells), charge, null));
                 continue;
             }
             if (step.move() == M_BRIDGE) {
