@@ -116,7 +116,7 @@ public final class JobBossMenu extends MenuController {
 
         List<Card> actions = new ArrayList<>();
         if (state == JobBossApi.State.OFFERING && JobBossApi.resting(player, selected) > 0L) {
-            actions.add(Card.of(new ItemStack(Items.RED_BED), "Au repos", List.of(
+            actions.add(Card.of(new ItemStack(Items.BED), "Au repos", List.of(
                     "Prochaine offrande dans " + JobBossApi.when(JobBossApi.resting(player, selected)),
                     "Huit heures apres chaque victoire")).accent(color(selected)).state(MenuView.DISABLED));
         } else if (state == JobBossApi.State.OFFERING) {
