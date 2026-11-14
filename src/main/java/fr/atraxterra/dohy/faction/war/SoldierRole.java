@@ -4,7 +4,7 @@ package fr.atraxterra.dohy.faction.war;
  * Les roles d'une armee en campagne.
  *
  * <p>Chacun porte ce qui le fait reconnaitre de loin : la banniere de sa
- * nation sur la tete du commandant, une caisse de TNT sous le bras du sapeur,
+ * nation sur la tete du commandant, un paquet de dynamite a la main du sapeur,
  * un coffre dans les mains du tresorier (tout en or), un casque d'or, une
  * pioche et une echelle pour l'ingenieur, une tunique blanche pour le
  * medecin. Le reste de la troupe porte le cuir teint aux couleurs de la

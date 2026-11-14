@@ -829,8 +829,12 @@ final class Siege {
         lostAt.add(tick);
         lostAt.removeIf(at -> tick - at > 1200);
         if (first) {
-            DoHy.LOGGER.info("Guerre : un {} {} s'egare en {}", soldier.role().label().toLowerCase(java.util.Locale.ROOT),
-                    traits.de(), soldier.blockPosition().toShortString());
+            int at = soldier.routeIndex;
+            String step = at >= 0 && at < steps().size() ? steps().get(at).move() + "@"
+                    + steps().get(at).pos().toShortString() : "-";
+            DoHy.LOGGER.info("Guerre : un {} {} s'egare en {} (etape {} {}, ordre {} vers {})",
+                    soldier.role().label().toLowerCase(java.util.Locale.ROOT), traits.de(),
+                    soldier.blockPosition().toShortString(), at, step, soldier.order().kind(), soldier.order().index());
         }
         if (job != null && soldier.getUUID().equals(job.worker) && (job.stage == GOTO || job.stage == WORK)) {
             soldier.setPose(Pose.STANDING);
@@ -878,6 +882,42 @@ final class Siege {
         }
     }
 
+    /** Les etapes ou la troupe ne doit pas s'entasser : un pont, une echelle, a cote de la lave. */
+    private boolean[] unsafe = new boolean[0];
+    private SiegePlanner.Plan unsafeFor;
+
+    private boolean unsafe(int index) {
+        if (unsafeFor != plan) {
+            unsafeFor = plan;
+            List<SiegePlanner.Step> all = steps();
+            unsafe = new boolean[all.size()];
+            for (int i = 0; i < all.size(); i++) {
+                SiegePlanner.Step step = all.get(i);
+                boolean risky = step.move() == SiegePlanner.M_BRIDGE || step.move() == SiegePlanner.M_LADDER
+                        || step.move() == SiegePlanner.M_SWIM || step.move() == SiegePlanner.M_CLIMB;
+                for (int dx = -1; dx <= 1 && !risky; dx++) {
+                    for (int dz = -1; dz <= 1 && !risky; dz++) {
+                        for (int dy = -1; dy <= 0 && !risky; dy++) {
+                            risky = level.getFluidState(step.pos().offset(dx, dy, dz))
+                                    .is(net.minecraft.tags.FluidTags.LAVA);
+                        }
+                    }
+                }
+                unsafe[i] = risky;
+            }
+        }
+        return index >= 0 && index < unsafe.length && unsafe[index];
+    }
+
+    /** L'etape sure la plus proche, en reculant : on n'attend ni sur un pont ni au bord de la lave. */
+    private int safe(int index) {
+        int at = Math.max(0, Math.min(index, last()));
+        while (at > 0 && unsafe(at)) {
+            at--;
+        }
+        return at;
+    }
+
     /** L'etape ou la troupe attend : avant l'obstacle en cours, ou le coffre s'il n'y en a plus. */
     private int front() {
         if (plan == null) {
@@ -901,7 +941,7 @@ final class Siege {
         int front = front();
         boolean storm = storming() && phase != Phase.CAMP && morale >= 35.0d;
         boolean blasting = job != null && job.charge > 0.0f;
-        int rally = phase == Phase.CAMP ? 0 : storm ? last() : Math.max(0, front - (blasting ? 9 : 5));
+        int rally = phase == Phase.CAMP ? 0 : storm ? last() : safe(front - (blasting ? 9 : 5));
         Soldier treasurer = soldier(paymaster);
         UUID worker = job == null ? null : job.worker;
         List<Soldier> escort = new ArrayList<>();
@@ -955,11 +995,10 @@ final class Siege {
                     }
                 }
                 case ARCHER -> soldier.orderRoute(phase == Phase.EXTRACT ? 0
-                        : Math.max(0, (storm || phase == Phase.PILLAGE ? last() - 8 : rally - 6)), 1.0d);
+                        : safe(storm || phase == Phase.PILLAGE ? last() - 8 : rally - 6), 1.0d);
                 case MEDECIN -> soldier.orderRoute(phase == Phase.EXTRACT ? 0
-                        : Math.max(0, (storm || phase == Phase.PILLAGE ? last() - 5 : rally - 3)), 1.0d);
-                case SAPEUR, INGENIEUR -> soldier.orderRoute(phase == Phase.EXTRACT ? 0 : Math.max(0, rally - 2),
-                        1.0d);
+                        : safe(storm || phase == Phase.PILLAGE ? last() - 5 : rally - 3), 1.0d);
+                case SAPEUR, INGENIEUR -> soldier.orderRoute(phase == Phase.EXTRACT ? 0 : safe(rally - 2), 1.0d);
             }
         }
     }
@@ -1509,6 +1548,9 @@ final class Siege {
     private void tickExtract() {
         extractTimer++;
         Soldier treasurer = soldier(paymaster);
+        if (treasurer != null && extractTimer % 20 == 0) {
+            slipAway(treasurer);
+        }
         if (treasurer == null) {
             if (!paymasterDead) {
                 // Un tresorier disparu sans mourir (hors de la memoire) : l'argent revient.
@@ -1636,9 +1678,32 @@ final class Siege {
         Sieges.concluded(this);
     }
 
+    /**
+     * Un egare qui doit rentrer (la retraite, la fuite du tresorier) et que personne ne voit depuis
+     * vingt-cinq secondes : il a trouve un autre chemin, il reparait au camp.
+     */
+    private boolean slipAway(Soldier soldier) {
+        if (!soldier.lost || soldier.lostTicks < 500 || camp == null) {
+            return false;
+        }
+        ServerPlayer target = target();
+        if (target != null && target.level() == level && target.distanceToSqr(soldier) < 24.0d * 24.0d) {
+            return false;
+        }
+        BlockPos spot = spawnSpot();
+        soldier.snapTo(spot.getX() + 0.5d, spot.getY(), spot.getZ() + 0.5d, soldier.getYRot(), 0.0f);
+        soldier.getNavigation().stop();
+        soldier.lost = false;
+        soldier.routeIndex = 0;
+        DoHy.LOGGER.info("Guerre : un {} {} rejoint le camp par un autre chemin",
+                soldier.role().label().toLowerCase(java.util.Locale.ROOT), traits.de());
+        return true;
+    }
+
     private void tickRetreat() {
         if (phaseTick % 20 == 0) {
             for (Soldier soldier : alive()) {
+                slipAway(soldier);
                 soldier.orderRoute(0, 1.2d);
                 if (camp != null && soldier.near(camp, 4.0d)) {
                     level.sendParticles(ParticleTypes.POOF, soldier.getX(), soldier.getY() + 1.0d, soldier.getZ(), 10,

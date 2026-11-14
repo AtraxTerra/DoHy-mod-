@@ -213,7 +213,9 @@ public class Soldier extends Monster implements RangedAttackMob {
                 setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, color));
                 setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.CHAINMAIL_LEGGINGS));
                 setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.FLINT_AND_STEEL));
-                setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.TNT));
+                // Un paquet de dynamite, pas un bloc de TNT : avec NTM, un porteur de TNT qui prend feu explose.
+                setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(
+                        fr.atraxterra.dohy.palamod.pillage.PalaPillage.BIG_DYNAMITE.get()));
             }
             case INGENIEUR -> {
                 setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
