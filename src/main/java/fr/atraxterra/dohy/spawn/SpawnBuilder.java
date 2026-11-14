@@ -791,6 +791,7 @@ final class SpawnBuilder {
             case DAILY -> "yellow_concrete";
             case PORTALS -> "purple_concrete";
             case MINE -> "cyan_concrete";
+            case BLACK_MARKET -> "black_concrete";
         });
     }
 
