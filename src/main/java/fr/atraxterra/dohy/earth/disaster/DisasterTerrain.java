@@ -671,6 +671,9 @@ final class DisasterTerrain {
             DoHy.LOGGER.info("Terrain de la catastrophe {} revenu : {} blocs reposes, {} chunks revendiques laisses, "
                     + "en {} ms sur {} ticks", pending.label, changed, kept, nanos / 1_000_000L, ticks);
             tell(server, pending, "Le terrain est revenu (" + pending.label + ").", ChatFormatting.GRAY);
+            fr.atraxterra.dohy.faction.absence.AbsenceJournal.post(server,
+                    fr.atraxterra.dohy.faction.absence.AbsenceJournal.WORLD, "Le terrain est revenu : "
+                            + pending.label + " (" + changed + " blocs)", net.minecraft.world.item.Items.GRASS_BLOCK);
             return true;
         }
 

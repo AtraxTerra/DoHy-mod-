@@ -12,6 +12,9 @@
   "client": [
     "BiomeColorsMixin"
   ],
+  "server": [
+    "DedicatedServerPauseMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

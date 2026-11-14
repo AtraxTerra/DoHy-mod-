@@ -93,7 +93,6 @@ abstract class Disaster {
         return ledger;
     }
 
-    /** La fin : le terrain reviendra dans le delai des reglages. */
     /**
      * La catastrophe s'arrete avant sa fin (la commande {@code fin}, l'arret du
      * serveur) : elle range ce qui ne doit pas rester vivant jusqu'au retour du
@@ -102,6 +101,7 @@ abstract class Disaster {
     void halt(ServerLevel level) {
     }
 
+    /** La fin : le terrain reviendra dans le delai des reglages. */
     void finish(MinecraftServer server) {
         done = true;
         if (ledger != null) {

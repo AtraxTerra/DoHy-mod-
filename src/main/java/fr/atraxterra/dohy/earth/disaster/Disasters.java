@@ -408,6 +408,17 @@ public final class Disasters {
     private static void add(Disaster disaster) {
         ACTIVE.add(disaster);
         LAST.put(disaster.kind, disaster);
+        // le journal du monde : le rapport d'absence la raconte a qui n'etait pas la
+        net.minecraft.server.MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks
+                .getCurrentServer();
+        net.minecraft.world.item.Item icon = switch (disaster.kind) {
+            case QUAKE -> net.minecraft.world.item.Items.CRACKED_STONE_BRICKS;
+            case ERUPTION -> net.minecraft.world.item.Items.MAGMA_BLOCK;
+            case HURRICANE -> net.minecraft.world.item.Items.WIND_CHARGE;
+            case MONSOON -> net.minecraft.world.item.Items.WATER_BUCKET;
+        };
+        fr.atraxterra.dohy.faction.absence.AbsenceJournal.post(server,
+                fr.atraxterra.dohy.faction.absence.AbsenceJournal.WORLD, disaster.name + " - " + disaster.place, icon);
     }
 
     /** La categorie d'une tempete : 1 trois fois sur dix, 5 une fois sur dix. */
