@@ -979,12 +979,13 @@ final class Siege {
                     if (guards.contains(soldier.getUUID()) && !bannerDown) {
                         soldier.orderHold(camp, 5.0d);
                     } else if ((phase == Phase.PILLAGE || phase == Phase.EXTRACT) && treasurer != null
-                            && escort.size() < 2) {
+                            && escort.size() < 2 && treasurer.routeIndex >= 0) {
+                        // L'escorte suit le tresorier a deux etapes, sans le bousculer (ni sur une echelle).
                         escort.add(soldier);
-                        soldier.orderGoTo(treasurer.blockPosition(), 1.2d);
-                    } else if (phase == Phase.EXTRACT) {
-                        soldier.orderRoute(0, 1.1d);
-                    } else if (storm || phase == Phase.PILLAGE) {
+                        int behind = phase == Phase.EXTRACT ? treasurer.routeIndex + 2 : treasurer.routeIndex - 2;
+                        soldier.orderRoute(Math.max(0, Math.min(last(), behind)), 1.2d);
+                    } else if (storm || phase == Phase.PILLAGE || phase == Phase.EXTRACT) {
+                        // A la fuite du tresorier, l'arriere-garde tient le coffre : le chemin lui reste libre.
                         if (soldier.routeIndex >= last() - 2 || soldier.near(vault, ZONE + 2.0d)) {
                             soldier.orderHold(vault, 2.5d);
                         } else {
@@ -994,11 +995,12 @@ final class Siege {
                         soldier.orderRoute(rally, 1.0d);
                     }
                 }
-                case ARCHER -> soldier.orderRoute(phase == Phase.EXTRACT ? 0
-                        : safe(storm || phase == Phase.PILLAGE ? last() - 8 : rally - 6), 1.0d);
-                case MEDECIN -> soldier.orderRoute(phase == Phase.EXTRACT ? 0
-                        : safe(storm || phase == Phase.PILLAGE ? last() - 5 : rally - 3), 1.0d);
-                case SAPEUR, INGENIEUR -> soldier.orderRoute(phase == Phase.EXTRACT ? 0 : safe(rally - 2), 1.0d);
+                case ARCHER -> soldier.orderRoute(safe(storm || phase == Phase.PILLAGE || phase == Phase.EXTRACT
+                        ? last() - 8 : rally - 6), 1.0d);
+                case MEDECIN -> soldier.orderRoute(safe(storm || phase == Phase.PILLAGE || phase == Phase.EXTRACT
+                        ? last() - 5 : rally - 3), 1.0d);
+                case SAPEUR, INGENIEUR -> soldier.orderRoute(safe(storm || phase == Phase.PILLAGE
+                        || phase == Phase.EXTRACT ? last() - 4 : rally - 2), 1.0d);
             }
         }
     }
@@ -1545,10 +1547,22 @@ final class Siege {
         command();
     }
 
+    private int extractBest = Integer.MAX_VALUE;
+    private int extractBestAt;
+
     private void tickExtract() {
         extractTimer++;
         Soldier treasurer = soldier(paymaster);
         if (treasurer != null && extractTimer % 20 == 0) {
+            // Une minute sans se rapprocher du camp : il est egare, meme s'il s'agite.
+            if (treasurer.routeIndex >= 0 && treasurer.routeIndex < extractBest) {
+                extractBest = treasurer.routeIndex;
+                extractBestAt = tick;
+            } else if (tick - extractBestAt > 1200 && !treasurer.lost) {
+                treasurer.lost = true;
+                treasurer.lostTicks = 0;
+                onLost(treasurer, true);
+            }
             slipAway(treasurer);
         }
         if (treasurer == null) {

@@ -426,7 +426,17 @@ public class Soldier extends Monster implements RangedAttackMob {
             int next = Math.min(target, at + 8);
             for (int k = at + 1; k <= next; k++) {
                 if (steps.get(k).move() == SiegePlanner.M_LADDER) {
-                    if (k == at + 1 && near(steps.get(at).pos(), 0.9d) || climbing(steps, k)) {
+                    if (climbing(steps, k)) {
+                        climb(steps.get(k).pos(), speed);
+                        return;
+                    }
+                    if (k == at + 1 && near(steps.get(at).pos(), 0.9d)) {
+                        BlockPos base = steps.get(k - 1).pos();
+                        if (ladderBusy(current, base, base.getY(), steps.get(k).pos().getY())) {
+                            // Un camarade est sur l'echelle : on attend son tour, a cote.
+                            navigate(steps.get(Math.max(0, at - 2)).pos(), speed);
+                            return;
+                        }
                         climb(steps.get(k).pos(), speed);
                         return;
                     }
@@ -444,8 +454,14 @@ public class Soldier extends Monster implements RangedAttackMob {
             for (int k = at; k > next; k--) {
                 if (steps.get(k).move() == SiegePlanner.M_DROP
                         && steps.get(k - 1).pos().getY() - steps.get(k).pos().getY() >= 2) {
-                    // Remonter une descente : l'echelle posee contre la falaise.
-                    if (k == at || climbingUp(steps, k)) {
+                    // Remonter une descente : l'echelle posee contre la falaise, un a la fois.
+                    boolean on = climbingUp(steps, k);
+                    if (k == at || on) {
+                        BlockPos landing = steps.get(k).pos();
+                        if (!on && ladderBusy(current, landing, landing.getY(), steps.get(k - 1).pos().getY())) {
+                            navigate(steps.get(Math.min(steps.size() - 1, k + 2)).pos(), speed);
+                            return;
+                        }
                         climb(steps.get(k - 1).pos(), speed);
                         if (getY() >= steps.get(k - 1).pos().getY() - 0.2d) {
                             routeIndex = k - 1;
@@ -482,6 +498,21 @@ public class Soldier extends Monster implements RangedAttackMob {
         double dx = getX() - (base.getX() + 0.5d);
         double dz = getZ() - (base.getZ() + 0.5d);
         return dx * dx + dz * dz < 0.8d && getY() > base.getY() + 0.4d && getY() < top.getY() + 0.5d;
+    }
+
+    /** Un autre soldat du siege est-il dans cette colonne d'echelle, entre ces hauteurs ? */
+    private boolean ladderBusy(Siege current, BlockPos column, int bottom, int top) {
+        for (Soldier other : current.alive()) {
+            if (other == this) {
+                continue;
+            }
+            double dx = other.getX() - (column.getX() + 0.5d);
+            double dz = other.getZ() - (column.getZ() + 0.5d);
+            if (dx * dx + dz * dz < 0.6d && other.getY() > bottom + 0.4d && other.getY() < top + 0.5d) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Dans la colonne d'une echelle de descente, en train de la remonter. */
