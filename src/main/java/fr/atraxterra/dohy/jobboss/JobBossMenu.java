@@ -8,6 +8,7 @@ import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -116,7 +117,7 @@ public final class JobBossMenu extends MenuController {
 
         List<Card> actions = new ArrayList<>();
         if (state == JobBossApi.State.OFFERING && JobBossApi.resting(player, selected) > 0L) {
-            actions.add(Card.of(new ItemStack(Items.BED), "Au repos", List.of(
+            actions.add(Card.of(new ItemStack(Items.BED.pick(DyeColor.RED)), "Au repos", List.of(
                     "Prochaine offrande dans " + JobBossApi.when(JobBossApi.resting(player, selected)),
                     "Huit heures apres chaque victoire")).accent(color(selected)).state(MenuView.DISABLED));
         } else if (state == JobBossApi.State.OFFERING) {
