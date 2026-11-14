@@ -906,11 +906,12 @@ Paladium.
   (les noms se complètent).
 - **Le sommaire** : le cartouche (fiches, lues, nouvelles), « À LIRE » (les fiches découvertes et
   pas encore lues, marquées NOUVEAU), puis une section par catégorie — Débuter, Économie, Métiers,
-  PalaMod, Donjons, Faction, La Terre, Lieux, Agriculture, Technique : **65 fiches**.
+  PalaMod, Donjons, Faction, La Terre, Lieux, Agriculture, Technique : **67 fiches** (65, puis le
+  pass et le marché noir).
 - **Une fiche** : son résumé et ses sections (paragraphes, puces, commandes, astuces) dans la mise
   en page `TEXT` du kit ; **TA PROGRESSION** quand la fiche en nomme une (argent, les quatre métiers,
   un métier et ses quatre prochains déblocages, contrats, musée, succès, RPG, faction, guerre,
-  pays de la Terre, améliorations) ; **PLANS DE CONSTRUCTION** (un clic donne le plan, une seule
+  pays de la Terre, améliorations, pass) ; **PLANS DE CONSTRUCTION** (un clic donne le plan, une seule
   fois par structure dans le sac) ; **COMMANDES ET TOUCHES** (un clic lance une commande sans
   argument : le serveur ne lance que celles écrites dans la fiche ouverte) ; **VOIR AUSSI**.
 - **La découverte** : une fiche se découvre quand on croise son système — un objet dans le sac
@@ -958,7 +959,7 @@ fichier sans redémarrer.
 - **`tools/check_encyclopedia.py`** (et la CI) vérifie tout ce qu'une fiche nomme : voisins,
   catégories, objets et tags, plans, menus, dimensions, progressions, racines des commandes,
   textes sans accents, longueur des titres et des lignes. Au chargement, le journal du serveur
-  dit `Encyclopedie : 65 fiches en 10 categories`, suivi des problèmes s'il y en a.
+  dit `Encyclopedie : 67 fiches en 10 categories`, suivi des problèmes s'il y en a.
 
 ### Les plans de construction
 
@@ -1009,6 +1010,106 @@ jeu.
   tout chez le client : le plan porte sa pose, le monde du client dit ce qui est bâti).
 - Le kit : mise en page `MenuView.TEXT` (`MenuScreen`), bouton « ? » de `KitInventoryScreen`,
   section AIDE de `HubController`. Icône du plan (originale) : `tools/guide_assets.py`.
+
+## Le pass mensuel (2026-11-14)
+
+Demandé avec le marché noir (deuxième des trois lots du 2026-11-14) ; choix du joueur : **le thème
+du mois réel et un objet exclusif au dernier niveau**.
+
+- **Un mois réel** : du 1er à 5 h au 1er du mois suivant à 5 h (heure de Paris, comme le concours
+  Trixium). **35 niveaux** de 1 000 XP, une récompense par niveau.
+- **Les quêtes** : **trois quêtes du jour** (nouvelles à 5 h, tirées d'un pool de 22) et **six
+  quêtes du mois** au thème du mois. Elles comptent les mêmes gestes que les contrats
+  (`ContractApi.progress` les leur transmet) : miner, abattre, récolter, pêcher, cuire, vendre,
+  produire, poser, franchir des paliers, gagner des niveaux de métier, marcher, jouer. Un mois
+  offre environ 51 000 XP pour 35 000 nécessaires : finir le pass demande les deux tiers des quêtes.
+- **Les thèmes** : janvier Grand froid, février Saint-Valentin, mars Printemps, avril Chasse aux
+  œufs, mai Fête du travail, juin Fête de la musique, juillet Vacances, août Canicule, septembre
+  Rentrée, octobre Halloween, novembre Brumes d'automne, décembre Noël.
+- **Les récompenses** : argent (de 5 000 à 250 000 $), lingots de paladium, de titane et de
+  paladium vert, findium, trixium, clés de box améthyste et saharia, bouteilles de 10 000 XP de
+  métier, fragments et runes, pierres d'invocation, pépite d'endium. Elles se récupèrent dans
+  l'écran du pass, une par une ou toutes d'un coup.
+- **La relique du mois**, au niveau 35 : douze reliques, une par mois, datées du mois où elles sont
+  gagnées. Tenue en **main secondaire**, une relique donne son effet (niveau I) :
+
+| Mois | Relique | Effet |
+|---|---|---|
+| janvier | Cristal de givre | Résistance |
+| février | Cœur de cristal | Bonus de vie |
+| mars | Trèfle porte-bonheur | Chance |
+| avril | Œuf d'or | Saut amélioré |
+| mai | Brin de muguet | Célérité |
+| juin | Lyre de l'été | Vitesse |
+| juillet | Coquillage des vacances | Apnée |
+| août | Soleil de plomb | Résistance au feu |
+| septembre | Lanterne de la rentrée | Vision nocturne |
+| octobre | Citrouille maudite | Force |
+| novembre | Feuille d'automne | Chute lente |
+| décembre | Étoile de Noël | Régénération |
+
+- **La bascule** : le mois suivant, tout repart de zéro ; ce qui était atteint et pas encore
+  récupéré est **donné à la bascule** (relique comprise, datée de l'ancien mois). Trois jours
+  d'absence ne donnent qu'une série de quêtes, pas trois.
+- **Accès** : le bouton **PASS** de l'inventaire (à la place du Lucky Pass de Paladium ; le
+  concours Trixium reste au menu principal et à `/trixium`), la carte « Pass » du menu principal,
+  `/pass`. Administration : `/pass admin xp <n>`, `/pass admin quetes` (finit les quêtes),
+  `/pass admin recharger`, et pour essayer une bascule `/pass admin avancer <jours>` puis
+  `/pass admin horloge` (retour à l'heure réelle ; un redémarrage aussi). **La bascule d'essai est
+  vraie** : le mois en cours se clôt et sa progression ne revient pas au retour de l'horloge ;
+  sur l'horloge réelle, avec de la progression en jeu, la commande demande `confirmer` à la fin.
+- **Le fichier** : `data/pass.json` (niveaux, pool du jour, récompenses, douze thèmes), vérifié par
+  `tools/check_pass.py` (et la CI) : douze thèmes, types et cibles qui existent, une récompense
+  par niveau, la relique au dernier, assez d'XP dans chaque mois.
+
+### Code
+
+- `pass/PassConfig` (le fichier), `PassSeason` (le mois, le jour, l'horloge d'essai), `PassData`
+  (attachement `pass` : saison, XP, récompenses récupérées, quêtes ; gardé à la mort), `PassQuest`,
+  `PassApi` (bascules, progression, XP, récompenses), `PassEvents` (connexion, minute, effet de la
+  relique), `PassMenu`, `PassCommand`.
+- `pass/Relic` (les douze reliques et leurs effets), `RelicItem`, `DoHyPass` (objets et composant
+  `dohy:relic_season`). Icônes originales : `tools/pass_assets.py` ; noms : `tools/dohy_assets.py`.
+- Les contrats y gagnent l'objectif `PLAYTIME` (une unité par minute de jeu) et l'objectif
+  `TRAVEL` compte enfin les blocs parcourus à pied (marche, course, accroupi, d'après les
+  statistiques du jeu) : le contrat « Parcourir des blocs à pied » ne comptait rien jusque-là.
+
+## Le marché noir (2026-11-14)
+
+Le receleur tient boutique **sous le pont du spawn**, **toujours ouvert** (choix du joueur), avec
+un nouvel arrivage chaque matin à 5 h (la bascule des contrats). On y paie en liquide.
+
+- **Y aller** : au milieu du pont, une **trappe de bois** dans le béton (une étiquette « trappe du
+  receleur » flotte au-dessus) ; une échelle descend dans une pièce basse sous le tablier, éclairée
+  aux lanternes d'âmes, où la borne **MARCHÉ NOIR** attend contre le mur du fond.
+- **La marchandise volée** (quatre offres par jour) : des lingots, des blocs, du trixium, des
+  pépites d'endium, des fragments de rune, des essences, des gemmes, des clés de box, volés aux
+  nations rivales, entre **50 et 70 %** de leur valeur boutique. La nation volée finit par
+  l'apprendre : **un grief contre ta faction** (si tu en as une), qui nourrit son hostilité.
+- **La contrebande** (deux offres par jour) : ce qui ne se vend nulle part ailleurs — bouteilles de
+  **10 000 XP de métier**, totems d'immortalité, pommes d'or enchantées — entre 130 et 170 % de leur
+  valeur.
+- **Le lot sans étiquette** (trois par jour, 135 000 $) : de la ferraille, un petit, un bon, un beau,
+  un très beau ou le gros lot ; il rend en moyenne 87 % de son prix : un pari.
+- **Le receleur rachète** (trois objets par jour, quelques pièces chacun) ce que le shop refuse :
+  équipement de donjon, runes, essences, gemmes de wither, entre **25 et 40 %** de leur valeur,
+  l'usure déduite. Il ne prend que dans le sac (pas l'armure portée ni la main secondaire).
+- **Pas de boucle d'argent** : il vend toujours au moins à 50 % de la valeur et ne rachète jamais
+  au-dessus de 40 %. Comme le marché, l'arrivage n'est pas sauvegardé : il se recalcule de la
+  graine du monde, du jour et du joueur ; seuls les achats et les ventes du jour le sont
+  (attachement `black_market`).
+- **Le fichier** : `data/black_market.json`, **généré** par `tools/black_market.py` à partir des
+  valeurs boutique (`tools/crate_values.py`) et des cotes du marché (`data/auction.json`) ;
+  `--check` (et la CI) vérifie qu'il est à jour, que chaque objet existe et a une valeur, qu'il n'y
+  a pas de boucle d'argent et que le lot sans étiquette reste entre 80 et 92 % de son prix.
+
+### Code
+
+- `blackmarket/BlackMarketConfig` (le fichier), `BlackMarket` (l'arrivage du jour, acheter, le
+  lot, revendre), `BlackMarketData`, `BlackMarketMenu`.
+- La planque : `SpawnBuilder.blackMarket()` (version 8 du spawn : un spawn plus ancien est
+  reconstruit tout seul), la borne `SpawnTerminalBlock.Kind.BLACK_MARKET` (texture dessinée par
+  `tools/dohy_assets.py`).
 
 ## Sur un serveur dédié (2026-11-13)
 

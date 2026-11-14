@@ -16,6 +16,7 @@ autocrafter, crusher, cobblebreaker, grinder).
 | 5 | Inventaire du joueur, avec l'accès aux menus | fait |
 | 6 | Ouverture des caisses : la roulette | fait |
 | 7 | Encyclopédie : mise en page `TEXT`, menu du plan de construction, bouton « ? » de l'inventaire | fait |
+| 8 | Pass du mois (tuiles des 35 récompenses, quêtes), marché noir ; le bouton du Lucky Pass ouvre le pass | fait |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
 
@@ -174,7 +175,8 @@ inventaire.
 - **Accès aux menus** : le bouton rouge en haut à droite ouvre le menu principal ; les cinq cases
   ouvrent le **shop** (étal), les **contrats** (parchemin), la **banque** (émeraude), la **faction**
   (château) et les **métiers** (objet doré). Le bouton rouge sous le craft, à la place du Lucky Pass
-  de Paladium, ouvre le **concours Trixium**. Une bulle nomme chaque bouton.
+  de Paladium, ouvre le **pass du mois** (bouton PASS et relique du mois, depuis le lot 8 ; il
+  ouvrait le concours Trixium, qui reste au menu principal). Une bulle nomme chaque bouton.
 - **Côté serveur** : un clic ferme l'inventaire (le serveur rend la grille de craft et l'objet tenu
   à la souris), puis envoie `InventoryNav.Open` ; `HubController.openTarget` n'ouvre que les menus de
   sa liste, par les mêmes cartes que le menu principal.
@@ -223,6 +225,19 @@ construction »). Elle passe par `MenuView`, avec une mise en page de plus :
 - **Le bouton « ? »** de l'inventaire, vert, à gauche du bouton du menu principal, ouvre le
   sommaire ; `encyclopedia` rejoint la liste des cibles de `HubController.openTarget`. La
   touche J envoie la même demande (`InventoryNav.Open`).
+
+## Le pass et le marché noir (lot 8)
+
+- **Le pass** (`PassMenu`) : le cartouche (niveau, XP du niveau, fin du mois), la relique du mois
+  et « Tout récupérer » en `GRID`, les **35 récompenses en `TILES`** (le numéro du niveau en
+  pastille ; vert : récupérée, liseré or et clic : à récupérer, grisée : pas encore atteinte ; la
+  bulle dit ce que donne le niveau), puis les quêtes du jour et du mois en `ROWS` (barre
+  d'avancement, pastille de l'XP).
+- **Le marché noir** (`BlackMarketMenu`) : la marchandise volée (liseré rouge, la nation volée), la
+  contrebande (violet) et le lot sans étiquette (or) en `GRID` (le prix, le stock qui reste,
+  « VENDU » en pastille quand il n'y en a plus), ce que le receleur rachète en `ROWS` (vert, le
+  prix d'une pièce en pastille). Une carte trop chère reste cliquable : le refus dit ce qu'il
+  manque.
 
 ## Vérification
 

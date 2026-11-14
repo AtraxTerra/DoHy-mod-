@@ -67,6 +67,10 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
         // Un titre long retrecit plutot que d'etre coupe, jusqu'au cartouche.
         float room = statsLeft(g) - CONTENT_X - 10;
         float size = Math.max(13, Math.min(22, 22 * room / Math.max(1, g.width(Ui.TITLE, title, 22))));
+        // La largeur des glyphes s'arrondit : on descend encore un peu tant que ca deborde.
+        while (size > 13 && g.width(Ui.TITLE, title, size) > room) {
+            size = Math.max(13, size - 0.25f);
+        }
         g.textShaded(Ui.TITLE, g.fit(Ui.TITLE, title, size, room), CONTENT_X, 15 + (22 - size) * 0.6f, size, Ui.RED,
                 Ui.RED_SHADE, 1.3f);
         if (!view.subtitle().isEmpty()) {

@@ -49,7 +49,9 @@ public final class BlackMarketMenu extends MenuController {
             int left = BlackMarket.remaining(player, listing);
             String name = new ItemStack(listing.item()).getHoverName().getString();
             List<String> lines = new ArrayList<>();
-            lines.add(listing.lot() + " x · " + MoneyFormat.exact(listing.price()) + " $");
+            String price = MoneyFormat.exact(listing.price()) + " $";
+            lines.add((listing.lot() > 1 ? listing.lot() + " pour " + price : price)
+                    + (left > 0 ? " · reste " + left : ""));
             if (listing.stolen()) {
                 lines.add("Vole " + BlackMarket.fromNation(listing.nation()));
             } else {
@@ -57,7 +59,7 @@ public final class BlackMarketMenu extends MenuController {
                         : "Introuvable ailleurs");
             }
             List<String> tooltip = new ArrayList<>();
-            tooltip.add(listing.lot() + " x " + name);
+            tooltip.add(listing.lot() + " " + name);
             tooltip.add(MoneyFormat.exact(listing.price()) + " $ le lot · " + left + " lot(s) aujourd'hui");
             tooltip.add("Valeur boutique : " + MoneyFormat.exact(listing.offer().value() * listing.lot()) + " $");
             if (listing.stolen()) {
@@ -67,7 +69,7 @@ public final class BlackMarketMenu extends MenuController {
             }
             Card card = Card.of(listing.icon(), name, lines)
                     .accent(listing.stolen() ? RED : PURPLE)
-                    .badge(left > 0 ? "x" + left : "VENDU")
+                    .badge(left > 0 ? "" : "VENDU")
                     .tooltip(tooltip);
             if (left <= 0) {
                 card = card.state(MenuView.DISABLED);
@@ -79,18 +81,18 @@ public final class BlackMarketMenu extends MenuController {
             (listing.stolen() ? stolen : contraband).add(card);
         }
 
-        List<Card> lot = new ArrayList<>();
+        // Le lot sans etiquette se range avec la contrebande : une section pour une carte, c'est trop.
         BlackMarketConfig.Mystery mystery = config.mystery();
         if (mystery.price() > 0L && !mystery.outcomes().isEmpty()) {
             int left = BlackMarket.lotsLeft(player);
             Card card = Card.of(new ItemStack(Items.BARREL), "Lot sans etiquette", List.of(
-                            MoneyFormat.exact(mystery.price()) + " $",
+                            MoneyFormat.exact(mystery.price()) + " $" + (left > 0 ? " · reste " + left : ""),
                             "De la ferraille... ou le gros lot"))
-                    .accent(GOLD).badge(left > 0 ? "x" + left : "VENDU")
+                    .accent(GOLD).badge(left > 0 ? "" : "VENDU")
                     .tooltip(List.of("Un prix fixe, un contenu au hasard",
                             "Parfois de l'or, parfois du vent",
                             left + " lot(s) aujourd'hui"));
-            lot.add(left <= 0 ? card.state(MenuView.DISABLED) : card.action("lot|ouvrir un lot"));
+            contraband.add(left <= 0 ? card.state(MenuView.DISABLED) : card.action("lot|ouvrir un lot"));
         }
 
         List<Card> buyback = new ArrayList<>();
@@ -105,10 +107,10 @@ public final class BlackMarketMenu extends MenuController {
                 }
             }
             Card card = Card.of(new ItemStack(wanted.item()), name, List.of(
-                            MoneyFormat.exact(wanted.unit()) + " $ la piece, usure deduite",
-                            left > 0 ? "Encore " + left + " aujourd'hui · " + held + " dans ton sac"
-                                    : "Il en a assez pour aujourd'hui"))
-                    .accent(GREEN).badge(left > 0 ? "x" + left : "OK");
+                            left > 0 ? "Il en prend encore " + left + " aujourd'hui · " + held + " dans ton sac"
+                                    : "Il en a assez pour aujourd'hui",
+                            "Prix d'une piece neuve, usure deduite"))
+                    .accent(GREEN).badge(MoneyFormat.exact(wanted.unit()) + " $");
             buyback.add(left <= 0 || held == 0 ? card.state(MenuView.DISABLED)
                     : card.action("sell:" + wanted.index() + "|revendre"));
         }
@@ -116,9 +118,6 @@ public final class BlackMarketMenu extends MenuController {
         List<MenuView.Section> sections = new ArrayList<>();
         sections.add(new MenuView.Section("MARCHANDISE VOLEE", "melt", MenuView.GRID, stolen));
         sections.add(new MenuView.Section("CONTREBANDE", "fuel", MenuView.GRID, contraband));
-        if (!lot.isEmpty()) {
-            sections.add(new MenuView.Section("LOT SANS ETIQUETTE", "resources", MenuView.GRID, lot));
-        }
         sections.add(new MenuView.Section("LE RECELEUR RACHETE", "upgrade", MenuView.ROWS, buyback));
         String quote = BlackMarket.quote(player);
         return new MenuView(id(), "Marche noir", quote.isEmpty() ? "Le receleur" : "Le receleur · " + quote, stats,

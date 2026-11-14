@@ -61,23 +61,44 @@ public final class PassCommand {
                             return done(context, "Quetes finies : +" + xp + " XP");
                         }))
                         .then(Commands.literal("avancer").then(Commands.argument("jours", IntegerArgumentType.integer(1, 400))
-                                .executes(context -> {
-                                    PassSeason.advance(Duration.ofDays(IntegerArgumentType.getInteger(context, "jours")));
-                                    ServerPlayer player = context.getSource().getPlayerOrException();
-                                    PassApi.rollIfDue(player);
-                                    return done(context, "Horloge du pass : " + PassSeason.now().toLocalDateTime()
-                                            .withNano(0));
-                                })))
+                                .executes(context -> advance(context, false))
+                                .then(Commands.literal("confirmer").executes(context -> advance(context, true)))))
                         .then(Commands.literal("horloge").executes(context -> {
                             PassSeason.resetClock();
                             ServerPlayer player = context.getSource().getPlayerOrException();
                             PassApi.rollIfDue(player);
-                            return done(context, "Horloge du pass remise a l'heure");
+                            return done(context, "Horloge du pass remise a l'heure : pass " + PassSeason.ofMonth(
+                                    PassSeason.current()));
                         }))
                         .then(Commands.literal("recharger").executes(context -> {
                             boolean ok = PassConfig.load(context.getSource().getServer());
                             return done(context, ok ? "Pass recharge" : "Echec du rechargement : voir le journal");
                         }))));
+    }
+
+    /**
+     * Avance l'horloge du pass pour essayer une bascule. La bascule est vraie : le
+     * mois en cours se clot (ce qui est atteint est donne) et sa progression ne
+     * revient pas avec {@code horloge}. Sur l'horloge reelle, avec de la
+     * progression en jeu, il faut le confirmer.
+     */
+    private static int advance(CommandContext<CommandSourceStack> context, boolean confirmed)
+            throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        int days = IntegerArgumentType.getInteger(context, "jours");
+        PassApi.rollIfDue(player);
+        PassData data = PassApi.data(player);
+        if (!confirmed && !PassSeason.shifted() && (data.xp() > 0L || !data.claimedLevels().isEmpty())) {
+            context.getSource().sendFailure(Component.literal("Essai d'une vraie bascule : le pass "
+                    + PassSeason.ofMonth(data.season()) + " sera clos (ce qui est atteint est donne) et sa progression"
+                    + " ne reviendra pas avec /pass admin horloge. Pour continuer : /pass admin avancer " + days
+                    + " confirmer"));
+            return 0;
+        }
+        PassSeason.advance(Duration.ofDays(days));
+        PassApi.rollIfDue(player);
+        return done(context, "Horloge du pass : " + PassSeason.now().toLocalDateTime().withNano(0)
+                + " (jusqu'a /pass admin horloge ou un redemarrage)");
     }
 
     private static int done(CommandContext<CommandSourceStack> context, String message) throws CommandSyntaxException {
