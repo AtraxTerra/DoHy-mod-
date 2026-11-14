@@ -628,7 +628,8 @@ final class Siege {
             if (sent >= Math.min(room, 6)) {
                 break;
             }
-            boolean missing = role.worker() && alive().stream().noneMatch(s -> s.role() == role);
+            boolean missing = (role.worker() || role == SoldierRole.MEDECIN)
+                    && alive().stream().noneMatch(other -> other.role() == role);
             boolean needPaymaster = role == SoldierRole.TRESORIER && soldier(paymaster) == null;
             if ((role.worker() || role == SoldierRole.MEDECIN) && !missing) {
                 continue;

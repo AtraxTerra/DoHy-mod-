@@ -56,7 +56,7 @@ import java.util.UUID;
  * </ul>
  *
  * <p>De quoi tirer une humeur cible ; son hostilite s'en approche par tiers,
- * pas d'un coup. Au-dela de 62, avec une armee et de quoi la payer, elle passe
+ * pas d'un coup. Au-dela de 58, avec une armee et de quoi la payer, elle passe
  * a l'acte : un ultimatum (un tribut, sinon la guerre) si elle a de l'honneur
  * ou si tu as deja paye, une declaration de guerre directe sinon.
  *
@@ -80,7 +80,9 @@ public final class WarStrategy {
     static final long DAY_MS = 86_400_000L;
     /** Une faction plus pauvre n'interesse personne. */
     static final long MIN_BANK = 2_000L;
-    static final double MENACE_AT = 62.0d;
+    static final double MENACE_AT = 58.0d;
+    /** Apres une guerre, un jour de calme avant qu'une autre nation ne s'en prenne a toi. */
+    static final long CALM_MS = DAY_MS;
     /** Ce que coute un soldat engage dans un assaut, a sa nation. */
     static final long SOLDIER_COST = 120L;
 
@@ -268,13 +270,13 @@ public final class WarStrategy {
         NationTraits traits = relation.traits();
         FactionData faction = FactionApi.data(player);
         double bank = Math.max(0L, faction.bank());
-        double prize = traits.greed() * Math.log10(1.0d + bank / 1000.0d) * 14.0d;
-        double envy = traits.aggression() * Math.min(12.0d, faction.claims().size() * 0.6d);
+        double prize = traits.greed() * Math.log10(1.0d + bank / 1000.0d) * 18.0d;
+        double envy = traits.aggression() * Math.min(15.0d, faction.claims().size() * 0.8d);
         double revenge = traits.grudge() * Math.min(40.0d, relation.grievance(now));
         double nerve = relation.army / (double) Math.max(1, traits.maxArmy()) * 12.0d - 6.0d;
         double deterrence = traits.caution() * (relation.defense * 25.0d + power(player) * 15.0d)
                 + relation.fear * 0.35d * (1.0d - traits.aggression() * 0.5d);
-        double base = 15.0d + 25.0d * traits.aggression();
+        double base = 18.0d + 25.0d * traits.aggression();
         return Math.max(0.0d, Math.min(100.0d, base + prize + envy + revenge + nerve - deterrence));
     }
 
@@ -298,7 +300,9 @@ public final class WarStrategy {
             return;
         }
         long bank = FactionApi.data(player).bank();
-        boolean busy = data.conflict().isPresent() || Sieges.of(player.getUUID()) != null;
+        boolean calm = data.relations.stream().anyMatch(other -> other.stance == WarData.Stance.TREVE
+                && now - other.since < CALM_MS);
+        boolean busy = calm || data.conflict().isPresent() || Sieges.of(player.getUUID()) != null;
         if (busy || bank < MIN_BANK || relation.hostility < MENACE_AT || relation.army < 10
                 || relation.treasury < expedition(relation)) {
             return;
