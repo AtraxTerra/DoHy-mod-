@@ -1259,7 +1259,8 @@ final class Siege {
         }
         int defenders = 0;
         ServerPlayer target = target();
-        if (target != null && target.isAlive() && !target.isSpectator() && target.level() == level && inZone(target)) {
+        if (target != null && target.isAlive() && !target.isSpectator() && !target.isCreative()
+                && target.level() == level && inZone(target)) {
             defenders++;
         }
         AABB box = new AABB(vault).inflate(ZONE, 3.5d, ZONE);

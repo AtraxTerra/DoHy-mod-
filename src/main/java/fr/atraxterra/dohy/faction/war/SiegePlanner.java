@@ -364,7 +364,7 @@ final class SiegePlanner {
                 int ci = (((z0 + z) >> 4) - chunkFromZ) * cw + (((x0 + x) >> 4) - chunkFrom);
                 int d = distance[ci];
                 int feet = snap.surface[z * w + x];
-                if (claims[ci] == 0 && d >= 1 && d <= 3 && feet > 0 && campable(snap, x, feet, z)) {
+                if (claims[ci] == 0 && d >= 2 && d <= 3 && feet > 0 && campable(snap, x, feet, z)) {
                     snap.seed[z * w + x] = true;
                     any = true;
                 }
