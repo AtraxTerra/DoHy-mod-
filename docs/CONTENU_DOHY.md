@@ -906,12 +906,12 @@ Paladium.
   (les noms se complètent).
 - **Le sommaire** : le cartouche (fiches, lues, nouvelles), « À LIRE » (les fiches découvertes et
   pas encore lues, marquées NOUVEAU), puis une section par catégorie — Débuter, Économie, Métiers,
-  PalaMod, Donjons, Faction, La Terre, Lieux, Agriculture, Technique : **67 fiches** (65, puis le
-  pass et le marché noir).
+  PalaMod, Donjons, Faction, La Terre, Lieux, Agriculture, Technique : **68 fiches** (65, puis le
+  pass, le marché noir et les boss de métier).
 - **Une fiche** : son résumé et ses sections (paragraphes, puces, commandes, astuces) dans la mise
   en page `TEXT` du kit ; **TA PROGRESSION** quand la fiche en nomme une (argent, les quatre métiers,
   un métier et ses quatre prochains déblocages, contrats, musée, succès, RPG, faction, guerre,
-  pays de la Terre, améliorations, pass) ; **PLANS DE CONSTRUCTION** (un clic donne le plan, une seule
+  pays de la Terre, améliorations, pass, boss de métier) ; **PLANS DE CONSTRUCTION** (un clic donne le plan, une seule
   fois par structure dans le sac) ; **COMMANDES ET TOUCHES** (un clic lance une commande sans
   argument : le serveur ne lance que celles écrites dans la fiche ouverte) ; **VOIR AUSSI**.
 - **La découverte** : une fiche se découvre quand on croise son système — un objet dans le sac
@@ -959,7 +959,7 @@ fichier sans redémarrer.
 - **`tools/check_encyclopedia.py`** (et la CI) vérifie tout ce qu'une fiche nomme : voisins,
   catégories, objets et tags, plans, menus, dimensions, progressions, racines des commandes,
   textes sans accents, longueur des titres et des lignes. Au chargement, le journal du serveur
-  dit `Encyclopedie : 67 fiches en 10 categories`, suivi des problèmes s'il y en a.
+  dit `Encyclopedie : 68 fiches en 10 categories`, suivi des problèmes s'il y en a.
 
 ### Les plans de construction
 
@@ -1110,6 +1110,151 @@ un nouvel arrivage chaque matin à 5 h (la bascule des contrats). On y paie en l
 - La planque : `SpawnBuilder.blackMarket()` (version 8 du spawn : un spawn plus ancien est
   reconstruit tout seul), la borne `SpawnTerminalBlock.Kind.BLACK_MARKET` (texture dessinée par
   `tools/dohy_assets.py`).
+
+## Les donjons façon V12 : modes, boss Dark, nouvelles salles (2026-11-14)
+
+Le troisième lot du 2026-11-14. Choix du joueur : **les modes Facile/Normal/Difficile, des boss
+« Dark », de nouvelles salles et de nouveaux mini-boss**. Le wiki de la V12 ne donne aucun chiffre :
+tout ce qui suit est de DoHy. Le reste des donjons ne change pas (PALAMOD.md, § 22).
+
+### Les modes
+
+On choisit le mode dans l'écran des paliers (trois cartes au-dessus des vignettes ; le dernier choisi
+revient à la prochaine ouverture).
+
+| | Facile | Normal | Difficile |
+|---|---|---|---|
+| Vie des monstres | × 0,6 | × 1 | × 1,5 |
+| Dégâts des monstres et des boss | × 0,6 | × 1 | × 1,35 |
+| Monstres par vague | − 1 | = | + 1 |
+| Vie des mini-boss et des boss | × 0,6 | × 1 | × 1,6 (boss Dark × 2,24) |
+| XP de métier et XP RPG | × 0,5 | × 1 | × 1,5 |
+| Tirages de chaque coffre | − 1 | = | + 1 |
+| Récompenses uniques | 1 fois sur 4 | 1 fois sur 2 | toujours |
+
+- **La progression** : le **Normal est le donjon d'avant les modes** ; la progression déjà faite y
+  compte telle quelle. **Normal et Difficile partagent la progression** (un palier réussi dans l'un
+  ouvre le suivant dans les deux) ; le **Facile a la sienne**, que les deux autres font aussi
+  avancer. Le meilleur palier réussi en Difficile est gardé à part : c'est le « record » de l'écran.
+  Les clés de progression : `talikus` (Normal, inchangée), `talikus:facile`, `talikus:difficile`.
+
+### Les boss Dark
+
+En **Difficile, les boss des paliers en 0 sont Dark** (« Seigneur de Talikus Dark ») : le même boss,
+son modèle dans sa **variante noire** quelle que soit la tranche, un nom violet, une aura de fumée et
+d'âmes, **× 1,4 de vie** en plus du mode, et **une capacité sombre de plus** :
+
+- **Pulsation sombre** : obscurité, flétrissement et dégâts à 10 blocs ;
+- **Ombres** : deux copies plus petites, à 15 % de sa vie, qui s'effacent au bout de vingt secondes ;
+- **Drain de vie** : il blesse les joueurs à 8 blocs et s'en soigne.
+
+Sous **la moitié de sa vie, la forme Dark s'éveille** (titre à l'écran) : résistance, vitesse, et ses
+capacités reviennent 40 % plus souvent. Son coffre tire **une fois de plus dans la table des boss**
+et donne **une rune** (rare, épique une fois sur trois) et **une essence** du donjon au tier du palier.
+
+### Les nouvelles salles
+
+Les portes proposent toujours une à trois salles, maintenant tirées au poids parmi sept :
+
+| Salle | Porte | Dès le palier | Ce qu'il faut faire | Coffre |
+|---|---|---|---|---|
+| Combat | rouge | 1 | deux ou trois vagues | réserve |
+| Énigme | bleue | 1 | trouver 3 à 5 boutons | réserve |
+| Boost | verte | 1 | un bonus à l'autel | — |
+| Marchande | jaune | 1 | acheter | — |
+| **Élite** | orange | 3 | battre un des trois élites du donjon | réserve + 1 tirage de boss |
+| **Piège** | noire | 2 | traverser un sol qui s'embrase par rangées jusqu'au bouton du fond | réserve + 1 tirage |
+| **Survie** | rose | 8 | tenir 40 à 60 s sous des renforts sans fin (12 monstres au plus) | réserve + 1 tirage |
+
+- **Le piège** : chaque rangée de dalles passe au magma (alerte), puis des pointes en sortent et
+  blessent qui s'y tient (4 × (1 + palier / 50) × le mode), puis le sol revient ; les rangées sont
+  décalées de 0,6 s, une vague qui avance vers l'entrée. Trois rangées sûres à l'entrée, deux devant
+  le bouton.
+- **La survie** : une barre rose compte les secondes ; des renforts toutes les trois secondes. Au
+  bout du compte, les monstres s'effacent.
+
+### Les élites (nouveaux mini-boss)
+
+Trois par donjon, DoHy, avec les six capacités nouvelles des boss (séisme, nuage toxique, toiles —
+et les trois sombres des Dark) :
+
+| Donjon | Élites |
+|---|---|
+| Talikus | Épouvantail (squelette, tête de citrouille), Faucheuse (squelette wither, houe), Corbeau géant (phantom) |
+| Nimbria | Ver des galeries (poisson d'argent géant), Contremaître (zombie, pioche et casque), Mineur maudit (vagabond) |
+| Vitalys | Braconnier (pillard), Mante (araignée venimeuse géante), Brasier (blaze) |
+| Manelios | Sirène (noyée au trident), Tempête (breeze), Alchimiste fou (sorcière) |
+
+### Les capacités nouvelles
+
+- **Séisme** : dégâts, lenteur et secousse aux joueurs au sol à 9 blocs.
+- **Nuage toxique** : un nuage sous la cible, poison tant qu'on y reste, cinq secondes.
+- **Toiles** : des toiles autour de la cible, cinq secondes.
+
+### Essais
+
+`/donjon admin lancer <donjon> <palier> <mode>` (sans clé ni progression), `/donjon admin salle
+<type>` (la salle suivante, au choix), `/donjon admin finir` (la salle en cours réussie).
+
+### Code
+
+- `palamod/dungeon/DungeonMode` (les modes), `BossSpec.darkForm()`, `Dungeon.elites()`,
+  `RoomType` (ELITE, TRAP, SURVIVAL), `BossAbility` (six capacités), `DungeonRun` (modes, Dark,
+  pièges, survie, ombres, nuages, toiles), `DungeonRewards.chest(…, bossRolls, extraRolls)` et
+  `dark(…)`, `DungeonManager.best/highest/recordCleared(…, mode)`, l'écran des paliers
+  (`DungeonMenus.Paliers`).
+
+## Les boss de métier (2026-11-14)
+
+Choix du joueur : **des offrandes au spawn ; le boss arrive une heure après, dans une arène**.
+
+- **Les gardiens**, un par métier, chacun dans le **décor du donjon de son métier** :
+
+| Métier | Gardien | Monstre | Arène | Capacités |
+|---|---|---|---|---|
+| Fermier | Gardien des moissons | ravageur × 1,25 | grange de Talikus | ruée, onde de choc, enracinement, renforts |
+| Mineur | Colosse de fer | golem de fer × 1,7 | galerie de Nimbria | onde de choc, séisme, ruée |
+| Chasseur | Bête sauvage | zoglin × 2,4 | forge de Vitalys | ruée, renforts, attraction |
+| Alchimiste | Sorcière des fioles | sorcière × 2 | temple de Manelios | nuage toxique, téléportation, enracinement, renforts |
+
+- **L'autel des offrandes** : sur le **parvis du spawn, à gauche de l'allée en arrivant** (spawn
+  version 9, reconstruit tout seul) : un dallage rond, une estrade, la **borne AUTEL** au milieu et un
+  pilier par métier (foin, fer brut, os, améthyste). La borne ouvre l'écran de l'autel, où l'on
+  **dépose** ; ouvert d'ailleurs (carte « Boss de métier » du menu principal, `/autel`), l'écran ne
+  fait que montrer et lancer un combat.
+- **L'offrande** (niveau 1 ; × 1,5 au niveau 2, × 2 au niveau 3… × 5,5 au niveau 10) :
+
+| Métier | Offrande |
+|---|---|
+| Fermier | 192 blé, 128 carottes, 128 pommes de terre, 32 citrouilles |
+| Mineur | 64 lingots de fer, 32 d'or, 24 d'améthyste, 16 de titane, 8 de paladium |
+| Chasseur | 128 chair putréfiée, 64 os, 64 ficelles, 32 poudre à canon, 16 perles de l'Ender |
+| Alchimiste | 96 verrues du Nether, 64 poudre de glowstone, 16 bâtons de blaze, 16 crèmes de magma, 16 yeux d'araignée, 4 larmes de ghast |
+
+  On la dépose en autant de fois qu'il faut (« Offrir » prend dans le sac ce qu'il manque).
+- **Une heure** après l'offrande complète (heure réelle, redémarrages compris), le gardien
+  **arrive** : l'autel prévient dans le chat dix minutes avant, puis à l'arrivée avec un lien
+  **[Combattre]** (et à chaque connexion tant qu'il attend). **Il attend sans limite.**
+- **Le combat** : une partie de donjon d'une seule salle (la salle de boss), sans clé, d'où l'on
+  revient là où l'on était. Le gardien prend la force des monstres du **palier 10 × son niveau**
+  (dégâts compris) ; **300 points de vie au niveau 1, + 35 % par niveau** (× 1 + 0,6 par joueur en
+  plus) ; il **s'enrage sous le tiers** de sa vie (force, capacités plus fréquentes). **Une mort ne
+  coûte rien** : on est soigné et ramené, et il attend encore.
+- **La victoire** : **20 000 XP du métier et 15 000 $ par niveau**, tout de suite ; **son coffre**
+  au centre de l'arène (réserve du donjon de l'arène et deux tirages de la table des boss, au palier
+  10 × niveau), livré par la porte de sortie ; et le gardien **monte d'un niveau** (dix au plus).
+- **Essais** : `/autel admin offrande <métier>` (l'offrande à une ressource près), `/autel admin
+  pret <métier>` (l'heure passée), `/autel admin niveau <métier> <n>`.
+
+### Code
+
+- `palamod/dungeon/JobBosses` (les gardiens, leur arène, leur niveau), `DungeonManager.startJobBoss`,
+  `DungeonRun` (une partie d'une salle de boss, `jobBoss`).
+- `jobboss/JobBossData` (attachement `job_boss` : niveau, dépôt, arrivée, annonces, victoires ;
+  gardé à la mort), `JobBossApi` (offrandes, arrivée, combat, victoire, annonces), `JobBossMenu`
+  (l'écran `dohy:autel`), `JobBossEvents` (annonces, `/autel`).
+- La borne `SpawnTerminalBlock.Kind.JOB_ALTAR` et `SpawnBuilder.altar()` ; texture de la borne par
+  `tools/dohy_assets.py`.
 
 ## Sur un serveur dédié (2026-11-13)
 

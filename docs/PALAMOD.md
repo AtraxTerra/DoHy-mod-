@@ -2078,6 +2078,14 @@ pièce de lune, double XP, têtes de wither passive et suprême.
 - Les parties ne vivent qu'en mémoire : un arrêt du serveur ramène tout le monde, sans rien
   livrer ; qui se reconnecte dans la dimension sans partie y est renvoyé à son entrée.
 
+### Depuis le 2026-11-14 : modes, boss Dark, nouvelles salles
+
+Tout ce qui précède décrit le **mode Normal**. Les modes Facile et Difficile, les boss Dark (paliers
+en 0 du Difficile), les salles d'élite, de piège et de survie, les douze élites et six capacités de
+boss de plus sont décrits dans `docs/CONTENU_DOHY.md` (« Les donjons façon V12 ») ; les boss de
+métier, qui se battent dans une salle de boss de ces donjons, au même endroit (« Les boss de
+métier »).
+
 ### Règles de la dimension
 
 Rien ne s'y casse ni ne s'y pose (sauf en créatif), les explosions et les monstres n'y dégradent

@@ -17,6 +17,7 @@ autocrafter, crusher, cobblebreaker, grinder).
 | 6 | Ouverture des caisses : la roulette | fait |
 | 7 | Encyclopédie : mise en page `TEXT`, menu du plan de construction, bouton « ? » de l'inventaire | fait |
 | 8 | Pass du mois (tuiles des 35 récompenses, quêtes), marché noir ; le bouton du Lucky Pass ouvre le pass | fait |
+| 9 | Modes des donjons (cartes de mode au-dessus des paliers), autel des offrandes des boss de métier | fait |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
 
@@ -238,6 +239,19 @@ construction »). Elle passe par `MenuView`, avec une mise en page de plus :
   « VENDU » en pastille quand il n'y en a plus), ce que le receleur rachète en `ROWS` (vert, le
   prix d'une pièce en pastille). Une carte trop chère reste cliquable : le refus dit ce qu'il
   manque.
+
+## Les modes des donjons et l'autel (lot 9)
+
+- **Le choix du palier** (`DungeonMenus.Paliers`) : une section MODE en tête (trois cartes,
+  « CHOISI » en pastille sur le mode retenu, un clic change de mode et les vignettes suivent), puis
+  « Avant d'entrer », puis les cent paliers du mode. En Difficile, les paliers en 0 montrent une rose
+  du wither et « Boss Dark : … » ; le cartouche dit le métier, le mode et le dernier palier réussi
+  (le record en Difficile).
+- **L'autel des offrandes** (`JobBossMenu`, vue `dohy:autel`) : les quatre gardiens en `GRID`
+  (niveau, état — offrande en %, « Arrive dans 42 min », « T'attend dans l'arène » —, pastille PRET
+  ou EN ROUTE, barre de l'offrande sur celui qu'on regarde), son offrande en `TILES` (déposé / requis,
+  ce qu'il y a dans le sac, vert quand c'est complet), la carte d'action (Offrir à l'autel seulement,
+  En route, ou Combattre), puis ce qu'il rapporte en `ROWS`.
 
 ## Vérification
 
