@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -32,11 +33,12 @@ import java.util.List;
  * L'hologramme des plans de construction.
  *
  * <p>Chaque plan pose de l'inventaire (dans la dimension, a moins de 160
- * blocs) dessine ses cases en cubes translucides, a la texture du bloc
- * attendu : teintes de bleu pour un bloc a poser, de rouge pour un bloc a
- * retirer, de jaune pour un bloc a finir, d'un voile vert pour un bloc en
- * place. Un plan tenu en main et pas encore pose montre ou il irait, sur le
- * bloc vise, en blanc.
+ * blocs) dessine ses cases : un bloc a poser est le bloc attendu, translucide,
+ * dans une coque bleue ; un bloc a retirer, une coque rouge ; un bloc a finir,
+ * une coque jaune ; un bloc en place, un voile vert. Les coques sont d'une
+ * couleur unie (le centre d'une texture blanche) : teinter la texture du bloc
+ * l'assombrit, et le rouge se perd sur un bloc deja rouge. Un plan tenu en
+ * main et pas encore pose montre ou il irait, sur le bloc vise, en blanc.
  *
  * <p>Tout se lit chez le client : le plan porte sa pose ({@link PlanData}),
  * et le monde du client dit ce qui est construit.
@@ -48,14 +50,20 @@ public final class PlanRenderer {
     private static final double RANGE = 160.0d;
     private static final double DRAW = 72.0d;
 
-    private static final int TO_PLACE = 0x9C7FB6FF;
-    private static final int TO_REMOVE = 0xB4FF4A4A;
-    private static final int TO_FINISH = 0xA8FFD34A;
-    private static final int IN_PLACE = 0x3022E558;
-    private static final int PREVIEW = 0x70FFFFFF;
+    /** Le bloc a poser, translucide, a ses couleurs. */
+    private static final int TO_PLACE_BLOCK = 0x99FFFFFF;
+    /** Sa coque bleue. */
+    private static final int TO_PLACE_SHELL = 0x5C4FA3FF;
+    private static final int TO_REMOVE = 0xA8FF3030;
+    private static final int TO_FINISH = 0x99FFD02E;
+    private static final int IN_PLACE = 0x4C2EE66B;
+    private static final int PREVIEW = 0x80FFFFFF;
 
-    /** Un cube a dessiner, en coordonnees relatives a la camera. */
-    private record Ghost(float x, float y, float z, TextureAtlasSprite sprite, int color, float inset) {
+    /**
+     * Un cube a dessiner, en coordonnees relatives a la camera ; {@code flat} : une
+     * couleur unie, eclairee d'en haut sur toutes ses faces.
+     */
+    private record Ghost(float x, float y, float z, TextureAtlasSprite sprite, int color, float inset, boolean flat) {
     }
 
     private PlanRenderer() {
@@ -112,30 +120,17 @@ public final class PlanRenderer {
                 continue;
             }
             Blueprint.Status status = expect.status(level, pos);
-            if (status == Blueprint.Status.OPTIONAL) {
-                continue;
-            }
-            int color;
-            float inset;
             switch (status) {
-                case CORRECT -> {
-                    color = IN_PLACE;
-                    inset = -0.004f;
+                case OPTIONAL -> {
                 }
-                case WRONG -> {
-                    color = TO_REMOVE;
-                    inset = -0.006f;
-                }
-                case PARTIAL -> {
-                    color = TO_FINISH;
-                    inset = -0.005f;
-                }
+                case CORRECT -> ghosts.add(shell(minecraft, pos, camera, IN_PLACE, -0.004f));
+                case WRONG -> ghosts.add(shell(minecraft, pos, camera, TO_REMOVE, -0.008f));
+                case PARTIAL -> ghosts.add(shell(minecraft, pos, camera, TO_FINISH, -0.006f));
                 default -> {
-                    color = TO_PLACE;
-                    inset = 0.06f;
+                    ghosts.add(ghost(minecraft, pos, camera, expect.display(), TO_PLACE_BLOCK, 0.12f));
+                    ghosts.add(shell(minecraft, pos, camera, TO_PLACE_SHELL, 0.04f));
                 }
             }
-            ghosts.add(ghost(minecraft, pos, camera, expect.display(), color, inset));
         }
     }
 
@@ -170,7 +165,15 @@ public final class PlanRenderer {
         TextureAtlasSprite sprite = minecraft.getModelManager().getBlockStateModelSet()
                 .getParticleMaterial(display).sprite();
         return new Ghost((float) (pos.getX() - camera.x), (float) (pos.getY() - camera.y),
-                (float) (pos.getZ() - camera.z), sprite, color, inset);
+                (float) (pos.getZ() - camera.z), sprite, color, inset, false);
+    }
+
+    /** Une coque d'une couleur unie : le centre de la texture du beton blanc. */
+    private static Ghost shell(Minecraft minecraft, BlockPos pos, Vec3 camera, int color, float inset) {
+        TextureAtlasSprite sprite = minecraft.getModelManager().getBlockStateModelSet()
+                .getParticleMaterial(Blocks.WHITE_CONCRETE.defaultBlockState()).sprite();
+        return new Ghost((float) (pos.getX() - camera.x), (float) (pos.getY() - camera.y),
+                (float) (pos.getZ() - camera.z), sprite, color, inset, true);
     }
 
     // -- Un cube --------------------------------------------------------------------------
@@ -188,14 +191,29 @@ public final class PlanRenderer {
         float u1 = sprite.getU1();
         float v0 = sprite.getV0();
         float v1 = sprite.getV1();
+        if (ghost.flat()) {
+            // Une couleur unie : tout le cube prend le centre de la texture.
+            float u = (u0 + u1) / 2.0f;
+            float v = (v0 + v1) / 2.0f;
+            u0 = u;
+            u1 = u;
+            v0 = v;
+            v1 = v;
+        }
         int color = ghost.color();
-        // Le haut, le bas, puis les quatre cotes, chacun vu de l'exterieur.
+        boolean flat = ghost.flat();
+        // Le haut, le bas, puis les quatre cotes, chacun vu de l'exterieur. Une coque unie est
+        // eclairee d'en haut sur toutes ses faces : sa couleur ne s'assombrit pas sur les cotes.
         quad(pose, buffer, x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0, u0, v0, u1, v1, color, 0, 1, 0);
-        quad(pose, buffer, x0, y0, z1, x0, y0, z0, x1, y0, z0, x1, y0, z1, u0, v0, u1, v1, color, 0, -1, 0);
-        quad(pose, buffer, x0, y1, z1, x0, y0, z1, x1, y0, z1, x1, y1, z1, u0, v0, u1, v1, color, 0, 0, 1);
-        quad(pose, buffer, x1, y1, z0, x1, y0, z0, x0, y0, z0, x0, y1, z0, u0, v0, u1, v1, color, 0, 0, -1);
-        quad(pose, buffer, x1, y1, z1, x1, y0, z1, x1, y0, z0, x1, y1, z0, u0, v0, u1, v1, color, 1, 0, 0);
-        quad(pose, buffer, x0, y1, z0, x0, y0, z0, x0, y0, z1, x0, y1, z1, u0, v0, u1, v1, color, -1, 0, 0);
+        quad(pose, buffer, x0, y0, z1, x0, y0, z0, x1, y0, z0, x1, y0, z1, u0, v0, u1, v1, color, 0, flat ? 1 : -1, 0);
+        quad(pose, buffer, x0, y1, z1, x0, y0, z1, x1, y0, z1, x1, y1, z1, u0, v0, u1, v1, color, 0, flat ? 1 : 0,
+                flat ? 0 : 1);
+        quad(pose, buffer, x1, y1, z0, x1, y0, z0, x0, y0, z0, x0, y1, z0, u0, v0, u1, v1, color, 0, flat ? 1 : 0,
+                flat ? 0 : -1);
+        quad(pose, buffer, x1, y1, z1, x1, y0, z1, x1, y0, z0, x1, y1, z0, u0, v0, u1, v1, color, flat ? 0 : 1,
+                flat ? 1 : 0, 0);
+        quad(pose, buffer, x0, y1, z0, x0, y0, z0, x0, y0, z1, x0, y1, z1, u0, v0, u1, v1, color, flat ? 0 : -1,
+                flat ? 1 : 0, 0);
     }
 
     private static void quad(PoseStack.Pose pose, VertexConsumer buffer,

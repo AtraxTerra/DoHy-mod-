@@ -891,6 +891,125 @@ d'armement en 3D**. Compatible **Create** et **NTM NEXT**.
   `PaletteScreen`.
 - Modèle, textures (palette et image des caisses), recette, tags : `tools/dohy_assets.py`.
 
+## L'encyclopédie et les plans de construction (2026-11-14)
+
+Demandés le 2026-11-14, avec le pass mensuel, le marché noir, les boss de métier et les donjons
+façon V12 : ces deux-là forment le premier des trois lots. L'encyclopédie explique tout le mod en
+jeu ; les plans posent l'hologramme d'une structure à plusieurs blocs, comme le Blueprint de
+Paladium.
+
+### L'encyclopédie
+
+- **L'ouvrir** : touche **J** (à changer dans les commandes du jeu), bouton vert **?** de
+  l'inventaire (à gauche du bouton rouge du menu principal), carte « Encyclopédie » de la section
+  AIDE du menu principal, `/encyclopedie` ou `/wiki` ; `/encyclopedie <fiche>` ouvre une fiche
+  (les noms se complètent).
+- **Le sommaire** : le cartouche (fiches, lues, nouvelles), « À LIRE » (les fiches découvertes et
+  pas encore lues, marquées NOUVEAU), puis une section par catégorie — Débuter, Économie, Métiers,
+  PalaMod, Donjons, Faction, La Terre, Lieux, Agriculture, Technique : **65 fiches**.
+- **Une fiche** : son résumé et ses sections (paragraphes, puces, commandes, astuces) dans la mise
+  en page `TEXT` du kit ; **TA PROGRESSION** quand la fiche en nomme une (argent, les quatre métiers,
+  un métier et ses quatre prochains déblocages, contrats, musée, succès, RPG, faction, guerre,
+  pays de la Terre, améliorations) ; **PLANS DE CONSTRUCTION** (un clic donne le plan, une seule
+  fois par structure dans le sac) ; **COMMANDES ET TOUCHES** (un clic lance une commande sans
+  argument : le serveur ne lance que celles écrites dans la fiche ouverte) ; **VOIR AUSSI**.
+- **La découverte** : une fiche se découvre quand on croise son système — un objet dans le sac
+  (identifiant ou tag), une dimension, un menu du kit ouvert ; douze fiches de départ sont là
+  d'emblée. Toutes les cinq secondes, le sac et la dimension sont comparés aux déclencheurs ; un
+  menu découvre les siennes à son ouverture. Une fiche découverte s'annonce dans le chat, avec un
+  lien **[Lire]** (plusieurs à la fois : **[Ouvrir]**) ; à la première connexion, un message
+  d'accueil invite à ouvrir l'encyclopédie. Fiches découvertes et lues : attachement
+  `encyclopedia` du joueur, gardé à la mort.
+
+#### Écrire une fiche
+
+Les fiches vivent dans `data/encyclopedia.json`, copié dans le jar sous `data/dohy/` (un datapack
+peut donc le remplacer). Sur le serveur, `/encyclopedie admin recharger` (opérateur) relit le
+fichier sans redémarrer.
+
+```json
+{
+  "categories": [{"id": "palamod", "name": "PalaMod", "color": "EF3826", "icon": "palamod:paladium_ingot"}],
+  "entries": [{
+    "id": "grinder", "category": "palamod", "order": 3, "icon": "palamod:grinder",
+    "title": "Le grinder",
+    "card": ["Multibloc 3 x 3 x 3", "Forge les outils"],
+    "summary": ["Le grinder forge les outils en paladium..."],
+    "sections": [{"title": "La structure", "text": ["- une puce", "! une astuce", "un paragraphe"]}],
+    "commands": ["/plan grinder : recevoir le plan", "J : ouvrir l'encyclopedie"],
+    "see": ["equipement", "machines"],
+    "progress": "",
+    "plans": ["grinder"],
+    "discover": {"always": false, "items": ["palamod:grinder", "#palamod:un_tag"],
+                 "dimensions": ["palamod:miner"], "views": ["dohy:dimminer_entry"]}
+  }]
+}
+```
+
+- **Textes sans accents** : les polices du kit n'en ont pas. Un titre tient en 16 caractères (il
+  partage la carte du sommaire avec la pastille NOUVEAU), une ligne de carte en 30.
+- Dans une section, une ligne qui commence par `- ` est une puce, par `/` une commande, par `! `
+  une astuce (en or) ; le reste est un paragraphe.
+- `commands` : « ce qu'on tape : ce que ça fait ». Une commande sans `<` ni `[` est lançable d'un
+  clic.
+- `progress` : `argent`, `metiers`, `metier:miner|hunter|farmer|alchemist`, `contrats`, `musee`,
+  `succes`, `rpg`, `faction`, `guerre`, `terre`, `ameliorations`.
+- `views` : les identifiants des menus du kit (`dohy:` + l'identifiant du `MenuController`).
+- **`tools/check_encyclopedia.py`** (et la CI) vérifie tout ce qu'une fiche nomme : voisins,
+  catégories, objets et tags, plans, menus, dimensions, progressions, racines des commandes,
+  textes sans accents, longueur des titres et des lignes. Au chargement, le journal du serveur
+  dit `Encyclopedie : 65 fiches en 10 categories`, suivi des problèmes s'il y en a.
+
+### Les plans de construction
+
+Un objet, le **Plan de construction** : dans l'onglet des machines, fabriqué avec trois papiers et
+un lapis-lazuli, reçu depuis une fiche, ou par `/plan <structure>` (`/plan` seul ouvre la fiche des
+plans).
+
+- **Poser** : clic droit sur un bloc — le plan se pose contre ce bloc, la structure s'étendant
+  devant toi, dans le sens de ton regard. Un nouveau clic le déplace ; **accroupi + clic droit** :
+  un quart de tour ; **clic droit en l'air** : le menu du plan.
+- **L'hologramme** : tant que le plan est dans le sac (même dimension, à moins de 160 blocs ; les
+  cases sont dessinées jusqu'à 72 blocs) — **à poser** : le bloc attendu, translucide, dans une
+  coque **bleue** ; **à retirer** (un autre bloc) : une coque **rouge** ; **à finir** (le bon bloc,
+  pas encore prêt : obsidienne wither à charger, liquide qui coule au lieu d'une source) : une
+  coque **jaune** ; **en place** : un voile **vert**. Les coques sont d'une couleur unie : teinter
+  la texture du bloc l'assombrissait, et le rouge se perdait sur les blocs déjà rouges du grinder.
+  Tenu en main et pas encore posé, le plan montre en blanc où il irait, sur le bloc visé.
+- **La barre d'action**, plan en main, chaque seconde : « Grinder · 12 / 27 blocs · 2 a retirer
+  · 1 a finir », puis « structure complete ! ».
+- **Le menu du plan** : le cartouche (blocs en place, taille, sens de la pose), la structure et sa
+  taille à choisir, Tourner, Retirer le plan (l'hologramme disparaît, le plan reste), Lire la fiche,
+  et le matériel : chaque bloc, combien il en faut, combien sont en place.
+
+| Plan (`/plan …`) | Tailles | Blocs | Ce que reconnaît le jeu |
+|---|---|---|---|
+| `grinder` | 3 x 3 x 3 | 27 (lave comprise) | `GrinderStructure` |
+| `chaudron` | 7 x 7, deux étages | 74 (bassin d'eau angélique compris) | `CauldronStructure` — le cœur se pose en dernier, la foudre forme le chaudron |
+| `boite_golem` | 3 x 3 x 3 | 27 | `GolemBoxStructure` |
+| `enclos` | foin de 3 x 3 à 7 x 7 | 42 à 114 | `BarnStructure` |
+| `spawners` | paliers I à IV (7 x 7 à 17 x 17) | 47, 71, 119, 195 | `SpawnerBlueprint` |
+| `portail_mineur` | cadre de 4 x 5 | 10 (coins libres) | `MinerPortalShape`, obsidienne chargée à fond |
+| `reserve` | cubes de 5, 6, 7 | 98, 152, 218 | la réserve d'or ; le cœur : or liquide ou vide, rien d'autre |
+
+Chaque plan reprend la forme vérifiée par le code de sa structure. **Vérifié en CI** : chaque taille
+bâtie à l'identique dans les quatre sens (64 constructions), toutes reconnues par la structure du
+jeu.
+
+### Code
+
+- `guide/Encyclopedia` (le fichier, ses catégories et ses fiches, rechargement), `EncyclopediaData`
+  (découvertes, lectures, accueil), `EncyclopediaEvents` (découverte, annonces, barre d'action des
+  plans), `EncyclopediaProgress` (les progressions), `EncyclopediaMenu` (sommaire et fiche, plans
+  donnés, commandes lancées), `EncyclopediaCommand` (`/encyclopedie`, `/wiki`, `/plan`),
+  `DoHyGuide` (l'objet et son composant).
+- `guide/plan/Blueprint` (cases, attentes, statut d'une case, pose et rotation), `Blueprints` (les
+  sept plans), `PlanData` (composant `dohy:plan` : structure, taille, pose), `PlanItem`, `PlanMenu`.
+- `client/guide/GuideClient` (touche J), `PlanRenderer` (l'hologramme, `SubmitCustomGeometryEvent`,
+  tout chez le client : le plan porte sa pose, le monde du client dit ce qui est bâti).
+- Le kit : mise en page `MenuView.TEXT` (`MenuScreen`), bouton « ? » de `KitInventoryScreen`,
+  section AIDE de `HubController`. Icône du plan (originale) : `tools/guide_assets.py`.
+
 ## Sur un serveur dédié (2026-11-13)
 
 Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les
