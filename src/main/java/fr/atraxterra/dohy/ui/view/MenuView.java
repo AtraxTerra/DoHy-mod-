@@ -26,18 +26,40 @@ import java.util.function.UnaryOperator;
  * @param back l'hexagone de gauche renvoie l'action « back »
  */
 public record MenuView(Identifier view, String title, String subtitle, List<Stat> stats, List<Section> sections,
-                       boolean back, List<Tab> tabs) implements UiView {
+                       boolean back, List<Tab> tabs, Hero hero, int flags) implements UiView {
 
     /** Une vue sans onglets : la forme de tous les menus d'avant les onglets. */
     public MenuView(Identifier view, String title, String subtitle, List<Stat> stats, List<Section> sections,
                     boolean back) {
-        this(view, title, subtitle, stats, sections, back, List.of());
+        this(view, title, subtitle, stats, sections, back, List.of(), null, 0);
+    }
+
+    public MenuView(Identifier view, String title, String subtitle, List<Stat> stats, List<Section> sections,
+                    boolean back, List<Tab> tabs) {
+        this(view, title, subtitle, stats, sections, back, tabs, null, 0);
     }
 
     /** La meme vue avec une rangee d'onglets (un seul niveau). */
     public MenuView withTabs(List<Tab> value) {
-        return new MenuView(view, title, subtitle, stats, sections, back, List.copyOf(value));
+        return new MenuView(view, title, subtitle, stats, sections, back, List.copyOf(value), hero, flags);
     }
+
+    /** La meme vue avec un panneau a gauche du contenu (la fiche d'un metier). */
+    public MenuView withHero(Hero value) {
+        return new MenuView(view, title, subtitle, stats, sections, back, tabs, value, flags);
+    }
+
+    /** La meme vue avec des drapeaux d'affichage ({@link #ANCHORS}). */
+    public MenuView withFlags(int value) {
+        return new MenuView(view, title, subtitle, stats, sections, back, tabs, hero, value);
+    }
+
+    /**
+     * Drapeau : une rangee « Aller a » au-dessus du contenu, une pastille par section
+     * qui porte une ancre ({@link Section#anchor()}) ; un clic y fait defiler la page.
+     * C'est ainsi qu'une longue page se parcourt sans onglets dans les onglets.
+     */
+    public static final int ANCHORS = 1;
 
     /** Cartes larges, quatre par rangee. */
     public static final int GRID = 0;
@@ -95,14 +117,24 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
                         text.apply(card.badge()), card.accent(), card.state(), card.action(), card.rightAction(),
                         card.progress(), mapAll(card.tooltip(), text), text.apply(card.confirm())));
             }
-            mappedSections.add(new Section(text.apply(section.title()), section.icon(), section.layout(), cards));
+            mappedSections.add(new Section(text.apply(section.title()), section.icon(), section.layout(), cards,
+                    text.apply(section.anchor())));
         }
         List<Tab> mappedTabs = new ArrayList<>();
         for (Tab tab : tabs) {
             mappedTabs.add(new Tab(text.apply(tab.label()), tab.action(), tab.active(), text.apply(tab.count())));
         }
+        Hero mappedHero = null;
+        if (hero != null) {
+            List<Stat> heroStats = new ArrayList<>();
+            for (Stat stat : hero.stats()) {
+                heroStats.add(new Stat(text.apply(stat.label()), text.apply(stat.value()), stat.color()));
+            }
+            mappedHero = new Hero(hero.icon(), hero.image(), text.apply(hero.title()), text.apply(hero.badge()),
+                    hero.accent(), hero.progress(), text.apply(hero.legend()), heroStats, mapAll(hero.lines(), text));
+        }
         return new MenuView(view, text.apply(title), text.apply(subtitle), mappedStats, mappedSections, back,
-                mappedTabs);
+                mappedTabs, mappedHero, flags);
     }
 
     private static List<String> mapAll(List<String> values, UnaryOperator<String> text) {
@@ -165,18 +197,59 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
     /**
      * Une section.
      *
-     * @param icon losange de l'intertitre ({@code section_*}), vide pour aucun
+     * @param icon   losange de l'intertitre ({@code section_*}), vide pour aucun
+     * @param anchor libelle de sa pastille « Aller a » (« Primes|0/20 »), vide pour aucune
      */
-    public record Section(String title, String icon, int layout, List<Card> cards) {
+    public record Section(String title, String icon, int layout, List<Card> cards, String anchor) {
+
+        public Section(String title, String icon, int layout, List<Card> cards) {
+            this(title, icon, layout, cards, "");
+        }
+
+        /** La meme section, avec une pastille dans la rangee « Aller a ». */
+        public Section anchor(String value) {
+            return new Section(title, icon, layout, cards, value);
+        }
+
         static final StreamCodec<RegistryFriendlyByteBuf, Section> STREAM_CODEC = StreamCodec.of(
                 (buffer, section) -> {
                     buffer.writeUtf(section.title());
                     buffer.writeUtf(section.icon());
                     buffer.writeVarInt(section.layout());
                     Card.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, section.cards());
+                    buffer.writeUtf(section.anchor());
                 },
                 buffer -> new Section(buffer.readUtf(), buffer.readUtf(), buffer.readVarInt(),
-                        Card.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer)));
+                        Card.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer), buffer.readUtf()));
+    }
+
+    /**
+     * Le panneau a gauche du contenu : un embleme, un titre, une pastille, une barre
+     * et sa legende, des chiffres et quelques lignes.
+     *
+     * @param icon     objet affiche si {@code image} est vide
+     * @param image    texture du kit (« jobs/miner »), vide pour l'objet
+     * @param accent   couleur de la pastille, de la barre et du halo
+     * @param progress barre en pour mille, -1 pour aucune
+     * @param legend   sous la barre : « gauche|droite »
+     */
+    public record Hero(ItemStack icon, String image, String title, String badge, int accent, int progress,
+                       String legend, List<Stat> stats, List<String> lines) {
+        static final StreamCodec<RegistryFriendlyByteBuf, Hero> STREAM_CODEC = StreamCodec.of(
+                (buffer, hero) -> {
+                    ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, hero.icon());
+                    buffer.writeUtf(hero.image());
+                    buffer.writeUtf(hero.title());
+                    buffer.writeUtf(hero.badge());
+                    buffer.writeInt(hero.accent());
+                    buffer.writeVarInt(hero.progress() + 1);
+                    buffer.writeUtf(hero.legend());
+                    Stat.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, hero.stats());
+                    strings(buffer, hero.lines());
+                },
+                buffer -> new Hero(ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer), buffer.readUtf(), buffer.readUtf(),
+                        buffer.readUtf(), buffer.readInt(), buffer.readVarInt() - 1, buffer.readUtf(),
+                        Stat.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer), strings(buffer)));
     }
 
     /**
@@ -227,7 +300,10 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
             return new Card(icon, title, lines, badge, accent, state, action, rightAction, progress, value, confirm);
         }
 
-        /** Une question posee avant l'action : « Question » ou « Question|Detail ». */
+        /**
+         * Une question posee avant l'action du clic gauche : « Question » ou
+         * « Question|Detail » ; un « ! » en tete pour une action qui detruit.
+         */
         public Card confirm(String question) {
             return new Card(icon, title, lines, badge, accent, state, action, rightAction, progress, tooltip, question);
         }
@@ -276,11 +352,17 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
                 Section.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.sections());
                 buffer.writeBoolean(view.back());
                 Tab.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.tabs());
+                buffer.writeBoolean(view.hero() != null);
+                if (view.hero() != null) {
+                    Hero.STREAM_CODEC.encode(buffer, view.hero());
+                }
+                buffer.writeVarInt(view.flags());
             },
             buffer -> new MenuView(Identifier.STREAM_CODEC.decode(buffer), buffer.readUtf(), buffer.readUtf(),
                     Stat.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer),
                     Section.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer), buffer.readBoolean(),
-                    Tab.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer)));
+                    Tab.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer),
+                    buffer.readBoolean() ? Hero.STREAM_CODEC.decode(buffer) : null, buffer.readVarInt()));
 
     @Override
     public Identifier viewId() {

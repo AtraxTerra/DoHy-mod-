@@ -26,8 +26,6 @@ public final class EnemyBaseMenu extends MenuController {
 
     public static final EnemyBaseMenu INSTANCE = new EnemyBaseMenu();
 
-    /** L'abandon en deux clics, arme par joueur jusqu'a cette date. */
-    private static final Map<UUID, Long> ARMED = new ConcurrentHashMap<>();
     /** Le genre demande aux eclaireurs ; absent, ils prennent ce qu'ils trouvent. Le temps d'une partie. */
     private static final Map<UUID, EnemyBaseStyle> CHOICE = new ConcurrentHashMap<>();
 
@@ -47,11 +45,6 @@ public final class EnemyBaseMenu extends MenuController {
     @Override
     protected void back(ServerPlayer player) {
         FactionMenus.Overview.INSTANCE.open(player);
-    }
-
-    private static boolean armed(ServerPlayer player) {
-        Long until = ARMED.get(player.getUUID());
-        return until != null && until > System.currentTimeMillis();
     }
 
     @Override
@@ -77,11 +70,10 @@ public final class EnemyBaseMenu extends MenuController {
                             "Entre dans la salle des coffres pour la piller.",
                             "Clic : une boussole qui pointe vers elle"))
                     .action("compass|recevoir une boussole"));
-            boolean armed = armed(player);
-            target.add(Card.of(new ItemStack(Items.BARRIER), armed ? "Confirmer ?" : "Abandonner", List.of(
-                            armed ? "Clique encore pour confirmer" : "Deux clics",
-                            "Sans recompense : elle s'efface", "au bout de 5 minutes"))
-                    .accent(0xFF55545C).action("abandon|abandonner"));
+            target.add(Card.of(new ItemStack(Items.BARRIER), "Abandonner", List.of(
+                            "Sans recompense", "Elle s'efface en 5 minutes"))
+                    .accent(0xFF55545C).action("abandon|abandonner")
+                    .confirm("!Abandonner les " + base.name() + " ?|Sans recompense : la base s'efface en 5 minutes"));
         } else {
             target.add(Card.of(new ItemStack(Items.MAP), base.state() == EnemyBase.LOOTED
                             ? "Les " + base.name() + " : pillee" : "Aucune cible", List.of(
@@ -136,8 +128,7 @@ public final class EnemyBaseMenu extends MenuController {
                 new MenuView.Stat("CIBLE", pending ? "REPERAGE" : base.active() ? base.name().toUpperCase() : "AUCUNE",
                         base.active() ? 0xFFEF3826 : 0xFFFFFFFF),
                 new MenuView.Stat("PILLEES", String.valueOf(data.stat("raid:base")), 0xFFFAC400));
-        return new MenuView(id(), "Bases ennemies", "Une faction fictive, a plus de "
-                + MoneyFormat.exact(EnemyBases.MIN_DISTANCE) + " blocs, a piller", stats, List.of(
+        return new MenuView(id(), "Bases ennemies", "", stats, List.of(
                 new MenuView.Section("TA CIBLE", "resources", MenuView.GRID, target),
                 new MenuView.Section("GENRE DE BASE", "craft", MenuView.GRID, genres),
                 new MenuView.Section("REPERER UNE BASE", "upgrade", MenuView.GRID, tiers),
@@ -186,12 +177,8 @@ public final class EnemyBaseMenu extends MenuController {
         } else if ("compass".equals(key)) {
             report(player, EnemyBases.compass(player), "Boussole recue.");
         } else if ("abandon".equals(key)) {
-            if (armed(player)) {
-                ARMED.remove(player.getUUID());
-                report(player, EnemyBases.abandon(player), "Base abandonnee.");
-            } else {
-                ARMED.put(player.getUUID(), System.currentTimeMillis() + 5000L);
-            }
+            // La fenetre de confirmation a deja pose la question.
+            report(player, EnemyBases.abandon(player), "Base abandonnee.");
         }
     }
 }

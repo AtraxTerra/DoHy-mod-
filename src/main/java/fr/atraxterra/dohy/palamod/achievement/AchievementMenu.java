@@ -88,8 +88,9 @@ public final class AchievementMenu extends MenuController {
                 new MenuView.Stat("SUCCES", done + " / " + total, 0xFFFFFFFF),
                 new MenuView.Stat("GAGNE", MoneyFormat.shortForm(earned) + " $", GOLD),
                 new MenuView.Stat("AVANCEMENT", percent(done, total), GREEN));
-        return new MenuView(id(), "Succes", "Les succes de PalaMod et de PalaJobs", stats,
-                List.of(new MenuView.Section("CATEGORIES", "upgrade", MenuView.GRID, cards)), true);
+        return new MenuView(id(), "Succes", "", stats,
+                List.of(new MenuView.Section("CATEGORIES", "upgrade", MenuView.GRID, cards)), true)
+                .withTabs(tabs(null));
     }
 
     private MenuView category(ServerPlayer player, Category category) {
@@ -135,12 +136,26 @@ public final class AchievementMenu extends MenuController {
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("SUCCES", ok + " / " + list.size(), 0xFFFFFFFF),
                 new MenuView.Stat("AVANCEMENT", percent(ok, list.size()), GREEN));
-        return new MenuView(id(), "Succes · " + category.label(), "Passe la souris sur un succes pour ses etapes",
-                stats, sections, true);
+        return new MenuView(id(), "Succes · " + category.label(), "",
+                stats, sections, true).withTabs(tabs(category));
+    }
+
+    /** L'accueil et les six categories, en onglets. */
+    private static List<MenuView.Tab> tabs(Category active) {
+        List<MenuView.Tab> tabs = new ArrayList<>();
+        tabs.add(new MenuView.Tab("Tout", "overview", active == null, ""));
+        for (Category category : Category.values()) {
+            tabs.add(new MenuView.Tab(category.label(), "cat" + category.ordinal(), category == active, ""));
+        }
+        return tabs;
     }
 
     @Override
     protected void card(ServerPlayer player, String key, int button) {
+        if ("overview".equals(key)) {
+            OPEN.remove(player.getUUID());
+            return;
+        }
         if (key.startsWith("cat")) {
             try {
                 int index = Integer.parseInt(key.substring(3));

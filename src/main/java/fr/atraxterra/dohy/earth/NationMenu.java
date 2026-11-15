@@ -16,9 +16,6 @@ import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * L'onglet « Pays » de la faction, sur une carte de la Terre : la capitale,
@@ -34,9 +31,6 @@ public final class NationMenu extends MenuController {
 
     /** Combien de voisins a l'ecran : les plus proches. */
     private static final int SHOWN = 12;
-
-    /** Le pays a rendre, arme par joueur jusqu'a cette date (deux clics). */
-    private static final Map<UUID, long[]> ARMED = new ConcurrentHashMap<>();
 
     private NationMenu() {
         super("faction_nations");
@@ -54,11 +48,6 @@ public final class NationMenu extends MenuController {
     @Override
     protected void back(ServerPlayer player) {
         FactionMenus.Overview.INSTANCE.open(player);
-    }
-
-    private static boolean armed(ServerPlayer player, int country) {
-        long[] armed = ARMED.get(player.getUUID());
-        return armed != null && armed[0] == country && armed[1] > System.currentTimeMillis();
     }
 
     private static ItemStack banner(int rival) {
@@ -171,16 +160,12 @@ public final class NationMenu extends MenuController {
                             MoneyFormat.exact(EarthNations.cost(server, under.id())) + " points"))
                     .accent(holder.player() ? 0xFF22E558 : color(holder.rival()));
             if (holder.ownedBy(player.getUUID())) {
-                boolean armed = armed(player, under.id());
                 card = Card.of(FactionMenus.banner(data), under.name(), List.of("Aux mains de ta faction",
                                 "Depuis le " + DATE.format(java.time.Instant.ofEpochMilli(holder.held().since())
                                         .atZone(fr.atraxterra.dohy.util.RealClock.zone()))))
                         .accent(0xFF22E558).badge("A TOI")
-                        .tooltip(List.of("Deux clics : le rendre a la nation de sa region"))
-                        .action("abandon:" + under.id() + "|" + (armed ? "confirmer" : "rendre"));
-                if (armed) {
-                    card = card.badge("RENDRE ?");
-                }
+                        .action("abandon:" + under.id() + "|rendre")
+                        .confirm("!Rendre " + under.name() + " ?|Le pays retourne a la nation de sa region");
             } else if (target == under.id()) {
                 card = card.badge("CIBLE");
             } else if (!holder.player() && EarthNations.reachable(player, under.id())) {
@@ -240,7 +225,7 @@ public final class NationMenu extends MenuController {
                         target == 0 ? 0xFFFFFFFF : 0xFFEF3826),
                 new MenuView.Stat("POINTS", target == 0 ? "-" : MoneyFormat.shortForm(nation.pointsOn(target)) + " / "
                         + MoneyFormat.shortForm(EarthNations.cost(server, target)), 0xFF22E558));
-        return new MenuView(id(), "Pays a prendre", "Prends les pays de la Terre aux nations rivales", stats, List.of(
+        return new MenuView(id(), "Pays a prendre", "", stats, List.of(
                 new MenuView.Section("TA NATION", "resources", MenuView.GRID, own),
                 new MenuView.Section("ICI", "craft", MenuView.GRID, here),
                 new MenuView.Section(targets.size() > shown ? "VOISINS A PRENDRE - LES " + shown + " PLUS PROCHES SUR "
@@ -259,13 +244,9 @@ public final class NationMenu extends MenuController {
             report(player, refusal, refusal == null ? "Cible : " + EarthNations.countryName(id) + ", aux mains "
                     + EarthNations.de(EarthNations.holderName(player, id)) + "." : "");
         } else if (key.startsWith("abandon:")) {
+            // La fenetre de confirmation a deja pose la question.
             int id = Integer.parseInt(key.substring(8));
-            if (armed(player, id)) {
-                ARMED.remove(player.getUUID());
-                report(player, EarthNations.abandon(player, id), "Pays rendu : " + EarthNations.countryName(id) + ".");
-            } else {
-                ARMED.put(player.getUUID(), new long[] {id, System.currentTimeMillis() + 5000L});
-            }
+            report(player, EarthNations.abandon(player, id), "Pays rendu : " + EarthNations.countryName(id) + ".");
         }
     }
 }

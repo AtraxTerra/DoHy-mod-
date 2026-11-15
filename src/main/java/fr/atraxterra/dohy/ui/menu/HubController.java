@@ -101,7 +101,7 @@ public final class HubController extends MenuController {
             }
             double progress = level >= JobApi.maxLevel() ? 1.0d : JobApi.progress(player, job);
             jobs.add(Card.of(new ItemStack(jobIcon(job)), job.display(), List.of(line))
-                    .accent(jobColor(job)).badge("NIV. " + level).action("jobs")
+                    .accent(jobColor(job)).badge("NIV. " + level).action("jobs:" + job.name())
                     .progress(Math.round(progress * 1000.0d), 1000));
         }
 
@@ -353,6 +353,14 @@ public final class HubController extends MenuController {
 
     @Override
     protected void card(ServerPlayer player, String key, int button) {
+        if (key.startsWith("jobs:")) {
+            try {
+                JobsController.openDetail(player, Job.valueOf(key.substring(5)));
+            } catch (IllegalArgumentException unknown) {
+                JobsController.open(player);
+            }
+            return;
+        }
         switch (key) {
             case "encyclopedia" -> fr.atraxterra.dohy.guide.EncyclopediaMenu.openIndex(player);
             case "pass" -> fr.atraxterra.dohy.pass.PassMenu.INSTANCE.open(player);

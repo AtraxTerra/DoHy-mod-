@@ -80,15 +80,19 @@ public final class CollectionsController extends MenuController {
             Card card = Card.of(new ItemStack(category.icon()), category.display(), List.of(
                             "Entamees " + unlocked + " / " + ids.size(),
                             complete > 0 ? complete + " complete(s)" : "Aucune complete"))
-                    .accent(0xFF2F5BEA).progress(unlocked, ids.size())
+                    .accent(0xFF2F5BEA)
                     .badge(categoryPrestiges > 0 ? "P" + categoryPrestiges : "");
+            if (!ids.isEmpty()) {
+                card = card.progress(unlocked, ids.size());
+            }
             cards.add(ids.isEmpty() ? card.state(MenuView.DISABLED) : card.action("category:" + category.key()));
         }
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("ENTAMEES", started + " / " + tracked, 0xFFFFFFFF),
                 new MenuView.Stat("PRESTIGES", String.valueOf(prestiges), 0xFFEC4FB5));
-        return new MenuView(id(), "Collections", "Recolter releve le prix plancher", stats,
-                List.of(new MenuView.Section("CATEGORIES", "resources", MenuView.GRID, cards)), true);
+        return new MenuView(id(), "Collections", "", stats,
+                List.of(new MenuView.Section("CATEGORIES", "resources", MenuView.GRID, cards)), true)
+                .withTabs(tabs(null));
     }
 
     private MenuView items(ServerPlayer player, ShopCategory category) {
@@ -145,8 +149,9 @@ public final class CollectionsController extends MenuController {
             tiles.add(card);
         }
         List<MenuView.Stat> stats = List.of(new MenuView.Stat("ENTAMEES", unlocked + " / " + ids.size(), 0xFFFFFFFF));
-        return new MenuView(id(), category.display(), "Clic droit sur une collection complete : prestige", stats,
-                List.of(new MenuView.Section("", "", MenuView.TILES, tiles)), true);
+        return new MenuView(id(), category.display(), "", stats,
+                List.of(new MenuView.Section("", "", MenuView.TILES, tiles)), true)
+                .withTabs(tabs(category));
     }
 
     /** Les plus avancees d'abord : ce qui est pres d'aboutir merite un dernier effort. */
@@ -173,8 +178,22 @@ public final class CollectionsController extends MenuController {
         }
     }
 
+    /** Une rangee d'onglets : l'accueil, puis chaque categorie, au lieu d'une page dans la page. */
+    private static List<MenuView.Tab> tabs(ShopCategory active) {
+        List<MenuView.Tab> tabs = new ArrayList<>();
+        tabs.add(new MenuView.Tab("Tout", "overview", active == null, ""));
+        for (ShopCategory category : ShopCategory.values()) {
+            tabs.add(new MenuView.Tab(category.display(), "category:" + category.key(), category == active, ""));
+        }
+        return tabs;
+    }
+
     @Override
     protected void card(ServerPlayer player, String key, int button) {
+        if ("overview".equals(key)) {
+            open.remove(player.getUUID());
+            return;
+        }
         if (key.startsWith("category:")) {
             ShopCategory category = ShopCategory.byKey(key.substring(9));
             if (category != null) {

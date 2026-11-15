@@ -81,8 +81,7 @@ public final class BreadMachineMenu extends MachineMenu {
                 new MenuView.Stat("PAIN EN PLUS", bonus
                         ? Math.round(config.machines().bonusBreadChance() * 100.0d) + " %"
                         : "NIV. " + config.machines().bonusBreadLevel(), bonus ? GREEN : GOLD));
-        return new MenuView(id(), "Machine a pain", "Clic gauche : une fournee  ·  clic droit : " + MANY
-                + " fournees", stats,
+        return new MenuView(id(), "Machine a pain", "", stats,
                 List.of(stock(player, machine),
                         new MenuView.Section("CUIRE A LA MAIN", "resources", MenuView.GRID, cards)), true);
     }

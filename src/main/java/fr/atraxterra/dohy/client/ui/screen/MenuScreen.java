@@ -40,6 +40,12 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
     private static final float HEADER = 14.0f;
     private static final float SECTION_GAP = 8.7f;
     private static final float SCROLLBAR = 8.7f;
+    /** Le panneau de gauche d'une fiche (metier) : sa largeur, et l'espace avant le contenu. */
+    private static final float HERO_WIDTH = 126.7f;
+    private static final float HERO_GAP = 8.0f;
+    /** La rangee « Aller a », au-dessus du contenu. */
+    private static final float ANCHOR_ROW = 15.3f;
+    private static final float ANCHOR_HEIGHT = 11.3f;
 
     private MenuView view;
     private final Shell shell;
@@ -64,15 +70,26 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
 
     @Override
     public void accept(MenuView next) {
-        boolean sameTitle = next.title().equals(view.title());
+        // Une autre page (autre titre, autre onglet) repart du haut ; la meme page mise a
+        // jour garde sa position.
+        boolean samePage = next.title().equals(view.title()) && activeTab(next).equals(activeTab(view));
         this.view = next;
         header();
         content.reshape();
         content.layout();
-        if (!sameTitle) {
+        if (!samePage) {
             content.resetScroll();
         }
         content.clamp();
+    }
+
+    private static String activeTab(MenuView view) {
+        for (MenuView.Tab tab : view.tabs()) {
+            if (tab.active()) {
+                return tab.action();
+            }
+        }
+        return "";
     }
 
     @Override
@@ -90,11 +107,171 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
     @Override
     protected void drawBackground(UiGraphics g, double mouseX, double mouseY) {
         shell.draw(g, g.paint(), mouseX, mouseY);
+        if (view.hero() != null) {
+            hero(g, g.paint(), view.hero());
+        }
+        if (anchored()) {
+            anchors(g, g.paint(), mouseX, mouseY);
+        }
     }
 
     @Override
     protected boolean backgroundClicked(double mouseX, double mouseY, int button) {
+        if (button == 0 && anchored()) {
+            for (AnchorHit hit : anchorHits) {
+                if (mouseX >= hit.x() && mouseX < hit.x() + hit.width() && mouseY >= hit.y()
+                        && mouseY < hit.y() + ANCHOR_HEIGHT) {
+                    UiScreen.click(1.1f);
+                    content.scrollTo(hit.target());
+                    return true;
+                }
+            }
+        }
         return button == 0 && shell.click(mouseX, mouseY);
+    }
+
+    private boolean anchored() {
+        return (view.flags() & MenuView.ANCHORS) != 0;
+    }
+
+    /** Une pastille « Aller a » dessinee a cette image, et la hauteur de contenu ou elle mene. */
+    private record AnchorHit(float x, float y, float width, float target) {
+    }
+
+    private final List<AnchorHit> anchorHits = new ArrayList<>();
+    private final Map<String, Anim.Value> anchorHovers = new HashMap<>();
+
+    /**
+     * La rangee « Aller a » : une pastille par section ancree, celle qu'on lit en
+     * surbrillance. Le contenu defile dessous ; la rangee reste.
+     */
+    private void anchors(UiGraphics g, Paint p, double mouseX, double mouseY) {
+        anchorHits.clear();
+        float left = content.contentLeft();
+        float y = shell.contentTop();
+        float cursor = left;
+        g.text(Ui.PIXEL, "ALLER A", cursor, y + 3.9f, 3.3f, Ui.Theme.MUTED);
+        cursor += g.width(Ui.PIXEL, "ALLER A", 3.3f) + 4.7f;
+        String reading = content.reading();
+        for (Content.Spot spot : content.spots()) {
+            String label = spot.label();
+            String count = "";
+            int bar = label.indexOf('|');
+            if (bar >= 0) {
+                count = label.substring(bar + 1);
+                label = label.substring(0, bar);
+            }
+            float labelWidth = g.width(Ui.BOLD, label, 4.7f);
+            float countWidth = count.isEmpty() ? 0.0f : g.width(Ui.PIXEL, count, 3.3f) + 3.3f;
+            float width = labelWidth + countWidth + 9.4f;
+            if (cursor + width > shell.mainRight()) {
+                break;
+            }
+            boolean over = mouseX >= cursor && mouseX < cursor + width && mouseY >= y && mouseY < y + ANCHOR_HEIGHT;
+            float hover = anchorHovers.computeIfAbsent(spot.label(), key -> new Anim.Value(0.0f, 16.0f))
+                    .toward(over ? 1.0f : 0.0f);
+            boolean on = spot.label().equals(reading);
+            int fill = on ? 0xFF2E3036 : Paint.mix(0xFF1A1B1E, Ui.Theme.CARD_HOVER, hover);
+            int edge = on ? 0xFF4A4D55 : Paint.mix(Ui.Theme.EDGE, 0xFF45484F, hover);
+            p.framed(cursor, y, width, ANCHOR_HEIGHT, 3.3f, fill, edge, 1);
+            g.text(Ui.BOLD, label, cursor + 4.7f, y + 3.4f, 4.7f, on ? Ui.Theme.TEXT : Ui.Theme.TEXT2);
+            if (!count.isEmpty()) {
+                g.text(Ui.PIXEL, count, cursor + 4.7f + labelWidth + 3.3f, y + 4.1f, 3.3f, Ui.Theme.MUTED);
+            }
+            anchorHits.add(new AnchorHit(cursor, y, width, spot.y()));
+            cursor += width + 3.3f;
+        }
+    }
+
+    /**
+     * Le panneau de gauche d'une fiche : l'embleme, le titre, la pastille, la barre et
+     * sa legende, puis les chiffres en cases et quelques lignes.
+     */
+    private void hero(UiGraphics g, Paint p, MenuView.Hero hero) {
+        float x = shell.mainLeft();
+        float y = shell.contentTop();
+        float width = HERO_WIDTH;
+        float height = Shell.HEIGHT - 7.0f - y;
+        float center = x + width / 2.0f;
+        int accent = 0xFF000000 | hero.accent();
+        p.framed(x, y, width, height, 5.3f, 0xFF1C1D20, Ui.Theme.EDGE, 1);
+        g.scissor(Math.round(x), Math.round(y), Math.round(width), Math.round(height));
+        p.glow(center, y + 26.0f, 72.0f, Paint.alpha(accent, 0.22f));
+        g.endScissor();
+        g.scissor(Math.round(x), Math.round(y), Math.round(width), 1);
+        p.round(x, y, width, height, 5.3f, accent);
+        g.endScissor();
+        float cursor = y + 9.0f;
+        if (!hero.image().isEmpty()) {
+            g.texture(Ui.texture(hero.image()), Math.round(center - 31.0f), Math.round(cursor), 62, 64, 256, 266);
+            cursor += 66.0f;
+        } else {
+            p.glow(center, cursor + 16.0f, 26.0f, Paint.alpha(accent, 0.25f));
+            g.item(hero.icon(), center - 16.0f, cursor, 32.0f, false);
+            cursor += 38.0f;
+        }
+        float titleSize = 15.3f;
+        float room = width - 12.0f;
+        while (titleSize > 8.0f && g.width(Ui.TITLE, hero.title(), titleSize) > room) {
+            titleSize -= 0.5f;
+        }
+        float titleWidth = g.width(Ui.TITLE, hero.title(), titleSize);
+        g.textShaded(Ui.TITLE, hero.title(), center - titleWidth / 2.0f, cursor, titleSize, Ui.Theme.RED,
+                Ui.Theme.RED_DD, 1.0f);
+        cursor += titleSize + 4.0f;
+        if (!hero.badge().isEmpty()) {
+            float badgeWidth = Math.max(8.0f, g.width(Ui.PIXEL, hero.badge(), 3.3f) + 5.4f);
+            Shell.pill(g, p, hero.badge(), center + badgeWidth / 2.0f, cursor, accent, true);
+            cursor += 13.0f;
+        }
+        if (hero.progress() >= 0) {
+            float barX = x + 8.0f;
+            float barWidth = width - 16.0f;
+            float fill = barWidth * Math.max(0, Math.min(1000, hero.progress())) / 1000.0f
+                    * Anim.easeOut(Anim.progress(opened + 0.1d, 0.7d));
+            p.round(barX, cursor, barWidth, 2.7f, 1.35f, 0xFF2C2E33);
+            if (fill > 0.5f) {
+                p.glow(barX + fill, cursor + 1.35f, 6.0f, Paint.alpha(accent, 0.5f));
+                p.round(barX, cursor, Math.max(2.7f, fill), 2.7f, 1.35f, accent);
+            }
+            cursor += 5.3f;
+            if (!hero.legend().isEmpty()) {
+                int bar = hero.legend().indexOf('|');
+                String leftText = bar < 0 ? hero.legend() : hero.legend().substring(0, bar);
+                String rightText = bar < 0 ? "" : hero.legend().substring(bar + 1);
+                g.text(Ui.PIXEL, leftText, barX, cursor, 3.3f, Ui.Theme.MUTED);
+                if (!rightText.isEmpty()) {
+                    g.right(Ui.PIXEL, rightText, barX + barWidth, cursor, 3.3f, Ui.Theme.MUTED);
+                }
+                cursor += 6.0f;
+            }
+            cursor += 3.0f;
+        }
+        float boxWidth = (width - 16.0f - 4.0f) / 2.0f;
+        for (int index = 0; index < hero.stats().size(); index++) {
+            MenuView.Stat stat = hero.stats().get(index);
+            float boxX = x + 8.0f + (index % 2) * (boxWidth + 4.0f);
+            float boxY = cursor + (index / 2) * 22.0f;
+            p.framed(boxX, boxY, boxWidth, 19.3f, 3.3f, 0xFF16171A, 0xFF2A2C31, 1);
+            g.text(Ui.PIXEL, g.fit(Ui.PIXEL, stat.label(), 3.3f, boxWidth - 8.0f), boxX + 4.7f, boxY + 3.6f, 3.3f,
+                    Ui.Theme.MUTED);
+            int color = stat.color() == 0xFFFFFFFF ? Ui.Theme.TEXT : 0xFF000000 | stat.color();
+            g.text(Ui.WIDE, g.fit(Ui.WIDE, stat.value(), 6.0f, boxWidth - 8.0f), boxX + 4.7f, boxY + 9.6f, 6.0f, color);
+        }
+        cursor += ((hero.stats().size() + 1) / 2) * 22.0f + 3.0f;
+        for (String line : hero.lines()) {
+            if (cursor > y + height - 8.0f) {
+                break;
+            }
+            if (line.startsWith("#")) {
+                g.text(Ui.PIXEL, line.substring(1), x + 8.0f, cursor + 1.0f, 3.3f, Ui.Theme.MUTED);
+                cursor += 7.0f;
+                continue;
+            }
+            p.round(x + 8.6f, cursor + 1.8f, 1.6f, 1.6f, 0.4f, accent);
+            g.text(Ui.BODY, g.fit(Ui.BODY, line, 4.7f, width - 22.0f), x + 13.0f, cursor, 4.7f, Ui.Theme.TEXT2);
+            cursor += 7.3f;
+        }
     }
 
     @Override
@@ -170,10 +347,25 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
         return out;
     }
 
+    /** La place du nom dans une carte de grille de cette largeur, pastille deduite. */
+    private static float titleRoom(MenuView.Card card, float cardWidth) {
+        Font font = Minecraft.getInstance().font;
+        float badge = card.badge().isEmpty() ? (card.state() == MenuView.DONE ? 11.0f : 0.0f)
+                : Math.max(8.0f, UiGraphics.measure(font, Ui.PIXEL, card.badge(), 3.3f) + 5.4f) + 3.0f;
+        return cardWidth - 6.0f - 19.3f - 4.7f - 5.0f - badge;
+    }
+
+    /** Un nom trop long tient sur deux lignes, si la carte n'a qu'une ligne de texte. */
+    private static boolean twoLineTitle(MenuView.Card card, float cardWidth) {
+        return card.lines().size() <= 1 && UiGraphics.measure(Minecraft.getInstance().font, Ui.BOLD, card.title(),
+                6.3f) > titleRoom(card, cardWidth);
+    }
+
     /** La hauteur d'une carte de grille : icone, deux lignes, barre et legende. */
-    private static float gridHeight(MenuView.Card card) {
+    private static float gridHeight(MenuView.Card card, float cardWidth) {
         int lines = Math.min(2, card.lines().size());
-        float text = 1.5f + 6.3f + (lines >= 1 ? 6.7f : 0.0f) + (lines >= 2 ? 5.7f : 0.0f);
+        float text = 1.5f + 6.3f + (lines >= 1 ? 6.7f : 0.0f) + (lines >= 2 ? 5.7f : 0.0f)
+                + (twoLineTitle(card, cardWidth) ? 7.0f : 0.0f);
         float height = 6.0f + Math.max(19.3f, text) + 5.3f;
         if (card.progress() >= 0) {
             height += 4.7f + 2.7f;
@@ -199,11 +391,28 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
             super(0, 0, 1, 1);
         }
 
+        /** Une section ancree : le libelle de sa pastille et sa hauteur dans le contenu. */
+        record Spot(String label, float y) {
+        }
+
+        private final List<Spot> spots = new ArrayList<>();
+
+        List<Spot> spots() {
+            return spots;
+        }
+
+        /** Le bord gauche du contenu, panneau de fiche deduit. */
+        float contentLeft() {
+            return shell.mainLeft() + (view.hero() != null ? HERO_WIDTH + HERO_GAP : 0.0f);
+        }
+
         void reshape() {
-            x = Math.round(shell.mainLeft());
-            y = Math.round(shell.contentTop());
-            width = Math.round(shell.mainRight() - shell.mainLeft());
-            height = Math.round(Shell.HEIGHT - 7.0f - shell.contentTop());
+            float left = contentLeft();
+            float top = shell.contentTop() + (anchored() ? ANCHOR_ROW : 0.0f);
+            x = Math.round(left);
+            y = Math.round(top);
+            width = Math.round(shell.mainRight() - left);
+            height = Math.round(Shell.HEIGHT - 7.0f - top);
         }
 
         void resetScroll() {
@@ -211,9 +420,28 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
             scroll.set(0);
         }
 
+        /** Fait defiler jusqu'a une hauteur de contenu (une section ancree). */
+        void scrollTo(float contentY) {
+            target = contentY;
+            clamp();
+        }
+
+        /** La section ancree qu'on lit : la derniere dont le haut est passe sous le bord. */
+        String reading() {
+            String current = spots.isEmpty() ? "" : spots.getFirst().label();
+            float offset = scroll.get();
+            for (Spot spot : spots) {
+                if (spot.y() <= offset + 6.0f) {
+                    current = spot.label();
+                }
+            }
+            return current;
+        }
+
         void layout() {
             placed.clear();
             headers.clear();
+            spots.clear();
             float usable = width - SCROLLBAR;
             float cursor = 0;
             List<MenuView.Section> sections = view.sections();
@@ -239,6 +467,9 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
         /** Place une section dans la colonne (x, largeur) ; rend la hauteur utilisee. */
         private float place(MenuView.Section section, float left, float top, float columnWidth) {
             float cursor = top;
+            if (!section.anchor().isEmpty()) {
+                spots.add(new Spot(section.anchor(), top));
+            }
             if (!section.title().isEmpty()) {
                 String title = section.title();
                 String count = "";
@@ -302,7 +533,7 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                     for (int start = 0; start < cards.size(); start += columns) {
                         float rowHeight = 0;
                         for (int index = start; index < Math.min(cards.size(), start + columns); index++) {
-                            rowHeight = Math.max(rowHeight, gridHeight(cards.get(index)));
+                            rowHeight = Math.max(rowHeight, gridHeight(cards.get(index), cardWidth));
                         }
                         for (int index = start; index < Math.min(cards.size(), start + columns); index++) {
                             int column = index - start;
@@ -322,7 +553,7 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
         /** Le nom de chaque carte tient-il, pastille comprise, dans cette largeur ? */
         private boolean namesFit(List<MenuView.Card> cards, float cardWidth) {
             for (MenuView.Card card : cards) {
-                float badge = card.badge().isEmpty() ? 0.0f
+                float badge = card.badge().isEmpty() ? (card.state() == MenuView.DONE ? 11.0f : 0.0f)
                         : Math.max(8.0f, UiGraphics.measure(font, Ui.PIXEL, card.badge(), 3.3f) + 5.4f) + 3.0f;
                 float needed = 6.0f + 19.3f + 4.7f + UiGraphics.measure(font, Ui.BOLD, card.title(), 6.3f) + badge
                         + 5.0f;
@@ -478,6 +709,15 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
             g.item(card.icon(), tileX + (tile - 12.0f) / 2.0f, tileY + (tile - 12.0f) / 2.0f, 12.0f, false);
             float textX = tileX + tile + 4.7f;
             float badgeWidth = 0;
+            if (card.state() == MenuView.DONE && card.badge().isEmpty()) {
+                // Acquis : une coche verte a la place de la pastille.
+                float checkX = cardX + cardWidth - 9.0f;
+                float checkY = top + 9.3f;
+                p.glow(checkX, checkY, 8.0f, Paint.alpha(Ui.Theme.GREEN, 0.35f));
+                p.dot(checkX, checkY, 4.0f, Ui.Theme.GREEN);
+                p.check(checkX, checkY, 5.3f, 0xFFFFFFFF);
+                badgeWidth = 11.0f;
+            }
             if (!card.badge().isEmpty()) {
                 int badgeColor = card.state() == MenuView.DONE ? Ui.Theme.GREEN
                         : card.badge().startsWith("PRET") ? Ui.Theme.YELLOW : off ? 0xFF3A3C42 : Ui.Theme.RED;
@@ -487,14 +727,24 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
             }
             float room = cardX + cardWidth - 5.0f - badgeWidth - textX;
             List<String> lines = card.lines();
+            boolean twoLines = twoLineTitle(card, cardWidth);
             float textY = top + 7.5f;
             if (lines.isEmpty()) {
-                textY = top + 6.0f + (tile - 6.3f) / 2.0f;
-            } else if (lines.size() == 1) {
+                textY = top + 6.0f + (tile - (twoLines ? 13.3f : 6.3f)) / 2.0f;
+            } else if (lines.size() == 1 && !twoLines) {
                 textY = top + 9.0f;
             }
-            g.text(Ui.BOLD, g.fit(Ui.BOLD, card.title(), 6.3f, room), textX, textY, 6.3f,
-                    off ? Ui.Theme.MUTED : Ui.Theme.TEXT);
+            int titleColor = off ? Ui.Theme.MUTED : Ui.Theme.TEXT;
+            if (twoLines) {
+                List<String> wrapped = UiGraphics.wrap(font, Ui.BOLD, card.title(), 6.3f, room);
+                g.text(Ui.BOLD, g.fit(Ui.BOLD, wrapped.getFirst(), 6.3f, room), textX, textY, 6.3f, titleColor);
+                String rest = String.join(" ", wrapped.subList(1, wrapped.size()));
+                g.text(Ui.BOLD, g.fit(Ui.BOLD, rest, 6.3f, cardX + cardWidth - 5.0f - textX), textX, textY + 7.0f, 6.3f,
+                        titleColor);
+                textY += 7.0f;
+            } else {
+                g.text(Ui.BOLD, g.fit(Ui.BOLD, card.title(), 6.3f, room), textX, textY, 6.3f, titleColor);
+            }
             float lineRoom = cardX + cardWidth - 5.0f - textX;
             if (!lines.isEmpty()) {
                 g.text(Ui.BODY, g.fit(Ui.BODY, lines.get(0), 5.0f, lineRoom), textX, textY + 8.0f, 5.0f,
@@ -505,7 +755,7 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                         Ui.Theme.MUTED);
             }
             float below = top + 6.0f + Math.max(tile, 1.5f + 6.3f + (lines.isEmpty() ? 0 : 6.7f)
-                    + (lines.size() >= 2 ? 5.7f : 0.0f));
+                    + (lines.size() >= 2 ? 5.7f : 0.0f) + (twoLines ? 7.0f : 0.0f));
             if (card.progress() >= 0) {
                 float barY = below + 4.7f;
                 bar(p, cardX + 6.0f, barY, cardWidth - 12.0f, 2.7f, card.progress() / 1000.0f * bars, accent, off);
@@ -561,7 +811,9 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                 p.dot(right - 5.0f, rowY + rowHeight / 2.0f, 4.3f, 0xFF1F3A1C);
                 p.check(right - 5.0f, rowY + rowHeight / 2.0f, 6.0f, Ui.Theme.GREEN_L);
                 right -= 14.0f;
-            } else if (off) {
+            } else if (off && !card.badge().isEmpty()) {
+                // Le cadenas dit « pas encore » : une ligne grisee sans pastille (une liste
+                // vide, un rappel) n'en a pas.
                 p.dot(right - 5.0f, rowY + rowHeight / 2.0f, 5.0f, 0xFF2C2E33);
                 g.texture(Ui.texture("spawner_lock"), Math.round(right - 8.0f), Math.round(rowY + rowHeight / 2 - 3),
                         6, 6, 32, 32);

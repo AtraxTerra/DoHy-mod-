@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.client.ui.screen;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiClient;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
@@ -272,7 +273,9 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
         listScroll = Math.min(listScroll, maxListScroll());
         double points = points(now);
 
-        g.panelPlain(0, 0, WIDTH, HEIGHT);
+        Paint p = g.paint();
+        p.shadow(6, 10, WIDTH - 12, HEIGHT - 8, 22, Paint.alpha(Ui.Theme.SHADOW, 0.55f));
+        p.framed(0, 0, WIDTH, HEIGHT, 7.3f, Ui.Theme.BG2, 0xFF2C2E33, 1);
         column(g, LEFT_X, COLUMN_W);
         column(g, CENTER_X, CENTER_W);
         column(g, RIGHT_X, COLUMN_W);
@@ -286,8 +289,7 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
     }
 
     private static void column(UiGraphics g, int x, int width) {
-        g.rect(x - 1, TOP - 1, width + 2, BOTTOM - TOP + 2, Ui.FRAME);
-        g.rect(x, TOP, width, BOTTOM - TOP, Ui.INSET);
+        g.paint().framed(x - 1, TOP - 1, width + 2, BOTTOM - TOP + 2, 5.3f, 0xFF141518, 0xFF24262A, 1);
     }
 
     private void drawLeft(UiGraphics g, double mouseX, double mouseY, long now, double points) {
@@ -356,7 +358,7 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
     }
 
     private void drawUpgrades(UiGraphics g, double mouseX, double mouseY, double points) {
-        g.text(Ui.WIDE, "AMÉLIORATIONS", CENTER_X + 6, TOP + 6, 6, Ui.WHITE);
+        g.text(Ui.WIDE, "AMELIORATIONS", CENTER_X + 6, TOP + 6, 6, Ui.Theme.TEXT);
         g.right(Ui.BODY, view.owned() + " / " + view.upgradeCount(), CENTER_X + CENTER_W - 18, TOP + 7, 4.6f,
                 Ui.MUTED);
         // La fleche qui deplie les ameliorations : un chevron, vers le bas puis vers le haut.
@@ -369,7 +371,7 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
         int bottom = upgradesBottom();
         List<ClickerView.Upgrade> upgrades = view.upgrades();
         if (upgrades.isEmpty()) {
-            g.centered(Ui.BODY, "Aucune amélioration à portée : achète des bâtiments.", CENTER_X + CENTER_W / 2f,
+            g.centered(Ui.BODY, "Aucune amelioration a portee : achete des batiments.", CENTER_X + CENTER_W / 2f,
                     UPGRADES_Y + 24, 4.4f, Ui.DISABLED);
         }
         int hovered = upgradeAt(mouseX, mouseY);
@@ -382,9 +384,12 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
                 continue;
             }
             boolean buyable = upgrade.ready() && points >= upgrade.price();
-            g.rect(x + 1, y + 1, CELL - 2, CELL - 2, index == hovered ? Ui.SLOT_HOVER : Ui.SLOT_FILL);
-            g.border(x + 1, y + 1, CELL - 2, CELL - 2, 1,
-                    buyable ? AFFORD : upgrade.ready() ? 0xFF6A6973 : 0xFF3A3940);
+            if (buyable) {
+                g.paint().glow(x + CELL / 2.0f, y + CELL / 2.0f, CELL * 0.6f, Paint.alpha(AFFORD, 0.25f));
+            }
+            g.paint().framed(x + 1, y + 1, CELL - 2, CELL - 2, 3.3f,
+                    index == hovered ? Ui.Theme.CARD_HOVER : 0xFF1C1D20,
+                    buyable ? AFFORD : upgrade.ready() ? 0xFF4A4D55 : 0xFF2A2C31, 1);
             g.item(upgrade.icon(), x + 3, y + 3, 14, false);
         }
         g.raw().nextStratum();
@@ -404,7 +409,7 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
             int x = CENTER_X + 2 + (index % UPGRADE_COLUMNS) * CELL;
             int y = Math.round(UPGRADES_Y + (index / UPGRADE_COLUMNS) * CELL - upgradeScroll);
             if (y + CELL >= UPGRADES_Y && y <= bottom) {
-                g.rect(x + 2, y + 2, CELL - 4, CELL - 4, 0xA0101014);
+                g.paint().round(x + 2, y + 2, CELL - 4, CELL - 4, 2.7f, 0xA0101014);
             }
         }
         g.endScissor();
@@ -415,7 +420,7 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
         g.rect(CENTER_X + 4, top - 3, CENTER_W - 8, 1, Ui.FRAME);
         g.texture(NAMUU, CENTER_X + CENTER_W - 36, top - 2, 30, 27, 209, 188);
         g.text(Ui.WIDE, "CLIC SHOP", CENTER_X + 6, top + 4, 6, Ui.WHITE);
-        g.text(Ui.BODY, "Échange tes pièces obtenues via le clicker", CENTER_X + 6, top + 14, 4.2f, Ui.MUTED);
+        g.text(Ui.BODY, "Tes pieces contre des objets", CENTER_X + 6, top + 14, 4.2f, Ui.Theme.MUTED);
 
         int[] hovered = offerAt(mouseX, mouseY);
         List<ClickerView.Shelf> shop = view.shop();
@@ -482,7 +487,7 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
     }
 
     private void drawBuildings(UiGraphics g, double mouseX, double mouseY, double points) {
-        g.text(Ui.WIDE, "BÂTIMENTS", RIGHT_X + 6, TOP + 6, 6, Ui.WHITE);
+        g.text(Ui.WIDE, "BATIMENTS", RIGHT_X + 6, TOP + 6, 6, Ui.Theme.TEXT);
         int hovered = buildingAt(mouseX, mouseY);
         List<ClickerView.Building> buildings = view.buildings();
         g.scissor(RIGHT_X + 1, LIST_Y, COLUMN_W - 2, BOTTOM - 2 - LIST_Y);
@@ -495,15 +500,17 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
             int width = COLUMN_W - 4;
             if (index >= buildings.size()) {
                 // Le batiment suivant : cache tant que le dernier n'est pas achete.
-                g.rect(x, y + 1, width, ROW_H - 2, 0xFF1B1A20);
+                g.paint().framed(x, y + 1, width, ROW_H - 2, 4.0f, 0xFF18191C, 0xFF24262A, 1);
                 g.texture(UNKNOWN, x + 5, y + 5, 14, 14, 42, 42, 0xFF6A6973);
                 g.text(Ui.BOLD, "???", x + 26, y + 8, 6, Ui.DISABLED);
                 continue;
             }
             ClickerView.Building building = buildings.get(index);
             boolean affordable = points >= building.price() && building.count() < 99;
-            g.rect(x, y + 1, width, ROW_H - 2, index == hovered ? Ui.SLOT_HOVER : 0xFF211F27);
-            g.rect(x, y + 1, 2, ROW_H - 2, affordable ? AFFORD : building.count() > 0 ? 0xFF6A6973 : 0xFF3A3940);
+            g.paint().framed(x, y + 1, width, ROW_H - 2, 4.0f, index == hovered ? Ui.Theme.CARD_HOVER : Ui.Theme.CARD,
+                    Ui.Theme.EDGE, 1);
+            g.paint().round(x + 0.7f, y + 5, 1.34f, ROW_H - 10, 0.67f,
+                    affordable ? AFFORD : building.count() > 0 ? 0xFF6A6973 : 0xFF3A3940);
             g.item(building.icon(), x + 5, y + 3, 18, false);
             g.text(Ui.BOLD, g.fit(Ui.BOLD, building.name(), 4.6f, width - 48), x + 27, y + 4.5f, 4.6f, Ui.TEXT);
             g.texture(COIN, x + 27, y + 13, 6, 6, 64, 64);
@@ -517,9 +524,9 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
         if (max > 0) {
             int track = BOTTOM - 2 - LIST_Y;
             int thumb = Math.max(12, Math.round(track * track / (float) (listRows() * ROW_H)));
-            g.rect(RIGHT_X + COLUMN_W - 2, LIST_Y, 1, track, Ui.SCROLL_TRACK);
-            g.rect(RIGHT_X + COLUMN_W - 2, LIST_Y + Math.round((track - thumb) * listScroll / max), 1, thumb,
-                    Ui.SCROLL_THUMB);
+            g.paint().round(RIGHT_X + COLUMN_W - 2.5f, LIST_Y, 1.5f, track, 0.75f, 0xFF24262A);
+            g.paint().round(RIGHT_X + COLUMN_W - 2.5f, LIST_Y + (track - thumb) * listScroll / max, 1.5f, thumb, 0.75f,
+                    0xFF5A5D64);
         }
     }
 
@@ -535,9 +542,9 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
             List<Component> lines = new ArrayList<>();
             lines.add(Component.literal(upgrade.name()));
             lines.add(Component.literal(upgrade.effect()));
-            lines.add(Component.literal("Coût : " + ClickerFormat.compact(upgrade.price()) + " ClicCoins"));
+            lines.add(Component.literal("Cout : " + ClickerFormat.compact(upgrade.price()) + " ClicCoins"));
             for (String condition : upgrade.conditions()) {
-                lines.add(Component.literal((condition.startsWith("+") ? "Fait : " : "À faire : ")
+                lines.add(Component.literal((condition.startsWith("+") ? "Fait : " : "A faire : ")
                         + condition.substring(1)));
             }
             lines.add(Component.literal(!upgrade.ready() ? "Conditions non remplies"
@@ -557,7 +564,7 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
             lines.add(Component.literal("Production actuelle : " + ClickerFormat.rate(building.rps()) + " / s"));
             lines.add(Component.literal("Production totale : " + ClickerFormat.compact(building.produced())));
             if (!building.bonuses().isEmpty()) {
-                lines.add(Component.literal("Améliorations : " + String.join(", ", building.bonuses())));
+                lines.add(Component.literal("Ameliorations : " + String.join(", ", building.bonuses())));
             }
             if (!building.unlocks().isEmpty()) {
                 List<String> names = new ArrayList<>();
@@ -567,7 +574,7 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
                         names.add(name);
                     }
                 }
-                lines.add(Component.literal("Achats débloqués : " + String.join(", ", names)));
+                lines.add(Component.literal("Achats debloques : " + String.join(", ", names)));
             }
             g.tooltip(lines);
             return;
@@ -581,7 +588,7 @@ public class ClickerScreen extends UiScreen implements ViewScreen<ClickerView> {
                     + offer.stack().getHoverName().getString()));
             lines.add(Component.literal("Prix : " + ClickerFormat.compact(offer.price()) + " ClicCoins"));
             lines.add(Component.literal("Restant : " + offer.left()));
-            lines.add(Component.literal(offer.left() <= 0 ? "Cette offre est épuisée"
+            lines.add(Component.literal(offer.left() <= 0 ? "Cette offre est epuisee"
                     : points < offer.price() ? "Pas assez de ClicCoins"
                     : isArmed(shelf, offer, now) ? "Clique encore pour confirmer" : "Clic : acheter"));
             g.tooltip(lines);

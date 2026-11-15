@@ -107,10 +107,9 @@ public final class BlackMarketMenu extends MenuController {
                 }
             }
             Card card = Card.of(new ItemStack(wanted.item()), name, List.of(
-                            left > 0 ? "Il en prend encore " + left + " aujourd'hui · " + held + " dans ton sac"
-                                    : "Il en a assez pour aujourd'hui",
-                            "Prix d'une piece neuve, usure deduite"))
-                    .accent(GREEN).badge(MoneyFormat.exact(wanted.unit()) + " $");
+                            left > 0 ? "Encore " + left + " aujourd'hui · " + held + " sur toi" : "Plus aujourd'hui"))
+                    .accent(GREEN).badge(MoneyFormat.exact(wanted.unit()) + " $")
+                    .tooltip(List.of("Prix d'une piece neuve, usure deduite"));
             buyback.add(left <= 0 || held == 0 ? card.state(MenuView.DISABLED)
                     : card.action("sell:" + wanted.index() + "|revendre"));
         }
@@ -119,8 +118,7 @@ public final class BlackMarketMenu extends MenuController {
         sections.add(new MenuView.Section("MARCHANDISE VOLEE", "melt", MenuView.GRID, stolen));
         sections.add(new MenuView.Section("CONTREBANDE", "fuel", MenuView.GRID, contraband));
         sections.add(new MenuView.Section("LE RECELEUR RACHETE", "upgrade", MenuView.ROWS, buyback));
-        String quote = BlackMarket.quote(player);
-        return new MenuView(id(), "Marche noir", quote.isEmpty() ? "Le receleur" : "Le receleur · " + quote, stats,
+        return new MenuView(id(), "Marche noir", "", stats,
                 sections, false);
     }
 

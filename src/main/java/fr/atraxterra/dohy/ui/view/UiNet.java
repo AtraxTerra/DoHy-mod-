@@ -217,8 +217,6 @@ public final class UiNet {
     @SubscribeEvent
     public static void onRegister(RegisterPayloadHandlersEvent event) {
         register(ShopView.ID, ShopView.STREAM_CODEC, fr.atraxterra.dohy.shop.ShopController::handle);
-        register(JobsView.ID, JobsView.STREAM_CODEC, fr.atraxterra.dohy.job.JobsController::handle);
-        register(JobDetailView.ID, JobDetailView.STREAM_CODEC, fr.atraxterra.dohy.job.JobsController::handleDetail);
         register(CrateView.ID, CrateView.STREAM_CODEC, fr.atraxterra.dohy.ui.menu.BoutiqueController::handleCrate);
         register(fr.atraxterra.dohy.palamod.clicker.ClickerView.ID,
                 fr.atraxterra.dohy.palamod.clicker.ClickerView.STREAM_CODEC,

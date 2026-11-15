@@ -114,10 +114,9 @@ public final class WorldMarketMenu extends MenuController {
                 new MenuView.Stat("RANG", rank.label().toUpperCase(), rank.color()),
                 new MenuView.Stat("TAXE", Math.round(rank.fee() * 100.0d) + " %", 0xFFFAC400),
                 new MenuView.Stat("VOLUME", MoneyFormat.shortForm(WorldMarket.volume(player)), 0xFF22E558));
-        return new MenuView(id(), "Marche international", next == null
-                ? "Le cours suit le stock mondial : vends quand le monde en manque"
-                : "Taxe de " + Math.round(next.fee() * 100.0d) + " % au rang " + next.label() + " ("
-                + next.countries() + " pays)", stats, List.of(
+        String subtitle = next == null ? "" : "Taxe de " + Math.round(next.fee() * 100.0d) + " % au rang "
+                + next.label();
+        return new MenuView(id(), "Marche international", subtitle, stats, List.of(
                 new MenuView.Section("COURS MONDIAUX", "resources", MenuView.GRID, goods),
                 new MenuView.Section("DEPECHES", "upgrade", MenuView.GRID, news)), true);
     }

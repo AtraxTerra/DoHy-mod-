@@ -107,7 +107,7 @@ public final class SiloMenu extends MenuController {
                 cards.add(stored > 0 || price > 0L ? card : card.state(MenuView.DISABLED));
             }
         }
-        return new MenuView(id(), "Silo", "Clic gauche : prendre une pile  ·  clic droit : acheter un lot", stats,
+        return new MenuView(id(), "Silo", "", stats,
                 List.of(new MenuView.Section("CEREALES", "resources", MenuView.GRID, cards)), true);
     }
 

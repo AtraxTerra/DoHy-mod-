@@ -156,7 +156,7 @@ public final class RpgMenu extends MenuController {
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("NIVEAU", String.valueOf(level), 0xFF55CCFF),
                 new MenuView.Stat("POINTS LIBRES", String.valueOf(free), 0xFFFAC400));
-        return new MenuView(id(), "Profil RPG", "Arbre de competences des donjons", stats, sections, true);
+        return new MenuView(id(), "Profil RPG", "", stats, sections, true);
     }
 
     private static Card statsCard(ServerPlayer player, String title, Map<RpgStat, Float> tree,

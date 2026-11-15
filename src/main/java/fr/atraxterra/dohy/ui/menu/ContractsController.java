@@ -93,7 +93,7 @@ public final class ContractsController extends MenuController {
                 .accent(0xFF2F5BEA)
                 .progress(ContractApi.globalXpIntoLevel(player), ContractApi.globalXpPerLevel()));
 
-        return new MenuView(id(), "Contrats", "Ils se terminent tout seuls ; seule la commande se livre", stats,
+        return new MenuView(id(), "Contrats", "", stats,
                 List.of(
                 new MenuView.Section("CONTRATS DU JOUR", "resources", MenuView.ROWS, daily),
                 new MenuView.Section("COMMANDE DE TRIXIUM", "resources", MenuView.ROWS, order),

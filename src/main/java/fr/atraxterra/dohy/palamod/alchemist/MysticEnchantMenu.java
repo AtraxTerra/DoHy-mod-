@@ -61,7 +61,7 @@ public final class MysticEnchantMenu extends MenuController {
             enchants.add(refusal == null ? card.action("apply:" + enchant.name() + "|enchanter")
                     : card.state(MenuView.DISABLED));
         }
-        return new MenuView(id(), "Enchantement mystique", "Les enchantements de l'alchimiste", List.of(
+        return new MenuView(id(), "Enchantement mystique", "", List.of(
                 new MenuView.Stat("NIVEAUX D'XP", String.valueOf(player.experienceLevel), 0xFF22E558)), List.of(
                 new MenuView.Section("OBJET", "resources", MenuView.GRID, item),
                 new MenuView.Section("ENCHANTEMENTS", "upgrade", MenuView.GRID, enchants)), false);

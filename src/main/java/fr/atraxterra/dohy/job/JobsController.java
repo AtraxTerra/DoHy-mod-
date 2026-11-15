@@ -1,15 +1,7 @@
 package fr.atraxterra.dohy.job;
 
-import fr.atraxterra.dohy.contract.ActiveContract;
-import fr.atraxterra.dohy.contract.ContractApi;
-import fr.atraxterra.dohy.contract.ContractDisplay;
-import fr.atraxterra.dohy.contract.ContractType;
-import fr.atraxterra.dohy.ui.Hub;
 import fr.atraxterra.dohy.ui.view.JobDetailView;
-import fr.atraxterra.dohy.ui.view.JobsView;
 import fr.atraxterra.dohy.ui.view.MenuView;
-import fr.atraxterra.dohy.ui.view.UiNet;
-import fr.atraxterra.dohy.upgrade.UpgradeApi;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -26,54 +18,22 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * L'ecran des metiers cote serveur : niveaux, contrats du jour, et les deux
- * actions (ouvrir la fiche d'un metier, revenir au menu).
+ * Les donnees de la page Metiers ({@link JobsMenu}) : la fiche d'un metier, ses
+ * deblocages, ses primes, ses recompenses et ce qui rapporte de l'XP.
  */
 public final class JobsController {
 
     private JobsController() {
     }
 
+    /** La page Metiers, sur le dernier metier regarde. */
     public static void open(ServerPlayer player) {
-        if (player.containerMenu != player.inventoryMenu) {
-            player.closeContainer();
-        }
-        UiNet.show(player, view(player));
+        JobsMenu.INSTANCE.open(player);
     }
 
-    static JobsView view(ServerPlayer player) {
-        List<JobsView.JobLine> jobs = new ArrayList<>();
-        for (Job job : Job.values()) {
-            int level = JobApi.level(player, job);
-            jobs.add(new JobsView.JobLine(job.name(), level, JobApi.maxLevel(),
-                    (int) Math.round(JobApi.progress(player, job) * 1000), JobApi.xp(player, job),
-                    JobApi.xpToReach(Math.min(JobApi.maxLevel(), level + 1))));
-        }
-        ContractApi.rollIfDue(player);
-        List<JobsView.Quest> quests = new ArrayList<>();
-        for (ActiveContract contract : ContractApi.data(player).daily()) {
-            String goal = MoneyFormat.exact(contract.amount())
-                    + (contract.kind() == ContractType.SELL_VALUE ? " $" : "");
-            quests.add(new JobsView.Quest(ContractDisplay.label(contract), "Objectif : " + goal,
-                    contract.progress(), contract.amount(), ContractApi.rewardFor(player, contract), contract.done()));
-        }
-        int questBonus = (int) Math.round(ContractApi.rewardBonus(player) * 1000);
-        int multiplier = (int) Math.round(UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS) * 1000);
-        return new JobsView(jobs, quests, questBonus, multiplier);
-    }
-
-    /** La fiche d'un metier ; « retour » ramene a l'ecran des metiers. */
-    public static void handleDetail(ServerPlayer player, UiNet.Action action) {
-        if ("back".equals(action.verb())) {
-            UiNet.show(player, view(player));
-        }
-    }
-
+    /** La page Metiers, sur un metier. */
     public static void openDetail(ServerPlayer player, Job job) {
-        if (player.containerMenu != player.inventoryMenu) {
-            player.closeContainer();
-        }
-        UiNet.show(player, detail(player, job));
+        JobsMenu.INSTANCE.open(player, job);
     }
 
     static JobDetailView detail(ServerPlayer player, Job job) {
@@ -112,10 +72,10 @@ public final class JobsController {
             boolean received = milestone <= paid;
             long amount = JobPrimes.amount(milestone);
             primes.add(new JobDetailView.Row(new ItemStack(received ? Items.GOLD_INGOT : Items.GOLD_NUGGET),
-                    "Prime de " + MoneyFormat.exact(amount), received ? "Versee" : "Au niveau " + milestone,
+                    "Prime de " + MoneyFormat.exact(amount) + " $", received ? "Versee" : "Au niveau " + milestone,
                     milestone, received ? JobDetailView.ACQUIRED : JobDetailView.LOCKED,
                     List.of("Versee une fois, au passage du niveau " + milestone,
-                            "En plus des " + MoneyFormat.exact(JobApi.moneyForLevel(milestone)) + " du niveau")));
+                            "En plus des " + MoneyFormat.exact(JobApi.moneyForLevel(milestone)) + " $ du niveau")));
         }
 
         Map<Integer, List<JobConfig.Reward>> byLevel = new TreeMap<>();
@@ -158,25 +118,5 @@ public final class JobsController {
         Identifier id = JobConfig.parse(raw);
         Item item = id == null ? fallback : BuiltInRegistries.ITEM.getOptional(id).orElse(fallback);
         return new ItemStack(item);
-    }
-
-    public static void handle(ServerPlayer player, UiNet.Action action) {
-        switch (action.verb()) {
-            case "open" -> {
-                Job job;
-                try {
-                    job = Job.valueOf(action.argument());
-                } catch (IllegalArgumentException unknown) {
-                    return;
-                }
-                UiNet.show(player, detail(player, job));
-            }
-            case "home" -> {
-                UiNet.forget(player);
-                Hub.open(player);
-            }
-            default -> {
-            }
-        }
     }
 }

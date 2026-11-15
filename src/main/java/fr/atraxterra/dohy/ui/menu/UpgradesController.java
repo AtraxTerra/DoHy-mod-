@@ -64,7 +64,7 @@ public final class UpgradesController extends MenuController {
             }
             cards.add(card.tooltip(tooltip));
         }
-        return new MenuView(id(), "Ameliorations", "Achats definitifs : rien ne se consomme", stats,
+        return new MenuView(id(), "Ameliorations", "", stats,
                 List.of(new MenuView.Section("", "", MenuView.GRID, cards)), true);
     }
 

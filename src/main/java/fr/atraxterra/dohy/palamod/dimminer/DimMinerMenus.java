@@ -69,7 +69,7 @@ public final class DimMinerMenus {
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("POINTS", points + " / " + DimMinerData.TOTAL_POINTS, 0xFFFAC400),
                     new MenuView.Stat("TEMPS", DimMinerManager.clock(data.remainingSeconds()), 0xFFFFFFFF));
-            return new MenuView(id(), "Dimension mineur", "Un recapitulatif avant d'entrer", stats,
+            return new MenuView(id(), "Dimension mineur", "", stats,
                     List.of(new MenuView.Section("", "", MenuView.GRID, cards)), false);
         }
 
@@ -110,7 +110,7 @@ public final class DimMinerMenus {
                     Card.of(new ItemStack(Items.IRON_PICKAXE), "Metier mineur", List.of(
                             level >= JobApi.maxLevel() ? "Niveau max" : "Niveau " + level,
                             "+" + MoneyFormat.exact(stats.xp()) + " XP")).accent(0xFF22E558));
-            return new MenuView(id(), "Session finie", "Le bilan de ta dimension", List.of(),
+            return new MenuView(id(), "Session finie", "", List.of(),
                     List.of(new MenuView.Section("", "", MenuView.GRID, cards)), false);
         }
 

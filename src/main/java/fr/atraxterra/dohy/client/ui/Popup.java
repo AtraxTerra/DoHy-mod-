@@ -28,6 +28,14 @@ public final class Popup {
     private float boxX;
     private float boxY;
     private float boxHeight;
+    /** Des cases chiffrees sous le detail : « TOTAL 80 000 $ », « IL TE RESTERA ». */
+    private List<String[]> sums = List.of();
+
+    /** Ajoute des cases chiffrees (libelle, valeur) entre le detail et les boutons. */
+    public Popup sums(List<String[]> values) {
+        this.sums = List.copyOf(values);
+        return this;
+    }
 
     public Popup(ItemStack icon, String title, String detail, String confirmLabel, boolean danger, Runnable onConfirm) {
         this.icon = icon;
@@ -38,12 +46,17 @@ public final class Popup {
         this.onConfirm = onConfirm;
     }
 
-    /** Une question « Question|Detail » posee par une carte. */
+    /**
+     * Une question « Question|Detail » posee par une carte. Un « ! » en tete marque une
+     * action qui detruit (dissoudre, tout rendre) : le bouton passe au rouge.
+     */
     public static Popup question(ItemStack icon, String question, Runnable onConfirm) {
-        int bar = question.indexOf('|');
-        String title = bar < 0 ? question : question.substring(0, bar);
-        String detail = bar < 0 ? "" : question.substring(bar + 1);
-        return new Popup(icon, title, detail, "CONFIRMER", false, onConfirm);
+        boolean danger = question.startsWith("!");
+        String text = danger ? question.substring(1) : question;
+        int bar = text.indexOf('|');
+        String title = bar < 0 ? text : text.substring(0, bar);
+        String detail = bar < 0 ? "" : text.substring(bar + 1);
+        return new Popup(icon, title, detail, "CONFIRMER", danger, onConfirm);
     }
 
     public boolean closed() {
@@ -75,7 +88,8 @@ public final class Popup {
         List<String> titleLines = g.wrap(Ui.WIDE, title, 8.0f, WIDTH - 24.0f);
         // L'icone deborde de moitie : le texte commence sous elle, les boutons 9 unites plus bas.
         boxHeight = 30.7f / 2.0f + 6.0f + titleLines.size() * 10.0f
-                + (lines.isEmpty() ? 0.0f : 4.0f + lines.size() * 8.0f) + 7.0f + BUTTON_HEIGHT + 10.0f;
+                + (lines.isEmpty() ? 0.0f : 4.0f + lines.size() * 8.0f) + (sums.isEmpty() ? 0.0f : 25.0f) + 7.0f
+                + BUTTON_HEIGHT + 10.0f;
         boxX = (designWidth - WIDTH) / 2.0f;
         boxY = (designHeight - boxHeight) / 2.0f + 6.0f * (1.0f - appear) + 4.0f * gone;
         p.shadow(boxX + 6, boxY + 10, WIDTH - 12, boxHeight - 10, 26, Paint.alpha(0xFF000000, 0.7f * visible));
@@ -101,6 +115,17 @@ public final class Popup {
                 y += 8.0f;
             }
             y += 2.0f;
+        }
+        if (!sums.isEmpty()) {
+            y += 3.0f;
+            float sumWidth = (WIDTH - 24.0f - 4.0f * (sums.size() - 1)) / sums.size();
+            for (int index = 0; index < sums.size(); index++) {
+                float sumX = boxX + 12.0f + index * (sumWidth + 4.0f);
+                p.framed(sumX, y, sumWidth, 19.3f, 3.3f, 0xFF141518, 0xFF2A2C31, 1);
+                g.text(Ui.PIXEL, sums.get(index)[0], sumX + 4.7f, y + 3.6f, 3.3f, Ui.Theme.MUTED);
+                g.text(Ui.WIDE, g.fit(Ui.WIDE, sums.get(index)[1], 6.3f, sumWidth - 8.0f), sumX + 4.7f, y + 9.6f,
+                        6.3f, index == 0 ? Ui.Theme.TEXT : Ui.Theme.TEXT2);
+            }
         }
         float buttonsY = boxY + boxHeight - 10.0f - BUTTON_HEIGHT;
         float buttonWidth = (WIDTH - 24.0f - 4.0f) / 2.0f;

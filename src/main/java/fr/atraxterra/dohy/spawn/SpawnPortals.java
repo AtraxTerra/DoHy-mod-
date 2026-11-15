@@ -78,7 +78,7 @@ public final class SpawnPortals extends MenuController {
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("PALIERS REUSSIS", String.valueOf(total), 0xFF22E558),
                 new MenuView.Stat("NIVEAU RPG", String.valueOf(Rpg.level(Rpg.data(player).xp())), 0xFFFFFFFF));
-        return new MenuView(id(), "Departs", "Les donjons et les evenements", stats, List.of(
+        return new MenuView(id(), "Departs", "", stats, List.of(
                 new MenuView.Section("DONJONS", "upgrade", MenuView.GRID, dungeons),
                 new MenuView.Section("AUSSI", "resources", MenuView.GRID, others)), false);
     }

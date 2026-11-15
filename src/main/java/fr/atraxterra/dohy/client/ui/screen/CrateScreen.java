@@ -1,13 +1,17 @@
 package fr.atraxterra.dohy.client.ui.screen;
 
+import fr.atraxterra.dohy.client.ui.Anim;
+import fr.atraxterra.dohy.client.ui.Buttons;
+import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiClient;
+import fr.atraxterra.dohy.client.ui.UiElement;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.client.ui.UiScreen;
 import fr.atraxterra.dohy.client.ui.ViewScreen;
-import fr.atraxterra.dohy.client.ui.widget.CloseButton;
-import fr.atraxterra.dohy.client.ui.widget.UiButton;
+import fr.atraxterra.dohy.client.ui.shell.Shell;
 import fr.atraxterra.dohy.ui.view.CrateView;
+import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
@@ -36,10 +40,6 @@ import java.util.Random;
  */
 public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
 
-    private static final int WIDTH = 360;
-    private static final int HEIGHT = 216;
-    private static final int REEL_X = 18;
-    private static final int REEL_Y = 58;
     private static final int REEL_W = 324;
     private static final int REEL_H = 58;
     /** Le pas d'une case, et la case elle-meme. */
@@ -50,21 +50,39 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
 
     /** Commun, rare, epique, legendaire. */
     public static final int[] COLORS = {0xFFB4B3BD, 0xFF3D8BFF, 0xFFB45CFF, 0xFFFAC400};
-    private static final String[] NAMES = {"COMMUN", "RARE", "ÉPIQUE", "LÉGENDAIRE"};
-    private static final String[] ODDS = {"Commun", "Rare", "Épique", "Légendaire"};
+    private static final String[] NAMES = {"COMMUN", "RARE", "EPIQUE", "LEGENDAIRE"};
+    private static final String[] ODDS = {"Commun", "Rare", "Epique", "Legendaire"};
 
     private CrateView view;
+    private final Shell shell = new Shell(CrateView.ID);
+    private final double opened = Anim.now();
     private long start = -1L;
     private float jitter;
     private int lastCell = -1;
     private long lastTick;
     private boolean revealed;
-    private UiButton again;
+    /** La roulette, centree dans la zone de contenu de la coque. */
+    private int reelX;
+    private int reelY;
 
     public CrateScreen(CrateView view) {
-        super(Component.literal("Box"), WIDTH, HEIGHT);
+        super(Component.literal("Box"), Shell.WIDTH, Shell.HEIGHT);
         this.view = view;
+        header();
         restart();
+    }
+
+    private void header() {
+        shell.header(view.title(), "", List.of(
+                new MenuView.Stat(view.keys() > 1 ? "CLES" : "CLE", Integer.toString(view.keys()),
+                        view.keys() > 0 ? 0xFFFFFFFF : 0xFF8B8E95),
+                new MenuView.Stat("PRIX DE LA CLE", MoneyFormat.compact(view.price()).toUpperCase(Locale.ROOT),
+                        0xFFFAC400)), List.of(), true);
+    }
+
+    @Override
+    protected float lift() {
+        return 5.0f * (1.0f - Anim.easeOut(Anim.progress(opened, 0.22d)));
     }
 
     @Override
@@ -76,10 +94,10 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
     public void accept(CrateView next) {
         boolean newSpin = next.spin() != view.spin();
         this.view = next;
+        header();
         if (newSpin) {
             restart();
         }
-        refresh();
     }
 
     /** Relance la roulette. L'arret tombe au hasard dans la case, pas toujours au milieu. */
@@ -92,27 +110,66 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
 
     @Override
     protected void build() {
-        add(new CloseButton(WIDTH - 26, 16, this::onClose));
-        again = add(new UiButton(WIDTH / 2 - 122, 184, 118, 18, "", UiButton.Style.GREEN,
-                () -> UiClient.send(CrateView.ID, "again", view.tier(), 0)));
-        add(new UiButton(WIDTH / 2 + 4, 184, 118, 18, "BOUTIQUE", UiButton.Style.GRAY,
-                () -> UiClient.send(CrateView.ID, "back", "", 0)));
-        refresh();
+        reelX = Math.round(shell.mainLeft() + (shell.mainRight() - shell.mainLeft() - REEL_W) / 2.0f);
+        reelY = Math.round(shell.contentTop() + 26.0f);
+        add(new Actions());
     }
 
-    private void refresh() {
-        if (again == null) {
-            return;
-        }
+    private String againLabel() {
         if (view.keys() > 0) {
-            again.setLabel("ROUVRIR (" + view.keys() + " CLÉ" + (view.keys() > 1 ? "S" : "") + ")");
-            again.enabled = revealed;
-        } else if (view.affordable()) {
-            again.setLabel("CLÉ À " + MoneyFormat.compact(view.price()).toUpperCase(Locale.ROOT));
-            again.enabled = revealed;
-        } else {
-            again.setLabel("PLUS DE CLÉ");
-            again.enabled = false;
+            return "ROUVRIR (" + view.keys() + " CLE" + (view.keys() > 1 ? "S" : "") + ")";
+        }
+        if (view.affordable()) {
+            return "CLE A " + MoneyFormat.compact(view.price()).toUpperCase(Locale.ROOT);
+        }
+        return "PLUS DE CLE";
+    }
+
+    private boolean againEnabled() {
+        return revealed && (view.keys() > 0 || view.affordable());
+    }
+
+    /** Les deux boutons sous le resultat : rouvrir, revenir a la boutique. */
+    private final class Actions extends UiElement {
+        private final Anim.Value againHover = new Anim.Value(0.0f, 16.0f);
+        private final Anim.Value backHover = new Anim.Value(0.0f, 16.0f);
+
+        Actions() {
+            super(0, 0, 1, 1);
+            width = 244;
+            height = 17;
+            x = reelX + (REEL_W - width) / 2;
+            y = reelY + REEL_H + 76;
+        }
+
+        @Override
+        public void render(UiGraphics g, double mouseX, double mouseY) {
+            // Sous le resultat : plus bas quand un lot groupe aligne ses objets.
+            y = Math.round(resultTop() + (view.contents().isEmpty() ? 34 : 46));
+            float half = (width - 4) / 2.0f;
+            boolean overAgain = mouseX >= x && mouseX < x + half && mouseY >= y && mouseY < y + height;
+            boolean overBack = mouseX >= x + half + 4 && mouseX < x + width && mouseY >= y && mouseY < y + height;
+            Buttons.draw(g, g.paint(), x, y, half, height, againLabel(), Buttons.GREEN,
+                    againHover.toward(overAgain ? 1.0f : 0.0f), againEnabled(), 5.0f);
+            Buttons.draw(g, g.paint(), x + half + 4, y, half, height, "BOUTIQUE", Buttons.GHOST,
+                    backHover.toward(overBack ? 1.0f : 0.0f), true, 5.0f);
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (!contains(mouseX, mouseY) || button != 0) {
+                return false;
+            }
+            if (mouseX < x + (width - 4) / 2.0f) {
+                if (againEnabled()) {
+                    UiScreen.click(1.1f);
+                    UiClient.send(CrateView.ID, "again", view.tier(), 0);
+                }
+            } else {
+                UiScreen.click(0.9f);
+                UiClient.send(CrateView.ID, "back", "", 0);
+            }
+            return true;
         }
     }
 
@@ -145,7 +202,6 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
 
     private void reveal() {
         revealed = true;
-        refresh();
         switch (view.rarity()) {
             case 3 -> {
                 play(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 0.9f);
@@ -189,26 +245,22 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
             }
         }
 
-        g.panel(0, 0, WIDTH, HEIGHT);
-        g.textShaded(Ui.TITLE, view.title().toUpperCase(Locale.ROOT), 24, 18, 20, Ui.RED, Ui.RED_SHADE, 1.5f);
-        String keys = view.keys() + (view.keys() > 1 ? " CLÉS" : " CLÉ");
-        g.right(Ui.WIDE, keys, WIDTH - 34, 18, 5, view.keys() > 0 ? Ui.WHITE : Ui.MUTED);
-        g.right(Ui.BODY, "Clé : " + MoneyFormat.exact(view.price()), WIDTH - 34, 27, 4.4f, Ui.MUTED);
-
+        shell.draw(g, g.paint(), mouseX, mouseY);
         drawReel(g, offset, now);
         drawResult(g, now);
         drawOdds(g);
     }
 
     private void drawReel(UiGraphics g, float offset, long now) {
-        g.rect(REEL_X - 2, REEL_Y - 2, REEL_W + 4, REEL_H + 4, Ui.FRAME);
-        g.rect(REEL_X, REEL_Y, REEL_W, REEL_H, Ui.INSET);
+        Paint p = g.paint();
+        p.shadow(reelX + 4, reelY + 6, REEL_W - 8, REEL_H - 4, 12, Paint.alpha(0xFF000000, 0.45f));
+        p.framed(reelX - 3, reelY - 3, REEL_W + 6, REEL_H + 6, 7.0f, 0xFF141518, 0xFF2C2E33, 1);
 
         int base = (int) Math.floor(offset);
         float fraction = offset - base;
-        int cellY = REEL_Y + (REEL_H - CELL_H) / 2;
+        int cellY = reelY + (REEL_H - CELL_H) / 2;
         List<CrateView.Slot> reel = view.reel();
-        g.scissor(REEL_X, REEL_Y, REEL_W, REEL_H);
+        g.scissor(reelX, reelY, REEL_W, REEL_H);
         Matrix3x2fStack pose = g.raw().pose();
         pose.pushMatrix();
         // Le reste du decalage en sous-unite : la bande glisse sans a-coups au ralenti.
@@ -227,78 +279,82 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
             for (int index = 0; index < reel.size(); index++) {
                 int x = cellX(index, base);
                 if (index != view.win() && visible(x)) {
-                    g.rect(x, cellY, CELL_W, CELL_H, 0xB0101014);
+                    p.round(x, cellY, CELL_W, CELL_H, 4.0f, 0xB0101014);
                 }
             }
             int x = cellX(view.win(), base);
-            int rgb = COLORS[rarity()] & 0xFFFFFF;
+            int color = COLORS[rarity()];
             float pulse = 0.5f + 0.5f * (float) Math.sin(now / 160.0);
-            g.rect(x - 4, cellY - 4, CELL_W + 8, CELL_H + 8, (Math.round(0x28 + 0x38 * pulse) << 24) | rgb);
-            g.border(x - 2, cellY - 2, CELL_W + 4, CELL_H + 4, 2, (Math.round(0xA0 + 0x5F * pulse) << 24) | rgb);
+            p.glow(x + CELL_W / 2.0f, cellY + CELL_H / 2.0f, CELL_H * 0.9f, Paint.alpha(color, 0.25f + 0.2f * pulse));
+            p.round(x - 2, cellY - 2, CELL_W + 4, CELL_H + 4, 5.3f, Paint.alpha(color, 0.75f + 0.25f * pulse));
             drawCell(g, reel.get(view.win()), x, cellY, true);
         }
         pose.popMatrix();
 
         // Les bords s'estompent dans le fond.
-        for (int step = 0; step < 10; step++) {
-            int alpha = Math.round(0xE0 * (1f - step / 10f));
-            int color = (alpha << 24) | (Ui.INSET & 0xFFFFFF);
-            g.rect(REEL_X + step * 2, REEL_Y, 2, REEL_H, color);
-            g.rect(REEL_X + REEL_W - (step + 1) * 2, REEL_Y, 2, REEL_H, color);
-        }
+        p.gradientH(reelX, reelY, 22, REEL_H, 0xF0141518, 0x00141518);
+        p.gradientH(reelX + REEL_W - 22, reelY, 22, REEL_H, 0x00141518, 0xF0141518);
         g.endScissor();
 
-        // Le repere : un filet et deux pointes, a la couleur du lot une fois arrete.
-        int center = REEL_X + REEL_W / 2;
-        int marker = revealed ? COLORS[rarity()] : Ui.WHITE;
+        // Le repere : un filet lumineux et deux pastilles, a la couleur du lot une fois arrete.
+        float center = reelX + REEL_W / 2.0f;
+        int marker = revealed ? COLORS[rarity()] : 0xFFFFFFFF;
         if (!revealed) {
-            g.rect(center, REEL_Y, 1, REEL_H, 0x55FFFFFF);
+            p.rect(center - 0.34f, reelY, 0.67f, REEL_H, 0x66FFFFFF);
         }
-        g.rect(center - 3, REEL_Y - 6, 7, 2, marker);
-        g.rect(center - 2, REEL_Y - 4, 5, 2, marker);
-        g.rect(center - 1, REEL_Y - 2, 3, 2, marker);
-        g.rect(center - 1, REEL_Y + REEL_H, 3, 2, marker);
-        g.rect(center - 2, REEL_Y + REEL_H + 2, 5, 2, marker);
-        g.rect(center - 3, REEL_Y + REEL_H + 4, 7, 2, marker);
+        p.glow(center, reelY - 3.0f, 6.0f, Paint.alpha(marker, 0.6f));
+        p.round(center - 4.0f, reelY - 5.0f, 8.0f, 3.3f, 1.65f, marker);
+        p.glow(center, reelY + REEL_H + 3.0f, 6.0f, Paint.alpha(marker, 0.6f));
+        p.round(center - 4.0f, reelY + REEL_H + 1.7f, 8.0f, 3.3f, 1.65f, marker);
     }
 
-    private static int cellX(int index, int base) {
-        return REEL_X + index * PITCH - base + (PITCH - CELL_W) / 2;
+    private int cellX(int index, int base) {
+        return reelX + index * PITCH - base + (PITCH - CELL_W) / 2;
     }
 
-    private static boolean visible(int x) {
-        return x + CELL_W >= REEL_X - 4 && x <= REEL_X + REEL_W + 4;
+    private boolean visible(int x) {
+        return x + CELL_W >= reelX - 4 && x <= reelX + REEL_W + 4;
     }
 
     private void drawCell(UiGraphics g, CrateView.Slot slot, int x, int y, boolean winner) {
+        Paint p = g.paint();
         int color = COLORS[Math.max(0, Math.min(slot.rarity(), COLORS.length - 1))];
-        g.rect(x, y, CELL_W, CELL_H, 0xFF1F1E25);
-        g.rect(x, y, CELL_W, CELL_H, ((winner ? 0x50 : 0x24) << 24) | (color & 0xFFFFFF));
-        g.rect(x, y + CELL_H - 3, CELL_W, 3, color);
+        int fill = Paint.mix(0xFF1F2024, color, winner ? 0.30f : 0.12f);
+        p.framed(x, y, CELL_W, CELL_H, 4.0f, fill, Paint.mix(fill, color, 0.5f), 1);
+        p.round(x + 4, y + CELL_H - 3.3f, CELL_W - 8, 1.6f, 0.8f, color);
         if (slot.icon().isEmpty()) {
             g.texture(Ui.MONEY, x + 5, y + 11, 20, 12, 56, 34);
         } else {
             g.item(slot.icon(), x + 5, y + 7, 20, false);
         }
-        g.centered(Ui.PIXEL, g.fit(Ui.PIXEL, slot.label(), 4.5f, CELL_W - 2), x + CELL_W / 2f, y + 32, 4.5f,
-                Ui.TEXT);
+        g.centered(Ui.PIXEL, g.fit(Ui.PIXEL, slot.label(), 3.6f, CELL_W - 2), x + CELL_W / 2f, y + 32, 3.6f,
+                Ui.Theme.TEXT);
+    }
+
+    private float resultTop() {
+        return reelY + REEL_H + 14;
     }
 
     private void drawResult(UiGraphics g, long now) {
-        float middle = WIDTH / 2f;
+        float middle = reelX + REEL_W / 2f;
+        float top = resultTop();
         if (!revealed) {
             int dots = (int) ((now / 300L) % 4L);
-            g.centered(Ui.WIDE, "OUVERTURE" + ".".repeat(dots), middle, 132, 6, Ui.MUTED);
-            g.centered(Ui.BODY, "Clique sur la roulette pour passer", middle, 145, 4.4f, Ui.DISABLED);
+            g.centered(Ui.WIDE, "OUVERTURE" + ".".repeat(dots), middle, top + 8, 6, Ui.Theme.MUTED);
+            g.centered(Ui.BODY, "Clique sur la roulette pour passer", middle, top + 20, 4.7f, Ui.Theme.DIM);
             return;
         }
         int color = COLORS[rarity()];
-        g.centered(Ui.WIDE, NAMES[rarity()], middle, 126, 6, color);
-        g.centered(Ui.BOLD, g.fit(Ui.BOLD, view.prize(), 8, WIDTH - 60), middle, 136, 8, Ui.WHITE);
+        Paint p = g.paint();
+        float pill = g.width(Ui.PIXEL, NAMES[rarity()], 3.6f) + 8.0f;
+        p.glow(middle, top + 3.5f, pill * 0.7f, Paint.alpha(color, 0.35f));
+        p.round(middle - pill / 2.0f, top, pill, 7.3f, 3.65f, color);
+        g.centered(Ui.PIXEL, NAMES[rarity()], middle, top + 1.9f, 3.6f, rarity() == 3 ? 0xFF2A1E00 : 0xFFFFFFFF);
+        g.centered(Ui.BOLD, g.fit(Ui.BOLD, view.prize(), 8, REEL_W - 20), middle, top + 11, 8, Ui.Theme.TEXT);
         List<ItemStack> contents = view.contents();
         if (contents.isEmpty()) {
             if (!view.detail().isEmpty()) {
-                g.centered(Ui.BODY, view.detail(), middle, 150, 4.8f, Ui.MUTED);
+                g.centered(Ui.BODY, view.detail(), middle, top + 23, 4.8f, Ui.Theme.MUTED);
             }
             return;
         }
@@ -308,25 +364,32 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
         int total = contents.size() * size + (contents.size() - 1) * gap;
         int x = Math.round(middle - total / 2f);
         for (ItemStack stack : contents) {
-            g.item(stack, x, 151, size, true);
+            g.item(stack, x, Math.round(top + 24), size, true);
             x += size + gap;
         }
     }
 
+    /** La chance de chaque classe, en pastilles sous les boutons. */
     private void drawOdds(UiGraphics g) {
+        Paint p = g.paint();
         List<Integer> odds = view.odds();
-        float size = 4.2f;
-        float gap = 9f;
-        String[] parts = new String[Math.min(odds.size(), ODDS.length)];
+        float size = 4.0f;
+        float gap = 4f;
+        int count = Math.min(odds.size(), ODDS.length);
+        String[] parts = new String[count];
         float total = 0f;
-        for (int index = 0; index < parts.length; index++) {
+        for (int index = 0; index < count; index++) {
             parts[index] = ODDS[index] + " " + percent(odds.get(index));
-            total += g.width(Ui.BODY, parts[index], size) + (index > 0 ? gap : 0f);
+            total += g.width(Ui.BODY, parts[index], size) + 10.0f + (index > 0 ? gap : 0f);
         }
-        float x = WIDTH / 2f - total / 2f;
-        for (int index = 0; index < parts.length; index++) {
-            g.text(Ui.BODY, parts[index], x, 205, size, COLORS[index]);
-            x += g.width(Ui.BODY, parts[index], size) + gap;
+        float x = reelX + REEL_W / 2f - total / 2f;
+        float y = resultTop() + (view.contents().isEmpty() ? 34 : 46) + 25;
+        for (int index = 0; index < count; index++) {
+            float width = g.width(Ui.BODY, parts[index], size) + 10.0f;
+            p.framed(x, y, width, 10.0f, 5.0f, 0xFF18191C, Paint.mix(0xFF2A2C31, COLORS[index], 0.5f), 1);
+            p.dot(x + 4.0f, y + 5.0f, 1.3f, COLORS[index]);
+            g.text(Ui.BODY, parts[index], x + 7.0f, y + 3.0f, size, Ui.Theme.TEXT2);
+            x += width + gap;
         }
     }
 
@@ -354,9 +417,10 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
         int size = 16;
         int gap = 3;
         int total = contents.size() * size + Math.max(0, contents.size() - 1) * gap;
-        int x = Math.round(WIDTH / 2f - total / 2f);
+        int x = Math.round(reelX + REEL_W / 2f - total / 2f);
+        int itemsY = Math.round(resultTop() + 24);
         for (ItemStack stack : contents) {
-            if (mouseX >= x && mouseX < x + size && mouseY >= 151 && mouseY < 151 + size) {
+            if (mouseX >= x && mouseX < x + size && mouseY >= itemsY && mouseY < itemsY + size) {
                 g.tooltip(stack);
                 return;
             }
@@ -367,7 +431,7 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
         float end = offset(1f);
         int base = (int) Math.floor(end);
         double cellX = cellX(view.win(), base) - (end - base);
-        int cellY = REEL_Y + (REEL_H - CELL_H) / 2;
+        int cellY = reelY + (REEL_H - CELL_H) / 2;
         if (contents.isEmpty() && !slot.icon().isEmpty() && mouseX >= cellX && mouseX < cellX + CELL_W
                 && mouseY >= cellY && mouseY < cellY + CELL_H) {
             g.tooltip(slot.icon());
@@ -380,11 +444,16 @@ public class CrateScreen extends UiScreen implements ViewScreen<CrateView> {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double x = designX(event.x());
         double y = designY(event.y());
-        if (!revealed && x >= REEL_X && x < REEL_X + REEL_W && y >= REEL_Y && y < REEL_Y + REEL_H) {
+        if (!revealed && x >= reelX && x < reelX + REEL_W && y >= reelY && y < reelY + REEL_H) {
             skip();
             return true;
         }
         return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    protected boolean backgroundClicked(double mouseX, double mouseY, int button) {
+        return button == 0 && shell.click(mouseX, mouseY);
     }
 
     @Override

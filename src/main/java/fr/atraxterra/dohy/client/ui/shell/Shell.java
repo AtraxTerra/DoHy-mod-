@@ -309,15 +309,37 @@ public final class Shell {
     }
 
     private void tabs(UiGraphics g, Paint p, float x, float y, double mouseX, double mouseY) {
+        // Trop d'onglets pour la largeur : on resserre, puis on laisse les compteurs.
+        float size = 5.33f;
+        float pad = 13.4f;
+        boolean counts = true;
+        float available = mainRight() - x;
         float cursor = x + 2.0f;
         List<float[]> boxes = new ArrayList<>();
-        for (MenuView.Tab tab : tabs) {
-            float labelWidth = g.width(Ui.BOLD, tab.label(), 5.33f);
-            float countWidth = tab.count().isEmpty() ? 0.0f : g.width(Ui.PIXEL, tab.count(), 3.6f) + 3.3f;
-            float tabWidth = labelWidth + countWidth + 13.4f;
-            boxes.add(new float[] {cursor, tabWidth});
-            cursor += tabWidth + 2.7f;
+        for (int attempt = 0; attempt < 3; attempt++) {
+            cursor = x + 2.0f;
+            boxes.clear();
+            for (MenuView.Tab tab : tabs) {
+                float labelWidth = g.width(Ui.BOLD, tab.label(), size);
+                float countWidth = !counts || tab.count().isEmpty() ? 0.0f
+                        : g.width(Ui.PIXEL, tab.count(), 3.6f) + 3.3f;
+                float tabWidth = labelWidth + countWidth + pad;
+                boxes.add(new float[] {cursor, tabWidth});
+                cursor += tabWidth + 2.7f;
+            }
+            if (cursor - x <= available) {
+                break;
+            }
+            if (attempt == 0) {
+                size = 4.8f;
+                pad = 9.0f;
+            } else {
+                counts = false;
+            }
         }
+        float labelSize = size;
+        float labelPad = pad / 2.0f;
+        boolean showCounts = counts;
         float containerWidth = cursor - x - 0.7f;
         p.framed(x, y, containerWidth, 19.3f, 5.3f, Ui.Theme.INSET, 0xFF24262A, 1);
         for (int index = 0; index < tabs.size(); index++) {
@@ -336,10 +358,11 @@ public final class Shell {
                 p.round(tabX, tabY, tabWidth, 15.3f, 3.7f, Paint.alpha(0xFFFFFFFF, 0.05f * hover));
             }
             int color = tab.active() ? Ui.Theme.TEXT : Paint.mix(Ui.Theme.TEXT2, Ui.Theme.TEXT, hover);
-            g.text(Ui.BOLD, tab.label(), tabX + 6.7f, tabY + 5.0f, 5.33f, color);
-            if (!tab.count().isEmpty()) {
-                float labelWidth = g.width(Ui.BOLD, tab.label(), 5.33f);
-                g.text(Ui.PIXEL, tab.count(), tabX + 6.7f + labelWidth + 3.3f, tabY + 6.0f, 3.6f,
+            g.text(Ui.BOLD, tab.label(), tabX + labelPad, tabY + 5.0f + (5.33f - labelSize) / 2.0f, labelSize,
+                    color);
+            if (showCounts && !tab.count().isEmpty()) {
+                float labelWidth = g.width(Ui.BOLD, tab.label(), labelSize);
+                g.text(Ui.PIXEL, tab.count(), tabX + labelPad + labelWidth + 3.3f, tabY + 6.0f, 3.6f,
                         tab.active() ? 0xCCFFFFFF : Ui.Theme.MUTED);
             }
             if (!tab.active()) {
@@ -348,6 +371,28 @@ public final class Shell {
                     UiClient.send(view, "card", tab.action(), 0);
                 }));
             }
+        }
+    }
+
+    /**
+     * Un intertitre de section, comme dans les menus : le losange, le titre en police
+     * large, un compteur, puis un filet qui s'efface vers la droite.
+     */
+    public static void section(UiGraphics g, Paint p, float x, float y, float width, String icon, String title,
+                               String count) {
+        float cursor = x;
+        if (!icon.isEmpty()) {
+            g.texture(Ui.texture("section_" + icon), Math.round(cursor), Math.round(y), 9, 9, 56, 56);
+            cursor += 12.7f;
+        }
+        g.text(Ui.WIDE, title, cursor, y + 1.7f, 6.3f, Ui.Theme.TEXT);
+        cursor += g.width(Ui.WIDE, title, 6.3f) + 4.0f;
+        if (!count.isEmpty()) {
+            g.text(Ui.PIXEL, count, cursor, y + 3.0f, 3.7f, Ui.Theme.MUTED);
+            cursor += g.width(Ui.PIXEL, count, 3.7f) + 4.0f;
+        }
+        if (x + width - cursor > 4) {
+            p.gradientH(cursor, y + 4.2f, x + width - cursor, 0.34f, 0xFF34363C, 0x0034363C);
         }
     }
 
