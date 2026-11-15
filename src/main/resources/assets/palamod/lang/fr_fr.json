@@ -915,5 +915,18 @@
   "key.dohy.atlas": "Atlas (grande carte)",
   "key.dohy.minimap": "Minimap (afficher)",
   "key.dohy.minimap_zoom_in": "Minimap : zoom +",
-  "key.dohy.minimap_zoom_out": "Minimap : zoom -"
+  "key.dohy.minimap_zoom_out": "Minimap : zoom -",
+  "item.palamod.candy_green": "Bonbon vert",
+  "item.palamod.candy_yellow": "Bonbon jaune",
+  "item.palamod.candy_blue": "Bonbon bleu",
+  "item.palamod.candy_purple": "Bonbon mauve",
+  "item.palamod.candy_rainbow": "Bonbon multicolore",
+  "item.palamod.candy_wrapped": "Bonbon a deballer",
+  "tooltip.palamod.candy": "+%s XP de %s",
+  "tooltip.palamod.candy.all": "+%s XP dans chaque metier",
+  "tooltip.palamod.candy.hint": "Clic droit : le croquer. Accroupi : toute la pile.",
+  "tooltip.palamod.candy_wrapped": "Un bonbon de metier au hasard, parfois multicolore",
+  "tooltip.palamod.candy_wrapped.hint": "Clic droit : le deballer.",
+  "message.palamod.candy": "[Bonbon] +%s XP de %s",
+  "message.palamod.candy_wrapped": "[Bonbon] Dans le papier : %s !"
 }

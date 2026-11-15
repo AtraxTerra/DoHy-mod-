@@ -230,9 +230,8 @@
       "level": 5,
       "items": [
         {
-          "item": "palamod:job_bottle_miner",
-          "count": 1,
-          "job_xp": 10000
+          "item": "palamod:candy_yellow",
+          "count": 1
         }
       ]
     },
@@ -275,9 +274,8 @@
       "level": 11,
       "items": [
         {
-          "item": "palamod:job_bottle_hunter",
-          "count": 1,
-          "job_xp": 10000
+          "item": "palamod:candy_blue",
+          "count": 1
         }
       ]
     },
@@ -320,9 +318,8 @@
       "level": 17,
       "items": [
         {
-          "item": "palamod:job_bottle_farmer",
-          "count": 1,
-          "job_xp": 10000
+          "item": "palamod:candy_green",
+          "count": 1
         }
       ]
     },
@@ -352,9 +349,8 @@
       "level": 21,
       "items": [
         {
-          "item": "palamod:job_bottle_alchemist",
-          "count": 1,
-          "job_xp": 10000
+          "item": "palamod:candy_purple",
+          "count": 1
         }
       ]
     },

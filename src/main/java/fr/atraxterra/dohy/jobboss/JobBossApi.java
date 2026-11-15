@@ -108,6 +108,17 @@ public final class JobBossApi {
         return System.currentTimeMillis() >= arrival ? State.READY : State.COMING;
     }
 
+    /**
+     * Huit heures apres chaque victoire, l'autel n'accepte pas d'offrande pour
+     * ce gardien (wiki Java, « Boss metier », 23/04/2026).
+     */
+    public static final long REST = 8L * 60L * 60L * 1000L;
+
+    /** Millisecondes de repos qui restent avant la prochaine offrande (0 : l'autel l'accepte). */
+    public static long resting(ServerPlayer player, Job job) {
+        return Math.max(0L, data(player).guardian(job).rest() - System.currentTimeMillis());
+    }
+
     /** Millisecondes avant l'arrivee (0 s'il est la, ou pas appele). */
     public static long remaining(ServerPlayer player, Job job) {
         long arrival = data(player).guardian(job).arrival();
@@ -146,6 +157,10 @@ public final class JobBossApi {
     public static String offer(ServerPlayer player, Job job) {
         if (state(player, job) != State.OFFERING) {
             return JobBosses.name(job) + " est deja appele.";
+        }
+        if (resting(player, job) > 0L) {
+            return JobBosses.name(job) + " se remet de sa defaite : prochaine offrande dans "
+                    + when(resting(player, job)) + ".";
         }
         JobBossData.Guardian guardian = data(player).guardian(job);
         Inventory inventory = player.getInventory();
@@ -228,6 +243,7 @@ public final class JobBossApi {
             guardian.arrival = 0L;
             guardian.notices = 0;
             guardian.deposited.clear();
+            guardian.rest = System.currentTimeMillis() + REST;
             player.setData(DoHyAttachments.JOB_BOSS, data(player));
         }
         say(player, Component.literal(JobBosses.name(job) + " (niveau " + level + ") est vaincu : +"

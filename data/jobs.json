@@ -977,9 +977,9 @@
     {
       "job": "miner",
       "level": 95,
-      "id": "palamod:job_bottle_miner",
-      "count": 5,
-      "label": "Bouteille d'XP de metier"
+      "id": "palamod:candy_wrapped",
+      "count": 1,
+      "label": "Bonbon a deballer"
     },
     {
       "job": "miner",
@@ -1355,9 +1355,9 @@
     {
       "job": "farmer",
       "level": 95,
-      "id": "palamod:job_bottle_farmer",
-      "count": 5,
-      "label": "Bouteille d'XP de metier"
+      "id": "palamod:candy_wrapped",
+      "count": 1,
+      "label": "Bonbon a deballer"
     },
     {
       "job": "farmer",
@@ -1701,9 +1701,9 @@
     {
       "job": "hunter",
       "level": 95,
-      "id": "palamod:job_bottle_hunter",
-      "count": 5,
-      "label": "Bouteille d'XP de metier"
+      "id": "palamod:candy_wrapped",
+      "count": 1,
+      "label": "Bonbon a deballer"
     },
     {
       "job": "hunter",
@@ -2051,9 +2051,9 @@
     {
       "job": "alchemist",
       "level": 95,
-      "id": "palamod:job_bottle_alchemist",
-      "count": 5,
-      "label": "Bouteille d'XP de metier"
+      "id": "palamod:candy_wrapped",
+      "count": 1,
+      "label": "Bonbon a deballer"
     },
     {
       "job": "alchemist",

@@ -137,6 +137,23 @@ public final class PalaDungeon {
     public static final DeferredItem<JobBottleItem> ALCHEMIST_BOTTLE = ITEMS.registerItem("job_bottle_alchemist",
             properties -> new JobBottleItem(Job.ALCHEMIST, properties.stacksTo(64)));
 
+    // -- Bonbons de metier (wiki Java : 50 000 XP de PalaJobs, ici 17 850) ------------
+
+    public static final DeferredItem<CandyItem> CANDY_GREEN = ITEMS.registerItem("candy_green",
+            properties -> new CandyItem(List.of(Job.FARMER), properties.stacksTo(64)));
+    public static final DeferredItem<CandyItem> CANDY_YELLOW = ITEMS.registerItem("candy_yellow",
+            properties -> new CandyItem(List.of(Job.MINER), properties.stacksTo(64)));
+    public static final DeferredItem<CandyItem> CANDY_BLUE = ITEMS.registerItem("candy_blue",
+            properties -> new CandyItem(List.of(Job.HUNTER), properties.stacksTo(64)));
+    public static final DeferredItem<CandyItem> CANDY_PURPLE = ITEMS.registerItem("candy_purple",
+            properties -> new CandyItem(List.of(Job.ALCHEMIST), properties.stacksTo(64)));
+    public static final DeferredItem<CandyItem> CANDY_RAINBOW = ITEMS.registerItem("candy_rainbow",
+            properties -> new CandyItem(List.of(Job.FARMER, Job.MINER, Job.HUNTER, Job.ALCHEMIST),
+                    properties.stacksTo(64)));
+    /** Le « bonbon a deballer » : un bonbon de metier au hasard. */
+    public static final DeferredItem<WrappedCandyItem> CANDY_WRAPPED = ITEMS.registerItem("candy_wrapped",
+            properties -> new WrappedCandyItem(properties.stacksTo(64)));
+
     // -- Runes ----------------------------------------------------------------------
 
     /** « Fragment de rune commune » : quatre font une rune a la palamachine. */
@@ -156,6 +173,7 @@ public final class PalaDungeon {
             TALIKUS_KEY, NIMBRIA_KEY, VITALYS_KEY, MANELIOS_KEY,
             LEATHER_BACKPACK, BACKPACK_T2, BACKPACK_T3,
             FARMER_BOTTLE, MINER_BOTTLE, HUNTER_BOTTLE, ALCHEMIST_BOTTLE,
+            CANDY_GREEN, CANDY_YELLOW, CANDY_BLUE, CANDY_PURPLE, CANDY_RAINBOW, CANDY_WRAPPED,
             RUNE_FRAGMENT_COMMON, RUNE_FRAGMENT_RARE, RUNE_COMMON, RUNE_RARE, RUNE_EPIC);
 
     private PalaDungeon() {

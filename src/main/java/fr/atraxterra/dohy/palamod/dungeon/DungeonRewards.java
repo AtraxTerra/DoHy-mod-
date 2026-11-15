@@ -48,7 +48,7 @@ import java.util.function.IntPredicate;
  * <p>Les parchemins de sort (les sorts sont laisses de cote, au choix du
  * joueur) et les parchemins de craft ne sont pas portes, ni les objets du
  * wiki qui ne sont ni dans PalaMod ni dans vanilla (Obsidienne infusee, Tete
- * de thirsty, Totem fleuri, Bonbons, Jetpack...). Une entree introuvable au registre est
+ * de thirsty, Totem fleuri, Jetpack...). Une entree introuvable au registre est
  * ignoree, pas une erreur.
  */
 final class DungeonRewards {
@@ -199,7 +199,7 @@ final class DungeonRewards {
     /**
      * La table des boss : la reserve B de dix-sept objets, puis les ajouts
      * ligne par ligne. Les deux tetes de wither de PalaMod (passive et
-     * supreme), les bonbons, le jetpack, la defense d'elephant, la piece de
+     * supreme), le jetpack, la defense d'elephant, la piece de
      * lune et le double XP n'existent pas dans DoHy : seule la tete de
      * squelette wither vanilla (« Tete de wither ») reste.
      */
@@ -225,6 +225,8 @@ final class DungeonRewards {
         for (String job : List.of("farmer", "hunter", "miner", "alchemist")) {
             entries.add(Entry.of(0, 3, "palamod:job_bottle_" + job, 1, 1));
         }
+        // « Bonbon emballe » au palier 50, « Bonbon a deballer » aux 85 et 95 : le meme.
+        entries.add(Entry.of(50, 2, "palamod:candy_wrapped", 1, 1));
         // Armure d'endium mixte P4U3 : apres un boss des 30, apres tout boss des 55.
         for (String piece : List.of("helmet", "chestplate", "leggings", "boots")) {
             entries.add(new Entry(palier -> palier >= 55 || (palier >= 30 && x0(palier)), 1,

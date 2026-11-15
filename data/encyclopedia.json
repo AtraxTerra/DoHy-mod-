@@ -760,7 +760,8 @@
         "chasseur",
         "fermier",
         "alchimiste",
-        "boss_metier"
+        "boss_metier",
+        "bonbons"
       ],
       "progress": "metiers",
       "discover": {
@@ -804,7 +805,8 @@
         {
           "title": "Le combat",
           "text": [
-            "Une salle de boss : sa barre, ses capacites, ses renforts, une rage sous le tiers de sa vie. Une defaite ne coute rien : il t'attend encore."
+            "Une salle de boss : sa barre, ses capacites, ses renforts, une rage sous le tiers de sa vie. Une defaite ne coute rien : il t'attend encore.",
+            "! Laisse-le une minute sans le frapper et il se soigne vite : reste au contact."
           ]
         },
         {
@@ -812,7 +814,8 @@
           "text": [
             "- 20 000 XP du metier et 15 000 $ par niveau du gardien, des qu'il tombe.",
             "- Son coffre au centre de l'arene : la reserve du donjon et deux tirages de la table des boss.",
-            "- Dix niveaux : a chaque victoire, une offrande plus grosse, un gardien plus fort."
+            "- Dix niveaux : a chaque victoire, une offrande plus grosse, un gardien plus fort.",
+            "- Apres une victoire, le gardien se repose huit heures avant d'accepter une nouvelle offrande."
           ]
         }
       ],
@@ -830,6 +833,52 @@
         "views": [
           "dohy:autel"
         ]
+      }
+    },
+    {
+      "id": "bonbons",
+      "category": "metiers",
+      "order": 6,
+      "icon": "palamod:candy_rainbow",
+      "title": "Les bonbons",
+      "card": [
+        "17 850 XP d'un coup",
+        "Un par metier"
+      ],
+      "summary": [
+        "Les bonbons de metier donnent de l'XP d'un coup : clic droit pour en croquer un, accroupi pour toute la pile."
+      ],
+      "sections": [
+        {
+          "title": "Les couleurs",
+          "text": [
+            "- Vert : Fermier. Jaune : Mineur. Bleu : Chasseur. Mauve : Alchimiste.",
+            "- Multicolore : les quatre metiers a la fois.",
+            "Chacun donne 17 850 XP, l'equivalent des 50 000 XP du bonbon de Paladium a l'echelle de DoHy."
+          ]
+        },
+        {
+          "title": "Le bonbon a deballer",
+          "text": [
+            "Deballe, il donne un bonbon de metier au hasard : le multicolore une fois sur dix, sinon l'une des quatre couleurs."
+          ]
+        },
+        {
+          "title": "Ou en trouver",
+          "text": [
+            "- Le pass du mois : un bonbon de couleur aux niveaux 5, 11, 17 et 21.",
+            "- Les metiers : un bonbon a deballer au niveau 95.",
+            "- Les coffres de boss des donjons, des le palier 50 : parfois un bonbon a deballer."
+          ]
+        }
+      ],
+      "see": [
+        "metiers",
+        "pass",
+        "donjons"
+      ],
+      "discover": {
+        "always": true
       }
     },
     {

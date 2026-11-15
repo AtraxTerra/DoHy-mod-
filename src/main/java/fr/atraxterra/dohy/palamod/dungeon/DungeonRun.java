@@ -1039,6 +1039,16 @@ final class DungeonRun {
         if (ticks % 5 == 0 && bar != null) {
             updateBar();
         }
+        // Le gardien de metier se soigne s'il n'est pas frappe pendant une minute :
+        // 2,5 % de sa vie par seconde (wiki : 250 points par seconde sur 10 000).
+        if (jobBoss != null && ticks % 20 == 0) {
+            for (Mob boss : bosses) {
+                if (boss.isAlive() && boss.tickCount - boss.getLastHurtByMobTimestamp() >= 1200
+                        && boss.getHealth() < boss.getMaxHealth()) {
+                    boss.heal(boss.getMaxHealth() * 0.025f);
+                }
+            }
+        }
         List<Mob> alive = new ArrayList<>();
         for (Mob boss : bosses) {
             if (boss.isAlive() && !boss.isRemoved()) {
