@@ -810,6 +810,16 @@ corrige au passage des défauts du jar — c'est lui qui porte le bon `endium_bl
 là où le jar traîne trois homonymes dont deux en 15×15. Le générateur affiche la
 provenance et nomme chaque repli : aucun n'est silencieux.
 
+**Exception, les armures** (demandé le 2026-11-15) : les icônes et les couches portées du
+paladium, du paladium vert, de l'améthyste, du titane, de l'endium et de l'armure de voyage
+viennent **du jar d'abord** (`JAR_FIRST` dans `tools/palamod_assets.py`). Le pack les a
+retouchées avec un grain à chaque pixel, que le joueur trouvait trop pixelisé et pas conforme
+aux originales. Le jar a aussi les couches des bottes et des jambières de voyage en 128 × 64,
+le double du pack : le modèle lit ses coordonnées en proportion de l'image, donc un multiple
+exact du 64 × 32 se porte au même endroit, plus fin (`check_assets.py` l'accepte). L'endium
+mixé et la cagoule étaient déjà identiques dans les deux ; les armures de donjon viennent de
+Palamod Recreated, sans équivalent dans le jar.
+
 Présent : cobblebreaker 4 paliers (front/side/top), palafurnace (on/off/side), 4 cultures ×
 4-5 stades, 4 graines, 4 fruits, 6 particules, 4 charbons mixés, 5 seedplanters, minerais
 (améthyste, findium, paladium, paladium vert, titane, trixium), lingots, compressés, anneaux,

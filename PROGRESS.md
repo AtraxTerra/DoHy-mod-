@@ -196,7 +196,19 @@ strictement privé et le dépôt aussi » (dépôt vérifié privé).
 
 **Fait** (`feat/bonbons-textures`) : les six textures de bonbons sont celles du joueur
 (`tools/candy_assets.py <dossier>` les pose ; sans dossier, il redessine les anciennes).
-`candy_pink` devient `candy_purple`, `candy` devient `candy_wrapped`. Rappel : la PR #130 a été
+`candy_pink` devient `candy_purple`, `candy` devient `candy_wrapped`.
+
+**Armures** (« refais une passe sur les textures d'armures, si certaines sont trop pixelisées, pas
+conformes aux textures fournies ») : toutes les textures d'armure comparées aux fichiers du joueur.
+Les armures de donjon, l'endium mixé, la cagoule et les couches de saut, de plongée et de slime
+étaient identiques à une source fournie. Les cinq métaux (paladium, paladium vert, améthyste,
+titane, endium) et l'armure de voyage venaient du pack retouché, au grain trop marqué : ils
+viennent maintenant du jar de PalaMod, les originales (38 textures ; couches des bottes et des
+jambières de voyage en 128 × 64). Seul le set antique n'a pas de texture fournie (le légendaire de
+Talikus passé au bronze). Les compilations GitHub ne démarrant plus (facturation d'Actions depuis
+que le dépôt est privé), le jar livré est le précédent avec ses textures remplacées.
+
+Rappel : la PR #130 a été
 fusionnée à 7 commits sur 10 (la page ne s'était pas rafraîchie) ; la #131 a apporté les trois
 derniers.
 

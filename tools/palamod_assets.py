@@ -546,6 +546,19 @@ def png_size(path):
 # Un chemin explicite ne suffit donc pas : il faut verifier ce qu'on a copie.
 EXPECTED_SIZE = (16, 16)
 
+# Les armures se prennent dans le jar d'abord (demande du joueur, 2026-11-15) :
+# le pack les a retouchees, grain par pixel, et le joueur les trouvait trop
+# pixelisees, pas conformes aux originales. Le jar a aussi les couches des
+# bottes et des jambieres de voyage en 128 x 64, le double du pack.
+ARMOR_METALS = ("paladium", "paladium_green", "amethyst", "titane", "endium")
+JAR_FIRST = (
+    {"items/%s_%s.png" % (metal, piece) for metal in ARMOR_METALS
+     for piece in ("helmet", "chestplate", "leggings", "boots")}
+    | {"models/%s_armor_%d.png" % (metal, layer) for metal in ARMOR_METALS for layer in (1, 2)}
+    | {"items/armor/travel_%s.png" % piece for piece in ("boots", "leggings", "scuba", "slimy")}
+    | {"models/travel_boots.png", "models/travel_leggings.png", "models/Slimy_Helmet.png",
+       "models/ScubaArmor.png"})
+
 
 # Le pack officiel ne range pas tout comme le jar. Une entree ici dit ou
 # chercher dans le pack quand le chemin du jar n'y mene pas.
@@ -573,6 +586,8 @@ def copy_texture(roots, relative, destination, wrong_size=None, expected=None):
             pack_root, "assets", NS, "textures", PACK_PATHS.get(relative, relative))))
     if jar_root:
         candidates.append(("jar", os.path.join(jar_root, "assets", NS, "textures", relative)))
+    if relative in JAR_FIRST:
+        candidates.reverse()
 
     for origin, src in candidates:
         if not os.path.exists(src):
@@ -581,7 +596,11 @@ def copy_texture(roots, relative, destination, wrong_size=None, expected=None):
         # Les icones font 16x16 ; les couches d'armure portees font 64x32, la
         # disposition UV du modele de joueur — la meme en 1.7.10 et en 26.2.
         want = expected or EXPECTED_SIZE
-        if size is not None and size != want:
+        # Une couche d'armure peut etre un multiple du 64 x 32 : le modele lit
+        # ses coordonnees en proportion de la taille de l'image.
+        scaled = (expected is not None and size is not None and size[0] % want[0] == 0
+                  and size[1] % want[1] == 0 and size[0] // want[0] == size[1] // want[1])
+        if size is not None and size != want and not scaled:
             if wrong_size is not None:
                 wrong_size.append("%s (%s) : %dx%d au lieu de %dx%d"
                                   % (relative, origin, size[0], size[1], *want))
@@ -4303,8 +4322,8 @@ def main():
     write("assets/%s/equipment/hood.json" % NS, {"layers": {"humanoid": [{"texture": "%s:hood" % NS}]}})
 
     # L'armure de voyage (ItemArmorTravel) : une couche portee par piece, comme
-    # getArmorTexture la choisissait. Les bottes et les jambieres du pack sont en
-    # 64 x 32 (le jar les a en 128 x 64), les trois autres ne sont que dans le jar.
+    # getArmorTexture la choisissait. Le jar d'abord (JAR_FIRST) : les bottes et
+    # les jambieres y sont en 128 x 64, le pack les avait reduites en 64 x 32.
     for name, source, layer in (
             ("travel_boots", "models/travel_boots.png", "humanoid"),
             ("travel_leggings", "models/travel_leggings.png", "humanoid_leggings"),
