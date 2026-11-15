@@ -24,6 +24,7 @@ import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
 import fr.atraxterra.dohy.palamod.hunter.SpawnerEvents;
 import fr.atraxterra.dohy.palamod.legendary.LegendaryStones;
 import fr.atraxterra.dohy.palamod.legendary.PalaLegendary;
+import fr.atraxterra.dohy.palamod.machine.PalaMachines;
 import fr.atraxterra.dohy.palamod.miner.GodVillager;
 import fr.atraxterra.dohy.palamod.miner.MinerXpEvents;
 import fr.atraxterra.dohy.ui.view.JobDetailView;
@@ -136,6 +137,16 @@ public final class JobXpGuide {
         Section blocks = new Section("BLOCS MINES", "Un bloc pose par un joueur ne rapporte rien");
         blocks(blocks, Job.MINER, "par bloc", Items.STONE);
 
+        Section cobble = new Section("COBBLEBREAKER", "Prises a la main dans la machine, par clic ou maj-clic",
+                "Un entonnoir qui vide la machine ne donne pas d'XP");
+        int machine = Math.max(MinerXpEvents.PARTICLE_XP_LEVEL,
+                gate(Job.MINER, JobGate.of(PalaMachines.COBBLEBREAKER_BLOCK.get().asItem())));
+        for (Map.Entry<Item, Double> particle : MinerXpEvents.particles()) {
+            double xp = MinerXpEvents.exact(particle.getValue());
+            ItemStack stack = new ItemStack(particle.getKey());
+            cobble.add(stack, MenuView.text(stack.getHoverName()), plus(xp), "par particule", machine, xp);
+        }
+
         Section gestures = new Section("AUTRES GESTES");
         double obsidian = MinerXpEvents.exact(MinerXpEvents.PALAJOBS_XP);
         gestures.add(new ItemStack(Items.OBSIDIAN), "Obsidienne sous l'effet Durete", plus(obsidian), "par bloc", 0,
@@ -145,7 +156,7 @@ public final class JobXpGuide {
                 "par echange", GodVillager.REQUIRED_LEVEL, god,
                 "Apparait tres rarement pres d'un Mineur niveau " + GodVillager.REQUIRED_LEVEL,
                 "64 blocs de paladium contre une pepite d'endium");
-        return sections(blocks, gestures);
+        return sections(blocks, cobble, gestures);
     }
 
     private static List<Section> hunter() {

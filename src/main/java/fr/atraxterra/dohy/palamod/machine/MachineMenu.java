@@ -118,6 +118,16 @@ public class MachineMenu extends AbstractContainerMenu {
             if (crafted && !stack.isEmpty()) {
                 stack.onCraftedBy(player, stack.getCount());
             }
+            taken(player, stack);
+        }
+
+        /**
+         * Ce qui sort de la machine a la main. Le clic passe par {@link #onTake},
+         * le maj-clic par {@code quickMoveStack}, qui ne l'appelle pas : les deux
+         * arrivent ici, pour que les succes et l'XP de Mineur ne dependent pas du
+         * geste. Un entonnoir ne passe par aucun des deux.
+         */
+        void taken(Player player, ItemStack stack) {
             if (player instanceof net.minecraft.server.level.ServerPlayer server && !stack.isEmpty()) {
                 String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
                 // Les succes : ce que le crusher a broye, les particules du cobblebreaker.
@@ -128,6 +138,8 @@ public class MachineMenu extends AbstractContainerMenu {
                         && id.endsWith("_particle")) {
                     fr.atraxterra.dohy.palamod.achievement.Achievements.count(server, "cobblebreaker:particles",
                             stack.getCount());
+                    // L'XP de Mineur des particules, prises a la main (wiki, niveau 5 soit 25 ici).
+                    fr.atraxterra.dohy.palamod.miner.MinerXpEvents.particlesTaken(server, stack);
                 }
             }
         }
@@ -256,8 +268,11 @@ public class MachineMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
             int moved = original.getCount() - stack.getCount();
-            if (moved > 0 && slot instanceof MachineSlot machineSlot && machineSlot.crafted) {
-                original.copyWithCount(moved).onCraftedBy(player, moved);
+            if (moved > 0 && slot instanceof MachineSlot machineSlot) {
+                if (machineSlot.crafted) {
+                    original.copyWithCount(moved).onCraftedBy(player, moved);
+                }
+                machineSlot.taken(player, original.copyWithCount(moved));
             }
         } else if (!insertIntoMachine(stack)) {
             return ItemStack.EMPTY;

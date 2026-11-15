@@ -189,7 +189,9 @@ Deux surfaces, toutes deux inertes sans le mod tiers :
 
 - **XP de minage** : `#dohy:mining_xp/{low,mid,high,elite}`, déclarés vides ici
   et référencés dans `job_progression.json` à 30, 80, 180 et 350. À comparer à l'échelle
-  existante : fer 12, diamant 90, émeraude 110, débris antiques 400.
+  existante : fer 12, diamant 90, émeraude 110, débris antiques 400. Les minerais de PalaMod,
+  qui font partie de DoHy, n'y passent pas : ils ont leurs propres lignes depuis le 2026-11-15
+  (`docs/PALAMOD.md`, « L'XP de Mineur des minerais et des particules »).
 - **Prix** : le mod range ses minerais dans les sous-tags `c:raw_materials/<matière>` et
   `c:ingots/<matière>` habituels, et la matière s'ajoute au bloc `materials` de
   `tag_prices.json` avec son cran. Le rattachement se fait par sous-tag exact : une matière non
