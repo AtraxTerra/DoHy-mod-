@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
-"""Les bonbons de metier : textures originales (16 x 16), modeles, objets, noms.
+"""Les bonbons de metier : textures (16 x 16), modeles, objets, noms.
 
-    python3 -I tools/candy_assets.py
+    python3 -I tools/candy_assets.py <dossier des textures fournies>
+    python3 -I tools/candy_assets.py            (textures dessinees ici)
 
-Un bonbon dur dans son papier tortille : le bonbon rond au milieu, les deux
-bouts du papier en eventail. Une couleur par metier (vert, jaune, bleu,
-mauve), le multicolore raye des quatre, et le bonbon a deballer, emballe dans
-un papier raye rouge et blanc. Dessines ici, pixel par pixel : rien n'est
-repris d'un autre jeu.
+Les textures sont celles que le joueur a fournies (2026-11-15, mod et depot
+prives) : le dossier textures/item du portage PalaMod 1.21. candy_green,
+candy_yellow, candy_blue et candy_rainbow gardent leur nom ; candy_pink devient
+candy_purple (le mauve de l'Alchimiste), candy devient candy_wrapped (le
+bonbon a deballer).
+
+Sans dossier, le script dessine ses propres textures : un bonbon dur dans son
+papier tortille, une couleur par metier, le multicolore raye des quatre, le
+bonbon a deballer dans un papier raye rouge et blanc.
 """
+import shutil
+import sys
 import json
 import os
 import struct
@@ -151,9 +158,21 @@ def write_json(path, value):
         handle.write("\n")
 
 
+# Texture fournie -> objet de DoHy.
+PROVIDED = {
+    "candy_green": "candy_green.png", "candy_yellow": "candy_yellow.png", "candy_blue": "candy_blue.png",
+    "candy_purple": "candy_pink.png", "candy_rainbow": "candy_rainbow.png", "candy_wrapped": "candy.png",
+}
+
+
 def main():
+    source = sys.argv[1] if len(sys.argv) > 1 else None
     for name in NAMES:
-        png(os.path.join(RES, "textures/item/%s.png" % name), draw(name))
+        target = os.path.join(RES, "textures/item/%s.png" % name)
+        if source:
+            shutil.copyfile(os.path.join(source, PROVIDED[name]), target)
+        else:
+            png(target, draw(name))
         write_json(os.path.join(RES, "models/item/%s.json" % name),
                    {"parent": "minecraft:item/generated", "textures": {"layer0": "palamod:item/%s" % name}})
         write_json(os.path.join(RES, "items/%s.json" % name),

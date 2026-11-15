@@ -189,6 +189,25 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-15 — les textures fournies pour les bonbons
+
+**Demande** : « Reprends les textures que je t'ai fournies pour les bonbons » ; « mon mod est
+strictement privé et le dépôt aussi » (dépôt vérifié privé).
+
+**Fait** (`feat/bonbons-textures`) : les six textures de bonbons sont celles du joueur
+(`tools/candy_assets.py <dossier>` les pose ; sans dossier, il redessine les anciennes).
+`candy_pink` devient `candy_purple`, `candy` devient `candy_wrapped`.
+
+**Armures** : toutes comparées aux fichiers du joueur ; un essai avec les originales du jar de
+PalaMod pour les cinq métaux et l'armure de voyage (au lieu du pack retouché, au grain plus marqué)
+a été montré au joueur, qui **préfère le pack retouché** : rien ne change. Les compilations GitHub
+ne démarrant plus (facturation d'Actions depuis que le dépôt est privé), le jar livré est le
+précédent avec les textures des bonbons remplacées.
+
+Rappel : la PR #130 a été
+fusionnée à 7 commits sur 10 (la page ne s'était pas rafraîchie) ; la #131 a apporté les trois
+derniers.
+
 ### 2026-11-14 (suite) — boss de métier, donjons V12, modèles des boss, Clic Shop, pousses
 
 **Demandes** : le lot 3 (« Boss de métier », « Donjons façon V12 » : offrandes au spawn ; modes,

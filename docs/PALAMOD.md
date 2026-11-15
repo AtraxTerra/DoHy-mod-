@@ -115,7 +115,9 @@ Demandés le 2026-11-14, d'après le wiki Java (pages « Évolution du métier �
 bonbons donnent **50 000 XP de PalaJobs d'un coup** — le vert au Fermier, le jaune au Mineur, le
 bleu au Chasseur, le mauve à l'Alchimiste, le multicolore aux quatre — et le **bonbon à déballer**
 donne un bonbon. Objets `palamod:candy_green`, `_yellow`, `_blue`, `_purple`, `_rainbow`,
-`_wrapped` (`CandyItem`, `WrappedCandyItem`), textures originales (`tools/candy_assets.py`).
+`_wrapped` (`CandyItem`, `WrappedCandyItem`). Textures : celles que le joueur a fournies le
+2026-11-15 (mod et dépôt privés), posées par `tools/candy_assets.py` — `candy_pink` y devient
+`candy_purple`, `candy` devient `candy_wrapped`.
 
 | Point | DoHy | Source |
 |---|---|---|
