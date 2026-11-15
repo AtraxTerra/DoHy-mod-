@@ -543,14 +543,9 @@ def check_equipment():
                          "— cette partie de l'armure sera invisible")
                     continue
                 size = png_size(path)
-                # Le modele lit ses coordonnees en proportion de l'image : un
-                # multiple exact du 64 x 32 (128 x 64 pour les bottes et les
-                # jambieres de voyage du jar) se lit au meme endroit, plus fin.
-                ratio = size[0] // LAYER_SIZE[0] if size else 0
-                if not size or ratio < 1 or size != (LAYER_SIZE[0] * ratio, LAYER_SIZE[1] * ratio):
+                if size != LAYER_SIZE:
                     fail(f"equipement : {layer}/{texture}.png fait {size}, une couche portee "
-                         f"fait {LAYER_SIZE} ou un multiple exact — le modele lirait la texture "
-                         f"au mauvais endroit")
+                         f"fait {LAYER_SIZE} — le modele lirait la texture au mauvais endroit")
 
     # -- 2. chaque piece dans le tag qui ouvre ses enchantements
     source = EQUIPMENT_JAVA.read_text(encoding="utf-8")
