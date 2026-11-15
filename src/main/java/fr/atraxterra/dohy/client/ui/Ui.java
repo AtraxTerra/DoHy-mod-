@@ -113,8 +113,12 @@ public final class Ui {
      */
     private static float drawUnit = 3.0f;
 
-    /** Une police pixel : un pixel de la police vaut 200 / 2048 de sa taille. */
-    private static final float PIXEL_GRID = 200.0f / 2048.0f;
+    /**
+     * La police pixel est une police bitmap (font/pixel.json) : un texel par pixel de
+     * police, 12 texels rendus sur 9 unites a la taille de base (8). Un texel vaut donc
+     * 0,75 / 8 de la taille demandee.
+     */
+    private static final float PIXEL_TEXEL = 0.75f / FONT_BASE;
 
     public static void drawUnit(float unit) {
         drawUnit = Math.max(0.25f, unit);
@@ -126,8 +130,8 @@ public final class Ui {
 
     /**
      * La taille reellement dessinee. La police pixel n'est nette qu'a un nombre entier
-     * de pixels physiques par pixel de police : entre deux, des rangees entieres
-     * disparaissent (le E perd sa barre, le B devient un D). On l'arrondit donc au
+     * de pixels physiques par texel : entre deux, des rangees entieres disparaissent
+     * ou doublent (le E perd sa barre, le B devient un D). On l'arrondit donc au
      * multiple le plus proche, jamais en dessous d'un pixel. Les autres polices sont
      * vectorielles et gardent leur taille.
      */
@@ -135,7 +139,7 @@ public final class Ui {
         if (!PIXEL.equals(face)) {
             return size;
         }
-        float perSize = PIXEL_GRID * drawUnit;
+        float perSize = PIXEL_TEXEL * drawUnit;
         int pixels = Math.max(1, Math.round(size * perSize));
         return pixels / perSize;
     }
