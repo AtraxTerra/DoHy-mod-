@@ -937,5 +937,6 @@
   "item.palamod.exp_fish": "Poisson a XP",
   "item.palamod.whale": "Baleine",
   "item.palamod.kraken": "Kraken",
-  "item.palamod.endium_fishing_rod": "Canne a peche en endium"
+  "item.palamod.endium_fishing_rod": "Canne a peche en endium",
+  "block.palamod.drawbridge": "Pont-levis"
 }

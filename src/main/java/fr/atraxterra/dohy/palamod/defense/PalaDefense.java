@@ -232,6 +232,17 @@ public final class PalaDefense {
             COORDINATE_JAMMER_ENTITY = BLOCK_ENTITIES.register("coordinate_jammer",
                     () -> new BlockEntityType<>(CoordinateJammerBlockEntity::new, Set.<Block>of(COORDINATE_JAMMER.get())));
 
+    // -- Pont-levis ------------------------------------------------------------
+
+    /** Le pont-levis : seize blocs poses ou repris au signal de redstone. */
+    public static final DeferredBlock<DrawbridgeBlock> DRAWBRIDGE = BLOCKS.registerBlock(
+            "drawbridge", DrawbridgeBlock::new, properties -> properties
+                    .strength(3.5f, 6.0f).sound(SoundType.WOOD).mapColor(MapColor.WOOD));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DrawbridgeBlockEntity>>
+            DRAWBRIDGE_ENTITY = BLOCK_ENTITIES.register("drawbridge",
+                    () -> new BlockEntityType<>(DrawbridgeBlockEntity::new, Set.<Block>of(DRAWBRIDGE.get())));
+
     // -- Fake Water -------------------------------------------------------------
 
     /** L'eau sulfurique : la physique de l'eau, sans source infinie. */
@@ -303,7 +314,7 @@ public final class PalaDefense {
             WOOD_SPIKE_OBSIDIAN, IRON_SPIKE_OBSIDIAN, GOLD_SPIKE_OBSIDIAN, DIAMOND_SPIKE_OBSIDIAN,
             AMETHYST_SPIKE_OBSIDIAN, TITANE_SPIKE_OBSIDIAN, PALADIUM_SPIKE_OBSIDIAN,
             AMETHYST_ANVIL, TITANE_ANVIL, PALADIUM_ANVIL,
-            LAVA_SPONGE, WET_LAVA_SPONGE, COMPRESSED_SPONGE, COORDINATE_JAMMER);
+            LAVA_SPONGE, WET_LAVA_SPONGE, COMPRESSED_SPONGE, COORDINATE_JAMMER, DRAWBRIDGE);
     private static final List<DeferredItem<BlockItem>> BLOCK_ITEMS = ORDERED_BLOCKS.stream()
             .map(block -> ITEMS.registerSimpleBlockItem(block, properties -> properties)).toList();
     public static final DeferredItem<DoubleHighBlockItem> OBSIDIAN_DOOR_ITEM = ITEMS.registerItem(

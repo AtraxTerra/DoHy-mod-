@@ -1068,6 +1068,18 @@ chances du mini-jeu de pêche de Paladium. **Depuis le 2026-11-15, le mini-jeu e
 pêche de PalaJobs », ci-dessous) : la canne ouvre le mini-jeu, et son ancien écart (+3 de chance en
 main) est retiré.
 
+### Le pont-levis (2026-11-15)
+
+Demandé le 2026-11-15 (« ajoute le drawbridge »), d'après Palamod Recreated : `palamod:drawbridge`
+(`DrawbridgeBlock`, `DrawbridgeBlockEntity`, onglet des défenses). Un bloc à neuf cases : alimenté
+en redstone, il pose devant lui (face avant tournée là où regardait le joueur qui l'a posé), un
+bloc tous les deux ticks, jusqu'à **seize** blocs pris dans son inventaire ; le courant coupé, il
+les reprend du plus loin au plus près et les range (au sol si l'inventaire est plein). Il ne
+reprend que ses propres blocs encore en place, s'arrête devant un obstacle, ne pose pas de bloc à
+inventaire. Cassé, il lâche ses blocs posés et son contenu ; le comparateur lit sa longueur.
+Recette et textures du dossier fourni par le joueur (`tools/drawbridge_assets.py`) : deux pistons,
+deux blocs de slime, un distributeur, trois poudres de redstone.
+
 ### La pêche de PalaJobs (2026-11-15)
 
 Demandée le 2026-11-15, choix du joueur : **le mini-jeu seulement avec les cannes de Paladium**
@@ -1084,7 +1096,7 @@ PalaJobs fourni par le joueur (`tools/fishing_assets.py`).
 | Chances de départ | canne en paladium 75 / 21 / 4 / 0 % ; canne en endium 55 / 32 / 10 / 3 % ; Boost ou Level-Up une manche sur sept chacun | DoHy |
 | XP de Chasseur | celle du wiki × 0,357 (§ 1) : de 9 (morue) à 5 355 (kraken), × le nombre de poissons | wiki |
 | Niveaux | 10 (carpe, bar, raie, thon, poisson lune), 15 (poisson à XP), 20 (baleine, kraken) : en dessous, le tirage les exclut | wiki × 5 |
-| Vente | `data/prices.csv` : de 45 $ (carpe) à 4 500 $ (kraken) | DoHy |
+| Vente | rythme de prise dans `data/rates.csv` (de 120 carpes à 1,2 kraken par heure), prix tirés par `tools/gen_prices.py` : de 100 $ (carpe) à 10 000 $ (kraken) | DoHy |
 | Canne en endium | durabilité 512, recette de la canne en paladium avec un lingot d'endium en bout ; seule à ouvrir le mythique | PalaJobs (objet) ; DoHy (recette) |
 
 ### Épée en endium — `onLeftClickEntity`

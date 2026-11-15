@@ -197,8 +197,10 @@ canne en endium en plus. Description : PALAMOD.md, « La pêche de PalaJobs ».
 
 **Fait** (`feat/peche`) : mini-jeu à la barre espace (zones ×1, ×2, Boost, Level-Up), quatre
 raretés et leur butin d'après `FishingRegistry` de PalaJobs, huit poissons, canne en endium, XP de
-Chasseur du wiki, niveaux requis, prix de vente, fiche « La pêche ». La canne en paladium perd son
-bonus de chance (elle ouvre le mini-jeu).
+Chasseur du wiki, niveaux requis, prix de vente (`data/rates.csv`, prix générés), fiche « La pêche ».
+La canne en paladium perd son bonus de chance (elle ouvre le mini-jeu).
+- **Pont-levis** (« et ajoute le drawbridge », même PR) : seize blocs posés ou repris au signal de
+  redstone, inventaire de neuf cases ; textures et recette du dossier fourni par le joueur.
 
 ### 2026-11-15 — les textures fournies pour les bonbons
 

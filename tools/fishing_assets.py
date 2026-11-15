@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""La peche de PalaJobs : textures, modeles, objets, noms, recette, prix.
+"""La peche de PalaJobs : textures, modeles, objets, noms, recette.
 
     python3 -I tools/fishing_assets.py <jar PalaJobs extrait>
 
@@ -20,9 +20,6 @@ FISH = {
     "red_tuna": ("Thon rouge", "Red Tuna"), "moonfish": ("Poisson lune", "Moonfish"),
     "exp_fish": ("Poisson a XP", "XP Fish"), "whale": ("Baleine", "Whale"), "kraken": ("Kraken", "Kraken"),
 }
-# Prix de vente au shop (base_price) : plus cher selon la rarete ; buy_price = 4 x.
-PRICES = {"carp": 45, "bass": 70, "ray": 95, "red_tuna": 150, "moonfish": 180, "exp_fish": 240,
-          "whale": 3000, "kraken": 4500}
 
 
 def write_json(path, value):
@@ -71,21 +68,9 @@ def main():
             lang["item.%s.%s" % (NS, name)] = labels[index]
         lang["item.%s.endium_fishing_rod" % NS] = ("Canne a peche en endium", "Endium Fishing Rod")[index]
         write_json(path, lang)
-    # Les prix : une ligne par poisson ajoutee a data/prices.csv (shop et marche),
-    # avec les fins de ligne du fichier.
-    with open("data/prices.csv", "rb") as handle:
-        raw = handle.read()
-    newline = b"\r\n" if b"\r\n" in raw else b"\n"
-    known = {line.split(b",")[0] for line in raw.split(newline)}
-    if not raw.endswith(newline):
-        raw += newline
-    for name, price in PRICES.items():
-        item = ("%s:%s" % (NS, name)).encode()
-        if item not in known:
-            raw += b"%s,FOOD,FOOD,120.0,%d,2000,0.15,%d,peche de PalaJobs (mini-jeu)" % (item, price, price * 4) + newline
-    with open("data/prices.csv", "wb") as handle:
-        handle.write(raw)
-    print("peche : %d poissons, canne en endium, interface, recette, prix" % len(FISH))
+    # Les prix ne sont pas ici : data/rates.csv donne le rythme de prise de chaque
+    # poisson, et tools/gen_prices.py en tire data/prices.csv (shop et marche).
+    print("peche : %d poissons, canne en endium, interface, recette" % len(FISH))
 
 
 if __name__ == "__main__":

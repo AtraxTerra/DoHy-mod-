@@ -937,5 +937,6 @@
   "item.palamod.exp_fish": "XP Fish",
   "item.palamod.whale": "Whale",
   "item.palamod.kraken": "Kraken",
-  "item.palamod.endium_fishing_rod": "Endium Fishing Rod"
+  "item.palamod.endium_fishing_rod": "Endium Fishing Rod",
+  "block.palamod.drawbridge": "Drawbridge"
 }
