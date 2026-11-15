@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.job;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -12,6 +13,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
 import java.io.BufferedReader;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -112,22 +116,79 @@ public final class JobProgression {
     }
 
     /**
+     * Un gain d'XP : un palier ou plusieurs. Ecrit {@code 6} (des le niveau 0),
+     * {@code {"level": 25, "xp": 36}} ou une liste de tels paliers ; le plus haut
+     * palier atteint s'applique, et sous le premier la source ne rapporte rien.
+     * C'est le niveau de Bedrock (fois 5) des sources de PalaTracker : le lingot de
+     * titane fondu vaut 5 XP au niveau 25, puis 50 au niveau 30.
+     */
+    public record Reward(List<Tier> tiers) {
+
+        public record Tier(int level, double xp) {
+        }
+
+        private static final Codec<Tier> TIER_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.INT.optionalFieldOf("level", 0).forGetter(Tier::level),
+                Codec.DOUBLE.fieldOf("xp").forGetter(Tier::xp)
+        ).apply(instance, Tier::new));
+
+        static final Codec<Reward> CODEC = Codec.either(Codec.DOUBLE, Codec.either(TIER_CODEC, TIER_CODEC.listOf()))
+                .xmap(either -> either.map(xp -> of(List.of(new Tier(0, xp))),
+                                inner -> inner.map(tier -> of(List.of(tier)), Reward::of)),
+                        reward -> reward.tiers().size() == 1 && reward.tiers().getFirst().level() == 0
+                                ? Either.left(reward.tiers().getFirst().xp())
+                                : Either.right(Either.right(reward.tiers())));
+
+        /** Les paliers du plus bas au plus haut. */
+        static Reward of(List<Tier> tiers) {
+            List<Tier> sorted = new ArrayList<>(tiers);
+            sorted.sort(Comparator.comparingInt(Tier::level));
+            return new Reward(List.copyOf(sorted));
+        }
+
+        /** Ce que rapporte la source a ce niveau : le plus haut palier atteint, 0 en dessous du premier. */
+        public double at(int level) {
+            double xp = 0.0d;
+            for (Tier tier : tiers) {
+                if (level >= tier.level()) {
+                    xp = tier.xp();
+                }
+            }
+            return xp;
+        }
+
+        /** Le niveau a partir duquel la source rapporte. */
+        public int firstLevel() {
+            return tiers.isEmpty() ? 0 : tiers.getFirst().level();
+        }
+    }
+
+    /**
      * Sources d'XP. Les cles de {@code blocks} peuvent etre un identifiant ou
      * un tag prefixe de {@code #} ; la resolution est faite a l'usage, pour que
      * le chargement ne depende pas de l'ordre d'initialisation des registres.
+     *
+     * <p>{@code smelted} : un objet sorti cuit (four, haut fourneau, fumoir ou
+     * palafurnace, pris a la main ; outil en fusion). {@code crafted} : un objet
+     * fabrique a l'etabli. Les deux par objet obtenu.
      */
-    public record Sources(Map<String, Long> blocks, Map<String, Long> entities, Map<String, Long> actions) {
+    public record Sources(Map<String, Reward> blocks, Map<String, Reward> entities, Map<String, Reward> actions,
+                          Map<String, Reward> smelted, Map<String, Reward> crafted) {
+
+        static final Sources EMPTY = new Sources(Map.of(), Map.of(), Map.of(), Map.of(), Map.of());
+
+        private static final Codec<Map<String, Reward>> TABLE = Codec.unboundedMap(Codec.STRING, Reward.CODEC);
+
         static final Codec<Sources> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("blocks", Map.of())
-                        .forGetter(Sources::blocks),
-                Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("entities", Map.of())
-                        .forGetter(Sources::entities),
-                Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("actions", Map.of())
-                        .forGetter(Sources::actions)
+                TABLE.optionalFieldOf("blocks", Map.of()).forGetter(Sources::blocks),
+                TABLE.optionalFieldOf("entities", Map.of()).forGetter(Sources::entities),
+                TABLE.optionalFieldOf("actions", Map.of()).forGetter(Sources::actions),
+                TABLE.optionalFieldOf("smelted", Map.of()).forGetter(Sources::smelted),
+                TABLE.optionalFieldOf("crafted", Map.of()).forGetter(Sources::crafted)
         ).apply(instance, Sources::new));
 
         int total() {
-            return blocks.size() + entities.size() + actions.size();
+            return blocks.size() + entities.size() + actions.size() + smelted.size() + crafted.size();
         }
     }
 

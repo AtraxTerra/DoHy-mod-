@@ -21,7 +21,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  *
  * <ul>
  *   <li><b>fusion</b> (marteau en paladium) : chaque objet lache par un bloc
- *       sort cuit, s'il a une recette de four ; sinon il sort tel quel ;</li>
+ *       sort cuit, s'il a une recette de four ; sinon il sort tel quel. Ce qui
+ *       sort cuit rapporte l'XP de cuisson des metiers, comme au four ;</li>
  *   <li><b>flamme</b> : la cible brule 10 secondes. <b>Ecart</b> : la fastsword
  *       de PalaMod l'enflammait 200 secondes ({@code sipush 200}, contre
  *       {@code bipush 10} pour la broadsword) — des ticks pris pour des
@@ -68,8 +69,12 @@ public final class SmelteryEvents {
                     .map(holder -> holder.value().assemble(input))
                     .orElse(ItemStack.EMPTY);
             if (!smelted.isEmpty()) {
-                drop.setItem(smelted.copyWithCount(Math.min(smelted.getMaxStackSize(),
-                        smelted.getCount() * stack.getCount())));
+                int count = Math.min(smelted.getMaxStackSize(), smelted.getCount() * stack.getCount());
+                drop.setItem(smelted.copyWithCount(count));
+                // Fondu sur place : l'XP de cuisson des metiers, comme au four (bareme de Bedrock).
+                if (event.getBreaker() instanceof ServerPlayer smelter) {
+                    fr.atraxterra.dohy.job.JobXpEvents.smelted(smelter, smelted, count);
+                }
             }
         }
     }

@@ -6,7 +6,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,9 +18,11 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Les sources d'XP des metiers.
@@ -30,9 +35,27 @@ import java.util.Map;
  * <p>L'XP d'agriculture n'est accordee que sur une <b>culture mature</b> : sans
  * cette condition, casser des pousses a peine semees rapporterait autant qu'une
  * recolte, et l'engrais a os deviendrait une machine a XP.
+ *
+ * <p><b>Le bareme de Bedrock</b> (2026-11-15, {@code tools/bedrock_jobs.py}) : une
+ * source a un niveau a partir duquel elle rapporte, et parfois plusieurs paliers
+ * ({@link JobProgression.Reward}). S'y ajoutent la cuisson ({@code smelted}) et
+ * la fabrication ({@code crafted}). Deux garde-fous, devenus necessaires avec des
+ * creatures a 80 a 500 XP :
+ * <ul>
+ *   <li>une creature nee d'un spawner, ou tuee au controleur de spawners, ne
+ *       rapporte qu'un quarantieme ({@link #SPAWNER_SHARE}) : le controleur se
+ *       frappe deux fois par seconde sans risque, et a pleine valeur il menait au
+ *       niveau 100 en quelques heures. Un quarantieme, c'est a peu pres l'ancien
+ *       bareme (un zombie : 4 XP) ;</li>
+ *   <li>un petit ne rapporte rien : il ne lache rien, et l'elevage tuerait les
+ *       veaux a la naissance.</li>
+ * </ul>
  */
 @EventBusSubscriber
 public final class JobXpEvents {
+
+    /** La part d'une creature de spawner : un quarantieme. */
+    public static final double SPAWNER_SHARE = 1.0d / 40.0d;
 
     private JobXpEvents() {
     }
@@ -53,7 +76,8 @@ public final class JobXpEvents {
         Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
 
         for (Job job : new Job[]{Job.MINER, Job.FARMER, Job.ALCHEMIST}) {
-            long xp = blockXp(job, state, blockId);
+            JobProgression.Reward reward = lookup(table(job, JobProgression.Sources::blocks), blockId, state);
+            double xp = reward == null ? 0.0d : reward.at(JobApi.level(player, job));
             if (xp <= 0) {
                 continue;
             }
@@ -64,7 +88,7 @@ public final class JobXpEvents {
             if ((job == Job.FARMER || job == Job.ALCHEMIST) && !isMature(state)) {
                 continue;
             }
-            JobApi.grant(player, job, xp);
+            grant(player, job, xp);
             maybeDoubleDrop(player, event);
         }
     }
@@ -72,39 +96,69 @@ public final class JobXpEvents {
     /** Mort d'une creature : Chasseur, et Fermier ou Alchimiste selon la bete. */
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
-        ServerPlayer player = attribute(event.getEntity(), event);
-        if (player == null) {
+        LivingEntity victim = event.getEntity();
+        ServerPlayer player = attribute(victim, event);
+        if (player == null || victim instanceof AgeableMob young && young.isBaby()) {
             return;
         }
-        grantKill(player, BuiltInRegistries.ENTITY_TYPE.getKey(event.getEntity().getType()));
+        boolean spawner = victim instanceof Mob mob && mob.getSpawnType() == EntitySpawnReason.SPAWNER;
+        grantKill(player, BuiltInRegistries.ENTITY_TYPE.getKey(victim.getType()), spawner ? SPAWNER_SHARE : 1.0d);
     }
 
     /**
-     * L'XP de metier d'une creature tuee. Appele aussi par le controleur de
-     * spawners, dont la creature du mode manuel ne meurt pas vraiment.
+     * L'XP de metier d'une creature tuee, a la part {@code share} de sa valeur.
+     * Appele aussi par le controleur de spawners, dont la creature du mode manuel
+     * ne meurt pas vraiment : elle y compte comme une creature de spawner.
      */
-    public static void grantKill(ServerPlayer player, Identifier entityId) {
-        long xp = lookup(JobProgression.config().def(Job.HUNTER).sources()
-                .map(JobProgression.Sources::entities).orElse(Map.of()), entityId, null);
-        if (xp > 0) {
-            JobApi.grant(player, Job.HUNTER, xp);
+    public static void grantKill(ServerPlayer player, Identifier entityId, double share) {
+        // Le Chasseur prend les animaux et les monstres (bareme de Bedrock). Le
+        // Fermier et l'Alchimiste prennent les leurs s'ils en ont : les creatures
+        // qui portent un ingredient de potion comptent aussi pour l'Alchimiste
+        // (sorciere, blaze, ghast...), c'est le meme geste qui sert deux metiers.
+        for (Job job : new Job[]{Job.HUNTER, Job.FARMER, Job.ALCHEMIST}) {
+            JobProgression.Reward reward = lookup(table(job, JobProgression.Sources::entities), entityId, null);
+            if (reward != null) {
+                grant(player, job, reward.at(JobApi.level(player, job)) * share);
+            }
         }
+    }
 
-        // Les animaux d'elevage comptent pour le Fermier, pas pour le Chasseur.
-        long farmXp = lookup(JobProgression.config().def(Job.FARMER).sources()
-                .map(JobProgression.Sources::entities).orElse(Map.of()), entityId, null);
-        if (farmXp > 0) {
-            JobApi.grant(player, Job.FARMER, farmXp);
+    /**
+     * Un objet sorti cuit : pris a la main au four, au haut fourneau ou au fumoir
+     * ({@link #onItemSmelted}), au palafurnace, ou cuit sur place par un marteau
+     * ou une pioche du dieu en fusion. {@code count} objets de ce type.
+     */
+    public static void smelted(ServerPlayer player, ItemStack stack, int count) {
+        byItem(player, stack, count, JobProgression.Sources::smelted);
+    }
+
+    /** Four, haut fourneau, fumoir : ce qu'on retire de la case de resultat, clic ou maj-clic. */
+    @SubscribeEvent
+    public static void onItemSmelted(PlayerEvent.ItemSmeltedEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            smelted(player, event.getSmelting(), event.getAmountRemoved());
         }
+    }
 
-        // Les creatures qui portent un ingredient de potion comptent pour
-        // l'Alchimiste : sorciere, blaze, ghast, cube de magma, gardien. Elles
-        // rapportent aussi au Chasseur, et c'est voulu — c'est le meme geste qui
-        // sert deux metiers, exactement comme l'elevage.
-        long alchemyXp = lookup(JobProgression.config().def(Job.ALCHEMIST).sources()
-                .map(JobProgression.Sources::entities).orElse(Map.of()), entityId, null);
-        if (alchemyXp > 0) {
-            JobApi.grant(player, Job.ALCHEMIST, alchemyXp);
+    /** L'etabli et l'inventaire : chaque fabrication, quantite de son resultat comprise. */
+    @SubscribeEvent
+    public static void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            byItem(player, event.getCrafting(), event.getCrafting().getCount(), JobProgression.Sources::crafted);
+        }
+    }
+
+    private static void byItem(ServerPlayer player, ItemStack stack, int count,
+                               Function<JobProgression.Sources, Map<String, JobProgression.Reward>> kind) {
+        if (stack.isEmpty() || count <= 0) {
+            return;
+        }
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        for (Job job : Job.values()) {
+            JobProgression.Reward reward = table(job, kind).get(id.toString());
+            if (reward != null) {
+                grant(player, job, reward.at(JobApi.level(player, job)) * count);
+            }
         }
     }
 
@@ -122,10 +176,26 @@ public final class JobXpEvents {
         if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
         }
-        long xp = action(Job.ALCHEMIST, "potion_brewed");
-        if (xp > 0) {
-            JobApi.grant(player, Job.ALCHEMIST, xp);
+        JobProgression.Reward reward = table(Job.ALCHEMIST, JobProgression.Sources::actions).get("potion_brewed");
+        if (reward != null) {
+            grant(player, Job.ALCHEMIST, reward.at(JobApi.level(player, Job.ALCHEMIST)));
         }
+    }
+
+    /**
+     * Accorde un gain qui peut avoir une fraction (un quarantieme de spawner) : la
+     * partie entiere, plus un point tire au sort selon la fraction — la bonne
+     * moyenne, sans rien stocker.
+     */
+    static void grant(ServerPlayer player, Job job, double xp) {
+        if (xp <= 0) {
+            return;
+        }
+        long whole = (long) Math.floor(xp);
+        if (player.getRandom().nextDouble() < xp - whole) {
+            whole++;
+        }
+        JobApi.grant(player, job, whole);
     }
 
     /**
@@ -147,10 +217,9 @@ public final class JobXpEvents {
         });
     }
 
-    private static long blockXp(Job job, BlockState state, Identifier blockId) {
-        Map<String, Long> table = JobProgression.config().def(job).sources()
-                .map(JobProgression.Sources::blocks).orElse(Map.of());
-        return lookup(table, blockId, state);
+    private static Map<String, JobProgression.Reward> table(
+            Job job, Function<JobProgression.Sources, Map<String, JobProgression.Reward>> kind) {
+        return JobProgression.config().def(job).sources().map(kind).orElse(Map.of());
     }
 
     /**
@@ -159,15 +228,16 @@ public final class JobXpEvents {
      * <p>Les tags sont resolus a l'usage et non au chargement : les registres
      * de tags ne sont pas forcement prets au moment ou le datapack est lu.
      */
-    private static long lookup(Map<String, Long> table, Identifier id, BlockState state) {
-        Long direct = table.get(id.toString());
+    private static JobProgression.Reward lookup(Map<String, JobProgression.Reward> table, Identifier id,
+                                                BlockState state) {
+        JobProgression.Reward direct = table.get(id.toString());
         if (direct != null) {
             return direct;
         }
         if (state == null) {
-            return 0L;
+            return null;
         }
-        for (Map.Entry<String, Long> candidate : table.entrySet()) {
+        for (Map.Entry<String, JobProgression.Reward> candidate : table.entrySet()) {
             String key = candidate.getKey();
             if (!key.startsWith("#")) {
                 continue;
@@ -178,13 +248,7 @@ public final class JobXpEvents {
                 return candidate.getValue();
             }
         }
-        return 0L;
-    }
-
-    private static long action(Job job, String name) {
-        return JobProgression.config().def(job).sources()
-                .map(JobProgression.Sources::actions).orElse(Map.of())
-                .getOrDefault(name, 0L);
+        return null;
     }
 
     /** Culture arrivee a maturite : son age est au maximum. */

@@ -141,6 +141,10 @@ public class MachineMenu extends AbstractContainerMenu {
                     // L'XP de Mineur des particules, prises a la main (wiki, niveau 5 soit 25 ici).
                     fr.atraxterra.dohy.palamod.miner.MinerXpEvents.particlesTaken(server, stack);
                 }
+                // Le palafurnace : l'XP de cuisson des metiers, comme a la case de resultat d'un four.
+                if (machine instanceof PalafurnaceBlockEntity && machineIndex == PalafurnaceBlockEntity.SLOT_OUTPUT) {
+                    fr.atraxterra.dohy.job.JobXpEvents.smelted(server, stack, stack.getCount());
+                }
             }
         }
     }

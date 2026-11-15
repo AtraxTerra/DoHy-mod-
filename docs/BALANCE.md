@@ -130,6 +130,19 @@ Lecture pour le rythme de jeu visé :
 
 Levier unique : `xp_base` dans `data/job_progression.json`. Le passer à 75 réduit tout de 25 %.
 
+### Les sources : le barème de Paladium Bedrock (2026-11-15)
+
+Depuis le 2026-11-15, les sources du Mineur, du Fermier et du Chasseur sont celles du calculateur
+de PalaTracker pour Paladium Bedrock, **une XP de Bedrock pour une XP de DoHy**, aux niveaux de
+Bedrock fois 5 (détail : `PALAMOD.md`, « Les métiers sur le barème de Paladium Bedrock » ; données :
+`tools/bedrock_jobs.py`). La courbe ne change pas. Ce rapport est celui qui égalise le niveau 50
+(1 031 699 XP ici, 1 061 305 pour le 10 de Bedrock) : avant, un palier demande jusqu'à deux fois
+plus d'XP que sur Bedrock (le 25 : 174 545 contre 87 023), après, de moins en moins (le 100 :
+6,2 M contre 35,8 M pour le 20). Les « 15 k XP/h » du tableau restent la référence de rythme ;
+le rythme réel dépend maintenant du geste — la pierre ne rapporte plus rien, la fonte des lingots
+de PalaMod beaucoup (150 XP le lingot de paladium dès le 40), les animaux et les monstres davantage
+qu'avant. Garde-fous : un quarantième pour une créature de spawner, rien pour un petit.
+
 ### Primes de palier
 
 Les perks ont été remplacés par de l'argent le 2026-11-11. Tous les 5 niveaux, le palier verse
