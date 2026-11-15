@@ -2303,6 +2303,94 @@
       "buy_price": 5500,
       "sellable": true,
       "rate_per_hour": 44.0
+    },
+    "palamod:carp": {
+      "category": "FOOD",
+      "tier": "FOOD",
+      "base_price": 100,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 400,
+      "sellable": true,
+      "rate_per_hour": 120.0
+    },
+    "palamod:bass": {
+      "category": "FOOD",
+      "tier": "FOOD",
+      "base_price": 150,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 600,
+      "sellable": true,
+      "rate_per_hour": 80.0
+    },
+    "palamod:ray": {
+      "category": "FOOD",
+      "tier": "FOOD",
+      "base_price": 200,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 800,
+      "sellable": true,
+      "rate_per_hour": 60.0
+    },
+    "palamod:red_tuna": {
+      "category": "FOOD",
+      "tier": "FOOD",
+      "base_price": 300,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 1200,
+      "sellable": true,
+      "rate_per_hour": 40.0
+    },
+    "palamod:moonfish": {
+      "category": "FOOD",
+      "tier": "FOOD",
+      "base_price": 400,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 1600,
+      "sellable": true,
+      "rate_per_hour": 30.0
+    },
+    "palamod:exp_fish": {
+      "category": "FOOD",
+      "tier": "FOOD",
+      "base_price": 480,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 1900,
+      "sellable": true,
+      "rate_per_hour": 25.0
+    },
+    "palamod:whale": {
+      "category": "FOOD",
+      "tier": "FOOD",
+      "base_price": 6000,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 24000,
+      "sellable": true,
+      "rate_per_hour": 2.0
+    },
+    "palamod:kraken": {
+      "category": "FOOD",
+      "tier": "FOOD",
+      "base_price": 10000,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 40000,
+      "sellable": true,
+      "rate_per_hour": 1.2
     }
   }
 }

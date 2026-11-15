@@ -761,7 +761,8 @@
         "fermier",
         "alchimiste",
         "boss_metier",
-        "bonbons"
+        "bonbons",
+        "peche"
       ],
       "progress": "metiers",
       "discover": {
@@ -833,6 +834,59 @@
         "views": [
           "dohy:autel"
         ]
+      }
+    },
+    {
+      "id": "peche",
+      "category": "metiers",
+      "order": 7,
+      "icon": "palamod:carp",
+      "title": "La peche",
+      "card": [
+        "Le mini-jeu de PalaJobs",
+        "Huit poissons a vendre"
+      ],
+      "summary": [
+        "Avec une canne en paladium ou en endium, chaque prise ouvre un mini-jeu. La canne en bois reste celle de Minecraft."
+      ],
+      "sections": [
+        {
+          "title": "Le mini-jeu",
+          "text": [
+            "Le curseur parcourt la barre : arrete-le avec la barre espace avant la fin du temps.",
+            "- Vert : un poisson. Rouge : deux. Violet (Boost) : trois ou cinq.",
+            "- Jaune : la rarete monte d'un cran, et une nouvelle barre s'ouvre.",
+            "! Hors des zones, ou trop tard, le poisson s'echappe."
+          ]
+        },
+        {
+          "title": "Les raretes",
+          "text": [
+            "- Commun : morue, saumon, parfois une carpe ou un objet.",
+            "- Rare : poissons tropicaux, carpe, bar, raie manta, poisson a XP.",
+            "- Legendaire : poisson a XP, thon rouge, poisson lune.",
+            "- Mythique (canne en endium) : baleine, kraken."
+          ]
+        },
+        {
+          "title": "Les niveaux",
+          "text": [
+            "Les poissons de PalaJobs demandent un niveau de Chasseur : 10 (carpe, bar, raie, thon, poisson lune), 15 (poisson a XP), 20 (baleine, kraken). Chaque prise donne de l'XP de Chasseur."
+          ]
+        },
+        {
+          "title": "Vendre",
+          "text": [
+            "Les poissons se vendent au shop et au marche, d'autant plus cher qu'ils sont rares : la baleine et le kraken valent des milliers de dollars."
+          ]
+        }
+      ],
+      "see": [
+        "chasseur",
+        "metiers"
+      ],
+      "discover": {
+        "always": true
       }
     },
     {

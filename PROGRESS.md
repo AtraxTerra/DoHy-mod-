@@ -189,6 +189,19 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-15 (suite) — la pêche de PalaJobs
+
+**Demande** : « ok la pêche » (lot proposé après la relecture du wiki des métiers). Choix : les
+poissons servent à l'XP et à la vente ; le mini-jeu seulement avec les cannes de Paladium ; la
+canne en endium en plus. Description : PALAMOD.md, « La pêche de PalaJobs ».
+
+**Fait** (`feat/peche`) : mini-jeu à la barre espace (zones ×1, ×2, Boost, Level-Up), quatre
+raretés et leur butin d'après `FishingRegistry` de PalaJobs, huit poissons, canne en endium, XP de
+Chasseur du wiki, niveaux requis, prix de vente (`data/rates.csv`, prix générés), fiche « La pêche ».
+La canne en paladium perd son bonus de chance (elle ouvre le mini-jeu).
+- **Pont-levis** (« et ajoute le drawbridge », même PR) : seize blocs posés ou repris au signal de
+  redstone, inventaire de neuf cases ; textures et recette du dossier fourni par le joueur.
+
 ### 2026-11-15 — les textures fournies pour les bonbons
 
 **Demande** : « Reprends les textures que je t'ai fournies pour les bonbons » ; « mon mod est

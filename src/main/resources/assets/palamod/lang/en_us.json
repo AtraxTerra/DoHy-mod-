@@ -928,5 +928,15 @@
   "tooltip.palamod.candy_wrapped": "A random job candy, sometimes a rainbow one",
   "tooltip.palamod.candy_wrapped.hint": "Right-click: unwrap it.",
   "message.palamod.candy": "[Candy] +%s %s XP",
-  "message.palamod.candy_wrapped": "[Candy] Inside the wrapper: %s!"
+  "message.palamod.candy_wrapped": "[Candy] Inside the wrapper: %s!",
+  "item.palamod.carp": "Carp",
+  "item.palamod.bass": "Bass",
+  "item.palamod.ray": "Manta Ray",
+  "item.palamod.red_tuna": "Red Tuna",
+  "item.palamod.moonfish": "Moonfish",
+  "item.palamod.exp_fish": "XP Fish",
+  "item.palamod.whale": "Whale",
+  "item.palamod.kraken": "Kraken",
+  "item.palamod.endium_fishing_rod": "Endium Fishing Rod",
+  "block.palamod.drawbridge": "Drawbridge"
 }

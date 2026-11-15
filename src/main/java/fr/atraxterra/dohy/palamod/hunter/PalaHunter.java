@@ -6,17 +6,12 @@ import fr.atraxterra.dohy.palamod.machine.MachineLayout;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.FishingRodItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -97,14 +92,25 @@ public final class PalaHunter {
      * III : le tresor passe d'environ 5 a 11 % des prises.
      */
     public static final DeferredItem<FishingRodItem> PALADIUM_FISHING_ROD = ITEMS.registerItem(
-            "paladium_fishing_rod", properties -> new FishingRodItem(properties
-                    .durability(128)
-                    .enchantable(1)
-                    .attributes(ItemAttributeModifiers.builder()
-                            .add(Attributes.LUCK, new AttributeModifier(
-                                    Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "paladium_fishing_rod_luck"),
-                                    3.0d, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
-                            .build())));
+            "paladium_fishing_rod", properties -> new FishingRodItem(properties.durability(128).enchantable(1)));
+
+    /**
+     * La canne en endium de PalaJobs ({@code ENDIUM_FISHING_ROD}) : la seule qui
+     * ouvre les poissons mythiques du mini-jeu (FishingTable). Recette DoHy.
+     */
+    public static final DeferredItem<FishingRodItem> ENDIUM_FISHING_ROD = ITEMS.registerItem(
+            "endium_fishing_rod", properties -> new FishingRodItem(properties.durability(512).enchantable(1)));
+
+    // -- Poissons de PalaJobs (mini-jeu de peche, fishing/FishingTable) -------------
+
+    public static final DeferredItem<Item> CARP = ITEMS.registerSimpleItem("carp");
+    public static final DeferredItem<Item> BASS = ITEMS.registerSimpleItem("bass");
+    public static final DeferredItem<Item> RAY = ITEMS.registerSimpleItem("ray");
+    public static final DeferredItem<Item> RED_TUNA = ITEMS.registerSimpleItem("red_tuna");
+    public static final DeferredItem<Item> MOONFISH = ITEMS.registerSimpleItem("moonfish");
+    public static final DeferredItem<Item> EXP_FISH = ITEMS.registerSimpleItem("exp_fish");
+    public static final DeferredItem<Item> WHALE = ITEMS.registerSimpleItem("whale");
+    public static final DeferredItem<Item> KRAKEN = ITEMS.registerSimpleItem("kraken");
 
     // -- Capture -----------------------------------------------------------------
 
@@ -203,7 +209,8 @@ public final class PalaHunter {
 
     private static List<DeferredItem<? extends Item>> ordered() {
         List<DeferredItem<? extends Item>> list = new ArrayList<>(List.of(
-                PALADIUM_FISHING_ROD, CAPTURE_SWORD, CAPTURE_STONE,
+                PALADIUM_FISHING_ROD, ENDIUM_FISHING_ROD, CARP, BASS, RAY, RED_TUNA, MOONFISH, EXP_FISH, WHALE, KRAKEN,
+                CAPTURE_SWORD, CAPTURE_STONE,
                 CAVERN_HAMMER, BROKEN_SPAWNER, CUSTOM_SPAWNER_ITEM, SPAWNER_CONTROLLER_ITEM));
         list.addAll(SPAWNER_STRUCTURE_ITEMS);
         list.addAll(List.of(UPGRADE_SPEED, UPGRADE_LOOTING, UPGRADE_SLIME, UPGRADE_MORE));

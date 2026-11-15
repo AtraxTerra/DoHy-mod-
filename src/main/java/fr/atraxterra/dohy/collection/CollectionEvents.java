@@ -94,6 +94,11 @@ public final class CollectionEvents {
         }
     }
 
+    /** Une prise du mini-jeu de peche (son ItemFishedEvent est annule). */
+    public static void recordCatch(ServerPlayer player, ItemStack stack) {
+        record(player, stack);
+    }
+
     /** Peche. */
     @SubscribeEvent
     public static void onItemFished(ItemFishedEvent event) {

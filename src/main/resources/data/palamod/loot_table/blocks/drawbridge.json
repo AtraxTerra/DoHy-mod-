@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "palamod:blocks/drawbridge",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "palamod:drawbridge"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ]
+}

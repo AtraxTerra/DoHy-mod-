@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "P P",
+    "SDS",
+    "RRR"
+  ],
+  "key": {
+    "P": "minecraft:piston",
+    "S": "minecraft:slime_block",
+    "D": "minecraft:dispenser",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "palamod:drawbridge",
+    "count": 1
+  }
+}
