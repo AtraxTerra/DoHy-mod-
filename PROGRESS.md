@@ -192,6 +192,26 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-15 (suite) — la Mine toutes les cinq heures
+
+**Demande** : « bug : la mine ne se régénère pas toutes les 5h et c'est seulement la box
+d'apparition qui se reset pas la dimension ». Choix du joueur : **une mine neuve toutes les cinq
+heures** (5 h, 10 h, 15 h, 20 h et 1 h), un redémarrage ne touchant plus à rien.
+
+**Constat** : la Mine changeait de zone une fois par jour à 5 h, comme prévu ; mais au premier
+passage après chaque redémarrage du serveur, la salle d'arrivée était refaite dans la même zone.
+Le joueur voyait une salle neuve au milieu de ses galeries : une remise à neuf manquée.
+
+**Fait** (`fix/mine-5h`) : `RealClock` gagne les tranches de journée (`slotKey`,
+`minutesUntilNextSlot`, `nextSlot`, testées dans `RealClockTest`) ; `MineService` change de zone à
+chaque tranche, prévient 10, 5 et 1 minute avant, annonce l'heure de la prochaine remise à neuf,
+et ne repose pas la salle si sa borne RETOUR est déjà là. CONTENU_DOHY.md, « La Mine » ; fiche « La
+Mine ».
+
+**Vérifié en jeu** (client de CI) : arrivée annoncée « remise à neuf à 15 h » ; redémarrage simulé
+(état de `MineService` remis à zéro) : même arrivée, un bloc d'or posé dans la salle est resté ;
+`/mine admin remise` : joueur ramené au spawn, nouvelle zone 20 000 blocs plus loin, salle neuve.
+
 ### 2026-11-15 (suite) — le clicker suit PalaTracker
 
 **Demande** : « pour le clicker aide toi de ça https://palatracker.bromine.fr/clicker-optimizer ».
