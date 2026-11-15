@@ -192,6 +192,17 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-15 (suite) — le clicker suit PalaTracker
+
+**Demande** : « pour le clicker aide toi de ça https://palatracker.bromine.fr/clicker-optimizer ».
+
+**Fait** (`feat/clicker-palatracker`, sur la branche des graines) : les tables de l'optimiseur sont
+identiques à celles des relevés déjà portés, et ses formules à celles de DoHy. Seuls les nombres
+d'exemplaires différaient, là où le wiki avait été préféré : amélioration de bâtiment 3 et 7 (au
+lieu de 5 et 10), production nombreuse 2 (au lieu de 7), et les quatre catégories relevées
+reprennent leur condition. 109 conditions changent dans `clicker.json` ; prix, bâtiments et Clic
+Shop ne bougent pas. PALAMOD.md § 31, « L'optimiseur PalaTracker ».
+
 ### 2026-11-15 (suite) — les graines de PalaMod dans l'herbe
 
 **Demande** : « Alors ajoute leurs drops » puis « Aide toi du wiki de paladium » (après « est-ce

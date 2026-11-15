@@ -1246,7 +1246,7 @@
     {
      "type": "building",
      "id": "abandoned_mine",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1262,7 +1262,7 @@
     {
      "type": "building",
      "id": "big_rocks_cave",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1282,7 +1282,7 @@
     {
      "type": "building",
      "id": "dwarves_mine",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1302,7 +1302,7 @@
     {
      "type": "building",
      "id": "grandma_garden",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1322,7 +1322,7 @@
     {
      "type": "building",
      "id": "witch_cabin",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1342,7 +1342,7 @@
     {
      "type": "building",
      "id": "buzzing_hive",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1362,7 +1362,7 @@
     {
      "type": "building",
      "id": "snowy_forest",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1382,7 +1382,7 @@
     {
      "type": "building",
      "id": "frozen_iceberg",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1402,7 +1402,7 @@
     {
      "type": "building",
      "id": "pirate_port",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1422,7 +1422,7 @@
     {
      "type": "building",
      "id": "volcanic_island",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1442,7 +1442,7 @@
     {
      "type": "building",
      "id": "scorching_dunes",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1462,7 +1462,7 @@
     {
      "type": "building",
      "id": "mystical_forest",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1482,7 +1482,7 @@
     {
      "type": "building",
      "id": "lush_jungle",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1502,7 +1502,7 @@
     {
      "type": "building",
      "id": "forgotten_temple",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1522,7 +1522,7 @@
     {
      "type": "building",
      "id": "millennial_crypt",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1542,7 +1542,7 @@
     {
      "type": "building",
      "id": "bottomless_pit",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1562,7 +1562,7 @@
     {
      "type": "building",
      "id": "autonomous_mine",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1582,7 +1582,7 @@
     {
      "type": "building",
      "id": "golem_farm",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1602,7 +1602,7 @@
     {
      "type": "building",
      "id": "radioactive_cave",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1622,7 +1622,7 @@
     {
      "type": "building",
      "id": "biological_lab",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1642,7 +1642,7 @@
     {
      "type": "building",
      "id": "thermonuclear_submarine",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1662,7 +1662,7 @@
     {
      "type": "building",
      "id": "kraken_pit",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1682,7 +1682,7 @@
     {
      "type": "building",
      "id": "enigmatic_fissure",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1702,7 +1702,7 @@
     {
      "type": "building",
      "id": "corrupted_lands",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1722,7 +1722,7 @@
     {
      "type": "building",
      "id": "matrix_glitch",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1742,7 +1742,7 @@
     {
      "type": "building",
      "id": "quantum_computer",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1762,7 +1762,7 @@
     {
      "type": "building",
      "id": "particle_accelerator",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1782,7 +1782,7 @@
     {
      "type": "building",
      "id": "time_travel_machine",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1802,7 +1802,7 @@
     {
      "type": "building",
      "id": "prehistoric_cave",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1822,7 +1822,7 @@
     {
      "type": "building",
      "id": "extraterrestrial_pyramid",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1842,7 +1842,7 @@
     {
      "type": "building",
      "id": "atlantis",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1862,7 +1862,7 @@
     {
      "type": "building",
      "id": "great_ancients_pantheon",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1882,7 +1882,7 @@
     {
      "type": "building",
      "id": "earth_center",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1902,7 +1902,7 @@
     {
      "type": "building",
      "id": "devil_lair",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1922,7 +1922,7 @@
     {
      "type": "building",
      "id": "eden_garden",
-     "count": 5
+     "count": 3
     }
    ]
   },
@@ -1942,7 +1942,7 @@
     {
      "type": "building",
      "id": "abandoned_mine",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -1962,7 +1962,7 @@
     {
      "type": "building",
      "id": "big_rocks_cave",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -1982,7 +1982,7 @@
     {
      "type": "building",
      "id": "dwarves_mine",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2002,7 +2002,7 @@
     {
      "type": "building",
      "id": "grandma_garden",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2022,7 +2022,7 @@
     {
      "type": "building",
      "id": "witch_cabin",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2042,7 +2042,7 @@
     {
      "type": "building",
      "id": "buzzing_hive",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2062,7 +2062,7 @@
     {
      "type": "building",
      "id": "snowy_forest",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2082,7 +2082,7 @@
     {
      "type": "building",
      "id": "frozen_iceberg",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2102,7 +2102,7 @@
     {
      "type": "building",
      "id": "pirate_port",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2122,7 +2122,7 @@
     {
      "type": "building",
      "id": "volcanic_island",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2142,7 +2142,7 @@
     {
      "type": "building",
      "id": "scorching_dunes",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2162,7 +2162,7 @@
     {
      "type": "building",
      "id": "mystical_forest",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2182,7 +2182,7 @@
     {
      "type": "building",
      "id": "lush_jungle",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2202,7 +2202,7 @@
     {
      "type": "building",
      "id": "forgotten_temple",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2222,7 +2222,7 @@
     {
      "type": "building",
      "id": "millennial_crypt",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2242,7 +2242,7 @@
     {
      "type": "building",
      "id": "bottomless_pit",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2262,7 +2262,7 @@
     {
      "type": "building",
      "id": "autonomous_mine",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2282,7 +2282,7 @@
     {
      "type": "building",
      "id": "golem_farm",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2302,7 +2302,7 @@
     {
      "type": "building",
      "id": "radioactive_cave",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2322,7 +2322,7 @@
     {
      "type": "building",
      "id": "biological_lab",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2342,7 +2342,7 @@
     {
      "type": "building",
      "id": "thermonuclear_submarine",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2362,7 +2362,7 @@
     {
      "type": "building",
      "id": "kraken_pit",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2382,7 +2382,7 @@
     {
      "type": "building",
      "id": "enigmatic_fissure",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2402,7 +2402,7 @@
     {
      "type": "building",
      "id": "corrupted_lands",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2422,7 +2422,7 @@
     {
      "type": "building",
      "id": "matrix_glitch",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2442,7 +2442,7 @@
     {
      "type": "building",
      "id": "quantum_computer",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2462,7 +2462,7 @@
     {
      "type": "building",
      "id": "particle_accelerator",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2482,7 +2482,7 @@
     {
      "type": "building",
      "id": "time_travel_machine",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2502,7 +2502,7 @@
     {
      "type": "building",
      "id": "prehistoric_cave",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2522,7 +2522,7 @@
     {
      "type": "building",
      "id": "extraterrestrial_pyramid",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2542,7 +2542,7 @@
     {
      "type": "building",
      "id": "atlantis",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2562,7 +2562,7 @@
     {
      "type": "building",
      "id": "great_ancients_pantheon",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2582,7 +2582,7 @@
     {
      "type": "building",
      "id": "earth_center",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2602,7 +2602,7 @@
     {
      "type": "building",
      "id": "devil_lair",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2622,7 +2622,7 @@
     {
      "type": "building",
      "id": "eden_garden",
-     "count": 10
+     "count": 7
     }
    ]
   },
@@ -2638,7 +2638,7 @@
     {
      "type": "building",
      "id": "abandoned_mine",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2654,7 +2654,7 @@
     {
      "type": "building",
      "id": "big_rocks_cave",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2674,7 +2674,7 @@
     {
      "type": "building",
      "id": "dwarves_mine",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2694,7 +2694,7 @@
     {
      "type": "building",
      "id": "grandma_garden",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2714,7 +2714,7 @@
     {
      "type": "building",
      "id": "witch_cabin",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2734,7 +2734,7 @@
     {
      "type": "building",
      "id": "buzzing_hive",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2754,7 +2754,7 @@
     {
      "type": "building",
      "id": "snowy_forest",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2774,7 +2774,7 @@
     {
      "type": "building",
      "id": "frozen_iceberg",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2794,7 +2794,7 @@
     {
      "type": "building",
      "id": "pirate_port",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2814,7 +2814,7 @@
     {
      "type": "building",
      "id": "volcanic_island",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2834,7 +2834,7 @@
     {
      "type": "building",
      "id": "scorching_dunes",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2854,7 +2854,7 @@
     {
      "type": "building",
      "id": "mystical_forest",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2874,7 +2874,7 @@
     {
      "type": "building",
      "id": "lush_jungle",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2894,7 +2894,7 @@
     {
      "type": "building",
      "id": "forgotten_temple",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2914,7 +2914,7 @@
     {
      "type": "building",
      "id": "millennial_crypt",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2934,7 +2934,7 @@
     {
      "type": "building",
      "id": "bottomless_pit",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2954,7 +2954,7 @@
     {
      "type": "building",
      "id": "autonomous_mine",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2974,7 +2974,7 @@
     {
      "type": "building",
      "id": "golem_farm",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -2994,7 +2994,7 @@
     {
      "type": "building",
      "id": "radioactive_cave",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3014,7 +3014,7 @@
     {
      "type": "building",
      "id": "biological_lab",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3034,7 +3034,7 @@
     {
      "type": "building",
      "id": "thermonuclear_submarine",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3054,7 +3054,7 @@
     {
      "type": "building",
      "id": "kraken_pit",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3074,7 +3074,7 @@
     {
      "type": "building",
      "id": "enigmatic_fissure",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3094,7 +3094,7 @@
     {
      "type": "building",
      "id": "corrupted_lands",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3114,7 +3114,7 @@
     {
      "type": "building",
      "id": "matrix_glitch",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3134,7 +3134,7 @@
     {
      "type": "building",
      "id": "quantum_computer",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3154,7 +3154,7 @@
     {
      "type": "building",
      "id": "particle_accelerator",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3174,7 +3174,7 @@
     {
      "type": "building",
      "id": "time_travel_machine",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3194,7 +3194,7 @@
     {
      "type": "building",
      "id": "prehistoric_cave",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3214,7 +3214,7 @@
     {
      "type": "building",
      "id": "extraterrestrial_pyramid",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3234,7 +3234,7 @@
     {
      "type": "building",
      "id": "atlantis",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3254,7 +3254,7 @@
     {
      "type": "building",
      "id": "great_ancients_pantheon",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3274,7 +3274,7 @@
     {
      "type": "building",
      "id": "earth_center",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3294,7 +3294,7 @@
     {
      "type": "building",
      "id": "devil_lair",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -3314,7 +3314,7 @@
     {
      "type": "building",
      "id": "eden_garden",
-     "count": 7
+     "count": 2
     }
    ]
   },
@@ -4089,13 +4089,8 @@
    "conditions": [
     {
      "type": "building",
-     "id": "dwarves_mine",
-     "count": 1
-    },
-    {
-     "type": "building",
      "id": "pirate_port",
-     "count": 1
+     "count": 3
     }
    ]
   },
@@ -4110,13 +4105,8 @@
    "conditions": [
     {
      "type": "building",
-     "id": "snowy_forest",
-     "count": 1
-    },
-    {
-     "type": "building",
      "id": "frozen_iceberg",
-     "count": 1
+     "count": 3
     }
    ]
   },
@@ -4131,13 +4121,8 @@
    "conditions": [
     {
      "type": "building",
-     "id": "frozen_iceberg",
-     "count": 1
-    },
-    {
-     "type": "building",
      "id": "pirate_port",
-     "count": 1
+     "count": 3
     }
    ]
   },
@@ -4152,18 +4137,8 @@
    "conditions": [
     {
      "type": "building",
-     "id": "snowy_forest",
-     "count": 1
-    },
-    {
-     "type": "building",
      "id": "mystical_forest",
-     "count": 1
-    },
-    {
-     "type": "building",
-     "id": "lush_jungle",
-     "count": 1
+     "count": 3
     }
    ]
   },
