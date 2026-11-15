@@ -60,8 +60,26 @@ public final class UiNet {
     /** Ouvre ou met a jour la vue chez le joueur. */
     public static void show(ServerPlayer player, UiView view) {
         OPEN.put(player.getUUID(), view.viewId());
+        // Les pastilles de la barre laterale d'abord : l'ecran les a des sa premiere image.
+        Nav nav = fr.atraxterra.dohy.ui.NavBadges.of(player);
+        if (!nav.equals(NAV_SENT.get(player.getUUID()))) {
+            NAV_SENT.put(player.getUUID(), nav);
+            PacketDistributor.sendToPlayer(player, nav);
+        }
         PacketDistributor.sendToPlayer(player, new Show(view));
         fr.atraxterra.dohy.guide.EncyclopediaEvents.viewed(player, view.viewId());
+    }
+
+    private static final Map<UUID, Nav> NAV_SENT = new ConcurrentHashMap<>();
+
+    /** Oublie les pastilles envoyees : le prochain ecran les renverra. */
+    public static void forgetNav(ServerPlayer player) {
+        NAV_SENT.remove(player.getUUID());
+    }
+
+    /** Une notification en bas a droite de l'ecran du joueur. */
+    public static void toast(ServerPlayer player, Toast toast) {
+        PacketDistributor.sendToPlayer(player, toast);
     }
 
     /** Le joueur regarde-t-il encore cette vue ? */
@@ -77,6 +95,64 @@ public final class UiNet {
     public static void close(ServerPlayer player) {
         if (OPEN.remove(player.getUUID()) != null) {
             PacketDistributor.sendToPlayer(player, new Close());
+        }
+    }
+
+    /**
+     * L'etat de la barre laterale : les pastilles par entree (« contrats » -> « 2 »)
+     * et le niveau global du joueur.
+     */
+    public record Nav(Map<String, String> badges, int level) implements CustomPacketPayload {
+        public static final Type<Nav> TYPE = new Type<>(id("ui_nav"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Nav> STREAM_CODEC = StreamCodec.of(
+                (buffer, nav) -> {
+                    buffer.writeVarInt(nav.badges().size());
+                    for (Map.Entry<String, String> entry : nav.badges().entrySet()) {
+                        buffer.writeUtf(entry.getKey());
+                        buffer.writeUtf(entry.getValue());
+                    }
+                    buffer.writeVarInt(nav.level());
+                },
+                buffer -> {
+                    int count = Math.min(64, buffer.readVarInt());
+                    Map<String, String> badges = new HashMap<>();
+                    for (int index = 0; index < count; index++) {
+                        badges.put(buffer.readUtf(), buffer.readUtf());
+                    }
+                    return new Nav(badges, buffer.readVarInt());
+                });
+
+        @Override
+        public Type<Nav> type() {
+            return TYPE;
+        }
+    }
+
+    /**
+     * Une notification : l'icone, la cle en petites capitales (« CONTRAT TERMINE »),
+     * le titre, une ligne, la couleur, la duree, et un groupe : une notification du
+     * meme groupe remplace la precedente au lieu de s'empiler (l'XP d'un metier).
+     */
+    public record Toast(net.minecraft.world.item.ItemStack icon, String key, String title, String line, int accent,
+                        int millis, String group) implements CustomPacketPayload {
+        public static final Type<Toast> TYPE = new Type<>(id("ui_toast"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Toast> STREAM_CODEC = StreamCodec.of(
+                (buffer, toast) -> {
+                    net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, toast.icon());
+                    buffer.writeUtf(toast.key());
+                    buffer.writeUtf(toast.title());
+                    buffer.writeUtf(toast.line());
+                    buffer.writeInt(toast.accent());
+                    buffer.writeVarInt(toast.millis());
+                    buffer.writeUtf(toast.group());
+                },
+                buffer -> new Toast(net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer),
+                        buffer.readUtf(), buffer.readUtf(), buffer.readUtf(), buffer.readInt(), buffer.readVarInt(),
+                        buffer.readUtf()));
+
+        @Override
+        public Type<Toast> type() {
+            return TYPE;
         }
     }
 
@@ -158,6 +234,8 @@ public final class UiNet {
         PayloadRegistrar registrar = event.registrar("1");
         registrar.playToClient(Show.TYPE, Show.STREAM_CODEC);
         registrar.playToClient(Close.TYPE, Close.STREAM_CODEC);
+        registrar.playToClient(Nav.TYPE, Nav.STREAM_CODEC);
+        registrar.playToClient(Toast.TYPE, Toast.STREAM_CODEC);
         registrar.playToServer(Action.TYPE, Action.STREAM_CODEC, (action, context) -> {
             if (!(context.player() instanceof ServerPlayer player)) {
                 return;
@@ -166,6 +244,13 @@ public final class UiNet {
                 // Seulement si c'est bien la vue ouverte : un « close » en retard
                 // ne doit pas fermer la vue suivante.
                 OPEN.remove(player.getUUID(), action.view());
+                return;
+            }
+            if ("nav".equals(action.verb())) {
+                // La barre laterale : le nom du menu est verifie contre la liste du serveur.
+                if (OPEN.containsKey(player.getUUID())) {
+                    fr.atraxterra.dohy.ui.menu.HubController.openTarget(player, action.argument());
+                }
                 return;
             }
             if (!action.view().equals(OPEN.get(player.getUUID()))) {

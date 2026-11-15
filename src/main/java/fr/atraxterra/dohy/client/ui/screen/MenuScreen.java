@@ -1,36 +1,60 @@
 package fr.atraxterra.dohy.client.ui.screen;
 
+import fr.atraxterra.dohy.client.ui.Anim;
+import fr.atraxterra.dohy.client.ui.Paint;
+import fr.atraxterra.dohy.client.ui.Popup;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiClient;
 import fr.atraxterra.dohy.client.ui.UiElement;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.client.ui.UiScreen;
 import fr.atraxterra.dohy.client.ui.ViewScreen;
-import fr.atraxterra.dohy.client.ui.widget.CloseButton;
+import fr.atraxterra.dohy.client.ui.shell.Shell;
 import fr.atraxterra.dohy.ui.view.MenuView;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * L'ecran des menus generiques ({@link MenuView}) : titre, cartouche de
- * chiffres, puis les sections de cartes dans une zone qui defile.
+ * L'ecran des menus generiques ({@link MenuView}), dans la coque de la v2 : barre
+ * laterale, en-tete, puis les sections de cartes dans une zone qui defile.
+ *
+ * <p>Les cartes entrent en cascade a l'ouverture, se soulevent au survol, et leurs
+ * barres se remplissent ; une carte qui pose une question ouvre d'abord une
+ * fenetre de confirmation.
  */
 public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
 
-    private static final int CONTENT_X = 37;
-    private static final int CONTENT_Y = 56;
-    private static final int CONTENT_W = 410;
-    private static final int CONTENT_H = 190;
+    private static final float GAP = 4.7f;
+    private static final float ROW = 23.3f;
+    private static final float AGENDA_ROW = 25.3f;
+    private static final float ROW_GAP = 2.7f;
+    private static final float HEADER = 14.0f;
+    private static final float SECTION_GAP = 8.7f;
+    private static final float SCROLLBAR = 8.7f;
 
     private MenuView view;
+    private final Shell shell;
     private Content content;
+    private final double opened = Anim.now();
 
     public MenuScreen(MenuView view) {
-        super(Component.literal(view.title()), 457, 256);
+        super(Component.literal(view.title()), Shell.WIDTH, Shell.HEIGHT);
         this.view = view;
+        this.shell = new Shell(view.view());
+        header();
+    }
+
+    private void header() {
+        shell.header(view.title(), view.subtitle(), view.stats(), view.tabs(), view.back());
     }
 
     @Override
@@ -42,101 +66,61 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
     public void accept(MenuView next) {
         boolean sameTitle = next.title().equals(view.title());
         this.view = next;
+        header();
+        content.reshape();
         content.layout();
         if (!sameTitle) {
-            content.scroll = 0;
+            content.resetScroll();
         }
         content.clamp();
     }
 
     @Override
     protected void build() {
-        add(new CloseButton(431, 16, this::onClose));
-        if (view.back()) {
-            add(new JobDetailScreen.HexButton(Ui.texture("icon_back"), "Retour",
-                    () -> UiClient.send(view.view(), "back", "", 0)));
-        }
         content = add(new Content());
+        content.reshape();
         content.layout();
     }
 
     @Override
+    protected float lift() {
+        return 5.0f * (1.0f - Anim.easeOut(Anim.progress(opened, 0.22d)));
+    }
+
+    @Override
     protected void drawBackground(UiGraphics g, double mouseX, double mouseY) {
-        g.panel(9, 0, 448, 256);
-        String title = view.title().toUpperCase(java.util.Locale.ROOT);
-        // Un titre long retrecit plutot que d'etre coupe, jusqu'au cartouche.
-        float room = statsLeft(g) - CONTENT_X - 10;
-        float size = Math.max(13, Math.min(22, 22 * room / Math.max(1, g.width(Ui.TITLE, title, 22))));
-        // La largeur des glyphes s'arrondit : on descend encore un peu tant que ca deborde.
-        while (size > 13 && g.width(Ui.TITLE, title, size) > room) {
-            size = Math.max(13, size - 0.25f);
-        }
-        g.textShaded(Ui.TITLE, g.fit(Ui.TITLE, title, size, room), CONTENT_X, 15 + (22 - size) * 0.6f, size, Ui.RED,
-                Ui.RED_SHADE, 1.3f);
-        if (!view.subtitle().isEmpty()) {
-            g.text(Ui.BOLD, view.subtitle().toUpperCase(java.util.Locale.ROOT), CONTENT_X, 40, 4.2f, Ui.TEXT);
-        }
-        stats(g);
+        shell.draw(g, g.paint(), mouseX, mouseY);
     }
 
-    /** Le bord gauche du cartouche, ou le bord droit du titre sans cartouche. */
-    private float statsLeft(UiGraphics g) {
-        if (view.stats().isEmpty()) {
-            return 420;
-        }
-        float total = 14 * (view.stats().size() - 1) + 16;
-        for (MenuView.Stat stat : view.stats()) {
-            total += Math.max(g.width(Ui.WIDE, stat.label(), 3.6f), g.width(Ui.WIDE, stat.value(), 6.0f));
-        }
-        return 423 - Math.round(total);
+    @Override
+    protected boolean backgroundClicked(double mouseX, double mouseY, int button) {
+        return button == 0 && shell.click(mouseX, mouseY);
     }
 
-    /** Le cartouche : les chiffres cote a cote, dans un cadre vert. */
-    private void stats(UiGraphics g) {
-        if (view.stats().isEmpty()) {
-            return;
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (popup == null && event.key() == GLFW.GLFW_KEY_BACKSPACE && view.back()) {
+            UiClient.send(view.view(), "back", "", 0);
+            return true;
         }
-        List<Float> widths = new ArrayList<>();
-        float total = 0;
-        for (MenuView.Stat stat : view.stats()) {
-            float width = Math.max(g.width(Ui.WIDE, stat.label(), 3.6f), g.width(Ui.WIDE, stat.value(), 6.0f));
-            widths.add(width);
-            total += width;
-        }
-        total += 14 * (view.stats().size() - 1) + 16;
-        int width = Math.round(total);
-        int x = 423 - width;
-        int y = 14;
-        g.border(x, y, width, 26, 1, Ui.GREEN);
-        g.rect(x + 1, y + 1, width - 2, 24, 0xFF131217);
-        float cursor = x + 8;
-        for (int index = 0; index < view.stats().size(); index++) {
-            MenuView.Stat stat = view.stats().get(index);
-            g.text(Ui.WIDE, stat.label(), cursor, y + 5, 3.6f, Ui.MUTED);
-            g.text(Ui.WIDE, stat.value(), cursor, y + 12, 6.0f, stat.color());
-            cursor += widths.get(index);
-            if (index < view.stats().size() - 1) {
-                g.rect(Math.round(cursor + 7), y + 6, 1, 14, 0xFF3A3940);
-                cursor += 14;
-            }
-        }
+        return super.keyPressed(event);
     }
 
-    /** Une carte placee : sa section, son indice, son rectangle en coordonnees de contenu. */
-    private record Placed(MenuView.Section section, MenuView.Card card, int layout, int x, int y, int width,
-                          int height, List<TextLine> text) {
-
-        Placed(MenuView.Section section, MenuView.Card card, int layout, int x, int y, int width, int height) {
-            this(section, card, layout, x, y, width, height, List.of());
-        }
+    /** Une carte placee, en coordonnees de contenu. */
+    private record Placed(MenuView.Card card, int layout, float x, float y, float width, float height,
+                          List<TextLine> text, int index) {
     }
 
-    // -- Les cartes de texte -----------------------------------------------------------------
+    /** Un intertitre place : le titre, son compteur, son losange. */
+    private record Header(String title, String count, String icon, float x, float y, float width) {
+    }
 
-    private static final float TEXT_SIZE = 3.8f;
-    private static final float TEXT_LEADING = 5.4f;
-    private static final float TEXT_GAP = 2.4f;
-    private static final float HEADING_SIZE = 4.8f;
+    // -- Les cartes de texte -----------------------------------------------------------
+
+    private static final float TEXT_SIZE = 4.7f;
+    private static final float TEXT_LEADING = 6.6f;
+    private static final float TEXT_GAP = 3.0f;
+    private static final float HEADING_SIZE = 6.0f;
     private static final int NORMAL_LINE = 0;
     private static final int BULLET_LINE = 1;
     private static final int COMMAND_LINE = 2;
@@ -146,19 +130,17 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
     private record TextLine(String text, int kind, boolean first, float y) {
     }
 
-    /** La marge gauche du texte d'une carte : le liseré, et l'icone s'il y en a une. */
     private static float textLeft(MenuView.Card card) {
-        return card.icon().isEmpty() ? 8 : 27;
+        return card.icon().isEmpty() ? 9.0f : 30.0f;
     }
 
-    /** Coupe les paragraphes d'une carte de texte ; rend les lignes placees et la hauteur totale. */
-    private static List<TextLine> wrapText(MenuView.Card card, int width, float[] height) {
-        net.minecraft.client.gui.Font font = net.minecraft.client.Minecraft.getInstance().font;
+    private static List<TextLine> wrapText(MenuView.Card card, float width, float[] height) {
+        Font font = Minecraft.getInstance().font;
         List<TextLine> out = new ArrayList<>();
         float left = textLeft(card);
-        float y = 5;
+        float y = 6.5f;
         if (!card.title().isEmpty()) {
-            y += 9;
+            y += 10.0f;
         }
         for (int index = 0; index < card.lines().size(); index++) {
             String paragraph = card.lines().get(index);
@@ -173,8 +155,8 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                 kind = TIP_LINE;
                 body = paragraph.substring(2);
             }
-            float indent = kind == BULLET_LINE || kind == TIP_LINE ? 6 : 0;
-            float room = width - left - 7 - indent;
+            float indent = kind == BULLET_LINE || kind == TIP_LINE ? 7.0f : 0.0f;
+            float room = width - left - 9.0f - indent;
             List<String> lines = UiGraphics.wrap(font, kind == COMMAND_LINE ? Ui.BOLD : Ui.BODY, body, TEXT_SIZE, room);
             for (int line = 0; line < lines.size(); line++) {
                 out.add(new TextLine(lines.get(line), kind, line == 0, y));
@@ -184,310 +166,525 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                 y += TEXT_GAP;
             }
         }
-        height[0] = y + 4;
+        height[0] = y + 5.0f;
         return out;
+    }
+
+    /** La hauteur d'une carte de grille : icone, deux lignes, barre et legende. */
+    private static float gridHeight(MenuView.Card card) {
+        int lines = Math.min(2, card.lines().size());
+        float text = 1.5f + 6.3f + (lines >= 1 ? 6.7f : 0.0f) + (lines >= 2 ? 5.7f : 0.0f);
+        float height = 6.0f + Math.max(19.3f, text) + 5.3f;
+        if (card.progress() >= 0) {
+            height += 4.7f + 2.7f;
+            if (card.lines().size() >= 3) {
+                height += 6.0f;
+            }
+        } else if (card.lines().size() >= 3) {
+            height += 5.7f;
+        }
+        return height;
     }
 
     /** La zone de contenu : mise en page, defilement, dessin et clics. */
     private final class Content extends UiElement {
         private final List<Placed> placed = new ArrayList<>();
-        private final List<int[]> headers = new ArrayList<>();
-        private int total;
-        int scroll;
+        private final List<Header> headers = new ArrayList<>();
+        private final Map<Integer, Anim.Value> hovers = new HashMap<>();
+        private final Anim.Value scroll = new Anim.Value(0.0f, 18.0f);
+        private float total;
+        private float target;
 
         Content() {
-            super(CONTENT_X, CONTENT_Y, CONTENT_W, CONTENT_H);
+            super(0, 0, 1, 1);
+        }
+
+        void reshape() {
+            x = Math.round(shell.mainLeft());
+            y = Math.round(shell.contentTop());
+            width = Math.round(shell.mainRight() - shell.mainLeft());
+            height = Math.round(Shell.HEIGHT - 7.0f - shell.contentTop());
+        }
+
+        void resetScroll() {
+            target = 0;
+            scroll.set(0);
         }
 
         void layout() {
             placed.clear();
             headers.clear();
-            int cursor = 0;
-            int usable = CONTENT_W - 7;
-            for (int sectionIndex = 0; sectionIndex < view.sections().size(); sectionIndex++) {
-                MenuView.Section section = view.sections().get(sectionIndex);
-                if (!section.title().isEmpty()) {
-                    headers.add(new int[]{sectionIndex, cursor});
-                    cursor += 13;
+            float usable = width - SCROLLBAR;
+            float cursor = 0;
+            List<MenuView.Section> sections = view.sections();
+            int index = 0;
+            while (index < sections.size()) {
+                MenuView.Section section = sections.get(index);
+                boolean half = (section.layout() & MenuView.HALF) != 0;
+                if (half && index + 1 < sections.size() && (sections.get(index + 1).layout() & MenuView.HALF) != 0) {
+                    float leftWidth = (usable - 8.0f) * 1.35f / 2.35f;
+                    float rightWidth = usable - 8.0f - leftWidth;
+                    float leftHeight = place(section, 0, cursor, leftWidth);
+                    float rightHeight = place(sections.get(index + 1), leftWidth + 8.0f, cursor, rightWidth);
+                    cursor += Math.max(leftHeight, rightHeight) + SECTION_GAP;
+                    index += 2;
+                } else {
+                    cursor += place(section, 0, cursor, usable) + SECTION_GAP;
+                    index++;
                 }
-                List<MenuView.Card> cards = section.cards();
-                switch (section.layout()) {
-                    case MenuView.ROWS -> {
-                        for (MenuView.Card card : cards) {
-                            placed.add(new Placed(section, card, MenuView.ROWS, 0, cursor, usable, 24));
-                            cursor += 27;
-                        }
-                    }
-                    case MenuView.TEXT -> {
-                        for (MenuView.Card card : cards) {
-                            float[] height = new float[1];
-                            List<TextLine> lines = wrapText(card, usable, height);
-                            int cardHeight = Math.max(18, (int) Math.ceil(height[0]));
-                            placed.add(new Placed(section, card, MenuView.TEXT, 0, cursor, usable, cardHeight, lines));
-                            cursor += cardHeight + 4;
-                        }
-                    }
-                    case MenuView.TILES -> {
-                        int size = 29;
-                        int pitch = 31;
-                        int columns = Math.max(1, (usable + 2) / pitch);
-                        for (int index = 0; index < cards.size(); index++) {
-                            int column = index % columns;
-                            int row = index / columns;
-                            placed.add(new Placed(section, cards.get(index), MenuView.TILES, column * pitch,
-                                    cursor + row * (size + 5), size, size));
-                        }
-                        cursor += ((cards.size() + columns - 1) / columns) * (size + 5);
-                    }
-                    default -> {
-                        int columns = 4;
-                        int gap = 5;
-                        int cardWidth = (usable - gap * (columns - 1)) / columns;
-                        int cardHeight = 46;
-                        for (int index = 0; index < cards.size(); index++) {
-                            int column = index % columns;
-                            int row = index / columns;
-                            placed.add(new Placed(section, cards.get(index), MenuView.GRID,
-                                    column * (cardWidth + gap), cursor + row * (cardHeight + gap), cardWidth,
-                                    cardHeight));
-                        }
-                        cursor += ((cards.size() + columns - 1) / columns) * (cardHeight + gap);
-                    }
-                }
-                cursor += 6;
             }
-            total = cursor;
+            total = cursor - SECTION_GAP + 4.0f;
+        }
+
+        /** Place une section dans la colonne (x, largeur) ; rend la hauteur utilisee. */
+        private float place(MenuView.Section section, float left, float top, float columnWidth) {
+            float cursor = top;
+            if (!section.title().isEmpty()) {
+                String title = section.title();
+                String count = "";
+                int bar = title.indexOf('|');
+                if (bar >= 0) {
+                    count = title.substring(bar + 1);
+                    title = title.substring(0, bar);
+                }
+                headers.add(new Header(title, count, section.icon(), left, cursor, columnWidth));
+                cursor += HEADER;
+            }
+            List<MenuView.Card> cards = section.cards();
+            int layout = section.layout() & 0x0F;
+            switch (layout) {
+                case MenuView.ROWS, MenuView.AGENDA -> {
+                    float rowHeight = layout == MenuView.AGENDA ? AGENDA_ROW : ROW;
+                    for (MenuView.Card card : cards) {
+                        placed.add(new Placed(card, layout, left, cursor, columnWidth, rowHeight, List.of(),
+                                placed.size()));
+                        cursor += rowHeight + ROW_GAP;
+                    }
+                    if (!cards.isEmpty()) {
+                        cursor -= ROW_GAP;
+                    }
+                }
+                case MenuView.TEXT -> {
+                    for (MenuView.Card card : cards) {
+                        float[] cardHeight = new float[1];
+                        List<TextLine> lines = wrapText(card, columnWidth, cardHeight);
+                        float h = Math.max(20.0f, cardHeight[0]);
+                        placed.add(new Placed(card, layout, left, cursor, columnWidth, h, lines, placed.size()));
+                        cursor += h + ROW_GAP;
+                    }
+                    if (!cards.isEmpty()) {
+                        cursor -= ROW_GAP;
+                    }
+                }
+                case MenuView.TILES -> {
+                    float size = 21.3f;
+                    float pitch = size + 2.7f;
+                    int columns = Math.max(1, (int) ((columnWidth + 2.7f) / pitch));
+                    for (int index = 0; index < cards.size(); index++) {
+                        int column = index % columns;
+                        int row = index / columns;
+                        placed.add(new Placed(cards.get(index), layout, left + column * pitch, cursor + row * pitch,
+                                size, size, List.of(), placed.size()));
+                    }
+                    int rows = (cards.size() + columns - 1) / columns;
+                    cursor += rows * pitch - (rows > 0 ? 2.7f : 0.0f);
+                }
+                default -> {
+                    int columns = columnWidth > 330 ? 4 : columnWidth > 220 ? 3 : 2;
+                    float cardWidth = (columnWidth - GAP * (columns - 1)) / columns;
+                    for (int start = 0; start < cards.size(); start += columns) {
+                        float rowHeight = 0;
+                        for (int index = start; index < Math.min(cards.size(), start + columns); index++) {
+                            rowHeight = Math.max(rowHeight, gridHeight(cards.get(index)));
+                        }
+                        for (int index = start; index < Math.min(cards.size(), start + columns); index++) {
+                            int column = index - start;
+                            placed.add(new Placed(cards.get(index), MenuView.GRID, left + column * (cardWidth + GAP),
+                                    cursor, cardWidth, rowHeight, List.of(), placed.size()));
+                        }
+                        cursor += rowHeight + GAP;
+                    }
+                    if (!cards.isEmpty()) {
+                        cursor -= GAP;
+                    }
+                }
+            }
+            return cursor - top;
         }
 
         void clamp() {
-            scroll = Math.max(0, Math.min(scroll, Math.max(0, total - CONTENT_H)));
+            target = Math.max(0, Math.min(target, Math.max(0, total - height)));
         }
 
         @Override
         public void render(UiGraphics g, double mouseX, double mouseY) {
-            g.scissor(x, y, width, height);
-            for (int[] header : headers) {
-                int headerY = y + header[1] - scroll;
-                if (headerY > y + height || headerY + 12 < y) {
+            Paint p = g.paint();
+            float offset = scroll.toward(target);
+            g.scissor(x - 6, y - 1, width + 12, height + 1);
+            for (Header header : headers) {
+                float headerY = y + header.y() - offset;
+                if (headerY > y + height || headerY + HEADER < y - 2) {
                     continue;
                 }
-                MenuView.Section section = view.sections().get(header[0]);
-                if (section.icon().isEmpty()) {
-                    g.text(Ui.PIXEL, section.title(), x, headerY + 1, 6, Ui.WHITE);
-                    float end = x + g.width(Ui.PIXEL, section.title(), 6) + 5;
-                    g.rect(Math.round(end), headerY + 4, Math.round(x + width - 10 - end), 1, 0xFF55545C);
-                } else {
-                    g.section(x, headerY + 1, "section_" + section.icon(), section.title(),
-                            width - 10);
-                }
+                header(g, p, header, x + header.x(), headerY);
             }
             Placed hovered = null;
             boolean inside = mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
+            float bars = Anim.easeOut(Anim.progress(opened + 0.12d, 0.7d));
             for (Placed card : placed) {
-                int cardY = y + card.y() - scroll;
-                if (cardY > y + height || cardY + card.height() < y) {
+                float appear = Anim.easeOut(Anim.progress(opened + Math.min(0.3d, 0.025d * card.index()), 0.28d));
+                float cardY = y + card.y() - offset + 4.0f * (1.0f - appear);
+                if (cardY > y + height + 4 || cardY + card.height() < y - 4) {
                     continue;
                 }
-                int cardX = x + card.x();
+                float cardX = x + card.x();
                 boolean over = inside && mouseX >= cardX && mouseX < cardX + card.width() && mouseY >= cardY
                         && mouseY < cardY + card.height();
                 if (over) {
                     hovered = card;
                 }
+                boolean clickable = !card.card().action().isEmpty() || !card.card().rightAction().isEmpty();
+                float hover = hovers.computeIfAbsent(card.index(), key -> new Anim.Value(0.0f, 16.0f))
+                        .toward(over && clickable ? 1.0f : over ? 0.4f : 0.0f);
                 switch (card.layout()) {
-                    case MenuView.TEXT -> text(g, card, cardX, cardY, over);
-                    case MenuView.ROWS -> row(g, card.card(), cardX, cardY, card.width(), card.height(), over);
-                    case MenuView.TILES -> tile(g, card.card(), cardX, cardY, card.width(), over);
-                    default -> grid(g, card.card(), cardX, cardY, card.width(), card.height(), over);
+                    case MenuView.TEXT -> text(g, p, card, cardX, cardY, hover);
+                    case MenuView.ROWS -> row(g, p, card.card(), cardX, cardY, card.width(), card.height(), hover,
+                            bars);
+                    case MenuView.AGENDA -> agenda(g, p, card.card(), cardX, cardY, card.width(), card.height(),
+                            hover);
+                    case MenuView.TILES -> tile(g, p, card.card(), cardX, cardY, card.width(), hover, bars);
+                    default -> grid(g, p, card.card(), cardX, cardY, card.width(), card.height(), hover, bars);
                 }
             }
             g.endScissor();
-            // La barre.
-            if (total > CONTENT_H) {
-                int barX = x + width - 3;
-                g.rect(barX, y, 3, height, Ui.SCROLL_TRACK);
-                int thumb = Math.max(10, height * height / total);
-                int thumbY = y + (height - thumb) * scroll / Math.max(1, total - height);
-                g.rect(barX, thumbY, 3, thumb, Ui.SCROLL_THUMB);
+            if (total > height) {
+                float barX = x + width - 2.0f;
+                p.round(barX, y, 2.0f, height - 8.0f, 1.0f, 0xFF24262A);
+                float track = height - 8.0f;
+                float thumb = Math.max(12.0f, track * height / total);
+                float thumbY = y + (track - thumb) * offset / Math.max(1.0f, total - height);
+                p.round(barX, thumbY, 2.0f, thumb, 1.0f, 0xFF5A5D64);
             }
             if (hovered != null && (hovered.layout() != MenuView.TEXT || !hovered.card().action().isEmpty())) {
                 tooltip(g, hovered.card());
             }
         }
 
+        private void header(UiGraphics g, Paint p, Header header, float headerX, float headerY) {
+            float cursor = headerX;
+            if (!header.icon().isEmpty()) {
+                g.texture(Ui.texture("section_" + header.icon()), Math.round(cursor), Math.round(headerY), 9, 9, 56,
+                        56);
+                cursor += 12.7f;
+            }
+            g.text(Ui.WIDE, header.title(), cursor, headerY + 1.7f, 6.3f, Ui.Theme.TEXT);
+            cursor += g.width(Ui.WIDE, header.title(), 6.3f) + 4.0f;
+            if (!header.count().isEmpty()) {
+                g.text(Ui.PIXEL, header.count(), cursor, headerY + 3.0f, 3.7f, Ui.Theme.MUTED);
+                cursor += g.width(Ui.PIXEL, header.count(), 3.7f) + 4.0f;
+            }
+            float lineWidth = headerX + header.width() - cursor;
+            if (lineWidth > 4) {
+                p.gradientH(cursor, headerY + 4.2f, lineWidth, 0.34f, 0xFF34363C, 0x0034363C);
+            }
+        }
+
         private void tooltip(UiGraphics g, MenuView.Card card) {
             List<Component> lines = new ArrayList<>();
-            lines.add(Component.literal(card.title()).withColor(card.state() == MenuView.DONE ? 0x55FF55 : 0xFFFF55));
+            lines.add(Component.literal(card.title()).withColor(card.state() == MenuView.DONE ? 0x55FF55 : 0xFFFFFF));
             for (String line : card.lines()) {
-                lines.add(Component.literal(line).withColor(0xAAAAAA));
+                lines.add(Component.literal(line.replace('|', ' ')).withColor(0xC1C1C1));
             }
             for (String line : card.tooltip()) {
-                lines.add(line.isEmpty() ? Component.empty() : Component.literal(line).withColor(0x888888));
+                lines.add(line.isEmpty() ? Component.empty() : Component.literal(line).withColor(0x8B8E95));
             }
             if (!card.action().isEmpty() || !card.rightAction().isEmpty()) {
                 lines.add(Component.empty());
                 if (!card.action().isEmpty()) {
-                    lines.add(Component.literal("Clic gauche : " + verb(card.action())).withColor(0x55FFFF));
+                    lines.add(Component.literal("Clic gauche : " + verb(card.action())).withColor(0x2BC4C4));
                 }
                 if (!card.rightAction().isEmpty()) {
-                    lines.add(Component.literal("Clic droit : " + verb(card.rightAction())).withColor(0x55FFFF));
+                    lines.add(Component.literal("Clic droit : " + verb(card.rightAction())).withColor(0x2BC4C4));
                 }
             }
             g.tooltip(lines);
         }
 
-        /** Le verbe a montrer : la partie avant « | » de l'action, si elle en a une. */
         private String verb(String action) {
             int bar = action.indexOf('|');
             return bar < 0 ? "ouvrir" : action.substring(bar + 1);
         }
 
-        private int face(MenuView.Card card, boolean over) {
-            if (card.state() == MenuView.DISABLED) {
-                return 0xFF18171C;
+        private int accentOf(MenuView.Card card) {
+            if (card.state() == MenuView.DONE) {
+                return Ui.Theme.GREEN;
             }
-            boolean clickable = !card.action().isEmpty() || !card.rightAction().isEmpty();
-            return over && clickable ? 0xFF2C2B33 : over ? 0xFF222128 : 0xFF1C1B21;
+            if (card.state() == MenuView.DISABLED) {
+                return 0xFF55575D;
+            }
+            return card.accent() == 0xFF55545C ? 0xFF55575D : card.accent();
         }
 
-        private void grid(UiGraphics g, MenuView.Card card, int cardX, int cardY, int cardWidth, int cardHeight,
-                          boolean over) {
-            g.rect(cardX, cardY, cardWidth, cardHeight, face(card, over));
-            int accent = card.state() == MenuView.DONE ? Ui.GREEN : card.accent();
-            g.rect(cardX, cardY, cardWidth, 2, card.state() == MenuView.DISABLED ? 0xFF3A3940 : accent);
-            g.item(card.icon(), cardX + 5, cardY + 6, 16, false);
-            int titleColor = card.state() == MenuView.DISABLED ? Ui.MUTED : Ui.WHITE;
-            float titleMax = cardWidth - 28 - (card.badge().isEmpty() ? 0 : g.width(Ui.WIDE, card.badge(), 3.4f) + 6);
-            String title = card.title().toUpperCase(java.util.Locale.ROOT);
-            // Un titre un peu trop long retrecit d'abord (jusqu'a 3,8), et n'est coupe qu'au-dela.
-            float titleSize = 4.4f;
-            float natural = g.width(Ui.WIDE, title, titleSize);
-            if (natural > titleMax) {
-                titleSize = Math.max(3.8f, titleSize * titleMax / natural);
+        // -- Cartes de grille ----------------------------------------------------------
+
+        private void grid(UiGraphics g, Paint p, MenuView.Card card, float cardX, float cardY, float cardWidth,
+                          float cardHeight, float hover, float bars) {
+            boolean off = card.state() == MenuView.DISABLED;
+            int accent = accentOf(card);
+            float lift = -0.7f * hover;
+            float top = cardY + lift;
+            if (hover > 0.01f) {
+                p.shadow(cardX + 3, top + 5, cardWidth - 6, cardHeight - 5, 8, Paint.alpha(0xFF000000, 0.35f * hover));
             }
-            g.text(Ui.WIDE, g.fit(Ui.WIDE, title, titleSize, titleMax), cardX + 25,
-                    cardY + 8 + (4.4f - titleSize) / 2.0f, titleSize, titleColor);
-            badge(g, card, cardX + cardWidth - 3, cardY + 5);
-            int lineY = cardY + 25;
-            for (int index = 0; index < Math.min(3, card.lines().size()); index++) {
-                g.text(Ui.BODY, g.fit(Ui.BODY, card.lines().get(index), 3.6f, cardWidth - 10), cardX + 5,
-                        lineY + index * 5.5f, 3.6f, index == 0 && card.state() != MenuView.DISABLED ? Ui.TEXT
-                                : Ui.MUTED);
+            int fill = off ? 0xFF1D1F22 : Paint.mix(Ui.Theme.CARD, Ui.Theme.CARD_HOVER, hover);
+            int edge = Paint.mix(Ui.Theme.EDGE, Paint.mix(Ui.Theme.EDGE, accent, 0.6f), hover);
+            p.framed(cardX, top, cardWidth, cardHeight, 5.3f, fill, edge, 1);
+            // Le lisere du haut suit les coins arrondis ; le halo reste dans la carte.
+            g.scissor(Math.round(cardX), Math.round(top), Math.round(cardWidth), Math.round(cardHeight));
+            if (!off) {
+                p.glow(cardX + cardWidth - 10.0f, top + 10.0f, 22.0f, Paint.alpha(accent, 0.14f + 0.08f * hover));
+            }
+            g.endScissor();
+            g.scissor(Math.round(cardX), Math.round(top), Math.round(cardWidth), 1);
+            p.round(cardX, top, cardWidth, cardHeight, 5.3f, Paint.alpha(accent, off ? 0.5f : 0.95f));
+            g.endScissor();
+            // L'icone dans sa tuile teintee.
+            float tile = 19.3f;
+            float tileX = cardX + 6.0f;
+            float tileY = top + 6.0f;
+            int tileFill = Paint.mix(0xFF1A1B1E, accent, off ? 0.06f : 0.16f);
+            p.framed(tileX, tileY, tile, tile, 4.7f, tileFill, Paint.mix(tileFill, accent, off ? 0.15f : 0.35f), 1);
+            g.item(card.icon(), tileX + (tile - 12.0f) / 2.0f, tileY + (tile - 12.0f) / 2.0f, 12.0f, false);
+            float textX = tileX + tile + 4.7f;
+            float badgeWidth = 0;
+            if (!card.badge().isEmpty()) {
+                int badgeColor = card.state() == MenuView.DONE ? Ui.Theme.GREEN
+                        : card.badge().startsWith("PRET") ? Ui.Theme.YELLOW : off ? 0xFF3A3C42 : Ui.Theme.RED;
+                float pulse = card.badge().startsWith("PRET") ? Anim.pulse(1.6d) : 0.0f;
+                badgeWidth = Shell.pill(g, p, card.badge(), cardX + cardWidth - 4.7f, top + 5.3f,
+                        Paint.mix(badgeColor, 0xFFFFFFFF, 0.12f * pulse), !off) + 3.0f;
+            }
+            float room = cardX + cardWidth - 5.0f - badgeWidth - textX;
+            List<String> lines = card.lines();
+            float textY = top + 7.5f;
+            if (lines.isEmpty()) {
+                textY = top + 6.0f + (tile - 6.3f) / 2.0f;
+            } else if (lines.size() == 1) {
+                textY = top + 9.0f;
+            }
+            g.text(Ui.BOLD, g.fit(Ui.BOLD, card.title(), 6.3f, room), textX, textY, 6.3f,
+                    off ? Ui.Theme.MUTED : Ui.Theme.TEXT);
+            float lineRoom = cardX + cardWidth - 5.0f - textX;
+            if (!lines.isEmpty()) {
+                g.text(Ui.BODY, g.fit(Ui.BODY, lines.get(0), 5.0f, lineRoom), textX, textY + 8.0f, 5.0f,
+                        off ? Ui.Theme.DIM : Ui.Theme.TEXT2);
+            }
+            if (lines.size() >= 2) {
+                g.text(Ui.BODY, g.fit(Ui.BODY, lines.get(1), 4.7f, lineRoom), textX, textY + 14.0f, 4.7f,
+                        Ui.Theme.MUTED);
+            }
+            float below = top + 6.0f + Math.max(tile, 1.5f + 6.3f + (lines.isEmpty() ? 0 : 6.7f)
+                    + (lines.size() >= 2 ? 5.7f : 0.0f));
+            if (card.progress() >= 0) {
+                float barY = below + 4.7f;
+                bar(p, cardX + 6.0f, barY, cardWidth - 12.0f, 2.7f, card.progress() / 1000.0f * bars, accent, off);
+                if (lines.size() >= 3) {
+                    String legend = lines.get(2);
+                    int bar = legend.indexOf('|');
+                    String leftText = bar < 0 ? legend : legend.substring(0, bar);
+                    String rightText = bar < 0 ? "" : legend.substring(bar + 1);
+                    g.text(Ui.PIXEL, leftText, cardX + 6.0f, barY + 5.3f, 3.3f, Ui.Theme.MUTED);
+                    if (!rightText.isEmpty()) {
+                        g.right(Ui.PIXEL, rightText, cardX + cardWidth - 6.0f, barY + 5.3f, 3.3f, Ui.Theme.MUTED);
+                    }
+                }
+            } else if (lines.size() >= 3) {
+                g.text(Ui.BODY, g.fit(Ui.BODY, lines.get(2), 4.7f, cardWidth - 12.0f), cardX + 6.0f, below + 1.5f,
+                        4.7f, Ui.Theme.MUTED);
+            }
+        }
+
+        /** Une barre arrondie : le creux, et le plein en degrade avec son halo. */
+        private void bar(Paint p, float barX, float barY, float barWidth, float barHeight, float progress, int accent,
+                         boolean off) {
+            p.framed(barX, barY, barWidth, barHeight, barHeight / 2.0f, 0xFF17181B, 0xFF2C2E33, 1);
+            float filled = Math.max(0.0f, Math.min(1.0f, progress)) * barWidth;
+            if (filled < 0.5f) {
+                return;
+            }
+            if (!off) {
+                p.glow(barX + filled, barY + barHeight / 2.0f, 5.0f, Paint.alpha(accent, 0.45f));
+            }
+            p.round(barX, barY, filled, barHeight, barHeight / 2.0f, Paint.mix(accent, 0xFF000000, 0.3f));
+            p.gradientH(barX + barHeight / 2.0f, barY + 0.34f, Math.max(0, filled - barHeight), barHeight - 0.68f,
+                    0x00000000 | (accent & 0xFFFFFF), accent);
+            p.round(barX + filled - barHeight, barY, barHeight, barHeight, barHeight / 2.0f, accent);
+        }
+
+        // -- Lignes ------------------------------------------------------------------------
+
+        private void row(UiGraphics g, Paint p, MenuView.Card card, float rowX, float rowY, float rowWidth,
+                         float rowHeight, float hover, float bars) {
+            boolean off = card.state() == MenuView.DISABLED;
+            boolean done = card.state() == MenuView.DONE;
+            int accent = accentOf(card);
+            int fill = off ? 0xFF1D1F22 : Paint.mix(Ui.Theme.CARD, Ui.Theme.CARD_HOVER, hover);
+            p.framed(rowX, rowY, rowWidth, rowHeight, 4.7f, fill,
+                    Paint.mix(Ui.Theme.EDGE, Paint.mix(Ui.Theme.EDGE, accent, 0.5f), hover), 1);
+            p.round(rowX, rowY + 4.0f, 1.34f, rowHeight - 8.0f, 0.67f, accent);
+            g.item(card.icon(), rowX + 6.7f, rowY + (rowHeight - 13.3f) / 2.0f, 13.3f, false);
+            float textX = rowX + 25.3f;
+            float right = rowX + rowWidth - 6.0f;
+            if (done) {
+                p.dot(right - 5.0f, rowY + rowHeight / 2.0f, 5.0f, Ui.Theme.GREEN);
+                p.dot(right - 5.0f, rowY + rowHeight / 2.0f, 4.3f, 0xFF1F3A1C);
+                p.check(right - 5.0f, rowY + rowHeight / 2.0f, 6.0f, Ui.Theme.GREEN_L);
+                right -= 14.0f;
+            } else if (off) {
+                p.dot(right - 5.0f, rowY + rowHeight / 2.0f, 5.0f, 0xFF2C2E33);
+                g.texture(Ui.texture("spawner_lock"), Math.round(right - 8.0f), Math.round(rowY + rowHeight / 2 - 3),
+                        6, 6, 32, 32);
+                right -= 14.0f;
+            }
+            if (!card.badge().isEmpty()) {
+                if (card.badge().startsWith("NIV") || card.badge().length() > 6) {
+                    g.right(Ui.WIDE, card.badge(), right, rowY + rowHeight / 2.0f - 2.6f, 5.3f, Ui.Theme.TEXT2);
+                    right -= g.width(Ui.WIDE, card.badge(), 5.3f) + 6.0f;
+                } else {
+                    int color = done ? Ui.Theme.GREEN : off ? 0xFF3A3C42 : accent;
+                    right -= Shell.pill(g, p, card.badge(), right, rowY + rowHeight / 2.0f - 4.0f, color, !off) + 4.0f;
+                }
+            }
+            float textRoom = right - textX;
+            if (card.progress() >= 0 && rowWidth > 180) {
+                float barWidth = Math.min(110.0f, rowWidth * 0.36f);
+                float barX = right - barWidth;
+                bar(p, barX, rowY + rowHeight / 2.0f - 1.35f, barWidth, 2.7f, card.progress() / 1000.0f * bars, accent,
+                        off);
+                textRoom = barX - 6.0f - textX;
+            }
+            boolean twoLines = !card.lines().isEmpty();
+            float nameY = twoLines ? rowY + rowHeight / 2.0f - 6.3f : rowY + rowHeight / 2.0f - 3.0f;
+            g.text(Ui.BOLD, g.fit(Ui.BOLD, card.title(), 6.0f, textRoom), textX, nameY, 6.0f,
+                    off ? Ui.Theme.MUTED : Ui.Theme.TEXT);
+            if (twoLines) {
+                g.text(Ui.BODY, g.fit(Ui.BODY, String.join("  ·  ", card.lines()), 4.7f, textRoom), textX,
+                        nameY + 7.6f, 4.7f, done ? Ui.Theme.GREEN_L : Ui.Theme.MUTED);
+            }
+            if (card.progress() >= 0 && rowWidth <= 180) {
+                bar(p, textX, rowY + rowHeight - 4.7f, rowWidth - 31.0f, 2.0f, card.progress() / 1000.0f * bars,
+                        accent, off);
+            }
+        }
+
+        private void agenda(UiGraphics g, Paint p, MenuView.Card card, float rowX, float rowY, float rowWidth,
+                            float rowHeight, float hover) {
+            int accent = accentOf(card);
+            p.framed(rowX, rowY, rowWidth, rowHeight, 4.7f, Paint.mix(Ui.Theme.CARD, Ui.Theme.CARD_HOVER, hover),
+                    Ui.Theme.EDGE, 1);
+            p.round(rowX, rowY + 4.0f, 1.34f, rowHeight - 8.0f, 0.67f, accent);
+            g.text(Ui.WIDE, g.fit(Ui.WIDE, card.badge(), 5.7f, 34.0f), rowX + 6.7f, rowY + rowHeight / 2.0f - 2.8f,
+                    5.7f, accent);
+            float textX = rowX + 43.3f;
+            float room = rowX + rowWidth - 6.0f - textX;
+            boolean twoLines = !card.lines().isEmpty();
+            float nameY = twoLines ? rowY + rowHeight / 2.0f - 6.3f : rowY + rowHeight / 2.0f - 3.0f;
+            g.text(Ui.BOLD, g.fit(Ui.BOLD, card.title(), 6.0f, room), textX, nameY, 6.0f, Ui.Theme.TEXT);
+            if (twoLines) {
+                g.text(Ui.BODY, g.fit(Ui.BODY, card.lines().get(0), 4.7f, room), textX, nameY + 7.6f, 4.7f,
+                        Ui.Theme.MUTED);
+            }
+        }
+
+        private void tile(UiGraphics g, Paint p, MenuView.Card card, float tileX, float tileY, float size, float hover,
+                          float bars) {
+            boolean off = card.state() == MenuView.DISABLED;
+            boolean done = card.state() == MenuView.DONE;
+            int border = done ? Ui.Theme.GREEN : hover > 0.5f ? Ui.Theme.RED
+                    : card.accent() != 0xFF55545C ? Paint.mix(0xFF2A2C31, card.accent(), 0.6f) : 0xFF2A2C31;
+            if (hover > 0.01f || done) {
+                p.glow(tileX + size / 2, tileY + size / 2, size * 0.75f,
+                        Paint.alpha(done ? Ui.Theme.GREEN : Ui.Theme.RED, 0.3f * Math.max(hover, done ? 0.6f : 0.0f)));
+            }
+            p.framed(tileX, tileY, size, size, 3.0f, Paint.mix(0xFF101113, 0xFF1B1C20, hover), border,
+                    done || hover > 0.5f ? 2 : 1);
+            g.item(card.icon(), tileX + (size - 14.7f) / 2.0f, tileY + (size - 14.7f) / 2.0f - 0.5f, 14.7f, false);
+            if (off) {
+                p.round(tileX + 1, tileY + 1, size - 2, size - 2, 2.7f, 0x99101014);
             }
             if (card.progress() >= 0) {
-                g.rect(cardX + 5, cardY + cardHeight - 4, cardWidth - 10, 2, 0xFF2E2D34);
-                g.rect(cardX + 5, cardY + cardHeight - 4, (cardWidth - 10) * card.progress() / 1000, 2,
-                        card.state() == MenuView.DONE ? Ui.GREEN : 0xFF39CF44);
+                bar(p, tileX + 3.0f, tileY + size - 4.0f, size - 6.0f, 1.6f, card.progress() / 1000.0f * bars,
+                        done ? Ui.Theme.GREEN : 0xFF39CF44, off);
+            }
+            if (!card.badge().isEmpty()) {
+                g.right(Ui.WIDE, card.badge(), tileX + size - 1.7f, tileY + 1.7f, 3.6f, Ui.Theme.TEXT);
             }
         }
 
-        /** Une carte de texte : intertitre, puis les paragraphes deja coupes. */
-        private void text(UiGraphics g, Placed placed, int cardX, int cardY, boolean over) {
+        private void text(UiGraphics g, Paint p, Placed placed, float cardX, float cardY, float hover) {
             MenuView.Card card = placed.card();
             boolean clickable = !card.action().isEmpty();
-            g.rect(cardX, cardY, placed.width(), placed.height(), clickable && over ? 0xFF24232A : 0xFF19181E);
-            g.rect(cardX, cardY, 2, placed.height(), card.accent());
+            int accent = accentOf(card);
+            p.framed(cardX, cardY, placed.width(), placed.height(), 4.7f,
+                    clickable ? Paint.mix(0xFF1D1F22, Ui.Theme.CARD_HOVER, hover) : 0xFF1D1F22, Ui.Theme.EDGE, 1);
+            p.round(cardX, cardY + 4.0f, 1.34f, placed.height() - 8.0f, 0.67f, accent);
             if (!card.icon().isEmpty()) {
-                g.item(card.icon(), cardX + 7, cardY + 5, 16, false);
+                g.item(card.icon(), cardX + 8.0f, cardY + 6.0f, 16.0f, false);
             }
             float left = cardX + textLeft(card);
             if (!card.title().isEmpty()) {
-                g.text(Ui.BOLD, card.title(), left, cardY + 5, HEADING_SIZE, Ui.WHITE);
+                g.text(Ui.BOLD, card.title(), left, cardY + 6.5f, HEADING_SIZE, Ui.Theme.TEXT);
             }
             for (TextLine line : placed.text()) {
-                float y = cardY + line.y();
+                float lineY = cardY + line.y();
                 switch (line.kind()) {
                     case BULLET_LINE -> {
                         if (line.first()) {
-                            g.rect(Math.round(left + 1), Math.round(y + 1.4f), 2, 2, card.accent());
+                            p.dot(left + 2.0f, lineY + 2.2f, 1.2f, accent);
                         }
-                        g.text(Ui.BODY, line.text(), left + 6, y, TEXT_SIZE, Ui.TEXT);
+                        g.text(Ui.BODY, line.text(), left + 7.0f, lineY, TEXT_SIZE, Ui.Theme.TEXT2);
                     }
-                    case COMMAND_LINE -> g.text(Ui.BOLD, line.text(), left, y, TEXT_SIZE, 0xFF55E5FF);
+                    case COMMAND_LINE -> g.text(Ui.BOLD, line.text(), left, lineY, TEXT_SIZE, 0xFF55E5FF);
                     case TIP_LINE -> {
                         if (line.first()) {
-                            g.text(Ui.BOLD, "!", left + 1, y, TEXT_SIZE, 0xFFFAC400);
+                            g.text(Ui.BOLD, "!", left + 1.0f, lineY, TEXT_SIZE, Ui.Theme.YELLOW);
                         }
-                        g.text(Ui.BODY, line.text(), left + 6, y, TEXT_SIZE, 0xFFF3D27A);
+                        g.text(Ui.BODY, line.text(), left + 7.0f, lineY, TEXT_SIZE, 0xFFF3D27A);
                     }
-                    default -> g.text(Ui.BODY, line.text(), left, y, TEXT_SIZE, Ui.TEXT);
+                    default -> g.text(Ui.BODY, line.text(), left, lineY, TEXT_SIZE, Ui.Theme.TEXT2);
                 }
             }
         }
 
-        private void row(UiGraphics g, MenuView.Card card, int rowX, int rowY, int rowWidth, int rowHeight,
-                         boolean over) {
-            g.rect(rowX, rowY, rowWidth, rowHeight, face(card, over));
-            int accent = card.state() == MenuView.DONE ? Ui.GREEN : card.accent();
-            g.rect(rowX, rowY, 2, rowHeight, card.state() == MenuView.DISABLED ? 0xFF3A3940 : accent);
-            g.item(card.icon(), rowX + 7, rowY + 4, 16, false);
-            float right = rowX + rowWidth - 6;
-            if (!card.badge().isEmpty()) {
-                badge(g, card, Math.round(right), rowY + 4);
-                right -= g.width(Ui.WIDE, card.badge(), 3.4f) + 10;
-            }
-            g.text(Ui.BOLD, g.fit(Ui.BOLD, card.title(), 4.6f, right - rowX - 34), rowX + 29, rowY + 5, 4.6f,
-                    card.state() == MenuView.DISABLED ? Ui.MUTED : Ui.WHITE);
-            if (!card.lines().isEmpty()) {
-                g.text(Ui.BODY, g.fit(Ui.BODY, String.join("  ·  ", card.lines()), 3.8f, rowWidth - 140), rowX + 29,
-                        rowY + 13.5f, 3.8f, card.state() == MenuView.DONE ? 0xFF7BE38F : Ui.MUTED);
-            }
-            if (card.progress() >= 0) {
-                int barWidth = 80;
-                int barX = rowX + rowWidth - barWidth - 8;
-                g.rect(barX, rowY + rowHeight - 6, barWidth, 2, 0xFF2E2D34);
-                g.rect(barX, rowY + rowHeight - 6, barWidth * card.progress() / 1000, 2,
-                        card.state() == MenuView.DONE ? Ui.GREEN : 0xFF39CF44);
-            }
-        }
-
-        private void tile(UiGraphics g, MenuView.Card card, int tileX, int tileY, int size, boolean over) {
-            int border = card.state() == MenuView.DONE ? Ui.GREEN : card.state() == MenuView.DISABLED ? 0xFF3A3940
-                    : card.accent() != 0xFF55545C ? card.accent() : Ui.SLOT_BORDER;
-            g.rect(tileX, tileY, size, size, border);
-            g.rect(tileX + 1, tileY + 1, size - 2, size - 2, over ? Ui.SLOT_HOVER : Ui.SLOT_FILL);
-            g.item(card.icon(), tileX + (size - 16) / 2.0f, tileY + (size - 16) / 2.0f - 1, 16, false);
-            if (card.state() == MenuView.DISABLED) {
-                g.rect(tileX + 1, tileY + 1, size - 2, size - 2, 0x80101014);
-            }
-            if (card.progress() >= 0) {
-                g.rect(tileX + 3, tileY + size - 4, size - 6, 2, 0xFF2E2D34);
-                g.rect(tileX + 3, tileY + size - 4, (size - 6) * card.progress() / 1000, 2,
-                        card.state() == MenuView.DONE ? Ui.GREEN : 0xFF39CF44);
-            }
-            if (!card.badge().isEmpty()) {
-                g.right(Ui.WIDE, card.badge(), tileX + size - 2, tileY + 2.5f, 3.4f, Ui.WHITE);
-            }
-        }
-
-        private void badge(UiGraphics g, MenuView.Card card, int right, int top) {
-            if (card.badge().isEmpty()) {
-                return;
-            }
-            float width = g.width(Ui.WIDE, card.badge(), 3.4f) + 6;
-            int left = Math.round(right - width);
-            g.rect(left, top, Math.round(width), 8, card.state() == MenuView.DONE ? 0xFF1F5A2E : 0xFF2B2A31);
-            g.text(Ui.WIDE, card.badge(), left + 3, top + 2.3f, 3.4f, Ui.WHITE);
-        }
+        // -- Entrees -------------------------------------------------------------------------
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (!contains(mouseX, mouseY)) {
                 return false;
             }
+            float offset = scroll.get();
             for (Placed card : placed) {
-                int cardX = x + card.x();
-                int cardY = y + card.y() - scroll;
+                float cardX = x + card.x();
+                float cardY = y + card.y() - offset;
                 if (mouseX >= cardX && mouseX < cardX + card.width() && mouseY >= cardY
                         && mouseY < cardY + card.height()) {
-                    String action = button == 1 ? card.card().rightAction() : card.card().action();
+                    MenuView.Card data = card.card();
+                    String action = button == 1 ? data.rightAction() : data.action();
                     if (!action.isEmpty()) {
                         int bar = action.indexOf('|');
-                        UiScreen.click(1.0f);
+                        String key = bar < 0 ? action : action.substring(0, bar);
                         // Maj + clic gauche arrive en bouton 2 : l'enclos s'en sert pour les soins.
-                        boolean shift = (UiScreen.modifiers() & org.lwjgl.glfw.GLFW.GLFW_MOD_SHIFT) != 0;
-                        UiClient.send(view.view(), "card", bar < 0 ? action : action.substring(0, bar),
-                                button == 0 && shift ? 2 : button);
+                        boolean shift = (UiScreen.modifiers() & GLFW.GLFW_MOD_SHIFT) != 0;
+                        int amount = button == 0 && shift ? 2 : button;
+                        Runnable send = () -> UiClient.send(view.view(), "card", key, amount);
+                        if (!data.confirm().isEmpty() && button == 0) {
+                            UiScreen.click(1.0f);
+                            openPopup(Popup.question(data.icon(), data.confirm(), send));
+                        } else {
+                            UiScreen.click(1.0f);
+                            send.run();
+                        }
                     }
                     return true;
                 }
@@ -497,7 +694,7 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
 
         @Override
         public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-            scroll -= (int) Math.round(amount * 18);
+            target -= (float) (amount * 22.0d);
             clamp();
             return true;
         }

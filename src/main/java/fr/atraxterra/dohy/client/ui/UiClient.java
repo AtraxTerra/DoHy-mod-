@@ -63,6 +63,9 @@ public final class UiClient {
                 minecraft.gui.setScreen(null);
             }
         });
+        event.register(UiNet.Nav.TYPE, (payload, context) ->
+                fr.atraxterra.dohy.client.ui.shell.Nav.accept(payload.badges(), payload.level()));
+        event.register(UiNet.Toast.TYPE, (payload, context) -> ToastLayer.push(payload));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

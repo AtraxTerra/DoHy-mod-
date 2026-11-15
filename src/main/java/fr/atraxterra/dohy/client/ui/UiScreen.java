@@ -37,6 +37,8 @@ public abstract class UiScreen extends Screen {
     protected float originY;
 
     private final List<UiElement> elements = new ArrayList<>();
+    /** La fenetre de confirmation ouverte par-dessus l'ecran, ou {@code null}. */
+    protected Popup popup;
     private UiElement focusedElement;
     private UiElement draggedElement;
     private static int modifiers;
@@ -93,7 +95,27 @@ public abstract class UiScreen extends Screen {
     }
 
     protected double designY(double screenY) {
-        return (screenY - originY) / scale;
+        return (screenY - originY) / scale - lift();
+    }
+
+    /** Le nombre de pixels physiques par unite de maquette. */
+    public float unit() {
+        return scale * Math.max(1, minecraft == null ? 1 : minecraft.getWindow().getGuiScale());
+    }
+
+    /** Un decalage vertical de tout l'ecran, en unites (animation d'ouverture). */
+    protected float lift() {
+        return 0.0f;
+    }
+
+    /** Ouvre une fenetre de confirmation par-dessus l'ecran. */
+    public void openPopup(Popup value) {
+        this.popup = value;
+    }
+
+    /** Un clic qu'aucun element n'a pris : la coque des menus s'en sert. */
+    protected boolean backgroundClicked(double mouseX, double mouseY, int button) {
+        return false;
     }
 
     // -- Rendu -----------------------------------------------------------------
@@ -114,19 +136,32 @@ public abstract class UiScreen extends Screen {
         double y = designY(mouseY);
         UiGraphics ui = new UiGraphics(graphics, font, mouseX, mouseY);
         ui.design(x, y, designWidth, designHeight);
+        ui.paint(new Paint(graphics, unit()));
+        boolean blocked = popup != null;
+        double elementX = blocked ? -1.0e6d : x;
+        double elementY = blocked ? -1.0e6d : y;
         Matrix3x2fStack pose = graphics.pose();
         pose.pushMatrix();
         pose.translate(originX, originY);
         pose.scale(scale, scale);
-        drawBackground(ui, x, y);
+        pose.translate(0.0f, lift());
+        drawBackground(ui, elementX, elementY);
         for (UiElement element : elements) {
             if (element.visible) {
-                element.render(ui, x, y);
+                element.render(ui, elementX, elementY);
             }
         }
-        drawForeground(ui, x, y);
+        drawForeground(ui, elementX, elementY);
         ui.flushOverlays();
+        if (popup != null) {
+            graphics.nextStratum();
+            popup.draw(ui, x, y, designWidth, designHeight);
+            if (popup.closed()) {
+                popup = null;
+            }
+        }
         pose.popMatrix();
+        ToastLayer.drawOver(graphics);
     }
 
     // -- Entrees ---------------------------------------------------------------
@@ -136,6 +171,10 @@ public abstract class UiScreen extends Screen {
         modifiers = event.modifiers();
         double x = designX(event.x());
         double y = designY(event.y());
+        if (popup != null) {
+            popup.click(x, y, designWidth, designHeight);
+            return true;
+        }
         // Du dernier ajoute au premier : un menu deroulant ouvert passe devant.
         for (int index = elements.size() - 1; index >= 0; index--) {
             UiElement element = elements.get(index);
@@ -146,6 +185,9 @@ public abstract class UiScreen extends Screen {
             }
         }
         focus(null);
+        if (backgroundClicked(x, y, event.button())) {
+            return true;
+        }
         return super.mouseClicked(event, doubleClick);
     }
 
@@ -168,6 +210,9 @@ public abstract class UiScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (popup != null) {
+            return true;
+        }
         double x = designX(mouseX);
         double y = designY(mouseY);
         for (int index = elements.size() - 1; index >= 0; index--) {
@@ -181,6 +226,14 @@ public abstract class UiScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
+        if (popup != null) {
+            if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
+                popup.cancel();
+            } else if (event.key() == GLFW.GLFW_KEY_ENTER || event.key() == GLFW.GLFW_KEY_KP_ENTER) {
+                popup.confirm();
+            }
+            return true;
+        }
         if (focusedElement != null) {
             if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
                 focus(null);

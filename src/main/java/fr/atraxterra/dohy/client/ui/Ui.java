@@ -54,6 +54,44 @@ public final class Ui {
     public static final int SCROLL_TRACK = 0xFF3A3940;
     public static final int SCROLL_THUMB = 0xFF9E9E9E;
 
+    /**
+     * La palette de l'interface v2, relevee sur les maquettes validees : fonds
+     * anthracite en degrade, cartes grises au filet fin, rouge Berskar.
+     */
+    public static final class Theme {
+        public static final int BG0 = 0xFF0D0E10;
+        public static final int BG1 = 0xFF121315;
+        public static final int BG2 = 0xFF17181B;
+        public static final int BG3 = 0xFF1C1D21;
+        public static final int SIDEBAR = 0xFF101113;
+        public static final int CARD = 0xFF222427;
+        public static final int CARD_HOVER = 0xFF2A2C31;
+        public static final int EDGE = 0xFF2D2F34;
+        public static final int LINE = 0xFF313338;
+        public static final int LINE2 = 0xFF3B3E45;
+        public static final int INSET = 0xFF141518;
+        public static final int TEXT = 0xFFFFFFFF;
+        public static final int TEXT2 = 0xFFC1C1C1;
+        public static final int MUTED = 0xFF8B8E95;
+        public static final int DIM = 0xFF5D6068;
+        public static final int RED = 0xFFEF3926;
+        public static final int RED_LIGHT = 0xFFF2492F;
+        public static final int RED_D = 0xFFC92C1B;
+        public static final int RED_DD = 0xFF7E170F;
+        public static final int GREEN = 0xFF30CB1F;
+        public static final int GREEN_L = 0xFF22E558;
+        public static final int YELLOW = 0xFFFAC400;
+        public static final int BLUE = 0xFF2F5BEA;
+        public static final int CYAN = 0xFF2BC4C4;
+        public static final int MAGENTA = 0xFFEC4FB5;
+        public static final int ORANGE = 0xFFFF6F00;
+        public static final int PINK = 0xFFF3445D;
+        public static final int SHADOW = 0xFF000000;
+
+        private Theme() {
+        }
+    }
+
     // -- Polices -----------------------------------------------------------------
 
     /** Les grands titres rouges : MÉTIERS, ADMIN SHOP, CRUSHER. */

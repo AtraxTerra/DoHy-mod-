@@ -272,6 +272,9 @@ public final class ContractApi {
                         .withStyle(ChatFormatting.DARK_GRAY)));
 
         grantGlobalXp(player, pool.globalXp(), "contrat termine");
+        fr.atraxterra.dohy.ui.Toasts.send(player, new net.minecraft.world.item.ItemStack(
+                        net.minecraft.world.item.Items.WRITABLE_BOOK), "CONTRAT TERMINE", describe(contract),
+                "+" + MoneyFormat.exact(money) + " \u00B7 +" + pool.globalXp() + " XP", 0xFF30CB1F, "");
     }
 
     /**
