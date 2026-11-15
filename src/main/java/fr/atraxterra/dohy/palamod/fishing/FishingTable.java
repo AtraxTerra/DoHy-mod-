@@ -96,7 +96,7 @@ public final class FishingTable {
             Rarity.MYTHIC, List.of(new Loot("palamod:whale", 65f), new Loot("palamod:kraken", 35f)));
 
     /** XP de Chasseur par poisson (wiki, x 0,357). */
-    static final Map<String, Long> XP = Map.ofEntries(
+    public static final Map<String, Long> XP = Map.ofEntries(
             Map.entry("minecraft:cod", 9L), Map.entry("minecraft:salmon", 12L),
             Map.entry("minecraft:tropical_fish", 71L), Map.entry("minecraft:pufferfish", 27L),
             Map.entry("palamod:carp", 54L), Map.entry("palamod:bass", 80L), Map.entry("palamod:ray", 107L),
@@ -105,7 +105,7 @@ public final class FishingTable {
             Map.entry("palamod:kraken", 5355L));
 
     /** Niveau de Chasseur requis (wiki : 2, 3 et 4, soit 10, 15 et 20 chez DoHy). */
-    static final Map<String, Integer> LEVEL = Map.of(
+    public static final Map<String, Integer> LEVEL = Map.of(
             "palamod:carp", 10, "palamod:bass", 10, "palamod:ray", 10, "palamod:red_tuna", 10,
             "palamod:moonfish", 10, "palamod:exp_fish", 15, "palamod:whale", 20, "palamod:kraken", 20);
 

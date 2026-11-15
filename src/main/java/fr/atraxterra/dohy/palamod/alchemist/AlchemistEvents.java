@@ -46,8 +46,8 @@ public final class AlchemistEvents {
 
     /** {@code nextInt(800) == 300}. */
     private static final int LIGHTNING_CHANCE = 800;
-    private static final double LIGHTNING_XP = 30.0d;
-    private static final double LOG_XP = 10.0d;
+    public static final double LIGHTNING_XP = 30.0d;
+    public static final double LOG_XP = 10.0d;
     /** {@code > 60.0F} : seize bibliotheques mystiques. */
     private static final float MYSTIC_POWER = 60.0f;
 

@@ -9,15 +9,16 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 /**
- * La fiche d'un metier : niveau, XP, et les trois listes — deblocages, primes
- * de palier, recompenses. Les onglets se changent cote client : tout part d'un coup.
+ * La fiche d'un metier : niveau, XP, et les quatre listes — deblocages, primes
+ * de palier, recompenses, et ce qui rapporte de l'XP. Les onglets se changent
+ * cote client : tout part d'un coup.
  *
  * @param progress  avancement dans le niveau, en pour mille
  * @param nextMoney argent verse au prochain niveau, 0 au maximum
  */
 public record JobDetailView(String job, int level, int maxLevel, int progress, long xpInto, long xpNeed,
                             long totalXp, long nextMoney, List<Row> unlocks, List<Row> primes,
-                            List<Row> rewards) implements UiView {
+                            List<Row> rewards, List<Row> sources) implements UiView {
 
     public static final Identifier ID = UiNet.id("job_detail");
 
@@ -26,16 +27,13 @@ public record JobDetailView(String job, int level, int maxLevel, int progress, l
     public static final int ACQUIRED = 1;
     /** Declare mais absent du mod : objet pas encore porte. */
     public static final int MISSING = 2;
+    /** Titre de section (onglet XP) : ni acquis ni a venir, il ne se compte pas. */
+    public static final int HEADER = 3;
 
-    /**
-     * Une ligne de liste.
-     *
-     * @param lines details pour la bulle
-     */
     /** La meme fiche, chaque texte de ligne passe par {@code text} (voir {@code MenuView.text}). */
     public JobDetailView map(java.util.function.UnaryOperator<String> text) {
         return new JobDetailView(job, level, maxLevel, progress, xpInto, xpNeed, totalXp, nextMoney,
-                mapRows(unlocks, text), mapRows(primes, text), mapRows(rewards, text));
+                mapRows(unlocks, text), mapRows(primes, text), mapRows(rewards, text), mapRows(sources, text));
     }
 
     private static List<Row> mapRows(List<Row> rows, java.util.function.UnaryOperator<String> text) {
@@ -51,6 +49,11 @@ public record JobDetailView(String job, int level, int maxLevel, int progress, l
         return mapped;
     }
 
+    /**
+     * Une ligne de liste.
+     *
+     * @param lines details pour la bulle
+     */
     public record Row(ItemStack icon, String title, String detail, int level, int state, List<String> lines) {
         public static final StreamCodec<RegistryFriendlyByteBuf, Row> STREAM_CODEC = StreamCodec.of(
                 (buffer, row) -> {
@@ -92,9 +95,11 @@ public record JobDetailView(String job, int level, int maxLevel, int progress, l
                 Row.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.unlocks());
                 Row.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.primes());
                 Row.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.rewards());
+                Row.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.sources());
             },
             buffer -> new JobDetailView(buffer.readUtf(), buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(),
                     buffer.readVarLong(), buffer.readVarLong(), buffer.readVarLong(), buffer.readVarLong(),
+                    Row.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer),
                     Row.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer),
                     Row.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer),
                     Row.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer)));

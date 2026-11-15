@@ -32,7 +32,7 @@ import net.neoforged.neoforge.event.level.BlockDropsEvent;
 public final class MinerXpEvents {
 
     /** {@code JobsPlayer.addXp(MINER, ..., 4.0)}. */
-    private static final double PALAJOBS_XP = 4.0d;
+    public static final double PALAJOBS_XP = 4.0d;
 
     /** Somme de {@code JobExpUtils.LEVELS} : l'XP de PalaJobs pour atteindre le niveau 20. */
     private static final double PALAJOBS_TOTAL = 17_302_375.0d;
@@ -59,9 +59,14 @@ public final class MinerXpEvents {
         JobApi.grant(player, Job.MINER, convert(player, PALAJOBS_XP));
     }
 
+    /** XP de PalaJobs vers XP de DoHy, a progression egale, sans l'arrondi : ce que vaut un gain en moyenne. */
+    public static double exact(double palajobsXp) {
+        return palajobsXp * JobApi.xpToReach(JobApi.maxLevel()) / PALAJOBS_TOTAL;
+    }
+
     /** XP de PalaJobs vers XP de DoHy, a progression egale, arrondie au hasard. */
     public static long convert(ServerPlayer player, double palajobsXp) {
-        double exact = palajobsXp * JobApi.xpToReach(JobApi.maxLevel()) / PALAJOBS_TOTAL;
+        double exact = exact(palajobsXp);
         long whole = (long) Math.floor(exact);
         return whole + (player.getRandom().nextDouble() < exact - whole ? 1 : 0);
     }
