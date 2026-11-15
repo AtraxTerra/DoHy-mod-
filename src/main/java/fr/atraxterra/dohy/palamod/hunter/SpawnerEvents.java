@@ -72,8 +72,8 @@ public final class SpawnerEvents {
             EntityTypes.COW, EntityTypes.PIG, EntityTypes.CREEPER);
 
     /** 1 250 XP de PalaJobs, a partir du niveau 8 de Chasseur. */
-    private static final double SPAWNER_XP = 1250.0d;
-    private static final int SPAWNER_XP_LEVEL = 40;
+    public static final double SPAWNER_XP = 1250.0d;
+    public static final int SPAWNER_XP_LEVEL = 40;
 
     /** {@code nextInt(2) == 0}. */
     private static final float BROKEN_SPAWNER_CHANCE = 0.5f;

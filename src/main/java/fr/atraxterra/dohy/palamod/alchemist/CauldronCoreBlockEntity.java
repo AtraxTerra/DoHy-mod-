@@ -59,15 +59,15 @@ public class CauldronCoreBlockEntity extends BlockEntity {
      * XP de PalaJobs par fleur jetee ({@code DropCauldronObjective}, niveau 15) :
      * pissenlit et coquelicot 0,75, orchidee 1, les sept autres metas 2.
      */
-    private static final Map<Item, Double> FLOWER_XP = Map.ofEntries(
+    public static final Map<Item, Double> FLOWER_XP = Map.ofEntries(
             Map.entry(Items.DANDELION, 0.75d), Map.entry(Items.POPPY, 0.75d),
             Map.entry(Items.BLUE_ORCHID, 1.0d), Map.entry(Items.ALLIUM, 2.0d),
             Map.entry(Items.AZURE_BLUET, 2.0d), Map.entry(Items.RED_TULIP, 2.0d),
             Map.entry(Items.ORANGE_TULIP, 2.0d), Map.entry(Items.WHITE_TULIP, 2.0d),
             Map.entry(Items.PINK_TULIP, 2.0d), Map.entry(Items.OXEYE_DAISY, 2.0d));
-    private static final int FLOWER_XP_LEVEL = 15;
-    private static final double PALADIUM_FLOWER_XP = 100.0d;
-    private static final int PALADIUM_FLOWER_XP_LEVEL = 80;
+    public static final int FLOWER_XP_LEVEL = 15;
+    public static final double PALADIUM_FLOWER_XP = 100.0d;
+    public static final int PALADIUM_FLOWER_XP_LEVEL = 80;
 
     private int timer;
     private boolean exploding;

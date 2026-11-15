@@ -37,6 +37,15 @@ public final class DungeonManager {
     private static final int ROOM_Y = 64;
     public static final int MAX_PALIER = 100;
 
+    /**
+     * L'XP de metier d'un donjon reussi : 600, plus 40 par palier, fois le
+     * multiplicateur de recompenses du mode. Ecrite ici pour que la fiche du
+     * metier (onglet XP) lise la meme formule que la fin de partie.
+     */
+    public static long jobXp(int palier, DungeonMode mode) {
+        return Math.round((600L + 40L * palier) * mode.rewards());
+    }
+
     private static final Map<Integer, DungeonRun> RUNS = new HashMap<>();
     private static final Map<UUID, DungeonRun> BY_PLAYER = new HashMap<>();
     /** Monstre de partie -> sa partie. */

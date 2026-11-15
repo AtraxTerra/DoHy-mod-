@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * La fiche d'un metier : l'hexagone et l'XP a gauche, trois onglets a droite
- * (deblocages, primes, recompenses), chacun une liste qui defile.
+ * La fiche d'un metier : l'hexagone et l'XP a gauche, quatre onglets a droite
+ * (deblocages, primes, recompenses, et ce qui rapporte de l'XP), chacun une
+ * liste qui defile. L'onglet XP est coupe en sections par des lignes titres.
  */
 public class JobDetailScreen extends UiScreen implements ViewScreen<JobDetailView> {
 
-    private static final String[] TABS = {"DÉBLOCAGES", "PRIMES", "RÉCOMPENSES"};
+    private static final String[] TABS = {"DÉBLOCAGES", "PRIMES", "RÉCOMPENSES", "XP"};
     private static final int LIST_X = 165;
     private static final int LIST_Y = 70;
 
@@ -56,6 +57,7 @@ public class JobDetailScreen extends UiScreen implements ViewScreen<JobDetailVie
         return switch (tab) {
             case 1 -> view.primes();
             case 2 -> view.rewards();
+            case 3 -> view.sources();
             default -> view.unlocks();
         };
     }
@@ -108,6 +110,10 @@ public class JobDetailScreen extends UiScreen implements ViewScreen<JobDetailVie
 
     private void paintRow(UiGraphics g, int index, int x, int y, int width, int height, boolean hovered) {
         JobDetailView.Row row = rows().get(index);
+        if (row.state() == JobDetailView.HEADER) {
+            paintHeader(g, row, x, y, width, height, hovered);
+            return;
+        }
         g.rect(x, y, width, height, hovered ? 0xFF2A292F : 0xFF1C1B21);
         int accent = switch (row.state()) {
             case JobDetailView.ACQUIRED -> Ui.GREEN;
@@ -135,12 +141,43 @@ public class JobDetailScreen extends UiScreen implements ViewScreen<JobDetailVie
         }
     }
 
-    /** Un onglet : le libelle et le compte acquis / total. */
+    /**
+     * Un titre de section de l'onglet XP : le libelle a gauche, un filet, et a
+     * droite le detail s'il y en a un (le bonus d'XP du joueur). La bulle donne
+     * les remarques de la section.
+     */
+    private void paintHeader(UiGraphics g, JobDetailView.Row row, int x, int y, int width, int height,
+                             boolean hovered) {
+        float size = 4.2f;
+        float middle = y + height / 2.0f;
+        g.text(Ui.WIDE, row.title(), x + 4, middle - 2.5f, size, Ui.WHITE);
+        float start = x + 4 + g.width(Ui.WIDE, row.title(), size) + 5;
+        float end = x + width - 4;
+        if (!row.detail().isEmpty()) {
+            float detailWidth = g.width(Ui.WIDE, row.detail(), 3.8f);
+            g.text(Ui.WIDE, row.detail(), end - detailWidth, middle - 2.2f, 3.8f, Ui.GREEN);
+            end -= detailWidth + 5;
+        }
+        if (end > start) {
+            g.rect((int) start, (int) middle, (int) (end - start), 1, 0xFF3A3940);
+        }
+        if (hovered && !row.lines().isEmpty()) {
+            List<Component> lines = new ArrayList<>();
+            lines.add(Component.literal(row.title()));
+            for (String line : row.lines()) {
+                lines.add(Component.literal(line).withColor(0x888888));
+            }
+            g.tooltip(lines);
+        }
+    }
+
+    /** Un onglet : le libelle et le compte acquis / total (les titres de section ne comptent pas). */
     private final class Tab extends UiElement {
         private final int index;
 
         Tab(int index) {
-            super(LIST_X - 4 + index * 97, 50, 94, 14);
+            // Quatre onglets sur la largeur de la liste : les trois premiers et l'XP, plus etroit.
+            super(LIST_X - 4 + (index < 3 ? index * 79 : 3 * 79), 50, index < 3 ? 76 : 52, 14);
             this.index = index;
         }
 
@@ -153,15 +190,18 @@ public class JobDetailScreen extends UiScreen implements ViewScreen<JobDetailVie
             List<JobDetailView.Row> rows = switch (index) {
                 case 1 -> view.primes();
                 case 2 -> view.rewards();
+                case 3 -> view.sources();
                 default -> view.unlocks();
             };
             long done = rows.stream().filter(row -> row.state() == JobDetailView.ACQUIRED).count();
+            long total = rows.stream().filter(row -> row.state() != JobDetailView.HEADER).count();
             String label = TABS[index];
-            String count = done + "/" + rows.size();
-            float labelWidth = g.width(Ui.WIDE, label, 4.4f);
+            String count = done + "/" + total;
+            float labelSize = index < 3 ? 3.9f : 4.4f;
+            float labelWidth = g.width(Ui.WIDE, label, labelSize);
             float countWidth = g.width(Ui.BODY, count, 3.6f);
             float start = x + (width - labelWidth - countWidth - 4) / 2.0f;
-            g.text(Ui.WIDE, label, start, y + 4, 4.4f, Ui.WHITE);
+            g.text(Ui.WIDE, label, start, y + 4, labelSize, Ui.WHITE);
             g.text(Ui.BODY, count, start + labelWidth + 4, y + 4.4f, 3.6f, active ? 0xFFFFD0CC : Ui.MUTED);
         }
 

@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-14
+Dernière mise à jour : 2026-11-15
 
 ---
 
@@ -184,10 +184,32 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
   terre en place) et `EarthSites` (une plante morte n'est gardée que sur de la terre, plus sur de
   l'herbe). Le champ de mines des bases ennemies a été corrigé.
 - **`minecraft:potent_sulfur`** classé farmable sur la base des tags de geyser de 26.2 — **à vérifier en jeu** : si l'éruption ne produit pas de gain net, le reclasser en `FOUND`.
+- **Les minerais de PalaMod ne rapportent pas d'XP de Mineur** (relevé le 2026-11-15 en écrivant
+  l'onglet XP) : `job_progression.json` ne liste que les minerais vanilla, et les quatre tags
+  `#dohy:mining_xp/*` qui devaient recevoir ceux d'un autre mod sont vides. Paladium, titane,
+  améthyste, findium et trixium se minent donc pour rien côté métier. À trancher : les ranger dans
+  ces tags (les valeurs 30 / 80 / 180 / 350 existent déjà) ou leur donner des lignes propres.
 
 ---
 
 ## Journal des sessions
+
+### 2026-11-15 (suite) — l'onglet XP des métiers
+
+**Demande** : « Ajoute dans les métiers un petit onglet par métiers qui te dit quoi rapporte de
+l'expérience, à quel niveau... ».
+
+**Fait** (`feat/metiers-xp`, sur la branche de la pêche) : quatrième onglet **XP** sur la fiche de
+chaque métier (`JobXpGuide`, `JobDetailView.sources`). Une ligne par source, rangée en sections
+(blocs, créatures, pêche, machines, donjons et récompenses) : le gain, l'unité (« par bloc »,
+« par prise », « par fournée »...), le niveau où il devient possible, en vert s'il est déjà à
+portée. Tout est lu là où le jeu le prend — `job_progression.json`, constantes des gestes PalaMod,
+configuration de l'agriculture, `FishingTable` — pour que l'onglet ne puisse pas dire autre chose
+que ce qui est donné. Le niveau d'une ligne est le plus haut entre le seuil du gain et le verrou de
+`jobs.json` sur ce qu'il demande (culture, canne, chaudron, machine). Les gains de PalaJobs sont
+affichés convertis, à leur moyenne (`MinerXpEvents.exact`). Le premier titre de section donne le
+bonus d'XP du joueur ; les valeurs sont celles de base. Fiche « Les métiers » complétée.
+- **Constat** : les minerais de PalaMod ne rapportent pas d'XP de Mineur (voir « Points ouverts »).
 
 ### 2026-11-15 (suite) — la pêche de PalaJobs
 

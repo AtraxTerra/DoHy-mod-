@@ -1636,7 +1636,7 @@ final class DungeonRun {
     /** La porte de sortie : sacs livres, XP de metier, progression. */
     private void succeed() {
         phase = Phase.ENDED;
-        long jobXp = Math.round((600L + 40L * palier) * mode.rewards());
+        long jobXp = DungeonManager.jobXp(palier, mode);
         List<ServerPlayer> party = onlineMembers();
         for (ServerPlayer player : party) {
             List<ItemStack> delivered = new ArrayList<>(bags.getOrDefault(player.getUUID(), List.of()));

@@ -151,7 +151,7 @@ public final class JobsController {
 
         return new JobDetailView(job.name(), level, maxLevel, (int) Math.round(JobApi.progress(player, job) * 1000),
                 into, need, JobApi.xp(player, job), level >= maxLevel ? 0 : JobApi.moneyForLevel(level + 1),
-                unlocks, primes, rewards);
+                unlocks, primes, rewards, JobXpGuide.rows(player, job));
     }
 
     private static ItemStack icon(String raw, Item fallback) {

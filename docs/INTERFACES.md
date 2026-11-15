@@ -83,8 +83,12 @@ script.
   récompense du niveau global et le bonus d'XP de métier des améliorations. Clic sur un métier :
   sa fiche. L'hexagone de gauche ramène au menu principal.
 - **Fiche d'un métier** : hexagone, niveau, XP du niveau, argent du prochain niveau, XP totale ;
-  trois onglets (déblocages, bonus, récompenses) en listes qui défilent. Vert : acquis ; gris :
+  quatre onglets (déblocages, primes, récompenses, XP) en listes qui défilent. Vert : acquis ; gris :
   verrouillé ; orange : déclaré mais absent du mod (objet pas encore porté, effet pas appliqué).
+  L'onglet **XP** (ajouté le 2026-11-15, `JobXpGuide`) liste ce qui rapporte de l'XP au métier,
+  coupé en sections par des lignes titres (état `HEADER`, qui ne compte pas dans le total de
+  l'onglet) : gain, unité, niveau où il devient possible ; vert s'il est à portée. La bulle du
+  premier titre rappelle que les valeurs sont de base et donne le bonus d'XP du joueur.
 - **Shop** (`/shop`, menu principal) : catégorie et recherche (sans accents) à gauche, solde et
   fiche de l'objet à droite. Les règles sont celles de l'ancien shop : remise d'achat plafonnée à
   25 %, prix de vente dynamique, vente verrouillée tant que la collection n'est pas assez

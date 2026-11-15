@@ -746,6 +746,12 @@
           ]
         },
         {
+          "title": "Ce qui rapporte de l'XP",
+          "text": [
+            "La fiche de chaque metier a un onglet XP : tout ce qui rapporte de l'XP a ce metier, combien, et a partir de quel niveau. Les lignes en vert sont deja a ta portee ; les valeurs sont celles de base, avant tes bonus."
+          ]
+        },
+        {
           "title": "La barre",
           "text": [
             "Une barre en haut de l'ecran montre le metier, son niveau et l'XP qui vient d'arriver."

@@ -194,10 +194,14 @@ public final class LegendaryStones {
         tell(player, Component.translatable("message.palamod.legendary.fortune"));
     }
 
+    /** Les bornes de la pierre de metier, avant les bonus du joueur. */
+    public static final int JOBS_XP_MIN = 5000;
+    public static final int JOBS_XP_MAX = 20000;
+
     /** Un metier au hasard parmi les quatre, de 5 000 a 20 000 points, bonus du joueur compris. */
     private static void jobs(ServerPlayer player, RandomSource random) {
         Job job = Job.values()[random.nextInt(Job.values().length)];
-        int xp = 5000 + random.nextInt(15001);
+        int xp = JOBS_XP_MIN + random.nextInt(JOBS_XP_MAX - JOBS_XP_MIN + 1);
         JobApi.grant(player, job, xp);
         tell(player, Component.translatable("message.palamod.legendary.jobs", xp, job.display()));
     }

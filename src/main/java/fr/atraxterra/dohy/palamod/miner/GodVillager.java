@@ -54,10 +54,10 @@ public final class GodVillager {
     private static final int ODDS = 500_000_000;
 
     /** Mineur 19, x5. */
-    private static final int REQUIRED_LEVEL = 95;
+    public static final int REQUIRED_LEVEL = 95;
 
     /** {@code JobsPlayer.addXp(MINER, ..., 15000)}. */
-    private static final double PALAJOBS_XP = 15_000.0d;
+    public static final double PALAJOBS_XP = 15_000.0d;
 
     private GodVillager() {
     }
