@@ -1115,7 +1115,7 @@ final class SpawnBuilder {
         fill(-9, CORE_TOP + 2, CORE_NORTH + 1, -9, CORE_TOP + 4, CORE_NORTH + 1, steel);
         fill(-9, CORE_TOP + 5, CORE_NORTH + 1, -9, CORE_TOP + 16, CORE_NORTH + 1, bars);
         put(-9, CORE_TOP + 17, CORE_NORTH + 1, red);
-        labels.add(new Label(new BlockPos(0, FLOOR + 13, -24), "DOHY", 0xEF3826, 6.0f));
+        labels.add(new Label(new BlockPos(0, FLOOR + 13, -24), HologramBlockEntity.BRAND, 0xEF3826, 6.0f));
     }
 
     /** Une jardiniere de pierre taillee, de trois blocs de cote, plantee en son milieu. */
@@ -1456,7 +1456,7 @@ final class SpawnBuilder {
                 }
             }
         }
-        labels.add(new Label(new BlockPos(0, FLOOR + 11, 13), "DOHY", 0xEF3826, 5.0f));
+        labels.add(new Label(new BlockPos(0, FLOOR + 11, 13), HologramBlockEntity.BRAND, 0xEF3826, 5.0f));
     }
 
     /**

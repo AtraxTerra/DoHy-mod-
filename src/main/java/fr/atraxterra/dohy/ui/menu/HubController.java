@@ -139,14 +139,14 @@ public final class HubController extends MenuController {
             }
         }
         List<Card> help = List.of(
-                Card.of(new ItemStack(Items.KNOWLEDGE_BOOK), "Encyclopedie", List.of("Tout DoHy, fiche par fiche",
+                Card.of(new ItemStack(Items.KNOWLEDGE_BOOK), "Encyclopedie", List.of("Tout Berskar, fiche par fiche",
                                 fresh > 0 ? fresh + " fiche(s) nouvelle(s)" : "Touche J"))
                         .accent(0xFF22E558).action("encyclopedia").badge(fresh > 0 ? "+" + fresh : ""),
                 Card.of(new ItemStack(fr.atraxterra.dohy.guide.DoHyGuide.PLAN.get()), "Plans", List.of(
                                 "Hologrammes des structures", "Grinder, chaudron, enclos..."))
                         .accent(0xFF2BC4C4).action("plans"));
 
-        return new MenuView(id(), "DoHy", "Le menu de ton aventure", stats, List.of(
+        return new MenuView(id(), "Berskar", "Le menu de ton aventure", stats, List.of(
                 new MenuView.Section("AIDE", "upgrade", MenuView.GRID, help),
                 new MenuView.Section("ECONOMIE", "resources", MenuView.GRID, economy),
                 new MenuView.Section("PROGRESSION", "upgrade", MenuView.GRID, progress),

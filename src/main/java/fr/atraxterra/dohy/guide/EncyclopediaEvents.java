@@ -149,7 +149,7 @@ public final class EncyclopediaEvents {
         }
         if (first) {
             data.welcome();
-            player.sendSystemMessage(Component.literal("Bienvenue sur DoHy ! ").withStyle(ChatFormatting.GOLD)
+            player.sendSystemMessage(Component.literal("Bienvenue sur Berskar ! ").withStyle(ChatFormatting.GOLD)
                     .append(Component.literal("Tout le mod est explique dans l'encyclopedie : touche J, ou ")
                             .withStyle(ChatFormatting.YELLOW))
                     .append(link("[Ouvrir]", "/encyclopedie")));

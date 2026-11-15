@@ -102,7 +102,7 @@ public final class EncyclopediaMenu extends MenuController {
                 sections.add(new MenuView.Section(category.name().toUpperCase(), "", MenuView.GRID, cards));
             }
         }
-        return new MenuView(id(), "Encyclopedie", "Tout DoHy, fiche par fiche · touche J", stats, sections, true);
+        return new MenuView(id(), "Encyclopedie", "Tout Berskar, fiche par fiche · touche J", stats, sections, true);
     }
 
     private static Card card(Encyclopedia.Entry entry, EncyclopediaData data) {

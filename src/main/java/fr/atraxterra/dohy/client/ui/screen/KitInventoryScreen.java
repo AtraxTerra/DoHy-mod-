@@ -152,7 +152,7 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
     protected void drawForeground(UiGraphics g, int mouseX, int mouseY) {
         tip(g, mouseX, mouseY, MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE, List.of("Menu principal", "Tous les menus"));
         tip(g, mouseX, mouseY, HELP_X, MENU_Y, MENU_SIZE, MENU_SIZE,
-                List.of("Encyclopédie", "Tout DoHy, fiche par fiche (touche J)"));
+                List.of("Encyclopedie", "Tout Berskar, fiche par fiche (touche J)"));
         tip(g, mouseX, mouseY, PASS_X, PASS_Y, PASS_W, PASS_H,
                 List.of("Pass du mois", "Quetes du jour et du mois, 35 recompenses"));
         for (int index = 0; index < SHORTCUTS.size(); index++) {

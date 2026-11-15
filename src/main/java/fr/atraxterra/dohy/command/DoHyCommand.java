@@ -47,7 +47,11 @@ public final class DoHyCommand {
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
-        event.getDispatcher().register(build());
+        var node = event.getDispatcher().register(build());
+        // Le mod s'appelle Berskar : la commande repond aussi a ce nom.
+        event.getDispatcher().register(Commands.literal("berskar")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .redirect(node));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> build() {

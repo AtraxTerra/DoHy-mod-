@@ -73,7 +73,7 @@
         "Les grandes lignes"
       ],
       "summary": [
-        "DoHy est un mod d'economie et de progression pense pour jouer seul : tu gagnes de l'argent en vendant ce que tu recoltes, tu montes quatre metiers, tu fondes ta faction et tu prends des pays sur une carte de la Terre.",
+        "Berskar est un mod d'economie et de progression pense pour jouer seul : tu gagnes de l'argent en vendant ce que tu recoltes, tu montes quatre metiers, tu fondes ta faction et tu prends des pays sur une carte de la Terre.",
         "Cette encyclopedie explique chaque systeme. Une fiche marquee NOUVEAU vient d'etre decouverte : tu viens de croiser son systeme en jouant."
       ],
       "sections": [
@@ -122,7 +122,7 @@
         "Ou tout se trouve"
       ],
       "summary": [
-        "Tout DoHy passe par des menus : le menu principal regroupe les autres, et l'inventaire a ses raccourcis."
+        "Tout Berskar passe par des menus : le menu principal regroupe les autres, et l'inventaire a ses raccourcis."
       ],
       "sections": [
         {
@@ -917,7 +917,7 @@
           "text": [
             "- Vert : Fermier. Jaune : Mineur. Bleu : Chasseur. Mauve : Alchimiste.",
             "- Multicolore : les quatre metiers a la fois.",
-            "Chacun donne 17 850 XP, l'equivalent des 50 000 XP du bonbon de Paladium a l'echelle de DoHy."
+            "Chacun donne 17 850 XP, l'equivalent des 50 000 XP du bonbon de Paladium a l'echelle de Berskar."
           ]
         },
         {
@@ -2333,7 +2333,7 @@
         "Pays, minerais, saisons"
       ],
       "summary": [
-        "Sur une carte du monde reel, avec son datapack, DoHy sait dans quel pays tu es, te lache au hasard sur une terre, et pose les minerais la ou le monde reel les exploite."
+        "Sur une carte du monde reel, avec son datapack, Berskar sait dans quel pays tu es, te lache au hasard sur une terre, et pose les minerais la ou le monde reel les exploite."
       ],
       "sections": [
         {
@@ -2481,7 +2481,7 @@
         "reviennent"
       ],
       "summary": [
-        "Les animaux reviennent la ou ils vivent : toutes les 20 secondes, DoHy repeuple l'Overworld autour de toi, selon les biomes."
+        "Les animaux reviennent la ou ils vivent : toutes les 20 secondes, Berskar repeuple l'Overworld autour de toi, selon les biomes."
       ],
       "see": [
         "terre"
@@ -2756,7 +2756,7 @@
         {
           "title": "Les cereales",
           "text": [
-            "Neuf cereales de DoHy, et le ble. Chacune ne pousse que dans son climat : hors climat, la semence refuse d'etre plantee."
+            "Neuf cereales de Berskar, et le ble. Chacune ne pousse que dans son climat : hors climat, la semence refuse d'etre plantee."
           ]
         },
         {
@@ -2870,7 +2870,7 @@
         "Dans l'economie"
       ],
       "summary": [
-        "Avec NTM NEXT installe, ses minerais et ses pieces entrent dans l'economie de DoHy : le shop les connait, avec des regles contre les chaines de traitement qui multiplient la matiere."
+        "Avec NTM NEXT installe, ses minerais et ses pieces entrent dans l'economie de Berskar : le shop les connait, avec des regles contre les chaines de traitement qui multiplient la matiere."
       ],
       "see": [
         "shop",

@@ -192,6 +192,25 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-15 (suite) — le mod s'appelle Berskar
+
+**Demande** : « Renomme le mod en Berskar ».
+
+**Fait** (`feat/berskar`) : le nom que le joueur voit change, l'identifiant technique reste `dohy`.
+Changer l'identifiant aurait vidé les mondes existants (le serveur du joueur compris) de tous les
+blocs, objets et données rangés sous `dohy:` ; il reste donc tel quel, avec les espaces `palamod`
+et `palarpg`, les paquets Java et la configuration des mixins.
+- **Nom affiché** : `mod_name=Berskar` (liste des mods), description du pack, onglets créatifs
+  « Berskar — machines » et « Berskar — agriculture », titre du menu principal, message de
+  bienvenue, sept fiches de l'encyclopédie (régénérées par `encyclopedia_content.py`).
+- **Jar** : `berskar-0.1.0+mc26.2.jar` (`base.archivesName` suit le nom). L'ancien
+  `dohy-…jar` est à retirer des dossiers `mods` du serveur et du client : deux jars du même
+  identifiant empêchent le jeu de démarrer.
+- **Enseignes du spawn** : « BERSKAR » ; celles déjà posées sont renommées au chargement
+  (`HologramBlockEntity`, texte « DOHY » exactement), sans reconstruire le spawn.
+- **Commande** : `/berskar` répond comme `/dohy` (redirection Brigadier), qui reste.
+- Au passage, l'infobulle de l'encyclopédie dans l'inventaire perd son accent (« Encyclopedie »).
+
 ### 2026-11-15 (suite) — les métiers sur le barème de Paladium Bedrock
 
 **Demande** : « pour le métier de mineur, rend compatible le fait d'utiliser les hammer avec smelt
