@@ -1022,6 +1022,7 @@
         {
           "title": "A retenir",
           "text": [
+            "- Les graines de PalaMod tombent de l'herbe des que leur culture est debloquee.",
             "- Les cultures de PalaMod donnent parfois un lingot a la place du fruit.",
             "- La terre fertilisee fait pousser environ trois fois plus vite.",
             "- Fermier 10 : le tracteur. Fermier 20 : la machine a OGM."
@@ -2696,6 +2697,14 @@
         "Quatre plantes : aubergine, cerfeuil, kiwano et orangeblue. A maturite, une recolte sur des milliers donne un lingot a la place du fruit : l'agriculture est une autre voie vers les metaux."
       ],
       "sections": [
+        {
+          "title": "D'ou viennent les graines",
+          "text": [
+            "- L'herbe et les fougeres, des le niveau de Fermier de la culture : une chance sur cinq pour l'aubergine (35) et le cerfeuil (60), une sur 385 pour le kiwano (80), une sur 1 667 pour l'orangeblue (100).",
+            "- Les recompenses de niveau du Fermier et le donjon Talikus.",
+            "- La recolte : une culture mure rend sa graine, l'orangeblue une fois sur quinze."
+          ]
+        },
         {
           "title": "A savoir",
           "text": [

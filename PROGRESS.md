@@ -192,6 +192,17 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-15 (suite) — les graines de PalaMod dans l'herbe
+
+**Demande** : « Alors ajoute leurs drops » puis « Aide toi du wiki de paladium » (après « est-ce
+que si je casse des herbes et hautes herbes je peux récupérer des graines ? »).
+
+**Fait** (`feat/graines-herbe`, sur la branche de l'XP des minerais) : `GrassSeeds`, d'après
+`EventHandlerAlchemist.FarmerDropHandler` de PalaMod, que le wiki confirme sans les chiffres :
+aubergine et cerfeuil 20 %, kiwano 0,26 %, orangeblue 0,06 % par herbe cassée, chacune dès le
+niveau de Fermier de sa culture (35, 60, 80, 100). Herbes, hautes herbes et fougères. Fiches
+« Les cultures » et « Fermier » complétées ; PALAMOD.md, « Les graines dans l'herbe ».
+
 ### 2026-11-15 (suite) — l'XP de Mineur des minerais
 
 **Demande** : « j'ai merged, corrige le problème d'xp du coup » (le constat de l'onglet XP : les

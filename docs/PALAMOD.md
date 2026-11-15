@@ -305,6 +305,29 @@ Chaque culture a trois assets : le bloc (`blocks/crops/<nom>_stage_N.png`), la g
 (`items/seeds/<nom>.png`) et le fruit (`items/fruits/<nom>.png`, **au pluriel** pour l'aubergine :
 `eggplants.png`).
 
+### Les graines dans l'herbe — `EventHandlerAlchemist.FarmerDropHandler` (2026-11-15)
+
+Absentes de DoHy jusqu'au 2026-11-15 : les graines de PalaMod ne venaient que des récompenses du
+Fermier, du donjon Talikus et des récoltes. Le wiki (« Objets débloqués Fermier ») les fait
+pourtant tomber de l'herbe, « comme pour des graines de blé ». Le code le confirme et donne les
+chiffres : sur `BreakEvent` de `Blocks.tallgrass`, cinq tirages indépendants de
+`(int) (Math.random() * 10000)`, chacun gardé par le verrou de la culture
+(`JobsBridge.canUseCraft`) :
+
+| Graine | Tirage | Chance | Verrou (DoHy) |
+|---|---|---|---|
+| Aubergine | ≤ 2 000 | 20 % | Fermier 35 |
+| Cerfeuil | ≤ 2 000 | 20 % | Fermier 60 |
+| Kiwano | ≤ 25 | 0,26 % (1 sur 385) | Fermier 80 |
+| Orangeblue | ≤ 5 (≤ 7 avec la permission `palamod.boostseedorangeblue`) | 0,06 % (1 sur 1 667) | Fermier 100 |
+| Cristal de glace ×3 | ≤ 1 000 | 10 % | aucun — culture d'événement, non portée |
+
+Porté dans `GrassSeeds`. **Écart** : les hautes herbes et les grandes fougères comptent aussi
+(une fois par plante), comme les céréales de DoHy ; `Blocks.tallgrass` n'était que l'herbe basse
+et la fougère. La graine rejoint les drops du bloc en priorité basse, après Grass Breaker, qui ne
+la multiplie donc pas — dans l'original il ne relançait que les drops vanilla. Pas de garde
+`PlacedBlocks` : l'herbe repousse à la poudre d'os, la « ferme à graines » du wiki est voulue.
+
 ### La terre fertilisée — `connectedDirt`, l'accélérateur de cultures
 
 Lu dans `BlockConnectedDirt`, absent du wiki. **À chaque tick aléatoire, le bloc fait passer
