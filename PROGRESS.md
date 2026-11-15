@@ -192,6 +192,27 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-15 (suite) — les minerais de NTM NEXT dans la Mine
+
+**Demande** : « ajoute aussi la génération des minerais NTM NEXT dans la mine », puis
+« également la limestone du mod NTM NEXT ».
+
+**Constat** : la Mine reprenait déjà les placed features de NTM NEXT, mais presque toutes
+commencent par l'interrupteur `overworld_ores` de son datapack, que celui de la Terre coupe : avec
+lui, la Mine n'avait plus un seul minerai de NTM, calcaire compris.
+
+**Fait** (`feat/mine-ntm`, sur la branche de la Mine) : `tools/mine_ntm_ores.py` lit les placed
+features dans le jar de NTM NEXT 1.0.3 et en écrit 43 copies sans cet interrupteur (le coltan garde
+le sien), chargées seulement avec NTM ; le tag `mine_mod_ores` les reprend, strates d'abord. Le gaz
+du gneiss s'ajoute ; l'australium (anneau de 350 à 700 blocs du centre), les gisements de bedrock et
+de pétrole et les poches de gaz restent dehors. CONTENU_DOHY.md, « La Mine ».
+
+**Vérifié en jeu** (client de CI avec NTM NEXT 1.0.3 et un datapack qui coupe `overworld_ores`,
+comme la Terre) : sur 49 chunks autour de l'arrivée, 823 blocs de calcaire, 965 d'uranium, 1 492 de
+titane, 2 568 de tungstène, 1 845 de plomb, 4 089 de lignite… et les strates (hématite 7 239,
+malachite 6 616) ; dans trois chunks neufs de l'overworld, aucun minerai de NTM (l'interrupteur
+joue), seulement les strates qu'il ne commande pas.
+
 ### 2026-11-15 (suite) — la Mine toutes les cinq heures
 
 **Demande** : « bug : la mine ne se régénère pas toutes les 5h et c'est seulement la box

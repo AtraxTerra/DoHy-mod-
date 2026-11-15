@@ -100,9 +100,11 @@ import java.util.stream.Stream;
  * </ul>
  *
  * <p>Les minerais : ceux du jeu (emeraude comprise), ceux du PalaMod a leur
- * taux normal, et ceux des mods presents (zinc de Create, minerais de NTM
- * NEXT) — voir le biome {@code dohy:mine} et le tag
- * {@code dohy:mine_mod_ores}, ecrits par {@code tools/dohy_assets.py}.
+ * taux normal, et ceux des mods presents (zinc de Create, minerais et calcaire
+ * de NTM NEXT) — voir le biome {@code dohy:mine} et le tag
+ * {@code dohy:mine_mod_ores}, ecrits par {@code tools/dohy_assets.py}. Ceux de
+ * NTM passent par les copies de {@code tools/mine_ntm_ores.py}, sans
+ * l'interrupteur {@code overworld_ores} que coupe le datapack de la Terre.
  */
 @EventBusSubscriber
 public final class MineService {
