@@ -795,8 +795,17 @@ de la roche du fond au plafond, ni ciel ni surface.
   du lichen luisant et des stalactites. Aucune galerie n'est noyée.
 - Les **minerais** : ceux du jeu (émeraude comprise), ceux du PalaMod à leur taux normal
   (améthyste, titane, paladium, paladium vert, findium, trixium, invocateur) et le buisson
-  d'expérience, ceux des mods présents — zinc de Create, minerais de NTM NEXT (entrées
-  facultatives, sans effet si le mod manque).
+  d'expérience, ceux des mods présents — zinc de Create, minerais de NTM NEXT avec ses strates
+  (gneiss, hématite, bauxite, malachite) et son calcaire (entrées facultatives, sans effet si le mod
+  manque).
+- **Les minerais de NTM NEXT passent par des copies** (2026-11-15, `tools/mine_ntm_ores.py`,
+  `data/dohy/worldgen/placed_feature/mine/hbm/`) : les placed features de NTM commencent par
+  l'interrupteur `overworld_ores` de son datapack, que celui de la Terre coupe — avec lui, la Mine
+  n'avait plus un seul minerai de NTM. Les copies gardent le placement de NTM sans cet interrupteur
+  (le coltan garde le sien, `coltan_spawn`, coupé par défaut dans NTM) et ne se chargent que si NTM
+  NEXT est là. Absents volontairement : l'australium (NTM ne le pose qu'entre 350 et 700 blocs du
+  centre du monde), les gisements de bedrock et de pétrole (pour des machines) et les poches de gaz
+  inflammable.
 - Une **zone de 2 000 × 2 000 blocs** par remise à neuf ; on n'en sort pas par les côtés.
 
 ### Les règles (choix du joueur)

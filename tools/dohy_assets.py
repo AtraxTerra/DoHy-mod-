@@ -1621,19 +1621,23 @@ MINE_ORES = [
 
 # Les minerais des mods, poses s'ils existent (entrees facultatives d'un tag) : le zinc de Create et
 # les minerais du monde normal de NTM NEXT, releves dans ses sources (HbmPlacedFeatures).
-MINE_MOD_ORES = [
-    "create:zinc_ore", "create:striated_ores_overworld",
-    "hbm:ore_uranium", "hbm:ore_thorium", "hbm:ore_titanium", "hbm:ore_sulfur", "hbm:ore_aluminium",
-    "hbm:ore_fluorite", "hbm:ore_niter", "hbm:ore_tungsten", "hbm:ore_lead", "hbm:ore_beryllium", "hbm:ore_rare",
-    "hbm:ore_lignite", "hbm:ore_asbestos", "hbm:ore_cinnabar", "hbm:ore_cobalt", "hbm:ore_coltan",
-    "hbm:ore_alexandrite", "hbm:stratum_gneiss", "hbm:ore_gneiss_iron", "hbm:ore_gneiss_gold",
-    "hbm:ore_gneiss_copper", "hbm:ore_gneiss_asbestos", "hbm:ore_gneiss_lithium", "hbm:ore_gneiss_uranium",
-    "hbm:ore_gneiss_rare", "hbm:stratum_hematite", "hbm:stratum_bauxite", "hbm:stratum_malachite",
-    "hbm:ore_limestone", "hbm:cluster_iron", "hbm:cluster_titanium", "hbm:cluster_aluminium",
-    "hbm:cluster_copper", "hbm:deposit_iron", "hbm:deposit_titanium", "hbm:deposit_tungsten",
-    "hbm:deposit_cinnabar", "hbm:deposit_zirconium", "hbm:deposit_borax", "hbm:deposit_coltan",
-    "hbm:ore_cave_sulfur", "hbm:ore_cave_asbestos",
+# Les minerais des mods presents, en entrees facultatives. Ceux de NTM NEXT passent par les copies
+# de `tools/mine_ntm_ores.py` (sans l'interrupteur `overworld_ores`, que le datapack de la Terre
+# coupe), le gneiss avant les minerais qui le remplacent.
+MINE_NTM_ORES = [
+    "stratum_gneiss", "stratum_hematite", "stratum_bauxite", "stratum_malachite",
+    "ore_cave_sulfur", "ore_cave_asbestos",
+    "ore_uranium", "ore_thorium", "ore_titanium", "ore_sulfur", "ore_aluminium", "ore_fluorite",
+    "ore_niter", "ore_tungsten", "ore_lead", "ore_beryllium", "ore_rare", "ore_lignite", "ore_asbestos",
+    "ore_cinnabar", "ore_cobalt", "ore_coltan", "ore_alexandrite", "ore_limestone",
+    "ore_gneiss_iron", "ore_gneiss_gold", "ore_gneiss_copper", "ore_gneiss_asbestos", "ore_gneiss_lithium",
+    "ore_gneiss_uranium", "ore_gneiss_rare", "ore_gneiss_gas",
+    "cluster_iron", "cluster_titanium", "cluster_aluminium", "cluster_copper",
+    "deposit_iron", "deposit_titanium", "deposit_tungsten", "deposit_cinnabar", "deposit_zirconium",
+    "deposit_borax", "deposit_coltan",
 ]
+MINE_MOD_ORES = ["create:zinc_ore", "create:striated_ores_overworld"] + [
+    "%s:mine/hbm/%s" % (NS, name) for name in MINE_NTM_ORES]
 
 
 def mine():

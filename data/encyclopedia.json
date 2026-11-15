@@ -2669,6 +2669,7 @@
           "text": [
             "- Une mine neuve a 5 h, 10 h, 15 h, 20 h et 1 h ; a l'heure, les joueurs presents sont ramenes au spawn, prevenus 10, 5 et 1 minute avant.",
             "- Un redemarrage du serveur ne la remet pas a neuf : la mine en cours reste telle quelle.",
+            "- Les minerais du jeu, ceux du PalaMod et ceux des mods presents : zinc de Create, minerais et calcaire de NTM NEXT.",
             "- Pas de lumiere du jour : prends des torches.",
             "- La pierre et l'ardoise n'y donnent pas de cobblestone."
           ]
