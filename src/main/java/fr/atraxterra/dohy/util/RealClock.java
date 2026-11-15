@@ -141,6 +141,58 @@ public final class RealClock {
         return Math.max(0L, Duration.between(now, next).toMinutes());
     }
 
+    /**
+     * La cle d'une tranche de la journee. La journee commence a {@code resetHour}
+     * et se coupe aux decalages {@code offsets}, en heures depuis ce debut,
+     * croissants, le premier a 0 : avec 5 h et {@code {0, 5, 10, 15, 20}}, les
+     * tranches s'ouvrent a 5 h, 10 h, 15 h, 20 h et 1 h. Deux instants d'une meme
+     * tranche ont la meme cle ; deux tranches qui se suivent, des cles qui se
+     * suivent, y compris d'un jour a l'autre.
+     */
+    public static long slotKey(int resetHour, int[] offsets) {
+        return slotKey(resetHour, offsets, LocalDateTime.now(zone()));
+    }
+
+    static long slotKey(int resetHour, int[] offsets, LocalDateTime now) {
+        return localDay(resetHour, now).toEpochDay() * offsets.length + slotIndex(resetHour, offsets, now);
+    }
+
+    /** Minutes restantes avant l'ouverture de la tranche suivante. */
+    public static long minutesUntilNextSlot(int resetHour, int[] offsets) {
+        return minutesUntilNextSlot(resetHour, offsets, LocalDateTime.now(zone()));
+    }
+
+    static long minutesUntilNextSlot(int resetHour, int[] offsets, LocalDateTime now) {
+        return Math.max(0L, Duration.between(now, nextSlot(resetHour, offsets, now)).toMinutes());
+    }
+
+    /** L'instant local ou s'ouvre la tranche suivante. */
+    public static LocalDateTime nextSlot(int resetHour, int[] offsets) {
+        return nextSlot(resetHour, offsets, LocalDateTime.now(zone()));
+    }
+
+    static LocalDateTime nextSlot(int resetHour, int[] offsets, LocalDateTime now) {
+        LocalDateTime start = dayStart(resetHour, now);
+        int index = slotIndex(resetHour, offsets, now);
+        return index + 1 < offsets.length ? start.plusHours(offsets[index + 1]) : start.plusDays(1);
+    }
+
+    /** Le rang de la tranche en cours dans la journee : le dernier decalage deja passe. */
+    private static int slotIndex(int resetHour, int[] offsets, LocalDateTime now) {
+        LocalDateTime start = dayStart(resetHour, now);
+        int index = 0;
+        for (int candidate = 1; candidate < offsets.length; candidate++) {
+            if (!now.isBefore(start.plusHours(offsets[candidate]))) {
+                index = candidate;
+            }
+        }
+        return index;
+    }
+
+    private static LocalDateTime dayStart(int resetHour, LocalDateTime now) {
+        return localDay(resetHour, now).atStartOfDay().plusHours(clamp(resetHour));
+    }
+
     /** Minutes restantes avant la prochaine bascule hebdomadaire. */
     public static long minutesUntilNextWeek(int resetHour, DayOfWeek start) {
         return minutesUntilNextWeek(resetHour, start, LocalDateTime.now(zone()));

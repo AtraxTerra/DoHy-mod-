@@ -797,14 +797,20 @@ de la roche du fond au plafond, ni ciel ni surface.
   (améthyste, titane, paladium, paladium vert, findium, trixium, invocateur) et le buisson
   d'expérience, ceux des mods présents — zinc de Create, minerais de NTM NEXT (entrées
   facultatives, sans effet si le mod manque).
-- Une **zone de 2 000 × 2 000 blocs** par jour ; on n'en sort pas par les côtés.
+- Une **zone de 2 000 × 2 000 blocs** par remise à neuf ; on n'en sort pas par les côtés.
 
 ### Les règles (choix du joueur)
 
-- **Une mine neuve chaque matin à 5 h** (heure de Paris) : une nouvelle zone, loin de la précédente,
-  dans une roche que personne n'a touchée. Les joueurs présents sont prévenus à 10, 5 et 1 minute ;
-  à 5 h, ils sont ramenés au spawn. Qui se reconnecte dans une zone passée est ramené au spawn. Les
-  fichiers des zones passées sont effacés au démarrage suivant du serveur.
+- **Une mine neuve toutes les cinq heures** (demande du 2026-11-15) : à 5 h, 10 h, 15 h, 20 h et 1 h,
+  heure de Paris — la tranche de 1 h à 5 h ne dure que quatre heures, la grille revient chaque matin
+  à 5 h. Chaque remise à neuf ouvre une nouvelle zone, loin de la précédente, dans une roche que
+  personne n'a touchée. Les joueurs présents sont prévenus à 10, 5 et 1 minute ; à l'heure, ils sont
+  ramenés au spawn. Qui se reconnecte dans une zone passée est ramené au spawn. Les fichiers des
+  zones passées sont effacés au démarrage suivant du serveur.
+- **Un redémarrage ne touche à rien** : la salle d'arrivée n'est posée qu'une fois par tranche. Avant
+  le 2026-11-15, elle était refaite au premier passage après chaque démarrage ; un joueur revenu
+  dans la même zone voyait une salle neuve au milieu de ses galeries et croyait la remise à neuf
+  manquée.
 - **Pas de cobblestone** : la pierre, l'ardoise et leurs pavés ne donnent rien — ni le granite, la
   diorite, l'andésite et le tuf, qu'on perce sans cesse dans une mine toute en roche.
 - **Mourir ne fait rien perdre** : inventaire et expérience rendus à la réapparition.
@@ -812,12 +818,12 @@ de la roche du fond au plafond, ni ciel ni surface.
 
 ### Administration
 
-- `/mine admin info` : le jour, le centre de la zone, le temps avant la remise à neuf.
-- `/mine admin remise` : passe tout de suite à la zone suivante (pour essayer sans attendre 5 h).
+- `/mine admin info` : la tranche, le centre de la zone, le temps avant la remise à neuf et son heure.
+- `/mine admin remise` : passe tout de suite à la zone suivante (pour essayer sans attendre l'heure).
 
 ### Code
 
-- `mine/MineService` (calendrier, zone du jour, salle d'arrivée, règles, ménage des fichiers,
+- `mine/MineService` (calendrier, zone en cours, salle d'arrivée, règles, ménage des fichiers,
   commande) ; `spawn/SpawnTerminalBlock` (la borne MINE), `SpawnBuilder` (la borne dans l'atrium,
   `VERSION` 7), `SpawnApi.backToPad`.
 - `data/dohy/dimension/mine.json`, `dimension_type/mine.json` (plafond, pas de ciel),
