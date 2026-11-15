@@ -199,7 +199,7 @@ public final class UiGraphics {
 
     /** La largeur d'un texte hors du dessin : la mise en page la demande avant le premier rendu. */
     public static float measure(Font font, FontDescription face, String text, float size) {
-        return font.width(Ui.text(face, clean(text))) * size / Ui.FONT_BASE;
+        return font.width(Ui.text(face, clean(text))) * Ui.snap(face, size) / Ui.FONT_BASE;
     }
 
     /** Coupe un texte en lignes d'au plus {@code maxWidth} unites, hors du dessin. */
@@ -231,10 +231,12 @@ public final class UiGraphics {
     }
 
     public void text(FontDescription face, String text, float x, float y, float size, int color) {
+        float drawn = Ui.snap(face, size);
         Matrix3x2fStack pose = graphics.pose();
         pose.pushMatrix();
-        pose.translate(x, y);
-        pose.scale(size / Ui.FONT_BASE, size / Ui.FONT_BASE);
+        // Une police pixel recalee garde le meme centre vertical que la taille demandee.
+        pose.translate(x, y + (size - drawn) * 0.5f);
+        pose.scale(drawn / Ui.FONT_BASE, drawn / Ui.FONT_BASE);
         graphics.text(font, Ui.text(face, clean(text)), 0, 0, color, false);
         pose.popMatrix();
     }

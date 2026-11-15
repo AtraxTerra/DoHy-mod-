@@ -110,7 +110,7 @@ public final class HubController extends MenuController {
         java.time.ZonedDateTime now = java.time.ZonedDateTime.now(fr.atraxterra.dohy.util.RealClock.zone());
         long mineMinutes = fr.atraxterra.dohy.mine.MineService.minutesUntilReset();
         agenda.add(Card.of(new ItemStack(Items.IRON_PICKAXE), "Remise de la Mine", List.of("Dans " + until(mineMinutes)))
-                .badge(now.plusMinutes(mineMinutes).getHour() + " H").accent(0xFF2BC4C4));
+                .badge(hour(now.plusMinutes(mineMinutes))).accent(0xFF2BC4C4));
         java.time.ZonedDateTime eventNow = fr.atraxterra.dohy.faction.event.FactionEvents.now();
         fr.atraxterra.dohy.faction.event.FactionEventKind soonest = null;
         java.time.ZonedDateTime soonestTime = null;
@@ -128,11 +128,12 @@ public final class HubController extends MenuController {
         if (soonest != null) {
             agenda.add(Card.of(new ItemStack(soonest.icon()), soonest.label(),
                             List.of(MoneyFormat.shortForm(soonest.elo()) + " ELO"))
-                    .badge(day(soonestTime, eventNow) + soonestTime.getHour() + " H").accent(0xFFFAC400));
+                    .badge(day(soonestTime, eventNow).isEmpty() ? hour(soonestTime)
+                            : day(soonestTime, eventNow) + soonestTime.getHour() + " H").accent(0xFFFAC400));
         }
         long contractMinutes = ContractApi.minutesUntilDailyReset();
         agenda.add(Card.of(new ItemStack(Items.WRITABLE_BOOK), "Nouveaux contrats", List.of())
-                .badge(now.plusMinutes(contractMinutes).getHour() + " H").accent(0xFF2F5BEA));
+                .badge(hour(now.plusMinutes(contractMinutes))).accent(0xFF2F5BEA));
         TrixiumContest.catchUp(player);
         TrixiumData trixium = TrixiumContest.data(player);
         long daysLeft = daysLeftInMonth();
@@ -151,9 +152,10 @@ public final class HubController extends MenuController {
             // le marche n'est pas encore pret
         }
         List<Card> economy = List.of(
-                Card.of(new ItemStack(Items.CHEST_MINECART), "Banque", List.of(
-                                MoneyFormat.shortForm(Bank.banked(player)),
-                                "+" + MoneyFormat.shortForm(Bank.perDay(player)) + " / jour"))
+                Card.of(new ItemStack(Items.CHEST_MINECART), "Banque", Bank.banked(player) > 0 ? List.of(
+                                MoneyFormat.shortForm(Bank.banked(player)) + " $",
+                                "+" + MoneyFormat.shortForm(Bank.perDay(player)) + " / jour")
+                                : List.of("Rien de depose"))
                         .accent(0xFFFAC400).action("bank"),
                 Card.of(new ItemStack(Items.GOLD_BLOCK), booster > 1 ? "Booster x" + (long) booster : "Boutique",
                                 List.of(booster > 1 ? "Encore " + until(boosterLeft) : "Aucun booster actif"))
@@ -200,6 +202,21 @@ public final class HubController extends MenuController {
             return hours + " h " + String.format(java.util.Locale.ROOT, "%02d", minutes % 60L);
         }
         return Math.max(1L, minutes) + " min";
+    }
+
+    /** L'heure d'un rendez-vous : « 16 H », « 16 H 30 », « MINUIT », « MIDI ». */
+    private static String hour(java.time.ZonedDateTime at) {
+        // Les minutes restantes sont arrondies : 23 h 59 annonce minuit.
+        java.time.ZonedDateTime rounded = at.plusSeconds(90).withSecond(0).withNano(0);
+        int minute = rounded.getMinute() / 5 * 5;
+        String suffix = minute == 0 ? "" : " " + String.format(java.util.Locale.ROOT, "%02d", minute);
+        if (minute == 0 && rounded.getHour() == 0) {
+            return "MINUIT";
+        }
+        if (minute == 0 && rounded.getHour() == 12) {
+            return "MIDI";
+        }
+        return rounded.getHour() + " H" + suffix;
     }
 
     /** Le jour en trois lettres s'il n'est pas aujourd'hui (« MAR »). */

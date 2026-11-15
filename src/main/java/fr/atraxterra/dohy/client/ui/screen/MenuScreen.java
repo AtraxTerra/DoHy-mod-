@@ -291,6 +291,13 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                 }
                 default -> {
                     int columns = columnWidth > 330 ? 4 : columnWidth > 220 ? 3 : 2;
+                    // Trois cartes : trois colonnes, sans case vide au bout de la rangee. Et
+                    // des noms trop longs pour quatre colonnes passent a trois plutot que
+                    // d'etre coupes.
+                    if (columns == 4 && (cards.size() == 3
+                            || !namesFit(cards, (columnWidth - GAP * 3) / 4))) {
+                        columns = 3;
+                    }
                     float cardWidth = (columnWidth - GAP * (columns - 1)) / columns;
                     for (int start = 0; start < cards.size(); start += columns) {
                         float rowHeight = 0;
@@ -310,6 +317,20 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                 }
             }
             return cursor - top;
+        }
+
+        /** Le nom de chaque carte tient-il, pastille comprise, dans cette largeur ? */
+        private boolean namesFit(List<MenuView.Card> cards, float cardWidth) {
+            for (MenuView.Card card : cards) {
+                float badge = card.badge().isEmpty() ? 0.0f
+                        : Math.max(8.0f, UiGraphics.measure(font, Ui.PIXEL, card.badge(), 3.3f) + 5.4f) + 3.0f;
+                float needed = 6.0f + 19.3f + 4.7f + UiGraphics.measure(font, Ui.BOLD, card.title(), 6.3f) + badge
+                        + 5.0f;
+                if (needed > cardWidth) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         void clamp() {

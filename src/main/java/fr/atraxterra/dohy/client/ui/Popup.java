@@ -73,8 +73,9 @@ public final class Popup {
         p.rect(-400, -400, designWidth + 800, designHeight + 800, Paint.alpha(0xFF060708, 0.62f * visible));
         List<String> lines = detail.isEmpty() ? List.of() : g.wrap(Ui.BODY, detail, 5.7f, WIDTH - 24.0f);
         List<String> titleLines = g.wrap(Ui.WIDE, title, 8.0f, WIDTH - 24.0f);
-        boxHeight = 30.0f + titleLines.size() * 10.0f + lines.size() * 8.0f + (lines.isEmpty() ? 0 : 4.0f) + 8.7f
-                + BUTTON_HEIGHT + 10.0f;
+        // L'icone deborde de moitie : le texte commence sous elle, les boutons 9 unites plus bas.
+        boxHeight = 30.7f / 2.0f + 6.0f + titleLines.size() * 10.0f
+                + (lines.isEmpty() ? 0.0f : 4.0f + lines.size() * 8.0f) + 7.0f + BUTTON_HEIGHT + 10.0f;
         boxX = (designWidth - WIDTH) / 2.0f;
         boxY = (designHeight - boxHeight) / 2.0f + 6.0f * (1.0f - appear) + 4.0f * gone;
         p.shadow(boxX + 6, boxY + 10, WIDTH - 12, boxHeight - 10, 26, Paint.alpha(0xFF000000, 0.7f * visible));

@@ -107,6 +107,39 @@ public final class Ui {
     /** La taille a laquelle chaque police est definie (font/*.json). */
     public static final float FONT_BASE = 8.0f;
 
+    /**
+     * Les pixels physiques par unite du dessin en cours. Chaque ecran du kit (et les
+     * notifications) le pose avant de dessiner : la police pixel s'y cale.
+     */
+    private static float drawUnit = 3.0f;
+
+    /** Une police pixel : un pixel de la police vaut 200 / 2048 de sa taille. */
+    private static final float PIXEL_GRID = 200.0f / 2048.0f;
+
+    public static void drawUnit(float unit) {
+        drawUnit = Math.max(0.25f, unit);
+    }
+
+    public static float drawUnit() {
+        return drawUnit;
+    }
+
+    /**
+     * La taille reellement dessinee. La police pixel n'est nette qu'a un nombre entier
+     * de pixels physiques par pixel de police : entre deux, des rangees entieres
+     * disparaissent (le E perd sa barre, le B devient un D). On l'arrondit donc au
+     * multiple le plus proche, jamais en dessous d'un pixel. Les autres polices sont
+     * vectorielles et gardent leur taille.
+     */
+    public static float snap(FontDescription face, float size) {
+        if (!PIXEL.equals(face)) {
+            return size;
+        }
+        float perSize = PIXEL_GRID * drawUnit;
+        int pixels = Math.max(1, Math.round(size * perSize));
+        return pixels / perSize;
+    }
+
     // -- Images ------------------------------------------------------------------
 
     public static final Identifier CLOSE = texture("icon_close");

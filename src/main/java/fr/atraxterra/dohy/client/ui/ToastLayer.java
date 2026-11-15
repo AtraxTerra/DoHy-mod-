@@ -106,8 +106,11 @@ public final class ToastLayer implements GuiLayer {
     /** Par-dessus un ecran du kit : appele a la fin de son rendu. */
     public static void drawOver(GuiGraphicsExtractor graphics) {
         if (!ENTRIES.isEmpty()) {
+            float screenUnit = Ui.drawUnit();
             graphics.nextStratum();
             draw(graphics);
+            // Les mesures de l'ecran (clics, champs de texte) reprennent son echelle.
+            Ui.drawUnit(screenUnit);
         }
     }
 
@@ -140,6 +143,7 @@ public final class ToastLayer implements GuiLayer {
         float right = screenWidth / scale - MARGIN;
         float bottom = screenHeight / scale - MARGIN;
 
+        Ui.drawUnit(scale * guiScale);
         UiGraphics g = new UiGraphics(graphics, minecraft.font, -1, -1);
         g.paint(new Paint(graphics, scale * guiScale));
         Matrix3x2fStack pose = graphics.pose();

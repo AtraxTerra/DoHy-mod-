@@ -57,6 +57,7 @@ public abstract class UiScreen extends Screen {
         scale = physical >= 1.0f ? physical / guiScale : fit;
         originX = Math.round((width - designWidth * scale) / 2.0f * guiScale) / (float) guiScale;
         originY = Math.round((height - designHeight * scale) / 2.0f * guiScale) / (float) guiScale;
+        Ui.drawUnit(unit());
         elements.clear();
         focusedElement = null;
         draggedElement = null;
@@ -134,6 +135,7 @@ public abstract class UiScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         double x = designX(mouseX);
         double y = designY(mouseY);
+        Ui.drawUnit(unit());
         UiGraphics ui = new UiGraphics(graphics, font, mouseX, mouseY);
         ui.design(x, y, designWidth, designHeight);
         ui.paint(new Paint(graphics, unit()));

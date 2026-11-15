@@ -40,7 +40,7 @@ public final class Nav {
                     new Item("banque", "Banque", () -> new ItemStack(Items.CHEST_MINECART), "bank"),
                     new Item("clicker", "Clicker", () -> new ItemStack(Items.COOKIE), "clicker"))),
             new Group("PROGRESSION", List.of(
-                    new Item("pass", "Pass du mois", () -> new ItemStack(Items.FIREWORK_STAR), "pass"),
+                    new Item("pass", "Pass du mois", () -> new ItemStack(Items.AMETHYST_SHARD), "pass"),
                     new Item("contrats", "Contrats", () -> new ItemStack(Items.WRITABLE_BOOK), "contracts"),
                     new Item("metiers", "Metiers", () -> new ItemStack(Items.IRON_PICKAXE), "jobs"),
                     new Item("collections", "Collections", () -> new ItemStack(Items.BOOKSHELF), "collections"),
