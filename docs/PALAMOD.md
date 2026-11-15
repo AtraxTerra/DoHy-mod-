@@ -973,6 +973,39 @@ d'équipe bleue au lieu de `#2537FB`.
 - Les gains d'XP codés en dur sont des XP de PalaJobs, **convertis au rapport 0,357** (§ 1) :
   4 → 1,43 (partie fractionnaire tirée au sort), 15 000 → environ 5 350.
 
+### L'XP de Mineur des minerais et des particules (2026-11-15)
+
+Jusqu'au 2026-11-15, **les minerais de PalaMod ne rapportaient aucune XP de Mineur** :
+`job_progression.json` ne listait que des minerais vanilla, et les tags `#dohy:mining_xp/*`,
+prévus pour un mod tiers, sont vides. Le wiki (« Evolution du métier Mineur ») ne donne pas d'XP
+de minage pour eux : le minage y rapporte sur la roche et les minerais vanilla, et les minerais
+de PalaMod passent par les **particules** du cobblebreaker. Deux corrections :
+
+| Source | XP | D'où vient la valeur |
+|---|---|---|
+| Minerai d'améthyste | 12 par bloc | échelle de DoHy, par le rythme de minage (400/h) |
+| Minerai de titane | 16 | 300/h |
+| Minerai de paladium | 30 | 150/h |
+| Minerai de findium | 75 | 50/h |
+| Minerai de paladium vert | 90 | 40/h, comme le diamant |
+| Minerai de trixium | 140 | 25/h |
+| Minerai de pierre d'invocation | 170 | 20/h |
+| Particules du cobblebreaker, prises à la main, dès Mineur 25 | fer 0,71 · or 1,43 · diamant 2,86 · améthyste 4,28 · titane 5,71 · paladium 7,14 | wiki × 0,357 (niveau 5 du wiki) |
+
+- **Les minerais** suivent l'échelle des blocs de DoHy, pas celle de PalaJobs : sur le vanilla,
+  l'XP d'un minerai suit environ 2 300 × (blocs trouvés par heure)^−0,88 — fer 12, or 20, diamant
+  90, émeraude 110, débris 400 —, et les rythmes sont ceux des lignes `FOUND` de `data/rates.csv`.
+  Les minerais de PalaMod se rendent eux-mêmes ; un minerai posé puis recassé ne rapporte rien
+  (`PlacedBlocks`), comme tous les blocs.
+- **Le minerai de pépites d'endium** n'a pas de ligne : il ne se casse qu'au niveau 100, le dernier.
+- **Les particules** : l'XP passe par `MinerXpEvents.particlesTaken`, appelé quand la particule
+  sort de la machine **à la main**, par clic (`onTake`) ou par maj-clic (`quickMoveStack`, qui
+  n'appelait pas `onTake` : les succès du crusher et du cobblebreaker ne comptaient pas non plus
+  au maj-clic, c'est corrigé au passage). Un entonnoir ne donne rien, comme dans l'original.
+- Le même jour, **les minerais vanilla oubliés** : charbon (5, 6 en abîmes), variantes des abîmes
+  du cuivre, de l'or, de la redstone, du lapis et de l'émeraude (environ +15 %, comme le fer et le
+  diamant), quartz du Nether (8) et or du Nether (7). Ils ne rapportaient rien non plus.
+
 ### Minerai de pépites d'endium — `BlockEndiumNuggetOre`, `BaseWorldGenerator`
 
 Dureté 5, résistance de la bedrock, une seule pépite sans fortune ni toucher de soie ; le casser

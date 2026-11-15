@@ -184,15 +184,30 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
   terre en place) et `EarthSites` (une plante morte n'est gardée que sur de la terre, plus sur de
   l'herbe). Le champ de mines des bases ennemies a été corrigé.
 - **`minecraft:potent_sulfur`** classé farmable sur la base des tags de geyser de 26.2 — **à vérifier en jeu** : si l'éruption ne produit pas de gain net, le reclasser en `FOUND`.
-- **Les minerais de PalaMod ne rapportent pas d'XP de Mineur** (relevé le 2026-11-15 en écrivant
-  l'onglet XP) : `job_progression.json` ne liste que les minerais vanilla, et les quatre tags
-  `#dohy:mining_xp/*` qui devaient recevoir ceux d'un autre mod sont vides. Paladium, titane,
-  améthyste, findium et trixium se minent donc pour rien côté métier. À trancher : les ranger dans
-  ces tags (les valeurs 30 / 80 / 180 / 350 existent déjà) ou leur donner des lignes propres.
+- ~~**Les minerais de PalaMod ne rapportent pas d'XP de Mineur** (relevé le 2026-11-15 en écrivant
+  l'onglet XP).~~ → **corrigé le 2026-11-15** : des lignes propres dans `job_progression.json`,
+  les tags `#dohy:mining_xp/*` restant au mod tiers ; voir le journal.
 
 ---
 
 ## Journal des sessions
+
+### 2026-11-15 (suite) — l'XP de Mineur des minerais
+
+**Demande** : « j'ai merged, corrige le problème d'xp du coup » (le constat de l'onglet XP : les
+minerais de PalaMod ne rapportaient rien au Mineur).
+
+**Fait** (`feat/xp-minerais`) : description dans PALAMOD.md, « L'XP de Mineur des minerais et des
+particules ».
+- **Minerais de PalaMod** : améthyste 12, titane 16, paladium 30, findium 75, paladium vert 90,
+  trixium 140, pierre d'invocation 170 par bloc, sur l'échelle des blocs de DoHy (déduite du rythme
+  de minage de `rates.csv`, qui redonne fer 12, diamant 90, débris 400). Pas de ligne pour le
+  minerai de pépites d'endium, cassable seulement au niveau 100.
+- **Particules du cobblebreaker** prises à la main, dès Mineur 25 : la source du wiki pour les
+  minerais de PalaMod, × 0,357. Le maj-clic compte enfin, pour l'XP comme pour les succès.
+- **Minerais vanilla qui ne rapportaient rien** : charbon, variantes des abîmes du cuivre, de
+  l'or, de la redstone, du lapis et de l'émeraude, quartz et or du Nether.
+- L'onglet XP du Mineur les montre (nouvelle section « Cobblebreaker »).
 
 ### 2026-11-15 (suite) — l'onglet XP des métiers
 

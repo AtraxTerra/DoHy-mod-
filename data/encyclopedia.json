@@ -948,17 +948,19 @@
       "icon": "palamod:paladium_pickaxe",
       "title": "Mineur",
       "card": [
-        "Miner et fondre",
+        "Miner, les particules",
         "Outils de zone, aimant"
       ],
       "summary": [
-        "Le Mineur gagne son XP en minant et en fondant. Il debloque les outils de zone, l'aimant, les coffres de PalaMod, le compresseur a cobblestone et, tout au bout, le minerai de pepites d'endium."
+        "Le Mineur gagne son XP en minant les minerais, vanilla comme de PalaMod, et en sortant a la main les particules du cobblebreaker. Il debloque les outils de zone, l'aimant, les coffres de PalaMod, le compresseur a cobblestone et, tout au bout, le minerai de pepites d'endium."
       ],
       "sections": [
         {
           "title": "A retenir",
           "text": [
-            "- Les minerais de PalaMod se rendent eux-memes : fonds-les au four ou au haut fourneau.",
+            "- L'onglet XP de la fiche du metier donne le gain de chaque minerai et de chaque particule.",
+            "- Les minerais de PalaMod se rendent eux-memes : fonds-les au four ou au haut fourneau. Un minerai pose puis recasse ne rapporte rien.",
+            "- Les particules du cobblebreaker rapportent des Mineur 25, si tu les sors toi-meme de la machine : un entonnoir n'en donne pas.",
             "- La pioche des dieux monte de niveau avec les blocs casses, jusqu'au niveau 100.",
             "- Mineur 90 : le portail de la dimension du Mineur.",
             "- Mineur 95 : une chance infime de croiser le God Villager."
@@ -1132,7 +1134,7 @@
         {
           "title": "Automatiser",
           "text": [
-            "Un entonnoir sous le cobblebreaker et le crusher ne recupere que leurs produits."
+            "Un entonnoir sous le cobblebreaker et le crusher ne recupere que leurs produits. Les particules qu'il sort ne rapportent pas d'XP de Mineur : seules celles prises a la main comptent."
           ]
         }
       ],
