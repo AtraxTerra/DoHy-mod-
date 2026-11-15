@@ -2715,15 +2715,15 @@ offres tournantes du Clic Shop. `/clicker`, ou la carte « Clicker » du menu.
 Les sept types d'amélioration (`ClickerUpgrade.apply`) et leurs conditions
 (`checkConditions` : pièces récoltées, jours de saison, bâtiments possédés, amélioration possédée) :
 
-| Type | Effet | Exemplaires demandés (wiki) |
+| Type | Effet | Exemplaires demandés (relevés, depuis le 2026-11-15) |
 |---|---|---|
 | Clic (25) | double le clic | l'amélioration précédente |
 | Production globale (10) | +10 % sur tout | la précédente |
 | Connaissance de terrain (4) | +1 % par niveau du métier, sur sa catégorie | aucun |
-| Amélioration de bâtiment (70) | +100 % | 5 (niveau 1), 10 (niveau 2) |
-| Production nombreuse (35) | +1 % par exemplaire | 7 |
+| Amélioration de bâtiment (70) | +100 % | 3 (niveau 1), 7 (niveau 2) — le wiki disait 5 et 10 |
+| Production nombreuse (35) | +1 % par exemplaire | 2 — le wiki disait 7 |
 | Production postérieure (26) | +1 % par exemplaire du bâtiment précédent | 4 |
-| Amélioration de catégorie (25) | +50 % | un de chaque bâtiment de la catégorie |
+| Amélioration de catégorie (25) | +50 % (+10 % pour les quatre outils en paladium) | relevée : 1 ou 3 exemplaires d'un bâtiment ; sinon (wiki) un de chaque bâtiment de la catégorie |
 
 ### La production hors ligne (DoHy, 2026-11-14)
 
@@ -2759,13 +2759,29 @@ Le jar ne contient pas les tables : chez Paladium, ce sont trois fichiers du ser
   Kraken est « Créature hostile », « Profondeur » et « Sous l'eau »). Une amélioration de
   catégorie sans prix relevé vaut quatre fois le dernier bâtiment de sa catégorie. Les quatre
   outils en paladium gardent leur relevé (+10 %, un seul bâtiment demandé).
-- Quand le wiki et les relevés divergent sur un nombre d'exemplaires (5 et 10 contre 3 et 7), le
-  wiki l'emporte : c'est la source demandée.
+- Quand le wiki et les relevés divergent sur un nombre d'exemplaires (5 et 10 contre 3 et 7 pour
+  les bâtiments, 7 contre 2 pour la production nombreuse), **les relevés l'emportent depuis le
+  2026-11-15** (le joueur : « pour le clicker aide-toi de » l'optimiseur PalaTracker, qui les
+  reprend). Avant, le wiki l'emportait. Les catégories relevées gardent aussi leur condition
+  (trois exemplaires d'un bâtiment pour « Technique de persuasion », « Manteau épais », « Potion
+  contre le mal de mer » et « Lame de hache en Endium »).
 - Les icônes : PalaClicker montre un objet par bâtiment et par amélioration, donné par le
   serveur. Ici, un objet du jeu ou du mod qui dit la même chose (une pioche en bois pour la Mine
   abandonnée, la pioche en paladium pour « Pioche en Paladium »).
 - La production de base suit la formule du jar (`0,1 × 1,8^rang`), pas les relevés, qui s'en
   écartent de moins de 1 %.
+
+### L'optimiseur PalaTracker (2026-11-15)
+
+[palatracker.bromine.fr/clicker-optimizer](https://palatracker.bromine.fr/clicker-optimizer), du même
+auteur que les relevés. Ses neuf tables (bâtiments, clic, améliorations de bâtiment, de catégorie,
+globales, nombreuses, postérieures, de terrain, métiers) sont **identiques octet pour octet** à
+celles de `BroMinee/PaladiumClicker` déjà utilisées (empreintes comparées le 2026-11-15). Ses
+formules sont celles de DoHy : production `base × (1 + 0,1 × globales + 0,01 × niveau du métier
+(terrain) + améliorations de bâtiment + 0,01 × exemplaires (nombreuse) + 0,01 × exemplaires du
+précédent (postérieure) + catégories) × exemplaires`, base `0,1 × 1,8^rang`, prix `× 1,1` par
+exemplaire, conditions « pièces récoltées », « jour de saison », « exemplaires d'un bâtiment ».
+Seuls les nombres d'exemplaires différaient (voir plus haut) : ils suivent maintenant les relevés.
 
 ### Le Clic Shop
 

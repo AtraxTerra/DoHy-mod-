@@ -265,11 +265,15 @@ def main():
                        ("many", load("many_upgrade")), ("posterior", load("posterior_upgrade"))):
         for row in rows:
             days = [number(c["day"]) for c in row["condition"] if "day" in c]
-            known[(row["active_index"], name)] = (number(row["price"]), days[0] if days else 0)
+            owned = [int(number(c["own"])) for c in row["condition"] if "own" in c]
+            known[(row["active_index"], name)] = (number(row["price"]), days[0] if days else 0,
+                                                  owned[0] if owned else None)
     multiple = {"1": 9.0, "2": 19.0, "many": 4.0, "posterior": 2.25}
     shift = {"1": 0, "2": 1, "many": -1, "posterior": 0}
-    # Le nombre d'exemplaires que chaque type demande : celui du wiki.
-    copies = {"1": 5, "2": 10, "many": 7, "posterior": 4}
+    # Le nombre d'exemplaires que chaque type demande : celui des releves (BroMinee,
+    # que reprend l'optimiseur PalaTracker), 3, 7, 2 et 4. Jusqu'au 2026-11-15 c'etait
+    # celui du wiki (5, 10, 7 et 4) ; le joueur a demande de suivre PalaTracker.
+    copies = {"1": 3, "2": 7, "many": 2, "posterior": 4}
     kinds = {"1": ("building", 1.0), "2": ("building", 1.0), "many": ("many", 0.01), "posterior": ("posterior", 0.01)}
     for suffix in ("1", "2", "many", "posterior"):
         for key in ids:
@@ -282,18 +286,20 @@ def main():
                 upgrade_names[upgrade_id] = upgrade_names[match[0]]
             index = index_of[key]
             if (index, suffix) in known:
-                price, day = known[(index, suffix)]
+                price, day, owned = known[(index, suffix)]
             else:
                 price = prices[index] * multiple[suffix]
                 day = round(43 + (index - 15) * 5.5) + shift[suffix]
-            when = ([{"type": "time", "value": day}] if day > 0 else []) + [owns(key, copies[suffix])]
+                owned = None
+            when = ([{"type": "time", "value": day}] if day > 0 else []) + [owns(key, owned or copies[suffix])]
             kind, modifier = kinds[suffix]
             upgrade(upgrade_id, BUILDING_ITEMS[key], price, kind, key, modifier, when)
 
     # -- Par categorie. Releve : les quatre outils en paladium donnent +10 % et
-    # demandent un batiment ; les autres donnent +50 %. Wiki : +50 %, un
-    # exemplaire de chaque batiment de la categorie. Les outils en paladium
-    # gardent leur releve ; tout le reste suit le wiki. Un prix non releve vaut
+    # demandent un batiment ; les quatre autres releves donnent +50 % et demandent
+    # trois exemplaires d'un batiment. Toute categorie relevee garde sa condition
+    # (PalaTracker, 2026-11-15) ; les treize autres suivent le wiki : +50 %, un
+    # exemplaire de chaque batiment de la categorie. Un prix non releve vaut
     # quatre fois le dernier batiment de la categorie.
     recorded = {row["name"]: row for row in load("category_upgrade")}
     for key, name in names("clicker.upgrade.category_"):
@@ -301,15 +307,15 @@ def main():
         category = key[:-2] if key[-2:] in ("_1", "_2") else key
         members = [ids[index] for index in CATEGORIES[category]]
         row = recorded.get(name)
-        if key.endswith("_1"):
+        if row:
             need = [c for c in row["condition"] if "index" in c][0]
             when = [owns(ids[need["index"]], need["own"])]
             modifier = row["pourcentage"]
         else:
             when = [owns(member, 1) for member in members]
-            if key.endswith("_2"):
-                when.append(after("category_%s_1" % category))
             modifier = 0.5
+        if key.endswith("_2"):
+            when.append(after("category_%s_1" % category))
         price = number(row["price"]) if row else prices[max(CATEGORIES[category])] * 4
         upgrade(upgrade_id, CATEGORY_ITEMS[upgrade_id], price, "category", category, modifier, when)
 
