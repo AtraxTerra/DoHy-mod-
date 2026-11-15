@@ -71,6 +71,25 @@ public final class RealClockTest {
         eq("jeudi 20h vers lundi 5h : 3 j 9 h",
                 untilWeek(5, DayOfWeek.MONDAY, "2026-11-05T20:00"), (3L * 24 + 9) * 60);
 
+        // Les tranches de la Mine : 5 h, 10 h, 15 h, 20 h et 1 h (2026-11-15 est un dimanche).
+        long morning = slot("2026-11-15T05:00");
+        eq("5h00 et 9h59 sont la meme tranche", slot("2026-11-15T09:59"), morning);
+        eq("10h00 ouvre la tranche suivante", slot("2026-11-15T10:00") - morning, 1L);
+        eq("15h00, la troisieme", slot("2026-11-15T15:00") - morning, 2L);
+        eq("20h00 et 0h59 sont la meme tranche", slot("2026-11-16T00:59"), slot("2026-11-15T20:00"));
+        eq("1h00 ouvre la cinquieme", slot("2026-11-16T01:00") - morning, 4L);
+        eq("4h59 est encore la cinquieme", slot("2026-11-16T04:59") - morning, 4L);
+        eq("5h00 le lendemain suit la cinquieme", slot("2026-11-16T05:00") - morning, 5L);
+        eq("4h59 la veille precede 5h00", morning - slot("2026-11-15T04:59"), 1L);
+        eq("de 9h50 a 10h : 10 min", untilSlot("2026-11-15T09:50"), 10L);
+        eq("de 21h a 1h : 4 h", untilSlot("2026-11-15T21:00"), 240L);
+        eq("de 4h30 a 5h : 30 min", untilSlot("2026-11-16T04:30"), 30L);
+        eq("apres 20h, la suivante s'ouvre a 1h",
+                RealClock.nextSlot(5, MINE, LocalDateTime.parse("2026-11-15T21:00")).getHour(), 1L);
+        eq("apres 1h, la suivante s'ouvre a 5h",
+                RealClock.nextSlot(5, MINE, LocalDateTime.parse("2026-11-16T02:00")).getHour(), 5L);
+        inRange("le compte des tranches reste dans (0, 300]", untilSlot("2026-11-15T13:37"), 1L, 300L);
+
         eq("une heure de bascule negative se comporte comme 0",
                 day(-3, "2026-11-05T20:00"), day(0, "2026-11-05T20:00"));
         eq("une heure de bascule au-dela de 23 se comporte comme 23",
@@ -103,6 +122,17 @@ public final class RealClockTest {
 
     private static long week(int resetHour, DayOfWeek start, String localTime) {
         return RealClock.weekKey(resetHour, start, LocalDateTime.parse(localTime));
+    }
+
+    /** Les tranches de la Mine : toutes les 5 heures depuis 5 h. */
+    private static final int[] MINE = {0, 5, 10, 15, 20};
+
+    private static long slot(String localTime) {
+        return RealClock.slotKey(5, MINE, LocalDateTime.parse(localTime));
+    }
+
+    private static long untilSlot(String localTime) {
+        return RealClock.minutesUntilNextSlot(5, MINE, LocalDateTime.parse(localTime));
     }
 
     private static long until(int resetHour, String localTime) {

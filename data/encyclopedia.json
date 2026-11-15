@@ -225,7 +225,7 @@
         {
           "title": "Les heures",
           "text": [
-            "Les contrats et la Mine changent a 5 h, le classement de faction tombe le lundi a minuit, les events suivent le calendrier de Paladium."
+            "Les contrats changent a 5 h, la Mine toutes les cinq heures (5 h, 10 h, 15 h, 20 h, 1 h), le classement de faction tombe le lundi a minuit, les events suivent le calendrier de Paladium."
           ]
         }
       ],
@@ -2661,13 +2661,14 @@
         "Sous terre"
       ],
       "summary": [
-        "Un monde de minage remis a neuf chaque matin a 5 h, uniquement sous terre. On y entre par la borne MINE du spawn."
+        "Un monde de minage remis a neuf toutes les cinq heures, uniquement sous terre. On y entre par la borne MINE du spawn."
       ],
       "sections": [
         {
           "title": "Les regles",
           "text": [
-            "- Une mine neuve chaque jour ; a 5 h, les joueurs presents sont ramenes au spawn, prevenus 10, 5 et 1 minute avant.",
+            "- Une mine neuve a 5 h, 10 h, 15 h, 20 h et 1 h ; a l'heure, les joueurs presents sont ramenes au spawn, prevenus 10, 5 et 1 minute avant.",
+            "- Un redemarrage du serveur ne la remet pas a neuf : la mine en cours reste telle quelle.",
             "- Pas de lumiere du jour : prends des torches.",
             "- La pierre et l'ardoise n'y donnent pas de cobblestone."
           ]

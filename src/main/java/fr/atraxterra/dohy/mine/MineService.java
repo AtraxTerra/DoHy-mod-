@@ -55,9 +55,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
- * La Mine : un monde de minage public, remis a neuf chaque jour (dans
- * l'esprit de la mine de NationsGlory), a part de la dimension du Mineur du
- * PalaMod.
+ * La Mine : un monde de minage public, remis a neuf toutes les cinq heures
+ * (dans l'esprit de la mine de NationsGlory), a part de la dimension du Mineur
+ * du PalaMod.
  *
  * <h2>Uniquement sous terre</h2>
  *
@@ -67,17 +67,25 @@ import java.util.stream.Stream;
  * celles des carvers du jeu : cavernes, boyaux, ravins. On arrive dans une salle
  * creusee a y = 30, eclairee de lanternes, la borne RETOUR contre la paroi nord.
  *
- * <h2>Une mine neuve chaque matin</h2>
+ * <h2>Une mine neuve toutes les cinq heures</h2>
  *
  * <p>Une dimension ne se regenere pas pendant que le serveur tourne. La Mine
- * change donc de <b>terrain</b> plutot que de graine : chaque jour (a 5 h,
- * heure de {@link RealClock}) ouvre une nouvelle zone de 2 000 × 2 000 blocs,
- * loin des precedentes, dans une roche que personne n'a touchee. Celle de la
- * veille n'est plus jamais rejointe ; ses fichiers sont effaces au demarrage
- * suivant du serveur ({@link #onAboutToStart}).
+ * change donc de <b>terrain</b> plutot que de graine : chaque tranche ouvre une
+ * nouvelle zone de 2 000 × 2 000 blocs, loin des precedentes, dans une roche
+ * que personne n'a touchee. Demande du joueur (2026-11-15) : toutes les cinq
+ * heures, soit a 5 h, 10 h, 15 h, 20 h et 1 h, heure de {@link RealClock} (la
+ * derniere tranche, de 1 h a 5 h, ne dure que quatre heures : la grille revient
+ * chaque matin a 5 h). L'ancienne zone n'est plus jamais rejointe ; ses
+ * fichiers sont effaces au demarrage suivant du serveur ({@link #onAboutToStart}).
  *
- * <p>Dix, cinq et une minute avant 5 h, les joueurs presents sont prevenus ; a
- * 5 h, ils sont ramenes au spawn.
+ * <p>Dix, cinq et une minute avant la remise a neuf, les joueurs presents sont
+ * prevenus ; a l'heure, ils sont ramenes au spawn.
+ *
+ * <p><b>Un redemarrage ne touche a rien.</b> La salle d'arrivee est posee une
+ * fois par tranche : si elle est deja la (sa borne RETOUR en place), un
+ * redemarrage la laisse telle quelle. Avant, elle etait refaite au premier
+ * passage apres chaque demarrage, et un joueur revenu dans la meme zone croyait
+ * a une remise a neuf manquee.
  *
  * <h2>Les regles (choix du joueur)</h2>
  * <ul>
@@ -88,7 +96,7 @@ import java.util.stream.Stream;
  *   <li>mourir a la Mine ne fait rien perdre : l'inventaire et l'experience
  *       sont rendus a la reapparition ;</li>
  *   <li>aucun monstre ;</li>
- *   <li>on ne sort pas de la zone du jour.</li>
+ *   <li>on ne sort pas de la zone en cours.</li>
  * </ul>
  *
  * <p>Les minerais : ceux du jeu (emeraude comprise), ceux du PalaMod a leur
@@ -103,13 +111,16 @@ public final class MineService {
     public static final ResourceKey<Level> DIMENSION =
             ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "mine"));
 
-    /** La demi-largeur de la zone du jour : 2 000 × 2 000 blocs. */
+    /** La demi-largeur de la zone en cours : 2 000 × 2 000 blocs. */
     static final int HALF = 1000;
 
-    /** L'heure de la remise a neuf. */
+    /** L'heure de la premiere remise a neuf de la journee. */
     static final int RESET_HOUR = 5;
 
-    /** L'ecart entre les zones de deux jours. */
+    /** Les remises a neuf, en heures apres 5 h : 5 h, 10 h, 15 h, 20 h et 1 h. */
+    static final int[] RESET_OFFSETS = {0, 5, 10, 15, 20};
+
+    /** L'ecart entre les zones de deux tranches. */
     static final int SPACING = 20_000;
 
     /** La hauteur de la salle d'arrivee, en pleine roche (la Mine va de y = -64 a 127). */
@@ -130,12 +141,12 @@ public final class MineService {
             Items.COBBLED_DEEPSLATE, Items.STONE, Items.DEEPSLATE, Items.GRANITE, Items.DIORITE, Items.ANDESITE,
             Items.TUFF);
 
-    /** Les jours avances par {@code /mine admin remise}, pour essayer sans attendre 5 h. */
+    /** Les tranches avancees par {@code /mine admin remise}, pour essayer sans attendre l'heure. */
     private static int shift;
 
-    private static long lastDay = Long.MIN_VALUE;
-    private static long preparedDay = Long.MIN_VALUE;
-    private static long centerDay = Long.MIN_VALUE;
+    private static long lastPeriod = Long.MIN_VALUE;
+    private static long preparedPeriod = Long.MIN_VALUE;
+    private static long centerPeriod = Long.MIN_VALUE;
     private static BlockPos center;
     private static BlockPos arrival;
     private static int warned = Integer.MAX_VALUE;
@@ -150,16 +161,21 @@ public final class MineService {
     private MineService() {
     }
 
-    // -- Le calendrier et la zone du jour -------------------------------------------
+    // -- Le calendrier et la zone en cours ------------------------------------------
 
-    /** Le jour de la Mine : il change a 5 h. */
-    static long day() {
-        return RealClock.dayKey(RESET_HOUR) + shift;
+    /** La tranche de la Mine : elle change a 5 h, 10 h, 15 h, 20 h et 1 h. */
+    static long period() {
+        return RealClock.slotKey(RESET_HOUR, RESET_OFFSETS) + shift;
     }
 
-    /** Le centre, en x, de la zone d'un jour. */
-    static int base(long day) {
-        return 200_000 + (int) Math.floorMod(day, 500L) * SPACING;
+    /** L'heure de la prochaine remise a neuf, pour les messages. */
+    static int nextResetHour() {
+        return RealClock.nextSlot(RESET_HOUR, RESET_OFFSETS).getHour();
+    }
+
+    /** Le centre, en x, de la zone d'une tranche. */
+    static int base(long period) {
+        return 200_000 + (int) Math.floorMod(period, 500L) * SPACING;
     }
 
     public static ServerLevel level(MinecraftServer server) {
@@ -170,14 +186,14 @@ public final class MineService {
         return entity.level().dimension() == DIMENSION;
     }
 
-    /** Le centre de la zone du jour, a la hauteur de la salle d'arrivee. */
+    /** Le centre de la zone en cours, a la hauteur de la salle d'arrivee. */
     static BlockPos center(ServerLevel level) {
-        long day = day();
-        if (center != null && centerDay == day) {
+        long period = period();
+        if (center != null && centerPeriod == period) {
             return center;
         }
-        center = new BlockPos(base(day), ARRIVAL_Y, 0);
-        centerDay = day;
+        center = new BlockPos(base(period), ARRIVAL_Y, 0);
+        centerPeriod = period;
         return center;
     }
 
@@ -187,7 +203,7 @@ public final class MineService {
 
     // -- Entrer, sortir ---------------------------------------------------------------
 
-    /** La borne MINE de l'atrium : vers l'arrivee de la zone du jour. */
+    /** La borne MINE de l'atrium : vers l'arrivee de la zone en cours. */
     public static void enter(ServerPlayer player) {
         ServerLevel level = level(player.level().getServer());
         if (level == null) {
@@ -200,7 +216,7 @@ public final class MineService {
         player.teleport(new TeleportTransition(level, new Vec3(pad.getX() + 0.5d, pad.getY(), pad.getZ() + 0.5d),
                 Vec3.ZERO, 180.0f, 0.0f, TeleportTransition.DO_NOTHING));
         tell(player, "Bienvenue a la Mine : de la roche a perte de vue, prends des torches. "
-                + "Elle sera remise a neuf demain a 5 h.", ChatFormatting.GOLD);
+                + "Elle sera remise a neuf a " + nextResetHour() + " h.", ChatFormatting.GOLD);
         tell(player, "Pas de cobblestone ici, et mourir ne fait rien perdre. Sortie : la borne RETOUR ou /spawn.",
                 ChatFormatting.GRAY);
     }
@@ -212,16 +228,25 @@ public final class MineService {
     }
 
     /**
-     * L'arrivee du jour : une salle de 7 × 7 creusee en pleine roche au centre
+     * L'arrivee de la tranche : une salle de 7 × 7 creusee en pleine roche au centre
      * de la zone, sol de pierre polie, quatre lanternes, la borne RETOUR contre
      * la paroi nord. Les parois sont bouchees ou il le faut (galerie, lave, eau,
      * gravier qui tomberait) : on arrive toujours dans une salle close et sure,
-     * dont on sort a la pioche. Posee une fois par jour.
+     * dont on sort a la pioche. Posee une fois par tranche, et pas refaite apres
+     * un redemarrage si elle est deja la.
      */
     private static BlockPos prepare(ServerLevel level) {
         BlockPos middle = center(level);
-        long day = day();
-        if (arrival != null && preparedDay == day) {
+        long period = period();
+        if (arrival != null && preparedPeriod == period) {
+            return arrival;
+        }
+        BlockPos terminal = middle.offset(0, 0, -ROOM);
+        BlockState there = level.getBlockState(terminal);
+        if (there.is(DoHySpawn.TERMINAL.get()) && there.getValue(SpawnTerminalBlock.KIND) == SpawnTerminalBlock.Kind.RETURN) {
+            // Deja posee pendant cette tranche, avant un redemarrage : rien a refaire.
+            arrival = middle;
+            preparedPeriod = period;
             return arrival;
         }
         BlockState wall = Blocks.STONE.defaultBlockState();
@@ -256,8 +281,8 @@ public final class MineService {
                 .setValue(SpawnTerminalBlock.FACING, Direction.SOUTH)
                 .setValue(SpawnTerminalBlock.KIND, SpawnTerminalBlock.Kind.RETURN), Block.UPDATE_ALL);
         arrival = middle;
-        preparedDay = day;
-        DoHy.LOGGER.info("Mine : zone du jour {} autour de {} {}, salle d'arrivee a y = {}", day, middle.getX(),
+        preparedPeriod = period;
+        DoHy.LOGGER.info("Mine : zone de la tranche {} autour de {} {}, salle d'arrivee a y = {}", period, middle.getX(),
                 middle.getZ(), middle.getY());
         return arrival;
     }
@@ -274,22 +299,22 @@ public final class MineService {
         if (level == null) {
             return;
         }
-        long day = day();
-        if (lastDay == Long.MIN_VALUE) {
-            lastDay = day;
+        long period = period();
+        if (lastPeriod == Long.MIN_VALUE) {
+            lastPeriod = period;
         }
-        if (day != lastDay) {
-            lastDay = day;
+        if (period != lastPeriod) {
+            lastPeriod = period;
             warned = Integer.MAX_VALUE;
             for (ServerPlayer player : List.copyOf(level.players())) {
                 tell(player, "La Mine s'effondre : une mine neuve vous attend a la borne MINE du spawn.",
                         ChatFormatting.RED);
                 leave(player);
             }
-            DoHy.LOGGER.info("Mine : remise a neuf (jour {})", day);
+            DoHy.LOGGER.info("Mine : remise a neuf (tranche {})", period);
             return;
         }
-        long minutes = RealClock.minutesUntilNextDay(RESET_HOUR);
+        long minutes = RealClock.minutesUntilNextSlot(RESET_HOUR, RESET_OFFSETS);
         for (int warning : WARNINGS) {
             if (minutes < warning && warning < warned) {
                 warned = warning;
@@ -307,7 +332,7 @@ public final class MineService {
             double x = Math.clamp(player.getX(), middle.getX() - HALF + 1.0d, middle.getX() + HALF - 1.0d);
             double z = Math.clamp(player.getZ(), middle.getZ() - HALF + 1.0d, middle.getZ() + HALF - 1.0d);
             player.teleportTo(x, player.getY(), z);
-            tell(player, "C'est le bord de la Mine du jour.", ChatFormatting.RED);
+            tell(player, "C'est le bord de la Mine.", ChatFormatting.RED);
         }
     }
 
@@ -397,16 +422,16 @@ public final class MineService {
     // -- Le menage au demarrage --------------------------------------------------------
 
     /**
-     * Avant l'ouverture des mondes : efface les fichiers des zones des jours
-     * passes (regions, entites, points d'interet). Seule la bande du jour est
+     * Avant l'ouverture des mondes : efface les fichiers des zones des tranches
+     * passees (regions, entites, points d'interet). Seule la bande en cours est
      * gardee. Rien d'autre n'est touche, et seulement dans le dossier de la
      * Mine.
      */
     @SubscribeEvent
     public static void onAboutToStart(ServerAboutToStartEvent event) {
-        lastDay = Long.MIN_VALUE;
-        preparedDay = Long.MIN_VALUE;
-        centerDay = Long.MIN_VALUE;
+        lastPeriod = Long.MIN_VALUE;
+        preparedPeriod = Long.MIN_VALUE;
+        centerPeriod = Long.MIN_VALUE;
         center = null;
         arrival = null;
         shift = 0;
@@ -415,7 +440,7 @@ public final class MineService {
         if (!Files.isDirectory(folder)) {
             return;
         }
-        int start = base(day());
+        int start = base(period());
         int minRegionX = Math.floorDiv(start - HALF, 512) - 1;
         int maxRegionX = Math.floorDiv(start + HALF, 512) + 1;
         int minRegionZ = Math.floorDiv(-HALF, 512) - 1;
@@ -463,15 +488,16 @@ public final class MineService {
                         .then(Commands.literal("remise").executes(context -> {
                             shift++;
                             context.getSource().sendSuccess(() -> Component.literal(
-                                    "Mine remise a neuf a la main (zone du jour " + day() + ")."), true);
+                                    "Mine remise a neuf a la main (tranche " + period() + ")."), true);
                             return 1;
                         }))
                         .then(Commands.literal("info").executes(context -> {
                             ServerLevel level = level(context.getSource().getServer());
                             String where = level == null ? "absente" : center(level).toShortString();
-                            context.getSource().sendSuccess(() -> Component.literal("Mine : jour " + day()
+                            context.getSource().sendSuccess(() -> Component.literal("Mine : tranche " + period()
                                     + ", centre " + where + ", remise a neuf dans "
-                                    + RealClock.minutesUntilNextDay(RESET_HOUR) + " min."), false);
+                                    + RealClock.minutesUntilNextSlot(RESET_HOUR, RESET_OFFSETS) + " min, a "
+                                    + nextResetHour() + " h."), false);
                             return 1;
                         })));
     }
