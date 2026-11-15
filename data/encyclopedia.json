@@ -748,7 +748,10 @@
         {
           "title": "Ce qui rapporte de l'XP",
           "text": [
-            "La fiche de chaque metier a un onglet XP : tout ce qui rapporte de l'XP a ce metier, combien, et a partir de quel niveau. Les lignes en vert sont deja a ta portee ; les valeurs sont celles de base, avant tes bonus."
+            "La fiche de chaque metier a un onglet XP : tout ce qui rapporte de l'XP a ce metier, combien, et a partir de quel niveau. Les lignes en vert sont deja a ta portee ; les valeurs sont celles de base, avant tes bonus.",
+            "Le Mineur, le Fermier et le Chasseur suivent le bareme de Paladium Bedrock : les memes XP que le calculateur de PalaTracker, aux niveaux de Bedrock multiplies par 5. Sous son niveau, une source ne rapporte rien.",
+            "- La cuisson rapporte : les lingots au Mineur, la pomme de terre cuite au Fermier, les viandes et le saumon cuits au Chasseur. Au four, au haut fourneau, au fumoir ou au palafurnace, a condition de les sortir a la main.",
+            "- Le marteau et la pioche du dieu en fusion fondent sur place : ce qui sort cuit rapporte comme au four."
           ]
         },
         {
@@ -952,14 +955,15 @@
         "Outils de zone, aimant"
       ],
       "summary": [
-        "Le Mineur gagne son XP en minant les minerais, vanilla comme de PalaMod, et en sortant a la main les particules du cobblebreaker. Il debloque les outils de zone, l'aimant, les coffres de PalaMod, le compresseur a cobblestone et, tout au bout, le minerai de pepites d'endium."
+        "Le Mineur gagne son XP en minant les minerais, vanilla comme de PalaMod, en fondant les lingots et en sortant a la main les particules du cobblebreaker. Il debloque les outils de zone, l'aimant, les coffres de PalaMod, le compresseur a cobblestone et, tout au bout, le minerai de pepites d'endium."
       ],
       "sections": [
         {
           "title": "A retenir",
           "text": [
-            "- L'onglet XP de la fiche du metier donne le gain de chaque minerai et de chaque particule.",
-            "- Les minerais de PalaMod se rendent eux-memes : fonds-les au four ou au haut fourneau. Un minerai pose puis recasse ne rapporte rien.",
+            "- L'onglet XP de la fiche du metier donne le gain de chaque minerai, de chaque lingot et de chaque particule.",
+            "- Bareme de Bedrock : la pierre et l'ardoise ne rapportent rien ; l'andesite, le granite, la diorite et le tuf, si. Les minerais de PalaMod rapportent des Mineur 25, le paladium vert des 75.",
+            "- Les minerais de PalaMod se rendent eux-memes : fonds-les au four ou au haut fourneau, ou mine-les au marteau en fusion. Chaque lingot rapporte : le titane 50 XP des Mineur 30, le paladium 150 des Mineur 40. Un minerai pose puis recasse ne rapporte rien.",
             "- Les particules du cobblebreaker rapportent des Mineur 25, si tu les sors toi-meme de la machine : un entonnoir n'en donne pas.",
             "- La pioche des dieux monte de niveau avec les blocs casses, jusqu'au niveau 100.",
             "- Mineur 90 : le portail de la dimension du Mineur.",
@@ -986,12 +990,15 @@
         "Capture, spawners"
       ],
       "summary": [
-        "Le Chasseur gagne son XP en tuant des creatures. Il debloque la canne a peche en paladium, l'epee et la pierre de capture, le marteau de caverne et les spawners customises."
+        "Le Chasseur gagne son XP en tuant des creatures, animaux compris, et en cuisant leur viande. Il debloque la canne a peche en paladium, l'epee et la pierre de capture, le marteau de caverne et les spawners customises."
       ],
       "sections": [
         {
           "title": "A retenir",
           "text": [
+            "- Bareme de Bedrock : la vache des le niveau 0, puis le mouton, la poule, le cochon, le zombie (20), le squelette (30)... jusqu'au blaze (80). L'onglet XP de la fiche les donne tous.",
+            "- Une creature nee d'un spawner, ou tuee au controleur, ne rapporte qu'un quarantieme ; un petit ne rapporte rien.",
+            "- Les viandes et le saumon cuits rapportent, sortis du four ou du fumoir a la main.",
             "- L'epee de capture enferme la creature tuee dans une pierre de capture vide.",
             "- Le marteau de caverne recolte les ames des spawners de donjon pour remplir un spawner vide.",
             "- Capturer une monture demande l'epee et la pierre de capture."
@@ -1016,12 +1023,14 @@
         "Houes, crusher, OGM"
       ],
       "summary": [
-        "Le Fermier gagne son XP en recoltant les cultures mures et en faisant tourner les machines de l'agriculture. Il debloque les houes a rayon, les seedplanters, le crusher, la hache en endium, le tracteur et la machine a OGM."
+        "Le Fermier gagne son XP en recoltant les cultures mures, en cuisant et en fabriquant (pain, tarte a la citrouille) et en faisant tourner les machines de l'agriculture. Il debloque les houes a rayon, les seedplanters, le crusher, la hache en endium, le tracteur et la machine a OGM."
       ],
       "sections": [
         {
           "title": "A retenir",
           "text": [
+            "- Bareme de Bedrock : le ble des le niveau 0, la pomme de terre (5), la carotte (15), la betterave (25)... l'orangeblue 200 XP. Les animaux comptent pour le Chasseur.",
+            "- Le pain fabrique rapporte des Fermier 20, la pomme de terre cuite des 10.",
             "- Les graines de PalaMod tombent de l'herbe des que leur culture est debloquee.",
             "- Les cultures de PalaMod donnent parfois un lingot a la place du fruit.",
             "- La terre fertilisee fait pousser environ trois fois plus vite.",

@@ -71,5 +71,9 @@ public final class GodPickaxeEvents {
         }
         first.setItem(smelted.copyWithCount(count));
         drops.subList(1, drops.size()).clear();
+        // Fondu sur place : l'XP de cuisson des metiers, comme au four (bareme de Bedrock).
+        if (event.getBreaker() instanceof net.minecraft.server.level.ServerPlayer player) {
+            fr.atraxterra.dohy.job.JobXpEvents.smelted(player, smelted, count);
+        }
     }
 }

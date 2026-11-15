@@ -998,6 +998,9 @@ d'équipe bleue au lieu de `#2537FB`.
 
 ### L'XP de Mineur des minerais et des particules (2026-11-15)
 
+> **Remplacé le jour même** pour les minerais par le barème de Bedrock (section suivante) ; les
+> particules du cobblebreaker restent telles quelles.
+
 Jusqu'au 2026-11-15, **les minerais de PalaMod ne rapportaient aucune XP de Mineur** :
 `job_progression.json` ne listait que des minerais vanilla, et les tags `#dohy:mining_xp/*`,
 prévus pour un mod tiers, sont vides. Le wiki (« Evolution du métier Mineur ») ne donne pas d'XP
@@ -1028,6 +1031,80 @@ de PalaMod passent par les **particules** du cobblebreaker. Deux corrections :
 - Le même jour, **les minerais vanilla oubliés** : charbon (5, 6 en abîmes), variantes des abîmes
   du cuivre, de l'or, de la redstone, du lapis et de l'émeraude (environ +15 %, comme le fer et le
   diamant), quartz du Nether (8) et or du Nether (7). Ils ne rapportaient rien non plus.
+
+### Les métiers sur le barème de Paladium Bedrock (2026-11-15)
+
+**Demande** : « pour le métier de mineur, rend compatible le fait d'utiliser les hammer avec smelt
+donne de l'xp, et aide toi de https://palatracker.bromine.fr/xp-calculator/bedrock et met à jour
+le système de métiers ». Choix du joueur : **la cuisson aux trois métiers** de Bedrock (Mineur,
+Fermier, Chasseur) et **tout recalculer sur Bedrock** (casse, cuisson, créatures).
+
+**La source.** Le calculateur d'XP de PalaTracker, version Bedrock : le champ `bedrock` de
+`how_to_xp` dans `src/lib/constants.ts` de BroMinee/PaladiumClicker, identique au site le
+2026-11-15. Paladium Bedrock a 20 niveaux par métier (courbe `metier_xp_bedrock`, 35,8 M d'XP au
+total) et trois métiers ; le minage rapporte à la casse **et à la fonte** (« casser, fondre et
+raffiner », dit le wiki de Bedrock), la chasse aux animaux comme aux monstres et à la cuisson de
+leur viande, l'agriculture aux récoltes, à la pomme de terre cuite, au pain et à la tarte.
+
+**La conversion : une XP de Bedrock vaut une XP de DoHy.** Les niveaux de DoHy valent ceux de
+Bedrock fois 5, et il faut la même XP pour le niveau 50 de DoHy (1 031 701) que pour le 10 de
+Bedrock (1 061 305). Avant, DoHy demande jusqu'à deux fois plus d'XP pour un même palier (le 25 :
+174 546 contre 87 023) ; après, de moins en moins (le 100 : 6,2 M contre 35,8 M pour le 20). Les
+XP de l'onglet sont donc celles que PalaTracker affiche. Un niveau de Bedrock devient un niveau de
+DoHy fois 5 : celui à partir duquel la source rapporte — en dessous, rien.
+
+**Les paliers.** Bedrock donne parfois deux lignes pour un même objet : le lingot de titane fondu
+vaut 5 XP au niveau 5 et 50 au niveau 6, le lingot de paladium 6 puis 150 au niveau 8, le paladium
+vert 200 au niveau 12 puis 400 au 15. Ils sont lus comme des paliers : le plus haut atteint
+s'applique (`JobProgression.Reward`, une valeur ou une liste de `{level, xp}`).
+
+| Métier | Bedrock (extraits) | Niveau DoHy |
+|---|---|---|
+| Mineur, casse | andésite, granite, diorite 1 · tuf 3 · charbon 1 · fer 3 · cuivre 2 · or 6 · lapis 8 · redstone 6 · quartz 6 · obsidienne 6 · émeraude 30 | 0 |
+| | diamant 20 | 10 |
+| | variantes des abîmes (charbon 2, fer 5, cuivre 3, lapis 12, redstone 15, émeraude 45, diamant 30 ; or 9, déduit) | 50 |
+| | améthyste 18 · titane 27 · paladium 36 · findium 100 | 25 |
+| | paladium vert 40 (« Nugget Green Paladium », le plus proche) | 75 |
+| Mineur, fonte | cuivre 1 · fer 2 (10) · or 3 (15) · améthyste 4 (25) · titane 5 (25) puis 50 (30) · paladium 6 (25) puis 150 (40) · paladium vert 200 (60) puis 400 (75) | entre parenthèses |
+| Fermier | blé 1 (0) · pomme de terre 2 (5) · carotte 3 (15) · aubergine 20 (15) · betterave 8 (25) · cerfeuil 40 (30) · cactus 1 (35) · canne à sucre 2 (45) · citrouille 3 (55) · pastèque 5 (65) · kiwano 10 (70) · orangeblue 200 (95) ; pomme de terre cuite 2 (10) ; pain 5 (20) ; tarte 2 (75) | entre parenthèses |
+| Chasseur | vache 80 (0) · mouton 90 (5) · poule 100 (10) · cochon 110 (15) · zombie 160 (20) · squelette 200 (30) · creeper 140 et araignée 210 (40) · araignée venimeuse 220 (50) · chauve-souris 300 (60) · wither squelette 400 (70) · blaze 500 (80) ; steak 40 (5) · mouton et saumon cuits 45 (10) · poulet 50 (15) · porc et lapin cuits 55 (20) | entre parenthèses |
+
+**Ce que Bedrock ne connaît pas** garde sa place, à son ancienne valeur multipliée par le rapport
+médian Bedrock / ancien de sa famille (calculé sur les sources communes, arrondi à l'unité sous
+100, à deux chiffres au-dessus), au niveau de la source de Bedrock la plus proche :
+
+| Famille | Rapport | Sources |
+|---|---|---|
+| Blocs vanilla et des autres mods | × 0,317 | débris antiques 130 (50), or du Nether 2, soufre et cinabre 3, pique de soufre 2, amas d'améthyste 5, `#dohy:mining_xp/*` 10, 25, 57, 110 |
+| Minerais de PalaMod | × 1,417 | trixium 200, pierre d'invocation 240 (25, le palier des minerais de PalaMod) |
+| Cultures | × 1,667 | verrue du Nether 3, cacao 5, baies 3, torchefleur et plante-amphore 67, maïs, avoine, seigle, orge, soja, tournesol 7, fonio, sorgho, kamut 23 |
+| Animaux | × 33,3 | lapin 100 (20, comme le lapin cuit) |
+| Monstres | × 36,7 | enderman 440 (70), sorcière 660 (80), gardien 370 (60), shulker 1 100 et piglin brute 1 300 (80), cube de soufre 290 (50) — le niveau de la créature de Bedrock la plus forte qui ne rapporte pas davantage |
+| Boss | × 36,7 | gardien ancien 4 400 (0), warden 29 000 (80), wither 44 000 et dragon 73 000 (95) — face aux Arty de Bedrock (1 000 au niveau 0, 20 000 au 16, 40 000 au 19) |
+
+**Ce qui change pour le joueur.**
+- **La pierre et l'ardoise ne rapportent plus rien**, comme sur Bedrock ; l'andésite, le granite,
+  la diorite et le tuf, si.
+- **Les animaux passent au Chasseur** (vache 80, cochon 110…) ; le Fermier garde ses récoltes, la
+  cuisine et ses machines.
+- **La fonte rapporte** (`JobXpEvents.smelted`), par objet sorti : à la case de résultat d'un four,
+  d'un haut fourneau ou d'un fumoir, au clic comme au maj-clic (`ItemSmeltedEvent`) ; au
+  palafurnace (`MachineMenu`) ; et sur place, au **marteau en fusion** (`SmelteryEvents`) et à la
+  **pioche du dieu en fusion** (`GodPickaxeEvents`) — la compatibilité demandée. La Fortune y
+  multiplie les lingots, donc l'XP, ce que PalaTracker compte comme son « bonus Fortune ». Un
+  entonnoir ne donne rien.
+- **La fabrication rapporte** (`ItemCraftedEvent`) : le pain et la tarte au Fermier.
+- **Deux garde-fous.** Une créature née d'un spawner (`Mob.getSpawnType()`), ou tuée au
+  contrôleur de spawners, ne rapporte qu'**un quarantième** : le contrôleur se frappe deux fois
+  par seconde sans risque, et à pleine valeur il menait au niveau 100 en quelques heures ; un
+  quarantième, c'est à peu près l'ancien barème (zombie 4). Et **un petit ne rapporte rien** —
+  il ne lâche rien, et l'élevage tuerait les veaux à la naissance.
+- **Ne bougent pas** : l'Alchimiste (absent de Bedrock), les particules du cobblebreaker,
+  l'obsidienne sous Dureté, le God Villager, la pêche, le spawner cassé, les machines de
+  l'agriculture, les donjons, les gardiens, les bonbons, les bouteilles et les pierres.
+
+`tools/bedrock_jobs.py` porte la table de Bedrock, l'ancienne table de DoHy et les règles
+ci-dessus ; il réécrit les sources des trois métiers dans `data/job_progression.json`.
 
 ### Minerai de pépites d'endium — `BlockEndiumNuggetOre`, `BaseWorldGenerator`
 

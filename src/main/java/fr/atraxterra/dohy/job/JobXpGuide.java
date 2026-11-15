@@ -68,6 +68,10 @@ import java.util.TreeMap;
  * <p>Les valeurs sont celles de base. Les bonus d'XP (ameliorations, amulettes)
  * s'appliquent a toutes de la meme facon, dans {@link JobApi#grant} ; le premier
  * titre de section donne celui du joueur.
+ *
+ * <p>Depuis le bareme de Bedrock (2026-11-15), une source peut avoir plusieurs
+ * paliers ({@link JobProgression.Reward}) : une ligne par palier, chacune a son
+ * niveau, la bulle disant les autres.
  */
 public final class JobXpGuide {
 
@@ -107,6 +111,9 @@ public final class JobXpGuide {
             String badge = "";
             if (first) {
                 notes.add("Valeurs de base, avant les bonus d'XP");
+                if (job != Job.ALCHEMIST) {
+                    notes.add("Bareme de Paladium Bedrock (PalaTracker) : memes XP, niveaux x5");
+                }
                 if (bonus > 0) {
                     badge = "BONUS +" + bonus + " %";
                     notes.add("Ton bonus actuel : +" + bonus + " % sur chaque gain");
@@ -134,8 +141,14 @@ public final class JobXpGuide {
     // -- Les quatre metiers ---------------------------------------------------------------------
 
     private static List<Section> miner() {
-        Section blocks = new Section("BLOCS MINES", "Un bloc pose par un joueur ne rapporte rien");
+        Section blocks = new Section("BLOCS MINES", "Un bloc pose par un joueur ne rapporte rien",
+                "La pierre et l'ardoise ne rapportent rien, comme sur Bedrock");
         blocks(blocks, Job.MINER, "par bloc", Items.STONE);
+
+        Section smelting = new Section("FONTE", "Au four, au haut fourneau ou au palafurnace, pris a la main",
+                "Aussi le marteau et la pioche du dieu en fusion, qui fondent sur place",
+                "La Fortune donne plus de lingots, donc plus d'XP");
+        items(smelting, Job.MINER, JobProgression.Sources::smelted, "par lingot");
 
         Section cobble = new Section("COBBLEBREAKER", "Prises a la main dans la machine, par clic ou maj-clic",
                 "Un entonnoir qui vide la machine ne donne pas d'XP");
@@ -156,12 +169,17 @@ public final class JobXpGuide {
                 "par echange", GodVillager.REQUIRED_LEVEL, god,
                 "Apparait tres rarement pres d'un Mineur niveau " + GodVillager.REQUIRED_LEVEL,
                 "64 blocs de paladium contre une pepite d'endium");
-        return sections(blocks, cobble, gestures);
+        return sections(blocks, smelting, cobble, gestures);
     }
 
     private static List<Section> hunter() {
-        Section creatures = new Section("CREATURES TUEES");
+        Section creatures = new Section("CREATURES TUEES", "Les animaux comptent pour le Chasseur, comme sur Bedrock",
+                "Une creature nee d'un spawner, ou tuee au controleur : un quarantieme",
+                "Un petit ne rapporte rien");
         entities(creatures, Job.HUNTER, "par creature", Items.BONE);
+
+        Section cooking = new Section("CUISSON", "Au four ou au fumoir, pris a la main");
+        items(cooking, Job.HUNTER, JobProgression.Sources::smelted, "par morceau");
 
         // Le niveau d'un poisson tient compte de la canne en paladium, la canne d'entree : sans
         // elle, pas de mini-jeu. La canne en endium, de fin de partie, est dite dans les bulles.
@@ -198,7 +216,7 @@ public final class JobXpGuide {
         double spawner = MinerXpEvents.exact(SpawnerEvents.SPAWNER_XP);
         gestures.add(new ItemStack(Items.SPAWNER), "Spawner casse", plus(spawner), "par spawner",
                 SpawnerEvents.SPAWNER_XP_LEVEL, spawner, "Un spawner de monstres, casse par toi");
-        return sections(creatures, fishing, gestures);
+        return sections(creatures, cooking, fishing, gestures);
     }
 
     private static List<Section> farmer() {
@@ -208,6 +226,11 @@ public final class JobXpGuide {
 
         Section breeding = new Section("ELEVAGE");
         entities(breeding, Job.FARMER, "par animal", Items.LEATHER);
+
+        Section kitchen = new Section("CUISSON ET ETABLI", "Au four, pris a la main, ou a l'etabli",
+                "Les animaux comptent desormais pour le Chasseur");
+        items(kitchen, Job.FARMER, JobProgression.Sources::smelted, "par objet cuit");
+        items(kitchen, Job.FARMER, JobProgression.Sources::crafted, "par objet fabrique");
 
         Section machines = new Section("MACHINES ET OGM",
                 "Moulin et machine a pain : a la main seulement, l'automate ne donne pas d'XP");
@@ -240,7 +263,7 @@ public final class JobXpGuide {
             machines.add(gmoIcon, "Graines OGM fabriquees", plus(gmo.craftXp()), "par fabrication", lab,
                     gmo.craftXp(), gmo.seedsPerCraft() + " graines par fabrication reussie");
         }
-        return sections(crops, breeding, machines);
+        return sections(crops, kitchen, breeding, machines);
     }
 
     private static List<Section> alchemist() {
@@ -255,10 +278,10 @@ public final class JobXpGuide {
         entities(creatures, Job.ALCHEMIST, "par creature", Items.BLAZE_POWDER);
 
         Section brewing = new Section("ALAMBIC ET MACHINES");
-        long potion = sources(Job.ALCHEMIST).actions().getOrDefault("potion_brewed", 0L);
-        if (potion > 0) {
-            brewing.add(new ItemStack(Items.BREWING_STAND), "Potion terminee a l'alambic", plus(potion), "par potion",
-                    0, potion, "Chaque potion qui sort de l'alambic");
+        JobProgression.Reward potion = sources(Job.ALCHEMIST).actions().get("potion_brewed");
+        if (potion != null) {
+            reward(brewing, new ItemStack(Items.BREWING_STAND), "Potion terminee a l'alambic", potion, "par potion",
+                    0, List.of("Chaque potion qui sort de l'alambic"));
         }
 
         ItemStack extractor = new ItemStack(PalaAlchemist.EXTRACTOR_ITEM.get());
@@ -383,21 +406,17 @@ public final class JobXpGuide {
     // -- Lecture des sources --------------------------------------------------------------------
 
     private static JobProgression.Sources sources(Job job) {
-        return JobProgression.config().def(job).sources()
-                .orElse(new JobProgression.Sources(Map.of(), Map.of(), Map.of()));
+        return JobProgression.config().def(job).sources().orElse(JobProgression.Sources.EMPTY);
     }
 
     /** Les blocs du datapack : un par identifiant, un par groupe non vide. */
     private static void blocks(Section section, Job job, String unit, Item fallback) {
-        Map<String, Long> table = sources(job).blocks();
-        for (Map.Entry<String, Long> source : table.entrySet()) {
-            long xp = source.getValue();
-            if (xp <= 0) {
-                continue;
-            }
+        Map<String, JobProgression.Reward> table = sources(job).blocks();
+        for (Map.Entry<String, JobProgression.Reward> source : table.entrySet()) {
+            JobProgression.Reward reward = source.getValue();
             String key = source.getKey();
             if (key.startsWith("#")) {
-                group(section, table, key, xp, unit, fallback);
+                group(section, table, key, reward, unit, fallback);
                 continue;
             }
             Identifier id = JobConfig.parse(key);
@@ -415,7 +434,51 @@ public final class JobXpGuide {
             if (owner != null && owner != job) {
                 lines.add("Demande " + owner.display() + " niveau " + unlock.level());
             }
-            section.add(icon(block, fallback), MenuView.text(block.getName()), plus(xp), unit, level, xp, lines);
+            reward(section, icon(block, fallback), MenuView.text(block.getName()), reward, unit, level, lines);
+        }
+    }
+
+    /** Ce qui sort cuit ou fabrique : un objet par ligne, ou par palier. */
+    private static void items(Section section, Job job,
+                              java.util.function.Function<JobProgression.Sources, Map<String, JobProgression.Reward>> kind,
+                              String unit) {
+        for (Map.Entry<String, JobProgression.Reward> source : kind.apply(sources(job)).entrySet()) {
+            Item item = item(source.getKey());
+            if (item == null) {
+                continue;
+            }
+            ItemStack stack = new ItemStack(item);
+            reward(section, stack, MenuView.text(stack.getHoverName()), source.getValue(), unit,
+                    gate(job, JobGate.of(item)), List.of());
+        }
+    }
+
+    /**
+     * Une source : une ligne par palier, au plus haut de son niveau et du verrou. La
+     * bulle d'une source a paliers les donne tous : sous le palier suivant, c'est
+     * celui-ci qui compte.
+     */
+    private static void reward(Section section, ItemStack icon, String title, JobProgression.Reward reward,
+                               String unit, int gate, List<String> lines) {
+        List<JobProgression.Reward.Tier> tiers = reward.tiers();
+        for (int index = 0; index < tiers.size(); index++) {
+            JobProgression.Reward.Tier tier = tiers.get(index);
+            if (tier.xp() <= 0) {
+                continue;
+            }
+            List<String> all = new ArrayList<>(lines);
+            if (tiers.size() > 1) {
+                StringBuilder steps = new StringBuilder("Paliers :");
+                for (JobProgression.Reward.Tier step : tiers) {
+                    steps.append(step == tiers.getFirst() ? " " : ", ").append(plus(step.xp()))
+                            .append(" au niveau ").append(step.level());
+                }
+                all.add(steps.toString());
+                if (index + 1 < tiers.size()) {
+                    all.add("Puis " + plus(tiers.get(index + 1).xp()) + " des le niveau " + tiers.get(index + 1).level());
+                }
+            }
+            section.add(icon, title, plus(tier.xp()), unit, Math.max(gate, tier.level()), tier.xp(), all);
         }
     }
 
@@ -424,8 +487,8 @@ public final class JobXpGuide {
      * l'ouverture, comme dans {@code JobXpEvents}. Un bloc qui a sa propre ligne
      * en est retire (elle passe avant le groupe), un groupe vide n'est pas montre.
      */
-    private static void group(Section section, Map<String, Long> table, String key, long xp, String unit,
-                              Item fallback) {
+    private static void group(Section section, Map<String, JobProgression.Reward> table, String key,
+                              JobProgression.Reward reward, String unit, Item fallback) {
         Identifier tagId = JobConfig.parse(key.substring(1));
         if (tagId == null) {
             return;
@@ -452,21 +515,21 @@ public final class JobXpGuide {
             names.append(" et " + (members.size() - TAG_NAMES) + " autre(s)");
         }
         String title = TAG_TITLES.get(key);
-        section.add(icon(members.get(0), fallback), title != null ? title : MenuView.text(names), plus(xp), unit, 0,
-                xp, MenuView.text(Component.literal("Comprend : ").append(names)));
+        reward(section, icon(members.get(0), fallback), title != null ? title : MenuView.text(names), reward, unit, 0,
+                List.of(MenuView.text(Component.literal("Comprend : ").append(names))));
     }
 
     private static void entities(Section section, Job job, String unit, Item fallback) {
-        for (Map.Entry<String, Long> source : sources(job).entities().entrySet()) {
-            long xp = source.getValue();
+        for (Map.Entry<String, JobProgression.Reward> source : sources(job).entities().entrySet()) {
             Identifier id = JobConfig.parse(source.getKey());
             EntityType<?> type = id == null ? null : BuiltInRegistries.ENTITY_TYPE.getOptional(id).orElse(null);
-            if (type == null || xp <= 0) {
+            if (type == null) {
                 continue;
             }
             Item egg = BuiltInRegistries.ITEM.getOptional(
                     Identifier.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "_spawn_egg")).orElse(fallback);
-            section.add(new ItemStack(egg), MenuView.text(type.getDescription()), plus(xp), unit, 0, xp);
+            reward(section, new ItemStack(egg), MenuView.text(type.getDescription()), source.getValue(), unit, 0,
+                    List.of());
         }
     }
 

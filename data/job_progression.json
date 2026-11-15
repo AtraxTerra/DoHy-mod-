@@ -1,5 +1,5 @@
 {
-  "_comment": "Progression des quatre metiers : courbe, primes de palier et sources d'XP. Editable a chaud via /dohy reload. Les deblocages et les recompenses en objets sont dans jobs.json, genere depuis le bytecode de PalaMod ; ce fichier-ci est l'equilibrage propre a DoHy.",
+  "_comment": "Progression des quatre metiers : courbe, primes de palier et sources d'XP. Editable a chaud via /dohy reload. Les deblocages et les recompenses en objets sont dans jobs.json, genere depuis le bytecode de PalaMod. Depuis le 2026-11-15, les sources du Mineur, du Fermier et du Chasseur suivent le bareme de Paladium Bedrock (tools/bedrock_jobs.py) ; celles de l'Alchimiste, absent de Bedrock, restent celles de DoHy. Une valeur est un nombre (des le niveau 0) ou des paliers {level, xp} : le plus haut atteint s'applique.",
   "_historique": "Ce fichier etait skills.json. Les metiers ont remplace les neuf skills : minage, combat, agriculture et alchimie sont devenus Mineur, Chasseur, Fermier et Alchimiste avec leurs sources et leurs perks inchanges ; bucheronnage, peche, forge, construction et nucleaire ont ete retires, sources et perks compris. L'XP des quatre premiers est reprise a la premiere connexion (JobMigration), celle des cinq autres est abandonnee. Le 2026-11-11, les perks (attributs, double drop, XP, recolte, butin) ont ete remplaces par des primes en argent aux memes paliers.",
   "curve": {
     "max_level": 100,
@@ -18,68 +18,266 @@
     "miner": {
       "display": "Mineur",
       "sources": {
+        "_bedrock": "Bareme de Paladium Bedrock (tools/bedrock_jobs.py) : XP de PalaTracker telles quelles, niveaux de Bedrock x 5, en dessous du niveau la source ne rapporte rien. La pierre et l'ardoise ne rapportent rien, comme sur Bedrock. smelted : chaque objet sorti cuit du four, du haut fourneau ou du palafurnace a la main, ou d'un outil en fusion.",
         "blocks": {
-          "#minecraft:base_stone_overworld": 1,
-          "minecraft:deepslate": 2,
-          "minecraft:coal_ore": 5,
-          "minecraft:deepslate_coal_ore": 6,
-          "minecraft:iron_ore": 12,
-          "minecraft:deepslate_iron_ore": 14,
-          "minecraft:copper_ore": 10,
-          "minecraft:deepslate_copper_ore": 12,
-          "minecraft:gold_ore": 20,
-          "minecraft:deepslate_gold_ore": 23,
-          "minecraft:redstone_ore": 18,
-          "minecraft:deepslate_redstone_ore": 21,
-          "minecraft:lapis_ore": 22,
-          "minecraft:deepslate_lapis_ore": 25,
-          "minecraft:diamond_ore": 90,
-          "minecraft:deepslate_diamond_ore": 100,
-          "minecraft:emerald_ore": 110,
-          "minecraft:deepslate_emerald_ore": 125,
-          "minecraft:nether_quartz_ore": 8,
-          "minecraft:nether_gold_ore": 7,
-          "minecraft:ancient_debris": 400,
-          "minecraft:sulfur": 8,
-          "minecraft:cinnabar": 8,
-          "minecraft:sulfur_spike": 6,
-          "minecraft:amethyst_cluster": 15,
-          "palamod:amethyst_ore": 12,
-          "palamod:titane_ore": 16,
-          "palamod:paladium_ore": 30,
-          "palamod:findium_ore": 75,
-          "palamod:paladium_green_ore": 90,
-          "palamod:trixium_ore": 140,
-          "palamod:invoker_ore": 170,
-          "#dohy:mining_xp/low": 30,
-          "#dohy:mining_xp/mid": 80,
-          "#dohy:mining_xp/high": 180,
-          "#dohy:mining_xp/elite": 350
+          "minecraft:andesite": 1,
+          "minecraft:granite": 1,
+          "minecraft:diorite": 1,
+          "minecraft:tuff": 3,
+          "minecraft:coal_ore": 1,
+          "minecraft:deepslate_coal_ore": {
+            "level": 50,
+            "xp": 2
+          },
+          "minecraft:nether_quartz_ore": 6,
+          "minecraft:copper_ore": 2,
+          "minecraft:deepslate_copper_ore": {
+            "level": 50,
+            "xp": 3
+          },
+          "minecraft:obsidian": 6,
+          "minecraft:lapis_ore": 8,
+          "minecraft:deepslate_lapis_ore": {
+            "level": 50,
+            "xp": 12
+          },
+          "minecraft:redstone_ore": 6,
+          "minecraft:deepslate_redstone_ore": {
+            "level": 50,
+            "xp": 15
+          },
+          "minecraft:emerald_ore": 30,
+          "minecraft:deepslate_emerald_ore": {
+            "level": 50,
+            "xp": 45
+          },
+          "minecraft:iron_ore": 3,
+          "minecraft:deepslate_iron_ore": {
+            "level": 50,
+            "xp": 5
+          },
+          "minecraft:gold_ore": 6,
+          "minecraft:diamond_ore": {
+            "level": 10,
+            "xp": 20
+          },
+          "minecraft:deepslate_diamond_ore": {
+            "level": 50,
+            "xp": 30
+          },
+          "palamod:amethyst_ore": {
+            "level": 25,
+            "xp": 18
+          },
+          "palamod:titane_ore": {
+            "level": 25,
+            "xp": 27
+          },
+          "palamod:paladium_ore": {
+            "level": 25,
+            "xp": 36
+          },
+          "palamod:findium_ore": {
+            "level": 25,
+            "xp": 100
+          },
+          "palamod:paladium_green_ore": {
+            "level": 75,
+            "xp": 40
+          },
+          "minecraft:deepslate_gold_ore": {
+            "level": 50,
+            "xp": 9
+          },
+          "minecraft:ancient_debris": {
+            "level": 50,
+            "xp": 130
+          },
+          "minecraft:nether_gold_ore": 2,
+          "minecraft:sulfur": 3,
+          "minecraft:cinnabar": 3,
+          "minecraft:sulfur_spike": 2,
+          "minecraft:amethyst_cluster": 5,
+          "palamod:trixium_ore": {
+            "level": 25,
+            "xp": 200
+          },
+          "palamod:invoker_ore": {
+            "level": 25,
+            "xp": 240
+          },
+          "#dohy:mining_xp/low": 10,
+          "#dohy:mining_xp/mid": 25,
+          "#dohy:mining_xp/high": 57,
+          "#dohy:mining_xp/elite": 110
         },
-        "_palamod": "Les minerais de PalaMod (2026-11-15) ont leurs propres lignes : ils ne rapportaient rien. Valeurs tirees de l'echelle existante par leur rythme de minage (data/rates.csv, lignes FOUND) : sur le vanilla, l'XP suit environ 2 300 x rythme^-0,88 (fer 400/h -> 12, or 200/h -> 20, diamant 40/h -> 90, emeraude 30/h -> 110, debris 8/h -> 400). D'ou amethyste 400/h -> 12, titane 300/h -> 16, paladium 150/h -> 30, findium 50/h -> 75, paladium vert 40/h -> 90 (le diamant), trixium 25/h -> 140, pierre d'invocation 20/h -> 170. Le minerai de pepites d'endium n'a pas de ligne : il ne se casse qu'au niveau 100, le dernier, ou l'XP ne sert plus. Le meme jour, les variantes des abimes manquantes (charbon, cuivre, or, redstone, lapis, emeraude : environ +15 %, comme le fer et le diamant), le charbon et les minerais du Nether ont ete ajoutes : ils ne rapportaient rien non plus.",
-        "_palacore": "Les quatre paliers mining_xp restent le point d'extension d'un mod tiers (PalaCore), qui y range ses minerais. DoHy declare les tags vides : sans ce mod ils ne capturent rien et ne changent donc rien. Les valeurs se lisent contre l'echelle existante : le fer vaut 12, le diamant 90, l'emeraude 110, les debris antiques 400."
+        "smelted": {
+          "minecraft:copper_ingot": {
+            "level": 10,
+            "xp": 1
+          },
+          "minecraft:iron_ingot": {
+            "level": 10,
+            "xp": 2
+          },
+          "minecraft:gold_ingot": {
+            "level": 15,
+            "xp": 3
+          },
+          "palamod:amethyst_ingot": {
+            "level": 25,
+            "xp": 4
+          },
+          "palamod:titane_ingot": [
+            {
+              "level": 25,
+              "xp": 5
+            },
+            {
+              "level": 30,
+              "xp": 50
+            }
+          ],
+          "palamod:paladium_ingot": [
+            {
+              "level": 25,
+              "xp": 6
+            },
+            {
+              "level": 40,
+              "xp": 150
+            }
+          ],
+          "palamod:green_paladium_ingot": [
+            {
+              "level": 60,
+              "xp": 200
+            },
+            {
+              "level": 75,
+              "xp": 400
+            }
+          ]
+        }
       }
     },
     "hunter": {
       "display": "Chasseur",
       "sources": {
+        "_bedrock": "Bareme de Paladium Bedrock (tools/bedrock_jobs.py), animaux compris. Une creature nee d'un spawner, ou tuee au controleur, ne rapporte qu'un quarantieme ; un petit, rien.",
         "entities": {
-          "minecraft:zombie": 4,
-          "minecraft:skeleton": 5,
-          "minecraft:spider": 4,
-          "minecraft:creeper": 7,
-          "minecraft:enderman": 12,
-          "minecraft:witch": 18,
-          "minecraft:blaze": 15,
-          "minecraft:wither_skeleton": 25,
-          "minecraft:guardian": 10,
-          "minecraft:elder_guardian": 120,
-          "minecraft:shulker": 30,
-          "minecraft:piglin_brute": 35,
-          "minecraft:warden": 800,
-          "minecraft:wither": 1200,
-          "minecraft:ender_dragon": 2000,
-          "minecraft:sulfur_cube": 8
+          "minecraft:cow": 80,
+          "minecraft:sheep": {
+            "level": 5,
+            "xp": 90
+          },
+          "minecraft:chicken": {
+            "level": 10,
+            "xp": 100
+          },
+          "minecraft:pig": {
+            "level": 15,
+            "xp": 110
+          },
+          "minecraft:zombie": {
+            "level": 20,
+            "xp": 160
+          },
+          "minecraft:skeleton": {
+            "level": 30,
+            "xp": 200
+          },
+          "minecraft:creeper": {
+            "level": 40,
+            "xp": 140
+          },
+          "minecraft:spider": {
+            "level": 40,
+            "xp": 210
+          },
+          "minecraft:cave_spider": {
+            "level": 50,
+            "xp": 220
+          },
+          "minecraft:bat": {
+            "level": 60,
+            "xp": 300
+          },
+          "minecraft:wither_skeleton": {
+            "level": 70,
+            "xp": 400
+          },
+          "minecraft:blaze": {
+            "level": 80,
+            "xp": 500
+          },
+          "minecraft:rabbit": {
+            "level": 20,
+            "xp": 100
+          },
+          "minecraft:enderman": {
+            "level": 70,
+            "xp": 440
+          },
+          "minecraft:witch": {
+            "level": 80,
+            "xp": 660
+          },
+          "minecraft:guardian": {
+            "level": 60,
+            "xp": 370
+          },
+          "minecraft:shulker": {
+            "level": 80,
+            "xp": 1100
+          },
+          "minecraft:piglin_brute": {
+            "level": 80,
+            "xp": 1300
+          },
+          "minecraft:sulfur_cube": {
+            "level": 50,
+            "xp": 290
+          },
+          "minecraft:elder_guardian": 4400,
+          "minecraft:warden": {
+            "level": 80,
+            "xp": 29000
+          },
+          "minecraft:wither": {
+            "level": 95,
+            "xp": 44000
+          },
+          "minecraft:ender_dragon": {
+            "level": 95,
+            "xp": 73000
+          }
+        },
+        "smelted": {
+          "minecraft:cooked_beef": {
+            "level": 5,
+            "xp": 40
+          },
+          "minecraft:cooked_mutton": {
+            "level": 10,
+            "xp": 45
+          },
+          "minecraft:cooked_salmon": {
+            "level": 10,
+            "xp": 45
+          },
+          "minecraft:cooked_chicken": {
+            "level": 15,
+            "xp": 50
+          },
+          "minecraft:cooked_porkchop": {
+            "level": 20,
+            "xp": 55
+          },
+          "minecraft:cooked_rabbit": {
+            "level": 20,
+            "xp": 55
+          }
         }
       }
     },
@@ -87,39 +285,83 @@
       "display": "Fermier",
       "_rule": "XP uniquement sur culture mature (age max). Bone meal sur plant non mature = 0.",
       "sources": {
+        "_bedrock": "Bareme de Paladium Bedrock (tools/bedrock_jobs.py). Les animaux comptent pour le Chasseur, comme sur Bedrock. crafted : chaque objet fabrique a l'etabli.",
         "blocks": {
-          "minecraft:wheat": 2,
-          "minecraft:carrots": 2,
-          "minecraft:potatoes": 2,
-          "minecraft:beetroots": 2,
-          "minecraft:nether_wart": 2,
-          "minecraft:melon": 3,
-          "minecraft:pumpkin": 3,
-          "minecraft:sugar_cane": 1,
-          "minecraft:cocoa": 3,
-          "minecraft:sweet_berry_bush": 2,
-          "minecraft:torchflower_crop": 40,
-          "minecraft:pitcher_crop": 40,
-          "palamod:eggplant_crop": 8,
-          "palamod:chervil_crop": 15,
-          "palamod:kiwano_crop": 30,
-          "palamod:orangeblue_crop": 60,
-          "dohy:corn_crop": 4,
-          "dohy:oat_crop": 4,
-          "dohy:rye_crop": 4,
-          "dohy:barley_crop": 4,
-          "dohy:soy_crop": 4,
-          "dohy:sunflower_crop": 4,
-          "dohy:fonio_crop": 14,
-          "dohy:sorghum_crop": 14,
-          "dohy:kamut_crop": 14
+          "minecraft:wheat": 1,
+          "minecraft:potatoes": {
+            "level": 5,
+            "xp": 2
+          },
+          "minecraft:carrots": {
+            "level": 15,
+            "xp": 3
+          },
+          "minecraft:beetroots": {
+            "level": 25,
+            "xp": 8
+          },
+          "minecraft:cactus": {
+            "level": 35,
+            "xp": 1
+          },
+          "minecraft:sugar_cane": {
+            "level": 45,
+            "xp": 2
+          },
+          "minecraft:pumpkin": {
+            "level": 55,
+            "xp": 3
+          },
+          "minecraft:melon": {
+            "level": 65,
+            "xp": 5
+          },
+          "palamod:eggplant_crop": {
+            "level": 15,
+            "xp": 20
+          },
+          "palamod:chervil_crop": {
+            "level": 30,
+            "xp": 40
+          },
+          "palamod:kiwano_crop": {
+            "level": 70,
+            "xp": 10
+          },
+          "palamod:orangeblue_crop": {
+            "level": 95,
+            "xp": 200
+          },
+          "minecraft:nether_wart": 3,
+          "minecraft:cocoa": 5,
+          "minecraft:sweet_berry_bush": 3,
+          "minecraft:torchflower_crop": 67,
+          "minecraft:pitcher_crop": 67,
+          "dohy:corn_crop": 7,
+          "dohy:oat_crop": 7,
+          "dohy:rye_crop": 7,
+          "dohy:barley_crop": 7,
+          "dohy:soy_crop": 7,
+          "dohy:sunflower_crop": 7,
+          "dohy:fonio_crop": 23,
+          "dohy:sorghum_crop": 23,
+          "dohy:kamut_crop": 23
         },
-        "entities": {
-          "minecraft:cow": 3,
-          "minecraft:pig": 3,
-          "minecraft:sheep": 3,
-          "minecraft:chicken": 2,
-          "minecraft:rabbit": 3
+        "smelted": {
+          "minecraft:baked_potato": {
+            "level": 10,
+            "xp": 2
+          }
+        },
+        "crafted": {
+          "minecraft:bread": {
+            "level": 20,
+            "xp": 5
+          },
+          "minecraft:pumpkin_pie": {
+            "level": 75,
+            "xp": 2
+          }
         }
       }
     },

@@ -192,6 +192,37 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-15 (suite) — les métiers sur le barème de Paladium Bedrock
+
+**Demande** : « pour le métier de mineur, rend compatible le fait d'utiliser les hammer avec smelt
+donne de l'xp, et aide toi de https://palatracker.bromine.fr/xp-calculator/bedrock et met à jour le
+système de métiers ». Choix du joueur : **la cuisson aux trois métiers** de Bedrock et **tout
+recalculer sur Bedrock** (casse, cuisson, créatures).
+
+**Fait** (`feat/metiers-bedrock`, sur les branches de la Mine) : détail dans PALAMOD.md, « Les
+métiers sur le barème de Paladium Bedrock » ; données par `tools/bedrock_jobs.py`.
+- **Barème** : les XP du calculateur de PalaTracker telles quelles (une XP de Bedrock pour une de
+  DoHy : le niveau 50 d'ici demande la même XP que le 10 de Bedrock), aux niveaux de Bedrock × 5 ;
+  sous son niveau, une source ne rapporte rien. Paliers (`JobProgression.Reward`) : le lingot de
+  titane 5 puis 50 XP au niveau 30, celui de paladium 6 puis 150 au 40. Ce que Bedrock n'a pas suit
+  le rapport médian de sa famille.
+- **La pierre et l'ardoise ne rapportent plus rien** ; andésite, granite, diorite 1, tuf 3. Les
+  animaux passent au Chasseur.
+- **Cuisson** (`smelted`) : four, haut fourneau, fumoir, palafurnace, et sur place le marteau et la
+  pioche du dieu en fusion — la compatibilité demandée. **Fabrication** (`crafted`) : pain, tarte.
+- **Garde-fous** : un quarantième pour une créature de spawner ou du contrôleur ; rien pour un petit.
+- Onglet XP : sections FONTE, CUISSON, CUISSON ET ETABLI, une ligne par palier ; fiches des
+  métiers ; BALANCE.md.
+
+**Vérifié en jeu** (client de CI) : Mineur 0 — pierre 0, granite 1, tuf 3, fer 3, fer des abîmes 0,
+obsidienne 6, paladium 0 ; Mineur 25 — paladium 36, titane 27, trixium 200 ; Mineur 50 — fer des
+abîmes 5 ; **marteau en paladium en fusion** face à 3 × 3 minerais de titane au niveau 30 : 9
+lingots au sol, +693 (9 × 27 + 9 × 50) ; maj-clic au four sur 10 lingots de fer : +20 au niveau 10,
+0 au niveau 9 (haut fourneau) ; 5 steaks au fumoir, Chasseur 5 : +200 ; 3 pommes de terre cuites,
+Fermier 10 : +6 ; palafurnace, 2 lingots de paladium, Mineur 40 : +300 ; pain fabriqué : +5 au
+niveau 20, 0 au 19 ; blé mûr +1, pomme de terre au niveau 0 : 0, betterave au 25 : +8, blé pas mûr :
+0 ; vache +80, veau 0, zombie 0 au niveau 0 puis 160 au 20, zombie de spawner +4, cochon +110.
+
 ### 2026-11-15 (suite) — les minerais de NTM NEXT dans la Mine
 
 **Demande** : « ajoute aussi la génération des minerais NTM NEXT dans la mine », puis

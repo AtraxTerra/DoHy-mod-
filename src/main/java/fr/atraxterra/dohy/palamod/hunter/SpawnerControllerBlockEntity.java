@@ -651,7 +651,8 @@ public class SpawnerControllerBlockEntity extends MachineBlockEntity implements 
             }
         }
         ExperienceOrb.award(server, player.position(), type == EntityTypes.SLIME ? 2 : 5);
-        JobXpEvents.grantKill(player, id);
+        // Deux coups par seconde sans risque : la creature compte comme une creature de spawner.
+        JobXpEvents.grantKill(player, id, JobXpEvents.SPAWNER_SHARE);
         showHologram(server);
         setChanged();
     }
