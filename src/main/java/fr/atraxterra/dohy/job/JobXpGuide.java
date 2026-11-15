@@ -60,8 +60,8 @@ import java.util.TreeMap;
  * valeur moyenne : {@link MinerXpEvents#convert} tire la fraction au sort.
  *
  * <p>Le niveau d'une ligne est le premier ou le gain devient possible : le seuil
- * du gain lui-meme, ou le verrou de {@code data/jobs.json} sur le bloc, la graine
- * ou la machine qu'il demande, le plus haut des deux. Un verrou d'un autre metier
+ * du gain lui-meme, ou le verrou de {@code data/jobs.json} sur le bloc, la graine,
+ * la canne ou la machine qu'il demande, le plus haut des deux. Un verrou d'un autre metier
  * ne change pas le niveau : il est ecrit dans la bulle.
  *
  * <p>Les valeurs sont celles de base. Les bonus d'XP (ameliorations, amulettes)
@@ -152,11 +152,15 @@ public final class JobXpGuide {
         Section creatures = new Section("CREATURES TUEES");
         entities(creatures, Job.HUNTER, "par creature", Items.BONE);
 
+        // Le niveau d'un poisson tient compte de la canne en paladium, la canne d'entree : sans
+        // elle, pas de mini-jeu. La canne en endium, de fin de partie, est dite dans les bulles.
         int paladiumRod = gate(Job.HUNTER, JobGate.of(PalaHunter.PALADIUM_FISHING_ROD.get()));
         int endiumRod = gate(Job.HUNTER, JobGate.of(PalaHunter.ENDIUM_FISHING_ROD.get()));
         Section fishing = new Section("PECHE AU MINI-JEU",
-                "Canne en paladium : " + (paladiumRod > 0 ? "Chasseur niveau " + paladiumRod : "sans niveau")
-                        + ", en endium : " + (endiumRod > 0 ? "Chasseur niveau " + endiumRod : "sans niveau"),
+                paladiumRod > 0 ? "Le niveau tient compte de la canne en paladium (Chasseur " + paladiumRod + ")"
+                        : "La canne en paladium ne demande pas de niveau",
+                endiumRod > 0 ? "La canne en endium demande Chasseur " + endiumRod
+                        : "La canne en endium ne demande pas de niveau",
                 "La canne en bois ne lance pas le mini-jeu et ne rapporte rien",
                 "La zone touchee multiplie la prise et son XP (x1 a x5)",
                 "Un poisson au-dessus de ton niveau ne mord pas");
@@ -165,9 +169,18 @@ public final class JobXpGuide {
             if (item == null || fish.getValue() <= 0) {
                 continue;
             }
+            int own = FishingTable.LEVEL.getOrDefault(fish.getKey(), 0);
+            int shown = Math.max(own, paladiumRod);
+            List<String> lines = new ArrayList<>();
+            if (own > 0) {
+                lines.add("Mord a partir du niveau " + own);
+            }
+            if (Math.max(own, endiumRod) < shown) {
+                lines.add("Avec la canne en endium : des le niveau " + Math.max(own, endiumRod));
+            }
             ItemStack stack = new ItemStack(item);
-            fishing.add(stack, MenuView.text(stack.getHoverName()), plus(fish.getValue()), "par prise",
-                    FishingTable.LEVEL.getOrDefault(fish.getKey(), 0), fish.getValue());
+            fishing.add(stack, MenuView.text(stack.getHoverName()), plus(fish.getValue()), "par prise", shown,
+                    fish.getValue(), lines);
         }
 
         Section gestures = new Section("AUTRES GESTES");
@@ -301,7 +314,10 @@ public final class JobXpGuide {
         return sections(harvest, creatures, brewing);
     }
 
-    /** Ce que tous les metiers partagent : leur donjon, leur gardien, et les objets d'XP. */
+    /**
+     * Ce que tous les metiers partagent : leur donjon, leur gardien, et les objets d'XP. Tout y est
+     * au niveau 0 ; le rang ({@code sort}) les garde dans cet ordre plutot que par gain.
+     */
     private static Section rewards(Job job) {
         Section section = new Section("DONJONS ET RECOMPENSES");
         for (Dungeon dungeon : Dungeon.values()) {
@@ -319,7 +335,7 @@ public final class JobXpGuide {
             long base = DungeonManager.jobXp(0, DungeonMode.NORMAL);
             long step = DungeonManager.jobXp(1, DungeonMode.NORMAL) - base;
             section.add(new ItemStack(Items.WITHER_SKELETON_SKULL), "Donjon " + dungeon.display() + " reussi",
-                    "+" + MoneyFormat.exact(low) + " a " + MoneyFormat.exact(high) + " XP", "par palier", 0, high,
+                    "+" + MoneyFormat.exact(low) + " a " + MoneyFormat.exact(high) + " XP", "par palier", 0, 6,
                     MoneyFormat.exact(base) + " XP, plus " + step + " par palier (1 a " + DungeonManager.MAX_PALIER + ")",
                     "Selon le mode : " + modes);
         }
@@ -328,28 +344,28 @@ public final class JobXpGuide {
         long bossHigh = JobBossApi.xpReward(JobBosses.MAX_LEVEL);
         section.add(new ItemStack(JobBosses.icon(job)), "Gardien : " + JobBosses.name(job),
                 "+" + MoneyFormat.exact(bossLow) + " a " + MoneyFormat.exact(bossHigh) + " XP", "par victoire", 0,
-                bossHigh, MoneyFormat.exact(bossLow) + " XP par niveau du gardien (1 a " + JobBosses.MAX_LEVEL + ")",
+                5, MoneyFormat.exact(bossLow) + " XP par niveau du gardien (1 a " + JobBosses.MAX_LEVEL + ")",
                 "Appele par une offrande a l'autel du spawn",
                 "Repos de " + JobBossApi.REST / 3_600_000L + " h apres chaque victoire");
 
         String candySource = "Dans les bonbons a deballer : recompense du niveau 95, boss de donjon des le palier 50";
         ItemStack candy = new ItemStack(candy(job));
-        section.add(candy, MenuView.text(candy.getHoverName()), plus(CandyItem.XP), "par bonbon", 0, CandyItem.XP,
+        section.add(candy, MenuView.text(candy.getHoverName()), plus(CandyItem.XP), "par bonbon", 0, 4,
                 candySource, "Accroupi : toute la pile d'un coup");
         ItemStack rainbow = new ItemStack(PalaDungeon.CANDY_RAINBOW.get());
         section.add(rainbow, MenuView.text(rainbow.getHoverName()), plus(CandyItem.XP), "aux quatre metiers", 0,
-                CandyItem.XP - 1, candySource, "Un bonbon a deballer sur dix");
+                3, candySource, "Un bonbon a deballer sur dix");
 
         ItemStack bottle = new ItemStack(bottle(job));
         section.add(bottle, MenuView.text(bottle.getHoverName()), plus(JobBottleItem.DEFAULT_XP), "par bouteille", 0,
-                JobBottleItem.DEFAULT_XP, "Dans le butin des boss de donjon",
+                2, "Dans le butin des boss de donjon",
                 "Celles du marche noir en contiennent davantage");
 
         ItemStack stone = new ItemStack(PalaLegendary.JOBS.get());
         section.add(stone, MenuView.text(stone.getHoverName()),
                 "+" + MoneyFormat.exact(LegendaryStones.JOBS_XP_MIN) + " a "
                         + MoneyFormat.exact(LegendaryStones.JOBS_XP_MAX) + " XP", "a un metier", 0,
-                LegendaryStones.JOBS_XP_MIN, "Le metier est tire au hasard parmi les quatre");
+                1, "Le metier est tire au hasard parmi les quatre");
         return section;
     }
 
