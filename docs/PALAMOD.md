@@ -1064,8 +1064,28 @@ Les verrous non portés restent dans `data/jobs.json`, inertes.
 ### Canne à pêche en paladium — `ItemPaladiumFishingRod`
 
 Durabilité 128, enchantable. Dans l'original elle ne pêchait pas plus vite : elle changeait les
-chances du mini-jeu de pêche de Paladium, qui n'existe pas ici. **Écart** : elle donne **+3 de
-chance** en main (le bonus de *Chance de la mer* III), ce qui améliore le butin de la même façon.
+chances du mini-jeu de pêche de Paladium. **Depuis le 2026-11-15, le mini-jeu est porté** (« La
+pêche de PalaJobs », ci-dessous) : la canne ouvre le mini-jeu, et son ancien écart (+3 de chance en
+main) est retiré.
+
+### La pêche de PalaJobs (2026-11-15)
+
+Demandée le 2026-11-15, choix du joueur : **le mini-jeu seulement avec les cannes de Paladium**
+(la canne en bois reste vanilla), **la canne en endium en plus**, et **les poissons se vendent**
+(shop et marché, plus cher selon la rareté). Paquet `palamod/fishing/` (`FishingGame`,
+`FishingTable`, `FishingView`), écran `FishingScreen`, objets dans `PalaHunter`, textures du jar de
+PalaJobs fourni par le joueur (`tools/fishing_assets.py`).
+
+| Point | DoHy | Source |
+|---|---|---|
+| Déclenchement | un poisson remonté avec une canne en paladium ou en endium : le butin vanilla est annulé, le mini-jeu s'ouvre | wiki : l'interface s'ouvre quand un poisson mord |
+| Barre | zones verte (×1), rouge (×2) au milieu de la verte, violette (Boost ×5, ×3 au légendaire) au milieu de la rouge, jaune (rareté suivante, nouvelle manche) ailleurs ; largeurs et durées de `FishingRegistry` (3 s, 2,5 s, 2 s) | PalaJobs |
+| Raretés | commun, rare, légendaire, mythique ; butin pondéré de `FishingRegistry` | PalaJobs |
+| Chances de départ | canne en paladium 75 / 21 / 4 / 0 % ; canne en endium 55 / 32 / 10 / 3 % ; Boost ou Level-Up une manche sur sept chacun | DoHy |
+| XP de Chasseur | celle du wiki × 0,357 (§ 1) : de 9 (morue) à 5 355 (kraken), × le nombre de poissons | wiki |
+| Niveaux | 10 (carpe, bar, raie, thon, poisson lune), 15 (poisson à XP), 20 (baleine, kraken) : en dessous, le tirage les exclut | wiki × 5 |
+| Vente | `data/prices.csv` : de 45 $ (carpe) à 4 500 $ (kraken) | DoHy |
+| Canne en endium | durabilité 512, recette de la canne en paladium avec un lingot d'endium en bout ; seule à ouvrir le mythique | PalaJobs (objet) ; DoHy (recette) |
 
 ### Épée en endium — `onLeftClickEntity`
 

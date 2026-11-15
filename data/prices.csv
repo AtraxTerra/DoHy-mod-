@@ -207,3 +207,11 @@ dohy:gingerbread,AGRI,MOB,104.0,240,256,0.2,960,machine a pain : 2 farines de se
 dohy:fonio_bread,AGRI,FOUND,50.0,800,64,0.35,4800,pain d'OGM : 2 farines 1 creme 1 saindoux ; achat dissuasif
 dohy:sorghum_bread,AGRI,FOUND,36.0,1100,64,0.35,6600,pain d'OGM : 3 farines 1 creme 1 saindoux 1 oeuf ; achat dissuasif
 dohy:kamut_bread,AGRI,FOUND,44.0,910,64,0.35,5500,pain d'OGM : 2 farines 1 creme 1 melon scintillant ; achat dissuasif
+palamod:carp,FOOD,FOOD,120.0,45,2000,0.15,180,peche de PalaJobs (mini-jeu)
+palamod:bass,FOOD,FOOD,120.0,70,2000,0.15,280,peche de PalaJobs (mini-jeu)
+palamod:ray,FOOD,FOOD,120.0,95,2000,0.15,380,peche de PalaJobs (mini-jeu)
+palamod:red_tuna,FOOD,FOOD,120.0,150,2000,0.15,600,peche de PalaJobs (mini-jeu)
+palamod:moonfish,FOOD,FOOD,120.0,180,2000,0.15,720,peche de PalaJobs (mini-jeu)
+palamod:exp_fish,FOOD,FOOD,120.0,240,2000,0.15,960,peche de PalaJobs (mini-jeu)
+palamod:whale,FOOD,FOOD,120.0,3000,2000,0.15,12000,peche de PalaJobs (mini-jeu)
+palamod:kraken,FOOD,FOOD,120.0,4500,2000,0.15,18000,peche de PalaJobs (mini-jeu)

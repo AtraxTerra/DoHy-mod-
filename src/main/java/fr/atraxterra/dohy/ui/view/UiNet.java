@@ -147,6 +147,9 @@ public final class UiNet {
         register(fr.atraxterra.dohy.palamod.clicker.ClickerView.ID,
                 fr.atraxterra.dohy.palamod.clicker.ClickerView.STREAM_CODEC,
                 fr.atraxterra.dohy.palamod.clicker.Clicker::handle);
+        register(fr.atraxterra.dohy.palamod.fishing.FishingView.ID,
+                fr.atraxterra.dohy.palamod.fishing.FishingView.STREAM_CODEC,
+                fr.atraxterra.dohy.palamod.fishing.FishingGame::handle);
         register(fr.atraxterra.dohy.faction.FactionEditView.ID, fr.atraxterra.dohy.faction.FactionEditView.STREAM_CODEC,
                 fr.atraxterra.dohy.faction.FactionEdit::handle);
         for (fr.atraxterra.dohy.ui.menu.MenuController menu : fr.atraxterra.dohy.ui.menu.Menus.all()) {

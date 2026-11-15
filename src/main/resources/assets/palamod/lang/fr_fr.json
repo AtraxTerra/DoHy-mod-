@@ -928,5 +928,14 @@
   "tooltip.palamod.candy_wrapped": "Un bonbon de metier au hasard, parfois multicolore",
   "tooltip.palamod.candy_wrapped.hint": "Clic droit : le deballer.",
   "message.palamod.candy": "[Bonbon] +%s XP de %s",
-  "message.palamod.candy_wrapped": "[Bonbon] Dans le papier : %s !"
+  "message.palamod.candy_wrapped": "[Bonbon] Dans le papier : %s !",
+  "item.palamod.carp": "Carpe",
+  "item.palamod.bass": "Bar",
+  "item.palamod.ray": "Raie manta",
+  "item.palamod.red_tuna": "Thon rouge",
+  "item.palamod.moonfish": "Poisson lune",
+  "item.palamod.exp_fish": "Poisson a XP",
+  "item.palamod.whale": "Baleine",
+  "item.palamod.kraken": "Kraken",
+  "item.palamod.endium_fishing_rod": "Canne a peche en endium"
 }

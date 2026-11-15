@@ -43,6 +43,9 @@ public final class UiClient {
         SCREENS.put(fr.atraxterra.dohy.palamod.clicker.ClickerView.ID,
                 view -> new fr.atraxterra.dohy.client.ui.screen.ClickerScreen(
                         (fr.atraxterra.dohy.palamod.clicker.ClickerView) view));
+        SCREENS.put(fr.atraxterra.dohy.palamod.fishing.FishingView.ID,
+                view -> new fr.atraxterra.dohy.client.ui.screen.FishingScreen(
+                        (fr.atraxterra.dohy.palamod.fishing.FishingView) view));
         SCREENS.put(fr.atraxterra.dohy.faction.FactionEditView.ID,
                 view -> new fr.atraxterra.dohy.client.ui.screen.FactionEditScreen(
                         (fr.atraxterra.dohy.faction.FactionEditView) view));
