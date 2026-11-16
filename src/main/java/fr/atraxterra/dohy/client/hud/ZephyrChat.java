@@ -133,7 +133,10 @@ public final class ZephyrChat implements ChatComponent.ChatGraphicsAccess {
 
     @Override
     public void handleTag(int x0, int y0, int x1, int y1, float opacity, GuiMessageTag tag) {
-        replay.add(() -> inner.handleTag(x0, y0, x1, y1, opacity, tag));
+        // La marque d'un message (systeme, modifie) : un filet d'un pixel, un pixel en retrait du bord de la
+        // carte, au lieu d'une bande collee au bord qui couperait ses coins arrondis.
+        int left = Math.min(x0, x1) + 1;
+        replay.add(() -> inner.handleTag(left, y0, left + 1, y1, opacity, tag));
     }
 
     @Override

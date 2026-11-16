@@ -176,7 +176,7 @@ public final class StatusCard {
             boolean war = info.stance() == 2;
             String text = (war ? "Guerre \u00B7 " : "Ultimatum \u00B7 ") + info.nation();
             String right = info.deadline() > 0L ? countdown(info.deadline() + offset - System.currentTimeMillis())
-                    : war ? "heure ?" : null;
+                    : war ? "a fixer" : null;
             alerts.add(new Alert(text, war ? Ui.Theme.RED_LIGHT : Ui.Theme.ORANGE, right, war));
         }
         DisasterClient.Alert disaster = DisasterClient.alert(player.getX(), player.getZ());
