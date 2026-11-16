@@ -33,6 +33,8 @@ final class GlobeTiles {
     private static final int QUEUE = 48;
     /** La demi-largeur des traits, en pixels de dalle. */
     private static final double HALF_LINE = 0.45d;
+    /** Le poids de terre ou passe la cote. */
+    private static final double LAND = 0.42d;
 
     record Key(int density, int tx, int tz) {
     }
@@ -223,40 +225,66 @@ final class GlobeTiles {
         return 0xFF000000 | r << 16 | g << 8 | b;
     }
 
+    /**
+     * Les poids d'une B-spline cubique pour les quatre cases autour d'un point : un
+     * lissage doux, sans rebond, qui efface les marches de la grille.
+     */
+    private static void spline(double t, double[] w) {
+        double t2 = t * t;
+        double t3 = t2 * t;
+        w[0] = (1.0d - 3.0d * t + 3.0d * t2 - t3) / 6.0d;
+        w[1] = (3.0d * t3 - 6.0d * t2 + 4.0d) / 6.0d;
+        w[2] = (-3.0d * t3 + 3.0d * t2 + 3.0d * t + 1.0d) / 6.0d;
+        w[3] = t3 / 6.0d;
+    }
+
     static Result generate(Snapshot snap, Key key) {
         int density = key.density();
         int cells = SIZE / density;
+        // La grille de la dalle et sa marge (deux cases avant, trois apres), lue une fois.
+        int span = cells + 5;
+        int originX = key.tx() * cells - 2;
+        int originZ = key.tz() * cells - 2;
+        int[] grid = new int[span * span];
+        for (int r = 0; r < span; r++) {
+            for (int c = 0; c < span; c++) {
+                grid[r * span + c] = snap.cell(originX + c, originZ + r);
+            }
+        }
         NativeImage base = new NativeImage(SIZE, SIZE, false);
         NativeImage holders = snap.holders() ? new NativeImage(SIZE, SIZE, false) : null;
         boolean anyHolder = false;
-        int[] sample = new int[4];
-        double[] weight = new double[4];
-        int[] ids = new int[4];
-        double[] sums = new double[4];
-        int[] keys = new int[4];
-        double[] holderSums = new double[4];
+        int[] sample = new int[16];
+        double[] weight = new double[16];
+        double[] wx = new double[4];
+        double[] wz = new double[4];
+        int[] ids = new int[16];
+        double[] sums = new double[16];
+        int[] keys = new int[16];
+        double[] holderSums = new double[16];
         for (int py = 0; py < SIZE; py++) {
             double v = key.tz() * (double) cells + (py + 0.5d) / density - 0.5d;
             int row = (int) Math.floor(v);
-            double fy = v - row;
+            spline(v - row, wz);
+            int localRow = row - 1 - originZ;
             for (int px = 0; px < SIZE; px++) {
                 double u = key.tx() * (double) cells + (px + 0.5d) / density - 0.5d;
                 int column = (int) Math.floor(u);
-                double fx = u - column;
-                sample[0] = snap.cell(column, row);
-                sample[1] = snap.cell(column + 1, row);
-                sample[2] = snap.cell(column, row + 1);
-                sample[3] = snap.cell(column + 1, row + 1);
-                weight[0] = (1.0d - fx) * (1.0d - fy);
-                weight[1] = fx * (1.0d - fy);
-                weight[2] = (1.0d - fx) * fy;
-                weight[3] = fx * fy;
+                spline(u - column, wx);
+                int localColumn = column - 1 - originX;
+                for (int j = 0; j < 4; j++) {
+                    int base4 = (localRow + j) * span + localColumn;
+                    for (int i = 0; i < 4; i++) {
+                        sample[j * 4 + i] = grid[base4 + i];
+                        weight[j * 4 + i] = wx[i] * wz[j];
+                    }
+                }
                 // La terre : son poids, et ses pays par poids.
                 double land = 0.0d;
                 double coast = 0.0d;
                 double sea = 0.0d;
                 int count = 0;
-                for (int k = 0; k < 4; k++) {
+                for (int k = 0; k < 16; k++) {
                     int id = sample[k] & 0x7FFF;
                     if (id == 0) {
                         sea += weight[k];
@@ -279,11 +307,12 @@ final class GlobeTiles {
                         sums[slot] += weight[k];
                     }
                 }
-                int water = coast + sea <= 0.0d ? AtlasGlobe.COAST
-                        : mix(AtlasGlobe.SEA, AtlasGlobe.COAST, coast / (coast + sea));
+                double wet = coast + sea;
+                int water = wet <= 1.0e-9d ? AtlasGlobe.COAST
+                        : mix(AtlasGlobe.SEA, AtlasGlobe.COAST, 0.5d + (coast / wet - 0.5d) * density);
                 int color = water;
-                int top = 0;
                 if (count > 0) {
+                    int top = 0;
                     double best = -1.0d;
                     double second = 0.0d;
                     for (int s = 0; s < count; s++) {
@@ -298,11 +327,11 @@ final class GlobeTiles {
                     int ground = snap.land()[Math.min(top, snap.land().length - 1)];
                     if (second > 0.0d) {
                         double line = clamp(HALF_LINE + 0.5d - (best - second) * density / 2.0d);
-                        ground = mix(ground, AtlasScanner.shaded(ground, 0.55d), line);
+                        ground = mix(ground, AtlasScanner.shaded(ground, 0.6d), line);
                     }
-                    double edge = (land - 0.5d) * density;
+                    // Le trait de cote passe la ou la terre pese 0,42 : les ilots d'une case restent.
+                    double edge = (land - LAND) * density;
                     color = mix(water, ground, 0.5d + edge);
-                    // Un filet clair le long des cotes.
                     double shore = clamp(HALF_LINE * 0.8d + 0.5d - Math.abs(edge)) * 0.45d;
                     if (shore > 0.0d) {
                         color = mix(color, AtlasGlobe.SHORE, shore);
@@ -329,7 +358,7 @@ final class GlobeTiles {
     private static int holder(Snapshot snap, int[] sample, double[] weight, int density, int[] keys,
                               double[] sums) {
         int count = 0;
-        for (int k = 0; k < 4; k++) {
+        for (int k = 0; k < sample.length; k++) {
             int id = sample[k] & 0x7FFF;
             boolean ground = id != 0 && (sample[k] & 0x8000) == 0;
             int color = ground && id < snap.holder().length ? snap.holder()[id] : 0;

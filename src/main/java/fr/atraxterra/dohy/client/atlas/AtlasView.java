@@ -29,12 +29,16 @@ final class AtlasView {
 
     /** Le fond d'une carte sans globe ni terrain. */
     static final int BACKDROP = 0xFF0E1013;
+    /** Le zoom (blocs par pixel) au-dela duquel les points de passage n'ont plus leur nom. */
+    static final double POINT_LABELS = 8.0d;
+    /** Le zoom au-dela duquel les gisements n'ont plus leur nom. */
+    static final double MARK_LABELS = 4.0d;
 
     /** Les couleurs des ressources des gisements geants (le reste en gris). */
     private static final Map<String, Integer> RESOURCE = Map.ofEntries(
             Map.entry("fer", 0xFFD8AF93), Map.entry("cuivre", 0xFFE0773A), Map.entry("or", 0xFFFFD700),
-            Map.entry("diamant", 0xFF5DECF5), Map.entry("charbon", 0xFF5A5A5A), Map.entry("lignite", 0xFF8B6E44),
-            Map.entry("petrole", 0xFF3A3A3A), Map.entry("gaz", 0xFF9AD0FF), Map.entry("sables bitumineux", 0xFF8A7048),
+            Map.entry("diamant", 0xFF5DECF5), Map.entry("charbon", 0xFF707070), Map.entry("lignite", 0xFF8B6E44),
+            Map.entry("petrole", 0xFF9A7448), Map.entry("gaz", 0xFF9AD0FF), Map.entry("sables bitumineux", 0xFF8A7048),
             Map.entry("uranium", 0xFF6BE04A), Map.entry("thorium", 0xFF3E8E3A), Map.entry("terres rares", 0xFFB06BE0),
             Map.entry("lithium", 0xFFE6E6F0), Map.entry("cobalt", 0xFF3050D0), Map.entry("coltan", 0xFF6A6A80),
             Map.entry("bauxite", 0xFFC0603A), Map.entry("titane", 0xFFB0B8C0), Map.entry("plomb", 0xFF60607A),
@@ -478,17 +482,11 @@ final class AtlasView {
      * ressource dans une pastille cerclee de sa couleur. La capitale, une etoile.
      */
     private static void marks(UiGraphics ui, Paint paint, Frame frame, Style style, boolean labels) {
-        List<EarthAtlas.Mark> marks = AtlasData.marks();
-        float badge = style.badge();
-        boolean names = labels && frame.scale <= 4.0d;
-        for (EarthAtlas.Mark mark : marks) {
-            double sx = frame.screenX(mark.x());
-            double sy = frame.screenY(mark.z());
-            if (!frame.inside(sx, sy, badge + 2.0d)) {
-                continue;
-            }
-            float x = frame.snap(sx);
-            float y = frame.snap(sy);
+        float badge = badgeRadius(style, frame.scale);
+        boolean names = labels && frame.scale <= MARK_LABELS;
+        for (EarthAtlas.Mark mark : visibleMarks(frame, badge)) {
+            float x = frame.snap(frame.screenX(mark.x()));
+            float y = frame.snap(frame.screenY(mark.z()));
             badge(ui, paint, mark, x, y, badge);
             if (names) {
                 label(ui, paint, mark.name(), x, y + badge + 2.0f, style.label(), 0xFFFFFFFF);
@@ -509,6 +507,47 @@ final class AtlasView {
                 }
             }
         }
+    }
+
+    /** Le rayon des pastilles : plus petites de loin, pour que la carte respire. */
+    static float badgeRadius(Style style, double scale) {
+        double factor = scale <= 6.0d ? 1.0d : Math.max(0.62d, 1.0d - 0.17d * Math.log(scale / 6.0d) / Math.log(2.0d));
+        return (float) (style.badge() * factor);
+    }
+
+    /**
+     * Les reperes a montrer : ceux qui se voient, les lieux (zones, bases, volcans)
+     * d'abord, puis les gisements ; un repere qui en recouvrirait un autre deja place
+     * attend qu'on zoome.
+     */
+    static List<EarthAtlas.Mark> visibleMarks(Frame frame, float badge) {
+        List<EarthAtlas.Mark> candidates = new java.util.ArrayList<>();
+        for (EarthAtlas.Mark mark : AtlasData.marks()) {
+            if (frame.inside(frame.screenX(mark.x()), frame.screenY(mark.z()), badge + 2.0d)) {
+                candidates.add(mark);
+            }
+        }
+        candidates.sort(java.util.Comparator.comparingInt((EarthAtlas.Mark mark) -> mark.kind() >= 10 ? 0 : 1));
+        List<EarthAtlas.Mark> placed = new java.util.ArrayList<>();
+        double spacing = badge * 1.55d;
+        double limit = spacing * spacing;
+        for (EarthAtlas.Mark mark : candidates) {
+            double x = frame.screenX(mark.x());
+            double y = frame.screenY(mark.z());
+            boolean free = true;
+            for (EarthAtlas.Mark other : placed) {
+                double dx = frame.screenX(other.x()) - x;
+                double dy = frame.screenY(other.z()) - y;
+                if (dx * dx + dy * dy < limit) {
+                    free = false;
+                    break;
+                }
+            }
+            if (free) {
+                placed.add(mark);
+            }
+        }
+        return placed;
     }
 
     /** La pastille d'un repere : son anneau de couleur, le fond sombre, l'objet. */
@@ -542,7 +581,7 @@ final class AtlasView {
             float x = frame.snap(sx);
             float y = frame.snap(sy);
             diamond(graphics, frame.unit, x, y, style.diamond(), point.color());
-            if (labels) {
+            if (labels && frame.scale <= POINT_LABELS) {
                 label(ui, paint, point.name(), x, y + style.diamond() + 2.5f, style.label(), point.color());
             }
         }

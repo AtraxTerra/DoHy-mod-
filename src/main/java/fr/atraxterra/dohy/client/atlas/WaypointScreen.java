@@ -21,6 +21,9 @@ final class WaypointScreen extends UiScreen {
 
     private static final int WIDTH = 236;
     private static final int HEIGHT = 154;
+    /** La carte au milieu d'une maquette de la taille des menus : meme echelle qu'eux. */
+    private static final int LEFT = (Shell.WIDTH - WIDTH) / 2;
+    private static final int TOP = (Shell.HEIGHT - HEIGHT) / 2;
     private static final float CLOSE = 17.3f;
     private static final float SWATCH = 6.3f;
 
@@ -36,7 +39,7 @@ final class WaypointScreen extends UiScreen {
     private SearchBox name;
 
     WaypointScreen(Screen parent, Waypoints.Point existing, int x, int y, int z, String dimension) {
-        super(Component.literal("Point de passage"), WIDTH, HEIGHT);
+        super(Component.literal("Point de passage"), Shell.WIDTH, Shell.HEIGHT);
         this.parent = parent;
         this.existing = existing;
         this.x = x;
@@ -55,7 +58,7 @@ final class WaypointScreen extends UiScreen {
     @Override
     protected void build() {
         String kept = name == null ? (existing == null ? "Point " + x + " " + z : existing.name()) : name.value();
-        name = add(SearchBox.form(16, 62, WIDTH - 32, 15, "Nom du point", 32, kept));
+        name = add(SearchBox.form(LEFT + 16, TOP + 62, WIDTH - 32, 15, "Nom du point", 32, kept));
         add(new Swatches());
         add(new Actions());
     }
@@ -95,14 +98,14 @@ final class WaypointScreen extends UiScreen {
     @Override
     protected void drawBackground(UiGraphics g, double mouseX, double mouseY) {
         Paint p = g.paint();
-        p.shadow(4, 8, WIDTH - 8, HEIGHT - 8, 22, Paint.alpha(Ui.Theme.SHADOW, 0.6f));
-        p.framed(0, 0, WIDTH, HEIGHT, Shell.RADIUS, Ui.Theme.BG2, 0xFF2C2E33, 1);
-        g.textShaded(Ui.TITLE, existing == null ? "NOUVEAU POINT" : "POINT DE PASSAGE", 16.0f, 12.0f, 14.7f,
-                Ui.Theme.RED, Ui.Theme.RED_DD, 1.33f);
-        g.text(Ui.BODY, x + "   " + y + "   " + z, 16.0f, 30.3f, 5.0f, Ui.Theme.MUTED);
+        p.shadow(LEFT + 4, TOP + 8, WIDTH - 8, HEIGHT - 8, 22, Paint.alpha(Ui.Theme.SHADOW, 0.6f));
+        p.framed(LEFT, TOP, WIDTH, HEIGHT, Shell.RADIUS, Ui.Theme.BG2, 0xFF2C2E33, 1);
+        g.textShaded(Ui.TITLE, existing == null ? "NOUVEAU POINT" : "POINT DE PASSAGE", LEFT + 16.0f, TOP + 12.0f,
+                14.7f, Ui.Theme.RED, Ui.Theme.RED_DD, 1.33f);
+        g.text(Ui.BODY, x + "   " + y + "   " + z, LEFT + 16.0f, TOP + 30.3f, 5.0f, Ui.Theme.MUTED);
         // La croix, comme dans les menus.
-        float closeX = WIDTH - 12.0f - CLOSE;
-        float closeY = 11.0f;
+        float closeX = closeX();
+        float closeY = TOP + 11.0f;
         boolean over = mouseX >= closeX && mouseY >= closeY && mouseX < closeX + CLOSE && mouseY < closeY + CLOSE;
         float hover = closeHover.toward(over ? 1.0f : 0.0f);
         p.framed(closeX, closeY, CLOSE, CLOSE, 4.7f, Paint.mix(Ui.Theme.CARD, Ui.Theme.RED, hover),
@@ -112,15 +115,26 @@ final class WaypointScreen extends UiScreen {
         }
         g.texture(Ui.CLOSE, Math.round(closeX + CLOSE / 2 - 3.5f), Math.round(closeY + CLOSE / 2 - 3.5f), 7, 7, 32,
                 32);
-        Shell.section(g, p, 16.0f, 47.0f, WIDTH - 32.0f, "craft", "NOM", "");
-        Shell.section(g, p, 16.0f, 86.0f, WIDTH - 32.0f, "resources", "COULEUR", "");
+        Shell.section(g, p, LEFT + 16.0f, TOP + 47.0f, WIDTH - 32.0f, "craft", "NOM", "");
+        Shell.section(g, p, LEFT + 16.0f, TOP + 86.0f, WIDTH - 32.0f, "resources", "COULEUR", "");
+    }
+
+    private static float closeX() {
+        return LEFT + WIDTH - 12.0f - CLOSE;
     }
 
     @Override
     protected boolean backgroundClicked(double mouseX, double mouseY, int button) {
-        float closeX = WIDTH - 12.0f - CLOSE;
-        if (button == 0 && mouseX >= closeX && mouseY >= 11.0f && mouseX < closeX + CLOSE && mouseY < 11.0f + CLOSE) {
+        float closeX = closeX();
+        float closeY = TOP + 11.0f;
+        if (button == 0 && mouseX >= closeX && mouseY >= closeY && mouseX < closeX + CLOSE
+                && mouseY < closeY + CLOSE) {
             UiScreen.click(0.8f);
+            onClose();
+            return true;
+        }
+        if (button == 0 && (mouseX < LEFT || mouseY < TOP || mouseX >= LEFT + WIDTH || mouseY >= TOP + HEIGHT)) {
+            // Un clic hors de la carte la ferme, comme on referme une bulle.
             onClose();
             return true;
         }
@@ -132,7 +146,7 @@ final class WaypointScreen extends UiScreen {
         private final Anim.Value[] hovers = new Anim.Value[Waypoints.COLORS.length];
 
         Swatches() {
-            super(16, 98, WIDTH - 32, 16);
+            super(LEFT + 16, TOP + 98, WIDTH - 32, 16);
             for (int index = 0; index < hovers.length; index++) {
                 hovers[index] = new Anim.Value(0.0f, 16.0f);
             }
@@ -191,7 +205,7 @@ final class WaypointScreen extends UiScreen {
         private final Anim.Value deleteHover = new Anim.Value(0.0f, 16.0f);
 
         Actions() {
-            super(16, HEIGHT - 30, WIDTH - 32, 17);
+            super(LEFT + 16, TOP + HEIGHT - 30, WIDTH - 32, 17);
         }
 
         @Override

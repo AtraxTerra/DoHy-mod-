@@ -162,12 +162,19 @@ public final class AtlasScreen extends Screen {
         Paint paint = new Paint(graphics, gui);
         if (focus != null && focus.mark() != null) {
             // Le repere survole, en plus grand, avec son nom.
+            float badge = AtlasView.badgeRadius(style, scale) * 1.3f;
             float x = frame.snap(frame.screenX(focus.mark().x()));
             float y = frame.snap(frame.screenY(focus.mark().z()));
-            paint.glow(x, y, style.badge() * 3.2f, Paint.alpha(AtlasView.resourceColor(focus.mark().resource()), 0.35f));
-            AtlasView.badge(ui, paint, focus.mark(), x, y, style.badge() * 1.3f);
-            AtlasView.label(ui, paint, focus.mark().name(), x, y + style.badge() * 1.3f + 2.5f * du, style.label(),
-                    0xFFFFFFFF);
+            paint.glow(x, y, badge * 2.5f, Paint.alpha(AtlasView.resourceColor(focus.mark().resource()), 0.35f));
+            AtlasView.badge(ui, paint, focus.mark(), x, y, badge);
+            if (scale > AtlasView.MARK_LABELS) {
+                AtlasView.label(ui, paint, focus.mark().name(), x, y + badge + 2.5f * du, style.label(), 0xFFFFFFFF);
+            }
+        } else if (focus != null && focus.point() != null && scale > AtlasView.POINT_LABELS) {
+            Waypoints.Point point = focus.point();
+            float x = frame.snap(frame.screenX(point.x() + 0.5d));
+            float y = frame.snap(frame.screenY(point.z() + 0.5d));
+            AtlasView.label(ui, paint, point.name(), x, y + style.diamond() + 2.5f * du, style.label(), point.color());
         }
         player(graphics, paint, frame, du);
         graphics.nextStratum();
@@ -240,8 +247,8 @@ public final class AtlasScreen extends Screen {
         panels.clear();
         float lift = 4.0f * (1.0f - Anim.easeOut(Anim.progress(opened, 0.25d)));
         // Un voile en haut et en bas : les cartes se detachent de la carte.
-        p.gradient(0, 0, designWidth, 46.0f, 0x8C000000, 0x00000000);
-        p.gradient(0, designHeight - 52.0f, designWidth, 52.0f, 0x00000000, 0x99000000);
+        veil(p, 0.0f, 46.0f, 0.55f, true);
+        veil(p, designHeight - 56.0f, 56.0f, 0.6f, false);
         layers(g, p, MARGIN, MARGIN + lift, mx, my, dimension, options);
         close(g, p, designWidth - MARGIN - CLOSE, MARGIN + lift, mx, my);
         position(g, p, designWidth - MARGIN - CLOSE - 4.0f, MARGIN + lift, mx, my);
@@ -250,6 +257,18 @@ public final class AtlasScreen extends Screen {
         float zoomLeft = zoom(g, p, designWidth - MARGIN, bottom, frame, mx, my);
         hint(g, p, MARGIN + INFO + 8.0f, zoomLeft - 8.0f, bottom);
         pose.popMatrix();
+    }
+
+    /** Un degrade du noir vers le transparent, en fines bandes (vers le bas si {@code down}). */
+    private void veil(Paint p, float y, float height, float alpha, boolean down) {
+        int bands = 28;
+        float step = height / bands;
+        for (int band = 0; band < bands; band++) {
+            float t = (band + 0.5f) / bands;
+            float strength = down ? 1.0f - t : t;
+            p.rect(0, y + band * step, designWidth, step + 0.01f,
+                    Paint.alpha(0xFF000000, alpha * strength * strength));
+        }
     }
 
     private float hover(String key, boolean over) {
@@ -424,7 +443,7 @@ public final class AtlasScreen extends Screen {
             return;
         }
         String value = player.getBlockX() + "  " + player.getBlockY() + "  " + player.getBlockZ();
-        float width = Math.max(g.width(Ui.WIDE, value, 6.3f), g.width(Ui.PIXEL, "TA POSITION (C)", 3.3f)) + 13.4f;
+        float width = Math.max(g.width(Ui.WIDE, value, 6.3f), g.width(Ui.PIXEL, "TA POSITION", 3.3f)) + 13.4f;
         float x = right - width;
         float top = y - 2.0f;
         float height = 21.3f;
@@ -433,7 +452,7 @@ public final class AtlasScreen extends Screen {
         p.shadow(x + 3, top + 5, width - 6, height - 5, 10.0f, Paint.alpha(Ui.Theme.SHADOW, 0.5f));
         p.framed(x, top, width, height, 4.7f, Paint.mix(Ui.Theme.CARD, Ui.Theme.CARD_HOVER, hover),
                 Paint.mix(0xFF2E3035, 0xFF45484F, hover), 1);
-        g.text(Ui.PIXEL, "TA POSITION (C)", x + 6.7f, top + 5.6f, 3.3f, Ui.Theme.MUTED);
+        g.text(Ui.PIXEL, "TA POSITION", x + 6.7f, top + 5.6f, 3.3f, Ui.Theme.MUTED);
         g.text(Ui.WIDE, value, x + 6.7f, top + 11.4f, 6.3f, Ui.Theme.TEXT);
         panels.add(new float[] {x, top, width, height});
         hits.add(new Hit(x, top, width, height, () -> {
@@ -535,7 +554,7 @@ public final class AtlasScreen extends Screen {
         String text = length >= 1000.0d ? (length % 1000.0d == 0 ? String.valueOf((long) (length / 1000.0d))
                 : String.format(Locale.ROOT, "%.1f", length / 1000.0d).replace('.', ',')) + " km"
                 : (long) length + " m";
-        float barWidth = Math.max(bar, g.width(Ui.WIDE, text, 4.2f)) + 2.0f;
+        float barWidth = Math.max(bar, g.width(Ui.BOLD, text, 4.8f)) + 2.0f;
         float width = 8.0f + button + 8.0f + barWidth + 8.0f + button + 6.0f + button + 8.0f;
         float x = right - width;
         float y = bottom - height;
@@ -545,7 +564,7 @@ public final class AtlasScreen extends Screen {
         roundButton(g, p, cursor, by, button, "minus", mx, my, () -> zoomBy(1.6d));
         cursor += button + 8.0f;
         float barLeft = cursor + (barWidth - bar) / 2.0f;
-        g.centered(Ui.WIDE, text, cursor + barWidth / 2.0f, y + 6.0f, 4.2f, Ui.Theme.TEXT2);
+        g.centered(Ui.BOLD, text, cursor + barWidth / 2.0f, y + 5.3f, 4.8f, Ui.Theme.TEXT2);
         float lineY = y + 15.3f;
         p.rect(barLeft, lineY, bar, 1.0f, Ui.Theme.TEXT2);
         p.rect(barLeft, lineY - 2.3f, 1.0f, 3.3f, Ui.Theme.TEXT2);
@@ -597,7 +616,8 @@ public final class AtlasScreen extends Screen {
 
     /** Les gestes, en petit au milieu du bas, s'il reste la place. */
     private void hint(UiGraphics g, Paint p, float left, float right, float bottom) {
-        String text = "Glisser : se deplacer  \u00B7  Molette : zoom  \u00B7  Clic droit : poser un point";
+        String text = "Glisser : se deplacer  \u00B7  Molette : zoom  \u00B7  Clic droit : poser un point"
+                + "  \u00B7  C : recentrer";
         float size = 4.6f;
         float width = g.width(Ui.BODY, text, size);
         if (width + 16.0f > right - left) {
@@ -617,7 +637,8 @@ public final class AtlasScreen extends Screen {
 
     private Focus focus(AtlasView.Frame frame, int mouseX, int mouseY, AtlasView.Style style, String dimension,
                         AtlasClient.Options options) {
-        double reach = style.badge() + 1.5d;
+        float badge = AtlasView.badgeRadius(style, scale);
+        double reach = badge + 1.5d;
         if (options.waypoints) {
             Waypoints.Point point = pointAt(frame, mouseX, mouseY, dimension, style.diamond() + 2.5d);
             if (point != null) {
@@ -627,7 +648,7 @@ public final class AtlasScreen extends Screen {
         }
         boolean overworld = "minecraft:overworld".equals(dimension);
         if (overworld && options.marks) {
-            EarthAtlas.Mark mark = markAt(frame, mouseX, mouseY, reach);
+            EarthAtlas.Mark mark = markAt(AtlasView.visibleMarks(frame, badge), frame, mouseX, mouseY, reach);
             if (mark != null) {
                 return new Focus(mark.name(), describe(mark), AtlasView.resourceColor(mark.resource()),
                         MarkIcons.icon(mark.resource()), mark, null);
@@ -677,10 +698,11 @@ public final class AtlasScreen extends Screen {
         return best;
     }
 
-    private static EarthAtlas.Mark markAt(AtlasView.Frame frame, double mouseX, double mouseY, double reach) {
+    private static EarthAtlas.Mark markAt(List<EarthAtlas.Mark> marks, AtlasView.Frame frame, double mouseX,
+                                          double mouseY, double reach) {
         EarthAtlas.Mark best = null;
         double bestDistance = reach * reach;
-        for (EarthAtlas.Mark mark : AtlasData.marks()) {
+        for (EarthAtlas.Mark mark : marks) {
             double dx = frame.screenX(mark.x()) - mouseX;
             double dy = frame.screenY(mark.z()) - mouseY;
             double distance = dx * dx + dy * dy;
