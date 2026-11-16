@@ -31,7 +31,9 @@ import java.util.List;
  *   <li>{@code heure 21:00}, {@code heure demain 18h} fixent l'assaut ;</li>
  *   <li>{@code paix} achete la paix, {@code cadeau <nation> <montant>} adoucit une nation ;</li>
  *   <li>{@code coffre} designe ton coffre, la ou tu te tiens ;</li>
- *   <li>{@code admin} (operateurs) : menacer, declarer, lancer un assaut, l'arreter.</li>
+ *   <li>{@code admin} (operateurs) : menacer, declarer, lancer un assaut, l'arreter, tirer un
+ *       missile sur sa propre base ({@code missile <nation> [charge]}), faire revenir tout de suite
+ *       le terrain bombarde ({@code retour}).</li>
  * </ul>
  */
 @EventBusSubscriber
@@ -119,6 +121,18 @@ public final class WarCommand {
                                     ? answer(context, "Rien a reprendre : aucun pays de sa region, hors capitale", null)
                                     : answer(context, null, "Reprise : " + retaken + ".");
                         })))
+                        // Une frappe de missile sur sa propre base, sans siege : pour essayer les missiles de NTM.
+                        .then(Commands.literal("missile").then(nationArgument()
+                                .executes(context -> missile(context, null))
+                                .then(Commands.argument("charge", StringArgumentType.word())
+                                        .suggests((context, builder) -> SharedSuggestionProvider.suggest(
+                                                java.util.Arrays.stream(NtmArsenal.Warhead.values())
+                                                        .map(w -> w.name().toLowerCase(java.util.Locale.ROOT))
+                                                        .toList(), builder))
+                                        .executes(context -> missile(context,
+                                                StringArgumentType.getString(context, "charge"))))))
+                        .then(Commands.literal("retour").executes(context -> answer(context, null,
+                                StrikeTerrain.hurry() + " terrain(s) bombarde(s) reviennent maintenant.")))
                         .then(Commands.literal("hostilite").then(nationArgument()
                                 .then(Commands.argument("valeur", DoubleArgumentType.doubleArg(0.0d, 100.0d))
                                         .executes(context -> {
@@ -190,6 +204,42 @@ public final class WarCommand {
                 WarStrategy.launch(player, data, relation, now);
             }
         }
+        return 1;
+    }
+
+    private static int missile(CommandContext<CommandSourceStack> context, String charge)
+            throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        int nation = NationTraits.find(StringArgumentType.getString(context, "nation"));
+        if (nation < 0) {
+            return answer(context, "Nation inconnue", null);
+        }
+        if (!FactionApi.has(player)) {
+            return answer(context, "Il faut une faction", null);
+        }
+        if (!NtmArsenal.ready()) {
+            return answer(context, "NTM NEXT n'est pas la (ou ne repond pas) : pas de missiles", null);
+        }
+        if (Strikes.striking(player.getUUID()) || Sieges.of(player.getUUID()) != null) {
+            return answer(context, "Un siege ou une frappe est deja en cours", null);
+        }
+        long now = System.currentTimeMillis();
+        WarData data = WarStrategy.data(player);
+        WarData.Relation relation = data.relation(nation, now);
+        NtmArsenal.Warhead warhead = charge == null ? Strikes.choose(relation, true) : NtmArsenal.Warhead.find(charge);
+        if (warhead == null || !NtmArsenal.available(warhead)) {
+            return answer(context, "Charge inconnue ou indisponible (le nucleaire peut etre coupe dans NTM)", null);
+        }
+        java.util.Optional<java.util.Map.Entry<net.minecraft.server.level.ServerLevel, net.minecraft.core.BlockPos>>
+                vault = WarStrategy.vault(player, data);
+        if (vault.isEmpty()) {
+            return answer(context, "Aucun claim a viser", null);
+        }
+        relation.memory = relation.memory.withStrike();
+        relation.stance(WarData.Stance.TREVE, now);
+        relation.truce = now + WarStrategy.DAY_MS;
+        Strikes.start(player, nation, vault.get().getKey(), vault.get().getValue(), warhead, 0L);
+        WarStrategy.say(player, relation, WarStrategy.bombard(relation.traits(), warhead), ChatFormatting.DARK_RED);
         return 1;
     }
 

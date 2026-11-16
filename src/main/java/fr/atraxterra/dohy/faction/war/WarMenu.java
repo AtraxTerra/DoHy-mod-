@@ -111,6 +111,22 @@ public final class WarMenu extends MenuController {
             sections.add(new MenuView.Section("L'ASSAUT EN COURS", "armor", MenuView.GRID, cards));
         }
 
+        // -- le missile en approche, ou le terrain bombarde qui attend son retour
+        Strike incoming = Strikes.of(player.getUUID());
+        long due = StrikeTerrain.dueFor(player.getUUID());
+        if (incoming != null || due > 0L) {
+            boolean alert = incoming != null;
+            sections.add(new MenuView.Section(alert ? "MISSILE EN APPROCHE" : "BASE BOMBARDEE", "armor",
+                    MenuView.GRID, List.of(Card.of(new ItemStack(alert ? Items.FIREWORK_ROCKET : Items.TNT),
+                            alert ? incoming.warhead.title() : "Le terrain revient", List.of(
+                                    alert ? incoming.status() : "Retour " + WarStrategy.when(due, now),
+                                    "Coffres et machines epargnes"))
+                    .accent(0xFFB3261E)
+                    .tooltip(List.of("Le terrain revient 5 h apres l'impact.",
+                            "Ce que tu poses ou casses d'ici la reste tel quel.",
+                            "Un antimissile de NTM peut l'abattre en vol.")))));
+        }
+
         // -- l'ultimatum, ou l'heure de l'assaut
         conflict.ifPresent(relation -> {
             NationTraits traits = relation.traits();

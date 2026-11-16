@@ -47,16 +47,19 @@ public final class WarData {
      * @param looted ce qu'elle t'a pris en tout
      * @param paid   les tributs et cadeaux que tu lui as verses
      * @param killed ses soldats tombes chez toi
+     * @param strikes les missiles qu'elle a tires sur ta base (chaque tir monte d'un cran)
      */
-    public record Memory(List<Grievance> grievances, int wins, int losses, long looted, long paid, int killed) {
-        static final Memory EMPTY = new Memory(List.of(), 0, 0, 0L, 0L, 0);
+    public record Memory(List<Grievance> grievances, int wins, int losses, long looted, long paid, int killed,
+                         int strikes) {
+        static final Memory EMPTY = new Memory(List.of(), 0, 0, 0L, 0L, 0, 0);
         static final Codec<Memory> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Grievance.CODEC.listOf().optionalFieldOf("grievances", List.of()).forGetter(Memory::grievances),
                 Codec.INT.optionalFieldOf("wins", 0).forGetter(Memory::wins),
                 Codec.INT.optionalFieldOf("losses", 0).forGetter(Memory::losses),
                 Codec.LONG.optionalFieldOf("looted", 0L).forGetter(Memory::looted),
                 Codec.LONG.optionalFieldOf("paid", 0L).forGetter(Memory::paid),
-                Codec.INT.optionalFieldOf("killed", 0).forGetter(Memory::killed)
+                Codec.INT.optionalFieldOf("killed", 0).forGetter(Memory::killed),
+                Codec.INT.optionalFieldOf("strikes", 0).forGetter(Memory::strikes)
         ).apply(instance, Memory::new));
 
         Memory withGrievance(Grievance grievance) {
@@ -65,27 +68,31 @@ public final class WarData {
             while (next.size() > 12) {
                 next.removeFirst();
             }
-            return new Memory(List.copyOf(next), wins, losses, looted, paid, killed);
+            return new Memory(List.copyOf(next), wins, losses, looted, paid, killed, strikes);
         }
 
         Memory withGrievances(List<Grievance> next) {
-            return new Memory(List.copyOf(next), wins, losses, looted, paid, killed);
+            return new Memory(List.copyOf(next), wins, losses, looted, paid, killed, strikes);
         }
 
         Memory withWin(long amount) {
-            return new Memory(grievances, wins + 1, losses, looted + amount, paid, killed);
+            return new Memory(grievances, wins + 1, losses, looted + amount, paid, killed, strikes);
         }
 
         Memory withLoss() {
-            return new Memory(grievances, wins, losses + 1, looted, paid, killed);
+            return new Memory(grievances, wins, losses + 1, looted, paid, killed, strikes);
         }
 
         Memory withPaid(long amount) {
-            return new Memory(grievances, wins, losses, looted, paid + amount, killed);
+            return new Memory(grievances, wins, losses, looted, paid + amount, killed, strikes);
         }
 
         Memory withKilled(int count) {
-            return new Memory(grievances, wins, losses, looted, paid, killed + count);
+            return new Memory(grievances, wins, losses, looted, paid, killed + count, strikes);
+        }
+
+        Memory withStrike() {
+            return new Memory(grievances, wins, losses, looted, paid, killed, strikes + 1);
         }
     }
 

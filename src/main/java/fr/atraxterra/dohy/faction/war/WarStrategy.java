@@ -74,6 +74,11 @@ import java.util.UUID;
  * sur la carte de la Terre ({@link EarthNations#reclaim}). Ce pays en jeu est
  * annonce a l'ultimatum, a la declaration et au depart de l'armee ; celui de
  * ta capitale ne l'est jamais.
+ *
+ * <p><b>Les missiles</b> : devant une base imprenable, une nation qui en a les
+ * moyens (et NTM NEXT) tire un missile au lieu de lever le siege
+ * ({@link Strikes}). Le terrain revient cinq heures apres l'impact ; tes
+ * conteneurs et tes machines sont epargnes.
  */
 public final class WarStrategy {
 
@@ -649,7 +654,7 @@ public final class WarStrategy {
         if (!FactionApi.has(player)) {
             return "Tu n'as pas de faction";
         }
-        if (Sieges.of(player.getUUID()) != null) {
+        if (Sieges.of(player.getUUID()) != null || Strikes.striking(player.getUUID())) {
             return "On ne deplace pas son coffre en plein siege";
         }
         if (!FactionApi.claimAt(player.level(), player.blockPosition()).ownedBy(player.getUUID())) {
@@ -717,12 +722,23 @@ public final class WarStrategy {
             }
             case "imprenable" -> {
                 relation.defense = 1.0d;
-                relation.fear = Math.min(100.0d, relation.fear + 20.0d);
-                relation.hostility = Math.max(0.0d, relation.hostility - 10.0d);
-                relation.stance(WarData.Stance.TREVE, now);
-                relation.truce = now + 7L * DAY_MS;
-                say(player, relation, "Ta base est imprenable. Nous levons le siege.", ChatFormatting.GREEN);
-                line = "siege leve : base imprenable";
+                Strike strike = Strikes.plan(player, relation, siege.level, siege.vault);
+                if (strike != null) {
+                    // Pas d'entree : elle bombarde. La treve tient le temps du tir, puis struck() la fixe.
+                    relation.treasury = Math.max(0L, relation.treasury - strike.cost);
+                    relation.memory = relation.memory.withStrike();
+                    relation.stance(WarData.Stance.TREVE, now);
+                    relation.truce = now + DAY_MS;
+                    say(player, relation, bombard(traits, strike.warhead), ChatFormatting.DARK_RED);
+                    line = "base imprenable : tir (" + strike.warhead.label() + ")";
+                } else {
+                    relation.fear = Math.min(100.0d, relation.fear + 20.0d);
+                    relation.hostility = Math.max(0.0d, relation.hostility - 10.0d);
+                    relation.stance(WarData.Stance.TREVE, now);
+                    relation.truce = now + 7L * DAY_MS;
+                    say(player, relation, "Ta base est imprenable. Nous levons le siege.", ChatFormatting.GREEN);
+                    line = "siege leve : base imprenable";
+                }
             }
             case "suspendu" -> {
                 relation.stance(WarData.Stance.GUERRE, relation.since);
@@ -789,6 +805,98 @@ public final class WarStrategy {
         };
         say(player, relation, text, ChatFormatting.DARK_RED);
         return name + " repris";
+    }
+
+    /** Ce qu'elle dit en pointant un missile sur ta base. */
+    static String bombard(NationTraits traits, NtmArsenal.Warhead warhead) {
+        return switch (traits.voice()) {
+            case "brutale" -> "Imprenable ? Alors nous la raserons. " + warhead.sentence() + " part vers ta base.";
+            case "courtoise" -> "Tes murs resistent a nos soldats : nous allons les bombarder. Mets tes gens a l'abri.";
+            case "mielleuse" -> "Une si belle forteresse... ce serait dommage qu'" + warhead.one()
+                    + " tombe dessus. Leve les yeux.";
+            default -> "Base imprenable. Frappe autorisee : " + warhead.label() + ".";
+        };
+    }
+
+    /**
+     * La frappe est finie (ou n'aura pas lieu) : la nation en tire ses lecons.
+     *
+     * <ul>
+     *   <li>{@code frappe} : sa colere retombe, une treve de deux a quatre jours ;</li>
+     *   <li>{@code intercepte} : abattu en vol, elle te craint, une treve plus longue,
+     *       et de l'ELO pour toi ;</li>
+     *   <li>{@code annule} : tu t'es deconnecte avant l'impact, le missile lui est
+     *       rendu et la guerre continue ;</li>
+     *   <li>{@code rate} : le tir n'est pas parti, le missile lui est rendu.</li>
+     * </ul>
+     */
+    static void struck(ServerPlayer player, int nation, String result, NtmArsenal.Warhead warhead, long cost) {
+        if (!FactionApi.has(player)) {
+            return;
+        }
+        WarData data = data(player);
+        long now = System.currentTimeMillis();
+        WarData.Relation relation = data.relation(nation, now);
+        NationTraits traits = relation.traits();
+        String line;
+        switch (result) {
+            case "frappe" -> {
+                relation.hostility = Math.max(0.0d, relation.hostility - 8.0d - 10.0d * traits.aggression());
+                relation.fear = Math.min(100.0d, relation.fear + 5.0d);
+                relation.stance(WarData.Stance.TREVE, now);
+                relation.truce = now + Math.round((2.0d + 2.0d * traits.caution()) * DAY_MS);
+                String text = switch (traits.voice()) {
+                    case "brutale" -> "Voila ce qu'il en coute de nous defier.";
+                    case "courtoise" -> "Nous regrettons d'en etre arrives la. La treve est a toi, si tu la veux.";
+                    case "mielleuse" -> "Oh... ta jolie base. Quel dommage.";
+                    default -> "Frappe executee.";
+                };
+                say(player, relation, text, ChatFormatting.DARK_RED);
+                line = "frappe sur ta base (" + warhead.label() + ")";
+            }
+            case "intercepte" -> {
+                relation.fear = Math.min(100.0d, relation.fear + 18.0d);
+                relation.hostility = Math.min(100.0d, relation.hostility + 6.0d * traits.grudge());
+                relation.stance(WarData.Stance.TREVE, now);
+                relation.truce = now + Math.round((4.0d + 3.0d * traits.caution()) * DAY_MS);
+                String text = switch (traits.voice()) {
+                    case "brutale" -> "Tu as abattu notre missile. Le prochain ne te ratera pas.";
+                    case "courtoise" -> "Ta defense antimissile est remarquable. Nous en prenons note.";
+                    case "mielleuse" -> "Quelle adresse... tu as abattu notre petit cadeau.";
+                    default -> "Missile perdu. Defense antimissile confirmee.";
+                };
+                say(player, relation, text, ChatFormatting.GRAY);
+                player.sendSystemMessage(FactionApi.prefix().append(Component.literal("Missile abattu en vol ! "
+                        + traits.verb("recule", "reculent") + ".").withStyle(ChatFormatting.GOLD)));
+                FactionApi.addElo(player, 25L, "missile abattu");
+                line = "tir abattu en vol (" + warhead.label() + ")";
+            }
+            case "annule" -> {
+                relation.treasury += cost;
+                relation.stance(WarData.Stance.GUERRE, now);
+                relation.slot = 0L;
+                relation.deadline = now + WINDOW_MS;
+                relation.hostility = Math.min(100.0d, relation.hostility + 5.0d);
+                line = "tir annule";
+            }
+            default -> {
+                relation.treasury += cost;
+                relation.stance(WarData.Stance.TREVE, now);
+                relation.truce = now + DAY_MS;
+                say(player, relation, "Notre missile n'est pas parti. Ce n'est que partie remise.",
+                        ChatFormatting.GRAY);
+                line = "tir rate";
+            }
+        }
+        log(player, data, relation, now, line);
+        DoHy.LOGGER.info("Guerre : frappe {} contre {} : {} ({})", traits.de(), player.getGameProfile().name(),
+                result, warhead.label());
+    }
+
+    /** Une partie du prix du missile revient a la nation (une charge plus legere que prevu). */
+    static void refund(ServerPlayer player, int nation, long amount) {
+        WarData.Relation relation = data(player).relation(nation, System.currentTimeMillis());
+        relation.treasury += amount;
     }
 
     /** L'argent en route avec le tresorier : rendu au demarrage si le serveur tombe. */
