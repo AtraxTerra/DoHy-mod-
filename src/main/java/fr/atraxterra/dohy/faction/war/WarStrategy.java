@@ -68,6 +68,12 @@ import java.util.UUID;
  * <p><b>Jamais en ton absence</b> : un ultimatum qui expire hors ligne est
  * prolonge, un assaut dont l'heure passe hors ligne part cinq minutes apres
  * ton retour.
+ *
+ * <p><b>La reconquete</b> : un assaut reussi (le tresorier rentre au camp
+ * avec ta banque) rend aussi a la nation le dernier pays que tu lui as pris
+ * sur la carte de la Terre ({@link EarthNations#reclaim}). Ce pays en jeu est
+ * annonce a l'ultimatum, a la declaration et au depart de l'armee ; celui de
+ * ta capitale ne l'est jamais.
  */
 public final class WarStrategy {
 
@@ -347,6 +353,7 @@ public final class WarStrategy {
                 .append(button("[Refuser]", "/guerre refuser", ChatFormatting.RED))
                 .append(Component.literal(" "))
                 .append(button("[Details]", "/guerre", ChatFormatting.GRAY)));
+        stakeLine(player, relation);
         player.level().playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE,
                 0.6f, 1.4f);
         log(player, data, relation, now, traits.verb("exige", "exigent") + " " + sum + " de tribut");
@@ -371,6 +378,7 @@ public final class WarStrategy {
                 .append(button("[Choisir l'heure]", "/guerre", ChatFormatting.GOLD))
                 .append(Component.literal(" Entre " + when(now + WINDOW_OPEN_MS, now) + " et "
                         + when(relation.deadline, now) + ".").withStyle(ChatFormatting.GRAY)));
+        stakeLine(player, relation);
         player.level().playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE,
                 1.0f, 0.8f);
         log(player, data, relation, now, traits.verb("declare", "declarent") + " la guerre");
@@ -668,7 +676,10 @@ public final class WarStrategy {
         int force = force(relation);
         relation.treasury = Math.max(0L, relation.treasury - force * SOLDIER_COST);
         Sieges.start(player, relation, vault.get().getKey(), vault.get().getValue(), force, now);
-        say(player, relation, "Notre armee marche sur ta base : " + force + " soldats.", ChatFormatting.DARK_RED);
+        int country = stake(player, relation.nation);
+        say(player, relation, "Notre armee marche sur ta base : " + force + " soldats."
+                + (country > 0 ? " Si nous l'emportons, " + EarthNations.countryName(country) + " nous reviendra." : ""),
+                ChatFormatting.DARK_RED);
         log(player, data, relation, now, "assaut lance (" + force + " soldats)");
     }
 
@@ -699,6 +710,10 @@ public final class WarStrategy {
                 relation.truce = now + Math.round((4.0d - traits.greed() * 2.0d) * DAY_MS);
                 data.refund = Math.max(0L, data.refund - siege.drained);
                 line = "assaut reussi : " + MoneyFormat.exact(siege.drained) + " $ pilles";
+                String retaken = reconquer(player, relation);
+                if (!retaken.isEmpty()) {
+                    line += " ; " + retaken;
+                }
             }
             case "imprenable" -> {
                 relation.defense = 1.0d;
@@ -747,6 +762,35 @@ public final class WarStrategy {
                 player.getGameProfile().name(), siege.result, siege.fallen, siege.drained);
     }
 
+    /**
+     * L'assaut a reussi : la nation reprend le pays en jeu, s'il y en a un, et le
+     * grief qu'il portait s'eteint. Rend la ligne du journal (« Pologne repris »),
+     * vide si elle n'avait rien a reprendre.
+     */
+    static String reconquer(ServerPlayer player, WarData.Relation relation) {
+        int country = EarthNations.active() ? EarthNations.reclaim(player, relation.nation) : 0;
+        if (country <= 0) {
+            return "";
+        }
+        String name = EarthNations.countryName(country);
+        String kind = "pays pris : " + name;
+        List<WarData.Grievance> kept = new ArrayList<>();
+        for (WarData.Grievance grievance : relation.memory.grievances()) {
+            if (!grievance.kind().equals(kind)) {
+                kept.add(grievance);
+            }
+        }
+        relation.memory = relation.memory.withGrievances(kept);
+        String text = switch (relation.traits().voice()) {
+            case "brutale" -> name + " est de nouveau a nous. N'y remets plus les pieds.";
+            case "courtoise" -> "Nous reprenons " + name + ". Nous en prendrons soin, sois-en sur.";
+            case "mielleuse" -> "Merci de nous rendre " + name + "... c'etait si aimable a toi.";
+            default -> "Nous reprenons " + name + ".";
+        };
+        say(player, relation, text, ChatFormatting.DARK_RED);
+        return name + " repris";
+    }
+
     /** L'argent en route avec le tresorier : rendu au demarrage si le serveur tombe. */
     static void transit(ServerPlayer player, long delta) {
         WarData data = data(player);
@@ -764,6 +808,20 @@ public final class WarStrategy {
         relation.grieve(kind, weight, now);
         relation.hostility = Math.min(100.0d, relation.hostility + weight * relation.traits().grudge() * 0.5d);
         log(player, data, relation, now, "grief : " + kind);
+    }
+
+    /** Le pays en jeu face a cette nation : celui qu'elle reprendrait si son assaut reussissait ; 0 sans. */
+    static int stake(ServerPlayer player, int nation) {
+        return EarthNations.active() ? EarthNations.stake(player, nation) : 0;
+    }
+
+    /** La ligne de l'enjeu, sous un ultimatum ou une declaration de guerre. */
+    private static void stakeLine(ServerPlayer player, WarData.Relation relation) {
+        int country = stake(player, relation.nation);
+        if (country > 0) {
+            player.sendSystemMessage(Component.literal("   Enjeu : " + EarthNations.countryName(country)
+                    + ", repris si leur assaut reussit.").withStyle(ChatFormatting.GOLD));
+        }
     }
 
     // -- Les mots ----------------------------------------------------------------------------------

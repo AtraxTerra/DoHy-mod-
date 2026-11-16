@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.faction.war;
 
+import fr.atraxterra.dohy.earth.EarthNations;
 import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.ui.menu.MenuController;
 import fr.atraxterra.dohy.ui.view.MenuView;
@@ -106,6 +107,7 @@ public final class WarMenu extends MenuController {
                             : "Pris a " + Math.round(siege.capture * 100.0d) + " %",
                             siege.paymasterDead ? "Tresorier abattu" : "Tresorier en vie"))
                     .accent(siege.drained > 0 ? 0xFFFAC400 : 0xFF55545C));
+            stakeCard(player, siege.nation).ifPresent(cards::add);
             sections.add(new MenuView.Section("L'ASSAUT EN COURS", "armor", MenuView.GRID, cards));
         }
 
@@ -125,6 +127,7 @@ public final class WarMenu extends MenuController {
                         "Selon leur avidite et leur crainte"))
                         .action(relation.negotiated() ? "" : "negotiate")
                         .state(relation.negotiated() ? MenuView.DISABLED : MenuView.NORMAL));
+                stakeCard(player, relation.nation).ifPresent(cards::add);
                 sections.add(new MenuView.Section("ON TE MENACE", "craft", MenuView.GRID, cards));
             } else if (relation.stance() == WarData.Stance.GUERRE && siege == null) {
                 List<Card> cards = new ArrayList<>();
@@ -141,13 +144,15 @@ public final class WarMenu extends MenuController {
                 sections.add(new MenuView.Section(title, "armor", MenuView.TILES, cards));
                 boolean refuses = WarStrategy.refusesPeace(relation, now);
                 long price = WarStrategy.peacePrice(player, relation);
-                sections.add(new MenuView.Section("LA PAIX", "craft", MenuView.GRID, List.of(
-                        Card.of(new ItemStack(refuses ? Items.WITHER_ROSE : Items.POPPY),
+                List<Card> peace = new ArrayList<>();
+                peace.add(Card.of(new ItemStack(refuses ? Items.WITHER_ROSE : Items.POPPY),
                                 refuses ? "Ils refusent la paix" : "Acheter la paix",
                                 refuses ? List.of("Trop de rancune", "Il faudra te battre")
                                         : List.of(MoneyFormat.exact(price) + " $", "Treve de quelques jours"))
-                                .action(refuses ? "" : "peace")
-                                .state(refuses ? MenuView.DISABLED : MenuView.NORMAL))));
+                        .action(refuses ? "" : "peace")
+                        .state(refuses ? MenuView.DISABLED : MenuView.NORMAL));
+                stakeCard(player, relation.nation).ifPresent(peace::add);
+                sections.add(new MenuView.Section("LA PAIX", "craft", MenuView.GRID, peace));
             }
         });
 
@@ -181,6 +186,10 @@ public final class WarMenu extends MenuController {
             }
             if (memory.looted() > 0) {
                 tooltip.add("T'a pris " + MoneyFormat.exact(memory.looted()) + " $");
+            }
+            int stake = WarStrategy.stake(player, i);
+            if (stake > 0) {
+                tooltip.add("Reprendrait " + EarthNations.countryName(stake) + " sur un assaut reussi");
             }
             tooltip.add("Clic : un cadeau de 1 000 $ (pas en guerre)");
             nations.add(Card.of(banner(traits), traits.name(), List.of(stance,
@@ -276,5 +285,20 @@ public final class WarMenu extends MenuController {
         } else {
             success(player);
         }
+    }
+
+    /** La carte du pays en jeu face a cette nation, s'il y en a un. */
+    private static Optional<Card> stakeCard(ServerPlayer player, int nation) {
+        int country = WarStrategy.stake(player, nation);
+        if (country <= 0) {
+            return Optional.empty();
+        }
+        return Optional.of(Card.of(new ItemStack(Items.FILLED_MAP), EarthNations.countryName(country),
+                        List.of("En jeu", "Repris s'ils gagnent"))
+                .accent(0xFFE8590C)
+                .tooltip(List.of("Si leur tresorier rentre au camp avec ta banque,",
+                        "la nation reprend ce pays, et le claim qu'il donne.",
+                        "C'est le dernier pays que tu lui as pris ;",
+                        "celui de ta capitale n'est jamais en jeu.")));
     }
 }

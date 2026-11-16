@@ -46,6 +46,11 @@ import java.util.UUID;
  * partie ; finir devant elle rapporte des points de conquete, l'ELO gagne a
  * cet event. Le pays tombe quand ses points sont reunis. Chaque pays tenu
  * ajoute un claim.
+ *
+ * <p>La nation depossedee s'en souvient : un grief, qui mene a la guerre. Si
+ * son assaut reussit (son tresorier rentre au camp avec ta banque), elle
+ * reprend le dernier pays que tu lui as pris ({@link #reclaim}) ; le pays de
+ * ta capitale n'est jamais en jeu.
  */
 public final class EarthNations {
 
@@ -1065,6 +1070,64 @@ public final class EarthNations {
                 false);
         FactionApi.stat(player, "earth:countries", 1);
         DoHy.LOGGER.info("Pays a prendre : {} prend {} a {}", data.name(), name, from.name());
+    }
+
+    /**
+     * Le pays qu'une nation rivale reprendrait a ce joueur si son assaut
+     * reussissait : le dernier pris parmi ceux de sa region. Le pays de la
+     * capitale n'est jamais en jeu. 0 s'il n'y en a pas.
+     */
+    public static int stake(ServerPlayer player, int rival) {
+        MinecraftServer server = player.level().getServer();
+        Atlas atlas = atlas(server);
+        if (atlas == null || rival < 0) {
+            return 0;
+        }
+        int capital = nation(player).capital();
+        Held last = null;
+        for (Held held : ledger(server).held()) {
+            int country = held.country();
+            if (!held.owner().equals(player.getUUID()) || country == capital || country <= 0
+                    || country >= atlas.rival.length || atlas.rival[country] != rival) {
+                continue;
+            }
+            if (last == null || held.since() > last.since()) {
+                last = held;
+            }
+        }
+        return last == null ? 0 : last.country();
+    }
+
+    /**
+     * Une nation rivale a pille la base de ce joueur : elle reprend le pays en
+     * jeu ({@link #stake}), et le joueur perd le claim qu'il lui donnait. Les
+     * points deja reunis contre ce pays repartent de zero. Rend le pays repris,
+     * 0 si elle n'avait rien a reprendre.
+     */
+    public static int reclaim(ServerPlayer player, int rival) {
+        int country = stake(player, rival);
+        if (country == 0) {
+            return 0;
+        }
+        MinecraftServer server = player.level().getServer();
+        save(server, ledger(server).without(country));
+        save(player, nation(player).withPoints(country, 0L));
+        String name = countryName(country);
+        String nation = EventRun.rivalPool().get(rival).name();
+        player.connection.send(new ClientboundSetTitlesAnimationPacket(10, 70, 20));
+        player.connection.send(new ClientboundSetTitleTextPacket(Component.literal(name)
+                .withStyle(ChatFormatting.RED)));
+        player.connection.send(new ClientboundSetSubtitleTextPacket(Component.literal(
+                "Repris par " + nation + " \u00B7 -1 claim").withStyle(ChatFormatting.GRAY)));
+        String faction = FactionApi.has(player) ? FactionApi.data(player).name() : player.getGameProfile().name();
+        String verb = rival < fr.atraxterra.dohy.faction.war.NationTraits.count()
+                ? fr.atraxterra.dohy.faction.war.NationTraits.of(rival).verb("reprend", "reprennent")
+                : nation + " reprend";
+        server.getPlayerList().broadcastSystemMessage(FactionApi.prefix().append(Component.literal(
+                name + " : " + verb + " le pays " + a(faction) + ".").withStyle(ChatFormatting.RED)), false);
+        FactionApi.stat(player, "earth:lost", 1);
+        DoHy.LOGGER.info("Pays a prendre : {} reprend {} a {}", nation, name, faction);
+        return country;
     }
 
     /** Le nom d'une faction a change : les pays qu'elle tient le suivent. */

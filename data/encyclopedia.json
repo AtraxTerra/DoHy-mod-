@@ -2262,7 +2262,8 @@
         {
           "title": "L'assaut",
           "text": [
-            "L'armee campe, perce tes murs, pose des echelles, jette des ponts, et son tresorier vient vider ta banque de faction. Le terrain revient apres la bataille."
+            "L'armee campe, perce tes murs, pose des echelles, jette des ponts, et son tresorier vient vider ta banque de faction. Le terrain revient apres la bataille.",
+            "! Si le tresorier rentre au camp, la nation reprend aussi le dernier pays que tu lui as pris sur la carte de la Terre, et son claim. Le pays de ta capitale n'est jamais en jeu : l'ultimatum et la declaration annoncent l'enjeu."
           ]
         },
         {
@@ -2370,7 +2371,8 @@
         "Conquerir des pays"
       ],
       "summary": [
-        "Ta faction pose sa capitale dans un de ses claims, puis prend des pays entiers aux douze nations rivales : finir devant la nation qui tient le pays vise, aux events, rapporte des points de conquete. Chaque pays tenu ajoute un claim."
+        "Ta faction pose sa capitale dans un de ses claims, puis prend des pays entiers aux douze nations rivales : finir devant la nation qui tient le pays vise, aux events, rapporte des points de conquete. Chaque pays tenu ajoute un claim.",
+        "La nation depossedee s'en souvient : si son assaut contre ta base reussit, elle reprend le dernier pays que tu lui as pris. Le pays de ta capitale n'est jamais en jeu."
       ],
       "commands": [
         "/pays : ta nation et tes pays",
