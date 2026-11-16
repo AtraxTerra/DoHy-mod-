@@ -1,21 +1,28 @@
 package fr.atraxterra.dohy.client.atlas;
 
+import fr.atraxterra.dohy.client.ui.Anim;
+import fr.atraxterra.dohy.client.ui.Buttons;
+import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiElement;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.client.ui.UiScreen;
-import fr.atraxterra.dohy.client.ui.widget.CloseButton;
-import fr.atraxterra.dohy.client.ui.widget.TextField;
-import fr.atraxterra.dohy.client.ui.widget.UiButton;
+import fr.atraxterra.dohy.client.ui.shell.Shell;
+import fr.atraxterra.dohy.client.ui.widget.SearchBox;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-/** Poser ou modifier un point de passage, dans les panneaux du kit : son nom, sa couleur ; le supprimer. */
+/**
+ * Poser ou modifier un point de passage, dans une carte du kit par-dessus la
+ * carte du monde : son nom, sa couleur ; le supprimer.
+ */
 final class WaypointScreen extends UiScreen {
 
-    private static final int WIDTH = 240;
-    private static final int HEIGHT = 150;
-    private static final int SWATCH = 16;
+    private static final int WIDTH = 236;
+    private static final int HEIGHT = 154;
+    private static final float CLOSE = 17.3f;
+    private static final float SWATCH = 6.3f;
 
     private final Screen parent;
     private final Waypoints.Point existing;
@@ -23,8 +30,10 @@ final class WaypointScreen extends UiScreen {
     private final int y;
     private final int z;
     private final String dimension;
+    private final double opened = Anim.now();
+    private final Anim.Value closeHover = new Anim.Value(0.0f, 16.0f);
     private int color;
-    private TextField name;
+    private SearchBox name;
 
     WaypointScreen(Screen parent, Waypoints.Point existing, int x, int y, int z, String dimension) {
         super(Component.literal("Point de passage"), WIDTH, HEIGHT);
@@ -39,22 +48,16 @@ final class WaypointScreen extends UiScreen {
     }
 
     @Override
+    protected float lift() {
+        return 5.0f * (1.0f - Anim.easeOut(Anim.progress(opened, 0.22d)));
+    }
+
+    @Override
     protected void build() {
         String kept = name == null ? (existing == null ? "Point " + x + " " + z : existing.name()) : name.value();
-        add(new CloseButton(WIDTH - 26, 16, this::onClose));
-        name = new TextField(22, 62, WIDTH - 44, 16, "Nom du point", 32, text -> {
-        });
-        name.search = false;
-        name.textSize = 5.5f;
-        add(name.withValue(kept));
-        for (int index = 0; index < Waypoints.COLORS.length; index++) {
-            add(new Swatch(Waypoints.COLORS[index], 22 + index * (SWATCH + 6), 96));
-        }
-        add(new UiButton(WIDTH - 22 - 90, HEIGHT - 32, 90, 18, "ENREGISTRER", UiButton.Style.GREEN, this::save));
-        add(new UiButton(WIDTH - 22 - 90 - 66, HEIGHT - 32, 60, 18, "ANNULER", UiButton.Style.GRAY, this::onClose));
-        if (existing != null) {
-            add(new UiButton(22, HEIGHT - 32, 70, 18, "SUPPRIMER", UiButton.Style.RED, this::delete));
-        }
+        name = add(SearchBox.form(16, 62, WIDTH - 32, 15, "Nom du point", 32, kept));
+        add(new Swatches());
+        add(new Actions());
     }
 
     private void save() {
@@ -79,40 +82,160 @@ final class WaypointScreen extends UiScreen {
         minecraft.gui.setScreen(parent);
     }
 
+    /** La carte du monde reste visible derriere, assombrie. */
     @Override
-    protected void drawBackground(UiGraphics g, double mouseX, double mouseY) {
-        g.panel(0, 0, WIDTH, HEIGHT);
-        g.textShaded(Ui.TITLE, existing == null ? "NOUVEAU POINT" : "POINT DE PASSAGE", 22, 16, 14, Ui.RED,
-                Ui.RED_SHADE, 1.0f);
-        g.section(22, 44, "section_craft", "NOM", WIDTH - 44);
-        g.text(Ui.PIXEL, x + "  " + y + "  " + z, 22, 54, 4.5f, Ui.MUTED);
-        g.section(22, 86, "section_resources", "COULEUR", WIDTH - 44);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        if (parent != null) {
+            parent.extractRenderState(graphics, -1, -1, partialTick);
+            graphics.nextStratum();
+        }
+        graphics.fill(0, 0, width, height, 0x99000000);
     }
 
-    /** Une case de couleur : un clic la choisit, la case choisie a un filet blanc. */
-    private final class Swatch extends UiElement {
-        private final int value;
+    @Override
+    protected void drawBackground(UiGraphics g, double mouseX, double mouseY) {
+        Paint p = g.paint();
+        p.shadow(4, 8, WIDTH - 8, HEIGHT - 8, 22, Paint.alpha(Ui.Theme.SHADOW, 0.6f));
+        p.framed(0, 0, WIDTH, HEIGHT, Shell.RADIUS, Ui.Theme.BG2, 0xFF2C2E33, 1);
+        g.textShaded(Ui.TITLE, existing == null ? "NOUVEAU POINT" : "POINT DE PASSAGE", 16.0f, 12.0f, 14.7f,
+                Ui.Theme.RED, Ui.Theme.RED_DD, 1.33f);
+        g.text(Ui.BODY, x + "   " + y + "   " + z, 16.0f, 30.3f, 5.0f, Ui.Theme.MUTED);
+        // La croix, comme dans les menus.
+        float closeX = WIDTH - 12.0f - CLOSE;
+        float closeY = 11.0f;
+        boolean over = mouseX >= closeX && mouseY >= closeY && mouseX < closeX + CLOSE && mouseY < closeY + CLOSE;
+        float hover = closeHover.toward(over ? 1.0f : 0.0f);
+        p.framed(closeX, closeY, CLOSE, CLOSE, 4.7f, Paint.mix(Ui.Theme.CARD, Ui.Theme.RED, hover),
+                Paint.mix(0xFF2E3035, Ui.Theme.RED, hover), 1);
+        if (hover > 0.05f) {
+            p.glow(closeX + CLOSE / 2, closeY + CLOSE / 2, 16, Paint.alpha(Ui.Theme.RED, 0.35f * hover));
+        }
+        g.texture(Ui.CLOSE, Math.round(closeX + CLOSE / 2 - 3.5f), Math.round(closeY + CLOSE / 2 - 3.5f), 7, 7, 32,
+                32);
+        Shell.section(g, p, 16.0f, 47.0f, WIDTH - 32.0f, "craft", "NOM", "");
+        Shell.section(g, p, 16.0f, 86.0f, WIDTH - 32.0f, "resources", "COULEUR", "");
+    }
 
-        Swatch(int value, int x, int y) {
-            super(x, y, SWATCH, SWATCH);
-            this.value = value;
+    @Override
+    protected boolean backgroundClicked(double mouseX, double mouseY, int button) {
+        float closeX = WIDTH - 12.0f - CLOSE;
+        if (button == 0 && mouseX >= closeX && mouseY >= 11.0f && mouseX < closeX + CLOSE && mouseY < 11.0f + CLOSE) {
+            UiScreen.click(0.8f);
+            onClose();
+            return true;
+        }
+        return false;
+    }
+
+    /** Les couleurs : des pastilles rondes, la choisie cerclee de blanc. */
+    private final class Swatches extends UiElement {
+        private final Anim.Value[] hovers = new Anim.Value[Waypoints.COLORS.length];
+
+        Swatches() {
+            super(16, 98, WIDTH - 32, 16);
+            for (int index = 0; index < hovers.length; index++) {
+                hovers[index] = new Anim.Value(0.0f, 16.0f);
+            }
+        }
+
+        private float centerX(int index) {
+            return x + SWATCH + 1.0f + index * (SWATCH * 2.0f + 6.0f);
         }
 
         @Override
-        public void render(UiGraphics graphics, double mouseX, double mouseY) {
-            boolean chosen = value == color;
-            graphics.rect(x, y, width, height, chosen ? Ui.WHITE : contains(mouseX, mouseY) ? 0xFF8C8B93 : Ui.OUTER);
-            graphics.rect(x + 2, y + 2, width - 4, height - 4, value);
+        public void render(UiGraphics g, double mouseX, double mouseY) {
+            Paint p = g.paint();
+            float cy = y + height / 2.0f;
+            for (int index = 0; index < Waypoints.COLORS.length; index++) {
+                int value = Waypoints.COLORS[index];
+                float cx = centerX(index);
+                boolean over = Math.hypot(mouseX - cx, mouseY - cy) <= SWATCH + 1.5f;
+                float hover = hovers[index].toward(over ? 1.0f : 0.0f);
+                boolean chosen = value == color;
+                if (chosen) {
+                    p.glow(cx, cy, SWATCH * 2.4f, Paint.alpha(value, 0.45f));
+                    p.dot(cx, cy, SWATCH + 1.6f, 0xFFFFFFFF);
+                    p.dot(cx, cy, SWATCH + 0.6f, Ui.Theme.BG2);
+                } else if (hover > 0.01f) {
+                    p.dot(cx, cy, SWATCH + 1.2f, Paint.alpha(0xFFFFFFFF, 0.35f * hover));
+                    p.dot(cx, cy, SWATCH + 0.5f, Ui.Theme.BG2);
+                }
+                p.dot(cx, cy, SWATCH - (chosen ? 0.6f : 0.0f), value);
+            }
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (!contains(mouseX, mouseY)) {
+            if (button != 0) {
                 return false;
             }
-            UiScreen.click(1.2f);
-            color = value;
-            return true;
+            float cy = y + height / 2.0f;
+            for (int index = 0; index < Waypoints.COLORS.length; index++) {
+                if (Math.hypot(mouseX - centerX(index), mouseY - cy) <= SWATCH + 2.0f) {
+                    UiScreen.click(1.2f);
+                    color = Waypoints.COLORS[index];
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /** Les boutons du bas : supprimer a gauche (si le point existe), annuler et enregistrer a droite. */
+    private final class Actions extends UiElement {
+        private static final float CANCEL = 56.0f;
+        private static final float SAVE = 80.0f;
+        private static final float DELETE = 64.0f;
+        private final Anim.Value cancelHover = new Anim.Value(0.0f, 16.0f);
+        private final Anim.Value saveHover = new Anim.Value(0.0f, 16.0f);
+        private final Anim.Value deleteHover = new Anim.Value(0.0f, 16.0f);
+
+        Actions() {
+            super(16, HEIGHT - 30, WIDTH - 32, 17);
+        }
+
+        @Override
+        public void render(UiGraphics g, double mouseX, double mouseY) {
+            Paint p = g.paint();
+            float right = x + width;
+            float saveX = right - SAVE;
+            float cancelX = saveX - 4.0f - CANCEL;
+            boolean inRow = mouseY >= y && mouseY < y + height;
+            Buttons.draw(g, p, cancelX, y, CANCEL, height, "ANNULER", Buttons.GHOST,
+                    cancelHover.toward(inRow && mouseX >= cancelX && mouseX < cancelX + CANCEL ? 1.0f : 0.0f), true,
+                    5.3f);
+            Buttons.draw(g, p, saveX, y, SAVE, height, "ENREGISTRER", Buttons.GREEN,
+                    saveHover.toward(inRow && mouseX >= saveX && mouseX < right ? 1.0f : 0.0f), true, 5.3f);
+            if (existing != null) {
+                Buttons.draw(g, p, x, y, DELETE, height, "SUPPRIMER", Buttons.RED,
+                        deleteHover.toward(inRow && mouseX >= x && mouseX < x + DELETE ? 1.0f : 0.0f), true, 5.3f);
+            }
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (button != 0 || mouseY < y || mouseY >= y + height) {
+                return false;
+            }
+            float right = x + width;
+            float saveX = right - SAVE;
+            float cancelX = saveX - 4.0f - CANCEL;
+            if (mouseX >= saveX && mouseX < right) {
+                UiScreen.click(1.1f);
+                save();
+                return true;
+            }
+            if (mouseX >= cancelX && mouseX < cancelX + CANCEL) {
+                UiScreen.click(0.9f);
+                onClose();
+                return true;
+            }
+            if (existing != null && mouseX >= x && mouseX < x + DELETE) {
+                UiScreen.click(0.8f);
+                delete();
+                return true;
+            }
+            return false;
         }
     }
 }

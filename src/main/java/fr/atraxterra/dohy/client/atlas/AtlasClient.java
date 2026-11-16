@@ -56,7 +56,7 @@ public final class AtlasClient {
         public boolean disasters = true;
     }
 
-    /** Les tailles de minimap proposees par le bouton TAILLE de la grande carte. */
+    /** Les tailles de minimap proposees par la grande carte. */
     public static final int[] SIZES = {56, 72, 96, 112};
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -127,6 +127,7 @@ public final class AtlasClient {
         Waypoints.close();
         AtlasData.clear();
         AtlasGlobe.release();
+        MarkIcons.clear();
         world = null;
     }
 

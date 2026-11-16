@@ -1,0 +1,377 @@
+package fr.atraxterra.dohy.client.atlas;
+
+import com.mojang.blaze3d.platform.NativeImage;
+import fr.atraxterra.dohy.DoHy;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+
+/**
+ * Le globe vu de pres : des dalles redessinees lisses a partir de la grille des
+ * pays, au lieu d'agrandir ses cases de 8 blocs.
+ *
+ * <p>Chaque pixel d'une dalle melange les quatre cases voisines selon sa position
+ * (comme un filtrage bilineaire), puis tranche : les cotes et les frontieres
+ * deviennent des courbes, avec un bord adouci sur un pixel, et les frontieres un
+ * trait fin. Trois finesses (4, 16 et 64 pixels par case) suivent le zoom.
+ *
+ * <p>Le calcul se fait sur un fil a part ; la carte affiche le globe agrandi le temps
+ * qu'une dalle arrive. Le calque des pays tenus suit le meme dessin.
+ */
+final class GlobeTiles {
+
+    static final int SIZE = 256;
+    private static final int CACHE = 96;
+    private static final int QUEUE = 48;
+    /** La demi-largeur des traits, en pixels de dalle. */
+    private static final double HALF_LINE = 0.45d;
+
+    record Key(int density, int tx, int tz) {
+    }
+
+    /** Une dalle prete : le fond et, s'il y a des pays tenus dessous, leur calque. */
+    record Entry(Identifier base, Identifier holders) {
+    }
+
+    /** Ce que le fil de calcul lit : une copie figee de la grille et des couleurs. */
+    record Snapshot(int version, short[] cells, int width, int height, int[] land, int[] holder, boolean holders) {
+        int cell(int column, int row) {
+            if (column < 0 || row < 0 || column >= width || row >= height) {
+                return 0;
+            }
+            return cells[row * width + column] & 0xFFFF;
+        }
+    }
+
+    private record Result(Key key, int version, NativeImage base, NativeImage holders) {
+    }
+
+    private static final Map<Key, Entry> TILES = new LinkedHashMap<>(64, 0.75f, true);
+    private static final BlockingDeque<Key> QUEUED = new LinkedBlockingDeque<>();
+    private static final Set<Key> WANTED = new HashSet<>();
+    private static final ConcurrentLinkedQueue<Result> DONE = new ConcurrentLinkedQueue<>();
+    private static volatile Snapshot snapshot;
+    private static int counter;
+    private static Thread worker;
+
+    private GlobeTiles() {
+    }
+
+    /** Reprend les donnees du globe : tout se redessine si la grille ou les pays tenus ont change. */
+    static void sync(int[] land, int[] holder, short[] cells, int width, int height, int globeVersion,
+                     int nationsVersion) {
+        Snapshot current = snapshot;
+        int version = globeVersion * 65_537 + nationsVersion;
+        if (current != null && current.version() == version) {
+            return;
+        }
+        clear();
+        boolean any = false;
+        for (int color : holder) {
+            if (color != 0) {
+                any = true;
+                break;
+            }
+        }
+        snapshot = new Snapshot(version, cells, width, height, land.clone(), holder.clone(), any);
+        counter++;
+    }
+
+    /** La dalle si elle est prete ; sinon elle est demandee au fil de calcul et vient plus tard. */
+    static Entry get(int density, int tx, int tz) {
+        Key key = new Key(density, tx, tz);
+        Entry entry = TILES.get(key);
+        if (entry != null || snapshot == null) {
+            return entry;
+        }
+        synchronized (WANTED) {
+            if (WANTED.add(key)) {
+                QUEUED.offerFirst(key);
+                while (QUEUED.size() > QUEUE) {
+                    Key dropped = QUEUED.pollLast();
+                    if (dropped != null) {
+                        WANTED.remove(dropped);
+                    }
+                }
+            }
+        }
+        start();
+        return null;
+    }
+
+    /** Transforme en textures les dalles calculees (au plus {@code max} par image). */
+    static void pump(int max) {
+        Snapshot current = snapshot;
+        for (int i = 0; i < max; i++) {
+            Result result = DONE.poll();
+            if (result == null) {
+                return;
+            }
+            synchronized (WANTED) {
+                WANTED.remove(result.key());
+            }
+            if (current == null || result.version() != current.version() || TILES.containsKey(result.key())) {
+                result.base().close();
+                if (result.holders() != null) {
+                    result.holders().close();
+                }
+                continue;
+            }
+            Identifier base = texture(result.key(), "b", result.base());
+            Identifier holders = result.holders() == null ? null : texture(result.key(), "h", result.holders());
+            TILES.put(result.key(), new Entry(base, holders));
+            evict();
+        }
+    }
+
+    private static Identifier texture(Key key, String kind, NativeImage image) {
+        Identifier id = Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "atlas_globe/" + kind + counter + "_"
+                + key.density() + "_" + (key.tx() < 0 ? "m" + -key.tx() : key.tx()) + "_"
+                + (key.tz() < 0 ? "m" + -key.tz() : key.tz()));
+        MapTexture texture = new MapTexture("dohy atlas globe " + id, SIZE, SIZE, 1, MapTexture.smooth());
+        texture.upload(image, null);
+        image.close();
+        Minecraft.getInstance().getTextureManager().register(id, texture);
+        return id;
+    }
+
+    private static void evict() {
+        Iterator<Map.Entry<Key, Entry>> iterator = TILES.entrySet().iterator();
+        while (TILES.size() > CACHE && iterator.hasNext()) {
+            Entry entry = iterator.next().getValue();
+            iterator.remove();
+            release(entry);
+        }
+    }
+
+    private static void release(Entry entry) {
+        Minecraft.getInstance().getTextureManager().release(entry.base());
+        if (entry.holders() != null) {
+            Minecraft.getInstance().getTextureManager().release(entry.holders());
+        }
+    }
+
+    /** Rend toutes les textures et oublie les demandes. */
+    static void clear() {
+        for (Entry entry : TILES.values()) {
+            release(entry);
+        }
+        TILES.clear();
+        synchronized (WANTED) {
+            QUEUED.clear();
+            WANTED.clear();
+        }
+        Result result;
+        while ((result = DONE.poll()) != null) {
+            result.base().close();
+            if (result.holders() != null) {
+                result.holders().close();
+            }
+        }
+        snapshot = null;
+    }
+
+    private static synchronized void start() {
+        if (worker != null && worker.isAlive()) {
+            return;
+        }
+        worker = new Thread(GlobeTiles::run, "DoHy atlas globe");
+        worker.setDaemon(true);
+        worker.setPriority(Thread.MIN_PRIORITY);
+        worker.start();
+    }
+
+    private static void run() {
+        while (true) {
+            try {
+                Key key = QUEUED.takeFirst();
+                Snapshot current = snapshot;
+                if (current == null) {
+                    synchronized (WANTED) {
+                        WANTED.remove(key);
+                    }
+                    continue;
+                }
+                DONE.add(generate(current, key));
+            } catch (InterruptedException interrupted) {
+                return;
+            } catch (Throwable error) {
+                DoHy.LOGGER.warn("Atlas : dalle du globe non calculee ({})", error.toString());
+            }
+        }
+    }
+
+    // -- Le dessin d'une dalle --------------------------------------------------------------------
+
+    private static double clamp(double value) {
+        return value < 0.0d ? 0.0d : value > 1.0d ? 1.0d : value;
+    }
+
+    static int mix(int from, int to, double t) {
+        double c = clamp(t);
+        int r = (int) Math.round(((from >> 16) & 0xFF) + (((to >> 16) & 0xFF) - ((from >> 16) & 0xFF)) * c);
+        int g = (int) Math.round(((from >> 8) & 0xFF) + (((to >> 8) & 0xFF) - ((from >> 8) & 0xFF)) * c);
+        int b = (int) Math.round((from & 0xFF) + ((to & 0xFF) - (from & 0xFF)) * c);
+        return 0xFF000000 | r << 16 | g << 8 | b;
+    }
+
+    static Result generate(Snapshot snap, Key key) {
+        int density = key.density();
+        int cells = SIZE / density;
+        NativeImage base = new NativeImage(SIZE, SIZE, false);
+        NativeImage holders = snap.holders() ? new NativeImage(SIZE, SIZE, false) : null;
+        boolean anyHolder = false;
+        int[] sample = new int[4];
+        double[] weight = new double[4];
+        int[] ids = new int[4];
+        double[] sums = new double[4];
+        int[] keys = new int[4];
+        double[] holderSums = new double[4];
+        for (int py = 0; py < SIZE; py++) {
+            double v = key.tz() * (double) cells + (py + 0.5d) / density - 0.5d;
+            int row = (int) Math.floor(v);
+            double fy = v - row;
+            for (int px = 0; px < SIZE; px++) {
+                double u = key.tx() * (double) cells + (px + 0.5d) / density - 0.5d;
+                int column = (int) Math.floor(u);
+                double fx = u - column;
+                sample[0] = snap.cell(column, row);
+                sample[1] = snap.cell(column + 1, row);
+                sample[2] = snap.cell(column, row + 1);
+                sample[3] = snap.cell(column + 1, row + 1);
+                weight[0] = (1.0d - fx) * (1.0d - fy);
+                weight[1] = fx * (1.0d - fy);
+                weight[2] = (1.0d - fx) * fy;
+                weight[3] = fx * fy;
+                // La terre : son poids, et ses pays par poids.
+                double land = 0.0d;
+                double coast = 0.0d;
+                double sea = 0.0d;
+                int count = 0;
+                for (int k = 0; k < 4; k++) {
+                    int id = sample[k] & 0x7FFF;
+                    if (id == 0) {
+                        sea += weight[k];
+                    } else if ((sample[k] & 0x8000) != 0) {
+                        coast += weight[k];
+                    } else {
+                        land += weight[k];
+                        int slot = -1;
+                        for (int s = 0; s < count; s++) {
+                            if (ids[s] == id) {
+                                slot = s;
+                                break;
+                            }
+                        }
+                        if (slot < 0) {
+                            slot = count++;
+                            ids[slot] = id;
+                            sums[slot] = 0.0d;
+                        }
+                        sums[slot] += weight[k];
+                    }
+                }
+                int water = coast + sea <= 0.0d ? AtlasGlobe.COAST
+                        : mix(AtlasGlobe.SEA, AtlasGlobe.COAST, coast / (coast + sea));
+                int color = water;
+                int top = 0;
+                if (count > 0) {
+                    double best = -1.0d;
+                    double second = 0.0d;
+                    for (int s = 0; s < count; s++) {
+                        if (sums[s] > best) {
+                            second = Math.max(second, best);
+                            best = sums[s];
+                            top = ids[s];
+                        } else {
+                            second = Math.max(second, sums[s]);
+                        }
+                    }
+                    int ground = snap.land()[Math.min(top, snap.land().length - 1)];
+                    if (second > 0.0d) {
+                        double line = clamp(HALF_LINE + 0.5d - (best - second) * density / 2.0d);
+                        ground = mix(ground, AtlasScanner.shaded(ground, 0.55d), line);
+                    }
+                    double edge = (land - 0.5d) * density;
+                    color = mix(water, ground, 0.5d + edge);
+                    // Un filet clair le long des cotes.
+                    double shore = clamp(HALF_LINE * 0.8d + 0.5d - Math.abs(edge)) * 0.45d;
+                    if (shore > 0.0d) {
+                        color = mix(color, AtlasGlobe.SHORE, shore);
+                    }
+                }
+                base.setPixel(px, py, color);
+                if (holders != null) {
+                    int pixel = holder(snap, sample, weight, density, keys, holderSums);
+                    if ((pixel >>> 24) != 0) {
+                        anyHolder = true;
+                    }
+                    holders.setPixel(px, py, pixel);
+                }
+            }
+        }
+        if (holders != null && !anyHolder) {
+            holders.close();
+            holders = null;
+        }
+        return new Result(key, snap.version(), base, holders);
+    }
+
+    /** Le calque des pays tenus en un pixel : une teinte legere et un trait au bord. */
+    private static int holder(Snapshot snap, int[] sample, double[] weight, int density, int[] keys,
+                              double[] sums) {
+        int count = 0;
+        for (int k = 0; k < 4; k++) {
+            int id = sample[k] & 0x7FFF;
+            boolean ground = id != 0 && (sample[k] & 0x8000) == 0;
+            int color = ground && id < snap.holder().length ? snap.holder()[id] : 0;
+            int slot = -1;
+            for (int s = 0; s < count; s++) {
+                if (keys[s] == color) {
+                    slot = s;
+                    break;
+                }
+            }
+            if (slot < 0) {
+                slot = count++;
+                keys[slot] = color;
+                sums[slot] = 0.0d;
+            }
+            sums[slot] += weight[k];
+        }
+        int top = 0;
+        int other = 0;
+        double best = -1.0d;
+        double second = 0.0d;
+        for (int s = 0; s < count; s++) {
+            if (sums[s] > best) {
+                if (best >= 0.0d) {
+                    second = best;
+                    other = top;
+                }
+                best = sums[s];
+                top = keys[s];
+            } else if (sums[s] > second) {
+                second = sums[s];
+                other = keys[s];
+            }
+        }
+        double distance = (best - second) * density / 2.0d;
+        double fill = top == 0 ? 0.0d : 0.36d * clamp(0.5d + distance);
+        double line = count > 1 ? clamp(HALF_LINE * 1.4d + 0.5d - distance) * 0.9d : 0.0d;
+        int color = top != 0 ? top : other;
+        if (color == 0) {
+            return 0;
+        }
+        double alpha = fill + line * (1.0d - fill);
+        return (int) Math.round(clamp(alpha) * 255.0d) << 24 | (color & 0xFFFFFF);
+    }
+}
