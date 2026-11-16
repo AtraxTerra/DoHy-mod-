@@ -95,7 +95,7 @@ public final class NationMenu extends MenuController {
                         mine.isEmpty() ? "Aucun pour l'instant" : NationCommand.names(mine, 2),
                         "+" + mine.size() + " claim(s)"))
                 .accent(0xFFFAC400).tooltip(held.isEmpty() ? List.of("Chaque pays tenu ajoute un claim",
-                        "et compte pour quatre claims dans la notation") : held.subList(0, Math.min(16, held.size()))));
+                        "et compte pour quatre claims dans la notation") : heldTooltip(held)));
         if (target == 0) {
             own.add(Card.of(new ItemStack(Items.IRON_SWORD), "Aucune cible", List.of(
                     nation.capital() == 0 ? "Pose d'abord ta capitale" : "Vise un voisin ci-dessous",
@@ -115,6 +115,17 @@ public final class NationMenu extends MenuController {
                     .action("drop|renoncer"));
         }
         return own;
+    }
+
+    /** Les pays tenus, puis la regle de la reconquete. */
+    private static List<String> heldTooltip(List<String> held) {
+        List<String> lines = new ArrayList<>(held.subList(0, Math.min(14, held.size())));
+        if (held.size() > 14) {
+            lines.add("et " + (held.size() - 14) + " autres");
+        }
+        lines.add("Un assaut perdu rend a la nation le dernier");
+        lines.add("pays pris ; jamais celui de ta capitale.");
+        return lines;
     }
 
     /** Les gestes de ces cartes, d'ou qu'on clique : vrai si la cle en etait une. */

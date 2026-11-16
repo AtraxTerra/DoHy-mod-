@@ -102,6 +102,23 @@ public final class WarCommand {
                                 "declarer"))))
                         .then(Commands.literal("assaut").then(nationArgument().executes(context -> admin(context,
                                 "assaut"))))
+                        // Le resultat d'un assaut reussi sur la carte, sans livrer bataille : pour essayer la reconquete.
+                        .then(Commands.literal("reprise").then(nationArgument().executes(context -> {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            int nation = NationTraits.find(StringArgumentType.getString(context, "nation"));
+                            if (nation < 0) {
+                                return answer(context, "Nation inconnue", null);
+                            }
+                            if (!FactionApi.has(player)) {
+                                return answer(context, "Il faut une faction", null);
+                            }
+                            WarData.Relation relation = WarStrategy.data(player).relation(nation,
+                                    System.currentTimeMillis());
+                            String retaken = WarStrategy.reconquer(player, relation);
+                            return retaken.isEmpty()
+                                    ? answer(context, "Rien a reprendre : aucun pays de sa region, hors capitale", null)
+                                    : answer(context, null, "Reprise : " + retaken + ".");
+                        })))
                         .then(Commands.literal("hostilite").then(nationArgument()
                                 .then(Commands.argument("valeur", DoubleArgumentType.doubleArg(0.0d, 100.0d))
                                         .executes(context -> {
