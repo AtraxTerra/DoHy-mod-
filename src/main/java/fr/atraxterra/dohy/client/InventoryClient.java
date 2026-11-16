@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.client;
 
+import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
 import fr.atraxterra.dohy.client.ui.vanilla.KitChests;
 import fr.atraxterra.dohy.client.ui.vanilla.KitPauseScreen;
@@ -49,7 +50,13 @@ public final class InventoryClient {
         Minecraft minecraft = Minecraft.getInstance();
         Screen screen = event.getNewScreen();
         if (screen != null && screen.getClass() == TitleScreen.class) {
-            event.setNewScreen(new KitTitleScreen());
+            // L'ecran titre s'ouvre a la fin du chargement des ressources : une erreur ici
+            // ferait echouer le chargement et bloquerait le jeu. On garde alors celui du jeu.
+            try {
+                event.setNewScreen(new KitTitleScreen());
+            } catch (RuntimeException e) {
+                DoHy.LOGGER.error("Ecran titre de Berskar indisponible, on garde celui du jeu", e);
+            }
             return;
         }
         if (minecraft.player == null) {
