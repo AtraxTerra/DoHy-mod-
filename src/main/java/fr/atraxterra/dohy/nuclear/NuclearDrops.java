@@ -351,7 +351,13 @@ public final class NuclearDrops {
                 }
             }
         }
-        return zones.isEmpty() && forced.isEmpty() ? wild(server, level) : null;
+        if (!forced.isEmpty()) {
+            return null;
+        }
+        if (!zones.isEmpty()) {
+            DoHy.LOGGER.warn("Largage : aucun point libre dans les zones irradiees (claims, eau), il tombe ailleurs");
+        }
+        return wild(server, level);
     }
 
     /** Un point de chute dans une zone : terre ferme, a ciel ouvert, hors des claims. */
