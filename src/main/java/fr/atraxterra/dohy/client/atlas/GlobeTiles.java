@@ -258,6 +258,16 @@ final class GlobeTiles {
         double[] weight = new double[16];
         double[] wx = new double[4];
         double[] wz = new double[4];
+        // Les poids ne dependent que de la position dans la case : une table par colonne de pixels.
+        int[] columns = new int[SIZE];
+        double[] columnWeights = new double[SIZE * 4];
+        for (int px = 0; px < SIZE; px++) {
+            double u = key.tx() * (double) cells + (px + 0.5d) / density - 0.5d;
+            int column = (int) Math.floor(u);
+            columns[px] = column - 1 - originX;
+            spline(u - column, wx);
+            System.arraycopy(wx, 0, columnWeights, px * 4, 4);
+        }
         int[] ids = new int[16];
         double[] sums = new double[16];
         int[] keys = new int[16];
@@ -268,15 +278,13 @@ final class GlobeTiles {
             spline(v - row, wz);
             int localRow = row - 1 - originZ;
             for (int px = 0; px < SIZE; px++) {
-                double u = key.tx() * (double) cells + (px + 0.5d) / density - 0.5d;
-                int column = (int) Math.floor(u);
-                spline(u - column, wx);
-                int localColumn = column - 1 - originX;
+                int localColumn = columns[px];
+                int weights = px * 4;
                 for (int j = 0; j < 4; j++) {
                     int base4 = (localRow + j) * span + localColumn;
                     for (int i = 0; i < 4; i++) {
                         sample[j * 4 + i] = grid[base4 + i];
-                        weight[j * 4 + i] = wx[i] * wz[j];
+                        weight[j * 4 + i] = columnWeights[weights + i] * wz[j];
                     }
                 }
                 // La terre : son poids, et ses pays par poids.
