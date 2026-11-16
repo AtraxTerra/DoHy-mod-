@@ -143,9 +143,7 @@ public final class DoHyClient {
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAboveAll(
-                Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "money"),
-                new MoneyHudLayer());
+        // Le solde est dans la carte de faction du HUD Zephyr (client.hud.StatusCard).
         event.registerAboveAll(
                 Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "finder"),
                 new FinderHudLayer());
