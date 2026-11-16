@@ -227,20 +227,29 @@ final class AtlasView {
     private static void globe(GuiGraphicsExtractor graphics, Frame frame, AtlasData.Globe globe, boolean holders,
                               int left, int top, int right, int bottom) {
         double cellPixels = globe.cell() / frame.blocks();
-        int density = cellPixels >= 64.0d ? 64 : cellPixels >= 16.0d ? 16 : cellPixels >= 4.0d ? 4
+        int density = cellPixels >= 48.0d ? 64 : cellPixels >= 12.0d ? 16 : cellPixels >= 3.0d ? 4
                 : cellPixels >= 1.5d ? 2 : 0;
         Identifier whole = holders ? AtlasGlobe.HOLDERS : AtlasGlobe.BASE;
-        int cells = density == 0 ? 1 : GlobeTiles.SIZE / density;
-        double span = (double) cells * globe.cell();
-        int fromX = Math.max(0, (int) Math.floor((frame.worldX(frame.x) - globe.minX()) / span));
-        int toX = Math.min((globe.width() - 1) / cells, (int) Math.floor((frame.worldX(frame.x + frame.width)
-                - globe.minX()) / span));
-        int fromZ = Math.max(0, (int) Math.floor((frame.worldZ(frame.y) - globe.minZ()) / span));
-        int toZ = Math.min((globe.height() - 1) / cells, (int) Math.floor((frame.worldZ(frame.y + frame.height)
-                - globe.minZ()) / span));
-        if (density != 0 && (long) (toX - fromX + 1) * (toZ - fromZ + 1) > 90) {
-            // Trop de dalles pour cet ecran : l'image entiere, lissee, suffit.
-            density = 0;
+        int cells = 1;
+        double span = globe.cell();
+        int fromX = 0;
+        int toX = -1;
+        int fromZ = 0;
+        int toZ = -1;
+        while (density != 0) {
+            cells = GlobeTiles.SIZE / density;
+            span = (double) cells * globe.cell();
+            fromX = Math.max(0, (int) Math.floor((frame.worldX(frame.x) - globe.minX()) / span));
+            toX = Math.min((globe.width() - 1) / cells, (int) Math.floor((frame.worldX(frame.x + frame.width)
+                    - globe.minX()) / span));
+            fromZ = Math.max(0, (int) Math.floor((frame.worldZ(frame.y) - globe.minZ()) / span));
+            toZ = Math.min((globe.height() - 1) / cells, (int) Math.floor((frame.worldZ(frame.y + frame.height)
+                    - globe.minZ()) / span));
+            if ((long) (toX - fromX + 1) * (toZ - fromZ + 1) <= 90) {
+                break;
+            }
+            // Trop de dalles pour cet ecran : une finesse plus grossiere, puis l'image entiere.
+            density = density == 64 ? 16 : density == 16 ? 4 : density == 4 ? 2 : 0;
         }
         if (density == 0 || !holders) {
             region(graphics, frame, globe, whole, 0, 0, globe.width(), globe.height(), left, top, right, bottom);
