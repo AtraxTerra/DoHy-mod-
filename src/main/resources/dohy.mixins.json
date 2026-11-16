@@ -7,7 +7,8 @@
     "PlayerEdgeMixin",
     "SerializableChunkDataMixin",
     "BiomeAccessor",
-    "BiomeTemperatureMixin"
+    "BiomeTemperatureMixin",
+    "CelestialGravityMixin"
   ],
   "client": [
     "BiomeColorsMixin",

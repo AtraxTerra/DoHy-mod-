@@ -1,0 +1,16 @@
+{
+  "body.duna": "Arrakis",
+  "body.ike": "Premiere Lune",
+  "biome.hbmspace.ike": "Premiere Lune",
+  "biome.hbmspace.duna_plains": "Erg d'Arrakis",
+  "biome.hbmspace.duna_lowlands": "Cuvette de sel",
+  "biome.hbmspace.duna_hills": "Massifs d'Arrakis",
+  "biome.hbmspace.duna_polar": "Calotte polaire",
+  "biome.hbmspace.duna_polar_hills": "Monts polaires",
+  "block.hbmspace.duna_rock": "Roche d'Arrakis",
+  "block.hbmspace.duna_cobble": "Pierre d'Arrakis",
+  "block.hbmspace.duna_sands": "Sable rouge d'Arrakis",
+  "block.hbmspace.dunaair": "Air d'Arrakis",
+  "block.hbmspace.ike_regolith": "Regolithe de la Premiere Lune",
+  "block.hbmspace.ike_stone": "Roche de la Premiere Lune"
+}

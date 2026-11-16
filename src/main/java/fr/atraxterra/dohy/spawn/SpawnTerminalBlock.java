@@ -42,7 +42,8 @@ public class SpawnTerminalBlock extends Block {
         PORTALS("portals", "DONJONS", 0xC77DFF),
         MINE("mine", "MINE", 0x5FD8E8),
         BLACK_MARKET("black_market", "MARCHE NOIR", 0x9B6BFF),
-        JOB_ALTAR("job_altar", "AUTEL", 0xFF8A3D);
+        JOB_ALTAR("job_altar", "AUTEL", 0xFF8A3D),
+        SHUTTLE("shuttle", "NAVETTE", 0xFF9A3C);
 
         private final String name;
         private final String label;
@@ -136,6 +137,7 @@ public class SpawnTerminalBlock extends Block {
             case MINE -> fr.atraxterra.dohy.mine.MineService.enter(server);
             case BLACK_MARKET -> fr.atraxterra.dohy.blackmarket.BlackMarketMenu.INSTANCE.open(server);
             case JOB_ALTAR -> fr.atraxterra.dohy.jobboss.JobBossMenu.INSTANCE.openAtAltar(server);
+            case SHUTTLE -> fr.atraxterra.dohy.arrakis.ShuttleMenu.INSTANCE.open(server);
         }
         return InteractionResult.SUCCESS;
     }

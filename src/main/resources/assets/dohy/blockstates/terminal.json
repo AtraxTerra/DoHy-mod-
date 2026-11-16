@@ -179,6 +179,21 @@
     "facing=west,kind=job_altar": {
       "model": "dohy:block/terminal_job_altar",
       "y": 270
+    },
+    "facing=north,kind=shuttle": {
+      "model": "dohy:block/terminal_shuttle"
+    },
+    "facing=east,kind=shuttle": {
+      "model": "dohy:block/terminal_shuttle",
+      "y": 90
+    },
+    "facing=south,kind=shuttle": {
+      "model": "dohy:block/terminal_shuttle",
+      "y": 180
+    },
+    "facing=west,kind=shuttle": {
+      "model": "dohy:block/terminal_shuttle",
+      "y": 270
     }
   }
 }
