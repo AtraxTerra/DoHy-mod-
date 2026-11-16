@@ -1,5 +1,7 @@
 package fr.atraxterra.dohy.client.ui.screen;
 
+import fr.atraxterra.dohy.client.ui.ContainerStyle;
+import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiContainerScreen;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
@@ -13,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.List;
@@ -21,16 +24,17 @@ import java.util.List;
  * L'inventaire du joueur au style du kit, avec l'acces aux menus.
  *
  * <p>Il remplace l'ecran d'inventaire du jeu en survie ({@code InventoryClient}) ;
- * le mode creatif garde le sien. A droite, le bouton rouge ouvre le menu
- * principal et les cinq cases ouvrent le shop, les contrats, la banque, la
- * faction et les metiers ; sous le craft, le bouton rouge ouvre le concours
- * Trixium. Plus besoin de connaitre les commandes.
+ * le mode creatif garde le sien. En haut a droite, le bouton rouge ouvre le menu
+ * principal et le point d'interrogation l'encyclopedie ; a droite, les cinq cases
+ * ouvrent le shop, les contrats, la banque, la faction et les metiers ; sous le
+ * craft, le bouton rouge ouvre le pass du mois. Plus besoin de connaitre les
+ * commandes.
  *
  * <h2>Les cases sont celles du jeu</h2>
  *
  * <p>La position d'une case est fixee par le menu d'inventaire du jeu
  * ({@code Slot.x} et {@code Slot.y} sont finals) : le panneau se dessine donc
- * autour d'elles, et deborde au-dessus pour le titre et a droite pour les
+ * autour d'elles, et deborde au-dessus pour l'en-tete et a droite pour les
  * boutons. L'ecran est recentre sur ce panneau, et un clic dans le panneau
  * n'est jamais pris pour un lancer d'objet.
  *
@@ -40,37 +44,47 @@ import java.util.List;
 public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
 
     /** Le panneau, en coordonnees des cases (l'origine est celle de l'inventaire du jeu). */
-    private static final int PANEL_X = -20;
-    private static final int PANEL_Y = -54;
-    private static final int PANEL_W = 252;
-    private static final int PANEL_H = 230;
+    private static final int PANEL_X = -4;
+    private static final int PANEL_Y = -30;
+    private static final int PANEL_W = 232;
+    private static final int PANEL_H = 197;
 
-    /** La colonne de boutons. */
+    /** La colonne de raccourcis. */
     private static final int COLUMN_X = 188;
     private static final int BUTTON = 28;
     private static final int BUTTON_GAP = 5;
     private static final int BUTTONS_Y = -2;
-    private static final int MENU_X = 192;
-    private static final int MENU_Y = -34;
-    private static final int MENU_SIZE = 21;
-    /** L'encyclopedie, a gauche du menu principal. */
-    private static final int HELP_X = MENU_X - 25;
 
-    /** Le bouton du concours, sous le craft. */
+    /** L'en-tete : la tuile et le titre, puis l'encyclopedie et le menu principal a droite. */
+    private static final int HEADER_Y = PANEL_Y + 5;
+    private static final int MENU_W = 40;
+    private static final int MENU_H = 13;
+    private static final int MENU_X = COLUMN_X + BUTTON - MENU_W;
+    private static final int MENU_Y = HEADER_Y + 2;
+    private static final int HELP_X = MENU_X - 4 - MENU_H;
+
+    /** Le bouton du pass, sous le craft. */
     private static final int PASS_X = 97;
     private static final int PASS_Y = 58;
     private static final int PASS_W = 75;
     private static final int PASS_H = 15;
 
+    /** La zone du personnage, entre l'armure et la seconde main. */
+    private static final int MODEL_X = 26;
+    private static final int MODEL_Y = 8;
+    private static final int MODEL_W = 49;
+    private static final int MODEL_H = 70;
+
     private static final List<Shortcut> SHORTCUTS = List.of(
             new Shortcut("shop", "inv_shop", "Shop", "Acheter et vendre"),
             new Shortcut("contracts", "inv_contracts", "Contrats", "Quotidiens et hebdomadaires"),
-            new Shortcut("bank", "inv_bank", "Banque", "Épargne et intérêts"),
+            new Shortcut("bank", "inv_bank", "Banque", "Epargne et interets"),
             new Shortcut("faction", "inv_faction", "Faction", "Ta faction, ses claims, sa ligue"),
-            new Shortcut("jobs", "inv_jobs", "Métiers", "Niveaux, déblocages, primes"));
+            new Shortcut("jobs", "inv_jobs", "Metiers", "Niveaux, deblocages, primes"));
 
     /** La relique du mois : l'icone du bouton du pass. */
     private final ItemStack passIcon;
+    private final ItemStack headerIcon = new ItemStack(Items.BUNDLE);
 
     public KitInventoryScreen(Player player) {
         super(player.inventoryMenu, player.getInventory(), Component.translatable("container.inventory"), 176, 166);
@@ -81,77 +95,88 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
     @Override
     protected void init() {
         super.init();
-        // Recentre sur le panneau, qui deborde a gauche, a droite et en haut des
-        // cases du jeu. Sur un petit ecran, le titre ne sort jamais par le haut.
+        // Recentre sur le panneau, qui deborde a droite et en haut des cases du
+        // jeu. Sur un petit ecran, l'en-tete ne sort jamais par le haut.
         leftPos = Math.max(-PANEL_X + 2, (width - PANEL_W) / 2 - PANEL_X);
         topPos = Math.max(-PANEL_Y + 2, (height - PANEL_H) / 2 - PANEL_Y);
     }
 
     @Override
     protected void drawPanel(UiGraphics g, int mouseX, int mouseY) {
-        g.panel(PANEL_X, PANEL_Y, PANEL_W, PANEL_H);
-        title(g, "INVENTAIRE", -4, -40, 15, 180, Ui.RED, Ui.RED_SHADE);
+        Paint p = g.paint();
+        ContainerStyle.window(p, PANEL_X, PANEL_Y, PANEL_W, PANEL_H);
+        ContainerStyle.header(g, p, headerIcon, "Inventaire", 8, HEADER_Y, HELP_X - 12);
 
-        // Armure : le losange, le mot, les quatre cases et le personnage.
-        g.texture(Ui.texture("section_armor"), 6, -12, 11, 11, 56, 56);
-        g.text(Ui.WIDE, "ARMURE", 21, -9.5f, 6, Ui.WHITE);
-        g.rect(26, 8, 50, 71, Ui.INSET);
-
-        // Craft : le losange, le mot, la grille, la fleche et le resultat.
-        g.texture(Ui.texture("section_craft"), 96, -12, 11, 11, 56, 56);
-        g.text(Ui.WIDE, "CRAFT", 111, -9.5f, 6, Ui.WHITE);
-        drawCraftArrow(g, 137, 30);
-
-        for (Slot slot : menu.slots) {
-            frame(g, slot, false);
+        // L'encyclopedie : un point d'interrogation vert.
+        boolean helpHovered = inside(mouseX, mouseY, HELP_X, MENU_Y, MENU_H, MENU_H);
+        if (helpHovered) {
+            p.glow(HELP_X + MENU_H / 2.0f, MENU_Y + MENU_H / 2.0f, 12.0f, Paint.alpha(Ui.Theme.GREEN, 0.35f));
         }
+        p.framed(HELP_X, MENU_Y, MENU_H, MENU_H, 3.5f, helpHovered ? Ui.Theme.GREEN : 0xFF222427,
+                helpHovered ? Ui.Theme.GREEN_L : 0xFF2E3035, 1);
+        g.centered(Ui.BOLD, "?", HELP_X + MENU_H / 2.0f + 0.2f, MENU_Y + 2.6f, 8.0f,
+                helpHovered ? Ui.Theme.TEXT : Ui.Theme.GREEN_L);
 
-        // Le concours Trixium, a la place du Lucky Pass.
-        boolean passHovered = inside(mouseX, mouseY, PASS_X, PASS_Y, PASS_W, PASS_H);
-        g.button(PASS_X, PASS_Y, PASS_W, PASS_H, Ui.RED, Ui.RED_DARK, passHovered);
-        g.text(Ui.WIDE, "PASS", PASS_X + 7, PASS_Y + 4.5f, 4.6f, Ui.WHITE);
-        int boxX = PASS_X + PASS_W - 15;
-        g.border(boxX, PASS_Y + 2, 11, 10, 1, Ui.WHITE);
-        g.item(passIcon, boxX + 1.5f, PASS_Y + 3, 8, false);
-
-        // Le menu principal.
-        boolean menuHovered = inside(mouseX, mouseY, MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE);
-        g.button(MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE, Ui.RED, Ui.RED_DARK, menuHovered);
+        // Le menu principal : le bouton rouge, ses trois traits et son nom.
+        boolean menuHovered = inside(mouseX, mouseY, MENU_X, MENU_Y, MENU_W, MENU_H);
+        if (menuHovered) {
+            p.glow(MENU_X + MENU_W / 2.0f, MENU_Y + MENU_H / 2.0f, 22.0f, Paint.alpha(Ui.Theme.RED, 0.35f));
+        }
+        p.roundGradient(MENU_X, MENU_Y, MENU_W, MENU_H, 3.5f, menuHovered ? 0xFFFF5A43 : Ui.Theme.RED_LIGHT,
+                menuHovered ? Ui.Theme.RED : Ui.Theme.RED_D);
         for (int row = 0; row < 3; row++) {
-            int y = MENU_Y + 5 + row * 4;
-            g.rect(MENU_X + 4, y, 3, 3, Ui.WHITE);
-            g.rect(MENU_X + 8, y, 9, 3, Ui.WHITE);
+            p.round(MENU_X + 5.0f, MENU_Y + 3.8f + row * 2.2f, 6.0f, 1.2f, 0.6f, Ui.Theme.TEXT);
+        }
+        g.text(Ui.WIDE, "MENU", MENU_X + 14.0f, MENU_Y + 4.4f, 4.4f, Ui.Theme.TEXT);
+
+        // Armure et personnage.
+        ContainerStyle.labelAbove(g, menu.slots.get(InventoryMenu.ARMOR_SLOT_START), "ARMURE", "");
+        ContainerStyle.inset(p, MODEL_X, MODEL_Y - 0.5f, MODEL_W, MODEL_H + 1);
+
+        // Craft : la grille, la fleche et le resultat.
+        ContainerStyle.labelAbove(g, menu.slots.get(InventoryMenu.CRAFT_SLOT_START), "CRAFT", "");
+        boolean ready = menu.getSlot(InventoryMenu.RESULT_SLOT).hasItem();
+        p.arrow(137.5f, 33.2f, 11.0f, 5.6f, ready ? Ui.Theme.TEXT2 : 0xFF3A3C42);
+
+        for (int index = 0; index < menu.slots.size(); index++) {
+            Slot slot = menu.slots.get(index);
+            if (index == InventoryMenu.RESULT_SLOT) {
+                ContainerStyle.bigSlot(p, slot, Ui.Theme.GREEN);
+            } else {
+                ContainerStyle.slot(p, slot);
+            }
         }
 
-        // L'encyclopedie : un point d'interrogation.
-        boolean helpHovered = inside(mouseX, mouseY, HELP_X, MENU_Y, MENU_SIZE, MENU_SIZE);
-        g.button(HELP_X, MENU_Y, MENU_SIZE, MENU_SIZE, Ui.GREEN, Ui.GREEN_DARK, helpHovered);
-        g.centered(Ui.TITLE, "?", HELP_X + MENU_SIZE / 2.0f + 0.5f, MENU_Y + 4.5f, 12, Ui.WHITE);
+        // Le pass du mois.
+        boolean passHovered = inside(mouseX, mouseY, PASS_X, PASS_Y, PASS_W, PASS_H);
+        if (passHovered) {
+            p.glow(PASS_X + PASS_W / 2.0f, PASS_Y + PASS_H / 2.0f, 34.0f, Paint.alpha(Ui.Theme.RED, 0.3f));
+        }
+        p.roundGradient(PASS_X, PASS_Y, PASS_W, PASS_H, 4.0f, passHovered ? 0xFFFF5A43 : Ui.Theme.RED_LIGHT,
+                passHovered ? Ui.Theme.RED : Ui.Theme.RED_D);
+        g.text(Ui.WIDE, "PASS", PASS_X + 7, PASS_Y + 5.2f, 4.6f, Ui.Theme.TEXT);
+        float boxX = PASS_X + PASS_W - 14.0f;
+        p.round(boxX, PASS_Y + 2.0f, 11.0f, 11.0f, 2.5f, 0x40000000);
+        g.item(passIcon, boxX + 1.5f, PASS_Y + 3.5f, 8, false);
 
         // Les cinq raccourcis.
         for (int index = 0; index < SHORTCUTS.size(); index++) {
             Shortcut shortcut = SHORTCUTS.get(index);
             int y = shortcutY(index);
             boolean hovered = inside(mouseX, mouseY, COLUMN_X, y, BUTTON, BUTTON);
-            g.rect(COLUMN_X, y, BUTTON, BUTTON, hovered ? Ui.WHITE : Ui.SLOT_BORDER);
-            g.rect(COLUMN_X + 1, y + 1, BUTTON - 2, BUTTON - 2, hovered ? Ui.SLOT_HOVER : 0xFF242428);
-            g.texture(Ui.texture(shortcut.icon()), COLUMN_X + 3, y + 3, BUTTON - 6, BUTTON - 6, 64, 64);
+            if (hovered) {
+                p.glow(COLUMN_X + BUTTON / 2.0f, y + BUTTON / 2.0f, 24.0f, Paint.alpha(Ui.Theme.RED, 0.28f));
+            }
+            p.framed(COLUMN_X, y, BUTTON, BUTTON, 5.0f, hovered ? Ui.Theme.CARD_HOVER : 0xFF1C1D21,
+                    hovered ? Ui.Theme.RED : 0xFF2E3035, 1);
+            g.texture(Ui.texture(shortcut.icon()), COLUMN_X + 4, y + 4, BUTTON - 8, BUTTON - 8, 64, 64);
         }
-    }
-
-    /** La petite fleche blanche qui descend vers le resultat. */
-    private static void drawCraftArrow(UiGraphics g, int x, int y) {
-        g.rect(x, y, 2, 5, Ui.WHITE);
-        g.rect(x, y + 4, 9, 2, Ui.WHITE);
-        g.rect(x + 7, y + 2, 2, 6, Ui.WHITE);
-        g.rect(x + 9, y + 3, 1, 4, Ui.WHITE);
-        g.rect(x + 10, y + 4, 1, 2, Ui.WHITE);
     }
 
     @Override
     protected void drawForeground(UiGraphics g, int mouseX, int mouseY) {
-        tip(g, mouseX, mouseY, MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE, List.of("Menu principal", "Tous les menus"));
-        tip(g, mouseX, mouseY, HELP_X, MENU_Y, MENU_SIZE, MENU_SIZE,
+        tip(g, mouseX, mouseY, MENU_X, MENU_Y, MENU_W, MENU_H, List.of("Menu principal", "Tous les menus"));
+        tip(g, mouseX, mouseY, HELP_X, MENU_Y, MENU_H, MENU_H,
                 List.of("Encyclopedie", "Tout Berskar, fiche par fiche (touche J)"));
         tip(g, mouseX, mouseY, PASS_X, PASS_Y, PASS_W, PASS_H,
                 List.of("Pass du mois", "Quetes du jour et du mois, 35 recompenses"));
@@ -166,8 +191,9 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         // Le personnage, au meme cadrage que l'inventaire du jeu.
-        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, leftPos + 26, topPos + 8, leftPos + 75,
-                topPos + 78, 30, 0.0625f, mouseX, mouseY, minecraft.player);
+        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, leftPos + MODEL_X, topPos + MODEL_Y,
+                leftPos + MODEL_X + MODEL_W, topPos + MODEL_Y + MODEL_H, 30, 0.0625f, mouseX, mouseY,
+                minecraft.player);
     }
 
     @Override
@@ -188,10 +214,10 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
 
     /** Le menu vise par un clic, ou {@code null}. */
     private static String target(double x, double y) {
-        if (inside(x, y, MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE)) {
+        if (inside(x, y, MENU_X, MENU_Y, MENU_W, MENU_H)) {
             return "hub";
         }
-        if (inside(x, y, HELP_X, MENU_Y, MENU_SIZE, MENU_SIZE)) {
+        if (inside(x, y, HELP_X, MENU_Y, MENU_H, MENU_H)) {
             return "encyclopedia";
         }
         if (inside(x, y, PASS_X, PASS_Y, PASS_W, PASS_H)) {

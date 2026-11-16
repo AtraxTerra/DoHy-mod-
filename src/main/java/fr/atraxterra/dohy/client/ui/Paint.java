@@ -28,6 +28,7 @@ public final class Paint {
 
     private static final Map<Integer, Identifier> DISCS = new HashMap<>();
     private static final Map<Integer, Identifier> CHECKS = new HashMap<>();
+    private static final Map<Long, Identifier> ARROWS = new HashMap<>();
     private static Identifier glow;
     private static Identifier rampVertical;
     private static Identifier rampHorizontal;
@@ -282,6 +283,23 @@ public final class Paint {
         end();
     }
 
+    /**
+     * Une fleche vers la droite (trait et pointe arrondis) dans le rectangle donne,
+     * dont la hauteur fixe l'epaisseur du trait : les polices n'en ont pas non plus.
+     */
+    public void arrow(float x, float y, float width, float height, int color) {
+        if (width <= 0 || height <= 0 || (color >>> 24) == 0) {
+            return;
+        }
+        begin();
+        int x0 = p(x);
+        int y0 = p(y);
+        int w = Math.max(4, p(x + width) - x0);
+        int h = Math.max(4, p(y + height) - y0);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, arrow(w, h), x0, y0, 0.0f, 0.0f, w, h, w, h, w, h, color);
+        end();
+    }
+
     // -- Textures generees ------------------------------------------------------------
 
     private static Identifier register(String name, NativeImage image) {
@@ -345,6 +363,43 @@ public final class Paint {
                 }
             }
             return register("check_" + value, image);
+        });
+    }
+
+    /**
+     * Une fleche blanche de {@code width} x {@code height} pixels : le trait du milieu
+     * et les deux branches de la pointe, au bout arrondi, comme la fleche des maquettes.
+     */
+    private static Identifier arrow(int width, int height) {
+        int w = Math.min(width, 256);
+        int h = Math.min(height, 128);
+        long key = ((long) w << 32) | h;
+        return ARROWS.computeIfAbsent(key, value -> {
+            NativeImage image = new NativeImage(w, h, true);
+            // En unites de hauteur : demi-epaisseur du trait, puis la pointe.
+            double half = 0.093d;
+            double length = (double) w / h;
+            double tipX = length - half;
+            double armX = tipX - 0.52d;
+            for (int py = 0; py < h; py++) {
+                for (int px = 0; px < w; px++) {
+                    int inside = 0;
+                    for (int sy = 0; sy < 4; sy++) {
+                        for (int sx = 0; sx < 4; sx++) {
+                            double ux = (px + (sx + 0.5d) / 4.0d) / h;
+                            double uy = (py + (sy + 0.5d) / 4.0d) / h;
+                            double d = Math.min(segment(ux, uy, half, 0.5d, tipX - 0.04d, 0.5d),
+                                    Math.min(segment(ux, uy, armX, half, tipX, 0.5d),
+                                            segment(ux, uy, armX, 1.0d - half, tipX, 0.5d)));
+                            if (d <= half) {
+                                inside++;
+                            }
+                        }
+                    }
+                    image.setPixel(px, py, white(inside / 16.0f));
+                }
+            }
+            return register("arrow_" + w + "x" + h, image);
         });
     }
 
