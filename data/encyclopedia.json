@@ -2518,11 +2518,34 @@
       "icon": "minecraft:sculk",
       "title": "Zones irradiees",
       "card": [
-        "Zones d'exclusion",
-        "Minerais rares"
+        "Largages nucleaires",
+        "Minerais qui repoussent"
       ],
       "summary": [
-        "Deux zones d'exclusion, la ou elles sont sur la vraie carte : la radiation est celle de NTM NEXT. Au coeur, des minerais rares a aller chercher, bien protege."
+        "Deux zones d'exclusion, la ou elles sont sur la vraie carte : la radiation est celle de NTM NEXT. On y farme le nucleaire : des largages y tombent, et leurs minerais repoussent."
+      ],
+      "sections": [
+        {
+          "title": "Les largages",
+          "text": [
+            "Toutes les 2 heures environ, une caisse de matieres nucleaires est parachutee dans une zone. Le chat l'annonce 5 minutes avant, avec ses coordonnees : le premier arrive se sert.",
+            "- Surtout du brut : uranium, thorium, plutonium et lithium bruts, yellowcake, beryllium.",
+            "- Un peu de raffine : lingots, uranium 235, plutonium 239, radium, polonium ; parfois du schrabidium.",
+            "- De quoi se soigner : RadAway, Rad-X, iode.",
+            "! La caisse disparait 1 heure apres son arrivee."
+          ]
+        },
+        {
+          "title": "Les minerais repoussent",
+          "text": [
+            "Toutes les 2 heures, les filons des zones se reforment dans la roche : uranium, thorium, gemmes radioactives et un peu de schrabidium. Ce que tu n'as pas mine reste, rien ne s'accumule.",
+            "! La radiation monte vite au coeur : une combinaison de NTM est conseillee."
+          ]
+        }
+      ],
+      "commands": [
+        "/largage : le prochain largage, les caisses au sol, la repousse",
+        "/largage boussole : une boussole vers le largage"
       ],
       "see": [
         "terre",
