@@ -18,10 +18,10 @@ import java.util.concurrent.LinkedBlockingDeque;
  * Le globe vu de pres : des dalles redessinees lisses a partir de la grille des
  * pays, au lieu d'agrandir ses cases de 8 blocs.
  *
- * <p>Chaque pixel d'une dalle melange les quatre cases voisines selon sa position
- * (comme un filtrage bilineaire), puis tranche : les cotes et les frontieres
- * deviennent des courbes, avec un bord adouci sur un pixel, et les frontieres un
- * trait fin. Quatre finesses (2, 4, 16 et 64 pixels par case) suivent le zoom.
+ * <p>Chaque pixel d'une dalle melange les seize cases voisines selon sa position
+ * (une B-spline cubique), puis tranche : les cotes et les frontieres deviennent
+ * des courbes, avec un bord adouci sur un pixel, et les frontieres un trait fin ;
+ * les eaux cotieres se fondent dans le large. Quatre finesses (2, 4, 16 et 64 pixels par case) suivent le zoom.
  *
  * <p>Le calcul se fait sur un fil a part ; la carte affiche le globe agrandi le temps
  * qu'une dalle arrive. Le calque des pays tenus suit le meme dessin.
@@ -360,6 +360,13 @@ final class GlobeTiles {
         if (holdersLayer && !snap.holders()) {
             return null;
         }
+        // Les eaux d'un pays (cotieres ou terre) contre le large, floutees sur cinq cases : le haut-fond
+        // se fond dans le large au lieu de suivre les marches de la grille.
+        int margin = 4;
+        int fieldSpan = cells + margin * 2 + 1;
+        int fieldX = key.tx() * cells - margin;
+        int fieldZ = key.tz() * cells - margin;
+        float[] field = holdersLayer ? null : shallows(snap, fieldX, fieldZ, fieldSpan);
         NativeImage image = new NativeImage(SIZE, SIZE, false);
         boolean anyHolder = false;
         int[] sample = new int[16];
@@ -405,36 +412,36 @@ final class GlobeTiles {
                 }
                 // La terre : son poids, et ses pays par poids.
                 double land = 0.0d;
-                double coast = 0.0d;
-                double sea = 0.0d;
                 int count = 0;
                 for (int k = 0; k < 16; k++) {
                     int id = sample[k] & 0x7FFF;
-                    if (id == 0) {
-                        sea += weight[k];
-                    } else if ((sample[k] & 0x8000) != 0) {
-                        coast += weight[k];
-                    } else {
-                        land += weight[k];
-                        int slot = -1;
-                        for (int s = 0; s < count; s++) {
-                            if (ids[s] == id) {
-                                slot = s;
-                                break;
-                            }
+                    if (id == 0 || (sample[k] & 0x8000) != 0) {
+                        continue;
+                    }
+                    land += weight[k];
+                    int slot = -1;
+                    for (int s = 0; s < count; s++) {
+                        if (ids[s] == id) {
+                            slot = s;
+                            break;
                         }
-                        if (slot < 0) {
-                            slot = count++;
-                            ids[slot] = id;
-                            sums[slot] = 0.0d;
-                        }
-                        sums[slot] += weight[k];
+                    }
+                    if (slot < 0) {
+                        slot = count++;
+                        ids[slot] = id;
+                        sums[slot] = 0.0d;
+                    }
+                    sums[slot] += weight[k];
+                }
+                double shallow = 0.0d;
+                int fieldBase = (row - 1 - fieldZ) * fieldSpan + (columns[px] + originX - fieldX);
+                for (int j = 0; j < 4; j++) {
+                    int line = fieldBase + j * fieldSpan;
+                    for (int i = 0; i < 4; i++) {
+                        shallow += field[line + i] * weight[j * 4 + i];
                     }
                 }
-                double wet = coast + sea;
-                // Les eaux cotieres se fondent dans le large sur une case : un haut-fond, pas une marche.
-                int water = wet <= 1.0e-9d ? AtlasGlobe.COAST
-                        : mix(AtlasGlobe.SEA, AtlasGlobe.COAST, 0.5d + (coast / wet - 0.5d) * 2.0d);
+                int water = mix(AtlasGlobe.SEA, AtlasGlobe.COAST, 0.5d + (shallow - 0.5d) * 2.0d);
                 int color = water;
                 if (count > 0) {
                     int top = 0;
@@ -470,6 +477,37 @@ final class GlobeTiles {
             return null;
         }
         return image;
+    }
+
+    /** Le champ des eaux d'un pays (1) contre le large (0), flou binomial sur cinq cases. */
+    private static float[] shallows(Snapshot snap, int x0, int z0, int span) {
+        float[] raw = new float[span * span];
+        for (int r = 0; r < span; r++) {
+            for (int c = 0; c < span; c++) {
+                raw[r * span + c] = (snap.cell(x0 + c, z0 + r) & 0x7FFF) == 0 ? 0.0f : 1.0f;
+            }
+        }
+        float[] kernel = {1.0f / 16.0f, 4.0f / 16.0f, 6.0f / 16.0f, 4.0f / 16.0f, 1.0f / 16.0f};
+        float[] across = new float[span * span];
+        for (int r = 0; r < span; r++) {
+            for (int c = 0; c < span; c++) {
+                float sum = 0.0f;
+                for (int k = -2; k <= 2; k++) {
+                    sum += kernel[k + 2] * raw[r * span + Math.max(0, Math.min(span - 1, c + k))];
+                }
+                across[r * span + c] = sum;
+            }
+        }
+        for (int r = 0; r < span; r++) {
+            for (int c = 0; c < span; c++) {
+                float sum = 0.0f;
+                for (int k = -2; k <= 2; k++) {
+                    sum += kernel[k + 2] * across[Math.max(0, Math.min(span - 1, r + k)) * span + c];
+                }
+                raw[r * span + c] = sum;
+            }
+        }
+        return raw;
     }
 
     /** Le calque des pays tenus en un pixel : une teinte legere et un trait au bord. */
