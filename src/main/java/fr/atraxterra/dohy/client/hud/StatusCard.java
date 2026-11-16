@@ -134,7 +134,7 @@ public final class StatusCard {
                     league.color(), 0.8f), 1);
             ui.text(Ui.BOLD, tag, tagX + 2.5f, row + 0.9f, 3.4f, league.color());
             row += 7.5f;
-            String stats = info.claims() + " / " + info.claimCap() + " claims  ·  "
+            String stats = info.claims() + " / " + info.claimCap() + " claims  \u00B7  "
                     + MoneyFormat.exact(info.elo()) + " ELO";
             ui.text(Ui.BODY, ui.fit(Ui.BODY, stats, 4.1f, WIDTH - PAD * 2), x + PAD, row, 4.1f, Ui.Theme.MUTED);
             row += 8.5f;
@@ -174,7 +174,7 @@ public final class StatusCard {
         }
         if (info != null && info.stance() > 0 && !info.nation().isEmpty()) {
             boolean war = info.stance() == 2;
-            String text = (war ? "Guerre · " : "Ultimatum · ") + info.nation();
+            String text = (war ? "Guerre \u00B7 " : "Ultimatum \u00B7 ") + info.nation();
             String right = info.deadline() > 0L ? countdown(info.deadline() + offset - System.currentTimeMillis())
                     : war ? "heure ?" : null;
             alerts.add(new Alert(text, war ? Ui.Theme.RED_LIGHT : Ui.Theme.ORANGE, right, war));
