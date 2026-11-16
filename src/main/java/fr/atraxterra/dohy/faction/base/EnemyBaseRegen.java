@@ -566,8 +566,8 @@ public final class EnemyBaseRegen {
             }
             release(level);
             forget(server);
-            LOGGER.info("Terrain de la base des {} ({}) revenu : {} blocs reposes, {} a la seconde passe, {} chunks "
-                            + "revendiques laisses, en {} ms sur {} ticks", pending.name, pending.key, changed, again,
+            LOGGER.info("Terrain de {} ({}) revenu : {} blocs reposes, {} a la seconde passe, {} chunks "
+                            + "revendiques laisses, en {} ms sur {} ticks", pending.inner(), pending.key, changed, again,
                     kept, nanos / 1_000_000L, ticks);
             fr.atraxterra.dohy.faction.absence.AbsenceJournal.post(server,
                     fr.atraxterra.dohy.faction.absence.AbsenceJournal.WORLD, pending.title
