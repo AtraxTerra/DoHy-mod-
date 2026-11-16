@@ -3,12 +3,8 @@ package fr.atraxterra.dohy.arrakis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import fr.atraxterra.dohy.DoHy;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.KeyDispatchDataCodec;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.DensityFunction;
 
 /**
@@ -75,11 +71,13 @@ public record ArrakisTerrain(Output output) implements DensityFunction.SimpleFun
     }
 
     /**
-     * Les numeros des biomes de Duna dans NTM Space, demandes une fois a
-     * {@code BiomeGenBaseCelestial} ; ceux connus a l'ecriture de ce code sinon.
+     * Les numeros des biomes de Duna dans NTM Space. Ses biomes de planete ne
+     * s'inscrivent qu'a l'initialisation de leur classe, que seule sa propre
+     * densite declenchait : on l'initialise ici, puis on lit leurs numeros.
      */
-    private static final class Ids {
+    static final class Ids {
 
+        static final String DUNA_BIOMES = "com.hbmspace.dim.duna.biome.BiomeGenBaseDuna";
         private static volatile int[] ids;
 
         static int of(ArrakisRelief.Region region) {
@@ -91,20 +89,17 @@ public record ArrakisTerrain(Output output) implements DensityFunction.SimpleFun
             return known[region.ordinal()];
         }
 
-        private static int[] resolve() {
+        static int[] resolve() {
             ArrakisRelief.Region[] regions = ArrakisRelief.Region.values();
             int[] out = new int[regions.length];
             for (ArrakisRelief.Region region : regions) {
                 out[region.ordinal()] = region.fallbackId;
             }
             try {
-                Class<?> celestial = Class.forName("com.hbmspace.dim.BiomeGenBaseCelestial");
-                java.lang.reflect.Method get = celestial.getMethod("get", ResourceKey.class);
-                java.lang.reflect.Field id = celestial.getField("biomeID");
+                Class<?> duna = Class.forName(DUNA_BIOMES, true, ArrakisTerrain.class.getClassLoader());
+                java.lang.reflect.Field id = Class.forName("com.hbmspace.dim.BiomeGenBaseCelestial").getField("biomeID");
                 for (ArrakisRelief.Region region : regions) {
-                    ResourceKey<Biome> key = ResourceKey.create(Registries.BIOME,
-                            Identifier.fromNamespaceAndPath("hbmspace", region.biome));
-                    Object biome = get.invoke(null, key);
+                    Object biome = duna.getField(region.field).get(null);
                     if (biome != null) {
                         out[region.ordinal()] = id.getInt(biome);
                     }

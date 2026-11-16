@@ -18,18 +18,19 @@ public final class ArrakisRelief {
 
     /** Les cinq biomes de Duna, repris tels quels pour Arrakis. */
     public enum Region {
-        PLAINS("duna_plains", 122),
-        LOWLANDS("duna_lowlands", 121),
-        HILLS("duna_hills", 119),
-        POLAR("duna_polar", 120),
-        POLAR_HILLS("duna_polar_hills", 118);
+        PLAINS("dunaPlains", 122),
+        LOWLANDS("dunaLowlands", 121),
+        HILLS("dunaHills", 119),
+        POLAR("dunaPolar", 120),
+        POLAR_HILLS("dunaPolarHills", 118);
 
-        final String biome;
+        /** Le champ de {@code BiomeGenBaseDuna} qui tient ce biome. */
+        final String field;
         /** Numero du biome dans NTM Space, si on ne peut pas le lui demander. */
         final int fallbackId;
 
-        Region(String biome, int fallbackId) {
-            this.biome = biome;
+        Region(String field, int fallbackId) {
+            this.field = field;
             this.fallbackId = fallbackId;
         }
     }

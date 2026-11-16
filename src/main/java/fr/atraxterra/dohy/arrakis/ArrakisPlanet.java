@@ -44,6 +44,9 @@ public final class ArrakisPlanet {
 
     /** A la mise en place commune : l'atmosphere et la teinte par defaut de Duna. */
     static void install() {
+        // les biomes de Duna, que la source de biomes de NTM Space cherche par numero
+        int[] biomes = ArrakisTerrain.Ids.resolve();
+        DoHy.LOGGER.info("Arrakis : biomes de Duna numerotes {}", java.util.Arrays.toString(biomes));
         try {
             Class.forName("com.hbmspace.dim.SolarSystem").getMethod("ensureInit").invoke(null);
             Object body = body();
