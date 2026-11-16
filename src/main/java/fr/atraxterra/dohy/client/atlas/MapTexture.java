@@ -110,6 +110,29 @@ final class MapTexture extends AbstractTexture {
         }
     }
 
+    /** Tous les niveaux d'une image (le premier est l'image elle-meme) ; l'appelant les libere. */
+    static NativeImage[] levels(NativeImage image, int levels) {
+        NativeImage[] out = new NativeImage[Math.max(1, levels)];
+        bleed(image);
+        out[0] = image;
+        for (int level = 1; level < out.length; level++) {
+            out[level] = downsample(out[level - 1]);
+            bleed(out[level]);
+        }
+        return out;
+    }
+
+    /** Envoie des niveaux deja calcules ({@link #levels}). */
+    void uploadLevels(NativeImage[] images) {
+        if (texture == null || texture.isClosed()) {
+            return;
+        }
+        CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
+        for (int level = 0; level < Math.min(levels, images.length); level++) {
+            encoder.writeToTexture(texture, images[level], level, 0, 0, 0);
+        }
+    }
+
     /**
      * Un niveau deux fois plus petit : chaque pixel est la moyenne de quatre, ponderee
      * par leur opacite (un pixel transparent ne fonce pas ses voisins).

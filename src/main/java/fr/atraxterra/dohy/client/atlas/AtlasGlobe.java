@@ -71,13 +71,23 @@ final class AtlasGlobe {
             baseVersion = AtlasData.globeVersion();
             holdersVersion = -1;
         }
-        if (holdersVersion != AtlasData.nationsVersion()) {
-            paintHolders(globe);
+        boolean nations = holdersVersion != AtlasData.nationsVersion();
+        if (nations) {
+            holderColors = holderColors(globe);
             holdersVersion = AtlasData.nationsVersion();
         }
         GlobeTiles.sync(landColors, holderColors, globe.cells(), globe.width(), globe.height(), baseVersion,
                 holdersVersion);
+        if (nations) {
+            // Calcule a part : l'ancien calque reste affiche le temps du nouveau.
+            GlobeTiles.whole(AtlasGlobe::install);
+        }
         return true;
+    }
+
+    /** Vrai des que l'image entiere des pays tenus existe. */
+    static boolean holdersReady() {
+        return holders != null;
     }
 
     /** La couleur de terre d'un pays. */
@@ -155,34 +165,36 @@ final class AtlasGlobe {
         };
     }
 
-    private static void paintHolders(AtlasData.Globe globe) {
-        if (base == null) {
-            return;
-        }
+    private static int[] holderColors(AtlasData.Globe globe) {
         EarthAtlas.Nations nations = AtlasData.nations();
         int target = nations == null ? 0 : nations.target();
-        holderColors = new int[IDS];
+        int[] colors = new int[IDS];
         for (int id = 1; id < IDS; id++) {
             if (globe.countries().containsKey(id)) {
-                holderColors[id] = holderColor(id, target);
+                colors[id] = holderColor(id, target);
             }
         }
-        NativeImage image = new NativeImage(width, height, true);
-        for (int row = 0; row < height; row++) {
-            for (int column = 0; column < width; column++) {
-                int cell = globe.cells()[row * width + column] & 0xFFFF;
-                int id = cell & 0x7FFF;
-                int color = id != 0 && (cell & 0x8000) == 0 ? holderColors[id] : 0;
-                image.setPixel(column, row, color == 0 ? 0 : (color & 0x00FFFFFF) | 0x60000000);
+        return colors;
+    }
+
+    /** Pose l'image entiere des pays tenus calculee a part, si elle est encore d'actualite. */
+    private static void install(int version, NativeImage[] levels) {
+        try {
+            if (version != holdersVersion || base == null || levels.length == 0
+                    || levels[0].getWidth() != width || levels[0].getHeight() != height) {
+                return;
+            }
+            MapTexture texture = new MapTexture("dohy atlas globe holders", width, height, levels.length,
+                    MapTexture.smooth());
+            texture.uploadLevels(levels);
+            // L'enregistrement remplace (et ferme) l'ancienne image.
+            Minecraft.getInstance().getTextureManager().register(HOLDERS, texture);
+            holders = texture;
+        } finally {
+            for (NativeImage level : levels) {
+                level.close();
             }
         }
-        if (holders != null) {
-            Minecraft.getInstance().getTextureManager().release(HOLDERS);
-        }
-        holders = new MapTexture("dohy atlas globe holders", width, height, LEVELS, MapTexture.smooth());
-        holders.upload(image, null);
-        image.close();
-        Minecraft.getInstance().getTextureManager().register(HOLDERS, holders);
     }
 
     static void release() {

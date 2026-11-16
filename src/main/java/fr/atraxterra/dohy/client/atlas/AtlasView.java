@@ -1,6 +1,5 @@
 package fr.atraxterra.dohy.client.atlas;
 
-import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.client.disaster.DisasterClient;
 import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Ui;
@@ -251,7 +250,8 @@ final class AtlasView {
             // Trop de dalles pour cet ecran : une finesse plus grossiere, puis l'image entiere.
             density = density == 64 ? 16 : density == 16 ? 4 : density == 4 ? 2 : 0;
         }
-        if (density == 0 || !holders) {
+        boolean wholeReady = !holders || AtlasGlobe.holdersReady();
+        if ((density == 0 || !holders) && wholeReady) {
             region(graphics, frame, globe, whole, 0, 0, globe.width(), globe.height(), left, top, right, bottom);
         }
         if (density == 0) {
@@ -259,15 +259,20 @@ final class AtlasView {
         }
         for (int tz = fromZ; tz <= toZ; tz++) {
             for (int tx = fromX; tx <= toX; tx++) {
-                GlobeTiles.Entry entry = GlobeTiles.get(density, tx, tz);
-                if (entry == null) {
-                    if (holders) {
-                        region(graphics, frame, globe, whole, tx * cells, tz * cells, cells, cells, left, top, right,
-                                bottom);
+                Identifier texture;
+                if (holders) {
+                    GlobeTiles.Tile tile = GlobeTiles.holders(density, tx, tz);
+                    if (tile == null) {
+                        if (wholeReady) {
+                            region(graphics, frame, globe, whole, tx * cells, tz * cells, cells, cells, left, top,
+                                    right, bottom);
+                        }
+                        continue;
                     }
-                    continue;
+                    texture = tile.id;
+                } else {
+                    texture = GlobeTiles.base(density, tx, tz);
                 }
-                Identifier texture = holders ? entry.holders() : entry.base();
                 if (texture == null) {
                     continue;
                 }
@@ -645,9 +650,5 @@ final class AtlasView {
         float left = centerX - width / 2.0f - padX;
         paint.round(left, top, width + padX * 2.0f, height, height / 2.0f, 0xD812131A);
         ui.text(Ui.BODY, text, left + padX, top + (height - size) / 2.0f + size * 0.06f, size, color);
-    }
-
-    static void logOnce(String message, Throwable error) {
-        DoHy.LOGGER.error(message, error);
     }
 }

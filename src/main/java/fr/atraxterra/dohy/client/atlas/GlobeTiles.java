@@ -29,53 +29,92 @@ import java.util.concurrent.LinkedBlockingDeque;
 final class GlobeTiles {
 
     static final int SIZE = 256;
-    private static final int CACHE = 112;
-    private static final int QUEUE = 96;
+    private static final int CACHE = 160;
+    private static final int QUEUE = 128;
     /** La demi-largeur des traits, en pixels de dalle. */
     private static final double HALF_LINE = 0.45d;
     /** Le poids de terre ou passe la cote. */
     private static final double LAND = 0.42d;
+    /** Les niveaux de detail de l'image entiere des pays tenus. */
+    static final int WHOLE_LEVELS = 7;
 
-    record Key(int density, int tx, int tz) {
+    /** Le fond (pays, mers) ou le calque des pays tenus. */
+    enum Kind {
+        BASE, HOLDERS, WHOLE
     }
 
-    /** Une dalle prete : le fond et, s'il y a des pays tenus dessous, leur calque. */
-    record Entry(Identifier base, Identifier holders) {
+    record Key(Kind kind, int density, int tx, int tz) {
+    }
+
+    /**
+     * Une dalle prete, a la version des donnees qui l'ont dessinee ; {@code id} vide si
+     * elle ne montre rien (aucun pays tenu dessous).
+     */
+    static final class Tile {
+        final Identifier id;
+        final int version;
+
+        Tile(Identifier id, int version) {
+            this.id = id;
+            this.version = version;
+        }
     }
 
     /** Ce que le fil de calcul lit : une copie figee de la grille et des couleurs. */
-    record Snapshot(int version, short[] cells, int width, int height, int[] land, int[] holder, boolean holders) {
+    record Snapshot(int globeVersion, int holderVersion, short[] cells, int width, int height, int[] land,
+                    int[] holder, boolean holders) {
         int cell(int column, int row) {
             if (column < 0 || row < 0 || column >= width || row >= height) {
                 return 0;
             }
             return cells[row * width + column] & 0xFFFF;
         }
+
+        int version(Kind kind) {
+            return kind == Kind.BASE ? globeVersion : holderVersion;
+        }
     }
 
-    private record Result(Key key, int version, NativeImage base, NativeImage holders) {
+    private record Result(Key key, int version, NativeImage image, NativeImage[] levels) {
+        void close() {
+            if (image != null) {
+                image.close();
+            }
+            if (levels != null) {
+                for (NativeImage level : levels) {
+                    level.close();
+                }
+            }
+        }
     }
 
-    private static final Map<Key, Entry> TILES = new LinkedHashMap<>(64, 0.75f, true);
+    private static final Map<Key, Tile> TILES = new LinkedHashMap<>(64, 0.75f, true);
     private static final BlockingDeque<Key> QUEUED = new LinkedBlockingDeque<>();
     private static final Set<Key> WANTED = new HashSet<>();
     private static final ConcurrentLinkedQueue<Result> DONE = new ConcurrentLinkedQueue<>();
     private static volatile Snapshot snapshot;
     private static int counter;
     private static Thread worker;
+    /** Recoit l'image entiere des pays tenus, avec ses niveaux, une fois calculee. */
+    private static java.util.function.BiConsumer<Integer, NativeImage[]> whole;
 
     private GlobeTiles() {
     }
 
-    /** Reprend les donnees du globe : tout se redessine si la grille ou les pays tenus ont change. */
+    /**
+     * Reprend les donnees du globe. Une nouvelle grille efface tout ; de nouveaux pays
+     * tenus laissent le fond et gardent l'ancien calque affiche le temps du nouveau.
+     */
     static void sync(int[] land, int[] holder, short[] cells, int width, int height, int globeVersion,
                      int nationsVersion) {
         Snapshot current = snapshot;
-        int version = globeVersion * 65_537 + nationsVersion;
-        if (current != null && current.version() == version) {
+        if (current != null && current.globeVersion() == globeVersion && current.holderVersion() == nationsVersion) {
             return;
         }
-        clear();
+        if (current == null || current.globeVersion() != globeVersion || current.cells() != cells) {
+            clear();
+            counter++;
+        }
         boolean any = false;
         for (int color : holder) {
             if (color != 0) {
@@ -83,17 +122,41 @@ final class GlobeTiles {
                 break;
             }
         }
-        snapshot = new Snapshot(version, cells, width, height, land.clone(), holder.clone(), any);
-        counter++;
+        snapshot = new Snapshot(globeVersion, nationsVersion, cells, width, height, land.clone(), holder.clone(),
+                any);
     }
 
-    /** La dalle si elle est prete ; sinon elle est demandee au fil de calcul et vient plus tard. */
-    static Entry get(int density, int tx, int tz) {
-        Key key = new Key(density, tx, tz);
-        Entry entry = TILES.get(key);
-        if (entry != null || snapshot == null) {
-            return entry;
+    /** Le fond d'une dalle s'il est pret ; sinon il est demande au fil de calcul et vient plus tard. */
+    static Identifier base(int density, int tx, int tz) {
+        Tile tile = tile(new Key(Kind.BASE, density, tx, tz));
+        return tile == null ? null : tile.id;
+    }
+
+    /**
+     * Le calque des pays tenus d'une dalle, meme d'une version passee (redemande alors) ;
+     * {@code null} s'il n'a jamais ete dessine.
+     */
+    static Tile holders(int density, int tx, int tz) {
+        return tile(new Key(Kind.HOLDERS, density, tx, tz));
+    }
+
+    private static Tile tile(Key key) {
+        Snapshot current = snapshot;
+        Tile tile = TILES.get(key);
+        if (current == null || (tile != null && tile.version == current.version(key.kind()))) {
+            return tile;
         }
+        request(key);
+        return tile;
+    }
+
+    /** Demande l'image entiere des pays tenus ; {@code done} la recoit sur le fil du rendu. */
+    static void whole(java.util.function.BiConsumer<Integer, NativeImage[]> done) {
+        whole = done;
+        request(new Key(Kind.WHOLE, 0, 0, 0));
+    }
+
+    private static void request(Key key) {
         synchronized (WANTED) {
             if (WANTED.add(key)) {
                 QUEUED.offerFirst(key);
@@ -106,7 +169,6 @@ final class GlobeTiles {
             }
         }
         start();
-        return null;
     }
 
     /** Transforme en textures les dalles calculees (au plus {@code max} par image). */
@@ -117,25 +179,39 @@ final class GlobeTiles {
             if (result == null) {
                 return;
             }
+            Key key = result.key();
             synchronized (WANTED) {
-                WANTED.remove(result.key());
+                WANTED.remove(key);
             }
-            if (current == null || result.version() != current.version() || TILES.containsKey(result.key())) {
-                result.base().close();
-                if (result.holders() != null) {
-                    result.holders().close();
+            if (current == null || result.version() != current.version(key.kind())) {
+                result.close();
+                continue;
+            }
+            if (key.kind() == Kind.WHOLE) {
+                if (whole != null) {
+                    whole.accept(result.version(), result.levels());
+                } else {
+                    result.close();
                 }
                 continue;
             }
-            Identifier base = texture(result.key(), "b", result.base());
-            Identifier holders = result.holders() == null ? null : texture(result.key(), "h", result.holders());
-            TILES.put(result.key(), new Entry(base, holders));
+            Tile before = TILES.get(key);
+            if (before != null && before.version == result.version()) {
+                result.close();
+                continue;
+            }
+            Identifier id = result.image() == null ? null : texture(key, result.version(), result.image());
+            if (before != null && before.id != null) {
+                Minecraft.getInstance().getTextureManager().release(before.id);
+            }
+            TILES.put(key, new Tile(id, result.version()));
             evict();
         }
     }
 
-    private static Identifier texture(Key key, String kind, NativeImage image) {
-        Identifier id = Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "atlas_globe/" + kind + counter + "_"
+    private static Identifier texture(Key key, int version, NativeImage image) {
+        Identifier id = Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "atlas_globe/"
+                + key.kind().name().toLowerCase(java.util.Locale.ROOT) + counter + "_" + version + "_"
                 + key.density() + "_" + (key.tx() < 0 ? "m" + -key.tx() : key.tx()) + "_"
                 + (key.tz() < 0 ? "m" + -key.tz() : key.tz()));
         MapTexture texture = new MapTexture("dohy atlas globe " + id, SIZE, SIZE, 1, MapTexture.smooth());
@@ -146,25 +222,22 @@ final class GlobeTiles {
     }
 
     private static void evict() {
-        Iterator<Map.Entry<Key, Entry>> iterator = TILES.entrySet().iterator();
+        Iterator<Map.Entry<Key, Tile>> iterator = TILES.entrySet().iterator();
         while (TILES.size() > CACHE && iterator.hasNext()) {
-            Entry entry = iterator.next().getValue();
+            Tile tile = iterator.next().getValue();
             iterator.remove();
-            release(entry);
-        }
-    }
-
-    private static void release(Entry entry) {
-        Minecraft.getInstance().getTextureManager().release(entry.base());
-        if (entry.holders() != null) {
-            Minecraft.getInstance().getTextureManager().release(entry.holders());
+            if (tile.id != null) {
+                Minecraft.getInstance().getTextureManager().release(tile.id);
+            }
         }
     }
 
     /** Rend toutes les textures et oublie les demandes. */
     static void clear() {
-        for (Entry entry : TILES.values()) {
-            release(entry);
+        for (Tile tile : TILES.values()) {
+            if (tile.id != null) {
+                Minecraft.getInstance().getTextureManager().release(tile.id);
+            }
         }
         TILES.clear();
         synchronized (WANTED) {
@@ -173,10 +246,7 @@ final class GlobeTiles {
         }
         Result result;
         while ((result = DONE.poll()) != null) {
-            result.base().close();
-            if (result.holders() != null) {
-                result.holders().close();
-            }
+            result.close();
         }
         snapshot = null;
     }
@@ -193,8 +263,9 @@ final class GlobeTiles {
 
     private static void run() {
         while (true) {
+            Key key = null;
             try {
-                Key key = QUEUED.takeFirst();
+                key = QUEUED.takeFirst();
                 Snapshot current = snapshot;
                 if (current == null) {
                     synchronized (WANTED) {
@@ -202,13 +273,38 @@ final class GlobeTiles {
                     }
                     continue;
                 }
-                DONE.add(generate(current, key));
+                DONE.add(switch (key.kind()) {
+                    case WHOLE -> new Result(key, current.holderVersion(), null, wholeHolders(current));
+                    case BASE -> new Result(key, current.globeVersion(), generate(current, key, false), null);
+                    case HOLDERS -> new Result(key, current.holderVersion(), generate(current, key, true), null);
+                });
             } catch (InterruptedException interrupted) {
                 return;
             } catch (Throwable error) {
+                if (key != null) {
+                    synchronized (WANTED) {
+                        WANTED.remove(key);
+                    }
+                }
                 DoHy.LOGGER.warn("Atlas : dalle du globe non calculee ({})", error.toString());
             }
         }
+    }
+
+    /** L'image entiere des pays tenus, une case par pixel, et ses niveaux : vue de loin. */
+    private static NativeImage[] wholeHolders(Snapshot snap) {
+        NativeImage image = new NativeImage(snap.width(), snap.height(), true);
+        for (int row = 0; row < snap.height(); row++) {
+            for (int column = 0; column < snap.width(); column++) {
+                int cell = snap.cells()[row * snap.width() + column] & 0xFFFF;
+                int id = cell & 0x7FFF;
+                int color = id != 0 && (cell & 0x8000) == 0 && id < snap.holder().length ? snap.holder()[id] : 0;
+                if (color != 0) {
+                    image.setPixel(column, row, (color & 0x00FFFFFF) | 0x60000000);
+                }
+            }
+        }
+        return MapTexture.levels(image, Math.min(WHOLE_LEVELS, MapTexture.maxLevels(snap.width(), snap.height())));
     }
 
     // -- Le dessin d'une dalle --------------------------------------------------------------------
@@ -238,7 +334,8 @@ final class GlobeTiles {
         w[3] = t3 / 6.0d;
     }
 
-    static Result generate(Snapshot snap, Key key) {
+    /** Le fond ou le calque des pays tenus d'une dalle ; {@code null} pour un calque vide. */
+    static NativeImage generate(Snapshot snap, Key key, boolean holdersLayer) {
         int density = key.density();
         int cells = SIZE / density;
         // La grille de la dalle et sa marge (deux cases avant, trois apres), lue une fois.
@@ -251,8 +348,10 @@ final class GlobeTiles {
                 grid[r * span + c] = snap.cell(originX + c, originZ + r);
             }
         }
-        NativeImage base = new NativeImage(SIZE, SIZE, false);
-        NativeImage holders = snap.holders() ? new NativeImage(SIZE, SIZE, false) : null;
+        if (holdersLayer && !snap.holders()) {
+            return null;
+        }
+        NativeImage image = new NativeImage(SIZE, SIZE, false);
         boolean anyHolder = false;
         int[] sample = new int[16];
         double[] weight = new double[16];
@@ -286,6 +385,14 @@ final class GlobeTiles {
                         sample[j * 4 + i] = grid[base4 + i];
                         weight[j * 4 + i] = columnWeights[weights + i] * wz[j];
                     }
+                }
+                if (holdersLayer) {
+                    int pixel = holder(snap, sample, weight, density, keys, holderSums);
+                    if ((pixel >>> 24) != 0) {
+                        anyHolder = true;
+                    }
+                    image.setPixel(px, py, pixel);
+                    continue;
                 }
                 // La terre : son poids, et ses pays par poids.
                 double land = 0.0d;
@@ -345,21 +452,14 @@ final class GlobeTiles {
                         color = mix(color, AtlasGlobe.SHORE, shore);
                     }
                 }
-                base.setPixel(px, py, color);
-                if (holders != null) {
-                    int pixel = holder(snap, sample, weight, density, keys, holderSums);
-                    if ((pixel >>> 24) != 0) {
-                        anyHolder = true;
-                    }
-                    holders.setPixel(px, py, pixel);
-                }
+                image.setPixel(px, py, color);
             }
         }
-        if (holders != null && !anyHolder) {
-            holders.close();
-            holders = null;
+        if (holdersLayer && !anyHolder) {
+            image.close();
+            return null;
         }
-        return new Result(key, snap.version(), base, holders);
+        return image;
     }
 
     /** Le calque des pays tenus en un pixel : une teinte legere et un trait au bord. */
