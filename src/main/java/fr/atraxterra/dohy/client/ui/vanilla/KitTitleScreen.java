@@ -48,7 +48,14 @@ public final class KitTitleScreen extends Screen {
     private static final float NEWS_W = 140.0f;
 
     private final List<Entry> entries = new ArrayList<>();
-    private final ItemStack head = new ItemStack(Items.PLAYER_HEAD);
+    /**
+     * La tete du joueur, creee a la premiere image et pas a la construction : l'ecran
+     * s'ouvre a la fin du chargement des ressources, avant que les composants des items
+     * soient lies ({@code Components not bound yet}). Tant qu'ils ne le sont pas, on
+     * reessaie une fois par seconde et la pastille s'affiche sans la tete.
+     */
+    private ItemStack head;
+    private long headRetry;
     private float[] hover = new float[0];
     private String version = "";
 
@@ -193,9 +200,23 @@ public final class KitTitleScreen extends Screen {
         float width = Math.max(34.0f, 17.0f + g.width(Ui.BOLD, name, 3.8f));
         x -= width - 34.0f;
         p.framed(x, y, width, 14.0f, 3.0f, 0xE81C1D21, 0xFF2A2C31, 1);
-        g.item(head, x + 3.5f, y + 3.5f, 7.0f, false);
+        ItemStack stack = head();
+        if (stack != null) {
+            g.item(stack, x + 3.5f, y + 3.5f, 7.0f, false);
+        }
         g.text(Ui.BOLD, name, x + 13.0f, y + 2.6f, 3.8f, Ui.Theme.TEXT);
         g.text(Ui.PIXEL, "CONNECTE", x + 13.0f, y + 8.2f, 2.8f, Ui.Theme.MUTED);
+    }
+
+    private ItemStack head() {
+        if (head == null && System.currentTimeMillis() >= headRetry) {
+            try {
+                head = new ItemStack(Items.PLAYER_HEAD);
+            } catch (RuntimeException notBound) {
+                headRetry = System.currentTimeMillis() + 1000L;
+            }
+        }
+        return head;
     }
 
     // -- Entrees -----------------------------------------------------------------------
