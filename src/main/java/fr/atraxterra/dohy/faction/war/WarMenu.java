@@ -16,9 +16,9 @@ import java.util.Optional;
 
 /**
  * L'ecran de la guerre : l'assaut en cours, l'ultimatum a repondre, l'heure a
- * choisir, puis les douze nations — leur humeur envers toi, leur force, ce
- * qu'on dit d'elles —, ce qu'elles pensent de tes defenses, et l'histoire de
- * vos guerres.
+ * choisir, la place forte de la nation a raser, puis les douze nations — leur
+ * humeur envers toi, leur force, ce qu'on dit d'elles —, ce qu'elles pensent de
+ * tes defenses, et l'histoire de vos guerres.
  */
 public final class WarMenu extends MenuController {
 
@@ -172,6 +172,40 @@ public final class WarMenu extends MenuController {
             }
         });
 
+        // -- leur place forte : la riposte
+        Strongholds.Fort fort = Strongholds.of(player.getUUID());
+        if (fort != null) {
+            NationTraits traits = fort.traits();
+            List<Card> cards = new ArrayList<>();
+            cards.add(Card.of(new ItemStack(Items.TARGET), "Place forte " + traits.de(),
+                            List.of(Strongholds.coordinates(fort), Strongholds.where(player, fort.center)))
+                    .accent(tint(traits)).action("fort").badge("VISER")
+                    .tooltip(List.of(fort.genre().title() + " (" + fort.kind().label().toLowerCase(
+                                    java.util.Locale.ROOT) + ")",
+                            "Un designateur de NTM sur ces coordonnees,",
+                            "puis tire depuis une rampe de lancement.",
+                            "Clic : une boussole vers elle")));
+            int worst = Math.min(fort.integrity, fort.vault);
+            cards.add(Card.of(new ItemStack(Items.TNT), "Structure " + fort.integrity + " %",
+                            List.of("Salle forte " + fort.vault + " %", "Rasee sous " + Strongholds.RAZED_AT + " %"))
+                    .accent(worst < 80 ? 0xFFE8590C : 0xFF55545C)
+                    .progress(fort.integrity, 100)
+                    .tooltip(List.of("Compte apres chaque impact de missile.",
+                            "Murs de la salle forte sous " + Strongholds.VAULT_AT + " % : rasee.",
+                            "Entrer dans sa salle forte la fait tomber aussi.")));
+            cards.add(Card.of(new ItemStack(Items.GOLD_INGOT), "Si elle tombe",
+                            List.of("30 % de leur tresor", "Treve de 7 jours"))
+                    .accent(0xFFFAC400)
+                    .tooltip(List.of("La moitie de leur armee tombe,",
+                            "un de leurs pays passe a ta faction (+1 claim).",
+                            "5 minutes plus tard, elle s'efface.")));
+            sections.add(new MenuView.Section("LEUR PLACE FORTE", "armor", MenuView.GRID, cards));
+        } else if (Strongholds.building(player.getUUID())) {
+            sections.add(new MenuView.Section("LEUR PLACE FORTE", "armor", MenuView.GRID, List.of(
+                    Card.of(new ItemStack(Items.SCAFFOLDING), "En chantier", List.of("Loin de tes claims",
+                            "Ses coordonnees arrivent")).accent(0xFF55545C))));
+        }
+
         // -- les nations
         List<Card> nations = new ArrayList<>();
         for (int i = 0; i < NationTraits.count(); i++) {
@@ -281,6 +315,9 @@ public final class WarMenu extends MenuController {
         } else if (key.equals("vault")) {
             refusal = WarStrategy.setVault(player);
             message = "Ton coffre est ici. Defends-le.";
+        } else if (key.equals("fort")) {
+            refusal = Strongholds.compass(player);
+            message = "Une boussole pointe vers leur place forte.";
         } else if (key.startsWith("slot:")) {
             try {
                 refusal = WarStrategy.choose(player, Long.parseLong(key.substring(5)));

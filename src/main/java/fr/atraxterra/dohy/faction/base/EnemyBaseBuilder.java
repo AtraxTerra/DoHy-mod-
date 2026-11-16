@@ -158,6 +158,8 @@ final class EnemyBaseBuilder {
     private final EnemyBaseTier tier;
     private final EnemyBaseStyle style;
     private final String name;
+    /** Le nom des gardes : « Garde des Corbeaux » par defaut. */
+    private String guardName;
     private final int cx;
     private final int cz;
     private final int grade;
@@ -265,6 +267,11 @@ final class EnemyBaseBuilder {
     }
 
     // -- Chantier -------------------------------------------------------------------
+
+    /** Le nom des gardes, avant le chantier : « Garde de Nordheim ». */
+    void guardName(String label) {
+        this.guardName = label;
+    }
 
     /** Choisit le sol et prepare toutes les etapes. */
     void plan() {
@@ -2527,7 +2534,7 @@ final class EnemyBaseBuilder {
         }
         mob.setPersistenceRequired();
         mob.addTag(EnemyBases.GUARD_TAG);
-        mob.setCustomName(Component.literal("Garde des " + name));
+        mob.setCustomName(Component.literal(guardName != null ? guardName : "Garde des " + name));
         if (level.addFreshEntity(mob)) {
             guards++;
         }

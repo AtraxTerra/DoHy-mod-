@@ -31,9 +31,12 @@ import java.util.List;
  *   <li>{@code heure 21:00}, {@code heure demain 18h} fixent l'assaut ;</li>
  *   <li>{@code paix} achete la paix, {@code cadeau <nation> <montant>} adoucit une nation ;</li>
  *   <li>{@code coffre} designe ton coffre, la ou tu te tiens ;</li>
+ *   <li>{@code placeforte} donne une boussole vers la place forte de la nation en guerre ;</li>
  *   <li>{@code admin} (operateurs) : menacer, declarer, lancer un assaut, l'arreter, tirer un
  *       missile sur sa propre base ({@code missile <nation> [charge]}), faire revenir tout de suite
- *       le terrain bombarde ({@code retour}).</li>
+ *       le terrain bombarde ({@code retour}), commander la place forte d'une nation
+ *       ({@code placeforte <nation> [distance]}), la raser ({@code rase}) ou la recompter
+ *       ({@code compte}).</li>
  * </ul>
  */
 @EventBusSubscriber
@@ -73,6 +76,8 @@ public final class WarCommand {
                         context.getSource().getPlayerOrException()), null)))
                 .then(Commands.literal("paix").executes(context -> answer(context, WarStrategy.peace(
                         context.getSource().getPlayerOrException()), null)))
+                .then(Commands.literal("placeforte").executes(context -> answer(context, Strongholds.compass(
+                        context.getSource().getPlayerOrException()), "Une boussole pointe vers leur place forte.")))
                 .then(Commands.literal("coffre").executes(context -> answer(context, WarStrategy.setVault(
                         context.getSource().getPlayerOrException()), "Ton coffre est ici : c'est lui que les "
                         + "nations viendront prendre. Defends-le.")))
@@ -131,6 +136,17 @@ public final class WarCommand {
                                                         .toList(), builder))
                                         .executes(context -> missile(context,
                                                 StringArgumentType.getString(context, "charge"))))))
+                        // La place forte de la nation, plus pres que d'ordinaire : pour essayer la riposte.
+                        .then(Commands.literal("placeforte").then(nationArgument()
+                                .executes(context -> stronghold(context, 0))
+                                .then(Commands.argument("distance", com.mojang.brigadier.arguments.IntegerArgumentType
+                                                .integer(64, 4_000))
+                                        .executes(context -> stronghold(context, com.mojang.brigadier.arguments
+                                                .IntegerArgumentType.getInteger(context, "distance"))))))
+                        .then(Commands.literal("rase").executes(context -> answer(context, Strongholds.forceRaze(
+                                context.getSource().getPlayerOrException()), null)))
+                        .then(Commands.literal("compte").executes(context -> answer(context, Strongholds.recount(
+                                context.getSource().getPlayerOrException()), "Comptes de la place forte en cours.")))
                         .then(Commands.literal("retour").executes(context -> answer(context, null,
                                 StrikeTerrain.hurry() + " terrain(s) bombarde(s) reviennent maintenant.")))
                         .then(Commands.literal("hostilite").then(nationArgument()
@@ -205,6 +221,31 @@ public final class WarCommand {
             }
         }
         return 1;
+    }
+
+    /** La guerre avec cette nation (declaree s'il le faut), et sa place forte commandee. */
+    private static int stronghold(CommandContext<CommandSourceStack> context, int distance)
+            throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        int nation = NationTraits.find(StringArgumentType.getString(context, "nation"));
+        if (nation < 0) {
+            return answer(context, "Nation inconnue", null);
+        }
+        if (!FactionApi.has(player)) {
+            return answer(context, "Il faut une faction", null);
+        }
+        long now = System.currentTimeMillis();
+        WarData data = WarStrategy.data(player);
+        WarData.Relation relation = data.relation(nation, now);
+        for (WarData.Relation other : data.relations()) {
+            if (other != relation && (other.stance == WarData.Stance.MENACE || other.stance == WarData.Stance.GUERRE)) {
+                other.stance(WarData.Stance.PAIX, now);
+            }
+        }
+        if (relation.stance != WarData.Stance.GUERRE) {
+            WarStrategy.declare(player, data, relation, now, true);
+        }
+        return answer(context, Strongholds.order(player, relation, distance), null);
     }
 
     private static int missile(CommandContext<CommandSourceStack> context, String charge)

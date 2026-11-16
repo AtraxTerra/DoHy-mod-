@@ -297,7 +297,7 @@ public final class EnemyBaseRegen {
         try {
             Files.createDirectories(folder(server));
             Files.writeString(due(server, pending.key), Math.max(0, pending.ticks) + "\n" + pending.name + "\n"
-                    + (pending.player == null ? "" : pending.player.toString()) + "\n");
+                    + (pending.player == null ? "" : pending.player.toString()) + "\n" + pending.title + "\n");
         } catch (IOException e) {
             LOGGER.warn("Echeance du terrain {} non ecrite", pending.key, e);
         }
@@ -308,14 +308,22 @@ public final class EnemyBaseRegen {
     private static final class Pending {
         final String key;
         final String name;
+        /** Ce qui s'efface, en debut de phrase : « La base des Corbeaux », « La place forte de Nordheim ». */
+        final String title;
         final UUID player;
         int ticks;
 
-        Pending(String key, String name, UUID player, int ticks) {
+        Pending(String key, String name, String title, UUID player, int ticks) {
             this.key = key;
             this.name = name;
+            this.title = title == null || title.isBlank() ? "La base des " + name : title;
             this.player = player;
             this.ticks = ticks;
+        }
+
+        /** « la base des Corbeaux », en milieu de phrase. */
+        String inner() {
+            return Character.toLowerCase(title.charAt(0)) + title.substring(1);
         }
     }
 
@@ -331,14 +339,24 @@ public final class EnemyBaseRegen {
     }
 
     static boolean schedule(MinecraftServer server, ServerPlayer player, EnemyBase base, int ticks) {
-        String key = key(base.center().getX(), base.center().getZ());
+        return schedule(server, player.getUUID(), base.name(), null, base.center(), ticks);
+    }
+
+    /**
+     * La meme chose pour une base dont le joueur peut etre deconnecte (une place
+     * forte de nation) ; {@code title} nomme ce qui s'efface dans les messages
+     * (« La place forte de Nordheim »), {@code null} pour « La base des ... ».
+     */
+    static boolean schedule(MinecraftServer server, UUID player, String name, String title, BlockPos center,
+                            int ticks) {
+        String key = key(center.getX(), center.getZ());
         if (restore != null && restore.pending.key.equals(key)) {
             return true;
         }
         if (!WRITES.containsKey(key) && !Files.exists(terrain(server, key))) {
             return false;
         }
-        Pending pending = new Pending(key, base.name(), player.getUUID(), ticks);
+        Pending pending = new Pending(key, name, title, player, ticks);
         PENDING.put(key, pending);
         writeDue(server, pending);
         return true;
@@ -346,8 +364,33 @@ public final class EnemyBaseRegen {
 
     /** Le terrain de cette base attend-il de revenir, ou revient-il ? */
     public static boolean regenerating(EnemyBase base) {
-        String key = key(base.center().getX(), base.center().getZ());
+        return regenerating(base.center());
+    }
+
+    static boolean regenerating(BlockPos center) {
+        String key = key(center.getX(), center.getZ());
         return PENDING.containsKey(key) || restore != null && restore.pending.key.equals(key);
+    }
+
+    /** Un terrain attend-il de revenir (ou revient-il) a moins de {@code reach} blocs de (x, z), en x et en z ? */
+    static boolean regeneratingNear(int x, int z, int reach) {
+        for (String key : PENDING.keySet()) {
+            if (near(key, x, z, reach)) {
+                return true;
+            }
+        }
+        return restore != null && near(restore.pending.key, x, z, reach);
+    }
+
+    private static boolean near(String key, int x, int z, int reach) {
+        int split = key.indexOf('_', 1);
+        try {
+            int kx = Integer.parseInt(key.substring(0, split));
+            int kz = Integer.parseInt(key.substring(split + 1));
+            return Math.abs(kx - x) <= reach && Math.abs(kz - z) <= reach;
+        } catch (RuntimeException malformed) {
+            return false;
+        }
     }
 
     @SubscribeEvent
@@ -378,7 +421,8 @@ public final class EnemyBaseRegen {
                     LOGGER.warn("Echeance illisible : {}", file);
                 }
                 // Un retour interrompu par l'arret reprend au debut, apres un court repit.
-                PENDING.put(key, new Pending(key, lines.size() > 1 ? lines.get(1) : "", player, Math.max(ticks, 200)));
+                PENDING.put(key, new Pending(key, lines.size() > 1 ? lines.get(1) : "",
+                        lines.size() > 3 ? lines.get(3).trim() : null, player, Math.max(ticks, 200)));
             }
         } catch (IOException e) {
             LOGGER.warn("Echeances des terrains non lues", e);
@@ -408,10 +452,10 @@ public final class EnemyBaseRegen {
                 Pending pending = iterator.next();
                 pending.ticks--;
                 if (pending.ticks == 60 * 20) {
-                    tell(server, pending, "La base des " + pending.name + " s'efface dans 1 minute.",
+                    tell(server, pending, pending.title + " s'efface dans 1 minute.",
                             ChatFormatting.YELLOW);
                 } else if (pending.ticks == 10 * 20) {
-                    tell(server, pending, "La base des " + pending.name + " s'efface dans 10 secondes !",
+                    tell(server, pending, pending.title + " s'efface dans 10 secondes !",
                             ChatFormatting.RED);
                 }
                 if (pending.ticks <= 0 && restore == null) {
@@ -500,7 +544,7 @@ public final class EnemyBaseRegen {
                 }
                 clear(level);
                 cleared = true;
-                tell(server, pending, "La base des " + pending.name + " s'efface : le terrain reprend ses droits.",
+                tell(server, pending, pending.title + " s'efface : le terrain reprend ses droits.",
                         ChatFormatting.GOLD);
             }
             long start = System.nanoTime();
@@ -526,7 +570,7 @@ public final class EnemyBaseRegen {
                             + "revendiques laisses, en {} ms sur {} ticks", pending.name, pending.key, changed, again,
                     kept, nanos / 1_000_000L, ticks);
             fr.atraxterra.dohy.faction.absence.AbsenceJournal.post(server,
-                    fr.atraxterra.dohy.faction.absence.AbsenceJournal.WORLD, "La base des " + pending.name
+                    fr.atraxterra.dohy.faction.absence.AbsenceJournal.WORLD, pending.title
                             + " s'est effacee : le terrain a repris ses droits",
                     net.minecraft.world.item.Items.MOSSY_COBBLESTONE);
             ServerPlayer player = pending.player == null ? null : server.getPlayerList().getPlayer(pending.player);
@@ -536,7 +580,7 @@ public final class EnemyBaseRegen {
                         .equals(pending.key)) {
                     player.setData(Factions.ENEMY_BASE.get(), EnemyBase.EMPTY);
                 }
-                FactionApi.tell(player, "Il ne reste rien de la base des " + pending.name + ".",
+                FactionApi.tell(player, "Il ne reste rien de " + pending.inner() + ".",
                         ChatFormatting.GRAY);
             }
             return true;

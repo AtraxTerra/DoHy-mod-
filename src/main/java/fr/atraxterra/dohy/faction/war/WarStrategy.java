@@ -6,6 +6,7 @@ import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.faction.FactionData;
 import fr.atraxterra.dohy.faction.Factions;
 import fr.atraxterra.dohy.faction.absence.AbsenceJournal;
+import fr.atraxterra.dohy.faction.base.EnemyBaseTier;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import fr.atraxterra.dohy.util.RealClock;
 import net.minecraft.ChatFormatting;
@@ -891,6 +892,59 @@ public final class WarStrategy {
         log(player, data, relation, now, line);
         DoHy.LOGGER.info("Guerre : frappe {} contre {} : {} ({})", traits.de(), player.getGameProfile().name(),
                 result, warhead.label());
+    }
+
+    /** Ce que la chute de sa place forte te rapporte : le butin verse a ta banque, les soldats qu'elle perd. */
+    record Spoils(long loot, int lost) {
+    }
+
+    /**
+     * Sa place forte est tombee ({@link Strongholds}) : rasee par tes missiles
+     * ({@code missiles}) ou pillee ({@code pillage}). La nation recule : 30 % de
+     * son tresor passent a ta banque de faction (10 % de plus partent en
+     * fumee), la moitie de son armee tombe, elle te craint, et une treve de
+     * sept jours commence. Sur la carte de la Terre, {@code country} (s'il y en
+     * a un) passe a ta faction.
+     */
+    static Spoils razed(ServerPlayer player, int nation, String how, EnemyBaseTier tier, int country) {
+        WarData data = data(player);
+        long now = System.currentTimeMillis();
+        WarData.Relation relation = data.relation(nation, now);
+        NationTraits traits = relation.traits();
+        if (country > 0) {
+            EarthNations.conquer(player, country, EarthNations.holder(player.level().getServer(), country));
+        }
+        long loot = relation.treasury >= 1_000L ? round(Math.round(relation.treasury * 0.30d)) : 0L;
+        long burnt = Math.round(relation.treasury * 0.10d);
+        relation.treasury = Math.max(0L, relation.treasury - loot - burnt);
+        int lost = (relation.army + 1) / 2;
+        relation.army -= lost;
+        relation.memory = relation.memory.withLoss().withKilled(lost);
+        relation.fear = Math.min(100.0d, relation.fear + 30.0d);
+        relation.hostility = Math.max(0.0d, relation.hostility - 15.0d);
+        relation.stance(WarData.Stance.TREVE, now);
+        relation.truce = now + 7L * DAY_MS;
+        relation.slot = 0L;
+        if (loot > 0L) {
+            FactionApi.creditBank(player, loot, "Butin de la place forte " + traits.de());
+        }
+        FactionApi.addElo(player, tier.elo(), "place forte " + traits.de());
+        FactionApi.stat(player, "war:stronghold", 1);
+        boolean pillage = "pillage".equals(how);
+        String text = switch (traits.voice()) {
+            case "brutale" -> pillage ? "Tu as fouille notre place forte. Profite de la treve : elle ne durera pas."
+                    : "Tu as rase notre place forte. Nous reculons... pour cette fois.";
+            case "courtoise" -> "Notre place forte est tombee. Nous saluons ta victoire : la treve est a toi.";
+            case "mielleuse" -> "Notre jolie place forte... tu n'aurais pas du. Faisons une petite pause, veux-tu ?";
+            default -> "Place forte perdue. Retrait. Treve de sept jours.";
+        };
+        say(player, relation, text, ChatFormatting.GRAY);
+        log(player, data, relation, now, "place forte " + (pillage ? "pillee" : "rasee") + " : "
+                + MoneyFormat.exact(loot) + " $ de butin, " + lost + " soldats perdus"
+                + (country > 0 ? ", " + EarthNations.countryName(country) + " perdu" : ""));
+        DoHy.LOGGER.info("Guerre : place forte {} {} par {} : {} $ de butin, {} soldats perdus, pays {}", traits.de(),
+                pillage ? "pillee" : "rasee", player.getGameProfile().name(), loot, lost, country);
+        return new Spoils(loot, lost);
     }
 
     /** Une partie du prix du missile revient a la nation (une charge plus legere que prevu). */
