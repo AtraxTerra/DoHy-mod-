@@ -131,8 +131,14 @@ public final class Achievements {
             for (Achievement achievement : fresh) {
                 tell(player, "Succes valide : " + achievement.name() + " (+" + MoneyFormat.exact(achievement.reward())
                         + " $)", ChatFormatting.GOLD);
+                fr.atraxterra.dohy.ui.Toasts.send(player, new net.minecraft.world.item.ItemStack(
+                                net.minecraft.world.item.Items.GOLDEN_APPLE), "SUCCES VALIDE", achievement.name(),
+                        "+" + MoneyFormat.exact(achievement.reward()) + " $", 0xFFFAC400, "");
             }
         } else {
+            fr.atraxterra.dohy.ui.Toasts.send(player, new net.minecraft.world.item.ItemStack(
+                            net.minecraft.world.item.Items.GOLDEN_APPLE), "SUCCES VALIDES",
+                    fresh.size() + " succes d'un coup", "+" + MoneyFormat.exact(total) + " $", 0xFFFAC400, "");
             tell(player, fresh.size() + " succes valides d'un coup : +" + MoneyFormat.exact(total) + " $. Detail : /succes",
                     ChatFormatting.GOLD);
         }

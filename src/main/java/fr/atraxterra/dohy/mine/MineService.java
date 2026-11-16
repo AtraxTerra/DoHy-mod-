@@ -170,6 +170,11 @@ public final class MineService {
         return RealClock.slotKey(RESET_HOUR, RESET_OFFSETS) + shift;
     }
 
+    /** Les minutes avant la prochaine remise a neuf : l'agenda de l'accueil. */
+    public static long minutesUntilReset() {
+        return RealClock.minutesUntilNextSlot(RESET_HOUR, RESET_OFFSETS);
+    }
+
     /** L'heure de la prochaine remise a neuf, pour les messages. */
     static int nextResetHour() {
         return RealClock.nextSlot(RESET_HOUR, RESET_OFFSETS).getHour();

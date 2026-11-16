@@ -72,7 +72,7 @@ public final class AuctionController extends MenuController {
                 : refresh.action("reroll|payer");
         sections.add(new MenuView.Section("VENDEURS", "craft", MenuView.GRID, List.of(refresh)));
 
-        return new MenuView(id(), "Marche", "Ce que d'autres vendent aujourd'hui : stocks limites, prix variables",
+        return new MenuView(id(), "Marche", "",
                 stats, sections, true);
     }
 

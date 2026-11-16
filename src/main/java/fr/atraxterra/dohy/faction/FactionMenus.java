@@ -98,6 +98,62 @@ public final class FactionMenus {
         return until != null && until > System.currentTimeMillis();
     }
 
+    /**
+     * La rangee d'onglets commune aux pages de la faction : un clic change de page sans
+     * repasser par la vue d'ensemble. Les compteurs disent ce qui attend.
+     */
+    public static List<MenuView.Tab> tabs(ServerPlayer player, String active) {
+        FactionData data = FactionApi.data(player);
+        int done = 0;
+        int total = 0;
+        for (FactionBranch branch : FactionBranch.values()) {
+            done += data.tier(branch.key());
+            total += FactionTree.tiers(branch).size();
+        }
+        EventRun fight = FactionEvents.active();
+        boolean live = fight != null && !fight.ended();
+        long now = System.currentTimeMillis();
+        boolean ripe = GoldReserves.of(player).investments().stream().anyMatch(investment -> investment.ripe(now));
+        FactionLeague league = FactionLeague.of(data.ranking().league());
+        List<MenuView.Tab> tabs = new ArrayList<>();
+        tabs.add(tab("Vue d'ensemble", "faction", active, ""));
+        tabs.add(tab("Claims", "faction_claims", active, data.claims().size() + "/" + FactionApi.claimCap(player)));
+        tabs.add(tab("Banque", "faction_bank", active, ""));
+        tabs.add(tab("Classement", "faction_ranking", active, league.label().toUpperCase()));
+        tabs.add(tab("Arbre", "faction_tree", active, total <= 0 ? "" : done * 100 / total + " %"));
+        tabs.add(tab("Events", "faction_events", active, live ? "EN COURS" : ""));
+        tabs.add(tab("Reserve", "faction_reserve", active, ripe ? "PRET" : ""));
+        tabs.add(tab("Parametres", "faction_settings", active, ""));
+        return tabs;
+    }
+
+    private static MenuView.Tab tab(String label, String path, String active, String count) {
+        return new MenuView.Tab(label, "tab:" + path, path.equals(active), count);
+    }
+
+    /** Les derniers mouvements de la banque, en agenda : quand, quoi, combien. */
+    private static List<Card> activity(FactionData data) {
+        List<FactionData.BankEntry> history = data.history();
+        List<Card> cards = new ArrayList<>();
+        ZonedDateTime now = ZonedDateTime.now(FactionWeekly.zone());
+        for (int index = history.size() - 1; index >= 0 && cards.size() < 3; index--) {
+            FactionData.BankEntry entry = history.get(index);
+            ZonedDateTime at = Instant.ofEpochMilli(entry.time()).atZone(FactionWeekly.zone());
+            long days = java.time.temporal.ChronoUnit.DAYS.between(at.toLocalDate(), now.toLocalDate());
+            String when = days == 0 ? at.getHour() + " H" : days == 1 ? "HIER " + at.getHour() + " H"
+                    : days < 7 ? DAYS[at.getDayOfWeek().getValue() - 1] + " " + at.getHour() + " H"
+                    : at.getDayOfMonth() + "/" + at.getMonthValue();
+            boolean in = entry.amount() >= 0;
+            cards.add(Card.of(new ItemStack(in ? Items.GOLD_INGOT : Items.GOLD_NUGGET),
+                            entry.label().isEmpty() ? (in ? "Depot" : "Retrait") : entry.label(),
+                            List.of((in ? "+" : "") + MoneyFormat.exact(entry.amount()) + " $"))
+                    .badge(when).accent(in ? 0xFF22E558 : 0xFFFAC400));
+        }
+        return cards;
+    }
+
+    private static final String[] DAYS = {"LUN", "MAR", "MER", "JEU", "VEN", "SAM", "DIM"};
+
     /** Un onglet de la faction : sans faction, l'ecran de creation ; l'hexagone revient a la page. */
     private abstract static class Tab extends MenuController {
         Tab(String path) {
@@ -159,18 +215,16 @@ public final class FactionMenus {
                                     data.tags().isEmpty() ? "Faction solo" : String.join(" · ", data.tags())))
                             .accent(rank.color()).tooltip(identity),
                     Card.of(new ItemStack(Items.GRASS_BLOCK), "Claims", List.of(
-                                    data.claims().size() + " / " + FactionApi.claimCap(player) + " chunks",
-                                    "Ta base, a l'abri du monde"))
+                                    data.claims().size() + " / " + FactionApi.claimCap(player) + " chunks"))
                             .accent(0xFF22E558).progress(data.claims().size(), FactionApi.claimCap(player))
                             .action("claims|gerer les claims"),
                     Card.of(new ItemStack(Items.GOLD_INGOT), "Banque de faction", List.of(
-                                    MoneyFormat.exact(data.bank()) + " $", "Paie l'arbre de technologie"))
+                                    MoneyFormat.exact(data.bank()) + " $"))
                             .accent(0xFFFAC400).action("bank|ouvrir la banque"),
                     Card.of(leagueIcon(league), "Ligue " + league.label(), List.of(
                                     MoneyFormat.exact(data.ranking().elo()) + " ELO",
-                                    "Semaine : +" + MoneyFormat.exact(data.ranking().weekElo())))
-                            .accent(league.color()).action("ranking|voir le classement"),
-                    notationCard(player));
+                                    "+" + MoneyFormat.exact(data.ranking().weekElo()) + " cette semaine"))
+                            .accent(league.color()).action("ranking|voir le classement"));
 
             List<String> homeLines = new ArrayList<>();
             if (perks.homes() <= 0) {
@@ -189,11 +243,12 @@ public final class FactionMenus {
                     enemyBaseCard(player),
                     reserveCard(player),
                     eventsCard()));
-            progression.add(Card.of(new ItemStack(Items.CHEST), "Marche international", List.of(
-                            "Cours selon le stock mondial", "Taxe : " + Math.round(rank.fee() * 100.0d) + " %"))
+            progression.add(Card.of(new ItemStack(Items.CHEST), "Marche mondial", List.of(
+                            "Taxe " + Math.round(rank.fee() * 100.0d) + " %"))
                     .accent(0xFF27C4E8).action("market|ouvrir"));
-            progression.add(Card.of(new ItemStack(Items.COMPARATOR), "Parametres", List.of("Nom, description, MOTD",
-                    "Tags, blason, dissolution")).accent(0xFF55545C).action("settings|ouvrir"));
+            progression.add(notationCard(player));
+            progression.add(Card.of(new ItemStack(Items.COMPARATOR), "Parametres", List.of("Nom, blason, MOTD"))
+                    .accent(0xFF55545C).action("settings|ouvrir"));
             List<MenuView.Stat> stats = List.of(
                     earth ? new MenuView.Stat("RANG", rank.label().toUpperCase(), rank.color())
                             : new MenuView.Stat("LIGUE", league.label().toUpperCase(), league.color()),
@@ -210,8 +265,11 @@ public final class FactionMenus {
                 sections.add(new MenuView.Section("TERRITOIRE", "craft", MenuView.GRID, lands));
             }
             sections.add(new MenuView.Section("PROGRESSION", "upgrade", MenuView.GRID, progression));
-            return new MenuView(id(), data.name(), data.description().isEmpty() ? (earth ? "Ta nation"
-                    : "Ta faction") : data.description(), stats, sections, true);
+            List<Card> activity = activity(data);
+            if (!activity.isEmpty()) {
+                sections.add(new MenuView.Section("ACTIVITE RECENTE", "craft", MenuView.AGENDA, activity));
+            }
+            return new MenuView(id(), data.name(), "", stats, sections, true).withTabs(tabs(player, "faction"));
         }
 
         @Override
@@ -268,9 +326,8 @@ public final class FactionMenus {
         String day = next.toLocalDate().equals(now.toLocalDate()) ? "" : next.getDayOfMonth() + "/"
                 + next.getMonthValue() + " ";
         return Card.of(new ItemStack(Items.DRAGON_EGG), "Events de faction", List.of(
-                        "Prochain : " + soonest.label() + ", " + day
-                                + String.format("%d h %02d", next.getHour(), next.getMinute()),
-                        "Boss, KOTH, Totem, Egg Hunt"))
+                        soonest.label() + ", " + day
+                                + String.format("%d h %02d", next.getHour(), next.getMinute())))
                 .accent(0xFFFAC400).action("events|ouvrir");
     }
 
@@ -281,7 +338,7 @@ public final class FactionMenus {
         List<String> lines = reserve.exists()
                 ? List.of("Palier " + reserve.tier() + " · " + reserve.investments().size() + " placement(s)",
                         MoneyFormat.shortForm(reserve.invested()) + " $ places")
-                : List.of("Places l'argent de la banque,", "recolte les interets");
+                : List.of("Place l'argent de la banque");
         return Card.of(new ItemStack(Items.GOLD_BLOCK), "Reserve d'or", lines).accent(0xFFFAC400)
                 .badge(ripe ? "PRET" : "").action("reserve|ouvrir");
     }
@@ -292,7 +349,7 @@ public final class FactionMenus {
         List<String> lines = base.active()
                 ? List.of("Cible : les " + base.name(), EnemyBases.where(player, base))
                 : EnemyBases.pending(player) ? List.of("Reperage en cours", "Patience...")
-                : List.of("Une faction a piller,", "a plus de 9 000 blocs");
+                : List.of("A plus de 9 000 blocs");
         return Card.of(new ItemStack(Items.TNT), "Bases ennemies", lines).accent(0xFFEF3826)
                 .badge(base.active() ? "!" : "").action("bases|ouvrir");
     }
@@ -311,9 +368,14 @@ public final class FactionMenus {
                 ready = true;
             }
         }
-        return Card.of(new ItemStack(Items.ENCHANTING_TABLE), "Arbre de technologie", List.of(
-                        "Paliers " + done + " / " + total,
-                        running > 0 ? running + " amelioration(s) en cours" : ready ? "Un palier est pret" : "4 branches"))
+        List<String> treeLines = new ArrayList<>();
+        treeLines.add("Paliers " + done + " / " + total);
+        if (running > 0) {
+            treeLines.add(running + " amelioration(s) en cours");
+        } else if (ready) {
+            treeLines.add("Un palier est pret");
+        }
+        return Card.of(new ItemStack(Items.ENCHANTING_TABLE), "Arbre de technologie", treeLines)
                 .accent(0xFFEC4FB5).progress(done, total).badge(ready ? "!" : "").action("tree|ouvrir l'arbre");
     }
 
@@ -366,10 +428,11 @@ public final class FactionMenus {
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("BANQUE DE FACTION", MoneyFormat.shortForm(data.bank()), 0xFFFAC400),
                     new MenuView.Stat("TON ARGENT", MoneyFormat.shortForm(purse), 0xFFFFFFFF));
-            return new MenuView(id(), "Banque de faction", "L'arbre de technologie se paie d'ici", stats, List.of(
+            return new MenuView(id(), "Banque de faction", "", stats, List.of(
                     new MenuView.Section("DEPOSER", "resources", MenuView.GRID, deposit),
                     new MenuView.Section("RETIRER", "upgrade", MenuView.GRID, withdraw),
-                    new MenuView.Section("HISTORIQUE", "craft", MenuView.ROWS, history)), true);
+                    new MenuView.Section("HISTORIQUE", "craft", MenuView.ROWS, history)), true)
+                    .withTabs(tabs(player, "faction_bank"));
         }
 
         @Override
@@ -427,10 +490,11 @@ public final class FactionMenus {
                 actions.add(data.claims().size() < FactionApi.claimCap(player) ? claim.accent(0xFF22E558).action("claim|revendiquer")
                         : claim.state(MenuView.DISABLED).tooltip(List.of("Plus de claim disponible")));
             }
-            boolean armed = armed(player, "unclaimall");
-            actions.add(Card.of(new ItemStack(Items.TNT), armed ? "Confirmer ?" : "Tout rendre", List.of(
-                            data.claims().size() + " claim(s)", armed ? "Clique encore pour confirmer" : "Deux clics"))
-                    .accent(0xFFEF3826).action("unclaimall|tout rendre"));
+            actions.add(Card.of(new ItemStack(Items.TNT), "Tout rendre", List.of(
+                            data.claims().size() + " claim(s)", "Avec confirmation"))
+                    .accent(0xFFEF3826).action("unclaimall|tout rendre")
+                    .confirm("!Rendre tous les claims ?|" + data.claims().size()
+                            + " chunk(s) redeviennent libres, pour tout le monde"));
             actions.add(Card.of(new ItemStack(Items.SHIELD), "Protection", List.of("Ni explosions de monstres,",
                             "ni endermen, ni intrus"))
                     .accent(0xFF2F5BEA).tooltip(List.of("Tes explosions (TNT, dynamite) cassent ton claim ;",
@@ -457,9 +521,10 @@ public final class FactionMenus {
                     new MenuView.Stat("CLAIMS", data.claims().size() + " / " + FactionApi.claimCap(player), 0xFF22E558),
                     new MenuView.Stat("ICI", owner.ownedBy(player.getUUID()) ? "A TOI" : owner.claimed() ? "PRIS"
                             : "LIBRE", owner.claimed() ? 0xFFEF3826 : 0xFFFFFFFF));
-            return new MenuView(id(), "Claims", "Clic : monstres oui/non · clic droit : rendre", stats, List.of(
+            return new MenuView(id(), "Claims", "", stats, List.of(
                     new MenuView.Section("ICI", "resources", MenuView.GRID, actions),
-                    new MenuView.Section("TES CLAIMS", "upgrade", MenuView.ROWS, claims)), true);
+                    new MenuView.Section("TES CLAIMS", "upgrade", MenuView.ROWS, claims)), true)
+                    .withTabs(tabs(player, "faction_claims"));
         }
 
         @Override
@@ -470,10 +535,9 @@ public final class FactionMenus {
             } else if ("unclaim".equals(key)) {
                 report(player, FactionApi.unclaimHere(player), "Chunk rendu.");
             } else if ("unclaimall".equals(key)) {
-                if (confirmed(player, "unclaimall")) {
-                    int count = FactionApi.unclaimAll(player);
-                    report(player, null, count + " claim(s) rendu(s).");
-                }
+                // La fenetre de confirmation a deja pose la question.
+                int count = FactionApi.unclaimAll(player);
+                report(player, null, count + " claim(s) rendu(s).");
             } else if (key.startsWith("toggle:")) {
                 int index = Integer.parseInt(key.substring(7));
                 if (index < data.claims().size()) {
@@ -541,9 +605,10 @@ public final class FactionMenus {
                     new MenuView.Stat("LIGUE", current.label().toUpperCase(), current.color()),
                     new MenuView.Stat("ELO", MoneyFormat.shortForm(ranking.elo()), 0xFFFFFFFF),
                     new MenuView.Stat("SEMAINE", "+" + MoneyFormat.shortForm(ranking.weekElo()), 0xFF22E558));
-            return new MenuView(id(), "Classement", "Les events et les raids rapportent l'ELO", stats, List.of(
+            return new MenuView(id(), "Classement", "", stats, List.of(
                     new MenuView.Section("LIGUES", "upgrade", MenuView.GRID, leagues),
-                    new MenuView.Section("SEMAINE", "resources", MenuView.GRID, week)), true);
+                    new MenuView.Section("SEMAINE", "resources", MenuView.GRID, week)), true)
+                    .withTabs(tabs(player, "faction_ranking"));
         }
 
         @Override
@@ -668,7 +733,7 @@ public final class FactionMenus {
                     new MenuView.Stat("RANG", FactionNotation.ordinal(rank).toUpperCase() + " / " + standings.size(),
                             0xFF8F5BEA),
                     new MenuView.Stat("BOURSE", MoneyFormat.shortForm(score.bourse()), 0xFFFAC400));
-            return new MenuView(id(), "Notation", "Une note chaque lundi, un rang face aux douze nations", stats,
+            return new MenuView(id(), "Notation", "Une note chaque lundi", stats,
                     List.of(new MenuView.Section("CETTE SEMAINE", "resources", MenuView.GRID, week),
                             new MenuView.Section("BILAN", "upgrade", MenuView.GRID, last),
                             new MenuView.Section("CLASSEMENT DES NATIONS", "craft", MenuView.GRID, table)), true);
@@ -691,7 +756,6 @@ public final class FactionMenus {
         @Override
         public MenuView view(ServerPlayer player) {
             FactionData data = FactionApi.data(player);
-            boolean disband = armed(player, "disband");
             FactionPerks perks = FactionPerks.of(data);
             Card custom = Card.of(data.bannerItem().isEmpty() ? new ItemStack(Items.FLOWER_BANNER_PATTERN)
                     : data.bannerItem(), "Blason personnalise", perks.customBanner()
@@ -705,12 +769,13 @@ public final class FactionMenus {
                     Card.of(banner(data.banner()), "Blason", List.of("Clic : couleur suivante",
                             "Clic droit : precedente")).accent(0xFFFAC400)
                             .action("banner:1|couleur suivante").right("banner:-1|couleur precedente"),
-                    Card.of(new ItemStack(Items.SKELETON_SKULL), disband ? "Confirmer ?" : "Dissoudre", List.of(
-                                    disband ? "Clique encore pour confirmer" : "Deux clics",
-                                    "Claims, banque et arbre perdus"))
-                            .accent(0xFFEF3826).action("disband|dissoudre la faction"));
-            return new MenuView(id(), "Parametres", "Ta faction, ton nom", List.of(), List.of(
-                    new MenuView.Section("FACTION", "craft", MenuView.GRID, cards)), true);
+                    Card.of(new ItemStack(Items.SKELETON_SKULL), "Dissoudre", List.of(
+                                    "Avec confirmation", "Claims, banque et arbre perdus"))
+                            .accent(0xFFEF3826).action("disband|dissoudre la faction")
+                            .confirm("!Dissoudre " + data.name() + " ?|Claims, banque et arbre sont perdus pour de bon"));
+            return new MenuView(id(), "Parametres", "", List.of(), List.of(
+                    new MenuView.Section("FACTION", "craft", MenuView.GRID, cards)), true)
+                    .withTabs(tabs(player, "faction_settings"));
         }
 
         @Override
@@ -726,7 +791,7 @@ public final class FactionMenus {
                 report(player, FactionApi.setCustomBanner(player, player.getMainHandItem()), "Blason personnalise pose.");
             } else if ("uncustom".equals(key)) {
                 report(player, FactionApi.setCustomBanner(player, ItemStack.EMPTY), "Blason personnalise retire.");
-            } else if ("disband".equals(key) && confirmed(player, "disband")) {
+            } else if ("disband".equals(key)) {
                 FactionApi.disband(player);
                 UiNet.close(player);
                 player.sendSystemMessage(FactionApi.prefix().append(net.minecraft.network.chat.Component.literal(

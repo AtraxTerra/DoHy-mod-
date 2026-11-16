@@ -157,8 +157,8 @@ public final class JobBossMenu extends MenuController {
                 new MenuView.Stat("PRETS", String.valueOf(ready), ready > 0 ? 0xFFFAC400 : 0xFF8C8B93),
                 new MenuView.Stat("NIVEAU", level + " / " + JobBosses.MAX_LEVEL, color(selected)));
         String name = JobBosses.name(selected).toUpperCase(java.util.Locale.ROOT);
-        return new MenuView(id(), "Autel des offrandes", here.altar() ? "Une offrande, une heure, un gardien"
-                : "Les offrandes se deposent a l'autel du spawn", stats, List.of(
+        return new MenuView(id(), "Autel des offrandes", here.altar() ? "" : "Les offrandes se font a l'autel du spawn",
+                stats, List.of(
                 new MenuView.Section("LES GARDIENS", "armor", MenuView.GRID, guardians),
                 new MenuView.Section("OFFRANDE · " + name, "resources", MenuView.TILES, offering),
                 new MenuView.Section("", "", MenuView.GRID, actions),

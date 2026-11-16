@@ -1,4 +1,6 @@
-# DoHy
+# Berskar
+
+*Anciennement DoHy : l'identifiant technique reste `dohy`, pour que les mondes existants gardent leurs blocs et leurs objets.*
 
 Mod d'économie et de progression pour **Minecraft 26.2 / NeoForge**, conçu pour une partie **solo** en monde normal.
 

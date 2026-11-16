@@ -3,13 +3,9 @@ package fr.atraxterra.dohy.client.ui;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import fr.atraxterra.dohy.client.ui.screen.CrateScreen;
-import fr.atraxterra.dohy.client.ui.screen.JobDetailScreen;
-import fr.atraxterra.dohy.client.ui.screen.JobsScreen;
 import fr.atraxterra.dohy.client.ui.screen.MenuScreen;
 import fr.atraxterra.dohy.client.ui.screen.ShopScreen;
 import fr.atraxterra.dohy.ui.view.CrateView;
-import fr.atraxterra.dohy.ui.view.JobDetailView;
-import fr.atraxterra.dohy.ui.view.JobsView;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.ShopView;
 import fr.atraxterra.dohy.ui.view.UiNet;
@@ -37,8 +33,6 @@ public final class UiClient {
 
     static {
         SCREENS.put(ShopView.ID, view -> new ShopScreen((ShopView) view));
-        SCREENS.put(JobsView.ID, view -> new JobsScreen((JobsView) view));
-        SCREENS.put(JobDetailView.ID, view -> new JobDetailScreen((JobDetailView) view));
         SCREENS.put(CrateView.ID, view -> new CrateScreen((CrateView) view));
         SCREENS.put(fr.atraxterra.dohy.palamod.clicker.ClickerView.ID,
                 view -> new fr.atraxterra.dohy.client.ui.screen.ClickerScreen(
@@ -63,13 +57,15 @@ public final class UiClient {
                 minecraft.gui.setScreen(null);
             }
         });
+        event.register(UiNet.Nav.TYPE, (payload, context) ->
+                fr.atraxterra.dohy.client.ui.shell.Nav.accept(payload.badges(), payload.level()));
+        event.register(UiNet.Toast.TYPE, (payload, context) -> ToastLayer.push(payload));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void show(UiView received) {
         Minecraft minecraft = Minecraft.getInstance();
         UiView view = received instanceof MenuView menu ? menu.map(UiClient::translate)
-                : received instanceof JobDetailView detail ? detail.map(UiClient::translate)
                 : received instanceof CrateView crate ? crate.map(UiClient::translate) : received;
         Screen current = minecraft.gui.screen();
         if (current instanceof ViewScreen screen && current instanceof UiScreen ui && ui.viewId().equals(view.viewId())) {

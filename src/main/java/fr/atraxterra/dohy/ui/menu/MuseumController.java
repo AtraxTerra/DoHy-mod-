@@ -105,8 +105,9 @@ public final class MuseumController extends MenuController {
                 new MenuView.Stat("AILES", complete + " / " + MuseumApi.wings().size(), 0xFF22E558),
                 new MenuView.Stat("PAR DON", "+" + MuseumConfig.config().globalXpPerDonation() + " XP",
                         0xFFFAC400));
-        return new MenuView(id(), "Musee", "Des pieces rares seulement ; un don est definitif", stats,
-                List.of(new MenuView.Section("AILES", "resources", MenuView.GRID, cards)), true);
+        return new MenuView(id(), "Musee", "Un don est definitif", stats,
+                List.of(new MenuView.Section("AILES", "resources", MenuView.GRID, cards)), true)
+                .withTabs(tabs(null));
     }
 
     private MenuView wing(ServerPlayer player, String key) {
@@ -136,8 +137,23 @@ public final class MuseumController extends MenuController {
         int done = MuseumApi.donatedIn(player, key);
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("EXPOSEES", done + " / " + wing.pieces().size(), 0xFFFFFFFF));
-        return new MenuView(id(), wing.name(), "Les pieces grisees manquent encore", stats,
-                List.of(new MenuView.Section("", "", MenuView.TILES, tiles)), true);
+        return new MenuView(id(), wing.name(), "", stats,
+                List.of(new MenuView.Section("", "", MenuView.TILES, tiles)), true)
+                .withTabs(tabs(key));
+    }
+
+    /** Le hall et chaque aile en onglets, tant qu'ils tiennent sur une rangee. */
+    private static List<MenuView.Tab> tabs(String active) {
+        List<String> wings = new ArrayList<>(MuseumApi.wings());
+        if (wings.size() + 1 > 7) {
+            return List.of();
+        }
+        List<MenuView.Tab> tabs = new ArrayList<>();
+        tabs.add(new MenuView.Tab("Hall", "overview", active == null, ""));
+        for (String wing : wings) {
+            tabs.add(new MenuView.Tab(section(wing).name(), "wing:" + wing, wing.equals(active), ""));
+        }
+        return tabs;
     }
 
     @Override
@@ -151,7 +167,9 @@ public final class MuseumController extends MenuController {
 
     @Override
     protected void card(ServerPlayer player, String key, int button) {
-        if (key.startsWith("wing:")) {
+        if ("overview".equals(key)) {
+            open.remove(player.getUUID());
+        } else if (key.startsWith("wing:")) {
             open.put(player.getUUID(), key.substring(5));
         } else if ("deposit".equals(key)) {
             UiNet.forget(player);

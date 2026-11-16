@@ -152,6 +152,9 @@ public final class DoHyClient {
         event.registerAboveAll(
                 Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "wither_receptacle"),
                 new ReceptacleHudLayer());
+        event.registerAboveAll(
+                Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "toasts"),
+                new fr.atraxterra.dohy.client.ui.ToastLayer());
     }
 
     /**

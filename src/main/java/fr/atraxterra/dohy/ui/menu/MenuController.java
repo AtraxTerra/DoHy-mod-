@@ -51,12 +51,41 @@ public abstract class MenuController {
         switch (action.verb()) {
             case "back" -> back(player);
             case "card" -> {
+                if (action.argument().startsWith("tab:")) {
+                    openTab(player, action.argument());
+                    return;
+                }
                 card(player, action.argument(), action.amount());
                 if (UiNet.isOpen(player, id)) {
                     UiNet.show(player, view(player));
                 }
             }
             default -> {
+            }
+        }
+    }
+
+    /**
+     * Un onglet « tab:chemin » de la rangee : il ouvre le menu de ce chemin, s'il fait
+     * bien partie des onglets que cette vue propose a ce joueur. Le nom vient du
+     * client : sans ce controle, on ouvrirait de loin un menu lie a un bloc.
+     */
+    private void openTab(ServerPlayer player, String action) {
+        boolean offered = false;
+        for (MenuView.Tab tab : view(player).tabs()) {
+            if (tab.action().equals(action)) {
+                offered = true;
+                break;
+            }
+        }
+        if (!offered) {
+            return;
+        }
+        Identifier target = UiNet.id(action.substring(4));
+        for (MenuController menu : Menus.all()) {
+            if (menu.id().equals(target)) {
+                menu.open(player);
+                return;
             }
         }
     }

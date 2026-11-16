@@ -34,6 +34,10 @@ public class HologramBlockEntity extends BlockEntity {
     /** La marque des textes flottants : jamais recharges depuis le disque. */
     static final String TAG = "dohy.hologram";
     private static final int CHECK = 20;
+    /** Le nom du mod sur les enseignes du spawn. */
+    static final String BRAND = "BERSKAR";
+    /** Son ancien nom : les enseignes deja posees le perdent au chargement. */
+    private static final String OLD_BRAND = "DOHY";
 
     private String text = "";
     private int color = 0xFFFFFF;
@@ -127,6 +131,9 @@ public class HologramBlockEntity extends BlockEntity {
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         text = input.getStringOr("text", "");
+        if (OLD_BRAND.equals(text)) {
+            text = BRAND;
+        }
         color = input.getIntOr("color", 0xFFFFFF);
         scale = input.getIntOr("scale", 100) / 100.0f;
     }

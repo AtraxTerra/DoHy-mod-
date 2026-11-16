@@ -95,7 +95,7 @@ public final class TradingServerMenu extends MenuController {
                 new MenuView.Stat("ENERGIE", (config.energyCapacity() <= 0 ? 0
                         : stored * 100L / config.energyCapacity()) + " %", 0xFFFAC400),
                 new MenuView.Stat("CAISSE", MoneyFormat.shortForm(pending), 0xFFFFFFFF));
-        return new MenuView(id(), "Serveur de trading", "De l'energie en entree, de l'argent en sortie", stats,
+        return new MenuView(id(), "Serveur de trading", "", stats,
                 List.of(new MenuView.Section("MACHINE", "resources", MenuView.GRID, cards)), true);
     }
 

@@ -216,7 +216,7 @@ public final class MountMenus {
                     new MenuView.Stat("EN SOIN", barn.inCare() + " / " + BarnControllerBlockEntity.MAX_IN_CARE,
                             0xFFFFFFFF));
             return new MenuView(id(), "Enclos " + barn.size() + "x" + barn.size(),
-                    "Clic : equiper · clic droit : recuperer · Maj + clic : soigner", stats, List.of(
+                    "", stats, List.of(
                     new MenuView.Section("ECURIE", "resources", MenuView.GRID, top),
                     new MenuView.Section("MONTURES", "upgrade", MenuView.GRID, gems)), false);
         }
@@ -307,7 +307,7 @@ public final class MountMenus {
             List<Card> confirm = List.of(Card.of(new ItemStack(Items.GOLDEN_APPLE), "Soigner", List.of(
                             "Une couveuse dans l'enclos", "Deux montures en soin au plus"))
                     .accent(0xFF22E558).action("confirm|placer en soin"));
-            return new MenuView(id(), "Soigner " + gem.name(), "Chaque bandage rend 10 % de la vie", List.of(),
+            return new MenuView(id(), "Soigner " + gem.name(), "Un bandage : +10 % de vie", List.of(),
                     List.of(new MenuView.Section("BANDAGES", "resources", MenuView.GRID, cards),
                             new MenuView.Section("", "", MenuView.GRID, confirm)), true);
         }

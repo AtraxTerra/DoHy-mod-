@@ -26,7 +26,40 @@ import java.util.function.UnaryOperator;
  * @param back l'hexagone de gauche renvoie l'action « back »
  */
 public record MenuView(Identifier view, String title, String subtitle, List<Stat> stats, List<Section> sections,
-                       boolean back) implements UiView {
+                       boolean back, List<Tab> tabs, Hero hero, int flags) implements UiView {
+
+    /** Une vue sans onglets : la forme de tous les menus d'avant les onglets. */
+    public MenuView(Identifier view, String title, String subtitle, List<Stat> stats, List<Section> sections,
+                    boolean back) {
+        this(view, title, subtitle, stats, sections, back, List.of(), null, 0);
+    }
+
+    public MenuView(Identifier view, String title, String subtitle, List<Stat> stats, List<Section> sections,
+                    boolean back, List<Tab> tabs) {
+        this(view, title, subtitle, stats, sections, back, tabs, null, 0);
+    }
+
+    /** La meme vue avec une rangee d'onglets (un seul niveau). */
+    public MenuView withTabs(List<Tab> value) {
+        return new MenuView(view, title, subtitle, stats, sections, back, List.copyOf(value), hero, flags);
+    }
+
+    /** La meme vue avec un panneau a gauche du contenu (la fiche d'un metier). */
+    public MenuView withHero(Hero value) {
+        return new MenuView(view, title, subtitle, stats, sections, back, tabs, value, flags);
+    }
+
+    /** La meme vue avec des drapeaux d'affichage ({@link #ANCHORS}). */
+    public MenuView withFlags(int value) {
+        return new MenuView(view, title, subtitle, stats, sections, back, tabs, hero, value);
+    }
+
+    /**
+     * Drapeau : une rangee « Aller a » au-dessus du contenu, une pastille par section
+     * qui porte une ancre ({@link Section#anchor()}) ; un clic y fait defiler la page.
+     * C'est ainsi qu'une longue page se parcourt sans onglets dans les onglets.
+     */
+    public static final int ANCHORS = 1;
 
     /** Cartes larges, quatre par rangee. */
     public static final int GRID = 0;
@@ -41,6 +74,13 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
      * « ! » une astuce. L'encyclopedie s'en sert pour ses fiches.
      */
     public static final int TEXT = 3;
+    /** Les lignes d'un agenda : la pastille de la carte devient l'heure, a gauche. */
+    public static final int AGENDA = 4;
+    /**
+     * Ajoute a une disposition : la section prend une demi-largeur, et la section
+     * demi-largeur suivante se place a cote d'elle.
+     */
+    public static final int HALF = 0x10;
 
     public static final int NORMAL = 0;
     /** Grise : pas assez d'argent, deja actif, verrouille. */
@@ -75,11 +115,26 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
             for (Card card : section.cards()) {
                 cards.add(new Card(card.icon(), text.apply(card.title()), mapAll(card.lines(), text),
                         text.apply(card.badge()), card.accent(), card.state(), card.action(), card.rightAction(),
-                        card.progress(), mapAll(card.tooltip(), text)));
+                        card.progress(), mapAll(card.tooltip(), text), text.apply(card.confirm())));
             }
-            mappedSections.add(new Section(text.apply(section.title()), section.icon(), section.layout(), cards));
+            mappedSections.add(new Section(text.apply(section.title()), section.icon(), section.layout(), cards,
+                    text.apply(section.anchor())));
         }
-        return new MenuView(view, text.apply(title), text.apply(subtitle), mappedStats, mappedSections, back);
+        List<Tab> mappedTabs = new ArrayList<>();
+        for (Tab tab : tabs) {
+            mappedTabs.add(new Tab(text.apply(tab.label()), tab.action(), tab.active(), text.apply(tab.count())));
+        }
+        Hero mappedHero = null;
+        if (hero != null) {
+            List<Stat> heroStats = new ArrayList<>();
+            for (Stat stat : hero.stats()) {
+                heroStats.add(new Stat(text.apply(stat.label()), text.apply(stat.value()), stat.color()));
+            }
+            mappedHero = new Hero(hero.icon(), hero.image(), text.apply(hero.title()), text.apply(hero.badge()),
+                    hero.accent(), hero.progress(), text.apply(hero.legend()), heroStats, mapAll(hero.lines(), text));
+        }
+        return new MenuView(view, text.apply(title), text.apply(subtitle), mappedStats, mappedSections, back,
+                mappedTabs, mappedHero, flags);
     }
 
     private static List<String> mapAll(List<String> values, UnaryOperator<String> text) {
@@ -114,6 +169,21 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
         return 0xFF000000 | rgb;
     }
 
+    /**
+     * Un onglet de la rangee unique : son libelle, l'action envoyee comme un clic de
+     * carte, s'il est actif, et un petit compteur (vide pour aucun).
+     */
+    public record Tab(String label, String action, boolean active, String count) {
+        static final StreamCodec<RegistryFriendlyByteBuf, Tab> STREAM_CODEC = StreamCodec.of(
+                (buffer, tab) -> {
+                    buffer.writeUtf(tab.label());
+                    buffer.writeUtf(tab.action());
+                    buffer.writeBoolean(tab.active());
+                    buffer.writeUtf(tab.count());
+                },
+                buffer -> new Tab(buffer.readUtf(), buffer.readUtf(), buffer.readBoolean(), buffer.readUtf()));
+    }
+
     public record Stat(String label, String value, int color) {
         static final StreamCodec<RegistryFriendlyByteBuf, Stat> STREAM_CODEC = StreamCodec.of(
                 (buffer, stat) -> {
@@ -127,18 +197,59 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
     /**
      * Une section.
      *
-     * @param icon losange de l'intertitre ({@code section_*}), vide pour aucun
+     * @param icon   losange de l'intertitre ({@code section_*}), vide pour aucun
+     * @param anchor libelle de sa pastille « Aller a » (« Primes|0/20 »), vide pour aucune
      */
-    public record Section(String title, String icon, int layout, List<Card> cards) {
+    public record Section(String title, String icon, int layout, List<Card> cards, String anchor) {
+
+        public Section(String title, String icon, int layout, List<Card> cards) {
+            this(title, icon, layout, cards, "");
+        }
+
+        /** La meme section, avec une pastille dans la rangee « Aller a ». */
+        public Section anchor(String value) {
+            return new Section(title, icon, layout, cards, value);
+        }
+
         static final StreamCodec<RegistryFriendlyByteBuf, Section> STREAM_CODEC = StreamCodec.of(
                 (buffer, section) -> {
                     buffer.writeUtf(section.title());
                     buffer.writeUtf(section.icon());
                     buffer.writeVarInt(section.layout());
                     Card.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, section.cards());
+                    buffer.writeUtf(section.anchor());
                 },
                 buffer -> new Section(buffer.readUtf(), buffer.readUtf(), buffer.readVarInt(),
-                        Card.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer)));
+                        Card.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer), buffer.readUtf()));
+    }
+
+    /**
+     * Le panneau a gauche du contenu : un embleme, un titre, une pastille, une barre
+     * et sa legende, des chiffres et quelques lignes.
+     *
+     * @param icon     objet affiche si {@code image} est vide
+     * @param image    texture du kit (« jobs/miner »), vide pour l'objet
+     * @param accent   couleur de la pastille, de la barre et du halo
+     * @param progress barre en pour mille, -1 pour aucune
+     * @param legend   sous la barre : « gauche|droite »
+     */
+    public record Hero(ItemStack icon, String image, String title, String badge, int accent, int progress,
+                       String legend, List<Stat> stats, List<String> lines) {
+        static final StreamCodec<RegistryFriendlyByteBuf, Hero> STREAM_CODEC = StreamCodec.of(
+                (buffer, hero) -> {
+                    ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, hero.icon());
+                    buffer.writeUtf(hero.image());
+                    buffer.writeUtf(hero.title());
+                    buffer.writeUtf(hero.badge());
+                    buffer.writeInt(hero.accent());
+                    buffer.writeVarInt(hero.progress() + 1);
+                    buffer.writeUtf(hero.legend());
+                    Stat.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, hero.stats());
+                    strings(buffer, hero.lines());
+                },
+                buffer -> new Hero(ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer), buffer.readUtf(), buffer.readUtf(),
+                        buffer.readUtf(), buffer.readInt(), buffer.readVarInt() - 1, buffer.readUtf(),
+                        Stat.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer), strings(buffer)));
     }
 
     /**
@@ -151,41 +262,50 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
      * @param rightAction action du clic droit, vide pour aucune
      * @param progress    barre en pour mille, -1 pour aucune
      * @param tooltip     lignes de la bulle, en plus du titre et des lignes
+     * @param confirm     question posee dans une fenetre avant l'action (« Question|Detail »), vide pour aucune
      */
     public record Card(ItemStack icon, String title, List<String> lines, String badge, int accent, int state,
-                       String action, String rightAction, int progress, List<String> tooltip) {
+                       String action, String rightAction, int progress, List<String> tooltip, String confirm) {
 
         public static Card of(ItemStack icon, String title, List<String> lines) {
-            return new Card(icon, title, lines, "", 0xFF55545C, NORMAL, "", "", -1, List.of());
+            return new Card(icon, title, lines, "", 0xFF55545C, NORMAL, "", "", -1, List.of(), "");
         }
 
         public Card badge(String value) {
-            return new Card(icon, title, lines, value, accent, state, action, rightAction, progress, tooltip);
+            return new Card(icon, title, lines, value, accent, state, action, rightAction, progress, tooltip, confirm);
         }
 
         public Card accent(int color) {
-            return new Card(icon, title, lines, badge, color, state, action, rightAction, progress, tooltip);
+            return new Card(icon, title, lines, badge, color, state, action, rightAction, progress, tooltip, confirm);
         }
 
         public Card state(int value) {
-            return new Card(icon, title, lines, badge, accent, value, action, rightAction, progress, tooltip);
+            return new Card(icon, title, lines, badge, accent, value, action, rightAction, progress, tooltip, confirm);
         }
 
         public Card action(String left) {
-            return new Card(icon, title, lines, badge, accent, state, left, rightAction, progress, tooltip);
+            return new Card(icon, title, lines, badge, accent, state, left, rightAction, progress, tooltip, confirm);
         }
 
         public Card right(String value) {
-            return new Card(icon, title, lines, badge, accent, state, action, value, progress, tooltip);
+            return new Card(icon, title, lines, badge, accent, state, action, value, progress, tooltip, confirm);
         }
 
         public Card progress(long done, long total) {
             int permille = total <= 0 ? 1000 : (int) Math.max(0, Math.min(1000, done * 1000 / total));
-            return new Card(icon, title, lines, badge, accent, state, action, rightAction, permille, tooltip);
+            return new Card(icon, title, lines, badge, accent, state, action, rightAction, permille, tooltip, confirm);
         }
 
         public Card tooltip(List<String> value) {
-            return new Card(icon, title, lines, badge, accent, state, action, rightAction, progress, value);
+            return new Card(icon, title, lines, badge, accent, state, action, rightAction, progress, value, confirm);
+        }
+
+        /**
+         * Une question posee avant l'action du clic gauche : « Question » ou
+         * « Question|Detail » ; un « ! » en tete pour une action qui detruit.
+         */
+        public Card confirm(String question) {
+            return new Card(icon, title, lines, badge, accent, state, action, rightAction, progress, tooltip, question);
         }
 
         static final StreamCodec<RegistryFriendlyByteBuf, Card> STREAM_CODEC = StreamCodec.of(
@@ -200,10 +320,11 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
                     buffer.writeUtf(card.rightAction());
                     buffer.writeVarInt(card.progress() + 1);
                     strings(buffer, card.tooltip());
+                    buffer.writeUtf(card.confirm());
                 },
                 buffer -> new Card(ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer), buffer.readUtf(), strings(buffer),
                         buffer.readUtf(), buffer.readInt(), buffer.readVarInt(), buffer.readUtf(), buffer.readUtf(),
-                        buffer.readVarInt() - 1, strings(buffer)));
+                        buffer.readVarInt() - 1, strings(buffer), buffer.readUtf()));
     }
 
     private static void strings(RegistryFriendlyByteBuf buffer, List<String> values) {
@@ -230,10 +351,18 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
                 Stat.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.stats());
                 Section.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.sections());
                 buffer.writeBoolean(view.back());
+                Tab.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, view.tabs());
+                buffer.writeBoolean(view.hero() != null);
+                if (view.hero() != null) {
+                    Hero.STREAM_CODEC.encode(buffer, view.hero());
+                }
+                buffer.writeVarInt(view.flags());
             },
             buffer -> new MenuView(Identifier.STREAM_CODEC.decode(buffer), buffer.readUtf(), buffer.readUtf(),
                     Stat.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer),
-                    Section.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer), buffer.readBoolean()));
+                    Section.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer), buffer.readBoolean(),
+                    Tab.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer),
+                    buffer.readBoolean() ? Hero.STREAM_CODEC.decode(buffer) : null, buffer.readVarInt()));
 
     @Override
     public Identifier viewId() {

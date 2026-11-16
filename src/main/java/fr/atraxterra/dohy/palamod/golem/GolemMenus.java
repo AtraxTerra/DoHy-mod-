@@ -79,6 +79,13 @@ public final class GolemMenus {
         return lines;
     }
 
+    /** Les trois pages du golem, en onglets : chacune reverifie que le golem est a portee. */
+    private static List<MenuView.Tab> tabs(String active) {
+        return List.of(new MenuView.Tab("Golem", "tab:golem_main", "golem_main".equals(active), ""),
+                new MenuView.Tab("Arbre", "tab:golem_tree", "golem_tree".equals(active), ""),
+                new MenuView.Tab("Comportement", "tab:golem_choices", "golem_choices".equals(active), ""));
+    }
+
     /** Les controleurs du golem verifient tous que le golem est la et a portee. */
     private abstract static class GolemScreen extends MenuController {
         GolemScreen(String path) {
@@ -151,7 +158,8 @@ public final class GolemMenus {
                     new MenuView.Stat("NIVEAU", level + " / " + GuardianGolem.MAX_LEVEL, 0xFFFAC400),
                     new MenuView.Stat("POINTS", String.valueOf(golem.points()), 0xFF22E558));
             return new MenuView(id(), "Golem gardien", golem.describeOwner(), stats,
-                    List.of(new MenuView.Section("", "", MenuView.GRID, cards)), false);
+                    List.of(new MenuView.Section("", "", MenuView.GRID, cards)), false)
+                    .withTabs(tabs("golem_main"));
         }
 
         @Override
@@ -227,8 +235,8 @@ public final class GolemMenus {
             }
             List<MenuView.Stat> stats = List.of(new MenuView.Stat("POINTS", String.valueOf(golem.points()),
                     0xFF22E558));
-            return new MenuView(id(), "Arbre du golem", "Un point de capacite par niveau du golem", stats,
-                    sections, true);
+            return new MenuView(id(), "Arbre du golem", "Un point par niveau du golem", stats,
+                    sections, true).withTabs(tabs("golem_tree"));
         }
 
         private static String branchName(GolemUpgrade.Branch branch) {
@@ -338,7 +346,8 @@ public final class GolemMenus {
                             MenuView.GRID, cards));
                 }
             }
-            return new MenuView(id(), "Choix du golem", "Comment ton golem se comporte", List.of(), sections, true);
+            return new MenuView(id(), "Choix du golem", "", List.of(), sections, true)
+                    .withTabs(tabs("golem_choices"));
         }
 
         @Override

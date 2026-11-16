@@ -54,7 +54,7 @@ public final class MillMenu extends MachineMenu {
                 new MenuView.Stat("UNE FARINE", config.millRatio() + " CEREALES, " + config.millEnergy() + " FE",
                         0xFFFFFFFF),
                 workStat(machine));
-        return new MenuView(id(), "Moulin", "Clic gauche : une farine  ·  clic droit : jusqu'a une pile", stats,
+        return new MenuView(id(), "Moulin", "", stats,
                 List.of(stock(player, machine),
                         new MenuView.Section("MOUDRE A LA MAIN", "resources", MenuView.GRID, cards)), true);
     }

@@ -137,7 +137,7 @@ public final class JobApi {
 
         // La barre se rafraichit a chaque gain, avant les recompenses : elle doit
         // deja montrer le nouveau niveau quand le message de montee arrive.
-        JobBossBar.show(player, job, boosted, after > before);
+        fr.atraxterra.dohy.ui.Toasts.jobXp(player, job, boosted, after > before);
 
         if (after > before) {
             for (int level = before + 1; level <= after; level++) {

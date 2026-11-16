@@ -33,8 +33,6 @@ public final class ReserveMenu extends MenuController {
     private static final long[] AMOUNTS = {100_000L, 1_000_000L, 10_000_000L, 0L};
     /** Le montant choisi par joueur (indice dans {@link #AMOUNTS}). */
     private static final Map<UUID, Integer> CHOSEN = new ConcurrentHashMap<>();
-    /** Le retrait avant terme, arme pour un placement jusqu'a une date. */
-    private static final Map<UUID, long[]> ARMED = new ConcurrentHashMap<>();
 
     private ReserveMenu() {
         super("faction_reserve");
@@ -57,11 +55,6 @@ public final class ReserveMenu extends MenuController {
 
     private static int chosen(ServerPlayer player) {
         return CHOSEN.getOrDefault(player.getUUID(), AMOUNTS.length - 1);
-    }
-
-    private static boolean armed(ServerPlayer player, int index) {
-        long[] armed = ARMED.get(player.getUUID());
-        return armed != null && armed[0] == index && armed[1] > System.currentTimeMillis();
     }
 
     /** Les blocs d'un cube de cote n : coffres-forts, vitres, or liquide au plus. */
@@ -158,10 +151,10 @@ public final class ReserveMenu extends MenuController {
             if (ripe) {
                 card = card.accent(0xFF22E558).badge("PRET").action("harvest:" + i + "|recolter");
             } else {
-                boolean armed = armed(player, i);
-                card = card.accent(armed ? 0xFFEF3826 : 0xFFFAC400)
-                        .right("withdraw:" + i + "|" + (armed ? "confirmer le retrait" : "retirer (-"
-                                + GoldReserves.PENALTY_PERCENT + " %)"));
+                card = card.accent(0xFFFAC400)
+                        .action("withdraw:" + i + "|retirer (-" + GoldReserves.PENALTY_PERCENT + " %)")
+                        .confirm("!Retirer ce placement ?|Avant terme, il perd " + GoldReserves.PENALTY_PERCENT
+                                + " % et ses interets");
             }
             running.add(card);
         }
@@ -175,12 +168,13 @@ public final class ReserveMenu extends MenuController {
                 new MenuView.Stat("PLACE", MoneyFormat.shortForm(reserve.invested()) + " / "
                         + MoneyFormat.shortForm(capacity), 0xFFFFFFFF),
                 new MenuView.Stat("BANQUE", MoneyFormat.shortForm(data.bank()), 0xFF22E558));
-        return new MenuView(id(), "Reserve d'or", "Places l'argent de la faction, recolte les interets", stats,
+        return new MenuView(id(), "Reserve d'or", "", stats,
                 List.of(new MenuView.Section("TA RESERVE", "resources", MenuView.GRID, mine),
                         new MenuView.Section("PLACEMENTS", "upgrade", MenuView.GRID, running),
                         new MenuView.Section("MONTANT", "resources", MenuView.GRID, amounts),
                         new MenuView.Section("DUREE", "upgrade", MenuView.GRID, terms),
-                        new MenuView.Section("PLANS", "resources", MenuView.GRID, plans)), true);
+                        new MenuView.Section("PLANS", "resources", MenuView.GRID, plans)), true)
+                .withTabs(fr.atraxterra.dohy.faction.FactionMenus.tabs(player, "faction_reserve"));
     }
 
     private static String duration(long millis) {
@@ -205,14 +199,10 @@ public final class ReserveMenu extends MenuController {
         } else if (key.startsWith("harvest:")) {
             report(player, GoldReserves.harvest(player, Integer.parseInt(key.substring(8))), "Placement recolte.");
         } else if (key.startsWith("withdraw:")) {
+            // La fenetre de confirmation a deja pose la question.
             int index = Integer.parseInt(key.substring(9));
-            if (armed(player, index)) {
-                ARMED.remove(player.getUUID());
-                report(player, GoldReserves.withdraw(player, index), "Placement retire, moins "
-                        + GoldReserves.PENALTY_PERCENT + " %.");
-            } else {
-                ARMED.put(player.getUUID(), new long[]{index, System.currentTimeMillis() + 5000L});
-            }
+            report(player, GoldReserves.withdraw(player, index), "Placement retire, moins "
+                    + GoldReserves.PENALTY_PERCENT + " %.");
         }
     }
 }

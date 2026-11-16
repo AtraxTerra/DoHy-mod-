@@ -138,8 +138,8 @@ public final class TrixiumMenu extends MenuController {
                 new MenuView.Stat("DEPOSE", MoneyFormat.shortForm(data.deposited()), 0xFFFFFFFF),
                 new MenuView.Stat("RANG", data.deposited() > 0 ? rank + " / " + (TrixiumRivals.COUNT + 1) : "-", GOLD),
                 new MenuView.Stat("FIN", TrixiumSeason.remaining(season), TEAL));
-        return new MenuView(id(), "Concours Trixium", "Saison de " + TrixiumSeason.label(season)
-                + " · un mois reel", stats, sections, true);
+        return new MenuView(id(), "Concours Trixium", "Saison de " + TrixiumSeason.label(season), stats, sections,
+                true);
     }
 
     static String ordinal(int rank) {

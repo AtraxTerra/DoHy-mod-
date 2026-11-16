@@ -92,11 +92,11 @@ public final class PassMenu extends MenuController {
         }
         sections.add(new MenuView.Section("RECOMPENSES", "resources", MenuView.TILES, tiles));
 
-        sections.add(new MenuView.Section("QUETES DU JOUR · NOUVELLES DANS " + PassSeason.untilTomorrow().toUpperCase(),
+        sections.add(new MenuView.Section("QUETES DU JOUR|NOUVELLES DANS " + PassSeason.untilTomorrow().toUpperCase(),
                 "craft", MenuView.ROWS, quests(data.daily(), accent)));
         sections.add(new MenuView.Section("QUETES DU MOIS", "armor", MenuView.ROWS, quests(data.monthly(), accent)));
 
-        String subtitle = (theme == null ? "" : theme.name() + (theme.tagline().isEmpty() ? "" : " · " + theme.tagline()));
+        String subtitle = theme == null ? "" : theme.name();
         return new MenuView(id(), "Pass " + PassSeason.ofMonth(season), subtitle, stats, sections, true);
     }
 

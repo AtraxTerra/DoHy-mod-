@@ -78,7 +78,7 @@ public final class BankController extends MenuController {
                         .tooltip(List.of("Divise par deux la perte a la mort",
                                 "Une charge est consommee par mort")));
 
-        return new MenuView(id(), "Banque", "Ton epargne, protegee de la mort", stats, List.of(
+        return new MenuView(id(), "Banque", "", stats, List.of(
                 new MenuView.Section("DEPOSER", "resources", MenuView.GRID, deposit),
                 new MenuView.Section("RETIRER", "upgrade", MenuView.GRID, withdraw),
                 new MenuView.Section("TON COMPTE", "craft", MenuView.GRID, account)), true);

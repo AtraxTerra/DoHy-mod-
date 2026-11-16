@@ -132,7 +132,7 @@ public final class BoutiqueController extends MenuController {
         services.add(Card.of(new ItemStack(Items.NETHER_STAR), "Ameliorations", List.of("Achats definitifs",
                 "Rien ne se consomme")).accent(0xFFEC4FB5).action("upgrades"));
 
-        return new MenuView(id(), "Boutique", "Ce qui s'achete ici ne se trouve pas en jeu", stats, List.of(
+        return new MenuView(id(), "Boutique", "", stats, List.of(
                 new MenuView.Section("BOOSTERS", "upgrade", MenuView.GRID, boosters),
                 new MenuView.Section("BOXES", "resources", MenuView.GRID, crates),
                 new MenuView.Section("COFFRES A POSER", "armor", MenuView.GRID, boxes),

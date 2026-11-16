@@ -132,7 +132,7 @@ public final class SpawnDaily extends MenuController {
                         "Apres le dernier jour, elle reprend")).accent(0xFF2F5BEA)
                         .tooltip(List.of("La recompense ne se prend qu'ici, au spawn.",
                                 "Elle grandit avec ton niveau global.")));
-        return new MenuView(id(), "Recompense du jour", "Reviens chaque jour au spawn", stats, List.of(
+        return new MenuView(id(), "Recompense du jour", "", stats, List.of(
                 new MenuView.Section("LA SERIE", "upgrade", MenuView.GRID, days),
                 new MenuView.Section("REGLES", "resources", MenuView.GRID, rules)), false);
     }

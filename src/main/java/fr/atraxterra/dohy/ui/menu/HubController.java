@@ -56,112 +56,200 @@ public final class HubController extends MenuController {
                 new MenuView.Stat("PATRIMOINE", MoneyFormat.shortForm(Economy.of(player).netWorth()), 0xFFFFFFFF),
                 new MenuView.Stat("NIVEAU GLOBAL", String.valueOf(ContractApi.globalLevel(player)), 0xFF22E558));
 
-        double booster = Boosters.active(player);
-        List<Card> economy = List.of(
-                Card.of(new ItemStack(Items.EMERALD), "Shop", List.of("Acheter et vendre", "Prix dynamiques"))
-                        .accent(0xFFEF3826).action("shop"),
-                Card.of(new ItemStack(Items.CHEST), "Coffre de vente", List.of("Depose, ferme : vendu",
-                        "Le reste te revient")).accent(0xFFEF3826).action("sell"),
-                Card.of(new ItemStack(Items.GOLD_BLOCK), "Boutique", List.of("Boosters, boxes, autosell",
-                        booster > 1 ? "Booster x" + (long) booster + " actif" : "Aucun booster actif"))
-                        .accent(0xFFFAC400).action("boutique"),
-                Card.of(new ItemStack(Items.BELL), "Marche", List.of("Les annonces du jour",
-                        "Stocks limites, prix variables")).accent(0xFFFAC400).action("market"),
-                Card.of(new ItemStack(Items.CHEST_MINECART), "Banque", List.of(
-                        "Epargne " + MoneyFormat.shortForm(Bank.banked(player)),
-                        MoneyFormat.shortForm(Bank.perDay(player)) + " d'interets / jour"))
-                        .accent(0xFFFAC400).action("bank"),
-                clickerCard(player),
-                Card.of(new ItemStack(Items.BEACON), "Spawn", List.of("Le hall des box", "et les bornes"))
-                        .accent(0xFFEF3826).action("spawn"));
-
+        // A faire maintenant : ce qui attend une action du joueur.
         ContractData contracts = ContractApi.data(player);
         int left = 0;
+        int dailies = contracts.daily().size();
         for (ActiveContract contract : contracts.daily()) {
             if (!contract.done()) {
                 left++;
             }
         }
-        int unlocked = 0;
-        int total = 0;
-        for (Job job : Job.values()) {
-            for (JobConfig.Unlock unlock : JobGate.unlocksOf(job)) {
-                total++;
-                if (JobGate.allows(player, unlock)) {
-                    unlocked++;
-                }
-            }
-        }
-        int expected = 0;
-        int donated = 0;
-        for (String wing : MuseumApi.wings()) {
-            expected += MuseumApi.expected(wing).size();
-            donated += MuseumApi.donatedIn(player, wing);
-        }
-        List<Card> progress = List.of(
-                passCard(player),
-                Card.of(new ItemStack(Items.WRITABLE_BOOK), "Contrats", List.of(
-                        left == 0 ? "Quotidiens termines" : left + " quotidien(s) restant(s)",
-                        "Niveau global " + ContractApi.globalLevel(player)))
-                        .accent(0xFF2F5BEA).action("contracts").badge(left == 0 ? "OK" : String.valueOf(left))
-                        .state(left == 0 ? MenuView.DONE : MenuView.NORMAL),
-                Card.of(new ItemStack(Items.IRON_PICKAXE), "Metiers", List.of(
-                        "Niveaux cumules " + JobApi.totalLevels(player),
-                        "Deblocages " + unlocked + " / " + total))
-                        .accent(0xFF2F5BEA).action("jobs").progress(unlocked, total),
-                Card.of(new ItemStack(Items.BOOKSHELF), "Collections", List.of("Recolter releve le plancher",
-                        "Prestige : plus d'ecoulement")).accent(0xFF2F5BEA).action("collections"),
-                Card.of(new ItemStack(Items.ENCHANTING_TABLE), "Musee", List.of(
-                        "Pieces exposees " + donated + " / " + expected, "Ailes completes : bonus"))
-                        .accent(0xFF2F5BEA).action("museum").progress(donated, expected),
-                altarCard(player));
-
+        Card contractCard = Card.of(new ItemStack(Items.WRITABLE_BOOK), "Contrats du jour", List.of(
+                        left == 0 ? "Tout est fait" : left + (left > 1 ? " restants" : " restant"), "",
+                        (dailies - left) + " / " + dailies))
+                .accent(0xFF2F5BEA).action("contracts").progress(dailies - left, dailies)
+                .badge(left == 0 ? "" : String.valueOf(left)).state(left == 0 ? MenuView.DONE : MenuView.NORMAL);
         int rpgLevel = Rpg.level(Rpg.data(player).xp());
+        long rpgInto = Rpg.xpInLevel(Rpg.data(player).xp());
+        long rpgNeed = Rpg.xpToNext(rpgLevel);
         int points = Rpg.available(player);
-        int upgrades = UpgradeApi.data(player).total();
-        int upgradesTotal = UpgradeConfig.config().totalLevels();
-        List<Card> endgame = List.of(
-                Card.of(new ItemStack(Items.NETHER_STAR), "Ameliorations", List.of(
-                        "Paliers " + upgrades + " / " + upgradesTotal, "Achats definitifs"))
-                        .accent(0xFFEC4FB5).action("upgrades").progress(upgrades, upgradesTotal),
-                Card.of(new ItemStack(Items.TOTEM_OF_UNDYING), "Profil RPG", List.of("Niveau RPG " + rpgLevel,
-                        points > 0 ? points + " point(s) a depenser" : "Arbre des donjons"))
-                        .accent(0xFFEC4FB5).action("rpg").badge(points > 0 ? "+" + points : ""),
-                factionCard(player),
-                trixiumCard(player),
-                achievementCard(player));
-
-        fr.atraxterra.dohy.guide.EncyclopediaData guide = fr.atraxterra.dohy.guide.EncyclopediaEvents.data(player);
-        int fresh = 0;
-        for (String id : guide.freshIds()) {
-            if (fr.atraxterra.dohy.guide.Encyclopedia.entry(id) != null) {
-                fresh++;
+        Card rpgCard = Card.of(new ItemStack(Items.TOTEM_OF_UNDYING), "Profil RPG", List.of("Niveau " + rpgLevel, "",
+                        MoneyFormat.shortForm(rpgInto) + " / " + MoneyFormat.shortForm(rpgNeed) + " XP"))
+                .accent(0xFFF3445D).action("rpg").progress(rpgInto, Math.max(1, rpgNeed))
+                .badge(points > 0 ? "+" + points : "");
+        List<Card> todo = List.of(contractCard, passCard(player), altarCard(player), rpgCard);
+        int actionable = (left > 0 ? 1 : 0) + (points > 0 ? 1 : 0);
+        for (Card card : todo) {
+            if (card != contractCard && card != rpgCard && !card.badge().isEmpty()) {
+                actionable++;
             }
         }
-        List<Card> help = List.of(
-                Card.of(new ItemStack(Items.KNOWLEDGE_BOOK), "Encyclopedie", List.of("Tout DoHy, fiche par fiche",
-                                fresh > 0 ? fresh + " fiche(s) nouvelle(s)" : "Touche J"))
-                        .accent(0xFF22E558).action("encyclopedia").badge(fresh > 0 ? "+" + fresh : ""),
-                Card.of(new ItemStack(fr.atraxterra.dohy.guide.DoHyGuide.PLAN.get()), "Plans", List.of(
-                                "Hologrammes des structures", "Grinder, chaudron, enclos..."))
-                        .accent(0xFF2BC4C4).action("plans"));
 
-        return new MenuView(id(), "DoHy", "Le menu de ton aventure", stats, List.of(
-                new MenuView.Section("AIDE", "upgrade", MenuView.GRID, help),
-                new MenuView.Section("ECONOMIE", "resources", MenuView.GRID, economy),
-                new MenuView.Section("PROGRESSION", "upgrade", MenuView.GRID, progress),
-                new MenuView.Section("FIN DE PARTIE", "craft", MenuView.GRID, endgame)), false);
+        // Les metiers : le niveau, la barre, le prochain deblocage.
+        List<Card> jobs = new java.util.ArrayList<>();
+        for (Job job : Job.values()) {
+            int level = JobApi.level(player, job);
+            JobConfig.Unlock next = fr.atraxterra.dohy.job.JobGate.next(player, job);
+            String line;
+            if (next == null) {
+                line = "Tout est debloque";
+            } else {
+                Component name = next.label().<Component>map(Component::literal).orElseGet(() ->
+                        fr.atraxterra.dohy.ui.Gui.displayName(net.minecraft.resources.Identifier.parse(next.id())));
+                line = MenuView.text(Component.empty().append(name).append(" \u00B7 niv. " + next.level()));
+            }
+            double progress = level >= JobApi.maxLevel() ? 1.0d : JobApi.progress(player, job);
+            jobs.add(Card.of(new ItemStack(jobIcon(job)), job.display(), List.of(line))
+                    .accent(jobColor(job)).badge("NIV. " + level).action("jobs:" + job.name())
+                    .progress(Math.round(progress * 1000.0d), 1000));
+        }
+
+        // L'agenda : les prochaines heures qui comptent.
+        List<Card> agenda = new java.util.ArrayList<>();
+        java.time.ZonedDateTime now = java.time.ZonedDateTime.now(fr.atraxterra.dohy.util.RealClock.zone());
+        long mineMinutes = fr.atraxterra.dohy.mine.MineService.minutesUntilReset();
+        agenda.add(Card.of(new ItemStack(Items.IRON_PICKAXE), "Remise de la Mine", List.of("Dans " + until(mineMinutes)))
+                .badge(hour(now.plusMinutes(mineMinutes))).accent(0xFF2BC4C4));
+        java.time.ZonedDateTime eventNow = fr.atraxterra.dohy.faction.event.FactionEvents.now();
+        fr.atraxterra.dohy.faction.event.FactionEventKind soonest = null;
+        java.time.ZonedDateTime soonestTime = null;
+        for (fr.atraxterra.dohy.faction.event.FactionEventKind kind
+                : fr.atraxterra.dohy.faction.event.FactionEventKind.values()) {
+            if (!kind.ready()) {
+                continue;
+            }
+            java.time.ZonedDateTime at = kind.next(eventNow);
+            if (soonestTime == null || at.isBefore(soonestTime)) {
+                soonest = kind;
+                soonestTime = at;
+            }
+        }
+        if (soonest != null) {
+            agenda.add(Card.of(new ItemStack(soonest.icon()), soonest.label(),
+                            List.of(MoneyFormat.shortForm(soonest.elo()) + " ELO"))
+                    .badge(day(soonestTime, eventNow).isEmpty() ? hour(soonestTime)
+                            : day(soonestTime, eventNow) + soonestTime.getHour() + " H").accent(0xFFFAC400));
+        }
+        long contractMinutes = ContractApi.minutesUntilDailyReset();
+        agenda.add(Card.of(new ItemStack(Items.WRITABLE_BOOK), "Nouveaux contrats", List.of())
+                .badge(hour(now.plusMinutes(contractMinutes))).accent(0xFF2F5BEA));
+        TrixiumContest.catchUp(player);
+        TrixiumData trixium = TrixiumContest.data(player);
+        long daysLeft = daysLeftInMonth();
+        agenda.add(Card.of(new ItemStack(PalaItems.TRIXIUM.get()), "Fin du concours Trixium", List.of(
+                        trixium.deposited() > 0 ? TrixiumContest.rank(player) + "e / " + (TrixiumRivals.COUNT + 1)
+                                : "Pas encore de depot"))
+                .badge(daysLeft + " J").accent(0xFFEC4FB5));
+
+        // L'economie : l'argent qui travaille.
+        double booster = Boosters.active(player);
+        long boosterLeft = Boosters.remaining(player);
+        int listings = 0;
+        try {
+            listings = fr.atraxterra.dohy.auction.AuctionHouse.listings(player).size();
+        } catch (RuntimeException ignored) {
+            // le marche n'est pas encore pret
+        }
+        List<Card> economy = List.of(
+                Card.of(new ItemStack(Items.CHEST_MINECART), "Banque", Bank.banked(player) > 0 ? List.of(
+                                MoneyFormat.shortForm(Bank.banked(player)) + " $",
+                                "+" + MoneyFormat.shortForm(Bank.perDay(player)) + " / jour")
+                                : List.of("Rien de depose"))
+                        .accent(0xFFFAC400).action("bank"),
+                Card.of(new ItemStack(Items.GOLD_BLOCK), booster > 1 ? "Booster x" + (long) booster : "Boutique",
+                                List.of(booster > 1 ? "Encore " + until(boosterLeft) : "Aucun booster actif"))
+                        .accent(0xFFFAC400).action("boutique").badge(booster > 1 ? "ACTIF" : "")
+                        .state(booster > 1 ? MenuView.DONE : MenuView.NORMAL),
+                Card.of(new ItemStack(Items.MAP), "Marche", List.of(listings > 0 ? listings + " annonces"
+                                : "Les annonces du jour"))
+                        .accent(0xFFFAC400).action("market"),
+                clickerCard(player));
+
+        return new MenuView(id(), "Accueil", "", stats, List.of(
+                new MenuView.Section("A FAIRE|" + actionable, "upgrade", MenuView.GRID, todo),
+                new MenuView.Section("TES METIERS", "resources", MenuView.ROWS | MenuView.HALF, jobs),
+                new MenuView.Section("AGENDA", "craft", MenuView.AGENDA | MenuView.HALF, agenda),
+                new MenuView.Section("ECONOMIE", "resources", MenuView.GRID, economy)), false);
+    }
+
+    private static net.minecraft.world.item.Item jobIcon(Job job) {
+        return switch (job) {
+            case MINER -> Items.IRON_PICKAXE;
+            case FARMER -> Items.WHEAT;
+            case HUNTER -> Items.BOW;
+            case ALCHEMIST -> Items.BLAZE_POWDER;
+        };
+    }
+
+    private static int jobColor(Job job) {
+        return switch (job) {
+            case MINER -> 0xFFEF3926;
+            case FARMER -> 0xFFFAC400;
+            case HUNTER -> 0xFF2F5BEA;
+            case ALCHEMIST -> 0xFFEC4FB5;
+        };
+    }
+
+    /** « 1 h 36 », « 25 min », « 2 j 4 h ». */
+    private static String until(long minutes) {
+        long days = minutes / 1440L;
+        long hours = minutes / 60L % 24L;
+        if (days > 0) {
+            return days + " j " + hours + " h";
+        }
+        if (hours > 0) {
+            return hours + " h " + String.format(java.util.Locale.ROOT, "%02d", minutes % 60L);
+        }
+        return Math.max(1L, minutes) + " min";
+    }
+
+    /** L'heure d'un rendez-vous : « 16 H », « 16 H 30 », « MINUIT », « MIDI ». */
+    private static String hour(java.time.ZonedDateTime at) {
+        // Les minutes restantes sont arrondies : 23 h 59 annonce minuit.
+        java.time.ZonedDateTime rounded = at.plusSeconds(90).withSecond(0).withNano(0);
+        int minute = rounded.getMinute() / 5 * 5;
+        String suffix = minute == 0 ? "" : " " + String.format(java.util.Locale.ROOT, "%02d", minute);
+        if (minute == 0 && rounded.getHour() == 0) {
+            return "MINUIT";
+        }
+        if (minute == 0 && rounded.getHour() == 12) {
+            return "MIDI";
+        }
+        return rounded.getHour() + " H" + suffix;
+    }
+
+    /** Le jour en trois lettres s'il n'est pas aujourd'hui (« MAR »). */
+    private static String day(java.time.ZonedDateTime at, java.time.ZonedDateTime now) {
+        if (at.toLocalDate().equals(now.toLocalDate())) {
+            return "";
+        }
+        return switch (at.getDayOfWeek()) {
+            case MONDAY -> "LUN ";
+            case TUESDAY -> "MAR ";
+            case WEDNESDAY -> "MER ";
+            case THURSDAY -> "JEU ";
+            case FRIDAY -> "VEN ";
+            case SATURDAY -> "SAM ";
+            case SUNDAY -> "DIM ";
+        };
+    }
+
+    /** Les jours restants avant la fin du mois (pass, concours). */
+    private static long daysLeftInMonth() {
+        java.time.ZonedDateTime now = fr.atraxterra.dohy.pass.PassSeason.now();
+        java.time.ZonedDateTime end = now.withDayOfMonth(1).toLocalDate().plusMonths(1).atStartOfDay(now.getZone());
+        return Math.max(0L, java.time.Duration.between(now, end).toDays());
     }
 
     /** Le clicker : ses ClicCoins et sa production, s'il a deja servi. */
     private static Card clickerCard(ServerPlayer player) {
         var data = player.getExistingDataOrNull(fr.atraxterra.dohy.DoHyAttachments.CLICKER.get());
         boolean started = data != null && !data.isEmpty();
-        return Card.of(new ItemStack(Items.COOKIE), "Clicker", List.of(
-                        started ? fr.atraxterra.dohy.palamod.clicker.ClickerFormat.compact(data.points())
-                                + " ClicCoins" : "Nourris les namuus",
-                        started ? fr.atraxterra.dohy.palamod.clicker.ClickerFormat.rate(data.rps()) + " par seconde"
-                                : "Batiments, ameliorations, Clic Shop"))
+        return Card.of(new ItemStack(Items.COOKIE), "Clicker", started ? List.of(
+                        fr.atraxterra.dohy.palamod.clicker.ClickerFormat.compact(data.points()) + " ClicCoins",
+                        "+" + fr.atraxterra.dohy.palamod.clicker.ClickerFormat.rate(data.rps()) + " / s")
+                        : List.of("Nourris les namuus"))
                 .accent(0xFFFAC400).action("clicker");
     }
 
@@ -187,12 +275,17 @@ public final class HubController extends MenuController {
                 }
             }
         }
-        int kills = fr.atraxterra.dohy.jobboss.JobBossApi.data(player).totalKills();
-        return Card.of(new ItemStack(Items.BELL), "Boss de metier", List.of(
-                        ready > 0 ? ready + " gardien(s) t'attendent" : coming > 0 ? coming + " gardien(s) en route"
-                                : "Une offrande a l'autel du spawn",
-                        kills + " victoire(s)"))
-                .accent(0xFFFF8A3D).action("altar").badge(ready > 0 ? "PRET" : "");
+        String readyJob = "";
+        for (fr.atraxterra.dohy.job.Job job : fr.atraxterra.dohy.job.Job.values()) {
+            if (fr.atraxterra.dohy.jobboss.JobBossApi.state(player, job)
+                    == fr.atraxterra.dohy.jobboss.JobBossApi.State.READY) {
+                readyJob = job.display();
+                break;
+            }
+        }
+        return Card.of(new ItemStack(Items.IRON_SWORD), "Boss de metier", List.of(
+                        ready > 0 ? "Gardien du " + readyJob : coming > 0 ? coming + " en route" : "Une offrande a l'autel"))
+                .accent(0xFFFF6F00).action("altar").badge(ready > 0 ? "PRET" : "");
     }
 
     private static Card passCard(ServerPlayer player) {
@@ -205,9 +298,8 @@ public final class HubController extends MenuController {
         fr.atraxterra.dohy.pass.Relic relic = fr.atraxterra.dohy.pass.PassApi.relic(season);
         return Card.of(fr.atraxterra.dohy.pass.DoHyPass.relic(relic, season),
                         "Pass " + fr.atraxterra.dohy.pass.PassSeason.ofMonth(season), List.of(
-                        "Niveau " + level + " / " + levels,
-                        claimable > 0 ? claimable + " recompense(s) a recuperer" : "Au niveau " + levels + " : "
-                                + relic.title()))
+                        claimable > 0 ? claimable + (claimable > 1 ? " recompenses" : " recompense") : "Niveau " + level,
+                        "", "NIVEAU " + level + " / " + levels + "|" + daysLeftInMonth() + " J"))
                 .accent(0xFFEC4FB5).action("pass").progress(level, levels)
                 .badge(claimable > 0 ? "+" + claimable : "");
     }
@@ -238,10 +330,11 @@ public final class HubController extends MenuController {
                 .accent(league.color()).action("faction");
     }
 
-    /** Les menus que les boutons de l'inventaire peuvent ouvrir. */
+    /** Les menus que les boutons de l'inventaire et la barre laterale peuvent ouvrir. */
     private static final java.util.Set<String> INVENTORY_TARGETS =
             java.util.Set.of("shop", "contracts", "bank", "faction", "jobs", "trixium", "clicker", "encyclopedia",
-                    "pass");
+                    "pass", "sell", "boutique", "market", "collections", "museum", "altar", "achievements", "upgrades",
+                    "rpg", "plans");
 
     /**
      * Ouvre le menu demande par un bouton de l'inventaire ({@code InventoryNav}).
@@ -260,6 +353,14 @@ public final class HubController extends MenuController {
 
     @Override
     protected void card(ServerPlayer player, String key, int button) {
+        if (key.startsWith("jobs:")) {
+            try {
+                JobsController.openDetail(player, Job.valueOf(key.substring(5)));
+            } catch (IllegalArgumentException unknown) {
+                JobsController.open(player);
+            }
+            return;
+        }
         switch (key) {
             case "encyclopedia" -> fr.atraxterra.dohy.guide.EncyclopediaMenu.openIndex(player);
             case "pass" -> fr.atraxterra.dohy.pass.PassMenu.INSTANCE.open(player);

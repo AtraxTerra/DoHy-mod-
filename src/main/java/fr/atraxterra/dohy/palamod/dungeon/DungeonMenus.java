@@ -149,7 +149,7 @@ public final class DungeonMenus {
                     new MenuView.Stat("MODE", mode.label().toUpperCase(), color(mode.color())),
                     new MenuView.Stat(mode == DungeonMode.DIFFICILE ? "RECORD" : "DERNIER REUSSI",
                             done == 0 ? "-" : String.valueOf(done), 0xFF22E558));
-            return new MenuView(id(), "Donjon " + dungeon.display(), "Choisis ton mode et ton palier", stats, List.of(
+            return new MenuView(id(), "Donjon " + dungeon.display(), "", stats, List.of(
                     new MenuView.Section("MODE", "armor", MenuView.GRID, modes),
                     new MenuView.Section("AVANT D'ENTRER", "resources", MenuView.GRID, info),
                     new MenuView.Section("PALIERS · " + mode.label().toUpperCase(), "upgrade", MenuView.TILES, tiles)),
@@ -217,7 +217,7 @@ public final class DungeonMenus {
                             : card.action("boost:" + index + "|choisir"));
                 }
             }
-            return new MenuView(id(), "Autel de boost", "Un seul bonus par joueur", List.of(),
+            return new MenuView(id(), "Autel de boost", "Un bonus par joueur", List.of(),
                     List.of(new MenuView.Section("BONUS", "upgrade", MenuView.GRID, cards)), false);
         }
 
@@ -297,7 +297,7 @@ public final class DungeonMenus {
                 cards.add(balance >= price ? card.action("buy:" + offer.name() + "|acheter")
                         : card.state(MenuView.DISABLED));
             }
-            return new MenuView(id(), "Marchande", "Les prix montent avec le palier",
+            return new MenuView(id(), "Marchande", "",
                     List.of(new MenuView.Stat("VOTRE ARGENT", MoneyFormat.shortForm(balance), 0xFFFFFFFF)),
                     List.of(new MenuView.Section("OFFRES", "resources", MenuView.GRID, cards)), false);
         }
@@ -358,7 +358,7 @@ public final class DungeonMenus {
                     tiles.add(Card.of(ItemStack.EMPTY, "Emplacement libre", List.of()));
                 }
             }
-            return new MenuView(id(), "Sac de donjon", "Livre a la fin du palier reussi, perdu sinon",
+            return new MenuView(id(), "Sac de donjon", "Perdu si le palier echoue",
                     List.of(new MenuView.Stat("PILES", bag.size() + " / " + capacity, 0xFFFFFFFF)),
                     List.of(new MenuView.Section("", "", MenuView.TILES, tiles)), false);
         }

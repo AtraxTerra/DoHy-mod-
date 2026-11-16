@@ -31,6 +31,10 @@ public class TextField extends UiElement {
         return value;
     }
 
+    protected String placeholder() {
+        return placeholder;
+    }
+
     /** Le texte initial, sans prevenir l'ecouteur. */
     public TextField withValue(String initial) {
         value = initial.length() > maxLength ? initial.substring(0, maxLength) : initial;
