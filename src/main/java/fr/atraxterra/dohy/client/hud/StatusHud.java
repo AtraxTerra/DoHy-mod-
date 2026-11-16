@@ -75,12 +75,11 @@ final class StatusHud {
         }
         lastHealth = health;
         float shown = HEALTH.toward(fill);
-        float trail = TRAIL.get();
-        if (shown >= trail) {
+        // Pendant l'arret, la trainee vise sa propre valeur : son horloge avance sans qu'elle bouge.
+        float trail = TRAIL.toward(Anim.now() < trailHold ? Math.max(TRAIL.get(), shown) : shown);
+        if (trail < shown) {
             TRAIL.set(shown);
             trail = shown;
-        } else if (Anim.now() >= trailHold) {
-            trail = TRAIL.toward(shown);
         }
 
         int[] colors = healthColors(player);
