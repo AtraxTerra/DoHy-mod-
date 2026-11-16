@@ -41,7 +41,8 @@ public abstract class UiContainerScreen<M extends AbstractContainerMenu> extends
         if (minecraft.level != null) {
             graphics.fill(0, 0, width, height, 0x70000000);
         }
-        UiGraphics g = new UiGraphics(graphics, font, mouseX, mouseY);
+        // Le pinceau du kit (coins lisses) et la police pixel calee sur l'echelle d'interface.
+        UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
         Matrix3x2fStack pose = graphics.pose();
         pose.pushMatrix();
         pose.translate(getLeftPos(), getTopPos());
@@ -53,7 +54,7 @@ public abstract class UiContainerScreen<M extends AbstractContainerMenu> extends
     /** Le jeu ecrit ici le titre et « Inventaire » en gris fonce ; le kit dessine les siens. */
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        UiGraphics g = new UiGraphics(graphics, font, mouseX, mouseY);
+        UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
         drawForeground(g, mouseX - getLeftPos(), mouseY - getTopPos());
         g.flushOverlays();
     }
@@ -112,6 +113,7 @@ public abstract class UiContainerScreen<M extends AbstractContainerMenu> extends
     /** Un titre en police de titre, reduit s'il deborde de {@code maxWidth}. */
     protected static void title(UiGraphics g, String text, int x, int y, float size, float maxWidth, int color,
                                 int shade) {
+        text = ContainerStyle.plain(text);
         float fitted = size;
         while (fitted > 7 && g.width(Ui.TITLE, text, fitted) > maxWidth) {
             fitted -= 0.5f;

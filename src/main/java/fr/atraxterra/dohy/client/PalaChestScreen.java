@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.client;
 
-import fr.atraxterra.dohy.client.ui.Ui;
+import fr.atraxterra.dohy.client.ui.ContainerStyle;
+import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.UiContainerScreen;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.palamod.storage.PalaChestMenu;
@@ -30,7 +31,8 @@ public class PalaChestScreen extends UiContainerScreen<PalaChestMenu> {
 
     @Override
     protected void drawPanel(UiGraphics g, int mouseX, int mouseY) {
-        g.panelPlain(0, 0, imageWidth, imageHeight);
+        Paint p = g.paint();
+        ContainerStyle.window(p, 0, 0, imageWidth, imageHeight);
         int color = menu.tier().titleColor();
         String name = getTitle().getString().toUpperCase(Locale.ROOT);
         int marginX = menu.tier().playerX() + 9 * 18 + 6;
@@ -50,10 +52,11 @@ public class PalaChestScreen extends UiContainerScreen<PalaChestMenu> {
         for (int index = 0; index < menu.slots.size(); index++) {
             Slot slot = menu.slots.get(index);
             boolean ring = index >= menu.tier().size() && index < chestEnd;
-            frame(g, slot, false);
             if (ring) {
                 // Les anneaux : la case teintee du metal du coffre.
-                g.rect(slot.x, slot.y, 16, 16, (color & 0x00FFFFFF) | 0x38000000);
+                ContainerStyle.slot(p, slot, color);
+            } else {
+                ContainerStyle.slot(p, slot);
             }
         }
     }

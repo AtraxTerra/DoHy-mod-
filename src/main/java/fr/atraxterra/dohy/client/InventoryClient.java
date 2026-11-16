@@ -1,20 +1,37 @@
 package fr.atraxterra.dohy.client;
 
 import fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
+import fr.atraxterra.dohy.client.ui.vanilla.KitChests;
+import fr.atraxterra.dohy.client.ui.vanilla.KitWorkstations;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CraftingScreen;
+import net.minecraft.client.gui.screens.inventory.DispenserScreen;
+import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
+import net.minecraft.client.gui.screens.inventory.HopperScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen;
+import net.minecraft.client.gui.screens.inventory.SmokerScreen;
+import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
 /**
- * Remplace l'inventaire du jeu par celui du kit ({@link KitInventoryScreen}).
+ * Remplace des ecrans du jeu par ceux du kit, a leur ouverture : l'inventaire
+ * ({@link KitInventoryScreen}), les coffres, la boite de shulker, l'entonnoir et le
+ * distributeur ({@link KitChests}), l'etabli et les fours ({@link KitWorkstations}).
  *
- * <p>Seulement hors du mode creatif : l'ecran du jeu y bascule de lui-meme sur
- * l'inventaire creatif, qu'on garde tel quel. Le remplacement se fait a
- * l'ouverture, donc pour toutes les facons d'ouvrir l'inventaire (touche,
- * avancee, autre mod).
+ * <p>Le remplacement se fait a l'ouverture, donc pour toutes les facons d'ouvrir
+ * l'ecran (touche, bloc, autre mod) ; le menu reste celui que le jeu a cree. On ne
+ * remplace que la classe exacte du jeu : un ecran d'un autre mod qui en herite
+ * garde le sien.
+ *
+ * <p>L'inventaire seulement hors du mode creatif : l'ecran du jeu y bascule de
+ * lui-meme sur l'inventaire creatif, qu'on garde tel quel.
  */
 @EventBusSubscriber(Dist.CLIENT)
 public final class InventoryClient {
@@ -24,13 +41,49 @@ public final class InventoryClient {
 
     @SubscribeEvent
     public static void onOpening(ScreenEvent.Opening event) {
-        if (!(event.getNewScreen() instanceof InventoryScreen)) {
-            return;
-        }
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || minecraft.player.isCreative()) {
+        if (minecraft.player == null) {
             return;
         }
-        event.setNewScreen(new KitInventoryScreen(minecraft.player));
+        Screen replacement = replace(event.getNewScreen(), minecraft);
+        if (replacement != null) {
+            event.setNewScreen(replacement);
+        }
+    }
+
+    private static Screen replace(Screen screen, Minecraft minecraft) {
+        if (screen == null) {
+            return null;
+        }
+        Inventory inventory = minecraft.player.getInventory();
+        Class<?> type = screen.getClass();
+        if (type == InventoryScreen.class) {
+            return minecraft.player.isCreative() ? null : new KitInventoryScreen(minecraft.player);
+        }
+        if (type == ContainerScreen.class) {
+            return new KitChests.Chest(((ContainerScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == ShulkerBoxScreen.class) {
+            return new KitChests.Shulker(((ShulkerBoxScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == HopperScreen.class) {
+            return new KitChests.Hopper(((HopperScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == DispenserScreen.class) {
+            return new KitChests.Dispenser(((DispenserScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == CraftingScreen.class) {
+            return new KitWorkstations.Crafting(((CraftingScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == FurnaceScreen.class) {
+            return new KitWorkstations.Furnace(((FurnaceScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == BlastFurnaceScreen.class) {
+            return new KitWorkstations.Blast(((BlastFurnaceScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == SmokerScreen.class) {
+            return new KitWorkstations.Smoker(((SmokerScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        return null;
     }
 }
