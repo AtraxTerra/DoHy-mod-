@@ -54,6 +54,11 @@ final class ItemNameHud {
         return true;
     }
 
+    /** Le nom de l'objet est-il a l'ecran (la barre d'action se pose alors au-dessus). */
+    static boolean showing(Hud hud) {
+        return HudAccess.highlightTimer(hud) > 0 && !HudAccess.highlightStack(hud).isEmpty();
+    }
+
     /** La hauteur deja prise au-dessus du bas : les barres en survie, la hotbar seule sinon. */
     static int base(Minecraft minecraft, Hud hud) {
         return HudKit.survival(minecraft) ? Math.max(hud.leftHeight, hud.rightHeight)

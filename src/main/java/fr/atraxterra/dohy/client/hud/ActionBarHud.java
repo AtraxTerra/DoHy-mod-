@@ -38,7 +38,9 @@ final class ActionBarHud {
         }
         int color = HudAccess.overlayAnimated(hud)
                 ? Mth.hsvToArgb(left / 50.0f, 0.7f, 0.6f, 255) : 0xFFFFFFFF;
-        float bottom = graphics.guiHeight() - ItemNameHud.base(minecraft, hud) - 18.0f;
+        // Au-dessus du nom de l'objet tenu s'il est affiche, a sa place sinon.
+        float bottom = graphics.guiHeight() - ItemNameHud.base(minecraft, hud) - (ItemNameHud.showing(hud) ? 18.0f
+                : 3.0f);
         ItemNameHud.pill(graphics, minecraft, message, bottom, alpha, color);
         return true;
     }
