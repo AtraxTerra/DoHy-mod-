@@ -47,8 +47,10 @@ import java.util.Map;
  * <p>Les zones recoivent leurs minerais une seule fois, a la premiere visite
  * ({@code EarthDeposits}). Ici, a chaque cycle de deux heures, chaque chunk
  * d'une zone est remis a niveau : pour chaque minerai, des filons neufs sont
- * tires comme au premier jour, tant que le chunk en a moins que son plein (ce
- * qu'on n'a pas mine reste, et ne s'accumule pas). Un chunk charge est servi
+ * tires comme au premier jour, seulement s'ils tiennent sous son plein (ce
+ * qu'on n'a pas mine reste ; un chunk ne depasse jamais son plein : deux
+ * filons d'uranium, un de thorium, un de gemmes, un de schrabidium). Un chunk
+ * charge est servi
  * dans la minute, les autres a leur prochaine visite : pour le joueur qui
  * revient, la zone a toujours repousse.
  *

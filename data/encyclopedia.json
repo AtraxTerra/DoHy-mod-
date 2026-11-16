@@ -2538,7 +2538,7 @@
         {
           "title": "Les minerais repoussent",
           "text": [
-            "Toutes les 2 heures, les filons des zones se reforment dans la roche : uranium, thorium, gemmes radioactives et un peu de schrabidium. Ce que tu n'as pas mine reste, rien ne s'accumule.",
+            "Toutes les 2 heures, les filons des zones se reforment dans la roche : uranium, thorium, gemmes radioactives et un peu de schrabidium. Ce que tu n'as pas mine reste : un chunk ne depasse jamais son plein.",
             "! La radiation monte vite au coeur : une combinaison de NTM est conseillee."
           ]
         }
