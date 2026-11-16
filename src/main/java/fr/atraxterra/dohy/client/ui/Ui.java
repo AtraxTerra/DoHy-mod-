@@ -96,6 +96,8 @@ public final class Ui {
 
     /** Les grands titres rouges : MÉTIERS, ADMIN SHOP, CRUSHER. */
     public static final FontDescription TITLE = font("title");
+    /** Le logo BERSKAR : la police de titre, rendue assez fin pour les tres grandes tailles. */
+    public static final FontDescription LOGO = font("logo");
     /** Les libelles larges : MINEUR, VOTRE ARGENT, PRIX D'ACHAT. */
     public static final FontDescription WIDE = font("wide");
     /** Les intertitres fins des machines : Fuel, CRAFT, MELT. */

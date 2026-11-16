@@ -2,9 +2,13 @@ package fr.atraxterra.dohy.client;
 
 import fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
 import fr.atraxterra.dohy.client.ui.vanilla.KitChests;
+import fr.atraxterra.dohy.client.ui.vanilla.KitPauseScreen;
+import fr.atraxterra.dohy.client.ui.vanilla.KitTitleScreen;
 import fr.atraxterra.dohy.client.ui.vanilla.KitWorkstations;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
@@ -21,7 +25,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
 /**
- * Remplace des ecrans du jeu par ceux du kit, a leur ouverture : l'inventaire
+ * Remplace des ecrans du jeu par ceux du kit, a leur ouverture : l'ecran titre
+ * ({@link KitTitleScreen}), le menu pause ({@link KitPauseScreen}), l'inventaire
  * ({@link KitInventoryScreen}), les coffres, la boite de shulker, l'entonnoir et le
  * distributeur ({@link KitChests}), l'etabli et les fours ({@link KitWorkstations}).
  *
@@ -42,10 +47,19 @@ public final class InventoryClient {
     @SubscribeEvent
     public static void onOpening(ScreenEvent.Opening event) {
         Minecraft minecraft = Minecraft.getInstance();
+        Screen screen = event.getNewScreen();
+        if (screen != null && screen.getClass() == TitleScreen.class) {
+            event.setNewScreen(new KitTitleScreen());
+            return;
+        }
         if (minecraft.player == null) {
             return;
         }
-        Screen replacement = replace(event.getNewScreen(), minecraft);
+        if (screen != null && screen.getClass() == PauseScreen.class && ((PauseScreen) screen).showsPauseMenu()) {
+            event.setNewScreen(new KitPauseScreen());
+            return;
+        }
+        Screen replacement = replace(screen, minecraft);
         if (replacement != null) {
             event.setNewScreen(replacement);
         }

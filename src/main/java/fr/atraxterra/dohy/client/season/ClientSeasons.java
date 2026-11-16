@@ -109,6 +109,29 @@ public final class ClientSeasons {
     public record Line(String text, int color) {
     }
 
+    /**
+     * La saison sous les pieds du joueur : son nom, le jour (1 a 7, 0 sous les
+     * tropiques) et sa couleur ; {@code null} hors de la carte des saisons.
+     */
+    public static Now now(BlockPos pos) {
+        SeasonClimate climate = SeasonClimate.CLIENT;
+        if (!climate.active() || !onMap) {
+            return null;
+        }
+        double phase = climate.phase();
+        double latitude = climate.frame().latitude(pos.getZ() + 0.5d);
+        if (SeasonMath.tropical(latitude)) {
+            return new Now(SeasonMath.name(latitude, phase), 0, TROPICS);
+        }
+        double local = SeasonMath.local(phase, latitude);
+        int season = SeasonMath.season(local);
+        return new Now(SeasonMath.name(season), SeasonMath.day(local, 7), COLORS[season]);
+    }
+
+    /** La saison du moment, pour les ecrans (pause, liste des joueurs). */
+    public record Now(String name, int day, int color) {
+    }
+
     private static final int TROPICS = 0xFF7FD8C8;
     private static final int[] COLORS = {0xFFA9D8FF, 0xFF9BE07A, 0xFFFFD45C, 0xFFE8873A};
 }

@@ -29,6 +29,7 @@ public final class Paint {
     private static final Map<Integer, Identifier> DISCS = new HashMap<>();
     private static final Map<Integer, Identifier> CHECKS = new HashMap<>();
     private static final Map<Long, Identifier> ARROWS = new HashMap<>();
+    private static final Map<Integer, Identifier> RINGS = new HashMap<>();
     private static Identifier glow;
     private static Identifier rampVertical;
     private static Identifier rampHorizontal;
@@ -125,6 +126,34 @@ public final class Paint {
                 size, size, color);
         graphics.blit(RenderPipelines.GUI_TEXTURED, disc, x + w - radius, y + h - radius, radius, radius, radius, radius,
                 radius, radius, size, size, color);
+    }
+
+    /**
+     * Un contour arrondi seul, de {@code line} pixels physiques : l'interieur reste tel
+     * quel (un bouton fantome sur le panorama).
+     */
+    public void outline(float x, float y, float width, float height, float radius, int color, int line) {
+        if (width <= 0 || height <= 0 || line <= 0 || (color >>> 24) == 0) {
+            return;
+        }
+        begin();
+        int x0 = p(x);
+        int y0 = p(y);
+        int w = p(x + width) - x0;
+        int h = p(y + height) - y0;
+        int r = Math.max(line, Math.min(p(radius), Math.min(w, h) / 2));
+        graphics.fill(x0 + r, y0, x0 + w - r, y0 + line, color);
+        graphics.fill(x0 + r, y0 + h - line, x0 + w - r, y0 + h, color);
+        graphics.fill(x0, y0 + r, x0 + line, y0 + h - r, color);
+        graphics.fill(x0 + w - line, y0 + r, x0 + w, y0 + h - r, color);
+        Identifier ring = ring(r, line);
+        int size = r * 2;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, ring, x0, y0, 0.0f, 0.0f, r, r, r, r, size, size, color);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, ring, x0 + w - r, y0, r, 0.0f, r, r, r, r, size, size, color);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, ring, x0, y0 + h - r, 0.0f, r, r, r, r, r, size, size, color);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, ring, x0 + w - r, y0 + h - r, r, r, r, r, r, r, size, size,
+                color);
+        end();
     }
 
     /**
@@ -336,6 +365,35 @@ public final class Paint {
                 }
             }
             return register("disc_" + key, image);
+        });
+    }
+
+    /** Un anneau blanc de rayon {@code radius} et d'epaisseur {@code line} pixels, au bord lisse. */
+    private static Identifier ring(int radius, int line) {
+        int r = Math.min(radius, 160);
+        int l = Math.min(line, r);
+        return RINGS.computeIfAbsent(r * 1000 + l, key -> {
+            int size = r * 2;
+            double outer = r * (double) r;
+            double inner = (r - l) * (double) (r - l);
+            NativeImage image = new NativeImage(size, size, true);
+            for (int py = 0; py < size; py++) {
+                for (int px = 0; px < size; px++) {
+                    int inside = 0;
+                    for (int sy = 0; sy < 4; sy++) {
+                        for (int sx = 0; sx < 4; sx++) {
+                            double dx = px + (sx + 0.5d) / 4.0d - r;
+                            double dy = py + (sy + 0.5d) / 4.0d - r;
+                            double d = dx * dx + dy * dy;
+                            if (d <= outer && d >= inner) {
+                                inside++;
+                            }
+                        }
+                    }
+                    image.setPixel(px, py, white(inside / 16.0f));
+                }
+            }
+            return register("ring_" + r + "_" + l, image);
         });
     }
 

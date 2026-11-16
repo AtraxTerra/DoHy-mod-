@@ -1,0 +1,15 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "dohy:dungeons.ttf",
+      "size": 8.0,
+      "oversample": 24.0,
+      "shift": [
+        0.0,
+        0.0
+      ],
+      "skip": ""
+    }
+  ]
+}
