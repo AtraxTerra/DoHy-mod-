@@ -21,7 +21,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  * <p>Chaque pixel d'une dalle melange les quatre cases voisines selon sa position
  * (comme un filtrage bilineaire), puis tranche : les cotes et les frontieres
  * deviennent des courbes, avec un bord adouci sur un pixel, et les frontieres un
- * trait fin. Trois finesses (4, 16 et 64 pixels par case) suivent le zoom.
+ * trait fin. Quatre finesses (2, 4, 16 et 64 pixels par case) suivent le zoom.
  *
  * <p>Le calcul se fait sur un fil a part ; la carte affiche le globe agrandi le temps
  * qu'une dalle arrive. Le calque des pays tenus suit le meme dessin.
@@ -29,8 +29,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 final class GlobeTiles {
 
     static final int SIZE = 256;
-    private static final int CACHE = 96;
-    private static final int QUEUE = 48;
+    private static final int CACHE = 112;
+    private static final int QUEUE = 96;
     /** La demi-largeur des traits, en pixels de dalle. */
     private static final double HALF_LINE = 0.45d;
     /** Le poids de terre ou passe la cote. */
