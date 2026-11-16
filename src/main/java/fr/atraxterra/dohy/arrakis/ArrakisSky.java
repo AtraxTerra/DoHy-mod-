@@ -23,6 +23,8 @@ final class ArrakisSky {
     /** Ciel et brouillard d'Arrakis en plein jour. */
     private static final int SKY = 0xE3C796;
     private static final int FOG = 0xEBD5AA;
+    /** Lever et coucher : orange brule, pas le bleu martien de Duna. */
+    private static final int SUNSET = 0xF0782F;
     /** Luminance du ciel de NTM en plein jour avec l'air d'Arrakis : la ou la teinte est pleine. */
     private static final float SKY_REFERENCE = 0.56f;
     private static final float FOG_REFERENCE = 0.62f;
@@ -65,6 +67,9 @@ final class ArrakisSky {
                 (value, position, interpolator) -> tint(value, SKY, SKY_REFERENCE));
         builder.addPositionalLayer(EnvironmentAttributes.FOG_COLOR,
                 (value, position, interpolator) -> tint(value, FOG, FOG_REFERENCE));
+        // l'opacite dit la force de la lueur au fil du jour : on la garde, on change la couleur
+        builder.addPositionalLayer(EnvironmentAttributes.SUNRISE_SUNSET_COLOR,
+                (value, position, interpolator) -> value == null ? null : value & 0xFF000000 | SUNSET);
     }
 
     /** La teinte voulue, a la luminosite de la couleur calculee par NTM. */
