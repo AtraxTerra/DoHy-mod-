@@ -285,7 +285,8 @@ public final class FactionApi {
             return "Ce chunk est deja a toi";
         }
         if (owner.claimed()) {
-            return "Ce chunk appartient a la faction " + owner.faction();
+            return owner.enemy() ? owner.label() + " tient ce chunk"
+                    : "Ce chunk appartient a la faction " + owner.faction();
         }
         int cap = claimCap(player);
         if (data.claims.size() >= cap) {

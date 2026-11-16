@@ -2285,11 +2285,22 @@
             "- Tue le tresorier : ton argent revient.",
             "! Designe ton coffre avec /guerre coffre, debout dans un de tes claims."
           ]
+        },
+        {
+          "title": "Leur place forte",
+          "text": [
+            "En guerre, la nation batit une place forte a 1 200 - 2 000 blocs de toi. Ses coordonnees sont dans /guerre.",
+            "- Vise-la avec un designateur de NTM, tire depuis une rampe de lancement.",
+            "- Sa structure sous 60 %, ou sa salle forte ouverte : rasee. Entrer dans sa salle forte la fait tomber aussi.",
+            "- Elle recule : 30 % de son tresor pour ta banque, la moitie de son armee, une treve de 7 jours, et un de ses pays sur la carte de la Terre (+1 claim).",
+            "! 5 minutes plus tard, elle s'efface : le terrain revient tel qu'il etait."
+          ]
         }
       ],
       "commands": [
         "/guerre : l'ecran de la guerre",
         "/guerre coffre : designer ton coffre ici",
+        "/guerre placeforte : une boussole vers leur place forte",
         "/guerre heure <heure> : fixer l'heure de l'assaut",
         "/guerre payer : payer un ultimatum",
         "/guerre negocier : negocier un ultimatum",

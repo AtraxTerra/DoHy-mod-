@@ -70,7 +70,7 @@ public final class ClaimProtection {
         if (last == null || now - last > 1000L) {
             LAST_WARNING.put(player.getUUID(), now);
             FactionApi.tell(player, owner.enemy()
-                    ? "Base ennemie des " + owner.faction() + " : rien ne se casse ni ne se pose ici. Dynamites, canon a TNT ou wither."
+                    ? owner.label() + " : rien ne se casse ni ne se pose ici. Dynamites, canon a TNT, wither ou missiles."
                     : "Ce territoire appartient a la faction " + owner.faction() + ".", ChatFormatting.RED);
         }
     }

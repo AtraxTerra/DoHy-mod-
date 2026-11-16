@@ -46,4 +46,16 @@ public record ClaimOwner(Optional<UUID> owner, String faction, boolean monsters,
     public boolean ownedBy(UUID player) {
         return owner.map(player::equals).orElse(false);
     }
+
+    /**
+     * A qui est ce claim, en debut de phrase : « La faction Atrax », « La base
+     * ennemie des Corbeaux », ou une place forte de nation, deja nommee
+     * (« Place forte de Nordheim »).
+     */
+    public String label() {
+        if (!enemy) {
+            return "La faction " + faction;
+        }
+        return faction.startsWith("Place forte") ? faction : "La base ennemie des " + faction;
+    }
 }
