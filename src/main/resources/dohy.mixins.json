@@ -10,7 +10,8 @@
     "BiomeTemperatureMixin"
   ],
   "client": [
-    "BiomeColorsMixin"
+    "BiomeColorsMixin",
+    "ChatComponentMixin"
   ],
   "server": [
     "DedicatedServerPauseMixin"

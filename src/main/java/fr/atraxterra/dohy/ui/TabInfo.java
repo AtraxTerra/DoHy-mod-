@@ -61,6 +61,14 @@ public record TabInfo(List<Entry> entries) implements CustomPacketPayload {
     private static final int[] COLORS = {0xFFFAC400, 0xFF2F5BEA, 0xFF22E558, 0xFFEC4FB5, 0xFF2BC4C4, 0xFFFF6F00,
             0xFFF3445D, 0xFFB45CFF};
 
+    /** La couleur d'une faction, choisie par son nom ; gris sans faction. */
+    public static int color(String faction) {
+        if (faction == null || faction.isEmpty()) {
+            return 0xFF5D6068;
+        }
+        return COLORS[Math.floorMod(faction.toLowerCase(java.util.Locale.ROOT).hashCode(), COLORS.length)];
+    }
+
     private static final int PERIOD = 100;
     private static int ticks;
 
@@ -111,9 +119,7 @@ public record TabInfo(List<Entry> entries) implements CustomPacketPayload {
                 if (faction.length() > 16) {
                     faction = faction.substring(0, 16);
                 }
-                if (!faction.isEmpty()) {
-                    color = COLORS[Math.floorMod(faction.toLowerCase(java.util.Locale.ROOT).hashCode(), COLORS.length)];
-                }
+                color = color(faction);
             }
         } catch (RuntimeException ignored) {
             // Une faction illisible ne prive pas la liste de la ligne du joueur.
