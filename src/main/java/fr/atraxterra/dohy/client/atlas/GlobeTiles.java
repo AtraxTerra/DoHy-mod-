@@ -432,8 +432,9 @@ final class GlobeTiles {
                     }
                 }
                 double wet = coast + sea;
+                // Les eaux cotieres se fondent dans le large sur une case : un haut-fond, pas une marche.
                 int water = wet <= 1.0e-9d ? AtlasGlobe.COAST
-                        : mix(AtlasGlobe.SEA, AtlasGlobe.COAST, 0.5d + (coast / wet - 0.5d) * density);
+                        : mix(AtlasGlobe.SEA, AtlasGlobe.COAST, 0.5d + (coast / wet - 0.5d) * 2.0d);
                 int color = water;
                 if (count > 0) {
                     int top = 0;
