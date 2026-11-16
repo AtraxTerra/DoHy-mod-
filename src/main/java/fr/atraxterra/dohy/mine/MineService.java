@@ -175,8 +175,8 @@ public final class MineService {
         return RealClock.minutesUntilNextSlot(RESET_HOUR, RESET_OFFSETS);
     }
 
-    /** L'heure de la prochaine remise a neuf, pour les messages. */
-    static int nextResetHour() {
+    /** L'heure de la prochaine remise a neuf, pour les messages et les ecrans (pause, liste des joueurs). */
+    public static int nextResetHour() {
         return RealClock.nextSlot(RESET_HOUR, RESET_OFFSETS).getHour();
     }
 

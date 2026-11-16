@@ -17,6 +17,11 @@ public final class GuideClient {
 
     private static KeyMapping encyclopediaKey;
 
+    /** La touche de l'encyclopedie, pour l'afficher (menu pause) ; {@code null} avant l'enregistrement. */
+    public static KeyMapping key() {
+        return encyclopediaKey;
+    }
+
     private GuideClient() {
     }
 
