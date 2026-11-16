@@ -307,7 +307,8 @@ public final class Strongholds {
             case ARCHERS -> EnemyBaseStyle.RADAR;
             default -> EnemyBaseStyle.SILO;
         };
-        String name = traits.plural() ? traits.name().substring(4) : traits.name();
+        // Le nom de ses claims : « Place forte de Nordheim » (le message d'un claim ennemi le reprend tel quel).
+        String name = "Place forte " + traits.de();
         int min = distance > 0 ? distance : MIN_DISTANCE;
         int spread = distance > 0 ? Math.max(32, distance / 4) : SPREAD;
         Job next = new Job(player.getUUID(), player.getGameProfile().name(), relation.nation, tier, style, name,
@@ -480,9 +481,14 @@ public final class Strongholds {
                     current.site[0], current.site[1]);
             return;
         }
-        if (!current.works.work(BUILD_BUDGET)) {
-            return;
+        if (current.works.work(BUILD_BUDGET)) {
+            finish(server, current, player);
         }
+    }
+
+    /** Le chantier est fini : la place forte est comptee, gardee, annoncee. */
+    private static void finish(MinecraftServer server, Job current, ServerPlayer player) {
+        ServerLevel level = server.overworld();
         Fort fort = new Fort();
         fort.player = current.player;
         fort.playerName = current.playerName;
@@ -1099,13 +1105,26 @@ public final class Strongholds {
         }
     }
 
-    @SubscribeEvent
+    /** Avant {@code EnemyBaseRegen} : le releve du terrain d'un chantier fini a l'arret doit etre ecrit. */
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onStopping(ServerStoppingEvent event) {
-        save(event.getServer());
+        MinecraftServer server = event.getServer();
+        if (job != null && job.works != null) {
+            // Un chantier entame est fini d'un coup : une base a moitie batie, sans releve, resterait la.
+            try {
+                while (!job.works.work(1_000_000_000L)) {
+                    Thread.onSpinWait();
+                }
+                finish(server, job, null);
+            } catch (RuntimeException failure) {
+                DoHy.LOGGER.error("Guerre : le chantier de la place forte n'a pas pu finir a l'arret", failure);
+            }
+        }
         if (job != null) {
-            release(event.getServer().overworld(), job);
+            release(server.overworld(), job);
             job = null;
         }
+        save(server);
     }
 
     @SubscribeEvent
