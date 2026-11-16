@@ -213,10 +213,13 @@ public final class NuclearDrops {
         return Collections.unmodifiableList(CRATES);
     }
 
-    /** « dans 1 h 12 », « dans 4 min », « maintenant ». */
+    /** « dans 1 h 12 », « dans 4 min », « dans 15 s », « maintenant ». */
     static String in(long millis) {
         if (millis <= 0L) {
             return "maintenant";
+        }
+        if (millis < 60_000L) {
+            return "dans " + Math.max(1L, (millis + 999L) / 1000L) + " s";
         }
         long minutes = Math.max(1L, (millis + 59_999L) / 60_000L);
         if (minutes < 60L) {

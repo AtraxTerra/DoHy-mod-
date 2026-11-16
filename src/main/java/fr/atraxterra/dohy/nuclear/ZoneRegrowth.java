@@ -275,7 +275,8 @@ public final class ZoneRegrowth {
             Rule rule = rules.get(index).rule();
             int cap = (int) Math.ceil(rule.veins()) * rule.size();
             int veins = (int) rule.veins() + (random.nextDouble() < rule.veins() - (int) rule.veins() ? 1 : 0);
-            for (int vein = 0; vein < veins && count[index] < cap; vein++) {
+            // un filon de plus seulement s'il tient sous le plein : le chunk n'en a jamais plus qu'au premier jour
+            for (int vein = 0; vein < veins && count[index] + rule.size() <= cap; vein++) {
                 int laid = vein(level, chunk, rules.get(index), random);
                 count[index] += laid;
                 placed += laid;
