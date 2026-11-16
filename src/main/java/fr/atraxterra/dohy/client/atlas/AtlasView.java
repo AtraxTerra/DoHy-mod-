@@ -154,7 +154,7 @@ final class AtlasView {
         boolean overworld = "minecraft:overworld".equals(dimension);
         AtlasData.Globe globe = overworld && AtlasGlobe.ready() ? AtlasData.globe() : null;
         if (globe != null) {
-            GlobeTiles.pump(8);
+            GlobeTiles.pump(32);
             globe(graphics, frame, globe, false, left, top, right, bottom);
         }
         loads = 0;

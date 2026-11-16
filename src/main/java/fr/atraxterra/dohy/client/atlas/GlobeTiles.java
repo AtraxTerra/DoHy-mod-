@@ -159,7 +159,12 @@ final class GlobeTiles {
     private static void request(Key key) {
         synchronized (WANTED) {
             if (WANTED.add(key)) {
-                QUEUED.offerFirst(key);
+                // Le fond d'abord (il se voit le plus), le calque des pays tenus ensuite.
+                if (key.kind() == Kind.HOLDERS) {
+                    QUEUED.offerLast(key);
+                } else {
+                    QUEUED.offerFirst(key);
+                }
                 while (QUEUED.size() > QUEUE) {
                     Key dropped = QUEUED.pollLast();
                     if (dropped != null) {
@@ -171,10 +176,14 @@ final class GlobeTiles {
         start();
     }
 
-    /** Transforme en textures les dalles calculees (au plus {@code max} par image). */
+    /**
+     * Transforme en textures les dalles calculees : au plus {@code max} par image, et
+     * pas plus de deux millisecondes.
+     */
     static void pump(int max) {
         Snapshot current = snapshot;
-        for (int i = 0; i < max; i++) {
+        long until = System.nanoTime() + 2_000_000L;
+        for (int i = 0; i < max && (i < 4 || System.nanoTime() < until); i++) {
             Result result = DONE.poll();
             if (result == null) {
                 return;
