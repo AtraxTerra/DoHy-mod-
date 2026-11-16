@@ -1,6 +1,6 @@
-# Datapack « DoHy — la Terre » (carte Earth24k)
+# Datapack « DoHy — la Terre » (carte Earth40k)
 
-Ce datapack allume, pour la carte **Earth24kChaosCubed**, ce que le mod DoHy sait faire d'une carte
+Ce datapack allume, pour la carte **Earth40kChaosCubed**, ce que le mod DoHy sait faire d'une carte
 de la Terre : le pays où l'on se trouve et un message au passage d'une frontière, le saut en
 parachute depuis le spawn, la carte du monde au spawn, et les **ressources là où le monde réel les
 exploite** : de vraies mines géantes, les champs de pétrole et de gaz, et des filons par pays.
@@ -12,10 +12,10 @@ La carte elle-même n'est pas ici : seulement son calage et la grille des pays.
 1. Mettre à jour le mod : le jar de DoHy doit contenir le lot « ressources de la Terre » (PR #116
    ou plus récent). **Sans le mod, ne pas ouvrir la carte en 26.2** : le jeu la régénère par-dessus
    (voir plus bas).
-2. Garder l'archive `Earth24kChaosCubed.zip` de côté : c'est l'original intact.
+2. Garder l'archive `Earth40kChaosCubed.zip` de côté : c'est l'original intact.
 3. Décompresser la carte dans `saves/`, puis déposer
    [`dohy_terre.zip`](https://github.com/AtraxTerra/DoHy-mod-/raw/datapack-terre/dohy_terre.zip)
-   **tel quel**, sans le décompresser, dans `saves/Earth24kChaosCubed/datapacks/` (créer le dossier
+   **tel quel**, sans le décompresser, dans `saves/Earth40kChaosCubed/datapacks/` (créer le dossier
    `datapacks` s'il n'existe pas).
 4. Lancer le jeu et ouvrir le monde. Le datapack s'active tout seul.
 
@@ -23,11 +23,26 @@ Le mieux est de partir d'une carte neuve : les ressources se posent à la premi�
 chunk. Sur une partie déjà commencée, un chunk déjà visité est repris une fois — ses minerais
 d'origine retirés, puis les nouveaux posés ; un minerai qu'on y aurait posé à la main part avec.
 
+## Passer d'une carte de la Terre à une autre sans perdre les joueurs
+
+Les joueurs (inventaire, coffre de l'End, stats, argent, métiers, nations) vivent dans le dossier
+du monde, pas dans la carte. Pour passer de la carte Earth24k à Earth40k sur un serveur :
+
+1. Snapshot du serveur, serveur éteint.
+2. Dans le monde actuel, remplacer **seulement** `dimensions/minecraft/overworld/region` et
+   `.../entities` par ceux de la nouvelle carte, et retirer `.../poi` (il se refait).
+3. Remplacer `datapacks/dohy_terre.zip` par cette version.
+4. Démarrer, puis `/setworldspawn 1164 65 -4332` (le point d'apparition de la carte 40k).
+
+Les joueurs gardent tout, mais reviennent à leurs anciennes coordonnées sur une autre géographie :
+`/spawn` en arrivant. Les constructions et les claims de l'ancienne carte ne suivent pas.
+L'ancienne version du datapack reste ici : `dohy_terre_24k.zip`.
+
 ## Ce qu'il contient
 
 | Fichier | Rôle |
 |---|---|
-| `data/dohy/earth/earth.json` | Le calage de la carte : projection de Miller, 68,6755 blocs par degré, Greenwich en x = 1,33, équateur en z = 700,35 ; la liste des 256 pays et territoires. |
+| `data/dohy/earth/earth.json` | Le calage de la carte : projection de Miller, 111,952 blocs par degré, Greenwich en x = 7, équateur en z = 1144 ; la liste des 256 pays et territoires. |
 | `data/dohy/earth/countries.bin` | La grille des pays, une case pour 8 blocs (Natural Earth, domaine public). |
 | `data/dohy/neoforge/biome_modifier/terre_minerais.json` | Retire de la génération tous les minerais du jeu (charbon, fer, cuivre, or, redstone, diamant, lapis, émeraude) : ils ne viennent plus que des gisements. |
 | `data/hbm/hbm/world_config/worldgen.json` | Coupe les minerais d'overworld de NTM NEXT (son propre interrupteur). |
@@ -39,7 +54,7 @@ recompiler, ajouter ce fichier au datapack : il remplace celui du mod.
 
 ## Les ressources sur la carte
 
-- **Rien n'est plus semé partout.** La carte Earth24k portait déjà du fer, de l'or, du diamant, du
+- **Rien n'est plus semé partout.** La carte portait déjà du fer, de l'or, du diamant, du
   charbon et du quartz du Nether à peu près partout : chaque chunk en est nettoyé à sa première
   visite, avec les minerais que le jeu ou les mods y auraient encore posés.
 - **Filons par pays** : charbon, fer, cuivre et quartz dans les pays qui les exploitent ou les ont
@@ -66,6 +81,6 @@ recompiler, ajouter ce fichier au datapack : il remplace celui du mod.
 
 - Pays : [Natural Earth](https://www.naturalearthdata.com/), `ne_10m_admin_0_countries`, domaine public.
 - Calage : mesuré sur la carte (relevé terre/mer par chunk ajusté sur les côtes de Natural Earth,
-  99 % de concordance hors Antarctique).
+  98 % de concordance hors Antarctique, un relevé tous les 32 blocs).
 - Mines et champs : positions publiques des sites réels, à quelques kilomètres près ; leur taille
   dit leur rang mondial, pas un tonnage.
