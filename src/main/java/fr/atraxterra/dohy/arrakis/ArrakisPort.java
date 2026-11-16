@@ -14,6 +14,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -117,6 +118,13 @@ public final class ArrakisPort {
     /** Pose le joueur au milieu de l'aire d'arrivee, tourne vers le hall. */
     public static void arrive(ServerPlayer player, ServerLevel level) {
         BlockPos at = PortBuilder.ARRIVAL;
+        // jamais d'arrivee dans un mur : du sable tombe ou un bloc pose la, on degage
+        for (int dy = 0; dy < 2; dy++) {
+            BlockPos head = at.above(dy);
+            if (!level.getBlockState(head).getCollisionShape(level, head).isEmpty()) {
+                level.setBlock(head, Blocks.AIR.defaultBlockState(), 3);
+            }
+        }
         player.fallDistance = 0.0f;
         player.teleport(new TeleportTransition(level, new Vec3(at.getX() + 0.5d, at.getY(), at.getZ() + 0.5d),
                 Vec3.ZERO, 180.0f, 0.0f, TeleportTransition.DO_NOTHING));

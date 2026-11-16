@@ -8,7 +8,8 @@
     "SerializableChunkDataMixin",
     "BiomeAccessor",
     "BiomeTemperatureMixin",
-    "CelestialGravityMixin"
+    "CelestialGravityMixin",
+    "ArrakisTerraceMixin"
   ],
   "client": [
     "BiomeColorsMixin",
