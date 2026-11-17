@@ -221,6 +221,12 @@ jobs:
       - name: L'encyclopedie ne doit renvoyer qu'a ce qui existe
         run: python3 tools/check_encyclopedia.py
 
+      # Le parcours NTM nomme des objets de NTM NEXT, absent de la CI : le
+      # controle porte ici sur le fichier (objectifs, recompenses, textes) ; il
+      # verifie aussi les objets quand on lui donne le dossier data du mod.
+      - name: Le parcours NTM doit etre coherent
+        run: python3 tools/check_ntm_path.py
+
       # Le pass : douze themes, des quetes dont le type et la cible existent,
       # une recompense par niveau et la relique au dernier, assez d'XP dans le
       # mois pour finir le pass sans tout faire.

@@ -64,8 +64,15 @@ import java.util.TreeMap;
  *
  * <p>Chaque matiere porte un des huit crans de « Difficulty of Production » du
  * wiki du mod (nucleartech.wiki), de Very Easy a Extremely Hard. L'achat est
- * multiplie par 5 a chaque cran, la vente par 2,83 seulement : un achat est un
- * puits a argent, qu'on ne peut pas exploiter, une vente est un revenu.
+ * multiplie par 3 a chaque cran, la vente par 2,83 : un achat reste un puits a
+ * argent, qu'on ne peut pas exploiter, une vente un revenu.
+ *
+ * <h2>Les premieres machines</h2>
+ *
+ * <p>De l'enclume a l'usine chimique, avec leurs moules et la tenue de
+ * protection : listees dans {@code machines}, chiffrees comme les pieces, en
+ * achat seul, et rangees dans leur propre onglet du shop
+ * ({@link fr.atraxterra.dohy.shop.ShopCategory#NTM_MACHINES}).
  */
 public final class TagPricing {
 
@@ -161,26 +168,37 @@ public final class TagPricing {
             }
         }
 
-        int components = 0;
-        for (Map.Entry<String, Long> component : current.components().entrySet()) {
-            Identifier id = Identifier.tryParse(component.getKey());
-            // Un identifiant inconnu est une piece d'une autre version du mod, ou
-            // le mod absent : rien a faire, le shop ne montre que ce qui existe.
-            if (id == null || component.getValue() <= 0L || explicit.containsKey(id)
-                    || generated.containsKey(id) || BuiltInRegistries.ITEM.getOptional(id).isEmpty()) {
-                continue;
-            }
-            generated.put(id, componentEntry(component.getValue()));
-            components++;
-        }
+        int components = listed(current.components(), "NTM", explicit, generated);
+        int machines = listed(current.machines(), "NTM_MACHINES", explicit, generated);
 
         if (!generated.isEmpty()) {
             long sellable = generated.values().stream().filter(PriceEntry::sellable).count();
             long buyable = generated.values().stream().filter(entry -> entry.buyPrice() > 0).count();
-            DoHy.LOGGER.info("Tarification par tag : {} items generes ({} a la vente, {} a l'achat), dont {} pieces de machine",
-                    generated.size(), sellable, buyable, components);
+            DoHy.LOGGER.info("Tarification par tag : {} items generes ({} a la vente, {} a l'achat), dont {} pieces "
+                    + "et {} machines", generated.size(), sellable, buyable, components, machines);
         }
         return generated;
+    }
+
+    /**
+     * Ajoute une liste d'objets en achat seul (pieces ou machines) dans un onglet.
+     * @return le nombre d'objets ajoutes
+     */
+    private static int listed(Map<String, Long> prices, String category, Map<Identifier, PriceEntry> explicit,
+                              Map<Identifier, PriceEntry> generated) {
+        int added = 0;
+        for (Map.Entry<String, Long> price : prices.entrySet()) {
+            Identifier id = Identifier.tryParse(price.getKey());
+            // Un identifiant inconnu est un objet d'une autre version du mod, ou
+            // le mod absent : rien a faire, le shop ne montre que ce qui existe.
+            if (id == null || price.getValue() <= 0L || explicit.containsKey(id)
+                    || generated.containsKey(id) || BuiltInRegistries.ITEM.getOptional(id).isEmpty()) {
+                continue;
+            }
+            generated.put(id, componentEntry(price.getValue(), category));
+            added++;
+        }
+        return added;
     }
 
     /**
@@ -191,9 +209,9 @@ public final class TagPricing {
      * pas. Il garde le rapport achat / vente d'un lingot du cran EASY, pour que
      * pieces et lingots se rangent dans le meme ordre de valeur.
      */
-    private static PriceEntry componentEntry(long buy) {
+    private static PriceEntry componentEntry(long buy, String category) {
         return new PriceEntry(
-                "NTM",
+                category,
                 "FARM",
                 Math.max(1L, Math.round(buy / 30.0d)),
                 S0.get("FARM"),
@@ -297,17 +315,18 @@ public final class TagPricing {
     }
 
     /**
-     * Le fichier entier. {@code components} associe un identifiant d'item a son
-     * prix d'achat ; le bloc {@code costing}, qui sert a le calculer, n'est lu
-     * que par l'outil et ignore ici.
+     * Le fichier entier. {@code components} et {@code machines} associent un
+     * identifiant d'item a son prix d'achat ; le bloc {@code costing}, qui sert a
+     * les calculer, n'est lu que par l'outil et ignore ici.
      */
     public record Config(Map<String, Level> levels,
                          Map<String, Double> forms,
                          Map<String, Material> materials,
                          List<Rule> rules,
-                         Map<String, Long> components) {
+                         Map<String, Long> components,
+                         Map<String, Long> machines) {
 
-        static final Config EMPTY = new Config(Map.of(), Map.of(), Map.of(), List.of(), Map.of());
+        static final Config EMPTY = new Config(Map.of(), Map.of(), Map.of(), List.of(), Map.of(), Map.of());
 
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.unboundedMap(Codec.STRING, Level.CODEC)
@@ -318,7 +337,9 @@ public final class TagPricing {
                         .optionalFieldOf("materials", Map.of()).forGetter(Config::materials),
                 Rule.CODEC.listOf().optionalFieldOf("rules", List.of()).forGetter(Config::rules),
                 Codec.unboundedMap(Codec.STRING, Codec.LONG)
-                        .optionalFieldOf("components", Map.of()).forGetter(Config::components)
+                        .optionalFieldOf("components", Map.of()).forGetter(Config::components),
+                Codec.unboundedMap(Codec.STRING, Codec.LONG)
+                        .optionalFieldOf("machines", Map.of()).forGetter(Config::machines)
         ).apply(instance, Config::new));
     }
 }

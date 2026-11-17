@@ -68,6 +68,7 @@ public final class EncyclopediaProgress {
                 case "ameliorations" -> upgrades(player);
                 case "pass" -> pass(player);
                 case "boss_metier" -> jobBosses(player);
+                case "parcours_ntm" -> ntmPath(player);
                 default -> Result.NONE;
             };
         } catch (RuntimeException error) {
@@ -75,6 +76,33 @@ public final class EncyclopediaProgress {
             fr.atraxterra.dohy.DoHy.LOGGER.warn("Encyclopedie : progression « {} » illisible", key, error);
             return Result.NONE;
         }
+    }
+
+    /** Le parcours NTM : les etapes faites, et l'etape en cours (un clic ouvre le parcours). */
+    private static Result ntmPath(ServerPlayer player) {
+        if (!fr.atraxterra.dohy.nuclear.path.NtmPath.installed()
+                || fr.atraxterra.dohy.nuclear.path.NtmPath.steps().isEmpty()) {
+            return Result.NONE;
+        }
+        int done = fr.atraxterra.dohy.nuclear.path.NtmPath.doneCount(player);
+        int total = fr.atraxterra.dohy.nuclear.path.NtmPath.steps().size();
+        fr.atraxterra.dohy.nuclear.path.NtmPath.Located current = fr.atraxterra.dohy.nuclear.path.NtmPath.current(player);
+        List<Card> cards = new ArrayList<>();
+        if (current != null) {
+            cards.add(Card.of(current.step().iconStack(), "Etape " + current.number() + " : " + current.step().title(),
+                            List.of(current.step().goal().label(), "Recompense " + MoneyFormat.shortForm(
+                                    current.step().reward().money()) + " $"))
+                    .accent(current.chapter().accent()).progress(done, total)
+                    .action("cmd:/parcours|ouvrir le parcours"));
+        } else {
+            cards.add(Card.of(new ItemStack(Items.NETHER_STAR), "Parcours termine", List.of(
+                            total + " etapes validees", "Un clic le rouvre"))
+                    .accent(GREEN).state(MenuView.DONE).action("cmd:/parcours|ouvrir le parcours"));
+        }
+        return new Result(List.of(
+                new MenuView.Stat("ETAPES", done + " / " + total, GREEN),
+                new MenuView.Stat("GAGNE", MoneyFormat.shortForm(
+                        fr.atraxterra.dohy.nuclear.path.NtmPath.data(player).earned()) + " $", WHITE)), cards);
     }
 
     private static Result money(ServerPlayer player) {
