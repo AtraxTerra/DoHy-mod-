@@ -13,6 +13,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
@@ -64,6 +65,11 @@ public final class Hydration {
     private static final float SUIT = 0.35f;
     private static final float LEGS = 0.25f;
     private static final float BOOTS = 0.10f;
+    /** Le distille de sietch, cousu a nouveau : chaque piece garde un peu plus (0,93 en tout). */
+    private static final float SIETCH_MASK = 0.17f;
+    private static final float SIETCH_SUIT = 0.39f;
+    private static final float SIETCH_LEGS = 0.26f;
+    private static final float SIETCH_BOOTS = 0.11f;
     /** Hors d'Arrakis, on boit a sa soif : la reserve regagne un point par seconde. */
     private static final float ELSEWHERE = 1.0f;
     /** A sec, un demi-coeur toutes les trois secondes. */
@@ -97,18 +103,24 @@ public final class Hydration {
         }
     }
 
-    /** La part de l'eau du corps que garde le distille porte, de 0 a 0,85. */
+    /** La part de l'eau du corps que garde le distille porte : 0,85 pour celui d'Arrakeen, 0,93 pour celui d'un sietch. */
     public static float saved(Player player) {
         float saved = 0.0f;
-        saved += worn(player, EquipmentSlot.HEAD, ArrakisContent.STILLSUIT_MASK.get(), MASK);
-        saved += worn(player, EquipmentSlot.CHEST, ArrakisContent.STILLSUIT_SUIT.get(), SUIT);
-        saved += worn(player, EquipmentSlot.LEGS, ArrakisContent.STILLSUIT_LEGGINGS.get(), LEGS);
-        saved += worn(player, EquipmentSlot.FEET, ArrakisContent.STILLSUIT_BOOTS.get(), BOOTS);
+        saved += worn(player, EquipmentSlot.HEAD, ArrakisContent.STILLSUIT_MASK.get(), MASK,
+                SietchContent.SIETCH_MASK.get(), SIETCH_MASK);
+        saved += worn(player, EquipmentSlot.CHEST, ArrakisContent.STILLSUIT_SUIT.get(), SUIT,
+                SietchContent.SIETCH_SUIT.get(), SIETCH_SUIT);
+        saved += worn(player, EquipmentSlot.LEGS, ArrakisContent.STILLSUIT_LEGGINGS.get(), LEGS,
+                SietchContent.SIETCH_LEGGINGS.get(), SIETCH_LEGS);
+        saved += worn(player, EquipmentSlot.FEET, ArrakisContent.STILLSUIT_BOOTS.get(), BOOTS,
+                SietchContent.SIETCH_BOOTS.get(), SIETCH_BOOTS);
         return saved;
     }
 
-    private static float worn(Player player, EquipmentSlot slot, Item piece, float share) {
-        return player.getItemBySlot(slot).is(piece) ? share : 0.0f;
+    private static float worn(Player player, EquipmentSlot slot, Item piece, float share, Item sietch,
+                              float sietchShare) {
+        ItemStack worn = player.getItemBySlot(slot);
+        return worn.is(sietch) ? sietchShare : worn.is(piece) ? share : 0.0f;
     }
 
     /** Vrai si le joueur a le soleil d'Arrakis sur la tete. */

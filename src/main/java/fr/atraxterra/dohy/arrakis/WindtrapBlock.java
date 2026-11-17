@@ -163,7 +163,7 @@ public class WindtrapBlock extends Block {
         }
         int taken;
         if (canteen) {
-            int room = CanteenItem.CAPACITY - CanteenItem.water(stack);
+            int room = CanteenItem.capacity(stack) - CanteenItem.water(stack);
             taken = Math.min(room, water);
             if (taken <= 0) {
                 server.sendSystemMessage(Component.literal("Ta gourde est deja pleine.")
@@ -172,7 +172,7 @@ public class WindtrapBlock extends Block {
             }
             CanteenItem.setWater(stack, CanteenItem.water(stack) + taken);
             server.sendSystemMessage(Component.literal("Gourde : " + CanteenItem.water(stack) + " / "
-                    + CanteenItem.CAPACITY + " gorgees").withStyle(ChatFormatting.AQUA), true);
+                    + CanteenItem.capacity(stack) + " gorgees").withStyle(ChatFormatting.AQUA), true);
         } else {
             taken = 1;
             ItemStack filled = PotionContents.createItemStack(Items.POTION, Potions.WATER);
