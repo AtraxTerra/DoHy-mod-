@@ -181,11 +181,16 @@ final class SietchBuilder {
         if (summit > floor + 10) {
             BlockPos hall = site.hall(floor);
             int top = summit;
-            BlockPos trap = new BlockPos(hall.getX(), top, hall.getZ());
-            blocks.put(trap.asLong(), SietchContent.windtrap());
+            // un socle de deux blocs taille, le piege a vent dessus : on le voit de loin sur la roche
+            BlockPos base = new BlockPos(hall.getX(), top, hall.getZ());
+            blocks.put(base.asLong(), cut);
+            blocks.put(base.above().asLong(), chiseled);
+            blocks.put(base.above(2).asLong(), SietchContent.windtrap());
             for (Direction d : Direction.Plane.HORIZONTAL) {
-                blocks.put(trap.relative(d).below().asLong(), cut);
-                blocks.put(trap.relative(d).relative(d.getClockWise()).below().asLong(), sandstone);
+                blocks.put(base.relative(d).below().asLong(), cut);
+                blocks.put(base.relative(d).asLong(), with(block("smooth_sandstone_slab"),
+                        BlockStateProperties.SLAB_TYPE, SlabType.BOTTOM));
+                blocks.put(base.relative(d).relative(d.getClockWise()).below().asLong(), sandstone);
             }
         }
     }
