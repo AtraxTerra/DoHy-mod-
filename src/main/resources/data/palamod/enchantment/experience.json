@@ -2,7 +2,7 @@
   "description": {
     "translate": "enchantment.palamod.experience"
   },
-  "supported_items": "#minecraft:enchantable/sword",
+  "supported_items": "#minecraft:swords",
   "weight": 1,
   "max_level": 3,
   "min_cost": {
