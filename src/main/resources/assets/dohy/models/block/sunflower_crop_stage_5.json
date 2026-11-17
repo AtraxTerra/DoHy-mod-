@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:block/crop",
+  "parent": "dohy:block/crop_cross_tall",
   "textures": {
-    "crop": "dohy:block/sunflower_crop_stage_5"
+    "cross": "dohy:block/sunflower_crop_stage_5"
   }
 }

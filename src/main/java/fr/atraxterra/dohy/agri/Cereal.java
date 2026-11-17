@@ -55,6 +55,14 @@ public enum Cereal {
         return climate;
     }
 
+    /**
+     * Vrai pour les cereales qui montent sur deux blocs a partir du cinquieme stade (mais,
+     * tournesol, sorgho) : leur modele depasse le bloc, leur contour de selection aussi.
+     */
+    public boolean tall() {
+        return this == CORN || this == SUNFLOWER || this == SORGHUM;
+    }
+
     /** La part des ticks de croissance que la culture accepte : un OGM pousse moins vite. */
     public float growth() {
         return gmo() ? 0.6f : 1.0f;
