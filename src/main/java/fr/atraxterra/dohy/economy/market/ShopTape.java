@@ -28,8 +28,8 @@ import java.util.Map;
  */
 public final class ShopTape {
 
-    /** Les heures gardees : celles de la courbe. */
-    public static final int HOURS = 24;
+    /** Les heures gardees : celles de la courbe, vingt-quatre heures et l'heure en cours. */
+    public static final int HOURS = 25;
 
     private ShopTape() {
     }

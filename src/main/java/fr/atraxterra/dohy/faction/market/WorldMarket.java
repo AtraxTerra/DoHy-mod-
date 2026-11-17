@@ -295,7 +295,7 @@ public final class WorldMarket {
             values.add(1000L);
             volumes.add(0L);
         }
-        return new PriceChart(values, volumes, 1000L, MOVE_MINUTES, PriceChart.PERMILLE);
+        return new PriceChart(values, volumes, 1000L, MOVE_MINUTES, PriceChart.PERMILLE | PriceChart.VOLUME_DOLLARS);
     }
 
     private static Map<Identifier, Double> stocks(MinecraftServer server) {

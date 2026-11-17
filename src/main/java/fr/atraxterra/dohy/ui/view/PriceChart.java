@@ -18,7 +18,8 @@ import java.util.List;
  * @param volumes   le volume echange sur chaque pas, aligne sur {@code values} ; vide pour aucun
  * @param reference un repere horizontal (le prix de base, un cours de 1000), 0 pour aucun
  * @param step      la duree d'un pas, en minutes
- * @param unit      {@link #DOLLARS} ou {@link #PERMILLE}
+ * @param unit      {@link #DOLLARS} ou {@link #PERMILLE}, plus {@link #VOLUME_DOLLARS} si les volumes
+ *                  sont des sommes et non des quantites
  */
 public record PriceChart(List<Long> values, List<Long> volumes, long reference, int step, int unit) {
 
@@ -26,6 +27,8 @@ public record PriceChart(List<Long> values, List<Long> volumes, long reference, 
     public static final int DOLLARS = 0;
     /** Un cours en pour mille de la reference : 1000 pour le prix de base. */
     public static final int PERMILLE = 1;
+    /** Drapeau : les volumes sont des dollars echanges (l'indice, qui melange des ressources). */
+    public static final int VOLUME_DOLLARS = 0x10;
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PriceChart> STREAM_CODEC = StreamCodec.of(
             (buffer, chart) -> {
@@ -51,6 +54,16 @@ public record PriceChart(List<Long> values, List<Long> volumes, long reference, 
     public PriceChart {
         values = List.copyOf(values);
         volumes = List.copyOf(volumes);
+    }
+
+    /** {@link #DOLLARS} ou {@link #PERMILLE}, sans les drapeaux. */
+    public int scale() {
+        return unit & 0x0F;
+    }
+
+    /** Vrai si les volumes sont des dollars. */
+    public boolean volumeInDollars() {
+        return (unit & VOLUME_DOLLARS) != 0;
     }
 
     public int size() {

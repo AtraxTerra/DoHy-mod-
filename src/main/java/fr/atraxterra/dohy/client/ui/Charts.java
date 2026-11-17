@@ -62,7 +62,7 @@ public final class Charts {
 
     /** Une valeur de la courbe : « 1.2k $ » pour un prix, « +12 % » pour un cours. */
     public static String value(PriceChart chart, long value) {
-        if (chart.unit() == PriceChart.PERMILLE) {
+        if (chart.scale() == PriceChart.PERMILLE) {
             long percent = Math.round((value - 1000L) / 10.0d);
             return (percent > 0 ? "+" : "") + percent + " %";
         }
@@ -142,24 +142,30 @@ public final class Charts {
         int color = trend(chart);
         int n = chart.size();
 
-        // Le cadre et la grille : trois paliers, leur prix a droite.
+        // Le point sous la souris, s'il y en a un.
         Plot plot = plot(p, chart, x, y, plotWidth, lineHeight, 3.0f, 1.15f, 1.6f);
-        p.rect(x, y + plotHeight, plotWidth, 0.34f, 0xFF2C2E33);
-        for (int step = 0; step < 3; step++) {
-            double value = plot.high - (plot.high - plot.low) * step / 2.0d;
-            float gridY = plot.guiYOf(value);
-            p.dashes(x, gridY, plotWidth, 0.7f, 1.4f, 0x22FFFFFF);
-            g.text(Ui.PIXEL, value(chart, Math.round(value)), x + plotWidth + 2.7f, gridY - 1.4f, 3.0f,
-                    Ui.Theme.DIM);
-        }
-
-        // Les volumes, une barre par point, de la couleur du pas.
         int hovered = -1;
         boolean inside = mouseX >= x && mouseX < x + plotWidth && mouseY >= y && mouseY < y + plotHeight;
         if (inside && n > 1) {
             hovered = Math.round((float) ((mouseX - x) / plotWidth * (n - 1)));
             hovered = Math.max(0, Math.min(n - 1, hovered));
         }
+        // L'etiquette de droite (le dernier prix, ou celui du point survole) cache les paliers qu'elle touche.
+        float tagY = hovered >= 0 ? plot.guiY(hovered) : reveal >= 0.999f ? plot.guiY(plot.last()) : Float.NaN;
+
+        // Le cadre et la grille : trois paliers, leur prix a droite.
+        p.rect(x, y + plotHeight, plotWidth, 0.34f, 0xFF2C2E33);
+        for (int step = 0; step < 3; step++) {
+            double value = plot.high - (plot.high - plot.low) * step / 2.0d;
+            float gridY = plot.guiYOf(value);
+            p.dashes(x, gridY, plotWidth, 0.7f, 1.4f, 0x22FFFFFF);
+            if (!(Math.abs(gridY - tagY) < 5.0f)) {
+                g.text(Ui.PIXEL, value(chart, Math.round(value)), x + plotWidth + 2.7f, gridY - 1.4f, 3.0f,
+                        Ui.Theme.DIM);
+            }
+        }
+
+        // Les volumes, une barre par point, de la couleur du pas.
         if (volumes) {
             long top = 1L;
             for (long volume : chart.volumes()) {
@@ -182,13 +188,20 @@ public final class Charts {
         }
 
         // Le repere : le prix de base, ou le cours de reference.
-        if (chart.reference() > 0 && plot.referenceY >= y && plot.referenceY <= y + lineHeight) {
+        boolean reference = chart.reference() > 0 && plot.referenceY >= y && plot.referenceY <= y + lineHeight;
+        if (reference) {
             p.dashes(x, plot.referenceY, plotWidth, 1.3f, 1.3f, 0x40FFFFFF);
-            g.text(Ui.PIXEL, chart.unit() == PriceChart.PERMILLE ? "REFERENCE" : "BASE", x + 1.5f,
-                    plot.referenceY - 4.3f, 2.7f, 0x66FFFFFF);
         }
 
         plot.draw(p, color, reveal);
+
+        // Le nom du repere, sur un fond : la courbe passe souvent dessous.
+        if (reference) {
+            String name = chart.scale() == PriceChart.PERMILLE ? "REFERENCE" : "BASE";
+            float nameWidth = g.width(Ui.PIXEL, name, 2.7f) + 3.4f;
+            p.round(x + 0.6f, plot.referenceY - 5.4f, nameWidth, 4.4f, 1.2f, 0xD016171A);
+            g.text(Ui.PIXEL, name, x + 2.3f, plot.referenceY - 4.5f, 2.7f, 0x99FFFFFF);
+        }
 
         // Le dernier point : le prix de maintenant, qui bat doucement.
         float lastX = plot.guiX(plot.last());
@@ -228,7 +241,7 @@ public final class Charts {
             String when = ago(minutes).toUpperCase(java.util.Locale.ROOT);
             if (volumes && chart.volumes().get(hovered) > 0L) {
                 when += " · " + MoneyFormat.shortForm(chart.volumes().get(hovered))
-                        + (chart.unit() == PriceChart.PERMILLE && chart.reference() == 1000L ? "" : " ECH.");
+                        + (chart.volumeInDollars() ? " $" : " ECH.");
             }
             float tagWidth = g.width(Ui.PIXEL, when, 3.0f) + 5.4f;
             float tagX = Math.max(x, Math.min(x + plotWidth - tagWidth, pointX - tagWidth / 2.0f));
