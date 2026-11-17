@@ -113,6 +113,12 @@ public final class SpiceBlows {
         }
     }
 
+    /** Le centre de l'eruption qui gronde en ce moment, ou {@code null}. */
+    public static BlockPos pending() {
+        Blow blow = pending;
+        return blow == null ? null : blow.center;
+    }
+
     /** {@code /arrakis epice} : une eruption pres de ce joueur, apres le grondement. Faux si rien ne convient. */
     public static boolean trigger(ServerPlayer player) {
         if (!(player.level() instanceof ServerLevel level) || level.dimension() != DoHyArrakis.DIMENSION
