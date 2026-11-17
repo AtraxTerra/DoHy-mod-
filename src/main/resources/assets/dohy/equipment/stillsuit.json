@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "dohy:stillsuit"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "dohy:stillsuit"
+      }
+    ]
+  }
+}

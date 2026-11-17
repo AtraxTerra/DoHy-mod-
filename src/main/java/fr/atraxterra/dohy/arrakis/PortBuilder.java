@@ -31,7 +31,7 @@ import java.util.Random;
 final class PortBuilder {
 
     /** A changer quand le dessin change : l'astroport est alors repose. */
-    static final int VERSION = 2;
+    static final int VERSION = 3;
     static final int G = ArrakisRelief.CITY_GROUND;
     /** Le centre de l'aire d'arrivee ; on y apparait tourne vers le hall, au nord. */
     static final BlockPos ARRIVAL = new BlockPos(0, G + 1, 6);
@@ -39,6 +39,8 @@ final class PortBuilder {
     static final BlockPos TERMINAL = new BlockPos(0, G + 1, -18);
     /** Le comptoir de l'epice, a droite de la navette : la Guilde y rachete le melange. */
     static final BlockPos COUNTER = new BlockPos(8, G + 1, -18);
+    /** Le marchand d'eau, a gauche de la navette : la citerne, les gourdes, le distille. */
+    static final BlockPos WATER = new BlockPos(-8, G + 1, -18);
 
     record Label(BlockPos pos, String text, int color, float scale) {
     }
@@ -123,6 +125,13 @@ final class PortBuilder {
                 .setValue(SpawnTerminalBlock.KIND, SpawnTerminalBlock.Kind.SPICE));
         labels.add(new Label(COUNTER.above(), "EPICE", 0xE8742C, 1.0f));
         labels.add(new Label(COUNTER.above(2), "Comptoir de la Guilde", 0xE8C27A, 0.6f));
+        // le marchand d'eau, de l'autre cote
+        put(WATER.getX(), WATER.getY() - 1, WATER.getZ(), trim);
+        put(WATER.getX(), WATER.getY(), WATER.getZ(), DoHySpawn.TERMINAL.get().defaultBlockState()
+                .setValue(SpawnTerminalBlock.FACING, Direction.SOUTH)
+                .setValue(SpawnTerminalBlock.KIND, SpawnTerminalBlock.Kind.WATER));
+        labels.add(new Label(WATER.above(), "EAU", 0x4FB8FF, 1.0f));
+        labels.add(new Label(WATER.above(2), "Le marchand d'eau", 0xE8C27A, 0.6f));
     }
 
     // -- L'aire d'atterrissage ------------------------------------------------------------

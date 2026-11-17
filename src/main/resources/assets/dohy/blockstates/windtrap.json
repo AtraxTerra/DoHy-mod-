@@ -1,0 +1,49 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "dohy:block/windtrap_frame"
+      }
+    },
+    {
+      "when": {
+        "water": "0"
+      },
+      "apply": {
+        "model": "dohy:block/windtrap_tank_0"
+      }
+    },
+    {
+      "when": {
+        "water": "1|2|3|4"
+      },
+      "apply": {
+        "model": "dohy:block/windtrap_tank_1"
+      }
+    },
+    {
+      "when": {
+        "water": "5|6|7|8"
+      },
+      "apply": {
+        "model": "dohy:block/windtrap_tank_2"
+      }
+    },
+    {
+      "when": {
+        "water": "9|10|11|12"
+      },
+      "apply": {
+        "model": "dohy:block/windtrap_tank_3"
+      }
+    },
+    {
+      "when": {
+        "water": "13|14|15|16"
+      },
+      "apply": {
+        "model": "dohy:block/windtrap_tank_4"
+      }
+    }
+  ]
+}

@@ -55,6 +55,7 @@ public final class Menus {
                 fr.atraxterra.dohy.pass.PassMenu.INSTANCE, fr.atraxterra.dohy.blackmarket.BlackMarketMenu.INSTANCE,
                 fr.atraxterra.dohy.guide.plan.PlanMenu.INSTANCE, fr.atraxterra.dohy.jobboss.JobBossMenu.INSTANCE,
                 fr.atraxterra.dohy.job.JobsMenu.INSTANCE, fr.atraxterra.dohy.arrakis.ShuttleMenu.INSTANCE,
-                fr.atraxterra.dohy.arrakis.SpiceCounterMenu.INSTANCE, fr.atraxterra.dohy.arrakis.HarvesterMenu.INSTANCE);
+                fr.atraxterra.dohy.arrakis.SpiceCounterMenu.INSTANCE, fr.atraxterra.dohy.arrakis.HarvesterMenu.INSTANCE,
+                fr.atraxterra.dohy.arrakis.WaterMenu.INSTANCE);
     }
 }

@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * Le HUD de Berskar au style Zephyr : la hotbar en carte, la sante, la faim, l'armure,
- * l'air et la monture en barres, l'experience fine sous elles, le nom de l'objet tenu et la
+ * l'air, la monture et l'eau d'Arrakis en barres, l'experience fine sous elles, le nom de l'objet tenu et la
  * barre d'action en pastilles, les effets en puces, la carte de faction en haut a droite.
  *
  * <p>Chaque couche du jeu est enveloppee, pas remplacee : l'enveloppe garde la couche du
@@ -53,6 +53,17 @@ public final class ZephyrHud {
         wrap(event, VanillaGuiLayers.FOOD_LEVEL, Part.STATUS, StatusHud::food);
         wrap(event, VanillaGuiLayers.VEHICLE_HEALTH, Part.STATUS, StatusHud::mount);
         wrap(event, VanillaGuiLayers.AIR_LEVEL, Part.STATUS, StatusHud::air);
+        // l'eau d'Arrakis : une rangee de plus a droite, entre la faim (ou la monture) et l'air
+        event.registerAbove(VanillaGuiLayers.VEHICLE_HEALTH, Identifier.fromNamespaceAndPath(DoHy.MOD_ID,
+                "water_level"), (graphics, delta) -> {
+                    if (!BROKEN.contains(Part.STATUS)) {
+                        try {
+                            StatusHud.water(graphics, delta);
+                        } catch (Throwable error) {
+                            fail(Part.STATUS, error);
+                        }
+                    }
+                });
         wrap(event, VanillaGuiLayers.CONTEXTUAL_INFO_BAR_BACKGROUND, Part.EXPERIENCE, ExperienceHud::background);
         wrap(event, VanillaGuiLayers.EXPERIENCE_LEVEL, Part.EXPERIENCE, ExperienceHud::level);
         wrap(event, VanillaGuiLayers.CONTEXTUAL_INFO_BAR, Part.EXPERIENCE, ExperienceHud::bar);

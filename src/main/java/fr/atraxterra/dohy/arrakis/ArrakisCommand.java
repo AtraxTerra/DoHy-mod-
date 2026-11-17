@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.arrakis;
 
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import fr.atraxterra.dohy.DoHy;
 import net.minecraft.commands.CommandSourceStack;
@@ -15,7 +16,8 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 /**
  * {@code /arrakis} pour les operateurs : aller a l'astroport sans billet,
  * reconstruire l'astroport, provoquer une eruption d'epice, appeler un ver,
- * se donner une moissonneuse pleine, lire l'oxygene de l'atmosphere.
+ * se donner une moissonneuse pleine, lire ou fixer son eau, lire l'oxygene de
+ * l'atmosphere.
  */
 @EventBusSubscriber(modid = DoHy.MOD_ID)
 public final class ArrakisCommand {
@@ -89,6 +91,25 @@ public final class ArrakisCommand {
                             false);
                     return 1;
                 }))
+                .then(Commands.literal("eau")
+                        .executes(context -> {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            float water = Hydration.water(player);
+                            context.getSource().sendSuccess(() -> Component.literal(String.format(
+                                    java.util.Locale.ROOT, "Eau : %.1f / %.0f  -  perte ici : %.3f par seconde"
+                                            + " (distille : %.0f %%)", water, Hydration.MAX, Hydration.loss(player),
+                                    Hydration.saved(player) * 100.0f)), false);
+                            return 1;
+                        })
+                        .then(Commands.argument("valeur", FloatArgumentType.floatArg(0.0f, Hydration.MAX))
+                                .executes(context -> {
+                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                    float value = FloatArgumentType.getFloat(context, "valeur");
+                                    Hydration.set(player, value);
+                                    context.getSource().sendSuccess(() -> Component.literal(String.format(
+                                            java.util.Locale.ROOT, "Eau mise a %.1f.", value)), false);
+                                    return 1;
+                                })))
                 .then(Commands.literal("air").executes(context -> {
                     double oxygen = ArrakisPlanet.oxygen(context.getSource().getServer());
                     context.getSource().sendSuccess(() -> Component.literal(

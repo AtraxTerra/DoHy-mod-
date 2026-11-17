@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import fr.atraxterra.dohy.DoHy;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
@@ -44,6 +45,16 @@ public final class DoHyArrakis {
     static {
         DENSITY.register("arrakis", () -> ArrakisTerrain.MAP_CODEC);
     }
+
+    /**
+     * L'eau d'un joueur, de 0 a {@link Hydration#MAX} : elle ne baisse que sur Arrakis.
+     * Synchronisee pour le HUD ; pas gardee a la mort (on reapparait desaltere).
+     */
+    public static final Supplier<AttachmentType<Float>> HYDRATION = ATTACHMENTS.register(
+            "hydration", () -> AttachmentType.builder(() -> Hydration.MAX)
+                    .serialize(Codec.FLOAT.fieldOf("water"), value -> value < Hydration.MAX)
+                    .sync(ByteBufCodecs.FLOAT)
+                    .build());
 
     /** La version de l'astroport construit, gardee sur la dimension ; 0 tant qu'il n'existe pas. */
     public static final Supplier<AttachmentType<Integer>> PORT_BUILT = ATTACHMENTS.register(

@@ -14,6 +14,9 @@ import java.lang.reflect.Proxy;
  * passe apres lui et garde sa lumiere — jour, nuit, eclipses, tempetes — mais
  * lui donne la teinte d'un ciel de sable, pale et chaud.
  *
+ * <p>L'eau aussi : versee a l'air libre, elle s'evapore (l'attribut d'environnement
+ * du Nether), si bien que seules la gourde et le piege a vent en gardent.
+ *
  * <p>NTM tient une liste de fournisseurs de couches d'environnement
  * ({@code AtmosphereLayers}) ; on s'y inscrit par un mandataire, sans
  * dependance de compilation.
@@ -70,6 +73,12 @@ final class ArrakisSky {
         // l'opacite dit la force de la lueur au fil du jour : on la garde, on change la couleur
         builder.addPositionalLayer(EnvironmentAttributes.SUNRISE_SUNSET_COLOR,
                 (value, position, interpolator) -> value == null ? null : value & 0xFF000000 | SUNSET);
+        // l'eau versee a l'air libre s'evapore, comme dans le Nether : seules la gourde et la citerne la gardent
+        try {
+            builder.addConstantLayer(EnvironmentAttributes.WATER_EVAPORATES, value -> Boolean.TRUE);
+        } catch (RuntimeException e) {
+            DoHy.LOGGER.warn("Arrakis : impossible de rendre l'eau evaporable", e);
+        }
     }
 
     /** La teinte voulue, a la luminosite de la couleur calculee par NTM. */

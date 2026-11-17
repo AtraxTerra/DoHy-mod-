@@ -209,6 +209,21 @@
     "facing=west,kind=spice": {
       "model": "dohy:block/terminal_spice",
       "y": 270
+    },
+    "facing=north,kind=water": {
+      "model": "dohy:block/terminal_water"
+    },
+    "facing=east,kind=water": {
+      "model": "dohy:block/terminal_water",
+      "y": 90
+    },
+    "facing=south,kind=water": {
+      "model": "dohy:block/terminal_water",
+      "y": 180
+    },
+    "facing=west,kind=water": {
+      "model": "dohy:block/terminal_water",
+      "y": 270
     }
   }
 }
