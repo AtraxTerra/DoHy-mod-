@@ -40,7 +40,7 @@ import java.util.Optional;
 
 /**
  * Le parcours NTM : les premieres machines de NTM NEXT, une etape apres
- * l'autre, de l'enclume a la centrifugeuse ({@code data/dohy/ntm_path.json}).
+ * l'autre, de l'enclume a l'uranium enrichi ({@code data/dohy/ntm_path.json}).
  *
  * <p>Chaque etape a un objectif que le serveur verifie au moment de valider :
  * des objets dans le sac ({@code have}, rien n'est pris) ou une machine posee
@@ -415,7 +415,7 @@ public final class NtmPath {
                     .append(link("[Voir]")));
         } else {
             player.sendSystemMessage(Component.literal("[NTM] ").withStyle(ChatFormatting.GREEN)
-                    .append(Component.literal("Parcours termine : toute la premiere industrie est montee. Bravo !")
+                    .append(Component.literal("Parcours termine : de l'enclume a l'uranium enrichi. Bravo !")
                             .withStyle(ChatFormatting.GOLD)));
         }
         Toasts.send(player, step.iconStack(), next == null ? "PARCOURS NTM TERMINE" : "ETAPE VALIDEE", step.title(),
