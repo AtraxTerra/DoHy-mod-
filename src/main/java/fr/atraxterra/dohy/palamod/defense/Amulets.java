@@ -33,6 +33,11 @@ import java.util.List;
  * dix niveaux. Le plastron garde la liste de ses amulettes (une de chaque) et
  * les fait agir tant qu'on le porte. L'amulette de voyance demande le palier 1
  * de la branche Defense.
+ *
+ * <p><b>Une seule amulette par plastron</b>, plus une par niveau
+ * d'Overwhelmed ({@code EventsManager.onCraft} du Chasseur) : au-dela, la plus
+ * ancienne cede sa place a la nouvelle. Un plastron qui en portait davantage
+ * avant cette regle les garde jusqu'a la prochaine fusion.
  */
 @EventBusSubscriber
 public final class Amulets {
@@ -52,6 +57,11 @@ public final class Amulets {
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
         List<String> amulets = chest.get(PalaDefense.AMULETS.get());
         return amulets != null && amulets.contains(type.key()) && isHost(chest);
+    }
+
+    /** Amulettes que tient le plastron : une, plus une par niveau d'Overwhelmed. */
+    public static int capacity(ItemStack chest) {
+        return 1 + fr.atraxterra.dohy.palamod.alchemist.MysticEnchant.OVERWHELMED.levelOn(chest);
     }
 
     /** Le bonus d'XP de metier de l'amulette du chasseur, ajoute par {@code JobApi.grant}. */
@@ -75,6 +85,10 @@ public final class Amulets {
         }
         List<String> next = new ArrayList<>(current);
         next.add(amulet.type().key());
+        int capacity = capacity(left);
+        while (next.size() > capacity) {
+            next.remove(0);
+        }
         ItemStack output = left.copy();
         output.set(PalaDefense.AMULETS.get(), List.copyOf(next));
         event.setOutput(output);
@@ -123,6 +137,8 @@ public final class Amulets {
         if (amulets == null || amulets.isEmpty()) {
             return;
         }
+        event.getToolTip().add(Component.translatable("tooltip.palamod.amulet_slots", amulets.size(),
+                capacity(event.getItemStack())).withStyle(ChatFormatting.DARK_PURPLE));
         for (String key : amulets) {
             event.getToolTip().add(Component.translatable("item.palamod." + key + "_amulet")
                     .withStyle(ChatFormatting.LIGHT_PURPLE));

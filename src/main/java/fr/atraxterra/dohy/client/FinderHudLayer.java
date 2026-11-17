@@ -3,10 +3,8 @@ package fr.atraxterra.dohy.client;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
-import fr.atraxterra.dohy.palamod.alchemist.MysticEnchant;
 import fr.atraxterra.dohy.palamod.pillage.FinderItem;
 import fr.atraxterra.dohy.palamod.pillage.FinderType;
-import fr.atraxterra.dohy.palamod.pillage.PalaPillage;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -18,7 +16,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.client.gui.GuiLayer;
@@ -92,19 +89,15 @@ public final class FinderHudLayer implements GuiLayer {
         draw(new UiGraphics(graphics, minecraft.font, 0, 0), minecraft, player.blockPosition(), type);
     }
 
-    /** Le finder en main (droite, puis gauche), sinon le casque Unclaim Helmet. */
+    /** Le finder en main (droite, puis gauche), sinon le casque Unclaim Helmet garni d'un finder. */
     private static ItemStack activeStack(LocalPlayer player, ClientLevel level) {
         for (ItemStack stack : new ItemStack[] {player.getMainHandItem(), player.getOffhandItem()}) {
             if (stack.getItem() instanceof FinderItem) {
                 return stack;
             }
         }
-        ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
-        if (!helmet.isEmpty() && MysticEnchant.UNCLAIM_HELMET.holder(level)
-                .map(holder -> EnchantmentHelper.getItemEnchantmentLevel(holder, helmet) > 0).orElse(false)) {
-            return new ItemStack(PalaPillage.UNCLAIM_FINDER.get());
-        }
-        return ItemStack.EMPTY;
+        // Le casque ne vaut finder qu'apres sa fusion avec un finder, de sa couleur.
+        return fr.atraxterra.dohy.palamod.defense.UnclaimHelmet.finder(player.getItemBySlot(EquipmentSlot.HEAD));
     }
 
     private void scan(ClientLevel level, BlockPos center, ChunkPos origin, FinderType type) {
