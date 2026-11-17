@@ -63,7 +63,16 @@ public class CryoChamberRenderer implements BlockEntityRenderer<CryoChamberBlock
         if (mob == null || chamber.getLevel() == null) {
             return;
         }
-        state.mob = entities.extractEntity(mob, partialTick);
+        try {
+            state.mob = entities.extractEntity(mob, partialTick);
+        } catch (RuntimeException failure) {
+            // Une bete d'un autre mod qui ne se dessine pas hors du monde : la chambre reste, sans clone.
+            fr.atraxterra.dohy.DoHy.LOGGER.warn("Chambre cryogenique : le clone {} ne se dessine pas",
+                    mob.getType(), failure);
+            chamber.displayFailed();
+            state.mob = null;
+            return;
+        }
         state.mob.lightCoords = LIGHT;
         float time = chamber.getLevel().getGameTime() + partialTick;
         boolean running = chamber.running();

@@ -14,7 +14,6 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -80,7 +79,7 @@ public final class CryoChamberScreen extends UiContainerScreen<MachineMenu> {
         }
         if (type.get() != previewType) {
             previewType = type.get();
-            preview = previewType.create(minecraft.level, EntitySpawnReason.LOAD) instanceof LivingEntity living
+            preview = CryoChamberBlockEntity.clone(previewType, minecraft.level) instanceof LivingEntity living
                     ? living : null;
         }
         return preview;
@@ -185,8 +184,13 @@ public final class CryoChamberScreen extends UiContainerScreen<MachineMenu> {
         }
         float size = Math.max(0.3f, Math.max(mob.getBbHeight(), mob.getBbWidth() * 1.3f));
         int scale = Mth.clamp(Math.round((TUBE_H - 14) / size), 10, 38);
-        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, leftPos + TUBE_X + 3, topPos + TUBE_Y + 3,
-                leftPos + TUBE_X + TUBE_W - 3, topPos + TUBE_Y + TUBE_H - 6, scale, 0.0625f, mouseX, mouseY, mob);
+        try {
+            InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, leftPos + TUBE_X + 3, topPos + TUBE_Y + 3,
+                    leftPos + TUBE_X + TUBE_W - 3, topPos + TUBE_Y + TUBE_H - 6, scale, 0.0625f, mouseX, mouseY, mob);
+        } catch (RuntimeException failure) {
+            // une bete qui ne se dessine pas hors du monde : la cuve reste vide
+            preview = null;
+        }
     }
 
     // -- Le premier plan -------------------------------------------------------------------

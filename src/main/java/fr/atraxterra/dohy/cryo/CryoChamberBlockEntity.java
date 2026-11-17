@@ -117,6 +117,7 @@ public class CryoChamberBlockEntity extends MachineBlockEntity
     private boolean running;
     private Entity display;
     private Identifier displayMob;
+    private boolean broken;
 
     public CryoChamberBlockEntity(BlockPos pos, BlockState blockState) {
         super(DoHyCryo.CHAMBER_TYPE.get(), pos, blockState, SIZE,
@@ -465,19 +466,42 @@ public class CryoChamberBlockEntity extends MachineBlockEntity
         return shownGrade;
     }
 
-    /** Le clone dans la cuve, cote client : un modele de la bete qui n'entre pas dans le monde. */
+    /** Les numeros des clones : negatifs, loin de ceux que le serveur donne aux vraies entites. */
+    private static final java.util.concurrent.atomic.AtomicInteger CLONE_IDS =
+            new java.util.concurrent.atomic.AtomicInteger(-2_000_000_000);
+
+    /**
+     * Un modele de bete qui n'entre pas dans le monde, pour le rendu : en 26.2 une
+     * entite doit avoir un numero avant d'etre dessinee, et celui-la ne lui en
+     * donnerait jamais.
+     */
+    public static Entity clone(EntityType<?> type, net.minecraft.world.level.Level level) {
+        Entity entity = type.create(level, EntitySpawnReason.LOAD);
+        if (entity != null) {
+            entity.setId(CLONE_IDS.getAndIncrement());
+        }
+        return entity;
+    }
+
+    /** Le clone dans la cuve, cote client ; {@code null} si sa bete ne se dessine pas. */
     public Entity display() {
-        if (shownMob == null || level == null) {
+        if (shownMob == null || level == null || broken) {
             display = null;
             displayMob = null;
             return null;
         }
         if (display == null || !shownMob.equals(displayMob)) {
             displayMob = shownMob;
-            display = BuiltInRegistries.ENTITY_TYPE.getOptional(shownMob)
-                    .map(type -> (Entity) type.create(level, EntitySpawnReason.LOAD)).orElse(null);
+            display = BuiltInRegistries.ENTITY_TYPE.getOptional(shownMob).map(type -> clone(type, level))
+                    .orElse(null);
         }
         return display;
+    }
+
+    /** Le rendu du clone a echoue : on ne le redessine plus, la chambre reste visible. */
+    public void displayFailed() {
+        broken = true;
+        display = null;
     }
 
     /** Le cote client n'a rien a faire, sinon tenir son clone pret. */
