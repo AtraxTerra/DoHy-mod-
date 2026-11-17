@@ -1,5 +1,8 @@
 package fr.atraxterra.dohy.client.hud;
 
+import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.arrakis.DoHyArrakis;
+import fr.atraxterra.dohy.arrakis.Hydration;
 import fr.atraxterra.dohy.client.ui.Anim;
 import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Ui;
@@ -8,6 +11,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
@@ -26,6 +30,9 @@ import net.minecraft.world.food.FoodData;
  * bout, la regeneration la fait miroiter et elle pulse en rouge sous un quart de vie. La
  * faim se remplit depuis la droite, comme ses cuisses, avec la saturation en filet clair.
  *
+ * <p>Sur Arrakis s'ajoute l'eau, au-dessus de la faim : une barre bleue qui se vide depuis
+ * la gauche, et qui cerne d'orange quand on a soif.
+ *
  * <p>Chaque barre est posee a la hauteur que les compteurs de NeoForge lui donnent et les
  * fait monter d'une rangee, comme les couches du jeu.
  */
@@ -39,6 +46,8 @@ final class StatusHud {
     private static float lastHealth = -1.0f;
     private static int lastPlayer;
     private static int lastBubble = -1;
+    private static final Identifier WATER_SPRITE = Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "hud/water");
+    private static final Anim.Value WATER = new Anim.Value(-1.0f, 6.0f);
 
     private StatusHud() {
     }
@@ -256,6 +265,40 @@ final class StatusHud {
     static LivingEntity mount(Player player) {
         return player.getVehicle() instanceof LivingEntity living && living.showVehicleHealth()
                 && living.getMaxHealth() > 0.0f ? living : null;
+    }
+
+    // -- Eau, sur Arrakis ---------------------------------------------------------------
+
+    static boolean water(GuiGraphicsExtractor graphics, DeltaTracker delta) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Player player = visiblePlayer(minecraft);
+        if (player == null || minecraft.level == null || minecraft.level.dimension() != DoHyArrakis.DIMENSION) {
+            return true;
+        }
+        Hud hud = minecraft.gui.hud;
+        float unit = HudKit.unit(minecraft);
+        Paint paint = new Paint(graphics, unit);
+        UiGraphics ui = new UiGraphics(graphics, minecraft.font, 0, 0);
+        float water = Math.max(0.0f, player.getData(DoHyArrakis.HYDRATION));
+        float fill = HudKit.clamp(water / Hydration.MAX);
+        if (WATER.get() < 0.0f) {
+            WATER.set(fill);
+        }
+        float shown = WATER.toward(fill);
+        int x = HudKit.left(graphics) + HudKit.WIDTH - HudKit.COLUMN;
+        int y = graphics.guiHeight() - hud.rightHeight;
+        float width = HudKit.COLUMN - 10.0f;
+        float barY = y + 1.0f;
+        HudKit.bar(paint, x, barY, width, HudKit.BAR, shown, HudKit.WATER_TOP, HudKit.WATER_BOTTOM, true);
+        if (water <= Hydration.THIRSTY) {
+            paint.outline(x - 1.0f, barY - 1.0f, width + 2.0f, HudKit.BAR + 2.0f, (HudKit.BAR + 2.0f) / 2.0f,
+                    Paint.alpha(0xFFFFA43A, 0.25f + 0.6f * Anim.pulse(water <= Hydration.PARCHED ? 0.6d : 1.1d)), 1);
+        }
+        HudKit.sprite(graphics, WATER_SPRITE, x + HudKit.COLUMN - 9, y, 9);
+        ui.textShaded(Ui.BOLD, Integer.toString(Mth.ceil(water)), x + 3.0f, barY + 1.25f, TEXT, Ui.Theme.TEXT,
+                0x99000000, 0.5f);
+        hud.rightHeight += HudKit.ROW;
+        return true;
     }
 
     // -- Air --------------------------------------------------------------------------

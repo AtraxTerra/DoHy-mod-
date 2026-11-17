@@ -2,11 +2,16 @@ package fr.atraxterra.dohy.arrakis;
 
 import fr.atraxterra.dohy.DoHy;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ColorRGBA;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -21,6 +26,10 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterials;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.level.block.ColoredFallingBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,9 +49,10 @@ import java.util.List;
 /**
  * L'epice d'Arrakis : le sable qui la porte, le melange qu'on en tire, la
  * moissonneuse qui le recolte, et ce qui rode dessous : le ver des sables, le
- * marteleur qui l'appelle, la dent qu'il perd. Tout existe meme sans NTM Space
- * (les objets se gardent d'un serveur a l'autre), mais seule Arrakis a des
- * champs d'epice et des vers.
+ * marteleur qui l'appelle, la dent qu'il perd. Et l'eau, rare : la gourde, le
+ * distille qui garde celle du corps, le piege a vent qui la tire de l'air.
+ * Tout existe meme sans NTM Space (les objets se gardent d'un serveur a
+ * l'autre), mais seule Arrakis a des champs d'epice, des vers et la soif.
  */
 public final class ArrakisContent {
 
@@ -52,6 +62,8 @@ public final class ArrakisContent {
             DeferredRegister.create(Registries.ENTITY_TYPE, DoHy.MOD_ID);
     private static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DoHy.MOD_ID);
+    private static final DeferredRegister.DataComponents COMPONENTS =
+            DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, DoHy.MOD_ID);
 
     /** Le sable d'epice : il coule comme du sable, et sa poussiere est rouille. */
     public static final DeferredBlock<ColoredFallingBlock> SPICE_SAND = BLOCKS.registerBlock("spice_sand",
@@ -115,7 +127,45 @@ public final class ArrakisContent {
 
     /** Les degats d'un ver : « englouti ». */
     public static final ResourceKey<DamageType> WORM_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE,
-            net.minecraft.resources.Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "sandworm"));
+            Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "sandworm"));
+
+    // -- L'eau --------------------------------------------------------------------------
+
+    /** L'eau d'une gourde, en gorgees. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WATER =
+            COMPONENTS.registerComponentType("canteen_water", builder -> builder
+                    .persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /** La gourde : huit gorgees, qu'on remplit a un piege a vent (ou a l'eau, hors d'Arrakis). */
+    public static final DeferredItem<CanteenItem> CANTEEN = ITEMS.registerItem("canteen", CanteenItem::new,
+            properties -> properties.stacksTo(1).rarity(Rarity.UNCOMMON)
+                    .component(DataComponents.LORE, lore("tooltip.dohy.canteen.1", "tooltip.dohy.canteen.2")));
+
+    /**
+     * Le distille : une combinaison qui garde l'eau du corps (la sueur, le souffle)
+     * et la rend a boire. Peu de defense, celle du cuir ; chaque piece portee
+     * ralentit la soif, les quatre ensemble de pres de sept fois.
+     */
+    public static final ArmorMaterial STILLSUIT_MATERIAL = new ArmorMaterial(ArmorMaterials.LEATHER.durability() * 3,
+            ArmorMaterials.LEATHER.defense(), ArmorMaterials.LEATHER.enchantmentValue(), SoundEvents.ARMOR_EQUIP_LEATHER,
+            0.0f, 0.0f, ArmorMaterials.LEATHER.repairIngredient(), ResourceKey.create(EquipmentAssets.ROOT_ID,
+                    Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "stillsuit")));
+    public static final DeferredItem<Item> STILLSUIT_MASK = stillsuit("stillsuit_mask", ArmorType.HELMET);
+    public static final DeferredItem<Item> STILLSUIT_SUIT = stillsuit("stillsuit_suit", ArmorType.CHESTPLATE);
+    public static final DeferredItem<Item> STILLSUIT_LEGGINGS = stillsuit("stillsuit_leggings", ArmorType.LEGGINGS);
+    public static final DeferredItem<Item> STILLSUIT_BOOTS = stillsuit("stillsuit_boots", ArmorType.BOOTS);
+
+    /** Le piege a vent : il condense l'humidite de l'air, la nuit surtout, tant qu'il voit le ciel. */
+    public static final DeferredBlock<WindtrapBlock> WINDTRAP = BLOCKS.registerBlock("windtrap", WindtrapBlock::new,
+            properties -> properties.mapColor(MapColor.SAND).strength(2.0f, 6.0f).sound(SoundType.METAL)
+                    .noOcclusion().randomTicks());
+    public static final DeferredItem<BlockItem> WINDTRAP_ITEM =
+            ITEMS.registerSimpleBlockItem(WINDTRAP, properties -> properties.rarity(Rarity.UNCOMMON)
+                    .component(DataComponents.LORE, lore("tooltip.dohy.windtrap.1", "tooltip.dohy.windtrap.2")));
+
+    /** La soif : « desseche ». */
+    public static final ResourceKey<DamageType> DEHYDRATION = ResourceKey.create(Registries.DAMAGE_TYPE,
+            Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "dehydration"));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = TABS.register("arrakis",
             () -> CreativeModeTab.builder()
@@ -127,6 +177,12 @@ public final class ArrakisContent {
                         output.accept(HARVESTER_ITEM.get());
                         output.accept(THUMPER_ITEM.get());
                         output.accept(WORM_TOOTH.get());
+                        output.accept(CanteenItem.filled(CANTEEN.get()));
+                        output.accept(STILLSUIT_MASK.get());
+                        output.accept(STILLSUIT_SUIT.get());
+                        output.accept(STILLSUIT_LEGGINGS.get());
+                        output.accept(STILLSUIT_BOOTS.get());
+                        output.accept(WINDTRAP_ITEM.get());
                     })
                     .build());
 
@@ -138,6 +194,7 @@ public final class ArrakisContent {
         ITEMS.register(modBus);
         ENTITIES.register(modBus);
         TABS.register(modBus);
+        COMPONENTS.register(modBus);
         modBus.addListener(ArrakisContent::onAttributes);
     }
 
@@ -148,6 +205,12 @@ public final class ArrakisContent {
 
     public static boolean isSpice(BlockState state) {
         return state.is(SPICE_SAND.get());
+    }
+
+    private static DeferredItem<Item> stillsuit(String name, ArmorType type) {
+        return ITEMS.registerItem(name, properties -> new Item(properties.humanoidArmor(STILLSUIT_MATERIAL, type)
+                .rarity(Rarity.UNCOMMON)
+                .component(DataComponents.LORE, lore("tooltip.dohy.stillsuit.1", "tooltip.dohy." + name))));
     }
 
     private static ItemLore lore(String... keys) {

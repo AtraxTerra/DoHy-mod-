@@ -851,6 +851,7 @@ final class SpawnBuilder {
             case JOB_ALTAR -> "orange_concrete";
             case SHUTTLE -> "orange_concrete";
             case SPICE -> "orange_terracotta";
+            case WATER -> "light_blue_terracotta";
         });
     }
 

@@ -51,6 +51,8 @@ final class HudKit {
     static final int ARMOR_BOTTOM = 0xFF7D8FA3;
     static final int AIR_TOP = 0xFF9BE3FF;
     static final int AIR_BOTTOM = 0xFF2C93D6;
+    static final int WATER_TOP = 0xFF6FD3FF;
+    static final int WATER_BOTTOM = 0xFF1C72C4;
     static final int MOUNT_TOP = 0xFFFF8FB1;
     static final int MOUNT_BOTTOM = 0xFFC93A68;
     static final int XP_TOP = 0xFFC6F86A;
