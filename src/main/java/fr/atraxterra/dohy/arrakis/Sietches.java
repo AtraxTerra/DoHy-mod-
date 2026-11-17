@@ -216,7 +216,7 @@ public final class Sietches {
 
     // -- La construction -----------------------------------------------------------------------
 
-    private static boolean built(ServerLevel level, Site site) {
+    static boolean built(ServerLevel level, Site site) {
         return level.getData(DoHyArrakis.SIETCHES.get()).contains(site.index() * 1000 + VERSION);
     }
 
