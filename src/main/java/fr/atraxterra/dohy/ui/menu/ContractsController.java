@@ -93,12 +93,17 @@ public final class ContractsController extends MenuController {
                 .accent(0xFF2F5BEA)
                 .progress(ContractApi.globalXpIntoLevel(player), ContractApi.globalXpPerLevel()));
 
-        return new MenuView(id(), "Contrats", "", stats,
-                List.of(
+        List<MenuView.Section> sections = new ArrayList<>(List.of(
                 new MenuView.Section("CONTRATS DU JOUR", "resources", MenuView.ROWS, daily),
                 new MenuView.Section("COMMANDE DE TRIXIUM", "resources", MenuView.ROWS, order),
-                new MenuView.Section("CONTRAT DE LA SEMAINE", "upgrade", MenuView.ROWS, weekly),
-                new MenuView.Section("BONUS", "craft", MenuView.GRID, bonus)), true);
+                new MenuView.Section("CONTRAT DE LA SEMAINE", "upgrade", MenuView.ROWS, weekly)));
+        // Le contrat de progression de NTM NEXT : l'etape en cours du parcours.
+        Card path = fr.atraxterra.dohy.nuclear.path.NtmPathMenu.contractCard(player);
+        if (path != null) {
+            sections.add(new MenuView.Section("PARCOURS NTM", "upgrade", MenuView.ROWS, List.of(path)));
+        }
+        sections.add(new MenuView.Section("BONUS", "craft", MenuView.GRID, bonus));
+        return new MenuView(id(), "Contrats", "", stats, sections, true);
     }
 
     private static Card card(ServerPlayer player, ActiveContract contract) {
@@ -167,6 +172,10 @@ public final class ContractsController extends MenuController {
 
     @Override
     protected void card(ServerPlayer player, String key, int button) {
+        if ("parcours".equals(key)) {
+            fr.atraxterra.dohy.nuclear.path.NtmPathMenu.openFor(player);
+            return;
+        }
         if ("order".equals(key)) {
             String refusal = TrixiumOrder.deliver(player);
             if (refusal == null) {

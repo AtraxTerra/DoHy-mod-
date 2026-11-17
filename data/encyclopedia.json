@@ -3024,6 +3024,7 @@
           "title": "Comment ca marche",
           "text": [
             "- /parcours ouvre le parcours sur l'etape en cours : son mode d'emploi, son objectif et sa recompense.",
+            "- Il a aussi sa place dans l'ecran des contrats : l'etape en cours, ce qui manque, un clic pour l'ouvrir.",
             "- Deux sortes d'objectifs : avoir des objets dans ton sac (rien n'est pris), ou poser une machine et valider a moins de 8 blocs d'elle.",
             "- Quand c'est pret, le chat te previent : un clic sur l'objectif valide l'etape, et la suivante s'ouvre.",
             "! Un clic sur n'importe quelle etape en rouvre le mode d'emploi : le parcours sert aussi d'aide-memoire."

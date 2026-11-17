@@ -33,7 +33,9 @@ ID = re.compile(r"^[a-z0-9_]+$")
 ITEM = re.compile(r"^[a-z0-9_.-]+:[a-z0-9_./-]+$")
 GOALS = {"have", "near"}
 NAMESPACES = {"hbm", "minecraft", "dohy", "palamod"}
-TITLE_CHARS = 22
+# Le titre d'une carte d'etape partage sa ligne avec la pastille de son numero :
+# au-dela de 15 caracteres, il serait coupe.
+TITLE_CHARS = 15
 LABEL_CHARS = 32
 ALLOWED = {"·", "«", "»", "—"}
 

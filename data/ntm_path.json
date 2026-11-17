@@ -11,7 +11,7 @@
       "steps": [
         {
           "id": "enclume",
-          "title": "L'enclume de fer",
+          "title": "Enclume de fer",
           "icon": "hbm:anvil_iron",
           "goal": {"type": "have", "items": ["hbm:anvil_iron", "hbm:anvil_lead"], "count": 1, "label": "Une enclume de fer ou de plomb"},
           "text": [
@@ -24,7 +24,7 @@
         },
         {
           "id": "presse",
-          "title": "La presse a vapeur",
+          "title": "Presse a vapeur",
           "icon": "hbm:machine_press",
           "goal": {"type": "near", "items": ["hbm:machine_press"], "label": "Poser une presse a vapeur"},
           "text": [
@@ -49,7 +49,7 @@
         },
         {
           "id": "briques",
-          "title": "Briques refractaires",
+          "title": "Les briques",
           "icon": "hbm:ingot_firebrick",
           "goal": {"type": "have", "items": ["hbm:ingot_firebrick"], "count": 32, "label": "32 briques refractaires"},
           "text": [
@@ -62,7 +62,7 @@
         },
         {
           "id": "haut_fourneau",
-          "title": "Le haut fourneau",
+          "title": "Haut fourneau",
           "icon": "hbm:machine_blast_furnace",
           "goal": {"type": "near", "items": ["hbm:machine_blast_furnace"], "label": "Poser un haut fourneau"},
           "text": [
@@ -105,7 +105,7 @@
       "steps": [
         {
           "id": "enclume_acier",
-          "title": "L'enclume d'acier",
+          "title": "Enclume d'acier",
           "icon": "hbm:anvil_steel",
           "goal": {"type": "have", "items": ["hbm:anvil_steel"], "count": 1, "label": "Une enclume d'acier"},
           "text": [
@@ -142,7 +142,7 @@
         },
         {
           "id": "generateur",
-          "title": "Le generateur a bois",
+          "title": "Le generateur",
           "icon": "hbm:machine_wood_burner",
           "goal": {"type": "near", "items": ["hbm:machine_wood_burner"], "label": "Poser un generateur a bois"},
           "text": [
@@ -155,7 +155,7 @@
         },
         {
           "id": "batterie",
-          "title": "Stocker le courant",
+          "title": "La batterie",
           "icon": "hbm:machine_battery_socket",
           "goal": {"type": "near", "items": ["hbm:machine_battery_socket"], "label": "Poser un socle de batterie"},
           "text": [
@@ -237,7 +237,7 @@
         },
         {
           "id": "circuits",
-          "title": "Le circuit analogique",
+          "title": "Les circuits",
           "icon": "hbm:circuit_analog",
           "goal": {"type": "have", "items": ["hbm:circuit_analog"], "count": 2, "label": "2 circuits analogiques"},
           "text": [
@@ -250,7 +250,7 @@
         },
         {
           "id": "usine_chimique",
-          "title": "L'usine chimique",
+          "title": "Usine chimique",
           "icon": "hbm:machine_chemical_plant",
           "goal": {"type": "near", "items": ["hbm:machine_chemical_plant"], "label": "Poser une usine chimique"},
           "text": [
@@ -270,7 +270,7 @@
       "steps": [
         {
           "id": "mesure",
-          "title": "Mesurer la radiation",
+          "title": "Le dosimetre",
           "icon": "hbm:geiger_counter",
           "goal": {"type": "have", "items": ["hbm:dosimeter", "hbm:geiger_counter"], "count": 1, "label": "Un dosimetre ou un Geiger"},
           "text": [
@@ -296,7 +296,7 @@
         },
         {
           "id": "centrifugeuse",
-          "title": "La centrifugeuse",
+          "title": "Centrifugeuse",
           "icon": "hbm:machine_centrifuge",
           "goal": {"type": "near", "items": ["hbm:machine_centrifuge"], "label": "Poser une centrifugeuse"},
           "text": [

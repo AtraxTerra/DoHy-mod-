@@ -124,8 +124,8 @@ public final class NtmPathMenu extends MenuController {
         String legend = done + " / " + total + " ETAPES|" + (total <= 0 ? 100 : done * 100 / total) + " %";
         List<MenuView.Stat> stats = new ArrayList<>();
         stats.add(new MenuView.Stat("GAGNE", MoneyFormat.shortForm(data.earned()) + " $", GOLD));
-        stats.add(new MenuView.Stat("RESTE", (total - done) + (total - done > 1 ? " etapes" : " etape"),
-                0xFFFFFFFF));
+        stats.add(new MenuView.Stat("RESTE", total == done ? "Aucune"
+                : (total - done) + (total - done > 1 ? " etapes" : " etape"), 0xFFFFFFFF));
         if (shown != null) {
             stats.add(new MenuView.Stat("RECOMPENSE", MoneyFormat.shortForm(shown.step().reward().money()) + " $",
                     GOLD));
@@ -158,8 +158,16 @@ public final class NtmPathMenu extends MenuController {
         ItemStack icon = goal.items().isEmpty() ? step.iconStack() : NtmPath.stack(goal.items().get(0), 1);
         String reward = MenuView.text(Component.literal("Recompense : ").append(NtmPath.rewardText(step.reward())));
         List<String> tooltip = new ArrayList<>();
-        tooltip.add(goal.near() ? "Une de ces machines, posee pres de toi :"
-                : goal.all() ? "Un de chaque :" : "Au choix, en tout " + goal.count() + " :");
+        boolean several = goal.items().size() > 1;
+        if (goal.near()) {
+            tooltip.add((several ? "Une de ces machines" : "La machine") + ", posee a moins de " + NtmPath.radius()
+                    + " blocs :");
+        } else if (goal.all()) {
+            tooltip.add("Un de chaque, dans ton sac :");
+        } else {
+            tooltip.add(several ? "Au choix, " + goal.count() + " en tout, dans ton sac :"
+                    : goal.count() + " dans ton sac :");
+        }
         for (Identifier id : goal.items()) {
             tooltip.add(MenuView.text(Component.literal("- ").append(Gui.displayName(id))));
         }
@@ -173,7 +181,7 @@ public final class NtmPathMenu extends MenuController {
                     .accent(MUTED).badge("A VENIR").state(MenuView.DISABLED).tooltip(tooltip));
         } else {
             NtmPath.Status status = NtmPath.status(player, step);
-            Card card = Card.of(icon, goal.label(), List.of(status.met() ? status.line() + " : c'est pret !"
+            Card card = Card.of(icon, goal.label(), List.of(status.met() ? status.line() + ", c'est pret !"
                             : status.line(), reward))
                     .accent(status.met() ? GREEN : shown.chapter().accent())
                     .badge(status.met() ? "PRET" : MoneyFormat.shortForm(step.reward().money()) + " $")
@@ -181,9 +189,9 @@ public final class NtmPathMenu extends MenuController {
             cards.add(status.met() ? card.action("valider|valider l'etape") : card);
         }
         if (shown != current && current != null) {
-            cards.add(Card.of(current.step().iconStack(), "Revenir a l'etape en cours", List.of(
+            cards.add(Card.of(current.step().iconStack(), "Etape en cours", List.of(
                             "Etape " + current.number() + " : " + current.step().title()))
-                    .accent(current.chapter().accent()).action("courante|revenir"));
+                    .accent(current.chapter().accent()).action("courante|revenir a l'etape en cours"));
         }
         return cards;
     }
@@ -201,11 +209,47 @@ public final class NtmPathMenu extends MenuController {
         if (done) {
             card = card.state(MenuView.DONE).badge(located == shown ? "VUE" : "");
         } else if (now) {
-            card = card.badge(located == shown ? "EN COURS" : "A FAIRE");
+            // Pas de pastille : elle couperait le titre. L'etape en cours le dit dans sa ligne.
+            card = Card.of(step.iconStack(), step.title(), List.of(step.goal().label(), "En cours · " + money))
+                    .accent(located.chapter().accent()).action("voir:" + step.id() + "|voir l'etape");
         } else {
             card = card.state(MenuView.DISABLED).badge(located == shown ? "VUE" : String.valueOf(located.number()));
         }
         return card;
+    }
+
+    /**
+     * La carte du parcours dans l'ecran des contrats : l'etape en cours, ce qui
+     * manque, et un clic qui ouvre le parcours. {@code null} sans NTM NEXT.
+     */
+    public static Card contractCard(ServerPlayer player) {
+        if (!NtmPath.installed() || NtmPath.steps().isEmpty()) {
+            return null;
+        }
+        int total = NtmPath.steps().size();
+        NtmPath.Located current = NtmPath.current(player);
+        if (current == null) {
+            return Card.of(new ItemStack(Items.NETHER_STAR), "Parcours NTM termine", List.of(
+                            total + " / " + total + " etapes",
+                            MoneyFormat.exact(NtmPath.data(player).earned()) + " $ gagnes"))
+                    .accent(GREEN).state(MenuView.DONE).progress(1, 1).action("parcours|ouvrir le parcours");
+        }
+        NtmPath.Status status = NtmPath.status(player, current.step());
+        return Card.of(current.step().iconStack(), "Etape " + current.number() + " / " + total + " : "
+                        + current.step().title(), List.of(
+                        current.step().goal().label() + " · " + status.line(),
+                        status.met() ? "Prete : un clic, et valide-la" : current.chapter().name()))
+                .accent(status.met() ? GREEN : current.chapter().accent())
+                .badge(status.met() ? "PRET" : MoneyFormat.shortForm(current.step().reward().money()) + " $")
+                .progress(status.have(), status.need())
+                .action("parcours|ouvrir le parcours");
+    }
+
+    /** Le parcours est un contrat de progression : l'hexagone ramene aux contrats. */
+    @Override
+    protected void back(ServerPlayer player) {
+        VIEWING.remove(player.getUUID());
+        fr.atraxterra.dohy.ui.menu.ContractsController.INSTANCE.open(player);
     }
 
     private MenuView message(String title, List<String> lines) {

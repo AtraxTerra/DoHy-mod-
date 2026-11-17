@@ -85,10 +85,13 @@ public final class ShopController {
                     missing = Math.max(1L, CollectionApi.missingToUnlock(player, id, entry));
                 }
             }
+            // Une machine ne se recolte pas : pas de barre de collection pour elle.
+            ShopCategory kind = ShopCategory.byKey(entry.category());
+            boolean collectable = kind == null || kind.collectable();
             offers.add(new ShopView.Offer(new ItemStack(item), entry.category(), buy,
                     entry.buyPrice() > 0 ? (int) Math.round(discount * 100) : 0, sell, percent, missing,
                     countOwned(player, item), CollectionApi.countOf(player, id),
-                    Math.max(0L, CollectionApi.nextThreshold(player, id, entry)),
+                    collectable ? Math.max(0L, CollectionApi.nextThreshold(player, id, entry)) : 0L,
                     HourlyCourse.percent(id, entry), chart(player, id, entry, discount, now)));
         }
         return new ShopView(Economy.balance(player), offers, HourlyCourse.minutesLeft());

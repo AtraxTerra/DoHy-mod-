@@ -260,7 +260,7 @@ public final class NtmPath {
 
     /**
      * Ou en est un objectif : {@code have} sur {@code need}, et la phrase qui le
-     * dit (« 12 / 24 dans ton sac », « Posee a 3 blocs »).
+     * dit (« 12 / 24 », « Posee a 3 blocs »).
      */
     public record Status(long have, long need, boolean met, String line) {
     }
@@ -270,10 +270,10 @@ public final class NtmPath {
         if (goal.near()) {
             int distance = nearest(player, goal.items(), radius());
             if (distance >= 0) {
-                return new Status(1, 1, true, distance <= 1 ? "Posee juste a cote de toi" : "Posee a " + distance
-                        + " blocs de toi");
+                return new Status(1, 1, true, distance <= 1 ? "Posee a cote de toi" : "Posee a " + distance
+                        + " blocs");
             }
-            return new Status(0, 1, false, "Pose-la, puis valide a moins de " + radius() + " blocs");
+            return new Status(0, 1, false, "Pas encore posee pres de toi");
         }
         if (goal.all()) {
             int owned = 0;
@@ -283,12 +283,11 @@ public final class NtmPath {
                 }
             }
             boolean met = owned >= goal.items().size();
-            return new Status(owned, goal.items().size(), met,
-                    owned + " / " + goal.items().size() + " dans ton sac");
+            return new Status(owned, goal.items().size(), met, owned + " / " + goal.items().size());
         }
         long owned = count(player, goal.items());
         return new Status(Math.min(owned, goal.count()), goal.count(), owned >= goal.count(),
-                Math.min(owned, goal.count()) + " / " + goal.count() + " dans ton sac");
+                Math.min(owned, goal.count()) + " / " + goal.count());
     }
 
     /** Combien le joueur porte de ces objets, tous ensemble. */
