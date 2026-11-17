@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.client.ui.screen;
 
 import fr.atraxterra.dohy.client.ui.Anim;
 import fr.atraxterra.dohy.client.ui.Buttons;
+import fr.atraxterra.dohy.client.ui.Charts;
 import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Popup;
 import fr.atraxterra.dohy.client.ui.Ui;
@@ -14,6 +15,7 @@ import fr.atraxterra.dohy.client.ui.shell.Shell;
 import fr.atraxterra.dohy.client.ui.widget.SearchBox;
 import fr.atraxterra.dohy.shop.ShopCategory;
 import fr.atraxterra.dohy.ui.view.MenuView;
+import fr.atraxterra.dohy.ui.view.PriceChart;
 import fr.atraxterra.dohy.ui.view.ShopView;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -57,6 +59,8 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
     private int category;
     private String search = "";
     private Identifier selectedId;
+    /** Quand l'objet affiche a change : sa courbe se deroule depuis cet instant. */
+    private double picked = Anim.now();
     private int quantity = 1;
     private Grid grid;
 
@@ -133,6 +137,7 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         }
         if (selected() == null && !shown.isEmpty()) {
             selectedId = idOf(shown.getFirst());
+            picked = Anim.now();
         }
         if (grid != null) {
             grid.clamp();
@@ -418,6 +423,7 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
                 if (!id.equals(selectedId)) {
                     selectedId = id;
                     quantity = 1;
+                    picked = Anim.now();
                     UiScreen.click(1.2f);
                 }
             }
@@ -564,9 +570,48 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
             float sellHover = hover("sell", mouseX, mouseY, left + buttonWidth + 4.0f, buttonY, buttonWidth, BUTTON);
             Buttons.draw(g, p, left + buttonWidth + 4.0f, buttonY, buttonWidth, BUTTON, "VENDRE", Buttons.RED,
                     sellHover, canSell, 5.3f);
+            trend(g, p, offer, y + panelHeight + 5.0f, height - panelHeight - 5.0f, mouseX, mouseY);
             if (mouseX >= left && mouseX < left + 30 && mouseY >= y + 8 && mouseY < y + 38) {
                 g.tooltip(tip(offer));
             }
+        }
+
+        /**
+         * La courbe de l'objet, sous sa fiche, comme a la bourse : le cours des
+         * dernieres heures, sa variation, ses plus haut et plus bas, et les volumes
+         * echanges sur le serveur. Un objet a prix fixe a sa ligne plate.
+         */
+        private void trend(UiGraphics g, Paint p, ShopView.Offer offer, float top, float panel, double mouseX,
+                           double mouseY) {
+            PriceChart chart = offer.chart();
+            if (panel < 48.0f || chart == null || chart.size() == 0) {
+                return;
+            }
+            p.framed(x, top, width, panel, 5.3f, 0xFF1C1D20, Ui.Theme.EDGE, 1);
+            float left = x + 7.0f;
+            float right = x + width - 7.0f;
+            int color = Charts.trend(chart);
+            boolean fixed = chart.flat();
+            String heading = (fixed ? "PRIX " : offer.course() > 0 ? "COURS " : "PRIX ") + Charts.span(chart.span());
+            g.text(Ui.PIXEL, heading, left, top + 6.0f, 3.3f, Ui.Theme.MUTED);
+            String change = fixed ? "STABLE" : Charts.change(chart);
+            float pillWidth = g.width(Ui.PIXEL, change, 3.3f) + 6.0f;
+            p.round(right - pillWidth, top + 4.4f, pillWidth, 6.3f, 2.0f, Paint.alpha(color, 0.18f));
+            g.text(Ui.PIXEL, change, right - pillWidth + 3.0f, top + 6.0f, 3.3f, color);
+            g.text(Ui.WIDE, Charts.value(chart, chart.last()), left, top + 13.3f, 7.0f, Ui.Theme.TEXT);
+            if (fixed) {
+                g.right(Ui.PIXEL, "PAS DE COURS", right, top + 13.6f, 3.0f, Ui.Theme.DIM);
+            } else {
+                g.right(Ui.PIXEL, "HAUT " + Charts.value(chart, chart.high()), right, top + 13.6f, 3.0f,
+                        Ui.Theme.DIM);
+                g.right(Ui.PIXEL, "BAS " + Charts.value(chart, chart.low()), right, top + 18.0f, 3.0f,
+                        Ui.Theme.DIM);
+            }
+            long traded = chart.traded();
+            g.text(Ui.PIXEL, traded > 0 ? MoneyFormat.shortForm(traded) + " ECHANGES SUR LE SERVEUR"
+                    : "AUCUN ECHANGE", left, top + 22.6f, 3.0f, Ui.Theme.DIM);
+            float reveal = Anim.easeOut(Anim.progress(picked, 0.6d));
+            Charts.full(g, chart, left - 1.0f, top + 29.0f, width - 12.0f, panel - 34.0f, mouseX, mouseY, reveal);
         }
 
         private void price(UiGraphics g, Paint p, float boxX, float boxY, float boxWidth, String label, String value,

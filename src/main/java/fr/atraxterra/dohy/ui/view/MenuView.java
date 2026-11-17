@@ -77,6 +77,12 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
     /** Les lignes d'un agenda : la pastille de la carte devient l'heure, a gauche. */
     public static final int AGENDA = 4;
     /**
+     * Une courbe de prix sur toute la largeur, comme a la bourse : le titre et les
+     * lignes de la carte en tete, sa courbe ({@link Card#chart()}) dessous, avec les
+     * volumes, les reperes et un reticule sous la souris.
+     */
+    public static final int CHART = 5;
+    /**
      * Ajoute a une disposition : la section prend une demi-largeur, et la section
      * demi-largeur suivante se place a cote d'elle.
      */
@@ -115,7 +121,7 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
             for (Card card : section.cards()) {
                 cards.add(new Card(card.icon(), text.apply(card.title()), mapAll(card.lines(), text),
                         text.apply(card.badge()), card.accent(), card.state(), card.action(), card.rightAction(),
-                        card.progress(), mapAll(card.tooltip(), text), text.apply(card.confirm())));
+                        card.progress(), mapAll(card.tooltip(), text), text.apply(card.confirm()), card.chart()));
             }
             mappedSections.add(new Section(text.apply(section.title()), section.icon(), section.layout(), cards,
                     text.apply(section.anchor())));
@@ -265,39 +271,55 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
      * @param confirm     question posee dans une fenetre avant l'action (« Question|Detail »), vide pour aucune
      */
     public record Card(ItemStack icon, String title, List<String> lines, String badge, int accent, int state,
-                       String action, String rightAction, int progress, List<String> tooltip, String confirm) {
+                       String action, String rightAction, int progress, List<String> tooltip, String confirm,
+                       PriceChart chart) {
 
         public static Card of(ItemStack icon, String title, List<String> lines) {
-            return new Card(icon, title, lines, "", 0xFF55545C, NORMAL, "", "", -1, List.of(), "");
+            return new Card(icon, title, lines, "", 0xFF55545C, NORMAL, "", "", -1, List.of(), "", null);
+        }
+
+        /**
+         * La meme carte avec une courbe de prix : une courbe miniature sous le texte
+         * d'une carte de grille, la courbe complete dans une section {@link #CHART}.
+         */
+        public Card chart(PriceChart value) {
+            return new Card(icon, title, lines, badge, accent, state, action, rightAction, progress, tooltip, confirm,
+                    value);
         }
 
         public Card badge(String value) {
-            return new Card(icon, title, lines, value, accent, state, action, rightAction, progress, tooltip, confirm);
+            return new Card(icon, title, lines, value, accent, state, action, rightAction, progress, tooltip, confirm,
+                    chart);
         }
 
         public Card accent(int color) {
-            return new Card(icon, title, lines, badge, color, state, action, rightAction, progress, tooltip, confirm);
+            return new Card(icon, title, lines, badge, color, state, action, rightAction, progress, tooltip, confirm,
+                    chart);
         }
 
         public Card state(int value) {
-            return new Card(icon, title, lines, badge, accent, value, action, rightAction, progress, tooltip, confirm);
+            return new Card(icon, title, lines, badge, accent, value, action, rightAction, progress, tooltip, confirm,
+                    chart);
         }
 
         public Card action(String left) {
-            return new Card(icon, title, lines, badge, accent, state, left, rightAction, progress, tooltip, confirm);
+            return new Card(icon, title, lines, badge, accent, state, left, rightAction, progress, tooltip, confirm,
+                    chart);
         }
 
         public Card right(String value) {
-            return new Card(icon, title, lines, badge, accent, state, action, value, progress, tooltip, confirm);
+            return new Card(icon, title, lines, badge, accent, state, action, value, progress, tooltip, confirm, chart);
         }
 
         public Card progress(long done, long total) {
             int permille = total <= 0 ? 1000 : (int) Math.max(0, Math.min(1000, done * 1000 / total));
-            return new Card(icon, title, lines, badge, accent, state, action, rightAction, permille, tooltip, confirm);
+            return new Card(icon, title, lines, badge, accent, state, action, rightAction, permille, tooltip, confirm,
+                    chart);
         }
 
         public Card tooltip(List<String> value) {
-            return new Card(icon, title, lines, badge, accent, state, action, rightAction, progress, value, confirm);
+            return new Card(icon, title, lines, badge, accent, state, action, rightAction, progress, value, confirm,
+                    chart);
         }
 
         /**
@@ -305,7 +327,8 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
          * « Question|Detail » ; un « ! » en tete pour une action qui detruit.
          */
         public Card confirm(String question) {
-            return new Card(icon, title, lines, badge, accent, state, action, rightAction, progress, tooltip, question);
+            return new Card(icon, title, lines, badge, accent, state, action, rightAction, progress, tooltip, question,
+                    chart);
         }
 
         static final StreamCodec<RegistryFriendlyByteBuf, Card> STREAM_CODEC = StreamCodec.of(
@@ -321,10 +344,12 @@ public record MenuView(Identifier view, String title, String subtitle, List<Stat
                     buffer.writeVarInt(card.progress() + 1);
                     strings(buffer, card.tooltip());
                     buffer.writeUtf(card.confirm());
+                    PriceChart.OPTIONAL_STREAM_CODEC.encode(buffer, card.chart());
                 },
                 buffer -> new Card(ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer), buffer.readUtf(), strings(buffer),
                         buffer.readUtf(), buffer.readInt(), buffer.readVarInt(), buffer.readUtf(), buffer.readUtf(),
-                        buffer.readVarInt() - 1, strings(buffer), buffer.readUtf()));
+                        buffer.readVarInt() - 1, strings(buffer), buffer.readUtf(),
+                        PriceChart.OPTIONAL_STREAM_CODEC.decode(buffer)));
     }
 
     private static void strings(RegistryFriendlyByteBuf buffer, List<String> values) {

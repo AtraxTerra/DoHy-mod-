@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.client.ui.screen;
 
 import fr.atraxterra.dohy.client.ui.Anim;
+import fr.atraxterra.dohy.client.ui.Charts;
 import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Popup;
 import fr.atraxterra.dohy.client.ui.Ui;
@@ -11,6 +12,7 @@ import fr.atraxterra.dohy.client.ui.UiScreen;
 import fr.atraxterra.dohy.client.ui.ViewScreen;
 import fr.atraxterra.dohy.client.ui.shell.Shell;
 import fr.atraxterra.dohy.ui.view.MenuView;
+import fr.atraxterra.dohy.ui.view.PriceChart;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.input.KeyEvent;
@@ -40,6 +42,11 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
     private static final float HEADER = 14.0f;
     private static final float SECTION_GAP = 8.7f;
     private static final float SCROLLBAR = 8.7f;
+    /** La courbe miniature d'une carte de grille, sous son texte. */
+    private static final float SPARK_GAP = 3.3f;
+    private static final float SPARK_HEIGHT = 17.3f;
+    /** Une carte de courbe complete ({@link MenuView#CHART}). */
+    private static final float CHART_HEIGHT = 112.0f;
     /** Le panneau de gauche d'une fiche (metier) : sa largeur, et l'espace avant le contenu. */
     private static final float HERO_WIDTH = 126.7f;
     private static final float HERO_GAP = 8.0f;
@@ -367,6 +374,9 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
         float text = 1.5f + 6.3f + (lines >= 1 ? 6.7f : 0.0f) + (lines >= 2 ? 5.7f : 0.0f)
                 + (twoLineTitle(card, cardWidth) ? 7.0f : 0.0f);
         float height = 6.0f + Math.max(19.3f, text) + 5.3f;
+        if (card.chart() != null) {
+            return height + SPARK_GAP + SPARK_HEIGHT + 6.3f;
+        }
         if (card.progress() >= 0) {
             height += 4.7f + 2.7f;
             if (card.lines().size() >= 3) {
@@ -507,6 +517,16 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                         cursor -= ROW_GAP;
                     }
                 }
+                case MenuView.CHART -> {
+                    for (MenuView.Card card : cards) {
+                        placed.add(new Placed(card, layout, left, cursor, columnWidth, CHART_HEIGHT, List.of(),
+                                placed.size()));
+                        cursor += CHART_HEIGHT + GAP;
+                    }
+                    if (!cards.isEmpty()) {
+                        cursor -= GAP;
+                    }
+                }
                 case MenuView.TILES -> {
                     float size = 21.3f;
                     float pitch = size + 2.7f;
@@ -605,6 +625,8 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                     case MenuView.AGENDA -> agenda(g, p, card.card(), cardX, cardY, card.width(), card.height(),
                             hover);
                     case MenuView.TILES -> tile(g, p, card.card(), cardX, cardY, card.width(), hover, bars);
+                    case MenuView.CHART -> chart(g, p, card.card(), cardX, cardY, card.width(), card.height(), hover,
+                            bars, inside ? mouseX : -1, inside ? mouseY : -1);
                     default -> grid(g, p, card.card(), cardX, cardY, card.width(), card.height(), hover, bars);
                 }
             }
@@ -617,7 +639,8 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                 float thumbY = y + (track - thumb) * offset / Math.max(1.0f, total - height);
                 p.round(barX, thumbY, 2.0f, thumb, 1.0f, 0xFF5A5D64);
             }
-            if (hovered != null && (hovered.layout() != MenuView.TEXT || !hovered.card().action().isEmpty())) {
+            if (hovered != null && hovered.layout() != MenuView.CHART
+                    && (hovered.layout() != MenuView.TEXT || !hovered.card().action().isEmpty())) {
                 tooltip(g, hovered.card());
             }
         }
@@ -756,6 +779,21 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
             }
             float below = top + 6.0f + Math.max(tile, 1.5f + 6.3f + (lines.isEmpty() ? 0 : 6.7f)
                     + (lines.size() >= 2 ? 5.7f : 0.0f) + (twoLines ? 7.0f : 0.0f));
+            if (card.chart() != null) {
+                // La courbe miniature, comme une ligne de cotation : la duree a gauche, la variation a droite.
+                PriceChart chart = card.chart();
+                float sparkY = below + SPARK_GAP;
+                p.round(cardX + 4.0f, sparkY - 1.3f, cardWidth - 8.0f, SPARK_HEIGHT + 2.6f, 3.0f, 0x40000000);
+                Charts.spark(g, chart, cardX + 6.0f, sparkY, cardWidth - 12.0f, SPARK_HEIGHT, off ? 1.0f : bars);
+                float legendY = sparkY + SPARK_HEIGHT + 2.3f;
+                g.text(Ui.PIXEL, chart.size() > 1 ? Charts.span(chart.span()) : "PREMIER RELEVE", cardX + 6.0f,
+                        legendY, 3.3f, Ui.Theme.DIM);
+                if (chart.size() > 1) {
+                    g.right(Ui.PIXEL, Charts.change(chart), cardX + cardWidth - 6.0f, legendY, 3.3f,
+                            Charts.trend(chart));
+                }
+                return;
+            }
             if (card.progress() >= 0) {
                 float barY = below + 4.7f;
                 bar(p, cardX + 6.0f, barY, cardWidth - 12.0f, 2.7f, card.progress() / 1000.0f * bars, accent, off);
@@ -772,6 +810,66 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
             } else if (lines.size() >= 3) {
                 g.text(Ui.BODY, g.fit(Ui.BODY, lines.get(2), 4.7f, cardWidth - 12.0f), cardX + 6.0f, below + 1.5f,
                         4.7f, Ui.Theme.MUTED);
+            }
+        }
+
+        /**
+         * Une carte de courbe ({@link MenuView#CHART}) : l'icone, le titre et deux lignes
+         * en tete, le dernier cours en grand a droite avec sa variation, ses plus haut et
+         * plus bas, puis la courbe complete sur toute la largeur.
+         */
+        private void chart(UiGraphics g, Paint p, MenuView.Card card, float cardX, float cardY, float cardWidth,
+                           float cardHeight, float hover, float bars, double mouseX, double mouseY) {
+            int accent = accentOf(card);
+            p.framed(cardX, cardY, cardWidth, cardHeight, 5.3f, Paint.mix(Ui.Theme.CARD, 0xFF1C1D21, 0.5f),
+                    Ui.Theme.EDGE, 1);
+            g.scissor(Math.round(cardX), Math.round(cardY), Math.round(cardWidth), Math.round(cardHeight));
+            p.glow(cardX + cardWidth - 30.0f, cardY + 8.0f, 60.0f, Paint.alpha(accent, 0.10f));
+            g.endScissor();
+            g.scissor(Math.round(cardX), Math.round(cardY), Math.round(cardWidth), 1);
+            p.round(cardX, cardY, cardWidth, cardHeight, 5.3f, Paint.alpha(accent, 0.95f));
+            g.endScissor();
+            float tile = 19.3f;
+            float tileX = cardX + 6.0f;
+            float tileY = cardY + 6.0f;
+            int tileFill = Paint.mix(0xFF1A1B1E, accent, 0.16f);
+            p.framed(tileX, tileY, tile, tile, 4.7f, tileFill, Paint.mix(tileFill, accent, 0.35f), 1);
+            if (!card.icon().isEmpty()) {
+                g.item(card.icon(), tileX + (tile - 12.0f) / 2.0f, tileY + (tile - 12.0f) / 2.0f, 12.0f, false);
+            }
+            PriceChart chart = card.chart();
+            float textX = tileX + tile + 4.7f;
+            float right = cardX + cardWidth - 7.0f;
+            float valueWidth = 0.0f;
+            if (chart != null && chart.size() > 0) {
+                int color = Charts.trend(chart);
+                String last = Charts.value(chart, chart.last());
+                valueWidth = g.width(Ui.WIDE, last, 8.0f);
+                g.right(Ui.WIDE, last, right, cardY + 6.3f, 8.0f, Ui.Theme.TEXT);
+                if (chart.size() > 1) {
+                    String change = Charts.change(chart) + " · " + Charts.span(chart.span());
+                    float pillWidth = g.width(Ui.PIXEL, change, 3.3f) + 6.0f;
+                    p.round(right - pillWidth, cardY + 16.0f, pillWidth, 6.3f, 2.0f, Paint.alpha(color, 0.18f));
+                    g.text(Ui.PIXEL, change, right - pillWidth + 3.0f, cardY + 17.6f, 3.3f, color);
+                    String range = "HAUT " + Charts.value(chart, chart.high()) + "   BAS "
+                            + Charts.value(chart, chart.low());
+                    g.right(Ui.PIXEL, range, right, cardY + 24.3f, 3.0f, Ui.Theme.DIM);
+                    valueWidth = Math.max(valueWidth, Math.max(pillWidth, g.width(Ui.PIXEL, range, 3.0f)));
+                }
+            }
+            float room = right - valueWidth - 6.0f - textX;
+            g.text(Ui.BOLD, g.fit(Ui.BOLD, card.title(), 6.3f, room), textX, cardY + 7.5f, 6.3f, Ui.Theme.TEXT);
+            List<String> lines = card.lines();
+            if (!lines.isEmpty()) {
+                g.text(Ui.BODY, g.fit(Ui.BODY, lines.get(0), 5.0f, room), textX, cardY + 15.5f, 5.0f,
+                        Ui.Theme.TEXT2);
+            }
+            if (lines.size() >= 2) {
+                g.text(Ui.BODY, g.fit(Ui.BODY, lines.get(1), 4.7f, room), textX, cardY + 21.5f, 4.7f, Ui.Theme.MUTED);
+            }
+            if (chart != null) {
+                Charts.full(g, chart, cardX + 7.0f, cardY + 32.0f, cardWidth - 12.0f, cardHeight - 38.0f, mouseX,
+                        mouseY, bars);
             }
         }
 

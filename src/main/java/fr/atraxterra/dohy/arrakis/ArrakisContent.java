@@ -183,6 +183,14 @@ public final class ArrakisContent {
                         output.accept(STILLSUIT_LEGGINGS.get());
                         output.accept(STILLSUIT_BOOTS.get());
                         output.accept(WINDTRAP_ITEM.get());
+                        output.accept(SietchContent.PARACOMPASS.get());
+                        output.accept(CanteenItem.filled(SietchContent.CANTEEN.get()));
+                        output.accept(SietchContent.SIETCH_MASK.get());
+                        output.accept(SietchContent.SIETCH_SUIT.get());
+                        output.accept(SietchContent.SIETCH_LEGGINGS.get());
+                        output.accept(SietchContent.SIETCH_BOOTS.get());
+                        output.accept(SietchContent.KRYS.get());
+                        output.accept(SietchContent.SPICE_COFFEE.get());
                     })
                     .build());
 

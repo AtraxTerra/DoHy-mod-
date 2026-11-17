@@ -35,9 +35,10 @@ public record ShopView(long balance, List<Offer> offers, int courseMinutes) impl
      * @param collected   exemplaires deja collectes
      * @param nextStep    prochain palier de collection, 0 si complet
      * @param course      cours de l'heure en pour cent du prix de base, 0 si l'objet n'en suit pas
+     * @param chart       la courbe des dernieres heures, plate pour un prix fixe
      */
     public record Offer(ItemStack stack, String category, long buy, int discount, long sell, int sellPercent,
-                        long lockMissing, int owned, long collected, long nextStep, int course) {
+                        long lockMissing, int owned, long collected, long nextStep, int course, PriceChart chart) {
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Offer> STREAM_CODEC = StreamCodec.of(
                 (buffer, offer) -> {
@@ -52,10 +53,12 @@ public record ShopView(long balance, List<Offer> offers, int courseMinutes) impl
                     buffer.writeVarLong(offer.collected());
                     buffer.writeVarLong(offer.nextStep());
                     buffer.writeVarInt(offer.course());
+                    PriceChart.OPTIONAL_STREAM_CODEC.encode(buffer, offer.chart());
                 },
                 buffer -> new Offer(ItemStack.STREAM_CODEC.decode(buffer), buffer.readUtf(), buffer.readVarLong(),
                         buffer.readVarInt(), buffer.readVarLong(), buffer.readVarInt(), buffer.readVarLong(),
-                        buffer.readVarInt(), buffer.readVarLong(), buffer.readVarLong(), buffer.readVarInt()));
+                        buffer.readVarInt(), buffer.readVarLong(), buffer.readVarLong(), buffer.readVarInt(),
+                        PriceChart.OPTIONAL_STREAM_CODEC.decode(buffer)));
 
         public boolean sellable() {
             return sell > 0;

@@ -62,6 +62,25 @@ public final class DoHyArrakis {
                     .serialize(Codec.INT.fieldOf("version"), value -> value > 0)
                     .build());
 
+    /**
+     * Les sietchs deja creuses sur la dimension : pour chacun, {@code indice * 1000 + version}
+     * (une version qui change les fait recreuser, comme l'astroport).
+     */
+    public static final Supplier<AttachmentType<java.util.List<Integer>>> SIETCHES = ATTACHMENTS.register(
+            "sietches", () -> AttachmentType.<java.util.List<Integer>>builder(() -> java.util.List.of())
+                    .serialize(Codec.INT.listOf().fieldOf("built"), value -> !value.isEmpty())
+                    .build());
+
+    /**
+     * La confiance des sietchs envers un joueur : l'eau et l'epice qu'il leur a offertes. Elle
+     * suit le joueur d'un sietch a l'autre et survit a la mort.
+     */
+    public static final Supplier<AttachmentType<Integer>> SIETCH_TRUST = ATTACHMENTS.register(
+            "sietch_trust", () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT.fieldOf("trust"), value -> value > 0)
+                    .copyOnDeath()
+                    .build());
+
     private DoHyArrakis() {
     }
 
@@ -69,6 +88,7 @@ public final class DoHyArrakis {
         DENSITY.register(modBus);
         ATTACHMENTS.register(modBus);
         ArrakisContent.register(modBus);
+        SietchContent.register(modBus);
         modBus.addListener(DoHyArrakis::setup);
     }
 

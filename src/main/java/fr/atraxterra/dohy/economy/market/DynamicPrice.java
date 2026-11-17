@@ -151,6 +151,7 @@ public final class DynamicPrice {
         // La pression enregistree est celle de la quantite reellement vendue :
         // un bonus ne doit pas accelerer la chute du prix, sinon il s'annule.
         market.record(id, quantity);
+        ShopTape.record(player.level().getServer(), id, quantity);
 
         double multiplier = Bonuses.consume(player, id);
         long payout = Math.max(1L, Math.round(base * multiplier));

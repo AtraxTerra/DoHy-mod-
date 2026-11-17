@@ -8,6 +8,7 @@ import fr.atraxterra.dohy.faction.NationRank;
 import fr.atraxterra.dohy.ui.menu.MenuController;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
+import fr.atraxterra.dohy.ui.view.PriceChart;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -75,14 +76,19 @@ public final class WorldMarketMenu extends MenuController {
             }
             tip.add(pile > 0 ? "Clic droit : acheter " + pile + " pour "
                     + MoneyFormat.exact(WorldMarket.buyQuote(server, id, pile)) + " $" : "Penurie : rien a acheter");
+            PriceChart chart = WorldMarket.chart(server, id);
+            if (chart.size() > 1) {
+                tip.add("Sur " + hours(chart.span()) + " : plus haut " + WorldMarket.percent(chart.high() / 1000.0d)
+                        + ", plus bas " + WorldMarket.percent(chart.low() / 1000.0d) + ", "
+                        + MoneyFormat.exact(chart.traded()) + " echanges");
+            }
             Card card = Card.of(new ItemStack(item), WorldMarket.name(id), List.of(
                             "Vente " + MoneyFormat.exact(WorldMarket.sellUnit(player, id)) + " $ · achat "
                                     + MoneyFormat.exact(WorldMarket.buyUnit(server, id)) + " $",
                             "Cours " + WorldMarket.percent(factor) + (have > 0 ? " · tu en as "
                                     + MoneyFormat.exact(have) : "")))
                     .accent(factor >= 1.15d ? 0xFF22E558 : factor <= 0.85d ? 0xFFEF3826 : 0xFF55545C)
-                    .progress(Math.round(stock - WorldMarket.minStock(id)),
-                            Math.round(WorldMarket.maxStock(id) - WorldMarket.minStock(id)))
+                    .chart(chart)
                     .tooltip(tip).action("sell:" + id + "|vendre tout").right("buy:" + id + "|acheter une pile");
             if (room <= 0) {
                 card = card.badge("SATURE");
@@ -116,9 +122,24 @@ public final class WorldMarketMenu extends MenuController {
                 new MenuView.Stat("VOLUME", MoneyFormat.shortForm(WorldMarket.volume(player)), 0xFF22E558));
         String subtitle = next == null ? "" : "Taxe de " + Math.round(next.fee() * 100.0d) + " % au rang "
                 + next.label();
+        PriceChart index = WorldMarket.index(server);
+        Card board = Card.of(new ItemStack(Items.FILLED_MAP), "Indice international", List.of(
+                        "Le cours moyen des " + WorldMarket.goods().size() + " ressources cotees",
+                        index.size() > 1 ? "Un releve apres chaque lot des nations, toutes les dix minutes de jeu"
+                                : "Premier releve au prochain lot des nations"))
+                .accent(0xFF27C4E8).chart(index);
         return new MenuView(id(), "Marche international", subtitle, stats, List.of(
+                new MenuView.Section("INDICE", "upgrade", MenuView.CHART, List.of(board)),
                 new MenuView.Section("COURS MONDIAUX", "resources", MenuView.GRID, goods),
                 new MenuView.Section("DEPECHES", "upgrade", MenuView.GRID, news)), true);
+    }
+
+    /** « 8 h », « 40 min », « 2 h 30 ». */
+    static String hours(int minutes) {
+        if (minutes < 60) {
+            return minutes + " min";
+        }
+        return minutes % 60 == 0 ? minutes / 60 + " h" : minutes / 60 + " h " + minutes % 60;
     }
 
     /** Le marche annonce lui-meme ses echanges : ici, seulement le son, ou le refus. */

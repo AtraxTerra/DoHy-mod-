@@ -1,23 +1,28 @@
 package fr.atraxterra.dohy.arrakis;
 
 import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import fr.atraxterra.dohy.DoHy;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import java.util.List;
 
 /**
  * {@code /arrakis} pour les operateurs : aller a l'astroport sans billet,
  * reconstruire l'astroport, provoquer une eruption d'epice, appeler un ver,
  * se donner une moissonneuse pleine, lire ou fixer son eau, lire l'oxygene de
- * l'atmosphere.
+ * l'atmosphere, lister les sietchs et aller devant l'un d'eux.
  */
 @EventBusSubscriber(modid = DoHy.MOD_ID)
 public final class ArrakisCommand {
@@ -108,6 +113,47 @@ public final class ArrakisCommand {
                                     Hydration.set(player, value);
                                     context.getSource().sendSuccess(() -> Component.literal(String.format(
                                             java.util.Locale.ROOT, "Eau mise a %.1f.", value)), false);
+                                    return 1;
+                                })))
+                .then(Commands.literal("sietchs").executes(context -> {
+                    ServerLevel level = ArrakisPort.level(context.getSource().getServer());
+                    List<Sietches.Site> sites = Sietches.sites();
+                    context.getSource().sendSuccess(() -> Component.literal(sites.size() + " sietchs sur Arrakis :"),
+                            false);
+                    for (Sietches.Site site : sites) {
+                        BlockPos face = site.face();
+                        boolean built = level != null && Sietches.built(level, site);
+                        context.getSource().sendSuccess(() -> Component.literal("  " + (site.index() + 1) + ". "
+                                + site.name() + " : " + face.getX() + " " + face.getY() + " " + face.getZ()
+                                + (built ? " (creuse)" : " (pas encore creuse)")), false);
+                    }
+                    return sites.size();
+                }))
+                .then(Commands.literal("sietch")
+                        .then(Commands.argument("numero", IntegerArgumentType.integer(1, Sietches.NAMES.length))
+                                .executes(context -> {
+                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                    ServerLevel level = ArrakisPort.level(context.getSource().getServer());
+                                    int index = IntegerArgumentType.getInteger(context, "numero") - 1;
+                                    Sietches.Site site = null;
+                                    for (Sietches.Site s : Sietches.sites()) {
+                                        if (s.index() == index) {
+                                            site = s;
+                                        }
+                                    }
+                                    if (level == null || site == null) {
+                                        context.getSource().sendFailure(Component.literal("Pas de sietch " + (index + 1)
+                                                + " sur Arrakis."));
+                                        return 0;
+                                    }
+                                    BlockPos front = site.face().relative(site.forward().getOpposite(), 4);
+                                    float yaw = site.forward().toYRot();
+                                    player.teleport(new TeleportTransition(level, new Vec3(front.getX() + 0.5d,
+                                            Sietches.floor(level, site), front.getZ() + 0.5d), Vec3.ZERO, yaw, 0.0f,
+                                            TeleportTransition.DO_NOTHING));
+                                    String name = site.name();
+                                    context.getSource().sendSuccess(() -> Component.literal("Devant le sietch "
+                                            + name + "."), false);
                                     return 1;
                                 })))
                 .then(Commands.literal("air").executes(context -> {
