@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "TBT",
+    "GDG",
+    "TRT"
+  ],
+  "key": {
+    "T": "palamod:titane_ingot",
+    "B": "minecraft:blue_ice",
+    "G": "minecraft:glass",
+    "D": "minecraft:diamond",
+    "R": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "dohy:cryo_chamber",
+    "count": 1
+  }
+}

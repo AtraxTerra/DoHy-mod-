@@ -142,5 +142,16 @@
   "tooltip.dohy.windtrap.1": "Draws water from the air, mostly at night: sixteen sips",
   "tooltip.dohy.windtrap.2": "Place it under open sky  -  sneak, empty hand: drink",
   "death.attack.dohy.dehydration": "%1$s dried out under the sun of Arrakis",
-  "death.attack.dohy.dehydration.player": "%1$s dried out whilst fleeing %2$s"
+  "death.attack.dohy.dehydration.player": "%1$s dried out whilst fleeing %2$s",
+  "block.dohy.cryo_chamber": "Cryogenic Chamber",
+  "item.dohy.cryo_chamber": "Cryogenic Chamber",
+  "item.dohy.dna": "DNA Vial",
+  "item.dohy.dna.of": "DNA: %s (%s)",
+  "item.dohy.dna.empty": "Empty: draw a peaceful animal's DNA with the syringe",
+  "item.dohy.dna.grade": "Grade %s of %s",
+  "item.dohy.dna.cycle": "In the chamber: a %s s cycle, %s loot roll(s)",
+  "item.dohy.dna.fusion": "%s vials fused give grade %s",
+  "item.dohy.dna_syringe": "Extraction Syringe",
+  "item.dohy.dna_syringe.hint": "Right-click a peaceful animal: a DNA vial",
+  "message.dohy.dna.drawn": "DNA drawn: %s"
 }

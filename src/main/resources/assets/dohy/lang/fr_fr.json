@@ -142,5 +142,16 @@
   "tooltip.dohy.windtrap.1": "Tire l'eau de l'air, la nuit surtout : seize gorgees",
   "tooltip.dohy.windtrap.2": "Pose-le a ciel ouvert  -  accroupi, main vide : boire",
   "death.attack.dohy.dehydration": "%1$s s'est desseche sous le soleil d'Arrakis",
-  "death.attack.dohy.dehydration.player": "%1$s s'est desseche en fuyant %2$s"
+  "death.attack.dohy.dehydration.player": "%1$s s'est desseche en fuyant %2$s",
+  "block.dohy.cryo_chamber": "Chambre cryogenique",
+  "item.dohy.cryo_chamber": "Chambre cryogenique",
+  "item.dohy.dna": "Fiole d'ADN",
+  "item.dohy.dna.of": "ADN : %s (%s)",
+  "item.dohy.dna.empty": "Vide : preleve l'ADN d'une bete paisible a la seringue",
+  "item.dohy.dna.grade": "Grade %s sur %s",
+  "item.dohy.dna.cycle": "En chambre : un cycle de %s s, %s tirage(s) de butin",
+  "item.dohy.dna.fusion": "%s fioles fusionnees donnent le grade %s",
+  "item.dohy.dna_syringe": "Seringue d'extraction",
+  "item.dohy.dna_syringe.hint": "Clic droit sur une bete paisible : une fiole d'ADN",
+  "message.dohy.dna.drawn": "ADN preleve : %s"
 }

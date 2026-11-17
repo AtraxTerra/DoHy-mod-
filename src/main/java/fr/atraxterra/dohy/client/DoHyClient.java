@@ -114,6 +114,9 @@ public final class DoHyClient {
         // Les caisses des palettes d'armement, dessinees par le coin nord-ouest de chaque groupe.
         event.registerBlockEntityRenderer(fr.atraxterra.dohy.palette.DoHyPalette.TYPE.get(),
                 fr.atraxterra.dohy.client.palette.PaletteRenderer::new);
+        // Le clone dans la cuve de la chambre cryogenique.
+        event.registerBlockEntityRenderer(fr.atraxterra.dohy.cryo.DoHyCryo.CHAMBER_TYPE.get(),
+                fr.atraxterra.dohy.client.cryo.CryoChamberRenderer::new);
         event.registerEntityRenderer(PalaPillage.DYNAMITE_ENTITY.get(), ThrownItemRenderer::new);
         // TntRenderer est type sur PrimedTnt, dont PalaPrimedTnt herite : le
         // rendu ne lit que l'etat de bloc et la meche, communs aux deux.
@@ -193,6 +196,8 @@ public final class DoHyClient {
         machine(event, PalaPvp.PALAMACHINE_MENU.get(), MachineDesigns.PALAMACHINE);
         machine(event, fr.atraxterra.dohy.palamod.hunter.PalaHunter.SPAWNER_CONTROLLER_MENU.get(),
                 MachineDesigns.SPAWNER_CONTROLLER);
+        event.<MachineMenu, fr.atraxterra.dohy.client.cryo.CryoChamberScreen>register(
+                fr.atraxterra.dohy.cryo.DoHyCryo.MENU.get(), fr.atraxterra.dohy.client.cryo.CryoChamberScreen::new);
         for (KitMenus.Use use : KitMenus.Use.values()) {
             event.<ChestMenu, KitChestScreen>register(use.type(),
                     (menu, inventory, title) -> new KitChestScreen(menu, inventory, title, use));
