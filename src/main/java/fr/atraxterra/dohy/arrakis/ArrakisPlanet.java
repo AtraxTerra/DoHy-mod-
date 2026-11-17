@@ -123,6 +123,9 @@ public final class ArrakisPlanet {
     public static void onStarted(ServerStartedEvent event) {
         ticks = 0;
         ensureBreathable();
+        if (installed) {
+            ArrakisPort.refresh(event.getServer());
+        }
     }
 
     @SubscribeEvent

@@ -31,12 +31,14 @@ import java.util.Random;
 final class PortBuilder {
 
     /** A changer quand le dessin change : l'astroport est alors repose. */
-    static final int VERSION = 1;
+    static final int VERSION = 2;
     static final int G = ArrakisRelief.CITY_GROUND;
     /** Le centre de l'aire d'arrivee ; on y apparait tourne vers le hall, au nord. */
     static final BlockPos ARRIVAL = new BlockPos(0, G + 1, 6);
     /** La borne de la navette, au bord nord de l'aire, face a l'arrivee. */
     static final BlockPos TERMINAL = new BlockPos(0, G + 1, -18);
+    /** Le comptoir de l'epice, a droite de la navette : la Guilde y rachete le melange. */
+    static final BlockPos COUNTER = new BlockPos(8, G + 1, -18);
 
     record Label(BlockPos pos, String text, int color, float scale) {
     }
@@ -114,6 +116,13 @@ final class PortBuilder {
                 .setValue(SpawnTerminalBlock.KIND, SpawnTerminalBlock.Kind.SHUTTLE));
         labels.add(new Label(TERMINAL.above(), "NAVETTE", 0xFF9A3C, 1.0f));
         labels.add(new Label(TERMINAL.above(2), "Retour au spawn : gratuit", 0xE8C27A, 0.6f));
+        // le comptoir de l'epice, a cote
+        put(COUNTER.getX(), COUNTER.getY() - 1, COUNTER.getZ(), trim);
+        put(COUNTER.getX(), COUNTER.getY(), COUNTER.getZ(), DoHySpawn.TERMINAL.get().defaultBlockState()
+                .setValue(SpawnTerminalBlock.FACING, Direction.SOUTH)
+                .setValue(SpawnTerminalBlock.KIND, SpawnTerminalBlock.Kind.SPICE));
+        labels.add(new Label(COUNTER.above(), "EPICE", 0xE8742C, 1.0f));
+        labels.add(new Label(COUNTER.above(2), "Comptoir de la Guilde", 0xE8C27A, 0.6f));
     }
 
     // -- L'aire d'atterrissage ------------------------------------------------------------

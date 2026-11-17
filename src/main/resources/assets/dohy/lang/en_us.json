@@ -107,5 +107,15 @@
   "tooltip.dohy.sorghum_bread.1": "Strength II, Speed II, Absorption I, 2 min  -  +2 hearts",
   "tooltip.dohy.sorghum_bread.2": "Regeneration II 30 s  -  Life Steal II 1 min",
   "item.dohy.kamut_bread": "Kamut Bread",
-  "tooltip.dohy.kamut_bread.1": "Clears harmful effects, then Immunity 2 min"
+  "tooltip.dohy.kamut_bread.1": "Clears harmful effects, then Immunity 2 min",
+  "itemGroup.dohy.arrakis": "Berskar — Arrakis",
+  "block.dohy.spice_sand": "Spice Sand",
+  "tooltip.dohy.spice_sand.1": "A shovel gets one melange out of three blocks",
+  "item.dohy.melange": "Melange",
+  "tooltip.dohy.melange.1": "The spice of Arrakis: the Arrakeen counter buys it",
+  "tooltip.dohy.melange.2": "Eaten: night vision 2 min, speed and haste 1 min",
+  "item.dohy.spice_harvester": "Spice Harvester",
+  "tooltip.dohy.spice_harvester.1": "Place it on the sand: you become its owner",
+  "tooltip.dohy.spice_harvester.2": "Jump: open the intake  -  sneak + click: its screen",
+  "entity.dohy.spice_harvester": "Spice Harvester"
 }

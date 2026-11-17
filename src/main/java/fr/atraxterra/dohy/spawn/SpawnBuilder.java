@@ -850,6 +850,7 @@ final class SpawnBuilder {
             case BLACK_MARKET -> "black_concrete";
             case JOB_ALTAR -> "orange_concrete";
             case SHUTTLE -> "orange_concrete";
+            case SPICE -> "orange_terracotta";
         });
     }
 
