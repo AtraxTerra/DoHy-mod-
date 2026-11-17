@@ -415,12 +415,16 @@ public class Elephant extends PathfinderMob {
         }
     }
 
-    /** La vie et les attributs de l'age reviennent avec ceux de la creature. */
+    /**
+     * L'age remet les attributs du sien : une creature invoquee avec un age
+     * ({@code /summon ... {age:2}}) n'en a pas d'autres que ceux tires a sa
+     * construction.
+     */
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         entityData.set(COLOR, input.getIntOr("color", 0));
-        entityData.set(AGE, Mth.clamp(input.getIntOr("age", CHILD), CHILD, ADULT));
+        setAge(input.getIntOr("age", CHILD));
         entityData.set(FEED, input.getIntOr("feed", 0));
         entityData.set(TAMED, input.getBooleanOr("tamed", false));
         owner = input.read("owner", UUIDUtil.CODEC).orElse(null);
