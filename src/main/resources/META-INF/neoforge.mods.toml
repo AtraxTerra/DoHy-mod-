@@ -23,6 +23,15 @@ versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
+# Arrakis reprend la planete Duna de NTM NEXT Space : charge apres lui, Berskar passe devant ses
+# donnees (reglages de bruit de Duna, noms, texture de la planete).
+[[dependencies.${mod_id}]]
+modId = "hbmspace"
+type = "optional"
+versionRange = "[1.0.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
 # L'anti-chute de l'Alchimiste : Player.isStayingOnGroundSurface (voir PlayerEdgeMixin).
 [[mixins]]
 config = "dohy.mixins.json"

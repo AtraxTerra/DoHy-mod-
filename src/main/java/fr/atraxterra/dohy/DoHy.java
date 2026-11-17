@@ -44,6 +44,8 @@ public final class DoHy {
         fr.atraxterra.dohy.faction.war.DoHyWar.register(modBus);
         fr.atraxterra.dohy.guide.DoHyGuide.register(modBus);
         fr.atraxterra.dohy.pass.DoHyPass.register(modBus);
+        // Arrakis : la planete Duna de NTM NEXT Space, reprise (relief, air, navette, astroport).
+        fr.atraxterra.dohy.arrakis.DoHyArrakis.register(modBus);
         LOGGER.info("DoHy charge");
     }
 }

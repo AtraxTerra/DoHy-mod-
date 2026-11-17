@@ -43,7 +43,7 @@ import java.util.List;
 final class SpawnBuilder {
 
     /** A augmenter des que le dessin change : un spawn d'une autre version est reconstruit. */
-    static final int VERSION = 9;
+    static final int VERSION = 10;
 
     /** Le niveau du sol du parvis : on marche a {@code FLOOR + 1}. */
     static final int FLOOR = 200;
@@ -798,6 +798,10 @@ final class SpawnBuilder {
         put(0, FLOOR, PAD_Z, lamp);
         terminal(5, FLOOR + 1, PAD_Z + 5, Direction.NORTH, SpawnTerminalBlock.Kind.RETURN,
                 new BlockPos(5, FLOOR + 2, PAD_Z + 5));
+        // la navette d'Arrakis, en face du retour
+        terminal(-5, FLOOR + 1, PAD_Z + 5, Direction.NORTH, SpawnTerminalBlock.Kind.SHUTTLE,
+                new BlockPos(-5, FLOOR + 2, PAD_Z + 5));
+        labels.add(new Label(new BlockPos(-5, FLOOR + 3, PAD_Z + 5), "Arrakis", 0xE8C27A, 0.7f));
         labels.add(new Label(new BlockPos(0, FLOOR + 5, PAD_Z - 9), "SPAWN", 0xFFFFFF, 3.0f));
         labels.add(new Label(new BlockPos(0, FLOOR + 3, PAD_Z - 9), "Le hall des box est au bout du pont", 0xFAC400,
                 1.0f));
@@ -845,6 +849,7 @@ final class SpawnBuilder {
             case MINE -> "cyan_concrete";
             case BLACK_MARKET -> "black_concrete";
             case JOB_ALTAR -> "orange_concrete";
+            case SHUTTLE -> "orange_concrete";
         });
     }
 

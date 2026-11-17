@@ -54,6 +54,6 @@ public final class Menus {
                 fr.atraxterra.dohy.guide.EncyclopediaMenu.INSTANCE,
                 fr.atraxterra.dohy.pass.PassMenu.INSTANCE, fr.atraxterra.dohy.blackmarket.BlackMarketMenu.INSTANCE,
                 fr.atraxterra.dohy.guide.plan.PlanMenu.INSTANCE, fr.atraxterra.dohy.jobboss.JobBossMenu.INSTANCE,
-                fr.atraxterra.dohy.job.JobsMenu.INSTANCE);
+                fr.atraxterra.dohy.job.JobsMenu.INSTANCE, fr.atraxterra.dohy.arrakis.ShuttleMenu.INSTANCE);
     }
 }

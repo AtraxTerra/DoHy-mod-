@@ -1,0 +1,16 @@
+{
+  "body.duna": "Arrakis",
+  "body.ike": "First Moon",
+  "biome.hbmspace.ike": "First Moon",
+  "biome.hbmspace.duna_plains": "Arrakis Erg",
+  "biome.hbmspace.duna_lowlands": "Salt Pan",
+  "biome.hbmspace.duna_hills": "Arrakis Rocklands",
+  "biome.hbmspace.duna_polar": "Polar Cap",
+  "biome.hbmspace.duna_polar_hills": "Polar Mountains",
+  "block.hbmspace.duna_rock": "Arrakis Rock",
+  "block.hbmspace.duna_cobble": "Arrakis Cobblestone",
+  "block.hbmspace.duna_sands": "Arrakis Red Sand",
+  "block.hbmspace.dunaair": "Arrakis Air",
+  "block.hbmspace.ike_regolith": "First Moon Regolith",
+  "block.hbmspace.ike_stone": "First Moon Stone"
+}
