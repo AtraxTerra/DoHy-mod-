@@ -92,7 +92,7 @@ public final class Sietches {
         if (sites == null) {
             List<Site> found = new ArrayList<>();
             for (int k = 0; k < NAMES.length; k++) {
-                Site site = locate(k);
+                Site site = locate(k, found);
                 if (site != null) {
                     found.add(site);
                 }
@@ -128,7 +128,10 @@ public final class Sietches {
         return ((h >>> 11) * 0x1.0p-53) * 2.0d - 1.0d;
     }
 
-    private static Site locate(int k) {
+    /** Deux sietchs ne se creusent pas a moins de tant de blocs l'un de l'autre. */
+    private static final double SPACING = 480.0d;
+
+    private static Site locate(int k, List<Site> found) {
         double angle = Math.toRadians(k * 45.0d + 17.0d + 14.0d * hash(k, 1));
         double dist = 760.0d + 900.0d * (0.5d + 0.5d * hash(k, 2));
         int cx = (int) Math.round(Math.cos(angle) * dist);
@@ -139,6 +142,16 @@ public final class Sietches {
                 double t = 2.0d * Math.PI * i / n + hash(k, 3);
                 int x = cx + (int) Math.round(Math.cos(t) * r);
                 int z = cz + (int) Math.round(Math.sin(t) * r);
+                boolean crowded = false;
+                for (Site other : found) {
+                    if (other.distanceSq(x, z) < SPACING * SPACING) {
+                        crowded = true;
+                        break;
+                    }
+                }
+                if (crowded) {
+                    continue;
+                }
                 for (Direction out : Direction.Plane.HORIZONTAL) {
                     Site site = cliff(k, x, z, out);
                     if (site != null) {

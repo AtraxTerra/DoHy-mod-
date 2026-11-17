@@ -67,8 +67,9 @@ public class SietchDweller extends PathfinderMob {
     private static final EntityDataAccessor<Integer> DATA_VARIANT =
             SynchedEntityData.defineId(SietchDweller.class, EntityDataSerializers.INT);
 
-    private static final String[] NAMES = {"Yasir", "Nadra", "Tamir", "Hesna", "Idrak", "Samra", "Kadim", "Leyla",
-            "Orun", "Zafira", "Bahir", "Rawa"};
+    /** Des noms d'hommes pour le porteur d'eau, l'artisan, l'equipeur ; de femmes pour l'ancienne. */
+    private static final String[] MEN = {"Yasir", "Tamir", "Idrak", "Kadim", "Orun", "Bahir"};
+    private static final String[] WOMEN = {"Nadra", "Hesna", "Samra", "Leyla", "Zafira", "Rawa"};
 
     /** Ce que disent ceux qu'on aborde dans la salle. */
     private static final String[] LINES = {
@@ -129,7 +130,8 @@ public class SietchDweller extends PathfinderMob {
         entityData.set(DATA_ROLE, role.ordinal());
         entityData.set(DATA_VARIANT, variant);
         setHomeTo(post, role == Role.DWELLER ? 7 : 1);
-        String name = NAMES[Math.floorMod(sietch * 7 + role.ordinal() * 3 + variant, NAMES.length)];
+        String[] names = role == Role.ELDER ? WOMEN : role == Role.DWELLER && variant % 2 == 1 ? WOMEN : MEN;
+        String name = names[Math.floorMod(sietch * 5 + role.ordinal() * 3 + variant, names.length)];
         setCustomName(Component.literal(role == Role.DWELLER ? name : name + ", " + role.title().toLowerCase(
                 java.util.Locale.ROOT)).withStyle(ChatFormatting.GOLD));
         setCustomNameVisible(false);
