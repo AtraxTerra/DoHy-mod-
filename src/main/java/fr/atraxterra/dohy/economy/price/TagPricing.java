@@ -69,7 +69,7 @@ import java.util.TreeMap;
  *
  * <h2>Les premieres machines</h2>
  *
- * <p>Celles du parcours NTM, de l'enclume a la centrifugeuse a gaz, avec leurs
+ * <p>Celles du parcours NTM, de l'enclume a la fusion, avec leurs
  * moules et la tenue de protection : listees dans {@code machines}, chiffrees
  * comme les pieces, en achat seul, et rangees dans leur propre onglet du shop
  * ({@link fr.atraxterra.dohy.shop.ShopCategory#NTM_MACHINES}).

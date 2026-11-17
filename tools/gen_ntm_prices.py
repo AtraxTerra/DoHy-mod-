@@ -53,7 +53,16 @@ RECIPE_TYPES = {
     # L'enclume d'acier se forge sur une enclume de fer : c'est la seule
     # machine de la liste qui passe par la forge de l'enclume.
     "hbm:anvil_smithing",
+    # L'usine chimique et le four a arc, pour ce que leurs ingredients solides
+    # font l'essentiel : beton amiante, lentille polarisee, batterie au lithium,
+    # verre de quartz. Leurs fluides ne comptent pas, comme partout ; une recette
+    # sans ingredient solide est ignoree, et les matieres de reference (polymere,
+    # caoutchouc...) restent chiffrees a leur cran, avant toute recette.
+    "hbm:chemical_plant", "hbm:arc_furnace",
 }
+
+# Ces machines-la ne comptent que si la recette a un ingredient solide.
+SOLID_ONLY = {"hbm:chemical_plant", "hbm:arc_furnace"}
 
 INGREDIENT_LISTS = ("input_items", "pcb", "solder")
 
@@ -141,6 +150,8 @@ class Pricer:
             if recipe.get("type") not in RECIPE_TYPES or not self._conditions_hold(recipe):
                 continue
             if "recycle" in str(recipe.get("name", "")).lower():
+                continue
+            if recipe.get("type") in SOLID_ONLY and not recipe.get("input_items"):
                 continue
             output = self._output(recipe)
             if output is None:

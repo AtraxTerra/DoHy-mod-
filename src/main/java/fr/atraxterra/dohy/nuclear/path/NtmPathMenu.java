@@ -31,6 +31,8 @@ public final class NtmPathMenu extends MenuController {
     private static final int GREEN = 0xFF22E558;
     private static final int GOLD = 0xFFFAC400;
     private static final int MUTED = 0xFF8C8B93;
+    /** Chapitres listes dans le panneau de gauche, autour de l'etape affichee. */
+    private static final int HERO_CHAPTERS = 5;
 
     /** L'etape affichee par joueur, si ce n'est pas celle en cours. */
     private static final Map<UUID, String> VIEWING = new ConcurrentHashMap<>();
@@ -53,7 +55,7 @@ public final class NtmPathMenu extends MenuController {
     public MenuView view(ServerPlayer player) {
         if (!NtmPath.installed()) {
             return message("NTM NEXT absent", List.of(
-                    "Le parcours guide les premieres machines de NTM NEXT, de l'enclume au premier reacteur.",
+                    "Le parcours guide les machines de NTM NEXT, de l'enclume a la fusion.",
                     "Ce serveur n'a pas NTM NEXT : il n'y a rien a faire ici."));
         }
         List<NtmPath.Located> steps = NtmPath.steps();
@@ -78,11 +80,11 @@ public final class NtmPathMenu extends MenuController {
         List<MenuView.Section> sections = new ArrayList<>();
         if (shown == null) {
             sections.add(new MenuView.Section("PARCOURS TERMINE", "upgrade", MenuView.TEXT, List.of(
-                    Card.of(ItemStack.EMPTY, "De l'enclume a l'uranium enrichi", List.of(
-                            "Industrie, petrole, premier reacteur, enrichissement : tu as tout ce qui ouvre la "
-                                    + "suite de NTM NEXT.",
-                            "- La suite : les reacteurs plus gros (RBMK), la fusion, l'espace. Les fiches NTM de "
-                                    + "l'encyclopedie donnent les bases.",
+                    Card.of(ItemStack.EMPTY, "De l'enclume a la fusion", List.of(
+                            "Industrie, petrole, reacteurs, bismuth, fusion : tu as parcouru NTM NEXT de bout en "
+                                    + "bout.",
+                            "- Au-dela : le DFC, l'ICF, les autres planetes. Les fiches NTM de l'encyclopedie "
+                                    + "donnent les bases.",
                             "- Ce qui manque s'achete au shop, onglets NTM NEXT (pieces) et Machines NTM.",
                             "! Un clic sur une etape ci-dessous en rouvre le mode d'emploi."))
                             .accent(GREEN))));
@@ -135,7 +137,17 @@ public final class NtmPathMenu extends MenuController {
         }
         List<String> lines = new ArrayList<>();
         lines.add("#CHAPITRES");
-        for (NtmPath.Chapter chapter : NtmPath.chapters()) {
+        // Douze chapitres ne tiennent pas dans le panneau : on montre ceux autour
+        // de l'etape affichee, et on resume le reste.
+        List<NtmPath.Chapter> chapters = NtmPath.chapters();
+        int at = shown != null ? shown.chapterIndex() : chapters.size() - 1;
+        int from = Math.max(0, Math.min(at - 1, chapters.size() - HERO_CHAPTERS));
+        int to = Math.min(chapters.size(), from + HERO_CHAPTERS);
+        if (from > 0) {
+            lines.add(from + (from > 1 ? " chapitres avant" : " chapitre avant"));
+        }
+        for (int i = from; i < to; i++) {
+            NtmPath.Chapter chapter = chapters.get(i);
             int chapterDone = 0;
             for (NtmPath.Step step : chapter.steps()) {
                 if (data.done(step.id())) {
@@ -143,6 +155,10 @@ public final class NtmPathMenu extends MenuController {
                 }
             }
             lines.add(chapter.name() + " · " + chapterDone + " / " + chapter.steps().size());
+        }
+        if (to < chapters.size()) {
+            int after = chapters.size() - to;
+            lines.add(after + (after > 1 ? " chapitres apres" : " chapitre apres"));
         }
         lines.add("#COMMANDE");
         lines.add("/parcours");
@@ -156,11 +172,14 @@ public final class NtmPathMenu extends MenuController {
         NtmPath.Step step = shown.step();
         NtmPath.Goal goal = step.goal();
         List<Card> cards = new ArrayList<>();
-        ItemStack icon = goal.items().isEmpty() ? step.iconStack() : NtmPath.stack(goal.items().get(0), 1);
+        ItemStack icon = goal.items().isEmpty() || goal.visit() ? step.iconStack()
+                : NtmPath.stack(goal.items().get(0), 1);
         String reward = MenuView.text(Component.literal("Recompense : ").append(NtmPath.rewardText(step.reward())));
         List<String> tooltip = new ArrayList<>();
         boolean several = goal.items().size() > 1;
-        if (goal.near()) {
+        if (goal.visit()) {
+            tooltip.add(several ? "Un de ces lieux :" : "Le lieu :");
+        } else if (goal.near()) {
             tooltip.add((several ? "Une de ces machines" : "La machine") + ", posee a moins de " + NtmPath.radius()
                     + " blocs :");
         } else if (goal.all()) {
@@ -170,7 +189,9 @@ public final class NtmPathMenu extends MenuController {
                     : goal.count() + " dans ton sac :");
         }
         for (Identifier id : goal.items()) {
-            tooltip.add(MenuView.text(Component.literal("- ").append(Gui.displayName(id))));
+            // Un lieu est une dimension, pas un item : on embellit son nom.
+            Component name = goal.visit() ? Component.literal(Gui.prettify(id.getPath())) : Gui.displayName(id);
+            tooltip.add(MenuView.text(Component.literal("- ").append(name)));
         }
 
         if (data.done(step.id())) {

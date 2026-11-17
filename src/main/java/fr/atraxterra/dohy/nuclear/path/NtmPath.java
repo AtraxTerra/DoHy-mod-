@@ -39,8 +39,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Le parcours NTM : les premieres machines de NTM NEXT, une etape apres
- * l'autre, de l'enclume a l'uranium enrichi ({@code data/dohy/ntm_path.json}).
+ * Le parcours NTM : les machines de NTM NEXT, une etape apres l'autre, de
+ * l'enclume a la fusion ({@code data/dohy/ntm_path.json}), en passant par
+ * l'espace quand NTM Space est la.
  *
  * <p>Chaque etape a un objectif que le serveur verifie au moment de valider :
  * des objets dans le sac ({@code have}, rien n'est pris) ou une machine posee
@@ -82,8 +83,9 @@ public final class NtmPath {
 
     /**
      * L'objectif : {@code have} (avoir {@code count} objets parmi {@code items},
-     * ou un de chaque avec {@code all}) ou {@code near} (une de ces machines posee
-     * a moins de {@link #radius()} blocs).
+     * ou un de chaque avec {@code all}), {@code near} (une de ces machines posee
+     * a moins de {@link #radius()} blocs) ou {@code visit} (etre dans une de ces
+     * dimensions : la Mun, par exemple).
      */
     public record Goal(String type, List<Identifier> items, int count, boolean all, String label) {
         static final Codec<Goal> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -96,6 +98,10 @@ public final class NtmPath {
 
         public boolean near() {
             return "near".equals(type);
+        }
+
+        public boolean visit() {
+            return "visit".equals(type);
         }
     }
 
@@ -114,13 +120,23 @@ public final class NtmPath {
         }
     }
 
-    public record Chapter(String id, String name, String color, List<Step> steps) {
+    /**
+     * Un chapitre. {@code requires} nomme un mod sans lequel il n'a pas de sens
+     * (l'espace et NTM Space) : sans lui, le chapitre est retire du parcours.
+     */
+    public record Chapter(String id, String name, String color, String requires, List<Step> steps) {
         static final Codec<Chapter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("id").forGetter(Chapter::id),
                 Codec.STRING.fieldOf("name").forGetter(Chapter::name),
                 Codec.STRING.optionalFieldOf("color", "22E558").forGetter(Chapter::color),
+                Codec.STRING.optionalFieldOf("requires", "").forGetter(Chapter::requires),
                 Step.CODEC.listOf().fieldOf("steps").forGetter(Chapter::steps)
         ).apply(instance, Chapter::new));
+
+        /** Le mod dont depend le chapitre est-il la ? */
+        public boolean available() {
+            return requires.isEmpty() || ModList.get().isLoaded(requires);
+        }
 
         /** La couleur du chapitre, opaque. */
         public int accent() {
@@ -157,7 +173,18 @@ public final class NtmPath {
                         result.error().map(Object::toString).orElse("erreur inconnue"));
                 return false;
             }
-            Book loaded = result.getOrThrow();
+            Book parsed = result.getOrThrow();
+            // Un chapitre dont le mod manque (l'espace sans NTM Space) n'existe pas ici.
+            List<Chapter> kept = new ArrayList<>();
+            for (Chapter chapter : parsed.chapters()) {
+                if (chapter.available()) {
+                    kept.add(chapter);
+                } else {
+                    DoHy.LOGGER.info("Parcours NTM : chapitre « {} » retire, {} absent", chapter.id(),
+                            chapter.requires());
+                }
+            }
+            Book loaded = new Book(parsed.radius(), List.copyOf(kept));
             List<Located> flat = new ArrayList<>();
             Map<String, Located> index = new LinkedHashMap<>();
             int number = 0;
@@ -175,7 +202,7 @@ public final class NtmPath {
             steps = List.copyOf(flat);
             byId = index;
             if (installed()) {
-                report(flat);
+                report(server, flat);
             }
             DoHy.LOGGER.info("Parcours NTM : {} etapes en {} chapitres{}", flat.size(), loaded.chapters().size(),
                     installed() ? "" : " (NTM NEXT absent : inerte)");
@@ -187,11 +214,13 @@ public final class NtmPath {
     }
 
     /** Ce que le fichier nomme et que cette version de NTM n'a pas : l'etape ne se validerait jamais. */
-    private static void report(List<Located> flat) {
+    private static void report(MinecraftServer server, List<Located> flat) {
         for (Located located : flat) {
             Goal goal = located.step().goal();
             for (Identifier id : goal.items()) {
-                boolean exists = goal.near() ? BuiltInRegistries.BLOCK.getOptional(id).isPresent()
+                boolean exists = goal.visit()
+                        ? server.levelKeys().stream().anyMatch(key -> key.identifier().equals(id))
+                        : goal.near() ? BuiltInRegistries.BLOCK.getOptional(id).isPresent()
                         : BuiltInRegistries.ITEM.getOptional(id).isPresent();
                 if (!exists) {
                     DoHy.LOGGER.warn("Parcours NTM : etape « {} » : {} inconnu de cette version de NTM",
@@ -267,6 +296,10 @@ public final class NtmPath {
 
     public static Status status(ServerPlayer player, Step step) {
         Goal goal = step.goal();
+        if (goal.visit()) {
+            boolean here = goal.items().contains(player.level().dimension().identifier());
+            return new Status(here ? 1 : 0, 1, here, here ? "Tu y es" : "Pas encore sur place");
+        }
         if (goal.near()) {
             int distance = nearest(player, goal.items(), radius());
             if (distance >= 0) {
@@ -386,6 +419,9 @@ public final class NtmPath {
         Step step = current.step();
         Status status = status(player, step);
         if (!status.met()) {
+            if (step.goal().visit()) {
+                return "Tu n'es pas encore sur place : " + step.goal().label() + ". Valide une fois arrive.";
+            }
             return step.goal().near()
                     ? "Aucune machine de l'etape a moins de " + radius() + " blocs : pose-la, puis valide pres d'elle."
                     : "Il te manque encore de quoi valider : " + step.goal().label() + " (" + status.line() + ").";
@@ -415,7 +451,7 @@ public final class NtmPath {
                     .append(link("[Voir]")));
         } else {
             player.sendSystemMessage(Component.literal("[NTM] ").withStyle(ChatFormatting.GREEN)
-                    .append(Component.literal("Parcours termine : de l'enclume a l'uranium enrichi. Bravo !")
+                    .append(Component.literal("Parcours termine : de l'enclume a la fusion. Bravo !")
                             .withStyle(ChatFormatting.GOLD)));
         }
         Toasts.send(player, step.iconStack(), next == null ? "PARCOURS NTM TERMINE" : "ETAPE VALIDEE", step.title(),
