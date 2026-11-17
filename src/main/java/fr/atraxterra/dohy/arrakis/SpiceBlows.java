@@ -60,8 +60,8 @@ public final class SpiceBlows {
     /** Les joueurs a cette distance l'entendent et sont prevenus. */
     private static final double HEARD = 400.0d;
     private static final int SPICE = 0xE8742C;
-    private static final String[] DIRECTIONS = {"nord", "nord-est", "est", "sud-est", "sud", "sud-ouest", "ouest",
-            "nord-ouest"};
+    private static final String[] DIRECTIONS = {"au nord", "au nord-est", "a l'est", "au sud-est", "au sud",
+            "au sud-ouest", "a l'ouest", "au nord-ouest"};
 
     private static int countdown = -1;
     private static Blow pending;
@@ -141,6 +141,21 @@ public final class SpiceBlows {
         return true;
     }
 
+    /** Une eruption en ce point de sable nu (charge, hors de la cuvette), apres le grondement. */
+    public static boolean triggerAt(ServerLevel level, BlockPos center) {
+        if (level.dimension() != DoHyArrakis.DIMENSION || pending != null || !level.hasChunkAt(center)
+                || Math.hypot(center.getX(), center.getZ()) < SAFE_RADIUS) {
+            return false;
+        }
+        int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, center.getX(), center.getZ()) - 1;
+        BlockPos top = new BlockPos(center.getX(), y, center.getZ());
+        if (!level.getBlockState(top).is(Blocks.SAND)) {
+            return false;
+        }
+        start(level, top);
+        return true;
+    }
+
     /** Un point de sable nu, dans un chunk charge, hors de la cuvette d'Arrakeen. */
     private static BlockPos spot(ServerLevel level, ServerPlayer player, int near, int far) {
         RandomSource random = level.getRandom();
@@ -167,7 +182,7 @@ public final class SpiceBlows {
         DoHy.LOGGER.info("Arrakis : eruption d'epice en {} {}", center.getX(), center.getZ());
         for (ServerPlayer player : level.players()) {
             if (heard(player, center)) {
-                player.sendSystemMessage(Component.literal("Le sable gronde au " + direction(player, center)
+                player.sendSystemMessage(Component.literal("Le sable gronde " + direction(player, center)
                         + ", a " + distance(player, center) + " blocs...").withStyle(ChatFormatting.GOLD));
             }
         }
@@ -181,7 +196,7 @@ public final class SpiceBlows {
         return (int) Math.round(Math.hypot(player.getX() - center.getX(), player.getZ() - center.getZ()));
     }
 
-    /** Le point cardinal ou se trouve {@code center}, vu du joueur. */
+    /** Le point cardinal ou se trouve {@code center}, vu du joueur : « au nord », « a l'est »... */
     static String direction(ServerPlayer player, BlockPos center) {
         double dx = center.getX() + 0.5d - player.getX();
         double dz = center.getZ() + 0.5d - player.getZ();
@@ -328,7 +343,7 @@ public final class SpiceBlows {
                 if (heard(player, center)) {
                     sound(player, SoundEvents.GENERIC_EXPLODE.value(), center, 3.0f, 0.55f);
                     sound(player, SoundEvents.SAND_BREAK, center, 2.0f, 0.5f);
-                    player.sendSystemMessage(Component.literal("Eruption d'epice au " + direction(player, center)
+                    player.sendSystemMessage(Component.literal("Eruption d'epice " + direction(player, center)
                             + " (" + center.getX() + ", " + center.getZ() + ") : un nouveau champ est ne.")
                             .withStyle(ChatFormatting.GOLD));
                 }
