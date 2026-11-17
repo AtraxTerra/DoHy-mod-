@@ -4,9 +4,15 @@ import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.market.HourlyCourse;
+import fr.atraxterra.dohy.economy.market.ShopTape;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
+import fr.atraxterra.dohy.ui.view.PriceChart;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Le cours de l'epice, au seul comptoir d'Arrakeen.
@@ -49,6 +55,21 @@ public final class SpiceMarket {
 
     public static int minutesLeft() {
         return HourlyCourse.minutesLeft();
+    }
+
+    /**
+     * La courbe du melange : le prix de base fois le cours de chacune des
+     * {@link ShopTape#HOURS} dernieres heures, l'heure en cours au bout, et ce qui
+     * s'en est vendu au comptoir. Jamais l'heure suivante : elle est deja tiree.
+     */
+    public static PriceChart chart(MinecraftServer server) {
+        long now = HourlyCourse.slot();
+        List<Long> values = new ArrayList<>(ShopTape.HOURS);
+        for (int back = ShopTape.HOURS - 1; back >= 0; back--) {
+            values.add(Math.max(1L, Math.round(BASE_PRICE * HourlyCourse.factorAt(ID, now - back))));
+        }
+        return new PriceChart(values, ShopTape.volumes(server, ID), BASE_PRICE, HourlyCourse.periodMinutes(),
+                PriceChart.DOLLARS);
     }
 
     /** Le prix d'une unite pour ce joueur, maintenant. */

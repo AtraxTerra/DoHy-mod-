@@ -3,10 +3,12 @@ package fr.atraxterra.dohy.shop;
 import fr.atraxterra.dohy.collection.CollectionApi;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.market.HourlyCourse;
+import fr.atraxterra.dohy.economy.market.ShopTape;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
 import fr.atraxterra.dohy.museum.MuseumApi;
+import fr.atraxterra.dohy.ui.view.PriceChart;
 import fr.atraxterra.dohy.ui.view.ShopView;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.upgrade.UpgradeApi;
@@ -65,6 +67,7 @@ public final class ShopController {
                 .thenComparingLong(id -> book.entry(id).map(PriceEntry::basePrice).orElse(0L))
                 .thenComparing(Identifier::toString));
         double discount = discount(player);
+        long now = HourlyCourse.slot();
         List<ShopView.Offer> offers = new ArrayList<>();
         for (Identifier id : ids) {
             PriceEntry entry = book.entry(id).orElseThrow();
@@ -86,9 +89,31 @@ public final class ShopController {
                     entry.buyPrice() > 0 ? (int) Math.round(discount * 100) : 0, sell, percent, missing,
                     countOwned(player, item), CollectionApi.countOf(player, id),
                     Math.max(0L, CollectionApi.nextThreshold(player, id, entry)),
-                    HourlyCourse.percent(id, entry)));
+                    HourlyCourse.percent(id, entry), chart(player, id, entry, discount, now)));
         }
         return new ShopView(Economy.balance(player), offers, HourlyCourse.minutesLeft());
+    }
+
+    /**
+     * La courbe des {@link ShopTape#HOURS} dernieres heures : le prix de reference
+     * a chaque heure (prix de base fois le cours de l'heure, sans la pression de
+     * vente propre au joueur) et le volume echange sur tout le serveur.
+     *
+     * <p>Seules les heures passees et l'heure en cours : le cours est tire d'avance,
+     * montrer la suivante dirait quand vendre. Un objet a prix fixe a sa ligne plate,
+     * et ses volumes s'il s'en est echange.
+     */
+    static PriceChart chart(ServerPlayer player, Identifier id, PriceEntry entry, double discount, long now) {
+        boolean course = HourlyCourse.follows(entry);
+        List<Long> volumes = ShopTape.volumes(player.level().getServer(), id);
+        long base = entry.sellable() ? entry.basePrice()
+                : Math.max(1L, Math.round(entry.buyPrice() * (1.0d - discount)));
+        List<Long> values = new ArrayList<>(ShopTape.HOURS);
+        for (int back = ShopTape.HOURS - 1; back >= 0; back--) {
+            double factor = course ? HourlyCourse.factorAt(id, now - back) : 1.0d;
+            values.add(Math.max(1L, Math.round(base * factor)));
+        }
+        return new PriceChart(values, volumes, base, HourlyCourse.periodMinutes(), PriceChart.DOLLARS);
     }
 
     public static void handle(ServerPlayer player, UiNet.Action action) {
@@ -164,6 +189,7 @@ public final class ShopController {
             return;
         }
         fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, fr.atraxterra.dohy.palamod.achievement.Achievements.PURCHASES, 1);
+        ShopTape.record(player.level().getServer(), id, wanted);
         int left = wanted;
         int stackSize = new ItemStack(item).getMaxStackSize();
         while (left > 0) {

@@ -53,6 +53,11 @@ public final class Paint {
         return Math.round(value * unit);
     }
 
+    /** Une coordonnee du repere courant en pixels physiques, arrondie comme les formes. */
+    public int pixels(float value) {
+        return p(value);
+    }
+
     /** Passe en pixels physiques le temps d'un dessin. */
     private void begin() {
         Matrix3x2fStack pose = graphics.pose();
@@ -329,7 +334,68 @@ public final class Paint {
         end();
     }
 
+    /**
+     * Une texture generee a la taille exacte ou elle s'affiche, en pixels physiques :
+     * la region {@code (0, v, width, height)} posee en {@code (px, py)}, teintee de
+     * {@code color}. C'est ainsi que les courbes, rasterisees une fois, se dessinent
+     * d'un seul trait a chaque image.
+     */
+    public void mask(Identifier texture, int px, int py, int width, int height, int v, int textureWidth,
+                     int textureHeight, int color) {
+        if (width <= 0 || height <= 0 || (color >>> 24) == 0) {
+            return;
+        }
+        begin();
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, px, py, 0.0f, v, width, height, width, height,
+                textureWidth, textureHeight, color);
+        end();
+    }
+
+    /** Un trait horizontal en pointilles, d'un pixel physique d'epaisseur. */
+    public void dashes(float x, float y, float width, float dash, float gap, int color) {
+        if (width <= 0 || (color >>> 24) == 0) {
+            return;
+        }
+        begin();
+        int y0 = p(y);
+        int x1 = p(x + width);
+        int on = Math.max(1, p(dash));
+        int off = Math.max(1, p(gap));
+        for (int cursor = p(x); cursor < x1; cursor += on + off) {
+            graphics.fill(cursor, y0, Math.min(x1, cursor + on), y0 + 1, color);
+        }
+        end();
+    }
+
+    /** Un trait vertical en pointilles, d'un pixel physique d'epaisseur. */
+    public void dashesV(float x, float y, float height, float dash, float gap, int color) {
+        if (height <= 0 || (color >>> 24) == 0) {
+            return;
+        }
+        begin();
+        int x0 = p(x);
+        int y1 = p(y + height);
+        int on = Math.max(1, p(dash));
+        int off = Math.max(1, p(gap));
+        for (int cursor = p(y); cursor < y1; cursor += on + off) {
+            graphics.fill(x0, cursor, x0 + 1, Math.min(y1, cursor + on), color);
+        }
+        end();
+    }
+
     // -- Textures generees ------------------------------------------------------------
+
+    /**
+     * Enregistre une image generee hors du kit (une courbe) ; a rendre par
+     * {@link #release} quand elle ne sert plus, sinon la carte graphique la garde.
+     */
+    public static Identifier registerGenerated(String name, NativeImage image) {
+        return register(name, image);
+    }
+
+    public static void release(Identifier id) {
+        Minecraft.getInstance().getTextureManager().release(id);
+    }
 
     private static Identifier register(String name, NativeImage image) {
         Identifier id = Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "kit2/" + name);

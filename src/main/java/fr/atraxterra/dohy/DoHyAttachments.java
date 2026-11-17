@@ -63,6 +63,16 @@ public final class DoHyAttachments {
                     .build());
 
     /**
+     * Le ruban du shop : les volumes echanges heure par heure sur tout le serveur,
+     * sur le monde principal. Ce sont les barres sous les courbes du shop.
+     */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.economy.market.ShopTape.Tape>> SHOP_TAPE =
+            ATTACHMENT_TYPES.register("shop_tape", () -> AttachmentType.builder(
+                            fr.atraxterra.dohy.economy.market.ShopTape.Tape::new)
+                    .serialize(fr.atraxterra.dohy.economy.market.ShopTape.Tape.MAP_CODEC, tape -> !tape.isEmpty())
+                    .build());
+
+    /**
      * Collections par item. Conservees a la mort : un acquis ne se reperd pas,
      * et chaque palier releve le prix plancher — la perdre a la mort serait
      * punitif au point d'etre absurde.
