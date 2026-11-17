@@ -6,11 +6,15 @@ import fr.atraxterra.dohy.palamod.machine.MachineLayout;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.FishingRodItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -45,6 +49,8 @@ public final class PalaHunter {
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, PalaMod.NAMESPACE);
     private static final DeferredRegister<MenuType<?>> MENUS =
             DeferredRegister.create(Registries.MENU, PalaMod.NAMESPACE);
+    private static final DeferredRegister<EntityType<?>> ENTITIES =
+            DeferredRegister.create(Registries.ENTITY_TYPE, PalaMod.NAMESPACE);
 
     // -- Donnees ---------------------------------------------------------------
 
@@ -205,12 +211,32 @@ public final class PalaHunter {
     public static final DeferredItem<SpawnerUpgradeItem> UPGRADE_SLIME = ITEMS.registerItem(
             "upgrade_slime", properties -> new SpawnerUpgradeItem(SpawnerUpgrade.SLIME, properties));
 
+    // -- L'elephant ----------------------------------------------------------------
+
+    /**
+     * {@code EntityElephant} ({@code registerModEntity}, suivi a 40 blocs) : a la
+     * taille de l'adulte, celle qui decide ou il peut apparaitre ; chaque age a
+     * ensuite la sienne ({@link Elephant}).
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<Elephant>> ELEPHANT = ENTITIES.register(
+            "elephant", key -> EntityType.Builder.<Elephant>of(Elephant::new, MobCategory.CREATURE)
+                    .sized(3.0f, 4.0f)
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
+
+    /** {@code ItemsRegister.TUSK} : la defense d'elephant, par 64. */
+    public static final DeferredItem<Item> TUSK = ITEMS.registerSimpleItem("tusk");
+
+    /** L'oeuf de l'elephant ({@code registerGlobalEntityID}, gris et gris clair). */
+    public static final DeferredItem<SpawnEggItem> ELEPHANT_SPAWN_EGG = ITEMS.registerItem(
+            "elephant_spawn_egg", properties -> new SpawnEggItem(properties.spawnEgg(ELEPHANT.get())));
+
     public static final List<DeferredItem<? extends Item>> ORDERED = ordered();
 
     private static List<DeferredItem<? extends Item>> ordered() {
         List<DeferredItem<? extends Item>> list = new ArrayList<>(List.of(
                 PALADIUM_FISHING_ROD, ENDIUM_FISHING_ROD, CARP, BASS, RAY, RED_TUNA, MOONFISH, EXP_FISH, WHALE, KRAKEN,
-                CAPTURE_SWORD, CAPTURE_STONE,
+                CAPTURE_SWORD, CAPTURE_STONE, TUSK, ELEPHANT_SPAWN_EGG,
                 CAVERN_HAMMER, BROKEN_SPAWNER, CUSTOM_SPAWNER_ITEM, SPAWNER_CONTROLLER_ITEM));
         list.addAll(SPAWNER_STRUCTURE_ITEMS);
         list.addAll(List.of(UPGRADE_SPEED, UPGRADE_LOOTING, UPGRADE_SLIME, UPGRADE_MORE));
@@ -227,5 +253,6 @@ public final class PalaHunter {
         ITEMS.register(modBus);
         TYPES.register(modBus);
         MENUS.register(modBus);
+        ENTITIES.register(modBus);
     }
 }

@@ -1003,14 +1003,16 @@
             "- Les viandes et le saumon cuits rapportent, sortis du four ou du fumoir a la main.",
             "- L'epee de capture enferme la creature tuee dans une pierre de capture vide.",
             "- Le marteau de caverne recolte les ames des spawners de donjon pour remplir un spawner vide.",
-            "- Capturer une monture demande l'epee et la pierre de capture."
+            "- Capturer une monture demande l'epee et la pierre de capture.",
+            "- L'elephant se tue des le niveau 40, et rapporte un bonus des le 55 s'il a ete bien nourri."
           ]
         }
       ],
       "see": [
         "metiers",
         "spawners",
-        "monture"
+        "monture",
+        "elephant"
       ],
       "progress": "metier:hunter"
     },
@@ -1431,7 +1433,8 @@
         {
           "title": "La monture",
           "text": [
-            "Sa gemme la garde ; elle a ses niveaux, sa vie et son energie. Les cornes d'amethyste, de titane et de paladium creusent de plus en plus large."
+            "Sa gemme la garde ; elle a ses niveaux, sa vie et son energie. Les cornes d'amethyste, de titane et de paladium creusent de plus en plus large.",
+            "Les cornes se forgent a la palamachine autour d'une defense d'elephant."
           ]
         }
       ],
@@ -1441,7 +1444,8 @@
       ],
       "see": [
         "chasseur",
-        "plans"
+        "plans",
+        "elephant"
       ],
       "plans": [
         "enclos"
@@ -1459,9 +1463,58 @@
       }
     },
     {
-      "id": "spawners",
+      "id": "elephant",
       "category": "palamod",
       "order": 8,
+      "icon": "palamod:tusk",
+      "title": "L'elephant",
+      "card": [
+        "Savanes et jungles",
+        "Bambou, monture"
+      ],
+      "summary": [
+        "L'elephant vit en petits groupes dans les savanes et les jungles. Petit, ado ou adulte, il est neutre : il ne charge que celui qui le frappe. Le petit s'apprivoise au bambou ; apprivoise, il grandit et se laisse monter."
+      ],
+      "sections": [
+        {
+          "title": "Le bambou",
+          "text": [
+            "- Clic droit avec un bambou : il en mange un. Un bloc de bambou en vaut neuf ; accroupi, toute la pile y passe. Chaque bambou le soigne d'un point.",
+            "- Sauvage, seul le petit en veut : il s'apprivoise en quelques bambous, et tu deviens son maitre.",
+            "- Apprivoise, il grandit : ado a 64 bambous, adulte a 128, une robe vert pale a 1 000, verte a 5 000."
+          ]
+        },
+        {
+          "title": "En selle",
+          "text": [
+            "Son maitre monte d'un clic droit main vide. Un bambou en main, l'elephant avance droit devant, dans le sens de ton regard : le petit trotte, l'adulte avance au pas. Sans bambou, il se promene a sa guise."
+          ]
+        },
+        {
+          "title": "Pour le Chasseur",
+          "text": [
+            "- Des Chasseur 40, un elephant tue rapporte un peu plus qu'une vache.",
+            "- Des Chasseur 55, un elephant bien nourri (128 bambous et plus) rapporte un bonus, d'autant plus gros qu'il a mange.",
+            "- Une fois sur 25, un ado ou un adulte lache des defenses d'elephant : le coeur des cornes de monture, a la palamachine.",
+            "- Il se capture a l'epee et a la pierre de capture."
+          ]
+        }
+      ],
+      "see": [
+        "chasseur",
+        "monture"
+      ],
+      "discover": {
+        "items": [
+          "palamod:tusk",
+          "palamod:elephant_spawn_egg"
+        ]
+      }
+    },
+    {
+      "id": "spawners",
+      "category": "palamod",
+      "order": 9,
       "icon": "palamod:spawner_controller",
       "title": "Les spawners",
       "card": [
@@ -1504,7 +1557,7 @@
     {
       "id": "dimension_mineur",
       "category": "palamod",
-      "order": 9,
+      "order": 10,
       "icon": "palamod:withered_obsidian",
       "title": "Dimension Mineur",
       "card": [
@@ -1558,7 +1611,7 @@
     {
       "id": "pierres_legendaires",
       "category": "palamod",
-      "order": 10,
+      "order": 11,
       "icon": "palamod:legendary_stone_random",
       "title": "Pierres et gant",
       "card": [
@@ -1593,7 +1646,7 @@
     {
       "id": "pvp",
       "category": "palamod",
-      "order": 11,
+      "order": 12,
       "icon": "palamod:strength_stick",
       "title": "Objets de combat",
       "card": [
@@ -1628,7 +1681,7 @@
     {
       "id": "clicker",
       "category": "palamod",
-      "order": 12,
+      "order": 13,
       "icon": "minecraft:cookie",
       "title": "Le clicker",
       "card": [
@@ -1661,7 +1714,7 @@
     {
       "id": "trixium",
       "category": "palamod",
-      "order": 13,
+      "order": 14,
       "icon": "palamod:trixium",
       "title": "Concours Trixium",
       "card": [
@@ -1691,7 +1744,7 @@
     {
       "id": "succes",
       "category": "palamod",
-      "order": 14,
+      "order": 15,
       "icon": "minecraft:golden_apple",
       "title": "Les succes",
       "card": [
@@ -1719,7 +1772,7 @@
     {
       "id": "withers",
       "category": "palamod",
-      "order": 15,
+      "order": 16,
       "icon": "palamod:wither_receptacle",
       "title": "Les withers",
       "card": [

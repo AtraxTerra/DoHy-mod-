@@ -21,7 +21,6 @@
         "_bedrock": "Bareme de Paladium Bedrock (tools/bedrock_jobs.py) : XP de PalaTracker telles quelles, niveaux de Bedrock x 5, en dessous du niveau la source ne rapporte rien. La pierre et l'ardoise ne rapportent rien, comme sur Bedrock. smelted : chaque objet sorti cuit du four, du haut fourneau ou du palafurnace a la main, ou d'un outil en fusion.",
         "blocks": {
           "minecraft:andesite": 1,
-          "dohy:spice_sand": 2,
           "minecraft:granite": 1,
           "minecraft:diorite": 1,
           "minecraft:tuff": 3,
@@ -90,6 +89,7 @@
             "level": 50,
             "xp": 9
           },
+          "dohy:spice_sand": 2,
           "minecraft:ancient_debris": {
             "level": 50,
             "xp": 130
@@ -165,7 +165,7 @@
     "hunter": {
       "display": "Chasseur",
       "sources": {
-        "_bedrock": "Bareme de Paladium Bedrock (tools/bedrock_jobs.py), animaux compris. Une creature nee d'un spawner, ou tuee au controleur, ne rapporte qu'un quarantieme ; un petit, rien.",
+        "_bedrock": "Bareme de Paladium Bedrock (tools/bedrock_jobs.py), animaux compris. Une creature nee d'un spawner, ou tuee au controleur, ne rapporte qu'un quarantieme ; un petit, rien. Les creatures de PalaMod (l'elephant) : leur XP de PalaJobs au rapport des animaux.",
         "entities": {
           "minecraft:cow": 80,
           "minecraft:sheep": {
@@ -252,6 +252,10 @@
           "minecraft:ender_dragon": {
             "level": 95,
             "xp": 73000
+          },
+          "palamod:elephant": {
+            "level": 40,
+            "xp": 100
           }
         },
         "smelted": {

@@ -101,8 +101,9 @@ qui n'existe pas en 1.7.10 vanilla. C'est le module `back2future` de PalaMod
 **Remplaçants** (2026-11-11) : le bonbon à déballer de PalaMod (`ItemCandy`) devenait 5
 bouteilles d'XP du métier. **Porté le 2026-11-14** (« Les bonbons de métier », plus bas) : la
 récompense du niveau 95 est de nouveau le bonbon à déballer.
-La défense d'éléphant (Chasseur, 80) devient un bloc d'os, comme dans les recettes de cornes de
-la palamachine. Sans remplaçant, ces récompenses n'étaient pas distribuées. L'armure de voyage (Fermier, 55)
+La défense d'éléphant (Chasseur, 80) devenait un bloc d'os, comme dans les recettes de cornes de
+la palamachine ; **portée le 2026-11-17** avec l'éléphant, c'est de nouveau elle. Sans remplaçant,
+ces récompenses n'étaient pas distribuées. L'armure de voyage (Fermier, 55)
 est portée depuis (§ 28). `tools/palamod_jobs.py` porte la règle (`SUBSTITUTES`).
 
 **Joueurs migrés** : à la première connexion après le remplacement des skills, un joueur
@@ -1293,6 +1294,52 @@ pierre de gardien, crusher.
   dans le monde (`EntityJoinLevelEvent`) : `BaseSpawner.serverTick` relance alors son délai
   normal, que l'ajout échoue ou réussisse.
 
+### L'éléphant — `EntityElephant`, `ModelElephant`, `RenderElephant` (2026-11-17)
+
+Relevé au bytecode (`hunter.entites.EntityElephant`, son modèle et son rendu ; `HunterRegisterer`
+pour l'XP). Il ne venait que des lucky blocks et des événements du serveur : aucun code ne le
+faisait apparaître.
+
+| Âge | Taille | Vie | Coup | Vitesse | Recul | Texture |
+|---|---|---|---|---|---|---|
+| petit | 1 × 1,5 | 25 | 5 | 0,6 | insensible | 64 × 64 |
+| ado | 1,5 × 2,3 | 50 | 10 | 0,5 | 0,65 | 128 × 128 |
+| adulte | 3 × 4 | 100 | 25 | 0,3 | insensible | 160 × 160 |
+
+- **Naissance** : un âge au hasard (`entityInit` : `rand(3)`), robe 0, sauvage. Le petit est
+  insensible au recul par une faute de l'original (l'âge comparé à 0,3) : gardée.
+- **IA** : promenade (0,6), regarde les joueurs, ne charge (0,8) que le joueur qui le frappe.
+- **Bambou** (`interact`, main droite) : un bambou (+1) ou un bloc de bambou (+9) ; accroupi, toute
+  la pile. Il soigne d'autant. Sauvage, seul le petit mange, et s'apprivoise si son compte de
+  bambou atteint un tirage de 0 à 9. Apprivoisé, il grandit : ado à 64, adulte à 128, robe 1 à
+  1 000, robe 2 à 5 000 ; il refuse tout à 100 000. Étincelles de coup critique (75), cœurs à
+  l'apprivoisement (100) et au plein (200). Compté pour le succès « Élevage d'éléphants ».
+- **Monture** : le maître monte d'un clic droit main vide. Bambou en main, l'éléphant avance droit
+  devant dans le lacet du cavalier (`moveEntityWithHeading(0, 0,4 / 0,3 / 0,2)`), à la vitesse de
+  sa promenade (0,6 × l'attribut, ramenée au sol de 26.2 : × 0,45) ; sinon il se promène, le
+  cavalier sur le dos. Le cavalier s'assied à `0,75 × hauteur` de 1.7.10.
+- **Mort** : un ado ou un adulte lâche une fois sur 25 de 0 à 2 **défenses d'éléphant**, plus de 0
+  à Butin (`getDropItem`, `dropFewItems`), et 5 orbes d'XP comme un monstre.
+- **XP de Chasseur** : 15 XP de PalaJobs au niveau 8 (`EntityKillObjective`), soit **100 XP dès
+  Chasseur 40**. Le barème des créatures est celui de Bedrock, qui n'a pas d'éléphant : son XP
+  passe au rapport médian Bedrock / PalaJobs des animaux communs (vache, mouton, poulet, cochon :
+  14 dans PalaJobs, 80 à 110 sur Bedrock, × 6,79), dans `tools/bedrock_jobs.py`. Le **bonus de
+  l'éléphant nourri** (`EntityKillSpecialObjective`, niveau 11 → **55**) : de 128 à 1 000
+  bambous, 1 à 40 XP de PalaJobs ; au-delà, `bambou / 100 + rand(bambou / 10 + bambou / 25)` ;
+  converti au même rapport que la mise à mort.
+- **Capture** : à l'épée et à la pierre de capture, à tout âge (« Zoo original »).
+- **Apparition (écart)** : par petits groupes (1 à 3, poids 3) dans les savanes et les jungles
+  (`palamod:elephant_spawns`, `biome_modifier/elephant.json`), sur un sol d'animal et au jour ;
+  `Wildlife` en ramène sur une carte déjà générée.
+- **Écarts** : une créature et pas un monstre (`EntityMob`) — il ne disparaît plus en paisible et
+  sait nager ; sauvage et sans nom, il s'en va loin des joueurs, comme un monstre de 1.7.10,
+  mais un apprivoisé reste (l'original pouvait disparaître). Les sons de monstre sont gardés.
+  La peau « Elmer » (un éléphant nommé d'après un personnage de livre pour enfants) n'est pas
+  reprise : c'est l'œuvre d'un autre. L'œuf d'apparition a une texture de DoHy (gris, taches
+  gris clair, les couleurs de `registerGlobalEntityID`).
+- **Pas encore dans les donjons** : la défense d'éléphant et le totem fleuri figuraient dans les
+  tables du wiki, à des paliers non relevés ici ; ils restent hors des coffres.
+
 ## 14. Alchimiste — les objets débloqués (chapitre 11)
 
 Relevé dans `PAlchimiste` (recettes du chaudron et des portails), `CraftMod`, `TileEntityExtractor`,
@@ -1745,9 +1792,10 @@ horloge s'arrête.
   couveuse (6 terre cuite, 2 verre, 1 orbe de régénération), gestionnaire (6 terre cuite, 2 blocs
   de paladium, 1 **coffre en or**), bandage (6 papier, 2 ficelle, 1 orbe), **orbe de
   régénération** (4 lingots de paladium autour d'une tranche de pastèque scintillante).
-- **Cornes** : l'éléphant et sa défense ne sont pas portés. Les cornes se fabriquent à la
-  **palamachine** (chapitre 16, § 20), la défense remplacée par un **bloc d'os** : os au centre,
-  lingot, bloc, lingot, bloc. Les recettes « bâtons + bloc » sont des **réparations** : la corne
+- **Cornes** : elles se fabriquent à la **palamachine** (chapitre 16, § 20) autour d'une
+  **défense d'éléphant** : défense au centre, lingot, bloc, lingot, bloc. Avant l'éléphant
+  (2026-11-17), un bloc d'os la remplaçait. Les recettes « bâtons + bloc » sont des
+  **réparations** : la corne
   usée au centre, trois bâtons du métal (celui du milieu devient un cœur en paladium pour la corne
   en paladium) et un bloc ; elle ressort neuve.
 
@@ -1992,8 +2040,9 @@ réparer. Ni entonnoir ni conduit. Recette à l'établi : 8 pierres autour d'un 
   lègue plus son compteur au stick divin qu'il sert à fabriquer.
 - Portées : 12 recettes d'anneaux, 14 de sticks, 6 de cornes de monture, et la recharge de
   l'extracteur (un extracteur entamé, 3 lingots de paladium et un seau d'eau : il ressort à 144
-  utilisations). La défense d'éléphant devient un **bloc d'os** ; les anciens substituts des
-  cornes à l'établi sont retirés. Laissées : détecteurs de claim, runes de donjon (non portés).
+  utilisations). La défense d'éléphant y est au centre des cornes (un bloc d'os jusqu'au
+  2026-11-17) ; les anciens substituts des cornes à l'établi sont retirés. Laissées : détecteurs
+  de claim, runes de donjon (non portés).
 
 | Création | Pièce centrale | Ingrédients (1, 2, 3, 4) |
 |---|---|---|
@@ -2642,13 +2691,14 @@ le code.
 - **Dépenser** (`CresusWithdrawAchievement`) : tout débit consenti (achats au shop, boutique,
   améliorations, dépôts en banque de faction…), pas la pénalité de mort.
 
-### Les 13 succès retirés
+### Les 12 succès retirés
 
 Mailbox (« Écrivain »), sorts (« Apprenti sorcier »), Palapass, échanges entre joueurs (trois
 « Tradeur »), familier niveau 100, blocs camouflage d'un autre mod (« Expert du camouflage »),
 glueballs (« Chewing gum maison »), colle (« Colleur »), bouteilles d'XP scellées (« Mise en
-bouteille »), sac à dos de chasseur (« Transport dominical »), éléphants (« Élevage
-d'éléphants »). Aucun de ces systèmes n'existe dans DoHy.
+bouteille »), sac à dos de chasseur (« Transport dominical »). Aucun de ces systèmes n'existe
+dans DoHy. « Élevage d'éléphants » (7 500 bambous, un bloc en vaut neuf) est revenu le
+2026-11-17 avec les éléphants.
 
 ### Les écarts
 
@@ -2659,7 +2709,7 @@ d'éléphants »). Aucun de ces systèmes n'existe dans DoHy.
 | Une belle omelette II | utiliser le parchemin de dragon | être là quand Volcania tombe (pas de parchemin) |
 | Transdimensionnelle III | la commande `/dimension` trois fois | terminer trois sessions |
 | Chercheur assisté | utiliser 10 fois un spawner finder | 10 min en main (le finder de DoHy s'use à la seconde) |
-| Zoo original | zombie, creeper, tortue, crabe, escargot, dauphin, éléphant | crabe, escargot, éléphant → panda, perroquet, chèvre (capturables) |
+| Zoo original | zombie, creeper, tortue, crabe, escargot, dauphin, éléphant | crabe, escargot → panda, perroquet (capturables) ; l'éléphant depuis le 2026-11-17 |
 | Petite proie, dur combat | les quatre mini-boss de PalaJobs | les cinq boss d'event |
 | Extermina-home | tuer 10 fantômes du home remover | effacer 10 monstres avec le home remover (celui de DoHy efface les monstres du chunk) |
 | Doux chez soi | posséder un village de faction | bâtir la réserve d'or |

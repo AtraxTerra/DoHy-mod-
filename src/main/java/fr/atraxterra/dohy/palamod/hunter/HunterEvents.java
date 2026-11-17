@@ -41,11 +41,12 @@ import java.util.Set;
  * pile de creatures n'en perd qu'une.
  *
  * <p>Capturables : les huit de 1.7.10 (cochon, vache, mouton, slime, zombie et
- * zombie-villageois, creeper, poulet), le lapin, et cinq creatures que PalaMod
+ * zombie-villageois, creeper, poulet), le lapin, cinq creatures que PalaMod
  * ajoutait et qui sont vanilla en 26.2 (tortue, panda, dauphin, perroquet,
- * chevre). Le cheval ne l'a jamais ete ; le wither ne l'etait que sur le serveur
- * de minage ; les autres creatures de PalaMod ne sont pas portees. Le Dancarok
- * sauvage donne une gemme de monture (chapitre 14).
+ * chevre) et l'elephant de PalaMod, a tout age. Le cheval ne l'a jamais ete ; le
+ * wither ne l'etait que sur le serveur de minage ; les autres creatures de
+ * PalaMod ne sont pas portees. Le Dancarok sauvage donne une gemme de monture
+ * (chapitre 14).
  */
 @EventBusSubscriber
 public final class HunterEvents {
@@ -57,6 +58,11 @@ public final class HunterEvents {
             EntityTypes.PARROT, EntityTypes.GOAT);
 
     private HunterEvents() {
+    }
+
+    /** L'elephant est enregistre par le mod : il ne peut pas etre dans la liste figee. */
+    private static boolean capturable(EntityType<?> type) {
+        return CAPTURABLE.contains(type) || type == PalaHunter.ELEPHANT.get();
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -76,7 +82,7 @@ public final class HunterEvents {
         if (victim instanceof Mob mob) {
             MobStacks.split(mob);
         }
-        ItemStack stone = CAPTURABLE.contains(victim.getType()) ? emptyStone(player.getInventory()) : null;
+        ItemStack stone = capturable(victim.getType()) ? emptyStone(player.getInventory()) : null;
         if (stone != null) {
             if (victim instanceof Mob mob) {
                 mob.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
