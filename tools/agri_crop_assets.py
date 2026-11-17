@@ -1087,6 +1087,43 @@ GRASS = {
     "fonio": (SPROUT, FONIO, FONIO, FONIO, False),
 }
 
+def fonio_tops(c, age, stalks, heads, g):
+    """Le fonio en epiaison : des tiges greles et droites qui s'ouvrent a peine, chargees sur
+    leurs deux tiers du haut de grains minuscules, clairs et sombres en alternance, piques de
+    points bruns ; une masse touffue et mouchetee, comme sur la planche."""
+    rng = random.Random(70 + age)
+    density = {4: 0.25, 5: 0.5, 6: 0.8, 7: 1.0}[age]
+    stems = [(13, 6, 22), (14, 10, 26), (15, 13, 28), (16, 16, 29), (17, 19, 28), (18, 22, 26), (19, 26, 22),
+             (15, 8, 24), (17, 24, 24)]
+    if age == 4:
+        stems = stems[1:6]
+    tops = []
+    for k, (x0, tx, h) in enumerate(stems):
+        h = int(h * (0.8 if age == 4 else 1.0))
+        top = (tx, g - h)
+        depth = 0.88 if k >= 7 else 1.0
+        c.paste(ribbon([(x0, g + 1), (x0 + (tx - x0) * 0.3, g - h * 0.5), top], const(1.3), scale(stalks, depth),
+                       tip=1.1), shadow=False)
+        tops.append((x0, tx, h, depth))
+    for x0, tx, h, depth in tops:
+        pts = [(x0, g + 1), (x0 + (tx - x0) * 0.3, g - h * 0.5), (tx, g - h)]
+        n = int(h * 2.2 * density)
+        for i in range(n):
+            t = rng.uniform(0.35, 1.0)
+            x, y = bez(pts, t)
+            side = rng.choice((-1, 1))
+            off = rng.uniform(0.6, 1.8 + 1.2 * (1 - t))
+            gx, gy = int(math.floor(x + side * off)), int(math.floor(y + rng.uniform(-0.5, 0.5)))
+            r = rng.random()
+            tone = 6 if r < 0.12 else 5 if r < 0.42 else 4 if r < 0.62 else 2 if r < 0.9 else 1
+            col = scale(heads, depth)[tone]
+            if rng.random() < 0.07 * density:
+                col = BARK[1]
+            c.put(gx, gy, col)
+            if tone >= 4 and rng.random() < 0.5:
+                c.put(gx + (1 if side > 0 else 0), gy + 1, scale(heads, depth)[tone - 2])
+
+
 RIPE = {4: 0.0, 5: 0.15, 6: 0.55, 7: 1.0}
 
 
@@ -1096,7 +1133,10 @@ def grasses(name, age):
     green, ripe_stalk, head, awn, wide = GRASS[name]
     ripe = RIPE.get(age, 0.0)
     leaves = mix_ramp(green, ripe_stalk, ripe * 0.85)
-    blades = GRASS_BLADES[age]
+    # chaque espece a son port : le fonio grele, le kamut epais, l'avoine un peu plus haute
+    widths = {"fonio": 0.72, "kamut": 1.12, "oat": 0.95, "rye": 0.88}.get(name, 1.0)
+    heights = {"oat": 1.06, "rye": 1.08, "fonio": 0.92}.get(name, 1.0)
+    blades = [(x0, min(29, h * heights), lean, w * widths, curl) for x0, h, lean, w, curl in GRASS_BLADES[age]]
     back = blades[0::2] if age >= 4 else blades
     for x0, h, lean, w, curl in back:
         c.paste(upright(x0, g + 1, h, lean, w, scale(leaves, 0.9) if age < 4 else scale(leaves, 0.92), curl=curl))
@@ -1105,6 +1145,11 @@ def grasses(name, age):
     stalks = mix_ramp(green, ripe_stalk, 0.15 + ripe * 0.85)
     heads = mix_ramp(green, head, 0.25 + ripe * 0.75)
     awns = mix_ramp(green, awn, 0.25 + ripe * 0.75)
+    if name == "fonio":
+        fonio_tops(c, age, stalks, heads, g)
+        for x0, h, lean, w, curl in blades[1::2]:
+            c.paste(upright(x0, g + 1, h, lean, w, leaves, curl=curl))
+        return c
     stems = GRASS_STEMS[age][0 if wide else 1]
     young = age == 4
     order = sorted(range(len(stems)), key=lambda k: -stems[k][2])  # les plus hautes derriere
@@ -1241,25 +1286,31 @@ def sorghum_icon():
 
 
 def fonio_icon():
-    """Une botte de fonio : les tiges liees, et au-dessus des grappes greles et perlees qui
-    retombent de tous cotes, comme une fontaine."""
+    """Une botte de fonio : des tiges greles liees en bas, qui s'ouvrent en eventail, chargees
+    en haut de grains minuscules mouchetes."""
     green, ripe_stalk, head, awn, wide = GRASS["fonio"]
-    shape = {}
-    for k, (x, lean) in enumerate(((13, -3), (16, 0), (19, 3))):
-        stems_to(shape, 16 + lean * 0.3, 30, x + lean * 0.4, 9, ripe_stalk)
-    rng = random.Random(8)
-
-    def beads(t, v, tone, key):
-        tone = tone + (1 if int(t * 14) % 2 == 0 else -1)
-        return 1 if rng.random() < 0.07 else tone
-
-    for k, (side, reach, drop, top) in enumerate(((-1, 11, 12, 7), (1, 11, 12, 7), (-1, 7, 14, 5), (1, 7, 14, 5),
-                                                  (-1, 3, 15, 4), (1, 3, 15, 4))):
-        x0 = 16 + side * 1.5
-        pts = [(x0, top + 3), (x0 + side * reach * 0.3, top - 3), (x0 + side * reach * 0.8, top - 1),
-               (x0 + side * reach, top + drop)]
-        shape.update(ribbon(pts, lambda t: 3.0 * (1 - 0.45 * t), head, tip=0.97, pattern=beads))
-    return bundle([shape], tie_y=22)
+    c = Canvas()
+    rng = random.Random(12)
+    stems = [(-9, 3), (-6, 1), (-3, 0), (0, -1), (3, 0), (6, 1), (9, 3), (-4.5, 4), (4.5, 4)]
+    for k, (dx, top) in enumerate(stems):
+        depth = 0.88 if k >= 7 else 1.0
+        pts = [(16 + dx * 0.15, 30), (16 + dx * 0.3, 18), (16 + dx, top + 2)]
+        c.paste(ribbon(pts, const(1.3), scale(ripe_stalk, depth), tip=1.1), shadow=False)
+        for i in range(26):
+            t = rng.uniform(0.5, 1.0)
+            x, y = bez(pts, t)
+            side = rng.choice((-1, 1))
+            gx = int(math.floor(x + side * rng.uniform(0.6, 2.0)))
+            gy = int(math.floor(y + rng.uniform(-0.5, 0.5)))
+            r = rng.random()
+            tone = 6 if r < 0.12 else 5 if r < 0.42 else 4 if r < 0.62 else 2 if r < 0.9 else 1
+            c.put(gx, gy, BARK[1] if rng.random() < 0.06 else scale(head, depth)[tone])
+    for x in range(12, 21):
+        k = x - 12
+        c.put(x, 22, BARK[4] if k % 3 else BARK[5])
+        c.put(x, 23, BARK[2] if k % 3 else BARK[3])
+        c.put(x, 24, BARK[0])
+    return c
 
 
 ICONS = {
