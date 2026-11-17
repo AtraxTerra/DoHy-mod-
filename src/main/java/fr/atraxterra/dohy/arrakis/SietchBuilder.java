@@ -201,7 +201,15 @@ final class SietchBuilder {
         room(6, -1, 9, 4, 3, sandstone);
         room(8, 3, 14, 4, 3, sandstone);
         put(7, 2, 4, lantern(true));
-        put(12, 2, 3, lantern(true));
+        put(10, 2, 4, lantern(true));
+        put(13, 2, 3, lantern(true));
+        put(3, 2, -1, lantern(true));
+        // deux cairns sur le sable, de part et d'autre : on les voit si l'on sait les chercher
+        for (int v : new int[] {-4, 3}) {
+            put(-5, -1, v, sandstone);
+            put(-5, 0, v, sandstone);
+            put(-5, 1, v, block("sandstone_wall"));
+        }
         // la porte : deux battants de cuivre, un linteau taille
         BlockState door = first("waxed_weathered_copper_door", "waxed_copper_door", "spruce_door");
         door = facing(door, 'F');
@@ -355,6 +363,23 @@ final class SietchBuilder {
             spots.add(new Spot(role, at(u0 + 2, 0, vOut - 2 * step), yaw(side == 'L' ? 'R' : 'L')));
         }
         labels.add(new Label(at(u0 + 2, 3, vOut), title, color, 0.6f));
+        // une tenture tissee dans la paroi du fond : rayures de laine, un motif au milieu
+        int wall = vIn + (side == 'L' ? -1 : 1);
+        BlockState[] stripes = {block("red_wool"), block("orange_wool"), block("brown_wool")};
+        for (int u = u0 + 1; u <= u0 + 3; u++) {
+            put(u, 2, wall, stripes[(u - u0) % 3]);
+            put(u, 1, wall, u == u0 + 2 ? motif(color) : block("brown_wool"));
+        }
+    }
+
+    /** Le motif d'une tenture, de la couleur du comptoir. */
+    private BlockState motif(int color) {
+        return switch (color) {
+            case 0x4FB8FF -> block("light_blue_wool");
+            case 0xC88BE8 -> block("purple_wool");
+            case 0xD9A35C -> block("yellow_wool");
+            default -> block("white_wool");
+        };
     }
 
     /** Au fond : le couloir, le dortoir (des nattes en rangs), la reserve (tonneaux, jarres). */
@@ -379,6 +404,14 @@ final class SietchBuilder {
         put(46, 0, 6, block("decorated_pot"));
         put(43, 3, 4, lantern(true));
         put(41, 3, -1, lantern(true));
+        put(45, 3, -1, lantern(true));
+        put(43, 3, 8, lantern(true));
+        put(46, 0, -3, candles(3));
+        put(40, 0, -3, candles(2));
+        for (int v = -2; v <= 2; v++) {
+            put(47, 2, v, v % 2 == 0 ? block("orange_wool") : block("red_wool"));
+            put(47, 1, v, block("brown_wool"));
+        }
         // deux habitants qui vont et viennent dans la salle, un troisieme au dortoir
         spots.add(new Spot(SietchDweller.Role.DWELLER, at(22, 0, 1), yaw('F')));
         spots.add(new Spot(SietchDweller.Role.DWELLER, at(34, 0, 6), yaw('B')));

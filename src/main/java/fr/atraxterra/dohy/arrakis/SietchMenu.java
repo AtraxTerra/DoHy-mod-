@@ -247,7 +247,9 @@ public final class SietchMenu extends MenuController {
     private List<MenuView.Section> water(ServerPlayer player, int trust, int spice) {
         boolean friend = trust >= FRIEND;
         boolean thirsty = Hydration.thirsty(player);
-        Card drink = trade(ItemStack.EMPTY, "Boire a la citerne", "drink|boire", WATER,
+        Card drink = trade(net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                net.minecraft.world.item.Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER),
+                "Boire a la citerne", "drink|boire", WATER,
                 List.of(friend ? "Offert aux amis du sietch" : DRINK_MELANGE + " melange", "Ta reserve d'eau, pleine"),
                 !thirsty ? "Tu n'as pas soif." : friend ? null : lacking(spice, DRINK_MELANGE, "melange"), null);
         int missing = missing(player);

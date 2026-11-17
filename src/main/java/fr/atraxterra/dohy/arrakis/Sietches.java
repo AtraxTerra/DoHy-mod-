@@ -78,6 +78,8 @@ public final class Sietches {
     private static Job job;
     /** Les volumes proteges des sietchs creuses, par indice. */
     private static final Map<Integer, BoundingBox> BOXES = new java.util.HashMap<>();
+    /** Les plans des sietchs creuses, pour l'entretien (habitants, citerne). */
+    private static final Map<Integer, SietchBuilder.Plan> PLANS = new java.util.HashMap<>();
     private static int ticks;
 
     private Sietches() {
@@ -131,8 +133,8 @@ public final class Sietches {
         double dist = 760.0d + 900.0d * (0.5d + 0.5d * hash(k, 2));
         int cx = (int) Math.round(Math.cos(angle) * dist);
         int cz = (int) Math.round(Math.sin(angle) * dist);
-        for (int r = 0; r <= 360; r += 8) {
-            int n = r == 0 ? 1 : (int) Math.ceil(2.0d * Math.PI * r / 8.0d);
+        for (int r = 0; r <= 720; r += 10) {
+            int n = r == 0 ? 1 : (int) Math.ceil(2.0d * Math.PI * r / 10.0d);
             for (int i = 0; i < n; i++) {
                 double t = 2.0d * Math.PI * i / n + hash(k, 3);
                 int x = cx + (int) Math.round(Math.cos(t) * r);
@@ -164,7 +166,7 @@ public final class Sietches {
      */
     private static Site cliff(int k, int x, int z, Direction out) {
         double r = Math.hypot(x, z);
-        if (r < 650.0d || r > 1900.0d || !sand(x, z)) {
+        if (r < 620.0d || r > 2600.0d || Math.abs(z) > 7000 || !sand(x, z)) {
             return null;
         }
         Direction forward = out.getOpposite();
@@ -183,7 +185,7 @@ public final class Sietches {
                 break;
             }
         }
-        if (!wall || height(fx + forward.getStepX() * 3, fz + forward.getStepZ() * 3) < y0 + 20) {
+        if (!wall || height(fx + forward.getStepX() * 3, fz + forward.getStepZ() * 3) < y0 + 16) {
             return null;
         }
         // le devant : du sable a peu pres de niveau, pour que la fissure s'ouvre sur l'erg
@@ -192,7 +194,7 @@ public final class Sietches {
                 int px = fx + forward.getStepX() * u + right.getStepX() * v;
                 int pz = fz + forward.getStepZ() * u + right.getStepZ() * v;
                 double h = height(px, pz);
-                if (h > y0 + 2.5d || h < y0 - 5.0d) {
+                if (h > y0 + 3.5d || h < y0 - 6.0d) {
                     return null;
                 }
             }
@@ -204,7 +206,7 @@ public final class Sietches {
             for (int v = vMin; v <= vMax; v += 2) {
                 int px = fx + forward.getStepX() * u + right.getStepX() * v;
                 int pz = fz + forward.getStepZ() * u + right.getStepZ() * v;
-                if (height(px, pz) < y0 + 13) {
+                if (height(px, pz) < y0 + 12) {
                     return null;
                 }
             }
@@ -316,10 +318,19 @@ public final class Sietches {
         }
     }
 
-    /** Remet a sa place chaque habitant qui manque (tue en creatif, perdu, jamais apparu). */
+    /** Remet a sa place chaque habitant qui manque (tue en creatif, perdu, jamais apparu), et l'eau de la citerne. */
     static void upkeep(ServerLevel level, Site site) {
-        SietchBuilder.Plan plan = SietchBuilder.plan(site, floor(level, site), 0);
+        SietchBuilder.Plan plan = PLANS.computeIfAbsent(site.index(), k -> SietchBuilder.plan(site, floor(level, site), 0));
         BoundingBox box = plan.box();
+        BlockState water = net.minecraft.world.level.block.Blocks.WATER.defaultBlockState();
+        for (long key : plan.blocks().keySet()) {
+            if (plan.blocks().get(key) == water) {
+                BlockPos pos = BlockPos.of(key);
+                if (level.isLoaded(pos) && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER)) {
+                    level.setBlock(pos, water, Block.UPDATE_CLIENTS);
+                }
+            }
+        }
         List<SietchDweller> present = level.getEntitiesOfClass(SietchDweller.class,
                 net.minecraft.world.phys.AABB.of(box).inflate(4.0d), d -> d.sietch() == site.index());
         Map<SietchDweller.Role, Integer> count = new EnumMap<>(SietchDweller.Role.class);
@@ -349,10 +360,21 @@ public final class Sietches {
         level.addFreshEntity(dweller);
     }
 
+    /** Les emplacements se calculent a l'ecart, des le demarrage : le premier joueur n'attend pas. */
+    @SubscribeEvent
+    public static void onServerStarted(net.neoforged.neoforge.event.server.ServerStartedEvent event) {
+        if (DoHyArrakis.available()) {
+            Thread thread = new Thread(Sietches::sites, "dohy-sietches");
+            thread.setDaemon(true);
+            thread.start();
+        }
+    }
+
     @SubscribeEvent
     public static void onServerStopped(ServerStoppedEvent event) {
         job = null;
         BOXES.clear();
+        PLANS.clear();
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
