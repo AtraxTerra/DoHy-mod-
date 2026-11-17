@@ -12,6 +12,7 @@ import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.faction.Factions;
 import fr.atraxterra.dohy.faction.NationRank;
 import fr.atraxterra.dohy.faction.event.EventRun;
+import fr.atraxterra.dohy.ui.view.PriceChart;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -52,6 +53,13 @@ import java.util.Random;
  * revient vers sa reference au rythme de l'oubli du marche du joueur (10 % de
  * l'ecart par vingt minutes de jeu).
  *
+ * <h2>Les courbes</h2>
+ *
+ * <p>Apres chaque lot des nations (toutes les dix minutes de jeu), le cours de
+ * chaque ressource est releve, avec la quantite echangee depuis le releve
+ * precedent (joueurs et nations) : les {@link #HISTORY} derniers releves font la
+ * courbe de chaque carte du marche, et leur moyenne l'indice international.
+ *
  * <h2>Pas de boucle d'argent</h2>
  *
  * <ul>
@@ -89,6 +97,8 @@ public final class WorldMarket {
     /** Un gros lot d'une nation toutes les dix minutes de jeu. */
     private static final int MOVE_MINUTES = 10;
     private static final int NEWS_KEPT = 6;
+    /** Les releves gardes : huit heures de jeu, un toutes les dix minutes. */
+    public static final int HISTORY = 48;
     public static final String VOLUME = "note:trade";
 
     private static int ticks;
@@ -106,17 +116,38 @@ public final class WorldMarket {
         ).apply(instance, Stock::new));
     }
 
-    /** Les stocks qui s'ecartent de leur reference, les dernieres depeches, et les minutes depuis le dernier lot. */
-    public record State(List<Stock> stocks, List<String> news, int minutes) {
-        public static final State EMPTY = new State(List.of(), List.of(), 0);
+    /**
+     * Les releves d'une ressource, du plus ancien au plus recent.
+     *
+     * @param course le cours a chaque releve, en pour mille (1000 au stock de reference)
+     * @param volume la quantite echangee entre le releve precedent et celui-ci
+     */
+    public record Series(Identifier id, List<Integer> course, List<Integer> volume) {
+        static final Codec<Series> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Identifier.CODEC.fieldOf("id").forGetter(Series::id),
+                Codec.INT.listOf().fieldOf("course").forGetter(Series::course),
+                Codec.INT.listOf().optionalFieldOf("volume", List.of()).forGetter(Series::volume)
+        ).apply(instance, Series::new));
+    }
+
+    /**
+     * Les stocks qui s'ecartent de leur reference, les dernieres depeches, les minutes
+     * depuis le dernier lot, les releves des courbes, et ce qui s'est echange depuis le
+     * dernier releve.
+     */
+    public record State(List<Stock> stocks, List<String> news, int minutes, List<Series> history,
+                        List<Stock> traded) {
+        public static final State EMPTY = new State(List.of(), List.of(), 0, List.of(), List.of());
         public static final MapCodec<State> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Stock.CODEC.listOf().optionalFieldOf("stocks", List.of()).forGetter(State::stocks),
                 Codec.STRING.listOf().optionalFieldOf("news", List.of()).forGetter(State::news),
-                Codec.INT.optionalFieldOf("minutes", 0).forGetter(State::minutes)
+                Codec.INT.optionalFieldOf("minutes", 0).forGetter(State::minutes),
+                Series.CODEC.listOf().optionalFieldOf("history", List.of()).forGetter(State::history),
+                Stock.CODEC.listOf().optionalFieldOf("traded", List.of()).forGetter(State::traded)
         ).apply(instance, State::new));
 
         public boolean exists() {
-            return !stocks.isEmpty() || !news.isEmpty();
+            return !stocks.isEmpty() || !news.isEmpty() || !history.isEmpty() || !traded.isEmpty();
         }
     }
 
@@ -125,6 +156,12 @@ public final class WorldMarket {
     }
 
     private static void save(MinecraftServer server, Map<Identifier, Double> stocks, List<String> news, int minutes) {
+        State current = state(server);
+        store(server, stocks, news, minutes, current.history(), current.traded());
+    }
+
+    private static void store(MinecraftServer server, Map<Identifier, Double> stocks, List<String> news, int minutes,
+                              List<Series> history, List<Stock> traded) {
         List<Stock> list = new ArrayList<>();
         for (Map.Entry<Identifier, Double> entry : stocks.entrySet()) {
             double reference = reference(entry.getKey());
@@ -133,7 +170,132 @@ public final class WorldMarket {
             }
         }
         ServerLevel level = server.overworld();
-        level.setData(Factions.WORLD_MARKET.get(), new State(List.copyOf(list), List.copyOf(news), minutes));
+        level.setData(Factions.WORLD_MARKET.get(), new State(List.copyOf(list), List.copyOf(news), minutes,
+                List.copyOf(history), List.copyOf(traded)));
+    }
+
+    /** Compte une quantite echangee depuis le dernier releve. */
+    private static void tally(MinecraftServer server, Identifier id, double amount) {
+        if (amount <= 0.0d) {
+            return;
+        }
+        State state = state(server);
+        List<Stock> traded = new ArrayList<>(state.traded().size() + 1);
+        boolean found = false;
+        for (Stock stock : state.traded()) {
+            if (stock.id().equals(id)) {
+                traded.add(new Stock(id, stock.amount() + amount));
+                found = true;
+            } else {
+                traded.add(stock);
+            }
+        }
+        if (!found) {
+            traded.add(new Stock(id, amount));
+        }
+        server.overworld().setData(Factions.WORLD_MARKET.get(), new State(state.stocks(), state.news(),
+                state.minutes(), state.history(), List.copyOf(traded)));
+    }
+
+    private static double tradedSince(State state, Identifier id) {
+        for (Stock stock : state.traded()) {
+            if (stock.id().equals(id)) {
+                return stock.amount();
+            }
+        }
+        return 0.0d;
+    }
+
+    /** Le releve : le cours de chaque ressource et ce qui s'en est echange, au bout de sa courbe. */
+    static void sample(MinecraftServer server) {
+        State state = state(server);
+        Map<Identifier, Series> previous = new HashMap<>();
+        for (Series series : state.history()) {
+            previous.put(series.id(), series);
+        }
+        List<Series> history = new ArrayList<>();
+        for (Identifier id : goods()) {
+            Series old = previous.get(id);
+            List<Integer> course = new ArrayList<>(old == null ? List.of() : old.course());
+            List<Integer> volume = new ArrayList<>(old == null ? List.of() : old.volume());
+            // les volumes s'alignent sur les cours, meme apres une sauvegarde d'avant les volumes
+            while (volume.size() < course.size()) {
+                volume.add(0, 0);
+            }
+            course.add((int) Math.round(factor(server, id) * 1000.0d));
+            volume.add((int) Math.min(Integer.MAX_VALUE, Math.round(tradedSince(state, id))));
+            while (course.size() > HISTORY) {
+                course.remove(0);
+                volume.remove(0);
+            }
+            history.add(new Series(id, List.copyOf(course), List.copyOf(volume)));
+        }
+        server.overworld().setData(Factions.WORLD_MARKET.get(), new State(state.stocks(), state.news(),
+                state.minutes(), List.copyOf(history), List.of()));
+    }
+
+    /**
+     * La courbe d'une ressource : ses releves, puis le cours de maintenant, en pour
+     * mille. Le volume du dernier point est celui echange depuis le dernier releve.
+     */
+    public static PriceChart chart(MinecraftServer server, Identifier id) {
+        State state = state(server);
+        List<Long> values = new ArrayList<>();
+        List<Long> volumes = new ArrayList<>();
+        for (Series series : state.history()) {
+            if (series.id().equals(id)) {
+                int pad = series.course().size() - series.volume().size();
+                for (int index = 0; index < series.course().size(); index++) {
+                    values.add((long) series.course().get(index));
+                    volumes.add(index < pad ? 0L : (long) series.volume().get(index - pad));
+                }
+            }
+        }
+        values.add(Math.round(factor(server, id) * 1000.0d));
+        volumes.add(Math.round(tradedSince(state, id)));
+        return new PriceChart(values, volumes, 1000L, MOVE_MINUTES, PriceChart.PERMILLE);
+    }
+
+    /**
+     * L'indice international : la moyenne des cours de toutes les ressources cotees
+     * a chaque releve, et la somme de leurs volumes en dollars au prix de base.
+     */
+    public static PriceChart index(MinecraftServer server) {
+        List<Identifier> goods = goods();
+        int length = 0;
+        List<PriceChart> charts = new ArrayList<>();
+        for (Identifier id : goods) {
+            PriceChart chart = chart(server, id);
+            charts.add(chart);
+            length = Math.max(length, chart.size());
+        }
+        List<Long> values = new ArrayList<>();
+        List<Long> volumes = new ArrayList<>();
+        for (int back = length - 1; back >= 0; back--) {
+            long sum = 0L;
+            long money = 0L;
+            int count = 0;
+            for (int good = 0; good < charts.size(); good++) {
+                PriceChart chart = charts.get(good);
+                int index = chart.size() - 1 - back;
+                if (index < 0) {
+                    continue;
+                }
+                sum += chart.values().get(index);
+                count++;
+                long base = Prices.book().entry(goods.get(good)).map(PriceEntry::basePrice).orElse(0L);
+                money += chart.volumes().get(index) * base;
+            }
+            if (count > 0) {
+                values.add(Math.round(sum / (double) count));
+                volumes.add(money);
+            }
+        }
+        if (values.isEmpty()) {
+            values.add(1000L);
+            volumes.add(0L);
+        }
+        return new PriceChart(values, volumes, 1000L, MOVE_MINUTES, PriceChart.PERMILLE | PriceChart.VOLUME_DOLLARS);
     }
 
     private static Map<Identifier, Double> stocks(MinecraftServer server) {
@@ -329,6 +491,7 @@ public final class WorldMarket {
         stocks.put(id, stock(server, id) + sold);
         State state = state(server);
         save(server, stocks, state.news(), state.minutes());
+        tally(server, id, sold);
         Economy.credit(player, payout);
         FactionApi.stat(player, VOLUME, payout);
         FactionApi.tell(player, "Vendu : " + MoneyFormat.exact(sold) + " x " + name(id) + " pour "
@@ -367,6 +530,7 @@ public final class WorldMarket {
         stocks.put(id, stock(server, id) - bought);
         State state = state(server);
         save(server, stocks, state.news(), state.minutes());
+        tally(server, id, bought);
         FactionApi.stat(player, VOLUME, cost);
         FactionApi.tell(player, "Achete : " + MoneyFormat.exact(bought) + " x " + name(id) + " pour "
                 + MoneyFormat.exact(cost) + " $. Cours : " + percent(factor(server, id)) + ".", ChatFormatting.GREEN);
@@ -420,6 +584,7 @@ public final class WorldMarket {
         save(server, stocks, news, minutes >= MOVE_MINUTES ? 0 : minutes);
         if (minutes >= MOVE_MINUTES) {
             move(server, RANDOM);
+            sample(server);
         }
     }
 
@@ -463,6 +628,7 @@ public final class WorldMarket {
             news.remove(news.size() - 1);
         }
         save(server, stocks, news, 0);
+        tally(server, id, moved);
         fr.atraxterra.dohy.faction.absence.AbsenceJournal.post(server,
                 fr.atraxterra.dohy.faction.absence.AbsenceJournal.NATIONS, line,
                 BuiltInRegistries.ITEM.getOptional(id).orElse(net.minecraft.world.item.Items.PAPER));

@@ -112,7 +112,12 @@ public final class SpiceCounterMenu extends MenuController {
                 "- Le sable tremble sous toi : cours, tu as moins d'une seconde",
                 "- Arrete-toi, tais-toi, ou gagne la roche : il perd ta trace",
                 "! Un marteleur plante loin de toi le detourne."));
+        Card course = Card.of(new ItemStack(ArrakisContent.MELANGE.get()), "Cours du melange", List.of(
+                        "Prix de base " + MoneyFormat.exact(SpiceMarket.BASE_PRICE) + " $, fois le cours de l'heure",
+                        "Prochain cours dans " + SpiceMarket.minutesLeft() + " min"))
+                .accent(SPICE).chart(SpiceMarket.chart(player.level().getServer()));
         return new MenuView(id(), "Comptoir de l'epice", "Arrakeen — la Guilde rachete le melange", stats, List.of(
+                new MenuView.Section("COURS", "upgrade", MenuView.CHART, List.of(course)),
                 new MenuView.Section("VENTE", "resources", MenuView.GRID, List.of(sellAll, sellStack, sellTeeth)),
                 new MenuView.Section("MATERIEL", "resources", MenuView.GRID, List.of(harvester, thumper)),
                 new MenuView.Section("ARRAKIS", "", MenuView.TEXT, List.of(about, worms))), false);

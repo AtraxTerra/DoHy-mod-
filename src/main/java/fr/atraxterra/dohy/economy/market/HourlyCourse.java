@@ -78,6 +78,11 @@ public final class HourlyCourse {
         return Math.floorDiv(epochMillis, periodMillis());
     }
 
+    /** La duree d'un cours, en minutes reelles : le pas des courbes du shop. */
+    public static int periodMinutes() {
+        return Math.max(1, EconomyConfig.course().periodMinutes());
+    }
+
     /** Minutes restantes avant le prochain cours, au moins 1. */
     public static int minutesLeft() {
         long period = periodMillis();

@@ -170,6 +170,8 @@ public final class SiloMenu extends MenuController {
             report(player, "Il te manque " + MoneyFormat.exact(price - Economy.balance(player)) + " $.", "");
         } else {
             silo.deposit(item, batch);
+            fr.atraxterra.dohy.economy.market.ShopTape.record(player.level().getServer(),
+                    BuiltInRegistries.ITEM.getKey(item), batch);
             success(player);
         }
     }
