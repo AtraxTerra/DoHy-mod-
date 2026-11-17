@@ -7,23 +7,27 @@ script attrape avant la compilation ce qui se voit dans le fichier seul :
 
   - textes sans accents (les polices du kit n'en ont pas ; « · » est permis) ;
   - identifiants d'etapes et de chapitres uniques et bien formes ;
-  - objectifs connus (have, near), quantites et recompenses positives ;
+  - objectifs connus (have, near, visit), quantites et recompenses positives ;
   - titres et libelles courts (ils se coupent sinon), mode d'emploi non vide ;
-  - recompenses en objets de mods connus.
+  - recompenses en objets de mods connus ;
+  - un chapitre qui depend d'un mod (l'espace et NTM Space) le declare dans
+    'requires', et lui seul nomme des objets ou des lieux de ce mod.
 
 Avec le dossier data de NTM NEXT en argument, il verifie aussi que chaque
 objet nomme existe dans cette version du mod, et qu'une machine a poser est
-bien un bloc. Les donnees de NTM sont lues comme des donnees, jamais
-executees.
+bien un bloc. Avec --space et le jar de NTM Space, il verifie de meme les
+objets, les blocs et les dimensions de l'espace. Les donnees des deux mods
+sont lues comme des donnees, jamais executees.
 
 Usage :
     python3 -I tools/check_ntm_path.py
-    python3 -I tools/check_ntm_path.py <dossier data de NTM NEXT>
+    python3 -I tools/check_ntm_path.py <dossier data de NTM NEXT> [--space <jar de NTM Space>]
 """
 
 import json
 import re
 import sys
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -31,8 +35,10 @@ PATH = ROOT / "data" / "ntm_path.json"
 
 ID = re.compile(r"^[a-z0-9_]+$")
 ITEM = re.compile(r"^[a-z0-9_.-]+:[a-z0-9_./-]+$")
-GOALS = {"have", "near"}
+GOALS = {"have", "near", "visit"}
 NAMESPACES = {"hbm", "minecraft", "dohy", "palamod"}
+# Les mods dont un chapitre peut dependre ('requires'), et ce qu'ils ajoutent.
+MODS = {"hbmspace"}
 # Le titre d'une carte d'etape partage sa ligne avec la pastille de son numero :
 # au-dela de 15 caracteres, il serait coupe.
 TITLE_CHARS = 15
@@ -61,8 +67,35 @@ def ntm_assets(data_dir):
     return items, blocks
 
 
+def space_assets(jar):
+    """Les objets, blocs et dimensions de NTM Space, lus dans son jar comme des donnees."""
+    with zipfile.ZipFile(jar) as archive:
+        names = archive.namelist()
+
+    def stems(prefix):
+        return {n[len(prefix):-5] for n in names if n.startswith(prefix) and n.endswith(".json") and "/" not in n[len(prefix):]}
+
+    return (stems("assets/hbmspace/items/"), stems("assets/hbmspace/blockstates/"),
+            stems("data/hbmspace/dimension/"))
+
+
 def main(argv):
     errors = []
+    argv = list(argv)
+    space = None
+    if "--space" in argv:
+        at = argv.index("--space")
+        if at + 1 >= len(argv):
+            print("--space attend le chemin du jar de NTM Space")
+            return 1
+        try:
+            space = space_assets(argv[at + 1])
+        except (OSError, zipfile.BadZipFile) as error:
+            print(f"jar de NTM Space illisible : {error}")
+            return 1
+        if not space[0]:
+            errors.append(f"{argv[at + 1]} : pas d'assets/hbmspace/items dans ce jar")
+        del argv[at:at + 2]
     try:
         book = json.loads(PATH.read_text(encoding="utf-8"))
     except (OSError, ValueError) as error:
@@ -104,6 +137,11 @@ def main(argv):
             errors.append(f"chapitre {cid} : couleur attendue en RRGGBB")
         if not chapter.get("steps"):
             errors.append(f"chapitre {cid} : aucune etape")
+        requires = chapter.get("requires", "")
+        if requires and requires not in MODS:
+            errors.append(f"chapitre {cid} : mod requis inconnu {requires!r} (connus : {', '.join(sorted(MODS))})")
+        # Les objets d'un chapitre : ceux de NTM, plus ceux du mod dont il depend.
+        own = {"hbm"} | ({requires} if requires in MODS else set())
         for step in chapter.get("steps", []):
             steps += 1
             sid = step.get("id", "")
@@ -138,24 +176,42 @@ def main(argv):
             count = goal.get("count", 1)
             if not isinstance(count, int) or count < 1:
                 errors.append(f"{where} : quantite {count!r}")
-            if kind == "near" and (goal.get("all") or count != 1):
-                errors.append(f"{where} : une machine a poser n'a ni quantite ni 'all'")
+            if kind in ("near", "visit") and (goal.get("all") or count != 1):
+                errors.append(f"{where} : une machine a poser ou un lieu n'a ni quantite ni 'all'")
             for target in targets:
                 if not ITEM.match(target):
                     errors.append(f"{where} : objet mal forme {target!r}")
                     continue
                 namespace, name = target.split(":", 1)
-                if namespace != "hbm":
-                    errors.append(f"{where} : {target} n'est pas un objet de NTM")
-                elif items is not None:
+                if kind == "visit":
+                    # Un lieu : une dimension du mod dont depend le chapitre (ou de Minecraft).
+                    if namespace not in (own - {"hbm"}) | {"minecraft"}:
+                        errors.append(f"{where} : {target} n'est pas un lieu de ce chapitre "
+                                      f"(il faut 'requires' et une dimension du mod)")
+                    elif namespace == "hbmspace" and space is not None and name not in space[2]:
+                        errors.append(f"{where} : {target} n'est pas une dimension de NTM Space")
+                elif namespace not in own:
+                    errors.append(f"{where} : {target} n'est pas un objet de NTM"
+                                  + (f" ni de {requires}" if requires else ""))
+                elif namespace == "hbm" and items is not None:
                     if name not in items:
                         errors.append(f"{where} : {target} n'existe pas dans cette version de NTM")
                     if kind == "near" and name not in blocks:
+                        errors.append(f"{where} : {target} n'est pas un bloc, il ne se pose pas")
+                elif namespace == "hbmspace" and space is not None:
+                    if name not in space[0]:
+                        errors.append(f"{where} : {target} n'existe pas dans NTM Space")
+                    if kind == "near" and name not in space[1]:
                         errors.append(f"{where} : {target} n'est pas un bloc, il ne se pose pas")
 
             icon = step.get("icon", "")
             if items is not None and icon.startswith("hbm:") and icon.split(":", 1)[1] not in items:
                 errors.append(f"{where} : icone {icon} inconnue de NTM")
+            if icon.startswith("hbmspace:"):
+                if "hbmspace" not in own:
+                    errors.append(f"{where} : icone {icon} d'un mod que le chapitre ne requiert pas")
+                elif space is not None and icon.split(":", 1)[1] not in space[0]:
+                    errors.append(f"{where} : icone {icon} inconnue de NTM Space")
 
             reward = step.get("reward", {})
             amount = reward.get("money", 0)
@@ -165,10 +221,12 @@ def main(argv):
                 money += amount
             for prize in reward.get("items", []):
                 pid = prize.get("id", "")
-                if not ITEM.match(pid) or pid.split(":", 1)[0] not in NAMESPACES:
+                if not ITEM.match(pid) or pid.split(":", 1)[0] not in NAMESPACES | own:
                     errors.append(f"{where} : objet de recompense {pid!r}")
                 elif items is not None and pid.startswith("hbm:") and pid.split(":", 1)[1] not in items:
                     errors.append(f"{where} : objet de recompense {pid} inconnu de NTM")
+                elif space is not None and pid.startswith("hbmspace:") and pid.split(":", 1)[1] not in space[0]:
+                    errors.append(f"{where} : objet de recompense {pid} inconnu de NTM Space")
                 if not isinstance(prize.get("count", 1), int) or prize.get("count", 1) < 1:
                     errors.append(f"{where} : quantite de recompense {prize.get('count')!r}")
 
@@ -177,7 +235,7 @@ def main(argv):
             print(error)
         print(f"{len(errors)} probleme(s) dans le parcours NTM")
         return 1
-    checked = " et les objets de NTM" if items is not None else ""
+    checked = (" et les objets de NTM" if items is not None else "") + (" et de NTM Space" if space else "")
     print(f"parcours NTM : {steps} etapes en {len(chapters)} chapitres, {money} $ de recompenses, "
           f"fichier{checked} en ordre")
     return 0

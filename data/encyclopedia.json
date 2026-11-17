@@ -2970,14 +2970,14 @@
         "Le parcours pour debuter"
       ],
       "summary": [
-        "NTM NEXT, le mod nucleaire, tourne sur Berskar : ses minerais, ses pieces et ses premieres machines entrent dans l'economie, et le parcours NTM guide les debuts, de l'enclume a l'uranium."
+        "NTM NEXT, le mod nucleaire, tourne sur Berskar : ses minerais, ses pieces et ses machines entrent dans l'economie, et le parcours NTM guide tout le chemin, de l'enclume a la fusion."
       ],
       "sections": [
         {
           "title": "Au shop",
           "text": [
             "- Les minerais de NTM se vendent bruts ; leurs lingots s'achetent, sans se revendre.",
-            "- Les pieces (plaques, fils, bobines, moteurs, circuits) et les premieres machines s'achetent a 115 % de ce que coutent leurs ingredients : fabriquer reste moins cher.",
+            "- Les pieces (plaques, fils, bobines, moteurs, circuits) et les machines s'achetent a 115 % de ce que coutent leurs ingredients : fabriquer reste moins cher.",
             "- L'onglet NTM NEXT pour les matieres et les pieces, l'onglet Machines NTM pour les machines, leurs moules et la tenue hazmat.",
             "! Les prix ont ete abaisses pour ouvrir NTM a tous : le lingot de plomb a 300 $, celui de titane a 900 $."
           ]
@@ -2985,8 +2985,8 @@
         {
           "title": "Par ou commencer",
           "text": [
-            "Le parcours NTM : 38 etapes, de l'enclume a l'uranium enrichi, chacune avec son mode d'emploi et sa recompense.",
-            "- Les fiches Premiers pas, Courant, Industrie, Petrole, Radiation et Reacteurs NTM reprennent les recettes cle."
+            "Le parcours NTM : 64 etapes, de l'enclume a la fusion (58 sans NTM Space), chacune avec son mode d'emploi et sa recompense.",
+            "- Les fiches Premiers pas, Courant, Industrie, Petrole, Radiation et Reacteurs NTM reprennent les recettes cle ; RBMK, Espace et Fusion NTM, la suite."
           ]
         }
       ],
@@ -3001,6 +3001,9 @@
         "ntm_radiation",
         "ntm_reacteurs",
         "ntm_petrole",
+        "ntm_rbmk",
+        "ntm_espace",
+        "ntm_fusion",
         "shop",
         "serveur_trading",
         "palettes",
@@ -3015,11 +3018,11 @@
       "icon": "minecraft:anvil",
       "title": "Parcours NTM",
       "card": [
-        "De l'enclume au reacteur",
+        "De l'enclume a la fusion",
         "Une recompense par etape"
       ],
       "summary": [
-        "Le parcours NTM guide tes premieres machines de NTM NEXT, une etape apres l'autre : chaque etape dit quoi fabriquer et comment, et paie quand c'est fait."
+        "Le parcours NTM guide tes machines de NTM NEXT, de l'enclume a la fusion, une etape apres l'autre : chaque etape dit quoi fabriquer et comment, et paie quand c'est fait."
       ],
       "sections": [
         {
@@ -3027,13 +3030,13 @@
           "text": [
             "- /parcours ouvre le parcours sur l'etape en cours : son mode d'emploi, son objectif et sa recompense.",
             "- Il a aussi sa place dans l'ecran des contrats : l'etape en cours, ce qui manque, un clic pour l'ouvrir.",
-            "- Deux sortes d'objectifs : avoir des objets dans ton sac (rien n'est pris), ou poser une machine et valider a moins de 8 blocs d'elle.",
+            "- Trois sortes d'objectifs : avoir des objets dans ton sac (rien n'est pris), poser une machine et valider a moins de 8 blocs d'elle, ou te rendre sur place, comme sur la Mun.",
             "- Quand c'est pret, le chat te previent : un clic sur l'objectif valide l'etape, et la suivante s'ouvre.",
             "! Un clic sur n'importe quelle etape en rouvre le mode d'emploi : le parcours sert aussi d'aide-memoire."
           ]
         },
         {
-          "title": "Les sept chapitres",
+          "title": "Les douze chapitres",
           "text": [
             "- Les bases : l'enclume, la presse, les briques refractaires, le haut fourneau, l'acier et le cuivre rouge.",
             "- Le courant : l'enclume d'acier, les bobines, les cables, le generateur a bois et la batterie.",
@@ -3041,13 +3044,19 @@
             "- Le petrole : la soudeuse, le detecteur, le derrick, la raffinerie et le polymere.",
             "- L'atome : mesurer la radiation, la tenue hazmat, la centrifugeuse et l'uranium.",
             "- Le reacteur : la pile de Chicago, du graphite au premier plutonium.",
-            "- L'enrichissement : le desh, le yellowcake, la cascade de centrifugeuses a gaz et l'uranium enrichi."
+            "- L'enrichissement : le desh, le yellowcake, la cascade de centrifugeuses a gaz et l'uranium enrichi.",
+            "- Le petrole avance : la tour de fractionnement, la tour de craquage et le caoutchouc.",
+            "- Le RBMK : le beton amiante, les colonnes, la vapeur, les barres de combustible, la console et la grande turbine.",
+            "- L'espace, avec NTM Space : le VAB, la fusee, le StarDar, le disque de cap, le pas de tir et la Mun.",
+            "- Le bismuth : l'acidifieur, le laser FEL, la chambre SILEX, les futs a dechets et le bismuth.",
+            "- La fusion : le supercalculateur, le coeur du tore, le tore, le klystron, l'energie plasma et la forge a plasma.",
+            "! Sans NTM Space, le chapitre de l'espace disparait : le parcours passe du RBMK au bismuth."
           ]
         },
         {
           "title": "Les recompenses",
           "text": [
-            "Environ 500 000 $ en tout, verses une seule fois, et des objets qui aident l'etape suivante : moule, charbon, moteurs, batterie, lames, foyer, RadAway, electrodes, identifiant de fluide, barres de controle."
+            "Environ 1 700 000 $ en tout (1 400 000 $ sans NTM Space), verses une seule fois, et des objets qui aident l'etape suivante : moule, charbon, moteurs, batterie, lames, foyer, RadAway, electrodes, identifiant de fluide, barres de controle, reservoirs d'oxygene."
           ]
         }
       ],
@@ -3061,7 +3070,10 @@
         "ntm_industrie",
         "ntm_petrole",
         "ntm_radiation",
-        "ntm_reacteurs"
+        "ntm_reacteurs",
+        "ntm_rbmk",
+        "ntm_espace",
+        "ntm_fusion"
       ],
       "progress": "parcours_ntm",
       "discover": {
@@ -3289,6 +3301,14 @@
             "- L'huile legere : le desh, avec du mercure. Le naphta : l'essence.",
             "- Les huiles fractionnees : les carburants, diesel et kerosene, pour les generateurs."
           ]
+        },
+        {
+          "title": "Aller plus loin",
+          "text": [
+            "- La tour de craquage casse les fluides a la vapeur : le petrole brut en petrole craque et gaz petrolier, le gaz naturel en hydrocarbures insatures.",
+            "- Les insatures et une poudre de soufre, a l'usine chimique, donnent le caoutchouc : colonnes RBMK, turbines, fusees.",
+            "- Les tours de fractionnement s'empilent : l'huile lourde y donne du bitume et de l'huile industrielle."
+          ]
         }
       ],
       "commands": [
@@ -3300,6 +3320,7 @@
         "gisements",
         "ntm_industrie",
         "ntm_reacteurs",
+        "ntm_rbmk",
         "ntm"
       ],
       "discover": {
@@ -3395,7 +3416,7 @@
           "text": [
             "- A l'usine chimique : le yellowcake (uranium, soufre, peroxyde), puis l'UF6 (yellowcake, fluorite, eau).",
             "- Les centrifugeuses a gaz, en cascade, enrichissent l'UF6 : du combustible d'uranium en bout de chaine, de l'uranium 235 avec une amelioration.",
-            "- Ce combustible nourrit les reacteurs plus gros, RBMK en tete."
+            "- Ce combustible nourrit les reacteurs plus gros, RBMK en tete : la fiche RBMK NTM en donne le detail."
           ]
         }
       ],
@@ -3404,8 +3425,171 @@
       ],
       "see": [
         "parcours_ntm",
+        "ntm_rbmk",
         "ntm_radiation",
         "ntm_petrole",
+        "ntm"
+      ],
+      "discover": {
+        "views": [
+          "dohy:parcours_ntm"
+        ]
+      }
+    },
+    {
+      "id": "ntm_rbmk",
+      "category": "technique",
+      "order": 9,
+      "icon": "minecraft:sea_lantern",
+      "title": "RBMK NTM",
+      "card": [
+        "Le reacteur a colonnes",
+        "Vapeur, turbine, console"
+      ],
+      "summary": [
+        "Le RBMK est le grand reacteur de NTM NEXT : des colonnes posees en grille, du combustible dans les unes, des moderateurs, des barres de controle et de la vapeur dans les autres."
+      ],
+      "sections": [
+        {
+          "title": "Les colonnes",
+          "text": [
+            "- Tout part de la colonne vide : 4 betons amiante, 2 plaques coulees d'acier, 4 plaques de cuivre et 2 caoutchoucs, a l'assembleur.",
+            "- Combustible : la colonne vide entre 2 coques d'acier. Moderateur : avec 4 blocs de graphite. Absorbeur : avec 8 lingots de bore ; avec 2 moteurs et 2 graphites, il devient barre de controle.",
+            "- Vapeur : 6 tuyaux de cuivre, 2 coques de cuivre et la colonne vide. Les couvercles ferment le haut des colonnes."
+          ]
+        },
+        {
+          "title": "Le combustible",
+          "text": [
+            "- Une barre vide : 6 cubes de zirconium et 2 barres quadruples vides, a l'etabli.",
+            "- NU : 8 billettes d'uranium naturel. MEU : 8 billettes de combustible d'uranium, issues de la cascade.",
+            "- Une barre usee, seule a l'etabli, se demonte en 8 pastilles ; le SILEX en tire de l'uranium, du plutonium et des dechets."
+          ]
+        },
+        {
+          "title": "Piloter",
+          "text": [
+            "- La console (3 lingots de bore, 4 blocs deco RBMK, une vitre, un circuit analogique) se lie au reacteur avec l'outil de liaison RBMK.",
+            "- La turbine industrielle change la vapeur en courant ; un condenseur rend l'eau aux colonnes de vapeur.",
+            "! Une chaleur que la vapeur n'emporte plus, ou des barres de controle levees trop vite : le RBMK explose."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : le parcours NTM, etape par etape"
+      ],
+      "see": [
+        "parcours_ntm",
+        "ntm_reacteurs",
+        "ntm_fusion",
+        "ntm_radiation",
+        "ntm"
+      ],
+      "discover": {
+        "views": [
+          "dohy:parcours_ntm"
+        ]
+      }
+    },
+    {
+      "id": "ntm_espace",
+      "category": "technique",
+      "order": 10,
+      "icon": "minecraft:firework_rocket",
+      "title": "Espace NTM",
+      "card": [
+        "Fusees, StarDar, la Mun",
+        "Avec NTM Space"
+      ],
+      "summary": [
+        "Avec NTM Space, les fusees de NTM NEXT quittent la Terre : on les assemble au VAB, on programme leur destination au StarDar et on les lance depuis une base spatiale."
+      ],
+      "sections": [
+        {
+          "title": "La fusee",
+          "text": [
+            "- Le VAB monte la fusee etage par etage : chaque etage rejoint un astre, s'il a assez de carburant ; deux etages pour la Mun, aller et retour.",
+            "- Un etage : un fuselage (le reservoir) et un moteur, au kerosene, a l'hydrogene ou au gaz naturel. La capsule d'atterrissage coiffe le tout.",
+            "- La fusee finie sort du VAB en objet."
+          ]
+        },
+        {
+          "title": "La destination",
+          "text": [
+            "- Le StarDar programme un disque dur vide : l'astre, puis la zone ou se poser.",
+            "- Le processeur de disque le traite, avec une puce du bon niveau : 1 pour la Mun et Minmus, plus pour les astres lointains."
+          ]
+        },
+        {
+          "title": "Le lancement",
+          "text": [
+            "- Le pas de tir ne se pose que dans les quatre bases spatiales de Berskar : Baikonour, Cap Canaveral, Kourou et Jiuquan.",
+            "- Pose la fusee dessus, glisse le disque traite, branche le courant et le carburant, puis lance.",
+            "! Pas d'air hors de la Terre : une armure qui sert de combinaison, ou une armure etanche avec un PLSS rempli d'oxygene."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : le parcours NTM, etape par etape"
+      ],
+      "see": [
+        "parcours_ntm",
+        "bases_lancement",
+        "ntm_rbmk",
+        "ntm"
+      ],
+      "discover": {
+        "views": [
+          "dohy:parcours_ntm"
+        ]
+      }
+    },
+    {
+      "id": "ntm_fusion",
+      "category": "technique",
+      "order": 11,
+      "icon": "minecraft:conduit",
+      "title": "Fusion NTM",
+      "card": [
+        "Bismuth, tore, plasma",
+        "Le sommet de NTM"
+      ],
+      "summary": [
+        "La fusion est le sommet de NTM NEXT : du bismuth tire des dechets nucleaires, des circuits polyvalents, un supercalculateur, puis le tore de fusion et sa forge a plasma."
+      ],
+      "sections": [
+        {
+          "title": "Le bismuth",
+          "text": [
+            "- Le SILEX separe les isotopes au laser ; le FEL fournit le faisceau, regle par un cristal (CO2-desh pour l'infrarouge).",
+            "- Les pastilles RBMK usees y laissent des dechets a vie longue ; le fut de stockage les appauvrit avec le temps ; repasses au SILEX, ils donnent du plomb et du bismuth.",
+            "- L'arsenic remplace le bismuth dans les pieces de fusion."
+          ]
+        },
+        {
+          "title": "Le tore",
+          "text": [
+            "- Le supercalculateur remplit des cles de simulation ; avec des circuits polyvalents (puces bismoides), elles font le coeur du tore.",
+            "- Pose le coeur et bati la coque : bobines BSCCO soudees au chalumeau, couvertures, tuyauteries. Complete, elle devient le tore.",
+            "- Le klystron, refroidi a l'air comprime, allume le plasma."
+          ]
+        },
+        {
+          "title": "L'energie",
+          "text": [
+            "- La chaudiere de fusion change l'energie plasma du tore en vapeur super dense ; la turbine MHD en tire du courant directement, refroidie au perfluoromethyle.",
+            "- La forge a plasma, branchee sur un tore en marche, fabrique le reste : un second tore, le DFC, l'ICF.",
+            "! Le tore doit etre refroidi, comme le klystron et la turbine MHD."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : le parcours NTM, etape par etape"
+      ],
+      "see": [
+        "parcours_ntm",
+        "ntm_rbmk",
+        "ntm_reacteurs",
         "ntm"
       ],
       "discover": {

@@ -213,7 +213,25 @@
     "hbm:hazmat_helmet": 3100,
     "hbm:hazmat_plate": 4800,
     "hbm:hazmat_legs": 4200,
-    "hbm:hazmat_boots": 2400
+    "hbm:hazmat_boots": 2400,
+    "hbm:machine_cracking_tower": 390000,
+    "hbm:rbmk_blank": 27000,
+    "hbm:rbmk_fuel_rod": 35000,
+    "hbm:rbmk_moderator": 64000,
+    "hbm:rbmk_absorber": 52000,
+    "hbm:rbmk_control": 57000,
+    "hbm:rbmk_boiler": 30000,
+    "hbm:rbmk_lid": 1800,
+    "hbm:rbmk_console": 25000,
+    "hbm:rbmk_tool": 830,
+    "hbm:rbmk_fuel_empty": 59000,
+    "hbm:machine_industrial_turbine": 160000,
+    "hbm:machine_crystallizer": 160000,
+    "hbm:machine_fel": 430000,
+    "hbm:machine_silex": 240000,
+    "hbm:machine_storage_drum": 6900,
+    "hbm:fusion_component_blanket": 5700,
+    "hbm:blowtorch": 760
   },
   "costing": {
     "_comment": "Lu seulement par tools/gen_ntm_prices.py. Le jeu l'ignore.",
@@ -284,6 +302,21 @@
         "level": "EASY_MEDIUM",
         "wiki": "-",
         "_note": "Des terres rares a la centrifugeuse, ou du borax : au cran du niobium, autre sous-produit des terres rares."
+      },
+      "limestone": {
+        "level": "VERY_EASY",
+        "wiki": "-",
+        "_note": "Poudre de calcaire : de la pierre calcaire au broyeur, le plus bas des crans."
+      },
+      "asbestos": {
+        "level": "EASY",
+        "wiki": "-",
+        "_note": "Amiante : un minerai courant, fondu au four ; au cran de l'acier."
+      },
+      "zirconium": {
+        "level": "MEDIUM",
+        "wiki": "-",
+        "_note": "Zirconium : minerai des profondeurs, a l'explosif ou au foret ; au cran du polymere."
       }
     },
     "_reference_forms": "Facteur d'une forme de matiere de reference, relatif au lingot. Une billette de NTM vaut six pepites.",
@@ -354,7 +387,8 @@
       "c:storage_blocks/iron": "minecraft:iron_block",
       "c:storage_blocks/redstone": "minecraft:redstone_block",
       "minecraft:sand": "minecraft:sand",
-      "c:dyes": "minecraft:white_dye"
+      "c:dyes": "minecraft:white_dye",
+      "c:dusts/nether_quartz": "minecraft:quartz"
     },
     "_targets": "Les pieces mises au shop, jusqu'au circuit de controle. Les pieces du palier bismuth et au-dela (puces bismoides et quantiques, horloge atomique, circuits bismoide, quantique et cristallin, unites de controle avancee et quantique, moteur au bismuth) sont de fin de partie et restent a fabriquer. Le fil dense de titane, celui de tungstene et les tuyaux d'acier n'ont pas de recette dans NTM NEXT.",
     "targets": [
@@ -404,7 +438,7 @@
       "hbm:circuit_controller_chassis",
       "hbm:circuit_controller"
     ],
-    "_machines": "Les machines du parcours NTM, dans son ordre : enclumes, presse et moules, haut fourneau, generateurs, cables et batterie, assembleur, broyeur, creuset et fonderie, station de soudure, usine chimique, centrifugeuse, soudeuse a l'arc, petrole (detecteur, derrick, raffinerie, tour de fractionnement), pile de Chicago, centrifugeuse a gaz, et la tenue de protection. Chiffrees comme les pieces ; elles ont leur onglet au shop.",
+    "_machines": "Les machines du parcours NTM, dans son ordre : enclumes, presse et moules, haut fourneau, generateurs, cables et batterie, assembleur, broyeur, creuset et fonderie, station de soudure, usine chimique, centrifugeuse, soudeuse a l'arc, petrole (detecteur, derrick, raffinerie, tour de fractionnement), pile de Chicago, centrifugeuse a gaz, la tenue de protection, puis la suite : tour de craquage, RBMK (colonnes, barres de controle, console, turbine), acidifieur, FEL et SILEX, futs a dechets, et la fusion (supercalculateur, coeur du tore et sa coque, klystron, chaudiere, turbine MHD, forge a plasma). Celles que leurs recettes ne permettent pas de chiffrer (une piece au hasard, une simulation) ne sont pas vendues. Les machines de NTM Space ne sont pas lues. Chiffrees comme les pieces ; elles ont leur onglet au shop.",
     "machines": [
       "hbm:anvil_iron",
       "hbm:anvil_steel",
@@ -463,7 +497,34 @@
       "hbm:hazmat_helmet",
       "hbm:hazmat_plate",
       "hbm:hazmat_legs",
-      "hbm:hazmat_boots"
+      "hbm:hazmat_boots",
+      "hbm:machine_cracking_tower",
+      "hbm:rbmk_blank",
+      "hbm:rbmk_fuel_rod",
+      "hbm:rbmk_moderator",
+      "hbm:rbmk_absorber",
+      "hbm:rbmk_control",
+      "hbm:rbmk_boiler",
+      "hbm:rbmk_lid",
+      "hbm:rbmk_console",
+      "hbm:rbmk_tool",
+      "hbm:rbmk_fuel_empty",
+      "hbm:machine_industrial_turbine",
+      "hbm:machine_crystallizer",
+      "hbm:machine_fel",
+      "hbm:laser_crystal_co2",
+      "hbm:machine_silex",
+      "hbm:machine_storage_drum",
+      "hbm:machine_supercomputer",
+      "hbm:struct_torus_core",
+      "hbm:fusion_component",
+      "hbm:fusion_component_blanket",
+      "hbm:fusion_component_motor",
+      "hbm:fusion_klystron",
+      "hbm:fusion_boiler",
+      "hbm:fusion_mhdt",
+      "hbm:fusion_plasma_forge",
+      "hbm:blowtorch"
     ]
   }
 }

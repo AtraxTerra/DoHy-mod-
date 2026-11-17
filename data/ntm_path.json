@@ -1,7 +1,7 @@
 {
-  "_comment": "Le parcours NTM : les premieres machines de NTM NEXT, une etape apres l'autre, de l'enclume a l'uranium enrichi. Chaque etape a un objectif, un mode d'emploi tire des vraies recettes du mod (sans les options LBSM ni le mode 528) et une recompense versee une seule fois. Lu par fr.atraxterra.dohy.nuclear.path.NtmPath, inerte sans NTM NEXT. Verifie par tools/check_ntm_path.py (avec le dossier data de NTM en argument, il verifie aussi que chaque objet existe).",
-  "_goals": "type have : avoir dans son sac 'count' objets parmi 'items' (all : un de chaque). near : un bloc de 'items' a moins de 'radius' blocs du joueur, pour les machines posees. Rien n'est jamais pris dans le sac.",
-  "_rewards": "money en dollars, items : de quoi attaquer l'etape suivante. Au total, environ 500 000 $ : la premiere industrie, le petrole, le premier reacteur et l'enrichissement.",
+  "_comment": "Le parcours NTM : les machines de NTM NEXT, une etape apres l'autre, de l'enclume a la fusion, en passant par l'espace quand NTM Space est la. Chaque etape a un objectif, un mode d'emploi tire des vraies recettes du mod (sans les options LBSM ni le mode 528) et une recompense versee une seule fois. Lu par fr.atraxterra.dohy.nuclear.path.NtmPath, inerte sans NTM NEXT. Verifie par tools/check_ntm_path.py (avec le dossier data de NTM et le jar de NTM Space en arguments, il verifie aussi que chaque objet existe).",
+  "_goals": "type have : avoir dans son sac 'count' objets parmi 'items' (all : un de chaque). near : un bloc de 'items' a moins de 'radius' blocs du joueur, pour les machines posees. visit : etre dans une des dimensions de 'items'. Rien n'est jamais pris dans le sac. Un chapitre avec 'requires' (un mod) disparait sans ce mod.",
+  "_rewards": "money en dollars, items : de quoi attaquer l'etape suivante. Au total, environ 1 700 000 $ (1 400 000 $ sans NTM Space) : l'industrie, le petrole, les reacteurs, l'espace, le bismuth et la fusion.",
   "radius": 8,
   "chapters": [
     {
@@ -527,9 +527,366 @@
           "text": [
             "En bout de cascade, l'UF6 moyennement enrichi donne du combustible d'uranium : 6 pepites pour 600 mB.",
             "- Avec une amelioration, la cascade va plus loin, jusqu'a l'uranium 235.",
-            "- La suite : les reacteurs plus gros, RBMK en tete. La fiche Reacteurs NTM en donne les bases."
+            "- La suite : le petrole avance, puis le RBMK, le grand reacteur a colonnes."
           ],
           "reward": {"money": 30000, "items": []}
+        }
+      ]
+    },
+    {
+      "id": "petrole_avance",
+      "name": "Petrole avance",
+      "color": "A1887F",
+      "steps": [
+        {
+          "id": "fractionnement",
+          "title": "Fractionnement",
+          "icon": "hbm:machine_fraction_tower",
+          "goal": {"type": "near", "items": ["hbm:machine_fraction_tower"], "label": "Tour de fractionnement posee"},
+          "text": [
+            "La tour de fractionnement coupe un fluide en deux : le petrole lourd de la raffinerie donne 30 % de bitume et 70 % d'huile industrielle.",
+            "- A l'etabli : 2 plaques soudees d'acier et une grille d'acier.",
+            "- Les tours s'empilent : le fluide monte, les produits redescendent, et l'entree comme les sorties se branchent en bas."
+          ],
+          "reward": {"money": 20000, "items": []}
+        },
+        {
+          "id": "craquage",
+          "title": "Craquage",
+          "icon": "hbm:machine_cracking_tower",
+          "goal": {"type": "near", "items": ["hbm:machine_cracking_tower"], "label": "Tour de craquage posee"},
+          "text": [
+            "La tour de craquage catalytique casse les fluides a la vapeur : 100 mB de petrole brut donnent 80 mB de petrole craque et 20 mB de gaz petrolier.",
+            "- A l'assembleur : 16 echafaudages d'acier, 6 coques d'acier, 12 lingots de desh et 4 de niobium.",
+            "- Elle rend de la vapeur usee : un condenseur la remet en eau.",
+            "- Le gaz naturel craque donne des hydrocarbures insatures : la base du caoutchouc."
+          ],
+          "reward": {"money": 30000, "items": []}
+        },
+        {
+          "id": "caoutchouc",
+          "title": "Caoutchouc",
+          "icon": "hbm:ingot_rubber",
+          "goal": {"type": "have", "items": ["hbm:ingot_rubber"], "count": 16, "label": "16 lingots de caoutchouc"},
+          "text": [
+            "A l'usine chimique, 500 mB d'hydrocarbures insatures et une poudre de soufre donnent 2 lingots de caoutchouc.",
+            "- Le caoutchouc sert partout ensuite : colonnes RBMK, turbines, SILEX, fusees.",
+            "- Il n'est pas pris : garde-le pour le chapitre suivant."
+          ],
+          "reward": {"money": 25000, "items": []}
+        }
+      ]
+    },
+    {
+      "id": "rbmk",
+      "name": "Le RBMK",
+      "color": "3FA9F5",
+      "steps": [
+        {
+          "id": "beton",
+          "title": "Beton amiante",
+          "icon": "hbm:concrete_asbestos",
+          "goal": {"type": "have", "items": ["hbm:concrete_asbestos"], "count": 32, "label": "32 blocs de beton amiante"},
+          "text": [
+            "Le RBMK est un reacteur a colonnes, bien plus puissant que la pile de Chicago. Tout commence par le beton amiante.",
+            "- A l'usine chimique : 4 ciments, 4 lingots d'amiante, 8 sables et 2000 mB d'eau donnent 16 blocs.",
+            "- Le ciment, a l'etabli : une poudre de calcaire et 3 boules d'argile.",
+            "- Une colonne vide RBMK, a l'assembleur : 4 betons amiante, 2 plaques coulees d'acier, 4 plaques de cuivre et 2 caoutchoucs."
+          ],
+          "reward": {"money": 25000, "items": []}
+        },
+        {
+          "id": "colonnes",
+          "title": "Colonnes RBMK",
+          "icon": "hbm:rbmk_fuel_rod",
+          "goal": {"type": "near", "items": ["hbm:rbmk_fuel_rod", "hbm:rbmk_fuel_rod_moderated"], "label": "Colonne de combustible posee"},
+          "text": [
+            "Une colonne de combustible : une colonne vide entre 2 coques d'acier. La version moderee demande du bismuth, plus tard.",
+            "- Autour : des moderateurs (colonne vide + 4 blocs de graphite) et des barres de controle (absorbeur au bore + 2 moteurs + 2 lingots de graphite).",
+            "- Les couvercles RBMK (6 plaques d'acier + 3 betons amiante, pour 4) ferment le haut des colonnes."
+          ],
+          "reward": {"money": 35000, "items": []}
+        },
+        {
+          "id": "vapeur",
+          "title": "Vapeur RBMK",
+          "icon": "hbm:rbmk_boiler",
+          "goal": {"type": "near", "items": ["hbm:rbmk_boiler"], "label": "Colonne de vapeur posee"},
+          "text": [
+            "La colonne de vapeur fait bouillir l'eau avec la chaleur du coeur : 6 tuyaux de cuivre, 2 coques de cuivre et une colonne vide.",
+            "- Elle prend de l'eau et rend de la vapeur : envoie-la vers une turbine.",
+            "! Sans colonnes de vapeur, la chaleur monte jusqu'a l'explosion."
+          ],
+          "reward": {"money": 30000, "items": []}
+        },
+        {
+          "id": "barres_rbmk",
+          "title": "Barres RBMK",
+          "icon": "hbm:rbmk_fuel_ueu",
+          "goal": {"type": "have", "items": ["hbm:rbmk_fuel_ueu", "hbm:rbmk_fuel_meu"], "count": 4, "label": "4 barres de combustible RBMK"},
+          "text": [
+            "Une barre vide, a l'etabli : 6 cubes de zirconium et 2 barres quadruples vides. C'est le succes « RBMK » de NTM.",
+            "- NU : la barre vide et 8 billettes d'uranium (2 lingots d'uranium donnent 3 billettes).",
+            "- MEU : la barre vide et 8 billettes de combustible (5 pepites d'U238 et 1 d'U235 chacune).",
+            "- Les barres se chargent dans les colonnes de combustible ; leve les barres de controle petit a petit."
+          ],
+          "reward": {"money": 40000, "items": [{"id": "hbm:rbmk_control", "count": 2}]}
+        },
+        {
+          "id": "console",
+          "title": "Console RBMK",
+          "icon": "hbm:rbmk_console",
+          "goal": {"type": "near", "items": ["hbm:rbmk_console"], "label": "Console RBMK posee"},
+          "text": [
+            "La console pilote le reacteur a distance : 3 lingots de bore, 4 blocs deco RBMK, une vitre et un circuit analogique.",
+            "- Lie-la avec l'outil de liaison RBMK (2 lingots de plomb, 2 de fer) : accroupi, clic droit sur le reacteur, puis sur la console.",
+            "- Elle affiche la temperature, l'usure du combustible et le xenon de chaque colonne."
+          ],
+          "reward": {"money": 35000, "items": []}
+        },
+        {
+          "id": "turbine",
+          "title": "Grande turbine",
+          "icon": "hbm:machine_industrial_turbine",
+          "goal": {"type": "near", "items": ["hbm:machine_industrial_turbine"], "label": "Turbine industrielle posee"},
+          "text": [
+            "La turbine industrielle change la vapeur du RBMK en courant, avec un rendement de 100 %.",
+            "- A l'assembleur : 16 plaques d'acier, 4 caoutchoucs, 2 turbines a vapeur en titane, 4 fils denses d'or, 4 tuyaux d'acier haute vitesse et 2 circuits integres.",
+            "- La vapeur usee repart vers un condenseur, puis en eau vers les colonnes de vapeur."
+          ],
+          "reward": {"money": 45000, "items": []}
+        }
+      ]
+    },
+    {
+      "id": "espace",
+      "name": "L'espace",
+      "color": "8C9EFF",
+      "requires": "hbmspace",
+      "steps": [
+        {
+          "id": "vab",
+          "title": "Le VAB",
+          "icon": "hbmspace:machine_rocket_assembly",
+          "goal": {"type": "near", "items": ["hbmspace:machine_rocket_assembly"], "label": "Base d'assemblage posee"},
+          "text": [
+            "Avec NTM Space, la Terre n'est qu'un debut. Le VAB assemble les fusees etage par etage : chaque etage rejoint un autre astre, s'il a assez de carburant.",
+            "- Deux etages suffisent pour aller sur la Mun et revenir.",
+            "- A l'assembleur : 8 plaques coulees d'acier, 12 tuyaux d'acier, 16 betons, 8 plastiques, 64 echafaudages d'acier et 4 circuits integres.",
+            "- Prevois de la hauteur : la fusee se monte au-dessus de la base."
+          ],
+          "reward": {"money": 45000, "items": []}
+        },
+        {
+          "id": "fusee",
+          "title": "Fusee orbitale",
+          "icon": "hbmspace:rocket_custom",
+          "goal": {"type": "have", "items": ["hbmspace:rocket_custom"], "count": 1, "label": "Une fusee orbitale en main"},
+          "text": [
+            "Dans le VAB, chaque etage prend un fuselage (le reservoir) et un moteur ; la capsule d'atterrissage coiffe le tout, des pieds l'aident a se poser.",
+            "- Chaque moteur a son carburant : kerosene, hydrogene ou gaz naturel, avec son comburant. Le pas de tir fera le plein.",
+            "- La fusee finie sort du VAB en objet : c'est elle qu'il faut avoir en main.",
+            "- Les 4 reservoirs d'oxygene offerts remplissent un PLSS : sur la Mun, il n'y a pas d'air."
+          ],
+          "reward": {"money": 50000, "items": [{"id": "hbmspace:lox_tank", "count": 4}]}
+        },
+        {
+          "id": "stardar",
+          "title": "StarDar",
+          "icon": "hbmspace:machine_stardar",
+          "goal": {"type": "near", "items": ["hbmspace:machine_stardar"], "label": "StarDar posee"},
+          "text": [
+            "Le StarDar est une parabole qui repere les astres et leurs zones d'atterrissage sures.",
+            "- A l'assembleur : 4 moteurs, 16 plaques coulees d'or, 32 panneaux solaires, 32 magnetrons, 16 betons, 8 echafaudages d'acier et 4 circuits integres.",
+            "- Il programme un disque dur vide (2 puces et 16 circuits imprimes, au poste de soudure) : choisis l'astre, puis la zone ou te poser."
+          ],
+          "reward": {"money": 35000, "items": []}
+        },
+        {
+          "id": "disque",
+          "title": "Disque de cap",
+          "icon": "hbmspace:hard_drive_full_mun",
+          "goal": {"type": "have", "items": ["hbmspace:hard_drive_full_mun", "hbmspace:hard_drive_full_minmus"], "count": 1, "label": "Disque pour la Mun ou Minmus"},
+          "text": [
+            "Un disque programme doit encore etre traite par le processeur de disque, sinon le pas de tir le refuse.",
+            "- Le processeur, a l'assembleur : 2 caoutchoucs, 8 fils fins de cuivre, 2 plaques coulees d'acier, 2 ecrans et 2 circuits integres.",
+            "- La Mun et Minmus demandent le niveau 1 : une puce de traitement niveau 1, a la soudeuse sous vide (8 puces, 2 circuits imprimes, 4 condensateurs)."
+          ],
+          "reward": {"money": 25000, "items": []}
+        },
+        {
+          "id": "pas_de_tir",
+          "title": "Pas de tir",
+          "icon": "hbmspace:launch_pad_rocket",
+          "goal": {"type": "near", "items": ["hbmspace:launch_pad_rocket"], "label": "Pas de tir pose"},
+          "text": [
+            "Le pas de tir fait le plein et prepare la fusee. Sur Berskar, il ne se pose que dans une base de lancement : Baikonour, Cap Canaveral, Kourou ou Jiuquan.",
+            "- A l'assembleur : 12 plaques soudees d'acier, 24 tuyaux d'aluminium, 128 betons, 16 plastiques, 64 echafaudages d'acier et 4 circuits avioniques.",
+            "- Pose la fusee dessus, glisse le disque traite, branche le courant et le carburant.",
+            "- La fiche Bases spatiales de l'encyclopedie les situe."
+          ],
+          "reward": {"money": 50000, "items": []}
+        },
+        {
+          "id": "la_mun",
+          "title": "La Mun",
+          "icon": "hbmspace:rp_c_20",
+          "goal": {"type": "visit", "items": ["hbmspace:mun", "hbmspace:minmus"], "label": "Sur la Mun ou sur Minmus"},
+          "text": [
+            "Decollage ! Valide l'etape une fois pose sur la Mun ou sur Minmus.",
+            "- Pas d'air la-haut : une armure « Can be used as a spacesuit », ou une armure etanche avec un PLSS plein d'oxygene.",
+            "- Le deuxieme etage te ramene : garde du carburant pour le retour.",
+            "- La Mun a ses propres minerais : de quoi rentrer charge."
+          ],
+          "reward": {"money": 120000, "items": []}
+        }
+      ]
+    },
+    {
+      "id": "bismuth",
+      "name": "Le bismuth",
+      "color": "F06292",
+      "steps": [
+        {
+          "id": "acidifieur",
+          "title": "Acidifieur",
+          "icon": "hbm:machine_crystallizer",
+          "goal": {"type": "near", "items": ["hbm:machine_crystallizer"], "label": "Acidifieur de minerai pose"},
+          "text": [
+            "L'acidifieur change les minerais en cristaux avec du peroxyde ou de l'acide : plus de matiere par minerai. C'est le succes « Acidifieur » de NTM.",
+            "- A l'assembleur : 2 plaques soudees d'acier, 3 coques de titane, 4 lingots de desh, un moteur et 2 circuits integres.",
+            "- Il ouvre la voie du SILEX, la separation au laser."
+          ],
+          "reward": {"money": 25000, "items": []}
+        },
+        {
+          "id": "laser",
+          "title": "Laser FEL",
+          "icon": "hbm:machine_fel",
+          "goal": {"type": "near", "items": ["hbm:machine_fel"], "label": "Laser FEL pose"},
+          "text": [
+            "Le FEL est un laser a electrons libres : son faisceau alimente la chambre SILEX.",
+            "- A l'assembleur : une batterie lithium-ion, 64 fils denses d'or, 12 plaques coulees d'acier, 16 plastiques, 4 lentilles polarisees, 16 condensateurs et 4 circuits integres.",
+            "- Un cristal laser regle la longueur d'onde : le cristal CO2-desh tire en infrarouge, celui qu'il faut pour les dechets."
+          ],
+          "reward": {"money": 40000, "items": []}
+        },
+        {
+          "id": "silex",
+          "title": "SILEX",
+          "icon": "hbm:machine_silex",
+          "goal": {"type": "near", "items": ["hbm:machine_silex"], "label": "Chambre SILEX posee"},
+          "text": [
+            "La chambre SILEX separe les isotopes au laser : combustible use, dechets, pastilles RBMK.",
+            "- A l'assembleur : 16 verres de quartz, 8 plaques coulees d'acier, 4 lingots de desh, 8 caoutchoucs et 8 tuyaux d'acier.",
+            "- Les pastilles des barres RBMK usees y redonnent de l'uranium, du plutonium et des dechets a vie longue."
+          ],
+          "reward": {"money": 45000, "items": []}
+        },
+        {
+          "id": "futs",
+          "title": "Futs a dechets",
+          "icon": "hbm:machine_storage_drum",
+          "goal": {"type": "near", "items": ["hbm:machine_storage_drum"], "label": "Fut de stockage pose"},
+          "text": [
+            "Le fut de stockage laisse les dechets nucleaires se desintegrer : les dechets a vie longue y deviennent des dechets appauvris.",
+            "- A l'etabli : 8 plaques de plomb et un reservoir d'acier.",
+            "- C'est long : charge le fut et laisse-le travailler, loin de ta base."
+          ],
+          "reward": {"money": 25000, "items": []}
+        },
+        {
+          "id": "bismuth",
+          "title": "Bismuth",
+          "icon": "hbm:ingot_bismuth",
+          "goal": {"type": "have", "items": ["hbm:nugget_bismuth", "hbm:ingot_bismuth", "hbm:nugget_arsenic"], "count": 4, "label": "4 pepites de bismuth"},
+          "text": [
+            "Repasse les dechets appauvris au SILEX, en infrarouge : ils donnent du plomb et du bismuth, jusqu'a 40 % pour ceux du thorium.",
+            "- C'est le succes « Bismuth » de NTM : la porte de la fusion.",
+            "- L'arsenic fait le meme travail dans les pieces de fusion : ses pepites comptent aussi."
+          ],
+          "reward": {"money": 70000, "items": []}
+        }
+      ]
+    },
+    {
+      "id": "fusion",
+      "name": "La fusion",
+      "color": "FF8A3D",
+      "steps": [
+        {
+          "id": "supercalcul",
+          "title": "Supercalcul",
+          "icon": "hbm:machine_supercomputer",
+          "goal": {"type": "near", "items": ["hbm:machine_supercomputer"], "label": "Supercalculateur pose"},
+          "text": [
+            "La fusion se calcule avant de se construire : le supercalculateur remplit des cles de simulation de particules (une cle vide et 16 000 mB d'eau, 15 minutes).",
+            "- A l'assembleur : 16 lingots d'acier au technetium ou au cadmium, 64 plastiques, 32 fils denses d'or, 8 tuyaux de cuivre, 32 circuits integres et un circuit polyvalent.",
+            "- Le circuit polyvalent, au poste de soudure : 4 puces bismoides, 16 puces, 24 condensateurs et 1000 mB de solvant.",
+            "- Une puce bismoide, a l'assembleur : 2 plaques de polymere, 2 plaquettes de silicium, une pepite de bismuth et 2 fils fins d'or."
+          ],
+          "reward": {"money": 50000, "items": []}
+        },
+        {
+          "id": "noyau",
+          "title": "Coeur du tore",
+          "icon": "hbm:struct_torus_core",
+          "goal": {"type": "have", "items": ["hbm:struct_torus_core"], "count": 1, "label": "Le coeur du tore en main"},
+          "text": [
+            "Le coeur du tore, a l'assembleur : 8 plaques soudees d'acier au technetium ou au cadmium, 32 plastiques durs, 8 circuits polyvalents et 4 cles de simulation.",
+            "- Les plastiques durs : polycarbonate ou PVC.",
+            "- C'est le succes « Fusion » de NTM."
+          ],
+          "reward": {"money": 60000, "items": []}
+        },
+        {
+          "id": "tore",
+          "title": "Tore de fusion",
+          "icon": "hbm:fusion_torus",
+          "goal": {"type": "near", "items": ["hbm:fusion_torus"], "label": "Tore de fusion assemble"},
+          "text": [
+            "Pose le coeur, puis bati la coque autour : bobines BSCCO, couvertures et tuyauteries. Une fois complete, elle devient le tore de fusion.",
+            "- Bobine BSCCO : un fil dense BSCCO, un tuyau de cuivre, un lingot d'acier au technetium et 4 plastiques ; posee, elle se soude au chalumeau avec une plaque coulee d'acier.",
+            "- Couverture : une plaque soudee de tungstene, 2 d'acier et 4 lingots de beryllium. Tuyauterie : 4 plastiques durs, 2 tuyaux de cuivre, 2 moteurs et un circuit integre.",
+            "! Le tore doit etre refroidi."
+          ],
+          "reward": {"money": 90000, "items": []}
+        },
+        {
+          "id": "klystron",
+          "title": "Klystron",
+          "icon": "hbm:fusion_klystron",
+          "goal": {"type": "near", "items": ["hbm:fusion_klystron"], "label": "Klystron pose"},
+          "text": [
+            "Le klystron change le courant en energie qui allume le plasma du tore. Il se refroidit a l'air comprime, celui du compresseur.",
+            "- A l'assembleur : 4 plaques soudees de tungstene, 16 plaques coulees d'acier au technetium ou au cadmium, 32 plaques de cuivre, 16 plastiques durs, 8 fils denses BSCCO et 2 circuits polyvalents."
+          ],
+          "reward": {"money": 60000, "items": []}
+        },
+        {
+          "id": "chaudiere",
+          "title": "Energie plasma",
+          "icon": "hbm:fusion_boiler",
+          "goal": {"type": "near", "items": ["hbm:fusion_boiler", "hbm:fusion_mhdt"], "label": "Chaudiere ou turbine MHD posee"},
+          "text": [
+            "Le tore produit de l'energie plasma : la chaudiere de fusion en fait de la vapeur super dense, la turbine MHD du courant directement.",
+            "- Chaudiere, a l'assembleur : 16 plaques coulees d'acier au technetium ou au cadmium, 16 coques de cuivre, 8 tuyaux d'acier et 16 plastiques durs.",
+            "- La turbine MHD rend plus, mais demande des circuits quantiques et un refroidissement au perfluoromethyle."
+          ],
+          "reward": {"money": 60000, "items": []}
+        },
+        {
+          "id": "forge_plasma",
+          "title": "Forge a plasma",
+          "icon": "hbm:fusion_plasma_forge",
+          "goal": {"type": "near", "items": ["hbm:fusion_plasma_forge"], "label": "Forge a plasma posee"},
+          "text": [
+            "La forge a plasma fabrique ce qu'aucune autre machine ne sait faire, au feu d'un tore en marche : un second tore, le DFC, l'ICF.",
+            "- A l'assembleur : 8 plaques soudees d'acier au technetium ou au cadmium, 32 fils denses BSCCO, 16 plaques coulees de bronze au bismuth (ou a l'arsenic) et 4 circuits polyvalents.",
+            "- Branche-la sur le tore : son energie plasma la fait chauffer.",
+            "- Derniere etape : tu as parcouru NTM, de l'enclume a la fusion."
+          ],
+          "reward": {"money": 100000, "items": []}
         }
       ]
     }
