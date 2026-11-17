@@ -21,6 +21,7 @@
     "palamod:titane_block",
     "palamod:titane_chest",
     "palamod:titane_ore",
-    "palamod:titane_spike"
+    "palamod:titane_spike",
+    "dohy:cryo_chamber"
   ]
 }

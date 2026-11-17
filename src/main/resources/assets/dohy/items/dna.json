@@ -1,0 +1,22 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "dohy:item/dna",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      },
+      {
+        "type": "minecraft:custom_model_data",
+        "index": 0,
+        "default": -9395789
+      },
+      {
+        "type": "minecraft:custom_model_data",
+        "index": 1,
+        "default": -5592406
+      }
+    ]
+  }
+}

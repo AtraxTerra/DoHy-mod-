@@ -163,5 +163,16 @@
   "tooltip.dohy.krys.2": "Repaired with a worm tooth",
   "item.dohy.spice_coffee": "Spice coffee",
   "tooltip.dohy.spice_coffee.1": "Gives back one sip of water",
-  "tooltip.dohy.spice_coffee.2": "Night vision, haste II, speed"
+  "tooltip.dohy.spice_coffee.2": "Night vision, haste II, speed",
+  "block.dohy.cryo_chamber": "Cryogenic Chamber",
+  "item.dohy.cryo_chamber": "Cryogenic Chamber",
+  "item.dohy.dna": "DNA Vial",
+  "item.dohy.dna.of": "DNA: %s (%s)",
+  "item.dohy.dna.empty": "Empty: draw a peaceful animal's DNA with the syringe",
+  "item.dohy.dna.grade": "Grade %s of %s",
+  "item.dohy.dna.cycle": "In the chamber: a %s s cycle, %s loot roll(s)",
+  "item.dohy.dna.fusion": "%s vials fused give grade %s",
+  "item.dohy.dna_syringe": "Extraction Syringe",
+  "item.dohy.dna_syringe.hint": "Right-click a peaceful animal: a DNA vial",
+  "message.dohy.dna.drawn": "DNA drawn: %s"
 }

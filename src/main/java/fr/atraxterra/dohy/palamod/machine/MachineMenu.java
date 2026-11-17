@@ -113,6 +113,12 @@ public class MachineMenu extends AbstractContainerMenu {
         }
 
         @Override
+        public int getMaxStackSize() {
+            return machine instanceof SlotLimits limits
+                    ? Math.min(super.getMaxStackSize(), limits.slotLimit(machineIndex)) : super.getMaxStackSize();
+        }
+
+        @Override
         public void onTake(Player player, ItemStack stack) {
             super.onTake(player, stack);
             if (crafted && !stack.isEmpty()) {
@@ -183,6 +189,14 @@ public class MachineMenu extends AbstractContainerMenu {
      */
     public interface Buttons {
         boolean pressButton(net.minecraft.server.level.ServerPlayer player, int id);
+    }
+
+    /**
+     * Une machine dont une case ne prend qu'une piece (la fiole d'ADN de la
+     * chambre cryogenique) : la limite vaut pour le clic comme pour le maj-clic.
+     */
+    public interface SlotLimits {
+        int slotLimit(int slot);
     }
 
     @Override

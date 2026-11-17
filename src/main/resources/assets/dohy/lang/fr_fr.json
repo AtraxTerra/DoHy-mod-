@@ -163,5 +163,16 @@
   "tooltip.dohy.krys.2": "Se repare avec une dent de ver",
   "item.dohy.spice_coffee": "Cafe d'epice",
   "tooltip.dohy.spice_coffee.1": "Rend une gorgee d'eau",
-  "tooltip.dohy.spice_coffee.2": "Vision nocturne, celerite II, rapidite"
+  "tooltip.dohy.spice_coffee.2": "Vision nocturne, celerite II, rapidite",
+  "block.dohy.cryo_chamber": "Chambre cryogenique",
+  "item.dohy.cryo_chamber": "Chambre cryogenique",
+  "item.dohy.dna": "Fiole d'ADN",
+  "item.dohy.dna.of": "ADN : %s (%s)",
+  "item.dohy.dna.empty": "Vide : preleve l'ADN d'une bete paisible a la seringue",
+  "item.dohy.dna.grade": "Grade %s sur %s",
+  "item.dohy.dna.cycle": "En chambre : un cycle de %s s, %s tirage(s) de butin",
+  "item.dohy.dna.fusion": "%s fioles fusionnees donnent le grade %s",
+  "item.dohy.dna_syringe": "Seringue d'extraction",
+  "item.dohy.dna_syringe.hint": "Clic droit sur une bete paisible : une fiole d'ADN",
+  "message.dohy.dna.drawn": "ADN preleve : %s"
 }

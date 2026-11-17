@@ -1,0 +1,150 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "dohy:block/cryo_chamber_part"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "px": "1",
+        "py": "1",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_lower"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "px": "1",
+        "py": "2",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_glass"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "px": "1",
+        "py": "4",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_upper"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "px": "1",
+        "py": "1",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "px": "1",
+        "py": "2",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_glass",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "px": "1",
+        "py": "4",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "px": "1",
+        "py": "1",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "px": "1",
+        "py": "2",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_glass",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "px": "1",
+        "py": "4",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "px": "1",
+        "py": "1",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "px": "1",
+        "py": "2",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_glass",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "px": "1",
+        "py": "4",
+        "pz": "1"
+      },
+      "apply": {
+        "model": "dohy:block/cryo_chamber_upper",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -2876,6 +2876,58 @@
       }
     },
     {
+      "id": "cryogenie",
+      "category": "agriculture",
+      "order": 3,
+      "icon": "dohy:cryo_chamber",
+      "title": "La cryogenie",
+      "card": [
+        "Chambre 3 x 3 x 5",
+        "ADN, clonage, fusion"
+      ],
+      "summary": [
+        "La chambre cryogenique clone les betes paisibles : pose une fiole d'ADN dans sa cuve, nourris-la de glace, et elle produit le butin de la bete, cycle apres cycle."
+      ],
+      "sections": [
+        {
+          "title": "Prelever l'ADN",
+          "text": [
+            "- La seringue d'extraction, clic droit sur une bete paisible et adulte : une fiole d'ADN de grade I.",
+            "- Une meme bete ne se preleve qu'une fois toutes les cinq minutes : pour beaucoup d'ADN, il faut un troupeau.",
+            "- Une bete dont le clone ne donnerait rien (sans butin) ne donne pas d'ADN."
+          ]
+        },
+        {
+          "title": "La chambre",
+          "text": [
+            "- Elle prend 3 x 3 blocs au sol et 5 de haut, centree sur la case visee, la console vers toi.",
+            "- Le froid : neige 4, glace 8, glace compactee 72, glace bleue 648 ; un cycle en coute 2.",
+            "- Un clic sur n'importe quelle case ouvre la machine ; les entonnoirs y versent la glace et en tirent le butin.",
+            "! Casser une case demonte toute la chambre : l'objet et son contenu reviennent."
+          ]
+        },
+        {
+          "title": "Les grades",
+          "text": [
+            "- Quatre fioles d'une meme bete et d'un meme grade fusionnent en une du grade suivant, dans la chambre.",
+            "- Grade I : un tirage toutes les 2 min. Grade V : trois tirages toutes les 30 s, douze fois plus.",
+            "- Les poules pondent, les tatous perdent leurs ecailles, les abeilles font du miel : le clone aussi."
+          ]
+        }
+      ],
+      "see": [
+        "agriculture",
+        "tracteur"
+      ],
+      "discover": {
+        "items": [
+          "dohy:cryo_chamber",
+          "dohy:dna_syringe",
+          "dohy:dna"
+        ]
+      }
+    },
+    {
       "id": "palettes",
       "category": "technique",
       "order": 0,

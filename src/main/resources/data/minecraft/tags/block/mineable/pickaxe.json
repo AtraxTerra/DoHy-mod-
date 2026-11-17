@@ -102,6 +102,7 @@
     "palamod:void_stone",
     "palamod:wither_receptacle",
     "palamod:withered_obsidian",
-    "palamod:withered_reinforced_piston"
+    "palamod:withered_reinforced_piston",
+    "dohy:cryo_chamber"
   ]
 }

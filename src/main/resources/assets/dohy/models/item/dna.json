@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "dohy:item/dna_vial",
+    "layer1": "dohy:item/dna_fluid",
+    "layer2": "dohy:item/dna_band"
+  }
+}
