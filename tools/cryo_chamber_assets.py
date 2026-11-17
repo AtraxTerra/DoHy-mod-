@@ -3,7 +3,7 @@
 
 Une colonne de cryogenie dessinee pour Berskar : un socle a marche en tole
 striee, une console a ecran sur l'avant, un rebord a liseret de lumiere, une
-cuve de verre givre tenue par quatre piliers et quatre meneaux, des conduites
+cuve de verre givre tenue par quatre piliers et trois meneaux, des conduites
 de froid aux angles, un collier a lumiere, un chapiteau a ouies, une trappe et
 un emetteur au sommet. Trois blocs sur trois, cinq de haut.
 
@@ -543,31 +543,37 @@ def emblem(img, rng, cx, cy):
 
 
 def glass(img, rng, w, h):
-    """Le verre de la cuve : bleu, givre sur les bords et en bas, des reflets en biais."""
-    noise = value_noise(w, h, rng, 6)
+    """Le verre de la cuve : clair au centre pour voir le clone, givre en bas et en haut, deux reflets en biais."""
+    noise = value_noise(w, h, rng, 8)
     for j in range(h):
         for i in range(w):
             t = j / float(h - 1)
             n = noise[j][i]
-            k = 2 if n < 0.45 else 3
-            a = 118 + int(40 * n)
-            c = GLASS[k]
-            # le givre monte du bas et descend du haut, il colle aux bords
-            edge = min(i, w - 1 - i) / float(max(1, w // 2))
-            frost = max(0.0, 0.9 - t * 6.0) * 0.35 + max(0.0, t - 0.72) * 2.2 + max(0.0, 0.32 - edge) * 1.6
-            if rng.random() < frost * (0.6 + n * 0.6):
+            c = GLASS[3] if n > 0.55 else GLASS[2]
+            a = 62 + int(34 * n)
+            # le givre monte du bas, tombe du haut, et borde les montants
+            frost = 0.0
+            if t > 0.84:
+                frost = (t - 0.84) / 0.16 * 0.95
+            elif t < 0.07:
+                frost = (0.07 - t) / 0.07 * 0.7
+            if i < 2 or i > w - 3:
+                frost = max(frost, 0.45)
+            if rng.random() < frost * (0.55 + n * 0.6):
                 c = tone("frost", 2 + int(rng.random() * 2))
-                a = 200
-            # les reflets
-            s = (i + int(j * 0.45)) % 23
-            if s in (0, 1) and 0.08 < t < 0.9:
-                c, a = GLASS[5], 170
-            elif s == 2 and 0.08 < t < 0.9:
-                c, a = GLASS[4], 150
+                a = 185 + int(rng.random() * 40)
+            elif rng.random() < 0.006:
+                c, a = tone("frost", 3), 150
+            # deux reflets fins, en biais
+            s = (i + int(j * 0.42)) % 41
+            if 0.1 < t < 0.82 and s in (0, 1):
+                c, a = GLASS[5], 104
+            elif 0.1 < t < 0.82 and s == 6:
+                c, a = GLASS[4], 84
             img.put(i, j, (c[0], c[1], c[2], a))
     for j in range(h):
-        img.put(0, j, (*tone("frost", 1), 210))
-        img.put(w - 1, j, (*tone("frost", 1), 210))
+        img.put(0, j, (*tone("frost", 1), 215))
+        img.put(w - 1, j, (*tone("frost", 1), 215))
 
 
 # -- La geometrie ---------------------------------------------------------------------------
@@ -619,19 +625,18 @@ def build():
     box("ledge_glow_w", (0.9, 15, 4), (1, 16, 44), {"west": "glow"}, light=12)
     box("ledge_glow_e", (47, 15, 4), (47.1, 16, 44), {"east": "glow"}, light=12)
     box("emitter", (14, 17, 14), (34, 17.1, 34), {"up": "emitter"}, light=12)
-    # La cuve : quatre piliers, quatre meneaux, huit vitres, et les conduites des angles.
+    # La cuve : quatre piliers, trois meneaux, sept vitres, et les conduites des angles.
     for (x, z) in ((4, 4), (38, 4), (4, 38), (38, 38)):
         box("pillar", (x, 17, z), (x + 6, 62, z + 6), sides("pillar"))
-    box("midbar_n", (21, 17, 5), (27, 62, 9), {"north": "midbar", "south": "midbar_side", "west": "midbar_side",
-                                                 "east": "midbar_side"})
     box("midbar_s", (21, 17, 39), (27, 62, 43), {"south": "midbar", "north": "midbar_side", "west": "midbar_side",
                                                    "east": "midbar_side"})
     box("midbar_w", (5, 17, 21), (9, 62, 27), {"west": "midbar", "east": "midbar_side", "north": "midbar_side",
                                                  "south": "midbar_side"})
     box("midbar_e", (39, 17, 21), (43, 62, 27), {"east": "midbar", "west": "midbar_side", "north": "midbar_side",
                                                    "south": "midbar_side"})
+    # l'avant n'a pas de meneau : une seule grande vitre, pour voir le clone
+    box("glass_n", (10, 17, 6.5), (38, 62, 7.5), {"north": "glass", "south": "glass"}, layer="glass")
     for (x0, x1) in ((10, 21), (27, 38)):
-        box("glass_n", (x0, 17, 6.5), (x1, 62, 7.5), {"north": "glass", "south": "glass"}, layer="glass")
         box("glass_s", (x0, 17, 40.5), (x1, 62, 41.5), {"south": "glass", "north": "glass"}, layer="glass")
         box("glass_w", (6.5, 17, x0), (7.5, 62, x1), {"west": "glass", "east": "glass"}, layer="glass")
         box("glass_e", (40.5, 17, x0), (41.5, 62, x1), {"east": "glass", "west": "glass"}, layer="glass")
@@ -771,7 +776,7 @@ def models(elements, spots, sizes):
         "textures": textures,
         "elements": mini,
         "display": {
-            "gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0], "scale": [0.7, 0.7, 0.7]},
+            "gui": {"rotation": [30, 225, 0], "translation": [0, -0.5, 0], "scale": [0.8, 0.8, 0.8]},
             "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.4, 0.4, 0.4]},
             "fixed": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [0.7, 0.7, 0.7]},
             "thirdperson_righthand": {"rotation": [75, 45, 0], "translation": [0, 2.5, 0], "scale": [0.4, 0.4, 0.4]},
@@ -942,7 +947,7 @@ def particle():
 def main():
     elements = build()
     frame, frame_spots = atlas(elements, "frame", 256)
-    glass_tex, glass_spots = atlas(elements, "glass", 32)
+    glass_tex, glass_spots = atlas(elements, "glass", 128)
     spots = {"frame": frame_spots, "glass": glass_spots}
     sizes = {"frame": (frame.w, frame.h), "glass": (glass_tex.w, glass_tex.h)}
     write_png(os.path.join(ASSETS, "textures", "block", "cryo_chamber.png"), frame)
