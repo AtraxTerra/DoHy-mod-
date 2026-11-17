@@ -37,6 +37,8 @@ public final class WaterMenu extends MenuController {
     /** Les quatre pieces ensemble : vingt mille de moins qu'une a une. */
     public static final long STILLSUIT_PRICE = 200_000L;
     public static final long WINDTRAP_PRICE = 75_000L;
+    /** Le paracompas : pour trouver un premier sietch. */
+    public static final long PARACOMPASS_PRICE = 15_000L;
 
     private static final double REACH = 12.0d;
     private static final int WATER = 0xFF4FB8FF;
@@ -62,7 +64,7 @@ public final class WaterMenu extends MenuController {
         for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
             ItemStack stack = player.getInventory().getItem(slot);
             if (stack.getItem() instanceof CanteenItem) {
-                missing += CanteenItem.CAPACITY - CanteenItem.water(stack);
+                missing += CanteenItem.capacity(stack) - CanteenItem.water(stack);
             }
         }
         return missing;
@@ -132,6 +134,11 @@ public final class WaterMenu extends MenuController {
                         "Une gorgee toutes les 20 s la nuit, toutes les 60 s le jour.",
                         "Une gourde ou une bouteille vide s'y remplit.")));
 
+        gear.add(buy(new ItemStack(SietchContent.PARACOMPASS.get()), "Paracompas", PARACOMPASS_PRICE, balance,
+                "buy_paracompass", 0xFFE8E0C8, List.of("Il montre le sietch le plus proche", "Les sietchs echangent l'eau"),
+                List.of("Huit sietchs sont creuses au pied des falaises de l'erg.",
+                        "Leurs habitants echangent l'eau et l'equipement contre du melange.")));
+
         int minutes = Hydration.minutesLeft(player);
         Card rules = Card.of(ItemStack.EMPTY, "L'eau d'Arrakis", List.of(
                 "Hors d'Arrakeen, le desert boit ton eau.",
@@ -187,7 +194,7 @@ public final class WaterMenu extends MenuController {
                 for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
                     ItemStack stack = player.getInventory().getItem(slot);
                     if (stack.getItem() instanceof CanteenItem) {
-                        CanteenItem.setWater(stack, CanteenItem.CAPACITY);
+                        CanteenItem.setWater(stack, CanteenItem.capacity(stack));
                     }
                 }
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL,
@@ -207,6 +214,9 @@ public final class WaterMenu extends MenuController {
                     stack(ArrakisContent.STILLSUIT_LEGGINGS.get()));
             case "buy_boots" -> sell(player, BOOTS_PRICE, "Bottes de distille livrees.",
                     stack(ArrakisContent.STILLSUIT_BOOTS.get()));
+            case "buy_paracompass" -> sell(player, PARACOMPASS_PRICE,
+                    "Paracompas livre : sur Arrakis, son aiguille montre le sietch le plus proche.",
+                    stack(SietchContent.PARACOMPASS.get()));
             case "buy_windtrap" -> sell(player, WINDTRAP_PRICE,
                     "Piege a vent livre : pose-le a ciel ouvert, il se remplit la nuit.",
                     stack(ArrakisContent.WINDTRAP_ITEM.get()));

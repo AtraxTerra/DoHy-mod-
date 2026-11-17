@@ -37,25 +37,39 @@ public class CanteenItem extends Item {
 
     /** Les gorgees d'une gourde pleine. */
     public static final int CAPACITY = 8;
+    /** Les gorgees de la gourde de sietch. */
+    public static final int SIETCH_CAPACITY = 16;
     private static final int BAR = 0x3FA9F5;
 
+    private final int capacity;
+
     public CanteenItem(Properties properties) {
+        this(properties, CAPACITY);
+    }
+
+    public CanteenItem(Properties properties, int capacity) {
         super(properties.component(DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
+        this.capacity = capacity;
+    }
+
+    /** Les gorgees que tient cette gourde, pleine. */
+    public static int capacity(ItemStack stack) {
+        return stack.getItem() instanceof CanteenItem canteen ? canteen.capacity : CAPACITY;
     }
 
     /** Les gorgees qu'il reste dans cette gourde. */
     public static int water(ItemStack stack) {
-        return Mth.clamp(stack.getOrDefault(ArrakisContent.WATER.get(), 0), 0, CAPACITY);
+        return Mth.clamp(stack.getOrDefault(ArrakisContent.WATER.get(), 0), 0, capacity(stack));
     }
 
     public static void setWater(ItemStack stack, int sips) {
-        stack.set(ArrakisContent.WATER.get(), Mth.clamp(sips, 0, CAPACITY));
+        stack.set(ArrakisContent.WATER.get(), Mth.clamp(sips, 0, capacity(stack)));
     }
 
     /** Une gourde pleine. */
     public static ItemStack filled(Item canteen) {
         ItemStack stack = new ItemStack(canteen);
-        setWater(stack, CAPACITY);
+        setWater(stack, capacity(stack));
         return stack;
     }
 
@@ -64,10 +78,10 @@ public class CanteenItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         // a une eau libre (hors d'Arrakis), on la remplit
         BlockHitResult hit = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
-        if (hit.getType() == HitResult.Type.BLOCK && water(stack) < CAPACITY
+        if (hit.getType() == HitResult.Type.BLOCK && water(stack) < capacity(stack)
                 && level.getFluidState(hit.getBlockPos()).is(FluidTags.WATER)) {
             if (!level.isClientSide()) {
-                setWater(stack, CAPACITY);
+                setWater(stack, capacity(stack));
                 level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL,
                         SoundSource.PLAYERS, 1.0f, 0.8f);
                 level.gameEvent(player, GameEvent.FLUID_PICKUP, hit.getBlockPos());
@@ -112,7 +126,7 @@ public class CanteenItem extends Item {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0f * water(stack) / CAPACITY);
+        return Math.round(13.0f * water(stack) / capacity(stack));
     }
 
     @Override
@@ -123,7 +137,7 @@ public class CanteenItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
                                 Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.translatable("tooltip.dohy.canteen.water", water(stack), CAPACITY)
+        tooltip.accept(Component.translatable("tooltip.dohy.canteen.water", water(stack), capacity(stack))
                 .withStyle(ChatFormatting.AQUA));
     }
 }
