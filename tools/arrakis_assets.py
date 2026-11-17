@@ -9,7 +9,9 @@ Ecrit dans assets/dohy/textures :
                               grains de cannelle et paillettes d'epice ;
 * item/melange.png          — une pincee de melange : un petit tas qui luit, des eclats au-dessus ;
 * item/spice_harvester.png  — la moissonneuse de trois quarts ;
-* block/terminal_spice.png  — la borne du comptoir : l'ecran des bornes, un tas d'epice et son eclat.
+* block/terminal_spice.png  — la borne du comptoir : l'ecran des bornes, un tas d'epice et son eclat ;
+* block/thumper_*.png       — le marteleur : sa masselotte rouille rayee, l'acier de son mat, son socle ;
+* item/worm_tooth.png       — une dent de ver, courbe, de la racine rougie a la pointe.
 
 La maniere de PalaMod : peu de tons par matiere (cinq a sept), une lumiere
 venue d'en haut a gauche, un contour d'un ton sombre de la matiere (pas de noir
@@ -237,6 +239,121 @@ def terminal():
     return save(image, "block", "terminal_spice.png")
 
 
+
+# -- Le marteleur ---------------------------------------------------------------------------
+
+STEEL = [(26, 26, 32), (44, 44, 52), (64, 66, 76), (88, 90, 102), (118, 122, 134), (160, 164, 176)]
+RUST = [(70, 30, 12), (110, 50, 18), (150, 72, 26), (190, 98, 36), (222, 132, 54), (246, 172, 90)]
+HAZARD = {"y": (240, 192, 36), "Y": (255, 224, 110), "k": (30, 28, 26), "K": (52, 48, 44)}
+
+
+def bevelled(ramp, base=3):
+    """Une tole de 16 : contour sombre, lisere clair en haut a gauche, coins rivetes."""
+    g = [[base] * 16 for _ in range(16)]
+    for i in range(16):
+        g[0][i] = 1
+        g[15][i] = 0
+        g[i][0] = 1
+        g[i][15] = 0
+    for i in range(1, 15):
+        g[1][i] = base + 1
+        g[i][1] = base + 1
+    for x, y in ((2, 2), (13, 2), (2, 13), (13, 13)):
+        g[y][x] = 5
+        g[y + 1][x + 1] = 1
+    return g
+
+
+def paint_grid(g, ramp):
+    image = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            image.putpixel((x, y), ramp[g[y][x]] + (255,))
+    return image
+
+
+def thumper_textures():
+    rng = random.Random(26)
+    # la masselotte : tole rouille, bande rayee au milieu
+    g = bevelled(RUST)
+    for y in range(3, 13):
+        for x in range(3, 13):
+            if g[y][x] == 3 and rng.random() < 0.18:
+                g[y][x] = 2
+    weight = paint_grid(g, RUST)
+    for y in range(6, 10):
+        for x in range(1, 15):
+            stripe = ((x + y) // 2) % 2 == 0
+            c = HAZARD["y"] if stripe else HAZARD["k"]
+            if y == 6:
+                c = HAZARD["Y"] if stripe else HAZARD["K"]
+            weight.putpixel((x, y), c + (255,))
+    save(weight, "block", "thumper_weight.png")
+    # l'acier du mat : rainures verticales
+    g = bevelled(STEEL)
+    for y in range(2, 14):
+        for x in (5, 10):
+            g[y][x] = 1
+            g[y][x + 1] = 4
+    save(paint_grid(g, STEEL), "block", "thumper_steel.png")
+    # le socle : tole larmee, cadre sombre, boulons
+    g = bevelled(STEEL, base=2)
+    for y in range(3, 13):
+        for x in range(3, 13):
+            if (x + 2 * y) % 4 == 0:
+                g[y][x] = 4
+            elif (x + 2 * y) % 4 == 1:
+                g[y][x] = 1
+    return save(paint_grid(g, STEEL), "block", "thumper_base.png")
+
+
+# -- La dent de ver -------------------------------------------------------------------------
+
+BONE = {"o": (74, 52, 34), "1": (132, 112, 84), "2": (170, 152, 118), "3": (204, 190, 156), "4": (230, 222, 196),
+        "5": (248, 244, 228), "r": (120, 36, 30), "R": (160, 58, 44)}
+
+
+def worm_tooth():
+    """Un croc courbe, de la racine (en bas a gauche) a la pointe (en haut a droite)."""
+    def curve(t):
+        # une courbe de Bezier : racine, point de controle, pointe
+        p0, p1, p2 = (6.0, 11.8), (5.2, 4.6), (13.2, 1.8)
+        x = (1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0]
+        y = (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1]
+        return x, y
+
+    samples = [curve(k / 200.0) for k in range(201)]
+    image = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    inside = {}
+    for y in range(16):
+        for x in range(16):
+            px, py = x + 0.5, y + 0.5
+            best, bt, side = 99.0, 0.0, 0.0
+            for k, (cx, cy) in enumerate(samples):
+                d = math.hypot(px - cx, py - cy)
+                if d < best:
+                    best, bt = d, k / 200.0
+                    nx, ny = samples[min(200, k + 1)][0] - cx, samples[min(200, k + 1)][1] - cy
+                    side = nx * (py - cy) - ny * (px - cx)
+            width = 3.1 * (1.0 - bt) ** 0.7 + 0.5
+            if best <= width:
+                inside[(x, y)] = (bt, side, best / width)
+    for (x, y), (t, side, depth) in inside.items():
+        light = 3.2 - depth * 1.6 + (1.0 if side < 0 else -0.6) + t * 0.8
+        index = max(1, min(5, int(round(light))))
+        c = BONE[str(index)]
+        if t < 0.07:
+            c = BONE["R"] if side < 0 else BONE["r"]      # la racine, encore rouge de gencive
+        image.putpixel((x, y), c + (255,))
+    for y in range(16):
+        for x in range(16):
+            if (x, y) in inside:
+                continue
+            if any((x + dx, y + dy) in inside for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                image.putpixel((x, y), BONE["o"] + (255,))
+    return save(image, "item", "worm_tooth.png")
+
+
 def preview(folder, images):
     os.makedirs(folder, exist_ok=True)
     sheet = Image.new("RGBA", (len(images) * 272 + 3 * 16 * 8 + 16, 400), (64, 64, 64, 255))
@@ -252,7 +369,7 @@ def preview(folder, images):
 
 
 def main():
-    images = [spice_sand(), melange(), harvester_icon(), terminal()]
+    images = [spice_sand(), melange(), harvester_icon(), terminal(), thumper_textures(), worm_tooth()]
     if len(sys.argv) > 1:
         preview(sys.argv[1], images)
 

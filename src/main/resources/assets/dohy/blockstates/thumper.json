@@ -1,0 +1,20 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "down": "false"
+      },
+      "apply": {
+        "model": "dohy:block/thumper_up"
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "dohy:block/thumper_down"
+      }
+    }
+  ]
+}

@@ -117,5 +117,12 @@
   "item.dohy.spice_harvester": "Moissonneuse d'epice",
   "tooltip.dohy.spice_harvester.1": "Pose-la sur le sable : tu en es le proprietaire",
   "tooltip.dohy.spice_harvester.2": "Saut : ouvrir la bouche  -  accroupi + clic : son ecran",
-  "entity.dohy.spice_harvester": "Moissonneuse d'epice"
+  "entity.dohy.spice_harvester": "Moissonneuse d'epice",
+  "block.dohy.thumper": "Marteleur",
+  "tooltip.dohy.thumper.1": "Plante-le dans le sable : il frappe une minute",
+  "tooltip.dohy.thumper.2": "Ses coups appellent les vers, loin de toi",
+  "item.dohy.worm_tooth": "Dent de ver",
+  "tooltip.dohy.worm_tooth.1": "La Guilde la rachete cher au comptoir d'Arrakeen",
+  "entity.dohy.sandworm": "Ver des sables",
+  "death.attack.dohy.sandworm": "%1$s a ete englouti par un ver des sables"
 }

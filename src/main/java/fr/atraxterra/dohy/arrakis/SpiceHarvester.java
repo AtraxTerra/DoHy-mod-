@@ -67,6 +67,10 @@ import java.util.UUID;
  *
  * <p>Elle a un proprietaire, celui qui l'a posee : lui seul (et les operateurs)
  * la conduit, l'ouvre et la demonte (accroupi + coup).
+ *
+ * <p>Elle fait du bruit ({@link WormNoise}) : beaucoup bouche ouverte, un peu en
+ * roulant. Trop, et un ver vient ; s'il l'atteint, il l'avale avec son
+ * conducteur et la recrache vide, du haut de sa gueule.
  */
 public class SpiceHarvester extends PathfinderMob implements PlayerRideableJumping, HasCustomInventoryScreen {
 
@@ -105,6 +109,7 @@ public class SpiceHarvester extends PathfinderMob implements PlayerRideableJumpi
     private double burn;
     private int quiet;
     private int swallowed;
+    private int lastMove = -1000;
 
     public SpiceHarvester(EntityType<? extends SpiceHarvester> type, Level level) {
         super(type, level);
@@ -206,6 +211,9 @@ public class SpiceHarvester extends PathfinderMob implements PlayerRideableJumpi
             // une teleportation n'est pas un trajet
             moved = 0.0d;
         }
+        if (moved > 0.01d) {
+            lastMove = tickCount;
+        }
         if (moved > 0.001d && fuel() > 0) {
             burn += moved * MOVE_COST * (working() ? WORK_FACTOR : 1.0d);
             int whole = (int) burn;
@@ -228,6 +236,41 @@ public class SpiceHarvester extends PathfinderMob implements PlayerRideableJumpi
         if (tickCount % 40 == 0 && cargo() > 0) {
             sellAtCounter(server);
         }
+    }
+
+    /** Vrai si elle a roule ces {@code ticks} derniers ticks. */
+    public boolean movedWithin(int ticks) {
+        return tickCount - lastMove <= ticks;
+    }
+
+    /** Un avertissement au conducteur, dans le chat et au-dessus de sa barre d'objets. */
+    void warnDriver(String text) {
+        if (getControllingPassenger() instanceof ServerPlayer driver) {
+            driver.sendSystemMessage(Component.literal(text).withStyle(ChatFormatting.GOLD));
+            driver.sendSystemMessage(Component.literal(text).withStyle(ChatFormatting.GOLD), true);
+        }
+    }
+
+    /**
+     * Un ver l'avale : son conducteur tombe dans la gueule avec elle, sa tremie et son
+     * reservoir sont perdus. Rend l'epave (l'objet moissonneuse) que le ver recrachera,
+     * vide, du haut de sa gueule.
+     */
+    ItemStack swallowed(ServerLevel level) {
+        if (isRemoved()) {
+            return ItemStack.EMPTY;
+        }
+        int lost = cargo();
+        ServerPlayer owner = this.owner == null ? null : level.getServer().getPlayerList().getPlayer(this.owner);
+        ejectPassengers();
+        setCargo(0);
+        setFuel(0);
+        discard();
+        if (owner != null) {
+            owner.sendSystemMessage(Component.literal("Un ver a avale ta moissonneuse ! Il va la recracher, vide ("
+                    + lost + " melange perdus).").withStyle(ChatFormatting.RED));
+        }
+        return new ItemStack(ArrakisContent.HARVESTER_ITEM.get());
     }
 
     /** Un message au conducteur, au-dessus de sa barre d'objets ; pas plus d'un par seconde. */

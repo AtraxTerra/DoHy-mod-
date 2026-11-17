@@ -54,7 +54,7 @@ public final class SpiceBlows {
     /** Le nuage d'epice, apres : il retombe lentement. */
     private static final int AFTERGLOW = 5 * 20;
     /** Arrakeen et sa cuvette : pas d'eruption a moins de ce rayon du centre. */
-    private static final double SAFE_RADIUS = 520.0d;
+    static final double SAFE_RADIUS = 520.0d;
     private static final int NEAR = 40;
     private static final int FAR = 130;
     /** Les joueurs a cette distance l'entendent et sont prevenus. */
@@ -62,6 +62,8 @@ public final class SpiceBlows {
     private static final int SPICE = 0xE8742C;
     private static final String[] DIRECTIONS = {"au nord", "au nord-est", "a l'est", "au sud-est", "au sud",
             "au sud-ouest", "a l'ouest", "au nord-ouest"};
+    private static final String[] ORIGINS = {"du nord", "du nord-est", "de l'est", "du sud-est", "du sud",
+            "du sud-ouest", "de l'ouest", "du nord-ouest"};
 
     private static int countdown = -1;
     private static Blow pending;
@@ -198,11 +200,19 @@ public final class SpiceBlows {
 
     /** Le point cardinal ou se trouve {@code center}, vu du joueur : « au nord », « a l'est »... */
     static String direction(ServerPlayer player, BlockPos center) {
+        return DIRECTIONS[octant(player, center)];
+    }
+
+    /** D'ou vient ce qui est en {@code center}, vu du joueur : « du nord », « de l'est »... */
+    static String origin(ServerPlayer player, BlockPos center) {
+        return ORIGINS[octant(player, center)];
+    }
+
+    private static int octant(ServerPlayer player, BlockPos center) {
         double dx = center.getX() + 0.5d - player.getX();
         double dz = center.getZ() + 0.5d - player.getZ();
         double degrees = Math.toDegrees(Math.atan2(dx, -dz));
-        int index = Math.floorMod((int) Math.round(degrees / 45.0d), 8);
-        return DIRECTIONS[index];
+        return Math.floorMod((int) Math.round(degrees / 45.0d), 8);
     }
 
     /** Un son pour ce joueur seul : un son lointain lui arrive de la bonne direction, a douze blocs. */
@@ -350,6 +360,8 @@ public final class SpiceBlows {
             }
             DoHy.LOGGER.info("Arrakis : eruption d'epice en {} {}, {} blocs de sable d'epice", center.getX(),
                     center.getZ(), converted);
+            // le fracas d'une eruption s'entend de loin, sous le sable aussi
+            WormNoise.emitAt(level, center, WormNoise.THRESHOLD, 30 * 20, false);
         }
     }
 }
