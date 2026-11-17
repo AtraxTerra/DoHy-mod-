@@ -25,8 +25,10 @@ Les donnees de NTM sont lues comme des donnees, jamais executees. Lancer avec
     python3 -I tools/gen_ntm_prices.py <dossier data de NTM NEXT>
     python3 -I tools/gen_ntm_prices.py ../ntm-next/neoforge/src/main/resources/data
 
-Le bloc ``components`` de ``data/tag_prices.json`` est reecrit ; le reste du
-fichier est conserve.
+Deux listes sont chiffrees, de la meme facon : ``costing.targets`` (les pieces,
+ecrites dans ``components``) et ``costing.machines`` (les premieres machines,
+ecrites dans ``machines``, qui ont leur onglet au shop). Le reste du fichier
+est conserve.
 """
 
 import argparse
@@ -48,6 +50,9 @@ RECIPE_TYPES = {
     "minecraft:smelting", "minecraft:blasting",
     "hbm:press", "hbm:assembly_machine", "hbm:precision_assembler",
     "hbm:soldering", "hbm:arc_welder", "hbm:anvil_construction",
+    # L'enclume d'acier se forge sur une enclume de fer : c'est la seule
+    # machine de la liste qui passe par la forge de l'enclume.
+    "hbm:anvil_smithing",
 }
 
 INGREDIENT_LISTS = ("input_items", "pcb", "solder")
@@ -82,6 +87,9 @@ class Pricer:
         # Les formes chiffrees directement (lingot, pepite, billette...). Les
         # formes sans facteur, plaques et fils, passent par leur recette.
         self.form_factor = {k: v for k, v in costing["reference_forms"].items() if not k.startswith("_")}
+        # Les formes coulees a la fonderie, qui n'a pas de recette lisible :
+        # tant de lingots de la meme matiere (une plaque coulee en vaut trois).
+        self.cast_forms = {k: v for k, v in costing.get("cast_forms", {}).items() if not k.startswith("_")}
         self.tags = self._load_tags(Path(data_dir))
         self.recipes = self._load_recipes(Path(data_dir))
         self.memo = {}
@@ -172,7 +180,9 @@ class Pricer:
                 members += self.tag_members(member[1:], seen)
             else:
                 members.append(member)
-        if not members and tag in self.aliases:
+        # Le tag vanilla existe en jeu meme quand NTM y ajoute ses objets
+        # (ses planches roses dans minecraft:planks) : l'alias en reste membre.
+        if tag in self.aliases and self.aliases[tag] not in members:
             members.append(self.aliases[tag])
         return members
 
@@ -193,6 +203,11 @@ class Pricer:
         direct = self.material_cost(tag)
         if direct is not None:
             return direct, "matiere %s" % tag
+        form, _, material = tag.partition("/")
+        if form in self.cast_forms and material:
+            ingot, _ = self.tag_cost("c:ingots/" + material)
+            if ingot is not None:
+                return ingot * self.cast_forms[form], "coulee de %s" % material
         best = None
         for member in self.tag_members(tag):
             cost = self.item_cost(member)
@@ -212,6 +227,9 @@ class Pricer:
             if kind == "neoforge:compound":
                 return self.ingredient_cost(ingredient.get("children", []))
             if kind == "neoforge:difference":
+                return self.ingredient_cost(ingredient.get("base"))
+            # L'ingredient maison de NTM qui enveloppe un objet ou un tag.
+            if kind == "hbm:recipe_input":
                 return self.ingredient_cost(ingredient.get("base"))
             if kind is not None:
                 return None
@@ -313,25 +331,30 @@ def main():
     config = json.loads(TAG_PRICES.read_text(encoding="utf-8"))
     pricer = Pricer(args.data_dir, config, load_vanilla())
 
-    components = {}
+    blocks = {}
     missing = []
-    print("%-34s %14s  %s" % ("piece", "prix", "chiffrage"))
-    for target in config["costing"]["targets"]:
-        cost = pricer.item_cost(target)
-        if cost is None:
-            missing.append(target)
-            continue
-        price = round_sig(cost * pricer.premium)
-        components[target] = price
-        print("%-34s %14s  %s" % (target, "{:,}".format(price).replace(",", " "), pricer.how.get(target, "")))
+    for block, key, label in (("components", "targets", "piece"), ("machines", "machines", "machine")):
+        prices = {}
+        print("%-34s %14s  %s" % (label, "prix", "chiffrage"))
+        for target in config["costing"].get(key, []):
+            cost = pricer.item_cost(target)
+            if cost is None:
+                missing.append(target)
+                continue
+            price = round_sig(cost * pricer.premium)
+            prices[target] = price
+            print("%-34s %14s  %s" % (target, "{:,}".format(price).replace(",", " "), pricer.how.get(target, "")))
+        print()
+        blocks[block] = prices
     if missing:
-        print("\nSans recette chiffrable, laisses hors du shop :", ", ".join(missing), file=sys.stderr)
+        print("Sans recette chiffrable, laisses hors du shop :", ", ".join(missing), file=sys.stderr)
 
     if args.dry_run:
         return
-    config["components"] = components
+    config.update(blocks)
     TAG_PRICES.write_text(json.dumps(config, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print("\n%d pieces ecrites dans %s" % (len(components), TAG_PRICES.relative_to(ROOT)))
+    print("%d pieces et %d machines ecrites dans %s" % (len(blocks["components"]), len(blocks["machines"]),
+                                                        TAG_PRICES.relative_to(ROOT)))
 
 
 if __name__ == "__main__":

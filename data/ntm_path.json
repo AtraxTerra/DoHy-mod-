@@ -1,0 +1,326 @@
+{
+  "_comment": "Le parcours NTM : les premieres machines de NTM NEXT, une etape apres l'autre, de l'enclume a la centrifugeuse. Chaque etape a un objectif, un mode d'emploi tire des vraies recettes du mod (sans les options LBSM ni le mode 528) et une recompense versee une seule fois. Lu par fr.atraxterra.dohy.nuclear.path.NtmPath, inerte sans NTM NEXT. Verifie par tools/check_ntm_path.py (avec le dossier data de NTM en argument, il verifie aussi que chaque objet existe).",
+  "_goals": "type have : avoir dans son sac 'count' objets parmi 'items' (all : un de chaque). near : un bloc de 'items' a moins de 'radius' blocs du joueur, pour les machines posees. Rien n'est jamais pris dans le sac.",
+  "_rewards": "money en dollars, items : de quoi attaquer l'etape suivante. Au total, environ 200 000 $ : deux contrats hebdomadaires pour toute la premiere industrie.",
+  "radius": 8,
+  "chapters": [
+    {
+      "id": "bases",
+      "name": "Les bases",
+      "color": "EF3926",
+      "steps": [
+        {
+          "id": "enclume",
+          "title": "L'enclume de fer",
+          "icon": "hbm:anvil_iron",
+          "goal": {"type": "have", "items": ["hbm:anvil_iron", "hbm:anvil_lead"], "count": 1, "label": "Une enclume de fer ou de plomb"},
+          "text": [
+            "L'outil de depart de NTM : sans enclume, pas de machine.",
+            "- 6 lingots de fer autour d'un bloc de fer (III / B / III). En plomb, la meme recette donne l'enclume de plomb.",
+            "- En haut de son menu, la forge : on y change les moules et on y fait l'enclume d'acier.",
+            "- En bas, la construction : choisis une recette, le bouton bleu prend les objets dans ton sac."
+          ],
+          "reward": {"money": 2000, "items": [{"id": "hbm:stamp_iron_flat", "count": 1}]}
+        },
+        {
+          "id": "presse",
+          "title": "La presse a vapeur",
+          "icon": "hbm:machine_press",
+          "goal": {"type": "near", "items": ["hbm:machine_press"], "label": "Poser une presse a vapeur"},
+          "text": [
+            "Elle frappe les lingots en plaques et en fils. Elle brule du charbon.",
+            "- Des lingots de fer, un four, un piston et un bloc de fer (IRI / IPI / IBI).",
+            "- Le moule plat : 3 briques sur 3 lingots de fer. A l'enclume, il devient moule de plaque ou moule de fil ; le dossier de patrons le fait aussi.",
+            "! Le moule plat de l'etape d'avant est dans ton sac."
+          ],
+          "reward": {"money": 3000, "items": [{"id": "minecraft:coal", "count": 32}]}
+        },
+        {
+          "id": "plaques",
+          "title": "Les plaques",
+          "icon": "hbm:plate_copper",
+          "goal": {"type": "have", "items": ["hbm:plate_copper"], "count": 8, "label": "8 plaques de cuivre"},
+          "text": [
+            "Presque toutes les machines de NTM sont faites de plaques.",
+            "- A la presse, avec le moule de plaque : un lingot donne une plaque.",
+            "- Le haut fourneau en demande 8 de cuivre ; le fer et l'acier suivront par dizaines."
+          ],
+          "reward": {"money": 2000, "items": []}
+        },
+        {
+          "id": "briques",
+          "title": "Briques refractaires",
+          "icon": "hbm:ingot_firebrick",
+          "goal": {"type": "have", "items": ["hbm:ingot_firebrick"], "count": 32, "label": "32 briques refractaires"},
+          "text": [
+            "Le haut fourneau et le creuset sont faits de briques qui tiennent la chaleur.",
+            "- 3 boules d'argile et 1 bauxite (aluminium brut, minerai ou poudre) donnent 4 argiles refractaires.",
+            "- Ou 2 boules d'argile, 1 calcaire et 1 sable.",
+            "- Cuis l'argile refractaire au four : une brique par boule."
+          ],
+          "reward": {"money": 3000, "items": []}
+        },
+        {
+          "id": "haut_fourneau",
+          "title": "Le haut fourneau",
+          "icon": "hbm:machine_blast_furnace",
+          "goal": {"type": "near", "items": ["hbm:machine_blast_furnace"], "label": "Poser un haut fourneau"},
+          "text": [
+            "La premiere source d'acier et de cuivre rouge.",
+            "- A l'enclume (construction) : 4 briques de pierre, 32 briques refractaires et 8 plaques de cuivre.",
+            "- Il ne brule que les combustibles chauds : charbon, coke, combustible solide.",
+            "! Un souffle d'air chaud l'accelere jusqu'a trois fois."
+          ],
+          "reward": {"money": 6000, "items": [{"id": "minecraft:coal_block", "count": 4}]}
+        },
+        {
+          "id": "acier",
+          "title": "L'acier",
+          "icon": "hbm:ingot_steel",
+          "goal": {"type": "have", "items": ["hbm:ingot_steel"], "count": 24, "label": "24 lingots d'acier"},
+          "text": [
+            "Le metal de base de toute l'industrie.",
+            "- Au haut fourneau : 2 lingots de fer et 1 sable donnent 2 lingots d'acier, et une scorie.",
+            "- Un minerai de fer et un sable en donnent autant : garde tes minerais pour ca."
+          ],
+          "reward": {"money": 5000, "items": []}
+        },
+        {
+          "id": "cuivre_rouge",
+          "title": "Le cuivre rouge",
+          "icon": "hbm:ingot_red_copper",
+          "goal": {"type": "have", "items": ["hbm:ingot_red_copper"], "count": 8, "label": "8 lingots de cuivre rouge"},
+          "text": [
+            "Le metal des fils, des bobines et des cables.",
+            "- Au haut fourneau : 1 lingot de cuivre et 1 redstone donnent 2 lingots de cuivre rouge."
+          ],
+          "reward": {"money": 4000, "items": []}
+        }
+      ]
+    },
+    {
+      "id": "courant",
+      "name": "Le courant",
+      "color": "FAC400",
+      "steps": [
+        {
+          "id": "enclume_acier",
+          "title": "L'enclume d'acier",
+          "icon": "hbm:anvil_steel",
+          "goal": {"type": "have", "items": ["hbm:anvil_steel"], "count": 1, "label": "Une enclume d'acier"},
+          "text": [
+            "Elle construit les machines du palier 2 : assembleur, creuset, foyer, chaudiere.",
+            "- A la forge de l'enclume de fer, en haut de son menu : l'enclume de fer et 10 lingots d'acier.",
+            "! L'enclume de fer part dans la forge : refais-en une si tu veux garder les deux."
+          ],
+          "reward": {"money": 8000, "items": []}
+        },
+        {
+          "id": "bobines",
+          "title": "Fils et bobines",
+          "icon": "hbm:coil_copper",
+          "goal": {"type": "have", "items": ["hbm:coil_copper"], "count": 4, "label": "4 bobines de cuivre"},
+          "text": [
+            "Le coeur des moteurs et des generateurs.",
+            "- A la presse, avec le moule de fil : un lingot de cuivre rouge donne 8 fils fins.",
+            "- 8 fils fins autour d'un lingot de fer : une bobine de cuivre.",
+            "- 4 bobines autour d'une plaque de fer : 2 bobines annulaires. Un fil fin, 4 plaques de fer, une bobine et une bobine annulaire : 2 moteurs."
+          ],
+          "reward": {"money": 4000, "items": [{"id": "hbm:motor", "count": 2}]}
+        },
+        {
+          "id": "cables",
+          "title": "Les cables",
+          "icon": "hbm:cable",
+          "goal": {"type": "have", "items": ["hbm:cable"], "count": 16, "label": "16 cables en cuivre rouge"},
+          "text": [
+            "Ils portent le courant d'une machine a l'autre.",
+            "- Un isolateur, 3 fils fins de cuivre rouge, un isolateur (en croix) : 16 cables.",
+            "- L'isolateur : 2 briques en donnent 4, comme 2 briques du Nether, ou une laine entre deux ficelles."
+          ],
+          "reward": {"money": 3000, "items": []}
+        },
+        {
+          "id": "generateur",
+          "title": "Le generateur a bois",
+          "icon": "hbm:machine_wood_burner",
+          "goal": {"type": "near", "items": ["hbm:machine_wood_burner"], "label": "Poser un generateur a bois"},
+          "text": [
+            "Le premier courant : il brule le bois, le charbon ou un carburant liquide.",
+            "- 3 plaques d'acier, 2 bobines de cuivre, un four et 2 lingots de fer (PPP / CFC / I I).",
+            "- Il tire plus des buches et des planches. Les cables se branchent a l'arriere.",
+            "! Ensuite : le foyer et le moteur Stirling, puis la chaudiere et la machine a vapeur."
+          ],
+          "reward": {"money": 8000, "items": [{"id": "hbm:battery_pack_battery_redstone", "count": 1}]}
+        },
+        {
+          "id": "batterie",
+          "title": "Stocker le courant",
+          "icon": "hbm:machine_battery_socket",
+          "goal": {"type": "near", "items": ["hbm:machine_battery_socket"], "label": "Poser un socle de batterie"},
+          "text": [
+            "Le courant qu'aucune machine ne prend est perdu : stocke-le.",
+            "- 6 isolateurs autour d'une bobine de cuivre (I I / I I / IRI) : le socle de batterie.",
+            "- La batterie : 4 plaques de fer, 3 blocs de redstone et 2 isolateurs. Celle de l'etape d'avant est dans ton sac."
+          ],
+          "reward": {"money": 6000, "items": []}
+        }
+      ]
+    },
+    {
+      "id": "industrie",
+      "name": "L'industrie",
+      "color": "2F5BEA",
+      "steps": [
+        {
+          "id": "assembleur",
+          "title": "L'assembleur",
+          "icon": "hbm:machine_assembly_machine",
+          "goal": {"type": "near", "items": ["hbm:machine_assembly_machine"], "label": "Poser une machine d'assemblage"},
+          "text": [
+            "La machine a tout faire de NTM : la plupart des pieces et des machines y passent.",
+            "- A l'enclume d'acier : 8 lingots d'acier, 4 plaques de cuivre, 2 moteurs et 4 tubes a vide.",
+            "- Le tube a vide : une vitre, un fil fin de tungstene (ou de graphite) et un isolateur, en colonne.",
+            "- Branche-la au courant, puis choisis sa recette dans son menu."
+          ],
+          "reward": {"money": 15000, "items": []}
+        },
+        {
+          "id": "broyeur",
+          "title": "Le broyeur",
+          "icon": "hbm:machine_shredder",
+          "goal": {"type": "near", "items": ["hbm:machine_shredder"], "label": "Poser un broyeur"},
+          "text": [
+            "Un minerai broye donne deux poudres : deux fois plus de lingots.",
+            "- A l'assembleur : 8 plaques d'acier, 4 plaques de cuivre et 2 moteurs.",
+            "- Il lui faut 2 lames : un lingot d'acier entre 4 plaques d'acier. Celles de la recompense sont pretes.",
+            "! Ce qui n'a pas de recette finit en debris : ne broie pas n'importe quoi."
+          ],
+          "reward": {"money": 10000, "items": [{"id": "hbm:blades_steel", "count": 2}]}
+        },
+        {
+          "id": "creuset",
+          "title": "Le creuset",
+          "icon": "hbm:machine_crucible",
+          "goal": {"type": "near", "items": ["hbm:machine_crucible"], "label": "Poser un creuset"},
+          "text": [
+            "Il fond les metaux pour les couler en plaques et les allier.",
+            "- A l'enclume d'acier : 20 briques refractaires, 8 lingots de cuivre et 8 plaques d'acier.",
+            "- Il chauffe par en dessous : pose-le sur un foyer nourri au charbon. Celui de la recompense est pour lui."
+          ],
+          "reward": {"money": 12000, "items": [{"id": "hbm:heater_firebox", "count": 1}]}
+        },
+        {
+          "id": "plaques_coulees",
+          "title": "Plaques coulees",
+          "icon": "hbm:plate_cast_steel",
+          "goal": {"type": "have", "items": ["hbm:plate_cast_steel"], "count": 4, "label": "4 plaques coulees d'acier"},
+          "text": [
+            "Les machines plus grosses demandent des plaques coulees : 3 lingots chacune.",
+            "- Le moule : une plaque coulee de fer (3 plaques de fer entre 6 boulons d'acier) forgee a l'enclume sur une base de moule (4 briques refractaires autour d'un lingot de fer).",
+            "- Le bassin de fonderie (5 briques refractaires et une dalle de pierre lisse) porte le moule ; des rigoles de fonderie y menent le metal qui sort du creuset.",
+            "- Fonds-y de l'acier : il se coule tout seul."
+          ],
+          "reward": {"money": 8000, "items": []}
+        },
+        {
+          "id": "soudure",
+          "title": "La soudure",
+          "icon": "hbm:machine_soldering_station",
+          "goal": {"type": "near", "items": ["hbm:machine_soldering_station"], "label": "Poser une station de soudure"},
+          "text": [
+            "Elle soude les circuits electroniques.",
+            "- A l'enclume d'acier : 2 plaques coulees d'acier, 4 bobines de cuivre, 4 boulons de tungstene et 2 tubes a vide.",
+            "- Un circuit, c'est une plaquette, ses composants et du fil fin de plomb pour la soudure."
+          ],
+          "reward": {"money": 10000, "items": []}
+        },
+        {
+          "id": "circuits",
+          "title": "Le circuit analogique",
+          "icon": "hbm:circuit_analog",
+          "goal": {"type": "have", "items": ["hbm:circuit_analog"], "count": 2, "label": "2 circuits analogiques"},
+          "text": [
+            "Le circuit qui ouvre la chimie.",
+            "- A la station de soudure : 3 tubes a vide et 2 condensateurs sur 4 circuits imprimes, soudes au fil fin de plomb.",
+            "- Le circuit imprime : un isolateur sur une plaque de cuivre, ou 4 d'un coup avec une plaque d'or.",
+            "- Le condensateur : un isolateur, une pepite de niobium et un fil fin de cuivre en colonne ; ou 2 d'un coup avec 2 isolateurs, une poudre d'aluminium et 2 fils fins."
+          ],
+          "reward": {"money": 10000, "items": []}
+        },
+        {
+          "id": "usine_chimique",
+          "title": "L'usine chimique",
+          "icon": "hbm:machine_chemical_plant",
+          "goal": {"type": "near", "items": ["hbm:machine_chemical_plant"], "label": "Poser une usine chimique"},
+          "text": [
+            "La chimie de NTM : polymere, desh, acides.",
+            "- A l'assembleur : 8 lingots d'acier, 2 tuyaux de cuivre, 16 isolateurs, 2 moteurs, 2 bobines de tungstene et 1 circuit analogique.",
+            "- La bobine de tungstene : 8 fils fins de tungstene autour d'un lingot de fer.",
+            "- Elle travaille les fluides : relie ses entrees et ses sorties par des conduits universels."
+          ],
+          "reward": {"money": 25000, "items": []}
+        }
+      ]
+    },
+    {
+      "id": "atome",
+      "name": "L'atome",
+      "color": "22E558",
+      "steps": [
+        {
+          "id": "mesure",
+          "title": "Mesurer la radiation",
+          "icon": "hbm:geiger_counter",
+          "goal": {"type": "have", "items": ["hbm:dosimeter", "hbm:geiger_counter"], "count": 1, "label": "Un dosimetre ou un Geiger"},
+          "text": [
+            "La radiation de NTM ne se voit pas : mesure-la avant de toucher a l'uranium.",
+            "- Le dosimetre : des planches, une vitre, un tube a vide et un lingot de beryllium.",
+            "- Le compteur Geiger, plus precis : de l'or, du caoutchouc, des fils fins d'or, un circuit integre, une plaque d'acier et du beryllium.",
+            "! Les zones irradiees de la carte ont leur fiche dans l'encyclopedie."
+          ],
+          "reward": {"money": 5000, "items": []}
+        },
+        {
+          "id": "hazmat",
+          "title": "La tenue hazmat",
+          "icon": "hbm:hazmat_helmet",
+          "goal": {"type": "have", "items": ["hbm:hazmat_helmet", "hbm:hazmat_plate", "hbm:hazmat_legs", "hbm:hazmat_boots"], "all": true, "count": 1, "label": "Les 4 pieces de la tenue hazmat"},
+          "text": [
+            "Elle arrete une bonne part de la radiation.",
+            "- La toile hazmat : 4 poudres de plomb et 8 ficelles a l'assembleur, pour 4 toiles.",
+            "- Plastron, jambieres et bottes se taillent comme une armure ; le casque prend aussi une vitre et une plaque de fer.",
+            "! Le RadAway de la recompense fait baisser la radiation que tu as accumulee."
+          ],
+          "reward": {"money": 10000, "items": [{"id": "hbm:radaway", "count": 2}]}
+        },
+        {
+          "id": "centrifugeuse",
+          "title": "La centrifugeuse",
+          "icon": "hbm:machine_centrifuge",
+          "goal": {"type": "near", "items": ["hbm:machine_centrifuge"], "label": "Poser une centrifugeuse"},
+          "text": [
+            "Elle separe les minerais : plus de rendement, et des sous-produits rares.",
+            "- A l'assembleur : un element de centrifugeuse, 4 lingots de plastique, 8 plaques d'acier, 4 plaques de cuivre et un circuit analogique.",
+            "- L'element : 4 plaques d'acier rapide, 4 plaques de titane et un moteur, a l'assembleur.",
+            "- Le plastique sort de l'usine chimique : du polymere, fait de gaz de petrole, de poudre de charbon et de fluorite."
+          ],
+          "reward": {"money": 25000, "items": []}
+        },
+        {
+          "id": "uranium",
+          "title": "L'uranium",
+          "icon": "hbm:powder_uranium",
+          "goal": {"type": "have", "items": ["hbm:powder_uranium"], "count": 16, "label": "16 poudres d'uranium"},
+          "text": [
+            "Un minerai d'uranium centrifuge donne 2 poudres d'uranium, et un peu de radium.",
+            "- La poudre se fond en lingot au four : deux lingots par minerai au lieu d'un.",
+            "- La suite, combustible, reacteurs et enrichissement, est dans les fiches NTM de l'encyclopedie.",
+            "! L'uranium irradie celui qui le porte : ne le garde pas sur toi."
+          ],
+          "reward": {"money": 20000, "items": []}
+        }
+      ]
+    }
+  ]
+}

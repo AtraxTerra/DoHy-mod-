@@ -205,6 +205,14 @@ public final class DoHyAttachments {
                             .copyOnDeath()
                             .build());
 
+    /** Le parcours NTM : les etapes validees et ce qu'elles ont rapporte. Conserve a la mort. */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.nuclear.path.NtmPathData>> NTM_PATH =
+            ATTACHMENT_TYPES.register("ntm_path",
+                    () -> AttachmentType.builder(fr.atraxterra.dohy.nuclear.path.NtmPathData::new)
+                            .serialize(fr.atraxterra.dohy.nuclear.path.NtmPathData.MAP_CODEC, data -> !data.isEmpty())
+                            .copyOnDeath()
+                            .build());
+
     private DoHyAttachments() {
     }
 

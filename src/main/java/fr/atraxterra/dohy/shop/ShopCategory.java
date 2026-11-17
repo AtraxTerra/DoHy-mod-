@@ -29,6 +29,10 @@ import java.util.function.Supplier;
  * <p>{@code AGRI} regroupe l'agriculture de DoHy : cereales, farines, pains,
  * produits d'elevage. C'est la seule categorie dont les prix suivent le cours
  * de l'heure ({@code HourlyCourse}).
+ *
+ * <p>{@code NTM_MACHINES} range a part les premieres machines de NTM NEXT, leurs
+ * moules et la tenue de protection, en achat seul : une presse ne se « recolte »
+ * pas, l'onglet n'a donc pas de collection ({@link #collectable()}).
  */
 public enum ShopCategory {
 
@@ -39,6 +43,8 @@ public enum ShopCategory {
     PALAMOD("PALAMOD", "PalaMod", () -> BuiltInRegistries.ITEM
             .getOptional(Identifier.fromNamespaceAndPath("palamod", "paladium_ingot")).orElse(Items.NETHERITE_SCRAP)),
     NTM("NTM", "NTM NEXT", () -> Items.ANVIL),
+    NTM_MACHINES("NTM_MACHINES", "Machines NTM", () -> BuiltInRegistries.ITEM
+            .getOptional(Identifier.fromNamespaceAndPath("hbm", "machine_press")).orElse(Items.BLAST_FURNACE)),
     AGRI("AGRI", "Agriculture", () -> BuiltInRegistries.ITEM
             .getOptional(Identifier.fromNamespaceAndPath("dohy", "corn")).orElse(Items.WHEAT_SEEDS));
 
@@ -62,6 +68,11 @@ public enum ShopCategory {
 
     public Item icon() {
         return icon.get();
+    }
+
+    /** Si l'onglet a sa collection : tout sauf les machines, qui s'achetent et ne se recoltent pas. */
+    public boolean collectable() {
+        return this != NTM_MACHINES;
     }
 
     /** Recherche par cle de catalogue, insensible a la casse. */

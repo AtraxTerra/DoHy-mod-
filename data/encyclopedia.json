@@ -2549,7 +2549,8 @@
       ],
       "see": [
         "terre",
-        "ntm"
+        "ntm",
+        "ntm_radiation"
       ]
     },
     {
@@ -2965,18 +2966,328 @@
       "icon": "minecraft:lightning_rod",
       "title": "NTM NEXT",
       "card": [
-        "Minerais et pieces",
-        "Dans l'economie"
+        "Minerais, pieces, machines",
+        "Le parcours pour debuter"
       ],
       "summary": [
-        "Avec NTM NEXT installe, ses minerais et ses pieces entrent dans l'economie de Berskar : le shop les connait, avec des regles contre les chaines de traitement qui multiplient la matiere."
+        "NTM NEXT, le mod nucleaire, tourne sur Berskar : ses minerais, ses pieces et ses premieres machines entrent dans l'economie, et le parcours NTM guide les debuts, de l'enclume a l'uranium."
+      ],
+      "sections": [
+        {
+          "title": "Au shop",
+          "text": [
+            "- Les minerais de NTM se vendent bruts ; leurs lingots s'achetent, sans se revendre.",
+            "- Les pieces (plaques, fils, bobines, moteurs, circuits) et les premieres machines s'achetent a 115 % de ce que coutent leurs ingredients : fabriquer reste moins cher.",
+            "- L'onglet NTM NEXT pour les matieres et les pieces, l'onglet Machines NTM pour les machines, leurs moules et la tenue hazmat.",
+            "! Les prix ont ete abaisses pour ouvrir NTM a tous : le lingot de plomb a 300 $, celui de titane a 900 $."
+          ]
+        },
+        {
+          "title": "Par ou commencer",
+          "text": [
+            "Le parcours NTM : 23 etapes, de l'enclume a l'uranium, chacune avec son mode d'emploi et sa recompense.",
+            "- Les fiches Premiers pas NTM, Courant NTM, Industrie NTM et Radiation NTM reprennent les recettes cle."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : le parcours NTM, etape par etape"
       ],
       "see": [
+        "parcours_ntm",
+        "ntm_debuts",
+        "ntm_courant",
+        "ntm_industrie",
+        "ntm_radiation",
         "shop",
         "serveur_trading",
         "palettes",
         "zones_irradiees"
-      ]
+      ],
+      "progress": "parcours_ntm"
+    },
+    {
+      "id": "parcours_ntm",
+      "category": "technique",
+      "order": 2,
+      "icon": "minecraft:anvil",
+      "title": "Parcours NTM",
+      "card": [
+        "De l'enclume a l'uranium",
+        "Une recompense par etape"
+      ],
+      "summary": [
+        "Le parcours NTM guide tes premieres machines de NTM NEXT, une etape apres l'autre : chaque etape dit quoi fabriquer et comment, et paie quand c'est fait."
+      ],
+      "sections": [
+        {
+          "title": "Comment ca marche",
+          "text": [
+            "- /parcours ouvre le parcours sur l'etape en cours : son mode d'emploi, son objectif et sa recompense.",
+            "- Deux sortes d'objectifs : avoir des objets dans ton sac (rien n'est pris), ou poser une machine et valider a moins de 8 blocs d'elle.",
+            "- Quand c'est pret, le chat te previent : un clic sur l'objectif valide l'etape, et la suivante s'ouvre.",
+            "! Un clic sur n'importe quelle etape en rouvre le mode d'emploi : le parcours sert aussi d'aide-memoire."
+          ]
+        },
+        {
+          "title": "Les quatre chapitres",
+          "text": [
+            "- Les bases : l'enclume, la presse, les briques refractaires, le haut fourneau, l'acier et le cuivre rouge.",
+            "- Le courant : l'enclume d'acier, les bobines, les cables, le generateur a bois et la batterie.",
+            "- L'industrie : l'assembleur, le broyeur, le creuset et ses plaques coulees, la soudure, l'usine chimique.",
+            "- L'atome : mesurer la radiation, la tenue hazmat, la centrifugeuse et l'uranium."
+          ]
+        },
+        {
+          "title": "Les recompenses",
+          "text": [
+            "Environ 200 000 $ en tout, verses une seule fois, et des objets qui aident l'etape suivante : moule, charbon, moteurs, batterie, lames, foyer, RadAway."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : ouvrir le parcours"
+      ],
+      "see": [
+        "ntm",
+        "ntm_debuts",
+        "ntm_courant",
+        "ntm_industrie",
+        "ntm_radiation"
+      ],
+      "progress": "parcours_ntm",
+      "discover": {
+        "always": true,
+        "views": [
+          "dohy:parcours_ntm"
+        ]
+      }
+    },
+    {
+      "id": "ntm_debuts",
+      "category": "technique",
+      "order": 3,
+      "icon": "minecraft:blast_furnace",
+      "title": "Premiers pas NTM",
+      "card": [
+        "Enclume, presse, acier",
+        "Les recettes de depart"
+      ],
+      "summary": [
+        "Les premieres recettes de NTM NEXT, celles qui ouvrent tout le reste : l'enclume, la presse et ses moules, les briques refractaires et le haut fourneau."
+      ],
+      "sections": [
+        {
+          "title": "L'enclume",
+          "text": [
+            "- 6 lingots de fer autour d'un bloc de fer (III / B / III) ; en plomb, l'enclume de plomb.",
+            "- En haut de son menu, la forge (moules, enclume d'acier) ; en bas, la construction : une recette, le bouton bleu, et l'enclume prend les objets dans ton sac.",
+            "- L'enclume d'acier (l'enclume de fer et 10 lingots d'acier, a la forge) ouvre les constructions du palier 2."
+          ]
+        },
+        {
+          "title": "La presse et ses moules",
+          "text": [
+            "- La presse a vapeur : lingots de fer, four, piston et bloc de fer (IRI / IPI / IBI). Elle brule du charbon.",
+            "- Le moule plat : 3 briques sur 3 lingots de fer (sur 3 pierres, un moule de pierre). A l'enclume ou au dossier de patrons, il devient moule de plaque ou de fil.",
+            "- Avec le moule de plaque, un lingot donne une plaque ; avec le moule de fil, 8 fils fins."
+          ]
+        },
+        {
+          "title": "Briques et haut fourneau",
+          "text": [
+            "- L'argile refractaire : 3 boules d'argile et 1 bauxite (aluminium brut, minerai ou poudre) pour 4, ou 2 boules d'argile, 1 calcaire et 1 sable. Au four, chacune donne une brique refractaire.",
+            "- Le haut fourneau, a l'enclume : 4 briques de pierre, 32 briques refractaires, 8 plaques de cuivre. Il ne brule que charbon, coke ou combustible solide.",
+            "- L'acier : 2 lingots (ou 1 minerai) de fer et 1 sable donnent 2 lingots d'acier. Le cuivre rouge : 1 lingot de cuivre et 1 redstone en donnent 2."
+          ]
+        },
+        {
+          "title": "L'isolateur",
+          "text": [
+            "Il entre dans les cables, les batteries et les circuits : 2 briques (ou 2 briques du Nether) en donnent 4, une laine entre deux ficelles aussi."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : le parcours NTM, etape par etape"
+      ],
+      "see": [
+        "parcours_ntm",
+        "ntm_courant",
+        "ntm_industrie",
+        "ntm"
+      ],
+      "discover": {
+        "views": [
+          "dohy:parcours_ntm"
+        ]
+      }
+    },
+    {
+      "id": "ntm_courant",
+      "category": "technique",
+      "order": 4,
+      "icon": "minecraft:redstone_block",
+      "title": "Courant NTM",
+      "card": [
+        "Generateurs et cables",
+        "Stocker le courant"
+      ],
+      "summary": [
+        "Les machines de NTM NEXT tournent au courant, compte en HE. Il se produit, passe par des cables et se stocke dans des batteries."
+      ],
+      "sections": [
+        {
+          "title": "Produire",
+          "text": [
+            "- Le generateur a bois, le premier : 3 plaques d'acier, 2 bobines de cuivre, un four et 2 lingots de fer. Il brule le bois, le charbon ou un carburant.",
+            "- Le foyer chauffe ce qu'on pose dessus : un moteur Stirling en tire du courant, une chaudiere de la vapeur.",
+            "- La chaudiere et la machine a vapeur : de l'eau chauffee en vapeur, puis en courant ; un condenseur rend l'eau.",
+            "- Le generateur diesel brule les carburants liquides, qui sortent du petrole."
+          ]
+        },
+        {
+          "title": "Transporter",
+          "text": [
+            "- Le cable en cuivre rouge : 2 isolateurs et 3 fils fins de cuivre rouge, en croix, pour 16 cables.",
+            "- Ils se branchent a l'arriere du generateur a bois, puis de machine en machine."
+          ]
+        },
+        {
+          "title": "Stocker",
+          "text": [
+            "- Le socle de batterie : 6 isolateurs autour d'une bobine de cuivre. Il recoit une batterie.",
+            "- La premiere batterie : 4 plaques de fer, 3 blocs de redstone et 2 isolateurs.",
+            "! Le courant qu'aucune machine ni batterie ne prend est perdu."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : le parcours NTM, etape par etape"
+      ],
+      "see": [
+        "parcours_ntm",
+        "ntm_debuts",
+        "ntm_industrie",
+        "ntm"
+      ],
+      "discover": {
+        "views": [
+          "dohy:parcours_ntm"
+        ]
+      }
+    },
+    {
+      "id": "ntm_industrie",
+      "category": "technique",
+      "order": 5,
+      "icon": "minecraft:crafter",
+      "title": "Industrie NTM",
+      "card": [
+        "Assembleur et fonderie",
+        "Circuits et chimie"
+      ],
+      "summary": [
+        "Apres l'acier et le courant viennent les machines qui fabriquent les autres : l'assembleur, la fonderie, la soudure et l'usine chimique."
+      ],
+      "sections": [
+        {
+          "title": "L'assembleur",
+          "text": [
+            "- A l'enclume d'acier : 8 lingots d'acier, 4 plaques de cuivre, 2 moteurs et 4 tubes a vide.",
+            "- Jusqu'a douze ingredients par recette : la plupart des pieces et des machines y passent. La recette se choisit dans son menu.",
+            "- On y fait le broyeur, qui double les minerais, et la toile hazmat."
+          ]
+        },
+        {
+          "title": "La fonderie",
+          "text": [
+            "- Le creuset, a l'enclume d'acier : 20 briques refractaires, 8 lingots de cuivre et 8 plaques d'acier. Il chauffe sur un foyer.",
+            "- Le metal fondu coule par des rigoles de fonderie jusqu'a un bassin qui porte un moule. Une plaque coulee vaut 3 lingots.",
+            "- Le moule de plaque coulee : une plaque coulee de fer forgee sur une base de moule, a l'enclume."
+          ]
+        },
+        {
+          "title": "Soudure et circuits",
+          "text": [
+            "- La station de soudure : 2 plaques coulees d'acier, 4 bobines de cuivre, 4 boulons de tungstene et 2 tubes a vide.",
+            "- Le circuit analogique : 3 tubes a vide et 2 condensateurs sur 4 circuits imprimes, soudes au fil fin de plomb."
+          ]
+        },
+        {
+          "title": "La chimie",
+          "text": [
+            "- L'usine chimique, a l'assembleur : 8 lingots d'acier, 2 tuyaux de cuivre, 16 isolateurs, 2 moteurs, 2 bobines de tungstene et un circuit analogique.",
+            "- Elle fait le polymere (le plastique), le desh et les acides ; ses fluides passent par des conduits universels."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : le parcours NTM, etape par etape"
+      ],
+      "see": [
+        "parcours_ntm",
+        "ntm_courant",
+        "ntm_radiation",
+        "ntm"
+      ],
+      "discover": {
+        "views": [
+          "dohy:parcours_ntm"
+        ]
+      }
+    },
+    {
+      "id": "ntm_radiation",
+      "category": "technique",
+      "order": 6,
+      "icon": "minecraft:sculk_sensor",
+      "title": "Radiation NTM",
+      "card": [
+        "Mesurer et se proteger",
+        "Uranium et soins"
+      ],
+      "summary": [
+        "Les matieres radioactives de NTM NEXT irradient celui qui les porte ou s'en approche. La radiation s'accumule dans le corps sans se voir : il faut la mesurer."
+      ],
+      "sections": [
+        {
+          "title": "Mesurer",
+          "text": [
+            "- Le dosimetre : des planches, une vitre, un tube a vide et un lingot de beryllium.",
+            "- Le compteur Geiger, plus precis : de l'or, du caoutchouc, des fils fins d'or, un circuit integre, une plaque d'acier et du beryllium."
+          ]
+        },
+        {
+          "title": "Se proteger",
+          "text": [
+            "- La tenue hazmat : la toile se fait a l'assembleur (4 poudres de plomb et 8 ficelles pour 4 toiles), puis casque, plastron, jambieres et bottes.",
+            "- Le masque a gaz : 4 plaques d'acier, 2 vitres et une plaque de fer.",
+            "! Ne garde pas l'uranium sur toi : un coffre a distance vaut mieux qu'une poche."
+          ]
+        },
+        {
+          "title": "Se soigner",
+          "text": [
+            "- Le RadAway fait baisser la radiation accumulee ; le Rad-X protege un moment.",
+            "- Les largages des zones irradiees en contiennent."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : le parcours NTM, etape par etape"
+      ],
+      "see": [
+        "parcours_ntm",
+        "zones_irradiees",
+        "ntm_industrie",
+        "ntm"
+      ],
+      "discover": {
+        "views": [
+          "dohy:parcours_ntm"
+        ]
+      }
     }
   ]
 }

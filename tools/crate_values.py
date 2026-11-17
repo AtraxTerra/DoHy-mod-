@@ -77,6 +77,7 @@ def load_ntm():
     with open(os.path.join(ROOT, "data", "tag_prices.json")) as handle:
         data = json.load(handle)
     values = dict(data["components"])
+    values.update(data.get("machines", {}))
     tags = {}
     for material, spec in data["materials"].items():
         unit = data["levels"][spec["level"]]["buy_unit"]

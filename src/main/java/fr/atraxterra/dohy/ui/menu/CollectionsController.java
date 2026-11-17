@@ -57,6 +57,9 @@ public final class CollectionsController extends MenuController {
         int prestiges = 0;
         List<Card> cards = new ArrayList<>();
         for (ShopCategory category : ShopCategory.values()) {
+            if (!category.collectable()) {
+                continue;
+            }
             List<Identifier> ids = itemsOf(player, category);
             int unlocked = 0;
             int complete = 0;
@@ -183,7 +186,9 @@ public final class CollectionsController extends MenuController {
         List<MenuView.Tab> tabs = new ArrayList<>();
         tabs.add(new MenuView.Tab("Tout", "overview", active == null, ""));
         for (ShopCategory category : ShopCategory.values()) {
-            tabs.add(new MenuView.Tab(category.display(), "category:" + category.key(), category == active, ""));
+            if (category.collectable()) {
+                tabs.add(new MenuView.Tab(category.display(), "category:" + category.key(), category == active, ""));
+            }
         }
         return tabs;
     }
@@ -196,7 +201,7 @@ public final class CollectionsController extends MenuController {
         }
         if (key.startsWith("category:")) {
             ShopCategory category = ShopCategory.byKey(key.substring(9));
-            if (category != null) {
+            if (category != null && category.collectable()) {
                 open.put(player.getUUID(), category);
             }
             return;
