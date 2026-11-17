@@ -21,6 +21,7 @@
         "_bedrock": "Bareme de Paladium Bedrock (tools/bedrock_jobs.py) : XP de PalaTracker telles quelles, niveaux de Bedrock x 5, en dessous du niveau la source ne rapporte rien. La pierre et l'ardoise ne rapportent rien, comme sur Bedrock. smelted : chaque objet sorti cuit du four, du haut fourneau ou du palafurnace a la main, ou d'un outil en fusion.",
         "blocks": {
           "minecraft:andesite": 1,
+          "dohy:spice_sand": 2,
           "minecraft:granite": 1,
           "minecraft:diorite": 1,
           "minecraft:tuff": 3,

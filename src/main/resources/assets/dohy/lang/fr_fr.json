@@ -107,5 +107,15 @@
   "tooltip.dohy.sorghum_bread.1": "Force II, Rapidite II, Absorption I, 2 min  -  +2 coeurs",
   "tooltip.dohy.sorghum_bread.2": "Regeneration II 30 s  -  Vol de vigueur II 1 min",
   "item.dohy.kamut_bread": "Pain de kamut",
-  "tooltip.dohy.kamut_bread.1": "Leve les effets nefastes, puis Immunite 2 min"
+  "tooltip.dohy.kamut_bread.1": "Leve les effets nefastes, puis Immunite 2 min",
+  "itemGroup.dohy.arrakis": "Berskar — Arrakis",
+  "block.dohy.spice_sand": "Sable d'epice",
+  "tooltip.dohy.spice_sand.1": "Une pelle en tire un melange une fois sur trois",
+  "item.dohy.melange": "Melange",
+  "tooltip.dohy.melange.1": "L'epice d'Arrakis : le comptoir d'Arrakeen la rachete",
+  "tooltip.dohy.melange.2": "Mangee : vision nocturne 2 min, rapidite et celerite 1 min",
+  "item.dohy.spice_harvester": "Moissonneuse d'epice",
+  "tooltip.dohy.spice_harvester.1": "Pose-la sur le sable : tu en es le proprietaire",
+  "tooltip.dohy.spice_harvester.2": "Saut : ouvrir la bouche  -  accroupi + clic : son ecran",
+  "entity.dohy.spice_harvester": "Moissonneuse d'epice"
 }

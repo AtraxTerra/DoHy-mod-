@@ -194,6 +194,21 @@
     "facing=west,kind=shuttle": {
       "model": "dohy:block/terminal_shuttle",
       "y": 270
+    },
+    "facing=north,kind=spice": {
+      "model": "dohy:block/terminal_spice"
+    },
+    "facing=east,kind=spice": {
+      "model": "dohy:block/terminal_spice",
+      "y": 90
+    },
+    "facing=south,kind=spice": {
+      "model": "dohy:block/terminal_spice",
+      "y": 180
+    },
+    "facing=west,kind=spice": {
+      "model": "dohy:block/terminal_spice",
+      "y": 270
     }
   }
 }

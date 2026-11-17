@@ -107,6 +107,8 @@ public final class DoHyClient {
                 fr.atraxterra.dohy.client.war.SoldierRenderer::new);
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
         event.registerEntityRenderer(DoHyAgri.TRACTOR.get(), TractorRenderer::new);
+        event.registerEntityRenderer(fr.atraxterra.dohy.arrakis.ArrakisContent.HARVESTER.get(),
+                fr.atraxterra.dohy.client.arrakis.HarvesterRenderer::new);
         // Les caisses des palettes d'armement, dessinees par le coin nord-ouest de chaque groupe.
         event.registerBlockEntityRenderer(fr.atraxterra.dohy.palette.DoHyPalette.TYPE.get(),
                 fr.atraxterra.dohy.client.palette.PaletteRenderer::new);
@@ -135,6 +137,8 @@ public final class DoHyClient {
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DancarokModel.LAYER, DancarokGeometry::createBodyLayer);
         event.registerLayerDefinition(TractorModel.LAYER, TractorGeometry::createBodyLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.arrakis.HarvesterModel.LAYER,
+                fr.atraxterra.dohy.client.arrakis.HarvesterGeometry::createBodyLayer);
         PalaWitherGeometry.register(event);
         for (BossKind kind : BossKind.values()) {
             event.registerLayerDefinition(EventBossModel.layer(kind), () -> EventBossModel.definition(kind));

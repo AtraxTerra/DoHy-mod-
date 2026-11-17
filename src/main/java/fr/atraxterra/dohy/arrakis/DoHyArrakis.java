@@ -57,6 +57,7 @@ public final class DoHyArrakis {
     public static void register(IEventBus modBus) {
         DENSITY.register(modBus);
         ATTACHMENTS.register(modBus);
+        ArrakisContent.register(modBus);
         modBus.addListener(DoHyArrakis::setup);
     }
 

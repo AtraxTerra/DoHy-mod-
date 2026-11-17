@@ -136,6 +136,20 @@ public final class ArrakisPort {
         SpawnApi.backToPad(player);
     }
 
+    /** Au demarrage : un astroport d'une version precedente est repose, avec ce qui a change. */
+    static void refresh(MinecraftServer server) {
+        ServerLevel level = level(server);
+        if (level == null) {
+            return;
+        }
+        int built = level.getData(DoHyArrakis.PORT_BUILT.get());
+        if (built > 0 && built != PortBuilder.VERSION) {
+            DoHy.LOGGER.info("Arrakis : astroport de version {}, on le repose en version {}", built,
+                    PortBuilder.VERSION);
+            prepare(level);
+        }
+    }
+
     /** Lance la construction si elle n'est pas faite ; vrai si l'astroport est deja pret. */
     public static boolean prepare(ServerLevel level) {
         if (ready(level)) {
