@@ -11,6 +11,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -133,10 +134,10 @@ public final class DoHyCryo {
         }
         event.accept(CHAMBER_ITEM.get());
         event.accept(SYRINGE.get());
-        for (EntityType<?> type : List.of(EntityType.COW, EntityType.SHEEP, EntityType.CHICKEN, EntityType.PIG)) {
+        for (EntityType<?> type : List.of(EntityTypes.COW, EntityTypes.SHEEP, EntityTypes.CHICKEN, EntityTypes.PIG)) {
             event.accept(Dna.stack(type, 1), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         }
-        event.accept(Dna.stack(EntityType.COW, Dna.MAX_GRADE), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        event.accept(Dna.stack(EntityTypes.COW, Dna.MAX_GRADE), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
     }
 
     /**

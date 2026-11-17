@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -65,35 +66,35 @@ public final class Dna {
 
     /** La couleur du liquide de la fiole, par bete ; les autres tirent la leur de leur nom. */
     private static final Map<EntityType<?>, Integer> COLORS = Map.ofEntries(
-            Map.entry(EntityType.COW, 0x7A5232), Map.entry(EntityType.MOOSHROOM, 0xC23A2E),
-            Map.entry(EntityType.PIG, 0xF2A3A0), Map.entry(EntityType.SHEEP, 0xEDEDE6),
-            Map.entry(EntityType.CHICKEN, 0xF4EAD2), Map.entry(EntityType.RABBIT, 0xB0926C),
-            Map.entry(EntityType.HORSE, 0x8E5B2C), Map.entry(EntityType.DONKEY, 0x8C8274),
-            Map.entry(EntityType.MULE, 0x5E4632), Map.entry(EntityType.LLAMA, 0xDCCBA2),
-            Map.entry(EntityType.CAMEL, 0xDBA968), Map.entry(EntityType.GOAT, 0xD4D0C4),
-            Map.entry(EntityType.CAT, 0x9C7752), Map.entry(EntityType.OCELOT, 0xE2B252),
-            Map.entry(EntityType.WOLF, 0xC9C1B8), Map.entry(EntityType.FOX, 0xE27C2E),
-            Map.entry(EntityType.PARROT, 0x34B84E), Map.entry(EntityType.PANDA, 0xA0A0A0),
-            Map.entry(EntityType.POLAR_BEAR, 0xF4F4F0), Map.entry(EntityType.BEE, 0xF4C430),
-            Map.entry(EntityType.TURTLE, 0x44A84E), Map.entry(EntityType.FROG, 0xC97C3C),
-            Map.entry(EntityType.AXOLOTL, 0xF49ECA), Map.entry(EntityType.SQUID, 0x30527E),
-            Map.entry(EntityType.GLOW_SQUID, 0x34D8C8), Map.entry(EntityType.COD, 0xB49A6C),
-            Map.entry(EntityType.SALMON, 0xC4483C), Map.entry(EntityType.TROPICAL_FISH, 0xF2822C),
-            Map.entry(EntityType.PUFFERFISH, 0xE8C832), Map.entry(EntityType.DOLPHIN, 0x7393AC),
-            Map.entry(EntityType.SNIFFER, 0xB44A30), Map.entry(EntityType.ARMADILLO, 0xAC6654),
-            Map.entry(EntityType.STRIDER, 0xA0403C), Map.entry(EntityType.BAT, 0x5A4A3A),
-            Map.entry(EntityType.ALLAY, 0x5CC6F2));
+            Map.entry(EntityTypes.COW, 0x7A5232), Map.entry(EntityTypes.MOOSHROOM, 0xC23A2E),
+            Map.entry(EntityTypes.PIG, 0xF2A3A0), Map.entry(EntityTypes.SHEEP, 0xEDEDE6),
+            Map.entry(EntityTypes.CHICKEN, 0xF4EAD2), Map.entry(EntityTypes.RABBIT, 0xB0926C),
+            Map.entry(EntityTypes.HORSE, 0x8E5B2C), Map.entry(EntityTypes.DONKEY, 0x8C8274),
+            Map.entry(EntityTypes.MULE, 0x5E4632), Map.entry(EntityTypes.LLAMA, 0xDCCBA2),
+            Map.entry(EntityTypes.CAMEL, 0xDBA968), Map.entry(EntityTypes.GOAT, 0xD4D0C4),
+            Map.entry(EntityTypes.CAT, 0x9C7752), Map.entry(EntityTypes.OCELOT, 0xE2B252),
+            Map.entry(EntityTypes.WOLF, 0xC9C1B8), Map.entry(EntityTypes.FOX, 0xE27C2E),
+            Map.entry(EntityTypes.PARROT, 0x34B84E), Map.entry(EntityTypes.PANDA, 0xA0A0A0),
+            Map.entry(EntityTypes.POLAR_BEAR, 0xF4F4F0), Map.entry(EntityTypes.BEE, 0xF4C430),
+            Map.entry(EntityTypes.TURTLE, 0x44A84E), Map.entry(EntityTypes.FROG, 0xC97C3C),
+            Map.entry(EntityTypes.AXOLOTL, 0xF49ECA), Map.entry(EntityTypes.SQUID, 0x30527E),
+            Map.entry(EntityTypes.GLOW_SQUID, 0x34D8C8), Map.entry(EntityTypes.COD, 0xB49A6C),
+            Map.entry(EntityTypes.SALMON, 0xC4483C), Map.entry(EntityTypes.TROPICAL_FISH, 0xF2822C),
+            Map.entry(EntityTypes.PUFFERFISH, 0xE8C832), Map.entry(EntityTypes.DOLPHIN, 0x7393AC),
+            Map.entry(EntityTypes.SNIFFER, 0xB44A30), Map.entry(EntityTypes.ARMADILLO, 0xAC6654),
+            Map.entry(EntityTypes.STRIDER, 0xA0403C), Map.entry(EntityTypes.BAT, 0x5A4A3A),
+            Map.entry(EntityTypes.ALLAY, 0x5CC6F2));
 
     /** Ce que la bete produit de son vivant, en plus de son butin : l'oeuf, l'ecaille, le rayon de miel. */
     private record Extra(Item item, float chance) {
     }
 
     private static final Map<EntityType<?>, List<Extra>> EXTRAS = Map.of(
-            EntityType.CHICKEN, List.of(new Extra(Items.EGG, 0.6f)),
-            EntityType.ARMADILLO, List.of(new Extra(Items.ARMADILLO_SCUTE, 1.0f)),
-            EntityType.TURTLE, List.of(new Extra(Items.TURTLE_SCUTE, 0.2f)),
-            EntityType.SNIFFER, List.of(new Extra(Items.TORCHFLOWER_SEEDS, 0.3f), new Extra(Items.PITCHER_POD, 0.15f)),
-            EntityType.BEE, List.of(new Extra(Items.HONEYCOMB, 0.5f)));
+            EntityTypes.CHICKEN, List.of(new Extra(Items.EGG, 0.6f)),
+            EntityTypes.ARMADILLO, List.of(new Extra(Items.ARMADILLO_SCUTE, 1.0f)),
+            EntityTypes.TURTLE, List.of(new Extra(Items.TURTLE_SCUTE, 0.2f)),
+            EntityTypes.SNIFFER, List.of(new Extra(Items.TORCHFLOWER_SEEDS, 0.3f), new Extra(Items.PITCHER_POD, 0.15f)),
+            EntityTypes.BEE, List.of(new Extra(Items.HONEYCOMB, 0.5f)));
 
     private Dna() {
     }
@@ -102,7 +103,7 @@ public final class Dna {
 
     /** Vrai si cette bete est paisible : un ADN peut s'en prelever. */
     public static boolean passive(EntityType<?> type) {
-        return PASSIVE.contains(type.getCategory()) && !type.is(NO_DNA);
+        return PASSIVE.contains(type.getCategory()) && !type.builtInRegistryHolder().is(NO_DNA);
     }
 
     /** Vrai si le clone de cette bete donnerait quelque chose : un butin ou une production. */

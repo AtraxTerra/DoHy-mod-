@@ -306,7 +306,7 @@ public class CryoChamberBlockEntity extends MachineBlockEntity
             store(drop);
         }
         server.playSound(null, worldPosition.above(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.6f,
-                0.7f + server.random.nextFloat() * 0.3f);
+                0.7f + server.getRandom().nextFloat() * 0.3f);
         setChanged();
         return STATE_RUNNING;
     }
@@ -340,7 +340,7 @@ public class CryoChamberBlockEntity extends MachineBlockEntity
             }
         }
         for (int roll = 0; roll < rolls; roll++) {
-            drops.addAll(Dna.extras(type, server.random));
+            drops.addAll(Dna.extras(type, server.getRandom()));
         }
         return drops;
     }
