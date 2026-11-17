@@ -53,7 +53,7 @@ public final class NtmPathMenu extends MenuController {
     public MenuView view(ServerPlayer player) {
         if (!NtmPath.installed()) {
             return message("NTM NEXT absent", List.of(
-                    "Le parcours guide les premieres machines de NTM NEXT, de l'enclume a la centrifugeuse.",
+                    "Le parcours guide les premieres machines de NTM NEXT, de l'enclume au premier reacteur.",
                     "Ce serveur n'a pas NTM NEXT : il n'y a rien a faire ici."));
         }
         List<NtmPath.Located> steps = NtmPath.steps();
@@ -78,10 +78,11 @@ public final class NtmPathMenu extends MenuController {
         List<MenuView.Section> sections = new ArrayList<>();
         if (shown == null) {
             sections.add(new MenuView.Section("PARCOURS TERMINE", "upgrade", MenuView.TEXT, List.of(
-                    Card.of(ItemStack.EMPTY, "Toute la premiere industrie est montee", List.of(
-                            "De l'enclume a la centrifugeuse : tu as les machines qui font tout le reste.",
-                            "- La suite : la raffinerie de petrole, l'enrichissement, les reacteurs. Les fiches "
-                                    + "NTM de l'encyclopedie t'y menent.",
+                    Card.of(ItemStack.EMPTY, "De l'enclume a l'uranium enrichi", List.of(
+                            "Industrie, petrole, premier reacteur, enrichissement : tu as tout ce qui ouvre la "
+                                    + "suite de NTM NEXT.",
+                            "- La suite : les reacteurs plus gros (RBMK), la fusion, l'espace. Les fiches NTM de "
+                                    + "l'encyclopedie donnent les bases.",
                             "- Ce qui manque s'achete au shop, onglets NTM NEXT (pieces) et Machines NTM.",
                             "! Un clic sur une etape ci-dessous en rouvre le mode d'emploi."))
                             .accent(GREEN))));

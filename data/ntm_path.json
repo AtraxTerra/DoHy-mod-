@@ -1,7 +1,7 @@
 {
-  "_comment": "Le parcours NTM : les premieres machines de NTM NEXT, une etape apres l'autre, de l'enclume a la centrifugeuse. Chaque etape a un objectif, un mode d'emploi tire des vraies recettes du mod (sans les options LBSM ni le mode 528) et une recompense versee une seule fois. Lu par fr.atraxterra.dohy.nuclear.path.NtmPath, inerte sans NTM NEXT. Verifie par tools/check_ntm_path.py (avec le dossier data de NTM en argument, il verifie aussi que chaque objet existe).",
+  "_comment": "Le parcours NTM : les premieres machines de NTM NEXT, une etape apres l'autre, de l'enclume a l'uranium enrichi. Chaque etape a un objectif, un mode d'emploi tire des vraies recettes du mod (sans les options LBSM ni le mode 528) et une recompense versee une seule fois. Lu par fr.atraxterra.dohy.nuclear.path.NtmPath, inerte sans NTM NEXT. Verifie par tools/check_ntm_path.py (avec le dossier data de NTM en argument, il verifie aussi que chaque objet existe).",
   "_goals": "type have : avoir dans son sac 'count' objets parmi 'items' (all : un de chaque). near : un bloc de 'items' a moins de 'radius' blocs du joueur, pour les machines posees. Rien n'est jamais pris dans le sac.",
-  "_rewards": "money en dollars, items : de quoi attaquer l'etape suivante. Au total, environ 200 000 $ : deux contrats hebdomadaires pour toute la premiere industrie.",
+  "_rewards": "money en dollars, items : de quoi attaquer l'etape suivante. Au total, environ 500 000 $ : la premiere industrie, le petrole, le premier reacteur et l'enrichissement.",
   "radius": 8,
   "chapters": [
     {
@@ -264,6 +264,78 @@
       ]
     },
     {
+      "id": "petrole",
+      "name": "Le petrole",
+      "color": "D97A2B",
+      "steps": [
+        {
+          "id": "soudeuse",
+          "title": "La soudeuse",
+          "icon": "hbm:machine_arc_welder",
+          "goal": {"type": "near", "items": ["hbm:machine_arc_welder"], "label": "Poser une soudeuse a l'arc"},
+          "text": [
+            "Elle soude deux plaques coulees en une plaque soudee : la raffinerie et les tours en demandent.",
+            "- A l'enclume d'acier : 4 plaques coulees d'acier, 8 lingots de tungstene, un transformateur et 2 electrodes de graphite.",
+            "- Le transformateur : 4 lingots de fer, 2 condensateurs, 2 bobines de cuivre et un lingot de cuivre rouge. L'electrode : 2 lingots de graphite autour d'un boulon d'acier.",
+            "- Le graphite : du coke frappe a la presse avec le moule plat. Le four a combinaison cuit la poudre de charbon en coke.",
+            "! Elle tire beaucoup de courant : branche-la sur une batterie."
+          ],
+          "reward": {"money": 15000, "items": [{"id": "hbm:arc_electrode_graphite", "count": 2}]}
+        },
+        {
+          "id": "detecteur",
+          "title": "Le detecteur",
+          "icon": "hbm:oil_detector",
+          "goal": {"type": "have", "items": ["hbm:oil_detector"], "count": 1, "label": "Un detecteur de petrole"},
+          "text": [
+            "Le petrole dort en gisements sous la roche. Sur Berskar, il est la ou il est sur Terre : golfe Persique, Siberie, Venezuela, Nigeria, Libye, Caspienne.",
+            "- Le detecteur : 2 fils fins d'or, 2 lingots de cuivre, un circuit analogique et 3 plaques d'acier (W I / WCI / PPP).",
+            "- Clic droit : il dit si du petrole est proche, et quand un gisement est juste dessous.",
+            "! /gisements montre les grands champs de petrole et de gaz, comme Ghawar ou Burgan."
+          ],
+          "reward": {"money": 8000, "items": []}
+        },
+        {
+          "id": "derrick",
+          "title": "Le derrick",
+          "icon": "hbm:machine_well",
+          "goal": {"type": "near", "items": ["hbm:machine_well", "hbm:machine_pumpjack"], "label": "Poser un derrick"},
+          "text": [
+            "Pose sur un gisement et branche au courant, il creuse et pompe le petrole brut et le gaz naturel.",
+            "- A l'assembleur : 8 plaques d'acier, 2 plaques coulees de cuivre, 4 tuyaux d'acier, un moteur et une foreuse en titane.",
+            "- La foreuse, a l'assembleur : 8 plaques de titane et une plaque coulee d'acier rapide (acier, tungstene et cobalt fondus ensemble au creuset).",
+            "! Un gisement finit par s'epuiser ; le pumpjack, plus tard, pompe plus vite."
+          ],
+          "reward": {"money": 15000, "items": [{"id": "hbm:fluid_identifier_multi", "count": 1}]}
+        },
+        {
+          "id": "raffinerie",
+          "title": "La raffinerie",
+          "icon": "hbm:machine_refinery",
+          "goal": {"type": "near", "items": ["hbm:machine_refinery"], "label": "Poser une raffinerie"},
+          "text": [
+            "Elle separe le petrole chaud en huile lourde, naphta, huile legere et gaz de petrole, avec du soufre.",
+            "- A l'assembleur : 3 plaques soudees d'acier, 8 plaques de cuivre, 4 coques d'acier, 12 tuyaux d'acier, 8 isolateurs et 3 circuits analogiques.",
+            "- Le petrole se chauffe d'abord dans une chaudiere posee sur un foyer : l'identifiant de fluide (celui de la recompense) regle la chaudiere sur le petrole brut.",
+            "- L'identifiant : une teinture, un tube a vide et une plaque de fer, en colonne. Il regle aussi les conduits."
+          ],
+          "reward": {"money": 25000, "items": []}
+        },
+        {
+          "id": "polymere",
+          "title": "Le polymere",
+          "icon": "hbm:ingot_polymer",
+          "goal": {"type": "have", "items": ["hbm:ingot_polymer"], "count": 16, "label": "16 barres de polymere"},
+          "text": [
+            "Le plastique de NTM : la centrifugeuse et bien des machines en demandent.",
+            "- A l'usine chimique : 1 000 mB de gaz de petrole, 2 poudres de charbon et une fluorite donnent 4 barres de polymere.",
+            "- La poudre de charbon sort du broyeur ; la fluorite tombe du minerai de fluorite."
+          ],
+          "reward": {"money": 15000, "items": []}
+        }
+      ]
+    },
+    {
       "id": "atome",
       "name": "L'atome",
       "color": "22E558",
@@ -303,7 +375,7 @@
             "Elle separe les minerais : plus de rendement, et des sous-produits rares.",
             "- A l'assembleur : un element de centrifugeuse, 4 lingots de plastique, 8 plaques d'acier, 4 plaques de cuivre et un circuit analogique.",
             "- L'element : 4 plaques d'acier rapide, 4 plaques de titane et un moteur, a l'assembleur.",
-            "- Le plastique sort de l'usine chimique : du polymere, fait de gaz de petrole, de poudre de charbon et de fluorite."
+            "- Le plastique : les barres de polymere du chapitre du petrole."
           ],
           "reward": {"money": 25000, "items": []}
         },
@@ -315,10 +387,149 @@
           "text": [
             "Un minerai d'uranium centrifuge donne 2 poudres d'uranium, et un peu de radium.",
             "- La poudre se fond en lingot au four : deux lingots par minerai au lieu d'un.",
-            "- La suite, combustible, reacteurs et enrichissement, est dans les fiches NTM de l'encyclopedie.",
+            "- Garde le radium : il fera la source de neutrons du premier reacteur.",
             "! L'uranium irradie celui qui le porte : ne le garde pas sur toi."
           ],
           "reward": {"money": 20000, "items": []}
+        }
+      ]
+    },
+    {
+      "id": "reacteur",
+      "name": "Le reacteur",
+      "color": "2BC4C4",
+      "steps": [
+        {
+          "id": "graphite",
+          "title": "Le graphite",
+          "icon": "hbm:pile_brick",
+          "goal": {"type": "have", "items": ["hbm:pile_brick"], "count": 125, "label": "125 briques de graphite"},
+          "text": [
+            "La pile de Chicago, le premier reacteur de NTM, est un pave plein de briques de graphite : au moins 5 x 5 x 5, soit 125 briques.",
+            "- La brique, a l'assembleur : une planche, 4 lingots de graphite et 2 boulons d'acier.",
+            "- Le graphite : du coke frappe a la presse avec le moule plat ; le coke sort du four a combinaison.",
+            "! Le graphite brule : une pile trop chaude prend feu et se disloque."
+          ],
+          "reward": {"money": 20000, "items": []}
+        },
+        {
+          "id": "pile",
+          "title": "La pile",
+          "icon": "hbm:pile_block",
+          "goal": {"type": "near", "items": ["hbm:pile_block"], "label": "Monter la pile de Chicago"},
+          "text": [
+            "Monte un pave plein de briques, de 5 x 5 x 5 a 15 x 15 x 15, puis perce une face avec la perceuse a main : le bloc perce devient le coeur de la pile.",
+            "- La perceuse a main : un lingot d'acier rapide et 2 batons.",
+            "- Perce ensuite les canaux : ceux dans l'axe du coeur recoivent le combustible, ceux en travers la ventilation. Deux canaux ne se croisent jamais.",
+            "- Un canal perce par le dessus recoit une barre de controle."
+          ],
+          "reward": {"money": 25000, "items": []}
+        },
+        {
+          "id": "ventilation",
+          "title": "La ventilation",
+          "icon": "hbm:pile_vent",
+          "goal": {"type": "near", "items": ["hbm:pile_vent"], "label": "Poser une bouche d'aeration"},
+          "text": [
+            "Sans air, un canal de combustible depasse 800 degres et le graphite s'enflamme.",
+            "- La bouche d'aeration : un moteur, 2 plaques d'aluminium, une coque de cuivre et une plaque coulee d'acier.",
+            "- Elle souffle dans un canal de ventilation l'air d'un compresseur regle sur 1 PU. Le compresseur, a l'assembleur : 8 plaques coulees d'acier, 4 plaques de cuivre, 2 coques d'acier, 3 moteurs et un circuit analogique.",
+            "! Elle ne refroidit que les canaux de combustible juste au-dessus et au-dessous d'elle."
+          ],
+          "reward": {"money": 20000, "items": []}
+        },
+        {
+          "id": "neutrons",
+          "title": "Les neutrons",
+          "icon": "hbm:pile_rod_mk2_ra226be",
+          "goal": {"type": "have", "items": ["hbm:pile_rod_mk2_ra226be", "hbm:pile_rod_mk2_po210be"], "count": 1, "label": "Un barreau source de neutrons"},
+          "text": [
+            "La pile ne demarre qu'avec une source de neutrons : un barreau radium-beryllium dans un canal a lui.",
+            "- La billette : 3 pepites de radium 226 et 3 pepites de beryllium. Le radium sort de la centrifugeuse, avec l'uranium.",
+            "- Le barreau : 3 billettes, a l'enclume d'acier ou a l'assembleur."
+          ],
+          "reward": {"money": 15000, "items": []}
+        },
+        {
+          "id": "combustible",
+          "title": "Le combustible",
+          "icon": "hbm:pile_rod_mk2_nu",
+          "goal": {"type": "have", "items": ["hbm:pile_rod_mk2_nu"], "count": 4, "label": "4 barreaux d'uranium naturel"},
+          "text": [
+            "La pile change l'uranium naturel en plutonium 239, barreau par barreau.",
+            "- Le barreau : 3 billettes d'uranium, a l'enclume d'acier ou a l'assembleur. 2 lingots d'uranium font 3 billettes.",
+            "- Le chargeur, pose a l'entree d'un canal, y pousse les barreaux un par un : une plaque d'aluminium, un lingot de bore, une plaque coulee d'acier et une coque d'acier. Le bore sort du minerai de terres rares, a la centrifugeuse.",
+            "! Les barres de controle de la recompense calment la reaction : un signal de redstone les retire."
+          ],
+          "reward": {"money": 15000, "items": [{"id": "hbm:pile_control", "count": 2}]}
+        },
+        {
+          "id": "plutonium",
+          "title": "Le plutonium",
+          "icon": "hbm:pile_rod_mk2_pu239",
+          "goal": {"type": "have", "items": ["hbm:pile_rod_mk2_pu239"], "count": 1, "label": "Un barreau de plutonium 239"},
+          "text": [
+            "Laisse l'uranium dans la pile : il devient du plutonium 239.",
+            "- Sors-le a temps : trop longtemps, il devient du plutonium de qualite reacteur, puis des dechets qui chauffent fort.",
+            "- Chaque barreau charge pousse le dernier du canal de l'autre cote de la pile : un entonnoir l'y recueille.",
+            "! Ventilation et neutrons d'abord, combustible ensuite : jamais l'inverse."
+          ],
+          "reward": {"money": 30000, "items": []}
+        }
+      ]
+    },
+    {
+      "id": "enrichissement",
+      "name": "L'enrichissement",
+      "color": "B05CF0",
+      "steps": [
+        {
+          "id": "desh",
+          "title": "Le desh",
+          "icon": "hbm:ingot_desh",
+          "goal": {"type": "have", "items": ["hbm:ingot_desh"], "count": 4, "label": "4 lingots de desh"},
+          "text": [
+            "Le metal des machines avancees, et de la centrifugeuse a gaz.",
+            "- A l'usine chimique : 200 mB d'huile legere, 200 mB de mercure et une poudre de desh melangee donnent un lingot.",
+            "- La poudre melangee sort du minerai de terres rares a la centrifugeuse ; le mercure, du minerai de redstone a la centrifugeuse."
+          ],
+          "reward": {"money": 20000, "items": []}
+        },
+        {
+          "id": "yellowcake",
+          "title": "Le yellowcake",
+          "icon": "hbm:powder_yellowcake",
+          "goal": {"type": "have", "items": ["hbm:powder_yellowcake"], "count": 4, "label": "4 yellowcakes"},
+          "text": [
+            "L'uranium a enrichir passe d'abord en poudre, puis en gaz.",
+            "- Le yellowcake, a l'usine chimique : 2 billettes d'uranium, 2 soufres et 500 mB de peroxyde d'hydrogene. Le peroxyde s'y fait avec de l'eau ; le soufre sort de la raffinerie.",
+            "- L'hexafluorure d'uranium (UF6), a l'usine chimique : un yellowcake, 4 fluorites et 1 000 mB d'eau donnent 1 200 mB d'UF6."
+          ],
+          "reward": {"money": 15000, "items": []}
+        },
+        {
+          "id": "cascade",
+          "title": "La cascade",
+          "icon": "hbm:machine_gascent",
+          "goal": {"type": "near", "items": ["hbm:machine_gascent"], "label": "Poser une centrifugeuse a gaz"},
+          "text": [
+            "La centrifugeuse a gaz enrichit l'UF6 par etapes : on en met plusieurs a la suite, en cascade.",
+            "- A l'assembleur : 4 elements de centrifugeuse, 8 lingots de plastique, 2 lingots de desh, 8 plaques d'acier et un circuit avance.",
+            "- Chaque centrifugeuse passe le gaz plus riche a la suivante et rend de l'uranium 238."
+          ],
+          "reward": {"money": 30000, "items": []}
+        },
+        {
+          "id": "enrichi",
+          "title": "Uranium enrichi",
+          "icon": "hbm:nugget_uranium_fuel",
+          "goal": {"type": "have", "items": ["hbm:nugget_uranium_fuel"], "count": 6, "label": "6 pepites de combustible"},
+          "text": [
+            "En bout de cascade, l'UF6 moyennement enrichi donne du combustible d'uranium : 6 pepites pour 600 mB.",
+            "- Avec une amelioration, la cascade va plus loin, jusqu'a l'uranium 235.",
+            "- La suite : les reacteurs plus gros, RBMK en tete. La fiche Reacteurs NTM en donne les bases."
+          ],
+          "reward": {"money": 30000, "items": []}
         }
       ]
     }

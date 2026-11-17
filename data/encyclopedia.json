@@ -2985,8 +2985,8 @@
         {
           "title": "Par ou commencer",
           "text": [
-            "Le parcours NTM : 23 etapes, de l'enclume a l'uranium, chacune avec son mode d'emploi et sa recompense.",
-            "- Les fiches Premiers pas NTM, Courant NTM, Industrie NTM et Radiation NTM reprennent les recettes cle."
+            "Le parcours NTM : 38 etapes, de l'enclume a l'uranium enrichi, chacune avec son mode d'emploi et sa recompense.",
+            "- Les fiches Premiers pas, Courant, Industrie, Petrole, Radiation et Reacteurs NTM reprennent les recettes cle."
           ]
         }
       ],
@@ -2999,6 +2999,8 @@
         "ntm_courant",
         "ntm_industrie",
         "ntm_radiation",
+        "ntm_reacteurs",
+        "ntm_petrole",
         "shop",
         "serveur_trading",
         "palettes",
@@ -3013,7 +3015,7 @@
       "icon": "minecraft:anvil",
       "title": "Parcours NTM",
       "card": [
-        "De l'enclume a l'uranium",
+        "De l'enclume au reacteur",
         "Une recompense par etape"
       ],
       "summary": [
@@ -3031,18 +3033,21 @@
           ]
         },
         {
-          "title": "Les quatre chapitres",
+          "title": "Les sept chapitres",
           "text": [
             "- Les bases : l'enclume, la presse, les briques refractaires, le haut fourneau, l'acier et le cuivre rouge.",
             "- Le courant : l'enclume d'acier, les bobines, les cables, le generateur a bois et la batterie.",
             "- L'industrie : l'assembleur, le broyeur, le creuset et ses plaques coulees, la soudure, l'usine chimique.",
-            "- L'atome : mesurer la radiation, la tenue hazmat, la centrifugeuse et l'uranium."
+            "- Le petrole : la soudeuse, le detecteur, le derrick, la raffinerie et le polymere.",
+            "- L'atome : mesurer la radiation, la tenue hazmat, la centrifugeuse et l'uranium.",
+            "- Le reacteur : la pile de Chicago, du graphite au premier plutonium.",
+            "- L'enrichissement : le desh, le yellowcake, la cascade de centrifugeuses a gaz et l'uranium enrichi."
           ]
         },
         {
           "title": "Les recompenses",
           "text": [
-            "Environ 200 000 $ en tout, verses une seule fois, et des objets qui aident l'etape suivante : moule, charbon, moteurs, batterie, lames, foyer, RadAway."
+            "Environ 500 000 $ en tout, verses une seule fois, et des objets qui aident l'etape suivante : moule, charbon, moteurs, batterie, lames, foyer, RadAway, electrodes, identifiant de fluide, barres de controle."
           ]
         }
       ],
@@ -3054,7 +3059,9 @@
         "ntm_debuts",
         "ntm_courant",
         "ntm_industrie",
-        "ntm_radiation"
+        "ntm_petrole",
+        "ntm_radiation",
+        "ntm_reacteurs"
       ],
       "progress": "parcours_ntm",
       "discover": {
@@ -3228,6 +3235,7 @@
       ],
       "see": [
         "parcours_ntm",
+        "ntm_petrole",
         "ntm_courant",
         "ntm_radiation",
         "ntm"
@@ -3239,9 +3247,71 @@
       }
     },
     {
-      "id": "ntm_radiation",
+      "id": "ntm_petrole",
       "category": "technique",
       "order": 6,
+      "icon": "minecraft:coal_block",
+      "title": "Petrole NTM",
+      "card": [
+        "Derrick et raffinerie",
+        "Plastique et carburants"
+      ],
+      "summary": [
+        "Le petrole de NTM NEXT se pompe dans des gisements, se chauffe et se raffine en huiles, en gaz et en soufre : de quoi faire du plastique, des carburants et du desh."
+      ],
+      "sections": [
+        {
+          "title": "Trouver",
+          "text": [
+            "- Sur Berskar, les gisements sont la ou ils sont sur Terre ; /gisements montre les grands champs, comme Ghawar, Burgan ou Samotlor.",
+            "- Le detecteur de petrole (fils fins d'or, lingots de cuivre, circuit analogique, plaques d'acier) dit quand un gisement est proche, ou juste dessous."
+          ]
+        },
+        {
+          "title": "Pomper",
+          "text": [
+            "- Le derrick, pose sur le gisement et branche au courant, pompe le petrole brut et le gaz naturel ; le pumpjack fait mieux, plus tard.",
+            "- Un gisement s'epuise. Le petrole du socle, tout au fond pres de la bedrock (golfe Persique, Venezuela), ne s'epuise pas, mais il faut une tour de fracturation."
+          ]
+        },
+        {
+          "title": "Raffiner",
+          "text": [
+            "- Une chaudiere posee sur un foyer chauffe le petrole brut ; l'identifiant de fluide la regle sur le petrole.",
+            "- La raffinerie separe le petrole chaud : huile lourde, naphta, huile legere, gaz de petrole, et du soufre.",
+            "- La tour de fractionnement separe encore une huile en deux ; l'identifiant la regle aussi."
+          ]
+        },
+        {
+          "title": "Ce qu'on en fait",
+          "text": [
+            "- Le gaz de petrole : le polymere, a l'usine chimique, avec de la poudre de charbon et de la fluorite.",
+            "- L'huile legere : le desh, avec du mercure. Le naphta : l'essence.",
+            "- Les huiles fractionnees : les carburants, diesel et kerosene, pour les generateurs."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : le parcours NTM, etape par etape",
+        "/gisements : les grands champs de petrole et de gaz"
+      ],
+      "see": [
+        "parcours_ntm",
+        "gisements",
+        "ntm_industrie",
+        "ntm_reacteurs",
+        "ntm"
+      ],
+      "discover": {
+        "views": [
+          "dohy:parcours_ntm"
+        ]
+      }
+    },
+    {
+      "id": "ntm_radiation",
+      "category": "technique",
+      "order": 7,
       "icon": "minecraft:sculk_sensor",
       "title": "Radiation NTM",
       "card": [
@@ -3280,8 +3350,62 @@
       ],
       "see": [
         "parcours_ntm",
+        "ntm_reacteurs",
         "zones_irradiees",
         "ntm_industrie",
+        "ntm"
+      ],
+      "discover": {
+        "views": [
+          "dohy:parcours_ntm"
+        ]
+      }
+    },
+    {
+      "id": "ntm_reacteurs",
+      "category": "technique",
+      "order": 8,
+      "icon": "minecraft:beacon",
+      "title": "Reacteurs NTM",
+      "card": [
+        "La pile de Chicago",
+        "Enrichir l'uranium"
+      ],
+      "summary": [
+        "Le premier reacteur de NTM NEXT est la pile de Chicago : du graphite, de l'air, des neutrons et de l'uranium naturel, qui devient du plutonium. L'uranium enrichi ouvre ensuite les gros reacteurs."
+      ],
+      "sections": [
+        {
+          "title": "La pile de Chicago",
+          "text": [
+            "- Un pave plein de briques de graphite, de 5 x 5 x 5 a 15 x 15 x 15. La perceuse a main en fait le coeur, puis y perce les canaux.",
+            "- Les canaux dans l'axe du coeur prennent le combustible, pousse par le chargeur ; ceux en travers, la ventilation, nourrie par une bouche d'aeration et un compresseur a 1 PU.",
+            "- Une source de neutrons (radium-beryllium) demarre la reaction ; les barres de controle, sur les canaux perces par le dessus, la calment."
+          ]
+        },
+        {
+          "title": "Le plutonium",
+          "text": [
+            "- L'uranium naturel y devient du plutonium 239 ; laisse trop longtemps, il tourne au plutonium de qualite reacteur, puis en dechets qui chauffent fort.",
+            "! Au-dela de 800 degres, le graphite s'enflamme et la pile se disloque : la ventilation n'est pas une option."
+          ]
+        },
+        {
+          "title": "L'enrichissement",
+          "text": [
+            "- A l'usine chimique : le yellowcake (uranium, soufre, peroxyde), puis l'UF6 (yellowcake, fluorite, eau).",
+            "- Les centrifugeuses a gaz, en cascade, enrichissent l'UF6 : du combustible d'uranium en bout de chaine, de l'uranium 235 avec une amelioration.",
+            "- Ce combustible nourrit les reacteurs plus gros, RBMK en tete."
+          ]
+        }
+      ],
+      "commands": [
+        "/parcours : le parcours NTM, etape par etape"
+      ],
+      "see": [
+        "parcours_ntm",
+        "ntm_radiation",
+        "ntm_petrole",
         "ntm"
       ],
       "discover": {

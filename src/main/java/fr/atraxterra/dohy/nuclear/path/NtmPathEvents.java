@@ -100,7 +100,7 @@ public final class NtmPathEvents {
             return;
         }
         player.sendSystemMessage(Component.literal("[NTM] ").withStyle(ChatFormatting.GREEN)
-                .append(Component.literal("Le parcours NTM te guide de l'enclume a la centrifugeuse, avec une "
+                .append(Component.literal("Le parcours NTM te guide de l'enclume au premier reacteur, avec une "
                         + "recompense a chaque etape. ").withStyle(ChatFormatting.WHITE))
                 .append(NtmPath.link("[Ouvrir]")));
     }
