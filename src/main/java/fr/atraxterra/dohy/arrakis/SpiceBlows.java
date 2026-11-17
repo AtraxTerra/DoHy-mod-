@@ -51,6 +51,8 @@ public final class SpiceBlows {
     private static final int MAX_INTERVAL = 10 * 60 * 20;
     /** Le grondement, avant l'eruption. */
     private static final int WARNING = 8 * 20;
+    /** Le nuage d'epice, apres : il retombe lentement. */
+    private static final int AFTERGLOW = 5 * 20;
     /** Arrakeen et sa cuvette : pas d'eruption a moins de ce rayon du centre. */
     private static final double SAFE_RADIUS = 520.0d;
     private static final int NEAR = 40;
@@ -117,6 +119,12 @@ public final class SpiceBlows {
     public static BlockPos pending() {
         Blow blow = pending;
         return blow == null ? null : blow.center;
+    }
+
+    /** Vrai une fois l'eruption partie, tant que son nuage retombe. */
+    public static boolean erupted() {
+        Blow blow = pending;
+        return blow != null && blow.ticks <= 0;
     }
 
     /** {@code /arrakis epice} : une eruption pres de ce joueur, apres le grondement. Faux si rien ne convient. */
@@ -214,6 +222,7 @@ public final class SpiceBlows {
 
         private final BlockPos center;
         private final int radius;
+        /** Avant l'eruption, le compte a rebours ; apres, il devient negatif pendant que le nuage retombe. */
         private int ticks = WARNING;
         private boolean done;
 
@@ -230,21 +239,35 @@ public final class SpiceBlows {
             }
             double x = center.getX() + 0.5d;
             double z = center.getZ() + 0.5d;
-            if (ticks % 4 == 0) {
-                particles(level, ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, x, center.getY() + 1.0d, z, 2, 0.6d, 0.2d,
-                        0.01d, center);
-                particles(level, new DustParticleOptions(SPICE, 3.0f), x, center.getY() + 1.5d, z, 6, 1.5d, 0.6d,
-                        0.02d, center);
-            }
-            if (ticks % 20 == 0 && ticks > 0) {
-                for (ServerPlayer player : level.players()) {
-                    if (heard(player, center)) {
-                        sound(player, SoundEvents.WARDEN_HEARTBEAT, center, 2.0f, 0.5f);
+            BlockState spice = ArrakisContent.SPICE_SAND.get().defaultBlockState();
+            if (ticks > 0) {
+                // le grondement : une colonne de fumee, la poussiere qui frissonne
+                if (ticks % 3 == 0) {
+                    particles(level, ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, x, center.getY() + 1.0d, z, 3, 0.8d, 0.2d,
+                            0.01d, center);
+                    particles(level, new BlockParticleOption(ParticleTypes.FALLING_DUST, spice), x,
+                            center.getY() + 1.5d, z, 12, 2.5d, 1.0d, 0.0d, center);
+                }
+                if (ticks % 20 == 0) {
+                    for (ServerPlayer player : level.players()) {
+                        if (heard(player, center)) {
+                            sound(player, SoundEvents.WARDEN_HEARTBEAT, center, 2.0f, 0.5f);
+                        }
                     }
                 }
+                return;
             }
-            if (ticks <= 0) {
+            if (ticks == 0) {
                 erupt(level);
+            }
+            // le nuage d'epice retombe
+            if (ticks % 2 == 0) {
+                particles(level, new BlockParticleOption(ParticleTypes.FALLING_DUST, spice), x,
+                        center.getY() + 10.0d, z, 40, radius * 0.6d, 6.0d, 0.0d, center);
+                particles(level, new DustParticleOptions(SPICE, 4.0f), x, center.getY() + 6.0d, z, 20,
+                        radius * 0.4d, 5.0d, 0.01d, center);
+            }
+            if (ticks <= -AFTERGLOW) {
                 done = true;
             }
         }
@@ -279,14 +302,20 @@ public final class SpiceBlows {
                     }
                 }
             }
-            particles(level, ParticleTypes.EXPLOSION_EMITTER, x, center.getY() + 1.0d, z, 1, 0.0d, 0.0d, 0.0d,
+            particles(level, ParticleTypes.EXPLOSION_EMITTER, x, center.getY() + 1.0d, z, 2, 1.0d, 0.5d, 0.0d,
                     center);
-            for (int h = 0; h <= 24; h += 2) {
-                particles(level, new DustParticleOptions(SPICE, 4.0f), x, center.getY() + 1.0d + h, z, 14,
-                        1.2d + h * 0.12d, 0.6d, 0.03d, center);
+            particles(level, ParticleTypes.EXPLOSION, x, center.getY() + 3.0d, z, 24, radius * 0.3d, 2.5d, 0.0d,
+                    center);
+            for (int h = 0; h <= 28; h += 2) {
+                particles(level, new DustParticleOptions(SPICE, 4.0f), x, center.getY() + 1.0d + h, z, 30,
+                        1.0d + h * 0.15d, 0.8d, 0.04d, center);
             }
-            particles(level, new BlockParticleOption(ParticleTypes.BLOCK, spice), x, center.getY() + 1.5d, z, 120,
-                    radius * 0.4d, 1.0d, 0.3d, center);
+            particles(level, new BlockParticleOption(ParticleTypes.FALLING_DUST, spice), x, center.getY() + 14.0d, z,
+                    400, radius * 0.5d, 10.0d, 0.0d, center);
+            particles(level, new BlockParticleOption(ParticleTypes.BLOCK, spice), x, center.getY() + 1.5d, z, 160,
+                    radius * 0.4d, 1.0d, 0.4d, center);
+            particles(level, ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, x, center.getY() + 1.0d, z, 30, 2.0d, 0.5d,
+                    0.02d, center);
             for (int i = 0, n = 6 + random.nextInt(7); i < n; i++) {
                 double angle = random.nextDouble() * Math.PI * 2.0d;
                 ItemEntity item = new ItemEntity(level, x, center.getY() + 1.5d, z,
