@@ -117,5 +117,12 @@
   "item.dohy.spice_harvester": "Spice Harvester",
   "tooltip.dohy.spice_harvester.1": "Place it on the sand: you become its owner",
   "tooltip.dohy.spice_harvester.2": "Jump: open the intake  -  sneak + click: its screen",
-  "entity.dohy.spice_harvester": "Spice Harvester"
+  "entity.dohy.spice_harvester": "Spice Harvester",
+  "block.dohy.thumper": "Thumper",
+  "tooltip.dohy.thumper.1": "Plant it in the sand: it thumps for a minute",
+  "tooltip.dohy.thumper.2": "Its beats call the worms, away from you",
+  "item.dohy.worm_tooth": "Worm Tooth",
+  "tooltip.dohy.worm_tooth.1": "The Guild pays well for it at the Arrakeen counter",
+  "entity.dohy.sandworm": "Sandworm",
+  "death.attack.dohy.sandworm": "%1$s was swallowed by a sandworm"
 }

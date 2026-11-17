@@ -17,7 +17,8 @@ import java.util.List;
 
 /**
  * La borne EPICE d'Arrakeen : le seul comptoir ou le melange se vend, au cours
- * de l'heure, et ou s'achete la moissonneuse.
+ * de l'heure, ou la Guilde rachete les dents de ver, et ou s'achetent la
+ * moissonneuse et les marteleurs.
  */
 public final class SpiceCounterMenu extends MenuController {
 
@@ -25,6 +26,10 @@ public final class SpiceCounterMenu extends MenuController {
 
     /** Le prix de la moissonneuse, livree avec un quart de plein. */
     public static final long HARVESTER_PRICE = 1_000_000L;
+    /** Le prix d'un marteleur. */
+    public static final long THUMPER_PRICE = 15_000L;
+    /** Ce que la Guilde donne d'une dent de ver. */
+    public static final long TOOTH_PRICE = 80_000L;
     private static final int DELIVERED_FUEL = SpiceHarvester.TANK / 4;
     private static final double REACH = 12.0d;
     private static final int STACK = 64;
@@ -76,6 +81,22 @@ public final class SpiceCounterMenu extends MenuController {
                 : harvester.state(MenuView.DISABLED).tooltip(List.of("Il te manque "
                         + MoneyFormat.exact(HARVESTER_PRICE - balance) + " $."));
 
+        int teeth = SpiceInv.count(player, ArrakisContent.WORM_TOOTH.get());
+        Card sellTeeth = Card.of(new ItemStack(ArrakisContent.WORM_TOOTH.get(), Math.max(1, Math.min(16, teeth))),
+                "Dents de ver", List.of(MoneyFormat.exact(TOOTH_PRICE) + " $ la dent",
+                        teeth > 0 ? teeth + " sur toi" : "Un ver en perd parfois en refermant sa gueule"))
+                .accent(0xFFE8E0C8).badge(teeth > 0 ? "x" + teeth : "");
+        sellTeeth = teeth > 0 ? sellTeeth.action("sell_teeth|vendre les dents") : sellTeeth.state(MenuView.DISABLED);
+        Card thumper = Card.of(new ItemStack(ArrakisContent.THUMPER_ITEM.get()), "Marteleur",
+                List.of(MoneyFormat.exact(THUMPER_PRICE) + " $", "Une minute de coups sourds",
+                        "Il appelle les vers, loin de toi"))
+                .accent(0xFFB0B4BA).badge("ACHAT")
+                .tooltip(List.of("Plante-le dans le sable de l'erg : il frappe une minute.",
+                        "Un ver qui l'entend s'y rend, et le broie.",
+                        "Pose-le loin de ta moissonneuse avant qu'il n'arrive."));
+        thumper = balance >= THUMPER_PRICE ? thumper.action("buy_thumper|acheter un marteleur")
+                : thumper.state(MenuView.DISABLED);
+
         Card about = Card.of(ItemStack.EMPTY, "Le cours de l'epice", List.of(
                 "La Guilde ne rachete le melange qu'ici, a Arrakeen.",
                 "- Le cours change toutes les heures : prochain dans " + SpiceMarket.minutesLeft() + " min",
@@ -83,10 +104,18 @@ public final class SpiceCounterMenu extends MenuController {
                 "- Les champs d'epice : des taches rouille dans l'erg, loin de la ville",
                 "- Les eruptions d'epice en font naitre de nouveaux : guette le grondement",
                 "! A la main, une pelle n'en tire qu'un melange sur trois blocs."));
+        Card worms = Card.of(ItemStack.EMPTY, "Les vers des sables", List.of(
+                "Tout ce qui bat le sable de l'erg a un rythme les attire.",
+                "- Moissonneuse bouche ouverte : beaucoup ; en roulant : un peu",
+                "- Course : assez ; marche : a peine ; accroupi ou immobile : rien",
+                "- Signe de ver : le sable bouillonne, il creuse, il vient",
+                "- Le sable tremble sous toi : cours, tu as moins d'une seconde",
+                "- Arrete-toi, tais-toi, ou gagne la roche : il perd ta trace",
+                "! Un marteleur plante loin de toi le detourne."));
         return new MenuView(id(), "Comptoir de l'epice", "Arrakeen — la Guilde rachete le melange", stats, List.of(
-                new MenuView.Section("VENTE", "resources", MenuView.GRID, List.of(sellAll, sellStack)),
-                new MenuView.Section("MOISSONNEUSE", "resources", MenuView.GRID, List.of(harvester)),
-                new MenuView.Section("ARRAKIS", "", MenuView.TEXT, List.of(about))), false);
+                new MenuView.Section("VENTE", "resources", MenuView.GRID, List.of(sellAll, sellStack, sellTeeth)),
+                new MenuView.Section("MATERIEL", "resources", MenuView.GRID, List.of(harvester, thumper)),
+                new MenuView.Section("ARRAKIS", "", MenuView.TEXT, List.of(about, worms))), false);
     }
 
     @Override
@@ -108,6 +137,28 @@ public final class SpiceCounterMenu extends MenuController {
                 success(player);
                 player.sendSystemMessage(Component.literal("Vendu " + taken + " melange pour "
                         + MoneyFormat.exact(payout) + " $").withStyle(ChatFormatting.GOLD));
+            }
+            case "sell_teeth" -> {
+                int taken = SpiceInv.take(player, ArrakisContent.WORM_TOOTH.get(),
+                        SpiceInv.count(player, ArrakisContent.WORM_TOOTH.get()));
+                if (taken <= 0) {
+                    failure(player);
+                    return;
+                }
+                long payout = TOOTH_PRICE * taken;
+                Economy.credit(player, payout);
+                fr.atraxterra.dohy.palamod.achievement.Achievements.sold(player, payout);
+                success(player);
+                player.sendSystemMessage(Component.literal("Vendu " + taken + " dent" + (taken > 1 ? "s" : "")
+                        + " de ver pour " + MoneyFormat.exact(payout) + " $").withStyle(ChatFormatting.GOLD));
+            }
+            case "buy_thumper" -> {
+                if (!Economy.tryDebit(player, THUMPER_PRICE)) {
+                    failure(player);
+                    return;
+                }
+                SpiceInv.give(player, ArrakisContent.THUMPER_ITEM.get(), 1);
+                report(player, null, "Marteleur achete : plante-le dans le sable, loin de toi.");
             }
             case "buy" -> {
                 if (!Economy.tryDebit(player, HARVESTER_PRICE)) {

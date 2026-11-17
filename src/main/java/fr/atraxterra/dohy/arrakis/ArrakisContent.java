@@ -7,6 +7,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ColorRGBA;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -37,9 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * L'epice d'Arrakis : le sable qui la porte, le melange qu'on en tire, et la
- * moissonneuse qui le recolte. Tout existe meme sans NTM Space (les objets se
- * gardent d'un serveur a l'autre), mais seule Arrakis a des champs d'epice.
+ * L'epice d'Arrakis : le sable qui la porte, le melange qu'on en tire, la
+ * moissonneuse qui le recolte, et ce qui rode dessous : le ver des sables, le
+ * marteleur qui l'appelle, la dent qu'il perd. Tout existe meme sans NTM Space
+ * (les objets se gardent d'un serveur a l'autre), mais seule Arrakis a des
+ * champs d'epice et des vers.
  */
 public final class ArrakisContent {
 
@@ -85,6 +88,35 @@ public final class ArrakisContent {
                     .component(DataComponents.LORE, lore("tooltip.dohy.spice_harvester.1",
                             "tooltip.dohy.spice_harvester.2")));
 
+    /** Le ver des sables : une creature, mais rien qui apparaisse seul ni qu'on puisse tuer. */
+    public static final DeferredHolder<EntityType<?>, EntityType<SandWorm>> SANDWORM = ENTITIES.register(
+            "sandworm", key -> EntityType.Builder.<SandWorm>of(SandWorm::new, MobCategory.MISC)
+                    .sized(2.0f, 2.0f)
+                    .fireImmune()
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
+
+    /**
+     * Le marteleur : un pieu a masselotte qu'on plante dans le sable. Il frappe une
+     * minute, et ses coups appellent les vers — loin de la moissonneuse.
+     */
+    public static final DeferredBlock<ThumperBlock> THUMPER = BLOCKS.registerBlock("thumper", ThumperBlock::new,
+            properties -> properties.mapColor(MapColor.METAL).strength(1.5f, 3.0f).sound(SoundType.METAL)
+                    .noOcclusion());
+    public static final DeferredItem<BlockItem> THUMPER_ITEM =
+            ITEMS.registerSimpleBlockItem(THUMPER, properties -> properties
+                    .component(DataComponents.LORE, lore("tooltip.dohy.thumper.1", "tooltip.dohy.thumper.2")));
+
+    /** La dent d'un ver : elle tombe parfois quand il referme sa gueule. Le comptoir la rachete cher. */
+    public static final DeferredItem<Item> WORM_TOOTH = ITEMS.registerItem("worm_tooth", properties -> new Item(
+            properties.rarity(Rarity.EPIC).stacksTo(16)
+                    .component(DataComponents.LORE, lore("tooltip.dohy.worm_tooth.1"))));
+
+    /** Les degats d'un ver : « englouti ». */
+    public static final ResourceKey<DamageType> WORM_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE,
+            net.minecraft.resources.Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "sandworm"));
+
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = TABS.register("arrakis",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup." + DoHy.MOD_ID + ".arrakis"))
@@ -93,6 +125,8 @@ public final class ArrakisContent {
                         output.accept(SPICE_SAND_ITEM.get());
                         output.accept(MELANGE.get());
                         output.accept(HARVESTER_ITEM.get());
+                        output.accept(THUMPER_ITEM.get());
+                        output.accept(WORM_TOOTH.get());
                     })
                     .build());
 
@@ -109,6 +143,7 @@ public final class ArrakisContent {
 
     private static void onAttributes(EntityAttributeCreationEvent event) {
         event.put(HARVESTER.get(), SpiceHarvester.createAttributes().build());
+        event.put(SANDWORM.get(), SandWorm.createAttributes().build());
     }
 
     public static boolean isSpice(BlockState state) {

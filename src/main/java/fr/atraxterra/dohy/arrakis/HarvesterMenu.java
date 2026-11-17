@@ -61,10 +61,10 @@ public final class HarvesterMenu extends MenuController {
         SpiceHarvester harvester = harvester(player);
         int fuel = harvester == null ? 0 : harvester.fuel();
         int cargo = harvester == null ? 0 : harvester.cargo();
-        boolean working = harvester != null && harvester.working();
+        int noise = harvester == null ? 0 : (int) Math.round(WormNoise.attention(harvester) * 100.0d);
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("CARBURANT", fuel + " / " + SpiceHarvester.TANK, fuel > 0 ? GREEN : RED),
-                new MenuView.Stat("BOUCHE", working ? "OUVERTE" : "FERMEE", working ? GREEN : GOLD),
+                new MenuView.Stat("BRUIT", noise + " %", noise < 34 ? GREEN : noise < 67 ? GOLD : RED),
                 new MenuView.Stat("TREMIE", cargo + " / " + SpiceHarvester.CAPACITY,
                         cargo >= SpiceHarvester.CAPACITY ? RED : SPICE));
         List<MenuView.Section> sections = new ArrayList<>();
@@ -78,7 +78,9 @@ public final class HarvesterMenu extends MenuController {
                             "- " + SpiceHarvester.YIELD + " melange par bloc, du sable ordinaire a la place",
                             "- Les champs d'epice : des taches rouille dans l'erg, et les eruptions",
                             "- Garee pres du comptoir d'Arrakeen, la cargaison s'y vend seule",
-                            "! Le bruit de la machine porte loin dans le desert.")))));
+                            "! Le bruit attire les vers : a 100 %, un ver vient. Bouche fermee et",
+                            "  machine arretee, il perd la trace ; sur la roche, il ne passe pas.",
+                            "! Un marteleur plante plus loin le detourne de la moissonneuse.")))));
         }
         String owner = harvester == null || harvester.ownerName().isEmpty() ? "" : " — " + harvester.ownerName();
         return new MenuView(id(), "Moissonneuse d'epice", "Saut : ouvrir ou fermer la bouche" + owner, stats,

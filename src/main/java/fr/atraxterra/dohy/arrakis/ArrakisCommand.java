@@ -14,8 +14,8 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 /**
  * {@code /arrakis} pour les operateurs : aller a l'astroport sans billet,
- * reconstruire l'astroport, provoquer une eruption d'epice, se donner une
- * moissonneuse pleine, lire l'oxygene de l'atmosphere.
+ * reconstruire l'astroport, provoquer une eruption d'epice, appeler un ver,
+ * se donner une moissonneuse pleine, lire l'oxygene de l'atmosphere.
  */
 @EventBusSubscriber(modid = DoHy.MOD_ID)
 public final class ArrakisCommand {
@@ -65,6 +65,17 @@ public final class ArrakisCommand {
                         return 0;
                     }
                     context.getSource().sendSuccess(() -> Component.literal("Eruption d'epice en approche."), false);
+                    return 1;
+                }))
+                .then(Commands.literal("ver").executes(context -> {
+                    ServerPlayer player = context.getSource().getPlayerOrException();
+                    if (!(player.level() instanceof ServerLevel level) || !DoHyArrakis.onArrakis(player)
+                            || !SandWorm.dispatch(level, WormNoise.summon(player))) {
+                        context.getSource().sendFailure(Component.literal(
+                                "Pas de ver ici : il faut etre sur Arrakis, dans l'erg, loin de la roche."));
+                        return 0;
+                    }
+                    context.getSource().sendSuccess(() -> Component.literal("Un ver vient vers toi."), false);
                     return 1;
                 }))
                 .then(Commands.literal("moissonneuse").executes(context -> {
