@@ -11,6 +11,7 @@ import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
 import fr.atraxterra.dohy.palamod.hunter.SpawnerBlueprint;
 import fr.atraxterra.dohy.palamod.machine.PalaMachines;
 import fr.atraxterra.dohy.palamod.mount.PalaMount;
+import fr.atraxterra.dohy.palamod.nature.PalaNature;
 import fr.atraxterra.dohy.palamod.reserve.PalaReserve;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
@@ -46,7 +47,8 @@ public final class Blueprints {
         if (list == null) {
             synchronized (Blueprints.class) {
                 if (all == null) {
-                    all = List.of(grinder(), cauldron(), golemBox(), barn(), spawners(), minerPortal(), reserve());
+                    all = List.of(grinder(), cauldron(), golemBox(), barn(), spawners(), minerPortal(), reserve(),
+                            flowerGarden());
                 }
                 list = all;
             }
@@ -118,6 +120,31 @@ public final class Blueprints {
         }
         return new Blueprint("chaudron", "Chaudron de l'alchimiste", "alchimie", PalaAlchemist.CAULDRON_CORE.get(),
                 List.of(Blueprint.normalize("7 x 7", offsets, expects)));
+    }
+
+    /**
+     * Le jardin du totem fleuri ({@code FlowerTotemBlockEntity}) : un damier
+     * d'herbe et de podzol dessous, huit voisins autour. Le totem les accepte
+     * dans n'importe quel ordre ; le plan en propose un.
+     */
+    private static Blueprint flowerGarden() {
+        List<int[]> offsets = new ArrayList<>();
+        List<Expect> expects = new ArrayList<>();
+        Block[][] ring = {
+                {PalaNature.XP_BUSH.get(), Blocks.POPPY, Blocks.DANDELION},
+                {Blocks.BLUE_ORCHID, null, Blocks.ALLIUM},
+                {Blocks.WHITE_TULIP, PalaAlchemist.MINERAL_FLOWER.get(), Blocks.HOPPER}};
+        for (int dz = -1; dz <= 1; dz++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                offsets.add(new int[]{dx, 0, dz});
+                expects.add(block((Math.abs(dx) + Math.abs(dz)) % 2 == 1 ? Blocks.PODZOL : Blocks.GRASS_BLOCK));
+                offsets.add(new int[]{dx, 1, dz});
+                Block above = ring[dz + 1][dx + 1];
+                expects.add(block(above == null ? PalaMachines.FLOWER_TOTEM_BLOCK.get() : above));
+            }
+        }
+        return new Blueprint("jardin_fleuri", "Jardin du totem fleuri", "totem_fleuri",
+                PalaMachines.FLOWER_TOTEM_BLOCK.get(), List.of(Blueprint.normalize("3 x 3", offsets, expects)));
     }
 
     /** La boite a golem : un cube de 3, la boite au milieu d'une face, l'eau angelique au centre. */

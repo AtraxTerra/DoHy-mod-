@@ -176,6 +176,8 @@ MODEL_TEXTURES = {
     "block/food_machine.png": (64, 64),
     # Le totem de fertilite porte la texture de son modele d'origine (ModelTotem).
     "block/totem_of_fertility.png": (64, 64),
+    # Le totem fleuri porte celle de son modele GeckoLib (totem_of_flowery).
+    "block/flower_totem.png": (32, 32),
     # Le gestionnaire d'enclos reprend celle de son BarnControllerModel.
     "block/barn_controller.png": (64, 64),
     # Le portail du Mineur : 32 images de 48 x 48 (blocks/miner_portal.png).

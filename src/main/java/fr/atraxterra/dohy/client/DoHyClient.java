@@ -193,6 +193,7 @@ public final class DoHyClient {
         machine(event, PalaMenus.PALAFURNACE.get(), MachineDesigns.PALAFURNACE);
         machine(event, PalaMenus.PALAFORGE.get(), MachineDesigns.PALAFORGE);
         machine(event, PalaMenus.GRINDER.get(), MachineDesigns.GRINDER);
+        machine(event, PalaMenus.FLOWER_TOTEM.get(), MachineDesigns.FLOWER_TOTEM);
         machine(event, PalaGolem.FOOD_MACHINE_MENU.get(), MachineDesigns.FOOD_MACHINE);
         machine(event, PalaGolem.GOLEM_BOX_MENU.get(), MachineDesigns.GOLEM_BOX);
         machine(event, PalaPvp.PALAMACHINE_MENU.get(), MachineDesigns.PALAMACHINE);

@@ -278,7 +278,7 @@
         {
           "title": "Les structures",
           "text": [
-            "Le grinder, le chaudron de l'alchimiste, la boite a golem, l'enclos (cinq tailles), les structures de spawners (quatre paliers), le portail du Mineur et la reserve d'or (trois paliers)."
+            "Le grinder, le chaudron de l'alchimiste, le jardin du totem fleuri, la boite a golem, l'enclos (cinq tailles), les structures de spawners (quatre paliers), le portail du Mineur et la reserve d'or (trois paliers)."
           ]
         }
       ],
@@ -289,6 +289,7 @@
       "see": [
         "grinder",
         "alchimie",
+        "totem_fleuri",
         "golem",
         "monture",
         "spawners",
@@ -298,6 +299,7 @@
       "plans": [
         "grinder",
         "chaudron",
+        "jardin_fleuri",
         "boite_golem",
         "enclos",
         "spawners",
@@ -1057,7 +1059,7 @@
         "Portails, enchantements"
       ],
       "summary": [
-        "L'Alchimiste gagne son XP avec la seve, le chaudron et les portails. Il debloque les arbres de PalaMod, l'extracteur, le chaudron, les potions, les portails a seve et les enchantements mystiques."
+        "L'Alchimiste gagne son XP avec la seve, le chaudron et les portails. Il debloque les arbres de PalaMod, l'extracteur, le chaudron, les potions, les portails a seve, le totem fleuri et les enchantements mystiques."
       ],
       "sections": [
         {
@@ -1071,7 +1073,8 @@
       "see": [
         "metiers",
         "alchimie",
-        "withers"
+        "withers",
+        "totem_fleuri"
       ],
       "progress": "metier:alchemist"
     },
@@ -1278,12 +1281,14 @@
           "title": "Plus loin",
           "text": [
             "- Les portails a seve sont des autels : une cle inseree emplit leur centre.",
-            "- Seize bibliotheques mystiques autour d'une table d'enchantement ouvrent la table de l'Alchimiste."
+            "- Seize bibliotheques mystiques autour d'une table d'enchantement ouvrent la table de l'Alchimiste.",
+            "- Le totem fleuri rend des fleurs, au coeur d'un petit jardin."
           ]
         }
       ],
       "see": [
         "alchimiste",
+        "totem_fleuri",
         "withers",
         "plans"
       ],
@@ -1303,9 +1308,54 @@
       }
     },
     {
-      "id": "golem",
+      "id": "totem_fleuri",
       "category": "palamod",
       "order": 5,
+      "icon": "palamod:flower_totem",
+      "title": "Le totem fleuri",
+      "card": [
+        "Alchimiste 40",
+        "Des fleurs a la poudre d'os"
+      ],
+      "summary": [
+        "Le totem fleuri brule de la poudre d'os et rend des fleurs et des graines de ble. Il ne tourne qu'au coeur d'un petit jardin : un sol en damier dessous, huit voisins autour. Il faut etre Alchimiste 40 pour le poser et s'en servir."
+      ],
+      "sections": [
+        {
+          "title": "Le jardin",
+          "text": [
+            "- Dessous, un carre de 3 x 3 : de l'herbe aux coins et au centre, du podzol sur les bords.",
+            "- Autour, a sa hauteur, dans n'importe quel ordre : un buisson a XP, un coquelicot, un pissenlit, une orchidee bleue, un allium, une tulipe blanche, une fleur minerale et un entonnoir.",
+            "! Le plan de construction montre le jardin, et l'ecran du totem ce qui manque."
+          ]
+        },
+        {
+          "title": "La recolte",
+          "text": [
+            "Une poudre d'os toutes les cinq secondes : deux fleurs (coquelicot ou pissenlit) et deux graines de ble.",
+            "- L'entonnoir du jardin l'alimente en poudre d'os ; les fleurs se ramassent a la main.",
+            "! Ce qui ne tient plus dans les neuf cases de sortie est perdu."
+          ]
+        }
+      ],
+      "see": [
+        "alchimie",
+        "alchimiste",
+        "plans"
+      ],
+      "plans": [
+        "jardin_fleuri"
+      ],
+      "discover": {
+        "items": [
+          "palamod:flower_totem"
+        ]
+      }
+    },
+    {
+      "id": "golem",
+      "category": "palamod",
+      "order": 6,
       "icon": "palamod:guardian_stone",
       "title": "Le golem gardien",
       "card": [
@@ -1359,7 +1409,7 @@
     {
       "id": "monture",
       "category": "palamod",
-      "order": 6,
+      "order": 7,
       "icon": "palamod:mount_gemstone",
       "title": "Monture, enclos",
       "card": [
@@ -1411,7 +1461,7 @@
     {
       "id": "spawners",
       "category": "palamod",
-      "order": 7,
+      "order": 8,
       "icon": "palamod:spawner_controller",
       "title": "Les spawners",
       "card": [
@@ -1454,7 +1504,7 @@
     {
       "id": "dimension_mineur",
       "category": "palamod",
-      "order": 8,
+      "order": 9,
       "icon": "palamod:withered_obsidian",
       "title": "Dimension Mineur",
       "card": [
@@ -1508,7 +1558,7 @@
     {
       "id": "pierres_legendaires",
       "category": "palamod",
-      "order": 9,
+      "order": 10,
       "icon": "palamod:legendary_stone_random",
       "title": "Pierres et gant",
       "card": [
@@ -1543,7 +1593,7 @@
     {
       "id": "pvp",
       "category": "palamod",
-      "order": 10,
+      "order": 11,
       "icon": "palamod:strength_stick",
       "title": "Objets de combat",
       "card": [
@@ -1578,7 +1628,7 @@
     {
       "id": "clicker",
       "category": "palamod",
-      "order": 11,
+      "order": 12,
       "icon": "minecraft:cookie",
       "title": "Le clicker",
       "card": [
@@ -1611,7 +1661,7 @@
     {
       "id": "trixium",
       "category": "palamod",
-      "order": 12,
+      "order": 13,
       "icon": "palamod:trixium",
       "title": "Concours Trixium",
       "card": [
@@ -1641,7 +1691,7 @@
     {
       "id": "succes",
       "category": "palamod",
-      "order": 13,
+      "order": 14,
       "icon": "minecraft:golden_apple",
       "title": "Les succes",
       "card": [
@@ -1669,7 +1719,7 @@
     {
       "id": "withers",
       "category": "palamod",
-      "order": 14,
+      "order": 15,
       "icon": "palamod:wither_receptacle",
       "title": "Les withers",
       "card": [

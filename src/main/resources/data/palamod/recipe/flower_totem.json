@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OGO",
+    "POD",
+    "OBO"
+  ],
+  "key": {
+    "O": "minecraft:oak_log",
+    "G": "minecraft:short_grass",
+    "P": "minecraft:poppy",
+    "D": "minecraft:dandelion",
+    "B": "minecraft:bone_meal"
+  },
+  "result": {
+    "id": "palamod:flower_totem",
+    "count": 1
+  }
+}

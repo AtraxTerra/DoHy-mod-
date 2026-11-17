@@ -47,7 +47,7 @@ public final class PalaEnchantEffects {
      */
     @SubscribeEvent
     public static void onDamage(LivingDamageEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer victim) || event.getNewDamage() <= 0.0f
+        if (!(event.getEntity() instanceof ServerPlayer victim) || event.getInflictedDamage() <= 0.0f
                 || !(event.getSource().getDirectEntity() instanceof ServerPlayer attacker) || attacker == victim) {
             return;
         }

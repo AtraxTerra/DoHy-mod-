@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.client;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
+import fr.atraxterra.dohy.palamod.defense.UnclaimHelmet;
 import fr.atraxterra.dohy.palamod.pillage.FinderItem;
 import fr.atraxterra.dohy.palamod.pillage.FinderType;
 import net.minecraft.client.DeltaTracker;
@@ -97,7 +98,7 @@ public final class FinderHudLayer implements GuiLayer {
             }
         }
         // Le casque ne vaut finder qu'apres sa fusion avec un finder, de sa couleur.
-        return fr.atraxterra.dohy.palamod.defense.UnclaimHelmet.finder(player.getItemBySlot(EquipmentSlot.HEAD));
+        return UnclaimHelmet.finder(player.getItemBySlot(EquipmentSlot.HEAD));
     }
 
     private void scan(ClientLevel level, BlockPos center, ChunkPos origin, FinderType type) {

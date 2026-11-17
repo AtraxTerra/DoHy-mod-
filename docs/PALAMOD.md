@@ -1309,7 +1309,8 @@ chaudron, portails, enchantements mystiques.
 | 30 / 45 / 60 / 100 | Blocs et clés de portail (améthyste, titane, paladium, endium) | oui |
 | 100 | Bloc d'angle, cœur et pollen d'endium | oui |
 | 100 | Jambières et bottes en endium | déjà au chapitre 7 |
-| 15 / 40 | Table d'alchimiste, totem fleuri | **non, écartés par le joueur** |
+| 15 | Table d'alchimiste | **non, écartée par le joueur** |
+| 40 | Totem fleuri | oui (jardin, plan de construction) |
 | 75 / 90 | Améliorations de spawner | **non** (sans contrôleur de spawner) |
 | 95 | Trône de l'alchimiste | **non — aucun trône** |
 
@@ -1438,10 +1439,32 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
   d'expérience** chaque fois. Ni à la table vanilla, ni en livre.
 - **Anti chute** (bottes, 1 niveau) : on ne tombe plus d'un bord, comme accroupi. Un mixin sur
   `Player.isStayingOnGroundSurface` — le seul point qui décide, sans événement.
-- **Grass Breaker** (épées, 3 niveaux, Fermier 20) : les hautes herbes lâchent jusqu'à `niveau`
-  graines de plus par graine. **Écart** : l'original le réservait aux épées rapides, non portées.
-- Pas portés : le casque d'unclaim (ni unclaim finder ni factions), la protection contre l'eau
-  sulfurique (pas d'eau sulfurique), la table « lisible » d'Alchimiste 75.
+- **Grass Breaker** (épées, 3 niveaux, Fermier 20) : une haute herbe cassée à l'épée relance son
+  butin une fois de plus, **avec Fortune I**, et chaque pile gagne de 0 à `niveau` graines
+  (`AlchemistEventHandler`). **Écart** : l'original le réservait aux épées rapides, non portées.
+- **Unclaim Helmet** (casques, 1 niveau) : fondu à l'enclume avec un Unclaim Finder (15 niveaux),
+  le casque porté **devient** ce finder, de sa couleur — le HUD du finder s'affiche sans l'avoir en
+  main. L'arbre de faction compte les poses.
+- **Fake Water Protection** (casques, 1 niveau, arbre de faction) : dans la Fake Water, le casque
+  seul encaisse, **66 points d'usure par seconde** (`BlockSulfuricWater`). Avant cette version,
+  toute pièce d'armure le portait et l'usure n'était pas comptée.
+- **Experience Bottler** (tout objet à usure, 1 niveau, Mineur 60) : tenu ou porté, l'XP de métier
+  gagnée remplit des **bouteilles d'XP de métier** de ce métier (1 000 au plus chacune), en
+  complétant d'abord les bouteilles entamées, puis en convertissant les fioles vides du sac
+  (`PMiner`, `AJobsEventHandler`). Sans fiole, l'XP va au métier. Les bouteilles bues ne
+  remplissent rien.
+- **Voleur d'XP** (épées, 4 niveaux, Chasseur 55) : à chaque coup porté à un joueur, 2 / 4 / 7 /
+  10 % de chances de lui prendre 40 / 50 / 70 / 80 points d'expérience.
+- **Overwhelmed** (plastrons, 3 niveaux, Chasseur 95) : une amulette de plus par niveau sur le
+  plastron (une sans).
+- **Récupération** (épées) et **Récupération de minage** (outils), 1 niveau : le butin d'un
+  monstre tué ou d'un bloc cassé va directement dans le sac ; ce qui ne tient pas reste au sol.
+  Les monstres nommés gardent leur butin au sol.
+- **Expérience** (épées, 3 niveaux) : +1 / 3 / 5 % sur l'XP ramassée. **Écart** : l'original ne
+  venait que des lucky blocks de septembre, absents ; il passe ici par la table.
+- Pas portés : **Omniscient** (aucun effet dans le code d'origine : l'enchantement est déclaré et
+  rien ne le lit), **Confusion** (cité par le wiki seulement, sans code ni chiffres), la table
+  « lisible » d'Alchimiste 75. Frost Walker est celui de vanilla.
 
 ---
 

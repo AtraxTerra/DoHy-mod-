@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.palamod.defense;
 
 import fr.atraxterra.dohy.job.Job;
+import fr.atraxterra.dohy.palamod.alchemist.MysticEnchant;
 import fr.atraxterra.dohy.palamod.equipment.PalaEquipment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -61,7 +62,7 @@ public final class Amulets {
 
     /** Amulettes que tient le plastron : une, plus une par niveau d'Overwhelmed. */
     public static int capacity(ItemStack chest) {
-        return 1 + fr.atraxterra.dohy.palamod.alchemist.MysticEnchant.OVERWHELMED.levelOn(chest);
+        return 1 + MysticEnchant.OVERWHELMED.levelOn(chest);
     }
 
     /** Le bonus d'XP de metier de l'amulette du chasseur, ajoute par {@code JobApi.grant}. */
