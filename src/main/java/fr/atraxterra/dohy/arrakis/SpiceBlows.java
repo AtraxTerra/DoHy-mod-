@@ -133,7 +133,7 @@ public final class SpiceBlows {
         return true;
     }
 
-    /** Un point de sable a decouvert, dans un chunk charge, hors de la cuvette d'Arrakeen. */
+    /** Un point de sable nu, dans un chunk charge, hors de la cuvette d'Arrakeen. */
     private static BlockPos spot(ServerLevel level, ServerPlayer player, int near, int far) {
         RandomSource random = level.getRandom();
         for (int attempt = 0; attempt < 24; attempt++) {
@@ -146,7 +146,8 @@ public final class SpiceBlows {
             }
             int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z) - 1;
             BlockState top = level.getBlockState(new BlockPos(x, y, z));
-            if (top.is(Blocks.SAND) || ArrakisContent.isSpice(top)) {
+            // du sable nu : une eruption fait un champ neuf, pas un champ de plus sur un autre
+            if (top.is(Blocks.SAND)) {
                 return new BlockPos(x, y, z);
             }
         }

@@ -53,9 +53,9 @@ import java.util.UUID;
  * <p>On la conduit comme le tracteur : elle tourne vers le regard, avance et
  * recule, lentement — c'est une usine sur chenilles. La touche de saut ouvre et
  * ferme sa bouche d'aspiration. Ouverte, elle avale le sable d'epice devant elle,
- * sur trois blocs de large et jusqu'a deux de profondeur, rend du sable ordinaire
- * et garde le melange dans sa tremie : deux par bloc, la ou la main n'en tire
- * qu'un, une fois sur trois.
+ * sur trois blocs de large et deux de profondeur, en suivant les pentes des dunes ;
+ * elle rend du sable ordinaire et garde le melange dans sa tremie : deux par
+ * bloc, la ou la main n'en tire qu'un, une fois sur trois.
  *
  * <p>Elle brule du carburant au chemin (deux fois plus bouche ouverte) et une
  * unite par bloc avale. Les carburants sont ceux du tracteur : charbon, bloc de
@@ -246,7 +246,11 @@ public class SpiceHarvester extends PathfinderMob implements PlayerRideableJumpi
         return Mth.cos(getYRot() * Mth.DEG_TO_RAD);
     }
 
-    /** La bouche : trois colonnes devant la machine, du pied des chenilles a deux blocs sous le sol. */
+    /**
+     * La bouche : trois colonnes devant la machine. Dans chacune, elle suit le sol
+     * (d'un bloc au-dessus des chenilles a cinq en dessous, pour les pentes des
+     * dunes) et avale le sable d'epice du dessus, puis celui d'en dessous.
+     */
     private void harvest(ServerLevel server) {
         double fx = forwardX();
         double fz = forwardZ();
@@ -255,27 +259,40 @@ public class SpiceHarvester extends PathfinderMob implements PlayerRideableJumpi
         int feet = Mth.floor(getY() + 0.01d);
         int eaten = 0;
         for (int side = -1; side <= 1; side++) {
-            double x = baseX - fz * side;
-            double z = baseZ + fx * side;
-            for (int dy = 0; dy >= -2; dy--) {
+            int x = Mth.floor(baseX - fz * side);
+            int z = Mth.floor(baseZ + fx * side);
+            int top = ground(server, x, z, feet + 1, feet - 5);
+            for (int y = top; y >= top - 1 && top != Integer.MIN_VALUE; y--) {
                 if (cargo() >= CAPACITY) {
                     tell("Tremie pleine : rentre au comptoir d'Arrakeen.", ChatFormatting.GOLD);
                     finish(server, eaten, baseX, baseZ);
                     return;
                 }
-                BlockPos pos = BlockPos.containing(x, feet + dy, z);
+                BlockPos pos = new BlockPos(x, y, z);
                 BlockState state = server.getBlockState(pos);
                 if (!ArrakisContent.isSpice(state)) {
-                    continue;
+                    break;
                 }
                 server.setBlock(pos, Blocks.SAND.defaultBlockState(), Block.UPDATE_ALL);
                 setCargo(cargo() + YIELD);
                 eaten++;
-                server.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), pos.getX() + 0.5d,
-                        pos.getY() + 1.0d, pos.getZ() + 0.5d, 8, 0.4d, 0.3d, 0.4d, 0.05d);
+                server.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), x + 0.5d, y + 1.0d,
+                        z + 0.5d, 8, 0.4d, 0.3d, 0.4d, 0.05d);
             }
         }
         finish(server, eaten, baseX, baseZ);
+    }
+
+    /** Le premier bloc plein en descendant de {@code from} a {@code to}, ou {@code Integer.MIN_VALUE}. */
+    private static int ground(ServerLevel server, int x, int z, int from, int to) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        for (int y = from; y >= to; y--) {
+            BlockState state = server.getBlockState(pos.set(x, y, z));
+            if (!state.isAir() && !state.canBeReplaced()) {
+                return y;
+            }
+        }
+        return Integer.MIN_VALUE;
     }
 
     private void finish(ServerLevel server, int eaten, double baseX, double baseZ) {
