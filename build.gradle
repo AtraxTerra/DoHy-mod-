@@ -33,6 +33,7 @@ neoForge {
         }
         client {
             client()
+            programArguments.addAll('--width', '1920', '--height', '1080', '--quickPlaySingleplayer', 'shots')
         }
         server {
             server()
@@ -128,8 +129,6 @@ tasks.named('processResources', ProcessResources).configure {
     from(rootProject.file('data/encyclopedia.json')) {
         into "data/${mod_id}"
     }
-    // Le parcours NTM (les premieres machines de NTM NEXT, etape par etape),
-    // verifie par tools/check_ntm_path.py.
     from(rootProject.file('data/ntm_path.json')) {
         into "data/${mod_id}"
     }

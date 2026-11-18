@@ -1,0 +1,145 @@
+name: ui-shots
+# Temporaire : lance le client sous Xvfb avec NTM NEXT (branche ci/ntm),
+# essaie Arrakis (NTM NEXT Space) et pousse les captures sur shots-out.
+on:
+  push:
+    branches: [ci/shots]
+permissions:
+  contents: write
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.1.0"
+      - name: Paquets graphiques
+        run: |
+          # L'image du runner a deja Xvfb et Mesa (llvmpipe) : les depots
+          # d'Ubuntu ne sont consultes que s'ils manquent.
+          if which Xvfb xvfb-run && ls /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so /usr/lib/x86_64-linux-gnu/libgallium* 2>/dev/null | head -3; then
+            echo "paquets graphiques deja presents"
+          else
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq xvfb libgl1-mesa-dri > /dev/null
+          fi
+      - name: NTM NEXT
+        run: |
+          git fetch -q --depth 1 origin ci/ntm
+          mkdir -p /tmp/ntm run/mods
+          git --work-tree=/tmp/ntm checkout FETCH_HEAD -- mods
+          git reset -q
+          cp /tmp/ntm/mods/hbm-neoforge-*.jar run/mods/
+          cp /tmp/ntm/mods/hbmspace-neoforge-*.jar run/mods/
+          ls -la run/mods
+      - name: Utility Drawers
+        run: |
+          # Le fichier publie sur CurseForge (projet 1582712), celui que le
+          # joueur installera : la liste des fichiers, puis le dernier en 26.2.
+          mkdir -p /tmp/ud
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+          curl -sS -L -A "$UA" -H "Accept: application/json" -o /tmp/ud/files.json -w "liste HTTP %{http_code}\n" \
+            "https://www.curseforge.com/api/v1/mods/1582712/files?pageIndex=0&pageSize=20&sort=dateCreated&sortDescending=true&removeAlphas=false" || true
+          head -c 600 /tmp/ud/files.json; echo
+          python3 - <<'PY'
+          import json
+          files = json.load(open('/tmp/ud/files.json')).get('data', [])
+          for f in files:
+              print(f.get('id'), f.get('fileName'), f.get('fileLength'), f.get('gameVersions'),
+                    f.get('dateCreated'), f.get('releaseType'))
+          pick = next((f for f in files if '26.2' in (f.get('gameVersions') or [])), None)
+          if pick is None:
+              raise SystemExit('aucun fichier pour 26.2')
+          open('/tmp/ud/pick', 'w').write('%s %s\n' % (pick['id'], pick['fileName']))
+          PY
+          read ID NAME < /tmp/ud/pick
+          curl -sS -L -A "$UA" -o "/tmp/ud/$NAME" -w "jar HTTP %{http_code}\n" \
+            "https://www.curseforge.com/api/v1/mods/1582712/files/$ID/download"
+          ls -la /tmp/ud
+          sha256sum "/tmp/ud/$NAME"
+          python3 -c "import sys, zipfile; z = zipfile.ZipFile(sys.argv[1]); n = z.namelist(); print(len(n), 'entrees'); print(z.read('META-INF/neoforge.mods.toml').decode()[:3000])" "/tmp/ud/$NAME"
+          cp "/tmp/ud/$NAME" run/mods/
+          ls -la run/mods
+      - name: Create Fly + Diesel Generators
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # La pre-version server-latest d'AtraxTerra/Mod-ported : les deux jars qui remplacent
+          # Create: Adapted et Create: Diesel Generators Adapted sur le serveur.
+          mkdir -p /tmp/fly
+          curl -sSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/AtraxTerra/Mod-ported/releases/tags/server-latest -o /tmp/fly/release.json
+          python3 - <<'PY'
+          import json
+          release = json.load(open('/tmp/fly/release.json'))
+          print(release.get('name'), release.get('published_at'), release.get('target_commitish'))
+          print(release.get('body', '')[-400:])
+          with open('/tmp/fly/assets.txt', 'w') as out:
+              for asset in release.get('assets', []):
+                  print(asset['name'], asset['size'], asset['updated_at'])
+                  out.write(asset['browser_download_url'] + '\n')
+          PY
+          while read -r url; do curl -sSL -o "/tmp/fly/$(basename "$url")" "$url"; done < /tmp/fly/assets.txt
+          ls -la /tmp/fly
+          sha256sum /tmp/fly/*.jar
+          for jar in /tmp/fly/*.jar; do
+            python3 -c "import sys, zipfile; z = zipfile.ZipFile(sys.argv[1]); t = z.read('META-INF/neoforge.mods.toml').decode(); print(sys.argv[1]); print('\n'.join(l for l in t.splitlines() if l.strip().startswith(('modId', 'version', 'displayName')))[:600])" "$jar"
+          done
+          cp /tmp/fly/*.jar run/mods/
+          ls -la run/mods
+      - name: Monde
+        run: |
+          mkdir -p run/world/datapacks
+          # La Terre : calage, grille des pays, minerais retires, petrole interdit au hasard.
+          cp ci-dohy_terre.zip run/world/datapacks/dohy_terre.zip
+          ls -la run/world/datapacks
+          echo "eula=true" > run/eula.txt
+          printf 'online-mode=false\nenable-rcon=true\nrcon.password=shots\nrcon.port=25575\nlevel-seed=dohy\nspawn-protection=0\n' > run/server.properties
+          ( timeout 900 gradle runServer --no-daemon > /tmp/server.log 2>&1; echo "fin du serveur : $?" >> /tmp/server.log ) &
+          for i in $(seq 1 120); do grep -qE 'Done \(|fin du serveur' /tmp/server.log && break; sleep 5; done
+          grep -q 'Done (' /tmp/server.log || { grep -vE '^\s+at ' /tmp/server.log | tail -80; exit 1; }
+          python3 - <<'RCON'
+          import socket, struct
+          s = socket.create_connection(("127.0.0.1", 25575), timeout=60)
+          def send(kind, body, rid):
+              data = struct.pack("<ii", rid, kind) + body.encode() + b"\x00\x00"
+              s.sendall(struct.pack("<i", len(data)) + data)
+              size = struct.unpack("<i", s.recv(4))[0]
+              s.recv(size)
+          send(3, "shots", 1)
+          send(2, "stop", 2)
+          RCON
+          for i in $(seq 1 60); do grep -q 'fin du serveur' /tmp/server.log && break; sleep 2; done
+          grep -nE 'Done \(|fin du serveur|ERROR' /tmp/server.log | head -20
+          grep -niE 'utilitydrawers|utility drawers|utility_drawers' /tmp/server.log | head -40
+          grep -nE 'FAILED during APPLY|was not applied|Mixin apply failed|Error loading class|InvalidMixin' /tmp/server.log | head -20
+          grep -niE '\[create|createdieselgenerators|create fly|Legacy' /tmp/server.log | grep -iE 'warn|error|legacy|convert' | head -40
+          grep -niE 'datapack|dohy_terre|biome_modifier' /tmp/server.log | head -20
+          mkdir -p run/saves && cp -r run/world run/saves/shots && ls run/saves/shots
+      - name: Client
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          cp /tmp/ntm/mods/crankshaft-neoforge-*.jar run/mods/
+          printf 'lang:fr_fr\nonboardAccessibility:false\nnarrator:0\ntutorialStep:none\njoinedFirstServer:true\nsoundCategory_master:0.0\nguiScale:0\nfullscreen:false\nrenderDistance:10\nsimulationDistance:6\n' > run/options.txt
+          ( timeout 2400 xvfb-run -a -s "-screen 0 1920x1080x24" gradle runClient --no-daemon > /tmp/client.log 2>&1; echo "fin du client : $?" >> /tmp/client.log ) || true
+          grep -nE "dohy-shots|Guerre|ERROR|Exception|Caused by|fin du client|BUILD" /tmp/client.log | grep -v DEBUG | head -500
+          grep -niE 'utilitydrawers|utility drawers|utility_drawers|Failed to create screen' /tmp/client.log | grep -v DEBUG | head -60
+          grep -nE 'FAILED during APPLY|was not applied|Mixin apply failed|InvalidMixin' /tmp/client.log | head -20
+          ls -la run/screenshots || true
+      - name: Pousser
+        if: always()
+        run: |
+          mkdir out && cp run/screenshots/*.png out/ 2>/dev/null || true
+          cp /tmp/client.log out/client.log 2>/dev/null || true
+          cp /tmp/server.log out/server.log 2>/dev/null || true
+          cp /tmp/fly/release.json out/ 2>/dev/null || true
+          cd out
+          git init -q && git checkout -q -b shots-out && git add .
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "shots ${GITHUB_SHA}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" shots-out
