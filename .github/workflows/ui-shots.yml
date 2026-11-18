@@ -74,51 +74,169 @@ jobs:
           mkdir -p /tmp/fly
           curl -sSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/AtraxTerra/Mod-ported/releases/tags/server-latest -o /tmp/fly/release.json
-          python3 - <<'PY'
+          python3 - <<'PYR'
           import json
           release = json.load(open('/tmp/fly/release.json'))
           print(release.get('name'), release.get('published_at'), release.get('target_commitish'))
-          print(release.get('body', '')[-400:])
           with open('/tmp/fly/assets.txt', 'w') as out:
               for asset in release.get('assets', []):
                   print(asset['name'], asset['size'], asset['updated_at'])
                   out.write(asset['browser_download_url'] + '\n')
-          PY
+          PYR
           while read -r url; do curl -sSL -o "/tmp/fly/$(basename "$url")" "$url"; done < /tmp/fly/assets.txt
           ls -la /tmp/fly
           sha256sum /tmp/fly/*.jar
-          for jar in /tmp/fly/*.jar; do
-            python3 -c "import sys, zipfile; z = zipfile.ZipFile(sys.argv[1]); t = z.read('META-INF/neoforge.mods.toml').decode(); print(sys.argv[1]); print('\n'.join(l for l in t.splitlines() if l.strip().startswith(('modId', 'version', 'displayName')))[:600])" "$jar"
-          done
-          cp /tmp/fly/*.jar run/mods/
-          ls -la run/mods
+      - name: Create Fly, Flywheel deplace
+        run: |
+          # Le meme port, recompile avec son Flywheel embarque sous l'espace de noms
+          # create_flywheel : ses shaders ne recouvrent plus ceux de CrankShaft.
+          git clone -q --depth 1 -b port/neoforge-26.2 https://github.com/AtraxTerra/Mod-ported /tmp/flysrc
+          git -C /tmp/flysrc log --oneline -1
+          python3 -I ci/relocate_flywheel.py /tmp/flysrc
+          ( cd /tmp/flysrc && ./gradlew --no-daemon -q jar ) > /tmp/flybuild.log 2>&1 || { tail -60 /tmp/flybuild.log; exit 1; }
+          tail -5 /tmp/flybuild.log
+          mkdir -p /tmp/flyfix
+          cp $(ls /tmp/flysrc/build/libs/create-fly-*.jar | grep -v -- '-sources' | head -1) /tmp/flyfix/
+          ls -la /tmp/flyfix
+          python3 -I -c "import sys, zipfile; n = zipfile.ZipFile(sys.argv[1]).namelist(); print(sum(x.startswith('assets/create_flywheel/') for x in n), 'create_flywheel ;', sum(x.startswith('assets/flywheel/') for x in n), 'flywheel')" /tmp/flyfix/*.jar
+      - name: "Create: Adapted (phase A)"
+        run: |
+          # Ce que le serveur fait tourner aujourd'hui, memes fichiers.
+          mkdir -p /tmp/adapted/mods /tmp/adapted/assets
+          curl -fsSL -o /tmp/adapted/mods/create-adapted-26.2-1.31-public-external-assets.jar \
+            https://mediafilez.forgecdn.net/files/9075/359/create-adapted-26.2-1.31-public-external-assets.jar \
+            || curl -fsSL -o /tmp/adapted/mods/create-adapted-26.2-1.31-public-external-assets.jar \
+            https://www.cursemaven.com/curse/maven/create-adapted-1651484/9075359/create-adapted-1651484-9075359.jar
+          curl -fsSL -o /tmp/adapted/mods/createdieselgenerators-26.2-1.3.15-adapted-0.605.jar \
+            https://mediafilez.forgecdn.net/files/8879/67/createdieselgenerators-26.2-1.3.15-adapted-0.605.jar
+          curl -fsSL -o /tmp/adapted/assets/create-1.21.1-6.0.10.jar \
+            https://api.modrinth.com/maven/maven/modrinth/LNytGWDc/UjX6dr61/LNytGWDc-UjX6dr61.jar
+          ls -la /tmp/adapted/mods /tmp/adapted/assets
+          sha256sum /tmp/adapted/mods/*.jar
       - name: Monde
         run: |
           mkdir -p run/world/datapacks
           # La Terre : calage, grille des pays, minerais retires, petrole interdit au hasard.
           cp ci-dohy_terre.zip run/world/datapacks/dohy_terre.zip
-          ls -la run/world/datapacks
           echo "eula=true" > run/eula.txt
           printf 'online-mode=false\nenable-rcon=true\nrcon.password=shots\nrcon.port=25575\nlevel-seed=dohy\nspawn-protection=0\n' > run/server.properties
-          ( timeout 900 gradle runServer --no-daemon > /tmp/server.log 2>&1; echo "fin du serveur : $?" >> /tmp/server.log ) &
-          for i in $(seq 1 120); do grep -qE 'Done \(|fin du serveur' /tmp/server.log && break; sleep 5; done
-          grep -q 'Done (' /tmp/server.log || { grep -vE '^\s+at ' /tmp/server.log | tail -80; exit 1; }
-          python3 - <<'RCON'
-          import socket, struct
-          s = socket.create_connection(("127.0.0.1", 25575), timeout=60)
+          cat > /tmp/rcon.py <<'RCON'
+          import socket, struct, sys
+          s = socket.create_connection(("127.0.0.1", 25575), timeout=120)
           def send(kind, body, rid):
               data = struct.pack("<ii", rid, kind) + body.encode() + b"\x00\x00"
               s.sendall(struct.pack("<i", len(data)) + data)
               size = struct.unpack("<i", s.recv(4))[0]
-              s.recv(size)
+              got = b""
+              while len(got) < size:
+                  got += s.recv(size - len(got))
+              return got[8:-2].decode(errors="replace")
           send(3, "shots", 1)
-          send(2, "stop", 2)
+          for number, command in enumerate(sys.argv[1:], 2):
+              print("rcon>", command, "->", send(2, command, number)[:300])
           RCON
-          for i in $(seq 1 60); do grep -q 'fin du serveur' /tmp/server.log && break; sleep 2; done
+          cat > /tmp/nbt.py <<'NBT'
+          import gzip, struct, sys
+          raw = open(sys.argv[1], "rb").read()
+          data = gzip.decompress(raw) if raw[:2] == b"\x1f\x8b" else raw
+          pos = 0
+          def take(n):
+              global pos
+              chunk = data[pos:pos + n]
+              pos += n
+              return chunk
+          def name():
+              (length,) = struct.unpack(">H", take(2))
+              return take(length).decode("utf-8", "replace")
+          def payload(kind):
+              if kind == 1: return struct.unpack(">b", take(1))[0]
+              if kind == 2: return struct.unpack(">h", take(2))[0]
+              if kind == 3: return struct.unpack(">i", take(4))[0]
+              if kind == 4: return struct.unpack(">q", take(8))[0]
+              if kind == 5: return struct.unpack(">f", take(4))[0]
+              if kind == 6: return struct.unpack(">d", take(8))[0]
+              if kind == 7: return take(struct.unpack(">i", take(4))[0])
+              if kind == 8: return name()
+              if kind == 9:
+                  inner = take(1)[0]
+                  (count,) = struct.unpack(">i", take(4))
+                  return [payload(inner) for _ in range(count)]
+              if kind == 10:
+                  out = {}
+                  while True:
+                      tag = take(1)[0]
+                      if tag == 0: return out
+                      key = name()
+                      out[key] = payload(tag)
+              if kind == 11:
+                  (count,) = struct.unpack(">i", take(4))
+                  return list(struct.unpack(">%di" % count, take(4 * count)))
+              if kind == 12:
+                  (count,) = struct.unpack(">i", take(4))
+                  return list(struct.unpack(">%dq" % count, take(8 * count)))
+              raise SystemExit("tag %d inconnu" % kind)
+          kind = take(1)[0]
+          name()
+          root = payload(kind)
+          def show(value, indent=""):
+              if isinstance(value, dict):
+                  for key, item in value.items():
+                      if isinstance(item, list):
+                          print(indent + key, ": liste de", len(item))
+                          for entry in item[:4]:
+                              print(indent + "   ", entry)
+                      elif isinstance(item, dict):
+                          print(indent + key, ":")
+                          show(item, indent + "  ")
+                      else:
+                          print(indent + key, "=", item)
+          print(sys.argv[1], len(raw), "octets")
+          show(root)
+          NBT
+          boot() {
+            ( timeout 900 gradle runServer --no-daemon > "$1" 2>&1; echo "fin du serveur : $?" >> "$1" ) &
+            for i in $(seq 1 120); do grep -qE 'Done \(|fin du serveur' "$1" && break; sleep 5; done
+            grep -q 'Done (' "$1" || { grep -vE '^\s+at ' "$1" | tail -80; exit 1; }
+          }
+          halt() {
+            python3 /tmp/rcon.py "stop" || true
+            for i in $(seq 1 90); do grep -q 'fin du serveur' "$1" && break; sleep 2; done
+          }
+          oil() {
+            find run/world -path '*createdieselgenerators*' -name '*.dat' | while read -r f; do python3 /tmp/nbt.py "$f"; done
+          }
+          # Phase A : Create: Adapted et son Diesel Generators, comme le serveur aujourd'hui.
+          mkdir -p run/config/create-adapted/external-assets
+          cp /tmp/adapted/assets/*.jar run/config/create-adapted/external-assets/
+          cp /tmp/adapted/mods/*.jar run/mods/
+          ls -la run/mods
+          boot /tmp/server-A.log
+          python3 /tmp/rcon.py "dohyshots load"
+          for i in $(seq 1 24); do
+            sleep 10
+            python3 /tmp/rcon.py "dohyshots log" > /dev/null
+            [ "$(grep 'charges, ' /tmp/server-A.log | tail -3 | grep -c ' 25 servis')" -ge 3 ] && break
+          done
+          python3 /tmp/rcon.py "dohyshots log" "save-all flush"
+          sleep 8
+          grep -n 'dohy-shots' /tmp/server-A.log | tail -12
+          grep -niE 'petrole|Diesel Generators' /tmp/server-A.log | head -10
+          halt /tmp/server-A.log
+          echo "== petrole ecrit par Create: Adapted"; oil
+          # Phase B : Create Fly (Flywheel deplace) et le port de Diesel Generators sur le meme monde.
+          rm -f run/mods/create-adapted-*.jar run/mods/createdieselgenerators-*.jar
+          rm -rf run/config/create-adapted
+          cp /tmp/flyfix/create-fly-*.jar /tmp/fly/CreateDieselGenerators-*.jar run/mods/
+          ls -la run/mods
+          boot /tmp/server.log
+          python3 /tmp/rcon.py "dohyshots log" "save-all flush"
+          sleep 8
+          grep -n 'dohy-shots' /tmp/server.log | tail -8
+          halt /tmp/server.log
+          echo "== petrole relu et reecrit par le port"; oil
           grep -nE 'Done \(|fin du serveur|ERROR' /tmp/server.log | head -20
-          grep -niE 'utilitydrawers|utility drawers|utility_drawers' /tmp/server.log | head -40
-          grep -nE 'FAILED during APPLY|was not applied|Mixin apply failed|Error loading class|InvalidMixin' /tmp/server.log | head -20
-          grep -niE '\[create|createdieselgenerators|create fly|Legacy' /tmp/server.log | grep -iE 'warn|error|legacy|convert' | head -40
+          grep -nE 'FAILED during APPLY|was not applied|Mixin apply failed|InvalidMixin' /tmp/server.log | head -20
+          grep -niE 'legacy|convert|migrat' /tmp/server.log | head -20
           grep -niE 'datapack|dohy_terre|biome_modifier' /tmp/server.log | head -20
           mkdir -p run/saves && cp -r run/world run/saves/shots && ls run/saves/shots
       - name: Client
@@ -138,6 +256,8 @@ jobs:
           mkdir out && cp run/screenshots/*.png out/ 2>/dev/null || true
           cp /tmp/client.log out/client.log 2>/dev/null || true
           cp /tmp/server.log out/server.log 2>/dev/null || true
+          cp /tmp/server-A.log out/server-A.log 2>/dev/null || true
+          cp /tmp/flybuild.log out/flybuild.log 2>/dev/null || true
           cp /tmp/fly/release.json out/ 2>/dev/null || true
           cd out
           git init -q && git checkout -q -b shots-out && git add .

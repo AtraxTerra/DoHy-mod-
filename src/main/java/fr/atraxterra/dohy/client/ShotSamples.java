@@ -226,6 +226,8 @@ final class ShotSamples {
                 LOG.info("dohy-shots: [id] {} {}", id, BuiltInRegistries.ITEM.containsKey(
                         net.minecraft.resources.Identifier.parse(id)));
             }
+            // les champs servis par Create: Adapted en phase A, relus par le port avant toute visite
+            command(player, "dohyshots log");
             EarthData earth = EarthData.get();
             LOG.info("dohy-shots: [terre] carte {} ; {} gisements geants", earth != null, EarthBodies.all().size());
             for (String code : new String[]{"USA", "IND", "POL", "TCD"}) {
