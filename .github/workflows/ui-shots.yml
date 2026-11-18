@@ -100,6 +100,19 @@ jobs:
           cp $(ls /tmp/flysrc/build/libs/create-fly-*.jar | grep -v -- '-sources' | head -1) /tmp/flyfix/
           ls -la /tmp/flyfix
           python3 -I -c "import sys, zipfile; n = zipfile.ZipFile(sys.argv[1]).namelist(); print(sum(x.startswith('assets/create_flywheel/') for x in n), 'create_flywheel ;', sum(x.startswith('assets/flywheel/') for x in n), 'flywheel')" /tmp/flyfix/*.jar
+      - name: Diesel Generators, petrole Adapted relu
+        run: |
+          # Le port de Diesel Generators, recompile contre ce Create Fly, avec la lecture du
+          # petrole des chunks tel que la version Adapted l'ecrivait.
+          git clone -q --depth 1 -b port/cdg-neoforge-26.2 https://github.com/AtraxTerra/Mod-ported /tmp/cdgsrc
+          git -C /tmp/cdgsrc log --oneline -1
+          python3 -I ci/cdg_legacy_oil.py /tmp/cdgsrc
+          chmod +x /tmp/cdgsrc/gradlew
+          ( cd /tmp/cdgsrc && ./gradlew --no-daemon -q jar -Pcreate_fly_libs=/tmp/flysrc/build/libs ) > /tmp/cdgbuild.log 2>&1 || { tail -60 /tmp/cdgbuild.log; exit 1; }
+          tail -5 /tmp/cdgbuild.log
+          mkdir -p /tmp/cdgfix
+          cp $(ls /tmp/cdgsrc/build/libs/CreateDieselGenerators-*.jar | grep -v -- '-sources' | head -1) /tmp/cdgfix/
+          ls -la /tmp/cdgfix
       - name: "Create: Adapted (phase A)"
         run: |
           # Ce que le serveur fait tourner aujourd'hui, memes fichiers.
@@ -181,7 +194,9 @@ jobs:
           root = payload(kind)
           def show(value, indent=""):
               if isinstance(value, dict):
-                  for key, item in value.items():
+                  if len(value) > 15:
+                      print(indent + "(%d entrees, les 12 premieres)" % len(value))
+                  for key, item in list(value.items())[:12] if len(value) > 15 else value.items():
                       if isinstance(item, list):
                           print(indent + key, ": liste de", len(item))
                           for entry in item[:4]:
@@ -224,10 +239,10 @@ jobs:
           grep -niE 'petrole|Diesel Generators' /tmp/server-A.log | head -10
           halt /tmp/server-A.log
           echo "== petrole ecrit par Create: Adapted"; oil
-          # Phase B : Create Fly (Flywheel deplace) et le port de Diesel Generators sur le meme monde.
+          # Phase B : Create Fly (Flywheel deplace) et le port de Diesel Generators (petrole Adapted relu).
           rm -f run/mods/create-adapted-*.jar run/mods/createdieselgenerators-*.jar
           rm -rf run/config/create-adapted
-          cp /tmp/flyfix/create-fly-*.jar /tmp/fly/CreateDieselGenerators-*.jar run/mods/
+          cp /tmp/flyfix/create-fly-*.jar /tmp/cdgfix/CreateDieselGenerators-*.jar run/mods/
           ls -la run/mods
           boot /tmp/server.log
           python3 /tmp/rcon.py "dohyshots log" "save-all flush"
@@ -251,6 +266,8 @@ jobs:
           grep -niE 'utilitydrawers|utility drawers|utility_drawers|Failed to create screen' /tmp/client.log | grep -v DEBUG | head -60
           grep -nE 'FAILED during APPLY|was not applied|Mixin apply failed|InvalidMixin' /tmp/client.log | head -20
           ls -la run/screenshots || true
+          echo "== petrole apres le client"
+          find run/saves/shots -path '*createdieselgenerators*' -name '*.dat' | while read -r f; do python3 /tmp/nbt.py "$f"; done
       - name: Pousser
         if: always()
         run: |
@@ -259,6 +276,7 @@ jobs:
           cp /tmp/server.log out/server.log 2>/dev/null || true
           cp /tmp/server-A.log out/server-A.log 2>/dev/null || true
           cp /tmp/flybuild.log out/flybuild.log 2>/dev/null || true
+          cp /tmp/cdgbuild.log out/cdgbuild.log 2>/dev/null || true
           cp /tmp/fly/release.json out/ 2>/dev/null || true
           cd out
           git init -q && git checkout -q -b shots-out && git add .

@@ -236,7 +236,9 @@ final class ShotSamples {
         }));
         ShotHarness.SHOTS.add(server("o1_petrole", 500, player -> {
             ServerLevel level = player.level().getServer().overworld();
-            go(player, onLand(level, "permian", "ghawar", "samotlor", "hassi_messaoud", "orinoco", "bakken"));
+            // un champ que la phase A n'a pas servi : son petrole est pose par le port
+            go(player, onLand(level, "hassi_messaoud", "daqing", "burgan", "rumaila", "orinoco",
+                    "east_texas", "bakken"));
         }));
         ShotHarness.SHOTS.add(server("o2_petrole_chunks", 60, player -> {
             ServerLevel level = player.level().getServer().overworld();
