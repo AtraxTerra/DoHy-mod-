@@ -3223,3 +3223,62 @@ deux calculs de suite ; un achat (argent débité, objet dans l'inventaire, stoc
 « vendu ») ; les refus (plus de stock, pas assez d'argent, annonce inexistante) ; les quatre
 renouvellements à 250 k, 500 k, 1 M et 2 M, puis le refus du cinquième ; la carte du menu et
 la commande `/market`. Non vérifié : le changement d'annonces au passage d'un jour réel.
+
+## 35. Tiroirs : Utility Drawers (2026-11-18)
+
+Paladium jouait avec **Storage Drawers** installé à côté de PalaMod ; Berskar n'a pas de tiroirs
+à lui. Après l'essai de deux portages en 26.2, le joueur a retenu **Utility Drawers** (CurseForge,
+projet 1582712) : un mod à part, à mettre sur le serveur **et** sur le client. Berskar n'en
+dépend pas.
+
+### Ce que Berskar lui apporte
+
+- **Ses noms en français** : `assets/utilitydrawers/lang/fr_fr.json`, les 97 clés du mod, qui
+  n'a que l'anglais. Sans accents, comme le reste du kit ; les bois suivent les noms de Minecraft
+  (chêne, sapin, bouleau, acajou, acacia, chêne noir, palétuvier, cerisier, chêne pâle, bambou,
+  carmin, biscornu). Ce que le mod écrit en dur reste en anglais (le titre « Drawer » de
+  l'interface, « (Empty) » dans l'info-bulle, « Search... » à l'écran de stockage).
+- **La fiche « Les tiroirs »** (Technique) : son guide en jeu demande le mod GuideMe, absent. Elle
+  se découvre en ramassant un tiroir, une base, un compacteur ou une interface.
+  `check_encyclopedia.py` connaît désormais les objets d'un mod optionnel (`OPTIONAL_ITEMS`,
+  relevés dans son jar).
+
+### Les recettes au paladium de Paladium : aucune ne s'applique
+
+- La **clé en paladium** (`ItemPaladiumKey`, quatre lingots de paladium autour de la clé
+  personnelle) ouvrait un tiroir fermé par la clé personnelle d'un autre joueur. Utility Drawers
+  n'a pas de propriétaire : son verrou ne fixe que l'objet d'une case, et la télécommande le lève
+  pour n'importe qui. Le déblocage du Chasseur 85 dans `jobs.json` reste donc sans objet.
+- L'**amélioration de répétition** de la baguette des bâtisseurs de faction (paladium compressé
+  autour de l'amélioration émeraude) : la baguette n'existe pas dans Berskar.
+
+### Utility Drawers 1.2.6, essayé avec Berskar et NTM (captures, 2026-11-18)
+
+Fichier `utilitydrawers-1.2.6-26.2.jar` (2 540 354 octets, SHA-256 `56859f71…374117`), sur le
+serveur dédié puis le client, avec NTM NEXT et NTM Space. Tout ce qui suit a marché :
+
+- le démarrage, sans erreur ; ses 87 recettes ; la pose de tous les blocs ;
+- le dépôt au clic droit, le retrait au clic gauche (un objet, une pile accroupi), **l'objet et le
+  nombre dessinés sur la façade** ; le compacteur (45 lingots de fer → 5 blocs, 45 lingots,
+  405 pépites) ; l'interface du tiroir (clic droit main vide) ;
+- **un tiroir plein cassé garde son contenu** : reposé, il avait encore ses 127 pierres ;
+- l'amélioration en fer posée au clic droit (capacité × 4) ; l'eau et la lave dans un tiroir à
+  fluide ;
+- le réseau : la télécommande liée à l'interface (accroupi), cinq tiroirs reliés, puis un
+  entonnoir sur l'interface qui a rangé 8 pierres et 4 bûches dans les bons tiroirs ; l'écran de
+  stockage posé contre l'interface, qui montre tout le réseau ;
+- les noms en français dans le jeu, et la fiche.
+
+Deux remarques. Deux clics droits en moins de 300 ms rangent tout ce que le joueur porte du même
+objet ; le délai est compté **par joueur**, pas par tiroir (`LAST_CLICK_TIME`). Et le fluide
+paraît sombre sur la façade dans les captures, en rendu logiciel ; l'écran de stockage le montre
+bien.
+
+### Vault Drawers, essayé d'abord et écarté
+
+Vault Drawers 0.0.0-beta.9 (`vault_drawers-26.2-neoforge-26.2.0.57-0.0.0-beta.9.jar`) démarre aussi
+avec Berskar et NTM, mais : rien n'est dessiné sur la façade ; **un tiroir plein cassé est
+détruit** (un objet et les améliorations, 192 pierres → 1) ; pas d'interface côté client, et
+l'inventaire ne se rafraîchit plus à l'écran à moins de 8 blocs ; d'après son code, le contrôleur
+n'est pas porté et la fermeture à clé n'est pas sauvegardée. La clé en paladium avait été portée
+pour lui (PR #167), puis abandonnée avec lui.
