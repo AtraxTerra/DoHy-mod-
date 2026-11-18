@@ -10,7 +10,8 @@ Controles :
   - identifiants de fiches et de categories uniques, categories connues ;
   - voisins (``see``) existants, sans doublon ni renvoi a soi ;
   - objets (icones, decouverte) : ceux de dohy et palamod existent dans
-    assets/<ns>/items, les tags dans data/<ns>/tags/item ;
+    assets/<ns>/items, les tags dans data/<ns>/tags/item ; ceux d'un mod
+    optionnel figurent dans OPTIONAL_ITEMS, releves dans son jar ;
   - plans connus de Blueprints.java, menus (``views``) connus du code,
     dimensions connues du datapack, cles de progression connues
     d'EncyclopediaProgress.java ;
@@ -39,6 +40,13 @@ ID = re.compile(r"^[a-z0-9_]+$")
 ITEM = re.compile(r"^#?[a-z0-9_.-]+:[a-z0-9_./-]+$")
 VANILLA_DIMENSIONS = {"minecraft:overworld", "minecraft:the_nether", "minecraft:the_end"}
 MOD_NAMESPACES = {"dohy", "palamod"}
+# Les objets d'un mod optionnel : le depot ne les contient pas, on ne peut que
+# verifier qu'ils sont connus. Chaque liste est relevee dans le jar du mod.
+OPTIONAL_ITEMS = {
+    # Utility Drawers 1.2.6 (utilitydrawers-1.2.6-26.2.jar) : la fiche « tiroirs ».
+    "utilitydrawers": {"oak_drawer_1", "oak_drawer_2", "oak_drawer_4", "drawer_base",
+                       "compacting_drawer", "storage_interface"},
+}
 
 
 def java_text():
@@ -85,6 +93,8 @@ def item_problem(value):
     namespace, path = value.lstrip("#").split(":", 1)
     if namespace == "minecraft" or namespace == "c":
         return None
+    if namespace in OPTIONAL_ITEMS:
+        return None if not tag and path in OPTIONAL_ITEMS[namespace] else "objet inconnu du mod optionnel"
     if namespace not in MOD_NAMESPACES:
         return "espace de noms inconnu"
     if tag:

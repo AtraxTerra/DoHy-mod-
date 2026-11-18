@@ -3306,40 +3306,78 @@ deux calculs de suite ; un achat (argent débité, objet dans l'inventaire, stoc
 renouvellements à 250 k, 500 k, 1 M et 2 M, puis le refus du cinquième ; la carte du menu et
 la commande `/market`. Non vérifié : le changement d'annonces au passage d'un jour réel.
 
-## 35. Tiroirs : Vault Drawers et la clé en paladium (2026-11-18)
+## 35. Tiroirs : Utility Drawers, et la clé en paladium (2026-11-18)
 
 Paladium jouait avec **Storage Drawers** installé à côté de PalaMod ; Berskar n'a pas de tiroirs
-à lui. Le portage en 26.2 retenu par le joueur est **Vault Drawers** (CurseForge, projet
-1668019), un mod à part, à mettre sur le serveur **et** sur le client. Berskar n'en dépend pas.
+à lui. Deux portages en 26.2 ont été essayés avec Berskar et NTM : **Vault Drawers** d'abord,
+écarté, puis **Utility Drawers** (CurseForge, projet 1582712), retenu par le joueur. C'est un mod
+à part, à mettre sur le serveur **et** sur le client ; Berskar n'en dépend pas.
 
-### La clé en paladium — `ItemPaladiumKey`
+### Ce que Berskar apporte à Utility Drawers
+
+- **Ses noms en français** : `assets/utilitydrawers/lang/fr_fr.json`, les 97 clés du mod, qui
+  n'a que l'anglais. Sans accents, comme le reste du kit ; les bois suivent les noms de Minecraft
+  (chêne, sapin, bouleau, acajou, acacia, chêne noir, palétuvier, cerisier, chêne pâle, bambou,
+  carmin, biscornu). Ce que le mod écrit en dur reste en anglais (le titre « Drawer » de
+  l'interface, « (Empty) » dans l'info-bulle, « Search... » à l'écran de stockage).
+- **La fiche « Les tiroirs »** (Technique) : son guide en jeu demande le mod GuideMe, absent. Elle
+  se découvre en ramassant un tiroir, une base, un compacteur ou une interface.
+  `check_encyclopedia.py` connaît désormais les objets d'un mod optionnel (`OPTIONAL_ITEMS`,
+  relevés dans son jar).
+
+### Utility Drawers 1.2.6, essayé avec Berskar et NTM (captures, 2026-11-18)
+
+Fichier `utilitydrawers-1.2.6-26.2.jar` (2 540 354 octets, SHA-256 `56859f71…374117`), sur le
+serveur dédié puis le client, avec NTM NEXT et NTM Space. Tout ce qui suit a marché :
+
+- le démarrage, sans erreur ; ses 87 recettes ; la pose de tous les blocs ;
+- le dépôt au clic droit, le retrait au clic gauche (un objet, une pile accroupi), **l'objet et le
+  nombre dessinés sur la façade** ; le compacteur (45 lingots de fer → 5 blocs, 45 lingots,
+  405 pépites) ; l'interface du tiroir (clic droit main vide) ;
+- **un tiroir plein cassé garde son contenu** : reposé, il avait encore ses 127 pierres ;
+- l'amélioration en fer posée au clic droit (capacité × 4) ; l'eau et la lave dans un tiroir à
+  fluide ;
+- le réseau : la télécommande liée à l'interface (accroupi), cinq tiroirs reliés, puis un
+  entonnoir sur l'interface qui a rangé 8 pierres et 4 bûches dans les bons tiroirs ; l'écran de
+  stockage posé contre l'interface, qui montre tout le réseau ;
+- les noms en français dans le jeu, et la fiche.
+
+Deux remarques. Deux clics droits en moins de 300 ms rangent tout ce que le joueur porte du même
+objet ; le délai est compté **par joueur**, pas par tiroir (`LAST_CLICK_TIME`). Et le fluide
+paraît sombre sur la façade dans les captures, en rendu logiciel ; l'écran de stockage le montre
+bien.
+
+### La clé en paladium — `ItemPaladiumKey`, pour Vault Drawers seulement
 
 - Clic droit sur un tiroir fermé par une clé personnelle : il s'ouvre à tous, et la clé part (le
   créatif la garde). Sur un tiroir ouvert, ou sur un autre bloc, un message et rien d'autre. Les
   messages sont ceux de PalaMod, sans accents ni la faute de « vérrouillé ». Une par pile.
 - **Recette du relevé** : quatre lingots de paladium autour de la clé personnelle de Storage
-  Drawers, devenue `vault_drawers:personal_key`. Elle ne se charge qu'avec le mod
+  Drawers, devenue `vault_drawers:personal_key`. Elle ne se charge qu'avec Vault Drawers
   (`neoforge:mod_loaded`) : sans lui, l'ingrédient n'existe pas et 26.2 jetterait la recette.
-- **Chasseur 85** : le déblocage était déjà dans `jobs.json`, sans effet faute d'objet.
-- Le pont passe par la réflexion sur `IProtectable` (`VaultDrawersCompat`). Le clic est pris
-  avant le tiroir (`RightClickBlock`) : fermé, celui-ci ignore tout joueur qui n'en est pas le
-  propriétaire, la clé comprise. Priorité basse, pour que le verrou de métier passe d'abord.
-- **Seule l'une des deux recettes au paladium qui touchent aux tiroirs est portée.** L'autre
-  fait l'amélioration de répétition de la baguette des bâtisseurs de faction (paladium compressé
-  autour de l'amélioration émeraude) : cette baguette n'existe pas dans Berskar.
-- **Écart** : sur une partie jouée seul, la clé ne sert que si quelqu'un d'autre a fermé un
-  tiroir — son propriétaire l'ouvre avec sa propre clé personnelle.
+- **Chasseur 85** : le déblocage était déjà dans `jobs.json`.
+- Le pont passe par la réflexion sur `IProtectable` de Vault Drawers (`VaultDrawersCompat`). Le
+  clic est pris avant le tiroir (`RightClickBlock`) : fermé, celui-ci ignore tout joueur qui n'en
+  est pas le propriétaire, la clé comprise. Priorité basse, pour que le verrou de métier passe
+  d'abord.
+- **Avec Utility Drawers, elle ne sert à rien** : ce mod n'a pas de propriétaire, son verrou ne
+  fixe que l'objet d'une case et la télécommande le lève pour n'importe qui. Sans Vault Drawers,
+  la clé reste dans l'onglet créatif mais ne se fabrique pas. Même avec lui, sur une partie jouée
+  seul, elle ne sert que si quelqu'un d'autre a fermé un tiroir.
+- **L'autre recette au paladium qui touche aux tiroirs n'est pas portée** : elle fait
+  l'amélioration de répétition de la baguette des bâtisseurs de faction (paladium compressé autour
+  de l'amélioration émeraude), et cette baguette n'existe pas dans Berskar.
 
-### Vault Drawers 0.0.0-beta.9, essayé avec Berskar et NTM (captures, 2026-11-18)
+### Vault Drawers 0.0.0-beta.9, essayé d'abord et écarté (captures, 2026-11-18)
 
 Fichier `vault_drawers-26.2-neoforge-26.2.0.57-0.0.0-beta.9.jar` (1 067 619 octets, SHA-256
 `9e6a1297…5b3c8`), sur le serveur dédié puis le client, avec NTM NEXT et NTM Space.
 
-- **Ce qui marche** : le démarrage, sans erreur ; ses 125 recettes ; la pose de tous les blocs
-  (tiroirs 1, 2 et 4, demi-tiroirs, compactage, contrôleur, bordures) ; le dépôt au clic droit,
-  le retrait au clic gauche ; les améliorations posées au clic droit (émeraude : 2 048 → 131 072) ;
-  la clé personnelle, qui refuse le dépôt à un autre joueur. La clé en paladium : refusée sans le
-  niveau, puis le tiroir ouvert, la clé consommée et les trois messages.
+- **Ce qui marche** : le démarrage, sans erreur ; ses 125 recettes ; la pose de tous les blocs ;
+  le dépôt au clic droit, le retrait au clic gauche ; les améliorations posées au clic droit
+  (émeraude : 2 048 → 131 072) ; la clé personnelle, qui refuse le dépôt à un autre joueur. La clé
+  en paladium : refusée sans le niveau, puis le tiroir ouvert, la clé consommée et les trois
+  messages.
 - **Ce qui ne marche pas** :
   - **rien n'est dessiné sur la façade**, ni l'objet ni le nombre : on ne voit pas ce que
     contient un tiroir ;

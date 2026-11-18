@@ -3711,6 +3711,74 @@
           "dohy:parcours_ntm"
         ]
       }
+    },
+    {
+      "id": "tiroirs",
+      "category": "technique",
+      "order": 12,
+      "icon": "minecraft:barrel",
+      "title": "Les tiroirs",
+      "card": [
+        "Utility Drawers",
+        "Milliers d'objets par bloc"
+      ],
+      "summary": [
+        "Le mod Utility Drawers ajoute des tiroirs : un seul bloc garde des milliers d'objets d'une meme sorte et les montre sur sa facade. Il s'installe a part, sur le serveur et sur le client."
+      ],
+      "sections": [
+        {
+          "title": "Fabriquer",
+          "text": [
+            "- La base de tiroir : 4 lingots de fer aux coins, 4 planches entre eux.",
+            "- Le tiroir 1x : 8 buches ecorcees autour d'une base. Le 2x et le 4x prennent aussi des coffres. Une essence par bois.",
+            "- Le tiroir a fluide se fait en pierre ; le tiroir compacteur avec des blocs de fer et des pistons."
+          ]
+        },
+        {
+          "title": "Ranger et reprendre",
+          "text": [
+            "- Clic droit avec un objet : il entre dans la case visee. Deux clics en moins d'un tiers de seconde rangent tout ce que tu portes du meme objet.",
+            "- Clic gauche : un objet ; accroupi, une pile.",
+            "- Clic droit main vide : l'interface du tiroir et ses cases d'amelioration.",
+            "- Casse, un tiroir garde son contenu : repose, il est encore plein."
+          ]
+        },
+        {
+          "title": "Ameliorations",
+          "text": [
+            "- Clic droit sur le tiroir, l'amelioration en main : elle s'installe.",
+            "- Fer x4, or x8, diamant x16, netherite x32 sur la capacite ; elles se multiplient entre elles.",
+            "- Vide : detruit le surplus. Import et export tirent ou poussent vers les blocs voisins, une fois reglees (clic droit, l'amelioration en main)."
+          ]
+        },
+        {
+          "title": "Le compacteur",
+          "text": [
+            "Pepites, lingots et blocs d'un meme metal dans un seul tiroir : il convertit tout seul, dans les deux sens."
+          ]
+        },
+        {
+          "title": "Le reseau",
+          "text": [
+            "- L'interface de stockage relie des tiroirs : accroupi, clic droit sur l'interface avec la telecommande, puis clic droit sur chaque tiroir a relier.",
+            "- Ce qu'un entonnoir ou un tuyau verse dans l'interface se range dans les tiroirs relies.",
+            "- L'ecran de stockage, pose contre l'interface en etant accroupi, montre et cherche tout le reseau."
+          ]
+        }
+      ],
+      "see": [
+        "palettes"
+      ],
+      "discover": {
+        "items": [
+          "utilitydrawers:oak_drawer_1",
+          "utilitydrawers:oak_drawer_2",
+          "utilitydrawers:oak_drawer_4",
+          "utilitydrawers:drawer_base",
+          "utilitydrawers:compacting_drawer",
+          "utilitydrawers:storage_interface"
+        ]
+      }
     }
   ]
 }
