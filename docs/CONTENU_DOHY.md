@@ -346,6 +346,9 @@ La grille des 256 pays et territoires vient de Natural Earth (domaine public), u
     - **Create Diesel Generators** : les chunks d'un champ ont du pétrole pour sa pompe, 4 à
       9 millions de mB par point de richesse du bord au centre ; Ghawar et South Pars ont un cœur
       inépuisable (plus de 10 millions). Ailleurs, le datapack lui retire le pétrole au hasard.
+      Même classe et même fichier (`createdieselgenerators/oil_chunks.dat` de l'Overworld) avec la
+      version Adapted et avec le port de Create Fly (voir « Create Fly à la place de Create:
+      Adapted » plus bas).
     - **Quartz** : quatre mines de quartz du Nether (Spruce Pine, Diamantina, Hot Springs,
       Madagascar), avec des **géodes de quartz d'AE2** (une coque de quartz certus semée de 12 %
       de quartz bourgeonnant, creuse) : 6, 4 ou 2 selon le rang.
@@ -364,9 +367,13 @@ La grille des 256 pays et territoires vient de Natural Earth (domaine public), u
     seconde par chunk, et 15 ms au plus de service par tick. Un minerai d'un mod absent est ignoré.
 - **Ce que le datapack retire.** Sur la carte, tous les minerais du jeu (charbon, fer, cuivre, or,
   redstone, diamant, lapis, émeraude) ne sont plus générés (`neoforge:remove_features`), ni le
-  zinc de Create ; les minerais d'overworld de NTM NEXT sont coupés par son propre interrupteur
-  (`hbm/world_config/worldgen.json`) ; le pétrole au hasard du Create Diesel Generators aussi
-  (`deny_oil_biomes`). Tout vient des filons, des gisements géants et de la dimension du Mineur.
+  zinc de Create: Adapted ; les minerais d'overworld de NTM NEXT sont coupés par son propre
+  interrupteur (`hbm/world_config/worldgen.json`) ; le pétrole au hasard du Create Diesel
+  Generators aussi (`deny_oil_biomes`). Tout vient des filons, des gisements géants et de la
+  dimension du Mineur. **Create Fly** ajoute son zinc et ses pierres striées en code à tous les
+  biomes de l'Overworld, hors de portée du datapack : son zinc est effacé au premier passage par
+  le nettoyage (liste `clear`), comme les autres minerais ; ses pierres striées restent, comme
+  avec Create: Adapted.
 
 ### Les zones irradiées : Tchernobyl et Fukushima
 
@@ -691,6 +698,50 @@ par-dessus le chunk dessiné (essayé sur un chunk copié à cette étape : son 
 moitié de ses blocs aussi). `mixin/SerializableChunkDataMixin` renomme l'étape en `carvers` dans
 les données du chunk avant leur lecture : le jeu reprend à la décoration.
 
+### Create Fly à la place de Create: Adapted (essai du 2026-11-18)
+
+Le port NeoForge 26.2 de **Create Fly** et de son **Diesel Generators** (AtraxTerra/Mod-ported,
+pré-version `server-latest`) remplace Create: Adapted et Create: Diesel Generators Adapted. Rien
+ne change dans Berskar : mêmes identifiants (`create:zinc_ore`, `create:deepslate_zinc_ore`,
+`create:raw_zinc`, `create:zinc_ingot`, les placed features `create:zinc_ore` et
+`create:striated_ores_overworld` de la Mine), même classe et même méthode pour le pétrole des
+chunks (`OilChunksSavedData.setChunkOilAmount`), même tag `create:simple_mounted_storage`, même
+capacité d'objets de NeoForge pour les palettes (`AllTransfer` interroge `Capabilities.Item.BLOCK`).
+
+Essayé en CI avec Berskar, NTM NEXT et NTM Space, Utility Drawers et le datapack de la Terre, sur
+un monde d'abord ouvert avec les deux mods Adapted (trois champs de pétrole servis : Ghawar, le
+bassin permien, Samotlor), puis rouvert avec Create Fly :
+
+- **Zinc** : le gisement géant de Red Dog est en zinc de Create Fly (2 628 + 4 127 blocs autour
+  du centre) ; la Mine pose zinc et pierres striées (1 076 + 1 015 blocs de zinc et 222 d'asurine
+  sur 25 chunks) ; au Tchad, pays sans zinc, 25 chunks servis n'ont aucun bloc de Create.
+- **Pétrole** : les 47 chunks servis sous Create: Adapted sont relus à l'identique (Ghawar
+  9 263 399 mB au centre) ; un champ servi après le changement (Hassi Messaoud, 5 319 868 mB au
+  centre) reçoit son pétrole du port ; le fichier réécrit garde les 47 chunks et ajoute les nouveaux.
+- **Rendu** : arbres, roues dentées et moteur de Create dessinés à côté d'un coffre, d'une cloche,
+  d'une boîte de Shulker et d'un wagonnet dessinés par CrankShaft.
+
+Ces trois résultats demandent **deux corrections du port**, essayées en CI sur des jars recompilés
+(scripts `ci/relocate_flywheel.py` et `ci/cdg_legacy_oil.py` de la branche d'essai
+`tmp/shots-fly`) :
+
+1. **Flywheel.** Create Fly embarque sa propre copie de Flywheel (1.0.6), dont les shaders sont
+   rangés sous `assets/flywheel/` : le même espace de noms que CrankShaft 1.6.0 (le Flywheel
+   autonome), que NTM NEXT et NTM Space exigent côté client. 27 des 55 fichiers communs
+   diffèrent, et le client s'arrête au chargement (« Warming CrankShaft shaders »,
+   `culling/uber18.glsl`). Avec l'espace de noms `create_flywheel` (la constante
+   `Flywheel.MOD_ID`, le dossier des ressources et les `#include` des shaders), les deux moteurs
+   tournent ensemble.
+2. **Pétrole des chunks.** Create: Diesel Generators Adapted écrit une table plate `"x,z" → mB`
+   (`data: {"211,-67": 9263399, …}`) ; le port lit une liste `OilChunks` (`x`, `z`, `Amountmb`)
+   qui n'existe pas dans ce fichier. Sans correction, chaque champ déjà servi tombe à 0 mB (Berskar
+   ne le ressert pas) et le fichier est réécrit au premier changement. Le port corrigé lit les deux
+   formes et écrit la table de la version Adapted.
+
+À la migration, NeoForge ignore aussi l'attache `create:minecart_controller` que Create: Adapted
+mettait sur les wagonnets (« unknown or non-serializable data attachment ») : ce qu'elle gardait,
+l'attelage des wagonnets notamment, n'est pas repris par Create Fly.
+
 ### Code
 
 - `earth/` : `EarthData` (calage, grille, pays), `EarthEvents` (chargement avant les mondes,
@@ -891,7 +942,8 @@ d'armement en 3D**. Compatible **Create** et **NTM NEXT**.
 - Par n'importe quelle face, la **capacité d'objets** de NeoForge donne le stock du groupe entier :
   entonnoirs, glissières, bras mécaniques de Create, grues et convoyeurs de NTM NEXT chargent et
   déchargent une palette comme un coffre (relu dans leurs jars : tous deux interrogent cette
-  capacité). Les entonnoirs du jeu aussi.
+  capacité ; Create Fly aussi, `AllTransfer` et `Capabilities.Item.BLOCK`). Les entonnoirs du jeu
+  aussi.
 - Le tag `create:simple_mounted_storage` laisse Create **embarquer les palettes chargées** sur ses
   machines mobiles (trains, chariots), contenu compris : sans face, la capacité ne donne que les
   piles de la palette elle-même, pour que rien ne compte deux fois.
