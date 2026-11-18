@@ -722,8 +722,9 @@ bassin permien, Samotlor), puis rouvert avec Create Fly :
   d'une boîte de Shulker et d'un wagonnet dessinés par CrankShaft.
 
 Ces trois résultats demandent **deux corrections du port**, essayées en CI sur des jars recompilés
-(scripts `ci/relocate_flywheel.py` et `ci/cdg_legacy_oil.py` de la branche d'essai
-`tmp/shots-fly`) :
+(branche d'essai `tmp/shots-fly`) et proposées à Mod-ported (PR #1 sur `port/neoforge-26.2`,
+PR #2 sur `port/cdg-neoforge-26.2`, à fusionner dans cet ordre : c'est la seconde qui republie
+`server-latest`) :
 
 1. **Flywheel.** Create Fly embarque sa propre copie de Flywheel (1.0.6), dont les shaders sont
    rangés sous `assets/flywheel/` : le même espace de noms que CrankShaft 1.6.0 (le Flywheel
