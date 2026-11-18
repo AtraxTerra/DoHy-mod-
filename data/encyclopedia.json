@@ -1276,6 +1276,8 @@
           "text": [
             "- Un plancher de 7 x 7 blocs du chaudron, un anneau de 5 x 5 au-dessus, puis le coeur pose en dernier au centre du plancher : la foudre tombe et le chaudron est forme.",
             "- Le bassin de 3 x 3 dans l'anneau se remplit d'eau angelique.",
+            "- Des fleurs vanilla jetees dans le bassin donnent parfois une fleur rare : une fleur minerale sur 500, une fleur de paladium sur 300.",
+            "- Plantee, la fleur minerale se change en lingots a la septieme poudre d'os : 2 a 4 de titane, 3 a 5 d'amethyste ou 1 a 2 de paladium. Elle disparait.",
             "! Le plan de construction montre la forme complete."
           ]
         },
@@ -1302,7 +1304,8 @@
           "palamod:cauldron_core",
           "palamod:cauldron",
           "palamod:extractor",
-          "palamod:flask"
+          "palamod:flask",
+          "palamod:mineral_flower"
         ],
         "views": [
           "dohy:mystic_enchant"

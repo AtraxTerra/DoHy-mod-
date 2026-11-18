@@ -112,8 +112,9 @@ public final class PalaAlchemist {
             "endium_flower", PalaAlchemist::flower, PalaAlchemist::flowerProperties);
     public static final DeferredBlock<FlowerBlock> PALADIUM_FLOWER = BLOCKS.registerBlock(
             "paladium_flower", PalaAlchemist::flower, PalaAlchemist::flowerProperties);
-    public static final DeferredBlock<FlowerBlock> MINERAL_FLOWER = BLOCKS.registerBlock(
-            "mineral_flower", PalaAlchemist::flower, PalaAlchemist::flowerProperties);
+    /** Elle seule se change en lingots a la poudre d'os ({@link MineralFlowerBlock}). */
+    public static final DeferredBlock<MineralFlowerBlock> MINERAL_FLOWER = BLOCKS.registerBlock(
+            "mineral_flower", MineralFlowerBlock::new, PalaAlchemist::flowerProperties);
 
     public static final DeferredItem<BlockItem> HARPAGOPHYTUM_FLOWER_ITEM = ITEMS.registerSimpleBlockItem(HARPAGOPHYTUM_FLOWER);
     public static final DeferredItem<BlockItem> SAUGE_FLOWER_ITEM = ITEMS.registerSimpleBlockItem(SAUGE_FLOWER);

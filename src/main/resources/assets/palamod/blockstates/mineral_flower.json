@@ -1,6 +1,24 @@
 {
   "variants": {
-    "": {
+    "growth=0": {
+      "model": "palamod:block/mineral_flower"
+    },
+    "growth=1": {
+      "model": "palamod:block/mineral_flower"
+    },
+    "growth=2": {
+      "model": "palamod:block/mineral_flower"
+    },
+    "growth=3": {
+      "model": "palamod:block/mineral_flower"
+    },
+    "growth=4": {
+      "model": "palamod:block/mineral_flower"
+    },
+    "growth=5": {
+      "model": "palamod:block/mineral_flower"
+    },
+    "growth=6": {
       "model": "palamod:block/mineral_flower"
     }
   }
