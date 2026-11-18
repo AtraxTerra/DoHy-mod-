@@ -3305,3 +3305,50 @@ deux calculs de suite ; un achat (argent débité, objet dans l'inventaire, stoc
 « vendu ») ; les refus (plus de stock, pas assez d'argent, annonce inexistante) ; les quatre
 renouvellements à 250 k, 500 k, 1 M et 2 M, puis le refus du cinquième ; la carte du menu et
 la commande `/market`. Non vérifié : le changement d'annonces au passage d'un jour réel.
+
+## 35. Tiroirs : Vault Drawers et la clé en paladium (2026-11-18)
+
+Paladium jouait avec **Storage Drawers** installé à côté de PalaMod ; Berskar n'a pas de tiroirs
+à lui. Le portage en 26.2 retenu par le joueur est **Vault Drawers** (CurseForge, projet
+1668019), un mod à part, à mettre sur le serveur **et** sur le client. Berskar n'en dépend pas.
+
+### La clé en paladium — `ItemPaladiumKey`
+
+- Clic droit sur un tiroir fermé par une clé personnelle : il s'ouvre à tous, et la clé part (le
+  créatif la garde). Sur un tiroir ouvert, ou sur un autre bloc, un message et rien d'autre. Les
+  messages sont ceux de PalaMod, sans accents ni la faute de « vérrouillé ». Une par pile.
+- **Recette du relevé** : quatre lingots de paladium autour de la clé personnelle de Storage
+  Drawers, devenue `vault_drawers:personal_key`. Elle ne se charge qu'avec le mod
+  (`neoforge:mod_loaded`) : sans lui, l'ingrédient n'existe pas et 26.2 jetterait la recette.
+- **Chasseur 85** : le déblocage était déjà dans `jobs.json`, sans effet faute d'objet.
+- Le pont passe par la réflexion sur `IProtectable` (`VaultDrawersCompat`). Le clic est pris
+  avant le tiroir (`RightClickBlock`) : fermé, celui-ci ignore tout joueur qui n'en est pas le
+  propriétaire, la clé comprise. Priorité basse, pour que le verrou de métier passe d'abord.
+- **Seule l'une des deux recettes au paladium qui touchent aux tiroirs est portée.** L'autre
+  fait l'amélioration de répétition de la baguette des bâtisseurs de faction (paladium compressé
+  autour de l'amélioration émeraude) : cette baguette n'existe pas dans Berskar.
+- **Écart** : sur une partie jouée seul, la clé ne sert que si quelqu'un d'autre a fermé un
+  tiroir — son propriétaire l'ouvre avec sa propre clé personnelle.
+
+### Vault Drawers 0.0.0-beta.9, essayé avec Berskar et NTM (captures, 2026-11-18)
+
+Fichier `vault_drawers-26.2-neoforge-26.2.0.57-0.0.0-beta.9.jar` (1 067 619 octets, SHA-256
+`9e6a1297…5b3c8`), sur le serveur dédié puis le client, avec NTM NEXT et NTM Space.
+
+- **Ce qui marche** : le démarrage, sans erreur ; ses 125 recettes ; la pose de tous les blocs
+  (tiroirs 1, 2 et 4, demi-tiroirs, compactage, contrôleur, bordures) ; le dépôt au clic droit,
+  le retrait au clic gauche ; les améliorations posées au clic droit (émeraude : 2 048 → 131 072) ;
+  la clé personnelle, qui refuse le dépôt à un autre joueur. La clé en paladium : refusée sans le
+  niveau, puis le tiroir ouvert, la clé consommée et les trois messages.
+- **Ce qui ne marche pas** :
+  - **rien n'est dessiné sur la façade**, ni l'objet ni le nombre : on ne voit pas ce que
+    contient un tiroir ;
+  - **casser un tiroir plein le détruit** : il lâche un seul objet de son contenu et ses
+    améliorations, ni le tiroir ni le reste (192 pierres → 1) ;
+  - **l'interface** (Maj + clic droit main vide) n'existe pas côté client. Le serveur la croit
+    ouverte, et l'inventaire ne se met plus à jour à l'écran tant qu'on reste à moins de 8 blocs
+    du tiroir (rien n'est perdu) ;
+  - d'après son journal et son code : le contrôleur ne relie pas les tiroirs, et une fermeture à
+    clé n'est pas sauvegardée (elle disparaît au redémarrage).
+- NTM porte des mixins pour Storage Drawers (`com.jaquadro…`) ; ils ne trouvent pas Vault
+  Drawers, dont le paquet diffère : de simples avertissements au démarrage.

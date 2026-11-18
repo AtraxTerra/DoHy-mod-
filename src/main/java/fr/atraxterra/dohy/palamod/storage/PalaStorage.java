@@ -24,11 +24,15 @@ import java.util.ArrayList;
 import java.util.Set;
 
 /**
- * Coffres et entonnoir de PalaMod.
+ * Coffres et entonnoir de PalaMod, et la cle en paladium des tiroirs.
  *
  * <p>Les coffres ne sont pas des objets du Mineur, mais deux de ses recettes les
  * demandent : la Voidstone minage prend un coffre en titane, l'entonnoir en
  * paladium aussi, et le coffre en titane se fait avec un coffre en amethyste.
+ *
+ * <p>Les tiroirs eux-memes viennent d'un autre mod, comme sur Paladium : Vault
+ * Drawers, le portage en 26.2 de Storage Drawers. La cle n'a d'usage qu'avec
+ * lui, et sa recette ne se charge qu'en sa presence.
  */
 public final class PalaStorage {
 
@@ -72,6 +76,10 @@ public final class PalaStorage {
     public static final DeferredItem<BlockItem> PALADIUM_HOPPER_ITEM =
             ITEMS.registerSimpleBlockItem(PALADIUM_HOPPER_BLOCK, properties -> properties);
 
+    /** La cle en paladium, pour les tiroirs de Vault Drawers : voir {@link PaladiumKeyItem}. */
+    public static final DeferredItem<PaladiumKeyItem> PALADIUM_KEY = ITEMS.registerItem(
+            "paladium_key", properties -> new PaladiumKeyItem(properties.stacksTo(1)));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PalaChestBlockEntity>> CHEST =
             BLOCK_ENTITIES.register("chest", () -> new BlockEntityType<>(PalaChestBlockEntity::new,
                     CHESTS.values().stream().map(DeferredBlock::get).collect(Collectors.toSet())));
@@ -84,7 +92,7 @@ public final class PalaStorage {
 
     /** L'ordre de l'onglet creatif. */
     public static final List<DeferredItem<? extends Item>> ORDERED =
-            ordered(CHEST_ITEMS, PALADIUM_ENDER_CHEST_ITEM, PALADIUM_HOPPER_ITEM);
+            ordered(CHEST_ITEMS, PALADIUM_ENDER_CHEST_ITEM, PALADIUM_HOPPER_ITEM, PALADIUM_KEY);
 
     private PalaStorage() {
     }
@@ -118,10 +126,12 @@ public final class PalaStorage {
 
     private static List<DeferredItem<? extends Item>> ordered(Map<ChestTier, DeferredItem<BlockItem>> chests,
                                                              DeferredItem<BlockItem> ender,
-                                                             DeferredItem<BlockItem> hopper) {
+                                                             DeferredItem<BlockItem> hopper,
+                                                             DeferredItem<PaladiumKeyItem> key) {
         List<DeferredItem<? extends Item>> list = new ArrayList<>(chests.values());
         list.add(ender);
         list.add(hopper);
+        list.add(key);
         return List.copyOf(list);
     }
 

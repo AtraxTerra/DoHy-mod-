@@ -2139,6 +2139,13 @@
             "- Les dynamites se collent au premier bloc ou a la premiere creature touches, et sautent peu apres.",
             "- Leur usage demande le palier Pillage de l'arbre."
           ]
+        },
+        {
+          "title": "Les tiroirs fermes",
+          "text": [
+            "- Avec le mod Vault Drawers, une cle personnelle ferme un tiroir a son seul proprietaire.",
+            "- La cle en paladium (quatre lingots de paladium autour d'une cle personnelle) l'ouvre a tous, et part a l'usage. Chasseur 85."
+          ]
         }
       ],
       "see": [
@@ -2150,7 +2157,8 @@
         "items": [
           "palamod:dynamite",
           "palamod:big_dynamite",
-          "palamod:unclaim_finder"
+          "palamod:unclaim_finder",
+          "palamod:paladium_key"
         ],
         "views": [
           "dohy:chest_explorer"
