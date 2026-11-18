@@ -1,0 +1,35 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "hbm"
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ores/thorium"
+      }
+    }
+  ],
+  "type": "create:crushing",
+  "ingredient": "#c:ores/thorium",
+  "processing_time": 400,
+  "results": [
+    {
+      "id": "hbm:powder_thorium"
+    },
+    {
+      "id": "hbm:powder_thorium",
+      "chance": 0.75
+    },
+    {
+      "id": "create:experience_nugget",
+      "chance": 0.75
+    }
+  ]
+}

@@ -1346,6 +1346,73 @@ Choix du joueur : **des offrandes au spawn ; le boss arrive une heure après, da
 - La borne `SpawnTerminalBlock.Kind.JOB_ALTAR` et `SpawnBuilder.altar()` ; texture de la borne par
   `tools/dohy_assets.py`.
 
+## Create relié au reste du mod (2026-11-18)
+
+Create Fly et son Diesel Generators tournaient à côté du mod sans rien toucher : ni les minerais
+de PalaMod, ni ceux de NTM NEXT, ni les céréales n'avaient de recette chez Create. Toutes les
+recettes ci-dessous sont des données (`data/dohy/recipe/create/`), générées par
+`tools/create_recipes.py` et conditionnées à `create` (et à `hbm` pour celles de NTM) : sans ces
+mods, elles n'existent pas.
+
+### Minerais de PalaMod (roues de broyage)
+
+| Minerai | Broyé | Comme chez Create |
+|---|---|---|
+| Améthyste, titane, paladium, paladium vert | 9 particules, plus 75 % de chance de 9 autres | le minerai de fer (1 broyé + 75 %) |
+| Findium, trixium | la pierre, plus 75 % de chance d'une seconde | le diamant |
+
+Avec 75 % de chance d'XP et 12,5 % de pierre. Les particules sont les pépites de PalaMod : neuf
+font un lingot à l'établi, et la presse de Create sur un bassin le fait seule (compactage). Le
+minerai de pépites d'endium (une pépite vaut 40 000 $) et celui d'invocateur ne se broient pas.
+
+### Minerais de NTM NEXT
+
+- **Plomb, uranium, aluminium** : les minerais broyés de Create (Create Fly les fournit, mais ses
+  recettes de compatibilité ne sont pas chargées : ils n'avaient aucune recette). Lavés, 9 pépites
+  de NTM (le plomb et l'uranium ; NTM n'a pas de pépite d'aluminium) ; au four ou au haut-fourneau,
+  et donc au ventilateur sur la lave, le lingot de NTM.
+- **Titane, tungstène, béryllium, cobalt, thorium, lithium** : Create n'a pas de broyé pour eux,
+  la roue rend la poudre de NTM, que NTM fond déjà en lingot.
+- **Fer, or, cuivre du gneiss** de NTM : les broyés de Create, avec les rendements de Create.
+- Comme chez Create, seul le minerai entier (pioche soie) gagne 75 % : la matière brute donne un
+  broyé et de l'XP. Les minerais sont pris par les sous-tags `c:ores/<métal>` et
+  `c:raw_materials/<métal>` de NTM ; le plutonium et le schrabidium ne sont pas repris.
+
+### Céréales (meule)
+
+Les neuf céréales de DoHy (maïs, orge, avoine, seigle, tournesol, soja, fonio, sorgho, kamut)
+passent à la meule et aux roues : **un tiers de chance de farine par grain**, une farine pour trois
+grains en moyenne, le rapport du moulin électrique. La meule de Create ne donne pas d'XP de
+Fermier, comme l'automate du moulin. Le blé garde sa recette de Create (la farine de Create, qui
+fait la pâte), la farine de blé de DoHy reste au moulin.
+
+### Carburants entre Diesel Generators et NTM NEXT
+
+Les deux mods se reconnaissent déjà par les tags de fluides `c:` : les types de carburant de
+Diesel Generators visent `#c:diesel`, `#c:gasoline`, `#c:ethanol` et `#c:biodiesel`, où NTM range
+ses fluides, et NTM déclare que les siens « partagent » les mêmes tags. Le mod ajoute le
+biocarburant de NTM (`hbm:biofuel`) au tag `c:biodiesel` : les moteurs de Diesel Generators le
+brûlent comme le biodiesel. Le pétrole brut est dans `c:crude_oil` des deux côtés : celui des
+gisements de la Terre (Diesel Generators) se distille, et celui de NTM entre dans la tour de
+distillation de Diesel Generators.
+
+### Le zinc au shop
+
+Le zinc brut et les deux minerais de zinc de Create se vendent, au rythme du fer (400 par heure :
+100 $ la pièce, 400 $ à l'achat). Le lingot ne se vend pas : le broyage le multiplie, le vendre
+ferait de ce rendement un revenu (la règle des métaux de NTM).
+
+### La pépite de fer, plafonnée
+
+Neuf pépites de fer se vendaient 405 $ (45 $ pièce) contre 15 $ pour le lingot qui les donne à
+l'établi, une boucle d'argent que le lavage de Create rendait automatique : un minerai de fer
+acheté 400 $ au shop, broyé puis lavé, donnait en moyenne 15,75 pépites, soit 708 $.
+`tools/gen_prices.py` plafonne désormais le prix d'un objet au prix de sa source divisé par le
+nombre d'unités qu'elle donne (`CRAFT_CAPS`) : la pépite de fer vaut 1 $, 4 $ à l'achat.
+
+Le détail chiffré est dans `docs/BALANCE.md` § 6 unvicies. La fiche « Create » de l'encyclopédie
+(catégorie Technique) résume tout ça en jeu.
+
 ## Sur un serveur dédié (2026-11-13)
 
 Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les

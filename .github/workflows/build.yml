@@ -238,6 +238,11 @@ jobs:
       - name: Le marche noir doit etre a jour et sans boucle d'argent
         run: python3 tools/black_market.py --check
 
+      # Les recettes qui relient Create au reste du mod sont generees : une
+      # retouche a la main serait ecrasee au prochain passage du script.
+      - name: Les recettes de Create doivent etre a jour
+        run: python3 -I tools/create_recipes.py --check
+
       - name: Les JSON doivent parser
         run: |
           python3 - <<'PY'

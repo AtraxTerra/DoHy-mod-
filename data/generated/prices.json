@@ -789,11 +789,11 @@
     "minecraft:iron_nugget": {
       "category": "FARM",
       "tier": "FARM",
-      "base_price": 45,
+      "base_price": 1,
       "s0": 2000,
       "floor_pct": 0.15,
       "ceiling_pct": 1.8,
-      "buy_price": 180,
+      "buy_price": 4,
       "sellable": true,
       "rate_per_hour": 400.0
     },
@@ -1445,6 +1445,39 @@
       "buy_price": 270,
       "sellable": true,
       "rate_per_hour": 600.0
+    },
+    "create:raw_zinc": {
+      "category": "FOUND",
+      "tier": "FOUND",
+      "base_price": 100,
+      "s0": 64,
+      "floor_pct": 0.35,
+      "ceiling_pct": 1.8,
+      "buy_price": 400,
+      "sellable": true,
+      "rate_per_hour": 400.0
+    },
+    "create:zinc_ore": {
+      "category": "FOUND",
+      "tier": "FOUND",
+      "base_price": 100,
+      "s0": 64,
+      "floor_pct": 0.35,
+      "ceiling_pct": 1.8,
+      "buy_price": 400,
+      "sellable": true,
+      "rate_per_hour": 400.0
+    },
+    "create:deepslate_zinc_ore": {
+      "category": "FOUND",
+      "tier": "FOUND",
+      "base_price": 100,
+      "s0": 64,
+      "floor_pct": 0.35,
+      "ceiling_pct": 1.8,
+      "buy_price": 400,
+      "sellable": true,
+      "rate_per_hour": 400.0
     },
     "minecraft:sand": {
       "category": "FOUND",

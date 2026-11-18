@@ -1,0 +1,17 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:milling",
+  "ingredient": "dohy:corn",
+  "processing_time": 150,
+  "results": [
+    {
+      "id": "dohy:corn_flour",
+      "chance": 0.333
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:milling",
+  "ingredient": "dohy:oat",
+  "processing_time": 150,
+  "results": [
+    {
+      "id": "dohy:oat_flour",
+      "chance": 0.333
+    }
+  ]
+}

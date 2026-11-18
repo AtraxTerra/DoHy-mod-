@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:crushing",
+  "ingredient": "palamod:titane_ore",
+  "processing_time": 300,
+  "results": [
+    {
+      "id": "palamod:titane_particle",
+      "count": 9
+    },
+    {
+      "id": "palamod:titane_particle",
+      "count": 9,
+      "chance": 0.75
+    },
+    {
+      "id": "create:experience_nugget",
+      "chance": 0.75
+    },
+    {
+      "id": "minecraft:cobblestone",
+      "chance": 0.125
+    }
+  ]
+}

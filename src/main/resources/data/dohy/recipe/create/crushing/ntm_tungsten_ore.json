@@ -1,0 +1,35 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "hbm"
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ores/tungsten"
+      }
+    }
+  ],
+  "type": "create:crushing",
+  "ingredient": "#c:ores/tungsten",
+  "processing_time": 400,
+  "results": [
+    {
+      "id": "hbm:powder_tungsten"
+    },
+    {
+      "id": "hbm:powder_tungsten",
+      "chance": 0.75
+    },
+    {
+      "id": "create:experience_nugget",
+      "chance": 0.75
+    }
+  ]
+}

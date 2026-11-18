@@ -3779,6 +3779,72 @@
           "utilitydrawers:storage_interface"
         ]
       }
+    },
+    {
+      "id": "create",
+      "category": "technique",
+      "order": 13,
+      "icon": "create:crushing_wheel",
+      "title": "Create",
+      "card": [
+        "Broyer, laver, moudre",
+        "Avec PalaMod et NTM"
+      ],
+      "summary": [
+        "Les roues de broyage, la meule et le ventilateur de Create travaillent aussi les minerais de PalaMod et de NTM NEXT, et les cereales de DoHy."
+      ],
+      "sections": [
+        {
+          "title": "Les minerais de PalaMod",
+          "text": [
+            "- Amethyste, titane, paladium, paladium vert : 9 particules, plus 75 % de chance d'en avoir 9 autres. Neuf particules font un lingot, a l'etabli ou sous la presse sur un bassin.",
+            "- Findium et trixium : la pierre, plus 75 % de chance d'en avoir une seconde.",
+            "- Le minerai de pepites d'endium et celui d'invocateur ne se broient pas."
+          ]
+        },
+        {
+          "title": "Les minerais de NTM NEXT",
+          "text": [
+            "- Plomb, uranium, aluminium : les minerais broyes de Create. Laves, 9 pepites de NTM ; au four, le lingot.",
+            "- Titane, tungstene, beryllium, cobalt, thorium, lithium : la poudre de NTM, qui fond en lingot.",
+            "- Un minerai entier (pioche soie) donne 75 % de plus ; la matiere brute, une seule broyee."
+          ]
+        },
+        {
+          "title": "Les cereales",
+          "text": [
+            "La meule moud les neuf cereales de DoHy : une farine pour trois grains en moyenne, comme le moulin. Le ble garde la farine de Create."
+          ]
+        },
+        {
+          "title": "Les carburants",
+          "text": [
+            "- Les moteurs de Diesel Generators brulent le diesel, l'essence, l'ethanol et le biocarburant de NTM.",
+            "- Le petrole des gisements se raffine dans la tour de distillation comme dans la raffinerie de NTM."
+          ]
+        },
+        {
+          "title": "Le zinc",
+          "text": [
+            "Le zinc brut et son minerai se vendent au shop, comme le fer. Le lingot ne se vend pas : le broyage le multiplie."
+          ]
+        }
+      ],
+      "see": [
+        "minerais",
+        "ntm",
+        "ntm_petrole",
+        "agriculture",
+        "gisements",
+        "shop"
+      ],
+      "discover": {
+        "items": [
+          "create:crushing_wheel",
+          "create:millstone",
+          "create:encased_fan"
+        ]
+      }
     }
   ]
 }

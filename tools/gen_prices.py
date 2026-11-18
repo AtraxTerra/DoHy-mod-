@@ -91,6 +91,16 @@ VILLAGER_TRADES = {
     # TODO auditer : briques, argile, papier, verre teinte, charbon, fer
 }
 
+# Une conversion d'etabli qui part d'un item vendable doit rendre moins que lui
+# (DESIGN.md 3.3). Neuf pepites de fer se vendaient 405 $ contre 15 $ pour le
+# lingot qui les donne, et le lavage de Create en sort a la chaine (un minerai
+# de fer broye et lave : 15 pepites). Le prix de vente de l'item est plafonne a
+# celui de sa source divise par le nombre d'unites qu'elle donne, arrondi en
+# dessous. Format : item -> (item source, unites obtenues par source).
+CRAFT_CAPS = {
+    "minecraft:iron_nugget": ("minecraft:iron_ingot", 9),
+}
+
 
 def round_sig(x: float, digits: int = 2) -> int:
     """Arrondit a N chiffres significatifs, minimum 1. Des prix lisibles
@@ -128,10 +138,20 @@ def main() -> None:
                 FORCED_FLOOR_PRICE["minecraft:emerald"],
             )
 
+    # Prix de base avant plafonds, pour les plafonds d'etabli (la source peut
+    # venir plus bas dans le fichier).
+    raw_base = {}
+    for row in rows:
+        item = row["item_id"].strip()
+        if item and not item.startswith("#") and row["tier"].strip() in TARGET_RATE:
+            raw_base[item] = round_sig(TARGET_RATE[row["tier"].strip()]
+                                       / float(row["rate_per_hour"]) * mult)
+
     items = {}
     out_rows = []
     unknown_tiers = set()
     capped = []
+    craft_capped = []
 
     for row in rows:
         item = row["item_id"].strip()
@@ -150,6 +170,15 @@ def main() -> None:
             cap = max(1, round_sig(em / units * emerald_price))
             if cap < base:
                 capped.append((item, base, cap))
+                base = cap
+
+        if item in CRAFT_CAPS:
+            source, units = CRAFT_CAPS[item]
+            if source not in raw_base:
+                raise SystemExit(f"{item} : source de plafond {source} absente de rates.csv")
+            cap = max(1, raw_base[source] // units)
+            if cap < base:
+                craft_capped.append((item, base, cap, source, units))
                 base = cap
 
         base = max(base, FORCED_FLOOR_PRICE.get(item, 1))
@@ -232,6 +261,10 @@ def main() -> None:
         lo, hi = min(rates), max(rates)
         print(f"  {tier:<6} {len(sample):>3} items | $/h de {lo:,.0f} a {hi:,.0f} "
               f"(cible {TARGET_RATE[tier]:,})")
+    if craft_capped:
+        print("\nPlafonds d'etabli appliques :")
+        for item, before, after, source, units in craft_capped:
+            print(f"  {item:<28} {before:>6} -> {after} ({units} par {source})")
     if capped:
         print(f"\nPlafonds villageois appliques (emeraude a {emerald_price}) :")
         for item, before, after in capped:
