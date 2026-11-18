@@ -2261,7 +2261,10 @@ def main():
             ("paladium_flower", "flower_paladium", "Fleur de paladium", "Paladium Flower", 125),
             ("mineral_flower", "flower_mineral", "Fleur minerale", "Mineral Flower", 6250)):
         tex("blocks/flowers/%s.png" % source, "block/%s.png" % name)
-        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {"": {"model": "%s:block/%s" % (NS, name)}}})
+        model = {"model": "%s:block/%s" % (NS, name)}
+        # La fleur minerale compte ses poudres d'os (growth, 0 a 6) sans changer d'aspect.
+        variants = ({"growth=%d" % g: model for g in range(7)} if name == "mineral_flower" else {"": model})
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": variants})
         write("assets/%s/models/block/%s.json" % (NS, name),
               {"parent": "minecraft:block/cross", "textures": {"cross": "%s:block/%s" % (NS, name)}})
         flat_item(name, "%s:block/%s" % (NS, name))

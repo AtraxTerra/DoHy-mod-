@@ -1400,6 +1400,15 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
   - pollens : titane → 1 bloc de titane, améthyste → 2 blocs d'améthyste, paladium → 5 lingots.
 - Intégrité vérifiée toutes les 11 ticks de travail. Aucune XP pour les recettes du chaudron :
   l'original déclarait une XP qu'il ne versait jamais.
+- **La fleur minérale** (`BaseBlockFlower.onBlockActivated`, `FLOWER_MINERAL` seule ; portée le
+  2026-11-18) : plantée, elle se change en lingots à la poudre d'os. Les six premières la font
+  « pousser » sans rien montrer (métadonnée 0 → 6, ici `growth`) ; la septième la consomme et
+  donne, un tiers chacun, 2 à 4 lingots de titane, 1 à 2 de paladium ou 3 à 5 d'améthyste,
+  lâchés aux pieds du joueur et ramassables tout de suite (ici : dans son sac, sinon au sol).
+  Un distributeur n'y fait rien, comme dans l'original. **Écarts** : les particules de poudre
+  d'os à chaque coup, la fleur se brise à la dernière ; en créatif, la poudre n'est pas
+  consommée. Elle se ramasse toujours quand on la casse (l'original ne la rendait qu'au toucher
+  de soie) et reprend alors à zéro.
 - **Écart** : une fleur d'endium jetée sans le niveau reste là ; l'original la consommait pour rien.
 - **Potion de foudre** : sous la pluie, un casque en fer ou en or, une fiole d'eau vide en main —
   1/800 par tick (≈ 40 s) — la foudre tombe et la fiole devient potion ; 30 XP. **Écart** :
