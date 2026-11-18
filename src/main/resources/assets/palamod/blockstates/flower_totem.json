@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "palamod:block/flower_totem"
+    },
+    "facing=east": {
+      "model": "palamod:block/flower_totem",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "palamod:block/flower_totem",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "palamod:block/flower_totem",
+      "y": 270
+    }
+  }
+}

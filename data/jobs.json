@@ -1652,9 +1652,9 @@
     {
       "job": "hunter",
       "level": 80,
-      "id": "minecraft:bone_block",
+      "id": "palamod:tusk",
       "count": 1,
-      "label": "Bloc d'os"
+      "label": "Defense d'elephant"
     },
     {
       "job": "hunter",

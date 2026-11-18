@@ -72,6 +72,13 @@ public final class PalaMenus {
                             MachineLayout.GRINDER),
                     FeatureFlags.VANILLA_SET));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> FLOWER_TOTEM =
+            MENUS.register("flower_totem", () -> new MenuType<>(
+                    (containerId, inventory) -> new MachineMenu(
+                            PalaMenus.FLOWER_TOTEM.get(), containerId, inventory,
+                            MachineLayout.FLOWER_TOTEM),
+                    FeatureFlags.VANILLA_SET));
+
     private PalaMenus() {
     }
 

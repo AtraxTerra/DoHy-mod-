@@ -176,6 +176,8 @@ MODEL_TEXTURES = {
     "block/food_machine.png": (64, 64),
     # Le totem de fertilite porte la texture de son modele d'origine (ModelTotem).
     "block/totem_of_fertility.png": (64, 64),
+    # Le totem fleuri porte celle de son modele GeckoLib (totem_of_flowery).
+    "block/flower_totem.png": (32, 32),
     # Le gestionnaire d'enclos reprend celle de son BarnControllerModel.
     "block/barn_controller.png": (64, 64),
     # Le portail du Mineur : 32 images de 48 x 48 (blocks/miner_portal.png).
@@ -577,6 +579,35 @@ def check_equipment():
     print(f"equipement : {len(materials)} materiaux, {checked} pieces dans leurs tags d'enchantement")
 
 
+# Les tags d'objets des enchantements de la table de l'Alchimiste. Un tag absent
+# ne casse pas la compilation : il casse le chargement du monde (« Missing tag »),
+# toutes les donnees du mod avec. Seuls ceux-ci sont prouves par un demarrage en
+# 26.2 (captures du 2026-11-17) : #minecraft:enchantable/sword n'y existe plus,
+# l'epee se vise par #minecraft:swords. Un nouveau tag se prouve d'abord au demarrage.
+PROVEN_ENCHANTABLE = {
+    "#minecraft:swords",
+    "#minecraft:enchantable/durability",
+    "#minecraft:enchantable/mining",
+    "#minecraft:enchantable/head_armor",
+    "#minecraft:enchantable/chest_armor",
+    "#minecraft:enchantable/foot_armor",
+}
+
+
+def check_enchantments():
+    for path in sorted((DATA / "enchantment").glob("*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except ValueError as error:
+            fail(f"enchantment/{path.name} : JSON illisible ({error})")
+            continue
+        for key in ("supported_items", "primary_items"):
+            value = data.get(key)
+            if isinstance(value, str) and value.startswith("#") and value not in PROVEN_ENCHANTABLE:
+                fail(f"enchantment/{path.name} : {key} {value} n'est pas un tag prouve en 26.2 — "
+                     "un tag absent empeche le monde de charger (voir PROVEN_ENCHANTABLE)")
+
+
 def main():
     items, blocks, itemless = registered()
 
@@ -593,6 +624,7 @@ def main():
     check_lang(items, blocks)
     check_recipes(items, blocks)
     check_equipment()
+    check_enchantments()
     check_gui()
 
     if errors:

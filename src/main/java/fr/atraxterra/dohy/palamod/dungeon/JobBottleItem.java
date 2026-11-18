@@ -53,7 +53,8 @@ public class JobBottleItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         int count = player.isShiftKeyDown() ? stack.getCount() : 1;
         long total = (long) xp(stack) * count;
-        JobApi.grant(serverPlayer, job, total);
+        // L'XP d'une bouteille ne repart pas en bouteille (Experience Bottler).
+        JobApi.grant(serverPlayer, job, total, false);
         if (!player.isCreative()) {
             stack.shrink(count);
         }

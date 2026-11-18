@@ -93,6 +93,10 @@ BEDROCK = {
 # 1,5 fois la pierre (mediane : cuivre, lapis, emeraude, diamant), au niveau 10.
 INFERRED = {"miner": {"blocks": [("minecraft:deepslate_gold_ore", 9, 10)]}}
 
+# Ajoutees depuis le bareme, avec leur contenu : gardees telles quelles a chaque regeneration. Le
+# sable d'epice d'Arrakis (2026-11-17) : 2 XP de Mineur des le niveau 0.
+EXTRA = {"miner": {"blocks": [("dohy:spice_sand", 2, 0)]}}
+
 # -- L'ancienne table de DoHy (avant le 2026-11-15), pour les rapports et les sources propres --------
 
 OLD = {
@@ -161,6 +165,14 @@ LEVELS = {
 # Les boss de Bedrock (Paladium Arty, Green Paladium Arty, Endium Arty) : (XP, niveau de Bedrock).
 ARTY = [(1000, 0), (20000, 16), (40000, 19)]
 
+# Les creatures de PalaMod que Bedrock n'a pas : leur XP de PalaJobs (HunterRegisterer,
+# EntityKillObjective) et leur niveau de PalaJobs, sur 20 comme ceux de Bedrock. Elles passent au
+# rapport median Bedrock / PalaJobs des animaux que les deux baremes partagent (vache, mouton,
+# poulet et cochon valent 14 XP dans PalaJobs), arrondi comme les autres : l'elephant, 15 XP de
+# PalaJobs au niveau 8, vaut ainsi a peu pres une vache.
+PALAJOBS_ANIMALS = {"minecraft:cow": 14, "minecraft:sheep": 14, "minecraft:chicken": 14, "minecraft:pig": 14}
+PALAMOD_CREATURES = {"palamod:elephant": (15, 8)}
+
 HOSTILE = ("minecraft:zombie", "minecraft:skeleton", "minecraft:spider", "minecraft:creeper", "minecraft:blaze",
            "minecraft:wither_skeleton")
 PALAMOD = ("palamod:amethyst_ore", "palamod:titane_ore", "palamod:paladium_ore", "palamod:findium_ore")
@@ -183,6 +195,7 @@ def ratios():
         "crops": [bedrock["farmer"][k] / v for k, v in OLD["farmer"].items() if k in bedrock["farmer"]],
         "animals": [bedrock["hunter"][k] / v for k, v in OLD["animals"].items() if k in bedrock["hunter"]],
         "hostile": [bedrock["hunter"][k] / OLD["hunter"][k] for k in HOSTILE],
+        "palajobs": [bedrock["hunter"][k] / v for k, v in PALAJOBS_ANIMALS.items() if k in bedrock["hunter"]],
     }
     return {name: statistics.median(values) for name, values in families.items()}
 
@@ -224,6 +237,8 @@ def main():
             if level is None:
                 level = level_for(xp, family, hostile)
             derived[job].append((key, xp, level))
+    for key, (xp, level) in PALAMOD_CREATURES.items():
+        derived["hunter"].append((key, rounded(xp * factor["palajobs"]), level))
 
     root = json.load(open(PROGRESSION, encoding="utf-8"))
     notes = {
@@ -234,13 +249,15 @@ def main():
         "farmer": "Bareme de Paladium Bedrock (tools/bedrock_jobs.py). Les animaux comptent pour le Chasseur, "
                   "comme sur Bedrock. crafted : chaque objet fabrique a l'etabli.",
         "hunter": "Bareme de Paladium Bedrock (tools/bedrock_jobs.py), animaux compris. Une creature nee d'un "
-                  "spawner, ou tuee au controleur, ne rapporte qu'un quarantieme ; un petit, rien.",
+                  "spawner, ou tuee au controleur, ne rapporte qu'un quarantieme ; un petit, rien. Les "
+                  "creatures de PalaMod (l'elephant) : leur XP de PalaJobs au rapport des animaux.",
     }
     for job in ("miner", "farmer", "hunter"):
         sources = {"_bedrock": notes[job]}
         for kind in ("blocks", "entities", "smelted", "crafted"):
             entries = list(BEDROCK[job].get(kind, []))
             entries += INFERRED.get(job, {}).get(kind, [])
+            entries += EXTRA.get(job, {}).get(kind, [])
             if kind == ("entities" if job == "hunter" else "blocks"):
                 entries += derived[job]
             if entries:

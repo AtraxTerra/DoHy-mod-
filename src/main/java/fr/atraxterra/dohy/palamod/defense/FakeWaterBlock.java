@@ -6,10 +6,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,12 +27,15 @@ import java.util.UUID;
  * <p>Deux points de degats par seconde a ce qui vit dedans — sauf au
  * proprietaire du claim ou elle coule : la douve d'une base ne blesse pas son
  * chef. L'enchantement Fake Water Protection (lot 22d, table de l'Alchimiste)
- * protege qui le porte sur une piece d'armure ; chaque seconde evitee compte
- * pour l'arbre de faction.
+ * fait encaisser le casque a la place du joueur, 66 points d'usure par
+ * seconde ; chaque seconde evitee compte pour l'arbre de faction.
  */
 public class FakeWaterBlock extends LiquidBlock {
 
     static final float DAMAGE = 2.0f;
+
+    /** Usure du casque Fake Water Protection par seconde passee dedans. */
+    static final int HELMET_WEAR = 66;
 
     /** Le dernier tic compte pour chaque joueur protege. */
     private static final Map<UUID, Integer> LAST_COUNTED = new HashMap<>();
@@ -52,14 +56,16 @@ public class FakeWaterBlock extends LiquidBlock {
                 || FactionApi.claimAt(server, pos).ownedBy(player.getUUID()))) {
             return;
         }
-        if (protectedFrom(server, living)) {
+        if (protectedFrom(living)) {
             // Une seconde par seconde : un joueur dans plusieurs blocs a la fois
             // passe ici une fois par bloc touche.
-            if (living instanceof ServerPlayer player
-                    && !Integer.valueOf(player.tickCount).equals(LAST_COUNTED.put(player.getUUID(), player.tickCount))) {
+            if (!(living instanceof ServerPlayer player)) {
+                wearHelmet(living);
+            } else if (!Integer.valueOf(player.tickCount).equals(LAST_COUNTED.put(player.getUUID(), player.tickCount))) {
                 if (LAST_COUNTED.size() > 256) {
                     LAST_COUNTED.clear();
                 }
+                wearHelmet(player);
                 FactionApi.stat(player, "protect:fake_water", 1);
             }
             return;
@@ -67,8 +73,19 @@ public class FakeWaterBlock extends LiquidBlock {
         living.hurtServer(server, server.damageSources().magic(), DAMAGE);
     }
 
-    private static boolean protectedFrom(ServerLevel level, LivingEntity living) {
-        return MysticEnchant.FAKE_WATER_PROTECTION.holder(level)
-                .map(holder -> EnchantmentHelper.getEnchantmentLevel(holder, living) > 0).orElse(false);
+    /**
+     * Le casque enchante encaisse a la place du joueur ({@code BlockSulfuricWater}) :
+     * il faut un casque Fake Water Protection qui s'use encore. Les autres pieces
+     * d'armure n'y font rien, comme dans l'original.
+     */
+    private static boolean protectedFrom(LivingEntity living) {
+        ItemStack helmet = living.getItemBySlot(EquipmentSlot.HEAD);
+        return !helmet.isEmpty() && helmet.isDamageableItem()
+                && MysticEnchant.FAKE_WATER_PROTECTION.levelOn(helmet) > 0;
+    }
+
+    /** 66 points d'usure par seconde, le prix de la protection. */
+    private static void wearHelmet(LivingEntity living) {
+        living.getItemBySlot(EquipmentSlot.HEAD).hurtAndBreak(HELMET_WEAR, living, EquipmentSlot.HEAD);
     }
 }

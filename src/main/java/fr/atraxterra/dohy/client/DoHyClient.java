@@ -8,6 +8,9 @@ import fr.atraxterra.dohy.agri.DoHyAgri;
 import fr.atraxterra.dohy.client.agri.TractorGeometry;
 import fr.atraxterra.dohy.client.agri.TractorModel;
 import fr.atraxterra.dohy.client.agri.TractorRenderer;
+import fr.atraxterra.dohy.client.hunter.ElephantGeometry;
+import fr.atraxterra.dohy.client.hunter.ElephantModel;
+import fr.atraxterra.dohy.client.hunter.ElephantRenderer;
 import fr.atraxterra.dohy.client.mount.DancarokGeometry;
 import fr.atraxterra.dohy.client.mount.DancarokModel;
 import fr.atraxterra.dohy.client.mount.DancarokRenderer;
@@ -23,6 +26,7 @@ import fr.atraxterra.dohy.palamod.boss.PalaBosses;
 import fr.atraxterra.dohy.palamod.defense.PalaDefense;
 import fr.atraxterra.dohy.palamod.fluid.PalaFluids;
 import fr.atraxterra.dohy.palamod.golem.PalaGolem;
+import fr.atraxterra.dohy.palamod.hunter.PalaHunter;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import fr.atraxterra.dohy.palamod.machine.PalaMenus;
 import fr.atraxterra.dohy.palamod.mount.PalaMount;
@@ -106,6 +110,7 @@ public final class DoHyClient {
         event.registerEntityRenderer(fr.atraxterra.dohy.faction.war.DoHyWar.SOLDIER.get(),
                 fr.atraxterra.dohy.client.war.SoldierRenderer::new);
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
+        event.registerEntityRenderer(PalaHunter.ELEPHANT.get(), ElephantRenderer::new);
         event.registerEntityRenderer(DoHyAgri.TRACTOR.get(), TractorRenderer::new);
         event.registerEntityRenderer(fr.atraxterra.dohy.arrakis.ArrakisContent.HARVESTER.get(),
                 fr.atraxterra.dohy.client.arrakis.HarvesterRenderer::new);
@@ -143,6 +148,9 @@ public final class DoHyClient {
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DancarokModel.LAYER, DancarokGeometry::createBodyLayer);
+        event.registerLayerDefinition(ElephantModel.CHILD, ElephantGeometry::createBoneLayer);
+        event.registerLayerDefinition(ElephantModel.TEEN, ElephantGeometry::createBoneALayer);
+        event.registerLayerDefinition(ElephantModel.ADULT, ElephantGeometry::createBoneBLayer);
         event.registerLayerDefinition(TractorModel.LAYER, TractorGeometry::createBodyLayer);
         event.registerLayerDefinition(fr.atraxterra.dohy.client.arrakis.HarvesterModel.LAYER,
                 fr.atraxterra.dohy.client.arrakis.HarvesterGeometry::createBodyLayer);
@@ -193,6 +201,7 @@ public final class DoHyClient {
         machine(event, PalaMenus.PALAFURNACE.get(), MachineDesigns.PALAFURNACE);
         machine(event, PalaMenus.PALAFORGE.get(), MachineDesigns.PALAFORGE);
         machine(event, PalaMenus.GRINDER.get(), MachineDesigns.GRINDER);
+        machine(event, PalaMenus.FLOWER_TOTEM.get(), MachineDesigns.FLOWER_TOTEM);
         machine(event, PalaGolem.FOOD_MACHINE_MENU.get(), MachineDesigns.FOOD_MACHINE);
         machine(event, PalaGolem.GOLEM_BOX_MENU.get(), MachineDesigns.GOLEM_BOX);
         machine(event, PalaPvp.PALAMACHINE_MENU.get(), MachineDesigns.PALAMACHINE);

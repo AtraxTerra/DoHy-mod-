@@ -2,6 +2,8 @@ package fr.atraxterra.dohy.palamod.alchemist;
 
 import fr.atraxterra.dohy.world.PlacedBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -13,7 +15,11 @@ import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EnchantingTableBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -100,11 +106,31 @@ public final class AlchemistEvents {
         if (state.is(Blocks.SHORT_GRASS) || state.is(Blocks.FERN)) {
             int level = MysticEnchant.GRASS_BREAKER.levelOn(player, event.getTool());
             if (level > 0) {
-                for (ItemEntity drop : event.getDrops()) {
-                    ItemStack stack = drop.getItem();
-                    stack.grow(player.getRandom().nextInt(level + 1));
-                }
+                grassBreaker(event, player, level);
             }
+        }
+    }
+
+    /**
+     * Grass Breaker ({@code EventHandlerAlchemist.blockBreakedEvent}) : en plus
+     * du butin ordinaire, la haute herbe relance son butin avec Fortune I, et
+     * chaque pile de ce second tirage gagne de 0 a {@code niveau} objets.
+     */
+    private static void grassBreaker(BlockDropsEvent event, ServerPlayer player, int level) {
+        ServerLevel world = event.getLevel();
+        BlockPos pos = event.getPos();
+        ItemStack tool = event.getTool().copy();
+        Holder<Enchantment> fortune = world.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                .getOrThrow(Enchantments.FORTUNE);
+        EnchantmentHelper.updateEnchantments(tool, enchantments -> enchantments.set(fortune, 1));
+        for (ItemStack stack : Block.getDrops(event.getState(), world, pos, event.getBlockEntity(), player, tool)) {
+            if (stack.isEmpty()) {
+                continue;
+            }
+            stack.grow(player.getRandom().nextInt(level + 1));
+            ItemEntity drop = new ItemEntity(world, pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, stack);
+            drop.setDefaultPickUpDelay();
+            event.getDrops().add(drop);
         }
     }
 

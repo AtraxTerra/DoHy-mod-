@@ -93,6 +93,13 @@ public final class PalaDefense {
             COMPONENTS.registerComponentType("amulets", builder -> builder
                     .persistent(Codec.STRING.listOf())
                     .networkSynchronized(ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list())));
+    /**
+     * Le finder fondu dans un casque Unclaim Helmet ({@code alchemistUnclaimType}) :
+     * le nom d'un {@link fr.atraxterra.dohy.palamod.pillage.FinderType}.
+     */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> UNCLAIM_TYPE =
+            COMPONENTS.registerComponentType("unclaim_type", builder -> builder
+                    .persistent(Codec.STRING).networkSynchronized(ByteBufCodecs.STRING_UTF8));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PistolLoad>> PISTOL_LOAD =
             COMPONENTS.registerComponentType("pistol_load", builder -> builder
                     .persistent(PistolLoad.CODEC).networkSynchronized(PistolLoad.STREAM_CODEC));

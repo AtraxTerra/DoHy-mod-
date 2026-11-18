@@ -124,8 +124,25 @@ public final class JobApi {
      * donc une seule fois et au meme endroit pour toutes les sources.
      */
     public static void grant(ServerPlayer player, Job job, long amount) {
+        grant(player, job, amount, true);
+    }
+
+    /**
+     * Comme {@link #grant(ServerPlayer, Job, long)} ; {@code bottleable} faux
+     * pour l'XP qui sort d'une bouteille, qui ne doit pas y retourner. Avec
+     * l'enchantement Experience Bottler, l'XP brute part d'abord en bouteilles
+     * ({@code AJobsEventHandler.onPlayerEarnXp}) ; les bonus s'appliqueront
+     * quand la bouteille sera bue.
+     */
+    public static void grant(ServerPlayer player, Job job, long amount, boolean bottleable) {
         if (amount <= 0) {
             return;
+        }
+        if (bottleable) {
+            amount = fr.atraxterra.dohy.palamod.dungeon.XpBottler.bottle(player, job, amount);
+            if (amount <= 0) {
+                return;
+            }
         }
 
         long boosted = Math.round(amount * (1.0d
