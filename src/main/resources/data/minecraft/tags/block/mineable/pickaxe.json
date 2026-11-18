@@ -3,6 +3,7 @@
   "values": [
     "dohy:biogenerator",
     "dohy:bread_machine",
+    "dohy:cryo_chamber",
     "dohy:flour_mill",
     "dohy:fuel_pump",
     "dohy:gmo_machine",
@@ -46,6 +47,7 @@
     "palamod:faction_safe",
     "palamod:findium_block",
     "palamod:findium_ore",
+    "palamod:flower_totem",
     "palamod:food_machine",
     "palamod:gold_chest",
     "palamod:gold_spike",
@@ -102,7 +104,6 @@
     "palamod:void_stone",
     "palamod:wither_receptacle",
     "palamod:withered_obsidian",
-    "palamod:withered_reinforced_piston",
-    "dohy:cryo_chamber"
+    "palamod:withered_reinforced_piston"
   ]
 }

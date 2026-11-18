@@ -130,7 +130,7 @@ NAMES = {
 
     # -- Alchimiste
     "ALCHEMIST_THRONE": ("alchemist_throne", "Trone de l'alchimiste"),
-    "UPGRADE_MORE": ("upgrade_more", "Amelioration d'emplacements de spawner"),
+    "UPGRADE_MORE": ("upgrade_more", "Amelioration de capacite de spawner"),
     "UPGRADE_SLIME": ("upgrade_slime", "Amelioration slime de spawner"),
     "ALCHEMY_CREATOR_BLOCK": ("alchemy_creator", "Table d'alchimiste"),
     "CAULDRON_BLOCK": ("cauldron", "Bloc du chaudron"),
@@ -222,7 +222,9 @@ REWARD_NAMES = {
     "PALADIUM_BOOTS": ("paladium_boots", "Bottes en paladium"),
     # Pas encore portes : la recompense restera inerte jusqu'a leur chapitre.
     # (L'armure de voyage l'est depuis le 2026-11-11.)
-    # (JOB_CANDY et TUSK ont un remplacant : voir SUBSTITUTES.)
+    # (JOB_CANDY a un remplacant : voir SUBSTITUTES.)
+    # La defense d'elephant est portee depuis le 2026-11-17, avec l'elephant.
+    "TUSK": ("tusk", "Defense d'elephant"),
     "WITHER_RECEPTACLE": ("wither_receptacle", "Receptacle de wither"),
     "FURNACE_UPGRADE": ("furnace_upgrade", "Amelioration de four"),
     "TRAVEL_BOOTS": ("travel_boots", "Bottes de voyage"),
@@ -245,12 +247,11 @@ REWARD_NAMES = {
 #  - le bonbon a deballer (ItemCandy) est porte depuis le 2026-11-14 : c'est
 #    palamod:candy_wrapped, qui donne un bonbon de metier au hasard (il etait
 #    remplace par 5 bouteilles d'XP du metier) ;
-#  - la defense d'elephant devient un bloc d'os, comme dans les recettes de
-#    cornes de la palamachine (chapitre 16).
+#  - la defense d'elephant (TUSK) n'en a plus besoin : elle est portee depuis
+#    le 2026-11-17, avec l'elephant (elle devenait un bloc d'os).
 # Sans remplacant, la recompense n'etait pas distribuee du tout.
 SUBSTITUTES = {
     "JOB_CANDY": lambda job, count: ("palamod:candy_wrapped", "Bonbon a deballer", count),
-    "TUSK": lambda job, count: ("minecraft:bone_block", "Bloc d'os", count),
 }
 
 # Enchantements de 1.7.10 par champ SRG. Meme regle de lettre : protection _c,

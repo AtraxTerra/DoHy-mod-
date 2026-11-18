@@ -32,8 +32,9 @@ import java.util.function.ToLongFunction;
  * change pour une partie solo est note a cote du succes, et dans
  * {@code docs/PALAMOD.md} (§ 27) : les succes de systemes absents (serveurs,
  * mailbox, sorts, familiers, echanges entre joueurs, Palapass, blocs camouflage
- * d'un autre mod, glueballs, sac a dos de chasseur, bouteilles d'XP scellees,
- * elephants) sont retires ou remplaces par l'equivalent de DoHy.
+ * d'un autre mod, glueballs, sac a dos de chasseur, bouteilles d'XP scellees)
+ * sont retires ou remplaces par l'equivalent de DoHy. Les elephants sont venus
+ * le 2026-11-17, et leurs deux succes avec eux.
  *
  * <p><b>Recompenses</b> (choix du joueur : de l'argent, selon la difficulte) :
  * cinq paliers, de 10 000 $ a 5 000 000 $.
@@ -346,17 +347,21 @@ final class AchievementCatalogue {
         b.add("palamod.useitem.spawnerfinder", Category.JOBS, "Chercheur assiste",
                 "Utiliser 10 min un spawner finder", "palamod:spawner_finder", R1,
                 step("Tenir un Spawner Finder 10 min", 600, counter(Achievements.SPAWNER_FINDER_SECONDS)));
-        // Crabe, escargot et elephant n'existent pas ici : le panda, le perroquet et la chevre,
-        // de la meme liste de creatures capturables, les remplacent.
+        // UseItemAchievement « BAMBOO » : le bambou donne aux elephants, un bloc comptant pour neuf.
+        b.add("palamod.useitem.bamboo.feed", Category.JOBS, "Elevage d'elephants",
+                "Donner 7 500 bambous a des elephants", "minecraft:bamboo_block", R2,
+                step("Donner 7 500 bambous a des elephants", 7_500, counter("elephant:bamboo")));
+        // Crabe et escargot n'existent pas ici : le panda et le perroquet, de la meme liste de
+        // creatures capturables, les remplacent a leur place dans la liste.
         b.add("palamod.capturestone.all", Category.JOBS, "Zoo original", "Capturer des creatures",
                 "palamod:capture_stone", R2,
                 one("Capturer un zombie", counter("capture:minecraft:zombie")),
                 one("Capturer un creeper", counter("capture:minecraft:creeper")),
                 one("Capturer une tortue", counter("capture:minecraft:turtle")),
-                one("Capturer un dauphin", counter("capture:minecraft:dolphin")),
                 one("Capturer un panda", counter("capture:minecraft:panda")),
                 one("Capturer un perroquet", counter("capture:minecraft:parrot")),
-                one("Capturer une chevre", counter("capture:minecraft:goat")));
+                one("Capturer un dauphin", counter("capture:minecraft:dolphin")),
+                one("Capturer un elephant", counter("capture:palamod:elephant")));
         // Les mini-boss de PalaJobs ne sont pas portes : les cinq boss d'event les remplacent.
         b.add("palamod.miniboss.killall", Category.JOBS, "Petite proie, dur combat", "Vaincre les cinq boss d'event",
                 "minecraft:wither_skeleton_skull", R3,

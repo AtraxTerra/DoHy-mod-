@@ -24,9 +24,8 @@ import java.util.List;
  * tenait ne servait a rien d'autre), les runes de donjon (chapitre 20) et
  * les Unclaim Finders orange, rouge et bleu (chapitre 22, pillage).
  *
- * <p>La defense d'elephant ({@code TUSK}), centre des recettes de cornes,
- * n'existe pas ici : un bloc d'os la remplace, comme dans l'ancien substitut
- * a l'etabli qu'elles remplacent.
+ * <p>La defense d'elephant ({@code TUSK}) est au centre des recettes de
+ * cornes. Elle se prend aux elephants ; un bloc d'os la remplacait avant eux.
  *
  * <p>Les noms sont ceux du registre ; la table est construite au premier
  * usage, une fois les objets enregistres.
@@ -85,10 +84,10 @@ public final class PalamachineRecipes {
             add(built, "god_stick", "strength_stick", "heal_stick", "paladium_block", "speed_stick", "findium");
             add(built, "hyper_jump_stick", "jump_orb", "jump_stick", "paladium_block", "jump_stick", "paladium_block");
             add(built, "damage_stick", "titane_sword", "amethyst_stick", "paladium_spike", "amethyst_stick", "paladium_spike");
-            // Cornes de monture : creation (la defense devient un bloc d'os).
-            add(built, "amethyst_horn", Items.BONE_BLOCK, "amethyst_ingot", "amethyst_block", "amethyst_ingot", "amethyst_block");
-            add(built, "titane_horn", Items.BONE_BLOCK, "titane_ingot", "titane_block", "titane_ingot", "titane_block");
-            add(built, "paladium_horn", Items.BONE_BLOCK, "paladium_ingot", "paladium_block", "paladium_ingot", "paladium_block");
+            // Cornes de monture : creation, autour d'une defense d'elephant.
+            add(built, "amethyst_horn", "tusk", "amethyst_ingot", "amethyst_block", "amethyst_ingot", "amethyst_block");
+            add(built, "titane_horn", "tusk", "titane_ingot", "titane_block", "titane_ingot", "titane_block");
+            add(built, "paladium_horn", "tusk", "paladium_ingot", "paladium_block", "paladium_ingot", "paladium_block");
             // Sticks : reparation.
             add(built, "heal_stick", "heal_stick", "paladium_block", "titane_block", "paladium_block", "titane_block");
             add(built, "speed_stick", "speed_stick", "titane_block", "compressed_amethyst", "paladium_ingot", "titane_block");

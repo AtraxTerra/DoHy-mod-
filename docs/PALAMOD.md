@@ -101,8 +101,9 @@ qui n'existe pas en 1.7.10 vanilla. C'est le module `back2future` de PalaMod
 **Remplaçants** (2026-11-11) : le bonbon à déballer de PalaMod (`ItemCandy`) devenait 5
 bouteilles d'XP du métier. **Porté le 2026-11-14** (« Les bonbons de métier », plus bas) : la
 récompense du niveau 95 est de nouveau le bonbon à déballer.
-La défense d'éléphant (Chasseur, 80) devient un bloc d'os, comme dans les recettes de cornes de
-la palamachine. Sans remplaçant, ces récompenses n'étaient pas distribuées. L'armure de voyage (Fermier, 55)
+La défense d'éléphant (Chasseur, 80) devenait un bloc d'os, comme dans les recettes de cornes de
+la palamachine ; **portée le 2026-11-17** avec l'éléphant, c'est de nouveau elle. Sans remplaçant,
+ces récompenses n'étaient pas distribuées. L'armure de voyage (Fermier, 55)
 est portée depuis (§ 28). `tools/palamod_jobs.py` porte la règle (`SUBSTITUTES`).
 
 **Joueurs migrés** : à la première connexion après le remplacement des skills, un joueur
@@ -1293,6 +1294,52 @@ pierre de gardien, crusher.
   dans le monde (`EntityJoinLevelEvent`) : `BaseSpawner.serverTick` relance alors son délai
   normal, que l'ajout échoue ou réussisse.
 
+### L'éléphant — `EntityElephant`, `ModelElephant`, `RenderElephant` (2026-11-17)
+
+Relevé au bytecode (`hunter.entites.EntityElephant`, son modèle et son rendu ; `HunterRegisterer`
+pour l'XP). Il ne venait que des lucky blocks et des événements du serveur : aucun code ne le
+faisait apparaître.
+
+| Âge | Taille | Vie | Coup | Vitesse | Recul | Texture |
+|---|---|---|---|---|---|---|
+| petit | 1 × 1,5 | 25 | 5 | 0,6 | insensible | 64 × 64 |
+| ado | 1,5 × 2,3 | 50 | 10 | 0,5 | 0,65 | 128 × 128 |
+| adulte | 3 × 4 | 100 | 25 | 0,3 | insensible | 160 × 160 |
+
+- **Naissance** : un âge au hasard (`entityInit` : `rand(3)`), robe 0, sauvage. Le petit est
+  insensible au recul par une faute de l'original (l'âge comparé à 0,3) : gardée.
+- **IA** : promenade (0,6), regarde les joueurs, ne charge (0,8) que le joueur qui le frappe.
+- **Bambou** (`interact`, main droite) : un bambou (+1) ou un bloc de bambou (+9) ; accroupi, toute
+  la pile. Il soigne d'autant. Sauvage, seul le petit mange, et s'apprivoise si son compte de
+  bambou atteint un tirage de 0 à 9. Apprivoisé, il grandit : ado à 64, adulte à 128, robe 1 à
+  1 000, robe 2 à 5 000 ; il refuse tout à 100 000. Étincelles de coup critique (75), cœurs à
+  l'apprivoisement (100) et au plein (200). Compté pour le succès « Élevage d'éléphants ».
+- **Monture** : le maître monte d'un clic droit main vide. Bambou en main, l'éléphant avance droit
+  devant dans le lacet du cavalier (`moveEntityWithHeading(0, 0,4 / 0,3 / 0,2)`), à la vitesse de
+  sa promenade (0,6 × l'attribut, ramenée au sol de 26.2 : × 0,45) ; sinon il se promène, le
+  cavalier sur le dos. Le cavalier s'assied à `0,75 × hauteur` de 1.7.10.
+- **Mort** : un ado ou un adulte lâche une fois sur 25 de 0 à 2 **défenses d'éléphant**, plus de 0
+  à Butin (`getDropItem`, `dropFewItems`), et 5 orbes d'XP comme un monstre.
+- **XP de Chasseur** : 15 XP de PalaJobs au niveau 8 (`EntityKillObjective`), soit **100 XP dès
+  Chasseur 40**. Le barème des créatures est celui de Bedrock, qui n'a pas d'éléphant : son XP
+  passe au rapport médian Bedrock / PalaJobs des animaux communs (vache, mouton, poulet, cochon :
+  14 dans PalaJobs, 80 à 110 sur Bedrock, × 6,79), dans `tools/bedrock_jobs.py`. Le **bonus de
+  l'éléphant nourri** (`EntityKillSpecialObjective`, niveau 11 → **55**) : de 128 à 1 000
+  bambous, 1 à 40 XP de PalaJobs ; au-delà, `bambou / 100 + rand(bambou / 10 + bambou / 25)` ;
+  converti au même rapport que la mise à mort.
+- **Capture** : à l'épée et à la pierre de capture, à tout âge (« Zoo original »).
+- **Apparition (écart)** : par petits groupes (1 à 3, poids 3) dans les savanes et les jungles
+  (`palamod:elephant_spawns`, `biome_modifier/elephant.json`), sur un sol d'animal et au jour ;
+  `Wildlife` en ramène sur une carte déjà générée.
+- **Écarts** : une créature et pas un monstre (`EntityMob`) — il ne disparaît plus en paisible et
+  sait nager ; sauvage et sans nom, il s'en va loin des joueurs, comme un monstre de 1.7.10,
+  mais un apprivoisé reste (l'original pouvait disparaître). Les sons de monstre sont gardés.
+  La peau « Elmer » (un éléphant nommé d'après un personnage de livre pour enfants) n'est pas
+  reprise : c'est l'œuvre d'un autre. L'œuf d'apparition a une texture de DoHy (gris, taches
+  gris clair, les couleurs de `registerGlobalEntityID`).
+- **Pas encore dans les donjons** : la défense d'éléphant et le totem fleuri figuraient dans les
+  tables du wiki, à des paliers non relevés ici ; ils restent hors des coffres.
+
 ## 14. Alchimiste — les objets débloqués (chapitre 11)
 
 Relevé dans `PAlchimiste` (recettes du chaudron et des portails), `CraftMod`, `TileEntityExtractor`,
@@ -1309,7 +1356,8 @@ chaudron, portails, enchantements mystiques.
 | 30 / 45 / 60 / 100 | Blocs et clés de portail (améthyste, titane, paladium, endium) | oui |
 | 100 | Bloc d'angle, cœur et pollen d'endium | oui |
 | 100 | Jambières et bottes en endium | déjà au chapitre 7 |
-| 15 / 40 | Table d'alchimiste, totem fleuri | **non, écartés par le joueur** |
+| 15 | Table d'alchimiste | **non, écartée par le joueur** |
+| 40 | Totem fleuri | oui (jardin, plan de construction) |
 | 75 / 90 | Améliorations de spawner | **non** (sans contrôleur de spawner) |
 | 95 | Trône de l'alchimiste | **non — aucun trône** |
 
@@ -1400,6 +1448,15 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
   - pollens : titane → 1 bloc de titane, améthyste → 2 blocs d'améthyste, paladium → 5 lingots.
 - Intégrité vérifiée toutes les 11 ticks de travail. Aucune XP pour les recettes du chaudron :
   l'original déclarait une XP qu'il ne versait jamais.
+- **La fleur minérale** (`BaseBlockFlower.onBlockActivated`, `FLOWER_MINERAL` seule ; portée le
+  2026-11-18) : plantée, elle se change en lingots à la poudre d'os. Les six premières la font
+  « pousser » sans rien montrer (métadonnée 0 → 6, ici `growth`) ; la septième la consomme et
+  donne, un tiers chacun, 2 à 4 lingots de titane, 1 à 2 de paladium ou 3 à 5 d'améthyste,
+  lâchés aux pieds du joueur et ramassables tout de suite (ici : dans son sac, sinon au sol).
+  Un distributeur n'y fait rien, comme dans l'original. **Écarts** : les particules de poudre
+  d'os à chaque coup, la fleur se brise à la dernière ; en créatif, la poudre n'est pas
+  consommée. Elle se ramasse toujours quand on la casse (l'original ne la rendait qu'au toucher
+  de soie) et reprend alors à zéro.
 - **Écart** : une fleur d'endium jetée sans le niveau reste là ; l'original la consommait pour rien.
 - **Potion de foudre** : sous la pluie, un casque en fer ou en or, une fiole d'eau vide en main —
   1/800 par tick (≈ 40 s) — la foudre tombe et la fiole devient potion ; 30 XP. **Écart** :
@@ -1438,10 +1495,32 @@ Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèqu
   d'expérience** chaque fois. Ni à la table vanilla, ni en livre.
 - **Anti chute** (bottes, 1 niveau) : on ne tombe plus d'un bord, comme accroupi. Un mixin sur
   `Player.isStayingOnGroundSurface` — le seul point qui décide, sans événement.
-- **Grass Breaker** (épées, 3 niveaux, Fermier 20) : les hautes herbes lâchent jusqu'à `niveau`
-  graines de plus par graine. **Écart** : l'original le réservait aux épées rapides, non portées.
-- Pas portés : le casque d'unclaim (ni unclaim finder ni factions), la protection contre l'eau
-  sulfurique (pas d'eau sulfurique), la table « lisible » d'Alchimiste 75.
+- **Grass Breaker** (épées, 3 niveaux, Fermier 20) : une haute herbe cassée à l'épée relance son
+  butin une fois de plus, **avec Fortune I**, et chaque pile gagne de 0 à `niveau` graines
+  (`AlchemistEventHandler`). **Écart** : l'original le réservait aux épées rapides, non portées.
+- **Unclaim Helmet** (casques, 1 niveau) : fondu à l'enclume avec un Unclaim Finder (15 niveaux),
+  le casque porté **devient** ce finder, de sa couleur — le HUD du finder s'affiche sans l'avoir en
+  main. L'arbre de faction compte les poses.
+- **Fake Water Protection** (casques, 1 niveau, arbre de faction) : dans la Fake Water, le casque
+  seul encaisse, **66 points d'usure par seconde** (`BlockSulfuricWater`). Avant cette version,
+  toute pièce d'armure le portait et l'usure n'était pas comptée.
+- **Experience Bottler** (tout objet à usure, 1 niveau, Mineur 60) : tenu ou porté, l'XP de métier
+  gagnée remplit des **bouteilles d'XP de métier** de ce métier (1 000 au plus chacune), en
+  complétant d'abord les bouteilles entamées, puis en convertissant les fioles vides du sac
+  (`PMiner`, `AJobsEventHandler`). Sans fiole, l'XP va au métier. Les bouteilles bues ne
+  remplissent rien.
+- **Voleur d'XP** (épées, 4 niveaux, Chasseur 55) : à chaque coup porté à un joueur, 2 / 4 / 7 /
+  10 % de chances de lui prendre 40 / 50 / 70 / 80 points d'expérience.
+- **Overwhelmed** (plastrons, 3 niveaux, Chasseur 95) : une amulette de plus par niveau sur le
+  plastron (une sans).
+- **Récupération** (épées) et **Récupération de minage** (outils), 1 niveau : le butin d'un
+  monstre tué ou d'un bloc cassé va directement dans le sac ; ce qui ne tient pas reste au sol.
+  Les monstres nommés gardent leur butin au sol.
+- **Expérience** (épées, 3 niveaux) : +1 / 3 / 5 % sur l'XP ramassée. **Écart** : l'original ne
+  venait que des lucky blocks de septembre, absents ; il passe ici par la table.
+- Pas portés : **Omniscient** (aucun effet dans le code d'origine : l'enchantement est déclaré et
+  rien ne le lit), **Confusion** (cité par le wiki seulement, sans code ni chiffres), la table
+  « lisible » d'Alchimiste 75. Frost Walker est celui de vanilla.
 
 ---
 
@@ -1722,9 +1801,10 @@ horloge s'arrête.
   couveuse (6 terre cuite, 2 verre, 1 orbe de régénération), gestionnaire (6 terre cuite, 2 blocs
   de paladium, 1 **coffre en or**), bandage (6 papier, 2 ficelle, 1 orbe), **orbe de
   régénération** (4 lingots de paladium autour d'une tranche de pastèque scintillante).
-- **Cornes** : l'éléphant et sa défense ne sont pas portés. Les cornes se fabriquent à la
-  **palamachine** (chapitre 16, § 20), la défense remplacée par un **bloc d'os** : os au centre,
-  lingot, bloc, lingot, bloc. Les recettes « bâtons + bloc » sont des **réparations** : la corne
+- **Cornes** : elles se fabriquent à la **palamachine** (chapitre 16, § 20) autour d'une
+  **défense d'éléphant** : défense au centre, lingot, bloc, lingot, bloc. Avant l'éléphant
+  (2026-11-17), un bloc d'os la remplaçait. Les recettes « bâtons + bloc » sont des
+  **réparations** : la corne
   usée au centre, trois bâtons du métal (celui du milieu devient un cœur en paladium pour la corne
   en paladium) et un bloc ; elle ressort neuve.
 
@@ -1969,8 +2049,9 @@ réparer. Ni entonnoir ni conduit. Recette à l'établi : 8 pierres autour d'un 
   lègue plus son compteur au stick divin qu'il sert à fabriquer.
 - Portées : 12 recettes d'anneaux, 14 de sticks, 6 de cornes de monture, et la recharge de
   l'extracteur (un extracteur entamé, 3 lingots de paladium et un seau d'eau : il ressort à 144
-  utilisations). La défense d'éléphant devient un **bloc d'os** ; les anciens substituts des
-  cornes à l'établi sont retirés. Laissées : détecteurs de claim, runes de donjon (non portés).
+  utilisations). La défense d'éléphant y est au centre des cornes (un bloc d'os jusqu'au
+  2026-11-17) ; les anciens substituts des cornes à l'établi sont retirés. Laissées : détecteurs
+  de claim, runes de donjon (non portés).
 
 | Création | Pièce centrale | Ingrédients (1, 2, 3, 4) |
 |---|---|---|
@@ -2619,13 +2700,14 @@ le code.
 - **Dépenser** (`CresusWithdrawAchievement`) : tout débit consenti (achats au shop, boutique,
   améliorations, dépôts en banque de faction…), pas la pénalité de mort.
 
-### Les 13 succès retirés
+### Les 12 succès retirés
 
 Mailbox (« Écrivain »), sorts (« Apprenti sorcier »), Palapass, échanges entre joueurs (trois
 « Tradeur »), familier niveau 100, blocs camouflage d'un autre mod (« Expert du camouflage »),
 glueballs (« Chewing gum maison »), colle (« Colleur »), bouteilles d'XP scellées (« Mise en
-bouteille »), sac à dos de chasseur (« Transport dominical »), éléphants (« Élevage
-d'éléphants »). Aucun de ces systèmes n'existe dans DoHy.
+bouteille »), sac à dos de chasseur (« Transport dominical »). Aucun de ces systèmes n'existe
+dans DoHy. « Élevage d'éléphants » (7 500 bambous, un bloc en vaut neuf) est revenu le
+2026-11-17 avec les éléphants.
 
 ### Les écarts
 
@@ -2636,7 +2718,7 @@ d'éléphants »). Aucun de ces systèmes n'existe dans DoHy.
 | Une belle omelette II | utiliser le parchemin de dragon | être là quand Volcania tombe (pas de parchemin) |
 | Transdimensionnelle III | la commande `/dimension` trois fois | terminer trois sessions |
 | Chercheur assisté | utiliser 10 fois un spawner finder | 10 min en main (le finder de DoHy s'use à la seconde) |
-| Zoo original | zombie, creeper, tortue, crabe, escargot, dauphin, éléphant | crabe, escargot, éléphant → panda, perroquet, chèvre (capturables) |
+| Zoo original | zombie, creeper, tortue, crabe, escargot, dauphin, éléphant | crabe, escargot → panda, perroquet (capturables) ; l'éléphant depuis le 2026-11-17 |
 | Petite proie, dur combat | les quatre mini-boss de PalaJobs | les cinq boss d'event |
 | Extermina-home | tuer 10 fantômes du home remover | effacer 10 monstres avec le home remover (celui de DoHy efface les monstres du chunk) |
 | Doux chez soi | posséder un village de faction | bâtir la réserve d'or |
@@ -3224,14 +3306,14 @@ deux calculs de suite ; un achat (argent débité, objet dans l'inventaire, stoc
 renouvellements à 250 k, 500 k, 1 M et 2 M, puis le refus du cinquième ; la carte du menu et
 la commande `/market`. Non vérifié : le changement d'annonces au passage d'un jour réel.
 
-## 35. Tiroirs : Utility Drawers (2026-11-18)
+## 35. Tiroirs : Utility Drawers, et la clé en paladium (2026-11-18)
 
 Paladium jouait avec **Storage Drawers** installé à côté de PalaMod ; Berskar n'a pas de tiroirs
-à lui. Après l'essai de deux portages en 26.2, le joueur a retenu **Utility Drawers** (CurseForge,
-projet 1582712) : un mod à part, à mettre sur le serveur **et** sur le client. Berskar n'en
-dépend pas.
+à lui. Deux portages en 26.2 ont été essayés avec Berskar et NTM : **Vault Drawers** d'abord,
+écarté, puis **Utility Drawers** (CurseForge, projet 1582712), retenu par le joueur. C'est un mod
+à part, à mettre sur le serveur **et** sur le client ; Berskar n'en dépend pas.
 
-### Ce que Berskar lui apporte
+### Ce que Berskar apporte à Utility Drawers
 
 - **Ses noms en français** : `assets/utilitydrawers/lang/fr_fr.json`, les 97 clés du mod, qui
   n'a que l'anglais. Sans accents, comme le reste du kit ; les bois suivent les noms de Minecraft
@@ -3242,15 +3324,6 @@ dépend pas.
   se découvre en ramassant un tiroir, une base, un compacteur ou une interface.
   `check_encyclopedia.py` connaît désormais les objets d'un mod optionnel (`OPTIONAL_ITEMS`,
   relevés dans son jar).
-
-### Les recettes au paladium de Paladium : aucune ne s'applique
-
-- La **clé en paladium** (`ItemPaladiumKey`, quatre lingots de paladium autour de la clé
-  personnelle) ouvrait un tiroir fermé par la clé personnelle d'un autre joueur. Utility Drawers
-  n'a pas de propriétaire : son verrou ne fixe que l'objet d'une case, et la télécommande le lève
-  pour n'importe qui. Le déblocage du Chasseur 85 dans `jobs.json` reste donc sans objet.
-- L'**amélioration de répétition** de la baguette des bâtisseurs de faction (paladium compressé
-  autour de l'amélioration émeraude) : la baguette n'existe pas dans Berskar.
 
 ### Utility Drawers 1.2.6, essayé avec Berskar et NTM (captures, 2026-11-18)
 
@@ -3274,11 +3347,46 @@ objet ; le délai est compté **par joueur**, pas par tiroir (`LAST_CLICK_TIME`)
 paraît sombre sur la façade dans les captures, en rendu logiciel ; l'écran de stockage le montre
 bien.
 
-### Vault Drawers, essayé d'abord et écarté
+### La clé en paladium — `ItemPaladiumKey`, pour Vault Drawers seulement
 
-Vault Drawers 0.0.0-beta.9 (`vault_drawers-26.2-neoforge-26.2.0.57-0.0.0-beta.9.jar`) démarre aussi
-avec Berskar et NTM, mais : rien n'est dessiné sur la façade ; **un tiroir plein cassé est
-détruit** (un objet et les améliorations, 192 pierres → 1) ; pas d'interface côté client, et
-l'inventaire ne se rafraîchit plus à l'écran à moins de 8 blocs ; d'après son code, le contrôleur
-n'est pas porté et la fermeture à clé n'est pas sauvegardée. La clé en paladium avait été portée
-pour lui (PR #167), puis abandonnée avec lui.
+- Clic droit sur un tiroir fermé par une clé personnelle : il s'ouvre à tous, et la clé part (le
+  créatif la garde). Sur un tiroir ouvert, ou sur un autre bloc, un message et rien d'autre. Les
+  messages sont ceux de PalaMod, sans accents ni la faute de « vérrouillé ». Une par pile.
+- **Recette du relevé** : quatre lingots de paladium autour de la clé personnelle de Storage
+  Drawers, devenue `vault_drawers:personal_key`. Elle ne se charge qu'avec Vault Drawers
+  (`neoforge:mod_loaded`) : sans lui, l'ingrédient n'existe pas et 26.2 jetterait la recette.
+- **Chasseur 85** : le déblocage était déjà dans `jobs.json`.
+- Le pont passe par la réflexion sur `IProtectable` de Vault Drawers (`VaultDrawersCompat`). Le
+  clic est pris avant le tiroir (`RightClickBlock`) : fermé, celui-ci ignore tout joueur qui n'en
+  est pas le propriétaire, la clé comprise. Priorité basse, pour que le verrou de métier passe
+  d'abord.
+- **Avec Utility Drawers, elle ne sert à rien** : ce mod n'a pas de propriétaire, son verrou ne
+  fixe que l'objet d'une case et la télécommande le lève pour n'importe qui. Sans Vault Drawers,
+  la clé reste dans l'onglet créatif mais ne se fabrique pas. Même avec lui, sur une partie jouée
+  seul, elle ne sert que si quelqu'un d'autre a fermé un tiroir.
+- **L'autre recette au paladium qui touche aux tiroirs n'est pas portée** : elle fait
+  l'amélioration de répétition de la baguette des bâtisseurs de faction (paladium compressé autour
+  de l'amélioration émeraude), et cette baguette n'existe pas dans Berskar.
+
+### Vault Drawers 0.0.0-beta.9, essayé d'abord et écarté (captures, 2026-11-18)
+
+Fichier `vault_drawers-26.2-neoforge-26.2.0.57-0.0.0-beta.9.jar` (1 067 619 octets, SHA-256
+`9e6a1297…5b3c8`), sur le serveur dédié puis le client, avec NTM NEXT et NTM Space.
+
+- **Ce qui marche** : le démarrage, sans erreur ; ses 125 recettes ; la pose de tous les blocs ;
+  le dépôt au clic droit, le retrait au clic gauche ; les améliorations posées au clic droit
+  (émeraude : 2 048 → 131 072) ; la clé personnelle, qui refuse le dépôt à un autre joueur. La clé
+  en paladium : refusée sans le niveau, puis le tiroir ouvert, la clé consommée et les trois
+  messages.
+- **Ce qui ne marche pas** :
+  - **rien n'est dessiné sur la façade**, ni l'objet ni le nombre : on ne voit pas ce que
+    contient un tiroir ;
+  - **casser un tiroir plein le détruit** : il lâche un seul objet de son contenu et ses
+    améliorations, ni le tiroir ni le reste (192 pierres → 1) ;
+  - **l'interface** (Maj + clic droit main vide) n'existe pas côté client. Le serveur la croit
+    ouverte, et l'inventaire ne se met plus à jour à l'écran tant qu'on reste à moins de 8 blocs
+    du tiroir (rien n'est perdu) ;
+  - d'après son journal et son code : le contrôleur ne relie pas les tiroirs, et une fermeture à
+    clé n'est pas sauvegardée (elle disparaît au redémarrage).
+- NTM porte des mixins pour Storage Drawers (`com.jaquadro…`) ; ils ne trouvent pas Vault
+  Drawers, dont le paquet diffère : de simples avertissements au démarrage.

@@ -19,6 +19,12 @@ les pivots passent tels quels, sans retouche. Les racines sont les pieces que
 
     python3 tools/modelbase2java.py Model.javap > corps.java
     python3 tools/modelbase2java.py Model.javap paquet NomGeometry > NomGeometry.java
+
+Un modele qui change de taille de texture en cours de constructeur (une racine
+par taille, comme l'elephant : 64, 128 et 160) se traduit en une couche par
+racine, avec ``split`` en quatrieme argument :
+
+    python3 tools/modelbase2java.py Model.javap paquet NomGeometry split > NomGeometry.java
 """
 import re
 import sys
@@ -42,6 +48,7 @@ class Part:
         self.children = []
         self.parent = None
         self.mirror = False
+        self.tex = (64, 32)
 
 
 def methods(lines):
@@ -116,7 +123,11 @@ def run_ctor(code):
         elif op == 'invokespecial':
             if 'ModelRenderer."<init>":(Lnet/minecraft/client/model/ModelBase;)V' in comment:
                 stack.pop(); stack.pop(); stack.pop()
-                stack.append(Part('?'))
+                part = Part('?')
+                # new ModelRenderer(this) copie la taille de texture du modele
+                # au moment de sa creation (setTextureSize dans le constructeur).
+                part.tex = tuple(tex)
+                stack.append(part)
             elif 'ModelBox."<init>"' in comment:
                 desc = comment.split('(', 1)[1].split(')')[0]
                 mirror = False
@@ -263,7 +274,68 @@ public final class %(name)s {
 '''
 
 
-def main(path, package=None, name=None):
+CLASS_SPLIT = """package %(package)s;
+
+import java.util.HashMap;
+import java.util.Map;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+
+/**
+ * La geometrie de {@code %(source)s} (PalaMod 10.3.0), traduite de son bytecode
+ * par {@code tools/modelbase2java.py}, sans retouche des cubes. Ne pas modifier
+ * a la main : regenerer.
+ *
+ * <p>Le modele d'origine change de taille de texture en cours de route : chaque
+ * racine a la sienne, donc sa propre couche ici.
+ */
+public final class %(name)s {
+
+    private %(name)s() {
+    }
+%(methods)s}
+"""
+
+SPLIT_METHOD = """
+    /** La racine {@code %(root)s}, texture de %(w)d x %(h)d. */
+    public static LayerDefinition create%(cap)sLayer() {
+%(body)s
+    }
+
+    /** Chaque piece de {@code %(root)s}, par son nom d'origine. */
+    public static Map<String, ModelPart> index%(cap)s(ModelPart root) {
+%(index)s
+    }
+"""
+
+
+def split_methods(parts, roots):
+    """Une couche et un index par racine, a la taille de texture de ses pieces."""
+    out = []
+    for root in roots:
+        sizes = set()
+
+        def collect(part):
+            sizes.add(part.tex)
+            for child in part.children:
+                collect(child)
+
+        collect(parts[root])
+        if len(sizes) != 1:
+            raise SystemExit('tailles de texture melangees sous %s : %s' % (root, sorted(sizes)))
+        tex = sizes.pop()
+        cap = root[0].upper() + root[1:]
+        out.append(SPLIT_METHOD % {'root': root, 'cap': cap, 'w': tex[0], 'h': tex[1],
+                                   'body': emit(parts, [root], tex), 'index': emit_index(parts, [root])})
+    return ''.join(out)
+
+
+def main(path, package=None, name=None, mode=None):
     lines = [l.rstrip('\n') for l in open(path) if not l.startswith('Picked up')]
     ms = methods(lines)
     ctor_sig = next(k for k in ms if re.match(r'public [\w.$]+\(\);', k))
@@ -271,7 +343,11 @@ def main(path, package=None, name=None):
     render = next(v for k, v in ms.items() if 'func_78088_a(' in k)
     parts, order, tex = run_ctor(ctor)
     roots = roots_of(render, parts)
-    if package and name:
+    if package and name and mode == 'split':
+        source = ctor_sig.split('(')[0].split()[-1].rsplit('.', 1)[-1]
+        print(CLASS_SPLIT % {'package': package, 'name': name, 'source': source,
+                             'methods': split_methods(parts, roots)}, end='')
+    elif package and name:
         source = ctor_sig.split('(')[0].split()[-1].rsplit('.', 1)[-1]
         print(CLASS % {'package': package, 'name': name, 'source': source,
                        'body': emit(parts, roots, tex), 'index': emit_index(parts, roots)}, end='')
@@ -284,5 +360,5 @@ def main(path, package=None, name=None):
 
 
 if __name__ == '__main__':
-    # modelbase2java.py Model.javap [paquet NomDeClasse]
-    main(*sys.argv[1:4])
+    # modelbase2java.py Model.javap [paquet NomDeClasse [split]]
+    main(*sys.argv[1:5])

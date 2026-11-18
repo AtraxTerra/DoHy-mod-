@@ -278,7 +278,7 @@
         {
           "title": "Les structures",
           "text": [
-            "Le grinder, le chaudron de l'alchimiste, la boite a golem, l'enclos (cinq tailles), les structures de spawners (quatre paliers), le portail du Mineur et la reserve d'or (trois paliers)."
+            "Le grinder, le chaudron de l'alchimiste, le jardin du totem fleuri, la boite a golem, l'enclos (cinq tailles), les structures de spawners (quatre paliers), le portail du Mineur et la reserve d'or (trois paliers)."
           ]
         }
       ],
@@ -289,6 +289,7 @@
       "see": [
         "grinder",
         "alchimie",
+        "totem_fleuri",
         "golem",
         "monture",
         "spawners",
@@ -298,6 +299,7 @@
       "plans": [
         "grinder",
         "chaudron",
+        "jardin_fleuri",
         "boite_golem",
         "enclos",
         "spawners",
@@ -1001,14 +1003,16 @@
             "- Les viandes et le saumon cuits rapportent, sortis du four ou du fumoir a la main.",
             "- L'epee de capture enferme la creature tuee dans une pierre de capture vide.",
             "- Le marteau de caverne recolte les ames des spawners de donjon pour remplir un spawner vide.",
-            "- Capturer une monture demande l'epee et la pierre de capture."
+            "- Capturer une monture demande l'epee et la pierre de capture.",
+            "- L'elephant se tue des le niveau 40, et rapporte un bonus des le 55 s'il a ete bien nourri."
           ]
         }
       ],
       "see": [
         "metiers",
         "spawners",
-        "monture"
+        "monture",
+        "elephant"
       ],
       "progress": "metier:hunter"
     },
@@ -1057,7 +1061,7 @@
         "Portails, enchantements"
       ],
       "summary": [
-        "L'Alchimiste gagne son XP avec la seve, le chaudron et les portails. Il debloque les arbres de PalaMod, l'extracteur, le chaudron, les potions, les portails a seve et les enchantements mystiques."
+        "L'Alchimiste gagne son XP avec la seve, le chaudron et les portails. Il debloque les arbres de PalaMod, l'extracteur, le chaudron, les potions, les portails a seve, le totem fleuri et les enchantements mystiques."
       ],
       "sections": [
         {
@@ -1071,7 +1075,8 @@
       "see": [
         "metiers",
         "alchimie",
-        "withers"
+        "withers",
+        "totem_fleuri"
       ],
       "progress": "metier:alchemist"
     },
@@ -1271,6 +1276,8 @@
           "text": [
             "- Un plancher de 7 x 7 blocs du chaudron, un anneau de 5 x 5 au-dessus, puis le coeur pose en dernier au centre du plancher : la foudre tombe et le chaudron est forme.",
             "- Le bassin de 3 x 3 dans l'anneau se remplit d'eau angelique.",
+            "- Des fleurs vanilla jetees dans le bassin donnent parfois une fleur rare : une fleur minerale sur 500, une fleur de paladium sur 300.",
+            "- Plantee, la fleur minerale se change en lingots a la septieme poudre d'os : 2 a 4 de titane, 3 a 5 d'amethyste ou 1 a 2 de paladium. Elle disparait.",
             "! Le plan de construction montre la forme complete."
           ]
         },
@@ -1278,12 +1285,14 @@
           "title": "Plus loin",
           "text": [
             "- Les portails a seve sont des autels : une cle inseree emplit leur centre.",
-            "- Seize bibliotheques mystiques autour d'une table d'enchantement ouvrent la table de l'Alchimiste."
+            "- Seize bibliotheques mystiques autour d'une table d'enchantement ouvrent la table de l'Alchimiste.",
+            "- Le totem fleuri rend des fleurs, au coeur d'un petit jardin."
           ]
         }
       ],
       "see": [
         "alchimiste",
+        "totem_fleuri",
         "withers",
         "plans"
       ],
@@ -1295,7 +1304,8 @@
           "palamod:cauldron_core",
           "palamod:cauldron",
           "palamod:extractor",
-          "palamod:flask"
+          "palamod:flask",
+          "palamod:mineral_flower"
         ],
         "views": [
           "dohy:mystic_enchant"
@@ -1303,9 +1313,54 @@
       }
     },
     {
-      "id": "golem",
+      "id": "totem_fleuri",
       "category": "palamod",
       "order": 5,
+      "icon": "palamod:flower_totem",
+      "title": "Le totem fleuri",
+      "card": [
+        "Alchimiste 40",
+        "Des fleurs a la poudre d'os"
+      ],
+      "summary": [
+        "Le totem fleuri brule de la poudre d'os et rend des fleurs et des graines de ble. Il ne tourne qu'au coeur d'un petit jardin : un sol en damier dessous, huit voisins autour. Il faut etre Alchimiste 40 pour le poser et s'en servir."
+      ],
+      "sections": [
+        {
+          "title": "Le jardin",
+          "text": [
+            "- Dessous, un carre de 3 x 3 : de l'herbe aux coins et au centre, du podzol sur les bords.",
+            "- Autour, a sa hauteur, dans n'importe quel ordre : un buisson a XP, un coquelicot, un pissenlit, une orchidee bleue, un allium, une tulipe blanche, une fleur minerale et un entonnoir.",
+            "! Le plan de construction montre le jardin, et l'ecran du totem ce qui manque."
+          ]
+        },
+        {
+          "title": "La recolte",
+          "text": [
+            "Une poudre d'os toutes les cinq secondes : deux fleurs (coquelicot ou pissenlit) et deux graines de ble.",
+            "- L'entonnoir du jardin l'alimente en poudre d'os ; les fleurs se ramassent a la main.",
+            "! Ce qui ne tient plus dans les neuf cases de sortie est perdu."
+          ]
+        }
+      ],
+      "see": [
+        "alchimie",
+        "alchimiste",
+        "plans"
+      ],
+      "plans": [
+        "jardin_fleuri"
+      ],
+      "discover": {
+        "items": [
+          "palamod:flower_totem"
+        ]
+      }
+    },
+    {
+      "id": "golem",
+      "category": "palamod",
+      "order": 6,
       "icon": "palamod:guardian_stone",
       "title": "Le golem gardien",
       "card": [
@@ -1359,7 +1414,7 @@
     {
       "id": "monture",
       "category": "palamod",
-      "order": 6,
+      "order": 7,
       "icon": "palamod:mount_gemstone",
       "title": "Monture, enclos",
       "card": [
@@ -1381,7 +1436,8 @@
         {
           "title": "La monture",
           "text": [
-            "Sa gemme la garde ; elle a ses niveaux, sa vie et son energie. Les cornes d'amethyste, de titane et de paladium creusent de plus en plus large."
+            "Sa gemme la garde ; elle a ses niveaux, sa vie et son energie. Les cornes d'amethyste, de titane et de paladium creusent de plus en plus large.",
+            "Les cornes se forgent a la palamachine autour d'une defense d'elephant."
           ]
         }
       ],
@@ -1391,7 +1447,8 @@
       ],
       "see": [
         "chasseur",
-        "plans"
+        "plans",
+        "elephant"
       ],
       "plans": [
         "enclos"
@@ -1409,9 +1466,58 @@
       }
     },
     {
+      "id": "elephant",
+      "category": "palamod",
+      "order": 8,
+      "icon": "palamod:tusk",
+      "title": "L'elephant",
+      "card": [
+        "Savanes et jungles",
+        "Bambou, monture"
+      ],
+      "summary": [
+        "L'elephant vit en petits groupes dans les savanes et les jungles. Petit, ado ou adulte, il est neutre : il ne charge que celui qui le frappe. Le petit s'apprivoise au bambou ; apprivoise, il grandit et se laisse monter."
+      ],
+      "sections": [
+        {
+          "title": "Le bambou",
+          "text": [
+            "- Clic droit avec un bambou : il en mange un. Un bloc de bambou en vaut neuf ; accroupi, toute la pile y passe. Chaque bambou le soigne d'un point.",
+            "- Sauvage, seul le petit en veut : il s'apprivoise en quelques bambous, et tu deviens son maitre.",
+            "- Apprivoise, il grandit : ado a 64 bambous, adulte a 128, une robe vert pale a 1 000, verte a 5 000."
+          ]
+        },
+        {
+          "title": "En selle",
+          "text": [
+            "Son maitre monte d'un clic droit main vide. Un bambou en main, l'elephant avance droit devant, dans le sens de ton regard : le petit trotte, l'adulte avance au pas. Sans bambou, il se promene a sa guise."
+          ]
+        },
+        {
+          "title": "Pour le Chasseur",
+          "text": [
+            "- Des Chasseur 40, un elephant tue rapporte un peu plus qu'une vache.",
+            "- Des Chasseur 55, un elephant bien nourri (128 bambous et plus) rapporte un bonus, d'autant plus gros qu'il a mange.",
+            "- Une fois sur 25, un ado ou un adulte lache des defenses d'elephant : le coeur des cornes de monture, a la palamachine.",
+            "- Il se capture a l'epee et a la pierre de capture."
+          ]
+        }
+      ],
+      "see": [
+        "chasseur",
+        "monture"
+      ],
+      "discover": {
+        "items": [
+          "palamod:tusk",
+          "palamod:elephant_spawn_egg"
+        ]
+      }
+    },
+    {
       "id": "spawners",
       "category": "palamod",
-      "order": 7,
+      "order": 9,
       "icon": "palamod:spawner_controller",
       "title": "Les spawners",
       "card": [
@@ -1454,7 +1560,7 @@
     {
       "id": "dimension_mineur",
       "category": "palamod",
-      "order": 8,
+      "order": 10,
       "icon": "palamod:withered_obsidian",
       "title": "Dimension Mineur",
       "card": [
@@ -1508,7 +1614,7 @@
     {
       "id": "pierres_legendaires",
       "category": "palamod",
-      "order": 9,
+      "order": 11,
       "icon": "palamod:legendary_stone_random",
       "title": "Pierres et gant",
       "card": [
@@ -1543,7 +1649,7 @@
     {
       "id": "pvp",
       "category": "palamod",
-      "order": 10,
+      "order": 12,
       "icon": "palamod:strength_stick",
       "title": "Objets de combat",
       "card": [
@@ -1578,7 +1684,7 @@
     {
       "id": "clicker",
       "category": "palamod",
-      "order": 11,
+      "order": 13,
       "icon": "minecraft:cookie",
       "title": "Le clicker",
       "card": [
@@ -1611,7 +1717,7 @@
     {
       "id": "trixium",
       "category": "palamod",
-      "order": 12,
+      "order": 14,
       "icon": "palamod:trixium",
       "title": "Concours Trixium",
       "card": [
@@ -1641,7 +1747,7 @@
     {
       "id": "succes",
       "category": "palamod",
-      "order": 13,
+      "order": 15,
       "icon": "minecraft:golden_apple",
       "title": "Les succes",
       "card": [
@@ -1669,7 +1775,7 @@
     {
       "id": "withers",
       "category": "palamod",
-      "order": 14,
+      "order": 16,
       "icon": "palamod:wither_receptacle",
       "title": "Les withers",
       "card": [
@@ -2033,6 +2139,13 @@
             "- Les dynamites se collent au premier bloc ou a la premiere creature touches, et sautent peu apres.",
             "- Leur usage demande le palier Pillage de l'arbre."
           ]
+        },
+        {
+          "title": "Les tiroirs fermes",
+          "text": [
+            "- Avec le mod Vault Drawers, une cle personnelle ferme un tiroir a son seul proprietaire.",
+            "- La cle en paladium (quatre lingots de paladium autour d'une cle personnelle) l'ouvre a tous, et part a l'usage. Chasseur 85."
+          ]
         }
       ],
       "see": [
@@ -2044,7 +2157,8 @@
         "items": [
           "palamod:dynamite",
           "palamod:big_dynamite",
-          "palamod:unclaim_finder"
+          "palamod:unclaim_finder",
+          "palamod:paladium_key"
         ],
         "views": [
           "dohy:chest_explorer"

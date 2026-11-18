@@ -75,6 +75,19 @@ public final class PalaMachines {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE));
 
+    /**
+     * Le totem fleuri de l'Alchimiste ({@code BlockFlowerFarm}) : en bois comme
+     * le totem de fertilite, mais a la pioche en pierre ({@code setHarvestLevel
+     * ("pickaxe", 1)}). Son identifiant est celui du verrou de metier deja en
+     * place, Alchimiste 40.
+     */
+    public static final DeferredBlock<Block> FLOWER_TOTEM_BLOCK = BLOCKS.registerBlock(
+            "flower_totem", FlowerTotemBlock::new, properties -> properties
+                    .strength(2.5f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.WOOD)
+                    .noOcclusion());
+
     /** Palaforge : fer, durete 12, resistance 4,8, pioche en pierre. */
     public static final DeferredBlock<Block> PALAFORGE_BLOCK = BLOCKS.registerBlock(
             "palaforge", PalaforgeBlock::new, properties -> properties
@@ -107,6 +120,11 @@ public final class PalaMachines {
             PALAFURNACE = TYPES.register("paladium_furnace",
             () -> new BlockEntityType<>(PalafurnaceBlockEntity::new,
                     Set.of(PALAFURNACE_BLOCK.get())));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FlowerTotemBlockEntity>>
+            FLOWER_TOTEM = TYPES.register("flower_totem",
+            () -> new BlockEntityType<>(FlowerTotemBlockEntity::new,
+                    Set.of(FLOWER_TOTEM_BLOCK.get())));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PalaforgeBlockEntity>>
             PALAFORGE = TYPES.register("palaforge",
@@ -156,8 +174,8 @@ public final class PalaMachines {
 
     /** Blocs puis ameliorations, dans l'ordre d'affichage de l'onglet creatif. */
     public static final List<DeferredBlock<Block>> ORDERED_BLOCKS =
-            List.of(COBBLEBREAKER_BLOCK, CRUSHER_BLOCK, TOTEM_BLOCK, PALAFURNACE_BLOCK, PALAFORGE_BLOCK,
-                    GRINDER_BLOCK, GRINDER_CASING, GRINDER_FRAME);
+            List.of(COBBLEBREAKER_BLOCK, CRUSHER_BLOCK, TOTEM_BLOCK, FLOWER_TOTEM_BLOCK, PALAFURNACE_BLOCK,
+                    PALAFORGE_BLOCK, GRINDER_BLOCK, GRINDER_CASING, GRINDER_FRAME);
     public static final List<DeferredItem<Item>> ORDERED_ITEMS =
             List.of(AMETHYST_UPGRADE, TITANE_UPGRADE, PALADIUM_UPGRADE, FURNACE_UPGRADE);
 

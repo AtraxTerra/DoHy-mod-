@@ -2,7 +2,7 @@
   "description": {
     "translate": "enchantment.palamod.fake_water_protection"
   },
-  "supported_items": "#minecraft:enchantable/armor",
+  "supported_items": "#minecraft:enchantable/head_armor",
   "weight": 1,
   "max_level": 1,
   "min_cost": {
@@ -15,6 +15,6 @@
   },
   "anvil_cost": 4,
   "slots": [
-    "armor"
+    "head"
   ]
 }

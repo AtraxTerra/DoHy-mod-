@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#palamod:elephant_spawns",
+  "spawners": {
+    "type": "palamod:elephant",
+    "weight": 3,
+    "minCount": 1,
+    "maxCount": 3
+  }
+}

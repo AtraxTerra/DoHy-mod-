@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.client.ui.screen;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.palamod.machine.CrusherBlockEntity;
+import fr.atraxterra.dohy.palamod.machine.FlowerTotemBlockEntity;
 import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen.Button;
 import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen.Design;
@@ -205,6 +206,38 @@ public final class MachineDesigns {
                     "Repas : cobblestone moussue"),
             3, List.of("Proteines", "Snack : chair putrefiee", "The : boeuf, poulet, porc ou oeuf",
                     "Repas : morue ou saumon")));
+
+    // -- Totem fleuri ----------------------------------------------------------
+
+    private static final String[] RING_NAMES = {"Buisson a XP", "Coquelicot", "Pissenlit", "Orchidee bleue",
+            "Allium", "Tulipe blanche", "Fleur minerale", "Entonnoir"};
+
+    public static final Design FLOWER_TOTEM = new Design(Set.of(), (g, menu, mouseX, mouseY) -> {
+        g.section(16, 38, "section_fuel", "POUDRE D'OS", 72);
+        g.arrow(108, 83, 52, menu.progress());
+        if (menu.duration() > 0) {
+            note(g, seconds(menu.duration() + 1), 134, 94);
+        }
+        g.section(160, 38, "section_craft", "RECOLTE", 86);
+        // Le jardin : le damier du sol, puis les huit voisins.
+        int floor = Integer.bitCount(menu.extra(0) & 0x1FF);
+        int ring = menu.extra(1) & 0xFF;
+        int around = Integer.bitCount(ring);
+        boolean complete = floor == 9 && around == FlowerTotemBlockEntity.RING.size();
+        small(g, complete ? "Jardin complet" : "Jardin incomplet", 16, 104, complete ? Ui.GREEN : Ui.RED);
+        small(g, "Sol : " + floor + " / 9", 16, 114, floor == 9 ? Ui.TEXT : Ui.MUTED);
+        small(g, "Voisins : " + around + " / " + FlowerTotemBlockEntity.RING.size(), 16, 122,
+                around == FlowerTotemBlockEntity.RING.size() ? Ui.TEXT : Ui.MUTED);
+        List<String> lines = new java.util.ArrayList<>();
+        lines.add("Le jardin du totem");
+        lines.add("Dessous : herbe aux coins et au centre, podzol sur les bords");
+        lines.add("Autour, a sa hauteur, dans n'importe quel ordre :");
+        for (int index = 0; index < RING_NAMES.length; index++) {
+            lines.add(((ring >> index) & 1) == 1 ? "  ok  " + RING_NAMES[index] : "  manque  " + RING_NAMES[index]);
+        }
+        tip(g, mouseX, mouseY, 16, 102, 100, 28, lines);
+    }, Map.of(
+            0, List.of("Poudre d'os", "Une par cycle de 5 secondes", "Un entonnoir peut la deposer ici")));
 
     // -- Palamachine -----------------------------------------------------------
 

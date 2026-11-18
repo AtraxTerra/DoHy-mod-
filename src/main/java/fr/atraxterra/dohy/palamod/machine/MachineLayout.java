@@ -71,6 +71,19 @@ public record MachineLayout(List<SlotPos> slots) {
             new SlotPos(88, 108, true),
             new SlotPos(160, 56, true)));
 
+    /** Le totem fleuri : la poudre d'os a gauche, les neuf sorties en carre a droite. */
+    public static final MachineLayout FLOWER_TOTEM = new MachineLayout(List.of(
+            new SlotPos(40, 79, true),
+            new SlotPos(172, 57, false),
+            new SlotPos(194, 57, false),
+            new SlotPos(216, 57, false),
+            new SlotPos(172, 79, false),
+            new SlotPos(194, 79, false),
+            new SlotPos(216, 79, false),
+            new SlotPos(172, 101, false),
+            new SlotPos(194, 101, false),
+            new SlotPos(216, 101, false)));
+
     /** La machine a croquettes : la lave, les trois ingredients, quatre sorties. */
     public static final MachineLayout FOOD_MACHINE = new MachineLayout(List.of(
             new SlotPos(24, 104, true),

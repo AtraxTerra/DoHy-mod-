@@ -701,20 +701,28 @@ def main():
             payload["group"] = group
         write("data/%s/recipe/%s.json" % (NS, path), payload)
 
-    def shaped(path, pattern, keys, result, count=1):
+    def shaped(path, pattern, keys, result, count=1, conditions=None):
         """Une recette a grille, telle qu'elle est relevee au bytecode.
 
         `pattern` et `keys` sont recopies de la sortie de
         tools/extract_crafts.py, sans reinterpretation. Les lignes de grille
         d'origine peuvent faire une ou deux cases de large : le format moderne
         l'accepte, il n'y a rien a completer.
+
+        `conditions` : les conditions de chargement de NeoForge, pour une
+        recette qui demande l'objet d'un autre mod. Sans elles, 26.2 jette la
+        recette avec un avertissement quand ce mod manque.
         """
-        write("data/%s/recipe/%s.json" % (NS, path), {
+        payload = {}
+        if conditions:
+            payload["neoforge:conditions"] = conditions
+        payload.update({
             "type": "minecraft:crafting_shaped",
             "pattern": pattern,
             "key": keys,
             "result": {"id": result, "count": count},
         })
+        write("data/%s/recipe/%s.json" % (NS, path), payload)
 
     def packed(path, ingredient, result, group=None):
         payload = {
@@ -1572,6 +1580,25 @@ def main():
     fr["block.%s.paladium_hopper" % NS] = "Entonnoir en paladium"
     en["block.%s.paladium_hopper" % NS] = "Paladium Hopper"
     tag("minecraft/tags/block/mineable/pickaxe.json", ["%s:paladium_hopper" % NS])
+
+    # La cle en paladium (PalaStorage.PALADIUM_KEY) : elle deverrouille un
+    # tiroir de Vault Drawers ferme par une cle personnelle. Sa recette est plus
+    # bas, avec celles du releve : elle ne se charge qu'avec Vault Drawers.
+    if not copy_texture(root, "items/paladium_key.png", "item/paladium_key.png", wrong_size):
+        missing.append("items/paladium_key.png")
+    write("assets/%s/models/item/paladium_key.json" % NS, {
+        "parent": "minecraft:item/generated",
+        "textures": {"layer0": "%s:item/paladium_key" % NS},
+    })
+    write("assets/%s/items/paladium_key.json" % NS, {
+        "model": {"type": "minecraft:model", "model": "%s:item/paladium_key" % NS},
+    })
+    fr["item.%s.paladium_key" % NS] = "Cle en paladium"
+    en["item.%s.paladium_key" % NS] = "Paladium Key"
+    fr["tooltip.%s.paladium_key" % NS] = "Clic droit sur un tiroir ferme a cle : il s'ouvre a tous, la cle part"
+    en["tooltip.%s.paladium_key" % NS] = "Right-click a locked drawer: it opens to everyone, the key is used up"
+    fr["tooltip.%s.paladium_key.mod" % NS] = "Sert avec le mod Vault Drawers"
+    en["tooltip.%s.paladium_key.mod" % NS] = "Works with the Vault Drawers mod"
     # Les blocs propres a DoHy (tools/dohy_assets.py) : ce fichier de tag est ecrit ici,
     # un second generateur ne peut pas y ajouter sa ligne sans que celui-ci l'efface.
     tag("minecraft/tags/block/mineable/pickaxe.json",
@@ -2261,7 +2288,10 @@ def main():
             ("paladium_flower", "flower_paladium", "Fleur de paladium", "Paladium Flower", 125),
             ("mineral_flower", "flower_mineral", "Fleur minerale", "Mineral Flower", 6250)):
         tex("blocks/flowers/%s.png" % source, "block/%s.png" % name)
-        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": {"": {"model": "%s:block/%s" % (NS, name)}}})
+        model = {"model": "%s:block/%s" % (NS, name)}
+        # La fleur minerale compte ses poudres d'os (growth, 0 a 6) sans changer d'aspect.
+        variants = ({"growth=%d" % g: model for g in range(7)} if name == "mineral_flower" else {"": model})
+        write("assets/%s/blockstates/%s.json" % (NS, name), {"variants": variants})
         write("assets/%s/models/block/%s.json" % (NS, name),
               {"parent": "minecraft:block/cross", "textures": {"cross": "%s:block/%s" % (NS, name)}})
         flat_item(name, "%s:block/%s" % (NS, name))
@@ -5009,6 +5039,14 @@ def main():
         "ONLINE_DETECTOR_BLOCK": "online_detector", "DYNAMITE": "dynamite", "DYNAMITE_BIG": "big_dynamite",
         "DYNAMITE_NINJA": "ninja_dynamite", "EXTRAPOLATED_BUCKET": "extrapolated_bucket",
         "UNCLAIMFINDER": "unclaim_finder", "SPAWNER_FINDER": "spawner_finder",
+        # Tiroirs (2026-11-18) : la cle en paladium, sur la cle personnelle.
+        "PALADIUM_KEY": "paladium_key",
+    }
+    # Les recettes qui demandent l'objet d'un autre mod : elles ne se chargent
+    # qu'avec lui. Storage Drawers, que Paladium installait a cote, est devenu
+    # Vault Drawers en 26.2.
+    CONDITIONS = {
+        "paladium_key": [{"type": "neoforge:mod_loaded", "modid": "vault_drawers"}],
     }
     # Un meme objet 1.7.10 a plusieurs metas, plusieurs objets en 26.2 : la
     # recette se choisit par (nom, meta). Sans cette table, les quatre outils de
@@ -5123,6 +5161,9 @@ def main():
         # Armure de voyage : la plume, et la vitre du casque de plongee.
         ("Items.field_151008_G", 0): "minecraft:feather",
         ("Blocks.field_150410_aZ", 0): "minecraft:glass_pane",
+        # La cle personnelle de Storage Drawers, celle de Vault Drawers en 26.2
+        # (une cle de tiroir et une etiquette, comme l'original).
+        ("ModItems.personalKey", 0): "vault_drawers:personal_key",
     }
     for metal in ("AMETHYST", "TITANE", "PALADIUM", "ENDIUM"):
         INGREDIENTS[("ItemsRegister.%s_INGOT" % metal, 0)] = "%s:%s_ingot" % (NS, metal.lower())
@@ -5181,7 +5222,8 @@ def main():
         while pattern and not pattern[-1].strip():
             pattern = pattern[:-1]
 
-        shaped(name, pattern, keys, "%s:%s" % (NS, name), recipe["result"]["count"])
+        shaped(name, pattern, keys, "%s:%s" % (NS, name), recipe["result"]["count"],
+               conditions=CONDITIONS.get(name))
         emitted[name] = recipe
 
     missing_recipes = sorted((set(PORTED.values()) | set(PORTED_BY_META.values())) - set(emitted))
