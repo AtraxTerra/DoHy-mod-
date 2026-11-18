@@ -93,6 +93,7 @@ jobs:
           git clone -q --depth 1 -b port/neoforge-26.2 https://github.com/AtraxTerra/Mod-ported /tmp/flysrc
           git -C /tmp/flysrc log --oneline -1
           python3 -I ci/relocate_flywheel.py /tmp/flysrc
+          chmod +x /tmp/flysrc/gradlew
           ( cd /tmp/flysrc && ./gradlew --no-daemon -q jar ) > /tmp/flybuild.log 2>&1 || { tail -60 /tmp/flybuild.log; exit 1; }
           tail -5 /tmp/flybuild.log
           mkdir -p /tmp/flyfix

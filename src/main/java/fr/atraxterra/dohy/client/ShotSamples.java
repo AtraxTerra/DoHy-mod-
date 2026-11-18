@@ -278,6 +278,32 @@ final class ShotSamples {
             LOG.info("dohy-shots: [temoin] Tchad : {}", text);
             say(player, "Tchad, 25 chunks : " + text);
         }));
+        // Les deux moteurs de rendu a la fois : celui embarque par Create Fly (arbres, roue dentee
+        // qui tournent) et CrankShaft (le coffre, la cloche, le wagonnet, que les deux savent dessiner).
+        ShotHarness.SHOTS.add(server("v1_rendu", 200, player -> {
+            EarthData earth = EarthData.get();
+            int x = (int) earth.x(18.5d) + 24;
+            int z = (int) earth.z(15.0d);
+            int y = 210;
+            command(player, "fill " + (x - 2) + " " + (y - 1) + " " + (z - 1) + " " + (x + 8) + " " + (y - 1) + " "
+                    + (z + 4) + " minecraft:smooth_stone");
+            command(player, "setblock " + x + " " + y + " " + z + " create:creative_motor[facing=east]");
+            for (int i = 1; i <= 3; i++) {
+                command(player, "setblock " + (x + i) + " " + y + " " + z + " create:shaft[axis=x]");
+            }
+            command(player, "setblock " + (x + 4) + " " + y + " " + z + " create:cogwheel[axis=x]");
+            command(player, "setblock " + (x + 5) + " " + y + " " + z + " create:shaft[axis=x]");
+            command(player, "setblock " + (x + 6) + " " + y + " " + z + " create:large_cogwheel[axis=x]");
+            command(player, "setblock " + (x + 1) + " " + y + " " + (z + 2) + " minecraft:chest[facing=north]");
+            command(player, "setblock " + (x + 3) + " " + y + " " + (z + 2) + " minecraft:bell[attachment=floor,"
+                    + "facing=north]");
+            command(player, "setblock " + (x + 5) + " " + y + " " + (z + 2) + " minecraft:rail");
+            command(player, "summon minecraft:minecart " + (x + 5) + " " + y + " " + (z + 2));
+            command(player, "setblock " + (x + 7) + " " + y + " " + (z + 2) + " minecraft:red_shulker_box[facing=up]");
+            command(player, "tp " + player.getScoreboardName() + " " + (x + 3) + " " + (y + 2) + " " + (z - 5)
+                    + " facing " + (x + 3) + " " + y + " " + (z + 1));
+            say(player, "Create Fly et CrankShaft ensemble");
+        }));
         ShotHarness.SHOTS.add(server("m1_mine", 400, MineService::enter));
         ShotHarness.SHOTS.add(server("m2_mine_compte", 40, player -> {
             ServerLevel level = (ServerLevel) player.level();
