@@ -199,9 +199,10 @@ final class DungeonRewards {
     /**
      * La table des boss : la reserve B de dix-sept objets, puis les ajouts
      * ligne par ligne. Les deux tetes de wither de PalaMod (passive et
-     * supreme), le jetpack, la defense d'elephant, la piece de
-     * lune et le double XP n'existent pas dans DoHy : seule la tete de
-     * squelette wither vanilla (« Tete de wither ») reste.
+     * supreme), le jetpack, la defense d'elephant et la piece de lune
+     * n'existent pas dans DoHy : seule la tete de squelette wither vanilla
+     * (« Tete de wither ») reste. Le double XP est la potion de 30 min ; la
+     * triple, propre a DoHy, s'y ajoute a partir du palier 50.
      */
     private static List<Entry> bossPool() {
         List<Entry> entries = new ArrayList<>();
@@ -227,6 +228,11 @@ final class DungeonRewards {
         }
         // « Bonbon emballe » au palier 50, « Bonbon a deballer » aux 85 et 95 : le meme.
         entries.add(Entry.of(50, 2, "palamod:candy_wrapped", 1, 1));
+        // Le double XP du wiki, en potion de 30 min ; la triple, plus rare, des le palier 50.
+        entries.add(Entry.of(0, 3, "palamod:double_xp_potion", 1, 1).with((level, stack) ->
+                stack.set(fr.atraxterra.dohy.palamod.boost.PalaXpPotions.MINUTES.get(), 30)));
+        entries.add(Entry.of(50, 1, "palamod:triple_xp_potion", 1, 1).with((level, stack) ->
+                stack.set(fr.atraxterra.dohy.palamod.boost.PalaXpPotions.MINUTES.get(), 30)));
         // Armure d'endium mixte P4U3 : apres un boss des 30, apres tout boss des 55.
         for (String piece : List.of("helmet", "chestplate", "leggings", "boots")) {
             entries.add(new Entry(palier -> palier >= 55 || (palier >= 30 && x0(palier)), 1,

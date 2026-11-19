@@ -1,0 +1,7 @@
+{
+  "parent": "palamod:item/throne",
+  "textures": {
+    "throne": "palamod:block/miner_throne",
+    "particle": "palamod:block/miner_throne"
+  }
+}

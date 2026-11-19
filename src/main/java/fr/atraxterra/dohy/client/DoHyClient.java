@@ -121,6 +121,11 @@ public final class DoHyClient {
         // Les caisses des palettes d'armement, dessinees par le coin nord-ouest de chaque groupe.
         event.registerBlockEntityRenderer(fr.atraxterra.dohy.palette.DoHyPalette.TYPE.get(),
                 fr.atraxterra.dohy.client.palette.PaletteRenderer::new);
+        // Les trones de metier : le modele de ModelJobThrone et le nom grave ; leur siege ne se voit pas.
+        event.registerBlockEntityRenderer(fr.atraxterra.dohy.palamod.throne.PalaThrones.THRONE_ENTITY.get(),
+                fr.atraxterra.dohy.client.throne.ThroneRenderer::new);
+        event.registerEntityRenderer(fr.atraxterra.dohy.palamod.throne.PalaThrones.SEAT.get(),
+                net.minecraft.client.renderer.entity.NoopRenderer::new);
         // Le clone dans la cuve de la chambre cryogenique.
         event.registerBlockEntityRenderer(fr.atraxterra.dohy.cryo.DoHyCryo.CHAMBER_TYPE.get(),
                 fr.atraxterra.dohy.client.cryo.CryoChamberRenderer::new);
@@ -148,6 +153,8 @@ public final class DoHyClient {
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DancarokModel.LAYER, DancarokGeometry::createBodyLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.throne.ThroneGeometry.LAYER,
+                fr.atraxterra.dohy.client.throne.ThroneGeometry::createLayer);
         event.registerLayerDefinition(ElephantModel.CHILD, ElephantGeometry::createBoneLayer);
         event.registerLayerDefinition(ElephantModel.TEEN, ElephantGeometry::createBoneALayer);
         event.registerLayerDefinition(ElephantModel.ADULT, ElephantGeometry::createBoneBLayer);

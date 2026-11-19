@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EOE",
+    "OFO",
+    "EOE"
+  ],
+  "key": {
+    "E": "palamod:endium_fragment",
+    "O": "palamod:paladium_portal_block",
+    "F": "palamod:findium_block"
+  },
+  "result": {
+    "id": "palamod:alchemist_throne",
+    "count": 1
+  }
+}

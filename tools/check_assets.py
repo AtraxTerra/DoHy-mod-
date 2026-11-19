@@ -193,6 +193,11 @@ MODEL_TEXTURES = {
     # Le quartz electrifie : 20 images de 16 x 16, animees par son .mcmeta.
     "block/empowered_quartz.png": (16, 320),
     "block/liquid_gold.png": (16, 320),
+    # Les trones de metier reprennent la texture de leur ModelJobThrone (128 x 128).
+    "block/miner_throne.png": (128, 128),
+    "block/farmer_throne.png": (128, 128),
+    "block/hunter_throne.png": (128, 128),
+    "block/alchemist_throne.png": (128, 128),
 }
 
 

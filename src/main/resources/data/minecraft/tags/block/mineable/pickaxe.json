@@ -104,6 +104,10 @@
     "palamod:void_stone",
     "palamod:wither_receptacle",
     "palamod:withered_obsidian",
-    "palamod:withered_reinforced_piston"
+    "palamod:withered_reinforced_piston",
+    "palamod:miner_throne",
+    "palamod:farmer_throne",
+    "palamod:hunter_throne",
+    "palamod:alchemist_throne"
   ]
 }

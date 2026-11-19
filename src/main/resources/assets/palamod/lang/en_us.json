@@ -960,5 +960,22 @@
   "item.palamod.whale": "Whale",
   "item.palamod.kraken": "Kraken",
   "item.palamod.endium_fishing_rod": "Endium Fishing Rod",
-  "block.palamod.drawbridge": "Drawbridge"
+  "block.palamod.drawbridge": "Drawbridge",
+  "tooltip.palamod.throne.owner": "%s's throne",
+  "tooltip.palamod.throne.blank": "Place it: it will take your name",
+  "tooltip.palamod.throne.sit": "Right-click to sit (job level 95)",
+  "message.palamod.throne.taken": "Someone is already sitting on this throne.",
+  "entity.palamod.throne_seat": "Throne Seat",
+  "block.palamod.miner_throne": "Miner Throne",
+  "block.palamod.farmer_throne": "Farmer Throne",
+  "block.palamod.hunter_throne": "Hunter Throne",
+  "block.palamod.alchemist_throne": "Alchemist Throne",
+  "item.palamod.xp_potion.named": "%s (%s)",
+  "tooltip.palamod.xp_potion": "%s XP on all your jobs for %s of play",
+  "tooltip.palamod.xp_potion.stack": "Drunk while active: the time adds up. x3 overrides x2.",
+  "message.palamod.xp_potion": "Job XP %s: %s left",
+  "item.palamod.double_xp_potion": "Double XP Potion",
+  "effect.palamod.double_job_xp": "Double Job XP",
+  "item.palamod.triple_xp_potion": "Triple XP Potion",
+  "effect.palamod.triple_job_xp": "Triple Job XP"
 }

@@ -121,7 +121,8 @@ public final class JobApi {
      * Accorde de l'XP, applique les montees de niveau et leurs recompenses.
      *
      * <p>Le bonus d'XP des ameliorations et des amulettes est applique ici,
-     * donc une seule fois et au meme endroit pour toutes les sources.
+     * donc une seule fois et au meme endroit pour toutes les sources, et le
+     * multiplicateur des potions d'XP par-dessus.
      */
     public static void grant(ServerPlayer player, Job job, long amount) {
         grant(player, job, amount, true);
@@ -145,9 +146,11 @@ public final class JobApi {
             }
         }
 
+        // Les potions d'XP (x2, x3) multiplient le tout, bonus compris.
         long boosted = Math.round(amount * (1.0d
                 + UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS)
-                + fr.atraxterra.dohy.palamod.defense.Amulets.xpBonus(player, job)));
+                + fr.atraxterra.dohy.palamod.defense.Amulets.xpBonus(player, job))
+                * fr.atraxterra.dohy.palamod.boost.PalaXpPotions.multiplier(player));
         int before = level(player, job);
         data(player).addXp(job, boosted);
         int after = level(player, job);
