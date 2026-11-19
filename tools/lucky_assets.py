@@ -52,7 +52,7 @@ SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEve
            "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
            "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
            "EasterEvents.java", "MayEvents.java", "JuneEvents.java",
-           "JulyEvents.java", "AugustEvents.java", "SeptemberEvents.java")
+           "JulyEvents.java", "AugustEvents.java", "SeptemberEvents.java", "HalloweenEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -133,6 +133,8 @@ EFFECTS = {
     "summer_body": ("Summer body", "Summer Body", "august/summer_body_dilemma"),
     "mess": ("Tout un foin", "Hay Mess", "august/dont_make_mess"),
     "english": ("Cours d'anglais", "English Lesson", "september/english_test"),
+    "hell_yeah": ("Hell Yeah!", "Hell Yeah!", "hell_yeah"),
+    "spooky": ("Spooky Spook", "Spooky Spook", "spooky_spook"),
     "no_forward": ("Aucune avancee", "No Progress", "may/aucune_avancee"),
 }
 
@@ -394,6 +396,11 @@ SEASON_ITEMS = {
     "job_offer": ("items/job_offer.png", "job_offer", False, "Offre d'emploi", "Job Offer"),
     "trade_file": ("items/trade_file.png", "trade_file", False, "Dossier de metier", "Trade File"),
     "daemon_amulet": ("items/daemon_amulet.png", "daemon_amulet", False, "Amulette demoniaque", "Daemon Amulet"),
+    # Halloween.
+    "pumpkin_shear": ("items/pumpkinshear.png", "pumpkin_shear", True, "Ciseaux a citrouille", "Pumpkin Shears"),
+    "spider_gloves": (None, "spider_gloves", False, "Gants tisseurs", "Web Gloves"),
+    "witch_broom": ("items/witchbroom.png", "witch_broom", True, "Balai de sorciere", "Witch Broom"),
+    "halloween_stone": ("items/halloweenstone.png", "halloween_stone", False, "Pierre d'Halloween", "Halloween Stone"),
 }
 SEASON_BLOCKS = {
     "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),
@@ -424,6 +431,40 @@ SEASON_BLOCKS = {
     "treadmill": ("cube_bottom_top", {"top": "jar:blocks/treadmill.png", "bottom": "minecraft:block/iron_block",
                                       "side": "minecraft:block/iron_block"}, "self", "Tapis de course", "Treadmill"),
     "quicksand": ("cube_all", {"all": "minecraft:block/sand"}, None, "Sable mouvant", "Quicksand"),
+    "pumpkin_face_1": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_1.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 1", "Carved Pumpkin 1"),
+    "pumpkin_face_2": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_2.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 2", "Carved Pumpkin 2"),
+    "pumpkin_face_3": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_3.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 3", "Carved Pumpkin 3"),
+    "pumpkin_face_4": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_4.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 4", "Carved Pumpkin 4"),
+    "pumpkin_face_5": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_5.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 5", "Carved Pumpkin 5"),
+    "pumpkin_face_6": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_6.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 6", "Carved Pumpkin 6"),
+    "pumpkin_face_7": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_7.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 7", "Carved Pumpkin 7"),
+    "pumpkin_face_8": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_8.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 8", "Carved Pumpkin 8"),
+    "infinity_pie": ("box", {"all": "draw:pumpkin_pie", "box": [1, 0, 1, 15, 6, 15]}, "self", "Tarte infinie",
+                     "Infinity Pie"),
 }
 GADGET_ITEMS.update(SEASON_ITEMS)
 GADGET_BLOCKS.update(SEASON_BLOCKS)
@@ -886,6 +927,69 @@ CAT_COLORS = {"S": (96, 96, 104, 255), "s": (126, 126, 134, 255), ".": (126, 126
 MISSING_TEX = ["MMKK"] * 2 + ["KKMM"] * 2
 MISSING_COLORS = {"M": (248, 0, 248, 120), "K": (0, 0, 0, 120)}
 
+# « Tisse ta toile » (ex « Spider-Steve ») : une toile et son araignee, dessinees ici.
+WEB_ICON = [
+    "W......W......W.",
+    ".W.....W.....W..",
+    "..WWWWWWWWWWW...",
+    "..WW...W...WW...",
+    "..W.W..W..W.W...",
+    "..W..WWWWW..W...",
+    "..W..WW.WW..W...",
+    "WWWWWWW.WWWWWWWW",
+    "..W..WW.WW..W...",
+    "..W..WWWWW.KK...",
+    "..W.W..W..KRRK..",
+    "..WW...W.KKKKKK.",
+    "..WWWWWWWWKKKK..",
+    ".W.....W.K.KK.K.",
+    "W......W..K..K..",
+    "................",
+]
+WEB_COLORS = {"W": (232, 232, 238, 255), "K": (24, 20, 28, 255), "R": (220, 40, 40, 255)}
+# Les gants tisseurs : un gant sombre, des fils blancs, une manchette violette.
+GLOVE_TEX = [
+    "................",
+    "......K.K.K.....",
+    ".....KGKGKGK....",
+    ".....KGKWKGK.K..",
+    ".....KGKGKGKKGK.",
+    ".....KGWGGGWKGK.",
+    ".....KGGWGWGGWK.",
+    "....KKGGGWGGGK..",
+    "...KGKGGWGWGGK..",
+    "...KGGGWGGGWGK..",
+    "....KGGGGGGGK...",
+    ".....KGGGGGGK...",
+    ".....KPPPPPPK...",
+    ".....KPpPpPPK...",
+    ".....KKKKKKKK...",
+    "................",
+]
+GLOVE_COLORS = {"K": (18, 16, 22, 255), "G": (62, 60, 74, 255), "W": (226, 226, 232, 255),
+                "P": (118, 58, 160, 255), "p": (150, 92, 196, 255)}
+# La tarte infinie : la croute au bord, la citrouille au milieu, quelques points de creme.
+PIE_TEX = [
+    "................",
+    ".CCCCCCCCCCCCCC.",
+    ".COOOOOOOOOOOOC.",
+    ".COOOoOOOOoOOOC.",
+    ".COOOOOOOOOOOOC.",
+    ".COOOOOWWOOOOOC.",
+    ".COOoOWWWWOoOOC.",
+    ".COOOOWWWWOOOOC.",
+    ".COOOOOWWOOOOOC.",
+    ".COOOOOOOOOOOOC.",
+    ".COOoOOOOOOoOOC.",
+    ".COOOOOOOOOOOOC.",
+    ".COOOOOOOOOOOOC.",
+    ".COOOOOOOOOOOOC.",
+    ".CCCCCCCCCCCCCC.",
+    ".BBBBBBBBBBBBBB.",
+]
+PIE_COLORS = {"C": (198, 142, 74, 255), "B": (148, 96, 48, 255), "O": (222, 122, 38, 255),
+              "o": (196, 98, 30, 255), "W": (250, 242, 222, 255)}
+
 # Les images dessinees ici plutot que prises dans le jar.
 DRAWN = {
     "chauves_souris": (BATS_ICON, BATS_COLORS),
@@ -899,6 +1003,7 @@ DRAWN = {
     "sol_glissant": (WET_ICON, WET_COLORS),
     "coup_de_turbo": (TURBO_ICON, TURBO_COLORS),
     "baskets_ailees": (SNEAKER_ICON, SNEAKER_COLORS),
+    "tisse_ta_toile": (WEB_ICON, WEB_COLORS),
 }
 # Les textures d'objet dessinees ici.
 DRAWN_ITEMS = {
@@ -929,6 +1034,7 @@ SHARK_TEX = [
 ]
 SHARK_COLORS = {"G": (112, 128, 150, 255), "W": (232, 236, 240, 255), "w": (200, 60, 60, 255)}
 DRAWN_ITEMS["shark_plush"] = (SHARK_TEX, SHARK_COLORS)
+DRAWN_ITEMS["spider_gloves"] = (GLOVE_TEX, GLOVE_COLORS)
 
 # Les ecrans des ordinateurs de « Pirate informatique » (le jar n'a que les patrons de leur modele).
 COMPUTER_LOCKED = [
@@ -980,6 +1086,7 @@ DRAWN_BLOCKS = {
     "cat_detector": (CAT_TEX, CAT_COLORS),
     "computer_locked": (COMPUTER_LOCKED, COMPUTER_COLORS),
     "computer_open": (COMPUTER_OPEN, COMPUTER_COLORS),
+    "pumpkin_pie": (PIE_TEX, PIE_COLORS),
 }
 
 
@@ -1141,7 +1248,7 @@ def gadget_outputs(put):
         elif kind == "orientable":
             model(name, {"parent": "minecraft:block/orientable",
                          "textures": {"front": block_texture(textures["front"]), "side": block_texture(textures["side"]),
-                                      "top": block_texture(textures["side"])}})
+                                      "top": block_texture(textures.get("top", textures["side"]))}})
             variants = {}
             for facing, rotation in facings.items():
                 if name == "bruteforcer":

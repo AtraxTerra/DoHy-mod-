@@ -1186,5 +1186,20 @@
   "item.palamod.butcher_knife": "Butcher Knife",
   "item.palamod.job_offer": "Job Offer",
   "item.palamod.trade_file": "Trade File",
-  "item.palamod.daemon_amulet": "Daemon Amulet"
+  "item.palamod.daemon_amulet": "Daemon Amulet",
+  "effect.palamod.hell_yeah": "Hell Yeah!",
+  "effect.palamod.spooky": "Spooky Spook",
+  "item.palamod.pumpkin_shear": "Pumpkin Shears",
+  "item.palamod.spider_gloves": "Web Gloves",
+  "item.palamod.witch_broom": "Witch Broom",
+  "item.palamod.halloween_stone": "Halloween Stone",
+  "block.palamod.pumpkin_face_1": "Carved Pumpkin 1",
+  "block.palamod.pumpkin_face_2": "Carved Pumpkin 2",
+  "block.palamod.pumpkin_face_3": "Carved Pumpkin 3",
+  "block.palamod.pumpkin_face_4": "Carved Pumpkin 4",
+  "block.palamod.pumpkin_face_5": "Carved Pumpkin 5",
+  "block.palamod.pumpkin_face_6": "Carved Pumpkin 6",
+  "block.palamod.pumpkin_face_7": "Carved Pumpkin 7",
+  "block.palamod.pumpkin_face_8": "Carved Pumpkin 8",
+  "block.palamod.infinity_pie": "Infinity Pie"
 }

@@ -1186,5 +1186,20 @@
   "item.palamod.butcher_knife": "Couteau de boucher",
   "item.palamod.job_offer": "Offre d'emploi",
   "item.palamod.trade_file": "Dossier de metier",
-  "item.palamod.daemon_amulet": "Amulette demoniaque"
+  "item.palamod.daemon_amulet": "Amulette demoniaque",
+  "effect.palamod.hell_yeah": "Hell Yeah!",
+  "effect.palamod.spooky": "Spooky Spook",
+  "item.palamod.pumpkin_shear": "Ciseaux a citrouille",
+  "item.palamod.spider_gloves": "Gants tisseurs",
+  "item.palamod.witch_broom": "Balai de sorciere",
+  "item.palamod.halloween_stone": "Pierre d'Halloween",
+  "block.palamod.pumpkin_face_1": "Citrouille sculptee 1",
+  "block.palamod.pumpkin_face_2": "Citrouille sculptee 2",
+  "block.palamod.pumpkin_face_3": "Citrouille sculptee 3",
+  "block.palamod.pumpkin_face_4": "Citrouille sculptee 4",
+  "block.palamod.pumpkin_face_5": "Citrouille sculptee 5",
+  "block.palamod.pumpkin_face_6": "Citrouille sculptee 6",
+  "block.palamod.pumpkin_face_7": "Citrouille sculptee 7",
+  "block.palamod.pumpkin_face_8": "Citrouille sculptee 8",
+  "block.palamod.infinity_pie": "Tarte infinie"
 }

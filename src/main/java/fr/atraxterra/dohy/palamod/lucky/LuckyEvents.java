@@ -60,6 +60,7 @@ public final class LuckyEvents {
             JulyEvents.register(catalog);
             AugustEvents.register(catalog);
             SeptemberEvents.register(catalog);
+            HalloweenEvents.register(catalog);
             events = Collections.unmodifiableMap(catalog.map);
         }
         return events;

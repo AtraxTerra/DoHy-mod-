@@ -102,6 +102,22 @@ public final class LuckyClientEvents {
         }
     }
 
+    /** L'inventaire etait-il ouvert au tic precedent ? */
+    private static boolean inventoryWasOpen;
+
+    /** « Spooky Spook » ({@code ClientProxy.spooky}) : ouvrir son inventaire fait hurler. */
+    @SubscribeEvent
+    public static void onSpooky(ClientTickEvent.Post event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        boolean open = minecraft.screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen;
+        if (open && !inventoryWasOpen && minecraft.player != null
+                && minecraft.player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SPOOKY)) {
+            minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+                    net.minecraft.sounds.SoundEvents.GHAST_SCREAM, 0.8f, 1.0f));
+        }
+        inventoryWasOpen = open;
+    }
+
     /** « Cinema muet » : plus aucun son ({@code PLuckyBlock.CINEMA_MUET}). */
     @SubscribeEvent
     public static void onSound(net.neoforged.neoforge.client.event.sound.PlaySoundEvent event) {

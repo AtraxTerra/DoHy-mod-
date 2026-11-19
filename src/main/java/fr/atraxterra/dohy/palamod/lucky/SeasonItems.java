@@ -64,6 +64,7 @@ public final class SeasonItems {
     private static final List<DeferredItem<? extends Item>> ORDER = new ArrayList<>();
     /** La potion lancee : l'effet qu'elle porte ({@code EntityJupiterGravitySplashPotion}...). */
     static final String SPLASH = "dohy_season_splash";
+    static final String WEB = "dohy_season_web";
 
     // -- Mars -----------------------------------------------------------------------------------
 
@@ -285,6 +286,41 @@ public final class SeasonItems {
     public static final DeferredItem<DaemonAmuletItem> DAEMON_AMULET = seasonItem("daemon_amulet",
             DaemonAmuletItem::new, properties -> properties.stacksTo(1));
 
+    // -- Halloween ------------------------------------------------------------------------------
+
+    /** {@code BlockPumpkinCustom} : les huit visages de citrouille, sculptes aux ciseaux. */
+    public static final DeferredBlock<PumpkinFaceBlock> PUMPKIN_FACE_1 = seasonBlock("pumpkin_face_1",
+            PumpkinFaceBlock::new, SeasonItems::pumpkin);
+    public static final DeferredBlock<PumpkinFaceBlock> PUMPKIN_FACE_2 = seasonBlock("pumpkin_face_2",
+            PumpkinFaceBlock::new, SeasonItems::pumpkin);
+    public static final DeferredBlock<PumpkinFaceBlock> PUMPKIN_FACE_3 = seasonBlock("pumpkin_face_3",
+            PumpkinFaceBlock::new, SeasonItems::pumpkin);
+    public static final DeferredBlock<PumpkinFaceBlock> PUMPKIN_FACE_4 = seasonBlock("pumpkin_face_4",
+            PumpkinFaceBlock::new, SeasonItems::pumpkin);
+    public static final DeferredBlock<PumpkinFaceBlock> PUMPKIN_FACE_5 = seasonBlock("pumpkin_face_5",
+            PumpkinFaceBlock::new, SeasonItems::pumpkin);
+    public static final DeferredBlock<PumpkinFaceBlock> PUMPKIN_FACE_6 = seasonBlock("pumpkin_face_6",
+            PumpkinFaceBlock::new, SeasonItems::pumpkin);
+    public static final DeferredBlock<PumpkinFaceBlock> PUMPKIN_FACE_7 = seasonBlock("pumpkin_face_7",
+            PumpkinFaceBlock::new, SeasonItems::pumpkin);
+    public static final DeferredBlock<PumpkinFaceBlock> PUMPKIN_FACE_8 = seasonBlock("pumpkin_face_8",
+            PumpkinFaceBlock::new, SeasonItems::pumpkin);
+    /** {@code ItemPumpkinShear} : sur une citrouille, change son visage. */
+    public static final DeferredItem<PumpkinShearItem> PUMPKIN_SHEAR = seasonItem("pumpkin_shear",
+            PumpkinShearItem::new, properties -> properties.durability(238));
+    /** {@code ItemSpiderGlove} : des toiles d'araignee a lancer. */
+    public static final DeferredItem<WebGlovesItem> SPIDER_GLOVES = seasonItem("spider_gloves", WebGlovesItem::new,
+            properties -> properties.durability(128));
+    /** {@code ItemWitchBroom} : on vole deux minutes ; douze heures de recharge. */
+    public static final DeferredItem<WitchBroomItem> WITCH_BROOM = seasonItem("witch_broom", WitchBroomItem::new,
+            properties -> properties.stacksTo(1));
+    /** {@code ItemHalloweenStone} : un fantome qui aveugle ; six utilisations, trente minutes entre deux. */
+    public static final DeferredItem<HalloweenStoneItem> HALLOWEEN_STONE = seasonItem("halloween_stone",
+            HalloweenStoneItem::new, properties -> properties.durability(6));
+    /** {@code BlockHalloweenTrade} : 64 tartes a la citrouille par jour. */
+    public static final DeferredBlock<InfinityPieBlock> INFINITY_PIE = seasonBlock("infinity_pie",
+            InfinityPieBlock::new, properties -> properties.strength(5.0f).sound(SoundType.WOOL).noOcclusion());
+
     private SeasonItems() {
     }
 
@@ -305,6 +341,24 @@ public final class SeasonItems {
         DeferredBlock<B> block = BLOCKS.registerBlock(name, factory, properties);
         ORDER.add(ITEMS.registerSimpleBlockItem(block, item -> item));
         return block;
+    }
+
+    private static BlockBehaviour.Properties pumpkin(BlockBehaviour.Properties properties) {
+        return properties.strength(1.0f).sound(SoundType.WOOD);
+    }
+
+    /** Les huit visages, dans l'ordre des ciseaux. */
+    public static List<DeferredBlock<PumpkinFaceBlock>> pumpkinFaces() {
+        return List.of(PUMPKIN_FACE_1, PUMPKIN_FACE_2, PUMPKIN_FACE_3, PUMPKIN_FACE_4, PUMPKIN_FACE_5, PUMPKIN_FACE_6,
+                PUMPKIN_FACE_7, PUMPKIN_FACE_8);
+    }
+
+    /** Une duree lisible : « 11 h 58 min », « 3 min 12 s ». */
+    static String duration(long seconds) {
+        long hours = seconds / 3600L;
+        long minutes = seconds / 60L % 60L;
+        return hours > 0 ? hours + " h " + minutes + " min" : minutes > 0 ? minutes + " min " + seconds % 60L + " s"
+                : seconds + " s";
     }
 
     /** L'onglet PalaMod : les objets saisonniers, dans l'ordre d'inscription. */
@@ -420,6 +474,23 @@ public final class SeasonItems {
     @SubscribeEvent
     public static void onImpact(ProjectileImpactEvent event) {
         Entity projectile = event.getProjectile();
+        if (projectile.level() instanceof ServerLevel webLevel && projectile.getPersistentData().contains(WEB)) {
+            // La toile des gants tisseurs : une toile d'araignee la ou elle touche, trente secondes.
+            BlockPos at = event.getRayTraceResult() instanceof BlockHitResult hit
+                    ? hit.getBlockPos().relative(hit.getDirection())
+                    : BlockPos.containing(event.getRayTraceResult().getLocation());
+            if (event.getProjectile().getOwner() instanceof ServerPlayer owner && webLevel.getBlockState(at).isAir()
+                    && LuckyWorld.place(owner, webLevel, at, Blocks.COBWEB.defaultBlockState())) {
+                LuckyTasks.later(owner, 600, () -> {
+                    if (webLevel.getBlockState(at).is(Blocks.COBWEB)) {
+                        webLevel.removeBlock(at, false);
+                    }
+                });
+            }
+            projectile.discard();
+            event.setCanceled(true);
+            return;
+        }
         if (projectile.level() instanceof ServerLevel volleyLevel && projectile.getPersistentData().contains(VOLLEY)) {
             // Le ballon de volley repousse ce qu'il touche, puis retombe ou il est.
             if (event.getRayTraceResult() instanceof net.minecraft.world.phys.EntityHitResult hit) {
@@ -1476,6 +1547,245 @@ public final class SeasonItems {
     }
 
     /** Une ligne grise sous le nom de l'objet. */
+    /** Un visage de citrouille : tourne vers celui qui le pose. */
+    public static class PumpkinFaceBlock extends Block {
+        public static final net.minecraft.world.level.block.state.properties.EnumProperty<net.minecraft.core.Direction>
+                FACING = net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
+
+        public PumpkinFaceBlock(Properties properties) {
+            super(properties);
+            registerDefaultState(stateDefinition.any().setValue(FACING, net.minecraft.core.Direction.NORTH));
+        }
+
+        @Override
+        protected void createBlockStateDefinition(
+                net.minecraft.world.level.block.state.StateDefinition.Builder<Block, BlockState> builder) {
+            builder.add(FACING);
+        }
+
+        @Override
+        public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
+            return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        }
+    }
+
+    /** Les ciseaux a citrouille : une citrouille, ou un visage, passe au visage suivant. */
+    public static class PumpkinShearItem extends Item {
+        public PumpkinShearItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult useOn(net.minecraft.world.item.context.UseOnContext context) {
+            Level level = context.getLevel();
+            BlockPos pos = context.getClickedPos();
+            BlockState state = level.getBlockState(pos);
+            List<DeferredBlock<PumpkinFaceBlock>> faces = pumpkinFaces();
+            int face = state.is(Blocks.PUMPKIN) || state.is(Blocks.CARVED_PUMPKIN) ? 0 : -1;
+            for (int index = 0; index < faces.size() && face < 0; index++) {
+                if (state.is(faces.get(index).get())) {
+                    face = index + 1;
+                }
+            }
+            if (face < 0) {
+                return InteractionResult.PASS;
+            }
+            if (level instanceof ServerLevel server && context.getPlayer() instanceof ServerPlayer player) {
+                net.minecraft.core.Direction facing = state.hasProperty(PumpkinFaceBlock.FACING)
+                        ? state.getValue(PumpkinFaceBlock.FACING) : context.getHorizontalDirection().getOpposite();
+                if (!LuckyWorld.canEdit(player, server, pos)) {
+                    return InteractionResult.FAIL;
+                }
+                server.setBlock(pos, faces.get(face % faces.size()).get().defaultBlockState()
+                        .setValue(PumpkinFaceBlock.FACING, facing), Block.UPDATE_ALL);
+                server.playSound(null, pos, SoundEvents.PUMPKIN_CARVE, SoundSource.BLOCKS, 1.0f, 1.0f);
+                context.getItemInHand().hurtAndBreak(1, player, context.getHand());
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context,
+                                    net.minecraft.world.item.component.TooltipDisplay display,
+                                    Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+            info(tooltip, "Clic droit sur une citrouille : un nouveau visage.");
+        }
+    }
+
+    /** Les gants tisseurs : une toile d'araignee lancee, qui reste trente secondes la ou elle touche. */
+    public static class WebGlovesItem extends Item {
+        public WebGlovesItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (level instanceof ServerLevel server && player instanceof ServerPlayer owner) {
+                var web = new net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball(server, player,
+                        new ItemStack(net.minecraft.world.item.Items.COBWEB));
+                web.getPersistentData().putBoolean(WEB, true);
+                web.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0f, 1.6f, 1.0f);
+                server.addFreshEntity(web);
+                LuckyWorld.sound(server, player.getX(), player.getY(), player.getZ(), "entity.arrow.shoot",
+                        SoundSource.PLAYERS, 0.5f, 1.4f);
+                player.getCooldowns().addCooldown(stack, 10);
+                stack.hurtAndBreak(1, owner, hand);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context,
+                                    net.minecraft.world.item.component.TooltipDisplay display,
+                                    Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+            info(tooltip, "Clic droit : lance une toile d'araignee.");
+        }
+    }
+
+    /** Le balai de sorciere : deux minutes de vol, douze heures de recharge. */
+    public static class WitchBroomItem extends Item {
+        private static final String READY = "dohy_broom_ready";
+
+        public WitchBroomItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (level instanceof ServerLevel server && player instanceof ServerPlayer rider) {
+                long now = server.getGameTime();
+                var data = stack.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                        net.minecraft.world.item.component.CustomData.EMPTY).copyTag();
+                long ready = data.getLongOr(READY, 0L);
+                if (now < ready) {
+                    LuckyWorld.bar(rider, "Le balai se recharge : encore " + duration((ready - now) / 20L),
+                            ChatFormatting.GRAY);
+                    return InteractionResult.FAIL;
+                }
+                rider.addEffect(new MobEffectInstance(PalaLucky.SUPER_MAN, 2400, 0));
+                data.putLong(READY, now + 864_000L);
+                stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                        net.minecraft.world.item.component.CustomData.of(data));
+                server.sendParticles(ParticleTypes.WITCH, rider.getX(), rider.getY() + 0.5d, rider.getZ(), 30, 0.4d,
+                        0.3d, 0.4d, 0.05d);
+                LuckyWorld.bar(rider, "En selle ! Tu voles pendant 2 minutes.", ChatFormatting.LIGHT_PURPLE);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context,
+                                    net.minecraft.world.item.component.TooltipDisplay display,
+                                    Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+            info(tooltip, "Clic droit : tu voles pendant 2 minutes.");
+            info(tooltip, "Temps de rechargement : 12 heures.");
+        }
+    }
+
+    /** La pierre d'Halloween : un fantome file droit devant et aveugle ce qu'il touche. */
+    public static class HalloweenStoneItem extends Item {
+        private static final String READY = "dohy_halloween_stone_ready";
+
+        public HalloweenStoneItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (level instanceof ServerLevel server && player instanceof ServerPlayer caster) {
+                long now = server.getGameTime();
+                var data = stack.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                        net.minecraft.world.item.component.CustomData.EMPTY).copyTag();
+                long ready = data.getLongOr(READY, 0L);
+                if (now < ready) {
+                    LuckyWorld.bar(caster, "La pierre se recharge : encore " + duration((ready - now) / 20L),
+                            ChatFormatting.GRAY);
+                    return InteractionResult.FAIL;
+                }
+                ghost(caster, server);
+                data.putLong(READY, now + 36_000L);
+                stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                        net.minecraft.world.item.component.CustomData.of(data));
+                stack.hurtAndBreak(1, caster, hand);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        /** {@code EntityGhostProjectile} : trente blocs au plus ; cecite (et lenteur pour un monstre). */
+        private static void ghost(ServerPlayer caster, ServerLevel level) {
+            Vec3 eye = caster.getEyePosition();
+            Vec3 direction = caster.getLookAngle();
+            LuckyWorld.sound(level, caster.getX(), caster.getY(), caster.getZ(), "particle.soul_escape",
+                    SoundSource.PLAYERS, 1.0f, 0.8f);
+            for (double distance = 1.0d; distance <= 30.0d; distance += 0.5d) {
+                Vec3 at = eye.add(direction.scale(distance));
+                BlockPos block = BlockPos.containing(at);
+                if (!level.getBlockState(block).getCollisionShape(level, block).isEmpty()) {
+                    return;
+                }
+                level.sendParticles(ParticleTypes.SOUL, at.x, at.y, at.z, 1, 0.05d, 0.05d, 0.05d, 0.0d);
+                List<LivingEntity> hit = level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(0.6d),
+                        living -> living != caster && living.isAlive());
+                if (!hit.isEmpty()) {
+                    LivingEntity target = hit.get(0);
+                    target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 4));
+                    if (!(target instanceof Player)) {
+                        target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, 4));
+                    }
+                    level.sendParticles(ParticleTypes.SCULK_SOUL, target.getX(), target.getY() + 1.0d, target.getZ(), 12,
+                            0.3d, 0.5d, 0.3d, 0.02d);
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context,
+                                    net.minecraft.world.item.component.TooltipDisplay display,
+                                    Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+            info(tooltip, "Clic droit : un fantome aveugle ce qu'il touche.");
+            info(tooltip, "Temps de rechargement : 30 minutes.");
+        }
+    }
+
+    /** La tarte infinie : 64 tartes a la citrouille, une fois par jour. */
+    public static class InfinityPieBlock extends Block {
+        private static final String NEXT = "dohy_infinity_pie";
+
+        public InfinityPieBlock(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                   BlockHitResult hit) {
+            if (level instanceof ServerLevel server && player instanceof ServerPlayer eater) {
+                long now = System.currentTimeMillis();
+                long next = eater.getPersistentData().getLongOr(NEXT, 0L);
+                if (now < next) {
+                    LuckyWorld.tell(eater, "Tu dois attendre " + duration((next - now) / 1000L)
+                            + " avant de pouvoir reutiliser ce bloc.", ChatFormatting.RED);
+                    return InteractionResult.SUCCESS;
+                }
+                eater.getPersistentData().putLong(NEXT, now + 86_400_000L);
+                LuckyWorld.drop(server, pos.above(), new ItemStack(net.minecraft.world.item.Items.PUMPKIN_PIE, 64));
+                LuckyWorld.tell(eater, "Tu as recu une recompense, reviens dans 24 heures pour en avoir une autre.",
+                        ChatFormatting.GREEN);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        protected net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state,
+                net.minecraft.world.level.BlockGetter level, BlockPos pos,
+                net.minecraft.world.phys.shapes.CollisionContext context) {
+            return Block.box(1, 0, 1, 15, 6, 15);
+        }
+    }
+
     static void info(Consumer<Component> tooltip, String text) {
         tooltip.accept(Component.literal(text).withStyle(ChatFormatting.GRAY));
     }

@@ -113,6 +113,12 @@ public final class SeasonEffects {
     /** « Test d'anglais » rate : le jeu passe en anglais le temps de l'effet ({@code SCTimedLanguagePacket}). */
     public static final DeferredHolder<MobEffect, LuckyEffect> ENGLISH =
             EFFECTS.register("english", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x3C5AA6));
+    /** « Hell Yeah! » ({@code PLuckyBlock.HELLYEAH}) : le sol prend feu derriere soi. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> HELL_YEAH =
+            EFFECTS.register("hell_yeah", () -> new LuckyEffect(MobEffectCategory.NEUTRAL, 0xE0401C));
+    /** « Spooky Spook » ({@code ClientProxy.spooky}) : ouvrir son inventaire fait hurler. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> SPOOKY =
+            EFFECTS.register("spooky", () -> new LuckyEffect(MobEffectCategory.NEUTRAL, 0x6A2D8C));
 
     private SeasonEffects() {
     }
@@ -206,7 +212,8 @@ public final class SeasonEffects {
             LuckyWorld.sound(level, player.getX(), player.getY(), player.getZ(), "entity.parrot.ambient",
                     net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 0.6f);
         }
-        if (player.hasEffect(FIRE_WALK) && player.onGround() && player.tickCount % 4 == 0) {
+        if ((player.hasEffect(FIRE_WALK) || player.hasEffect(HELL_YEAH)) && player.onGround()
+                && player.tickCount % 4 == 0) {
             net.minecraft.core.BlockPos behind = net.minecraft.core.BlockPos.containing(
                     player.position().subtract(player.getLookAngle().multiply(1.0d, 0.0d, 1.0d).normalize()));
             if (level.getBlockState(behind).isAir() && level.getBlockState(behind.below()).isFaceSturdy(level,
