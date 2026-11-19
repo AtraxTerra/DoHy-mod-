@@ -166,14 +166,15 @@ final class ShotSamples {
                     {"palamod:legendary_stone_fortune", "1"}, {"palamod:rune_common", "1"},
                     {"palamod:rune_fragment_common", "5"}, {"palamod:talikus_reinforced_sword", "1"},
                     {"palamod:crate_key_paladium", "2"}, {"palamod:capture_stone", "2"},
-                    {"palamod:forest_essence", "3"}};
+                    {"palamod:forest_essence", "3"}, {"dohy:corn", "64"}, {"dohy:wheat_flour", "32"},
+                    {"dohy:corn_bread", "16"}};
             int slot = 9;
             for (String[] entry : items) {
                 inventory.setItem(slot++, new ItemStack(item(entry[0]), Integer.parseInt(entry[1])));
             }
             // La vente du ble, de la pierre, du paladium et des carottes est ouverte ; pas celle de l'or.
             for (String id : new String[] {"minecraft:wheat", "minecraft:cobblestone", "palamod:paladium_ingot",
-                    "minecraft:carrot"}) {
+                    "minecraft:carrot", "dohy:corn", "dohy:wheat_flour", "dohy:corn_bread"}) {
                 CollectionApi.record(player, Identifier.parse(id), 20_000);
             }
             ItemStack stone = new ItemStack(item("palamod:legendary_stone_fortune"));
@@ -191,6 +192,25 @@ final class ShotSamples {
                 search("cle");
             } catch (ReflectiveOperationException e) {
                 LOG.error("dohy-shots: ECHEC recherche", e);
+            }
+        }));
+        ShotHarness.SHOTS.add(client("b2b_courbes", 25, () -> {
+            try {
+                search("");
+                var screen = Minecraft.getInstance().gui.screen();
+                Class<?> type = fr.atraxterra.dohy.client.ui.screen.ShopScreen.class;
+                var category = type.getDeclaredField("category");
+                category.setAccessible(true);
+                category.setInt(screen, fr.atraxterra.dohy.shop.ShopCategory.AGRI.ordinal() + 1);
+                var selected = type.getDeclaredField("selectedId");
+                selected.setAccessible(true);
+                selected.set(screen, Identifier.parse("dohy:corn_flour"));
+                var refilter = type.getDeclaredMethod("refilter");
+                refilter.setAccessible(true);
+                refilter.invoke(screen);
+                log("onglet Acheter : agriculture, farine de mais");
+            } catch (ReflectiveOperationException e) {
+                LOG.error("dohy-shots: ECHEC courbes", e);
             }
         }));
         ShotHarness.SHOTS.add(client("b3_introuvable", 10, () -> {
