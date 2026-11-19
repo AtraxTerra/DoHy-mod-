@@ -120,6 +120,49 @@ public final class PalaLucky {
     public static final DeferredHolder<MobEffect, LuckyEffect> ANVIL_MONEY =
             EFFECTS.register("anvil_money", () -> new LuckyEffect(MobEffectCategory.BENEFICIAL, 0xFAC400));
 
+    // Le deuxieme lot : leurs effets vivent dans LuckyEffectEvents (serveur),
+    // LuckyClientEvents et LuckyOverlays (client).
+
+    /** T'as un probleme nan ? ({@code RAYMAN}) : le corps disparait, bras et jambes flottent. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> RAYMAN =
+            EFFECTS.register("rayman", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xC9A0FF));
+    /** Fantome ({@code GHOST}) : il ne reste que la tete. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> GHOST =
+            EFFECTS.register("ghost", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xDDE6EE));
+    /** Le monde a l'envers ({@code ROTATE}) : le joueur se voit la tete en bas. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> ROTATE =
+            EFFECTS.register("rotate", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x5E8BFF));
+    /** Steve Jobs ({@code STEVE}) : le skin par defaut. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> STEVE =
+            EFFECTS.register("steve", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x3FA7C9));
+    /** Sans lunette ({@code FLOU}) : un voile gris sur l'ecran. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> FLOU =
+            EFFECTS.register("flou", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xC9CBCF));
+    /** I love cats ({@code CAT}) : un chat au milieu de l'ecran. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> CAT =
+            EFFECTS.register("cat", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xE79A3C));
+    /** Vision nocturne ({@code GREEN}) : un filtre vert. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> GREEN =
+            EFFECTS.register("green", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x9AFF69));
+    /** #TeamTree ({@code TREE}) : on seme des pousses de chene en marchant. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> TREE =
+            EFFECTS.register("tree", () -> new LuckyEffect(MobEffectCategory.BENEFICIAL, 0x4E9A2E));
+    /** Boom les mobs ({@code BOOM_MOBS}) : un coup envoie le monstre en l'air. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> BOOM_MOBS =
+            EFFECTS.register("boom_mobs", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xFF4E4E));
+    /** Explosif ({@code EXPLOSE}) : s'accroupir fait exploser. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> EXPLOSE =
+            EFFECTS.register("explose", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xFF8A1E));
+    /** Inversion ({@code PacketUseInversion}) : avant, arriere, gauche, droite, saut et accroupi inverses. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> INVERSION =
+            EFFECTS.register("inversion", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xB04BD6));
+    /** Divise XP ({@code DiviseXP.isXpDivised}) : l'XP de metier est divisee par deux. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> HALF_JOB_XP =
+            EFFECTS.register("half_job_xp", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x7B6A3A));
+    /** On voit pas le fond du bol ({@code pumpkinBlur}) : la vue de la citrouille reste, meme sans elle. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> PUMPKIN_BLUR =
+            EFFECTS.register("pumpkin_blur", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xE38A1D));
+
     /** Les evenements vus et le Lucky Pass. Gardes a la mort. */
     public static final Supplier<AttachmentType<LuckyData>> DATA = ATTACHMENTS.register("lucky",
             () -> AttachmentType.builder(LuckyData::new)

@@ -4005,7 +4005,14 @@
         {
           "title": "Les evenements",
           "text": [
-            "75 des 439 evenements de Paladium sont la : gardes du corps, tour de paladium, pluie de minerais, pyramides de beacon, gant de l'infini... et cages de verre, cochon explosif, zombie geant ou tete qui disparait. Le compteur de l'ecran dit combien tu en as deja vu."
+            "125 des 439 evenements de Paladium sont la : gardes du corps, tour de paladium, pluie de minerais, pyramides de beacon, gant de l'infini, base d'obsidienne... et cages de verre, cochon explosif, pluie de dynamites, boules de feu, terrain mine ou tete qui disparait. Le compteur de l'ecran dit combien tu en as deja vu."
+          ]
+        },
+        {
+          "title": "Les effets",
+          "text": [
+            "Certains evenements laissent un effet, parfois sans fin : un chat ou un voile sur l'ecran, des touches inversees, un corps de fantome, la tete en bas, le skin de Steve, une explosion a chaque accroupissement... Un seau de lait les retire, comme les effets ordinaires.",
+            "Un terrain mine se casse avec un outil Toucher de soie, sinon il explose."
           ]
         }
       ],

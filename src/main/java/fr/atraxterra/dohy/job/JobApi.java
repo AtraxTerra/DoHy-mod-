@@ -150,7 +150,9 @@ public final class JobApi {
         long boosted = Math.round(amount * (1.0d
                 + UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS)
                 + fr.atraxterra.dohy.palamod.defense.Amulets.xpBonus(player, job))
-                * fr.atraxterra.dohy.palamod.boost.PalaXpPotions.multiplier(player));
+                * fr.atraxterra.dohy.palamod.boost.PalaXpPotions.multiplier(player)
+                // « Divise XP » (lucky block en findium) : moitie moins pendant quinze minutes.
+                * (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.PalaLucky.HALF_JOB_XP) ? 0.5d : 1.0d));
         apply(player, job, boosted);
     }
 

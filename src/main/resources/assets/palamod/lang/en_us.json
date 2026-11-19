@@ -990,5 +990,18 @@
   "effect.palamod.frozen_ground": "Frozen Ground",
   "effect.palamod.no_jump": "No Jump",
   "effect.palamod.third_person": "Step Back",
-  "effect.palamod.anvil_money": "Anvil Money"
+  "effect.palamod.anvil_money": "Anvil Money",
+  "effect.palamod.rayman": "Rayman",
+  "effect.palamod.ghost": "Ghost",
+  "effect.palamod.rotate": "Upside Down",
+  "effect.palamod.steve": "Steve",
+  "effect.palamod.flou": "Where Are My Glasses?",
+  "effect.palamod.cat": "I Love Cats",
+  "effect.palamod.green": "Green Filter",
+  "effect.palamod.tree": "Tree Friend",
+  "effect.palamod.boom_mobs": "Boom Mobs",
+  "effect.palamod.explose": "EXPLOSION!",
+  "effect.palamod.inversion": "Inversion",
+  "effect.palamod.half_job_xp": "Half Job XP",
+  "effect.palamod.pumpkin_blur": "Bottom of the Bowl"
 }

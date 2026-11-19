@@ -261,7 +261,7 @@ construction »). Elle passe par `MenuView`, avec une mise en page de plus :
 ## Les lucky blocks et le Lucky Pass (lot 10)
 
 - **L'ouverture d'un lucky block** (`LuckyBlockScreen`, vue `dohy:lucky_block`) : un panneau à la
-  couleur du bloc, l'en-tête LUCKY BLOCK et sa sorte, la pastille DECOUVERTS x / 75, puis la
+  couleur du bloc, l'en-tête LUCKY BLOCK et sa sorte, la pastille DECOUVERTS x / 125, puis la
   machine à sous de PalaMod (son avant-plan, ses trois rouleaux d'icônes, leurs temps : 5 s par
   rouleau, départs décalés de 600 ms, arrivée avec un rebond). Sous la machine : l'invite, puis
   OUVERTURE EN COURS..., puis la pastille BONUS ou MALUS (et NOUVEAU), le nom de l'événement et le
@@ -271,6 +271,9 @@ construction »). Elle passe par `MenuView`, avec une mise en page de plus :
 - **Le Lucky Pass** (`LuckyPassScreen`, vue `dohy:lucky_pass`) : le même cadre, trois rouleaux de
   cases (un lucky block, ou la croix de PalaMod pour une case vide), le nombre de lancers, LANCER
   puis le gain (« Gagne : 1 PALADIUM + 1 FINDIUM ») et l'heure du prochain lancer.
+- **Les filtres d'écran** des effets (deuxième lot d'événements, `LuckyOverlays`) : sous toute l'interface, le voile
+  gris de « Sans lunette », le vert de « Vision nocturne », la vue de la citrouille du bol, et le
+  chat dessiné de « I love cats » au milieu de l'écran, large de la moitié de l'écran.
 - **Le menu principal** passe à cinq cartes sur une ligne quand les noms tiennent (la carte
   « Lucky Pass » rejoint la liste des choses à faire).
 

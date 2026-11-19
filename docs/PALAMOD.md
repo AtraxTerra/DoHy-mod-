@@ -3596,3 +3596,126 @@ saison.
 - `tools/lucky_assets.py` génère blockstates, modèles, butin et noms, `--jar` copie les textures,
   `--check` (en CI) vérifie les événements contre `tools/data/lucky_events.json` — le relevé des
   439 événements du jar — et `--stats` donne l'équilibre.
+
+## 38. Lucky blocks, deuxième lot (2026-11-19)
+
+La suite du § 37, demandée le même jour (« Continue ») : **50 événements de plus**, 125 sur 439. Ce lot
+prend tous ceux qui posent un effet d'écran ou de rendu, et les farces qui agissent sur le monde sans
+objet, bloc ou créature propres à PalaMod. Les autres attendent leur contenu (lot suivant).
+
+### Les effets — `CustomPotion` de `PLuckyBlock`, `EventsManager`
+
+**Ce que dit le code**, effet par effet, et **ce que fait DoHy** :
+
+| Événement | Effet de PalaMod | Ici |
+|---|---|---|
+| T'as un problème nan ? (20) | `RAYMAN`, sans fin : le corps (`bipedBody.isHidden`) disparaît, bras et jambes flottent | la partie « body » cachée au rendu |
+| Fantôme (100) | `GHOST`, sans fin : corps, bras et jambes cachés, il reste la tête | idem |
+| Le monde à l'envers (50) | `ROTATE`, sans fin : le joueur se voit retourné (rotation de 180°), à ses propres yeux seulement | le drapeau « tête en bas » de Minecraft (celui de Dinnerbone) |
+| Steve Jobs, Tous les mêmes (200) | `STEVE`, sans fin : le skin par défaut | idem |
+| Sans lunette (100) | `FLOU`, 1 min : un voile gris presque opaque (`floufilter`, 87 %) | un aplat de la même couleur |
+| Vision nocturne (500) | `GREEN`, sans fin : un voile vert (47 %), aucune vision de nuit malgré le nom | idem |
+| I love cats (200) | `CAT`, sans fin : une photo de chat au milieu de l'écran, large de la moitié de l'écran | un chat dessiné pour DoHy, aux mêmes proportions |
+| #TeamTree (100) | `TREE`, 1 min : à chaque tic, une pousse de chêne en haut de la colonne du joueur | seulement là où une pousse tient (PalaMod la posait même sur la pierre) |
+| Boom les mobs (100) | `BOOM_MOBS`, sans fin : un coup direct envoie le monstre (ni joueur ni boss) de 30 à 59 blocs plus haut | idem ; la chute fait le reste |
+| Explosif (100) | `EXPLOSE`, 1 min : la touche d'accroupissement fait exploser le joueur (puissance 5, une fois par seconde au plus) ; il est la source et n'est pas blessé | dès qu'il commence à s'accroupir ; rien ne casse là où il n'a pas le droit |
+| Inversion (20) | `PacketUseInversion`, 3 min : avant et arrière, gauche et droite, saut et accroupi échangés (`CustomMovementInput.confused`) | un effet, donc une icône, au lieu d'un drapeau caché |
+| Divise XP (300) | 15 min : l'XP de métier divisée par deux (`DiviseXP.isXpDivised`) | l'effet « Divise XP », appliqué après les bonus |
+| On voit pas le fond du bol (80) | une soupe ; le prochain repas coiffe d'une citrouille, et sa vue reste jusqu'à la connexion suivante | une citrouille sculptée ; le casque revient dans l'inventaire au lieu d'être écrasé ; la vue reste, effet « Le fond du bol » |
+
+Les durées de PalaMod de « 999 999 999 tics » sont des effets sans fin. Un seau de lait les retire,
+comme chez PalaMod. Les icônes viennent des images des événements.
+
+### Les farces — paladium et endium
+
+- **Spam TP** (50) : quatre fois, toutes les 25 secondes, de la fumée et le joueur repart 201 blocs
+  au-dessus du sol. Ici, jamais plus haut que le haut du monde.
+- **Ghast dans l'âme** (60) : quatre boules de feu partent du bloc vers les points cardinaux et
+  explosent en puissance 10 là où elles touchent. Sans lanceur, rien ne casse dans un claim.
+- **Nether activé !** (100) : 10 x 11 colonnes passent à la netherrack ; trois fois sur dix elles
+  prennent feu, trois fois sur cent un zombie-cochon y apparaît.
+- **Hasta la vista** (200) : six messages, une seconde d'écart, puis `PacketCrash` faisait **planter
+  le client**. Ici le joueur est renvoyé du monde avec ces mots : même effet, sans risque pour la
+  sauvegarde.
+- **Paladin** (500) : « Bravo ! Vous avez gagné un grade paladin »… et la vérité au survol.
+- **TeamKiller** (800) : dix lapins tueurs.
+- **T ki ?** (1000) : trente secondes chez un autre joueur, invincible, puis retour. Seul, un message.
+- **La dirt, c'est bien** (1000) : les 40 cases (sac et armure) deviennent de la terre pendant dix
+  secondes. Ici, ce qui a été ramassé entre-temps est rendu aussi, et l'inventaire revient même si le
+  joueur meurt ou se déconnecte dans l'intervalle.
+- **Silence, ça tourne** (2000) : cinq secondes, puis le joueur « dit » sa position dans le chat. Ici
+  une ligne du serveur à son nom.
+- **Armaguedon** (2000) : dix vagues de dix grosses dynamites (mèche de 30), dix blocs au-dessus du
+  sol, dans un carré de 20 blocs.
+- **Tête de wither** (100, bon) : la gemme du Funny Wither, nommée « Tête de wither gentil ».
+- **Princesse** (200, bon) : un cube d'argile de 9 blocs pousse, case après case, dans des cœurs ;
+  vidé sur 7 cinq secondes plus tard. Un bloc qui tomberait sur le joueur le fait monter.
+- **Base déco** (1000, bon) : le joueur part au hasard à ±15 000 blocs, 13 blocs au-dessus du sol,
+  dans une coque d'obsidienne de 18 blocs vidée sur 15. Ici, toujours dans la bordure du monde.
+
+### Les farces — findium
+
+- **Villa-nul** (100) : `EntityGodVillager` de type 3, qui ne vend rien. Ici un villageois benêt
+  nommé « Villa-nul ».
+- **Reste à ta place** (100), **Reste à la maison** (700) : un home pris au hasard. DoHy n'a pas de
+  homes de joueur : ce sont ceux de la faction. Sans home, le premier le dit, le second ramène au
+  spawn.
+- **Bataille de regard** (100) : trente secondes les yeux dans ceux d'un enderman sans IA, soigné à
+  chaque fois, qui compte les secondes ; le joueur est remis en place toutes les deux tics.
+- **Terrain miné** (150) : le bloc laisse place à de la terre, du sable, de la pierre… qui explose
+  en puissance 15 si on le casse sans Toucher de soie. Gardé en mémoire, comme chez PalaMod : un
+  redémarrage le désamorce.
+- **Père Castor** (150) : un livre de 34 pages, « Une petite histoire… » (Thésée et le Minotaure).
+  Ici la même histoire, racontée avec d'autres mots, en dix pages.
+- **Pétard mouillé** (150) : trente détonations pour rien, une par seconde.
+- **End** (200) : vingt endermen. **Professeur Chaos** (200) : vingt échanges de cases au hasard.
+- **Ne bois pas ça** (200, en bon et en malus) : une bouteille sans étiquette, six effets de quatre
+  minutes — force, célérité, résistance au feu, vitesse, vie supplémentaire, absorption, ou cécité,
+  nausée, fatigue, faim, lenteur, poison. Ici une vraie potion couleur d'eau dont l'infobulle est
+  cachée : les deux se ressemblent.
+- **Have Fun** (200) : une boîte d'obsidienne durcie autour du joueur, avec les bizarreries du code
+  (sol et plafond de 4 x 4, murs qui descendent trois blocs sous les pieds).
+- **L'ennemi des loups** (300) : vingt loups enragés. **Rantamplan** (400) : cinq loups apprivoisés.
+- **Coordonnées de Fuze** (300) : un livre de « bigh4ck3r »… et un lien qui n'a rien de coordonnées.
+- **Ça fait haut** (300) : une cage de verre de 249 à 254 (moins si le monde est plus bas), le joueur
+  dedans.
+- **Tour à mob** (300) : de 34 à 46 zombies à l'épée et squelettes à l'arc, en fer, plus rapides
+  (0,43) et plus forts (8).
+- **Injouable** (500) : Absorption XXI, trente secondes (84 cœurs).
+- **Je crois que c'est interdit** (800) : un wagonnet vide.
+- **La tête sur les épaules** (1000) : la tête d'un autre joueur en ligne, prévenu ; seul, la sienne.
+- **Invocateur** (1000) : neuf spawners dans les premières cases d'air autour du joueur (squelette,
+  zombie, araignée, creeper, blaze ou enderman). PalaMod ne les posait qu'aux coordonnées positives,
+  un oubli ; ici partout.
+- **Inventaire plein** (5000) : vingt piles de terre dans le sac, le reste perdu.
+- **Duplicata** (10 000) : un exemplaire de plus de l'objet en main ; la main vide, un exemplaire de
+  chaque objet du sac. Ni les tiroirs, ni les lucky blocks, ni les coffres-forts.
+
+### Pas dans ce lot
+
+- **Les événements à contenu** (le gros du reste) : lampes, plantes, instruments, TNT mignonnes,
+  jetpack, grappin, lasso, Wi-Fi, armure de cochon, boutique de Fuze… chacun demande son objet, son
+  bloc ou sa créature. Lots suivants.
+- **Des effets sans équivalent fidèle simple** : Aimanté (les entités tremblent vers le joueur, côté
+  client seulement), 404 Not Found (tous les blocs prennent la texture manquante), 56K (les paquets du
+  client retardés d'une demi-seconde), T'as une mauvaise mine (le joueur teinté de vert), Mission
+  commando (la caméra un bloc plus bas), Cow Player (une vache à la place du joueur), T'as mangé
+  quoi ? (des pas qui pètent, un son de PalaMod). Ils pourront venir plus tard.
+- **Adieu faction** (2000) : renvoie un membre de la faction, ou fait partir le joueur seul. En solo,
+  cela dissoudrait sa faction (claims, homes, banque) : pas porté.
+- **Tp All** : des demandes de téléportation à tous les joueurs ; rien en solo.
+
+### Équilibre
+
+`tools/lucky_assets.py --stats` après ce lot :
+
+| | Portés | Masse des bons | Masse des malus | Bons repesés |
+|---|---|---|---|---|
+| Paladium | 72 / 111 | 60,9 % | 78,9 % | × 1,62 |
+| Endium | 30 / 56 | 60,9 % | — | × 1,25 |
+| Findium | 53 / 130 | 36,6 % | 86,4 % | × 2,95 |
+
+La part des bons reste celle de PalaMod (51,5 % au paladium, 44,4 % au findium). Au findium, « Où
+donner de la tête » tombe de 41 % à 31 % (27 % chez PalaMod). Au paladium, les malus portés
+couvrent maintenant plus que les bons : chaque bon sort un peu plus souvent que chez PalaMod (× 1,62
+au lieu de × 1,25), sans que la part des bons change.

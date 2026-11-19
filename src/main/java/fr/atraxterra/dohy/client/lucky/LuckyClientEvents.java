@@ -7,10 +7,12 @@ import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.Input;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,6 +22,10 @@ import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.List;
 
 /**
  * Les effets des lucky blocks qui se voient ou se sentent chez le client
@@ -32,7 +38,11 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  *   <li>Sonic : le saut ne repond plus ;</li>
  *   <li>Sol glace : le sol glisse ({@code motion * 1,47} a chaque tic au sol) ;</li>
  *   <li>Prendre du recul : la camera ne quitte pas la vue de dos ;</li>
- *   <li>Ou donner de la tete : la tete du joueur disparait.</li>
+ *   <li>Ou donner de la tete : la tete du joueur disparait ; Fantome : il ne
+ *       reste qu'elle ; T'as un probleme nan ? : le corps disparait ;</li>
+ *   <li>Steve Jobs : le skin par defaut ; Le monde a l'envers : le joueur se voit
+ *       la tete en bas ;</li>
+ *   <li>Inversion : les touches de deplacement s'inversent.</li>
  * </ul>
  *
  * <p>Le client ne connait que ses propres effets : la tete d'un autre joueur ne
@@ -43,6 +53,11 @@ public final class LuckyClientEvents {
 
     /** {@code motionX *= 1.47} au sol : la glace de PalaMod. */
     private static final double ICE = 1.47d;
+    /** Ce que Fantome cache ({@code isHidden} sur le corps, les bras et les jambes). */
+    private static final List<String> GHOST_PARTS = List.of("body", "left_arm", "right_arm", "left_leg",
+            "right_leg");
+    /** Le vecteur de marche de {@link ClientInput}, protege : retrouve une fois, par son type. */
+    private static Field moveVector;
 
     private LuckyClientEvents() {
     }
@@ -78,6 +93,9 @@ public final class LuckyClientEvents {
             return;
         }
         ClientInput input = event.getInput();
+        if (player.hasEffect(PalaLucky.INVERSION)) {
+            invert(input);
+        }
         if (player.hasEffect(PalaLucky.NO_JUMP)) {
             Input keys = input.keyPresses;
             if (keys.jump()) {
@@ -88,6 +106,34 @@ public final class LuckyClientEvents {
         }
         if (player.hasEffect(PalaLucky.BUNNY_LIFE) && player.onGround() && player.getRandom().nextInt(10) == 5) {
             input.makeJump();
+        }
+    }
+
+    /**
+     * Inversion ({@code CustomMovementInput.confused}) : avant et arriere, gauche
+     * et droite s'echangent, le saut et l'accroupi aussi. Le vecteur de marche,
+     * deja calcule, est retourne avec.
+     */
+    private static void invert(ClientInput input) {
+        Input keys = input.keyPresses;
+        input.keyPresses = new Input(keys.backward(), keys.forward(), keys.right(), keys.left(), keys.shift(),
+                keys.jump(), keys.sprint());
+        Vec2 move = input.getMoveVector();
+        try {
+            if (moveVector == null) {
+                for (Field field : ClientInput.class.getDeclaredFields()) {
+                    if (field.getType() == Vec2.class && !Modifier.isStatic(field.getModifiers())) {
+                        field.setAccessible(true);
+                        moveVector = field;
+                        break;
+                    }
+                }
+            }
+            if (moveVector != null) {
+                moveVector.set(input, new Vec2(-move.x, -move.y));
+            }
+        } catch (ReflectiveOperationException | RuntimeException error) {
+            moveVector = null;
         }
     }
 
@@ -110,6 +156,22 @@ public final class LuckyClientEvents {
             public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState state) {
                 if (avatar.hasEffect(PalaLucky.HIDE_HEAD)) {
                     state.overrideModelPartVisibility("head", false);
+                }
+                // Fantome : la tete seule ; Rayman : le corps seul disparait (bras et jambes flottent).
+                if (avatar.hasEffect(PalaLucky.GHOST)) {
+                    for (String part : GHOST_PARTS) {
+                        state.overrideModelPartVisibility(part, false);
+                    }
+                } else if (avatar.hasEffect(PalaLucky.RAYMAN)) {
+                    state.overrideModelPartVisibility("body", false);
+                }
+                if (avatar.hasEffect(PalaLucky.STEVE)) {
+                    state.skin = DefaultPlayerSkin.getDefaultSkin();
+                }
+                // Le monde a l'envers : PalaMod ne retourne que le joueur local, a ses propres yeux.
+                LocalPlayer local = Minecraft.getInstance().player;
+                if (local != null && avatar == local && local.hasEffect(PalaLucky.ROTATE)) {
+                    state.isUpsideDown = true;
                 }
             }
         });

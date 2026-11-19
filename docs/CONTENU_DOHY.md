@@ -1466,11 +1466,17 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
   sous s'ouvre ; « OUVRIR » lance les trois rouleaux, et l'événement tombe quand l'écran se
   ferme (seul, cinq secondes après l'arrêt, ou par FERMER). Espace ou Entrée valent le bouton ; un
   clic sur la machine passe l'animation.
-- **75 événements** pour ce premier lot, sur les 439 de PalaMod : un bon sur deux environ au
+- **125 événements** sur les 439 de PalaMod (deux lots) : un bon sur deux environ au
   paladium (pyramides de minerais, gardes du corps, pluie de minerais, armure arc-en-ciel,
   dix lucky blocks en endium d'un coup…), que des bons à l'endium, et au findium des tours plus
   étranges (la tête qui disparaît, une armée de chiens, des enclumes qui rapportent 1 000 $). Les
   malus piègent, font exploser ou abîment, jamais dans un claim ennemi.
+- **Des effets** que laissent certains événements, souvent sans fin (le lait les retire) : un chat
+  ou un voile sur l'écran, des touches inversées, un corps de fantôme ou de Rayman, la tête en bas,
+  le skin de Steve, une explosion à chaque accroupissement, l'XP de métier divisée par deux, des
+  pousses de chêne semées en marchant… Et des farces : pluie de dynamites, boules de feu, cage de
+  verre en haut du monde, base d'obsidienne à l'autre bout de la carte, terrain miné, bataille de
+  regard avec un enderman.
 - L'événement est tiré une fois pour toutes : cassé et reposé, le bloc garde le sien. Le compteur
   DECOUVERTS suit ceux qu'on a déjà vus.
 
