@@ -261,7 +261,7 @@ construction »). Elle passe par `MenuView`, avec une mise en page de plus :
 ## Les lucky blocks et le Lucky Pass (lot 10)
 
 - **L'ouverture d'un lucky block** (`LuckyBlockScreen`, vue `dohy:lucky_block`) : un panneau à la
-  couleur du bloc, l'en-tête LUCKY BLOCK et sa sorte, la pastille DECOUVERTS x / 125, puis la
+  couleur du bloc, l'en-tête LUCKY BLOCK et sa sorte, la pastille DECOUVERTS x / 147, puis la
   machine à sous de PalaMod (son avant-plan, ses trois rouleaux d'icônes, leurs temps : 5 s par
   rouleau, départs décalés de 600 ms, arrivée avec un rebond). Sous la machine : l'invite, puis
   OUVERTURE EN COURS..., puis la pastille BONUS ou MALUS (et NOUVEAU), le nom de l'événement et le
@@ -270,10 +270,17 @@ construction »). Elle passe par `MenuView`, avec une mise en page de plus :
   pour un malus, un carillon pour un bon.
 - **Le Lucky Pass** (`LuckyPassScreen`, vue `dohy:lucky_pass`) : le même cadre, trois rouleaux de
   cases (un lucky block, ou la croix de PalaMod pour une case vide), le nombre de lancers, LANCER
-  puis le gain (« Gagne : 1 PALADIUM + 1 FINDIUM ») et l'heure du prochain lancer.
+  puis le gain (« Gagne : 1 PALADIUM + 1 FINDIUM ») et l'heure du prochain lancer. Un lancer offert
+  (Roulette, Boule de Crystal) laisse LANCER actif après celui du jour ; les rouleaux s'arrêtent
+  quand même sur les gains du lancer qui vient d'être fait.
 - **Les filtres d'écran** des effets (deuxième lot d'événements, `LuckyOverlays`) : sous toute l'interface, le voile
   gris de « Sans lunette », le vert de « Vision nocturne », la vue de la citrouille du bol, et le
   chat dessiné de « I love cats » au milieu de l'écran, large de la moitié de l'écran.
+- **« 1 000 000 joueurs »** (troisième lot, `OneMillionScreen`, vue `dohy:one_million`) : la
+  bannière criarde d'un faux gagnant, dessinée pour DoHy — cadre bleu glace, fond vert vif,
+  confettis qui tombent, deux coupes dorées, « VOUS ETES LE 1 000 000 JOUEUR ! VOUS AVEZ GAGNE
+  UN FULL ENDIUM !!!! » et un bouton blanc RECUPERER que montre une main. Le bouton, Espace,
+  Entrée ou Échap ferment l'écran ; l'aveu de LuckyMan arrive alors dans le chat.
 - **Le menu principal** passe à cinq cartes sur une ligne quand les noms tiennent (la carte
   « Lucky Pass » rejoint la liste des choses à faire).
 

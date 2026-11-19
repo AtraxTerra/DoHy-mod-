@@ -3719,3 +3719,116 @@ La part des bons reste celle de PalaMod (51,5 % au paladium, 44,4 % au findium).
 donner de la tête » tombe de 41 % à 31 % (27 % chez PalaMod). Au paladium, les malus portés
 couvrent maintenant plus que les bons : chaque bon sort un peu plus souvent que chez PalaMod (× 1,62
 au lieu de × 1,25), sans que la part des bons change.
+
+## 39. Lucky blocks, troisième lot (2026-11-19)
+
+La suite du § 38, demandée le même jour (« Enchaîne ») : **22 événements de plus**, 147 sur 439. Ce
+lot prend ceux dont le contenu existe déjà dans DoHy — coffres en paladium et en endium, golems et
+boîte à golem, pierre de capture, totem de fertilité, obsidienne durcie, Lucky Pass — ou dans le
+jeu. Code : `ContentEvents` (paladium et endium), `FindiumContent`, `LuckyMaze`,
+`LuckyContentEvents` (le coffre maudit, l'énigme, le voyant) et l'écran `OneMillionScreen`.
+
+### Paladium et endium
+
+- **Expala-osion** (150) : une petite explosion qui ne casse rien (puissance 1), puis 64 fois deux
+  lingots de paladium qui tombent de six blocs, un lâcher tous les deux tics : 128 lingots.
+- **Carte au trésor** (200, bon) : une feuille de papier nommée « Carte au trésor : x, y, z », vers
+  un point au hasard à 20 000 blocs au plus (dans la bordure du monde). Un coffre en paladium y
+  attend, un lingot par case : 108. Le chunk est généré d'abord, pour trouver la surface.
+- **Carte au trésor** (200, malus) : la même carte ; au bout, une pancarte « [LuckyBlock] / Cheh
+  y'a rien ».
+- **Jimmy Hendryx** et **Nez en trompette** (50) : la guitare et le cor de Custom NPCs, deux
+  accessoires sans effet. Ici un bloc musical « Guitare de Jimmy » (posé sur de la laine, il joue
+  de la guitare) et une corne de chèvre « Trompette ».
+- **Réflexe** (200, malus) : un deltaplane de moins s'il y en a un dans l'inventaire, un seau
+  d'eau, puis cinq secondes de montée jusqu'à 500 blocs plus haut, dans des étincelles : il faut
+  poser l'eau avant le sol.
+- **Labyrinthe** (200, malus) : 16 × 16 cases d'obsidienne à la hauteur 100 — sol en 99, couloirs
+  de deux blocs, plafond en 102 —, creusées par une marche au hasard (10 000 pas au plus), sans
+  sortie. Fatigue de minage X sans fin, et les commandes refusées : « Puisse le sort vous être
+  favorable, mais ici dans ce labyrinthe, la triche n'est point autorisée ! ». On en sort par le
+  lait (puis la pioche), la reconnexion ou la mort. **Écart** : le joueur arrive au milieu d'une
+  case ; PalaMod le posait dans un mur, sous le plafond.
+- **Coffre maudit** (1000, malus) — « Triforce » chez PalaMod : un coffre en endium vide, marqué.
+  L'ouvrir tue (dégâts magiques sans limite), cinquante éclairs tombent dessus, et le coffre
+  disparaît vingt secondes plus tard. Le casser au lieu de l'ouvrir donne un coffre en endium
+  ordinaire, comme chez PalaMod. **Écarts** : le nom et l'image changent (l'image reprenait
+  l'emblème d'une autre licence) ; les éclairs sont pour l'œil — chez PalaMod, ils brûlaient les
+  objets tombés du joueur mort.
+
+### Findium
+
+- **Je t'aime tôt** (100) : un totem de fertilité, plein de 64 lingots de paladium.
+- **Bou-bam** (150) : une colonne de bambou jusqu'à la hauteur 255, tant qu'il y a de l'air. Le
+  bambou de PalaMod (module chasseur) devient celui du jeu, posé sans prévenir les voisins pour
+  tenir même sur la pierre.
+- **Boule de Crystal** (200) : un lancer de Lucky Pass offert, et un voyant — un villageois prêtre,
+  immobile — qui ouvre le Lucky Pass d'un clic puis s'en va. Chez PalaMod, un « God Villager ».
+- **Paladium Bizarre** (200) : un lingot de paladium marqué `STRANGE` ; ici, une ligne « Il a l'air
+  bizarre... » le montre.
+- **Coucou** (300) : un golem gardien niveau 40 au joueur (Golemancie, Utilitaire, Régime novateur,
+  Gourmand, Stockeur), 64 blocs de paladium dans son inventaire, et ce message : « Tue moi si tu
+  l'oses ».
+- **N'en parle à personne** (300) : LuckyMan « partage un dossier qui a fuité »… et son second
+  message est vide. **Écart** : l'image, logo d'une plateforme vidéo chez PalaMod, est un dossier
+  dessiné ici.
+- **1 000 000 joueurs** (300, compté bon par PalaMod) : l'écran d'un faux gagnant (« Vous avez gagné
+  un full endium !!!! ») et 5 000 $ de moins, jamais sous zéro. À la fermeture : « Oups... On dirait
+  que vous vous êtes fait arnaquer ». L'écran est dessiné pour DoHy : l'image de PalaMod est faite
+  de photos.
+- **Tête d'enclume** (500, malus) : onze vagues, toutes les 15 tics, d'enclumes qui tombent de dix
+  blocs au-dessus du joueur, sur 10 × 10 blocs, trois cases sur dix. **Écart** : seulement dans
+  l'air ; PalaMod remplaçait les blocs.
+- **Creepesque** (500) : une pierre de capture qui garde un creeper.
+- **Déclassement** (600, malus) : chaque pièce d'armure tombe au sol, et une pièce en cuir, aux
+  mêmes enchantements et au même nom, prend sa place (sans l'usure de l'originale).
+- **Père Fouras** (800) : une énigme en quatre lignes, trois essais dans le chat — la réponse ne part
+  pas aux autres. « La pensée » (avec ou sans accent, « penser » aussi) rapporte 10 lingots.
+- **Roulette** (800) : un lancer de Lucky Pass offert ; l'écran s'ouvre.
+- **Base abandonnée** (1000) : un sol de 10 × 10 en obsidienne durcie sous le joueur, et quatre
+  murs de onze blocs de haut, de six sous ses pieds à quatre au-dessus de sa tête, sans toit.
+- **Jackpot** (1300) : une boîte à golem toute montée (25 cadres, l'eau angélique au centre, la
+  boîte sur une face) et trois mini golems niveau 12 dedans. **Écart** : PalaMod leur donnait
+  Farmeur et Palado-créateur, sans Golem en boîte, sans laquelle une boîte ne les fait pas
+  travailler ; ici les deux branches vont jusqu'au bout et les golems produisent.
+
+### Le Lucky Pass et ses lancers offerts
+
+`setHasLuckyEventBypassNow` ouvrait chez PalaMod un écran à part pour un lancer gratuit. Ici, les
+lancers offerts s'ajoutent à celui du jour (`LuckyData.pass_bonus`) : le lancer du jour part
+d'abord, le lancer offert ne change pas le jour.
+
+### Correction du deuxième lot
+
+**Base déco** lisait la hauteur avant que le chunk d'arrivée soit chargé : Minecraft rendait alors
+le fond du monde, et la base se construisait sous terre (sur le monde plat des captures, la
+différence ne se voyait pas). Le chunk est maintenant généré d'abord.
+
+### Pas encore portés
+
+- **Les événements à contenu neuf**, le gros du reste : lampes, plantes, instruments, TNT mignonnes,
+  objets de PalaMod (grappin, lasso, jetpack, potions...), créatures (ballons, colombe, chauve-souris
+  nerveuse, mouton piquant, zoo, monstres d'XP).
+- **Corvée générale** (4000) : un boss au hasard. Les boss de DoHy ne vivent qu'avec leur combat de
+  faction.
+- **Golem classieux**, **Golem crasseux** : des skins de golem, absents de DoHy. **Coffre fort**,
+  méga et ultra : le coffre-fort de PalaMod n'est pas dans DoHy.
+- **La statue des admins** et **le grade Divinity** : de vraies personnes, un grade de serveur.
+  **My name is Fuze III**, **Fuze personnel**, **To doum doum** : des disques de musique.
+- **Ton heure a sonné** (700) : il tue le joueur, compté bon par PalaMod.
+- Les effets sans portage fidèle simple (§ 38).
+
+### Équilibre
+
+`tools/lucky_assets.py --stats` après ce lot :
+
+| | Portés | Masse des bons | Masse des malus | Bons repesés |
+|---|---|---|---|---|
+| Paladium | 80 / 111 | 66,6 % | 80,4 % | × 1,51 |
+| Endium | 34 / 56 | 66,6 % | — | × 1,25 |
+| Findium | 67 / 130 | 49,7 % | 87,1 % | × 2,19 |
+
+La part des bons reste celle de PalaMod (51,5 % au paladium, 44,4 % au findium). Espérance d'un
+bloc (`BALANCE.md` § 6 tervicies) : paladium ~5 800 $, endium ~11 300 $, findium ~1 800 $ ; Lucky
+Pass ~6 600 $ par jour. Les nouveaux bons, de valeur modeste, diluent les gros lots : une Diamond
+Beacon tous les 250 jours de lancers, un Endium Block tous les 5 000.

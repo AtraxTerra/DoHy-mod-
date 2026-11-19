@@ -170,6 +170,24 @@ public final class PalaLucky {
                     .copyOnDeath()
                     .build());
 
+    /**
+     * Le coffre en endium piege de « Coffre maudit » ({@code Triforce} : la metadonnee 1
+     * du coffre pose par l'evenement). Porte par le coffre, il tient au redemarrage.
+     */
+    public static final Supplier<AttachmentType<Boolean>> CURSED = ATTACHMENTS.register("cursed_chest",
+            () -> AttachmentType.builder(() -> Boolean.FALSE)
+                    .serialize(com.mojang.serialization.Codec.BOOL.fieldOf("cursed"), cursed -> cursed)
+                    .build());
+
+    /**
+     * Le voyant de « Boule de Crystal » ({@code EntityGodVillager}) : un clic sur lui ouvre le
+     * Lucky Pass, puis il s'en va.
+     */
+    public static final Supplier<AttachmentType<Boolean>> SEER = ATTACHMENTS.register("lucky_seer",
+            () -> AttachmentType.builder(() -> Boolean.FALSE)
+                    .serialize(com.mojang.serialization.Codec.BOOL.fieldOf("seer"), seer -> seer)
+                    .build());
+
     public static final List<DeferredItem<? extends Item>> ORDERED = List.of(
             PALADIUM_LUCKY_BLOCK_ITEM, ENDIUM_LUCKY_BLOCK_ITEM, FINDIUM_LUCKY_BLOCK_ITEM);
 

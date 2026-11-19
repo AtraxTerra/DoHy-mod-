@@ -44,7 +44,7 @@ JAVA = os.path.join(ROOT, "src", "main", "java", "fr", "atraxterra", "dohy", "pa
 CATALOG = os.path.join(ROOT, "tools", "data", "lucky_events.json")
 # Les fichiers ou sont declares les evenements portes (c.classic / c.findium).
 SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEvents.java", "TrickEvents.java",
-           "FindiumTricks.java")
+           "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java")
 NS = "palamod"
 
 TYPES = {
@@ -115,6 +115,62 @@ DEEP_ICON = [
 DEEP_COLORS = {
     "S": (58, 58, 64, 255), "s": (72, 72, 80, 255), "O": (40, 26, 0, 255), "Y": (250, 196, 0, 255),
     "D": (100, 220, 220, 255), "d": (60, 170, 170, 255),
+}
+
+
+# Le coffre maudit (« Triforce » chez PalaMod, dont l'image reprend l'embleme d'une
+# autre licence) : un coffre en endium frappe par un eclair, dessine ici.
+CURSED_ICON = [
+    "..........yYY...",
+    "..OOOOOOOOYYOO..",
+    ".ObbbbbbyYYbbbO.",
+    ".ObBBBByYYYYYbO.",
+    ".OBBBBBBByYYBBO.",
+    ".ODDDDDLLYYDDDO.",
+    ".OOOOOOLYYOOOOO.",
+    ".OBBBByYYYYYBBO.",
+    ".OBBBBBByYYBBBO.",
+    ".OBBBBByYYBBBBO.",
+    ".ODBBByYYBBBBDO.",
+    ".OOOOOYYOOOOOOO.",
+    "....yYY.........",
+    "...yYY..........",
+    "...yY...........",
+    "................",
+]
+CURSED_COLORS = {
+    ".": (0, 0, 0, 0), "O": (18, 22, 58, 255), "b": (96, 146, 255, 255), "B": (42, 88, 232, 255),
+    "D": (22, 46, 140, 255), "L": (250, 200, 40, 255), "Y": (255, 232, 70, 255), "y": (196, 140, 10, 255),
+}
+# « N'en parle a personne » (l'image de PalaMod est le logo d'une plateforme video) :
+# un dossier marque d'un tampon rouge, dessine ici.
+FOLDER_ICON = [
+    "................",
+    ".OOOOO..........",
+    ".OYYYYO.........",
+    ".OYYYYYOOOOOOOO.",
+    ".OYYYYYYYYYYYYO.",
+    ".OOOOOOOOOOOOOO.",
+    ".OyyyyyyyyyyyyO.",
+    ".OyyRRRRRRRRyyO.",
+    ".OyyRWWRWWWRyyO.",
+    ".OyyRRRRRRRRyyO.",
+    ".OyyyyyyyyyyyyO.",
+    ".OyyyyyyyyyyyyO.",
+    ".OyyyyyyyyyyyyO.",
+    ".OOOOOOOOOOOOOO.",
+    "................",
+    "................",
+]
+FOLDER_COLORS = {
+    ".": (0, 0, 0, 0), "O": (64, 40, 8, 255), "Y": (226, 170, 52, 255), "y": (250, 208, 98, 255),
+    "R": (206, 28, 28, 255), "W": (255, 236, 236, 255),
+}
+# Les images dessinees ici plutot que prises dans le jar.
+DRAWN = {
+    "teleportyone": (DEEP_ICON, DEEP_COLORS),
+    "coffre_maudit": (CURSED_ICON, CURSED_COLORS),
+    "dossier_secret": (FOLDER_ICON, FOLDER_COLORS),
 }
 
 
@@ -238,11 +294,12 @@ def textures(jar, events):
         target = os.path.join(icons, icon + ".png")
         if icon + ".png" in available:
             image = square(Image.open(os.path.join(folder, available[icon + ".png"])).convert("RGBA"))
-        elif icon == "teleportyone":
+        elif icon in DRAWN:
+            rows, colors = DRAWN[icon]
             image = Image.new("RGBA", (16, 16))
-            for y, row in enumerate(DEEP_ICON):
+            for y, row in enumerate(rows):
                 for x, char in enumerate(row):
-                    image.putpixel((x, y), DEEP_COLORS[char])
+                    image.putpixel((x, y), colors.get(char, (0, 0, 0, 0)))
         else:
             raise SystemExit("image d'evenement introuvable dans le jar : %s" % icon)
         image.save(target)

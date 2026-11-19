@@ -42,9 +42,18 @@ public final class LuckyPass {
         UiNet.show(player, view(player, 0));
     }
 
-    /** Le lancer du jour est-il encore a faire ? */
+    /** Le lancer du jour est-il encore a faire, ou reste-t-il un lancer offert ? */
     public static boolean available(ServerPlayer player) {
-        return PalaLucky.data(player).passDay() != ContractApi.today();
+        LuckyData data = PalaLucky.data(player);
+        return data.passDay() != ContractApi.today() || data.passBonus() > 0;
+    }
+
+    /**
+     * Un lancer offert ({@code setHasLuckyEventBypassNow} puis
+     * {@code GUI_LUCKY_PASS_BYPASS}) : il s'ajoute a celui du jour.
+     */
+    public static void giveBonus(ServerPlayer player) {
+        PalaLucky.data(player).giveBonus();
     }
 
     public static void handle(ServerPlayer player, UiNet.Action action) {
@@ -64,7 +73,11 @@ public final class LuckyPass {
             return;
         }
         List<Integer> wins = draw(player.getRandom());
-        data.spin(ContractApi.today(), wins);
+        if (data.passDay() != ContractApi.today()) {
+            data.spin(ContractApi.today(), wins);
+        } else {
+            data.bonusSpin(wins);
+        }
         for (int win : wins) {
             if (win >= 0) {
                 ItemStack stack = LuckyType.of(win).stack(1);
@@ -94,7 +107,8 @@ public final class LuckyPass {
     static LuckyPassView view(ServerPlayer player, int spin) {
         LuckyData data = PalaLucky.data(player);
         boolean claimed = !available(player);
-        return new LuckyPassView(claimed, claimed ? data.passWins() : List.of(-1, -1, -1), spin,
+        // Juste apres un lancer, les rouleaux s'arretent sur ses gains, meme s'il reste un lancer offert.
+        return new LuckyPassView(claimed, claimed || spin > 0 ? data.passWins() : List.of(-1, -1, -1), spin,
                 ContractApi.minutesUntilDailyReset(), data.passSpins());
     }
 
