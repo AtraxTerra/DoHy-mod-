@@ -2162,10 +2162,10 @@ public final class SeasonItems {
                     start.getY() + step * 1.5d, start.getZ() + 0.5d, 4, 0.1d, 0.3d, 0.1d, 0.02d));
             LuckyTasks.later(player, 60, () -> {
                 if (level.isRaining()) {
-                    level.setWeatherParameters(12_000, 0, false, false);
+                    level.getServer().setWeatherParameters(12_000, 0, false, false);
                     LuckyWorld.tell(player, "Le missile a dissipe les nuages : grand soleil !", ChatFormatting.YELLOW);
                 } else {
-                    level.setWeatherParameters(0, 6_000, true, false);
+                    level.getServer().setWeatherParameters(0, 6_000, true, false);
                     LuckyWorld.tell(player, "Le missile a creve les nuages : il pleut !", ChatFormatting.AQUA);
                 }
             });
