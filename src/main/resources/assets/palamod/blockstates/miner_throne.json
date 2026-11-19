@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "palamod:block/miner_throne"
+    },
+    "facing=south": {
+      "model": "palamod:block/miner_throne"
+    },
+    "facing=west": {
+      "model": "palamod:block/miner_throne"
+    },
+    "facing=east": {
+      "model": "palamod:block/miner_throne"
+    }
+  }
+}

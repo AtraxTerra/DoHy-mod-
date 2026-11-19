@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "palamod:block/hunter_throne"
+    },
+    "facing=south": {
+      "model": "palamod:block/hunter_throne"
+    },
+    "facing=west": {
+      "model": "palamod:block/hunter_throne"
+    },
+    "facing=east": {
+      "model": "palamod:block/hunter_throne"
+    }
+  }
+}

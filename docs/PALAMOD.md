@@ -125,7 +125,7 @@ donne un bonbon. Objets `palamod:candy_green`, `_yellow`, `_blue`, `_purple`, `_
 | XP d'un bonbon | **17 850** (50 000 × 0,357, § 1), par `JobApi.grant` | wiki : 50 000 |
 | Bonbon à déballer | multicolore 10 %, sinon une couleur (22,5 % chacune) | chances absentes du wiki : DoHy |
 | Où | pass du mois (niveaux 5, 11, 17, 21, à la place des bouteilles d'XP) ; métiers niveau 95 ; coffres de boss dès le palier 50 | wiki : Palapass ; patch note V8.5 (niveau 90 du wiki Java) ; récompenses de boss (« Bonbon emballée » au 50, « à déballer » aux 85 et 95) |
-| Double XP | absent de DoHy | wiki : la potion double l'XP du bonbon |
+| Double XP | la potion de Double XP (x2) ou de Triple XP (x3) multiplie l'XP du bonbon (§ 36) | wiki : la potion double l'XP du bonbon |
 
 ### Types d'objectifs et de quêtes
 
@@ -872,7 +872,7 @@ Relevé dans `MinerRegisterer` (verrous), `ToolHandler`, `ItemBuilderWand`, `Pla
 | 90 | Cave block en endium | 18 | oui |
 | 90 | Piston renforcé wither (compresseur à cobblestone) | 18 | oui |
 | 95 | God Villager | 19 | oui (sans verrou : c'est une apparition) |
-| 95 | Trône du Mineur | 19 | **non, laissé de côté à la demande du joueur** |
+| 95 | Trône du Mineur | 19 | oui, le 2026-11-19 (§ 36) |
 | 100 | Minerai de pépites d'endium, pioche en endium | 20 | oui |
 
 Les prérequis non listés par le wiki sont portés aussi : **coffres en améthyste et en titane**
@@ -885,7 +885,7 @@ fourneau** (ingrédients de la Palaforge), **cave block** (ingrédient du cave b
 objets du spawner et les houes à rayon vivent dans d'autres registres (`BlocksRegistry`,
 `SpawnerItemRegistry`, `ItemsRegistry` de PalaJobs) : 26 verrous perdus, 99 au lieu de 73.
 Conséquence visible hors de ce chapitre : **les houes à rayon sont maintenant verrouillées**
-(Fermier 10, 25, 65, 85 et 100). Les verrous d'objets pas encore portés (trônes, spawner) sont
+(Fermier 10, 25, 65, 85 et 100). Les verrous d'objets pas encore portés (spawner) sont
 dans la table et restent inertes tant que l'objet n'existe pas.
 
 ### Outils de zone — `ToolHandler.removeBlocksInIteration`
@@ -1132,7 +1132,7 @@ Relevé dans `FarmerRegisterer` (verrous), `BaseItemAxe` et `BlockAngelicWater`.
 | 45 / 55 | Graines d'herbe colorée, herbe colorée | 9 / 11 | **non, écartées par le joueur** |
 | 50 | Graine de racinier | 10 | **non, écartée par le joueur** |
 | 70 | Totem de fertilité | 14 | déjà au chapitre 5a |
-| 95 | Trône du fermier | 19 | **non — aucun trône n'est porté, à la demande du joueur** |
+| 95 | Trône du fermier | 19 | oui, le 2026-11-19 (§ 36) |
 | 100 | Hache en endium (abattage), plastron en endium | 20 | oui (le plastron l'était au chapitre 7) |
 
 Les herbes colorées et le racinier ont été portés puis **retirés à la demande du joueur** après
@@ -1191,7 +1191,7 @@ spawner sur le wiki (« spawner customisé »). Niveaux du code ×5. Périmètre
 | — | Contrôleur de spawner | oui — §32 (pas de verrou dans l'original) |
 | 75 | Amélioration de butin de spawner (les trois autres : Mineur 85, Alchimiste 75 et 90) | oui — §32 |
 | 10 / 15 / 35 / 45–100 | Bateau en bambou, cage et familiers, mini golem, détecteur, clé, étiquette, totem, autel, boussole, poudres | **non, écartés par le joueur** |
-| 95 | Trône du chasseur | **non — aucun trône** |
+| 95 | Trône du chasseur | oui, le 2026-11-19 (§ 36) |
 
 Les verrous non portés restent dans `data/jobs.json`, inertes.
 
@@ -1359,7 +1359,7 @@ chaudron, portails, enchantements mystiques.
 | 15 | Table d'alchimiste | **non, écartée par le joueur** |
 | 40 | Totem fleuri | oui (jardin, plan de construction) |
 | 75 / 90 | Améliorations de spawner | **non** (sans contrôleur de spawner) |
-| 95 | Trône de l'alchimiste | **non — aucun trône** |
+| 95 | Trône de l'alchimiste | oui, le 2026-11-19 (§ 36) |
 
 Sans verrou : fiole, extracteur, potion de foudre, fleurs, pollens, bibliothèque mystique, arbres.
 
@@ -2335,7 +2335,8 @@ Le meilleur sac de l'inventaire à l'entrée fixe la contenance ; ce qui dépass
 **Venus aux chapitres suivants** : épées et armures de donjon, essences et pièces antiques (§ 23),
 runes (§ 24). **Non portés** : parchemins de sort (sorts sautés) et de craft. **Absents de DoHy**, donc ignorés : obsidienne
 infusée, têtes de thirsty et de prédator, totem fleuri, jetpack, défense d'éléphant,
-pièce de lune, double XP, têtes de wither passive et suprême.
+pièce de lune, têtes de wither passive et suprême. Le double XP y est depuis le 2026-11-19 : la potion
+de Double XP de 30 min, et la Triple dès le palier 50 (§ 36).
 
 ### Fin du palier
 
@@ -3390,3 +3391,73 @@ Fichier `vault_drawers-26.2-neoforge-26.2.0.57-0.0.0-beta.9.jar` (1 067 619 octe
     clé n'est pas sauvegardée (elle disparaît au redémarrage).
 - NTM porte des mixins pour Storage Drawers (`com.jaquadro…`) ; ils ne trouvent pas Vault
   Drawers, dont le paquet diffère : de simples avertissements au démarrage.
+
+---
+
+## 36. Trônes de métier et potions d'XP (2026-11-19)
+
+Demandés le 2026-11-19 (« ajoute les trônes et le Lucky pass », puis « ajoute aussi les potions
+de double et triple xp métiers »). Les trônes avaient été laissés de côté à la demande du joueur
+(§ 11 et suivants) ; la potion de Double XP était notée absente (bonbons, table des boss des
+donjons). Le Lucky Pass suit, avec les lucky blocks qu'il distribue.
+
+### Les trônes — `BlockThroneBase`, `TileEntity*Throne`, `ModelJobThrone` (PalaJobs)
+
+**Ce que dit le code**
+
+- Quatre blocs, un par métier : `miner_throne`, `farmer_throne`, `hunter_throne`,
+  `alchemist_throne` (« Trône Mineur », « Trône Farmer »…). Matériau roche, dureté 1, onglet des
+  métiers. Verrou d'usage au **niveau 95** (`JobsBridge.canUse` au clic droit).
+- **Recette** (`CraftRegistry`) : `EOE / OFO / EOE`, E le fragment d'endium, F le bloc de findium,
+  O l'objet du métier — l'obsidienne anti-aggro (Mineur), le seedplanter en paladium vert
+  (Fermier), la corne en paladium (Chasseur), le bloc de portail en paladium (Alchimiste).
+- **Pose** : quatre orientations, face à celui qui pose. Le premier qui pose un trône y grave son
+  nom (`owner` du NBT de l'objet, recopié dans la tile entity) ; le rendu l'affiche en rouge à
+  3,2 blocs, tourné vers la caméra.
+- **Clic droit** : on s'assoit (`EntitySittableBlock`, 0,6 bloc). **Casse** : le trône tombe avec
+  son nom (`onBlockHarvested`, `getDrops` vide).
+- **Modèle** : un export Blockbench pour `ModelBase`, 17 boîtes sur une texture de 128 × 128
+  (`textures/blocks/thrones/<métier>.png`), dont un dôme tourné de 45° et deux accoudoirs inclinés
+  de 22,5°. Il fait 2,9 blocs de haut et 1,8 de large. Boîte du bloc : de 0,5 à 2 blocs.
+- `BlockThroneBase` implémente `ILuckyStatsOwnedReward` : le trône était aussi une récompense
+  des Lucky Stats.
+
+**Ce que fait DoHy**
+
+- Les quatre blocs sous les mêmes identifiants, la recette, le nom gravé (composant
+  `palamod:throne_owner`, gardé par le butin), le nom en rouge à moins de 24 blocs.
+- **Le modèle est dessiné par la block entity**, comme le TESR d'origine : la géométrie est
+  recopiée boîte par boîte (`tools/throne_assets.py` → `ThroneGeometry`), avec la même texture.
+  Un modèle de bloc ne sort pas de -16..32 : le trône n'y tiendrait pas. L'objet, lui, est un
+  modèle en 3D descendu d'un bloc et recentré par ses transformations d'affichage.
+- **S'asseoir** : un siège invisible (`palamod:throne_seat`) posé sur le coussin, à 9 pixels ; le
+  regard reste à 105° du trône, comme dans une barque ; on se relève devant lui. Le siège se
+  sauvegarde (26.2 refuse de faire monter un joueur sur une entité qui ne se sauvegarde pas) et
+  disparaît dès qu'il n'a plus de passager.
+- **Le verrou** : celui de la table des métiers, déjà relevé (`jobs.json`) — il s'applique à la
+  **pose** et au clic droit, comme pour tout objet verrouillé de DoHy (le craft n'est jamais
+  verrouillé, § 2).
+- **Écart** : la boîte va du sol à 1,5 bloc (une clôture) au lieu de 0,5 à 2 : en 26.2, une boîte
+  plus haute qu'un bloc ne se vise pas au-delà du premier.
+
+### Les potions d'XP — `ItemBoostDoubleXp` (PalaMod)
+
+**Ce que dit le code** : « Potion de Double XP », à l'unité, bue en 32 ticks. Quatre durées par
+métadonnée : 30 min, 1 h, 2 h, 4 h. Elle double l'XP de **tous** les métiers
+(`JobsManager.setDoubleXpUntil`) ; bue pendant un double XP en cours, sa durée s'ajoute au reste.
+Le temps est réel (`System.currentTimeMillis`) : il file hors ligne. Il n'y a pas de Triple XP dans
+le jar (seulement une potion x10 de 5 minutes, dans les lucky blocks de décembre).
+
+**Ce que fait DoHy**
+
+- `palamod:double_xp_potion`, la texture de PalaMod ; `palamod:triple_xp_potion`, propre à DoHy :
+  la même fiole, le liquide passé à l'or, un « 3 » à la place du « 2 ». La durée est un composant
+  (`palamod:boost_minutes`) ; l'onglet a les quatre durées de chaque.
+- **Un effet** (`palamod:double_job_xp`, `palamod:triple_job_xp`) au lieu d'une date : il ne
+  compte que le temps de jeu, comme les boosters. Ni le lait ni la mort ne l'enlèvent (la date de
+  PalaMod ne craignait ni l'un ni l'autre).
+- **Le multiplicateur** s'applique dans `JobApi.grant`, à toute l'XP de métier, bonus compris
+  (amélioration *Apprentissage*, amulettes) : blocs, cuisson, bouteilles d'XP, bonbons. Le x3
+  passe avant le x2 ; les deux s'écoulent ensemble.
+- **Où** : la boutique (Double 1 h et 4 h, Triple 1 h et 4 h ; `BALANCE.md` § 6 duovicies) et la
+  table des boss des donjons (Double 30 min, poids 3 ; Triple 30 min dès le palier 50, poids 1).

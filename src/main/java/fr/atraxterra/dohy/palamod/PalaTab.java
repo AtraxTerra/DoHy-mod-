@@ -113,6 +113,11 @@ public final class PalaTab {
                         PalaReserve.tab().forEach(item -> output.accept(item.get()));
                         // Les objets exclusifs du concours Trixium.
                         PalaTrixium.ORDERED.forEach(item -> output.accept(item.get()));
+                        // Les trones de metier (niveau 95).
+                        fr.atraxterra.dohy.palamod.throne.PalaThrones.ORDERED
+                                .forEach(item -> output.accept(item.get()));
+                        // Les potions d'XP de metier, dans leurs quatre durees.
+                        fr.atraxterra.dohy.palamod.boost.PalaXpPotions.tab().forEach(output::accept);
                     })
                     .build());
 

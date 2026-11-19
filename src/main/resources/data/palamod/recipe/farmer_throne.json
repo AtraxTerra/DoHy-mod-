@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EOE",
+    "OFO",
+    "EOE"
+  ],
+  "key": {
+    "E": "palamod:endium_fragment",
+    "O": "palamod:green_paladium_seedplanter",
+    "F": "palamod:findium_block"
+  },
+  "result": {
+    "id": "palamod:farmer_throne",
+    "count": 1
+  }
+}

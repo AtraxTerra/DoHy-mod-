@@ -601,10 +601,10 @@
       "title": "La boutique",
       "card": [
         "Boosters et boxes",
-        "L'autosell"
+        "Potions d'XP, autosell"
       ],
       "summary": [
-        "La boutique vend les boosters (le prix de vente multiplie pendant 20 minutes), les boxes de PalaMod a ouvrir avec leurs cles, et l'autosell."
+        "La boutique vend les boosters (le prix de vente multiplie pendant 20 minutes), les boxes de PalaMod a ouvrir avec leurs cles, les potions d'XP de metier et l'autosell."
       ],
       "sections": [
         {
@@ -618,6 +618,12 @@
           "text": [
             "Amethyste, titane, paladium, endium, trixium... Leurs cles tombent en jouant (contrats, events, bases ennemies), et une roulette tire le lot. Le hall des boxes est au spawn."
           ]
+        },
+        {
+          "title": "Les potions d'XP",
+          "text": [
+            "La Potion de Double XP (1 h ou 4 h) et la Potion de Triple XP (1 h ou 4 h) multiplient l'XP de tous tes metiers pendant leur duree."
+          ]
         }
       ],
       "commands": [
@@ -627,7 +633,8 @@
       "see": [
         "shop",
         "spawn",
-        "pierres_legendaires"
+        "pierres_legendaires",
+        "potions_xp"
       ],
       "discover": {
         "items": [
@@ -773,7 +780,9 @@
         "alchimiste",
         "boss_metier",
         "bonbons",
-        "peche"
+        "peche",
+        "trones",
+        "potions_xp"
       ],
       "progress": "metiers",
       "discover": {
@@ -919,7 +928,8 @@
           "text": [
             "- Vert : Fermier. Jaune : Mineur. Bleu : Chasseur. Mauve : Alchimiste.",
             "- Multicolore : les quatre metiers a la fois.",
-            "Chacun donne 17 850 XP, l'equivalent des 50 000 XP du bonbon de Paladium a l'echelle de Berskar."
+            "Chacun donne 17 850 XP, l'equivalent des 50 000 XP du bonbon de Paladium a l'echelle de Berskar.",
+            "Sous une potion d'XP, un bonbon rapporte deux ou trois fois plus."
           ]
         },
         {
@@ -940,10 +950,118 @@
       "see": [
         "metiers",
         "pass",
-        "donjons"
+        "donjons",
+        "potions_xp"
       ],
       "discover": {
         "always": true
+      }
+    },
+    {
+      "id": "trones",
+      "category": "metiers",
+      "order": 8,
+      "icon": "palamod:miner_throne",
+      "title": "Les trones",
+      "card": [
+        "Un par metier",
+        "Niveau 95"
+      ],
+      "summary": [
+        "Le trone est la recompense du niveau 95 d'un metier : un siege d'or de pres de trois blocs de haut, aux couleurs du metier, qui porte le nom de son proprietaire."
+      ],
+      "sections": [
+        {
+          "title": "La recette",
+          "text": [
+            "Quatre fragments d'endium aux coins, un bloc de findium au centre, et sur les quatre bords l'objet du metier :",
+            "- Mineur : l'obsidienne anti-aggro.",
+            "- Fermier : le seedplanter en paladium vert.",
+            "- Chasseur : la corne en paladium.",
+            "- Alchimiste : le bloc de portail en paladium.",
+            "Il se fabrique a tout niveau, mais se pose et s'utilise au niveau 95 du metier."
+          ]
+        },
+        {
+          "title": "S'asseoir",
+          "text": [
+            "Clic droit sur le trone pour t'y asseoir, accroupi pour te relever : tu te releves devant lui. Une seule personne a la fois."
+          ]
+        },
+        {
+          "title": "Le nom",
+          "text": [
+            "Le premier qui pose un trone y grave son nom, qui flotte en rouge au-dessus. Casse, le trone garde ce nom : il est a toi pour de bon."
+          ]
+        }
+      ],
+      "see": [
+        "metiers",
+        "mineur",
+        "fermier",
+        "chasseur",
+        "alchimiste"
+      ],
+      "discover": {
+        "items": [
+          "palamod:miner_throne",
+          "palamod:farmer_throne",
+          "palamod:hunter_throne",
+          "palamod:alchemist_throne"
+        ]
+      }
+    },
+    {
+      "id": "potions_xp",
+      "category": "metiers",
+      "order": 9,
+      "icon": "palamod:double_xp_potion",
+      "title": "Potions d'XP",
+      "card": [
+        "x2 ou x3 sur tous les metiers",
+        "De 30 min a 4 h de jeu"
+      ],
+      "summary": [
+        "La Potion de Double XP multiplie par deux l'XP de tous tes metiers pendant sa duree, la Potion de Triple XP par trois. Bois-la avant une grosse session."
+      ],
+      "sections": [
+        {
+          "title": "La duree",
+          "text": [
+            "- Quatre durees : 30 min, 1 h, 2 h et 4 h de jeu. Le temps ne file que quand tu joues.",
+            "- Bue pendant l'effet, une potion du meme genre ajoute sa duree au reste.",
+            "- Le x3 passe avant le x2 ; les deux s'ecoulent en meme temps.",
+            "- Ni le lait ni la mort ne l'enlevent."
+          ]
+        },
+        {
+          "title": "Ce qu'elle multiplie",
+          "text": [
+            "Toute l'XP de metier, bonus compris : les blocs, la cuisson, les bouteilles d'XP et les bonbons. Un bonbon bu sous Triple XP rapporte trois fois plus."
+          ]
+        },
+        {
+          "title": "Ou en trouver",
+          "text": [
+            "- La boutique : la Double d'1 h ou de 4 h, la Triple d'1 h ou de 4 h.",
+            "- Les coffres de boss des donjons : la Double de 30 min, et la Triple des le palier 50."
+          ]
+        }
+      ],
+      "commands": [
+        "/boutique : la boutique"
+      ],
+      "see": [
+        "metiers",
+        "boutique",
+        "bonbons",
+        "donjons"
+      ],
+      "discover": {
+        "items": [
+          "palamod:double_xp_potion",
+          "palamod:triple_xp_potion"
+        ]
       }
     },
     {
@@ -1856,7 +1974,8 @@
           "text": [
             "- Un coffre en fin de salle, et une note de D a S qui ouvre un meilleur coffre.",
             "- De l'XP de metier et de l'XP RPG.",
-            "- Les sacs de donjon gardent le butin."
+            "- Les sacs de donjon gardent le butin.",
+            "- Les coffres de boss : parfois une potion de Double XP, et de Triple des le palier 50."
           ]
         }
       ],

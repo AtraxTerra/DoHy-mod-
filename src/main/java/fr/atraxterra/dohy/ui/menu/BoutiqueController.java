@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-/** La boutique : boosters, loot boxes et leurs coffres a poser, assurance et autosell. */
+/** La boutique : boosters, loot boxes et leurs coffres a poser, potions d'XP, assurance et autosell. */
 public final class BoutiqueController extends MenuController {
 
     public static final BoutiqueController INSTANCE = new BoutiqueController();
@@ -102,6 +102,26 @@ public final class BoutiqueController extends MenuController {
                     : card.action("box:" + kind.getSerializedName() + "|acheter"));
         }
 
+        // Les potions d'XP de metier : la Double de PalaMod, et la Triple.
+        List<Card> potions = new ArrayList<>();
+        for (fr.atraxterra.dohy.palamod.boost.PalaXpPotions.Offer offer
+                : fr.atraxterra.dohy.palamod.boost.PalaXpPotions.SHOP) {
+            String duration = fr.atraxterra.dohy.palamod.boost.PalaXpPotions.label(offer.minutes());
+            long missing = offer.price() - Economy.balance(player);
+            Card card = Card.of(fr.atraxterra.dohy.palamod.boost.PalaXpPotions.stack(offer.multiplier(),
+                                    offer.minutes()),
+                            (offer.multiplier() == 3 ? "Triple XP " : "Double XP ") + duration, List.of(
+                            MoneyFormat.exact(offer.price()), "x" + offer.multiplier() + " XP de metier"))
+                    .accent(offer.multiplier() == 3 ? 0xFFFAC400 : 0xFF22E558).badge("x" + offer.multiplier())
+                    .tooltip(List.of("Toute l'XP de metier x" + offer.multiplier() + " pendant " + duration
+                                    + " de jeu",
+                            "Bue pendant l'effet : la duree s'ajoute",
+                            "Le x3 passe avant le x2 ; ni le lait ni la mort ne l'enlevent",
+                            missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) : ""));
+            potions.add(missing > 0 ? card.state(MenuView.DISABLED)
+                    : card.action("xp:" + offer.multiplier() + ":" + offer.minutes() + "|acheter"));
+        }
+
         int charges = Economy.of(player).insurance();
         BoostData data = Boosters.data(player);
         List<Card> services = new ArrayList<>();
@@ -136,6 +156,7 @@ public final class BoutiqueController extends MenuController {
                 new MenuView.Section("BOOSTERS", "upgrade", MenuView.GRID, boosters),
                 new MenuView.Section("BOXES", "resources", MenuView.GRID, crates),
                 new MenuView.Section("COFFRES A POSER", "armor", MenuView.GRID, boxes),
+                new MenuView.Section("POTIONS D'XP", "upgrade", MenuView.GRID, potions),
                 new MenuView.Section("SERVICES", "craft", MenuView.GRID, services)), true);
     }
 
@@ -209,6 +230,8 @@ public final class BoutiqueController extends MenuController {
                     }
                 }
             }
+        } else if (key.startsWith("xp:")) {
+            buyPotion(player, key.substring(3));
         } else if (key.startsWith("crate:")) {
             // Reussie, l'ouverture remplace la boutique par la roulette.
             String refusal = Crates.open(player, key.substring(6));
@@ -238,6 +261,34 @@ public final class BoutiqueController extends MenuController {
                 }
             }
         }
+    }
+
+    /** Une potion d'XP : {@code 2:60} pour la Double d'une heure. */
+    private static void buyPotion(ServerPlayer player, String spec) {
+        String[] parts = spec.split(":");
+        fr.atraxterra.dohy.palamod.boost.PalaXpPotions.Offer offer = null;
+        try {
+            offer = fr.atraxterra.dohy.palamod.boost.PalaXpPotions.offer(Integer.parseInt(parts[0]),
+                    Integer.parseInt(parts[1]));
+        } catch (RuntimeException malformed) {
+            // un clic forge par le client : rien a vendre
+        }
+        if (offer == null) {
+            failure(player);
+            return;
+        }
+        if (!Economy.tryDebit(player, offer.price())) {
+            report(player, "Il te faut " + MoneyFormat.exact(offer.price()) + " en liquide.", "");
+            return;
+        }
+        ItemStack potion = fr.atraxterra.dohy.palamod.boost.PalaXpPotions.stack(offer.multiplier(), offer.minutes());
+        Component name = potion.getHoverName();
+        if (!player.getInventory().add(potion)) {
+            player.drop(potion, false);
+        }
+        success(player);
+        player.sendSystemMessage(Component.empty().append(name).append(" achetee : bois-la quand tu veux.")
+                .withStyle(ChatFormatting.GREEN));
     }
 
     /**

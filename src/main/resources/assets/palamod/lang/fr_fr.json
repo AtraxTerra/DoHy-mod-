@@ -960,5 +960,22 @@
   "item.palamod.whale": "Baleine",
   "item.palamod.kraken": "Kraken",
   "item.palamod.endium_fishing_rod": "Canne a peche en endium",
-  "block.palamod.drawbridge": "Pont-levis"
+  "block.palamod.drawbridge": "Pont-levis",
+  "tooltip.palamod.throne.owner": "Trone de %s",
+  "tooltip.palamod.throne.blank": "Pose-le : il prendra ton nom",
+  "tooltip.palamod.throne.sit": "Clic droit pour t'y asseoir (metier niveau 95)",
+  "message.palamod.throne.taken": "Quelqu'un est deja assis sur ce trone.",
+  "entity.palamod.throne_seat": "Siege de trone",
+  "block.palamod.miner_throne": "Trone du mineur",
+  "block.palamod.farmer_throne": "Trone du fermier",
+  "block.palamod.hunter_throne": "Trone du chasseur",
+  "block.palamod.alchemist_throne": "Trone de l'alchimiste",
+  "item.palamod.xp_potion.named": "%s (%s)",
+  "tooltip.palamod.xp_potion": "%s XP sur tous tes metiers pendant %s de jeu",
+  "tooltip.palamod.xp_potion.stack": "Bue pendant l'effet : la duree s'ajoute. Le x3 passe avant le x2.",
+  "message.palamod.xp_potion": "XP de metier %s : encore %s",
+  "item.palamod.double_xp_potion": "Potion de Double XP",
+  "effect.palamod.double_job_xp": "Double XP metier",
+  "item.palamod.triple_xp_potion": "Potion de Triple XP",
+  "effect.palamod.triple_job_xp": "Triple XP metier"
 }

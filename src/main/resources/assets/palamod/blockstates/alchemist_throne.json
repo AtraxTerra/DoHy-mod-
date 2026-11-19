@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "palamod:block/alchemist_throne"
+    },
+    "facing=south": {
+      "model": "palamod:block/alchemist_throne"
+    },
+    "facing=west": {
+      "model": "palamod:block/alchemist_throne"
+    },
+    "facing=east": {
+      "model": "palamod:block/alchemist_throne"
+    }
+  }
+}

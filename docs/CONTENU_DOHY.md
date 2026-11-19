@@ -1413,6 +1413,48 @@ nombre d'unités qu'elle donne (`CRAFT_CAPS`) : la pépite de fer vaut 1 $, 4 $ 
 Le détail chiffré est dans `docs/BALANCE.md` § 6 unvicies. La fiche « Create » de l'encyclopédie
 (catégorie Technique) résume tout ça en jeu.
 
+## Trônes de métier et potions d'XP (2026-11-19)
+
+Demandés le 2026-11-19. Le détail du relevé est dans `PALAMOD.md` § 36, les prix dans
+`BALANCE.md` § 6 duovicies.
+
+### Les trônes
+
+- **Quatre trônes**, un par métier, la récompense du **niveau 95** : Mineur (rouge, pioche),
+  Fermier (orange), Chasseur (violet, arc), Alchimiste (rose, fiole). Un siège d'or de près de
+  trois blocs de haut, le modèle et les textures de PalaMod.
+- **La recette** : quatre fragments d'endium aux coins, un bloc de findium au centre, l'objet du
+  métier sur les bords (obsidienne anti-aggro, seedplanter en paladium vert, corne en paladium,
+  bloc de portail en paladium). Il se fabrique à tout niveau ; il se pose et s'utilise au 95.
+- **S'asseoir** : clic droit ; accroupi pour se relever, devant le trône. Une personne à la fois.
+- **Le nom** : le premier qui pose le trône y grave son nom, en rouge au-dessus ; cassé, le trône
+  le garde (infobulle « Trône de … »).
+- **La fiche** « Les trônes » (Métiers), découverte en ramassant un trône.
+
+### Les potions d'XP de métier
+
+- **Potion de Double XP** (celle de PalaMod) et **Potion de Triple XP** (propre à DoHy) : l'XP de
+  **tous** les métiers multipliée par 2 ou par 3, bonus compris, pendant 30 min, 1 h, 2 h ou 4 h
+  **de jeu**. Bue pendant l'effet, une potion du même genre ajoute sa durée ; le x3 passe avant le
+  x2. Ni le lait ni la mort ne les enlèvent. Elles se boivent comme une potion, à l'unité.
+- **Où** : la boutique, section POTIONS D'XP (Double 1 h à 120 000 $, 4 h à 400 000 $ ; Triple
+  1 h à 300 000 $, 4 h à 1 M$) ; les coffres de boss des donjons (Double 30 min, Triple 30 min dès
+  le palier 50).
+- **La fiche** « Potions d'XP » (Métiers) ; les fiches de la boutique, des bonbons et des donjons
+  les mentionnent.
+
+### Code
+
+- `palamod/throne/` : `PalaThrones` (blocs, objets, block entity, composant `throne_owner`, siège),
+  `ThroneBlock`, `ThroneBlockEntity`, `ThroneItem`, `ThroneSeat` ; côté client
+  `client/throne/ThroneRenderer` et `ThroneGeometry` (généré).
+- `palamod/boost/` : `PalaXpPotions` (effets, objets, composant `boost_minutes`, offres de la
+  boutique), `XpPotionItem`, `JobXpEffect`, `XpPotionEvents` (lait, mort). Le multiplicateur est
+  appliqué dans `JobApi.grant`.
+- Générateurs : `tools/throne_assets.py` (géométrie, objet en 3D, blockstates, butin, recettes,
+  noms ; `--jar` pour les textures) et `tools/xp_potion_assets.py` (textures, icônes d'effet,
+  modèles, noms). La CI vérifie que leurs fichiers sont à jour (`--check`).
+
 ## Sur un serveur dédié (2026-11-13)
 
 Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les
