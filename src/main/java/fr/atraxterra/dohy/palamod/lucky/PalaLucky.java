@@ -9,6 +9,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -21,11 +22,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * Les lucky blocks de PalaMod ({@code modules.luckyblock}) : les trois blocs,
+ * Les lucky blocks de PalaMod ({@code modules.luckyblock}) : les quatorze blocs,
  * le faux bloc de paladium de « Ouaiche t'es relou », les effets des
  * evenements et les donnees du joueur.
  *
@@ -66,6 +66,29 @@ public final class PalaLucky {
             "endium_lucky_block", properties -> new LuckyBlock(LuckyType.ENDIUM, properties), PalaLucky::lucky);
     public static final DeferredBlock<LuckyBlock> FINDIUM_LUCKY_BLOCK = BLOCKS.registerBlock(
             "findium_lucky_block", properties -> new LuckyBlock(LuckyType.FINDIUM, properties), PalaLucky::lucky);
+    // Les lucky blocks saisonniers ({@code BlocksRegister.BLACK_LUCKY_BLOCK}, {@code MARCH_LUCKY_BLOCK}...).
+    public static final DeferredBlock<LuckyBlock> BLACK_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "black_lucky_block", properties -> new LuckyBlock(LuckyType.BLACK, properties), PalaLucky::lucky);
+    public static final DeferredBlock<LuckyBlock> MARCH_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "march_lucky_block", properties -> new LuckyBlock(LuckyType.MARCH, properties), PalaLucky::lucky);
+    public static final DeferredBlock<LuckyBlock> EASTER_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "easter_lucky_block", properties -> new LuckyBlock(LuckyType.EASTER, properties), PalaLucky::lucky);
+    public static final DeferredBlock<LuckyBlock> MAY_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "may_lucky_block", properties -> new LuckyBlock(LuckyType.MAY, properties), PalaLucky::lucky);
+    public static final DeferredBlock<LuckyBlock> JUNE_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "june_lucky_block", properties -> new LuckyBlock(LuckyType.JUNE, properties), PalaLucky::lucky);
+    public static final DeferredBlock<LuckyBlock> JULY_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "july_lucky_block", properties -> new LuckyBlock(LuckyType.JULY, properties), PalaLucky::lucky);
+    public static final DeferredBlock<LuckyBlock> AUGUST_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "august_lucky_block", properties -> new LuckyBlock(LuckyType.AUGUST, properties), PalaLucky::lucky);
+    public static final DeferredBlock<LuckyBlock> SEPTEMBER_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "september_lucky_block", properties -> new LuckyBlock(LuckyType.SEPTEMBER, properties), PalaLucky::lucky);
+    public static final DeferredBlock<LuckyBlock> HALLOWEEN_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "halloween_lucky_block", properties -> new LuckyBlock(LuckyType.HALLOWEEN, properties), PalaLucky::lucky);
+    public static final DeferredBlock<LuckyBlock> NOVEMBER_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "november_lucky_block", properties -> new LuckyBlock(LuckyType.NOVEMBER, properties), PalaLucky::lucky);
+    public static final DeferredBlock<LuckyBlock> CHRISTMAS_LUCKY_BLOCK = BLOCKS.registerBlock(
+            "christmas_lucky_block", properties -> new LuckyBlock(LuckyType.CHRISTMAS, properties), PalaLucky::lucky);
 
     /**
      * Le faux bloc de paladium ({@code BlockFakePaladium}) : la texture du vrai,
@@ -88,10 +111,44 @@ public final class PalaLucky {
     public static final DeferredItem<BlockItem> FINDIUM_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
             "findium_lucky_block", properties -> new BlockItem(FINDIUM_LUCKY_BLOCK.get(),
                     properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> BLACK_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "black_lucky_block", properties -> new BlockItem(BLACK_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> MARCH_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "march_lucky_block", properties -> new BlockItem(MARCH_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> EASTER_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "easter_lucky_block", properties -> new BlockItem(EASTER_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> MAY_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "may_lucky_block", properties -> new BlockItem(MAY_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> JUNE_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "june_lucky_block", properties -> new BlockItem(JUNE_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> JULY_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "july_lucky_block", properties -> new BlockItem(JULY_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> AUGUST_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "august_lucky_block", properties -> new BlockItem(AUGUST_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> SEPTEMBER_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "september_lucky_block", properties -> new BlockItem(SEPTEMBER_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> HALLOWEEN_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "halloween_lucky_block", properties -> new BlockItem(HALLOWEEN_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> NOVEMBER_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "november_lucky_block", properties -> new BlockItem(NOVEMBER_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> CHRISTMAS_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
+            "christmas_lucky_block", properties -> new BlockItem(CHRISTMAS_LUCKY_BLOCK.get(),
+                    properties.useBlockDescriptionPrefix()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LuckyBlockEntity>> LUCKY_ENTITY =
-            BLOCK_ENTITIES.register("lucky_block", () -> new BlockEntityType<>(LuckyBlockEntity::new, Set.of(
-                    PALADIUM_LUCKY_BLOCK.get(), ENDIUM_LUCKY_BLOCK.get(), FINDIUM_LUCKY_BLOCK.get())));
+            BLOCK_ENTITIES.register("lucky_block", () -> new BlockEntityType<>(LuckyBlockEntity::new,
+                    java.util.Arrays.stream(LuckyType.values()).map(type -> (Block) block(type).get())
+                            .collect(java.util.stream.Collectors.toUnmodifiableSet())));
 
     // Les effets des evenements ({@code CustomPotion} de PLuckyBlock). Leur
     // comportement vit dans LuckyWorldEvents (serveur) et LuckyClientEvents (client).
@@ -231,7 +288,18 @@ public final class PalaLucky {
                     .build());
 
     public static final List<DeferredItem<? extends Item>> ORDERED = List.of(
-            PALADIUM_LUCKY_BLOCK_ITEM, ENDIUM_LUCKY_BLOCK_ITEM, FINDIUM_LUCKY_BLOCK_ITEM);
+            PALADIUM_LUCKY_BLOCK_ITEM, ENDIUM_LUCKY_BLOCK_ITEM, FINDIUM_LUCKY_BLOCK_ITEM,
+            BLACK_LUCKY_BLOCK_ITEM,
+            MARCH_LUCKY_BLOCK_ITEM,
+            EASTER_LUCKY_BLOCK_ITEM,
+            MAY_LUCKY_BLOCK_ITEM,
+            JUNE_LUCKY_BLOCK_ITEM,
+            JULY_LUCKY_BLOCK_ITEM,
+            AUGUST_LUCKY_BLOCK_ITEM,
+            SEPTEMBER_LUCKY_BLOCK_ITEM,
+            HALLOWEEN_LUCKY_BLOCK_ITEM,
+            NOVEMBER_LUCKY_BLOCK_ITEM,
+            CHRISTMAS_LUCKY_BLOCK_ITEM);
 
     private PalaLucky() {
     }
@@ -255,6 +323,17 @@ public final class PalaLucky {
             case PALADIUM -> PALADIUM_LUCKY_BLOCK_ITEM;
             case ENDIUM -> ENDIUM_LUCKY_BLOCK_ITEM;
             case FINDIUM -> FINDIUM_LUCKY_BLOCK_ITEM;
+            case BLACK -> BLACK_LUCKY_BLOCK_ITEM;
+            case MARCH -> MARCH_LUCKY_BLOCK_ITEM;
+            case EASTER -> EASTER_LUCKY_BLOCK_ITEM;
+            case MAY -> MAY_LUCKY_BLOCK_ITEM;
+            case JUNE -> JUNE_LUCKY_BLOCK_ITEM;
+            case JULY -> JULY_LUCKY_BLOCK_ITEM;
+            case AUGUST -> AUGUST_LUCKY_BLOCK_ITEM;
+            case SEPTEMBER -> SEPTEMBER_LUCKY_BLOCK_ITEM;
+            case HALLOWEEN -> HALLOWEEN_LUCKY_BLOCK_ITEM;
+            case NOVEMBER -> NOVEMBER_LUCKY_BLOCK_ITEM;
+            case CHRISTMAS -> CHRISTMAS_LUCKY_BLOCK_ITEM;
         };
     }
 
@@ -263,6 +342,17 @@ public final class PalaLucky {
             case PALADIUM -> PALADIUM_LUCKY_BLOCK;
             case ENDIUM -> ENDIUM_LUCKY_BLOCK;
             case FINDIUM -> FINDIUM_LUCKY_BLOCK;
+            case BLACK -> BLACK_LUCKY_BLOCK;
+            case MARCH -> MARCH_LUCKY_BLOCK;
+            case EASTER -> EASTER_LUCKY_BLOCK;
+            case MAY -> MAY_LUCKY_BLOCK;
+            case JUNE -> JUNE_LUCKY_BLOCK;
+            case JULY -> JULY_LUCKY_BLOCK;
+            case AUGUST -> AUGUST_LUCKY_BLOCK;
+            case SEPTEMBER -> SEPTEMBER_LUCKY_BLOCK;
+            case HALLOWEEN -> HALLOWEEN_LUCKY_BLOCK;
+            case NOVEMBER -> NOVEMBER_LUCKY_BLOCK;
+            case CHRISTMAS -> CHRISTMAS_LUCKY_BLOCK;
         };
     }
 
@@ -279,5 +369,7 @@ public final class PalaLucky {
         ATTACHMENTS.register(modBus);
         LuckyItems.register(modBus);
         LuckyGadgets.register(modBus);
+        SeasonItems.register(modBus);
+        SeasonEffects.register(modBus);
     }
 }

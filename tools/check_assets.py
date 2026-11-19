@@ -38,13 +38,14 @@ EXPECTED_PNG = (16, 16)
 # enregistre un bloc.
 ITEM_FACTORIES = ("registerSimpleItem", "registerItem", "simple", "seed", "planter",
                   "sword", "pickaxe", "axe", "shovel", "hoe", "armor", "stick", "ring", "amulet",
-                  # Les gadgets des lucky blocks (LuckyGadgets).
-                  "gadgetItem")
+                  # Les gadgets des lucky blocks (LuckyGadgets) et les objets saisonniers (SeasonItems).
+                  "gadgetItem", "seasonItem")
 BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "crop", "soil",
                    # Les objets de defense (chapitre 22) : obsidiennes piegees, a spike, enclumes.
                    "effect", "spikeObsidian", "anvil",
-                   # Les gadgets des lucky blocks (LuckyGadgets) : chacun a son objet.
-                   "gadgetBlock")
+                   # Les gadgets des lucky blocks (LuckyGadgets) et les blocs saisonniers (SeasonItems) :
+                   # chacun a son objet.
+                   "gadgetBlock", "seasonBlock")
 
 # Les blocs sans item : on les obtient en semant, comme le ble vanilla. Ils
 # n'ont donc ni definition d'item ni modele d'item, et c'est normal.

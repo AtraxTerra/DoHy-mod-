@@ -125,9 +125,8 @@ public class LuckyPassScreen extends UiScreen implements ViewScreen<LuckyPassVie
             return column < wins.size() ? wins.get(column) : -1;
         }
         RandomSource random = RandomSource.create(view.spin() * 977L + column * 131L + index * 17L);
-        int roll = random.nextInt(9);
-        return roll < 2 ? -1 : roll < 5 ? LuckyType.PALADIUM.ordinal() : roll < 8 ? LuckyType.FINDIUM.ordinal()
-                : LuckyType.ENDIUM.ordinal();
+        // Les cases qui defilent suivent le tirage du Lucky Pass, saisonniers compris.
+        return random.nextInt(9) < 2 ? -1 : LuckyType.draw(random).ordinal();
     }
 
     @Override
@@ -233,7 +232,7 @@ public class LuckyPassScreen extends UiScreen implements ViewScreen<LuckyPassVie
         }
         for (LuckyType type : LuckyType.values()) {
             if (counts[type.ordinal()] > 0) {
-                won.add(counts[type.ordinal()] + " " + type.label());
+                won.add(counts[type.ordinal()] + " " + type.shortLabel());
             }
         }
         g.centered(Ui.BOLD, won.isEmpty() ? "Rien cette fois" : "Gagne : " + String.join(" + ", won), middle, top + 2,

@@ -21,9 +21,9 @@ import java.util.Map;
  * <p>Tous les evenements ne sont pas encore portes. Pour que la part des bons et
  * des mauvais reste celle de Paladium, le bonus des bons est recalcule sur ce qui
  * existe : avec les 111 evenements du lucky block en paladium, bonus compris,
- * 51,48 % des tirages sont bons ; avec les 130 du findium, 44,38 %. Les chiffres
- * viennent de {@code tools/lucky_assets.py --stats}. A chaque lot porte, le
- * calcul suit.
+ * 51,48 % des tirages sont bons ; avec les 130 du findium, 44,38 %. Chaque lucky
+ * block saisonnier a sa propre part. Les chiffres viennent de
+ * {@code tools/lucky_assets.py --stats}. A chaque lot porte, le calcul suit.
  */
 public final class LuckyEvents {
 
@@ -53,6 +53,7 @@ public final class LuckyEvents {
             FindiumContent.register(catalog);
             LuckyItemEvents.register(catalog);
             ClassicContent.register(catalog);
+            MarchEvents.register(catalog);
             events = Collections.unmodifiableMap(catalog.map);
         }
         return events;
@@ -96,7 +97,18 @@ public final class LuckyEvents {
         double target = switch (type) {
             case PALADIUM -> PALADIUM_GOOD;
             case FINDIUM -> FINDIUM_GOOD;
-            case ENDIUM -> 1.0d;
+            case ENDIUM, HALLOWEEN -> 1.0d;
+            // Les lucky blocks saisonniers, sur tous leurs evenements de PalaMod (--stats).
+            case BLACK -> 0.9001d;
+            case MARCH -> 0.7772d;
+            case EASTER -> 0.6174d;
+            case MAY -> 0.6886d;
+            case JUNE -> 0.5406d;
+            case JULY -> 0.7340d;
+            case AUGUST -> 0.6217d;
+            case SEPTEMBER -> 0.7064d;
+            case NOVEMBER -> 0.3733d;
+            case CHRISTMAS -> 0.7406d;
         };
         if (good <= 0.0d || bad <= 0.0d || target >= 1.0d) {
             return PASS_BONUS;
@@ -159,6 +171,12 @@ public final class LuckyEvents {
         /** Un evenement du lucky block en findium, et de lui seul. */
         public void findium(String id, String name, String icon, boolean bad, int rarity, LuckyEvent.Action action) {
             add(new LuckyEvent(id, name, icon, bad, rarity, EnumSet.of(LuckyType.FINDIUM), action));
+        }
+
+        /** Un evenement d'un lucky block saisonnier (le noir, ceux des mois), et de lui seul. */
+        public void season(LuckyType type, String id, String name, String icon, boolean bad, int rarity,
+                           LuckyEvent.Action action) {
+            add(new LuckyEvent(id, name, icon, bad, rarity, EnumSet.of(type), action));
         }
 
         private void add(LuckyEvent event) {

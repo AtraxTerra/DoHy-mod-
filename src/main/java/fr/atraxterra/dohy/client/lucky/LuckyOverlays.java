@@ -37,6 +37,8 @@ public final class LuckyOverlays {
     private static final Identifier CAT = texture("cat");
     /** 404 Not found : la texture manquante, a moitie transparente, sur tout l'ecran. */
     private static final Identifier MISSING = texture("missing");
+    /** Les etoiles de « La tete dans les etoiles » ({@code StarRenderListener}). */
+    private static final Identifier STARS = texture("stars");
     /** Les filtres sont des aplats : quelques pixels suffisent, etires sur tout l'ecran. */
     private static final int FILTER_SIZE = 16;
     /** Le chat dessine, et le rapport de l'image de PalaMod (1030 / 887). */
@@ -85,6 +87,9 @@ public final class LuckyOverlays {
                             FILTER_SIZE, FILTER_SIZE, FILTER_SIZE);
                 }
             }
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.STAR)) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, STARS, 0, 0, 0.0f, 0.0f, width, height, 512, 256, 512, 256);
         }
         if (player.hasEffect(PalaLucky.CAT)) {
             int catWidth = width / 2;

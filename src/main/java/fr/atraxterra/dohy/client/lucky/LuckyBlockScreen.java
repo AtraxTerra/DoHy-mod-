@@ -172,7 +172,7 @@ public class LuckyBlockScreen extends UiScreen implements ViewScreen<LuckyBlockV
         long now = System.currentTimeMillis();
         tick(now);
         Paint p = g.paint();
-        int accent = type().color();
+        int accent = type().accent();
 
         // Le panneau, et la lueur du type en haut a gauche.
         p.shadow(LEFT + 6, TOP + 10, WIDTH - 12, HEIGHT - 8, 18, Paint.alpha(0xFF000000, 0.55f));
@@ -209,7 +209,7 @@ public class LuckyBlockScreen extends UiScreen implements ViewScreen<LuckyBlockV
     }
 
     private void drawMachine(UiGraphics g, Paint p, long now) {
-        int accent = type().color();
+        int accent = type().accent();
         float payline = MACHINE_Y + MACHINE_H / 2.0f;
         if (done()) {
             float pulse = 0.5f + 0.5f * (float) Math.sin(now / 180.0d);

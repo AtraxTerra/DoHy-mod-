@@ -150,6 +150,9 @@ public final class PalaArmorMaterials {
     /** Le masque de bal (a la place du casque de « Squid Game ») : un casque de cuir pour l'allure. */
     public static final ArmorMaterial PARTY_MASK = material("party_mask", ArmorMaterials.LEATHER,
             SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
+    /** Le casque des etoiles du lucky block de mars ({@code ItemStarHelmet}) : du paladium. */
+    public static final ArmorMaterial STAR_HELMET = material("star_helmet", PALADIUM, SoundEvents.ARMOR_EQUIP_IRON,
+            PalaTags.REPAIRS_NOTHING);
 
     private PalaArmorMaterials() {
     }

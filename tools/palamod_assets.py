@@ -4354,7 +4354,7 @@ def main():
     # seul tenant. Sans eux, ni Protection ni Tranchant ne s'y appliqueraient.
     tag("minecraft/tags/item/head_armor.json", ["%s:%s" % (NS, name) for name in (
         "pig_helmet", "cave_helmet", "invisible_helmet", "fake_endium_helmet", "balaclava_helmet",
-        "party_mask")])
+        "party_mask", "star_helmet")])
     tag("minecraft/tags/item/chest_armor.json", ["%s:%s" % (NS, name) for name in (
         "pig_chestplate", "invisible_chestplate", "fake_endium_chestplate", "jetpack")])
     tag("minecraft/tags/item/leg_armor.json", ["%s:%s" % (NS, name) for name in (

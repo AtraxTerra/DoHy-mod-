@@ -49,14 +49,28 @@ CATALOG = os.path.join(ROOT, "tools", "data", "lucky_events.json")
 # Les fichiers ou sont declares les evenements portes (c.classic / c.findium).
 SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEvents.java", "TrickEvents.java",
            "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
-           "LuckyItemEvents.java", "ClassicContent.java")
+           "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java")
 NS = "palamod"
 
 TYPES = {
     "paladium": ("Lucky Block en paladium", "Paladium Lucky Block"),
     "endium": ("Lucky Block en endium", "Endium Lucky Block"),
     "findium": ("Lucky Block en findium", "Findium Lucky Block"),
+    # Les lucky blocks saisonniers (LuckyType.BLACK, MARCH...), dans l'ordre de l'enum.
+    "black": ("Lucky Block noir", "Black Lucky Block"),
+    "march": ("Lucky Block de mars", "March Lucky Block"),
+    "easter": ("Lucky Block de Paques", "Easter Lucky Block"),
+    "may": ("Lucky Block de mai", "May Lucky Block"),
+    "june": ("Lucky Block de juin", "June Lucky Block"),
+    "july": ("Lucky Block de juillet", "July Lucky Block"),
+    "august": ("Lucky Block d'aout", "August Lucky Block"),
+    "september": ("Lucky Block de septembre", "September Lucky Block"),
+    "halloween": ("Lucky Block d'Halloween", "Halloween Lucky Block"),
+    "november": ("Lucky Block de novembre", "November Lucky Block"),
+    "christmas": ("Lucky Block de Noel", "Christmas Lucky Block"),
 }
+# Le seul bloc dont l'image n'a pas le nom du type dans le jar.
+TYPE_TEXTURES = {"christmas": "christmas_luckyblock.png"}
 
 # Les effets des evenements : nom francais (lang de PalaMod), anglais, image d'evenement.
 EFFECTS = {
@@ -94,6 +108,10 @@ EFFECTS = {
     "tombe": ("Ton heure a sonne", "Your Time Has Come", "tombe"),
     "sugar": ("Trop de sucre", "Sugar Rush", "soda_pop"),
     "giant": ("Geant", "Giant", "champignon_geant"),
+    # Lucky blocks saisonniers (SeasonEffects).
+    "star": ("La tete dans les etoiles", "Head in the Stars", "march/head_in_stars"),
+    "no_oxygen": ("Plus d'oxygene", "No Oxygen", "march/no_oxygen"),
+    "jupiter_gravity": ("Gravite de Jupiter", "Jupiter Gravity", "march/astronaut_training"),
 }
 
 # Les filtres d'ecran (EventsManager.drawFilter) : des aplats, aux couleurs de
@@ -163,6 +181,7 @@ EQUIPMENT = {
     "fake_endium": {"humanoid": ("endium", None), "humanoid_leggings": ("endium", None)},
     "jetpack": {"humanoid": ("jetpack", "models/jetpack_layer_1.png")},
     "party_mask": {"humanoid": ("party_mask", None)},
+    "star_helmet": {"humanoid": ("star_helmet", "armors/star_helmet.png")},
 }
 # Sur le cote des AirMin portees, une petite marque sombre (une signature de marque) :
 # effacee, la toile reprend sa couleur.
@@ -270,6 +289,37 @@ GADGET_BLOCKS = {
     "tomb": ("box", {"all": "minecraft:block/polished_andesite", "box": [1, 0, 4, 15, 15, 12]}, None, "Tombe",
              "Tomb"),
 }
+# Les objets des lucky blocks saisonniers (SeasonItems), comme GADGET_ITEMS : texture du jar,
+# texture du mod, tenu en main, noms. Ils sont ajoutes a GADGET_ITEMS, qui fait le reste.
+SEASON_ITEMS = {
+    # Mars.
+    "star_helmet": ("items/star_helmet.png", "star_helmet", False, "Casque des etoiles", "Star Helmet"),
+    "galactic_pile": ("items/galactic_pile.png", "galactic_pile", False, "Pile galactique", "Galactic Battery"),
+    "moon_piece": ("items/moon_piece.png", "moon_piece", False, "Morceau de lune", "Moon Piece"),
+    "supersonic_rocket": ("items/supersonic_rocket.png", "supersonic_rocket", False, "Fusee supersonique",
+                          "Supersonic Rocket"),
+    "splash_potion_mars_gravity": ("items/splash_potion_mars_gravity.png", "splash_potion_mars_gravity", False,
+                                   "Potion de gravite martienne", "Mars Gravity Potion"),
+    "splash_potion_moon_gravity": ("items/splash_potion_moon_gravity.png", "splash_potion_moon_gravity", False,
+                                   "Potion de gravite lunaire", "Moon Gravity Potion"),
+    "splash_potion_jupiter_gravity": ("items/splash_potion_jupiter_gravity.png", "splash_potion_jupiter_gravity",
+                                      False, "Potion de gravite de Jupiter", "Jupiter Gravity Potion"),
+    "surviving_stone": ("items/survivingstone.png", "surviving_stone", False, "Pierre de survie", "Surviving Stone"),
+}
+SEASON_BLOCKS = {
+    "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),
+}
+GADGET_ITEMS.update(SEASON_ITEMS)
+GADGET_BLOCKS.update(SEASON_BLOCKS)
+# Les recettes des objets saisonniers (le casque des etoiles de « Plus d'oxygene »).
+SEASON_RECIPES = {
+    "star_helmet": {"type": "minecraft:crafting_shaped", "category": "equipment", "pattern": ["IGI", "I I"],
+                    "key": {"I": "minecraft:iron_ingot", "G": "minecraft:glowstone"},
+                    "result": {"id": "palamod:star_helmet", "count": 1}},
+}
+# Les images d'ecran copiees du jar : textures/gui/lucky/overlay/<nom>.png.
+SEASON_OVERLAYS = {"stars": "ui/march/head_in_stars/head_in_stars.png"}
+
 # Les seize teintes de la lampe coloree (getRenderColor), dans l'ordre de ses couleurs.
 LAMP_TINTS = [0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFF7D00, 0xFF7D7D, 0x7DFF7D,
               0x7D00FF, 0x7DFF00, 0x7D7DFF, 0x00FF7D, 0xFF007D, 0xBEBEBE]
@@ -736,8 +786,8 @@ DRAWN_BLOCKS = {
 def ported():
     """Les evenements des sources Java : (genre, id, nom, image, malus, rarete)."""
     events = []
-    pattern = re.compile(r'c\.(classic|findium)\(\s*([A-Z_]+|"[^"]+")\s*,\s*"([^"]*)"\s*,\s*"([^"]*)"\s*,'
-                         r'\s*(true|false)\s*,\s*(\d+)')
+    pattern = re.compile(r'c\.(classic|findium|season\(LuckyType\.[A-Z]+)\s*[(,]\s*([A-Z_]+|"[^"]+")\s*,'
+                         r'\s*"([^"]*)"\s*,\s*"([^"]*)"\s*,\s*(true|false)\s*,\s*(\d+)')
     constants = {}
     for name in SOURCES:
         path = os.path.join(JAVA, name)
@@ -746,6 +796,8 @@ def ported():
             constants[key] = value
         for kind, ident, label, icon, bad, rarity in pattern.findall(text):
             ident = constants.get(ident, ident.strip('"'))
+            # c.season(LuckyType.MARCH, ...) : le genre est le type, en minuscules.
+            kind = kind.split(".")[-1].lower() if kind.startswith("season") else kind
             events.append((kind, ident, label, icon, bad == "true", int(rarity)))
     return events
 
@@ -836,6 +888,8 @@ def box_model(textures, box):
 
 def gadget_outputs(put):
     """Blocs, objets, tableaux et noms du cinquieme lot."""
+    for name, recipe in SEASON_RECIPES.items():
+        put(os.path.join(DATA, "recipe", name + ".json"), recipe)
     def model(name, payload):
         put(os.path.join(ASSETS, "models", "block", name + ".json"), payload)
 
@@ -988,8 +1042,12 @@ def textures(jar, events):
     for folder in (block_dir, gui, icons, effects):
         os.makedirs(folder, exist_ok=True)
     for key in TYPES:
-        Image.open(os.path.join(source, "blocks", "%s_lucky_block.png" % key)).convert("RGBA").save(
-            os.path.join(block_dir, "%s_lucky_block.png" % key))
+        image = Image.open(os.path.join(source, "blocks", TYPE_TEXTURES.get(key, "%s_lucky_block.png" % key))).convert(
+            "RGBA")
+        # Les blocs du mois sont dessines en 64 ou 128 pixels : ramenes a 16, comme les autres.
+        if image.size != (16, 16):
+            image = image.resize((16, 16), Image.BOX)
+        image.save(os.path.join(block_dir, "%s_lucky_block.png" % key))
     frame = Image.open(os.path.join(source, "gui", "LuckyBlock", "minecraft", "foreground.png")).convert("RGBA")
     frame.resize((frame.width // 2, frame.height // 2), Image.LANCZOS).save(os.path.join(gui, "foreground.png"))
     Image.open(os.path.join(source, "gui", "LuckyBlock", "minecraft", "unknown.png")).convert("RGBA").save(
@@ -997,12 +1055,19 @@ def textures(jar, events):
     Image.open(os.path.join(source, "gui", "LuckyPass", "minecraft", "empty.png")).convert("RGBA").save(
         os.path.join(gui, "empty.png"))
     folder = os.path.join(source, "gui", "LuckyBlock", "events")
-    available = {name.lower(): name for name in os.listdir(folder) if name.endswith(".png")}
+    # Les images des evenements du mois sont rangees par mois (march/asteroid_rain).
+    available = {}
+    for root, _dirs, names in os.walk(folder):
+        for name in names:
+            if name.endswith(".png"):
+                relative = os.path.relpath(os.path.join(root, name), folder).replace(os.sep, "/")
+                available.setdefault(relative.lower(), relative)
     wanted = {icon for _kind, _ident, _label, icon, _bad, _rarity in events}
     wanted |= {icon for _fr, _en, icon in EFFECTS.values()}
     drawn = {}
     for icon in sorted(wanted):
         target = os.path.join(icons, icon + ".png")
+        os.makedirs(os.path.dirname(target), exist_ok=True)
         if icon + ".png" in available:
             image = square(Image.open(os.path.join(folder, available[icon + ".png"])).convert("RGBA"))
         elif icon in ALIASES:
@@ -1106,6 +1171,10 @@ def gadget_textures(jar):
     os.makedirs(paintings, exist_ok=True)
     for name, width, height, u, v in PAINTINGS:
         sheet.crop((u, v, u + width, v + height)).save(os.path.join(paintings, "lucky_%s.png" % name))
+    overlay = os.path.join(ASSETS, "textures", "gui", "lucky", "overlay")
+    os.makedirs(overlay, exist_ok=True)
+    for name, path in SEASON_OVERLAYS.items():
+        Image.open(os.path.join(source, path)).convert("RGBA").save(os.path.join(overlay, name + ".png"))
     # Le masque de bal porte : un loup violet borde d'or sur les yeux (calque du chapeau).
     layer = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
     gold, purple, dark = (232, 186, 46, 255), (120, 50, 170, 255), (60, 20, 90, 255)
@@ -1194,7 +1263,7 @@ def stats(events):
     catalog = json.load(open(CATALOG, encoding="utf-8"))
     ids = {ident for _kind, ident, _label, _icon, _bad, _rarity in events}
     print("%d evenements portes sur %d" % (len(ids), len(catalog)))
-    for key in ("PALADIUM", "ENDIUM", "FINDIUM"):
+    for key in [key.upper() for key in TYPES]:
         pool = [event for event in catalog if key in event["types"]]
         good = sum(1.0 / event["rarity"] for event in pool if not event["bad"])
         bad = sum(1.0 / event["rarity"] for event in pool if event["bad"])
@@ -1202,7 +1271,7 @@ def stats(events):
         mine = [event for event in pool if event["id"] in ids]
         my_good = sum(1.0 / event["rarity"] for event in mine if not event["bad"])
         my_bad = sum(1.0 / event["rarity"] for event in mine if event["bad"])
-        print("%-8s %3d/%3d portes  bons %.4f (Lucky Pass compris)  masse couverte : bons %4.1f %%, malus %4.1f %%"
+        print("%-9s %3d/%3d portes  bons %.4f (Lucky Pass compris)  masse couverte : bons %5.1f %%, malus %5.1f %%"
               % (key, len(mine), len(pool), share, 100.0 * my_good / good if good else 0.0,
                  100.0 * my_bad / bad if bad else 0.0))
 
@@ -1223,15 +1292,27 @@ def main():
         seen.add(ident)
         if any(ord(char) > 127 for char in label):
             stale.append("nom avec accent : %s (%s)" % (ident, label))
-        if not re.fullmatch(r"[a-z0-9_.\-]+", icon):
+        if not re.fullmatch(r"[a-z0-9_.\-]+(/[a-z0-9_.\-]+)?", icon):
             stale.append("image au nom invalide : %s (%s)" % (ident, icon))
         known = catalog.get(ident)
         if known is None:
             stale.append("evenement inconnu de PalaMod : %s" % ident)
         elif known["rarity"] != rarity or known["bad"] != bad:
             stale.append("%s : rarete ou malus different de PalaMod (%s, %s)" % (ident, known["rarity"], known["bad"]))
-        elif (kind == "findium") != ("FINDIUM" in known["types"]):
+        elif kind in ("classic", "findium") and (kind == "findium") != ("FINDIUM" in known["types"]):
             stale.append("%s : pas le bon lucky block" % ident)
+        elif kind not in ("classic", "findium") and known["types"] != [kind.upper()]:
+            stale.append("%s : pas le bon lucky block (%s)" % (ident, ", ".join(known["types"])))
+    # Les objets nommes dans le code des evenements (SeasonKit.stack("palamod:...", n)) : chaque nom
+    # doit exister, sans quoi l'objet donne serait de l'air.
+    for name in os.listdir(JAVA):
+        if not name.endswith(".java"):
+            continue
+        text = open(os.path.join(JAVA, name), encoding="utf-8").read()
+        for namespace, item in re.findall(r'stack\("([a-z_]+):([a-z0-9_/]+)"', text):
+            if namespace != "minecraft" and not os.path.exists(os.path.join(
+                    ROOT, "src", "main", "resources", "assets", namespace, "items", item + ".json")):
+                stale.append("%s : objet inconnu %s:%s" % (name, namespace, item))
     for path, content in outputs().items():
         current = open(path, encoding="utf-8").read() if os.path.exists(path) else None
         if current == content:
@@ -1265,7 +1346,8 @@ def main():
     needed += ["textures/gui/lucky/%s.png" % name for name in ("foreground", "unknown", "empty")]
     needed += ["textures/gui/lucky/events/%s.png" % icon for _k, _i, _l, icon, _b, _r in events]
     needed += ["textures/mob_effect/%s.png" % effect for effect in EFFECTS]
-    needed += ["textures/gui/lucky/overlay/%s.png" % name for name in list(FILTERS) + ["cat", "missing"]]
+    needed += ["textures/gui/lucky/overlay/%s.png" % name
+               for name in list(FILTERS) + ["cat", "missing"] + list(SEASON_OVERLAYS)]
     needed += ["textures/item/%s.png" % texture for _s, texture, _h, _f, _e in GADGET_ITEMS.values()]
     needed += ["textures/painting/lucky_%s.png" % name for name, _w, _h, _u, _v in PAINTINGS]
     needed += ["textures/block/lucky/lamp_%d_%s.png" % (index, state) for index in range(16) for state in ("on", "off")]
