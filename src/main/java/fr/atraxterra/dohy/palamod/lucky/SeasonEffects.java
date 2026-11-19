@@ -96,6 +96,21 @@ public final class SeasonEffects {
     public static final DeferredHolder<MobEffect, LuckyEffect> IMMUNE =
             EFFECTS.register("immune", () -> new LuckyEffect(MobEffectCategory.BENEFICIAL, 0xE8E8E8));
 
+    // -- Aout -----------------------------------------------------------------------------------
+
+    /** {@code PLuckyBlock.SUNBURN} : au soleil, ca brule. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> SUNBURN =
+            EFFECTS.register("sunburn", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xFF5A3C));
+    /** {@code PLuckyBlock.BAKING} : chaque piece d'armure portee chauffe. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> BAKING =
+            EFFECTS.register("baking", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xC86E1E));
+    /** {@code PLuckyBlock.SUMMER_BODY} : plus fort et plus rapide. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> SUMMER_BODY = EFFECTS.register("summer_body",
+            () -> modified(MobEffectCategory.BENEFICIAL, 0xF5C542, "summer_body", 0.2d, Attributes.MOVEMENT_SPEED));
+    /** « Faut pas en faire tout un foin » : de la paille plein l'ecran ({@code SCMessPacket}). */
+    public static final DeferredHolder<MobEffect, LuckyEffect> MESS =
+            EFFECTS.register("mess", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xD9C35A));
+
     private SeasonEffects() {
     }
 
@@ -134,6 +149,14 @@ public final class SeasonEffects {
                 && isBoat(event.getEntityBeingMounted())) {
             event.setCanceled(true);
             LuckyWorld.bar(player, "Tu ne peux plus utiliser de bateau.", net.minecraft.ChatFormatting.RED);
+        }
+    }
+
+    /** « Reste hydrate » : une bouteille bue compte. */
+    @SubscribeEvent
+    public static void onUseFinish(net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent.Finish event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            AugustEvents.drank(player, event.getItem());
         }
     }
 
@@ -186,6 +209,24 @@ public final class SeasonEffects {
             if (level.getBlockState(behind).isAir() && level.getBlockState(behind.below()).isFaceSturdy(level,
                     behind.below(), net.minecraft.core.Direction.UP)) {
                 LuckyWorld.place(player, level, behind, net.minecraft.world.level.block.Blocks.FIRE.defaultBlockState());
+            }
+        }
+        if (player.hasEffect(SUNBURN) && player.tickCount % 40 == 0 && level.isBrightOutside()
+                && level.canSeeSky(player.blockPosition().above())) {
+            player.hurtServer(level, level.damageSources().onFire(), 1.0f);
+        }
+        if (player.hasEffect(BAKING) && player.tickCount % 20 == 0) {
+            int pieces = 0;
+            for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS,
+                    EquipmentSlot.FEET}) {
+                if (!player.getItemBySlot(slot).isEmpty()) {
+                    pieces++;
+                }
+            }
+            if (pieces > 0) {
+                player.hurtServer(level, level.damageSources().hotFloor(), pieces);
+                level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 1.0d, player.getZ(), pieces * 2,
+                        0.3d, 0.5d, 0.3d, 0.01d);
             }
         }
         if (player.hasEffect(SCURVY) && player.tickCount % 600 == 0) {

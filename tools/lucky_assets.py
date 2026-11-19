@@ -52,7 +52,7 @@ SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEve
            "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
            "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
            "EasterEvents.java", "MayEvents.java", "JuneEvents.java",
-           "JulyEvents.java")
+           "JulyEvents.java", "AugustEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -128,6 +128,10 @@ EFFECTS = {
     "scurvy": ("Scorbut", "Scurvy", "july/scorbut"),
     "pirate_talk": ("Parler comme un pirate", "Pirate Talk", "july/talk_like_pirate"),
     "immune": ("Invulnerabilite", "Immunity", "july/red_cross"),
+    "sunburn": ("Coup de soleil", "Sunburn", "august/sunburn"),
+    "baking": ("Cuisson", "Baking", "august/armor_bake"),
+    "summer_body": ("Summer body", "Summer Body", "august/summer_body_dilemma"),
+    "mess": ("Tout un foin", "Hay Mess", "august/dont_make_mess"),
     "no_forward": ("Aucune avancee", "No Progress", "may/aucune_avancee"),
 }
 
@@ -140,6 +144,8 @@ FILTERS = {
     "pink": (255, 120, 190, 90),
     # « Cinema muet » : un vieux film, sepia.
     "sepia": (112, 88, 60, 110),
+    # « Faut pas en faire tout un foin » : de la paille partout.
+    "hay": (214, 184, 74, 150),
 }
 
 LANG = {
@@ -374,6 +380,14 @@ SEASON_ITEMS = {
     "treasure_map": ("items/treasure_map.png", "treasure_map", False, "Carte au tresor", "Treasure Map"),
     "invulnerability_potion": ("items/invulnerability_potion.png", "invulnerability_potion", False,
                                "Potion d'invulnerabilite", "Invulnerability Potion"),
+    # Aout.
+    "ice_cream": ("items/ice_cream.png", "ice_cream", False, "Glace", "Ice Cream"),
+    "double_ice_cream": ("items/double_ice_cream.png", "double_ice_cream", False, "Glace deux boules",
+                         "Double Ice Cream"),
+    "solar_cream": ("items/solar_cream.png", "solar_cream", False, "Creme solaire", "Sun Cream"),
+    "volley_ball": ("items/volley_ball.png", "volley_ball", False, "Ballon de volley", "Volleyball"),
+    "portable_volley_court": ("items/portable_volley_court.png", "portable_volley_court", False,
+                              "Terrain de volley portatif", "Portable Volleyball Court"),
 }
 SEASON_BLOCKS = {
     "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),
@@ -398,6 +412,12 @@ SEASON_BLOCKS = {
     "decrypted_computer": ("cube_front", {"front": "draw:computer_open", "back": "minecraft:block/iron_block",
                                           "side": "minecraft:block/iron_block"}, "self", "Ordinateur decrypte",
                            "Decrypted Computer"),
+    "lead_block": ("cube_all", {"all": "jar:blocks/lead.png"}, "self", "Bloc de plomb", "Block of Lead"),
+    "ventilator": ("fan", {"front": "jar:blocks/ventilator_front.png", "side": "jar:blocks/ventilator_side.png"}, "self",
+                   "Ventilateur", "Fan"),
+    "treadmill": ("cube_bottom_top", {"top": "jar:blocks/treadmill.png", "bottom": "minecraft:block/iron_block",
+                                      "side": "minecraft:block/iron_block"}, "self", "Tapis de course", "Treadmill"),
+    "quicksand": ("cube_all", {"all": "minecraft:block/sand"}, None, "Sable mouvant", "Quicksand"),
 }
 GADGET_ITEMS.update(SEASON_ITEMS)
 GADGET_BLOCKS.update(SEASON_BLOCKS)
@@ -1103,6 +1123,14 @@ def gadget_outputs(put):
                 model(name + suffix, {"parent": "minecraft:block/cube_all",
                                       "textures": {"all": block_texture(textures["on" if lit else "off"])}})
             states(name, {"lit=false": {"model": ref}, "lit=true": {"model": ref + "_on"}})
+            item_model(name, {"parent": ref})
+        elif kind == "fan":
+            model(name, {"parent": "minecraft:block/orientable",
+                         "textures": {"front": block_texture(textures["front"]), "side": block_texture(textures["side"]),
+                                      "top": block_texture(textures["side"])}})
+            states(name, {"facing=%s,lit=%s" % (facing, lit): ({"model": ref, "y": rotation} if rotation
+                                                                else {"model": ref})
+                          for facing, rotation in facings.items() for lit in ("false", "true")})
             item_model(name, {"parent": ref})
         elif kind == "orientable":
             model(name, {"parent": "minecraft:block/orientable",

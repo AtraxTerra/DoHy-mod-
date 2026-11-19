@@ -1168,5 +1168,18 @@
   "item.palamod.invulnerability_potion": "Invulnerability Potion",
   "block.palamod.powder_barrel": "Powder Barrel",
   "block.palamod.encrypted_computer": "Encrypted Computer",
-  "block.palamod.decrypted_computer": "Decrypted Computer"
+  "block.palamod.decrypted_computer": "Decrypted Computer",
+  "effect.palamod.sunburn": "Sunburn",
+  "effect.palamod.baking": "Baking",
+  "effect.palamod.summer_body": "Summer Body",
+  "effect.palamod.mess": "Hay Mess",
+  "item.palamod.ice_cream": "Ice Cream",
+  "item.palamod.double_ice_cream": "Double Ice Cream",
+  "item.palamod.solar_cream": "Sun Cream",
+  "item.palamod.volley_ball": "Volleyball",
+  "item.palamod.portable_volley_court": "Portable Volleyball Court",
+  "block.palamod.lead_block": "Block of Lead",
+  "block.palamod.ventilator": "Fan",
+  "block.palamod.treadmill": "Treadmill",
+  "block.palamod.quicksand": "Quicksand"
 }

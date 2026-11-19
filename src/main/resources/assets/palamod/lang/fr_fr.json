@@ -1168,5 +1168,18 @@
   "item.palamod.invulnerability_potion": "Potion d'invulnerabilite",
   "block.palamod.powder_barrel": "Baril de poudre",
   "block.palamod.encrypted_computer": "Ordinateur crypte",
-  "block.palamod.decrypted_computer": "Ordinateur decrypte"
+  "block.palamod.decrypted_computer": "Ordinateur decrypte",
+  "effect.palamod.sunburn": "Coup de soleil",
+  "effect.palamod.baking": "Cuisson",
+  "effect.palamod.summer_body": "Summer body",
+  "effect.palamod.mess": "Tout un foin",
+  "item.palamod.ice_cream": "Glace",
+  "item.palamod.double_ice_cream": "Glace deux boules",
+  "item.palamod.solar_cream": "Creme solaire",
+  "item.palamod.volley_ball": "Ballon de volley",
+  "item.palamod.portable_volley_court": "Terrain de volley portatif",
+  "block.palamod.lead_block": "Bloc de plomb",
+  "block.palamod.ventilator": "Ventilateur",
+  "block.palamod.treadmill": "Tapis de course",
+  "block.palamod.quicksand": "Sable mouvant"
 }

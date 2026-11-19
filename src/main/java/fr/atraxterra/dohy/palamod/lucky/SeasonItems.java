@@ -236,6 +236,39 @@ public final class SeasonItems {
             properties -> new ComputerBlock(properties, true), properties -> properties.strength(2.0f)
                     .sound(SoundType.METAL).lightLevel(state -> 7));
 
+    // -- Aout -----------------------------------------------------------------------------------
+
+    /** {@code BlockLead} : du plomb ; au grand soleil, il finit parfois en or. */
+    public static final DeferredBlock<LeadBlock> LEAD_BLOCK = seasonBlock("lead_block", LeadBlock::new,
+            properties -> properties.strength(4.0f, 6.0f).sound(SoundType.METAL).randomTicks());
+    /** {@code ItemIceCream} : une boule, puis deux ; un peu de vitesse avec. */
+    public static final DeferredItem<IceCreamItem> ICE_CREAM = seasonItem("ice_cream",
+            properties -> new IceCreamItem(properties, 1), properties -> properties.food(
+                    new net.minecraft.world.food.FoodProperties.Builder().nutrition(4).saturationModifier(1.2f)
+                            .alwaysEdible().build()));
+    public static final DeferredItem<IceCreamItem> DOUBLE_ICE_CREAM = seasonItem("double_ice_cream",
+            properties -> new IceCreamItem(properties, 2), properties -> properties.food(
+                    new net.minecraft.world.food.FoodProperties.Builder().nutrition(8).saturationModifier(1.2f)
+                            .alwaysEdible().build()));
+    /** {@code ItemSolarCream} : contre les coups de soleil. */
+    public static final DeferredItem<SolarCreamItem> SOLAR_CREAM = seasonItem("solar_cream", SolarCreamItem::new,
+            properties -> properties.stacksTo(16));
+    /** {@code ItemsRegister.VOLLEY_BALL} : un ballon a lancer, qui rebondit sur les joueurs. */
+    public static final DeferredItem<VolleyBallItem> VOLLEY_BALL = seasonItem("volley_ball", VolleyBallItem::new,
+            properties -> properties.stacksTo(16));
+    /** {@code ItemPortableVolleyCourt} : un terrain de volley, cinq fois. */
+    public static final DeferredItem<VolleyCourtItem> PORTABLE_VOLLEY_COURT = seasonItem("portable_volley_court",
+            VolleyCourtItem::new, properties -> properties.durability(5));
+    /** {@code BlockVentilator} : il souffle devant lui, un clic l'allume ou l'eteint. */
+    public static final DeferredBlock<FanBlock> VENTILATOR = seasonBlock("ventilator", FanBlock::new,
+            properties -> properties.strength(2.0f).sound(SoundType.METAL));
+    /** {@code BlockRunningTreadmill} : monter dessus, c'est le defi du summer body. */
+    public static final DeferredBlock<TreadmillBlock> TREADMILL = seasonBlock("treadmill", TreadmillBlock::new,
+            properties -> properties.strength(2.0f).sound(SoundType.METAL));
+    /** {@code BlocksRegister.QUICKSAND} : on s'y enfonce. */
+    public static final DeferredBlock<QuicksandBlock> QUICKSAND = seasonBlock("quicksand", QuicksandBlock::new,
+            properties -> properties.strength(0.5f).sound(SoundType.SAND).noCollision());
+
     private SeasonItems() {
     }
 
@@ -371,6 +404,19 @@ public final class SeasonItems {
     @SubscribeEvent
     public static void onImpact(ProjectileImpactEvent event) {
         Entity projectile = event.getProjectile();
+        if (projectile.level() instanceof ServerLevel volleyLevel && projectile.getPersistentData().contains(VOLLEY)) {
+            // Le ballon de volley repousse ce qu'il touche, puis retombe ou il est.
+            if (event.getRayTraceResult() instanceof net.minecraft.world.phys.EntityHitResult hit) {
+                Vec3 push = projectile.getDeltaMovement().normalize().scale(0.8d);
+                hit.getEntity().push(push.x, 0.4d, push.z);
+                hit.getEntity().hurtMarked = true;
+            }
+            Vec3 at = event.getRayTraceResult().getLocation();
+            LuckyWorld.drop(volleyLevel, at.x, at.y + 0.2d, at.z, new ItemStack(VOLLEY_BALL.get()));
+            projectile.discard();
+            event.setCanceled(true);
+            return;
+        }
         if (!(projectile.level() instanceof ServerLevel level) || !projectile.getPersistentData().contains(SPLASH)) {
             return;
         }
@@ -849,7 +895,199 @@ public final class SeasonItems {
         }
     }
 
+    /** La glace : une ou deux boules, un peu de vitesse. */
+    public static class IceCreamItem extends Item {
+        private final int scoops;
+
+        public IceCreamItem(Properties properties, int scoops) {
+            super(properties);
+            this.scoops = scoops;
+        }
+
+        @Override
+        public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+            ItemStack left = super.finishUsingItem(stack, level, entity);
+            entity.addEffect(new MobEffectInstance(MobEffects.SPEED, 600 * scoops, scoops - 1));
+            entity.removeEffect(SeasonEffects.SUNBURN);
+            return left;
+        }
+    }
+
+    /** La creme solaire : elle soigne le coup de soleil. */
+    public static class SolarCreamItem extends Item {
+        public SolarCreamItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (!(player instanceof ServerPlayer server)) {
+                return InteractionResult.SUCCESS;
+            }
+            if (!player.hasEffect(SeasonEffects.SUNBURN)) {
+                LuckyWorld.tell(server, "Tu ne peux pas utiliser cet objet : tu n'as pas d'insolation.", ChatFormatting.RED);
+                return InteractionResult.FAIL;
+            }
+            player.removeEffect(SeasonEffects.SUNBURN);
+            player.getItemInHand(hand).consume(1, player);
+            LuckyWorld.tell(server, "La creme solaire te protege.", ChatFormatting.GREEN);
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** Le ballon de volley : il se lance, et repousse ce qu'il touche. */
+    public static class VolleyBallItem extends Item {
+        public VolleyBallItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (level instanceof ServerLevel server) {
+                var ball = new net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball(server, player,
+                        stack.copyWithCount(1));
+                ball.getPersistentData().putBoolean(VOLLEY, true);
+                ball.shootFromRotation(player, player.getXRot(), player.getYRot(), -10.0f, 1.2f, 1.0f);
+                server.addFreshEntity(ball);
+            }
+            stack.consume(1, player);
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    static final String VOLLEY = "dohy_volley";
+
+    /** Le terrain de volley portatif : du sable, un filet, cinq fois. */
+    public static class VolleyCourtItem extends Item {
+        public VolleyCourtItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (player instanceof ServerPlayer server && level instanceof ServerLevel serverLevel) {
+                if (AugustEvents.volleyCourt(server, serverLevel)) {
+                    player.getItemInHand(hand).hurtAndBreak(1, player, hand);
+                    LuckyWorld.tell(server, "Tu as bien pose le terrain de volley !", ChatFormatting.GREEN);
+                } else {
+                    LuckyWorld.tell(server, "Il n'a pas ete possible de poser le terrain.", ChatFormatting.RED);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
     // -- Blocs ----------------------------------------------------------------------------------
+
+    /** Le plomb : au soleil de midi, il lui arrive de devenir de l'or. */
+    public static class LeadBlock extends Block {
+        public LeadBlock(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+            if (level.isBrightOutside() && level.canSeeSky(pos.above()) && random.nextInt(40) == 0) {
+                level.setBlock(pos, Blocks.GOLD_BLOCK.defaultBlockState(), Block.UPDATE_ALL);
+                level.sendParticles(ParticleTypes.WAX_ON, pos.getX() + 0.5d, pos.getY() + 1.0d, pos.getZ() + 0.5d, 10,
+                        0.4d, 0.2d, 0.4d, 0.0d);
+            }
+        }
+    }
+
+    /** Le ventilateur : allume, il repousse ce qui est devant lui, sur six blocs. */
+    public static class FanBlock extends Block {
+        public static final net.minecraft.world.level.block.state.properties.EnumProperty<net.minecraft.core.Direction>
+                FACING = net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
+        public static final net.minecraft.world.level.block.state.properties.BooleanProperty LIT =
+                net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
+
+        public FanBlock(Properties properties) {
+            super(properties);
+            registerDefaultState(defaultBlockState().setValue(FACING, net.minecraft.core.Direction.NORTH)
+                    .setValue(LIT, true));
+        }
+
+        @Override
+        protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<Block,
+                BlockState> builder) {
+            builder.add(FACING, LIT);
+        }
+
+        @Override
+        public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
+            return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        }
+
+        @Override
+        protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                   BlockHitResult hit) {
+            boolean lit = !state.getValue(LIT);
+            level.setBlock(pos, state.setValue(LIT, lit), Block.UPDATE_ALL);
+            if (lit) {
+                level.scheduleTick(pos, this, 2);
+            }
+            if (player instanceof ServerPlayer server) {
+                LuckyWorld.bar(server, lit ? "Ventilateur active" : "Ventilateur desactive",
+                        lit ? ChatFormatting.GREEN : ChatFormatting.RED);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState old, boolean moved) {
+            if (state.getValue(LIT)) {
+                level.scheduleTick(pos, this, 2);
+            }
+        }
+
+        @Override
+        protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+            if (!state.getValue(LIT)) {
+                return;
+            }
+            net.minecraft.core.Direction facing = state.getValue(FACING);
+            AABB area = new AABB(pos).expandTowards(facing.getStepX() * 6.0d, 0.0d, facing.getStepZ() * 6.0d)
+                    .inflate(0.2d, 1.0d, 0.2d);
+            for (Entity entity : level.getEntities((Entity) null, area, entity -> !entity.isSpectator())) {
+                entity.push(facing.getStepX() * 0.08d, 0.0d, facing.getStepZ() * 0.08d);
+                entity.hurtMarked = true;
+            }
+            if (random.nextInt(4) == 0) {
+                level.sendParticles(ParticleTypes.CLOUD, pos.getX() + 0.5d + facing.getStepX() * 0.7d, pos.getY() + 0.5d,
+                        pos.getZ() + 0.5d + facing.getStepZ() * 0.7d, 1, 0.1d, 0.1d, 0.1d, 0.05d);
+            }
+            level.scheduleTick(pos, this, 2);
+        }
+    }
+
+    /** Le tapis de course : poser le pied dessus lance le defi du summer body. */
+    public static class TreadmillBlock extends Block {
+        public TreadmillBlock(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+            if (entity instanceof ServerPlayer player && level instanceof ServerLevel server) {
+                AugustEvents.treadmill(player, server, pos);
+            }
+        }
+    }
+
+    /** Le sable mouvant : on s'y englue et l'on s'enfonce. */
+    public static class QuicksandBlock extends Block {
+        public QuicksandBlock(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
+                                    net.minecraft.world.entity.InsideBlockEffectApplier effects, boolean intersects) {
+            entity.makeStuckInBlock(state, new Vec3(0.25d, 0.05d, 0.25d));
+        }
+    }
 
     /** Le baril de poudre : jusqu'a 64 poudres ; une fleche ou un signal de redstone, et il explose. */
     public static class PowderBarrelBlock extends Block {
