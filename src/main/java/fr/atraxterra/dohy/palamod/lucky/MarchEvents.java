@@ -343,7 +343,7 @@ final class MarchEvents {
     private static void alien(ServerPlayer player, ServerLevel level, BlockPos pos) {
         Vec3 at = Vec3.atBottomCenterOf(SeasonKit.around(player, level, 2, 3));
         SeasonKit.npc(player, level, EntityTypes.ENDERMAN, at, "Alien", 180, (p, alien) -> {
-            if (p.getTags().contains(SEEN_ALIEN)) {
+            if (p.entityTags().contains(SEEN_ALIEN)) {
                 SeasonKit.next(p, "Alien", "Content de te retrouver ! Mon espece est fan de la tienne ! Voici un cadeau"
                         + " qu'un de mes amis m'a transmis pour les humains.", "Recevoir le cadeau", q -> {
                     SeasonKit.give(q, new ItemStack(LuckyGadgets.COLORED_LAMP.get()));
@@ -397,6 +397,7 @@ final class MarchEvents {
         int y = Math.min(250, level.getMaxY() - 8);
         BlockPos center = new BlockPos(player.getBlockX(), y, player.getBlockZ());
         RandomSource random = level.getRandom();
+        BlockState white = SeasonKit.block("white_concrete");
         int placed = 0;
         for (BlockPos at : BlockPos.betweenClosed(center.offset(-7, -4, -7), center.offset(7, 0, 7))) {
             double dx = at.getX() - center.getX();
@@ -405,9 +406,8 @@ final class MarchEvents {
             if (dx * dx + dy * dy + dz * dz > 49.0d) {
                 continue;
             }
-            BlockState state = random.nextInt(6) == 0 ? Blocks.GRAY_CONCRETE.defaultBlockState()
-                    : random.nextInt(3) == 0 ? Blocks.LIGHT_GRAY_CONCRETE.defaultBlockState()
-                    : Blocks.WHITE_CONCRETE.defaultBlockState();
+            BlockState state = random.nextInt(6) == 0 ? SeasonKit.block("gray_concrete")
+                    : random.nextInt(3) == 0 ? SeasonKit.block("light_gray_concrete") : white;
             if (level.getBlockState(at).isAir() && LuckyWorld.place(player, level, at.immutable(), state)) {
                 placed++;
             }
@@ -415,7 +415,7 @@ final class MarchEvents {
         // Les cratere : quelques creux en surface.
         for (int crater = 0; crater < 4; crater++) {
             BlockPos hole = center.offset(random.nextInt(9) - 4, 0, random.nextInt(9) - 4);
-            if (!hole.equals(center) && level.getBlockState(hole).is(Blocks.WHITE_CONCRETE)) {
+            if (!hole.equals(center) && level.getBlockState(hole).is(white.getBlock())) {
                 level.setBlock(hole, Blocks.AIR.defaultBlockState(), 3);
             }
         }

@@ -134,6 +134,15 @@ public final class SeasonKit {
                 net.minecraft.resources.Identifier.parse(id)), count);
     }
 
+    /**
+     * Un bloc du jeu par son nom ({@code white_concrete}) : les blocs de couleur n'ont plus de
+     * constante chacun dans {@code Blocks}.
+     */
+    public static BlockState block(String id) {
+        return net.minecraft.core.registries.BuiltInRegistries.BLOCK.getValue(
+                net.minecraft.resources.Identifier.parse(id.contains(":") ? id : "minecraft:" + id)).defaultBlockState();
+    }
+
     /** Un objet renomme, avec ses lignes de description. */
     public static ItemStack named(ItemStack stack, String name, String... lore) {
         stack.set(DataComponents.CUSTOM_NAME, Component.literal(name).withStyle(style -> style.withItalic(false)));
