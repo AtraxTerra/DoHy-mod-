@@ -799,7 +799,8 @@ passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, c
   **six box** sont dans des niches à leur couleur (améthyste, saharia, paladium à l'ouest ;
   halloween, trixium, endium à l'est) : un clic avec sa clé ouvre une box, comme chez soi.
 - De part et d'autre de l'atrium, deux **travées de bornes** : COMMERCE à l'est (shop, boutique,
-  marché), CARRIÈRE à l'ouest (banque, contrats, musée). Une borne ouvre le même écran que le menu.
+  marché), CARRIÈRE à l'ouest (banque, contrats, musée). Une borne ouvre le même écran que le menu ;
+  les trois bornes du commerce ouvrent chacune son onglet (Acheter, Boutique, Hôtel des ventes).
   La borne RETOUR est à côté de l'entrée (et sur la plateforme d'arrivée).
 - Deux **étages de galeries** regardent l'atrium, de la verdure retombe de leurs garde-corps ; des
   escaliers de pierre taillée, entre deux limons massifs, y montent depuis chaque travée. Chaque galerie ouvre sur sa terrasse, sur l'anneau et sur les passerelles.
@@ -1525,6 +1526,40 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
   à outils (`SeasonKit`, `SeasonEffects`) ; côté client `client/lucky/` (les deux écrans, les effets
   cosmétiques).
 - `tools/lucky_assets.py` génère les fichiers et vérifie les événements en CI (`--check`).
+
+## Le commerce et l'hôtel des ventes (2026-11-19)
+
+Demandé le 2026-11-19 : des shops, une boutique et un marché « plus simples de compréhension », et
+un hôtel des ventes qui marche en solo. Choix du joueur : **un seul écran à onglets** ; ce qui
+gênait, c'était de ne pas savoir **où acheter quoi**, et des **écrans trop chargés** ; des
+**acheteurs fictifs** plutôt que des enchères ; on ne met en vente que **ce que le shop refuse**.
+
+- **L'écran Commerce** remplace quatre entrées de la barre latérale (Shop, Coffre de vente,
+  Boutique, Marché) : **Acheter** (le shop, prix d'achat seulement), **Vendre** (ce que le shop
+  rachète dans le sac, ligne par ligne, et Tout vendre ; le coffre de vente), **Boutique**
+  (boosters, clés, potions d'XP, services), **Hôtel des ventes**. Sous le titre, une phrase dit ce
+  qu'on trouve dans l'onglet ; la recherche d'Acheter trouve aussi ce qui s'achète à la boutique
+  ou à l'hôtel des ventes, et y mène. Détail des écrans : `INTERFACES.md`, lot 11.
+- **L'hôtel des ventes vend et achète** : les douze annonces du jour des vendeurs fictifs, et ce
+  que le joueur met en vente. Les acheteurs prennent les raretés de la réserve dont la valeur vient
+  du butin (78 objets : pierres légendaires, runes, essences, équipement de donjon, clés...), au prix
+  choisi parmi trois (vente rapide, prix conseillé, prix fort) ; moins c'est cher, plus vite ça
+  part, en temps réel, partie fermée comprise. Six annonces à la fois ; un invendu revient au bout
+  de 48 heures. Règles et chiffres : `PALAMOD.md` § 34, équilibre : `BALANCE.md` § 6 decies.
+- **Commandes** : `/commerce` ou `/shop` (Acheter), `/sell` (Vendre), `/sell coffre`, `/boutique`,
+  `/hdv`, `/ah` ou `/market` (hôtel des ventes) ; `/dohy hdv vendre` (opérateur) fait partir tout
+  de suite les annonces en cours.
+- **L'encyclopédie** : la fiche « Le shop » devient « Le commerce », la fiche « Le marché » devient
+  « Hôtel des ventes ».
+
+### Code
+
+`shop/Commerce` (les onglets, le routage, ce qui s'achète ailleurs), `shop/SellController`
+(l'onglet Vendre), `shop/ShopController` et `client/ui/screen/ShopScreen` (l'onglet Acheter),
+`ui/menu/BoutiqueController`, `auction/AuctionSales` (mise en vente, acheteurs, règlement),
+`auction/AuctionController` (l'onglet et sa mise en vente en deux pages), `auction/AuctionData`
+(les ventes gardées), `auction/AuctionConfig` (les acheteurs, lus dans `data/auction.json`, écrit
+par `tools/market_offers.py`).
 
 ## Sur un serveur dédié (2026-11-13)
 

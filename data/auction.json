@@ -1434,6 +1434,9 @@
   ],
   "buyers": {
     "factor": 0.6,
+    "categories": {
+      "crates": 0.35
+    },
     "slots": 6,
     "hours": 48,
     "presets": [

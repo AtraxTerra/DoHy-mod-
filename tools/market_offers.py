@@ -122,6 +122,10 @@ PRICES = [
 # prix conseille, avec le temps moyen pour trouver preneur (loi exponentielle).
 BUYERS = {
     "factor": 0.6,
+    # Une cle rapporte ~22 % de son prix en liquide quand on l'ouvre (BALANCE.md) :
+    # revendue un peu plus, mais loin des 60 % d'une rarete, pour ne pas tripler
+    # d'un coup ce que valent les cles des contrats, des events et des donjons.
+    "categories": {"crates": 0.35},
     "slots": 6,
     "hours": 48,
     "presets": [
@@ -293,7 +297,7 @@ def buyers(offers, values):
     for result, count, inputs in crate_values.load_recipes():
         by_result.setdefault(result, []).append((count, inputs))
     memo = {}
-    top = BUYERS["factor"] * max(preset["factor"] for preset in BUYERS["presets"])
+    best = max(preset["factor"] for preset in BUYERS["presets"])
     cheapest = min(price["factor"][0] for price in PRICES)
     problems = []
     for entry in offers:
@@ -308,6 +312,7 @@ def buyers(offers, values):
             continue
         # Les acheteurs paient au plus top x la cote : moins que le prix le plus bas
         # auquel l'objet s'achete, chez les vendeurs fictifs comme au shop.
+        top = BUYERS["categories"].get(entry["category"], BUYERS["factor"]) * best
         if top >= listed:
             problems.append("%s : les acheteurs paient %.2f de la cote, une annonce peut descendre a %.2f"
                             % (item, top, listed))

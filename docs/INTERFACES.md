@@ -18,6 +18,8 @@ autocrafter, crusher, cobblebreaker, grinder).
 | 7 | Encyclopédie : mise en page `TEXT`, menu du plan de construction, bouton « ? » de l'inventaire | fait |
 | 8 | Pass du mois (tuiles des 35 récompenses, quêtes), marché noir ; le bouton du Lucky Pass ouvre le pass | fait |
 | 9 | Modes des donjons (cartes de mode au-dessus des paliers), autel des offrandes des boss de métier | fait |
+| 10 | Lucky blocks et Lucky Pass | fait |
+| 11 | Le commerce : un écran à quatre onglets (acheter, vendre, boutique, hôtel des ventes) | fait |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
 
@@ -283,6 +285,51 @@ construction »). Elle passe par `MenuView`, avec une mise en page de plus :
   Entrée ou Échap ferment l'écran ; l'aveu de LuckyMan arrive alors dans le chat.
 - **Le menu principal** passe à cinq cartes sur une ligne quand les noms tiennent (la carte
   « Lucky Pass » rejoint la liste des choses à faire).
+
+## Le commerce (lot 11, 2026-11-19)
+
+Demandé par le joueur : des shops, une boutique et un marché « plus simples de compréhension »
+(ce qui gênait : on ne savait pas lequel vendait quoi, et les écrans étaient trop chargés), et un
+hôtel des ventes qui marche en solo.
+
+- **Un seul écran, quatre onglets** (`fr.atraxterra.dohy.shop.Commerce`) : la barre latérale
+  n'a plus qu'une entrée **Commerce** à la place de Shop, Coffre de vente, Boutique et Marché.
+  Le titre est COMMERCE partout ; la rangée d'onglets **Acheter · Vendre · Boutique · Hôtel des
+  ventes** est celle de la coque (`MenuView.Tab`) ; le sous-titre dit en une phrase ce qu'on
+  trouve dans l'onglet ouvert, et où aller pour le reste. Les quatre onglets gardent leur vue et
+  leur contrôleur (`dohy:shop`, `dohy:sell`, `dohy:boutique`, `dohy:auction`) : un clic sur un
+  onglet passe par `Commerce.openTab`, que `MenuController` et `ShopController` appellent.
+  Compteurs : le nombre de sortes d'objets à vendre sur Vendre, « N A RECUPERER » sur l'hôtel
+  des ventes ; la pastille de l'entrée Commerce compte les invendus.
+- **Acheter** (`ShopScreen`) : seulement ce qui s'achète. Une carte montre l'objet, son nom et un
+  seul prix (vert si on peut le payer). La fiche : PRIX A L'UNITE (remise comprise), le prix du
+  moment s'il suit le cours de l'heure, la quantité, le total, un seul bouton ACHETER (PAS ASSEZ
+  D'ARGENT sinon). La courbe ne s'affiche plus que pour un prix qui bouge. Les catégories vides
+  disparaissent. **La recherche** trouve aussi ce qui s'achète ailleurs — les annonces du jour
+  de l'hôtel des ventes, les boosters, clés, coffres à poser, potions et l'assurance de la
+  boutique (`ShopView.Elsewhere`) : une carte à bandeau jaune dit où, un clic y mène ; rien
+  trouvé du tout, l'écran le dit (« ni au shop, ni à la boutique, ni dans les annonces du
+  jour »).
+- **Vendre** (`SellController`, vue `dohy:sell`) : VENDRE D'UN COUP (Tout vendre, avec le
+  total et une confirmation ; le coffre de vente), CE QUE LE SHOP RACHETE en `ROWS` (quantité,
+  prix pièce, total, pastille PRIX BAS quand la pression de vente l'a fait baisser, barre de
+  collection grisée quand la vente n'est pas encore ouverte ; un clic vend toute la ligne), A
+  L'HOTEL DES VENTES (les raretés du sac, un clic ouvre leur mise en vente). Sac vide de tout
+  ça : trois lignes disent où se vend quoi. `/sell` ouvre cet onglet, `/sell coffre` le coffre.
+- **Boutique** (`BoutiqueController`) : un seul chiffre (TON ARGENT, et le booster s'il tourne),
+  des lignes qui disent ce que fait l'achat (« Ventes x2 pendant 20 min », « 2 clés sur toi :
+  clic droit pour ouvrir »), les coffres à poser en dernier. Les cartes Banque et Améliorations
+  (de simples liens) sont retirées.
+- **Hôtel des ventes** (`AuctionController`) : TES VENTES (annonces en cours avec leur prix et
+  le temps qu'il faut en général, VENDU, A RECUPERER, et la carte Mettre en vente), ANNONCES DU
+  JOUR en une seule section (le vendeur passe dans la bulle), PLUS D'ANNONCES. La mise en vente
+  se fait en deux pages : QUEL OBJET ? (les raretés du sac, prix conseillé), puis A QUEL PRIX ?
+  (l'objet en tête, Vente rapide, Prix conseillé, Prix fort, chacun avec ce qu'il rapporte et
+  le temps qu'il faut). Une carte Retour, ou le fil d'Ariane, ramène à la page principale.
+- **Ailleurs** : le raccourci de l'inventaire devient « Commerce — Acheter, vendre, hotel des
+  ventes » ; la carte Marché du menu principal devient Hôtel des ventes (ce qui est en vente,
+  les invendus) ; les bornes du spawn ouvrent le bon onglet. `/hdv` et `/ah` ouvrent l'hôtel des
+  ventes, `/commerce` l'onglet Acheter.
 
 ## Vérification
 

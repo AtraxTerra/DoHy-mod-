@@ -37,7 +37,8 @@ import java.util.Random;
  * matieres sans que leur prix baisse.
  *
  * <p><b>Le prix et le temps.</b> Le prix conseille est la cote de l'objet fois
- * le facteur des acheteurs (0,6), fois la quantite et l'usure. Le joueur choisit
+ * le facteur des acheteurs (0,6 ; 0,35 pour les cles et les coffres a poser, qui
+ * s'ouvrent plutot qu'ils ne se revendent), fois la quantite et l'usure. Le joueur choisit
  * entre trois prix ; moins c'est cher, plus vite ca part : la duree de vente
  * suit une loi exponentielle de moyenne propre a chaque prix. Elle est tiree a
  * la mise en vente, et l'heure ou l'objet part est gardee : la vente se fait en
@@ -59,9 +60,10 @@ public final class AuctionSales {
     private static final long SOLD_SHOWN = 24L * HOUR;
     private static final Random RANDOM = new Random();
 
-    /** La cote de chaque objet de la reserve, recalculee quand la reserve change. */
+    /** La cote de chaque objet de la reserve et son rayon, recalcules quand la reserve change. */
     private static AuctionConfig.Config indexed;
     private static Map<Item, Long> quotes = Map.of();
+    private static Map<Item, String> shelves = Map.of();
 
     private static int ticks;
 
@@ -76,20 +78,36 @@ public final class AuctionSales {
 
     /** La cote d'un objet que les acheteurs cherchent (la plus haute de la reserve), 0 sinon. */
     public static long quote(Item item) {
-        AuctionConfig.Config config = AuctionConfig.config();
-        if (config != indexed) {
-            Map<Item, Long> next = new HashMap<>();
-            for (AuctionConfig.Offer offer : config.offers()) {
-                if (!offer.buyers()) {
-                    continue;
-                }
-                Optional<Item> found = BuiltInRegistries.ITEM.getOptional(offer.item());
-                found.ifPresent(value -> next.merge(value, offer.quote(), Math::max));
-            }
-            quotes = next;
-            indexed = config;
-        }
+        index();
         return quotes.getOrDefault(item, 0L);
+    }
+
+    /** La part de la cote que les acheteurs paient au prix conseille, selon le rayon de l'objet. */
+    public static double factor(Item item) {
+        index();
+        return buyers().factor(shelves.getOrDefault(item, ""));
+    }
+
+    private static synchronized void index() {
+        AuctionConfig.Config config = AuctionConfig.config();
+        if (config == indexed) {
+            return;
+        }
+        Map<Item, Long> next = new HashMap<>();
+        Map<Item, String> rows = new HashMap<>();
+        for (AuctionConfig.Offer offer : config.offers()) {
+            if (!offer.buyers()) {
+                continue;
+            }
+            Optional<Item> found = BuiltInRegistries.ITEM.getOptional(offer.item());
+            found.ifPresent(value -> {
+                next.merge(value, offer.quote(), Math::max);
+                rows.putIfAbsent(value, offer.category());
+            });
+        }
+        quotes = next;
+        shelves = rows;
+        indexed = config;
     }
 
     /** Le shop rachete-t-il cet objet ? Il se vend alors au shop, pas ici. */
@@ -125,7 +143,7 @@ public final class AuctionSales {
         if (stack.isDamageableItem() && stack.getMaxDamage() > 0) {
             wear = Math.max(0.1d, 1.0d - stack.getDamageValue() / (double) stack.getMaxDamage());
         }
-        return round(quote * buyers().factor() * stack.getCount() * wear);
+        return round(quote * factor(stack.getItem()) * stack.getCount() * wear);
     }
 
     /** Le prix d'une pile a l'un des prix proposes. */

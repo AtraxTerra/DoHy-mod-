@@ -155,23 +155,32 @@ public final class AuctionConfig {
     /**
      * Les acheteurs fictifs de l'hotel des ventes : ce que le joueur y met en vente.
      *
-     * @param factor  le prix conseille, en part de la cote
-     * @param slots   combien d'annonces le joueur peut avoir en meme temps
-     * @param hours   au bout de combien d'heures une annonce invendue revient
-     * @param presets les prix proposes
+     * @param factor     le prix conseille, en part de la cote
+     * @param slots      combien d'annonces le joueur peut avoir en meme temps
+     * @param hours      au bout de combien d'heures une annonce invendue revient
+     * @param presets    les prix proposes
+     * @param categories un autre facteur pour les objets d'un rayon (les cles se revendent moins bien)
      */
-    public record Buyers(double factor, int slots, double hours, List<Preset> presets) {
+    public record Buyers(double factor, int slots, double hours, List<Preset> presets,
+                         java.util.Map<String, Double> categories) {
         static final Buyers DEFAULT = new Buyers(0.6d, 6, 48.0d, List.of(
                 new Preset("quick", "Vente rapide", 0.85d, 1.0d / 3.0d),
                 new Preset("fair", "Prix conseille", 1.0d, 3.0d),
-                new Preset("high", "Prix fort", 1.15d, 27.0d)));
+                new Preset("high", "Prix fort", 1.15d, 27.0d)), java.util.Map.of("crates", 0.35d));
 
         static final Codec<Buyers> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.DOUBLE.optionalFieldOf("factor", DEFAULT.factor()).forGetter(Buyers::factor),
                 Codec.INT.optionalFieldOf("slots", DEFAULT.slots()).forGetter(Buyers::slots),
                 Codec.DOUBLE.optionalFieldOf("hours", DEFAULT.hours()).forGetter(Buyers::hours),
-                Preset.CODEC.listOf().optionalFieldOf("presets", DEFAULT.presets()).forGetter(Buyers::presets)
+                Preset.CODEC.listOf().optionalFieldOf("presets", DEFAULT.presets()).forGetter(Buyers::presets),
+                Codec.unboundedMap(Codec.STRING, Codec.DOUBLE).optionalFieldOf("categories", DEFAULT.categories())
+                        .forGetter(Buyers::categories)
         ).apply(instance, Buyers::new));
+
+        /** Le facteur du prix conseille pour un objet de ce rayon. */
+        public double factor(String category) {
+            return categories.getOrDefault(category, factor);
+        }
 
         /** Le prix propose de cet identifiant, ou {@code null}. */
         public Preset preset(String id) {

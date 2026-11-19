@@ -3253,12 +3253,18 @@ joueur. Ses choix : un **hôtel des ventes simulé**, qui vend des **raretés de
 **clés et boxes**, et **n'achète rien** (la vente reste au shop et aux contrats). PalaTrade
 (l'échange direct entre deux joueurs) n'a pas de sens en solo et n'est pas porté.
 
-Tout est dans `fr.atraxterra.dohy.auction` : `AuctionConfig` (la réserve), `AuctionHouse` (les
-annonces du jour, l'achat), `AuctionData` (les achats du jour), `AuctionController` (l'écran).
+Tout est dans `fr.atraxterra.dohy.auction` : `AuctionConfig` (la réserve et les acheteurs),
+`AuctionHouse` (les annonces du jour, l'achat), `AuctionSales` (ce que le joueur met en vente),
+`AuctionData` (les achats du jour et les ventes du joueur), `AuctionController` (l'écran).
+
+Le 2026-11-19, le joueur a demandé « un système d'Auction House si c'est possible en solo » :
+l'hôtel des ventes **achète** maintenant aussi (plus bas, « Vendre »), et il est devenu l'onglet
+Hôtel des ventes du commerce (`INTERFACES.md`, lot 11).
 
 ### Ce que le joueur voit
 
-`/market`, ou la carte « Marché » du menu : douze annonces de vendeurs fictifs, en quatre rayons.
+`/hdv`, `/market`, ou l'onglet Hôtel des ventes du commerce : ses propres ventes, puis douze
+annonces de vendeurs fictifs, tirées dans quatre rayons et montrées en une seule section.
 
 | Rayon | Annonces par jour | Ce qu'on y trouve |
 |---|---|---|
@@ -3293,11 +3299,45 @@ remplace tout de suite contre de l'argent.
   Il remplace toutes les annonces, achetées ou non.
 - `/dohy reload` relit la réserve.
 
+### Vendre (2026-11-19)
+
+En solo, personne en face : des **acheteurs fictifs** prennent ce que le joueur met en vente. Choix
+du joueur : des acheteurs qui achètent plus ou moins vite selon le prix (plutôt que des enchères
+contre des PNJ), et seulement **ce que le shop refuse** (ce que le shop rachète reste au shop).
+
+- **Ce qu'ils prennent** : les mêmes raretés que celles des vendeurs fictifs (la réserve), sauf ce
+  que le shop rachète (la pépite d'endium) et ce qui se fabrique surtout avec des matières du shop
+  (`buyers: false` dans la réserve) — le vendre ici reviendrait à vendre ces matières sans que leur
+  prix baisse. `tools/market_offers.py` calcule, recette par recette, la part de la cote qui vient
+  de matières que le shop vend ou rachète ; au-delà de 30 %, non. Sont ainsi écartés : l'amulette
+  du chasseur, le gant et le lingot d'endium, les pierres de capture, les quatre améliorations de
+  spawner, les deux obsidiennes infusées, les trois gemmes de wither (leurs têtes viennent de crânes
+  de wither squelette). Restent 78 objets : pierres légendaires, fabrique à nuage, enderchest de
+  poche, runes et fragments, essences, équipement de donjon basique et renforcé, clés et coffres à
+  poser.
+- **Le prix** : le prix conseillé est la cote fois **0,6** (**0,35** pour les clés et les coffres à
+  poser, qui s'ouvrent plutôt qu'ils ne se revendent), fois la quantité et l'usure (une pièce à
+  moitié usée vaut moitié). Trois prix : **vente rapide** (0,85 fois le conseillé, vingt minutes
+  en moyenne), **prix conseillé** (trois heures), **prix fort** (1,15 fois, vingt-sept heures : il
+  part dans 83 % des cas avant l'échéance). Pas de taxe : le prix affiché est ce que le joueur
+  reçoit.
+- **Le temps** : la durée de vente suit une loi exponentielle de la moyenne du prix choisi, tirée à
+  la mise en vente ; l'heure où l'objet part est gardée (temps réel, partie fermée comprise, réglée
+  à la connexion suivante). Au bout de **48 heures**, un invendu attend que le joueur le récupère.
+  **Six annonces** à la fois (les invendus pas encore récupérés comptent). Une annonce se retire à
+  tout moment.
+- **L'argent** arrive au moment de la vente, avec une notification et une ligne dans le chat ; une
+  vente réussie reste affichée une journée. Le règlement (`AuctionSales.settle`) passe toutes les
+  cinq secondes pour les joueurs en ligne, et à la connexion.
+- `/dohy hdv vendre` (opérateur) vend tout de suite toutes les annonces en cours : pour essayer.
+
 ### Ce qui est laissé de côté
 
 - L'équipement de donjon **légendaire et antique** et les **sacs** : ce sont les récompenses des
-  paliers 65 à 100, et les vendre viderait les donjons de leur but.
-- Toute vente par le joueur, et les tiroirs (`Lucky Drawer`) de Paladium.
+  paliers 65 à 100, et les vendre viderait les donjons de leur but. Ils n'ont pas de cote : les
+  acheteurs ne les prennent pas non plus.
+- Les enchères (le joueur a choisi les acheteurs à prix fixe), et les tiroirs (`Lucky Drawer`) de
+  Paladium.
 
 ### Vérifié en jeu (captures, 2026-11-11)
 
