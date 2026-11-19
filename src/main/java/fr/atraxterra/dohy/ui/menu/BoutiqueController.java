@@ -79,8 +79,8 @@ public final class BoutiqueController extends MenuController {
             ItemStack icon = kind != null ? new ItemStack(PalaBoxes.key(kind))
                     : new ItemStack(keys > 0 ? Items.ENDER_CHEST : Items.TRAPPED_CHEST);
             crates.add(Card.of(icon, Crates.title(tier), List.of("Cle : " + MoneyFormat.exact(crate.price()) + " $",
-                            keys > 0 ? keys + (keys > 1 ? " cles sur toi : clic droit pour ouvrir" : " cle sur toi : clic "
-                                    + "droit pour ouvrir") : "Clic : acheter une cle"))
+                            keys > 0 ? keys + (keys > 1 ? " cles · clic droit : ouvrir" : " cle · clic droit : ouvrir")
+                                    : "Clic : acheter une cle"))
                     .accent(0xFFEF3826).badge(keys > 0 ? keys + " CLE" : "")
                     .action("key:" + tier + "|acheter une cle")
                     .right(keys > 0 ? "crate:" + tier + "|ouvrir a la roulette" : "")
@@ -142,7 +142,7 @@ public final class BoutiqueController extends MenuController {
             long missing = Autosell.UNLOCK_PRICE - Economy.balance(player);
             services.add(Card.of(new ItemStack(Items.HOPPER_MINECART), "Autosell", List.of(
                             MoneyFormat.exact(Autosell.UNLOCK_PRICE) + " $",
-                            "Vend un coffre lie toutes les " + Autosell.INTERVAL_MINUTES + " min"))
+                            "Vend un coffre toutes les " + Autosell.INTERVAL_MINUTES + " min"))
                     .accent(0xFF2F5BEA).action("autosell|debloquer")
                     .state(missing > 0 ? MenuView.DISABLED : MenuView.NORMAL)
                     .tooltip(List.of("Ne charge jamais le chunk : un coffre non charge est saute",
