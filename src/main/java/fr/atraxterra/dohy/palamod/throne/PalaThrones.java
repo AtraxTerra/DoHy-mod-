@@ -79,13 +79,14 @@ public final class PalaThrones {
                     MINER_THRONE.get(), FARMER_THRONE.get(), HUNTER_THRONE.get(), ALCHEMIST_THRONE.get())));
 
     /**
-     * Le siege invisible ou s'assoit le joueur ({@code EntitySittableBlock}). Il
-     * n'est jamais sauvegarde : un joueur deconnecte se releve.
+     * Le siege invisible ou s'assoit le joueur ({@code EntitySittableBlock}). Il se
+     * sauvegarde : 26.2 refuse de faire monter un joueur sur une entite qui ne se
+     * sauvegarde pas ({@code Entity.startRiding}). Un joueur deconnecte assis se
+     * retrouve assis ; un siege sans passager disparait au tick suivant.
      */
     public static final DeferredHolder<EntityType<?>, EntityType<ThroneSeat>> SEAT = ENTITIES.register(
             "throne_seat", key -> EntityType.Builder.<ThroneSeat>of(ThroneSeat::new, MobCategory.MISC)
                     .sized(0.0f, 0.0f)
-                    .noSave()
                     .noSummon()
                     .clientTrackingRange(10)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));

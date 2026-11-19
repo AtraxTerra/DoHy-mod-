@@ -20,9 +20,9 @@ import net.minecraft.world.phys.Vec3;
  * Le siege d'un trone ({@code EntitySittableBlock}) : une entite sans taille ni
  * rendu, posee sur l'assise, que le joueur monte.
  *
- * <p>Elle disparait des que son passager descend ou que le trone n'est plus la ;
- * elle n'est jamais sauvegardee. Le joueur assis regarde du cote du trone, a
- * 105 degres pres, comme dans une barque.
+ * <p>Elle disparait des que son passager descend ou que le trone n'est plus la.
+ * Le joueur assis regarde du cote du trone, a 105 degres pres, comme dans une
+ * barque.
  */
 public class ThroneSeat extends Entity {
 

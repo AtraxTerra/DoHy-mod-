@@ -142,7 +142,10 @@ public class ThroneBlock extends BaseEntityBlock {
         ThroneSeat seat = new ThroneSeat(PalaThrones.SEAT.get(), serverLevel);
         seat.seatAt(pos, state.getValue(FACING));
         serverLevel.addFreshEntity(seat);
-        server.startRiding(seat);
+        if (!server.startRiding(seat)) {
+            seat.discard();
+            return InteractionResult.PASS;
+        }
         return InteractionResult.SUCCESS;
     }
 }

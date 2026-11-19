@@ -3431,8 +3431,9 @@ donjons). Le Lucky Pass suit, avec les lucky blocks qu'il distribue.
   Un modèle de bloc ne sort pas de -16..32 : le trône n'y tiendrait pas. L'objet, lui, est un
   modèle en 3D descendu d'un bloc et recentré par ses transformations d'affichage.
 - **S'asseoir** : un siège invisible (`palamod:throne_seat`) posé sur le coussin, à 9 pixels ; le
-  regard reste à 105° du trône, comme dans une barque ; on se relève devant lui. Le siège n'est
-  jamais sauvegardé.
+  regard reste à 105° du trône, comme dans une barque ; on se relève devant lui. Le siège se
+  sauvegarde (26.2 refuse de faire monter un joueur sur une entité qui ne se sauvegarde pas) et
+  disparaît dès qu'il n'a plus de passager.
 - **Le verrou** : celui de la table des métiers, déjà relevé (`jobs.json`) — il s'applique à la
   **pose** et au clic droit, comme pour tout objet verrouillé de DoHy (le craft n'est jamais
   verrouillé, § 2).
