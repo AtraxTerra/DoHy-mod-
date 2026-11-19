@@ -3847,7 +3847,8 @@ les fichiers viennent de `tools/lucky_assets.py`.
 - **J'ai glissé chef** (100, malus) : une nappe de 7 × 7 slimepads à hauteur des pieds, le joueur
   dedans, et « Il ne me semblait pas avoir vu de panneau sol glissant pourtant ? ».
 - **Tour de slime** (20, malus) : un puits de dix slimepads cerclé de pierre, un pic en paladium au
-  sommet, et le joueur posé un bloc plus haut : les slimepads le lancent droit dans le pic.
+  sommet, pointe en bas (la métadonnée 0 de `BlockSpike`), et le joueur posé un bloc plus haut : les
+  slimepads le lancent droit dans le pic, qui le blesse à chaque contact.
 
 ### Findium
 

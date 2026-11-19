@@ -1,8 +1,10 @@
 package fr.atraxterra.dohy.palamod.lucky;
 
 import fr.atraxterra.dohy.palamod.pvp.PalaPvp;
+import fr.atraxterra.dohy.palamod.pvp.SpikeBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -92,8 +94,8 @@ final class LuckyItemEvents {
 
     /**
      * Tour de slime ({@code SlimeTower}) : un puits de dix slimepads cercle de pierre, un pic
-     * en paladium au sommet, et le joueur pose un bloc au-dessus de ses pieds. Les
-     * slimepads le lancent vers le haut, droit dans le pic.
+     * en paladium au sommet, pointe en bas, et le joueur pose un bloc au-dessus de ses pieds.
+     * Les slimepads le lancent vers le haut, droit dans le pic.
      */
     private static void slimeTower(ServerPlayer player, ServerLevel level, BlockPos pos) {
         BlockPos base = player.blockPosition();
@@ -107,7 +109,9 @@ final class LuckyItemEvents {
             LuckyWorld.place(player, level, at.south(), wall);
             LuckyWorld.place(player, level, at.north(), wall);
         }
-        LuckyWorld.place(player, level, base.above(TOWER_HEIGHT), PalaPvp.PALADIUM_SPIKE.get().defaultBlockState());
+        // La metadonnee 0 de BlockSpike : la pointe vers le bas, la face du haut pleine.
+        LuckyWorld.place(player, level, base.above(TOWER_HEIGHT),
+                PalaPvp.PALADIUM_SPIKE.get().defaultBlockState().setValue(SpikeBlock.FACING, Direction.DOWN));
         player.teleportTo(base.getX() + 0.5d, base.getY() + 1, base.getZ() + 0.5d);
     }
 
