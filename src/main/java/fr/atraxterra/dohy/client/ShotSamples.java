@@ -484,7 +484,7 @@ final class ShotSamples {
             fire(player, pos);
         }));
         ShotHarness.SHOTS.add(server("d2b_coffre_ouest", 10, player -> tp(player, 0.5, 0, 2.5, 90.0f, 5.0f)));
-        ShotHarness.SHOTS.add(server("d2c_coffre_est", 10, player -> tp(player, 0.5, 0, 2.5, 270.0f, 5.0f)));
+        ShotHarness.SHOTS.add(server("d2c_coffre_est", 10, player -> tp(player, 0.5, 0, 2.5, 270.0f, 0.0f)));
         ShotHarness.SHOTS.add(server("d2d_coffre_sud", 10, player -> tp(player, 0.5, 0, 2.5, 0.0f, 20.0f)));
         ShotHarness.SHOTS.add(server("e1_boules", 30, player -> {
             clear(player, 20, 12);
