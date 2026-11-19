@@ -471,8 +471,13 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
             frame(p, cardX, cardY, cardWidth, hover, false, Ui.Theme.YELLOW);
             p.round(cardX + 3.0f, cardY + 3.0f, cardWidth - 6.0f, 6.0f, 2.0f, Paint.alpha(Ui.Theme.YELLOW, 0.18f));
             String where = entry.where().toUpperCase(Locale.ROOT);
-            g.centered(Ui.PIXEL, g.fit(Ui.PIXEL, where, 3.0f, cardWidth - 8.0f), cardX + cardWidth / 2.0f, cardY + 4.6f,
-                    3.0f, Ui.Theme.YELLOW);
+            // « HOTEL DES VENTES » tient en entier : la police se resserre plutot que de couper.
+            float size = 3.0f;
+            while (size > 2.2f && g.width(Ui.PIXEL, where, size) > cardWidth - 8.0f) {
+                size -= 0.1f;
+            }
+            g.centered(Ui.PIXEL, g.fit(Ui.PIXEL, where, size, cardWidth - 8.0f), cardX + cardWidth / 2.0f,
+                    cardY + 4.6f + (3.0f - size) / 2.0f, size, Ui.Theme.YELLOW);
             g.item(entry.icon(), cardX + (cardWidth - 13.0f) / 2.0f, cardY + 11.0f, 13.0f, false);
             title(g, ShopScreen.name(entry), cardX, cardY, cardWidth);
             g.centered(Ui.BOLD, g.fit(Ui.BOLD, entry.price(), 3.6f, cardWidth - 8.0f), cardX + cardWidth / 2.0f,
