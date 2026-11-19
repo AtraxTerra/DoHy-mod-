@@ -3461,3 +3461,138 @@ le jar (seulement une potion x10 de 5 minutes, dans les lucky blocks de décembr
   passe avant le x2 ; les deux s'écoulent ensemble.
 - **Où** : la boutique (Double 1 h et 4 h, Triple 1 h et 4 h ; `BALANCE.md` § 6 duovicies) et la
   table des boss des donjons (Double 30 min, poids 3 ; Triple 30 min dès le palier 50, poids 1).
+
+## 37. Lucky blocks et Lucky Pass (2026-11-19)
+
+Demandés le 2026-11-19 avec les trônes (« ajoute les trônes et le Lucky pass »). Le joueur a
+choisi d'**ajouter les lucky blocks** que le pass distribue, et un pass **toujours actif** : un
+lancer gratuit par jour, sans achat. Premier lot : trois lucky blocks, l'écran d'ouverture et
+75 des 439 événements ; les autres suivront par lots, puis les lucky blocks de saison.
+
+### Les lucky blocks — `BlockLuckyBlock`, `TileEntityLuckyBlock`, `UILuckyBlock`, `PLuckyBlock`
+
+**Ce que dit le code**
+
+- Un bloc par sorte : dureté 1, résistance 1 000, se casse à la main, tombe lui-même avec son NBT,
+  des particules de poussière rouge. Le jar en compte quatorze : paladium (111 événements),
+  endium (56), findium (130), le noir, et dix de saison.
+- **Ouverture** : un clic droit ouvre l'écran, une machine à sous à trois rouleaux. « OUVRIR »
+  envoie `PacketGetLuckyEvent` ; le serveur tire l'événement et le garde dans la tile entity ; le
+  client anime les rouleaux (le premier part à 100 ms, puis un toutes les 600 ms, 5 s chacun,
+  arrivée en *Back*). Le bouton passe de OUVRIR à PASSER puis à FERMER ; l'écran se ferme seul
+  5 s après l'arrêt. À la fermeture, `PacketUseLuckyBlock` : le bloc disparaît, un feu d'artifice,
+  puis `event.perform(player, x, y, z)`. Fermé avant le tirage, il ne se passe rien.
+- **Tirage** : le poids d'un événement est `LuckyConst / rareté` (une rareté de 10 sort cent fois
+  plus qu'une de 1 000). Les bons événements pèsent **1,25 fois plus** pour qui a le Lucky Pass
+  (`PLuckyBlock$2`). Une règle de pitié force parfois la Consolation.
+
+**Ce que fait DoHy**
+
+- `palamod:paladium_lucky_block`, `endium_lucky_block`, `findium_lucky_block`, les textures de
+  PalaMod. Résistance d'obsidienne (1 200) : une explosion ne les ouvre pas. Le butin les rend
+  avec leur événement (`palamod:lucky_event`) : casser et reposer ne retire pas au sort.
+- **L'écran** reprend la machine (l'avant-plan de PalaMod) et ses temps, les icônes des
+  événements sur les rouleaux, le compteur « DECOUVERTS x / 75 », les pastilles BONUS ou MALUS et
+  NOUVEAU au premier tirage d'un événement. Espace ou Entrée valent le bouton, un clic sur la
+  machine passe l'animation. Le serveur garde la main : un bloc ne s'ouvre que pour un joueur à
+  la fois, à moins de 10 blocs, et l'événement part quand l'écran se ferme, comme chez PalaMod.
+  Une notification dit ce qui est sorti.
+- **Le bonus du pass** : tout le monde a le pass, donc le × 1,25 vaut pour tous les tirages.
+- **Ce qui manque encore** compte dans le tirage : les bons événements sont repesés pour que la
+  part des bons reste celle de PalaMod, bonus compris — **51,5 %** au paladium, **44,4 %** au
+  findium ; l'endium n'a que des bons (`LuckyEvents.goodScale`, chiffres de
+  `tools/lucky_assets.py --stats`). Au paladium, les 53 événements portés couvrent 59 % du poids
+  des bons et des malus : les chances de chacun restent proches de celles de PalaMod. Au findium,
+  ils couvrent 23 % des bons et 66 % des malus : les bons sont multipliés par 3,6, et
+  « Où donner de la tête » (rareté 4) sort dans **41 %** des cas, « Doggy Army » dans 12 %. Ces
+  écarts fondent à chaque lot porté.
+
+**Les 75 événements portés** (rareté entre parenthèses) :
+
+- **Bons, paladium et endium (27)** : Body Guard (10), Ouaiche t'es relou (10), Pala-Pillone (10),
+  Arc en armure (20), Puits (30), Ruée vers les minerais (30), Mineral Shower (50), Quelle
+  dinguerie ! (50), SuperMan (50), Walk in Music (50), Consolation (100), Spawner (100), Caballo de
+  la muerte (200), Diamond Beacon (200), Amethyst Beacon (400), Endium Beacon (400), Fast Learner
+  (500), Titane Beacon (800), Explosif (900), Trop chanceux pour ce monde (900), Legendary Stone
+  (1 000), Paladium Beacon (1 200), Mega Fast Learner (2 400), Et paf + de sous (5 000),
+  Inéluctable (5 000), Rodshild (5 000), Mega-Inéluctable (12 500).
+- **Malus, paladium (26)** : BOOM (20), Enfermé (20), Geyser (20), La-Haut (20), StarFish (20),
+  Boom (30), C'est un traquenard ! (30), Piggy Rodeo (30), Pssssssss (30), 0 + 0 = La tête à Toto
+  (40), Allumer le feu (40), Instant break up (40), Sur la Lune (40), Zombie Hero (40), Bunny Life
+  (50), Ne pas casser (50), Tout feu tout flamme (50), MEGABOOM (70), ArachnoTrap (80), ObsiTrap
+  (80), Badaboum (100), High attitude (100), One Shot (100), Et paf plus de sous (5 000), Le
+  seum… (10 000), Le malus le plus rare… (30 000).
+- **Bons, findium (13)** : Doggy Army (50), 20 000 lieues sous terre (100), Danse maintenant (100),
+  Prêt à tout (100), Et ! Les phans ! (200), Pala est là (200), Bien mais pas trop (300),
+  DoubleXP (300), L'ami des loups (300), Try Again (400), Over 9000 (1 000), Pioche de Légende
+  (1 000), Endium Block (9 000).
+- **Malus, findium (9)** : Où donner de la tête (4), Sol glacé (50), A-Bee-me (100), C'est pas
+  passé loin (100), Long time no see (100), Mélange de grand-mère (100), Prendre du recul (100),
+  Si j'étais toi je bougerais (100), Sonic (100).
+
+Les effets de PalaMod qui n'ont pas d'équivalent sont des effets à part, sans action propre :
+SuperMan (vol forcé), Walk in Music (notes de musique), Tout feu tout flamme (flammes), Bunny
+Life (sauts forcés), Où donner de la tête (la tête disparaît du modèle, sans mixin), Sol glacé
+(on glisse), Sonic (plus de saut), Prendre du recul (troisième personne forcée), Prêt à tout
+(1 000 $ par enclume reçue). Leurs icônes viennent des événements.
+
+**Écarts**, voulus ou forcés :
+
+- **Endium Beacon** bâtit sa pyramide en **lapis**, comme le code de PalaMod (le nom promettait
+  de l'endium).
+- **Enfermé** remplit la cage d'eau : DoHy n'a pas l'acide. **ObsiTrap** laisse libres les deux
+  blocs du joueur, qui serait sinon étouffé dans l'obsidienne.
+- **20 000 lieues sous terre** creuse une poche de deux blocs à six blocs du fond du monde et y
+  téléporte ; au-dessus du vide (End), il ne fait rien.
+- **Puits** : la foudre n'est qu'une image. **Danse maintenant** : dix éclairs pour l'image, les
+  dégâts (5) et le feu posés à la main, sans mettre le feu au sol.
+- **Caballo de la muerte** est un cheval squelette déjà dressé, au nom du joueur.
+- **Fast Learner** donne un niveau dans un métier, comme le code ; son message en promettait cinq.
+- **MEGABOOM** est la TNT en endium de DoHy ; **Piggy Rodeo** fait exploser le cochon
+  (puissance 15) au bout de dix secondes.
+- **Instant break up** détruit deux outils, celui en main et le premier de l'inventaire, comme
+  le code.
+- **Les coffres piégés** de « C'est un traquenard ! » sont gardés en mémoire : un redémarrage les
+  rend inoffensifs. **Les gardes du corps** sont reconnus à leurs étiquettes d'entité.
+- **Les explosions** n'ont pas de joueur pour source : elles ne cassent rien dans un claim, comme
+  les autres explosions de DoHy. Un lucky block ne modifie que les blocs qu'on a le droit de
+  modifier (hors claim ennemi, sans block entity).
+- La règle de pitié de la Consolation n'est pas reprise.
+
+### Le Lucky Pass — `UILuckyPass`, `PlayerLuckyPassProperties`, `PacketWinLuckyPass`
+
+**Ce que dit le code** : un lancer par jour pour qui a le pass (`hasLuckyPass`). Trois
+cases, chacune vide ou un lucky block : 60 % des lancers donnent **un** bloc (la case du
+milieu), 30 % **deux**, 10 % **trois** — un bloc et demi en moyenne. La sorte se tire au
+poids : paladium 4 000, findium 3 500, endium 500, noir 300, et 170 pour chacun des dix de
+saison.
+
+**Ce que fait DoHy**
+
+- **Toujours actif**, gratuit : un lancer par jour, le jour des contrats (`ContractApi.today()`),
+  donc remis à zéro à la même heure qu'eux. Le lancer se garde avec le joueur (`palamod:lucky`,
+  conservé à la mort) ; un serveur qui redémarre ne le rend pas.
+- **L'écran** : trois rouleaux de cases, un lucky block ou une croix, « UN LANCER GRATUIT PAR
+  JOUR », le nombre de lancers ; le résultat, puis « Prochain lancer dans 7 h 12 ». Les blocs vont
+  dans l'inventaire, au sol s'il est plein.
+- **La sorte** se tire entre les trois portés : paladium 50 %, findium 43,75 %, endium 6,25 %. Le
+  noir et ceux de saison viendront avec leurs événements.
+- **Où** : le bouton LUCKY de l'inventaire (à côté de PASS, sous le craft — la place qu'il avait
+  sur la maquette de Paladium), la carte « Lucky Pass » du menu principal (PRET tant que le
+  lancer du jour n'est pas joué), `/luckypass` ou `/lucky`.
+- Le Lucky Pass est, pour l'instant, la **seule source** de lucky blocks (avec Try Again et
+  Quelle dinguerie !, qui en donnent d'autres).
+
+### Code
+
+- `palamod/lucky/` : `PalaLucky` (blocs, objets, block entity, composants, effets, données),
+  `LuckyType`, `LuckyEvent`, `LuckyEvents` (catalogue, tirage, équilibre), `GoodEvents`,
+  `BadEvents`, `FindiumEvents`, `LuckyWorld` (poser, déposer, foudre, TNT, droits), `LuckyTasks`
+  (événements étalés dans le temps), `LuckyWorldEvents` (gardes, lapin, coffres piégés, faux
+  creepers, faux paladium, vol), `LuckySession`, `LuckyPass`, les vues `LuckyBlockView` et
+  `LuckyPassView`, `FakePaladiumBlock`.
+- Côté client : `client/lucky/LuckyBlockScreen`, `LuckyPassScreen`, `LuckyClientEvents` (les
+  effets cosmétiques, la tête cachée).
+- `tools/lucky_assets.py` génère blockstates, modèles, butin et noms, `--jar` copie les textures,
+  `--check` (en CI) vérifie les événements contre `tools/data/lucky_events.json` — le relevé des
+  439 événements du jar — et `--stats` donne l'équilibre.

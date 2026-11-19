@@ -27,7 +27,7 @@ import java.util.List;
  * le mode creatif garde le sien. En haut a droite, le bouton rouge ouvre le menu
  * principal et le point d'interrogation l'encyclopedie ; a droite, les cinq cases
  * ouvrent le shop, les contrats, la banque, la faction et les metiers ; sous le
- * craft, le bouton rouge ouvre le pass du mois. Plus besoin de connaitre les
+ * craft, le bouton rouge ouvre le pass du mois et le vert le Lucky Pass. Plus besoin de connaitre les
  * commandes.
  *
  * <h2>Les cases sont celles du jeu</h2>
@@ -63,11 +63,13 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
     private static final int MENU_Y = HEADER_Y + 2;
     private static final int HELP_X = MENU_X - 4 - MENU_H;
 
-    /** Le bouton du pass, sous le craft. */
+    /** Le bouton du pass, sous le craft, et celui du Lucky Pass a sa droite. */
     private static final int PASS_X = 97;
     private static final int PASS_Y = 58;
-    private static final int PASS_W = 75;
+    private static final int PASS_W = 47;
     private static final int PASS_H = 15;
+    private static final int LUCKY_X = PASS_X + PASS_W + 3;
+    private static final int LUCKY_W = 172 - LUCKY_X;
 
     /** La zone du personnage, entre l'armure et la seconde main. */
     private static final int MODEL_X = 26;
@@ -84,6 +86,8 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
 
     /** La relique du mois : l'icone du bouton du pass. */
     private final ItemStack passIcon;
+    private final ItemStack luckyIcon =
+            fr.atraxterra.dohy.palamod.lucky.LuckyType.PALADIUM.stack(1);
     private final ItemStack headerIcon = new ItemStack(Items.BUNDLE);
 
     public KitInventoryScreen(Player player) {
@@ -154,10 +158,19 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
         }
         p.roundGradient(PASS_X, PASS_Y, PASS_W, PASS_H, 4.0f, passHovered ? 0xFFFF5A43 : Ui.Theme.RED_LIGHT,
                 passHovered ? Ui.Theme.RED : Ui.Theme.RED_D);
-        g.text(Ui.WIDE, "PASS", PASS_X + 7, PASS_Y + 5.2f, 4.6f, Ui.Theme.TEXT);
+        g.text(Ui.WIDE, "PASS", PASS_X + 6, PASS_Y + 5.2f, 4.6f, Ui.Theme.TEXT);
         float boxX = PASS_X + PASS_W - 14.0f;
         p.round(boxX, PASS_Y + 2.0f, 11.0f, 11.0f, 2.5f, 0x40000000);
         g.item(passIcon, boxX + 1.5f, PASS_Y + 3.5f, 8, false);
+
+        // Le Lucky Pass : le lancer gratuit du jour.
+        boolean luckyHovered = inside(mouseX, mouseY, LUCKY_X, PASS_Y, LUCKY_W, PASS_H);
+        if (luckyHovered) {
+            p.glow(LUCKY_X + LUCKY_W / 2.0f, PASS_Y + PASS_H / 2.0f, 20.0f, Paint.alpha(Ui.Theme.GREEN, 0.3f));
+        }
+        p.roundGradient(LUCKY_X, PASS_Y, LUCKY_W, PASS_H, 4.0f, luckyHovered ? 0xFF5FEA4C : 0xFF3FD52C,
+                luckyHovered ? 0xFF2DB51D : 0xFF24A015);
+        g.item(luckyIcon, LUCKY_X + (LUCKY_W - 11) / 2.0f, PASS_Y + 2.0f, 11, false);
 
         // Les cinq raccourcis.
         for (int index = 0; index < SHORTCUTS.size(); index++) {
@@ -180,6 +193,8 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
                 List.of("Encyclopedie", "Tout Berskar, fiche par fiche (touche J)"));
         tip(g, mouseX, mouseY, PASS_X, PASS_Y, PASS_W, PASS_H,
                 List.of("Pass du mois", "Quetes du jour et du mois, 35 recompenses"));
+        tip(g, mouseX, mouseY, LUCKY_X, PASS_Y, LUCKY_W, PASS_H,
+                List.of("Lucky Pass", "Un lancer gratuit par jour : 1 a 3 lucky blocks"));
         for (int index = 0; index < SHORTCUTS.size(); index++) {
             Shortcut shortcut = SHORTCUTS.get(index);
             tip(g, mouseX, mouseY, COLUMN_X, shortcutY(index), BUTTON, BUTTON,
@@ -222,6 +237,9 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
         }
         if (inside(x, y, PASS_X, PASS_Y, PASS_W, PASS_H)) {
             return "pass";
+        }
+        if (inside(x, y, LUCKY_X, PASS_Y, LUCKY_W, PASS_H)) {
+            return "lucky";
         }
         for (int index = 0; index < SHORTCUTS.size(); index++) {
             if (inside(x, y, COLUMN_X, shortcutY(index), BUTTON, BUTTON)) {

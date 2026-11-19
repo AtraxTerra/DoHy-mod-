@@ -1455,6 +1455,41 @@ Demandés le 2026-11-19. Le détail du relevé est dans `PALAMOD.md` § 36, les 
   noms ; `--jar` pour les textures) et `tools/xp_potion_assets.py` (textures, icônes d'effet,
   modèles, noms). La CI vérifie que leurs fichiers sont à jour (`--check`).
 
+## Lucky blocks et Lucky Pass (2026-11-19)
+
+Demandés le 2026-11-19 avec les trônes. Le relevé et les écarts sont dans `PALAMOD.md` § 37, la
+valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
+
+### Les lucky blocks
+
+- **Trois blocs** : paladium (rouge), endium (bleu), findium (jaune). Clic droit : une machine à
+  sous s'ouvre ; « OUVRIR » lance les trois rouleaux, et l'événement tombe quand l'écran se
+  ferme (seul, cinq secondes après l'arrêt, ou par FERMER). Espace ou Entrée valent le bouton ; un
+  clic sur la machine passe l'animation.
+- **75 événements** pour ce premier lot, sur les 439 de PalaMod : un bon sur deux environ au
+  paladium (pyramides de minerais, gardes du corps, pluie de minerais, armure arc-en-ciel,
+  dix lucky blocks en endium d'un coup…), que des bons à l'endium, et au findium des tours plus
+  étranges (la tête qui disparaît, une armée de chiens, des enclumes qui rapportent 1 000 $). Les
+  malus piègent, font exploser ou abîment, jamais dans un claim ennemi.
+- L'événement est tiré une fois pour toutes : cassé et reposé, le bloc garde le sien. Le compteur
+  DECOUVERTS suit ceux qu'on a déjà vus.
+
+### Le Lucky Pass
+
+- **Un lancer gratuit par jour**, remis à zéro avec les contrats : un, deux ou trois lucky blocks
+  (60 %, 30 %, 10 %), paladium ou findium le plus souvent, endium une fois sur seize.
+- **Où** : le bouton LUCKY de l'inventaire, à côté de PASS ; la carte « Lucky Pass » du menu
+  principal, marquée PRET tant que le lancer du jour reste à jouer ; `/luckypass` ou `/lucky`.
+- **La fiche** « Lucky blocks » (PalaMod), découverte en ramassant un lucky block ou en ouvrant
+  l'un des deux écrans.
+
+### Code
+
+- `palamod/lucky/` : les blocs, le catalogue et le tirage (`LuckyEvents`, `GoodEvents`,
+  `BadEvents`, `FindiumEvents`), l'ouverture (`LuckySession`) et le pass (`LuckyPass`) ; côté
+  client `client/lucky/` (les deux écrans, les effets cosmétiques).
+- `tools/lucky_assets.py` génère les fichiers et vérifie les événements en CI (`--check`).
+
 ## Sur un serveur dédié (2026-11-13)
 
 Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les

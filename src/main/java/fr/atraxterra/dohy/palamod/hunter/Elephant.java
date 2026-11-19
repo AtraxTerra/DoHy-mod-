@@ -239,7 +239,8 @@ public class Elephant extends PathfinderMob {
         }
     }
 
-    void tame(ServerPlayer player) {
+    /** Apprivoise l'elephant pour ce joueur (au bout des croquettes, ou d'un lucky block). */
+    public void tame(ServerPlayer player) {
         owner = player.getUUID();
         entityData.set(TAMED, true);
     }

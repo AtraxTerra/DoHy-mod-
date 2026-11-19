@@ -3964,6 +3964,71 @@
           "create:encased_fan"
         ]
       }
+    },
+    {
+      "id": "lucky_blocks",
+      "category": "palamod",
+      "order": 17,
+      "icon": "palamod:paladium_lucky_block",
+      "title": "Lucky blocks",
+      "card": [
+        "Paladium, endium, findium",
+        "Le Lucky Pass : 1 par jour"
+      ],
+      "summary": [
+        "Un lucky block se pose puis s'ouvre d'un clic droit : trois rouleaux tournent et s'arretent sur un evenement, bon ou mauvais. Il se produit a la fermeture de l'ecran."
+      ],
+      "sections": [
+        {
+          "title": "Les trois blocs",
+          "text": [
+            "- Paladium : bons et mauvais evenements, a peu pres moitie-moitie.",
+            "- Endium : uniquement des bons, les memes que le paladium.",
+            "- Findium : ses propres evenements, plus de malus que de bonus.",
+            "Casse a la main, un lucky block se rend tel quel. Une explosion ne l'ouvre pas."
+          ]
+        },
+        {
+          "title": "L'ouverture",
+          "text": [
+            "Clic droit, puis Ouvrir : l'evenement est tire a ce moment et ne change plus, meme si tu fermes l'ecran. Passer saute la roulette.",
+            "Les explosions des lucky blocks blessent, mais ne cassent rien dans ton claim. Ouvre-les quand meme loin de tes coffres."
+          ]
+        },
+        {
+          "title": "Le Lucky Pass",
+          "text": [
+            "Un lancer gratuit par jour (bouton vert de l'inventaire, /luckypass) : 1 lucky block 6 fois sur 10, 2 trois fois sur 10, 3 une fois sur 10. Paladium la moitie du temps, findium presque autant, endium rarement.",
+            "Il rend aussi les bons evenements 1,25 fois plus probables, pour tous tes lucky blocks."
+          ]
+        },
+        {
+          "title": "Les evenements",
+          "text": [
+            "75 des 439 evenements de Paladium sont la : gardes du corps, tour de paladium, pluie de minerais, pyramides de beacon, gant de l'infini... et cages de verre, cochon explosif, zombie geant ou tete qui disparait. Le compteur de l'ecran dit combien tu en as deja vu."
+          ]
+        }
+      ],
+      "commands": [
+        "/luckypass : le Lucky Pass",
+        "/lucky : le Lucky Pass"
+      ],
+      "see": [
+        "pierres_legendaires",
+        "elephant",
+        "metiers"
+      ],
+      "discover": {
+        "items": [
+          "palamod:paladium_lucky_block",
+          "palamod:endium_lucky_block",
+          "palamod:findium_lucky_block"
+        ],
+        "views": [
+          "dohy:lucky_block",
+          "dohy:lucky_pass"
+        ]
+      }
     }
   ]
 }

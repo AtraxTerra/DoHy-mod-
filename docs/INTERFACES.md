@@ -179,9 +179,10 @@ inventaire.
   à droite, et l'écran est recentré sur lui.
 - **Accès aux menus** : le bouton rouge en haut à droite ouvre le menu principal ; les cinq cases
   ouvrent le **shop** (étal), les **contrats** (parchemin), la **banque** (émeraude), la **faction**
-  (château) et les **métiers** (objet doré). Le bouton rouge sous le craft, à la place du Lucky Pass
-  de Paladium, ouvre le **pass du mois** (bouton PASS et relique du mois, depuis le lot 8 ; il
-  ouvrait le concours Trixium, qui reste au menu principal). Une bulle nomme chaque bouton.
+  (château) et les **métiers** (objet doré). Sous le craft, là où Paladium mettait le Lucky Pass,
+  le bouton rouge PASS ouvre le **pass du mois** (relique du mois, depuis le lot 8 ; il ouvrait le
+  concours Trixium, qui reste au menu principal) et, depuis le lot 10, le bouton vert LUCKY à côté
+  ouvre le **Lucky Pass**. Une bulle nomme chaque bouton.
 - **Côté serveur** : un clic ferme l'inventaire (le serveur rend la grille de craft et l'objet tenu
   à la souris), puis envoie `InventoryNav.Open` ; `HubController.openTarget` n'ouvre que les menus de
   sa liste, par les mêmes cartes que le menu principal.
@@ -256,6 +257,22 @@ construction »). Elle passe par `MenuView`, avec une mise en page de plus :
   ou EN ROUTE, barre de l'offrande sur celui qu'on regarde), son offrande en `TILES` (déposé / requis,
   ce qu'il y a dans le sac, vert quand c'est complet), la carte d'action (Offrir à l'autel seulement,
   En route, ou Combattre), puis ce qu'il rapporte en `ROWS`.
+
+## Les lucky blocks et le Lucky Pass (lot 10)
+
+- **L'ouverture d'un lucky block** (`LuckyBlockScreen`, vue `dohy:lucky_block`) : un panneau à la
+  couleur du bloc, l'en-tête LUCKY BLOCK et sa sorte, la pastille DECOUVERTS x / 75, puis la
+  machine à sous de PalaMod (son avant-plan, ses trois rouleaux d'icônes, leurs temps : 5 s par
+  rouleau, départs décalés de 600 ms, arrivée avec un rebond). Sous la machine : l'invite, puis
+  OUVERTURE EN COURS..., puis la pastille BONUS ou MALUS (et NOUVEAU), le nom de l'événement et le
+  compte à rebours de la fermeture. Un bouton, OUVRIR, PASSER puis FERMER ; Espace et Entrée le
+  valent. Un tic à chaque case qui passe, un coup sourd à chaque rouleau qui s'arrête, une enclume
+  pour un malus, un carillon pour un bon.
+- **Le Lucky Pass** (`LuckyPassScreen`, vue `dohy:lucky_pass`) : le même cadre, trois rouleaux de
+  cases (un lucky block, ou la croix de PalaMod pour une case vide), le nombre de lancers, LANCER
+  puis le gain (« Gagne : 1 PALADIUM + 1 FINDIUM ») et l'heure du prochain lancer.
+- **Le menu principal** passe à cinq cartes sur une ligne quand les noms tiennent (la carte
+  « Lucky Pass » rejoint la liste des choses à faire).
 
 ## Vérification
 

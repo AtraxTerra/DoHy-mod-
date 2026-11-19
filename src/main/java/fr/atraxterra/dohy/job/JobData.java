@@ -103,6 +103,11 @@ public final class JobData {
         return next;
     }
 
+    /** Fixe l'XP d'un metier : un lucky block qui fait perdre un niveau ({@code SEUM}). */
+    public void setXp(Job job, long value) {
+        xp.put(job, Math.max(0L, value));
+    }
+
     /** Reprend la progression d'une ancienne sauvegarde, sans jamais la baisser. */
     void absorb(JobData legacy) {
         legacy.xp.forEach((job, value) -> xp.merge(job, value, Math::max));

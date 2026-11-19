@@ -977,5 +977,18 @@
   "item.palamod.double_xp_potion": "Potion de Double XP",
   "effect.palamod.double_job_xp": "Double XP metier",
   "item.palamod.triple_xp_potion": "Potion de Triple XP",
-  "effect.palamod.triple_job_xp": "Triple XP metier"
+  "effect.palamod.triple_job_xp": "Triple XP metier",
+  "block.palamod.paladium_fake_block": "Bloc de paladium",
+  "block.palamod.paladium_lucky_block": "Lucky Block en paladium",
+  "block.palamod.endium_lucky_block": "Lucky Block en endium",
+  "block.palamod.findium_lucky_block": "Lucky Block en findium",
+  "effect.palamod.super_man": "SuperMan",
+  "effect.palamod.walk_in_music": "Bouge en rythme",
+  "effect.palamod.fire_man": "Tout feu tout flamme",
+  "effect.palamod.bunny_life": "Gros Relou",
+  "effect.palamod.hide_head": "Ou donner de la tete",
+  "effect.palamod.frozen_ground": "Sol glace",
+  "effect.palamod.no_jump": "Mais pas si haut !",
+  "effect.palamod.third_person": "Prendre du recul",
+  "effect.palamod.anvil_money": "Money"
 }

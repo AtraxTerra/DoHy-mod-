@@ -100,6 +100,7 @@ public final class PalaMod {
         PalaTrixium.register(modBus);
         PalaThrones.register(modBus);
         PalaXpPotions.register(modBus);
+        fr.atraxterra.dohy.palamod.lucky.PalaLucky.register(modBus);
         PalaAchievements.register(modBus);
         PalaItems.register(modBus);
         PalaTab.register(modBus);

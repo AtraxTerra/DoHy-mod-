@@ -226,6 +226,12 @@ public final class UiNet {
                 fr.atraxterra.dohy.palamod.fishing.FishingGame::handle);
         register(fr.atraxterra.dohy.faction.FactionEditView.ID, fr.atraxterra.dohy.faction.FactionEditView.STREAM_CODEC,
                 fr.atraxterra.dohy.faction.FactionEdit::handle);
+        register(fr.atraxterra.dohy.palamod.lucky.LuckyBlockView.ID,
+                fr.atraxterra.dohy.palamod.lucky.LuckyBlockView.STREAM_CODEC,
+                fr.atraxterra.dohy.palamod.lucky.LuckySession::handle);
+        register(fr.atraxterra.dohy.palamod.lucky.LuckyPassView.ID,
+                fr.atraxterra.dohy.palamod.lucky.LuckyPassView.STREAM_CODEC,
+                fr.atraxterra.dohy.palamod.lucky.LuckyPass::handle);
         for (fr.atraxterra.dohy.ui.menu.MenuController menu : fr.atraxterra.dohy.ui.menu.Menus.all()) {
             register(menu.id(), MenuView.STREAM_CODEC, menu::handle);
         }

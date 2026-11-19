@@ -78,7 +78,7 @@ public final class HubController extends MenuController {
                         MoneyFormat.shortForm(rpgInto) + " / " + MoneyFormat.shortForm(rpgNeed) + " XP"))
                 .accent(0xFFF3445D).action("rpg").progress(rpgInto, Math.max(1, rpgNeed))
                 .badge(points > 0 ? "+" + points : "");
-        List<Card> todo = List.of(contractCard, passCard(player), altarCard(player), rpgCard);
+        List<Card> todo = List.of(contractCard, passCard(player), luckyCard(player), altarCard(player), rpgCard);
         int actionable = (left > 0 ? 1 : 0) + (points > 0 ? 1 : 0);
         for (Card card : todo) {
             if (card != contractCard && card != rpgCard && !card.badge().isEmpty()) {
@@ -288,6 +288,15 @@ public final class HubController extends MenuController {
                 .accent(0xFFFF6F00).action("altar").badge(ready > 0 ? "PRET" : "");
     }
 
+    /** Le Lucky Pass : le lancer gratuit du jour, ou l'heure du prochain. */
+    private static Card luckyCard(ServerPlayer player) {
+        boolean ready = fr.atraxterra.dohy.palamod.lucky.LuckyPass.available(player);
+        return Card.of(fr.atraxterra.dohy.palamod.lucky.LuckyType.PALADIUM.stack(1), "Lucky Pass", List.of(
+                        ready ? "Un lancer gratuit" : "Prochain lancer dans " + until(ContractApi.minutesUntilDailyReset())))
+                .accent(0xFF22E558).action("lucky").badge(ready ? "PRET" : "")
+                .state(ready ? MenuView.NORMAL : MenuView.DONE);
+    }
+
     private static Card passCard(ServerPlayer player) {
         fr.atraxterra.dohy.pass.PassApi.rollIfDue(player);
         fr.atraxterra.dohy.pass.PassData data = fr.atraxterra.dohy.pass.PassApi.data(player);
@@ -334,7 +343,7 @@ public final class HubController extends MenuController {
     private static final java.util.Set<String> INVENTORY_TARGETS =
             java.util.Set.of("shop", "contracts", "bank", "faction", "jobs", "trixium", "clicker", "encyclopedia",
                     "pass", "sell", "boutique", "market", "collections", "museum", "altar", "achievements", "upgrades",
-                    "rpg", "plans");
+                    "rpg", "plans", "lucky");
 
     /**
      * Ouvre le menu demande par un bouton de l'inventaire ({@code InventoryNav}).
@@ -364,6 +373,7 @@ public final class HubController extends MenuController {
         switch (key) {
             case "encyclopedia" -> fr.atraxterra.dohy.guide.EncyclopediaMenu.openIndex(player);
             case "pass" -> fr.atraxterra.dohy.pass.PassMenu.INSTANCE.open(player);
+            case "lucky" -> fr.atraxterra.dohy.palamod.lucky.LuckyPass.open(player);
             case "altar" -> fr.atraxterra.dohy.jobboss.JobBossMenu.INSTANCE.openFromAfar(player);
             case "plans" -> fr.atraxterra.dohy.guide.EncyclopediaMenu.openEntry(player, "plans");
             case "faction" -> fr.atraxterra.dohy.faction.FactionMenus.Overview.INSTANCE.open(player);

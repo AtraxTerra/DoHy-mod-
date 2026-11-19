@@ -118,6 +118,8 @@ public final class PalaTab {
                                 .forEach(item -> output.accept(item.get()));
                         // Les potions d'XP de metier, dans leurs quatre durees.
                         fr.atraxterra.dohy.palamod.boost.PalaXpPotions.tab().forEach(output::accept);
+                        // Les lucky blocks.
+                        fr.atraxterra.dohy.palamod.lucky.PalaLucky.ORDERED.forEach(item -> output.accept(item.get()));
                     })
                     .build());
 
