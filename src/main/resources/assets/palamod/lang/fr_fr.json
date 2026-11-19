@@ -1201,5 +1201,6 @@
   "block.palamod.pumpkin_face_6": "Citrouille sculptee 6",
   "block.palamod.pumpkin_face_7": "Citrouille sculptee 7",
   "block.palamod.pumpkin_face_8": "Citrouille sculptee 8",
-  "block.palamod.infinity_pie": "Tarte infinie"
+  "block.palamod.infinity_pie": "Tarte infinie",
+  "effect.palamod.explosive": "Inventaire explosif"
 }

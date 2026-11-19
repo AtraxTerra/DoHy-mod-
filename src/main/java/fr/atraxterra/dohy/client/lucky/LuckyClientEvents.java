@@ -105,15 +105,26 @@ public final class LuckyClientEvents {
     /** L'inventaire etait-il ouvert au tic precedent ? */
     private static boolean inventoryWasOpen;
 
-    /** « Spooky Spook » ({@code ClientProxy.spooky}) : ouvrir son inventaire fait hurler. */
+    /**
+     * L'inventaire vient de s'ouvrir : « Spooky Spook » ({@code ClientProxy.spooky}) fait hurler,
+     * « Inventaire explosif » previent le serveur, qui fait tomber une dynamite.
+     */
     @SubscribeEvent
-    public static void onSpooky(ClientTickEvent.Post event) {
+    public static void onInventory(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
-        boolean open = minecraft.screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen;
-        if (open && !inventoryWasOpen && minecraft.player != null
-                && minecraft.player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SPOOKY)) {
-            minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
-                    net.minecraft.sounds.SoundEvents.GHAST_SCREAM, 0.8f, 1.0f));
+        net.minecraft.client.gui.screens.Screen screen = minecraft.screen;
+        boolean open = screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen
+                || screen instanceof net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
+                || screen instanceof fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
+        if (open && !inventoryWasOpen && minecraft.player != null) {
+            if (minecraft.player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SPOOKY)) {
+                minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+                        net.minecraft.sounds.SoundEvents.GHAST_SCREAM, 0.8f, 1.0f));
+            }
+            if (minecraft.player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.EXPLOSIVE)) {
+                net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
+                        fr.atraxterra.dohy.palamod.lucky.LuckyPayloads.InventoryOpened.INSTANCE);
+            }
         }
         inventoryWasOpen = open;
     }

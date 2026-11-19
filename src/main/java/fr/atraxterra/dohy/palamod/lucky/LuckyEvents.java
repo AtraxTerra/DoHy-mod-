@@ -61,6 +61,7 @@ public final class LuckyEvents {
             AugustEvents.register(catalog);
             SeptemberEvents.register(catalog);
             HalloweenEvents.register(catalog);
+            NovemberEvents.register(catalog);
             events = Collections.unmodifiableMap(catalog.map);
         }
         return events;
@@ -184,6 +185,18 @@ public final class LuckyEvents {
         public void season(LuckyType type, String id, String name, String icon, boolean bad, int rarity,
                            LuckyEvent.Action action) {
             add(new LuckyEvent(id, name, icon, bad, rarity, EnumSet.of(type), action));
+        }
+
+        /**
+         * L'action d'un evenement deja inscrit : novembre et le lucky block noir reprennent des
+         * evenements des autres lucky blocks sous un autre nom.
+         */
+        public LuckyEvent.Action action(String id) {
+            LuckyEvent event = map.get(id);
+            if (event == null) {
+                throw new IllegalStateException("evenement inconnu : " + id);
+            }
+            return event.action();
         }
 
         private void add(LuckyEvent event) {

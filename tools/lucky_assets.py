@@ -52,7 +52,8 @@ SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEve
            "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
            "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
            "EasterEvents.java", "MayEvents.java", "JuneEvents.java",
-           "JulyEvents.java", "AugustEvents.java", "SeptemberEvents.java", "HalloweenEvents.java")
+           "JulyEvents.java", "AugustEvents.java", "SeptemberEvents.java", "HalloweenEvents.java",
+           "NovemberEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -135,6 +136,7 @@ EFFECTS = {
     "english": ("Cours d'anglais", "English Lesson", "september/english_test"),
     "hell_yeah": ("Hell Yeah!", "Hell Yeah!", "hell_yeah"),
     "spooky": ("Spooky Spook", "Spooky Spook", "spooky_spook"),
+    "explosive": ("Inventaire explosif", "Explosive Inventory", "november/explosive_inventory"),
     "no_forward": ("Aucune avancee", "No Progress", "may/aucune_avancee"),
 }
 

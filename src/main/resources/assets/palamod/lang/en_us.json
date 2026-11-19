@@ -1201,5 +1201,6 @@
   "block.palamod.pumpkin_face_6": "Carved Pumpkin 6",
   "block.palamod.pumpkin_face_7": "Carved Pumpkin 7",
   "block.palamod.pumpkin_face_8": "Carved Pumpkin 8",
-  "block.palamod.infinity_pie": "Infinity Pie"
+  "block.palamod.infinity_pie": "Infinity Pie",
+  "effect.palamod.explosive": "Explosive Inventory"
 }

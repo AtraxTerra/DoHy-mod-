@@ -119,6 +119,9 @@ public final class SeasonEffects {
     /** « Spooky Spook » ({@code ClientProxy.spooky}) : ouvrir son inventaire fait hurler. */
     public static final DeferredHolder<MobEffect, LuckyEffect> SPOOKY =
             EFFECTS.register("spooky", () -> new LuckyEffect(MobEffectCategory.NEUTRAL, 0x6A2D8C));
+    /** « Inventaire explosif » : ouvrir son inventaire fait tomber une dynamite ({@code ExplosiveInventoryData}). */
+    public static final DeferredHolder<MobEffect, LuckyEffect> EXPLOSIVE =
+            EFFECTS.register("explosive", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xC81E1E));
 
     private SeasonEffects() {
     }
