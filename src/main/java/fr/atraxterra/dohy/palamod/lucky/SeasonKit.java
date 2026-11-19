@@ -220,11 +220,14 @@ public final class SeasonKit {
 
     private static final Map<UUID, CodeRoom> ROOMS = new HashMap<>();
 
+    /** Ou flottent les chiffres, par rapport au centre de la salle : ouest, nord, est, sud. */
+    private static final double[][] CODE_SPOTS = {{-1.2d, 0.0d}, {0.0d, -1.2d}, {1.2d, 0.0d}, {0.0d, 1.2d}};
+
     /**
      * La salle a code des coffres du mois ({@code BiicodeStructure}) : une piece de 6 blocs de
-     * bedrock autour du joueur, un coffre au milieu, trois chiffres devant le mur du nord, a
-     * hauteur des yeux, et une lumiere invisible au plafond. Le code tape dans le chat ouvre la
-     * porte ; au bout de cinq minutes la piece disparait de toute facon. Le coffre reste.
+     * bedrock autour du joueur, un coffre au milieu, un chiffre devant chaque mur (ouest, nord,
+     * est), a hauteur des yeux, et une lumiere invisible au plafond. Le code tape dans le chat
+     * ouvre la porte ; au bout de cinq minutes la piece disparait de toute facon. Le coffre reste.
      */
     public static void codeRoom(ServerPlayer player, ServerLevel level, String title, int[] code,
                                 List<ItemStack> rewards) {
@@ -253,10 +256,11 @@ public final class SeasonKit {
         chest(player, level, center.offset(0, 0, 1), rewards);
         List<Entity> marks = new ArrayList<>();
         for (int index = 0; index < code.length; index++) {
-            // Le nom flotte au-dessus du support invisible (haut de 2 blocs) : pose un peu sous le
-            // sol, le chiffre se lit a hauteur des yeux, pas dans le plafond.
-            var mark = LuckyCreatures.marker(level, center.getX() - 1 + index + 0.5d, center.getY() - 0.3d,
-                    center.getZ() - 2 + 0.7d);
+            // Un chiffre par mur, sinon les noms se chevauchent. Le nom flotte au-dessus du support
+            // invisible (haut de 2 blocs) : pose un peu sous le sol, il se lit a hauteur des yeux.
+            double[] spot = CODE_SPOTS[index % CODE_SPOTS.length];
+            var mark = LuckyCreatures.marker(level, center.getX() + spot[0], center.getY() - 0.3d,
+                    center.getZ() + spot[1]);
             if (mark != null) {
                 mark.setCustomName(Component.literal("Chiffre " + (index + 1) + " : " + code[index])
                         .withStyle(ChatFormatting.AQUA));
