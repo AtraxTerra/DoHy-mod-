@@ -1181,5 +1181,10 @@
   "block.palamod.lead_block": "Block of Lead",
   "block.palamod.ventilator": "Fan",
   "block.palamod.treadmill": "Treadmill",
-  "block.palamod.quicksand": "Quicksand"
+  "block.palamod.quicksand": "Quicksand",
+  "effect.palamod.english": "English Lesson",
+  "item.palamod.butcher_knife": "Butcher Knife",
+  "item.palamod.job_offer": "Job Offer",
+  "item.palamod.trade_file": "Trade File",
+  "item.palamod.daemon_amulet": "Daemon Amulet"
 }

@@ -114,7 +114,7 @@ final class AugustEvents {
             return;
         }
         SeasonKit.stat(bee, Attributes.MAX_HEALTH, 7.0d);
-        bee.setRemainingPersistentAngerTime(3600);
+        bee.setTimeToRemainAngry(3600L);
         bee.setTarget(player);
     }
 
@@ -354,7 +354,7 @@ final class AugustEvents {
     // -- La vie de chateau (de sable) -----------------------------------------------------------
 
     /** Un chateau de sable et son majordome, qui rend un service au choix. */
-    private static void sandcastle(ServerPlayer player, ServerLevel level, BlockPos pos) {
+    static void sandcastle(ServerPlayer player, ServerLevel level, BlockPos pos) {
         Vec3 look = player.getLookAngle().multiply(1.0d, 0.0d, 1.0d).normalize();
         BlockPos center = SeasonKit.ground(level, (int) Math.floor(player.getX() + look.x * 6.0d),
                 (int) Math.floor(player.getZ() + look.z * 6.0d));
@@ -439,6 +439,14 @@ final class AugustEvents {
 
     /** Une petite ile au soleil, cinq minutes, et un coffre de vacances. */
     private static void holidays(ServerPlayer player, ServerLevel level, BlockPos pos) {
+        holidays(player, level, LuckyType.AUGUST, LuckyType.JULY);
+    }
+
+    /**
+     * L'ile des vacances ({@code lbaout_camping}), reprise par le pecule de vacances de
+     * septembre : le coffre garde les deux lucky blocks donnes.
+     */
+    static void holidays(ServerPlayer player, ServerLevel level, LuckyType first, LuckyType second) {
         Vec3 back = player.position();
         int y = Math.min(150, level.getMaxY() - 12);
         BlockPos center = new BlockPos(player.getBlockX(), y, player.getBlockZ());
@@ -472,7 +480,7 @@ final class AugustEvents {
             }
         }
         SeasonKit.chest(player, level, center.offset(-2, 1, -2), List.of(SeasonKit.stack("palamod:paladium_block", 2),
-                LuckyType.AUGUST.stack(1), LuckyType.JULY.stack(1), new ItemStack(SeasonItems.DOUBLE_ICE_CREAM.get(), 2)));
+                first.stack(1), second.stack(1), new ItemStack(SeasonItems.DOUBLE_ICE_CREAM.get(), 2)));
         player.teleportTo(center.getX() + 0.5d, center.getY() + 1.0d, center.getZ() + 0.5d);
         SeasonKit.win(player, "Bienvenue en vacances ! Profite bien, le retour est dans 5 minutes.");
         SeasonKit.timer(player, "Vacances d'ete", 300, p -> {

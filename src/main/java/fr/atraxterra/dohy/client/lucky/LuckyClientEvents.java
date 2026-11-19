@@ -73,6 +73,35 @@ public final class LuckyClientEvents {
         }
     }
 
+    /** La langue d'avant le cours d'anglais, rendue a la fin de l'effet. */
+    private static net.minecraft.locale.Language beforeEnglish;
+    /** L'anglais charge pour l'effet : une autre langue en place veut dire un rechargement des ressources. */
+    private static net.minecraft.locale.Language english;
+
+    /**
+     * « Test d'anglais » rate ({@code SCTimedLanguagePacket}) : le jeu passe en anglais le temps de
+     * l'effet, sans toucher aux options du joueur.
+     */
+    @SubscribeEvent
+    public static void onEnglish(ClientTickEvent.Post event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        boolean active = minecraft.player != null
+                && minecraft.player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.ENGLISH);
+        net.minecraft.locale.Language current = net.minecraft.locale.Language.getInstance();
+        if (active && current != english) {
+            beforeEnglish = current;
+            english = net.minecraft.client.resources.language.ClientLanguage.loadFrom(minecraft.getResourceManager(),
+                    List.of("en_us"), false);
+            net.minecraft.locale.Language.inject(english);
+        } else if (!active && english != null) {
+            if (current == english) {
+                net.minecraft.locale.Language.inject(beforeEnglish);
+            }
+            beforeEnglish = null;
+            english = null;
+        }
+    }
+
     /** « Cinema muet » : plus aucun son ({@code PLuckyBlock.CINEMA_MUET}). */
     @SubscribeEvent
     public static void onSound(net.neoforged.neoforge.client.event.sound.PlaySoundEvent event) {

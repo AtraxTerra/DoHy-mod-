@@ -110,6 +110,9 @@ public final class SeasonEffects {
     /** « Faut pas en faire tout un foin » : de la paille plein l'ecran ({@code SCMessPacket}). */
     public static final DeferredHolder<MobEffect, LuckyEffect> MESS =
             EFFECTS.register("mess", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xD9C35A));
+    /** « Test d'anglais » rate : le jeu passe en anglais le temps de l'effet ({@code SCTimedLanguagePacket}). */
+    public static final DeferredHolder<MobEffect, LuckyEffect> ENGLISH =
+            EFFECTS.register("english", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x3C5AA6));
 
     private SeasonEffects() {
     }

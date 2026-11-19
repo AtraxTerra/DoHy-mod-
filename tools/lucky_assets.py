@@ -52,7 +52,7 @@ SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEve
            "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
            "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
            "EasterEvents.java", "MayEvents.java", "JuneEvents.java",
-           "JulyEvents.java", "AugustEvents.java")
+           "JulyEvents.java", "AugustEvents.java", "SeptemberEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -132,6 +132,7 @@ EFFECTS = {
     "baking": ("Cuisson", "Baking", "august/armor_bake"),
     "summer_body": ("Summer body", "Summer Body", "august/summer_body_dilemma"),
     "mess": ("Tout un foin", "Hay Mess", "august/dont_make_mess"),
+    "english": ("Cours d'anglais", "English Lesson", "september/english_test"),
     "no_forward": ("Aucune avancee", "No Progress", "may/aucune_avancee"),
 }
 
@@ -388,6 +389,11 @@ SEASON_ITEMS = {
     "volley_ball": ("items/volley_ball.png", "volley_ball", False, "Ballon de volley", "Volleyball"),
     "portable_volley_court": ("items/portable_volley_court.png", "portable_volley_court", False,
                               "Terrain de volley portatif", "Portable Volleyball Court"),
+    # Septembre.
+    "butcher_knife": ("items/butcher_knife.png", "butcher_knife", True, "Couteau de boucher", "Butcher Knife"),
+    "job_offer": ("items/job_offer.png", "job_offer", False, "Offre d'emploi", "Job Offer"),
+    "trade_file": ("items/trade_file.png", "trade_file", False, "Dossier de metier", "Trade File"),
+    "daemon_amulet": ("items/daemon_amulet.png", "daemon_amulet", False, "Amulette demoniaque", "Daemon Amulet"),
 }
 SEASON_BLOCKS = {
     "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),

@@ -269,6 +269,22 @@ public final class SeasonItems {
     public static final DeferredBlock<QuicksandBlock> QUICKSAND = seasonBlock("quicksand", QuicksandBlock::new,
             properties -> properties.strength(0.5f).sound(SoundType.SAND).noCollision());
 
+    // -- Septembre ------------------------------------------------------------------------------
+
+    /** {@code ItemButcherKnife} : une epee en paladium ; 25 degats de plus aux zombies. */
+    public static final DeferredItem<ButcherKnifeItem> BUTCHER_KNIFE = seasonItem("butcher_knife",
+            ButcherKnifeItem::new, properties -> properties.sword(
+                    fr.atraxterra.dohy.palamod.equipment.PalaToolMaterials.PALADIUM, 3.0f, -2.4f));
+    /** {@code ItemsRegister.JOB_OFFER} : une offre d'emploi ; acceptee, de l'experience de metier. */
+    public static final DeferredItem<JobOfferItem> JOB_OFFER = seasonItem("job_offer", JobOfferItem::new,
+            properties -> properties.stacksTo(16));
+    /** {@code ItemTradeFile} : le dossier de metier, les niveaux de son proprietaire. */
+    public static final DeferredItem<TradeFileItem> TRADE_FILE = seasonItem("trade_file", TradeFileItem::new,
+            properties -> properties.stacksTo(1));
+    /** {@code DAEMON_AMULET} : force et resistance au feu une minute ; cinq minutes entre deux. */
+    public static final DeferredItem<DaemonAmuletItem> DAEMON_AMULET = seasonItem("daemon_amulet",
+            DaemonAmuletItem::new, properties -> properties.stacksTo(1));
+
     private SeasonItems() {
     }
 
@@ -973,6 +989,83 @@ public final class SeasonItems {
                 } else {
                     LuckyWorld.tell(server, "Il n'a pas ete possible de poser le terrain.", ChatFormatting.RED);
                 }
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** Le couteau de boucher : les zombies le sentent passer. */
+    public static class ButcherKnifeItem extends Item {
+        public ButcherKnifeItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+            super.hurtEnemy(stack, target, attacker);
+            if (attacker.level() instanceof ServerLevel server
+                    && target instanceof net.minecraft.world.entity.monster.zombie.Zombie) {
+                target.hurtServer(server, server.damageSources().magic(), 25.0f);
+            }
+        }
+    }
+
+    /** L'offre d'emploi : deux mille points d'experience dans un metier au hasard. */
+    public static class JobOfferItem extends Item {
+        public JobOfferItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (player instanceof ServerPlayer server) {
+                var jobs = fr.atraxterra.dohy.job.Job.values();
+                var job = jobs[server.getRandom().nextInt(jobs.length)];
+                fr.atraxterra.dohy.job.JobApi.grant(server, job, 2000L);
+                LuckyWorld.tell(server, "Offre acceptee : 2000 XP en " + job.display() + " !", ChatFormatting.GREEN);
+                player.getItemInHand(hand).consume(1, player);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** Le dossier de metier : les niveaux, metier par metier. */
+    public static class TradeFileItem extends Item {
+        public TradeFileItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (player instanceof ServerPlayer server) {
+                LuckyWorld.tell(server, "Dossier de metier de " + server.getName().getString(), ChatFormatting.GOLD);
+                for (var job : fr.atraxterra.dohy.job.Job.values()) {
+                    LuckyWorld.tell(server, " - " + job.display() + " : niveau "
+                            + fr.atraxterra.dohy.job.JobApi.level(server, job) + " (" + fr.atraxterra.dohy.job.JobApi
+                            .xp(server, job) + " XP)", ChatFormatting.YELLOW);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** L'amulette demoniaque : force et feu, une minute. */
+    public static class DaemonAmuletItem extends Item {
+        public DaemonAmuletItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (player.getCooldowns().isOnCooldown(player.getItemInHand(hand))) {
+                return InteractionResult.FAIL;
+            }
+            if (level instanceof ServerLevel server) {
+                player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 1200, 1));
+                player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 1200, 0));
+                server.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, player.getX(), player.getY() + 1.0d, player.getZ(),
+                        20, 0.4d, 0.6d, 0.4d, 0.02d);
+                player.getCooldowns().addCooldown(player.getItemInHand(hand), 6000);
             }
             return InteractionResult.SUCCESS;
         }

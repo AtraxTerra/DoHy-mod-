@@ -4363,7 +4363,7 @@ def main():
     tag("minecraft/tags/item/foot_armor.json", ["%s:%s" % (NS, name) for name in (
         "pig_boots", "invisible_boots", "fake_endium_boots", "air_min_boots", "easter_bunny_boots")])
     tag("minecraft/tags/item/swords.json", ["%s:couac_sword" % NS, "%s:ghostly_sword" % NS,
-                                            "%s:electric_guitar" % NS])
+                                            "%s:electric_guitar" % NS, "%s:butcher_knife" % NS])
     # Les AirMin ne se reparent pas (getIsRepairable) : leur materiau designe un tag vide.
     tag("%s/tags/item/repairs/nothing.json" % NS, [])
 

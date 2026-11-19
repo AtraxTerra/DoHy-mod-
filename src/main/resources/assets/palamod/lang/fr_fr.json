@@ -1181,5 +1181,10 @@
   "block.palamod.lead_block": "Bloc de plomb",
   "block.palamod.ventilator": "Ventilateur",
   "block.palamod.treadmill": "Tapis de course",
-  "block.palamod.quicksand": "Sable mouvant"
+  "block.palamod.quicksand": "Sable mouvant",
+  "effect.palamod.english": "Cours d'anglais",
+  "item.palamod.butcher_knife": "Couteau de boucher",
+  "item.palamod.job_offer": "Offre d'emploi",
+  "item.palamod.trade_file": "Dossier de metier",
+  "item.palamod.daemon_amulet": "Amulette demoniaque"
 }
