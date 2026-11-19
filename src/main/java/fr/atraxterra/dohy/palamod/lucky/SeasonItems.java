@@ -321,6 +321,46 @@ public final class SeasonItems {
     public static final DeferredBlock<InfinityPieBlock> INFINITY_PIE = seasonBlock("infinity_pie",
             InfinityPieBlock::new, properties -> properties.strength(5.0f).sound(SoundType.WOOL).noOcclusion());
 
+    // -- Noel -----------------------------------------------------------------------------------
+
+    /** {@code BlockChristmasTree} : le sapin de Noel, que donne la hache du roi des forets. */
+    public static final DeferredBlock<ShapedDecorBlock> CHRISTMAS_TREE = seasonBlock("christmas_tree",
+            properties -> new ShapedDecorBlock(properties, Block.box(2, 0, 2, 14, 16, 14)),
+            properties -> properties.strength(0.5f).sound(SoundType.GRASS).noOcclusion().noCollision()
+                    .lightLevel(state -> 6));
+    /** {@code BlockChristmasMockup} : une maquette de maison enneigee, pour decorer. */
+    public static final DeferredBlock<ShapedDecorBlock> CHRISTMAS_MOCKUP = seasonBlock("christmas_mockup",
+            properties -> new ShapedDecorBlock(properties, Block.box(2, 0, 2, 14, 10, 14)),
+            properties -> properties.strength(1.0f).sound(SoundType.WOOD).noOcclusion());
+    /** {@code ItemChocolateMilk} : du lait chocolate, trente secondes de vitesse. */
+    public static final DeferredItem<ChocolateMilkItem> CHOCOLATE_MILK = seasonItem("chocolate_milk",
+            ChocolateMilkItem::new, properties -> properties.stacksTo(16)
+                    .food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(4).saturationModifier(0.4f)
+                            .alwaysEdible().build())
+                    .component(net.minecraft.core.component.DataComponents.CONSUMABLE,
+                            net.minecraft.world.item.component.Consumable.builder().consumeSeconds(1.6f)
+                                    .animation(net.minecraft.world.item.ItemUseAnimation.DRINK)
+                                    .sound(SoundEvents.GENERIC_DRINK).hasConsumeParticles(false).build()));
+    /** {@code ItemChristmasAxe} : une buche coupee avec elle donne un sapin de Noel. */
+    public static final DeferredItem<ChristmasAxeItem> CHRISTMAS_AXE = seasonItem("christmas_axe",
+            properties -> new ChristmasAxeItem(net.minecraft.world.item.ToolMaterial.IRON, 6.0f, -3.1f, properties),
+            properties -> properties);
+    /** {@code ItemChristmasStone} : fait le vide autour de soi ; une fois par jour. */
+    public static final DeferredItem<ChristmasStoneItem> CHRISTMAS_STONE = seasonItem("christmas_stone",
+            ChristmasStoneItem::new, properties -> properties.stacksTo(1));
+    /** {@code ItemMulticolorGift} : un lucky block en paladium, un en findium, un noir. */
+    public static final DeferredItem<GiftItem> MULTICOLOR_GIFT = seasonItem("multicolor_gift",
+            properties -> new GiftItem(properties, GiftItem.MULTICOLOR), properties -> properties.stacksTo(64));
+    /** {@code ItemPresent} : un cadeau, un objet au hasard. */
+    public static final DeferredItem<GiftItem> PRESENT = seasonItem("present",
+            properties -> new GiftItem(properties, GiftItem.PRESENT), properties -> properties.stacksTo(64));
+    /** {@code ItemPresentBag} : un sac de un a trois cadeaux. */
+    public static final DeferredItem<GiftItem> PRESENT_BAG = seasonItem("present_bag",
+            properties -> new GiftItem(properties, GiftItem.BAG), properties -> properties.stacksTo(16));
+    /** {@code ItemWishCard} : une carte de voeux, lue a tout le serveur. */
+    public static final DeferredItem<WishCardItem> WISH_CARD = seasonItem("wish_card", WishCardItem::new,
+            properties -> properties.stacksTo(16));
+
     private SeasonItems() {
     }
 
@@ -1783,6 +1823,178 @@ public final class SeasonItems {
                 net.minecraft.world.level.BlockGetter level, BlockPos pos,
                 net.minecraft.world.phys.shapes.CollisionContext context) {
             return Block.box(1, 0, 1, 15, 6, 15);
+        }
+    }
+
+    /** Un bloc de decoration, a la forme donnee. */
+    public static class ShapedDecorBlock extends Block {
+        private final net.minecraft.world.phys.shapes.VoxelShape shape;
+
+        public ShapedDecorBlock(Properties properties, net.minecraft.world.phys.shapes.VoxelShape shape) {
+            super(properties);
+            this.shape = shape;
+        }
+
+        @Override
+        protected net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state,
+                net.minecraft.world.level.BlockGetter level, BlockPos pos,
+                net.minecraft.world.phys.shapes.CollisionContext context) {
+            return shape;
+        }
+    }
+
+    /** Le lait chocolate : trente secondes de vitesse. */
+    public static class ChocolateMilkItem extends Item {
+        public ChocolateMilkItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+            ItemStack left = super.finishUsingItem(stack, level, entity);
+            if (!level.isClientSide()) {
+                entity.addEffect(new MobEffectInstance(MobEffects.SPEED, 600, 0));
+            }
+            return left;
+        }
+    }
+
+    /** La hache du roi des forets : chaque buche coupee donne aussi un sapin de Noel. */
+    public static class ChristmasAxeItem extends net.minecraft.world.item.AxeItem {
+        public ChristmasAxeItem(net.minecraft.world.item.ToolMaterial material, float damage, float speed,
+                                Properties properties) {
+            super(material, damage, speed, properties);
+        }
+
+        @Override
+        public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miner) {
+            if (!level.isClientSide() && miner instanceof ServerPlayer player
+                    && state.is(net.minecraft.tags.BlockTags.LOGS)) {
+                SeasonKit.give(player, new ItemStack(CHRISTMAS_TREE.get()));
+            }
+            return super.mineBlock(stack, level, state, pos, miner);
+        }
+
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context,
+                                    net.minecraft.world.item.component.TooltipDisplay display,
+                                    Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+            info(tooltip, "Chaque buche coupee donne un sapin de Noel.");
+        }
+    }
+
+    /** La pierre de Noel : fait le vide dans un rayon de quatre blocs, une fois par jour. */
+    public static class ChristmasStoneItem extends Item {
+        private static final String READY = "dohy_christmas_stone_ready";
+
+        public ChristmasStoneItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (level instanceof ServerLevel server && player instanceof ServerPlayer owner) {
+                long now = System.currentTimeMillis();
+                var data = stack.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                        net.minecraft.world.item.component.CustomData.EMPTY).copyTag();
+                long ready = data.getLongOr(READY, 0L);
+                if (now < ready) {
+                    LuckyWorld.tell(owner, "Attends encore " + duration((ready - now) / 1000L)
+                            + " avant de pouvoir utiliser cet objet.", ChatFormatting.RED);
+                    return InteractionResult.FAIL;
+                }
+                BlockPos center = owner.blockPosition();
+                for (BlockPos at : BlockPos.betweenClosed(center.offset(-4, -4, -4), center.offset(4, 4, 4))) {
+                    if (at.distManhattan(center) <= 4 && !server.getBlockState(at).isAir()
+                            && LuckyWorld.canEdit(owner, server, at)) {
+                        server.removeBlock(at.immutable(), false);
+                    }
+                }
+                data.putLong(READY, now + 86_400_000L);
+                stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                        net.minecraft.world.item.component.CustomData.of(data));
+                server.sendParticles(ParticleTypes.SNOWFLAKE, owner.getX(), owner.getY() + 1.0d, owner.getZ(), 60, 2.0d,
+                        2.0d, 2.0d, 0.05d);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context,
+                                    net.minecraft.world.item.component.TooltipDisplay display,
+                                    Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+            info(tooltip, "Clic droit : fait le vide dans un rayon de 4 blocs.");
+            info(tooltip, "Une fois toutes les 24 heures.");
+        }
+    }
+
+    /** Les cadeaux de Noel : le cadeau multicolore, le cadeau, le sac de cadeaux. */
+    public static class GiftItem extends Item {
+        static final int MULTICOLOR = 0;
+        static final int PRESENT = 1;
+        static final int BAG = 2;
+        /** {@code ItemPresent.presents} : ce que peut contenir un cadeau (ce qui existe ici). */
+        private static final List<String> PRESENTS = List.of("palamod:chunk_analyser", "palamod:blaze_and_steel",
+                "palamod:grappin", "palamod:grappin_hook", "palamod:space_food", "palamod:magic_potion",
+                "palamod:lasso", "palamod:jetpack", "palamod:biome_painter", "palamod:pig_helmet",
+                "palamod:pig_chestplate", "palamod:pig_leggings", "palamod:pig_boots", "palamod:cave_helmet",
+                "palamod:invisible_helmet", "palamod:invisible_chestplate", "palamod:invisible_leggings",
+                "palamod:invisible_boots", "palamod:speed_apple", "palamod:poulpogun", "palamod:meter",
+                "palamod:surviving_stone", "palamod:ghost_cape", "palamod:witch_broom", "palamod:pumpkin_shear",
+                "palamod:spider_gloves", "palamod:halloween_stone", "palamod:christmas_stone", "palamod:present_bag");
+        private final int kind;
+
+        public GiftItem(Properties properties, int kind) {
+            super(properties);
+            this.kind = kind;
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (level instanceof ServerLevel server && player instanceof ServerPlayer owner) {
+                switch (kind) {
+                    case MULTICOLOR -> SeasonKit.give(owner, LuckyType.PALADIUM.stack(1), LuckyType.FINDIUM.stack(1),
+                            LuckyType.BLACK.stack(1));
+                    case PRESENT -> SeasonKit.give(owner, SeasonKit.stack(PRESENTS.get(owner.getRandom()
+                            .nextInt(PRESENTS.size())), 1));
+                    default -> SeasonKit.give(owner, new ItemStack(SeasonItems.PRESENT.get(),
+                            1 + owner.getRandom().nextInt(3)));
+                }
+                server.playSound(null, owner.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.4f);
+                server.sendParticles(ParticleTypes.HAPPY_VILLAGER, owner.getX(), owner.getY() + 1.0d, owner.getZ(), 12,
+                        0.4d, 0.4d, 0.4d, 0.0d);
+                stack.consume(1, player);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** La carte de voeux : les meilleurs voeux du joueur, a tout le serveur. */
+    public static class WishCardItem extends Item {
+        private static final List<String> WISHES = List.of("vous souhaite un joyeux Noel !",
+                "vous souhaite de bonnes fetes de fin d'annee !", "vous adresse ses meilleurs voeux !",
+                "vous souhaite une annee pleine de lucky blocks !");
+
+        public WishCardItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (level instanceof ServerLevel server && player instanceof ServerPlayer owner) {
+                Component wish = Component.literal(owner.getName().getString() + " "
+                        + WISHES.get(owner.getRandom().nextInt(WISHES.size()))).withStyle(ChatFormatting.GOLD);
+                server.getServer().getPlayerList().broadcastSystemMessage(wish, false);
+                server.sendParticles(ParticleTypes.FIREWORK, owner.getX(), owner.getY() + 2.0d, owner.getZ(), 40, 0.5d,
+                        0.5d, 0.5d, 0.1d);
+                server.playSound(null, owner.blockPosition(), SoundEvents.FIREWORK_ROCKET_TWINKLE, SoundSource.PLAYERS,
+                        1.0f, 1.0f);
+                stack.consume(1, player);
+            }
+            return InteractionResult.SUCCESS;
         }
     }
 

@@ -1202,5 +1202,15 @@
   "block.palamod.pumpkin_face_7": "Citrouille sculptee 7",
   "block.palamod.pumpkin_face_8": "Citrouille sculptee 8",
   "block.palamod.infinity_pie": "Tarte infinie",
-  "effect.palamod.explosive": "Inventaire explosif"
+  "effect.palamod.explosive": "Inventaire explosif",
+  "effect.palamod.extreme_cold": "Grand froid",
+  "item.palamod.chocolate_milk": "Lait chocolate",
+  "item.palamod.christmas_axe": "Hache du roi des forets",
+  "item.palamod.christmas_stone": "Pierre de Noel",
+  "item.palamod.multicolor_gift": "Cadeau multicolore",
+  "item.palamod.present": "Cadeau",
+  "item.palamod.present_bag": "Sac de cadeaux",
+  "item.palamod.wish_card": "Carte de voeux",
+  "block.palamod.christmas_tree": "Sapin de Noel",
+  "block.palamod.christmas_mockup": "Maquette de Noel"
 }

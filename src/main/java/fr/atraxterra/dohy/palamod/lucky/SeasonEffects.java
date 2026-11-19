@@ -122,6 +122,9 @@ public final class SeasonEffects {
     /** « Inventaire explosif » : ouvrir son inventaire fait tomber une dynamite ({@code ExplosiveInventoryData}). */
     public static final DeferredHolder<MobEffect, LuckyEffect> EXPLOSIVE =
             EFFECTS.register("explosive", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xC81E1E));
+    /** « Grand froid » ({@code PLuckyBlock.EXTREME_COLD}) : de la neige sous chaque pas. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> EXTREME_COLD =
+            EFFECTS.register("extreme_cold", () -> new LuckyEffect(MobEffectCategory.NEUTRAL, 0xA8D8F0));
 
     private SeasonEffects() {
     }
@@ -222,6 +225,13 @@ public final class SeasonEffects {
             if (level.getBlockState(behind).isAir() && level.getBlockState(behind.below()).isFaceSturdy(level,
                     behind.below(), net.minecraft.core.Direction.UP)) {
                 LuckyWorld.place(player, level, behind, net.minecraft.world.level.block.Blocks.FIRE.defaultBlockState());
+            }
+        }
+        if (player.hasEffect(EXTREME_COLD) && player.onGround()) {
+            net.minecraft.core.BlockPos feet = player.blockPosition();
+            if (level.getBlockState(feet).isAir() && level.getBlockState(feet.below()).isFaceSturdy(level, feet.below(),
+                    net.minecraft.core.Direction.UP)) {
+                LuckyWorld.place(player, level, feet, net.minecraft.world.level.block.Blocks.SNOW.defaultBlockState());
             }
         }
         if (player.hasEffect(SUNBURN) && player.tickCount % 40 == 0 && level.isBrightOutside()

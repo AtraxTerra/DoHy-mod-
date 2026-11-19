@@ -53,7 +53,7 @@ SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEve
            "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
            "EasterEvents.java", "MayEvents.java", "JuneEvents.java",
            "JulyEvents.java", "AugustEvents.java", "SeptemberEvents.java", "HalloweenEvents.java",
-           "NovemberEvents.java")
+           "NovemberEvents.java", "ChristmasEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -137,6 +137,7 @@ EFFECTS = {
     "hell_yeah": ("Hell Yeah!", "Hell Yeah!", "hell_yeah"),
     "spooky": ("Spooky Spook", "Spooky Spook", "spooky_spook"),
     "explosive": ("Inventaire explosif", "Explosive Inventory", "november/explosive_inventory"),
+    "extreme_cold": ("Grand froid", "Extreme Cold", "extreme_cold"),
     "no_forward": ("Aucune avancee", "No Progress", "may/aucune_avancee"),
 }
 
@@ -403,6 +404,14 @@ SEASON_ITEMS = {
     "spider_gloves": (None, "spider_gloves", False, "Gants tisseurs", "Web Gloves"),
     "witch_broom": ("items/witchbroom.png", "witch_broom", True, "Balai de sorciere", "Witch Broom"),
     "halloween_stone": ("items/halloweenstone.png", "halloween_stone", False, "Pierre d'Halloween", "Halloween Stone"),
+    # Noel.
+    "chocolate_milk": ("items/chocolate_milk.png", "chocolate_milk", False, "Lait chocolate", "Chocolate Milk"),
+    "christmas_axe": ("items/christmas_axe.png", "christmas_axe", True, "Hache du roi des forets", "Forest King Axe"),
+    "christmas_stone": ("items/christmas_stone.png", "christmas_stone", False, "Pierre de Noel", "Christmas Stone"),
+    "multicolor_gift": ("items/multicolor_gift.png", "multicolor_gift", False, "Cadeau multicolore", "Multicolor Gift"),
+    "present": ("items/present.png", "present", False, "Cadeau", "Present"),
+    "present_bag": ("items/present_bag.png", "present_bag", False, "Sac de cadeaux", "Present Bag"),
+    "wish_card": ("items/wish_card.png", "wish_card", False, "Carte de voeux", "Wish Card"),
 }
 SEASON_BLOCKS = {
     "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),
@@ -467,6 +476,9 @@ SEASON_BLOCKS = {
                        "Citrouille sculptee 8", "Carved Pumpkin 8"),
     "infinity_pie": ("box", {"all": "draw:pumpkin_pie", "box": [1, 0, 1, 15, 6, 15]}, "self", "Tarte infinie",
                      "Infinity Pie"),
+    "christmas_tree": ("cross", {"cross": "draw:christmas_tree"}, "self", "Sapin de Noel", "Christmas Tree"),
+    "christmas_mockup": ("box_tb", {"top": "draw:mockup_top", "side": "draw:mockup_side", "bottom": "minecraft:block/spruce_planks",
+                                    "box": [2, 0, 2, 14, 10, 14]}, "self", "Maquette de Noel", "Christmas Mockup"),
 }
 GADGET_ITEMS.update(SEASON_ITEMS)
 GADGET_BLOCKS.update(SEASON_BLOCKS)
@@ -992,6 +1004,61 @@ PIE_TEX = [
 PIE_COLORS = {"C": (198, 142, 74, 255), "B": (148, 96, 48, 255), "O": (222, 122, 38, 255),
               "o": (196, 98, 30, 255), "W": (250, 242, 222, 255)}
 
+# Le sapin de Noel (le jar n'a que le patron de son modele).
+TREE_TEX = [
+    ".......Y........",
+    "......YYY.......",
+    ".......G........",
+    "......GGG.......",
+    ".....GGRGG......",
+    "......GgG.......",
+    ".....GGGGG......",
+    "....GGBGGgG.....",
+    ".....GgGGG......",
+    "....GGGGGYG.....",
+    "...GRGGgGGGG....",
+    "....GGGGGGg.....",
+    "...GGgGBGGGGG...",
+    "..GGYGGGGgGRGG..",
+    ".......T........",
+    "......TTT.......",
+]
+TREE_COLORS = {"Y": (250, 210, 60, 255), "G": (38, 118, 52, 255), "g": (28, 92, 40, 255), "R": (214, 40, 40, 255),
+               "B": (60, 104, 222, 255), "T": (112, 72, 40, 255)}
+# La maquette de Noel : une maison enneigee (seules les lignes 6 a 15 se voient sur les cotes).
+MOCKUP_SIDE = ["..WWWWWWWWWWWW.."] * 6 + [
+    "..SSSSSSSSSSSS..",
+    "..WWWWWWWWWWWW..",
+    "..WWwwWWWWwwWW..",
+    "..WWwwWWWWwwWW..",
+    "..WWWWWWWWWWWW..",
+    "..WWWWWDDWWWWW..",
+    "..WWWWWDDWWWWW..",
+    "..WWWWWDdWWWWW..",
+    "..WWWWWDDWWWWW..",
+    "..WWWWWDDWWWWW..",
+]
+MOCKUP_TOP = [
+    "SSSSSSSSSSSSSSSS",
+    "SSSSSSSSSSSSSSSS",
+    "SSsSSSSSSSSSsSSS",
+    "SSSSSSSSSSSSSSSS",
+    "SSSSSSSSSCCSSSSS",
+    "SSSSsSSSSCCSSsSS",
+    "SSSSSSSSSSSSSSSS",
+    "SsSSSSSSSSSSSSSS",
+    "SSSSSSSSSSSsSSSS",
+    "SSSSSSsSSSSSSSSS",
+    "SSSSSSSSSSSSSSSS",
+    "SSSSSSSSSSSSSsSS",
+    "SSSsSSSSSSSSSSSS",
+    "SSSSSSSSSsSSSSSS",
+    "SSSSSSSSSSSSSSSS",
+    "SSSSSSSSSSSSSSSS",
+]
+MOCKUP_COLORS = {"S": (240, 245, 250, 255), "s": (212, 228, 240, 255), "W": (150, 96, 56, 255),
+                 "w": (255, 220, 120, 255), "D": (92, 56, 30, 255), "d": (230, 190, 60, 255), "C": (124, 62, 50, 255)}
+
 # Les images dessinees ici plutot que prises dans le jar.
 DRAWN = {
     "chauves_souris": (BATS_ICON, BATS_COLORS),
@@ -1089,6 +1156,9 @@ DRAWN_BLOCKS = {
     "computer_locked": (COMPUTER_LOCKED, COMPUTER_COLORS),
     "computer_open": (COMPUTER_OPEN, COMPUTER_COLORS),
     "pumpkin_pie": (PIE_TEX, PIE_COLORS),
+    "christmas_tree": (TREE_TEX, TREE_COLORS),
+    "mockup_side": (MOCKUP_SIDE, MOCKUP_COLORS),
+    "mockup_top": (MOCKUP_TOP, MOCKUP_COLORS),
 }
 
 
@@ -1183,6 +1253,22 @@ def block_texture(ref):
     return ref
 
 
+def box_model_tb(textures, box):
+    """Un pave de {from} a {to} : le dessus, le dessous et les cotes ont chacun leur texture."""
+    x0, y0, z0, x1, y1, z1 = box
+    uv = {"north": [x0, 16 - y1, x1, 16 - y0], "south": [x0, 16 - y1, x1, 16 - y0],
+          "east": [z0, 16 - y1, z1, 16 - y0], "west": [z0, 16 - y1, z1, 16 - y0],
+          "up": [x0, z0, x1, z1], "down": [x0, z0, x1, z1]}
+    keys = {"up": "#top", "down": "#bottom"}
+    side = block_texture(textures["side"])
+    return {"parent": "minecraft:block/block",
+            "textures": {"top": block_texture(textures["top"]), "bottom": block_texture(textures["bottom"]),
+                         "side": side, "particle": side},
+            "elements": [{"from": [x0, y0, z0], "to": [x1, y1, z1],
+                          "faces": {face: {"uv": coords, "texture": keys.get(face, "#side")}
+                                    for face, coords in uv.items()}}]}
+
+
 def box_model(textures, box):
     """Un pave de {from} a {to}, la meme texture sur ses six faces."""
     x0, y0, z0, x1, y1, z1 = box
@@ -1275,6 +1361,8 @@ def gadget_outputs(put):
         else:
             if kind == "box":
                 model(name, box_model(textures, textures["box"]))
+            elif kind == "box_tb":
+                model(name, box_model_tb(textures, textures["box"]))
             elif kind == "cube_front":
                 model(name, {"parent": "minecraft:block/cube", "textures": {
                     "north": block_texture(textures["front"]), "south": block_texture(textures["back"]),

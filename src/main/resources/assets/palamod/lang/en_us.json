@@ -1202,5 +1202,15 @@
   "block.palamod.pumpkin_face_7": "Carved Pumpkin 7",
   "block.palamod.pumpkin_face_8": "Carved Pumpkin 8",
   "block.palamod.infinity_pie": "Infinity Pie",
-  "effect.palamod.explosive": "Explosive Inventory"
+  "effect.palamod.explosive": "Explosive Inventory",
+  "effect.palamod.extreme_cold": "Extreme Cold",
+  "item.palamod.chocolate_milk": "Chocolate Milk",
+  "item.palamod.christmas_axe": "Forest King Axe",
+  "item.palamod.christmas_stone": "Christmas Stone",
+  "item.palamod.multicolor_gift": "Multicolor Gift",
+  "item.palamod.present": "Present",
+  "item.palamod.present_bag": "Present Bag",
+  "item.palamod.wish_card": "Wish Card",
+  "block.palamod.christmas_tree": "Christmas Tree",
+  "block.palamod.christmas_mockup": "Christmas Mockup"
 }
