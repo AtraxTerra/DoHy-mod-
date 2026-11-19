@@ -304,14 +304,20 @@ hôtel des ventes qui marche en solo.
 - **Acheter** (`ShopScreen`) : seulement ce qui s'achète. Une carte montre l'objet, son nom et un
   seul prix (vert si on peut le payer). La fiche : PRIX A L'UNITE (remise comprise), le prix du
   moment s'il suit le cours de l'heure, la quantité, le total, un seul bouton ACHETER (PAS ASSEZ
-  D'ARGENT sinon). La courbe ne s'affiche plus que pour un prix qui bouge. Les catégories vides
-  disparaissent. **La recherche** trouve aussi ce qui s'achète ailleurs — les annonces du jour
+  D'ARGENT sinon). **Les courbes** (demandé le 2026-11-19 : « uniquement pour les ressources qui
+  changent régulièrement ») : seuls les objets dont le prix change chaque heure — le cours de
+  l'heure, les 32 objets de l'agriculture — en ont une, en miniature sur leur carte (l'objet à
+  gauche, la courbe et la variation du moment à droite) et en grand sous la fiche (prix des
+  24 dernières heures, plus haut, plus bas, l'heure de chaque point sous la souris). Un prix fixe
+  n'en a pas : sa courbe n'était qu'une ligne plate. Les catégories vides disparaissent. **La recherche** trouve aussi ce qui s'achète ailleurs — les annonces du jour
   de l'hôtel des ventes, les boosters, clés, coffres à poser, potions et l'assurance de la
   boutique (`ShopView.Elsewhere`) : une carte à bandeau jaune dit où, un clic y mène ; rien
   trouvé du tout, l'écran le dit (« ni au shop, ni à la boutique, ni dans les annonces du
   jour »).
 - **Vendre** (`SellController`, vue `dohy:sell`) : VENDRE D'UN COUP (Tout vendre, avec le
-  total et une confirmation ; le coffre de vente), CE QUE LE SHOP RACHETE en `ROWS` (quantité,
+  total et une confirmation ; le coffre de vente), PRIX QUI CHANGENT CHAQUE HEURE (les objets du
+  cours de l'heure, en cartes avec leur courbe : c'est là que l'heure de vendre compte), CE QUE LE
+  SHOP RACHETE en `ROWS` (quantité,
   prix pièce, total, pastille PRIX BAS quand la pression de vente l'a fait baisser, barre de
   collection grisée quand la vente n'est pas encore ouverte ; un clic vend toute la ligne), A
   L'HOTEL DES VENTES (les raretés du sac, un clic ouvre leur mise en vente). Sac vide de tout

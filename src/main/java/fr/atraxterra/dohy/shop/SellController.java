@@ -34,9 +34,11 @@ import java.util.Map;
  * L'onglet Vendre du commerce : ce que le sac contient, et ou chaque chose se vend.
  *
  * <p>Ce que le shop rachete, ligne par ligne, avec ce que ca rapporte maintenant ;
- * un bouton pour tout vendre d'un coup. Ce que le shop refuse mais que l'hotel
- * des ventes prend, avec un raccourci vers la mise en vente. Le coffre de vente
- * reste la, pour deposer une fournee a la main.
+ * un bouton pour tout vendre d'un coup. Ce dont le prix change chaque heure (le
+ * cours de l'heure) a sa propre section, en cartes avec la courbe des dernieres
+ * heures : c'est la que choisir l'heure de vendre compte. Ce que le shop refuse
+ * mais que l'hotel des ventes prend, avec un raccourci vers la mise en vente. Le
+ * coffre de vente reste la, pour deposer une fournee a la main.
  */
 public final class SellController extends MenuController {
 
@@ -63,6 +65,8 @@ public final class SellController extends MenuController {
         long total = 0L;
         int open = 0;
         List<Card> rows = new ArrayList<>();
+        List<Card> moving = new ArrayList<>();
+        long slot = HourlyCourse.slot();
         for (Line line : lines) {
             boolean locked = !CollectionApi.isUnlocked(player, line.id(), line.entry());
             if (locked) {
@@ -87,8 +91,11 @@ public final class SellController extends MenuController {
                 tooltip.add("Le shop paie moins quand tu en vends beaucoup d'un coup");
                 tooltip.add("Le prix remonte tout seul, partie fermee comprise");
             }
-            if (HourlyCourse.follows(line.entry())) {
-                tooltip.add("Le prix de cet objet change aussi chaque heure");
+            boolean hourly = HourlyCourse.follows(line.entry());
+            if (hourly) {
+                int course = HourlyCourse.percent(line.id(), line.entry()) - 100;
+                tooltip.add("Prix de l'heure : " + (course > 0 ? "+" : "") + course + " % (change dans "
+                        + HourlyCourse.minutesLeft() + " min)");
             }
             Card row = Card.of(new ItemStack(line.item()), name(line.item()), List.of(
                             "x" + line.count() + " · " + money(unit) + " piece",
@@ -98,7 +105,12 @@ public final class SellController extends MenuController {
             if (percent < 95) {
                 row = row.badge("PRIX BAS");
             }
-            rows.add(row);
+            if (hourly) {
+                // Un prix qui change chaque heure : une carte avec la courbe des dernieres heures.
+                moving.add(row.chart(ShopController.chart(player, line.id(), line.entry(), 0.0d, slot)));
+            } else {
+                rows.add(row);
+            }
         }
 
         List<Card> quick = new ArrayList<>();
@@ -131,13 +143,17 @@ public final class SellController extends MenuController {
 
         List<MenuView.Section> sections = new ArrayList<>();
         sections.add(new MenuView.Section("VENDRE D'UN COUP", "resources", MenuView.GRID, quick));
+        if (!moving.isEmpty()) {
+            sections.add(new MenuView.Section("PRIX QUI CHANGENT CHAQUE HEURE|" + moving.size(), "upgrade",
+                    MenuView.GRID, moving));
+        }
         if (!rows.isEmpty()) {
             sections.add(new MenuView.Section("CE QUE LE SHOP RACHETE|" + rows.size(), "upgrade", MenuView.ROWS, rows));
         }
         if (!rare.isEmpty()) {
             sections.add(new MenuView.Section("A L'HOTEL DES VENTES|" + rare.size(), "armor", MenuView.GRID, rare));
         }
-        if (rows.isEmpty() && rare.isEmpty()) {
+        if (rows.isEmpty() && moving.isEmpty() && rare.isEmpty()) {
             sections.add(new MenuView.Section("TON SAC", "craft", MenuView.TEXT, List.of(Card.of(ItemStack.EMPTY, "",
                     List.of("Rien a vendre pour l'instant.",
                             "- Le shop rachete presque tout ce qui se recolte, se mine ou se chasse.",
