@@ -718,33 +718,63 @@ Le butin d'un raid double à peu près, en TNT plutôt qu'en argent.
 Les réglages sont les quatre tableaux `KEY_*` de `DungeonRewards`, `PALADIUM_KEY_CHANCE` et
 `HALLOWEEN_KEY_CHANCE` de `BossFight`, et `OUTPOST_KEY_CHANCE` de `EnemyBases`.
 
-## 6 decies. Marché
+## 6 decies. Marché — l'hôtel des ventes
 
-Le marché **ne paie jamais** : aucune boucle d'argent n'y est possible, c'est un puits. Ce qu'il
-faut tenir, ce sont trois choses.
+Jusqu'au 2026-11-19, le marché **ne payait jamais** : c'était un puits. Il **achète** maintenant
+aussi, ce que le joueur met en vente (`PALAMOD.md` § 34, « Vendre ») : c'est une source d'argent,
+tenue par trois règles.
 
-**Pas de revente gagnante.** Un objet se revend au shop à son prix de base, le quart de sa cote.
-L'annonce la moins chère est à 0,70 fois la cote : acheter au marché pour revendre perd toujours
-au moins 64 %.
+**Pas de revente gagnante.** Les acheteurs paient au plus **0,69 fois la cote** (0,6 au prix
+conseillé, fois 1,15 au prix fort). L'annonce la moins chère d'un vendeur fictif est à 0,70 fois
+la cote, une clé en promotion à 0,75 et à la boutique à son prix plein : acheter pour revendre
+perd toujours. Pour les clés et les coffres à poser, le facteur est même de **0,35** (au plus 0,40
+fois leur prix). `tools/market_offers.py` le vérifie à chaque génération, et la CI aussi, contre
+les bornes des annonces et contre le shop (remise la plus forte et cours le plus bas compris).
+Seule exception, bornée : la marchandise volée du marché noir (0,5 à 0,7 de sa valeur, quatre
+offres par jour, un grief contre la faction) peut se revendre un peu plus cher qu'achetée — un
+écart de quelques pièces par jour, pas une machine.
+
+**Pas de contournement du shop.** Ce qui se fabrique surtout avec des matières que le shop vend ou
+rachète (lingots, obsidienne, étoile du Nether, pépites d'endium, crânes de wither squelette...)
+n'est pas pris : le vendre ici, c'était vendre ces matières sans que leur prix baisse, à 2,4 fois
+leur prix de base. Le script mesure, recette par recette, la part de la cote qui vient de telles
+matières ; au-delà de 30 %, l'objet est marqué `buyers: false`. 14 objets de la réserve sont ainsi
+écartés (toute la chasse et le wither, le gant et le lingot d'endium, l'amulette du chasseur), et
+la pépite d'endium, que le shop rachète. Restent 78 objets dont la valeur vient du butin : pierres
+légendaires, récompenses du trixium, runes, essences, équipement de donjon, clés, coffres à poser.
+
+**Ce que ça rapporte.** Au prix conseillé, une pierre légendaire rapporte 12 M, une pièce de
+donjon renforcée 1,2 M (basique 240 k), une rune épique 1,5 M, un fragment de rune commune 24 k ;
+une clé Paladium 1,75 M, une clé Endium 52,5 M (ouverte, elle rend ~22 % de son prix en liquide :
+la revendre est un peu mieux, pas trois fois mieux). Le receleur du marché noir prend les mêmes
+pièces à 25-40 % tout de suite, trois par jour : il reste la vente immédiate, l'hôtel des ventes
+la vente patiente. Le débit est celui du butin : six annonces à la fois, et ce que les donjons, les
+boxes et les events donnent.
 
 **Les clés.** Une clé en promotion coûte de 75 à 100 % de son prix. La box rend ~88 % de ce
-prix en valeur boutique et ~22 % en liquide : même à 75 %, ouvrir pour revendre perd de l'argent.
-Ce que la promotion change, c'est le prix d'accès — une clé Endium à 112 M au lieu de 150 M,
-quand elle passe (une annonce sur quarante-trois du rayon). Les six clés sont au rayon, d'autant
-plus rares que la box est chère (`KEY_OFFERS`).
+prix en valeur boutique et ~22 % en liquide : même à 75 %, ouvrir pour revendre perd de l'argent,
+et revendre la clé à l'hôtel des ventes (au plus 40 %) aussi. Ce que la promotion change, c'est le
+prix d'accès — une clé Endium à 112 M au lieu de 150 M, quand elle passe (une annonce sur
+quarante-trois du rayon). Les six clés sont au rayon, d'autant plus rares que la box est chère
+(`KEY_OFFERS`).
 
 **Les pierres légendaires.** Cotées 20 M (§ 6 quater), elles étaient le gros lot de la box
 Paladium (alors « caisse rare ») et ne s'achetaient nulle part. Elles sont maintenant en vente environ **deux jours sur cinq**,
 entre 14 M et 32 M. C'est le changement d'équilibrage du marché, voulu par le joueur (« raretés
 de PalaMod ») : la pierre devient un achat de milieu de partie plutôt qu'un coup de chance. Si
-c'est trop, baisser les poids des pierres dans `tools/market_offers.py`.
+c'est trop, baisser les poids des pierres dans `tools/market_offers.py`. Revendue, elle rapporte
+de 10,2 M (vente rapide) à 13,8 M (prix fort).
 
 | Réglage | Valeur | Où |
 |---|---|---|
 | Annonces par jour | 3 + 4 + 2 + 3 | `CATEGORIES` |
-| Bonne affaire / courant / gourmand | 15 % / 65 % / 20 % | `prices` |
+| Bonne affaire / courant / gourmand | 15 % / 65 % / 20 % | `PRICES` |
 | Renouvellement payé | 250 k, doublé, 4 par jour (3,75 M au plus) | `per_reroll`, `max_rerolls` |
 | Cotes sans valeur boutique | fragment de rune 40 k et 150 k, rune 170 k, 620 k, 2,5 M ; essence 20 k, 80 k, 300 k ; pièce de donjon 400 k et 2 M ; capacité de spawner 450 k | `QUOTES` |
+| Prix conseillé des acheteurs | 0,6 fois la cote ; 0,35 pour les clés et coffres à poser | `BUYERS` |
+| Vente rapide / conseillé / fort | 0,85 / 1 / 1,15 fois le conseillé ; 20 min / 3 h / 27 h en moyenne | `BUYERS["presets"]` |
+| Annonces du joueur | 6 à la fois, invendu rendu au bout de 48 h | `BUYERS` |
+| Part de matières du shop tolérée | 30 % | `FARMABLE_LIMIT` |
 
 ## 6 undecies. Ruines à spawner de la dimension du Mineur
 

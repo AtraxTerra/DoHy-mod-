@@ -138,7 +138,7 @@
         {
           "title": "L'inventaire",
           "text": [
-            "Le bouton rouge en haut a droite ouvre le menu principal, le bouton vert ? l'encyclopedie. La colonne de droite mene au shop, aux contrats, a la banque, a la faction et aux metiers. Le bouton PASS ouvre le pass du mois."
+            "Le bouton rouge en haut a droite ouvre le menu principal, le bouton vert ? l'encyclopedie. La colonne de droite mene au commerce, aux contrats, a la banque, a la faction et aux metiers. Le bouton PASS ouvre le pass du mois."
           ]
         }
       ],
@@ -321,18 +321,29 @@
       "category": "economie",
       "order": 0,
       "icon": "minecraft:emerald",
-      "title": "Le shop",
+      "title": "Le commerce",
       "card": [
-        "Acheter et vendre",
-        "Des prix qui bougent"
+        "Acheter, vendre",
+        "Boutique, hotel des ventes"
       ],
       "summary": [
-        "Le shop achete ce que tu recoltes et vend le reste. Chaque objet a un prix de base, mais plus tu en vends, plus il baisse ; la pression s'efface ensuite avec le temps, 10 % toutes les 20 minutes."
+        "Tout ce qui s'achete et se vend tient dans un seul ecran, le commerce, en quatre onglets. Chacun dit en une phrase ce qu'on y trouve."
       ],
       "sections": [
         {
-          "title": "Les regles",
+          "title": "Les quatre onglets",
           "text": [
+            "- Acheter : le shop. Blocs, minerais, nourriture, pieces, a prix fixe.",
+            "- Vendre : ce que le shop rachete dans ton sac, ligne par ligne, et un bouton pour tout vendre. Les raretes que le shop refuse y ont un raccourci vers l'hotel des ventes.",
+            "- Boutique : boosters, cles de box, potions d'XP de metier, assurance, autosell.",
+            "- Hotel des ventes : les raretes du jour, et tes objets rares a vendre.",
+            "! La recherche de l'onglet Acheter trouve aussi ce qui s'achete a la boutique ou a l'hotel des ventes : un clic y mene."
+          ]
+        },
+        {
+          "title": "Les regles du shop",
+          "text": [
+            "Plus tu vends le meme objet, plus son prix baisse ; il remonte ensuite tout seul, 10 % toutes les 20 minutes, partie fermee comprise.",
             "- Ce qui se fabrique s'achete seulement : on ne revend pas un objet fabrique.",
             "- Un minerai vaut plus que le metal que tu en tires a la main.",
             "- Certains prix suivent un cours qui change chaque heure (l'agriculture).",
@@ -342,16 +353,19 @@
         {
           "title": "Vendre vite",
           "text": [
-            "Le coffre de vente du menu principal : depose, ferme, c'est vendu ; ce qui ne se vend pas te revient. L'autosell vend tout seul : c'est un achat de fin de partie."
+            "Le bouton Tout vendre de l'onglet Vendre, ou le coffre de vente : depose, ferme, c'est vendu ; ce qui ne se vend pas te revient. L'autosell vend tout seul : c'est un achat de fin de partie."
           ]
         }
       ],
       "commands": [
-        "/shop : ouvrir le shop",
-        "/sell : le coffre de vente",
+        "/commerce ou /shop : acheter",
+        "/sell : vendre",
+        "/sell coffre : le coffre de vente",
         "/sell hand : vendre l'objet en main",
         "/sellall : tout vendre d'un coup",
-        "/worth : ce que vaut l'objet en main"
+        "/worth : ce que vaut l'objet en main",
+        "/boutique : la boutique",
+        "/hdv : l'hotel des ventes"
       ],
       "see": [
         "boutique",
@@ -362,7 +376,8 @@
       "discover": {
         "always": true,
         "views": [
-          "dohy:shop"
+          "dohy:shop",
+          "dohy:sell"
         ]
       }
     },
@@ -604,7 +619,7 @@
         "Potions d'XP, autosell"
       ],
       "summary": [
-        "La boutique vend les boosters (le prix de vente multiplie pendant 20 minutes), les boxes de PalaMod a ouvrir avec leurs cles, les potions d'XP de metier et l'autosell."
+        "L'onglet Boutique du commerce vend les boosters (le prix de vente multiplie pendant 20 minutes), les cles des boxes de PalaMod, les potions d'XP de metier, l'assurance et l'autosell. Tout s'y paie en liquide."
       ],
       "sections": [
         {
@@ -650,27 +665,54 @@
       "id": "marche",
       "category": "economie",
       "order": 6,
-      "icon": "minecraft:bell",
-      "title": "Le marche",
+      "icon": "minecraft:name_tag",
+      "title": "Hotel des ventes",
       "card": [
-        "Les annonces du jour",
-        "Stocks limites"
+        "Raretes du jour",
+        "Vends tes objets rares"
       ],
       "summary": [
-        "Le marche imite un hotel des ventes pour un joueur seul : chaque jour, des annonces de vendeurs fictifs, en quantites limitees, a des prix qui varient."
+        "L'hotel des ventes est fait pour un joueur seul : des vendeurs fictifs y proposent des raretes chaque jour, et des acheteurs fictifs prennent celles que tu mets en vente."
       ],
       "commands": [
-        "/market : le marche"
+        "/hdv ou /market : l'hotel des ventes"
       ],
       "see": [
         "shop",
+        "marche_noir",
         "marche_international"
       ],
       "discover": {
         "views": [
           "dohy:auction"
         ]
-      }
+      },
+      "sections": [
+        {
+          "title": "Acheter",
+          "text": [
+            "Douze annonces par jour : pierres legendaires, runes, essences, equipement de donjon, cles... en quantites limitees, a des prix qui varient. Une bonne affaire porte sa remise en pastille.",
+            "Les annonces changent chaque matin a 5 h ; Nouvelles annonces les remplace tout de suite, contre de l'argent."
+          ]
+        },
+        {
+          "title": "Vendre",
+          "text": [
+            "Mettre en vente, puis l'objet, puis le prix. Les acheteurs cherchent les memes raretes que celles qui sont en vente ici.",
+            "- Vente rapide : un peu moins cher, ca part en vingt minutes environ.",
+            "- Prix conseille : en general en trois heures.",
+            "- Prix fort : plus cher, environ un jour, et pas toujours.",
+            "Tu recois l'argent des que l'objet part, meme partie fermee. Invendu au bout de 48 heures, il t'attend : clique dessus pour le recuperer. Une annonce se retire a tout moment.",
+            "! Six annonces a la fois. Une piece abimee vaut moins."
+          ]
+        },
+        {
+          "title": "Ce qu'ils ne prennent pas",
+          "text": [
+            "Ce que le shop rachete : vends-le dans l'onglet Vendre. Ce qui se fabrique surtout avec des matieres du shop non plus (pierres de capture, ameliorations de spawner, gemmes de wither, lingots d'endium...) : ce serait vendre ces matieres sans que leur prix baisse."
+          ]
+        }
+      ]
     },
     {
       "id": "ameliorations",

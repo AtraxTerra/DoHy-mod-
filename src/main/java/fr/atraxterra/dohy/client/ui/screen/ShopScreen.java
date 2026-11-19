@@ -33,12 +33,19 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Le shop, dans la coque des menus (maquette validee) : la recherche et les categories
- * a gauche, la grille des objets au centre avec le cours de l'heure, et la fiche de
- * l'objet choisi a droite — quantite, total, acheter, vendre.
+ * L'onglet Acheter du commerce, dans la coque des menus : la recherche et les
+ * categories a gauche, la grille des objets au centre, et la fiche de l'objet
+ * choisi a droite — son prix, la quantite, le total, un seul bouton.
  *
- * <p>Tout le catalogue arrive d'un coup : la categorie, la recherche et la selection
- * se font ici sans aller-retour ; seuls l'achat et la vente passent par le serveur.
+ * <p>La vente a son onglet : ici, une carte ne montre que ce qui sert a acheter
+ * (l'objet, son nom, son prix). Seul ce dont le prix change chaque heure (le
+ * cours de l'heure) a une courbe : en miniature sur sa carte, en grand sous sa
+ * fiche ; un prix fixe n'en a pas. Une recherche trouve aussi ce qui s'achete
+ * ailleurs dans le commerce (boutique, hotel des ventes) et dit ou aller ; un
+ * clic y mene.
+ *
+ * <p>Tout le catalogue arrive d'un coup : la categorie, la recherche et la
+ * selection se font ici sans aller-retour ; seul l'achat passe par le serveur.
  * Un achat qui entame une bonne part du solde demande d'abord une confirmation.
  */
 public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
@@ -54,6 +61,8 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
     private ShopView view;
     private final Shell shell = new Shell(ShopView.ID);
     private final List<ShopView.Offer> shown = new ArrayList<>();
+    /** Ce qui s'achete ailleurs et correspond a la recherche ; vide sans recherche. */
+    private final List<ShopView.Elsewhere> away = new ArrayList<>();
     private final double opened = Anim.now();
     /** 0 pour tout, sinon la categorie d'indice - 1. */
     private int category;
@@ -65,14 +74,14 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
     private Grid grid;
 
     public ShopScreen(ShopView view) {
-        super(Component.literal("Shop"), Shell.WIDTH, Shell.HEIGHT);
+        super(Component.literal("Commerce"), Shell.WIDTH, Shell.HEIGHT);
         this.view = view;
         header();
     }
 
     private void header() {
-        shell.header("Shop", "", List.of(new MenuView.Stat("TON ARGENT", MoneyFormat.exact(view.balance()) + " $",
-                0xFFFFFFFF)), List.of(), false);
+        shell.header("Commerce", view.subtitle(), List.of(new MenuView.Stat("TON ARGENT",
+                MoneyFormat.exact(view.balance()) + " $", 0xFFFFFFFF)), view.tabs(), false);
     }
 
     @Override
@@ -125,6 +134,7 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
 
     private void refilter() {
         shown.clear();
+        away.clear();
         String needle = fold(search);
         for (ShopView.Offer offer : view.offers()) {
             if (category > 0 && !ShopCategory.values()[category - 1].key().equalsIgnoreCase(offer.category())) {
@@ -135,6 +145,13 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
             }
             shown.add(offer);
         }
+        if (!needle.isEmpty()) {
+            for (ShopView.Elsewhere entry : view.elsewhere()) {
+                if (fold(name(entry)).contains(needle)) {
+                    away.add(entry);
+                }
+            }
+        }
         if (selected() == null && !shown.isEmpty()) {
             selectedId = idOf(shown.getFirst());
             picked = Anim.now();
@@ -142,6 +159,18 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         if (grid != null) {
             grid.clamp();
         }
+    }
+
+    /** Les categories qui ont quelque chose a vendre : 0 pour « Tout », sinon l'indice + 1. */
+    private List<Integer> categories() {
+        List<Integer> out = new ArrayList<>();
+        out.add(0);
+        for (int index = 1; index <= ShopCategory.values().length; index++) {
+            if (count(index) > 0) {
+                out.add(index);
+            }
+        }
+        return out;
     }
 
     private int count(int index) {
@@ -162,6 +191,10 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         return Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase(Locale.ROOT).trim();
     }
 
+    private static String name(ShopView.Elsewhere entry) {
+        return entry.label().isEmpty() ? entry.icon().getHoverName().getString() : entry.label();
+    }
+
     private static Identifier idOf(ShopView.Offer offer) {
         return BuiltInRegistries.ITEM.getKey(offer.stack().getItem());
     }
@@ -179,20 +212,32 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
     }
 
     private static String money(long value) {
-        return MoneyFormat.shortForm(value) + " $";
+        return MoneyFormat.exact(value) + " $";
     }
 
-    /** La bulle d'un objet, dans le style du kit : son nom, ses prix, ce qu'on en a. */
+    /** La bulle d'un objet : son nom, son prix, ce qu'on en a. */
     private static List<Component> tip(ShopView.Offer offer) {
         List<Component> lines = new ArrayList<>();
         lines.add(offer.stack().getHoverName().copy().withColor(0xFFFFFF));
-        if (offer.buy() > 0) {
-            lines.add(Component.literal("Achat : " + MoneyFormat.exact(offer.buy()) + " $").withColor(0x22E558));
-        }
-        if (offer.sellable()) {
-            lines.add(Component.literal("Vente : " + MoneyFormat.exact(offer.sell()) + " $").withColor(0xEF8A7D));
+        lines.add(Component.literal("Prix : " + money(offer.buy()) + " l'unite").withColor(0x22E558));
+        if (moves(offer)) {
+            lines.add(Component.literal("Ce prix change chaque heure : " + course(offer.course())
+                    + " en ce moment").withColor(0xFAC400));
         }
         lines.add(Component.literal("Tu en as " + offer.owned()).withColor(0x8B8E95));
+        return lines;
+    }
+
+    /** Le prix de cet objet change-t-il regulierement (le cours de l'heure) ? Lui seul a une courbe. */
+    private static boolean moves(ShopView.Offer offer) {
+        return offer.course() > 0 && offer.chart() != null && offer.chart().size() > 1;
+    }
+
+    private static List<Component> tip(ShopView.Elsewhere entry) {
+        List<Component> lines = new ArrayList<>();
+        lines.add(Component.literal(name(entry)).withColor(0xFFFFFF));
+        lines.add(Component.literal("Pas au shop : " + entry.where() + ", " + entry.price()).withColor(0xFAC400));
+        lines.add(Component.literal("Clic : y aller").withColor(0x2BC4C4));
         return lines;
     }
 
@@ -201,25 +246,24 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         return offer.buy() <= 0 ? 0 : Math.min(MAX_QUANTITY, view.balance() / offer.buy());
     }
 
-    private void trade(String verb) {
+    private void buy() {
         ShopView.Offer offer = selected();
         if (offer == null) {
             return;
         }
         String id = idOf(offer).toString();
         long total = offer.buy() * quantity;
-        if ("buy".equals(verb) && total >= 1_000L && total * 10L >= view.balance()) {
+        if (total >= 1_000L && total * 10L >= view.balance()) {
             // Un achat qui prend au moins un dixieme du solde : on demande.
             String name = offer.stack().getHoverName().getString();
             int amount = quantity;
-            Popup confirm = new Popup(offer.stack(), "Acheter " + amount + " \u00D7 " + name + " ?",
-                    offer.course() > 0 ? "Cours de l'heure : " + course(offer.course()) : "", "ACHETER", false,
-                    () -> UiClient.send(ShopView.ID, "buy", id, amount));
-            openPopup(confirm.sums(List.of(new String[]{"TOTAL", MoneyFormat.exact(total) + " $"},
-                    new String[]{"IL TE RESTERA", MoneyFormat.exact(Math.max(0L, view.balance() - total)) + " $"})));
+            Popup confirm = new Popup(offer.stack(), "Acheter " + amount + " × " + name + " ?", "", "ACHETER",
+                    false, () -> UiClient.send(ShopView.ID, "buy", id, amount));
+            openPopup(confirm.sums(List.of(new String[]{"TOTAL", money(total)},
+                    new String[]{"IL TE RESTERA", money(Math.max(0L, view.balance() - total))})));
             return;
         }
-        UiClient.send(ShopView.ID, verb, id, quantity);
+        UiClient.send(ShopView.ID, "buy", id, quantity);
     }
 
     private static String course(int percent) {
@@ -239,7 +283,7 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         return button == 0 && shell.click(mouseX, mouseY);
     }
 
-    /** La liste des categories, avec le nombre d'objets de chacune. */
+    /** La liste des categories qui ont des objets, avec leur nombre. */
     private final class Categories extends UiElement {
         private static final float ROW = 14.0f;
         private final Map<Integer, Anim.Value> hovers = new HashMap<>();
@@ -255,10 +299,13 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         @Override
         public void render(UiGraphics g, double mouseX, double mouseY) {
             Paint p = g.paint();
-            p.framed(x, y, width, height, 5.3f, 0xFF141518, 0xFF24262A, 1);
+            List<Integer> rows = categories();
+            float boxHeight = 14.0f + rows.size() * ROW + 5.0f;
+            p.framed(x, y, width, boxHeight, 5.3f, 0xFF141518, 0xFF24262A, 1);
             g.text(Ui.PIXEL, "CATEGORIES", x + 5.3f, y + 5.3f, 3.3f, Ui.Theme.DIM);
-            for (int index = 0; index <= ShopCategory.values().length; index++) {
-                float rowY = y + 12.0f + index * ROW;
+            for (int row = 0; row < rows.size(); row++) {
+                int index = rows.get(row);
+                float rowY = y + 12.0f + row * ROW;
                 boolean on = index == category;
                 boolean over = mouseX >= x + 2 && mouseX < x + width - 2 && mouseY >= rowY && mouseY < rowY + ROW;
                 float hover = hovers.computeIfAbsent(index, key -> new Anim.Value(0.0f, 16.0f))
@@ -284,9 +331,10 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
             if (!contains(mouseX, mouseY)) {
                 return false;
             }
-            int index = (int) ((mouseY - (y + 12.0f)) / ROW);
-            if (index >= 0 && index <= ShopCategory.values().length && index != category) {
-                category = index;
+            List<Integer> rows = categories();
+            int row = (int) ((mouseY - (y + 12.0f)) / ROW);
+            if (row >= 0 && row < rows.size() && rows.get(row) != category) {
+                category = rows.get(row);
                 UiScreen.click(1.1f);
                 grid.resetScroll();
                 refilter();
@@ -295,10 +343,10 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         }
     }
 
-    /** La grille des objets, qui defile. */
+    /** La grille des objets, qui defile ; apres eux, ce qui s'achete ailleurs. */
     private final class Grid extends UiElement {
         private final Anim.Value scroll = new Anim.Value(0.0f, 18.0f);
-        private final Map<Identifier, Anim.Value> hovers = new HashMap<>();
+        private final Map<String, Anim.Value> hovers = new HashMap<>();
         private float target;
 
         Grid() {
@@ -313,8 +361,12 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
             return (width - 6.0f - CARD_GAP * (COLUMNS - 1)) / COLUMNS;
         }
 
+        private int size() {
+            return shown.size() + away.size();
+        }
+
         private float total() {
-            int rows = (shown.size() + COLUMNS - 1) / COLUMNS;
+            int rows = (size() + COLUMNS - 1) / COLUMNS;
             return rows * (CARD_HEIGHT + CARD_GAP) - (rows > 0 ? CARD_GAP : 0);
         }
 
@@ -331,30 +383,45 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         public void render(UiGraphics g, double mouseX, double mouseY) {
             Paint p = g.paint();
             float offset = scroll.toward(target);
-            if (shown.isEmpty()) {
-                g.centered(Ui.BODY, search.isEmpty() ? "Rien dans cette categorie" : "Aucun objet ne correspond",
-                        x + width / 2.0f, y + 40.0f, 5.3f, Ui.Theme.MUTED);
+            if (size() == 0) {
+                if (search.isEmpty()) {
+                    g.centered(Ui.BODY, "Rien dans cette categorie", x + width / 2.0f, y + 40.0f, 5.3f, Ui.Theme.MUTED);
+                } else {
+                    g.centered(Ui.BODY, "Introuvable : ni au shop, ni a la boutique,", x + width / 2.0f, y + 40.0f,
+                            5.3f, Ui.Theme.MUTED);
+                    g.centered(Ui.BODY, "ni dans les annonces du jour de l'hotel des ventes.", x + width / 2.0f,
+                            y + 48.0f, 5.3f, Ui.Theme.MUTED);
+                }
                 return;
             }
             float cardWidth = cardWidth();
             boolean inside = contains(mouseX, mouseY);
-            ShopView.Offer hovered = null;
+            List<Component> tooltip = null;
             g.scissor(x - 4, y - 1, width + 8, height + 1);
-            for (int index = 0; index < shown.size(); index++) {
-                ShopView.Offer offer = shown.get(index);
+            for (int index = 0; index < size(); index++) {
                 float cardX = x + (index % COLUMNS) * (cardWidth + CARD_GAP);
                 float cardY = y + (index / COLUMNS) * (CARD_HEIGHT + CARD_GAP) - offset;
                 if (cardY > y + height || cardY + CARD_HEIGHT < y) {
                     continue;
                 }
-                Identifier id = idOf(offer);
                 boolean over = inside && mouseX >= cardX && mouseX < cardX + cardWidth && mouseY >= cardY
                         && mouseY < cardY + CARD_HEIGHT;
-                if (over) {
-                    hovered = offer;
+                if (index < shown.size()) {
+                    ShopView.Offer offer = shown.get(index);
+                    Identifier id = idOf(offer);
+                    float hover = hover("o:" + id, over);
+                    card(g, p, offer, cardX, cardY - 1.3f * hover, cardWidth, hover, id.equals(selectedId));
+                    if (over) {
+                        tooltip = tip(offer);
+                    }
+                } else {
+                    ShopView.Elsewhere entry = away.get(index - shown.size());
+                    float hover = hover("e:" + index, over);
+                    elsewhere(g, p, entry, cardX, cardY - 1.3f * hover, cardWidth, hover);
+                    if (over) {
+                        tooltip = tip(entry);
+                    }
                 }
-                float hover = hovers.computeIfAbsent(id, key -> new Anim.Value(0.0f, 16.0f)).toward(over ? 1.0f : 0.0f);
-                card(g, p, offer, cardX, cardY - 1.3f * hover, cardWidth, hover, id.equals(selectedId));
             }
             g.endScissor();
             if (total() > height) {
@@ -364,48 +431,82 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
                 float thumbY = y + (height - thumb) * offset / Math.max(1.0f, total() - height);
                 p.round(barX, thumbY, 2.0f, thumb, 1.0f, 0xFF5A5D64);
             }
-            if (hovered != null) {
-                g.tooltip(tip(hovered));
+            if (tooltip != null) {
+                g.tooltip(tooltip);
+            }
+        }
+
+        private float hover(String key, boolean over) {
+            return hovers.computeIfAbsent(key, k -> new Anim.Value(0.0f, 16.0f)).toward(over ? 1.0f : 0.0f);
+        }
+
+        private void frame(Paint p, float cardX, float cardY, float cardWidth, float hover, boolean selected, int tint) {
+            if (hover > 0.01f || selected) {
+                p.shadow(cardX + 2, cardY + 4, cardWidth - 4, CARD_HEIGHT - 4, 8,
+                        Paint.alpha(selected ? tint : 0xFF000000, selected ? 0.22f : 0.3f * hover));
+            }
+            int edge = selected ? tint : Paint.mix(Ui.Theme.EDGE, 0xFF45484F, hover);
+            int fill = selected ? Paint.mix(Ui.Theme.CARD, tint, 0.08f) : Paint.mix(Ui.Theme.CARD, Ui.Theme.CARD_HOVER,
+                    hover);
+            p.framed(cardX, cardY, cardWidth, CARD_HEIGHT, 4.7f, fill, edge, selected ? 2 : 1);
+        }
+
+        private void title(UiGraphics g, String text, float cardX, float cardY, float cardWidth) {
+            List<String> name = g.wrap(Ui.BOLD, text, 4.3f, cardWidth - 6.0f);
+            float nameY = cardY + 26.0f - (name.size() > 1 ? 2.6f : 0.0f);
+            for (int line = 0; line < Math.min(2, name.size()); line++) {
+                String part = line == 1 && name.size() > 2 ? g.fit(Ui.BOLD, name.get(1) + " ...", 4.3f, cardWidth - 6.0f)
+                        : name.get(line);
+                g.centered(Ui.BOLD, part, cardX + cardWidth / 2.0f, nameY + line * 5.3f, 4.3f, Ui.Theme.TEXT);
             }
         }
 
         private void card(UiGraphics g, Paint p, ShopView.Offer offer, float cardX, float cardY, float cardWidth,
                           float hover, boolean selected) {
-            if (hover > 0.01f || selected) {
-                p.shadow(cardX + 2, cardY + 4, cardWidth - 4, CARD_HEIGHT - 4, 8,
-                        Paint.alpha(selected ? Ui.Theme.RED : 0xFF000000, selected ? 0.22f : 0.3f * hover));
+            frame(p, cardX, cardY, cardWidth, hover, selected, Ui.Theme.RED);
+            if (moves(offer)) {
+                // Un prix qui change chaque heure : l'objet a gauche, sa courbe et sa variation a droite.
+                PriceChart chart = offer.chart();
+                g.item(offer.stack(), cardX + 3.0f, cardY + 6.0f, 12.0f, false);
+                float sparkX = cardX + 17.0f;
+                float sparkWidth = cardWidth - 20.0f;
+                p.round(sparkX - 1.0f, cardY + 4.0f, sparkWidth + 2.0f, 11.0f, 2.0f, 0x40000000);
+                Charts.spark(g, chart, sparkX, cardY + 5.0f, sparkWidth, 9.0f, 1.0f);
+                g.right(Ui.PIXEL, course(offer.course()), cardX + cardWidth - 3.0f, cardY + 17.3f, 3.0f,
+                        offer.course() > 100 ? Ui.Theme.RED_LIGHT : offer.course() < 100 ? Ui.Theme.GREEN_L
+                                : Ui.Theme.MUTED);
+            } else {
+                g.item(offer.stack(), cardX + (cardWidth - 16.0f) / 2.0f, cardY + 7.0f, 16.0f, false);
             }
-            int edge = selected ? Ui.Theme.RED : Paint.mix(Ui.Theme.EDGE, 0xFF45484F, hover);
-            int fill = selected ? 0xFF2A1F20 : Paint.mix(Ui.Theme.CARD, Ui.Theme.CARD_HOVER, hover);
-            p.framed(cardX, cardY, cardWidth, CARD_HEIGHT, 4.7f, fill, edge, selected ? 2 : 1);
-            if (offer.course() > 0) {
-                int delta = offer.course() - 100;
-                int color = delta > 0 ? Ui.Theme.GREEN_L : delta < 0 ? Ui.Theme.RED_LIGHT : Ui.Theme.MUTED;
-                g.right(Ui.PIXEL, course(offer.course()), cardX + cardWidth - 4.0f, cardY + 4.0f, 3.3f, color);
+            title(g, offer.stack().getHoverName().getString(), cardX, cardY, cardWidth);
+            // Un seul prix, celui qu'on paie, centre et lisible.
+            String price = money(offer.buy());
+            float size = 4.3f;
+            while (size > 3.2f && g.width(Ui.BOLD, price, size) > cardWidth - 8.0f) {
+                size -= 0.2f;
             }
-            g.item(offer.stack(), cardX + (cardWidth - 16.0f) / 2.0f, cardY + 7.0f, 16.0f, false);
-            List<String> name = g.wrap(Ui.BOLD, offer.stack().getHoverName().getString(), 4.3f, cardWidth - 6.0f);
-            float nameY = cardY + 26.0f - (name.size() > 1 ? 2.6f : 0.0f);
-            for (int line = 0; line < Math.min(2, name.size()); line++) {
-                String text = line == 1 && name.size() > 2 ? g.fit(Ui.BOLD, name.get(1) + " ...", 4.3f, cardWidth - 6.0f)
-                        : name.get(line);
-                g.centered(Ui.BOLD, text, cardX + cardWidth / 2.0f, nameY + line * 5.3f, 4.3f, Ui.Theme.TEXT);
+            g.centered(Ui.BOLD, price, cardX + cardWidth / 2.0f, cardY + CARD_HEIGHT - 9.0f + (4.3f - size) / 2.0f,
+                    size, view.balance() >= offer.buy() ? Ui.Theme.GREEN_L : Ui.Theme.MUTED);
+        }
+
+        /** Une carte « ailleurs » : l'objet, son nom, l'onglet ou il s'achete. */
+        private void elsewhere(UiGraphics g, Paint p, ShopView.Elsewhere entry, float cardX, float cardY,
+                               float cardWidth, float hover) {
+            frame(p, cardX, cardY, cardWidth, hover, false, Ui.Theme.YELLOW);
+            p.round(cardX + 3.0f, cardY + 3.0f, cardWidth - 6.0f, 6.0f, 2.0f, Paint.alpha(Ui.Theme.YELLOW, 0.18f));
+            String where = entry.where().toUpperCase(Locale.ROOT);
+            // « HOTEL DES VENTES » tient en entier : la police se resserre plutot que de couper. La
+            // police pixel ne prend que des tailles entieres de texel : on prend la grasse, qui se resserre.
+            float size = 3.4f;
+            while (size > 2.4f && g.width(Ui.BOLD, where, size) > cardWidth - 8.0f) {
+                size -= 0.1f;
             }
-            float priceY = cardY + CARD_HEIGHT - 8.7f;
-            String buy = offer.buy() > 0 ? money(offer.buy()) : "";
-            String sell = offer.sellable() ? money(offer.sell()) : "";
-            // Deux grands prix ne tiennent pas cote a cote : la police se resserre.
-            float size = 4.0f;
-            while (size > 3.0f && g.width(Ui.BOLD, buy, size) + g.width(Ui.BOLD, sell, size) + 4.0f > cardWidth - 8.0f) {
-                size -= 0.25f;
-            }
-            if (!buy.isEmpty()) {
-                g.text(Ui.BOLD, buy, cardX + 4.0f, priceY + (4.0f - size) / 2.0f, size, Ui.Theme.GREEN_L);
-            }
-            if (!sell.isEmpty()) {
-                g.right(Ui.BOLD, sell, cardX + cardWidth - 4.0f, priceY + (4.0f - size) / 2.0f, size,
-                        offer.locked() ? Ui.Theme.DIM : Ui.Theme.MUTED);
-            }
+            g.centered(Ui.BOLD, g.fit(Ui.BOLD, where, size, cardWidth - 8.0f), cardX + cardWidth / 2.0f,
+                    cardY + 4.4f + (3.4f - size) / 2.0f, size, Ui.Theme.YELLOW);
+            g.item(entry.icon(), cardX + (cardWidth - 13.0f) / 2.0f, cardY + 11.0f, 13.0f, false);
+            title(g, ShopScreen.name(entry), cardX, cardY, cardWidth);
+            g.centered(Ui.BOLD, g.fit(Ui.BOLD, entry.price(), 3.6f, cardWidth - 8.0f), cardX + cardWidth / 2.0f,
+                    cardY + CARD_HEIGHT - 8.5f, 3.6f, Ui.Theme.TEXT2);
         }
 
         @Override
@@ -418,7 +519,10 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
             int column = (int) ((mouseX - x) / (cardWidth + CARD_GAP));
             int row = (int) ((mouseY - y + offset) / (CARD_HEIGHT + CARD_GAP));
             int index = row * COLUMNS + column;
-            if (column >= 0 && column < COLUMNS && index >= 0 && index < shown.size()) {
+            if (column < 0 || column >= COLUMNS || index < 0 || index >= size()) {
+                return true;
+            }
+            if (index < shown.size()) {
                 Identifier id = idOf(shown.get(index));
                 if (!id.equals(selectedId)) {
                     selectedId = id;
@@ -426,6 +530,10 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
                     picked = Anim.now();
                     UiScreen.click(1.2f);
                 }
+            } else {
+                // Ce qui s'achete ailleurs : on passe a l'onglet qui le vend.
+                UiScreen.click(1.0f);
+                UiClient.send(ShopView.ID, "card", "tab:" + away.get(index - shown.size()).tab(), 0);
             }
             return true;
         }
@@ -441,7 +549,7 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         }
     }
 
-    /** La fiche de l'objet choisi : prix, cours, quantite, total, et les deux boutons. */
+    /** La fiche de l'objet choisi : son prix, la quantite, le total, et le bouton d'achat. */
     private final class Detail extends UiElement {
         private static final float BUTTON = 15.3f;
         private final Map<String, Anim.Value> hovers = new HashMap<>();
@@ -469,7 +577,7 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
             hits.clear();
             Paint p = g.paint();
             ShopView.Offer offer = selected();
-            float panelHeight = 178.0f;
+            float panelHeight = Math.min(height, 150.0f);
             p.framed(x, y, width, panelHeight, 5.3f, 0xFF1C1D20, Ui.Theme.EDGE, 1);
             g.scissor(x, y, width, Math.round(panelHeight));
             p.glow(x + width - 10.0f, y + 6.0f, 60.0f, Paint.alpha(Ui.Theme.RED, 0.14f));
@@ -483,7 +591,7 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
             }
             float left = x + 8.0f;
             float inner = width - 16.0f;
-            // L'objet.
+            // L'objet, son nom, ce qu'on en a deja.
             p.framed(left, y + 8.0f, 30.0f, 30.0f, 7.0f, Paint.mix(0xFF1A1B1E, Ui.Theme.RED, 0.16f),
                     Paint.mix(0xFF1A1B1E, Ui.Theme.RED, 0.45f), 1);
             g.item(offer.stack(), left + 5.0f, y + 13.0f, 20.0f, false);
@@ -495,44 +603,28 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
                 g.text(Ui.BOLD, g.fit(Ui.BOLD, name.get(line), 6.3f, textRoom), textX, textY, 6.3f, Ui.Theme.TEXT);
                 textY += 7.3f;
             }
-            ShopCategory kind = ShopCategory.byKey(offer.category());
-            g.text(Ui.BODY, kind == null ? "" : kind.display(), textX, textY, 4.7f, Ui.Theme.MUTED);
-            g.text(Ui.BODY, "Tu en as " + offer.owned(), textX, textY + 6.6f, 4.7f, Ui.Theme.TEXT2);
+            g.text(Ui.BODY, "Tu en as " + offer.owned(), textX, textY, 4.7f, Ui.Theme.TEXT2);
 
-            // Les prix.
+            // Le prix, et ce qui le fait bouger, en clair.
             float boxY = y + 44.0f;
-            float boxWidth = (inner - 4.0f) / 2.0f;
-            price(g, p, left, boxY, boxWidth, "ACHAT", offer.buy() > 0 ? MoneyFormat.exact(offer.buy()) + " $"
-                    : "-", Ui.Theme.GREEN_L, offer.discount() > 0 ? "-" + offer.discount() + " %" : "");
-            String sell = !offer.sellable() ? "-" : MoneyFormat.exact(offer.sell()) + " $";
-            price(g, p, left + boxWidth + 4.0f, boxY, boxWidth, "VENTE", sell,
-                    offer.locked() ? Ui.Theme.DIM : 0xFFEF8A7D,
-                    offer.sellable() && offer.sellPercent() != 100 ? offer.sellPercent() + " %" : "");
-
-            // Le cours, la collection.
-            float infoY = boxY + 24.0f;
+            p.framed(left, boxY, inner, 19.3f, 3.3f, 0xFF16171A, 0xFF2A2C31, 1);
+            g.text(Ui.PIXEL, "PRIX A L'UNITE", left + 4.7f, boxY + 3.6f, 3.3f, Ui.Theme.MUTED);
+            if (offer.discount() > 0) {
+                g.right(Ui.PIXEL, "REMISE -" + offer.discount() + " % COMPRISE", left + inner - 4.0f, boxY + 3.6f, 3.3f,
+                        Ui.Theme.YELLOW);
+            }
+            g.text(Ui.WIDE, g.fit(Ui.WIDE, money(offer.buy()), 7.0f, inner - 8.0f), left + 4.7f, boxY + 9.3f, 7.0f,
+                    Ui.Theme.GREEN_L);
+            float infoY = boxY + 23.0f;
             if (offer.course() > 0) {
                 int delta = offer.course() - 100;
-                g.text(Ui.PIXEL, "COURS DE L'HEURE " + course(offer.course()) + " · " + view.courseMinutes() + " MIN",
-                        left, infoY, 3.3f, delta >= 0 ? Ui.Theme.GREEN_L : Ui.Theme.RED_LIGHT);
+                g.text(Ui.PIXEL, "PRIX DU MOMENT " + course(offer.course()) + " · CHANGE DANS " + view.courseMinutes()
+                        + " MIN", left, infoY, 3.3f, delta > 0 ? Ui.Theme.RED_LIGHT : Ui.Theme.GREEN_L);
                 infoY += 6.0f;
-            }
-            if (offer.locked()) {
-                g.text(Ui.PIXEL, "VENTE APRES " + MoneyFormat.shortForm(offer.lockMissing()) + " DE COLLECTE", left,
-                        infoY, 3.3f, Ui.Theme.YELLOW);
-                infoY += 6.0f;
-            } else if (offer.nextStep() > 0) {
-                g.text(Ui.PIXEL, "COLLECTION " + MoneyFormat.shortForm(offer.collected()) + " / "
-                        + MoneyFormat.shortForm(offer.nextStep()), left, infoY, 3.3f, Ui.Theme.MUTED);
-                infoY += 4.7f;
-                float progress = Math.min(1.0f, offer.collected() / (float) Math.max(1L, offer.nextStep()));
-                p.round(left, infoY, inner, 2.0f, 1.0f, 0xFF2C2E33);
-                p.round(left, infoY, Math.max(2.0f, inner * progress), 2.0f, 1.0f, Ui.Theme.YELLOW);
-                infoY += 4.7f;
             }
 
             // La quantite.
-            float quantityY = Math.max(infoY + 2.0f, y + 86.0f);
+            float quantityY = Math.max(infoY + 2.0f, y + 72.0f);
             g.text(Ui.PIXEL, "QUANTITE", left, quantityY, 3.3f, Ui.Theme.MUTED);
             float rowY = quantityY + 5.3f;
             float minus = hover("minus", mouseX, mouseY, left, rowY, BUTTON, BUTTON);
@@ -556,30 +648,28 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
                         on ? Buttons.GHOST_ON : Buttons.GHOST, h, true, 4.0f);
             }
 
-            // Le total et les boutons.
+            // Le total et le bouton.
             float totalY = presetY + 16.0f;
-            long unit = offer.buy() > 0 ? offer.buy() : offer.sell();
-            g.text(Ui.PIXEL, offer.buy() > 0 ? "TOTAL" : "TOTAL VENTE", left, totalY + 2.0f, 3.3f, Ui.Theme.MUTED);
-            g.right(Ui.WIDE, MoneyFormat.exact(unit * quantity) + " $", left + inner, totalY, 7.3f, Ui.Theme.TEXT);
+            long total = offer.buy() * quantity;
+            boolean canBuy = total <= view.balance();
+            g.text(Ui.PIXEL, "TOTAL", left, totalY + 2.0f, 3.3f, Ui.Theme.MUTED);
+            g.right(Ui.WIDE, money(total), left + inner, totalY, 7.3f, canBuy ? Ui.Theme.TEXT : Ui.Theme.RED_LIGHT);
             float buttonY = totalY + 12.0f;
-            float buttonWidth = (inner - 4.0f) / 2.0f;
-            boolean canBuy = offer.buy() > 0 && offer.buy() * quantity <= view.balance();
-            boolean canSell = offer.sellable() && !offer.locked() && offer.owned() > 0;
-            float buy = hover("buy", mouseX, mouseY, left, buttonY, buttonWidth, BUTTON);
-            Buttons.draw(g, p, left, buttonY, buttonWidth, BUTTON, "ACHETER", Buttons.GREEN, buy, canBuy, 5.3f);
-            float sellHover = hover("sell", mouseX, mouseY, left + buttonWidth + 4.0f, buttonY, buttonWidth, BUTTON);
-            Buttons.draw(g, p, left + buttonWidth + 4.0f, buttonY, buttonWidth, BUTTON, "VENDRE", Buttons.RED,
-                    sellHover, canSell, 5.3f);
-            trend(g, p, offer, y + panelHeight + 5.0f, height - panelHeight - 5.0f, mouseX, mouseY);
+            float buy = hover("buy", mouseX, mouseY, left, buttonY, inner, BUTTON);
+            Buttons.draw(g, p, left, buttonY, inner, BUTTON, canBuy ? "ACHETER" : "PAS ASSEZ D'ARGENT", Buttons.GREEN,
+                    buy, canBuy, 5.3f);
+            if (offer.chart() != null) {
+                trend(g, p, offer, y + panelHeight + 5.0f, height - panelHeight - 5.0f, mouseX, mouseY);
+            }
             if (mouseX >= left && mouseX < left + 30 && mouseY >= y + 8 && mouseY < y + 38) {
                 g.tooltip(tip(offer));
             }
         }
 
         /**
-         * La courbe de l'objet, sous sa fiche, comme a la bourse : le cours des
-         * dernieres heures, sa variation, ses plus haut et plus bas, et les volumes
-         * echanges sur le serveur. Un objet a prix fixe a sa ligne plate.
+         * Pour un objet dont le prix change chaque heure : la courbe des dernieres
+         * heures, sous sa fiche, avec ses plus haut et plus bas et l'heure de chaque
+         * point sous la souris. Les objets a prix fixe n'en ont pas.
          */
         private void trend(UiGraphics g, Paint p, ShopView.Offer offer, float top, float panel, double mouseX,
                            double mouseY) {
@@ -591,37 +681,17 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
             float left = x + 7.0f;
             float right = x + width - 7.0f;
             int color = Charts.trend(chart);
-            boolean fixed = chart.flat();
-            String heading = (fixed ? "PRIX " : offer.course() > 0 ? "COURS " : "PRIX ") + Charts.span(chart.span());
-            g.text(Ui.PIXEL, heading, left, top + 6.0f, 3.3f, Ui.Theme.MUTED);
-            String change = fixed ? "STABLE" : Charts.change(chart);
+            g.text(Ui.PIXEL, "PRIX " + Charts.span(chart.span()) + " · CHANGE CHAQUE HEURE", left, top + 6.0f, 3.3f,
+                    Ui.Theme.MUTED);
+            String change = Charts.change(chart);
             float pillWidth = g.width(Ui.PIXEL, change, 3.3f) + 6.0f;
             p.round(right - pillWidth, top + 4.4f, pillWidth, 6.3f, 2.0f, Paint.alpha(color, 0.18f));
             g.text(Ui.PIXEL, change, right - pillWidth + 3.0f, top + 6.0f, 3.3f, color);
             g.text(Ui.WIDE, Charts.value(chart, chart.last()), left, top + 13.3f, 7.0f, Ui.Theme.TEXT);
-            if (fixed) {
-                g.right(Ui.PIXEL, "PAS DE COURS", right, top + 13.6f, 3.0f, Ui.Theme.DIM);
-            } else {
-                g.right(Ui.PIXEL, "HAUT " + Charts.value(chart, chart.high()), right, top + 13.6f, 3.0f,
-                        Ui.Theme.DIM);
-                g.right(Ui.PIXEL, "BAS " + Charts.value(chart, chart.low()), right, top + 18.0f, 3.0f,
-                        Ui.Theme.DIM);
-            }
-            long traded = chart.traded();
-            g.text(Ui.PIXEL, traded > 0 ? MoneyFormat.shortForm(traded) + " ECHANGES SUR LE SERVEUR"
-                    : "AUCUN ECHANGE", left, top + 22.6f, 3.0f, Ui.Theme.DIM);
+            g.right(Ui.PIXEL, "HAUT " + Charts.value(chart, chart.high()), right, top + 13.6f, 3.0f, Ui.Theme.DIM);
+            g.right(Ui.PIXEL, "BAS " + Charts.value(chart, chart.low()), right, top + 18.0f, 3.0f, Ui.Theme.DIM);
             float reveal = Anim.easeOut(Anim.progress(picked, 0.6d));
-            Charts.full(g, chart, left - 1.0f, top + 29.0f, width - 12.0f, panel - 34.0f, mouseX, mouseY, reveal);
-        }
-
-        private void price(UiGraphics g, Paint p, float boxX, float boxY, float boxWidth, String label, String value,
-                           int color, String note) {
-            p.framed(boxX, boxY, boxWidth, 19.3f, 3.3f, 0xFF16171A, 0xFF2A2C31, 1);
-            g.text(Ui.PIXEL, label, boxX + 4.7f, boxY + 3.6f, 3.3f, Ui.Theme.MUTED);
-            if (!note.isEmpty()) {
-                g.right(Ui.PIXEL, note, boxX + boxWidth - 4.0f, boxY + 3.6f, 3.3f, Ui.Theme.YELLOW);
-            }
-            g.text(Ui.WIDE, g.fit(Ui.WIDE, value, 6.0f, boxWidth - 8.0f), boxX + 4.7f, boxY + 9.6f, 6.0f, color);
+            Charts.full(g, chart, left - 1.0f, top + 24.0f, width - 12.0f, panel - 29.0f, mouseX, mouseY, reveal);
         }
 
         @Override
@@ -645,17 +715,10 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
                     case "preset0" -> quantity = 1;
                     case "preset1" -> quantity = 16;
                     case "preset2" -> quantity = 64;
-                    case "preset3" -> quantity = (int) Math.max(1L, offer.sellable() && offer.owned() > 0
-                            && !offer.locked() ? Math.min(MAX_QUANTITY, offer.owned()) : affordable(offer));
+                    case "preset3" -> quantity = (int) Math.max(1L, affordable(offer));
                     case "buy" -> {
-                        if (offer.buy() > 0 && offer.buy() * quantity <= view.balance()) {
-                            trade("buy");
-                        }
-                        return true;
-                    }
-                    case "sell" -> {
-                        if (offer.sellable() && !offer.locked() && offer.owned() > 0) {
-                            trade("sell");
+                        if (offer.buy() * quantity <= view.balance()) {
+                            buy();
                         }
                         return true;
                     }

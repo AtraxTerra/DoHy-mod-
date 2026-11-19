@@ -73,7 +73,17 @@ public final class DoHyCommand {
                 .then(Commands.literal("chunk")
                         .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                 .executes(ctx -> chunk(ctx.getSource(),
-                                        BlockPosArgument.getLoadedBlockPos(ctx, "pos")))));
+                                        BlockPosArgument.getLoadedBlockPos(ctx, "pos")))))
+                // Pour essayer l'hotel des ventes sans attendre : tes annonces partent tout de suite.
+                .then(Commands.literal("hdv")
+                        .then(Commands.literal("vendre")
+                                .executes(ctx -> {
+                                    int sold = fr.atraxterra.dohy.auction.AuctionSales.settle(
+                                            ctx.getSource().getPlayerOrException(), true);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(sold > 0
+                                            ? sold + " annonce(s) reglee(s)." : "Aucune annonce en cours."), false);
+                                    return sold;
+                                })));
     }
 
     private static int placed(CommandSourceStack source, BlockPos pos) {

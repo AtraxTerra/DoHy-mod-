@@ -78,7 +78,7 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
     private static final int MODEL_H = 70;
 
     private static final List<Shortcut> SHORTCUTS = List.of(
-            new Shortcut("shop", "inv_shop", "Shop", "Acheter et vendre"),
+            new Shortcut("shop", "inv_shop", "Commerce", "Acheter, vendre, hotel des ventes"),
             new Shortcut("contracts", "inv_contracts", "Contrats", "Quotidiens et hebdomadaires"),
             new Shortcut("bank", "inv_bank", "Banque", "Epargne et interets"),
             new Shortcut("faction", "inv_faction", "Faction", "Ta faction, ses claims, sa ligue"),

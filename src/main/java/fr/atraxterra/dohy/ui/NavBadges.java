@@ -83,6 +83,15 @@ public final class NavBadges {
         } catch (RuntimeException ignored) {
             // pas de pastille
         }
+        try {
+            // Un invendu de l'hotel des ventes attend d'etre recupere.
+            int waiting = fr.atraxterra.dohy.auction.AuctionSales.unsold(player);
+            if (waiting > 0) {
+                badges.put("commerce", String.valueOf(waiting));
+            }
+        } catch (RuntimeException ignored) {
+            // pas de pastille
+        }
         int level = 0;
         try {
             level = ContractApi.globalLevel(player);

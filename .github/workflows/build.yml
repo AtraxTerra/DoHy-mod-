@@ -238,6 +238,11 @@ jobs:
       - name: Le marche noir doit etre a jour et sans boucle d'argent
         run: python3 tools/black_market.py --check
 
+      # L'hotel des ventes : sa reserve est generee, et ses acheteurs ne doivent
+      # payer nulle part plus cher que le prix le plus bas de ce qu'ils prennent.
+      - name: L'hotel des ventes doit etre a jour et sans boucle d'argent
+        run: python3 -I tools/market_offers.py --check
+
       # Les recettes qui relient Create au reste du mod sont generees : une
       # retouche a la main serait ecrasee au prochain passage du script.
       - name: Les recettes de Create doivent etre a jour

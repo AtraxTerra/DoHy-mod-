@@ -26,7 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-/** La boutique : boosters, loot boxes et leurs coffres a poser, potions d'XP, assurance et autosell. */
+/**
+ * L'onglet Boutique du commerce : boosters, cles de box et leurs coffres a poser,
+ * potions d'XP, assurance et autosell. Tout s'y paie en liquide.
+ */
 public final class BoutiqueController extends MenuController {
 
     public static final BoutiqueController INSTANCE = new BoutiqueController();
@@ -39,17 +42,19 @@ public final class BoutiqueController extends MenuController {
     @Override
     public MenuView view(ServerPlayer player) {
         double active = Boosters.active(player);
-        List<MenuView.Stat> stats = List.of(
-                new MenuView.Stat("LIQUIDE", MoneyFormat.shortForm(Economy.balance(player)), 0xFFFFFFFF),
-                new MenuView.Stat("EPARGNE", MoneyFormat.shortForm(Bank.banked(player)), 0xFFFAC400),
-                new MenuView.Stat("BOOSTER", active > 1 ? "x" + (long) active : "-", 0xFF22E558));
+        List<MenuView.Stat> stats = new ArrayList<>();
+        stats.add(new MenuView.Stat("TON ARGENT", MoneyFormat.exact(Economy.balance(player)) + " $", 0xFFFFFFFF));
+        if (active > 1.0d) {
+            stats.add(new MenuView.Stat("BOOSTER", "x" + (long) active, 0xFF22E558));
+        }
 
         List<Card> boosters = new ArrayList<>();
         for (Boosters.Tier tier : Boosters.TIERS) {
             boolean busy = active > 1.0d;
             long missing = tier.price() - Economy.balance(player);
             Card card = Card.of(new ItemStack(boosterIcon(tier)), "Booster " + tier.key(), List.of(
-                            MoneyFormat.exact(tier.price()), Boosters.DURATION_MINUTES + " min de temps de jeu"))
+                            MoneyFormat.exact(tier.price()) + " $", "Ventes " + tier.key() + " pendant "
+                                    + Boosters.DURATION_MINUTES + " min"))
                     .accent(0xFFFAC400).badge(tier.key())
                     .tooltip(List.of("Multiplie l'argent des ventes",
                             "Le montant booste ne fait pas baisser les prix",
@@ -73,8 +78,9 @@ public final class BoutiqueController extends MenuController {
             int keys = CrateKeys.count(player, tier);
             ItemStack icon = kind != null ? new ItemStack(PalaBoxes.key(kind))
                     : new ItemStack(keys > 0 ? Items.ENDER_CHEST : Items.TRAPPED_CHEST);
-            crates.add(Card.of(icon, Crates.title(tier), List.of("Cle : " + MoneyFormat.exact(crate.price()),
-                            keys + " cle(s) sur toi"))
+            crates.add(Card.of(icon, Crates.title(tier), List.of("Cle : " + MoneyFormat.exact(crate.price()) + " $",
+                            keys > 0 ? keys + (keys > 1 ? " cles · clic droit : ouvrir" : " cle · clic droit : ouvrir")
+                                    : "Clic : acheter une cle"))
                     .accent(0xFFEF3826).badge(keys > 0 ? keys + " CLE" : "")
                     .action("key:" + tier + "|acheter une cle")
                     .right(keys > 0 ? "crate:" + tier + "|ouvrir a la roulette" : "")
@@ -91,7 +97,7 @@ public final class BoutiqueController extends MenuController {
             ItemStack icon = new ItemStack(PalaBoxes.item(kind));
             long missing = PalaBoxes.PRICE - Economy.balance(player);
             Card card = Card.of(icon, MenuView.text(icon.getHoverName()), List.of(
-                            MoneyFormat.exact(PalaBoxes.PRICE), "Le coffre anime, a poser"))
+                            MoneyFormat.exact(PalaBoxes.PRICE) + " $", "Deco animee, s'ouvre avec une cle"))
                     .accent(0xFF9B59E8)
                     .tooltip(List.of("Un coffre anime a poser chez soi",
                             "Clic droit avec une " + Crates.keyName(tier) + " : il s'ouvre",
@@ -111,7 +117,8 @@ public final class BoutiqueController extends MenuController {
             Card card = Card.of(fr.atraxterra.dohy.palamod.boost.PalaXpPotions.stack(offer.multiplier(),
                                     offer.minutes()),
                             (offer.multiplier() == 3 ? "Triple XP " : "Double XP ") + duration, List.of(
-                            MoneyFormat.exact(offer.price()), "x" + offer.multiplier() + " XP de metier"))
+                            MoneyFormat.exact(offer.price()) + " $", "XP de metier x" + offer.multiplier() + " pendant "
+                                    + duration))
                     .accent(offer.multiplier() == 3 ? 0xFFFAC400 : 0xFF22E558).badge("x" + offer.multiplier())
                     .tooltip(List.of("Toute l'XP de metier x" + offer.multiplier() + " pendant " + duration
                                     + " de jeu",
@@ -126,14 +133,16 @@ public final class BoutiqueController extends MenuController {
         BoostData data = Boosters.data(player);
         List<Card> services = new ArrayList<>();
         services.add(Card.of(new ItemStack(Items.TOTEM_OF_UNDYING), "Assurance", List.of(
-                        MoneyFormat.exact(Bank.insurancePrice()) + " la charge", charges + " charge(s)"))
+                        MoneyFormat.exact(Bank.insurancePrice()) + " $ la charge", charges > 0
+                                ? charges + (charges > 1 ? " charges : tu perds moitie moins a la mort"
+                                : " charge : tu perds moitie moins a la mort") : "Tu perds moitie moins a la mort"))
                 .accent(0xFF2F5BEA).badge(String.valueOf(charges)).action("insurance|acheter une charge")
                 .tooltip(List.of("Divise par deux la perte a la mort", "Une charge est consommee par mort")));
         if (!data.autosellUnlocked()) {
             long missing = Autosell.UNLOCK_PRICE - Economy.balance(player);
             services.add(Card.of(new ItemStack(Items.HOPPER_MINECART), "Autosell", List.of(
-                            MoneyFormat.exact(Autosell.UNLOCK_PRICE),
-                            "Vide un coffre lie toutes les " + Autosell.INTERVAL_MINUTES + " min"))
+                            MoneyFormat.exact(Autosell.UNLOCK_PRICE) + " $",
+                            "Vend un coffre toutes les " + Autosell.INTERVAL_MINUTES + " min"))
                     .accent(0xFF2F5BEA).action("autosell|debloquer")
                     .state(missing > 0 ? MenuView.DISABLED : MenuView.NORMAL)
                     .tooltip(List.of("Ne charge jamais le chunk : un coffre non charge est saute",
@@ -147,20 +156,19 @@ public final class BoutiqueController extends MenuController {
                             "Dernier passage il y a " + since + " min"))
                     .state(MenuView.DONE).tooltip(List.of("Place-toi devant un coffre et fais /autosell link")));
         }
-        services.add(Card.of(new ItemStack(Items.CHEST_MINECART), "Banque", List.of("Deposer, retirer",
-                "Assurance")).accent(0xFFFAC400).action("bank"));
-        services.add(Card.of(new ItemStack(Items.NETHER_STAR), "Ameliorations", List.of("Achats definitifs",
-                "Rien ne se consomme")).accent(0xFFEC4FB5).action("upgrades"));
-
-        return new MenuView(id(), "Boutique", "", stats, List.of(
-                new MenuView.Section("BOOSTERS", "upgrade", MenuView.GRID, boosters),
-                new MenuView.Section("BOXES", "resources", MenuView.GRID, crates),
-                new MenuView.Section("COFFRES A POSER", "armor", MenuView.GRID, boxes),
-                new MenuView.Section("POTIONS D'XP", "upgrade", MenuView.GRID, potions),
-                new MenuView.Section("SERVICES", "craft", MenuView.GRID, services)), true);
+        // La banque et les ameliorations ont leur entree dans la barre laterale : elles
+        // ne s'achetent pas ici, elles n'y ont plus de carte.
+        return new MenuView(id(), fr.atraxterra.dohy.shop.Commerce.TITLE,
+                fr.atraxterra.dohy.shop.Commerce.Tab.BOUTIQUE.subtitle(), stats, List.of(
+                new MenuView.Section("BOOSTERS : TES VENTES RAPPORTENT PLUS", "upgrade", MenuView.GRID, boosters),
+                new MenuView.Section("CLES DE BOX", "resources", MenuView.GRID, crates),
+                new MenuView.Section("POTIONS D'XP DE METIER", "upgrade", MenuView.GRID, potions),
+                new MenuView.Section("SERVICES", "craft", MenuView.GRID, services),
+                new MenuView.Section("COFFRES A POSER", "armor", MenuView.GRID, boxes)), false)
+                .withTabs(fr.atraxterra.dohy.shop.Commerce.tabs(player, fr.atraxterra.dohy.shop.Commerce.Tab.BOUTIQUE));
     }
 
-    private static Item boosterIcon(Boosters.Tier tier) {
+    public static Item boosterIcon(Boosters.Tier tier) {
         return switch (tier.key()) {
             case "x2" -> Items.SUGAR;
             case "x3" -> Items.GLOWSTONE_DUST;
