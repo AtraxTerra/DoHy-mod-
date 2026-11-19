@@ -403,14 +403,6 @@ final class ShotSamples {
         ShotHarness.SHOTS.add(client("c3_inventaire", 15, ShotSamples::openInventory));
         ShotHarness.SHOTS.add(client("c4_fermer", 5, () -> Minecraft.getInstance().gui.setScreen(null)));
         event("d1_trouilles", 40, LuckyType.HALLOWEEN, "sixtrouilles", 15.0f);
-        ShotHarness.SHOTS.add(server("d2_coffre", 40, player -> {
-            clear(player, 20, 12);
-            hover(player, false);
-            tp(player, 0.5, 0, 2.5, 180.0f, 10.0f);
-            BlockPos pos = at(0, 0);
-            place(player, LuckyType.SEPTEMBER, "september_chest", pos);
-            fire(player, pos);
-        }));
         ShotHarness.SHOTS.add(server("d3_anglais", 25, player -> {
             command(player, "kill @e[type=minecraft:armor_stand]");
             clear(player, 20, 12);
@@ -482,6 +474,15 @@ final class ShotSamples {
         ShotHarness.SHOTS.add(server("z2_lune", 360, player -> log("lune : joueur a y = {}", player.getY())));
         ShotHarness.SHOTS.add(client("z3_lune_dos", 20, () -> camera(CameraType.THIRD_PERSON_BACK)));
         ShotHarness.SHOTS.add(client("z5_camera", 5, () -> camera(CameraType.FIRST_PERSON)));
+        ShotHarness.SHOTS.add(server("d2_coffre", 40, player -> {
+            clear(player, 20, 12);
+            hover(player, false);
+            effectsOff(player);
+            tp(player, 0.5, 0, 2.5, 180.0f, 5.0f);
+            BlockPos pos = at(0, 0);
+            place(player, LuckyType.SEPTEMBER, "september_chest", pos);
+            fire(player, pos);
+        }));
         ShotHarness.SHOTS.add(server("e1_boules", 30, player -> {
             clear(player, 20, 12);
             effectsOff(player);
