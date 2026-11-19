@@ -4349,6 +4349,21 @@ def main():
     tag("minecraft/tags/item/chest_armor.json", ["%s:travel_jumpchest" % NS])
     tag("minecraft/tags/item/head_armor.json", ["%s:travel_slimyhelmet" % NS, "%s:travel_scubahelmet" % NS])
 
+    # Les armures et l'epee des lucky blocks (LuckyItems) : leurs icones, modeles et couches
+    # portees viennent de tools/lucky_assets.py, mais les tags vanilla s'ecrivent ici, d'un
+    # seul tenant. Sans eux, ni Protection ni Tranchant ne s'y appliqueraient.
+    tag("minecraft/tags/item/head_armor.json", ["%s:%s" % (NS, name) for name in (
+        "pig_helmet", "cave_helmet", "invisible_helmet", "fake_endium_helmet", "balaclava_helmet")])
+    tag("minecraft/tags/item/chest_armor.json", ["%s:%s" % (NS, name) for name in (
+        "pig_chestplate", "invisible_chestplate", "fake_endium_chestplate")])
+    tag("minecraft/tags/item/leg_armor.json", ["%s:%s" % (NS, name) for name in (
+        "pig_leggings", "invisible_leggings", "fake_endium_leggings")])
+    tag("minecraft/tags/item/foot_armor.json", ["%s:%s" % (NS, name) for name in (
+        "pig_boots", "invisible_boots", "fake_endium_boots", "air_min_boots")])
+    tag("minecraft/tags/item/swords.json", ["%s:couac_sword" % NS])
+    # Les AirMin ne se reparent pas (getIsRepairable) : leur materiau designe un tag vide.
+    tag("%s/tags/item/repairs/nothing.json" % NS, [])
+
     # L'arc en paladium : le modele de l'arc vanilla et ses trois etapes de tension.
     for suffix, source in (("", "paladium_bow"), ("_pulling_0", "paladium_bow_0"),
                            ("_pulling_1", "paladium_bow_1"), ("_pulling_2", "paladium_bow_2")):

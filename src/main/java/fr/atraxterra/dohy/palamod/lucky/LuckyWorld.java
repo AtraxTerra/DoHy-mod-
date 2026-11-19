@@ -6,7 +6,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -120,6 +122,16 @@ public final class LuckyWorld {
     public static void sound(ServerLevel level, double x, double y, double z, SoundEvent sound, float volume,
                              float pitch) {
         level.playSound(null, x, y, z, sound, SoundSource.BLOCKS, volume, pitch);
+    }
+
+    /**
+     * Un son du jeu par son nom ({@code entity.pig.ambient}) : les cris des animaux ont
+     * des variantes selon les versions, leur nom reste.
+     */
+    public static void sound(ServerLevel level, double x, double y, double z, String id, SoundSource source,
+                             float volume, float pitch) {
+        BuiltInRegistries.SOUND_EVENT.getOptional(Identifier.withDefaultNamespace(id))
+                .ifPresent(sound -> level.playSound(null, x, y, z, sound, source, volume, pitch));
     }
 
     /**

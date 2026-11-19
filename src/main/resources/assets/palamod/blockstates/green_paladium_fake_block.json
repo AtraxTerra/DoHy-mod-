@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "hits=0": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=1": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=2": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=3": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=4": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=5": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=6": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=7": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=8": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=9": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=10": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=11": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=12": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=13": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=14": {
+      "model": "palamod:block/green_paladium_block"
+    },
+    "hits=15": {
+      "model": "palamod:block/green_paladium_block"
+    }
+  }
+}

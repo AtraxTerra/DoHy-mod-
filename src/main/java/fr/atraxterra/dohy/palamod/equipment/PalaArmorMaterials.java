@@ -110,7 +110,45 @@ public final class PalaArmorMaterials {
     public static final ArmorMaterial TRAVEL_SCUBA = material("travel_scuba", ArmorMaterials.IRON,
             SoundEvents.ARMOR_EQUIP_IRON);
 
+    // -- Les armures des lucky blocks (troisieme lot de findium, PALAMOD.md section 40) --
+
+    /**
+     * Le cochon ({@code PArmorMaterial.pig}) : les memes valeurs que le paladium, et la
+     * reparation au titane. Le casque de speleologue et l'armure invisible le partagent.
+     */
+    public static final ArmorMaterial PIG = material("pig",
+            260, new int[]{10, 13, 11, 9}, 15, SoundEvents.ARMOR_EQUIP_LEATHER,
+            PalaTags.REPAIRS_PALADIUM_ARMOR);
+    public static final ArmorMaterial CAVE_HELMET = material("cave_helmet",
+            260, new int[]{10, 13, 11, 9}, 15, SoundEvents.ARMOR_EQUIP_IRON,
+            PalaTags.REPAIRS_PALADIUM_ARMOR);
+    public static final ArmorMaterial INVISIBLE = material("invisible",
+            260, new int[]{10, 13, 11, 9}, 15, SoundEvents.ARMOR_EQUIP_GENERIC,
+            PalaTags.REPAIRS_PALADIUM_ARMOR);
+
+    /** La cagoule des lucky blocks ({@code ItemBalaclavaHelmet}) : le fer vanilla, reparee au fer. */
+    public static final ArmorMaterial BALACLAVA = material("balaclava", ArmorMaterials.IRON,
+            SoundEvents.ARMOR_EQUIP_LEATHER);
+
+    /** Les AirMin ({@code ItemAirMin}) : le fer vanilla, et irreparables. */
+    public static final ArmorMaterial AIR_MIN = material("air_min", ArmorMaterials.IRON,
+            SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
+
+    /**
+     * La fausse armure en endium ({@code ItemFakeEndiumArmor}) : l'allure de l'endium, le fer
+     * vanilla dessous, et la reparation au lingot de paladium.
+     */
+    public static final ArmorMaterial FAKE_ENDIUM = material("fake_endium", ArmorMaterials.IRON,
+            SoundEvents.ARMOR_EQUIP_NETHERITE, PalaTags.REPAIRS_PALADIUM);
+
     private PalaArmorMaterials() {
+    }
+
+    /** Un materiau vanilla repris sous un autre nom, et repare avec autre chose. */
+    public static ArmorMaterial material(String name, ArmorMaterial base, Holder<SoundEvent> sound,
+                                         TagKey<Item> repair) {
+        return new ArmorMaterial(base.durability(), base.defense(), base.enchantmentValue(), sound,
+                base.toughness(), base.knockbackResistance(), repair, asset(name));
     }
 
     /** Un materiau vanilla repris sous un autre nom : ses couches portees sont celles de PalaMod. */

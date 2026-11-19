@@ -74,6 +74,10 @@ public final class PalaLucky {
     public static final DeferredBlock<FakePaladiumBlock> PALADIUM_FAKE_BLOCK = BLOCKS.registerBlock(
             "paladium_fake_block", FakePaladiumBlock::new,
             properties -> properties.strength(6.0f, 6.0f).sound(SoundType.METAL));
+    /** Le faux bloc de paladium vert ({@code BLOCK_FAKE_GPALADIUM}) : il rend un vrai bloc vert. */
+    public static final DeferredBlock<FakePaladiumBlock> GREEN_PALADIUM_FAKE_BLOCK = BLOCKS.registerBlock(
+            "green_paladium_fake_block", properties -> new FakePaladiumBlock(0x25E251, properties),
+            properties -> properties.strength(6.0f, 6.0f).sound(SoundType.METAL));
 
     public static final DeferredItem<BlockItem> PALADIUM_LUCKY_BLOCK_ITEM = ITEMS.registerItem(
             "paladium_lucky_block", properties -> new BlockItem(PALADIUM_LUCKY_BLOCK.get(),
@@ -226,5 +230,6 @@ public final class PalaLucky {
         EFFECTS.register(modBus);
         ITEMS.register(modBus);
         ATTACHMENTS.register(modBus);
+        LuckyItems.register(modBus);
     }
 }

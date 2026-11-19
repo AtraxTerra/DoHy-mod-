@@ -8,9 +8,11 @@
 Ce que le script ecrit sans le jar (et que --check verifie) :
 
   - les blockstates, modeles, definitions d'objet et tables de butin des trois
-    lucky blocks (paladium, endium, findium) et du faux bloc de paladium de
-    « Ouaiche t'es relou » ;
-  - les noms (blocs et effets) en francais et en anglais.
+    lucky blocks (paladium, endium, findium) et des faux blocs de paladium de
+    « Ouaiche t'es relou » et « Ouaiche t'es tres relou » ;
+  - les modeles et definitions des objets des lucky blocks (LuckyItems) et les
+    definitions d'equipement de leurs armures ;
+  - les noms (blocs, effets et objets) en francais et en anglais.
 
 Avec --jar (PIL requis), il recopie de PalaMod :
 
@@ -21,11 +23,13 @@ Avec --jar (PIL requis), il recopie de PalaMod :
     de 16 x 16 ; celle de « 20 000 lieu sous terre » manque dans le jar de
     PalaMod lui-meme : elle est dessinee ici ;
   - les icones d'effet (18 x 18), tirees des images des evenements ;
-  - et il dessine les filtres d'ecran (aplats) et le chat de « I love cats ».
+  - les icones des objets des lucky blocks et les couches portees de leurs
+    armures (`textures/items/`, `textures/models/`) ;
+  - et il dessine les filtres d'ecran (aplats), le chat de « I love cats », le
+    billet, et les images qui reprenaient une autre licence (DRAWN).
 
-Les evenements portes sont lus dans les sources Java (SOURCES : GoodEvents,
-BadEvents, FindiumEvents, EffectEvents, TrickEvents, FindiumTricks) : --check echoue si l'un d'eux n'a pas son image, ou porte un
-nom avec un accent.
+Les evenements portes sont lus dans les sources Java (SOURCES) : --check echoue
+si l'un d'eux n'a pas son image, ou porte un nom avec un accent.
 
 --stats compare le catalogue complet de PalaMod (`tools/data/lucky_events.json`,
 439 evenements) a ce qui est porte : la part de bons tirages par lucky block,
@@ -44,7 +48,8 @@ JAVA = os.path.join(ROOT, "src", "main", "java", "fr", "atraxterra", "dohy", "pa
 CATALOG = os.path.join(ROOT, "tools", "data", "lucky_events.json")
 # Les fichiers ou sont declares les evenements portes (c.classic / c.findium).
 SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEvents.java", "TrickEvents.java",
-           "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java")
+           "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
+           "LuckyItemEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -88,8 +93,71 @@ FILTERS = {
 }
 
 LANG = {
-    "fr_fr": {"block.palamod.paladium_fake_block": "Bloc de paladium"},
-    "en_us": {"block.palamod.paladium_fake_block": "Paladium Block"},
+    "fr_fr": {"block.palamod.paladium_fake_block": "Bloc de paladium",
+              "block.palamod.green_paladium_fake_block": "Bloc de paladium vert"},
+    "en_us": {"block.palamod.paladium_fake_block": "Paladium Block",
+              "block.palamod.green_paladium_fake_block": "Green Paladium Block"},
+}
+
+# Les faux blocs de « Ouaiche t'es relou » et de « Ouaiche t'es tres relou » : le modele
+# du vrai bloc, et le vrai bloc au bout des quinze sauts.
+FAKE_BLOCKS = {
+    "paladium_fake_block": "paladium_block",
+    "green_paladium_fake_block": "green_paladium_block",
+}
+
+# Les objets des lucky blocks (LuckyItems) : texture dans le jar (sous textures/), texture
+# dans le mod (palamod:item/...), tenu en main comme une arme, noms francais et anglais.
+# La fausse armure en endium reprend les icones de la vraie ; le billet, dont l'image
+# venait d'un autre mod (customnpcs:npcMoney), est dessine ici.
+ITEMS = {
+    "pig_helmet": ("items/pig_helmet.png", "pig_helmet", False, "Casque de cochon", "Pig Helmet"),
+    "pig_chestplate": ("items/pig_chestplate.png", "pig_chestplate", False, "Plastron de cochon",
+                       "Pig Chestplate"),
+    "pig_leggings": ("items/pig_leggings.png", "pig_leggings", False, "Jambieres de cochon", "Pig Leggings"),
+    "pig_boots": ("items/pig_boots.png", "pig_boots", False, "Bottes de cochon", "Pig Boots"),
+    "cave_helmet": ("items/cave_helmet.png", "cave_helmet", False, "Casque de speleologue", "Cave Helmet"),
+    "invisible_helmet": ("items/invisible_helmet.png", "invisible_helmet", False, "Casque invisible",
+                         "Invisible Helmet"),
+    "invisible_chestplate": ("items/invisible_chestplate.png", "invisible_chestplate", False,
+                             "Plastron invisible", "Invisible Chestplate"),
+    "invisible_leggings": ("items/invisible_leggings.png", "invisible_leggings", False, "Jambieres invisibles",
+                           "Invisible Leggings"),
+    "invisible_boots": ("items/invisible_boots.png", "invisible_boots", False, "Bottes invisibles",
+                        "Invisible Boots"),
+    "fake_endium_helmet": (None, "endium_helmet", False, "Casque en faux endium", "Fake Endium Helmet"),
+    "fake_endium_chestplate": (None, "endium_chestplate", False, "Plastron en faux endium",
+                               "Fake Endium Chestplate"),
+    "fake_endium_leggings": (None, "endium_leggings", False, "Jambieres en faux endium", "Fake Endium Leggings"),
+    "fake_endium_boots": (None, "endium_boots", False, "Bottes en faux endium", "Fake Endium Boots"),
+    "balaclava_helmet": ("items/balaclava_helmet.png", "balaclava_helmet", False, "Cagoule noire", "Balaclava"),
+    "air_min_boots": ("items/airMin.png", "air_min_boots", False, "Air Min", "Air Min"),
+    "speed_apple": ("items/speed_apple.png", "speed_apple", False, "Pomme de vitesse", "Speed Apple"),
+    "calcium": ("items/calcium.png", "calcium", False, "Brique de lait", "Milk Carton"),
+    "fake_money": (None, "fake_money", False, "Billet", "Banknote"),
+    "couac_sword": ("items/couac_sword.png", "couac_sword", True, "Epee Couac", "Couac Sword"),
+}
+
+# Les couches portees des armures des lucky blocks (getArmorTexture) : materiau -> couche
+# -> (texture, image du jar). L'armure invisible l'est parce que ses deux couches sont
+# entierement transparentes ; la fausse armure en endium porte celles de la vraie.
+EQUIPMENT = {
+    "pig": {"humanoid": ("pig", "models/pig_armor_1.png"),
+            "humanoid_leggings": ("pig", "models/pig_armor_2.png")},
+    "cave_helmet": {"humanoid": ("cave_helmet", "models/cave_helmet_layer_1.png")},
+    "invisible": {"humanoid": ("invisible", "models/invisible_armor_1.png"),
+                  "humanoid_leggings": ("invisible", "models/invisible_armor_2.png")},
+    "balaclava": {"humanoid": ("balaclava", "models/balaclava_helmet.png")},
+    "air_min": {"humanoid": ("air_min", "models/air_min_boots.png")},
+    "fake_endium": {"humanoid": ("endium", None), "humanoid_leggings": ("endium", None)},
+}
+# Sur le cote des AirMin portees, une petite marque sombre (une signature de marque) :
+# effacee, la toile reprend sa couleur.
+AIR_MIN_MARK = ((50, 50, 50, 255), (246, 230, 215, 255))
+
+# Les images d'evenement rangees dans un sous-dossier du jar.
+ALIASES = {
+    "homme_invisible": "may/homme_invisible.png",
 }
 
 # L'image de TeleportYOne, absente du jar de PalaMod : une fleche jaune qui
@@ -166,11 +234,111 @@ FOLDER_COLORS = {
     ".": (0, 0, 0, 0), "O": (64, 40, 8, 255), "Y": (226, 170, 52, 255), "y": (250, 208, 98, 255),
     "R": (206, 28, 28, 255), "W": (255, 236, 236, 255),
 }
+# « J'ai glisse chef » (l'image de PalaMod reprend la peau de banane d'un jeu de course) :
+# un panneau de sol glissant, dessine ici. Puis « Coup de turbo » (PalaMod montrait le
+# numero d'une voiture de dessin anime) : la pomme de vitesse lancee ; « Air Min »
+# (PalaMod montrait le logo d'une marque de baskets) : une basket ailee ; et le billet.
+WET_ICON = [
+    "................",
+    "......OOOO......",
+    ".....OYYYYO.....",
+    ".....OYKKYO.....",
+    "....OYYKKYYO....",
+    "....OYYKKYYO....",
+    "....OYYKKYYO....",
+    "...OYYYKKYYYO...",
+    "...OYYYYYYYYO...",
+    "...OYYYKKYYYO...",
+    "..OYYYYKKYYYYO..",
+    "..OYbbYYYYbbYO..",
+    "..ObbbbYYbbbbO..",
+    "..OOOOOOOOOOOO..",
+    "...Oo......oO...",
+    "..OO........OO..",
+]
+WET_COLORS = {
+    ".": (0, 0, 0, 0), "O": (60, 44, 6, 255), "Y": (250, 206, 40, 255), "K": (24, 24, 24, 255),
+    "b": (70, 150, 230, 255), "o": (130, 100, 30, 255),
+}
+TURBO_ICON = [
+    "................",
+    "..........K.....",
+    ".........KGG....",
+    "........OOOOO...",
+    ".......ObbBBBO..",
+    "WWWW..ObWBBBBBO.",
+    "......ObbBBBBBO.",
+    "..WWWWOBBBBBBBO.",
+    "......OBBBBBBBO.",
+    "WWWW..OBBBBBBdO.",
+    "......OBBBBBddO.",
+    "..WW...OBBBddO..",
+    ".......OOdOOO...",
+    "........OO.OO...",
+    "................",
+    "................",
+]
+TURBO_COLORS = {
+    ".": (0, 0, 0, 0), "O": (20, 58, 92, 255), "B": (120, 210, 240, 255), "b": (190, 240, 255, 255),
+    "W": (255, 255, 255, 255), "d": (70, 150, 200, 255), "K": (80, 50, 20, 255), "G": (70, 170, 60, 255),
+}
+SNEAKER_ICON = [
+    "................",
+    "................",
+    "WWWWWW..........",
+    ".wwwwwWW........",
+    "..WWWWWWW.......",
+    "...wwwwwWW......",
+    "....WWWWWW......",
+    ".....wwwwW.OOOO.",
+    "......OOOOOWWWWO",
+    ".....OWWWWWGWWWO",
+    ".....OWWWWWWGWWO",
+    ".....OWWWWWWWWWO",
+    ".....OrrrrrrrrrO",
+    ".....OOOOOOOOOOO",
+    "................",
+    "................",
+]
+SNEAKER_COLORS = {
+    ".": (0, 0, 0, 0), "O": (40, 40, 48, 255), "W": (246, 246, 250, 255), "w": (190, 214, 236, 255),
+    "G": (150, 150, 160, 255), "r": (120, 120, 132, 255),
+}
+MONEY_ITEM = [
+    "................",
+    "................",
+    "..OOOOOOOOOOOO..",
+    "..OaaaaaaaaaaO..",
+    "..OaOOOOOOOOOOOO",
+    "..OaOggggggggggO",
+    "..OaOgGggOOggGgO",
+    "..OaOggOOddOOggO",
+    "...OOggOdddOggO.",
+    "....OggOOddOOggO",
+    "....OgGggOOggGgO",
+    "....OggggggggggO",
+    "....OOOOOOOOOOOO",
+    "................",
+    "................",
+    "................",
+]
+MONEY_COLORS = {
+    ".": (0, 0, 0, 0), "O": (34, 74, 40, 255), "a": (150, 196, 140, 255), "g": (176, 222, 160, 255),
+    "G": (92, 150, 84, 255), "d": (120, 176, 110, 255),
+}
+
 # Les images dessinees ici plutot que prises dans le jar.
 DRAWN = {
     "teleportyone": (DEEP_ICON, DEEP_COLORS),
     "coffre_maudit": (CURSED_ICON, CURSED_COLORS),
     "dossier_secret": (FOLDER_ICON, FOLDER_COLORS),
+    "sol_glissant": (WET_ICON, WET_COLORS),
+    "coup_de_turbo": (TURBO_ICON, TURBO_COLORS),
+    "baskets_ailees": (SNEAKER_ICON, SNEAKER_COLORS),
+}
+# Les textures d'objet dessinees ici.
+DRAWN_ITEMS = {
+    "fake_money": (MONEY_ITEM, MONEY_COLORS),
 }
 
 
@@ -225,19 +393,31 @@ def outputs():
             }],
             "random_sequence": "%s:blocks/%s" % (NS, name),
         })
-    put(os.path.join(ASSETS, "blockstates", "paladium_fake_block.json"),
-        {"variants": {"hits=%d" % hits: {"model": "%s:block/paladium_block" % NS} for hits in range(16)}})
-    # Au bout de ses quinze sauts, le faux bloc rend un vrai bloc de paladium.
-    put(os.path.join(DATA, "loot_table", "blocks", "paladium_fake_block.json"), {
-        "type": "minecraft:block",
-        "pools": [{
-            "rolls": 1,
-            "bonus_rolls": 0,
-            "entries": [{"type": "minecraft:item", "name": "%s:paladium_block" % NS}],
-            "conditions": [{"condition": "minecraft:survives_explosion"}],
-        }],
-        "random_sequence": "%s:blocks/paladium_fake_block" % NS,
-    })
+    for fake, real in FAKE_BLOCKS.items():
+        put(os.path.join(ASSETS, "blockstates", fake + ".json"),
+            {"variants": {"hits=%d" % hits: {"model": "%s:block/%s" % (NS, real)} for hits in range(16)}})
+        # Au bout de ses quinze sauts, le faux bloc rend le vrai.
+        put(os.path.join(DATA, "loot_table", "blocks", fake + ".json"), {
+            "type": "minecraft:block",
+            "pools": [{
+                "rolls": 1,
+                "bonus_rolls": 0,
+                "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, real)}],
+                "conditions": [{"condition": "minecraft:survives_explosion"}],
+            }],
+            "random_sequence": "%s:blocks/%s" % (NS, fake),
+        })
+    for name, (_source, texture, handheld, _fr, _en) in ITEMS.items():
+        put(os.path.join(ASSETS, "models", "item", name + ".json"), {
+            "parent": "minecraft:item/handheld" if handheld else "minecraft:item/generated",
+            "textures": {"layer0": "%s:item/%s" % (NS, texture)},
+        })
+        put(os.path.join(ASSETS, "items", name + ".json"),
+            {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)}})
+    # La definition d'equipement : c'est elle que l'ArmorMaterial designe par son nom.
+    for material, layers in EQUIPMENT.items():
+        put(os.path.join(ASSETS, "equipment", material + ".json"), {"layers": {
+            layer: [{"texture": "%s:%s" % (NS, texture)}] for layer, (texture, _source) in layers.items()}})
     return files
 
 
@@ -250,6 +430,8 @@ def lang_updates():
             labels["block.%s.%s_lucky_block" % (NS, key)] = fr if french else en
         for effect, (fr, en, _icon) in EFFECTS.items():
             labels["effect.%s.%s" % (NS, effect)] = fr if french else en
+        for name, (_source, _texture, _handheld, fr, en) in ITEMS.items():
+            labels["item.%s.%s" % (NS, name)] = fr if french else en
         updates[code] = labels
     return updates
 
@@ -294,12 +476,10 @@ def textures(jar, events):
         target = os.path.join(icons, icon + ".png")
         if icon + ".png" in available:
             image = square(Image.open(os.path.join(folder, available[icon + ".png"])).convert("RGBA"))
+        elif icon in ALIASES:
+            image = square(Image.open(os.path.join(folder, ALIASES[icon])).convert("RGBA"))
         elif icon in DRAWN:
-            rows, colors = DRAWN[icon]
-            image = Image.new("RGBA", (16, 16))
-            for y, row in enumerate(rows):
-                for x, char in enumerate(row):
-                    image.putpixel((x, y), colors.get(char, (0, 0, 0, 0)))
+            image = pixels(*DRAWN[icon])
         else:
             raise SystemExit("image d'evenement introuvable dans le jar : %s" % icon)
         image.save(target)
@@ -308,6 +488,49 @@ def textures(jar, events):
         canvas = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
         canvas.paste(drawn[icon], (1, 1), drawn[icon])
         canvas.save(os.path.join(effects, effect + ".png"))
+
+
+def pixels(rows, colors):
+    from PIL import Image
+
+    image = Image.new("RGBA", (16, 16))
+    for y, row in enumerate(rows):
+        for x, char in enumerate(row):
+            image.putpixel((x, y), colors.get(char, (0, 0, 0, 0)))
+    return image
+
+
+def item_textures(jar):
+    """Les icones des objets (16 x 16) et les couches portees des armures (64 x 32)."""
+    from PIL import Image
+
+    source = os.path.join(jar, "assets", "palamod", "textures")
+    items = os.path.join(ASSETS, "textures", "item")
+    os.makedirs(items, exist_ok=True)
+    for name, (path, texture, _handheld, _fr, _en) in ITEMS.items():
+        if name in DRAWN_ITEMS:
+            pixels(*DRAWN_ITEMS[name]).save(os.path.join(items, texture + ".png"))
+        elif path is not None:
+            image = Image.open(os.path.join(source, path)).convert("RGBA")
+            if image.size != (16, 16):
+                raise SystemExit("icone d'objet de taille inattendue : %s %s" % (path, image.size))
+            image.save(os.path.join(items, texture + ".png"))
+    for material, layers in EQUIPMENT.items():
+        for layer, (texture, path) in layers.items():
+            if path is None:
+                continue
+            image = Image.open(os.path.join(source, path)).convert("RGBA")
+            if image.size != (64, 32):
+                raise SystemExit("couche portee de taille inattendue : %s %s" % (path, image.size))
+            if material == "air_min":
+                mark, cloth = AIR_MIN_MARK
+                for y in range(image.height):
+                    for x in range(image.width):
+                        if image.getpixel((x, y)) == mark:
+                            image.putpixel((x, y), cloth)
+            folder = os.path.join(ASSETS, "textures", "entity", "equipment", layer)
+            os.makedirs(folder, exist_ok=True)
+            image.save(os.path.join(folder, texture + ".png"))
 
 
 def draw_cat():
@@ -440,12 +663,16 @@ def main():
             handle.write("\n")
     if jar and not check:
         textures(jar, events)
+        item_textures(jar)
         overlays()
     needed = ["textures/block/%s_lucky_block.png" % key for key in TYPES]
     needed += ["textures/gui/lucky/%s.png" % name for name in ("foreground", "unknown", "empty")]
     needed += ["textures/gui/lucky/events/%s.png" % icon for _k, _i, _l, icon, _b, _r in events]
     needed += ["textures/mob_effect/%s.png" % effect for effect in EFFECTS]
     needed += ["textures/gui/lucky/overlay/%s.png" % name for name in list(FILTERS) + ["cat"]]
+    needed += ["textures/item/%s.png" % texture for _s, texture, _h, _f, _e in ITEMS.values()]
+    needed += ["textures/entity/equipment/%s/%s.png" % (layer, texture)
+               for layers in EQUIPMENT.values() for layer, (texture, _source) in layers.items()]
     for relative in needed:
         if not os.path.exists(os.path.join(ASSETS, relative)):
             stale.append("%s absente (relancer avec --jar)" % relative)

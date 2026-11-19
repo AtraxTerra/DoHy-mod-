@@ -30,8 +30,16 @@ public class FakePaladiumBlock extends Block {
     private static final int RANGE = 21;
     private static final int TRIES = 50;
 
+    /** La couleur de la trainee : le rouge du paladium, ou le vert du paladium vert. */
+    private final int dust;
+
     public FakePaladiumBlock(Properties properties) {
+        this(0xEF3926, properties);
+    }
+
+    public FakePaladiumBlock(int dust, Properties properties) {
         super(properties);
+        this.dust = dust;
         registerDefaultState(stateDefinition.any().setValue(HITS, 0));
     }
 
@@ -70,7 +78,8 @@ public class FakePaladiumBlock extends Block {
         Vec3 end = Vec3.atCenterOf(to);
         Vec3 step = end.subtract(start).normalize();
         double length = start.distanceTo(end);
-        DustParticleOptions dust = new DustParticleOptions(0xEF3926, 1.2f);
+        int color = state.getBlock() instanceof FakePaladiumBlock fake ? fake.dust : 0xEF3926;
+        DustParticleOptions dust = new DustParticleOptions(color, 1.2f);
         for (double walked = 0.0d; walked < length; walked += 1.0d) {
             Vec3 at = start.add(step.scale(walked));
             level.sendParticles(dust, at.x, at.y, at.z, 3, 0.1d, 0.1d, 0.1d, 0.0d);
