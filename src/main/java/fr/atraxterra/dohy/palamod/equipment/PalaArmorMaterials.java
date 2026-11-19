@@ -159,6 +159,9 @@ public final class PalaArmorMaterials {
     /** La cape fantome ({@code ItemGhostCape}) : un plastron en diamant. */
     public static final ArmorMaterial GHOST_CAPE = material("ghost_cape", ArmorMaterials.DIAMOND,
             SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
+    /** Le cache-oeil de pirate ({@code ItemsRegister.EYE_PATCH}) : du cuir. */
+    public static final ArmorMaterial EYE_PATCH = material("eye_patch", ArmorMaterials.LEATHER,
+            SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
 
     private PalaArmorMaterials() {
     }

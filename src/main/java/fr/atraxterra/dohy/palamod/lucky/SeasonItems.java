@@ -180,6 +180,62 @@ public final class SeasonItems {
             BrightSoundBlock::new, properties -> properties.strength(1.0f).sound(SoundType.GLASS)
                     .lightLevel(state -> state.getValue(BrightSoundBlock.LIT) ? 12 : 0));
 
+    // -- Juillet --------------------------------------------------------------------------------
+
+    /** {@code BlockBarrel} : on le remplit de poudre ; une fleche ou du redstone, et il saute. */
+    public static final DeferredBlock<PowderBarrelBlock> POWDER_BARREL = seasonBlock("powder_barrel",
+            PowderBarrelBlock::new, properties -> properties.strength(2.0f).sound(SoundType.WOOD));
+    /** {@code ItemSeaBottle} : on l'ouvre, un message seche dedans. */
+    public static final DeferredItem<MessageItem> SEA_BOTTLE = seasonItem("sea_bottle",
+            properties -> new MessageItem(properties, 0), properties -> properties.stacksTo(16));
+    /** {@code ItemDryMessage} : illisible ; un passage au four le rend lisible. */
+    public static final DeferredItem<MessageItem> DRY_MESSAGE = seasonItem("dry_message",
+            properties -> new MessageItem(properties, 1), properties -> properties.stacksTo(16));
+    /** {@code ItemPirateKingMessage} : le message du roi des pirates. */
+    public static final DeferredItem<MessageItem> PIRATE_MESSAGE = seasonItem("pirate_message",
+            properties -> new MessageItem(properties, 2), properties -> properties.stacksTo(16));
+    /** {@code ItemsRegister.EYE_PATCH} : un cache-oeil, a porter. */
+    public static final DeferredItem<Item> EYE_PATCH = seasonItem("eye_patch", Item::new,
+            properties -> properties.humanoidArmor(PalaArmorMaterials.EYE_PATCH, ArmorType.HELMET));
+    /** {@code ItemPipe} : une bouffee, dix secondes de regeneration ; cinq minutes entre deux. */
+    public static final DeferredItem<PipeItem> PIPE = seasonItem("pipe", PipeItem::new,
+            properties -> properties.stacksTo(1));
+    /** {@code ItemOrangeConsumable} : riche en vitamines, il soigne le scorbut. */
+    public static final DeferredItem<OrangeItem> ORANGE = seasonItem("orange", OrangeItem::new,
+            properties -> properties.food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(4)
+                    .saturationModifier(0.3f).alwaysEdible().build()));
+    /** {@code ItemSailorTooth} : une dent de marin ; huit poudres d'os a l'etabli. */
+    public static final DeferredItem<Item> SAILOR_TOOTH = seasonItem("sailor_tooth", Item::new,
+            properties -> properties);
+    /** {@code ItemSkeletonSkull} : un crane auquel il manque cinq dents. */
+    public static final DeferredItem<Item> TOOTH_SKELETON_SKULL = seasonItem("tooth_skeleton_skull", Item::new,
+            properties -> properties.stacksTo(1));
+    /** {@code ItemParrotSeeds} : un perroquet ami, dix minutes. */
+    public static final DeferredItem<ParrotSeedsItem> PARROT_SEEDS = seasonItem("parrot_seeds", ParrotSeedsItem::new,
+            properties -> properties.stacksTo(16));
+    /** Les instruments des musiciens pirates. */
+    public static final DeferredItem<InstrumentItem> DRUM = seasonItem("drum",
+            properties -> new InstrumentItem(properties, "block.note_block.basedrum"), properties -> properties.stacksTo(1));
+    public static final DeferredItem<InstrumentItem> ACCORDION = seasonItem("accordion",
+            properties -> new InstrumentItem(properties, "block.note_block.flute"), properties -> properties.stacksTo(1));
+    /** {@code ItemTreasureMap} : elle montre le chemin du tresor enterre. */
+    public static final DeferredItem<TreasureMapItem> TREASURE_MAP = seasonItem("treasure_map", TreasureMapItem::new,
+            properties -> properties.stacksTo(1));
+    /** {@code ItemInvulnerabilityPotion} : soixante secondes sans effet negatif. */
+    public static final DeferredItem<ImmunityPotionItem> INVULNERABILITY_POTION = seasonItem("invulnerability_potion",
+            ImmunityPotionItem::new, properties -> properties.stacksTo(16).component(
+                    net.minecraft.core.component.DataComponents.CONSUMABLE, net.minecraft.world.item.component.Consumable
+                            .builder().consumeSeconds(1.6f).animation(net.minecraft.world.item.ItemUseAnimation.DRINK)
+                            .sound(SoundEvents.GENERIC_DRINK).hasConsumeParticles(false).build()));
+    /** {@code BlockEncryptedComputer} : un ordinateur a decrypter. */
+    public static final DeferredBlock<ComputerBlock> ENCRYPTED_COMPUTER = seasonBlock("encrypted_computer",
+            properties -> new ComputerBlock(properties, false), properties -> properties.strength(2.0f)
+                    .sound(SoundType.METAL));
+    /** {@code BlockDecryptedComputer} : ses donnees top secretes (le code du coffre de juillet). */
+    public static final DeferredBlock<ComputerBlock> DECRYPTED_COMPUTER = seasonBlock("decrypted_computer",
+            properties -> new ComputerBlock(properties, true), properties -> properties.strength(2.0f)
+                    .sound(SoundType.METAL).lightLevel(state -> 7));
+
     private SeasonItems() {
     }
 
@@ -650,7 +706,246 @@ public final class SeasonItems {
         }
     }
 
+    /** La bouteille a la mer et ses messages ({@code 0} bouteille, {@code 1} seche, {@code 2} lisible). */
+    public static class MessageItem extends Item {
+        private final int kind;
+
+        public MessageItem(Properties properties, int kind) {
+            super(properties);
+            this.kind = kind;
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (!(player instanceof ServerPlayer server)) {
+                return InteractionResult.SUCCESS;
+            }
+            switch (kind) {
+                case 0 -> {
+                    player.getItemInHand(hand).consume(1, player);
+                    SeasonKit.give(server, new ItemStack(DRY_MESSAGE.get()),
+                            new ItemStack(net.minecraft.world.item.Items.GLASS_BOTTLE));
+                    LuckyWorld.tell(server, "Un message est roule dans la bouteille.", ChatFormatting.YELLOW);
+                }
+                case 1 -> LuckyWorld.tell(server, "Ce message semble illisible. Il pourrait peut-etre devenir lisible en"
+                        + " etant rechauffe.", ChatFormatting.RED);
+                default -> JulyEvents.readPirateMessage(server);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** La pipe : regeneration et fumee. */
+    public static class PipeItem extends Item {
+        public PipeItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (player.getCooldowns().isOnCooldown(player.getItemInHand(hand))) {
+                return InteractionResult.FAIL;
+            }
+            if (level instanceof ServerLevel server) {
+                if (player.getLastHurtByMob() != null && player.tickCount - player.getLastHurtByMobTimestamp() < 200) {
+                    LuckyWorld.tell((ServerPlayer) player, "Tu ne peux pas utiliser cet objet en combat !",
+                            ChatFormatting.RED);
+                    return InteractionResult.FAIL;
+                }
+                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 0));
+                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, player.getX(), player.getEyeY() + 0.2d,
+                        player.getZ(), 6, 0.1d, 0.1d, 0.1d, 0.01d);
+                player.getCooldowns().addCooldown(player.getItemInHand(hand), 6000);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** L'orange : elle soigne le scorbut. */
+    public static class OrangeItem extends Item {
+        public OrangeItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+            ItemStack left = super.finishUsingItem(stack, level, entity);
+            if (entity instanceof ServerPlayer player && player.hasEffect(SeasonEffects.SCURVY)) {
+                player.removeEffect(SeasonEffects.SCURVY);
+                player.removeEffect(MobEffects.WEAKNESS);
+                player.removeEffect(MobEffects.SLOWNESS);
+                LuckyWorld.tell(player, "Tu as ete soigne du scorbut.", ChatFormatting.GREEN);
+            }
+            return left;
+        }
+    }
+
+    /** Les graines de perroquet : un perroquet apprivoise pour dix minutes. */
+    public static class ParrotSeedsItem extends Item {
+        public ParrotSeedsItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (player instanceof ServerPlayer server && level instanceof ServerLevel serverLevel) {
+                JulyEvents.flint(server, serverLevel, 12000);
+                player.getItemInHand(hand).consume(1, player);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** Un instrument : une note par clic. */
+    public static class InstrumentItem extends Item {
+        private final String sound;
+
+        public InstrumentItem(Properties properties, String sound) {
+            super(properties);
+            this.sound = sound;
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (level instanceof ServerLevel server) {
+                LuckyWorld.sound(server, player.getX(), player.getY(), player.getZ(), sound, SoundSource.RECORDS, 1.0f,
+                        0.6f + server.getRandom().nextFloat() * 0.9f);
+                server.sendParticles(ParticleTypes.NOTE, player.getX(), player.getY() + 2.0d, player.getZ(), 1, 0.2d,
+                        0.1d, 0.2d, server.getRandom().nextFloat());
+                player.getCooldowns().addCooldown(player.getItemInHand(hand), 5);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** La carte au tresor : la direction et la distance du tresor enterre. */
+    public static class TreasureMapItem extends Item {
+        public TreasureMapItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (player instanceof ServerPlayer server) {
+                JulyEvents.readMap(server, player.getItemInHand(hand));
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** La potion d'invulnerabilite : soixante secondes a l'abri des effets negatifs. */
+    public static class ImmunityPotionItem extends Item {
+        public ImmunityPotionItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+            ItemStack left = super.finishUsingItem(stack, level, entity);
+            if (entity instanceof ServerPlayer player) {
+                player.addEffect(new MobEffectInstance(SeasonEffects.IMMUNE, 1200, 0));
+            }
+            return left;
+        }
+    }
+
     // -- Blocs ----------------------------------------------------------------------------------
+
+    /** Le baril de poudre : jusqu'a 64 poudres ; une fleche ou un signal de redstone, et il explose. */
+    public static class PowderBarrelBlock extends Block {
+        public static final net.minecraft.world.level.block.state.properties.IntegerProperty POWDER =
+                net.minecraft.world.level.block.state.properties.IntegerProperty.create("powder", 0, 64);
+
+        public PowderBarrelBlock(Properties properties) {
+            super(properties);
+            registerDefaultState(defaultBlockState().setValue(POWDER, 0));
+        }
+
+        @Override
+        protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<Block,
+                BlockState> builder) {
+            builder.add(POWDER);
+        }
+
+        @Override
+        protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+                                              InteractionHand hand, BlockHitResult hit) {
+            if (!stack.is(net.minecraft.world.item.Items.GUNPOWDER)) {
+                return InteractionResult.TRY_WITH_EMPTY_HAND;
+            }
+            if (player instanceof ServerPlayer server) {
+                int powder = state.getValue(POWDER);
+                if (powder >= 64) {
+                    LuckyWorld.tell(server, "Tu ne peux pas ajouter plus de poudre a ce baril !", ChatFormatting.RED);
+                    return InteractionResult.FAIL;
+                }
+                int added = Math.min(64 - powder, player.isShiftKeyDown() ? stack.getCount() : 1);
+                stack.consume(added, player);
+                level.setBlock(pos, state.setValue(POWDER, powder + added), Block.UPDATE_ALL);
+                LuckyWorld.bar(server, "Il y a actuellement " + (powder + added) + " poudres dans ce baril.",
+                        ChatFormatting.YELLOW);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                   BlockHitResult hit) {
+            if (player instanceof ServerPlayer server) {
+                LuckyWorld.bar(server, "Il y a actuellement " + state.getValue(POWDER) + " poudres dans ce baril.",
+                        ChatFormatting.YELLOW);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbor,
+                                       net.minecraft.world.level.redstone.Orientation orientation, boolean moved) {
+            if (level instanceof ServerLevel server && level.hasNeighborSignal(pos)) {
+                explode(server, pos, state);
+            }
+        }
+
+        @Override
+        protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit,
+                                       net.minecraft.world.entity.projectile.Projectile projectile) {
+            if (level instanceof ServerLevel server) {
+                explode(server, hit.getBlockPos(), state);
+            }
+        }
+
+        static void explode(ServerLevel level, BlockPos pos, BlockState state) {
+            int powder = state.getValue(POWDER);
+            level.removeBlock(pos, false);
+            if (powder > 0) {
+                level.explode(null, pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, 1.0f + powder / 10.0f,
+                        Level.ExplosionInteraction.TNT);
+            }
+        }
+    }
+
+    /** L'ordinateur crypte (et decrypte) du pirate informatique. */
+    public static class ComputerBlock extends Block {
+        private final boolean decrypted;
+
+        public ComputerBlock(Properties properties, boolean decrypted) {
+            super(properties);
+            this.decrypted = decrypted;
+        }
+
+        @Override
+        protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                   BlockHitResult hit) {
+            if (player instanceof ServerPlayer server && level instanceof ServerLevel serverLevel) {
+                if (decrypted) {
+                    JulyEvents.secretFiles(server);
+                } else {
+                    JulyEvents.decrypt(server, serverLevel, pos);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
 
     /** Le bloc sonore : un clic, il s'allume et joue sa note ({@code JuneEvents} s'en sert au test de rythme). */
     public static class BrightSoundBlock extends Block {

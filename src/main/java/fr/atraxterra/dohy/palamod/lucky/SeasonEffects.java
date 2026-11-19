@@ -78,6 +78,24 @@ public final class SeasonEffects {
     public static final DeferredHolder<MobEffect, LuckyEffect> FIRE_WALK =
             EFFECTS.register("fire_walk", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xFF7A1A));
 
+    // -- Juillet --------------------------------------------------------------------------------
+
+    /** « Marin d'eau douce » : plus de bateau. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> NO_BOAT =
+            EFFECTS.register("no_boat", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x4A7DB5));
+    /** « Cache-oeil » : la moitie de l'ecran dans le noir ({@code LuckyOverlays}). */
+    public static final DeferredHolder<MobEffect, LuckyEffect> EYE_PATCH =
+            EFFECTS.register("eye_patch", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x222222));
+    /** « Scorbut » : faiblesse et lenteur reviennent, jusqu'a une orange. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> SCURVY =
+            EFFECTS.register("scurvy", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x9C8B2E));
+    /** « Parler comme un pirate » : le chat parle a ta place. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> PIRATE_TALK =
+            EFFECTS.register("pirate_talk", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x7A3B1E));
+    /** {@code ItemInvulnerabilityPotion} : aucun effet negatif ne prend. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> IMMUNE =
+            EFFECTS.register("immune", () -> new LuckyEffect(MobEffectCategory.BENEFICIAL, 0xE8E8E8));
+
     private SeasonEffects() {
     }
 
@@ -89,12 +107,39 @@ public final class SeasonEffects {
         return effect;
     }
 
-    /** « Quack » : le message part, mais en canard. */
+    /** « Quack » : le message part, mais en canard ; « Parler comme un pirate » : en pirate. */
     @SubscribeEvent
     public static void onChat(net.neoforged.neoforge.event.ServerChatEvent event) {
         if (event.getPlayer().hasEffect(QUACK)) {
             event.setMessage(net.minecraft.network.chat.Component.literal("Coin coin !"));
+        } else if (event.getPlayer().hasEffect(PIRATE_TALK)) {
+            event.setMessage(net.minecraft.network.chat.Component.literal(JulyEvents.pirateLine(
+                    event.getPlayer().getRandom())));
         }
+    }
+
+    /** La potion d'invulnerabilite : un effet negatif ne prend pas. */
+    @SubscribeEvent
+    public static void onEffect(net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event) {
+        if (event.getEntity().hasEffect(IMMUNE)
+                && event.getEffectInstance().getEffect().value().getCategory() == MobEffectCategory.HARMFUL) {
+            event.setResult(net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+        }
+    }
+
+    /** « Marin d'eau douce » : on ne monte plus dans un bateau. */
+    @SubscribeEvent
+    public static void onMount(net.neoforged.neoforge.event.entity.EntityMountEvent event) {
+        if (event.isMounting() && event.getEntityMounting() instanceof ServerPlayer player && player.hasEffect(NO_BOAT)
+                && isBoat(event.getEntityBeingMounted())) {
+            event.setCanceled(true);
+            LuckyWorld.bar(player, "Tu ne peux plus utiliser de bateau.", net.minecraft.ChatFormatting.RED);
+        }
+    }
+
+    private static boolean isBoat(net.minecraft.world.entity.Entity entity) {
+        String path = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath();
+        return path.endsWith("boat") || path.endsWith("raft");
     }
 
     static void register(IEventBus modBus) {
@@ -142,6 +187,12 @@ public final class SeasonEffects {
                     behind.below(), net.minecraft.core.Direction.UP)) {
                 LuckyWorld.place(player, level, behind, net.minecraft.world.level.block.Blocks.FIRE.defaultBlockState());
             }
+        }
+        if (player.hasEffect(SCURVY) && player.tickCount % 600 == 0) {
+            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                    net.minecraft.world.effect.MobEffects.WEAKNESS, 600, 0));
+            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                    net.minecraft.world.effect.MobEffects.SLOWNESS, 600, 0));
         }
         if (player.tickCount % 40 == 0 && JuneEvents.squeaking(player.getMainHandItem())) {
             LuckyWorld.sound(level, player.getX(), player.getY(), player.getZ(), "block.note_block.didgeridoo",

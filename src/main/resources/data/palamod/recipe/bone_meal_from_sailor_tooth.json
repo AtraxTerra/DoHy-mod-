@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "palamod:sailor_tooth"
+  ],
+  "result": {
+    "id": "minecraft:bone_meal",
+    "count": 8
+  }
+}

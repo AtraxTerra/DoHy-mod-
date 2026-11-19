@@ -51,7 +51,8 @@ CATALOG = os.path.join(ROOT, "tools", "data", "lucky_events.json")
 SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEvents.java", "TrickEvents.java",
            "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
            "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
-           "EasterEvents.java", "MayEvents.java", "JuneEvents.java")
+           "EasterEvents.java", "MayEvents.java", "JuneEvents.java",
+           "JulyEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -122,6 +123,11 @@ EFFECTS = {
     "quack": ("Quack", "Quack", "june/quack"),
     "silent_movie": ("Cinema muet", "Silent Movie", "june/cinema_muet"),
     "fire_walk": ("Enflamme le dance-floor", "Fire Walk", "june/enflamme_dancefloor"),
+    "no_boat": ("Marin d'eau douce", "Landlubber", "july/fresh_water_sailor"),
+    "eye_patch": ("Cache-oeil", "Eye Patch", "july/eye_patch"),
+    "scurvy": ("Scorbut", "Scurvy", "july/scorbut"),
+    "pirate_talk": ("Parler comme un pirate", "Pirate Talk", "july/talk_like_pirate"),
+    "immune": ("Invulnerabilite", "Immunity", "july/red_cross"),
     "no_forward": ("Aucune avancee", "No Progress", "may/aucune_avancee"),
 }
 
@@ -200,6 +206,7 @@ EQUIPMENT = {
     "easter_bunny": {"humanoid": ("easter_bunny", "models/easter_bunny_armor_1.png"),
                      "humanoid_leggings": ("easter_bunny", "models/easter_bunny_armor_1.png")},
     "ghost_cape": {"humanoid": ("ghost_cape", "models/ghostcape_armor_1.png")},
+    "eye_patch": {"humanoid": ("eye_patch", "models/eye_patch.png")},
 }
 # Sur le cote des AirMin portees, une petite marque sombre (une signature de marque) :
 # effacee, la toile reprend sa couleur.
@@ -350,6 +357,23 @@ SEASON_ITEMS = {
     "gold_record": ("items/gold_record.png", "gold_record", False, "Disque d'or", "Gold Record"),
     "electric_guitar": ("items/electric_guitar.png", "electric_guitar", True, "Guitare electrique", "Electric Guitar"),
     "shark_plush": (None, "shark_plush", False, "Peluche requin", "Shark Plush"),
+    # Juillet.
+    "sea_bottle": ("items/sea_bottle.png", "sea_bottle", False, "Bouteille a la mer", "Message in a Bottle"),
+    "dry_message": ("items/dry_message.png", "dry_message", False, "Message seche", "Dry Message"),
+    "pirate_message": ("items/pirate_king_message.png", "pirate_message", False, "Message du roi des pirates",
+                       "Pirate King's Message"),
+    "eye_patch": ("items/eye_patch.png", "eye_patch", False, "Cache-oeil", "Eye Patch"),
+    "pipe": ("items/pipe.png", "pipe", False, "Pipe", "Pipe"),
+    "orange": ("items/orange_consumable.png", "orange", False, "Orange", "Orange"),
+    "sailor_tooth": ("items/sailor_tooth.png", "sailor_tooth", False, "Dent de marin", "Sailor Tooth"),
+    "tooth_skeleton_skull": ("items/tooth_skeleton_skull.png", "tooth_skeleton_skull", False, "Crane edente",
+                             "Toothless Skull"),
+    "parrot_seeds": ("items/parrot_seeds.png", "parrot_seeds", False, "Graines de perroquet", "Parrot Seeds"),
+    "drum": ("items/drum.png", "drum", False, "Tambour", "Drum"),
+    "accordion": ("items/accordion.png", "accordion", False, "Accordeon", "Accordion"),
+    "treasure_map": ("items/treasure_map.png", "treasure_map", False, "Carte au tresor", "Treasure Map"),
+    "invulnerability_potion": ("items/invulnerability_potion.png", "invulnerability_potion", False,
+                               "Potion d'invulnerabilite", "Invulnerability Potion"),
 }
 SEASON_BLOCKS = {
     "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),
@@ -364,6 +388,16 @@ SEASON_BLOCKS = {
     "fake_gold_block": ("cube_all", {"all": "minecraft:block/gold_block"}, None, "Bloc d'or", "Block of Gold"),
     "bright_sound": ("lit", {"off": "jar:blocks/bright_sound_off.png", "on": "jar:blocks/bright_sound_on.png"}, "self",
                      "Bloc sonore", "Bright Sound"),
+    "powder_barrel": ("cube_bottom_top", {"top": "jar:blocks/powder_barrel_top.png",
+                                          "bottom": "jar:blocks/powder_barrel_top.png",
+                                          "side": "jar:blocks/powder_barrel_side.png"}, "self", "Baril de poudre",
+                      "Powder Barrel"),
+    "encrypted_computer": ("cube_front", {"front": "draw:computer_locked", "back": "minecraft:block/iron_block",
+                                          "side": "minecraft:block/iron_block"}, "self", "Ordinateur crypte",
+                           "Encrypted Computer"),
+    "decrypted_computer": ("cube_front", {"front": "draw:computer_open", "back": "minecraft:block/iron_block",
+                                          "side": "minecraft:block/iron_block"}, "self", "Ordinateur decrypte",
+                           "Decrypted Computer"),
 }
 GADGET_ITEMS.update(SEASON_ITEMS)
 GADGET_BLOCKS.update(SEASON_BLOCKS)
@@ -376,6 +410,17 @@ SEASON_RECIPES = {
                                    "ingredients": ["palamod:golden_egg"],
                                    "result": {"id": "minecraft:gold_ingot", "count": 3}},
 }
+SEASON_RECIPES.update({
+    "orange": {"type": "minecraft:crafting_shapeless", "category": "misc",
+               "ingredients": ["minecraft:apple", "minecraft:orange_dye"],
+               "result": {"id": "palamod:orange", "count": 1}},
+    "bone_meal_from_sailor_tooth": {"type": "minecraft:crafting_shapeless", "category": "misc",
+                                    "ingredients": ["palamod:sailor_tooth"],
+                                    "result": {"id": "minecraft:bone_meal", "count": 8}},
+    "pirate_message": {"type": "minecraft:smelting", "category": "misc", "ingredient": "palamod:dry_message",
+                       "result": {"id": "palamod:pirate_message", "count": 1}, "experience": 0.1,
+                       "cookingtime": 200},
+})
 # Le cuir arc-en-ciel et une piece d'armure en cuir : la piece devient arc-en-ciel (PalaLucky.RAINBOW).
 for piece in ("helmet", "chestplate", "leggings", "boots"):
     SEASON_RECIPES["rainbow_leather_%s" % piece] = {
@@ -859,6 +904,46 @@ SHARK_TEX = [
 SHARK_COLORS = {"G": (112, 128, 150, 255), "W": (232, 236, 240, 255), "w": (200, 60, 60, 255)}
 DRAWN_ITEMS["shark_plush"] = (SHARK_TEX, SHARK_COLORS)
 
+# Les ecrans des ordinateurs de « Pirate informatique » (le jar n'a que les patrons de leur modele).
+COMPUTER_LOCKED = [
+    "GGGGGGGGGGGGGGGG",
+    "GKKKKKKKKKKKKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKKKKKRRRRKKKKKG",
+    "GKKKKRKKKKRKKKKG",
+    "GKKKKRKKKKRKKKKG",
+    "GKKKRRRRRRRRKKKG",
+    "GKKKRRRRRRRRKKKG",
+    "GKKKRRRKKRRRKKKG",
+    "GKKKRRRRRRRRKKKG",
+    "GKKKRRRRRRRRKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GGGGGGGGGGGGGGGG",
+    "GGGGGGDDDDGGGGGG",
+    "GGGGGGGGGGGGGGGG",
+]
+COMPUTER_OPEN = [
+    "GGGGGGGGGGGGGGGG",
+    "GKKKKKKKKKKKKKKG",
+    "GKVVKVVVKVKVVKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKVKVVKVVVVKKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKVVVKVKVVKVVKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKVKVVVVKVKKKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKVVKVKVVVKVKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GGGGGGGGGGGGGGGG",
+    "GGGGGGDDDDGGGGGG",
+    "GGGGGGGGGGGGGGGG",
+]
+COMPUTER_COLORS = {"G": (150, 154, 160, 255), "K": (18, 22, 28, 255), "R": (210, 50, 50, 255),
+                   "V": (60, 220, 90, 255), "D": (90, 94, 100, 255)}
+
 DRAWN_BLOCKS = {
     "fish_bowl": (FISHBOWL_TEX, FISHBOWL_COLORS),
     "basketball": (BALL_TEX, BALL_COLORS),
@@ -867,6 +952,8 @@ DRAWN_BLOCKS = {
     "jaws_trap": (JAWS_TEX, JAWS_COLORS),
     "sleeping_bag": (BAG_TEX, BAG_COLORS),
     "cat_detector": (CAT_TEX, CAT_COLORS),
+    "computer_locked": (COMPUTER_LOCKED, COMPUTER_COLORS),
+    "computer_open": (COMPUTER_OPEN, COMPUTER_COLORS),
 }
 
 
@@ -1208,6 +1295,9 @@ def item_textures(jar):
             animated = os.path.exists(os.path.join(source, path) + ".mcmeta") and image.height % image.width == 0
             if (image.width != image.height and not animated) or image.width % 16:
                 raise SystemExit("icone d'objet de taille inattendue : %s %s" % (path, image.size))
+            if not animated and image.size != (16, 16):
+                # Quelques icones de PalaMod sont dessinees en 32 : ramenees a 16, comme les autres.
+                image = image.resize((16, 16), Image.BOX)
             image.save(os.path.join(items, texture + ".png"))
             if animated:
                 # Une bande d'images animee (le cuir et le colorant arc-en-ciel) : son .mcmeta suit.
@@ -1371,6 +1461,11 @@ def overlays():
                     if glyph[dy] and (dx != 1 or dy in (0, 3)):
                         matrix.putpixel((column + dx, (top + row + dy) % 64), (40, 230, 90, alpha))
     matrix.save(os.path.join(folder, "matrix.png"))
+    patch = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(8):
+            patch.putpixel((x, y), (8, 8, 8, 255))
+    patch.save(os.path.join(folder, "eye_patch.png"))
 
 
 def stats(events):
@@ -1461,7 +1556,7 @@ def main():
     needed += ["textures/gui/lucky/events/%s.png" % icon for _k, _i, _l, icon, _b, _r in events]
     needed += ["textures/mob_effect/%s.png" % effect for effect in EFFECTS]
     needed += ["textures/gui/lucky/overlay/%s.png" % name
-               for name in list(FILTERS) + ["cat", "missing", "matrix"] + list(SEASON_OVERLAYS)]
+               for name in list(FILTERS) + ["cat", "missing", "matrix", "eye_patch"] + list(SEASON_OVERLAYS)]
     needed += ["textures/item/%s.png" % texture for _s, texture, _h, _f, _e in GADGET_ITEMS.values()]
     needed += ["textures/painting/lucky_%s.png" % name for name, _w, _h, _u, _v in PAINTINGS]
     needed += ["textures/block/lucky/lamp_%d_%s.png" % (index, state) for index in range(16) for state in ("on", "off")]
