@@ -53,7 +53,8 @@ SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEve
            "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
            "EasterEvents.java", "MayEvents.java", "JuneEvents.java",
            "JulyEvents.java", "AugustEvents.java", "SeptemberEvents.java", "HalloweenEvents.java",
-           "NovemberEvents.java", "ChristmasEvents.java")
+           "NovemberEvents.java", "ChristmasEvents.java",
+           "BlackEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -138,6 +139,7 @@ EFFECTS = {
     "spooky": ("Spooky Spook", "Spooky Spook", "spooky_spook"),
     "explosive": ("Inventaire explosif", "Explosive Inventory", "november/explosive_inventory"),
     "extreme_cold": ("Grand froid", "Extreme Cold", "extreme_cold"),
+    "solitaire": ("Solitaire", "Solitaire", "solitaire"),
     "no_forward": ("Aucune avancee", "No Progress", "may/aucune_avancee"),
 }
 
@@ -412,6 +414,12 @@ SEASON_ITEMS = {
     "present": ("items/present.png", "present", False, "Cadeau", "Present"),
     "present_bag": ("items/present_bag.png", "present_bag", False, "Sac de cadeaux", "Present Bag"),
     "wish_card": ("items/wish_card.png", "wish_card", False, "Carte de voeux", "Wish Card"),
+    # Le lucky block noir.
+    "water_pistol": ("gui/LuckyBlock/events/luckyluke.png", "water_pistol", True, "Pistolet a eau", "Water Pistol"),
+    "supersonic_boots": (None, "supersonic_boots", False, "Bottes supersoniques", "Supersonic Boots"),
+    "weather_missile": ("items/missile_sol_air.png", "weather_missile", False, "Missile meteo", "Weather Missile"),
+    "extending_arm": (None, "extending_arm", False, "Bras extensible", "Extending Arm"),
+    "alchemist_flask": ("items/flasque.png", "alchemist_flask", False, "Flasque d'alchimiste", "Alchemist Flask"),
 }
 SEASON_BLOCKS = {
     "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),
@@ -477,6 +485,7 @@ SEASON_BLOCKS = {
     "infinity_pie": ("box", {"all": "draw:pumpkin_pie", "box": [1, 0, 1, 15, 6, 15]}, "self", "Tarte infinie",
                      "Infinity Pie"),
     "christmas_tree": ("cross", {"cross": "draw:christmas_tree"}, "self", "Sapin de Noel", "Christmas Tree"),
+    "whistle": ("cube_all", {"all": "jar:blocks/sifflet.png"}, "self", "Sifflet de train", "Train Whistle"),
     "christmas_mockup": ("box_tb", {"top": "draw:mockup_top", "side": "draw:mockup_side", "bottom": "minecraft:block/spruce_planks",
                                     "box": [2, 0, 2, 14, 10, 14]}, "self", "Maquette de Noel", "Christmas Mockup"),
 }
@@ -1059,6 +1068,67 @@ MOCKUP_TOP = [
 MOCKUP_COLORS = {"S": (240, 245, 250, 255), "s": (212, 228, 240, 255), "W": (150, 96, 56, 255),
                  "w": (255, 220, 120, 255), "D": (92, 56, 30, 255), "d": (230, 190, 60, 255), "C": (124, 62, 50, 255)}
 
+# Le lucky block noir : trois images de PalaMod reprenaient des personnages connus, redessinees ici.
+ARM_ICON = [
+    "................",
+    ".........WW.....",
+    "........WWWW....",
+    ".......WWWWWW...",
+    "......WWWWWWW...",
+    ".....SWWWWWW....",
+    "....S.WWWWW.....",
+    "...S...S........",
+    "....S.S.........",
+    ".....S..........",
+    "....S.S.........",
+    "...S...S........",
+    "....S.S.........",
+    ".....S..........",
+    "....GGG.........",
+    "...GGGGG........",
+]
+ARM_COLORS = {"W": (238, 238, 242, 255), "S": (150, 152, 164, 255), "G": (86, 88, 100, 255)}
+BOOTS_ICON = [
+    "................",
+    "................",
+    "................",
+    "......BBBB......",
+    "......BbBB......",
+    "......BBBB......",
+    "......BBBBB.....",
+    "......BBWBBB....",
+    "..LL..BBBBBBB...",
+    ".LLLL.BBBBbBBBB.",
+    "......BBBBBBBBBB",
+    "..LLL.WWWWWWWWWW",
+    "......KKKKKKKKKK",
+    "................",
+    "................",
+    "................",
+]
+BOOTS_COLORS = {"B": (42, 90, 205, 255), "b": (90, 140, 240, 255), "W": (240, 240, 244, 255),
+                "K": (30, 30, 36, 255), "L": (250, 170, 40, 255)}
+DOG_ICON = [
+    "................",
+    "..BB........BB..",
+    "..BBB......BBB..",
+    "..BBTTTTTTTTBB..",
+    "...TTTTTTTTTT...",
+    "..TTTTTTTTTTTT..",
+    "..TTKTTTTTTKTT..",
+    "..TTTTTTTTTTTT..",
+    "..TTTTWWWWTTTT..",
+    "...TTWWNNWWTT...",
+    "...TTWWWWWWTT...",
+    "....TWWRRWWT....",
+    ".....TTRRTT.....",
+    "................",
+    "................",
+    "................",
+]
+DOG_COLORS = {"T": (190, 130, 70, 255), "B": (110, 70, 40, 255), "K": (24, 20, 20, 255), "W": (236, 216, 190, 255),
+              "N": (30, 26, 26, 255), "R": (230, 92, 112, 255)}
+
 # Les images dessinees ici plutot que prises dans le jar.
 DRAWN = {
     "chauves_souris": (BATS_ICON, BATS_COLORS),
@@ -1073,6 +1143,9 @@ DRAWN = {
     "coup_de_turbo": (TURBO_ICON, TURBO_COLORS),
     "baskets_ailees": (SNEAKER_ICON, SNEAKER_COLORS),
     "tisse_ta_toile": (WEB_ICON, WEB_COLORS),
+    "bras_extensible": (ARM_ICON, ARM_COLORS),
+    "bottes_supersoniques": (BOOTS_ICON, BOOTS_COLORS),
+    "petit_chien": (DOG_ICON, DOG_COLORS),
 }
 # Les textures d'objet dessinees ici.
 DRAWN_ITEMS = {
@@ -1104,6 +1177,8 @@ SHARK_TEX = [
 SHARK_COLORS = {"G": (112, 128, 150, 255), "W": (232, 236, 240, 255), "w": (200, 60, 60, 255)}
 DRAWN_ITEMS["shark_plush"] = (SHARK_TEX, SHARK_COLORS)
 DRAWN_ITEMS["spider_gloves"] = (GLOVE_TEX, GLOVE_COLORS)
+DRAWN_ITEMS["extending_arm"] = (ARM_ICON, ARM_COLORS)
+DRAWN_ITEMS["supersonic_boots"] = (BOOTS_ICON, BOOTS_COLORS)
 
 # Les ecrans des ordinateurs de « Pirate informatique » (le jar n'a que les patrons de leur modele).
 COMPUTER_LOCKED = [

@@ -280,6 +280,13 @@ public final class LuckyClientEvents {
                 }
                 // Le monde a l'envers : PalaMod ne retourne que le joueur local, a ses propres yeux.
                 LocalPlayer local = Minecraft.getInstance().player;
+                // Solitaire : les autres joueurs disparaissent ({@code RenderPlayerEvent.Pre} annule).
+                if (local != null && avatar != local
+                        && local.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SOLITAIRE)) {
+                    for (String part : COW_HIDDEN) {
+                        state.overrideModelPartVisibility(part, false);
+                    }
+                }
                 if (local != null && avatar == local && local.hasEffect(PalaLucky.ROTATE)) {
                     state.isUpsideDown = true;
                 }

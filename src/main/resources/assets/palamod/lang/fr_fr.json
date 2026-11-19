@@ -1212,5 +1212,12 @@
   "item.palamod.present_bag": "Sac de cadeaux",
   "item.palamod.wish_card": "Carte de voeux",
   "block.palamod.christmas_tree": "Sapin de Noel",
-  "block.palamod.christmas_mockup": "Maquette de Noel"
+  "block.palamod.christmas_mockup": "Maquette de Noel",
+  "effect.palamod.solitaire": "Solitaire",
+  "item.palamod.water_pistol": "Pistolet a eau",
+  "item.palamod.supersonic_boots": "Bottes supersoniques",
+  "item.palamod.weather_missile": "Missile meteo",
+  "item.palamod.extending_arm": "Bras extensible",
+  "item.palamod.alchemist_flask": "Flasque d'alchimiste",
+  "block.palamod.whistle": "Sifflet de train"
 }

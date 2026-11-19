@@ -65,6 +65,7 @@ public final class SeasonItems {
     /** La potion lancee : l'effet qu'elle porte ({@code EntityJupiterGravitySplashPotion}...). */
     static final String SPLASH = "dohy_season_splash";
     static final String WEB = "dohy_season_web";
+    static final String WATER = "dohy_season_water";
 
     // -- Mars -----------------------------------------------------------------------------------
 
@@ -361,6 +362,33 @@ public final class SeasonItems {
     public static final DeferredItem<WishCardItem> WISH_CARD = seasonItem("wish_card", WishCardItem::new,
             properties -> properties.stacksTo(16));
 
+    // -- Lucky block noir -----------------------------------------------------------------------
+
+    /** {@code BlockSifflet} : un sifflet de train, une note de plus a chaque clic droit. */
+    public static final DeferredBlock<WhistleBlock> WHISTLE = seasonBlock("whistle", WhistleBlock::new,
+            properties -> properties.strength(0.8f).sound(SoundType.WOOD));
+    /** {@code ItemWaterPistol} : un jet d'eau, qui eteint le feu et repousse. */
+    public static final DeferredItem<WaterPistolItem> WATER_PISTOL = seasonItem("water_pistol", WaterPistolItem::new,
+            properties -> properties.durability(64));
+    /** {@code ItemSonicBoots} : des bottes rapides, qui laissent une trainee de flammes. */
+    public static final DeferredItem<SupersonicBootsItem> SUPERSONIC_BOOTS = seasonItem("supersonic_boots",
+            SupersonicBootsItem::new, properties -> properties.durability(256)
+                    .humanoidArmor(net.minecraft.world.item.equipment.ArmorMaterials.LEATHER, ArmorType.BOOTS)
+                    .component(net.minecraft.core.component.DataComponents.DYED_COLOR,
+                            new net.minecraft.world.item.component.DyedItemColor(0x2A5ACD)));
+    /** {@code ItemMissileMeteo} : lance vers le ciel, il change le temps qu'il fait. */
+    public static final DeferredItem<WeatherMissileItem> WEATHER_MISSILE = seasonItem("weather_missile",
+            WeatherMissileItem::new, properties -> properties.stacksTo(16));
+    /** {@code ItemGadgeto} : greffe sur un outil, il allonge la portee de trois blocs. */
+    public static final DeferredItem<ExtendingArmItem> EXTENDING_ARM = seasonItem("extending_arm",
+            ExtendingArmItem::new, properties -> properties.stacksTo(16));
+    /** {@code ItemFlasque} : six gorgees, chacune un effet au hasard. */
+    public static final DeferredItem<FlaskItem> ALCHEMIST_FLASK = seasonItem("alchemist_flask", FlaskItem::new,
+            properties -> properties.durability(6).component(net.minecraft.core.component.DataComponents.CONSUMABLE,
+                    net.minecraft.world.item.component.Consumable.builder().consumeSeconds(0.4f)
+                            .animation(net.minecraft.world.item.ItemUseAnimation.DRINK).sound(SoundEvents.GENERIC_DRINK)
+                            .hasConsumeParticles(false).build()));
+
     private SeasonItems() {
     }
 
@@ -514,6 +542,26 @@ public final class SeasonItems {
     @SubscribeEvent
     public static void onImpact(ProjectileImpactEvent event) {
         Entity projectile = event.getProjectile();
+        if (projectile.level() instanceof ServerLevel wetLevel && projectile.getPersistentData().contains(WATER)) {
+            // La goutte du pistolet a eau : elle eteint, repousse un peu et ne blesse pas.
+            Vec3 at = event.getRayTraceResult().getLocation();
+            if (event.getRayTraceResult() instanceof net.minecraft.world.phys.EntityHitResult hit) {
+                Entity target = hit.getEntity();
+                target.clearFire();
+                Vec3 push = projectile.getDeltaMovement().normalize().scale(0.4d);
+                target.push(push.x, 0.15d, push.z);
+                target.hurtMarked = true;
+            } else if (event.getRayTraceResult() instanceof BlockHitResult hit) {
+                BlockPos fire = hit.getBlockPos().relative(hit.getDirection());
+                if (wetLevel.getBlockState(fire).is(net.minecraft.tags.BlockTags.FIRE)) {
+                    wetLevel.removeBlock(fire, false);
+                }
+            }
+            wetLevel.sendParticles(ParticleTypes.SPLASH, at.x, at.y, at.z, 12, 0.2d, 0.2d, 0.2d, 0.1d);
+            projectile.discard();
+            event.setCanceled(true);
+            return;
+        }
         if (projectile.level() instanceof ServerLevel webLevel && projectile.getPersistentData().contains(WEB)) {
             // La toile des gants tisseurs : une toile d'araignee la ou elle touche, trente secondes.
             BlockPos at = event.getRayTraceResult() instanceof BlockHitResult hit
@@ -1995,6 +2043,200 @@ public final class SeasonItems {
                 stack.consume(1, player);
             }
             return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** Le sifflet de train : la note monte a chaque clic droit, un clic gauche siffle. */
+    public static class WhistleBlock extends Block {
+        public static final net.minecraft.world.level.block.state.properties.IntegerProperty NOTE =
+                net.minecraft.world.level.block.state.properties.BlockStateProperties.NOTE;
+
+        public WhistleBlock(Properties properties) {
+            super(properties);
+            registerDefaultState(stateDefinition.any().setValue(NOTE, 12));
+        }
+
+        @Override
+        protected void createBlockStateDefinition(
+                net.minecraft.world.level.block.state.StateDefinition.Builder<Block, BlockState> builder) {
+            builder.add(NOTE);
+        }
+
+        @Override
+        protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                   BlockHitResult hit) {
+            BlockState next = state.cycle(NOTE);
+            level.setBlock(pos, next, Block.UPDATE_ALL);
+            whistle(level, pos, next.getValue(NOTE));
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        protected void attack(BlockState state, Level level, BlockPos pos, Player player) {
+            whistle(level, pos, state.getValue(NOTE));
+        }
+
+        private static void whistle(Level level, BlockPos pos, int note) {
+            if (level instanceof ServerLevel server) {
+                float pitch = (float) Math.pow(2.0d, (note - 12) / 12.0d);
+                LuckyWorld.sound(server, pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d,
+                        "block.note_block.flute", SoundSource.RECORDS, 3.0f, pitch);
+                server.sendParticles(ParticleTypes.NOTE, pos.getX() + 0.5d, pos.getY() + 1.2d, pos.getZ() + 0.5d, 1,
+                        0.0d, 0.0d, 0.0d, 0.0d);
+            }
+        }
+    }
+
+    /** Le pistolet a eau : une goutte qui eteint le feu, repousse un peu et mouille. */
+    public static class WaterPistolItem extends Item {
+        public WaterPistolItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (level instanceof ServerLevel server && player instanceof ServerPlayer shooter) {
+                var drop = new net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball(server, player,
+                        new ItemStack(net.minecraft.world.item.Items.HEART_OF_THE_SEA));
+                drop.getPersistentData().putBoolean(WATER, true);
+                drop.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0f, 2.0f, 0.5f);
+                server.addFreshEntity(drop);
+                LuckyWorld.sound(server, player.getX(), player.getY(), player.getZ(), "entity.generic.splash",
+                        SoundSource.PLAYERS, 0.4f, 1.8f);
+                player.getCooldowns().addCooldown(stack, 6);
+                stack.hurtAndBreak(1, shooter, hand);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** Les bottes supersoniques : de la vitesse, et des flammes sous les pieds quand on court. */
+    public static class SupersonicBootsItem extends Item {
+        public SupersonicBootsItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity,
+                                  net.minecraft.world.entity.EquipmentSlot slot) {
+            if (slot != net.minecraft.world.entity.EquipmentSlot.FEET || !(entity instanceof ServerPlayer player)) {
+                return;
+            }
+            if (player.tickCount % 20 == 0) {
+                player.addEffect(new MobEffectInstance(MobEffects.SPEED, 40, 1, false, false, true));
+            }
+            if (player.isSprinting() && player.onGround()) {
+                level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.1d, player.getZ(), 2, 0.15d,
+                        0.0d, 0.15d, 0.0d);
+                if (player.tickCount % 100 == 0) {
+                    stack.hurtAndBreak(1, player, net.minecraft.world.entity.EquipmentSlot.FEET);
+                }
+            }
+        }
+    }
+
+    /** Le missile meteo : il monte au ciel et inverse le temps (la pluie s'arrete, ou commence). */
+    public static class WeatherMissileItem extends Item {
+        public WeatherMissileItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult useOn(net.minecraft.world.item.context.UseOnContext context) {
+            if (!(context.getLevel() instanceof ServerLevel level) || !(context.getPlayer() instanceof ServerPlayer player)) {
+                return InteractionResult.SUCCESS;
+            }
+            BlockPos start = context.getClickedPos().above();
+            for (int y = start.getY(); y < level.getMaxY(); y++) {
+                if (!level.getBlockState(new BlockPos(start.getX(), y, start.getZ())).isAir()) {
+                    LuckyWorld.tell(player, "La trajectoire du missile doit etre degagee pour pouvoir etre lancee.",
+                            ChatFormatting.RED);
+                    return InteractionResult.FAIL;
+                }
+            }
+            context.getItemInHand().consume(1, player);
+            LuckyWorld.sound(level, start.getX() + 0.5d, start.getY(), start.getZ() + 0.5d, "entity.firework_rocket.launch",
+                    SoundSource.PLAYERS, 3.0f, 0.6f);
+            LuckyTasks.repeat(player, 0, 1, 60, step -> level.sendParticles(ParticleTypes.FIREWORK, start.getX() + 0.5d,
+                    start.getY() + step * 1.5d, start.getZ() + 0.5d, 4, 0.1d, 0.3d, 0.1d, 0.02d));
+            LuckyTasks.later(player, 60, () -> {
+                if (level.isRaining()) {
+                    level.setWeatherParameters(12_000, 0, false, false);
+                    LuckyWorld.tell(player, "Le missile a dissipe les nuages : grand soleil !", ChatFormatting.YELLOW);
+                } else {
+                    level.setWeatherParameters(0, 6_000, true, false);
+                    LuckyWorld.tell(player, "Le missile a creve les nuages : il pleut !", ChatFormatting.AQUA);
+                }
+            });
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** Le bras extensible : tenu avec un outil dans l'autre main, il y est greffe (trois blocs de portee en plus). */
+    public static class ExtendingArmItem extends Item {
+        private static final net.minecraft.resources.Identifier REACH =
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("palamod", "extending_arm");
+
+        public ExtendingArmItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            ItemStack arm = player.getItemInHand(hand);
+            ItemStack tool = player.getItemInHand(hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND
+                    : InteractionHand.MAIN_HAND);
+            if (!(player instanceof ServerPlayer owner)) {
+                return InteractionResult.SUCCESS;
+            }
+            boolean isTool = tool.is(net.minecraft.tags.ItemTags.PICKAXES) || tool.is(net.minecraft.tags.ItemTags.AXES)
+                    || tool.is(net.minecraft.tags.ItemTags.SHOVELS) || tool.is(net.minecraft.tags.ItemTags.HOES);
+            if (!isTool) {
+                LuckyWorld.bar(owner, "Tiens une pioche, une hache, une pelle ou une houe dans l'autre main.",
+                        ChatFormatting.GRAY);
+                return InteractionResult.FAIL;
+            }
+            net.minecraft.world.item.component.ItemAttributeModifiers base = tool.getOrDefault(
+                    net.minecraft.core.component.DataComponents.ATTRIBUTE_MODIFIERS,
+                    net.minecraft.world.item.component.ItemAttributeModifiers.EMPTY);
+            tool.set(net.minecraft.core.component.DataComponents.ATTRIBUTE_MODIFIERS, base.withModifierAdded(
+                    net.minecraft.world.entity.ai.attributes.Attributes.BLOCK_INTERACTION_RANGE,
+                    new net.minecraft.world.entity.ai.attributes.AttributeModifier(REACH, 3.0d,
+                            net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
+                    net.minecraft.world.entity.EquipmentSlotGroup.MAINHAND));
+            arm.consume(1, player);
+            LuckyWorld.bar(owner, "Bras extensible greffe : trois blocs de portee en plus !", ChatFormatting.GREEN);
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context,
+                                    net.minecraft.world.item.component.TooltipDisplay display,
+                                    Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+            info(tooltip, "Un outil dans l'autre main, clic droit :");
+            info(tooltip, "l'outil gagne trois blocs de portee.");
+        }
+    }
+
+    /** La flasque d'alchimiste : six gorgees, chacune un bon effet au hasard pendant une minute. */
+    public static class FlaskItem extends Item {
+        private static final List<Holder<MobEffect>> EFFECTS = List.of(MobEffects.SPEED, MobEffects.STRENGTH,
+                MobEffects.REGENERATION, MobEffects.HASTE, MobEffects.RESISTANCE, MobEffects.FIRE_RESISTANCE,
+                MobEffects.NIGHT_VISION, MobEffects.JUMP_BOOST);
+
+        public FlaskItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+            if (level instanceof ServerLevel && entity instanceof ServerPlayer player) {
+                Holder<MobEffect> effect = EFFECTS.get(player.getRandom().nextInt(EFFECTS.size()));
+                player.addEffect(new MobEffectInstance(effect, 1200, 1));
+                stack.hurtAndBreak(1, player, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+            }
+            return stack;
         }
     }
 

@@ -125,6 +125,9 @@ public final class SeasonEffects {
     /** « Grand froid » ({@code PLuckyBlock.EXTREME_COLD}) : de la neige sous chaque pas. */
     public static final DeferredHolder<MobEffect, LuckyEffect> EXTREME_COLD =
             EFFECTS.register("extreme_cold", () -> new LuckyEffect(MobEffectCategory.NEUTRAL, 0xA8D8F0));
+    /** « Solitaire » ({@code PLuckyBlock.SOLITAIRE}) : les autres joueurs disparaissent de l'ecran. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> SOLITAIRE =
+            EFFECTS.register("solitaire", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x3A3A3A));
 
     private SeasonEffects() {
     }
