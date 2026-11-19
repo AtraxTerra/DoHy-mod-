@@ -3848,7 +3848,8 @@ les fichiers viennent de `tools/lucky_assets.py`.
   dedans, et « Il ne me semblait pas avoir vu de panneau sol glissant pourtant ? ».
 - **Tour de slime** (20, malus) : un puits de dix slimepads cerclé de pierre, un pic en paladium au
   sommet, pointe en bas (la métadonnée 0 de `BlockSpike`), et le joueur posé un bloc plus haut : les
-  slimepads le lancent droit dans le pic, qui le blesse à chaque contact.
+  slimepads le lancent droit dans le pic, qui le blesse à chaque contact (15 points : sans armure,
+  deux coups suffisent). Casser un slimepad arrête la poussée.
 
 ### Findium
 
