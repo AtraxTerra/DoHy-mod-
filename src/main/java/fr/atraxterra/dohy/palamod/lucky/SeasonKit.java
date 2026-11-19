@@ -220,8 +220,12 @@ public final class SeasonKit {
 
     private static final Map<UUID, CodeRoom> ROOMS = new HashMap<>();
 
-    /** Ou flottent les chiffres, par rapport au centre de la salle : ouest, nord, est, sud. */
-    private static final double[][] CODE_SPOTS = {{-1.2d, 0.0d}, {0.0d, -1.2d}, {1.2d, 0.0d}, {0.0d, 1.2d}};
+    /**
+     * Ou flottent les chiffres, par rapport au joueur au milieu de la salle : ouest, nord, est, sud.
+     * La salle fait quatre blocs de large, le joueur n'est pas au centre : il y a plus de place a
+     * l'ouest et au nord.
+     */
+    private static final double[][] CODE_SPOTS = {{-1.7d, 0.0d}, {0.0d, -1.7d}, {1.2d, 0.0d}, {0.0d, 1.2d}};
 
     /**
      * La salle a code des coffres du mois ({@code BiicodeStructure}) : une piece de 6 blocs de
@@ -257,10 +261,10 @@ public final class SeasonKit {
         List<Entity> marks = new ArrayList<>();
         for (int index = 0; index < code.length; index++) {
             // Un chiffre par mur, sinon les noms se chevauchent. Le nom flotte au-dessus du support
-            // invisible (haut de 2 blocs) : pose un peu sous le sol, il se lit a hauteur des yeux.
+            // invisible (haut de 2 blocs) : pose sous le sol, il se lit a hauteur des yeux.
             double[] spot = CODE_SPOTS[index % CODE_SPOTS.length];
-            var mark = LuckyCreatures.marker(level, center.getX() + spot[0], center.getY() - 0.3d,
-                    center.getZ() + spot[1]);
+            var mark = LuckyCreatures.marker(level, center.getX() + 0.5d + spot[0], center.getY() - 0.6d,
+                    center.getZ() + 0.5d + spot[1]);
             if (mark != null) {
                 mark.setCustomName(Component.literal("Chiffre " + (index + 1) + " : " + code[index])
                         .withStyle(ChatFormatting.AQUA));
