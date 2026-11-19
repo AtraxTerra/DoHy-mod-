@@ -107,7 +107,7 @@ public final class SellController extends MenuController {
             }
             if (hourly) {
                 // Un prix qui change chaque heure : une carte avec la courbe des dernieres heures.
-                moving.add(row.chart(ShopController.chart(player, line.id(), line.entry(), 0.0d, slot)));
+                moving.add(row.chart(ShopController.chart(player, line.id(), line.entry(), 0.0d, slot, false)));
             } else {
                 rows.add(row);
             }
