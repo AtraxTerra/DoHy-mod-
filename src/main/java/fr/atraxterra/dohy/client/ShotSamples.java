@@ -293,6 +293,24 @@ final class ShotSamples {
         }));
     }
 
+    /**
+     * Les PNJ apparaissent au hasard autour du joueur : on ramene celui de l'evenement devant lui, tourne vers
+     * lui, et on pousse les autres derriere la camera.
+     */
+    private static void npcInFront(ServerPlayer player, String name) {
+        int x = origin.getX();
+        int y = origin.getY();
+        int z = origin.getZ();
+        command(player, String.format(java.util.Locale.ROOT,
+                "execute positioned %d %d %d run tp @e[type=minecraft:villager,distance=..12,name=!\"%s\"] %d %d %d",
+                x, y, z + 4, name, x, y, z + 40));
+        command(player, String.format(java.util.Locale.ROOT,
+                "execute positioned %d %d %d run tp @e[type=minecraft:villager,distance=..12,name=\"%s\"] %.2f %d %.2f"
+                        + " facing entity %s eyes", x, y, z + 4, name, x + 0.5d, y, z + 2.0d,
+                player.getName().getString()));
+        log("pnj {} ramene devant le joueur", name);
+    }
+
     private static String slotsOf(net.minecraft.world.entity.player.Inventory inventory) {
         StringBuilder out = new StringBuilder();
         for (int slot = 0; slot < 36; slot++) {
@@ -388,38 +406,33 @@ final class ShotSamples {
         ShotHarness.SHOTS.add(server("d2_coffre", 40, player -> {
             clear(player, 20, 12);
             hover(player, false);
-            tp(player, 0.5, 0, 0.5, 180.0f, 0.0f);
+            tp(player, 0.5, 0, 2.5, 180.0f, 10.0f);
             BlockPos pos = at(0, 0);
             place(player, LuckyType.SEPTEMBER, "september_chest", pos);
             fire(player, pos);
         }));
-        ShotHarness.SHOTS.add(server("d3_anglais", 20, player -> {
+        ShotHarness.SHOTS.add(server("d3_anglais", 25, player -> {
+            command(player, "kill @e[type=minecraft:armor_stand]");
+            clear(player, 20, 12);
+            hover(player, false);
+            tp(player, 0.5, 0, 4.5, 180.0f, 10.0f);
+            player.getInventory().clearContent();
+            player.getInventory().setItem(0, new ItemStack(net.minecraft.world.item.Items.STONE));
+            player.getInventory().setSelectedSlot(0);
             player.addEffect(new MobEffectInstance(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.ENGLISH, 600, 0));
             log("anglais : effet {}", player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.ENGLISH));
         }));
-        ShotHarness.SHOTS.add(client("d4_anglais_langue", 10, () -> {
-            log("anglais : block.minecraft.stone = {}", net.minecraft.locale.Language.getInstance()
-                    .getOrDefault("block.minecraft.stone"));
-            openInventory();
-        }));
-        ShotHarness.SHOTS.add(client("d5_fermer", 5, () -> Minecraft.getInstance().gui.setScreen(null)));
-        ShotHarness.SHOTS.add(server("d6_fin_anglais", 30, player -> player.removeEffect(
+        ShotHarness.SHOTS.add(client("d4_anglais_langue", 5, () -> log("anglais : block.minecraft.stone = {}",
+                net.minecraft.locale.Language.getInstance().getOrDefault("block.minecraft.stone"))));
+        ShotHarness.SHOTS.add(server("d6_fin_anglais", 25, player -> player.removeEffect(
                 fr.atraxterra.dohy.palamod.lucky.SeasonEffects.ENGLISH)));
         ShotHarness.SHOTS.add(client("d7_francais", 5, () -> log("francais : block.minecraft.stone = {}",
                 net.minecraft.locale.Language.getInstance().getOrDefault("block.minecraft.stone"))));
-        ShotHarness.SHOTS.add(server("e1_boules", 30, player -> {
-            clear(player, 20, 12);
-            effectsOff(player);
-            hover(player, false);
-            tp(player, 0.5, 0, 0.5, 180.0f, 15.0f);
-            BlockPos pos = at(0, -2);
-            place(player, LuckyType.CHRISTMAS, "drank_too_much", pos);
-            fire(player, pos);
-            player.removeEffect(net.minecraft.world.effect.MobEffects.NAUSEA);
-        }));
-        ShotHarness.SHOTS.add(client("e2_boules_dos", 20, () -> camera(CameraType.THIRD_PERSON_BACK)));
-        ShotHarness.SHOTS.add(client("e3_camera", 5, () -> camera(CameraType.FIRST_PERSON)));
         event("e4_neige", 40, LuckyType.CHRISTMAS, "snow_army", 15.0f);
+        ShotHarness.SHOTS.add(server("e4b_neige_haut", 20, player -> {
+            hover(player, true);
+            tp(player, 0.5, 7, 12.5, 180.0f, 35.0f);
+        }));
         ShotHarness.SHOTS.add(server("e5_paladium", 120, player -> {
             clear(player, 20, 12);
             effectsOff(player);
@@ -436,8 +449,10 @@ final class ShotSamples {
                     state -> net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath()
                             .equals("paladium_ore")));
         }));
-        event("e7_noescroc", 30, LuckyType.CHRISTMAS, "noescroc_father", 10.0f);
-        event("e8_jack", 30, LuckyType.HALLOWEEN, "small_candies", 10.0f);
+        event("e7_noescroc", 10, LuckyType.CHRISTMAS, "noescroc_father", 10.0f);
+        ShotHarness.SHOTS.add(server("e7b_noescroc_devant", 20, player -> npcInFront(player, "Pere Noel")));
+        event("e8_jack", 10, LuckyType.HALLOWEEN, "small_candies", 10.0f);
+        ShotHarness.SHOTS.add(server("e8b_jack_devant", 20, player -> npcInFront(player, "Jack-o-lantern")));
         ShotHarness.SHOTS.add(server("f1_cadeaux", 10, player -> {
             var inventory = player.getInventory();
             inventory.clearContent();
@@ -466,6 +481,19 @@ final class ShotSamples {
         }));
         ShotHarness.SHOTS.add(server("z2_lune", 360, player -> log("lune : joueur a y = {}", player.getY())));
         ShotHarness.SHOTS.add(client("z3_lune_dos", 20, () -> camera(CameraType.THIRD_PERSON_BACK)));
+        ShotHarness.SHOTS.add(client("z5_camera", 5, () -> camera(CameraType.FIRST_PERSON)));
+        ShotHarness.SHOTS.add(server("e1_boules", 30, player -> {
+            clear(player, 20, 12);
+            effectsOff(player);
+            hover(player, false);
+            tp(player, 0.5, 0, 0.5, 180.0f, 15.0f);
+            BlockPos pos = at(0, -2);
+            place(player, LuckyType.CHRISTMAS, "drank_too_much", pos);
+            fire(player, pos);
+            player.removeEffect(net.minecraft.world.effect.MobEffects.NAUSEA);
+        }));
+        ShotHarness.SHOTS.add(client("e2_boules_dos", 20, () -> camera(CameraType.THIRD_PERSON_BACK)));
+        ShotHarness.SHOTS.add(client("e3_camera", 5, () -> camera(CameraType.FIRST_PERSON)));
         ShotHarness.SHOTS.add(server("z4_fin", 10, player -> LOG.info("dohy-shots: [fin] {}",
                 List.of(player.getName().getString()))));
     }
