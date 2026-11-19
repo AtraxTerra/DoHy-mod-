@@ -76,6 +76,17 @@ public class ThroneSeat extends Entity {
         return getPassengers().isEmpty();
     }
 
+    /** On s'assoit tourne comme le trone, face a la salle : chez le client aussi, qui tient le regard. */
+    @Override
+    protected void addPassenger(Entity passenger) {
+        super.addPassenger(passenger);
+        float yaw = getYRot();
+        passenger.setYRot(yaw);
+        passenger.yRotO = yaw;
+        passenger.setYHeadRot(yaw);
+        passenger.setYBodyRot(yaw);
+    }
+
     @Override
     protected void positionRider(Entity passenger, Entity.MoveFunction move) {
         super.positionRider(passenger, move);
