@@ -38,7 +38,9 @@ import java.util.Map;
  * choisi a droite — son prix, la quantite, le total, un seul bouton.
  *
  * <p>La vente a son onglet : ici, une carte ne montre que ce qui sert a acheter
- * (l'objet, son nom, son prix). Une recherche trouve aussi ce qui s'achete
+ * (l'objet, son nom, son prix). Seul ce dont le prix change chaque heure (le
+ * cours de l'heure) a une courbe : en miniature sur sa carte, en grand sous sa
+ * fiche ; un prix fixe n'en a pas. Une recherche trouve aussi ce qui s'achete
  * ailleurs dans le commerce (boutique, hotel des ventes) et dit ou aller ; un
  * clic y mene.
  *
@@ -218,8 +220,17 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         List<Component> lines = new ArrayList<>();
         lines.add(offer.stack().getHoverName().copy().withColor(0xFFFFFF));
         lines.add(Component.literal("Prix : " + money(offer.buy()) + " l'unite").withColor(0x22E558));
+        if (moves(offer)) {
+            lines.add(Component.literal("Ce prix change chaque heure : " + course(offer.course())
+                    + " en ce moment").withColor(0xFAC400));
+        }
         lines.add(Component.literal("Tu en as " + offer.owned()).withColor(0x8B8E95));
         return lines;
+    }
+
+    /** Le prix de cet objet change-t-il regulierement (le cours de l'heure) ? Lui seul a une courbe. */
+    private static boolean moves(ShopView.Offer offer) {
+        return offer.course() > 0 && offer.chart() != null && offer.chart().size() > 1;
     }
 
     private static List<Component> tip(ShopView.Elsewhere entry) {
@@ -453,7 +464,20 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
         private void card(UiGraphics g, Paint p, ShopView.Offer offer, float cardX, float cardY, float cardWidth,
                           float hover, boolean selected) {
             frame(p, cardX, cardY, cardWidth, hover, selected, Ui.Theme.RED);
-            g.item(offer.stack(), cardX + (cardWidth - 16.0f) / 2.0f, cardY + 7.0f, 16.0f, false);
+            if (moves(offer)) {
+                // Un prix qui change chaque heure : l'objet a gauche, sa courbe et sa variation a droite.
+                PriceChart chart = offer.chart();
+                g.item(offer.stack(), cardX + 3.0f, cardY + 6.0f, 12.0f, false);
+                float sparkX = cardX + 17.0f;
+                float sparkWidth = cardWidth - 20.0f;
+                p.round(sparkX - 1.0f, cardY + 4.0f, sparkWidth + 2.0f, 11.0f, 2.0f, 0x40000000);
+                Charts.spark(g, chart, sparkX, cardY + 5.0f, sparkWidth, 9.0f, 1.0f);
+                g.right(Ui.PIXEL, course(offer.course()), cardX + cardWidth - 3.0f, cardY + 17.3f, 3.0f,
+                        offer.course() > 100 ? Ui.Theme.RED_LIGHT : offer.course() < 100 ? Ui.Theme.GREEN_L
+                                : Ui.Theme.MUTED);
+            } else {
+                g.item(offer.stack(), cardX + (cardWidth - 16.0f) / 2.0f, cardY + 7.0f, 16.0f, false);
+            }
             title(g, offer.stack().getHoverName().getString(), cardX, cardY, cardWidth);
             // Un seul prix, celui qu'on paie, centre et lisible.
             String price = money(offer.buy());
@@ -644,7 +668,8 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
 
         /**
          * Pour un objet dont le prix change chaque heure : la courbe des dernieres
-         * heures, sous sa fiche. Les objets a prix fixe n'en ont pas.
+         * heures, sous sa fiche, avec ses plus haut et plus bas et l'heure de chaque
+         * point sous la souris. Les objets a prix fixe n'en ont pas.
          */
         private void trend(UiGraphics g, Paint p, ShopView.Offer offer, float top, float panel, double mouseX,
                            double mouseY) {
@@ -656,13 +681,17 @@ public class ShopScreen extends UiScreen implements ViewScreen<ShopView> {
             float left = x + 7.0f;
             float right = x + width - 7.0f;
             int color = Charts.trend(chart);
-            g.text(Ui.PIXEL, "LE PRIX CES DERNIERES HEURES", left, top + 6.0f, 3.3f, Ui.Theme.MUTED);
+            g.text(Ui.PIXEL, "PRIX " + Charts.span(chart.span()) + " · CHANGE CHAQUE HEURE", left, top + 6.0f, 3.3f,
+                    Ui.Theme.MUTED);
             String change = Charts.change(chart);
             float pillWidth = g.width(Ui.PIXEL, change, 3.3f) + 6.0f;
             p.round(right - pillWidth, top + 4.4f, pillWidth, 6.3f, 2.0f, Paint.alpha(color, 0.18f));
             g.text(Ui.PIXEL, change, right - pillWidth + 3.0f, top + 6.0f, 3.3f, color);
+            g.text(Ui.WIDE, Charts.value(chart, chart.last()), left, top + 13.3f, 7.0f, Ui.Theme.TEXT);
+            g.right(Ui.PIXEL, "HAUT " + Charts.value(chart, chart.high()), right, top + 13.6f, 3.0f, Ui.Theme.DIM);
+            g.right(Ui.PIXEL, "BAS " + Charts.value(chart, chart.low()), right, top + 18.0f, 3.0f, Ui.Theme.DIM);
             float reveal = Anim.easeOut(Anim.progress(picked, 0.6d));
-            Charts.full(g, chart, left - 1.0f, top + 14.0f, width - 12.0f, panel - 19.0f, mouseX, mouseY, reveal);
+            Charts.full(g, chart, left - 1.0f, top + 24.0f, width - 12.0f, panel - 29.0f, mouseX, mouseY, reveal);
         }
 
         @Override
