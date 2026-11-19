@@ -57,6 +57,12 @@ public class DynamiteEntity extends ThrowableItemProjectile {
         super(PalaPillage.DYNAMITE_ENTITY.get(), x, y, z, level, stack);
     }
 
+    /** Une autre meche, en tics : la grosse dynamite d'un lucky block saute en une demi-seconde. */
+    public DynamiteEntity fuse(int ticks) {
+        this.fuse = Math.max(1, ticks);
+        return this;
+    }
+
     @Override
     protected Item getDefaultItem() {
         return PalaPillage.DYNAMITE.get();

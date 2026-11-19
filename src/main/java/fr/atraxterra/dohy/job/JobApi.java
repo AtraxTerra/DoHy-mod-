@@ -151,6 +151,11 @@ public final class JobApi {
                 + UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS)
                 + fr.atraxterra.dohy.palamod.defense.Amulets.xpBonus(player, job))
                 * fr.atraxterra.dohy.palamod.boost.PalaXpPotions.multiplier(player));
+        apply(player, job, boosted);
+    }
+
+    /** Ajoute de l'XP deja calculee, et paie les niveaux franchis. */
+    private static void apply(ServerPlayer player, Job job, long boosted) {
         int before = level(player, job);
         data(player).addXp(job, boosted);
         int after = level(player, job);
@@ -166,6 +171,38 @@ public final class JobApi {
             ContractApi.grantGlobalXp(player, (after - before) * 20L, "niveau de metier");
             ContractApi.progress(player, ContractType.JOB_LEVELS, target -> true, after - before);
         }
+    }
+
+    /**
+     * Des niveaux tout ronds, sans bonus ni bouteille : les lucky blocks Fast
+     * Learner ({@code setExperience(getNeededXpForLvl(niveau + 1))}). L'XP passe
+     * au seuil du niveau vise ; les recompenses des niveaux franchis sont payees.
+     * Rend faux si le metier est deja au maximum.
+     */
+    public static boolean grantLevels(ServerPlayer player, Job job, int levels) {
+        int level = level(player, job);
+        int target = Math.min(maxLevel(), level + Math.max(0, levels));
+        if (target <= level) {
+            return false;
+        }
+        long missing = xpToReach(target) - xp(player, job);
+        if (missing > 0) {
+            apply(player, job, missing);
+        }
+        return true;
+    }
+
+    /**
+     * Un niveau de moins ({@code SEUM}) : l'XP retombe au seuil du niveau
+     * precedent. Les recompenses deja touchees restent. Rend faux au niveau 0.
+     */
+    public static boolean loseLevel(ServerPlayer player, Job job) {
+        int level = level(player, job);
+        if (level <= 0) {
+            return false;
+        }
+        data(player).setXp(job, xpToReach(level - 1));
+        return true;
     }
 
     private static void reward(ServerPlayer player, Job job, int level) {

@@ -1,0 +1,117 @@
+package fr.atraxterra.dohy.client.lucky;
+
+import fr.atraxterra.dohy.palamod.lucky.PalaLucky;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.ClientAvatarEntity;
+import net.minecraft.client.player.ClientInput;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.player.Input;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
+import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
+import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+
+/**
+ * Les effets des lucky blocks qui se voient ou se sentent chez le client
+ * ({@code EventsManager} de PalaMod, ses parties cote client).
+ *
+ * <ul>
+ *   <li>Walk in Music : des notes sous les pieds ; Tout feu tout flamme : des
+ *       flammes autour du corps ;</li>
+ *   <li>Bunny Life : on saute tout seul, une fois sur dix a chaque tic au sol ;</li>
+ *   <li>Sonic : le saut ne repond plus ;</li>
+ *   <li>Sol glace : le sol glisse ({@code motion * 1,47} a chaque tic au sol) ;</li>
+ *   <li>Prendre du recul : la camera ne quitte pas la vue de dos ;</li>
+ *   <li>Ou donner de la tete : la tete du joueur disparait.</li>
+ * </ul>
+ *
+ * <p>Le client ne connait que ses propres effets : la tete d'un autre joueur ne
+ * disparait pas a l'ecran. C'est un mod solo.
+ */
+@EventBusSubscriber(Dist.CLIENT)
+public final class LuckyClientEvents {
+
+    /** {@code motionX *= 1.47} au sol : la glace de PalaMod. */
+    private static final double ICE = 1.47d;
+
+    private LuckyClientEvents() {
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        LocalPlayer player = minecraft.player;
+        if (player == null || minecraft.level == null || minecraft.isPaused()) {
+            return;
+        }
+        RandomSource random = player.getRandom();
+        if (player.hasEffect(PalaLucky.WALK_IN_MUSIC) && player.onGround()) {
+            minecraft.level.addParticle(ParticleTypes.NOTE, player.getX(), player.getY() + 0.05d, player.getZ(),
+                    random.nextInt(25) / 24.0d, 0.0d, 0.0d);
+        }
+        if (player.hasEffect(PalaLucky.FIRE_MAN)) {
+            // En premiere personne, les flammes restent sous les yeux : devant la camera, elles cachent tout.
+            float height = minecraft.options.getCameraType() == CameraType.FIRST_PERSON ? 1.1f : 3.0f;
+            minecraft.level.addParticle(ParticleTypes.FLAME, player.getX() + random.nextGaussian() * 0.3d,
+                    player.getY() + random.nextFloat() * height,
+                    player.getZ() + random.nextGaussian() * 0.3d, 0.0d, 0.01d, 0.0d);
+        }
+        if (player.hasEffect(PalaLucky.THIRD_PERSON) && minecraft.options.getCameraType() == CameraType.FIRST_PERSON) {
+            minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+        }
+    }
+
+    /** Bunny Life saute pour le joueur ; Sonic l'en empeche. */
+    @SubscribeEvent
+    public static void onInput(MovementInputUpdateEvent event) {
+        if (!(event.getEntity() instanceof LocalPlayer player)) {
+            return;
+        }
+        ClientInput input = event.getInput();
+        if (player.hasEffect(PalaLucky.NO_JUMP)) {
+            Input keys = input.keyPresses;
+            if (keys.jump()) {
+                input.keyPresses = new Input(keys.forward(), keys.backward(), keys.left(), keys.right(), false,
+                        keys.shift(), keys.sprint());
+            }
+            return;
+        }
+        if (player.hasEffect(PalaLucky.BUNNY_LIFE) && player.onGround() && player.getRandom().nextInt(10) == 5) {
+            input.makeJump();
+        }
+    }
+
+    /** Sol glace : au sol, l'elan grandit au lieu de retomber. */
+    @SubscribeEvent
+    public static void onPlayerTick(PlayerTickEvent.Pre event) {
+        if (!(event.getEntity() instanceof LocalPlayer player) || !player.onGround()
+                || !player.hasEffect(PalaLucky.FROZEN_GROUND)) {
+            return;
+        }
+        Vec3 motion = player.getDeltaMovement();
+        player.setDeltaMovement(motion.x * ICE, motion.y, motion.z * ICE);
+    }
+
+    /** Ou donner de la tete : la tete (et le chapeau, son enfant) cachee. */
+    @SubscribeEvent
+    public static void onRenderState(RegisterRenderStateModifiersEvent event) {
+        event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
+            @Override
+            public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState state) {
+                if (avatar.hasEffect(PalaLucky.HIDE_HEAD)) {
+                    state.overrideModelPartVisibility("head", false);
+                }
+            }
+        });
+    }
+}

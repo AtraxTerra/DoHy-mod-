@@ -58,7 +58,10 @@ ITEMLESS_BLOCKS = ("void_stone", "angelic_water",
                    # l'alchimiste, n'existe que cadre allume.
                    "miner_portal",
                    # La Fake Water (chapitre 22) : son objet est le seau.
-                   "fake_water")
+                   "fake_water",
+                   # Le faux bloc de paladium de « Ouaiche t'es relou » : il ne
+                   # nait que d'un lucky block et rend un vrai bloc a la fin.
+                   "paladium_fake_block")
 
 errors = []
 

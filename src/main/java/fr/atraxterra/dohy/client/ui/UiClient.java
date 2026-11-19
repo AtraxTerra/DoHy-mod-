@@ -43,6 +43,12 @@ public final class UiClient {
         SCREENS.put(fr.atraxterra.dohy.faction.FactionEditView.ID,
                 view -> new fr.atraxterra.dohy.client.ui.screen.FactionEditScreen(
                         (fr.atraxterra.dohy.faction.FactionEditView) view));
+        SCREENS.put(fr.atraxterra.dohy.palamod.lucky.LuckyBlockView.ID,
+                view -> new fr.atraxterra.dohy.client.lucky.LuckyBlockScreen(
+                        (fr.atraxterra.dohy.palamod.lucky.LuckyBlockView) view));
+        SCREENS.put(fr.atraxterra.dohy.palamod.lucky.LuckyPassView.ID,
+                view -> new fr.atraxterra.dohy.client.lucky.LuckyPassScreen(
+                        (fr.atraxterra.dohy.palamod.lucky.LuckyPassView) view));
     }
 
     private UiClient() {

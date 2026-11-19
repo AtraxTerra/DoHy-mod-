@@ -549,6 +549,10 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                             || !namesFit(cards, (columnWidth - GAP * 3) / 4))) {
                         columns = 3;
                     }
+                    // Cinq cartes (l'accueil, avec le Lucky Pass) : une seule rangee si les noms tiennent.
+                    if (columns == 4 && cards.size() == 5 && namesFit(cards, (columnWidth - GAP * 4) / 5)) {
+                        columns = 5;
+                    }
                     float cardWidth = (columnWidth - GAP * (columns - 1)) / columns;
                     for (int start = 0; start < cards.size(); start += columns) {
                         float rowHeight = 0;
