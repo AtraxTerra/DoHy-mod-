@@ -1,10 +1,13 @@
 {
   "replace": false,
   "values": [
+    "dohy:stillsuit_leggings",
     "palamod:amethyst_leggings",
     "palamod:antique_leggings",
     "palamod:endium_leggings",
+    "palamod:fake_endium_leggings",
     "palamod:green_paladium_leggings",
+    "palamod:invisible_leggings",
     "palamod:manelios_legendary_leggings",
     "palamod:manelios_leggings",
     "palamod:manelios_reinforced_leggings",
@@ -13,6 +16,7 @@
     "palamod:nimbria_leggings",
     "palamod:nimbria_reinforced_leggings",
     "palamod:paladium_leggings",
+    "palamod:pig_leggings",
     "palamod:talikus_legendary_leggings",
     "palamod:talikus_leggings",
     "palamod:talikus_reinforced_leggings",
@@ -20,7 +24,6 @@
     "palamod:travel_leggings",
     "palamod:vitalys_legendary_leggings",
     "palamod:vitalys_leggings",
-    "palamod:vitalys_reinforced_leggings",
-    "dohy:stillsuit_leggings"
+    "palamod:vitalys_reinforced_leggings"
   ]
 }

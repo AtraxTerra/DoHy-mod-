@@ -4006,7 +4006,7 @@
         {
           "title": "Les evenements",
           "text": [
-            "147 des 439 evenements de Paladium sont la : gardes du corps, tour de paladium, pluie de minerais, pyramides de beacon, gant de l'infini, carte au tresor, golem charge de paladium, boite a golem toute montee... et cages de verre, cochon explosif, pluie de dynamites, enclumes, labyrinthe d'obsidienne ou terrain mine. Le compteur de l'ecran dit combien tu en as deja vu."
+            "163 des 439 evenements de Paladium sont la : gardes du corps, tour de paladium, pluie de minerais, pyramides de beacon, gant de l'infini, carte au tresor, golem charge de paladium, boite a golem toute montee... et cages de verre, cochon explosif, pluie de dynamites, enclumes, labyrinthe d'obsidienne ou terrain mine. Le compteur de l'ecran dit combien tu en as deja vu."
           ]
         },
         {
@@ -4021,7 +4021,19 @@
           "text": [
             "Le Pere Fouras attend ta reponse dans le chat : trois essais, et dix lingots de paladium a la cle.",
             "Dans le labyrinthe d'obsidienne, les commandes ne marchent pas. Un seau de lait retire la fatigue de minage ; il reste a creuser.",
-            "Un coffre en endium sorti d'un lucky block, seul et vide, peut etre maudit : le casser est plus sur que l'ouvrir."
+            "Un coffre en endium sorti d'un lucky block, seul et vide, peut etre maudit : le casser est plus sur que l'ouvrir.",
+            "Sous tes pieds, un slimepad te lance : une nappe de slimepads fait glisser, et une tour de slimepads coiffee d'un pic fait mal."
+          ]
+        },
+        {
+          "title": "Les objets du findium",
+          "text": [
+            "- Casque de speleologue : le sol sous tes pieds devient transparent et montre les grottes. Il s'use en cinq minutes de port.",
+            "- Air Min : Saut III tant que tu les portes.",
+            "- Brique de lait : un seau de lait de dix gorgees. Tape une vache avec pour la remplir.",
+            "- Pomme de vitesse : Vitesse VIII pendant dix secondes, et de quoi tenir longtemps.",
+            "- Armure de cochon, armure invisible (personne ne la voit sur toi), et fausse armure en endium : l'allure de l'endium, la solidite du fer.",
+            "- Billets : factices, ils ne valent rien. Epee Couac : du paladium qui caquette."
           ]
         }
       ],

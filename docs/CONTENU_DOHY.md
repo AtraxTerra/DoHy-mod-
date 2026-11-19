@@ -1466,7 +1466,7 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
   sous s'ouvre ; « OUVRIR » lance les trois rouleaux, et l'événement tombe quand l'écran se
   ferme (seul, cinq secondes après l'arrêt, ou par FERMER). Espace ou Entrée valent le bouton ; un
   clic sur la machine passe l'animation.
-- **147 événements** sur les 439 de PalaMod (trois lots) : un bon sur deux environ au
+- **163 événements** sur les 439 de PalaMod (quatre lots) : un bon sur deux environ au
   paladium (pyramides de minerais, gardes du corps, pluie de minerais, armure arc-en-ciel,
   dix lucky blocks en endium d'un coup…), que des bons à l'endium, et au findium des tours plus
   étranges (la tête qui disparaît, une armée de chiens, des enclumes qui rapportent 1 000 $). Les
@@ -1484,6 +1484,13 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
   sans sortie à la hauteur 100, un coffre en endium maudit qui tue qui l'ouvre, une pluie
   d'enclumes, l'armure changée en cuir, un faux gros lot qui coûte 5 000 $, l'énigme du Père Fouras
   (trois essais dans le chat).
+- **Les objets des lucky blocks** dans le quatrième lot, presque tous au findium : l'armure de
+  cochon, l'armure invisible (on ne la voit pas sur le joueur), une fausse armure en endium (l'allure
+  de l'endium, le fer dessous), une cagoule noire, les AirMin (Saut III), le casque de spéléologue
+  (le sol sous les pieds devient transparent et montre les grottes, cinq minutes de port), la brique
+  de lait (dix gorgées, une vache la remplit), la pomme de vitesse (Vitesse VIII), de faux billets,
+  l'épée Couac qui caquette, et un faux bloc de paladium vert qui saute quand on le casse. Au
+  paladium, deux pièges au slimepad : une nappe qui fait glisser, une tour qui lance dans un pic.
 - L'événement est tiré une fois pour toutes : cassé et reposé, le bloc garde le sien. Le compteur
   DECOUVERTS suit ceux qu'on a déjà vus.
 
@@ -1501,8 +1508,9 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
 ### Code
 
 - `palamod/lucky/` : les blocs, le catalogue et le tirage (`LuckyEvents`, `GoodEvents`,
-  `BadEvents`, `FindiumEvents`), l'ouverture (`LuckySession`) et le pass (`LuckyPass`) ; côté
-  client `client/lucky/` (les deux écrans, les effets cosmétiques).
+  `BadEvents`, `FindiumEvents`), l'ouverture (`LuckySession`) et le pass (`LuckyPass`) ; les objets
+  (`LuckyItems`, `CaveHelmetVision`) ; côté client `client/lucky/` (les deux écrans, les effets
+  cosmétiques).
 - `tools/lucky_assets.py` génère les fichiers et vérifie les événements en CI (`--check`).
 
 ## Sur un serveur dédié (2026-11-13)

@@ -30,6 +30,8 @@ public final class PalaTags {
     public static final TagKey<Item> REPAIRS_GREEN_PALADIUM = repairs("green_paladium");
     public static final TagKey<Item> REPAIRS_ENDIUM = repairs("endium");
     public static final TagKey<Item> REPAIRS_MIXED_ENDIUM = repairs("mixed_endium");
+    /** Les AirMin des lucky blocks ({@code getIsRepairable} toujours faux) : un tag vide, rien ne les repare. */
+    public static final TagKey<Item> REPAIRS_NOTHING = repairs("nothing");
 
     private PalaTags() {
     }

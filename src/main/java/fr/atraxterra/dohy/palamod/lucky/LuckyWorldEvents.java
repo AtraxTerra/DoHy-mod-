@@ -220,7 +220,7 @@ public final class LuckyWorldEvents {
     @SubscribeEvent
     public static void onBreak(BreakBlockEvent event) {
         BlockState state = event.getState();
-        if (!state.is(PalaLucky.PALADIUM_FAKE_BLOCK.get()) || !FakePaladiumBlock.jumps(state)
+        if (!(state.getBlock() instanceof FakePaladiumBlock) || !FakePaladiumBlock.jumps(state)
                 || !(event.getPlayer() instanceof ServerPlayer player) || player.isCreative()
                 || !(event.getLevel() instanceof ServerLevel level)) {
             return;

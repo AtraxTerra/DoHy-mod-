@@ -1,10 +1,14 @@
 {
   "replace": false,
   "values": [
+    "dohy:stillsuit_boots",
+    "palamod:air_min_boots",
     "palamod:amethyst_boots",
     "palamod:antique_boots",
     "palamod:endium_boots",
+    "palamod:fake_endium_boots",
     "palamod:green_paladium_boots",
+    "palamod:invisible_boots",
     "palamod:manelios_boots",
     "palamod:manelios_legendary_boots",
     "palamod:manelios_reinforced_boots",
@@ -13,6 +17,7 @@
     "palamod:nimbria_legendary_boots",
     "palamod:nimbria_reinforced_boots",
     "palamod:paladium_boots",
+    "palamod:pig_boots",
     "palamod:talikus_boots",
     "palamod:talikus_legendary_boots",
     "palamod:talikus_reinforced_boots",
@@ -20,7 +25,6 @@
     "palamod:travel_boots",
     "palamod:vitalys_boots",
     "palamod:vitalys_legendary_boots",
-    "palamod:vitalys_reinforced_boots",
-    "dohy:stillsuit_boots"
+    "palamod:vitalys_reinforced_boots"
   ]
 }
