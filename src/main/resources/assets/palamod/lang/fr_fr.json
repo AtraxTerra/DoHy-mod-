@@ -990,5 +990,18 @@
   "effect.palamod.frozen_ground": "Sol glace",
   "effect.palamod.no_jump": "Mais pas si haut !",
   "effect.palamod.third_person": "Prendre du recul",
-  "effect.palamod.anvil_money": "Money"
+  "effect.palamod.anvil_money": "Money",
+  "effect.palamod.rayman": "Rayman",
+  "effect.palamod.ghost": "Fantome",
+  "effect.palamod.rotate": "Le monde a l'envers",
+  "effect.palamod.steve": "Steve",
+  "effect.palamod.flou": "Ou sont mes lunettes ?",
+  "effect.palamod.cat": "I love cats",
+  "effect.palamod.green": "Filtre vert",
+  "effect.palamod.tree": "L'ami des arbres",
+  "effect.palamod.boom_mobs": "Boom les mobs",
+  "effect.palamod.explose": "EXPLOSION !",
+  "effect.palamod.inversion": "Inversion",
+  "effect.palamod.half_job_xp": "Divise XP",
+  "effect.palamod.pumpkin_blur": "Le fond du bol"
 }

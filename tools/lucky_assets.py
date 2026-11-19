@@ -20,10 +20,11 @@ Avec --jar (PIL requis), il recopie de PalaMod :
   - l'image de chaque evenement porte (`gui/LuckyBlock/events/`), mise au carre
     de 16 x 16 ; celle de « 20 000 lieu sous terre » manque dans le jar de
     PalaMod lui-meme : elle est dessinee ici ;
-  - les icones d'effet (18 x 18), tirees des images des evenements.
+  - les icones d'effet (18 x 18), tirees des images des evenements ;
+  - et il dessine les filtres d'ecran (aplats) et le chat de « I love cats ».
 
-Les evenements portes sont lus dans les sources Java (GoodEvents, BadEvents,
-FindiumEvents) : --check echoue si l'un d'eux n'a pas son image, ou porte un
+Les evenements portes sont lus dans les sources Java (SOURCES : GoodEvents,
+BadEvents, FindiumEvents, EffectEvents, TrickEvents, FindiumTricks) : --check echoue si l'un d'eux n'a pas son image, ou porte un
 nom avec un accent.
 
 --stats compare le catalogue complet de PalaMod (`tools/data/lucky_events.json`,
@@ -41,6 +42,9 @@ ASSETS = os.path.join(ROOT, "src", "main", "resources", "assets", "palamod")
 DATA = os.path.join(ROOT, "src", "main", "resources", "data", "palamod")
 JAVA = os.path.join(ROOT, "src", "main", "java", "fr", "atraxterra", "dohy", "palamod", "lucky")
 CATALOG = os.path.join(ROOT, "tools", "data", "lucky_events.json")
+# Les fichiers ou sont declares les evenements portes (c.classic / c.findium).
+SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEvents.java", "TrickEvents.java",
+           "FindiumTricks.java")
 NS = "palamod"
 
 TYPES = {
@@ -60,6 +64,27 @@ EFFECTS = {
     "no_jump": ("Mais pas si haut !", "No Jump", "sonic"),
     "third_person": ("Prendre du recul", "Step Back", "recul"),
     "anvil_money": ("Money", "Anvil Money", "danselighting"),
+    # Le deuxieme lot.
+    "rayman": ("Rayman", "Rayman", "rayman"),
+    "ghost": ("Fantome", "Ghost", "ghost"),
+    "rotate": ("Le monde a l'envers", "Upside Down", "reverse"),
+    "steve": ("Steve", "Steve", "steve_jobs"),
+    "flou": ("Ou sont mes lunettes ?", "Where Are My Glasses?", "flou"),
+    "cat": ("I love cats", "I Love Cats", "i_love_cats"),
+    "green": ("Filtre vert", "Green Filter", "vision_nocturne"),
+    "tree": ("L'ami des arbres", "Tree Friend", "teamtree"),
+    "boom_mobs": ("Boom les mobs", "Boom Mobs", "boom_les_mobs"),
+    "explose": ("EXPLOSION !", "EXPLOSION!", "explosif"),
+    "inversion": ("Inversion", "Inversion", "inversion"),
+    "half_job_xp": ("Divise XP", "Half Job XP", "divise_xp"),
+    "pumpkin_blur": ("Le fond du bol", "Bottom of the Bowl", "on_voit_pas_le_fond_du_bol"),
+}
+
+# Les filtres d'ecran (EventsManager.drawFilter) : des aplats, aux couleurs de
+# greenfilter.png et floufilter.png de PalaMod, etires sur tout l'ecran.
+FILTERS = {
+    "green": (154, 255, 105, 121),
+    "flou": (214, 214, 214, 222),
 }
 
 LANG = {
@@ -99,7 +124,7 @@ def ported():
     pattern = re.compile(r'c\.(classic|findium)\(\s*([A-Z_]+|"[^"]+")\s*,\s*"([^"]*)"\s*,\s*"([^"]*)"\s*,'
                          r'\s*(true|false)\s*,\s*(\d+)')
     constants = {}
-    for name in ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java"):
+    for name in SOURCES:
         path = os.path.join(JAVA, name)
         text = open(path, encoding="utf-8").read()
         for key, value in re.findall(r'static final String ([A-Z_]+) = "([^"]+)";', text):
@@ -228,6 +253,68 @@ def textures(jar, events):
         canvas.save(os.path.join(effects, effect + ".png"))
 
 
+def draw_cat():
+    """Le chat de « I love cats », dessine ici (PalaMod montrait une photo) : 64 x 74."""
+    from PIL import Image, ImageDraw
+
+    width, height = 64, 74
+    image = Image.new("RGBA", (width, height))
+    draw = ImageDraw.Draw(image)
+    # Un ciel de fin de journee, puis le sol.
+    for y in range(height):
+        if y < 46:
+            k = y / 45.0
+            color = (int(150 + 100 * k), int(190 + 5 * k), int(235 - 95 * k), 255)
+        else:
+            color = (104, 104, 110, 255) if (y // 2) % 2 == 0 else (98, 98, 104, 255)
+        draw.line([(0, y), (width - 1, y)], fill=color)
+    fur = (226, 140, 60, 255)
+    dark = (176, 96, 34, 255)
+    line = (110, 56, 20, 255)
+    cream = (250, 232, 208, 255)
+    # La queue, puis le corps couche.
+    draw.ellipse([40, 54, 62, 66], fill=fur, outline=line)
+    draw.line([(52, 56), (54, 64)], fill=dark, width=2)
+    draw.ellipse([8, 44, 56, 70], fill=fur, outline=line)
+    for x in (16, 24, 40, 48):
+        draw.line([(x, 47), (x + 2, 55)], fill=dark, width=2)
+    draw.ellipse([14, 62, 26, 71], fill=cream, outline=line)
+    draw.ellipse([36, 62, 48, 71], fill=cream, outline=line)
+    # La tete, les oreilles.
+    draw.polygon([(17, 26), (20, 9), (29, 20)], fill=fur, outline=line)
+    draw.polygon([(47, 26), (44, 9), (35, 20)], fill=fur, outline=line)
+    draw.polygon([(20, 22), (21, 13), (26, 20)], fill=(240, 160, 160, 255))
+    draw.polygon([(44, 22), (43, 13), (38, 20)], fill=(240, 160, 160, 255))
+    draw.ellipse([15, 16, 49, 48], fill=fur, outline=line)
+    for x in (28, 32, 36):
+        draw.line([(x, 18), (x, 24)], fill=dark, width=2)
+    draw.ellipse([23, 33, 41, 46], fill=cream, outline=None)
+    # Les yeux mi-clos, le nez, la bouche, les moustaches.
+    for x0 in (21, 37):
+        draw.ellipse([x0, 27, x0 + 6, 32], fill=(120, 200, 90, 255), outline=line)
+        draw.line([(x0, 28), (x0 + 6, 28)], fill=line, width=2)
+        draw.line([(x0 + 3, 29), (x0 + 3, 31)], fill=(20, 20, 20, 255))
+    draw.polygon([(30, 35), (34, 35), (32, 38)], fill=(236, 120, 140, 255))
+    draw.line([(32, 38), (32, 40)], fill=line)
+    draw.line([(32, 40), (29, 42)], fill=line)
+    draw.line([(32, 40), (35, 42)], fill=line)
+    for y, dy in ((37, -2), (39, 0), (41, 2)):
+        draw.line([(22, y), (12, y + dy)], fill=(240, 240, 240, 255))
+        draw.line([(42, y), (52, y + dy)], fill=(240, 240, 240, 255))
+    return image
+
+
+def overlays():
+    """Les filtres et le chat des effets d'ecran, sans le jar de PalaMod."""
+    from PIL import Image
+
+    folder = os.path.join(ASSETS, "textures", "gui", "lucky", "overlay")
+    os.makedirs(folder, exist_ok=True)
+    for name, color in FILTERS.items():
+        Image.new("RGBA", (16, 16), color).save(os.path.join(folder, name + ".png"))
+    draw_cat().save(os.path.join(folder, "cat.png"))
+
+
 def stats(events):
     catalog = json.load(open(CATALOG, encoding="utf-8"))
     ids = {ident for _kind, ident, _label, _icon, _bad, _rarity in events}
@@ -296,10 +383,12 @@ def main():
             handle.write("\n")
     if jar and not check:
         textures(jar, events)
+        overlays()
     needed = ["textures/block/%s_lucky_block.png" % key for key in TYPES]
     needed += ["textures/gui/lucky/%s.png" % name for name in ("foreground", "unknown", "empty")]
     needed += ["textures/gui/lucky/events/%s.png" % icon for _k, _i, _l, icon, _b, _r in events]
     needed += ["textures/mob_effect/%s.png" % effect for effect in EFFECTS]
+    needed += ["textures/gui/lucky/overlay/%s.png" % name for name in list(FILTERS) + ["cat"]]
     for relative in needed:
         if not os.path.exists(os.path.join(ASSETS, relative)):
             stale.append("%s absente (relancer avec --jar)" % relative)

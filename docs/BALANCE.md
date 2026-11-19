@@ -1197,24 +1197,25 @@ métier, les effets.
 
 | Événement | Ce qu'il donne | Valeur | Paladium | Endium |
 |---|---|---|---|---|
-| Diamond Beacon | 83 blocs de diamant (747 diamants) et une balise | 747 000 $ | 0,48 % | 0,93 % |
-| Quelle dinguerie ! | 10 lucky blocks en endium, qui ne refont pas le coup | ~97 000 $ | 1,9 % | 3,7 % |
+| Diamond Beacon | 83 blocs de diamant (747 diamants) et une balise | 747 000 $ | 0,46 % | 0,90 % |
+| Quelle dinguerie ! | 10 lucky blocks en endium, qui ne refont pas le coup | ~94 000 $ | 1,9 % | 3,6 % |
 | Paladium Beacon | 83 blocs de paladium | 53 800 $ | 0,08 % | 0,15 % |
-| Trop chanceux pour ce monde | une pépite d'endium | 40 000 $ | 0,11 % | 0,21 % |
-| Titane, Amethyst Beacon | 83 blocs | 33 600 $, 22 400 $ | 0,12 %, 0,24 % | 0,23 %, 0,46 % |
+| Trop chanceux pour ce monde | une pépite d'endium | 40 000 $ | 0,10 % | 0,20 % |
+| Titane, Amethyst Beacon | 83 blocs | 33 600 $, 22 400 $ | 0,12 %, 0,23 % | 0,22 %, 0,45 % |
 | Mineral Shower | 15 × 3 diamants, lingots de paladium ou de titane | 16 800 $ | 1,9 % | 3,7 % |
-| Pala-Pillone | 8 blocs de paladium | 5 200 $ | 9,5 % | 18,5 % |
-| Consolation | 30 à 123 lingots de paladium | 5 500 $ | 0,95 % | 1,9 % |
+| Pala-Pillone | 8 blocs de paladium | 5 200 $ | 9,3 % | 18,0 % |
+| Consolation | 30 à 123 lingots de paladium | 5 500 $ | 0,93 % | 1,8 % |
 
-Ce que vaut un lucky block, en moyenne : **6 650 $** en paladium, **12 900 $** en endium,
-**2 750 $** en findium — chez lui, seuls l'Endium Block (3,24 M$, 0,07 %) et DoubleXP
-(15 min, environ 15 000 $, 2 %) pèsent. Le diamant fait plus de la moitié de la valeur du
+Ce que vaut un lucky block, en moyenne : **6 400 $** en paladium, **12 400 $** en endium,
+**1 700 $** en findium — chez lui, seuls l'Endium Block (3,24 M$, 0,04 %) et DoubleXP
+(15 min, environ 15 000 $, 1,2 %) pèsent. (Deuxième lot porté, `PALAMOD.md` § 38 : les malus
+de plus font baisser le findium.) Le diamant fait plus de la moitié de la valeur du
 paladium : c'est une loterie, pas un revenu.
 
-Le Lucky Pass donne un bloc et demi par jour, la moitié en paladium : **environ 8 000 $ par
-jour**, deux à trois minutes de revenu au milieu du jeu (§ 3). Une Diamond Beacon tous les **225 jours**
-de lancers, un Endium Block tous les 2 300. **Pas de boucle** : le pass est la seule source de
-lucky blocks ; Try Again en redonne trois (1,5 % au findium) et Quelle dinguerie ! dix, qui ne
+Le Lucky Pass donne un bloc et demi par jour, la moitié en paladium : **environ 7 100 $ par
+jour**, deux à trois minutes de revenu au milieu du jeu (§ 3). Une Diamond Beacon tous les **230 jours**
+de lancers, un Endium Block tous les 3 700. **Pas de boucle** : le pass est la seule source de
+lucky blocks ; Try Again en redonne trois (0,9 % au findium) et Quelle dinguerie ! dix, qui ne
 peuvent pas se relancer. Leviers : `LuckyPass.draw` (cases et sortes), `LuckyEvents`
 (`PALADIUM_GOOD`, `FINDIUM_GOOD`), la rareté de chaque événement.
 
