@@ -3954,9 +3954,9 @@ Les événements du mois parlent, comptent et construisent ; tout passe par une 
   ou en cours ; un seul défi à la fois par joueur.
 - **PNJ** : une créature du jeu nommée, immobile et invulnérable, qui part au bout de quelques
   minutes ; un clic droit l'appelle (`EntityPlayerNPC`).
-- **Salles à code** (les coffres du mois) : une salle de bedrock de 6 × 6 × 6 autour du joueur, les
-  chiffres du code sur les murs, une porte qui s'ouvre quand le code est tapé dans le chat, cinq
-  minutes puis tout disparaît.
+- **Salles à code** (les coffres du mois) : une salle de bedrock de 6 × 6 × 6 autour du joueur,
+  éclairée par une lumière invisible, les chiffres du code devant le mur du nord à hauteur des yeux,
+  une porte qui s'ouvre quand le code est tapé dans le chat, cinq minutes puis tout disparaît.
 - Créatures nommées et réglées (vie, dégâts, butin en plus), chutes adoucies, effets propres
   (`SeasonEffects`) : étoiles, plus d'oxygène, gravité de Jupiter, caméra retournée, écran piraté,
   la vie en rose, danse, « coin coin », cinéma muet, sol qui s'enflamme, cache-œil, scorbut, parler
