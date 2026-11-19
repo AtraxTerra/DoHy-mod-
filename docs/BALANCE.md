@@ -1159,6 +1159,35 @@ déjà dans la règle.
 Leviers : `tools/create_recipes.py` (rendements, minerais repris), `data/rates.csv` (zinc),
 `CRAFT_CAPS` dans `tools/gen_prices.py`.
 
+## 6 duovicies. Potions d'XP de métier — ce que vaut une heure doublée
+
+La référence est celle du marché noir : **10 000 XP de métier valent 40 000 $** (l'argent des
+niveaux qu'elles font franchir, et le temps de métier qu'elles remplacent), soit 4 $ l'XP. Au
+rythme de référence de la courbe (15 000 XP par heure, § 2), une heure de Double XP rapporte
+15 000 XP de plus, environ **60 000 $** ; une heure de Triple, 30 000 XP de plus, environ
+**120 000 $**.
+
+| Potion | Prix | XP en plus au rythme de référence | Ce qu'elle vaut | Prix / valeur |
+|---|---|---|---|---|
+| Double XP 1 h | 120 000 $ | 15 000 | 60 000 $ | 2,0 |
+| Double XP 4 h | 400 000 $ | 60 000 | 240 000 $ | 1,7 |
+| Triple XP 1 h | 300 000 $ | 30 000 | 120 000 $ | 2,5 |
+| Triple XP 4 h | 1 000 000 $ | 120 000 | 480 000 $ | 2,1 |
+
+La potion se paie donc environ **deux fois** ce qu'elle rapporte au joueur moyen : c'est un
+achat de progression (les déblocages arrivent plus tôt), pas une source d'argent. Elle devient
+rentable au-delà de 30 000 XP par heure — fonte de lingots de PalaMod, session de bonbons et de
+bouteilles : la boire avant une grosse session est le bon geste. **Pas de boucle** : l'argent des
+métiers est borné (28 M par métier maxé, primes comprises), et une potion ne fait que l'avancer.
+
+Les prix tombent au milieu du jeu (200 000 $ par heure, § 3) : la Double d'une heure coûte un
+peu plus d'une demi-heure de revenu, la Triple de quatre heures cinq heures. En fin de partie (1 M$ par heure et
+plus), elles deviennent un réflexe ; les quatre métiers maxés, elles ne servent plus à rien.
+
+**Donjons** : la Double de 30 min tombe dans la table des boss avec un poids de 3 (celui d'une
+bouteille de 1 000 XP), la Triple de 30 min dès le palier 50 avec un poids de 1. Leviers :
+`PalaXpPotions.SHOP` (prix et durées vendues), `DungeonRewards.bossPool` (poids).
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas
