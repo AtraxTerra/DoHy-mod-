@@ -102,31 +102,29 @@ public final class LuckyClientEvents {
         }
     }
 
-    /** L'inventaire etait-il ouvert au tic precedent ? */
-    private static boolean inventoryWasOpen;
-
     /**
-     * L'inventaire vient de s'ouvrir : « Spooky Spook » ({@code ClientProxy.spooky}) fait hurler,
-     * « Inventaire explosif » previent le serveur, qui fait tomber une dynamite.
+     * L'inventaire s'ouvre : « Spooky Spook » ({@code ClientProxy.spooky}) fait hurler,
+     * « Inventaire explosif » previent le serveur, qui fait tomber une dynamite. L'inventaire de
+     * survie est celui de Berskar ({@code KitInventoryScreen}), qui remplace celui du jeu.
      */
     @SubscribeEvent
-    public static void onInventory(ClientTickEvent.Post event) {
-        Minecraft minecraft = Minecraft.getInstance();
-        net.minecraft.client.gui.screens.Screen screen = minecraft.screen;
-        boolean open = screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen
+    public static void onInventory(net.neoforged.neoforge.client.event.ScreenEvent.Opening event) {
+        net.minecraft.client.gui.screens.Screen screen = event.getNewScreen();
+        boolean inventory = screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen
                 || screen instanceof net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
                 || screen instanceof fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
-        if (open && !inventoryWasOpen && minecraft.player != null) {
-            if (minecraft.player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SPOOKY)) {
-                minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
-                        net.minecraft.sounds.SoundEvents.GHAST_SCREAM, 0.8f, 1.0f));
-            }
-            if (minecraft.player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.EXPLOSIVE)) {
-                net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
-                        fr.atraxterra.dohy.palamod.lucky.LuckyPayloads.InventoryOpened.INSTANCE);
-            }
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (!inventory || player == null) {
+            return;
         }
-        inventoryWasOpen = open;
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SPOOKY)) {
+            Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance
+                    .forUI(net.minecraft.sounds.SoundEvents.GHAST_SCREAM, 0.8f, 1.0f));
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.EXPLOSIVE)) {
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
+                    fr.atraxterra.dohy.palamod.lucky.LuckyPayloads.InventoryOpened.INSTANCE);
+        }
     }
 
     /** « Cinema muet » : plus aucun son ({@code PLuckyBlock.CINEMA_MUET}). */
