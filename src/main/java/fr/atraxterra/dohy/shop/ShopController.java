@@ -98,30 +98,34 @@ public final class ShopController {
                     countOwned(player, item), CollectionApi.countOf(player, id),
                     collectable ? Math.max(0L, CollectionApi.nextThreshold(player, id, entry)) : 0L,
                     HourlyCourse.percent(id, entry),
-                    HourlyCourse.follows(entry) ? chart(player, id, entry, discount, now) : null));
+                    HourlyCourse.follows(entry) ? chart(player, id, entry, discount, now, true) : null));
         }
         return new ShopView(Economy.balance(player), offers, HourlyCourse.minutesLeft(), Commerce.Tab.BUY.subtitle(),
                 Commerce.tabs(player, Commerce.Tab.BUY), Commerce.elsewhere(player));
     }
 
     /**
-     * La courbe des {@link ShopTape#HOURS} dernieres heures : le prix de reference
-     * a chaque heure (prix de base fois le cours de l'heure, sans la pression de
-     * vente propre au joueur) et le volume echange sur tout le serveur.
+     * La courbe des {@link ShopTape#HOURS} dernieres heures et le volume echange sur
+     * tout le serveur. A l'achat ({@code buying}), le prix d'achat a chaque heure,
+     * remise comprise : son dernier point est le prix affiche. A la vente, le prix de
+     * reference (prix de base fois le cours de l'heure, sans la pression de vente
+     * propre au joueur).
      *
      * <p>Seules les heures passees et l'heure en cours : le cours est tire d'avance,
-     * montrer la suivante dirait quand vendre. Un objet a prix fixe a sa ligne plate,
-     * et ses volumes s'il s'en est echange.
+     * montrer la suivante dirait quand vendre. Un objet a prix fixe aurait sa ligne
+     * plate : le commerce ne la montre pas.
      */
-    static PriceChart chart(ServerPlayer player, Identifier id, PriceEntry entry, double discount, long now) {
+    static PriceChart chart(ServerPlayer player, Identifier id, PriceEntry entry, double discount, long now,
+                            boolean buying) {
         boolean course = HourlyCourse.follows(entry);
         List<Long> volumes = ShopTape.volumes(player.level().getServer(), id);
-        long base = entry.sellable() ? entry.basePrice()
-                : Math.max(1L, Math.round(entry.buyPrice() * (1.0d - discount)));
+        boolean buy = buying && entry.buyPrice() > 0 || !entry.sellable();
+        double unit = buy ? entry.buyPrice() * (1.0d - discount) : entry.basePrice();
+        long base = Math.max(1L, Math.round(unit));
         List<Long> values = new ArrayList<>(ShopTape.HOURS);
         for (int back = ShopTape.HOURS - 1; back >= 0; back--) {
             double factor = course ? HourlyCourse.factorAt(id, now - back) : 1.0d;
-            values.add(Math.max(1L, Math.round(base * factor)));
+            values.add(Math.max(1L, Math.round(unit * factor)));
         }
         return new PriceChart(values, volumes, base, HourlyCourse.periodMinutes(), PriceChart.DOLLARS);
     }
