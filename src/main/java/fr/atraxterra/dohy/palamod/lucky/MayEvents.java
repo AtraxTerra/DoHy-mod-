@@ -61,7 +61,7 @@ public final class MayEvents {
 
     static void register(LuckyEvents.Catalog c) {
         c.season(LuckyType.MAY, "test_force", "Test de force", "may/test_force", false, 100, MayEvents::strengthTest);
-        c.season(LuckyType.MAY, "mlg_pro", "MLG pro", "may/mlg_pro", true, 110, MayEvents::mlg);
+        c.season(LuckyType.MAY, "mlg_pro", "Pro du seau d'eau", "seau_de_pro", true, 110, MayEvents::mlg);
         c.season(LuckyType.MAY, "vieille_histoire", "Une vieille histoire", "may/vieille_histoire", false, 110,
                 MayEvents::oldStory);
         c.season(LuckyType.MAY, "champ_de_fleur", "Champ de fleur", "may/champ_de_fleur", false, 130,
@@ -89,7 +89,7 @@ public final class MayEvents {
         c.season(LuckyType.MAY, "aucune_avancee", "Aucune avancee", "may/aucune_avancee", true, 170,
                 (player, level, pos) -> player.addEffect(new MobEffectInstance(SeasonEffects.NO_FORWARD, 6000, 0)));
         c.season(LuckyType.MAY, "va_te_laver", "Va te laver !", "may/va_te_laver", true, 170, MayEvents::lavaBath);
-        c.season(LuckyType.MAY, "force_avec_toi", "Le chevalier sombre", "may/force_avec_toi", false, 180,
+        c.season(LuckyType.MAY, "force_avec_toi", "Le chevalier sombre", "chevalier_sombre", false, 180,
                 MayEvents::darkKnight);
         c.season(LuckyType.MAY, "vie_en_rose", "La vie en rose", "may/vie_en_rose", true, 180, MayEvents::pinkLife);
         c.season(LuckyType.MAY, "meilleur_ami", "Meilleur ami", "may/meilleur_ami", false, 200, MayEvents::bestFriend);
@@ -191,7 +191,7 @@ public final class MayEvents {
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.WATER_BUCKET));
         player.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 60, 20, false, false));
         SeasonKit.softFall(player, 600);
-        SeasonKit.say(player, "MLG pro ! Pose l'eau avant de toucher le sol.");
+        SeasonKit.say(player, "A toi de jouer, pro du seau d'eau ! Pose l'eau avant de toucher le sol.");
     }
 
     // -- Une vieille histoire -------------------------------------------------------------------

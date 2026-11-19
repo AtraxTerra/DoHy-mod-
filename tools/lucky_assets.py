@@ -1129,6 +1129,66 @@ DOG_ICON = [
 DOG_COLORS = {"T": (190, 130, 70, 255), "B": (110, 70, 40, 255), "K": (24, 20, 20, 255), "W": (236, 216, 190, 255),
               "N": (30, 26, 26, 255), "R": (230, 92, 112, 255)}
 
+# Trois images de PalaMod reprenaient un personnage, un logo ou un jeu connus : redessinees ici.
+KNIGHT_ICON = [
+    "......PP........",
+    ".....PPP........",
+    "....PPP.........",
+    "....KKKKKKK.....",
+    "...KHHHHHHHK....",
+    "..KHHHHHHHHHK...",
+    "..KHhHHHHHhHK...",
+    "..KHHHHHHHHHK...",
+    "..KKKKKKKKKKK...",
+    "..KHHHHKHHHHK...",
+    "..KHHHHKHHHHK...",
+    "..KHhHHKHHhHK...",
+    "..KHHHHKHHHHK...",
+    "...KHHHHHHHK....",
+    "....KKKKKKK.....",
+    "................",
+]
+KNIGHT_COLORS = {"K": (20, 20, 26, 255), "H": (70, 72, 84, 255), "h": (120, 124, 140, 255), "P": (110, 40, 150, 255)}
+BUCKET_ICON = [
+    "................",
+    "..L.............",
+    ".L..GGGGGGGG....",
+    "L..GWWWWWWWWG...",
+    "..GWBBBBBBBBWG..",
+    "L.GBBbBBBBbBBG..",
+    ".LGGBBBBBBBBGG..",
+    "..GGGGGGGGGGGG..",
+    "...GGGGGGGGGG...",
+    "...GgGGGGGGgG...",
+    "...GGGGGGGGGG...",
+    "....GGGGGGGG....",
+    "....GgGGGGgG....",
+    "....GGGGGGGG....",
+    ".....GGGGGG.....",
+    "................",
+]
+BUCKET_COLORS = {"G": (170, 170, 180, 255), "g": (120, 120, 130, 255), "W": (220, 220, 228, 255),
+                 "B": (50, 110, 230, 255), "b": (120, 170, 250, 255), "L": (240, 240, 245, 255)}
+JUMPER_ICON = [
+    "......KK........",
+    "......KK........",
+    ".....KKKK.......",
+    "....K.KK.K......",
+    "......KK........",
+    ".....K..K.......",
+    "....K....K......",
+    "................",
+    "...Y........Y...",
+    "..YYYYYYYYYYYY..",
+    "...S.S.S.S.S....",
+    "..S.S.S.S.S.S...",
+    "...S.S.S.S.S....",
+    "..GGGGGGGGGGGG..",
+    "..G..........G..",
+    "................",
+]
+JUMPER_COLORS = {"K": (30, 30, 40, 255), "Y": (240, 190, 40, 255), "S": (150, 150, 160, 255), "G": (90, 90, 100, 255)}
+
 # Les images dessinees ici plutot que prises dans le jar.
 DRAWN = {
     "chauves_souris": (BATS_ICON, BATS_COLORS),
@@ -1146,6 +1206,9 @@ DRAWN = {
     "bras_extensible": (ARM_ICON, ARM_COLORS),
     "bottes_supersoniques": (BOOTS_ICON, BOOTS_COLORS),
     "petit_chien": (DOG_ICON, DOG_COLORS),
+    "chevalier_sombre": (KNIGHT_ICON, KNIGHT_COLORS),
+    "seau_de_pro": (BUCKET_ICON, BUCKET_COLORS),
+    "sauteur_pro": (JUMPER_ICON, JUMPER_COLORS),
 }
 # Les textures d'objet dessinees ici.
 DRAWN_ITEMS = {

@@ -37,7 +37,7 @@ public final class NovemberEvents {
                     SeasonKit.fail(player, "Je te deconseille fortement d'ouvrir ton inventaire pendant quelque temps.");
                 });
         c.season(LuckyType.NOVEMBER, "november_professional_jumper", "Sauteur professionnel",
-                "november/professional_jumper", true, 200, (player, level, pos) -> {
+                "sauteur_pro", true, 200, (player, level, pos) -> {
                     player.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, 1200, 40));
                     SeasonKit.fail(player, "Attention a ta tete quand tu sautes.");
                 });
