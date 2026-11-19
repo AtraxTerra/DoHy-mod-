@@ -1462,11 +1462,13 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
 
 ### Les lucky blocks
 
-- **Trois blocs** : paladium (rouge), endium (bleu), findium (jaune). Clic droit : une machine à
+- **Quatorze blocs** : paladium (rouge), endium (bleu), findium (jaune), le noir et les dix du mois
+  (mars à Noël, plus bas). Clic droit : une machine à
   sous s'ouvre ; « OUVRIR » lance les trois rouleaux, et l'événement tombe quand l'écran se
   ferme (seul, cinq secondes après l'arrêt, ou par FERMER). Espace ou Entrée valent le bouton ; un
   clic sur la machine passe l'animation.
-- **163 événements** sur les 439 de PalaMod (quatre lots) : un bon sur deux environ au
+- **429 événements** sur les 439 de PalaMod (cinq lots ; les dix qui manquent mettaient en scène
+  le serveur Paladium et ses joueurs) : un bon sur deux environ au
   paladium (pyramides de minerais, gardes du corps, pluie de minerais, armure arc-en-ciel,
   dix lucky blocks en endium d'un coup…), que des bons à l'endium, et au findium des tours plus
   étranges (la tête qui disparaît, une armée de chiens, des enclumes qui rapportent 1 000 $). Les
@@ -1493,11 +1495,20 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
   paladium, deux pièges au slimepad : une nappe qui fait glisser, une tour qui lance dans un pic.
 - L'événement est tiré une fois pour toutes : cassé et reposé, le bloc garde le sien. Le compteur
   DECOUVERTS suit ceux qu'on a déjà vus.
+- **Les lucky blocks du mois** (cinquième lot, `PALAMOD.md` § 41), toute l'année : le noir et
+  ceux de mars (l'espace), Pâques, mai, juin (la musique), juillet (les pirates), août (l'été),
+  septembre (le travail), Halloween, novembre et Noël, 198 événements qui ne sortent que d'eux. Ils
+  parlent : un personnage pose une question, on clique sa réponse dans le chat (ou on l'écrit : test
+  d'anglais, énigme, codes des coffres du mois) ; des défis chronométrés (barre en haut de l'écran),
+  des PNJ à qui parler d'un clic droit, des salles de bedrock dont le code est écrit sur les murs.
+  Des objets aussi : couteau de boucher, ciseaux à citrouille, balai de sorcière (deux minutes de
+  vol), tarte infinie, hache du roi des forêts, pierre de Noël, cadeaux, pistolet à eau, bottes
+  supersoniques, missile météo, bras extensible (trois blocs de portée greffés sur un outil)…
 
 ### Le Lucky Pass
 
 - **Un lancer gratuit par jour**, remis à zéro avec les contrats : un, deux ou trois lucky blocks
-  (60 %, 30 %, 10 %), paladium ou findium le plus souvent, endium une fois sur seize.
+  (60 %, 30 %, 10 %) : paladium 40 %, findium 35 %, endium 5 %, le noir 3 %, chaque mois 1,7 %.
 - **Des lancers offerts** par la Roulette et la Boule de Crystal (lucky block en findium), en plus
   de celui du jour.
 - **Où** : le bouton LUCKY de l'inventaire, à côté de PASS ; la carte « Lucky Pass » du menu
@@ -1508,8 +1519,10 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
 ### Code
 
 - `palamod/lucky/` : les blocs, le catalogue et le tirage (`LuckyEvents`, `GoodEvents`,
-  `BadEvents`, `FindiumEvents`), l'ouverture (`LuckySession`) et le pass (`LuckyPass`) ; les objets
-  (`LuckyItems`, `CaveHelmetVision`) ; côté client `client/lucky/` (les deux écrans, les effets
+  `BadEvents`, `FindiumEvents`, `ClassicContent`…), l'ouverture (`LuckySession`) et le pass
+  (`LuckyPass`) ; les objets (`LuckyItems`, `LuckyGadgets`, `SeasonItems`, `CaveHelmetVision`) ; un
+  fichier par lucky block saisonnier (`MarchEvents` … `ChristmasEvents`, `BlackEvents`) et leur boîte
+  à outils (`SeasonKit`, `SeasonEffects`) ; côté client `client/lucky/` (les deux écrans, les effets
   cosmétiques).
 - `tools/lucky_assets.py` génère les fichiers et vérifie les événements en CI (`--check`).
 

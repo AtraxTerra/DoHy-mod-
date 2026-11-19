@@ -3973,7 +3973,7 @@
       "title": "Lucky blocks",
       "card": [
         "Paladium, endium, findium",
-        "Le Lucky Pass : 1 par jour"
+        "Noir et onze saisonniers"
       ],
       "summary": [
         "Un lucky block se pose puis s'ouvre d'un clic droit : trois rouleaux tournent et s'arretent sur un evenement, bon ou mauvais. Il se produit a la fermeture de l'ecran."
@@ -3998,7 +3998,7 @@
         {
           "title": "Le Lucky Pass",
           "text": [
-            "Un lancer gratuit par jour (bouton vert de l'inventaire, /luckypass) : 1 lucky block 6 fois sur 10, 2 trois fois sur 10, 3 une fois sur 10. Paladium la moitie du temps, findium presque autant, endium rarement.",
+            "Un lancer gratuit par jour (bouton vert de l'inventaire, /luckypass) : 1 lucky block 6 fois sur 10, 2 trois fois sur 10, 3 une fois sur 10. Paladium 40 fois sur 100, findium 35, endium 5, le noir 3 et chacun des dix lucky blocks du mois 1,7.",
             "Il rend aussi les bons evenements 1,25 fois plus probables, pour tous tes lucky blocks.",
             "La Roulette et la Boule de Crystal, deux evenements du lucky block en findium, offrent un lancer de plus, a faire quand tu veux."
           ]
@@ -4006,7 +4006,8 @@
         {
           "title": "Les evenements",
           "text": [
-            "163 des 439 evenements de Paladium sont la : gardes du corps, tour de paladium, pluie de minerais, pyramides de beacon, gant de l'infini, carte au tresor, golem charge de paladium, boite a golem toute montee... et cages de verre, cochon explosif, pluie de dynamites, enclumes, labyrinthe d'obsidienne ou terrain mine. Le compteur de l'ecran dit combien tu en as deja vu."
+            "429 des 439 evenements de Paladium sont la : gardes du corps, tour de paladium, pluie de minerais, pyramides de beacon, gant de l'infini, carte au tresor, golem charge de paladium, boite a golem toute montee... et cages de verre, cochon explosif, pluie de dynamites, enclumes, labyrinthe d'obsidienne ou terrain mine. Le compteur de l'ecran dit combien tu en as deja vu.",
+            "Les dix qui manquent mettaient en scene les admins et les joueurs du serveur Paladium, ou sa boutique."
           ]
         },
         {
@@ -4044,7 +4045,8 @@
       "see": [
         "pierres_legendaires",
         "elephant",
-        "metiers"
+        "metiers",
+        "lucky_saisonniers"
       ],
       "discover": {
         "items": [
@@ -4055,6 +4057,75 @@
         "views": [
           "dohy:lucky_block",
           "dohy:lucky_pass"
+        ]
+      }
+    },
+    {
+      "id": "lucky_saisonniers",
+      "category": "palamod",
+      "order": 18,
+      "icon": "palamod:halloween_lucky_block",
+      "title": "Lucky du mois",
+      "card": [
+        "Noir, Noel, Halloween...",
+        "Leurs propres evenements"
+      ],
+      "summary": [
+        "Onze lucky blocks de plus : le noir et ceux des mois (mars, Paques, mai, juin, juillet, aout, septembre, Halloween, novembre, Noel). Chacun a ses evenements, qui ne sortent que de lui, toute l'annee."
+      ],
+      "sections": [
+        {
+          "title": "Ou les trouver",
+          "text": [
+            "Le Lucky Pass en donne une fois sur cinq : le noir 3 fois sur 100, chaque mois 1,7. Certains evenements en rendent d'autres (le coffre du mois, les vacances, le cadeau multicolore)."
+          ]
+        },
+        {
+          "title": "Repondre",
+          "text": [
+            "Beaucoup d'evenements parlent : un personnage pose une question et les reponses s'affichent dans le chat. Clique sur la tienne.",
+            "Quelques-uns attendent ta reponse ecrite dans le chat : le test d'anglais, l'enigme du lucky block noir, le credit a la consommation, le code des coffres du mois.",
+            "Un PNJ (agent de voyage, marchand de sable, Pere Noel...) se parle d'un clic droit, et part au bout de quelques minutes."
+          ]
+        },
+        {
+          "title": "Les defis",
+          "text": [
+            "Une barre en haut de l'ecran compte le temps des defis : miner une pierre par seconde, tuer soixante zombies, survivre au vrai boss final, remplir l'entonnoir d'Halloween... Le lait ne les arrete pas."
+          ]
+        },
+        {
+          "title": "Les coffres du mois",
+          "text": [
+            "Une salle de bedrock s'ouvre autour de toi : les chiffres du code sont ecrits sur les murs, tape-le dans le chat. Cinq minutes, puis la salle disparait."
+          ]
+        },
+        {
+          "title": "Quelques objets",
+          "text": [
+            "- Septembre : couteau de boucher (25 degats de plus aux zombies), offre d'emploi, amulette demoniaque.",
+            "- Halloween : ciseaux a citrouille, gants tisseurs, balai de sorciere (2 minutes de vol), tarte infinie.",
+            "- Noel : hache du roi des forets (un sapin par buche), pierre de Noel (fait le vide autour de toi), cadeaux.",
+            "- Noir : pistolet a eau, bottes supersoniques, missile meteo (change le temps), bras extensible (3 blocs de portee de plus sur un outil), flasque d'alchimiste."
+          ]
+        }
+      ],
+      "see": [
+        "lucky_blocks"
+      ],
+      "discover": {
+        "items": [
+          "palamod:black_lucky_block",
+          "palamod:march_lucky_block",
+          "palamod:easter_lucky_block",
+          "palamod:may_lucky_block",
+          "palamod:june_lucky_block",
+          "palamod:july_lucky_block",
+          "palamod:august_lucky_block",
+          "palamod:september_lucky_block",
+          "palamod:halloween_lucky_block",
+          "palamod:november_lucky_block",
+          "palamod:christmas_lucky_block"
         ]
       }
     }

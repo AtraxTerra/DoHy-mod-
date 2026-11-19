@@ -3923,3 +3923,143 @@ La part des bons reste celle de PalaMod. Les nouveaux objets n'ont pas de prix d
 comptent pas dans l'espérance (`BALANCE.md` § 6 tervicies), qui reste ~5 800 $ au paladium et
 ~11 300 $ à l'endium, et descend à ~1 500 $ au findium ; Lucky Pass ~6 400 $ par jour. Une Diamond
 Beacon tous les 250 jours de lancers, un Endium Block tous les 6 000.
+
+## 41. Lucky blocks, cinquième lot : le noir et les lucky blocks du mois (2026-11-19)
+
+« Enchaîne, reviens quand tu as totalement tout fini » : **266 événements de plus, 429 sur 439**.
+Les 68 derniers événements classiques portables (paladium, endium, findium), puis les **onze lucky
+blocks saisonniers** de PalaMod — le noir et ceux de mars, Pâques, mai, juin, juillet, août,
+septembre, Halloween, novembre et Noël — avec leurs 198 événements. Commits `5a` à `5l` sur
+`feat/lucky-blocks-5`.
+
+### Les lucky blocks saisonniers
+
+- **Onze blocs** (`PalaLucky`, `LuckyType` : les types s'ajoutent à la fin, leur numéro est gardé
+  dans les données des joueurs), chacun sa couleur de PalaMod (`LuckyType.Util`), éclaircie à l'écran
+  quand elle est trop sombre (le violet de novembre, le bordeaux de mai).
+- **Ils sortent du Lucky Pass**, toute l'année, avec les poids de PalaMod sur 10 000 : paladium 4 000,
+  findium 3 500, endium 500, noir 300, chaque mois 170. Les 2 000 du saisonnier, jusqu'ici répartis
+  sur les trois types, vont à leurs blocs. PalaMod ne les vendait qu'en leur saison ; ici aucun
+  calendrier.
+- **Leurs événements ne sortent que d'eux** (`Catalog.season`), et la part des bons est celle de
+  PalaMod, comme pour les autres (`LuckyEvents.goodScale`).
+
+### La boîte à outils (`SeasonKit`)
+
+Les événements du mois parlent, comptent et construisent ; tout passe par une boîte commune :
+
+- **Dialogues** : un personnage pose une question, chaque réponse est une ligne cliquable du chat
+  (`/dohy_lucky_reponse`) ; une nouvelle question remplace l'ancienne.
+- **Défis** : une barre de boss compte le temps ; une étape tourne à chaque tic et dit gagné, perdu
+  ou en cours ; un seul défi à la fois par joueur.
+- **PNJ** : une créature du jeu nommée, immobile et invulnérable, qui part au bout de quelques
+  minutes ; un clic droit l'appelle (`EntityPlayerNPC`).
+- **Salles à code** (les coffres du mois) : une salle de bedrock de 6 × 6 × 6 autour du joueur, les
+  chiffres du code sur les murs, une porte qui s'ouvre quand le code est tapé dans le chat, cinq
+  minutes puis tout disparaît.
+- Créatures nommées et réglées (vie, dégâts, butin en plus), chutes adoucies, effets propres
+  (`SeasonEffects`) : étoiles, plus d'oxygène, gravité de Jupiter, caméra retournée, écran piraté,
+  la vie en rose, danse, « coin coin », cinéma muet, sol qui s'enflamme, cache-œil, scorbut, parler
+  pirate, coup de soleil, cuisson, foin plein l'écran, cours d'anglais, Hell Yeah, Spooky Spook,
+  inventaire explosif, grand froid, solitaire.
+
+### Mois par mois
+
+- **Mars** (15, l'espace) : pluie d'astéroïdes, rencontre du troisième type, petits hommes verts,
+  entraînement d'astronaute, trou noir, télescope et son quiz, casque d'étoiles, pile galactique,
+  fusée supersonique, potions de gravité, pierre de survie.
+- **Pâques** (20) : chasse aux œufs, poule aux œufs d'or, lapin-garou, poisson d'avril (24 heures),
+  œufs en chocolat, cuir arc-en-ciel, cadeaux piégés ou pas, Hackerman, ça fait flipper.
+- **Mai** (19) : la vie en rose, champ de fleurs, cage dorée, Ça va faire BOOM (le méga creeper),
+  repas de roi, test de force, va te laver (un bain de lave à prendre), fête du travail, le chevalier
+  sombre, le seau d'eau du pro.
+- **Juin** (18, la musique) : super danseur, battle de danse, cinéma muet, disque d'or, jukebox,
+  « coin coin », réveille-toi, enflamme le dance-floor, maladie du pouet-pouet.
+- **Juillet** (20, les pirates) : bouteille à la mer, carte au trésor enterré, roi des pirates,
+  bateau fantôme, parler pirate, scorbut et oranges, ordinateur à décrypter (le code du coffre),
+  marin d'eau douce, potion d'invulnérabilité.
+- **Août** (19, l'été) : vacances sur une île, château de sable et son majordome, volley, glaces,
+  crème solaire, coup de soleil, ventilateur, tapis de course, sable mouvant, soldes d'été.
+- **Septembre** (21, le travail) : astronaute — une capsule, le décollage, une minute sur la Lune —,
+  test d'anglais (une faute et le jeu passe en anglais cinq minutes), secret professionnel (trente
+  minutes sans un mot), le travail c'est la santé, le temps c'est de l'argent, la bonne paye, le
+  marchand de sable, la boucherie (60 zombies en une minute), le tribunal du diable, la carrière,
+  l'épreuve du forgeron, le vrai boss final.
+- **Halloween** (17, tous bons) : dix fantômes, six zombies à tête de citrouille, golem citrouille,
+  Hell Yeah (le sol s'embrase), Spooky Spook (ouvrir son inventaire fait hurler), l'entonnoir du
+  trick or treat (des lingots de paladium en cinq minutes, sinon un mauvais événement au hasard),
+  Jack-o-lantern, et les objets : ciseaux à citrouille (huit visages), gants tisseurs, balai de
+  sorcière, pierre d'Halloween, cape fantôme, tarte infinie, huit lucky blocks en paladium.
+- **Novembre** (15) : onze événements repris des autres mois sous leur nom de novembre
+  (`Catalog.action`), l'inventaire explosif, le sauteur professionnel (Saut XLI une minute), la
+  tempête de sable, le kit du petit alchimiste (64 blocs de chaudron, son cœur, neuf seaux d'eau
+  angélique).
+- **Noël** (18) : la vache de Noël et son lait chocolaté, le crédit à la consommation (quitte ou
+  double, 10 000 $ au plus), trop mangé, trop bu, grand froid (de la neige sous les pas), privé de
+  Noël (un bloc d'obsidienne renforcée autour du joueur), le traîneau, freeze (trente secondes figé),
+  l'armée de neige, le Père Noescroc (le cadeau choisi n'est qu'un bloc de terre qui en porte le
+  nom), le village de Noël (le God Villager, § 6 terdecies de `BALANCE.md`), et la hache du roi des
+  forêts, la pierre de Noël, les cadeaux, la carte de vœux, la maquette.
+- **Noir** (16) : sifflet de train, sherpa (des vaches en laisse), l'énigme (10 000 $ ou 5 000 $ de
+  moins), pistolet à eau, petit chien chien, bottes supersoniques, missile météo, solitaire,
+  cauchemardesque, bras extensible, dauphin tueur, flasque d'alchimiste, Pa-rtout-ladium (135
+  minerais de paladium autour du joueur), une offre en or, Easy Cash, Cosmetico.
+
+### Les objets
+
+| Objet | Chez PalaMod | Ici |
+|---|---|---|
+| Couteau de boucher | épée en paladium, +25 dégâts aux zombies | pareil |
+| Offre d'emploi, dossier de métier | XP de métier ; les métiers d'un joueur | 2 000 XP dans un métier au hasard ; ses propres métiers |
+| Amulette démoniaque | force et résistance au feu | une minute, cinq minutes de recharge |
+| Ciseaux à citrouille | huit visages de `BlockPumpkinCustom` | huit citrouilles sculptées, orientables |
+| Gants tisseurs (`ItemSpiderGlove`) | un arc qui lance une toile | une toile lancée, qui reste trente secondes |
+| Balai de sorcière | porté : deux minutes de vol, douze heures de recharge | tenu, clic droit |
+| Pierre d'Halloween | un fantôme qui aveugle les joueurs ; six usages, 30 minutes | touche aussi les monstres (et les ralentit) |
+| Tarte infinie (`BlockHalloweenTrade`) | 64 tartes à la citrouille par jour | par joueur |
+| Hache du roi des forêts | une bûche coupée donne un sapin de Noël | pareil |
+| Pierre de Noël | fait le vide dans un rayon de 4, une fois par jour | pareil, jamais dans un claim ennemi |
+| Cadeau, sac de cadeaux, cadeau multicolore | un objet au hasard ; 1 à 3 cadeaux ; trois lucky blocks | les objets qui existent ici |
+| Sifflet de train | un bloc à notes qui siffle | la flûte du jeu |
+| Pistolet à eau, bottes supersoniques | jet d'eau ; pas de géant et flammes | éteint et repousse ; Vitesse II et flammes |
+| Missile météo | change le temps | pareil, s'il a le ciel dégagé |
+| Bras extensible (`ItemGadgeto`) | recette avec un outil | tenu avec l'outil dans l'autre main : +3 blocs de portée |
+| Flasque d'alchimiste | une fiole de six gorgées | six gorgées, un bon effet au hasard |
+
+### Écarts
+
+- **Structures** : les schematics du serveur Event (salle de classe, cockpit et Lune, boucherie,
+  tribunal, agence de voyage, maison du Père Noescroc, village) ne sont pas dans le jar : les décors
+  utiles sont reconstruits autour du joueur et repartent ensuite, les autres sont omis.
+- **Réponses** : OUI/NON, ARGENT/TEMPS et les choix des PNJ deviennent des lignes à cliquer. Le test
+  d'anglais, l'énigme du noir, le crédit à la consommation et les codes se tapent toujours dans le
+  chat ; l'énigme ne se répond plus sur un panneau.
+- **Créatures** : les créatures de PalaMod (fantômes, golem citrouille, vache de Noël, armée de
+  neige, gardes du corps, PNJ) sont des créatures du jeu renommées et réglées.
+- **Noms et images** : « Spider-Steve » devient **Tisse ta toile**, « Lucky Luck » **Pistolet à
+  eau**, « Sonic Boots » **Bottes supersoniques**, « Gogo Gadgeto Grip » **Bras extensible**,
+  « Milkado » **Chocolat chaud**, « MLG pro » **Pro du seau d'eau** ; leurs images, celles du
+  chevalier sombre, du sauteur professionnel et du petit chien chien sont dessinées ici (elles
+  reprenaient un personnage, un logo ou un jeu connus). Le disque d'Halloween est un disque du jeu.
+- **Seul sur le serveur** : la prime d'« Enfin une prime » envoie aussi trois chasseurs de primes ;
+  « Solitaire » cache les autres joueurs et ne change rien quand on est seul.
+- **Argent de la boutique** : les 25 PB d'Easy Cash deviennent 25 000 $, le cosmétique de Cosmetico
+  un chapeau de gala.
+
+### Pas portés
+
+Dix événements classiques, qui mettaient en scène le serveur Paladium et ses joueurs : la statue des
+admins, le grade Endium, les deux disques et la boutique de Fuze, « To doum doum », « Adieu
+faction », le spam de /tpahere, et les deux skins de golem (amélioration et golem crasseux).
+
+### Équilibre
+
+`tools/lucky_assets.py --stats` après ce lot : tous les événements des saisonniers sont portés ; au
+paladium 107 / 111, à l'endium 53 / 56, au findium 124 / 130. La part des bons reste celle de
+PalaMod (de 37 % en novembre à 100 % à Halloween ; 90 % au noir).
+
+Les nouveaux événements donnent surtout des objets, des effets et des épreuves, sans prix de
+revente : l'espérance en argent (`BALANCE.md` § 6 tervicies) baisse — ~3 600 $ au paladium,
+~6 900 $ à l'endium, ~230 $ au findium, quelques centaines au noir et à Halloween, presque rien aux
+autres mois — et le Lucky Pass vaut **~2 800 $ par jour** au lieu de ~6 400. Une Diamond Beacon
+tous les 475 jours de lancers. Le levier est `LuckyType` (les poids) si le pass doit rapporter plus.
