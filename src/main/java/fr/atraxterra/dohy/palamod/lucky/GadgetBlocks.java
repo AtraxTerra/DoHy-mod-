@@ -41,7 +41,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.redstone.Orientation;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -347,7 +347,7 @@ final class GadgetBlocks {
         @Override
         protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
-            if (!stack.has(DataComponents.DYED_COLOR) && !stack.is(net.minecraft.tags.ItemTags.DYEABLE)) {
+            if (!stack.has(DataComponents.DYED_COLOR) && !stack.is(net.minecraft.tags.ItemTags.CAULDRON_CAN_REMOVE_DYE)) {
                 return InteractionResult.TRY_WITH_EMPTY_HAND;
             }
             if (level instanceof ServerLevel server) {
@@ -362,8 +362,9 @@ final class GadgetBlocks {
                     }
                 }
                 stack.set(DataComponents.DYED_COLOR, new DyedItemColor(colors[index].getTextureDiffuseColor()));
-                server.sendParticles(ParticleTypes.EFFECT, pos.getX() + 0.5d, pos.getY() + 1.1d, pos.getZ() + 0.5d, 8,
-                        0.3d, 0.1d, 0.3d, 0.0d);
+                server.sendParticles(new net.minecraft.core.particles.DustParticleOptions(
+                        colors[index].getTextureDiffuseColor(), 1.2f), pos.getX() + 0.5d, pos.getY() + 1.1d,
+                        pos.getZ() + 0.5d, 8, 0.3d, 0.1d, 0.3d, 0.0d);
                 server.playSound(null, pos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0f, 1.0f);
             }
             return InteractionResult.SUCCESS;

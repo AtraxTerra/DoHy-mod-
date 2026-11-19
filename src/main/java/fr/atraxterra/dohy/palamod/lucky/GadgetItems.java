@@ -16,7 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -174,7 +173,8 @@ final class GadgetItems {
                 held.set(PalaHunter.CAPTURED.get(), new CapturedEntity(BuiltInRegistries.ENTITY_TYPE.getKey(
                         target.getType()), data, target.getName()));
                 target.discard();
-                level.playSound(null, player.blockPosition(), SoundEvents.LEASH_KNOT_PLACE, SoundSource.PLAYERS, 1.0f, 1.0f);
+                LuckyWorld.sound(level, player.getX(), player.getY(), player.getZ(), "item.lead.tied",
+                        SoundSource.PLAYERS, 1.0f, 1.0f);
             }
             return InteractionResult.SUCCESS;
         }
@@ -246,7 +246,7 @@ final class GadgetItems {
                     for (int y = server.getMinY(); y < server.getMaxY(); y++) {
                         BlockState state = server.getBlockState(pos.set(x, y, z));
                         Identifier id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-                        if (id.getPath().endsWith("_ore") || state.is(BlockTags.COAL_ORES)) {
+                        if (id.getPath().endsWith("_ore")) {
                             ores.merge(state.getBlock().getName().getString(), 1, Integer::sum);
                         }
                     }

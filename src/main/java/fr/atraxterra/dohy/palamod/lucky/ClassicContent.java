@@ -340,9 +340,7 @@ final class ClassicContent {
         dove.setItemSlot(EquipmentSlot.MAINHAND, sword);
         dove.setDropChance(EquipmentSlot.MAINHAND, 2.0f);
         dove.setCustomName(Component.literal("Colombe"));
-        if (dove instanceof net.minecraft.world.entity.animal.parrot.Parrot bird) {
-            bird.setVariant(net.minecraft.world.entity.animal.parrot.Parrot.Variant.GRAY);
-        }
+        dove.setComponent(DataComponents.PARROT_VARIANT, net.minecraft.world.entity.animal.parrot.Parrot.Variant.GRAY);
     }
 
     /** Fruit exotique : un bananier pousse sur le lucky block. */
