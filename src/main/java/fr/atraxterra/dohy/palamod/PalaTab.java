@@ -121,6 +121,7 @@ public final class PalaTab {
                         // Les lucky blocks.
                         fr.atraxterra.dohy.palamod.lucky.PalaLucky.ORDERED.forEach(item -> output.accept(item.get()));
                         fr.atraxterra.dohy.palamod.lucky.LuckyItems.ORDERED.forEach(item -> output.accept(item.get()));
+                        fr.atraxterra.dohy.palamod.lucky.LuckyGadgets.ordered().forEach(item -> output.accept(item.get()));
                     })
                     .build());
 

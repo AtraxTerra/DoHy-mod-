@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "palamod:block/cat_detector"
+    },
+    "powered=true": {
+      "model": "palamod:block/cat_detector_on"
+    }
+  }
+}

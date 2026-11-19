@@ -167,6 +167,44 @@ public final class PalaLucky {
     public static final DeferredHolder<MobEffect, LuckyEffect> PUMPKIN_BLUR =
             EFFECTS.register("pumpkin_blur", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xE38A1D));
 
+    // -- Le cinquieme lot : les effets restes de cote au deuxieme (PALAMOD.md section 41) --
+
+    /** Mission commando ({@code COMMANDO}) : la camera un bloc plus bas, ici le joueur rapetisse. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> COMMANDO = EFFECTS.register("commando",
+            () -> scaled(MobEffectCategory.HARMFUL, 0x5A6B3A, "commando", -0.45d));
+    /** Cow Player ({@code COW_PLAYER}) : une vache a la place du joueur ({@link LuckyEffectsExtra}). */
+    public static final DeferredHolder<MobEffect, LuckyEffect> COW_PLAYER =
+            EFFECTS.register("cow_player", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x4D3A2A));
+    /** 56K ({@code LAG}) : le joueur revient en arriere, comme sur une connexion qui rame. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> LAG =
+            EFFECTS.register("lag", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xFFD200));
+    /** Aimante ({@code MAGNETIC}) : ce qui est a cinq blocs glisse vers le joueur. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> MAGNETIC =
+            EFFECTS.register("magnetic", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xB0B0B0));
+    /** 404 Not found ({@code NO_TEXTURE}) : la texture manquante sur l'ecran. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> NO_TEXTURE =
+            EFFECTS.register("no_texture", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0xF800F8));
+    /** T'as une mauvaise mine ({@code BAD_FACE}) : le joueur verdit. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> BAD_FACE =
+            EFFECTS.register("bad_face", () -> new LuckyEffect(MobEffectCategory.NEUTRAL, 0x6BBF59));
+    /** T'as mange quoi ? ({@code FART}) : des pas bruyants. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> FART =
+            EFFECTS.register("fart", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x8A9A3B));
+    /** Ton heure a sonne ({@code TOMBE}) : a la mort, le contenu de l'inventaire va dans une tombe. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> TOMBE =
+            EFFECTS.register("tombe", () -> new LuckyEffect(MobEffectCategory.NEUTRAL, 0x6A6A6A));
+    /** Le soda ({@code REMOVE_HEART}) : un coeur de moins tant qu'il dure. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> SUGAR = EFFECTS.register("sugar", () -> {
+        LuckyEffect effect = new LuckyEffect(MobEffectCategory.HARMFUL, 0xC0392B);
+        effect.addAttributeModifier(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH,
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "lucky_sugar"), -2.0d,
+                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE);
+        return effect;
+    });
+    /** Le champignon geant ({@code MARIO_MUSHROOM}) : le joueur dessine deux fois plus grand. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> GIANT = EFFECTS.register("giant",
+            () -> scaled(MobEffectCategory.BENEFICIAL, 0xE52521, "giant", 1.0d));
+
     /** Les evenements vus et le Lucky Pass. Gardes a la mort. */
     public static final Supplier<AttachmentType<LuckyData>> DATA = ATTACHMENTS.register("lucky",
             () -> AttachmentType.builder(LuckyData::new)
@@ -196,6 +234,15 @@ public final class PalaLucky {
             PALADIUM_LUCKY_BLOCK_ITEM, ENDIUM_LUCKY_BLOCK_ITEM, FINDIUM_LUCKY_BLOCK_ITEM);
 
     private PalaLucky() {
+    }
+
+    /** Un effet qui change la taille du joueur tant qu'il dure ({@code Attributes.SCALE}). */
+    private static LuckyEffect scaled(MobEffectCategory category, int color, String name, double amount) {
+        LuckyEffect effect = new LuckyEffect(category, color);
+        effect.addAttributeModifier(net.minecraft.world.entity.ai.attributes.Attributes.SCALE,
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "lucky_" + name), amount,
+                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        return effect;
     }
 
     /** Roche, durete 1, resistance 1000 : une explosion ne l'ouvre pas. */
@@ -231,5 +278,6 @@ public final class PalaLucky {
         ITEMS.register(modBus);
         ATTACHMENTS.register(modBus);
         LuckyItems.register(modBus);
+        LuckyGadgets.register(modBus);
     }
 }

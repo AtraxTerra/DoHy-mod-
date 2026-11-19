@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "triggered=false": {
+      "model": "palamod:block/fake_command_block"
+    },
+    "triggered=true": {
+      "model": "palamod:block/fake_command_block"
+    }
+  }
+}

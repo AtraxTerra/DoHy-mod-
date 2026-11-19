@@ -56,6 +56,8 @@ public final class LuckyClientEvents {
     /** Ce que Fantome cache ({@code isHidden} sur le corps, les bras et les jambes). */
     private static final List<String> GHOST_PARTS = List.of("body", "left_arm", "right_arm", "left_leg",
             "right_leg");
+    private static final List<String> COW_HIDDEN = List.of("head", "body", "left_arm", "right_arm", "left_leg",
+            "right_leg");
     /** Le vecteur de marche de {@link ClientInput}, protege : retrouve une fois, par son type. */
     private static Field moveVector;
 
@@ -154,6 +156,12 @@ public final class LuckyClientEvents {
         event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
             @Override
             public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState state) {
+                // Cow Player : le joueur disparait derriere la vache qui le suit (LuckyEffectsExtra).
+                if (avatar.hasEffect(PalaLucky.COW_PLAYER)) {
+                    for (String part : COW_HIDDEN) {
+                        state.overrideModelPartVisibility(part, false);
+                    }
+                }
                 if (avatar.hasEffect(PalaLucky.HIDE_HEAD)) {
                     state.overrideModelPartVisibility("head", false);
                 }

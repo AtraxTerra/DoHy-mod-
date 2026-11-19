@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,powered=false": {
+      "model": "palamod:block/bruteforcer"
+    },
+    "facing=north,powered=true": {
+      "model": "palamod:block/bruteforcer"
+    },
+    "facing=east,powered=false": {
+      "model": "palamod:block/bruteforcer",
+      "y": 90
+    },
+    "facing=east,powered=true": {
+      "model": "palamod:block/bruteforcer",
+      "y": 90
+    },
+    "facing=south,powered=false": {
+      "model": "palamod:block/bruteforcer",
+      "y": 180
+    },
+    "facing=south,powered=true": {
+      "model": "palamod:block/bruteforcer",
+      "y": 180
+    },
+    "facing=west,powered=false": {
+      "model": "palamod:block/bruteforcer",
+      "y": 270
+    },
+    "facing=west,powered=true": {
+      "model": "palamod:block/bruteforcer",
+      "y": 270
+    }
+  }
+}

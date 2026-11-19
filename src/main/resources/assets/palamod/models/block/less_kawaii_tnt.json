@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "side": "palamod:block/lucky/less_kawaii_tnt_side",
+    "top": "palamod:block/lucky/less_kawaii_tnt_top",
+    "bottom": "palamod:block/lucky/less_kawaii_tnt_bottom"
+  }
+}

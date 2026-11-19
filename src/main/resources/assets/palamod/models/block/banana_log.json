@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "palamod:block/lucky/banana_wood",
+    "end": "palamod:block/lucky/banana_planks"
+  }
+}

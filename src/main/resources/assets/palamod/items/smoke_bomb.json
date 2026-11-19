@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "palamod:item/smoke_bomb",
+    "tints": [
+      {
+        "type": "minecraft:dye",
+        "default": -3618616
+      }
+    ]
+  }
+}

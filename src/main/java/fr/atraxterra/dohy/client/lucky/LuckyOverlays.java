@@ -35,6 +35,8 @@ public final class LuckyOverlays {
     private static final Identifier GREEN = texture("green");
     private static final Identifier FLOU = texture("flou");
     private static final Identifier CAT = texture("cat");
+    /** 404 Not found : la texture manquante, a moitie transparente, sur tout l'ecran. */
+    private static final Identifier MISSING = texture("missing");
     /** Les filtres sont des aplats : quelques pixels suffisent, etires sur tout l'ecran. */
     private static final int FILTER_SIZE = 16;
     /** Le chat dessine, et le rapport de l'image de PalaMod (1030 / 887). */
@@ -74,6 +76,15 @@ public final class LuckyOverlays {
         }
         if (player.hasEffect(PalaLucky.FLOU)) {
             stretch(graphics, FLOU, width, height);
+        }
+        if (player.hasEffect(PalaLucky.NO_TEXTURE)) {
+            int tile = 32;
+            for (int x = 0; x < width; x += tile) {
+                for (int y = 0; y < height; y += tile) {
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, MISSING, x, y, 0.0f, 0.0f, tile, tile, FILTER_SIZE,
+                            FILTER_SIZE, FILTER_SIZE, FILTER_SIZE);
+                }
+            }
         }
         if (player.hasEffect(PalaLucky.CAT)) {
             int catWidth = width / 2;

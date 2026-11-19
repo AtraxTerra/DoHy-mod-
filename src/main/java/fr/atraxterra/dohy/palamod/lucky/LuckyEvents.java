@@ -52,6 +52,7 @@ public final class LuckyEvents {
             ContentEvents.register(catalog);
             FindiumContent.register(catalog);
             LuckyItemEvents.register(catalog);
+            ClassicContent.register(catalog);
             events = Collections.unmodifiableMap(catalog.map);
         }
         return events;

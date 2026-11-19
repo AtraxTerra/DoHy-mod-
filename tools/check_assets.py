@@ -37,10 +37,14 @@ EXPECTED_PNG = (16, 16)
 # NeoForge. Un nom ajoute ici doit l'etre aussi dans BLOCK_FACTORIES s'il
 # enregistre un bloc.
 ITEM_FACTORIES = ("registerSimpleItem", "registerItem", "simple", "seed", "planter",
-                  "sword", "pickaxe", "axe", "shovel", "hoe", "armor", "stick", "ring", "amulet")
+                  "sword", "pickaxe", "axe", "shovel", "hoe", "armor", "stick", "ring", "amulet",
+                  # Les gadgets des lucky blocks (LuckyGadgets).
+                  "gadgetItem")
 BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "crop", "soil",
                    # Les objets de defense (chapitre 22) : obsidiennes piegees, a spike, enclumes.
-                   "effect", "spikeObsidian", "anvil")
+                   "effect", "spikeObsidian", "anvil",
+                   # Les gadgets des lucky blocks (LuckyGadgets) : chacun a son objet.
+                   "gadgetBlock")
 
 # Les blocs sans item : on les obtient en semant, comme le ble vanilla. Ils
 # n'ont donc ni definition d'item ni modele d'item, et c'est normal.
@@ -62,7 +66,9 @@ ITEMLESS_BLOCKS = ("void_stone", "angelic_water",
                    # Les faux blocs de paladium de « Ouaiche t'es relou » et de
                    # « Ouaiche t'es tres relou » : ils ne naissent que d'un lucky
                    # block et rendent un vrai bloc a la fin.
-                   "paladium_fake_block", "green_paladium_fake_block")
+                   "paladium_fake_block", "green_paladium_fake_block",
+                   # La tombe de « Ton heure a sonne » : elle ne nait que d'une mort.
+                   "tomb")
 
 errors = []
 
