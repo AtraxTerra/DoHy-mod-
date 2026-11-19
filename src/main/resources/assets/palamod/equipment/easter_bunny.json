@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "palamod:easter_bunny"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "palamod:easter_bunny"
+      }
+    ]
+  }
+}

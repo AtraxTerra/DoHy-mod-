@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "palamod:block/lucky/bruteforcer_front",
+    "side": "palamod:block/lucky/bruteforcer_side",
+    "top": "palamod:block/lucky/bruteforcer_side"
+  }
+}

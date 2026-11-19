@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "palamod:block/lucky/megasafe_front",
+    "side": "palamod:block/lucky/megasafe_side",
+    "top": "palamod:block/lucky/megasafe_side"
+  }
+}

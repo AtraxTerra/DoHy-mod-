@@ -35,6 +35,20 @@ public final class LuckyOverlays {
     private static final Identifier GREEN = texture("green");
     private static final Identifier FLOU = texture("flou");
     private static final Identifier CAT = texture("cat");
+    /** 404 Not found : la texture manquante, a moitie transparente, sur tout l'ecran. */
+    private static final Identifier MISSING = texture("missing");
+    /** Les etoiles de « La tete dans les etoiles » ({@code StarRenderListener}). */
+    private static final Identifier STARS = texture("stars");
+    /** Les chiffres verts de « Hackerman » ({@code PLuckyBlock.H4CK3D}). */
+    private static final Identifier MATRIX = texture("matrix");
+    /** Le voile de « La vie en rose » ({@code PotionPink}). */
+    private static final Identifier PINK = texture("pink");
+    /** Le voile de « Cinema muet » : un vieux film. */
+    private static final Identifier SEPIA = texture("sepia");
+    /** Le cache-oeil : la moitie gauche de l'ecran dans le noir. */
+    private static final Identifier EYE_PATCH = texture("eye_patch");
+    /** La paille de « Faut pas en faire tout un foin ». */
+    private static final Identifier HAY = texture("hay");
     /** Les filtres sont des aplats : quelques pixels suffisent, etires sur tout l'ecran. */
     private static final int FILTER_SIZE = 16;
     /** Le chat dessine, et le rapport de l'image de PalaMod (1030 / 887). */
@@ -74,6 +88,41 @@ public final class LuckyOverlays {
         }
         if (player.hasEffect(PalaLucky.FLOU)) {
             stretch(graphics, FLOU, width, height);
+        }
+        if (player.hasEffect(PalaLucky.NO_TEXTURE)) {
+            int tile = 32;
+            for (int x = 0; x < width; x += tile) {
+                for (int y = 0; y < height; y += tile) {
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, MISSING, x, y, 0.0f, 0.0f, tile, tile, FILTER_SIZE,
+                            FILTER_SIZE, FILTER_SIZE, FILTER_SIZE);
+                }
+            }
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.STAR)) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, STARS, 0, 0, 0.0f, 0.0f, width, height, 512, 256, 512, 256);
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.MESS)) {
+            stretch(graphics, HAY, width, height);
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.EYE_PATCH)) {
+            stretch(graphics, EYE_PATCH, width, height);
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SILENT_MOVIE)) {
+            stretch(graphics, SEPIA, width, height);
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.PINK)) {
+            stretch(graphics, PINK, width, height);
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.HACKED)) {
+            // Les colonnes defilent : la texture se decale d'un pixel par tic.
+            float scroll = (player.tickCount % 64) * 2.0f;
+            int tile = 128;
+            for (int x = 0; x < width; x += tile) {
+                for (int y = -tile; y < height; y += tile) {
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, MATRIX, x, y + (int) scroll, 0.0f, 0.0f, tile, tile,
+                            64, 64, 64, 64);
+                }
+            }
         }
         if (player.hasEffect(PalaLucky.CAT)) {
             int catWidth = width / 2;

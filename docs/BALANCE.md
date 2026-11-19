@@ -1197,36 +1197,47 @@ l'XP de métier, les effets, les blocs posés (obsidienne durcie, boîte à gole
 
 | Événement | Ce qu'il donne | Valeur | Paladium | Endium |
 |---|---|---|---|---|
-| Diamond Beacon | 83 blocs de diamant (747 diamants) et une balise | 747 000 $ | 0,42 % | 0,82 % |
-| Quelle dinguerie ! | 10 lucky blocks en endium, qui ne refont pas le coup | ~87 000 $ | 1,7 % | 3,3 % |
-| Paladium Beacon | 83 blocs de paladium | 53 800 $ | 0,07 % | 0,14 % |
-| Trop chanceux pour ce monde | une pépite d'endium | 40 000 $ | 0,09 % | 0,18 % |
-| Titane, Amethyst Beacon | 83 blocs | 33 600 $, 22 400 $ | 0,11 %, 0,21 % | 0,21 %, 0,41 % |
-| Mineral Shower | 15 × 3 diamants, lingots de paladium ou de titane | 16 800 $ | 1,7 % | 3,3 % |
-| Expala-osion | 128 lingots de paladium | 9 200 $ | 0,57 % | 1,1 % |
-| Carte au trésor | un coffre en paladium de 108 lingots, à 20 000 blocs au plus | 7 800 $ | 0,42 % | 0,82 % |
-| Pala-Pillone | 8 blocs de paladium | 5 200 $ | 8,5 % | 16,5 % |
-| Consolation | 30 à 123 lingots de paladium | 5 500 $ | 0,85 % | 1,6 % |
+| Diamond Beacon | 83 blocs de diamant (747 diamants) et une balise | 747 000 $ | 0,28 % | 0,55 % |
+| Quelle dinguerie ! | 10 lucky blocks en endium, qui ne refont pas le coup | ~58 000 $ | 1,1 % | 2,2 % |
+| Paladium Beacon | 83 blocs de paladium | 53 800 $ | 0,05 % | 0,09 % |
+| Trop chanceux pour ce monde | une pépite d'endium | 40 000 $ | 0,06 % | 0,12 % |
+| Titane, Amethyst Beacon | 83 blocs | 33 600 $, 22 400 $ | 0,07 %, 0,14 % | 0,14 %, 0,27 % |
+| Mineral Shower | 15 × 3 diamants, lingots de paladium ou de titane | 16 800 $ | 1,1 % | 2,2 % |
+| Expala-osion | 128 lingots de paladium | 9 200 $ | 0,38 % | 0,73 % |
+| Carte au trésor | un coffre en paladium de 108 lingots, à 20 000 blocs au plus | 7 800 $ | 0,28 % | 0,55 % |
+| Pala-Pillone | 8 blocs de paladium | 5 200 $ | 5,7 % | 11,0 % |
+| Consolation | 30 à 123 lingots de paladium | 5 500 $ | 0,56 % | 1,1 % |
 
-Ce que vaut un lucky block, en moyenne : **5 800 $** en paladium, **11 300 $** en endium,
-**1 500 $** en findium. Au findium pèsent l'Endium Block (3,24 M$, 0,025 %), DoubleXP (15 min,
-environ 15 000 $, 0,8 %), Coucou (un golem et ses 64 blocs de paladium, 41 500 $, 0,8 %), Je
-t'aime tôt (64 lingots dans un totem, 4 600 $, 2,3 %) et les lancers offerts de la Roulette et de
-la Boule de Crystal (un lancer du pass, environ 6 400 $, 1,4 % à eux deux). (Troisième lot,
-`PALAMOD.md` § 39 : les nouveaux bons, modestes, diluent les gros lots du paladium et de l'endium,
-dont la part des bons ne bouge pas. Quatrième lot, § 40 : les objets des lucky blocks — armures,
-pomme de vitesse, brique de lait, épée Couac — n'ont pas de prix de revente et ne comptent pour
-rien ici ; ils diluent encore le findium. Les deux pièges au slimepad du paladium sont des malus
-sans argent : le repesage des bons les compense.) Le diamant fait plus de la moitié de la valeur
-du paladium : c'est une loterie, pas un revenu.
+Ce que vaut un lucky block, en moyenne : **3 600 $** en paladium, **6 900 $** en endium,
+**230 $** en findium (cinquième lot ; 5 800 $, 11 300 $ et 1 500 $ avant lui). Au findium pèsent
+l'Endium Block (3,24 M$, 0,004 %), DoubleXP (15 min, environ 15 000 $, 0,13 %), Coucou (un golem
+et ses 64 blocs de paladium, 41 500 $, 0,13 %), Je t'aime tôt (64 lingots dans un totem, 4 600 $,
+0,37 %) et les lancers offerts de la Roulette et de la Boule de Crystal (un lancer du pass, environ
+2 800 $, 0,23 % à eux deux). (Troisième lot, `PALAMOD.md` § 39 : les nouveaux bons, modestes,
+diluent les gros lots du paladium et de l'endium, dont la part des bons ne bouge pas. Quatrième
+lot, § 40 : les objets des lucky blocks — armures, pomme de vitesse, brique de lait, épée Couac —
+n'ont pas de prix de revente et ne comptent pour rien ici ; ils diluent encore le findium. Les deux
+pièges au slimepad du paladium sont des malus sans argent : le repesage des bons les compense.) Le
+diamant fait plus de la moitié de la valeur du paladium : c'est une loterie, pas un revenu.
 
-Le Lucky Pass donne un bloc et demi par jour, la moitié en paladium : **environ 6 400 $ par
-jour**, deux à trois minutes de revenu au milieu du jeu (§ 3). Une Diamond Beacon tous les **250 jours**
-de lancers, un Endium Block tous les 6 000. **Pas de vraie boucle** : le pass est la seule source de
-lucky blocks ; Try Again en redonne trois (0,7 % au findium), Quelle dinguerie ! dix, qui ne
-peuvent pas se relancer, et la Roulette ou la Boule de Crystal un lancer (un lancer sur cent à
-peine en ramène un autre). Leviers : `LuckyPass.draw` (cases et sortes), `LuckyEvents`
-(`PALADIUM_GOOD`, `FINDIUM_GOOD`), la rareté de chaque événement.
+**Cinquième lot** (`PALAMOD.md` § 41) : 68 événements classiques de plus et les onze lucky blocks
+saisonniers. Presque tous donnent des objets, des effets ou des épreuves sans prix de revente : ils
+diluent les gros lots (la part des bons ne bouge pas), et le cinquième des lancers qui va aux
+saisonniers vaut peu d'argent — ~560 $ au noir (Easy Cash, 25 000 $ à 0,4 % ; l'énigme ;
+Pa-rtout-ladium), ~530 $ à Halloween (huit lucky blocks en paladium à 1,1 %), presque rien aux
+autres mois.
+
+Le Lucky Pass donne un bloc et demi par jour, quatre sur dix en paladium, un sur cinq saisonnier :
+**environ 2 800 $ par jour** (~6 400 $ avant le cinquième lot), une à deux minutes de revenu au
+milieu du jeu (§ 3) ; ses lancers sont devenus une loterie d'objets plus qu'un revenu. Une Diamond
+Beacon tous les **475 jours** de lancers ; l'Endium Block n'est plus qu'une curiosité.
+
+**Pas de vraie boucle** : le pass est la seule source de lucky blocks ; Try Again en redonne trois
+(0,09 % au findium), Quelle dinguerie ! dix, qui ne peuvent pas se relancer, la Roulette ou la
+Boule de Crystal un lancer (un lancer sur quatre cents à peine en ramène un autre), le cadeau
+multicolore de Noël trois, Case départ huit. Leviers : `LuckyPass.draw` (cases et sortes),
+`LuckyType` (poids), `LuckyEvents` (`PALADIUM_GOOD`, `FINDIUM_GOOD`), la rareté de chaque
+événement.
 
 ## 7. Ce qui n'est pas encore chiffré
 

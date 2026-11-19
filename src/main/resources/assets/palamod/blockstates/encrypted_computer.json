@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "palamod:block/encrypted_computer"
+    }
+  }
+}

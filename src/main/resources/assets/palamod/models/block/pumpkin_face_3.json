@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "palamod:block/lucky/pumpkin_3",
+    "side": "palamod:block/lucky/pumpkin_side",
+    "top": "palamod:block/lucky/pumpkin_top"
+  }
+}

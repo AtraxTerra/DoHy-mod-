@@ -1,0 +1,100 @@
+{
+  "variants": {
+    "color=0,lit=false": {
+      "model": "palamod:block/colored_lamp_0_off"
+    },
+    "color=0,lit=true": {
+      "model": "palamod:block/colored_lamp_0_on"
+    },
+    "color=1,lit=false": {
+      "model": "palamod:block/colored_lamp_1_off"
+    },
+    "color=1,lit=true": {
+      "model": "palamod:block/colored_lamp_1_on"
+    },
+    "color=2,lit=false": {
+      "model": "palamod:block/colored_lamp_2_off"
+    },
+    "color=2,lit=true": {
+      "model": "palamod:block/colored_lamp_2_on"
+    },
+    "color=3,lit=false": {
+      "model": "palamod:block/colored_lamp_3_off"
+    },
+    "color=3,lit=true": {
+      "model": "palamod:block/colored_lamp_3_on"
+    },
+    "color=4,lit=false": {
+      "model": "palamod:block/colored_lamp_4_off"
+    },
+    "color=4,lit=true": {
+      "model": "palamod:block/colored_lamp_4_on"
+    },
+    "color=5,lit=false": {
+      "model": "palamod:block/colored_lamp_5_off"
+    },
+    "color=5,lit=true": {
+      "model": "palamod:block/colored_lamp_5_on"
+    },
+    "color=6,lit=false": {
+      "model": "palamod:block/colored_lamp_6_off"
+    },
+    "color=6,lit=true": {
+      "model": "palamod:block/colored_lamp_6_on"
+    },
+    "color=7,lit=false": {
+      "model": "palamod:block/colored_lamp_7_off"
+    },
+    "color=7,lit=true": {
+      "model": "palamod:block/colored_lamp_7_on"
+    },
+    "color=8,lit=false": {
+      "model": "palamod:block/colored_lamp_8_off"
+    },
+    "color=8,lit=true": {
+      "model": "palamod:block/colored_lamp_8_on"
+    },
+    "color=9,lit=false": {
+      "model": "palamod:block/colored_lamp_9_off"
+    },
+    "color=9,lit=true": {
+      "model": "palamod:block/colored_lamp_9_on"
+    },
+    "color=10,lit=false": {
+      "model": "palamod:block/colored_lamp_10_off"
+    },
+    "color=10,lit=true": {
+      "model": "palamod:block/colored_lamp_10_on"
+    },
+    "color=11,lit=false": {
+      "model": "palamod:block/colored_lamp_11_off"
+    },
+    "color=11,lit=true": {
+      "model": "palamod:block/colored_lamp_11_on"
+    },
+    "color=12,lit=false": {
+      "model": "palamod:block/colored_lamp_12_off"
+    },
+    "color=12,lit=true": {
+      "model": "palamod:block/colored_lamp_12_on"
+    },
+    "color=13,lit=false": {
+      "model": "palamod:block/colored_lamp_13_off"
+    },
+    "color=13,lit=true": {
+      "model": "palamod:block/colored_lamp_13_on"
+    },
+    "color=14,lit=false": {
+      "model": "palamod:block/colored_lamp_14_off"
+    },
+    "color=14,lit=true": {
+      "model": "palamod:block/colored_lamp_14_on"
+    },
+    "color=15,lit=false": {
+      "model": "palamod:block/colored_lamp_15_off"
+    },
+    "color=15,lit=true": {
+      "model": "palamod:block/colored_lamp_15_on"
+    }
+  }
+}

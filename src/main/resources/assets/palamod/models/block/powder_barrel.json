@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "palamod:block/lucky/powder_barrel_top",
+    "bottom": "palamod:block/lucky/powder_barrel_top",
+    "side": "palamod:block/lucky/powder_barrel_side"
+  }
+}

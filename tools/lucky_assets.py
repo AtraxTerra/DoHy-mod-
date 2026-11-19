@@ -39,6 +39,7 @@ masse de tirage deja couverte.
 import json
 import os
 import re
+import shutil
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -49,14 +50,32 @@ CATALOG = os.path.join(ROOT, "tools", "data", "lucky_events.json")
 # Les fichiers ou sont declares les evenements portes (c.classic / c.findium).
 SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEvents.java", "TrickEvents.java",
            "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
-           "LuckyItemEvents.java")
+           "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
+           "EasterEvents.java", "MayEvents.java", "JuneEvents.java",
+           "JulyEvents.java", "AugustEvents.java", "SeptemberEvents.java", "HalloweenEvents.java",
+           "NovemberEvents.java", "ChristmasEvents.java",
+           "BlackEvents.java")
 NS = "palamod"
 
 TYPES = {
     "paladium": ("Lucky Block en paladium", "Paladium Lucky Block"),
     "endium": ("Lucky Block en endium", "Endium Lucky Block"),
     "findium": ("Lucky Block en findium", "Findium Lucky Block"),
+    # Les lucky blocks saisonniers (LuckyType.BLACK, MARCH...), dans l'ordre de l'enum.
+    "black": ("Lucky Block noir", "Black Lucky Block"),
+    "march": ("Lucky Block de mars", "March Lucky Block"),
+    "easter": ("Lucky Block de Paques", "Easter Lucky Block"),
+    "may": ("Lucky Block de mai", "May Lucky Block"),
+    "june": ("Lucky Block de juin", "June Lucky Block"),
+    "july": ("Lucky Block de juillet", "July Lucky Block"),
+    "august": ("Lucky Block d'aout", "August Lucky Block"),
+    "september": ("Lucky Block de septembre", "September Lucky Block"),
+    "halloween": ("Lucky Block d'Halloween", "Halloween Lucky Block"),
+    "november": ("Lucky Block de novembre", "November Lucky Block"),
+    "christmas": ("Lucky Block de Noel", "Christmas Lucky Block"),
 }
+# Le seul bloc dont l'image n'a pas le nom du type dans le jar.
+TYPE_TEXTURES = {"christmas": "christmas_luckyblock.png"}
 
 # Les effets des evenements : nom francais (lang de PalaMod), anglais, image d'evenement.
 EFFECTS = {
@@ -83,6 +102,45 @@ EFFECTS = {
     "inversion": ("Inversion", "Inversion", "inversion"),
     "half_job_xp": ("Divise XP", "Half Job XP", "divise_xp"),
     "pumpkin_blur": ("Le fond du bol", "Bottom of the Bowl", "on_voit_pas_le_fond_du_bol"),
+    # Le cinquieme lot.
+    "commando": ("Mission commando", "Commando", "mission_commando"),
+    "cow_player": ("Cow Player", "Cow Player", "cow_player"),
+    "lag": ("56K", "56K", "56k"),
+    "magnetic": ("Aimante", "Magnetic", "aimente"),
+    "no_texture": ("404 Not found", "404 Not Found", "404_"),
+    "bad_face": ("Mauvaise mine", "Bad Face", "bad_face"),
+    "fart": ("T'as mange quoi ?", "What Did You Eat?", "t_a_mange_quoi"),
+    "tombe": ("Ton heure a sonne", "Your Time Has Come", "tombe"),
+    "sugar": ("Trop de sucre", "Sugar Rush", "soda_pop"),
+    "giant": ("Geant", "Giant", "champignon_geant"),
+    # Lucky blocks saisonniers (SeasonEffects).
+    "star": ("La tete dans les etoiles", "Head in the Stars", "march/head_in_stars"),
+    "no_oxygen": ("Plus d'oxygene", "No Oxygen", "march/no_oxygen"),
+    "jupiter_gravity": ("Gravite de Jupiter", "Jupiter Gravity", "march/astronaut_training"),
+    "flip": ("Ca fait flipper", "Flipped", "easter/fait_flipper"),
+    "hacked": ("Hackerman", "Hacked", "easter/hackerman"),
+    "april_fish": ("Poisson d'avril", "April Fish", "easter/poisson_avril"),
+    "pink": ("La vie en rose", "Life in Pink", "may/vie_en_rose"),
+    "dance": ("Danse", "Dance", "june/super_danseur"),
+    "quack": ("Quack", "Quack", "june/quack"),
+    "silent_movie": ("Cinema muet", "Silent Movie", "june/cinema_muet"),
+    "fire_walk": ("Enflamme le dance-floor", "Fire Walk", "june/enflamme_dancefloor"),
+    "no_boat": ("Marin d'eau douce", "Landlubber", "july/fresh_water_sailor"),
+    "eye_patch": ("Cache-oeil", "Eye Patch", "july/eye_patch"),
+    "scurvy": ("Scorbut", "Scurvy", "july/scorbut"),
+    "pirate_talk": ("Parler comme un pirate", "Pirate Talk", "july/talk_like_pirate"),
+    "immune": ("Invulnerabilite", "Immunity", "july/red_cross"),
+    "sunburn": ("Coup de soleil", "Sunburn", "august/sunburn"),
+    "baking": ("Cuisson", "Baking", "august/armor_bake"),
+    "summer_body": ("Summer body", "Summer Body", "august/summer_body_dilemma"),
+    "mess": ("Tout un foin", "Hay Mess", "august/dont_make_mess"),
+    "english": ("Cours d'anglais", "English Lesson", "september/english_test"),
+    "hell_yeah": ("Hell Yeah!", "Hell Yeah!", "hell_yeah"),
+    "spooky": ("Spooky Spook", "Spooky Spook", "spooky_spook"),
+    "explosive": ("Inventaire explosif", "Explosive Inventory", "november/explosive_inventory"),
+    "extreme_cold": ("Grand froid", "Extreme Cold", "extreme_cold"),
+    "solitaire": ("Solitaire", "Solitaire", "solitaire"),
+    "no_forward": ("Aucune avancee", "No Progress", "may/aucune_avancee"),
 }
 
 # Les filtres d'ecran (EventsManager.drawFilter) : des aplats, aux couleurs de
@@ -90,6 +148,12 @@ EFFECTS = {
 FILTERS = {
     "green": (154, 255, 105, 121),
     "flou": (214, 214, 214, 222),
+    # « La vie en rose » (PotionPink).
+    "pink": (255, 120, 190, 90),
+    # « Cinema muet » : un vieux film, sepia.
+    "sepia": (112, 88, 60, 110),
+    # « Faut pas en faire tout un foin » : de la paille partout.
+    "hay": (214, 184, 74, 150),
 }
 
 LANG = {
@@ -150,10 +214,325 @@ EQUIPMENT = {
     "balaclava": {"humanoid": ("balaclava", "models/balaclava_helmet.png")},
     "air_min": {"humanoid": ("air_min", "models/air_min_boots.png")},
     "fake_endium": {"humanoid": ("endium", None), "humanoid_leggings": ("endium", None)},
+    "jetpack": {"humanoid": ("jetpack", "models/jetpack_layer_1.png")},
+    "party_mask": {"humanoid": ("party_mask", None)},
+    "star_helmet": {"humanoid": ("star_helmet", "armors/star_helmet.png")},
+    "easter_bunny": {"humanoid": ("easter_bunny", "models/easter_bunny_armor_1.png"),
+                     "humanoid_leggings": ("easter_bunny", "models/easter_bunny_armor_1.png")},
+    "ghost_cape": {"humanoid": ("ghost_cape", "models/ghostcape_armor_1.png")},
+    "eye_patch": {"humanoid": ("eye_patch", "models/eye_patch.png")},
 }
 # Sur le cote des AirMin portees, une petite marque sombre (une signature de marque) :
 # effacee, la toile reprend sa couleur.
 AIR_MIN_MARK = ((50, 50, 50, 255), (246, 230, 215, 255))
+
+# Les objets du cinquieme lot (LuckyGadgets) : texture du jar (sous textures/) ou None si
+# elle est dessinee ici (DRAWN_ITEMS), texture du mod, tenu en main, noms.
+GADGET_ITEMS = {
+    "grappin": ("items/grappin_standby.png", "grappin", True, "Grappin", "Grappling Hook"),
+    "grappin_hook": ("items/grappin_hook.png", "grappin_hook", False, "Crochet de grappin", "Grappling Hook Head"),
+    "jetpack": ("items/jetpack.png", "jetpack", False, "Jetpack", "Jetpack"),
+    "lasso": ("items/lasso.png", "lasso", False, "Lasso", "Lasso"),
+    "magic_potion": ("items/magic_potion.png", "magic_potion", False, "Potion magique", "Magic Potion"),
+    "blaze_and_steel": ("items/blaze_and_steel.png", "blaze_and_steel", False, "Briquet de blaze", "Blaze and Steel"),
+    "chunk_analyser": ("items/chunk_analyser.png", "chunk_analyser", False, "Analyseur de chunk", "Chunk Analyser"),
+    "boat_furnace": ("items/boatfurnace.png", "boat_furnace", False, "Turboat", "Turboat"),
+    "new_year_firework": ("items/happy_new_year_firework.png", "new_year_firework", False, "Fusee du nouvel an",
+                          "New Year Firework"),
+    "giant_mushroom": (None, "giant_mushroom", False, "Champignon geant", "Giant Mushroom"),
+    "space_food": ("items/spacefood.png", "space_food", False, "Nourriture de l'espace", "Space Food"),
+    "stats_stone": ("items/stats_stone.png", "stats_stone", False, "Pierre de statistiques", "Stats Stone"),
+    "soda": (None, "soda", False, "Soda", "Soda"),
+    "meter": ("items/meter.png", "meter", False, "Metre", "Measuring Tape"),
+    "biome_painter": ("items/biome_painter.png", "biome_painter", True, "Peintre de biome", "Biome Painter"),
+    "poulpogun": ("items/poulpogun.png", "poulpogun", True, "PoulpoGun", "PoulpoGun"),
+    "smoke_bomb": ("items/smokebomb.png", "smoke_bomb", False, "Bombe fumigene", "Smoke Bomb"),
+    "party_mask": (None, "party_mask", False, "Masque de bal", "Party Mask"),
+    "banana": ("items/banana.png", "banana", False, "Banane", "Banana"),
+    "snake_venom": ("items/snake_venom.png", "snake_venom", False, "Venin de serpent", "Snake Venom"),
+    "parrot_feather": ("items/parrot_feather.png", "parrot_feather", False, "Plume de perroquet", "Parrot Feather"),
+    "turtle_scales": ("items/turtle_scales.png", "turtle_scales", False, "Ecailles de tortue", "Turtle Scales"),
+    "goat_shoe": ("items/goat_shoe.png", "goat_shoe", False, "Fer de chevre", "Goat Shoe"),
+    "meduse_hook": ("items/meduse_hook.png", "meduse_hook", False, "Crochet de meduse", "Jellyfish Hook"),
+    "panda_drool": ("items/panda_drool.png", "panda_drool", False, "Bave de panda", "Panda Drool"),
+    "snail_shell": ("items/snail_shell.png", "snail_shell", False, "Coquille d'escargot", "Snail Shell"),
+}
+# La boussole de pistage garde les aiguilles de la boussole du jeu (cible : la pierre d'aimant).
+COMPASS = ("follow_compass", "Boussole de pistage", "Tracking Compass")
+
+# Les blocs du cinquieme lot : forme du modele, textures (palamod:block/... ou minecraft:...),
+# butin ("self", None, ou une table), noms. Les textures « jar: » viennent du jar, « draw: »
+# sont dessinees ici (DRAWN_BLOCKS).
+GADGET_BLOCKS = {
+    "colored_lamp": ("lamp", {}, "self", "Lampe coloree", "Colored Lamp"),
+    "fish_bowl": ("cube_all", {"all": "draw:fish_bowl"}, "self", "Bocal a poisson", "Fish Bowl"),
+    "hunter_flower": ("cross", {"cross": "jar:blocks/flowers/flower_hunter.png"}, "self", "Plante du chasseur",
+                      "Hunter Plant"),
+    "kawaii_tnt": ("cube_bottom_top", {"side": "jar:blocks/kawaii_tnt_side.png", "top": "jar:blocks/kawaii_tnt_top.png",
+                                       "bottom": "jar:blocks/kawaii_tnt_bottom.png"}, "self", "TNT mignonne", "Kawaii TNT"),
+    "less_kawaii_tnt": ("cube_bottom_top", {"side": "jar:blocks/less_kawaii_tnt_side.png",
+                                            "top": "jar:blocks/less_kawaii_tnt_top.png",
+                                            "bottom": "jar:blocks/less_kawaii_tnt_bottom.png"}, "self",
+                        "TNT moins mignonne", "Less Kawaii TNT"),
+    "fake_tnt": ("cube_bottom_top", {"side": "minecraft:block/tnt_side", "top": "minecraft:block/tnt_top",
+                                     "bottom": "minecraft:block/tnt_bottom"}, "self", "Fausse TNT", "Fake TNT"),
+    "flashy_block": ("cube_all", {"all": "jar:blocks/flashy_block.png"}, "self", "Bloc flashy", "Flashy Block"),
+    "banana_log": ("cube_column", {"side": "jar:blocks/banana_wood.png", "end": "jar:blocks/banana_planks.png"},
+                   "self", "Bois de bananier", "Banana Log"),
+    "banana_leaves": ("cube_all", {"all": "jar:blocks/banana_leave.png"}, "banana", "Feuilles de bananier",
+                      "Banana Leaves"),
+    "fake_paladium_ore": ("parent", {"parent": "palamod:block/paladium_ore"}, None, "Minerai de paladium",
+                          "Paladium Ore"),
+    "wireless_lever": ("box", {"all": "jar:blocks/wireless_lever.png", "box": [4, 0, 4, 12, 6, 12]}, "self",
+                       "Levier sans fil", "Wireless Lever"),
+    "dyeing_machine": ("cube_bottom_top", {"side": "jar:blocks/dyeing_machine_side.png",
+                                           "top": "jar:blocks/dyeing_machine_top.png",
+                                           "bottom": "jar:blocks/dyeing_machine_bottom.png"}, "self",
+                       "Machine a teindre", "Dyeing Machine"),
+    "basketball": ("box", {"all": "draw:basketball", "box": [4, 0, 4, 12, 8, 12]}, "self", "Ballon de basket",
+                   "Basketball"),
+    "basket_hoop": ("box", {"all": "draw:basket_hoop", "box": [0, 0, 14, 16, 16, 16]}, "self", "Panier de basket",
+                    "Basketball Hoop"),
+    "alarm": ("box", {"all": "draw:alarm", "box": [3, 0, 3, 13, 12, 13]}, "self", "Alarme", "Alarm"),
+    "fake_portal": ("portal", {}, None, "Portail du Nether", "Nether Portal"),
+    "jaws_trap": ("box", {"all": "draw:jaws_trap", "box": [1, 0, 1, 15, 3, 15]}, "self", "Piege a machoires",
+                  "Jaws Trap"),
+    "pet_rock": ("box", {"all": "jar:blocks/petrock/petrock.png", "box": [4, 0, 4, 12, 6, 12]}, "self",
+                 "Caillou de compagnie", "Pet Rock"),
+    "sleeping_bag": ("box", {"all": "draw:sleeping_bag", "box": [0, 0, 0, 16, 3, 16]}, "self", "Sac de couchage",
+                     "Sleeping Bag"),
+    "fake_lava": ("cube_all", {"all": "minecraft:block/lava_still"}, None, "Lave", "Lava"),
+    "cat_detector": ("detector", {"off": "draw:cat_detector", "on": "draw:cat_detector"}, "self",
+                     "Detecteur de chats", "Cat Detector"),
+    "chat_detector": ("detector", {"off": "jar:blocks/chatdetector_off.png", "on": "jar:blocks/chatdetector_on.png"},
+                      "self", "Detecteur de chat", "Chat Detector"),
+    "safe_chest": ("orientable", {"front": "jar:blocks/safechest/safe_front.png",
+                                  "side": "jar:blocks/safechest/safe_side.png"}, "self", "Coffre-fort", "Safe"),
+    "mega_safe_chest": ("orientable", {"front": "jar:blocks/safechest/megasafe_front.png",
+                                       "side": "jar:blocks/safechest/megasafe_side.png"}, None,
+                        "Mega coffre-fort", "Mega Safe"),
+    "ultra_safe_chest": ("orientable", {"front": "jar:blocks/safechest/ultrasafe_front.png",
+                                        "side": "jar:blocks/safechest/ultrasafe_side.png"}, None,
+                         "Ultra coffre-fort", "Ultra Safe"),
+    "string_trap": ("box", {"all": "minecraft:block/tripwire", "box": [0, 0, 0, 16, 2, 16]}, "self",
+                    "Piege a ficelle", "String Trap"),
+    "fake_command_block": ("cube_front", {"front": "minecraft:block/command_block_front",
+                                          "side": "minecraft:block/command_block_side",
+                                          "back": "minecraft:block/command_block_back"}, "self",
+                           "Bloc de commande", "Command Block"),
+    "bruteforcer": ("orientable", {"front": "jar:blocks/bruteforcer/bruteforcer_front.png",
+                                   "side": "jar:blocks/bruteforcer/bruteforcer_side.png"}, "self", "Bruteforcer",
+                    "Bruteforcer"),
+    "lucky_flower": ("cross", {"cross": "jar:blocks/flowers/flower_lucky.png"}, "self", "Fleur porte-bonheur",
+                     "Lucky Flower"),
+    "tomb": ("box", {"all": "minecraft:block/polished_andesite", "box": [1, 0, 4, 15, 15, 12]}, None, "Tombe",
+             "Tomb"),
+}
+# Les objets des lucky blocks saisonniers (SeasonItems), comme GADGET_ITEMS : texture du jar,
+# texture du mod, tenu en main, noms. Ils sont ajoutes a GADGET_ITEMS, qui fait le reste.
+SEASON_ITEMS = {
+    # Mars.
+    "star_helmet": ("items/star_helmet.png", "star_helmet", False, "Casque des etoiles", "Star Helmet"),
+    "galactic_pile": ("items/galactic_pile.png", "galactic_pile", False, "Pile galactique", "Galactic Battery"),
+    "moon_piece": ("items/moon_piece.png", "moon_piece", False, "Morceau de lune", "Moon Piece"),
+    "supersonic_rocket": ("items/supersonic_rocket.png", "supersonic_rocket", False, "Fusee supersonique",
+                          "Supersonic Rocket"),
+    "splash_potion_mars_gravity": ("items/splash_potion_mars_gravity.png", "splash_potion_mars_gravity", False,
+                                   "Potion de gravite martienne", "Mars Gravity Potion"),
+    "splash_potion_moon_gravity": ("items/splash_potion_moon_gravity.png", "splash_potion_moon_gravity", False,
+                                   "Potion de gravite lunaire", "Moon Gravity Potion"),
+    "splash_potion_jupiter_gravity": ("items/splash_potion_jupiter_gravity.png", "splash_potion_jupiter_gravity",
+                                      False, "Potion de gravite de Jupiter", "Jupiter Gravity Potion"),
+    "surviving_stone": ("items/survivingstone.png", "surviving_stone", False, "Pierre de survie", "Surviving Stone"),
+    # Paques.
+    "chocolate_egg": ("items/chocolate_egg.png", "chocolate_egg", False, "Oeuf en chocolat", "Chocolate Egg"),
+    "fake_chocolate_egg": ("items/chocolate_egg.png", "fake_chocolate_egg", False, "Oeuf en chocolat",
+                           "Chocolate Egg"),
+    "golden_egg": ("items/golden_egg.png", "golden_egg", False, "Oeuf d'or", "Golden Egg"),
+    "april_fish": ("items/april_fish.png", "april_fish", False, "Poisson d'avril", "April Fish"),
+    "rainbow_leather": ("items/rainbow_leather.png", "rainbow_leather", False, "Cuir arc-en-ciel", "Rainbow Leather"),
+    "rainbow_coloring": ("items/rainbow_coloring.png", "rainbow_coloring", False, "Colorant arc-en-ciel",
+                         "Rainbow Coloring"),
+    "easter_bunny_helmet": ("items/easter_bunny_helmet.png", "easter_bunny_helmet", False, "Tete de lapin de Paques",
+                            "Easter Bunny Head"),
+    "easter_bunny_chestplate": ("items/easter_bunny_chestplate.png", "easter_bunny_chestplate", False,
+                                "Costume de lapin de Paques", "Easter Bunny Suit"),
+    "easter_bunny_leggings": ("items/easter_bunny_leggings.png", "easter_bunny_leggings", False,
+                              "Pantalon de lapin de Paques", "Easter Bunny Pants"),
+    "easter_bunny_boots": ("items/easter_bunny_boots.png", "easter_bunny_boots", False, "Pattes de lapin de Paques",
+                           "Easter Bunny Paws"),
+    # Mai.
+    "player_saddle": ("items/player_saddle.png", "player_saddle", False, "Selle de joueur", "Player Saddle"),
+    "ghost_cape": ("items/ghostcape.png", "ghost_cape", False, "Cape fantome", "Ghost Cape"),
+    "ghostly_sword": ("items/ghostly_sword.png", "ghostly_sword", True, "Epee fantome", "Ghostly Sword"),
+    # Juin.
+    "radio": ("items/radio.png", "radio", False, "Radio", "Radio"),
+    "trumpet": ("items/trumpet.png", "trumpet", False, "Trompette", "Trumpet"),
+    "gold_record": ("items/gold_record.png", "gold_record", False, "Disque d'or", "Gold Record"),
+    "electric_guitar": ("items/electric_guitar.png", "electric_guitar", True, "Guitare electrique", "Electric Guitar"),
+    "shark_plush": (None, "shark_plush", False, "Peluche requin", "Shark Plush"),
+    # Juillet.
+    "sea_bottle": ("items/sea_bottle.png", "sea_bottle", False, "Bouteille a la mer", "Message in a Bottle"),
+    "dry_message": ("items/dry_message.png", "dry_message", False, "Message seche", "Dry Message"),
+    "pirate_message": ("items/pirate_king_message.png", "pirate_message", False, "Message du roi des pirates",
+                       "Pirate King's Message"),
+    "eye_patch": ("items/eye_patch.png", "eye_patch", False, "Cache-oeil", "Eye Patch"),
+    "pipe": ("items/pipe.png", "pipe", False, "Pipe", "Pipe"),
+    "orange": ("items/orange_consumable.png", "orange", False, "Orange", "Orange"),
+    "sailor_tooth": ("items/sailor_tooth.png", "sailor_tooth", False, "Dent de marin", "Sailor Tooth"),
+    "tooth_skeleton_skull": ("items/tooth_skeleton_skull.png", "tooth_skeleton_skull", False, "Crane edente",
+                             "Toothless Skull"),
+    "parrot_seeds": ("items/parrot_seeds.png", "parrot_seeds", False, "Graines de perroquet", "Parrot Seeds"),
+    "drum": ("items/drum.png", "drum", False, "Tambour", "Drum"),
+    "accordion": ("items/accordion.png", "accordion", False, "Accordeon", "Accordion"),
+    "treasure_map": ("items/treasure_map.png", "treasure_map", False, "Carte au tresor", "Treasure Map"),
+    "invulnerability_potion": ("items/invulnerability_potion.png", "invulnerability_potion", False,
+                               "Potion d'invulnerabilite", "Invulnerability Potion"),
+    # Aout.
+    "ice_cream": ("items/ice_cream.png", "ice_cream", False, "Glace", "Ice Cream"),
+    "double_ice_cream": ("items/double_ice_cream.png", "double_ice_cream", False, "Glace deux boules",
+                         "Double Ice Cream"),
+    "solar_cream": ("items/solar_cream.png", "solar_cream", False, "Creme solaire", "Sun Cream"),
+    "volley_ball": ("items/volley_ball.png", "volley_ball", False, "Ballon de volley", "Volleyball"),
+    "portable_volley_court": ("items/portable_volley_court.png", "portable_volley_court", False,
+                              "Terrain de volley portatif", "Portable Volleyball Court"),
+    # Septembre.
+    "butcher_knife": ("items/butcher_knife.png", "butcher_knife", True, "Couteau de boucher", "Butcher Knife"),
+    "job_offer": ("items/job_offer.png", "job_offer", False, "Offre d'emploi", "Job Offer"),
+    "trade_file": ("items/trade_file.png", "trade_file", False, "Dossier de metier", "Trade File"),
+    "daemon_amulet": ("items/daemon_amulet.png", "daemon_amulet", False, "Amulette demoniaque", "Daemon Amulet"),
+    # Halloween.
+    "pumpkin_shear": ("items/pumpkinshear.png", "pumpkin_shear", True, "Ciseaux a citrouille", "Pumpkin Shears"),
+    "spider_gloves": (None, "spider_gloves", False, "Gants tisseurs", "Web Gloves"),
+    "witch_broom": ("items/witchbroom.png", "witch_broom", True, "Balai de sorciere", "Witch Broom"),
+    "halloween_stone": ("items/halloweenstone.png", "halloween_stone", False, "Pierre d'Halloween", "Halloween Stone"),
+    # Noel.
+    "chocolate_milk": ("items/chocolate_milk.png", "chocolate_milk", False, "Lait chocolate", "Chocolate Milk"),
+    "christmas_axe": ("items/christmas_axe.png", "christmas_axe", True, "Hache du roi des forets", "Forest King Axe"),
+    "christmas_stone": ("items/christmas_stone.png", "christmas_stone", False, "Pierre de Noel", "Christmas Stone"),
+    "multicolor_gift": ("items/multicolor_gift.png", "multicolor_gift", False, "Cadeau multicolore", "Multicolor Gift"),
+    "present": ("items/present.png", "present", False, "Cadeau", "Present"),
+    "present_bag": ("items/present_bag.png", "present_bag", False, "Sac de cadeaux", "Present Bag"),
+    "wish_card": ("items/wish_card.png", "wish_card", False, "Carte de voeux", "Wish Card"),
+    # Le lucky block noir.
+    "water_pistol": ("gui/LuckyBlock/events/luckyluke.png", "water_pistol", True, "Pistolet a eau", "Water Pistol"),
+    "supersonic_boots": (None, "supersonic_boots", False, "Bottes supersoniques", "Supersonic Boots"),
+    "weather_missile": ("items/missile_sol_air.png", "weather_missile", False, "Missile meteo", "Weather Missile"),
+    "extending_arm": (None, "extending_arm", False, "Bras extensible", "Extending Arm"),
+    "alchemist_flask": ("items/flasque.png", "alchemist_flask", False, "Flasque d'alchimiste", "Alchemist Flask"),
+}
+SEASON_BLOCKS = {
+    "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),
+    "easter_gift": ("cross", {"cross": "jar:blocks/easter_gift_item.png"}, "self", "Cadeau de Paques", "Easter Gift"),
+    "fake_easter_gift": ("cross", {"cross": "jar:blocks/easter_gift_item.png"}, "self", "Cadeau de Paques",
+                         "Easter Gift"),
+    "blue_easter_egg": ("cross", {"cross": "jar:blocks/easter_egg_blue_item.png"}, None, "Oeuf de Paques bleu",
+                        "Blue Easter Egg"),
+    "yellow_easter_egg": ("cross", {"cross": "jar:blocks/easter_egg_yellow_item.png"}, "self", "Oeuf de Paques jaune",
+                          "Yellow Easter Egg"),
+    "stone_hearth": ("cube_all", {"all": "jar:blocks/stone_hearth.png"}, "self", "Foyer de pierre", "Stone Hearth"),
+    "fake_gold_block": ("cube_all", {"all": "minecraft:block/gold_block"}, None, "Bloc d'or", "Block of Gold"),
+    "bright_sound": ("lit", {"off": "jar:blocks/bright_sound_off.png", "on": "jar:blocks/bright_sound_on.png"}, "self",
+                     "Bloc sonore", "Bright Sound"),
+    "powder_barrel": ("cube_bottom_top", {"top": "jar:blocks/powder_barrel_top.png",
+                                          "bottom": "jar:blocks/powder_barrel_top.png",
+                                          "side": "jar:blocks/powder_barrel_side.png"}, "self", "Baril de poudre",
+                      "Powder Barrel"),
+    "encrypted_computer": ("cube_front", {"front": "draw:computer_locked", "back": "minecraft:block/iron_block",
+                                          "side": "minecraft:block/iron_block"}, "self", "Ordinateur crypte",
+                           "Encrypted Computer"),
+    "decrypted_computer": ("cube_front", {"front": "draw:computer_open", "back": "minecraft:block/iron_block",
+                                          "side": "minecraft:block/iron_block"}, "self", "Ordinateur decrypte",
+                           "Decrypted Computer"),
+    "lead_block": ("cube_all", {"all": "jar:blocks/lead.png"}, "self", "Bloc de plomb", "Block of Lead"),
+    "ventilator": ("fan", {"front": "jar:blocks/ventilator_front.png", "side": "jar:blocks/ventilator_side.png"}, "self",
+                   "Ventilateur", "Fan"),
+    "treadmill": ("cube_bottom_top", {"top": "jar:blocks/treadmill.png", "bottom": "minecraft:block/iron_block",
+                                      "side": "minecraft:block/iron_block"}, "self", "Tapis de course", "Treadmill"),
+    "quicksand": ("cube_all", {"all": "minecraft:block/sand"}, None, "Sable mouvant", "Quicksand"),
+    "pumpkin_face_1": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_1.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 1", "Carved Pumpkin 1"),
+    "pumpkin_face_2": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_2.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 2", "Carved Pumpkin 2"),
+    "pumpkin_face_3": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_3.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 3", "Carved Pumpkin 3"),
+    "pumpkin_face_4": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_4.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 4", "Carved Pumpkin 4"),
+    "pumpkin_face_5": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_5.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 5", "Carved Pumpkin 5"),
+    "pumpkin_face_6": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_6.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 6", "Carved Pumpkin 6"),
+    "pumpkin_face_7": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_7.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 7", "Carved Pumpkin 7"),
+    "pumpkin_face_8": ("orientable", {"front": "jar:blocks/pumpkin/pumpkin_8.png",
+                                        "side": "jar:blocks/pumpkin/pumpkin_side.png",
+                                        "top": "jar:blocks/pumpkin/pumpkin_top.png"}, "self",
+                       "Citrouille sculptee 8", "Carved Pumpkin 8"),
+    "infinity_pie": ("box", {"all": "draw:pumpkin_pie", "box": [1, 0, 1, 15, 6, 15]}, "self", "Tarte infinie",
+                     "Infinity Pie"),
+    "christmas_tree": ("cross", {"cross": "draw:christmas_tree"}, "self", "Sapin de Noel", "Christmas Tree"),
+    "whistle": ("cube_all", {"all": "jar:blocks/sifflet.png"}, "self", "Sifflet de train", "Train Whistle"),
+    "christmas_mockup": ("box_tb", {"top": "draw:mockup_top", "side": "draw:mockup_side", "bottom": "minecraft:block/spruce_planks",
+                                    "box": [2, 0, 2, 14, 10, 14]}, "self", "Maquette de Noel", "Christmas Mockup"),
+}
+GADGET_ITEMS.update(SEASON_ITEMS)
+GADGET_BLOCKS.update(SEASON_BLOCKS)
+# Les recettes des objets saisonniers (le casque des etoiles de « Plus d'oxygene »).
+SEASON_RECIPES = {
+    "star_helmet": {"type": "minecraft:crafting_shaped", "category": "equipment", "pattern": ["IGI", "I I"],
+                    "key": {"I": "minecraft:iron_ingot", "G": "minecraft:glowstone"},
+                    "result": {"id": "palamod:star_helmet", "count": 1}},
+    "gold_ingot_from_golden_egg": {"type": "minecraft:crafting_shapeless", "category": "misc",
+                                   "ingredients": ["palamod:golden_egg"],
+                                   "result": {"id": "minecraft:gold_ingot", "count": 3}},
+}
+SEASON_RECIPES.update({
+    "orange": {"type": "minecraft:crafting_shapeless", "category": "misc",
+               "ingredients": ["minecraft:apple", "minecraft:orange_dye"],
+               "result": {"id": "palamod:orange", "count": 1}},
+    "bone_meal_from_sailor_tooth": {"type": "minecraft:crafting_shapeless", "category": "misc",
+                                    "ingredients": ["palamod:sailor_tooth"],
+                                    "result": {"id": "minecraft:bone_meal", "count": 8}},
+    "pirate_message": {"type": "minecraft:smelting", "category": "misc", "ingredient": "palamod:dry_message",
+                       "result": {"id": "palamod:pirate_message", "count": 1}, "experience": 0.1,
+                       "cookingtime": 200},
+})
+# Le cuir arc-en-ciel et une piece d'armure en cuir : la piece devient arc-en-ciel (PalaLucky.RAINBOW).
+for piece in ("helmet", "chestplate", "leggings", "boots"):
+    SEASON_RECIPES["rainbow_leather_%s" % piece] = {
+        "type": "minecraft:crafting_shapeless", "category": "equipment",
+        "ingredients": ["palamod:rainbow_leather", "minecraft:leather_%s" % piece],
+        "result": {"id": "minecraft:leather_%s" % piece, "count": 1, "components": {"palamod:lucky_rainbow": True}}}
+# Les images d'ecran copiees du jar : textures/gui/lucky/overlay/<nom>.png.
+SEASON_OVERLAYS = {"stars": "ui/march/head_in_stars/head_in_stars.png"}
+
+# Les seize teintes de la lampe coloree (getRenderColor), dans l'ordre de ses couleurs.
+LAMP_TINTS = [0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFF7D00, 0xFF7D7D, 0x7DFF7D,
+              0x7D00FF, 0x7DFF00, 0x7D7DFF, 0x00FF7D, 0xFF007D, 0xBEBEBE]
+# Les tableaux de PalaMod (EntityLuckyPainting.EnumArt) : nom, largeur et hauteur en pixels,
+# position dans painting/lucky_paintings.png.
+PAINTINGS = [
+    ("paladium_small", 16, 16, 0, 0), ("snow", 16, 16, 16, 0), ("alban", 16, 16, 32, 0),
+    ("aztec", 16, 16, 48, 0), ("bomb", 16, 16, 64, 0), ("plant", 16, 16, 80, 0), ("wasteland", 16, 16, 96, 0),
+    ("pool", 32, 16, 0, 32), ("courbet", 32, 16, 32, 32), ("sea", 32, 16, 64, 32), ("sunset", 32, 16, 96, 32),
+    ("creebet", 32, 16, 128, 32), ("wanderer", 16, 32, 0, 64), ("paladium", 32, 32, 0, 128),
+    ("bust", 32, 32, 32, 128), ("stage", 32, 32, 64, 128), ("void", 32, 32, 96, 128), ("butterfly", 64, 32, 0, 96),
+    ("golem", 64, 64, 0, 192), ("cherry", 64, 48, 192, 64),
+]
 
 # Les images d'evenement rangees dans un sous-dossier du jar.
 ALIASES = {
@@ -327,26 +706,605 @@ MONEY_COLORS = {
     "G": (92, 150, 84, 255), "d": (120, 176, 110, 255),
 }
 
+# Les dessins du cinquieme lot : des chauves-souris (l'image de PalaMod etait le logo d'un
+# heros de bande dessinee), un champignon sans visage, un masque de bal, une canette verte et
+# une silhouette barree remplacent des images qui reprenaient un personnage, un logo ou une
+# marque ; les autres sont des blocs dont PalaMod n'avait qu'un rendu en 3D.
+BATS_ICON = [
+    "................",
+    "................",
+    "..K..........K..",
+    ".KK...KKKK...KK.",
+    ".KKK.KKKKKK.KKK.",
+    "KKKKKKRKKRKKKKKK",
+    "KKKKKKKKKKKKKKKK",
+    ".KKKK.KKKK.KKKK.",
+    "..K....KK....K..",
+    "................",
+    "....k......k....",
+    "...kk.kkkk.kk...",
+    "..kkkkkrkrkkkk..",
+    "...kk.kkkk.kk...",
+    "......k..k......",
+    "................",
+]
+BATS_COLORS = {".": (0, 0, 0, 0), "K": (40, 30, 48, 255), "k": (70, 56, 80, 255), "R": (230, 40, 40, 255),
+               "r": (230, 60, 60, 255)}
+MUSHROOM_ICON = [
+    "................",
+    ".....RRRRRR.....",
+    "...RRRWWRRRRR...",
+    "..RRRWWWWRRWRR..",
+    ".RRWRRWWRRRWWRR.",
+    ".RWWWRRRRRRRWRR.",
+    "RRWWWRRRWWRRRRRR",
+    "RRRWRRRWWWWRRWWR",
+    "RrrrrrrrrrrrrrrR",
+    ".rr..........rr.",
+    "......SSSS......",
+    ".....SSSSSS.....",
+    ".....SSSSSS.....",
+    ".....SSssSS.....",
+    "......ssss......",
+    "................",
+]
+MUSHROOM_COLORS = {".": (0, 0, 0, 0), "R": (214, 38, 38, 255), "r": (150, 20, 20, 255), "W": (250, 246, 236, 255),
+                   "S": (238, 222, 190, 255), "s": (200, 180, 146, 255)}
+MASK_ICON = [
+    "................",
+    "................",
+    "................",
+    "......Y..Y......",
+    "...YYYPPPPYYY...",
+    "..YPPPPPPPPPPY..",
+    ".YPPP..PP..PPPY.",
+    ".YPP....P...PPY.",
+    ".YPPP..PPP.PPPY.",
+    "..YPPPPPYPPPPY..",
+    "...YYPPY.YPPYY..",
+    ".....YY...YY....",
+    "................",
+    "................",
+    "................",
+    "................",
+]
+MASK_COLORS = {".": (0, 0, 0, 0), "Y": (232, 186, 46, 255), "P": (120, 50, 170, 255)}
+SODA_ICON = [
+    "................",
+    "......SSSS......",
+    ".....SssssS.....",
+    ".....GGGGGG.....",
+    ".....GGgGGG.....",
+    ".....GWGgGG.....",
+    ".....GGGGWG.....",
+    ".....GgGWGG.....",
+    ".....GGgGGG.....",
+    ".....GWGGgG.....",
+    ".....GGGGGG.....",
+    ".....GGGgGG.....",
+    ".....GGGGGG.....",
+    ".....SSSSSS.....",
+    "......ssss......",
+    "................",
+]
+SODA_COLORS = {".": (0, 0, 0, 0), "S": (196, 200, 206, 255), "s": (140, 146, 154, 255), "G": (40, 168, 92, 255),
+               "g": (26, 120, 64, 255), "W": (220, 250, 230, 255)}
+STALKER_ICON = [
+    "................",
+    ".....DDDDDD.....",
+    "....DDDDDDDD....",
+    "...DDddddddDD...",
+    "...DdKKKKKKdD...",
+    "...DdKKKKKKdD...",
+    "...DdKKKKKKdD...",
+    "..XDdKKKKKKdDX..",
+    "...XDddddddDX...",
+    "..DDXDDDDDDXDD..",
+    ".DDDDXDDDDXDDDD.",
+    ".DDDDDXDDXDDDDD.",
+    ".DDDDDDXXDDDDDD.",
+    ".DDDDDXDDXDDDDD.",
+    ".DDDDXDDDDXDDDD.",
+    "................",
+]
+STALKER_COLORS = {".": (0, 0, 0, 0), "D": (52, 52, 64, 255), "d": (36, 36, 44, 255), "K": (14, 14, 18, 255),
+                  "X": (210, 30, 30, 255)}
+FISHBOWL_TEX = [
+    "GGGGGGGGGGGGGGGG",
+    "G..............G",
+    "G.w............G",
+    "G.w............G",
+    "G..............G",
+    "G..............G",
+    "Gbbbbbbbbbbbbbbb",
+    "GbbbbOOObbbbbbbG",
+    "GbbbOOOOOObbbbbG",
+    "GbbOOOKOOOOObbbG",
+    "GbbbOOOOOObOObbG",
+    "GbbbbOOObbbbObbG",
+    "GbbbbbbbbbbbbbbG",
+    "GbbbbbbbbbbbbbbG",
+    "GbbbbbbbbbbbbbbG",
+    "GGGGGGGGGGGGGGGG",
+]
+FISHBOWL_COLORS = {".": (200, 230, 255, 40), "G": (190, 220, 240, 170), "w": (255, 255, 255, 160),
+                   "b": (70, 140, 230, 110), "O": (250, 140, 30, 255), "K": (20, 20, 20, 255)}
+BALL_TEX = [
+    "OOOOOOOKOOOOOOOO",
+    "OOOOOOOKOOOOOOOO",
+    "KOOOOOOKOOOOOOOK",
+    "OKKOOOOKOOOOOKKO",
+    "OOOKKOOKOOOKKOOO",
+    "OOOOOKKKKKKOOOOO",
+    "OOOOOOOKOOOOOOOO",
+    "KKKKKKKKKKKKKKKK",
+    "OOOOOOOKOOOOOOOO",
+    "OOOOOKKKKKKOOOOO",
+    "OOOKKOOKOOOKKOOO",
+    "OKKOOOOKOOOOOKKO",
+    "KOOOOOOKOOOOOOOK",
+    "OOOOOOOKOOOOOOOO",
+    "OOOOOOOKOOOOOOOO",
+    "OOOOOOOKOOOOOOOO",
+]
+BALL_COLORS = {"O": (232, 112, 34, 255), "K": (40, 26, 20, 255)}
+BOARD_TEX = [
+    "KKKKKKKKKKKKKKKK",
+    "KWWWWWWWWWWWWWWK",
+    "KWWWWWWWWWWWWWWK",
+    "KWWWWRRRRRRWWWWK",
+    "KWWWWRWWWWRWWWWK",
+    "KWWWWRWWWWRWWWWK",
+    "KWWWWRWWWWRWWWWK",
+    "KWWWWRRRRRRWWWWK",
+    "KWWWWWWWWWWWWWWK",
+    "KWWWWWWWWWWWWWWK",
+    "KKKKKKKKKKKKKKKK",
+    "......RRRR......",
+    ".....R....R.....",
+    ".....R....R.....",
+    "......RRRR......",
+    "................",
+]
+BOARD_COLORS = {".": (0, 0, 0, 0), "K": (30, 30, 30, 255), "W": (240, 240, 240, 255), "R": (210, 40, 40, 255)}
+ALARM_TEX = [
+    "....RRRRRRRR....",
+    "...RrrrrrrrrR...",
+    "..RrrWWrrrrrrR..",
+    "..RrWWrrrrrrrR..",
+    "..RrrrrrrrrrrR..",
+    "..RrrrrrrrrrrR..",
+    "..RrrrrrrrrrrR..",
+    "..RrrrrrrrrrrR..",
+    "..RRRRRRRRRRRR..",
+    ".GGGGGGGGGGGGGG.",
+    ".GgggggggggggggG",
+    ".GgggggggggggggG",
+    ".GGGGGGGGGGGGGG.",
+    "................",
+    "................",
+    "................",
+]
+ALARM_COLORS = {".": (0, 0, 0, 0), "R": (150, 20, 20, 255), "r": (230, 50, 40, 255), "W": (255, 220, 210, 255),
+                "G": (70, 70, 78, 255), "g": (110, 110, 120, 255)}
+JAWS_TEX = [
+    "................",
+    ".GGGGGGGGGGGGGG.",
+    ".GgTgTgTgTgTgTG.",
+    ".GTgTgTgTgTgTgG.",
+    ".G............G.",
+    ".G............G.",
+    ".G....OOOO....G.",
+    ".G....OKKO....G.",
+    ".G....OKKO....G.",
+    ".G....OOOO....G.",
+    ".G............G.",
+    ".G............G.",
+    ".GgTgTgTgTgTgTG.",
+    ".GTgTgTgTgTgTgG.",
+    ".GGGGGGGGGGGGGG.",
+    "................",
+]
+JAWS_COLORS = {".": (0, 0, 0, 0), "G": (90, 90, 98, 255), "g": (130, 130, 140, 255), "T": (210, 210, 220, 255),
+               "O": (140, 100, 50, 255), "K": (90, 60, 30, 255)}
+BAG_TEX = [
+    "BBBBBBBBBBBBBBBB",
+    "BbbbbbbbbbbbbbbB",
+    "BbWWWWWbbbbbbbbB",
+    "BbWWWWWbbbbbbbbB",
+    "BbWWWWWbbbbbbbbB",
+    "BbbbbbbbbbbbbbbB",
+    "BBBBBBBBBBBBBBBB",
+    "BbbbbbbbbbbbbbbB",
+    "BbbbbbbbbbbbbbbB",
+    "BbbbbbbbbbbbbbbB",
+    "BbbbbbbbbbbbbbbB",
+    "BbbbbbbbbbbbbbbB",
+    "BbbbbbbbbbbbbbbB",
+    "BbbbbbbbbbbbbbbB",
+    "BbbbbbbbbbbbbbbB",
+    "BBBBBBBBBBBBBBBB",
+]
+BAG_COLORS = {"B": (30, 60, 140, 255), "b": (56, 98, 196, 255), "W": (236, 236, 244, 255)}
+CAT_TEX = [
+    "SSSSSSSSSSSSSSSS",
+    "SssssssssssssssS",
+    "SsOs........sOsS",
+    "SsOOs......sOOsS",
+    "SsOOOOOOOOOOOOsS",
+    "SsOOOOOOOOOOOOsS",
+    "SsOOGGOOOOGGOOsS",
+    "SsOOGKOOOOGKOOsS",
+    "SsOOOOOOOOOOOOsS",
+    "SsOOOOOPPOOOOOsS",
+    "SsOOOOKOOKOOOOsS",
+    "SsOOOOOKKOOOOOsS",
+    "SssOOOOOOOOOOssS",
+    "SsssOOOOOOOOsssS",
+    "SssssssssssssssS",
+    "SSSSSSSSSSSSSSSS",
+]
+CAT_COLORS = {"S": (96, 96, 104, 255), "s": (126, 126, 134, 255), ".": (126, 126, 134, 255),
+              "O": (232, 150, 60, 255), "G": (120, 220, 90, 255), "K": (24, 24, 24, 255), "P": (240, 140, 160, 255)}
+# La texture manquante de « 404 Not found », a moitie transparente.
+MISSING_TEX = ["MMKK"] * 2 + ["KKMM"] * 2
+MISSING_COLORS = {"M": (248, 0, 248, 120), "K": (0, 0, 0, 120)}
+
+# « Tisse ta toile » (ex « Spider-Steve ») : une toile et son araignee, dessinees ici.
+WEB_ICON = [
+    "W......W......W.",
+    ".W.....W.....W..",
+    "..WWWWWWWWWWW...",
+    "..WW...W...WW...",
+    "..W.W..W..W.W...",
+    "..W..WWWWW..W...",
+    "..W..WW.WW..W...",
+    "WWWWWWW.WWWWWWWW",
+    "..W..WW.WW..W...",
+    "..W..WWWWW.KK...",
+    "..W.W..W..KRRK..",
+    "..WW...W.KKKKKK.",
+    "..WWWWWWWWKKKK..",
+    ".W.....W.K.KK.K.",
+    "W......W..K..K..",
+    "................",
+]
+WEB_COLORS = {"W": (232, 232, 238, 255), "K": (24, 20, 28, 255), "R": (220, 40, 40, 255)}
+# Les gants tisseurs : un gant sombre, des fils blancs, une manchette violette.
+GLOVE_TEX = [
+    "................",
+    "......K.K.K.....",
+    ".....KGKGKGK....",
+    ".....KGKWKGK.K..",
+    ".....KGKGKGKKGK.",
+    ".....KGWGGGWKGK.",
+    ".....KGGWGWGGWK.",
+    "....KKGGGWGGGK..",
+    "...KGKGGWGWGGK..",
+    "...KGGGWGGGWGK..",
+    "....KGGGGGGGK...",
+    ".....KGGGGGGK...",
+    ".....KPPPPPPK...",
+    ".....KPpPpPPK...",
+    ".....KKKKKKKK...",
+    "................",
+]
+GLOVE_COLORS = {"K": (18, 16, 22, 255), "G": (62, 60, 74, 255), "W": (226, 226, 232, 255),
+                "P": (118, 58, 160, 255), "p": (150, 92, 196, 255)}
+# La tarte infinie : la croute au bord, la citrouille au milieu, quelques points de creme.
+PIE_TEX = [
+    "................",
+    ".CCCCCCCCCCCCCC.",
+    ".COOOOOOOOOOOOC.",
+    ".COOOoOOOOoOOOC.",
+    ".COOOOOOOOOOOOC.",
+    ".COOOOOWWOOOOOC.",
+    ".COOoOWWWWOoOOC.",
+    ".COOOOWWWWOOOOC.",
+    ".COOOOOWWOOOOOC.",
+    ".COOOOOOOOOOOOC.",
+    ".COOoOOOOOOoOOC.",
+    ".COOOOOOOOOOOOC.",
+    ".COOOOOOOOOOOOC.",
+    ".COOOOOOOOOOOOC.",
+    ".CCCCCCCCCCCCCC.",
+    ".BBBBBBBBBBBBBB.",
+]
+PIE_COLORS = {"C": (198, 142, 74, 255), "B": (148, 96, 48, 255), "O": (222, 122, 38, 255),
+              "o": (196, 98, 30, 255), "W": (250, 242, 222, 255)}
+
+# Le sapin de Noel (le jar n'a que le patron de son modele).
+TREE_TEX = [
+    ".......Y........",
+    "......YYY.......",
+    ".......G........",
+    "......GGG.......",
+    ".....GGRGG......",
+    "......GgG.......",
+    ".....GGGGG......",
+    "....GGBGGgG.....",
+    ".....GgGGG......",
+    "....GGGGGYG.....",
+    "...GRGGgGGGG....",
+    "....GGGGGGg.....",
+    "...GGgGBGGGGG...",
+    "..GGYGGGGgGRGG..",
+    ".......T........",
+    "......TTT.......",
+]
+TREE_COLORS = {"Y": (250, 210, 60, 255), "G": (38, 118, 52, 255), "g": (28, 92, 40, 255), "R": (214, 40, 40, 255),
+               "B": (60, 104, 222, 255), "T": (112, 72, 40, 255)}
+# La maquette de Noel : une maison enneigee (seules les lignes 6 a 15 se voient sur les cotes).
+MOCKUP_SIDE = ["..WWWWWWWWWWWW.."] * 6 + [
+    "..SSSSSSSSSSSS..",
+    "..WWWWWWWWWWWW..",
+    "..WWwwWWWWwwWW..",
+    "..WWwwWWWWwwWW..",
+    "..WWWWWWWWWWWW..",
+    "..WWWWWDDWWWWW..",
+    "..WWWWWDDWWWWW..",
+    "..WWWWWDdWWWWW..",
+    "..WWWWWDDWWWWW..",
+    "..WWWWWDDWWWWW..",
+]
+MOCKUP_TOP = [
+    "SSSSSSSSSSSSSSSS",
+    "SSSSSSSSSSSSSSSS",
+    "SSsSSSSSSSSSsSSS",
+    "SSSSSSSSSSSSSSSS",
+    "SSSSSSSSSCCSSSSS",
+    "SSSSsSSSSCCSSsSS",
+    "SSSSSSSSSSSSSSSS",
+    "SsSSSSSSSSSSSSSS",
+    "SSSSSSSSSSSsSSSS",
+    "SSSSSSsSSSSSSSSS",
+    "SSSSSSSSSSSSSSSS",
+    "SSSSSSSSSSSSSsSS",
+    "SSSsSSSSSSSSSSSS",
+    "SSSSSSSSSsSSSSSS",
+    "SSSSSSSSSSSSSSSS",
+    "SSSSSSSSSSSSSSSS",
+]
+MOCKUP_COLORS = {"S": (240, 245, 250, 255), "s": (212, 228, 240, 255), "W": (150, 96, 56, 255),
+                 "w": (255, 220, 120, 255), "D": (92, 56, 30, 255), "d": (230, 190, 60, 255), "C": (124, 62, 50, 255)}
+
+# Le lucky block noir : trois images de PalaMod reprenaient des personnages connus, redessinees ici.
+ARM_ICON = [
+    "................",
+    ".........WW.....",
+    "........WWWW....",
+    ".......WWWWWW...",
+    "......WWWWWWW...",
+    ".....SWWWWWW....",
+    "....S.WWWWW.....",
+    "...S...S........",
+    "....S.S.........",
+    ".....S..........",
+    "....S.S.........",
+    "...S...S........",
+    "....S.S.........",
+    ".....S..........",
+    "....GGG.........",
+    "...GGGGG........",
+]
+ARM_COLORS = {"W": (238, 238, 242, 255), "S": (150, 152, 164, 255), "G": (86, 88, 100, 255)}
+BOOTS_ICON = [
+    "................",
+    "................",
+    "................",
+    "......BBBB......",
+    "......BbBB......",
+    "......BBBB......",
+    "......BBBBB.....",
+    "......BBWBBB....",
+    "..LL..BBBBBBB...",
+    ".LLLL.BBBBbBBBB.",
+    "......BBBBBBBBBB",
+    "..LLL.WWWWWWWWWW",
+    "......KKKKKKKKKK",
+    "................",
+    "................",
+    "................",
+]
+BOOTS_COLORS = {"B": (42, 90, 205, 255), "b": (90, 140, 240, 255), "W": (240, 240, 244, 255),
+                "K": (30, 30, 36, 255), "L": (250, 170, 40, 255)}
+DOG_ICON = [
+    "................",
+    "..BB........BB..",
+    "..BBB......BBB..",
+    "..BBTTTTTTTTBB..",
+    "...TTTTTTTTTT...",
+    "..TTTTTTTTTTTT..",
+    "..TTKTTTTTTKTT..",
+    "..TTTTTTTTTTTT..",
+    "..TTTTWWWWTTTT..",
+    "...TTWWNNWWTT...",
+    "...TTWWWWWWTT...",
+    "....TWWRRWWT....",
+    ".....TTRRTT.....",
+    "................",
+    "................",
+    "................",
+]
+DOG_COLORS = {"T": (190, 130, 70, 255), "B": (110, 70, 40, 255), "K": (24, 20, 20, 255), "W": (236, 216, 190, 255),
+              "N": (30, 26, 26, 255), "R": (230, 92, 112, 255)}
+
+# Trois images de PalaMod reprenaient un personnage, un logo ou un jeu connus : redessinees ici.
+KNIGHT_ICON = [
+    "......PP........",
+    ".....PPP........",
+    "....PPP.........",
+    "....KKKKKKK.....",
+    "...KHHHHHHHK....",
+    "..KHHHHHHHHHK...",
+    "..KHhHHHHHhHK...",
+    "..KHHHHHHHHHK...",
+    "..KKKKKKKKKKK...",
+    "..KHHHHKHHHHK...",
+    "..KHHHHKHHHHK...",
+    "..KHhHHKHHhHK...",
+    "..KHHHHKHHHHK...",
+    "...KHHHHHHHK....",
+    "....KKKKKKK.....",
+    "................",
+]
+KNIGHT_COLORS = {"K": (20, 20, 26, 255), "H": (70, 72, 84, 255), "h": (120, 124, 140, 255), "P": (110, 40, 150, 255)}
+BUCKET_ICON = [
+    "................",
+    "..L.............",
+    ".L..GGGGGGGG....",
+    "L..GWWWWWWWWG...",
+    "..GWBBBBBBBBWG..",
+    "L.GBBbBBBBbBBG..",
+    ".LGGBBBBBBBBGG..",
+    "..GGGGGGGGGGGG..",
+    "...GGGGGGGGGG...",
+    "...GgGGGGGGgG...",
+    "...GGGGGGGGGG...",
+    "....GGGGGGGG....",
+    "....GgGGGGgG....",
+    "....GGGGGGGG....",
+    ".....GGGGGG.....",
+    "................",
+]
+BUCKET_COLORS = {"G": (170, 170, 180, 255), "g": (120, 120, 130, 255), "W": (220, 220, 228, 255),
+                 "B": (50, 110, 230, 255), "b": (120, 170, 250, 255), "L": (240, 240, 245, 255)}
+JUMPER_ICON = [
+    "......KK........",
+    "......KK........",
+    ".....KKKK.......",
+    "....K.KK.K......",
+    "......KK........",
+    ".....K..K.......",
+    "....K....K......",
+    "................",
+    "...Y........Y...",
+    "..YYYYYYYYYYYY..",
+    "...S.S.S.S.S....",
+    "..S.S.S.S.S.S...",
+    "...S.S.S.S.S....",
+    "..GGGGGGGGGGGG..",
+    "..G..........G..",
+    "................",
+]
+JUMPER_COLORS = {"K": (30, 30, 40, 255), "Y": (240, 190, 40, 255), "S": (150, 150, 160, 255), "G": (90, 90, 100, 255)}
+
 # Les images dessinees ici plutot que prises dans le jar.
 DRAWN = {
+    "chauves_souris": (BATS_ICON, BATS_COLORS),
+    "champignon_geant": (MUSHROOM_ICON, MUSHROOM_COLORS),
+    "masque_de_bal": (MASK_ICON, MASK_COLORS),
+    "soda_pop": (SODA_ICON, SODA_COLORS),
+    "retire_du_jeu_dessin": (STALKER_ICON, STALKER_COLORS),
     "teleportyone": (DEEP_ICON, DEEP_COLORS),
     "coffre_maudit": (CURSED_ICON, CURSED_COLORS),
     "dossier_secret": (FOLDER_ICON, FOLDER_COLORS),
     "sol_glissant": (WET_ICON, WET_COLORS),
     "coup_de_turbo": (TURBO_ICON, TURBO_COLORS),
     "baskets_ailees": (SNEAKER_ICON, SNEAKER_COLORS),
+    "tisse_ta_toile": (WEB_ICON, WEB_COLORS),
+    "bras_extensible": (ARM_ICON, ARM_COLORS),
+    "bottes_supersoniques": (BOOTS_ICON, BOOTS_COLORS),
+    "petit_chien": (DOG_ICON, DOG_COLORS),
+    "chevalier_sombre": (KNIGHT_ICON, KNIGHT_COLORS),
+    "seau_de_pro": (BUCKET_ICON, BUCKET_COLORS),
+    "sauteur_pro": (JUMPER_ICON, JUMPER_COLORS),
 }
 # Les textures d'objet dessinees ici.
 DRAWN_ITEMS = {
     "fake_money": (MONEY_ITEM, MONEY_COLORS),
+    "giant_mushroom": (MUSHROOM_ICON, MUSHROOM_COLORS),
+    "soda": (SODA_ICON, SODA_COLORS),
+    "party_mask": (MASK_ICON, MASK_COLORS),
+}
+# Les textures de bloc dessinees ici.
+# La peluche requin (« La musique qui fait peur ! ») : dessinee ici, la texture du jar est un patron de modele.
+SHARK_TEX = [
+    "................",
+    "........G.......",
+    ".......GG.......",
+    "......GGG.......",
+    ".....GGGGG......",
+    "...GGGGGGGGG..G.",
+    "..GGGGGGGGGGGGG.",
+    ".GWGGGGGGGGGGG..",
+    ".GGGGGGGGGGGGGG.",
+    ".GWWWWWWWWGGG..G",
+    "..WWwWwWWWWG....",
+    "...WWWWWWWW.....",
+    ".....GG.........",
+    "................",
+    "................",
+    "................",
+]
+SHARK_COLORS = {"G": (112, 128, 150, 255), "W": (232, 236, 240, 255), "w": (200, 60, 60, 255)}
+DRAWN_ITEMS["shark_plush"] = (SHARK_TEX, SHARK_COLORS)
+DRAWN_ITEMS["spider_gloves"] = (GLOVE_TEX, GLOVE_COLORS)
+DRAWN_ITEMS["extending_arm"] = (ARM_ICON, ARM_COLORS)
+DRAWN_ITEMS["supersonic_boots"] = (BOOTS_ICON, BOOTS_COLORS)
+
+# Les ecrans des ordinateurs de « Pirate informatique » (le jar n'a que les patrons de leur modele).
+COMPUTER_LOCKED = [
+    "GGGGGGGGGGGGGGGG",
+    "GKKKKKKKKKKKKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKKKKKRRRRKKKKKG",
+    "GKKKKRKKKKRKKKKG",
+    "GKKKKRKKKKRKKKKG",
+    "GKKKRRRRRRRRKKKG",
+    "GKKKRRRRRRRRKKKG",
+    "GKKKRRRKKRRRKKKG",
+    "GKKKRRRRRRRRKKKG",
+    "GKKKRRRRRRRRKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GGGGGGGGGGGGGGGG",
+    "GGGGGGDDDDGGGGGG",
+    "GGGGGGGGGGGGGGGG",
+]
+COMPUTER_OPEN = [
+    "GGGGGGGGGGGGGGGG",
+    "GKKKKKKKKKKKKKKG",
+    "GKVVKVVVKVKVVKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKVKVVKVVVVKKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKVVVKVKVVKVVKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKVKVVVVKVKKKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKVVKVKVVVKVKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GKKKKKKKKKKKKKKG",
+    "GGGGGGGGGGGGGGGG",
+    "GGGGGGDDDDGGGGGG",
+    "GGGGGGGGGGGGGGGG",
+]
+COMPUTER_COLORS = {"G": (150, 154, 160, 255), "K": (18, 22, 28, 255), "R": (210, 50, 50, 255),
+                   "V": (60, 220, 90, 255), "D": (90, 94, 100, 255)}
+
+DRAWN_BLOCKS = {
+    "fish_bowl": (FISHBOWL_TEX, FISHBOWL_COLORS),
+    "basketball": (BALL_TEX, BALL_COLORS),
+    "basket_hoop": (BOARD_TEX, BOARD_COLORS),
+    "alarm": (ALARM_TEX, ALARM_COLORS),
+    "jaws_trap": (JAWS_TEX, JAWS_COLORS),
+    "sleeping_bag": (BAG_TEX, BAG_COLORS),
+    "cat_detector": (CAT_TEX, CAT_COLORS),
+    "computer_locked": (COMPUTER_LOCKED, COMPUTER_COLORS),
+    "computer_open": (COMPUTER_OPEN, COMPUTER_COLORS),
+    "pumpkin_pie": (PIE_TEX, PIE_COLORS),
+    "christmas_tree": (TREE_TEX, TREE_COLORS),
+    "mockup_side": (MOCKUP_SIDE, MOCKUP_COLORS),
+    "mockup_top": (MOCKUP_TOP, MOCKUP_COLORS),
 }
 
 
 def ported():
     """Les evenements des sources Java : (genre, id, nom, image, malus, rarete)."""
     events = []
-    pattern = re.compile(r'c\.(classic|findium)\(\s*([A-Z_]+|"[^"]+")\s*,\s*"([^"]*)"\s*,\s*"([^"]*)"\s*,'
-                         r'\s*(true|false)\s*,\s*(\d+)')
+    pattern = re.compile(r'c\.(classic|findium|season\(LuckyType\.[A-Z]+)\s*[(,]\s*([A-Z_]+|"[^"]+")\s*,'
+                         r'\s*"([^"]*)"\s*,\s*"([^"]*)"\s*,\s*(true|false)\s*,\s*(\d+)')
     constants = {}
     for name in SOURCES:
         path = os.path.join(JAVA, name)
@@ -355,6 +1313,8 @@ def ported():
             constants[key] = value
         for kind, ident, label, icon, bad, rarity in pattern.findall(text):
             ident = constants.get(ident, ident.strip('"'))
+            # c.season(LuckyType.MARCH, ...) : le genre est le type, en minuscules.
+            kind = kind.split(".")[-1].lower() if kind.startswith("season") else kind
             events.append((kind, ident, label, icon, bad == "true", int(rarity)))
     return events
 
@@ -418,7 +1378,175 @@ def outputs():
     for material, layers in EQUIPMENT.items():
         put(os.path.join(ASSETS, "equipment", material + ".json"), {"layers": {
             layer: [{"texture": "%s:%s" % (NS, texture)}] for layer, (texture, _source) in layers.items()}})
+    gadget_outputs(put)
     return files
+
+
+def block_texture(ref):
+    """Une texture de bloc du lot 5 : jar:..., draw:... ou une texture du jeu."""
+    if ref.startswith("jar:"):
+        return "%s:block/lucky/%s" % (NS, os.path.basename(ref[4:])[:-4])
+    if ref.startswith("draw:"):
+        return "%s:block/lucky/%s" % (NS, ref[5:])
+    return ref
+
+
+def box_model_tb(textures, box):
+    """Un pave de {from} a {to} : le dessus, le dessous et les cotes ont chacun leur texture."""
+    x0, y0, z0, x1, y1, z1 = box
+    uv = {"north": [x0, 16 - y1, x1, 16 - y0], "south": [x0, 16 - y1, x1, 16 - y0],
+          "east": [z0, 16 - y1, z1, 16 - y0], "west": [z0, 16 - y1, z1, 16 - y0],
+          "up": [x0, z0, x1, z1], "down": [x0, z0, x1, z1]}
+    keys = {"up": "#top", "down": "#bottom"}
+    side = block_texture(textures["side"])
+    return {"parent": "minecraft:block/block",
+            "textures": {"top": block_texture(textures["top"]), "bottom": block_texture(textures["bottom"]),
+                         "side": side, "particle": side},
+            "elements": [{"from": [x0, y0, z0], "to": [x1, y1, z1],
+                          "faces": {face: {"uv": coords, "texture": keys.get(face, "#side")}
+                                    for face, coords in uv.items()}}]}
+
+
+def box_model(textures, box):
+    """Un pave de {from} a {to}, la meme texture sur ses six faces."""
+    x0, y0, z0, x1, y1, z1 = box
+    texture = block_texture(textures["all"])
+    uv = {"north": [x0, 16 - y1, x1, 16 - y0], "south": [x0, 16 - y1, x1, 16 - y0],
+          "east": [z0, 16 - y1, z1, 16 - y0], "west": [z0, 16 - y1, z1, 16 - y0],
+          "up": [x0, z0, x1, z1], "down": [x0, z0, x1, z1]}
+    return {"parent": "minecraft:block/block", "textures": {"all": texture, "particle": texture},
+            "elements": [{"from": [x0, y0, z0], "to": [x1, y1, z1],
+                          "faces": {face: {"uv": coords, "texture": "#all"} for face, coords in uv.items()}}]}
+
+
+def gadget_outputs(put):
+    """Blocs, objets, tableaux et noms du cinquieme lot."""
+    for name, recipe in SEASON_RECIPES.items():
+        put(os.path.join(DATA, "recipe", name + ".json"), recipe)
+    def model(name, payload):
+        put(os.path.join(ASSETS, "models", "block", name + ".json"), payload)
+
+    def states(name, variants):
+        put(os.path.join(ASSETS, "blockstates", name + ".json"), {"variants": variants})
+
+    def item_model(name, payload):
+        put(os.path.join(ASSETS, "models", "item", name + ".json"), payload)
+
+    def item_def(name, payload=None):
+        put(os.path.join(ASSETS, "items", name + ".json"),
+            payload or {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)}})
+
+    facings = {"north": 0, "east": 90, "south": 180, "west": 270}
+    for name, (kind, textures, loot, _fr, _en) in GADGET_BLOCKS.items():
+        ref = "%s:block/%s" % (NS, name)
+        if kind == "lamp":
+            for color in range(16):
+                for lit in (False, True):
+                    model("%s_%d_%s" % (name, color, "on" if lit else "off"),
+                          {"parent": "minecraft:block/cube_all",
+                           "textures": {"all": "%s:block/lucky/lamp_%d_%s" % (NS, color, "on" if lit else "off")}})
+            states(name, {"color=%d,lit=%s" % (color, str(lit).lower()):
+                          {"model": "%s_%d_%s" % (ref, color, "on" if lit else "off")}
+                          for color in range(16) for lit in (False, True)})
+            item_model(name, {"parent": ref + "_0_off"})
+        elif kind == "detector":
+            for powered in (False, True):
+                suffix = "_on" if powered else ""
+                model(name + suffix, {"parent": "minecraft:block/cube_all",
+                                      "textures": {"all": block_texture(textures["on" if powered else "off"])}})
+            states(name, {"powered=false": {"model": ref}, "powered=true": {"model": ref + "_on"}})
+            item_model(name, {"parent": ref})
+        elif kind == "lit":
+            for lit in (False, True):
+                suffix = "_on" if lit else ""
+                model(name + suffix, {"parent": "minecraft:block/cube_all",
+                                      "textures": {"all": block_texture(textures["on" if lit else "off"])}})
+            states(name, {"lit=false": {"model": ref}, "lit=true": {"model": ref + "_on"}})
+            item_model(name, {"parent": ref})
+        elif kind == "fan":
+            model(name, {"parent": "minecraft:block/orientable",
+                         "textures": {"front": block_texture(textures["front"]), "side": block_texture(textures["side"]),
+                                      "top": block_texture(textures["side"])}})
+            states(name, {"facing=%s,lit=%s" % (facing, lit): ({"model": ref, "y": rotation} if rotation
+                                                                else {"model": ref})
+                          for facing, rotation in facings.items() for lit in ("false", "true")})
+            item_model(name, {"parent": ref})
+        elif kind == "orientable":
+            model(name, {"parent": "minecraft:block/orientable",
+                         "textures": {"front": block_texture(textures["front"]), "side": block_texture(textures["side"]),
+                                      "top": block_texture(textures.get("top", textures["side"]))}})
+            variants = {}
+            for facing, rotation in facings.items():
+                if name == "bruteforcer":
+                    for powered in ("false", "true"):
+                        variants["facing=%s,powered=%s" % (facing, powered)] = {"model": ref, "y": rotation} \
+                            if rotation else {"model": ref}
+                else:
+                    variants["facing=%s" % facing] = {"model": ref, "y": rotation} if rotation else {"model": ref}
+            states(name, variants)
+            item_model(name, {"parent": ref})
+        elif kind == "portal":
+            states(name, {"": {"model": "minecraft:block/nether_portal_ns"}})
+            item_model(name, {"parent": "minecraft:item/generated", "textures": {"layer0": "minecraft:block/nether_portal"}})
+        elif kind == "cross":
+            texture = block_texture(textures["cross"])
+            model(name, {"parent": "minecraft:block/cross", "textures": {"cross": texture}})
+            states(name, {"": {"model": ref}})
+            item_model(name, {"parent": "minecraft:item/generated", "textures": {"layer0": texture}})
+        elif kind == "parent":
+            states(name, {"": {"model": textures["parent"]}})
+            item_model(name, {"parent": textures["parent"]})
+        else:
+            if kind == "box":
+                model(name, box_model(textures, textures["box"]))
+            elif kind == "box_tb":
+                model(name, box_model_tb(textures, textures["box"]))
+            elif kind == "cube_front":
+                model(name, {"parent": "minecraft:block/cube", "textures": {
+                    "north": block_texture(textures["front"]), "south": block_texture(textures["back"]),
+                    "east": block_texture(textures["side"]), "west": block_texture(textures["side"]),
+                    "up": block_texture(textures["side"]), "down": block_texture(textures["side"]),
+                    "particle": block_texture(textures["side"])}})
+            else:
+                model(name, {"parent": "minecraft:block/" + kind,
+                             "textures": {key: block_texture(value) for key, value in textures.items()}})
+            keys = {"alarm": ["powered=false", "powered=true"], "fake_command_block": ["triggered=false", "triggered=true"]}
+            states(name, {key: {"model": ref} for key in keys.get(name, [""])})
+            if name != "tomb":
+                item_model(name, {"parent": ref})
+        if name != "tomb":
+            item_def(name)
+        if loot == "self":
+            pools = [{"rolls": 1, "bonus_rolls": 0, "entries": [{"type": "minecraft:item", "name": "%s:%s" % (NS, name)}],
+                      "conditions": [{"condition": "minecraft:survives_explosion"}]}]
+        elif loot == "banana":
+            pools = [{"rolls": 1, "bonus_rolls": 0, "entries": [{"type": "minecraft:alternatives", "children": [
+                {"type": "minecraft:item", "name": "%s:banana" % NS,
+                 "conditions": [{"condition": "minecraft:random_chance", "chance": 0.7}]},
+                {"type": "minecraft:item", "name": "minecraft:stick"}]}],
+                      "conditions": [{"condition": "minecraft:survives_explosion"}]}]
+        else:
+            pools = []
+        put(os.path.join(DATA, "loot_table", "blocks", name + ".json"),
+            {"type": "minecraft:block", "pools": pools, "random_sequence": "%s:blocks/%s" % (NS, name)})
+    for name, (_source, texture, handheld, _fr, _en) in GADGET_ITEMS.items():
+        item_model(name, {"parent": "minecraft:item/handheld" if handheld else "minecraft:item/generated",
+                          "textures": {"layer0": "%s:item/%s" % (NS, texture)}})
+        if name == "smoke_bomb":
+            item_def(name, {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name),
+                                      "tints": [{"type": "minecraft:dye", "default": -3618616}]}})
+        else:
+            item_def(name)
+    # La boussole de pistage : les 32 aiguilles de la boussole du jeu, vers la pierre d'aimant.
+    item_def(COMPASS[0], {"model": {
+        "type": "minecraft:range_dispatch", "property": "minecraft:compass", "target": "lodestone", "scale": 32.0,
+        "entries": [{"threshold": index - 0.5, "model": {"type": "minecraft:model",
+                                                           "model": "minecraft:item/compass_%02d" % (index % 32)}}
+                    for index in range(33)],
+        "fallback": {"type": "minecraft:model", "model": "minecraft:item/compass_16"}}})
+    for name, width, height, _u, _v in PAINTINGS:
+        put(os.path.join(DATA, "painting_variant", "lucky_%s.json" % name),
+            {"asset_id": "%s:lucky_%s" % (NS, name), "width": width // 16, "height": height // 16})
 
 
 def lang_updates():
@@ -432,6 +1560,11 @@ def lang_updates():
             labels["effect.%s.%s" % (NS, effect)] = fr if french else en
         for name, (_source, _texture, _handheld, fr, en) in ITEMS.items():
             labels["item.%s.%s" % (NS, name)] = fr if french else en
+        for name, (_source, _texture, _handheld, fr, en) in GADGET_ITEMS.items():
+            labels["item.%s.%s" % (NS, name)] = fr if french else en
+        labels["item.%s.%s" % (NS, COMPASS[0])] = COMPASS[1] if french else COMPASS[2]
+        for name, (_kind, _textures, _loot, fr, en) in GADGET_BLOCKS.items():
+            labels["block.%s.%s" % (NS, name)] = fr if french else en
         updates[code] = labels
     return updates
 
@@ -459,8 +1592,12 @@ def textures(jar, events):
     for folder in (block_dir, gui, icons, effects):
         os.makedirs(folder, exist_ok=True)
     for key in TYPES:
-        Image.open(os.path.join(source, "blocks", "%s_lucky_block.png" % key)).convert("RGBA").save(
-            os.path.join(block_dir, "%s_lucky_block.png" % key))
+        image = Image.open(os.path.join(source, "blocks", TYPE_TEXTURES.get(key, "%s_lucky_block.png" % key))).convert(
+            "RGBA")
+        # Les blocs du mois sont dessines en 64 ou 128 pixels : ramenes a 16, comme les autres.
+        if image.size != (16, 16):
+            image = image.resize((16, 16), Image.BOX)
+        image.save(os.path.join(block_dir, "%s_lucky_block.png" % key))
     frame = Image.open(os.path.join(source, "gui", "LuckyBlock", "minecraft", "foreground.png")).convert("RGBA")
     frame.resize((frame.width // 2, frame.height // 2), Image.LANCZOS).save(os.path.join(gui, "foreground.png"))
     Image.open(os.path.join(source, "gui", "LuckyBlock", "minecraft", "unknown.png")).convert("RGBA").save(
@@ -468,12 +1605,19 @@ def textures(jar, events):
     Image.open(os.path.join(source, "gui", "LuckyPass", "minecraft", "empty.png")).convert("RGBA").save(
         os.path.join(gui, "empty.png"))
     folder = os.path.join(source, "gui", "LuckyBlock", "events")
-    available = {name.lower(): name for name in os.listdir(folder) if name.endswith(".png")}
+    # Les images des evenements du mois sont rangees par mois (march/asteroid_rain).
+    available = {}
+    for root, _dirs, names in os.walk(folder):
+        for name in names:
+            if name.endswith(".png"):
+                relative = os.path.relpath(os.path.join(root, name), folder).replace(os.sep, "/")
+                available.setdefault(relative.lower(), relative)
     wanted = {icon for _kind, _ident, _label, icon, _bad, _rarity in events}
     wanted |= {icon for _fr, _en, icon in EFFECTS.values()}
     drawn = {}
     for icon in sorted(wanted):
         target = os.path.join(icons, icon + ".png")
+        os.makedirs(os.path.dirname(target), exist_ok=True)
         if icon + ".png" in available:
             image = square(Image.open(os.path.join(folder, available[icon + ".png"])).convert("RGBA"))
         elif icon in ALIASES:
@@ -507,14 +1651,26 @@ def item_textures(jar):
     source = os.path.join(jar, "assets", "palamod", "textures")
     items = os.path.join(ASSETS, "textures", "item")
     os.makedirs(items, exist_ok=True)
-    for name, (path, texture, _handheld, _fr, _en) in ITEMS.items():
+    for name, (path, texture, _handheld, _fr, _en) in list(ITEMS.items()) + list(GADGET_ITEMS.items()):
         if name in DRAWN_ITEMS:
             pixels(*DRAWN_ITEMS[name]).save(os.path.join(items, texture + ".png"))
         elif path is not None:
             image = Image.open(os.path.join(source, path)).convert("RGBA")
-            if image.size != (16, 16):
+            if image.width <= 16 and image.height <= 16 and image.size != (16, 16):
+                # Quelques icones de PalaMod font 15 x 15 : on les centre sur 16 x 16.
+                padded = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+                padded.paste(image, ((16 - image.width) // 2, (16 - image.height) // 2))
+                image = padded
+            animated = os.path.exists(os.path.join(source, path) + ".mcmeta") and image.height % image.width == 0
+            if (image.width != image.height and not animated) or image.width % 16:
                 raise SystemExit("icone d'objet de taille inattendue : %s %s" % (path, image.size))
+            if not animated and image.size != (16, 16):
+                # Quelques icones de PalaMod sont dessinees en 32 : ramenees a 16, comme les autres.
+                image = image.resize((16, 16), Image.BOX)
             image.save(os.path.join(items, texture + ".png"))
+            if animated:
+                # Une bande d'images animee (le cuir et le colorant arc-en-ciel) : son .mcmeta suit.
+                shutil.copyfile(os.path.join(source, path) + ".mcmeta", os.path.join(items, texture + ".png.mcmeta"))
     for material, layers in EQUIPMENT.items():
         for layer, (texture, path) in layers.items():
             if path is None:
@@ -522,6 +1678,8 @@ def item_textures(jar):
             image = Image.open(os.path.join(source, path)).convert("RGBA")
             if image.size != (64, 32):
                 raise SystemExit("couche portee de taille inattendue : %s %s" % (path, image.size))
+            if material == "party_mask":
+                continue
             if material == "air_min":
                 mark, cloth = AIR_MIN_MARK
                 for y in range(image.height):
@@ -531,6 +1689,64 @@ def item_textures(jar):
             folder = os.path.join(ASSETS, "textures", "entity", "equipment", layer)
             os.makedirs(folder, exist_ok=True)
             image.save(os.path.join(folder, texture + ".png"))
+
+
+def gadget_textures(jar):
+    """Les textures de bloc du lot 5, la lampe en seize couleurs, les tableaux, le masque porte."""
+    from PIL import Image
+
+    source = os.path.join(jar, "assets", "palamod", "textures")
+    folder = os.path.join(ASSETS, "textures", "block", "lucky")
+    os.makedirs(folder, exist_ok=True)
+    for name, (_kind, refs, _loot, _fr, _en) in GADGET_BLOCKS.items():
+        for ref in refs.values():
+            if not isinstance(ref, str):
+                continue
+            if ref.startswith("jar:"):
+                image = Image.open(os.path.join(source, ref[4:])).convert("RGBA")
+                if image.width != image.height:
+                    image = image.crop((0, 0, min(image.size), min(image.size)))
+                image.save(os.path.join(folder, os.path.basename(ref[4:])))
+            elif ref.startswith("draw:"):
+                pixels(*DRAWN_BLOCKS[ref[5:]]).save(os.path.join(folder, ref[5:] + ".png"))
+    # La lampe coloree : la texture grise de PalaMod, teinte ({@code getRenderColor}), eteinte plus sombre.
+    lamp = Image.open(os.path.join(source, "blocks", "colored_lamp.png")).convert("RGBA")
+    for index, tint in enumerate(LAMP_TINTS):
+        for lit in (False, True):
+            factor = 1.0 if lit else 0.45
+            image = Image.new("RGBA", lamp.size)
+            for y in range(lamp.height):
+                for x in range(lamp.width):
+                    r, g, b, a = lamp.getpixel((x, y))
+                    image.putpixel((x, y), (int(r * ((tint >> 16) & 255) / 255 * factor),
+                                            int(g * ((tint >> 8) & 255) / 255 * factor),
+                                            int(b * (tint & 255) / 255 * factor), a))
+            image.save(os.path.join(folder, "lamp_%d_%s.png" % (index, "on" if lit else "off")))
+    # Les tableaux de PalaMod, decoupes dans leur planche.
+    sheet = Image.open(os.path.join(source, "painting", "lucky_paintings.png")).convert("RGBA")
+    paintings = os.path.join(ASSETS, "textures", "painting")
+    os.makedirs(paintings, exist_ok=True)
+    for name, width, height, u, v in PAINTINGS:
+        sheet.crop((u, v, u + width, v + height)).save(os.path.join(paintings, "lucky_%s.png" % name))
+    overlay = os.path.join(ASSETS, "textures", "gui", "lucky", "overlay")
+    os.makedirs(overlay, exist_ok=True)
+    for name, path in SEASON_OVERLAYS.items():
+        Image.open(os.path.join(source, path)).convert("RGBA").save(os.path.join(overlay, name + ".png"))
+    # Le masque de bal porte : un loup violet borde d'or sur les yeux (calque du chapeau).
+    layer = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
+    gold, purple, dark = (232, 186, 46, 255), (120, 50, 170, 255), (60, 20, 90, 255)
+    for x in range(40, 48):
+        for y in (10, 13):
+            layer.putpixel((x, y), gold)
+        for y in (11, 12):
+            layer.putpixel((x, y), dark if x in (41, 42, 45, 46) else purple)
+    for x in range(32, 40):
+        for y in range(11, 13):
+            layer.putpixel((x + 16, y), purple)
+            layer.putpixel((x + 24 if x + 24 < 64 else x, y), purple)
+    target = os.path.join(ASSETS, "textures", "entity", "equipment", "humanoid")
+    os.makedirs(target, exist_ok=True)
+    layer.save(os.path.join(target, "party_mask.png"))
 
 
 def draw_cat():
@@ -593,13 +1809,39 @@ def overlays():
     for name, color in FILTERS.items():
         Image.new("RGBA", (16, 16), color).save(os.path.join(folder, name + ".png"))
     draw_cat().save(os.path.join(folder, "cat.png"))
+    image = Image.new("RGBA", (4, 4))
+    for y, row in enumerate(MISSING_TEX):
+        for x, char in enumerate(row):
+            image.putpixel((x, y), MISSING_COLORS[char])
+    image.resize((16, 16), Image.NEAREST).save(os.path.join(folder, "missing.png"))
+    # « Hackerman » : des colonnes de chiffres verts sur fond transparent (64 x 64, tirage fixe).
+    import random as _random
+    rng = _random.Random(1337)
+    matrix = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    for column in range(0, 64, 4):
+        if rng.random() < 0.35:
+            continue
+        top = rng.randrange(64)
+        for row in range(0, rng.randrange(16, 56), 5):
+            glyph = rng.choice(((1, 1, 1, 1), (0, 1, 1, 0)))
+            alpha = max(60, 230 - row * 3)
+            for dy in range(4):
+                for dx in range(3):
+                    if glyph[dy] and (dx != 1 or dy in (0, 3)):
+                        matrix.putpixel((column + dx, (top + row + dy) % 64), (40, 230, 90, alpha))
+    matrix.save(os.path.join(folder, "matrix.png"))
+    patch = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(8):
+            patch.putpixel((x, y), (8, 8, 8, 255))
+    patch.save(os.path.join(folder, "eye_patch.png"))
 
 
 def stats(events):
     catalog = json.load(open(CATALOG, encoding="utf-8"))
     ids = {ident for _kind, ident, _label, _icon, _bad, _rarity in events}
     print("%d evenements portes sur %d" % (len(ids), len(catalog)))
-    for key in ("PALADIUM", "ENDIUM", "FINDIUM"):
+    for key in [key.upper() for key in TYPES]:
         pool = [event for event in catalog if key in event["types"]]
         good = sum(1.0 / event["rarity"] for event in pool if not event["bad"])
         bad = sum(1.0 / event["rarity"] for event in pool if event["bad"])
@@ -607,7 +1849,7 @@ def stats(events):
         mine = [event for event in pool if event["id"] in ids]
         my_good = sum(1.0 / event["rarity"] for event in mine if not event["bad"])
         my_bad = sum(1.0 / event["rarity"] for event in mine if event["bad"])
-        print("%-8s %3d/%3d portes  bons %.4f (Lucky Pass compris)  masse couverte : bons %4.1f %%, malus %4.1f %%"
+        print("%-9s %3d/%3d portes  bons %.4f (Lucky Pass compris)  masse couverte : bons %5.1f %%, malus %5.1f %%"
               % (key, len(mine), len(pool), share, 100.0 * my_good / good if good else 0.0,
                  100.0 * my_bad / bad if bad else 0.0))
 
@@ -628,15 +1870,27 @@ def main():
         seen.add(ident)
         if any(ord(char) > 127 for char in label):
             stale.append("nom avec accent : %s (%s)" % (ident, label))
-        if not re.fullmatch(r"[a-z0-9_.\-]+", icon):
+        if not re.fullmatch(r"[a-z0-9_.\-]+(/[a-z0-9_.\-]+)?", icon):
             stale.append("image au nom invalide : %s (%s)" % (ident, icon))
         known = catalog.get(ident)
         if known is None:
             stale.append("evenement inconnu de PalaMod : %s" % ident)
         elif known["rarity"] != rarity or known["bad"] != bad:
             stale.append("%s : rarete ou malus different de PalaMod (%s, %s)" % (ident, known["rarity"], known["bad"]))
-        elif (kind == "findium") != ("FINDIUM" in known["types"]):
+        elif kind in ("classic", "findium") and (kind == "findium") != ("FINDIUM" in known["types"]):
             stale.append("%s : pas le bon lucky block" % ident)
+        elif kind not in ("classic", "findium") and known["types"] != [kind.upper()]:
+            stale.append("%s : pas le bon lucky block (%s)" % (ident, ", ".join(known["types"])))
+    # Les objets nommes dans le code des evenements (SeasonKit.stack("palamod:...", n)) : chaque nom
+    # doit exister, sans quoi l'objet donne serait de l'air.
+    for name in os.listdir(JAVA):
+        if not name.endswith(".java"):
+            continue
+        text = open(os.path.join(JAVA, name), encoding="utf-8").read()
+        for namespace, item in re.findall(r'stack\("([a-z_]+):([a-z0-9_/]+)"', text):
+            if namespace != "minecraft" and not os.path.exists(os.path.join(
+                    ROOT, "src", "main", "resources", "assets", namespace, "items", item + ".json")):
+                stale.append("%s : objet inconnu %s:%s" % (name, namespace, item))
     for path, content in outputs().items():
         current = open(path, encoding="utf-8").read() if os.path.exists(path) else None
         if current == content:
@@ -664,12 +1918,22 @@ def main():
     if jar and not check:
         textures(jar, events)
         item_textures(jar)
+        gadget_textures(jar)
         overlays()
     needed = ["textures/block/%s_lucky_block.png" % key for key in TYPES]
     needed += ["textures/gui/lucky/%s.png" % name for name in ("foreground", "unknown", "empty")]
     needed += ["textures/gui/lucky/events/%s.png" % icon for _k, _i, _l, icon, _b, _r in events]
     needed += ["textures/mob_effect/%s.png" % effect for effect in EFFECTS]
-    needed += ["textures/gui/lucky/overlay/%s.png" % name for name in list(FILTERS) + ["cat"]]
+    needed += ["textures/gui/lucky/overlay/%s.png" % name
+               for name in list(FILTERS) + ["cat", "missing", "matrix", "eye_patch"] + list(SEASON_OVERLAYS)]
+    needed += ["textures/item/%s.png" % texture for _s, texture, _h, _f, _e in GADGET_ITEMS.values()]
+    needed += ["textures/painting/lucky_%s.png" % name for name, _w, _h, _u, _v in PAINTINGS]
+    needed += ["textures/block/lucky/lamp_%d_%s.png" % (index, state) for index in range(16) for state in ("on", "off")]
+    for _kind, refs, _loot, _fr, _en in GADGET_BLOCKS.values():
+        for ref in refs.values():
+            if isinstance(ref, str) and ref.startswith(("jar:", "draw:")):
+                needed.append("textures/block/lucky/%s.png" % (os.path.basename(ref[4:])[:-4] if ref.startswith("jar:")
+                                                               else ref[5:]))
     needed += ["textures/item/%s.png" % texture for _s, texture, _h, _f, _e in ITEMS.values()]
     needed += ["textures/entity/equipment/%s/%s.png" % (layer, texture)
                for layers in EQUIPMENT.values() for layer, (texture, _source) in layers.items()]

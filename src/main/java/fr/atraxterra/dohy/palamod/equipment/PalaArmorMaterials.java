@@ -141,6 +141,28 @@ public final class PalaArmorMaterials {
     public static final ArmorMaterial FAKE_ENDIUM = material("fake_endium", ArmorMaterials.IRON,
             SoundEvents.ARMOR_EQUIP_NETHERITE, PalaTags.REPAIRS_PALADIUM);
 
+    // -- Le cinquieme lot des lucky blocks (PALAMOD.md section 41) --
+
+    /** Le jetpack ({@code ItemJetpack}) : un plastron de cuir pour l'armure, irreparable. */
+    public static final ArmorMaterial JETPACK = material("jetpack", ArmorMaterials.LEATHER,
+            SoundEvents.ARMOR_EQUIP_IRON, PalaTags.REPAIRS_NOTHING);
+
+    /** Le masque de bal (a la place du casque de « Squid Game ») : un casque de cuir pour l'allure. */
+    public static final ArmorMaterial PARTY_MASK = material("party_mask", ArmorMaterials.LEATHER,
+            SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
+    /** Le casque des etoiles du lucky block de mars ({@code ItemStarHelmet}) : du paladium. */
+    public static final ArmorMaterial STAR_HELMET = material("star_helmet", PALADIUM, SoundEvents.ARMOR_EQUIP_IRON,
+            PalaTags.REPAIRS_NOTHING);
+    /** Le costume de lapin de Paques ({@code ItemEasterBunnyArmor}) : du cuir. */
+    public static final ArmorMaterial EASTER_BUNNY = material("easter_bunny", ArmorMaterials.LEATHER,
+            SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
+    /** La cape fantome ({@code ItemGhostCape}) : un plastron en diamant. */
+    public static final ArmorMaterial GHOST_CAPE = material("ghost_cape", ArmorMaterials.DIAMOND,
+            SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
+    /** Le cache-oeil de pirate ({@code ItemsRegister.EYE_PATCH}) : du cuir. */
+    public static final ArmorMaterial EYE_PATCH = material("eye_patch", ArmorMaterials.LEATHER,
+            SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
+
     private PalaArmorMaterials() {
     }
 

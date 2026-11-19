@@ -37,10 +37,15 @@ EXPECTED_PNG = (16, 16)
 # NeoForge. Un nom ajoute ici doit l'etre aussi dans BLOCK_FACTORIES s'il
 # enregistre un bloc.
 ITEM_FACTORIES = ("registerSimpleItem", "registerItem", "simple", "seed", "planter",
-                  "sword", "pickaxe", "axe", "shovel", "hoe", "armor", "stick", "ring", "amulet")
+                  "sword", "pickaxe", "axe", "shovel", "hoe", "armor", "stick", "ring", "amulet",
+                  # Les gadgets des lucky blocks (LuckyGadgets) et les objets saisonniers (SeasonItems).
+                  "gadgetItem", "seasonItem")
 BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "crop", "soil",
                    # Les objets de defense (chapitre 22) : obsidiennes piegees, a spike, enclumes.
-                   "effect", "spikeObsidian", "anvil")
+                   "effect", "spikeObsidian", "anvil",
+                   # Les gadgets des lucky blocks (LuckyGadgets) et les blocs saisonniers (SeasonItems) :
+                   # chacun a son objet.
+                   "gadgetBlock", "seasonBlock")
 
 # Les blocs sans item : on les obtient en semant, comme le ble vanilla. Ils
 # n'ont donc ni definition d'item ni modele d'item, et c'est normal.
@@ -62,7 +67,9 @@ ITEMLESS_BLOCKS = ("void_stone", "angelic_water",
                    # Les faux blocs de paladium de « Ouaiche t'es relou » et de
                    # « Ouaiche t'es tres relou » : ils ne naissent que d'un lucky
                    # block et rendent un vrai bloc a la fin.
-                   "paladium_fake_block", "green_paladium_fake_block")
+                   "paladium_fake_block", "green_paladium_fake_block",
+                   # La tombe de « Ton heure a sonne » : elle ne nait que d'une mort.
+                   "tomb")
 
 errors = []
 
@@ -214,6 +221,10 @@ def check_textures():
             size = png_size(png)
             if size is None:
                 fail(f"{folder}/{png.name} : ce n'est pas un PNG")
+            elif png.with_name(png.name + ".mcmeta").exists() and size[0] == EXPECTED_PNG[0] \
+                    and size[1] % size[0] == 0:
+                # Une bande animee (son .mcmeta a cote) : des images de 16 x 16 empilees.
+                continue
             elif size != MODEL_TEXTURES.get(f"{folder}/{png.name}", EXPECTED_PNG):
                 fail(f"{folder}/{png.name} : {size[0]}x{size[1]} au lieu de "
                      f"{EXPECTED_PNG[0]}x{EXPECTED_PNG[1]} — homonyme pris dans le jar ? "

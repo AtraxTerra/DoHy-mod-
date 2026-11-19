@@ -56,10 +56,84 @@ public final class LuckyClientEvents {
     /** Ce que Fantome cache ({@code isHidden} sur le corps, les bras et les jambes). */
     private static final List<String> GHOST_PARTS = List.of("body", "left_arm", "right_arm", "left_leg",
             "right_leg");
+    private static final List<String> COW_HIDDEN = List.of("head", "body", "left_arm", "right_arm", "left_leg",
+            "right_leg");
     /** Le vecteur de marche de {@link ClientInput}, protege : retrouve une fois, par son type. */
     private static Field moveVector;
 
     private LuckyClientEvents() {
+    }
+
+    /** « Ca fait flipper » : la camera a l'envers ({@code PLuckyBlock.FLIP}). */
+    @SubscribeEvent
+    public static void onCamera(net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null && player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.FLIP)) {
+            event.setRoll(event.getRoll() + 180.0f);
+        }
+    }
+
+    /** La langue d'avant le cours d'anglais, rendue a la fin de l'effet. */
+    private static net.minecraft.locale.Language beforeEnglish;
+    /** L'anglais charge pour l'effet : une autre langue en place veut dire un rechargement des ressources. */
+    private static net.minecraft.locale.Language english;
+
+    /**
+     * « Test d'anglais » rate ({@code SCTimedLanguagePacket}) : le jeu passe en anglais le temps de
+     * l'effet, sans toucher aux options du joueur.
+     */
+    @SubscribeEvent
+    public static void onEnglish(ClientTickEvent.Post event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        boolean active = minecraft.player != null
+                && minecraft.player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.ENGLISH);
+        net.minecraft.locale.Language current = net.minecraft.locale.Language.getInstance();
+        if (active && current != english) {
+            beforeEnglish = current;
+            english = net.minecraft.client.resources.language.ClientLanguage.loadFrom(minecraft.getResourceManager(),
+                    List.of("en_us"), false);
+            net.minecraft.locale.Language.inject(english);
+        } else if (!active && english != null) {
+            if (current == english) {
+                net.minecraft.locale.Language.inject(beforeEnglish);
+            }
+            beforeEnglish = null;
+            english = null;
+        }
+    }
+
+    /**
+     * L'inventaire s'ouvre : « Spooky Spook » ({@code ClientProxy.spooky}) fait hurler,
+     * « Inventaire explosif » previent le serveur, qui fait tomber une dynamite. L'inventaire de
+     * survie est celui de Berskar ({@code KitInventoryScreen}), qui remplace celui du jeu.
+     */
+    @SubscribeEvent
+    public static void onInventory(net.neoforged.neoforge.client.event.ScreenEvent.Opening event) {
+        net.minecraft.client.gui.screens.Screen screen = event.getNewScreen();
+        boolean inventory = screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen
+                || screen instanceof net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
+                || screen instanceof fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (!inventory || player == null) {
+            return;
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SPOOKY)) {
+            Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance
+                    .forUI(net.minecraft.sounds.SoundEvents.GHAST_SCREAM, 0.8f, 1.0f));
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.EXPLOSIVE)) {
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
+                    fr.atraxterra.dohy.palamod.lucky.LuckyPayloads.InventoryOpened.INSTANCE);
+        }
+    }
+
+    /** « Cinema muet » : plus aucun son ({@code PLuckyBlock.CINEMA_MUET}). */
+    @SubscribeEvent
+    public static void onSound(net.neoforged.neoforge.client.event.sound.PlaySoundEvent event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null && player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SILENT_MOVIE)) {
+            event.setSound(null);
+        }
     }
 
     @SubscribeEvent
@@ -96,6 +170,9 @@ public final class LuckyClientEvents {
         if (player.hasEffect(PalaLucky.INVERSION)) {
             invert(input);
         }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.NO_FORWARD)) {
+            noForward(input);
+        }
         if (player.hasEffect(PalaLucky.NO_JUMP)) {
             Input keys = input.keyPresses;
             if (keys.jump()) {
@@ -114,6 +191,33 @@ public final class LuckyClientEvents {
      * et droite s'echangent, le saut et l'accroupi aussi. Le vecteur de marche,
      * deja calcule, est retourne avec.
      */
+    /** « Aucune avancee » ({@code CANCEL_FORWARD}) : la touche avancer ne fait plus rien. */
+    private static void noForward(ClientInput input) {
+        Input keys = input.keyPresses;
+        input.keyPresses = new Input(false, keys.backward(), keys.left(), keys.right(), keys.jump(), keys.shift(),
+                false);
+        Vec2 move = input.getMoveVector();
+        if (move.y <= 0.0f) {
+            return;
+        }
+        try {
+            if (moveVector == null) {
+                for (Field field : ClientInput.class.getDeclaredFields()) {
+                    if (field.getType() == Vec2.class && !Modifier.isStatic(field.getModifiers())) {
+                        field.setAccessible(true);
+                        moveVector = field;
+                        break;
+                    }
+                }
+            }
+            if (moveVector != null) {
+                moveVector.set(input, new Vec2(move.x, 0.0f));
+            }
+        } catch (ReflectiveOperationException | RuntimeException error) {
+            moveVector = null;
+        }
+    }
+
     private static void invert(ClientInput input) {
         Input keys = input.keyPresses;
         input.keyPresses = new Input(keys.backward(), keys.forward(), keys.right(), keys.left(), keys.shift(),
@@ -154,6 +258,12 @@ public final class LuckyClientEvents {
         event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
             @Override
             public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState state) {
+                // Cow Player : le joueur disparait derriere la vache qui le suit (LuckyEffectsExtra).
+                if (avatar.hasEffect(PalaLucky.COW_PLAYER)) {
+                    for (String part : COW_HIDDEN) {
+                        state.overrideModelPartVisibility(part, false);
+                    }
+                }
                 if (avatar.hasEffect(PalaLucky.HIDE_HEAD)) {
                     state.overrideModelPartVisibility("head", false);
                 }
@@ -170,6 +280,13 @@ public final class LuckyClientEvents {
                 }
                 // Le monde a l'envers : PalaMod ne retourne que le joueur local, a ses propres yeux.
                 LocalPlayer local = Minecraft.getInstance().player;
+                // Solitaire : les autres joueurs disparaissent ({@code RenderPlayerEvent.Pre} annule).
+                if (local != null && avatar != local
+                        && local.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SOLITAIRE)) {
+                    for (String part : COW_HIDDEN) {
+                        state.overrideModelPartVisibility(part, false);
+                    }
+                }
                 if (local != null && avatar == local && local.hasEffect(PalaLucky.ROTATE)) {
                     state.isUpsideDown = true;
                 }
