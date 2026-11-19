@@ -33,15 +33,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -58,7 +55,6 @@ import java.util.UUID;
 public final class MayEvents {
 
     private static final Map<UUID, Dummy> DUMMIES = new HashMap<>();
-    private static final Set<UUID> MLG = new HashSet<>();
 
     private MayEvents() {
     }
@@ -194,19 +190,8 @@ public final class MayEvents {
         }
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.WATER_BUCKET));
         player.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 60, 20, false, false));
-        MLG.add(player.getUUID());
+        SeasonKit.softFall(player, 600);
         SeasonKit.say(player, "MLG pro ! Pose l'eau avant de toucher le sol.");
-        LuckyTasks.later(player, 600, () -> MLG.remove(player.getUUID()));
-    }
-
-    @SubscribeEvent
-    public static void onDamage(LivingIncomingDamageEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player && MLG.contains(player.getUUID())
-                && event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FALL)) {
-            MLG.remove(player.getUUID());
-            float safe = Math.max(0.0f, player.getHealth() - 1.0f);
-            event.setAmount(Math.min(event.getAmount(), safe));
-        }
     }
 
     // -- Une vieille histoire -------------------------------------------------------------------

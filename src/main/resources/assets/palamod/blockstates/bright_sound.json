@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "palamod:block/bright_sound"
+    },
+    "lit=true": {
+      "model": "palamod:block/bright_sound_on"
+    }
+  }
+}

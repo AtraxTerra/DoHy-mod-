@@ -43,6 +43,8 @@ public final class LuckyOverlays {
     private static final Identifier MATRIX = texture("matrix");
     /** Le voile de « La vie en rose » ({@code PotionPink}). */
     private static final Identifier PINK = texture("pink");
+    /** Le voile de « Cinema muet » : un vieux film. */
+    private static final Identifier SEPIA = texture("sepia");
     /** Les filtres sont des aplats : quelques pixels suffisent, etires sur tout l'ecran. */
     private static final int FILTER_SIZE = 16;
     /** Le chat dessine, et le rapport de l'image de PalaMod (1030 / 887). */
@@ -94,6 +96,9 @@ public final class LuckyOverlays {
         }
         if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.STAR)) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, STARS, 0, 0, 0.0f, 0.0f, width, height, 512, 256, 512, 256);
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SILENT_MOVIE)) {
+            stretch(graphics, SEPIA, width, height);
         }
         if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.PINK)) {
             stretch(graphics, PINK, width, height);

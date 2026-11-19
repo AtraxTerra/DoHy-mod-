@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffect;
@@ -156,6 +157,28 @@ public final class SeasonItems {
     public static final DeferredItem<Item> GHOSTLY_SWORD = seasonItem("ghostly_sword", Item::new,
             properties -> properties.sword(fr.atraxterra.dohy.palamod.equipment.PalaToolMaterials.PALADIUM, 3.0f,
                     -2.4f));
+
+    // -- Juin -----------------------------------------------------------------------------------
+
+    /** {@code ItemRadio} : un air entrainant, et les joueurs proches dansent vingt secondes. */
+    public static final DeferredItem<RadioItem> RADIO = seasonItem("radio", RadioItem::new,
+            properties -> properties.durability(10));
+    /** {@code ItemTrumpet} : un son tres agreable, une fois par minute. */
+    public static final DeferredItem<TrumpetItem> TRUMPET = seasonItem("trumpet", TrumpetItem::new,
+            properties -> properties.stacksTo(1));
+    /** {@code ItemGoldRecord} : pose sur un juke-box, il change le sol dessous en or (5 x 5). */
+    public static final DeferredItem<GoldRecordItem> GOLD_RECORD = seasonItem("gold_record", GoldRecordItem::new,
+            properties -> properties.stacksTo(1));
+    /** {@code ItemElectricGuitar} : une guitare qui frappe en musique. */
+    public static final DeferredItem<GuitarItem> ELECTRIC_GUITAR = seasonItem("electric_guitar", GuitarItem::new,
+            properties -> properties.sword(net.minecraft.world.item.ToolMaterial.IRON, 3.0f, -2.6f));
+    /** {@code BlocksRegister.SHARK_PLUSH} : une peluche de requin. */
+    public static final DeferredItem<Item> SHARK_PLUSH = seasonItem("shark_plush", Item::new,
+            properties -> properties.stacksTo(16));
+    /** {@code BlockBrightSound} : un clic, il s'allume et joue sa note une seconde. */
+    public static final DeferredBlock<BrightSoundBlock> BRIGHT_SOUND = seasonBlock("bright_sound",
+            BrightSoundBlock::new, properties -> properties.strength(1.0f).sound(SoundType.GLASS)
+                    .lightLevel(state -> state.getValue(BrightSoundBlock.LIT) ? 12 : 0));
 
     private SeasonItems() {
     }
@@ -514,7 +537,169 @@ public final class SeasonItems {
         }
     }
 
+    /** La radio : on danse autour. */
+    public static class RadioItem extends Item {
+        public RadioItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (player.getCooldowns().isOnCooldown(player.getItemInHand(hand))) {
+                return InteractionResult.FAIL;
+            }
+            if (level instanceof ServerLevel server && player instanceof ServerPlayer owner) {
+                for (ServerPlayer other : server.getEntitiesOfClass(ServerPlayer.class,
+                        player.getBoundingBox().inflate(15.0d))) {
+                    other.addEffect(new MobEffectInstance(SeasonEffects.DANCE, 400, 0));
+                }
+                JuneEvents.tune(owner, server, 20);
+                player.getItemInHand(hand).hurtAndBreak(1, player, hand);
+                player.getCooldowns().addCooldown(player.getItemInHand(hand), 400);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** La trompette : une fois par minute. */
+    public static class TrumpetItem extends Item {
+        public TrumpetItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (player.getCooldowns().isOnCooldown(player.getItemInHand(hand))) {
+                return InteractionResult.FAIL;
+            }
+            if (level instanceof ServerLevel server) {
+                LuckyWorld.sound(server, player.getX(), player.getY(), player.getZ(), "item.goat_horn.sound.1",
+                        SoundSource.PLAYERS, 2.0f, 1.2f);
+                server.sendParticles(ParticleTypes.NOTE, player.getX(), player.getY() + 2.0d, player.getZ(), 8, 0.6d,
+                        0.3d, 0.6d, 1.0d);
+                player.getCooldowns().addCooldown(player.getItemInHand(hand), 1200);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** Le disque d'or : sur un juke-box, l'etage du dessous devient de l'or. */
+    public static class GoldRecordItem extends Item {
+        public GoldRecordItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult useOn(net.minecraft.world.item.context.UseOnContext context) {
+            Level level = context.getLevel();
+            BlockPos jukebox = context.getClickedPos();
+            if (!level.getBlockState(jukebox).is(Blocks.JUKEBOX)) {
+                return InteractionResult.PASS;
+            }
+            if (!(context.getPlayer() instanceof ServerPlayer player) || !(level instanceof ServerLevel server)) {
+                return InteractionResult.SUCCESS;
+            }
+            BlockPos below = jukebox.below();
+            List<BlockPos> layer = new ArrayList<>();
+            for (BlockPos pos : BlockPos.betweenClosed(below.offset(-2, 0, -2), below.offset(2, 0, 2))) {
+                BlockState state = server.getBlockState(pos);
+                if (state.isAir()) {
+                    LuckyWorld.tell(player, "Il manque des blocs sous ton juke-box (laisse une zone de 5 x 5 en"
+                            + " dessous).", ChatFormatting.RED);
+                    return InteractionResult.FAIL;
+                }
+                if (state.is(Blocks.BEDROCK)) {
+                    LuckyWorld.tell(player, "Tu ne peux pas poser de disque d'or sur de la bedrock.", ChatFormatting.RED);
+                    return InteractionResult.FAIL;
+                }
+                if (state.is(Blocks.GOLD_BLOCK)) {
+                    LuckyWorld.tell(player, "Il y a deja de l'or ici.", ChatFormatting.RED);
+                    return InteractionResult.FAIL;
+                }
+                if (!LuckyWorld.canEdit(player, server, pos.immutable())) {
+                    LuckyWorld.tell(player, "Tu ne peux pas poser de disque d'or dans une zone protegee.",
+                            ChatFormatting.RED);
+                    return InteractionResult.FAIL;
+                }
+                layer.add(pos.immutable());
+            }
+            for (BlockPos pos : layer) {
+                server.setBlock(pos, Blocks.GOLD_BLOCK.defaultBlockState(), Block.UPDATE_ALL);
+            }
+            server.playSound(null, jukebox, SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 1.0f, 0.8f);
+            server.sendParticles(ParticleTypes.WAX_ON, jukebox.getX() + 0.5d, jukebox.getY() + 1.0d,
+                    jukebox.getZ() + 0.5d, 30, 1.5d, 0.5d, 1.5d, 0.0d);
+            context.getItemInHand().consume(1, player);
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** La guitare electrique : chaque coup fait une note. */
+    public static class GuitarItem extends Item {
+        public GuitarItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+            super.hurtEnemy(stack, target, attacker);
+            if (attacker.level() instanceof ServerLevel server) {
+                LuckyWorld.sound(server, target.getX(), target.getY(), target.getZ(), "block.note_block.guitar",
+                        SoundSource.PLAYERS, 1.0f, 0.5f + server.getRandom().nextFloat());
+            }
+        }
+    }
+
     // -- Blocs ----------------------------------------------------------------------------------
+
+    /** Le bloc sonore : un clic, il s'allume et joue sa note ({@code JuneEvents} s'en sert au test de rythme). */
+    public static class BrightSoundBlock extends Block {
+        public static final net.minecraft.world.level.block.state.properties.BooleanProperty LIT =
+                net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
+
+        public BrightSoundBlock(Properties properties) {
+            super(properties);
+            registerDefaultState(defaultBlockState().setValue(LIT, false));
+        }
+
+        @Override
+        protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<Block,
+                BlockState> builder) {
+            builder.add(LIT);
+        }
+
+        @Override
+        protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                   BlockHitResult hit) {
+            if (level instanceof ServerLevel server) {
+                ring(server, pos, 1.0f);
+                if (player instanceof ServerPlayer owner) {
+                    JuneEvents.padPressed(owner, server, pos);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        static void ring(ServerLevel level, BlockPos pos, float pitch) {
+            BlockState state = level.getBlockState(pos);
+            if (!(state.getBlock() instanceof BrightSoundBlock)) {
+                return;
+            }
+            level.setBlock(pos, state.setValue(LIT, true), Block.UPDATE_ALL);
+            level.scheduleTick(pos, state.getBlock(), 20);
+            LuckyWorld.sound(level, pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, "block.note_block.bell",
+                    SoundSource.BLOCKS, 1.0f, pitch);
+            level.sendParticles(ParticleTypes.NOTE, pos.getX() + 0.5d, pos.getY() + 1.2d, pos.getZ() + 0.5d, 1, 0.0d,
+                    0.0d, 0.0d, pitch / 2.0f);
+        }
+
+        @Override
+        protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+            if (state.getValue(LIT)) {
+                level.setBlock(pos, state.setValue(LIT, false), Block.UPDATE_ALL);
+            }
+        }
+    }
 
     /** Le foyer de pierre : trois coeurs, puis une minute d'attente. */
     public static class HearthBlock extends Block {

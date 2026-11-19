@@ -1137,5 +1137,15 @@
   "item.palamod.ghost_cape": "Cape fantome",
   "item.palamod.ghostly_sword": "Epee fantome",
   "block.palamod.stone_hearth": "Foyer de pierre",
-  "block.palamod.fake_gold_block": "Bloc d'or"
+  "block.palamod.fake_gold_block": "Bloc d'or",
+  "effect.palamod.dance": "Danse",
+  "effect.palamod.quack": "Quack",
+  "effect.palamod.silent_movie": "Cinema muet",
+  "effect.palamod.fire_walk": "Enflamme le dance-floor",
+  "item.palamod.radio": "Radio",
+  "item.palamod.trumpet": "Trompette",
+  "item.palamod.gold_record": "Disque d'or",
+  "item.palamod.electric_guitar": "Guitare electrique",
+  "item.palamod.shark_plush": "Peluche requin",
+  "block.palamod.bright_sound": "Bloc sonore"
 }

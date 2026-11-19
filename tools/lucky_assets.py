@@ -51,7 +51,7 @@ CATALOG = os.path.join(ROOT, "tools", "data", "lucky_events.json")
 SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEvents.java", "TrickEvents.java",
            "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
            "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
-           "EasterEvents.java", "MayEvents.java")
+           "EasterEvents.java", "MayEvents.java", "JuneEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -118,6 +118,10 @@ EFFECTS = {
     "hacked": ("Hackerman", "Hacked", "easter/hackerman"),
     "april_fish": ("Poisson d'avril", "April Fish", "easter/poisson_avril"),
     "pink": ("La vie en rose", "Life in Pink", "may/vie_en_rose"),
+    "dance": ("Danse", "Dance", "june/super_danseur"),
+    "quack": ("Quack", "Quack", "june/quack"),
+    "silent_movie": ("Cinema muet", "Silent Movie", "june/cinema_muet"),
+    "fire_walk": ("Enflamme le dance-floor", "Fire Walk", "june/enflamme_dancefloor"),
     "no_forward": ("Aucune avancee", "No Progress", "may/aucune_avancee"),
 }
 
@@ -128,6 +132,8 @@ FILTERS = {
     "flou": (214, 214, 214, 222),
     # « La vie en rose » (PotionPink).
     "pink": (255, 120, 190, 90),
+    # « Cinema muet » : un vieux film, sepia.
+    "sepia": (112, 88, 60, 110),
 }
 
 LANG = {
@@ -338,6 +344,12 @@ SEASON_ITEMS = {
     "player_saddle": ("items/player_saddle.png", "player_saddle", False, "Selle de joueur", "Player Saddle"),
     "ghost_cape": ("items/ghostcape.png", "ghost_cape", False, "Cape fantome", "Ghost Cape"),
     "ghostly_sword": ("items/ghostly_sword.png", "ghostly_sword", True, "Epee fantome", "Ghostly Sword"),
+    # Juin.
+    "radio": ("items/radio.png", "radio", False, "Radio", "Radio"),
+    "trumpet": ("items/trumpet.png", "trumpet", False, "Trompette", "Trumpet"),
+    "gold_record": ("items/gold_record.png", "gold_record", False, "Disque d'or", "Gold Record"),
+    "electric_guitar": ("items/electric_guitar.png", "electric_guitar", True, "Guitare electrique", "Electric Guitar"),
+    "shark_plush": (None, "shark_plush", False, "Peluche requin", "Shark Plush"),
 }
 SEASON_BLOCKS = {
     "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),
@@ -350,6 +362,8 @@ SEASON_BLOCKS = {
                           "Yellow Easter Egg"),
     "stone_hearth": ("cube_all", {"all": "jar:blocks/stone_hearth.png"}, "self", "Foyer de pierre", "Stone Hearth"),
     "fake_gold_block": ("cube_all", {"all": "minecraft:block/gold_block"}, None, "Bloc d'or", "Block of Gold"),
+    "bright_sound": ("lit", {"off": "jar:blocks/bright_sound_off.png", "on": "jar:blocks/bright_sound_on.png"}, "self",
+                     "Bloc sonore", "Bright Sound"),
 }
 GADGET_ITEMS.update(SEASON_ITEMS)
 GADGET_BLOCKS.update(SEASON_BLOCKS)
@@ -823,6 +837,28 @@ DRAWN_ITEMS = {
     "party_mask": (MASK_ICON, MASK_COLORS),
 }
 # Les textures de bloc dessinees ici.
+# La peluche requin (« La musique qui fait peur ! ») : dessinee ici, la texture du jar est un patron de modele.
+SHARK_TEX = [
+    "................",
+    "........G.......",
+    ".......GG.......",
+    "......GGG.......",
+    ".....GGGGG......",
+    "...GGGGGGGGG..G.",
+    "..GGGGGGGGGGGGG.",
+    ".GWGGGGGGGGGGG..",
+    ".GGGGGGGGGGGGGG.",
+    ".GWWWWWWWWGGG..G",
+    "..WWwWwWWWWG....",
+    "...WWWWWWWW.....",
+    ".....GG.........",
+    "................",
+    "................",
+    "................",
+]
+SHARK_COLORS = {"G": (112, 128, 150, 255), "W": (232, 236, 240, 255), "w": (200, 60, 60, 255)}
+DRAWN_ITEMS["shark_plush"] = (SHARK_TEX, SHARK_COLORS)
+
 DRAWN_BLOCKS = {
     "fish_bowl": (FISHBOWL_TEX, FISHBOWL_COLORS),
     "basketball": (BALL_TEX, BALL_COLORS),
@@ -973,6 +1009,13 @@ def gadget_outputs(put):
                 model(name + suffix, {"parent": "minecraft:block/cube_all",
                                       "textures": {"all": block_texture(textures["on" if powered else "off"])}})
             states(name, {"powered=false": {"model": ref}, "powered=true": {"model": ref + "_on"}})
+            item_model(name, {"parent": ref})
+        elif kind == "lit":
+            for lit in (False, True):
+                suffix = "_on" if lit else ""
+                model(name + suffix, {"parent": "minecraft:block/cube_all",
+                                      "textures": {"all": block_texture(textures["on" if lit else "off"])}})
+            states(name, {"lit=false": {"model": ref}, "lit=true": {"model": ref + "_on"}})
             item_model(name, {"parent": ref})
         elif kind == "orientable":
             model(name, {"parent": "minecraft:block/orientable",

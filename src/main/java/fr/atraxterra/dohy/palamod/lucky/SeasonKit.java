@@ -588,6 +588,28 @@ public final class SeasonKit {
     private record Npc(UUID owner, BiConsumer<ServerPlayer, Entity> talk) {
     }
 
+    // -- Chutes adoucies ------------------------------------------------------------------------
+
+    private static final java.util.Set<UUID> SOFT_FALL = new java.util.HashSet<>();
+
+    /**
+     * Pendant {@code ticks}, la prochaine chute laisse au moins un demi-coeur ({@code
+     * almostCancelFallDamagePlayer}) : la peur, pas la mort.
+     */
+    public static void softFall(ServerPlayer player, int ticks) {
+        SOFT_FALL.add(player.getUUID());
+        LuckyTasks.later(player, ticks, () -> SOFT_FALL.remove(player.getUUID()));
+    }
+
+    @SubscribeEvent
+    public static void onFall(net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player && SOFT_FALL.contains(player.getUUID())
+                && event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FALL)) {
+            SOFT_FALL.remove(player.getUUID());
+            event.setAmount(Math.min(event.getAmount(), Math.max(0.0f, player.getHealth() - 1.0f)));
+        }
+    }
+
     // -- Nettoyage ------------------------------------------------------------------------------
 
     @SubscribeEvent

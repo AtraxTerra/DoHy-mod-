@@ -1137,5 +1137,15 @@
   "item.palamod.ghost_cape": "Ghost Cape",
   "item.palamod.ghostly_sword": "Ghostly Sword",
   "block.palamod.stone_hearth": "Stone Hearth",
-  "block.palamod.fake_gold_block": "Block of Gold"
+  "block.palamod.fake_gold_block": "Block of Gold",
+  "effect.palamod.dance": "Dance",
+  "effect.palamod.quack": "Quack",
+  "effect.palamod.silent_movie": "Silent Movie",
+  "effect.palamod.fire_walk": "Fire Walk",
+  "item.palamod.radio": "Radio",
+  "item.palamod.trumpet": "Trumpet",
+  "item.palamod.gold_record": "Gold Record",
+  "item.palamod.electric_guitar": "Electric Guitar",
+  "item.palamod.shark_plush": "Shark Plush",
+  "block.palamod.bright_sound": "Bright Sound"
 }

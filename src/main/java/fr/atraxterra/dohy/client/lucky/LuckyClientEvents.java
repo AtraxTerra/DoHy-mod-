@@ -73,6 +73,15 @@ public final class LuckyClientEvents {
         }
     }
 
+    /** « Cinema muet » : plus aucun son ({@code PLuckyBlock.CINEMA_MUET}). */
+    @SubscribeEvent
+    public static void onSound(net.neoforged.neoforge.client.event.sound.PlaySoundEvent event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null && player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.SILENT_MOVIE)) {
+            event.setSound(null);
+        }
+    }
+
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
