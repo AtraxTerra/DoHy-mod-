@@ -30,7 +30,8 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Le shop cote serveur : la vue envoyee a l'ecran, et l'achat et la vente.
+ * Le shop cote serveur : l'onglet Acheter du commerce ({@link Commerce}), et la
+ * vente d'un objet, que l'onglet Vendre ({@link SellController}) appelle.
  *
  * <p>Les regles sont celles de l'ancien shop en coffre ({@code ShopMenu}) :
  * remise d'achat (musee + negoce, plafonnee a 25 %), prix de vente dynamique,
@@ -71,6 +72,10 @@ public final class ShopController {
         List<ShopView.Offer> offers = new ArrayList<>();
         for (Identifier id : ids) {
             PriceEntry entry = book.entry(id).orElseThrow();
+            if (entry.buyPrice() <= 0) {
+                // L'onglet Acheter ne montre que ce qui s'achete : la vente a son onglet.
+                continue;
+            }
             Item item = BuiltInRegistries.ITEM.getValue(id);
             double course = HourlyCourse.factor(id, entry);
             long buy = entry.buyPrice() > 0
@@ -92,9 +97,11 @@ public final class ShopController {
                     entry.buyPrice() > 0 ? (int) Math.round(discount * 100) : 0, sell, percent, missing,
                     countOwned(player, item), CollectionApi.countOf(player, id),
                     collectable ? Math.max(0L, CollectionApi.nextThreshold(player, id, entry)) : 0L,
-                    HourlyCourse.percent(id, entry), chart(player, id, entry, discount, now)));
+                    HourlyCourse.percent(id, entry),
+                    HourlyCourse.follows(entry) ? chart(player, id, entry, discount, now) : null));
         }
-        return new ShopView(Economy.balance(player), offers, HourlyCourse.minutesLeft());
+        return new ShopView(Economy.balance(player), offers, HourlyCourse.minutesLeft(), Commerce.Tab.BUY.subtitle(),
+                Commerce.tabs(player, Commerce.Tab.BUY), Commerce.elsewhere(player));
     }
 
     /**
@@ -120,6 +127,11 @@ public final class ShopController {
     }
 
     public static void handle(ServerPlayer player, UiNet.Action action) {
+        if ("card".equals(action.verb())) {
+            // Un onglet du commerce, ou une carte « ailleurs » de la recherche.
+            Commerce.openTab(player, action.argument());
+            return;
+        }
         Identifier id = Identifier.tryParse(action.argument());
         if (id == null) {
             return;
@@ -140,7 +152,7 @@ public final class ShopController {
         UiNet.show(player, view(player));
     }
 
-    private static void sell(ServerPlayer player, Identifier id, Item item, PriceEntry entry, int wanted) {
+    static void sell(ServerPlayer player, Identifier id, Item item, PriceEntry entry, int wanted) {
         if (!entry.sellable()) {
             refuse(player, "Cet item est en achat seul.");
             return;

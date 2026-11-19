@@ -29,9 +29,13 @@ public final class MenuCommand {
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(menu());
         event.getDispatcher().register(boutique());
-        // Le marche : le /market de Paladium.
-        event.getDispatcher().register(Commands.literal("market").executes(ctx -> {
-            fr.atraxterra.dohy.auction.AuctionController.INSTANCE.open(ctx.getSource().getPlayerOrException());
+        // L'hotel des ventes : le /market de Paladium, et ses noms courants.
+        event.getDispatcher().register(Commands.literal("market").executes(ctx -> openAuction(ctx.getSource())));
+        event.getDispatcher().register(Commands.literal("hdv").executes(ctx -> openAuction(ctx.getSource())));
+        event.getDispatcher().register(Commands.literal("ah").executes(ctx -> openAuction(ctx.getSource())));
+        // Le commerce, a son premier onglet (Acheter).
+        event.getDispatcher().register(Commands.literal("commerce").executes(ctx -> {
+            fr.atraxterra.dohy.shop.ShopController.open(ctx.getSource().getPlayerOrException());
             return 1;
         }));
         // Le clicker : le raccourci « clicker » de Paladium.
@@ -53,6 +57,11 @@ public final class MenuCommand {
 
     private static int open(CommandSourceStack source) throws CommandSyntaxException {
         Hub.open(source.getPlayerOrException());
+        return 1;
+    }
+
+    private static int openAuction(CommandSourceStack source) throws CommandSyntaxException {
+        fr.atraxterra.dohy.auction.AuctionController.INSTANCE.open(source.getPlayerOrException());
         return 1;
     }
 

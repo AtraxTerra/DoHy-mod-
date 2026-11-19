@@ -9,18 +9,47 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 /**
- * Le shop : le solde et toutes les offres du catalogue.
+ * L'onglet Acheter du commerce : le solde et tout ce que le shop vend.
  *
  * <p>Tout le catalogue part d'un coup (moins de deux cents lignes) : la
  * categorie, la recherche et la selection se font cote client sans aller-retour.
- * Seuls l'achat et la vente passent par le serveur, qui renvoie la vue a jour.
+ * Seul l'achat passe par le serveur, qui renvoie la vue a jour. La vente a son
+ * propre onglet.
  *
- * @param balance       solde du joueur, en centimes
+ * @param balance       solde du joueur
  * @param courseMinutes minutes avant le prochain cours de l'heure
+ * @param subtitle      la phrase sous le titre : ce qu'on trouve ici
+ * @param tabs          les onglets du commerce
+ * @param elsewhere     ce qui s'achete ailleurs (boutique, hotel des ventes), pour la recherche
  */
-public record ShopView(long balance, List<Offer> offers, int courseMinutes) implements UiView {
+public record ShopView(long balance, List<Offer> offers, int courseMinutes, String subtitle, List<MenuView.Tab> tabs,
+                       List<Elsewhere> elsewhere) implements UiView {
 
     public static final Identifier ID = UiNet.id("shop");
+
+    /**
+     * Ce qui ne s'achete pas au shop mais ailleurs dans le commerce : une recherche
+     * le trouve et dit ou aller.
+     *
+     * @param icon  l'objet
+     * @param label son nom s'il n'est pas celui de l'objet (« Booster x2 »), vide sinon
+     * @param tab   le chemin de l'onglet ou il s'achete
+     * @param where le nom de cet onglet
+     * @param price son prix, deja ecrit
+     */
+    public record Elsewhere(ItemStack icon, String label, String tab, String where, String price) {
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, Elsewhere> STREAM_CODEC = StreamCodec.of(
+                (buffer, entry) -> {
+                    ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, entry.icon());
+                    buffer.writeUtf(entry.label());
+                    buffer.writeUtf(entry.tab());
+                    buffer.writeUtf(entry.where());
+                    buffer.writeUtf(entry.price());
+                },
+                buffer -> new Elsewhere(ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer), buffer.readUtf(),
+                        buffer.readUtf(), buffer.readUtf(), buffer.readUtf()));
+    }
 
     /**
      * Une offre.
@@ -73,6 +102,9 @@ public record ShopView(long balance, List<Offer> offers, int courseMinutes) impl
             ByteBufCodecs.VAR_LONG, ShopView::balance,
             Offer.STREAM_CODEC.apply(ByteBufCodecs.list()), ShopView::offers,
             ByteBufCodecs.VAR_INT, ShopView::courseMinutes,
+            ByteBufCodecs.STRING_UTF8, ShopView::subtitle,
+            MenuView.Tab.STREAM_CODEC.apply(ByteBufCodecs.list()), ShopView::tabs,
+            Elsewhere.STREAM_CODEC.apply(ByteBufCodecs.list()), ShopView::elsewhere,
             ShopView::new);
 
     @Override

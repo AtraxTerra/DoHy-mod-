@@ -32,11 +32,10 @@ public final class Nav {
     public static final List<Group> GROUPS = List.of(
             new Group("", List.of(
                     new Item("accueil", "Accueil", () -> ItemStack.EMPTY, "hub"))),
+            // Le commerce : un seul ecran, quatre onglets (acheter, vendre, boutique,
+            // hotel des ventes). Quatre entrees ici, c'etait ne plus savoir laquelle vend quoi.
             new Group("ECONOMIE", List.of(
-                    new Item("shop", "Shop", () -> new ItemStack(Items.EMERALD), "shop"),
-                    new Item("vente", "Coffre de vente", () -> new ItemStack(Items.CHEST), "sell"),
-                    new Item("boutique", "Boutique", () -> new ItemStack(Items.GOLD_BLOCK), "boutique"),
-                    new Item("marche", "Marche", () -> new ItemStack(Items.MAP), "market"),
+                    new Item("commerce", "Commerce", () -> new ItemStack(Items.EMERALD), "shop"),
                     new Item("banque", "Banque", () -> new ItemStack(Items.CHEST_MINECART), "bank"),
                     new Item("clicker", "Clicker", () -> new ItemStack(Items.COOKIE), "clicker"))),
             new Group("PROGRESSION", List.of(
@@ -64,10 +63,11 @@ public final class Nav {
 
     static {
         VIEWS.put("hub", "accueil");
-        VIEWS.put("shop", "shop");
-        VIEWS.put("boutique", "boutique");
-        VIEWS.put("crate", "boutique");
-        VIEWS.put("auction", "marche");
+        VIEWS.put("shop", "commerce");
+        VIEWS.put("sell", "commerce");
+        VIEWS.put("boutique", "commerce");
+        VIEWS.put("crate", "commerce");
+        VIEWS.put("auction", "commerce");
         VIEWS.put("bank", "banque");
         VIEWS.put("clicker", "clicker");
         VIEWS.put("pass", "pass");

@@ -40,13 +40,26 @@ public final class SellCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("sell")
-                // Sans argument : le coffre de vente. C'est le geste courant —
-                // on depose une fournee entiere plutot qu'un item a la fois.
-                .executes(ctx -> openSellChest(ctx.getSource()))
+                // Sans argument : l'onglet Vendre du commerce, qui montre ce que le sac
+                // rapporte et vend tout d'un clic. Le coffre de vente a sa propre forme.
+                .executes(ctx -> openSellTab(ctx.getSource()))
+                .then(Commands.literal("coffre")
+                        .executes(ctx -> openSellChest(ctx.getSource())))
                 .then(Commands.literal("hand")
                         .executes(ctx -> sellHand(ctx.getSource(), false)))
                 .then(Commands.literal("stack")
                         .executes(ctx -> sellHand(ctx.getSource(), true)));
+    }
+
+    private static int openSellTab(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        if (Prices.book().size() == 0) {
+            source.sendFailure(Component.literal(
+                    "Catalogue de prix vide. Essaie /dohy reload et regarde les logs."));
+            return 0;
+        }
+        fr.atraxterra.dohy.shop.SellController.INSTANCE.open(player);
+        return 1;
     }
 
     private static int openSellChest(CommandSourceStack source) throws CommandSyntaxException {

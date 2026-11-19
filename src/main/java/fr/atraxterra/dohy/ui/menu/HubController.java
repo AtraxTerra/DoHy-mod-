@@ -21,7 +21,6 @@ import fr.atraxterra.dohy.palamod.trixium.TrixiumContest;
 import fr.atraxterra.dohy.palamod.trixium.TrixiumData;
 import fr.atraxterra.dohy.palamod.trixium.TrixiumMenu;
 import fr.atraxterra.dohy.palamod.trixium.TrixiumRivals;
-import fr.atraxterra.dohy.shop.SellChestMenu;
 import fr.atraxterra.dohy.shop.ShopController;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.ui.view.MenuView;
@@ -31,7 +30,6 @@ import fr.atraxterra.dohy.upgrade.UpgradeConfig;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -145,11 +143,13 @@ public final class HubController extends MenuController {
         // L'economie : l'argent qui travaille.
         double booster = Boosters.active(player);
         long boosterLeft = Boosters.remaining(player);
-        int listings = 0;
-        try {
-            listings = fr.atraxterra.dohy.auction.AuctionHouse.listings(player).size();
-        } catch (RuntimeException ignored) {
-            // le marche n'est pas encore pret
+        // L'hotel des ventes : ce que le joueur a en vente, et ce qui l'attend.
+        int selling = 0;
+        int waiting = fr.atraxterra.dohy.auction.AuctionSales.unsold(player);
+        for (fr.atraxterra.dohy.auction.AuctionData.Sale sale : fr.atraxterra.dohy.auction.AuctionSales.sales(player)) {
+            if (sale.state() == fr.atraxterra.dohy.auction.AuctionData.Sale.ACTIVE) {
+                selling++;
+            }
         }
         List<Card> economy = List.of(
                 Card.of(new ItemStack(Items.CHEST_MINECART), "Banque", Bank.banked(player) > 0 ? List.of(
@@ -161,9 +161,11 @@ public final class HubController extends MenuController {
                                 List.of(booster > 1 ? "Encore " + until(boosterLeft) : "Aucun booster actif"))
                         .accent(0xFFFAC400).action("boutique").badge(booster > 1 ? "ACTIF" : "")
                         .state(booster > 1 ? MenuView.DONE : MenuView.NORMAL),
-                Card.of(new ItemStack(Items.MAP), "Marche", List.of(listings > 0 ? listings + " annonces"
-                                : "Les annonces du jour"))
-                        .accent(0xFFFAC400).action("market"),
+                Card.of(new ItemStack(Items.NAME_TAG), "Hotel des ventes", List.of(waiting > 0
+                                ? waiting + (waiting > 1 ? " invendus a recuperer" : " invendu a recuperer")
+                                : selling > 0 ? selling + (selling > 1 ? " objets en vente" : " objet en vente")
+                                : "Raretes du jour, tes ventes"))
+                        .accent(0xFFFAC400).action("market").badge(waiting > 0 ? String.valueOf(waiting) : ""),
                 clickerCard(player));
 
         return new MenuView(id(), "Accueil", "", stats, List.of(
@@ -384,12 +386,7 @@ public final class HubController extends MenuController {
                 fr.atraxterra.dohy.spawn.SpawnApi.toggle(player);
             }
             case "shop" -> ShopController.open(player);
-            case "sell" -> {
-                UiNet.forget(player);
-                player.openMenu(new SimpleMenuProvider(
-                        (containerId, inventory, viewer) -> new SellChestMenu(containerId, inventory, player),
-                        Component.literal("Coffre de vente")));
-            }
+            case "sell" -> fr.atraxterra.dohy.shop.SellController.INSTANCE.open(player);
             case "boutique" -> BoutiqueController.INSTANCE.open(player);
             case "market" -> fr.atraxterra.dohy.auction.AuctionController.INSTANCE.open(player);
             case "bank" -> BankController.INSTANCE.open(player);

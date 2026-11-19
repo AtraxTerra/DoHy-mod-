@@ -81,6 +81,10 @@ public abstract class MenuController {
         if (!offered) {
             return;
         }
+        // Les onglets du commerce : l'onglet Acheter n'est pas un menu generique.
+        if (fr.atraxterra.dohy.shop.Commerce.openTab(player, action)) {
+            return;
+        }
         Identifier target = UiNet.id(action.substring(4));
         for (MenuController menu : Menus.all()) {
             if (menu.id().equals(target)) {

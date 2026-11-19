@@ -13,9 +13,20 @@ d'objets), un stock (combien de lots) et un prix, qui tourne autour de la
 La cote est la valeur boutique de tools/crate_values.py : le prix d'achat au
 shop, sinon le cout des ingredients, sinon une cote fixee a la main (les
 pierres legendaires, par exemple). Ce qui n'a de cote nulle part en recoit une
-ici (QUOTES), avec sa raison. Le marche ne rachete rien : il n'y a pas de
-boucle d'argent a surveiller, seulement des prix a tenir au-dessus de ce que
-rapporte la revente (le quart de la cote).
+ici (QUOTES), avec sa raison.
+
+Les acheteurs (BUYERS) : le joueur met aussi en vente, et des acheteurs
+fictifs prennent les memes raretes que celles de la reserve (AuctionSales), au
+plus 0,69 fois la cote. Deux regles le gardent :
+
+- pas de boucle d'argent : rien de ce qu'ils prennent ne s'achete moins cher
+  que leur prix le plus haut (verifie ici, contre les bornes des annonces et
+  contre le shop) ;
+- pas de contournement du shop : ce qui se fabrique surtout avec ce que le shop
+  rachete ou vend (lingots, obsidienne, etoile du Nether, pepites d'endium...)
+  n'est pas pris (« buyers »: false) : le vendre ici reviendrait a vendre ces
+  matieres sans que leur prix baisse. La part de la cote qui vient de telles
+  matieres est calculee recette par recette ; au-dela de FARMABLE_LIMIT, non.
 
 Les prix eux-memes ne sont pas ecrits ici : le jeu les tire chaque jour
 (AuctionHouse). Ce fichier fixe la reserve, les cotes et les bornes.
@@ -97,6 +108,43 @@ SELLERS = [
 # annonce y est une promotion, ou rien.
 PROMO = [0.75, 1.0]
 
+# Le prix d'une annonce, en part de la cote : une bonne affaire, le prix
+# courant, ou un vendeur gourmand. chance en pour cent.
+PRICES = [
+    {"label": "deal", "chance": 15, "factor": [0.70, 0.88]},
+    {"label": "fair", "chance": 65, "factor": [0.98, 1.25]},
+    {"label": "greedy", "chance": 20, "factor": [1.30, 1.60]},
+]
+
+# Les acheteurs de ce que le joueur met en vente. factor : le prix conseille en
+# part de la cote ; slots : les annonces en meme temps ; hours : au bout de
+# combien d'heures un invendu revient ; presets : les prix proposes, en part du
+# prix conseille, avec le temps moyen pour trouver preneur (loi exponentielle).
+BUYERS = {
+    "factor": 0.6,
+    "slots": 6,
+    "hours": 48,
+    "presets": [
+        {"id": "quick", "label": "Vente rapide", "factor": 0.85, "hours": 0.33},
+        {"id": "fair", "label": "Prix conseille", "factor": 1.0, "hours": 3.0},
+        {"id": "high", "label": "Prix fort", "factor": 1.15, "hours": 27.0},
+    ],
+}
+
+# Au-dela de cette part de la cote venue de matieres du shop, les acheteurs
+# n'en veulent pas (voir plus haut).
+FARMABLE_LIMIT = 0.30
+
+# Ce que les recettes du jeu ne disent pas : le gant d'endium se fait de deux
+# lingots d'endium (EXCLUSIVE dans crate_values), donc de pepites que le shop
+# rachete.
+NO_BUYERS = {"palamod:endium_gauntlet"}
+
+# La remise d'achat la plus forte au shop (musee et negoce), et le cours de
+# l'heure le plus bas : le prix d'achat le plus bas qu'un objet du shop puisse
+# avoir, en part de son prix.
+SHOP_FLOOR = 0.75 * 0.70
+
 
 def offer(category, item, quote, lot, stock, weight, factor=None):
     entry = {"category": category, "item": "%s:%s" % (NS, item), "quote": quote,
@@ -177,6 +225,7 @@ def build():
         entry["_name"] = name or path
     if problems:
         raise SystemExit("\n".join(problems))
+    buyers(offers, values)
     known = {category["id"] for category in CATEGORIES}
     for category in CATEGORIES:
         available = sum(1 for entry in offers if entry["category"] == category["id"])
@@ -191,17 +240,83 @@ def build():
                     "tire dans son rayon ; factor : bornes du prix en part de la cote, sinon celles de prices.",
         "per_reroll": 250_000,
         "max_rerolls": 4,
-        # Le prix d'une annonce, en part de la cote : une bonne affaire, le
-        # prix courant, ou un vendeur gourmand. chance en pour cent.
-        "prices": [
-            {"label": "deal", "chance": 15, "factor": [0.70, 0.88]},
-            {"label": "fair", "chance": 65, "factor": [0.98, 1.25]},
-            {"label": "greedy", "chance": 20, "factor": [1.30, 1.60]},
-        ],
+        "prices": PRICES,
         "sellers": SELLERS,
         "categories": CATEGORIES,
         "offers": [{key: value for key, value in entry.items() if not key.startswith("_")} for entry in offers],
+        "buyers": BUYERS,
     }, offers
+
+
+def shop_items():
+    """Ce que le shop vend ou rachete : des matieres qu'on se procure a volonte."""
+    with open(os.path.join(ROOT, "data", "generated", "prices.json")) as handle:
+        return json.load(handle)["items"]
+
+
+def farmable_share(item, values, by_result, shop, memo, depth=0):
+    """La part de la valeur d'un objet qui vient de matieres du shop, recette par recette.
+
+    Un objet du shop (ou un tag, ou un objet de base du jeu) en est entierement
+    fait ; un objet sans recette n'en contient pas (un butin, une recompense).
+    """
+    if item is None or item.startswith("#") or item in shop or item in crate_values.VANILLA:
+        return 1.0
+    if item not in memo:
+        memo[item] = 0.0  # garde contre les recettes en boucle
+        memo[item] = recipe_share(item, values, by_result, shop, memo, depth)
+    return memo[item]
+
+
+def recipe_share(item, values, by_result, shop, memo, depth=0):
+    """La part de matieres du shop dans la recette la moins chere d'un objet (0 sans recette)."""
+    recipes = by_result.get(item)
+    if not recipes or depth >= 10:
+        return 0.0
+    best = None
+    for count, inputs in recipes:
+        known = [value for value in inputs if value is not None and value in values]
+        cost = sum(values[value] for value in known) / count
+        if best is None or cost < best[0]:
+            best = (cost, count, inputs)
+    cost, count, inputs = best
+    farm = sum(values[value] * farmable_share(value, values, by_result, shop, memo, depth + 1)
+               for value in inputs if value is not None and value in values) / count
+    whole = max(values.get(item, 0.0), cost)
+    return farm / whole if whole > 0 else 0.0
+
+
+def buyers(offers, values):
+    """Marque ce que les acheteurs ne prennent pas, et verifie qu'il n'y a pas de boucle d'argent."""
+    shop = shop_items()
+    by_result = {}
+    for result, count, inputs in crate_values.load_recipes():
+        by_result.setdefault(result, []).append((count, inputs))
+    memo = {}
+    top = BUYERS["factor"] * max(preset["factor"] for preset in BUYERS["presets"])
+    cheapest = min(price["factor"][0] for price in PRICES)
+    problems = []
+    for entry in offers:
+        item = entry["item"]
+        listed = entry.get("factor", [cheapest])[0]
+        share = 1.0 if item in NO_BUYERS else recipe_share(item, values, by_result, shop, memo)
+        sold_at_shop = item in shop and shop[item].get("sellable")
+        entry["_share"] = share
+        if sold_at_shop or share > FARMABLE_LIMIT:
+            entry["buyers"] = False
+            entry["_why"] = "le shop le rachete" if sold_at_shop else "matieres du shop %d %%" % round(100 * share)
+            continue
+        # Les acheteurs paient au plus top x la cote : moins que le prix le plus bas
+        # auquel l'objet s'achete, chez les vendeurs fictifs comme au shop.
+        if top >= listed:
+            problems.append("%s : les acheteurs paient %.2f de la cote, une annonce peut descendre a %.2f"
+                            % (item, top, listed))
+        buy = shop.get(item, {}).get("buy_price", 0)
+        if buy and top * entry["quote"] >= SHOP_FLOOR * buy:
+            problems.append("%s : les acheteurs paient %d, le shop le vend %d" % (item, top * entry["quote"],
+                                                                                SHOP_FLOOR * buy))
+    if problems:
+        raise SystemExit("boucle d'argent a l'hotel des ventes :\n" + "\n".join(problems))
 
 
 def render(data):
@@ -225,9 +340,10 @@ def main(argv):
         print("%s — %d annonces par jour, %d offres" % (category["title"], category["count"], len(mine)))
         for entry in sorted(mine, key=lambda e: -e["weight"]):
             lot = entry["lot"]
-            print("  %5.1f %%  %-42s cote %13s  lot %s" % (
+            print("  %5.1f %%  %-42s cote %13s  lot %-7s %s" % (
                 100.0 * entry["weight"] / total, entry["_name"][:42], format(entry["quote"], ",").replace(",", " "),
-                "%d" % lot[0] if lot[0] == lot[1] else "%d a %d" % tuple(lot)))
+                "%d" % lot[0] if lot[0] == lot[1] else "%d a %d" % tuple(lot),
+                "acheteurs" if entry.get("buyers", True) else "pas d'acheteurs (%s)" % entry["_why"]))
 
 
 if __name__ == "__main__":
