@@ -107,6 +107,9 @@ public final class LuckyClientEvents {
         if (player.hasEffect(PalaLucky.INVERSION)) {
             invert(input);
         }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.NO_FORWARD)) {
+            noForward(input);
+        }
         if (player.hasEffect(PalaLucky.NO_JUMP)) {
             Input keys = input.keyPresses;
             if (keys.jump()) {
@@ -125,6 +128,33 @@ public final class LuckyClientEvents {
      * et droite s'echangent, le saut et l'accroupi aussi. Le vecteur de marche,
      * deja calcule, est retourne avec.
      */
+    /** « Aucune avancee » ({@code CANCEL_FORWARD}) : la touche avancer ne fait plus rien. */
+    private static void noForward(ClientInput input) {
+        Input keys = input.keyPresses;
+        input.keyPresses = new Input(false, keys.backward(), keys.left(), keys.right(), keys.jump(), keys.shift(),
+                false);
+        Vec2 move = input.getMoveVector();
+        if (move.y <= 0.0f) {
+            return;
+        }
+        try {
+            if (moveVector == null) {
+                for (Field field : ClientInput.class.getDeclaredFields()) {
+                    if (field.getType() == Vec2.class && !Modifier.isStatic(field.getModifiers())) {
+                        field.setAccessible(true);
+                        moveVector = field;
+                        break;
+                    }
+                }
+            }
+            if (moveVector != null) {
+                moveVector.set(input, new Vec2(move.x, 0.0f));
+            }
+        } catch (ReflectiveOperationException | RuntimeException error) {
+            moveVector = null;
+        }
+    }
+
     private static void invert(ClientInput input) {
         Input keys = input.keyPresses;
         input.keyPresses = new Input(keys.backward(), keys.forward(), keys.right(), keys.left(), keys.shift(),

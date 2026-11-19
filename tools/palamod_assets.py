@@ -4356,12 +4356,13 @@ def main():
         "pig_helmet", "cave_helmet", "invisible_helmet", "fake_endium_helmet", "balaclava_helmet",
         "party_mask", "star_helmet", "easter_bunny_helmet")])
     tag("minecraft/tags/item/chest_armor.json", ["%s:%s" % (NS, name) for name in (
-        "pig_chestplate", "invisible_chestplate", "fake_endium_chestplate", "jetpack", "easter_bunny_chestplate")])
+        "pig_chestplate", "invisible_chestplate", "fake_endium_chestplate", "jetpack", "easter_bunny_chestplate",
+        "ghost_cape")])
     tag("minecraft/tags/item/leg_armor.json", ["%s:%s" % (NS, name) for name in (
         "pig_leggings", "invisible_leggings", "fake_endium_leggings", "easter_bunny_leggings")])
     tag("minecraft/tags/item/foot_armor.json", ["%s:%s" % (NS, name) for name in (
         "pig_boots", "invisible_boots", "fake_endium_boots", "air_min_boots", "easter_bunny_boots")])
-    tag("minecraft/tags/item/swords.json", ["%s:couac_sword" % NS])
+    tag("minecraft/tags/item/swords.json", ["%s:couac_sword" % NS, "%s:ghostly_sword" % NS])
     # Les AirMin ne se reparent pas (getIsRepairable) : leur materiau designe un tag vide.
     tag("%s/tags/item/repairs/nothing.json" % NS, [])
 

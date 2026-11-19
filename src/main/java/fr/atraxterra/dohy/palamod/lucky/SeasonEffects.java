@@ -54,6 +54,15 @@ public final class SeasonEffects {
     public static final DeferredHolder<MobEffect, LuckyEffect> APRIL_FISH =
             EFFECTS.register("april_fish", () -> new LuckyEffect(MobEffectCategory.NEUTRAL, 0xF0873A));
 
+    // -- Mai ------------------------------------------------------------------------------------
+
+    /** {@code PotionPink} : la vie en rose, un voile rose sur l'ecran. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> PINK =
+            EFFECTS.register("pink", () -> new LuckyEffect(MobEffectCategory.NEUTRAL, 0xF59BC8));
+    /** {@code PLuckyBlock.CANCEL_FORWARD} : on ne peut plus avancer ({@code LuckyClientEvents}). */
+    public static final DeferredHolder<MobEffect, LuckyEffect> NO_FORWARD =
+            EFFECTS.register("no_forward", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x7D7D7D));
+
     private SeasonEffects() {
     }
 

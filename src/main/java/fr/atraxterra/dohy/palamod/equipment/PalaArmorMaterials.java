@@ -156,6 +156,9 @@ public final class PalaArmorMaterials {
     /** Le costume de lapin de Paques ({@code ItemEasterBunnyArmor}) : du cuir. */
     public static final ArmorMaterial EASTER_BUNNY = material("easter_bunny", ArmorMaterials.LEATHER,
             SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
+    /** La cape fantome ({@code ItemGhostCape}) : un plastron en diamant. */
+    public static final ArmorMaterial GHOST_CAPE = material("ghost_cape", ArmorMaterials.DIAMOND,
+            SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
 
     private PalaArmorMaterials() {
     }

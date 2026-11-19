@@ -1130,5 +1130,12 @@
   "block.palamod.easter_gift": "Cadeau de Paques",
   "block.palamod.fake_easter_gift": "Cadeau de Paques",
   "block.palamod.blue_easter_egg": "Oeuf de Paques bleu",
-  "block.palamod.yellow_easter_egg": "Oeuf de Paques jaune"
+  "block.palamod.yellow_easter_egg": "Oeuf de Paques jaune",
+  "effect.palamod.pink": "La vie en rose",
+  "effect.palamod.no_forward": "Aucune avancee",
+  "item.palamod.player_saddle": "Selle de joueur",
+  "item.palamod.ghost_cape": "Cape fantome",
+  "item.palamod.ghostly_sword": "Epee fantome",
+  "block.palamod.stone_hearth": "Foyer de pierre",
+  "block.palamod.fake_gold_block": "Bloc d'or"
 }

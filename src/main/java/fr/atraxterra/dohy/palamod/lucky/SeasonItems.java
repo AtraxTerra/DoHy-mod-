@@ -138,6 +138,25 @@ public final class SeasonItems {
             properties -> new EasterEggBlock(properties, true), properties -> properties.instabreak()
                     .sound(SoundType.STONE).noOcclusion());
 
+    // -- Mai ------------------------------------------------------------------------------------
+
+    /** {@code BlockStoneHearth} : trois coeurs rendus, une fois par minute et par foyer. */
+    public static final DeferredBlock<HearthBlock> STONE_HEARTH = seasonBlock("stone_hearth", HearthBlock::new,
+            properties -> properties.strength(2.0f).sound(SoundType.STONE).lightLevel(state -> 10));
+    /** {@code FAKE_GOLD_BLOCK} : de l'or pour les yeux ; casse, il ne rend rien. */
+    public static final DeferredBlock<Block> FAKE_GOLD_BLOCK = seasonBlock("fake_gold_block", Block::new,
+            properties -> properties.strength(3.0f, 6.0f).sound(SoundType.METAL));
+    /** {@code ItemPlayerSaddle} : un clic droit sur un joueur, ou ici sur toute creature, et on monte dessus. */
+    public static final DeferredItem<SaddleItem> PLAYER_SADDLE = seasonItem("player_saddle", SaddleItem::new,
+            properties -> properties.stacksTo(1));
+    /** {@code ItemGhostCape} : portee, deux minutes d'invisibilite, puis une heure de recharge. */
+    public static final DeferredItem<GhostCapeItem> GHOST_CAPE = seasonItem("ghost_cape", GhostCapeItem::new,
+            properties -> properties.humanoidArmor(PalaArmorMaterials.GHOST_CAPE, ArmorType.CHESTPLATE));
+    /** {@code ItemGhostlySword} : une epee en paladium, d'apparence spectrale. */
+    public static final DeferredItem<Item> GHOSTLY_SWORD = seasonItem("ghostly_sword", Item::new,
+            properties -> properties.sword(fr.atraxterra.dohy.palamod.equipment.PalaToolMaterials.PALADIUM, 3.0f,
+                    -2.4f));
+
     private SeasonItems() {
     }
 
@@ -439,7 +458,96 @@ public final class SeasonItems {
         }
     }
 
+    /** La selle de joueur : on monte sur la creature visee. */
+    public static class SaddleItem extends Item {
+        public SaddleItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target,
+                                                      InteractionHand hand) {
+            if (player.isPassenger() || target.isVehicle()) {
+                return InteractionResult.PASS;
+            }
+            if (player instanceof ServerPlayer) {
+                player.startRiding(target);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    /** La cape fantome : chargee, elle rend invisible deux minutes ; puis il faut une heure. */
+    public static class GhostCapeItem extends Item {
+        private static final String READY = "dohy_ghost_ready";
+
+        public GhostCapeItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity,
+                                  net.minecraft.world.entity.EquipmentSlot slot) {
+            if (slot != net.minecraft.world.entity.EquipmentSlot.CHEST || !(entity instanceof ServerPlayer player)
+                    || player.tickCount % 20 != 0) {
+                return;
+            }
+            long now = level.getGameTime();
+            var data = stack.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                    net.minecraft.world.item.component.CustomData.EMPTY).copyTag();
+            if (now >= data.getLongOr(READY, 0L)) {
+                player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 2400, 0, false, false, true));
+                data.putLong(READY, now + 72_000L);
+                stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                        net.minecraft.world.item.component.CustomData.of(data));
+                LuckyWorld.bar(player, "La cape fantome te rend invisible pendant 2 minutes.", ChatFormatting.AQUA);
+            }
+        }
+
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context,
+                                    net.minecraft.world.item.component.TooltipDisplay display,
+                                    Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+            info(tooltip, "Cet objet te permet de devenir invisible");
+            info(tooltip, "pendant 2 minutes s'il est completement recharge.");
+            info(tooltip, "Temps de rechargement : 1 heure.");
+        }
+    }
+
     // -- Blocs ----------------------------------------------------------------------------------
+
+    /** Le foyer de pierre : trois coeurs, puis une minute d'attente. */
+    public static class HearthBlock extends Block {
+        private static final java.util.Map<BlockPos, Long> LAST = new java.util.HashMap<>();
+
+        public HearthBlock(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                   BlockHitResult hit) {
+            if (!(player instanceof ServerPlayer server)) {
+                return InteractionResult.SUCCESS;
+            }
+            long now = level.getGameTime();
+            long last = LAST.getOrDefault(pos.immutable(), -1200L);
+            if (now - last < 1200L) {
+                long left = (1200L - (now - last)) / 20L;
+                LuckyWorld.tell(server, "Tu dois attendre encore " + left / 60L + " min " + left % 60L + " s.",
+                        ChatFormatting.RED);
+                return InteractionResult.SUCCESS;
+            }
+            LAST.put(pos.immutable(), now);
+            server.heal(6.0f);
+            LuckyWorld.tell(server, "Tu as ete soigne de 3 coeurs !", ChatFormatting.GREEN);
+            if (level instanceof ServerLevel serverLevel) {
+                serverLevel.sendParticles(ParticleTypes.HEART, pos.getX() + 0.5d, pos.getY() + 1.0d, pos.getZ() + 0.5d,
+                        6, 0.3d, 0.2d, 0.3d, 0.0d);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
 
     /** Le cadeau de Paques : pose, il s'ouvre deux secondes plus tard. */
     public static class EasterGiftBlock extends Block {

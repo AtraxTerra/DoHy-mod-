@@ -1130,5 +1130,12 @@
   "block.palamod.easter_gift": "Easter Gift",
   "block.palamod.fake_easter_gift": "Easter Gift",
   "block.palamod.blue_easter_egg": "Blue Easter Egg",
-  "block.palamod.yellow_easter_egg": "Yellow Easter Egg"
+  "block.palamod.yellow_easter_egg": "Yellow Easter Egg",
+  "effect.palamod.pink": "Life in Pink",
+  "effect.palamod.no_forward": "No Progress",
+  "item.palamod.player_saddle": "Player Saddle",
+  "item.palamod.ghost_cape": "Ghost Cape",
+  "item.palamod.ghostly_sword": "Ghostly Sword",
+  "block.palamod.stone_hearth": "Stone Hearth",
+  "block.palamod.fake_gold_block": "Block of Gold"
 }

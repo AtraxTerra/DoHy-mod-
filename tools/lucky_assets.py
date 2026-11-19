@@ -51,7 +51,7 @@ CATALOG = os.path.join(ROOT, "tools", "data", "lucky_events.json")
 SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEvents.java", "TrickEvents.java",
            "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
            "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
-           "EasterEvents.java")
+           "EasterEvents.java", "MayEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -117,6 +117,8 @@ EFFECTS = {
     "flip": ("Ca fait flipper", "Flipped", "easter/fait_flipper"),
     "hacked": ("Hackerman", "Hacked", "easter/hackerman"),
     "april_fish": ("Poisson d'avril", "April Fish", "easter/poisson_avril"),
+    "pink": ("La vie en rose", "Life in Pink", "may/vie_en_rose"),
+    "no_forward": ("Aucune avancee", "No Progress", "may/aucune_avancee"),
 }
 
 # Les filtres d'ecran (EventsManager.drawFilter) : des aplats, aux couleurs de
@@ -124,6 +126,8 @@ EFFECTS = {
 FILTERS = {
     "green": (154, 255, 105, 121),
     "flou": (214, 214, 214, 222),
+    # « La vie en rose » (PotionPink).
+    "pink": (255, 120, 190, 90),
 }
 
 LANG = {
@@ -189,6 +193,7 @@ EQUIPMENT = {
     "star_helmet": {"humanoid": ("star_helmet", "armors/star_helmet.png")},
     "easter_bunny": {"humanoid": ("easter_bunny", "models/easter_bunny_armor_1.png"),
                      "humanoid_leggings": ("easter_bunny", "models/easter_bunny_armor_1.png")},
+    "ghost_cape": {"humanoid": ("ghost_cape", "models/ghostcape_armor_1.png")},
 }
 # Sur le cote des AirMin portees, une petite marque sombre (une signature de marque) :
 # effacee, la toile reprend sa couleur.
@@ -329,6 +334,10 @@ SEASON_ITEMS = {
                               "Pantalon de lapin de Paques", "Easter Bunny Pants"),
     "easter_bunny_boots": ("items/easter_bunny_boots.png", "easter_bunny_boots", False, "Pattes de lapin de Paques",
                            "Easter Bunny Paws"),
+    # Mai.
+    "player_saddle": ("items/player_saddle.png", "player_saddle", False, "Selle de joueur", "Player Saddle"),
+    "ghost_cape": ("items/ghostcape.png", "ghost_cape", False, "Cape fantome", "Ghost Cape"),
+    "ghostly_sword": ("items/ghostly_sword.png", "ghostly_sword", True, "Epee fantome", "Ghostly Sword"),
 }
 SEASON_BLOCKS = {
     "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),
@@ -339,6 +348,8 @@ SEASON_BLOCKS = {
                         "Blue Easter Egg"),
     "yellow_easter_egg": ("cross", {"cross": "jar:blocks/easter_egg_yellow_item.png"}, "self", "Oeuf de Paques jaune",
                           "Yellow Easter Egg"),
+    "stone_hearth": ("cube_all", {"all": "jar:blocks/stone_hearth.png"}, "self", "Foyer de pierre", "Stone Hearth"),
+    "fake_gold_block": ("cube_all", {"all": "minecraft:block/gold_block"}, None, "Bloc d'or", "Block of Gold"),
 }
 GADGET_ITEMS.update(SEASON_ITEMS)
 GADGET_BLOCKS.update(SEASON_BLOCKS)
