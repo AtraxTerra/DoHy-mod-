@@ -1466,7 +1466,7 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
   sous s'ouvre ; « OUVRIR » lance les trois rouleaux, et l'événement tombe quand l'écran se
   ferme (seul, cinq secondes après l'arrêt, ou par FERMER). Espace ou Entrée valent le bouton ; un
   clic sur la machine passe l'animation.
-- **125 événements** sur les 439 de PalaMod (deux lots) : un bon sur deux environ au
+- **147 événements** sur les 439 de PalaMod (trois lots) : un bon sur deux environ au
   paladium (pyramides de minerais, gardes du corps, pluie de minerais, armure arc-en-ciel,
   dix lucky blocks en endium d'un coup…), que des bons à l'endium, et au findium des tours plus
   étranges (la tête qui disparaît, une armée de chiens, des enclumes qui rapportent 1 000 $). Les
@@ -1477,6 +1477,13 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
   pousses de chêne semées en marchant… Et des farces : pluie de dynamites, boules de feu, cage de
   verre en haut du monde, base d'obsidienne à l'autre bout de la carte, terrain miné, bataille de
   regard avec un enderman.
+- **Du contenu du mod** dans le troisième lot : une carte au trésor vers un coffre en paladium plein,
+  à 20 000 blocs au plus ; une pluie de 128 lingots ; un golem chargé de 64 blocs de paladium ; une
+  boîte à golem toute montée avec trois mini golems ; un totem de fertilité plein ; une pierre de
+  capture et son creeper ; une base d'obsidienne durcie. Et des pièges : un labyrinthe d'obsidienne
+  sans sortie à la hauteur 100, un coffre en endium maudit qui tue qui l'ouvre, une pluie
+  d'enclumes, l'armure changée en cuir, un faux gros lot qui coûte 5 000 $, l'énigme du Père Fouras
+  (trois essais dans le chat).
 - L'événement est tiré une fois pour toutes : cassé et reposé, le bloc garde le sien. Le compteur
   DECOUVERTS suit ceux qu'on a déjà vus.
 
@@ -1484,6 +1491,8 @@ valeur d'un lancer dans `BALANCE.md` § 6 tervicies.
 
 - **Un lancer gratuit par jour**, remis à zéro avec les contrats : un, deux ou trois lucky blocks
   (60 %, 30 %, 10 %), paladium ou findium le plus souvent, endium une fois sur seize.
+- **Des lancers offerts** par la Roulette et la Boule de Crystal (lucky block en findium), en plus
+  de celui du jour.
 - **Où** : le bouton LUCKY de l'inventaire, à côté de PASS ; la carte « Lucky Pass » du menu
   principal, marquée PRET tant que le lancer du jour reste à jouer ; `/luckypass` ou `/lucky`.
 - **La fiche** « Lucky blocks » (PalaMod), découverte en ramassant un lucky block ou en ouvrant

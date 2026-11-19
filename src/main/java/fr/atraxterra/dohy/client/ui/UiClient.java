@@ -49,6 +49,9 @@ public final class UiClient {
         SCREENS.put(fr.atraxterra.dohy.palamod.lucky.LuckyPassView.ID,
                 view -> new fr.atraxterra.dohy.client.lucky.LuckyPassScreen(
                         (fr.atraxterra.dohy.palamod.lucky.LuckyPassView) view));
+        SCREENS.put(fr.atraxterra.dohy.palamod.lucky.OneMillionView.ID,
+                view -> new fr.atraxterra.dohy.client.lucky.OneMillionScreen(
+                        (fr.atraxterra.dohy.palamod.lucky.OneMillionView) view));
     }
 
     private UiClient() {

@@ -337,7 +337,8 @@ final class TrickEvents {
                 break;
             }
         }
-        int y = Math.min(top(level, x, z) + BASE_HEIGHT, level.getMaxY() - 10);
+        // Le chunk d'arrivee est genere d'abord : sans lui, la hauteur serait celle du fond du monde.
+        int y = Math.min(ContentEvents.surface(level, x, z) + BASE_HEIGHT, level.getMaxY() - 10);
         player.teleportTo(level, x + 0.5d, y, z + 0.5d, java.util.Set.of(), player.getYRot(), player.getXRot(), false);
         BlockPos center = new BlockPos(x, y, z);
         LuckyWorld.box(player, level, center, 18, 18, 18, Blocks.OBSIDIAN.defaultBlockState(), null);

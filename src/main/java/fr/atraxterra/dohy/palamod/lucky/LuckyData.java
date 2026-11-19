@@ -24,7 +24,8 @@ public final class LuckyData {
             Codec.INT.optionalFieldOf("opened", 0).forGetter(data -> data.opened),
             Codec.LONG.optionalFieldOf("pass_day", 0L).forGetter(data -> data.passDay),
             Codec.INT.listOf().optionalFieldOf("pass_wins", List.of()).forGetter(data -> List.copyOf(data.passWins)),
-            Codec.INT.optionalFieldOf("pass_spins", 0).forGetter(data -> data.passSpins)
+            Codec.INT.optionalFieldOf("pass_spins", 0).forGetter(data -> data.passSpins),
+            Codec.INT.optionalFieldOf("pass_bonus", 0).forGetter(data -> data.passBonus)
     ).apply(instance, LuckyData::new));
 
     /** Combien de fois chaque evenement est sorti. */
@@ -37,20 +38,27 @@ public final class LuckyData {
     private final List<Integer> passWins = new ArrayList<>();
     /** Les lancers du Lucky Pass, depuis le debut. */
     private int passSpins;
+    /**
+     * Les lancers offerts en plus de celui du jour ({@code setHasLuckyEventBypassNow}) :
+     * la Roulette et la Boule de Crystal.
+     */
+    private int passBonus;
 
     public LuckyData() {
     }
 
-    private LuckyData(Map<String, Integer> seen, int opened, long passDay, List<Integer> passWins, int passSpins) {
+    private LuckyData(Map<String, Integer> seen, int opened, long passDay, List<Integer> passWins, int passSpins,
+                      int passBonus) {
         this.seen.putAll(seen);
         this.opened = opened;
         this.passDay = passDay;
         this.passWins.addAll(passWins);
         this.passSpins = passSpins;
+        this.passBonus = passBonus;
     }
 
     public boolean isEmpty() {
-        return seen.isEmpty() && opened == 0 && passDay == 0L && passSpins == 0;
+        return seen.isEmpty() && opened == 0 && passDay == 0L && passSpins == 0 && passBonus == 0;
     }
 
     public boolean seen(String event) {
@@ -95,6 +103,23 @@ public final class LuckyData {
 
     void spin(long day, List<Integer> wins) {
         passDay = day;
+        passWins.clear();
+        passWins.addAll(wins);
+        passSpins++;
+    }
+
+    public int passBonus() {
+        return passBonus;
+    }
+
+    /** Un lancer offert de plus. */
+    void giveBonus() {
+        passBonus++;
+    }
+
+    /** Un lancer offert, le lancer du jour deja fait : le jour ne change pas. */
+    void bonusSpin(List<Integer> wins) {
+        passBonus = Math.max(0, passBonus - 1);
         passWins.clear();
         passWins.addAll(wins);
         passSpins++;
