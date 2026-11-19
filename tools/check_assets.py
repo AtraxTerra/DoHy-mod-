@@ -221,6 +221,10 @@ def check_textures():
             size = png_size(png)
             if size is None:
                 fail(f"{folder}/{png.name} : ce n'est pas un PNG")
+            elif png.with_name(png.name + ".mcmeta").exists() and size[0] == EXPECTED_PNG[0] \
+                    and size[1] % size[0] == 0:
+                # Une bande animee (son .mcmeta a cote) : des images de 16 x 16 empilees.
+                continue
             elif size != MODEL_TEXTURES.get(f"{folder}/{png.name}", EXPECTED_PNG):
                 fail(f"{folder}/{png.name} : {size[0]}x{size[1]} au lieu de "
                      f"{EXPECTED_PNG[0]}x{EXPECTED_PNG[1]} — homonyme pris dans le jar ? "

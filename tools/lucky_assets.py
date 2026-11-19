@@ -39,6 +39,7 @@ masse de tirage deja couverte.
 import json
 import os
 import re
+import shutil
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -49,7 +50,8 @@ CATALOG = os.path.join(ROOT, "tools", "data", "lucky_events.json")
 # Les fichiers ou sont declares les evenements portes (c.classic / c.findium).
 SOURCES = ("GoodEvents.java", "BadEvents.java", "FindiumEvents.java", "EffectEvents.java", "TrickEvents.java",
            "FindiumTricks.java", "ContentEvents.java", "FindiumContent.java",
-           "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java")
+           "LuckyItemEvents.java", "ClassicContent.java", "MarchEvents.java",
+           "EasterEvents.java")
 NS = "palamod"
 
 TYPES = {
@@ -112,6 +114,9 @@ EFFECTS = {
     "star": ("La tete dans les etoiles", "Head in the Stars", "march/head_in_stars"),
     "no_oxygen": ("Plus d'oxygene", "No Oxygen", "march/no_oxygen"),
     "jupiter_gravity": ("Gravite de Jupiter", "Jupiter Gravity", "march/astronaut_training"),
+    "flip": ("Ca fait flipper", "Flipped", "easter/fait_flipper"),
+    "hacked": ("Hackerman", "Hacked", "easter/hackerman"),
+    "april_fish": ("Poisson d'avril", "April Fish", "easter/poisson_avril"),
 }
 
 # Les filtres d'ecran (EventsManager.drawFilter) : des aplats, aux couleurs de
@@ -182,6 +187,8 @@ EQUIPMENT = {
     "jetpack": {"humanoid": ("jetpack", "models/jetpack_layer_1.png")},
     "party_mask": {"humanoid": ("party_mask", None)},
     "star_helmet": {"humanoid": ("star_helmet", "armors/star_helmet.png")},
+    "easter_bunny": {"humanoid": ("easter_bunny", "models/easter_bunny_armor_1.png"),
+                     "humanoid_leggings": ("easter_bunny", "models/easter_bunny_armor_1.png")},
 }
 # Sur le cote des AirMin portees, une petite marque sombre (une signature de marque) :
 # effacee, la toile reprend sa couleur.
@@ -305,9 +312,33 @@ SEASON_ITEMS = {
     "splash_potion_jupiter_gravity": ("items/splash_potion_jupiter_gravity.png", "splash_potion_jupiter_gravity",
                                       False, "Potion de gravite de Jupiter", "Jupiter Gravity Potion"),
     "surviving_stone": ("items/survivingstone.png", "surviving_stone", False, "Pierre de survie", "Surviving Stone"),
+    # Paques.
+    "chocolate_egg": ("items/chocolate_egg.png", "chocolate_egg", False, "Oeuf en chocolat", "Chocolate Egg"),
+    "fake_chocolate_egg": ("items/chocolate_egg.png", "fake_chocolate_egg", False, "Oeuf en chocolat",
+                           "Chocolate Egg"),
+    "golden_egg": ("items/golden_egg.png", "golden_egg", False, "Oeuf d'or", "Golden Egg"),
+    "april_fish": ("items/april_fish.png", "april_fish", False, "Poisson d'avril", "April Fish"),
+    "rainbow_leather": ("items/rainbow_leather.png", "rainbow_leather", False, "Cuir arc-en-ciel", "Rainbow Leather"),
+    "rainbow_coloring": ("items/rainbow_coloring.png", "rainbow_coloring", False, "Colorant arc-en-ciel",
+                         "Rainbow Coloring"),
+    "easter_bunny_helmet": ("items/easter_bunny_helmet.png", "easter_bunny_helmet", False, "Tete de lapin de Paques",
+                            "Easter Bunny Head"),
+    "easter_bunny_chestplate": ("items/easter_bunny_chestplate.png", "easter_bunny_chestplate", False,
+                                "Costume de lapin de Paques", "Easter Bunny Suit"),
+    "easter_bunny_leggings": ("items/easter_bunny_leggings.png", "easter_bunny_leggings", False,
+                              "Pantalon de lapin de Paques", "Easter Bunny Pants"),
+    "easter_bunny_boots": ("items/easter_bunny_boots.png", "easter_bunny_boots", False, "Pattes de lapin de Paques",
+                           "Easter Bunny Paws"),
 }
 SEASON_BLOCKS = {
     "telescope": ("cross", {"cross": "jar:items/telescope.png"}, "self", "Telescope", "Telescope"),
+    "easter_gift": ("cross", {"cross": "jar:blocks/easter_gift_item.png"}, "self", "Cadeau de Paques", "Easter Gift"),
+    "fake_easter_gift": ("cross", {"cross": "jar:blocks/easter_gift_item.png"}, "self", "Cadeau de Paques",
+                         "Easter Gift"),
+    "blue_easter_egg": ("cross", {"cross": "jar:blocks/easter_egg_blue_item.png"}, None, "Oeuf de Paques bleu",
+                        "Blue Easter Egg"),
+    "yellow_easter_egg": ("cross", {"cross": "jar:blocks/easter_egg_yellow_item.png"}, "self", "Oeuf de Paques jaune",
+                          "Yellow Easter Egg"),
 }
 GADGET_ITEMS.update(SEASON_ITEMS)
 GADGET_BLOCKS.update(SEASON_BLOCKS)
@@ -316,7 +347,16 @@ SEASON_RECIPES = {
     "star_helmet": {"type": "minecraft:crafting_shaped", "category": "equipment", "pattern": ["IGI", "I I"],
                     "key": {"I": "minecraft:iron_ingot", "G": "minecraft:glowstone"},
                     "result": {"id": "palamod:star_helmet", "count": 1}},
+    "gold_ingot_from_golden_egg": {"type": "minecraft:crafting_shapeless", "category": "misc",
+                                   "ingredients": ["palamod:golden_egg"],
+                                   "result": {"id": "minecraft:gold_ingot", "count": 3}},
 }
+# Le cuir arc-en-ciel et une piece d'armure en cuir : la piece devient arc-en-ciel (PalaLucky.RAINBOW).
+for piece in ("helmet", "chestplate", "leggings", "boots"):
+    SEASON_RECIPES["rainbow_leather_%s" % piece] = {
+        "type": "minecraft:crafting_shapeless", "category": "equipment",
+        "ingredients": ["palamod:rainbow_leather", "minecraft:leather_%s" % piece],
+        "result": {"id": "minecraft:leather_%s" % piece, "count": 1, "components": {"palamod:lucky_rainbow": True}}}
 # Les images d'ecran copiees du jar : textures/gui/lucky/overlay/<nom>.png.
 SEASON_OVERLAYS = {"stars": "ui/march/head_in_stars/head_in_stars.png"}
 
@@ -1111,9 +1151,13 @@ def item_textures(jar):
                 padded = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
                 padded.paste(image, ((16 - image.width) // 2, (16 - image.height) // 2))
                 image = padded
-            if image.width != image.height or image.width % 16:
+            animated = os.path.exists(os.path.join(source, path) + ".mcmeta") and image.height % image.width == 0
+            if (image.width != image.height and not animated) or image.width % 16:
                 raise SystemExit("icone d'objet de taille inattendue : %s %s" % (path, image.size))
             image.save(os.path.join(items, texture + ".png"))
+            if animated:
+                # Une bande d'images animee (le cuir et le colorant arc-en-ciel) : son .mcmeta suit.
+                shutil.copyfile(os.path.join(source, path) + ".mcmeta", os.path.join(items, texture + ".png.mcmeta"))
     for material, layers in EQUIPMENT.items():
         for layer, (texture, path) in layers.items():
             if path is None:
@@ -1257,6 +1301,22 @@ def overlays():
         for x, char in enumerate(row):
             image.putpixel((x, y), MISSING_COLORS[char])
     image.resize((16, 16), Image.NEAREST).save(os.path.join(folder, "missing.png"))
+    # « Hackerman » : des colonnes de chiffres verts sur fond transparent (64 x 64, tirage fixe).
+    import random as _random
+    rng = _random.Random(1337)
+    matrix = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    for column in range(0, 64, 4):
+        if rng.random() < 0.35:
+            continue
+        top = rng.randrange(64)
+        for row in range(0, rng.randrange(16, 56), 5):
+            glyph = rng.choice(((1, 1, 1, 1), (0, 1, 1, 0)))
+            alpha = max(60, 230 - row * 3)
+            for dy in range(4):
+                for dx in range(3):
+                    if glyph[dy] and (dx != 1 or dy in (0, 3)):
+                        matrix.putpixel((column + dx, (top + row + dy) % 64), (40, 230, 90, alpha))
+    matrix.save(os.path.join(folder, "matrix.png"))
 
 
 def stats(events):
@@ -1347,7 +1407,7 @@ def main():
     needed += ["textures/gui/lucky/events/%s.png" % icon for _k, _i, _l, icon, _b, _r in events]
     needed += ["textures/mob_effect/%s.png" % effect for effect in EFFECTS]
     needed += ["textures/gui/lucky/overlay/%s.png" % name
-               for name in list(FILTERS) + ["cat", "missing"] + list(SEASON_OVERLAYS)]
+               for name in list(FILTERS) + ["cat", "missing", "matrix"] + list(SEASON_OVERLAYS)]
     needed += ["textures/item/%s.png" % texture for _s, texture, _h, _f, _e in GADGET_ITEMS.values()]
     needed += ["textures/painting/lucky_%s.png" % name for name, _w, _h, _u, _v in PAINTINGS]
     needed += ["textures/block/lucky/lamp_%d_%s.png" % (index, state) for index in range(16) for state in ("on", "off")]

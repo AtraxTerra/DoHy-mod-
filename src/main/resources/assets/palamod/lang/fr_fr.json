@@ -1113,5 +1113,22 @@
   "item.palamod.splash_potion_moon_gravity": "Potion de gravite lunaire",
   "item.palamod.splash_potion_jupiter_gravity": "Potion de gravite de Jupiter",
   "item.palamod.surviving_stone": "Pierre de survie",
-  "block.palamod.telescope": "Telescope"
+  "block.palamod.telescope": "Telescope",
+  "effect.palamod.flip": "Ca fait flipper",
+  "effect.palamod.hacked": "Hackerman",
+  "effect.palamod.april_fish": "Poisson d'avril",
+  "item.palamod.chocolate_egg": "Oeuf en chocolat",
+  "item.palamod.fake_chocolate_egg": "Oeuf en chocolat",
+  "item.palamod.golden_egg": "Oeuf d'or",
+  "item.palamod.april_fish": "Poisson d'avril",
+  "item.palamod.rainbow_leather": "Cuir arc-en-ciel",
+  "item.palamod.rainbow_coloring": "Colorant arc-en-ciel",
+  "item.palamod.easter_bunny_helmet": "Tete de lapin de Paques",
+  "item.palamod.easter_bunny_chestplate": "Costume de lapin de Paques",
+  "item.palamod.easter_bunny_leggings": "Pantalon de lapin de Paques",
+  "item.palamod.easter_bunny_boots": "Pattes de lapin de Paques",
+  "block.palamod.easter_gift": "Cadeau de Paques",
+  "block.palamod.fake_easter_gift": "Cadeau de Paques",
+  "block.palamod.blue_easter_egg": "Oeuf de Paques bleu",
+  "block.palamod.yellow_easter_egg": "Oeuf de Paques jaune"
 }

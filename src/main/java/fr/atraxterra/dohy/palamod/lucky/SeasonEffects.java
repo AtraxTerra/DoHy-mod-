@@ -42,6 +42,18 @@ public final class SeasonEffects {
     public static final DeferredHolder<MobEffect, LuckyEffect> JUPITER_GRAVITY = EFFECTS.register("jupiter_gravity",
             () -> modified(MobEffectCategory.HARMFUL, 0xC9874A, "jupiter_gravity", -1.0d, Attributes.JUMP_STRENGTH));
 
+    // -- Paques ---------------------------------------------------------------------------------
+
+    /** {@code PLuckyBlock.FLIP} : l'ecran a l'envers ({@code LuckyClientEvents}). */
+    public static final DeferredHolder<MobEffect, LuckyEffect> FLIP =
+            EFFECTS.register("flip", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x9A6CE8));
+    /** {@code PLuckyBlock.H4CK3D} : des chiffres verts partout sur l'ecran. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> HACKED =
+            EFFECTS.register("hacked", () -> new LuckyEffect(MobEffectCategory.HARMFUL, 0x22D14B));
+    /** {@code ItemAprilFish} : un poisson d'argent dans le dos toutes les trente minutes. */
+    public static final DeferredHolder<MobEffect, LuckyEffect> APRIL_FISH =
+            EFFECTS.register("april_fish", () -> new LuckyEffect(MobEffectCategory.NEUTRAL, 0xF0873A));
+
     private SeasonEffects() {
     }
 
@@ -65,6 +77,19 @@ public final class SeasonEffects {
         if (player.hasEffect(STAR) && player.tickCount % 10 == 0) {
             level.sendParticles(ParticleTypes.END_ROD, player.getX(), player.getY() + 2.3d, player.getZ(), 2, 0.4d, 0.1d,
                     0.4d, 0.0d);
+        }
+        if (player.hasEffect(APRIL_FISH) && player.tickCount % 36_000 == 0 && player.tickCount > 0) {
+            var look = player.getLookAngle().multiply(1.0d, 0.0d, 1.0d).normalize();
+            var fish = LuckyWorld.create(level, net.minecraft.world.entity.EntityTypes.SILVERFISH,
+                    player.getX() - look.x * 1.5d, player.getY(), player.getZ() - look.z * 1.5d);
+            if (fish != null) {
+                level.addFreshEntity(fish);
+                LuckyWorld.tell(player, "Un poisson d'avril est apparu dans ton dos !", net.minecraft.ChatFormatting.YELLOW);
+            }
+        }
+        if (player.tickCount % 40 == 0 && EasterEvents.ringing(player.getMainHandItem())) {
+            level.playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.BELL_BLOCK,
+                    net.minecraft.sounds.SoundSource.PLAYERS, 0.7f, 1.2f);
         }
         if (player.hasEffect(NO_OXYGEN) && player.tickCount % 40 == 0
                 && !player.getItemBySlot(EquipmentSlot.HEAD).is(SeasonItems.STAR_HELMET.get())) {

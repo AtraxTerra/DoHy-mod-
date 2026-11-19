@@ -64,6 +64,15 @@ public final class LuckyClientEvents {
     private LuckyClientEvents() {
     }
 
+    /** « Ca fait flipper » : la camera a l'envers ({@code PLuckyBlock.FLIP}). */
+    @SubscribeEvent
+    public static void onCamera(net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null && player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.FLIP)) {
+            event.setRoll(event.getRoll() + 180.0f);
+        }
+    }
+
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();

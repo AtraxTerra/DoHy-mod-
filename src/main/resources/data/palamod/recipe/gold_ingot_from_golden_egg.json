@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "palamod:golden_egg"
+  ],
+  "result": {
+    "id": "minecraft:gold_ingot",
+    "count": 3
+  }
+}

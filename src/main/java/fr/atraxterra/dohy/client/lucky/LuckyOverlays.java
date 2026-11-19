@@ -39,6 +39,8 @@ public final class LuckyOverlays {
     private static final Identifier MISSING = texture("missing");
     /** Les etoiles de « La tete dans les etoiles » ({@code StarRenderListener}). */
     private static final Identifier STARS = texture("stars");
+    /** Les chiffres verts de « Hackerman » ({@code PLuckyBlock.H4CK3D}). */
+    private static final Identifier MATRIX = texture("matrix");
     /** Les filtres sont des aplats : quelques pixels suffisent, etires sur tout l'ecran. */
     private static final int FILTER_SIZE = 16;
     /** Le chat dessine, et le rapport de l'image de PalaMod (1030 / 887). */
@@ -90,6 +92,17 @@ public final class LuckyOverlays {
         }
         if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.STAR)) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, STARS, 0, 0, 0.0f, 0.0f, width, height, 512, 256, 512, 256);
+        }
+        if (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.SeasonEffects.HACKED)) {
+            // Les colonnes defilent : la texture se decale d'un pixel par tic.
+            float scroll = (player.tickCount % 64) * 2.0f;
+            int tile = 128;
+            for (int x = 0; x < width; x += tile) {
+                for (int y = -tile; y < height; y += tile) {
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, MATRIX, x, y + (int) scroll, 0.0f, 0.0f, tile, tile,
+                            64, 64, 64, 64);
+                }
+            }
         }
         if (player.hasEffect(PalaLucky.CAT)) {
             int catWidth = width / 2;

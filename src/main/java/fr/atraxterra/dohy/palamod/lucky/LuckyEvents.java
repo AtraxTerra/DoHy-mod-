@@ -54,6 +54,7 @@ public final class LuckyEvents {
             LuckyItemEvents.register(catalog);
             ClassicContent.register(catalog);
             MarchEvents.register(catalog);
+            EasterEvents.register(catalog);
             events = Collections.unmodifiableMap(catalog.map);
         }
         return events;

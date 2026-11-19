@@ -153,6 +153,9 @@ public final class PalaArmorMaterials {
     /** Le casque des etoiles du lucky block de mars ({@code ItemStarHelmet}) : du paladium. */
     public static final ArmorMaterial STAR_HELMET = material("star_helmet", PALADIUM, SoundEvents.ARMOR_EQUIP_IRON,
             PalaTags.REPAIRS_NOTHING);
+    /** Le costume de lapin de Paques ({@code ItemEasterBunnyArmor}) : du cuir. */
+    public static final ArmorMaterial EASTER_BUNNY = material("easter_bunny", ArmorMaterials.LEATHER,
+            SoundEvents.ARMOR_EQUIP_LEATHER, PalaTags.REPAIRS_NOTHING);
 
     private PalaArmorMaterials() {
     }

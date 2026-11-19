@@ -1113,5 +1113,22 @@
   "item.palamod.splash_potion_moon_gravity": "Moon Gravity Potion",
   "item.palamod.splash_potion_jupiter_gravity": "Jupiter Gravity Potion",
   "item.palamod.surviving_stone": "Surviving Stone",
-  "block.palamod.telescope": "Telescope"
+  "block.palamod.telescope": "Telescope",
+  "effect.palamod.flip": "Flipped",
+  "effect.palamod.hacked": "Hacked",
+  "effect.palamod.april_fish": "April Fish",
+  "item.palamod.chocolate_egg": "Chocolate Egg",
+  "item.palamod.fake_chocolate_egg": "Chocolate Egg",
+  "item.palamod.golden_egg": "Golden Egg",
+  "item.palamod.april_fish": "April Fish",
+  "item.palamod.rainbow_leather": "Rainbow Leather",
+  "item.palamod.rainbow_coloring": "Rainbow Coloring",
+  "item.palamod.easter_bunny_helmet": "Easter Bunny Head",
+  "item.palamod.easter_bunny_chestplate": "Easter Bunny Suit",
+  "item.palamod.easter_bunny_leggings": "Easter Bunny Pants",
+  "item.palamod.easter_bunny_boots": "Easter Bunny Paws",
+  "block.palamod.easter_gift": "Easter Gift",
+  "block.palamod.fake_easter_gift": "Easter Gift",
+  "block.palamod.blue_easter_egg": "Blue Easter Egg",
+  "block.palamod.yellow_easter_egg": "Yellow Easter Egg"
 }

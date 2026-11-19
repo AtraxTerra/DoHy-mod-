@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "palamod:block/lucky/easter_egg_blue_item"
+  }
+}

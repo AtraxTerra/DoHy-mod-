@@ -91,7 +91,59 @@ public final class SeasonItems {
     public static final DeferredBlock<TelescopeBlock> TELESCOPE = seasonBlock("telescope", TelescopeBlock::new,
             properties -> properties.strength(1.0f).sound(SoundType.METAL).noOcclusion());
 
+    // -- Paques ---------------------------------------------------------------------------------
+
+    /** {@code ItemChocolateEgg} : toute la faim, et un effet au hasard pendant une minute. */
+    public static final DeferredItem<ChocolateEggItem> CHOCOLATE_EGG = seasonItem("chocolate_egg",
+            properties -> new ChocolateEggItem(properties, false), properties -> properties.food(eggFood()));
+    /** {@code ItemFakeChocolateEgg} : le meme oeuf, perime (poison). */
+    public static final DeferredItem<ChocolateEggItem> FAKE_CHOCOLATE_EGG = seasonItem("fake_chocolate_egg",
+            properties -> new ChocolateEggItem(properties, true), properties -> properties.food(eggFood()));
+    /** {@code ItemGoldenEgg} : il se mange (mal) ou se change en or a l'etabli. */
+    public static final DeferredItem<GoldenEggItem> GOLDEN_EGG = seasonItem("golden_egg", GoldenEggItem::new,
+            properties -> properties.food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(2)
+                    .saturationModifier(0.2f).alwaysEdible().build()));
+    /** {@code ItemAprilFish} : mange, ou donne a un autre (clic droit) ; un poisson d'avril pour 24 heures. */
+    public static final DeferredItem<AprilFishItem> APRIL_FISH = seasonItem("april_fish", AprilFishItem::new,
+            properties -> properties.food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(2)
+                    .saturationModifier(0.1f).alwaysEdible().build()));
+    /** {@code ItemRainbowLeather} : avec une piece d'armure en cuir, elle devient arc-en-ciel. */
+    public static final DeferredItem<Item> RAINBOW_LEATHER = seasonItem("rainbow_leather", Item::new,
+            properties -> properties);
+    /** {@code ItemRainbowColoring} : sur un mouton, il devient arc-en-ciel ({@code jeb_}). */
+    public static final DeferredItem<RainbowColoringItem> RAINBOW_COLORING = seasonItem("rainbow_coloring",
+            RainbowColoringItem::new, properties -> properties.stacksTo(1));
+    public static final DeferredItem<Item> EASTER_BUNNY_HELMET = seasonItem("easter_bunny_helmet", Item::new,
+            properties -> properties.humanoidArmor(PalaArmorMaterials.EASTER_BUNNY, ArmorType.HELMET));
+    public static final DeferredItem<Item> EASTER_BUNNY_CHESTPLATE = seasonItem("easter_bunny_chestplate", Item::new,
+            properties -> properties.humanoidArmor(PalaArmorMaterials.EASTER_BUNNY, ArmorType.CHESTPLATE));
+    public static final DeferredItem<Item> EASTER_BUNNY_LEGGINGS = seasonItem("easter_bunny_leggings", Item::new,
+            properties -> properties.humanoidArmor(PalaArmorMaterials.EASTER_BUNNY, ArmorType.LEGGINGS));
+    public static final DeferredItem<Item> EASTER_BUNNY_BOOTS = seasonItem("easter_bunny_boots", Item::new,
+            properties -> properties.humanoidArmor(PalaArmorMaterials.EASTER_BUNNY, ArmorType.BOOTS));
+    /** {@code BlockEasterGift} : pose, il s'ouvre et donne une recompense. */
+    public static final DeferredBlock<EasterGiftBlock> EASTER_GIFT = seasonBlock("easter_gift",
+            properties -> new EasterGiftBlock(properties, false), properties -> properties.strength(0.5f)
+                    .sound(SoundType.WOOL).noOcclusion());
+    /** {@code BlockFakeEasterGift} : le meme, mais un trou noir en sort. */
+    public static final DeferredBlock<EasterGiftBlock> FAKE_EASTER_GIFT = seasonBlock("fake_easter_gift",
+            properties -> new EasterGiftBlock(properties, true), properties -> properties.strength(0.5f)
+                    .sound(SoundType.WOOL).noOcclusion());
+    /** {@code BlockBlueEasterEgg} : les oeufs de la chasse aux oeufs. */
+    public static final DeferredBlock<EasterEggBlock> BLUE_EASTER_EGG = seasonBlock("blue_easter_egg",
+            properties -> new EasterEggBlock(properties, false), properties -> properties.instabreak()
+                    .sound(SoundType.STONE).noOcclusion());
+    /** {@code BlockYellowEasterEgg} : casse, il donne une recompense. */
+    public static final DeferredBlock<EasterEggBlock> YELLOW_EASTER_EGG = seasonBlock("yellow_easter_egg",
+            properties -> new EasterEggBlock(properties, true), properties -> properties.instabreak()
+                    .sound(SoundType.STONE).noOcclusion());
+
     private SeasonItems() {
+    }
+
+    private static net.minecraft.world.food.FoodProperties eggFood() {
+        return new net.minecraft.world.food.FoodProperties.Builder().nutrition(20).saturationModifier(0.6f)
+                .alwaysEdible().build();
     }
 
     private static <I extends Item> DeferredItem<I> seasonItem(String name, Function<Item.Properties, I> factory,
@@ -268,7 +320,218 @@ public final class SeasonItems {
         }
     }
 
+    /** L'oeuf en chocolat, vrai ou perime. */
+    public static class ChocolateEggItem extends Item {
+        private final boolean fake;
+
+        public ChocolateEggItem(Properties properties, boolean fake) {
+            super(properties);
+            this.fake = fake;
+        }
+
+        @Override
+        public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+            ItemStack left = super.finishUsingItem(stack, level, entity);
+            if (level instanceof ServerLevel && entity instanceof ServerPlayer player) {
+                if (fake) {
+                    player.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 0));
+                    LuckyWorld.tell(player, "Tu as mange un oeuf perime.", ChatFormatting.RED);
+                } else {
+                    List<Holder<MobEffect>> effects = List.of(MobEffects.BLINDNESS, MobEffects.NAUSEA, MobEffects.HASTE,
+                            MobEffects.NIGHT_VISION, MobEffects.REGENERATION, MobEffects.POISON, MobEffects.SPEED,
+                            MobEffects.WITHER);
+                    player.addEffect(new MobEffectInstance(effects.get(player.getRandom().nextInt(effects.size())), 1200,
+                            0));
+                }
+            }
+            return left;
+        }
+
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context,
+                                    net.minecraft.world.item.component.TooltipDisplay display,
+                                    Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+            info(tooltip, "Restaure toute la barre de nourriture" + (fake ? "." : ""));
+            if (!fake) {
+                info(tooltip, "et donne un effet au hasard pendant une minute.");
+            }
+            info(tooltip, "N'en mange pas trop, cela te ferait mal au ventre.");
+        }
+    }
+
+    /** L'oeuf d'or : se manger fait mal ; il vaut surtout son or. */
+    public static class GoldenEggItem extends Item {
+        public GoldenEggItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+            ItemStack left = super.finishUsingItem(stack, level, entity);
+            if (level instanceof ServerLevel server && entity instanceof ServerPlayer player) {
+                player.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 0));
+                player.hurtServer(server, server.damageSources().magic(), 2.0f);
+            }
+            return left;
+        }
+
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context,
+                                    net.minecraft.world.item.component.TooltipDisplay display,
+                                    Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+            info(tooltip, "Peut etre transforme en lingots d'or a l'etabli.");
+            info(tooltip, "Mais il est si joli, tu veux vraiment le faire ?");
+        }
+    }
+
+    /** Le poisson d'avril : mange, ou glisse a une creature (clic droit). */
+    public static class AprilFishItem extends Item {
+        public AprilFishItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+            ItemStack left = super.finishUsingItem(stack, level, entity);
+            if (entity instanceof ServerPlayer player) {
+                fish(player);
+            }
+            return left;
+        }
+
+        @Override
+        public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target,
+                                                      InteractionHand hand) {
+            if (!(target instanceof ServerPlayer other) || !(player instanceof ServerPlayer server)) {
+                return InteractionResult.PASS;
+            }
+            fish(other);
+            LuckyWorld.tell(server, "Tu as transforme " + other.getName().getString() + " en poisson pour 24 heures !",
+                    ChatFormatting.YELLOW);
+            stack.consume(1, player);
+            return InteractionResult.SUCCESS;
+        }
+
+        static void fish(ServerPlayer player) {
+            player.addEffect(new MobEffectInstance(SeasonEffects.APRIL_FISH, 1_728_000, 0));
+            LuckyWorld.tell(player, "Tu as ete transforme en poisson pour 24 heures !", ChatFormatting.YELLOW);
+        }
+    }
+
+    /** Le colorant arc-en-ciel : un mouton nomme {@code jeb_} change de couleur sans arret. */
+    public static class RainbowColoringItem extends Item {
+        public RainbowColoringItem(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target,
+                                                      InteractionHand hand) {
+            if (target.getType() != net.minecraft.world.entity.EntityTypes.SHEEP) {
+                return InteractionResult.PASS;
+            }
+            if (player instanceof ServerPlayer server) {
+                target.setCustomName(Component.literal("jeb_"));
+                LuckyWorld.tell(server, "Le mouton est maintenant arc-en-ciel !", ChatFormatting.GREEN);
+                stack.consume(1, player);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
     // -- Blocs ----------------------------------------------------------------------------------
+
+    /** Le cadeau de Paques : pose, il s'ouvre deux secondes plus tard. */
+    public static class EasterGiftBlock extends Block {
+        private final boolean fake;
+
+        public EasterGiftBlock(Properties properties, boolean fake) {
+            super(properties);
+            this.fake = fake;
+        }
+
+        @Override
+        public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+            if (!(level instanceof ServerLevel server) || !(placer instanceof ServerPlayer player)) {
+                return;
+            }
+            LuckyTasks.later(player, 35, () -> {
+                if (!server.getBlockState(pos).is(this)) {
+                    return;
+                }
+                server.removeBlock(pos, false);
+                if (fake) {
+                    EasterEvents.blackHole(player, server, Vec3.atBottomCenterOf(pos));
+                    return;
+                }
+                ItemStack reward = switch (server.getRandom().nextInt(4)) {
+                    case 0 -> new ItemStack(CHOCOLATE_EGG.get(), 8);
+                    case 1 -> new ItemStack(EASTER_BUNNY_CHESTPLATE.get());
+                    case 2 -> new ItemStack(EASTER_BUNNY_LEGGINGS.get());
+                    default -> new ItemStack(EASTER_BUNNY_BOOTS.get());
+                };
+                LuckyWorld.drop(server, pos, reward);
+                server.sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5d, pos.getY() + 0.5d,
+                        pos.getZ() + 0.5d, 15, 0.4d, 0.4d, 0.4d, 0.0d);
+            });
+        }
+
+        @Override
+        protected net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state,
+                net.minecraft.world.level.BlockGetter level, BlockPos pos,
+                net.minecraft.world.phys.shapes.CollisionContext context) {
+            return Block.box(2, 0, 2, 14, 13, 14);
+        }
+    }
+
+    /** Un oeuf de Paques pose : bleu pour la chasse, jaune pour une recompense. */
+    public static class EasterEggBlock extends Block {
+        private final boolean yellow;
+
+        public EasterEggBlock(Properties properties, boolean yellow) {
+            super(properties);
+            this.yellow = yellow;
+        }
+
+        @Override
+        protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                   BlockHitResult hit) {
+            if (player instanceof ServerPlayer server && level instanceof ServerLevel serverLevel) {
+                found(server, serverLevel, pos);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        protected void attack(BlockState state, Level level, BlockPos pos, Player player) {
+            if (player instanceof ServerPlayer server && level instanceof ServerLevel serverLevel) {
+                found(server, serverLevel, pos);
+            }
+        }
+
+        private void found(ServerPlayer player, ServerLevel level, BlockPos pos) {
+            if (!level.getBlockState(pos).is(this)) {
+                return;
+            }
+            level.removeBlock(pos, false);
+            level.sendParticles(new net.minecraft.core.particles.DustParticleOptions(yellow ? 0xF2D54A : 0x63B4F0, 1.5f),
+                    pos.getX() + 0.5d, pos.getY() + 0.4d, pos.getZ() + 0.5d, 20, 0.3d, 0.3d, 0.3d, 0.0d);
+            level.playSound(null, pos, SoundEvents.CHICKEN_EGG, SoundSource.BLOCKS, 1.0f, 1.2f);
+            if (yellow) {
+                LuckyWorld.drop(level, pos, EasterEvents.yellowReward(level.getRandom()));
+            } else {
+                EasterEvents.blueEggFound(player);
+            }
+        }
+
+        @Override
+        protected net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state,
+                net.minecraft.world.level.BlockGetter level, BlockPos pos,
+                net.minecraft.world.phys.shapes.CollisionContext context) {
+            return Block.box(4, 0, 4, 12, 11, 12);
+        }
+    }
+
 
     /** Le telescope de « Par dela les etoiles » : un test sur le systeme solaire, une fois. */
     public static class TelescopeBlock extends Block {
