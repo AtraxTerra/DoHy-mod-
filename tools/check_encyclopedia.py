@@ -46,6 +46,8 @@ OPTIONAL_ITEMS = {
     # Utility Drawers 1.2.6 (utilitydrawers-1.2.6-26.2.jar) : la fiche « tiroirs ».
     "utilitydrawers": {"oak_drawer_1", "oak_drawer_2", "oak_drawer_4", "drawer_base",
                        "compacting_drawer", "storage_interface"},
+    # Create Fly 6.0.9-1 (create-fly-26.2-neoforge-6.0.9-1.jar) : la fiche « create ».
+    "create": {"crushing_wheel", "millstone", "encased_fan"},
 }
 
 

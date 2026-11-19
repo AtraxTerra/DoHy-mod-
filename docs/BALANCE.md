@@ -1113,6 +1113,52 @@ lots (30 000 $ au prix de base) et un claim.
 Leviers : `WorldMarket` (`GOODS`, `K`, `MIN_FACTOR`, `MAX_FACTOR`, `REFERENCE_PER_S0`,
 `BUY_MARKUP`, `BUY_FLOOR`, `MOVE_MINUTES`), `NationRank` (les taxes), `notations.json`.
 
+## 6 unvicies. Create — ce que rapporte le broyage
+
+Les roues de broyage donnent 1,75 fois la matière d'un minerai de PalaMod (9 particules, plus
+75 % de chance de 9 autres ; la pierre et 75 % pour le findium et le trixium). La question est de
+savoir si broyer puis vendre les lingots rapporte plus que vendre le minerai tel quel. Revenu d'une
+vente d'une traite, courbe du § 6, sans l'oubli :
+
+| Minerai | N | Vendre le minerai | Four, lingots vendus | Create, lingots vendus |
+|---|---|---|---|---|
+| Améthyste | 64 / 256 / 1 000 | 5 129 / 14 489 / 40 602 | 1 902 / 7 405 / 26 415 | 3 306 / 12 633 / 42 887 |
+| Titane | 64 / 256 / 1 000 | 6 668 / 18 836 / 52 783 | 2 853 / 11 107 / 39 623 | 4 958 / 18 949 / 64 330 |
+| Paladium | 64 / 256 / 1 000 | 13 849 / 39 122 / 109 626 | 4 565 / 17 771 / 63 396 | 7 934 / 30 319 / 102 928 |
+| Paladium vert | 64 / 256 / 1 000 | 51 292 / 144 895 / 406 023 | 25 646 / 72 447 / 203 012 | 40 015 / 106 412 / 334 262 |
+| Findium | 64 / 256 / 1 000 | 41 034 / 115 916 / 324 818 | 20 517 / 57 958 / 162 409 | 32 012 / 85 129 / 267 409 |
+| Trixium | 64 / 256 / 1 000 | 82 067 / 231 832 / 649 637 | 41 034 / 115 916 / 324 818 | 64 024 / 170 258 / 534 818 |
+
+Vendre le minerai reste le meilleur choix, sauf pour l'améthyste et le titane au-delà de quelques
+centaines d'un coup : leurs lingots sont au tier `FARM` (S₀ = 2 000, des golems et des sèves en
+donnent par centaines à l'heure), leurs minerais au tier `FOUND` (S₀ = 64), et 1 000 minerais
+broyés rapportent 6 et 22 % de plus. C'est l'ordre de grandeur des fermes qui fixent ces prix ; le
+broyage sert d'abord à fabriquer. Le minerai de pépites d'endium n'a pas de recette : une pépite vaut
+40 000 $, 75 % de plus en ferait une rente.
+
+**NTM NEXT** : les lingots et les poudres ne se vendent pas (§ 6 bis) ; broyer un minerai de NTM
+donne plus de matière à fabriquer, jamais plus d'argent. La matière brute, qui se vend, ne gagne
+rien à la roue (un broyé, comme chez Create).
+
+**Céréales** : un tiers de chance de farine par grain à la meule, le `mill_ratio` de 3 du moulin
+(`data/agriculture.json`) : la farine ne coûte pas moins de grain à la meule qu'au moulin.
+
+**Zinc** : `create:raw_zinc`, `create:zinc_ore` et `create:deepslate_zinc_ore` au tier `FOUND`, au
+rythme du fer (400 par heure : 100 $, 400 $ à l'achat). Le lingot n'a pas de prix. Le zinc brut
+acheté 400 $, broyé puis lavé, rend 9 pépites (sans prix) et 0,75 poudre à canon (42 $) : pas de
+boucle.
+
+**Pépite de fer** : son taux de troc (400 par heure) lui donnait 45 $, et le lingot (15 $) en
+donne 9 à l'établi : 405 $ par lingot. Le lavage de Create en faisait une rente automatique (un
+minerai de fer acheté 400 $, broyé et lavé : 15,75 pépites en moyenne, 708 $). `gen_prices.py`
+applique désormais des **plafonds d'établi** (`CRAFT_CAPS`) : le prix d'un objet ne dépasse pas
+celui de sa source divisé par le nombre d'unités qu'elle donne, arrondi en dessous. La pépite de
+fer passe à 1 $ (4 $ à l'achat). La pépite d'or (9 $, 81 $ les neuf contre 82 $ le lingot) était
+déjà dans la règle.
+
+Leviers : `tools/create_recipes.py` (rendements, minerais repris), `data/rates.csv` (zinc),
+`CRAFT_CAPS` dans `tools/gen_prices.py`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas
