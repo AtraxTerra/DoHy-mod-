@@ -222,9 +222,9 @@ public final class SeasonKit {
 
     /**
      * La salle a code des coffres du mois ({@code BiicodeStructure}) : une piece de 6 blocs de
-     * bedrock autour du joueur, un coffre au milieu, trois chiffres sur le mur du nord. Le code
-     * tape dans le chat ouvre la porte ; au bout de cinq minutes la piece disparait de toute
-     * facon. Le coffre reste.
+     * bedrock autour du joueur, un coffre au milieu, trois chiffres devant le mur du nord, a
+     * hauteur des yeux, et une lumiere invisible au plafond. Le code tape dans le chat ouvre la
+     * porte ; au bout de cinq minutes la piece disparait de toute facon. Le coffre reste.
      */
     public static void codeRoom(ServerPlayer player, ServerLevel level, String title, int[] code,
                                 List<ItemStack> rewards) {
@@ -246,10 +246,16 @@ public final class SeasonKit {
                 walls.add(pos.immutable());
             }
         }
+        BlockPos light = center.offset(0, 3, -1);
+        if (level.setBlock(light, Blocks.LIGHT.defaultBlockState(), 3)) {
+            walls.add(light);
+        }
         chest(player, level, center.offset(0, 0, 1), rewards);
         List<Entity> marks = new ArrayList<>();
         for (int index = 0; index < code.length; index++) {
-            var mark = LuckyCreatures.marker(level, center.getX() - 1 + index + 0.5d, center.getY() + 1.6d,
+            // Le nom flotte au-dessus du support invisible (haut de 2 blocs) : pose un peu sous le
+            // sol, le chiffre se lit a hauteur des yeux, pas dans le plafond.
+            var mark = LuckyCreatures.marker(level, center.getX() - 1 + index + 0.5d, center.getY() - 0.3d,
                     center.getZ() - 2 + 0.7d);
             if (mark != null) {
                 mark.setCustomName(Component.literal("Chiffre " + (index + 1) + " : " + code[index])
@@ -287,7 +293,8 @@ public final class SeasonKit {
             return;
         }
         for (BlockPos pos : room.walls) {
-            if (room.level.getBlockState(pos).is(Blocks.BEDROCK)) {
+            BlockState state = room.level.getBlockState(pos);
+            if (state.is(Blocks.BEDROCK) || state.is(Blocks.LIGHT)) {
                 room.level.removeBlock(pos, false);
             }
         }
