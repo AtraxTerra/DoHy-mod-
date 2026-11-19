@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "palamod:invisible"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "palamod:invisible"
+      }
+    ]
+  }
+}

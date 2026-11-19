@@ -3832,3 +3832,94 @@ La part des bons reste celle de PalaMod (51,5 % au paladium, 44,4 % au findium).
 bloc (`BALANCE.md` § 6 tervicies) : paladium ~5 800 $, endium ~11 300 $, findium ~1 800 $ ; Lucky
 Pass ~6 600 $ par jour. Les nouveaux bons, de valeur modeste, diluent les gros lots : une Diamond
 Beacon tous les 250 jours de lancers, un Endium Block tous les 5 000.
+
+## 40. Lucky blocks, quatrième lot (2026-11-19)
+
+La suite du § 39 (« Continue ») : **16 événements de plus**, 163 sur 439. Ce lot porte ceux qui
+demandaient du contenu neuf : dix-neuf objets des lucky blocks de PalaMod (`luckyblock/items`), le
+faux bloc de paladium vert, la vision du casque de spéléologue — et les deux pièges au slimepad, qui
+existait déjà (§ 20). Code : `LuckyItems` (les objets, Saut III des AirMin, la brique de lait qui se
+remplit), `CalciumItem`, `CouacSwordItem`, `CaveHelmetVision`, `LuckyItemEvents` (les événements) ;
+les fichiers viennent de `tools/lucky_assets.py`.
+
+### Paladium
+
+- **J'ai glissé chef** (100, malus) : une nappe de 7 × 7 slimepads à hauteur des pieds, le joueur
+  dedans, et « Il ne me semblait pas avoir vu de panneau sol glissant pourtant ? ».
+- **Tour de slime** (20, malus) : un puits de dix slimepads cerclé de pierre, un pic en paladium au
+  sommet, pointe en bas (la métadonnée 0 de `BlockSpike`), et le joueur posé un bloc plus haut : les
+  slimepads le lancent droit dans le pic, qui le blesse à chaque contact (15 points : sans armure,
+  deux coups suffisent). Casser un slimepad arrête la poussée.
+
+### Findium
+
+- **Grouik Grouik** (Helmet, Chestplate, Leggings, Boots — 1000 chacun) : une pièce de l'armure de
+  cochon dans l'inventaire, et « Grouik Grouik! » en rose.
+- **C'est cheat un peu** (1500) : le casque de spéléologue.
+- **Homme invisible** (800) : une pièce de l'armure invisible, au hasard.
+- **Juste pour flex** (400) : une pièce de la fausse armure en endium — les bottes deux fois sur
+  cinq (`nextInt(5)`, et 0 retombe sur elles).
+- **Cagoule** (200) : la cagoule noire. **Air Min** (200) : les AirMin. **Dose de Calcium** (100) :
+  la brique de lait. **Poulay** (300) : l'épée Couac. **Coup de turbo** (3000) : une pomme de
+  vitesse. Les objets « dans l'inventaire » tombent au sol s'il est plein.
+- **Faux billets** (100, malus) : cinq billets.
+- **Ouaiche t'es très relou** (7000) : le faux bloc de paladium vert, qui saute quinze fois comme le
+  rouge (étincelles vertes) et rend un vrai bloc de paladium vert.
+
+### Les objets
+
+| Objet | Chez PalaMod | Ici |
+|---|---|---|
+| Armure de cochon | `PArmorMaterial.pig`, réparée au titane | les valeurs du paladium (§ 10), le son du cuir |
+| Casque de spéléologue | même matériau, `setMaxDamage(300)` | 300 points, un par seconde de port : cinq minutes |
+| Armure invisible | même matériau, couches transparentes | pareil : on ne la voit pas sur le joueur |
+| Fausse armure en endium | fer vanilla, icônes et couches de l'endium, réparée au lingot de paladium | pareil, sans le bonus de set de l'endium |
+| Cagoule noire | casque en fer, réparé au fer | pareil |
+| AirMin | bottes en fer, irréparables, Saut III (`PotionEffect(jump, 60, 2)`) | pareil |
+| Brique de lait | un seau de lait de dix gorgées ; taper une vache la remplit | pareil |
+| Pomme de vitesse | nourriture 100, saturation 0,6, Vitesse VIII 10 s, par 16 | pareil, toujours mangeable |
+| Billet | par 5, « Ce sont des billets factices, prend garde à toi. » (Maj) | la phrase toujours visible |
+| Épée Couac | épée en paladium, `palamod:chicken` à chaque coup | le cri de la poule du jeu |
+
+Le **casque de spéléologue** (`CaveHelmetListener`) change, pour son seul porteur, les neuf blocs
+qui le portent en cave blocks — le verre troué qui montre les grottes (§ 11) — et chaque bloc
+redevient lui-même deux secondes après le dernier passage. La case visée est celle de PalaMod
+(`floor(posY) - 2`, posY à hauteur d'yeux côté client), jamais un conteneur. **Écarts** : le serveur
+envoie au porteur un faux bloc puis le vrai, celui du moment, au lieu de changer le monde du client ;
+seuls les blocs à collision pleine sont montrés (un cave block à la place d'une dalle ferait buter le
+joueur sur un bloc que le serveur ne voit pas).
+
+### Écarts
+
+- **Noms et images** : « Flash McQueen » devient **Coup de turbo** (l'image était le numéro d'une
+  voiture de dessin animé), « Michael Jordans » devient **Air Min** (le nom des bottes chez PalaMod ;
+  l'image était le logo d'une marque de baskets), et **J'ai glissé chef** montre un panneau de sol
+  glissant au lieu d'une peau de banane reprise d'un jeu de course. Les trois images sont dessinées
+  ici, comme l'icône du billet (PalaMod prenait celle d'un autre mod, Custom NPCs). La petite marque
+  sombre sur le côté des AirMin portées est effacée.
+- Le slimepad posé par les événements regarde au sud, comme la métadonnée 0 de PalaMod.
+
+### Pas dans ce lot
+
+- **Le déguisement en cochon** : l'armure de cochon complète faisait dessiner le joueur en cochon
+  (`EventsManager`, côté client). Le rendu des joueurs de 26.2 ne s'y prête pas simplement ; les
+  quatre pièces restent une armure.
+- Les autres événements à contenu neuf : lampes, plantes, instruments, TNT mignonnes, objets de
+  PalaMod (grappin, lasso, jetpack, potions...), créatures (ballons, colombe, chauve-souris nerveuse,
+  mouton piquant, zoo, monstres d'XP) ; puis les lucky blocks noir et saisonniers.
+- Ce que listait déjà le § 39 (boss, skins de golem, coffres-forts, disques, vraies personnes).
+
+### Équilibre
+
+`tools/lucky_assets.py --stats` après ce lot :
+
+| | Portés | Masse des bons | Masse des malus | Bons repesés |
+|---|---|---|---|---|
+| Paladium | 82 / 111 | 66,6 % | 86,0 % | × 1,61 |
+| Endium | 34 / 56 | 66,6 % | — | × 1,25 |
+| Findium | 81 / 130 | 59,6 % | 89,1 % | × 1,87 |
+
+La part des bons reste celle de PalaMod. Les nouveaux objets n'ont pas de prix de revente : ils ne
+comptent pas dans l'espérance (`BALANCE.md` § 6 tervicies), qui reste ~5 800 $ au paladium et
+~11 300 $ à l'endium, et descend à ~1 500 $ au findium ; Lucky Pass ~6 400 $ par jour. Une Diamond
+Beacon tous les 250 jours de lancers, un Endium Block tous les 6 000.

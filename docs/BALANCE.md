@@ -1209,17 +1209,20 @@ l'XP de métier, les effets, les blocs posés (obsidienne durcie, boîte à gole
 | Consolation | 30 à 123 lingots de paladium | 5 500 $ | 0,85 % | 1,6 % |
 
 Ce que vaut un lucky block, en moyenne : **5 800 $** en paladium, **11 300 $** en endium,
-**1 800 $** en findium. Au findium pèsent l'Endium Block (3,24 M$, 0,03 %), DoubleXP (15 min,
-environ 15 000 $, 0,9 %), Coucou (un golem et ses 64 blocs de paladium, 41 500 $, 0,9 %), Je
-t'aime tôt (64 lingots dans un totem, 4 600 $, 2,7 %) et les lancers offerts de la Roulette et de
-la Boule de Crystal (un lancer du pass, environ 6 600 $, 1,7 % à eux deux). (Troisième lot,
+**1 500 $** en findium. Au findium pèsent l'Endium Block (3,24 M$, 0,025 %), DoubleXP (15 min,
+environ 15 000 $, 0,8 %), Coucou (un golem et ses 64 blocs de paladium, 41 500 $, 0,8 %), Je
+t'aime tôt (64 lingots dans un totem, 4 600 $, 2,3 %) et les lancers offerts de la Roulette et de
+la Boule de Crystal (un lancer du pass, environ 6 400 $, 1,4 % à eux deux). (Troisième lot,
 `PALAMOD.md` § 39 : les nouveaux bons, modestes, diluent les gros lots du paladium et de l'endium,
-dont la part des bons ne bouge pas.) Le diamant fait plus de la moitié de la valeur du paladium :
-c'est une loterie, pas un revenu.
+dont la part des bons ne bouge pas. Quatrième lot, § 40 : les objets des lucky blocks — armures,
+pomme de vitesse, brique de lait, épée Couac — n'ont pas de prix de revente et ne comptent pour
+rien ici ; ils diluent encore le findium. Les deux pièges au slimepad du paladium sont des malus
+sans argent : le repesage des bons les compense.) Le diamant fait plus de la moitié de la valeur
+du paladium : c'est une loterie, pas un revenu.
 
-Le Lucky Pass donne un bloc et demi par jour, la moitié en paladium : **environ 6 600 $ par
+Le Lucky Pass donne un bloc et demi par jour, la moitié en paladium : **environ 6 400 $ par
 jour**, deux à trois minutes de revenu au milieu du jeu (§ 3). Une Diamond Beacon tous les **250 jours**
-de lancers, un Endium Block tous les 5 000. **Pas de vraie boucle** : le pass est la seule source de
+de lancers, un Endium Block tous les 6 000. **Pas de vraie boucle** : le pass est la seule source de
 lucky blocks ; Try Again en redonne trois (0,7 % au findium), Quelle dinguerie ! dix, qui ne
 peuvent pas se relancer, et la Roulette ou la Boule de Crystal un lancer (un lancer sur cent à
 peine en ramène un autre). Leviers : `LuckyPass.draw` (cases et sortes), `LuckyEvents`

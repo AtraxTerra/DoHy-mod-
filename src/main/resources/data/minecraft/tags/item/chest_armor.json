@@ -1,10 +1,13 @@
 {
   "replace": false,
   "values": [
+    "dohy:stillsuit_suit",
     "palamod:amethyst_chestplate",
     "palamod:antique_chestplate",
     "palamod:endium_chestplate",
+    "palamod:fake_endium_chestplate",
     "palamod:green_paladium_chestplate",
+    "palamod:invisible_chestplate",
     "palamod:manelios_chestplate",
     "palamod:manelios_legendary_chestplate",
     "palamod:manelios_reinforced_chestplate",
@@ -13,6 +16,7 @@
     "palamod:nimbria_legendary_chestplate",
     "palamod:nimbria_reinforced_chestplate",
     "palamod:paladium_chestplate",
+    "palamod:pig_chestplate",
     "palamod:talikus_chestplate",
     "palamod:talikus_legendary_chestplate",
     "palamod:talikus_reinforced_chestplate",
@@ -20,7 +24,6 @@
     "palamod:travel_jumpchest",
     "palamod:vitalys_chestplate",
     "palamod:vitalys_legendary_chestplate",
-    "palamod:vitalys_reinforced_chestplate",
-    "dohy:stillsuit_suit"
+    "palamod:vitalys_reinforced_chestplate"
   ]
 }
