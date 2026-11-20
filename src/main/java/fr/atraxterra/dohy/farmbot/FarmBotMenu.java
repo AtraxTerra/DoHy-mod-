@@ -93,8 +93,7 @@ public final class FarmBotMenu extends MenuController {
         if (bot.chests().isEmpty()) {
             return "Lie-lui un coffre : telecommande en main, accroupi + clic droit sur le coffre.";
         }
-        return "Il recolte ce qui est mur, replante, et vide son sac dans ses coffres. A " + bot.ownerName()
-                + " : l'XP de Fermier aussi.";
+        return "Recolte, replante, range dans ses coffres. L'XP de Fermier va a " + bot.ownerName() + ".";
     }
 
     private static List<Card> zone(ServerPlayer player, FarmBot bot) {

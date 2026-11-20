@@ -74,6 +74,8 @@ public final class JobXpEvents {
         }
 
         Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+        // Ce que rend le bloc avant toute copie : deux metiers, deux chances, chacune sur l'original.
+        java.util.List<net.minecraft.world.entity.item.ItemEntity> originals = java.util.List.copyOf(event.getDrops());
 
         for (Job job : new Job[]{Job.MINER, Job.FARMER, Job.ALCHEMIST}) {
             JobProgression.Reward reward = lookup(table(job, JobProgression.Sources::blocks), blockId, state);
@@ -89,7 +91,7 @@ public final class JobXpEvents {
                 continue;
             }
             grant(player, job, xp);
-            maybeDoubleDrop(player, event);
+            maybeDoubleDrop(player, event, originals);
         }
     }
 
@@ -201,20 +203,26 @@ public final class JobXpEvents {
     /**
      * Duplique les drops avec la probabilite accordee par les ailes completes du
      * musee. Les metiers n'en accordent plus : leurs paliers paient en argent.
+     *
+     * <p>Les copies rejoignent la liste des drops au lieu d'apparaitre a part : la
+     * tremie du tracteur et le sac d'un bot de farming, qui la lisent en dernier,
+     * les ramassent avec le reste au lieu de les laisser par terre.
      */
-    private static void maybeDoubleDrop(ServerPlayer player, BlockDropsEvent event) {
+    private static void maybeDoubleDrop(ServerPlayer player, BlockDropsEvent event,
+                                        java.util.List<net.minecraft.world.entity.item.ItemEntity> originals) {
         double chance = fr.atraxterra.dohy.museum.MuseumApi.doubleDropBonus(player);
         if (chance <= 0 || player.getRandom().nextDouble() >= chance) {
             return;
         }
-        event.getDrops().forEach(drop -> {
+        java.util.List<net.minecraft.world.entity.item.ItemEntity> copies = new java.util.ArrayList<>();
+        for (net.minecraft.world.entity.item.ItemEntity drop : originals) {
             ItemStack copy = drop.getItem().copy();
             if (!copy.isEmpty()) {
-                player.level().addFreshEntity(
-                        new net.minecraft.world.entity.item.ItemEntity(
-                                player.level(), drop.getX(), drop.getY(), drop.getZ(), copy));
+                copies.add(new net.minecraft.world.entity.item.ItemEntity(
+                        player.level(), drop.getX(), drop.getY(), drop.getZ(), copy));
             }
-        });
+        }
+        event.getDrops().addAll(copies);
     }
 
     private static Map<String, JobProgression.Reward> table(
