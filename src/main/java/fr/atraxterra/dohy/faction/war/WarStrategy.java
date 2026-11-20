@@ -804,6 +804,15 @@ public final class WarStrategy {
         return ally != null && ally.ally == relation.nation && !ally.beaten(now) ? ally : null;
     }
 
+    /**
+     * L'allie qui se bat a ses cotes : celui de la coalition, sauf s'il tient une
+     * treve avec toi (il l'honore et reste en dehors) ; {@code null} sinon.
+     */
+    static WarData.Relation comrade(WarData data, WarData.Relation relation, long now) {
+        WarData.Relation ally = ally(data, relation, now);
+        return ally != null && ally.stance != WarData.Stance.TREVE ? ally : null;
+    }
+
     /** La coalition contre toi, s'il y en a une : ses deux nations. */
     public static Optional<List<WarData.Relation>> coalition(WarData data, long now) {
         for (WarData.Relation relation : data.relations) {
@@ -897,7 +906,7 @@ public final class WarStrategy {
         }
         player.sendSystemMessage(Component.literal("   ")
                 .append(button("[La coalition]", "/guerre", ChatFormatting.GOLD))
-                .append(Component.literal(" Allies, ils s'echauffent ensemble et attaquent ensemble. Sous "
+                .append(Component.literal(" Alliees, elles se soutiennent et attaquent ensemble. Sous "
                         + Math.round(DISSOLVE_AT) + " de puissance, la coalition se defait.")
                         .withStyle(ChatFormatting.GRAY)));
         player.level().playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE,
@@ -930,7 +939,7 @@ public final class WarStrategy {
 
     /** La guerre commence : l'allie de la coalition la rejoint, et le dit. */
     private static void rally(ServerPlayer player, WarData data, WarData.Relation relation, long now) {
-        WarData.Relation ally = ally(data, relation, now);
+        WarData.Relation ally = comrade(data, relation, now);
         if (ally == null) {
             return;
         }
@@ -1149,7 +1158,7 @@ public final class WarStrategy {
         int force = force(relation);
         relation.treasury = Math.max(0L, relation.treasury - force * SOLDIER_COST);
         // La coalition attaque ensemble : l'allie joint un contingent, a ses frais.
-        WarData.Relation ally = ally(data, relation, now);
+        WarData.Relation ally = comrade(data, relation, now);
         int contingent = ally == null ? 0 : contingent(ally);
         if (contingent > 0) {
             ally.treasury = Math.max(0L, ally.treasury - contingent * SOLDIER_COST);
@@ -1478,7 +1487,8 @@ public final class WarStrategy {
         WarData.Relation relation = data.relation(nation, now);
         NationTraits traits = relation.traits();
         MinecraftServer server = player.level().getServer();
-        WarData.Relation ally = ally(data, relation, now);
+        WarData.Relation partner = relation.ally >= 0 ? data.find(relation.ally).orElse(null) : null;
+        WarData.Relation ally = comrade(data, relation, now);
         List<String> recovered = new ArrayList<>();
         long returned = restitute(player, relation, recovered);
         if (ally != null) {
@@ -1526,8 +1536,14 @@ public final class WarStrategy {
                 + (returned > 0L ? ", " + MoneyFormat.exact(returned) + " $ rendus" : "") + ", " + lost
                 + " soldats perdus" + (country > 0 ? ", " + EarthNations.countryName(country) + " perdu" : "")
                 + (recovered.isEmpty() ? "" : ", te reviennent : " + String.join(", ", recovered)));
+        // Sa chute defait la coalition ; l'allie qui se battait a ses cotes recule aussi.
+        if (partner != null && partner.ally == relation.nation) {
+            partner.ally = -1;
+            partner.pact = 0L;
+        }
+        relation.ally = -1;
+        relation.pact = 0L;
         if (ally != null) {
-            // Vaincu avec elle : il recule aussi, et la coalition se defait.
             ally.fear = Math.min(100.0d, ally.fear + 15.0d);
             ally.hostility = Math.max(0.0d, ally.hostility - 10.0d);
             if (ally.stance != WarData.Stance.GUERRE) {
@@ -1535,13 +1551,11 @@ public final class WarStrategy {
                 ally.truce = now + 7L * DAY_MS;
             }
             ally.defeated = now;
-            relation.ally = -1;
-            relation.pact = 0L;
-            ally.ally = -1;
-            ally.pact = 0L;
             say(player, ally, traits.verb("est tombee", "sont tombes") + "... Nous te rendons ce que nous "
                     + "t'avions pris, et la coalition n'est plus.", ChatFormatting.GRAY);
             log(player, data, ally, now, "vaincue avec " + traits.the() + " : la coalition se defait");
+        } else if (partner != null) {
+            log(player, data, partner, now, "la coalition avec " + traits.the() + " se defait");
         }
         DoHy.LOGGER.info("Guerre : place forte {} {} par {} : {} $ de butin, {} $ rendus, {} soldats perdus, pays {},"
                         + " repris {}", traits.de(), pillage ? "pillee" : "rasee", player.getGameProfile().name(), loot,

@@ -206,7 +206,7 @@ public final class WarMenu extends MenuController {
                             "Murs de la salle forte sous " + Strongholds.VAULT_AT + " % : rasee.",
                             "Entrer dans sa salle forte la fait tomber aussi.")));
             WarData.Relation owner = data.find(fort.nation).orElse(null);
-            WarData.Relation partner = owner == null ? null : WarStrategy.ally(data, owner, now);
+            WarData.Relation partner = owner == null ? null : WarStrategy.comrade(data, owner, now);
             boolean owes = owner != null && owner.holds() || partner != null && partner.holds();
             List<String> fall = new ArrayList<>();
             if (owner != null && owner.holds()) {
@@ -296,26 +296,45 @@ public final class WarMenu extends MenuController {
             for (WarData.Relation relation : targets.subList(0, Math.min(4, targets.size()))) {
                 NationTraits traits = relation.traits();
                 String refusal = WarStrategy.counterRefusal(player, data, relation, now);
+                // Deux lignes : ce qu'elle te doit, puis le butin de sa place forte (ou pourquoi pas maintenant).
+                List<String> lands = new ArrayList<>();
+                for (int country : relation.retaken()) {
+                    lands.add(EarthNations.countryName(country));
+                }
+                for (String id : relation.retakenMines()) {
+                    fr.atraxterra.dohy.earth.EarthBodies.Body body = fr.atraxterra.dohy.earth.mine.EarthMines.body(id);
+                    lands.add(body == null ? id : "la mine de " + body.name());
+                }
+                int mines = relation.retakenMines().size();
+                String land = lands.size() == 1 ? lands.getFirst() : lands.isEmpty() ? ""
+                        : relation.retaken().size() + " pays et " + mines + (mines > 1 ? " mines" : " mine");
                 List<String> lines = new ArrayList<>();
                 if (relation.owed() > 0L) {
                     lines.add("Te doit " + MoneyFormat.exact(relation.owed()) + " $");
                 }
-                int taken = relation.retaken().size() + relation.retakenMines().size();
-                if (taken > 0) {
-                    lines.add("T'a repris " + taken + (taken > 1 ? " terres" : " terre"));
+                if (!land.isEmpty()) {
+                    lines.add(relation.owed() > 0L ? "et " + land : "T'a repris " + land);
                 }
                 if (lines.isEmpty()) {
                     lines.add("Ne t'a rien pris");
                 }
-                lines.add(refusal == null ? "Place forte : ~" + MoneyFormat.compact(relation.treasury() * 3L / 10L
-                        / 1000L * 1000L) + " $ de butin" : relation.beaten(now) ? "Vaincue, elle se releve"
-                        : relation.stance() == WarData.Stance.TREVE ? "En treve" : "Pas maintenant");
+                String why = refusal == null ? null : relation.beaten(now) ? "Vaincue, elle se releve"
+                        : relation.stance() == WarData.Stance.TREVE ? "En treve" : "Pas maintenant";
+                if (lines.size() < 2) {
+                    lines.add(why != null ? why : "Place forte : ~" + MoneyFormat.compact(relation.treasury() * 3L
+                            / 10L / 1000L * 1000L) + " $ de butin");
+                } else if (why != null) {
+                    lines.set(1, why);
+                }
                 List<String> tooltip = new ArrayList<>();
                 tooltip.add("Tu lui declares la guerre : elle batit une place forte");
                 tooltip.add("a 1 200 - 2 000 blocs, et viendra attaquer ta base");
                 tooltip.add("a l'heure que tu fixes.");
                 tooltip.add("Si sa place forte tombe : " + WarStrategy.spoilsLine(player, relation) + ".");
-                WarData.Relation partner = WarStrategy.ally(data, relation, now);
+                long rest = relation.treasury() - Math.min(relation.owed(), relation.treasury());
+                tooltip.add("Ses 30 % : ~" + MoneyFormat.compact(rest * 3L / 10L / 1000L * 1000L)
+                        + " $ (estimes par tes espions).");
+                WarData.Relation partner = WarStrategy.comrade(data, relation, now);
                 if (partner != null) {
                     tooltip.add(partner.traits().name() + ", " + (partner.traits().plural() ? "ses allies" : "son allie")
                             + ", la rejoindra.");

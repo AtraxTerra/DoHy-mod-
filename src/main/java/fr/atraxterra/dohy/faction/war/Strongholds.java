@@ -305,7 +305,7 @@ public final class Strongholds {
         }
         NationTraits traits = relation.traits();
         // Une coalition batit plus grand : l'allie y met la moitie de son armee (lot 22l-2).
-        WarData.Relation ally = WarStrategy.ally(WarStrategy.data(player), relation, System.currentTimeMillis());
+        WarData.Relation ally = WarStrategy.comrade(WarStrategy.data(player), relation, System.currentTimeMillis());
         int strength = relation.army() + (ally == null ? 0 : ally.army() / 2);
         EnemyBaseTier tier = strength < 55 ? EnemyBaseTier.OUTPOST
                 : strength < 90 ? EnemyBaseTier.BASE : EnemyBaseTier.FORTRESS;

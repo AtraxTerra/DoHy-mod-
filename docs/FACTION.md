@@ -30,7 +30,8 @@ PvE**. Choix du joueur :
 | 22k | La base tourne sans toi : claims tenus chargés (64 au plus, les plus actifs), le serveur vide ne se met plus en pause, rapport d'absence à la connexion | fait |
 | 22l | La guerre des nations : IA stratégique des douze nations, diplomatie (ultimatum, tribut, paix), assaut à l'heure que tu fixes, siège tactique (plan de brèche, sapeurs, ingénieurs, moral), pillage de la banque, riposte, terrain qui revient | fait |
 | 22m | Mines de la Terre à capturer : une balise de concession, rester à côté de 2 à 5 min ; revenus horaires (hors ligne compris) à la banque de faction, argent et minerais (coffre de la banque) ; reprise par la guerre | fait |
-| 22l-2 | Éclaireurs, IA qui apprend de tes défenses d'un assaut à l'autre, alliances de nations, contre-offensive | à faire |
+| 22l-2 | La riposte contre les nations : ta contre-offensive (ce qu'elles t'ont pris te revient quand leur place forte tombe), une IA qui apprend de tes défenses d'un assaut à l'autre, les coalitions de nations | fait |
+| 22l-3 | Éclaireurs | à faire |
 
 ## Ce qui change en solo
 
@@ -713,9 +714,9 @@ Les douze nations rivales (celles des events et de la carte de la Terre) ne se c
 tenir des pays : elles viennent chez toi. Demandé le 2026-11-14 (« je veux une IA réaliste et très
 compliquée »), choix du joueur : **toi qui fixes l'heure de l'assaut**, leur objectif est de
 **vider ta banque de faction**, **le terrain revient** après la bataille, et l'IA couvre **la
-stratégie des nations, la tactique sur le terrain, la diplomatie et ta riposte**. Ce lot est le
-premier des deux ; le second ajoutera les éclaireurs, une IA qui apprend de tes défenses d'un
-assaut à l'autre, les alliances de nations contre toi et la contre-offensive sur leurs bases.
+stratégie des nations, la tactique sur le terrain, la diplomatie et ta riposte**. Le lot 22l-2
+(plus bas) y a ajouté ta contre-offensive, une IA qui apprend de tes défenses d'un assaut à
+l'autre et les coalitions de nations contre toi ; les éclaireurs restent à faire.
 
 ### Douze nations, douze caractères
 

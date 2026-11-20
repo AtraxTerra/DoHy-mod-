@@ -645,7 +645,7 @@ final class Siege {
                     count++;
                 }
             }
-            parts.add(count + " " + role.label().toLowerCase(java.util.Locale.ROOT));
+            parts.add(count + " " + role.label().toLowerCase(java.util.Locale.ROOT) + (count > 1 ? "s" : ""));
         }
         return String.join(", ", parts);
     }
@@ -1990,12 +1990,14 @@ final class Siege {
             return;
         }
         int count = alive().size();
+        // Une coalition : les deux noms (« de Nordheim et des Corbeaux »).
+        String who = traits.de() + (ally >= 0 ? " et " + NationTraits.of(ally).de() : "");
         String label = switch (phase) {
-            case CAMP -> "Camp " + traits.de() + " · assaut dans " + Math.max(0, (CAMP_TICKS - phaseTick) / 20) + " s";
-            case PILLAGE -> "Pillage " + traits.de() + " · coffre tenu";
+            case CAMP -> "Camp " + who + " · assaut dans " + Math.max(0, (CAMP_TICKS - phaseTick) / 20) + " s";
+            case PILLAGE -> "Pillage " + who + " · coffre tenu";
             case EXTRACT -> "Le tresorier " + traits.de() + " s'enfuit !";
-            case RETREAT -> "Retraite " + traits.de();
-            default -> "Assaut " + traits.de() + " · moral " + (int) Math.round(morale) + " % · "
+            case RETREAT -> "Retraite " + who;
+            default -> "Assaut " + who + " · moral " + (int) Math.round(morale) + " % · "
                     + count + " soldat(s)" + (bannerDown ? "" : " · renforts " + reserveCount());
         };
         bar.setName(Component.literal(label));
