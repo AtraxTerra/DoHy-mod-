@@ -54,12 +54,19 @@ public class FarmBotItem extends Item {
         bot.apply(stack.getOrDefault(DoHyFarmBots.SETUP.get(), BotSetup.EMPTY));
         level.addFreshEntity(bot);
         FarmBots.update(level, bot);
+        boolean piloted = BotRemoteItem.adopt(player, bot);
         level.playSound(null, pos, SoundEvents.IRON_GOLEM_REPAIR, SoundSource.NEUTRAL, 0.6f, 1.4f);
-        player.sendSystemMessage(Component.literal(bot.zone() == null
-                ? "Bot pose. Telecommande en main : clic droit sur lui, puis sur deux coins de ton champ, puis accroupi"
-                        + " + clic droit sur un coffre."
-                : "Bot pose : il reprend sa zone (" + bot.zone().label() + ") et ses coffres.")
-                .withStyle(ChatFormatting.GREEN));
+        String text;
+        if (bot.zone() != null) {
+            text = "Bot pose : il reprend sa zone (" + bot.zone().label() + ") et ses coffres.";
+        } else if (piloted) {
+            text = "Bot pose, ta telecommande le pilote : clic droit sur deux coins de ton champ, puis accroupi"
+                    + " + clic droit sur un coffre.";
+        } else {
+            text = "Bot pose. Telecommande en main : clic droit sur lui, puis sur deux coins de ton champ, puis"
+                    + " accroupi + clic droit sur un coffre.";
+        }
+        player.sendSystemMessage(Component.literal(text).withStyle(ChatFormatting.GREEN));
         if (!player.getAbilities().instabuild) {
             stack.shrink(1);
         }

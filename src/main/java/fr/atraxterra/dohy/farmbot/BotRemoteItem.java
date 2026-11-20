@@ -51,6 +51,22 @@ public class BotRemoteItem extends Item {
                 + " zone, accroupi + clic droit sur un coffre pour le lier.").withStyle(ChatFormatting.GREEN));
     }
 
+    /**
+     * A la pose d'un bot : une telecommande du joueur qui ne pilote aucun de ses bots presents se met a
+     * piloter celui-ci. Vrai si c'est fait.
+     */
+    static boolean adopt(ServerPlayer player, FarmBot bot) {
+        for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+            ItemStack stack = player.getInventory().getItem(slot);
+            if (stack.getItem() instanceof BotRemoteItem && bot(player, stack) == null) {
+                stack.set(DoHyFarmBots.REMOTE_BOT.get(), bot.getUUID());
+                stack.remove(DoHyFarmBots.REMOTE_CORNER.get());
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Le bot que pilote cette telecommande, s'il est la et a ce joueur. */
     static FarmBot bot(ServerPlayer player, ItemStack remote) {
         UUID id = remote.get(DoHyFarmBots.REMOTE_BOT.get());
