@@ -160,7 +160,7 @@ public final class BoostCommand {
 
         if (!data.autosellUnlocked()) {
             source.sendSuccess(() -> Component.literal("Autosell verrouille — "
-                            + MoneyFormat.exact(Autosell.UNLOCK_PRICE) + " (/autosell unlock)")
+                            + MoneyFormat.exact(Autosell.UNLOCK_PRICE) + " $ (/autosell unlock)")
                     .withStyle(ChatFormatting.GRAY), false);
             return 0;
         }

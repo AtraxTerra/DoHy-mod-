@@ -152,7 +152,7 @@ public final class GradeTools {
                     + " ». ").withStyle(ChatFormatting.RED).append(list(homes)));
             return;
         }
-        GradeTeleports.schedule(player, "au home " + name, () -> {
+        GradeTeleports.schedule(player, "au home « " + name + " »", () -> {
             player.closeContainer();
             player.fallDistance = 0.0f;
             point.send(player);

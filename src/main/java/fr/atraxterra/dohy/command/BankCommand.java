@@ -118,8 +118,8 @@ public final class BankCommand {
         }
         source.sendSuccess(() -> Component.literal("Depose ")
                 .withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(MoneyFormat.exact(credited)).withStyle(ChatFormatting.GOLD))
-                .append(Component.literal(" (frais " + MoneyFormat.exact(fee) + ")")
+                .append(Component.literal(MoneyFormat.exact(credited) + " $").withStyle(ChatFormatting.GOLD))
+                .append(Component.literal(" (frais " + MoneyFormat.exact(fee) + " $)")
                         .withStyle(ChatFormatting.DARK_GRAY)), false);
         return 1;
     }
@@ -142,7 +142,7 @@ public final class BankCommand {
         }
         source.sendSuccess(() -> Component.literal("Retire ")
                 .withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(MoneyFormat.exact(amount)).withStyle(ChatFormatting.GOLD)), false);
+                .append(Component.literal(MoneyFormat.exact(amount) + " $").withStyle(ChatFormatting.GOLD)), false);
         return 1;
     }
 
@@ -160,7 +160,7 @@ public final class BankCommand {
         ServerPlayer player = source.getPlayerOrException();
         if (!Bank.buyInsurance(player)) {
             source.sendFailure(Component.literal("Il te faut "
-                    + MoneyFormat.exact(Bank.insurancePrice()) + " en liquide."));
+                    + MoneyFormat.exact(Bank.insurancePrice()) + " $ en liquide."));
             return 0;
         }
         source.sendSuccess(() -> Component.literal("Assurance achetee — "
