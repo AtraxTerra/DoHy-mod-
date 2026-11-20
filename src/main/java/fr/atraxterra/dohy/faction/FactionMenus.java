@@ -467,7 +467,7 @@ public final class FactionMenus {
                 return cards;
             }
             cards.add(Card.of(new ItemStack(Items.HOPPER), "Tout prendre", List.of(vault.count() + " objets"))
-                    .accent(0xFF22E558).action("vault_all|tout prendre"));
+                    .accent(0xFF22E558).badge("TOUT").action("vault_all|tout prendre"));
             for (int index = 0; index < vault.items().size(); index++) {
                 ItemStack stack = vault.items().get(index);
                 cards.add(Card.of(stack.copyWithCount(1), MenuView.text(stack.getHoverName()),

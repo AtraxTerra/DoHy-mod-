@@ -717,9 +717,11 @@ public final class EarthMines {
         player.connection.send(new ClientboundSetSubtitleTextPacket(Component.literal("Mine reprise par " + name)
                 .withStyle(ChatFormatting.GRAY)));
         String faction = FactionApi.has(player) ? FactionApi.data(player).name() : player.getGameProfile().name();
+        String verb = nation < fr.atraxterra.dohy.faction.war.NationTraits.count()
+                ? fr.atraxterra.dohy.faction.war.NationTraits.of(nation).verb("reprend", "reprennent")
+                : name + " reprend";
         server.getPlayerList().broadcastSystemMessage(FactionApi.prefix().append(Component.literal(body.name()
-                + " : " + name + " reprend la mine " + EarthNations.a(faction) + ".").withStyle(ChatFormatting.RED)),
-                false);
+                + " : " + verb + " la mine " + EarthNations.a(faction) + ".").withStyle(ChatFormatting.RED)), false);
         FactionApi.stat(player, "earth:mines_lost", 1);
         DoHy.LOGGER.info("Mines de la Terre : {} reprend {} a {}", name, body.name(), faction);
         return body.name();
