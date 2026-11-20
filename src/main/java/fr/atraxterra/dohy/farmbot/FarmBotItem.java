@@ -58,7 +58,9 @@ public class FarmBotItem extends Item {
         level.playSound(null, pos, SoundEvents.IRON_GOLEM_REPAIR, SoundSource.NEUTRAL, 0.6f, 1.4f);
         String text;
         if (bot.zone() != null) {
-            text = "Bot pose : il reprend sa zone (" + bot.zone().label() + ") et ses coffres.";
+            int chests = bot.chests().size();
+            text = "Bot pose : il reprend sa zone (" + bot.zone().label() + ")"
+                    + (chests == 0 ? "." : chests == 1 ? " et son coffre." : " et ses " + chests + " coffres.");
         } else if (piloted) {
             text = "Bot pose, ta telecommande le pilote : clic droit sur deux coins de ton champ, puis accroupi"
                     + " + clic droit sur un coffre.";

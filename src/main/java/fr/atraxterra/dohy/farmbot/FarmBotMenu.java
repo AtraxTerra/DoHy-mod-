@@ -145,7 +145,7 @@ public final class FarmBotMenu extends MenuController {
         }
         if (chests.size() < FarmBot.MAX_CHESTS) {
             cards.add(Card.of(new ItemStack(Items.CHEST), chests.isEmpty() ? "Aucun coffre" : "Lier un coffre", List.of(
-                            "Telecommande en main, accroupi", "+ clic droit sur le coffre"))
+                            "Accroupi + clic droit dessus", "avec la telecommande"))
                     .accent(chests.isEmpty() ? GOLD : GREY)
                     .tooltip(List.of("Coffre, baril, tiroir, silo... tout ce", "qui garde des objets, a moins de "
                             + FarmBot.CHEST_RANGE + " blocs", "de la zone. Le plus proche d'abord ;",
