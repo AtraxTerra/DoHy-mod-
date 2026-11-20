@@ -812,7 +812,10 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
                     }
                 }
             } else if (lines.size() >= 3) {
-                g.text(Ui.BODY, g.fit(Ui.BODY, lines.get(2), 4.7f, cardWidth - 12.0f), cardX + 6.0f, below + 1.5f,
+                // Au-dela de trois lignes, la troisieme reprend les suivantes : rien ne disparait de la carte
+                // (la machine a pain et ses quatre ingredients).
+                String last = lines.size() == 3 ? lines.get(2) : String.join("  ·  ", lines.subList(2, lines.size()));
+                g.text(Ui.BODY, g.fit(Ui.BODY, last, 4.7f, cardWidth - 12.0f), cardX + 6.0f, below + 1.5f,
                         4.7f, Ui.Theme.MUTED);
             }
         }
