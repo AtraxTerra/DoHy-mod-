@@ -150,7 +150,7 @@ final class ShotSamples {
                 living.snapTo(origin.getX() + 2.5 + index * 2, origin.getY(), origin.getZ() + 6.5, 0.0f, 0.0f);
                 level.addFreshEntity(living);
                 int before = player.getInventory().countItem(DoHyCryo.DNA.get());
-                var mobFirst = living.interact(player, InteractionHand.MAIN_HAND);
+                var mobFirst = living.interact(player, InteractionHand.MAIN_HAND, living.position());
                 var result = mobFirst.consumesAction() ? mobFirst
                         : player.getMainHandItem().interactLivingEntity(player, living, InteractionHand.MAIN_HAND);
                 int after = player.getInventory().countItem(DoHyCryo.DNA.get());
