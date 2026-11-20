@@ -904,6 +904,12 @@
           "text": [
             "Une barre en haut de l'ecran montre le metier, son niveau et l'XP qui vient d'arriver."
           ]
+        },
+        {
+          "title": "La renaissance",
+          "text": [
+            "Au niveau 100, un metier peut renaitre : retour au niveau 0, deblocages gardes, +10 % d'XP et d'argent pour toujours (fiche Renaissance)."
+          ]
         }
       ],
       "commands": [
@@ -918,7 +924,8 @@
         "bonbons",
         "peche",
         "trones",
-        "potions_xp"
+        "potions_xp",
+        "renaissance"
       ],
       "progress": "metiers",
       "discover": {
@@ -1333,6 +1340,53 @@
         "totem_fleuri"
       ],
       "progress": "metier:alchemist"
+    },
+    {
+      "id": "renaissance",
+      "category": "metiers",
+      "order": 10,
+      "icon": "minecraft:totem_of_undying",
+      "title": "Renaissance",
+      "card": [
+        "Au niveau 100",
+        "+10 % XP et argent"
+      ],
+      "summary": [
+        "Un metier au niveau 100 peut renaitre : il repart du niveau 0, garde tous ses deblocages, et gagne pour toujours +10 % d'XP et d'argent. Chaque niveau repaie son argent, sa prime et ses objets en remontant."
+      ],
+      "sections": [
+        {
+          "title": "Faire renaitre un metier",
+          "text": [
+            "- Sur la page Metiers, la carte RENAISSANCE du metier s'allume au niveau 100 ; un clic, puis confirmer.",
+            "- Ou : /metiers renaissance fermier (mineur, chasseur, alchimiste).",
+            "! Le niveau repart de zero, mais rien de ce que le metier a debloque ne se referme : outils, machines, recettes, zones, et toutes les sources d'XP."
+          ]
+        },
+        {
+          "title": "Ce que ca rapporte",
+          "text": [
+            "+10 % d'XP et +10 % d'argent par renaissance sur ce metier, qui s'ajoutent les uns aux autres, sans limite de nombre. L'argent de chaque niveau et les primes tous les 5 niveaux sont payes avec ce bonus ; les objets de Paladium des paliers reviennent aussi.",
+            "L'XP gagnee au-dela du niveau 100 n'est pas perdue : elle compte des le debut du nouveau tour.",
+            "Le rang (R1, R2...) s'affiche a cote du metier : page Metiers, barre, notifications."
+          ]
+        }
+      ],
+      "commands": [
+        "/metiers renaissance : faire renaitre un metier"
+      ],
+      "see": [
+        "metiers",
+        "mineur",
+        "chasseur",
+        "fermier",
+        "alchimiste"
+      ],
+      "discover": {
+        "views": [
+          "dohy:jobs"
+        ]
+      }
     },
     {
       "id": "minerais",
