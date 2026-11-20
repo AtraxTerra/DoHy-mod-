@@ -49,6 +49,8 @@ public final class DoHy {
         fr.atraxterra.dohy.cryo.DoHyCryo.register(modBus);
         // Les grades de Paladium (Heros, Legende, Divinite) et Premium, achetes a la Boutique.
         fr.atraxterra.dohy.grade.DoHyGrades.register(modBus);
+        // Les bots de farming : ils recoltent, replantent et remplissent les coffres qu'on leur lie.
+        fr.atraxterra.dohy.farmbot.DoHyFarmBots.register(modBus);
         LOGGER.info("DoHy charge");
     }
 }

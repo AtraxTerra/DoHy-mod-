@@ -1592,6 +1592,54 @@ avantage, grade et Premium additionnés ; l'achat), `grade/GradeData` (ce que ga
 nocturne, vol, fin de Premium), `grade/ChatStyle` (couleurs et emojis), `tools/grade_assets.py`
 (les insignes). Les bonus sont lus dans `JobApi`, `PassApi`, `AuctionSales` et `NationRank`.
 
+## Les bots de farming (2026-11-20)
+
+Demandé le 2026-11-20 : « des bots de farming qui récoltent et replantent les cultures, et qui
+mettent les items récoltés dans des coffres que je désigne ». Choix du joueur : **achetés à la
+Boutique**, **une zone qu'on délimite** (deux coins), **l'XP de Fermier comme à la main**.
+
+- **Le bot** : 100 k à la Boutique (section BOTS DE FARMING), avec sa télécommande la première fois
+  (10 k seule). Quatre bots au plus par joueur, posés ou sur soi. Un clic droit sur le sol le pose,
+  à son nom ; il ne prend aucun dégât, ne se pousse pas et ne disparaît pas. Tué quand même (le
+  vide, `/kill`), il rend son sac et redevient un objet.
+- **La télécommande** : clic droit sur son bot, elle le pilote (celle qu'on a sur soi pilote
+  d'office le bot qu'on pose) ; clic droit sur deux coins du champ, c'est sa zone (48 × 48 au plus,
+  à moins de 64 blocs du bot, d'un bloc sous les coins à trois au-dessus) ; accroupi + clic
+  droit sur un coffre, un baril, un tiroir, un silo… (tout ce qui garde des objets, à moins de
+  24 blocs de la zone), c'est le lier, ou le délier ; six au plus. Tant qu'on la tient, le contour
+  de la zone scintille, les coffres liés aussi.
+- **Ce qu'il fait** : il refait le tour de sa zone toutes les trois secondes, va à la culture mûre
+  la plus proche, la récolte et la replante avec une graine de la récolte. Il vide son sac
+  (27 cases) dans le coffre lié le plus proche aux deux tiers plein, quand il n'a plus rien à
+  récolter, ou toutes les cinq minutes. Un coffre plein, il passe au suivant ; tous pleins, il
+  s'arrête et prévient son propriétaire (une fois toutes les cinq minutes) : il ne jette rien par
+  terre. Une culture qu'il n'arrive pas à atteindre est laissée de côté une minute.
+- **Ce qu'il récolte** : les cultures à leur dernier stade (blé, carottes, pommes de terre,
+  betteraves, celles de PalaMod et de l'agriculture), les verrues du Nether, le cacao, les
+  pastèques et les citrouilles nées d'une tige (pas celles posées en déco), la canne à sucre (il
+  laisse le pied) et les baies sucrées (le buisson reste). Il ne piétine pas la terre labourée.
+- **Comme à la main** : la récolte passe par la casse normale du bloc, au nom du propriétaire
+  quand il est connecté : l'XP de Fermier, les contrats, les collections et les succès la comptent.
+  Propriétaire déconnecté, le bot récolte quand même, sans XP.
+- **Ses limites** : il ne travaille que là où le jeu tourne (près d'un joueur), et jamais dans le
+  claim d'un autre ni dans une base ennemie.
+- **Son menu** (clic droit dessus, main vide) : son état, ses récoltes, son sac ; sa zone (l'effacer),
+  ses coffres (les délier), la télécommande (la relier, en acheter une) ; mettre en pause, vider
+  maintenant, prendre son sac, le ranger. Rangé, il redevient un objet qui garde sa zone et ses
+  coffres : reposé près d'eux, il s'y remet.
+- **`/bots`** : où sont ses bots. **L'encyclopédie** : la fiche « Bots de farming »
+  (agriculture). **Équilibre** : `BALANCE.md` § 6 quinvicies.
+
+### Code
+
+`farmbot/FarmBot` (l'entité : le tour de la zone, la récolte, la replantation, les coffres),
+`farmbot/BotZone`, `farmbot/BotSetup` (le réglage que garde l'objet), `farmbot/BotRegistry` et
+`farmbot/FarmBots` (où sont les bots de chacun, l'achat, `/bots`), `farmbot/FarmBotItem`,
+`farmbot/BotRemoteItem`, `farmbot/FarmBotMenu`, `farmbot/FarmBotEvents` (ce qui tombe va dans le
+sac, la terre n'est pas piétinée, le contour qui scintille), `farmbot/DoHyFarmBots`
+(l'enregistrement), `client/farmbot/` (le modèle et son rendu), `tools/farm_bot_assets.py` (la
+texture et les icônes). La récolte suit le même chemin que celle du tracteur (`agri/Tractor`).
+
 ## Sur un serveur dédié (2026-11-13)
 
 Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les

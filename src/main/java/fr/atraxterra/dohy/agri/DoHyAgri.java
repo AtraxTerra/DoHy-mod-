@@ -281,6 +281,8 @@ public final class DoHyAgri {
         list.addAll(TOOLS.values());
         list.add(SILO_ITEM);
         list.add(FUEL_PUMP_ITEM);
+        list.add(fr.atraxterra.dohy.farmbot.DoHyFarmBots.FARM_BOT_ITEM);
+        list.add(fr.atraxterra.dohy.farmbot.DoHyFarmBots.BOT_REMOTE);
         return list;
     }
 

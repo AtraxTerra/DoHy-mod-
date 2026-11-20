@@ -360,6 +360,25 @@ hôtel des ventes qui marche en solo.
   avec l'icône de l'Ender Chest et la consigne « Agrandi par ton grade » (types de menu
   `dohy:grade_ender_4` à `_7`).
 
+## Les bots de farming (lot 13, 2026-11-20)
+
+- **Le menu du bot** (`FarmBotMenu`, vue `dohy:farm_bot`, clic droit sur son bot la main vide ;
+  il ne répond plus à plus de 12 blocs) : en tête ÉTAT (dans sa couleur : Récolte, Range sa
+  récolte, Attend que ça pousse, Rejoint sa zone, Coffres pleins, Sac plein sans coffre, Pas de
+  zone, En pause), RÉCOLTES et SAC (en rouge quand il est plein). Puis SA ZONE (sa taille et ses
+  coins, clic droit pour l'effacer ; les cultures mûres qu'il voit ; la télécommande : la relier à
+  ce bot, ou en acheter une), SES COFFRES (« n / 6 » : une carte par coffre lié, avec sa position
+  et sa distance, la pastille PLEIN s'il l'était au dernier passage, clic droit pour le délier ;
+  puis la consigne pour en lier un), SON SAC (`TILES` : une vignette par objet, le total en
+  pastille) et ACTIONS (pause ou reprise, vider maintenant, prendre son sac, ranger le bot, avec
+  confirmation).
+- **Le sous-titre** dit ce qui manque : la zone, puis un coffre ; ensuite, ce que fait le bot.
+- **La Boutique** : la section BOTS DE FARMING, après les potions : le bot et la télécommande.
+- **Les objets** : leur icône et leur bulle ; un bot rangé dit aussi sa zone et ses coffres.
+- **Dans le monde** : le bot, un petit robot de ferme sur chenilles, chapeau sur la tête et houe
+  en main (il la lève à chaque récolte). Télécommande en main : le contour de la zone en
+  étincelles, les coffres liés en points verts, un premier coin en attente en lueur blanche.
+
 ## Vérification
 
 Une branche de travail (`ci/shots`) lance un vrai client sous Xvfb sur GitHub, dans un monde
