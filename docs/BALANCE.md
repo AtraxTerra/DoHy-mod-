@@ -1435,6 +1435,59 @@ produit rien de plus qu'elle-même ; deux factions de joueurs ne se disputent pa
 Leviers : `EarthMines.moneyPerHour`, `blocksPerHour`, `captureSeconds`, `MAX_HOURS` (la semaine),
 `DoHyMines.BEACON_PRICE`, `FactionVault.SLOTS`, et le grief (`EarthMines.grief`).
 
+## 6 septvicies. La riposte contre les nations — ce que rend une place forte
+
+Règles : `docs/FACTION.md`, « La riposte contre les nations (22l-2) ». Ce lot ne crée pas de
+nouvelle source d'argent : il rend ce qu'on t'a pris, et rend les nations plus dures à battre.
+
+**La restitution sort de son trésor.** Ce qu'une nation rend, c'est ton argent, qui dormait dans son
+trésor depuis son pillage (il ne paie que ses recrues, ses soldats engagés, ses missiles et ses
+réparations). Elle rend au plus ce qu'elle a ; le reste reste dû. Le butin de 30 % se prend ensuite
+sur ce qui reste : une nation de 70 000 $ qui te rend 30 000 $ ne te laisse plus que 12 000 $ de
+butin, au lieu de 21 000. La chute rapporte donc le plus quand on ne t'a rien pris — et quand on t'a
+pris, elle te remet d'abord à flot.
+
+**La contre-offensive ne se farme pas.**
+
+- Une nation **vaincue se relève une semaine** : pas de nouvelle guerre contre elle avant.
+- Chaque chute ampute son trésor de 40 % (30 % pour toi, 10 % en fumée), et il ne se reconstitue
+  que de 1 % de son trésor de départ par heure (plus ses pays) : le butin suivant est maigre.
+- **Déclarer coûte** : la nation riposte sur ta base (son assaut, à l'heure que tu fixes, peut
+  te piller de nouveau), et chaque guerre déclarée compte 5 points de puissance deux semaines ;
+  au-delà de 50, les nations s'allient.
+- Une trêve ne se rompt que si elle te doit quelque chose.
+
+**La coalition, en chiffres.**
+
+| | Une nation seule | Une coalition |
+|---|---|---|
+| Soldats à l'assaut | 8 à 24 | + 4 à 10 de l'alliée (120 $ chacun sur son trésor) |
+| Repris sur un assaut réussi | 1 pays, 1 mine | 2 pays, 2 mines (chacune ceux de sa région) |
+| Sa place forte | selon son armée | + la moitié de l'armée de l'alliée |
+| Ce que rend sa chute | ce qu'elle t'a pris | ce que les deux t'ont pris |
+
+**Ta puissance**, sur trois parties types :
+
+| Partie | Banque | Pays | Mines | Claims | Victoires | Puissance |
+|---|---|---|---|---|---|---|
+| Début | 20 000 $ (5) | 0 | 0 | 8 (2) | 0 | **7** |
+| Milieu | 300 000 $ (15) | 2 (10) | 1 (5) | 25 (6) | 2 (6) | **42** |
+| Fin | 3 M$ (25) | 6 (25) | 4 (20) | 40 (10) | 5 (15) | **95** |
+
+Les coalitions arrivent au milieu de partie, quand la faction tient des terres sur la Terre et a
+déjà battu des assauts : pas avant. Une guerre déclarée (+5) peut faire passer le seuil.
+
+**L'IA qui apprend** rend chaque nation plus dure au fil des assauts, sans la rendre imbattable :
+ses espions voient au plus quatre dixièmes de plus de tes pièges (une nation rusée les voit déjà
+presque tous), sa troupe ne change que de quelques soldats (un quart des fantassins, au plus), et
+déplacer ton coffre de plus de 48 blocs efface la carte de ses morts. Varier ses défenses paie :
+la leçon suit la cause qui a tué le plus, chaque assaut comptant moitié moins au suivant.
+
+Leviers : `WarStrategy.BEATEN_MS` (la semaine de la vaincue), `COALITION_AT`, `DISSOLVE_AT`,
+`PACT_MS`, `CONTINGENT_MIN` et `CONTINGENT_MAX`, `threat` (les poids), `WarData.Lessons` (`DEATHS`,
+`MOVED`, `insight`, la leçon : trois morts et plus du tiers), `Siege.compose` (ce que change une
+leçon), le poids des tourelles dans `Siege.requestPlan`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

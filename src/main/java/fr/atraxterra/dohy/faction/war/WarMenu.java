@@ -101,7 +101,12 @@ public final class WarMenu extends MenuController {
                     "Moral " + Math.round(siege.morale) + " % · " + siege.alive().size() + " soldats"))
                     .accent(0xFFB3261E)
                     .progress(Math.round(siege.morale), 100)
-                    .tooltip(List.of("Abats l'etendard du camp : plus de renforts.",
+                    .tooltip(siege.ally >= 0 ? List.of("Abats l'etendard du camp : plus de renforts.",
+                            "Tue le commandant : leur moral s'effondre.",
+                            "Tue le tresorier : ton argent revient.",
+                            NationTraits.of(siege.ally).verb("joint", "joignent") + " " + siege.allyForce
+                                    + " soldats a ses couleurs : la coalition attaque ensemble.")
+                            : List.of("Abats l'etendard du camp : plus de renforts.",
                             "Tue le commandant : leur moral s'effondre.",
                             "Tue le tresorier : ton argent revient.")));
             cards.add(Card.of(new ItemStack(siege.bannerDown ? Items.BARRIER : Items.BANNER.pick(traits.color())),
@@ -307,13 +312,13 @@ public final class WarMenu extends MenuController {
                 }
                 int mines = relation.retakenMines().size();
                 String land = lands.size() == 1 ? lands.getFirst() : lands.isEmpty() ? ""
-                        : relation.retaken().size() + " pays et " + mines + (mines > 1 ? " mines" : " mine");
+                        : relation.retaken().size() + " pays, " + mines + (mines > 1 ? " mines" : " mine");
                 List<String> lines = new ArrayList<>();
                 if (relation.owed() > 0L) {
                     lines.add("Te doit " + MoneyFormat.exact(relation.owed()) + " $");
                 }
                 if (!land.isEmpty()) {
-                    lines.add(relation.owed() > 0L ? "et " + land : "T'a repris " + land);
+                    lines.add(relation.owed() > 0L ? "+ " + land : "T'a repris " + land);
                 }
                 if (lines.isEmpty()) {
                     lines.add("Ne t'a rien pris");
