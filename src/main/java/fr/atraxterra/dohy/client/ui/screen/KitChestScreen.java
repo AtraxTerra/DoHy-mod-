@@ -17,7 +17,8 @@ import java.util.Locale;
 
 /**
  * Un inventaire en coffre au style du kit : coffre de vente, guichet du musee,
- * sac de la monture, coffre du golem, coffre de l'ender en paladium.
+ * sac de la monture, coffre du golem, coffre de l'ender en paladium ou agrandi par
+ * un grade (jusqu'a sept rangees).
  *
  * <p>Les cases sont celles du coffre du jeu (176 de large, rangees de 18), donc le
  * panneau garde ses dimensions ; l'en-tete (icone, titre, croix) deborde au-dessus,
@@ -32,6 +33,7 @@ public final class KitChestScreen extends UiContainerScreen<ChestMenu> {
         super(menu, inventory, title, 176, 114 + use.rows() * 18);
         this.use = use;
         this.icon = use == KitMenus.Use.MOUNT_INVENTORY ? new ItemStack(Items.SADDLE)
+                : use.ender() ? new ItemStack(Items.ENDER_CHEST)
                 : ContainerStyle.targetIcon(new ItemStack(Items.CHEST));
     }
 

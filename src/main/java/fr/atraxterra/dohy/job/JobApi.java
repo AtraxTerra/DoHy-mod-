@@ -120,7 +120,7 @@ public final class JobApi {
     /**
      * Accorde de l'XP, applique les montees de niveau et leurs recompenses.
      *
-     * <p>Le bonus d'XP des ameliorations et des amulettes est applique ici,
+     * <p>Le bonus d'XP des ameliorations, des amulettes et des grades est applique ici,
      * donc une seule fois et au meme endroit pour toutes les sources, et le
      * multiplicateur des potions d'XP par-dessus.
      */
@@ -149,7 +149,8 @@ public final class JobApi {
         // Les potions d'XP (x2, x3) multiplient le tout, bonus compris.
         long boosted = Math.round(amount * (1.0d
                 + UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS)
-                + fr.atraxterra.dohy.palamod.defense.Amulets.xpBonus(player, job))
+                + fr.atraxterra.dohy.palamod.defense.Amulets.xpBonus(player, job)
+                + fr.atraxterra.dohy.grade.Grades.jobXpBonus(player))
                 * fr.atraxterra.dohy.palamod.boost.PalaXpPotions.multiplier(player)
                 // « Divise XP » (lucky block en findium) : moitie moins pendant quinze minutes.
                 * (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.PalaLucky.HALF_JOB_XP) ? 0.5d : 1.0d));

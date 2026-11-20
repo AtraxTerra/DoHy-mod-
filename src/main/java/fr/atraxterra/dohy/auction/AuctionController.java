@@ -102,7 +102,7 @@ public final class AuctionController extends MenuController {
             PAGES.put(player.getUUID(), page);
         }
         long balance = Economy.balance(player);
-        int slots = AuctionSales.buyers().slots();
+        int slots = AuctionSales.slots(player);
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("TON ARGENT", money(balance), 0xFFFFFFFF),
                 new MenuView.Stat("TES ANNONCES", AuctionSales.used(player) + " / " + slots, GOLD));

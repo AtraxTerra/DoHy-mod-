@@ -31,8 +31,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * La liste des joueurs (touche Tab) au style du kit : chaque joueur avec sa tete, sa
- * faction et son niveau global, son ping en barres ; en tete l'heure du serveur, en
+ * La liste des joueurs (touche Tab) au style du kit : chaque joueur avec sa tete, son
+ * grade, sa faction et son niveau global, son ping en barres ; en tete l'heure du serveur, en
  * pied la prochaine remise a neuf de la Mine et la saison.
  *
  * <p>Elle remplace le calque du jeu. La faction et le niveau viennent du serveur
@@ -128,8 +128,19 @@ public final class KitTabList implements GuiLayer {
             PlayerFaceExtractor.extractRenderState(graphics, info.getSkin(), Math.round(rowX + 6), rowY + 4, 6);
             String name = info.getProfile().name();
             boolean spectator = info.getGameMode() == GameType.SPECTATOR;
-            g.text(Ui.BOLD, name, rowX + 16.0f, rowY + 4.4f, 4.6f, spectator ? Ui.Theme.MUTED : Ui.Theme.TEXT);
+            boolean graded = entry != null && !entry.grade().isEmpty();
+            // Le pseudo prend la couleur du grade, et le grade sa pastille, avant celle de la faction.
+            g.text(Ui.BOLD, name, rowX + 16.0f, rowY + 4.4f, 4.6f, spectator ? Ui.Theme.MUTED
+                    : graded && entry.gradeColor() != 0 ? entry.gradeColor() : Ui.Theme.TEXT);
             float chipX = rowX + 16.0f + g.width(Ui.BOLD, name, 4.6f) + 4.0f;
+            if (graded) {
+                int gradeColor = entry.gradeColor() != 0 ? entry.gradeColor() : Ui.Theme.TEXT2;
+                float gradeW = g.width(Ui.PIXEL, entry.grade(), 3.0f) + 6.0f;
+                p.framed(chipX, rowY + 3.5f, gradeW, 7.0f, 3.5f, Paint.mix(0xFF1C1D21, gradeColor, 0.22f),
+                        Paint.mix(0xFF2A2C31, gradeColor, 0.6f), 1);
+                g.text(Ui.PIXEL, entry.grade(), chipX + 3.0f, rowY + 5.6f, 3.0f, gradeColor);
+                chipX += gradeW + 3.0f;
+            }
             if (entry != null && !entry.faction().isEmpty()) {
                 String tag = ContainerStyle.plain(entry.faction()).toUpperCase(Locale.ROOT);
                 float tagW = g.width(Ui.PIXEL, tag, 3.0f) + 6.0f;

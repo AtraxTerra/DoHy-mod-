@@ -52,13 +52,14 @@ public final class Commerce {
     /** Les onglets, dans l'ordre de la rangee. */
     public enum Tab {
         BUY("shop", "Acheter",
-                "Blocs, minerais, nourriture et pieces, a prix fixe. Boosters et cles a la Boutique, raretes a "
-                        + "l'Hotel des ventes."),
+                "Blocs, minerais, nourriture et pieces, a prix fixe. Grades, boosters et cles a la Boutique, raretes"
+                        + " a l'Hotel des ventes."),
         SELL("sell", "Vendre",
                 "Le shop rachete ce que tu recoltes, mines ou chasses. Plus tu vends le meme objet, plus son prix "
                         + "baisse ; il remonte ensuite tout seul."),
         BOUTIQUE("boutique", "Boutique",
-                "Boosters, cles de box, coffres a poser, potions d'XP de metier et services, payes avec ton argent."),
+                "Grades, boosters, cles de box, coffres a poser, potions d'XP de metier et services, payes avec "
+                        + "ton argent."),
         AUCTION("auction", "Hotel des ventes",
                 "Des raretes en vente chaque jour, et tes objets rares que le shop ne rachete pas, vendus a des "
                         + "acheteurs.");
@@ -205,6 +206,12 @@ public final class Commerce {
         }
         out.add(new ShopView.Elsewhere(new ItemStack(Items.TOTEM_OF_UNDYING), "Assurance", Tab.BOUTIQUE.path(),
                 Tab.BOUTIQUE.label(), money(Bank.insurancePrice())));
+        for (fr.atraxterra.dohy.grade.PlayerGrade grade : fr.atraxterra.dohy.grade.PlayerGrade.buyable()) {
+            out.add(new ShopView.Elsewhere(fr.atraxterra.dohy.grade.DoHyGrades.badge(grade), "Grade " + grade.label(),
+                    Tab.BOUTIQUE.path(), Tab.BOUTIQUE.label(), money(grade.price())));
+        }
+        out.add(new ShopView.Elsewhere(fr.atraxterra.dohy.grade.DoHyGrades.premiumBadge(), "Premium 30 jours",
+                Tab.BOUTIQUE.path(), Tab.BOUTIQUE.label(), money(fr.atraxterra.dohy.grade.Premium.PRICE)));
         return out;
     }
 

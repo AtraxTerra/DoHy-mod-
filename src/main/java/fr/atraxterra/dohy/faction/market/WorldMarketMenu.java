@@ -118,7 +118,9 @@ public final class WorldMarketMenu extends MenuController {
         NationRank next = rank.next();
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("RANG", rank.label().toUpperCase(), rank.color()),
-                new MenuView.Stat("TAXE", Math.round(rank.fee() * 100.0d) + " %", 0xFFFAC400),
+                // La taxe du joueur : celle du rang, moins la part qu'efface son grade.
+                new MenuView.Stat("TAXE", String.format(java.util.Locale.ROOT, "%.1f",
+                        NationRank.fee(player) * 100.0d).replace(".0", "").replace('.', ',') + " %", 0xFFFAC400),
                 new MenuView.Stat("VOLUME", MoneyFormat.shortForm(WorldMarket.volume(player)), 0xFF22E558));
         String subtitle = next == null ? "" : "Taxe de " + Math.round(next.fee() * 100.0d) + " % au rang "
                 + next.label();

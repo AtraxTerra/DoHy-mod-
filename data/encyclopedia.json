@@ -471,7 +471,7 @@
     {
       "id": "pass",
       "category": "economie",
-      "order": 9,
+      "order": 10,
       "icon": "dohy:relic_novembre",
       "title": "Le pass du mois",
       "card": [
@@ -615,11 +615,11 @@
       "icon": "minecraft:gold_block",
       "title": "La boutique",
       "card": [
-        "Boosters et boxes",
+        "Grades, boosters, boxes",
         "Potions d'XP, autosell"
       ],
       "summary": [
-        "L'onglet Boutique du commerce vend les boosters (le prix de vente multiplie pendant 20 minutes), les cles des boxes de PalaMod, les potions d'XP de metier, l'assurance et l'autosell. Tout s'y paie en liquide."
+        "L'onglet Boutique du commerce vend les grades, les boosters (le prix de vente multiplie pendant 20 minutes), les cles des boxes de PalaMod, les potions d'XP de metier, l'assurance et l'autosell. Tout s'y paie en liquide."
       ],
       "sections": [
         {
@@ -646,6 +646,7 @@
         "/spawn : le hall des boxes"
       ],
       "see": [
+        "grades",
         "shop",
         "spawn",
         "pierres_legendaires",
@@ -662,9 +663,100 @@
       }
     },
     {
-      "id": "marche",
+      "id": "grades",
       "category": "economie",
       "order": 6,
+      "icon": "dohy:grade_legende",
+      "title": "Les grades",
+      "card": [
+        "Heros, Legende, Divinite",
+        "Premium : 30 jours"
+      ],
+      "summary": [
+        "Les grades de Paladium donnent du confort, jamais de la puissance : plus de homes, un Ender Chest plus grand, de l'XP en plus et des commandes. Ils s'achetent une fois pour toutes a la Boutique, avec ton argent ; Premium s'y ajoute pour trente jours."
+      ],
+      "sections": [
+        {
+          "title": "Les trois grades",
+          "text": [
+            "- Heros, 10 M : 5 homes, 5 /rtp par mois, 36 cases d'Ender Chest, +5 % d'XP de metier et du pass, +10 % d'XP classique, /craft et /minage.",
+            "- Legende, 100 M : 10 homes, 10 /rtp, 45 cases, +10 % et +20 %, -10 % de taxe au marche international, teleportation sans attente, emojis, /feed, /furnace, /rangement et /tptoggle.",
+            "- Divinite, 1 G : 15 homes, 10 /rtp, 54 cases, +15 % et +30 %, -20 % de taxe, /condense, /hat et /deathlocate.",
+            "Chaque grade donne aussi ceux d'en dessous, le pseudo et le chat en couleur, l'XP gardee a la mort et dix annonces de plus a l'hotel des ventes.",
+            "! Monter d'un grade ne coute que la difference de prix."
+          ]
+        },
+        {
+          "title": "Premium",
+          "text": [
+            "15 M les trente jours, qui courent meme partie fermee ; racheter les prolonge. Premium s'ajoute au grade (ou a l'absence de grade) : +5 homes, +3 /rtp, une rangee d'Ender Chest, +5 % d'XP de metier et du pass, +10 % d'XP classique, -10 % de taxe en plus, et ton arrivee annoncee.",
+            "- /ec : ton Ender Chest, partout sauf en combat.",
+            "- /fly : voler, au spawn seulement.",
+            "- /nv : la vision nocturne, sans fin."
+          ]
+        },
+        {
+          "title": "Le chat",
+          "text": [
+            "Avec un grade, &a ecrit en vert, &c en rouge, &6 en or, &l en gras, &o en italique ; &r revient au texte normal.",
+            "A partir de Legende, :coeur:, :etoile:, :sourire:, :soleil:, :epee:, :couronne:, :note:... deviennent des symboles."
+          ]
+        },
+        {
+          "title": "Sans grade",
+          "text": [
+            "Deux homes et un /rtp par mois. Une teleportation attend trois secondes sans bouger (tout de suite a partir de Legende) ; jamais en combat, ni depuis un donjon, une arene, Arrakis ou la dimension du Mineur.",
+            "Un home se pose dans l'Overworld, le Nether ou l'End ; pas au spawn ni a la Mine."
+          ]
+        }
+      ],
+      "commands": [
+        "/grade : la page des grades",
+        "/sethome [nom] : pose un home ici",
+        "/home [nom] : y retourner",
+        "/homes : la liste de tes homes",
+        "/delhome nom : en oublier un",
+        "/rtp : un endroit au hasard",
+        "/tpa joueur : demander a le rejoindre",
+        "/tpahere joueur : le faire venir",
+        "/tpaccept ou /tpdeny : repondre",
+        "/craft : un etabli partout (Heros)",
+        "/minage : direct a la Mine (Heros)",
+        "/feed : rassasie, toutes les 5 min (Legende)",
+        "/furnace : cuit ce que tu tiens (Legende)",
+        "/rangement : trie ton sac (Legende)",
+        "/tptoggle : refuser les /tpa (Legende)",
+        "/condense : lingots en blocs (Divinite)",
+        "/hat : un bloc sur la tete (Divinite)",
+        "/deathlocate : ta derniere mort (Divinite)",
+        "/ec : l'Ender Chest partout (Premium)",
+        "/fly : voler au spawn (Premium)",
+        "/nv : vision nocturne (Premium)"
+      ],
+      "see": [
+        "boutique",
+        "marche",
+        "marche_international",
+        "mine",
+        "spawn",
+        "pass"
+      ],
+      "discover": {
+        "items": [
+          "dohy:grade_heros",
+          "dohy:grade_legende",
+          "dohy:grade_divinite",
+          "dohy:grade_premium"
+        ],
+        "views": [
+          "dohy:grades"
+        ]
+      }
+    },
+    {
+      "id": "marche",
+      "category": "economie",
+      "order": 7,
       "icon": "minecraft:name_tag",
       "title": "Hotel des ventes",
       "card": [
@@ -680,7 +772,8 @@
       "see": [
         "shop",
         "marche_noir",
-        "marche_international"
+        "marche_international",
+        "grades"
       ],
       "discover": {
         "views": [
@@ -703,7 +796,7 @@
             "- Prix conseille : en general en trois heures.",
             "- Prix fort : plus cher, environ un jour, et pas toujours.",
             "Tu recois l'argent des que l'objet part, meme partie fermee. Invendu au bout de 48 heures, il t'attend : clique dessus pour le recuperer. Une annonce se retire a tout moment.",
-            "! Six annonces a la fois. Une piece abimee vaut moins."
+            "! Six annonces a la fois, seize avec un grade. Une piece abimee vaut moins."
           ]
         },
         {
@@ -717,7 +810,7 @@
     {
       "id": "ameliorations",
       "category": "economie",
-      "order": 7,
+      "order": 8,
       "icon": "minecraft:nether_star",
       "title": "Ameliorations",
       "card": [
@@ -744,7 +837,7 @@
     {
       "id": "serveur_trading",
       "category": "economie",
-      "order": 8,
+      "order": 9,
       "icon": "dohy:trading_server",
       "title": "Le trading",
       "card": [
@@ -2612,7 +2705,8 @@
       ],
       "see": [
         "marche",
-        "notation"
+        "notation",
+        "grades"
       ],
       "discover": {
         "views": [

@@ -4103,3 +4103,110 @@ revente : l'espérance en argent (`BALANCE.md` § 6 tervicies) baisse — ~3 600
 ~6 900 $ à l'endium, ~230 $ au findium, quelques centaines au noir et à Halloween, presque rien aux
 autres mois — et le Lucky Pass vaut **~2 800 $ par jour** au lieu de ~6 400. Une Diamond Beacon
 tous les 475 jours de lancers. Le levier est `LuckyType` (les poids) si le pass doit rapporter plus.
+
+## 42. Grades et Premium (2026-11-20)
+
+Demandés le 2026-11-20 (« Peux-tu ajouter les grades et toutes les fonctionnalités associées ? »).
+Choix du joueur : les grades **s'achètent à la Boutique avec l'argent du jeu**, ils sont
+**permanents**, et **Premium** s'y ajoute pour **30 jours**, à racheter.
+
+### Ce que dit Paladium
+
+Les grades ne sont pas dans le jar : c'est le serveur (ses plugins et ses permissions) qui les
+porte. Le jar n'en connaît que deux traces : le coffre de l'Ender en paladium, agrandi selon une
+permission (4 rangées par défaut, 5 au plus, § 11), et les lucky blocks « grade Paladin » (un faux,
+§ 38) et « grade Divinity » (non porté, § 39). Les avantages viennent donc du wiki de Paladium, page
+« Java | Par grade » (lue le 2026-11-20) : ils donnent « du confort », jamais de performances.
+
+| | Héros | Légende | Divinité | Premium (en plus) |
+|---|---|---|---|---|
+| Homes par serveur faction | 5 | 10 | 15 | +5 |
+| RTP | 5 | 10 | 10 | +3 par mois |
+| Cases d'Ender Chest | 18 | 27 | 36 | +9 |
+| XP de métier | +5 % | +10 % | +15 % | +5 % |
+| Points du Palapass | +5 % | +10 % | +15 % | +5 % |
+| XP vanilla | +10 % | +20 % | +30 % | +10 % |
+| Prix d'un AP, location d'une MDF | -10 % | -20 % | -30 % | -10 % |
+| Taxes du market | — | -10 % | -20 % | -10 % |
+| Anti-AFK | 10 min | 15 min | 20 min | +10 min |
+| Macros NEI | — | 5 | 10 | +3 |
+
+Tous les grades : pseudo et chat en couleur, accès prioritaire aux serveurs faction, pas de perte
+d'XP à la mort, 10 places de vente en plus au market. Légende et Divinité : les emojis, la
+téléportation instantanée (`/spawn`, `/tpa`, `/tpahere`). Commandes : Héros `/craft`, `/minage`,
+`/farmland`, `/serverhistory`, `/re` ; Légende en plus `/feed`, `/furnace` (sans XP de métier),
+`/tptoggle`, `/rangement`, `/me` ; Divinité en plus `/condense`, `/hat`, `/deathlocate`, `/skin`.
+Premium (abonnement mensuel, cumulable) : le pseudo en couleur sans grade, un home depuis n'importe
+quel serveur, le serveur de test, un message de connexion, `/ec`, `/go`, `/fly` (au lobby), `/nv`.
+La FAQ précise que les grades classiques durent le temps acheté ; Premium, jusqu'à la résiliation.
+
+### Ce que fait DoHy
+
+- **L'achat** : la section GRADES en tête de l'onglet Boutique du commerce, et la page des grades
+  (`/grade`, entrée **Grade** de la barre latérale, groupe Personnage). Héros 10 M, Légende 100 M,
+  Divinité 1 G, une fois pour toutes ; monter d'un grade coûte la différence. Premium 15 M les
+  30 jours, en temps réel (il court partie fermée), prolongé de 30 jours à chaque achat, 360 au
+  plus. Prix et raisons : `BALANCE.md` § 6 quatervicies.
+- **La page des grades** : les quatre cartes d'achat (avec leur bulle, ce que donne le grade), TES
+  COMMANDES (une carte par commande ; celles qu'on a se lancent d'un clic, les autres disent le
+  grade qu'il faut), CE QUE DONNE CHAQUE GRADE (une ligne par avantage, les valeurs des quatre
+  niveaux et de Premium, la sienne en pastille), et les commandes de tous.
+- **Les valeurs** sont celles du tableau, avec les écarts plus bas. Sans grade : 2 homes, 1 `/rtp`
+  par mois, les 27 cases du jeu.
+- **Homes** : `/sethome [nom]`, `/home [nom]`, `/homes` (cliquables), `/delhome nom`. Dans
+  l'Overworld, le Nether, l'End et la Terre ; pas au spawn ni à la Mine (remise à neuf toutes les
+  cinq heures). Au-dessus de sa limite (fin de Premium), on garde ses homes, sans en poser de
+  nouveau.
+- **Téléportations** : `/home`, `/rtp`, `/minage` et les `/tpa` attendent **3 secondes sans
+  bouger ni prendre de coup**, comme sur Paladium ; **tout de suite à partir de Légende**. Jamais
+  en combat (`CombatTag`), ni depuis un donjon, une arène, Arrakis ou la dimension du Mineur, qui
+  ont leurs propres sorties.
+- **`/rtp`** : avec la carte de la Terre, le saut en parachute du puits du spawn (`EarthJump`) ;
+  sinon un sol sec entre 800 et 4 000 blocs du spawn du monde. Un `/rtp` raté n'est pas compté ;
+  le compte repart chaque mois.
+- **`/tpa joueur`**, **`/tpahere joueur`**, **`/tpaccept`**, **`/tpdeny`** (boutons cliquables,
+  une minute pour répondre) ; **`/tptoggle`** (Légende) refuse les demandes.
+- **Commandes de grade** : `/craft` (un établi partout), `/minage` (la Mine sans passer par le
+  spawn ; `/spawn` puis la borne RETOUR ramènent là où on était), `/feed` (toutes les 5 minutes),
+  `/furnace` (la pile en main cuite d'un coup, sans XP), `/rangement` (les 27 cases du sac
+  regroupées et triées, la barre d'action ne bouge pas), `/condense` (tout ce que l'établi
+  compresse par neuf : lingots, minerais bruts, pépites, blé...), `/hat` (l'objet en main sur la
+  tête, sauf casque maudit), `/deathlocate`. Premium : `/ec` (l'Ender Chest partout, sauf en
+  combat), `/fly` (au spawn seulement ; le vol s'en va dès qu'on en sort, avec une chute lente),
+  `/nv` (vision nocturne sans fin, remise à chaque réapparition).
+- **Les bonus** : l'XP de métier dans `JobApi.grant`, additionnée aux autres bonus (Apprentissage,
+  amulettes) avant les potions ; l'XP du pass sur ses quêtes (`PassApi.complete`) ; l'XP vanilla
+  sur tous les points gagnés (`PlayerXpEvent.XpChange`, une fraction d'orbe tirée au sort) ; l'XP
+  gardée à la mort (tous les grades, pas Premium seul) ; 10 annonces de plus à l'hôtel des ventes
+  (16 au lieu de 6) ; la taxe du marché international réduite.
+- **L'Ender Chest** : les 27 cases du jeu et une rangée par grade (Héros 36, Légende 45, Divinité
+  54), une pour Premium : **63 cases au plus**, sur 7 rangées. Tous les coffres de l'Ender du
+  joueur montrent le même contenu (le coffre du jeu, celui en paladium, l'enderchest de poche,
+  `/ec`) ; les rangées en plus sont gardées sur le joueur, la première étant celle du coffre en
+  paladium. Si la place diminue (fin de Premium), ce qui ne tient plus revient dans l'inventaire.
+- **Le pseudo** : « [Légende] Pseudo », dans la couleur du grade, dans le chat et les messages de
+  mort ; « [Premium] » sans grade. La liste des joueurs (touche Tab) colore le pseudo et ajoute la
+  pastille du grade (« LEGENDE+ » avec Premium). **Le chat** : `&a`, `&l`... à partir de Héros
+  (pas le texte illisible `&k`) ; 22 emojis (`:coeur:`, `:etoile:`, `:epee:`...) à partir de
+  Légende. **L'arrivée** d'un joueur Premium est annoncée à tous ; trois jours avant la fin, il est
+  prévenu ; à la fin, ses avantages s'en vont.
+- **Administration** : `/dohy grade <joueur> <aucun|heros|legende|divinite>`,
+  `/dohy premium <joueur> <jours>` (0 l'enlève).
+- **Les insignes** : quatre icônes dessinées (`tools/grade_assets.py`), ni gagnables ni
+  vendables ; elles servent aux menus et à l'encyclopédie (fiche « Les grades »).
+
+### Écarts
+
+- **L'Ender Chest** : le jeu en donne déjà 27 cases sans grade ; DoHy garde ce socle et ajoute une
+  rangée par niveau, comme Paladium (une rangée de plus par grade).
+- **Les taxes du market** : l'hôtel des ventes de DoHy ne prend pas de taxe ; la seule taxe de
+  vente est celle du marché international (de 15 à 6 % selon le rang de la nation), et c'est elle
+  que le grade réduit : -30 % au plus, Divinité et Premium, soit 4,2 % au rang Superpuissance.
+- **La téléportation instantanée** : `/spawn` est déjà instantané pour tous dans DoHy ; l'attente
+  de trois secondes ne vaut que pour les nouvelles téléportations.
+- **Pas d'équivalent** : l'accès prioritaire, l'anti-AFK, les macros NEI, `/go`, `/re`,
+  `/serverhistory`, le serveur de test et le home depuis n'importe quel serveur (un seul monde) ;
+  la remise sur un AP ou une MDF (rien à louer dans DoHy) ; `/farmland` (pas de zone de farm
+  commune) ; `/skin` (pas d'apparences d'armure) ; `/me` est la commande du jeu, ouverte à tous.
+- **Un grade ne s'arrête pas** : sur Paladium, les grades classiques durent le temps acheté ; ici,
+  ils sont permanents (choix du joueur). Seul Premium est un abonnement.

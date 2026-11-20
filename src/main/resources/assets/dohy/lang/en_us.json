@@ -174,5 +174,10 @@
   "item.dohy.dna.fusion": "%s vials fused give grade %s",
   "item.dohy.dna_syringe": "Extraction Syringe",
   "item.dohy.dna_syringe.hint": "Right-click a peaceful animal: a DNA vial",
-  "message.dohy.dna.drawn": "DNA drawn: %s"
+  "message.dohy.dna.drawn": "DNA drawn: %s",
+  "item.dohy.grade_heros": "Hero Badge",
+  "item.dohy.grade_legende": "Legend Badge",
+  "item.dohy.grade_divinite": "Divinity Badge",
+  "item.dohy.grade_premium": "Premium Badge",
+  "tooltip.dohy.grade_badge": "Grades are bought in the Boutique: /grade"
 }

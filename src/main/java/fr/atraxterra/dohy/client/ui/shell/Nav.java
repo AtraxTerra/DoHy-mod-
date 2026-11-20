@@ -47,6 +47,8 @@ public final class Nav {
                     new Item("boss", "Boss de metier", () -> new ItemStack(Items.IRON_SWORD), "altar"),
                     new Item("succes", "Succes", () -> new ItemStack(Items.GOLDEN_APPLE), "achievements"))),
             new Group("PERSONNAGE", List.of(
+                    new Item("grade", "Grade", () -> new ItemStack(fr.atraxterra.dohy.grade.DoHyGrades.LEGENDE.get()),
+                            "grades"),
                     new Item("ameliorations", "Ameliorations", () -> new ItemStack(Items.NETHER_STAR), "upgrades"),
                     new Item("rpg", "Profil RPG", () -> new ItemStack(Items.TOTEM_OF_UNDYING), "rpg"))),
             new Group("FACTION", List.of(
@@ -79,6 +81,7 @@ public final class Nav {
         VIEWS.put("autel", "boss");
         VIEWS.put("achievements", "succes");
         VIEWS.put("upgrades", "ameliorations");
+        VIEWS.put("grades", "grade");
         VIEWS.put("rpg", "rpg");
         VIEWS.put("trixium", "trixium");
         VIEWS.put("encyclopedie", "encyclopedie");

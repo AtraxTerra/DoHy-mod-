@@ -345,7 +345,7 @@ public final class HubController extends MenuController {
     private static final java.util.Set<String> INVENTORY_TARGETS =
             java.util.Set.of("shop", "contracts", "bank", "faction", "jobs", "trixium", "clicker", "encyclopedia",
                     "pass", "sell", "boutique", "market", "collections", "museum", "altar", "achievements", "upgrades",
-                    "rpg", "plans", "lucky");
+                    "rpg", "plans", "lucky", "grades");
 
     /**
      * Ouvre le menu demande par un bouton de l'inventaire ({@code InventoryNav}).
@@ -396,6 +396,7 @@ public final class HubController extends MenuController {
             case "collections" -> CollectionsController.INSTANCE.open(player);
             case "museum" -> MuseumController.INSTANCE.open(player);
             case "upgrades" -> UpgradesController.INSTANCE.open(player);
+            case "grades" -> fr.atraxterra.dohy.grade.GradesController.INSTANCE.open(player);
             case "rpg" -> {
                 UiNet.forget(player);
                 RpgMenu.INSTANCE.open(player);

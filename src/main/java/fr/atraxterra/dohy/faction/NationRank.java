@@ -41,6 +41,11 @@ public enum NationRank {
         return fee;
     }
 
+    /** La taxe que paie ce joueur : celle du rang de sa nation, moins la part que son grade efface. */
+    public static double fee(ServerPlayer player) {
+        return of(player).fee * (1.0d - fr.atraxterra.dohy.grade.Grades.marketTaxCut(player));
+    }
+
     public int color() {
         return color;
     }
