@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
@@ -173,7 +174,7 @@ public final class FarmBotMenu extends MenuController {
 
     private static List<Card> actions(FarmBot bot) {
         List<Card> cards = new ArrayList<>();
-        cards.add(Card.of(new ItemStack(bot.paused() ? Items.LIME_DYE : Items.GRAY_DYE),
+        cards.add(Card.of(new ItemStack(Items.DYE.pick(bot.paused() ? DyeColor.LIME : DyeColor.GRAY)),
                         bot.paused() ? "Reprendre" : "Mettre en pause", List.of(
                                 bot.paused() ? "Il se remet au travail" : "Il s'arrete ou il est", ""))
                 .accent(bot.paused() ? GREEN : GOLD)

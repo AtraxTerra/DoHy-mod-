@@ -32,7 +32,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AttachedStemBlock;
 import net.minecraft.world.level.block.Block;
@@ -534,7 +533,7 @@ public class FarmBot extends PathfinderMob {
 
     /** Jamais dans le claim d'un autre (ni dans une base ennemie). */
     private boolean allowed(ServerLevel level, BlockPos pos) {
-        long chunk = ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
+        long chunk = ((long) (pos.getX() >> 4) << 32) | ((pos.getZ() >> 4) & 0xFFFFFFFFL);
         return claims.computeIfAbsent(chunk, key -> {
             ClaimOwner claim = FactionApi.claimAt(level, pos);
             return !claim.claimed() || (owner != null && claim.ownedBy(owner) && !claim.enemy());
