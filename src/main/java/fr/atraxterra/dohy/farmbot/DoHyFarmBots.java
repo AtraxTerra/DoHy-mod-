@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 public final class DoHyFarmBots {
 
     /** Le prix d'un bot a la Boutique. */
-    public static final long BOT_PRICE = 5_000_000L;
+    public static final long BOT_PRICE = 100_000L;
     /** Le prix d'une telecommande, a la Boutique comme dans le menu d'un bot. */
     public static final long REMOTE_PRICE = 10_000L;
 

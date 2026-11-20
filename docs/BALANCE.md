@@ -1310,6 +1310,56 @@ manière de l'assurance, mais pour du confort. Le temps est réel : un mois sans
 
 Leviers : `PlayerGrade` (prix et valeurs de chaque grade), `Premium` (prix, durée, bonus).
 
+## 6 quinvicies. Bots de farming — un champ qui se récolte seul
+
+Description : `docs/CONTENU_DOHY.md`. Comme le tracteur (§ 6 sexdecies), le bot ne change ni le
+prix d'une culture ni ce qu'elle rend : il change **qui récolte**. Ce qui borne son revenu, dans
+l'ordre :
+
+- **la pousse** : il ne fait rien mûrir (ni poudre d'os, ni accélération). Une culture vanilla sur
+  terre humide met de 25 à 50 minutes à mûrir selon la disposition des rangs ; son plus grand champ
+  (48 × 48, 2 304 cases, ~2 050 cultures une fois l'eau posée) donne donc de **2 400 à 4 800
+  récoltes à l'heure** ;
+- **son débit** : mesuré en jeu, 80 récoltes et replantations en 51 secondes dans un champ serré
+  de 9 × 9 (une toutes les 0,65 s, marche comprise), soit ~5 500 à l'heure. Un bot suit la pousse
+  de son plus grand champ, guère plus : la limite de 48 × 48 est faite pour ça ;
+- **la zone chargée** : il ne travaille que près d'un joueur. Ce n'est pas une rente qui tourne
+  la nuit ni pendant qu'on est à la Mine : en solo, il récolte pendant qu'on fait autre chose à
+  côté de sa base ;
+- **la pression de vente** (§ 6) : chaque culture a sa courbe, S₀ = 2 000. Vendues d'un coup,
+  2 400 céréales rapportent 27 800 $ (77 % du prix de base), 4 800 en rapportent 47 400 $ (66 %),
+  9 600 (deux bots sur la même céréale) 76 500 $ (53 %). Quatre bots rapportent quatre fois plus
+  seulement sur quatre cultures différentes, ou en passant par la farine et le pain, qui repartent
+  chacun d'une courbe neuve.
+
+**Le prix.** 100 k, fixé par le joueur le 2026-11-20 (5 M étaient prévus, au niveau de la box
+Paladium). C'est quatre heures d'activité du début de partie (25 k$/h, § 3) : les bots deviennent
+un outil de la première semaine, pas un jalon. À plein, un bot rapporte de 28 à 47 k$ par heure de
+présence et se rembourse en deux à quatre heures près du champ ; les quatre (400 k), sur quatre
+cultures, approchent les 200 k$ par heure des « fermes en place » du § 3 dès que les champs sont
+plantés. Ce qui les borne n'est donc plus le prix mais le reste : la pousse, la présence, la
+pression de vente et le plafond de quatre bots. La télécommande (10 k) n'est qu'un outil.
+
+**L'XP de Fermier** (choix du joueur : comme à la main). Une récolte du bot vaut une récolte à la
+main, mesurée en jeu au point près : 1 le blé, 3 la verrue, 5 le cacao ; 2 la pomme de terre
+(Fermier 5), 3 la carotte (15), 8 la betterave (25), 2 la canne (45), 3 la citrouille (55), 5 la
+pastèque (65). Les grades, les potions et le reste s'y appliquent comme à la main ; les baies
+cueillies ne donnent rien, comme à la main ; propriétaire déconnecté, rien non plus. Un champ de
+48 × 48 de betteraves à plein donne jusqu'à ~38 000 XP par heure, deux fois et demie le rythme de
+référence (15 000 XP/h, § 2), et quatre bots le quadruplent : c'est l'échelle du tracteur (le
+métier monte avec la surface), sans le conduire. **C'est le point à surveiller** : si le Fermier
+monte trop vite, le levier le plus doux est la surface (`BotZone.MAX_SIDE`), puis le nombre de
+bots. À 100 k, ce point arrive dès la première semaine.
+
+**Rien ne se perd, rien ne se crée** : le bot ne ramasse que ce que rend la casse normale du bloc
+(et la copie du double drop du musée, qui va désormais dans la liste des drops, pour lui comme pour
+la trémie du tracteur) ; il replante avec une graine de la récolte ; sac et coffres pleins, il
+s'arrête au lieu de jeter. Invulnérable, il ne meurt que par le vide ou `/kill`, et rend alors son
+sac.
+
+Leviers : `DoHyFarmBots.BOT_PRICE` et `REMOTE_PRICE`, `BotRegistry.MAX_PER_PLAYER` (quatre),
+`BotZone.MAX_SIDE` (la surface), `FarmBot.HARVEST_PAUSE` (le débit), `FarmBot.MAX_CHESTS`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

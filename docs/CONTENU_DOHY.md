@@ -1598,7 +1598,7 @@ Demandé le 2026-11-20 : « des bots de farming qui récoltent et replantent les
 mettent les items récoltés dans des coffres que je désigne ». Choix du joueur : **achetés à la
 Boutique**, **une zone qu'on délimite** (deux coins), **l'XP de Fermier comme à la main**.
 
-- **Le bot** : 5 M à la Boutique (section BOTS DE FARMING), avec sa télécommande la première fois
+- **Le bot** : 100 k à la Boutique (section BOTS DE FARMING), avec sa télécommande la première fois
   (10 k seule). Quatre bots au plus par joueur, posés ou sur soi. Un clic droit sur le sol le pose,
   à son nom ; il ne prend aucun dégât, ne se pousse pas et ne disparaît pas. Tué quand même (le
   vide, `/kill`), il rend son sac et redevient un objet.
