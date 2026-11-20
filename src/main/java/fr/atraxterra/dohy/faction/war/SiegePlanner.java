@@ -238,7 +238,7 @@ final class SiegePlanner {
      * @param intel  la part des pieges que la nation connait (sa ruse)
      */
     static Snapshot capture(ServerLevel level, BlockPos vault, UUID owner, int radius, List<BlockPos> deaths,
-                            double intel, long salt, List<BlockPos> from) {
+                            double intel, long salt, List<BlockPos> from, float turretWeight) {
         int x0 = vault.getX() - radius;
         int z0 = vault.getZ() - radius;
         int w = radius * 2 + 1;
@@ -401,7 +401,7 @@ final class SiegePlanner {
 
         // Le danger des colonnes : ce que couvrent les tourelles, ou sont tombes les soldats.
         for (BlockPos turret : turrets) {
-            spread(snap, turret.getX() - x0, turret.getZ() - z0, 22, 1.6f);
+            spread(snap, turret.getX() - x0, turret.getZ() - z0, 22, turretWeight);
         }
         for (BlockPos death : deaths) {
             spread(snap, death.getX() - x0, death.getZ() - z0, 3, 22.0f);

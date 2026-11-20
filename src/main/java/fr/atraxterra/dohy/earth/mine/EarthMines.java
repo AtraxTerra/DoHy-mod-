@@ -727,6 +727,37 @@ public final class EarthMines {
         return body.name();
     }
 
+    /**
+     * La place forte de la nation qui l'avait reprise est tombee : la mine
+     * revient a la faction (lot 22l-2), ses revenus repartant de maintenant.
+     * Rend son nom, {@code null} si une autre faction la tient deja.
+     */
+    public static String restore(ServerPlayer player, String id) {
+        EarthBodies.Body body = body(id);
+        if (!active() || body == null || !FactionApi.has(player)) {
+            return null;
+        }
+        MinecraftServer server = player.level().getServer();
+        if (ledger(server).of(body.id()) != null) {
+            return null;
+        }
+        long now = System.currentTimeMillis();
+        String faction = FactionApi.data(player).name();
+        save(server, ledger(server).with(new MineLedger.Concession(body.id(), player.getUUID(), faction, now, now)));
+        int nation = nation(server, body);
+        int country = country(body);
+        boolean ownCountry = country != 0 && EarthNations.holder(server, country).ownedBy(player.getUUID());
+        if (nation >= 0 && !ownCountry) {
+            fr.atraxterra.dohy.faction.war.WarStrategy.grieve(player, nation, "mine prise : " + body.name(),
+                    grief(body));
+        }
+        server.getPlayerList().broadcastSystemMessage(FactionApi.prefix().append(Component.literal(body.name()
+                + " : " + faction + " reprend la mine (" + body.resource() + ").").withStyle(ChatFormatting.YELLOW)),
+                false);
+        DoHy.LOGGER.info("Mines de la Terre : {} reprend {} ({})", faction, body.name(), body.id());
+        return body.name();
+    }
+
     /** Rend une mine a la nation de sa region. */
     public static String abandon(ServerPlayer player, String id) {
         EarthBodies.Body body = body(id);

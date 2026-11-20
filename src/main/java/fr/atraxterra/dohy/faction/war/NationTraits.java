@@ -142,6 +142,16 @@ public record NationTraits(String name, DyeColor color, double aggression, doubl
         return fr.atraxterra.dohy.earth.EarthNations.de(name);
     }
 
+    /** Le nom au fil d'une phrase : « Nordheim », « les Corbeaux ». */
+    public String the() {
+        return plural() ? "les " + name.substring(4) : name;
+    }
+
+    /** « sa » ou « leur » : « Nordheim perd sa place forte », « les Corbeaux perdent leur place forte ». */
+    public String her() {
+        return plural() ? "leur" : "sa";
+    }
+
     /** Ce qu'on dit d'elle, en clair, quand on la connait un peu. */
     public String reputation() {
         StringBuilder out = new StringBuilder();
