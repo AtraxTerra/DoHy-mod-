@@ -23,7 +23,8 @@ import java.util.UUID;
 
 /**
  * Ce que la liste des joueurs (touche Tab) affiche en plus du jeu : la faction de
- * chaque joueur et son niveau global.
+ * chaque joueur, son niveau global et son grade (« Les grades apparaissent dans le
+ * Tab », dit le wiki de Paladium).
  *
  * <p>Le client ne connait ni l'une ni l'autre : le serveur envoie la liste a tous,
  * a chaque connexion et toutes les cinq secondes. Une ligne par joueur en ligne,
@@ -32,8 +33,11 @@ import java.util.UUID;
 @EventBusSubscriber
 public record TabInfo(List<Entry> entries) implements CustomPacketPayload {
 
-    /** Une ligne : la faction ({@code ""} sans faction), sa couleur, le niveau global. */
-    public record Entry(UUID id, String faction, int color, int level) {
+    /**
+     * Une ligne : la faction ({@code ""} sans faction), sa couleur, le niveau global, et le grade
+     * ({@code ""} sans grade ni Premium) avec sa couleur.
+     */
+    public record Entry(UUID id, String faction, int color, int level, String grade, int gradeColor) {
     }
 
     public static final Type<TabInfo> TYPE = new Type<>(Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "tab_info"));
@@ -46,13 +50,16 @@ public record TabInfo(List<Entry> entries) implements CustomPacketPayload {
                     buffer.writeUtf(entry.faction(), 32);
                     buffer.writeInt(entry.color());
                     buffer.writeVarInt(entry.level());
+                    buffer.writeUtf(entry.grade(), 16);
+                    buffer.writeInt(entry.gradeColor());
                 }
             },
             buffer -> {
                 int count = Math.min(buffer.readVarInt(), 1024);
                 List<Entry> entries = new ArrayList<>(count);
                 for (int index = 0; index < count; index++) {
-                    entries.add(new Entry(buffer.readUUID(), buffer.readUtf(32), buffer.readInt(), buffer.readVarInt()));
+                    entries.add(new Entry(buffer.readUUID(), buffer.readUtf(32), buffer.readInt(), buffer.readVarInt(),
+                            buffer.readUtf(16), buffer.readInt()));
                 }
                 return new TabInfo(entries);
             });
@@ -79,7 +86,7 @@ public record TabInfo(List<Entry> entries) implements CustomPacketPayload {
 
     @SubscribeEvent
     public static void onRegister(RegisterPayloadHandlersEvent event) {
-        event.registrar("1").optional().playToClient(TYPE, STREAM_CODEC);
+        event.registrar("2").optional().playToClient(TYPE, STREAM_CODEC);
     }
 
     @SubscribeEvent
@@ -130,6 +137,14 @@ public record TabInfo(List<Entry> entries) implements CustomPacketPayload {
         } catch (RuntimeException ignored) {
             // Idem pour le niveau.
         }
-        return new Entry(player.getUUID(), faction, color, level);
+        String grade = "";
+        int gradeColor = 0;
+        try {
+            grade = fr.atraxterra.dohy.grade.Grades.tag(player);
+            gradeColor = fr.atraxterra.dohy.grade.Grades.color(player);
+        } catch (RuntimeException ignored) {
+            // Idem pour le grade.
+        }
+        return new Entry(player.getUUID(), faction, color, level, grade, gradeColor);
     }
 }

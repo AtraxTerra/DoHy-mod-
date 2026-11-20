@@ -32,7 +32,12 @@ public final class KitMenus {
         MOUNT_INVENTORY("mount_inventory", 5, "Le sac de ta monture"),
         GOLEM_STORAGE("golem_storage", 2, "Le coffre du golem"),
         GOLEM_KEEPER("golem_keeper", 1, "Les croquettes du gardien"),
-        PALADIUM_ENDER_CHEST("paladium_ender_chest", 4, "Partage entre tes coffres");
+        PALADIUM_ENDER_CHEST("paladium_ender_chest", 4, "Partage entre tes coffres"),
+        // Le coffre de l'Ender agrandi par les grades : une rangee par grade, une pour Premium.
+        GRADE_ENDER_4("grade_ender_4", 4, "Agrandi par ton grade"),
+        GRADE_ENDER_5("grade_ender_5", 5, "Agrandi par ton grade"),
+        GRADE_ENDER_6("grade_ender_6", 6, "Agrandi par ton grade"),
+        GRADE_ENDER_7("grade_ender_7", 7, "Agrandi par ton grade");
 
         private final String path;
         private final int rows;
@@ -55,6 +60,21 @@ public final class KitMenus {
 
         public MenuType<ChestMenu> type() {
             return holder.get();
+        }
+
+        /** Un coffre de l'Ender, celui de l'Ender en paladium ou un agrandi par les grades. */
+        public boolean ender() {
+            return this == PALADIUM_ENDER_CHEST || path.startsWith("grade_ender_");
+        }
+
+        /** Le coffre de l'Ender agrandi de ce nombre de rangees, de 4 a 7. */
+        public static Use gradeEnder(int rows) {
+            return switch (Math.max(4, Math.min(7, rows))) {
+                case 4 -> GRADE_ENDER_4;
+                case 5 -> GRADE_ENDER_5;
+                case 6 -> GRADE_ENDER_6;
+                default -> GRADE_ENDER_7;
+            };
         }
     }
 

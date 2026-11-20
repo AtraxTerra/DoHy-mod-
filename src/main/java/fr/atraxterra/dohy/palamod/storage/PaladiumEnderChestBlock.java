@@ -1,21 +1,14 @@
 package fr.atraxterra.dohy.palamod.storage;
 
 import com.mojang.serialization.MapCodec;
-import fr.atraxterra.dohy.ui.KitMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -35,7 +28,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * <p>PalaMod agrandissait l'inventaire du coffre de l'End lui-meme, selon des
  * permissions du serveur : 4 rangees par defaut, 5 au plus. Sans permissions,
  * c'est le defaut qui est porte. La 4e rangee est rangee a part, sur le joueur ;
- * les 27 premieres cases sont celles du coffre de l'End vanilla.
+ * les 27 premieres cases sont celles du coffre de l'End vanilla. Les grades de
+ * DoHy ajoutent des rangees a tous les coffres de l'Ender, celui-ci compris
+ * ({@code grade.GradeEnder}).
  *
  * <p>Casse sans Toucher de soie, il rend 8 obsidiennes, comme le vanilla.
  */
@@ -86,25 +81,8 @@ public class PaladiumEnderChestBlock extends HorizontalDirectionalBlock {
     }
 
     private static void open(ServerPlayer player) {
-        NonNullList<ItemStack> stored = player.getData(PalaStorage.ENDER_EXTRA.get()).items();
-        SimpleContainer extra = new SimpleContainer(EXTRA_SLOTS) {
-            @Override
-            public void setChanged() {
-                super.setChanged();
-                NonNullList<ItemStack> copy = NonNullList.withSize(EXTRA_SLOTS, ItemStack.EMPTY);
-                for (int slot = 0; slot < EXTRA_SLOTS; slot++) {
-                    copy.set(slot, getItem(slot).copy());
-                }
-                player.setData(PalaStorage.ENDER_EXTRA.get(), new EnderExtra(copy));
-            }
-        };
-        for (int slot = 0; slot < EXTRA_SLOTS && slot < stored.size(); slot++) {
-            extra.setItem(slot, stored.get(slot).copy());
-        }
-        CompoundContainer container = new CompoundContainer(player.getEnderChestInventory(), extra);
-        player.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> new ChestMenu(KitMenus.Use.PALADIUM_ENDER_CHEST.type(), containerId, inventory,
-                        container, 4),
-                Component.translatable("container.palamod.paladium_ender_chest")));
+        // Le meme coffre que les autres, avec au moins sa rangee en plus ; un grade peut en ajouter.
+        fr.atraxterra.dohy.grade.GradeEnder.open(player, 4, null,
+                Component.translatable("container.palamod.paladium_ender_chest"));
     }
 }

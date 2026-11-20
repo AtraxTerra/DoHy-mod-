@@ -47,6 +47,8 @@ public final class DoHy {
         // Arrakis : la planete Duna de NTM NEXT Space, reprise (relief, air, navette, astroport).
         fr.atraxterra.dohy.arrakis.DoHyArrakis.register(modBus);
         fr.atraxterra.dohy.cryo.DoHyCryo.register(modBus);
+        // Les grades de Paladium (Heros, Legende, Divinite) et Premium, achetes a la Boutique.
+        fr.atraxterra.dohy.grade.DoHyGrades.register(modBus);
         LOGGER.info("DoHy charge");
     }
 }

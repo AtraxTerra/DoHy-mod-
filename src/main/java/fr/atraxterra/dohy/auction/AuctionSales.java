@@ -197,8 +197,13 @@ public final class AuctionSales {
         return used;
     }
 
+    /** Les annonces a la fois : six, et dix de plus avec un grade. */
+    public static int slots(ServerPlayer player) {
+        return buyers().slots() + fr.atraxterra.dohy.grade.Grades.auctionSlots(player);
+    }
+
     public static int free(ServerPlayer player) {
-        return Math.max(0, buyers().slots() - used(player));
+        return Math.max(0, slots(player) - used(player));
     }
 
     /** Les invendus qui attendent le joueur. */
@@ -236,7 +241,7 @@ public final class AuctionSales {
             return refusal;
         }
         if (free(player) <= 0) {
-            return "Tes " + buyers().slots() + " emplacements sont pris : attends une vente ou retire une annonce.";
+            return "Tes " + slots(player) + " emplacements sont pris : attends une vente ou retire une annonce.";
         }
         long price = price(stack, preset);
         ItemStack listed = stack.copy();

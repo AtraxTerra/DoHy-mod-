@@ -369,7 +369,7 @@ public final class WorldMarket {
     public static long sellUnit(ServerPlayer player, Identifier id) {
         PriceEntry entry = entry(id);
         return entry == null ? 0L : Math.max(1L, Math.round(entry.basePrice() * factor(player.level().getServer(), id)
-                * (1.0d - NationRank.of(player).fee())));
+                * (1.0d - NationRank.fee(player))));
     }
 
     /** Ce que paie le joueur pour une unite achetee maintenant. */
@@ -403,7 +403,7 @@ public final class WorldMarket {
         }
         double stock = stock(server, id);
         return Math.max(1L, Math.round(integral(entry.basePrice(), reference(id), stock, stock + quantity)
-                * (1.0d - NationRank.of(player).fee())));
+                * (1.0d - NationRank.fee(player))));
     }
 
     /** Ce que couterait l'achat de cette quantite ; 0 si le stock n'y suffit pas. */
@@ -495,7 +495,7 @@ public final class WorldMarket {
         Economy.credit(player, payout);
         FactionApi.stat(player, VOLUME, payout);
         FactionApi.tell(player, "Vendu : " + MoneyFormat.exact(sold) + " x " + name(id) + " pour "
-                + MoneyFormat.exact(payout) + " $ (taxe " + Math.round(NationRank.of(player).fee() * 100.0d)
+                + MoneyFormat.exact(payout) + " $ (taxe " + Math.round(NationRank.fee(player) * 100.0d)
                 + " %). Cours : " + percent(factor(server, id)) + "."
                 + (sold < Math.min(quantity, have) ? " Le marche est sature." : ""), ChatFormatting.GREEN);
         return null;

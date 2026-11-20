@@ -197,11 +197,13 @@ public final class PassApi {
     private static void complete(ServerPlayer player, PassQuest quest, boolean month) {
         player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER,
                 0.6f, 1.4f);
+        // Le bonus d'XP du pass des grades (les points du Palapass de Paladium) : sur les quetes seulement.
+        long xp = Math.round(quest.xp() * (1.0d + fr.atraxterra.dohy.grade.Grades.passXpBonus(player)));
         player.sendSystemMessage(Component.literal("[Pass] ").withStyle(ChatFormatting.LIGHT_PURPLE)
                 .append(Component.literal((month ? "Quete du mois terminee : " : "Quete du jour terminee : ")
                         + ContractDisplay.label(quest.asContract())).withStyle(ChatFormatting.WHITE))
-                .append(Component.literal("  +" + MoneyFormat.exact(quest.xp()) + " XP").withStyle(ChatFormatting.AQUA)));
-        grantXp(player, quest.xp());
+                .append(Component.literal("  +" + MoneyFormat.exact(xp) + " XP").withStyle(ChatFormatting.AQUA)));
+        grantXp(player, xp);
     }
 
     /** De l'XP de pass ; les niveaux franchis s'annoncent. */

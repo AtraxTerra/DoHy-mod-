@@ -74,6 +74,9 @@ public final class DoHyCommand {
                         .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                 .executes(ctx -> chunk(ctx.getSource(),
                                         BlockPosArgument.getLoadedBlockPos(ctx, "pos")))))
+                // Les grades : en donner un, ou du Premium, pour essayer ou sur un serveur.
+                .then(fr.atraxterra.dohy.grade.GradeCommands.admin())
+                .then(fr.atraxterra.dohy.grade.GradeCommands.adminPremium())
                 // Pour essayer l'hotel des ventes sans attendre : tes annonces partent tout de suite.
                 .then(Commands.literal("hdv")
                         .then(Commands.literal("vendre")

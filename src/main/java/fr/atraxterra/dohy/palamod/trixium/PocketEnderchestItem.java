@@ -8,9 +8,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -40,10 +38,8 @@ public class PocketEnderchestItem extends Item {
                     Component.literal("Cet objet n'est pas utilisable en combat.").withStyle(ChatFormatting.RED)));
             return InteractionResult.FAIL;
         }
-        server.openMenu(new SimpleMenuProvider(
-                (containerId, inventory, viewer) -> ChestMenu.threeRows(containerId, inventory,
-                        server.getEnderChestInventory()),
-                Component.translatable("container.enderchest")));
+        // Le coffre de l'Ender du joueur, agrandi si son grade le permet.
+        fr.atraxterra.dohy.grade.GradeEnder.open(server, 3, null, Component.translatable("container.enderchest"));
         server.level().playSound(null, server.blockPosition(), SoundEvents.ENDER_CHEST_OPEN, SoundSource.PLAYERS,
                 0.5f, 1.0f);
         return InteractionResult.SUCCESS;

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 /**
- * L'onglet Boutique du commerce : boosters, cles de box et leurs coffres a poser,
+ * L'onglet Boutique du commerce : grades, boosters, cles de box et leurs coffres a poser,
  * potions d'XP, assurance et autosell. Tout s'y paie en liquide.
  */
 public final class BoutiqueController extends MenuController {
@@ -160,6 +160,9 @@ public final class BoutiqueController extends MenuController {
         // ne s'achetent pas ici, elles n'y ont plus de carte.
         return new MenuView(id(), fr.atraxterra.dohy.shop.Commerce.TITLE,
                 fr.atraxterra.dohy.shop.Commerce.Tab.BOUTIQUE.subtitle(), stats, List.of(
+                // Les grades d'abord, comme sur la boutique de Paladium ; clic droit : tous les avantages.
+                new MenuView.Section("GRADES : DU CONFORT, POUR TOUJOURS", "armor", MenuView.GRID,
+                        fr.atraxterra.dohy.grade.GradesController.offers(player, "grade:")),
                 new MenuView.Section("BOOSTERS : TES VENTES RAPPORTENT PLUS", "upgrade", MenuView.GRID, boosters),
                 new MenuView.Section("CLES DE BOX", "resources", MenuView.GRID, crates),
                 new MenuView.Section("POTIONS D'XP DE METIER", "upgrade", MenuView.GRID, potions),
@@ -210,7 +213,11 @@ public final class BoutiqueController extends MenuController {
 
     @Override
     protected void card(ServerPlayer player, String key, int button) {
-        if (key.startsWith("booster:")) {
+        if (key.startsWith("grade:")) {
+            fr.atraxterra.dohy.grade.GradesController.handle(player, key.substring(6));
+        } else if (key.equals("grades")) {
+            fr.atraxterra.dohy.grade.GradesController.INSTANCE.open(player);
+        } else if (key.startsWith("booster:")) {
             Boosters.Tier tier = Boosters.tier(key.substring(8));
             if (tier != null) {
                 report(player, Boosters.buy(player, tier), "Booster x" + (long) tier.multiplier() + " actif pour "

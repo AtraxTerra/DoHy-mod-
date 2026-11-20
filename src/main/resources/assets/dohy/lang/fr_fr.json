@@ -174,5 +174,10 @@
   "item.dohy.dna.fusion": "%s fioles fusionnees donnent le grade %s",
   "item.dohy.dna_syringe": "Seringue d'extraction",
   "item.dohy.dna_syringe.hint": "Clic droit sur une bete paisible : une fiole d'ADN",
-  "message.dohy.dna.drawn": "ADN preleve : %s"
+  "message.dohy.dna.drawn": "ADN preleve : %s",
+  "item.dohy.grade_heros": "Insigne de Heros",
+  "item.dohy.grade_legende": "Insigne de Legende",
+  "item.dohy.grade_divinite": "Insigne de Divinite",
+  "item.dohy.grade_premium": "Insigne Premium",
+  "tooltip.dohy.grade_badge": "Les grades s'achetent a la Boutique : /grade"
 }
