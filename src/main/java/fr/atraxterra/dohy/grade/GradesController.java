@@ -46,9 +46,8 @@ public final class GradesController extends MenuController {
         sections.add(new MenuView.Section("CE QUE DONNE CHAQUE GRADE", "resources", MenuView.ROWS, perks(player)));
         sections.add(new MenuView.Section("POUR TOUS, AVEC OU SANS GRADE", "", MenuView.TEXT, List.of(
                 Card.of(ItemStack.EMPTY, "", everyone(player)))));
-        return new MenuView(id(), "Grades",
-                "Du confort, jamais de puissance : un grade s'achete une fois pour toutes, Premium s'y ajoute pour "
-                        + Premium.DAYS + " jours.", stats, sections, true);
+        return new MenuView(id(), "Grades", "Du confort, pas de puissance : un grade s'achete pour toujours, Premium "
+                + "dure " + Premium.DAYS + " jours.", stats, sections, true);
     }
 
     /**
@@ -71,7 +70,7 @@ public final class GradesController extends MenuController {
                 boolean upgrade = current != PlayerGrade.NONE;
                 String price = MoneyFormat.exact(cost) + " $";
                 card = Card.of(DoHyGrades.badge(grade), grade.label(), List.of(
-                                upgrade ? "Passer : " + MoneyFormat.shortForm(cost) + " $" : price, headline(grade)))
+                                upgrade ? "Passer : " + price : price, headline(grade)))
                         .action(prefix + "buy:" + grade.id() + "|acheter")
                         .confirm("Acheter le grade " + grade.label() + " ?|" + price + (upgrade
                                 ? ", la difference avec ton grade " + current.label() : "") + ". Pour toujours.");
@@ -93,7 +92,7 @@ public final class GradesController extends MenuController {
         int days = Grades.premiumDays(player);
         List<String> tooltip = new ArrayList<>(premiumSummary());
         Card premium = Card.of(DoHyGrades.premiumBadge(), "Premium", List.of(
-                        MoneyFormat.shortForm(Premium.PRICE) + " $ les " + Premium.DAYS + " jours",
+                        MoneyFormat.exact(Premium.PRICE) + " $ · " + Premium.DAYS + " jours",
                         days > 0 ? "Actif encore " + days + " j" : "/ec, /fly, /nv, +5 homes"))
                 .accent(Premium.COLOR).badge(days > 0 ? days + " J" : "30 J")
                 .action(prefix + "premium|" + (days > 0 ? "prolonger de 30 jours" : "acheter 30 jours"))

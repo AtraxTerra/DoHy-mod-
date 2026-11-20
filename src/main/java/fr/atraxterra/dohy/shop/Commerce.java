@@ -52,8 +52,8 @@ public final class Commerce {
     /** Les onglets, dans l'ordre de la rangee. */
     public enum Tab {
         BUY("shop", "Acheter",
-                "Blocs, minerais, nourriture et pieces, a prix fixe. Boosters et cles a la Boutique, raretes a "
-                        + "l'Hotel des ventes."),
+                "Blocs, minerais, nourriture et pieces, a prix fixe. Grades, boosters et cles a la Boutique, raretes"
+                        + " a l'Hotel des ventes."),
         SELL("sell", "Vendre",
                 "Le shop rachete ce que tu recoltes, mines ou chasses. Plus tu vends le meme objet, plus son prix "
                         + "baisse ; il remonte ensuite tout seul."),
