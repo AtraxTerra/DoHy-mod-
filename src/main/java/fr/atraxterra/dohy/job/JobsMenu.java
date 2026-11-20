@@ -140,7 +140,8 @@ public final class JobsMenu extends MenuController {
                 MenuView.GRID, rebirth(player, job, detail, color)));
         String unlockCount = unlocksDone + " / " + detail.unlocks().size();
         sections.add(new MenuView.Section("PROCHAINS DEBLOCAGES|" + unlockCount, "upgrade", MenuView.GRID,
-                next(detail, color)).anchor("Deblocages|" + unlocksDone + "/" + detail.unlocks().size()));
+                next(detail, color, JobApi.level(player, job)))
+                .anchor("Deblocages|" + unlocksDone + "/" + detail.unlocks().size()));
         sections.add(new MenuView.Section("TOUS LES DEBLOCAGES", "", MenuView.ROWS,
                 rows(detail.unlocks(), detail.level(), color, true)));
         sections.add(new MenuView.Section("PRIMES|" + primesDone + " / " + detail.primes().size(), "resources",
@@ -187,9 +188,10 @@ public final class JobsMenu extends MenuController {
 
     /**
      * Les prochains deblocages : le dernier obtenu, puis les deux suivants, chacun avec
-     * sa barre vers son niveau. Au niveau maximum, les trois derniers.
+     * sa barre vers son niveau (le niveau de deblocage, garde par les renaissances). Au niveau
+     * maximum, les trois derniers.
      */
-    private static List<Card> next(JobDetailView detail, int color) {
+    private static List<Card> next(JobDetailView detail, int color, int unlockedLevel) {
         List<JobDetailView.Row> sorted = new ArrayList<>(detail.unlocks());
         sorted.sort(Comparator.comparingInt(JobDetailView.Row::level));
         int firstLocked = sorted.size();
@@ -210,7 +212,7 @@ public final class JobsMenu extends MenuController {
                 card = card.state(MenuView.DONE);
             } else {
                 card = card.state(MenuView.DISABLED).badge(Integer.toString(row.level()))
-                        .progress(detail.level(), row.level());
+                        .progress(unlockedLevel, row.level());
             }
             cards.add(card);
         }
