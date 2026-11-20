@@ -180,6 +180,8 @@ final class ShotSamples {
             command(player, "weather clear");
             command(player, "gamerule doDaylightCycle false");
             command(player, "gamerule doMobSpawning false");
+            command(player, "difficulty peaceful");
+            command(player, "kill @e[type=minecraft:slime]");
             player.setGameMode(GameType.SURVIVAL);
             origin = new BlockPos(300, -60, 300);
             tp(player, 0.5, 0, 0.5, 0.0f, 10.0f);
@@ -202,6 +204,7 @@ final class ShotSamples {
             state(player, "apres Divinite et Premium");
             GradesController.INSTANCE.open(player);
         }));
+        ShotHarness.SHOTS.add(client("b2b_haut", 20, () -> scroll(400.0)));
         ShotHarness.SHOTS.add(client("b3_commandes", 20, () -> scroll(-40.0)));
         ShotHarness.SHOTS.add(server("c1_boutique_achete", 30, player -> {
             long before = JobApi.xp(player, Job.MINER);
@@ -294,6 +297,39 @@ final class ShotSamples {
             Minecraft.getInstance().execute(() -> Minecraft.getInstance().gui.setScreen(null));
             log("apres la mort : niveau {} (avant {}), vivant {}", player.experienceLevel, xpLevelBeforeDeath,
                     player.isAlive());
+        }));
+        ShotHarness.SHOTS.add(server("j1_fin_premium", 60, player -> {
+            Minecraft.getInstance().execute(() -> Minecraft.getInstance().gui.setScreen(null));
+            player.setData(fr.atraxterra.dohy.grade.DoHyGrades.DATA.get(),
+                    Grades.data(player).withPremiumUntil(System.currentTimeMillis() - 1000L));
+            log("Premium mis a expirer");
+        }));
+        ShotHarness.SHOTS.add(server("j2_ender_reduit", 30, player -> {
+            state(player, "apres la fin du Premium");
+            int apples = 0;
+            for (int slot = 0; slot < 36; slot++) {
+                if (player.getInventory().getItem(slot).is(item("minecraft:golden_apple"))) {
+                    apples += player.getInventory().getItem(slot).getCount();
+                }
+            }
+            log("pommes d'or dans le sac avant /ec : {}", apples);
+            as(player, "ec");
+            apples = 0;
+            for (int slot = 0; slot < 36; slot++) {
+                if (player.getInventory().getItem(slot).is(item("minecraft:golden_apple"))) {
+                    apples += player.getInventory().getItem(slot).getCount();
+                }
+            }
+            log("pommes d'or dans le sac apres /ec : {}", apples);
+            as(player, "home mine");
+        }));
+        ShotHarness.SHOTS.add(server("j3_ender_coffre", 30, player -> {
+            fr.atraxterra.dohy.grade.GradeEnder.open(player, 3, null,
+                    net.minecraft.network.chat.Component.translatable("container.enderchest"));
+        }));
+        ShotHarness.SHOTS.add(client("j4_chat", 15, () -> {
+            Minecraft.getInstance().gui.setScreen(null);
+            openChat();
         }));
         ShotHarness.SHOTS.add(server("h1_acheter", 30, ShopController::open));
         ShotHarness.SHOTS.add(client("h2_recherche", 20, () -> {
