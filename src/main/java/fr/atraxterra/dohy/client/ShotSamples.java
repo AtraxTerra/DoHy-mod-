@@ -414,14 +414,24 @@ final class ShotSamples {
             command(player, "kill @e[type=minecraft:slime]");
             player.setGameMode(GameType.SURVIVAL);
             origin = new BlockPos(300, -60, 300);
+            tp(player, 6.5, 0, -5.5, 0.0f, 12.0f);
+            command(player, "forceload add " + (origin.getX() - 8) + " " + (origin.getZ() - 8) + " "
+                    + (origin.getX() + 24) + " " + (origin.getZ() + 24));
+        }));
+        // Les chunks du champ sont charges : on peut le construire.
+        ShotHarness.SHOTS.add(server("a0b_champ", 60, player -> {
             build(player);
             command(player, "kill @e[type=minecraft:item]");
-            tp(player, 6.5, 0, -5.5, 0.0f, 12.0f);
             Economy.set(player, 50_000_000L);
             player.getInventory().clearContent();
             farmerXp = JobApi.xp(player, Job.FARMER);
             log("depart : argent {} XP de Fermier {}", Economy.balance(player), farmerXp);
             log("depart : champ {}", field((ServerLevel) player.level()));
+            ServerLevel level = (ServerLevel) player.level();
+            log("depart : extras melon {} citrouille {} verrue {} baies {} canne {} {} cacao {} coffre {} baril {}",
+                    block(level, 13, 0, 2), block(level, 13, 0, 3), block(level, 12, 0, 5), block(level, 13, 0, 6),
+                    block(level, 12, 2, 9), block(level, 13, 1, 8), block(level, 13, 0, 10), block(level, 4, 0, 12),
+                    block(level, 8, 0, 12));
         }));
         ShotHarness.SHOTS.add(server("a1_boutique", 30, BoutiqueController.INSTANCE::open));
         ShotHarness.SHOTS.add(client("a2_boutique", 20, () -> scroll(-40.0)));
