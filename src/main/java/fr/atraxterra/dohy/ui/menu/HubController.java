@@ -87,7 +87,8 @@ public final class HubController extends MenuController {
         // Les metiers : le niveau, la barre, le prochain deblocage.
         List<Card> jobs = new java.util.ArrayList<>();
         for (Job job : Job.values()) {
-            int level = JobApi.level(player, job);
+            int level = JobApi.progressLevel(player, job);
+            String rank = fr.atraxterra.dohy.job.JobRebirth.rank(player, job);
             JobConfig.Unlock next = fr.atraxterra.dohy.job.JobGate.next(player, job);
             String line;
             if (next == null) {
@@ -99,7 +100,8 @@ public final class HubController extends MenuController {
             }
             double progress = level >= JobApi.maxLevel() ? 1.0d : JobApi.progress(player, job);
             jobs.add(Card.of(new ItemStack(jobIcon(job)), job.display(), List.of(line))
-                    .accent(jobColor(job)).badge("NIV. " + level).action("jobs:" + job.name())
+                    .accent(jobColor(job)).badge((rank.isEmpty() ? "" : rank + " \u00B7 ") + "NIV. " + level)
+                    .action("jobs:" + job.name())
                     .progress(Math.round(progress * 1000.0d), 1000));
         }
 

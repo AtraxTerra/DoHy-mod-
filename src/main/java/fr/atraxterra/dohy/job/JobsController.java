@@ -37,21 +37,24 @@ public final class JobsController {
     }
 
     static JobDetailView detail(ServerPlayer player, Job job) {
-        int level = JobApi.level(player, job);
+        // Le tour en cours, pour la barre, les primes et les recompenses ; les deblocages,
+        // eux, restent acquis apres une renaissance (JobApi.level).
+        int level = JobApi.progressLevel(player, job);
+        int unlockedLevel = JobApi.level(player, job);
         int maxLevel = JobApi.maxLevel();
         long into = level >= maxLevel ? 0 : JobApi.xp(player, job) - JobApi.xpToReach(level);
         long need = level >= maxLevel ? 0 : JobApi.xpForLevel(level + 1);
 
         List<JobDetailView.Row> unlocks = new ArrayList<>();
         for (JobConfig.Unlock unlock : JobGate.unlocksOf(job)) {
-            boolean acquired = level >= unlock.level();
+            boolean acquired = unlockedLevel >= unlock.level();
             boolean real = !unlock.isTag() && JobConfig.exists(unlock.plainId());
             int state = acquired ? JobDetailView.ACQUIRED : JobDetailView.LOCKED;
             if (!real && !unlock.isTag()) {
                 state = JobDetailView.MISSING;
             }
             List<String> lines = new ArrayList<>();
-            lines.add(acquired ? "Debloque" : "Il manque " + (unlock.level() - level) + " niveau(x)");
+            lines.add(acquired ? "Debloque" : "Il manque " + (unlock.level() - unlockedLevel) + " niveau(x)");
             if (unlock.isTag()) {
                 lines.add("Porte sur un groupe : " + unlock.plainId());
             }
@@ -70,12 +73,13 @@ public final class JobsController {
         List<JobDetailView.Row> primes = new ArrayList<>();
         for (int milestone : JobPrimes.milestones()) {
             boolean received = milestone <= paid;
-            long amount = JobPrimes.amount(milestone);
+            long amount = JobPrimes.amount(player, job, milestone);
             primes.add(new JobDetailView.Row(new ItemStack(received ? Items.GOLD_INGOT : Items.GOLD_NUGGET),
                     "Prime de " + MoneyFormat.exact(amount) + " $", received ? "Versee" : "Au niveau " + milestone,
                     milestone, received ? JobDetailView.ACQUIRED : JobDetailView.LOCKED,
-                    List.of("Versee une fois, au passage du niveau " + milestone,
-                            "En plus des " + MoneyFormat.exact(JobApi.moneyForLevel(milestone)) + " $ du niveau")));
+                    List.of("Versee au passage du niveau " + milestone + " (et a chaque renaissance)",
+                            "En plus des " + MoneyFormat.exact(JobApi.levelMoney(player, job, milestone))
+                                    + " $ du niveau")));
         }
 
         Map<Integer, List<JobConfig.Reward>> byLevel = new TreeMap<>();
@@ -110,7 +114,7 @@ public final class JobsController {
         });
 
         return new JobDetailView(job.name(), level, maxLevel, (int) Math.round(JobApi.progress(player, job) * 1000),
-                into, need, JobApi.xp(player, job), level >= maxLevel ? 0 : JobApi.moneyForLevel(level + 1),
+                into, need, JobApi.xp(player, job), level >= maxLevel ? 0 : JobApi.levelMoney(player, job, level + 1),
                 unlocks, primes, rewards, JobXpGuide.rows(player, job));
     }
 

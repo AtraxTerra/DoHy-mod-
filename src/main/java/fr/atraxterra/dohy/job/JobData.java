@@ -25,6 +25,9 @@ import java.util.Map;
  * qu'une prime ne se paie qu'une fois, y compris quand la courbe est
  * reequilibree et que les niveaux bougent. Une sauvegarde d'avant les primes ne
  * l'a pas ; il vaut alors zero, et le rattrapage paie les paliers deja franchis.
+ *
+ * <p>Les renaissances (2026-11-20) se comptent par metier : un metier au maximum repart
+ * de zero, son palier des primes avec lui, et garde ses deblocages ({@link JobApi#level}).
  */
 public final class JobData {
 
@@ -34,21 +37,32 @@ public final class JobData {
                     .forGetter(JobData::asMap),
             Codec.unboundedMap(Codec.STRING, Codec.INT)
                     .optionalFieldOf("primes", Map.of())
-                    .forGetter(JobData::primesAsMap)
+                    .forGetter(JobData::primesAsMap),
+            Codec.unboundedMap(Codec.STRING, Codec.INT)
+                    .optionalFieldOf("rebirths", Map.of())
+                    .forGetter(JobData::rebirthsAsMap)
     ).apply(instance, JobData::fromMaps));
 
     private final EnumMap<Job, Long> xp = new EnumMap<>(Job.class);
     private final EnumMap<Job, Integer> primes = new EnumMap<>(Job.class);
+    /** Les renaissances de chaque metier (2026-11-20) : un metier revenu au niveau 0 depuis le maximum. */
+    private final EnumMap<Job, Integer> rebirths = new EnumMap<>(Job.class);
 
     public JobData() {
     }
 
-    private static JobData fromMaps(Map<String, Long> raw, Map<String, Integer> paid) {
+    private static JobData fromMaps(Map<String, Long> raw, Map<String, Integer> paid, Map<String, Integer> reborn) {
         JobData data = new JobData();
         paid.forEach((key, value) -> {
             Job job = Job.byKey(key);
             if (job != null && value != null && value > 0) {
                 data.primes.put(job, value);
+            }
+        });
+        reborn.forEach((key, value) -> {
+            Job job = Job.byKey(key);
+            if (job != null && value != null && value > 0) {
+                data.rebirths.put(job, value);
             }
         });
         raw.forEach((key, value) -> {
@@ -73,6 +87,27 @@ public final class JobData {
         Map<String, Integer> raw = new HashMap<>();
         primes.forEach((job, value) -> raw.put(job.key(), value));
         return raw;
+    }
+
+    private Map<String, Integer> rebirthsAsMap() {
+        Map<String, Integer> raw = new HashMap<>();
+        rebirths.forEach((job, value) -> raw.put(job.key(), value));
+        return raw;
+    }
+
+    /** Les renaissances de ce metier, 0 s'il n'est jamais reparti de zero. */
+    public int rebirths(Job job) {
+        return rebirths.getOrDefault(job, 0);
+    }
+
+    /**
+     * La renaissance : le metier repart de zero (l'XP et le palier des primes, pour que les
+     * niveaux et leurs primes se repaient en remontant) et compte une renaissance de plus.
+     */
+    void rebirth(Job job) {
+        xp.put(job, 0L);
+        primes.remove(job);
+        rebirths.merge(job, 1, (a, b) -> a == Integer.MAX_VALUE ? a : a + b);
     }
 
     /** Le plus haut palier dont la prime a ete versee, 0 si aucun. */
@@ -114,6 +149,6 @@ public final class JobData {
     }
 
     public boolean isEmpty() {
-        return xp.isEmpty();
+        return xp.isEmpty() && primes.isEmpty() && rebirths.isEmpty();
     }
 }

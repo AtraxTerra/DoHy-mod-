@@ -28,6 +28,9 @@ import java.util.List;
  * d'un coup, et le joueur qui avait deja ses perks avant le changement, paye a
  * sa premiere connexion pour les paliers qu'il avait passes. Un reequilibrage
  * de la courbe qui fait redescendre des niveaux ne repaie rien.
+ *
+ * <p>Une renaissance remet ce palier a zero ({@link JobRebirth}) : les primes se regagnent en
+ * remontant, avec le bonus des renaissances.
  */
 @EventBusSubscriber
 public final class JobPrimes {
@@ -47,7 +50,8 @@ public final class JobPrimes {
         long total = 0;
         int count = 0;
         for (Job job : Job.values()) {
-            List<Integer> due = due(player, job, JobApi.level(player, job));
+            // le tour en cours : apres une renaissance, les primes se regagnent en remontant
+            List<Integer> due = due(player, job, JobApi.progressLevel(player, job));
             for (int level : due) {
                 total += pay(player, job, level);
             }
@@ -90,7 +94,7 @@ public final class JobPrimes {
     }
 
     private static long pay(ServerPlayer player, Job job, int level) {
-        long amount = amount(level);
+        long amount = amount(player, job, level);
         // Le palier est note avant le credit : une exception dans le credit
         // laisserait une prime perdue, jamais une prime payee deux fois.
         JobApi.data(player).markPrime(job, level);
@@ -98,6 +102,11 @@ public final class JobPrimes {
             Economy.credit(player, amount);
         }
         return amount;
+    }
+
+    /** La prime d'un palier pour ce joueur : +10 % par renaissance du metier. */
+    public static long amount(ServerPlayer player, Job job, int level) {
+        return Math.round(amount(level) * (1.0d + JobApi.rebirthBonus(player, job)));
     }
 
     /** Les niveaux qui portent une prime : 5, 10, ... jusqu'au niveau maximum. */

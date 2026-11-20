@@ -77,8 +77,33 @@ public final class JobApi {
         return JobProgression.config().curve().maxLevel();
     }
 
+    /**
+     * Le niveau qui ouvre les verrous et les effets du metier : celui du joueur, ou le
+     * maximum si le metier a deja connu une renaissance (ses deblocages sont gardes).
+     * Pour afficher la progression du tour en cours, {@link #progressLevel}.
+     */
     public static int level(ServerPlayer player, Job job) {
+        return rebirths(player, job) > 0 ? maxLevel() : progressLevel(player, job);
+    }
+
+    /** Le niveau du tour en cours, tire de l'XP : il repart de zero a chaque renaissance. */
+    public static int progressLevel(ServerPlayer player, Job job) {
         return levelOf(data(player).xpOf(job));
+    }
+
+    /** Les renaissances de ce metier. */
+    public static int rebirths(ServerPlayer player, Job job) {
+        return data(player).rebirths(job);
+    }
+
+    /** Le bonus des renaissances sur l'XP et l'argent de ce metier : +10 % chacune. */
+    public static double rebirthBonus(ServerPlayer player, Job job) {
+        return JobRebirth.BONUS * rebirths(player, job);
+    }
+
+    /** L'argent d'un niveau de ce metier pour ce joueur, renaissances comprises. */
+    public static long levelMoney(ServerPlayer player, Job job, int level) {
+        return Math.round(moneyForLevel(level) * (1.0d + rebirthBonus(player, job)));
     }
 
     public static long xp(ServerPlayer player, Job job) {
@@ -87,7 +112,7 @@ public final class JobApi {
 
     /** Progression dans le niveau courant, entre 0 et 1. */
     public static double progress(ServerPlayer player, Job job) {
-        int level = level(player, job);
+        int level = progressLevel(player, job);
         if (level >= maxLevel()) {
             return 1.0d;
         }
@@ -101,13 +126,13 @@ public final class JobApi {
         return level(player, job) >= required;
     }
 
-    /** Niveau cumule des quatre metiers. */
+    /** Niveau cumule des quatre metiers, renaissances comprises (cent niveaux par renaissance). */
     public static int totalLevels(ServerPlayer player) {
-        int total = 0;
+        long total = 0L;
         for (Job job : Job.values()) {
-            total += level(player, job);
+            total += (long) rebirths(player, job) * maxLevel() + progressLevel(player, job);
         }
-        return total;
+        return (int) Math.min(Integer.MAX_VALUE, total);
     }
 
     public static long moneyForLevel(int level) {
@@ -150,7 +175,8 @@ public final class JobApi {
         long boosted = Math.round(amount * (1.0d
                 + UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS)
                 + fr.atraxterra.dohy.palamod.defense.Amulets.xpBonus(player, job)
-                + fr.atraxterra.dohy.grade.Grades.jobXpBonus(player))
+                + fr.atraxterra.dohy.grade.Grades.jobXpBonus(player)
+                + rebirthBonus(player, job))
                 * fr.atraxterra.dohy.palamod.boost.PalaXpPotions.multiplier(player)
                 // « Divise XP » (lucky block en findium) : moitie moins pendant quinze minutes.
                 * (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.PalaLucky.HALF_JOB_XP) ? 0.5d : 1.0d));
@@ -158,10 +184,10 @@ public final class JobApi {
     }
 
     /** Ajoute de l'XP deja calculee, et paie les niveaux franchis. */
-    private static void apply(ServerPlayer player, Job job, long boosted) {
-        int before = level(player, job);
+    static void apply(ServerPlayer player, Job job, long boosted) {
+        int before = progressLevel(player, job);
         data(player).addXp(job, boosted);
-        int after = level(player, job);
+        int after = progressLevel(player, job);
 
         // La barre se rafraichit a chaque gain, avant les recompenses : elle doit
         // deja montrer le nouveau niveau quand le message de montee arrive.
@@ -183,7 +209,7 @@ public final class JobApi {
      * Rend faux si le metier est deja au maximum.
      */
     public static boolean grantLevels(ServerPlayer player, Job job, int levels) {
-        int level = level(player, job);
+        int level = progressLevel(player, job);
         int target = Math.min(maxLevel(), level + Math.max(0, levels));
         if (target <= level) {
             return false;
@@ -200,7 +226,7 @@ public final class JobApi {
      * precedent. Les recompenses deja touchees restent. Rend faux au niveau 0.
      */
     public static boolean loseLevel(ServerPlayer player, Job job) {
-        int level = level(player, job);
+        int level = progressLevel(player, job);
         if (level <= 0) {
             return false;
         }
@@ -209,7 +235,7 @@ public final class JobApi {
     }
 
     private static void reward(ServerPlayer player, Job job, int level) {
-        long money = moneyForLevel(level);
+        long money = levelMoney(player, job, level);
         long balance = Economy.credit(player, money);
 
         player.level().playSound(null, player.blockPosition(),

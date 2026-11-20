@@ -123,7 +123,7 @@ public final class EncyclopediaProgress {
     }
 
     private static Card jobCard(ServerPlayer player, Job job) {
-        int level = JobApi.level(player, job);
+        int level = JobApi.progressLevel(player, job);
         double progress = JobApi.progress(player, job);
         return Card.of(jobIcon(job), job.display(), List.of("Niveau " + level + " / " + JobApi.maxLevel(),
                         level >= JobApi.maxLevel() ? "Au maximum" : Math.round(progress * 100) + " % du suivant"))
@@ -167,7 +167,7 @@ public final class EncyclopediaProgress {
                     List.of("Debloque au niveau " + unlock.level())).accent(0xFF55545C).state(MenuView.DISABLED));
         }
         return new Result(List.of(
-                new MenuView.Stat("NIVEAU", JobApi.level(player, job) + " / " + JobApi.maxLevel(), GREEN),
+                new MenuView.Stat("NIVEAU", JobApi.progressLevel(player, job) + " / " + JobApi.maxLevel(), GREEN),
                 new MenuView.Stat("DEBLOCAGES", unlocked + " / " + all.size(), WHITE)), cards);
     }
 

@@ -56,14 +56,14 @@ public final class JobMigration {
         JobData jobs = JobApi.data(player);
         int[] before = new int[Job.values().length];
         for (Job job : Job.values()) {
-            before[job.ordinal()] = JobApi.level(player, job);
+            before[job.ordinal()] = JobApi.progressLevel(player, job);
         }
         jobs.absorb(legacy);
 
         player.sendSystemMessage(Component.literal("Les skills sont devenus des metiers.")
                 .withStyle(ChatFormatting.GOLD));
         for (Job job : Job.values()) {
-            int level = JobApi.level(player, job);
+            int level = JobApi.progressLevel(player, job);
             if (level <= 0) {
                 continue;
             }

@@ -64,7 +64,33 @@ public final class JobsCommand {
             root = root.then(Commands.literal(job.key())
                     .executes(ctx -> detail(ctx.getSource(), job)));
         }
-        return root;
+        // La renaissance d'un metier au niveau maximum, par sa cle ou son nom francais.
+        LiteralArgumentBuilder<CommandSourceStack> rebirth = Commands.literal("renaissance")
+                .executes(ctx -> {
+                    ctx.getSource().sendSuccess(() -> Component.literal("Au niveau maximum : /" + name
+                            + " renaissance <mineur|chasseur|fermier|alchimiste>")
+                            .withStyle(ChatFormatting.GRAY), false);
+                    return 1;
+                });
+        for (Job job : Job.values()) {
+            String french = java.text.Normalizer.normalize(job.display(), java.text.Normalizer.Form.NFD)
+                    .replaceAll("\\p{M}", "").toLowerCase(java.util.Locale.ROOT);
+            rebirth = rebirth.then(Commands.literal(job.key()).executes(ctx -> rebirth(ctx.getSource(), job)));
+            if (!french.equals(job.key())) {
+                rebirth = rebirth.then(Commands.literal(french).executes(ctx -> rebirth(ctx.getSource(), job)));
+            }
+        }
+        return root.then(rebirth);
+    }
+
+    private static int rebirth(CommandSourceStack source, Job job) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        String refusal = fr.atraxterra.dohy.job.JobRebirth.rebirth(player, job);
+        if (refusal != null) {
+            source.sendFailure(Component.literal(refusal));
+            return 0;
+        }
+        return 1;
     }
 
     private static int open(CommandSourceStack source) throws CommandSyntaxException {
@@ -80,7 +106,7 @@ public final class JobsCommand {
                 .withStyle(ChatFormatting.GOLD), false);
 
         for (Job job : Job.values()) {
-            int level = JobApi.level(player, job);
+            int level = JobApi.progressLevel(player, job);
             List<JobConfig.Unlock> unlocks = JobGate.unlocksOf(job);
             int acquired = 0;
             for (JobConfig.Unlock unlock : unlocks) {
@@ -98,7 +124,8 @@ public final class JobsCommand {
                                     .withStyle(ChatFormatting.DARK_GRAY));
 
             int finalAcquired = acquired;
-            source.sendSuccess(() -> Component.literal("  " + pad(job.display()) + " ")
+            source.sendSuccess(() -> Component.literal("  " + pad(fr.atraxterra.dohy.job.JobRebirth.title(player, job))
+                    + " ")
                     .withStyle(level >= maxLevel ? ChatFormatting.AQUA : ChatFormatting.WHITE)
                     .append(Component.literal(String.format("%3d", level))
                             .withStyle(ChatFormatting.GOLD))
@@ -118,11 +145,12 @@ public final class JobsCommand {
 
     private static int detail(CommandSourceStack source, Job job) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        int level = JobApi.level(player, job);
+        int level = JobApi.progressLevel(player, job);
         List<JobConfig.Unlock> unlocks = JobGate.unlocksOf(job);
 
         source.sendSuccess(() -> Component.literal(
-                        job.display() + " — niveau " + level + " / " + JobApi.maxLevel())
+                        fr.atraxterra.dohy.job.JobRebirth.title(player, job) + " — niveau " + level + " / "
+                                + JobApi.maxLevel())
                 .withStyle(ChatFormatting.GOLD), false);
 
         if (unlocks.isEmpty()) {
