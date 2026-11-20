@@ -78,7 +78,7 @@ public final class JobBossBar {
             return new Bar(event);
         });
 
-        int level = JobApi.level(player, job);
+        int level = JobApi.progressLevel(player, job);
         int maxLevel = JobApi.maxLevel();
         boolean maxed = level >= maxLevel;
 
@@ -97,7 +97,7 @@ public final class JobBossBar {
      */
     private static Component label(ServerPlayer player, Job job, int level,
                                    int maxLevel, long gained, boolean maxed) {
-        Component head = Component.literal(job.display() + " " + level)
+        Component head = Component.literal(JobRebirth.title(player, job) + " " + level)
                 .withStyle(ChatFormatting.AQUA);
 
         if (maxed) {

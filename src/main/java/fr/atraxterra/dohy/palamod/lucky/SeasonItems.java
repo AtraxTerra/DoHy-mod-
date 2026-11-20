@@ -1199,8 +1199,9 @@ public final class SeasonItems {
             if (player instanceof ServerPlayer server) {
                 LuckyWorld.tell(server, "Dossier de metier de " + server.getName().getString(), ChatFormatting.GOLD);
                 for (var job : fr.atraxterra.dohy.job.Job.values()) {
-                    LuckyWorld.tell(server, " - " + job.display() + " : niveau "
-                            + fr.atraxterra.dohy.job.JobApi.level(server, job) + " (" + fr.atraxterra.dohy.job.JobApi
+                    LuckyWorld.tell(server, " - " + fr.atraxterra.dohy.job.JobRebirth.title(server, job)
+                            + " : niveau " + fr.atraxterra.dohy.job.JobApi.progressLevel(server, job) + " ("
+                            + fr.atraxterra.dohy.job.JobApi
                             .xp(server, job) + " XP)", ChatFormatting.YELLOW);
                 }
             }

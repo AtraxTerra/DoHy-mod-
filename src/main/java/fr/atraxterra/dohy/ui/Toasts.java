@@ -74,7 +74,8 @@ public final class Toasts {
         }
         running[0] += gained;
         running[1] = now;
-        int level = JobApi.level(player, job);
+        int level = JobApi.progressLevel(player, job);
+        String rank = fr.atraxterra.dohy.job.JobRebirth.rank(player, job);
         String line;
         if (level >= JobApi.maxLevel()) {
             line = "Niveau maximum";
@@ -83,10 +84,12 @@ public final class Toasts {
             long need = JobApi.xpToReach(level + 1) - JobApi.xpToReach(level);
             line = number(Math.max(0L, into)) + " / " + number(Math.max(1L, need));
         }
-        send(player, jobIcon(job), job.display().toUpperCase(Locale.ROOT) + " · NIVEAU " + level,
+        send(player, jobIcon(job), job.display().toUpperCase(Locale.ROOT) + (rank.isEmpty() ? "" : " " + rank)
+                        + " · NIVEAU " + level,
                 "+" + number(running[0]) + " XP", line, jobColor(job), "xp_" + job.key());
         if (levelUp) {
-            send(player, jobIcon(job), "NIVEAU SUPERIEUR", job.display() + " niveau " + level,
+            send(player, jobIcon(job), "NIVEAU SUPERIEUR", fr.atraxterra.dohy.job.JobRebirth.title(player, job)
+                            + " niveau " + level,
                     "Ouvre les metiers pour tes deblocages", jobColor(job), "level_" + job.key());
         }
     }

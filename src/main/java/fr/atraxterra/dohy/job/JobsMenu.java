@@ -49,15 +49,24 @@ public final class JobsMenu extends MenuController {
         }
         Job best = Job.MINER;
         for (Job candidate : Job.values()) {
-            if (JobApi.level(player, candidate) > JobApi.level(player, best)) {
+            if (standing(player, candidate) > standing(player, best)) {
                 best = candidate;
             }
         }
         return best;
     }
 
+    /** Ou en est un metier, renaissances comprises : cent niveaux par renaissance. */
+    private static long standing(ServerPlayer player, Job job) {
+        return (long) JobApi.rebirths(player, job) * JobApi.maxLevel() + JobApi.progressLevel(player, job);
+    }
+
     @Override
     protected void card(ServerPlayer player, String key, int button) {
+        if (key.equals("rebirth")) {
+            report(player, JobRebirth.rebirth(player, shown(player)), "");
+            return;
+        }
         if (key.startsWith("job:")) {
             try {
                 SHOWN.put(player.getUUID(), Job.valueOf(key.substring(4)));
@@ -79,16 +88,19 @@ public final class JobsMenu extends MenuController {
         int unlocked = 0;
         int unlockTotal = 0;
         for (Job other : Job.values()) {
-            int level = JobApi.level(player, other);
-            levels += level;
+            int level = JobApi.progressLevel(player, other);
+            int unlockedLevel = JobApi.level(player, other);
             for (JobConfig.Unlock unlock : JobGate.unlocksOf(other)) {
                 unlockTotal++;
-                if (level >= unlock.level()) {
+                if (unlockedLevel >= unlock.level()) {
                     unlocked++;
                 }
             }
-            tabs.add(new MenuView.Tab(other.display(), "job:" + other.name(), other == job, "NIV. " + level));
+            String rank = JobRebirth.rank(player, other);
+            tabs.add(new MenuView.Tab(other.display(), "job:" + other.name(), other == job,
+                    (rank.isEmpty() ? "" : rank + " ") + "NIV. " + level));
         }
+        levels = JobApi.totalLevels(player);
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("NIVEAUX CUMULES", Integer.toString(levels), 0xFFFFFFFF),
                 new MenuView.Stat("DEBLOCAGES", unlocked + " / " + unlockTotal, 0xFF22E558));
@@ -101,14 +113,20 @@ public final class JobsMenu extends MenuController {
                 : MoneyFormat.exact(detail.xpInto()) + " / " + MoneyFormat.exact(detail.xpNeed()) + " XP|"
                 + detail.progress() / 10 + " %";
         List<String> lines = new ArrayList<>();
-        long bonus = Math.round((UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS) + Amulets.xpBonus(player, job))
-                * 100.0d);
+        long bonus = Math.round((UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS) + Amulets.xpBonus(player, job)
+                + JobApi.rebirthBonus(player, job)) * 100.0d);
         if (bonus > 0) {
             lines.add("#TES BONUS");
             lines.add("+" + bonus + " % d'XP sur chaque gain");
         }
+        int rebirths = JobApi.rebirths(player, job);
+        if (rebirths > 0) {
+            lines.add("#RENAISSANCE " + rebirths);
+            lines.add("+" + JobRebirth.percent(player, job) + " % d'XP et d'argent ; deblocages gardes");
+        }
         MenuView.Hero hero = new MenuView.Hero(icon(job), "jobs/" + job.name().toLowerCase(Locale.ROOT),
-                job.display().toUpperCase(Locale.ROOT), "NIVEAU " + detail.level(), color, detail.progress(), legend,
+                job.display().toUpperCase(Locale.ROOT), "NIVEAU " + detail.level()
+                + (rebirths > 0 ? " \u00B7 R" + rebirths : ""), color, detail.progress(), legend,
                 List.of(new MenuView.Stat("XP TOTALE", MoneyFormat.exact(detail.totalXp()), 0xFFFFFFFF),
                         new MenuView.Stat("PROCHAIN NIVEAU",
                                 detail.nextMoney() > 0 ? "+" + MoneyFormat.shortForm(detail.nextMoney()) + " $" : "-",
@@ -118,9 +136,12 @@ public final class JobsMenu extends MenuController {
                 lines);
 
         List<MenuView.Section> sections = new ArrayList<>();
+        sections.add(new MenuView.Section("RENAISSANCE" + (rebirths > 0 ? "|" + rebirths : ""), "upgrade",
+                MenuView.GRID, rebirth(player, job, detail, color)));
         String unlockCount = unlocksDone + " / " + detail.unlocks().size();
         sections.add(new MenuView.Section("PROCHAINS DEBLOCAGES|" + unlockCount, "upgrade", MenuView.GRID,
-                next(detail, color)).anchor("Deblocages|" + unlocksDone + "/" + detail.unlocks().size()));
+                next(detail, color, JobApi.level(player, job)))
+                .anchor("Deblocages|" + unlocksDone + "/" + detail.unlocks().size()));
         sections.add(new MenuView.Section("TOUS LES DEBLOCAGES", "", MenuView.ROWS,
                 rows(detail.unlocks(), detail.level(), color, true)));
         sections.add(new MenuView.Section("PRIMES|" + primesDone + " / " + detail.primes().size(), "resources",
@@ -137,10 +158,40 @@ public final class JobsMenu extends MenuController {
     }
 
     /**
-     * Les prochains deblocages : le dernier obtenu, puis les deux suivants, chacun avec
-     * sa barre vers son niveau. Au niveau maximum, les trois derniers.
+     * La renaissance : au maximum, la carte qui la lance (avec confirmation) ; avant, ce qu'il
+     * reste a monter. Apres une premiere, une carte dit le bonus acquis.
      */
-    private static List<Card> next(JobDetailView detail, int color) {
+    private static List<Card> rebirth(ServerPlayer player, Job job, JobDetailView detail, int color) {
+        List<Card> cards = new ArrayList<>();
+        int rebirths = JobApi.rebirths(player, job);
+        int next = rebirths + 1;
+        long after = (long) next * JobRebirth.PERCENT;
+        boolean max = detail.level() >= detail.maxLevel();
+        List<String> tooltip = List.of("Le metier repart du niveau 0", "Tes deblocages restent acquis",
+                "+" + JobRebirth.PERCENT + " % d'XP et d'argent de ce metier, pour toujours",
+                "Chaque niveau repaie son argent, sa prime et ses objets", "Sans limite de nombre");
+        Card card = Card.of(new ItemStack(Items.TOTEM_OF_UNDYING), "Renaissance " + next, List.of(
+                        max ? "Retour au niveau 0" : "Au niveau " + detail.maxLevel(),
+                        max ? "Bonus total : +" + after + " %" : "Encore " + (detail.maxLevel() - detail.level())
+                                + " niveaux"))
+                .accent(0xFFFAC400).tooltip(tooltip);
+        cards.add(max ? card.action("rebirth|renaitre").confirm("!Faire renaitre le " + job.display().toLowerCase(
+                        Locale.ROOT) + " ?|Retour au niveau 0, deblocages gardes, +" + after + " % d'XP et d'argent.")
+                : card.state(MenuView.DISABLED).progress(detail.level(), detail.maxLevel()));
+        if (rebirths > 0) {
+            cards.add(Card.of(new ItemStack(Items.NETHER_STAR), "Renaissance " + rebirths, List.of(
+                            "+" + JobRebirth.percent(player, job) + " % d'XP et d'argent", "Deblocages gardes"))
+                    .accent(color).badge("R" + rebirths).state(MenuView.DONE));
+        }
+        return cards;
+    }
+
+    /**
+     * Les prochains deblocages : le dernier obtenu, puis les deux suivants, chacun avec
+     * sa barre vers son niveau (le niveau de deblocage, garde par les renaissances). Au niveau
+     * maximum, les trois derniers.
+     */
+    private static List<Card> next(JobDetailView detail, int color, int unlockedLevel) {
         List<JobDetailView.Row> sorted = new ArrayList<>(detail.unlocks());
         sorted.sort(Comparator.comparingInt(JobDetailView.Row::level));
         int firstLocked = sorted.size();
@@ -161,7 +212,7 @@ public final class JobsMenu extends MenuController {
                 card = card.state(MenuView.DONE);
             } else {
                 card = card.state(MenuView.DISABLED).badge(Integer.toString(row.level()))
-                        .progress(detail.level(), row.level());
+                        .progress(unlockedLevel, row.level());
             }
             cards.add(card);
         }
