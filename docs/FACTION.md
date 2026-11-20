@@ -962,3 +962,41 @@ partage ce qu'elle apprend.
 - Opérateurs : `/guerre admin pillage <nation> <montant>` (un assaut réussi, sans bataille),
   `coalition <nation> <nation>`, `lecon <nation> <cause> <morts>` ; `etat` dit aussi ce que
   chaque nation doit, son alliée, sa leçon, et ta puissance.
+
+### Vérifié en jeu
+
+Dans le client du CI, sur un monde plat avec la carte de la Terre : une faction de cinq claims,
+400 000 $ en banque, sa capitale au Mali, l'Algérie et la mine de Sadiola données (toutes deux de
+la région des Corbeaux).
+
+- **Ce qu'elle a pris** : un pillage des Corbeaux sans bataille (`/guerre admin pillage`) : 30 000 $
+  sortent de la banque, les Corbeaux reprennent l'Algérie et Sadiola et les notent (30 000 $, un
+  pays, une mine) ; l'écran les met en tête de TA CONTRE-OFFENSIVE (« Te doit 30 000 $ · + 1 pays,
+  1 mine »).
+- **La contre-offensive** : un clic sur leur carte leur déclare la guerre (la trêve du pillage se
+  rompt : ils te doivent quelque chose) ; leur réponse, l'heure de leur riposte à fixer, et ce que
+  rendra la chute de leur place forte. Une deuxième guerre est refusée (« Une guerre à la fois »).
+- **La chute** : leur place forte (un silo de missiles, avant-poste, à 365 blocs pour l'essai)
+  rasée : **+42 000 $** — les 30 000 $ rendus, puis 30 % des 40 000 $ restés au trésor —,
+  l'Algérie et Sadiola reviennent à la faction, le Mali passe à la faction (+1 claim), les Corbeaux
+  perdent la moitié de leur armée ; vaincus, une nouvelle guerre contre eux est refusée
+  (« reviens vendredi 13:01 »).
+- **La coalition** : Nordheim et Ombre Pourpre alliés (`/guerre admin coalition`) : les annonces, la
+  section LA COALITION CONTRE TOI, les pastilles ALLIÉE, ta puissance à 41.
+- **L'assaut commun et la leçon** : avec la leçon « ta lame » (six morts), l'assaut de Nordheim
+  aligne 24 soldats et 9 d'Ombre Pourpre (« Assaut de Nordheim et d'Ombre Pourpre ») : 17
+  fantassins et 12 archers (quatre fantassins de Nordheim devenus archers), 1 sapeur, 1 ingénieur,
+  2 médecins ; renseignement 66 % (35 de base, 21 de ruse, 10 d'un assaut appris). Au camp :
+  « Ils ont retenu la leçon de leurs assauts : plus d'archers, loin de ta lame ». Parmi les seize
+  premiers soldats, trois aux couleurs d'Ombre Pourpre.
+- **Ce qu'elles retiennent** : trois soldats de Nordheim tués à l'épée (son armée 60 → 57), puis
+  l'assaut arrêté : la leçon de Nordheim reste « ta lame » (les six morts d'avant comptés moitié,
+  et trois nouveaux), les trois cases sont relevées, et Ombre Pourpre a appris la même chose. (Un
+  premier essai avait touché un soldat d'Ombre Pourpre : sa perte allait à son armée, 35 → 34.)
+
+Code : `faction/war/` — `WarData` (`Lessons`, ce qu'elle doit, la coalition, tes guerres
+déclarées), `WarStrategy` (`counter`, `restitute`, `threat`, `coalition`, `comrade`, `learn`, les
+commandes d'essai), `Siege` (le contingent allié, la troupe selon la leçon, `cause`), `Sieges.start`
+(le renseignement, la mémoire des morts), `SiegePlanner.capture` (le poids des tourelles),
+`Strongholds` (la récompense, la place forte d'une coalition), `WarMenu`, `WarCommand` ;
+`earth/mine/EarthMines.restore`.
