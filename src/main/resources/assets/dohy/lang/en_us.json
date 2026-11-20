@@ -179,5 +179,15 @@
   "item.dohy.grade_legende": "Legend Badge",
   "item.dohy.grade_divinite": "Divinity Badge",
   "item.dohy.grade_premium": "Premium Badge",
-  "tooltip.dohy.grade_badge": "Grades are bought in the Boutique: /grade"
+  "tooltip.dohy.grade_badge": "Grades are bought in the Boutique: /grade",
+  "entity.dohy.farm_bot": "Farming Bot",
+  "item.dohy.farm_bot": "Farming Bot",
+  "item.dohy.bot_remote": "Bot Remote",
+  "tooltip.dohy.farm_bot.1": "Right-click the ground: place it",
+  "tooltip.dohy.farm_bot.2": "Harvests, replants, fills your chests",
+  "tooltip.dohy.farm_bot.setup": "Zone %s, %s chest(s)",
+  "tooltip.dohy.bot_remote.1": "Right-click your bot: control it",
+  "tooltip.dohy.bot_remote.2": "Right-click two corners: its zone",
+  "tooltip.dohy.bot_remote.3": "Sneak + right-click a chest: link it",
+  "tooltip.dohy.bot_remote.corner": "First corner set: click the opposite corner"
 }

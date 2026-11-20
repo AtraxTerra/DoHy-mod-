@@ -179,5 +179,15 @@
   "item.dohy.grade_legende": "Insigne de Legende",
   "item.dohy.grade_divinite": "Insigne de Divinite",
   "item.dohy.grade_premium": "Insigne Premium",
-  "tooltip.dohy.grade_badge": "Les grades s'achetent a la Boutique : /grade"
+  "tooltip.dohy.grade_badge": "Les grades s'achetent a la Boutique : /grade",
+  "entity.dohy.farm_bot": "Bot de farming",
+  "item.dohy.farm_bot": "Bot de farming",
+  "item.dohy.bot_remote": "Telecommande de bot",
+  "tooltip.dohy.farm_bot.1": "Clic droit sur le sol : le poser",
+  "tooltip.dohy.farm_bot.2": "Recolte, replante, remplit tes coffres",
+  "tooltip.dohy.farm_bot.setup": "Zone %s, %s coffre(s)",
+  "tooltip.dohy.bot_remote.1": "Clic droit sur ton bot : le piloter",
+  "tooltip.dohy.bot_remote.2": "Clic droit sur deux coins : sa zone",
+  "tooltip.dohy.bot_remote.3": "Accroupi + clic droit sur un coffre : le lier",
+  "tooltip.dohy.bot_remote.corner": "Premier coin pose : clique le coin oppose"
 }

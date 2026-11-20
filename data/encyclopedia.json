@@ -616,10 +616,10 @@
       "title": "La boutique",
       "card": [
         "Grades, boosters, boxes",
-        "Potions d'XP, autosell"
+        "Bots de farming, potions"
       ],
       "summary": [
-        "L'onglet Boutique du commerce vend les grades, les boosters (le prix de vente multiplie pendant 20 minutes), les cles des boxes de PalaMod, les potions d'XP de metier, l'assurance et l'autosell. Tout s'y paie en liquide."
+        "L'onglet Boutique du commerce vend les grades, les boosters (le prix de vente multiplie pendant 20 minutes), les cles des boxes de PalaMod, les potions d'XP de metier, les bots de farming, l'assurance et l'autosell. Tout s'y paie en liquide."
       ],
       "sections": [
         {
@@ -650,7 +650,8 @@
         "shop",
         "spawn",
         "pierres_legendaires",
-        "potions_xp"
+        "potions_xp",
+        "bots_farming"
       ],
       "discover": {
         "items": [
@@ -3233,7 +3234,8 @@
       ],
       "see": [
         "agriculture",
-        "fermier"
+        "fermier",
+        "bots_farming"
       ],
       "discover": {
         "items": [
@@ -3246,9 +3248,73 @@
       }
     },
     {
-      "id": "cryogenie",
+      "id": "bots_farming",
       "category": "agriculture",
       "order": 3,
+      "icon": "dohy:farm_bot",
+      "title": "Bots de farming",
+      "card": [
+        "Recoltent et replantent",
+        "Remplissent tes coffres"
+      ],
+      "summary": [
+        "Un bot de farming marche jusqu'aux cultures mures de la zone que tu lui traces, les recolte, les replante, et vide sa recolte dans les coffres que tu lui lies. Il s'achete a la Boutique, avec sa telecommande."
+      ],
+      "sections": [
+        {
+          "title": "Le mettre au travail",
+          "text": [
+            "- Pose-le pres de ton champ : clic droit sur le sol avec le bot.",
+            "- Telecommande en main, clic droit sur le bot : elle le pilote.",
+            "- Clic droit sur un coin du champ, puis sur le coin oppose : c'est sa zone (48 x 48 blocs au plus).",
+            "- Accroupi + clic droit sur un coffre : il y videra sa recolte. Jusqu'a six coffres, barils, tiroirs ou silos, le plus proche d'abord.",
+            "! Telecommande en main, le contour de la zone et les coffres lies scintillent."
+          ]
+        },
+        {
+          "title": "Ce qu'il recolte",
+          "text": [
+            "Ble, carottes, pommes de terre, betteraves, les cultures du PalaMod et les cereales, a leur dernier stade ; les verrues du Nether, le cacao, les pasteques et citrouilles nees d'une tige, la canne a sucre (il laisse le pied) et les baies sucrees. Il replante avec une graine de la recolte.",
+            "Ce qu'il recolte compte comme a la main : l'XP de Fermier, les contrats et les collections, quand tu es connecte."
+          ]
+        },
+        {
+          "title": "Son menu",
+          "text": [
+            "Clic droit sur lui : ce qu'il fait, sa zone, ses coffres et son sac. De la, le mettre en pause, le faire vider, reprendre sa recolte ou le ranger (il revient en objet avec sa zone et ses coffres).",
+            "Il ne prend aucun degat et ne laisse rien tomber : sac et coffres pleins, il s'arrete et te previent. Jamais dans le claim d'un autre."
+          ]
+        },
+        {
+          "title": "Limites",
+          "text": [
+            "Quatre bots par joueur. Un bot travaille quand sa zone est chargee, c'est-a-dire quand tu es dans le coin."
+          ]
+        }
+      ],
+      "commands": [
+        "/bots : ou sont tes bots"
+      ],
+      "see": [
+        "boutique",
+        "fermier",
+        "cultures",
+        "agriculture"
+      ],
+      "discover": {
+        "items": [
+          "dohy:farm_bot",
+          "dohy:bot_remote"
+        ],
+        "views": [
+          "dohy:farm_bot"
+        ]
+      }
+    },
+    {
+      "id": "cryogenie",
+      "category": "agriculture",
+      "order": 4,
       "icon": "dohy:cryo_chamber",
       "title": "La cryogenie",
       "card": [

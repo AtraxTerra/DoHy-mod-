@@ -129,6 +129,39 @@ public final class BoutiqueController extends MenuController {
                     : card.action("xp:" + offer.multiplier() + ":" + offer.minutes() + "|acheter"));
         }
 
+        // Les bots de farming : un bot (et sa telecommande, s'il n'en a pas), ou une telecommande seule.
+        List<Card> bots = new ArrayList<>();
+        int placed = fr.atraxterra.dohy.farmbot.FarmBots.of(player).size();
+        int owned = placed + fr.atraxterra.dohy.farmbot.FarmBots.carried(player);
+        long botMissing = fr.atraxterra.dohy.farmbot.DoHyFarmBots.BOT_PRICE - Economy.balance(player);
+        Card bot = Card.of(new ItemStack(fr.atraxterra.dohy.farmbot.DoHyFarmBots.FARM_BOT_ITEM.get()),
+                        "Bot de farming", List.of(MoneyFormat.exact(fr.atraxterra.dohy.farmbot.DoHyFarmBots.BOT_PRICE)
+                                + " $", "Tes bots : " + owned + " / "
+                                + fr.atraxterra.dohy.farmbot.BotRegistry.MAX_PER_PLAYER))
+                .accent(0xFF22E558).badge(owned > 0 ? owned + " BOT" + (owned > 1 ? "S" : "") : "")
+                .tooltip(List.of("Il recolte ce qui est mur dans la zone que tu traces,",
+                        "replante, et vide sa recolte dans les coffres que tu lui lies",
+                        "L'XP de Fermier te revient, comme a la main",
+                        "Une telecommande est donnee si tu n'en as pas",
+                        owned >= fr.atraxterra.dohy.farmbot.BotRegistry.MAX_PER_PLAYER
+                                ? fr.atraxterra.dohy.farmbot.BotRegistry.MAX_PER_PLAYER + " bots au plus par joueur"
+                                : botMissing > 0 ? "Il te manque " + MoneyFormat.exact(botMissing) : ""));
+        bots.add(owned >= fr.atraxterra.dohy.farmbot.BotRegistry.MAX_PER_PLAYER || botMissing > 0
+                ? bot.state(MenuView.DISABLED)
+                : bot.action("farm_bot|acheter").confirm("Acheter un bot de farming ?|"
+                        + MoneyFormat.exact(fr.atraxterra.dohy.farmbot.DoHyFarmBots.BOT_PRICE)
+                        + " $, avec une telecommande si tu n'en as pas."));
+        long remoteMissing = fr.atraxterra.dohy.farmbot.DoHyFarmBots.REMOTE_PRICE - Economy.balance(player);
+        Card remote = Card.of(new ItemStack(fr.atraxterra.dohy.farmbot.DoHyFarmBots.BOT_REMOTE.get()),
+                        "Telecommande", List.of(MoneyFormat.exact(fr.atraxterra.dohy.farmbot.DoHyFarmBots.REMOTE_PRICE)
+                                + " $", "Zone et coffres des bots"))
+                .accent(0xFF27C4E8)
+                .tooltip(List.of("Clic droit sur un de tes bots : elle le pilote",
+                        "Clic droit sur deux coins : sa zone",
+                        "Accroupi + clic droit sur un coffre : le lier",
+                        remoteMissing > 0 ? "Il te manque " + MoneyFormat.exact(remoteMissing) : ""));
+        bots.add(remoteMissing > 0 ? remote.state(MenuView.DISABLED) : remote.action("bot_remote|acheter"));
+
         int charges = Economy.of(player).insurance();
         BoostData data = Boosters.data(player);
         List<Card> services = new ArrayList<>();
@@ -166,6 +199,7 @@ public final class BoutiqueController extends MenuController {
                 new MenuView.Section("BOOSTERS : TES VENTES RAPPORTENT PLUS", "upgrade", MenuView.GRID, boosters),
                 new MenuView.Section("CLES DE BOX", "resources", MenuView.GRID, crates),
                 new MenuView.Section("POTIONS D'XP DE METIER", "upgrade", MenuView.GRID, potions),
+                new MenuView.Section("BOTS DE FARMING", "resources", MenuView.GRID, bots),
                 new MenuView.Section("SERVICES", "craft", MenuView.GRID, services),
                 new MenuView.Section("COFFRES A POSER", "armor", MenuView.GRID, boxes)), false)
                 .withTabs(fr.atraxterra.dohy.shop.Commerce.tabs(player, fr.atraxterra.dohy.shop.Commerce.Tab.BOUTIQUE));
@@ -217,6 +251,20 @@ public final class BoutiqueController extends MenuController {
             fr.atraxterra.dohy.grade.GradesController.handle(player, key.substring(6));
         } else if (key.equals("grades")) {
             fr.atraxterra.dohy.grade.GradesController.INSTANCE.open(player);
+        } else if (key.equals("farm_bot")) {
+            String refusal = fr.atraxterra.dohy.farmbot.FarmBots.buyBot(player);
+            if (refusal == null) {
+                success(player);
+            } else {
+                report(player, refusal, "");
+            }
+        } else if (key.equals("bot_remote")) {
+            String refusal = fr.atraxterra.dohy.farmbot.FarmBots.buyRemote(player);
+            if (refusal == null) {
+                success(player);
+            } else {
+                report(player, refusal, "");
+            }
         } else if (key.startsWith("booster:")) {
             Boosters.Tier tier = Boosters.tier(key.substring(8));
             if (tier != null) {

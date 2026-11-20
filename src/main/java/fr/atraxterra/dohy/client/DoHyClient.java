@@ -112,6 +112,8 @@ public final class DoHyClient {
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
         event.registerEntityRenderer(PalaHunter.ELEPHANT.get(), ElephantRenderer::new);
         event.registerEntityRenderer(DoHyAgri.TRACTOR.get(), TractorRenderer::new);
+        event.registerEntityRenderer(fr.atraxterra.dohy.farmbot.DoHyFarmBots.FARM_BOT.get(),
+                fr.atraxterra.dohy.client.farmbot.FarmBotRenderer::new);
         event.registerEntityRenderer(fr.atraxterra.dohy.arrakis.ArrakisContent.HARVESTER.get(),
                 fr.atraxterra.dohy.client.arrakis.HarvesterRenderer::new);
         event.registerEntityRenderer(fr.atraxterra.dohy.arrakis.ArrakisContent.SANDWORM.get(),
@@ -159,6 +161,8 @@ public final class DoHyClient {
         event.registerLayerDefinition(ElephantModel.TEEN, ElephantGeometry::createBoneALayer);
         event.registerLayerDefinition(ElephantModel.ADULT, ElephantGeometry::createBoneBLayer);
         event.registerLayerDefinition(TractorModel.LAYER, TractorGeometry::createBodyLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.farmbot.FarmBotModel.LAYER,
+                fr.atraxterra.dohy.client.farmbot.FarmBotModel::createBodyLayer);
         event.registerLayerDefinition(fr.atraxterra.dohy.client.arrakis.HarvesterModel.LAYER,
                 fr.atraxterra.dohy.client.arrakis.HarvesterGeometry::createBodyLayer);
         event.registerLayerDefinition(fr.atraxterra.dohy.client.arrakis.SandWormModel.LAYER,

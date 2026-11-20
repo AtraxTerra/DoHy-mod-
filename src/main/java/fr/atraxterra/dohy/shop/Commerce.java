@@ -58,7 +58,7 @@ public final class Commerce {
                 "Le shop rachete ce que tu recoltes, mines ou chasses. Plus tu vends le meme objet, plus son prix "
                         + "baisse ; il remonte ensuite tout seul."),
         BOUTIQUE("boutique", "Boutique",
-                "Grades, boosters, cles de box, coffres a poser, potions d'XP de metier et services, payes avec "
+                "Grades, boosters, cles de box, bots de farming, potions d'XP de metier et services, payes avec "
                         + "ton argent."),
         AUCTION("auction", "Hotel des ventes",
                 "Des raretes en vente chaque jour, et tes objets rares que le shop ne rachete pas, vendus a des "
@@ -212,6 +212,12 @@ public final class Commerce {
         }
         out.add(new ShopView.Elsewhere(fr.atraxterra.dohy.grade.DoHyGrades.premiumBadge(), "Premium 30 jours",
                 Tab.BOUTIQUE.path(), Tab.BOUTIQUE.label(), money(fr.atraxterra.dohy.grade.Premium.PRICE)));
+        out.add(new ShopView.Elsewhere(new ItemStack(fr.atraxterra.dohy.farmbot.DoHyFarmBots.FARM_BOT_ITEM.get()),
+                "Bot de farming", Tab.BOUTIQUE.path(), Tab.BOUTIQUE.label(),
+                money(fr.atraxterra.dohy.farmbot.DoHyFarmBots.BOT_PRICE)));
+        out.add(new ShopView.Elsewhere(new ItemStack(fr.atraxterra.dohy.farmbot.DoHyFarmBots.BOT_REMOTE.get()),
+                "Telecommande de bot", Tab.BOUTIQUE.path(), Tab.BOUTIQUE.label(),
+                money(fr.atraxterra.dohy.farmbot.DoHyFarmBots.REMOTE_PRICE)));
         return out;
     }
 
