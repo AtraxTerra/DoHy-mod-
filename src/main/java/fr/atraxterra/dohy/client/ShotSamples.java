@@ -342,6 +342,7 @@ final class ShotSamples {
                 block(level, 12, 0, 5), block(level, 13, 0, 6), block(level, 13, 0, 7), block(level, 12, 0, 9),
                 block(level, 12, 1, 9), block(level, 12, 2, 9), block(level, 13, 0, 8), block(level, 13, 1, 8),
                 block(level, 13, 0, 10));
+        log("{} : citrouille de deco {}", when, block(level, 13, 0, 4));
         log("{} : coffre {} ; baril {}", when, contents(level, at(4, 0, 12)), contents(level, at(8, 0, 12)));
         log("{} : XP de Fermier {} (+{} depuis le depart), argent {}", when, JobApi.xp(player, Job.FARMER),
                 JobApi.xp(player, Job.FARMER) - farmerXp, Economy.balance(player));
@@ -376,11 +377,13 @@ final class ShotSamples {
         set(player, 6, -1, 6, "minecraft:water");
         // Au bord : pasteque et citrouille sur leur tige, verrue, baies, canne a sucre, cacao.
         set(player, 12, -1, 2, "minecraft:farmland[moisture=7]");
-        set(player, 12, 0, 2, "minecraft:attached_melon_stem[facing=east]");
         set(player, 13, 0, 2, "minecraft:melon");
+        set(player, 12, 0, 2, "minecraft:attached_melon_stem[facing=east]");
         set(player, 12, -1, 3, "minecraft:farmland[moisture=7]");
-        set(player, 12, 0, 3, "minecraft:attached_pumpkin_stem[facing=east]");
         set(player, 13, 0, 3, "minecraft:pumpkin");
+        set(player, 12, 0, 3, "minecraft:attached_pumpkin_stem[facing=east]");
+        // une citrouille posee en deco, sans tige : il doit la laisser
+        set(player, 13, 0, 4, "minecraft:pumpkin");
         set(player, 12, -1, 5, "minecraft:soul_sand");
         set(player, 12, 0, 5, "minecraft:nether_wart[age=3]");
         set(player, 13, 0, 6, "minecraft:sweet_berry_bush[age=3]");
@@ -455,7 +458,7 @@ final class ShotSamples {
                     bot != null && bot.getUUID().equals(piloted), FarmBots.carried(player), FarmBots.of(player).size());
             report(player, "apres la pose");
         }));
-        ShotHarness.SHOTS.add(server("b2_bot_proche", 30, player -> tp(player, 6.5, 0, -3.6, 0.0f, 8.0f)));
+        ShotHarness.SHOTS.add(server("b2_bot_proche", 230, player -> tp(player, 6.5, 0, -3.4, 0.0f, 6.0f)));
         ShotHarness.SHOTS.add(server("c1_zone_coffres", 40, player -> {
             hold(player, DoHyFarmBots.BOT_REMOTE.get());
             click(player, at(1, -1, 1), Direction.UP);
@@ -469,9 +472,22 @@ final class ShotSamples {
             tp(player, 7.5, 5, -3.5, 0.0f, 30.0f);
         }));
         ShotHarness.SHOTS.add(server("c2_travail", 160, player -> report(player, "au travail")));
-        ShotHarness.SHOTS.add(server("c3_travail", 200, player -> report(player, "au travail, plus tard")));
+        ShotHarness.SHOTS.add(server("c3_menu_travail", 30, player -> {
+            report(player, "au travail, plus tard");
+            FarmBot bot = current;
+            if (bot != null) {
+                tp(player, bot.getX() - origin.getX(), 0, bot.getZ() - origin.getZ() - 2.0d, 0.0f, 10.0f);
+                emptyHand(player);
+                interact(player, bot);
+            }
+        }));
+        ShotHarness.SHOTS.add(server("c3b_retour", 60, player -> {
+            UiNet.close(player);
+            tp(player, 7.5, 5, -3.5, 0.0f, 30.0f);
+            hold(player, DoHyFarmBots.BOT_REMOTE.get());
+        }));
         ShotHarness.SHOTS.add(server("c4_fini", 20, player -> {
-            ShotHarness.until = () -> current != null && current.harvested() >= 85
+            ShotHarness.until = () -> current != null && current.harvested() >= 88
                     && current.status() == FarmBot.Status.WAITING && current.usedSlots() == 0;
             report(player, "avant la fin du premier tour");
         }));
