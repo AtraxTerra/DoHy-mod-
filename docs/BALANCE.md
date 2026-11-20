@@ -194,9 +194,9 @@ trixium, l'équipement enchanté). L'XP d'un tour ne change pas (6,2 M), mais le
 
 À 15 k XP/h (le rythme de référence, § 2), dix renaissances demandent ~3 000 heures : un horizon de
 plusieurs saisons, et un métier qui reste un bonus. **Le point à surveiller est le Fermier avec
-quatre bots** (§ 6 quinvicies) : ~150 k XP/h de betteraves le mènent au 100 en ~41 heures, et chaque
-tour rapporte alors autant qu'une heure d'autosell par heure de présence ; dix renaissances en ~300
-heures, puis près de 3 M par heure. C'est le choix du joueur (« en entier », « sans limite ») ; si
+quatre bots** (§ 6 quinvicies) : ~150 k XP/h de betteraves le mènent au 100 en ~41 heures, soit
+~690 k $ par heure de présence dès le premier tour (le revenu de fin de partie du § 3 est de 1 M) ;
+dix renaissances en ~300 heures, puis près de 3 M par heure. C'est le choix du joueur (« en entier », « sans limite ») ; si
 l'économie s'emballe, les leviers sont, du plus doux au plus fort : `JobRebirth.BONUS` (le bonus par
 renaissance), la part de l'argent repayée en remontant (aujourd'hui entière : `JobApi.levelMoney`
 et `JobPrimes.amount`), un plafond de renaissances, et pour le seul Fermier la taille des champs des
