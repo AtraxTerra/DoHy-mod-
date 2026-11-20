@@ -24,6 +24,13 @@ public final class Factions {
                     .copyOnDeath()
                     .build());
 
+    /** Le coffre de la banque de faction : les minerais des mines de la Terre. Garde a la mort. */
+    public static final Supplier<AttachmentType<FactionVault>> VAULT = ATTACHMENTS.register("faction_vault",
+            () -> AttachmentType.builder(() -> FactionVault.EMPTY)
+                    .serialize(FactionVault.MAP_CODEC, vault -> !vault.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
     /** Le proprietaire d'un chunk. Rien n'est ecrit pour un chunk libre. */
     public static final Supplier<AttachmentType<ClaimOwner>> CLAIM = ATTACHMENTS.register("claim",
             () -> AttachmentType.builder(() -> ClaimOwner.NONE)

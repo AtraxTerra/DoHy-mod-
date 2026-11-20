@@ -225,6 +225,7 @@ public final class FactionCommand {
                                 .executes(ctx -> as(ctx.getSource(), player -> result(player,
                                         EnemyBases.abandon(player), "Base abandonnee.")))))
                 .then(fr.atraxterra.dohy.earth.NationCommand.build())
+                .then(fr.atraxterra.dohy.earth.mine.MineCommand.build())
                 .then(Commands.literal("marche").executes(ctx -> {
                     fr.atraxterra.dohy.faction.market.WorldMarketMenu.INSTANCE.open(
                             ctx.getSource().getPlayerOrException());

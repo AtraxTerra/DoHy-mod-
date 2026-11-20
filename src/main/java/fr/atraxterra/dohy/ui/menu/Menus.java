@@ -60,6 +60,7 @@ public final class Menus {
                 fr.atraxterra.dohy.arrakis.WaterMenu.INSTANCE, fr.atraxterra.dohy.arrakis.SietchMenu.INSTANCE,
                 fr.atraxterra.dohy.nuclear.path.NtmPathMenu.INSTANCE,
                 fr.atraxterra.dohy.grade.GradesController.INSTANCE,
-                fr.atraxterra.dohy.farmbot.FarmBotMenu.INSTANCE);
+                fr.atraxterra.dohy.farmbot.FarmBotMenu.INSTANCE,
+                fr.atraxterra.dohy.earth.mine.MineMenu.INSTANCE);
     }
 }

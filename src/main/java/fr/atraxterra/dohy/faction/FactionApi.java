@@ -202,6 +202,7 @@ public final class FactionApi {
         data.tags.addAll(tags);
         data.banner = Math.floorMod(banner, 16);
         fr.atraxterra.dohy.earth.EarthNations.renamed(player);
+        fr.atraxterra.dohy.earth.mine.EarthMines.renamed(player);
         return null;
     }
 
@@ -225,7 +226,7 @@ public final class FactionApi {
         return null;
     }
 
-    /** Dissout la faction : claims rendus, banque perdue, arbre remis a zero. */
+    /** Dissout la faction : claims, pays et mines rendus, banque et son coffre perdus, arbre remis a zero. */
     public static void disband(ServerPlayer player) {
         FactionData data = data(player);
         if (!data.exists()) {
@@ -234,6 +235,8 @@ public final class FactionApi {
         unclaimAll(player);
         player.setData(Factions.ENEMY_BASE.get(), fr.atraxterra.dohy.faction.base.EnemyBase.EMPTY);
         fr.atraxterra.dohy.earth.EarthNations.release(player);
+        fr.atraxterra.dohy.earth.mine.EarthMines.release(player);
+        FactionVault.clear(player);
         String name = data.name;
         data.clear();
         tell(player, "La faction " + name + " est dissoute.", ChatFormatting.RED);

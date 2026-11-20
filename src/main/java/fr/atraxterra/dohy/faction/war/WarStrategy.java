@@ -780,17 +780,43 @@ public final class WarStrategy {
     }
 
     /**
-     * L'assaut a reussi : la nation reprend le pays en jeu, s'il y en a un, et le
-     * grief qu'il portait s'eteint. Rend la ligne du journal (« Pologne repris »),
-     * vide si elle n'avait rien a reprendre.
+     * L'assaut a reussi : la nation reprend le pays en jeu, s'il y en a un, et la
+     * mine en jeu (la derniere capturee dans sa region), et les griefs qu'ils
+     * portaient s'eteignent. Rend la ligne du journal (« Pologne repris ; mine de
+     * Kiruna reprise »), vide si elle n'avait rien a reprendre.
      */
     static String reconquer(ServerPlayer player, WarData.Relation relation) {
+        List<String> taken = new ArrayList<>();
         int country = EarthNations.active() ? EarthNations.reclaim(player, relation.nation) : 0;
-        if (country <= 0) {
-            return "";
+        if (country > 0) {
+            String name = EarthNations.countryName(country);
+            forget(relation, "pays pris : " + name);
+            String text = switch (relation.traits().voice()) {
+                case "brutale" -> name + " est de nouveau a nous. N'y remets plus les pieds.";
+                case "courtoise" -> "Nous reprenons " + name + ". Nous en prendrons soin, sois-en sur.";
+                case "mielleuse" -> "Merci de nous rendre " + name + "... c'etait si aimable a toi.";
+                default -> "Nous reprenons " + name + ".";
+            };
+            say(player, relation, text, ChatFormatting.DARK_RED);
+            taken.add(name + " repris");
         }
-        String name = EarthNations.countryName(country);
-        String kind = "pays pris : " + name;
+        String mine = fr.atraxterra.dohy.earth.mine.EarthMines.reclaim(player, relation.nation);
+        if (mine != null) {
+            forget(relation, "mine prise : " + mine);
+            String text = switch (relation.traits().voice()) {
+                case "brutale" -> "La mine de " + mine + " est a nous. Tes balises n'y changeront rien.";
+                case "courtoise" -> "Nous reprenons la mine de " + mine + ". Ses mineurs nous attendaient.";
+                case "mielleuse" -> "Une si jolie mine, " + mine + "... nous la gardons, merci.";
+                default -> "Nous reprenons la mine de " + mine + ".";
+            };
+            say(player, relation, text, ChatFormatting.DARK_RED);
+            taken.add("mine de " + mine + " reprise");
+        }
+        return String.join(" ; ", taken);
+    }
+
+    /** Le grief de ce genre s'eteint : ce qu'il reclamait est repris. */
+    private static void forget(WarData.Relation relation, String kind) {
         List<WarData.Grievance> kept = new ArrayList<>();
         for (WarData.Grievance grievance : relation.memory.grievances()) {
             if (!grievance.kind().equals(kind)) {
@@ -798,14 +824,6 @@ public final class WarStrategy {
             }
         }
         relation.memory = relation.memory.withGrievances(kept);
-        String text = switch (relation.traits().voice()) {
-            case "brutale" -> name + " est de nouveau a nous. N'y remets plus les pieds.";
-            case "courtoise" -> "Nous reprenons " + name + ". Nous en prendrons soin, sois-en sur.";
-            case "mielleuse" -> "Merci de nous rendre " + name + "... c'etait si aimable a toi.";
-            default -> "Nous reprenons " + name + ".";
-        };
-        say(player, relation, text, ChatFormatting.DARK_RED);
-        return name + " repris";
     }
 
     /** Ce qu'elle dit en pointant un missile sur ta base. */

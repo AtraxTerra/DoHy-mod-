@@ -15,7 +15,7 @@ import java.util.Locale;
 
 /**
  * {@code /gisements [ressource]} : les gisements geants les plus proches, leur
- * direction et leur distance — « Kiruna, fer (Suede) : 412 blocs au nord ».
+ * direction, leur distance et qui les tient — « Kiruna, fer (Suede) : 412 blocs au nord · Arcanum ».
  * Seulement sur la carte de la Terre.
  */
 final class EarthBodyCommand {
@@ -64,9 +64,13 @@ final class EarthBodyCommand {
             double dx = body.centerX() - x;
             double dz = body.centerZ() - z;
             String where = Math.round(Math.sqrt(dx * dx + dz * dz)) + " blocs " + direction(dx, dz);
+            boolean own = fr.atraxterra.dohy.earth.mine.EarthMines.ownedBy(player, body);
             player.sendSystemMessage(Component.literal("  " + body.name() + ", " + body.resource()
                     + (country == null ? "" : " (" + country.name() + ")") + " : ").withStyle(ChatFormatting.YELLOW)
-                    .append(Component.literal(where).withStyle(ChatFormatting.GRAY)));
+                    .append(Component.literal(where).withStyle(ChatFormatting.GRAY))
+                    .append(Component.literal(" \u00B7 " + (own ? "a ta faction"
+                            : fr.atraxterra.dohy.earth.mine.EarthMines.holderName(player, body)))
+                            .withStyle(own ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY)));
         }
         return found.size();
     }

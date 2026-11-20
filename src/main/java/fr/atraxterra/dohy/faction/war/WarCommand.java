@@ -123,7 +123,8 @@ public final class WarCommand {
                                     System.currentTimeMillis());
                             String retaken = WarStrategy.reconquer(player, relation);
                             return retaken.isEmpty()
-                                    ? answer(context, "Rien a reprendre : aucun pays de sa region, hors capitale", null)
+                                    ? answer(context, "Rien a reprendre : ni pays (hors capitale) ni mine de sa region",
+                                    null)
                                     : answer(context, null, "Reprise : " + retaken + ".");
                         })))
                         // Une frappe de missile sur sa propre base, sans siege : pour essayer les missiles de NTM.
