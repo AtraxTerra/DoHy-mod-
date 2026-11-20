@@ -1266,7 +1266,13 @@ public final class WarStrategy {
                 relation.slot = 0L;
                 relation.deadline = now + WINDOW_MS;
                 relation.hostility = Math.min(100.0d, relation.hostility + 5.0d);
+                // Les soldats encore debout rentrent : leur solde revient au tresor. Sans cela, la
+                // nation (et son allie) paierait deux fois la meme armee a la reprise de l'assaut.
+                relation.treasury += Math.max(0, siege.force - own) * SOLDIER_COST;
                 line = "assaut interrompu";
+                if (ally != null) {
+                    ally.treasury += Math.max(0, siege.allyForce - siege.allyFallen) * SOLDIER_COST;
+                }
             }
             default -> {
                 relation.memory = relation.memory.withLoss();
