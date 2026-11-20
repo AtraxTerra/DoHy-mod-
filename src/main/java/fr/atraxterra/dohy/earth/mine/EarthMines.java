@@ -313,6 +313,12 @@ public final class EarthMines {
         return CAPTURES.get(player);
     }
 
+    /** La capture en cours, en clair (« kiruna 1200 / 2400 » ticks tenus), vide sans : pour les journaux. */
+    public static String captureState(UUID player) {
+        Capture capture = CAPTURES.get(player);
+        return capture == null ? "" : capture.mine + " " + capture.progress + " / " + capture.need;
+    }
+
     /** Ce qui empeche de poser une balise ici ; {@code null} si la capture peut commencer. */
     public static String refusal(ServerPlayer player, BlockPos pos) {
         EarthData earth = EarthData.get();

@@ -2952,16 +2952,76 @@
         "Petrole et gaz"
       ],
       "summary": [
-        "Sur la carte de la Terre, les vraies mines geantes et les champs de petrole et de gaz existent la ou ils sont dans le monde reel."
+        "Sur la carte de la Terre, les vraies mines geantes et les champs de petrole et de gaz existent la ou ils sont dans le monde reel.",
+        "Chacun se capture avec une balise de concession : ses revenus vont alors a ta banque de faction (fiche Mines a capturer)."
       ],
       "commands": [
         "/gisements : les gisements geants"
       ],
       "see": [
+        "mines_terre",
         "terre",
         "minerais",
         "mine"
       ]
+    },
+    {
+      "id": "mines_terre",
+      "category": "terre",
+      "order": 9,
+      "icon": "dohy:concession_beacon",
+      "title": "Mines a capturer",
+      "card": [
+        "Une balise, 2 a 5 min",
+        "Argent et minerais"
+      ],
+      "summary": [
+        "Les 245 gisements geants de la Terre se capturent sans combat : pose une balise de concession dans la mine et reste a cote. Chaque heure, meme hors ligne, la mine verse de l'argent a ta banque de faction et des minerais au coffre de la banque."
+      ],
+      "sections": [
+        {
+          "title": "Capturer une mine",
+          "text": [
+            "- Achete une balise de concession a la Boutique (25 000 $).",
+            "- Va dans une mine (/gisements) : son nom s'affiche quand tu y entres, avec la nation qui la tient.",
+            "- Pose la balise et reste a moins de 16 blocs : 2 min pour une mine de rang 3, 3 min au rang 2, 5 min au rang 1. T'eloigner met la capture en pause ; casser la balise l'abandonne.",
+            "! La mine reste ouverte : tu peux toujours y miner toi-meme."
+          ]
+        },
+        {
+          "title": "Ce qu'elle rapporte",
+          "text": [
+            "Par heure : 400, 800 ou 1 500 $ selon son rang (le double pour un champ de petrole ou de gaz), et 2 a 6 blocs de son minerai (moins pour les diamants). L'argent va a la banque de faction, les minerais au coffre de la banque (54 cases), a vider depuis l'onglet Banque.",
+            "Hors ligne aussi : a ton retour, jusqu'a une semaine d'absence est versee."
+          ]
+        },
+        {
+          "title": "Les nations",
+          "text": [
+            "Une mine prise a une nation lui laisse un grief. Si son assaut contre ta base reussit, elle reprend la derniere mine que tu as capturee dans sa region.",
+            "Dissoudre la faction rend toutes ses mines."
+          ]
+        }
+      ],
+      "commands": [
+        "/mines : tes mines et les plus proches",
+        "/gisements : les gisements geants"
+      ],
+      "see": [
+        "gisements",
+        "pays",
+        "banque",
+        "guerre",
+        "boutique"
+      ],
+      "discover": {
+        "items": [
+          "dohy:concession_beacon"
+        ],
+        "views": [
+          "dohy:faction_mines"
+        ]
+      }
     },
     {
       "id": "spawn",

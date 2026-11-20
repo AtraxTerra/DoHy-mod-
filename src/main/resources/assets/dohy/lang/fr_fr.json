@@ -189,5 +189,10 @@
   "tooltip.dohy.bot_remote.1": "Clic droit sur ton bot : le piloter",
   "tooltip.dohy.bot_remote.2": "Clic droit sur deux coins : sa zone",
   "tooltip.dohy.bot_remote.3": "Accroupi + clic droit sur un coffre : le lier",
-  "tooltip.dohy.bot_remote.corner": "Premier coin pose : clique le coin oppose"
+  "tooltip.dohy.bot_remote.corner": "Premier coin pose : clique le coin oppose",
+  "block.dohy.concession_beacon": "Balise de concession",
+  "item.dohy.concession_beacon": "Balise de concession",
+  "tooltip.dohy.concession_beacon.1": "A poser dans une mine de la Terre",
+  "tooltip.dohy.concession_beacon.2": "Reste a cote : la mine passe a ta faction",
+  "tooltip.dohy.concession_beacon.3": "Ses revenus vont a ta banque de faction"
 }

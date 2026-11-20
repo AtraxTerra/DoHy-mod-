@@ -108,6 +108,7 @@
     "palamod:miner_throne",
     "palamod:farmer_throne",
     "palamod:hunter_throne",
-    "palamod:alchemist_throne"
+    "palamod:alchemist_throne",
+    "dohy:concession_beacon"
   ]
 }
