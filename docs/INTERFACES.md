@@ -411,6 +411,28 @@ hôtel des ventes qui marche en solo.
   orange frappé d'une pioche), la barre de capture en haut de l'écran, l'annonce de la mine dans
   la barre d'action, et le titre de la capture.
 
+## La riposte contre les nations (lot 16, 2026-11-20)
+
+- **L'écran de la guerre** (`WarMenu`, vue `dohy:guerre`) : la statistique PUISSANCE (rouge
+  au-delà de 50, orange au-delà de 35) entre GUERRE et COFFRE ; la section LA COALITION CONTRE TOI
+  (une carte par nation — sa bannière, « Alliée aux Corbeaux », son humeur en barre, la pastille
+  PACTE — et une carte du pacte ou de l'assaut commun ; la bulle explique la coalition) ; la
+  section TA CONTRE-OFFENSIVE, sans guerre en cours (jusqu'à quatre nations, d'abord celles qui te
+  doivent quelque chose : ce qu'elles te doivent, le butin estimé de leur place forte, la pastille
+  GUERRE ; un clic demande confirmation ; grisées avec leur raison : « Vaincue, elle se relève »,
+  « En trêve ») ; l'heure de l'assaut d'une guerre que tu as déclarée s'intitule SA RIPOSTE.
+- **Les nations** : les pastilles ALLIÉE et TE DOIT ; la bulle ajoute ce qu'elle te doit, son
+  pacte, ce qu'elle a appris, sa défaite, et la commande pour lui déclarer la guerre.
+- **Leur place forte** : la carte « Si elle tombe » (« Ce qu'elle t'a pris + 30 % de son
+  trésor » ; la bulle détaille ce qu'elle rendra, et son alliée).
+- **Ta base vue par elles** : les cartes « Ta puissance » (une étoile du Nether, la barre, le détail
+  en bulle) et « Ce qu'elles ont appris » (la nation qui te connaît le mieux et sa leçon ; la bulle
+  les donne toutes).
+- **L'encyclopédie** : la fiche « La guerre » gagne Ta contre-offensive, Elles apprennent et Les
+  coalitions.
+- **Dans le monde** : les soldats du contingent allié portent les couleurs de leur nation, et la
+  barre de l'assaut les deux noms (« Assaut des Corbeaux et de Kraken »).
+
 ## Vérification
 
 Une branche de travail (`ci/shots`) lance un vrai client sous Xvfb sur GitHub, dans un monde

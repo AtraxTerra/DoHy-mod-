@@ -92,20 +92,34 @@ public final class Sieges {
         return LEDGERS.computeIfAbsent(level.dimension(), key -> new SiegeTerrain.Ledger(level));
     }
 
+    /**
+     * L'assaut part. Ses espions voient d'autant plus de tes pieges caches
+     * qu'elle est rusee, et qu'elle a deja assiege ta base (un dixieme de plus
+     * par assaut, quatre au plus) ; ses morts des assauts precedents, si ton
+     * coffre n'a pas bouge, guident son plan (lot 22l-2). {@code ally} et
+     * {@code allyForce} : le contingent d'une coalition, {@code null} et 0 sans.
+     */
     static Siege start(ServerPlayer target, WarData.Relation relation, ServerLevel level, BlockPos vault, int force,
-                       long now) {
+                       WarData.Relation ally, int allyForce, long now) {
         NationTraits traits = relation.traits();
-        double intel = 0.35d + 0.6d * traits.cunning();
+        WarData.Lessons lessons = relation.lessons();
+        double intel = Math.min(0.98d, 0.35d + 0.6d * traits.cunning() + lessons.insight());
         boolean heavy = relation.treasury >= 20_000L || traits.doctrine() == NationTraits.Doctrine.SIEGE;
         boolean endium = traits.cunning() >= 0.6d || traits.doctrine() == NationTraits.Doctrine.SIEGE
                 && relation.treasury >= 40_000L;
         double morale = Math.max(40.0d, Math.min(95.0d, 60.0d + 25.0d * traits.aggression()
-                - 10.0d * traits.caution() + Math.min(15.0d, relation.grievance(now) / 4.0d)));
+                - 10.0d * traits.caution() + Math.min(15.0d, relation.grievance(now) / 4.0d)
+                + (ally != null ? 5.0d : 0.0d)));
+        List<BlockPos> remembered = lessons.remembers(FactionApi.dimension(level), vault) ? lessons.deaths()
+                : List.of();
         Siege siege = new Siege(level, target, relation.nation, vault, force, intel,
-                new SiegePlanner.Capabilities(heavy, endium), morale);
+                new SiegePlanner.Capabilities(heavy, endium), morale, ally == null ? -1 : ally.nation,
+                ally == null ? 0 : allyForce, remembered, lessons.lesson());
         ACTIVE.put(siege.id, siege);
-        DoHy.LOGGER.info("Guerre : {} assiege {} ({} soldats, coffre {} {} {}, moral {})", traits.name(),
-                target.getGameProfile().name(), force, vault.getX(), vault.getY(), vault.getZ(), Math.round(morale));
+        DoHy.LOGGER.info("Guerre : {} assiege {} ({} soldats{}, coffre {} {} {}, moral {}, renseignement {} %)",
+                traits.name(), target.getGameProfile().name(), force,
+                ally == null ? "" : " et " + allyForce + " " + ally.traits().de(), vault.getX(), vault.getY(),
+                vault.getZ(), Math.round(morale), Math.round(intel * 100.0d));
         return siege;
     }
 

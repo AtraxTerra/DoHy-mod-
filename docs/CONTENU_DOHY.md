@@ -1785,3 +1785,24 @@ joueurs) — ce serait un lot à part.
   `TrixiumSeason`, `NationMenu` et `GuardianStoneItem` passent par lui.
 - `util/ClockReport` : la ligne du journal au démarrage, et l'avertissement si l'option
   `dohy.fuseau` n'est pas comprise.
+
+## La riposte contre les nations (2026-11-20)
+
+Le deuxième lot de la guerre des nations (règles complètes : `docs/FACTION.md`, « La riposte
+contre les nations (22l-2) »). Choix du joueur : **ta contre-offensive**, **une IA qui apprend**
+et **les alliances** ; la chute d'une place forte rend **ce qu'elle t'a pris**.
+
+- **Ta contre-offensive** : `/guerre declarer <nation>` ou l'écran de la guerre. La nation bâtit
+  sa place forte et ripostera sur ta base ; si sa place forte tombe, elle te rend l'argent qu'elle
+  t'a pillé (tant que son trésor le permet), le pays et la mine qu'elle t'a repris, et 30 % de son
+  trésor. Une guerre à la fois ; une trêve ne se rompt que pour reprendre ce qu'elle t'a pris ;
+  vaincue, elle se relève une semaine.
+- **Une IA qui apprend** : chaque nation retient où ses soldats sont tombés et de quoi. Son
+  prochain plan évite ces cases, ses espions voient davantage de tes pièges, et sa troupe change
+  contre ce qui l'a tuée (plus d'archers loin de ta lame, plus d'ingénieurs sur tes pièges…).
+- **Les coalitions** : au-delà de 50 de puissance (banque, pays et mines de la Terre, claims,
+  victoires, guerres déclarées), deux nations s'allient contre toi. L'alliée joint 4 à 10 soldats
+  à ses couleurs à chaque assaut ; la chute de la place forte de l'une fait rendre aux deux ce
+  qu'elles t'ont pris, et défait la coalition.
+- **Écran** : la puissance, la coalition, ta contre-offensive, ce que chaque nation te doit et ce
+  qu'elle a appris (`docs/INTERFACES.md`, lot 16). **Équilibre** : `BALANCE.md` § 6 septvicies.

@@ -19,6 +19,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.BossEvent;
@@ -26,6 +27,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
@@ -176,10 +178,24 @@ final class Siege {
     private final Map<UUID, Integer> charges = new LinkedHashMap<>();
     /** Les chunks tenus charges par ce siege, et s'ils tournent. */
     private final Map<Long, Boolean> forced = new LinkedHashMap<>();
-    private final int force;
+    final int force;
+
+    /** L'allie d'une coalition (lot 22l-2), -1 sans ; son contingent, ses soldats tombes. */
+    final int ally;
+    final int allyForce;
+    int allyFallen;
+    /** Ce qui reste a deployer du contingent allie, par role (compte aussi dans la reserve). */
+    private final EnumMap<SoldierRole, Integer> allyReserve = new EnumMap<>(SoldierRole.class);
+    private final java.util.Set<UUID> allied = new java.util.HashSet<>();
+    /** Ce que la nation a retenu de ses assauts precedents : ou ses soldats sont tombes, et sa lecon. */
+    final List<BlockPos> remembered;
+    final String lesson;
+    /** De quoi sont morts ses soldats pendant ce siege : ce qu'elle en retiendra. */
+    final Map<String, Integer> causes = new LinkedHashMap<>();
 
     Siege(ServerLevel level, ServerPlayer target, int nation, BlockPos vault, int force, double intel,
-          SiegePlanner.Capabilities capabilities, double morale) {
+          SiegePlanner.Capabilities capabilities, double morale, int ally, int allyForce,
+          List<BlockPos> remembered, String lesson) {
         this.player = target.getUUID();
         this.playerName = target.getGameProfile().name();
         this.nation = nation;
@@ -193,7 +209,12 @@ final class Siege {
         this.capabilities = capabilities;
         this.morale = morale;
         this.radius = radiusFor(target, vault);
-        this.bar = new ServerBossEvent(UUID.randomUUID(), Component.literal("Assaut " + traits.de()),
+        this.ally = allyForce > 0 ? ally : -1;
+        this.allyForce = allyForce > 0 ? allyForce : 0;
+        this.remembered = List.copyOf(remembered);
+        this.lesson = lesson;
+        this.bar = new ServerBossEvent(UUID.randomUUID(), Component.literal("Assaut " + traits.de()
+                + (this.ally >= 0 ? " et " + NationTraits.of(this.ally).de() : "")),
                 BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_10);
         this.loot = new ServerBossEvent(UUID.randomUUID(), Component.literal("Ta banque"),
                 BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.PROGRESS);
@@ -376,6 +397,24 @@ final class Siege {
                 + " de ton coffre. L'assaut part dans " + (CAMP_TICKS / 20) + " s.", ChatFormatting.RED);
         tell("Plan de bataille : " + found.summary() + ". Abats l'etendard, le commandant ou le tresorier.",
                 ChatFormatting.GRAY);
+        if (ally >= 0) {
+            tell(NationTraits.of(ally).verb("joint", "joignent") + " " + allyForce
+                    + " soldats a l'assaut : la coalition attaque ensemble.", ChatFormatting.RED);
+        }
+        if (!lesson.isEmpty() || !remembered.isEmpty()) {
+            List<String> learned = new ArrayList<>();
+            if (!lesson.isEmpty()) {
+                learned.add(WarStrategy.lessonText(lesson));
+            }
+            if (!remembered.isEmpty()) {
+                learned.add("ils evitent les " + remembered.size() + " cases ou leurs soldats sont tombes");
+            }
+            tell("Ils ont retenu la lecon de leurs assauts : " + String.join(" ; ", learned) + ".",
+                    ChatFormatting.GOLD);
+        }
+        DoHy.LOGGER.info("Guerre : armee {} : {} (lecon {}, {} morts en memoire, contingent {} {})", traits.de(),
+                composition(), lesson.isEmpty() ? "aucune" : lesson, remembered.size(), allyForce,
+                ally >= 0 ? NationTraits.of(ally).de() : "-");
         ServerPlayer target = target();
         if (target != null) {
             bar.addPlayer(target);
@@ -384,7 +423,9 @@ final class Siege {
     }
 
     private void requestPlan() {
-        List<BlockPos> memory = List.copyOf(deaths);
+        // Ses morts des assauts precedents d'abord (lot 22l-2), puis celles de ce siege.
+        List<BlockPos> memory = new ArrayList<>(remembered);
+        memory.addAll(deaths);
         // Une replanification part des etapes deja tenues : du camp jusqu'au front.
         List<BlockPos> from = null;
         if (plan != null) {
@@ -394,7 +435,10 @@ final class Siege {
                 from.add(plan.steps().get(i).pos());
             }
         }
-        SiegePlanner.Snapshot snapshot = SiegePlanner.capture(level, vault, player, radius, memory, intel, salt, from);
+        // Echaudee par tes tourelles, elle donne deux fois plus de poids a ce qu'elles couvrent.
+        float turrets = "tourelles".equals(lesson) ? 3.2f : 1.6f;
+        SiegePlanner.Snapshot snapshot = SiegePlanner.capture(level, vault, player, radius, memory, intel, salt, from,
+                turrets);
         SiegePlanner.Capabilities caps = capabilities;
         pending = CompletableFuture.supplyAsync(() -> SiegePlanner.search(snapshot, caps), PLANNER);
     }
@@ -540,6 +584,37 @@ final class Siege {
             engineers = Math.min(engineers, 1);
         }
         int infantry = Math.max(3, force - sappers - engineers - archers - medics);
+        // La lecon de ses assauts precedents (lot 22l-2) : elle change sa troupe contre ce qui l'a tuee.
+        switch (lesson) {
+            case "lame" -> {
+                int moved = Math.max(1, infantry / 4);
+                infantry -= moved;
+                archers += moved;
+            }
+            case "fleches" -> {
+                int moved = Math.max(1, archers / 2);
+                archers -= moved;
+                infantry += moved - 1;
+                medics++;
+            }
+            case "tourelles" -> {
+                infantry -= 1;
+                medics++;
+            }
+            case "pieges", "terrain" -> {
+                infantry -= 2;
+                engineers += 2;
+            }
+            case "gardiens" -> {
+                int moved = Math.max(1, archers / 3);
+                archers -= moved;
+                infantry += moved;
+            }
+            default -> {
+            }
+        }
+        infantry = Math.max(3, infantry);
+        archers = Math.max(0, archers);
         reserve.put(SoldierRole.FANTASSIN, infantry);
         reserve.put(SoldierRole.ARCHER, archers);
         reserve.put(SoldierRole.SAPEUR, sappers);
@@ -547,6 +622,32 @@ final class Siege {
         reserve.put(SoldierRole.MEDECIN, medics);
         reserve.put(SoldierRole.COMMANDANT, 1);
         reserve.put(SoldierRole.TRESORIER, 2);
+        // Le contingent de l'allie : des combattants a ses couleurs, deployes parmi les siens.
+        allyReserve.clear();
+        if (ally >= 0 && allyForce > 0) {
+            int foot = (int) Math.round(allyForce * 0.6d);
+            int bows = allyForce - foot;
+            allyReserve.put(SoldierRole.FANTASSIN, foot);
+            allyReserve.put(SoldierRole.ARCHER, bows);
+            reserve.merge(SoldierRole.FANTASSIN, foot, Integer::sum);
+            reserve.merge(SoldierRole.ARCHER, bows, Integer::sum);
+        }
+    }
+
+    /** La composition deployee ou en reserve, pour le journal : « 9 fantassins, 4 archers... ». */
+    String composition() {
+        List<String> parts = new ArrayList<>();
+        for (SoldierRole role : List.of(SoldierRole.FANTASSIN, SoldierRole.ARCHER, SoldierRole.SAPEUR,
+                SoldierRole.INGENIEUR, SoldierRole.MEDECIN)) {
+            int count = reserve.getOrDefault(role, 0);
+            for (SoldierRole deployedRole : units.values()) {
+                if (deployedRole == role) {
+                    count++;
+                }
+            }
+            parts.add(count + " " + role.label().toLowerCase(java.util.Locale.ROOT) + (count > 1 ? "s" : ""));
+        }
+        return String.join(", ", parts);
     }
 
     private Soldier deploy(SoldierRole role) {
@@ -560,11 +661,18 @@ final class Siege {
         }
         BlockPos spot = spawnSpot();
         soldier.snapTo(spot.getX() + 0.5d, spot.getY(), spot.getZ() + 0.5d, random.nextFloat() * 360.0f, 0.0f);
-        soldier.enlist(id, role, nation, random);
+        // Un soldat du contingent allie, a la part qu'il tient dans la reserve de ce role.
+        int theirs = allyReserve.getOrDefault(role, 0);
+        boolean fromAlly = theirs > 0 && random.nextInt(count) < theirs;
+        soldier.enlist(id, role, fromAlly ? ally : nation, random);
         if (!level.addFreshEntity(soldier)) {
             return null;
         }
         reserve.put(role, count - 1);
+        if (fromAlly) {
+            allyReserve.put(role, theirs - 1);
+            allied.add(soldier.getUUID());
+        }
         units.put(soldier.getUUID(), role);
         deployed++;
         soldier.routeIndex = 0;
@@ -1620,8 +1728,16 @@ final class Siege {
         SoldierRole role = soldier.role();
         fallen++;
         killed.merge(role, 1, Integer::sum);
-        DoHy.LOGGER.info("Guerre : un {} {} tombe en {} ({})", role.label().toLowerCase(java.util.Locale.ROOT),
-                traits.de(), soldier.blockPosition().toShortString(), source.getMsgId());
+        if (allied.remove(soldier.getUUID())) {
+            allyFallen++;
+        }
+        String cause = cause(source);
+        if (!cause.isEmpty()) {
+            causes.merge(cause, 1, Integer::sum);
+        }
+        DoHy.LOGGER.info("Guerre : un {} {} tombe en {} ({}, lecon : {})", role.label().toLowerCase(java.util.Locale.ROOT),
+                NationTraits.of(soldier.nation()).de(), soldier.blockPosition().toShortString(), source.getMsgId(),
+                cause.isEmpty() ? "aucune" : cause);
         deaths.add(soldier.blockPosition());
         guards.remove(soldier.getUUID());
         double hit = role.weight() * (alive().stream().anyMatch(s -> s.role() == SoldierRole.MEDECIN) ? 0.8d : 1.0d);
@@ -1669,6 +1785,59 @@ final class Siege {
         if (near >= 3 && near % 3 == 0) {
             replan("pertes au meme endroit");
         }
+    }
+
+    /**
+     * De quoi un soldat est mort, pour la lecon de sa nation (lot 22l-2) :
+     * {@code lame} (un joueur, au corps a corps), {@code fleches} (un joueur,
+     * de loin), {@code gardiens} (un golem, un loup...), {@code tourelles} (un
+     * projectile sans tireur vivant, ou un faux joueur : les tourelles de NTM),
+     * {@code terrain} (lave, feu, chute, noyade, vide), {@code pieges} (les
+     * explosions, le magma, les pics, les cactus, et tout le reste) ;
+     * {@code ""} pour ses propres charges et les coups de ses camarades.
+     */
+    static String cause(DamageSource source) {
+        Entity attacker = source.getEntity();
+        Entity direct = source.getDirectEntity();
+        if (direct instanceof PrimedTnt tnt && tnt.entityTags().contains(Sieges.CHARGE_TAG)
+                || attacker instanceof Soldier) {
+            return "";
+        }
+        if (source.is(DamageTypeTags.IS_EXPLOSION)) {
+            return "pieges";
+        }
+        if (attacker != null && fake(attacker)) {
+            return "tourelles";
+        }
+        if (attacker instanceof Player) {
+            return direct != null && direct != attacker || source.is(DamageTypeTags.IS_PROJECTILE) ? "fleches"
+                    : "lame";
+        }
+        if (attacker instanceof LivingEntity) {
+            return "gardiens";
+        }
+        if (direct != null || source.is(DamageTypeTags.IS_PROJECTILE)) {
+            return "tourelles";
+        }
+        String id = source.getMsgId();
+        if ("hotFloor".equals(id) || "cactus".equals(id) || "sweetBerryBush".equals(id) || "stalagmite".equals(id)) {
+            return "pieges";
+        }
+        if (source.is(DamageTypeTags.IS_FIRE) || source.is(DamageTypeTags.IS_FALL)
+                || source.is(DamageTypeTags.IS_DROWNING) || "outOfWorld".equals(id) || "inWall".equals(id)) {
+            return "terrain";
+        }
+        return "pieges";
+    }
+
+    /** Un faux joueur (une machine qui tire ou frappe au nom de personne), sans dependre de NeoForge. */
+    private static boolean fake(Entity entity) {
+        for (Class<?> type = entity.getClass(); type != null; type = type.getSuperclass()) {
+            if (type.getSimpleName().equals("FakePlayer")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     void onPlayerDeath() {
@@ -1821,12 +1990,14 @@ final class Siege {
             return;
         }
         int count = alive().size();
+        // Une coalition : les deux noms (« de Nordheim et des Corbeaux »).
+        String who = traits.de() + (ally >= 0 ? " et " + NationTraits.of(ally).de() : "");
         String label = switch (phase) {
-            case CAMP -> "Camp " + traits.de() + " · assaut dans " + Math.max(0, (CAMP_TICKS - phaseTick) / 20) + " s";
-            case PILLAGE -> "Pillage " + traits.de() + " · coffre tenu";
+            case CAMP -> "Camp " + who + " · assaut dans " + Math.max(0, (CAMP_TICKS - phaseTick) / 20) + " s";
+            case PILLAGE -> "Pillage " + who + " · coffre tenu";
             case EXTRACT -> "Le tresorier " + traits.de() + " s'enfuit !";
-            case RETREAT -> "Retraite " + traits.de();
-            default -> "Assaut " + traits.de() + " · moral " + (int) Math.round(morale) + " % · "
+            case RETREAT -> "Retraite " + who;
+            default -> "Assaut " + who + " · moral " + (int) Math.round(morale) + " % · "
                     + count + " soldat(s)" + (bannerDown ? "" : " · renforts " + reserveCount());
         };
         bar.setName(Component.literal(label));

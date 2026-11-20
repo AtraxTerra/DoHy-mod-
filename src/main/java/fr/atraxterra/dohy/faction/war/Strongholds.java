@@ -267,6 +267,11 @@ public final class Strongholds {
         return job != null && job.player.equals(player);
     }
 
+    /** Une place forte contre ce joueur, debout, en chantier, ou tombee et pas encore comptee ? */
+    static boolean standing(UUID player) {
+        return FORTS.containsKey(player) || building(player);
+    }
+
     // -- La commande d'une place forte ---------------------------------------------------------------
 
     /**
@@ -299,8 +304,11 @@ public final class Strongholds {
             return "La place forte se batit dans le Monde : reviens-y";
         }
         NationTraits traits = relation.traits();
-        EnemyBaseTier tier = relation.army() < 55 ? EnemyBaseTier.OUTPOST
-                : relation.army() < 90 ? EnemyBaseTier.BASE : EnemyBaseTier.FORTRESS;
+        // Une coalition batit plus grand : l'allie y met la moitie de son armee (lot 22l-2).
+        WarData.Relation ally = WarStrategy.comrade(WarStrategy.data(player), relation, System.currentTimeMillis());
+        int strength = relation.army() + (ally == null ? 0 : ally.army() / 2);
+        EnemyBaseTier tier = strength < 55 ? EnemyBaseTier.OUTPOST
+                : strength < 90 ? EnemyBaseTier.BASE : EnemyBaseTier.FORTRESS;
         EnemyBaseStyle style = switch (traits.doctrine()) {
             case SIEGE -> EnemyBaseStyle.BUNKER;
             case CHOC -> EnemyBaseStyle.SOVIET;
@@ -913,22 +921,32 @@ public final class Strongholds {
         }
         NationTraits traits = fort.traits();
         boolean pillage = "pillage".equals(fort.how);
-        int country = forfeit(player, fort.nation);
-        WarStrategy.Spoils spoils = WarStrategy.razed(player, fort.nation, fort.how, fort.kind(), country);
-        if (country <= 0) {
+        WarStrategy.Spoils spoils = WarStrategy.razed(player, fort.nation, fort.how, fort.kind(),
+                forfeit(player, fort.nation));
+        int country = spoils.country();
+        long total = spoils.loot() + spoils.returned();
+        // Un pays pris ou rendu a deja son titre a l'ecran ; sinon, celui de la victoire.
+        boolean titled = country > 0 || spoils.recovered().stream().anyMatch(name -> !name.startsWith("la mine"));
+        if (!titled) {
             player.connection.send(new ClientboundSetTitlesAnimationPacket(10, 70, 20));
             player.connection.send(new ClientboundSetTitleTextPacket(Component.literal(pillage ? "PLACE FORTE PILLEE"
                     : "PLACE FORTE RASEE").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)));
             player.connection.send(new ClientboundSetSubtitleTextPacket(Component.literal(
-                    traits.verb("recule", "reculent") + " \u00B7 +" + MoneyFormat.exact(spoils.loot()) + " $")
+                    traits.verb("recule", "reculent") + " \u00B7 +" + MoneyFormat.exact(total) + " $")
                     .withStyle(ChatFormatting.YELLOW)));
         }
         player.level().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE,
                 SoundSource.PLAYERS, 1.0f, 1.0f);
         FactionApi.tell(player, fort.title() + (pillage ? " est pillee" : " est rasee") + " : +"
-                + MoneyFormat.exact(spoils.loot()) + " $ a ta banque, " + spoils.lost() + " soldats perdus pour "
+                + MoneyFormat.exact(total) + " $ a ta banque"
+                + (spoils.returned() > 0L ? " (dont " + MoneyFormat.exact(spoils.returned())
+                + " $ qu'on t'avait pris)" : "") + ", " + spoils.lost() + " soldats perdus pour "
                 + "elle, treve de 7 jours" + (country > 0 ? ", " + EarthNations.countryName(country)
                 + " est a toi (+1 claim)." : "."), ChatFormatting.GOLD);
+        if (!spoils.recovered().isEmpty()) {
+            FactionApi.tell(player, "Te reviennent : " + String.join(", ", spoils.recovered()) + ".",
+                    ChatFormatting.GOLD);
+        }
         FactionApi.tell(player, "Dans 5 minutes, elle s'efface : le terrain reprend ses droits.",
                 ChatFormatting.YELLOW);
     }

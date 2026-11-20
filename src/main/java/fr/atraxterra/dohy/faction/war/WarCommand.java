@@ -30,13 +30,16 @@ import java.util.List;
  *   <li>{@code payer}, {@code negocier}, {@code refuser} repondent a un ultimatum ;</li>
  *   <li>{@code heure 21:00}, {@code heure demain 18h} fixent l'assaut ;</li>
  *   <li>{@code paix} achete la paix, {@code cadeau <nation> <montant>} adoucit une nation ;</li>
+ *   <li>{@code declarer <nation>} : ta contre-offensive, la guerre que tu declares (lot 22l-2) ;</li>
  *   <li>{@code coffre} designe ton coffre, la ou tu te tiens ;</li>
  *   <li>{@code placeforte} donne une boussole vers la place forte de la nation en guerre ;</li>
  *   <li>{@code admin} (operateurs) : menacer, declarer, lancer un assaut, l'arreter, tirer un
  *       missile sur sa propre base ({@code missile <nation> [charge]}), faire revenir tout de suite
  *       le terrain bombarde ({@code retour}), commander la place forte d'une nation
  *       ({@code placeforte <nation> [distance]}), la raser ({@code rase}) ou la recompter
- *       ({@code compte}).</li>
+ *       ({@code compte}) ; et pour la riposte du lot 22l-2 : un pillage sans bataille
+ *       ({@code pillage <nation> <montant>}), une coalition ({@code coalition <nation> <nation>}),
+ *       une lecon ({@code lecon <nation> <cause> <morts>}).</li>
  * </ul>
  */
 @EventBusSubscriber
@@ -91,6 +94,15 @@ public final class WarCommand {
                             }
                             return answer(context, WarStrategy.choose(player, at), null);
                         })))
+                // Ta contre-offensive (lot 22l-2) : declarer la guerre a une nation.
+                .then(Commands.literal("declarer").then(nationArgument().executes(context -> {
+                    int nation = NationTraits.find(StringArgumentType.getString(context, "nation"));
+                    if (nation < 0) {
+                        return answer(context, "Nation inconnue", null);
+                    }
+                    return answer(context, WarStrategy.counter(context.getSource().getPlayerOrException(), nation),
+                            null);
+                })))
                 .then(Commands.literal("cadeau").then(nationArgument()
                         .then(Commands.argument("montant", LongArgumentType.longArg(100L))
                                 .executes(context -> {
@@ -127,6 +139,54 @@ public final class WarCommand {
                                     null)
                                     : answer(context, null, "Reprise : " + retaken + ".");
                         })))
+                        // Un assaut reussi sans bataille : pour essayer la restitution (lot 22l-2).
+                        .then(Commands.literal("pillage").then(nationArgument()
+                                .then(Commands.argument("montant", LongArgumentType.longArg(0L))
+                                        .executes(context -> {
+                                            ServerPlayer player = context.getSource().getPlayerOrException();
+                                            int nation = NationTraits.find(StringArgumentType.getString(context,
+                                                    "nation"));
+                                            if (nation < 0 || !FactionApi.has(player)) {
+                                                return answer(context, "Nation inconnue, ou pas de faction", null);
+                                            }
+                                            String line = WarStrategy.simulatePillage(player, nation,
+                                                    LongArgumentType.getLong(context, "montant"));
+                                            return line.startsWith("!") ? answer(context, line.substring(1), null)
+                                                    : answer(context, null, line + ".");
+                                        }))))
+                        // Une coalition entre deux nations, tout de suite.
+                        .then(Commands.literal("coalition").then(Commands.argument("premiere",
+                                        StringArgumentType.word())
+                                .then(nationArgument().executes(context -> {
+                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                    int first = NationTraits.find(StringArgumentType.getString(context, "premiere"));
+                                    int second = NationTraits.find(StringArgumentType.getString(context, "nation"));
+                                    if (first < 0 || second < 0 || !FactionApi.has(player)) {
+                                        return answer(context, "Nation inconnue, ou pas de faction", null);
+                                    }
+                                    return answer(context, WarStrategy.forcePact(player, first, second), null);
+                                }))))
+                        // Une lecon apprise sans assaut : pour essayer l'armee qui s'adapte.
+                        .then(Commands.literal("lecon").then(nationArgument()
+                                .then(Commands.argument("cause", StringArgumentType.word())
+                                        .suggests((context, builder) -> SharedSuggestionProvider.suggest(List.of(
+                                                "lame", "fleches", "tourelles", "pieges", "terrain", "gardiens"),
+                                                builder))
+                                        .then(Commands.argument("morts", com.mojang.brigadier.arguments
+                                                        .IntegerArgumentType.integer(1, 50))
+                                                .executes(context -> {
+                                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                                    int nation = NationTraits.find(StringArgumentType.getString(
+                                                            context, "nation"));
+                                                    if (nation < 0) {
+                                                        return answer(context, "Nation inconnue", null);
+                                                    }
+                                                    return answer(context, WarStrategy.teach(player, nation,
+                                                            StringArgumentType.getString(context, "cause"),
+                                                            com.mojang.brigadier.arguments.IntegerArgumentType
+                                                                    .getInteger(context, "morts")),
+                                                            "Lecon ajoutee.");
+                                                })))))
                         // Une frappe de missile sur sa propre base, sans siege : pour essayer les missiles de NTM.
                         .then(Commands.literal("missile").then(nationArgument()
                                 .executes(context -> missile(context, null))
@@ -295,9 +355,16 @@ public final class WarCommand {
                     + ", hostilite " + Math.round(relation.hostility()) + " (vise "
                     + Math.round(WarStrategy.mood(player, data, relation, now)) + "), crainte "
                     + Math.round(relation.fear()) + ", armee " + relation.army() + ", tresor "
-                    + MoneyFormat.compact(relation.treasury()) + ", griefs " + Math.round(relation.grievance(now)))
+                    + MoneyFormat.compact(relation.treasury()) + ", griefs " + Math.round(relation.grievance(now))
+                    + (relation.holds() ? ", doit " + WarStrategy.owedLine(player, relation) : "")
+                    + (relation.ally() >= 0 ? ", alliee " + fr.atraxterra.dohy.earth.EarthNations.a(
+                    NationTraits.of(relation.ally()).name()) : "")
+                    + (relation.lessons().assaults() > 0 ? ", " + relation.lessons().assaults() + " assaut(s) appris"
+                    + (relation.lessons().lesson().isEmpty() ? "" : " (" + relation.lessons().lesson() + ")") : ""))
                     .withStyle(ChatFormatting.GRAY));
         }
+        player.sendSystemMessage(Component.literal("Puissance " + Math.round(WarStrategy.threat(player).total())
+                + " : " + String.join(", ", WarStrategy.threat(player).parts())).withStyle(ChatFormatting.GRAY));
         Siege siege = Sieges.of(player.getUUID());
         if (siege != null) {
             player.sendSystemMessage(Component.literal("Siege : " + siege.phase.name().toLowerCase() + ", "

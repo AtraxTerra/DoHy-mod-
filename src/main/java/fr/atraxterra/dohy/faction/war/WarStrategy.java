@@ -1,7 +1,9 @@
 package fr.atraxterra.dohy.faction.war;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.earth.EarthBodies;
 import fr.atraxterra.dohy.earth.EarthNations;
+import fr.atraxterra.dohy.earth.mine.EarthMines;
 import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.faction.FactionData;
 import fr.atraxterra.dohy.faction.Factions;
@@ -80,6 +82,29 @@ import java.util.UUID;
  * moyens (et NTM NEXT) tire un missile au lieu de lever le siege
  * ({@link Strikes}). Le terrain revient cinq heures apres l'impact ; tes
  * conteneurs et tes machines sont epargnes.
+ *
+ * <p><b>La riposte contre les nations</b> (lot 22l-2) :
+ *
+ * <ul>
+ *   <li><b>ta contre-offensive</b> ({@link #counter}) : tu declares la guerre a
+ *       une nation. Elle batit sa place forte et viendra attaquer ta base a
+ *       l'heure que tu fixes ; si sa place forte tombe, elle te rend ce qu'elle
+ *       t'a pris (l'argent pille, tant que son tresor le permet, les pays et la
+ *       mine repris), en plus de 30 % de son tresor. Une treve ne se rompt que
+ *       pour reprendre ce qu'elle t'a pris ; vaincue, elle se releve une
+ *       semaine ;</li>
+ *   <li><b>une IA qui apprend</b> : la nation retient ou ses soldats sont
+ *       tombes et de quoi, d'un assaut a l'autre ({@link WarData.Lessons}). Son
+ *       prochain plan evite ces cases, ses espions voient davantage de tes
+ *       pieges, et elle change la composition de son armee selon la lecon
+ *       (plus d'archers loin de ta lame, plus d'ingenieurs sur tes pieges...) ;</li>
+ *   <li><b>les coalitions</b> : quand ta puissance ({@link #threat}) depasse
+ *       {@value #COALITION_AT}, une nation hostile cherche un allie contre toi.
+ *       Allies, ils durcissent ensemble, l'allie joint un contingent a chaque
+ *       assaut, et si la place forte de l'un tombe, les deux te rendent ce
+ *       qu'ils t'ont pris. Sous {@value #DISSOLVE_AT}, ou qu'un cadeau en
+ *       radoucisse une, la coalition se defait.</li>
+ * </ul>
  */
 public final class WarStrategy {
 
@@ -97,6 +122,18 @@ public final class WarStrategy {
     static final long CALM_MS = DAY_MS;
     /** Ce que coute un soldat engage dans un assaut, a sa nation. */
     static final long SOLDIER_COST = 120L;
+    /** Vaincue (sa place forte tombee), une nation se releve une semaine : ni contre-offensive, ni coalition. */
+    static final long BEATEN_MS = 7L * DAY_MS;
+    /** Ta puissance au-dela de laquelle les nations s'allient contre toi ; en deca de l'autre, la coalition se defait. */
+    static final double COALITION_AT = 50.0d;
+    static final double DISSOLVE_AT = 35.0d;
+    /** Un pacte dure une semaine, renouvele tant que tu fais peur ; il tient jusqu'a la fin d'une guerre. */
+    static final long PACT_MS = 7L * DAY_MS;
+    /** Le contingent d'un allie dans un assaut : la moitie de ce qu'il engagerait seul, de 4 a 10 soldats. */
+    static final int CONTINGENT_MIN = 4;
+    static final int CONTINGENT_MAX = 10;
+    /** Ce qu'une nation garde en note de ce qu'elle t'a repris. */
+    private static final int RETAKEN = 8;
 
     private static final DateTimeFormatter CLOCK = DateTimeFormatter.ofPattern("HH:mm");
     private static final String[] DAYS = {"lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"};
@@ -288,8 +325,11 @@ public final class WarStrategy {
         double nerve = relation.army / (double) Math.max(1, traits.maxArmy()) * 12.0d - 6.0d;
         double deterrence = traits.caution() * (relation.defense * 25.0d + power(player) * 15.0d)
                 + relation.fear * 0.35d * (1.0d - traits.aggression() * 0.5d);
+        // Une coalition se soutient : l'humeur de l'allie entraine la sienne.
+        WarData.Relation ally = ally(data, relation, now);
+        double solidarity = ally == null ? 0.0d : 6.0d + 0.12d * ally.hostility;
         double base = 18.0d + 25.0d * traits.aggression();
-        return Math.max(0.0d, Math.min(100.0d, base + prize + envy + revenge + nerve - deterrence));
+        return Math.max(0.0d, Math.min(100.0d, base + prize + envy + revenge + nerve + solidarity - deterrence));
     }
 
     static void think(ServerPlayer player, WarData data, WarData.Relation relation, long now) {
@@ -302,8 +342,11 @@ public final class WarStrategy {
         double noise = (player.getRandom().nextDouble() - 0.5d) * 8.0d;
         relation.hostility = Math.max(0.0d, Math.min(100.0d,
                 relation.hostility + (target + noise - relation.hostility) * 0.33d));
+        coalition(player, data, relation, now);
         if (relation.stance != WarData.Stance.PAIX) {
-            if (relation.stance == WarData.Stance.GUERRE && relation.slot == 0L && relation.hostility < 28.0d) {
+            // La guerre que tu as declaree, elle ne peut pas y renoncer : c'est toi qui l'as voulue.
+            if (relation.stance == WarData.Stance.GUERRE && relation.slot == 0L && relation.hostility < 28.0d
+                    && !relation.declared) {
                 relation.stance(WarData.Stance.TREVE, now);
                 relation.truce = now + 2L * DAY_MS;
                 say(player, relation, "Cette guerre ne vaut plus la peine. Nous la suspendons.", ChatFormatting.GREEN);
@@ -385,6 +428,7 @@ public final class WarStrategy {
                 .append(Component.literal(" Entre " + when(now + WINDOW_OPEN_MS, now) + " et "
                         + when(relation.deadline, now) + ".").withStyle(ChatFormatting.GRAY)));
         stakeLine(player, relation);
+        rally(player, data, relation, now);
         player.level().playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE,
                 1.0f, 0.8f);
         log(player, data, relation, now, traits.verb("declare", "declarent") + " la guerre");
@@ -528,6 +572,438 @@ public final class WarStrategy {
                 ChatFormatting.GREEN);
         log(player, data, relation, now, "cadeau de " + MoneyFormat.exact(amount) + " $");
         return null;
+    }
+
+    // -- Ta contre-offensive (lot 22l-2) -----------------------------------------------------------
+
+    /**
+     * Pourquoi tu ne peux pas declarer la guerre a cette nation maintenant ;
+     * {@code null} si tu le peux. Une guerre a la fois ; une treve ne se rompt
+     * que pour reprendre ce qu'elle t'a pris ; vaincue, elle se releve une
+     * semaine.
+     */
+    static String counterRefusal(ServerPlayer player, WarData data, WarData.Relation relation, long now) {
+        if (!FactionApi.has(player)) {
+            return "Il faut une faction";
+        }
+        if (Sieges.of(player.getUUID()) != null || Strikes.striking(player.getUUID())) {
+            return "Pas en plein siege";
+        }
+        NationTraits traits = relation.traits();
+        for (WarData.Relation other : data.relations) {
+            if (other.stance == WarData.Stance.GUERRE) {
+                return other == relation ? "Tu es deja en guerre contre " + traits.the()
+                        : "Une guerre a la fois : tu es en guerre contre " + other.traits().the();
+            }
+            if (other.stance == WarData.Stance.MENACE && other != relation) {
+                return "Reponds d'abord a l'ultimatum " + other.traits().de();
+            }
+        }
+        if (Strongholds.standing(player.getUUID())) {
+            return "Une place forte se dresse encore contre toi";
+        }
+        if (relation.beaten(now)) {
+            return traits.verb("se releve", "se relevent") + " de la chute de " + traits.her()
+                    + " place forte : reviens " + when(relation.defeated + BEATEN_MS, now);
+        }
+        if (relation.stance == WarData.Stance.TREVE && !relation.holds()) {
+            return "Treve avec " + traits.the() + " (fin " + when(relation.truce, now)
+                    + ") : tu ne la romps que pour reprendre ce qu'elle t'a pris";
+        }
+        return null;
+    }
+
+    /**
+     * Ta contre-offensive : tu declares la guerre a une nation. Elle batit sa
+     * place forte et viendra attaquer ta base a l'heure que tu fixes ; si sa
+     * place forte tombe, elle te rend ce qu'elle t'a pris, et 30 % de son
+     * tresor. Son allie de coalition la rejoint. {@code null}, ou le refus.
+     */
+    static String counter(ServerPlayer player, int nation) {
+        if (nation < 0 || nation >= NationTraits.count()) {
+            return "Nation inconnue";
+        }
+        WarData data = data(player);
+        long now = System.currentTimeMillis();
+        WarData.Relation relation = data.relation(nation, now);
+        String refusal = counterRefusal(player, data, relation, now);
+        if (refusal != null) {
+            return refusal;
+        }
+        NationTraits traits = relation.traits();
+        boolean broken = relation.stance == WarData.Stance.TREVE;
+        relation.grieve(broken ? "treve rompue" : "guerre declaree", broken ? 14.0d : 10.0d, now);
+        relation.hostility = Math.min(100.0d, Math.max(relation.hostility, 55.0d) + 10.0d);
+        relation.stance(WarData.Stance.GUERRE, now);
+        relation.deadline = now + WINDOW_MS;
+        relation.slot = 0L;
+        relation.declared = true;
+        data.declared(now);
+        String text = switch (traits.voice()) {
+            case "brutale" -> "Tu oses nous defier ? Nous batissons une place forte, et nous viendrons chez toi.";
+            case "courtoise" -> "Tu nous declares la guerre. Soit : nous fortifions nos positions, et nous "
+                    + "riposterons.";
+            case "mielleuse" -> "Une guerre ? Quelle audace... Notre place forte t'attend, et nous te rendrons "
+                    + "la visite.";
+            default -> "Declaration recue. Place forte en construction. Riposte a prevoir.";
+        };
+        say(player, relation, (broken ? "Tu romps la treve. " : "") + text, ChatFormatting.DARK_RED);
+        player.sendSystemMessage(Component.literal("   ")
+                .append(button("[Choisir l'heure de sa riposte]", "/guerre", ChatFormatting.GOLD))
+                .append(Component.literal(" Entre " + when(now + WINDOW_OPEN_MS, now) + " et "
+                        + when(relation.deadline, now) + ".").withStyle(ChatFormatting.GRAY)));
+        player.sendSystemMessage(Component.literal("   Sa place forte se dresse a 1 200 - 2 000 blocs : rase-la, ou "
+                + "entre dans sa salle forte. Si elle tombe : " + spoilsLine(player, relation) + ".")
+                .withStyle(ChatFormatting.GOLD));
+        stakeLine(player, relation);
+        rally(player, data, relation, now);
+        player.level().playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE,
+                1.0f, 1.2f);
+        log(player, data, relation, now, broken ? "contre-offensive : tu romps la treve et lui declares la guerre"
+                : "contre-offensive : tu lui declares la guerre");
+        String faction = FactionApi.data(player).name();
+        player.level().getServer().getPlayerList().broadcastSystemMessage(FactionApi.prefix().append(
+                Component.literal(faction + " declare la guerre " + EarthNations.a(traits.name()) + ".")
+                        .withStyle(ChatFormatting.RED)), false);
+        FactionApi.stat(player, "war:declared", 1);
+        DoHy.LOGGER.info("Guerre : {} declare la guerre a {} (dette {} $, {} pays, {} mines)",
+                player.getGameProfile().name(), traits.name(), relation.owed, relation.retaken.size(),
+                relation.retakenMines.size());
+        return null;
+    }
+
+    /**
+     * Ce que te vaudrait la chute de sa place forte : « elle te rend les
+     * 12 400 $ qu'elle t'a pilles et Pologne, et 30 % de son tresor », ou
+     * « 30 % de son tresor ».
+     */
+    static String spoilsLine(ServerPlayer player, WarData.Relation relation) {
+        return relation.holds() ? "elle te rend " + owedLine(player, relation) + ", et 30 % de son tresor"
+                : "30 % de son tresor, et un de ses pays";
+    }
+
+    /** Ce qu'elle te doit : « les 12 400 $ qu'elle t'a pilles, Pologne et la mine de Kiruna ». */
+    static String owedLine(ServerPlayer player, WarData.Relation relation) {
+        List<String> parts = new ArrayList<>();
+        if (relation.owed > 0L) {
+            parts.add("les " + MoneyFormat.exact(relation.owed) + " $ qu'elle t'a pilles");
+        }
+        for (int country : relation.retaken) {
+            parts.add(EarthNations.countryName(country));
+        }
+        for (String id : relation.retakenMines) {
+            EarthBodies.Body body = EarthMines.body(id);
+            if (body != null) {
+                parts.add("la mine de " + body.name());
+            }
+        }
+        if (parts.isEmpty()) {
+            return "rien";
+        }
+        if (parts.size() == 1) {
+            return parts.getFirst();
+        }
+        return String.join(", ", parts.subList(0, parts.size() - 1)) + " et " + parts.getLast();
+    }
+
+    /**
+     * Ce qu'elle t'avait pris te revient : l'argent pille, tant que son tresor
+     * le permet (le reste, elle le doit encore), les pays et les mines repris,
+     * s'ils sont encore a elle. Rend l'argent rendu, et ajoute a {@code names}
+     * ce qui revient.
+     */
+    private static long restitute(ServerPlayer player, WarData.Relation relation, List<String> names) {
+        long money = Math.max(0L, Math.min(relation.owed, relation.treasury));
+        relation.owed -= money;
+        relation.treasury -= money;
+        MinecraftServer server = player.level().getServer();
+        if (EarthNations.active()) {
+            for (int country : relation.retaken) {
+                EarthNations.Holder holder = EarthNations.holder(server, country);
+                if (!holder.player() && holder.rival() == relation.nation) {
+                    EarthNations.conquer(player, country, holder);
+                    names.add(EarthNations.countryName(country));
+                }
+            }
+        }
+        relation.retaken.clear();
+        for (String id : relation.retakenMines) {
+            String name = EarthMines.restore(player, id);
+            if (name != null) {
+                names.add("la mine de " + name);
+            }
+        }
+        relation.retakenMines.clear();
+        return money;
+    }
+
+    // -- Les coalitions (lot 22l-2) ----------------------------------------------------------------
+
+    /** Ta puissance aux yeux des nations : son total, de 0 a 100, et ce qui la fait. */
+    public record Threat(double total, List<String> parts) {
+    }
+
+    /**
+     * Ta puissance aux yeux des nations, de 0 a 100 : ta banque (10 points par
+     * puissance de dix au-dela de 10 000 $, 30 au plus), tes pays et tes mines
+     * sur la Terre (5 chacun ; 25 et 20 au plus), tes claims (un quart de
+     * point chacun, 10 au plus), leurs defaites (3 par assaut brise ou place
+     * forte tombee, 15 au plus), et les guerres que tu as declarees ces deux
+     * dernieres semaines (5 chacune, 15 au plus). Au-dela de
+     * {@value #COALITION_AT}, elles s'allient contre toi.
+     */
+    public static Threat threat(ServerPlayer player) {
+        if (!FactionApi.has(player)) {
+            return new Threat(0.0d, List.of());
+        }
+        FactionData faction = FactionApi.data(player);
+        WarData data = data(player);
+        long now = System.currentTimeMillis();
+        List<String> parts = new ArrayList<>();
+        double total = Math.min(30.0d, 10.0d * Math.log10(1.0d + Math.max(0L, faction.bank()) / 10_000.0d));
+        parts.add("Ta banque : " + Math.round(total));
+        if (EarthNations.active()) {
+            int countries = EarthNations.heldBy(player).size();
+            double points = Math.min(25.0d, 5.0d * countries);
+            parts.add(countries + " pays sur la Terre : " + Math.round(points));
+            total += points;
+        }
+        if (EarthMines.active()) {
+            int mines = EarthMines.of(player).size();
+            double points = Math.min(20.0d, 5.0d * mines);
+            parts.add(mines + " mine(s) de la Terre : " + Math.round(points));
+            total += points;
+        }
+        double claims = Math.min(10.0d, faction.claims().size() * 0.25d);
+        parts.add(faction.claims().size() + " claims : " + Math.round(claims));
+        total += claims;
+        int beaten = 0;
+        for (WarData.Relation relation : data.relations) {
+            beaten += relation.memory.losses();
+        }
+        if (beaten > 0) {
+            double points = Math.min(15.0d, 3.0d * beaten);
+            parts.add(beaten + " defaite(s) infligee(s) : " + Math.round(points));
+            total += points;
+        }
+        int wars = data.aggressions(now);
+        if (wars > 0) {
+            double points = Math.min(15.0d, 5.0d * wars);
+            parts.add(wars + " guerre(s) declaree(s) en 14 jours : " + Math.round(points));
+            total += points;
+        }
+        return new Threat(Math.min(100.0d, total), parts);
+    }
+
+    /** Son allie de coalition, s'il tient son pacte et n'est pas vaincu ; {@code null} sinon. */
+    static WarData.Relation ally(WarData data, WarData.Relation relation, long now) {
+        if (relation.ally < 0) {
+            return null;
+        }
+        WarData.Relation ally = data.find(relation.ally).orElse(null);
+        return ally != null && ally.ally == relation.nation && !ally.beaten(now) ? ally : null;
+    }
+
+    /**
+     * L'allie qui se bat a ses cotes : celui de la coalition, sauf s'il tient une
+     * treve avec toi (il l'honore et reste en dehors) ; {@code null} sinon.
+     */
+    static WarData.Relation comrade(WarData data, WarData.Relation relation, long now) {
+        WarData.Relation ally = ally(data, relation, now);
+        return ally != null && ally.stance != WarData.Stance.TREVE ? ally : null;
+    }
+
+    /** La coalition contre toi, s'il y en a une : ses deux nations. */
+    public static Optional<List<WarData.Relation>> coalition(WarData data, long now) {
+        for (WarData.Relation relation : data.relations) {
+            WarData.Relation ally = ally(data, relation, now);
+            if (ally != null) {
+                return Optional.of(relation.nation < ally.nation ? List.of(relation, ally) : List.of(ally, relation));
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * La coalition, a chaque reflexion d'une nation : son pacte se renouvelle
+     * tant que tu fais peur et se defait sinon (jamais en pleine guerre) ; sans
+     * allie, hostile, devant ta puissance, elle en cherche un. Une seule
+     * coalition a la fois.
+     */
+    private static void coalition(ServerPlayer player, WarData data, WarData.Relation relation, long now) {
+        double threat = threat(player).total();
+        if (relation.ally >= 0) {
+            WarData.Relation ally = data.find(relation.ally).orElse(null);
+            if (ally == null || ally.ally != relation.nation) {
+                relation.ally = -1;
+                relation.pact = 0L;
+                return;
+            }
+            if (relation.stance == WarData.Stance.GUERRE || ally.stance == WarData.Stance.GUERRE) {
+                // En pleine guerre, le pacte tient jusqu'au bout.
+                relation.pact = Math.max(relation.pact, now + DAY_MS);
+                ally.pact = relation.pact;
+                return;
+            }
+            String why = threat < DISSOLVE_AT ? "tu ne fais plus peur"
+                    : relation.hostility < 30.0d ? "nous n'avons plus de querelle avec toi"
+                    : now >= relation.pact && threat < COALITION_AT ? "le pacte expire" : null;
+            if (why != null) {
+                dissolve(player, data, relation, ally, now, why);
+            } else if (relation.pact - now < DAY_MS) {
+                relation.pact = now + PACT_MS;
+                ally.pact = relation.pact;
+            }
+            return;
+        }
+        if (threat < COALITION_AT || relation.hostility < 45.0d || relation.beaten(now)
+                || relation.stance == WarData.Stance.MENACE || relation.stance == WarData.Stance.TREVE) {
+            return;
+        }
+        for (WarData.Relation other : data.relations) {
+            if (other.ally >= 0) {
+                return;
+            }
+        }
+        if (player.getRandom().nextDouble() > 0.3d + 0.5d * relation.traits().cunning()) {
+            return;
+        }
+        WarData.Relation partner = null;
+        for (WarData.Relation other : data.relations) {
+            if (other != relation && other.stance == WarData.Stance.PAIX && !other.beaten(now)
+                    && other.hostility >= 35.0d && (partner == null || other.hostility > partner.hostility)) {
+                partner = other;
+            }
+        }
+        if (partner != null) {
+            ally(player, data, relation, partner, now);
+        }
+    }
+
+    /** Le pacte : {@code relation} s'allie a {@code partner} contre toi. */
+    static void ally(ServerPlayer player, WarData data, WarData.Relation relation, WarData.Relation partner,
+                     long now) {
+        relation.ally = partner.nation;
+        partner.ally = relation.nation;
+        relation.pact = now + PACT_MS;
+        partner.pact = relation.pact;
+        partner.hostility = Math.min(100.0d, partner.hostility + 5.0d);
+        NationTraits traits = relation.traits();
+        NationTraits other = partner.traits();
+        String text = switch (traits.voice()) {
+            case "brutale" -> "Ta puissance grandit trop. Desormais, " + other.the() + " et nous marchons ensemble.";
+            case "courtoise" -> "Ta puissance inquiete. Nous avons conclu une alliance avec " + other.the()
+                    + " : nous agirons ensemble.";
+            case "mielleuse" -> "Tu deviens si puissant... " + other.name() + " et nous avons pense qu'a deux, ce "
+                    + "serait plus prudent.";
+            default -> "Coalition formee avec " + other.the() + ". Objectif : ta faction.";
+        };
+        say(player, relation, text, ChatFormatting.DARK_RED);
+        if (relation.stance == WarData.Stance.GUERRE) {
+            rally(player, data, relation, now);
+        } else {
+            say(player, partner, "Nous sommes avec " + traits.the() + ".", ChatFormatting.RED);
+        }
+        player.sendSystemMessage(Component.literal("   ")
+                .append(button("[La coalition]", "/guerre", ChatFormatting.GOLD))
+                .append(Component.literal(" Alliees, elles se soutiennent et attaquent ensemble. Sous "
+                        + Math.round(DISSOLVE_AT) + " de puissance, la coalition se defait.")
+                        .withStyle(ChatFormatting.GRAY)));
+        player.level().playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE,
+                0.6f, 1.7f);
+        String faction = FactionApi.data(player).name();
+        player.level().getServer().getPlayerList().broadcastSystemMessage(FactionApi.prefix().append(
+                Component.literal(traits.name() + " et " + other.the() + " s'allient contre " + faction + ".")
+                        .withStyle(ChatFormatting.RED)), false);
+        log(player, data, relation, now, "alliance avec " + other.the() + " contre toi");
+        log(player, data, partner, now, "alliance avec " + traits.the() + " contre toi");
+        DoHy.LOGGER.info("Guerre : coalition de {} et {} contre {} (puissance {})", traits.name(), other.name(),
+                player.getGameProfile().name(), Math.round(threat(player).total()));
+    }
+
+    /** La coalition se defait. */
+    private static void dissolve(ServerPlayer player, WarData data, WarData.Relation relation, WarData.Relation ally,
+                                 long now, String why) {
+        relation.ally = -1;
+        relation.pact = 0L;
+        if (ally != null) {
+            ally.ally = -1;
+            ally.pact = 0L;
+        }
+        say(player, relation, "Notre alliance" + (ally == null ? "" : " avec " + ally.traits().the())
+                + " prend fin : " + why + ".", ChatFormatting.GRAY);
+        log(player, data, relation, now, "coalition dissoute (" + why + ")");
+        DoHy.LOGGER.info("Guerre : la coalition de {} contre {} se defait ({})", relation.traits().name(),
+                player.getGameProfile().name(), why);
+    }
+
+    /** La guerre commence : l'allie de la coalition la rejoint, et le dit. */
+    private static void rally(ServerPlayer player, WarData data, WarData.Relation relation, long now) {
+        WarData.Relation ally = comrade(data, relation, now);
+        if (ally == null) {
+            return;
+        }
+        NationTraits traits = relation.traits();
+        String text = switch (ally.traits().voice()) {
+            case "brutale" -> "Nous marchons avec " + traits.the() + ". Deux armees, cette fois.";
+            case "courtoise" -> "Notre alliance nous oblige : nous combattrons aux cotes " + traits.de() + ".";
+            case "mielleuse" -> "Tu croyais n'avoir affaire qu'" + EarthNations.a(traits.name())
+                    + " ? Nous sommes la aussi.";
+            default -> "Alliance activee : nous rejoignons la guerre " + traits.de() + ".";
+        };
+        say(player, ally, text, ChatFormatting.DARK_RED);
+        log(player, data, ally, now, "en guerre aux cotes " + traits.de());
+    }
+
+    /** Ce que l'allie engage dans un assaut : la moitie de ce qu'il engagerait seul, de 4 a 10 soldats ; 0 sans. */
+    static int contingent(WarData.Relation ally) {
+        if (ally.army < 10) {
+            return 0;
+        }
+        int wanted = Math.max(CONTINGENT_MIN, Math.min(CONTINGENT_MAX, Math.round(force(ally) * 0.5f)));
+        int affordable = (int) Math.min(wanted, ally.treasury / SOLDIER_COST);
+        return affordable >= CONTINGENT_MIN ? Math.min(affordable, ally.army / 2) : 0;
+    }
+
+    // -- L'IA qui apprend (lot 22l-2) ----------------------------------------------------------------
+
+    /** La lecon en clair, telle que le commandant l'annonce : « plus d'archers, loin de ta lame ». */
+    static String lessonText(String lesson) {
+        return switch (lesson) {
+            case "lame" -> "plus d'archers, loin de ta lame";
+            case "fleches" -> "ils chargent en masse sous tes fleches";
+            case "tourelles" -> "ils contournent tes tourelles";
+            case "pieges" -> "leurs ingenieurs sondent tes pieges";
+            case "terrain" -> "plus d'ingenieurs pour tes douves et tes chutes";
+            case "gardiens" -> "plus de fantassins contre tes gardiens";
+            default -> "";
+        };
+    }
+
+    /** Ce qui a tue ses soldats, en clair : « ta lame », « tes pieges ». */
+    static String causeLabel(String cause) {
+        return switch (cause) {
+            case "lame" -> "ta lame";
+            case "fleches" -> "tes fleches";
+            case "tourelles" -> "tes tourelles";
+            case "pieges" -> "tes pieges";
+            case "terrain" -> "la lave, l'eau et les chutes";
+            case "gardiens" -> "tes gardiens";
+            default -> cause;
+        };
+    }
+
+    /**
+     * La nation retient le siege : ou ses soldats sont tombes, et de quoi.
+     * Rend la lecon qui se degage desormais, {@code ""} sinon.
+     */
+    private static String learn(WarData.Relation relation, Siege siege) {
+        if (siege.deployed == 0) {
+            return relation.lessons.lesson();
+        }
+        relation.lessons = relation.lessons.after(FactionApi.dimension(siege.level), siege.vault, siege.deaths,
+                siege.causes, !"suspendu".equals(siege.result));
+        return relation.lessons.lesson();
     }
 
     // -- L'heure de l'assaut -----------------------------------------------------------------------
@@ -681,12 +1157,22 @@ public final class WarStrategy {
         }
         int force = force(relation);
         relation.treasury = Math.max(0L, relation.treasury - force * SOLDIER_COST);
-        Sieges.start(player, relation, vault.get().getKey(), vault.get().getValue(), force, now);
+        // La coalition attaque ensemble : l'allie joint un contingent, a ses frais.
+        WarData.Relation ally = comrade(data, relation, now);
+        int contingent = ally == null ? 0 : contingent(ally);
+        if (contingent > 0) {
+            ally.treasury = Math.max(0L, ally.treasury - contingent * SOLDIER_COST);
+        } else {
+            ally = null;
+        }
+        Sieges.start(player, relation, vault.get().getKey(), vault.get().getValue(), force, ally, contingent, now);
         int country = stake(player, relation.nation);
-        say(player, relation, "Notre armee marche sur ta base : " + force + " soldats."
+        say(player, relation, "Notre armee marche sur ta base : " + force + " soldats"
+                + (ally != null ? ", et " + contingent + " " + ally.traits().de() : "") + "."
                 + (country > 0 ? " Si nous l'emportons, " + EarthNations.countryName(country) + " nous reviendra." : ""),
                 ChatFormatting.DARK_RED);
-        log(player, data, relation, now, "assaut lance (" + force + " soldats)");
+        log(player, data, relation, now, "assaut lance (" + force + " soldats"
+                + (ally != null ? ", " + contingent + " " + ally.traits().de() : "") + ")");
     }
 
     /** Le siege est fini : la nation en tire ses lecons. */
@@ -699,17 +1185,38 @@ public final class WarStrategy {
         long now = System.currentTimeMillis();
         WarData.Relation relation = data.relation(siege.nation, now);
         NationTraits traits = relation.traits();
+        // L'allie de la coalition, s'il a joint un contingent : ses soldats tombes sont les siens.
+        WarData.Relation ally = siege.ally >= 0 ? data.relation(siege.ally, now) : null;
+        int own = Math.max(0, siege.fallen - siege.allyFallen);
         data.assaults++;
-        relation.army = Math.max(0, relation.army - siege.fallen);
-        relation.memory = relation.memory.withKilled(siege.fallen);
+        relation.army = Math.max(0, relation.army - own);
+        relation.memory = relation.memory.withKilled(own);
+        if (ally != null) {
+            ally.army = Math.max(0, ally.army - siege.allyFallen);
+            ally.memory = ally.memory.withKilled(siege.allyFallen);
+        }
         if (siege.plan != null) {
             relation.defense = relation.defense * 0.3d + siege.plan.hardness() * 0.7d;
+            if (ally != null) {
+                ally.defense = ally.defense * 0.3d + siege.plan.hardness() * 0.7d;
+            }
+        }
+        // Ce qu'elle retient de ses morts (l'allie aussi : une coalition partage ce qu'elle apprend).
+        String before = relation.lessons.lesson();
+        String lesson = learn(relation, siege);
+        if (ally != null) {
+            learn(ally, siege);
         }
         String line;
         switch (siege.result) {
             case "pillage" -> {
-                relation.memory = relation.memory.withWin(siege.drained);
-                relation.treasury += siege.drained;
+                // Le butin se partage selon les soldats engages ; chacun te le doit.
+                long share = ally == null ? 0L
+                        : siege.drained * siege.allyForce / Math.max(1, siege.force + siege.allyForce);
+                long kept = siege.drained - share;
+                relation.memory = relation.memory.withWin(kept);
+                relation.treasury += kept;
+                relation.owed += kept;
                 relation.hostility = Math.max(0.0d, relation.hostility - 15.0d);
                 relation.fear = Math.max(0.0d, relation.fear - 10.0d);
                 relation.stance(WarData.Stance.TREVE, now);
@@ -719,6 +1226,19 @@ public final class WarStrategy {
                 String retaken = reconquer(player, relation);
                 if (!retaken.isEmpty()) {
                     line += " ; " + retaken;
+                }
+                if (ally != null) {
+                    ally.memory = ally.memory.withWin(share);
+                    ally.treasury += share;
+                    ally.owed += share;
+                    ally.hostility = Math.max(0.0d, ally.hostility - 10.0d);
+                    ally.stance(WarData.Stance.TREVE, now);
+                    ally.truce = relation.truce;
+                    line += " ; " + MoneyFormat.exact(share) + " $ pour " + ally.traits().the();
+                    String also = reconquer(player, ally);
+                    if (!also.isEmpty()) {
+                        line += " ; " + also;
+                    }
                 }
             }
             case "imprenable" -> {
@@ -766,13 +1286,28 @@ public final class WarStrategy {
                     }
                 }
                 line = "assaut brise (" + siege.fallen + " soldats tombes)";
+                if (ally != null) {
+                    ally.memory = ally.memory.withLoss();
+                    ally.fear = Math.min(100.0d, ally.fear + fear * 0.7d);
+                    ally.grieve("soldats tombes", Math.min(30.0d, siege.allyFallen * 1.2d), now);
+                    ally.hostility = Math.max(0.0d, ally.hostility - 15.0d + 10.0d * ally.traits().grudge());
+                    ally.stance(WarData.Stance.TREVE, now);
+                    ally.truce = relation.truce;
+                    line += " ; " + ally.traits().the() + " " + (ally.traits().plural() ? "perdent " : "perd ")
+                            + siege.allyFallen + " soldats";
+                }
                 player.sendSystemMessage(FactionApi.prefix().append(Component.literal("Victoire ! L'assaut "
-                        + traits.de() + " est brise : " + siege.fallen + " soldat(s) tombe(s)"
+                        + traits.de() + (ally != null ? " et " + ally.traits().de() : "") + " est brise : "
+                        + siege.fallen + " soldat(s) tombe(s)"
                         + (siege.bounty > 0 ? ", " + MoneyFormat.exact(siege.bounty) + " $ de primes" : "")
                         + (reparations > 0 ? ", " + MoneyFormat.exact(reparations) + " $ de reparations" : "")
                         + ".").withStyle(ChatFormatting.GOLD)));
                 FactionApi.addElo(player, 40L + siege.fallen * 4L, "assaut brise");
             }
+        }
+        if (!lesson.isEmpty() && !lesson.equals(before)) {
+            say(player, relation, "Nous retiendrons la lecon.", ChatFormatting.GRAY);
+            line += " ; lecon retenue : " + lessonText(lesson);
         }
         log(player, data, relation, now, line);
         DoHy.LOGGER.info("Guerre : fin du siege de {} contre {} : {} ({} morts, {} $ pilles)", traits.name(),
@@ -790,6 +1325,13 @@ public final class WarStrategy {
         int country = EarthNations.active() ? EarthNations.reclaim(player, relation.nation) : 0;
         if (country > 0) {
             String name = EarthNations.countryName(country);
+            // Elle te le doit : sa place forte tombee, il te reviendra (lot 22l-2).
+            if (!relation.retaken.contains(country)) {
+                relation.retaken.add(country);
+                while (relation.retaken.size() > RETAKEN) {
+                    relation.retaken.removeFirst();
+                }
+            }
             forget(relation, "pays pris : " + name);
             String text = switch (relation.traits().voice()) {
                 case "brutale" -> name + " est de nouveau a nous. N'y remets plus les pieds.";
@@ -800,8 +1342,15 @@ public final class WarStrategy {
             say(player, relation, text, ChatFormatting.DARK_RED);
             taken.add(name + " repris");
         }
-        String mine = fr.atraxterra.dohy.earth.mine.EarthMines.reclaim(player, relation.nation);
+        EarthBodies.Body staked = EarthMines.stake(player, relation.nation);
+        String mine = EarthMines.reclaim(player, relation.nation);
         if (mine != null) {
+            if (staked != null && !relation.retakenMines.contains(staked.id())) {
+                relation.retakenMines.add(staked.id());
+                while (relation.retakenMines.size() > RETAKEN) {
+                    relation.retakenMines.removeFirst();
+                }
+            }
             forget(relation, "mine prise : " + mine);
             String text = switch (relation.traits().voice()) {
                 case "brutale" -> "La mine de " + mine + " est a nous. Tes balises n'y changeront rien.";
@@ -912,25 +1461,45 @@ public final class WarStrategy {
                 result, warhead.label());
     }
 
-    /** Ce que la chute de sa place forte te rapporte : le butin verse a ta banque, les soldats qu'elle perd. */
-    record Spoils(long loot, int lost) {
+    /**
+     * Ce que la chute de sa place forte te rapporte : le butin (30 % de son
+     * tresor), l'argent qu'elle (et son allie) te rendent, les soldats qu'elle
+     * perd, le pays qui passe a ta faction (0 sans), et ce qui te revient (pays
+     * et mines qu'ils t'avaient repris).
+     */
+    record Spoils(long loot, long returned, int lost, int country, List<String> recovered) {
     }
 
     /**
      * Sa place forte est tombee ({@link Strongholds}) : rasee par tes missiles
-     * ({@code missiles}) ou pillee ({@code pillage}). La nation recule : 30 % de
-     * son tresor passent a ta banque de faction (10 % de plus partent en
-     * fumee), la moitie de son armee tombe, elle te craint, et une treve de
+     * ({@code missiles}) ou pillee ({@code pillage}). D'abord, elle te rend ce
+     * qu'elle t'a pris (lot 22l-2) : l'argent pille, tant que son tresor le
+     * permet, les pays et les mines repris. Puis elle recule : 30 % de ce qui
+     * reste de son tresor passent a ta banque de faction (10 % de plus partent
+     * en fumee), la moitie de son armee tombe, elle te craint, et une treve de
      * sept jours commence. Sur la carte de la Terre, {@code country} (s'il y en
-     * a un) passe a ta faction.
+     * a un) passe a ta faction. Son allie de coalition, vaincu avec elle, te
+     * rend aussi ce qu'il t'a pris ; la coalition se defait.
      */
     static Spoils razed(ServerPlayer player, int nation, String how, EnemyBaseTier tier, int country) {
         WarData data = data(player);
         long now = System.currentTimeMillis();
         WarData.Relation relation = data.relation(nation, now);
         NationTraits traits = relation.traits();
+        MinecraftServer server = player.level().getServer();
+        WarData.Relation partner = relation.ally >= 0 ? data.find(relation.ally).orElse(null) : null;
+        WarData.Relation ally = comrade(data, relation, now);
+        List<String> recovered = new ArrayList<>();
+        long returned = restitute(player, relation, recovered);
+        if (ally != null) {
+            returned += restitute(player, ally, recovered);
+        }
+        // Le pays qu'elle perd en plus : un autre, si celui-la vient de te revenir.
+        if (country > 0 && EarthNations.holder(server, country).ownedBy(player.getUUID())) {
+            country = Strongholds.forfeit(player, nation);
+        }
         if (country > 0) {
-            EarthNations.conquer(player, country, EarthNations.holder(player.level().getServer(), country));
+            EarthNations.conquer(player, country, EarthNations.holder(server, country));
         }
         long loot = relation.treasury >= 1_000L ? round(Math.round(relation.treasury * 0.30d)) : 0L;
         long burnt = Math.round(relation.treasury * 0.10d);
@@ -943,6 +1512,11 @@ public final class WarStrategy {
         relation.stance(WarData.Stance.TREVE, now);
         relation.truce = now + 7L * DAY_MS;
         relation.slot = 0L;
+        relation.defeated = now;
+        if (returned > 0L) {
+            FactionApi.creditBank(player, returned, "Ce que " + traits.the() + (ally != null ? " et "
+                    + ally.traits().the() : "") + " t'avaient pris");
+        }
         if (loot > 0L) {
             FactionApi.creditBank(player, loot, "Butin de la place forte " + traits.de());
         }
@@ -958,11 +1532,35 @@ public final class WarStrategy {
         };
         say(player, relation, text, ChatFormatting.GRAY);
         log(player, data, relation, now, "place forte " + (pillage ? "pillee" : "rasee") + " : "
-                + MoneyFormat.exact(loot) + " $ de butin, " + lost + " soldats perdus"
-                + (country > 0 ? ", " + EarthNations.countryName(country) + " perdu" : ""));
-        DoHy.LOGGER.info("Guerre : place forte {} {} par {} : {} $ de butin, {} soldats perdus, pays {}", traits.de(),
-                pillage ? "pillee" : "rasee", player.getGameProfile().name(), loot, lost, country);
-        return new Spoils(loot, lost);
+                + MoneyFormat.exact(loot) + " $ de butin"
+                + (returned > 0L ? ", " + MoneyFormat.exact(returned) + " $ rendus" : "") + ", " + lost
+                + " soldats perdus" + (country > 0 ? ", " + EarthNations.countryName(country) + " perdu" : "")
+                + (recovered.isEmpty() ? "" : ", te reviennent : " + String.join(", ", recovered)));
+        // Sa chute defait la coalition ; l'allie qui se battait a ses cotes recule aussi.
+        if (partner != null && partner.ally == relation.nation) {
+            partner.ally = -1;
+            partner.pact = 0L;
+        }
+        relation.ally = -1;
+        relation.pact = 0L;
+        if (ally != null) {
+            ally.fear = Math.min(100.0d, ally.fear + 15.0d);
+            ally.hostility = Math.max(0.0d, ally.hostility - 10.0d);
+            if (ally.stance != WarData.Stance.GUERRE) {
+                ally.stance(WarData.Stance.TREVE, now);
+                ally.truce = now + 7L * DAY_MS;
+            }
+            ally.defeated = now;
+            say(player, ally, traits.verb("est tombee", "sont tombes") + "... Nous te rendons ce que nous "
+                    + "t'avions pris, et la coalition n'est plus.", ChatFormatting.GRAY);
+            log(player, data, ally, now, "vaincue avec " + traits.the() + " : la coalition se defait");
+        } else if (partner != null) {
+            log(player, data, partner, now, "la coalition avec " + traits.the() + " se defait");
+        }
+        DoHy.LOGGER.info("Guerre : place forte {} {} par {} : {} $ de butin, {} $ rendus, {} soldats perdus, pays {},"
+                        + " repris {}", traits.de(), pillage ? "pillee" : "rasee", player.getGameProfile().name(), loot,
+                returned, lost, country, recovered);
+        return new Spoils(loot, returned, lost, country, List.copyOf(recovered));
     }
 
     /** Une partie du prix du missile revient a la nation (une charge plus legere que prevu). */
@@ -988,6 +1586,72 @@ public final class WarStrategy {
         relation.grieve(kind, weight, now);
         relation.hostility = Math.min(100.0d, relation.hostility + weight * relation.traits().grudge() * 0.5d);
         log(player, data, relation, now, "grief : " + kind);
+    }
+
+    // -- L'administration (essais du lot 22l-2) ------------------------------------------------------
+
+    /**
+     * Le resultat d'un assaut reussi, sans livrer bataille : {@code amount} sort
+     * de ta banque vers son tresor, elle te le doit, et elle reprend le pays et
+     * la mine en jeu. Rend la ligne du journal, ou le refus (« ! » en tete).
+     */
+    static String simulatePillage(ServerPlayer player, int nation, long amount) {
+        if (!FactionApi.payFromBank(player, amount, "Pillage (essai)")) {
+            return "!Ta banque de faction n'a que " + MoneyFormat.exact(FactionApi.data(player).bank()) + " $";
+        }
+        WarData data = data(player);
+        long now = System.currentTimeMillis();
+        WarData.Relation relation = data.relation(nation, now);
+        relation.memory = relation.memory.withWin(amount);
+        relation.treasury += amount;
+        relation.owed += amount;
+        String line = "assaut reussi (essai) : " + MoneyFormat.exact(amount) + " $ pilles";
+        String retaken = reconquer(player, relation);
+        if (!retaken.isEmpty()) {
+            line += " ; " + retaken;
+        }
+        if (relation.stance != WarData.Stance.GUERRE) {
+            relation.stance(WarData.Stance.TREVE, now);
+            relation.truce = now + Math.round((4.0d - relation.traits().greed() * 2.0d) * DAY_MS);
+        }
+        log(player, data, relation, now, line);
+        return line;
+    }
+
+    /** Force une coalition entre deux nations (essais) ; {@code null}, ou le refus. */
+    static String forcePact(ServerPlayer player, int first, int second) {
+        if (first == second) {
+            return "Deux nations differentes";
+        }
+        WarData data = data(player);
+        long now = System.currentTimeMillis();
+        for (WarData.Relation relation : data.relations) {
+            if (relation.ally >= 0) {
+                relation.ally = -1;
+                relation.pact = 0L;
+            }
+        }
+        WarData.Relation relation = data.relation(first, now);
+        WarData.Relation partner = data.relation(second, now);
+        relation.defeated = 0L;
+        partner.defeated = 0L;
+        ally(player, data, relation, partner, now);
+        return null;
+    }
+
+    /** Ajoute a ses lecons un assaut ou {@code count} soldats sont tombes de {@code cause} (essais). */
+    static String teach(ServerPlayer player, int nation, String cause, int count) {
+        if (lessonText(cause).isEmpty()) {
+            return "Causes : lame, fleches, tourelles, pieges, terrain, gardiens";
+        }
+        WarData data = data(player);
+        long now = System.currentTimeMillis();
+        WarData.Relation relation = data.relation(nation, now);
+        Optional<Map.Entry<ServerLevel, BlockPos>> vault = vault(player, data);
+        String where = vault.map(entry -> FactionApi.dimension(entry.getKey())).orElse("");
+        BlockPos at = vault.map(Map.Entry::getValue).orElse(BlockPos.ZERO);
+        relation.lessons = relation.lessons.after(where, at, List.of(), Map.of(cause, count), true);
+        return null;
     }
 
     /** Le pays en jeu face a cette nation : celui qu'elle reprendrait si son assaut reussissait ; 0 sans. */

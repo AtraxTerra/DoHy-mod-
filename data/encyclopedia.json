@@ -2667,10 +2667,10 @@
       "title": "La guerre",
       "card": [
         "Ultimatum, assaut",
-        "Missiles, riposte"
+        "Riposte, coalitions"
       ],
       "summary": [
-        "Les douze nations rivales jugent ta base : ta banque, tes claims, leurs griefs, ta force. Une nation hostile t'envoie un ultimatum ou te declare la guerre, et c'est toi qui fixes l'heure de l'assaut."
+        "Les douze nations rivales jugent ta base : ta banque, tes claims, leurs griefs, ta force. Une nation hostile t'envoie un ultimatum ou te declare la guerre, et c'est toi qui fixes l'heure de l'assaut. Tu peux aussi leur declarer la guerre : ta contre-offensive."
       ],
       "sections": [
         {
@@ -2715,8 +2715,39 @@
             "En guerre, la nation batit une place forte a 1 200 - 2 000 blocs de toi. Ses coordonnees sont dans /guerre.",
             "- Vise-la avec un designateur de NTM, tire depuis une rampe de lancement.",
             "- Sa structure sous 60 %, ou sa salle forte ouverte : rasee. Entrer dans sa salle forte la fait tomber aussi.",
-            "- Elle recule : 30 % de son tresor pour ta banque, la moitie de son armee, une treve de 7 jours, et un de ses pays sur la carte de la Terre (+1 claim).",
+            "- Elle te rend d'abord ce qu'elle t'a pris : l'argent pille (tant que son tresor le permet), les pays et la mine repris.",
+            "- Puis elle recule : 30 % de son tresor pour ta banque, la moitie de son armee, une treve de 7 jours, et un de ses pays sur la carte de la Terre (+1 claim).",
             "! 5 minutes plus tard, elle s'efface : le terrain revient tel qu'il etait."
+          ]
+        },
+        {
+          "title": "Ta contre-offensive",
+          "text": [
+            "Declare-leur la guerre toi-meme : /guerre declarer <nation>, ou la section Ta contre-offensive de l'ecran. Elle batit sa place forte, et viendra attaquer ta base a l'heure que tu fixes.",
+            "- Si sa place forte tombe, elle te rend ce qu'elle t'a pris, en plus de 30 % de son tresor.",
+            "- Une treve ne se rompt que pour reprendre ce qu'elle t'a pris.",
+            "- Vaincue, elle se releve une semaine avant une nouvelle guerre.",
+            "! Une guerre a la fois. Chaque guerre declaree grossit ta puissance deux semaines."
+          ]
+        },
+        {
+          "title": "Elles apprennent",
+          "text": [
+            "Chaque nation retient ou ses soldats sont tombes chez toi, et de quoi.",
+            "- Son prochain plan evite ces cases.",
+            "- Ses espions voient davantage de tes pieges caches a chaque assaut.",
+            "- Sa troupe change contre ce qui l'a tuee : plus d'archers loin de ta lame, une charge en masse sous tes fleches, plus d'ingenieurs sur tes pieges et tes douves, plus de fantassins contre tes gardiens.",
+            "! Deplacer ton coffre de plus de 48 blocs efface la carte de leurs morts."
+          ]
+        },
+        {
+          "title": "Les coalitions",
+          "text": [
+            "Ta puissance (banque, pays et mines de la Terre, claims, victoires sur elles, guerres declarees) depasse 50 : une nation hostile cherche un allie contre toi.",
+            "- Allies, leur humeur s'entraine l'une l'autre.",
+            "- A chaque assaut, l'allie joint 4 a 10 soldats a ses couleurs.",
+            "- Si la place forte de l'une tombe, les deux te rendent ce qu'elles t'ont pris, et la coalition se defait.",
+            "! Sous 35 de puissance, ou si l'une se radoucit (un cadeau), elle se defait aussi."
           ]
         }
       ],
@@ -2724,6 +2755,7 @@
         "/guerre : l'ecran de la guerre",
         "/guerre coffre : designer ton coffre ici",
         "/guerre placeforte : une boussole vers leur place forte",
+        "/guerre declarer <nation> : lui declarer la guerre",
         "/guerre heure <heure> : fixer l'heure de l'assaut",
         "/guerre payer : payer un ultimatum",
         "/guerre negocier : negocier un ultimatum",

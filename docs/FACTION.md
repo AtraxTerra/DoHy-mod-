@@ -30,7 +30,8 @@ PvE**. Choix du joueur :
 | 22k | La base tourne sans toi : claims tenus chargés (64 au plus, les plus actifs), le serveur vide ne se met plus en pause, rapport d'absence à la connexion | fait |
 | 22l | La guerre des nations : IA stratégique des douze nations, diplomatie (ultimatum, tribut, paix), assaut à l'heure que tu fixes, siège tactique (plan de brèche, sapeurs, ingénieurs, moral), pillage de la banque, riposte, terrain qui revient | fait |
 | 22m | Mines de la Terre à capturer : une balise de concession, rester à côté de 2 à 5 min ; revenus horaires (hors ligne compris) à la banque de faction, argent et minerais (coffre de la banque) ; reprise par la guerre | fait |
-| 22l-2 | Éclaireurs, IA qui apprend de tes défenses d'un assaut à l'autre, alliances de nations, contre-offensive | à faire |
+| 22l-2 | La riposte contre les nations : ta contre-offensive (ce qu'elles t'ont pris te revient quand leur place forte tombe), une IA qui apprend de tes défenses d'un assaut à l'autre, les coalitions de nations | fait |
+| 22l-3 | Éclaireurs | à faire |
 
 ## Ce qui change en solo
 
@@ -713,9 +714,9 @@ Les douze nations rivales (celles des events et de la carte de la Terre) ne se c
 tenir des pays : elles viennent chez toi. Demandé le 2026-11-14 (« je veux une IA réaliste et très
 compliquée »), choix du joueur : **toi qui fixes l'heure de l'assaut**, leur objectif est de
 **vider ta banque de faction**, **le terrain revient** après la bataille, et l'IA couvre **la
-stratégie des nations, la tactique sur le terrain, la diplomatie et ta riposte**. Ce lot est le
-premier des deux ; le second ajoutera les éclaireurs, une IA qui apprend de tes défenses d'un
-assaut à l'autre, les alliances de nations contre toi et la contre-offensive sur leurs bases.
+stratégie des nations, la tactique sur le terrain, la diplomatie et ta riposte**. Le lot 22l-2
+(plus bas) y a ajouté ta contre-offensive, une IA qui apprend de tes défenses d'un assaut à
+l'autre et les coalitions de nations contre toi ; les éclaireurs restent à faire.
 
 ### Douze nations, douze caractères
 
@@ -869,3 +870,133 @@ assauts des Titans de bout en bout (le camp y durait 20 s au lieu d'une minute) 
 - dans les deux cas, le terrain est revenu comme avant quinze secondes après la fin ;
 - le serveur dédié démarre jusqu'à « Done » avec le lot, et `/summon dohy:soldier` y fait
   apparaître un soldat.
+
+## La riposte contre les nations (22l-2)
+
+Le deuxième lot de la guerre des nations, demandé le 2026-11-20. Choix du joueur : **ta
+contre-offensive**, **une IA qui apprend** et **les alliances** (les éclaireurs attendront) ; et
+quand la place forte d'une nation tombe, tu récupères **ce qu'elle t'a pris** — l'argent qu'elle
+t'a pillé, le pays et la mine qu'elle t'a repris — en plus de 30 % de son trésor.
+
+### Ta contre-offensive
+
+- **Déclarer la guerre** : `/guerre declarer <nation>`, ou la section TA CONTRE-OFFENSIVE de
+  l'écran de la guerre (un clic, avec confirmation). La section montre d'abord les nations qui
+  t'ont pris quelque chose, puis les plus hostiles.
+- **Elle riposte** : elle bâtit sa place forte (à 1 200 - 2 000 blocs, comme dans une guerre
+  qu'elle déclare) et viendra attaquer ta base à l'heure que tu fixes, entre 30 minutes et
+  48 heures plus tard ; son allié de coalition la rejoint. Elle ne peut pas renoncer à une guerre
+  que tu as déclarée : pour l'arrêter, rase sa place forte ou achète la paix.
+- **Ce qu'elle te doit** : chaque nation note ce qu'elle t'a pris — l'argent que son trésorier a
+  rapporté au camp, le pays et la mine qu'elle reprend sur un assaut réussi. Les pillages d'avant
+  ce lot comptent aussi.
+- **Quand sa place forte tombe** (rasée par tes missiles, ou pillée), dans une guerre qu'elle a
+  déclarée comme dans la tienne : elle te rend d'abord l'argent pillé, tant que son trésor le
+  permet (le reste, elle le doit encore), puis les pays et les mines repris, s'ils sont encore à
+  elle. Ensuite, comme avant : 30 % de ce qui reste de son trésor (10 % de plus partent en fumée),
+  la moitié de son armée, sa crainte, une trêve de 7 jours, un de ses pays (+1 claim).
+- **Les règles** : une guerre à la fois, et pas pendant l'ultimatum d'une autre nation
+  (déclarer la guerre à celle qui te menace, c'est lui répondre). Une **trêve ne se rompt que
+  pour reprendre ce qu'elle t'a pris**, et laisse un grief ; une nation **vaincue** (sa place forte
+  tombée) **se relève une semaine** avant une nouvelle guerre. Chaque guerre que tu déclares
+  compte deux semaines dans ta puissance.
+
+### Une IA qui apprend
+
+Chaque nation retient, d'un assaut à l'autre :
+
+- **où ses soldats sont tombés** (les 40 derniers) : son prochain plan évite ces cases, comme les
+  morts du siège en cours. Déplacer ton coffre de plus de 48 blocs efface cette carte ;
+- **tes pièges cachés** : à chaque assaut, ses espions en voient un dixième de plus (quatre au
+  plus), en plus de ce que sa ruse lui montre ;
+- **de quoi ils sont morts** — ta lame, tes flèches, tes tourelles, tes pièges (explosions, pics,
+  magma, cactus), le terrain (lave, eau, chutes), tes gardiens —, chaque assaut comptant moitié
+  moins au suivant. La cause qui domine (trois morts au moins, et plus du tiers) est **sa leçon**,
+  et elle change sa troupe :
+
+| Sa leçon | Ce qu'elle change |
+|---|---|
+| ta lame | un quart des fantassins deviennent archers |
+| tes flèches | la moitié des archers deviennent fantassins, un médecin de plus |
+| tes tourelles | ce qu'elles couvrent pèse deux fois plus dans son plan, un médecin de plus |
+| tes pièges, le terrain | deux ingénieurs de plus |
+| tes gardiens | un tiers des archers deviennent fantassins |
+
+Au camp, le commandant l'annonce (« Ils ont retenu la leçon de leurs assauts : plus d'archers,
+loin de ta lame ; ils évitent les 12 cases où leurs soldats sont tombés »), et la fin d'un assaut
+qui en tire une nouvelle le dit (« Nous retiendrons la leçon », au journal aussi). Une coalition
+partage ce qu'elle apprend.
+
+### Les coalitions
+
+- **Ta puissance**, de 0 à 100, en tête de l'écran : ta banque (10 points par puissance de dix
+  au-delà de 10 000 $, 30 au plus), tes pays et tes mines sur la Terre (5 chacun ; 25 et 20 au
+  plus), tes claims (un quart de point, 10 au plus), leurs défaites (3 par assaut brisé ou place
+  forte tombée, 15 au plus), les guerres que tu as déclarées ces deux dernières semaines (5
+  chacune, 15 au plus).
+- **Au-delà de 50**, à sa réflexion, une nation hostile (45 au moins) sans allié cherche un
+  partenaire parmi celles qui sont en paix avec toi (la plus hostile, 35 au moins) ; une nation
+  rusée s'y décide plus vite. Une seule coalition à la fois ; le chat et le serveur l'annoncent.
+- **Alliées**, leurs humeurs s'entraînent (+6, plus 12 % de l'hostilité de l'autre) ; quand l'une
+  entre en guerre (qu'elle la déclare ou que tu la lui déclares), l'autre la rejoint. À **chaque
+  assaut**, l'alliée joint **4 à 10 soldats** à ses couleurs (fantassins et archers, payés sur son
+  trésor) ; sur un assaut réussi, le butin se partage selon les soldats engagés, chacune te doit sa
+  part et reprend son pays et sa mine en jeu. Leur place forte est plus grande (l'alliée y met la
+  moitié de son armée).
+- **Si la place forte de l'une tombe**, les deux te rendent ce qu'elles t'ont pris ; l'alliée recule
+  aussi (crainte, trêve de 7 jours, vaincue une semaine), et la coalition se défait.
+- **Elle se défait aussi** sous 35 de puissance, si l'une se radoucit sous 30 (un cadeau), ou à la
+  fin du pacte (une semaine, renouvelée tant que tu fais peur) — jamais en pleine guerre.
+
+### L'écran
+
+- La statistique **PUISSANCE** en tête ; **LA COALITION CONTRE TOI** (les deux nations, leur
+  humeur, le pacte ou l'assaut commun) ; **TA CONTRE-OFFENSIVE**, quand aucune guerre n'est en
+  cours (jusqu'à quatre nations, ce qu'elles te doivent, le butin estimé de leur place forte,
+  grisées avec leur raison) ; l'heure de l'assaut d'une guerre que tu as déclarée s'appelle **SA
+  RIPOSTE**.
+- **Les nations** : les pastilles ALLIÉE et TE DOIT, et dans la bulle ce qu'elle te doit, son
+  pacte, ce qu'elle a appris, sa défaite.
+- **Leur place forte** : « Si elle tombe » dit ce qu'elle te rendra.
+- **Ta base vue par elles** : ta puissance (le détail dans la bulle) et ce qu'elles ont appris.
+- Opérateurs : `/guerre admin pillage <nation> <montant>` (un assaut réussi, sans bataille),
+  `coalition <nation> <nation>`, `lecon <nation> <cause> <morts>` ; `etat` dit aussi ce que
+  chaque nation doit, son alliée, sa leçon, et ta puissance.
+
+### Vérifié en jeu
+
+Dans le client du CI, sur un monde plat avec la carte de la Terre : une faction de cinq claims,
+400 000 $ en banque, sa capitale au Mali, l'Algérie et la mine de Sadiola données (toutes deux de
+la région des Corbeaux).
+
+- **Ce qu'elle a pris** : un pillage des Corbeaux sans bataille (`/guerre admin pillage`) : 30 000 $
+  sortent de la banque, les Corbeaux reprennent l'Algérie et Sadiola et les notent (30 000 $, un
+  pays, une mine) ; l'écran les met en tête de TA CONTRE-OFFENSIVE (« Te doit 30 000 $ · + 1 pays,
+  1 mine »).
+- **La contre-offensive** : un clic sur leur carte leur déclare la guerre (la trêve du pillage se
+  rompt : ils te doivent quelque chose) ; leur réponse, l'heure de leur riposte à fixer, et ce que
+  rendra la chute de leur place forte. Une deuxième guerre est refusée (« Une guerre à la fois »).
+- **La chute** : leur place forte (un silo de missiles, avant-poste, à 365 blocs pour l'essai)
+  rasée : **+42 000 $** — les 30 000 $ rendus, puis 30 % des 40 000 $ restés au trésor —,
+  l'Algérie et Sadiola reviennent à la faction, le Mali passe à la faction (+1 claim), les Corbeaux
+  perdent la moitié de leur armée ; vaincus, une nouvelle guerre contre eux est refusée
+  (« reviens vendredi 13:01 »).
+- **La coalition** : Nordheim et Ombre Pourpre alliés (`/guerre admin coalition`) : les annonces, la
+  section LA COALITION CONTRE TOI, les pastilles ALLIÉE, ta puissance à 41.
+- **L'assaut commun et la leçon** : avec la leçon « ta lame » (six morts), l'assaut de Nordheim
+  aligne 24 soldats et 9 d'Ombre Pourpre (« Assaut de Nordheim et d'Ombre Pourpre ») : 17
+  fantassins et 12 archers (quatre fantassins de Nordheim devenus archers), 1 sapeur, 1 ingénieur,
+  2 médecins ; renseignement 66 % (35 de base, 21 de ruse, 10 d'un assaut appris). Au camp :
+  « Ils ont retenu la leçon de leurs assauts : plus d'archers, loin de ta lame ». Parmi les seize
+  premiers soldats, trois aux couleurs d'Ombre Pourpre.
+- **Ce qu'elles retiennent** : trois soldats de Nordheim tués à l'épée (son armée 60 → 57), puis
+  l'assaut arrêté : la leçon de Nordheim reste « ta lame » (les six morts d'avant comptés moitié,
+  et trois nouveaux), les trois cases sont relevées, et Ombre Pourpre a appris la même chose. (Un
+  premier essai avait touché un soldat d'Ombre Pourpre : sa perte allait à son armée, 35 → 34.)
+
+Code : `faction/war/` — `WarData` (`Lessons`, ce qu'elle doit, la coalition, tes guerres
+déclarées), `WarStrategy` (`counter`, `restitute`, `threat`, `coalition`, `comrade`, `learn`, les
+commandes d'essai), `Siege` (le contingent allié, la troupe selon la leçon, `cause`), `Sieges.start`
+(le renseignement, la mémoire des morts), `SiegePlanner.capture` (le poids des tourelles),
+`Strongholds` (la récompense, la place forte d'une coalition), `WarMenu`, `WarCommand` ;
+`earth/mine/EarthMines.restore`.
