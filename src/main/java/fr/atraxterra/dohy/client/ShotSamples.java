@@ -469,6 +469,11 @@ final class ShotSamples {
     private static final Pattern RISKY_ACTION = Pattern.compile(
             "(?i)dissou|quitt|supprim|abandon|reset|reinit|disband|leave|delete|detrui|exil|renonc|bannir|kick|liquid");
 
+    private static String key(String action) {
+        int bar = action.indexOf('|');
+        return bar < 0 ? action : action.substring(0, bar);
+    }
+
     private static void clicks(ServerPlayer player) {
         int total = 0;
         int failed = 0;
@@ -489,11 +494,13 @@ final class ShotSamples {
                         skipped++;
                         continue;
                     }
+                    // Comme le client : ce qui suit la barre est le libelle de l'action, pas sa cle.
                     if (!card.action().isEmpty()) {
-                        actions.add(new String[] {card.action(), "0"});
+                        actions.add(new String[] {key(card.action()), "0"});
+                        actions.add(new String[] {key(card.action()), "2"});
                     }
                     if (!card.rightAction().isEmpty()) {
-                        actions.add(new String[] {card.rightAction(), "1"});
+                        actions.add(new String[] {key(card.rightAction()), "1"});
                     }
                 }
             }
@@ -594,6 +601,14 @@ final class ShotSamples {
             player.getInventory().add(new ItemStack(item("palamod:paladium_ingot"), 64));
             player.getInventory().add(new ItemStack(item("palamod:paladium_ingot"), 36));
             log("depart : {} menus", Menus.all().size());
+        }));
+        ShotHarness.SHOTS.add(server("a1_clics_seul", 100, player -> {
+            teleport(player, 3000.5d, Y, 3000.5d, 180.0f, 20.0f);
+            clicks(player);
+            player.setGameMode(GameType.SURVIVAL);
+            Economy.set(player, 1_000_000L);
+            player.getInventory().add(new ItemStack(item("palamod:paladium_ingot"), 64));
+            player.getInventory().add(new ItemStack(item("palamod:paladium_ingot"), 36));
         }));
         ShotHarness.SHOTS.add(server("b0_faction", 60, player -> {
             UiNet.close(player);
