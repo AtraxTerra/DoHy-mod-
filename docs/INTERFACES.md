@@ -379,6 +379,27 @@ hôtel des ventes qui marche en solo.
   en main (il la lève à chaque récolte). Télécommande en main : le contour de la zone en
   étincelles, les coffres liés en points verts, un premier coin en attente en lueur blanche.
 
+## Les mines de la Terre (lot 14, 2026-11-20)
+
+- **L'onglet Mines** de la faction (`MineMenu`, vue `dohy:faction_mines`, sur une carte de la
+  Terre ; la pastille de l'onglet compte les mines) : en tête MINES, PAR HEURE et COFFRE. Puis
+  CAPTURE EN COURS (la balise, le temps qui reste, une barre de progression ; grisée et « En pause »
+  loin de la balise), TES MINES|n (une carte par mine : son minerai en icône, la ressource et le
+  pays, ce qu'elle verse par heure, la pastille RANG ; en orange celle qu'une nation reprendrait ;
+  la bulle dit la date de capture ; un clic la rend, avec confirmation), LES PLUS PROCHES (six
+  mines, leur direction et leur distance, qui les tient, ce qu'elles verseraient) et COMMENT FAIRE
+  (`TEXT`).
+- **La banque de faction** : une section COFFRE DE LA BANQUE|n / 54 (`TILES`, une vignette par
+  pile, le nombre en pastille ; un clic prend la pile ; « Tout prendre ») et la statistique COFFRE.
+- **La vue d'ensemble** : une carte Mines dans TERRITOIRE (le nombre de mines, l'argent par heure).
+- **La Boutique** : la section MINES DE LA TERRE, après les bots, avec la balise de concession
+  (seulement sur une carte de la Terre).
+- **La guerre** : la bulle d'une nation dit la mine qu'elle reprendrait ; une carte « Mine en jeu »
+  rejoint celle du pays en jeu.
+- **Dans le monde** : la balise (un socle de métal, un mât d'acier, une lampe ambre, un fanion
+  orange frappé d'une pioche), la barre de capture en haut de l'écran, l'annonce de la mine dans
+  la barre d'action, et le titre de la capture.
+
 ## Vérification
 
 Une branche de travail (`ci/shots`) lance un vrai client sous Xvfb sur GitHub, dans un monde

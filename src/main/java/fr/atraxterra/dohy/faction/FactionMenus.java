@@ -119,6 +119,10 @@ public final class FactionMenus {
         tabs.add(tab("Vue d'ensemble", "faction", active, ""));
         tabs.add(tab("Claims", "faction_claims", active, data.claims().size() + "/" + FactionApi.claimCap(player)));
         tabs.add(tab("Banque", "faction_bank", active, ""));
+        if (fr.atraxterra.dohy.earth.mine.EarthMines.active()) {
+            int mines = fr.atraxterra.dohy.earth.mine.EarthMines.of(player).size();
+            tabs.add(tab("Mines", "faction_mines", active, mines > 0 ? String.valueOf(mines) : ""));
+        }
         tabs.add(tab("Classement", "faction_ranking", active, league.label().toUpperCase()));
         tabs.add(tab("Arbre", "faction_tree", active, total <= 0 ? "" : done * 100 / total + " %"));
         tabs.add(tab("Events", "faction_events", active, live ? "EN COURS" : ""));
@@ -262,6 +266,15 @@ public final class FactionMenus {
                 lands.add(Card.of(new ItemStack(Items.COMPASS), "Voisins et rivales", List.of(
                                 "Les pays a viser", "Ce que tient chaque nation"))
                         .accent(0xFFFAC400).action("nations|ouvrir"));
+                if (fr.atraxterra.dohy.earth.mine.EarthMines.active()) {
+                    int mines = fr.atraxterra.dohy.earth.mine.EarthMines.of(player).size();
+                    long hourly = fr.atraxterra.dohy.earth.mine.EarthMines.moneyPerHour(player);
+                    lands.add(Card.of(new ItemStack(Items.IRON_PICKAXE), "Mines", List.of(
+                                    mines == 0 ? "Aucune pour l'instant" : mines + " mine" + (mines > 1 ? "s" : ""),
+                                    mines == 0 ? "Une balise les capture" : "+" + MoneyFormat.exact(hourly) + " $ / h"))
+                            .accent(0xFFFAC400).badge(mines > 0 ? String.valueOf(mines) : "")
+                            .action("mines|ouvrir"));
+                }
                 sections.add(new MenuView.Section("TERRITOIRE", "craft", MenuView.GRID, lands));
             }
             sections.add(new MenuView.Section("PROGRESSION", "upgrade", MenuView.GRID, progression));
@@ -289,6 +302,7 @@ public final class FactionMenus {
                 case "reserve" -> ReserveMenu.INSTANCE.open(player);
                 case "events" -> FactionEventMenu.INSTANCE.open(player);
                 case "nations" -> fr.atraxterra.dohy.earth.NationMenu.INSTANCE.open(player);
+                case "mines" -> fr.atraxterra.dohy.earth.mine.MineMenu.INSTANCE.open(player);
                 case "home" -> {
                     String refusal = FactionHomes.go(player, 0);
                     if (refusal != null) {
@@ -425,14 +439,42 @@ public final class FactionMenus {
                 history.add(Card.of(new ItemStack(Items.PAPER), "Aucun mouvement", List.of("Les depots, retraits",
                         "et recompenses s'inscrivent ici")).state(MenuView.DISABLED));
             }
-            List<MenuView.Stat> stats = List.of(
+            FactionVault vault = FactionVault.of(player);
+            List<MenuView.Stat> stats = new ArrayList<>(List.of(
                     new MenuView.Stat("BANQUE DE FACTION", MoneyFormat.shortForm(data.bank()), 0xFFFAC400),
-                    new MenuView.Stat("TON ARGENT", MoneyFormat.shortForm(purse), 0xFFFFFFFF));
-            return new MenuView(id(), "Banque de faction", "", stats, List.of(
+                    new MenuView.Stat("TON ARGENT", MoneyFormat.shortForm(purse), 0xFFFFFFFF)));
+            List<MenuView.Section> sections = new ArrayList<>(List.of(
                     new MenuView.Section("DEPOSER", "resources", MenuView.GRID, deposit),
-                    new MenuView.Section("RETIRER", "upgrade", MenuView.GRID, withdraw),
-                    new MenuView.Section("HISTORIQUE", "craft", MenuView.ROWS, history)), true)
+                    new MenuView.Section("RETIRER", "upgrade", MenuView.GRID, withdraw)));
+            if (fr.atraxterra.dohy.earth.mine.EarthMines.active() || !vault.isEmpty()) {
+                stats.add(new MenuView.Stat("COFFRE", vault.used() + " / " + FactionVault.SLOTS,
+                        vault.used() >= FactionVault.SLOTS ? 0xFFEF3826 : 0xFFFFFFFF));
+                sections.add(new MenuView.Section("COFFRE DE LA BANQUE|" + vault.used() + " / " + FactionVault.SLOTS,
+                        "armor", MenuView.TILES, vaultCards(vault)));
+            }
+            sections.add(new MenuView.Section("HISTORIQUE", "craft", MenuView.ROWS, history));
+            return new MenuView(id(), "Banque de faction", "", stats, sections, true)
                     .withTabs(tabs(player, "faction_bank"));
+        }
+
+        /** Le coffre de la banque : une vignette par pile, un clic la prend ; une carte pour tout prendre. */
+        private static List<Card> vaultCards(FactionVault vault) {
+            List<Card> cards = new ArrayList<>();
+            if (vault.isEmpty()) {
+                cards.add(Card.of(new ItemStack(Items.CHEST), "Vide", List.of("Les minerais de tes mines",
+                                "arrivent ici chaque heure"))
+                        .state(MenuView.DISABLED));
+                return cards;
+            }
+            cards.add(Card.of(new ItemStack(Items.HOPPER), "Tout prendre", List.of(vault.count() + " objets"))
+                    .accent(0xFF22E558).badge("TOUT").action("vault_all|tout prendre"));
+            for (int index = 0; index < vault.items().size(); index++) {
+                ItemStack stack = vault.items().get(index);
+                cards.add(Card.of(stack.copyWithCount(1), MenuView.text(stack.getHoverName()),
+                                List.of("x" + stack.getCount()))
+                        .badge(String.valueOf(stack.getCount())).action("vault:" + index + "|prendre"));
+            }
+            return cards;
         }
 
         @Override
@@ -445,6 +487,16 @@ public final class FactionMenus {
                 long amount = Long.parseLong(key.substring(9));
                 report(player, FactionApi.withdraw(player, amount), "-" + MoneyFormat.exact(amount)
                         + " $ de la banque de faction.");
+            } else if (key.equals("vault_all")) {
+                int moved = FactionVault.takeAll(player);
+                report(player, moved > 0 ? null : "Ton inventaire est plein", "");
+            } else if (key.startsWith("vault:")) {
+                try {
+                    int moved = FactionVault.take(player, Integer.parseInt(key.substring(6)));
+                    report(player, moved > 0 ? null : "Ton inventaire est plein", "");
+                } catch (NumberFormatException malformed) {
+                    failure(player);
+                }
             }
         }
     }

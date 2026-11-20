@@ -108,6 +108,7 @@ public final class WarMenu extends MenuController {
                             siege.paymasterDead ? "Tresorier abattu" : "Tresorier en vie"))
                     .accent(siege.drained > 0 ? 0xFFFAC400 : 0xFF55545C));
             stakeCard(player, siege.nation).ifPresent(cards::add);
+            mineStakeCard(player, siege.nation).ifPresent(cards::add);
             sections.add(new MenuView.Section("L'ASSAUT EN COURS", "armor", MenuView.GRID, cards));
         }
 
@@ -144,6 +145,7 @@ public final class WarMenu extends MenuController {
                         .action(relation.negotiated() ? "" : "negotiate")
                         .state(relation.negotiated() ? MenuView.DISABLED : MenuView.NORMAL));
                 stakeCard(player, relation.nation).ifPresent(cards::add);
+                mineStakeCard(player, relation.nation).ifPresent(cards::add);
                 sections.add(new MenuView.Section("ON TE MENACE", "craft", MenuView.GRID, cards));
             } else if (relation.stance() == WarData.Stance.GUERRE && siege == null) {
                 List<Card> cards = new ArrayList<>();
@@ -168,6 +170,7 @@ public final class WarMenu extends MenuController {
                         .action(refuses ? "" : "peace")
                         .state(refuses ? MenuView.DISABLED : MenuView.NORMAL));
                 stakeCard(player, relation.nation).ifPresent(peace::add);
+                mineStakeCard(player, relation.nation).ifPresent(peace::add);
                 sections.add(new MenuView.Section("LA PAIX", "craft", MenuView.GRID, peace));
             }
         });
@@ -240,6 +243,11 @@ public final class WarMenu extends MenuController {
             int stake = WarStrategy.stake(player, i);
             if (stake > 0) {
                 tooltip.add("Reprendrait " + EarthNations.countryName(stake) + " sur un assaut reussi");
+            }
+            fr.atraxterra.dohy.earth.EarthBodies.Body mineStake =
+                    fr.atraxterra.dohy.earth.mine.EarthMines.stake(player, i);
+            if (mineStake != null) {
+                tooltip.add("Reprendrait la mine de " + mineStake.name() + " sur un assaut reussi");
             }
             tooltip.add("Clic : un cadeau de 1 000 $ (pas en guerre)");
             nations.add(Card.of(banner(traits), traits.name(), List.of(stance,
@@ -338,6 +346,20 @@ public final class WarMenu extends MenuController {
         } else {
             success(player);
         }
+    }
+
+    /** La carte de la mine en jeu face a cette nation, s'il y en a une. */
+    private static Optional<Card> mineStakeCard(ServerPlayer player, int nation) {
+        fr.atraxterra.dohy.earth.EarthBodies.Body mine = fr.atraxterra.dohy.earth.mine.EarthMines.stake(player, nation);
+        if (mine == null) {
+            return Optional.empty();
+        }
+        return Optional.of(Card.of(fr.atraxterra.dohy.earth.mine.EarthMines.icon(mine), mine.name(),
+                        List.of("Mine en jeu", "Reprise s'ils gagnent"))
+                .accent(0xFFE8590C)
+                .tooltip(List.of("Si leur tresorier rentre au camp avec ta banque,",
+                        "la nation reprend cette mine et ses revenus.",
+                        "C'est la derniere que tu as capturee dans sa region.")));
     }
 
     /** La carte du pays en jeu face a cette nation, s'il y en a un. */

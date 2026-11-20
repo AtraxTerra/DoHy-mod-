@@ -1,0 +1,275 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "dohy:block/concession_beacon_base",
+    "base": "dohy:block/concession_beacon_base",
+    "pole": "dohy:block/concession_beacon_pole",
+    "lamp": "dohy:block/concession_beacon_lamp",
+    "flag": "dohy:block/concession_beacon_flag"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        2,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#base",
+          "uv": [
+            4,
+            14,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#base",
+          "uv": [
+            4,
+            14,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#base",
+          "uv": [
+            4,
+            14,
+            12,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#base",
+          "uv": [
+            4,
+            14,
+            12,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#base",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#base",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        2,
+        7
+      ],
+      "to": [
+        9,
+        14,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pole",
+          "uv": [
+            7,
+            2,
+            9,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#pole",
+          "uv": [
+            7,
+            2,
+            9,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#pole",
+          "uv": [
+            7,
+            2,
+            9,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#pole",
+          "uv": [
+            7,
+            2,
+            9,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#pole",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#pole",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        14,
+        6.5
+      ],
+      "to": [
+        9.5,
+        16,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lamp",
+          "uv": [
+            6,
+            6,
+            10,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#lamp",
+          "uv": [
+            6,
+            6,
+            10,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#lamp",
+          "uv": [
+            6,
+            6,
+            10,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#lamp",
+          "uv": [
+            6,
+            6,
+            10,
+            9
+          ]
+        },
+        "up": {
+          "texture": "#lamp",
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#lamp",
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        9,
+        9,
+        7.75
+      ],
+      "to": [
+        15,
+        15,
+        8.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#flag",
+          "uv": [
+            1,
+            1,
+            15,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#flag",
+          "uv": [
+            15,
+            1,
+            1,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#flag",
+          "uv": [
+            14,
+            1,
+            15,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#flag",
+          "uv": [
+            1,
+            0,
+            15,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#flag",
+          "uv": [
+            1,
+            12,
+            15,
+            13
+          ]
+        }
+      }
+    }
+  ]
+}

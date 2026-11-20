@@ -162,6 +162,24 @@ public final class BoutiqueController extends MenuController {
                         remoteMissing > 0 ? "Il te manque " + MoneyFormat.exact(remoteMissing) : ""));
         bots.add(remoteMissing > 0 ? remote.state(MenuView.DISABLED) : remote.action("bot_remote|acheter"));
 
+        // Les mines de la Terre : la balise qui en capture une (seulement sur une carte de la Terre).
+        List<Card> mines = new ArrayList<>();
+        if (fr.atraxterra.dohy.earth.mine.EarthMines.active()) {
+            int held = fr.atraxterra.dohy.earth.mine.EarthMines.of(player).size();
+            long beaconMissing = fr.atraxterra.dohy.earth.mine.DoHyMines.BEACON_PRICE - Economy.balance(player);
+            Card beacon = Card.of(new ItemStack(fr.atraxterra.dohy.earth.mine.DoHyMines.BEACON_ITEM.get()),
+                            "Balise de concession", List.of(MoneyFormat.exact(
+                                    fr.atraxterra.dohy.earth.mine.DoHyMines.BEACON_PRICE) + " $",
+                                    "Tes mines : " + held))
+                    .accent(0xFFE8590C).badge(held > 0 ? held + " MINE" + (held > 1 ? "S" : "") : "")
+                    .tooltip(List.of("Pose-la dans une mine de la Terre et reste a cote :",
+                            "2 a 5 min, et la mine est a ta faction",
+                            "Chaque heure, meme hors ligne : argent et minerais",
+                            "a ta banque de faction. La capture la consomme.",
+                            beaconMissing > 0 ? "Il te manque " + MoneyFormat.exact(beaconMissing) : ""));
+            mines.add(beaconMissing > 0 ? beacon.state(MenuView.DISABLED) : beacon.action("beacon|acheter"));
+        }
+
         int charges = Economy.of(player).insurance();
         BoostData data = Boosters.data(player);
         List<Card> services = new ArrayList<>();
@@ -191,17 +209,21 @@ public final class BoutiqueController extends MenuController {
         }
         // La banque et les ameliorations ont leur entree dans la barre laterale : elles
         // ne s'achetent pas ici, elles n'y ont plus de carte.
-        return new MenuView(id(), fr.atraxterra.dohy.shop.Commerce.TITLE,
-                fr.atraxterra.dohy.shop.Commerce.Tab.BOUTIQUE.subtitle(), stats, List.of(
+        List<MenuView.Section> sections = new ArrayList<>(List.of(
                 // Les grades d'abord, comme sur la boutique de Paladium ; clic droit : tous les avantages.
                 new MenuView.Section("GRADES : DU CONFORT, POUR TOUJOURS", "armor", MenuView.GRID,
                         fr.atraxterra.dohy.grade.GradesController.offers(player, "grade:")),
                 new MenuView.Section("BOOSTERS : TES VENTES RAPPORTENT PLUS", "upgrade", MenuView.GRID, boosters),
                 new MenuView.Section("CLES DE BOX", "resources", MenuView.GRID, crates),
                 new MenuView.Section("POTIONS D'XP DE METIER", "upgrade", MenuView.GRID, potions),
-                new MenuView.Section("BOTS DE FARMING", "resources", MenuView.GRID, bots),
-                new MenuView.Section("SERVICES", "craft", MenuView.GRID, services),
-                new MenuView.Section("COFFRES A POSER", "armor", MenuView.GRID, boxes)), false)
+                new MenuView.Section("BOTS DE FARMING", "resources", MenuView.GRID, bots)));
+        if (!mines.isEmpty()) {
+            sections.add(new MenuView.Section("MINES DE LA TERRE", "upgrade", MenuView.GRID, mines));
+        }
+        sections.add(new MenuView.Section("SERVICES", "craft", MenuView.GRID, services));
+        sections.add(new MenuView.Section("COFFRES A POSER", "armor", MenuView.GRID, boxes));
+        return new MenuView(id(), fr.atraxterra.dohy.shop.Commerce.TITLE,
+                fr.atraxterra.dohy.shop.Commerce.Tab.BOUTIQUE.subtitle(), stats, sections, false)
                 .withTabs(fr.atraxterra.dohy.shop.Commerce.tabs(player, fr.atraxterra.dohy.shop.Commerce.Tab.BOUTIQUE));
     }
 
@@ -253,6 +275,13 @@ public final class BoutiqueController extends MenuController {
             fr.atraxterra.dohy.grade.GradesController.INSTANCE.open(player);
         } else if (key.equals("farm_bot")) {
             String refusal = fr.atraxterra.dohy.farmbot.FarmBots.buyBot(player);
+            if (refusal == null) {
+                success(player);
+            } else {
+                report(player, refusal, "");
+            }
+        } else if (key.equals("beacon")) {
+            String refusal = fr.atraxterra.dohy.earth.mine.EarthMines.buyBeacon(player);
             if (refusal == null) {
                 success(player);
             } else {

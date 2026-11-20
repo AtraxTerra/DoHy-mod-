@@ -1360,6 +1360,51 @@ sac.
 Leviers : `DoHyFarmBots.BOT_PRICE` et `REMOTE_PRICE`, `BotRegistry.MAX_PER_PLAYER` (quatre),
 `BotZone.MAX_SIDE` (la surface), `FarmBot.HARVEST_PAUSE` (le débit), `FarmBot.MAX_CHESTS`.
 
+## 6 sexvicies. Mines de la Terre — un revenu de territoire, borné par le voyage
+
+Description : `docs/CONTENU_DOHY.md`. Les pays (§ 6 novodecies) ne rapportaient pas d'argent :
+« les revenus de territoire n'ont pas été retenus ». Les mines sont ce revenu, demandé par le
+joueur, versé à la banque de faction en argent et en minerais, chaque heure de temps réel, hors
+ligne compris.
+
+| Rang | Mines | Argent par heure | Minerai par heure | Capture |
+|---|---|---|---|---|
+| 1 | 47 (29 mines, 2 cheminées, 16 champs) | 1 500 $ (3 000 pour un champ) | 6 blocs (2 pour une cheminée) | 5 min |
+| 2 | 100 (62 mines, 7 cheminées, 31 champs) | 800 $ (1 600) | 3 blocs (1) | 3 min |
+| 3 | 98 (97 mines, 1 cheminée) | 400 $ | 2 blocs (1) | 2 min |
+
+Les champs de pétrole et de gaz ne rendent pas d'objets (ni barils ni gaz en bouteille) : leur
+argent double. Les blocs de minerai rendent ce que rendrait la pioche en diamant sans fortune ;
+une cheminée de kimberlite est plafonnée à 1 ou 2 diamants par heure (un diamant vaut 1 000 $).
+
+**Ce que ça donne.** Trois mines de rang 3 près de chez soi : 1 200 $ par heure, 28 800 $ par jour
+et 144 blocs de minerai, pour trois balises (75 000 $) remboursées en moins de trois jours. Dix
+mines de tous rangs : ~8 000 $ par heure, ~190 000 $ par jour, une heure d'activité du milieu de
+partie (§ 3). **Toutes** (245) : 238 500 $ par heure, 5,7 M par jour et 566 blocs de minerai par
+heure — cinq à six heures de jeu de fin de partie chaque jour, la récompense de qui a fait le tour
+du monde.
+
+**Ce qui le borne**, dans l'ordre :
+
+- **le voyage** : la carte fait 40 000 blocs de tour (111,952 blocs par degré) ; chaque mine
+  demande d'y aller, puis 2 à 5 minutes sur place, et une balise de 25 000 $ ;
+- **la guerre** : chaque mine prise laisse un grief à la nation de sa région (5 à 12 selon le
+  rang ; un pays en vaut 25) et grossit la banque qu'elle convoite ; un assaut réussi reprend la
+  dernière mine de sa région et emporte une part de la banque, que les mines remplissent ;
+- **le coffre de la banque** : 54 cases. Une semaine d'absence avec dix mines de fer de rang 1, c'est
+  10 000 blocs : le coffre en garde 3 456, le reste est perdu. Les minerais ne s'accumulent pas
+  sans fin ;
+- **l'absence** : une semaine au plus est rattrapée ; au-delà, la mine ne produit plus ;
+- **la pression de vente** (§ 6) : le fer, le cuivre et l'or bruts sont au tier `FOUND` (S₀ = 64,
+  plancher 35 %) ; vendre la production d'une semaine d'un coup en écrase le prix. Les minerais
+  servent d'abord à fabriquer (NTM, Create), l'argent est le revenu.
+
+**Pas de boucle** : la balise coûte 25 000 $ et n'est jamais rendue par la capture ; une mine ne
+produit rien de plus qu'elle-même ; deux factions de joueurs ne se disputent pas une mine.
+
+Leviers : `EarthMines.moneyPerHour`, `blocksPerHour`, `captureSeconds`, `MAX_HOURS` (la semaine),
+`DoHyMines.BEACON_PRICE`, `FactionVault.SLOTS`, et le grief (`EarthMines.grief`).
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

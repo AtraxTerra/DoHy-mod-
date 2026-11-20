@@ -189,5 +189,10 @@
   "tooltip.dohy.bot_remote.1": "Right-click your bot: control it",
   "tooltip.dohy.bot_remote.2": "Right-click two corners: its zone",
   "tooltip.dohy.bot_remote.3": "Sneak + right-click a chest: link it",
-  "tooltip.dohy.bot_remote.corner": "First corner set: click the opposite corner"
+  "tooltip.dohy.bot_remote.corner": "First corner set: click the opposite corner",
+  "block.dohy.concession_beacon": "Concession Beacon",
+  "item.dohy.concession_beacon": "Concession Beacon",
+  "tooltip.dohy.concession_beacon.1": "Place it in an Earth mine",
+  "tooltip.dohy.concession_beacon.2": "Stay close: the mine joins your faction",
+  "tooltip.dohy.concession_beacon.3": "Its income goes to your faction bank"
 }
