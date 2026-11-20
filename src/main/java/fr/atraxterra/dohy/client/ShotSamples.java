@@ -254,6 +254,8 @@ final class ShotSamples {
                     for (MenuView.Card card : section.cards()) {
                         if (card.lines().size() > 3) {
                             tall++;
+                            log("carte haute {} [{}] section « {} » (mise en page {}) : « {} » {} lignes {}", id, label,
+                                    section.title(), section.layout(), card.title(), card.lines().size(), card.lines());
                         }
                     }
                 }
@@ -461,6 +463,60 @@ final class ShotSamples {
         }
     }
 
+
+    // -- Les clics -------------------------------------------------------------------------------
+
+    private static final Pattern RISKY_ACTION = Pattern.compile(
+            "(?i)dissou|quitt|supprim|abandon|reset|reinit|disband|leave|delete|detrui|exil|renonc|bannir|kick|liquid");
+
+    private static void clicks(ServerPlayer player) {
+        int total = 0;
+        int failed = 0;
+        int skipped = 0;
+        for (MenuController menu : Menus.all()) {
+            MenuView view;
+            try {
+                view = menu.view(player);
+            } catch (Throwable t) {
+                LOG.error("dohy-bug: ECHEC vue avant clics " + menu.id(), t);
+                continue;
+            }
+            List<String[]> actions = new ArrayList<>();
+            for (MenuView.Section section : view.sections()) {
+                for (MenuView.Card card : section.cards()) {
+                    String text = card.title() + " " + card.confirm() + " " + card.action() + " " + card.rightAction();
+                    if (RISKY_ACTION.matcher(text).find()) {
+                        skipped++;
+                        continue;
+                    }
+                    if (!card.action().isEmpty()) {
+                        actions.add(new String[] {card.action(), "0"});
+                    }
+                    if (!card.rightAction().isEmpty()) {
+                        actions.add(new String[] {card.rightAction(), "1"});
+                    }
+                }
+            }
+            int done = 0;
+            for (String[] action : actions) {
+                total++;
+                try {
+                    menu.handle(player, new UiNet.Action(menu.id(), "card", action[0], Integer.parseInt(action[1])));
+                    done++;
+                } catch (Throwable t) {
+                    failed++;
+                    LOG.error("dohy-bug: ECHEC clic " + menu.id() + " « " + action[0] + " » bouton " + action[1], t);
+                }
+            }
+            UiNet.close(player);
+            if (player.containerMenu != player.inventoryMenu) {
+                player.closeContainer();
+            }
+            log("clics {} : {} / {} sans exception", menu.id(), done, actions.size());
+        }
+        log("clics : {} actions, {} en echec, {} cartes ecartees", total, failed, skipped);
+    }
+
     // -- Les commandes ---------------------------------------------------------------------------
 
     private static final Set<String> SAFE = Set.of("aide", "help", "info", "infos", "liste", "list", "etat", "stats",
@@ -518,6 +574,10 @@ final class ShotSamples {
         log("commandes : {} / {} sans exception : {}", ok, lines.size(), lines);
     }
 
+    private static Item item(String id) {
+        return BuiltInRegistries.ITEM.getOptional(Identifier.parse(id)).orElseThrow();
+    }
+
     static void register() {
         ShotHarness.SHOTS.add(server("a0_depart", 100, player -> {
             me = player.getUUID();
@@ -531,18 +591,10 @@ final class ShotSamples {
             player.setGameMode(GameType.SURVIVAL);
             teleport(player, 3000.5d, Y, 3000.5d, 180.0f, 20.0f);
             Economy.set(player, 1_000_000L);
+            player.getInventory().add(new ItemStack(item("palamod:paladium_ingot"), 64));
+            player.getInventory().add(new ItemStack(item("palamod:paladium_ingot"), 36));
             log("depart : {} menus", Menus.all().size());
         }));
-        ShotHarness.SHOTS.add(client("a1_objets", 10, ShotSamples::items));
-        ShotHarness.SHOTS.add(server("a2_vues", 10, player -> {
-            teleport(player, 3000.5d, Y, 3000.5d, 180.0f, 20.0f);
-            views(player, "seul");
-        }));
-        int index = 0;
-        for (MenuController menu : Menus.all()) {
-            String name = String.format("m%02d_%s", index++, menu.id().getPath().replace('/', '_'));
-            ShotHarness.SHOTS.add(server(name, 0, player -> openMenu(player, menu)));
-        }
         ShotHarness.SHOTS.add(server("b0_faction", 60, player -> {
             UiNet.close(player);
             teleport(player, 3000.5d, Y, 3000.5d, 180.0f, 20.0f);
@@ -563,7 +615,7 @@ final class ShotSamples {
             as(player, "guerre coffre");
         }));
         ShotHarness.SHOTS.add(server("b1_vues", 10, player -> views(player, "faction")));
-        index = 0;
+        int index = 0;
         for (MenuController menu : Menus.all()) {
             int number = index++;
             if (factionMenu(menu)) {
@@ -571,16 +623,14 @@ final class ShotSamples {
                 ShotHarness.SHOTS.add(server(name, 0, player -> openMenu(player, menu)));
             }
         }
-        ShotHarness.SHOTS.add(server("c0_blocs", 200, ShotSamples::placeAll));
-        for (int quadrant = 0; quadrant < 4; quadrant++) {
-            int q = quadrant;
-            ShotHarness.SHOTS.add(server("c" + (q + 1) + "_blocs", 60, player -> viewBlocks(player, q)));
-        }
-        ShotHarness.SHOTS.add(server("c5_casse", 40, ShotSamples::breakAll));
-        ShotHarness.SHOTS.add(server("d0_entites", 200, ShotSamples::spawnAll));
-        ShotHarness.SHOTS.add(server("d1_entites", 40, player -> log("entites apres 10 s : {} vivantes",
-                SPAWNED.stream().filter(e -> !e.isRemoved()).count())));
-        ShotHarness.SHOTS.add(server("d2_mort", 40, ShotSamples::killAll));
+        ShotHarness.SHOTS.add(server("v_pain", 0, player -> openMenu(player,
+                fr.atraxterra.dohy.agri.BreadMachineMenu.INSTANCE)));
+        ShotHarness.SHOTS.add(server("f0_clics", 100, player -> {
+            UiNet.close(player);
+            teleport(player, 3000.5d, Y, 3000.5d, 180.0f, 20.0f);
+            clicks(player);
+        }));
+        ShotHarness.SHOTS.add(server("f1_vues", 10, player -> views(player, "apres clics")));
         ShotHarness.SHOTS.add(server("e0_commandes", 60, ShotSamples::commands));
         ShotHarness.SHOTS.add(server("z_fin", 10, player -> {
             UiNet.close(player);
