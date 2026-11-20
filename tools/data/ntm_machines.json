@@ -1,0 +1,3560 @@
+[
+ {
+  "id": "hbm:anvil_arsenic_bronze",
+  "mod": "NTM NEXT",
+  "en": "Arsenic Bronze Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_bismuth_bronze",
+  "mod": "NTM NEXT",
+  "en": "Bismuth Bronze Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_desh",
+  "mod": "NTM NEXT",
+  "en": "Desh Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_dnt",
+  "mod": "NTM NEXT",
+  "en": "Dineutronium Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_ferrouranium",
+  "mod": "NTM NEXT",
+  "en": "Ferrouranium Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_iron",
+  "mod": "NTM NEXT",
+  "en": "Iron Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_lead",
+  "mod": "NTM NEXT",
+  "en": "Lead Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_murky",
+  "mod": "NTM NEXT",
+  "en": "Murky Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_osmiridium",
+  "mod": "NTM NEXT",
+  "en": "Osmiridium Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_saturnite",
+  "mod": "NTM NEXT",
+  "en": "Saturnite Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_schrabidate",
+  "mod": "NTM NEXT",
+  "en": "Ferric Schrabidate Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:anvil_steel",
+  "mod": "NTM NEXT",
+  "en": "Steel Anvil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:barrel_antimatter",
+  "mod": "NTM NEXT",
+  "en": "Magnetic Antimatter Container",
+  "fr": ""
+ },
+ {
+  "id": "hbm:barrel_corroded",
+  "mod": "NTM NEXT",
+  "en": "Corroded Barrel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:barrel_plastic",
+  "mod": "NTM NEXT",
+  "en": "Safe Barrel™",
+  "fr": ""
+ },
+ {
+  "id": "hbm:barrel_steel",
+  "mod": "NTM NEXT",
+  "en": "Steel Barrel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:barrel_tcalloy",
+  "mod": "NTM NEXT",
+  "en": "Technetium Steel Barrel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:blast_door",
+  "mod": "NTM NEXT",
+  "en": "Sliding Blast Door",
+  "fr": ""
+ },
+ {
+  "id": "hbm:bomb_multi",
+  "mod": "NTM NEXT",
+  "en": "Multi Purpose Bomb",
+  "fr": "Bombe polyvalente"
+ },
+ {
+  "id": "hbm:c4",
+  "mod": "NTM NEXT",
+  "en": "C-4",
+  "fr": ""
+ },
+ {
+  "id": "hbm:cable",
+  "mod": "NTM NEXT",
+  "en": "Red Copper Cable",
+  "fr": "Câble en cuivre rouge"
+ },
+ {
+  "id": "hbm:cable_detector",
+  "mod": "NTM NEXT",
+  "en": "Redstone Power Switch",
+  "fr": ""
+ },
+ {
+  "id": "hbm:cable_diode",
+  "mod": "NTM NEXT",
+  "en": "Red Copper Diode",
+  "fr": ""
+ },
+ {
+  "id": "hbm:cable_switch",
+  "mod": "NTM NEXT",
+  "en": "Power Switch",
+  "fr": ""
+ },
+ {
+  "id": "hbm:capacitor_copper",
+  "mod": "NTM NEXT",
+  "en": "Old Capacitor",
+  "fr": ""
+ },
+ {
+  "id": "hbm:cargo_elevator",
+  "mod": "NTM NEXT",
+  "en": "Cargo Elevator",
+  "fr": ""
+ },
+ {
+  "id": "hbm:charge_c4",
+  "mod": "NTM NEXT",
+  "en": "Demolition Charge",
+  "fr": ""
+ },
+ {
+  "id": "hbm:charge_dynamite",
+  "mod": "NTM NEXT",
+  "en": "Time Bomb",
+  "fr": ""
+ },
+ {
+  "id": "hbm:charge_miner",
+  "mod": "NTM NEXT",
+  "en": "Timed Mining Charge",
+  "fr": ""
+ },
+ {
+  "id": "hbm:charge_semtex",
+  "mod": "NTM NEXT",
+  "en": "Semtex Mining Charge",
+  "fr": ""
+ },
+ {
+  "id": "hbm:charger",
+  "mod": "NTM NEXT",
+  "en": "Charging Station",
+  "fr": ""
+ },
+ {
+  "id": "hbm:chimney_brick",
+  "mod": "NTM NEXT",
+  "en": "Smokestack",
+  "fr": ""
+ },
+ {
+  "id": "hbm:chimney_industrial",
+  "mod": "NTM NEXT",
+  "en": "Industrial Smokestack",
+  "fr": ""
+ },
+ {
+  "id": "hbm:compact_launcher",
+  "mod": "NTM NEXT",
+  "en": "Compact Launch Pad",
+  "fr": ""
+ },
+ {
+  "id": "hbm:conveyor",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Belt",
+  "fr": ""
+ },
+ {
+  "id": "hbm:conveyor_chute",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Chute",
+  "fr": ""
+ },
+ {
+  "id": "hbm:conveyor_double",
+  "mod": "NTM NEXT",
+  "en": "Double-Lane Conveyor Belt",
+  "fr": ""
+ },
+ {
+  "id": "hbm:conveyor_express",
+  "mod": "NTM NEXT",
+  "en": "Express Conveyor Belt",
+  "fr": ""
+ },
+ {
+  "id": "hbm:conveyor_lift",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Chain Lift",
+  "fr": ""
+ },
+ {
+  "id": "hbm:conveyor_triple",
+  "mod": "NTM NEXT",
+  "en": "Triple-Lane Conveyor Belt",
+  "fr": ""
+ },
+ {
+  "id": "hbm:crane_boxer",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Boxer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:crane_extractor",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Ejector",
+  "fr": ""
+ },
+ {
+  "id": "hbm:crane_grabber",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Grabber",
+  "fr": ""
+ },
+ {
+  "id": "hbm:crane_inserter",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Inserter",
+  "fr": ""
+ },
+ {
+  "id": "hbm:crane_partitioner",
+  "mod": "NTM NEXT",
+  "en": "Acidizer Input Partitioner",
+  "fr": ""
+ },
+ {
+  "id": "hbm:crane_router",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Sorter",
+  "fr": ""
+ },
+ {
+  "id": "hbm:crane_splitter",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Splitter",
+  "fr": ""
+ },
+ {
+  "id": "hbm:crane_unboxer",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Unboxer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:crate",
+  "mod": "NTM NEXT",
+  "en": "Supply Crate",
+  "fr": "Caisse de ravitaillement"
+ },
+ {
+  "id": "hbm:decon",
+  "mod": "NTM NEXT",
+  "en": "Player Decontaminator",
+  "fr": ""
+ },
+ {
+  "id": "hbm:det_charge",
+  "mod": "NTM NEXT",
+  "en": "Explosive Charge",
+  "fr": "Charge explosive"
+ },
+ {
+  "id": "hbm:det_miner",
+  "mod": "NTM NEXT",
+  "en": "Mining Charge",
+  "fr": ""
+ },
+ {
+  "id": "hbm:det_nuke",
+  "mod": "NTM NEXT",
+  "en": "Nuclear Charge",
+  "fr": ""
+ },
+ {
+  "id": "hbm:dfc_core",
+  "mod": "NTM NEXT",
+  "en": "Dark Fusion Core",
+  "fr": ""
+ },
+ {
+  "id": "hbm:dfc_emitter",
+  "mod": "NTM NEXT",
+  "en": "DFC Emitter",
+  "fr": ""
+ },
+ {
+  "id": "hbm:dfc_injector",
+  "mod": "NTM NEXT",
+  "en": "DFC Fuel Injector",
+  "fr": ""
+ },
+ {
+  "id": "hbm:dfc_receiver",
+  "mod": "NTM NEXT",
+  "en": "DFC Receiver",
+  "fr": ""
+ },
+ {
+  "id": "hbm:dfc_stabilizer",
+  "mod": "NTM NEXT",
+  "en": "DFC Stabilizer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:door_bunker",
+  "mod": "NTM NEXT",
+  "en": "Bunker Door",
+  "fr": ""
+ },
+ {
+  "id": "hbm:drone_crate",
+  "mod": "NTM NEXT",
+  "en": "Transport Drone Crate",
+  "fr": ""
+ },
+ {
+  "id": "hbm:drone_crate_provider",
+  "mod": "NTM NEXT",
+  "en": "Logistics Provider Crate",
+  "fr": ""
+ },
+ {
+  "id": "hbm:drone_crate_requester",
+  "mod": "NTM NEXT",
+  "en": "Logistics Requester Crate",
+  "fr": ""
+ },
+ {
+  "id": "hbm:drone_dock",
+  "mod": "NTM NEXT",
+  "en": "Logistics Drone Dock",
+  "fr": ""
+ },
+ {
+  "id": "hbm:drone_waypoint",
+  "mod": "NTM NEXT",
+  "en": "Transport Drone Waypoint",
+  "fr": ""
+ },
+ {
+  "id": "hbm:drone_waypoint_request",
+  "mod": "NTM NEXT",
+  "en": "Logistics Drone Waypoint",
+  "fr": ""
+ },
+ {
+  "id": "hbm:dynamite",
+  "mod": "NTM NEXT",
+  "en": "Dynamite",
+  "fr": ""
+ },
+ {
+  "id": "hbm:emp_bomb",
+  "mod": "NTM NEXT",
+  "en": "EMP Device",
+  "fr": "Bombe IEM"
+ },
+ {
+  "id": "hbm:field_disturber",
+  "mod": "NTM NEXT",
+  "en": "High Energy Field Jammer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fissure_bomb",
+  "mod": "NTM NEXT",
+  "en": "Fissure Bomb",
+  "fr": ""
+ },
+ {
+  "id": "hbm:flame_war",
+  "mod": "NTM NEXT",
+  "en": "Flame War in a Box",
+  "fr": "Flame War in a box"
+ },
+ {
+  "id": "hbm:float_bomb",
+  "mod": "NTM NEXT",
+  "en": "Levitation Bomb",
+  "fr": "Bombe à lévitation"
+ },
+ {
+  "id": "hbm:floodlight",
+  "mod": "NTM NEXT",
+  "en": "Powered Floodlight",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_counter_valve",
+  "mod": "NTM NEXT",
+  "en": "Fluid Valve with Counter",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_copper_0",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_copper_1",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_copper_2",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_copper_3",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_copper_4",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_silver_0",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_silver_1",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_silver_2",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_silver_3",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_silver_4",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_white_0",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_white_1",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_white_2",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_white_3",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_box_white_4",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct (Boxduct)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_exhaust_0",
+  "mod": "NTM NEXT",
+  "en": "Exhaust Pipe",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_exhaust_1",
+  "mod": "NTM NEXT",
+  "en": "Exhaust Pipe",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_exhaust_2",
+  "mod": "NTM NEXT",
+  "en": "Exhaust Pipe",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_exhaust_3",
+  "mod": "NTM NEXT",
+  "en": "Exhaust Pipe",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_exhaust_4",
+  "mod": "NTM NEXT",
+  "en": "Exhaust Pipe",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_gauge",
+  "mod": "NTM NEXT",
+  "en": "Flow Gauge Pipe",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_paintable",
+  "mod": "NTM NEXT",
+  "en": "Paintable Coated Universal Fluid Duct",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_duct_paintable_block_exhaust",
+  "mod": "NTM NEXT",
+  "en": "Paintable Coated Exhaust Pipe",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_pipe",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_pipe_colored",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_pipe_silver",
+  "mod": "NTM NEXT",
+  "en": "Universal Fluid Duct",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_pump",
+  "mod": "NTM NEXT",
+  "en": "Flow Control Pump",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_switch",
+  "mod": "NTM NEXT",
+  "en": "Redstone Fluid Valve",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fluid_valve",
+  "mod": "NTM NEXT",
+  "en": "Fluid Valve",
+  "fr": ""
+ },
+ {
+  "id": "hbm:foundry_basin",
+  "mod": "NTM NEXT",
+  "en": "Foundry Basin",
+  "fr": ""
+ },
+ {
+  "id": "hbm:foundry_channel",
+  "mod": "NTM NEXT",
+  "en": "Foundry Channel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:foundry_mold",
+  "mod": "NTM NEXT",
+  "en": "Shallow Foundry Basin",
+  "fr": ""
+ },
+ {
+  "id": "hbm:foundry_outlet",
+  "mod": "NTM NEXT",
+  "en": "Foundry Outlet",
+  "fr": ""
+ },
+ {
+  "id": "hbm:foundry_slagtap",
+  "mod": "NTM NEXT",
+  "en": "Foundry Spill Outlet",
+  "fr": ""
+ },
+ {
+  "id": "hbm:foundry_tank",
+  "mod": "NTM NEXT",
+  "en": "Foundry Storage Basin",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fraction_spacer",
+  "mod": "NTM NEXT",
+  "en": "Fractioning Tower Separator",
+  "fr": ""
+ },
+ {
+  "id": "hbm:furnace_combination",
+  "mod": "NTM NEXT",
+  "en": "Combination Oven",
+  "fr": ""
+ },
+ {
+  "id": "hbm:furnace_iron",
+  "mod": "NTM NEXT",
+  "en": "Iron Furnace",
+  "fr": ""
+ },
+ {
+  "id": "hbm:furnace_steel",
+  "mod": "NTM NEXT",
+  "en": "Steel Furnace",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_boiler",
+  "mod": "NTM NEXT",
+  "en": "Fusion Reactor Boiler",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_breeder",
+  "mod": "NTM NEXT",
+  "en": "Fusion Reactor Breeding Chamber",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_collector",
+  "mod": "NTM NEXT",
+  "en": "Fusion Reactor Collector Chamber",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_component",
+  "mod": "NTM NEXT",
+  "en": "Superconducting BSCCO Coils",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_component_blanket",
+  "mod": "NTM NEXT",
+  "en": "Fusion Reactor Blanket",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_component_bscco_welded",
+  "mod": "NTM NEXT",
+  "en": "Welded BSCCO Coils",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_component_motor",
+  "mod": "NTM NEXT",
+  "en": "Fusion Reactor Piping",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_coupler",
+  "mod": "NTM NEXT",
+  "en": "Fusion Reactor Plasma Coupler",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_hatch",
+  "mod": "NTM NEXT",
+  "en": "Duct Deco Block",
+  "fr": "Trappe d'accès du réacteur de fusion"
+ },
+ {
+  "id": "hbm:fusion_heater",
+  "mod": "NTM NEXT",
+  "en": "Plasma Heater Component",
+  "fr": "Chauffeur de plasma"
+ },
+ {
+  "id": "hbm:fusion_klystron",
+  "mod": "NTM NEXT",
+  "en": "Klystron",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_mhdt",
+  "mod": "NTM NEXT",
+  "en": "MHD Turbine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_plasma_forge",
+  "mod": "NTM NEXT",
+  "en": "Plasma Forge",
+  "fr": ""
+ },
+ {
+  "id": "hbm:fusion_torus",
+  "mod": "NTM NEXT",
+  "en": "Fusion Reactor Vessel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:geiger",
+  "mod": "NTM NEXT",
+  "en": "Geiger Counter",
+  "fr": ""
+ },
+ {
+  "id": "hbm:hadron_coil_alloy",
+  "mod": "NTM NEXT",
+  "en": "Dense Superconducting Coil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:heater_electric",
+  "mod": "NTM NEXT",
+  "en": "Electric Heater",
+  "fr": ""
+ },
+ {
+  "id": "hbm:heater_firebox",
+  "mod": "NTM NEXT",
+  "en": "Firebox",
+  "fr": ""
+ },
+ {
+  "id": "hbm:heater_heatex",
+  "mod": "NTM NEXT",
+  "en": "Heat Exchanging Heater",
+  "fr": ""
+ },
+ {
+  "id": "hbm:heater_oilburner",
+  "mod": "NTM NEXT",
+  "en": "Fluid Burner",
+  "fr": ""
+ },
+ {
+  "id": "hbm:heater_oven",
+  "mod": "NTM NEXT",
+  "en": "Heating Oven",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf",
+  "mod": "NTM NEXT",
+  "en": "Inertial Confinement Fusion Reactor (ICF)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_block",
+  "mod": "NTM NEXT",
+  "en": "ICF Laser",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_capacitor",
+  "mod": "NTM NEXT",
+  "en": "ICF Laser Capacitor",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_casing",
+  "mod": "NTM NEXT",
+  "en": "ICF Laser Casing",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_cell",
+  "mod": "NTM NEXT",
+  "en": "ICF Laser Cell",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_component",
+  "mod": "NTM NEXT",
+  "en": "ICF Stability Element",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_component_structure",
+  "mod": "NTM NEXT",
+  "en": "ICF Casing",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_component_structure_bolted",
+  "mod": "NTM NEXT",
+  "en": "ICF Casing (Riveted)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_component_vessel",
+  "mod": "NTM NEXT",
+  "en": "ICF Containment Vessel Wall",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_component_vessel_welded",
+  "mod": "NTM NEXT",
+  "en": "ICF Containment Vessel Wall (Welded)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_controller",
+  "mod": "NTM NEXT",
+  "en": "ICF Laser Controller",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_emitter",
+  "mod": "NTM NEXT",
+  "en": "ICF Laser Flash Tube",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_port",
+  "mod": "NTM NEXT",
+  "en": "ICF Laser Port",
+  "fr": ""
+ },
+ {
+  "id": "hbm:icf_turbocharger",
+  "mod": "NTM NEXT",
+  "en": "ICF Laser Turbocharger",
+  "fr": ""
+ },
+ {
+  "id": "hbm:launch_pad",
+  "mod": "NTM NEXT",
+  "en": "Silo Launch Pad",
+  "fr": "Base de lancement des missiles"
+ },
+ {
+  "id": "hbm:launch_pad_large",
+  "mod": "NTM NEXT",
+  "en": "Launch Pad",
+  "fr": ""
+ },
+ {
+  "id": "hbm:launch_pad_rusted",
+  "mod": "NTM NEXT",
+  "en": "Old Launch Pad",
+  "fr": ""
+ },
+ {
+  "id": "hbm:launch_table",
+  "mod": "NTM NEXT",
+  "en": "Large Launch Pad",
+  "fr": ""
+ },
+ {
+  "id": "hbm:launchpad_soyuz",
+  "mod": "NTM NEXT",
+  "en": "Soyuz Launch Pad",
+  "fr": ""
+ },
+ {
+  "id": "hbm:lox_barrel",
+  "mod": "NTM NEXT",
+  "en": "LOX Barrel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_ammo_press",
+  "mod": "NTM NEXT",
+  "en": "Ammo Press",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_annihilator",
+  "mod": "NTM NEXT",
+  "en": "Annihilator",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_arc_furnace",
+  "mod": "NTM NEXT",
+  "en": "Electric Arc Furnace",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_arc_welder",
+  "mod": "NTM NEXT",
+  "en": "Arc Welder",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_armor_table",
+  "mod": "NTM NEXT",
+  "en": "Armor Modification Table",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_ashpit",
+  "mod": "NTM NEXT",
+  "en": "Ashpit",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_assembly_factory",
+  "mod": "NTM NEXT",
+  "en": "Assembly Factory",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_assembly_machine",
+  "mod": "NTM NEXT",
+  "en": "Assembly Machine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_autocrafter",
+  "mod": "NTM NEXT",
+  "en": "Automatic Crafting Table",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_autosaw",
+  "mod": "NTM NEXT",
+  "en": "Automatic Buzz Saw",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_battery_redd",
+  "mod": "NTM NEXT",
+  "en": "FEnSU",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_battery_socket",
+  "mod": "NTM NEXT",
+  "en": "Battery Socket",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_bigasstank",
+  "mod": "NTM NEXT",
+  "en": "Big-Ass Tank",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_blast_furnace",
+  "mod": "NTM NEXT",
+  "en": "Blast Furnace",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_boiler",
+  "mod": "NTM NEXT",
+  "en": "Boiler",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_catalytic_reformer",
+  "mod": "NTM NEXT",
+  "en": "Catalytic Reformer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_centrifuge",
+  "mod": "NTM NEXT",
+  "en": "Centrifuge",
+  "fr": "Centrifugeuse"
+ },
+ {
+  "id": "hbm:machine_chemical_factory",
+  "mod": "NTM NEXT",
+  "en": "Chemical Factory",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_chemical_plant",
+  "mod": "NTM NEXT",
+  "en": "Chemical Plant",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_chungus",
+  "mod": "NTM NEXT",
+  "en": "Leviathan Steam Turbine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_coker",
+  "mod": "NTM NEXT",
+  "en": "Coker Unit",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_combustion_engine",
+  "mod": "NTM NEXT",
+  "en": "Industrial Combustion Engine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_compressor",
+  "mod": "NTM NEXT",
+  "en": "Compressor",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_compressor_compact",
+  "mod": "NTM NEXT",
+  "en": "Compact Compressor",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_condenser",
+  "mod": "NTM NEXT",
+  "en": "Steam Condenser",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_condenser_powered",
+  "mod": "NTM NEXT",
+  "en": "High-Power Steam Condenser",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_controller",
+  "mod": "NTM NEXT",
+  "en": "Reactor Remote Control Block",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_conveyor_press",
+  "mod": "NTM NEXT",
+  "en": "Conveyor Press",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_cracking_tower",
+  "mod": "NTM NEXT",
+  "en": "Catalytic Cracking Tower",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_crucible",
+  "mod": "NTM NEXT",
+  "en": "Crucible",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_crystallizer",
+  "mod": "NTM NEXT",
+  "en": "Ore Acidizer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_cyclotron",
+  "mod": "NTM NEXT",
+  "en": "Cyclotron",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_detector",
+  "mod": "NTM NEXT",
+  "en": "Power Detector",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_deuterium_extractor",
+  "mod": "NTM NEXT",
+  "en": "Deuterium Extractor",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_deuterium_tower",
+  "mod": "NTM NEXT",
+  "en": "Deuterium Extraction Tower",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_diesel",
+  "mod": "NTM NEXT",
+  "en": "Diesel Generator",
+  "fr": "Générateur diesel"
+ },
+ {
+  "id": "hbm:machine_drain",
+  "mod": "NTM NEXT",
+  "en": "Drainage Pipe",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_electric_furnace",
+  "mod": "NTM NEXT",
+  "en": "Electric Furnace",
+  "fr": "Four electrique"
+ },
+ {
+  "id": "hbm:machine_electrolyser",
+  "mod": "NTM NEXT",
+  "en": "Electrolysis Machine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_epress",
+  "mod": "NTM NEXT",
+  "en": "Electric Press",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_excavator",
+  "mod": "NTM NEXT",
+  "en": "Large Mining Drill",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_exposure_chamber",
+  "mod": "NTM NEXT",
+  "en": "Exposure Chamber",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_fel",
+  "mod": "NTM NEXT",
+  "en": "FEL",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_flare",
+  "mod": "NTM NEXT",
+  "en": "Flare Stack",
+  "fr": "Bruleur à gaz"
+ },
+ {
+  "id": "hbm:machine_fluidtank",
+  "mod": "NTM NEXT",
+  "en": "Tank",
+  "fr": "Réservoir"
+ },
+ {
+  "id": "hbm:machine_forcefield",
+  "mod": "NTM NEXT",
+  "en": "Forcefield Emitter",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_fracking_tower",
+  "mod": "NTM NEXT",
+  "en": "Hydraulic Fracking Tower",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_fraction_tower",
+  "mod": "NTM NEXT",
+  "en": "Fractioning Tower",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_funnel",
+  "mod": "NTM NEXT",
+  "en": "Combinator Funnel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_furnace_brick",
+  "mod": "NTM NEXT",
+  "en": "Bricked Furnace",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_gascent",
+  "mod": "NTM NEXT",
+  "en": "Gas Centrifuge",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_hephaestus",
+  "mod": "NTM NEXT",
+  "en": "Geothermal Heat Exchanger",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_hydrotreater",
+  "mod": "NTM NEXT",
+  "en": "Hydrotreater",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_icf_press",
+  "mod": "NTM NEXT",
+  "en": "ICF Fuel Pellet Maker",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_industrial_boiler",
+  "mod": "NTM NEXT",
+  "en": "Industrial Boiler",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_industrial_turbine",
+  "mod": "NTM NEXT",
+  "en": "Industrial Steam Turbine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_intake",
+  "mod": "NTM NEXT",
+  "en": "Air Intake",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_keyforge",
+  "mod": "NTM NEXT",
+  "en": "Locksmith Table",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_liquefactor",
+  "mod": "NTM NEXT",
+  "en": "Industrial Liquefaction Machine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_lpw2",
+  "mod": "NTM NEXT",
+  "en": "LPW-2 Station Thruster",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_microwave",
+  "mod": "NTM NEXT",
+  "en": "Microwave",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_mining_laser",
+  "mod": "NTM NEXT",
+  "en": "Mining Laser",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_missile_assembly",
+  "mod": "NTM NEXT",
+  "en": "Missile Assembly Station",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_mixer",
+  "mod": "NTM NEXT",
+  "en": "Industrial Mixer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_orbus",
+  "mod": "NTM NEXT",
+  "en": "Heavy Magnetic Storage Tank",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_ore_slopper",
+  "mod": "NTM NEXT",
+  "en": "Bedrock Ore Processor",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_precass",
+  "mod": "NTM NEXT",
+  "en": "Precision Assembly Machine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_press",
+  "mod": "NTM NEXT",
+  "en": "Burner Press",
+  "fr": "Presse à vapeur"
+ },
+ {
+  "id": "hbm:machine_puf6_tank",
+  "mod": "NTM NEXT",
+  "en": "Plutonium Hexafluoride Tank",
+  "fr": "Réservoir d'hexafluorure de plutonium"
+ },
+ {
+  "id": "hbm:machine_pumpjack",
+  "mod": "NTM NEXT",
+  "en": "Pumpjack",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_purex",
+  "mod": "NTM NEXT",
+  "en": "PUREX",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_pyrooven",
+  "mod": "NTM NEXT",
+  "en": "Pyrolysis Oven",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_radar",
+  "mod": "NTM NEXT",
+  "en": "Radar",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_radar_large",
+  "mod": "NTM NEXT",
+  "en": "Large Radar",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_radgen",
+  "mod": "NTM NEXT",
+  "en": "Radiation-Powered Engine",
+  "fr": "Moteur alimenté par rayonnement [WIP]"
+ },
+ {
+  "id": "hbm:machine_radiolysis",
+  "mod": "NTM NEXT",
+  "en": "Radioisotope Thermoelectric Generator and Radiolysis Chamber",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_reactor_small",
+  "mod": "NTM NEXT",
+  "en": "Research Reactor (LEGACY)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_refinery",
+  "mod": "NTM NEXT",
+  "en": "Oil Refinery",
+  "fr": "Raffinerie de pétrole"
+ },
+ {
+  "id": "hbm:machine_rockmill",
+  "mod": "NTM NEXT",
+  "en": "Rock Mill",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_rotary_furnace",
+  "mod": "NTM NEXT",
+  "en": "Rotary Furnace",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_rtg_grey",
+  "mod": "NTM NEXT",
+  "en": "RT Generator",
+  "fr": "Générateur RT"
+ },
+ {
+  "id": "hbm:machine_satlink",
+  "mod": "NTM NEXT",
+  "en": "Satellite Ground Station",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_satlinker",
+  "mod": "NTM NEXT",
+  "en": "Satellite ID Manager",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_sawmill",
+  "mod": "NTM NEXT",
+  "en": "Stirling Sawmill",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_shredder",
+  "mod": "NTM NEXT",
+  "en": "Shredder",
+  "fr": "Broyeur"
+ },
+ {
+  "id": "hbm:machine_silex",
+  "mod": "NTM NEXT",
+  "en": "Laser Isotope Separation Chamber (SILEX)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_siren",
+  "mod": "NTM NEXT",
+  "en": "Siren",
+  "fr": "sirene"
+ },
+ {
+  "id": "hbm:machine_solar_boiler",
+  "mod": "NTM NEXT",
+  "en": "Solar Tower Boiler",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_soldering_station",
+  "mod": "NTM NEXT",
+  "en": "Soldering Station",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_solidifier",
+  "mod": "NTM NEXT",
+  "en": "Industrial Solidification Machine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_steam_engine",
+  "mod": "NTM NEXT",
+  "en": "Steam Engine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_stirling",
+  "mod": "NTM NEXT",
+  "en": "Stirling Engine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_stirling_steel",
+  "mod": "NTM NEXT",
+  "en": "Heavy Stirling Engine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_storage_drum",
+  "mod": "NTM NEXT",
+  "en": "Nuclear Waste Disposal Drum",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_strand_caster",
+  "mod": "NTM NEXT",
+  "en": "Strand Caster",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_supercomputer",
+  "mod": "NTM NEXT",
+  "en": "Supercomputer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_tape_drive",
+  "mod": "NTM NEXT",
+  "en": "Drive Enclosure",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_teleporter",
+  "mod": "NTM NEXT",
+  "en": "Teleporter",
+  "fr": "Téléporteur"
+ },
+ {
+  "id": "hbm:machine_thresher",
+  "mod": "NTM NEXT",
+  "en": "Automatic Thresher",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_tower_large",
+  "mod": "NTM NEXT",
+  "en": "Cooling Tower",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_tower_small",
+  "mod": "NTM NEXT",
+  "en": "Auxiliary Cooling Tower",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_transformer",
+  "mod": "NTM NEXT",
+  "en": "10k-20Hz Transformer",
+  "fr": "Transformateur"
+ },
+ {
+  "id": "hbm:machine_turbinegas",
+  "mod": "NTM NEXT",
+  "en": "Combined Cycle Gas Turbine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_turbofan",
+  "mod": "NTM NEXT",
+  "en": "Turbofan",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_uf6_tank",
+  "mod": "NTM NEXT",
+  "en": "Uranium Hexafluoride Tank",
+  "fr": "Réservoir d'hexafluorure d'uranium"
+ },
+ {
+  "id": "hbm:machine_vacuum_distill",
+  "mod": "NTM NEXT",
+  "en": "Vacuum Refinery",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_waste_drum",
+  "mod": "NTM NEXT",
+  "en": "Spent Fuel Pool Drum",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_weapon_table",
+  "mod": "NTM NEXT",
+  "en": "Weapon Modification Table",
+  "fr": ""
+ },
+ {
+  "id": "hbm:machine_well",
+  "mod": "NTM NEXT",
+  "en": "Oil Derrick",
+  "fr": "Derrick"
+ },
+ {
+  "id": "hbm:machine_wood_burner",
+  "mod": "NTM NEXT",
+  "en": "Wood-Burning Generator",
+  "fr": ""
+ },
+ {
+  "id": "hbm:mass_storage_desh",
+  "mod": "NTM NEXT",
+  "en": "Mass Storage Unit",
+  "fr": ""
+ },
+ {
+  "id": "hbm:mass_storage_iron",
+  "mod": "NTM NEXT",
+  "en": "Mass Storage Unit",
+  "fr": ""
+ },
+ {
+  "id": "hbm:mass_storage_tcalloy",
+  "mod": "NTM NEXT",
+  "en": "Mass Storage Unit",
+  "fr": ""
+ },
+ {
+  "id": "hbm:mass_storage_wood",
+  "mod": "NTM NEXT",
+  "en": "Mass Storage Unit",
+  "fr": ""
+ },
+ {
+  "id": "hbm:mine_ap",
+  "mod": "NTM NEXT",
+  "en": "Anti-Personell Mine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:mine_fat",
+  "mod": "NTM NEXT",
+  "en": "Fat Mine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:mine_he",
+  "mod": "NTM NEXT",
+  "en": "Anti-Tank Mine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:mine_naval",
+  "mod": "NTM NEXT",
+  "en": "Naval Mine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:mine_shrap",
+  "mod": "NTM NEXT",
+  "en": "Shrapnel Mine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:nuke_boy",
+  "mod": "NTM NEXT",
+  "en": "Little Boy",
+  "fr": ""
+ },
+ {
+  "id": "hbm:nuke_custom",
+  "mod": "NTM NEXT",
+  "en": "Custom Nuke",
+  "fr": "Nuke personnalisé"
+ },
+ {
+  "id": "hbm:nuke_fleija",
+  "mod": "NTM NEXT",
+  "en": "F.L.E.I.J.A.",
+  "fr": "F.L.E.I.J.A"
+ },
+ {
+  "id": "hbm:nuke_fstbmb",
+  "mod": "NTM NEXT",
+  "en": "Balefire Bomb",
+  "fr": ""
+ },
+ {
+  "id": "hbm:nuke_gadget",
+  "mod": "NTM NEXT",
+  "en": "The Gadget",
+  "fr": "Le gadget"
+ },
+ {
+  "id": "hbm:nuke_man",
+  "mod": "NTM NEXT",
+  "en": "Fat Man",
+  "fr": ""
+ },
+ {
+  "id": "hbm:nuke_mike",
+  "mod": "NTM NEXT",
+  "en": "Ivy Mike",
+  "fr": ""
+ },
+ {
+  "id": "hbm:nuke_n2",
+  "mod": "NTM NEXT",
+  "en": "N² Mine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:nuke_prototype",
+  "mod": "NTM NEXT",
+  "en": "The Prototype",
+  "fr": "Le prototype"
+ },
+ {
+  "id": "hbm:nuke_solinium",
+  "mod": "NTM NEXT",
+  "en": "The Blue Rinse",
+  "fr": ""
+ },
+ {
+  "id": "hbm:nuke_tsar",
+  "mod": "NTM NEXT",
+  "en": "Tsar Bomba",
+  "fr": ""
+ },
+ {
+  "id": "hbm:oil_pipe",
+  "mod": "NTM NEXT",
+  "en": "Crude Oil Extraction Pipe",
+  "fr": "Tuyau d'extraction de pétrole brut"
+ },
+ {
+  "id": "hbm:pa_beamline",
+  "mod": "NTM NEXT",
+  "en": "Beamline",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pa_detector",
+  "mod": "NTM NEXT",
+  "en": "Particle Detector",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pa_dipole",
+  "mod": "NTM NEXT",
+  "en": "Dipole Magnets",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pa_quadrupole",
+  "mod": "NTM NEXT",
+  "en": "Quadrupole Magnets",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pa_rfc",
+  "mod": "NTM NEXT",
+  "en": "RF Cavity",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pa_source",
+  "mod": "NTM NEXT",
+  "en": "Particle Source",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pile_block",
+  "mod": "NTM NEXT",
+  "en": "Chicago Pile",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pile_brick",
+  "mod": "NTM NEXT",
+  "en": "Chicago Pile Graphite Bricks",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pile_control",
+  "mod": "NTM NEXT",
+  "en": "Chicago Pile Control Rod",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pile_loader",
+  "mod": "NTM NEXT",
+  "en": "Chicago Pile Fuel Loader",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pile_vent",
+  "mod": "NTM NEXT",
+  "en": "Chicago Pile Vent",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pipe_anchor",
+  "mod": "NTM NEXT",
+  "en": "Pipe Anchor",
+  "fr": ""
+ },
+ {
+  "id": "hbm:piston_inserter",
+  "mod": "NTM NEXT",
+  "en": "Inserter",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_flower_cd0",
+  "mod": "NTM NEXT",
+  "en": "Mustard Willow",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_flower_cd1",
+  "mod": "NTM NEXT",
+  "en": "Mustard Willow",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_flower_foxglove",
+  "mod": "NTM NEXT",
+  "en": "Foxglove",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_flower_nightshade",
+  "mod": "NTM NEXT",
+  "en": "Deadly Nightshade",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_flower_tobacco",
+  "mod": "NTM NEXT",
+  "en": "Tobacco Plant",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_flower_weed",
+  "mod": "NTM NEXT",
+  "en": "Hemp",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_reeds",
+  "mod": "NTM NEXT",
+  "en": "Reeds",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_tall_cd2",
+  "mod": "NTM NEXT",
+  "en": "Mustard Willow",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_tall_cd3",
+  "mod": "NTM NEXT",
+  "en": "Mustard Willow",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_tall_cd4",
+  "mod": "NTM NEXT",
+  "en": "Mustard Willow (Mature)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:plant_tall_weed",
+  "mod": "NTM NEXT",
+  "en": "Hemp",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pneumatic_storage_access",
+  "mod": "NTM NEXT",
+  "en": "Pneumatic Storage Network - Access Terminal",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pneumatic_storage_clutter",
+  "mod": "NTM NEXT",
+  "en": "Pneumatic Storage Network - Clutter Storage",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pneumatic_storage_exporter",
+  "mod": "NTM NEXT",
+  "en": "Pneumatic Storage Network - Exporter",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pneumatic_storage_importer",
+  "mod": "NTM NEXT",
+  "en": "Pneumatic Storage Network - Importer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pneumatic_storage_mono",
+  "mod": "NTM NEXT",
+  "en": "Pneumatic Storage Network - Bulk Storage",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pneumatic_tube",
+  "mod": "NTM NEXT",
+  "en": "Pneumatic Tube",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pneumatic_tube_paintable",
+  "mod": "NTM NEXT",
+  "en": "Paintable Pneumatic Tube",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pole_satellite_receiver",
+  "mod": "NTM NEXT",
+  "en": "Satellite Dish",
+  "fr": "Récepteur satellite"
+ },
+ {
+  "id": "hbm:pole_top",
+  "mod": "NTM NEXT",
+  "en": "Antenna Top",
+  "fr": "Antenne Haut"
+ },
+ {
+  "id": "hbm:press_preheater",
+  "mod": "NTM NEXT",
+  "en": "Burner Press Preheater",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pump_electric",
+  "mod": "NTM NEXT",
+  "en": "Electric Groundwater Pump",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pump_steam",
+  "mod": "NTM NEXT",
+  "en": "Steam-Powered Groundwater Pump",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_block",
+  "mod": "NTM NEXT",
+  "en": "PWR",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_casing",
+  "mod": "NTM NEXT",
+  "en": "PWR Pressure Vessel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_channel",
+  "mod": "NTM NEXT",
+  "en": "PWR Coolant Channel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_control",
+  "mod": "NTM NEXT",
+  "en": "PWR Control Rod",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_controller",
+  "mod": "NTM NEXT",
+  "en": "PWR Controller",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_fuel",
+  "mod": "NTM NEXT",
+  "en": "PWR Fuel Rod",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_heatex",
+  "mod": "NTM NEXT",
+  "en": "PWR Heat Exchanger",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_heatsink",
+  "mod": "NTM NEXT",
+  "en": "PWR Heatsink",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_neutron_source",
+  "mod": "NTM NEXT",
+  "en": "PWR Neutron Source",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_port",
+  "mod": "NTM NEXT",
+  "en": "PWR Access Port",
+  "fr": ""
+ },
+ {
+  "id": "hbm:pwr_reflector",
+  "mod": "NTM NEXT",
+  "en": "PWR Neutron Reflector",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rad_absorber",
+  "mod": "NTM NEXT",
+  "en": "Radiation Absorber",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rad_absorber_green",
+  "mod": "NTM NEXT",
+  "en": "Advanced Radiation Absorber",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rad_absorber_pink",
+  "mod": "NTM NEXT",
+  "en": "Elite Radiation Absorber",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rad_absorber_red",
+  "mod": "NTM NEXT",
+  "en": "Enhanced Radiation Absorber",
+  "fr": ""
+ },
+ {
+  "id": "hbm:radar_screen",
+  "mod": "NTM NEXT",
+  "en": "Radar Screen",
+  "fr": ""
+ },
+ {
+  "id": "hbm:radiorec",
+  "mod": "NTM NEXT",
+  "en": "FM Radio",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_absorber",
+  "mod": "NTM NEXT",
+  "en": "RBMK Boron Neutron Absorber",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_autoloader",
+  "mod": "NTM NEXT",
+  "en": "RBMK Autoloader",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_blank",
+  "mod": "NTM NEXT",
+  "en": "RBMK Structural Column",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_boiler",
+  "mod": "NTM NEXT",
+  "en": "RBMK Steam Channel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_console",
+  "mod": "NTM NEXT",
+  "en": "RBMK Console",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_control",
+  "mod": "NTM NEXT",
+  "en": "RBMK Control Rods",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_control_auto",
+  "mod": "NTM NEXT",
+  "en": "RBMK Automatic Control Rods",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_control_mod",
+  "mod": "NTM NEXT",
+  "en": "RBMK Moderated Control Rods",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_control_reasim",
+  "mod": "NTM NEXT",
+  "en": "RBMK Control Rods (ReaSim)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_control_reasim_auto",
+  "mod": "NTM NEXT",
+  "en": "RBMK Automatic Control Rods (ReaSim)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_cooler",
+  "mod": "NTM NEXT",
+  "en": "RBMK Cooler",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_crane_console",
+  "mod": "NTM NEXT",
+  "en": "RBMK Crane Console",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_debris",
+  "mod": "NTM NEXT",
+  "en": "RBMK Debris",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_debris_burning",
+  "mod": "NTM NEXT",
+  "en": "Flaming RBMK Debris",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_debris_digamma",
+  "mod": "NTM NEXT",
+  "en": "Blackened RBMK Debris",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_debris_radiating",
+  "mod": "NTM NEXT",
+  "en": "Smoldering RBMK Debris",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_display",
+  "mod": "NTM NEXT",
+  "en": "RBMK Display Panel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_display_blank",
+  "mod": "NTM NEXT",
+  "en": "Blank Redstone-over-Radio Panel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_fuel_rod",
+  "mod": "NTM NEXT",
+  "en": "RBMK Fuel Rod Channel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_fuel_rod_moderated",
+  "mod": "NTM NEXT",
+  "en": "RBMK Moderated Fuel Channel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_fuel_rod_reasim",
+  "mod": "NTM NEXT",
+  "en": "RBMK Fuel Channel (ReaSim)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_fuel_rod_reasim_moderated",
+  "mod": "NTM NEXT",
+  "en": "RBMK Moderated Fuel Channel (ReaSim)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_gauge",
+  "mod": "NTM NEXT",
+  "en": "Redstone-over-Radio Gauge",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_graph",
+  "mod": "NTM NEXT",
+  "en": "Redstone-over-Radio Graph",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_heater",
+  "mod": "NTM NEXT",
+  "en": "RBMK Fluid Heater",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_indicator",
+  "mod": "NTM NEXT",
+  "en": "Redstone-over-Radio Indicator Lights",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_key_pad",
+  "mod": "NTM NEXT",
+  "en": "Redstone-over-Radio Keypad",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_lever",
+  "mod": "NTM NEXT",
+  "en": "Redstone-over-Radio Lever",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_loader",
+  "mod": "NTM NEXT",
+  "en": "RBMK Steam Connector",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_moderator",
+  "mod": "NTM NEXT",
+  "en": "RBMK Graphite Moderator",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_numitron",
+  "mod": "NTM NEXT",
+  "en": "Redstone-over-Radio Numeric Display",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_outgasser",
+  "mod": "NTM NEXT",
+  "en": "RBMK Irradiation Channel",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_reflector",
+  "mod": "NTM NEXT",
+  "en": "RBMK Tungsten Carbide Neutron Reflector",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_steam_inlet",
+  "mod": "NTM NEXT",
+  "en": "RBMK ReaSim Water Inlet",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_steam_outlet",
+  "mod": "NTM NEXT",
+  "en": "RBMK ReaSim Steam Outlet",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_storage",
+  "mod": "NTM NEXT",
+  "en": "RBMK Storage Column",
+  "fr": ""
+ },
+ {
+  "id": "hbm:rbmk_terminal",
+  "mod": "NTM NEXT",
+  "en": "Redstone-over-Radio Terminal",
+  "fr": ""
+ },
+ {
+  "id": "hbm:reactor_zirnox",
+  "mod": "NTM NEXT",
+  "en": "ZIRNOX Nuclear Reactor",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_barrel",
+  "mod": "NTM NEXT",
+  "en": "Explosive Barrel",
+  "fr": "Baril explosif"
+ },
+ {
+  "id": "hbm:red_cable_box_0",
+  "mod": "NTM NEXT",
+  "en": "Red Copper Boxcable",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_cable_box_1",
+  "mod": "NTM NEXT",
+  "en": "Red Copper Boxcable",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_cable_box_2",
+  "mod": "NTM NEXT",
+  "en": "Red Copper Boxcable",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_cable_box_3",
+  "mod": "NTM NEXT",
+  "en": "Red Copper Boxcable",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_cable_box_4",
+  "mod": "NTM NEXT",
+  "en": "Red Copper Boxcable",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_cable_classic",
+  "mod": "NTM NEXT",
+  "en": "Red Copper Cable (Classic)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_cable_gauge",
+  "mod": "NTM NEXT",
+  "en": "Power Gauge",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_cable_paintable",
+  "mod": "NTM NEXT",
+  "en": "Paintable Red Copper Cable",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_connector",
+  "mod": "NTM NEXT",
+  "en": "Electricity Connector",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_connector_super",
+  "mod": "NTM NEXT",
+  "en": "Heavy Duty Electricity Connector",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_pylon",
+  "mod": "NTM NEXT",
+  "en": "Wooden Electricity Pylon",
+  "fr": "Pôle électrique"
+ },
+ {
+  "id": "hbm:red_pylon_large",
+  "mod": "NTM NEXT",
+  "en": "Large Electricity Pylon",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_pylon_medium_steel",
+  "mod": "NTM NEXT",
+  "en": "Medium Steel Electricity Pylon",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_pylon_medium_steel_transformer",
+  "mod": "NTM NEXT",
+  "en": "Medium Steel Electricity Pylon with Transformer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_pylon_medium_wood",
+  "mod": "NTM NEXT",
+  "en": "Medium Wooden Electricity Pylon",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_pylon_medium_wood_transformer",
+  "mod": "NTM NEXT",
+  "en": "Medium Wooden Electricity Pylon with Transformer",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_pylon_steel",
+  "mod": "NTM NEXT",
+  "en": "Steel Electricity Pylon",
+  "fr": ""
+ },
+ {
+  "id": "hbm:red_wire_coated",
+  "mod": "NTM NEXT",
+  "en": "Coated Red Copper Cable",
+  "fr": "Câble en cuivre rouge isolé"
+ },
+ {
+  "id": "hbm:refueler",
+  "mod": "NTM NEXT",
+  "en": "Refueling Station",
+  "fr": ""
+ },
+ {
+  "id": "hbm:safe",
+  "mod": "NTM NEXT",
+  "en": "Safe",
+  "fr": ""
+ },
+ {
+  "id": "hbm:sat_dock",
+  "mod": "NTM NEXT",
+  "en": "Cargo Landing Pad",
+  "fr": ""
+ },
+ {
+  "id": "hbm:semtex",
+  "mod": "NTM NEXT",
+  "en": "Semtex",
+  "fr": ""
+ },
+ {
+  "id": "hbm:sliding_blast_door",
+  "mod": "NTM NEXT",
+  "en": "Sliding Blast Door",
+  "fr": ""
+ },
+ {
+  "id": "hbm:solar_mirror",
+  "mod": "NTM NEXT",
+  "en": "Heliostat Mirror",
+  "fr": ""
+ },
+ {
+  "id": "hbm:soyuz_capsule",
+  "mod": "NTM NEXT",
+  "en": "Cargo Landing Capsule",
+  "fr": ""
+ },
+ {
+  "id": "hbm:soyuz_launcher",
+  "mod": "NTM NEXT",
+  "en": "Soyuz Launch Platform",
+  "fr": ""
+ },
+ {
+  "id": "hbm:spikes",
+  "mod": "NTM NEXT",
+  "en": "Spikes",
+  "fr": ""
+ },
+ {
+  "id": "hbm:spotlight_fluoro",
+  "mod": "NTM NEXT",
+  "en": "Fluorescent Light",
+  "fr": ""
+ },
+ {
+  "id": "hbm:spotlight_halogen",
+  "mod": "NTM NEXT",
+  "en": "Halogen Floodlight",
+  "fr": ""
+ },
+ {
+  "id": "hbm:spotlight_incandescent",
+  "mod": "NTM NEXT",
+  "en": "Cage Lamp",
+  "fr": ""
+ },
+ {
+  "id": "hbm:struct_icf_core",
+  "mod": "NTM NEXT",
+  "en": "Inertial Confinement Fusion Reactor Core Component",
+  "fr": ""
+ },
+ {
+  "id": "hbm:struct_launcher",
+  "mod": "NTM NEXT",
+  "en": "Launch Pad Component Block",
+  "fr": ""
+ },
+ {
+  "id": "hbm:struct_launcher_core",
+  "mod": "NTM NEXT",
+  "en": "Compact Launcher Core Component",
+  "fr": ""
+ },
+ {
+  "id": "hbm:struct_launcher_core_large",
+  "mod": "NTM NEXT",
+  "en": "Launch Table Core Component",
+  "fr": ""
+ },
+ {
+  "id": "hbm:struct_scaffold",
+  "mod": "NTM NEXT",
+  "en": "Launch Pad Scaffold Block",
+  "fr": ""
+ },
+ {
+  "id": "hbm:struct_soyuz_core",
+  "mod": "NTM NEXT",
+  "en": "Soyuz Launcher Core Component",
+  "fr": ""
+ },
+ {
+  "id": "hbm:struct_torus_core",
+  "mod": "NTM NEXT",
+  "en": "Fusion Reactor Vessel Core Component",
+  "fr": ""
+ },
+ {
+  "id": "hbm:struct_watz_core",
+  "mod": "NTM NEXT",
+  "en": "Watz Powerplant Core Component",
+  "fr": ""
+ },
+ {
+  "id": "hbm:substation",
+  "mod": "NTM NEXT",
+  "en": "Substation",
+  "fr": ""
+ },
+ {
+  "id": "hbm:teleanchor",
+  "mod": "NTM NEXT",
+  "en": "Teleportation Anchor",
+  "fr": ""
+ },
+ {
+  "id": "hbm:tesla",
+  "mod": "NTM NEXT",
+  "en": "Tesla Coil",
+  "fr": ""
+ },
+ {
+  "id": "hbm:therm_endo",
+  "mod": "NTM NEXT",
+  "en": "Endothermic Bomb",
+  "fr": "Bombe endothermique"
+ },
+ {
+  "id": "hbm:therm_exo",
+  "mod": "NTM NEXT",
+  "en": "Exothermic Bomb",
+  "fr": "Bombe exothermique"
+ },
+ {
+  "id": "hbm:tnt",
+  "mod": "NTM NEXT",
+  "en": "Actual TNT",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_arty",
+  "mod": "NTM NEXT",
+  "en": "Artillery Turret \"Greg\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_chekhov",
+  "mod": "NTM NEXT",
+  "en": "Heavy Machine Gun Turret \"Chekhov's Gun\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_friendly",
+  "mod": "NTM NEXT",
+  "en": "Chaingun Turret \"Mister Friendly\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_fritz",
+  "mod": "NTM NEXT",
+  "en": "Heavy Flamethrower Turret \"Fritz\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_himars",
+  "mod": "NTM NEXT",
+  "en": "Rocket Artillery Turret \"Henry\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_howard",
+  "mod": "NTM NEXT",
+  "en": "Goalkeeper Twin Chaingun CIWS \"Howard\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_howard_damaged",
+  "mod": "NTM NEXT",
+  "en": "Goalkeeper Twin Chaingun CIWS \"Methusalem\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_jeremy",
+  "mod": "NTM NEXT",
+  "en": "Autocannon Turret \"Jeremy\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_maxwell",
+  "mod": "NTM NEXT",
+  "en": "High-Energy MASER Turret \"Maxwell\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_richard",
+  "mod": "NTM NEXT",
+  "en": "Rocket Launcher Turret \"Richard\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_sentry",
+  "mod": "NTM NEXT",
+  "en": "Sentry Turret \"Brown\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_sentry_damaged",
+  "mod": "NTM NEXT",
+  "en": "Sentry Turret \"Edwin\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:turret_tauon",
+  "mod": "NTM NEXT",
+  "en": "XVL1456 Prototype Turret \"Tauon\"",
+  "fr": ""
+ },
+ {
+  "id": "hbm:vault_door",
+  "mod": "NTM NEXT",
+  "en": "Vault-Tec Blast Door",
+  "fr": ""
+ },
+ {
+  "id": "hbm:vending_machine",
+  "mod": "NTM NEXT",
+  "en": "Vending Machine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:vending_machine_snacks",
+  "mod": "NTM NEXT",
+  "en": "Vending Machine",
+  "fr": ""
+ },
+ {
+  "id": "hbm:vitrified_barrel",
+  "mod": "NTM NEXT",
+  "en": "Vitrified Nuclear Waste Drum",
+  "fr": ""
+ },
+ {
+  "id": "hbm:watz",
+  "mod": "NTM NEXT",
+  "en": "Watz Powerplant",
+  "fr": ""
+ },
+ {
+  "id": "hbm:watz_cooler",
+  "mod": "NTM NEXT",
+  "en": "Watz Reactor Supercooler",
+  "fr": "Super-refroidisseur de réacteur Watz"
+ },
+ {
+  "id": "hbm:watz_element",
+  "mod": "NTM NEXT",
+  "en": "Watz Reaction Chamber",
+  "fr": "Chambre à réaction Watz"
+ },
+ {
+  "id": "hbm:watz_end",
+  "mod": "NTM NEXT",
+  "en": "Watz Reactor Stability Element",
+  "fr": "Element de stabilite du reacteur Watz"
+ },
+ {
+  "id": "hbm:watz_end_bolted",
+  "mod": "NTM NEXT",
+  "en": "Watz Reactor Stability Element (Riveted)",
+  "fr": ""
+ },
+ {
+  "id": "hbm:watz_pump",
+  "mod": "NTM NEXT",
+  "en": "Watz Pressure Pump",
+  "fr": ""
+ },
+ {
+  "id": "hbm:yellow_barrel",
+  "mod": "NTM NEXT",
+  "en": "Radioactive Barrel",
+  "fr": "Baril radioactif"
+ },
+ {
+  "id": "hbm:zirnox_destroyed",
+  "mod": "NTM NEXT",
+  "en": "Destroyed ZIRNOX",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:air_scrubber",
+  "mod": "NTM NEXT: Space",
+  "en": "CO2 Scrubber",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:air_vent",
+  "mod": "NTM NEXT: Space",
+  "en": "Air Vent",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:algae_film",
+  "mod": "NTM NEXT: Space",
+  "en": "Microgravity Algae Film",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:atmosphere_editor",
+  "mod": "NTM NEXT: Space",
+  "en": "Atmosphere Editor",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:combat_drop",
+  "mod": "NTM NEXT: Space",
+  "en": "Combat Drop Pod",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:crop_coffee",
+  "mod": "NTM NEXT: Space",
+  "en": "Coffee",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:crop_mint",
+  "mod": "NTM NEXT: Space",
+  "en": "Mint",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:crop_paraffin",
+  "mod": "NTM NEXT: Space",
+  "en": "Wax Crop",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:crop_strawberry",
+  "mod": "NTM NEXT: Space",
+  "en": "Strawberries",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:crop_tea",
+  "mod": "NTM NEXT: Space",
+  "en": "Tea",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:det_salt",
+  "mod": "NTM NEXT: Space",
+  "en": "Salted Nuclear Charge",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:dish_control",
+  "mod": "NTM NEXT: Space",
+  "en": "StarDar Remote Access Console",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:dyson_converter_anatmogenesis",
+  "mod": "NTM NEXT: Space",
+  "en": "Dyson Anatmogenesis Terraformer",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:dyson_converter_he",
+  "mod": "NTM NEXT: Space",
+  "en": "Dyson Power Converter",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:dyson_converter_tu",
+  "mod": "NTM NEXT: Space",
+  "en": "Dyson Heat Converter",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:dyson_launcher",
+  "mod": "NTM NEXT: Space",
+  "en": "Dyson Spinlauncher",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:dyson_receiver",
+  "mod": "NTM NEXT: Space",
+  "en": "Dyson Receiver",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:gas_dock",
+  "mod": "NTM NEXT: Space",
+  "en": "Gas Giant Harvester",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:hydrobay",
+  "mod": "NTM NEXT: Space",
+  "en": "Industrial Greenhouse",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:launch_pad_rocket",
+  "mod": "NTM NEXT: Space",
+  "en": "Rocket Launch Pad",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_alkylation",
+  "mod": "NTM NEXT: Space",
+  "en": "Alkylation Unit",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_atmo_emitter",
+  "mod": "NTM NEXT: Space",
+  "en": "Atmospheric Emitter",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_atmo_tower",
+  "mod": "NTM NEXT: Space",
+  "en": "Atmospheric Liquefaction Tower",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_atmo_vent",
+  "mod": "NTM NEXT: Space",
+  "en": "Atmospheric Compressor",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_cryo_distill",
+  "mod": "NTM NEXT: Space",
+  "en": "Cryogenic Distillation Machine",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_drive_processor",
+  "mod": "NTM NEXT: Space",
+  "en": "Drive Processor",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_htr3",
+  "mod": "NTM NEXT: Space",
+  "en": "LPW-3N Station Thruster",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_htrf4",
+  "mod": "NTM NEXT: Space",
+  "en": "HTR-F4 Station Thruster (LEGACY)",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_htrf4neo",
+  "mod": "NTM NEXT: Space",
+  "en": "HTR-F4 NEO Station Thruster",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_magma",
+  "mod": "NTM NEXT: Space",
+  "en": "Magma Drill",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_milk_reformer",
+  "mod": "NTM NEXT: Space",
+  "en": "Dairy Processing Tank",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_radiator",
+  "mod": "NTM NEXT: Space",
+  "en": "Steam Radiator",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_rocket_assembly",
+  "mod": "NTM NEXT: Space",
+  "en": "Vehicle Assembly Base (VAB)",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_solar",
+  "mod": "NTM NEXT: Space",
+  "en": "Solar Panel",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_stardar",
+  "mod": "NTM NEXT: Space",
+  "en": "StarDar",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_vacuum_circuit",
+  "mod": "NTM NEXT: Space",
+  "en": "Vacuum Solderer",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:machine_xenon_thruster",
+  "mod": "NTM NEXT: Space",
+  "en": "Xenon Station Thruster",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:nuke_antimatter",
+  "mod": "NTM NEXT: Space",
+  "en": "Antimatter Bomb",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:orbital_station",
+  "mod": "NTM NEXT: Space",
+  "en": "Orbital Station Core",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:orbital_station_computer",
+  "mod": "NTM NEXT: Space",
+  "en": "Orbital Station Computer",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:orbital_station_launcher",
+  "mod": "NTM NEXT: Space",
+  "en": "Orbital Station Launching Port",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:orbital_station_port",
+  "mod": "NTM NEXT: Space",
+  "en": "Orbital Station Port",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:orrery",
+  "mod": "NTM NEXT: Space",
+  "en": "Orrery",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:transporter_rocket",
+  "mod": "NTM NEXT: Space",
+  "en": "Rocket Transporter Pad",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:troll_disturber",
+  "mod": "NTM NEXT: Space",
+  "en": "",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:tumor",
+  "mod": "NTM NEXT: Space",
+  "en": "Fleshy Mass",
+  "fr": ""
+ },
+ {
+  "id": "hbmspace:war_controller",
+  "mod": "NTM NEXT: Space",
+  "en": "",
+  "fr": ""
+ },
+ {
+  "id": "leafia:amat_duct",
+  "mod": "NTM: Cursed",
+  "en": "Electromagnetic Fluid Duct",
+  "fr": ""
+ },
+ {
+  "id": "leafia:amat_duct_charger",
+  "mod": "NTM: Cursed",
+  "en": "Electromagnetic Fluid Duct Charger",
+  "fr": ""
+ },
+ {
+  "id": "leafia:ams_base",
+  "mod": "NTM: Cursed",
+  "en": "AMC Base",
+  "fr": "Base AMS [WIP]"
+ },
+ {
+  "id": "leafia:ams_emitter",
+  "mod": "NTM: Cursed",
+  "en": "AMC Emitter",
+  "fr": "Emetteur AMS [WIP]"
+ },
+ {
+  "id": "leafia:ams_limiter",
+  "mod": "NTM: Cursed",
+  "en": "AMC Stabilizer",
+  "fr": "Stabilisateur AMS [WIP]"
+ },
+ {
+  "id": "leafia:amsp_analyzer",
+  "mod": "NTM: Cursed",
+  "en": "Anti-Mass Spectrometer Analyzer",
+  "fr": ""
+ },
+ {
+  "id": "leafia:amsp_receiver",
+  "mod": "NTM: Cursed",
+  "en": "Anti-Mass Spectrometer Receiver",
+  "fr": ""
+ },
+ {
+  "id": "leafia:apr_component",
+  "mod": "NTM: Cursed",
+  "en": "APR Support",
+  "fr": ""
+ },
+ {
+  "id": "leafia:apr_core",
+  "mod": "NTM: Cursed",
+  "en": "APR Core Component",
+  "fr": ""
+ },
+ {
+  "id": "leafia:apr_core_cell",
+  "mod": "NTM: Cursed",
+  "en": "Machine Structure",
+  "fr": ""
+ },
+ {
+  "id": "leafia:apr_outlet",
+  "mod": "NTM: Cursed",
+  "en": "APR Electricity Port",
+  "fr": ""
+ },
+ {
+  "id": "leafia:apr_port",
+  "mod": "NTM: Cursed",
+  "en": "APR Fluid Port",
+  "fr": ""
+ },
+ {
+  "id": "leafia:coolant_heatex",
+  "mod": "NTM: Cursed",
+  "en": "Coolant Heat Exchanger",
+  "fr": ""
+ },
+ {
+  "id": "leafia:dfc_exchanger",
+  "mod": "NTM: Cursed",
+  "en": "DFC Heat Exchanger",
+  "fr": ""
+ },
+ {
+  "id": "leafia:dfc_pulser",
+  "mod": "NTM: Cursed",
+  "en": "DFC Pulse Detonator",
+  "fr": ""
+ },
+ {
+  "id": "leafia:dfc_reinforced",
+  "mod": "NTM: Cursed",
+  "en": "DFC Reinforced Absorber",
+  "fr": ""
+ },
+ {
+  "id": "leafia:elevator_buffer",
+  "mod": "NTM: Cursed",
+  "en": "Elevator Buffer",
+  "fr": ""
+ },
+ {
+  "id": "leafia:elevator_pulley",
+  "mod": "NTM: Cursed",
+  "en": "Elevator Pulley",
+  "fr": ""
+ },
+ {
+  "id": "leafia:elevator_shaft",
+  "mod": "NTM: Cursed",
+  "en": "Elevator Shaft",
+  "fr": ""
+ },
+ {
+  "id": "leafia:ff_converter",
+  "mod": "NTM: Cursed",
+  "en": "Special Pipe Adapter",
+  "fr": ""
+ },
+ {
+  "id": "leafia:ff_duct",
+  "mod": "NTM: Cursed",
+  "en": "Special Pipe",
+  "fr": ""
+ },
+ {
+  "id": "leafia:ff_duct_solid_shielded",
+  "mod": "NTM: Cursed",
+  "en": "Rad Shielded Special Pipe",
+  "fr": ""
+ },
+ {
+  "id": "leafia:ff_filter",
+  "mod": "NTM: Cursed",
+  "en": "Special Pipe Mixture Filter",
+  "fr": ""
+ },
+ {
+  "id": "leafia:ff_pump",
+  "mod": "NTM: Cursed",
+  "en": "Special Pipe Pump",
+  "fr": ""
+ },
+ {
+  "id": "leafia:ff_tank",
+  "mod": "NTM: Cursed",
+  "en": "Special Tank",
+  "fr": ""
+ },
+ {
+  "id": "leafia:fluid_duct_gauge_mdl",
+  "mod": "NTM: Cursed",
+  "en": "Fluid Flow Gauge",
+  "fr": ""
+ },
+ {
+  "id": "leafia:fluid_duct_valve_mdl",
+  "mod": "NTM: Cursed",
+  "en": "Fluid Valve",
+  "fr": ""
+ },
+ {
+  "id": "leafia:fluid_duct_valve_mdl_rs",
+  "mod": "NTM: Cursed",
+  "en": "Redstone Fluid Valve",
+  "fr": ""
+ },
+ {
+  "id": "leafia:heater_rt",
+  "mod": "NTM: Cursed",
+  "en": "Radioisotope Thermal Heater",
+  "fr": "Chauffage thermique à radio-isotopes"
+ },
+ {
+  "id": "leafia:hp_boiler",
+  "mod": "NTM: Cursed",
+  "en": "High-Pressure Boiler",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_casing",
+  "mod": "NTM: Cursed",
+  "en": "PWR Pressure Vessel",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_channel",
+  "mod": "NTM: Cursed",
+  "en": "PWR Coolant Channel",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_control",
+  "mod": "NTM: Cursed",
+  "en": "PWR Control Rod",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_element",
+  "mod": "NTM: Cursed",
+  "en": "PWR Fuel Rod",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_exchanger",
+  "mod": "NTM: Cursed",
+  "en": "PWR Heat Exchanger",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_occs_in",
+  "mod": "NTM: Cursed",
+  "en": "PWR OCCS Inlet",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_occs_out",
+  "mod": "NTM: Cursed",
+  "en": "PWR OCCS Outlet",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_port",
+  "mod": "NTM: Cursed",
+  "en": "PWR Fluid Port",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_reflector",
+  "mod": "NTM: Cursed",
+  "en": "PWR Neutron Reflector",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_signal",
+  "mod": "NTM: Cursed",
+  "en": "PWR Control Port",
+  "fr": ""
+ },
+ {
+  "id": "leafia:lwr_terminal",
+  "mod": "NTM: Cursed",
+  "en": "PWR Control Terminal",
+  "fr": ""
+ },
+ {
+  "id": "leafia:meteor_diverter",
+  "mod": "NTM: Cursed",
+  "en": "Meteor Protection Beacon",
+  "fr": ""
+ },
+ {
+  "id": "leafia:mixingvat",
+  "mod": "NTM: Cursed",
+  "en": "Mixing Vat",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_2x2_blades",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 2x2 Blades",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_2x2_flywheel",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 2x3 Flywheel",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_3x3_blades",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 3x3 Blades",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_3x3_flywheel",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 3x3 Flywheel",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_3x3_generator",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 3x3 Generator",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_3x3_port_inline",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 3x3 Steam Port (Inline)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_3x3_port_side",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 3x3 Steam Port (Side)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_3x3_port_top",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 3x3 Steam Port (Top)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_3x3_separator",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 3x3 Separator",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_5x5_blades",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 5x5 Blades",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_5x5_flywheel",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 5x5 Flywheel",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_5x5_port_inline",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 5x5 Steam Port (Inline)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_5x5_port_side",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 5x5 Steam Port (Side)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_5x5_port_top",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 5x5 Steam Port (Top)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_5x5_separator",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 5x5 Separator",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_7x7_blades",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 7x7 Blades",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_7x7_flywheel",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 7x7 Flywheel",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_7x7_port_inline",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 7x7 Steam Port (Inline)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_7x7_port_side",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 7x7 Steam Port (Side)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_7x7_port_top",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 7x7 Steam Port (Top)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_7x7_separator",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 7x7 Separator",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_9x9_blades",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 9x9 Blades",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_9x9_flywheel",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 9x9 Flywheel",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_9x9_port_inline",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 9x9 Steam Port (Inline)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_9x9_port_side",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 9x9 Steam Port (Side)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_9x9_port_top",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 9x9 Steam Port (Top)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_9x9_separator",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine 9x9 Separator",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_core",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine Core",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_port",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine Electricity Port",
+  "fr": ""
+ },
+ {
+  "id": "leafia:modular_turbine_shaft",
+  "mod": "NTM: Cursed",
+  "en": "Modular Turbine Shaft",
+  "fr": ""
+ },
+ {
+  "id": "leafia:msr_arbitrary",
+  "mod": "NTM: Cursed",
+  "en": "LFTR Arbitrary Block",
+  "fr": ""
+ },
+ {
+  "id": "leafia:msr_control",
+  "mod": "NTM: Cursed",
+  "en": "LFTR Control Rod",
+  "fr": ""
+ },
+ {
+  "id": "leafia:msr_control_extension",
+  "mod": "NTM: Cursed",
+  "en": "LFTR Control Rod Extension",
+  "fr": ""
+ },
+ {
+  "id": "leafia:msr_ejector",
+  "mod": "NTM: Cursed",
+  "en": "LFTR Fuel Ejector",
+  "fr": ""
+ },
+ {
+  "id": "leafia:msr_element",
+  "mod": "NTM: Cursed",
+  "en": "LFTR Reaction Chamber",
+  "fr": ""
+ },
+ {
+  "id": "leafia:msr_plug",
+  "mod": "NTM: Cursed",
+  "en": "LFTR Fuel Plug",
+  "fr": ""
+ },
+ {
+  "id": "leafia:nuke_chud",
+  "mod": "NTM: Cursed",
+  "en": "Fat Chud",
+  "fr": ""
+ },
+ {
+  "id": "leafia:osmiridium_fluid",
+  "mod": "NTM: Cursed",
+  "en": "Molten DFC Component",
+  "fr": ""
+ },
+ {
+  "id": "leafia:oxygen_fluid",
+  "mod": "NTM: Cursed",
+  "en": "Liquid Oxygen",
+  "fr": ""
+ },
+ {
+  "id": "leafia:poster_slize",
+  "mod": "NTM: Cursed",
+  "en": "",
+  "fr": ""
+ },
+ {
+  "id": "leafia:pribris_smoke",
+  "mod": "NTM: Cursed",
+  "en": "",
+  "fr": ""
+ },
+ {
+  "id": "leafia:rbmk_rod_realersim",
+  "mod": "NTM: Cursed",
+  "en": "RBMK Fuel Channel (RealerSim)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:rbmk_rod_realersim_mod",
+  "mod": "NTM: Cursed",
+  "en": "RBMK Moderated Fuel Channel (RealerSim)",
+  "fr": ""
+ },
+ {
+  "id": "leafia:reactor_conductor",
+  "mod": "NTM: Cursed",
+  "en": "PWR Integrated Boiler",
+  "fr": ""
+ },
+ {
+  "id": "leafia:reactor_control",
+  "mod": "NTM: Cursed",
+  "en": "PWR Control Rod",
+  "fr": ""
+ },
+ {
+  "id": "leafia:reactor_door",
+  "mod": "NTM: Cursed",
+  "en": "Reactor Door",
+  "fr": ""
+ },
+ {
+  "id": "leafia:reactor_element",
+  "mod": "NTM: Cursed",
+  "en": "PWR Fuel Rod",
+  "fr": ""
+ },
+ {
+  "id": "leafia:reactor_element_blank",
+  "mod": "NTM: Cursed",
+  "en": "PWR Fuel Rod",
+  "fr": ""
+ },
+ {
+  "id": "leafia:reactor_hatch",
+  "mod": "NTM: Cursed",
+  "en": "PWR Control Terminal",
+  "fr": ""
+ },
+ {
+  "id": "leafia:reactor_hatch_alt",
+  "mod": "NTM: Cursed",
+  "en": "PWR Control Terminal",
+  "fr": ""
+ },
+ {
+  "id": "leafia:regex_filter",
+  "mod": "NTM: Cursed",
+  "en": "Pneumatic Tube RegEx Filter",
+  "fr": ""
+ },
+ {
+  "id": "leafia:salt_separator",
+  "mod": "NTM: Cursed",
+  "en": "Salt Fuel Separation Plant",
+  "fr": ""
+ },
+ {
+  "id": "leafia:scorched_earth",
+  "mod": "NTM: Cursed",
+  "en": "Scorched Grass",
+  "fr": ""
+ },
+ {
+  "id": "leafia:sellacity_rack",
+  "mod": "NTM: Cursed",
+  "en": "",
+  "fr": ""
+ },
+ {
+  "id": "leafia:sol_blaster",
+  "mod": "NTM: Cursed",
+  "en": "Neutron Blaster",
+  "fr": ""
+ },
+ {
+  "id": "leafia:spinny_light",
+  "mod": "NTM: Cursed",
+  "en": "Spinny Light",
+  "fr": "Lumière filante"
+ },
+ {
+  "id": "leafia:spk_cable",
+  "mod": "NTM: Cursed",
+  "en": "DFC Redirection Cable",
+  "fr": ""
+ },
+ {
+  "id": "leafia:wind_turbine_medium",
+  "mod": "NTM: Cursed",
+  "en": "Medium Wind Turbine",
+  "fr": ""
+ }
+]
