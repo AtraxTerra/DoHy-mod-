@@ -86,11 +86,14 @@ import java.util.UUID;
  * sert. La caisse descend en parachute, se pose, et disparait une heure plus
  * tard si personne ne l'a videe.
  *
- * <p><b>Le lieu.</b> Un point au hasard d'une zone irradiee, sur la terre
- * ferme, hors des claims ; la radiation est celle de la zone (NTM NEXT), une
- * combinaison est conseillee. Sans carte de la Terre, la caisse tombe a 300 -
- * 1 200 blocs du centre du Monde, loin des claims des joueurs en ligne, et
- * irradie l'endroit ou elle se pose.
+ * <p><b>Le lieu.</b> Un point d'une zone irradiee, sur la terre ferme, hors
+ * des claims, et loin du reacteur : son corium irradie les chunks voisins au
+ * point d'y tuer en quelques secondes (un joueur y est mort le 2026-11-20 en
+ * ouvrant la caisse). Parmi les points essayes, la caisse prend celui ou la
+ * radiation de NTM NEXT est la plus faible, et l'annonce dit combien de RAD/s
+ * y attendent. Sans carte de la Terre, la caisse tombe a 300 - 1 200 blocs du
+ * centre du Monde, loin des claims des joueurs en ligne, et irradie l'endroit
+ * ou elle se pose.
  *
  * <p><b>Le contenu.</b> De la matiere brute surtout (uranium, thorium,
  * plutonium et lithium bruts, yellowcake, beryllium), un peu de raffine
@@ -115,6 +118,10 @@ public final class NuclearDrops {
     private static final int LOAD_TIMEOUT_TICKS = 60 * 20;
     private static final String TAG = "dohy_largage";
     private static final String NAME = "Largage nucleaire";
+    /** Une radiation au point de chute (RAD/s) jusqu'a laquelle on garde le premier point trouve. */
+    private static final double SAFE_DOSE = 5.0d;
+    /** Au-dela, sans combinaison, la mort vient en moins d'une minute : l'annonce le dit. */
+    private static final double DEADLY_DOSE = 15.0d;
 
     private NuclearDrops() {
     }
@@ -127,6 +134,8 @@ public final class NuclearDrops {
         String place = "";
         int x;
         int z;
+        /** La radiation mesuree au point de chute (RAD/s), -1 si NTM NEXT ne la donne pas. */
+        double dose = -1.0d;
         /** L'heure de l'arrivee (ms). */
         long land;
 
@@ -312,7 +321,7 @@ public final class NuclearDrops {
         }
         save(server);
         MutableComponent text = Component.literal("Largage nucleaire " + in(warning) + " : " + drop.where()
-                + (drop.site.isEmpty() ? "" : ", zone irradiee : combinaison conseillee") + ".")
+                + (drop.site.isEmpty() ? "" : ", zone irradiee : " + danger(drop.dose)) + ".")
                 .withStyle(ChatFormatting.YELLOW);
         broadcast(server, text.append(compassButton()));
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
@@ -339,19 +348,39 @@ public final class NuclearDrops {
             zones.add(zones.removeFirst());
         }
         for (EarthSites.Placed zone : zones) {
+            // Hors du coeur, ou le corium du reacteur irradie les chunks au point d'y tuer en quelques
+            // secondes ; et, des points libres essayes, celui ou la radiation est la plus faible.
+            double outer = zone.site().radius() * 0.9d;
+            double inner = Math.min(outer * 0.5d, zone.site().coreRadius() + 4.0d);
+            Drop best = null;
             for (int attempt = 0; attempt < 24; attempt++) {
                 double angle = RANDOM.nextDouble() * Math.PI * 2.0d;
-                double distance = Math.sqrt(RANDOM.nextDouble()) * zone.site().radius() * 0.75d;
+                double distance = inner + Math.sqrt(RANDOM.nextDouble()) * (outer - inner);
                 int x = (int) Math.round(zone.x() + Math.cos(angle) * distance);
                 int z = (int) Math.round(zone.z() + Math.sin(angle) * distance);
-                if (dry(level, x, z)) {
-                    Drop drop = new Drop();
-                    drop.site = zone.site().id();
-                    drop.place = zone.site().name();
-                    drop.x = x;
-                    drop.z = z;
-                    return drop;
+                if (!dry(level, x, z)) {
+                    continue;
                 }
+                double dose = dose(level, x, z);
+                if (best == null || dose < best.dose) {
+                    best = new Drop();
+                    best.site = zone.site().id();
+                    best.place = zone.site().name();
+                    best.x = x;
+                    best.z = z;
+                    best.dose = dose;
+                }
+                // Sans mesure possible, le premier point libre ; sinon le premier assez sur.
+                if (dose < 0.0d || dose <= SAFE_DOSE) {
+                    break;
+                }
+            }
+            if (best != null) {
+                if (best.dose > DEADLY_DOSE) {
+                    DoHy.LOGGER.warn("Largage : {} RAD/s au mieux a {} (x {}, z {})", Math.round(best.dose),
+                            best.place, best.x, best.z);
+                }
+                return best;
             }
         }
         if (!forced.isEmpty()) {
@@ -375,6 +404,47 @@ public final class NuclearDrops {
         }
         BlockState ground = chunk.getBlockState(new BlockPos(x, top, z));
         return ground.getFluidState().isEmpty() && !ground.is(BlockTags.LEAVES) && top >= level.getSeaLevel() - 1;
+    }
+
+    private static Method doseAt;
+    private static boolean doseLooked;
+
+    /**
+     * La radiation au sol en ce point, en RAD/s (celle des chunks de NTM NEXT : le corium du
+     * reacteur s'y diffuse) ; -1 si NTM NEXT ne la donne pas. Le chunk est charge : {@code dry}
+     * vient de le lire.
+     */
+    private static double dose(ServerLevel level, int x, int z) {
+        if (!doseLooked) {
+            doseLooked = true;
+            try {
+                doseAt = Class.forName("com.hbm.handler.radiation.RadiationSystemNT")
+                        .getMethod("doseAt", ServerLevel.class, BlockPos.class);
+            } catch (ReflectiveOperationException | LinkageError error) {
+                DoHy.LOGGER.warn("Largage : mesure de la radiation de NTM NEXT indisponible ({})", error.toString());
+            }
+        }
+        if (doseAt == null) {
+            return -1.0d;
+        }
+        try {
+            BlockPos feet = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z), z);
+            double dose = ((Number) doseAt.invoke(null, level, feet)).doubleValue();
+            return Double.isFinite(dose) ? Math.max(0.0d, dose) : -1.0d;
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError error) {
+            return -1.0d;
+        }
+    }
+
+    /** « 3,2 RAD/s au point de chute, combinaison conseillee » ; sans mesure, le conseil seul. */
+    static String danger(double dose) {
+        if (dose < 0.0d) {
+            return "combinaison conseillee";
+        }
+        String rad = dose < 10.0d ? String.format(java.util.Locale.ROOT, "%.1f", dose).replace('.', ',')
+                : String.valueOf(Math.round(dose));
+        return rad + " RAD/s au point de chute, combinaison " + (dose > DEADLY_DOSE ? "indispensable"
+                : "conseillee");
     }
 
     /**
@@ -636,7 +706,11 @@ public final class NuclearDrops {
         }
     }
 
-    /** Le premier qui ouvre la caisse : tout le serveur le sait. */
+    /**
+     * Le premier qui ouvre la caisse : tout le serveur le sait. Et chacun qui l'ouvre est
+     * prevenu : ces matieres irradient qui les porte (une caisse entiere, souvent plus de
+     * 15 RAD/s ; 1 000 RAD tuent).
+     */
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onOpen(PlayerInteractEvent.RightClickBlock event) {
         if (event.isCanceled() || CRATES.isEmpty() || !(event.getEntity() instanceof ServerPlayer player)
@@ -644,6 +718,12 @@ public final class NuclearDrops {
             return;
         }
         for (Crate crate : CRATES) {
+            if (crate.pos.equals(event.getPos()) && event.getHand() == net.minecraft.world.InteractionHand.MAIN_HAND
+                    && !player.isCreative()) {
+                player.sendSystemMessage(prefix().append(Component.literal("Ces matieres sont radioactives : sans"
+                        + " combinaison, tout garder sur toi peut te tuer en une minute. RadAway et Rad-X aident.")
+                        .withStyle(ChatFormatting.RED)));
+            }
             if (!crate.opened && crate.pos.equals(event.getPos())) {
                 crate.opened = true;
                 MinecraftServer server = player.level().getServer();

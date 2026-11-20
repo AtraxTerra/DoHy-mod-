@@ -115,7 +115,7 @@ public final class BankController extends MenuController {
                 } else {
                     failure(player);
                     player.sendSystemMessage(Component.literal("Il te faut "
-                            + MoneyFormat.exact(Bank.insurancePrice()) + " en liquide.").withStyle(ChatFormatting.RED));
+                            + MoneyFormat.exact(Bank.insurancePrice()) + " $ en liquide.").withStyle(ChatFormatting.RED));
                 }
             }
             default -> {
@@ -136,8 +136,8 @@ public final class BankController extends MenuController {
         }
         play(player, SoundEvents.NOTE_BLOCK_BELL.value(), 1.2f);
         player.sendSystemMessage(Component.literal("Depose ").withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(MoneyFormat.exact(credited)).withStyle(ChatFormatting.GOLD))
-                .append(Component.literal(" (frais " + MoneyFormat.exact(fee) + ")").withStyle(ChatFormatting.DARK_GRAY)));
+                .append(Component.literal(MoneyFormat.exact(credited) + " $").withStyle(ChatFormatting.GOLD))
+                .append(Component.literal(" (frais " + MoneyFormat.exact(fee) + " $)").withStyle(ChatFormatting.DARK_GRAY)));
     }
 
     private static void withdraw(ServerPlayer player, long amount) {
@@ -147,6 +147,6 @@ public final class BankController extends MenuController {
         }
         play(player, SoundEvents.NOTE_BLOCK_BELL.value(), 0.8f);
         player.sendSystemMessage(Component.literal("Retire ").withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(MoneyFormat.exact(amount)).withStyle(ChatFormatting.GOLD)));
+                .append(Component.literal(MoneyFormat.exact(amount) + " $").withStyle(ChatFormatting.GOLD)));
     }
 }

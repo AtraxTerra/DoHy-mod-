@@ -1073,6 +1073,15 @@ Tchernobyl couvre une vingtaine de chunks, Fukushima une dizaine :
   minage sans protection dans la zone, c'est 1 800 RAD : il faut la combinaison de NTM NEXT, ou le
   RadAway. Le cœur, sans combinaison, tue en quatre minutes. Leviers : `rad_per_second` dans
   `data/dohy/hbm/biome_radiation/`.
+- **Le corium du réacteur** (vérifié le 2026-11-20, chasse aux bugs) : ces chiffres sont ceux du
+  biome seul. Le corium posé au centre (150 RAD/s par bloc chez NTM NEXT) irradie les chunks
+  voisins bien plus fort : un joueur sans combinaison y est mort en une dizaine de secondes, à
+  une vingtaine de blocs du réacteur, en ouvrant un largage. Les largages tombent donc hors du
+  cœur, au point le moins irradié de ceux qu'ils essaient, et l'annonce donne les RAD/s du point
+  de chute (au-delà de 15 RAD/s : « combinaison indispensable »).
+- **Le butin irradie qui le porte** : une caisse entière, c'est 15 RAD/s en médiane, plus de 20 dans
+  40 % des cas, plus de 40 dans 16 % (gemme radioactive 25 RAD/s pièce, polonium 7,5 la pépite,
+  plutonium brut 7,5). Celui qui ouvre la caisse en est prévenu.
 
 **Les bases de lancement** ne rapportent rien : elles obligent à s'installer loin. De Paris,
 Baïkonour est à environ 4 200 blocs, Kourou à 5 000.

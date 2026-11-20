@@ -57,11 +57,11 @@ public final class MoneyCommand {
 
         source.sendSuccess(() -> Component.literal("Solde : ")
                 .withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(MoneyFormat.exact(data.balance()))
+                .append(Component.literal(MoneyFormat.exact(data.balance()) + " $")
                         .withStyle(ChatFormatting.GOLD)), false);
         source.sendSuccess(() -> Component.literal("Gains cumules : ")
                 .withStyle(ChatFormatting.DARK_GRAY)
-                .append(Component.literal(MoneyFormat.exact(data.lifetimeEarned()))
+                .append(Component.literal(MoneyFormat.exact(data.lifetimeEarned()) + " $")
                         .withStyle(ChatFormatting.GRAY)), false);
 
         // Le solde exact tient dans un long : on le renvoie tel quel au

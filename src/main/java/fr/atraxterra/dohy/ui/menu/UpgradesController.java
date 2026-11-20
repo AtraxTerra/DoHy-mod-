@@ -57,7 +57,7 @@ public final class UpgradesController extends MenuController {
                 long missing = price - Economy.balance(player);
                 tooltip.add("Prix : " + MoneyFormat.exact(price));
                 if (missing > 0) {
-                    tooltip.add("Il te manque " + MoneyFormat.exact(missing));
+                    tooltip.add("Il te manque " + MoneyFormat.exact(missing) + " $");
                 }
                 card = card.action(id + "|acheter pour " + MoneyFormat.shortForm(price))
                         .state(missing > 0 ? MenuView.DISABLED : MenuView.NORMAL);

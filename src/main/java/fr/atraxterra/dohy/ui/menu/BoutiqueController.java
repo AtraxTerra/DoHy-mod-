@@ -60,7 +60,7 @@ public final class BoutiqueController extends MenuController {
                             "Le montant booste ne fait pas baisser les prix",
                             "Prepare un stock avant de le declencher",
                             busy ? "Un booster est deja actif : ils ne se cumulent pas"
-                                    : missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) : ""));
+                                    : missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) + " $" : ""));
             if (busy || missing > 0) {
                 card = card.state(MenuView.DISABLED);
             } else {
@@ -103,7 +103,7 @@ public final class BoutiqueController extends MenuController {
                             "Clic droit avec une " + Crates.keyName(tier) + " : il s'ouvre",
                             "Accroupi, main vide : achete une cle",
                             "Meme butin qu'a la roulette, l'ouverture en plus",
-                            missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) : ""));
+                            missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) + " $" : ""));
             boxes.add(missing > 0 ? card.state(MenuView.DISABLED)
                     : card.action("box:" + kind.getSerializedName() + "|acheter"));
         }
@@ -124,7 +124,7 @@ public final class BoutiqueController extends MenuController {
                                     + " de jeu",
                             "Bue pendant l'effet : la duree s'ajoute",
                             "Le x3 passe avant le x2 ; ni le lait ni la mort ne l'enlevent",
-                            missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) : ""));
+                            missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) + " $" : ""));
             potions.add(missing > 0 ? card.state(MenuView.DISABLED)
                     : card.action("xp:" + offer.multiplier() + ":" + offer.minutes() + "|acheter"));
         }
@@ -145,7 +145,7 @@ public final class BoutiqueController extends MenuController {
                         "Une telecommande est donnee si tu n'en as pas",
                         owned >= fr.atraxterra.dohy.farmbot.BotRegistry.MAX_PER_PLAYER
                                 ? fr.atraxterra.dohy.farmbot.BotRegistry.MAX_PER_PLAYER + " bots au plus par joueur"
-                                : botMissing > 0 ? "Il te manque " + MoneyFormat.exact(botMissing) : ""));
+                                : botMissing > 0 ? "Il te manque " + MoneyFormat.exact(botMissing) + " $" : ""));
         bots.add(owned >= fr.atraxterra.dohy.farmbot.BotRegistry.MAX_PER_PLAYER || botMissing > 0
                 ? bot.state(MenuView.DISABLED)
                 : bot.action("farm_bot|acheter").confirm("Acheter un bot de farming ?|"
@@ -159,7 +159,7 @@ public final class BoutiqueController extends MenuController {
                 .tooltip(List.of("Clic droit sur un de tes bots : elle le pilote",
                         "Clic droit sur deux coins : sa zone",
                         "Accroupi + clic droit sur un coffre : le lier",
-                        remoteMissing > 0 ? "Il te manque " + MoneyFormat.exact(remoteMissing) : ""));
+                        remoteMissing > 0 ? "Il te manque " + MoneyFormat.exact(remoteMissing) + " $" : ""));
         bots.add(remoteMissing > 0 ? remote.state(MenuView.DISABLED) : remote.action("bot_remote|acheter"));
 
         // Les mines de la Terre : la balise qui en capture une (seulement sur une carte de la Terre).
@@ -176,7 +176,7 @@ public final class BoutiqueController extends MenuController {
                             "2 a 5 min, et la mine est a ta faction",
                             "Chaque heure, meme hors ligne : argent et minerais",
                             "a ta banque de faction. La capture la consomme.",
-                            beaconMissing > 0 ? "Il te manque " + MoneyFormat.exact(beaconMissing) : ""));
+                            beaconMissing > 0 ? "Il te manque " + MoneyFormat.exact(beaconMissing) + " $" : ""));
             mines.add(beaconMissing > 0 ? beacon.state(MenuView.DISABLED) : beacon.action("beacon|acheter"));
         }
 
@@ -197,7 +197,7 @@ public final class BoutiqueController extends MenuController {
                     .accent(0xFF2F5BEA).action("autosell|debloquer")
                     .state(missing > 0 ? MenuView.DISABLED : MenuView.NORMAL)
                     .tooltip(List.of("Ne charge jamais le chunk : un coffre non charge est saute",
-                            missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) : "")));
+                            missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) + " $" : "")));
         } else {
             BlockPos linked = data.autosellPos();
             long since = Math.max(0L, ContractApi.data(player).playtimeMinutes() - data.autosellLast());
@@ -310,7 +310,7 @@ public final class BoutiqueController extends MenuController {
                     // Le nom se traduit chez le client : il reste un composant.
                     Component name = box.getHoverName();
                     if (!Economy.tryDebit(player, PalaBoxes.PRICE)) {
-                        report(player, "Il te faut " + MoneyFormat.exact(PalaBoxes.PRICE) + " en liquide.", "");
+                        report(player, "Il te faut " + MoneyFormat.exact(PalaBoxes.PRICE) + " $ en liquide.", "");
                     } else {
                         if (!player.getInventory().add(box)) {
                             player.drop(box, false);
@@ -341,7 +341,7 @@ public final class BoutiqueController extends MenuController {
                     } else {
                         failure(player);
                         player.sendSystemMessage(Component.literal("Il te faut "
-                                + MoneyFormat.exact(Bank.insurancePrice()) + " en liquide.")
+                                + MoneyFormat.exact(Bank.insurancePrice()) + " $ en liquide.")
                                 .withStyle(ChatFormatting.RED));
                     }
                 }
@@ -370,7 +370,7 @@ public final class BoutiqueController extends MenuController {
             return;
         }
         if (!Economy.tryDebit(player, offer.price())) {
-            report(player, "Il te faut " + MoneyFormat.exact(offer.price()) + " en liquide.", "");
+            report(player, "Il te faut " + MoneyFormat.exact(offer.price()) + " $ en liquide.", "");
             return;
         }
         ItemStack potion = fr.atraxterra.dohy.palamod.boost.PalaXpPotions.stack(offer.multiplier(), offer.minutes());
