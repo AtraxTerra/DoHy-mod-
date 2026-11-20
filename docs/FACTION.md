@@ -29,6 +29,7 @@ PvE**. Choix du joueur :
 | 22j | Refonte : la faction est une nation (rangs, page unifiée), marché international à stock mondial, notation à cinq critères avec classement face aux nations | fait |
 | 22k | La base tourne sans toi : claims tenus chargés (64 au plus, les plus actifs), le serveur vide ne se met plus en pause, rapport d'absence à la connexion | fait |
 | 22l | La guerre des nations : IA stratégique des douze nations, diplomatie (ultimatum, tribut, paix), assaut à l'heure que tu fixes, siège tactique (plan de brèche, sapeurs, ingénieurs, moral), pillage de la banque, riposte, terrain qui revient | fait |
+| 22m | Mines de la Terre à capturer : une balise de concession, rester à côté de 2 à 5 min ; revenus horaires (hors ligne compris) à la banque de faction, argent et minerais (coffre de la banque) ; reprise par la guerre | fait |
 | 22l-2 | Éclaireurs, IA qui apprend de tes défenses d'un assaut à l'autre, alliances de nations, contre-offensive | à faire |
 
 ## Ce qui change en solo
@@ -636,6 +637,23 @@ par un joueur ne se vise pas.
 Description complète : `docs/CONTENU_DOHY.md`, section « Les pays à prendre » ; chiffrage :
 `docs/BALANCE.md` § 6 novodecies. Code : `earth/EarthNations`, `NationMenu`, `NationCommand` ;
 `/f pays`.
+
+## Les mines de la Terre (22m)
+
+Sur une carte de la Terre seulement. Les 245 gisements géants de la carte (mines, cheminées de
+kimberlite, champs de pétrole et de gaz) se capturent **sans combat** : une **balise de
+concession** (Boutique, 25 000 $) posée dans la mine, puis rester à moins de 16 blocs d'elle
+2, 3 ou 5 minutes selon le rang de la mine. Chaque heure de temps réel, **hors ligne compris**
+(une semaine d'absence au plus), la mine verse **de l'argent à la banque de faction** et **des
+minerais au coffre de la banque** (54 cases, onglet Banque). Elle reste ouverte au minage : ni
+claim ni protection. La nation dépossédée en garde un grief ; **si son assaut réussit, elle
+reprend la dernière mine capturée dans sa région** (`WarStrategy.reconquer`, avec le pays en
+jeu). Dissoudre la faction rend les mines et vide le coffre ; entre joueurs, une mine tenue par un
+autre ne se capture pas.
+
+Description complète : `docs/CONTENU_DOHY.md`, section « Les mines de la Terre à capturer » ;
+chiffrage : `docs/BALANCE.md` § 6 sexvicies. Code : `earth/mine/` (`EarthMines`, `MineLedger`,
+`MineMenu`, `MineEvents`, `MineCommand`, la balise), `faction/FactionVault` ; `/mines`.
 
 ## La base tourne sans toi (22k)
 

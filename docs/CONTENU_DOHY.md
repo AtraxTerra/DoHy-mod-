@@ -1640,6 +1640,59 @@ sac, la terre n'est pas piétinée, le contour qui scintille), `farmbot/DoHyFarm
 (l'enregistrement), `client/farmbot/` (le modèle et son rendu), `tools/farm_bot_assets.py` (la
 texture et les icônes). La récolte suit le même chemin que celle du tracteur (`agri/Tractor`).
 
+## Les mines de la Terre à capturer (2026-11-20)
+
+Demandé le 2026-11-20 : une « récompense de capture de mines sur la Terre », dont les revenus
+**atterrissent dans la banque de faction (argent et minerais)**, en **laissant la possibilité
+d'aller miner soi-même** dans ces mines. Choix du joueur : une capture **sur place, sans combat**,
+une mine **reprise par la guerre** si une nation gagne un assaut, des revenus **chaque heure, hors
+ligne compris**. Seulement sur une carte de la Terre (le datapack de la carte).
+
+- **Les mines** : les 245 gisements géants de la carte (`EarthBodies`) — 188 mines, 10 cheminées
+  de kimberlite, 46 champs de pétrole et de gaz, les sables bitumineux de l'Athabasca. Chacune a un
+  rang mondial (1 pour les 47 plus grandes, 2 pour 100, 3 pour 98). Tant qu'aucune faction ne l'a
+  capturée, la nation de sa région l'exploite.
+- **La trouver** : `/gisements` dit qui tient chacune des six plus proches ; entrer dans une mine
+  l'annonce dans la barre d'action (« Mine de Kiruna (fer, rang 1) · aux mains d'Arcanum »).
+- **La capturer** : une **balise de concession** (25 000 $ à la Boutique, section MINES DE LA
+  TERRE) posée dans l'ellipse de la mine, puis rester à moins de 16 blocs d'elle : **2 minutes**
+  pour une mine de rang 3, **3** au rang 2, **5** au rang 1. Une barre en haut de l'écran compte le
+  temps ; s'éloigner, partir ou se déconnecter met la capture en pause ; casser la balise
+  l'abandonne (elle se ramasse). Une capture à la fois ; il faut une faction. La capture finie, la
+  balise s'éteint et disparaît, un titre l'annonce, et la nation dépossédée s'en souvient (un grief
+  de 5 à 12, un pays en vaut 25).
+- **La mine reste ouverte** : la capturer ne pose ni claim ni protection. On y mine toujours
+  soi-même, ses minerais restent dans la roche.
+- **Ce qu'elle rapporte**, chaque heure de temps réel, **hors ligne compris** (au retour, jusqu'à
+  une semaine d'absence est versée) : **400, 800 ou 1 500 $** selon le rang (le double pour un
+  champ de pétrole ou de gaz) à la **banque de faction**, et **2 à 6 blocs de son minerai** (une
+  cheminée de kimberlite : 1 ou 2) au **coffre de la banque** — ce que rendrait ce minerai cassé à
+  la pioche en diamant (fer brut, cuivre brut, charbon, diamants, minerais de NTM…), et parfois un
+  bloc brut des gisements riches. Un versement par heure, toutes mines ensemble, et une ligne dans
+  le chat.
+- **Le coffre de la banque** : 54 cases dans l'onglet Banque de la faction, une vignette par pile ;
+  un clic prend la pile, « Tout prendre » vide ce qui tient dans l'inventaire. Plein, les minerais
+  en trop sont perdus (le chat le dit). Il part avec la banque si la faction est dissoute.
+- **La reprise** : une nation dont l'assaut contre ta base réussit reprend, avec le pays en jeu,
+  **la dernière mine capturée dans sa région** (l'écran de la guerre la montre en jeu). Les nations
+  rivales n'en reprennent pas autrement : la mine reste à toi tant que tes défenses tiennent.
+- **Rendre une mine** : un clic sur sa carte dans l'onglet Mines, ou `/mines abandonner <mine>` ;
+  dissoudre la faction les rend toutes. **Entre joueurs** : une mine (ou le pays d'une mine) tenue
+  par la faction d'un autre joueur ne se capture pas.
+- **Écrans** : l'onglet **Mines** de la faction (la capture en cours, tes mines et ce qu'elles
+  versent, les plus proches, comment faire), la carte Mines de la vue d'ensemble, le coffre dans
+  l'onglet Banque. **Commandes** : `/mines` (ou `/f mines`), `abandonner <mine>` ; pour les
+  opérateurs, `donner <mine>` et `avancer <heures>` (comme si des heures avaient passé).
+- **Équilibre** : `BALANCE.md` § 6 sexvicies.
+
+### Code
+
+`earth/mine/EarthMines` (les mines, la capture, les revenus, la reprise), `MineLedger` (les
+concessions, sur le monde de la carte), `ConcessionBeaconBlock` et `ConcessionBeaconItem`,
+`MineMenu`, `MineEvents` (les captures, le versement de l'heure et du retour, l'annonce),
+`MineCommand`, `DoHyMines` ; `faction/FactionVault` (le coffre de la banque) ;
+`tools/concession_beacon_assets.py` (la balise). La reprise passe par `WarStrategy.reconquer`.
+
 ## Sur un serveur dédié (2026-11-13)
 
 Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les
