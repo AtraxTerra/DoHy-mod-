@@ -258,6 +258,11 @@ public class FarmBot extends PathfinderMob {
         resetWork();
     }
 
+    /** L'etat tout de suite, pour le menu qui se redessine avant le prochain tick du bot. */
+    private void settle() {
+        status = zone == null ? Status.NO_ZONE : paused ? Status.PAUSED : Status.WAITING;
+    }
+
     /** Lie ou delie un coffre ; vrai s'il est lie apres l'appel. */
     boolean toggleChest(BlockPos pos) {
         BlockPos fixed = pos.immutable();
@@ -304,6 +309,7 @@ public class FarmBot extends PathfinderMob {
     }
 
     private void resetWork() {
+        settle();
         mode = Mode.IDLE;
         target = null;
         targets = new ArrayList<>();
