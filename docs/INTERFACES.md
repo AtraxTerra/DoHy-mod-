@@ -20,6 +20,7 @@ autocrafter, crusher, cobblebreaker, grinder).
 | 9 | Modes des donjons (cartes de mode au-dessus des paliers), autel des offrandes des boss de métier | fait |
 | 10 | Lucky blocks et Lucky Pass | fait |
 | 11 | Le commerce : un écran à quatre onglets (acheter, vendre, boutique, hôtel des ventes) | fait |
+| 12 | Les grades : la page des grades, la section de la boutique, la liste des joueurs, l'Ender Chest agrandi | fait |
 
 Chaque lot est validé sur des captures prises en jeu avant son jar.
 
@@ -336,6 +337,28 @@ hôtel des ventes qui marche en solo.
   ventes » ; la carte Marché du menu principal devient Hôtel des ventes (ce qui est en vente,
   les invendus) ; les bornes du spawn ouvrent le bon onglet. `/hdv` et `/ah` ouvrent l'hôtel des
   ventes, `/commerce` l'onglet Acheter.
+
+## Les grades (lot 12, 2026-11-20)
+
+- **La page des grades** (`GradesController`, vue `dohy:grades`, entrée **Grade** du groupe
+  Personnage) : en tête TON GRADE (dans sa couleur), PREMIUM (les jours qui restent) et TON
+  ARGENT. Puis quatre sections : LES GRADES (Héros, Légende, Divinité et Premium ; la ligne de prix
+  dit « Passer : 90 M » quand on monte, « Ton grade » ou « Contenu dans Légende » quand c'est
+  acquis ; la bulle liste tout ce que donne le grade ; l'achat demande confirmation), TES COMMANDES
+  (une carte par commande avec son icône et ce qu'elle fait ; débloquée, un clic la lance et la
+  seconde ligne dit son état — vol, vision nocturne, demandes de téléportation ; verrouillée, elle
+  est grisée et dit le grade qu'il faut), CE QUE DONNE CHAQUE GRADE (`ROWS` : un avantage par ligne,
+  les valeurs Joueur · Héros · Légende · Divinité, celle de Premium, et la sienne en pastille
+  « TOI : 10 »), et POUR TOUS (`TEXT` : les commandes de tous, avec ce qui reste au joueur).
+- **La Boutique** : la section GRADES : DU CONFORT, POUR TOUJOURS ouvre l'onglet, avec les quatre
+  mêmes cartes ; clic droit, la page des grades.
+- **La recherche de l'onglet Acheter** trouve « Grade Héros »... et « Premium 30 jours », avec le
+  bandeau jaune qui mène à la Boutique.
+- **La liste des joueurs** (touche Tab) : le pseudo prend la couleur du grade, suivi d'une
+  pastille « HEROS », « LEGENDE+ » (avec Premium) ou « PREMIUM », avant celle de la faction.
+- **L'Ender Chest agrandi** : l'écran de coffre du kit (`KitChestScreen`), jusqu'à sept rangées,
+  avec l'icône de l'Ender Chest et la consigne « Agrandi par ton grade » (types de menu
+  `dohy:grade_ender_4` à `_7`).
 
 ## Vérification
 

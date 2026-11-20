@@ -87,8 +87,10 @@ public final class ChatStyle {
                         out.append(Component.literal(run.toString()).withStyle(style));
                         run.setLength(0);
                     }
+                    // Une couleur (0-9, a-f) repart d'un style neuf, comme sur les serveurs ; un format s'ajoute.
+                    boolean color = (code >= '0' && code <= '9') || (code >= 'a' && code <= 'f');
                     style = format == ChatFormatting.RESET ? Style.EMPTY
-                            : format.isColor() ? Style.EMPTY.withColor(format) : style.applyFormat(format);
+                            : color ? Style.EMPTY.withColor(format) : style.applyFormat(format);
                     index++;
                     continue;
                 }

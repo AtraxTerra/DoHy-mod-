@@ -1561,6 +1561,37 @@ gênait, c'était de ne pas savoir **où acheter quoi**, et des **écrans trop c
 (les ventes gardées), `auction/AuctionConfig` (les acheteurs, lus dans `data/auction.json`, écrit
 par `tools/market_offers.py`).
 
+## Les grades et Premium (2026-11-20)
+
+Demandé le 2026-11-20 : « les grades et toutes les fonctionnalités associées ». Choix du joueur :
+achetés **à la Boutique avec l'argent du jeu**, **permanents**, et **Premium** en plus, 30 jours.
+
+- **Les grades de Paladium** : Héros (10 M), Légende (100 M), Divinité (1 G) ; monter coûte la
+  différence. **Premium** : 15 M les 30 jours, en temps réel, cumulable avec un grade.
+- **Où** : la section GRADES en tête de l'onglet Boutique, la page des grades (`/grade`, entrée
+  Grade de la barre latérale), et la recherche de l'onglet Acheter, qui y mène.
+- **Ce qu'ils donnent** (le détail : `PALAMOD.md` § 42) : des homes (`/sethome`, `/home`), des
+  `/rtp` par mois, un Ender Chest plus grand (63 cases au plus), de l'XP de métier, du pass et
+  classique en plus, l'XP gardée à la mort, 16 annonces à l'hôtel des ventes, une taxe du marché
+  international plus basse, des commandes (`/craft`, `/minage`, `/feed`, `/furnace`,
+  `/rangement`, `/tptoggle`, `/condense`, `/hat`, `/deathlocate` ; Premium : `/ec`, `/fly` au
+  spawn, `/nv`), la téléportation sans attente (Légende), le pseudo en couleur dans le chat et la
+  liste des joueurs, les couleurs et les emojis dans le chat.
+- **Pour tous** : 2 homes, 1 `/rtp` par mois, `/tpa` et `/tpahere` entre joueurs ; une
+  téléportation attend trois secondes sans bouger.
+- **Équilibre** : `BALANCE.md` § 6 quatervicies. **Administration** : `/dohy grade` et
+  `/dohy premium`.
+
+### Code
+
+`grade/PlayerGrade` (les grades et leurs valeurs), `grade/Premium`, `grade/Grades` (chaque
+avantage, grade et Premium additionnés ; l'achat), `grade/GradeData` (ce que garde le joueur),
+`grade/GradesController` (la page, et les cartes de la Boutique), `grade/GradeCommands`,
+`grade/GradeTools` (ce que font les commandes), `grade/GradeTeleports` (l'attente, les `/tpa`),
+`grade/GradeEnder` (l'Ender Chest agrandi), `grade/GradeEvents` (pseudo, chat, XP, vision
+nocturne, vol, fin de Premium), `grade/ChatStyle` (couleurs et emojis), `tools/grade_assets.py`
+(les insignes). Les bonus sont lus dans `JobApi`, `PassApi`, `AuctionSales` et `NationRank`.
+
 ## Sur un serveur dédié (2026-11-13)
 
 Le joueur joue désormais sur un serveur qui tourne 24 h/24. Le mod y fonctionne tel quel : les

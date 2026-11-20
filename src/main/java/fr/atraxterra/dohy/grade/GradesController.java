@@ -189,7 +189,8 @@ public final class GradesController extends MenuController {
     /** Chaque avantage, grade par grade, avec la valeur du joueur en pastille. */
     private static List<Card> perks(ServerPlayer player) {
         List<Card> rows = new ArrayList<>();
-        rows.add(perk(Items.RED_BED, "Homes (/sethome)", "homes", value -> String.valueOf(value.homes()),
+        rows.add(perk(Items.BED.pick(net.minecraft.world.item.DyeColor.RED), "Homes (/sethome)", "homes",
+                value -> String.valueOf(value.homes()),
                 "+" + Premium.HOMES, String.valueOf(Grades.homes(player))));
         rows.add(perk(Items.COMPASS, "Teleportations au hasard (/rtp), par mois", "rtp",
                 value -> String.valueOf(value.rtp()), "+" + Premium.RTP, String.valueOf(Grades.rtpPerMonth(player))));
@@ -225,7 +226,7 @@ public final class GradesController extends MenuController {
         String of(PlayerGrade grade);
     }
 
-    private static Card perk(net.minecraft.world.item.Item icon, String title, String key, Value value,
+    private static Card perk(net.minecraft.world.level.ItemLike icon, String title, String key, Value value,
                              String premium, String mine) {
         StringBuilder line = new StringBuilder();
         for (PlayerGrade grade : PlayerGrade.values()) {

@@ -1269,6 +1269,47 @@ multicolore de Noël trois, Case départ huit. Leviers : `LuckyPass.draw` (cases
 `LuckyType` (poids), `LuckyEvents` (`PALADIUM_GOOD`, `FINDIUM_GOOD`), la rareté de chaque
 événement.
 
+## 6 quatervicies. Grades — ce que coûte le confort
+
+Les grades (`PALAMOD.md` § 42) s'achètent une fois pour toutes ; monter d'un grade coûte la
+différence. Ils ne donnent pas d'argent : du confort (homes, Ender Chest, commandes), de l'XP, et
+des ventes un peu plus faciles. Leur prix les place sur la progression du § 3.
+
+| Grade | Prix | Monter depuis le précédent | Atteint vers |
+|---|---|---|---|
+| Héros | 10 M | — | semaine 3 (~60 h), entre la box Paladium et le booster x3 |
+| Légende | 100 M | 90 M | mois 3, avec la box Endium |
+| Divinité | 1 G | 900 M | fin de partie, après l'autosell : un horizon, comme les derniers paliers d'amélioration |
+| Premium | 15 M les 30 jours | — | milieu de partie ; ensuite, un puits qui revient chaque mois |
+
+**L'XP de métier** : +5, +10, +15 % (et +5 % avec Premium), **ajoutés** aux autres bonus
+(Apprentissage +15 à +50 %, amulettes) avant les potions, qui multiplient le tout. Au rythme de
+référence (15 000 XP par heure, § 2) et au prix du marché noir (4 $ l'XP, § 6 duovicies), +5 %
+valent ~3 000 $ par heure, +20 % ~12 000 $ : Divinité avec Premium vaut à peu près Apprentissage I
+(150 M) sur ce seul point. Aucune boucle : l'argent des métiers est borné, le bonus ne fait que
+l'avancer.
+
+**L'XP du pass** : +5 à +20 % sur les quêtes. Un mois moyen donne déjà ~51 600 XP pour 35 000
+nécessaires (`tools/check_pass.py`) : le grade fait finir le pass plus tôt, pas gagner plus de
+récompenses. **L'XP classique** : +10 à +40 %, pour les enchantements et le raccommodage ; rien qui
+se vende.
+
+**L'hôtel des ventes** : 16 annonces à la fois au lieu de 6. Le débit reste celui du butin (§ 6
+decies), et les acheteurs paient au plus 0,69 fois la cote : plus d'annonces, pas de revente
+gagnante.
+
+**La taxe du marché international** : réduite de 10 % (Légende), 20 % (Divinité), 10 % de plus
+avec Premium. Au mieux, Superpuissance (6 %) et Divinité avec Premium : 4,2 %. Une vente rapporte
+alors au plus 2 × 0,958 = 1,92 fois la base, toujours sous les 2,6 fois de l'achat le moins cher :
+**pas de boucle** (§ 6 vicies).
+
+**Premium** : 15 M, c'est 75 heures au milieu de partie (200 k par heure), 15 heures à 1 M par
+heure, une broutille au-delà. Il vient après les achats uniques comme un puits récurrent, à la
+manière de l'assurance, mais pour du confort. Le temps est réel : un mois sans jouer le consomme
+(c'est un abonnement, choix du joueur).
+
+Leviers : `PlayerGrade` (prix et valeurs de chaque grade), `Premium` (prix, durée, bonus).
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas
