@@ -1456,6 +1456,36 @@ Demandés le 2026-11-19. Le détail du relevé est dans `PALAMOD.md` § 36, les 
   noms ; `--jar` pour les textures) et `tools/xp_potion_assets.py` (textures, icônes d'effet,
   modèles, noms). La CI vérifie que leurs fichiers sont à jour (`--check`).
 
+## La renaissance des métiers (2026-11-20)
+
+Demandée le 2026-11-20. Choix du joueur : les **déblocages gardés**, **+10 % d'XP et d'argent**
+par renaissance, les **récompenses des niveaux repayées en entier**, **sans limite** de nombre.
+
+- **Quand** : un métier au niveau 100. La carte **RENAISSANCE** de la page Métiers s'allume (avant,
+  elle dit combien de niveaux il reste) ; un clic, une confirmation. Ou `/metiers renaissance
+  <mineur|chasseur|fermier|alchimiste>` (les clés anglaises marchent aussi).
+- **Ce qui repart de zéro** : le niveau du métier (l'XP du tour), et ses paliers de primes. L'XP
+  gagnée au-delà du niveau 100 n'est pas perdue : elle compte dès le premier niveau du nouveau tour.
+- **Ce qui reste** : tout ce que le métier a débloqué — outils, machines, recettes, zones (la
+  dimension du Mineur, le villageois du dieu…), les effets qui dépendent du niveau (pêche, spawners,
+  pain…) et **toutes les sources d'XP**. Les points de profil RPG tirés des métiers et les succès
+  restent acquis.
+- **Ce que ça rapporte** : **+10 % d'XP** sur ce métier (ajoutés aux autres bonus : Apprentissage,
+  amulettes, grades ; les potions multiplient le tout) et **+10 % d'argent** sur ses niveaux et ses
+  primes, par renaissance, cumulés et sans limite. En remontant, chaque niveau repaie son argent, sa
+  prime tous les cinq niveaux et ses objets de Paladium.
+- **Le rang** : « R1 », « R2 »… à côté du métier, sur la page Métiers (onglets, fiche, carte du
+  bonus), la barre d'XP, les notifications, l'accueil, `/metiers`. Les niveaux cumulés comptent cent
+  niveaux par renaissance. Une annonce dans le chat et un titre saluent chaque renaissance.
+- **Équilibre** : `BALANCE.md` § 2, « Renaissance ».
+
+### Code
+
+`job/JobRebirth` (la renaissance, le rang, le bonus), `JobData` (les renaissances par métier),
+`JobApi` (`level` : le niveau qui ouvre les verrous, au maximum après une renaissance ;
+`progressLevel` : le niveau du tour ; le bonus dans `grant` et `levelMoney`), `JobPrimes` (les
+primes repayées), `JobsMenu` (la section RENAISSANCE), `command/JobsCommand`.
+
 ## Lucky blocks et Lucky Pass (2026-11-19)
 
 Demandés le 2026-11-19 avec les trônes. Le relevé et les écarts sont dans `PALAMOD.md` § 37, la

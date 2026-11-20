@@ -360,6 +360,17 @@ hôtel des ventes qui marche en solo.
   avec l'icône de l'Ender Chest et la consigne « Agrandi par ton grade » (types de menu
   `dohy:grade_ender_4` à `_7`).
 
+## La renaissance des métiers (lot 15, 2026-11-20)
+
+- **La page Métiers** : une section RENAISSANCE en tête de la fiche. Avant le niveau 100, la carte
+  « Renaissance n » est grisée avec sa barre vers le 100 (« Encore 12 niveaux ») ; au 100, elle
+  s'allume (« Retour au niveau 0 », « Bonus total : +20 % ») et demande confirmation. Après une
+  première renaissance, une carte dorée dit le bonus acquis (pastille R2). La fiche du métier dit
+  « NIVEAU 12 · R2 » et, dans TES BONUS, la ligne de la renaissance ; les onglets « R2 NIV. 12 » ;
+  les déblocages restent verts, les primes et les récompenses du tour repartent de zéro.
+- **Partout ailleurs** : le rang à côté du métier dans la barre d'XP (« Fermier R2 12 »), les
+  notifications d'XP et de niveau, les cartes de l'accueil (« R2 · NIV. 12 ») et `/metiers`.
+
 ## Les bots de farming (lot 13, 2026-11-20)
 
 - **Le menu du bot** (`FarmBotMenu`, vue `dohy:farm_bot`, clic droit sur son bot la main vide ;

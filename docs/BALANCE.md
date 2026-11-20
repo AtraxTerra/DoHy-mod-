@@ -172,6 +172,36 @@ leur bonus d'XP.
 connexion, en une fois. Le dernier palier payé est noté par métier, si bien qu'une prime ne se
 paie jamais deux fois, même si la courbe est rééquilibrée.
 
+### Renaissance (2026-11-20)
+
+Au niveau 100, un métier peut renaître : retour au niveau 0, déblocages gardés, **+10 % d'XP et
+d'argent par renaissance**, cumulés, **sans limite**, et les récompenses des niveaux **repayées en
+entier** en remontant (choix du joueur). Le palier des primes repart de zéro avec l'XP : la règle
+« une prime ne se paie qu'une fois » devient « une fois par tour ».
+
+**Ce que vaut un tour** après *n* renaissances : 28,3 M (20 M d'argent de niveau, 8,4 M de primes)
+× (1 + 0,1 *n*), plus les objets de Paladium des paliers (1 050 lingots de paladium et autant de
+trixium, l'équipement enchanté). L'XP d'un tour ne change pas (6,2 M), mais le bonus la fait venir
+1 + 0,1 *n* fois plus vite. L'argent par heure croît donc comme le **carré** de (1 + 0,1 *n*) :
+
+| Renaissances | Un tour rapporte | Heures par tour à 15 k XP/h | Par heure | Heures par tour à 150 k XP/h | Par heure |
+|---|---|---|---|---|---|
+| 0 (le premier tour) | 28,3 M | 412 | 69 k | 41 | 688 k |
+| 1 | 31,2 M | 374 | 83 k | 37 | 832 k |
+| 5 | 42,5 M | 274 | 155 k | 27 | 1,5 M |
+| 10 | 56,6 M | 206 | 275 k | 21 | 2,8 M |
+| 20 | 85,0 M | 137 | 619 k | 14 | 6,2 M |
+
+À 15 k XP/h (le rythme de référence, § 2), dix renaissances demandent ~3 000 heures : un horizon de
+plusieurs saisons, et un métier qui reste un bonus. **Le point à surveiller est le Fermier avec
+quatre bots** (§ 6 quinvicies) : ~150 k XP/h de betteraves le mènent au 100 en ~41 heures, et chaque
+tour rapporte alors autant qu'une heure d'autosell par heure de présence ; dix renaissances en ~300
+heures, puis près de 3 M par heure. C'est le choix du joueur (« en entier », « sans limite ») ; si
+l'économie s'emballe, les leviers sont, du plus doux au plus fort : `JobRebirth.BONUS` (le bonus par
+renaissance), la part de l'argent repayée en remontant (aujourd'hui entière : `JobApi.levelMoney`
+et `JobPrimes.amount`), un plafond de renaissances, et pour le seul Fermier la taille des champs des
+bots (`BotZone.MAX_SIDE`).
+
 ---
 
 ## 3. Progression attendue
