@@ -2988,6 +2988,8 @@
             "- Surtout du brut : uranium, thorium, plutonium et lithium bruts, yellowcake, beryllium.",
             "- Un peu de raffine : lingots, uranium 235, plutonium 239, radium, polonium ; parfois du schrabidium.",
             "- De quoi se soigner : RadAway, Rad-X, iode.",
+            "- L'annonce dit la radiation au point de chute : au-dela de 15 RAD/s, la combinaison est indispensable.",
+            "! Ces matieres irradient qui les porte : une caisse entiere fait souvent plus de 15 RAD/s (1 000 RAD tuent).",
             "! La caisse disparait 1 heure apres son arrivee."
           ]
         },
@@ -2995,7 +2997,7 @@
           "title": "Les minerais repoussent",
           "text": [
             "Toutes les 2 heures, les filons des zones se reforment dans la roche : uranium, thorium, gemmes radioactives et un peu de schrabidium. Ce que tu n'as pas mine reste : un chunk ne depasse jamais son plein.",
-            "! La radiation monte vite au coeur : une combinaison de NTM est conseillee."
+            "! Pres du reacteur, son corium irradie tout : sans combinaison de NTM, on y meurt en quelques secondes."
           ]
         }
       ],
