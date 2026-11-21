@@ -22,7 +22,9 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  * <ul>
  *   <li><b>fusion</b> (marteau en paladium) : chaque objet lache par un bloc
  *       sort cuit, s'il a une recette de four ; sinon il sort tel quel. Ce qui
- *       sort cuit rapporte l'XP de cuisson des metiers, comme au four ;</li>
+ *       sort cuit rapporte comme au four : l'XP de cuisson des metiers, et l'XP
+ *       verte de la recette (demande du 2026-11-21), lachee par le bloc avec la
+ *       sienne ;</li>
  *   <li><b>flamme</b> : la cible brule 10 secondes. <b>Ecart</b> : la fastsword
  *       de PalaMod l'enflammait 200 secondes ({@code sipush 200}, contre
  *       {@code bipush 10} pour la broadsword) — des ticks pris pour des
@@ -62,21 +64,39 @@ public final class SmelteryEvents {
             fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "hammer:duplicate:"
                     + net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(event.getState().getBlock()), 1);
         }
+        float experience = 0.0f;
         for (ItemEntity drop : event.getDrops()) {
             ItemStack stack = drop.getItem();
             SingleRecipeInput input = new SingleRecipeInput(stack.copyWithCount(1));
-            ItemStack smelted = level.recipeAccess().getRecipeFor(RecipeType.SMELTING, input, level)
-                    .map(holder -> holder.value().assemble(input))
-                    .orElse(ItemStack.EMPTY);
+            var recipe = level.recipeAccess().getRecipeFor(RecipeType.SMELTING, input, level);
+            ItemStack smelted = recipe.map(holder -> holder.value().assemble(input)).orElse(ItemStack.EMPTY);
             if (!smelted.isEmpty()) {
                 int count = Math.min(smelted.getMaxStackSize(), smelted.getCount() * stack.getCount());
                 drop.setItem(smelted.copyWithCount(count));
+                // L'XP verte du four : celle de la recette, pour chaque objet fondu.
+                int smelts = Math.min(stack.getCount(), (count + smelted.getCount() - 1) / smelted.getCount());
+                experience += smelts * recipe.get().value().experience();
                 // Fondu sur place : l'XP de cuisson des metiers, comme au four (bareme de Bedrock).
                 if (event.getBreaker() instanceof ServerPlayer smelter) {
                     fr.atraxterra.dohy.job.JobXpEvents.smelted(smelter, smelted, count);
                 }
             }
         }
+        event.setDroppedExperience(event.getDroppedExperience() + furnaceExperience(level, experience));
+    }
+
+    /**
+     * L'XP verte que rendrait le four pour ces cuissons : la partie entiere, plus un point avec la
+     * probabilite de la partie decimale ({@code AbstractFurnaceBlockEntity.createExperience}) —
+     * un lingot de fer (0,7) donne un point sept fois sur dix.
+     */
+    public static int furnaceExperience(ServerLevel level, float experience) {
+        if (experience <= 0.0f) {
+            return 0;
+        }
+        int points = (int) Math.floor(experience);
+        float rest = experience - points;
+        return rest > 0.0f && level.getRandom().nextFloat() < rest ? points + 1 : points;
     }
 
     @SubscribeEvent

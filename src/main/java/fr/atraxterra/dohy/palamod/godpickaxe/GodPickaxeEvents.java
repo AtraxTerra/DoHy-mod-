@@ -32,7 +32,8 @@ import java.util.List;
  *
  * <p><b>Ecart</b> : dans PalaMod, la fusion cassait le bloc elle-meme, et les
  * orbes d'XP du minerai etaient perdues. Ici elle ne fait que remplacer les
- * objets lâches : l'XP du minerai reste.
+ * objets laches : l'XP du minerai reste, et s'y ajoute celle du four
+ * (demande du 2026-11-21).
  */
 @EventBusSubscriber
 public final class GodPickaxeEvents {
@@ -57,9 +58,8 @@ public final class GodPickaxeEvents {
         }
         ItemEntity first = drops.getFirst();
         SingleRecipeInput input = new SingleRecipeInput(first.getItem().copyWithCount(1));
-        ItemStack smelted = level.recipeAccess().getRecipeFor(RecipeType.SMELTING, input, level)
-                .map(holder -> holder.value().assemble(input))
-                .orElse(ItemStack.EMPTY);
+        var recipe = level.recipeAccess().getRecipeFor(RecipeType.SMELTING, input, level);
+        ItemStack smelted = recipe.map(holder -> holder.value().assemble(input)).orElse(ItemStack.EMPTY);
         if (smelted.isEmpty()) {
             return;
         }
@@ -71,6 +71,10 @@ public final class GodPickaxeEvents {
         }
         first.setItem(smelted.copyWithCount(count));
         drops.subList(1, drops.size()).clear();
+        // L'XP verte du four, pour chaque exemplaire fondu, avec celle du minerai.
+        float experience = count * recipe.get().value().experience();
+        event.setDroppedExperience(event.getDroppedExperience()
+                + fr.atraxterra.dohy.palamod.smeltery.SmelteryEvents.furnaceExperience(level, experience));
         // Fondu sur place : l'XP de cuisson des metiers, comme au four (bareme de Bedrock).
         if (event.getBreaker() instanceof net.minecraft.server.level.ServerPlayer player) {
             fr.atraxterra.dohy.job.JobXpEvents.smelted(player, smelted, count);

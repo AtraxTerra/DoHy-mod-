@@ -896,7 +896,7 @@
             "La fiche de chaque metier a un onglet XP : tout ce qui rapporte de l'XP a ce metier, combien, et a partir de quel niveau. Les lignes en vert sont deja a ta portee ; les valeurs sont celles de base, avant tes bonus.",
             "Le Mineur, le Fermier et le Chasseur suivent le bareme de Paladium Bedrock : les memes XP que le calculateur de PalaTracker, aux niveaux de Bedrock multiplies par 5. Sous son niveau, une source ne rapporte rien.",
             "- La cuisson rapporte : les lingots au Mineur, la pomme de terre cuite au Fermier, les viandes et le saumon cuits au Chasseur. Au four, au haut fourneau, au fumoir ou au palafurnace, a condition de les sortir a la main.",
-            "- Le marteau et la pioche du dieu en fusion fondent sur place : ce qui sort cuit rapporte comme au four."
+            "- Le marteau et la pioche du dieu en fusion fondent sur place : ce qui sort cuit rapporte comme au four, l'XP verte comprise."
           ]
         },
         {
