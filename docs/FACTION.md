@@ -10,6 +10,9 @@ PvE**. Choix du joueur :
 - **tous les objets** de pillage et de défense de PalaMod ;
 - **events aux vraies heures** du calendrier de Paladium.
 
+La suite — la faction devenue une seule nation, et ses arbres de technologie bâtis sur NTM NEXT,
+Space et Cursed — est au chapitre 23 : `docs/NATION.md`.
+
 ## Lots
 
 | Lot | Contenu | État |
