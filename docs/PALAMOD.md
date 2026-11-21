@@ -1563,7 +1563,9 @@ ni dans PalaMod ni dans PalaJobs.
 
 - **Marteaux** (améthyste, titane, paladium) : 3 × 3, neuf fois plus lents qu'une pioche du même
   métal, la vitesse multipliée par (niveau de vitesse + 1). Seul le bloc visé use l'outil.
-  Fusion : chaque objet lâché sort cuit. Fortune : l'enchantement vanilla, posé par le grinder.
+  Fusion : chaque objet lâché sort cuit, avec l'XP de métier et l'XP verte du four — celle de la
+  recette, 0,7 par lingot de fer, 1 par lingot de paladium (demande du 2026-11-21). Fortune :
+  l'enchantement vanilla, posé par le grinder.
 - **Broadswords** : 7,7 / 8,2 / 9 de dégâts, +2,8 par niveau de dommage. **Fastswords** : 6 / 5 /
   7, +1,5 par niveau ; tenue en main, Célérité IV ; la cible ne reste invulnérable que 18 ticks.
   Flamme : la cible brûle 10 secondes ; recul : un demi-bloc par niveau.
@@ -1599,7 +1601,7 @@ ni dans PalaMod ni dans PalaJobs.
 - **Écarts**, des corrections : pile sur un seuil, PalaMod retombait au niveau 1 le temps d'un bloc,
   enchantements effacés ; il réécrivait les enchantements à chaque bloc, Toucher de soie compris ;
   l'amélioration de fusion se perdait sur un marteau ou une épée ; la fusion faisait perdre l'XP
-  des minerais. L'amélioration « big hole », lue par aucun code et sans recette, n'est pas portée.
+  des minerais (ici elle la garde, et y ajoute l'XP verte du four). L'amélioration « big hole », lue par aucun code et sans recette, n'est pas portée.
 
 ### Ce qui n'est pas porté
 
@@ -1607,7 +1609,6 @@ ni dans PalaMod ni dans PalaJobs.
   récompenses de DoHy sont des objets sans composants.
 - Succès, quêtes et événements du grinder (PalaPass, tutoriel), l'événement « Pioche de Légende »
   du lucky block Findium (pas de lucky blocks), le bonus de familier de la pioche.
-- La fusion automatique ne crédite pas d'XP de métier : DoHy n'a pas de source « cuisson ».
 
 ---
 
