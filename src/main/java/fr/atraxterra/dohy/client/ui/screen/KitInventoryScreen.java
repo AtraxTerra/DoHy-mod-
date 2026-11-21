@@ -81,7 +81,7 @@ public final class KitInventoryScreen extends UiContainerScreen<InventoryMenu> {
             new Shortcut("shop", "inv_shop", "Commerce", "Acheter, vendre, hotel des ventes"),
             new Shortcut("contracts", "inv_contracts", "Contrats", "Quotidiens et hebdomadaires"),
             new Shortcut("bank", "inv_bank", "Banque", "Epargne et interets"),
-            new Shortcut("faction", "inv_faction", "Faction", "Ta faction, ses claims, sa ligue"),
+            new Shortcut("faction", "inv_faction", "Nation", "Ta nation, ses terres, son rang"),
             new Shortcut("jobs", "inv_jobs", "Metiers", "Niveaux, deblocages, primes"));
 
     /** La relique du mois : l'icone du bouton du pass. */

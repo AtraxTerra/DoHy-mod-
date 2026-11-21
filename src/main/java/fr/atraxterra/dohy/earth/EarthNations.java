@@ -570,7 +570,7 @@ public final class EarthNations {
         return new Holder(country, rival, held);
     }
 
-    /** « de Nordheim », « d'Arcanum », « des Corbeaux », « de ta faction ». */
+    /** « de Nordheim », « d'Arcanum », « des Corbeaux », « de ta nation ». */
     public static String de(String name) {
         if (name.startsWith("Les ")) {
             return "des " + name.substring(4);
@@ -595,11 +595,11 @@ public final class EarthNations {
         return "a " + name;
     }
 
-    /** « ta faction », « Nordheim », ou le nom de la faction d'un autre joueur. */
+    /** « ta nation », « Nordheim », ou le nom de la faction d'un autre joueur. */
     public static String holderName(ServerPlayer viewer, int country) {
         Holder holder = holder(viewer.level().getServer(), country);
         if (holder.ownedBy(viewer.getUUID())) {
-            return "ta faction";
+            return "ta nation";
         }
         return holder.name();
     }
@@ -801,7 +801,7 @@ public final class EarthNations {
             return "Ce monde n'a pas de carte de la Terre";
         }
         if (!FactionApi.has(player)) {
-            return "Fonde d'abord ta faction";
+            return "Fonde d'abord ta nation";
         }
         return null;
     }
@@ -831,7 +831,7 @@ public final class EarthNations {
             return "Ta capitale se deplace dans un pays que tu tiens";
         }
         if (holder.player() && !holder.ownedBy(player.getUUID())) {
-            return country.name() + " est aux mains " + de(holder.name()) + ", la faction d'un joueur";
+            return country.name() + " est aux mains " + de(holder.name()) + ", la nation d'un joueur";
         }
         Nation nation = nation(player).withCapital(country.id(), player.getBlockX(), player.getBlockZ());
         if (mine.isEmpty()) {
@@ -864,7 +864,7 @@ public final class EarthNations {
             return name + " est deja a toi";
         }
         if (holder.player()) {
-            return name + " est aux mains " + de(holder.name()) + ", la faction d'un joueur : pas de guerre entre joueurs";
+            return name + " est aux mains " + de(holder.name()) + ", la nation d'un joueur : pas de guerre entre joueurs";
         }
         Nation nation = nation(player);
         if (ledger(server).of(player.getUUID()).isEmpty()) {

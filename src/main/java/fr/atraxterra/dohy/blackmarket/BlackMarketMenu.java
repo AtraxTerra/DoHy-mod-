@@ -65,7 +65,7 @@ public final class BlackMarketMenu extends MenuController {
             if (listing.stolen()) {
                 NationTraits traits = NationTraits.of(listing.nation());
                 tooltip.add(faction ? traits.name() + " : un grief de plus si tu achetes"
-                        : "Sans faction, personne ne remonte jusqu'a toi");
+                        : "Sans nation, personne ne remonte jusqu'a toi");
             }
             Card card = Card.of(listing.icon(), name, lines)
                     .accent(listing.stolen() ? RED : PURPLE)

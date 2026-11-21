@@ -94,8 +94,8 @@ import java.util.UUID;
  * rasee. Entrer dans sa salle forte la fait tomber aussi (« pillee »).
  *
  * <p><b>Ce qu'elle perd</b> ({@link WarStrategy#razed}) : 30 % de son tresor
- * pour ta banque de faction, la moitie de son armee, de la crainte, une treve
- * de sept jours ; sur la carte de la Terre, un de ses pays passe a ta faction
+ * pour ta banque nationale, la moitie de son armee, de la crainte, une treve
+ * de sept jours ; sur la carte de la Terre, un de ses pays passe a ta nation
  * (+1 claim). Ses claims tombent, ses tourelles s'eteignent, et cinq minutes
  * plus tard la place forte s'efface : son carre de claims revient tel qu'il
  * etait, crateres compris. Tombee pendant que tu es deconnecte (ou pendant un
@@ -281,7 +281,7 @@ public final class Strongholds {
      */
     static String order(ServerPlayer player, WarData.Relation relation, int distance) {
         if (!FactionApi.has(player)) {
-            return "Il faut une faction";
+            return "Il faut une nation";
         }
         if (FORTS.containsKey(player.getUUID())) {
             return "Une place forte se dresse deja contre toi";
@@ -915,7 +915,7 @@ public final class Strongholds {
         RETRY.put(fort.player, System.currentTimeMillis() + RETRY_MS);
         save(player.level().getServer());
         if (!FactionApi.has(player)) {
-            FactionApi.tell(player, fort.title() + " est tombee, mais sans faction, il n'y a rien a prendre.",
+            FactionApi.tell(player, fort.title() + " est tombee, mais sans nation, il n'y a rien a prendre.",
                     ChatFormatting.GRAY);
             return;
         }

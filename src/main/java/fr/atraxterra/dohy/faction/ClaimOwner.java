@@ -54,7 +54,7 @@ public record ClaimOwner(Optional<UUID> owner, String faction, boolean monsters,
      */
     public String label() {
         if (!enemy) {
-            return "La faction " + faction;
+            return "La nation " + faction;
         }
         return faction.startsWith("Place forte") ? faction : "La base ennemie des " + faction;
     }

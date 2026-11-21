@@ -35,11 +35,22 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Les onglets de la faction, sur le kit (MenuView) : la page de la faction, la
- * banque, les claims, le classement et les parametres. Sur Paladium, huit
- * onglets ; seul, les membres, l'annuaire et les grades n'ont pas d'objet.
+ * « Ma nation » (lot 23a) : la faction et le pays ne font plus qu'un, sous huit onglets — vue
+ * d'ensemble, territoire, technologies, economie, guerre, events, classement, parametres. Les
+ * pages de detail (pays a prendre, mines, reserve d'or, marche international, bases ennemies,
+ * notation, branche de l'arbre) gardent la rangee, sur l'onglet dont elles dependent.
  */
 public final class FactionMenus {
+
+    /** Les chemins des huit onglets ; une page de detail passe celui de son onglet. */
+    public static final String OVERVIEW = "faction";
+    public static final String TERRITORY = "faction_claims";
+    public static final String TECHNOLOGY = "faction_tree";
+    public static final String ECONOMY = "faction_bank";
+    public static final String WAR = "guerre";
+    public static final String EVENTS = "faction_events";
+    public static final String RANKING = "faction_ranking";
+    public static final String SETTINGS = "faction_settings";
 
     private static final DyeColor[] COLORS = DyeColor.values();
 
@@ -99,36 +110,35 @@ public final class FactionMenus {
     }
 
     /**
-     * La rangee d'onglets commune aux pages de la faction : un clic change de page sans
-     * repasser par la vue d'ensemble. Les compteurs disent ce qui attend.
+     * La rangee des huit onglets de la nation : un clic change de page sans repasser par la vue
+     * d'ensemble. Les compteurs disent ce qui attend. {@code active} est le chemin de l'onglet a
+     * allumer : celui de la page, ou celui dont depend la page de detail.
      */
     public static List<MenuView.Tab> tabs(ServerPlayer player, String active) {
-        FactionData data = FactionApi.data(player);
-        int done = 0;
-        int total = 0;
-        for (FactionBranch branch : FactionBranch.values()) {
-            done += data.tier(branch.key());
-            total += FactionTree.tiers(branch).size();
-        }
+        Nation nation = Nation.of(player);
+        int done = nation.researched();
+        int total = nation.researchTotal();
         EventRun fight = FactionEvents.active();
         boolean live = fight != null && !fight.ended();
-        long now = System.currentTimeMillis();
-        boolean ripe = GoldReserves.of(player).investments().stream().anyMatch(investment -> investment.ripe(now));
-        FactionLeague league = FactionLeague.of(data.ranking().league());
         List<MenuView.Tab> tabs = new ArrayList<>();
-        tabs.add(tab("Vue d'ensemble", "faction", active, ""));
-        tabs.add(tab("Claims", "faction_claims", active, data.claims().size() + "/" + FactionApi.claimCap(player)));
-        tabs.add(tab("Banque", "faction_bank", active, ""));
-        if (fr.atraxterra.dohy.earth.mine.EarthMines.active()) {
-            int mines = fr.atraxterra.dohy.earth.mine.EarthMines.of(player).size();
-            tabs.add(tab("Mines", "faction_mines", active, mines > 0 ? String.valueOf(mines) : ""));
-        }
-        tabs.add(tab("Classement", "faction_ranking", active, league.label().toUpperCase()));
-        tabs.add(tab("Arbre", "faction_tree", active, total <= 0 ? "" : done * 100 / total + " %"));
-        tabs.add(tab("Events", "faction_events", active, live ? "EN COURS" : ""));
-        tabs.add(tab("Reserve", "faction_reserve", active, ripe ? "PRET" : ""));
-        tabs.add(tab("Parametres", "faction_settings", active, ""));
+        tabs.add(tab("Vue d'ensemble", OVERVIEW, active, ""));
+        tabs.add(tab("Territoire", TERRITORY, active, nation.claims() + "/" + nation.claimCap()));
+        tabs.add(tab("Technologies", TECHNOLOGY, active, total <= 0 ? "" : done * 100 / total + " %"));
+        tabs.add(tab("Economie", ECONOMY, active, nation.reserveRipe() ? "PRET" : ""));
+        tabs.add(tab("Guerre", WAR, active, warBadge(nation)));
+        tabs.add(tab("Events", EVENTS, active, live ? "EN COURS" : ""));
+        tabs.add(tab("Classement", RANKING, active, nation.league().label().toUpperCase()));
+        tabs.add(tab("Parametres", SETTINGS, active, ""));
         return tabs;
+    }
+
+    /** Le compteur de l'onglet Guerre : l'assaut en cours, la guerre, l'ultimatum, ou rien. */
+    static String warBadge(Nation nation) {
+        if (nation.besieged()) {
+            return "ASSAUT";
+        }
+        return nation.conflict().map(relation -> relation.stance() == fr.atraxterra.dohy.faction.war.WarData.Stance
+                .GUERRE ? "GUERRE" : "ULTIMATUM").orElse("");
     }
 
     private static MenuView.Tab tab(String label, String path, String active, String count) {
@@ -195,9 +205,12 @@ public final class FactionMenus {
 
         @Override
         public MenuView view(ServerPlayer player) {
-            FactionData data = FactionApi.data(player);
+            Nation nation = Nation.of(player);
+            FactionData data = nation.data();
             FactionPerks perks = FactionPerks.of(data);
-            FactionLeague league = FactionLeague.of(data.ranking().league());
+            FactionLeague league = nation.league();
+            NationRank rank = nation.rank();
+            boolean earth = nation.earth();
             List<String> identity = new ArrayList<>();
             if (!data.description().isEmpty()) {
                 identity.add(data.description());
@@ -206,25 +219,36 @@ public final class FactionMenus {
                 identity.add("MOTD : " + data.motd());
             }
             identity.add("Tags : " + (data.tags().isEmpty() ? "aucun" : String.join(", ", data.tags())));
-            NationRank rank = NationRank.of(player);
-            boolean earth = fr.atraxterra.dohy.earth.EarthNations.active();
+            String next = nation.nextRank();
+            identity.add("Rang : " + rank.label() + (next.isEmpty() ? "" : " ; " + next));
+            identity.add("Taxe du marche international : " + Math.round(NationRank.fee(player) * 100.0d) + " %");
+            List<String> lands = new ArrayList<>();
+            lands.add(nation.claims() + " / " + nation.claimCap() + " claims");
             if (earth) {
-                NationRank next = rank.next();
-                identity.add("Rang : " + rank.label() + (next == null ? "" : " ; " + next.label() + " a "
-                        + next.countries() + " pays"));
+                int countries = nation.countries().size();
+                lands.add(nation.capital() == 0 ? "Pas encore de capitale" : countries + " pays · capitale "
+                        + fr.atraxterra.dohy.earth.EarthNations.countryName(nation.capital()));
+            } else {
+                lands.add("Monde, Nether et End");
+            }
+            List<String> treasury = new ArrayList<>();
+            treasury.add(MoneyFormat.exact(nation.bank()) + " $");
+            FactionVault vault = nation.vault();
+            if (!vault.isEmpty()) {
+                treasury.add("Coffre " + vault.used() + " / " + FactionVault.SLOTS);
+            } else if (nation.mines() > 0) {
+                treasury.add("+" + MoneyFormat.exact(nation.minesPerHour()) + " $ / h des mines");
             }
             List<Card> faction = List.of(
-                    Card.of(banner(data), data.name(), List.of(rank.label() + " · fondee le "
+                    Card.of(nation.banner(), data.name(), List.of(rank.label() + " · fondee le "
                                     + date(data.created()),
-                                    data.tags().isEmpty() ? "Faction solo" : String.join(" · ", data.tags())))
+                                    data.tags().isEmpty() ? "Nation solo" : String.join(" · ", data.tags())))
                             .accent(rank.color()).tooltip(identity),
-                    Card.of(new ItemStack(Items.GRASS_BLOCK), "Claims", List.of(
-                                    data.claims().size() + " / " + FactionApi.claimCap(player) + " chunks"))
-                            .accent(0xFF22E558).progress(data.claims().size(), FactionApi.claimCap(player))
-                            .action("claims|gerer les claims"),
-                    Card.of(new ItemStack(Items.GOLD_INGOT), "Banque de faction", List.of(
-                                    MoneyFormat.exact(data.bank()) + " $"))
-                            .accent(0xFFFAC400).action("bank|ouvrir la banque"),
+                    Card.of(new ItemStack(Items.GRASS_BLOCK), "Territoire", lands)
+                            .accent(0xFF22E558).progress(nation.claims(), nation.claimCap())
+                            .action("claims|ouvrir le territoire"),
+                    Card.of(new ItemStack(Items.GOLD_INGOT), "Banque nationale", treasury)
+                            .accent(0xFFFAC400).action("bank|ouvrir l'economie"),
                     Card.of(leagueIcon(league), "Ligue " + league.label(), List.of(
                                     MoneyFormat.exact(data.ranking().elo()) + " ELO",
                                     "+" + MoneyFormat.exact(data.ranking().weekElo()) + " cette semaine"))
@@ -242,24 +266,20 @@ public final class FactionMenus {
             home = perks.homes() <= 0 ? home.state(MenuView.DISABLED)
                     : home.action("home|y aller").right("sethome|le poser ici");
             List<Card> progression = new ArrayList<>(List.of(
-                    treeCard(player, data),
+                    treeCard(nation),
+                    warCard(nation),
+                    eventsCard(),
                     home,
                     enemyBaseCard(player),
                     reserveCard(player),
-                    eventsCard()));
-            progression.add(Card.of(new ItemStack(Items.CHEST), "Marche mondial", List.of(
-                            "Taxe " + Math.round(rank.fee() * 100.0d) + " %"))
-                    .accent(0xFF27C4E8).action("market|ouvrir"));
-            progression.add(notationCard(player));
-            progression.add(Card.of(new ItemStack(Items.COMPARATOR), "Parametres", List.of("Nom, blason, MOTD"))
-                    .accent(0xFF55545C).action("settings|ouvrir"));
+                    marketCard(player),
+                    notationCard(player)));
             List<MenuView.Stat> stats = List.of(
-                    earth ? new MenuView.Stat("RANG", rank.label().toUpperCase(), rank.color())
-                            : new MenuView.Stat("LIGUE", league.label().toUpperCase(), league.color()),
+                    new MenuView.Stat("RANG", rank.label().toUpperCase(), rank.color()),
                     new MenuView.Stat("ELO", MoneyFormat.shortForm(data.ranking().elo()), 0xFFFFFFFF),
                     new MenuView.Stat("BANQUE", MoneyFormat.shortForm(data.bank()), 0xFFFAC400));
             List<MenuView.Section> sections = new ArrayList<>();
-            sections.add(new MenuView.Section(earth ? "TA NATION" : "TA FACTION", "resources", MenuView.GRID, faction));
+            sections.add(new MenuView.Section("TA NATION", "resources", MenuView.GRID, faction));
             if (earth) {
                 // la capitale, les pays et la cible : la faction est une nation, tout tient sur une page
                 List<Card> lands = new ArrayList<>(fr.atraxterra.dohy.earth.NationMenu.ownCards(player));
@@ -277,32 +297,21 @@ public final class FactionMenus {
                 }
                 sections.add(new MenuView.Section("TERRITOIRE", "craft", MenuView.GRID, lands));
             }
-            sections.add(new MenuView.Section("PROGRESSION", "upgrade", MenuView.GRID, progression));
+            sections.add(new MenuView.Section("EN COURS", "upgrade", MenuView.GRID, progression));
             List<Card> activity = activity(data);
             if (!activity.isEmpty()) {
                 sections.add(new MenuView.Section("ACTIVITE RECENTE", "craft", MenuView.AGENDA, activity));
             }
-            return new MenuView(id(), data.name(), "", stats, sections, true).withTabs(tabs(player, "faction"));
+            return new MenuView(id(), nation.title(), "Ma nation", stats, sections, true)
+                    .withTabs(tabs(player, OVERVIEW));
         }
 
         @Override
         protected void card(ServerPlayer player, String key, int button) {
-            if (fr.atraxterra.dohy.earth.NationMenu.act(player, key)) {
+            if (opened(player, key)) {
                 return;
             }
             switch (key) {
-                case "market" -> fr.atraxterra.dohy.faction.market.WorldMarketMenu.INSTANCE.open(player);
-                case "claims" -> Claims.INSTANCE.open(player);
-                case "bank" -> Bank.INSTANCE.open(player);
-                case "ranking" -> Ranking.INSTANCE.open(player);
-                case "notation" -> Notation.INSTANCE.open(player);
-                case "settings" -> Settings.INSTANCE.open(player);
-                case "tree" -> FactionTreeMenus.Tree.INSTANCE.open(player);
-                case "bases" -> EnemyBaseMenu.INSTANCE.open(player);
-                case "reserve" -> ReserveMenu.INSTANCE.open(player);
-                case "events" -> FactionEventMenu.INSTANCE.open(player);
-                case "nations" -> fr.atraxterra.dohy.earth.NationMenu.INSTANCE.open(player);
-                case "mines" -> fr.atraxterra.dohy.earth.mine.MineMenu.INSTANCE.open(player);
                 case "home" -> {
                     String refusal = FactionHomes.go(player, 0);
                     if (refusal != null) {
@@ -358,7 +367,7 @@ public final class FactionMenus {
     }
 
     /** Les bases ennemies a piller (lot 22g) : la cible en cours, ou l'invitation a en reperer une. */
-    private static Card enemyBaseCard(ServerPlayer player) {
+    public static Card enemyBaseCard(ServerPlayer player) {
         EnemyBase base = EnemyBases.of(player);
         List<String> lines = base.active()
                 ? List.of("Cible : les " + base.name(), EnemyBases.where(player, base))
@@ -368,20 +377,11 @@ public final class FactionMenus {
                 .badge(base.active() ? "!" : "").action("bases|ouvrir");
     }
 
-    private static Card treeCard(ServerPlayer player, FactionData data) {
-        int done = 0;
-        int total = 0;
-        int running = 0;
-        boolean ready = false;
-        for (FactionBranch branch : FactionBranch.values()) {
-            done += data.tier(branch.key());
-            total += FactionTree.tiers(branch).size();
-            if (data.upgradeEnd(branch.key()) > 0L) {
-                running++;
-            } else if (FactionTree.blocker(player, branch) == null) {
-                ready = true;
-            }
-        }
+    private static Card treeCard(Nation nation) {
+        int done = nation.researched();
+        int total = nation.researchTotal();
+        int running = nation.researching();
+        boolean ready = running == 0 && nation.researchReady();
         List<String> treeLines = new ArrayList<>();
         treeLines.add("Paliers " + done + " / " + total);
         if (running > 0) {
@@ -389,8 +389,70 @@ public final class FactionMenus {
         } else if (ready) {
             treeLines.add("Un palier est pret");
         }
-        return Card.of(new ItemStack(Items.ENCHANTING_TABLE), "Arbre de technologie", treeLines)
-                .accent(0xFFEC4FB5).progress(done, total).badge(ready ? "!" : "").action("tree|ouvrir l'arbre");
+        return Card.of(new ItemStack(Items.ENCHANTING_TABLE), "Technologies", treeLines)
+                .accent(0xFFEC4FB5).progress(done, total).badge(ready ? "!" : "").action("tree|ouvrir les technologies");
+    }
+
+    /** La guerre des nations en une carte : l'assaut, la guerre ou l'ultimatum, sinon les hostiles. */
+    private static Card warCard(Nation nation) {
+        if (nation.besieged()) {
+            return Card.of(new ItemStack(Items.IRON_SWORD), "Guerre des nations", List.of("Assaut en cours",
+                            "Defends ta base"))
+                    .accent(0xFFEF3826).badge("ASSAUT").action("war|ouvrir");
+        }
+        java.util.Optional<fr.atraxterra.dohy.faction.war.WarData.Relation> conflict = nation.conflict();
+        if (conflict.isPresent()) {
+            fr.atraxterra.dohy.faction.war.WarData.Relation relation = conflict.get();
+            boolean war = relation.stance() == fr.atraxterra.dohy.faction.war.WarData.Stance.GUERRE;
+            List<String> lines = war
+                    ? List.of("Contre " + relation.traits().the(), relation.slot() > 0L ? "Assaut fixe"
+                            : relation.declared() ? "Rase sa place forte" : "Fixe l'heure de l'assaut")
+                    : List.of("Ultimatum " + relation.traits().de(), "Paie, negocie ou refuse");
+            return Card.of(new ItemStack(war ? Items.IRON_SWORD : Items.WRITABLE_BOOK), "Guerre des nations", lines)
+                    .accent(war ? 0xFFEF3826 : 0xFFE8590C).badge(war ? "GUERRE" : "!").action("war|ouvrir");
+        }
+        int hostiles = nation.hostiles();
+        return Card.of(new ItemStack(Items.SHIELD), "Guerre des nations", List.of("En paix",
+                        hostiles == 0 ? "Aucune nation hostile" : hostiles + " nation(s) hostile(s)"))
+                .accent(hostiles > 0 ? 0xFFE8590C : 0xFF55545C).action("war|ouvrir");
+    }
+
+    /** Le marche international : la taxe que paie ton rang. */
+    private static Card marketCard(ServerPlayer player) {
+        return Card.of(new ItemStack(Items.CHEST), "Marche international", List.of(
+                        "Taxe " + Math.round(NationRank.fee(player) * 100.0d) + " %", "Selon ton rang"))
+                .accent(0xFF27C4E8).action("market|ouvrir");
+    }
+
+    /**
+     * Les cartes qui menent a une autre page de la nation, et celles qui posent la capitale ou
+     * renoncent a la cible, d'ou qu'on clique : vrai si la cle en etait une.
+     */
+    public static boolean opened(ServerPlayer player, String key) {
+        if (fr.atraxterra.dohy.earth.NationMenu.act(player, key)) {
+            return true;
+        }
+        MenuController target = switch (key) {
+            case "market" -> fr.atraxterra.dohy.faction.market.WorldMarketMenu.INSTANCE;
+            case "claims" -> Claims.INSTANCE;
+            case "bank" -> Bank.INSTANCE;
+            case "ranking" -> Ranking.INSTANCE;
+            case "notation" -> Notation.INSTANCE;
+            case "settings" -> Settings.INSTANCE;
+            case "tree" -> FactionTreeMenus.Tree.INSTANCE;
+            case "bases" -> EnemyBaseMenu.INSTANCE;
+            case "reserve" -> ReserveMenu.INSTANCE;
+            case "events" -> FactionEventMenu.INSTANCE;
+            case "nations" -> fr.atraxterra.dohy.earth.NationMenu.INSTANCE;
+            case "mines" -> fr.atraxterra.dohy.earth.mine.MineMenu.INSTANCE;
+            case "war" -> fr.atraxterra.dohy.faction.war.WarMenu.INSTANCE;
+            default -> null;
+        };
+        if (target == null) {
+            return false;
+        }
+        target.open(player);
+        return true;
     }
 
     // -- Banque -----------------------------------------------------------------
@@ -441,11 +503,23 @@ public final class FactionMenus {
             }
             FactionVault vault = FactionVault.of(player);
             List<MenuView.Stat> stats = new ArrayList<>(List.of(
-                    new MenuView.Stat("BANQUE DE FACTION", MoneyFormat.shortForm(data.bank()), 0xFFFAC400),
+                    new MenuView.Stat("BANQUE NATIONALE", MoneyFormat.shortForm(data.bank()), 0xFFFAC400),
                     new MenuView.Stat("TON ARGENT", MoneyFormat.shortForm(purse), 0xFFFFFFFF)));
+            // la reserve d'or, le marche international et les mines : le reste du tresor de la nation
+            List<Card> treasury = new ArrayList<>(List.of(reserveCard(player), marketCard(player)));
+            Nation nation = Nation.of(player);
+            if (fr.atraxterra.dohy.earth.mine.EarthMines.active()) {
+                int mines = nation.mines();
+                treasury.add(Card.of(new ItemStack(Items.IRON_PICKAXE), "Mines de la Terre", List.of(
+                                mines == 0 ? "Aucune pour l'instant" : mines + " mine" + (mines > 1 ? "s" : ""),
+                                mines == 0 ? "Une balise les capture" : "+" + MoneyFormat.exact(nation.minesPerHour())
+                                        + " $ / h"))
+                        .accent(0xFFFAC400).badge(mines > 0 ? String.valueOf(mines) : "").action("mines|ouvrir"));
+            }
             List<MenuView.Section> sections = new ArrayList<>(List.of(
                     new MenuView.Section("DEPOSER", "resources", MenuView.GRID, deposit),
-                    new MenuView.Section("RETIRER", "upgrade", MenuView.GRID, withdraw)));
+                    new MenuView.Section("RETIRER", "upgrade", MenuView.GRID, withdraw),
+                    new MenuView.Section("TRESOR", "resources", MenuView.GRID, treasury)));
             if (fr.atraxterra.dohy.earth.mine.EarthMines.active() || !vault.isEmpty()) {
                 stats.add(new MenuView.Stat("COFFRE", vault.used() + " / " + FactionVault.SLOTS,
                         vault.used() >= FactionVault.SLOTS ? 0xFFEF3826 : 0xFFFFFFFF));
@@ -453,8 +527,8 @@ public final class FactionMenus {
                         "armor", MenuView.TILES, vaultCards(vault)));
             }
             sections.add(new MenuView.Section("HISTORIQUE", "craft", MenuView.ROWS, history));
-            return new MenuView(id(), "Banque de faction", "", stats, sections, true)
-                    .withTabs(tabs(player, "faction_bank"));
+            return new MenuView(id(), "Economie", "La banque nationale, la reserve d'or, le marche et les mines",
+                    stats, sections, true).withTabs(tabs(player, ECONOMY));
         }
 
         /** Le coffre de la banque : une vignette par pile, un clic la prend ; une carte pour tout prendre. */
@@ -479,14 +553,17 @@ public final class FactionMenus {
 
         @Override
         protected void card(ServerPlayer player, String key, int button) {
+            if (opened(player, key)) {
+                return;
+            }
             if (key.startsWith("deposit:")) {
                 long amount = Long.parseLong(key.substring(8));
                 report(player, FactionApi.deposit(player, amount), "+" + MoneyFormat.exact(amount)
-                        + " $ a la banque de faction.");
+                        + " $ a la banque nationale.");
             } else if (key.startsWith("withdraw:")) {
                 long amount = Long.parseLong(key.substring(9));
                 report(player, FactionApi.withdraw(player, amount), "-" + MoneyFormat.exact(amount)
-                        + " $ de la banque de faction.");
+                        + " $ de la banque nationale.");
             } else if (key.equals("vault_all")) {
                 int moved = FactionVault.takeAll(player);
                 report(player, moved > 0 ? null : "Ton inventaire est plein", "");
@@ -532,7 +609,7 @@ public final class FactionMenus {
                         .accent(0xFFEF3826).action("unclaim|rendre ce chunk"));
             } else if (owner.claimed()) {
                 actions.add(Card.of(new ItemStack(Items.BARRIER), "Chunk pris", List.of(hereLine,
-                        "Faction " + owner.faction())).state(MenuView.DISABLED));
+                        owner.label())).state(MenuView.DISABLED));
             } else if (!FactionApi.claimable(player.level())) {
                 actions.add(Card.of(new ItemStack(Items.BARRIER), "Pas ici", List.of(hereLine,
                         "Monde, Nether ou End seulement")).state(MenuView.DISABLED));
@@ -569,18 +646,42 @@ public final class FactionMenus {
                 claims.add(Card.of(new ItemStack(Items.MAP), "Aucun claim", List.of("Revendique le chunk",
                         "ou tu te tiens")).state(MenuView.DISABLED));
             }
-            List<MenuView.Stat> stats = List.of(
-                    new MenuView.Stat("CLAIMS", data.claims().size() + " / " + FactionApi.claimCap(player), 0xFF22E558),
-                    new MenuView.Stat("ICI", owner.ownedBy(player.getUUID()) ? "A TOI" : owner.claimed() ? "PRIS"
-                            : "LIBRE", owner.claimed() ? 0xFFEF3826 : 0xFFFFFFFF));
-            return new MenuView(id(), "Claims", "", stats, List.of(
-                    new MenuView.Section("ICI", "resources", MenuView.GRID, actions),
-                    new MenuView.Section("TES CLAIMS", "upgrade", MenuView.ROWS, claims)), true)
-                    .withTabs(tabs(player, "faction_claims"));
+            Nation nation = Nation.of(player);
+            List<MenuView.Stat> stats = new ArrayList<>();
+            stats.add(new MenuView.Stat("CLAIMS", data.claims().size() + " / " + FactionApi.claimCap(player),
+                    0xFF22E558));
+            List<MenuView.Section> sections = new ArrayList<>();
+            if (nation.earth()) {
+                // la capitale, les pays et la cible, puis les pages de la carte de la Terre
+                List<Card> lands = new ArrayList<>(fr.atraxterra.dohy.earth.NationMenu.ownCards(player));
+                lands.add(Card.of(new ItemStack(Items.COMPASS), "Pays a prendre", List.of(
+                                "Les voisins a viser", "Ce que tient chaque nation"))
+                        .accent(0xFFFAC400).action("nations|ouvrir"));
+                if (fr.atraxterra.dohy.earth.mine.EarthMines.active()) {
+                    int mines = nation.mines();
+                    lands.add(Card.of(new ItemStack(Items.IRON_PICKAXE), "Mines de la Terre", List.of(
+                                    mines == 0 ? "Aucune pour l'instant" : mines + " mine" + (mines > 1 ? "s" : ""),
+                                    mines == 0 ? "Une balise les capture" : "+" + MoneyFormat.exact(
+                                            nation.minesPerHour()) + " $ / h"))
+                            .accent(0xFFFAC400).badge(mines > 0 ? String.valueOf(mines) : "")
+                            .action("mines|ouvrir"));
+                }
+                sections.add(new MenuView.Section("TES TERRES", "craft", MenuView.GRID, lands));
+                stats.add(new MenuView.Stat("PAYS", String.valueOf(nation.countries().size()), 0xFFFAC400));
+            }
+            stats.add(new MenuView.Stat("ICI", owner.ownedBy(player.getUUID()) ? "A TOI" : owner.claimed() ? "PRIS"
+                    : "LIBRE", owner.claimed() ? 0xFFEF3826 : 0xFFFFFFFF));
+            sections.add(new MenuView.Section("ICI", "resources", MenuView.GRID, actions));
+            sections.add(new MenuView.Section("TES CLAIMS", "upgrade", MenuView.ROWS, claims));
+            return new MenuView(id(), "Territoire", nation.earth() ? "Tes claims, ta capitale et tes pays"
+                    : "Tes claims", stats, sections, true).withTabs(tabs(player, TERRITORY));
         }
 
         @Override
         protected void card(ServerPlayer player, String key, int button) {
+            if (opened(player, key)) {
+                return;
+            }
             FactionData data = FactionApi.data(player);
             if ("claim".equals(key)) {
                 report(player, FactionApi.claim(player), "Chunk revendique.");
@@ -640,7 +741,7 @@ public final class FactionMenus {
                 leagues.add(card);
             }
             boolean active = ranking.weekWins() > 0;
-            List<Card> week = List.of(
+            List<Card> week = new ArrayList<>(List.of(
                     Card.of(new ItemStack(Items.CLOCK), "Lundi minuit", List.of(
                             "Dans " + duration(FactionWeekly.untilReset()), "Recalcul et recompenses"))
                             .accent(0xFFFAC400),
@@ -648,23 +749,26 @@ public final class FactionMenus {
                                     ranking.weekWins() + " victoire(s) ELO", "+" + MoneyFormat.exact(ranking.weekElo())
                                             + " ELO"))
                             .accent(active ? 0xFF22E558 : 0xFFEF3826)
-                            .tooltip(List.of("Sans victoire dans la semaine, la faction",
+                            .tooltip(List.of("Sans victoire dans la semaine, la nation",
                                     "redescend d'une ligue et ne touche rien.")),
                     Card.of(new ItemStack(Items.GOLD_BLOCK), "Recompense", List.of(
                             MoneyFormat.exact(current.reward()) + " $", active ? "A la banque lundi" : "Gagne un event"))
-                            .accent(0xFFFAC400));
+                            .accent(0xFFFAC400)));
+            // la note de la semaine face aux douze nations : sa page detaille les cinq criteres
+            week.add(notationCard(player));
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("LIGUE", current.label().toUpperCase(), current.color()),
                     new MenuView.Stat("ELO", MoneyFormat.shortForm(ranking.elo()), 0xFFFFFFFF),
                     new MenuView.Stat("SEMAINE", "+" + MoneyFormat.shortForm(ranking.weekElo()), 0xFF22E558));
-            return new MenuView(id(), "Classement", "", stats, List.of(
+            return new MenuView(id(), "Classement", "Ligue, ELO et notation de la semaine", stats, List.of(
                     new MenuView.Section("LIGUES", "upgrade", MenuView.GRID, leagues),
                     new MenuView.Section("SEMAINE", "resources", MenuView.GRID, week)), true)
-                    .withTabs(tabs(player, "faction_ranking"));
+                    .withTabs(tabs(player, RANKING));
         }
 
         @Override
         protected void card(ServerPlayer player, String key, int button) {
+            opened(player, key);
         }
     }
 
@@ -694,7 +798,7 @@ public final class FactionMenus {
                 List.of("Dix points pour les jours joues (cinq jours suffisent),", "dix pour les contrats termines",
                         "Repart de zero le lundi"),
                 List.of("Ventes, primes, contrats et butins de la semaine", "Chaque x10 rapporte autant de points",
-                        "Les retraits de la banque de faction ne comptent pas"),
+                        "Les retraits de la banque nationale ne comptent pas"),
                 List.of("Ce que tu as vendu et achete au marche international", "Chaque x10 rapporte autant de points"),
                 List.of("Les victoires ELO de la semaine :", "bases ennemies pillees, events gagnes"),
                 List.of("Ta capitale, les pays que tu tiens,", "tes claims et les pieces du musee",
@@ -702,6 +806,11 @@ public final class FactionMenus {
 
         private Notation() {
             super("faction_notation");
+        }
+
+        @Override
+        protected void back(ServerPlayer player) {
+            Ranking.INSTANCE.open(player);
         }
 
         @Override
@@ -747,7 +856,7 @@ public final class FactionMenus {
                         "La premiere notation tombe lundi", "avec sa bourse")).state(MenuView.DISABLED));
             }
             last.add(Card.of(new ItemStack(Items.CLOCK), "Lundi minuit", List.of(
-                            "Dans " + duration(FactionWeekly.untilReset()), "Note et bourse a la banque de faction"))
+                            "Dans " + duration(FactionWeekly.untilReset()), "Note et bourse a la banque nationale"))
                     .accent(0xFFFAC400));
 
             // le classement face aux douze nations, et ce que vaudrait le rang
@@ -766,7 +875,7 @@ public final class FactionMenus {
                 table.add(standing.mine() ? card.badge("TOI") : card);
             }
             List<String> gains = new ArrayList<>();
-            gains.add("Bourse : +" + MoneyFormat.exact(score.bourse()) + " $ a la banque de faction");
+            gains.add("Bourse : +" + MoneyFormat.exact(score.bourse()) + " $ a la banque nationale");
             gains.add("Conquete : +" + MoneyFormat.exact(FactionNotation.conquestPoints(score.total(), rank))
                     + " points sur ton pays vise");
             gains.add("Podium : 3, 2 ou 1 lot(s) de ressources (" + MoneyFormat.shortForm(rewards.lotValue())
@@ -788,7 +897,8 @@ public final class FactionMenus {
             return new MenuView(id(), "Notation", "Une note chaque lundi", stats,
                     List.of(new MenuView.Section("CETTE SEMAINE", "resources", MenuView.GRID, week),
                             new MenuView.Section("BILAN", "upgrade", MenuView.GRID, last),
-                            new MenuView.Section("CLASSEMENT DES NATIONS", "craft", MenuView.GRID, table)), true);
+                            new MenuView.Section("CLASSEMENT DES NATIONS", "craft", MenuView.GRID, table)), true)
+                    .withTabs(tabs(player, RANKING));
         }
 
         @Override
@@ -823,11 +933,11 @@ public final class FactionMenus {
                             .action("banner:1|couleur suivante").right("banner:-1|couleur precedente"),
                     Card.of(new ItemStack(Items.SKELETON_SKULL), "Dissoudre", List.of(
                                     "Avec confirmation", "Claims, banque et arbre perdus"))
-                            .accent(0xFFEF3826).action("disband|dissoudre la faction")
+                            .accent(0xFFEF3826).action("disband|dissoudre la nation")
                             .confirm("!Dissoudre " + data.name() + " ?|Claims, banque et arbre sont perdus pour de bon"));
             return new MenuView(id(), "Parametres", "", List.of(), List.of(
-                    new MenuView.Section("FACTION", "craft", MenuView.GRID, cards)), true)
-                    .withTabs(tabs(player, "faction_settings"));
+                    new MenuView.Section("NATION", "craft", MenuView.GRID, cards)), true)
+                    .withTabs(tabs(player, SETTINGS));
         }
 
         @Override

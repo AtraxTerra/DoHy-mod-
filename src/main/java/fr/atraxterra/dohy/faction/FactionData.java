@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * La faction d'un joueur : en solo, une faction a un seul membre, son chef.
+ * La nation d'un joueur : en solo, une faction a un seul membre, son chef.
  *
  * <p>Portee par le joueur (piece jointe conservee a la mort). Les claims sont
  * aussi notes sur les chunks eux-memes ({@link ClaimOwner}) : la protection doit

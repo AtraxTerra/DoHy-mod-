@@ -108,7 +108,7 @@ public final class DefenseGate {
 
     private static Component refusal(ServerPlayer player, String key) {
         if (!FactionApi.has(player)) {
-            return Component.literal("Il te faut une faction et son arbre de technologie (/f create).")
+            return Component.literal("Il te faut une nation et son arbre de technologie (/f create).")
                     .withStyle(ChatFormatting.RED);
         }
         return FactionTree.unlockOf(key)

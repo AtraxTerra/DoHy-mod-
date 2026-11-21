@@ -67,7 +67,7 @@ public final class FactionEdit {
                 creating ? SoundEvents.UI_TOAST_CHALLENGE_COMPLETE : SoundEvents.EXPERIENCE_ORB_PICKUP,
                 SoundSource.MASTER, 0.5f, 1.0f);
         if (!creating) {
-            FactionApi.tell(player, "Faction modifiee.", ChatFormatting.GREEN);
+            FactionApi.tell(player, "Nation modifiee.", ChatFormatting.GREEN);
         }
         FactionMenus.Overview.INSTANCE.open(player);
     }

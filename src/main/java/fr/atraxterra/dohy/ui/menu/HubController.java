@@ -329,18 +329,20 @@ public final class HubController extends MenuController {
                 .accent(0xFF2BC4C4).action("trixium").badge(claimable > 0 ? "+" + claimable : "");
     }
 
+    /** Ta nation : son rang et ses terres, sa ligue ; sans nation, l'invitation a la fonder. */
     private static Card factionCard(ServerPlayer player) {
-        fr.atraxterra.dohy.faction.FactionData faction = fr.atraxterra.dohy.faction.FactionApi.data(player);
-        if (!faction.exists()) {
-            return Card.of(new ItemStack(Items.BANNER.pick(net.minecraft.world.item.DyeColor.WHITE)), "Faction", List.of("Fonde la tienne",
-                    fr.atraxterra.dohy.faction.FactionApi.CREATION_COST + " lingots de paladium"))
+        fr.atraxterra.dohy.faction.Nation nation = fr.atraxterra.dohy.faction.Nation.of(player);
+        if (!nation.exists()) {
+            return Card.of(new ItemStack(Items.BANNER.pick(net.minecraft.world.item.DyeColor.WHITE)), "Ma nation",
+                            List.of("Fonde la tienne", fr.atraxterra.dohy.faction.FactionApi.CREATION_COST
+                                    + " lingots de paladium"))
                     .accent(0xFFEC4FB5).action("faction");
         }
-        fr.atraxterra.dohy.faction.FactionLeague league =
-                fr.atraxterra.dohy.faction.FactionLeague.of(faction.ranking().league());
-        return Card.of(fr.atraxterra.dohy.faction.FactionMenus.banner(faction), faction.name(), List.of(
-                        "Ligue " + league.label(), MoneyFormat.shortForm(faction.ranking().elo()) + " ELO"))
-                .accent(league.color()).action("faction");
+        fr.atraxterra.dohy.faction.NationRank rank = nation.rank();
+        String lands = nation.earth() ? nation.countries().size() + " pays" : nation.claims() + " claims";
+        return Card.of(nation.banner(), nation.name(), List.of(rank.label() + " · " + lands,
+                        "Ligue " + nation.league().label() + " · " + MoneyFormat.shortForm(nation.elo()) + " ELO"))
+                .accent(rank.color()).action("faction");
     }
 
     /** Les menus que les boutons de l'inventaire et la barre laterale peuvent ouvrir. */

@@ -24,7 +24,7 @@ public final class Factions {
                     .copyOnDeath()
                     .build());
 
-    /** Le coffre de la banque de faction : les minerais des mines de la Terre. Garde a la mort. */
+    /** Le coffre de la banque nationale : les minerais des mines de la Terre. Garde a la mort. */
     public static final Supplier<AttachmentType<FactionVault>> VAULT = ATTACHMENTS.register("faction_vault",
             () -> AttachmentType.builder(() -> FactionVault.EMPTY)
                     .serialize(FactionVault.MAP_CODEC, vault -> !vault.isEmpty())

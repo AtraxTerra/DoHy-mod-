@@ -27,7 +27,7 @@ import net.minecraft.world.item.Items;
  *                     la TNT arrive en dynamite, au canon ou par wither
  * @param clearHeight  hauteur degagee au-dessus du sol de la base
  * @param elo          ELO gagne en la pillant
- * @param money        argent verse a la banque de faction
+ * @param money        argent verse a la banque nationale
  * @param summary      la taille et l'allure, en une ligne
  * @param contents     ce qui la defend, en une ligne
  * @param tools        ce qu'il faudra pour la piller

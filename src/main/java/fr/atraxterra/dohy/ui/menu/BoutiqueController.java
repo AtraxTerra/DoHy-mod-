@@ -173,9 +173,9 @@ public final class BoutiqueController extends MenuController {
                                     "Tes mines : " + held))
                     .accent(0xFFE8590C).badge(held > 0 ? held + " MINE" + (held > 1 ? "S" : "") : "")
                     .tooltip(List.of("Pose-la dans une mine de la Terre et reste a cote :",
-                            "2 a 5 min, et la mine est a ta faction",
+                            "2 a 5 min, et la mine est a ta nation",
                             "Chaque heure, meme hors ligne : argent et minerais",
-                            "a ta banque de faction. La capture la consomme.",
+                            "a ta banque nationale. La capture la consomme.",
                             beaconMissing > 0 ? "Il te manque " + MoneyFormat.exact(beaconMissing) + " $" : ""));
             mines.add(beaconMissing > 0 ? beacon.state(MenuView.DISABLED) : beacon.action("beacon|acheter"));
         }

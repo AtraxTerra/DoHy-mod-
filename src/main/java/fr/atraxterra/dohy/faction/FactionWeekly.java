@@ -18,7 +18,7 @@ import java.time.temporal.TemporalAdjusters;
 
 /**
  * Le lundi minuit de Paladium : la ligue se recalcule, la semaine est notee
- * ({@link FactionNotation}) et les recompenses tombent dans la banque de faction.
+ * ({@link FactionNotation}) et les recompenses tombent dans la banque nationale.
  *
  * <p>Sur Paladium, une faction sans aucune victoire ELO dans la semaine descend
  * d'une ligue et ne touche rien. Ici, pareil, a l'heure de {@link RealClock}. Un joueur
@@ -79,14 +79,14 @@ public final class FactionWeekly {
                 data.bank += league.reward();
                 data.log(league.reward(), "Recompense de ligue " + league.label());
                 FactionApi.tell(player, "Semaine close en ligue " + league.label() + " : +"
-                        + MoneyFormat.exact(league.reward()) + " $ a la banque de faction.", ChatFormatting.GREEN);
+                        + MoneyFormat.exact(league.reward()) + " $ a la banque nationale.", ChatFormatting.GREEN);
                 data.ranking = new FactionData.Ranking(current.elo(), 0L, 0, league.ordinal(), current.lastMonday());
             } else if (league.ordinal() > 0) {
                 // Une semaine sans victoire : une marche plus bas, et l'ELO ramene au seuil de la ligue.
                 FactionLeague lower = FactionLeague.of(league.ordinal() - 1);
                 long elo = Math.min(current.elo(), lower.threshold());
                 data.ranking = new FactionData.Ranking(elo, 0L, 0, lower.ordinal(), current.lastMonday());
-                FactionApi.tell(player, "Une semaine sans victoire : ta faction redescend en ligue " + lower.label()
+                FactionApi.tell(player, "Une semaine sans victoire : ta nation redescend en ligue " + lower.label()
                         + ".", ChatFormatting.RED);
             } else {
                 data.ranking = new FactionData.Ranking(current.elo(), 0L, 0, 0, current.lastMonday());

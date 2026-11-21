@@ -9,7 +9,7 @@ import net.minecraft.ChatFormatting;
  * apres une semaine sans victoire, comme sur Paladium.
  *
  * @param threshold ELO cumule pour y monter
- * @param reward    verse le lundi a la banque de faction, si la semaine compte une victoire
+ * @param reward    verse le lundi a la banque nationale, si la semaine compte une victoire
  */
 public enum FactionLeague {
     BRONZE("Bronze", 0L, 25_000L, ChatFormatting.GOLD, 0xFFCD7F32),

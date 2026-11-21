@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-15
+Dernière mise à jour : 2026-11-21
 
 ---
 
@@ -191,6 +191,21 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
+
+**Demande** : « avant de commencer la refonte, il devra y avoir un reset de la carte, et de TOUTES
+les stats », puis « bon on commence la grosse mise à jour ».
+
+- **Remise à zéro** du serveur Minestrator : la carte Earth40k d'origine (le zip du joueur,
+  vérifié : 3 936 régions, la même carte que celle du serveur, calage 40k du datapack) remplace
+  le monde, gardé de côté (`Earth24kChaosCubed_avant_reset`, et le snapshot
+  « avant-reset-carte »). Aucune base de données sur la MyBox : toutes les stats vivent dans le
+  monde. Le datapack de la Terre est recopié, réglages vérifiés (survie, normal, même spawn).
+- **Lot 23a de la nation** (`docs/NATION.md`, « Fait ») : façade `Nation`, rang sans carte de la
+  Terre par le Gouvernement (deux paliers de la Globale), menu « Ma nation » à huit onglets sur
+  les écrans existants, rang au HUD et dans la liste des joueurs, `/nation`, préfixe
+  `[Nation]`, banque nationale.
 
 ### 2026-11-17 — compléter les métiers : enchantements, totem fleuri, éléphant
 

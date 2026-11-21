@@ -26,7 +26,7 @@ import java.util.function.ToLongBiFunction;
 /**
  * L'arbre de technologie ({@code Java | Arbre de technologie}) : quatre branches,
  * douze paliers (six pour l'Economie). Un palier demande, tous ensemble, un
- * cout paye par la banque de faction, des actions, le palier precedent, puis
+ * cout paye par la banque nationale, des actions, le palier precedent, puis
  * une duree d'amelioration reelle.
  *
  * <p>Les couts, les durees et les recompenses sont ceux du wiki. Les
@@ -458,7 +458,7 @@ public final class FactionTree {
     public static String blocker(ServerPlayer player, FactionBranch branch) {
         FactionData data = FactionApi.data(player);
         if (!data.exists()) {
-            return "Tu n'as pas de faction";
+            return "Tu n'as pas de nation";
         }
         if (data.upgradeEnd(branch.key()) > 0L) {
             return "Une amelioration est deja en cours dans cette branche";
@@ -483,7 +483,7 @@ public final class FactionTree {
             }
         }
         if (data.bank() < next.cost()) {
-            return "La banque de faction n'a pas " + MoneyFormat.exact(next.cost()) + " $";
+            return "La banque nationale n'a pas " + MoneyFormat.exact(next.cost()) + " $";
         }
         return null;
     }
@@ -498,7 +498,7 @@ public final class FactionTree {
         Tier next = tier(branch, data.tier(branch.key()) + 1);
         if (next.cost() > 0 && !FactionApi.payFromBank(player, next.cost(),
                 "Arbre : " + branch.label() + " " + next.number())) {
-            return "La banque de faction n'a pas " + MoneyFormat.exact(next.cost()) + " $";
+            return "La banque nationale n'a pas " + MoneyFormat.exact(next.cost()) + " $";
         }
         if (!player.getAbilities().instabuild) {
             for (ItemCost cost : next.items()) {

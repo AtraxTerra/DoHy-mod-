@@ -20,7 +20,7 @@ Choix du joueur (2026-11-20) :
 | Lot | Contenu | État |
 |-----|---------|------|
 | 23-0 | Préparation : inventaire des trois mods, brouillon des neuf arbres, ce document | fait |
-| 23a | Une seule nation : le menu à onglets (territoire, technologies, économie, guerre…), le rang, la façade `Nation` | à faire |
+| 23a | Une seule nation : le menu à onglets (territoire, technologies, économie, guerre…), le rang, la façade `Nation` | fait |
 | 23b | Le moteur des technologies : domaines en données, état de recherche, écran des arbres ; l'arbre actuel fondu dedans | à faire |
 | 23c | Le laboratoire de recherche : bloc, énergie (FE, réseaux de NTM NEXT), points de recherche, les pays qui nourrissent la recherche | à faire |
 | 23d | Les verrous : pose des machines, exemptions, infobulles, encyclopédie | à faire |
@@ -96,6 +96,40 @@ lot 23a fait de la faction **ta nation**, partout :
   sera avec une migration (`optionalFieldOf`, valeur par défaut lue de l'ancien endroit).
 - **Les pays nourrissent la recherche** (23c) : chaque pays tenu ajoute aux points des
   laboratoires, la capitale aussi.
+
+### Fait (2026-11-21)
+
+- **La façade** `faction/Nation` : nom, rang et titre (« Royaume de Nordheim »), territoire
+  (claims, capitale, pays, cible, mines), trésor (banque, coffre, réserve d'or), recherche
+  (paliers acquis, en cours, prêts ; le palier du Gouvernement), guerre (conflit, siège, nations
+  hostiles). Elle lit les données où elles sont et n'écrit rien : aucune pièce jointe ne change.
+- **Le rang sans carte de la Terre** suit le Gouvernement : en attendant ses domaines (23b), deux
+  paliers de la branche Globale en font un (la conversion prévue plus bas) — Cité au palier 4,
+  État au 6, Royaume au 8, Empire au 10, Superpuissance au 12. Sur la carte, rien ne change : les
+  pays font le rang.
+- **Le menu « Ma nation »**, huit onglets sur les écrans existants, dont les identifiants ne
+  changent pas (les fiches de l'encyclopédie se découvrent comme avant) :
+
+  | Onglet | Écran | Ses pages de détail (l'onglet reste allumé) |
+  |---|---|---|
+  | Vue d'ensemble | `faction` : identité et rang, territoire, banque, ligue, puis ce qui attend (technologies, guerre, events, home, bases ennemies, réserve, marché, notation) | — |
+  | Territoire | `faction_claims` : tes terres (capitale, pays, cible, pays à prendre, mines), ici, tes claims | `faction_nations`, `faction_mines` |
+  | Technologies | `faction_tree` (l'arbre actuel, jusqu'au lot 23b) | `faction_branch` |
+  | Économie | `faction_bank` : déposer, retirer, trésor (réserve d'or, marché international, mines), coffre, historique | `faction_reserve`, `faction_world_market` |
+  | Guerre | `guerre` : la guerre des nations, et le pillage (bases ennemies) | `faction_enemy_bases` |
+  | Events | `faction_events` | — |
+  | Classement | `faction_ranking` : ligues, semaine, notation | `faction_notation` |
+  | Paramètres | `faction_settings` | — |
+
+  L'hexagone d'une page de détail revient à son onglet ; celui d'un onglet, à la vue d'ensemble.
+- **Le nom et le rang partout** : la pastille du HUD montre le rang (la ligue passe sur la ligne
+  du dessous), la liste des joueurs écrit « Royaume · Nordheim », le menu principal, la barre
+  latérale (« Ma nation »), l'inventaire, `/f info` (titre, rang et ce qui donne le suivant) ;
+  `/nation` ouvre le même menu que `/f` ; le préfixe des messages devient `[Nation]`.
+- **Le vocabulaire** : « banque de faction » devient « banque nationale », « ta faction »
+  « ta nation » (messages, écrans, encyclopédie, infobulles de la balise de concession, touche G
+  « Ma nation (menu) »). Restent « events de faction » (le nom des events de Paladium), le
+  concours Trixium et les succès de Paladium, et l'arbre de faction jusqu'au lot 23b.
 
 ## Les arbres de technologie (23b)
 

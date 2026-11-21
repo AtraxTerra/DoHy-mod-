@@ -127,6 +127,14 @@ public record TabInfo(List<Entry> entries) implements CustomPacketPayload {
                     faction = faction.substring(0, 16);
                 }
                 color = color(faction);
+                // le rang devant le nom (lot 23a) : « Royaume · Nordheim » ; une simple faction, le nom seul
+                fr.atraxterra.dohy.faction.NationRank rank = fr.atraxterra.dohy.faction.NationRank.of(player);
+                if (rank != fr.atraxterra.dohy.faction.NationRank.FACTION) {
+                    faction = rank.label() + " · " + faction;
+                    if (faction.length() > 32) {
+                        faction = faction.substring(0, 32);
+                    }
+                }
             }
         } catch (RuntimeException ignored) {
             // Une faction illisible ne prive pas la liste de la ligne du joueur.

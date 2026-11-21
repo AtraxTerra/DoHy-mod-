@@ -46,7 +46,7 @@ import java.util.Locale;
  *
  * <h2>Les recompenses</h2>
  *
- * <p>La bourse (a la banque de faction), des points de conquete sur le pays
+ * <p>La bourse (a la banque nationale), des points de conquete sur le pays
  * vise, et pour le podium des lots de ressources ; le premier gagne un claim.
  */
 public final class FactionNotation {
@@ -155,7 +155,7 @@ public final class FactionNotation {
         }
     }
 
-    /** Un retrait de la banque de faction : de l'argent deplace, pas gagne. */
+    /** Un retrait de la banque nationale : de l'argent deplace, pas gagne. */
     static void withdrawn(FactionData data, long amount) {
         data.addStat(WITHDRAWN, amount);
     }
@@ -242,7 +242,7 @@ public final class FactionNotation {
         return round(Math.max(0.0d, Math.min(max, value)));
     }
 
-    /** L'argent gagne depuis le debut de la semaine, retraits de la banque de faction deduits. */
+    /** L'argent gagne depuis le debut de la semaine, retraits de la banque nationale deduits. */
     private static long earned(ServerPlayer player, FactionData data) {
         long start = data.stat(EARNED_START);
         if (start == 0L) {
@@ -359,7 +359,7 @@ public final class FactionNotation {
                         + points(standing.score())).withStyle(standing.mine() ? ChatFormatting.YELLOW
                         : ChatFormatting.GRAY));
             }
-            FactionApi.tell(player, "Bourse : +" + MoneyFormat.exact(bourse) + " $ a la banque de faction.",
+            FactionApi.tell(player, "Bourse : +" + MoneyFormat.exact(bourse) + " $ a la banque nationale.",
                     ChatFormatting.GREEN);
             reward(player, data, score, rank);
         }

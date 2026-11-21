@@ -11,7 +11,9 @@ PvE**. Choix du joueur :
 - **events aux vraies heures** du calendrier de Paladium.
 
 La suite — la faction devenue une seule nation, et ses arbres de technologie bâtis sur NTM NEXT,
-Space et Cursed — est au chapitre 23 : `docs/NATION.md`.
+Space et Cursed — est au chapitre 23 : `docs/NATION.md`. Depuis son lot 23a, la faction **est**
+ta nation : un seul menu à huit onglets (« Ma nation »), un rang affiché partout, la banque
+nationale.
 
 ## Lots
 

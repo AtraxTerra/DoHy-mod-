@@ -129,7 +129,7 @@ public final class WarCommand {
                                 return answer(context, "Nation inconnue", null);
                             }
                             if (!FactionApi.has(player)) {
-                                return answer(context, "Il faut une faction", null);
+                                return answer(context, "Il faut une nation", null);
                             }
                             WarData.Relation relation = WarStrategy.data(player).relation(nation,
                                     System.currentTimeMillis());
@@ -147,7 +147,7 @@ public final class WarCommand {
                                             int nation = NationTraits.find(StringArgumentType.getString(context,
                                                     "nation"));
                                             if (nation < 0 || !FactionApi.has(player)) {
-                                                return answer(context, "Nation inconnue, ou pas de faction", null);
+                                                return answer(context, "Nation inconnue, ou tu n'as pas de nation", null);
                                             }
                                             String line = WarStrategy.simulatePillage(player, nation,
                                                     LongArgumentType.getLong(context, "montant"));
@@ -162,7 +162,7 @@ public final class WarCommand {
                                     int first = NationTraits.find(StringArgumentType.getString(context, "premiere"));
                                     int second = NationTraits.find(StringArgumentType.getString(context, "nation"));
                                     if (first < 0 || second < 0 || !FactionApi.has(player)) {
-                                        return answer(context, "Nation inconnue, ou pas de faction", null);
+                                        return answer(context, "Nation inconnue, ou tu n'as pas de nation", null);
                                     }
                                     return answer(context, WarStrategy.forcePact(player, first, second), null);
                                 }))))
@@ -256,7 +256,7 @@ public final class WarCommand {
             return answer(context, "Nation inconnue", null);
         }
         if (!FactionApi.has(player)) {
-            return answer(context, "Il faut une faction", null);
+            return answer(context, "Il faut une nation", null);
         }
         long now = System.currentTimeMillis();
         WarData data = WarStrategy.data(player);
@@ -293,7 +293,7 @@ public final class WarCommand {
             return answer(context, "Nation inconnue", null);
         }
         if (!FactionApi.has(player)) {
-            return answer(context, "Il faut une faction", null);
+            return answer(context, "Il faut une nation", null);
         }
         long now = System.currentTimeMillis();
         WarData data = WarStrategy.data(player);
@@ -317,7 +317,7 @@ public final class WarCommand {
             return answer(context, "Nation inconnue", null);
         }
         if (!FactionApi.has(player)) {
-            return answer(context, "Il faut une faction", null);
+            return answer(context, "Il faut une nation", null);
         }
         if (!NtmArsenal.ready()) {
             return answer(context, "NTM NEXT n'est pas la (ou ne repond pas) : pas de missiles", null);

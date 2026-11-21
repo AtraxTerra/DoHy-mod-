@@ -33,7 +33,7 @@ import java.util.UUID;
  * 27 or liquide, le 3 : 118, 100 et 125. Tout doit etre dans tes claims.
  *
  * <p><b>Investir</b> : chaque or liquide du coeur permet de placer 400 000 $
- * (jusqu'a 800 000 $ avec l'arbre). L'argent sort de la banque de faction et y
+ * (jusqu'a 800 000 $ avec l'arbre). L'argent sort de la banque nationale et y
  * revient a l'echeance, avec des interets d'autant plus gros que le placement
  * est long (1 % sur un jour, 4 % sur trois, 10 % sur sept, 25 % sur quatorze),
  * multiplies par l'arbre (x2, x3). Avant l'echeance, on peut retirer sa mise,
@@ -225,7 +225,7 @@ public final class GoldReserves {
     /** Un clic droit mains nues sur un coffre-fort : reconnait le cube, l'enregistre, ouvre la reserve. */
     public static void use(ServerPlayer player, BlockPos pos) {
         if (!FactionApi.has(player)) {
-            FactionApi.tell(player, "Fonde d'abord ta faction.", ChatFormatting.RED);
+            FactionApi.tell(player, "Fonde d'abord ta nation.", ChatFormatting.RED);
             return;
         }
         Level level = player.level();
@@ -311,14 +311,14 @@ public final class GoldReserves {
             return "Plus que " + MoneyFormat.exact(Math.max(0L, room)) + " $ de place : ajoute de l'or liquide";
         }
         if (amount > bank) {
-            return "La banque de faction n'a que " + MoneyFormat.exact(bank) + " $";
+            return "La banque nationale n'a que " + MoneyFormat.exact(bank) + " $";
         }
         if (amount < MIN_AMOUNT) {
             return "Il faut placer au moins " + MoneyFormat.exact(MIN_AMOUNT) + " $ (place : "
                     + MoneyFormat.exact(Math.max(0L, room)) + " $, banque : " + MoneyFormat.exact(bank) + " $)";
         }
         if (!FactionApi.payFromBank(player, amount, "Reserve d'or : placement " + term.label())) {
-            return "La banque de faction n'a pas assez";
+            return "La banque nationale n'a pas assez";
         }
         int permille = term.permille() * Math.max(1, FactionApi.perks(player).interest());
         set(player, reserve.with(new GoldReserve.Investment(amount, System.currentTimeMillis(), term.days(),
@@ -343,7 +343,7 @@ public final class GoldReserves {
         }
         set(player, reserve.without(index));
         FactionApi.creditBank(player, investment.payout(), "Reserve d'or : placement recolte");
-        FactionApi.tell(player, "+" + MoneyFormat.exact(investment.payout()) + " $ a la banque de faction (dont "
+        FactionApi.tell(player, "+" + MoneyFormat.exact(investment.payout()) + " $ a la banque nationale (dont "
                 + MoneyFormat.exact(investment.payout() - investment.amount()) + " $ d'interets).", ChatFormatting.GREEN);
         return null;
     }

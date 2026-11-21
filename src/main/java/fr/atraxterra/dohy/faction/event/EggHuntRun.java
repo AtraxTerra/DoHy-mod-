@@ -163,7 +163,7 @@ public final class EggHuntRun extends EventRun {
         }
         int rank = rankOf(player);
         return List.of(ended() ? "Termine" : "Reste " + clock(CONTEST - (ticks - eggSince)) + " · oeuf : " + holder(),
-                player.getUUID().equals(carrier) ? "Tu portes l'oeuf !" : rank > 0 ? "Ta faction : "
+                player.getUUID().equals(carrier) ? "Tu portes l'oeuf !" : rank > 0 ? "Ta nation : "
                         + (rank == 1 ? "1re" : rank + "e") + " · " + Math.round(scoreOf(player)) + " s"
                         : "Pas encore de temps de port");
     }

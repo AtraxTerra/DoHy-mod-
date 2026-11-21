@@ -68,7 +68,7 @@ final class EarthBodyCommand {
             player.sendSystemMessage(Component.literal("  " + body.name() + ", " + body.resource()
                     + (country == null ? "" : " (" + country.name() + ")") + " : ").withStyle(ChatFormatting.YELLOW)
                     .append(Component.literal(where).withStyle(ChatFormatting.GRAY))
-                    .append(Component.literal(" \u00B7 " + (own ? "a ta faction"
+                    .append(Component.literal(" \u00B7 " + (own ? "a ta nation"
                             : fr.atraxterra.dohy.earth.mine.EarthMines.holderName(player, body)))
                             .withStyle(own ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY)));
         }

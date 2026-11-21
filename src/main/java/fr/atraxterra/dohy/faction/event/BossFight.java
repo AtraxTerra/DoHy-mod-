@@ -124,7 +124,7 @@ public final class BossFight extends EventRun {
         int rank = rankOf(player);
         return List.of(ended() ? "Termine" : health >= 0.0f ? "Vie : " + Math.round(health * 100.0f) + " %"
                         : "En cours",
-                rank > 0 ? "Ta faction : " + (rank == 1 ? "1re" : rank + "e") + " · " + Math.round(scoreOf(player))
+                rank > 0 ? "Ta nation : " + (rank == 1 ? "1re" : rank + "e") + " · " + Math.round(scoreOf(player))
                         + " degats" : "Pas encore de degats");
     }
 

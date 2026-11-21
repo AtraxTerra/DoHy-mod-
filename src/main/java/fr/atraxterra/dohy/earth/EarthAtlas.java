@@ -124,7 +124,7 @@ public final class EarthAtlas {
     /**
      * Qui tient un pays.
      *
-     * @param kind 1 ta faction, 2 la faction d'un autre joueur, 3 une nation rivale ({@code nation} : son rang)
+     * @param kind 1 ta nation, 2 la faction d'un autre joueur, 3 une nation rivale ({@code nation} : son rang)
      */
     public record Owner(int country, int kind, int nation, String holder) {
     }
@@ -277,7 +277,7 @@ public final class EarthAtlas {
             for (EarthData.Country country : earth.config().countries()) {
                 EarthNations.Holder holder = EarthNations.holder(server, country.id());
                 if (holder.ownedBy(player.getUUID())) {
-                    owners.add(new Owner(country.id(), 1, 0, "ta faction"));
+                    owners.add(new Owner(country.id(), 1, 0, "ta nation"));
                 } else if (holder.player()) {
                     owners.add(new Owner(country.id(), 2, 0, holder.name()));
                 } else if (holder.rival() >= 0) {

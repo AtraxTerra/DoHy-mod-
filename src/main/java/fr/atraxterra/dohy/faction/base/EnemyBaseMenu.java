@@ -44,7 +44,7 @@ public final class EnemyBaseMenu extends MenuController {
 
     @Override
     protected void back(ServerPlayer player) {
-        FactionMenus.Overview.INSTANCE.open(player);
+        fr.atraxterra.dohy.faction.war.WarMenu.INSTANCE.open(player);
     }
 
     @Override
@@ -132,7 +132,8 @@ public final class EnemyBaseMenu extends MenuController {
                 new MenuView.Section("TA CIBLE", "resources", MenuView.GRID, target),
                 new MenuView.Section("GENRE DE BASE", "craft", MenuView.GRID, genres),
                 new MenuView.Section("REPERER UNE BASE", "upgrade", MenuView.GRID, tiers),
-                new MenuView.Section("PILLAGE", "resources", MenuView.GRID, help)), true);
+                new MenuView.Section("PILLAGE", "resources", MenuView.GRID, help)), true)
+                .withTabs(FactionMenus.tabs(player, FactionMenus.WAR));
     }
 
     /** Coupe un texte en lignes de {@code width} caracteres au plus, aux espaces ; {@code lines} lignes au plus. */

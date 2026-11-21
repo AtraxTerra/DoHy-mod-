@@ -67,7 +67,7 @@ public final class MineCommand {
                         .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.argument("mine", StringArgumentType.greedyString()).suggests(MINES)
                                 .executes(ctx -> act(ctx.getSource(), player -> EarthMines.give(player,
-                                        StringArgumentType.getString(ctx, "mine")), "Mine donnee a ta faction."))))
+                                        StringArgumentType.getString(ctx, "mine")), "Mine donnee a ta nation."))))
                 // Pour les operateurs : comme si des heures avaient passe, et le versement qui suit.
                 .then(Commands.literal("avancer")
                         .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))

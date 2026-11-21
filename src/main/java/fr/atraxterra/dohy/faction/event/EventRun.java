@@ -506,9 +506,9 @@ public abstract class EventRun {
                 player.connection.send(new ClientboundSetTitleTextPacket(Component.literal(winner)
                         .withStyle(place == 0 ? ChatFormatting.GREEN : ChatFormatting.GOLD)));
                 player.connection.send(new ClientboundSetSubtitleTextPacket(Component.literal(
-                        kind.label() + " · ta faction : " + where).withStyle(ChatFormatting.GRAY)));
+                        kind.label() + " · ta nation : " + where).withStyle(ChatFormatting.GRAY)));
             }
-            MutableComponent mine = Component.literal("Ta faction » ").withStyle(ChatFormatting.GRAY);
+            MutableComponent mine = Component.literal("Ta nation » ").withStyle(ChatFormatting.GRAY);
             player.sendSystemMessage(mine.append(Component.literal(where)
                     .withStyle(place < 0 ? ChatFormatting.RED : ChatFormatting.YELLOW)));
             if (place >= 0) {
