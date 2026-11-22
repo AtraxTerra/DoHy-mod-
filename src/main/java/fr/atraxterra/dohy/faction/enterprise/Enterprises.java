@@ -458,6 +458,21 @@ public final class Enterprises {
         return bonus;
     }
 
+    /** Le risque d'une affaire illegale aujourd'hui, sur 100 (0 pour une entreprise legale). */
+    public static double risk(ServerPlayer player, Enterprise enterprise) {
+        return new Payout.World(player, of(player), System.currentTimeMillis()).factors(enterprise).risk();
+    }
+
+    /** Ce que la prochaine heure rapporterait a cette entreprise, propre ou sale, avant ses frais. */
+    public static double perHour(ServerPlayer player, Enterprise enterprise) {
+        return Payout.preview(player).earned().getOrDefault(enterprise.id(), 0.0d);
+    }
+
+    /** Ses frais par heure, salaires compris. */
+    public static double costPerHour(ServerPlayer player, Enterprise enterprise) {
+        return new Payout.World(player, of(player), System.currentTimeMillis()).factors(enterprise).cost();
+    }
+
     /** Le net de la prochaine heure : propre, blanchi, moins les frais. */
     public static long netPerHour(ServerPlayer player) {
         return Math.round(Payout.preview(player).net());
