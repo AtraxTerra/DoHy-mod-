@@ -11,6 +11,7 @@ import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.ui.view.PriceChart;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -825,7 +826,7 @@ public final class EnterpriseMenus {
                 }
                 long price = seeds(world);
                 ItemStack seed = new ItemStack(fr.atraxterra.dohy.underground.Goods.seed(line), 8);
-                suppliers.add(Card.of(seed, "8 " + MenuView.text(seed.getHoverName()).toLowerCase(), List.of(
+                suppliers.add(Card.of(seed, MenuView.text(Component.literal("8 ").append(seed.getHoverName())), List.of(
                                 MoneyFormat.exact(price) + " $", line.climate()))
                         .accent(0xFF22E558).action("buy:seeds:" + line.name() + "|acheter")
                         .confirm("Acheter 8 graines ?|" + MoneyFormat.exact(price) + " $, en argent sale d'abord"));

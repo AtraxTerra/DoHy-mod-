@@ -10,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -124,21 +125,23 @@ public final class WorkstationMenus {
             List<Card> cards = new ArrayList<>();
             for (Recipe recipe : recipes()) {
                 ItemStack output = new ItemStack(recipe.output().get(), recipe.count());
-                StringBuilder needs = new StringBuilder();
+                // les noms d'objets se traduisent chez le client : un seul composant par ligne, le nombre devant
+                MutableComponent needs = Component.empty();
                 for (Input input : recipe.inputs()) {
-                    if (!needs.isEmpty()) {
+                    if (!needs.getSiblings().isEmpty()) {
                         needs.append(" + ");
                     }
-                    needs.append(input.count()).append(' ').append(MenuView.text(new ItemStack(input.item().get())
-                            .getHoverName()));
+                    needs.append(input.count() + " ").append(new ItemStack(input.item().get()).getHoverName());
                 }
                 int possible = possible(player, recipe);
                 List<String> lines = new ArrayList<>();
-                lines.add(needs.toString());
+                lines.add(MenuView.text(needs));
                 lines.add(recipe.tool() != null && AgriInv.count(player, recipe.tool().get()) <= 0
-                        ? "Il faut " + MenuView.text(new ItemStack(recipe.tool().get()).getHoverName())
+                        ? MenuView.text(Component.literal("Il faut ").append(new ItemStack(recipe.tool().get())
+                        .getHoverName()))
                         : possible > 0 ? "Tu peux en faire " + possible : "Il te manque des ingredients");
-                Card card = Card.of(output, recipe.count() + " " + MenuView.text(output.getHoverName()), lines)
+                Card card = Card.of(output, MenuView.text(Component.literal(recipe.count() + " ")
+                                .append(output.getHoverName())), lines)
                         .accent(possible > 0 ? 0xFF22E558 : 0xFF55545C).badge(possible > 0 ? "x" + possible : "")
                         .tooltip(List.of("Clic gauche : une fois", "Clic droit : jusqu'a " + MANY + " fois"));
                 cards.add(possible > 0 ? card.action("one:" + recipe.key() + "|une fois")
