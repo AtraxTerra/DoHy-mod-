@@ -72,8 +72,14 @@ final class Payout {
     static final double CASINO_LAUNDER = 1_500.0d;
     static final double CASINO_FEE = 0.20d;
 
-    /** Un evenement a dire au joueur a la fin du versement. */
-    record Event(String text, int color, boolean toast) {
+    /**
+     * Un evenement a dire au joueur a la fin du versement : la ligne du chat et du journal, et
+     * le titre et la ligne courte de sa notification (pas de notification sans titre).
+     */
+    record Event(String text, int color, String title, String line) {
+        Event(String text, int color) {
+            this(text, color, "", "");
+        }
     }
 
     /** Ce qui fait tourner une entreprise : multiplicateur de production, frais par heure, risque, et pourquoi. */
@@ -740,7 +746,8 @@ final class Payout {
         if (money >= 1.0d) {
             text.append(", ").append(MoneyFormat.exact(Math.round(money))).append(" $ d'argent sale saisis");
         }
-        sim.events.add(new Event(text.toString(), 0xFFEF3826, true));
+        sim.events.add(new Event(text.toString(), 0xFFEF3826, "Descente de police", enterprise.name()
+                + " fermee 24 h"));
     }
 
     // -- Le versement -----------------------------------------------------------------------------
@@ -772,9 +779,8 @@ final class Payout {
         World world = new World(player, holdings, now);
         Sim sim = new Sim(holdings);
         RandomSource random = player.getRandom();
-        if (holdings.dayTick <= 0L) {
-            holdings.dayTick = start;
-        }
+        // les journees des organisations suivent les heures rattrapees : une semaine au plus, elles aussi
+        holdings.dayTick = holdings.dayTick <= 0L ? start : Math.max(holdings.dayTick, start - DAY);
         for (int index = 0; index < hours; index++) {
             long time = start + (index + 1L) * HOUR;
             Hour hour = hour(world, sim, time, true, random);
@@ -820,10 +826,10 @@ final class Payout {
                 strike = true;
             }
         }
-        holdings.dirty = Math.max(0L, (long) Math.floor(sim.dirty));
+        holdings.dirty = Math.max(0L, Math.round(sim.dirty));
         holdings.stock.clear();
         for (Map.Entry<String, Double> entry : sim.stock.entrySet()) {
-            long units = (long) Math.floor(entry.getValue());
+            long units = Math.round(entry.getValue());
             if (units > 0L) {
                 holdings.stock.put(entry.getKey(), units);
             }
@@ -855,7 +861,7 @@ final class Payout {
         if (strike) {
             String text = "Faute de quoi payer les frais, tes employes cessent le travail 6 h";
             holdings.log(now, text);
-            sim.events.add(new Event(text, 0xFFEF3826, true));
+            sim.events.add(new Event(text, 0xFFEF3826, "Greve", "Frais impayes : 6 h d'arret"));
         }
         holdings.report = new Holdings.Report(now, hours, clean, Math.round(sim.dirtyEarned), laundered, costs,
                 sim.raids, Math.round(sim.sold), Math.round(sim.lost));
@@ -866,9 +872,9 @@ final class Payout {
         for (Event event : sim.events) {
             player.sendSystemMessage(Component.literal("[Entreprises] ").withStyle(ChatFormatting.GOLD)
                     .append(Component.literal(event.text() + ".").withStyle(chatColor(event.color()))));
-            if (event.toast()) {
-                Toasts.send(player, new ItemStack(Items.IRON_BARS), "enterprise_event", "Entreprises", event.text(),
-                        event.color(), "enterprise");
+            if (!event.title().isEmpty()) {
+                Toasts.send(player, new ItemStack(Items.IRON_BARS), "ENTREPRISES", event.title(), event.line(),
+                        event.color(), "enterprise_event");
             }
         }
     }
@@ -893,8 +899,8 @@ final class Payout {
         }
         String line = (net >= 0L ? "+" : "-") + MoneyFormat.exact(Math.abs(net)) + " $ a la banque"
                 + (report.dirty() > 0L ? " · sale +" + MoneyFormat.exact(report.dirty()) + " $" : "");
-        Toasts.send(player, new ItemStack(Items.GOLD_INGOT), "enterprise_hour", "Entreprises", line,
-                net >= 0L ? 0xFF22E558 : 0xFFFAC400, "enterprise");
+        Toasts.send(player, new ItemStack(Items.GOLD_INGOT), "ENTREPRISES", "Versement de l'heure", line,
+                net >= 0L ? 0xFF22E558 : 0xFFFAC400, "enterprise_hour");
     }
 
     // -- L'apercu des menus -----------------------------------------------------------------------

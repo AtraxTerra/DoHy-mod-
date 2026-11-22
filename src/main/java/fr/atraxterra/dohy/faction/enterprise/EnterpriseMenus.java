@@ -123,11 +123,16 @@ public final class EnterpriseMenus {
         return cards;
     }
 
+    /** « 376 $ / h », sans signe : une estimation. */
+    static String rate(double amount) {
+        return MoneyFormat.exact(Math.round(amount)) + " $ / h";
+    }
+
     /** Ce qu'une entreprise de ce secteur ferait en une heure, au niveau 1, ici. */
     static String estimate(Sector sector, Line line, Regime regime, int influence) {
         double factor = (sector.legal() ? regime.legal() : regime.illegal()) * Influence.revenue(sector, influence);
         return switch (sector.role()) {
-            case REVENUE -> "~" + perHour(sector.base() * factor);
+            case REVENUE -> "~" + rate(sector.base() * factor);
             case GROW -> line == null ? "" : "~" + Math.round(line.yield() * factor) + " "
                     + line.rawLabel().toLowerCase() + " / h";
             case LAB -> "~" + Math.round(sector.base() * factor) + " unites / h";
@@ -135,8 +140,8 @@ public final class EnterpriseMenus {
             case SELL -> "~" + Math.round(sector.base() * factor) + " unites vendues / h";
             case ARMS -> "~" + Math.round(sector.base() * factor) + " caisses / h";
             case ARMS_SELL -> "~" + Math.round(sector.base() * factor) + " caisses vendues / h";
-            case SMUGGLE, CASINO, FENCE -> "~" + perHour(sector.base() * factor) + " sales";
-            case RACKET -> "~" + perHour(sector.base() * factor * influence / 50.0d) + " sales";
+            case SMUGGLE, CASINO, FENCE -> "~" + rate(sector.base() * factor) + " sales";
+            case RACKET -> "~" + rate(sector.base() * factor * influence / 50.0d) + " sales";
             case LAUNDER -> "Blanchit ~" + MoneyFormat.exact(Math.round(sector.base() * factor)) + " $ / h";
         };
     }
@@ -384,8 +389,10 @@ public final class EnterpriseMenus {
                     : sector.role() == Sector.Role.GROW ? line.rawIcon() : line.productIcon();
             List<String> lines = new ArrayList<>();
             lines.add(MoneyFormat.exact(sector.price()) + " $ · " + estimate(sector, line, regime, influence));
-            lines.add(refusal != null ? refusal : sector.legal() ? sector.summary()
-                    : "Risque ~" + risk + " % · " + (line == null ? sector.summary() : line.climate()));
+            String detail = line == null ? sector.summary() : sector.role() == Sector.Role.GROW ? line.climate()
+                    : line.rawLabel().toLowerCase() + " > " + line.productLabel().toLowerCase();
+            lines.add(refusal != null ? refusal : sector.legal() ? sector.summary() : "Risque ~" + risk + " % · "
+                    + detail);
             List<String> tooltip = new ArrayList<>();
             tooltip.add(sector.summary());
             if (line != null) {

@@ -106,7 +106,8 @@ public final class Syndicates {
                     if (hostility >= WAR_AT && presence > 0) {
                         holdings.put(standing.with(hostility, Holdings.Status.GUERRE, time + WAR_DAYS * Payout.DAY));
                         sim.events.add(new Payout.Event(syndicate.label() + " te declare la guerre de territoire en "
-                                + syndicate.region().label() + " pour 7 jours", 0xFFEF3826, true));
+                                + syndicate.region().label() + " pour 7 jours", 0xFFEF3826, "Guerre de territoire",
+                                syndicate.label()));
                     } else {
                         holdings.put(standing.with(hostility, Holdings.Status.NEUTRE, 0L));
                     }
@@ -118,7 +119,7 @@ public final class Syndicates {
                         holdings.put(standing.with(hostility, Holdings.Status.NEUTRE, 0L));
                         sim.events.add(new Payout.Event((alliance ? "L'alliance" : "L'accord") + " avec "
                                 + syndicate.label() + " a pris fin : renouvelle-le depuis l'onglet Entreprises",
-                                0xFFFAC400, true));
+                                0xFFFAC400, alliance ? "Alliance terminee" : "Accord termine", syndicate.label()));
                     } else {
                         holdings.put(standing.with(hostility, standing.state(), standing.until()));
                     }
@@ -127,12 +128,13 @@ public final class Syndicates {
                     if (standing.until() <= time) {
                         holdings.put(standing.with(45.0d, Holdings.Status.NEUTRE, 0L));
                         sim.events.add(new Payout.Event("La guerre de territoire avec " + syndicate.label()
-                                + " est finie", 0xFF22E558, false));
+                                + " est finie", 0xFF22E558));
                     } else if (!exposed.isEmpty() && random.nextDouble() < 0.4d + 0.3d * syndicate.aggression()) {
                         Enterprise target = exposed.get(random.nextInt(exposed.size()));
                         sim.close(target, time + Payout.CLOSED_SABOTAGE);
                         sim.events.add(new Payout.Event(syndicate.label() + " sabote " + target.name()
-                                + Enterprises.place(target) + " : fermee 12 h", 0xFFEF3826, true));
+                                + Enterprises.place(target) + " : fermee 12 h", 0xFFEF3826, "Sabotage",
+                                target.name()));
                     }
                 }
             }
