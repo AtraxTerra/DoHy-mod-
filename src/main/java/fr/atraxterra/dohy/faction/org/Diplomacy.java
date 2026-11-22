@@ -128,7 +128,7 @@ public final class Diplomacy {
         }
         if (current != null && type != Treaty.Type.ALLIANCE) {
             return (current.kind() == Treaty.Type.ALLIANCE ? "Une " : "Un ") + current.kind().label().toLowerCase()
-                    + " vous lie deja : un seul traite par nation";
+                    + " vous lie deja";
         }
         if (current == null && treaties(player).size() >= slots(player)) {
             return "Ta nation tient deja " + slots(player) + " traites : un diplomate en permet plus";
@@ -186,7 +186,9 @@ public final class Diplomacy {
         NationTraits traits = NationTraits.of(nation);
         org.log(now, "Rompu : " + current.kind().label() + " avec " + traits.name());
         if (current.kind() != Treaty.Type.ACCORD) {
-            WarStrategy.grieve(player, nation, "trahison", current.kind() == Treaty.Type.ALLIANCE ? 12.0d : 8.0d);
+            boolean alliance = current.kind() == Treaty.Type.ALLIANCE;
+            WarStrategy.grieve(player, nation, "trahison", alliance ? 12.0d : 8.0d);
+            WarStrategy.provoke(player, nation, alliance ? 20.0d : 12.0d, "trahison");
             WarStrategy.speak(player, nation, "Tu romps ta parole. Nous nous en souviendrons.", ChatFormatting.RED);
         } else {
             WarStrategy.speak(player, nation, "Soit. Nos marchands rentrent chez eux.", ChatFormatting.GRAY);
@@ -224,6 +226,7 @@ public final class Diplomacy {
         }
         org.rivals.add(nation);
         WarStrategy.grieve(player, nation, "rivalite", 6.0d);
+        WarStrategy.provoke(player, nation, 10.0d, "rivalite declaree");
         org.log(now, "Rivalite declaree a " + traits.name());
         WarStrategy.speak(player, nation, "Tu nous defies ? Nous relevons le defi.", ChatFormatting.RED);
         return null;

@@ -1615,6 +1615,18 @@ public final class WarStrategy {
         log(player, data, relation, now, what);
     }
 
+    /** Un affront (un traite rompu, une rivalite declaree) : son hostilite monte d'autant (lot 24a). */
+    public static void provoke(ServerPlayer player, int nation, double amount, String what) {
+        if (nation < 0 || nation >= NationTraits.count() || !FactionApi.has(player)) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        WarData data = data(player);
+        WarData.Relation relation = data.relation(nation, now);
+        relation.hostility = Math.min(100.0d, relation.hostility + amount);
+        log(player, data, relation, now, what);
+    }
+
     /** La voix d'une nation dans le chat, depuis la diplomatie (lot 24a). */
     public static void speak(ServerPlayer player, int nation, String text, ChatFormatting color) {
         if (nation < 0 || nation >= NationTraits.count()) {

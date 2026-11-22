@@ -93,10 +93,11 @@ guerre), ou si tu l'as déclarée rivale.
 
 - Deux traités au plus, trois avec un diplomate, quatre avec un diplomate haut cadre. La taxe
   du marché ne descend pas sous 2 % par les traités.
-- **Rompre** un pacte ou une alliance est une trahison (grief de 8 ou 12) ; un accord tombe
-  sans suite. Renouveler prolonge depuis l'échéance.
-- **Rivalité déclarée** : le traité tombe, la nation s'en fâche (grief), son humeur monte de
-  12 ; ses pays rapportent un quart de points de conquête en plus.
+- **Rompre** un pacte ou une alliance est une trahison : l'hostilité monte aussitôt de 12 (20
+  pour une alliance) et la nation en garde un grief ; un accord tombe sans suite. Renouveler
+  prolonge depuis l'échéance.
+- **Rivalité déclarée** : le traité tombe, l'hostilité monte de 10 (et un grief), son humeur
+  tend à monter de 12 ; ses pays rapportent un quart de points de conquête en plus.
 - **Dans l'IA de guerre** (`WarStrategy`) : la diplomatie s'ajoute à l'humeur (`mood`), un pacte
   ou une alliance empêche l'ultimatum et la guerre (`think`) et retire la nation des
   coalitions (`coalition`).
