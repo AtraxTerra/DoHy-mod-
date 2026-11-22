@@ -435,6 +435,45 @@ public final class Enterprises {
         FactionVault.consume(player, Enterprises::iron, units);
     }
 
+    // -- Les stocks, depuis les objets (lot 24c) --------------------------------------------------
+
+    /** La place de chaque stock : 300 unites, plus ce qu'ajoutent les entrepots. */
+    public static long capacity(ServerPlayer player) {
+        return new Payout.World(player, of(player), System.currentTimeMillis()).capacity;
+    }
+
+    /** Ce qu'il reste de place dans ce stock. */
+    public static long room(ServerPlayer player, String key) {
+        return Math.max(0L, capacity(player) - of(player).stock(key));
+    }
+
+    /** Verse {@code units} unites au stock (une planque, un objet) ; rend ce qui a ete pris. */
+    public static long deposit(ServerPlayer player, String key, long units) {
+        if (!FactionApi.has(player) || units <= 0L) {
+            return 0L;
+        }
+        long taken = Math.min(units, room(player, key));
+        if (taken > 0L) {
+            of(player).add(key, taken);
+        }
+        return taken;
+    }
+
+    /** Sort {@code units} unites du stock, s'il les a ; vrai si c'est fait. */
+    public static boolean withdraw(ServerPlayer player, String key, long units) {
+        Holdings holdings = of(player);
+        if (!FactionApi.has(player) || units <= 0L || holdings.stock(key) < units) {
+            return false;
+        }
+        holdings.add(key, -units);
+        return true;
+    }
+
+    /** Une ligne au journal des affaires, depuis un autre systeme. */
+    public static void log(ServerPlayer player, String text) {
+        of(player).log(System.currentTimeMillis(), text);
+    }
+
     // -- Pour les autres systemes -----------------------------------------------------------------
 
     /** Ce que le recel ajoute aux prix du receleur du spawn : 5 % par niveau, 25 % au plus (+5 % avec le Condor). */

@@ -37,7 +37,9 @@ public final class KitMenus {
         GRADE_ENDER_4("grade_ender_4", 4, "Agrandi par ton grade"),
         GRADE_ENDER_5("grade_ender_5", 5, "Agrandi par ton grade"),
         GRADE_ENDER_6("grade_ender_6", 6, "Agrandi par ton grade"),
-        GRADE_ENDER_7("grade_ender_7", 7, "Agrandi par ton grade");
+        GRADE_ENDER_7("grade_ender_7", 7, "Agrandi par ton grade"),
+        // La planque securisee de l'economie souterraine (lot 24c) : elle garde, et verse aux stocks.
+        STASH_CHEST("stash_chest", 3, "Verse aux stocks a la fermeture");
 
         private final String path;
         private final int rows;

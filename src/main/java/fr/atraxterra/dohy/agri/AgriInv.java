@@ -5,15 +5,18 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-/** Compter, prendre et rendre dans l'inventaire porte : les machines de l'agriculture y puisent. */
-final class AgriInv {
+/**
+ * Compter, prendre et rendre dans l'inventaire porte : les machines de l'agriculture y puisent,
+ * les postes de l'economie souterraine aussi (lot 24c).
+ */
+public final class AgriInv {
 
     private static final int CARRIED_SLOTS = 36;
 
     private AgriInv() {
     }
 
-    static int count(ServerPlayer player, Item item) {
+    public static int count(ServerPlayer player, Item item) {
         int count = 0;
         Inventory inventory = player.getInventory();
         for (int slot = 0; slot < CARRIED_SLOTS; slot++) {
@@ -25,7 +28,7 @@ final class AgriInv {
         return count;
     }
 
-    static void take(ServerPlayer player, Item item, int wanted) {
+    public static void take(ServerPlayer player, Item item, int wanted) {
         int left = wanted;
         Inventory inventory = player.getInventory();
         for (int slot = 0; slot < CARRIED_SLOTS && left > 0; slot++) {
@@ -40,7 +43,7 @@ final class AgriInv {
     }
 
     /** Donne, et pose au sol ce qui ne rentre pas : rien de paye ne disparait. */
-    static void give(ServerPlayer player, Item item, int count) {
+    public static void give(ServerPlayer player, Item item, int count) {
         int left = count;
         int stackSize = new ItemStack(item).getMaxStackSize();
         while (left > 0) {

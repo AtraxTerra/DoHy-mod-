@@ -785,6 +785,52 @@ public final class EnterpriseMenus {
                         .accent(0xFF9AA0A6).progress(crates, Math.max(1L, world.capacity)));
             }
 
+            // sortir des stocks des objets (lot 24c) : des colis, des sachets, des caisses scellees
+            List<Card> out = new ArrayList<>();
+            for (Line line : Line.values()) {
+                long product = holdings.stock(line.productKey());
+                ItemStack parcel = new ItemStack(fr.atraxterra.dohy.underground.Goods.parcel(line));
+                ItemStack bag = new ItemStack(fr.atraxterra.dohy.underground.Goods.bag(line));
+                if (product >= fr.atraxterra.dohy.underground.Goods.PARCEL) {
+                    out.add(Card.of(parcel, MenuView.text(parcel.getHoverName()), List.of(
+                                    fr.atraxterra.dohy.underground.Goods.PARCEL + " unites de " + line.productLabel()
+                                            .toLowerCase(), product + " en stock"))
+                            .accent(0xFFA0522D).action("withdraw:parcel:" + line.name() + "|sortir un colis"));
+                }
+                if (product >= fr.atraxterra.dohy.underground.Goods.BAG) {
+                    out.add(Card.of(bag, MenuView.text(bag.getHoverName()), List.of(
+                                    fr.atraxterra.dohy.underground.Goods.BAG + " unites de " + line.productLabel()
+                                            .toLowerCase(), product + " en stock"))
+                            .accent(0xFFEC4FB5).action("withdraw:bag:" + line.name() + "|sortir un sachet"));
+                }
+            }
+            if (crates > 0L) {
+                ItemStack crate = new ItemStack(fr.atraxterra.dohy.underground.DoHyUnderground.SEALED_CRATE.get());
+                out.add(Card.of(crate, MenuView.text(crate.getHoverName()), List.of("Une caisse d'armes",
+                        crates + " en stock")).accent(0xFF9AA0A6).action("withdraw:crate|sortir une caisse"));
+            }
+
+            // les fournisseurs (lot 24c) : des bidons et des graines, payes en argent sale d'abord
+            List<Card> suppliers = new ArrayList<>();
+            long cans = precursors(world);
+            suppliers.add(Card.of(new ItemStack(fr.atraxterra.dohy.underground.DoHyUnderground.PRECURSOR_CAN.get(), 16),
+                            "16 bidons de precurseurs", List.of(MoneyFormat.exact(cans) + " $",
+                                    world.deal(Syndicate.RECIFS) ? "Prix du Cartel des Recifs" : "Marche gris, sans accord"))
+                    .accent(0xFF27C4E8).action("buy:precursors|acheter")
+                    .confirm("Acheter 16 bidons de precurseurs ?|" + MoneyFormat.exact(cans)
+                            + " $, en argent sale d'abord"));
+            for (Line line : Line.values()) {
+                if (!line.grows()) {
+                    continue;
+                }
+                long price = seeds(world);
+                ItemStack seed = new ItemStack(fr.atraxterra.dohy.underground.Goods.seed(line), 8);
+                suppliers.add(Card.of(seed, "8 " + MenuView.text(seed.getHoverName()).toLowerCase(), List.of(
+                                MoneyFormat.exact(price) + " $", line.climate()))
+                        .accent(0xFF22E558).action("buy:seeds:" + line.name() + "|acheter")
+                        .confirm("Acheter 8 graines ?|" + MoneyFormat.exact(price) + " $, en argent sale d'abord"));
+            }
+
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("SEMAINE", MoneyFormat.delta(weekNet) + " $", weekNet >= 0L ? 0xFF22E558
                             : 0xFFEF3826),
@@ -794,6 +840,11 @@ public final class EnterpriseMenus {
             if (!stocks.isEmpty()) {
                 sections.add(new MenuView.Section("STOCKS", "resources", MenuView.GRID, stocks));
             }
+            if (!out.isEmpty()) {
+                sections.add(new MenuView.Section("SORTIR DES STOCKS|en objets", "craft", MenuView.GRID, out));
+            }
+            sections.add(new MenuView.Section("FOURNISSEURS|argent sale d'abord", "upgrade", MenuView.GRID,
+                    suppliers));
             sections.add(new MenuView.Section("7 DERNIERS JOURS", "craft", MenuView.ROWS, days));
             if (!each.isEmpty()) {
                 sections.add(new MenuView.Section("PAR ENTREPRISE, LA PROCHAINE HEURE", "resources", MenuView.ROWS,
@@ -803,10 +854,56 @@ public final class EnterpriseMenus {
                     stats, sections, true).withTabs(tabs(player));
         }
 
+        /** Seize bidons de precurseurs : au prix du Cartel des Recifs avec un accord, du marche gris sinon. */
+        static long precursors(Payout.World world) {
+            return 16L * Enterprises.rawPrice(world, Line.SYNTHESE);
+        }
+
+        /** Huit graines : 150 $ piece, 110 $ avec un accord avec le Cartel des Recifs. */
+        static long seeds(Payout.World world) {
+            return 8L * (world.deal(Syndicate.RECIFS) ? 110L : 150L);
+        }
+
         @Override
         protected void card(ServerPlayer player, String key, int button) {
             if (key.startsWith("open:")) {
                 Detail.INSTANCE.show(player, key.substring(5));
+            } else if (key.startsWith("withdraw:")) {
+                String[] parts = key.split(":");
+                net.minecraft.world.item.Item item = null;
+                if (parts.length == 2 && parts[1].equals("crate")) {
+                    item = fr.atraxterra.dohy.underground.DoHyUnderground.SEALED_CRATE.get();
+                } else if (parts.length == 3 && Line.of(parts[2]) != null) {
+                    Line line = Line.of(parts[2]);
+                    item = parts[1].equals("parcel") ? fr.atraxterra.dohy.underground.Goods.parcel(line)
+                            : fr.atraxterra.dohy.underground.Goods.bag(line);
+                }
+                if (item != null) {
+                    answer(player, fr.atraxterra.dohy.underground.Goods.withdraw(player, item), "");
+                }
+            } else if (key.startsWith("buy:")) {
+                Holdings holdings = Enterprises.of(player);
+                Payout.World world = new Payout.World(player, holdings, System.currentTimeMillis());
+                if (key.equals("buy:precursors")) {
+                    long price = precursors(world);
+                    String refusal = Enterprises.pay(player, holdings, price, true, "Fournisseur : precurseurs");
+                    if (refusal == null) {
+                        fr.atraxterra.dohy.agri.AgriInv.give(player,
+                                fr.atraxterra.dohy.underground.DoHyUnderground.PRECURSOR_CAN.get(), 16);
+                    }
+                    answer(player, refusal, "16 bidons de precurseurs livres.");
+                } else if (key.startsWith("buy:seeds:")) {
+                    Line line = Line.of(key.substring(10));
+                    if (line != null && line.grows()) {
+                        long price = seeds(world);
+                        String refusal = Enterprises.pay(player, holdings, price, true, "Fournisseur : graines");
+                        if (refusal == null) {
+                            fr.atraxterra.dohy.agri.AgriInv.give(player, fr.atraxterra.dohy.underground.Goods.seed(line),
+                                    8);
+                        }
+                        answer(player, refusal, "8 graines livrees.");
+                    }
+                }
             }
         }
     }
