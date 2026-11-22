@@ -78,6 +78,13 @@ public final class OrgMenus {
         return "talent " + skill + " / 5";
     }
 
+    /** Le nom de l'entreprise que ce cadre gere (lot 24b). */
+    static String managed(ServerPlayer player, Cadre cadre) {
+        fr.atraxterra.dohy.faction.enterprise.Enterprise enterprise =
+                fr.atraxterra.dohy.faction.enterprise.Enterprises.find(player, cadre.manages());
+        return enterprise == null ? "une entreprise fermee" : enterprise.name();
+    }
+
     static int loyaltyColor(double loyalty) {
         return loyalty >= 60.0d ? 0xFF22E558 : loyalty >= 30.0d ? 0xFFFAC400 : 0xFFEF3826;
     }
@@ -143,13 +150,15 @@ public final class OrgMenus {
             List<Card> cadres = new ArrayList<>();
             for (Cadre cadre : org.cadres()) {
                 Post role = cadre.role();
+                String duty = role != null ? " · " + role.label()
+                        : cadre.manages().isEmpty() ? "" : " · gere " + managed(player, cadre);
                 cadres.add(Card.of(helmet(cadre.rank()), cadre.name(), List.of(
                                 cadre.rank().label() + " · " + stars(cadre.skill()) + " · " + cadre.character().label(),
                                 "Loyaute " + Math.round(cadre.loyalty()) + " · " + MoneyFormat.exact(
-                                        Organisations.salary(player, cadre)) + " $ / jour"
-                                        + (role == null ? "" : " · " + role.label())))
+                                        Organisations.salary(player, cadre)) + " $ / jour" + duty))
                         .accent(loyaltyColor(cadre.loyalty())).progress(Math.round(cadre.loyalty()), 100L)
-                        .badge(role == null ? "" : "POSTE").action("cadre:" + cadre.id() + "|voir sa fiche"));
+                        .badge(role != null ? "POSTE" : cadre.manages().isEmpty() ? "" : "GERANT")
+                        .action("cadre:" + cadre.id() + "|voir sa fiche"));
             }
             if (cadres.isEmpty()) {
                 cadres.add(Card.of(new ItemStack(Items.PLAYER_HEAD), "Aucun cadre", List.of(
@@ -315,6 +324,11 @@ public final class OrgMenus {
             if (role != null) {
                 actions.add(Card.of(role.icon(), "Liberer le poste", List.of(role.label(), "Il redevient libre"))
                         .accent(0xFF55545C).action("unpost|liberer"));
+            } else if (!cadre.manages().isEmpty()) {
+                actions.add(Card.of(new ItemStack(Items.EMERALD_BLOCK), "Quitter la gerance", List.of(
+                                managed(player, cadre), "Il redevient libre"))
+                        .accent(0xFF55545C).action("unmanage|liberer")
+                        .right("enterprise|voir l'entreprise"));
             }
             actions.add(Card.of(new ItemStack(Items.BARRIER), "Renvoyer", List.of("Sans indemnite",
                             "Son poste se libere"))
@@ -366,6 +380,17 @@ public final class OrgMenus {
                     Post role = cadre.role();
                     if (role != null) {
                         report(player, Organisations.vacate(player, role), "");
+                    }
+                }
+                case "unmanage" -> {
+                    if (!cadre.manages().isEmpty()) {
+                        report(player, Organisations.release(player, cadre.manages(), managed(player, cadre)), "");
+                    }
+                }
+                case "enterprise" -> {
+                    if (!cadre.manages().isEmpty()) {
+                        fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Detail.INSTANCE.show(player,
+                                cadre.manages());
                     }
                 }
                 case "fire" -> {

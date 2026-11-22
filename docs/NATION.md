@@ -107,7 +107,7 @@ lot 23a fait de la faction **ta nation**, partout :
   paliers de la branche Globale en font un (la conversion prévue plus bas) — Cité au palier 4,
   État au 6, Royaume au 8, Empire au 10, Superpuissance au 12. Sur la carte, rien ne change : les
   pays font le rang.
-- **Le menu « Ma nation »**, huit onglets sur les écrans existants, dont les identifiants ne
+- **Le menu « Ma nation »**, huit onglets sur les écrans existants (le lot 24b en ajoute un neuvième, Entreprises, voir `docs/ORGANISATIONS.md`), dont les identifiants ne
   changent pas (les fiches de l'encyclopédie se découvrent comme avant) :
 
   | Onglet | Écran | Ses pages de détail (l'onglet reste allumé) |

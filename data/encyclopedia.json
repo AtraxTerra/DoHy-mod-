@@ -2279,20 +2279,21 @@
       "title": "Ta nation",
       "card": [
         "Fonder, claimer",
-        "Huit onglets, un rang"
+        "Neuf onglets, un rang"
       ],
       "summary": [
         "Seul, ta nation est ta base et ta progression : la faction et le pays ne font plus qu'un. Elle se fonde avec 100 lingots de paladium : un nom, une description, deux tags et un blason."
       ],
       "sections": [
         {
-          "title": "Les huit onglets",
+          "title": "Les neuf onglets",
           "text": [
             "- Vue d'ensemble : ton rang, tes terres, ta banque, ta ligue, et ce qui attend.",
-            "- Territoire : tes claims, ta capitale, tes pays, les pays a prendre et les mines de la Terre.",
+            "- Territoire : tes claims, ta capitale, tes pays, les pays a prendre, les mines de la Terre et ton influence.",
             "- Organisation : ton regime, tes cadres et leurs postes, le recrutement, les parametres.",
             "- Diplomatie : tes traites, les douze nations, la guerre et le pillage.",
             "- Technologies : l'arbre de ta nation.",
+            "- Entreprises : tes affaires legales et illegales, l'argent sale, l'influence pays par pays, les organisations criminelles.",
             "- Economie : la banque nationale, son coffre, la reserve d'or, le marche international.",
             "- Events et Classement (ligue, ELO, notation)."
           ]
@@ -2336,6 +2337,7 @@
       "see": [
         "organisation",
         "diplomatie",
+        "entreprises",
         "elo",
         "arbre_techno",
         "reserve_or",
@@ -2383,10 +2385,11 @@
           "text": [
             "Recrue, Membre, Lieutenant, Capitaine, Haut cadre. Chaque grade se gagne apres quelques jours de service et coute une semaine du nouveau salaire.",
             "- Bras droit (haut cadre) : les autres postes rendent plus, leur loyaute tient.",
-            "- Tresorier (capitaine) : les salaires coutent moins.",
+            "- Tresorier (capitaine) : les salaires et les frais des entreprises coutent moins.",
             "- General (capitaine) : les nations hesitent a t'attaquer.",
             "- Diplomate (capitaine) : traites moins chers, plus faciles, plus nombreux.",
-            "- Chef des operations (capitaine) : les affaires illegales risquent moins."
+            "- Chef des operations (capitaine) : les affaires illegales risquent moins.",
+            "- Un cadre libre peut aussi diriger une entreprise : elle produit plus et risque moins."
           ]
         },
         {
@@ -2403,7 +2406,8 @@
       ],
       "see": [
         "faction",
-        "diplomatie"
+        "diplomatie",
+        "entreprises"
       ],
       "discover": {
         "views": [
@@ -2438,8 +2442,8 @@
         {
           "title": "Trahison et rivalite",
           "text": [
-            "! Rompre un pacte ou une alliance est une trahison : la nation t'en garde rancune.",
-            "- Declarer une nation rivale fait tomber le traite et la fache, mais ses pays rapportent un quart de points de conquete en plus."
+            "! Rompre un pacte ou une alliance est une trahison : son hostilite monte aussitot, et elle t'en garde rancune.",
+            "- Declarer une nation rivale fait tomber le traite et monter son hostilite, mais ses pays rapportent un quart de points de conquete en plus."
           ]
         }
       ],
@@ -2459,9 +2463,137 @@
       }
     },
     {
-      "id": "elo",
+      "id": "entreprises",
       "category": "faction",
       "order": 3,
+      "icon": "minecraft:emerald_block",
+      "title": "Les entreprises",
+      "card": [
+        "Legales, illegales",
+        "Revenus heure par heure"
+      ],
+      "summary": [
+        "Ta nation ouvre des entreprises la ou tu te tiens, sur la carte de la Terre : six secteurs legaux qui versent de l'argent propre a la banque nationale, onze affaires illegales qui rapportent de l'argent sale. Elles tournent chaque heure, meme hors ligne, une semaine au plus."
+      ],
+      "sections": [
+        {
+          "title": "Le modele commun",
+          "text": [
+            "Chaque entreprise a un secteur, un niveau de 1 a 5, un pays, des employes PNJ, quatre ameliorations et des frais par heure. Un cadre libre de ton organisation peut la diriger.",
+            "- Le niveau multiplie la production (jusqu'a x4,2) plus vite que les frais (x3).",
+            "- Il faut l'equipe au complet pour tout produire ; chaque employe coute 12 $ par heure.",
+            "- Ce qui compte : le regime, l'influence dans le pays, la saison, une catastrophe, une guerre, les traites avec la nation qui tient le pays.",
+            "! Tu en tiens 4, plus 2 par palier du Gouvernement."
+          ]
+        },
+        {
+          "title": "Les legales",
+          "text": [
+            "- Ferme : la saison compte.",
+            "- Carriere : +20 % avec une de tes mines de la Terre dans le pays.",
+            "- Usine : il faut 20 d'influence dans le pays.",
+            "- Commerce : l'influence compte double.",
+            "- Banque : seulement dans un pays que tient ta nation.",
+            "- Transport : aide tes usines, tes commerces et ta contrebande."
+          ]
+        },
+        {
+          "title": "Les illegales",
+          "text": [
+            "- Drogues : une plantation fait pousser la matiere premiere (cannabis presque partout, coca sous les tropiques, pavot entre 15 et 45 degres), un laboratoire la transforme, un entrepot garde les stocks, un reseau les vend au prix de la rue. La drogue de synthese ne pousse pas : ses precurseurs s'achetent.",
+            "- Armes : un atelier monte des caisses avec le fer du coffre de la banque (ou des pieces achetees), un trafic les revend, plus cher en temps de guerre.",
+            "- Contrebande (chaque pays ou tu es ouvre une route), casino, racket (30 d'influence), recel (le receleur du spawn te paie plus).",
+            "! Tout reste abstrait : des unites de stock, des prix, aucun procede."
+          ]
+        },
+        {
+          "title": "Argent sale et descentes",
+          "text": [
+            "L'argent sale paie d'abord tes affaires illegales, tes accords et tes tributs.",
+            "- Une societe ecran le blanchit vers la banque nationale (15 % de commission, moins aux niveaux suivants) ; un casino un peu aussi (20 %).",
+            "! Chaque heure, une affaire illegale risque une descente de police : fermee 24 h, une part de ses stocks et 15 % de l'argent sale saisis (250 000 $ au plus). Le chef des operations, un gerant, des guetteurs et l'influence baissent le risque ; un entrepot divise les saisies par deux."
+          ]
+        }
+      ],
+      "commands": [
+        "/f entreprises : l'onglet Entreprises",
+        "/f entreprises renommer : renommer une entreprise"
+      ],
+      "see": [
+        "crime_organise",
+        "organisation",
+        "faction"
+      ],
+      "discover": {
+        "views": [
+          "dohy:faction_enterprises",
+          "dohy:faction_enterprise",
+          "dohy:faction_enterprise_found",
+          "dohy:faction_enterprise_finance",
+          "dohy:faction_enterprise_territory"
+        ]
+      }
+    },
+    {
+      "id": "crime_organise",
+      "category": "faction",
+      "order": 4,
+      "icon": "minecraft:iron_bars",
+      "title": "Crime organise",
+      "card": [
+        "Six organisations",
+        "Accords et guerres"
+      ],
+      "summary": [
+        "Six organisations criminelles se partagent le monde, une par region. Tes affaires illegales sur leur territoire les echauffent : entends-toi avec elles, ou attends-toi a la guerre de territoire."
+      ],
+      "sections": [
+        {
+          "title": "Les six",
+          "text": [
+            "- Le Syndicat des Docks (Amerique du Nord) : contrebande.",
+            "- La Compagnie du Condor (Amerique du Sud) : recel.",
+            "- La Famille Valcorte (Europe) : casinos.",
+            "- La Caravane Ecarlate (Afrique et Moyen-Orient) : reseaux.",
+            "- La Confrerie du Lotus (Asie) : armes.",
+            "- Le Cartel des Recifs (Oceanie) : drogues."
+          ]
+        },
+        {
+          "title": "Accords et alliances",
+          "text": [
+            "- Accord (14 jours) : sa specialite te sert (bonus, fournitures, rachat du surplus), plus de malus sur son territoire, son hostilite baisse.",
+            "- Alliance (30 jours, sur un accord) : +15 % sur son territoire et moins de risque ; elle prend 5 % de tes gains de la region.",
+            "! Rompre une entente la fache durablement."
+          ]
+        },
+        {
+          "title": "La guerre de territoire",
+          "text": [
+            "A 75 d'hostilite, elle te fait la guerre sept jours : -40 % sur tes affaires de sa region, +15 de risque et des sabotages.",
+            "- Un tribut l'arrete tout de suite.",
+            "- Une riposte (30 000 $) peut l'arreter et l'affaiblir deux semaines ; ratee, la guerre dure deux jours de plus.",
+            "! Le regime compte : une organisation criminelle lui inspire de l'estime, un Etat officiel de la mefiance."
+          ]
+        }
+      ],
+      "commands": [
+        "/f entreprises : l'onglet Entreprises"
+      ],
+      "see": [
+        "entreprises",
+        "organisation"
+      ],
+      "discover": {
+        "views": [
+          "dohy:faction_syndicate"
+        ]
+      }
+    },
+    {
+      "id": "elo",
+      "category": "faction",
+      "order": 5,
       "icon": "minecraft:golden_sword",
       "title": "ELO et ligues",
       "card": [
@@ -2489,7 +2621,7 @@
     {
       "id": "arbre_techno",
       "category": "faction",
-      "order": 4,
+      "order": 6,
       "icon": "minecraft:enchanted_book",
       "title": "Arbre de techno",
       "card": [
@@ -2525,7 +2657,7 @@
     {
       "id": "defense",
       "category": "faction",
-      "order": 5,
+      "order": 7,
       "icon": "palamod:hardened_obsidian",
       "title": "La defense",
       "card": [
@@ -2559,7 +2691,7 @@
     {
       "id": "pillage",
       "category": "faction",
-      "order": 6,
+      "order": 8,
       "icon": "palamod:dynamite",
       "title": "Le pillage",
       "card": [
@@ -2605,7 +2737,7 @@
     {
       "id": "reserve_or",
       "category": "faction",
-      "order": 7,
+      "order": 9,
       "icon": "palamod:liquid_gold",
       "title": "Reserve d'or",
       "card": [
@@ -2657,7 +2789,7 @@
     {
       "id": "events",
       "category": "faction",
-      "order": 8,
+      "order": 10,
       "icon": "minecraft:end_crystal",
       "title": "Les events",
       "card": [
@@ -2703,7 +2835,7 @@
     {
       "id": "bases_ennemies",
       "category": "faction",
-      "order": 9,
+      "order": 11,
       "icon": "minecraft:tnt",
       "title": "Bases ennemies",
       "card": [
@@ -2739,7 +2871,7 @@
     {
       "id": "notation",
       "category": "faction",
-      "order": 10,
+      "order": 12,
       "icon": "minecraft:map",
       "title": "La notation",
       "card": [
@@ -2763,7 +2895,7 @@
     {
       "id": "base_sans_toi",
       "category": "faction",
-      "order": 11,
+      "order": 13,
       "icon": "minecraft:respawn_anchor",
       "title": "Base sans toi",
       "card": [
@@ -2790,7 +2922,7 @@
     {
       "id": "guerre",
       "category": "faction",
-      "order": 12,
+      "order": 14,
       "icon": "minecraft:crossbow",
       "title": "La guerre",
       "card": [
@@ -2906,7 +3038,7 @@
     {
       "id": "marche_international",
       "category": "faction",
-      "order": 13,
+      "order": 15,
       "icon": "minecraft:emerald_block",
       "title": "Marche mondial",
       "card": [

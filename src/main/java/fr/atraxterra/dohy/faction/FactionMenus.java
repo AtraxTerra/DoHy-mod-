@@ -48,6 +48,7 @@ public final class FactionMenus {
     public static final String TERRITORY = "faction_claims";
     public static final String ORGANISATION = "faction_organisation";
     public static final String DIPLOMACY = "faction_diplomacy";
+    public static final String ENTERPRISES = "faction_enterprises";
     public static final String TECHNOLOGY = "faction_tree";
     public static final String ECONOMY = "faction_bank";
     public static final String WAR = "guerre";
@@ -113,7 +114,7 @@ public final class FactionMenus {
     }
 
     /**
-     * La rangee des huit onglets de la nation : un clic change de page sans repasser par la vue
+     * La rangee des neuf onglets de la nation : un clic change de page sans repasser par la vue
      * d'ensemble. Les compteurs disent ce qui attend. {@code active} est le chemin de l'onglet a
      * allumer : celui de la page, ou celui dont depend la page de detail.
      */
@@ -134,6 +135,8 @@ public final class FactionMenus {
         tabs.add(tab("Diplomatie", DIPLOMACY, active, !war.isEmpty() ? war : treaties > 0 ? String.valueOf(treaties)
                 : ""));
         tabs.add(tab("Technologies", TECHNOLOGY, active, total <= 0 ? "" : done * 100 / total + " %"));
+        tabs.add(tab("Entreprises", ENTERPRISES, active,
+                fr.atraxterra.dohy.faction.enterprise.Enterprises.badge(player)));
         tabs.add(tab("Economie", ECONOMY, active, nation.reserveRipe() ? "PRET" : ""));
         tabs.add(tab("Events", EVENTS, active, live ? "EN COURS" : ""));
         tabs.add(tab("Classement", RANKING, active, nation.league().label().toUpperCase()));
@@ -276,6 +279,7 @@ public final class FactionMenus {
             List<Card> progression = new ArrayList<>(List.of(
                     organisationCard(player),
                     diplomacyCard(player),
+                    enterpriseCard(player),
                     treeCard(nation),
                     warCard(nation),
                     eventsCard(),
@@ -455,6 +459,27 @@ public final class FactionMenus {
                 .accent(0xFF27C4E8).action("diplomacy|ouvrir");
     }
 
+    /** Les entreprises, l'argent sale et le net de l'heure (lot 24b). */
+    private static Card enterpriseCard(ServerPlayer player) {
+        fr.atraxterra.dohy.faction.enterprise.Holdings holdings =
+                fr.atraxterra.dohy.faction.enterprise.Enterprises.of(player);
+        int count = holdings.enterprises().size();
+        String badge = fr.atraxterra.dohy.faction.enterprise.Enterprises.badge(player);
+        List<String> lines = new ArrayList<>();
+        if (count == 0) {
+            lines.add("Aucune pour l'instant");
+            lines.add("Legales ou non, elles rapportent");
+        } else {
+            long net = fr.atraxterra.dohy.faction.enterprise.Enterprises.netPerHour(player);
+            lines.add(count + " / " + fr.atraxterra.dohy.faction.enterprise.Enterprises.cap(player)
+                    + " · net " + MoneyFormat.delta(net) + " $ / h");
+            lines.add("Argent sale : " + MoneyFormat.shortForm(holdings.dirty()) + " $");
+        }
+        return Card.of(new ItemStack(Items.EMERALD_BLOCK), "Entreprises", lines).accent(0xFF22E558)
+                .badge(badge.equals("GUERRE") || badge.equals("FERMEE") ? badge : "")
+                .action("enterprises|ouvrir");
+    }
+
     /** Le marche international : la taxe que paie ton rang. */
     private static Card marketCard(ServerPlayer player) {
         return Card.of(new ItemStack(Items.CHEST), "Marche international", List.of(
@@ -486,6 +511,9 @@ public final class FactionMenus {
             case "war" -> fr.atraxterra.dohy.faction.war.WarMenu.INSTANCE;
             case "organisation" -> fr.atraxterra.dohy.faction.org.OrgMenus.Org.INSTANCE;
             case "diplomacy" -> fr.atraxterra.dohy.faction.org.DiplomacyMenus.Hub.INSTANCE;
+            case "enterprises" -> fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Hub.INSTANCE;
+            case "influence" -> fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Territory.INSTANCE;
+            case "enterprise_finance" -> fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Finance.INSTANCE;
             default -> null;
         };
         if (target == null) {
@@ -547,6 +575,14 @@ public final class FactionMenus {
                     new MenuView.Stat("TON ARGENT", MoneyFormat.shortForm(purse), 0xFFFFFFFF)));
             // la reserve d'or, le marche international et les mines : le reste du tresor de la nation
             List<Card> treasury = new ArrayList<>(List.of(reserveCard(player), marketCard(player)));
+            fr.atraxterra.dohy.faction.enterprise.Holdings holdings =
+                    fr.atraxterra.dohy.faction.enterprise.Enterprises.of(player);
+            treasury.add(Card.of(new ItemStack(Items.EMERALD_BLOCK), "Entreprises", List.of(
+                            holdings.enterprises().isEmpty() ? "Aucune pour l'instant"
+                                    : "Net " + MoneyFormat.delta(fr.atraxterra.dohy.faction.enterprise.Enterprises
+                                    .netPerHour(player)) + " $ / h",
+                            "Argent sale : " + MoneyFormat.shortForm(holdings.dirty()) + " $"))
+                    .accent(0xFF22E558).action("enterprise_finance|voir les comptes"));
             Nation nation = Nation.of(player);
             if (fr.atraxterra.dohy.earth.mine.EarthMines.active()) {
                 int mines = nation.mines();
@@ -706,6 +742,10 @@ public final class FactionMenus {
                             .accent(0xFFFAC400).badge(mines > 0 ? String.valueOf(mines) : "")
                             .action("mines|ouvrir"));
                 }
+                // l'influence pays par pays (lot 24b) : ce qui fait les revenus des entreprises
+                lands.add(Card.of(new ItemStack(Items.MAP), "Influence", List.of("Pays par pays",
+                                "Revenus et risque des entreprises"))
+                        .accent(0xFF22E558).action("influence|ouvrir"));
                 sections.add(new MenuView.Section("TES TERRES", "craft", MenuView.GRID, lands));
                 stats.add(new MenuView.Stat("PAYS", String.valueOf(nation.countries().size()), 0xFFFAC400));
             }

@@ -122,7 +122,7 @@ public final class Organisations {
     /** Le salaire d'un cadre, en $ par jour : son grade, son talent, moins ce que le tresorier economise. */
     public static long salary(ServerPlayer player, Cadre cadre) {
         double base = cadre.rank().salary() * (0.8d + 0.1d * cadre.skill());
-        double cut = 0.20d * strength(player, Post.TRESORIER);
+        double cut = Math.min(0.20d, 0.16d * strength(player, Post.TRESORIER));
         return Math.max(10L, Math.round(base * (1.0d - cut) / 10.0d) * 10L);
     }
 
@@ -408,6 +408,55 @@ public final class Organisations {
         }
         payroll(player, true);
         FactionApi.tell(player, hours + " h passent pour ton organisation.", ChatFormatting.GRAY);
+    }
+
+    // -- La gerance des entreprises (lot 24b) ----------------------------------------------------
+
+    /** Le cadre qui gere cette entreprise. */
+    public static Optional<Cadre> manager(ServerPlayer player, String enterprise) {
+        for (Cadre cadre : of(player).cadres) {
+            if (cadre.manages().equals(enterprise)) {
+                return Optional.of(cadre);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /** Le meilleur cadre libre, sans poste ni gerance : talent, puis grade, puis loyaute. */
+    public static Optional<Cadre> bestFree(ServerPlayer player) {
+        return of(player).cadres.stream().filter(Cadre::free)
+                .max(Comparator.comparingInt(Cadre::skill).thenComparingInt(Cadre::grade)
+                        .thenComparingDouble(Cadre::loyalty));
+    }
+
+    /** Confie la gerance de l'entreprise {@code enterprise} ({@code label}) a ce cadre libre. */
+    public static String manage(ServerPlayer player, String id, String enterprise, String label) {
+        Organisation org = of(player);
+        Cadre cadre = org.cadre(id);
+        if (cadre == null) {
+            return "Ce cadre n'est plus dans ta nation";
+        }
+        if (!cadre.free()) {
+            return cadre.name() + " a deja une charge : libere-le d'abord";
+        }
+        if (manager(player, enterprise).isPresent()) {
+            return label + " a deja un gerant";
+        }
+        org.replace(cadre.withPost("@" + enterprise));
+        org.log(System.currentTimeMillis(), cadre.name() + " prend la tete de " + label);
+        return null;
+    }
+
+    /** La gerance de cette entreprise s'arrete : son cadre redevient libre. */
+    public static String release(ServerPlayer player, String enterprise, String label) {
+        Organisation org = of(player);
+        Optional<Cadre> cadre = manager(player, enterprise);
+        if (cadre.isEmpty()) {
+            return label + " n'a pas de gerant";
+        }
+        org.replace(cadre.get().withPost(""));
+        org.log(System.currentTimeMillis(), cadre.get().name() + " quitte la tete de " + label);
+        return null;
     }
 
     /** La nation est dissoute : ses cadres partent, ses traites tombent. */

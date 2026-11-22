@@ -209,6 +209,25 @@ public final class Disasters {
         COOLDOWN.put(key, System.currentTimeMillis());
     }
 
+    /** Les pays ou une catastrophe frappe en ce moment, d'apres son centre (lot 24b : les entreprises en patissent). */
+    public static java.util.Set<Integer> struckCountries() {
+        java.util.Set<Integer> out = new java.util.HashSet<>();
+        EarthData earth = EarthData.get();
+        if (earth == null) {
+            return out;
+        }
+        for (Disaster disaster : ACTIVE) {
+            if (disaster.done) {
+                continue;
+            }
+            EarthData.Country country = earth.countryAt((int) disaster.x, (int) disaster.z);
+            if (country != null) {
+                out.add(country.id());
+            }
+        }
+        return out;
+    }
+
     private static boolean activeNear(DisasterKind kind, double x, double z, double range) {
         for (Disaster disaster : ACTIVE) {
             if (disaster.kind == kind && Math.hypot(disaster.x - x, disaster.z - z) <= range) {

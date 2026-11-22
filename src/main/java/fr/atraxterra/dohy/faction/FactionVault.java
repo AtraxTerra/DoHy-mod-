@@ -133,6 +133,38 @@ public record FactionVault(List<ItemStack> items) {
         return moved;
     }
 
+    /**
+     * Retire du coffre jusqu'a {@code units} unites de ce qui passe le filtre : {@code weight} dit
+     * combien d'unites vaut un objet (0 s'il ne compte pas ; un bloc de fer en vaut neuf). Les objets
+     * a une unite partent d'abord, puis les blocs, entiers. Rend les unites retirees (lot 24b :
+     * le fer des ateliers d'armes).
+     */
+    public static int consume(ServerPlayer player, java.util.function.ToIntFunction<ItemStack> weight, int units) {
+        if (units <= 0) {
+            return 0;
+        }
+        List<ItemStack> slots = copy(of(player));
+        int taken = 0;
+        for (int round = 0; round < 2 && taken < units; round++) {
+            for (ItemStack slot : slots) {
+                if (taken >= units) {
+                    break;
+                }
+                int each = weight.applyAsInt(slot);
+                if (each <= 0 || (round == 0) != (each == 1)) {
+                    continue;
+                }
+                int needed = (units - taken + each - 1) / each;
+                int used = Math.min(needed, slot.getCount());
+                slot.shrink(used);
+                taken += used * each;
+            }
+        }
+        slots.removeIf(ItemStack::isEmpty);
+        save(player, slots);
+        return taken;
+    }
+
     /** La faction est dissoute : le coffre part avec la banque. */
     public static void clear(ServerPlayer player) {
         player.removeData(Factions.VAULT.get());

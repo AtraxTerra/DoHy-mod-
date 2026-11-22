@@ -108,6 +108,7 @@ public final class AbsenceMenu extends MenuController {
         switch (key) {
             case "market" -> WorldMarketMenu.INSTANCE.open(player);
             case "bank" -> FactionMenus.Bank.INSTANCE.open(player);
+            case "enterprises" -> fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Hub.INSTANCE.open(player);
             default -> {
             }
         }
