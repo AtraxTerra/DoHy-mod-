@@ -76,9 +76,9 @@ final class Payout {
      * Un evenement a dire au joueur a la fin du versement : la ligne du chat et du journal, et
      * le titre et la ligne courte de sa notification (pas de notification sans titre).
      */
-    record Event(String text, int color, String title, String line) {
-        Event(String text, int color) {
-            this(text, color, "", "");
+    record Event(long time, String text, int color, String title, String line) {
+        Event(long time, String text, int color) {
+            this(time, text, color, "", "");
         }
     }
 
@@ -582,9 +582,10 @@ final class Payout {
                     capacity -= units;
                 }
                 if (capacity > 0.0d && world.deal(Syndicate.RECIFS)) {
+                    // le fournisseur ne remplit que la moitie de ce que le reseau peut encore ecouler
                     Line best = Line.HEROINE;
                     long price = Enterprises.wholesale(world, best);
-                    double units = Math.max(0.0d, Math.min(capacity, sim.dirty / price));
+                    double units = Math.max(0.0d, Math.min(capacity * 0.5d, sim.dirty / price));
                     sim.dirty -= units * price;
                     sim.supplies += units * price;
                     revenue += units * best.street();
@@ -607,7 +608,7 @@ final class Payout {
                 double missing = capacity - units;
                 if (missing > 0.0d && world.deal(Syndicate.LOTUS)) {
                     long price = Math.round(Enterprises.CRATE_SUPPLY * (world.allied(Syndicate.LOTUS) ? 0.85d : 1.0d));
-                    double bought = Math.max(0.0d, Math.min(missing, sim.dirty / price));
+                    double bought = Math.max(0.0d, Math.min(missing * 0.5d, sim.dirty / price));
                     sim.dirty -= bought * price;
                     sim.supplies += bought * price;
                     revenue += bought * street;
@@ -746,7 +747,7 @@ final class Payout {
         if (money >= 1.0d) {
             text.append(", ").append(MoneyFormat.exact(Math.round(money))).append(" $ d'argent sale saisis");
         }
-        sim.events.add(new Event(text.toString(), 0xFFEF3826, "Descente de police", enterprise.name()
+        sim.events.add(new Event(time, text.toString(), 0xFFEF3826, "Descente de police", enterprise.name()
                 + " fermee 24 h"));
     }
 
@@ -856,12 +857,12 @@ final class Payout {
             Enterprises.consumeIron(player, iron);
         }
         for (Event event : sim.events) {
-            holdings.log(now, event.text());
+            holdings.log(event.time(), event.text());
         }
         if (strike) {
             String text = "Faute de quoi payer les frais, tes employes cessent le travail 6 h";
             holdings.log(now, text);
-            sim.events.add(new Event(text, 0xFFEF3826, "Greve", "Frais impayes : 6 h d'arret"));
+            sim.events.add(new Event(now, text, 0xFFEF3826, "Greve", "Frais impayes : 6 h d'arret"));
         }
         holdings.report = new Holdings.Report(now, hours, clean, Math.round(sim.dirtyEarned), laundered, costs,
                 sim.raids, Math.round(sim.sold), Math.round(sim.lost));
@@ -899,7 +900,8 @@ final class Payout {
         }
         String line = (net >= 0L ? "+" : "-") + MoneyFormat.exact(Math.abs(net)) + " $ a la banque"
                 + (report.dirty() > 0L ? " · sale +" + MoneyFormat.exact(report.dirty()) + " $" : "");
-        Toasts.send(player, new ItemStack(Items.GOLD_INGOT), "ENTREPRISES", "Versement de l'heure", line,
+        Toasts.send(player, new ItemStack(Items.GOLD_INGOT), "ENTREPRISES", hours > 1 ? "Versement (" + hours
+                + " h)" : "Versement de l'heure", line,
                 net >= 0L ? 0xFF22E558 : 0xFFFAC400, "enterprise_hour");
     }
 

@@ -222,8 +222,8 @@ Une par région (le cœur du pays décide : `Region`), toutes inventées :
 | La Compagnie du Condor | Amérique du Sud | recel +25 % (+35 %), receleur +5 % |
 | La Famille Valcorte | Europe | casinos : +25 % de blanchiment, −5 points de commission |
 | La Caravane Écarlate | Afrique et Moyen-Orient | réseaux : +25 % de ventes (+35 %) |
-| La Confrérie du Lotus | Asie | vend des caisses (550 $, −15 % alliée), rachète le surplus |
-| Le Cartel des Récifs | Océanie | vend matière première et produits (−15 % alliée), rachète le surplus |
+| La Confrérie du Lotus | Asie | vend des caisses à tes trafics (550 $, −15 % alliée ; la moitié de ce qu'ils peuvent encore vendre), rachète le surplus |
+| Le Cartel des Récifs | Océanie | vend matière première et produits (−15 % alliée ; des produits pour la moitié de ce que tes réseaux peuvent encore écouler), rachète le surplus |
 
 Chaque jour, une organisation **neutre** s'échauffe de 2 × la présence (niveaux des affaires
 illégales dans sa région) × (0,5 + son agressivité), puis revient de 3 vers 30 − l'estime du

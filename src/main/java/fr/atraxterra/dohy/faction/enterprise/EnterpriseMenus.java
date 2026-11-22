@@ -562,8 +562,16 @@ public final class EnterpriseMenus {
 
             List<MenuView.Stat> stats = new ArrayList<>();
             stats.add(new MenuView.Stat("NIVEAU", enterprise.level() + " / " + Enterprise.MAX_LEVEL, 0xFFFAC400));
-            stats.add(new MenuView.Stat("PAR HEURE", MoneyFormat.delta(Math.round(earned)) + " $", enterprise.legal()
-                    ? 0xFF22E558 : 0xFFEC4FB5));
+            stats.add(switch (sector.role()) {
+                case GROW -> new MenuView.Stat("PRODUCTION", "~" + Math.round(line == null ? 0.0d
+                        : line.yield() * factors.output()) + " U/H", 0xFF22E558);
+                case LAB, ARMS -> new MenuView.Stat("PRODUCTION", "~" + Math.round(sector.base() * factors.output())
+                        + (sector.role() == Sector.Role.ARMS ? " CAISSES/H" : " U/H"), 0xFFEC4FB5);
+                case STORE -> new MenuView.Stat("PLACE", "+" + MoneyFormat.shortForm(Math.round(sector.base()
+                        * enterprise.level() * (enterprise.has(Upgrade.EQUIPEMENT) ? 1.25d : 1.0d))), 0xFFA0522D);
+                default -> new MenuView.Stat("PAR HEURE", MoneyFormat.delta(Math.round(earned)) + " $",
+                        enterprise.legal() ? 0xFF22E558 : 0xFFEC4FB5);
+            });
             stats.add(enterprise.legal() ? new MenuView.Stat("FRAIS", "-" + MoneyFormat.shortForm(Math.round(
                     factors.cost())) + " $", 0xFFEF3826) : new MenuView.Stat("RISQUE", Math.round(factors.risk())
                     + " %", riskColor(factors.risk())));
