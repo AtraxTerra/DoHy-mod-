@@ -358,6 +358,21 @@ public final class AbsenceReport {
                 money.add(new AbsenceData.Line(id(Items.EMERALD), "Banque nationale", lines, 0xFF55FF55, "bank"));
             }
         }
+        // les entreprises (lot 24b) : ce que le versement du retour a rapporte
+        fr.atraxterra.dohy.faction.enterprise.Holdings.Report business =
+                fr.atraxterra.dohy.faction.enterprise.Enterprises.of(player).report();
+        if (faction.exists() && business.hours() > 0L && business.time() >= data.leftAt()) {
+            List<String> lines = new ArrayList<>();
+            lines.add(signed(business.clean() + business.laundered() - business.costs()) + " $ a la banque");
+            if (business.dirty() > 0L) {
+                lines.add("+" + MoneyFormat.exact(business.dirty()) + " $ d'argent sale");
+            }
+            if (business.raids() > 0) {
+                lines.add(business.raids() + " descente(s) de police");
+            }
+            money.add(new AbsenceData.Line(id(Items.EMERALD_BLOCK), "Entreprises", lines, 0xFF22E558,
+                    "enterprises"));
+        }
         if (caught.restored() > 0) {
             money.add(new AbsenceData.Line(id(Items.PAPER), "Prix de vente", List.of(caught.restored()
                     + " objet(s) revenus", "au plein tarif"), 0xFFAAAAAA, ""));

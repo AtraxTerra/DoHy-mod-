@@ -124,6 +124,18 @@ public final class Factions {
                     .copyOnDeath()
                     .build());
 
+    /**
+     * Les affaires de la nation (lot 24b) : entreprises, argent sale, stocks, organisations
+     * criminelles. Gardees a la mort.
+     */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.faction.enterprise.Holdings>> ENTERPRISES =
+            ATTACHMENTS.register("enterprises", () -> AttachmentType.builder(
+                            fr.atraxterra.dohy.faction.enterprise.Holdings::new)
+                    .serialize(fr.atraxterra.dohy.faction.enterprise.Holdings.MAP_CODEC,
+                            data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
     private Factions() {
     }
 

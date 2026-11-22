@@ -203,7 +203,16 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   indépendant), cadres PNJ (cinq grades, cinq postes, salaires horaires hors ligne, loyauté,
   caractères, recrutement du jour), diplomatie avec les douze nations (pacte, accord, alliance,
   rivalité) branchée sur l'IA de guerre et la taxe du marché ; onglets Organisation et
-  Diplomatie ; `/f organisation`, `/f diplomatie`.
+  Diplomatie ; `/f organisation`, `/f diplomatie`. Une trahison ou une rivalité fait monter
+  l'hostilité tout de suite (PR #187).
+- **Lot 24b** : les entreprises (`faction/enterprise/`) — six secteurs légaux, onze illégaux
+  (drogues en chaîne plantation → laboratoire → entrepôt → réseau, armes avec le fer du coffre,
+  contrebande, société écran, casino, racket, recel), niveaux, employés PNJ, gérant (un cadre
+  libre), améliorations ; versement horaire hors ligne (une semaine) ; argent sale et
+  blanchiment ; risque et descentes plafonnées ; influence pays par pays ; six organisations
+  criminelles PNJ (accord, alliance, guerre de territoire, tribut, riposte) ; neuvième onglet
+  Entreprises (tableau de bord, catalogue, fiche, comptes, territoire, organisation) ; le
+  receleur paie plus avec des recels ; ligne « Entreprises » du rapport d'absence.
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 

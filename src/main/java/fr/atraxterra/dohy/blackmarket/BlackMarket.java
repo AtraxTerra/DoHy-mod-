@@ -288,9 +288,13 @@ public final class BlackMarket {
             return "Tu n'as pas de " + name + " dans ton sac.";
         }
         data(player).sell(index, taken);
+        // les recels de la nation (lot 24b) : le receleur paie plus ceux qui ont leurs propres filieres
+        long fence = Math.round(paid * fr.atraxterra.dohy.faction.enterprise.Enterprises.fenceBonus(player));
+        paid += fence;
         Economy.credit(player, paid);
         player.sendSystemMessage(Component.literal("[Receleur] ").withStyle(ChatFormatting.DARK_PURPLE)
-                .append(Component.literal(taken + " " + name + " : +" + MoneyFormat.exact(paid) + " $")
+                .append(Component.literal(taken + " " + name + " : +" + MoneyFormat.exact(paid) + " $"
+                                + (fence > 0L ? " (dont " + MoneyFormat.exact(fence) + " $ grace a tes recels)" : ""))
                         .withStyle(ChatFormatting.GREEN)));
         DoHy.LOGGER.info("Marche noir : {} revend {} x{} pour {}", player.getGameProfile().name(),
                 demand.demand().item(), taken, paid);

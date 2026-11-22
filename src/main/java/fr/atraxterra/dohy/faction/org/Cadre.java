@@ -77,6 +77,16 @@ public record Cadre(String id, String name, int grade, int skill, String trait, 
         return Post.of(post);
     }
 
+    /** L'entreprise qu'il gere (lot 24b : son poste vaut « @id »), vide sinon. */
+    public String manages() {
+        return post.startsWith("@") ? post.substring(1) : "";
+    }
+
+    /** Ni poste ni gerance. */
+    public boolean free() {
+        return post.isEmpty();
+    }
+
     /** « Ines Morel, Capitaine » */
     public String label() {
         return name + ", " + rank().label();

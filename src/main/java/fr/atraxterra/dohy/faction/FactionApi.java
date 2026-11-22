@@ -238,6 +238,7 @@ public final class FactionApi {
         fr.atraxterra.dohy.earth.mine.EarthMines.release(player);
         FactionVault.clear(player);
         fr.atraxterra.dohy.faction.org.Organisations.disbanded(player);
+        fr.atraxterra.dohy.faction.enterprise.Enterprises.disbanded(player);
         String name = data.name;
         data.clear();
         tell(player, "La nation " + name + " est dissoute.", ChatFormatting.RED);

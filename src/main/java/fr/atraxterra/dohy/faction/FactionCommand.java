@@ -137,6 +137,28 @@ public final class FactionCommand {
                             fr.atraxterra.dohy.faction.org.DiplomacyMenus.Hub.INSTANCE.open(player);
                             return 1;
                         })))
+                .then(Commands.literal("entreprises")
+                        .executes(ctx -> as(ctx.getSource(), player -> {
+                            fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Hub.INSTANCE.open(player);
+                            return 1;
+                        }))
+                        .then(Commands.literal("renommer")
+                                .then(Commands.argument("id", StringArgumentType.word())
+                                        .then(Commands.argument("nom", StringArgumentType.greedyString())
+                                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                                        fr.atraxterra.dohy.faction.enterprise.Enterprises.rename(player,
+                                                                StringArgumentType.getString(ctx, "id"),
+                                                                StringArgumentType.getString(ctx, "nom")),
+                                                        "Entreprise renommee."))))))
+                        // Pour les operateurs : faire passer des heures (revenus, descentes, organisations).
+                        .then(Commands.literal("avancer")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .then(Commands.argument("heures", IntegerArgumentType.integer(1, 720))
+                                        .executes(ctx -> as(ctx.getSource(), player -> {
+                                            fr.atraxterra.dohy.faction.enterprise.Enterprises.advance(player,
+                                                    IntegerArgumentType.getInteger(ctx, "heures"));
+                                            return 1;
+                                        })))))
                 .then(Commands.literal("arbre")
                         .executes(ctx -> as(ctx.getSource(), player -> {
                             FactionTreeMenus.Tree.INSTANCE.open(player);

@@ -151,6 +151,18 @@ public final class Seasons {
         return frame == null ? 0.0d : frame.latitude(z);
     }
 
+    /** La part des pousses qui passent a ce z de la carte, saison comprise ; 1 sans saisons (lot 24b). */
+    public static double growthAt(double z) {
+        SeasonClimate climate = SeasonClimate.SERVER;
+        return climate.active() ? SeasonMath.growth(latitude(z), climate.phase()) : 1.0d;
+    }
+
+    /** Le nom de la saison a ce z de la carte (« Hiver », « Saison seche »), vide sans saisons (lot 24b). */
+    public static String seasonAt(double z) {
+        SeasonClimate climate = SeasonClimate.SERVER;
+        return climate.active() ? SeasonMath.name(latitude(z), climate.phase()) : "";
+    }
+
     /** La temperature du biome en ce point, saison comprise. */
     public static float temperature(Level level, BlockPos pos) {
         return ((BiomeAccessor) (Object) level.getBiome(pos).value())

@@ -1597,7 +1597,6 @@ public final class WarStrategy {
         data.refund = Math.max(0L, data.refund + delta);
     }
 
-    /** Un grief venu d'ailleurs : un pays pris sur la carte de la Terre. */
     /** La relation d'une nation avec toi, creee si elle ne te connait pas encore (lot 24a). */
     public static WarData.Relation relationOf(ServerPlayer player, int nation) {
         return data(player).relation(nation, System.currentTimeMillis());
@@ -1635,6 +1634,7 @@ public final class WarStrategy {
         say(player, data(player).relation(nation, System.currentTimeMillis()), text, color);
     }
 
+    /** Un grief venu d'ailleurs : un pays pris sur la carte de la Terre, une trahison, une rivalite. */
     public static void grieve(ServerPlayer player, int nation, String kind, double weight) {
         if (nation < 0 || nation >= NationTraits.count() || !FactionApi.has(player)) {
             return;
