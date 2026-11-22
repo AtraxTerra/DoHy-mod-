@@ -47,7 +47,7 @@ public final class NationMenu extends MenuController {
 
     @Override
     protected void back(ServerPlayer player) {
-        FactionMenus.Overview.INSTANCE.open(player);
+        FactionMenus.Claims.INSTANCE.open(player);
     }
 
     private static ItemStack banner(int rival) {
@@ -149,7 +149,8 @@ public final class NationMenu extends MenuController {
             return new MenuView(id(), "Pays", "Il faut une carte de la Terre", List.of(), List.of(
                     new MenuView.Section("PAYS A PRENDRE", "resources", MenuView.GRID, List.of(
                             Card.of(new ItemStack(Items.MAP), "Pas de carte", List.of("Ce monde n'a pas de carte",
-                                    "de la Terre (datapack)")).state(MenuView.DISABLED)))), true);
+                                    "de la Terre (datapack)")).state(MenuView.DISABLED)))), true)
+                    .withTabs(FactionMenus.tabs(player, FactionMenus.TERRITORY));
         }
         EarthNations.Nation nation = EarthNations.nation(player);
         List<Integer> mine = EarthNations.heldBy(player);
@@ -171,7 +172,7 @@ public final class NationMenu extends MenuController {
                             MoneyFormat.exact(EarthNations.cost(server, under.id())) + " points"))
                     .accent(holder.player() ? 0xFF22E558 : color(holder.rival()));
             if (holder.ownedBy(player.getUUID())) {
-                card = Card.of(FactionMenus.banner(data), under.name(), List.of("Aux mains de ta faction",
+                card = Card.of(FactionMenus.banner(data), under.name(), List.of("Aux mains de ta nation",
                                 "Depuis le " + DATE.format(java.time.Instant.ofEpochMilli(holder.held().since())
                                         .atZone(fr.atraxterra.dohy.util.RealClock.zone()))))
                         .accent(0xFF22E558).badge("A TOI")
@@ -182,7 +183,7 @@ public final class NationMenu extends MenuController {
             } else if (!holder.player() && EarthNations.reachable(player, under.id())) {
                 card = card.action("target:" + under.id() + "|viser");
             } else {
-                card = card.state(MenuView.DISABLED).tooltip(List.of(holder.player() ? "La faction d'un joueur"
+                card = card.state(MenuView.DISABLED).tooltip(List.of(holder.player() ? "La nation d'un joueur"
                         : mine.isEmpty() ? "Ton premier pays est celui de ta capitale"
                         : "Trop loin de tes terres"));
             }
@@ -241,7 +242,8 @@ public final class NationMenu extends MenuController {
                 new MenuView.Section("ICI", "craft", MenuView.GRID, here),
                 new MenuView.Section(targets.size() > shown ? "VOISINS A PRENDRE - LES " + shown + " PLUS PROCHES SUR "
                         + targets.size() : "VOISINS A PRENDRE", "upgrade", MenuView.GRID, next),
-                new MenuView.Section("NATIONS RIVALES", "resources", MenuView.GRID, rivals)), true);
+                new MenuView.Section("NATIONS RIVALES", "resources", MenuView.GRID, rivals)), true)
+                .withTabs(FactionMenus.tabs(player, FactionMenus.TERRITORY));
     }
 
     @Override

@@ -51,8 +51,8 @@ public final class Nav {
                             "grades"),
                     new Item("ameliorations", "Ameliorations", () -> new ItemStack(Items.NETHER_STAR), "upgrades"),
                     new Item("rpg", "Profil RPG", () -> new ItemStack(Items.TOTEM_OF_UNDYING), "rpg"))),
-            new Group("FACTION", List.of(
-                    new Item("faction", "Ma faction", () -> new ItemStack(Items.BANNER.pick(DyeColor.RED)), "faction"),
+            new Group("NATION", List.of(
+                    new Item("faction", "Ma nation", () -> new ItemStack(Items.BANNER.pick(DyeColor.RED)), "faction"),
                     new Item("trixium", "Concours Trixium",
                             () -> new ItemStack(fr.atraxterra.dohy.palamod.PalaItems.TRIXIUM.get()), "trixium"))),
             new Group("AIDE", List.of(
@@ -129,7 +129,7 @@ public final class Nav {
                     case "ECONOMIE" -> "Economie";
                     case "PROGRESSION" -> "Progression";
                     case "PERSONNAGE" -> "Personnage";
-                    case "FACTION" -> "Faction";
+                    case "NATION" -> "Nation";
                     case "AIDE" -> "Aide";
                     default -> "";
                 };

@@ -98,7 +98,7 @@ public final class NationCommand {
                                         return "Pays inconnu";
                                     }
                                     if (!FactionApi.has(player)) {
-                                        return "Fonde d'abord ta faction";
+                                        return "Fonde d'abord ta nation";
                                     }
                                     EarthNations.Holder holder = EarthNations.holder(player.level().getServer(), id);
                                     if (holder.player()) {

@@ -123,23 +123,26 @@ public final class StatusCard {
         row += 9.5f;
 
         if (faction) {
+            // le rang de la nation en pastille (lot 23a), la ligue et l'ELO dessous
             FactionLeague league = FactionLeague.of(info.league());
-            String tag = league.label().toUpperCase(java.util.Locale.ROOT);
+            fr.atraxterra.dohy.faction.NationRank rank = fr.atraxterra.dohy.faction.NationRank.values()[Math.max(0,
+                    Math.min(fr.atraxterra.dohy.faction.NationRank.values().length - 1, info.rank()))];
+            String tag = rank.label().toUpperCase(java.util.Locale.ROOT);
             float tagWidth = ui.width(Ui.BOLD, tag, 3.4f) + 5.0f;
             paint.dot(x + PAD + 2.0f, row + 2.6f, 2.0f, info.color());
             String name = ui.fit(Ui.BOLD, info.faction(), 4.8f, WIDTH - PAD * 2 - 7.0f - tagWidth - 3.0f);
             ui.text(Ui.BOLD, name, x + PAD + 7.0f, row, 4.8f, Ui.Theme.TEXT);
             float tagX = x + WIDTH - PAD - tagWidth;
             paint.framed(tagX, row - 0.4f, tagWidth, 6.0f, 3.0f, Ui.Theme.BG1, Paint.mix(Ui.Theme.EDGE,
-                    league.color(), 0.8f), 1);
-            ui.text(Ui.BOLD, tag, tagX + 2.5f, row + 0.9f, 3.4f, league.color());
+                    rank.color(), 0.8f), 1);
+            ui.text(Ui.BOLD, tag, tagX + 2.5f, row + 0.9f, 3.4f, rank.color());
             row += 7.5f;
-            String stats = info.claims() + " / " + info.claimCap() + " claims  \u00B7  "
-                    + MoneyFormat.exact(info.elo()) + " ELO";
+            String stats = info.claims() + " / " + info.claimCap() + " claims  \u00B7  " + league.label()
+                    + "  \u00B7  " + MoneyFormat.exact(info.elo()) + " ELO";
             ui.text(Ui.BODY, ui.fit(Ui.BODY, stats, 4.1f, WIDTH - PAD * 2), x + PAD, row, 4.1f, Ui.Theme.MUTED);
             row += 8.5f;
         } else {
-            ui.text(Ui.BODY, "Sans faction", x + PAD, row, 4.4f, Ui.Theme.MUTED);
+            ui.text(Ui.BODY, "Sans nation", x + PAD, row, 4.4f, Ui.Theme.MUTED);
             row += 8.0f;
         }
 

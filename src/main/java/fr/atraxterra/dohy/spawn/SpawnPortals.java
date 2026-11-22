@@ -70,7 +70,7 @@ public final class SpawnPortals extends MenuController {
                             "Metier lie : " + dungeon.job().display())));
         }
         List<Card> others = List.of(
-                Card.of(new ItemStack(Items.IRON_SWORD), "Evenements de faction", List.of("Les arenes de ta faction",
+                Card.of(new ItemStack(Items.IRON_SWORD), "Evenements de faction", List.of("Les arenes de ta nation",
                         "Totem, chasse aux oeufs, boss")).accent(0xFFEF3826).action("events"),
                 Card.of(new ItemStack(Items.TOTEM_OF_UNDYING), "Profil RPG", List.of(
                         "Niveau RPG " + Rpg.level(Rpg.data(player).xp()), "L'arbre des donjons"))

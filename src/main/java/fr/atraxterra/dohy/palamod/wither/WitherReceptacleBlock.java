@@ -155,7 +155,7 @@ public class WitherReceptacleBlock extends BaseEntityBlock {
     private static String refusal(ServerPlayer player, Level level, BlockPos pos,
                                   WitherReceptacleBlockEntity receptacle, WitherKind kind) {
         if (!FactionApi.has(player) && !player.isCreative()) {
-            return "Il faut une faction pour invoquer un wither (/f create).";
+            return "Il faut une nation pour invoquer un wither (/f create).";
         }
         if (FactionApi.claimAt(level, pos).claimed()) {
             return "Le receptacle doit etre hors de tout claim : un wither ne s'invoque pas dans une base.";

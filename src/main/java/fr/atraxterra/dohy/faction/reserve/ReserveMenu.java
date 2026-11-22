@@ -50,7 +50,7 @@ public final class ReserveMenu extends MenuController {
 
     @Override
     protected void back(ServerPlayer player) {
-        FactionMenus.Overview.INSTANCE.open(player);
+        FactionMenus.Bank.INSTANCE.open(player);
     }
 
     private static int chosen(ServerPlayer player) {
@@ -116,7 +116,7 @@ public final class ReserveMenu extends MenuController {
             String title = amount == 0 ? "Maximum" : MoneyFormat.exact(amount) + " $";
             amounts.add(Card.of(new ItemStack(amount == 0 ? Items.GOLD_BLOCK : amount >= 10_000_000L
                             ? Items.GOLD_INGOT : Items.GOLD_NUGGET), title, List.of(amount == 0
-                            ? "Selon la place et la banque" : "Depuis la banque de faction",
+                            ? "Selon la place et la banque" : "Depuis la banque nationale",
                             "Banque : " + MoneyFormat.shortForm(data.bank()) + " $"))
                     .accent(i == chosen ? 0xFF22E558 : 0xFF55545C).badge(i == chosen ? "CHOISI" : "")
                     .action("amount:" + i + "|choisir"));
@@ -174,7 +174,7 @@ public final class ReserveMenu extends MenuController {
                         new MenuView.Section("MONTANT", "resources", MenuView.GRID, amounts),
                         new MenuView.Section("DUREE", "upgrade", MenuView.GRID, terms),
                         new MenuView.Section("PLANS", "resources", MenuView.GRID, plans)), true)
-                .withTabs(fr.atraxterra.dohy.faction.FactionMenus.tabs(player, "faction_reserve"));
+                .withTabs(fr.atraxterra.dohy.faction.FactionMenus.tabs(player, FactionMenus.ECONOMY));
     }
 
     private static String duration(long millis) {

@@ -385,7 +385,7 @@ public final class WarStrategy {
         String sum = MoneyFormat.exact(tribute) + " $";
         String limit = when(relation.deadline, now);
         String text = switch (traits.voice()) {
-            case "brutale" -> "Ta faction grossit trop pres de nos terres. " + sum + " de tribut avant " + limit
+            case "brutale" -> "Ta nation grossit trop pres de nos terres. " + sum + " de tribut avant " + limit
                     + ", ou nous venons les prendre nous-memes.";
             case "courtoise" -> "Nous preferons la paix. Un tribut de " + sum + " avant " + limit
                     + " la garantira ; a defaut, nous serions contraints a la guerre.";
@@ -445,7 +445,7 @@ public final class WarStrategy {
         }
         long tribute = relation.tribute;
         if (!FactionApi.payFromBank(player, tribute, "Tribut " + relation.traits().de())) {
-            return "Ta banque de faction n'a que " + MoneyFormat.exact(FactionApi.data(player).bank()) + " $";
+            return "Ta banque nationale n'a que " + MoneyFormat.exact(FactionApi.data(player).bank()) + " $";
         }
         NationTraits traits = relation.traits();
         relation.memory = relation.memory.withPaid(tribute);
@@ -561,7 +561,7 @@ public final class WarStrategy {
             return "En guerre, un cadeau passe pour de la faiblesse : demande la paix";
         }
         if (!FactionApi.payFromBank(player, amount, "Cadeau " + EarthNations.a(relation.traits().name()))) {
-            return "Ta banque de faction n'a que " + MoneyFormat.exact(FactionApi.data(player).bank()) + " $";
+            return "Ta banque nationale n'a que " + MoneyFormat.exact(FactionApi.data(player).bank()) + " $";
         }
         long bank = Math.max(0L, FactionApi.data(player).bank());
         double effect = Math.min(25.0d, amount / (bank / 20.0d + 500.0d) * 10.0d);
@@ -584,7 +584,7 @@ public final class WarStrategy {
      */
     static String counterRefusal(ServerPlayer player, WarData data, WarData.Relation relation, long now) {
         if (!FactionApi.has(player)) {
-            return "Il faut une faction";
+            return "Il faut une nation";
         }
         if (Sieges.of(player.getUUID()) != null || Strikes.striking(player.getUUID())) {
             return "Pas en plein siege";
@@ -896,7 +896,7 @@ public final class WarStrategy {
                     + " : nous agirons ensemble.";
             case "mielleuse" -> "Tu deviens si puissant... " + other.name() + " et nous avons pense qu'a deux, ce "
                     + "serait plus prudent.";
-            default -> "Coalition formee avec " + other.the() + ". Objectif : ta faction.";
+            default -> "Coalition formee avec " + other.the() + ". Objectif : ta nation.";
         };
         say(player, relation, text, ChatFormatting.DARK_RED);
         if (relation.stance == WarData.Stance.GUERRE) {
@@ -1129,7 +1129,7 @@ public final class WarStrategy {
 
     static String setVault(ServerPlayer player) {
         if (!FactionApi.has(player)) {
-            return "Tu n'as pas de faction";
+            return "Tu n'as pas de nation";
         }
         if (Sieges.of(player.getUUID()) != null || Strikes.striking(player.getUUID())) {
             return "On ne deplace pas son coffre en plein siege";
@@ -1470,7 +1470,7 @@ public final class WarStrategy {
     /**
      * Ce que la chute de sa place forte te rapporte : le butin (30 % de son
      * tresor), l'argent qu'elle (et son allie) te rendent, les soldats qu'elle
-     * perd, le pays qui passe a ta faction (0 sans), et ce qui te revient (pays
+     * perd, le pays qui passe a ta nation (0 sans), et ce qui te revient (pays
      * et mines qu'ils t'avaient repris).
      */
     record Spoils(long loot, long returned, int lost, int country, List<String> recovered) {
@@ -1481,10 +1481,10 @@ public final class WarStrategy {
      * ({@code missiles}) ou pillee ({@code pillage}). D'abord, elle te rend ce
      * qu'elle t'a pris (lot 22l-2) : l'argent pille, tant que son tresor le
      * permet, les pays et les mines repris. Puis elle recule : 30 % de ce qui
-     * reste de son tresor passent a ta banque de faction (10 % de plus partent
+     * reste de son tresor passent a ta banque nationale (10 % de plus partent
      * en fumee), la moitie de son armee tombe, elle te craint, et une treve de
      * sept jours commence. Sur la carte de la Terre, {@code country} (s'il y en
-     * a un) passe a ta faction. Son allie de coalition, vaincu avec elle, te
+     * a un) passe a ta nation. Son allie de coalition, vaincu avec elle, te
      * rend aussi ce qu'il t'a pris ; la coalition se defait.
      */
     static Spoils razed(ServerPlayer player, int nation, String how, EnemyBaseTier tier, int country) {
@@ -1603,7 +1603,7 @@ public final class WarStrategy {
      */
     static String simulatePillage(ServerPlayer player, int nation, long amount) {
         if (!FactionApi.payFromBank(player, amount, "Pillage (essai)")) {
-            return "!Ta banque de faction n'a que " + MoneyFormat.exact(FactionApi.data(player).bank()) + " $";
+            return "!Ta banque nationale n'a que " + MoneyFormat.exact(FactionApi.data(player).bank()) + " $";
         }
         WarData data = data(player);
         long now = System.currentTimeMillis();

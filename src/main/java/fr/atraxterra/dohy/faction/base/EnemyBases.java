@@ -62,7 +62,7 @@ import java.util.UUID;
  *
  * <p>Ses claims suivent la regle de Paladium : rien a la main, mais les
  * explosions et les withers y passent. <b>Entrer dans la salle des coffres,
- * c'est l'avoir pillee</b> : de l'ELO, de l'argent a la banque de faction, et
+ * c'est l'avoir pillee</b> : de l'ELO, de l'argent a la banque nationale, et
  * les claims tombent, les coffres s'ouvrent. Une base a la fois. Cinq minutes
  * apres le pillage ou l'abandon, la base s'efface et le terrain revient tel
  * qu'il etait ({@link EnemyBaseRegen}).
@@ -236,7 +236,7 @@ public final class EnemyBases {
      */
     public static String request(ServerPlayer player, EnemyBaseTier tier, EnemyBaseStyle style) {
         if (!FactionApi.has(player)) {
-            return "Fonde d'abord ta faction";
+            return "Fonde d'abord ta nation";
         }
         if (pending(player)) {
             return "Tes eclaireurs cherchent deja une base";
@@ -517,7 +517,7 @@ public final class EnemyBases {
         }
         FactionApi.addElo(player, tier.elo(), "pillage des " + base.name());
         FactionApi.creditBank(player, tier.money(), "Pillage des " + base.name());
-        FactionApi.tell(player, "+" + MoneyFormat.exact(tier.money()) + " $ a la banque de faction.",
+        FactionApi.tell(player, "+" + MoneyFormat.exact(tier.money()) + " $ a la banque nationale.",
                 ChatFormatting.GREEN);
         FactionApi.stat(player, "raid:base", 1);
         FactionApi.stat(player, "raid:" + tier.key(), 1);

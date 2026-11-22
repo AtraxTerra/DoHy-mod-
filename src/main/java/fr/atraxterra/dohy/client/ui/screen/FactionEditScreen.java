@@ -41,11 +41,11 @@ public class FactionEditScreen extends UiScreen implements ViewScreen<FactionEdi
     private int banner;
 
     public FactionEditScreen(FactionEditView view) {
-        super(Component.literal("Faction"), Shell.WIDTH, Shell.HEIGHT);
+        super(Component.literal("Nation"), Shell.WIDTH, Shell.HEIGHT);
         this.view = view;
         this.tags.addAll(view.tags());
         this.banner = view.banner();
-        shell.header(view.create() ? "Creer ta faction" : "Modifier la faction", "", List.of(), List.of(), false);
+        shell.header(view.create() ? "Fonder ta nation" : "Modifier ta nation", "", List.of(), List.of(), false);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class FactionEditScreen extends UiScreen implements ViewScreen<FactionEdi
         int x = Math.round(left());
         int width = Math.round(columnWidth());
         name = add(SearchBox.form(x, Math.round(top() + 20.0f), width, Math.round(FIELD),
-                "Nom de la faction (3 a 16 caracteres)", 16, keptName));
+                "Nom de la nation (3 a 16 caracteres)", 16, keptName));
         description = add(SearchBox.form(x, Math.round(top() + 46.0f), width, Math.round(FIELD),
                 "Description (facultative)", 60, keptDescription));
         motd = add(SearchBox.form(x, Math.round(top() + 72.0f), width, Math.round(FIELD),

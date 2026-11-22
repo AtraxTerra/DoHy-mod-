@@ -132,7 +132,7 @@ public final class FactionEventMenu extends MenuController {
                 new MenuView.Stat("PROCHAIN", fight != null && !fight.ended() ? "EN COURS"
                         : soonest == null ? "-" : until(now, soonest), 0xFFFAC400));
         return new MenuView(id(), "Events de faction", "Heure de Paris", stats, sections, true)
-                .withTabs(fr.atraxterra.dohy.faction.FactionMenus.tabs(player, "faction_events"));
+                .withTabs(fr.atraxterra.dohy.faction.FactionMenus.tabs(player, fr.atraxterra.dohy.faction.FactionMenus.EVENTS));
     }
 
     /** « 3 h 12 », « 25 min », « 2 j 4 h ». */

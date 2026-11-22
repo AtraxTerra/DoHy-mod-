@@ -148,7 +148,7 @@ public final class TotemRun extends EventRun {
         Carry mine = carriers.get(player.getUUID());
         return List.of(ended() ? "Termine" : height + " / " + EventArena.TOTEM_HEIGHT + " blocs · reste "
                         + clock(DURATION - ticks),
-                mine != null ? "Tu portes un bloc !" : rank > 0 ? "Ta faction : " + (rank == 1 ? "1re" : rank + "e")
+                mine != null ? "Tu portes un bloc !" : rank > 0 ? "Ta nation : " + (rank == 1 ? "1re" : rank + "e")
                         + " · " + Math.round(scoreOf(player)) + " points" : "Pas encore de points");
     }
 

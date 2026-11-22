@@ -42,6 +42,8 @@ public final class FactionCommand {
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(build("f"));
         event.getDispatcher().register(build("faction"));
+        // la faction est ta nation (lot 23a) : la meme commande sous son nom
+        event.getDispatcher().register(build("nation"));
     }
 
     private interface Action {
@@ -279,11 +281,16 @@ public final class FactionCommand {
     private static int info(ServerPlayer player) {
         FactionData data = FactionApi.data(player);
         if (!data.exists()) {
-            return result(player, "Tu n'as pas de faction : /f create", "");
+            return result(player, "Tu n'as pas de nation : /f create", "");
         }
         FactionPerks perks = FactionPerks.of(data);
         FactionLeague league = FactionLeague.of(data.ranking().league());
-        player.sendSystemMessage(FactionApi.prefix().append(Component.literal(data.name()).withStyle(ChatFormatting.WHITE)));
+        Nation nation = Nation.of(player);
+        player.sendSystemMessage(FactionApi.prefix().append(Component.literal(nation.title())
+                .withStyle(ChatFormatting.WHITE)));
+        String next = nation.nextRank();
+        player.sendSystemMessage(Component.literal(" Rang " + nation.rank().label() + (next.isEmpty() ? ""
+                : " · " + next)).withStyle(ChatFormatting.YELLOW));
         player.sendSystemMessage(Component.literal(" Ligue " + league.label() + " · "
                 + MoneyFormat.exact(data.ranking().elo()) + " ELO").withStyle(league.format()));
         player.sendSystemMessage(Component.literal(" Claims " + data.claims().size() + "/" + FactionApi.claimCap(player)

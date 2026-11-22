@@ -113,7 +113,7 @@ public final class KothRun extends EventRun {
         int rank = rankOf(player);
         return List.of(ended() ? "Termine" : "Reste " + clock(DURATION - ticks) + " · zone : "
                         + (holder == null ? "libre" : nameOf(holder)),
-                rank > 0 ? "Ta faction : " + (rank == 1 ? "1re" : rank + "e") + " · " + Math.round(scoreOf(player))
+                rank > 0 ? "Ta nation : " + (rank == 1 ? "1re" : rank + "e") + " · " + Math.round(scoreOf(player))
                         + " points" : "Pas encore de points");
     }
 

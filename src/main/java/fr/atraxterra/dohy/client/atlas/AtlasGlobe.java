@@ -9,7 +9,7 @@ import net.minecraft.resources.Identifier;
 /**
  * Les deux images du globe, une case de la grille par pixel : la carte
  * politique (mers, pays et frontieres), visible d'avance sous le terrain
- * explore, et le calque des pays tenus (ta faction en or, les nations rivales
+ * explore, et le calque des pays tenus (ta nation en or, les nations rivales
  * a leurs couleurs, ta cible en jaune), pose par-dessus.
  *
  * <p>Vues de loin, elles passent par leurs niveaux de detail et un filtrage
@@ -149,7 +149,7 @@ final class AtlasGlobe {
         return false;
     }
 
-    /** La couleur de qui tient ce pays (0 si personne) : ta cible, ta faction, un joueur, une nation. */
+    /** La couleur de qui tient ce pays (0 si personne) : ta cible, ta nation, un joueur, une nation. */
     private static int holderColor(int id, int target) {
         if (id == target) {
             return TARGET;

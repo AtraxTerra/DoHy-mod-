@@ -45,7 +45,7 @@ public final class WorldMarketMenu extends MenuController {
 
     @Override
     protected void back(ServerPlayer player) {
-        FactionMenus.Overview.INSTANCE.open(player);
+        FactionMenus.Bank.INSTANCE.open(player);
     }
 
     @Override
@@ -133,7 +133,8 @@ public final class WorldMarketMenu extends MenuController {
         return new MenuView(id(), "Marche international", subtitle, stats, List.of(
                 new MenuView.Section("INDICE", "upgrade", MenuView.CHART, List.of(board)),
                 new MenuView.Section("COURS MONDIAUX", "resources", MenuView.GRID, goods),
-                new MenuView.Section("DEPECHES", "upgrade", MenuView.GRID, news)), true);
+                new MenuView.Section("DEPECHES", "upgrade", MenuView.GRID, news)), true)
+                .withTabs(FactionMenus.tabs(player, FactionMenus.ECONOMY));
     }
 
     /** « 8 h », « 40 min », « 2 h 30 ». */

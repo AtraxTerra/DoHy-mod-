@@ -30,6 +30,16 @@ public final class WarMenu extends MenuController {
         super("guerre");
     }
 
+    /** L'onglet Guerre de la nation : l'hexagone revient a sa vue d'ensemble. */
+    @Override
+    protected void back(ServerPlayer player) {
+        if (FactionApi.has(player)) {
+            fr.atraxterra.dohy.faction.FactionMenus.Overview.INSTANCE.open(player);
+        } else {
+            super.back(player);
+        }
+    }
+
     private static ItemStack banner(NationTraits traits) {
         return new ItemStack(Items.BANNER.pick(traits.color()));
     }
@@ -148,7 +158,7 @@ public final class WarMenu extends MenuController {
                         MoneyFormat.exact(relation.tribute()) + " $ de tribut",
                         "Avant " + WarStrategy.when(relation.deadline(), now)))
                         .accent(0xFFE8590C).action("pay").right("refuse").badge("PAYER")
-                        .tooltip(List.of("Clic gauche : payer depuis ta banque de faction",
+                        .tooltip(List.of("Clic gauche : payer depuis ta banque nationale",
                                 "Clic droit : refuser, c'est la guerre")));
                 cards.add(Card.of(new ItemStack(Items.WRITABLE_BOOK), relation.negotiated() ? "Contre-offre faite"
                         : "Negocier", List.of(relation.negotiated() ? "Ils ont repondu" : "Proposer la moitie",
@@ -223,7 +233,7 @@ public final class WarMenu extends MenuController {
             }
             fall.add("Puis 30 % de ce qui reste de son tresor,");
             fall.add("la moitie de son armee tombe, un de ses pays");
-            fall.add("passe a ta faction (+1 claim), treve de 7 jours.");
+            fall.add("passe a ta nation (+1 claim), treve de 7 jours.");
             fall.add("5 minutes plus tard, elle s'efface.");
             cards.add(Card.of(new ItemStack(Items.GOLD_INGOT), "Si elle tombe",
                             owes ? List.of("Ce qu'elle t'a pris", "+ 30 % de son tresor")
@@ -360,6 +370,12 @@ public final class WarMenu extends MenuController {
             if (!cards.isEmpty()) {
                 sections.add(new MenuView.Section("TA CONTRE-OFFENSIVE", "armor", MenuView.GRID, cards));
             }
+        }
+
+        // -- le pillage : les bases ennemies fictives a reperer et a raser (lot 22g)
+        if (FactionApi.has(player)) {
+            sections.add(new MenuView.Section("PILLAGE", "armor", MenuView.GRID, List.of(
+                    fr.atraxterra.dohy.faction.FactionMenus.enemyBaseCard(player))));
         }
 
         // -- les nations
@@ -514,8 +530,10 @@ public final class WarMenu extends MenuController {
                         : r.declared() ? "Ta contre-offensive contre " + r.traits().the() + " : rase sa place forte"
                         : r.slot() > 0L ? "Assaut " + r.traits().de() + " " + WarStrategy.when(r.slot(), now)
                         : "Fixe l'heure de l'assaut " + r.traits().de()).orElse(FactionApi.has(player)
-                        ? "Les nations t'observent" : "Fonde une faction : les nations l'observeront");
-        return new MenuView(id(), "La guerre des nations", subtitle, stats, sections, true);
+                        ? "Les nations t'observent" : "Fonde ta nation : les autres l'observeront");
+        MenuView view = new MenuView(id(), "La guerre des nations", subtitle, stats, sections, true);
+        return FactionApi.has(player) ? view.withTabs(fr.atraxterra.dohy.faction.FactionMenus.tabs(player,
+                fr.atraxterra.dohy.faction.FactionMenus.WAR)) : view;
     }
 
     @Override
@@ -553,6 +571,9 @@ public final class WarMenu extends MenuController {
             } catch (NumberFormatException invalid) {
                 refusal = "Nation inconnue";
             }
+        } else if (key.equals("bases")) {
+            fr.atraxterra.dohy.faction.base.EnemyBaseMenu.INSTANCE.open(player);
+            return;
         } else if (key.startsWith("declare:")) {
             try {
                 refusal = WarStrategy.counter(player, Integer.parseInt(key.substring(8)));

@@ -25,8 +25,8 @@ import java.util.UUID;
 
 /**
  * Ce que la carte du HUD affiche en haut a droite et que le client ne connait pas : la
- * faction du joueur (nom, couleur, ligue, ELO, claims) et ses alertes de guerre (la nation
- * qui le menace ou l'attaque, l'echeance, le siege en cours).
+ * nation du joueur (nom, couleur, rang, ligue, ELO, claims) et ses alertes de guerre (la
+ * nation rivale qui le menace ou l'attaque, l'echeance, le siege en cours).
  *
  * <p>Le serveur regarde toutes les deux secondes et n'envoie que ce qui a change : une
  * echeance est une date, pas un compte a rebours, et le client decompte lui-meme. Une fois
@@ -35,6 +35,7 @@ import java.util.UUID;
  * @param faction  le nom de la faction, {@code ""} sans faction
  * @param color    la couleur de la faction (celle de la liste des joueurs)
  * @param league   l'indice de la ligue ({@code FactionLeague})
+ * @param rank     l'indice du rang de la nation ({@code NationRank})
  * @param elo      l'ELO de la faction
  * @param claims   les claims poses
  * @param claimCap les claims permis
@@ -45,8 +46,9 @@ import java.util.UUID;
  * @param now      l'heure du serveur a l'envoi, pour recaler {@code deadline}
  */
 @EventBusSubscriber
-public record HudStatus(String faction, int color, int league, long elo, int claims, int claimCap, int stance,
-                        String nation, long deadline, String siege, long now) implements CustomPacketPayload {
+public record HudStatus(String faction, int color, int league, int rank, long elo, int claims, int claimCap,
+                        int stance, String nation, long deadline, String siege, long now)
+        implements CustomPacketPayload {
 
     public static final Type<HudStatus> TYPE = new Type<>(Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "hud_status"));
 
@@ -55,6 +57,7 @@ public record HudStatus(String faction, int color, int league, long elo, int cla
                 buffer.writeUtf(status.faction(), 32);
                 buffer.writeInt(status.color());
                 buffer.writeVarInt(status.league());
+                buffer.writeVarInt(status.rank());
                 buffer.writeVarLong(Math.max(0L, status.elo()));
                 buffer.writeVarInt(status.claims());
                 buffer.writeVarInt(status.claimCap());
@@ -64,9 +67,9 @@ public record HudStatus(String faction, int color, int league, long elo, int cla
                 buffer.writeUtf(status.siege(), 160);
                 buffer.writeLong(status.now());
             },
-            buffer -> new HudStatus(buffer.readUtf(32), buffer.readInt(), buffer.readVarInt(), buffer.readVarLong(),
-                    buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(), buffer.readUtf(64),
-                    buffer.readLong(), buffer.readUtf(160), buffer.readLong()));
+            buffer -> new HudStatus(buffer.readUtf(32), buffer.readInt(), buffer.readVarInt(), buffer.readVarInt(),
+                    buffer.readVarLong(), buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(),
+                    buffer.readUtf(64), buffer.readLong(), buffer.readUtf(160), buffer.readLong()));
 
     private static final int PERIOD = 40;
     private static final long RESYNC = 60_000L;
@@ -86,12 +89,13 @@ public record HudStatus(String faction, int color, int league, long elo, int cla
     }
 
     private HudStatus timeless() {
-        return new HudStatus(faction, color, league, elo, claims, claimCap, stance, nation, deadline, siege, 0L);
+        return new HudStatus(faction, color, league, rank, elo, claims, claimCap, stance, nation, deadline, siege,
+                0L);
     }
 
     @SubscribeEvent
     public static void onRegister(RegisterPayloadHandlersEvent event) {
-        event.registrar("1").optional().playToClient(TYPE, STREAM_CODEC);
+        event.registrar("2").optional().playToClient(TYPE, STREAM_CODEC);
     }
 
     @SubscribeEvent
@@ -130,6 +134,7 @@ public record HudStatus(String faction, int color, int league, long elo, int cla
         String faction = "";
         int color = 0xFF5D6068;
         int league = 0;
+        int rank = 0;
         long elo = 0L;
         int claims = 0;
         int claimCap = 0;
@@ -142,6 +147,7 @@ public record HudStatus(String faction, int color, int league, long elo, int cla
                 }
                 color = TabInfo.color(faction);
                 league = data.ranking().league();
+                rank = fr.atraxterra.dohy.faction.NationRank.of(player).ordinal();
                 elo = data.ranking().elo();
                 claims = data.claims().size();
                 claimCap = FactionApi.claimCap(player);
@@ -172,6 +178,7 @@ public record HudStatus(String faction, int color, int league, long elo, int cla
         if (nation.length() > 60) {
             nation = nation.substring(0, 60);
         }
-        return new HudStatus(faction, color, league, elo, claims, claimCap, stance, nation, deadline, siege, now);
+        return new HudStatus(faction, color, league, rank, elo, claims, claimCap, stance, nation, deadline, siege,
+                now);
     }
 }

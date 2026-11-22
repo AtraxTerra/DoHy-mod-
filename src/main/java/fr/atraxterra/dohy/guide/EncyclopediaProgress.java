@@ -217,7 +217,7 @@ public final class EncyclopediaProgress {
     private static Result faction(ServerPlayer player) {
         FactionData faction = FactionApi.data(player);
         if (!faction.exists()) {
-            return new Result(List.of(new MenuView.Stat("FACTION", "AUCUNE", MUTED)), List.of());
+            return new Result(List.of(new MenuView.Stat("NATION", "AUCUNE", MUTED)), List.of());
         }
         FactionLeague league = FactionLeague.of(faction.ranking().league());
         return new Result(List.of(

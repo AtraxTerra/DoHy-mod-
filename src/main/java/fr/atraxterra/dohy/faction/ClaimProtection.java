@@ -71,7 +71,7 @@ public final class ClaimProtection {
             LAST_WARNING.put(player.getUUID(), now);
             FactionApi.tell(player, owner.enemy()
                     ? owner.label() + " : rien ne se casse ni ne se pose ici. Dynamites, canon a TNT, wither ou missiles."
-                    : "Ce territoire appartient a la faction " + owner.faction() + ".", ChatFormatting.RED);
+                    : "Ce territoire appartient a la nation " + owner.faction() + ".", ChatFormatting.RED);
         }
     }
 

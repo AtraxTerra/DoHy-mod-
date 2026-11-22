@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * L'ecran du rapport d'absence : en haut, la duree et la base ; puis ce que la
  * base a produit et consomme (en vignettes, avec les quantites), l'argent, les
- * nations et le monde. Le marche et la banque de faction s'ouvrent d'un clic.
+ * nations et le monde. Le marche et la banque nationale s'ouvrent d'un clic.
  */
 public final class AbsenceMenu extends MenuController {
 

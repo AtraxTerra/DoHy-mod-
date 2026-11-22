@@ -242,7 +242,7 @@ public final class EarthEvents {
         String holder = country == null ? null : EarthNations.holderName(player, country.id());
         ChatFormatting tone = ChatFormatting.GRAY;
         if (holder != null) {
-            boolean mine = holder.equals("ta faction");
+            boolean mine = holder.equals("ta nation");
             detail = "Aux mains " + EarthNations.de(holder);
             tone = mine ? ChatFormatting.GREEN : ChatFormatting.GRAY;
             EarthNations.Nation nation = EarthNations.nation(player);

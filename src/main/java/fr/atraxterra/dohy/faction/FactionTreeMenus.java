@@ -125,10 +125,10 @@ public final class FactionTreeMenus {
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("PALIERS", done + " / " + total, 0xFF22E558),
                     new MenuView.Stat("BANQUE", MoneyFormat.shortForm(data.bank()), 0xFFFAC400));
-            return new MenuView(id(), "Arbre de technologie", "", stats,
+            return new MenuView(id(), "Technologies", "", stats,
                     List.of(new MenuView.Section("BRANCHES", "upgrade", MenuView.GRID, branches),
                             new MenuView.Section("ACQUIS", "resources", MenuView.GRID, acquired)), true)
-                    .withTabs(FactionMenus.tabs(player, "faction_tree"));
+                    .withTabs(FactionMenus.tabs(player, FactionMenus.TECHNOLOGY));
         }
 
         @Override
@@ -178,7 +178,8 @@ public final class FactionTreeMenus {
                     new MenuView.Stat("BANQUE", MoneyFormat.shortForm(data.bank()), 0xFFFAC400),
                     new MenuView.Stat("EN COURS", running ? left(data, branch) : "-", 0xFFFFFFFF));
             return new MenuView(id(), "Branche " + branch.label(), "", stats,
-                    List.of(new MenuView.Section("PALIERS", "craft", MenuView.ROWS, rows)), true);
+                    List.of(new MenuView.Section("PALIERS", "craft", MenuView.ROWS, rows)), true)
+                    .withTabs(FactionMenus.tabs(player, FactionMenus.TECHNOLOGY));
         }
 
         private static Card row(ServerPlayer player, FactionData data, FactionTree.Tier step, int tier,

@@ -53,7 +53,7 @@ import java.util.zip.GZIPOutputStream;
  * tombe, coule ou roule y reste compris) ; un ouragan et une mousson relevent
  * chunk par chunk, juste avant leur premier degat.
  *
- * <p><b>Ce qui n'est jamais touche</b> : un chunk revendique (ta faction, une
+ * <p><b>Ce qui n'est jamais touche</b> : un chunk revendique (ta nation, une
  * base ennemie), un bloc pose par un joueur, un bloc qui porte un conteneur ou
  * une machine, et un chunk deja releve par une autre catastrophe qui n'a pas
  * fini de revenir.

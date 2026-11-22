@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Le coffre de la banque de faction : les minerais que versent les mines de la
+ * Le coffre de la banque nationale : les minerais que versent les mines de la
  * Terre ({@code earth/mine/EarthMines}), a cote de l'argent de la banque. On les
  * en sort depuis l'onglet Banque. Garde a la mort ; perdu, comme la banque, si
  * la faction est dissoute.

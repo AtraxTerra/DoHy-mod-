@@ -50,13 +50,35 @@ public enum NationRank {
         return color;
     }
 
+    /**
+     * Le rang d'une nation sans carte de la Terre : Faction jusqu'au Gouvernement I, Cite au II,
+     * Etat au III, Royaume au IV, Empire au V, Superpuissance au VI.
+     */
+    public static NationRank byGovernment(int tier) {
+        if (tier <= 1) {
+            return FACTION;
+        }
+        return values()[Math.min(values().length - 1, tier - 1)];
+    }
+
+    /** Le palier du Gouvernement qui donne ce rang, sans carte de la Terre. */
+    public static int governmentFor(NationRank rank) {
+        return rank == FACTION ? 0 : rank.ordinal() + 1;
+    }
+
     /** Le rang suivant, ou {@code null} au sommet. */
     public NationRank next() {
         return ordinal() + 1 < values().length ? values()[ordinal() + 1] : null;
     }
 
-    /** Une faction sans capitale reste une faction ; avec, une cite ; ensuite, les pays comptent. */
+    /**
+     * Une faction sans capitale reste une faction ; avec, une cite ; ensuite, les pays comptent.
+     * Sans carte de la Terre, pas de pays : le rang suit le Gouvernement.
+     */
     public static NationRank of(ServerPlayer player) {
+        if (!EarthNations.active()) {
+            return byGovernment(Nation.government(FactionApi.data(player)));
+        }
         int held = EarthNations.heldBy(player).size();
         if (held == 0) {
             return EarthNations.nation(player).capital() != 0 ? CITY : FACTION;

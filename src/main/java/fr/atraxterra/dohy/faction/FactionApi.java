@@ -64,7 +64,7 @@ public final class FactionApi {
     }
 
     public static MutableComponent prefix() {
-        return Component.literal("[Faction] ").withStyle(ChatFormatting.GOLD);
+        return Component.literal("[Nation] ").withStyle(ChatFormatting.GOLD);
     }
 
     public static void tell(ServerPlayer player, String message, ChatFormatting color) {
@@ -146,7 +146,7 @@ public final class FactionApi {
     public static String create(ServerPlayer player, String name, String description, List<String> tags, int banner) {
         FactionData data = data(player);
         if (data.exists()) {
-            return "Tu as deja une faction";
+            return "Tu as deja une nation";
         }
         String refusal = checkName(name);
         if (refusal == null) {
@@ -170,7 +170,7 @@ public final class FactionApi {
         data.created = System.currentTimeMillis();
         data.ranking = new FactionData.Ranking(0L, 0L, 0, 0, FactionWeekly.currentMonday());
         player.level().getServer().getPlayerList().broadcastSystemMessage(prefix().append(Component.literal(
-                player.getGameProfile().name() + " a fonde la faction " + data.name + ".")
+                player.getGameProfile().name() + " a fonde la nation " + data.name + ".")
                 .withStyle(ChatFormatting.YELLOW)), false);
         return null;
     }
@@ -180,7 +180,7 @@ public final class FactionApi {
                               int banner) {
         FactionData data = data(player);
         if (!data.exists()) {
-            return "Tu n'as pas de faction";
+            return "Tu n'as pas de nation";
         }
         String refusal = checkName(name);
         if (refusal == null) {
@@ -210,7 +210,7 @@ public final class FactionApi {
     public static String setCustomBanner(ServerPlayer player, ItemStack stack) {
         FactionData data = data(player);
         if (!data.exists()) {
-            return "Tu n'as pas de faction";
+            return "Tu n'as pas de nation";
         }
         if (!FactionPerks.of(data).customBanner()) {
             return "Le blason personnalise se debloque au palier 4 de la branche Globale";
@@ -239,7 +239,7 @@ public final class FactionApi {
         FactionVault.clear(player);
         String name = data.name;
         data.clear();
-        tell(player, "La faction " + name + " est dissoute.", ChatFormatting.RED);
+        tell(player, "La nation " + name + " est dissoute.", ChatFormatting.RED);
     }
 
     // -- Claims ----------------------------------------------------------------
@@ -272,7 +272,7 @@ public final class FactionApi {
     public static String claim(ServerPlayer player) {
         FactionData data = data(player);
         if (!data.exists()) {
-            return "Fonde d'abord ta faction";
+            return "Fonde d'abord ta nation";
         }
         ServerLevel level = (ServerLevel) player.level();
         if (!claimable(level)) {
@@ -289,7 +289,7 @@ public final class FactionApi {
         }
         if (owner.claimed()) {
             return owner.enemy() ? owner.label() + " tient ce chunk"
-                    : "Ce chunk appartient a la faction " + owner.faction();
+                    : "Ce chunk appartient a la nation " + owner.faction();
         }
         int cap = claimCap(player);
         if (data.claims.size() >= cap) {
@@ -375,7 +375,7 @@ public final class FactionApi {
     public static String deposit(ServerPlayer player, long amount) {
         FactionData data = data(player);
         if (!data.exists()) {
-            return "Tu n'as pas de faction";
+            return "Tu n'as pas de nation";
         }
         if (amount <= 0) {
             return "Rien a deposer";
@@ -391,10 +391,10 @@ public final class FactionApi {
     public static String withdraw(ServerPlayer player, long amount) {
         FactionData data = data(player);
         if (!data.exists()) {
-            return "Tu n'as pas de faction";
+            return "Tu n'as pas de nation";
         }
         if (amount <= 0 || data.bank <= 0) {
-            return "La banque de faction est vide";
+            return "La banque nationale est vide";
         }
         if (fr.atraxterra.dohy.faction.war.Sieges.besieged(player.getUUID())) {
             return "Ta base est assiegee : rien ne sort de ta banque tant que dure l'assaut";
@@ -408,7 +408,7 @@ public final class FactionApi {
         return null;
     }
 
-    /** Verse a la banque de faction : recompenses du lundi, events. */
+    /** Verse a la banque nationale : recompenses du lundi, events. */
     public static void creditBank(ServerPlayer player, long amount, String label) {
         FactionData data = data(player);
         if (!data.exists() || amount <= 0) {
@@ -418,7 +418,7 @@ public final class FactionApi {
         data.log(amount, label);
     }
 
-    /** Paie depuis la banque de faction : l'arbre de technologie. Rien ne sort d'une banque assiegee. */
+    /** Paie depuis la banque nationale : l'arbre de technologie. Rien ne sort d'une banque assiegee. */
     public static boolean payFromBank(ServerPlayer player, long amount, String label) {
         FactionData data = data(player);
         if (!data.exists() || data.bank < amount) {
@@ -461,7 +461,7 @@ public final class FactionApi {
                 after.ordinal(), ranking.lastMonday());
         tell(player, "+" + MoneyFormat.exact(amount) + " ELO (" + source + ")", ChatFormatting.GREEN);
         if (after != before) {
-            tell(player, "Ta faction monte en ligue " + after.label() + " !", ChatFormatting.AQUA);
+            tell(player, "Ta nation monte en ligue " + after.label() + " !", ChatFormatting.AQUA);
         }
     }
 

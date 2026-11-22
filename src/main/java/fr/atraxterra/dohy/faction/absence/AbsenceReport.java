@@ -198,7 +198,7 @@ public final class AbsenceReport {
     private static int status(ServerPlayer player) {
         FactionData data = FactionApi.data(player);
         if (!data.exists()) {
-            FactionApi.tell(player, "Fonde d'abord ta faction : tes claims tourneront sans toi.", ChatFormatting.RED);
+            FactionApi.tell(player, "Fonde d'abord ta nation : tes claims tourneront sans toi.", ChatFormatting.RED);
             return 0;
         }
         KeptBases.Base base = KeptBases.refresh(player);
@@ -355,7 +355,7 @@ public final class AbsenceReport {
             }
             if (bank != 0 || !lines.isEmpty()) {
                 lines.add(0, signed(bank) + " $");
-                money.add(new AbsenceData.Line(id(Items.EMERALD), "Banque de faction", lines, 0xFF55FF55, "bank"));
+                money.add(new AbsenceData.Line(id(Items.EMERALD), "Banque nationale", lines, 0xFF55FF55, "bank"));
             }
         }
         if (caught.restored() > 0) {

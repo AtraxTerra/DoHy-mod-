@@ -162,7 +162,7 @@ public final class FactionEvents {
         }
         boolean anyone = server.getPlayerList().getPlayers().stream().anyMatch(FactionApi::has);
         if (!anyone) {
-            return "Aucun joueur en faction connecte.";
+            return "Aucune nation de joueur en ligne.";
         }
         EventRun run;
         String subtitle;
@@ -242,7 +242,7 @@ public final class FactionEvents {
             return "Aucun event en cours.";
         }
         if (!FactionApi.has(player)) {
-            return "Il te faut une faction.";
+            return "Il te faut une nation.";
         }
         ServerLevel arena = EventArena.level(player.level().getServer());
         if (arena == null) {

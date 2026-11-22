@@ -52,7 +52,7 @@ public final class MineMenu extends MenuController {
 
     @Override
     protected void back(ServerPlayer player) {
-        FactionMenus.Overview.INSTANCE.open(player);
+        FactionMenus.Claims.INSTANCE.open(player);
     }
 
     @Override
@@ -62,7 +62,7 @@ public final class MineMenu extends MenuController {
                     new MenuView.Section("MINES", "resources", MenuView.GRID, List.of(
                             Card.of(new ItemStack(Items.MAP), "Pas de carte", List.of("Ce monde n'a pas de carte",
                                     "de la Terre (datapack)")).state(MenuView.DISABLED)))), true)
-                    .withTabs(FactionMenus.tabs(player, "faction_mines"));
+                    .withTabs(FactionMenus.tabs(player, FactionMenus.TERRITORY));
         }
         MinecraftServer server = player.level().getServer();
         List<MineLedger.Concession> mines = EarthMines.of(player);
@@ -152,12 +152,12 @@ public final class MineMenu extends MenuController {
                                 + MoneyFormat.exact(DoHyMines.BEACON_PRICE) + " $).",
                         "2. Va dans une mine de la Terre (/gisements) et pose la balise.",
                         "3. Reste a moins de " + EarthMines.RANGE + " blocs : 2 a 5 min selon le rang de la mine.",
-                        "4. Chaque heure, meme hors ligne : l'argent a ta banque de faction, les minerais au coffre"
+                        "4. Chaque heure, meme hors ligne : l'argent a ta banque nationale, les minerais au coffre"
                                 + " de la banque (une semaine d'absence au plus).",
                         "La mine reste ouverte : tu peux toujours y miner toi-meme. La nation depossedee s'en"
                                 + " souvient : si son assaut reussit, elle la reprend.")))));
-        return new MenuView(id(), "Mines de la Terre", "Capture des mines : leurs revenus vont a ta banque de faction.",
-                stats, sections, true).withTabs(FactionMenus.tabs(player, "faction_mines"));
+        return new MenuView(id(), "Mines de la Terre", "Capture des mines : leurs revenus vont a ta banque nationale.",
+                stats, sections, true).withTabs(FactionMenus.tabs(player, FactionMenus.TERRITORY));
     }
 
     @Override

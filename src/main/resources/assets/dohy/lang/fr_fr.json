@@ -193,6 +193,6 @@
   "block.dohy.concession_beacon": "Balise de concession",
   "item.dohy.concession_beacon": "Balise de concession",
   "tooltip.dohy.concession_beacon.1": "A poser dans une mine de la Terre",
-  "tooltip.dohy.concession_beacon.2": "Reste a cote : la mine passe a ta faction",
-  "tooltip.dohy.concession_beacon.3": "Ses revenus vont a ta banque de faction"
+  "tooltip.dohy.concession_beacon.2": "Reste a cote : la mine passe a ta nation",
+  "tooltip.dohy.concession_beacon.3": "Ses revenus vont a ta banque nationale"
 }

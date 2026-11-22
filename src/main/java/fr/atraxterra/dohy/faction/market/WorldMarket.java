@@ -431,7 +431,7 @@ public final class WorldMarket {
 
     private static String precheck(ServerPlayer player, Identifier id) {
         if (!FactionApi.has(player)) {
-            return "Le marche international est ouvert aux factions : fonde la tienne";
+            return "Le marche international est ouvert aux nations : fonde la tienne";
         }
         if (!traded(id)) {
             return "Cette ressource n'est pas cotee au marche international";

@@ -94,7 +94,7 @@ public final class MineEvents {
         String holder = EarthMines.holderName(player, body);
         boolean mine = EarthMines.ownedBy(player, body);
         player.sendSystemMessage(Component.literal("Mine de " + body.name() + " (" + EarthMines.label(body) + ") · "
-                + (mine ? "a ta faction" : "aux mains " + fr.atraxterra.dohy.earth.EarthNations.de(holder)
+                + (mine ? "a ta nation" : "aux mains " + fr.atraxterra.dohy.earth.EarthNations.de(holder)
                 + " · une balise de concession la capture"))
                 .withStyle(mine ? ChatFormatting.GREEN : ChatFormatting.GOLD), true);
     }

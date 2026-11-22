@@ -33,7 +33,7 @@ public final class FactionHomes {
     public static String set(ServerPlayer player, int index) {
         FactionData data = FactionApi.data(player);
         if (!data.exists()) {
-            return "Tu n'as pas de faction";
+            return "Tu n'as pas de nation";
         }
         int homes = FactionPerks.of(data).homes();
         if (homes <= 0) {
@@ -57,7 +57,7 @@ public final class FactionHomes {
     public static String go(ServerPlayer player, int index) {
         FactionData data = FactionApi.data(player);
         if (!data.exists()) {
-            return "Tu n'as pas de faction";
+            return "Tu n'as pas de nation";
         }
         if (index < 0 || index >= data.homes.size()) {
             return "Ce home n'est pas pose";

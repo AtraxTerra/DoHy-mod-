@@ -51,7 +51,7 @@ import java.util.UUID;
  * sa region s'en souvient (un grief, comme pour un pays).
  *
  * <p><b>Les revenus</b> : chaque heure de temps reel, hors ligne compris (choix du
- * joueur), une mine verse de l'argent a la banque de faction et des minerais au
+ * joueur), une mine verse de l'argent a la banque nationale et des minerais au
  * coffre de la banque ({@link FactionVault}). Une semaine d'absence au plus est
  * rattrapee.
  *
@@ -204,12 +204,12 @@ public final class EarthMines {
         return nation < 0 || nation >= pool.size() ? "personne" : pool.get(nation).name();
     }
 
-    /** Qui tient la mine, vu par ce joueur : « ta faction », la faction d'un autre joueur, ou une nation. */
+    /** Qui tient la mine, vu par ce joueur : « ta nation », la faction d'un autre joueur, ou une nation. */
     public static String holderName(ServerPlayer viewer, EarthBodies.Body body) {
         MinecraftServer server = viewer.level().getServer();
         MineLedger.Concession held = ledger(server).of(body.id());
         if (held != null) {
-            return held.owner().equals(viewer.getUUID()) ? "ta faction" : held.faction();
+            return held.owner().equals(viewer.getUUID()) ? "ta nation" : held.faction();
         }
         return nationName(nation(server, body));
     }
@@ -329,7 +329,7 @@ public final class EarthMines {
             return "Les mines sont sur la carte de la Terre";
         }
         if (!FactionApi.has(player)) {
-            return "Il faut une faction pour tenir une mine : /f create";
+            return "Il faut une nation pour tenir une mine : /f create";
         }
         EarthBodies.Body body = at(pos.getX() + 0.5d, pos.getZ() + 0.5d);
         if (body == null) {
@@ -338,14 +338,14 @@ public final class EarthMines {
         MinecraftServer server = player.level().getServer();
         MineLedger.Concession held = ledger(server).of(body.id());
         if (held != null) {
-            return held.owner().equals(player.getUUID()) ? body.name() + " est deja a ta faction"
-                    : body.name() + " est a la faction " + held.faction() + " : pas de guerre entre joueurs";
+            return held.owner().equals(player.getUUID()) ? body.name() + " est deja a ta nation"
+                    : body.name() + " est a la nation " + held.faction() + " : pas de guerre entre joueurs";
         }
         int country = country(body);
         if (country != 0) {
             EarthNations.Holder holder = EarthNations.holder(server, country);
             if (holder.player() && !holder.ownedBy(player.getUUID())) {
-                return countryName(body) + " est a la faction " + holder.name() + " : pas de guerre entre joueurs";
+                return countryName(body) + " est a la nation " + holder.name() + " : pas de guerre entre joueurs";
             }
         }
         Capture current = CAPTURES.get(player.getUUID());
@@ -489,7 +489,7 @@ public final class EarthMines {
         server.getPlayerList().broadcastSystemMessage(FactionApi.prefix().append(Component.literal(body.name()
                 + " : " + faction + " capture la mine (" + body.resource() + ")" + from + ".")
                 .withStyle(ChatFormatting.YELLOW)), false);
-        FactionApi.tell(player, "Elle verse " + output(body) + " a ta banque de faction, hors ligne compris. Tu peux"
+        FactionApi.tell(player, "Elle verse " + output(body) + " a ta banque nationale, hors ligne compris. Tu peux"
                 + " toujours y miner toi-meme.", ChatFormatting.GREEN);
         FactionApi.stat(player, "earth:mines", 1);
         DoHy.LOGGER.info("Mines de la Terre : {} capture {} ({})", faction, body.name(), body.id());
@@ -523,7 +523,7 @@ public final class EarthMines {
 
     /**
      * Verse ce que les mines de ce joueur ont produit depuis le dernier versement, heure par
-     * heure pleine, une semaine au plus : l'argent a la banque de faction, les minerais au coffre
+     * heure pleine, une semaine au plus : l'argent a la banque nationale, les minerais au coffre
      * de la banque. {@code login} : il revient, le message dit ce qui s'est passe en son absence.
      */
     public static void payout(ServerPlayer player, boolean login) {
@@ -579,7 +579,7 @@ public final class EarthMines {
         int lost = ores.isEmpty() ? 0 : FactionVault.store(player, ores);
         StringBuilder text = new StringBuilder(login ? "Pendant ton absence (" + hours + " h), tes mines ont verse "
                 : "Tes mines (" + paying + ") versent ");
-        text.append(MoneyFormat.exact(money)).append(" $ a la banque de faction");
+        text.append(MoneyFormat.exact(money)).append(" $ a la banque nationale");
         if (count > 0) {
             text.append(" et ").append(MoneyFormat.exact(count - lost)).append(" minerai")
                     .append(count - lost > 1 ? "s" : "").append(" au coffre de la banque");
@@ -762,7 +762,7 @@ public final class EarthMines {
     public static String abandon(ServerPlayer player, String id) {
         EarthBodies.Body body = body(id);
         if (body == null || !ownedBy(player, body)) {
-            return "Ta faction ne tient pas cette mine";
+            return "Ta nation ne tient pas cette mine";
         }
         MinecraftServer server = player.level().getServer();
         save(server, ledger(server).without(body.id()));
@@ -813,7 +813,7 @@ public final class EarthMines {
             return "Pas de carte de la Terre";
         }
         if (!FactionApi.has(player)) {
-            return "Il faut une faction";
+            return "Il faut une nation";
         }
         EarthBodies.Body body = find(query);
         if (body == null) {
@@ -835,7 +835,7 @@ public final class EarthMines {
         MineLedger ledger = ledger(server);
         List<MineLedger.Concession> mines = ledger.of(player.getUUID());
         if (mines.isEmpty()) {
-            return "Ta faction ne tient aucune mine";
+            return "Ta nation ne tient aucune mine";
         }
         MineLedger updated = ledger;
         for (MineLedger.Concession concession : mines) {
