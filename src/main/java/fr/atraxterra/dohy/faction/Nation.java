@@ -76,8 +76,11 @@ public final class Nation {
         if (next == null) {
             return "";
         }
-        return earth() ? next.label() + " a " + next.countries() + " pays"
-                : next.label() + " au palier " + NationRank.governmentFor(next) * 2 + " de la Globale";
+        if (earth()) {
+            return next == NationRank.CITY ? next.label() + " avec une capitale"
+                    : next.label() + " a " + next.countries() + " pays";
+        }
+        return next.label() + " au palier " + NationRank.governmentFor(next) * 2 + " de la Globale";
     }
 
     public ItemStack banner() {
