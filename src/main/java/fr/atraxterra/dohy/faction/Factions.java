@@ -112,6 +112,18 @@ public final class Factions {
                             fr.atraxterra.dohy.faction.war.SiegeTerrain.State::exists)
                     .build());
 
+    /**
+     * L'organisation de la nation (lot 24a) : regime, cadres PNJ, traites et rivalites. Gardee a
+     * la mort.
+     */
+    public static final Supplier<AttachmentType<fr.atraxterra.dohy.faction.org.Organisation>> ORGANISATION =
+            ATTACHMENTS.register("organisation", () -> AttachmentType.builder(
+                            fr.atraxterra.dohy.faction.org.Organisation::new)
+                    .serialize(fr.atraxterra.dohy.faction.org.Organisation.MAP_CODEC,
+                            data -> !data.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
     private Factions() {
     }
 

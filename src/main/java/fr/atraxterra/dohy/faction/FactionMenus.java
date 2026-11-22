@@ -35,16 +35,19 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * « Ma nation » (lot 23a) : la faction et le pays ne font plus qu'un, sous huit onglets — vue
- * d'ensemble, territoire, technologies, economie, guerre, events, classement, parametres. Les
- * pages de detail (pays a prendre, mines, reserve d'or, marche international, bases ennemies,
- * notation, branche de l'arbre) gardent la rangee, sur l'onglet dont elles dependent.
+ * « Ma nation » (lots 23a et 24a) : la faction et le pays ne font plus qu'un, sous huit onglets —
+ * vue d'ensemble, territoire, organisation, diplomatie, technologies, economie, events,
+ * classement. Les pages de detail (pays a prendre, mines, cadre, parametres, fiche d'une nation,
+ * guerre, bases ennemies, branche de l'arbre, reserve d'or, marche international, notation)
+ * gardent la rangee, sur l'onglet dont elles dependent.
  */
 public final class FactionMenus {
 
     /** Les chemins des huit onglets ; une page de detail passe celui de son onglet. */
     public static final String OVERVIEW = "faction";
     public static final String TERRITORY = "faction_claims";
+    public static final String ORGANISATION = "faction_organisation";
+    public static final String DIPLOMACY = "faction_diplomacy";
     public static final String TECHNOLOGY = "faction_tree";
     public static final String ECONOMY = "faction_bank";
     public static final String WAR = "guerre";
@@ -121,19 +124,24 @@ public final class FactionMenus {
         EventRun fight = FactionEvents.active();
         boolean live = fight != null && !fight.ended();
         List<MenuView.Tab> tabs = new ArrayList<>();
+        fr.atraxterra.dohy.faction.org.Organisation org = fr.atraxterra.dohy.faction.org.Organisations.of(player);
+        String war = warBadge(nation);
+        int treaties = fr.atraxterra.dohy.faction.org.Diplomacy.treaties(player).size();
         tabs.add(tab("Vue d'ensemble", OVERVIEW, active, ""));
         tabs.add(tab("Territoire", TERRITORY, active, nation.claims() + "/" + nation.claimCap()));
+        tabs.add(tab("Organisation", ORGANISATION, active, org.debt() > 0L ? "DETTE"
+                : org.cadres().size() + "/" + fr.atraxterra.dohy.faction.org.Organisations.cap(player)));
+        tabs.add(tab("Diplomatie", DIPLOMACY, active, !war.isEmpty() ? war : treaties > 0 ? String.valueOf(treaties)
+                : ""));
         tabs.add(tab("Technologies", TECHNOLOGY, active, total <= 0 ? "" : done * 100 / total + " %"));
         tabs.add(tab("Economie", ECONOMY, active, nation.reserveRipe() ? "PRET" : ""));
-        tabs.add(tab("Guerre", WAR, active, warBadge(nation)));
         tabs.add(tab("Events", EVENTS, active, live ? "EN COURS" : ""));
         tabs.add(tab("Classement", RANKING, active, nation.league().label().toUpperCase()));
-        tabs.add(tab("Parametres", SETTINGS, active, ""));
         return tabs;
     }
 
     /** Le compteur de l'onglet Guerre : l'assaut en cours, la guerre, l'ultimatum, ou rien. */
-    static String warBadge(Nation nation) {
+    public static String warBadge(Nation nation) {
         if (nation.besieged()) {
             return "ASSAUT";
         }
@@ -266,6 +274,8 @@ public final class FactionMenus {
             home = perks.homes() <= 0 ? home.state(MenuView.DISABLED)
                     : home.action("home|y aller").right("sethome|le poser ici");
             List<Card> progression = new ArrayList<>(List.of(
+                    organisationCard(player),
+                    diplomacyCard(player),
                     treeCard(nation),
                     warCard(nation),
                     eventsCard(),
@@ -417,6 +427,34 @@ public final class FactionMenus {
                 .accent(hostiles > 0 ? 0xFFE8590C : 0xFF55545C).action("war|ouvrir");
     }
 
+    /** Le regime et les cadres de la nation (lot 24a). */
+    private static Card organisationCard(ServerPlayer player) {
+        fr.atraxterra.dohy.faction.org.Organisation org = fr.atraxterra.dohy.faction.org.Organisations.of(player);
+        fr.atraxterra.dohy.faction.org.Regime regime = org.regime();
+        int vacant = 0;
+        for (fr.atraxterra.dohy.faction.org.Post post : fr.atraxterra.dohy.faction.org.Post.values()) {
+            if (fr.atraxterra.dohy.faction.org.Organisations.holder(player, post).isEmpty()) {
+                vacant++;
+            }
+        }
+        List<String> lines = new ArrayList<>();
+        lines.add(regime.label());
+        lines.add(org.debt() > 0L ? "Salaires impayes : " + MoneyFormat.exact(org.debt()) + " $"
+                : org.cadres().size() + " cadre(s), " + vacant + " poste(s) vacant(s)");
+        return Card.of(regime.icon(), "Organisation", lines).accent(regime.color())
+                .badge(org.debt() > 0L ? "DETTE" : "").action("organisation|ouvrir");
+    }
+
+    /** Les traites et rivalites (lot 24a). */
+    private static Card diplomacyCard(ServerPlayer player) {
+        int treaties = fr.atraxterra.dohy.faction.org.Diplomacy.treaties(player).size();
+        int rivals = fr.atraxterra.dohy.faction.org.Organisations.of(player).rivals().size();
+        return Card.of(new ItemStack(Items.WRITABLE_BOOK), "Diplomatie", List.of(
+                        treaties + " traite(s) sur " + fr.atraxterra.dohy.faction.org.Diplomacy.slots(player),
+                        rivals == 0 ? "Aucune rivale declaree" : rivals + " rivale(s) declaree(s)"))
+                .accent(0xFF27C4E8).action("diplomacy|ouvrir");
+    }
+
     /** Le marche international : la taxe que paie ton rang. */
     private static Card marketCard(ServerPlayer player) {
         return Card.of(new ItemStack(Items.CHEST), "Marche international", List.of(
@@ -446,6 +484,8 @@ public final class FactionMenus {
             case "nations" -> fr.atraxterra.dohy.earth.NationMenu.INSTANCE;
             case "mines" -> fr.atraxterra.dohy.earth.mine.MineMenu.INSTANCE;
             case "war" -> fr.atraxterra.dohy.faction.war.WarMenu.INSTANCE;
+            case "organisation" -> fr.atraxterra.dohy.faction.org.OrgMenus.Org.INSTANCE;
+            case "diplomacy" -> fr.atraxterra.dohy.faction.org.DiplomacyMenus.Hub.INSTANCE;
             default -> null;
         };
         if (target == null) {
@@ -916,6 +956,11 @@ public final class FactionMenus {
         }
 
         @Override
+        protected void back(ServerPlayer player) {
+            fr.atraxterra.dohy.faction.org.OrgMenus.Org.INSTANCE.open(player);
+        }
+
+        @Override
         public MenuView view(ServerPlayer player) {
             FactionData data = FactionApi.data(player);
             FactionPerks perks = FactionPerks.of(data);
@@ -937,7 +982,7 @@ public final class FactionMenus {
                             .confirm("!Dissoudre " + data.name() + " ?|Claims, banque et arbre sont perdus pour de bon"));
             return new MenuView(id(), "Parametres", "", List.of(), List.of(
                     new MenuView.Section("NATION", "craft", MenuView.GRID, cards)), true)
-                    .withTabs(tabs(player, SETTINGS));
+                    .withTabs(tabs(player, ORGANISATION));
         }
 
         @Override

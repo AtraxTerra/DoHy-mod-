@@ -41,9 +41,15 @@ public enum NationRank {
         return fee;
     }
 
-    /** La taxe que paie ce joueur : celle du rang de sa nation, moins la part que son grade efface. */
+    /**
+     * La taxe que paie ce joueur : celle du rang de sa nation, moins ce qu'effacent ses accords
+     * et alliances (lot 24a, 2 % au plus bas), puis la part que son grade efface.
+     */
     public static double fee(ServerPlayer player) {
-        return of(player).fee * (1.0d - fr.atraxterra.dohy.grade.Grades.marketTaxCut(player));
+        double treaties = fr.atraxterra.dohy.faction.org.Diplomacy.taxCut(player);
+        double fee = Math.max(Math.min(of(player).fee, fr.atraxterra.dohy.faction.org.Diplomacy.TAX_FLOOR),
+                of(player).fee - treaties);
+        return fee * (1.0d - fr.atraxterra.dohy.grade.Grades.marketTaxCut(player));
     }
 
     public int color() {

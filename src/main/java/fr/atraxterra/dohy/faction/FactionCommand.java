@@ -118,6 +118,25 @@ public final class FactionCommand {
                                         .executes(ctx -> as(ctx.getSource(), player -> result(player,
                                                 FactionApi.withdraw(player, LongArgumentType.getLong(ctx, "montant")),
                                                 "Retrait fait."))))))
+                .then(Commands.literal("organisation")
+                        .executes(ctx -> as(ctx.getSource(), player -> {
+                            fr.atraxterra.dohy.faction.org.OrgMenus.Org.INSTANCE.open(player);
+                            return 1;
+                        }))
+                        // Pour les operateurs : faire passer des heures (paie, service, traites), pour essayer.
+                        .then(Commands.literal("avancer")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .then(Commands.argument("heures", IntegerArgumentType.integer(1, 720))
+                                        .executes(ctx -> as(ctx.getSource(), player -> {
+                                            fr.atraxterra.dohy.faction.org.Organisations.advance(player,
+                                                    IntegerArgumentType.getInteger(ctx, "heures"));
+                                            return 1;
+                                        })))))
+                .then(Commands.literal("diplomatie")
+                        .executes(ctx -> as(ctx.getSource(), player -> {
+                            fr.atraxterra.dohy.faction.org.DiplomacyMenus.Hub.INSTANCE.open(player);
+                            return 1;
+                        })))
                 .then(Commands.literal("arbre")
                         .executes(ctx -> as(ctx.getSource(), player -> {
                             FactionTreeMenus.Tree.INSTANCE.open(player);

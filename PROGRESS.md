@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-21
+Dernière mise à jour : 2026-11-22
 
 ---
 
@@ -191,6 +191,19 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-22 — organisations et économie souterraine, lot 24a
+
+**Demande** : un long prompt (fusion factions/pays avec hiérarchie, diplomatie, influence ;
+entreprises légales et illégales ; interactions ; interfaces ; textures ; farmland du Chasseur).
+**Choix du joueur** : des PNJ pour les membres, grades et employés (« PNJ, pour jouer seul »).
+Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
+
+- **Lot 24a** : régime de la nation (État, organisation criminelle, faction militaire, groupe
+  indépendant), cadres PNJ (cinq grades, cinq postes, salaires horaires hors ligne, loyauté,
+  caractères, recrutement du jour), diplomatie avec les douze nations (pacte, accord, alliance,
+  rivalité) branchée sur l'IA de guerre et la taxe du marché ; onglets Organisation et
+  Diplomatie ; `/f organisation`, `/f diplomatie`.
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 
