@@ -38,7 +38,7 @@ public record Treaty(int nation, String type, long since, long until) {
      */
     public enum Type {
         PACTE("Pacte de non-agression", "Ni ultimatum ni guerre tant qu'il court ; elle ne se coalise pas contre toi",
-                () -> new ItemStack(Items.WHITE_BANNER), 0xFFFFFFFF, 50.0d, 20_000L, 14, 10.0d, 0.0d),
+                () -> new ItemStack(Items.BANNER.pick(net.minecraft.world.item.DyeColor.WHITE)), 0xFFFFFFFF, 50.0d, 20_000L, 14, 10.0d, 0.0d),
         ACCORD("Accord commercial", "Taxe du marche international -1 point ; ses pays rapporteront plus (lot 24b)",
                 () -> new ItemStack(Items.EMERALD), 0xFF22E558, 40.0d, 15_000L, 14, 6.0d, 0.01d),
         ALLIANCE("Alliance", "Pas de guerre, taxe -2 points, son hostilite fond ; un pacte ou un accord avant",

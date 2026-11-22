@@ -234,7 +234,7 @@ public final class DiplomacyMenus {
             }
 
             boolean rival = Diplomacy.rival(player, index);
-            List<Card> rivalry = List.of(Card.of(new ItemStack(rival ? Items.WHITE_BANNER : Items.CROSSBOW),
+            List<Card> rivalry = List.of(Card.of(rival ? new ItemStack(Items.BANNER.pick(net.minecraft.world.item.DyeColor.WHITE)) : new ItemStack(Items.CROSSBOW),
                             rival ? "Renoncer a la rivalite" : "Declarer la rivalite", rival
                                     ? List.of("Elle reste rivale tant que tu ne renonces pas", "Clic : y renoncer")
                                     : List.of("Ses pays : +25 % de points de conquete", "Elle s'en fache, le traite tombe"))
