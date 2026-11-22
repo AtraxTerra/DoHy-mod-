@@ -691,12 +691,14 @@ public final class EarthNations {
             return false;
         }
         long cost = cost(server, target);
-        long after = nation.pointsOn(target) + points;
+        long gained = Math.round(points * fr.atraxterra.dohy.faction.org.Diplomacy.conquestBonus(player,
+                holder.rival()));
+        long after = nation.pointsOn(target) + gained;
         if (after >= cost) {
             conquer(player, target, holder);
         } else {
             save(player, nation.withPoints(target, after));
-            FactionApi.tell(player, reason + " : +" + MoneyFormat.exact(points) + " points de conquete sur "
+            FactionApi.tell(player, reason + " : +" + MoneyFormat.exact(gained) + " points de conquete sur "
                     + countryName(target) + " (" + MoneyFormat.exact(after) + " / " + MoneyFormat.exact(cost) + ").",
                     ChatFormatting.GREEN);
         }
@@ -1035,10 +1037,13 @@ public final class EarthNations {
                     + MoneyFormat.exact(before) + " / " + MoneyFormat.exact(cost) + ").", ChatFormatting.RED);
             return;
         }
-        long after = before + earned;
+        // Une rivale declaree (lot 24a) : un quart de points en plus.
+        long gained = Math.round(earned * fr.atraxterra.dohy.faction.org.Diplomacy.conquestBonus(player,
+                holder.rival()));
+        long after = before + gained;
         if (after < cost) {
             save(player, nation.withPoints(target, after));
-            FactionApi.tell(player, "Conquete, " + name + " : +" + MoneyFormat.exact(earned) + " points ("
+            FactionApi.tell(player, "Conquete, " + name + " : +" + MoneyFormat.exact(gained) + " points ("
                     + MoneyFormat.exact(after) + " / " + MoneyFormat.exact(cost) + ").", ChatFormatting.GREEN);
             return;
         }

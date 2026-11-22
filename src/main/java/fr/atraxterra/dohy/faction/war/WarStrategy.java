@@ -329,7 +329,10 @@ public final class WarStrategy {
         WarData.Relation ally = ally(data, relation, now);
         double solidarity = ally == null ? 0.0d : 6.0d + 0.12d * ally.hostility;
         double base = 18.0d + 25.0d * traits.aggression();
-        return Math.max(0.0d, Math.min(100.0d, base + prize + envy + revenge + nerve + solidarity - deterrence));
+        // Les traites, le regime, le general et les rivalites de ta nation (lot 24a).
+        double diplomacy = fr.atraxterra.dohy.faction.org.Diplomacy.moodShift(player, relation.nation);
+        return Math.max(0.0d, Math.min(100.0d, base + prize + envy + revenge + nerve + solidarity - deterrence
+                + diplomacy));
     }
 
     static void think(ServerPlayer player, WarData data, WarData.Relation relation, long now) {
@@ -360,6 +363,10 @@ public final class WarStrategy {
         boolean busy = calm || data.conflict().isPresent() || Sieges.of(player.getUUID()) != null;
         if (busy || bank < MIN_BANK || relation.hostility < MENACE_AT || relation.army < 10
                 || relation.treasury < expedition(relation)) {
+            return;
+        }
+        // Un pacte de non-agression ou une alliance tient sa parole (lot 24a).
+        if (fr.atraxterra.dohy.faction.org.Diplomacy.protects(player, relation.nation)) {
             return;
         }
         if (traits.honor() >= 0.45d || relation.memory.paid() > 0L) {
@@ -832,6 +839,14 @@ public final class WarStrategy {
      */
     private static void coalition(ServerPlayer player, WarData data, WarData.Relation relation, long now) {
         double threat = threat(player).total();
+        // Liee a toi par un pacte ou une alliance (lot 24a) : elle quitte la coalition, ou n'y entre pas.
+        if (fr.atraxterra.dohy.faction.org.Diplomacy.protects(player, relation.nation)) {
+            if (relation.ally >= 0 && relation.stance != WarData.Stance.GUERRE) {
+                dissolve(player, data, relation, data.find(relation.ally).orElse(null), now,
+                        "un traite nous lie desormais a toi");
+            }
+            return;
+        }
         if (relation.ally >= 0) {
             WarData.Relation ally = data.find(relation.ally).orElse(null);
             if (ally == null || ally.ally != relation.nation) {
@@ -871,7 +886,8 @@ public final class WarStrategy {
         WarData.Relation partner = null;
         for (WarData.Relation other : data.relations) {
             if (other != relation && other.stance == WarData.Stance.PAIX && !other.beaten(now)
-                    && other.hostility >= 35.0d && (partner == null || other.hostility > partner.hostility)) {
+                    && other.hostility >= 35.0d && (partner == null || other.hostility > partner.hostility)
+                    && !fr.atraxterra.dohy.faction.org.Diplomacy.protects(player, other.nation)) {
                 partner = other;
             }
         }
@@ -1582,6 +1598,31 @@ public final class WarStrategy {
     }
 
     /** Un grief venu d'ailleurs : un pays pris sur la carte de la Terre. */
+    /** La relation d'une nation avec toi, creee si elle ne te connait pas encore (lot 24a). */
+    public static WarData.Relation relationOf(ServerPlayer player, int nation) {
+        return data(player).relation(nation, System.currentTimeMillis());
+    }
+
+    /** Un geste qui la calme (un traite signe) : son hostilite baisse d'autant (lot 24a). */
+    public static void soothe(ServerPlayer player, int nation, double amount, String what) {
+        if (nation < 0 || nation >= NationTraits.count() || !FactionApi.has(player)) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        WarData data = data(player);
+        WarData.Relation relation = data.relation(nation, now);
+        relation.hostility = Math.max(0.0d, relation.hostility - amount);
+        log(player, data, relation, now, what);
+    }
+
+    /** La voix d'une nation dans le chat, depuis la diplomatie (lot 24a). */
+    public static void speak(ServerPlayer player, int nation, String text, ChatFormatting color) {
+        if (nation < 0 || nation >= NationTraits.count()) {
+            return;
+        }
+        say(player, data(player).relation(nation, System.currentTimeMillis()), text, color);
+    }
+
     public static void grieve(ServerPlayer player, int nation, String kind, double weight) {
         if (nation < 0 || nation >= NationTraits.count() || !FactionApi.has(player)) {
             return;

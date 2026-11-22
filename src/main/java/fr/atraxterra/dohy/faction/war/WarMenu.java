@@ -30,11 +30,11 @@ public final class WarMenu extends MenuController {
         super("guerre");
     }
 
-    /** L'onglet Guerre de la nation : l'hexagone revient a sa vue d'ensemble. */
+    /** Sous l'onglet Diplomatie de la nation (lot 24a) : l'hexagone y revient. */
     @Override
     protected void back(ServerPlayer player) {
         if (FactionApi.has(player)) {
-            fr.atraxterra.dohy.faction.FactionMenus.Overview.INSTANCE.open(player);
+            fr.atraxterra.dohy.faction.org.DiplomacyMenus.Hub.INSTANCE.open(player);
         } else {
             super.back(player);
         }
@@ -49,12 +49,12 @@ public final class WarMenu extends MenuController {
     }
 
     /** L'humeur en mots et en couleur. */
-    static String mood(double hostility) {
+    public static String mood(double hostility) {
         return hostility >= 75.0d ? "Haineuse" : hostility >= 60.0d ? "Hostile" : hostility >= 45.0d ? "Mefiante"
                 : hostility >= 25.0d ? "Neutre" : "Amicale";
     }
 
-    private static int moodColor(double hostility) {
+    public static int moodColor(double hostility) {
         return hostility >= 75.0d ? 0xFFB3261E : hostility >= 60.0d ? 0xFFE8590C : hostility >= 45.0d ? 0xFFE0A100
                 : hostility >= 25.0d ? 0xFF8A8A8A : 0xFF2E7D32;
     }
@@ -533,7 +533,7 @@ public final class WarMenu extends MenuController {
                         ? "Les nations t'observent" : "Fonde ta nation : les autres l'observeront");
         MenuView view = new MenuView(id(), "La guerre des nations", subtitle, stats, sections, true);
         return FactionApi.has(player) ? view.withTabs(fr.atraxterra.dohy.faction.FactionMenus.tabs(player,
-                fr.atraxterra.dohy.faction.FactionMenus.WAR)) : view;
+                fr.atraxterra.dohy.faction.FactionMenus.DIPLOMACY)) : view;
     }
 
     @Override
