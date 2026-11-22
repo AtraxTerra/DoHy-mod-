@@ -2290,10 +2290,11 @@
           "text": [
             "- Vue d'ensemble : ton rang, tes terres, ta banque, ta ligue, et ce qui attend.",
             "- Territoire : tes claims, ta capitale, tes pays, les pays a prendre et les mines de la Terre.",
+            "- Organisation : ton regime, tes cadres et leurs postes, le recrutement, les parametres.",
+            "- Diplomatie : tes traites, les douze nations, la guerre et le pillage.",
             "- Technologies : l'arbre de ta nation.",
             "- Economie : la banque nationale, son coffre, la reserve d'or, le marche international.",
-            "- Guerre : la guerre des nations, et le pillage des bases ennemies.",
-            "- Events, Classement (ligue, ELO, notation) et Parametres."
+            "- Events et Classement (ligue, ELO, notation)."
           ]
         },
         {
@@ -2333,6 +2334,8 @@
         "/f sethome : poser un home ici"
       ],
       "see": [
+        "organisation",
+        "diplomatie",
         "elo",
         "arbre_techno",
         "reserve_or",
@@ -2352,9 +2355,113 @@
       }
     },
     {
-      "id": "elo",
+      "id": "organisation",
       "category": "faction",
       "order": 1,
+      "icon": "minecraft:golden_helmet",
+      "title": "Ton organisation",
+      "card": [
+        "Regime et cadres",
+        "Grades, postes, paie"
+      ],
+      "summary": [
+        "Ta nation choisit ce qu'elle est, et des cadres PNJ la font tourner : un bras droit, un tresorier, un general, un diplomate, un chef des operations. Tu les recrutes, les paies, les promeus."
+      ],
+      "sections": [
+        {
+          "title": "Le regime",
+          "text": [
+            "- Groupe independant : rien ne t'aide, rien ne te freine.",
+            "- Etat officiel : les entreprises legales rapportent plus, les nations te font confiance ; l'illegal rapporte moins et risque plus.",
+            "- Organisation criminelle : l'illegal rapporte plus et risque moins ; les nations se mefient.",
+            "- Faction militaire : on te craint, on traite moins avec toi.",
+            "! Le regime ne change qu'une fois par semaine (le premier choix est libre)."
+          ]
+        },
+        {
+          "title": "Les grades et les postes",
+          "text": [
+            "Recrue, Membre, Lieutenant, Capitaine, Haut cadre. Chaque grade se gagne apres quelques jours de service et coute une semaine du nouveau salaire.",
+            "- Bras droit (haut cadre) : les autres postes rendent plus, leur loyaute tient.",
+            "- Tresorier (capitaine) : les salaires coutent moins.",
+            "- General (capitaine) : les nations hesitent a t'attaquer.",
+            "- Diplomate (capitaine) : traites moins chers, plus faciles, plus nombreux.",
+            "- Chef des operations (capitaine) : les affaires illegales risquent moins."
+          ]
+        },
+        {
+          "title": "La paie et la loyaute",
+          "text": [
+            "Trois candidats par jour ; 3 cadres au plus, un de plus par palier du Gouvernement. Les salaires sortent de la banque nationale chaque heure, meme hors ligne.",
+            "- Payes, ils restent loyaux. Impayes, leur loyaute fond.",
+            "! A zero de loyaute, un cadre quitte ta nation. Sous 30, il ne rend plus que la moitie."
+          ]
+        }
+      ],
+      "commands": [
+        "/f organisation : l'onglet Organisation"
+      ],
+      "see": [
+        "faction",
+        "diplomatie"
+      ],
+      "discover": {
+        "views": [
+          "dohy:faction_organisation",
+          "dohy:faction_cadre"
+        ]
+      }
+    },
+    {
+      "id": "diplomatie",
+      "category": "faction",
+      "order": 2,
+      "icon": "minecraft:writable_book",
+      "title": "La diplomatie",
+      "card": [
+        "Pactes, accords",
+        "Alliances, rivalites"
+      ],
+      "summary": [
+        "Avec chacune des douze nations, ta nation peut signer un traite, ou la declarer rivale. Une nation signe si elle n'est pas trop hostile, contre un cadeau d'usage paye par la banque nationale."
+      ],
+      "sections": [
+        {
+          "title": "Les traites",
+          "text": [
+            "- Pacte de non-agression (14 jours) : ni ultimatum ni guerre, et elle ne se coalise pas contre toi.",
+            "- Accord commercial (14 jours) : la taxe du marche international baisse d'un point.",
+            "- Alliance (30 jours) : pas de guerre, la taxe baisse de deux points, son hostilite fond. Il faut d'abord un pacte ou un accord.",
+            "Un traite par nation ; deux en tout, plus avec un diplomate. Le meme traite se renouvelle avant son echeance."
+          ]
+        },
+        {
+          "title": "Trahison et rivalite",
+          "text": [
+            "! Rompre un pacte ou une alliance est une trahison : la nation t'en garde rancune.",
+            "- Declarer une nation rivale fait tomber le traite et la fache, mais ses pays rapportent un quart de points de conquete en plus."
+          ]
+        }
+      ],
+      "commands": [
+        "/f diplomatie : l'onglet Diplomatie"
+      ],
+      "see": [
+        "guerre",
+        "organisation",
+        "marche_international"
+      ],
+      "discover": {
+        "views": [
+          "dohy:faction_diplomacy",
+          "dohy:faction_diplomacy_nation"
+        ]
+      }
+    },
+    {
+      "id": "elo",
+      "category": "faction",
+      "order": 3,
       "icon": "minecraft:golden_sword",
       "title": "ELO et ligues",
       "card": [
@@ -2382,7 +2489,7 @@
     {
       "id": "arbre_techno",
       "category": "faction",
-      "order": 2,
+      "order": 4,
       "icon": "minecraft:enchanted_book",
       "title": "Arbre de techno",
       "card": [
@@ -2418,7 +2525,7 @@
     {
       "id": "defense",
       "category": "faction",
-      "order": 3,
+      "order": 5,
       "icon": "palamod:hardened_obsidian",
       "title": "La defense",
       "card": [
@@ -2452,7 +2559,7 @@
     {
       "id": "pillage",
       "category": "faction",
-      "order": 4,
+      "order": 6,
       "icon": "palamod:dynamite",
       "title": "Le pillage",
       "card": [
@@ -2498,7 +2605,7 @@
     {
       "id": "reserve_or",
       "category": "faction",
-      "order": 5,
+      "order": 7,
       "icon": "palamod:liquid_gold",
       "title": "Reserve d'or",
       "card": [
@@ -2550,7 +2657,7 @@
     {
       "id": "events",
       "category": "faction",
-      "order": 6,
+      "order": 8,
       "icon": "minecraft:end_crystal",
       "title": "Les events",
       "card": [
@@ -2596,7 +2703,7 @@
     {
       "id": "bases_ennemies",
       "category": "faction",
-      "order": 7,
+      "order": 9,
       "icon": "minecraft:tnt",
       "title": "Bases ennemies",
       "card": [
@@ -2632,7 +2739,7 @@
     {
       "id": "notation",
       "category": "faction",
-      "order": 8,
+      "order": 10,
       "icon": "minecraft:map",
       "title": "La notation",
       "card": [
@@ -2656,7 +2763,7 @@
     {
       "id": "base_sans_toi",
       "category": "faction",
-      "order": 9,
+      "order": 11,
       "icon": "minecraft:respawn_anchor",
       "title": "Base sans toi",
       "card": [
@@ -2683,7 +2790,7 @@
     {
       "id": "guerre",
       "category": "faction",
-      "order": 10,
+      "order": 12,
       "icon": "minecraft:crossbow",
       "title": "La guerre",
       "card": [
@@ -2786,7 +2893,8 @@
         "faction",
         "golem",
         "defense",
-        "pays"
+        "pays",
+        "diplomatie"
       ],
       "progress": "guerre",
       "discover": {
@@ -2798,7 +2906,7 @@
     {
       "id": "marche_international",
       "category": "faction",
-      "order": 11,
+      "order": 13,
       "icon": "minecraft:emerald_block",
       "title": "Marche mondial",
       "card": [

@@ -122,6 +122,9 @@ lot 23a fait de la faction **ta nation**, partout :
   | Paramètres | `faction_settings` | — |
 
   L'hexagone d'une page de détail revient à son onglet ; celui d'un onglet, à la vue d'ensemble.
+  Depuis le lot 24a (`docs/ORGANISATIONS.md`), les onglets Paramètres et Guerre laissent leur
+  place à **Organisation** (régime, cadres, paramètres) et **Diplomatie** (traités, guerre,
+  pillage) ; les paramètres, la guerre et les bases ennemies y deviennent des pages de détail.
 - **Le nom et le rang partout** : la pastille du HUD montre le rang (la ligue passe sur la ligne
   du dessous), la liste des joueurs écrit « Royaume · Nordheim », le menu principal, la barre
   latérale (« Ma nation »), l'inventaire, `/f info` (titre, rang et ce qui donne le suivant) ;
