@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "hbm"
+    }
+  ],
+  "type": "hbm:press",
+  "input_items": [
+    {
+      "ingredient": "dohy:synthetic_crystals"
+    }
+  ],
+  "order": 60102,
+  "output_items": [
+    {
+      "count": 2,
+      "id": "dohy:synthetic_pills"
+    }
+  ],
+  "stamp": "flat"
+}

@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:compacting",
+  "ingredients": [
+    "dohy:pill_bag",
+    "dohy:pill_bag",
+    "dohy:pill_bag",
+    "dohy:pill_bag",
+    "dohy:pill_bag",
+    "dohy:pill_bag",
+    "dohy:pill_bag",
+    "dohy:pill_bag",
+    "minecraft:paper"
+  ],
+  "results": [
+    {
+      "id": "dohy:synthetic_parcel"
+    }
+  ]
+}

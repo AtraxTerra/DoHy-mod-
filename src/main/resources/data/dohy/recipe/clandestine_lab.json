@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "GGG",
+    "IBI",
+    "ICI"
+  ],
+  "key": {
+    "G": "dohy:lab_glassware",
+    "I": "minecraft:iron_ingot",
+    "B": "minecraft:brewing_stand",
+    "C": "minecraft:cauldron"
+  },
+  "result": {
+    "id": "dohy:clandestine_lab",
+    "count": 1
+  }
+}

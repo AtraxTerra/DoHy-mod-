@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dohy:block/stash_chest"
+    },
+    "facing=east": {
+      "model": "dohy:block/stash_chest",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dohy:block/stash_chest",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dohy:block/stash_chest",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "G G",
+    "GBG",
+    " G "
+  ],
+  "key": {
+    "G": "minecraft:glass",
+    "B": "minecraft:glass_bottle"
+  },
+  "result": {
+    "id": "dohy:lab_glassware",
+    "count": 2
+  }
+}

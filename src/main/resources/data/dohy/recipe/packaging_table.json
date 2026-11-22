@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "WCW",
+    "W W"
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "C": "minecraft:crafting_table",
+    "W": "#minecraft:planks"
+  },
+  "result": {
+    "id": "dohy:packaging_table",
+    "count": 1
+  }
+}

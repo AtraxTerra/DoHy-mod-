@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "III",
+    "ICI",
+    "IHI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:chest",
+    "H": "minecraft:tripwire_hook"
+  },
+  "result": {
+    "id": "dohy:stash_chest",
+    "count": 1
+  }
+}

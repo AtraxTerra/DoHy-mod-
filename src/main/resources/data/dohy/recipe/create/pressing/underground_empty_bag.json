@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:pressing",
+  "ingredient": "minecraft:paper",
+  "results": [
+    {
+      "id": "dohy:empty_bag",
+      "count": 2
+    }
+  ]
+}

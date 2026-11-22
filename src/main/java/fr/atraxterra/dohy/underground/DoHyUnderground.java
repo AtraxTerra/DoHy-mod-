@@ -3,6 +3,7 @@ package fr.atraxterra.dohy.underground;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.faction.enterprise.Line;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -24,10 +25,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,6 +126,10 @@ public final class DoHyUnderground {
     public static final DeferredItem<Item> MACHINED_PARTS = simple("machined_parts");
     public static final DeferredItem<Item> SEALED_CRATE = ITEMS.registerItem("sealed_crate", Item::new,
             properties -> properties.stacksTo(16).component(DataComponents.LORE, lore("tooltip.dohy.sealed_crate")));
+    /** La caisse en cours de montage sur la chaine d'assemblage de Create (ses recettes n'existent qu'avec Create). */
+    public static final DeferredItem<Item> INCOMPLETE_SEALED_CRATE = ITEMS.registerItem("incomplete_sealed_crate",
+            Item::new, properties -> properties.stacksTo(1)
+                    .component(DataComponents.LORE, lore("tooltip.dohy.incomplete_sealed_crate")));
 
     // -- Les blocs --------------------------------------------------------------------------------
 
@@ -130,16 +138,18 @@ public final class DoHyUnderground {
                     .sound(SoundType.WOOD).noOcclusion().randomTicks());
     public static final DeferredBlock<WorkstationBlock> CLANDESTINE_LAB = BLOCKS.registerBlock("clandestine_lab",
             properties -> new WorkstationBlock(properties, WorkstationBlock.Kind.LAB),
-            properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL));
+            properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                    .noOcclusion());
     public static final DeferredBlock<WorkstationBlock> PACKAGING_TABLE = BLOCKS.registerBlock("packaging_table",
             properties -> new WorkstationBlock(properties, WorkstationBlock.Kind.PACKAGING),
-            properties -> properties.mapColor(MapColor.WOOD).strength(2.5f).sound(SoundType.WOOD));
+            properties -> properties.mapColor(MapColor.WOOD).strength(2.5f).sound(SoundType.WOOD).noOcclusion());
     public static final DeferredBlock<WorkstationBlock> ARMS_WORKBENCH = BLOCKS.registerBlock("arms_workbench",
             properties -> new WorkstationBlock(properties, WorkstationBlock.Kind.ARMS),
-            properties -> properties.mapColor(MapColor.METAL).strength(3.5f, 6.0f).sound(SoundType.METAL));
+            properties -> properties.mapColor(MapColor.METAL).strength(3.5f, 6.0f).sound(SoundType.METAL)
+                    .noOcclusion());
     public static final DeferredBlock<StashChestBlock> STASH_CHEST = BLOCKS.registerBlock("stash_chest",
             StashChestBlock::new, properties -> properties.mapColor(MapColor.METAL).strength(5.0f, 1200.0f)
-                    .sound(SoundType.METAL).pushReaction(PushReaction.BLOCK));
+                    .sound(SoundType.METAL).pushReaction(PushReaction.BLOCK).noOcclusion());
 
     public static final DeferredItem<BlockItem> DRYING_RACK_ITEM = ITEMS.registerSimpleBlockItem(DRYING_RACK,
             properties -> properties.component(DataComponents.LORE, lore("tooltip.dohy.drying_rack")));
@@ -176,6 +186,16 @@ public final class DoHyUnderground {
         ITEMS.register(modBus);
         TYPES.register(modBus);
         TABS.register(modBus);
+        modBus.addListener(DoHyUnderground::onCapabilities);
+    }
+
+    /**
+     * Les tapis et entonnoirs de Create, les convoyeurs de NTM NEXT remplissent la planque par ses
+     * faces, et ne la vident pas ({@link StashChestBlockEntity#canTakeItemThroughFace}).
+     */
+    private static void onCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.Item.BLOCK, STASH_TYPE.get(),
+                (stash, side) -> new WorldlyContainerWrapper(stash, side == null ? Direction.UP : side));
     }
 
     /** L'onglet, dans l'ordre des filieres. */

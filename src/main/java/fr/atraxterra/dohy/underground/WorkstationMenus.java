@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.underground;
 
+import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.agri.AgriInv;
 import fr.atraxterra.dohy.ui.menu.MenuController;
 import fr.atraxterra.dohy.ui.view.MenuView;
@@ -7,9 +8,12 @@ import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -31,6 +35,13 @@ import java.util.function.Supplier;
  * la table de conditionnement use la balance, l'etabli monte des caisses scellees.
  */
 public final class WorkstationMenus {
+
+    /** Ce qui protege la tete au laboratoire : le masque a gaz, et ceux de NTM NEXT s'il est la. */
+    static final TagKey<Item> LAB_MASKS = TagKey.create(Registries.ITEM,
+            Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "lab_masks"));
+    /** Ce qui protege le corps : la combinaison, et les plastrons hazmat de NTM NEXT. */
+    static final TagKey<Item> LAB_SUITS = TagKey.create(Registries.ITEM,
+            Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "lab_suits"));
 
     private WorkstationMenus() {
     }
@@ -262,13 +273,16 @@ public final class WorkstationMenus {
                             ? "OUI" : "NON", 0xFFFFFFFF));
         }
 
-        /** Le masque et la combinaison portes : 0, 1 ou 2. */
+        /**
+         * Le masque et la combinaison portes : 0, 1 ou 2. Ceux de NTM NEXT comptent aussi (masques a
+         * gaz, casques et plastrons hazmat : tags dohy:lab_masks et dohy:lab_suits).
+         */
         static int protections(ServerPlayer player) {
             int worn = 0;
-            if (player.getItemBySlot(EquipmentSlot.HEAD).is(DoHyUnderground.GAS_MASK.get())) {
+            if (player.getItemBySlot(EquipmentSlot.HEAD).is(LAB_MASKS)) {
                 worn++;
             }
-            if (player.getItemBySlot(EquipmentSlot.CHEST).is(DoHyUnderground.HAZMAT_SUIT.get())) {
+            if (player.getItemBySlot(EquipmentSlot.CHEST).is(LAB_SUITS)) {
                 worn++;
             }
             return worn;

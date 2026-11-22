@@ -36,10 +36,11 @@ public class DryingRackBlock extends Block {
     static final int LEAVES = 4;
     static final int HERB = 3;
     static final int TICKS = 2_400;
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(1.0d, 0.0d, 1.0d, 3.0d, 15.0d, 3.0d),
-            Block.box(13.0d, 0.0d, 1.0d, 15.0d, 15.0d, 3.0d), Block.box(1.0d, 0.0d, 13.0d, 3.0d, 15.0d, 15.0d),
-            Block.box(13.0d, 0.0d, 13.0d, 15.0d, 15.0d, 15.0d), Block.box(1.0d, 13.0d, 1.0d, 15.0d, 15.0d, 15.0d),
-            Block.box(3.0d, 5.0d, 3.0d, 13.0d, 12.0d, 13.0d));
+    /** Les quatre montants, le cadre du haut et ses ficelles, la ou pendent les bottes. */
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(1.0d, 0.0d, 1.0d, 2.5d, 15.0d, 2.5d),
+            Block.box(13.5d, 0.0d, 1.0d, 15.0d, 15.0d, 2.5d), Block.box(1.0d, 0.0d, 13.5d, 2.5d, 15.0d, 15.0d),
+            Block.box(13.5d, 0.0d, 13.5d, 15.0d, 15.0d, 15.0d), Block.box(1.25d, 13.0d, 1.25d, 14.75d, 14.5d, 14.75d),
+            Block.box(2.0d, 4.0d, 3.5d, 14.0d, 13.0d, 12.5d));
 
     public DryingRackBlock(Properties properties) {
         super(properties);

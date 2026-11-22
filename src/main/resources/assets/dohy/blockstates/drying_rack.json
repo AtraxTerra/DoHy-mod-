@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "stage=0": {
+      "model": "dohy:block/drying_rack_empty"
+    },
+    "stage=1": {
+      "model": "dohy:block/drying_rack_fresh"
+    },
+    "stage=2": {
+      "model": "dohy:block/drying_rack_dry"
+    }
+  }
+}

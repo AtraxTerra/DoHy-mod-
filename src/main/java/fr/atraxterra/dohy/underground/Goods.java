@@ -114,6 +114,10 @@ public final class Goods {
         };
     }
 
+    /** Ce qu'un versement a fait passer aux stocks, par stock, et s'il en est reste faute de place. */
+    record Moved(Map<String, Long> units, boolean full) {
+    }
+
     /**
      * Verse aux stocks ce que contient une planque, autant qu'il y a de place : les objets
      * verses en sortent, le reste y demeure. Rend la phrase a dire, vide si rien n'a bouge.
@@ -122,7 +126,22 @@ public final class Goods {
         if (!FactionApi.has(player)) {
             return "";
         }
+        Moved moved = move(player, container);
+        if (moved.units().isEmpty()) {
+            return moved.full() ? "Les stocks sont pleins : rien n'a ete verse." : "";
+        }
+        String text = "Verse aux stocks : " + describe(moved.units())
+                + (moved.full() ? " (stocks pleins pour le reste)." : ".");
+        Enterprises.log(player, text);
+        return text;
+    }
+
+    /** Le versement lui-meme, sans rien dire ni rien noter au journal. */
+    static Moved move(ServerPlayer player, Container container) {
         Map<String, Long> moved = new LinkedHashMap<>();
+        if (!FactionApi.has(player)) {
+            return new Moved(moved, false);
+        }
         boolean full = false;
         for (int slot = 0; slot < container.getContainerSize(); slot++) {
             ItemStack stack = container.getItem(slot);
@@ -148,20 +167,18 @@ public final class Goods {
             }
         }
         container.setChanged();
-        if (moved.isEmpty()) {
-            return full ? "Les stocks sont pleins : rien n'a ete verse." : "";
-        }
-        StringBuilder text = new StringBuilder("Verse aux stocks : ");
-        boolean first = true;
-        for (Map.Entry<String, Long> entry : moved.entrySet()) {
-            if (!first) {
+        return new Moved(moved, full);
+    }
+
+    /** « 12 unite(s) de poudre, 2 caisse(s) ». */
+    static String describe(Map<String, Long> units) {
+        StringBuilder text = new StringBuilder();
+        for (Map.Entry<String, Long> entry : units.entrySet()) {
+            if (!text.isEmpty()) {
                 text.append(", ");
             }
-            first = false;
             text.append(MoneyFormat.exact(entry.getValue())).append(' ').append(label(entry.getKey()));
         }
-        text.append(full ? " (stocks pleins pour le reste)." : ".");
-        Enterprises.log(player, text.toString());
         return text.toString();
     }
 

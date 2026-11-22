@@ -18,6 +18,8 @@
     "palamod:tapped_judeecercis_log",
     "palamod:tapped_ostrya_log",
     "palamod:totem_of_fertility",
-    "palamod:wood_spike"
+    "palamod:wood_spike",
+    "dohy:drying_rack",
+    "dohy:packaging_table"
   ]
 }

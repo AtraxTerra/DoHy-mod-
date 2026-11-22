@@ -109,6 +109,9 @@
     "palamod:farmer_throne",
     "palamod:hunter_throne",
     "palamod:alchemist_throne",
-    "dohy:concession_beacon"
+    "dohy:concession_beacon",
+    "dohy:clandestine_lab",
+    "dohy:arms_workbench",
+    "dohy:stash_chest"
   ]
 }
