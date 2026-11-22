@@ -32,6 +32,7 @@ neoForge {
             gameDirectory = file('run')
         }
         client {
+            programArguments.addAll('--width', '1920', '--height', '1080', '--quickPlaySingleplayer', 'shots')
             client()
         }
         server {
