@@ -222,14 +222,14 @@ public final class FactionMenus {
             String next = nation.nextRank();
             identity.add("Rang : " + rank.label() + (next.isEmpty() ? "" : " ; " + next));
             identity.add("Taxe du marche international : " + Math.round(NationRank.fee(player) * 100.0d) + " %");
-            List<String> lands = new ArrayList<>();
-            lands.add(nation.claims() + " / " + nation.claimCap() + " claims");
+            List<String> territory = new ArrayList<>();
+            territory.add(nation.claims() + " / " + nation.claimCap() + " claims");
             if (earth) {
                 int countries = nation.countries().size();
-                lands.add(nation.capital() == 0 ? "Pas encore de capitale" : countries + " pays · capitale "
+                territory.add(nation.capital() == 0 ? "Pas encore de capitale" : countries + " pays · capitale "
                         + fr.atraxterra.dohy.earth.EarthNations.countryName(nation.capital()));
             } else {
-                lands.add("Monde, Nether et End");
+                territory.add("Monde, Nether et End");
             }
             List<String> treasury = new ArrayList<>();
             treasury.add(MoneyFormat.exact(nation.bank()) + " $");
@@ -244,7 +244,7 @@ public final class FactionMenus {
                                     + date(data.created()),
                                     data.tags().isEmpty() ? "Nation solo" : String.join(" · ", data.tags())))
                             .accent(rank.color()).tooltip(identity),
-                    Card.of(new ItemStack(Items.GRASS_BLOCK), "Territoire", lands)
+                    Card.of(new ItemStack(Items.GRASS_BLOCK), "Territoire", territory)
                             .accent(0xFF22E558).progress(nation.claims(), nation.claimCap())
                             .action("claims|ouvrir le territoire"),
                     Card.of(new ItemStack(Items.GOLD_INGOT), "Banque nationale", treasury)
