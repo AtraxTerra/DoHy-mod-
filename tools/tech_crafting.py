@@ -27,6 +27,9 @@ petrole, prise d'air, chaudieres), ou si rien ne le produit (le lait d'une vache
 se prennent au seau. Pour chaque objet qui manque, le script dit ce qui le bloque : la machine (et
 son palier), l'ingredient ou le fluide.
 
+Les recettes que NTM ne charge pas avec ses reglages par defaut (mode cher, 528, LBSM : FLAGS) ne
+comptent pas, ni celles d'un mod absent (MODS).
+
 Le jar n'est pas dans le depot : il vient du dossier mods du client, comme pour
 tools/ntm_inventory.py. Code retour 1 si un palier demande ce qu'on ne peut pas encore fabriquer.
 """
@@ -175,19 +178,21 @@ SPACE_GATE = ("espace", 3)
 # coule plaques, fils epais et pieces d'arme dans ses moules, et ses alliages (ferro-uranium...) ; les
 # reacteurs usent leur combustible en pastilles. Seulement pour un objet qu'aucune recette ne produit.
 CODE_MADE = {
-    "hbm:ingot_*": "hbm:machine_crucible",
     "hbm:pile_rod_*": "hbm:pile_block", "hbm:rod_zirnox_*": "hbm:reactor_zirnox",
     "hbm:rbmk_pellet_*": "hbm:rbmk_fuel_rod", "hbmspace:rbmk_pellet_*": "hbm:rbmk_fuel_rod",
     "hbm:pwr_fuel_*": "hbm:pwr_fuel", "hbm:watz_pellet_*": "hbm:watz", "hbmspace:watz_pellet_*": "hbm:watz",
     "hbm:pellet_rtg_depleted_*": "hbm:machine_rtg_grey",
-    "hbm:bedrock_ore_fragment_*": "hbm:machine_ore_slopper", "hbm:arc_electrode_burnt_*": "hbm:machine_arc_furnace",
+    "hbm:bedrock_ore_fragment_*": "hbm:machine_ore_slopper",
 }
 
 # Ce que la fonderie coule dans ses moules, et la matiere fondue qu'il y faut (plate_cast_steel : de
 # l'acier, #c:ingots/steel). Le creuset melange aussi ses alliages (recettes « hbm:crucible », par
 # matieres : CRUCIBLE_MATERIALS dit ou les trouver).
 CASTINGS = ("hbm:plate_cast_", "hbm:wire_dense_", "hbm:blade_", "hbm:part_mechanism_", "hbm:part_barrel_",
-            "hbm:part_receiver_", "hbm:part_grip_")
+            "hbm:part_receiver_", "hbm:part_grip_", "hbm:ingot_", "hbm:nugget_", "hbm:billet_", "hbm:block_",
+            "hbmspace:ingot_", "hbmspace:nugget_", "hbmspace:billet_", "leafia:ingot_")
+# Les moules de la fonderie et le creuset qui fond les metaux (Industrie II).
+MOLDS = ("hbm:foundry_mold", "hbm:foundry_basin")
 CRUCIBLE_MATERIALS = {
     "flux": ("hbm:powder_flux",),
     "carbon": ("minecraft:coal", "minecraft:charcoal", "#c:dusts/coal", "#c:coal_coke", "#c:gems/coke"),
@@ -198,12 +203,61 @@ CRUCIBLE_MATERIALS = {
 }
 
 
+def molten_outputs(data):
+    """Les matieres fondues qu'une recette verse dans la fonderie (four a arc, four rotatif, creuset...)."""
+    result = []
+    for key in ("output_material", "output_material_2", "output_materials"):
+        value = data.get(key)
+        for entry in value if isinstance(value, list) else [value]:
+            if isinstance(entry, dict) and "material" in entry:
+                result.append("%" + entry["material"])
+    return result
+
+
 def material(name):
     """Ce qui apporte cette matiere au creuset : ses lingots, poudres, pepites, minerais..."""
     if name in CRUCIBLE_MATERIALS:
         return CRUCIBLE_MATERIALS[name]
     return tuple(f"#c:{family}/{name}" for family in
                  ("ingots", "dusts", "nuggets", "gems", "raw_materials", "ores", "storage_blocks"))
+
+
+# Les reglages de NTM qui choisissent une recette (« hbm:flag ») : leurs valeurs par defaut
+# (BalanceConfig de NTM NEXT 1.0.5, PWRContentConfig et DfcContentConfig de Cursed). Les recettes du
+# mode cher, du 528 et du LBSM ne servent donc pas ; celles du PWR et du DFC de Cursed, si.
+FLAGS = {"expensive_mode": False, "enable_528": False, "enable_528_pressurized": False, "lbsm": False,
+         "leafia_pwr": True, "leafia_dfc": True, "leafia_computercraft": False, "leafia_reflector_compat": False}
+# Les mods du dossier du client et du serveur (une recette « neoforge:mod_loaded » d'un autre ne sert pas).
+MODS = {"minecraft", "neoforge", "c", "hbm", "hbmspace", "leafia", "dohy", "create", "sodium", "immediatelyfast",
+        "crankshaft", "leavesbegone"}
+
+
+def condition(value):
+    """Une condition de chargement de recette, evaluee avec les reglages par defaut."""
+    if not isinstance(value, dict):
+        return True
+    kind = value.get("type", "")
+    if kind == "hbm:flag":
+        name = value.get("name", "")
+        wanted = not name.startswith("!")
+        name = name.lstrip("!")
+        state = FLAGS.get(name, False if name.startswith("lbsm") else False)
+        return state == wanted
+    if kind == "neoforge:never" or kind == "neoforge:false":
+        return False
+    if kind == "neoforge:true":
+        return True
+    if kind == "neoforge:mod_loaded":
+        return value.get("modid") in MODS
+    if kind == "neoforge:not":
+        return not condition(value.get("value"))
+    if kind == "neoforge:and":
+        return all(condition(v) for v in value.get("values", []))
+    if kind == "neoforge:or":
+        return any(condition(v) for v in value.get("values", []))
+    if kind == "neoforge:tag_empty":
+        return False
+    return True
 
 
 def load_json(zipped, name):
@@ -312,6 +366,8 @@ class Book:
 
     def add(self, data, name):
         kind = data.get("type", "")
+        if not all(condition(c) for c in data.get("neoforge:conditions", []) or []):
+            return
         base = name.rsplit("/", 1)[-1]
         if ".package." in base or ".unpackage." in base or base.endswith("emptypackage.json") or "recycle" in base:
             # Mettre un fluide en paquet et l'en sortir, demonter une machine deja faite : rien de neuf.
@@ -348,6 +404,7 @@ class Book:
         fluids_in = tuple(dict.fromkeys(f["type"] for f in data.get("input_fluids", []) or []
                                         if isinstance(f, dict) and "type" in f))
         fluids_out = [f["type"] for f in data.get("output_fluids", []) or [] if isinstance(f, dict) and "type" in f]
+        outputs = list(outputs) + molten_outputs(data)
         # Une case vide (une forme inconnue) ne demande rien.
         recipe = (kind, tier, tuple(dict.fromkeys(slot for slot in inputs if slot)), fluids_in, name)
         for output in dict.fromkeys(outputs):
@@ -419,6 +476,7 @@ def available(book, tree, reached):
     """Ce qu'on fabrique dans cet etat : point fixe sur les recettes (objets et fluides)."""
     have = set()
     flowing = set(FREE_FLUIDS)
+    melting = set()
     in_space = SPACE_GATE in reached
 
     def item_ok(identifier):
@@ -443,18 +501,50 @@ def available(book, tree, reached):
             return True
         if identifier in book.mined and (in_space or identifier not in book.space):
             return True
+        for prefix in CASTINGS:
+            if identifier.startswith(prefix) and molten(identifier[len(prefix):]):
+                return True
         if identifier in book.recipes:
             return False
-        for prefix in CASTINGS:
-            if identifier.startswith(prefix):
-                metal = identifier[len(prefix):]
-                return placed("hbm:machine_crucible") and (
-                        ("c:ingots/" + metal) not in book.tags or item_ok("#c:ingots/" + metal))
+        if identifier.startswith("hbm:arc_electrode_burnt_"):
+            # Une electrode usee sort du four a arc... ou on a mis l'electrode neuve.
+            fresh = "hbm:arc_electrode_" + identifier[len("hbm:arc_electrode_burnt_"):]
+            return placed("hbm:machine_arc_furnace") and (fresh not in book.recipes or item_ok(fresh))
         for pattern, machine in CODE_MADE.items():
             if fnmatch.fnmatch(identifier, pattern):
                 return placed(machine)
         return in_space or not (identifier in book.space
                                 or any(fnmatch.fnmatch(identifier, pattern) for pattern in SPACE_ONLY))
+
+    def molten(metal):
+        """Ce metal coule-t-il dans la fonderie ? D'une machine (« %saturnite ») ou fondu au creuset."""
+        if not any(placed(m) for m in MOLDS):
+            return False
+        if "%" + metal in have:
+            return True
+        if metal in melting or not placed("hbm:machine_crucible"):
+            return False
+        melting.add(metal)
+        try:
+            return any(obtained(form) for form in material(metal))
+        finally:
+            melting.discard(metal)
+
+    def obtained(identifier):
+        """Comme item_ok, sans supposer qu'un objet sans recette se trouve : ce qu'on fond doit exister."""
+        if identifier.startswith("#"):
+            tag = identifier[1:]
+            if tag.startswith("minecraft:"):
+                return True
+            if any(obtained(member) for member in book.members(tag) if not member.startswith("#")):
+                return True
+            path = tag[2:].split("/") if tag.startswith("c:") else []
+            return bool(path) and path[0] in NEOFORGE_FAMILIES and any(part in VANILLA_MATERIALS for part in path[1:])
+        if identifier.startswith("minecraft:") or identifier in have:
+            return True
+        if identifier in book.mined and (in_space or identifier not in book.space):
+            return True
+        return identifier in book.recipes and item_ok(identifier)
 
     def placed(machine):
         lock = tree.lock.get(machine)

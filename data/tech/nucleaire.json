@@ -139,7 +139,8 @@
         "hbm:machine_purex",
         "hbm:machine_silex",
         "hbm:rad_absorber_green",
-        "hbm:vitrified_barrel"
+        "hbm:vitrified_barrel",
+        "hbm:barrel_tcalloy"
       ],
       "machines": [
         {"id": "hbm:pwr_block", "name": "PWR"},
@@ -174,7 +175,8 @@
         {"id": "hbm:machine_purex", "name": "PUREX"},
         {"id": "hbm:machine_silex", "name": "Laser Isotope Separation Chamber (SILEX)"},
         {"id": "hbm:rad_absorber_green", "name": "Advanced Radiation Absorber"},
-        {"id": "hbm:vitrified_barrel", "name": "Vitrified Nuclear Waste Drum"}
+        {"id": "hbm:vitrified_barrel", "name": "Vitrified Nuclear Waste Drum"},
+        {"id": "hbm:barrel_tcalloy", "name": "Technetium Steel Barrel"}
       ],
       "bonuses": [
         {"type": "research", "value": 10, "label": "recherche +10 %"}
