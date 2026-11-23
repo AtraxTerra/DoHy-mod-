@@ -90,12 +90,18 @@ public final class CollectionTiers {
         ).apply(instance, Reward::new));
     }
 
-    /** Un item qui ne suit pas la courbe de son tier. */
-    public record Exception_(Optional<List<Long>> tiers, boolean floorBonusDisabled) {
+    /**
+     * Un item qui ne suit pas la courbe de son tier. {@code global_xp_disabled} : ses paliers et ses
+     * prestiges ne donnent pas d'XP globale (les blocs de masse, que la corne du Dancarok casse par
+     * centaines de milliers en quelques heures).
+     */
+    public record Exception_(Optional<List<Long>> tiers, boolean floorBonusDisabled, boolean globalXpDisabled) {
         static final Codec<Exception_> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.LONG.listOf().optionalFieldOf("tiers").forGetter(Exception_::tiers),
                 Codec.BOOL.optionalFieldOf("floor_bonus_disabled", false)
-                        .forGetter(Exception_::floorBonusDisabled)
+                        .forGetter(Exception_::floorBonusDisabled),
+                Codec.BOOL.optionalFieldOf("global_xp_disabled", false)
+                        .forGetter(Exception_::globalXpDisabled)
         ).apply(instance, Exception_::new));
     }
 
@@ -151,21 +157,21 @@ public final class CollectionTiers {
                         new Reward(true, 0.170d, 74L),
                         new Reward(true, 0.180d, 98L),
                         new Reward(true, 0.190d, 130L),
-                        new Reward(true, 0.199d, 170L),
-                        new Reward(true, 0.208d, 230L),
-                        new Reward(true, 0.216d, 310L),
-                        new Reward(true, 0.224d, 410L),
-                        new Reward(true, 0.232d, 540L),
-                        new Reward(true, 0.240d, 720L),
-                        new Reward(true, 0.247d, 960L),
-                        new Reward(true, 0.255d, 1270L),
-                        new Reward(true, 0.262d, 1700L),
-                        new Reward(true, 0.268d, 2260L),
-                        new Reward(true, 0.275d, 3000L),
-                        new Reward(true, 0.281d, 3990L),
-                        new Reward(true, 0.288d, 5310L),
-                        new Reward(true, 0.294d, 7060L),
-                        new Reward(true, 0.300d, 9390L)),
+                        new Reward(true, 0.199d, 150L),
+                        new Reward(true, 0.208d, 160L),
+                        new Reward(true, 0.216d, 170L),
+                        new Reward(true, 0.224d, 180L),
+                        new Reward(true, 0.232d, 190L),
+                        new Reward(true, 0.240d, 200L),
+                        new Reward(true, 0.247d, 210L),
+                        new Reward(true, 0.255d, 220L),
+                        new Reward(true, 0.262d, 230L),
+                        new Reward(true, 0.268d, 240L),
+                        new Reward(true, 0.275d, 250L),
+                        new Reward(true, 0.281d, 260L),
+                        new Reward(true, 0.288d, 270L),
+                        new Reward(true, 0.294d, 280L),
+                        new Reward(true, 0.300d, 290L)),
                 Map.of(),
                 new Prestige(5, 0.5d, 0.02d, 500L),
                 false);
@@ -199,6 +205,12 @@ public final class CollectionTiers {
         public boolean floorBonusAllowed(Identifier id) {
             Exception_ exception = exceptions.get(id);
             return exception == null || !exception.floorBonusDisabled();
+        }
+
+        /** Vrai si les paliers et les prestiges de l'item donnent de l'XP globale. */
+        public boolean globalXpAllowed(Identifier id) {
+            Exception_ exception = exceptions.get(id);
+            return exception == null || !exception.globalXpDisabled();
         }
 
         public Reward reward(int tierIndex) {

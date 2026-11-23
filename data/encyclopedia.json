@@ -448,7 +448,10 @@
         {
           "title": "Le niveau global",
           "text": [
-            "Il resume ta progression et s'affiche dans le menu principal."
+            "Il resume ta progression et s'affiche dans le menu principal. Un niveau vaut 500 XP ; chacun ajoute 35 % aux recompenses des contrats, et tous les cinq niveaux une prime tombe.",
+            "- Contrat du jour : 15 XP ; de la semaine : 250 ; commande de trixium : 15.",
+            "- Niveau de metier : 20 XP ; don au musee : 100.",
+            "- Palier de collection : de 10 a 290 XP ; prestige : 500. Les blocs de masse (pierre, roches, sable, terracotta...) n'en donnent pas."
           ]
         }
       ],
