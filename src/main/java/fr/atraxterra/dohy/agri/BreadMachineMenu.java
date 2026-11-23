@@ -49,7 +49,8 @@ public final class BreadMachineMenu extends MachineMenu {
                 continue;
             }
             boolean locked = level < batch.minLevel();
-            int possible = locked ? 0 : possible(player, batch, energy);
+            int each = machine == null ? batch.energy() : machine.cost(batch.energy());
+            int possible = locked ? 0 : possible(player, batch, energy, each);
             List<String> lines = new ArrayList<>();
             for (Map.Entry<Identifier, Integer> input : batch.inputs().entrySet()) {
                 Item item = BuiltInRegistries.ITEM.getOptional(input.getKey()).orElse(null);
@@ -60,7 +61,7 @@ public final class BreadMachineMenu extends MachineMenu {
                         + " / " + input.getValue() + " ").append(new ItemStack(item).getHoverName())));
             }
             List<String> tooltip = new ArrayList<>();
-            tooltip.add(batch.energy() + " FE la fournee  ·  +" + batch.xp() + " XP de Fermier");
+            tooltip.add(each + " FE la fournee  ·  +" + batch.xp() + " XP de Fermier");
             if (batch.minLevel() > 0) {
                 tooltip.add("Fermier niveau " + batch.minLevel() + "  ·  ne se cuit qu'a la main");
             }
@@ -87,8 +88,8 @@ public final class BreadMachineMenu extends MachineMenu {
     }
 
     /** Fournees possibles avec l'inventaire du joueur et l'energie de la machine. */
-    private static int possible(ServerPlayer player, AgriConfig.Batch batch, int energy) {
-        int most = batch.energy() <= 0 ? MANY : energy / batch.energy();
+    private static int possible(ServerPlayer player, AgriConfig.Batch batch, int energy, int each) {
+        int most = each <= 0 ? MANY : energy / each;
         for (Map.Entry<Identifier, Integer> input : batch.inputs().entrySet()) {
             Item item = BuiltInRegistries.ITEM.getOptional(input.getKey()).orElse(null);
             if (item == null) {
@@ -138,12 +139,13 @@ public final class BreadMachineMenu extends MachineMenu {
         if (JobApi.level(player, Job.FARMER) < batch.minLevel()) {
             return "Il faut etre Fermier niveau " + batch.minLevel() + " pour cuire ce pain.";
         }
-        int count = Math.min(wanted, possible(player, batch, machine.energyStored()));
+        int each = machine.cost(batch.energy());
+        int count = Math.min(wanted, possible(player, batch, machine.energyStored(), each));
         if (count <= 0) {
-            return machine.energyStored() < batch.energy()
+            return machine.energyStored() < each
                     ? "La machine a pain n'a pas assez d'energie." : "Il te manque des ingredients.";
         }
-        if (!machine.spend(count * batch.energy())) {
+        if (!machine.spend(count * each)) {
             return "La machine a pain n'a pas assez d'energie.";
         }
         batch.inputs().forEach((id, quantity) ->

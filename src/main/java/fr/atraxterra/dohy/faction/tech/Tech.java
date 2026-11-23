@@ -391,6 +391,19 @@ public final class Tech {
 
     // -- Les points des laboratoires (lot 23c) -------------------------------------------------------
 
+    /**
+     * Ce que coute en FE un travail d'une machine de DoHy (moulin, machine a pain, serveur de
+     * trading) pour une nation qui en efface {@code cut} pour cent (lot 23e : Energie III -10 %,
+     * V -15 %) ; jamais moins de 1 FE pour un travail qui en demandait.
+     */
+    public static int machineEnergy(int base, int cut) {
+        if (base <= 0) {
+            return base;
+        }
+        int kept = 100 - Math.max(0, Math.min(90, cut));
+        return (int) Math.max(1L, (long) base * kept / 100L);
+    }
+
     /** L'energie d'un laboratoire par tick de marche, en FE, moins ce qu'effacent les technologies de l'Energie. */
     public static int labEnergy(FactionData data) {
         int base = ResearchLabConfig.config().energyPerTick();

@@ -854,7 +854,7 @@
           "title": "Les regles",
           "text": [
             "- Quatre serveurs tournent a la fois par joueur ; les suivants attendent.",
-            "- Il s'alimente en energie de NTM NEXT, ou en FE d'un autre mod."
+            "- Il s'alimente en energie de NTM NEXT, ou en FE d'un autre mod. L'Energie III et V de ta nation lui en font consommer moins."
           ]
         }
       ],
@@ -1231,6 +1231,7 @@
             "- Les particules du cobblebreaker rapportent des Mineur 25, si tu les sors toi-meme de la machine : un entonnoir n'en donne pas.",
             "- La pioche des dieux monte de niveau avec les blocs casses, jusqu'au niveau 100.",
             "- Mineur 90 : le portail de la dimension du Mineur.",
+            "- L'Industrie II et VI de ta nation donnent +5 puis +10 % d'argent de Mineur, aux niveaux comme aux primes.",
             "- Mineur 95 : une chance infime de croiser le God Villager."
           ]
         }
@@ -2788,7 +2789,16 @@
           "text": [
             "- Recherche plus rapide (Industrie, Nucleaire, Espace), laboratoires et recherches en parallele (Gouvernement), laboratoires plus sobres (Energie), apport des pays (Gouvernement V).",
             "- Taxe du marche international et argent des mines de la Terre (Economie), minerais des mines (Industrie), champs de petrole et de gaz (Chimie).",
-            "- Les autres (energie des machines, metiers, coffre, largages, assauts) arrivent avec les contenus de chaque domaine : la bulle du bonus dit son lot."
+            "- Industrie II et VI : +5 puis +10 % d'argent de Mineur, aux niveaux et aux primes. Industrie IV : 27 cases de plus au coffre de la banque.",
+            "- Energie III et V : -10 puis -15 % d'energie pour le moulin, la machine a pain et le serveur de trading ; la machine le lit sur la nation de celui qui l'a posee.",
+            "- Les autres (Fermier et machines agricoles, largages, assauts) arrivent avec les contenus de chaque domaine : la bulle du bonus dit son lot."
+          ]
+        },
+        {
+          "title": "Dans l'ordre de NTM",
+          "text": [
+            "Energie et Industrie suivent la fabrication de NTM NEXT : le haut fourneau, l'acier et son enclume des le depart (Industrie I), l'assembleuse et la fonderie au II, la soudeuse et le four a arc au III, avec l'usine chimique (Chimie II) pour le beton et le desh.",
+            "Les carburants et la turbine a gaz demandent le raffinage (Chimie III), d'ou vient le caoutchouc ; l'assemblage de masse aussi. Les circuits polyvalents du laser et du supercalculateur demandent la petrochimie (Chimie IV)."
           ]
         },
         {
@@ -3551,7 +3561,7 @@
         {
           "title": "Ce qu'elle rapporte",
           "text": [
-            "Par heure : 400, 800 ou 1 500 $ selon son rang (le double pour un champ de petrole ou de gaz), et 2 a 6 blocs de son minerai (moins pour les diamants). L'argent va a la banque nationale, les minerais au coffre de la banque (54 cases), a vider depuis l'onglet Banque.",
+            "Par heure : 400, 800 ou 1 500 $ selon son rang (le double pour un champ de petrole ou de gaz), et 2 a 6 blocs de son minerai (moins pour les diamants). L'argent va a la banque nationale, les minerais au coffre de la banque (54 cases, 27 de plus a l'Industrie IV), a vider depuis l'onglet Banque.",
             "Hors ligne aussi : a ton retour, jusqu'a une semaine d'absence est versee."
           ]
         },

@@ -1,6 +1,8 @@
 package fr.atraxterra.dohy.tech;
 
 import fr.atraxterra.dohy.economy.Economy;
+import fr.atraxterra.dohy.faction.tech.Tech;
+import fr.atraxterra.dohy.faction.tech.TechPerks;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -84,6 +86,11 @@ public class TradingServerBlockEntity extends BlockEntity {
     private final Energy energy = new Energy();
     private UUID owner;
     private String ownerName = "";
+    /**
+     * L'energie que la nation du proprietaire efface, en pour cent (Energie III et V, lot 23e) : relue
+     * chaque seconde quand il est la, gardee sinon.
+     */
+    private int energyCut;
     /** L'argent produit, pas encore encaisse. */
     private long pending;
     /** Le reste de la division du revenu horaire par 72 000, reporte de tick en tick. */
@@ -105,6 +112,16 @@ public class TradingServerBlockEntity extends BlockEntity {
 
     public int energyStored() {
         return energy.amount;
+    }
+
+    /** Ce que la machine consomme par tick, en FE, technologies de l'Energie comprises. */
+    public int energyPerTick() {
+        return Tech.machineEnergy(TradingServerConfig.config().energyPerTick(), energyCut);
+    }
+
+    /** L'energie effacee par la nation du proprietaire, en pour cent. */
+    public int energyCut() {
+        return energyCut;
     }
 
     public long pending() {
@@ -146,7 +163,7 @@ public class TradingServerBlockEntity extends BlockEntity {
         if (pending >= config.bufferMax()) {
             return Status.FULL;
         }
-        if (energy.amount < config.energyPerTick()) {
+        if (energy.amount < energyPerTick()) {
             return Status.NO_POWER;
         }
         return Status.RUNNING;
@@ -155,11 +172,18 @@ public class TradingServerBlockEntity extends BlockEntity {
     // -- Le tick ----------------------------------------------------------------------
 
     void serverTick() {
-        if (!(level instanceof ServerLevel)) {
+        if (!(level instanceof ServerLevel world)) {
             return;
         }
         TradingServerConfig.Config config = TradingServerConfig.config();
         if (ticks++ % 20 == 0) {
+            if (owner != null && world.getServer().getPlayerList().getPlayer(owner) instanceof ServerPlayer player) {
+                int cut = TechPerks.of(player).machineEnergy();
+                if (cut != energyCut) {
+                    energyCut = cut;
+                    dirty = true;
+                }
+            }
             limited = rank() >= config.maxPerPlayer();
             boolean lit = status() == Status.RUNNING;
             BlockState state = getBlockState();
@@ -174,7 +198,7 @@ public class TradingServerBlockEntity extends BlockEntity {
         if (status() != Status.RUNNING) {
             return;
         }
-        energy.amount -= config.energyPerTick();
+        energy.amount -= energyPerTick();
         fraction += config.incomePerHour();
         if (fraction >= TICKS_PER_HOUR) {
             long gained = fraction / TICKS_PER_HOUR;
@@ -272,6 +296,7 @@ public class TradingServerBlockEntity extends BlockEntity {
         output.putString("owner", owner == null ? "" : owner.toString());
         output.putString("owner_name", ownerName);
         output.putInt("energy", energy.amount);
+        output.putInt("energy_cut", energyCut);
         output.putLong("pending", pending);
         output.putLong("fraction", fraction);
         output.putLong("total", totalProduced);
@@ -288,6 +313,7 @@ public class TradingServerBlockEntity extends BlockEntity {
         }
         ownerName = input.getStringOr("owner_name", "");
         energy.amount = Math.max(0, input.getIntOr("energy", 0));
+        energyCut = Math.max(0, Math.min(90, input.getIntOr("energy_cut", 0)));
         pending = Math.max(0L, input.getLongOr("pending", 0L));
         fraction = Math.max(0L, input.getLongOr("fraction", 0L));
         totalProduced = Math.max(0L, input.getLongOr("total", 0L));

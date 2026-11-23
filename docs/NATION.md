@@ -24,7 +24,7 @@ Choix du joueur (2026-11-20) :
 | 23b | Le moteur des technologies : domaines en données, état de recherche, écran des arbres ; l'arbre actuel fondu dedans | fait |
 | 23c | Le laboratoire de recherche : bloc, énergie (FE, réseaux de NTM NEXT), points de recherche, les pays qui nourrissent la recherche | fait |
 | 23d | Les verrous : pose des machines, exemptions, infobulles, encyclopédie | fait |
-| 23e | Contenu : Énergie et Industrie (paliers, coûts, bonus) | à faire |
+| 23e | Contenu : Énergie et Industrie (paliers, coûts, bonus) | fait |
 | 23f | Contenu : Chimie et Agriculture | à faire |
 | 23g | Contenu : Nucléaire et Défense | à faire |
 | 23h | Contenu : Espace | à faire |
@@ -156,15 +156,17 @@ bloque.
 
 Quelques jalons, pour lire l'arbre (le détail est dans le brouillon) :
 
-- **Énergie** : chaudière à bois, moteur Stirling et câbles (I) ; chaudière et turbine
-  industrielles, tours de refroidissement (II) ; diesel, turbine à gaz à cycle combiné (III) ;
-  tour solaire, géothermie, éolienne de Cursed, pylônes d'acier (IV) ; turbine Léviathan et
-  turbines modulaires de Cursed (V) ; FEnSU (VI).
-- **Industrie** : presse, haut fourneau de briques, broyeur (I) ; fonderie complète (II) ;
-  assembleuse, soudeuse à l'arc, centrifugeuse, convoyeurs (III) ; usine d'assemblage,
-  assembleuse de précision, grande foreuse, drones, réseau pneumatique (IV) ; laser minier,
-  supercalculateur (V) ; forge à plasma, annihilateur (VI). Les enclumes de NTM suivent : fer et
-  plomb (I), acier (II), desh (III)… jusqu'au dineutronium (VI).
+- **Énergie** : chaudière à bois, moteur Stirling, chaudière et machine à vapeur, câbles (I) ;
+  Stirling lourd, condenseur, transformateur, pylônes de bois (II) ; diesel, turbine à gaz à
+  cycle combiné, chaudière et turbine industrielles, tour auxiliaire (III) ; tour solaire,
+  géothermie, éolienne de Cursed, pylônes d'acier (IV) ; turbine Léviathan, turbines modulaires de
+  Cursed, tour de refroidissement (V) ; FEnSU (VI).
+- **Industrie** : presse, fours, haut fourneau et acier (I) ; fonderie complète, assembleuse,
+  broyeur (II) ; soudeuse, soudeuse à l'arc, four à arc, centrifugeuse, convoyeurs (III) ; usine
+  d'assemblage, assembleuse de précision, grande foreuse, drones, réseau pneumatique (IV) ; laser
+  minier, supercalculateur (V) ; forge à plasma, annihilateur (VI). Les enclumes de NTM suivent :
+  fer, plomb et acier (I), desh (III)… jusqu'au schrabidate et au dineutronium (VI).
+  Depuis le lot 23e, cet ordre est celui de la fabrication de NTM (voir plus bas).
 - **Chimie** : tuyaux et pompes (I) ; derrick, chevalet de pompage, usine chimique (II) ;
   raffinerie, tour de fractionnement, craquage (III) ; distillation sous vide, cokéfaction (IV) ;
   fracturation, usine chimique lourde, alkylation et distillation cryogénique de Space (V).
@@ -373,6 +375,55 @@ permet un, deux puis trois.
 - **Tranché** : les machines agricoles de DoHy entrent dans l'arbre Agriculture comme le prévoyait
   le brouillon (silo, pompe, tracteur au II ; moulin, machine à pain, biogénérateur au III ; machine
   à OGM, bot de farming au IV) ; l'abreuvoir et la mangeoire restent d'office.
+
+## Énergie et Industrie (23e)
+
+Le brouillon rangeait les machines par thème ; il fallait qu'elles se **fabriquent dans l'ordre** :
+qu'un palier demande des pièces qu'on sait faire avant de le rechercher, et que ses machines se
+fabriquent une fois qu'on l'a. Le brouillon ne le permettait pas : les chaudières, les moteurs et
+les câbles blindés de l'Énergie I, d'office, demandaient l'enclume d'acier de l'Industrie II ;
+l'acier lui-même sortait du haut fourneau de l'Industrie II ; le broyeur de l'Industrie I sortait
+de l'assembleuse du III ; le coût de l'Industrie III (des circuits intégrés) et celui du IV (des
+circuits militaires) demandaient les machines que ces paliers donnent.
+
+### Fait (2026-11-23)
+
+- **L'outil** `tools/tech_crafting.py` lit les recettes et les tags de NTM NEXT, Space et Cursed
+  (13 458 recettes, lues comme des archives, rien n'est exécuté) et se place, pour chaque palier,
+  dans l'état où on le recherche (le palier d'avant, les prérequis et les leurs, les paliers
+  d'office) : le coût doit s'y fabriquer, puis les machines une fois le palier acquis. Une recette
+  se fait si sa machine est posable et fabricable (assembleuse, soudeuse, enclume du bon niveau…),
+  si chaque case a un ingrédient fabricable, et si ses **fluides** coulent (puits et chevalets
+  pour le pétrole et le gaz, chaudières pour la vapeur et le pétrole chaud, prise d'air). Ce que le
+  code de NTM fabrique sans recette attend sa machine (plaques, fils épais et pièces coulés par la
+  fonderie, pastilles des réacteurs) ; ce qui ne pousse que sur une autre planète (le caoutchouc de
+  Tekto) attend l'Espace III ; les recettes de démontage ne comptent pas. Le jar n'est pas dans le
+  dépôt : il se lance à la main, comme `tools/ntm_inventory.py`.
+- **Énergie et Industrie : 0 problème** (74 avec le brouillon). Tous domaines : 117 au lieu de 280 ;
+  les autres se règlent avec leur lot (23f à 23h).
+
+| Palier | Énergie | Industrie |
+|---|---|---|
+| I (d'office) | chaudière à bois, foyer, four, Stirling, chaudière, machine à vapeur, câbles (sans la jauge ni la diode) | presse, fours, **haut fourneau**, enclumes de fer, de plomb **et d'acier** |
+| II | Stirling lourd, condenseur, transformateur, pylônes de bois — **demande l'Industrie II** (plaques coulées) | fonderie, four combiné, **assembleuse**, **broyeur** |
+| III | diesel, moteur à combustion, brûleur, turbofan, turbine à gaz, cheminées, condenseur électrique, **chaudière et turbine industrielles, tour auxiliaire, échangeur, jauge, diode** — **demande la Chimie III et l'Industrie III** | soudeuse, soudeuse à l'arc, four à arc, enclume en desh… — **demande l'Énergie II et la Chimie II** (béton, desh) ; coût : **16 tubes à vide** et 16 condensateurs |
+| IV | renouvelables, pylônes d'acier | assemblage de masse, drones, pneumatique — **demande la Chimie III** (caoutchouc) |
+| V | Léviathan, turbines modulaires, **tour de refroidissement** ; coût : **16 bobines d'alliage avancé** et 8 unités de contrôle | laser, supercalculateur — **demande l'Énergie IV et la Chimie IV** (plastique dur, solvant) |
+| VI | FEnSU — **demande l'Industrie VI** (forge à plasma) | forge à plasma, **enclume de schrabidate**… |
+
+- **La Chimie II demande l'Industrie II** : l'usine chimique sort de l'assembleuse. C'est le seul
+  palier d'un autre domaine qui bouge dans ce lot.
+- **Les bonus en service** (`TechPerks`, la bulle ne dit plus « lot 23e ») :
+  - **Énergie III et V** : le moulin, la machine à pain et le serveur de trading consomment 10 puis
+    15 % d'énergie en moins. La machine lit chaque seconde la nation de celui qui l'a posée, et garde
+    le chiffre quand il n'est pas là ; ses écrans montrent le coût réel (« 90 FE »). Le laboratoire
+    garde son propre bonus (Énergie II, IV, VI).
+  - **Industrie II et VI** : +5 puis +10 % d'argent de Mineur, à chaque niveau et à chaque prime,
+    en plus des renaissances ; la fiche du métier montre les montants bonus compris.
+  - **Industrie IV** : le coffre de la banque passe de 54 à 81 cases (`FactionVault.capacity`). Une
+    nation qui perd le palier garde ce qui dépasse ; seules les nouvelles piles attendent.
+- **L'encyclopédie** : la fiche « Technologies » dit les bonus et l'ordre de NTM ; les fiches du
+  Mineur, du trading et des mines disent ce qui change pour elles.
 
 ## L'arbre actuel, fondu dedans
 

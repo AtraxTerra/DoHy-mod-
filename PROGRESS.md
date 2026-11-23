@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-22
+Dernière mise à jour : 2026-11-23
 
 ---
 
@@ -263,6 +263,12 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   Cursed, machines agricoles de DoHy) ; les machines posées continuent de tourner, le créatif passe
   (vérifié par la CI), sans nation seuls les paliers d'office ; l'infobulle de chaque machine dit
   son palier, en vert ou en rouge.
+- **Lot 23e — Énergie et Industrie** (2026-11-23, `docs/NATION.md`, « Énergie et Industrie ») :
+  les deux domaines suivent l'ordre de fabrication de NTM, vérifié par `tools/tech_crafting.py`
+  (recettes, fluides, fonderie, planètes ; 0 problème au lieu de 74) — l'acier et son enclume
+  d'office, l'assembleuse à l'Industrie II, le béton et le caoutchouc par la Chimie. Bonus en
+  service : machines de DoHy plus sobres (Énergie III et V), argent du Mineur (Industrie II et VI),
+  coffre de la banque à 81 cases (Industrie IV).
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 

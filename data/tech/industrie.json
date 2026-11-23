@@ -16,10 +16,11 @@
         "hbm:machine_furnace_brick",
         "hbm:furnace_iron",
         "hbm:furnace_steel",
-        "hbm:machine_shredder",
         "hbm:machine_rockmill",
         "hbm:anvil_iron",
-        "hbm:anvil_lead"
+        "hbm:anvil_lead",
+        "hbm:machine_blast_furnace",
+        "hbm:anvil_steel"
       ],
       "machines": [
         {"id": "hbm:machine_press", "name": "Presse a vapeur"},
@@ -27,10 +28,11 @@
         {"id": "hbm:machine_furnace_brick", "name": "Bricked Furnace"},
         {"id": "hbm:furnace_iron", "name": "Iron Furnace"},
         {"id": "hbm:furnace_steel", "name": "Steel Furnace"},
-        {"id": "hbm:machine_shredder", "name": "Broyeur"},
         {"id": "hbm:machine_rockmill", "name": "Rock Mill"},
         {"id": "hbm:anvil_iron", "name": "Iron Anvil"},
-        {"id": "hbm:anvil_lead", "name": "Lead Anvil"}
+        {"id": "hbm:anvil_lead", "name": "Lead Anvil"},
+        {"id": "hbm:machine_blast_furnace", "name": "Blast Furnace"},
+        {"id": "hbm:anvil_steel", "name": "Steel Anvil"}
       ],
       "bonuses": []
     },
@@ -38,14 +40,13 @@
       "tier": 2,
       "name": "Fonderie",
       "unlocks": [
-        "hbm:machine_blast_furnace",
         "hbm:machine_crucible",
         "hbm:foundry_*",
         "hbm:furnace_combination",
-        "hbm:anvil_steel"
+        "hbm:machine_shredder",
+        "hbm:machine_assembly_machine"
       ],
       "machines": [
-        {"id": "hbm:machine_blast_furnace", "name": "Blast Furnace"},
         {"id": "hbm:machine_crucible", "name": "Crucible"},
         {"id": "hbm:foundry_basin", "name": "Foundry Basin"},
         {"id": "hbm:foundry_channel", "name": "Foundry Channel"},
@@ -54,7 +55,8 @@
         {"id": "hbm:foundry_slagtap", "name": "Foundry Spill Outlet"},
         {"id": "hbm:foundry_tank", "name": "Foundry Storage Basin"},
         {"id": "hbm:furnace_combination", "name": "Combination Oven"},
-        {"id": "hbm:anvil_steel", "name": "Steel Anvil"}
+        {"id": "hbm:machine_shredder", "name": "Broyeur"},
+        {"id": "hbm:machine_assembly_machine", "name": "Assembly Machine"}
       ],
       "bonuses": [
         {"type": "miner_money", "value": 5, "label": "Mineur +5 % d'argent"}
@@ -71,11 +73,10 @@
     {
       "tier": 3,
       "name": "Electromecanique",
-      "requires": ["energie:2"],
+      "requires": ["energie:2", "chimie:2"],
       "unlocks": [
         "hbm:machine_electric_furnace",
         "hbm:machine_epress",
-        "hbm:machine_assembly_machine",
         "hbm:machine_arc_welder",
         "hbm:machine_soldering_station",
         "hbm:machine_centrifuge",
@@ -92,7 +93,6 @@
       "machines": [
         {"id": "hbm:machine_electric_furnace", "name": "Four electrique"},
         {"id": "hbm:machine_epress", "name": "Electric Press"},
-        {"id": "hbm:machine_assembly_machine", "name": "Assembly Machine"},
         {"id": "hbm:machine_arc_welder", "name": "Arc Welder"},
         {"id": "hbm:machine_soldering_station", "name": "Soldering Station"},
         {"id": "hbm:machine_centrifuge", "name": "Centrifugeuse"},
@@ -125,7 +125,7 @@
         "money": 100000,
         "points": 6000,
         "items": [
-          {"id": "hbm:circuit_basic", "count": 16, "label": "circuits integres"},
+          {"id": "hbm:circuit_vacuum_tube", "count": 16, "label": "tubes a vide"},
           {"id": "hbm:circuit_capacitor", "count": 16, "label": "condensateurs"}
         ]
       }
@@ -133,6 +133,7 @@
     {
       "tier": 4,
       "name": "Production de masse",
+      "requires": ["chimie:3"],
       "unlocks": [
         "hbm:machine_assembly_factory",
         "hbm:machine_precass",
@@ -193,7 +194,7 @@
     {
       "tier": 5,
       "name": "Laser et calcul",
-      "requires": ["energie:4"],
+      "requires": ["energie:4", "chimie:4"],
       "unlocks": [
         "hbm:machine_mining_laser",
         "hbm:machine_supercomputer",
@@ -201,8 +202,7 @@
         "hbmspace:machine_drive_processor",
         "hbmspace:machine_vacuum_circuit",
         "hbm:machine_exposure_chamber",
-        "hbm:machine_keyforge",
-        "hbm:anvil_schrabidate"
+        "hbm:machine_keyforge"
       ],
       "machines": [
         {"id": "hbm:machine_mining_laser", "name": "Mining Laser"},
@@ -211,8 +211,7 @@
         {"id": "hbmspace:machine_drive_processor", "name": "Drive Processor"},
         {"id": "hbmspace:machine_vacuum_circuit", "name": "Vacuum Solderer"},
         {"id": "hbm:machine_exposure_chamber", "name": "Exposure Chamber"},
-        {"id": "hbm:machine_keyforge", "name": "Locksmith Table"},
-        {"id": "hbm:anvil_schrabidate", "name": "Ferric Schrabidate Anvil"}
+        {"id": "hbm:machine_keyforge", "name": "Locksmith Table"}
       ],
       "bonuses": [
         {"type": "research", "value": 10, "label": "recherche +10 %"}
@@ -236,7 +235,8 @@
         "hbm:machine_fel",
         "hbm:anvil_dnt",
         "hbm:anvil_osmiridium",
-        "hbm:anvil_murky"
+        "hbm:anvil_murky",
+        "hbm:anvil_schrabidate"
       ],
       "machines": [
         {"id": "hbm:fusion_plasma_forge", "name": "Plasma Forge"},
@@ -244,7 +244,8 @@
         {"id": "hbm:machine_fel", "name": "FEL"},
         {"id": "hbm:anvil_dnt", "name": "Dineutronium Anvil"},
         {"id": "hbm:anvil_osmiridium", "name": "Osmiridium Anvil"},
-        {"id": "hbm:anvil_murky", "name": "Murky Anvil"}
+        {"id": "hbm:anvil_murky", "name": "Murky Anvil"},
+        {"id": "hbm:anvil_schrabidate", "name": "Ferric Schrabidate Anvil"}
       ],
       "bonuses": [
         {"type": "miner_money", "value": 10, "label": "Mineur +10 % d'argent"}

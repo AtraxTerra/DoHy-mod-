@@ -13,12 +13,21 @@ import java.util.List;
  * en sort depuis l'onglet Banque. Garde a la mort ; perdu, comme la banque, si
  * la faction est dissoute.
  *
- * @param items les piles du coffre, sans case vide, {@link #SLOTS} au plus
+ * <p>Il a {@link #SLOTS} cases, plus celles des technologies de la nation (l'Industrie IV en ajoute
+ * 27, lot 23e : {@link #capacity}). Une nation qui perd ce palier garde ce qui depasse ; seules les
+ * nouvelles piles attendent qu'une case se libere.
+ *
+ * @param items les piles du coffre, sans case vide, {@link #capacity} au plus
  */
 public record FactionVault(List<ItemStack> items) {
 
     /** Six rangees de neuf, comme un grand coffre. */
     public static final int SLOTS = 54;
+
+    /** Les cases du coffre de cette nation : les {@link #SLOTS} de base et celles des technologies. */
+    public static int capacity(ServerPlayer player) {
+        return SLOTS + fr.atraxterra.dohy.faction.tech.TechPerks.of(player).vaultSlots();
+    }
 
     public static final FactionVault EMPTY = new FactionVault(List.of());
 
@@ -75,6 +84,7 @@ public record FactionVault(List<ItemStack> items) {
     /** Range ces objets dans le coffre, en completant les piles d'abord ; rend combien n'y ont pas tenu. */
     public static int store(ServerPlayer player, List<ItemStack> stacks) {
         List<ItemStack> slots = copy(of(player));
+        int capacity = capacity(player);
         int lost = 0;
         for (ItemStack stack : stacks) {
             ItemStack left = stack.copy();
@@ -88,7 +98,7 @@ public record FactionVault(List<ItemStack> items) {
                     left.shrink(moved);
                 }
             }
-            while (!left.isEmpty() && slots.size() < SLOTS) {
+            while (!left.isEmpty() && slots.size() < capacity) {
                 int moved = Math.min(left.getCount(), left.getMaxStackSize());
                 slots.add(left.copyWithCount(moved));
                 left.shrink(moved);

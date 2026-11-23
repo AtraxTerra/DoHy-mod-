@@ -101,9 +101,20 @@ public final class JobApi {
         return JobRebirth.BONUS * rebirths(player, job);
     }
 
-    /** L'argent d'un niveau de ce metier pour ce joueur, renaissances comprises. */
+    /**
+     * Le bonus des technologies de la nation sur l'argent de ce metier : l'Industrie II et VI pour le
+     * Mineur (lot 23e, +5 puis +10 %). Il s'ajoute a celui des renaissances.
+     */
+    public static double techBonus(ServerPlayer player, Job job) {
+        if (job != Job.MINER) {
+            return 0.0d;
+        }
+        return fr.atraxterra.dohy.faction.tech.TechPerks.of(player).minerMoney() / 100.0d;
+    }
+
+    /** L'argent d'un niveau de ce metier pour ce joueur, renaissances et technologies comprises. */
     public static long levelMoney(ServerPlayer player, Job job, int level) {
-        return Math.round(moneyForLevel(level) * (1.0d + rebirthBonus(player, job)));
+        return Math.round(moneyForLevel(level) * (1.0d + rebirthBonus(player, job) + techBonus(player, job)));
     }
 
     public static long xp(ServerPlayer player, Job job) {

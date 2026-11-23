@@ -1,5 +1,7 @@
 package fr.atraxterra.dohy.agri;
 
+import fr.atraxterra.dohy.faction.tech.Tech;
+import fr.atraxterra.dohy.faction.tech.TechPerks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -64,6 +66,11 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
     private final Energy energy = new Energy();
     private final NonNullList<ItemStack> items = NonNullList.withSize(INPUTS + OUTPUTS, ItemStack.EMPTY);
     private UUID owner;
+    /**
+     * L'energie que la nation du proprietaire efface, en pour cent (Energie III et V, lot 23e) : relue
+     * chaque seconde quand il est la, gardee sinon.
+     */
+    private int energyCut;
     private int fuel;
     private int burning;
     private int progress;
@@ -93,6 +100,16 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
 
     public int capacity() {
         return AgriConfig.config().machines().capacity();
+    }
+
+    /** Ce que coute ici, en FE, un travail qui en demande {@code base} : les technologies de l'Energie en effacent. */
+    public int cost(int base) {
+        return Tech.machineEnergy(base, energyCut);
+    }
+
+    /** L'energie effacee par la nation du proprietaire, en pour cent. */
+    public int energyCut() {
+        return energyCut;
     }
 
     /** Depense de l'energie. Faux, et rien n'est pris, s'il n'y en a pas assez. */
@@ -142,6 +159,14 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
             case OVEN -> work(server, bakeJob(), config.bakeTicks());
         }
         if (ticks++ % 20 == 0) {
+            if (!generator() && owner != null
+                    && server.getServer().getPlayerList().getPlayer(owner) instanceof ServerPlayer player) {
+                int cut = TechPerks.of(player).machineEnergy();
+                if (cut != energyCut) {
+                    energyCut = cut;
+                    dirty = true;
+                }
+            }
             boolean lit = generator() ? burning > 0 : energy.amount >= lowestCost(config);
             BlockState state = getBlockState();
             if (state.hasProperty(AgriMachineBlock.LIT) && state.getValue(AgriMachineBlock.LIT) != lit) {
@@ -172,7 +197,7 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
         for (String key : DoHyAgri.flourKeys()) {
             Item grain = DoHyAgri.grain(key);
             if (stored(grain) >= config.millRatio()) {
-                return new Job(Map.of(grain, config.millRatio()), DoHyAgri.flour(key), 1, config.millEnergy());
+                return new Job(Map.of(grain, config.millRatio()), DoHyAgri.flour(key), 1, cost(config.millEnergy()));
             }
         }
         return null;
@@ -196,7 +221,7 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
                 inputs.put(item, input.getValue());
             }
             if (ready) {
-                return new Job(inputs, DoHyAgri.bread(bread), batch.count(), batch.energy());
+                return new Job(inputs, DoHyAgri.bread(bread), batch.count(), cost(batch.energy()));
             }
         }
         return null;
@@ -461,11 +486,11 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
     /** L'energie qu'il faut pour que la machine fasse au moins une chose : en dessous, elle est eteinte. */
     private int lowestCost(AgriConfig.Machines config) {
         if (kind() == AgriMachineBlock.Kind.MILL) {
-            return Math.max(1, config.millEnergy());
+            return Math.max(1, cost(config.millEnergy()));
         }
         int lowest = Integer.MAX_VALUE;
         for (AgriConfig.Batch batch : AgriConfig.config().breads()) {
-            lowest = Math.min(lowest, batch.energy());
+            lowest = Math.min(lowest, cost(batch.energy()));
         }
         return Math.max(1, lowest == Integer.MAX_VALUE ? 1 : lowest);
     }
@@ -528,6 +553,7 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
         output.putInt("burning", burning);
         output.putInt("progress", progress);
         output.putString("owner", owner == null ? "" : owner.toString());
+        output.putInt("energy_cut", energyCut);
         ContainerHelper.saveAllItems(output, items);
     }
 
@@ -544,6 +570,7 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
         } catch (IllegalArgumentException malformed) {
             owner = null;
         }
+        energyCut = Math.max(0, Math.min(90, input.getIntOr("energy_cut", 0)));
         items.clear();
         ContainerHelper.loadAllItems(input, items);
     }
