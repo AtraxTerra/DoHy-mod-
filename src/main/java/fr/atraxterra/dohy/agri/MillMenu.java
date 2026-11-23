@@ -35,23 +35,24 @@ public final class MillMenu extends MachineMenu {
         AgriConfig.Machines config = AgriConfig.config().machines();
         AgriMachineBlockEntity machine = machine(player);
         int energy = machine == null ? 0 : machine.energyStored();
+        int each = each(machine, config);
         List<Card> cards = new ArrayList<>();
         for (String key : DoHyAgri.flourKeys()) {
             Item grain = DoHyAgri.grain(key);
             Item flour = DoHyAgri.flour(key);
             int have = AgriInv.count(player, grain);
-            int possible = possible(have, energy, config);
+            int possible = possible(have, energy, each, config);
             Card card = Card.of(new ItemStack(flour), MenuView.text(new ItemStack(flour).getHoverName()), List.of(
                             MenuView.text(Component.literal(config.millRatio() + " x ")
                                     .append(new ItemStack(grain).getHoverName())),
-                            "Tu en as " + have + "  ·  " + config.millEnergy() + " FE"))
+                            "Tu en as " + have + "  ·  " + each + " FE"))
                     .accent(possible > 0 ? GREEN : 0xFF55545C).badge(possible > 0 ? "x" + possible : "");
             cards.add(possible > 0
                     ? card.action("one:" + key + "|moudre une farine").right("all:" + key + "|moudre jusqu'a une pile")
                     : card.state(MenuView.DISABLED));
         }
         List<MenuView.Stat> stats = List.of(energyStat(machine),
-                new MenuView.Stat("UNE FARINE", config.millRatio() + " CEREALES, " + config.millEnergy() + " FE",
+                new MenuView.Stat("UNE FARINE", config.millRatio() + " CEREALES, " + each + " FE",
                         0xFFFFFFFF),
                 workStat(machine));
         return new MenuView(id(), "Moulin", "", stats,
@@ -59,9 +60,14 @@ public final class MillMenu extends MachineMenu {
                         new MenuView.Section("MOUDRE A LA MAIN", "resources", MenuView.GRID, cards)), true);
     }
 
-    private static int possible(int grains, int energy, AgriConfig.Machines config) {
+    /** L'energie d'une farine dans ce moulin, technologies de l'Energie comprises. */
+    private static int each(AgriMachineBlockEntity machine, AgriConfig.Machines config) {
+        return machine == null ? config.millEnergy() : machine.cost(config.millEnergy());
+    }
+
+    private static int possible(int grains, int energy, int each, AgriConfig.Machines config) {
         int byGrain = grains / Math.max(1, config.millRatio());
-        int byEnergy = config.millEnergy() <= 0 ? STACK : energy / config.millEnergy();
+        int byEnergy = each <= 0 ? STACK : energy / each;
         return Math.max(0, Math.min(STACK, Math.min(byGrain, byEnergy)));
     }
 
@@ -98,12 +104,13 @@ public final class MillMenu extends MachineMenu {
         }
         AgriConfig.Machines config = AgriConfig.config().machines();
         Item grain = DoHyAgri.grain(cereal);
-        int count = Math.min(wanted, possible(AgriInv.count(player, grain), machine.energyStored(), config));
+        int each = each(machine, config);
+        int count = Math.min(wanted, possible(AgriInv.count(player, grain), machine.energyStored(), each, config));
         if (count <= 0) {
-            return machine.energyStored() < config.millEnergy()
+            return machine.energyStored() < each
                     ? "Le moulin n'a pas assez d'energie." : "Il faut " + config.millRatio() + " cereales par farine.";
         }
-        if (!machine.spend(count * config.millEnergy())) {
+        if (!machine.spend(count * each)) {
             return "Le moulin n'a pas assez d'energie.";
         }
         AgriInv.take(player, grain, count * config.millRatio());

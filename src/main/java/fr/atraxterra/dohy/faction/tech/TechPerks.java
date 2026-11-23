@@ -14,8 +14,8 @@ import java.util.Map;
  * Nucleaire font +25 %).
  *
  * <p>Ils agissent sur les systemes de DoHy, jamais sur le code de NTM. Ceux qui ne servent pas
- * encore attendent leur lot ({@link #pending(String)}) : les contenus de chaque domaine (23e a
- * 23g).
+ * encore attendent leur lot ({@link #pending(String)}) : les contenus de chaque domaine (23f et
+ * 23g ; l'Energie et l'Industrie sont en service depuis le lot 23e).
  */
 public record TechPerks(Map<String, Integer> values) {
 
@@ -60,6 +60,21 @@ public record TechPerks(Map<String, Integer> values) {
         return value("oil_fields");
     }
 
+    /** L'energie que les machines de DoHy ne consomment plus, en pour cent (Energie III et V), 90 au plus. */
+    public int machineEnergy() {
+        return Math.max(0, Math.min(90, value("machine_energy")));
+    }
+
+    /** L'argent du metier de Mineur (niveaux et primes), en pour cent (Industrie II et VI). */
+    public int minerMoney() {
+        return Math.max(0, value("miner_money"));
+    }
+
+    /** Les cases ajoutees au coffre de la banque (Industrie IV). */
+    public int vaultSlots() {
+        return Math.max(0, value("vault_slots"));
+    }
+
     public static TechPerks of(ServerPlayer player) {
         return of(FactionApi.data(player));
     }
@@ -85,8 +100,7 @@ public record TechPerks(Map<String, Integer> values) {
     public static String pending(String type) {
         return switch (type) {
             case "parallel", "research", "market_tax", "mines_money", "mines_ore", "oil_fields", "labs",
-                 "research_per_country", "lab_energy" -> "";
-            case "machine_energy", "miner_money", "vault_slots" -> "lot 23e";
+                 "research_per_country", "lab_energy", "machine_energy", "miner_money", "vault_slots" -> "";
             case "farmer_xp", "agri_speed", "farmer_money" -> "lot 23f";
             case "nuclear_loot", "soldier_hp" -> "lot 23g";
             default -> "a venir";

@@ -104,9 +104,9 @@ public final class JobPrimes {
         return amount;
     }
 
-    /** La prime d'un palier pour ce joueur : +10 % par renaissance du metier. */
+    /** La prime d'un palier pour ce joueur : +10 % par renaissance du metier, plus les technologies (Mineur). */
     public static long amount(ServerPlayer player, Job job, int level) {
-        return Math.round(amount(level) * (1.0d + JobApi.rebirthBonus(player, job)));
+        return Math.round(amount(level) * (1.0d + JobApi.rebirthBonus(player, job) + JobApi.techBonus(player, job)));
     }
 
     /** Les niveaux qui portent une prime : 5, 10, ... jusqu'au niveau maximum. */

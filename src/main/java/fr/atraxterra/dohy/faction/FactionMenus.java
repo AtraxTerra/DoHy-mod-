@@ -246,7 +246,7 @@ public final class FactionMenus {
             treasury.add(MoneyFormat.exact(nation.bank()) + " $");
             FactionVault vault = nation.vault();
             if (!vault.isEmpty()) {
-                treasury.add("Coffre " + vault.used() + " / " + FactionVault.SLOTS);
+                treasury.add("Coffre " + vault.used() + " / " + FactionVault.capacity(player));
             } else if (nation.mines() > 0) {
                 treasury.add("+" + MoneyFormat.exact(nation.minesPerHour()) + " $ / h des mines");
             }
@@ -598,9 +598,10 @@ public final class FactionMenus {
                     new MenuView.Section("RETIRER", "upgrade", MenuView.GRID, withdraw),
                     new MenuView.Section("TRESOR", "resources", MenuView.GRID, treasury)));
             if (fr.atraxterra.dohy.earth.mine.EarthMines.active() || !vault.isEmpty()) {
-                stats.add(new MenuView.Stat("COFFRE", vault.used() + " / " + FactionVault.SLOTS,
-                        vault.used() >= FactionVault.SLOTS ? 0xFFEF3826 : 0xFFFFFFFF));
-                sections.add(new MenuView.Section("COFFRE DE LA BANQUE|" + vault.used() + " / " + FactionVault.SLOTS,
+                int capacity = FactionVault.capacity(player);
+                stats.add(new MenuView.Stat("COFFRE", vault.used() + " / " + capacity,
+                        vault.used() >= capacity ? 0xFFEF3826 : 0xFFFFFFFF));
+                sections.add(new MenuView.Section("COFFRE DE LA BANQUE|" + vault.used() + " / " + capacity,
                         "armor", MenuView.TILES, vaultCards(vault)));
             }
             sections.add(new MenuView.Section("HISTORIQUE", "craft", MenuView.ROWS, history));

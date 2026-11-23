@@ -56,6 +56,7 @@ public final class TradingServerMenu extends MenuController {
         TradingServerBlockEntity.Status status = server.status();
         boolean running = status == TradingServerBlockEntity.Status.RUNNING;
         int stored = server.energyStored();
+        int perTick = server.energyPerTick();
         long pending = server.pending();
 
         List<Card> cards = new ArrayList<>();
@@ -65,12 +66,14 @@ public final class TradingServerMenu extends MenuController {
                 .accent(running ? 0xFF22E558 : 0xFFEF3826).action("refresh|actualiser"));
         cards.add(Card.of(new ItemStack(Items.REDSTONE), "Energie", List.of(
                         MoneyFormat.exact(stored) + " / " + MoneyFormat.exact(config.energyCapacity()) + " FE",
-                        "Consomme " + config.energyPerTick() + " FE par tick"))
+                        "Consomme " + perTick + " FE par tick"
+                                + (server.energyCut() > 0 ? " (-" + server.energyCut() + " %)" : "")))
                 .accent(0xFFFAC400).progress(stored, config.energyCapacity())
                 .tooltip(List.of("Tout cable d'energie FE l'alimente",
-                        "NTM NEXT : " + (config.energyPerTick() * 5L) + " HE par tick (5 HE = 1 FE)",
-                        "Reserve pleine : " + (config.energyCapacity() / Math.max(1, config.energyPerTick()) / 20)
-                                + " s d'autonomie")));
+                        "NTM NEXT : " + (perTick * 5L) + " HE par tick (5 HE = 1 FE)",
+                        "Reserve pleine : " + (config.energyCapacity() / Math.max(1, perTick) / 20)
+                                + " s d'autonomie",
+                        "L'Energie III et V de ta nation en effacent une part")));
         cards.add(Card.of(new ItemStack(Items.EMERALD), "Production", List.of(
                         MoneyFormat.exact(config.incomePerHour()) + " $ par heure",
                         MoneyFormat.exact(server.totalProduced()) + " $ produits en tout"))

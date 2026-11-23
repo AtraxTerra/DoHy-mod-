@@ -71,8 +71,8 @@ public final class MineMenu extends MenuController {
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("MINES", String.valueOf(mines.size()), mines.isEmpty() ? 0xFFB8BCC6 : GOLD),
                 new MenuView.Stat("PAR HEURE", MoneyFormat.shortForm(perHour) + " $", perHour > 0 ? GREEN : 0xFFB8BCC6),
-                new MenuView.Stat("COFFRE", vault.used() + " / " + FactionVault.SLOTS,
-                        vault.used() >= FactionVault.SLOTS ? 0xFFEF3826 : 0xFFFFFFFF));
+                new MenuView.Stat("COFFRE", vault.used() + " / " + FactionVault.capacity(player),
+                        vault.used() >= FactionVault.capacity(player) ? 0xFFEF3826 : 0xFFFFFFFF));
         List<MenuView.Section> sections = new ArrayList<>();
 
         EarthMines.Capture capture = EarthMines.capture(player.getUUID());
