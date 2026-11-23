@@ -26,16 +26,14 @@ jobs:
           distribution: temurin
           java-version: "25"
 
-      # Gradle est epingle ici plutot que par un wrapper : le wrapper n'a pas pu
-      # etre genere depuis l'environnement de dev (services.gradle.org injoignable).
-      # A remplacer par ./gradlew des que le wrapper est commite.
-      - name: Gradle 9.1
+      # Le wrapper (Gradle 9.1.0, somme SHA-256 de la distribution verifiee) est
+      # commite depuis le 2026-11-23 ; setup-gradle garde le cache et verifie que
+      # gradle-wrapper.jar est bien celui d'une version publiee de Gradle.
+      - name: Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "9.1.0"
 
       - name: Build
-        run: gradle build --no-daemon --stacktrace
+        run: ./gradlew build --no-daemon --stacktrace
 
       # Le catalogue de prix est copie dans le jar au lieu d'etre duplique dans
       # les sources. Si cette copie casse silencieusement, le mod se charge mais

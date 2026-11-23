@@ -35,15 +35,37 @@ base_price = ( TARGET_RATE[tier] / rate_per_hour ) × MONEY_MULTIPLIER
 
 Un villageois qui vend un item contre `N` émeraudes impose un plafond : au-delà de `N × prix_émeraude`, le circuit *hall de troc → émeraudes → achat → revente* devient un revenu infini. Avec l'émeraude à 2 $, le générateur appliqué donne :
 
-| Item | Prix du modèle | Plafonné à | Troc |
+| Item | Prix du modèle | Plafonné à | Troc (et ce qu'il donne) |
 |---|---|---|---|
-| perle de l'ender | 83 | **10** | 5 ém. → 1 |
-| glowstone | 42 | **1** | 1 ém. → 2 |
-| terracotta | 33 | **2** | 1 ém. → 1 |
-| redstone | 28 | **1** | 1 ém. → 4 |
-| quartz | 20 | **2** | 1 ém. → 1 |
-| flèche | 17 | **1** | 1 ém. → 16 |
-| lapis | 15 | **2** | 1 ém. → 1 |
+| pomme | 120 | **1** | fermier : 1 ém. → 4 |
+| perle de l'ender | 83 | **10** | clerc : 5 ém. → 1 |
+| dripstone (bloc) | 60 | **1** | maçon : 1 ém. → 4 |
+| cuir | 60 | **4** | tanneur : armure de cheval en cuir, 6 ém., broyée par Create → 3 cuirs en moyenne (sa selle, 6 ém., en donne 2,5 à la meule) |
+| poudre de glowstone | 42 | **2** | clerc : 4 ém. → 1 glowstone, cassée à Fortune ou broyée par Create → 4 poudres au plus |
+| terracotta | 33 | **2** | maçon : 4 dripstone pour 1 ém. → 4 argiles à la meule de Create → 1 bloc d'argile cuit |
+| morue | 30 | **6** | pêcheur : seau de morue, 3 ém. |
+| argile (boule) | 30 | **1** | maçon : 4 dripstone pour 1 ém., à la meule de Create |
+| ficelle | 28 | **1** | berger : 1 laine pour 1 ém., broyée par Create → 2,5 ficelles en moyenne |
+| redstone | 28 | **1** | clerc : 1 ém. → 2 |
+| flèche | 17 | **1** | archer : 1 ém. → 16 |
+| laine blanche | 15 | **2** | berger : 1 ém. → 1 (ses laines teintes aussi, lavées par Create) |
+| charbon de bois | 15 | **2** | pêcheur : feu de camp, 2 ém., cassé → 2 charbons de bois |
+| lapis | 15 | **2** | clerc : 1 ém. → 1 |
+
+**Audit du 2026-11-23** sur les 388 trocs de 26.2 (les données du jeu, plus de table recopiée à la
+main) et les recettes de Create 6.0.9 (Create Fly) : chaque vente d'un villageois, et ce que l'objet
+acheté donne une fois cassé, fondu ou passé dans une machine de Create. La table d'avant se
+trompait : la redstone se vend 2 pour une émeraude, le clerc vend la glowstone (le bloc) et non sa
+poudre, le maçon ne vend ni quartz ni terracotta nature. Le **quartz** sort donc des plafonds et
+retrouve son prix (20 $) ; la **terracotta** y reste, par la chaîne du dripstone. Sans objet : les
+briques, le papier, le verre, la cloche (pas vendables au shop), le fer (une armure ou un outil de
+fer fondu donne une pépite, déjà plafonnée par `CRAFT_CAPS`). Le marchand ambulant n'entre pas en
+compte : il passe rarement, ses stocks sont limités, il ne se met pas en hall.
+
+**Choix du joueur** (2026-11-23) : plafonner plutôt que retirer les trocs fautifs par datapack. Les
+prix de la pomme, du cuir, de la ficelle et de l'argile s'effondrent ; c'était l'autre voie, et le
+joueur l'a écartée. **Non vérifié** : le broyeur de NTM NEXT (des armures ou des outils de
+villageois broyés en poudres de leur matière) — à voir en jeu.
 
 ### Blocs de masse
 
@@ -1570,6 +1592,55 @@ Leviers : `data/tech/*.json` (`cost` : `points`, `money`, `items`), `data/resear
 (`points_per_hour`, `buffer_points`, `country_percent`, `capital_percent`, `country_cap_percent`),
 `ResearchLabBlockEntity.PART_SLOTS`.
 
+## 6 novovicies. Niveau global — le barème des jalons (2026-11-23)
+
+Outil : `python3 -I tools/global_level.py`. Un niveau global vaut 500 XP ; chaque niveau ajoute
+35 % aux récompenses des contrats et à l'argent du jour du spawn, et tous les cinq niveaux une prime
+(50 000 $ fois le rang du palier).
+
+| Jalon | XP globale | Au plus |
+|---|---|---|
+| Contrat du jour | 15 | 3 par jour |
+| Contrat de la semaine | 250 | 1 par semaine |
+| Commande de trixium | 15 | 1 par jour |
+| Niveau de métier | 20 | 4 métiers × 100 niveaux : 8 000 |
+| Don au musée | 100 | 36 pièces : 3 600 |
+| Palier de collection | tête 10 → 130 (paliers 1 à 10), queue 150 → 290 (+10 par cran) | 3 795 par objet mené au bout |
+| Prestige de collection | 500 | 5 par objet |
+| Blocs de masse (20) | **aucune** (ni paliers ni prestige) | — |
+
+**Ce qui a changé.** La queue des paliers montait de 170 à **9 390** (×1,33 par cran) alors que
+ses seuils ne montent que de ×1,11 : au palier 24 d'une courbe `FOUND`, un objet récolté valait
+cinquante fois l'XP d'un objet du palier 9, et un seul palier dix-neuf niveaux globaux. Avec la
+corne du Dancarok sur un bloc de masse (100 000 blocs par heure, § 1), trois heures menaient une
+collection au bout : **37 815 XP, 75 niveaux**, une récompense de contrat multipliée par 27, et
+chaque prestige rendait le tout, la collection repartant à zéro. Les blocs de masse ne donnent plus
+d'XP globale (`global_xp_disabled` dans `collections.json`), la queue monte de dix en dix, et un
+objet mené au bout rapporte 3 795 XP au lieu de 37 815. La tête ne change pas.
+
+**Le rythme.** Pour un joueur seul à 20 h par semaine (§ 3), tous les contrats faits, les quatre
+métiers à parts égales, le musée rempli au fil de la saison, et pour les collections un modèle
+grossier (trois objets qui avancent ensemble par heure de jeu, sur un roulement de quarante) :
+
+| Semaine | Contrats | Métiers | Musée | Collections | Niveau | Récompense des contrats |
+|---|---|---|---|---|---|---|
+| 1 | 670 | 1 360 | 200 | 650 | 5 | ×2,75 |
+| 4 | 2 680 | 2 400 | 900 | 1 187 | 14 | ×5,9 |
+| 8 | 5 360 | 3 200 | 1 800 | 1 494 | 23 | ×9,05 |
+| 16 | 10 720 | 4 240 | 3 600 | 2 034 | 41 | ×15,35 |
+
+Le jeu ordinaire ne touche pas la queue des paliers en une saison (le palier le plus haut du
+modèle est le septième) : le nouveau barème ne change rien à ce rythme, il ferme les fontaines.
+Au niveau 41, les contrats rapportent ~4,6 M par semaine, moins du quart du revenu attendu au
+mois 4 (1 M/h, § 3) ; en semaine 1 (du niveau 0 au niveau 5), ils pèsent autant que la vente,
+~0,5 M chacun : c'est le rôle qu'on leur donne, structurer les premières soirées. **À surveiller** : si le booster ×2 tombe en
+semaine 1, c'est `money_base` des contrats qu'il faut baisser, pas l'XP.
+
+Leviers : `data/collections.json` (`rewards_per_tier[].global_xp`, `prestige.global_xp`,
+`exceptions[].global_xp_disabled`), `data/contracts.json` (`global_xp` des quotidiens, de l'hebdo
+et de la commande de trixium), `data/museum.json` (`global_xp_per_donation`), `JobApi`
+(20 par niveau de métier), `ContractApi` (500 par niveau, +35 %).
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas
@@ -1577,4 +1648,4 @@ Leviers : `data/tech/*.json` (`cost` : `points`, `money`, `items`), `data/resear
   partie montre un écart.
 - ~~**COMPONENT**~~ : catégorie supprimée le 2026-11-05, elle n'a jamais contenu d'item
 - ~~**Caisses**~~ : tables écrites le 2026-11-11, devenues six boxes le même jour (§ 6 quater)
-- **Niveau global** : barème d'XP par type de jalon à fixer une fois les contrats en jeu
+- ~~**Niveau global**~~ : barème fixé le 2026-11-23 (§ 6 novovicies)

@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.spawn.DoHySpawn;
 import fr.atraxterra.dohy.spawn.HologramBlockEntity;
+import fr.atraxterra.dohy.util.Soils;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -359,8 +360,10 @@ public final class EarthSites {
                         dead = leaves.orElse(Blocks.AIR.defaultBlockState());
                     } else if ((state.is(BlockTags.REPLACEABLE_BY_TREES) || state.is(BlockTags.FLOWERS))
                             && state.getFluidState().isEmpty() && !state.isAir()) {
-                        // une plante morte sur la terre, rien sur le haut d'une herbe haute
-                        boolean onSoil = level.getBlockState(pos.below()).is(BlockTags.DIRT);
+                        // une plante morte sur la terre (l'herbe comprise, que le tag minecraft:dirt ne
+                        // range plus en 26.2 : elle n'est changee en terre morte qu'apres), rien sur le
+                        // haut d'une herbe haute
+                        boolean onSoil = Soils.earth(level.getBlockState(pos.below()));
                         dead = onSoil ? plant.orElse(Blocks.AIR.defaultBlockState()) : Blocks.AIR.defaultBlockState();
                     }
                     if (dead != null) {

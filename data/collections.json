@@ -123,77 +123,77 @@
     {
       "tier_index": 10,
       "floor_bonus_pct": 0.199,
-      "global_xp": 170
+      "global_xp": 150
     },
     {
       "tier_index": 11,
       "floor_bonus_pct": 0.208,
-      "global_xp": 230
+      "global_xp": 160
     },
     {
       "tier_index": 12,
       "floor_bonus_pct": 0.216,
-      "global_xp": 310
+      "global_xp": 170
     },
     {
       "tier_index": 13,
       "floor_bonus_pct": 0.224,
-      "global_xp": 410
+      "global_xp": 180
     },
     {
       "tier_index": 14,
       "floor_bonus_pct": 0.232,
-      "global_xp": 540
+      "global_xp": 190
     },
     {
       "tier_index": 15,
       "floor_bonus_pct": 0.24,
-      "global_xp": 720
+      "global_xp": 200
     },
     {
       "tier_index": 16,
       "floor_bonus_pct": 0.247,
-      "global_xp": 960
+      "global_xp": 210
     },
     {
       "tier_index": 17,
       "floor_bonus_pct": 0.255,
-      "global_xp": 1270
+      "global_xp": 220
     },
     {
       "tier_index": 18,
       "floor_bonus_pct": 0.262,
-      "global_xp": 1700
+      "global_xp": 230
     },
     {
       "tier_index": 19,
       "floor_bonus_pct": 0.268,
-      "global_xp": 2260
+      "global_xp": 240
     },
     {
       "tier_index": 20,
       "floor_bonus_pct": 0.275,
-      "global_xp": 3000
+      "global_xp": 250
     },
     {
       "tier_index": 21,
       "floor_bonus_pct": 0.281,
-      "global_xp": 3990
+      "global_xp": 260
     },
     {
       "tier_index": 22,
       "floor_bonus_pct": 0.288,
-      "global_xp": 5310
+      "global_xp": 270
     },
     {
       "tier_index": 23,
       "floor_bonus_pct": 0.294,
-      "global_xp": 7060
+      "global_xp": 280
     },
     {
       "tier_index": 24,
       "floor_bonus_pct": 0.3,
-      "global_xp": 9390
+      "global_xp": 290
     }
   ],
   "prestige": {
@@ -210,7 +210,8 @@
     "_4": "Les items obtenus par achat au shop ne comptent pas dans la collection.",
     "_5": "Vingt-cinq paliers par courbe. La tete est volontairement raide (x2 a x5 par cran) et la queue dense (environ x1,11) : la tete est la progression, la queue est la duree de vie. Les valeurs de tete n'ont pas bouge depuis la premiere version, pour ne pas deplacer le palier des collections deja entamees.",
     "_6": "Le plancher suit une courbe concave jusqu'a 0,30 : il gagne 0,06 au premier palier et 0,003 au dernier. Il ne suit pas le nombre de paliers parce que c'est la variable qui peut eteindre le frein des prix — vingt-cinq crans de 0,03 auraient donne 0,75 a eux seuls, soit la borne entiere consommee par les collections.",
-    "_7": "Les exceptions gardent leur longueur propre (l'oeuf de dragon a un seul palier, l'elytre dix) : un item rare a moins de paliers, donc moins de bonus de plancher, ce qui est coherent."
+    "_7": "Les exceptions gardent leur longueur propre (l'oeuf de dragon a un seul palier, l'elytre dix) : un item rare a moins de paliers, donc moins de bonus de plancher, ce qui est coherent.",
+    "_8": "L'XP globale d'un palier (bareme fixe le 2026-11-23, BALANCE.md) : la tete monte de 10 a 130, la queue de 150 a 290, dix de plus par cran. La queue montait jusqu'a 9 390 : un seul palier valait dix-neuf niveaux globaux, et l'XP par objet recolte y etait cinquante fois celle du palier 9. global_xp_disabled retire l'XP des paliers et des prestiges d'un item : les blocs de masse, que la corne du Dancarok casse par centaines de milliers en quelques heures."
   },
   "exceptions": {
     "minecraft:dragon_egg": {
@@ -252,84 +253,104 @@
       "floor_bonus_disabled": true
     },
     "minecraft:cobblestone": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:stone": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:basalt": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:gravel": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:soul_sand": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:deepslate": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:tuff": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:calcite": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:granite": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:diorite": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:andesite": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:netherrack": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:blackstone": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:soul_soil": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:end_stone": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:sand": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:red_sand": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:terracotta": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:sulfur": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     },
     "minecraft:cinnabar": {
-      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok)",
-      "floor_bonus_disabled": true
+      "_reason": "bloc de masse : plancher de 5 %, que ni les paliers ni le prestige ne relevent (outils de zone, corne du Dancarok) ; ni XP globale",
+      "floor_bonus_disabled": true,
+      "global_xp_disabled": true
     }
   },
   "sell_requires_collection": false,

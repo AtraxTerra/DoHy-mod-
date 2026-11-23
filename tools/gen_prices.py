@@ -80,15 +80,43 @@ FORCED_FLOOR_PRICE = {
 # Tant qu'un villageois vend un item contre N emeraudes, le prix de vente de cet
 # item ne peut pas depasser N x prix_emeraude sans creer un revenu infini.
 # Format : item -> (emeraudes, unites obtenues).
+#
+# Audit du 2026-11-23 sur les 388 trocs de 26.2 (donnees du jeu) : chaque vente
+# d'un villageois, et ce que l'objet achete donne une fois casse, ou passe dans
+# les machines de Create (rendement moyen). Le joueur a tranche : on plafonne
+# (et on garde les trocs). Le marchand ambulant n'entre pas en compte : il passe
+# rarement, ses stocks sont limites, il ne se met pas en hall.
 VILLAGER_TRADES = {
     "minecraft:lapis_lazuli": (1, 1),     # clerc
-    "minecraft:redstone": (1, 4),         # clerc
-    "minecraft:glowstone_dust": (1, 2),   # clerc
+    "minecraft:redstone": (1, 2),         # clerc (2 pour une emeraude en 26.2)
+    # clerc : une glowstone pour 4 emeraudes, cassee a Fortune ou broyee par
+    # Create : 4 poudres au plus
+    "minecraft:glowstone_dust": (4, 4),
     "minecraft:ender_pearl": (5, 1),      # clerc expert
-    "minecraft:quartz": (1, 1),           # macon
-    "minecraft:terracotta": (1, 1),       # macon
     "minecraft:arrow": (1, 16),           # archer
-    # TODO auditer : briques, argile, papier, verre teinte, charbon, fer
+    "minecraft:apple": (1, 4),            # fermier
+    "minecraft:dripstone_block": (1, 4),  # macon
+    # berger ; ses laines teintes passent aussi au blanc, lavees par Create
+    "minecraft:white_wool": (1, 1),
+    # pecheur : un feu de camp pour 2 emeraudes, casse il donne 2 charbons de bois
+    "minecraft:charcoal": (2, 2),
+    # pecheur : un seau de morue pour 3 emeraudes, la morue tuee en donne une
+    "minecraft:cod": (3, 1),
+    # Create : la laine du berger (1 emeraude) broyee, 2,5 ficelles en moyenne
+    "minecraft:string": (1, 2.5),
+    # Create : l'armure de cheval en cuir du tanneur (6 emeraudes) broyee, 3 cuirs
+    # en moyenne (sa selle, 6 emeraudes, en donne 2,5 a la meule)
+    "minecraft:leather": (6, 3),
+    # Create : le dripstone du macon (4 pour une emeraude) a la meule, une
+    # argile par bloc
+    "minecraft:clay_ball": (1, 4),
+    # ... et ces quatre argiles font un bloc d'argile, cuit en une terracotta (le
+    # macon, lui, ne vend que des terracottas teintes, qui ne se defont pas)
+    "minecraft:terracotta": (1, 1),
+    # Retire a l'audit : le quartz (le macon vend le bloc de quartz, qui ne se
+    # defait pas). Sans objet : les briques, le papier, le verre, la cloche (pas
+    # vendables au shop) ; le fer (une armure ou un outil de fer fondu donne une
+    # pepite, deja plafonnee par CRAFT_CAPS sous le prix d'une emeraude).
 }
 
 # Une conversion d'etabli qui part d'un item vendable doit rendre moins que lui

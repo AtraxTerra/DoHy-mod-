@@ -68,13 +68,17 @@ public final class CollectionApi {
 
         long before = data(player).countOf(id);
         long after = data(player).add(id, quantity);
+        // Les blocs de masse n'en donnent pas : 300 000 se cassent en quelques heures a la corne.
+        boolean xp = CollectionTiers.config().globalXpAllowed(id);
 
         for (int index = 0; index < tiers.size(); index++) {
             long threshold = tiers.get(index);
             if (before < threshold && after >= threshold) {
                 announce(player, id, entry, index, threshold, tiers.size());
-                ContractApi.grantGlobalXp(player,
-                        CollectionTiers.config().reward(index).globalXp(), "palier de collection");
+                if (xp) {
+                    ContractApi.grantGlobalXp(player,
+                            CollectionTiers.config().reward(index).globalXp(), "palier de collection");
+                }
                 ContractApi.progress(player, ContractType.COLLECTION_TIER, target -> true, 1L);
             }
         }
@@ -207,7 +211,9 @@ public final class CollectionApi {
         player.sendSystemMessage(Component.literal("  collection repartie a zero")
                 .withStyle(ChatFormatting.GRAY));
 
-        ContractApi.grantGlobalXp(player, rules.globalXp(), "prestige de collection");
+        if (CollectionTiers.config().globalXpAllowed(id)) {
+            ContractApi.grantGlobalXp(player, rules.globalXp(), "prestige de collection");
+        }
         return null;
     }
 

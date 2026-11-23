@@ -437,11 +437,11 @@
     "minecraft:apple": {
       "category": "FARM",
       "tier": "FARM",
-      "base_price": 120,
+      "base_price": 1,
       "s0": 2000,
       "floor_pct": 0.15,
       "ceiling_pct": 1.8,
-      "buy_price": 480,
+      "buy_price": 4,
       "sellable": true,
       "rate_per_hour": 150.0
     },
@@ -459,11 +459,11 @@
     "minecraft:charcoal": {
       "category": "FARM",
       "tier": "FARM",
-      "base_price": 15,
+      "base_price": 2,
       "s0": 2000,
       "floor_pct": 0.15,
       "ceiling_pct": 1.8,
-      "buy_price": 60,
+      "buy_price": 8,
       "sellable": true,
       "rate_per_hour": 1200.0
     },
@@ -492,22 +492,22 @@
     "minecraft:white_wool": {
       "category": "FARM",
       "tier": "FARM",
-      "base_price": 15,
+      "base_price": 2,
       "s0": 2000,
       "floor_pct": 0.15,
       "ceiling_pct": 1.8,
-      "buy_price": 60,
+      "buy_price": 8,
       "sellable": true,
       "rate_per_hour": 1200.0
     },
     "minecraft:leather": {
       "category": "FARM",
       "tier": "FARM",
-      "base_price": 60,
+      "base_price": 4,
       "s0": 2000,
       "floor_pct": 0.15,
       "ceiling_pct": 1.8,
-      "buy_price": 240,
+      "buy_price": 16,
       "sellable": true,
       "rate_per_hour": 300.0
     },
@@ -701,22 +701,22 @@
     "minecraft:dripstone_block": {
       "category": "FARM",
       "tier": "FARM",
-      "base_price": 60,
+      "base_price": 1,
       "s0": 2000,
       "floor_pct": 0.15,
       "ceiling_pct": 1.8,
-      "buy_price": 240,
+      "buy_price": 4,
       "sellable": true,
       "rate_per_hour": 300.0
     },
     "minecraft:clay_ball": {
       "category": "FARM",
       "tier": "FARM",
-      "base_price": 30,
+      "base_price": 1,
       "s0": 2000,
       "floor_pct": 0.15,
       "ceiling_pct": 1.8,
-      "buy_price": 120,
+      "buy_price": 4,
       "sellable": true,
       "rate_per_hour": 600.0
     },
@@ -811,11 +811,11 @@
     "minecraft:quartz": {
       "category": "FARM",
       "tier": "FARM",
-      "base_price": 2,
+      "base_price": 20,
       "s0": 2000,
       "floor_pct": 0.15,
       "ceiling_pct": 1.8,
-      "buy_price": 8,
+      "buy_price": 80,
       "sellable": true,
       "rate_per_hour": 900.0
     },
@@ -932,11 +932,11 @@
     "minecraft:cod": {
       "category": "FOOD",
       "tier": "FOOD",
-      "base_price": 30,
+      "base_price": 6,
       "s0": 2000,
       "floor_pct": 0.15,
       "ceiling_pct": 1.8,
-      "buy_price": 120,
+      "buy_price": 24,
       "sellable": true,
       "rate_per_hour": 400.0
     },
@@ -1009,11 +1009,11 @@
     "minecraft:string": {
       "category": "MOB_DROP",
       "tier": "MOB",
-      "base_price": 28,
+      "base_price": 1,
       "s0": 256,
       "floor_pct": 0.2,
       "ceiling_pct": 1.8,
-      "buy_price": 110,
+      "buy_price": 4,
       "sellable": true,
       "rate_per_hour": 900.0
     },
@@ -1119,11 +1119,11 @@
     "minecraft:glowstone_dust": {
       "category": "MOB_DROP",
       "tier": "MOB",
-      "base_price": 1,
+      "base_price": 2,
       "s0": 256,
       "floor_pct": 0.2,
       "ceiling_pct": 1.8,
-      "buy_price": 4,
+      "buy_price": 8,
       "sellable": true,
       "rate_per_hour": 600.0
     },
