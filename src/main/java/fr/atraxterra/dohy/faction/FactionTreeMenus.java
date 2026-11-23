@@ -181,12 +181,8 @@ public final class FactionTreeMenus {
                 lines.add("Se gagne par les etapes de l'ancien arbre (" + names(Tech.tracks(domain)) + ")");
             }
             List<String> active = new ArrayList<>();
-            for (TechConfig.Tier tier : domain.tiers()) {
-                if (tier.tier() <= level) {
-                    for (TechConfig.Bonus bonus : tier.bonuses()) {
-                        active.add("+ " + TechPerks.label(bonus));
-                    }
-                }
+            for (TechConfig.Bonus bonus : effective(domain, level).values()) {
+                active.add("+ " + TechPerks.label(bonus));
             }
             if (!active.isEmpty()) {
                 lines.add("");
@@ -238,14 +234,8 @@ public final class FactionTreeMenus {
                             "Laboratoires : " + bonuses.labs() + " (lot 23c)")));
             List<String> lines = new ArrayList<>();
             for (TechConfig.Domain domain : TechConfig.domains()) {
-                int level = Tech.level(data, domain);
-                for (TechConfig.Tier tier : domain.tiers()) {
-                    if (tier.tier() <= level) {
-                        for (TechConfig.Bonus bonus : tier.bonuses()) {
-                            lines.add(domain.name() + " " + TechConfig.roman(tier.tier()) + " : "
-                                    + TechPerks.label(bonus));
-                        }
-                    }
+                for (TechConfig.Bonus bonus : effective(domain, Tech.level(data, domain)).values()) {
+                    lines.add(domain.name() + " : " + TechPerks.label(bonus));
                 }
             }
             cards.add(Card.of(new ItemStack(Items.NETHER_STAR), "Bonus des technologies", List.of(
@@ -333,6 +323,22 @@ public final class FactionTreeMenus {
                 Card.of(new ItemStack(Items.TNT), "Objets debloques", List.of(perks.unlocks().size()
                         + " deblocage(s)", "Detail dans la bulle")).accent(0xFF55545C)
                         .tooltip(unlocks.isEmpty() ? List.of("Aucun pour l'instant") : unlocks));
+    }
+
+    /** Les bonus qui comptent dans un domaine : pour chaque type, celui du plus haut palier acquis. */
+    private static Map<String, TechConfig.Bonus> effective(TechConfig.Domain domain, int level) {
+        Map<String, TechConfig.Bonus> best = new java.util.LinkedHashMap<>();
+        for (TechConfig.Tier tier : domain.tiers()) {
+            if (tier.tier() <= level) {
+                for (TechConfig.Bonus bonus : tier.bonuses()) {
+                    TechConfig.Bonus held = best.get(bonus.type());
+                    if (held == null || bonus.value() >= held.value()) {
+                        best.put(bonus.type(), bonus);
+                    }
+                }
+            }
+        }
+        return best;
     }
 
     private static String names(List<FactionBranch> branches) {
