@@ -476,6 +476,8 @@ final class Payout {
         /** Les fournitures payees par la banque, faute d'argent sale (surcout compris), et celles de l'heure. */
         double cleanSupplies;
         double hourClean;
+        /** Ce que les fournisseurs ont demande pendant l'heure, au prix en argent sale : le blanchiment le laisse de cote. */
+        double hourNeed;
         double sold;
         double lost;
         double ironUsed;
@@ -570,6 +572,7 @@ final class Payout {
         double startLaundered = sim.laundered;
         double startFines = sim.finesBank;
         sim.hourClean = 0.0d;
+        sim.hourNeed = 0.0d;
 
         // 1. ce qui pousse et ce qui se monte
         for (Enterprise enterprise : open) {
@@ -739,8 +742,11 @@ final class Payout {
             costs += sim.closed(enterprise, time) ? cost * 0.5d : cost;
         }
 
-        // 8. le blanchiment
+        // 8. le blanchiment ; ce que les fournisseurs ont demande cette heure reste sale, de cote pour la
+        // suivante, plutot que d'etre blanchi puis rachete 25 % plus cher par la banque
         sim.dirty += Math.max(0.0d, dirty);
+        double keep = Math.min(sim.dirty, sim.hourNeed);
+        sim.dirty -= keep;
         facades.sort((a, b) -> Double.compare(a[1], b[1]));
         for (double[] facade : facades) {
             double amount = Math.min(facade[0], sim.dirty);
@@ -758,6 +764,7 @@ final class Payout {
             sim.laundered += amount * (1.0d - fee);
             sim.fees += amount * fee;
         }
+        sim.dirty += keep;
 
         // 9. la police : les operations annoncees qui frappent a cette heure, puis les passages ordinaires
         if (live) {
@@ -795,6 +802,7 @@ final class Payout {
         if (units <= 0.0d || price <= 0.0d) {
             return 0.0d;
         }
+        sim.hourNeed += units * price;
         double fromDirty = Math.max(0.0d, Math.min(units, sim.dirty / price));
         sim.dirty -= fromDirty * price;
         sim.supplies += fromDirty * price;

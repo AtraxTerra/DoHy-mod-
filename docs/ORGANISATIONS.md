@@ -479,7 +479,10 @@ souples ne gagne parfois plus d'argent sale (casinos et réseaux légaux, blanch
 solde) : sans recours, ses ateliers et ses laboratoires s'arrêteraient pour de bon, faute de quoi
 payer les pièces qui relanceraient leurs ventes. La **banque nationale** prend donc le relais,
 **25 % plus cher** (il faut maquiller le paiement), sans jamais passer à découvert ; la carte
-« Achats aux fournisseurs » montre la part payée par la banque, comptée dans les frais.
+« Achats aux fournisseurs » montre la part payée par la banque, comptée dans les frais. Pour
+que cela reste un recours, le blanchiment laisse de côté, chaque heure, l'argent sale que les
+fournisseurs viennent de demander : il servira l'heure suivante au lieu d'être blanchi (avec
+commission) puis racheté plus cher.
 
 ### Les notifications
 
