@@ -192,6 +192,33 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-23 (suite) — le chanvre de NTM NEXT
+
+**Demande** : « Trouve une utilité au chanvre du mod ntm next ». Un chanvre à fibre : rien à voir
+avec le cannabis de la ligne clandestine, il ne donne aucune herbe.
+
+- **La récolte** (`CONTENU_DOHY.md`, « Le chanvre de NTM NEXT » ; `BALANCE.md` § 6 untrigesies ;
+  bloc `hemp` de `agriculture.json` ; `agri/Hemp.java`) : casser à la main la couronne d'un chanvre
+  haut rend, en plus de la fleur de NTM, 2 à 4 fibres, 1 ou 2 graines et 6 XP de Fermier. Une seule
+  récolte par plante (NTM lâche la couronne, puis le jeu la moitié basse : le bonus suit la
+  couronne). La plante redevient fleur et repousse.
+- **La trouver** : l'herbe des climats tempéré et chaud lâche une fleur une fois sur cent ; le shop
+  la vend (rayon agriculture), la carte de la Terre étant prégénérée sans chanvre sauvage.
+- **Les usages** : fibre → ficelle, corde de NTM (trois en colonne, quatre cordes), toile (quatre en
+  carré) ; toile → trois papiers, ou un tableau ; graines → fourrage (nouveau tag `dohy:fodder` :
+  mangeoire et biogénérateur ; le silo et le tracteur gardent `dohy:cereals`), nourriture des
+  poules et des perroquets, compost, `c:seeds`. La mangeoire et le biogénérateur parlent désormais
+  de « rations de fourrage ».
+- **Prix** (`rates.csv`) : fibre 5 / 20 $, graines 6 $ (pas en vente : acheter des graines pour la
+  mangeoire et revendre la crème serait un arbitrage), toile 20 / 80 $, fleur 5 / 20 $ ;
+  `check_agri_prices.py` compte les graines dans l'élevage et la toile dans les recettes.
+- **Noms et fiche** : la fleur et la plante haute de NTM s'appellent « Chanvre » en français, sa
+  corde « Corde » ; fiche « Le chanvre » dans l'encyclopédie ; icônes par `tools/hemp_assets.py`.
+- **Vérifié en CI** (captures, avec NTM NEXT) : quatre couronnes → 3, 4, 4 et 4 fibres, 1 ou 2
+  graines, la plante redevenue fleur, +6 XP chacune ; deux pieds → une seule récolte chacun ;
+  900 touffes d'herbe → 9 fleurs ; graines prises par la mangeoire et le biogénérateur, refusées
+  par le silo ; nourriture des poules ; noms français ; 81 vues sans exception.
+
 ### 2026-11-23 (suite) — les kits, les guichetiers du spawn, et une nouvelle remise à zéro
 
 **Demande** : « ok on oublie, refais un reset et ajoute un système de kit de départ comme sur
