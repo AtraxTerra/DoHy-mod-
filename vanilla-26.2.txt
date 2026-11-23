@@ -1,0 +1,761 @@
+jar build/moddev/artifacts/minecraft-patched-26.2.0.93.jar : 31643 entrees
+
+== data/minecraft/villager_trade/ : 388 fichiers
+armorer/1/emerald_iron_boots.json : gives.id=minecraft:iron_boots ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:emerald
+armorer/1/emerald_iron_chestplate.json : gives.id=minecraft:iron_chestplate ; max_uses=12.0 ; wants.count=9.0 ; wants.id=minecraft:emerald
+armorer/1/emerald_iron_helmet.json : gives.id=minecraft:iron_helmet ; max_uses=12.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+armorer/1/emerald_iron_leggings.json : gives.id=minecraft:iron_leggings ; max_uses=12.0 ; wants.count=7.0 ; wants.id=minecraft:emerald
+armorer/2/emerald_chainmail_boots.json : gives.id=minecraft:chainmail_boots ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=5.0
+armorer/2/emerald_chainmail_leggings.json : gives.id=minecraft:chainmail_leggings ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=5.0
+armorer/3/diamond_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.id=minecraft:diamond ; xp=20.0
+armorer/3/emerald_chainmail_chestplate.json : gives.id=minecraft:chainmail_chestplate ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:emerald ; xp=10.0
+armorer/3/emerald_chainmail_helmet.json : gives.id=minecraft:chainmail_helmet ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=10.0
+armorer/3/emerald_shield.json : gives.id=minecraft:shield ; max_uses=12.0 ; wants.count=5.0 ; wants.id=minecraft:emerald ; xp=10.0
+armorer/3/lava_bucket_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.id=minecraft:lava_bucket ; xp=20.0
+armorer/4/emerald_enchanted_diamond_boots.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:diamond_boots ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:diamond_boots ; max_uses=3.0 ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=15.0
+armorer/4/emerald_enchanted_diamond_leggings.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:diamond_leggings ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:diamond_leggings ; max_uses=3.0 ; wants.count=14.0 ; wants.id=minecraft:emerald ; xp=15.0
+armorer/5/emerald_enchanted_diamond_chestplate.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:diamond_chestplate ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:diamond_chestplate ; max_uses=3.0 ; wants.count=16.0 ; wants.id=minecraft:emerald ; xp=30.0
+armorer/5/emerald_enchanted_diamond_helmet.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:diamond_helmet ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:diamond_helmet ; max_uses=3.0 ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=30.0
+butcher/1/chicken_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=14.0 ; wants.id=minecraft:chicken ; xp=2.0
+butcher/1/emerald_rabbit_stew.json : gives.id=minecraft:rabbit_stew ; max_uses=12.0 ; wants.id=minecraft:emerald
+butcher/1/porkchop_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=7.0 ; wants.id=minecraft:porkchop ; xp=2.0
+butcher/1/rabbit_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=4.0 ; wants.id=minecraft:rabbit ; xp=2.0
+butcher/2/coal_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=15.0 ; wants.id=minecraft:coal ; xp=2.0
+butcher/2/emerald_cooked_chicken.json : gives.count=8 ; gives.id=minecraft:cooked_chicken ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+butcher/2/emerald_cooked_porkchop.json : gives.count=5 ; gives.id=minecraft:cooked_porkchop ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+butcher/3/beef_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=10.0 ; wants.id=minecraft:beef ; xp=20.0
+butcher/3/mutton_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=7.0 ; wants.id=minecraft:mutton ; xp=20.0
+butcher/4/dried_kelp_block_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=10.0 ; wants.id=minecraft:dried_kelp_block ; xp=30.0
+butcher/5/sweet_berries_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=10.0 ; wants.id=minecraft:sweet_berries ; xp=30.0
+cartographer/1/emerald_map.json : gives.id=minecraft:map ; max_uses=12.0 ; wants.count=7.0 ; wants.id=minecraft:emerald
+cartographer/1/paper_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=24.0 ; wants.id=minecraft:paper ; xp=2.0
+cartographer/2/emerald_and_compass_explorer_jungle_map.json : additional_wants.id=minecraft:compass ; given_item_modifiers[0].decoration=minecraft:jungle_temple ; given_item_modifiers[0].destination=minecraft:on_jungle_explorer_maps ; given_item_modifiers[0].function=minecraft:exploration_map ; given_item_modifiers[1].function=minecraft:set_name ; given_item_modifiers[2].function=minecraft:filtered ; given_item_modifiers[2].item_filter.items=minecraft:filled_map ; given_item_modifiers[2].on_fail.function=minecraft:discard ; gives.id=minecraft:map ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:swamp ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:savanna ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[2]=minecraft:desert ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=5.0
+cartographer/2/emerald_and_compass_explorer_swamp_map.json : additional_wants.id=minecraft:compass ; given_item_modifiers[0].decoration=minecraft:swamp_hut ; given_item_modifiers[0].destination=minecraft:on_swamp_explorer_maps ; given_item_modifiers[0].function=minecraft:exploration_map ; given_item_modifiers[1].function=minecraft:set_name ; given_item_modifiers[2].function=minecraft:filtered ; given_item_modifiers[2].item_filter.items=minecraft:filled_map ; given_item_modifiers[2].on_fail.function=minecraft:discard ; gives.id=minecraft:map ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:taiga ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:snow ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[2]=minecraft:jungle ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=5.0
+cartographer/2/emerald_and_compass_village_desert_map.json : additional_wants.id=minecraft:compass ; given_item_modifiers[0].decoration=minecraft:village_desert ; given_item_modifiers[0].destination=minecraft:on_desert_village_maps ; given_item_modifiers[0].function=minecraft:exploration_map ; given_item_modifiers[1].function=minecraft:set_name ; given_item_modifiers[2].function=minecraft:filtered ; given_item_modifiers[2].item_filter.items=minecraft:filled_map ; given_item_modifiers[2].on_fail.function=minecraft:discard ; gives.id=minecraft:map ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:savanna ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:jungle ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=5.0
+cartographer/2/emerald_and_compass_village_plains_map.json : additional_wants.id=minecraft:compass ; given_item_modifiers[0].decoration=minecraft:village_plains ; given_item_modifiers[0].destination=minecraft:on_plains_village_maps ; given_item_modifiers[0].function=minecraft:exploration_map ; given_item_modifiers[1].function=minecraft:set_name ; given_item_modifiers[2].function=minecraft:filtered ; given_item_modifiers[2].item_filter.items=minecraft:filled_map ; given_item_modifiers[2].on_fail.function=minecraft:discard ; gives.id=minecraft:map ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:taiga ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:snow ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[2]=minecraft:savanna ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[3]=minecraft:desert ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=5.0
+cartographer/2/emerald_and_compass_village_savanna_map.json : additional_wants.id=minecraft:compass ; given_item_modifiers[0].decoration=minecraft:village_savanna ; given_item_modifiers[0].destination=minecraft:on_savanna_village_maps ; given_item_modifiers[0].function=minecraft:exploration_map ; given_item_modifiers[1].function=minecraft:set_name ; given_item_modifiers[2].function=minecraft:filtered ; given_item_modifiers[2].item_filter.items=minecraft:filled_map ; given_item_modifiers[2].on_fail.function=minecraft:discard ; gives.id=minecraft:map ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:plains ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:jungle ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[2]=minecraft:desert ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=5.0
+cartographer/2/emerald_and_compass_village_snowy_map.json : additional_wants.id=minecraft:compass ; given_item_modifiers[0].decoration=minecraft:village_snowy ; given_item_modifiers[0].destination=minecraft:on_snowy_village_maps ; given_item_modifiers[0].function=minecraft:exploration_map ; given_item_modifiers[1].function=minecraft:set_name ; given_item_modifiers[2].function=minecraft:filtered ; given_item_modifiers[2].item_filter.items=minecraft:filled_map ; given_item_modifiers[2].on_fail.function=minecraft:discard ; gives.id=minecraft:map ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:taiga ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:swamp ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=5.0
+cartographer/2/emerald_and_compass_village_taiga_map.json : additional_wants.id=minecraft:compass ; given_item_modifiers[0].decoration=minecraft:village_taiga ; given_item_modifiers[0].destination=minecraft:on_taiga_village_maps ; given_item_modifiers[0].function=minecraft:exploration_map ; given_item_modifiers[1].function=minecraft:set_name ; given_item_modifiers[2].function=minecraft:filtered ; given_item_modifiers[2].item_filter.items=minecraft:filled_map ; given_item_modifiers[2].on_fail.function=minecraft:discard ; gives.id=minecraft:map ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:swamp ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:snow ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[2]=minecraft:plains ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=5.0
+cartographer/2/glass_pane_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=11.0 ; wants.id=minecraft:glass_pane ; xp=10.0
+cartographer/3/compass_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.id=minecraft:compass ; xp=20.0
+cartographer/3/emerald_and_compass_ocean_explorer_map.json : additional_wants.id=minecraft:compass ; given_item_modifiers[0].decoration=minecraft:monument ; given_item_modifiers[0].destination=minecraft:on_ocean_explorer_maps ; given_item_modifiers[0].function=minecraft:exploration_map ; given_item_modifiers[1].function=minecraft:set_name ; given_item_modifiers[2].function=minecraft:filtered ; given_item_modifiers[2].item_filter.items=minecraft:filled_map ; given_item_modifiers[2].on_fail.function=minecraft:discard ; gives.id=minecraft:map ; max_uses=12.0 ; wants.count=13.0 ; wants.id=minecraft:emerald ; xp=10.0
+cartographer/3/emerald_and_compass_trial_chamber_map.json : additional_wants.id=minecraft:compass ; given_item_modifiers[0].decoration=minecraft:trial_chambers ; given_item_modifiers[0].destination=minecraft:on_trial_chambers_maps ; given_item_modifiers[0].function=minecraft:exploration_map ; given_item_modifiers[1].function=minecraft:set_name ; given_item_modifiers[2].function=minecraft:filtered ; given_item_modifiers[2].item_filter.items=minecraft:filled_map ; given_item_modifiers[2].on_fail.function=minecraft:discard ; gives.id=minecraft:map ; max_uses=12.0 ; wants.count=12.0 ; wants.id=minecraft:emerald ; xp=10.0
+cartographer/4/emerald_black_banner.json : gives.id=minecraft:black_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant=minecraft:swamp ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_blue_banner.json : gives.id=minecraft:blue_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:snow ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:taiga ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_brown_banner.json : gives.id=minecraft:brown_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:plains ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:jungle ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_cyan_banner.json : gives.id=minecraft:cyan_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:desert ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:snow ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_gray_banner.json : gives.id=minecraft:gray_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant=minecraft:desert ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_green_banner.json : gives.id=minecraft:green_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:desert ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:savanna ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[2]=minecraft:jungle ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_item_frame.json : gives.id=minecraft:item_frame ; max_uses=12.0 ; wants.count=7.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_light_blue_banner.json : gives.id=minecraft:light_blue_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:snow ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:swamp ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_lime_banner.json : gives.id=minecraft:lime_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:desert ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:taiga ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_magenta_banner.json : gives.id=minecraft:magenta_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant=minecraft:savanna ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_orange_banner.json : gives.id=minecraft:orange_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:savanna ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:desert ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_pink_banner.json : gives.id=minecraft:pink_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:taiga ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:plains ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_purple_banner.json : gives.id=minecraft:purple_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:taiga ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:swamp ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_red_banner.json : gives.id=minecraft:red_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:snow ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:savanna ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_white_banner.json : gives.id=minecraft:white_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:snow ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:plains ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/4/emerald_yellow_banner.json : gives.id=minecraft:yellow_banner ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:plains ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:jungle ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+cartographer/5/emerald_and_compass_woodland_mansion_map.json : additional_wants.id=minecraft:compass ; given_item_modifiers[0].destination=minecraft:on_woodland_explorer_maps ; given_item_modifiers[0].function=minecraft:exploration_map ; given_item_modifiers[1].function=minecraft:set_name ; given_item_modifiers[2].function=minecraft:filtered ; given_item_modifiers[2].item_filter.items=minecraft:filled_map ; given_item_modifiers[2].on_fail.function=minecraft:discard ; gives.id=minecraft:map ; max_uses=12.0 ; wants.count=14.0 ; wants.id=minecraft:emerald ; xp=30.0
+cartographer/5/emerald_globe_banner_pattern.json : gives.id=minecraft:globe_banner_pattern ; max_uses=12.0 ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=30.0
+cleric/1/emerald_redstone.json : gives.count=2 ; gives.id=minecraft:redstone ; max_uses=12.0 ; wants.id=minecraft:emerald
+cleric/1/rotten_flesh_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=32.0 ; wants.id=minecraft:rotten_flesh ; xp=2.0
+cleric/2/emerald_lapis_lazuli.json : gives.id=minecraft:lapis_lazuli ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=5.0
+cleric/2/gold_ingot_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:gold_ingot ; xp=10.0
+cleric/3/emerald_glowstone.json : gives.id=minecraft:glowstone ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:emerald ; xp=10.0
+cleric/3/rabbit_foot_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=2.0 ; wants.id=minecraft:rabbit_foot ; xp=20.0
+cleric/4/emerald_ender_pearl.json : gives.id=minecraft:ender_pearl ; max_uses=12.0 ; wants.count=5.0 ; wants.id=minecraft:emerald ; xp=15.0
+cleric/4/glass_bottle_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=9.0 ; wants.id=minecraft:glass_bottle ; xp=30.0
+cleric/4/turtle_scute_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:turtle_scute ; xp=30.0
+cleric/5/emerald_experience_bottle.json : gives.id=minecraft:experience_bottle ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=30.0
+cleric/5/nether_wart_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=22.0 ; wants.id=minecraft:nether_wart ; xp=30.0
+farmer/1/beetroot_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=15.0 ; wants.id=minecraft:beetroot ; xp=2.0
+farmer/1/carrot_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=22.0 ; wants.id=minecraft:carrot ; xp=2.0
+farmer/1/emerald_bread.json : gives.count=6 ; gives.id=minecraft:bread ; max_uses=16.0 ; wants.id=minecraft:emerald
+farmer/1/potato_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=26.0 ; wants.id=minecraft:potato ; xp=2.0
+farmer/1/wheat_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=20.0 ; wants.id=minecraft:wheat ; xp=2.0
+farmer/2/emerald_apple.json : gives.count=4 ; gives.id=minecraft:apple ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+farmer/2/emerald_pumpkin_pie.json : gives.count=4 ; gives.id=minecraft:pumpkin_pie ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=5.0
+farmer/2/pumpkin_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=6.0 ; wants.id=minecraft:pumpkin ; xp=10.0
+farmer/3/emerald_cookie.json : gives.count=18 ; gives.id=minecraft:cookie ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+farmer/3/melon_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:melon ; xp=20.0
+farmer/4/emerald_cake.json : gives.id=minecraft:cake ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+farmer/4/emerald_suspicious_stew.json : given_item_modifiers[0].effects[0].type=minecraft:night_vision ; given_item_modifiers[0].effects[1].type=minecraft:jump_boost ; given_item_modifiers[0].effects[2].type=minecraft:weakness ; given_item_modifiers[0].effects[3].type=minecraft:blindness ; given_item_modifiers[0].effects[4].type=minecraft:poison ; given_item_modifiers[0].effects[5].type=minecraft:saturation ; given_item_modifiers[0].function=minecraft:set_stew_effect ; gives.id=minecraft:suspicious_stew ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+farmer/5/emerald_glistening_melon_slice.json : gives.count=3 ; gives.id=minecraft:glistering_melon_slice ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:emerald ; xp=30.0
+farmer/5/emerald_golden_carrot.json : gives.count=3 ; gives.id=minecraft:golden_carrot ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=30.0
+fisherman/1/coal_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=10.0 ; wants.id=minecraft:coal ; xp=2.0
+fisherman/1/emerald_cod_bucket.json : gives.id=minecraft:cod_bucket ; max_uses=16.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+fisherman/1/raw_cod_and_emerald_cooked_cod.json : additional_wants.id=minecraft:emerald ; gives.count=6 ; gives.id=minecraft:cooked_cod ; max_uses=16.0 ; wants.count=6.0 ; wants.id=minecraft:cod
+fisherman/1/string_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=20.0 ; wants.id=minecraft:string ; xp=2.0
+fisherman/2/cod_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=15.0 ; wants.id=minecraft:cod ; xp=10.0
+fisherman/2/emerald_campfire.json : gives.id=minecraft:campfire ; max_uses=12.0 ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=5.0
+fisherman/2/salmon_and_emerald_cooked_salmon.json : additional_wants.id=minecraft:emerald ; gives.count=6 ; gives.id=minecraft:cooked_salmon ; max_uses=16.0 ; wants.count=6.0 ; wants.id=minecraft:salmon ; xp=5.0
+fisherman/3/emerald_enchanted_fishing_rod.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:fishing_rod ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:fishing_rod ; max_uses=3.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+fisherman/3/salmon_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=13.0 ; wants.id=minecraft:salmon ; xp=20.0
+fisherman/4/tropical_fish_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=6.0 ; wants.id=minecraft:tropical_fish ; xp=30.0
+fisherman/5/acacia_boat_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant=minecraft:savanna ; wants.id=minecraft:acacia_boat ; xp=30.0
+fisherman/5/dark_oak_boat_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant=minecraft:swamp ; wants.id=minecraft:dark_oak_boat ; xp=30.0
+fisherman/5/jungle_boat_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:desert ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:jungle ; wants.id=minecraft:jungle_boat ; xp=30.0
+fisherman/5/oak_boat_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant=minecraft:plains ; wants.id=minecraft:oak_boat ; xp=30.0
+fisherman/5/pufferfish_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:pufferfish ; xp=30.0
+fisherman/5/spruce_boat_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; merchant_predicate.condition=minecraft:entity_properties ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[0]=minecraft:taiga ; merchant_predicate.predicate.minecraft:predicates.minecraft:villager/variant[1]=minecraft:snow ; wants.id=minecraft:spruce_boat ; xp=30.0
+fletcher/1/emerald_arrow.json : gives.count=16 ; gives.id=minecraft:arrow ; max_uses=12.0 ; wants.id=minecraft:emerald
+fletcher/1/gravel_and_emerald_flint.json : additional_wants.id=minecraft:emerald ; gives.count=10 ; gives.id=minecraft:flint ; max_uses=12.0 ; wants.count=10.0 ; wants.id=minecraft:gravel
+fletcher/1/stick_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=32.0 ; wants.id=minecraft:stick ; xp=2.0
+fletcher/2/emerald_bow.json : gives.id=minecraft:bow ; max_uses=12.0 ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=5.0
+fletcher/2/flint_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=26.0 ; wants.id=minecraft:flint ; xp=10.0
+fletcher/3/emerald_crossbow.json : gives.id=minecraft:crossbow ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+fletcher/3/string_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=14.0 ; wants.id=minecraft:string ; xp=20.0
+fletcher/4/emerald_enchanted_bow.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:bow ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:bow ; max_uses=3.0 ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=15.0
+fletcher/4/feather_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=24.0 ; wants.id=minecraft:feather ; xp=30.0
+fletcher/5/arrow_and_emerald_tipped_arrow.json : additional_wants.count=5.0 ; additional_wants.id=minecraft:arrow ; given_item_modifiers[0].function=minecraft:set_random_potion ; given_item_modifiers[0].options=#minecraft:tradeable ; gives.count=5 ; gives.id=minecraft:tipped_arrow ; max_uses=12.0 ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=30.0
+fletcher/5/emerald_enchanted_crossbow.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:crossbow ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:crossbow ; max_uses=3.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+fletcher/5/tripwire_hook_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=8.0 ; wants.id=minecraft:tripwire_hook ; xp=30.0
+leatherworker/1/emerald_dyed_leather_chestplate.json : given_item_modifiers[0].function=minecraft:set_random_dyes ; given_item_modifiers[0].number_of_dyes.type=minecraft:sum ; given_item_modifiers[0].number_of_dyes.summands[1].type=minecraft:binomial ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:leather_chestplate ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:leather_chestplate ; max_uses=12.0 ; wants.count=7.0 ; wants.id=minecraft:emerald
+leatherworker/1/emerald_dyed_leather_leggings.json : given_item_modifiers[0].function=minecraft:set_random_dyes ; given_item_modifiers[0].number_of_dyes.type=minecraft:sum ; given_item_modifiers[0].number_of_dyes.summands[1].type=minecraft:binomial ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:leather_leggings ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:leather_leggings ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+leatherworker/1/leather_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=6.0 ; wants.id=minecraft:leather ; xp=2.0
+leatherworker/2/emerald_dyed_leather_boots.json : given_item_modifiers[0].function=minecraft:set_random_dyes ; given_item_modifiers[0].number_of_dyes.type=minecraft:sum ; given_item_modifiers[0].number_of_dyes.summands[1].type=minecraft:binomial ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:leather_boots ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:leather_boots ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:emerald ; xp=5.0
+leatherworker/2/emerald_dyed_leather_helmet.json : given_item_modifiers[0].function=minecraft:set_random_dyes ; given_item_modifiers[0].number_of_dyes.type=minecraft:sum ; given_item_modifiers[0].number_of_dyes.summands[1].type=minecraft:binomial ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:leather_helmet ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:leather_helmet ; max_uses=12.0 ; wants.count=5.0 ; wants.id=minecraft:emerald ; xp=5.0
+leatherworker/2/flint_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=26.0 ; wants.id=minecraft:flint ; xp=10.0
+leatherworker/3/emerald_dyed_leather_chestplate.json : given_item_modifiers[0].function=minecraft:set_random_dyes ; given_item_modifiers[0].number_of_dyes.type=minecraft:sum ; given_item_modifiers[0].number_of_dyes.summands[1].type=minecraft:binomial ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:leather_chestplate ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:leather_chestplate ; max_uses=12.0 ; wants.count=7.0 ; wants.id=minecraft:emerald
+leatherworker/3/rabbit_hide_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=9.0 ; wants.id=minecraft:rabbit_hide ; xp=20.0
+leatherworker/4/emerald_dyed_leather_horse_armor.json : given_item_modifiers[0].function=minecraft:set_random_dyes ; given_item_modifiers[0].number_of_dyes.type=minecraft:sum ; given_item_modifiers[0].number_of_dyes.summands[1].type=minecraft:binomial ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:leather_horse_armor ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:leather_horse_armor ; max_uses=12.0 ; wants.count=6.0 ; wants.id=minecraft:emerald ; xp=15.0
+leatherworker/4/turtle_scute_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:turtle_scute ; xp=30.0
+leatherworker/5/emerald_dyed_leather_helmet.json : given_item_modifiers[0].function=minecraft:set_random_dyes ; given_item_modifiers[0].number_of_dyes.type=minecraft:sum ; given_item_modifiers[0].number_of_dyes.summands[1].type=minecraft:binomial ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:leather_helmet ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:leather_helmet ; max_uses=12.0 ; wants.count=5.0 ; wants.id=minecraft:emerald ; xp=5.0
+leatherworker/5/emerald_saddle.json : gives.id=minecraft:saddle ; max_uses=12.0 ; wants.count=6.0 ; wants.id=minecraft:emerald ; xp=30.0
+librarian/1/emerald_and_book_enchanted_book.json : additional_wants.id=minecraft:book ; double_trade_price_enchantments=#minecraft:double_trade_price ; given_item_modifiers[0].function=minecraft:enchant_randomly ; given_item_modifiers[0].options=#minecraft:tradeable ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:enchanted_book ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:enchanted_book ; max_uses=12.0 ; wants.count=0.0 ; wants.id=minecraft:emerald
+librarian/1/emerald_bookshelf.json : gives.id=minecraft:bookshelf ; max_uses=12.0 ; wants.count=9.0 ; wants.id=minecraft:emerald
+librarian/1/paper_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=24.0 ; wants.id=minecraft:paper ; xp=2.0
+librarian/2/book_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:book ; xp=10.0
+librarian/2/emerald_and_book_enchanted_book.json : additional_wants.id=minecraft:book ; double_trade_price_enchantments=#minecraft:double_trade_price ; given_item_modifiers[0].function=minecraft:enchant_randomly ; given_item_modifiers[0].options=#minecraft:tradeable ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:enchanted_book ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:enchanted_book ; max_uses=12.0 ; wants.count=0.0 ; wants.id=minecraft:emerald ; xp=5.0
+librarian/2/emerald_lantern.json : gives.id=minecraft:lantern ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=5.0
+librarian/3/emerald_and_book_enchanted_book.json : additional_wants.id=minecraft:book ; double_trade_price_enchantments=#minecraft:double_trade_price ; given_item_modifiers[0].function=minecraft:enchant_randomly ; given_item_modifiers[0].options=#minecraft:tradeable ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:enchanted_book ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:enchanted_book ; max_uses=12.0 ; wants.count=0.0 ; wants.id=minecraft:emerald ; xp=10.0
+librarian/3/emerald_glass.json : gives.count=4 ; gives.id=minecraft:glass ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=10.0
+librarian/3/ink_sac_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=5.0 ; wants.id=minecraft:ink_sac ; xp=20.0
+librarian/4/emerald_book_and_enchanted_book.json : additional_wants.id=minecraft:book ; double_trade_price_enchantments=#minecraft:double_trade_price ; given_item_modifiers[0].function=minecraft:enchant_randomly ; given_item_modifiers[0].options=#minecraft:tradeable ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:enchanted_book ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:enchanted_book ; max_uses=12.0 ; wants.count=0.0 ; wants.id=minecraft:emerald ; xp=15.0
+librarian/4/emerald_clock.json : gives.id=minecraft:clock ; max_uses=12.0 ; wants.count=5.0 ; wants.id=minecraft:emerald ; xp=15.0
+librarian/4/emerald_compass.json : gives.id=minecraft:compass ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:emerald ; xp=15.0
+librarian/4/writable_book_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=2.0 ; wants.id=minecraft:writable_book ; xp=30.0
+librarian/5/emerald_red_candle.json : gives.id=minecraft:red_candle ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=30.0
+librarian/5/emerald_yellow_candle.json : gives.id=minecraft:yellow_candle ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=30.0
+mason/1/clay_ball_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=10.0 ; wants.id=minecraft:clay_ball ; xp=2.0
+mason/1/emerald_brick.json : gives.count=10 ; gives.id=minecraft:brick ; max_uses=16.0 ; wants.id=minecraft:emerald
+mason/2/emerald_chiseled_stone_bricks.json : gives.count=4 ; gives.id=minecraft:chiseled_stone_bricks ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+mason/2/stone_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=20.0 ; wants.id=minecraft:stone ; xp=10.0
+mason/3/andesite_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=16.0 ; wants.id=minecraft:andesite ; xp=20.0
+mason/3/diorite_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=16.0 ; wants.id=minecraft:diorite ; xp=20.0
+mason/3/emerald_dripstone_block.json : gives.count=4 ; gives.id=minecraft:dripstone_block ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=10.0
+mason/3/emerald_polished_andesite.json : gives.count=4 ; gives.id=minecraft:polished_andesite ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=10.0
+mason/3/emerald_polished_diorite.json : gives.count=4 ; gives.id=minecraft:polished_diorite ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=10.0
+mason/3/emerald_polished_granite.json : gives.count=4 ; gives.id=minecraft:polished_granite ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=10.0
+mason/3/granite_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=16.0 ; wants.id=minecraft:granite ; xp=20.0
+mason/4/emerald_black_glazed_terracotta.json : gives.id=minecraft:black_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_black_terracotta.json : gives.id=minecraft:black_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_blue_glazed_terracotta.json : gives.id=minecraft:blue_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_blue_terracotta.json : gives.id=minecraft:blue_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_brown_glazed_terracotta.json : gives.id=minecraft:brown_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_brown_terracotta.json : gives.id=minecraft:brown_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_cyan_glazed_terracotta.json : gives.id=minecraft:cyan_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_cyan_terracotta.json : gives.id=minecraft:cyan_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_gray_glazed_terracotta.json : gives.id=minecraft:gray_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_gray_terracotta.json : gives.id=minecraft:gray_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_green_glazed_terracotta.json : gives.id=minecraft:green_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_green_terracotta.json : gives.id=minecraft:green_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_light_blue_glazed_terracotta.json : gives.id=minecraft:light_blue_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_light_blue_terracotta.json : gives.id=minecraft:light_blue_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_light_gray_glazed_terracotta.json : gives.id=minecraft:light_gray_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_light_gray_terracotta.json : gives.id=minecraft:light_gray_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_lime_glazed_terracotta.json : gives.id=minecraft:lime_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_lime_terracotta.json : gives.id=minecraft:lime_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_magenta_glazed_terracotta.json : gives.id=minecraft:magenta_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_magenta_terracotta.json : gives.id=minecraft:magenta_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_orange_glazed_terracotta.json : gives.id=minecraft:orange_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_orange_terracotta.json : gives.id=minecraft:orange_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_pink_glazed_terracotta.json : gives.id=minecraft:pink_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_pink_terracotta.json : gives.id=minecraft:pink_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_purple_glazed_terracotta.json : gives.id=minecraft:purple_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_purple_terracotta.json : gives.id=minecraft:purple_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_red_glazed_terracotta.json : gives.id=minecraft:red_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_red_terracotta.json : gives.id=minecraft:red_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_white_glazed_terracotta.json : gives.id=minecraft:white_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_white_terracotta.json : gives.id=minecraft:white_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_yellow_glazed_terracotta.json : gives.id=minecraft:yellow_glazed_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/emerald_yellow_terracotta.json : gives.id=minecraft:yellow_terracotta ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+mason/4/quartz_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=12.0 ; wants.id=minecraft:quartz ; xp=30.0
+mason/5/emerald_quartz_block.json : gives.id=minecraft:quartz_block ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=30.0
+mason/5/emerald_quartz_pillar.json : gives.id=minecraft:quartz_pillar ; max_uses=12.0 ; wants.id=minecraft:emerald ; xp=30.0
+shepherd/1/black_wool_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=18.0 ; wants.id=minecraft:black_wool ; xp=2.0
+shepherd/1/brown_wool_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=18.0 ; wants.id=minecraft:brown_wool ; xp=2.0
+shepherd/1/emerald_shears.json : gives.id=minecraft:shears ; max_uses=12.0 ; wants.count=2.0 ; wants.id=minecraft:emerald
+shepherd/1/gray_wool_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=18.0 ; wants.id=minecraft:gray_wool ; xp=2.0
+shepherd/1/white_wool_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=18.0 ; wants.id=minecraft:white_wool ; xp=2.0
+shepherd/2/black_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:black_dye ; xp=10.0
+shepherd/2/emerald_black_carpet.json : gives.count=4 ; gives.id=minecraft:black_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_black_wool.json : gives.id=minecraft:black_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_blue_carpet.json : gives.count=4 ; gives.id=minecraft:blue_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_blue_wool.json : gives.id=minecraft:blue_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_brown_carpet.json : gives.count=4 ; gives.id=minecraft:brown_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_brown_wool.json : gives.id=minecraft:brown_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_cyan_carpet.json : gives.count=4 ; gives.id=minecraft:cyan_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_cyan_wool.json : gives.id=minecraft:cyan_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_gray_carpet.json : gives.count=4 ; gives.id=minecraft:gray_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_gray_wool.json : gives.id=minecraft:gray_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_green_carpet.json : gives.count=4 ; gives.id=minecraft:green_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_green_wool.json : gives.id=minecraft:green_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_light_blue_carpet.json : gives.count=4 ; gives.id=minecraft:light_blue_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_light_blue_wool.json : gives.id=minecraft:light_blue_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_light_gray_carpet.json : gives.count=4 ; gives.id=minecraft:light_gray_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_light_gray_wool.json : gives.id=minecraft:light_gray_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_lime_carpet.json : gives.count=4 ; gives.id=minecraft:lime_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_lime_wool.json : gives.id=minecraft:lime_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_magenta_carpet.json : gives.count=4 ; gives.id=minecraft:magenta_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_magenta_wool.json : gives.id=minecraft:magenta_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_orange_carpet.json : gives.count=4 ; gives.id=minecraft:orange_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_orange_wool.json : gives.id=minecraft:orange_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_pink_carpet.json : gives.count=4 ; gives.id=minecraft:pink_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_pink_wool.json : gives.id=minecraft:pink_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_purple_carpet.json : gives.count=4 ; gives.id=minecraft:purple_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_purple_wool.json : gives.id=minecraft:purple_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_red_carpet.json : gives.count=4 ; gives.id=minecraft:red_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_red_wool.json : gives.id=minecraft:red_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_white_carpet.json : gives.count=4 ; gives.id=minecraft:white_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_white_wool.json : gives.id=minecraft:white_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_yellow_carpet.json : gives.count=4 ; gives.id=minecraft:yellow_carpet ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/emerald_yellow_wool.json : gives.id=minecraft:yellow_wool ; max_uses=16.0 ; wants.id=minecraft:emerald ; xp=5.0
+shepherd/2/gray_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:gray_dye ; xp=10.0
+shepherd/2/light_blue_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:light_blue_dye ; xp=10.0
+shepherd/2/lime_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:lime_dye ; xp=10.0
+shepherd/2/white_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:white_dye ; xp=10.0
+shepherd/3/emerald_black_bed.json : gives.id=minecraft:black_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_blue_bed.json : gives.id=minecraft:blue_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_brown_bed.json : gives.id=minecraft:brown_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_cyan_bed.json : gives.id=minecraft:cyan_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_gray_bed.json : gives.id=minecraft:gray_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_green_bed.json : gives.id=minecraft:green_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_light_blue_bed.json : gives.id=minecraft:light_blue_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_light_gray_bed.json : gives.id=minecraft:light_gray_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_lime_bed.json : gives.id=minecraft:lime_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_magenta_bed.json : gives.id=minecraft:magenta_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_orange_bed.json : gives.id=minecraft:orange_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_pink_bed.json : gives.id=minecraft:pink_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_purple_bed.json : gives.id=minecraft:purple_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_red_bed.json : gives.id=minecraft:red_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_white_bed.json : gives.id=minecraft:white_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/emerald_yellow_bed.json : gives.id=minecraft:yellow_bed ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+shepherd/3/light_gray_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:light_gray_dye ; xp=20.0
+shepherd/3/orange_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:orange_dye ; xp=20.0
+shepherd/3/pink_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:pink_dye ; xp=20.0
+shepherd/3/red_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:red_dye ; xp=20.0
+shepherd/3/yellow_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:yellow_dye ; xp=20.0
+shepherd/4/blue_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:blue_dye ; xp=30.0
+shepherd/4/brown_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:brown_dye ; xp=30.0
+shepherd/4/cyan_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:cyan_dye ; xp=30.0
+shepherd/4/emerald_black_banner.json : gives.id=minecraft:black_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_blue_banner.json : gives.id=minecraft:blue_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_brown_banner.json : gives.id=minecraft:brown_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_cyan_banner.json : gives.id=minecraft:cyan_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_gray_banner.json : gives.id=minecraft:gray_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_green_banner.json : gives.id=minecraft:green_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_light_blue_banner.json : gives.id=minecraft:light_blue_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_light_gray_banner.json : gives.id=minecraft:light_gray_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_lime_banner.json : gives.id=minecraft:lime_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_magenta_banner.json : gives.id=minecraft:magenta_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_orange_banner.json : gives.id=minecraft:orange_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_pink_banner.json : gives.id=minecraft:pink_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_purple_banner.json : gives.id=minecraft:purple_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_red_banner.json : gives.id=minecraft:red_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_white_banner.json : gives.id=minecraft:white_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/emerald_yellow_banner.json : gives.id=minecraft:yellow_banner ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=15.0
+shepherd/4/green_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:green_dye ; xp=30.0
+shepherd/4/magenta_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:magenta_dye ; xp=30.0
+shepherd/4/purple_dye_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=12.0 ; wants.id=minecraft:purple_dye ; xp=30.0
+shepherd/5/emerald_painting.json : gives.count=3 ; gives.id=minecraft:painting ; max_uses=12.0 ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=30.0
+smith/1/coal_emerald.json : gives.id=minecraft:emerald ; max_uses=16.0 ; wants.count=15.0 ; wants.id=minecraft:coal ; xp=2.0
+smith/2/emerald_bell.json : gives.id=minecraft:bell ; max_uses=12.0 ; wants.count=36.0 ; wants.id=minecraft:emerald ; xp=5.0
+smith/2/iron_ingot_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=4.0 ; wants.id=minecraft:iron_ingot ; xp=10.0
+toolsmith/1/emerald_stone_axe.json : gives.id=minecraft:stone_axe ; max_uses=12.0 ; wants.id=minecraft:emerald
+toolsmith/1/emerald_stone_hoe.json : gives.id=minecraft:stone_hoe ; max_uses=12.0 ; wants.id=minecraft:emerald
+toolsmith/1/emerald_stone_pickaxe.json : gives.id=minecraft:stone_pickaxe ; max_uses=12.0 ; wants.id=minecraft:emerald
+toolsmith/1/emerald_stone_shovel.json : gives.id=minecraft:stone_shovel ; max_uses=12.0 ; wants.id=minecraft:emerald
+toolsmith/3/emerald_diamond_hoe.json : gives.id=minecraft:diamond_hoe ; max_uses=3.0 ; wants.count=4.0 ; wants.id=minecraft:emerald ; xp=10.0
+toolsmith/3/emerald_enchanted_iron_axe.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:iron_axe ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:iron_axe ; max_uses=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+toolsmith/3/emerald_enchanted_iron_pickaxe.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:iron_pickaxe ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:iron_pickaxe ; max_uses=3.0 ; wants.count=3.0 ; wants.id=minecraft:emerald ; xp=10.0
+toolsmith/3/emerald_enchanted_iron_shovel.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:iron_shovel ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:iron_shovel ; max_uses=3.0 ; wants.count=2.0 ; wants.id=minecraft:emerald ; xp=10.0
+toolsmith/3/flint_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=30.0 ; wants.id=minecraft:flint ; xp=20.0
+toolsmith/4/diamond_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.id=minecraft:diamond ; xp=30.0
+toolsmith/4/emerald_enchanted_diamond_axe.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:diamond_axe ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:diamond_axe ; max_uses=3.0 ; wants.count=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+toolsmith/4/emerald_enchanted_diamond_shovel.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:diamond_shovel ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:diamond_shovel ; max_uses=3.0 ; wants.count=5.0 ; wants.id=minecraft:emerald ; xp=15.0
+toolsmith/5/emerald_enchanted_diamond_pickaxe.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:diamond_pickaxe ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:diamond_pickaxe ; max_uses=3.0 ; wants.count=13.0 ; wants.id=minecraft:emerald ; xp=30.0
+wandering_trader/baked_potato_emerald.json : gives.id=minecraft:emerald ; max_uses=2.0 ; wants.count=4.0 ; wants.id=minecraft:baked_potato
+wandering_trader/emerald_acacia_log.json : gives.count=8 ; gives.id=minecraft:acacia_log ; wants.id=minecraft:emerald
+wandering_trader/emerald_acacia_sapling.json : gives.id=minecraft:acacia_sapling ; max_uses=8.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_allium.json : gives.id=minecraft:allium ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_azure_bluet.json : gives.id=minecraft:azure_bluet ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_beetroot_seeds.json : gives.id=minecraft:beetroot_seeds ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_birch_log.json : gives.count=8 ; gives.id=minecraft:birch_log ; wants.id=minecraft:emerald
+wandering_trader/emerald_birch_sapling.json : gives.id=minecraft:birch_sapling ; max_uses=8.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_black_dye.json : gives.count=3 ; gives.id=minecraft:black_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_blue_dye.json : gives.count=3 ; gives.id=minecraft:blue_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_blue_ice.json : gives.id=minecraft:blue_ice ; max_uses=6.0 ; wants.count=6.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_blue_orchid.json : gives.id=minecraft:blue_orchid ; max_uses=8.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_brain_coral_block.json : gives.id=minecraft:brain_coral_block ; max_uses=8.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_brown_dye.json : gives.count=3 ; gives.id=minecraft:brown_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_brown_mushroom.json : gives.count=3 ; gives.id=minecraft:brown_mushroom ; wants.id=minecraft:emerald
+wandering_trader/emerald_bubble_coral_block.json : gives.id=minecraft:bubble_coral_block ; max_uses=8.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_cactus.json : gives.id=minecraft:cactus ; max_uses=8.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_cherry_log.json : gives.count=8 ; gives.id=minecraft:cherry_log ; wants.id=minecraft:emerald
+wandering_trader/emerald_cherry_sapling.json : gives.id=minecraft:cherry_sapling ; max_uses=8.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_cornflower.json : gives.id=minecraft:cornflower ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_cyan_dye.json : gives.count=3 ; gives.id=minecraft:cyan_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_dandelion.json : gives.id=minecraft:dandelion ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_dark_oak_log.json : gives.count=8 ; gives.id=minecraft:dark_oak_log ; wants.id=minecraft:emerald
+wandering_trader/emerald_dark_oak_sapling.json : gives.id=minecraft:dark_oak_sapling ; max_uses=8.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_dry_tall_grass.json : gives.id=minecraft:tall_dry_grass ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_enchanted_iron_pickaxe.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:iron_pickaxe ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:iron_pickaxe ; max_uses=1.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_fern.json : gives.id=minecraft:fern ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_fire_coral_block.json : gives.id=minecraft:fire_coral_block ; max_uses=8.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_firefly_bush.json : gives.id=minecraft:firefly_bush ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_fish_bucket.json : gives.id=minecraft:tropical_fish_bucket ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_glowstone.json : gives.id=minecraft:glowstone ; max_uses=5.0 ; wants.count=2.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_golden_dandelion.json : gives.id=minecraft:golden_dandelion ; max_uses=12.0 ; wants.count=2.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_gray_dye.json : gives.count=3 ; gives.id=minecraft:gray_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_green_dye.json : gives.count=3 ; gives.id=minecraft:green_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_gunpowder.json : gives.count=4 ; gives.id=minecraft:gunpowder ; max_uses=2.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_horn_coral_block.json : gives.id=minecraft:horn_coral_block ; max_uses=8.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_jungle_log.json : gives.count=8 ; gives.id=minecraft:jungle_log ; wants.id=minecraft:emerald
+wandering_trader/emerald_jungle_sapling.json : gives.id=minecraft:jungle_sapling ; max_uses=8.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_kelp.json : gives.id=minecraft:kelp ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_light_blue_dye.json : gives.count=3 ; gives.id=minecraft:light_blue_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_light_gray_dye.json : gives.count=3 ; gives.id=minecraft:light_gray_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_lily_of_the_valley.json : gives.id=minecraft:lily_of_the_valley ; max_uses=7.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_lily_pad.json : gives.count=5 ; gives.id=minecraft:lily_pad ; max_uses=2.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_lime_dye.json : gives.count=3 ; gives.id=minecraft:lime_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_long_invisibility_potion.json : given_item_modifiers[0].function=minecraft:set_potion ; given_item_modifiers[0].id=minecraft:long_invisibility ; gives.id=minecraft:potion ; max_uses=1.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_magenta_dye.json : gives.count=3 ; gives.id=minecraft:magenta_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_mangrove_log.json : gives.count=8 ; gives.id=minecraft:mangrove_log ; wants.id=minecraft:emerald
+wandering_trader/emerald_mangrove_propagule.json : gives.id=minecraft:mangrove_propagule ; max_uses=8.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_melon_seeds.json : gives.id=minecraft:melon_seeds ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_moss_block.json : gives.count=2 ; gives.id=minecraft:moss_block ; max_uses=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_name_tag.json : gives.id=minecraft:name_tag ; max_uses=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_nautilus_shell.json : gives.id=minecraft:nautilus_shell ; max_uses=5.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_oak_log.json : gives.count=8 ; gives.id=minecraft:oak_log ; wants.id=minecraft:emerald
+wandering_trader/emerald_oak_sapling.json : gives.id=minecraft:oak_sapling ; max_uses=8.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_open_eyeblossom.json : gives.id=minecraft:open_eyeblossom ; max_uses=7.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_orange_dye.json : gives.count=3 ; gives.id=minecraft:orange_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_orange_tulip.json : gives.id=minecraft:orange_tulip ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_oxeye_daisy.json : gives.id=minecraft:oxeye_daisy ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_packed_ice.json : gives.id=minecraft:packed_ice ; max_uses=6.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_pale_hanging_moss.json : gives.count=3 ; gives.id=minecraft:pale_hanging_moss ; wants.id=minecraft:emerald
+wandering_trader/emerald_pale_moss_block.json : gives.count=2 ; gives.id=minecraft:pale_moss_block ; max_uses=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_pale_oak_log.json : gives.count=8 ; gives.id=minecraft:pale_oak_log ; wants.id=minecraft:emerald
+wandering_trader/emerald_pale_oak_sapling.json : gives.id=minecraft:pale_oak_sapling ; max_uses=8.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_pink_dye.json : gives.count=3 ; gives.id=minecraft:pink_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_pink_tulip.json : gives.id=minecraft:pink_tulip ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_podzol.json : gives.count=3 ; gives.id=minecraft:podzol ; max_uses=6.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_pointed_dripstone.json : gives.count=2 ; gives.id=minecraft:pointed_dripstone ; max_uses=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_poppy.json : gives.id=minecraft:poppy ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_pufferfish_bucket.json : gives.id=minecraft:pufferfish_bucket ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_pumpkin.json : gives.id=minecraft:pumpkin ; wants.id=minecraft:emerald
+wandering_trader/emerald_pumpkin_seeds.json : gives.id=minecraft:pumpkin_seeds ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_purple_dye.json : gives.count=3 ; gives.id=minecraft:purple_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_red_dye.json : gives.count=3 ; gives.id=minecraft:red_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_red_mushroom.json : gives.count=3 ; gives.id=minecraft:red_mushroom ; wants.id=minecraft:emerald
+wandering_trader/emerald_red_sand.json : gives.count=4 ; gives.id=minecraft:red_sand ; max_uses=6.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_red_tulip.json : gives.id=minecraft:red_tulip ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_rooted_dirt.json : gives.count=2 ; gives.id=minecraft:rooted_dirt ; max_uses=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_sand.json : gives.count=8 ; gives.id=minecraft:sand ; max_uses=8.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_sea_pickle.json : gives.id=minecraft:sea_pickle ; max_uses=5.0 ; wants.count=2.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_slime_ball.json : gives.id=minecraft:slime_ball ; max_uses=5.0 ; wants.count=4.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_small_dripleaf.json : gives.count=2 ; gives.id=minecraft:small_dripleaf ; max_uses=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_spruce_log.json : gives.count=8 ; gives.id=minecraft:spruce_log ; wants.id=minecraft:emerald
+wandering_trader/emerald_spruce_sapling.json : gives.id=minecraft:spruce_sapling ; max_uses=8.0 ; wants.count=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_sugar_cane.json : gives.id=minecraft:sugar_cane ; max_uses=8.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_sulfur_spike.json : gives.count=2 ; gives.id=minecraft:sulfur_spike ; max_uses=5.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_tube_coral_block.json : gives.id=minecraft:tube_coral_block ; max_uses=8.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_vine.json : gives.count=3 ; gives.id=minecraft:vine ; wants.id=minecraft:emerald
+wandering_trader/emerald_wheat_seeds.json : gives.id=minecraft:wheat_seeds ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_white_dye.json : gives.count=3 ; gives.id=minecraft:white_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_white_tulip.json : gives.id=minecraft:white_tulip ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_wildflowers.json : gives.id=minecraft:wildflowers ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/emerald_yellow_dye.json : gives.count=3 ; gives.id=minecraft:yellow_dye ; max_uses=12.0 ; wants.id=minecraft:emerald
+wandering_trader/fermented_spider_eye_emerald.json : gives.count=3 ; gives.id=minecraft:emerald ; max_uses=2.0 ; wants.id=minecraft:fermented_spider_eye
+wandering_trader/hay_block_emerald.json : gives.id=minecraft:emerald ; max_uses=2.0 ; wants.id=minecraft:hay_block
+wandering_trader/milk_bucket_emerald.json : gives.count=2 ; gives.id=minecraft:emerald ; max_uses=2.0 ; wants.id=minecraft:milk_bucket
+wandering_trader/water_bottle_emerald.json : gives.id=minecraft:emerald ; max_uses=2.0 ; wants.components.minecraft:potion_contents.potion=minecraft:water ; wants.id=minecraft:potion
+wandering_trader/water_bucket_emerald.json : gives.count=2 ; gives.id=minecraft:emerald ; max_uses=2.0 ; wants.id=minecraft:water_bucket
+weaponsmith/1/emerald_enchanted_iron_sword.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:iron_sword ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:iron_sword ; max_uses=12.0 ; wants.count=2.0 ; wants.id=minecraft:emerald
+weaponsmith/1/emerald_iron_axe.json : gives.id=minecraft:iron_axe ; max_uses=12.0 ; wants.count=3.0 ; wants.id=minecraft:emerald
+weaponsmith/3/flint_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.count=24.0 ; wants.id=minecraft:flint ; xp=20.0
+weaponsmith/4/diamond_emerald.json : gives.id=minecraft:emerald ; max_uses=12.0 ; wants.id=minecraft:diamond ; xp=30.0
+weaponsmith/4/emerald_enchanted_diamond_axe.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:diamond_axe ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:diamond_axe ; max_uses=3.0 ; wants.count=12.0 ; wants.id=minecraft:emerald ; xp=15.0
+weaponsmith/5/emerald_enchanted_diamond_sword.json : given_item_modifiers[0].function=minecraft:enchant_with_levels ; given_item_modifiers[0].levels.type=minecraft:uniform ; given_item_modifiers[0].levels.max=19.0 ; given_item_modifiers[0].levels.min=5.0 ; given_item_modifiers[0].options=#minecraft:on_traded_equipment ; given_item_modifiers[1].function=minecraft:filtered ; given_item_modifiers[1].item_filter.items=minecraft:diamond_sword ; given_item_modifiers[1].on_fail.function=minecraft:discard ; gives.id=minecraft:diamond_sword ; max_uses=3.0 ; wants.count=8.0 ; wants.id=minecraft:emerald ; xp=30.0
+
+== data/minecraft/trade_set/ : 68 fichiers
+armorer/level_1.json : random_sequence=minecraft:trade_set/armorer/level_1 ; trades=#minecraft:armorer/level_1
+armorer/level_2.json : random_sequence=minecraft:trade_set/armorer/level_2 ; trades=#minecraft:armorer/level_2
+armorer/level_3.json : random_sequence=minecraft:trade_set/armorer/level_3 ; trades=#minecraft:armorer/level_3
+armorer/level_4.json : random_sequence=minecraft:trade_set/armorer/level_4 ; trades=#minecraft:armorer/level_4
+armorer/level_5.json : random_sequence=minecraft:trade_set/armorer/level_5 ; trades=#minecraft:armorer/level_5
+butcher/level_1.json : random_sequence=minecraft:trade_set/butcher/level_1 ; trades=#minecraft:butcher/level_1
+butcher/level_2.json : random_sequence=minecraft:trade_set/butcher/level_2 ; trades=#minecraft:butcher/level_2
+butcher/level_3.json : random_sequence=minecraft:trade_set/butcher/level_3 ; trades=#minecraft:butcher/level_3
+butcher/level_4.json : random_sequence=minecraft:trade_set/butcher/level_4 ; trades=#minecraft:butcher/level_4
+butcher/level_5.json : random_sequence=minecraft:trade_set/butcher/level_5 ; trades=#minecraft:butcher/level_5
+cartographer/level_1.json : random_sequence=minecraft:trade_set/cartographer/level_1 ; trades=#minecraft:cartographer/level_1
+cartographer/level_2.json : random_sequence=minecraft:trade_set/cartographer/level_2 ; trades=#minecraft:cartographer/level_2
+cartographer/level_3.json : random_sequence=minecraft:trade_set/cartographer/level_3 ; trades=#minecraft:cartographer/level_3
+cartographer/level_4.json : random_sequence=minecraft:trade_set/cartographer/level_4 ; trades=#minecraft:cartographer/level_4
+cartographer/level_5.json : random_sequence=minecraft:trade_set/cartographer/level_5 ; trades=#minecraft:cartographer/level_5
+cleric/level_1.json : random_sequence=minecraft:trade_set/cleric/level_1 ; trades=#minecraft:cleric/level_1
+cleric/level_2.json : random_sequence=minecraft:trade_set/cleric/level_2 ; trades=#minecraft:cleric/level_2
+cleric/level_3.json : random_sequence=minecraft:trade_set/cleric/level_3 ; trades=#minecraft:cleric/level_3
+cleric/level_4.json : random_sequence=minecraft:trade_set/cleric/level_4 ; trades=#minecraft:cleric/level_4
+cleric/level_5.json : random_sequence=minecraft:trade_set/cleric/level_5 ; trades=#minecraft:cleric/level_5
+farmer/level_1.json : random_sequence=minecraft:trade_set/farmer/level_1 ; trades=#minecraft:farmer/level_1
+farmer/level_2.json : random_sequence=minecraft:trade_set/farmer/level_2 ; trades=#minecraft:farmer/level_2
+farmer/level_3.json : random_sequence=minecraft:trade_set/farmer/level_3 ; trades=#minecraft:farmer/level_3
+farmer/level_4.json : random_sequence=minecraft:trade_set/farmer/level_4 ; trades=#minecraft:farmer/level_4
+farmer/level_5.json : random_sequence=minecraft:trade_set/farmer/level_5 ; trades=#minecraft:farmer/level_5
+fisherman/level_1.json : random_sequence=minecraft:trade_set/fisherman/level_1 ; trades=#minecraft:fisherman/level_1
+fisherman/level_2.json : random_sequence=minecraft:trade_set/fisherman/level_2 ; trades=#minecraft:fisherman/level_2
+fisherman/level_3.json : random_sequence=minecraft:trade_set/fisherman/level_3 ; trades=#minecraft:fisherman/level_3
+fisherman/level_4.json : random_sequence=minecraft:trade_set/fisherman/level_4 ; trades=#minecraft:fisherman/level_4
+fisherman/level_5.json : random_sequence=minecraft:trade_set/fisherman/level_5 ; trades=#minecraft:fisherman/level_5
+fletcher/level_1.json : random_sequence=minecraft:trade_set/fletcher/level_1 ; trades=#minecraft:fletcher/level_1
+fletcher/level_2.json : random_sequence=minecraft:trade_set/fletcher/level_2 ; trades=#minecraft:fletcher/level_2
+fletcher/level_3.json : random_sequence=minecraft:trade_set/fletcher/level_3 ; trades=#minecraft:fletcher/level_3
+fletcher/level_4.json : random_sequence=minecraft:trade_set/fletcher/level_4 ; trades=#minecraft:fletcher/level_4
+fletcher/level_5.json : random_sequence=minecraft:trade_set/fletcher/level_5 ; trades=#minecraft:fletcher/level_5
+leatherworker/level_1.json : random_sequence=minecraft:trade_set/leatherworker/level_1 ; trades=#minecraft:leatherworker/level_1
+leatherworker/level_2.json : random_sequence=minecraft:trade_set/leatherworker/level_2 ; trades=#minecraft:leatherworker/level_2
+leatherworker/level_3.json : random_sequence=minecraft:trade_set/leatherworker/level_3 ; trades=#minecraft:leatherworker/level_3
+leatherworker/level_4.json : random_sequence=minecraft:trade_set/leatherworker/level_4 ; trades=#minecraft:leatherworker/level_4
+leatherworker/level_5.json : random_sequence=minecraft:trade_set/leatherworker/level_5 ; trades=#minecraft:leatherworker/level_5
+librarian/level_1.json : random_sequence=minecraft:trade_set/librarian/level_1 ; trades=#minecraft:librarian/level_1
+librarian/level_2.json : random_sequence=minecraft:trade_set/librarian/level_2 ; trades=#minecraft:librarian/level_2
+librarian/level_3.json : random_sequence=minecraft:trade_set/librarian/level_3 ; trades=#minecraft:librarian/level_3
+librarian/level_4.json : random_sequence=minecraft:trade_set/librarian/level_4 ; trades=#minecraft:librarian/level_4
+librarian/level_5.json : random_sequence=minecraft:trade_set/librarian/level_5 ; trades=#minecraft:librarian/level_5
+mason/level_1.json : random_sequence=minecraft:trade_set/mason/level_1 ; trades=#minecraft:mason/level_1
+mason/level_2.json : random_sequence=minecraft:trade_set/mason/level_2 ; trades=#minecraft:mason/level_2
+mason/level_3.json : random_sequence=minecraft:trade_set/mason/level_3 ; trades=#minecraft:mason/level_3
+mason/level_4.json : random_sequence=minecraft:trade_set/mason/level_4 ; trades=#minecraft:mason/level_4
+mason/level_5.json : random_sequence=minecraft:trade_set/mason/level_5 ; trades=#minecraft:mason/level_5
+shepherd/level_1.json : random_sequence=minecraft:trade_set/shepherd/level_1 ; trades=#minecraft:shepherd/level_1
+shepherd/level_2.json : random_sequence=minecraft:trade_set/shepherd/level_2 ; trades=#minecraft:shepherd/level_2
+shepherd/level_3.json : random_sequence=minecraft:trade_set/shepherd/level_3 ; trades=#minecraft:shepherd/level_3
+shepherd/level_4.json : random_sequence=minecraft:trade_set/shepherd/level_4 ; trades=#minecraft:shepherd/level_4
+shepherd/level_5.json : random_sequence=minecraft:trade_set/shepherd/level_5 ; trades=#minecraft:shepherd/level_5
+toolsmith/level_1.json : random_sequence=minecraft:trade_set/toolsmith/level_1 ; trades=#minecraft:toolsmith/level_1
+toolsmith/level_2.json : random_sequence=minecraft:trade_set/toolsmith/level_2 ; trades=#minecraft:toolsmith/level_2
+toolsmith/level_3.json : random_sequence=minecraft:trade_set/toolsmith/level_3 ; trades=#minecraft:toolsmith/level_3
+toolsmith/level_4.json : random_sequence=minecraft:trade_set/toolsmith/level_4 ; trades=#minecraft:toolsmith/level_4
+toolsmith/level_5.json : random_sequence=minecraft:trade_set/toolsmith/level_5 ; trades=#minecraft:toolsmith/level_5
+wandering_trader/buying.json : random_sequence=minecraft:trade_set/wandering_trader/buying ; trades=#minecraft:wandering_trader/buying
+wandering_trader/common.json : random_sequence=minecraft:trade_set/wandering_trader/common ; trades=#minecraft:wandering_trader/common
+wandering_trader/uncommon.json : random_sequence=minecraft:trade_set/wandering_trader/uncommon ; trades=#minecraft:wandering_trader/uncommon
+weaponsmith/level_1.json : random_sequence=minecraft:trade_set/weaponsmith/level_1 ; trades=#minecraft:weaponsmith/level_1
+weaponsmith/level_2.json : random_sequence=minecraft:trade_set/weaponsmith/level_2 ; trades=#minecraft:weaponsmith/level_2
+weaponsmith/level_3.json : random_sequence=minecraft:trade_set/weaponsmith/level_3 ; trades=#minecraft:weaponsmith/level_3
+weaponsmith/level_4.json : random_sequence=minecraft:trade_set/weaponsmith/level_4 ; trades=#minecraft:weaponsmith/level_4
+weaponsmith/level_5.json : random_sequence=minecraft:trade_set/weaponsmith/level_5 ; trades=#minecraft:weaponsmith/level_5
+
+== tags de blocs
+ancient_city_replaceable : minecraft:deepslate, minecraft:deepslate_bricks, minecraft:deepslate_tiles, minecraft:deepslate_brick_slab, minecraft:deepslate_tile_slab, minecraft:deepslate_brick_stairs, minecraft:deepslate_tile_wall, minecraft:deepslate_brick_wall, minecraft:cobbled_deepslate, minecraft:cracked_deepslate_bricks, minecraft:cracked_deepslate_tiles, minecraft:gray_wool
+azalea_root_replaceable : #minecraft:base_stone_overworld, #minecraft:substrate_overworld, #minecraft:terracotta, minecraft:red_sand, minecraft:clay, minecraft:gravel, minecraft:sand, minecraft:snow_block, minecraft:powder_snow
+base_stone_overworld : minecraft:stone, minecraft:granite, minecraft:diorite, minecraft:andesite, minecraft:tuff, minecraft:deepslate
+beneath_bamboo_podzol_replaceable : #minecraft:substrate_overworld
+beneath_tree_podzol_replaceable : #minecraft:substrate_overworld
+camel_sand_step_sound_blocks : #minecraft:sand, #minecraft:concrete_powders
+cannot_support_seagrass : minecraft:magma_block
+causes_continuous_geyser_eruptions : minecraft:lava
+causes_periodic_geyser_eruptions : minecraft:magma_block
+convertable_to_mud : minecraft:dirt, minecraft:coarse_dirt, minecraft:rooted_dirt
+deepslate_ore_replaceables : minecraft:deepslate, minecraft:tuff
+dirt : minecraft:dirt, minecraft:coarse_dirt, minecraft:rooted_dirt
+dripstone_replaceable_blocks : #minecraft:base_stone_overworld
+grass_blocks : minecraft:grass_block, minecraft:podzol, minecraft:mycelium
+ice_spike_replaceable : #minecraft:substrate_overworld, minecraft:snow_block, minecraft:ice
+infiniburn_overworld : minecraft:netherrack, minecraft:magma_block
+lush_ground_replaceable : #minecraft:moss_replaceable, minecraft:clay, minecraft:gravel, minecraft:sand
+maintains_farmland : minecraft:pumpkin_stem, minecraft:attached_pumpkin_stem, minecraft:melon_stem, minecraft:attached_melon_stem, minecraft:beetroots, minecraft:carrots, minecraft:potatoes, minecraft:torchflower_crop, minecraft:torchflower, minecraft:pitcher_crop, minecraft:wheat, minecraft:moving_piston, #minecraft:fence_gates
+moss_blocks : minecraft:moss_block, minecraft:pale_moss_block
+moss_replaceable : #minecraft:base_stone_overworld, #minecraft:cave_vines, #minecraft:dirt, #minecraft:mud, #minecraft:moss_blocks, #minecraft:grass_blocks
+mud : minecraft:mud, minecraft:muddy_mangrove_roots
+nether_carver_replaceables : #minecraft:base_stone_overworld, #minecraft:base_stone_nether, #minecraft:substrate_overworld, #minecraft:nylium, #minecraft:wart_blocks, minecraft:soul_sand, minecraft:soul_soil
+overworld_carver_replaceables : #minecraft:base_stone_overworld, #minecraft:substrate_overworld, #minecraft:sand, #minecraft:terracotta, #minecraft:iron_ores, #minecraft:copper_ores, #minecraft:snow, minecraft:water, minecraft:gravel, minecraft:suspicious_gravel, minecraft:sandstone, minecraft:red_sandstone, minecraft:calcite, minecraft:packed_ice, minecraft:raw_iron_block, minecraft:raw_copper_block, minecraft:cinnabar, minecraft:sulfur, minecraft:potent_sulfur
+overworld_natural_logs : minecraft:acacia_log, minecraft:birch_log, minecraft:oak_log, minecraft:jungle_log, minecraft:spruce_log, minecraft:dark_oak_log, minecraft:pale_oak_log, minecraft:mangrove_log, minecraft:cherry_log
+replaceable : minecraft:air, minecraft:water, minecraft:lava, minecraft:short_grass, minecraft:fern, minecraft:dead_bush, minecraft:bush, minecraft:short_dry_grass, minecraft:tall_dry_grass, minecraft:seagrass, minecraft:tall_seagrass, minecraft:fire, minecraft:soul_fire, minecraft:snow, minecraft:vine, minecraft:glow_lichen, minecraft:resin_clump, minecraft:light, minecraft:tall_grass, minecraft:large_fern, minecraft:structure_void, minecraft:void_air, minecraft:cave_air, minecraft:bubble_column, minecraft:warped_roots, minecraft:nether_sprouts, minecraft:crimson_roots, minecraft:leaf_litter, minecraft:hanging_roots
+replaceable_by_mushrooms : #minecraft:leaves, #minecraft:small_flowers, minecraft:pale_moss_carpet, minecraft:short_grass, minecraft:fern, minecraft:dead_bush, minecraft:vine, minecraft:glow_lichen, minecraft:sunflower, minecraft:lilac, minecraft:rose_bush, minecraft:peony, minecraft:tall_grass, minecraft:large_fern, minecraft:hanging_roots, minecraft:pitcher_plant, minecraft:water, minecraft:seagrass, minecraft:tall_seagrass, minecraft:brown_mushroom, minecraft:red_mushroom, minecraft:brown_mushroom_block, minecraft:red_mushroom_block, minecraft:warped_roots, minecraft:nether_sprouts, minecraft:crimson_roots, minecraft:leaf_litter, minecraft:short_dry_grass, minecraft:tall_dry_grass, minecraft:bush, minecraft:firefly_bush
+replaceable_by_trees : #minecraft:leaves, #minecraft:small_flowers, minecraft:pale_moss_carpet, minecraft:short_grass, minecraft:fern, minecraft:dead_bush, minecraft:vine, minecraft:glow_lichen, minecraft:sunflower, minecraft:lilac, minecraft:rose_bush, minecraft:peony, minecraft:tall_grass, minecraft:large_fern, minecraft:hanging_roots, minecraft:pitcher_plant, minecraft:water, minecraft:seagrass, minecraft:tall_seagrass, minecraft:bush, minecraft:firefly_bush, minecraft:warped_roots, minecraft:nether_sprouts, minecraft:crimson_roots, minecraft:leaf_litter, minecraft:short_dry_grass, minecraft:tall_dry_grass
+sand : minecraft:sand, minecraft:red_sand, minecraft:suspicious_sand
+sculk_replaceable : #minecraft:base_stone_overworld, #minecraft:substrate_overworld, #minecraft:terracotta, #minecraft:nylium, #minecraft:base_stone_nether, minecraft:sand, minecraft:red_sand, minecraft:gravel, minecraft:soul_sand, minecraft:soul_soil, minecraft:calcite, minecraft:smooth_basalt, minecraft:clay, minecraft:dripstone_block, minecraft:end_stone, minecraft:red_sandstone, minecraft:sandstone, minecraft:sulfur, minecraft:cinnabar
+sculk_replaceable_world_gen : #minecraft:sculk_replaceable, minecraft:deepslate_bricks, minecraft:deepslate_tiles, minecraft:cobbled_deepslate, minecraft:cracked_deepslate_bricks, minecraft:cracked_deepslate_tiles, minecraft:polished_deepslate
+stone_ore_replaceables : minecraft:stone, minecraft:granite, minecraft:diorite, minecraft:andesite
+substrate_overworld : #minecraft:dirt, #minecraft:mud, #minecraft:moss_blocks, #minecraft:grass_blocks
+sulfur_spike_replaceable_blocks : minecraft:sulfur, minecraft:cinnabar
+supports_azalea : #minecraft:supports_vegetation, minecraft:clay
+supports_bamboo : #minecraft:sand, #minecraft:substrate_overworld, minecraft:bamboo, minecraft:bamboo_sapling, minecraft:gravel, minecraft:suspicious_gravel
+supports_big_dripleaf : #minecraft:supports_small_dripleaf, minecraft:dirt, minecraft:grass_block, minecraft:podzol, minecraft:coarse_dirt, minecraft:mycelium, minecraft:rooted_dirt, minecraft:moss_block, minecraft:mud, minecraft:muddy_mangrove_roots, minecraft:farmland
+supports_cactus : #minecraft:sand
+supports_chorus_flower : minecraft:end_stone
+supports_chorus_plant : minecraft:end_stone
+supports_cocoa : #minecraft:jungle_logs
+supports_crimson_fungus : #minecraft:supports_warped_fungus
+supports_crimson_roots : #minecraft:supports_warped_roots
+supports_crops : minecraft:farmland
+supports_dry_vegetation : #minecraft:sand, #minecraft:terracotta, #minecraft:supports_vegetation
+supports_frogspawn : 
+supports_hanging_mangrove_propagule : minecraft:mangrove_leaves
+supports_lily_pad : minecraft:ice, minecraft:frosted_ice
+supports_mangrove_propagule : #minecraft:supports_vegetation, minecraft:clay
+supports_melon_stem : #minecraft:supports_stem_crops
+supports_melon_stem_fruit : #minecraft:supports_stem_fruit
+supports_nether_sprouts : #minecraft:supports_vegetation, #minecraft:nylium, minecraft:soul_soil
+supports_nether_wart : minecraft:soul_sand
+supports_pumpkin_stem : #minecraft:supports_stem_crops
+supports_pumpkin_stem_fruit : #minecraft:supports_stem_fruit
+supports_small_dripleaf : minecraft:clay, minecraft:moss_block
+supports_stem_crops : #minecraft:supports_crops
+supports_stem_fruit : #minecraft:supports_vegetation
+supports_sugar_cane : #minecraft:substrate_overworld, #minecraft:sand
+supports_sugar_cane_adjacently : minecraft:frosted_ice
+supports_vegetation : #minecraft:substrate_overworld, minecraft:farmland
+supports_warped_fungus : #minecraft:supports_vegetation, #minecraft:nylium, minecraft:mycelium, minecraft:soul_soil
+supports_warped_roots : #minecraft:supports_vegetation, #minecraft:nylium, minecraft:soul_soil
+supports_wither_rose : #minecraft:supports_vegetation, minecraft:netherrack, minecraft:soul_sand, minecraft:soul_soil
+trail_ruins_replaceable : minecraft:gravel
+triggers_ambient_desert_sand_block_sounds : minecraft:sand, minecraft:red_sand
+
+== soufre et geysers : chemins
+assets/minecraft/models/item/sulfur_spike.json
+assets/minecraft/particles/geyser_base.json
+assets/minecraft/particles/geyser_plume.json
+assets/minecraft/particles/geyser_poof.json
+assets/minecraft/particles/sulfur_bubbles.json
+assets/minecraft/particles/sulfur_cube_goo.json
+assets/minecraft/textures/entity/sulfur_cube/
+data/minecraft/advancement/recipes/building_blocks/chiseled_sulfur.json
+data/minecraft/advancement/recipes/building_blocks/chiseled_sulfur_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/polished_sulfur.json
+data/minecraft/advancement/recipes/building_blocks/polished_sulfur_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/polished_sulfur_slab.json
+data/minecraft/advancement/recipes/building_blocks/polished_sulfur_slab_from_polished_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/polished_sulfur_slab_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/polished_sulfur_stairs.json
+data/minecraft/advancement/recipes/building_blocks/polished_sulfur_stairs_from_polished_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/polished_sulfur_stairs_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/potent_sulfur.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_brick_slab.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_brick_slab_from_polished_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_brick_slab_from_sulfur_bricks_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_brick_slab_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_brick_stairs.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_brick_stairs_from_polished_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_brick_stairs_from_sulfur_bricks_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_brick_stairs_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_bricks.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_bricks_from_polished_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_bricks_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_from_sulfur_spikes.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_slab.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_slab_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_stairs.json
+data/minecraft/advancement/recipes/building_blocks/sulfur_stairs_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/decorations/polished_sulfur_wall.json
+data/minecraft/advancement/recipes/decorations/polished_sulfur_wall_from_polished_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/decorations/polished_sulfur_wall_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/decorations/sulfur_brick_wall.json
+data/minecraft/advancement/recipes/decorations/sulfur_brick_wall_from_polished_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/decorations/sulfur_brick_wall_from_sulfur_bricks_stonecutting.json
+data/minecraft/advancement/recipes/decorations/sulfur_brick_wall_from_sulfur_stonecutting.json
+data/minecraft/advancement/recipes/decorations/sulfur_wall.json
+data/minecraft/advancement/recipes/decorations/sulfur_wall_from_sulfur_stonecutting.json
+data/minecraft/damage_type/sulfur_cube_hot.json
+data/minecraft/loot_table/blocks/chiseled_sulfur.json
+data/minecraft/loot_table/blocks/polished_sulfur.json
+data/minecraft/loot_table/blocks/polished_sulfur_slab.json
+data/minecraft/loot_table/blocks/polished_sulfur_stairs.json
+data/minecraft/loot_table/blocks/polished_sulfur_wall.json
+data/minecraft/loot_table/blocks/potent_sulfur.json
+data/minecraft/loot_table/blocks/sulfur.json
+data/minecraft/loot_table/blocks/sulfur_brick_slab.json
+data/minecraft/loot_table/blocks/sulfur_brick_stairs.json
+data/minecraft/loot_table/blocks/sulfur_brick_wall.json
+data/minecraft/loot_table/blocks/sulfur_bricks.json
+data/minecraft/loot_table/blocks/sulfur_slab.json
+data/minecraft/loot_table/blocks/sulfur_spike.json
+data/minecraft/loot_table/blocks/sulfur_stairs.json
+data/minecraft/loot_table/blocks/sulfur_wall.json
+data/minecraft/loot_table/entities/sulfur_cube.json
+data/minecraft/recipe/chiseled_sulfur.json
+data/minecraft/recipe/chiseled_sulfur_from_sulfur_stonecutting.json
+data/minecraft/recipe/polished_sulfur.json
+data/minecraft/recipe/polished_sulfur_from_sulfur_stonecutting.json
+data/minecraft/recipe/polished_sulfur_slab.json
+data/minecraft/recipe/polished_sulfur_slab_from_polished_sulfur_stonecutting.json
+data/minecraft/recipe/polished_sulfur_slab_from_sulfur_stonecutting.json
+data/minecraft/recipe/polished_sulfur_stairs.json
+data/minecraft/recipe/polished_sulfur_stairs_from_polished_sulfur_stonecutting.json
+data/minecraft/recipe/polished_sulfur_stairs_from_sulfur_stonecutting.json
+data/minecraft/recipe/polished_sulfur_wall.json
+data/minecraft/recipe/polished_sulfur_wall_from_polished_sulfur_stonecutting.json
+data/minecraft/recipe/polished_sulfur_wall_from_sulfur_stonecutting.json
+data/minecraft/recipe/potent_sulfur.json
+data/minecraft/recipe/sulfur_brick_slab.json
+data/minecraft/recipe/sulfur_brick_slab_from_polished_sulfur_stonecutting.json
+data/minecraft/recipe/sulfur_brick_slab_from_sulfur_bricks_stonecutting.json
+data/minecraft/recipe/sulfur_brick_slab_from_sulfur_stonecutting.json
+data/minecraft/recipe/sulfur_brick_stairs.json
+data/minecraft/recipe/sulfur_brick_stairs_from_polished_sulfur_stonecutting.json
+data/minecraft/recipe/sulfur_brick_stairs_from_sulfur_bricks_stonecutting.json
+data/minecraft/recipe/sulfur_brick_stairs_from_sulfur_stonecutting.json
+data/minecraft/recipe/sulfur_brick_wall.json
+data/minecraft/recipe/sulfur_brick_wall_from_polished_sulfur_stonecutting.json
+data/minecraft/recipe/sulfur_brick_wall_from_sulfur_bricks_stonecutting.json
+data/minecraft/recipe/sulfur_brick_wall_from_sulfur_stonecutting.json
+data/minecraft/recipe/sulfur_bricks.json
+data/minecraft/recipe/sulfur_bricks_from_polished_sulfur_stonecutting.json
+data/minecraft/recipe/sulfur_bricks_from_sulfur_stonecutting.json
+data/minecraft/recipe/sulfur_from_sulfur_spikes.json
+data/minecraft/recipe/sulfur_slab.json
+data/minecraft/recipe/sulfur_slab_from_sulfur_stonecutting.json
+data/minecraft/recipe/sulfur_stairs.json
+data/minecraft/recipe/sulfur_stairs_from_sulfur_stonecutting.json
+data/minecraft/recipe/sulfur_wall.json
+data/minecraft/recipe/sulfur_wall_from_sulfur_stonecutting.json
+data/minecraft/structure/spring/sulfur_spring_extra_large_1.nbt
+data/minecraft/structure/spring/sulfur_spring_large_1.nbt
+data/minecraft/structure/spring/sulfur_spring_large_2.nbt
+data/minecraft/structure/spring/sulfur_spring_medium_1.nbt
+data/minecraft/structure/spring/sulfur_spring_medium_2.nbt
+data/minecraft/structure/spring/sulfur_spring_medium_3.nbt
+data/minecraft/structure/spring/sulfur_spring_small_1.nbt
+data/minecraft/structure/spring/sulfur_spring_small_2.nbt
+data/minecraft/structure/spring/sulfur_spring_small_3.nbt
+data/minecraft/structure/spring/sulfur_spring_small_4.nbt
+data/minecraft/sulfur_cube_archetype/
+data/minecraft/sulfur_cube_archetype/bouncy.json
+data/minecraft/sulfur_cube_archetype/explosive.json
+data/minecraft/sulfur_cube_archetype/fast_flat.json
+data/minecraft/sulfur_cube_archetype/fast_sliding.json
+data/minecraft/sulfur_cube_archetype/high_resistance.json
+data/minecraft/sulfur_cube_archetype/hot.json
+data/minecraft/sulfur_cube_archetype/light.json
+data/minecraft/sulfur_cube_archetype/regular.json
+data/minecraft/sulfur_cube_archetype/slow_bouncy.json
+data/minecraft/sulfur_cube_archetype/slow_flat.json
+data/minecraft/sulfur_cube_archetype/slow_sliding.json
+data/minecraft/sulfur_cube_archetype/sticky.json
+data/minecraft/tags/block/causes_continuous_geyser_eruptions.json
+data/minecraft/tags/block/causes_periodic_geyser_eruptions.json
+data/minecraft/tags/block/sulfur_spike_replaceable_blocks.json
+data/minecraft/tags/damage_type/sulfur_cube_with_block_immune_to.json
+data/minecraft/tags/entity_type/not_affected_by_geysers.json
+data/minecraft/tags/item/sulfur_cube_archetype/
+data/minecraft/tags/item/sulfur_cube_archetype/bouncy.json
+data/minecraft/tags/item/sulfur_cube_archetype/explosive.json
+data/minecraft/tags/item/sulfur_cube_archetype/fast_flat.json
+data/minecraft/tags/item/sulfur_cube_archetype/fast_sliding.json
+data/minecraft/tags/item/sulfur_cube_archetype/high_resistance.json
+data/minecraft/tags/item/sulfur_cube_archetype/hot.json
+data/minecraft/tags/item/sulfur_cube_archetype/light.json
+data/minecraft/tags/item/sulfur_cube_archetype/regular.json
+data/minecraft/tags/item/sulfur_cube_archetype/slow_bouncy.json
+data/minecraft/tags/item/sulfur_cube_archetype/slow_flat.json
+data/minecraft/tags/item/sulfur_cube_archetype/slow_sliding.json
+data/minecraft/tags/item/sulfur_cube_archetype/sticky.json
+data/minecraft/tags/item/sulfur_cube_food.json
+data/minecraft/tags/item/sulfur_cube_swallowable.json
+data/minecraft/villager_trade/wandering_trader/emerald_sulfur_spike.json
+data/minecraft/worldgen/biome/sulfur_caves.json
+data/minecraft/worldgen/configured_feature/rooted_sulfur_spring.json
+data/minecraft/worldgen/configured_feature/sulfur_pool.json
+data/minecraft/worldgen/configured_feature/sulfur_spike.json
+data/minecraft/worldgen/configured_feature/sulfur_spike_cluster.json
+data/minecraft/worldgen/configured_feature/sulfur_spring.json
+data/minecraft/worldgen/noise/sulfur_cave_gradient.json
+data/minecraft/worldgen/placed_feature/rooted_sulfur_spring.json
+data/minecraft/worldgen/placed_feature/sulfur_pool.json
+data/minecraft/worldgen/placed_feature/sulfur_spike.json
+data/minecraft/worldgen/placed_feature/sulfur_spike_cluster.json
+assets/minecraft/blockstates/chiseled_sulfur.json
+assets/minecraft/blockstates/polished_sulfur.json
+assets/minecraft/blockstates/polished_sulfur_slab.json
+assets/minecraft/blockstates/polished_sulfur_stairs.json
+assets/minecraft/blockstates/polished_sulfur_wall.json
+assets/minecraft/blockstates/potent_sulfur.json
+assets/minecraft/blockstates/sulfur.json
+assets/minecraft/blockstates/sulfur_brick_slab.json
+assets/minecraft/blockstates/sulfur_brick_stairs.json
+assets/minecraft/blockstates/sulfur_brick_wall.json
+assets/minecraft/blockstates/sulfur_bricks.json
+assets/minecraft/blockstates/sulfur_slab.json
+assets/minecraft/blockstates/sulfur_spike.json
+assets/minecraft/blockstates/sulfur_stairs.json
+assets/minecraft/blockstates/sulfur_wall.json
+assets/minecraft/items/chiseled_sulfur.json
+assets/minecraft/items/polished_sulfur.json
+assets/minecraft/items/polished_sulfur_slab.json
+assets/minecraft/items/polished_sulfur_stairs.json
+assets/minecraft/items/polished_sulfur_wall.json
+assets/minecraft/items/potent_sulfur.json
+assets/minecraft/items/sulfur.json
+assets/minecraft/items/sulfur_brick_slab.json
+assets/minecraft/items/sulfur_brick_stairs.json
+assets/minecraft/items/sulfur_brick_wall.json
+assets/minecraft/items/sulfur_bricks.json
+assets/minecraft/items/sulfur_cube_bucket.json
+assets/minecraft/items/sulfur_cube_spawn_egg.json
+assets/minecraft/items/sulfur_slab.json
+assets/minecraft/items/sulfur_spike.json
+assets/minecraft/items/sulfur_stairs.json
+assets/minecraft/items/sulfur_wall.json
+assets/minecraft/models/block/chiseled_sulfur.json
+assets/minecraft/models/block/polished_sulfur.json
+assets/minecraft/models/block/polished_sulfur_slab.json
+assets/minecraft/models/block/polished_sulfur_slab_top.json
+assets/minecraft/models/block/polished_sulfur_stairs.json
+assets/minecraft/models/block/polished_sulfur_stairs_inner.json
+assets/minecraft/models/block/polished_sulfur_stairs_outer.json
+assets/minecraft/models/block/polished_sulfur_wall_inventory.json
+assets/minecraft/models/block/polished_sulfur_wall_post.json
+assets/minecraft/models/block/polished_sulfur_wall_side.json
+assets/minecraft/models/block/polished_sulfur_wall_side_tall.json
+assets/minecraft/models/block/potent_sulfur.json
+assets/minecraft/models/block/sulfur.json
+assets/minecraft/models/block/sulfur_brick_slab.json
+assets/minecraft/models/block/sulfur_brick_slab_top.json
+assets/minecraft/models/block/sulfur_brick_stairs.json
+assets/minecraft/models/block/sulfur_brick_stairs_inner.json
+assets/minecraft/models/block/sulfur_brick_stairs_outer.json
+assets/minecraft/models/block/sulfur_brick_wall_inventory.json
+assets/minecraft/models/block/sulfur_brick_wall_post.json
+assets/minecraft/models/block/sulfur_brick_wall_side.json
+assets/minecraft/models/block/sulfur_brick_wall_side_tall.json
+assets/minecraft/models/block/sulfur_bricks.json
+assets/minecraft/models/block/sulfur_slab.json
+assets/minecraft/models/block/sulfur_slab_top.json
+assets/minecraft/models/block/sulfur_spike_down_base.json
+assets/minecraft/models/block/sulfur_spike_down_frustum.json
+assets/minecraft/models/block/sulfur_spike_down_middle.json
+assets/minecraft/models/block/sulfur_spike_down_tip.json
+assets/minecraft/models/block/sulfur_spike_down_tip_merge.json
+assets/minecraft/models/block/sulfur_spike_up_base.json
+assets/minecraft/models/block/sulfur_spike_up_frustum.json
+assets/minecraft/models/block/sulfur_spike_up_middle.json
+assets/minecraft/models/block/sulfur_spike_up_tip.json
+assets/minecraft/models/block/sulfur_spike_up_tip_merge.json
+assets/minecraft/models/block/sulfur_stairs.json
+assets/minecraft/models/block/sulfur_stairs_inner.json
+assets/minecraft/models/block/sulfur_stairs_outer.json
+assets/minecraft/models/block/sulfur_wall_inventory.json
+assets/minecraft/models/block/sulfur_wall_post.json
+assets/minecraft/models/block/sulfur_wall_side.json
+assets/minecraft/models/block/sulfur_wall_side_tall.json
+assets/minecraft/models/item/sulfur_cube_bucket.json
+assets/minecraft/models/item/sulfur_cube_spawn_egg.json
+
+== qui donne du soufre puissant (butin, recettes)
+data/minecraft/loot_table/blocks/potent_sulfur.json : type=minecraft:block ; pools[0].conditions[0].condition=minecraft:survives_explosion ; pools[0].entries[0].type=minecraft:item ; pools[0].entries[0].name=minecraft:potent_sulfur ; pools[0].rolls=1.0 ; random_sequence=minecraft:blocks/potent_sulfur
+data/minecraft/recipe/potent_sulfur.json : type=minecraft:crafting_shapeless ; ingredients[0]=minecraft:sulfur ; ingredients[1]=minecraft:sulfur ; ingredients[2]=minecraft:sulfur ; ingredients[3]=minecraft:sulfur ; ingredients[4]=minecraft:sulfur ; ingredients[5]=minecraft:sulfur ; ingredients[6]=minecraft:sulfur ; ingredients[7]=minecraft:sulfur ; ingredients[8]=minecraft:sulfur ; result.id=minecraft:potent_sulfur
