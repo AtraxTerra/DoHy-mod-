@@ -2509,7 +2509,7 @@
         {
           "title": "Argent sale et descentes",
           "text": [
-            "L'argent sale paie d'abord tes affaires illegales, tes accords et tes tributs.",
+            "L'argent sale paie d'abord tes affaires illegales, tes accords et tes tributs. S'il manque pour les fournisseurs (pieces, matiere premiere), la banque paie a sa place, 25 % plus cher.",
             "- Une societe ecran le blanchit vers la banque nationale (15 % de commission, moins aux niveaux suivants) ; un casino un peu aussi (20 %).",
             "! Chaque heure, une affaire illegale risque une descente de police : fermee 24 h, une part de ses stocks et 15 % de l'argent sale saisis (250 000 $ au plus). Le chef des operations, un gerant, des guetteurs et l'influence baissent le risque ; un entrepot divise les saisies par deux."
           ]
@@ -2523,7 +2523,8 @@
         "crime_organise",
         "objets_milieu",
         "organisation",
-        "faction"
+        "faction",
+        "lois_police"
       ],
       "discover": {
         "views": [
@@ -2583,7 +2584,8 @@
       ],
       "see": [
         "entreprises",
-        "organisation"
+        "organisation",
+        "lois_police"
       ],
       "discover": {
         "views": [
@@ -2646,7 +2648,8 @@
       ],
       "see": [
         "entreprises",
-        "crime_organise"
+        "crime_organise",
+        "lois_police"
       ],
       "discover": {
         "views": [
@@ -2655,6 +2658,71 @@
           "dohy:arms_workbench"
         ]
       }
+    },
+    {
+      "id": "lois_police",
+      "category": "faction",
+      "order": 6,
+      "icon": "minecraft:bell",
+      "title": "Lois et police",
+      "card": [
+        "Legal, tolere, interdit",
+        "Operations et contrats"
+      ],
+      "summary": [
+        "Chaque pays a ses lois : dans les tiens, c'est toi qui decides si le cannabis, la drogue, les armes, le jeu, la contrebande, le racket ou le blanchiment sont legaux, toleres ou interdits ; ailleurs vaut la loi de la nation qui tient le pays. La police passe plus ou moins durement, les nations annoncent des operations contre tes affaires, et les organisations criminelles te proposent des contrats."
+      ],
+      "commands": [
+        "/f lois : les lois, chez toi et ailleurs",
+        "/f entreprises : menaces et contrats"
+      ],
+      "see": [
+        "entreprises",
+        "crime_organise",
+        "organisation",
+        "diplomatie"
+      ],
+      "discover": {
+        "views": [
+          "dohy:faction_laws"
+        ]
+      },
+      "sections": [
+        {
+          "title": "Les lois",
+          "text": [
+            "- Interdite : le risque de toujours. Toleree : risque x0,6, mais des pots-de-vin (frais +15 %). Legale : de simples controles (risque x0,3), et l'argent gagne devient propre, moins un cinquieme de taxes et de concurrence.",
+            "- Tes lois valent dans tous tes pays et changent au plus une fois par jour. Le racket, la contrebande et le blanchiment ne peuvent pas etre legaux.",
+            "- Chaque nation a les siennes, selon son caractere (l'honneur rend strict, l'avidite coulant), et une police plus ou moins zelee (x0,88 a x1,25). Hors de toute nation vaut la loi commune.",
+            "! Les nations plus strictes que toi s'en mefient ; tolerer apaise les organisations de tes regions, legaliser la drogue leur prend leur marche."
+          ]
+        },
+        {
+          "title": "La police",
+          "text": [
+            "- Un controle : une amende (2 % du capital de l'affaire).",
+            "- Une descente : amende (5 %), fermeture 24 h, une part des stocks et de l'argent sale saisie.",
+            "- Un coup de filet : amende (10 %), fermeture 72 h, saisies plus lourdes, et le gerant arrete trois jours (sa caution, cinq jours de salaire, le fait sortir plus tot).",
+            "! Plus le risque est haut, plus le coup de filet est probable. Une affaire legale n'a que des controles ; une organisation alliee de la region t'evite les coups de filet."
+          ]
+        },
+        {
+          "title": "Les operations",
+          "text": [
+            "- Une nation dont la loi reprouve tes affaires dans ses pays peut annoncer une operation, une par semaine au plus (jamais une alliee) : elle frappe douze heures plus tard toutes tes affaires visees encore ouvertes.",
+            "- D'ici la : l'acheter (selon son avidite et son honneur ; ratee, elle frappe plus fort) ou se mettre au vert (les affaires visees ferment jusqu'a six heures apres).",
+            "- Un Etat (Etat officiel ou faction militaire) peut mener une operation contre l'organisation d'une region ou il tient des pays : 40 000 $ propres ; reussie, elle est affaiblie deux semaines, ses biens saisis vont a ta banque et les nations apprecient."
+          ]
+        },
+        {
+          "title": "Contrats, rivalites et alliances",
+          "text": [
+            "- Les organisations qui ne sont pas en guerre avec toi proposent des contrats : livrer tant d'unites d'un produit, ou de caisses, sous trois jours, pour de l'argent sale (35 % au-dessus du gros, 55 % alliee). Rempli, hostilite -8 ; manque, +12.",
+            "- On livre ce qu'on porte (colis, sachets, caisses), puis les stocks.",
+            "- Hostile (50 et plus), une organisation vole dans tes stocks ou rackette ton argent sale ; alliee, elle te previent des operations (24 h au lieu de 12) et aide a les acheter."
+          ]
+        }
+      ]
     },
     {
       "id": "elo",

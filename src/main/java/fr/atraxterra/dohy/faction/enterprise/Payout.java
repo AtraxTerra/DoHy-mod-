@@ -49,6 +49,11 @@ import java.util.Set;
  *
  * <p>Une heure se simule sur une copie des stocks et de l'argent sale ({@link Sim}) : la meme
  * simulation donne l'apercu des menus, sans descente ni effet.
+ *
+ * <p>Lot 24d : la loi du pays (legale, toleree, interdite) et le zele de sa police pesent sur le
+ * risque et les frais ; une affaire legale gagne de l'argent propre ; la police a trois gravites
+ * ({@link Police}), les operations annoncees frappent a leur heure, et les contrats et operations
+ * se decident chaque jour avec les organisations.
  */
 final class Payout {
 
@@ -71,6 +76,8 @@ final class Payout {
     /** Ce qu'un casino blanchit par heure au niveau 1. */
     static final double CASINO_LAUNDER = 1_500.0d;
     static final double CASINO_FEE = 0.20d;
+    /** Les fournitures payees par la banque faute d'argent sale coutent 25 % de plus. */
+    static final double CLEAN_SURCHARGE = 1.25d;
 
     /**
      * Un evenement a dire au joueur a la fin du versement : la ligne du chat et du journal, et
@@ -118,6 +125,9 @@ final class Payout {
         final Map<Integer, HolderView> holders = new HashMap<>();
         final Map<String, Factors> factors = new HashMap<>();
         final long iron;
+        /** La banque nationale au debut du versement : ce que les fournisseurs peuvent prendre faute d'argent sale. */
+        final long bank;
+        private Set<Region> heldRegions;
 
         World(ServerPlayer player, Holdings holdings, long now) {
             this.player = player;
@@ -165,6 +175,7 @@ final class Payout {
                 }
             }
             this.iron = Enterprises.ironIn(FactionVault.of(player));
+            this.bank = FactionApi.has(player) ? Math.max(0L, FactionApi.data(player).bank()) : 0L;
         }
 
         Region region(int country) {
@@ -194,6 +205,35 @@ final class Payout {
             Treaty treaty = Diplomacy.treaty(player, nation);
             return new HolderView(false, nation, treaty == null ? null : treaty.kind(), Diplomacy.rival(player, nation),
                     WarStrategy.relationOf(player, nation).stance() == WarData.Stance.GUERRE);
+        }
+
+        /** La loi du pays de l'affaire sur son activite (lot 24d), {@code null} pour une affaire legale. */
+        Law.Status law(Enterprise enterprise) {
+            Law.Topic topic = Law.topic(enterprise);
+            if (topic == null) {
+                return null;
+            }
+            HolderView holder = holder(enterprise.country());
+            if (holder.own()) {
+                return holdings.justice.law(topic);
+            }
+            return holder.nation() >= 0 ? Law.of(holder.nation(), topic) : topic.common();
+        }
+
+        /** Ta nation tient-elle au moins un pays de cette region ? */
+        boolean holdsIn(Region region) {
+            if (heldRegions == null) {
+                heldRegions = new HashSet<>();
+                if (EarthNations.active()) {
+                    for (int country : EarthNations.heldBy(player)) {
+                        Region found = region(country);
+                        if (found != null) {
+                            heldRegions.add(found);
+                        }
+                    }
+                }
+            }
+            return heldRegions.contains(region);
         }
 
         /** Le statut avec l'organisation, et si elle sert la nation par un accord ou une alliance. */
@@ -345,12 +385,22 @@ final class Payout {
                 }
             }
 
+            Law.Status law = law(enterprise);
+            if (law == Law.Status.LEGAL && earns(sector)) {
+                notes.add("Loi : activite legale, ses gains sont propres (x" + String.format(Locale.FRANCE, "%.2f",
+                        Law.LEGAL_REVENUE) + ")");
+            }
+
             double cost = sector.cost() * Enterprises.COSTS[enterprise.level() - 1];
             if (enterprise.has(Upgrade.LOGISTIQUE)) {
                 cost *= 0.8d;
             }
             double wages = Enterprises.WAGE * enterprise.staff() * (enterprise.has(Upgrade.FORMATION) ? 0.75d : 1.0d);
             cost = (cost + wages) * (1.0d - Math.min(0.20d, 0.16d * treasurer));
+            if (law != null && law.cost() != 1.0d) {
+                cost *= law.cost();
+                notes.add("Frais : activite toleree, pots-de-vin " + percent(law.cost()));
+            }
 
             double risk = 0.0d;
             if (!sector.legal()) {
@@ -370,6 +420,15 @@ final class Payout {
                     risk *= 1.2d;
                 }
                 risk *= Influence.risk(influenceValue);
+                if (law != null && law.risk() != 1.0d) {
+                    risk *= law.risk();
+                    notes.add("Risque : activite " + law.label().toLowerCase() + " " + times(law.risk()));
+                }
+                if (holder.nation() >= 0) {
+                    double police = Law.police(holder.nation());
+                    risk *= police;
+                    notes.add("Risque : police " + NationTraits.of(holder.nation()).de() + " " + times(police));
+                }
                 risk *= 1.0d - Math.min(0.30d, 0.24d * operations);
                 risk *= 1.0d - 0.2d * Math.min(1.0d, manager);
                 if (enterprise.has(Upgrade.SECURITE)) {
@@ -385,6 +444,14 @@ final class Payout {
                 risk = Math.max(0.0d, Math.min(95.0d, risk));
             }
             return new Factors(output, cost, risk, influenceValue, notes);
+        }
+
+        /** Une affaire de ce secteur gagne-t-elle de l'argent (et non des unites en stock) ? */
+        static boolean earns(Sector sector) {
+            return switch (sector.role()) {
+                case SELL, ARMS_SELL, CASINO, SMUGGLE, RACKET, FENCE -> true;
+                default -> false;
+            };
         }
 
         /** Ce que les transports apportent aux usines et aux commerces : 3 % par niveau, 25 % au plus. */
@@ -406,10 +473,19 @@ final class Payout {
         double fees;
         double seized;
         double supplies;
+        /** Les fournitures payees par la banque, faute d'argent sale (surcout compris), et celles de l'heure. */
+        double cleanSupplies;
+        double hourClean;
+        /** Ce que les fournisseurs ont demande pendant l'heure, au prix en argent sale : le blanchiment le laisse de cote. */
+        double hourNeed;
         double sold;
         double lost;
         double ironUsed;
         int raids;
+        /** Les amendes que l'argent sale n'a pas couvertes : la banque les paiera (lot 24d). */
+        double finesBank;
+        double fines;
+        final List<Arrest> arrests = new ArrayList<>();
         final Map<String, Double> earned = new HashMap<>();
         final Map<String, Long> closures = new HashMap<>();
         final Set<String> raided = new HashSet<>();
@@ -442,6 +518,28 @@ final class Payout {
         void close(Enterprise enterprise, long until) {
             closures.merge(enterprise.id(), until, Math::max);
         }
+
+        boolean arrested(String cadre) {
+            for (Arrest arrest : arrests) {
+                if (arrest.cadre().equals(cadre)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /** Une amende : l'argent sale d'abord, la banque pour le reste. */
+        void fine(double amount) {
+            double fromDirty = Math.min(dirty, amount);
+            dirty -= fromDirty;
+            seized += fromDirty;
+            finesBank += amount - fromDirty;
+            fines += amount;
+        }
+    }
+
+    /** Un gerant arrete dans un coup de filet (lot 24d). */
+    record Arrest(String cadre, String where, long until) {
     }
 
     static final Line[] BY_STREET = sortedByStreet();
@@ -472,6 +570,9 @@ final class Payout {
         Map<Region, Double> regionDirty = new EnumMap<>(Region.class);
         double startSeized = sim.seized;
         double startLaundered = sim.laundered;
+        double startFines = sim.finesBank;
+        sim.hourClean = 0.0d;
+        sim.hourNeed = 0.0d;
 
         // 1. ce qui pousse et ce qui se monte
         for (Enterprise enterprise : open) {
@@ -488,9 +589,7 @@ final class Payout {
                         (world.iron - sim.ironUsed) / Enterprises.IRON_PER_CRATE));
                 sim.ironUsed += fromIron * Enterprises.IRON_PER_CRATE;
                 double rest = crates - fromIron;
-                double bought = Math.max(0.0d, Math.min(rest, sim.dirty / Enterprises.CRATE_PARTS));
-                sim.dirty -= bought * Enterprises.CRATE_PARTS;
-                sim.supplies += bought * Enterprises.CRATE_PARTS;
+                double bought = buy(world, sim, rest, Enterprises.CRATE_PARTS);
                 sim.add(Enterprises.CRATES, fromIron + bought);
             }
         }
@@ -508,13 +607,8 @@ final class Payout {
             double used = Math.min(capacity, sim.stock(line.rawKey()));
             sim.add(line.rawKey(), -used);
             double missing = capacity - used;
-            double bought = 0.0d;
             long price = Enterprises.rawPrice(world, line);
-            if (missing > 0.0d && price > 0L) {
-                bought = Math.max(0.0d, Math.min(missing, sim.dirty / price));
-                sim.dirty -= bought * price;
-                sim.supplies += bought * price;
-            }
+            double bought = buy(world, sim, missing, price);
             sim.add(line.productKey(), used + bought);
         }
 
@@ -538,7 +632,12 @@ final class Payout {
                 }
                 case CASINO -> {
                     amount = sector.base() * factors.output();
-                    dirty += amount;
+                    if (world.law(enterprise) == Law.Status.LEGAL) {
+                        amount *= Law.LEGAL_REVENUE;
+                        clean += amount;
+                    } else {
+                        dirty += amount;
+                    }
                     casinoCapacity += CASINO_LAUNDER * factors.output() * (valcorte ? 1.25d : 1.0d);
                 }
                 case LAUNDER -> {
@@ -553,7 +652,7 @@ final class Payout {
             }
             if (amount > 0.0d) {
                 sim.earn(enterprise, amount);
-                if (!sector.legal()) {
+                if (!sector.legal() && world.law(enterprise) != Law.Status.LEGAL) {
                     Region region = world.region(enterprise.country());
                     if (region != null && sector.role() != Sector.Role.LAUNDER) {
                         regionDirty.merge(region, amount, Double::sum);
@@ -585,20 +684,13 @@ final class Payout {
                     // le fournisseur ne remplit que la moitie de ce que le reseau peut encore ecouler
                     Line best = Line.HEROINE;
                     long price = Enterprises.wholesale(world, best);
-                    double units = Math.max(0.0d, Math.min(capacity * 0.5d, sim.dirty / price));
-                    sim.dirty -= units * price;
-                    sim.supplies += units * price;
+                    double units = buy(world, sim, capacity * 0.5d, price);
                     revenue += units * best.street();
                     sim.sold += units;
                 }
-                if (revenue > 0.0d) {
-                    dirty += revenue;
-                    sim.earn(enterprise, revenue);
-                    Region region = world.region(enterprise.country());
-                    if (region != null) {
-                        regionDirty.merge(region, revenue, Double::sum);
-                    }
-                }
+                bank(world, sim, enterprise, revenue, regionDirty);
+                dirty += world.law(enterprise) == Law.Status.LEGAL ? 0.0d : revenue;
+                clean += world.law(enterprise) == Law.Status.LEGAL ? revenue * Law.LEGAL_REVENUE : 0.0d;
             } else if (sector.role() == Sector.Role.ARMS_SELL) {
                 double capacity = sector.base() * world.factors(enterprise).output();
                 double street = Enterprises.CRATE_STREET * (world.atWar ? 1.4d : 1.0d);
@@ -608,21 +700,14 @@ final class Payout {
                 double missing = capacity - units;
                 if (missing > 0.0d && world.deal(Syndicate.LOTUS)) {
                     long price = Math.round(Enterprises.CRATE_SUPPLY * (world.allied(Syndicate.LOTUS) ? 0.85d : 1.0d));
-                    double bought = Math.max(0.0d, Math.min(missing * 0.5d, sim.dirty / price));
-                    sim.dirty -= bought * price;
-                    sim.supplies += bought * price;
+                    double bought = buy(world, sim, missing * 0.5d, price);
                     revenue += bought * street;
                     units += bought;
                 }
                 sim.sold += units;
-                if (revenue > 0.0d) {
-                    dirty += revenue;
-                    sim.earn(enterprise, revenue);
-                    Region region = world.region(enterprise.country());
-                    if (region != null) {
-                        regionDirty.merge(region, revenue, Double::sum);
-                    }
-                }
+                bank(world, sim, enterprise, revenue, regionDirty);
+                dirty += world.law(enterprise) == Law.Status.LEGAL ? 0.0d : revenue;
+                clean += world.law(enterprise) == Law.Status.LEGAL ? revenue * Law.LEGAL_REVENUE : 0.0d;
             }
         }
 
@@ -657,8 +742,11 @@ final class Payout {
             costs += sim.closed(enterprise, time) ? cost * 0.5d : cost;
         }
 
-        // 8. le blanchiment
+        // 8. le blanchiment ; ce que les fournisseurs ont demande cette heure reste sale, de cote pour la
+        // suivante, plutot que d'etre blanchi puis rachete 25 % plus cher par la banque
         sim.dirty += Math.max(0.0d, dirty);
+        double keep = Math.min(sim.dirty, sim.hourNeed);
+        sim.dirty -= keep;
         facades.sort((a, b) -> Double.compare(a[1], b[1]));
         for (double[] facade : facades) {
             double amount = Math.min(facade[0], sim.dirty);
@@ -676,20 +764,25 @@ final class Payout {
             sim.laundered += amount * (1.0d - fee);
             sim.fees += amount * fee;
         }
+        sim.dirty += keep;
 
-        // 9. la police
+        // 9. la police : les operations annoncees qui frappent a cette heure, puis les passages ordinaires
         if (live) {
+            Police.strike(world, sim, time, open, random);
             for (Enterprise enterprise : open) {
-                if (enterprise.legal() || sim.raids >= RAIDS_PER_BATCH || sim.raided.contains(enterprise.id())) {
+                if (enterprise.legal() || sim.raids >= RAIDS_PER_BATCH || sim.raided.contains(enterprise.id())
+                        || sim.closed(enterprise, time)) {
                     continue;
                 }
                 double risk = world.factors(enterprise).risk();
                 double chance = RAID_SCALE * Math.pow(risk, 2.5d);
                 if (random.nextDouble() < chance) {
-                    raid(world, sim, enterprise, time);
+                    raid(world, sim, enterprise, time, Police.severity(world, enterprise, risk, false, random));
                 }
             }
         }
+        costs += sim.finesBank - startFines;
+        costs += sim.hourClean;
 
         sim.clean += clean;
         sim.dirtyEarned += Math.max(0.0d, dirty);
@@ -699,12 +792,67 @@ final class Payout {
                 sim.seized - startSeized);
     }
 
-    /** Une descente de police : l'entreprise ferme, une part de ses stocks et de l'argent sale est saisie. */
-    static void raid(World world, Sim sim, Enterprise enterprise, long time) {
+    /**
+     * Achete aux fournisseurs jusqu'a {@code units} unites a {@code price} : l'argent sale d'abord ; s'il
+     * manque, la banque nationale, 25 % plus cher (il faut maquiller le paiement), sans la mettre a
+     * decouvert. Sans ce recours, une nation aux lois souples, qui ne gagne plus d'argent sale, verrait
+     * ses ateliers et ses laboratoires s'arreter pour de bon. Rend les unites achetees.
+     */
+    static double buy(World world, Sim sim, double units, double price) {
+        if (units <= 0.0d || price <= 0.0d) {
+            return 0.0d;
+        }
+        sim.hourNeed += units * price;
+        double fromDirty = Math.max(0.0d, Math.min(units, sim.dirty / price));
+        sim.dirty -= fromDirty * price;
+        sim.supplies += fromDirty * price;
+        double rest = units - fromDirty;
+        if (rest <= 0.0d) {
+            return fromDirty;
+        }
+        double cleanPrice = price * CLEAN_SURCHARGE;
+        double room = world.bank + sim.clean + sim.laundered - sim.costs - sim.hourClean;
+        double fromClean = Math.max(0.0d, Math.min(rest, room / cleanPrice));
+        sim.hourClean += fromClean * cleanPrice;
+        sim.cleanSupplies += fromClean * cleanPrice;
+        return fromDirty + fromClean;
+    }
+
+    /** Ce qu'une vente rapporte a l'affaire, et a la region quand l'argent est sale. */
+    private static void bank(World world, Sim sim, Enterprise enterprise, double revenue,
+                             Map<Region, Double> regionDirty) {
+        if (revenue <= 0.0d) {
+            return;
+        }
+        boolean legal = world.law(enterprise) == Law.Status.LEGAL;
+        sim.earn(enterprise, legal ? revenue * Law.LEGAL_REVENUE : revenue);
+        Region region = world.region(enterprise.country());
+        if (region != null && !legal) {
+            regionDirty.merge(region, revenue, Double::sum);
+        }
+    }
+
+    /**
+     * Un passage de la police (lot 24d : trois gravites). Un controle : une amende. Une descente :
+     * amende, fermeture 24 h, une part des stocks et de l'argent sale saisie. Un coup de filet :
+     * plus lourd, 72 h, et le gerant arrete trois jours.
+     */
+    static void raid(World world, Sim sim, Enterprise enterprise, long time, Police.Severity severity) {
         sim.raids++;
         sim.raided.add(enterprise.id());
-        sim.close(enterprise, time + CLOSED_RAID);
-        double share = world.warehouse ? 0.25d : 0.5d;
+        long fine = Police.fine(enterprise, severity);
+        sim.fine(fine);
+        String where = Enterprises.place(enterprise);
+        if (severity == Police.Severity.CONTROLE) {
+            sim.events.add(new Event(time, "Controle de police a " + enterprise.name() + where + " : amende de "
+                    + MoneyFormat.exact(fine) + " $", 0xFFFAC400, "Controle de police", enterprise.name() + " : "
+                    + MoneyFormat.exact(fine) + " $ d'amende"));
+            return;
+        }
+        boolean heavy = severity == Police.Severity.COUP_DE_FILET;
+        long closedFor = heavy ? Police.CLOSED_HEAVY : CLOSED_RAID;
+        sim.close(enterprise, time + closedFor);
+        double share = (world.warehouse ? 0.25d : 0.5d) * (heavy ? 1.5d : 1.0d);
         double units = 0.0d;
         Sector sector = enterprise.kind();
         Line line = enterprise.drug();
@@ -735,20 +883,25 @@ final class Payout {
             default -> {
             }
         }
-        double money = Math.min(sim.dirty * DIRTY_SEIZURE, DIRTY_SEIZURE_CAP);
+        double money = Math.min(sim.dirty * (heavy ? 0.25d : DIRTY_SEIZURE), heavy ? 400_000.0d : DIRTY_SEIZURE_CAP);
         sim.dirty -= money;
         sim.seized += money;
-        String where = Enterprises.place(enterprise);
-        StringBuilder text = new StringBuilder("Descente de police a ").append(enterprise.name()).append(where)
-                .append(" : fermee 24 h");
+        long hours = closedFor / HOUR;
+        StringBuilder text = new StringBuilder(severity.label()).append(" a ").append(enterprise.name()).append(where)
+                .append(" : fermee ").append(hours).append(" h, amende de ").append(MoneyFormat.exact(fine)).append(" $");
         if (units >= 1.0d) {
             text.append(", ").append(MoneyFormat.exact(Math.round(units))).append(" unite(s) saisie(s)");
         }
         if (money >= 1.0d) {
             text.append(", ").append(MoneyFormat.exact(Math.round(money))).append(" $ d'argent sale saisis");
         }
-        sim.events.add(new Event(time, text.toString(), 0xFFEF3826, "Descente de police", enterprise.name()
-                + " fermee 24 h"));
+        Cadre manager = world.managers.get(enterprise.id());
+        if (heavy && manager != null && !sim.arrested(manager.id())) {
+            sim.arrests.add(new Arrest(manager.id(), " a " + enterprise.name() + where, time + Police.JAIL));
+            text.append(" ; ").append(manager.name()).append(", son gerant, est arrete (3 jours)");
+        }
+        sim.events.add(new Event(time, text.toString(), 0xFFEF3826, severity.label(), enterprise.name()
+                + " fermee " + hours + " h"));
     }
 
     // -- Le versement -----------------------------------------------------------------------------
@@ -788,9 +941,12 @@ final class Payout {
             holdings.hour(Math.round(hour.gross()), Math.round(hour.costs()));
             holdings.book(day(time), Math.round(hour.clean()), Math.round(hour.dirty()), Math.round(hour.costs()),
                     Math.round(hour.laundered()), Math.round(hour.seized()));
+            Contracts.expire(world, sim, time);
             while (time - holdings.dayTick >= DAY) {
                 holdings.dayTick += DAY;
                 Syndicates.daily(world, sim, holdings.dayTick, random);
+                Police.daily(world, sim, holdings.dayTick, random);
+                Contracts.daily(world, sim, holdings.dayTick, random);
             }
         }
         holdings.paidUntil = start + hours * HOUR;
@@ -856,6 +1012,9 @@ final class Payout {
         if (iron > 0) {
             Enterprises.consumeIron(player, iron);
         }
+        for (Arrest arrest : sim.arrests) {
+            Organisations.arrest(player, arrest.cadre(), arrest.until(), arrest.where());
+        }
         for (Event event : sim.events) {
             holdings.log(event.time(), event.text());
         }
@@ -909,8 +1068,8 @@ final class Payout {
 
     /** Ce que rapporterait la prochaine heure, sans police, avec les stocks d'aujourd'hui. */
     record Preview(double clean, double dirty, double costs, double laundered, double fees, double supplies,
-                   double sold, double lost, Map<String, Double> earned) {
-        static final Preview NONE = new Preview(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, Map.of());
+                   double cleanSupplies, double sold, double lost, Map<String, Double> earned) {
+        static final Preview NONE = new Preview(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, Map.of());
 
         double net() {
             return clean + laundered - costs;
@@ -926,8 +1085,8 @@ final class Payout {
         World world = new World(player, holdings, now);
         Sim sim = new Sim(holdings);
         hour(world, sim, now + HOUR, false, player.getRandom());
-        return new Preview(sim.clean, sim.dirtyEarned, sim.costs, sim.laundered, sim.fees, sim.supplies, sim.sold,
-                sim.lost, Map.copyOf(sim.earned));
+        return new Preview(sim.clean, sim.dirtyEarned, sim.costs, sim.laundered, sim.fees, sim.supplies,
+                sim.cleanSupplies, sim.sold, sim.lost, Map.copyOf(sim.earned));
     }
 
     // -- Les petits outils ------------------------------------------------------------------------

@@ -82,9 +82,29 @@ public record Cadre(String id, String name, int grade, int skill, String trait, 
         return post.startsWith("@") ? post.substring(1) : "";
     }
 
-    /** Ni poste ni gerance. */
+    /** Ni poste ni gerance (ni prison). */
     public boolean free() {
         return post.isEmpty();
+    }
+
+    /** Le poste d'un cadre en detention (lot 24d) : « #prison:ms », l'heure de sa sortie. */
+    static final String JAIL = "#prison:";
+
+    /** En detention apres un coup de filet (lot 24d). */
+    public boolean jailed() {
+        return post.startsWith(JAIL);
+    }
+
+    /** L'heure de sa sortie de prison (ms), 0 s'il est libre. */
+    public long jailedUntil() {
+        if (!jailed()) {
+            return 0L;
+        }
+        try {
+            return Long.parseLong(post.substring(JAIL.length()));
+        } catch (NumberFormatException error) {
+            return 0L;
+        }
     }
 
     /** « Ines Morel, Capitaine » */

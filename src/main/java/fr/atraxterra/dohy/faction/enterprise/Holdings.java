@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Les affaires de la nation (lot 24b), en piece jointe du joueur, gardees a la mort : ses
@@ -46,15 +47,18 @@ public final class Holdings {
      *
      * @param hostility son hostilite, de 0 a 100 : a 75, elle te fait la guerre
      * @param until     la fin de l'accord, de l'alliance ou de la guerre (ms)
-     * @param weakened  affaiblie par une riposte jusqu'a cette heure (ms)
+     * @param weakened  affaiblie par une riposte ou une operation jusqu'a cette heure (ms)
+     * @param operated  la derniere operation de police que ta nation a menee contre elle (ms, lot 24d)
      */
-    public record Standing(String syndicate, double hostility, String status, long until, long weakened) {
+    public record Standing(String syndicate, double hostility, String status, long until, long weakened,
+                           long operated) {
         static final Codec<Standing> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("syndicate").forGetter(Standing::syndicate),
                 Codec.DOUBLE.optionalFieldOf("hostility", 30.0d).forGetter(Standing::hostility),
                 Codec.STRING.optionalFieldOf("status", Status.NEUTRE.name()).forGetter(Standing::status),
                 Codec.LONG.optionalFieldOf("until", 0L).forGetter(Standing::until),
-                Codec.LONG.optionalFieldOf("weakened", 0L).forGetter(Standing::weakened)
+                Codec.LONG.optionalFieldOf("weakened", 0L).forGetter(Standing::weakened),
+                Codec.LONG.optionalFieldOf("operated", 0L).forGetter(Standing::operated)
         ).apply(instance, Standing::new));
 
         public Status state() {
@@ -63,16 +67,20 @@ public final class Holdings {
 
         Standing with(double nextHostility, Status nextStatus, long nextUntil) {
             return new Standing(syndicate, Math.max(0.0d, Math.min(100.0d, nextHostility)), nextStatus.name(),
-                    nextUntil, weakened);
+                    nextUntil, weakened, operated);
         }
 
         Standing weakenedUntil(long until) {
-            return new Standing(syndicate, hostility, status, this.until, until);
+            return new Standing(syndicate, hostility, status, this.until, until, operated);
+        }
+
+        Standing operatedAt(long time) {
+            return new Standing(syndicate, hostility, status, until, weakened, time);
         }
 
         Standing shifted(long shift) {
             return new Standing(syndicate, hostility, status, until > 0L ? until - shift : 0L,
-                    weakened > 0L ? weakened - shift : 0L);
+                    weakened > 0L ? weakened - shift : 0L, operated > 0L ? operated - shift : 0L);
         }
     }
 
@@ -126,7 +134,9 @@ public final class Holdings {
             Codec.STRING.listOf().optionalFieldOf("journal", List.of()).forGetter(data -> List.copyOf(data.journal)),
             Codec.INT.optionalFieldOf("counter", 0).forGetter(data -> data.counter),
             Report.CODEC.optionalFieldOf("report", Report.NONE).forGetter(data -> data.report),
-            Codec.LONG.optionalFieldOf("day_tick", 0L).forGetter(data -> data.dayTick)
+            Codec.LONG.optionalFieldOf("day_tick", 0L).forGetter(data -> data.dayTick),
+            Justice.CODEC.optionalFieldOf("justice").forGetter(data -> data.justice.isEmpty() ? Optional.empty()
+                    : Optional.of(data.justice))
     ).apply(instance, Holdings::new));
 
     /** Lignes de journal gardees. */
@@ -155,14 +165,17 @@ public final class Holdings {
     Report report;
     /** La derniere journee passee pour les organisations criminelles (ms). */
     long dayTick;
+    /** Les lois, les operations de police et les contrats (lot 24d). */
+    final Justice justice;
 
     public Holdings() {
-        this(List.of(), 0L, Map.of(), 0L, List.of(), List.of(), List.of(), List.of(), List.of(), 0, Report.NONE, 0L);
+        this(List.of(), 0L, Map.of(), 0L, List.of(), List.of(), List.of(), List.of(), List.of(), 0, Report.NONE, 0L,
+                Optional.empty());
     }
 
     private Holdings(List<Enterprise> enterprises, long dirty, Map<String, Long> stock, long paidUntil,
                      List<Standing> standings, List<Day> days, List<Long> hours, List<Long> hourCosts,
-                     List<String> journal, int counter, Report report, long dayTick) {
+                     List<String> journal, int counter, Report report, long dayTick, Optional<Justice> justice) {
         this.enterprises = new ArrayList<>(enterprises);
         this.dirty = dirty;
         this.stock = new HashMap<>(stock);
@@ -175,11 +188,12 @@ public final class Holdings {
         this.counter = counter;
         this.report = report;
         this.dayTick = dayTick;
+        this.justice = justice.orElseGet(Justice::new);
     }
 
     public boolean isEmpty() {
         return enterprises.isEmpty() && dirty == 0L && stock.isEmpty() && standings.isEmpty() && journal.isEmpty()
-                && counter == 0 && days.isEmpty();
+                && counter == 0 && days.isEmpty() && justice.isEmpty();
     }
 
     public List<Enterprise> enterprises() {
@@ -228,7 +242,7 @@ public final class Holdings {
                 return standing;
             }
         }
-        return new Standing(syndicate.name(), 30.0d, Status.NEUTRE.name(), 0L, 0L);
+        return new Standing(syndicate.name(), 30.0d, Status.NEUTRE.name(), 0L, 0L, 0L);
     }
 
     void put(Standing standing) {
@@ -276,8 +290,13 @@ public final class Holdings {
     }
 
     String nextId() {
+        return nextId("e");
+    }
+
+    /** Un identifiant neuf : « e » une entreprise, « o » une operation, « k » un contrat. */
+    String nextId(String prefix) {
         counter++;
-        return "e" + counter;
+        return prefix + counter;
     }
 
     void hour(long gross, long costs) {
@@ -316,5 +335,6 @@ public final class Holdings {
         counter = 0;
         report = Report.NONE;
         dayTick = 0L;
+        justice.clear();
     }
 }

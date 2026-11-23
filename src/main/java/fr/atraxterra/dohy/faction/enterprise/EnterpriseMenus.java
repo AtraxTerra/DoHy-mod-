@@ -5,6 +5,7 @@ import fr.atraxterra.dohy.faction.FactionMenus;
 import fr.atraxterra.dohy.faction.org.Cadre;
 import fr.atraxterra.dohy.faction.org.Organisations;
 import fr.atraxterra.dohy.faction.org.Regime;
+import fr.atraxterra.dohy.faction.war.NationTraits;
 import fr.atraxterra.dohy.ui.menu.MenuController;
 import fr.atraxterra.dohy.ui.view.MenuView;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
@@ -30,7 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * L'onglet Entreprises de la nation (lot 24b) : le tableau de bord des affaires, chaque
  * entreprise et sa fiche, le catalogue de ce qu'on peut ouvrir la ou l'on est, les comptes,
- * l'influence pays par pays et les six organisations criminelles.
+ * l'influence pays par pays et les six organisations criminelles. Lot 24d : les lois, les
+ * operations de police annoncees, les contrats des organisations et les operations de l'Etat.
  */
 public final class EnterpriseMenus {
 
@@ -73,6 +75,114 @@ public final class EnterpriseMenus {
         } else if (!success.isEmpty()) {
             FactionApi.tell(player, success, ChatFormatting.GREEN);
         }
+    }
+
+    /** Un resultat d'action : « ! » en tete s'il est mauvais (rouge), sinon vert. */
+    static void result(ServerPlayer player, String result) {
+        if (result == null || result.isEmpty()) {
+            return;
+        }
+        if (result.startsWith("!")) {
+            FactionApi.tell(player, result.substring(1) + ".", ChatFormatting.RED);
+        } else {
+            FactionApi.tell(player, result + ".", ChatFormatting.GREEN);
+        }
+    }
+
+    // -- Les menaces et les contrats (lot 24d) ----------------------------------------------------
+
+    /** Les operations annoncees contre ta nation : deux cartes chacune, acheter ou se mettre au vert. */
+    static List<Card> threats(ServerPlayer player) {
+        long now = System.currentTimeMillis();
+        List<Card> cards = new ArrayList<>();
+        for (Operation operation : Police.pending(player)) {
+            NationTraits traits = NationTraits.of(operation.nation());
+            List<Enterprise> targets = Police.targets(player, operation);
+            String when = operation.runs() > now ? "Frappe dans " + Organisations.duration(operation.runs() - now)
+                    : "Frappe a la prochaine heure";
+            String refusal = Police.bribeRefusal(player, operation);
+            long price = Police.bribePrice(player, operation);
+            long chance = Math.round(Police.bribeChance(player, operation) * 100.0d);
+            Card bribe = Card.of(new ItemStack(Items.GOLD_INGOT), "Acheter l'operation " + traits.de(), List.of(
+                            when + " · " + targets.size() + " affaire(s) visee(s)",
+                            refusal != null ? refusal : MoneyFormat.exact(price) + " $ · " + chance + " % de chances"))
+                    .accent(0xFFFAC400).badge("MENACE");
+            cards.add(refusal != null ? bribe.state(MenuView.DISABLED) : bribe.action("bribe:" + operation.id()
+                    + "|acheter").confirm("Acheter l'operation " + traits.de() + " ?|" + MoneyFormat.exact(price)
+                    + " $ (argent sale d'abord), " + chance + " % de chances ; ratee, elle frappera plus fort"));
+            List<String> names = new ArrayList<>();
+            for (Enterprise enterprise : targets) {
+                names.add(enterprise.name() + " · " + Enterprises.countryName(enterprise.country()));
+            }
+            cards.add(Card.of(new ItemStack(Items.FERN), "Se mettre au vert", List.of(
+                            when + " · " + targets.size() + " affaire(s)",
+                            "Elles ferment jusqu'a 6 h apres : rien a saisir"))
+                    .accent(0xFF22E558).tooltip(names)
+                    .action("lowkey:" + operation.id() + "|se mettre au vert").confirm("Fermer " + targets.size()
+                            + " affaire(s) jusqu'apres l'operation " + traits.de() + " ?|Elles ne produisent rien d'ici "
+                            + "la, mais la police ne trouvera rien"));
+        }
+        return cards;
+    }
+
+    /** Les contrats proposes ou en cours, de toutes les organisations ou d'une seule. */
+    static List<Card> contracts(ServerPlayer player, Syndicate only) {
+        long now = System.currentTimeMillis();
+        Holdings holdings = Enterprises.of(player);
+        List<Card> cards = new ArrayList<>();
+        for (Contract contract : Contracts.open(player)) {
+            Syndicate syndicate = contract.from();
+            if (syndicate == null || only != null && syndicate != only) {
+                continue;
+            }
+            String what = Contracts.label(contract.key(), contract.units());
+            if (contract.phase() == Contract.State.OFFRE) {
+                long left = contract.offered() + Contracts.OFFER_DAYS * Enterprises.DAY_MS - now;
+                cards.add(Card.of(Contracts.icon(contract.key()), what, List.of(
+                                syndicate.label() + " · " + MoneyFormat.exact(contract.reward()) + " $ sales",
+                                "Propose encore " + Organisations.duration(Math.max(60_000L, left))
+                                        + " · trois jours pour livrer"))
+                        .accent(syndicate.color()).badge("OFFRE")
+                        .tooltip(List.of("Clic droit : refuser", "En stock : " + MoneyFormat.exact(holdings.stock(
+                                contract.key())), "Rempli : hostilite -" + Math.round(Contracts.DONE)
+                                + " ; manque : +" + Math.round(Contracts.FAILED)))
+                        .action("accept:" + contract.id() + "|accepter")
+                        .confirm("Accepter le contrat " + syndicate.of() + " ?|" + what + " sous trois jours, pour "
+                                + MoneyFormat.exact(contract.reward()) + " $ sales")
+                        .right("refuse:" + contract.id() + "|refuser"));
+            } else {
+                long left = contract.deadline() - now;
+                long stocked = holdings.stock(contract.key());
+                cards.add(Card.of(Contracts.icon(contract.key()), what, List.of(
+                                syndicate.label() + " · livre " + MoneyFormat.exact(contract.delivered()) + " / "
+                                        + MoneyFormat.exact(contract.units()),
+                                (left > 0L ? "Echeance dans " + Organisations.duration(left) : "Echeance passee")
+                                        + " · en stock " + MoneyFormat.exact(stocked)))
+                        .accent(syndicate.color()).badge("EN COURS").progress(contract.delivered(), contract.units())
+                        .tooltip(List.of("Livre ce que tu portes (colis, sachets, caisses) puis tes stocks",
+                                "Paie " + MoneyFormat.exact(contract.reward()) + " $ sales une fois rempli"))
+                        .action("deliver:" + contract.id() + "|livrer"));
+            }
+        }
+        return cards;
+    }
+
+    /** Les gestes des menaces et des contrats, communs au tableau de bord et aux organisations. */
+    static boolean threatOrContract(ServerPlayer player, String key) {
+        if (key.startsWith("bribe:")) {
+            result(player, Police.bribe(player, key.substring(6)));
+        } else if (key.startsWith("lowkey:")) {
+            answer(player, Police.lieLow(player, key.substring(7)), "Tes affaires visees se mettent au vert.");
+        } else if (key.startsWith("accept:")) {
+            answer(player, Contracts.accept(player, key.substring(7)), "Contrat accepte : trois jours pour livrer.");
+        } else if (key.startsWith("refuse:")) {
+            answer(player, Contracts.refuse(player, key.substring(7)), "Contrat refuse.");
+        } else if (key.startsWith("deliver:")) {
+            result(player, Contracts.deliver(player, key.substring(8)));
+        } else {
+            return false;
+        }
+        return true;
     }
 
     // -- Petits outils ----------------------------------------------------------------------------
@@ -273,6 +383,14 @@ public final class EnterpriseMenus {
             open.add(Card.of(new ItemStack(Items.BOOK), "Comptes", List.of("Les 48 dernieres heures",
                             "Les 7 derniers jours"))
                     .accent(0xFF27C4E8).action("finance|ouvrir"));
+            int free = 0;
+            for (Law.Topic topic : Law.Topic.values()) {
+                free += Enterprises.law(player, topic) != Law.Status.INTERDIT ? 1 : 0;
+            }
+            open.add(Card.of(new ItemStack(Items.WRITABLE_BOOK), "Lois", List.of(
+                            free == 0 ? "Tout est interdit dans tes pays" : free + " activite(s) toleree(s) ou legale(s)",
+                            "Et celles des douze nations"))
+                    .accent(0xFF2F5BEA).action("laws|ouvrir"));
 
             List<Card> syndicates = new ArrayList<>();
             for (Syndicate syndicate : Syndicate.values()) {
@@ -297,7 +415,18 @@ public final class EnterpriseMenus {
             stats.add(new MenuView.Stat("RISQUE", illegal == 0 ? "-" : Math.round(risk) + " %", riskColor(risk)));
 
             List<MenuView.Section> sections = new ArrayList<>();
+            List<Card> threats = threats(player);
+            if (!threats.isEmpty()) {
+                sections.add(new MenuView.Section("MENACES|operations de police annoncees", "armor", MenuView.GRID,
+                        threats));
+            }
             sections.add(new MenuView.Section("TABLEAU DE BORD", "resources", MenuView.GRID, board));
+            // les contrats ont un delai : au-dessus de la liste des entreprises, qui peut etre longue
+            List<Card> deals = contracts(player, null);
+            if (!deals.isEmpty()) {
+                sections.add(new MenuView.Section("CONTRATS|des organisations criminelles", "upgrade", MenuView.GRID,
+                        deals));
+            }
             sections.add(new MenuView.Section("TES ENTREPRISES|" + enterprises.size() + " / "
                     + Enterprises.cap(player), "craft", MenuView.ROWS, owned));
             sections.add(new MenuView.Section("OUVRIR ET GERER", "upgrade", MenuView.GRID, open));
@@ -323,12 +452,138 @@ public final class EnterpriseMenus {
                 Territory.INSTANCE.open(player);
             } else if (key.equals("finance")) {
                 Finance.INSTANCE.open(player);
+            } else if (key.equals("laws")) {
+                Laws.INSTANCE.open(player);
             } else if (key.startsWith("syndicate:")) {
                 Syndicate syndicate = Syndicate.of(key.substring(10));
                 if (syndicate != null) {
                     SyndicatePage.INSTANCE.show(player, syndicate);
                 }
+            } else {
+                threatOrContract(player, key);
             }
+        }
+    }
+
+    // -- Les lois (lot 24d) -----------------------------------------------------------------------
+
+    public static final class Laws extends Page {
+        public static final Laws INSTANCE = new Laws();
+
+        private Laws() {
+            super("faction_laws");
+        }
+
+        /** Ce que fait un statut, en une ligne. */
+        static String effect(Law.Status status) {
+            return switch (status) {
+                case INTERDIT -> "Le risque de toujours";
+                case TOLERE -> "Risque x0,6 · pots-de-vin +15 % de frais";
+                case LEGAL -> "Risque x0,3 · gains propres x0,8";
+            };
+        }
+
+        @Override
+        public MenuView view(ServerPlayer player) {
+            long now = System.currentTimeMillis();
+            int held = fr.atraxterra.dohy.earth.EarthNations.active()
+                    ? fr.atraxterra.dohy.earth.EarthNations.heldBy(player).size() : 0;
+            List<Card> mine = new ArrayList<>();
+            int free = 0;
+            for (Law.Topic topic : Law.Topic.values()) {
+                Law.Status status = Enterprises.law(player, topic);
+                free += status != Law.Status.INTERDIT ? 1 : 0;
+                Law.Status looser = topic.looser(status);
+                Law.Status stricter = topic.stricter(status);
+                long since = Enterprises.lawChanged(player, topic);
+                boolean ready = since <= now - Law.COOLDOWN;
+                List<String> tooltip = new ArrayList<>();
+                tooltip.add("Clic gauche : " + (looser == null ? "rien de plus libre" : "assouplir ("
+                        + looser.label().toLowerCase() + ")"));
+                tooltip.add("Clic droit : " + (stricter == null ? "rien de plus strict" : "durcir ("
+                        + stricter.label().toLowerCase() + ")"));
+                if (!topic.legalizable()) {
+                    tooltip.add("Ne peut pas etre legal, au mieux tolere");
+                }
+                Card card = Card.of(topic.icon(), topic.label(), List.of(topic.scope(),
+                                ready ? effect(status) : "Change de nouveau dans " + Organisations.duration(
+                                        since + Law.COOLDOWN - now)))
+                        .accent(status.color()).badge(status.label().toUpperCase()).tooltip(tooltip);
+                if (ready && looser != null) {
+                    card = card.action("law:" + topic.name() + ":up|assouplir").confirm(topic.label() + " : "
+                            + looser.label().toLowerCase() + " dans tes pays ?|" + effect(looser)
+                            + (looser == Law.Status.LEGAL || topic == Law.Topic.DROGUES
+                            ? " ; les nations honnetes et le milieu le verront" : ""));
+                }
+                if (ready && stricter != null) {
+                    card = card.right("law:" + topic.name() + ":down|durcir");
+                }
+                mine.add(card);
+            }
+
+            List<Card> nations = new ArrayList<>();
+            for (int nation = 0; nation < NationTraits.count(); nation++) {
+                NationTraits traits = NationTraits.of(nation);
+                Map<Law.Topic, Law.Status> laws = Law.of(nation);
+                List<String> tooltip = new ArrayList<>();
+                for (Law.Topic topic : Law.Topic.values()) {
+                    tooltip.add(topic.label() + " : " + laws.get(topic).label().toLowerCase());
+                }
+                double mood = Enterprises.lawMood(player, nation);
+                if (Math.abs(mood) >= 0.5d) {
+                    tooltip.add("Tes lois et ta police : humeur " + (mood > 0.0d ? "+" : "") + Math.round(mood));
+                }
+                nations.add(Card.of(new ItemStack(Items.BANNER.pick(traits.color())), traits.name(), List.of(
+                                Law.summary(laws), "Police " + Payout.times(Law.police(nation))))
+                        .accent(0xFF55545C).tooltip(tooltip));
+            }
+            Map<Law.Topic, Law.Status> common = new java.util.EnumMap<>(Law.Topic.class);
+            for (Law.Topic topic : Law.Topic.values()) {
+                common.put(topic, topic.common());
+            }
+            nations.add(Card.of(new ItemStack(Items.MAP), "Loi commune", List.of(Law.summary(common),
+                    "Hors de toute nation, et chez toi tant que rien n'est vote")).accent(0xFF9AA0A6));
+
+            List<String> text = new ArrayList<>();
+            text.add("- Tes lois valent dans tous les pays que tient ta nation ; ailleurs, celle de la nation qui le "
+                    + "tient (son honneur la rend stricte, son avidite coulante), et sa police est plus ou moins zelee.");
+            text.add("- Interdite : le risque de toujours. Toleree : la police ferme a moitie les yeux (risque x0,6) "
+                    + "contre des pots-de-vin (frais +15 %). Legale : de simples controles (risque x0,3), et l'argent "
+                    + "gagne devient propre, moins un cinquieme de taxes et de concurrence.");
+            text.add("- Les nations dont la loi est plus stricte que la tienne s'en mefient ; tolerer apaise les "
+                    + "organisations criminelles de tes regions, legaliser la drogue leur prend leur marche.");
+            text.add("! Une loi change au plus une fois par jour. Le racket, la contrebande et le blanchiment ne "
+                    + "peuvent pas etre legaux.");
+
+            List<MenuView.Stat> stats = List.of(
+                    new MenuView.Stat("TES PAYS", String.valueOf(held), 0xFFFFFFFF),
+                    new MenuView.Stat("LIBERTES", free + " / " + Law.Topic.values().length,
+                            free == 0 ? 0xFF9AA0A6 : 0xFFFAC400));
+            List<MenuView.Section> sections = new ArrayList<>();
+            sections.add(new MenuView.Section("TES LOIS|" + (held == 0 ? "tu ne tiens aucun pays" : "dans tes " + held
+                    + " pays"), "craft", MenuView.GRID, mine));
+            sections.add(new MenuView.Section("AILLEURS|les lois des douze nations", "resources", MenuView.GRID,
+                    nations));
+            sections.add(new MenuView.Section("CE QUE CHANGENT LES LOIS", "upgrade", MenuView.TEXT, List.of(
+                    Card.of(ItemStack.EMPTY, "", text))));
+            return new MenuView(id(), "Lois", "Ce que la police laisse faire, chez toi et ailleurs", stats, sections,
+                    true).withTabs(tabs(player));
+        }
+
+        @Override
+        protected void card(ServerPlayer player, String key, int button) {
+            if (!key.startsWith("law:")) {
+                return;
+            }
+            String[] parts = key.split(":");
+            Law.Topic topic = parts.length == 3 ? Law.Topic.of(parts[1]) : null;
+            if (topic == null) {
+                return;
+            }
+            boolean looser = parts[2].equals("up");
+            String refusal = Enterprises.setLaw(player, topic, looser);
+            answer(player, refusal, refusal == null ? topic.label() + " : desormais " + Enterprises.law(player, topic)
+                    .label().toLowerCase() + " dans tes pays." : "");
         }
     }
 
@@ -386,6 +641,11 @@ public final class EnterpriseMenus {
                                   int influence) {
             String refusal = Enterprises.refusal(player, sector, line, site);
             long risk = risk(sector, line, regime, influence);
+            Law.Topic topic = Law.topic(sector, line);
+            Law.Status law = topic == null ? null : Enterprises.lawAt(player, site.country(), topic);
+            if (law != null) {
+                risk = Math.round(Math.min(95.0d, risk * law.risk() * Enterprises.policeAt(player, site.country())));
+            }
             ItemStack icon = line == null ? sector.icon()
                     : sector.role() == Sector.Role.GROW ? line.rawIcon() : line.productIcon();
             List<String> lines = new ArrayList<>();
@@ -401,7 +661,12 @@ public final class EnterpriseMenus {
             }
             tooltip.add("Frais ~" + MoneyFormat.exact(Math.round(sector.cost() + Enterprises.WAGE * sector.staff()))
                     + " $ / h, " + sector.staff() + " employe(s)");
-            Card card = Card.of(icon, title(sector, line), lines).accent(sector.color()).tooltip(tooltip);
+            if (law != null) {
+                tooltip.add("Loi ici (" + topic.label().toLowerCase() + ") : " + law.label().toLowerCase() + " · "
+                        + Laws.effect(law).toLowerCase());
+            }
+            Card card = Card.of(icon, title(sector, line), lines).accent(sector.color()).tooltip(tooltip)
+                    .badge(law == null || law == Law.Status.INTERDIT ? "" : law.label().toUpperCase());
             if (refusal != null) {
                 return card.state(MenuView.DISABLED);
             }
@@ -760,10 +1025,14 @@ public final class EnterpriseMenus {
                             "+" + MoneyFormat.exact(Math.round(preview.laundered())) + " $ propres",
                             "Commission " + MoneyFormat.exact(Math.round(preview.fees())) + " $"))
                     .accent(0xFF27C4E8));
+            long fromBank = Math.round(preview.cleanSupplies());
             dirty.add(Card.of(new ItemStack(Items.HOPPER), "Achats aux fournisseurs", List.of(
                             MoneyFormat.exact(Math.round(preview.supplies())) + " $ sales / h",
-                            "Matiere premiere, pieces, produits"))
-                    .accent(0xFF9AA0A6));
+                            fromBank > 0L ? "+ " + MoneyFormat.exact(fromBank) + " $ de la banque (+25 %)"
+                                    : "Matiere premiere, pieces, produits"))
+                    .accent(0xFF9AA0A6)
+                    .tooltip(List.of("Matiere premiere, pieces, produits", "L'argent sale paie d'abord ; s'il manque, "
+                            + "la banque prend le relais, 25 % plus cher")));
             dirty.add(Card.of(new ItemStack(Items.BARREL), "Ventes et pertes", List.of(
                             "~" + Math.round(preview.sold()) + " unite(s) vendue(s) / h",
                             Math.round(preview.lost()) > 0 ? "~" + Math.round(preview.lost()) + " perdue(s) faute de place"
@@ -1045,6 +1314,11 @@ public final class EnterpriseMenus {
                     "+15 % sur son territoire, moins de risque, elle prend 5 %", "alliance"));
             acts.add(act(player, syndicate, Syndicates.Action.BREAK, new ItemStack(Items.BARRIER), "Rompre",
                     "Son hostilite monte d'un coup", "Elle n'oublie pas", "break"));
+            int heldThere = Syndicates.heldIn(player, syndicate);
+            acts.add(act(player, syndicate, Syndicates.Action.OPERATION, new ItemStack(Items.BELL),
+                    "Operation de police", MoneyFormat.exact(Syndicates.OPERATION_PRICE) + " $ propres · "
+                            + Math.round(Syndicates.operationChance(player, syndicate) * 100.0d) + " % de chances",
+                    heldThere + " pays a toi ici · reussie : affaiblie 14 j, biens saisis", "operation"));
             if (status == Holdings.Status.GUERRE) {
                 acts.add(act(player, syndicate, Syndicates.Action.TRIBUTE, new ItemStack(Items.GOLD_BLOCK), "Tribut",
                         MoneyFormat.exact(Syndicates.tributePrice(player, syndicate)) + " $",
@@ -1060,6 +1334,10 @@ public final class EnterpriseMenus {
             text.add("- Neutre : -10 % sur tes affaires illegales de " + syndicate.region().label()
                     + ", et son hostilite monte chaque jour selon ta presence");
             text.add("- En guerre : -40 % sur ce territoire, +15 de risque, et des sabotages");
+            text.add("- Hostile (50 et plus) : elle vole dans tes stocks ou rackette ton argent sale ; elle propose "
+                    + "des contrats tant qu'elle n'est pas en guerre avec toi");
+            text.add("- Alliee : elle te previent des operations de police dans sa region (24 h au lieu de 12), aide a "
+                    + "les acheter, t'evite les coups de filet et paie mieux ses contrats");
             text.add("! Agressivite " + Math.round(syndicate.aggression() * 100.0d) + " %, avidite "
                     + Math.round(syndicate.greed() * 100.0d) + " %, rancune " + Math.round(syndicate.honor() * 100.0d)
                     + " %");
@@ -1087,6 +1365,10 @@ public final class EnterpriseMenus {
                     new MenuView.Stat("PRESENCE", String.valueOf(presence), 0xFFFFFFFF));
             List<MenuView.Section> sections = new ArrayList<>();
             sections.add(new MenuView.Section("RELATION", "resources", MenuView.GRID, relation));
+            List<Card> deals = contracts(player, syndicate);
+            if (!deals.isEmpty()) {
+                sections.add(new MenuView.Section("CONTRATS", "upgrade", MenuView.GRID, deals));
+            }
             sections.add(new MenuView.Section("GESTES|payes en argent sale d'abord", "craft", MenuView.GRID, acts));
             sections.add(new MenuView.Section("CE QU'ELLE PESE", "resources", MenuView.TEXT, List.of(
                     Card.of(ItemStack.EMPTY, "", text))));
@@ -1107,6 +1389,10 @@ public final class EnterpriseMenus {
             String question = switch (action) {
                 case BREAK -> "!Rompre avec " + syndicate.label() + " ?|Son hostilite monte d'un coup";
                 case RIPOSTE -> "!Riposter contre " + syndicate.label() + " ?|" + price;
+                case OPERATION -> "!Lancer une operation de police contre " + syndicate.label() + " ?|" + price
+                        + (Syndicates.standing(player, syndicate).state() == Holdings.Status.ACCORD
+                        || Syndicates.standing(player, syndicate).state() == Holdings.Status.ALLIANCE
+                        ? " ; c'est trahir votre entente" : "");
                 default -> title + " avec " + syndicate.label() + " ?|" + price;
             };
             return card.action(key + "|" + title.toLowerCase()).confirm(question);
@@ -1124,17 +1410,13 @@ public final class EnterpriseMenus {
                         + syndicate.label() + ".");
                 case "tribute" -> answer(player, Syndicates.tribute(player, syndicate), "Tribut paye : la guerre "
                         + "s'arrete.");
-                case "riposte" -> {
-                    String result = Syndicates.riposte(player, syndicate);
-                    if (result.startsWith("!")) {
-                        FactionApi.tell(player, result.substring(1) + ".", ChatFormatting.RED);
-                    } else {
-                        FactionApi.tell(player, result + ".", ChatFormatting.GREEN);
-                    }
-                }
+                case "riposte" -> result(player, Syndicates.riposte(player, syndicate));
+                case "operation" -> result(player, Syndicates.operation(player, syndicate));
                 default -> {
                     if (key.startsWith("open:")) {
                         Detail.INSTANCE.show(player, key.substring(5));
+                    } else {
+                        threatOrContract(player, key);
                     }
                 }
             }

@@ -150,14 +150,15 @@ public final class OrgMenus {
             List<Card> cadres = new ArrayList<>();
             for (Cadre cadre : org.cadres()) {
                 Post role = cadre.role();
-                String duty = role != null ? " · " + role.label()
+                String duty = cadre.jailed() ? " · en prison" : role != null ? " · " + role.label()
                         : cadre.manages().isEmpty() ? "" : " · gere " + managed(player, cadre);
                 cadres.add(Card.of(helmet(cadre.rank()), cadre.name(), List.of(
                                 cadre.rank().label() + " · " + stars(cadre.skill()) + " · " + cadre.character().label(),
                                 "Loyaute " + Math.round(cadre.loyalty()) + " · " + MoneyFormat.exact(
                                         Organisations.salary(player, cadre)) + " $ / jour" + duty))
                         .accent(loyaltyColor(cadre.loyalty())).progress(Math.round(cadre.loyalty()), 100L)
-                        .badge(role != null ? "POSTE" : cadre.manages().isEmpty() ? "" : "GERANT")
+                        .badge(cadre.jailed() ? "PRISON" : role != null ? "POSTE" : cadre.manages().isEmpty() ? ""
+                                : "GERANT")
                         .action("cadre:" + cadre.id() + "|voir sa fiche"));
             }
             if (cadres.isEmpty()) {
@@ -310,18 +311,26 @@ public final class OrgMenus {
                         .state(MenuView.DONE));
             } else {
                 long price = Organisations.promotionPrice(player, cadre);
-                boolean ready = now >= cadre.promotable();
+                boolean ready = now >= cadre.promotable() && !cadre.jailed();
                 Card promote = Card.of(helmet(next), "Promouvoir " + next.label(), List.of(
                                 MoneyFormat.exact(price) + " $ (une semaine du nouveau salaire)",
-                                ready ? "Loyaute +10" : "Possible dans " + Organisations.duration(
-                                        cadre.promotable() - now)))
+                                cadre.jailed() ? "Pas depuis la prison" : ready ? "Loyaute +10"
+                                        : "Possible dans " + Organisations.duration(cadre.promotable() - now)))
                         .accent(0xFFFAC400);
                 actions.add(ready ? promote.action("promote|promouvoir").confirm("Promouvoir " + cadre.name() + " "
                         + next.label() + " ?|" + MoneyFormat.exact(price) + " $ depuis la banque nationale")
                         : promote.state(MenuView.DISABLED));
             }
             Post role = cadre.role();
-            if (role != null) {
+            if (cadre.jailed()) {
+                long bail = Organisations.bail(player, cadre);
+                actions.add(Card.of(new ItemStack(Items.IRON_BARS), "Payer la caution", List.of(
+                                "En prison encore " + Organisations.duration(Math.max(60_000L, cadre.jailedUntil() - now)),
+                                MoneyFormat.exact(bail) + " $ · loyaute +5 ; sans caution, -10 a sa sortie"))
+                        .accent(0xFFFAC400).badge("PRISON").action("bail|payer")
+                        .confirm("Payer la caution de " + cadre.name() + " ?|" + MoneyFormat.exact(bail)
+                                + " $ depuis la banque nationale"));
+            } else if (role != null) {
                 actions.add(Card.of(role.icon(), "Liberer le poste", List.of(role.label(), "Il redevient libre"))
                         .accent(0xFF55545C).action("unpost|liberer"));
             } else if (!cadre.manages().isEmpty()) {
@@ -376,6 +385,8 @@ public final class OrgMenus {
             switch (key) {
                 case "promote" -> report(player, Organisations.promote(player, cadre.id()), cadre.name()
                         + " monte en grade.");
+                case "bail" -> report(player, Organisations.payBail(player, cadre.id()), cadre.name()
+                        + " sort de prison.");
                 case "unpost" -> {
                     Post role = cadre.role();
                     if (role != null) {

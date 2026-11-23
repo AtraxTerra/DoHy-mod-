@@ -32,7 +32,7 @@
 | 24a | Régime de la nation, hiérarchie de cadres PNJ (grades, postes, salaires, loyauté), diplomatie avec les douze nations (pacte, accord commercial, alliance, rivalité), onglets Organisation et Diplomatie | fait |
 | 24b | Entreprises : le modèle commun (propriétaire, catégorie, niveau, capital, coûts, revenus, employés, stock, lieu, risque, améliorations), les catégories légales et illégales, les revenus horaires hors ligne, l'influence par pays, les six organisations criminelles, l'onglet Entreprises | fait |
 | 24c | Objets, blocs et textures : plantes, produits, conditionnement, caisses, balance, matériel de laboratoire, protections, bidons, laboratoire clandestin, table de conditionnement, coffres sécurisés — chacun branché sur une entreprise | fait |
-| 24d | Interactions : lois des pays, descentes de police, opérations contre le crime, rivalités qui coûtent, alliances qui rapportent, contrats entre organisations, notifications | à faire |
+| 24d | Interactions : lois des pays, descentes de police, opérations contre le crime, rivalités qui coûtent, alliances qui rapportent, contrats entre organisations, notifications | fait |
 | 24e | La farmland : dimension du Chasseur où n'apparaissent que les créatures du métier | à faire |
 
 ## Lot 24a — régime, cadres et diplomatie (fait, 2026-11-22)
@@ -342,15 +342,181 @@ qu'elle a reçu, autant qu'il y a de place ; le journal des entreprises en fait 
 les dix minutes. Les plantes sont des cultures comme les autres : la moissonneuse de Create les
 récolte et les replante.
 
+## Lot 24d — lois, police et contrats (fait, 2026-11-23)
+
+### Les lois
+
+Sept sujets de loi, chacun pour une famille d'affaires illégales ; chacun est **interdit**,
+**toléré** ou **légal** dans un pays.
+
+| Sujet | Affaires | Peut être légal | Loi commune |
+|---|---|---|---|
+| Cannabis | plantations et laboratoires de cannabis | oui | interdit |
+| Drogues dures | coca, pavot, synthèse, réseaux de rue, entrepôts | oui | interdit |
+| Armes | ateliers et trafics d'armes | oui | interdit |
+| Jeux d'argent | casinos | oui | toléré |
+| Contrebande | routes de contrebande | non | toléré |
+| Racket et recel | racket, recel | non | interdit |
+| Blanchiment | sociétés écrans | non | toléré |
+
+| Statut | Risque | Frais | Argent |
+|---|---|---|---|
+| Interdit | ×1 | ×1 | sale |
+| Toléré | ×0,6 | ×1,15 (pots-de-vin) | sale |
+| Légal | ×0,3 (de simples contrôles) | ×1 | **propre**, ×0,8 (taxes et concurrence) |
+
+- **Chez toi** : une loi pour tous les pays que tient ta nation (`/f lois`), la loi commune tant
+  que rien n'est voté ; une loi change au plus une fois par jour, d'un cran (clic gauche :
+  assouplir, clic droit : durcir).
+- **Ailleurs** : la loi de la nation qui tient le pays, tirée de son caractère (l'honneur la
+  rend stricte, l'avidité et la ruse coulante, l'agressivité aime les armes), et le zèle de sa
+  police : ×(0,8 + 0,5 × honneur), de ×0,88 à ×1,25. Hors de toute nation, la loi commune.
+
+| Nation | Cannabis | Drogues | Armes | Jeu | Contrebande | Racket | Blanchiment | Police |
+|---|---|---|---|---|---|---|---|---|
+| Les Corbeaux | légal | toléré | interdit | légal | toléré | interdit | toléré | ×0,98 |
+| Nordheim | toléré | interdit | toléré | toléré | interdit | interdit | interdit | ×1,13 |
+| Ombre Pourpre | légal | toléré | interdit | légal | toléré | toléré | toléré | ×0,88 |
+| Les Loups Gris | toléré | interdit | interdit | toléré | interdit | interdit | interdit | ×1,15 |
+| Valkyr | interdit | interdit | interdit | interdit | interdit | interdit | interdit | ×1,25 |
+| Kraken | légal | toléré | toléré | légal | toléré | interdit | interdit | ×1,00 |
+| Solaris | interdit | interdit | interdit | toléré | interdit | interdit | interdit | ×1,23 |
+| Arcanum | toléré | interdit | interdit | toléré | toléré | interdit | toléré | ×1,10 |
+| Les Titans | toléré | interdit | toléré | toléré | interdit | interdit | interdit | ×1,08 |
+| Fer de Lance | toléré | interdit | toléré | interdit | interdit | interdit | interdit | ×1,10 |
+| Basilic | légal | toléré | interdit | toléré | toléré | toléré | toléré | ×0,93 |
+| Aube Rouge | légal | toléré | légal | toléré | interdit | toléré | interdit | ×0,95 |
+
+Ce que tes lois font autour de toi, dès que ta nation tient un pays :
+
+- **Les nations** : chaque cran de laxisme de plus que leur propre loi fâche, +1,2 × (0,5 +
+  honneur) d'humeur, 10 au plus (`Diplomacy.moodShift`).
+- **Les organisations criminelles** des régions où tu tiens des pays, chaque jour : chaque
+  activité tolérée −0,4 d'hostilité ; cannabis ou drogues légales +1 (leur marché disparaît),
+  armes ou jeu légaux +0,5.
+
+### La police
+
+Un passage de la police a désormais trois gravités (`Police`) :
+
+| Gravité | Amende (du capital de l'affaire) | Fermeture | Saisies | Gérant |
+|---|---|---|---|---|
+| Contrôle | 2 % (1 000 à 50 000 $) | — | — | — |
+| Descente | 5 % (2 000 à 100 000 $) | 24 h | moitié des stocks (quart avec un entrepôt), 15 % de l'argent sale (250 000 $ au plus) | — |
+| Coup de filet | 10 % (5 000 à 200 000 $) | 72 h | une fois et demie, 25 % de l'argent sale (400 000 $ au plus) | arrêté 3 jours |
+
+La gravité suit le risque : coup de filet de 0 à 35 % (risque 35 à 70), contrôle de 50 à 10 %.
+Une affaire légale n'a que des contrôles ; une organisation alliée de la région change le coup
+de filet en descente. L'amende se paie en argent sale d'abord, la banque nationale pour le
+reste.
+
+**Le gérant arrêté** part en prison trois jours (son poste vaut `#prison:<heure>`) : il ne gère
+plus rien, sa loyauté perd 5. Sa **caution** (cinq jours de salaire, depuis la banque) le fait
+sortir aussitôt, loyauté +5 ; sans caution, il sort à l'heure dite, loyauté −10. En prison, ni
+poste, ni gérance, ni promotion ; la paie continue.
+
+### Les opérations
+
+**Contre toi.** Chaque jour, une nation dont la loi interdit (ou tolère, avec moins de poids)
+des affaires de ta nation dans ses pays peut annoncer une opération, une par semaine au plus,
+jamais une alliée : chance 5 % × exposition (une affaire interdite compte 1, tolérée 0,4 ;
+4 au plus) × (0,5 + honneur) × (0,5 + hostilité / 100), moitié moins avec un accord, trois
+quarts avec un pacte, une fois et demie si rivale ou en guerre. Elle frappe **12 heures** plus
+tard (24 si une organisation alliée de la région t'a prévenu) toutes les affaires visées encore
+ouvertes, sans limite, plus durement (coup de filet +25 points, jamais un simple contrôle).
+D'ici là, depuis la section **Menaces** de l'onglet Entreprises :
+
+- **l'acheter** : (20 000 + 8 000 par affaire visée) × (0,6 + avidité) $, argent sale d'abord ;
+  chance 25 % + 60 % × avidité − 30 % × honneur, +20 % avec une organisation alliée dans ses pays,
+  moitié moins si tu l'as déclarée rivale (5 à 90 %) ; ratée, l'argent est perdu et l'opération
+  frappe un quart plus fort ; impossible en guerre ;
+- **se mettre au vert** : les affaires visées ferment jusqu'à six heures après l'opération, qui
+  ne trouve rien.
+
+**Les tiennes.** Un État (État officiel ou faction militaire) qui tient des pays dans la région
+d'une organisation peut y mener une **opération de police** : 40 000 $ propres, une par semaine
+et par organisation ; chance 30 % + 10 % par pays tenu (3 au plus) + 20 % × général + 10 % pour
+l'État officiel − 25 % × agressivité (+10 % affaiblie), de 10 à 90 %. S'entendre avec elle puis
+la frapper, c'est la trahir (hostilité +25 ou +40 selon sa rancune). Réussie : affaiblie 14 jours,
+sa guerre s'arrête, 20 000 à 50 000 $ de biens saisis à la banque, et deux semaines durant les
+nations apprécient (−3 × (0,5 + honneur) d'humeur). Ratée : hostilité +20, et une fois sur deux
+elle ferme une de tes affaires de la région 12 h.
+
+### Rivalités qui coûtent, alliances qui rapportent
+
+- Une organisation **hostile** (50 et plus, neutre, avec tes affaires dans sa région) se sert,
+  chaque jour avec une chance de (hostilité − 50) % : 15 % du plus gros stock de produits ou de
+  caisses, ou 5 % de l'argent sale (20 000 $ au plus).
+- Une organisation **alliée** prévient des opérations dans sa région (24 h au lieu de 12), aide
+  à les acheter (+20 %), évite les coups de filet et paie mieux ses contrats.
+- Une nation **alliée** ne lance jamais d'opération contre toi ; un accord en divise la chance par
+  deux ; une rivale ou une guerre la multiplie par 1,5 et une rivale se laisse moins acheter.
+
+### Les contrats
+
+Chaque jour, une organisation qui n'est pas en guerre avec toi peut proposer un contrat (22 %,
++18 % avec un accord, −12 % au-delà de 50 d'hostilité ; un à la fois par organisation, trois
+propositions au plus) : livrer 32 à 128 unités d'un produit, ou 4 à 16 caisses, selon sa
+spécialité (Docks : caisses ou synthèse ; Condor : cocaïne ; Valcorte : synthèse ou cocaïne ;
+Caravane : cannabis ; Lotus : caisses ou héroïne ; Récifs : n'importe quel produit).
+
+| Étape | Délai | Effet |
+|---|---|---|
+| Proposé | 2 jours pour accepter | refuser ne coûte rien |
+| En cours | 3 jours pour livrer | « Livrer » prend d'abord ce que tu portes (colis, sachets, caisses de ce produit, jamais plus que ce qui manque), puis les stocks |
+| Rempli | — | prix de gros × 1,35 (× 1,55 alliée) en argent sale, hostilité −8 |
+| Manqué | — | hostilité +12 |
+
+Les offres sont tirées chaque jour, mais les délais se vérifient **à chaque heure** : une offre
+expire et un contrat est manqué dans l'heure qui suit son échéance, et on ne peut plus accepter
+une offre ni livrer passé le délai.
+
+### Les fournisseurs, quand l'argent sale manque
+
+Les achats aux fournisseurs (pièces d'armes faute de fer, matière première des laboratoires,
+héroïne des Récifs, caisses du Lotus) se paient en argent sale d'abord. Une nation aux lois
+souples ne gagne parfois plus d'argent sale (casinos et réseaux légaux, blanchiment qui vide le
+solde) : sans recours, ses ateliers et ses laboratoires s'arrêteraient pour de bon, faute de quoi
+payer les pièces qui relanceraient leurs ventes. La **banque nationale** prend donc le relais,
+**25 % plus cher** (il faut maquiller le paiement), sans jamais passer à découvert ; la carte
+« Achats aux fournisseurs » montre la part payée par la banque, comptée dans les frais. Pour
+que cela reste un recours, le blanchiment laisse de côté, chaque heure, l'argent sale que les
+fournisseurs viennent de demander : il servira l'heure suivante au lieu d'être blanchi (avec
+commission) puis racheté plus cher.
+
+### Les notifications
+
+Chaque événement passe par le journal des entreprises, le chat et une notification : contrôle,
+descente, coup de filet, gérant arrêté, opération annoncée, opération menée (ou qui ne trouve
+rien), vol, racket, contrat proposé, contrat manqué. Les gestes (acheter, se mettre au vert,
+accepter, livrer, opération de l'État, loi votée, caution) répondent dans le chat et s'inscrivent
+au journal.
+
+### L'interface
+
+- **Lois** (`faction_laws`, `/f lois`, carte « Lois » du tableau de bord) : tes sept lois (clic
+  gauche assouplir, clic droit durcir), celles des douze nations et la loi commune, ce que
+  changent les lois ; la pastille dit la loi en couleur (légale en vert, tolérée en jaune,
+  interdite en rouge).
+- **Tableau de bord** : une section **Menaces** (pour chaque opération : l'acheter, se mettre au
+  vert) en tête, une section **Contrats** (accepter, refuser, livrer) juste sous les chiffres,
+  avant la liste des entreprises.
+- **Une organisation** : ses contrats, le geste **Opération de police**.
+- **Une nation** (Diplomatie) : ses lois et le zèle de sa police, ce que tes lois font à son humeur.
+- **Le catalogue** : la loi du pays où tu te tiens sur chaque affaire illégale, le risque estimé
+  en tient compte.
+- **La fiche d'une entreprise** : la loi et la police dans le détail des facteurs.
+- **Organisation** : un cadre en prison (pastille PRISON) et sa caution.
+
+### Données
+
+`Justice`, dans `Holdings` (champ `justice`, absent des anciennes sauvegardes) : les lois votées
+et leur date, les opérations (annoncées, achetées, esquivées, menées) et les contrats (proposés,
+en cours, remplis, manqués, expirés), les douze derniers de chaque, la fin de l'effet de ta
+dernière opération contre le crime. `Standing` garde la date de ta dernière opération contre
+chaque organisation. Rien de nouveau dans `Organisation` : la prison est dans le poste du cadre.
+
 ## Lots suivants — la conception retenue
-
-### 24d — interactions
-
-Lois : dans un pays que tient ta nation, chaque activité est légale, tolérée ou interdite ;
-ailleurs, la loi de la nation qui le tient. Descentes de police selon le risque (amende,
-saisie, fermeture, cadre arrêté). Un État peut lancer des opérations contre les organisations
-criminelles de ses pays. Contrats entre organisations (livrer tant de produit avant une date).
-Notifications (toasts et journal) pour chaque événement.
 
 ### 24e — la farmland
 

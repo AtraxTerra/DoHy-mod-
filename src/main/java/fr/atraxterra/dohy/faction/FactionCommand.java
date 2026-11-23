@@ -159,6 +159,11 @@ public final class FactionCommand {
                                                     IntegerArgumentType.getInteger(ctx, "heures"));
                                             return 1;
                                         })))))
+                .then(Commands.literal("lois")
+                        .executes(ctx -> as(ctx.getSource(), player -> {
+                            fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Laws.INSTANCE.open(player);
+                            return 1;
+                        })))
                 .then(Commands.literal("arbre")
                         .executes(ctx -> as(ctx.getSource(), player -> {
                             FactionTreeMenus.Tree.INSTANCE.open(player);
