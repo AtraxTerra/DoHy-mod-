@@ -285,6 +285,13 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   suit le métal fondu et les réglages par défaut de NTM (le bismuth vient des RTG, le desh du
   raffinage) : **les 52 paliers sans problème** (enclume en desh à la Chimie III, Chimie IV après le
   Nucléaire II, stockages de masse à l'Industrie IV…).
+- **Lot 23i — Équilibrage, captures, vérification** (2026-11-23, `docs/NATION.md`, « Équilibrage,
+  captures et vérification », et `docs/BALANCE.md`, « Technologies de la nation ») : les chiffres
+  restent (points, argent et pièces tombent ensemble ; tout l'arbre en ~127 h de jeu seul,
+  `tools/tech_balance.py`) ; les **pièces se livrent au laboratoire** (18 piles, clic droit, bouton
+  Déposer, entonnoir, convoyeur ou tuyau ; une recherche les prend sur le joueur puis aux
+  laboratoires chargés) ; tout le chapitre parcouru en jeu et capturé. **Fin du chapitre 23.** À voir
+  sur le serveur avec NTM : verrous des vraies machines, câble, convoyeur, largage.
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 

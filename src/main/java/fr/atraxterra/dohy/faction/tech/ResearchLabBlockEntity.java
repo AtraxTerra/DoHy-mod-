@@ -3,12 +3,21 @@ package fr.atraxterra.dohy.faction.tech;
 import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.faction.FactionData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -19,6 +28,7 @@ import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -47,7 +57,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>Le Gouvernement permet un, deux puis trois laboratoires. La nation tient la liste des siens
  * ({@link FactionData#labs()}) ; un laboratoire au-dela du nombre permis attend.
  */
-public class ResearchLabBlockEntity extends BlockEntity {
+public class ResearchLabBlockEntity extends BlockEntity implements WorldlyContainer {
 
     /** L'etat du laboratoire, du plus bloquant au moins bloquant. */
     public enum Status {
@@ -77,10 +87,16 @@ public class ResearchLabBlockEntity extends BlockEntity {
 
     private static final int TICKS_PER_HOUR = 72_000;
 
+    /** Les cases des pieces livrees (lot 23i) : deux rangees, de quoi tenir le plus gros palier. */
+    public static final int PART_SLOTS = 18;
+    private static final int[] PART_FACES = java.util.stream.IntStream.range(0, PART_SLOTS).toArray();
+
     /** Les laboratoires en memoire, par proprietaire : leur cle et leurs points bruts par heure. */
     private static final Map<UUID, Map<String, Double>> LOADED = new ConcurrentHashMap<>();
 
     private final Energy energy = new Energy();
+    /** Les pieces livrees : les recherches de la nation les prennent au lancement, apres celles du joueur. */
+    private final NonNullList<ItemStack> parts = NonNullList.withSize(PART_SLOTS, ItemStack.EMPTY);
     private UUID owner;
     private String ownerName = "";
     /** Les points bruts produits, pas encore pris par une recherche. */
@@ -331,10 +347,16 @@ public class ResearchLabBlockEntity extends BlockEntity {
         LOADED.clear();
     }
 
-    /** Le bloc est casse : ses points vont aux recherches si son proprietaire est la, et il quitte la liste. */
+    /**
+     * Le bloc est casse : il rend ses pieces, ses points vont aux recherches si son proprietaire est la,
+     * et il quitte la liste.
+     */
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         super.preRemoveSideEffects(pos, state);
+        if (level != null && !level.isClientSide()) {
+            Containers.dropContents(level, pos, this);
+        }
         if (owner != null && level instanceof ServerLevel server
                 && server.getServer().getPlayerList().getPlayer(owner) instanceof ServerPlayer player) {
             FactionData data = FactionApi.data(player);
@@ -396,6 +418,167 @@ public class ResearchLabBlockEntity extends BlockEntity {
         }
     }
 
+    // -- Les pieces livrees (lot 23i) ------------------------------------------------------------------
+
+    /** Combien de cet objet le laboratoire garde. */
+    public int partCount(Item item) {
+        int total = 0;
+        for (ItemStack stack : parts) {
+            if (stack.is(item)) {
+                total += stack.getCount();
+            }
+        }
+        return total;
+    }
+
+    /** Prend jusqu'a {@code count} de cet objet, en commencant par les dernieres cases ; rend ce qu'il a pris. */
+    public int takePart(Item item, int count) {
+        int left = Math.max(0, count);
+        for (int slot = parts.size() - 1; slot >= 0 && left > 0; slot--) {
+            ItemStack stack = parts.get(slot);
+            if (stack.is(item)) {
+                int taken = Math.min(left, stack.getCount());
+                stack.shrink(taken);
+                left -= taken;
+            }
+        }
+        if (left < count) {
+            setChanged();
+        }
+        return count - left;
+    }
+
+    /** Range une pile de pieces (completant d'abord les piles du meme objet) ; ce qui ne tient pas revient. */
+    public ItemStack storePart(ItemStack stack) {
+        if (!TechConfig.isPart(stack)) {
+            return stack;
+        }
+        ItemStack rest = stack.copy();
+        for (int slot = 0; slot < parts.size() && !rest.isEmpty(); slot++) {
+            ItemStack here = parts.get(slot);
+            if (!here.isEmpty() && ItemStack.isSameItemSameComponents(here, rest)) {
+                int moved = Math.min(Math.min(here.getMaxStackSize(), getMaxStackSize()) - here.getCount(),
+                        rest.getCount());
+                if (moved > 0) {
+                    here.grow(moved);
+                    rest.shrink(moved);
+                }
+            }
+        }
+        for (int slot = 0; slot < parts.size() && !rest.isEmpty(); slot++) {
+            if (parts.get(slot).isEmpty()) {
+                parts.set(slot, rest.split(Math.min(rest.getMaxStackSize(), rest.getCount())));
+            }
+        }
+        if (rest.getCount() != stack.getCount()) {
+            setChanged();
+        }
+        return rest;
+    }
+
+    /** Les pieces gardees, par objet, dans l'ordre des cases. */
+    public Map<Item, Integer> partsByItem() {
+        Map<Item, Integer> byItem = new LinkedHashMap<>();
+        for (ItemStack stack : parts) {
+            if (!stack.isEmpty()) {
+                byItem.merge(stack.getItem(), stack.getCount(), Integer::sum);
+            }
+        }
+        return byItem;
+    }
+
+    /** Les cases encore vides. */
+    public int freePartSlots() {
+        int free = 0;
+        for (ItemStack stack : parts) {
+            if (stack.isEmpty()) {
+                free++;
+            }
+        }
+        return free;
+    }
+
+    // -- Les pieces, vues par les entonnoirs, convoyeurs et tuyaux ------------------------------------
+
+    @Override
+    public int getContainerSize() {
+        return parts.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        for (ItemStack stack : parts) {
+            if (!stack.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        return parts.get(slot);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int count) {
+        ItemStack removed = ContainerHelper.removeItem(parts, slot, count);
+        if (!removed.isEmpty()) {
+            setChanged();
+        }
+        return removed;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        return ContainerHelper.takeItem(parts, slot);
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        parts.set(slot, stack);
+        stack.limitSize(getMaxStackSize());
+        setChanged();
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return Container.stillValidBlockEntity(this, player);
+    }
+
+    @Override
+    public void clearContent() {
+        parts.clear();
+        setChanged();
+    }
+
+    /** Il ne prend que ce que demandent les paliers. */
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return TechConfig.isPart(stack);
+    }
+
+    /** Rien ne le vide : ses pieces ne sortent que par une recherche, l'ecran ou le bloc casse. */
+    @Override
+    public boolean canTakeItem(Container target, int slot, ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    public int[] getSlotsForFace(Direction side) {
+        return PART_FACES;
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction side) {
+        return canPlaceItem(slot, stack);
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+        return false;
+    }
+
     // -- Sauvegarde ----------------------------------------------------------------------------------------
 
     @Override
@@ -409,6 +592,7 @@ public class ResearchLabBlockEntity extends BlockEntity {
         output.putLong("fraction", fraction);
         output.putLong("produced", produced);
         output.putInt("fuel", fuel);
+        ContainerHelper.saveAllItems(output, parts);
     }
 
     @Override
@@ -427,6 +611,8 @@ public class ResearchLabBlockEntity extends BlockEntity {
         fraction = Math.max(0L, input.getLongOr("fraction", 0L));
         produced = Math.max(0L, input.getLongOr("produced", 0L));
         fuel = Math.max(0, input.getIntOr("fuel", 0));
+        parts.clear();
+        ContainerHelper.loadAllItems(input, parts);
     }
 
     /**

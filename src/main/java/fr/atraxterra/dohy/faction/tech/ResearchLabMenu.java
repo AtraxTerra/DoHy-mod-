@@ -9,7 +9,11 @@ import fr.atraxterra.dohy.ui.view.MenuView.Card;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -17,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -107,6 +112,8 @@ public final class ResearchLabMenu extends MenuController {
 
         List<MenuView.Section> sections = new ArrayList<>();
         sections.add(new MenuView.Section("LABORATOIRE", "resources", MenuView.GRID, machine));
+        sections.add(new MenuView.Section("PIECES LIVREES", "upgrade", MenuView.GRID,
+                parts(player, lab, member(player, lab, data), data)));
         if (mine && data.exists()) {
             sections.add(new MenuView.Section("RECHERCHES EN COURS", "craft", MenuView.ROWS, research(player, data)));
             sections.add(new MenuView.Section("LES LABORATOIRES DE TA NATION", "upgrade", MenuView.ROWS,
@@ -120,6 +127,133 @@ public final class ResearchLabMenu extends MenuController {
                 new MenuView.Stat("RESERVE", MoneyFormat.shortForm(lab.buffer()), 0xFFFFFFFF));
         return new MenuView(id(), "Laboratoire de recherche", lab.nationName().isEmpty() ? ""
                 : "Nation " + lab.nationName(), stats, sections, true);
+    }
+
+    /** Le proprietaire et les membres de sa nation reprennent les pieces ; les autres peuvent seulement en livrer. */
+    private static boolean member(ServerPlayer player, ResearchLabBlockEntity lab, FactionData data) {
+        return lab.isOwner(player) || player.getAbilities().instabuild
+                || data.exists() && !lab.nationName().isEmpty() && lab.nationName().equals(data.name());
+    }
+
+    /**
+     * Les pieces livrees (lot 23i) : ce que le laboratoire garde pour les recherches de sa nation, un
+     * depot de tout ce que le joueur porte, et une carte par objet garde pour en reprendre.
+     */
+    private static List<Card> parts(ServerPlayer player, ResearchLabBlockEntity lab, boolean member,
+                                    FactionData data) {
+        List<Card> cards = new ArrayList<>();
+        int carried = carried(player.getInventory());
+        List<String> hint = new ArrayList<>(List.of(
+                "Une recherche prend ses pieces sur toi, puis dans les laboratoires",
+                "charges de ta nation. Un entonnoir, un convoyeur ou un tuyau",
+                "d'objets en livre aussi ; il ne prend que ce que demandent les paliers,",
+                "et rien ne le vide. Casse, il rend tout."));
+        List<String> needs = needs(player, data);
+        if (!needs.isEmpty()) {
+            hint.add("");
+            hint.add("Les prochains paliers :");
+            hint.addAll(needs);
+        }
+        cards.add(Card.of(new ItemStack(Items.HOPPER), "Deposer tes pieces", List.of(
+                        carried > 0 ? carried + " piece(s) des paliers sur toi" : "Aucune piece des paliers sur toi",
+                        lab.freePartSlots() + " case(s) libre(s) sur " + ResearchLabBlockEntity.PART_SLOTS))
+                .accent(carried > 0 ? GREEN : 0xFF55545C).action("deposit|deposer").tooltip(hint));
+        for (Map.Entry<Item, Integer> entry : lab.partsByItem().entrySet()) {
+            ItemStack icon = new ItemStack(entry.getKey());
+            Card card = Card.of(icon, MenuView.text(icon.getHoverName()), List.of(
+                            "x" + MoneyFormat.exact(entry.getValue()) + " ici",
+                            member ? "Clic : une pile · Clic droit : tout" : "Seule sa nation les reprend"))
+                    .accent(CYAN);
+            if (member) {
+                String id = BuiltInRegistries.ITEM.getKey(entry.getKey()).toString();
+                card = card.action("take:" + id + "|reprendre une pile").right("takeall:" + id + "|tout reprendre");
+            }
+            cards.add(card);
+        }
+        return cards;
+    }
+
+    /** Combien de pieces des paliers le joueur porte. */
+    private static int carried(Inventory inventory) {
+        int total = 0;
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (TechConfig.isPart(stack)) {
+                total += stack.getCount();
+            }
+        }
+        return total;
+    }
+
+    /** Ce que demandent les prochains paliers de la nation, et ce qu'elle en a (sur le joueur et livre). */
+    private static List<String> needs(ServerPlayer player, FactionData data) {
+        List<String> lines = new ArrayList<>();
+        if (!data.exists()) {
+            return lines;
+        }
+        List<ResearchLabBlockEntity> labs = Tech.loadedLabs(player, data);
+        for (TechConfig.Domain domain : TechConfig.domains()) {
+            TechConfig.Tier next = domain.merged() || Tech.researching(data, domain) ? null : Tech.next(data, domain);
+            if (next == null || next.cost().isEmpty() || lines.size() >= 9) {
+                continue;
+            }
+            List<String> wants = new ArrayList<>();
+            boolean ready = true;
+            for (TechConfig.ItemCost item : next.cost().get().items()) {
+                Optional<Item> found = item.item();
+                if (found.isPresent()) {
+                    int have = Tech.count(player.getInventory(), found.get()) + Tech.delivered(labs, found.get());
+                    ready &= have >= item.count();
+                    wants.add(Math.min(have, item.count()) + "/" + item.count() + " " + item.label());
+                }
+            }
+            if (!wants.isEmpty()) {
+                lines.add((ready ? "✔ " : "- ") + domain.name() + " " + TechConfig.roman(next.tier()) + " : "
+                        + String.join(", ", wants));
+            }
+        }
+        return lines;
+    }
+
+    /** Depose tout ce que le joueur porte des pieces des paliers ; rend ce qui ne tient pas. */
+    private static String deposit(ServerPlayer player, ResearchLabBlockEntity lab) {
+        Inventory inventory = player.getInventory();
+        int moved = 0;
+        boolean full = false;
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (!TechConfig.isPart(stack)) {
+                continue;
+            }
+            ItemStack rest = lab.storePart(stack);
+            moved += stack.getCount() - rest.getCount();
+            full |= !rest.isEmpty();
+            inventory.setItem(slot, rest);
+        }
+        if (moved == 0) {
+            return full ? "!Le laboratoire est plein : 18 cases au plus" : "!Tu ne portes aucune piece des paliers";
+        }
+        return moved + " piece(s) deposee(s)" + (full ? " ; le laboratoire est plein, le reste est sur toi" : "");
+    }
+
+    /** Rend au joueur une pile, ou tout, de cet objet ; ce qui ne tient pas tombe a ses pieds. */
+    private static String takeBack(ServerPlayer player, ResearchLabBlockEntity lab, String id, boolean all) {
+        Identifier key = Identifier.tryParse(id);
+        Optional<Item> item = key == null ? Optional.empty() : BuiltInRegistries.ITEM.getOptional(key);
+        if (item.isEmpty() || lab.partCount(item.get()) <= 0) {
+            return "!Le laboratoire n'en a plus";
+        }
+        int wanted = all ? lab.partCount(item.get()) : new ItemStack(item.get()).getMaxStackSize();
+        int taken = lab.takePart(item.get(), wanted);
+        int left = taken;
+        while (left > 0) {
+            ItemStack stack = new ItemStack(item.get(), Math.min(left, new ItemStack(item.get()).getMaxStackSize()));
+            left -= stack.getCount();
+            if (!player.getInventory().add(stack)) {
+                player.drop(stack, false);
+            }
+        }
+        return taken + " piece(s) reprise(s)";
     }
 
     /** Le detail du multiplicateur : vitesse de recherche, pays, capitale. */
@@ -205,8 +339,30 @@ public final class ResearchLabMenu extends MenuController {
         if ("tree".equals(key)) {
             OPEN.remove(player.getUUID());
             FactionTreeMenus.Tree.INSTANCE.open(player);
+            return;
+        }
+        if ("deposit".equals(key)) {
+            answer(player, deposit(player, lab));
+            return;
+        }
+        boolean all = key.startsWith("takeall:");
+        if (all || key.startsWith("take:")) {
+            if (!member(player, lab, FactionApi.data(player))) {
+                answer(player, "!Seule la nation de ce laboratoire reprend ses pieces");
+                return;
+            }
+            answer(player, takeBack(player, lab, key.substring(key.indexOf(':') + 1), all || button == 1));
         }
         // « refresh » ne fait rien de plus : l'ecran se redessine apres chaque action.
+    }
+
+    /** Un message commencant par « ! » est un refus. */
+    private static void answer(ServerPlayer player, String message) {
+        if (message.startsWith("!")) {
+            report(player, message.substring(1), "");
+        } else {
+            report(player, null, message);
+        }
     }
 
     @Override

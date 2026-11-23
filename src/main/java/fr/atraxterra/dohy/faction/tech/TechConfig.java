@@ -20,9 +20,11 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -239,6 +241,8 @@ public final class TechConfig {
 
     private static volatile List<Domain> domains = List.of();
     private static volatile List<String> free = List.of();
+    /** Les objets que demandent les paliers, lus a la premiere question apres chaque chargement (lot 23i). */
+    private static volatile Set<Item> parts;
 
     private TechConfig() {
     }
@@ -260,6 +264,28 @@ public final class TechConfig {
     /** Les motifs des machines que l'arbre laisse libres. */
     public static List<String> free() {
         return free;
+    }
+
+    /**
+     * Vrai si un palier demande cet objet : c'est ce qu'un laboratoire accepte qu'on lui livre
+     * (lot 23i). Sans NTM NEXT, ses pieces n'existent pas et le laboratoire ne prend rien.
+     */
+    public static boolean isPart(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return false;
+        }
+        Set<Item> known = parts;
+        if (known == null) {
+            Set<Item> found = new HashSet<>();
+            for (Domain domain : domains) {
+                for (Tier tier : domain.tiers()) {
+                    tier.cost().ifPresent(cost -> cost.items().forEach(item -> item.item().ifPresent(found::add)));
+                }
+            }
+            known = Set.copyOf(found);
+            parts = known;
+        }
+        return known.contains(stack.getItem());
     }
 
     @SubscribeEvent
@@ -318,6 +344,7 @@ public final class TechConfig {
         }
         domains = List.copyOf(loaded);
         free = patterns;
+        parts = null;
         int tiers = 0;
         int machines = 0;
         for (Domain domain : loaded) {

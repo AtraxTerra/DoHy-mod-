@@ -1497,6 +1497,79 @@ Leviers : `WarStrategy.BEATEN_MS` (la semaine de la vaincue), `COALITION_AT`, `D
 `MOVED`, `insight`, la leçon : trois morts et plus du tiers), `Siege.compose` (ce que change une
 leçon), le poids des tourelles dans `Siege.requestPlan`.
 
+## 6 octovicies. Technologies de la nation — ce que coûte un palier
+
+Règles : `docs/NATION.md`, chapitre 23. Tranché au lot 23i (2026-11-23) : **les chiffres des lots
+23b et 23c restent**, parce que les trois limites d'un palier (les points, l'argent, les pièces)
+tombent au même moment de la partie ; ce qui change, c'est **où l'on livre les pièces**. Le calcul
+se refait avec `tools/tech_balance.py` (avec le jar de NTM NEXT pour les composants) :
+
+```bash
+python3 -I tools/tech_balance.py <mods>/hbm-neoforge-1.0.5-mc26.2.jar
+```
+
+**Les points.** Un laboratoire fait 3 600 points par heure de marche. Dans un domaine, un palier
+remplace le bonus du précédent ; d'un domaine à l'autre, ils s'ajoutent : la vitesse de recherche
+monte à +45 % (Industrie V +10, Nucléaire VI +15, Espace VI +20), l'apport des pays à +110 % (100 %
+au plus, +10 % au Gouvernement V) : ×3,04 au plus fort, et trois laboratoires.
+
+| Palier | Points | 1 labo, ×1 | 2 labos, ×1,25 (5 pays) | 3 labos, ×3,04 | Argent | Au revenu du moment |
+|---|---:|---:|---:|---:|---:|---|
+| II | 1 500 | 25 min | 10 min | 3 min | 25 k | 1 h à 25 k/h |
+| III | 6 000 | 1,7 h | 40 min | 11 min | 100 k | 4 h à 25 k/h |
+| IV | 20 000 | 5,6 h | 2,2 h | 36 min | 500 k | 2,5 h à 200 k/h |
+| V | 60 000 | 16,7 h | 6,7 h | 1,8 h | 2 M | 2 h à 1 M/h |
+| VI | 180 000 | 50 h | 20 h | 5,5 h | 10 M | 10 h à 1 M/h |
+
+L'Espace a un cran d'avance (son I coûte un II, son VI 360 000 points et 20 M). Tout l'arbre des
+six domaines nouveaux : **1 605 000 points et 75,75 M $**. Un joueur seul dont le laboratoire ne
+manque jamais de recherche (un laboratoire, deux à 48 h de jeu, trois à 72 h — ce que demandent les
+étapes du Gouvernement III et V) en vient à bout en **~127 h de jeu** ; au plus fort des bonus, les
+points de tout l'arbre se font en 49 h de marche. Vérifié en jeu (lot 23i) : tout l'arbre acquis,
+×1,45 sans carte de la Terre, trois laboratoires, trois recherches en parallèle.
+
+**L'argent arrive au même moment.** Au revenu du paragraphe 3, les paliers II et III des six
+domaines (750 k) se paient dans les quarante premières heures, les IV (3 M) entre 40 et 80 h, les
+V (12 M avec l'Espace IV) vers 100 h, les VI (60 M avec l'Espace V et VI) au mois 3, quand le
+revenu passe le million par heure : la Box Endium (150 M) et l'autosell (500 M) restent devant.
+Points et argent finissent ensemble vers 130 à 200 h : **un domaine fini par mois de saison**, pas
+plus tôt.
+
+**Les pièces montent par composants, pas par temps de machine.** Ramenées à leurs composants par
+les recettes par défaut de NTM NEXT :
+
+| Palier | Pièces (cas courant) | Composants | Machines |
+|---|---|---|---|
+| II | 32 plaques d'acier, 16 bobines de cuivre | — | presse, établi |
+| III | 16 circuits intégrés, 16 condensateurs | 64 puces, 16 condensateurs, 64 PCB | 6 min |
+| IV | 16 circuits militaires, 32 micropuces | 288 puces, 64 condensateurs, 128 PCB | 16 min |
+| V | 8 circuits polyvalents, 8 unités de contrôle | 384 puces, 448 condensateurs, 128 au tantale, 32 puces bismoïdes | 24 min |
+| VI | 4 processeurs quantiques, 4 horloges atomiques | 60 puces, 64 puces bismoïdes, 16 puces quantiques | 17 min |
+
+Le temps de machine (assembleuse et soudeuse) reste de quelques minutes : ce qui coûte, ce sont les
+matières (polymère, silicium, niobium, tantale, puis bismuth, BSCCO, hélium 4) et les machines qui
+les font — c'est-à-dire la progression de NTM elle-même. Le VI demande moins de composants que le V,
+mais des composants de fin de partie. L'Industrie III (16 tubes à vide) et l'Agriculture III
+(16 moteurs) sont plus légères que les autres III : la soudeuse des circuits intégrés n'arrive
+qu'avec l'Industrie III, l'Agriculture III ne demande que l'Énergie II (`tools/tech_crafting.py`).
+
+**Pourquoi rien ne bouge.** Baisser les points ferait finir l'arbre avant la fin du mois 2, quand
+l'argent manque encore ; les monter laisserait les laboratoires seuls juges de la progression, alors
+que la fin de l'arbre est déjà tenue par les composants de fin de partie. L'apport des pays
+plafonne vite (vingt pays, deux semaines de conquête) : il récompense la conquête sans la rendre
+obligatoire.
+
+**Ce qui change : les pièces se livrent au laboratoire.** Une recherche les prend sur le joueur,
+puis dans les laboratoires chargés de sa nation ; un entonnoir, un convoyeur ou un tuyau d'objets
+de NTM les y amène depuis la chaîne qui les fabrique. Le laboratoire garde 18 piles (le plus gros
+palier demande deux sortes de pièces, une pile de chaque au plus : de quoi en préparer neuf
+d'avance), ne prend que les pièces des paliers et ne se vide pas : ni un tuyau ni
+un entonnoir n'en tirent quoi que ce soit, il ne sert pas de coffre.
+
+Leviers : `data/tech/*.json` (`cost` : `points`, `money`, `items`), `data/research_lab.json`
+(`points_per_hour`, `buffer_points`, `country_percent`, `capital_percent`, `country_cap_percent`),
+`ResearchLabBlockEntity.PART_SLOTS`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

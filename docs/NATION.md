@@ -28,7 +28,7 @@ Choix du joueur (2026-11-20) :
 | 23f | Contenu : Chimie et Agriculture | fait |
 | 23g | Contenu : Nucléaire et Défense | fait |
 | 23h | Contenu : Espace | fait |
-| 23i | Équilibrage, captures, vérification en jeu | à faire |
+| 23i | Équilibrage, captures, vérification en jeu | fait |
 
 L'ordre compte : la nation (23a) donne le menu où vivent les technologies ; le moteur (23b) et le
 laboratoire (23c) doivent exister avant que le moindre verrou (23d) ne s'active. Les verrous
@@ -288,7 +288,7 @@ permet un, deux puis trois.
 - **Les pays** : chaque pays tenu ajoute aux points des laboratoires, la capitale aussi (taux et
   plafond au lot d'équilibrage).
 - **Le coût d'un palier** : des points, des pièces de NTM (livrées au laboratoire) et de l'argent
-  de la banque de faction. Ordres de grandeur, à équilibrer (23i) :
+  de la banque de faction. Ordres de grandeur (tranchés au lot 23i : ils restent) :
 
   | Palier | Points | Pièces de NTM (exemple) | Argent |
   |---|---:|---|---:|
@@ -336,8 +336,8 @@ permet un, deux puis trois.
 - **Les bonus** du Gouvernement (laboratoires, apport des pays) et de l'Énergie (laboratoires plus
   sobres) sont en service.
 - **Les commandes** : `/f techno points <n>` (opérateurs) verse des points aux recherches en cours.
-- **Pas fait** : les pièces de NTM se prennent toujours sur le joueur au lancement, pas dans le
-  laboratoire (à revoir avec l'équilibrage, 23i).
+- ~~**Pas fait** : les pièces de NTM se prennent toujours sur le joueur au lancement, pas dans le
+  laboratoire~~ : fait au lot 23i, elles se livrent aussi au laboratoire.
 
 ## Les verrous (23d)
 
@@ -543,6 +543,57 @@ affiné une dernière fois, en a révélé d'autres dans les domaines déjà fai
     prérequis y retarderait les bonus des anciennes étapes) pour l'**Industrie IV**.
 - **L'encyclopédie** : la fiche « Technologies » (le desh, le bismuth, l'Espace).
 
+## Équilibrage, captures et vérification (23i)
+
+Le dernier lot du chapitre : les chiffres, tranchés ; les pièces, livrées au laboratoire ; et tout
+l'arbre parcouru en jeu.
+
+### Fait (2026-11-23)
+
+- **Les chiffres restent** (`docs/BALANCE.md`, « Technologies de la nation », et
+  `tools/tech_balance.py`, qui refait le calcul) : points, argent et pièces tombent au même moment
+  de la partie. Tout l'arbre des six domaines nouveaux, 1 605 000 points et 75,75 M $, demande à un
+  joueur seul ~127 h de jeu (un laboratoire, deux à 48 h, trois à 72 h) ; l'argent suit au revenu
+  attendu (les VI au mois 3) ; les pièces montent en composants de NTM (64 puces au III, 288 au
+  IV, 384 et 448 condensateurs au V, les puces quantiques au VI), en quelques minutes de machine :
+  ce qui tient la fin de l'arbre, c'est la progression de NTM elle-même. L'apport des pays plafonne
+  vite (vingt pays) : il récompense la conquête sans l'imposer.
+- **Les pièces se livrent au laboratoire.** Il garde 18 piles : un clic droit avec la pile, le
+  bouton « Déposer tes pièces » de son écran, ou un entonnoir, un convoyeur ou un tuyau d'objets
+  (la capacité d'objets de NeoForge, par toutes ses faces). Il ne prend que les pièces des paliers
+  et ne se vide pas (rien ne sort, ni par le dessous ni sans face) : ce n'est pas un coffre. Une
+  recherche prend ses pièces **sur le joueur d'abord, puis dans les laboratoires chargés** de sa
+  nation. Sa nation les reprend de l'écran (clic : une pile, clic droit : tout) ; cassé, il les
+  rend ; ses pièces suivent sa sauvegarde.
+- **Les écrans** : la section « Pièces livrées » du laboratoire (une carte par pièce, le nom
+  traduit chez le joueur), et dans sa bulle ce que demandent les prochains paliers (« ✔ Énergie II :
+  32/32… ») ; la bulle d'un palier compte « 0 sur toi, 52 au labo » ; le refus dit « Il faut 8
+  lingots d'or, sur toi ou au labo ».
+- **Vérifié en jeu** (CI, client complet, sans NTM — des lingots de fer, de cuivre et d'or prennent
+  la place des pièces de NTM le temps de l'essai) : l'entonnoir livre 32 lingots et garde la terre ;
+  la capacité prend le fer, refuse la terre, ne rend rien ; le dépôt, le clic droit, la recherche
+  lancée (5 lingots sur le joueur, puis 27 au labo), la reprise d'une pile puis de tout, la
+  sauvegarde relue (25 fer, 32 cuivre), le bloc cassé (32 cuivre au sol, la liste vidée). Puis le
+  tour du chapitre : une nation de milieu de partie (deux recherches en parallèle, ×1,10, -15 %
+  d'énergie au labo, tous les bonus lus), tout l'arbre acquis (trois laboratoires, trois
+  recherches, ×1,45 sans carte de la Terre, -25 %, -15 %, +20 %, +10 %, +27 cases, -10 %) ; 80 vues
+  sans exception, 806 clics sans échec, le serveur dédié démarre avec ses 52 paliers.
+- **Les captures** : les neuf domaines, la vue d'ensemble, le laboratoire et ses pièces, les fiches
+  de l'encyclopédie.
+- **Correction** : les bonus d'un même type ne s'ajoutent pas dans un domaine (un palier remplace
+  le précédent) ; la vitesse de recherche monte donc à +45 %, pas +65 % — l'outil d'équilibrage
+  calculait mal, le jeu bien.
+
+### À voir sur le serveur, avec NTM
+
+La CI ne charge pas NTM NEXT (ses jars ne sont pas publics) : ce qui suit se vérifie en jeu.
+
+- Une machine de NTM d'un palier non acquis refuse la pose, avec son palier ; son infobulle le dit.
+- Un câble de NTM branché au laboratoire l'alimente (100 HE par tick).
+- Un convoyeur ou un tuyau d'objets de NTM y livre des pièces (plaques d'acier, bobines de cuivre).
+- Une recherche prend les pièces de NTM sur toi, puis au laboratoire.
+- Au Nucléaire II, une pile de plus dans un largage nucléaire.
+
 ## L'arbre actuel, fondu dedans
 
 | Ancienne branche | Domaine | Correspondance |
@@ -561,7 +612,8 @@ affiné une dernière fois, en a révélé d'autres dans les domaines déjà fai
 
 ## Encore à trancher, lot par lot
 
-- Les chiffres : coûts, points par laboratoire, apport des pays (23c, 23i).
+- ~~Les chiffres : coûts, points par laboratoire, apport des pays~~ : tranchés au lot 23i, ils
+  restent (`docs/BALANCE.md`, « Technologies de la nation »).
 - ~~Les machines agricoles de DoHy dans l'arbre Agriculture~~ : tranché au lot 23d, elles y sont.
 - Ce qu'il advient d'une machine verrouillée trouvée dans un coffre de pillage : elle se garde,
   elle ne se pose pas.

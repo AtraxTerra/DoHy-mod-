@@ -7,6 +7,7 @@ import fr.atraxterra.dohy.faction.FactionTree;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -356,10 +357,12 @@ public final class Tech {
         }
         TechConfig.Cost cost = cost(next);
         boolean creative = player.getAbilities().instabuild;
+        List<ResearchLabBlockEntity> labs = creative ? List.of() : loadedLabs(player, data);
         for (TechConfig.ItemCost item : cost.items()) {
             Optional<Item> found = item.item();
-            if (found.isPresent() && !creative && count(player.getInventory(), found.get()) < item.count()) {
-                return "Il faut " + item.count() + " " + item.label() + " sur toi";
+            if (found.isPresent() && !creative
+                    && count(player.getInventory(), found.get()) + delivered(labs, found.get()) < item.count()) {
+                return "Il faut " + item.count() + " " + item.label() + ", sur toi ou au labo";
             }
         }
         if (data.bank() < cost.money()) {
@@ -368,7 +371,11 @@ public final class Tech {
         return null;
     }
 
-    /** Lance la recherche du palier suivant : l'argent et les pieces tout de suite, puis les points des laboratoires. */
+    /**
+     * Lance la recherche du palier suivant : l'argent et les pieces tout de suite (celles du joueur
+     * d'abord, puis celles livrees aux laboratoires charges de la nation, lot 23i), puis les points
+     * des laboratoires.
+     */
     public static String start(ServerPlayer player, TechConfig.Domain domain) {
         String refusal = blocker(player, domain);
         if (refusal != null) {
@@ -381,12 +388,48 @@ public final class Tech {
             return "La banque nationale n'a pas " + MoneyFormat.exact(cost.money()) + " $";
         }
         if (!player.getAbilities().instabuild) {
+            List<ResearchLabBlockEntity> labs = loadedLabs(player, data);
             for (TechConfig.ItemCost item : cost.items()) {
-                item.item().ifPresent(found -> take(player.getInventory(), found, item.count()));
+                Optional<Item> found = item.item();
+                if (found.isEmpty()) {
+                    continue;
+                }
+                int left = item.count() - take(player.getInventory(), found.get(), item.count());
+                for (ResearchLabBlockEntity lab : labs) {
+                    if (left <= 0) {
+                        break;
+                    }
+                    left -= lab.takePart(found.get(), left);
+                }
             }
         }
         data.startTech(domain.id(), System.currentTimeMillis());
         return null;
+    }
+
+    /** Les laboratoires de la liste de la nation dont le chunk est charge : la que sont les pieces livrees. */
+    public static List<ResearchLabBlockEntity> loadedLabs(ServerPlayer player, FactionData data) {
+        List<ResearchLabBlockEntity> labs = new ArrayList<>();
+        MinecraftServer server = player.level().getServer();
+        if (server == null || !data.exists()) {
+            return labs;
+        }
+        for (String key : data.labs()) {
+            ResearchLabBlockEntity lab = ResearchLabBlockEntity.at(server, key);
+            if (lab != null && !lab.isRemoved()) {
+                labs.add(lab);
+            }
+        }
+        return labs;
+    }
+
+    /** Combien de cet objet ces laboratoires gardent. */
+    public static int delivered(List<ResearchLabBlockEntity> labs, Item item) {
+        int total = 0;
+        for (ResearchLabBlockEntity lab : labs) {
+            total += lab.partCount(item);
+        }
+        return total;
     }
 
     // -- Les points des laboratoires (lot 23c) -------------------------------------------------------
@@ -627,7 +670,8 @@ public final class Tech {
         return count;
     }
 
-    private static void take(Inventory inventory, Item item, int count) {
+    /** Prend jusqu'a {@code count} de cet objet dans l'inventaire ; rend ce qu'il a pris. */
+    private static int take(Inventory inventory, Item item, int count) {
         int left = count;
         for (int slot = 0; slot < inventory.getContainerSize() && left > 0; slot++) {
             ItemStack stack = inventory.getItem(slot);
@@ -637,5 +681,6 @@ public final class Tech {
                 left -= taken;
             }
         }
+        return count - left;
     }
 }
