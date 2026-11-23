@@ -179,6 +179,11 @@ final class Siege {
     /** Les chunks tenus charges par ce siege, et s'ils tournent. */
     private final Map<Long, Boolean> forced = new LinkedHashMap<>();
     final int force;
+    /**
+     * La vie que perdent ses soldats, en pour cent : les technologies de la Defense de la nation
+     * assiegee (lot 23g : Defense III -5 %, V -10 %), lues au debut du siege.
+     */
+    final int weakness;
 
     /** L'allie d'une coalition (lot 22l-2), -1 sans ; son contingent, ses soldats tombes. */
     final int ally;
@@ -213,6 +218,7 @@ final class Siege {
         this.allyForce = allyForce > 0 ? allyForce : 0;
         this.remembered = List.copyOf(remembered);
         this.lesson = lesson;
+        this.weakness = fr.atraxterra.dohy.faction.tech.TechPerks.of(target).soldierHp();
         this.bar = new ServerBossEvent(UUID.randomUUID(), Component.literal("Assaut " + traits.de()
                 + (this.ally >= 0 ? " et " + NationTraits.of(this.ally).de() : "")),
                 BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_10);
@@ -397,6 +403,10 @@ final class Siege {
                 + " de ton coffre. L'assaut part dans " + (CAMP_TICKS / 20) + " s.", ChatFormatting.RED);
         tell("Plan de bataille : " + found.summary() + ". Abats l'etendard, le commandant ou le tresorier.",
                 ChatFormatting.GRAY);
+        if (weakness > 0) {
+            tell("Tes technologies de Defense les affaiblissent : leurs soldats ont " + weakness + " % de vie en moins.",
+                    ChatFormatting.GREEN);
+        }
         if (ally >= 0) {
             tell(NationTraits.of(ally).verb("joint", "joignent") + " " + allyForce
                     + " soldats a l'assaut : la coalition attaque ensemble.", ChatFormatting.RED);
@@ -664,7 +674,7 @@ final class Siege {
         // Un soldat du contingent allie, a la part qu'il tient dans la reserve de ce role.
         int theirs = allyReserve.getOrDefault(role, 0);
         boolean fromAlly = theirs > 0 && random.nextInt(count) < theirs;
-        soldier.enlist(id, role, fromAlly ? ally : nation, random);
+        soldier.enlist(id, role, fromAlly ? ally : nation, random, weakness);
         if (!level.addFreshEntity(soldier)) {
             return null;
         }

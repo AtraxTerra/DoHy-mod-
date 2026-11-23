@@ -168,13 +168,17 @@ public class Soldier extends Monster implements RangedAttackMob {
         return siege == null ? null : Sieges.get(siege);
     }
 
-    /** Fait du soldat un {@code role} de la nation, pour ce siege : sa vie, ses armes, son nom. */
-    void enlist(UUID siegeId, SoldierRole role, int nation, RandomSource random) {
+    /**
+     * Fait du soldat un {@code role} de la nation, pour ce siege : sa vie (moins {@code weakness} pour
+     * cent, les technologies de la Defense de la nation assiegee), ses armes, son nom.
+     */
+    void enlist(UUID siegeId, SoldierRole role, int nation, RandomSource random, int weakness) {
         this.siege = siegeId;
         entityData.set(DATA_ROLE, role.ordinal());
         entityData.set(DATA_NATION, nation);
         entityData.set(DATA_VARIANT, random.nextInt(VARIANTS));
-        getAttribute(Attributes.MAX_HEALTH).setBaseValue(role.health());
+        getAttribute(Attributes.MAX_HEALTH).setBaseValue(
+                Math.max(1.0d, role.health() * (100 - Math.max(0, Math.min(50, weakness))) / 100.0d));
         getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(role.damage());
         getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(role.speed());
         if (role == SoldierRole.COMMANDANT) {

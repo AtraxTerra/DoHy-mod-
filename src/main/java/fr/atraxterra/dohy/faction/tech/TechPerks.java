@@ -13,10 +13,10 @@ import java.util.Map;
  * l'autre, les bonus du meme type s'ajoutent (la recherche +10 % de l'Industrie et +15 % du
  * Nucleaire font +25 %).
  *
- * <p>Ils agissent sur les systemes de DoHy, jamais sur le code de NTM. Ceux qui ne servent pas
- * encore attendent leur lot ({@link #pending(String)}) : les contenus du Nucleaire et de la Defense
- * (23g) ; l'Energie et l'Industrie sont en service depuis le lot 23e, la Chimie et l'Agriculture
- * depuis le 23f.
+ * <p>Ils agissent sur les systemes de DoHy, jamais sur le code de NTM. Tous sont en service depuis
+ * le lot 23g (l'Energie et l'Industrie au 23e, la Chimie et l'Agriculture au 23f, le Nucleaire et la
+ * Defense au 23g) ; un type que le moteur ne connait pas dit qu'il est « a venir »
+ * ({@link #pending(String)}).
  */
 public record TechPerks(Map<String, Integer> values) {
 
@@ -91,6 +91,16 @@ public record TechPerks(Map<String, Integer> values) {
         return Math.max(0, Math.min(200, value("agri_speed")));
     }
 
+    /** Les piles ajoutees au largage nucleaire qu'un membre de la nation ouvre le premier (Nucleaire II). */
+    public int nuclearLoot() {
+        return Math.max(0, Math.min(9, value("nuclear_loot")));
+    }
+
+    /** La vie que perdent les soldats des assauts des nations contre cette nation, en pour cent (Defense III et V). */
+    public int soldierHp() {
+        return Math.max(0, Math.min(50, value("soldier_hp")));
+    }
+
     public static TechPerks of(ServerPlayer player) {
         return of(FactionApi.data(player));
     }
@@ -117,8 +127,7 @@ public record TechPerks(Map<String, Integer> values) {
         return switch (type) {
             case "parallel", "research", "market_tax", "mines_money", "mines_ore", "oil_fields", "labs",
                  "research_per_country", "lab_energy", "machine_energy", "miner_money", "vault_slots",
-                 "farmer_xp", "agri_speed", "farmer_money" -> "";
-            case "nuclear_loot", "soldier_hp" -> "lot 23g";
+                 "farmer_xp", "agri_speed", "farmer_money", "nuclear_loot", "soldier_hp" -> "";
             default -> "a venir";
         };
     }
