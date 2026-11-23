@@ -9,6 +9,7 @@ import fr.atraxterra.dohy.client.ui.UiScreen;
 import fr.atraxterra.dohy.client.ui.shell.Shell;
 import fr.atraxterra.dohy.earth.EarthAtlas;
 import fr.atraxterra.dohy.earth.disaster.DisasterNet;
+import fr.atraxterra.dohy.faction.ClaimMap;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -33,6 +34,10 @@ import java.util.function.IntConsumer;
  * deplacer, la molette pour un zoom fluide (vers le curseur), clic droit pour
  * poser un point de passage, clic sur un point pour le modifier, C pour revenir
  * sur soi.
+ *
+ * <p>Le mode claim (la puce CLAIMS, en haut a droite) : un clic revendique ou rend
+ * le chunk vise, Maj + glisser choisit une zone (clic gauche pour la revendiquer,
+ * clic droit pour la rendre), Echap en sort. Le serveur decide (`ClaimMap`).
  */
 public final class AtlasScreen extends Screen {
 
@@ -63,6 +68,8 @@ public final class AtlasScreen extends Screen {
 
     private double centerX;
     private double centerZ;
+    /** Ouverte sur un point donne : l'ouverture ne la recentre pas sur le joueur. */
+    private boolean placed;
     private double scale = 2.0d;
     private double targetScale = 2.0d;
     private boolean anchored;
@@ -84,6 +91,17 @@ public final class AtlasScreen extends Screen {
     private boolean dragging;
     private double pressX;
     private double pressY;
+    /** Le mode claim : un clic revendique ou rend un chunk, Maj + glisser une zone. */
+    private boolean claiming;
+    /** Une zone en cours (Maj + glisser) : ses deux coins, en chunks, et ce qu'on en fera. */
+    private boolean selecting;
+    private boolean selectClaim;
+    private int selectX1;
+    private int selectZ1;
+    private int selectX2;
+    private int selectZ2;
+    /** Un clic gauche qui n'a pas encore glisse : relache, il revendique ou rend son chunk. */
+    private boolean clickCandidate;
 
     public AtlasScreen() {
         super(Component.literal("Atlas"));
@@ -96,10 +114,18 @@ public final class AtlasScreen extends Screen {
         this.targetScale = this.scale;
     }
 
+    /** La grande carte a ce zoom, centree sur ce point du monde (un lieu, un point de passage). */
+    public AtlasScreen(double scale, double x, double z) {
+        this(scale);
+        this.centerX = x;
+        this.centerZ = z;
+        this.placed = true;
+    }
+
     @Override
     protected void init() {
         LocalPlayer player = minecraft.player;
-        if (player != null && lastFrame < 0) {
+        if (player != null && lastFrame < 0 && !placed) {
             centerX = player.getX();
             centerZ = player.getZ();
         }
@@ -152,7 +178,8 @@ public final class AtlasScreen extends Screen {
         float du = design();
         AtlasView.Style style = new AtlasView.Style(5.6f * du, 3.6f * du, 5.0f * du, 0.45f);
         AtlasView.draw(graphics, font, map, frame,
-                new AtlasView.Layers(options.holders, options.marks, options.waypoints, true, options.disasters),
+                new AtlasView.Layers(options.holders, options.marks, options.waypoints, true, options.disasters,
+                        options.claims || claiming, true),
                 style, dimension);
         double mx = designX(mouseX);
         double my = designY(mouseY);
@@ -160,6 +187,9 @@ public final class AtlasScreen extends Screen {
         Focus focus = overPanel ? null : focus(frame, mouseX, mouseY, style, dimension, options);
         UiGraphics ui = new UiGraphics(graphics, font, mouseX, mouseY);
         Paint paint = new Paint(graphics, gui);
+        if (claiming) {
+            claimView(ui, paint, frame, mouseX, mouseY, overPanel, du);
+        }
         if (focus != null && focus.mark() != null) {
             // Le repere survole, en plus grand, avec son nom.
             float badge = AtlasView.badgeRadius(style, scale) * 1.3f;
@@ -251,11 +281,13 @@ public final class AtlasScreen extends Screen {
         veil(p, designHeight - 56.0f, 56.0f, 0.6f, false);
         layers(g, p, MARGIN, MARGIN + lift, mx, my, dimension, options);
         close(g, p, designWidth - MARGIN - CLOSE, MARGIN + lift, mx, my);
-        position(g, p, designWidth - MARGIN - CLOSE - 4.0f, MARGIN + lift, mx, my);
+        float chips = position(g, p, designWidth - MARGIN - CLOSE - 4.0f, MARGIN + lift, mx, my);
+        claimsChip(g, p, chips - 4.0f, MARGIN + lift, mx, my);
         float bottom = designHeight - MARGIN - lift;
         info(g, p, frame, focus, MARGIN, bottom, dimension, mouseX, mouseY, mx, my);
         float zoomLeft = zoom(g, p, designWidth - MARGIN, bottom, frame, mx, my);
         hint(g, p, MARGIN + INFO + 8.0f, zoomLeft - 8.0f, bottom);
+        toast(g, p, MARGIN + INFO + 8.0f, zoomLeft - 8.0f, bottom);
         pose.popMatrix();
     }
 
@@ -299,7 +331,7 @@ public final class AtlasScreen extends Screen {
     private void layers(UiGraphics g, Paint p, float x, float y, double mx, double my, String dimension,
                         AtlasClient.Options options) {
         float inner = PANEL - 20.0f;
-        float height = 38.0f + 14.0f + ROW * 5 + 10.0f + 14.0f + ROW + 2.0f + 2 * 16.7f + 6.0f;
+        float height = 38.0f + 14.0f + ROW * 6 + 10.0f + 14.0f + ROW + 2.0f + 2 * 16.7f + 6.0f;
         card(p, x, y, PANEL, height);
         g.textShaded(Ui.TITLE, "ATLAS", x + 10.0f, y + 8.7f, 16.0f, Ui.Theme.RED, Ui.Theme.RED_DD, 1.33f);
         g.text(Ui.BODY, place(dimension), x + 10.0f, y + 27.3f, 5.0f, Ui.Theme.MUTED);
@@ -316,6 +348,8 @@ public final class AtlasScreen extends Screen {
                 () -> options.markers = !options.markers, mx, my, "markers");
         rowY = toggle(g, p, x + 10.0f, rowY, inner, "Catastrophes", options.disasters,
                 () -> options.disasters = !options.disasters, mx, my, "disasters");
+        rowY = toggle(g, p, x + 10.0f, rowY, inner, "Claims", options.claims,
+                () -> options.claims = !options.claims, mx, my, "claims");
         rowY += 10.0f;
         Shell.section(g, p, x + 10.0f, rowY, inner, "craft", "MINIMAP", "");
         rowY += 14.0f;
@@ -436,11 +470,11 @@ public final class AtlasScreen extends Screen {
         }));
     }
 
-    /** La puce de ta position, a gauche de la croix : un clic recentre la carte. */
-    private void position(UiGraphics g, Paint p, float right, float y, double mx, double my) {
+    /** La puce de ta position, a gauche de la croix : un clic recentre la carte ; rend son bord gauche. */
+    private float position(UiGraphics g, Paint p, float right, float y, double mx, double my) {
         LocalPlayer player = minecraft.player;
         if (player == null) {
-            return;
+            return right;
         }
         String value = player.getBlockX() + "  " + player.getBlockY() + "  " + player.getBlockZ();
         float width = Math.max(g.width(Ui.WIDE, value, 6.3f), g.width(Ui.PIXEL, "TA POSITION", 3.3f)) + 13.4f;
@@ -459,6 +493,48 @@ public final class AtlasScreen extends Screen {
             UiScreen.click(1.0f);
             recenter();
         }));
+        return x;
+    }
+
+    /** La puce des claims, a gauche de ta position : ton compte, et le mode claim d'un clic. */
+    private void claimsChip(UiGraphics g, Paint p, float right, float y, double mx, double my) {
+        boolean nation = AtlasClaims.nation();
+        String value = !AtlasClaims.known() ? "..." : nation ? AtlasClaims.count() + " / " + AtlasClaims.cap()
+                : "SANS NATION";
+        String label = claiming ? "MODE CLAIM" : "CLAIMS";
+        float width = Math.max(g.width(Ui.WIDE, value, 6.3f), g.width(Ui.PIXEL, label, 3.3f)) + 13.4f;
+        float x = right - width;
+        float top = y - 2.0f;
+        float height = 21.3f;
+        boolean over = mx >= x && my >= top && mx < right && my < top + height;
+        float hover = hover("claims", over);
+        float on = animated("claims:on", claiming ? 1.0f : 0.0f, claiming ? 1.0f : 0.0f);
+        p.shadow(x + 3, top + 5, width - 6, height - 5, 10.0f,
+                Paint.alpha(Paint.mix(Ui.Theme.SHADOW, Ui.Theme.RED, on), 0.5f));
+        if (on > 0.01f) {
+            p.glow(x + width / 2.0f, top + height / 2.0f, width * 0.7f, Paint.alpha(Ui.Theme.RED, 0.22f * on));
+        }
+        p.framed(x, top, width, height, 4.7f,
+                Paint.mix(Paint.mix(Ui.Theme.CARD, Ui.Theme.CARD_HOVER, hover), Ui.Theme.RED_D, on),
+                Paint.mix(Paint.mix(0xFF2E3035, 0xFF45484F, hover), Ui.Theme.RED_LIGHT, on), 1);
+        g.text(Ui.PIXEL, label, x + 6.7f, top + 5.6f, 3.3f, Paint.mix(Ui.Theme.MUTED, Ui.Theme.TEXT, on));
+        g.text(Ui.WIDE, value, x + 6.7f, top + 11.4f, 6.3f,
+                nation ? Paint.mix(AtlasView.CLAIM_MINE, Ui.Theme.TEXT, on) : Ui.Theme.TEXT2);
+        panels.add(new float[] {x, top, width, height});
+        hits.add(new Hit(x, top, width, height, () -> {
+            UiScreen.click(claiming ? 0.9f : 1.1f);
+            toggleClaiming();
+        }));
+    }
+
+    private void toggleClaiming() {
+        if (!claiming && !AtlasClaims.nation()) {
+            AtlasClaims.tell("Fonde d'abord ta nation (/f create) pour revendiquer des chunks", false);
+            return;
+        }
+        claiming = !claiming;
+        selecting = false;
+        clickCandidate = false;
     }
 
     /** La carte d'information en bas a gauche : le lieu vise (ou le tien), son pays, ce qui s'y trouve. */
@@ -616,12 +692,16 @@ public final class AtlasScreen extends Screen {
 
     /** Les gestes, en petit au milieu du bas, s'il reste la place. */
     private void hint(UiGraphics g, Paint p, float left, float right, float bottom) {
-        String text = "Glisser : se deplacer  \u00B7  Molette : zoom  \u00B7  Clic droit : poser un point"
+        String text = claiming
+                ? "Clic : revendiquer ou rendre  \u00B7  Maj + glisser : une zone (clic droit : la rendre)"
+                + "  \u00B7  Echap : quitter"
+                : "Glisser : se deplacer  \u00B7  Molette : zoom  \u00B7  Clic droit : poser un point"
                 + "  \u00B7  C : recentrer";
         float size = 4.6f;
         float width = g.width(Ui.BODY, text, size);
         if (width + 16.0f > right - left) {
-            text = "Clic droit : poser un point";
+            text = claiming ? "Clic : revendiquer ou rendre  \u00B7  Maj + glisser : une zone"
+                    : "Clic droit : poser un point";
             width = g.width(Ui.BODY, text, size);
             if (width + 16.0f > right - left) {
                 return;
@@ -633,10 +713,191 @@ public final class AtlasScreen extends Screen {
         g.text(Ui.BODY, text, center - width / 2.0f, bottom - height + 3.4f, size, Ui.Theme.MUTED);
     }
 
+    /** La reponse a une demande de claims, au-dessus des gestes, qui s'efface en quelques secondes. */
+    private void toast(UiGraphics g, Paint p, float left, float right, float bottom) {
+        String text = AtlasClaims.toast();
+        double age = AtlasClaims.toastAge();
+        if (text.isEmpty() || age < 0.0d || age > AtlasClaims.TOAST_SECONDS) {
+            return;
+        }
+        float alpha = (float) Math.max(0.0d, Math.min(1.0d, Math.min(age / 0.15d, (AtlasClaims.TOAST_SECONDS - age)
+                / 0.6d)));
+        float size = 5.0f;
+        String fitted = g.fit(Ui.BOLD, text, size, Math.max(40.0f, right - left - 30.0f));
+        float width = g.width(Ui.BOLD, fitted, size);
+        float center = (left + right) / 2.0f;
+        float height = 14.0f;
+        float y = bottom - 11.3f - 5.0f - height;
+        int accent = AtlasClaims.toastOk() ? Ui.Theme.GREEN_L : Ui.Theme.RED;
+        p.shadow(center - width / 2.0f - 8.0f, y + 3.0f, width + 16.0f, height - 3.0f, 8.0f,
+                Paint.alpha(Ui.Theme.SHADOW, 0.5f * alpha));
+        p.framed(center - width / 2.0f - 11.0f, y, width + 22.0f, height, height / 2.0f,
+                Paint.alpha(0xFF141518, 0.94f * alpha), Paint.alpha(Paint.mix(0xFF2E3035, accent, 0.55f), alpha), 1);
+        p.dot(center - width / 2.0f - 4.6f, y + height / 2.0f, 1.9f, Paint.alpha(accent, alpha));
+        g.text(Ui.BOLD, fitted, center - width / 2.0f + 0.6f, y + 4.7f, size, Paint.alpha(Ui.Theme.TEXT, alpha));
+    }
+
+    // -- Le mode claim ----------------------------------------------------------------------------
+
+    private int chunkX(AtlasView.Frame frame, double screenX) {
+        return (int) Math.floor(frame.worldX(screenX) / 16.0d);
+    }
+
+    private int chunkZ(AtlasView.Frame frame, double screenY) {
+        return (int) Math.floor(frame.worldZ(screenY) / 16.0d);
+    }
+
+    /** A portee de la carte : a {@code radius} chunks au plus de celui ou tu te tiens. */
+    private boolean inRange(int cx, int cz) {
+        LocalPlayer player = minecraft.player;
+        return player != null && Math.max(Math.abs(cx - (player.getBlockX() >> 4)),
+                Math.abs(cz - (player.getBlockZ() >> 4))) <= AtlasClaims.radius();
+    }
+
+    /**
+     * Le mode claim sur la carte : la grille des chunks (des qu'un chunk fait cinq pixels), le carre
+     * de ta portee en pointilles, le chunk vise, ou la zone choisie et son nombre de chunks.
+     */
+    private void claimView(UiGraphics ui, Paint paint, AtlasView.Frame frame, int mouseX, int mouseY,
+                           boolean overPanel, float du) {
+        double chunk = 16.0d / scale;
+        float thin = 1.0f / gui;
+        if (chunk >= 5.0d) {
+            int color = Paint.alpha(0xFFFFFFFF, chunk >= 12.0d ? 0.13f : 0.07f);
+            long fromX = (long) Math.floor(frame.worldX(0) / 16.0d);
+            long toX = (long) Math.floor(frame.worldX(width) / 16.0d) + 1;
+            for (long cx = fromX; cx <= toX; cx++) {
+                paint.rect((float) frame.screenX(cx * 16.0d), 0.0f, thin, height, color);
+            }
+            long fromZ = (long) Math.floor(frame.worldZ(0) / 16.0d);
+            long toZ = (long) Math.floor(frame.worldZ(height) / 16.0d) + 1;
+            for (long cz = fromZ; cz <= toZ; cz++) {
+                paint.rect(0.0f, (float) frame.screenY(cz * 16.0d), width, thin, color);
+            }
+        }
+        LocalPlayer player = minecraft.player;
+        if (player != null) {
+            int radius = AtlasClaims.radius();
+            int pcx = player.getBlockX() >> 4;
+            int pcz = player.getBlockZ() >> 4;
+            float x0 = (float) frame.screenX((pcx - radius) * 16.0d);
+            float y0 = (float) frame.screenY((pcz - radius) * 16.0d);
+            float x1 = (float) frame.screenX((pcx + radius + 1) * 16.0d);
+            float y1 = (float) frame.screenY((pcz + radius + 1) * 16.0d);
+            int edge = Paint.alpha(0xFFFFFFFF, 0.55f);
+            paint.dashes(x0, y0, x1 - x0, 3.0f * du, 2.0f * du, edge);
+            paint.dashes(x0, y1, x1 - x0, 3.0f * du, 2.0f * du, edge);
+            paint.dashesV(x0, y0, y1 - y0, 3.0f * du, 2.0f * du, edge);
+            paint.dashesV(x1, y0, y1 - y0, 3.0f * du, 2.0f * du, edge);
+        }
+        if (selecting) {
+            int minX = Math.min(selectX1, selectX2);
+            int maxX = Math.max(selectX1, selectX2);
+            int minZ = Math.min(selectZ1, selectZ2);
+            int maxZ = Math.max(selectZ1, selectZ2);
+            float x0 = (float) frame.screenX(minX * 16.0d);
+            float y0 = (float) frame.screenY(minZ * 16.0d);
+            float x1 = (float) frame.screenX((maxX + 1) * 16.0d);
+            float y1 = (float) frame.screenY((maxZ + 1) * 16.0d);
+            int count = (maxX - minX + 1) * (maxZ - minZ + 1);
+            int color = count > ClaimMap.BATCH ? Ui.Theme.MUTED : selectClaim ? Ui.Theme.GREEN_L : Ui.Theme.RED;
+            box(paint, x0, y0, x1, y1, Paint.alpha(color, 0.24f), color, Math.max(thin, 1.0f));
+            String text = count + (count == 1 ? " chunk" : " chunks") + (count > ClaimMap.BATCH
+                    ? " (" + ClaimMap.BATCH + " au plus)" : selectClaim ? " a revendiquer" : " a rendre");
+            AtlasView.label(ui, paint, text, (x0 + x1) / 2.0f, y1 + 2.5f * du, 5.0f * du, color);
+            return;
+        }
+        if (overPanel || mouseX < 0 || mouseY < 0 || mouseX >= width || mouseY >= height) {
+            return;
+        }
+        int cx = chunkX(frame, mouseX);
+        int cz = chunkZ(frame, mouseY);
+        float x0 = (float) frame.screenX(cx * 16.0d);
+        float y0 = (float) frame.screenY(cz * 16.0d);
+        float x1 = (float) frame.screenX((cx + 1) * 16.0d);
+        float y1 = (float) frame.screenY((cz + 1) * 16.0d);
+        boolean mine = AtlasClaims.mine(dimension(), cx, cz);
+        boolean free = !mine && AtlasClaims.zone(dimension(), cx, cz) == null && inRange(cx, cz);
+        int color = mine ? Ui.Theme.RED : free ? Ui.Theme.GREEN_L : Ui.Theme.MUTED;
+        box(paint, x0, y0, x1, y1, Paint.alpha(color, 0.18f), Paint.alpha(color, 0.9f), Math.max(thin, 1.0f));
+    }
+
+    /** Un rectangle plein et son contour. */
+    private static void box(Paint paint, float x0, float y0, float x1, float y1, int fill, int line, float thick) {
+        float w = Math.max(thick, x1 - x0);
+        float h = Math.max(thick, y1 - y0);
+        paint.rect(x0, y0, w, h, fill);
+        paint.rect(x0, y0, w, thick, line);
+        paint.rect(x0, y0 + h - thick, w, thick, line);
+        paint.rect(x0, y0, thick, h, line);
+        paint.rect(x0 + w - thick, y0, thick, h, line);
+    }
+
+    /** Ce que la carte sait du chunk vise, pour la carte d'information. */
+    private Focus claimFocus(AtlasView.Frame frame, int mouseX, int mouseY, String dimension) {
+        int cx = chunkX(frame, mouseX);
+        int cz = chunkZ(frame, mouseY);
+        String title = "Chunk " + cx + ", " + cz;
+        if (AtlasClaims.mine(dimension, cx, cz)) {
+            return new Focus(title, "A ta nation \u00B7 clic pour le rendre", AtlasView.CLAIM_MINE, ItemStack.EMPTY,
+                    null, null);
+        }
+        ClaimMap.Zone zone = AtlasClaims.zone(dimension, cx, cz);
+        if (zone != null) {
+            return new Focus(title, zone.label(), zone.kind() == ClaimMap.OTHER_NATION ? AtlasView.CLAIM_OTHER
+                    : AtlasView.CLAIM_ENEMY, ItemStack.EMPTY, null, null);
+        }
+        if (!inRange(cx, cz)) {
+            return new Focus(title, "Hors de portee : " + AtlasClaims.radius() * 16 + " blocs de toi au plus",
+                    Ui.Theme.MUTED, ItemStack.EMPTY, null, null);
+        }
+        return new Focus(title, "Libre \u00B7 clic pour le revendiquer", Ui.Theme.GREEN_L, ItemStack.EMPTY, null,
+                null);
+    }
+
+    /** Un clic sur un chunk : le rendre s'il est a toi, le revendiquer sinon. */
+    private void clickChunk(AtlasView.Frame frame, double screenX, double screenY) {
+        String dimension = dimension();
+        int cx = chunkX(frame, screenX);
+        int cz = chunkZ(frame, screenY);
+        if (AtlasClaims.mine(dimension, cx, cz)) {
+            UiScreen.click(0.9f);
+            AtlasClaims.request(dimension, cx, cz, cx, cz, false);
+            return;
+        }
+        ClaimMap.Zone zone = AtlasClaims.zone(dimension, cx, cz);
+        if (zone != null) {
+            AtlasClaims.tell(zone.label() + " tient ce chunk", false);
+            return;
+        }
+        if (!inRange(cx, cz)) {
+            AtlasClaims.tell("Trop loin : la carte revendique a " + AtlasClaims.radius() * 16 + " blocs de toi au plus",
+                    false);
+            return;
+        }
+        UiScreen.click(1.1f);
+        AtlasClaims.request(dimension, cx, cz, cx, cz, true);
+    }
+
+    /** Une zone choisie a Maj + glisser : la demande part, si elle n'est pas trop grande. */
+    private void submitSelection() {
+        long count = (long) (Math.abs(selectX2 - selectX1) + 1) * (Math.abs(selectZ2 - selectZ1) + 1);
+        if (count > ClaimMap.BATCH) {
+            AtlasClaims.tell("Une zone de " + ClaimMap.BATCH + " chunks au plus (8 sur 8) : celle-ci en compte "
+                    + count, false);
+            return;
+        }
+        UiScreen.click(selectClaim ? 1.1f : 0.9f);
+        AtlasClaims.request(dimension(), selectX1, selectZ1, selectX2, selectZ2, selectClaim);
+    }
+
     // -- Ce que vise le curseur ----------------------------------------------------------------------
 
     private Focus focus(AtlasView.Frame frame, int mouseX, int mouseY, AtlasView.Style style, String dimension,
                         AtlasClient.Options options) {
+        if (claiming) {
+            return claimFocus(frame, mouseX, mouseY, dimension);
+        }
         float badge = AtlasView.badgeRadius(style, scale);
         double reach = badge + 1.5d;
         if (options.waypoints) {
@@ -773,6 +1034,25 @@ public final class AtlasScreen extends Screen {
         String dimension = dimension();
         AtlasView.Frame frame = frame();
         float du = design();
+        if (claiming) {
+            boolean shift = (UiScreen.modifiers() & GLFW.GLFW_MOD_SHIFT) != 0;
+            if (shift && (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT
+                    || event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
+                selecting = true;
+                selectClaim = event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT;
+                selectX1 = selectX2 = chunkX(frame, event.x());
+                selectZ1 = selectZ2 = chunkZ(frame, event.y());
+                return true;
+            }
+            if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                dragging = true;
+                clickCandidate = true;
+                pressX = event.x();
+                pressY = event.y();
+                returning = false;
+                return true;
+            }
+        }
         Waypoints.Point point = AtlasClient.options().waypoints
                 ? pointAt(frame, event.x(), event.y(), dimension, 3.6f * du + 2.5d) : null;
         if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
@@ -803,6 +1083,15 @@ public final class AtlasScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (selecting) {
+            AtlasView.Frame frame = frame();
+            selectX2 = chunkX(frame, event.x());
+            selectZ2 = chunkZ(frame, event.y());
+            return true;
+        }
+        if (clickCandidate && Math.hypot(event.x() - pressX, event.y() - pressY) > 3.0d) {
+            clickCandidate = false;
+        }
         if (dragging && event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             centerX -= dragX * scale;
             centerZ -= dragY * scale;
@@ -817,6 +1106,19 @@ public final class AtlasScreen extends Screen {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
+        if (selecting) {
+            selecting = false;
+            dragging = false;
+            submitSelection();
+            return true;
+        }
+        if (claiming && clickCandidate && event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            clickCandidate = false;
+            dragging = false;
+            clickChunk(frame(), event.x(), event.y());
+            return true;
+        }
+        clickCandidate = false;
         dragging = false;
         return super.mouseReleased(event);
     }
@@ -835,6 +1137,10 @@ public final class AtlasScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
+        if (claiming && event.key() == GLFW.GLFW_KEY_ESCAPE) {
+            toggleClaiming();
+            return true;
+        }
         if (event.key() == GLFW.GLFW_KEY_C) {
             recenter();
             return true;

@@ -505,6 +505,46 @@ Une carte faite maison, à la place de Xaero ou de JourneyMap (`client/atlas/`),
   `dohy_atlas/<monde>/points.json`.
 - Si Xaero's World Map reste installé, sa carte prend aussi **M** : changer une des deux touches.
 
+**Le monde entier et les claims (2026-11-23)** — à la demande : « Ajoute un système de claim
+directement sur la worldmap » et « je veux que la map soit entièrement révélée, pas au fur et à
+mesure que j'explore ».
+
+- **Le monde entier, révélé d'avance** (`atlas/WorldTiles`) : le serveur lit ses propres fichiers
+  de région (`RegionReader` ; `ChunkNbt` n'en lit que les sections, leur palette et leurs indices,
+  et saute la lumière, les biomes et les entités ; `ChunkColors`, les mêmes couleurs et le même
+  relief que le relevé du client, `MapShade`) et en tire les dalles de la carte, aux trois échelles
+  (un pixel par bloc, un pour 4, un pour 16). Un fil à part, qui se repose un tiers du temps qu'il
+  travaille.
+  - **Le passage de fond** : dès le démarrage du serveur, toutes les régions de l'overworld qui
+    n'ont pas de rendu à jour, une à une, de la plus proche du joueur connecté à la plus loin ;
+    puis, toutes les dix minutes, celles dont le fichier a changé. Quand un joueur est là, le fil
+    se repose autant qu'il travaille. Sur la Terre (3 936 régions), le premier passage demande de
+    l'ordre d'une demi-heure à une heure (banc en CI : environ 0,5 ms par chunk plein, soit une
+    demi-seconde par région) ; la console le dit au début et à la fin, avec le temps réel. Les
+    autres dimensions se rendent à la demande.
+  - Les dalles moyennes et d'ensemble sont gardées dans `<monde>/dohy/atlas/<dimension>/` (de
+    l'ordre de 50 à 100 Mo pour la Terre) et refaites quand une région a changé, au plus toutes
+    les dix minutes ; les dalles fines ne vivent qu'en mémoire.
+  - La grande carte demande les dalles qu'elle voit, six à la fois, du centre vers les bords
+    (`client/atlas/AtlasRemote`) ; une dalle pas encore rendue l'est tout de suite, avant le
+    passage de fond. Le client les garde dans `dohy_atlas/<monde>/<dimension>/` (toute la Terre
+    tient en 60 dalles d'ensemble) et les dessine **sous** son propre relevé : ce que tu explores
+    passe devant, à jour de ce que tu construis. La minimap montre ce que la grande carte a reçu.
+    Sans le mod sur le serveur, la carte reste celle de l'exploration.
+- **Le calque Claims** (`faction/ClaimMap`, envoyé à la connexion puis chaque seconde s'il a
+  changé) : tes chunks en or (le bord seulement sur le pourtour du territoire), les **bases
+  ennemies** actives et les **places fortes** en rouge, les nations des autres joueurs connectés
+  en rose. Sur la grande carte et sur la minimap.
+- **Le mode claim** : la puce **CLAIMS** en haut à droite de la grande carte (« 12 / 30 » : tes
+  claims et ta limite) l'ouvre. La grille des chunks apparaît dès 5 pixels par chunk, un carré
+  pointillé marque la portée (**64 chunks**, 1 024 blocs autour de toi), le chunk sous la souris
+  se teinte (vert : libre, rouge : à toi, gris : hors de portée ou tenu). Un **clic** revendique un chunk libre ou
+  rend un des tiens ; **Maj + glisser** choisit une zone (clic gauche pour revendiquer, clic droit
+  pour rendre), **64 chunks** au plus à la fois ; glisser sans Maj déplace toujours la carte ;
+  **Échap** sort du mode. Le serveur refait toutes les vérifications de `/f claim` (dimension,
+  limite de la nation, chunk d'un autre, base ennemie…) par `FactionApi.claimChunk`, s'arrête à
+  la limite et répond d'une ligne (« 9 chunks revendiqués (14 / 30) »).
+
 ### La faune (2026-11-13)
 
 Le jeu pose les animaux paisibles surtout à la génération des chunks ; ensuite, il n'en ajoute que

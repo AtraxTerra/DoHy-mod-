@@ -284,6 +284,26 @@ public final class FactionApi {
         if (chunk == null) {
             return "Chunk introuvable";
         }
+        return claim(player, data, level, chunk);
+    }
+
+    /**
+     * Revendique un chunk de ce monde sans s'y tenir : la grande carte de l'atlas (`ClaimMap`). Le
+     * chunk est charge s'il ne l'est pas, pour y noter son proprietaire ; les regles sont celles de
+     * {@link #claim(ServerPlayer)}.
+     */
+    public static String claimChunk(ServerPlayer player, ServerLevel level, int x, int z) {
+        FactionData data = data(player);
+        if (!data.exists()) {
+            return "Fonde d'abord ta nation";
+        }
+        if (!claimable(level)) {
+            return "On ne revendique pas dans cette dimension";
+        }
+        return claim(player, data, level, level.getChunk(x, z));
+    }
+
+    private static String claim(ServerPlayer player, FactionData data, ServerLevel level, LevelChunk chunk) {
         ClaimOwner owner = chunk.getData(Factions.CLAIM.get());
         ChunkPos pos = chunk.getPos();
         if (owner.ownedBy(player.getUUID())) {

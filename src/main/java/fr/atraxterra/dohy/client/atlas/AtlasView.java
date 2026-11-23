@@ -5,6 +5,7 @@ import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.earth.EarthAtlas;
+import fr.atraxterra.dohy.faction.ClaimMap;
 import fr.atraxterra.dohy.earth.disaster.DisasterNet;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -14,6 +15,7 @@ import org.joml.Matrix3x2fStack;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Le dessin d'une vue de l'atlas dans un rectangle de l'ecran : le globe (s'il y
@@ -47,9 +49,18 @@ final class AtlasView {
             Map.entry("tungstene", 0xFF4A4E58), Map.entry("fluorine", 0xFFB9F2E8), Map.entry("soufre", 0xFFF2D43A),
             Map.entry("salpetre", 0xFFE8E4DA), Map.entry("beryllium", 0xFF7D8A52), Map.entry("amiante", 0xFFCFD3C4));
 
-    /** Ce que la vue montre. */
-    record Layers(boolean holders, boolean marks, boolean waypoints, boolean labels, boolean disasters) {
+    /**
+     * Ce que la vue montre ; {@code reveal} : elle demande au serveur le monde qu'elle voit (la grande
+     * carte seulement : la minimap montre ce qui a ete recu).
+     */
+    record Layers(boolean holders, boolean marks, boolean waypoints, boolean labels, boolean disasters,
+                  boolean claims, boolean reveal) {
     }
+
+    /** Les claims de ta nation (l'or des pays tenus), ceux des bases ennemies et des autres nations. */
+    static final int CLAIM_MINE = AtlasGlobe.MINE;
+    static final int CLAIM_ENEMY = 0xFFE5484D;
+    static final int CLAIM_OTHER = AtlasGlobe.OTHER_PLAYER;
 
     /**
      * La taille des reperes, en pixels d'interface : le rayon des pastilles des
@@ -159,6 +170,7 @@ final class AtlasView {
         }
         loads = 0;
         if (map != null) {
+            revealed(graphics, frame, map, layers.reveal(), dimension, left, top, right, bottom);
             terrain(graphics, frame, map, left, top, right, bottom);
         }
         if (globe != null && layers.holders()) {
@@ -169,6 +181,9 @@ final class AtlasView {
         }
         if (overworld && layers.disasters()) {
             disasterAreas(graphics, frame, style, left, top, right, bottom);
+        }
+        if (layers.claims()) {
+            claims(graphics, frame, dimension, left, top, right, bottom);
         }
         pose.popMatrix();
         UiGraphics ui = new UiGraphics(graphics, font, 0, 0);
@@ -183,6 +198,66 @@ final class AtlasView {
             waypoints(graphics, ui, paint, frame, style, dimension, layers.labels());
         }
         graphics.disableScissor();
+    }
+
+    // -- Les claims ----------------------------------------------------------------------------------
+
+    /**
+     * Les chunks revendiques : un voile de la couleur du proprietaire et un trait sur le bord du
+     * territoire (pas entre deux chunks du meme). De loin, le trait se fond dans le voile.
+     */
+    private static void claims(GuiGraphicsExtractor graphics, Frame frame, String dimension, int left, int top,
+                               int right, int bottom) {
+        int line = Math.max(1, Math.round(frame.unit));
+        for (ClaimMap.Zone zone : AtlasClaims.zones()) {
+            if (!zone.dimension().equals(dimension)) {
+                continue;
+            }
+            int color = zone.kind() == ClaimMap.OTHER_NATION ? CLAIM_OTHER : CLAIM_ENEMY;
+            int x0 = Math.round(frame.physX(zone.minX() * 16.0d));
+            int y0 = Math.round(frame.physY(zone.minZ() * 16.0d));
+            int x1 = Math.round(frame.physX((zone.maxX() + 1) * 16.0d));
+            int y1 = Math.round(frame.physY((zone.maxZ() + 1) * 16.0d));
+            if (x1 < left || x0 > right || y1 < top || y0 > bottom) {
+                continue;
+            }
+            graphics.fill(x0, y0, Math.max(x1, x0 + 1), Math.max(y1, y0 + 1), Paint.alpha(color, 0.26f));
+            if (x1 - x0 > 3 * line) {
+                graphics.fill(x0, y0, x1, y0 + line, color);
+                graphics.fill(x0, y1 - line, x1, y1, color);
+                graphics.fill(x0, y0, x0 + line, y1, color);
+                graphics.fill(x1 - line, y0, x1, y1, color);
+            }
+        }
+        Set<Long> mine = AtlasClaims.mine(dimension);
+        int fill = Paint.alpha(CLAIM_MINE, 0.30f);
+        for (long key : mine) {
+            int cx = (int) (key >> 32);
+            int cz = (int) key;
+            int x0 = Math.round(frame.physX(cx * 16.0d));
+            int y0 = Math.round(frame.physY(cz * 16.0d));
+            int x1 = Math.round(frame.physX((cx + 1) * 16.0d));
+            int y1 = Math.round(frame.physY((cz + 1) * 16.0d));
+            if (x1 < left || x0 > right || y1 < top || y0 > bottom) {
+                continue;
+            }
+            graphics.fill(x0, y0, Math.max(x1, x0 + 1), Math.max(y1, y0 + 1), fill);
+            if (x1 - x0 <= 3 * line) {
+                continue;
+            }
+            if (!mine.contains(AtlasClaims.key(cx, cz - 1))) {
+                graphics.fill(x0, y0, x1, y0 + line, CLAIM_MINE);
+            }
+            if (!mine.contains(AtlasClaims.key(cx, cz + 1))) {
+                graphics.fill(x0, y1 - line, x1, y1, CLAIM_MINE);
+            }
+            if (!mine.contains(AtlasClaims.key(cx - 1, cz))) {
+                graphics.fill(x0, y0, x0 + line, y1, CLAIM_MINE);
+            }
+            if (!mine.contains(AtlasClaims.key(cx + 1, cz))) {
+                graphics.fill(x1 - line, y0, x1, y1, CLAIM_MINE);
+            }
+        }
     }
 
     // -- Le fond -------------------------------------------------------------------------------------
@@ -340,6 +415,38 @@ final class AtlasView {
             level(graphics, frame, levels[chosen + 1], false, left, top, right, bottom);
         }
         level(graphics, frame, levels[chosen], true, left, top, right, bottom);
+    }
+
+    /**
+     * Le monde tel que le serveur le connait, sous ce que tu as explore : le niveau qui convient au
+     * zoom, le plus grossier dessous en attendant ; et la demande de ce qui manque.
+     */
+    private static void revealed(GuiGraphicsExtractor graphics, Frame frame, AtlasMap map, boolean request,
+                                 String dimension, int left, int top, int right, int bottom) {
+        AtlasTiles[] levels = {map.revealFine, map.revealMiddle, map.revealOverview};
+        int chosen = choose(frame, levels);
+        if (chosen < levels.length - 1) {
+            level(graphics, frame, levels[chosen + 1], false, left, top, right, bottom);
+        }
+        level(graphics, frame, levels[chosen], true, left, top, right, bottom);
+        if (request) {
+            AtlasRemote.want(dimension, levels[chosen], frame);
+        }
+    }
+
+    /** Le niveau le plus fin que le zoom demande et dont les dalles visibles tiennent en memoire. */
+    private static int choose(Frame frame, AtlasTiles[] levels) {
+        double blocks = frame.blocks();
+        for (int index = 0; index < levels.length - 1; index++) {
+            AtlasTiles level = levels[index];
+            if (blocks > level.scale() * 3.0d) {
+                continue;
+            }
+            if (count(frame, level) <= level.budget()) {
+                return index;
+            }
+        }
+        return levels.length - 1;
     }
 
     private static long count(Frame frame, AtlasTiles level) {

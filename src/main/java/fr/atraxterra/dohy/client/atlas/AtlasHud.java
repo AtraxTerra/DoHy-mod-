@@ -90,7 +90,8 @@ final class AtlasHud implements GuiLayer {
         AtlasView.Frame frame = new AtlasView.Frame(mapX, mapY, size, size, player.getX(), player.getZ(),
                 options.minimapScale, unit);
         AtlasView.draw(graphics, minecraft.font, map, frame,
-                new AtlasView.Layers(options.holders, options.marks, options.waypoints, false, options.disasters),
+                new AtlasView.Layers(options.holders, options.marks, options.waypoints, false, options.disasters,
+                        options.claims, false),
                 AtlasView.Style.minimap(), dimension);
         graphics.nextStratum();
         // Les coins arrondis de la carte, peints du fond de la carte, et un filet sombre.
