@@ -274,6 +274,12 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   demande l'Industrie III, le film d'algues (feuille de sel de Laythe) passe à l'Espace V. Bonus en
   service : XP (Agriculture II) et argent (IV) du Fermier, machines agricoles plus rapides (III et
   V : automates, tracteur, bots de farming).
+- **Lot 23g — Nucléaire et Défense** (2026-11-23, `docs/NATION.md`, « Nucléaire et Défense ») : les
+  deux domaines dans l'ordre de fabrication de NTM (0 problème au lieu de 58) — la ZIRNOX au RBMK,
+  la forge à plasma avant la fusion (la boucle Industrie VI / Nucléaire VI est cassée), les
+  tourelles avec l'Industrie III ; un palier d'office peut garder une machine que seul un autre
+  domaine fait fabriquer. Bonus en service, tous désormais : une pile de plus aux largages
+  nucléaires (Nucléaire II), soldats des assauts affaiblis (Défense III et V).
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 

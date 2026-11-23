@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Les technologies de la nation se fabriquent-elles dans l'ordre ? (chapitre 23, lots 23e a 23i)
 
-    python3 -I tools/tech_crafting.py <hbm.jar> [<hbmspace.jar> <leafia.jar>] [--domaine energie,industrie]
+    python3 -I tools/tech_crafting.py <hbm.jar> [<hbmspace.jar> <leafia.jar>] [--domaine energie,industrie] [--details]
 
 Les trois mods de NTM sont lus comme des archives (recettes et tags de leurs dossiers data), rien
 n'est execute. Pour chaque palier de chaque domaine (data/tech/*.json), le script se place dans
@@ -10,14 +10,17 @@ paliers d'office — et verifie :
 
   - que les pieces de son cout se fabriquent dans cet etat (il faut les avoir pour lancer la
     recherche) ;
-  - que ses machines se fabriquent une fois le palier acquis.
+  - que ses machines se fabriquent une fois le palier acquis. Un palier d'office ne verrouille rien :
+    une de ses machines peut attendre le palier d'un autre domaine (elle se debloque des qu'on sait la
+    faire, --details les liste), jamais un palier plus haut du sien.
 
 Une recette se fait si sa machine (assembleuse, soudeuse, enclume du bon niveau...) est posable dans
 cet etat et fabricable, si chacune de ses cases a un ingredient fabricable (une case accepte souvent
 plusieurs objets, un tag), et si ses fluides coulent. Les objets du jeu de base, et ceux qu'aucune
 recette ne produit (minerais, butin), sont supposes disponibles — sauf ce qui ne se trouve que sur
-une autre planete, qui attend Espace III, et ce que le code de NTM fabrique (CODE_MADE : les pieces
-coulees par la fonderie, les pastilles des reacteurs), qui attend sa machine. Les recettes de
+une autre planete, qui attend Espace III, et ce que le code de NTM fabrique, qui attend sa machine :
+les pieces que la fonderie coule (avec leur metal fondu, CASTINGS), les alliages du creuset (ses
+recettes par matieres), les pastilles des reacteurs (CODE_MADE). Les recettes de
 demontage (« recycle ») ne comptent pas. Un fluide coule si une recette
 faisable le produit, si une machine posable le tire du monde ou le chauffe (WORLD_FLUIDS : puits de
 petrole, prise d'air, chaudieres), ou si rien ne le produit (le lait d'une vache) ; l'eau et la lave
@@ -172,16 +175,35 @@ SPACE_GATE = ("espace", 3)
 # coule plaques, fils epais et pieces d'arme dans ses moules, et ses alliages (ferro-uranium...) ; les
 # reacteurs usent leur combustible en pastilles. Seulement pour un objet qu'aucune recette ne produit.
 CODE_MADE = {
-    "hbm:plate_cast_*": "hbm:machine_crucible", "hbm:wire_dense_*": "hbm:machine_crucible",
-    "hbm:part_mechanism_*": "hbm:machine_crucible", "hbm:part_barrel_*": "hbm:machine_crucible",
-    "hbm:part_receiver_*": "hbm:machine_crucible", "hbm:part_grip_*": "hbm:machine_crucible",
     "hbm:ingot_*": "hbm:machine_crucible",
     "hbm:pile_rod_*": "hbm:pile_block", "hbm:rod_zirnox_*": "hbm:reactor_zirnox",
     "hbm:rbmk_pellet_*": "hbm:rbmk_fuel_rod", "hbmspace:rbmk_pellet_*": "hbm:rbmk_fuel_rod",
     "hbm:pwr_fuel_*": "hbm:pwr_fuel", "hbm:watz_pellet_*": "hbm:watz", "hbmspace:watz_pellet_*": "hbm:watz",
-    "hbm:pellet_rtg_depleted_*": "hbm:machine_rtg_grey", "hbm:blade_*": "hbm:machine_crucible",
+    "hbm:pellet_rtg_depleted_*": "hbm:machine_rtg_grey",
     "hbm:bedrock_ore_fragment_*": "hbm:machine_ore_slopper", "hbm:arc_electrode_burnt_*": "hbm:machine_arc_furnace",
 }
+
+# Ce que la fonderie coule dans ses moules, et la matiere fondue qu'il y faut (plate_cast_steel : de
+# l'acier, #c:ingots/steel). Le creuset melange aussi ses alliages (recettes « hbm:crucible », par
+# matieres : CRUCIBLE_MATERIALS dit ou les trouver).
+CASTINGS = ("hbm:plate_cast_", "hbm:wire_dense_", "hbm:blade_", "hbm:part_mechanism_", "hbm:part_barrel_",
+            "hbm:part_receiver_", "hbm:part_grip_")
+CRUCIBLE_MATERIALS = {
+    "flux": ("hbm:powder_flux",),
+    "carbon": ("minecraft:coal", "minecraft:charcoal", "#c:dusts/coal", "#c:coal_coke", "#c:gems/coke"),
+    "redstone": ("minecraft:redstone",),
+    "netherite_scrap": ("minecraft:netherite_scrap",),
+    "hematite": ("hbm:stone_resource_hematite",),
+    "malachite": ("hbm:stone_resource_malachite",),
+}
+
+
+def material(name):
+    """Ce qui apporte cette matiere au creuset : ses lingots, poudres, pepites, minerais..."""
+    if name in CRUCIBLE_MATERIALS:
+        return CRUCIBLE_MATERIALS[name]
+    return tuple(f"#c:{family}/{name}" for family in
+                 ("ingots", "dusts", "nuggets", "gems", "raw_materials", "ores", "storage_blocks"))
 
 
 def load_json(zipped, name):
@@ -282,6 +304,11 @@ class Book:
         # Ce que ne donnent que des blocs d'autres planetes (la feuille de sel des plantes de Laythe).
         self.space = {item for item, blocks in dropped_by.items() if item.startswith("hbmspace:")
                       and all(any(fnmatch.fnmatch(b, p) for p in SPACE_ONLY) for b in blocks)}
+        # Ce qu'un minerai donne quand on le casse (l'alexandrite de son minerai), meme si une recette
+        # en fait aussi : il se mine.
+        self.mined = {item for item, blocks in dropped_by.items()
+                      if any(re.search(r"(^|_)ores?(_|$)", b.split(":", 1)[-1]) and b not in self.recipes
+                             for b in blocks)}
 
     def add(self, data, name):
         kind = data.get("type", "")
@@ -302,6 +329,9 @@ class Book:
                       "minecraft:stonecutting"):
             inputs = [alternatives(data.get("ingredient"))]
             outputs = output_ids(data.get("result"))
+        elif kind == "hbm:crucible" and "input_materials" in data:
+            inputs = [material(m["material"]) for m in data.get("input_materials", []) if "material" in m]
+            outputs = output_ids(data.get("icon"))
         elif kind in ("minecraft:smithing_transform", "minecraft:crafting_transmute"):
             inputs = [alternatives(data.get(key)) for key in ("template", "base", "addition", "input", "material")
                       if key in data]
@@ -411,8 +441,15 @@ def available(book, tree, reached):
                     len(path) == 1 and path[0] in VANILLA_MATERIALS)
         if identifier.startswith("minecraft:") or identifier in have:
             return True
+        if identifier in book.mined and (in_space or identifier not in book.space):
+            return True
         if identifier in book.recipes:
             return False
+        for prefix in CASTINGS:
+            if identifier.startswith(prefix):
+                metal = identifier[len(prefix):]
+                return placed("hbm:machine_crucible") and (
+                        ("c:ingots/" + metal) not in book.tags or item_ok("#c:ingots/" + metal))
         for pattern, machine in CODE_MADE.items():
             if fnmatch.fnmatch(identifier, pattern):
                 return placed(machine)
@@ -492,6 +529,7 @@ def why(book, tree, reached, tools, identifier):
 
 def main(argv):
     jars = [a for a in argv if not a.startswith("--")]
+    verbose = "--details" in argv
     only = None
     for arg in argv:
         if arg.startswith("--domaine"):
@@ -527,6 +565,7 @@ def main(argv):
                     lines.append(f"  cout : {item['id']} -> " + " ; ".join(
                         why(book, tree, before, cache[before], item["id"])))
             item_ok = cache[after][1]
+            later = []
             for machine in tier.get("machines", []):
                 identifier = machine["id"]
                 if any(fnmatch.fnmatch(identifier, f) for f in tree.free):
@@ -534,11 +573,25 @@ def main(argv):
                 if identifier.startswith("dohy:"):
                     continue
                 if not item_ok(identifier):
+                    if tier.get("start"):
+                        # Un palier d'office ne verrouille rien : une machine que seul le palier d'un
+                        # autre domaine fait fabriquer s'y debloque des qu'on sait la faire. Seul ce qui
+                        # attend un palier plus haut du meme domaine (ou rien) est une faute.
+                        others = frozenset({(d, t["tier"]) for d, dom in tree.domains.items() if d != domain_id
+                                            for t in dom["tiers"]} | {(domain_id, number)})
+                        if others not in cache:
+                            cache[others] = available(book, tree, set(others))
+                        if cache[others][1](identifier):
+                            later.append(f"  plus tard : {identifier} -> " + " ; ".join(
+                                why(book, tree, after, cache[after], identifier)))
+                            continue
                     lines.append(f"  machine : {identifier} -> " + " ; ".join(
                         why(book, tree, after, cache[after], identifier)))
             status = "ok" if not lines else f"{len(lines)} probleme(s)"
+            if later:
+                status += f" ({len(later)} a fabriquer plus tard, palier d'office)"
             print(f"{domain_id} {number} ({tier['name']}) : {status}")
-            for line in lines:
+            for line in lines + (later if verbose else []):
                 print(line)
             problems += len(lines)
     print(f"{problems} probleme(s)")

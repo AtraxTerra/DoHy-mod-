@@ -584,6 +584,25 @@ public final class NuclearDrops {
         for (int slot = 0; slot < barrel.getContainerSize(); slot++) {
             free.add(slot);
         }
+        return roll(barrel, free, 8 + RANDOM.nextInt(4));
+    }
+
+    /**
+     * Les piles en plus qu'apportent les technologies de la nation du premier qui ouvre la caisse
+     * (lot 23g : Nucleaire II, une pile) ; tirees comme les autres, dans les cases encore vides.
+     */
+    private static int extra(BarrelBlockEntity barrel, int count) {
+        List<Integer> free = new ArrayList<>();
+        for (int slot = 0; slot < barrel.getContainerSize(); slot++) {
+            if (barrel.getItem(slot).isEmpty()) {
+                free.add(slot);
+            }
+        }
+        return roll(barrel, free, count);
+    }
+
+    /** Tire {@code rolls} matieres au hasard, selon leur poids, dans ces cases libres ; rend le nombre de piles posees. */
+    private static int roll(BarrelBlockEntity barrel, List<Integer> free, int rolls) {
         Collections.shuffle(free, new java.util.Random(RANDOM.nextLong()));
         int total = 0;
         for (Loot loot : LOOT) {
@@ -592,7 +611,6 @@ public final class NuclearDrops {
             }
         }
         int placed = 0;
-        int rolls = 8 + RANDOM.nextInt(4);
         for (int roll = 0; roll < rolls && total > 0 && !free.isEmpty(); roll++) {
             int pick = RANDOM.nextInt(total);
             for (Loot loot : LOOT) {
@@ -727,6 +745,17 @@ public final class NuclearDrops {
             if (!crate.opened && crate.pos.equals(event.getPos())) {
                 crate.opened = true;
                 MinecraftServer server = player.level().getServer();
+                int bonus = fr.atraxterra.dohy.faction.tech.TechPerks.of(player).nuclearLoot();
+                if (bonus > 0 && player.level().getBlockEntity(crate.pos) instanceof BarrelBlockEntity barrel) {
+                    int added = extra(barrel, bonus);
+                    if (added > 0) {
+                        player.sendSystemMessage(prefix().append(Component.literal("Les technologies de ta nation"
+                                + " ajoutent " + added + " pile" + (added > 1 ? "s" : "") + " au largage.")
+                                .withStyle(ChatFormatting.GREEN)));
+                        DoHy.LOGGER.info("Largage : {} pile(s) de plus pour la nation de {}", added,
+                                player.getGameProfile().name());
+                    }
+                }
                 save(server);
                 String who = player.getGameProfile().name()
                         + (FactionApi.has(player) ? " (" + FactionApi.data(player).name() + ")" : "");

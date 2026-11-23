@@ -26,7 +26,7 @@ Choix du joueur (2026-11-20) :
 | 23d | Les verrous : pose des machines, exemptions, infobulles, encyclopédie | fait |
 | 23e | Contenu : Énergie et Industrie (paliers, coûts, bonus) | fait |
 | 23f | Contenu : Chimie et Agriculture | fait |
-| 23g | Contenu : Nucléaire et Défense | à faire |
+| 23g | Contenu : Nucléaire et Défense | fait |
 | 23h | Contenu : Espace | à faire |
 | 23i | Équilibrage, captures, vérification en jeu | à faire |
 
@@ -176,12 +176,13 @@ Quelques jalons, pour lire l'arbre (le détail est dans le brouillon) :
   biogénérateur, laiterie de Space (III) ; machine à OGM, bots de farming (IV) ; baie
   hydroponique de Space (V). Le film d'algues de Space est à l'Espace V depuis le lot 23f.
 - **Nucléaire** : compteur Geiger, décontamination, pile de Chicago (I) ; réacteur de recherche,
-  ZIRNOX, RTG, centrifugeuse à gaz (II) ; RBMK (III) ; PWR de NTM et de Cursed, PUREX, SILEX (IV) ;
-  Watz, LFTR, APR, cyclotron, accélérateur de particules (V) ; fusion, ICF, DFC, antimatière (VI).
+  RTG, réservoirs (II) ; RBMK, ZIRNOX, centrifugeuse à gaz (III) ; PWR de NTM et de Cursed,
+  PUREX, SILEX (IV) ; Watz, LFTR, APR, cyclotron, accélérateur de particules (V) ; fusion, ICF,
+  DFC, antimatière (VI).
 - **Défense** : explosifs simples, mines, portes blindées (I) ; tourelles légères, sirène (II) ;
-  autocanon, lance-roquettes, radar, presse à munitions (III) ; pas de tir de missiles, radar
-  lourd, artillerie (IV) ; bombes nucléaires, champ de force, tourelle MASER (V) ; F.L.E.I.J.A.,
-  bombe au balefire, bombe à antimatière de Space (VI).
+  autocanon, lance-roquettes, mitrailleuse, radar, presse à munitions (III) ; pas de tir de
+  missiles, radar lourd, artillerie (IV) ; bombes nucléaires, mine Fat Man, champ de force,
+  tourelle MASER (V) ; F.L.E.I.J.A., bombe au balefire, bombe à antimatière de Space (VI).
 - **Espace** : récepteur satellite (I) ; pas de tir Soyouz (II) ; bâtiment d'assemblage des
   fusées, pas de tir de Space (III) ; stations orbitales et propulseurs (IV) ; atmosphère,
   foreuse à magma, collecteur de géante gazeuse (V) ; sphère de Dyson, éditeur d'atmosphère,
@@ -463,6 +464,49 @@ circuits qu'on ne savait pas encore faire).
   - La Chimie garde ses bonus (champs de pétrole et de gaz, déjà en service depuis le 23b).
 - **L'encyclopédie** : la fiche « Technologies » (bonus, ordre de la Chimie, film d'algues), le
   Fermier, le moulin et la machine à pain, le tracteur, les bots.
+
+## Nucléaire et Défense (23g)
+
+Même outil, même méthode : 58 problèmes dans ces deux domaines et à l'Industrie IV avec les
+données du 23f. Le nucléaire de NTM vient tard : la ZIRNOX et la centrifugeuse à gaz demandent du
+caoutchouc et du béton, les commandes automatiques du RBMK des circuits militaires. Et la fusion
+demandait la forge à plasma de l'Industrie VI, qui demandait elle-même la fusion : une boucle.
+
+### Fait (2026-11-23)
+
+- **L'outil** suit désormais les alliages du creuset par leurs matières (ferro-uranium : acier et
+  uranium 238), le métal des pièces coulées (une plaque coulée d'acier demande de l'acier), et ce
+  qu'un minerai donne quand on le casse (l'alexandrite). Et **un palier d'office ne verrouille
+  rien** : il peut garder une machine que seul un autre domaine fait fabriquer — elle se pose dès
+  qu'on sait la faire ; `--details` les liste. Seule une machine qui attend un palier plus haut du
+  même domaine y est une faute.
+- **Nucléaire, Défense et Industrie IV : 0 problème** ; tous domaines : 12 (75 avec les données du
+  23f) — l'Espace (lot 23h) et deux stockages de l'Économie.
+
+| Palier | Nucléaire | Défense |
+|---|---|---|
+| I (d'office) | Geiger, décontamination, absorbeur, pile de Chicago, fût de stockage | pointes, portes blindées, mines, explosifs (sans la mine Fat Man) |
+| II | petit réacteur, RTG, réservoirs, absorbeur rouge, contrôleur | tourelles légères, sirène, projecteurs — **demande l'Industrie III** |
+| III | RBMK, **ZIRNOX, centrifugeuse à gaz, générateur à radiations, enclumes de ferro-uranium et de bronze à l'arsenic** — **demande aussi la Chimie III** | tourelles lourdes, **mitrailleuse Tchekhov**, radar, presse à munitions — **demande l'Industrie III et la Chimie III** |
+| IV | PWR, LWR, PUREX, SILEX, **baril vitrifié** | missiles, **projecteur halogène** — **demande la Chimie IV** |
+| V | Watz, MSR, APR, cyclotron, accélérateur, **chauffage RT** — **demande la Chimie IV et l'Industrie V** | bombes nucléaires, **mine Fat Man, bombe à fission** — **demande le Nucléaire IV et la Chimie IV** |
+| VI | fusion, ICF (**avec sa presse**), DFC, antimatière — **demande l'Énergie V et l'Industrie VI** | armes exotiques |
+
+- **La forge à plasma avant la fusion** : l'Industrie VI demande le Nucléaire V (plus le VI) ; le
+  Nucléaire VI demande l'Industrie VI. L'Énergie VI (FEnSU, qui demande l'uranium 238m2 du cœur
+  DFC) demande le Nucléaire VI.
+- **Les paliers de la Défense** restent ceux de l'ancien arbre : les nouveaux prérequis ne touchent
+  que les machines et les bonus du domaine, jamais les récompenses des anciennes étapes.
+- **Les bonus en service** — tous ceux de l'arbre le sont désormais :
+  - **Nucléaire II** : une pile de plus dans un largage nucléaire, pour le premier qui l'ouvre si sa
+    nation a le palier (tirée comme les autres, dans les cases vides ; un message le dit).
+  - **Défense III et V** : les soldats des assauts des nations contre ta nation ont 5 puis 10 % de
+    vie en moins (lu au début du siège, annoncé au camp).
+- **L'encyclopédie** : la fiche « Technologies » (bonus, ordre de NTM, paliers d'office), la
+  guerre (l'assaut), les zones irradiées (les largages).
+- **Pour le lot 23i** : les deux stockages de masse de l'Économie IV et V demandent du desh et des
+  circuits ; l'Économie, domaine repris, ne peut pas recevoir de prérequis sans retarder ses bonus
+  d'anciennes étapes — ils changeront plutôt de domaine.
 
 ## L'arbre actuel, fondu dedans
 
