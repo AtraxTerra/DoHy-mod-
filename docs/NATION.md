@@ -25,7 +25,7 @@ Choix du joueur (2026-11-20) :
 | 23c | Le laboratoire de recherche : bloc, énergie (FE, réseaux de NTM NEXT), points de recherche, les pays qui nourrissent la recherche | fait |
 | 23d | Les verrous : pose des machines, exemptions, infobulles, encyclopédie | fait |
 | 23e | Contenu : Énergie et Industrie (paliers, coûts, bonus) | fait |
-| 23f | Contenu : Chimie et Agriculture | à faire |
+| 23f | Contenu : Chimie et Agriculture | fait |
 | 23g | Contenu : Nucléaire et Défense | à faire |
 | 23h | Contenu : Espace | à faire |
 | 23i | Équilibrage, captures, vérification en jeu | à faire |
@@ -167,13 +167,14 @@ Quelques jalons, pour lire l'arbre (le détail est dans le brouillon) :
   minier, supercalculateur (V) ; forge à plasma, annihilateur (VI). Les enclumes de NTM suivent :
   fer, plomb et acier (I), desh (III)… jusqu'au schrabidate et au dineutronium (VI).
   Depuis le lot 23e, cet ordre est celui de la fabrication de NTM (voir plus bas).
-- **Chimie** : tuyaux et pompes (I) ; derrick, chevalet de pompage, usine chimique (II) ;
-  raffinerie, tour de fractionnement, craquage (III) ; distillation sous vide, cokéfaction (IV) ;
-  fracturation, usine chimique lourde, alkylation et distillation cryogénique de Space (V).
+- **Chimie** : tuyaux, vannes et pompes à vapeur (I) ; derrick, usine chimique, mélangeur,
+  réservoir (II) ; raffinerie, tour de fractionnement, craquage, chevalet de pompage,
+  électrolyseur (III) ; distillation sous vide, cokéfaction, four à pyrolyse (IV) ; fracturation,
+  usine chimique lourde, alkylation et distillation cryogénique de Space (V).
 - **Agriculture** : les machines agricoles de DoHy entrent dans l'arbre avec celles de NTM et de
   Space : abreuvoir (I) ; batteuse, scierie, tracteur, silo (II) ; moulin, machine à pain,
-  biogénérateur, laiterie de Space (III) ; machine à OGM, bots de farming (IV) ; serre
-  industrielle de Space (V).
+  biogénérateur, laiterie de Space (III) ; machine à OGM, bots de farming (IV) ; baie
+  hydroponique de Space (V). Le film d'algues de Space est à l'Espace V depuis le lot 23f.
 - **Nucléaire** : compteur Geiger, décontamination, pile de Chicago (I) ; réacteur de recherche,
   ZIRNOX, RTG, centrifugeuse à gaz (II) ; RBMK (III) ; PWR de NTM et de Cursed, PUREX, SILEX (IV) ;
   Watz, LFTR, APR, cyclotron, accélérateur de particules (V) ; fusion, ICF, DFC, antimatière (VI).
@@ -424,6 +425,44 @@ circuits militaires) demandaient les machines que ces paliers donnent.
     nation qui perd le palier garde ce qui dépasse ; seules les nouvelles piles attendent.
 - **L'encyclopédie** : la fiche « Technologies » dit les bonus et l'ordre de NTM ; les fiches du
   Mineur, du trading et des mines disent ce qui change pour elles.
+
+## Chimie et Agriculture (23f)
+
+Même méthode qu'au lot 23e, avec le même outil (`tools/tech_crafting.py`) : 24 problèmes dans ces
+deux domaines avec les données du 23e (la vanne à compteur de la Chimie I demandait des micropuces,
+le réservoir l'assembleuse, le drain des plaques coulées ; le chevalet de pompage et
+l'électrolyseur de la Chimie II du desh et du caoutchouc ; la tour de fractionnement et le
+cristalliseur de la Chimie III des plaques soudées ; les coûts de l'Agriculture III à V des
+circuits qu'on ne savait pas encore faire).
+
+### Fait (2026-11-23)
+
+- **Chimie et Agriculture : 0 problème** ; tous domaines : 94 (118 avec les données du 23e).
+  L'outil reconnaît désormais aussi ce que seuls des blocs d'autres planètes donnent (leur table
+  de butin) : la feuille de sel des plantes de Laythe.
+
+| Palier | Chimie | Agriculture |
+|---|---|---|
+| I (d'office) | tuyaux, vannes, interrupteur, pompe, barils, pompe à vapeur, prise d'air, conduits (sans la jauge) | abreuvoir, distributeur d'eau |
+| II | derrick, conduite, torchère, mélangeur, usine chimique, **réservoir, drain** — demande l'Industrie II | batteuse, scierie, tracteur, silo, pompe à carburant |
+| III | raffinerie, fractionnement, craquage, solidificateur, liquéfacteur, compresseurs, cristalliseur, **chevalet de pompage, électrolyseur, vanne à compteur, pompe électrique, jauge** — **demande l'Énergie II et l'Industrie III** (plaques soudées) | moulin, machine à pain, biogénérateur, laiterie, micro-ondes ; coût : **16 moteurs** et 16 condensateurs |
+| IV | distillation sous vide, cokéfaction, hydrotraitement, reformage, grand réservoir, Orbus, baril en alliage Tc, Cursed, **four à pyrolyse** | machine à OGM, bots de farming |
+| V | fracturation, usine chimique lourde, alkylation, distillation cryogénique, deutérium | baie hydroponique ; coût : **16 moteurs en desh** et 8 unités de contrôle |
+
+- **Le film d'algues** demande la feuille de sel, qui ne pousse que sur Laythe : il passe de
+  l'Agriculture V à l'Espace V (Colonisation), qui demande déjà l'Agriculture V.
+- **Les bonus en service** :
+  - **Agriculture II** : +5 % d'XP de Fermier, avec les autres bonus d'XP (améliorations,
+    amulettes, grade, renaissances).
+  - **Agriculture IV** : +10 % d'argent de Fermier, niveaux et primes, comme le Mineur au 23e.
+  - **Agriculture III et V** : machines agricoles 10 puis 20 % plus rapides — le moulin (une
+    farine en 9 puis 8 ticks au lieu de 10) et la machine à pain (36 puis 33 au lieu de 40) en
+    automate, selon la nation du propriétaire ; le tracteur, selon celle du conducteur ; les bots de
+    farming (vitesse, et pause entre deux récoltes), selon celle du propriétaire, gardée dans le
+    bot quand il n'est pas là.
+  - La Chimie garde ses bonus (champs de pétrole et de gaz, déjà en service depuis le 23b).
+- **L'encyclopédie** : la fiche « Technologies » (bonus, ordre de la Chimie, film d'algues), le
+  Fermier, le moulin et la machine à pain, le tracteur, les bots.
 
 ## L'arbre actuel, fondu dedans
 

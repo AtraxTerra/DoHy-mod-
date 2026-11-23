@@ -269,6 +269,11 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   d'office, l'assembleuse à l'Industrie II, le béton et le caoutchouc par la Chimie. Bonus en
   service : machines de DoHy plus sobres (Énergie III et V), argent du Mineur (Industrie II et VI),
   coffre de la banque à 81 cases (Industrie IV).
+- **Lot 23f — Chimie et Agriculture** (2026-11-23, `docs/NATION.md`, « Chimie et Agriculture ») :
+  les deux domaines dans l'ordre de fabrication de NTM (0 problème au lieu de 24) — le raffinage
+  demande l'Industrie III, le film d'algues (feuille de sel de Laythe) passe à l'Espace V. Bonus en
+  service : XP (Agriculture II) et argent (IV) du Fermier, machines agricoles plus rapides (III et
+  V : automates, tracteur, bots de farming).
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 
