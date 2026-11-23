@@ -23,7 +23,7 @@ Choix du joueur (2026-11-20) :
 | 23a | Une seule nation : le menu à onglets (territoire, technologies, économie, guerre…), le rang, la façade `Nation` | fait |
 | 23b | Le moteur des technologies : domaines en données, état de recherche, écran des arbres ; l'arbre actuel fondu dedans | fait |
 | 23c | Le laboratoire de recherche : bloc, énergie (FE, réseaux de NTM NEXT), points de recherche, les pays qui nourrissent la recherche | fait |
-| 23d | Les verrous : pose des machines, exemptions, infobulles, encyclopédie | à faire |
+| 23d | Les verrous : pose des machines, exemptions, infobulles, encyclopédie | fait |
 | 23e | Contenu : Énergie et Industrie (paliers, coûts, bonus) | à faire |
 | 23f | Contenu : Chimie et Agriculture | à faire |
 | 23g | Contenu : Nucléaire et Défense | à faire |
@@ -348,6 +348,32 @@ permet un, deux puis trois.
 - Pas de verrou sur les recettes : la fabrication passe par les machines de NTM (assembleuses,
   modèles), hors de portée ; le verrou de pose suffit.
 
+### Fait (2026-11-23)
+
+- **Le moteur** (`faction/tech/TechGate`) : un index par identifiant, bâti depuis les motifs des
+  paliers résolus contre les registres de blocs et d'objets (espace de noms par espace de noms),
+  sans les machines laissées libres ; reconstruit quand les données changent (`/dohy reload`).
+  Les 570 machines rangées de NTM NEXT, Space et Cursed, et les machines agricoles de DoHy.
+- **La pose** (`TechGateEvents`) : la pose d'une machine d'un palier non acquis est annulée (l'objet
+  reste dans la main) avec « Technologie requise : Énergie II · Vapeur. Recherche-la dans /f
+  techno. » — ou « Il te faut d'abord une nation » ; une fois toutes les deux secondes au plus. Les
+  machines de NTM en plusieurs blocs sont couvertes : NeoForge note tout ce que pose l'objet et
+  l'annulation remet tout en place. Un objet qui pose une machine sans être un bloc (le tracteur,
+  le bot de farming) est verrouillé à l'usage. La télécommande des bots n'est pas une machine :
+  elle sort de l'arbre, pour ne pas bloquer les bots déjà posés.
+- **Les exemptions** : le créatif passe ; `tools/check_job_gates.py` vérifie désormais aussi que
+  chaque gestionnaire des verrous de technologie appelle `exempt()`, et que `TechGate.allows` dit
+  toujours la vérité. Sans nation, seuls les paliers d'office. Les machines déjà posées
+  continuent de tourner et leur écran s'ouvre ; pas de verrou sur les recettes.
+- **L'infobulle** : le serveur envoie au client les paliers, leurs motifs et ceux que la nation a
+  (`TechSync`, seulement quand quelque chose change) ; chaque machine de l'arbre porte
+  « Technologie : Énergie II · Vapeur », en vert si la nation l'a, en rouge avec « Pose
+  verrouillée : à rechercher (/f techno) » sinon.
+- **L'encyclopédie** : la fiche « Technologies » dit les verrous de pose.
+- **Tranché** : les machines agricoles de DoHy entrent dans l'arbre Agriculture comme le prévoyait
+  le brouillon (silo, pompe, tracteur au II ; moulin, machine à pain, biogénérateur au III ; machine
+  à OGM, bot de farming au IV) ; l'abreuvoir et la mangeoire restent d'office.
+
 ## L'arbre actuel, fondu dedans
 
 | Ancienne branche | Domaine | Correspondance |
@@ -367,7 +393,7 @@ permet un, deux puis trois.
 ## Encore à trancher, lot par lot
 
 - Les chiffres : coûts, points par laboratoire, apport des pays (23c, 23i).
-- Les machines agricoles de DoHy dans l'arbre Agriculture (le brouillon les y met).
+- ~~Les machines agricoles de DoHy dans l'arbre Agriculture~~ : tranché au lot 23d, elles y sont.
 - Ce qu'il advient d'une machine verrouillée trouvée dans un coffre de pillage : elle se garde,
   elle ne se pose pas.
 - Les nouveautés d'une prochaine version des trois mods : `tools/ntm_inventory.py` les sort,

@@ -258,6 +258,11 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   3 600 points par heure, plus la vitesse de recherche et les pays tenus ; les recherches coûtent
   désormais des points (1 500 à 180 000) au lieu d'une durée. Écran du laboratoire, points par heure
   et laboratoires dans Technologies, `/f techno points` pour les opérateurs.
+- **Lot 23d — les verrous de technologie** (2026-11-23, `docs/NATION.md`, « Fait ») : la pose d'une
+  machine d'un palier non acquis est refusée avec le palier qui la débloque (NTM NEXT, Space,
+  Cursed, machines agricoles de DoHy) ; les machines posées continuent de tourner, le créatif passe
+  (vérifié par la CI), sans nation seuls les paliers d'office ; l'infobulle de chaque machine dit
+  son palier, en vert ou en rouge.
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 
