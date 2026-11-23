@@ -268,7 +268,7 @@ public final class FactionMenus {
             List<String> homeLines = new ArrayList<>();
             if (perks.homes() <= 0) {
                 homeLines.add("Verrouille");
-                homeLines.add("Palier 5 de la branche Globale");
+                homeLines.add("Etape Globale 5 (Gouvernement)");
             } else {
                 homeLines.add(data.homes().size() + " / " + perks.homes() + " pose(s)");
                 homeLines.add("Delai : " + perks.homeDelay() + " s immobile");
@@ -399,9 +399,9 @@ public final class FactionMenus {
         List<String> treeLines = new ArrayList<>();
         treeLines.add("Paliers " + done + " / " + total);
         if (running > 0) {
-            treeLines.add(running + " amelioration(s) en cours");
+            treeLines.add(running + (running > 1 ? " recherches en cours" : " recherche en cours"));
         } else if (ready) {
-            treeLines.add("Un palier est pret");
+            treeLines.add("Une recherche est prete");
         }
         return Card.of(new ItemStack(Items.ENCHANTING_TABLE), "Technologies", treeLines)
                 .accent(0xFFEC4FB5).progress(done, total).badge(ready ? "!" : "").action("tree|ouvrir les technologies");
@@ -1008,7 +1008,7 @@ public final class FactionMenus {
             Card custom = Card.of(data.bannerItem().isEmpty() ? new ItemStack(Items.FLOWER_BANNER_PATTERN)
                     : data.bannerItem(), "Blason personnalise", perks.customBanner()
                     ? List.of("Clic : copier la banniere tenue", "Clic droit : retirer")
-                    : List.of("Verrouille", "Palier 4 de la branche Globale"));
+                    : List.of("Verrouille", "Etape Globale 4 (Gouvernement)"));
             custom = perks.customBanner() ? custom.accent(0xFFEC4FB5).action("custom|copier la banniere en main")
                     .right("uncustom|retirer le blason personnalise") : custom.state(MenuView.DISABLED);
             List<Card> cards = List.of(custom,

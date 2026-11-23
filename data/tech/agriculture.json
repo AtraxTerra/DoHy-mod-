@@ -1,0 +1,125 @@
+{
+  "id": "agriculture",
+  "name": "Agriculture",
+  "summary": "Machines agricoles, serres",
+  "icons": ["minecraft:wheat"],
+  "color": "#22E558",
+  "order": 6,
+  "tiers": [
+    {
+      "tier": 1,
+      "name": "Cultures",
+      "start": true,
+      "unlocks": ["dohy:trough", "dohy:water_dispenser"],
+      "machines": [
+        {"id": "dohy:trough", "name": "Mangeoire"},
+        {"id": "dohy:water_dispenser", "name": "Abreuvoir"}
+      ],
+      "bonuses": []
+    },
+    {
+      "tier": 2,
+      "name": "Mecanisation",
+      "unlocks": [
+        "hbm:machine_thresher",
+        "hbm:machine_autosaw",
+        "hbm:machine_sawmill",
+        "dohy:tractor",
+        "dohy:silo",
+        "dohy:fuel_pump"
+      ],
+      "machines": [
+        {"id": "hbm:machine_thresher", "name": "Automatic Thresher"},
+        {"id": "hbm:machine_autosaw", "name": "Automatic Buzz Saw"},
+        {"id": "hbm:machine_sawmill", "name": "Stirling Sawmill"},
+        {"id": "dohy:tractor", "name": "Tracteur"},
+        {"id": "dohy:silo", "name": "Silo"},
+        {"id": "dohy:fuel_pump", "name": "Pompe a carburant"}
+      ],
+      "bonuses": [
+        {"type": "farmer_xp", "value": 5, "label": "Fermier +5 % d'XP"}
+      ],
+      "cost": {
+        "money": 25000,
+        "hours": 6,
+        "items": [
+          {"id": "hbm:plate_steel", "count": 32, "label": "plaques d'acier"},
+          {"id": "hbm:coil_copper", "count": 16, "label": "bobines de cuivre"}
+        ]
+      }
+    },
+    {
+      "tier": 3,
+      "name": "Agro-industrie",
+      "requires": ["energie:2"],
+      "unlocks": [
+        "dohy:flour_mill",
+        "dohy:bread_machine",
+        "dohy:biogenerator",
+        "hbmspace:machine_milk_reformer",
+        "hbm:machine_microwave"
+      ],
+      "machines": [
+        {"id": "dohy:flour_mill", "name": "Moulin"},
+        {"id": "dohy:bread_machine", "name": "Machine a pain"},
+        {"id": "dohy:biogenerator", "name": "Biogenerateur"},
+        {"id": "hbmspace:machine_milk_reformer", "name": "Dairy Processing Tank"},
+        {"id": "hbm:machine_microwave", "name": "Microwave"}
+      ],
+      "bonuses": [
+        {"type": "agri_speed", "value": 10, "label": "machines agricoles DoHy +10 % de vitesse"}
+      ],
+      "cost": {
+        "money": 100000,
+        "hours": 12,
+        "items": [
+          {"id": "hbm:circuit_basic", "count": 16, "label": "circuits integres"},
+          {"id": "hbm:circuit_capacitor", "count": 16, "label": "condensateurs"}
+        ]
+      }
+    },
+    {
+      "tier": 4,
+      "name": "Genetique",
+      "requires": ["chimie:3"],
+      "unlocks": ["dohy:gmo_machine", "dohy:farm_bot", "dohy:bot_remote"],
+      "machines": [
+        {"id": "dohy:gmo_machine", "name": "Machine a OGM"},
+        {"id": "dohy:farm_bot", "name": "Bot de farming"},
+        {"id": "dohy:bot_remote", "name": "Telecommande de bot"}
+      ],
+      "bonuses": [
+        {"type": "farmer_money", "value": 10, "label": "Fermier +10 % d'argent"}
+      ],
+      "cost": {
+        "money": 500000,
+        "hours": 24,
+        "items": [
+          {"id": "hbm:circuit_advanced", "count": 16, "label": "circuits militaires"},
+          {"id": "hbm:circuit_chip", "count": 32, "label": "micropuces"}
+        ]
+      }
+    },
+    {
+      "tier": 5,
+      "name": "Serres industrielles",
+      "requires": ["industrie:4"],
+      "unlocks": ["hbmspace:hydrobay", "hbmspace:algae_film"],
+      "machines": [
+        {"id": "hbmspace:hydrobay", "name": "Industrial Greenhouse"},
+        {"id": "hbmspace:algae_film", "name": "Microgravity Algae Film"}
+      ],
+      "bonuses": [
+        {"type": "agri_speed", "value": 20, "label": "machines agricoles DoHy +20 % de vitesse"}
+      ],
+      "cost": {
+        "money": 2000000,
+        "hours": 48,
+        "items": [
+          {"id": "hbm:circuit_bismoid", "count": 8, "label": "circuits polyvalents"},
+          {"id": "hbm:circuit_controller", "count": 8, "label": "unites de controle"}
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "id": "economie",
+  "name": "Economie",
+  "summary": "Reserve d'or, marche, mines",
+  "icons": ["minecraft:gold_block"],
+  "color": "#FAC400",
+  "order": 2,
+  "tiers": [
+    {
+      "tier": 1,
+      "name": "Tresor",
+      "start": true,
+      "unlocks": [],
+      "machines": [],
+      "bonuses": [],
+      "legacy": ["economy:1"]
+    },
+    {
+      "tier": 2,
+      "name": "Stockage",
+      "unlocks": ["hbm:mass_storage_wood", "hbm:mass_storage_iron", "hbm:safe"],
+      "machines": [
+        {"id": "hbm:mass_storage_wood", "name": "Mass Storage Unit"},
+        {"id": "hbm:mass_storage_iron", "name": "Mass Storage Unit"},
+        {"id": "hbm:safe", "name": "Safe"}
+      ],
+      "bonuses": [],
+      "legacy": ["economy:2"]
+    },
+    {
+      "tier": 3,
+      "name": "Commerce",
+      "unlocks": ["hbm:vending_machine", "hbm:vending_machine_snacks"],
+      "machines": [
+        {"id": "hbm:vending_machine", "name": "Vending Machine"},
+        {"id": "hbm:vending_machine_snacks", "name": "Vending Machine"}
+      ],
+      "bonuses": [
+        {"type": "market_tax", "value": 1, "label": "taxe du marche international -1 point"}
+      ],
+      "legacy": ["economy:3"]
+    },
+    {
+      "tier": 4,
+      "name": "Concessions",
+      "unlocks": ["hbm:mass_storage_desh"],
+      "machines": [
+        {"id": "hbm:mass_storage_desh", "name": "Mass Storage Unit"}
+      ],
+      "bonuses": [
+        {"type": "mines_money", "value": 10, "label": "mines de la Terre +10 %"}
+      ],
+      "legacy": ["economy:4"]
+    },
+    {
+      "tier": 5,
+      "name": "Bourse",
+      "unlocks": ["hbm:mass_storage_tcalloy"],
+      "machines": [
+        {"id": "hbm:mass_storage_tcalloy", "name": "Mass Storage Unit"}
+      ],
+      "bonuses": [
+        {"type": "market_tax", "value": 2, "label": "taxe du marche international -2 points"}
+      ],
+      "legacy": ["economy:5"]
+    },
+    {
+      "tier": 6,
+      "name": "Hegemonie",
+      "unlocks": [],
+      "machines": [],
+      "bonuses": [
+        {"type": "mines_money", "value": 20, "label": "mines de la Terre +20 %"}
+      ],
+      "legacy": ["economy:6"]
+    }
+  ]
+}

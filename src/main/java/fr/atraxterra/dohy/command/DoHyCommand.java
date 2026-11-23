@@ -121,9 +121,10 @@ public final class DoHyCommand {
         boolean jobs = JobConfig.load(source.getServer());
         boolean auction = fr.atraxterra.dohy.auction.AuctionConfig.load(source.getServer());
         boolean path = fr.atraxterra.dohy.nuclear.path.NtmPath.load(source.getServer());
+        boolean tech = fr.atraxterra.dohy.faction.tech.TechConfig.load(source.getServer());
 
         if (prices && tiers && progression && contracts && crates && economy && museum && upgrades && jobs
-                && auction && notations && server && agriculture && earth && path) {
+                && auction && notations && server && agriculture && earth && path && tech) {
             source.sendSuccess(() -> Component.literal(
                             "Recharge : " + Prices.book().size() + " items, paliers de collection a jour.")
                     .withStyle(ChatFormatting.GREEN), true);
@@ -143,7 +144,8 @@ public final class DoHyCommand {
                 + (server ? "serveur de trading ok" : "serveur de trading en echec") + ", "
                 + (agriculture ? "agriculture ok" : "agriculture en echec") + ", "
                 + (earth ? "terre ok" : "terre en echec") + ", "
-                + (path ? "parcours NTM ok" : "parcours NTM en echec")
+                + (path ? "parcours NTM ok" : "parcours NTM en echec") + ", "
+                + (tech ? "technologies ok" : "technologies en echec")
                 + "). Les anciennes donnees restent en service. Voir les logs."));
         return 0;
     }

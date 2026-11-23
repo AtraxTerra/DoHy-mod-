@@ -150,6 +150,31 @@ public final class EarthMines {
         return body.kind() == EarthBodies.Kind.POOL || body.kind() == EarthBodies.Kind.SAND ? base * 2L : base;
     }
 
+    /**
+     * Ce qu'elle verse par heure a la nation de ce joueur, ses technologies comprises (lot 23b) :
+     * l'Economie pour toutes les mines, la Chimie en plus pour les champs de petrole et de gaz.
+     */
+    public static long moneyPerHour(ServerPlayer player, EarthBodies.Body body) {
+        return moneyPerHour(body) * (100L + moneyBonus(player, body)) / 100L;
+    }
+
+    /** Le bonus d'argent des technologies sur cette mine, en pour cent. */
+    public static int moneyBonus(ServerPlayer player, EarthBodies.Body body) {
+        fr.atraxterra.dohy.faction.tech.TechPerks perks = fr.atraxterra.dohy.faction.tech.TechPerks.of(player);
+        boolean field = body.kind() == EarthBodies.Kind.POOL || body.kind() == EarthBodies.Kind.SAND;
+        return perks.minesMoney() + (field ? perks.oilFields() : 0);
+    }
+
+    /** {@code blocks} blocs, plus le bonus de minerais des technologies (l'Industrie) ; la fraction se tire au sort. */
+    static long withOreBonus(ServerPlayer player, long blocks, RandomSource random) {
+        int bonus = fr.atraxterra.dohy.faction.tech.TechPerks.of(player).minesOre();
+        if (bonus <= 0 || blocks <= 0L) {
+            return blocks;
+        }
+        long scaled = blocks * (100L + bonus);
+        return scaled / 100L + (random.nextInt(100) < scaled % 100L ? 1L : 0L);
+    }
+
     /** Les blocs de minerai qu'elle extrait par heure ; les diamants des cheminees sont plus rares. */
     public static int blocksPerHour(EarthBodies.Body body) {
         return switch (body.kind()) {
@@ -300,7 +325,7 @@ public final class EarthMines {
         for (MineLedger.Concession concession : of(player)) {
             EarthBodies.Body body = body(concession.mine());
             if (body != null) {
-                total += moneyPerHour(body);
+                total += moneyPerHour(player, body);
             }
         }
         return total;
@@ -558,8 +583,9 @@ public final class EarthMines {
             }
             long due = elapsed / HOUR;
             long paid = Math.min(due, MAX_HOURS);
-            money += paid * moneyPerHour(body);
-            ores.addAll(extract(level, body, (int) Math.min(Integer.MAX_VALUE, paid * blocksPerHour(body)), random));
+            money += paid * moneyPerHour(player, body);
+            ores.addAll(extract(level, body, (int) Math.min(Integer.MAX_VALUE,
+                    withOreBonus(player, paid * blocksPerHour(body), random)), random));
             long until = due > MAX_HOURS ? now - elapsed % HOUR : concession.paid() + due * HOUR;
             updated = updated.with(concession.paidUntil(until));
             hours = Math.max(hours, paid);

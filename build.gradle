@@ -141,6 +141,16 @@ tasks.named('processResources', ProcessResources).configure {
     from(rootProject.file('data/black_market.json')) {
         into "data/${mod_id}"
     }
+    // Les technologies de la nation (chapitre 23, docs/NATION.md) : un fichier par
+    // domaine, et les machines laissees libres. Verifiees par
+    // tools/check_tech_catalogue.py.
+    from(rootProject.file('data/tech')) {
+        include '*.json'
+        into "data/${mod_id}/tech"
+    }
+    from(rootProject.file('data/tech_free.json')) {
+        into "data/${mod_id}"
+    }
     // Table des deblocages de metier. Generee par tools/palamod_jobs.py depuis
     // le bytecode de PalaMod, jamais ecrite a la main.
     from(rootProject.file('data/jobs.json')) {

@@ -1,0 +1,229 @@
+{
+  "id": "defense",
+  "name": "Defense",
+  "summary": "Fortifications, tourelles, missiles",
+  "icons": ["minecraft:shield"],
+  "color": "#EF3826",
+  "order": 8,
+  "tiers": [
+    {
+      "tier": 1,
+      "name": "Fortifications",
+      "start": true,
+      "unlocks": [
+        "hbm:spikes",
+        "hbm:blast_door",
+        "hbm:sliding_blast_door",
+        "hbm:door_bunker",
+        "hbm:mine_ap",
+        "hbm:mine_he",
+        "hbm:mine_shrap",
+        "hbm:dynamite",
+        "hbm:tnt",
+        "hbm:c4",
+        "hbm:semtex",
+        "hbm:red_barrel",
+        "hbm:mine_fat",
+        "hbm:mine_naval",
+        "hbm:vault_door"
+      ],
+      "machines": [
+        {"id": "hbm:spikes", "name": "Spikes"},
+        {"id": "hbm:blast_door", "name": "Sliding Blast Door"},
+        {"id": "hbm:sliding_blast_door", "name": "Sliding Blast Door"},
+        {"id": "hbm:door_bunker", "name": "Bunker Door"},
+        {"id": "hbm:mine_ap", "name": "Anti-Personell Mine"},
+        {"id": "hbm:mine_he", "name": "Anti-Tank Mine"},
+        {"id": "hbm:mine_shrap", "name": "Shrapnel Mine"},
+        {"id": "hbm:dynamite", "name": "Dynamite"},
+        {"id": "hbm:tnt", "name": "Actual TNT"},
+        {"id": "hbm:c4", "name": "C-4"},
+        {"id": "hbm:semtex", "name": "Semtex"},
+        {"id": "hbm:red_barrel", "name": "Baril explosif"},
+        {"id": "hbm:mine_fat", "name": "Fat Mine"},
+        {"id": "hbm:mine_naval", "name": "Naval Mine"},
+        {"id": "hbm:vault_door", "name": "Vault-Tec Blast Door"}
+      ],
+      "bonuses": [],
+      "legacy": ["defense:1", "defense:2", "pillage:1", "pillage:2"]
+    },
+    {
+      "tier": 2,
+      "name": "Tourelles legeres",
+      "requires": ["energie:1"],
+      "unlocks": [
+        "hbm:turret_chekhov",
+        "hbm:turret_friendly",
+        "hbm:turret_sentry",
+        "hbm:machine_siren",
+        "hbm:floodlight",
+        "hbm:spotlight_*"
+      ],
+      "machines": [
+        {"id": "hbm:turret_chekhov", "name": "Heavy Machine Gun Turret \"Chekhov's Gun\""},
+        {"id": "hbm:turret_friendly", "name": "Chaingun Turret \"Mister Friendly\""},
+        {"id": "hbm:turret_sentry", "name": "Sentry Turret \"Brown\""},
+        {"id": "hbm:machine_siren", "name": "sirene"},
+        {"id": "hbm:floodlight", "name": "Powered Floodlight"},
+        {"id": "hbm:spotlight_fluoro", "name": "Fluorescent Light"},
+        {"id": "hbm:spotlight_halogen", "name": "Halogen Floodlight"},
+        {"id": "hbm:spotlight_incandescent", "name": "Cage Lamp"}
+      ],
+      "bonuses": [],
+      "legacy": ["defense:3", "defense:4", "pillage:3", "pillage:4"]
+    },
+    {
+      "tier": 3,
+      "name": "Artillerie",
+      "requires": ["industrie:3"],
+      "unlocks": [
+        "hbm:turret_jeremy",
+        "hbm:turret_richard",
+        "hbm:turret_fritz",
+        "hbm:turret_howard",
+        "hbm:machine_radar",
+        "hbm:radar_screen",
+        "hbm:machine_ammo_press",
+        "hbm:machine_weapon_table",
+        "hbm:machine_armor_table",
+        "hbm:bomb_multi",
+        "hbm:therm_endo",
+        "hbm:therm_exo",
+        "hbm:float_bomb",
+        "hbm:fissure_bomb",
+        "hbm:flame_war"
+      ],
+      "machines": [
+        {"id": "hbm:turret_jeremy", "name": "Autocannon Turret \"Jeremy\""},
+        {"id": "hbm:turret_richard", "name": "Rocket Launcher Turret \"Richard\""},
+        {"id": "hbm:turret_fritz", "name": "Heavy Flamethrower Turret \"Fritz\""},
+        {"id": "hbm:turret_howard", "name": "Goalkeeper Twin Chaingun CIWS \"Howard\""},
+        {"id": "hbm:machine_radar", "name": "Radar"},
+        {"id": "hbm:radar_screen", "name": "Radar Screen"},
+        {"id": "hbm:machine_ammo_press", "name": "Ammo Press"},
+        {"id": "hbm:machine_weapon_table", "name": "Weapon Modification Table"},
+        {"id": "hbm:machine_armor_table", "name": "Armor Modification Table"},
+        {"id": "hbm:bomb_multi", "name": "Bombe polyvalente"},
+        {"id": "hbm:therm_endo", "name": "Bombe endothermique"},
+        {"id": "hbm:therm_exo", "name": "Bombe exothermique"},
+        {"id": "hbm:float_bomb", "name": "Bombe a levitation"},
+        {"id": "hbm:fissure_bomb", "name": "Fissure Bomb"},
+        {"id": "hbm:flame_war", "name": "Flame War in a box"}
+      ],
+      "bonuses": [
+        {"type": "soldier_hp", "value": 5, "label": "assauts des nations : soldats -5 % de vie"}
+      ],
+      "legacy": ["defense:5", "defense:6", "pillage:5", "pillage:6"]
+    },
+    {
+      "tier": 4,
+      "name": "Missiles",
+      "requires": ["chimie:3"],
+      "unlocks": [
+        "hbm:launch_pad",
+        "hbm:launch_pad_large",
+        "hbm:launch_table",
+        "hbm:compact_launcher",
+        "hbm:machine_missile_assembly",
+        "hbm:machine_radar_large",
+        "hbm:turret_arty",
+        "hbm:turret_himars",
+        "hbm:emp_bomb",
+        "hbm:charge_*",
+        "hbm:det_charge",
+        "hbm:det_miner",
+        "hbm:struct_launcher*"
+      ],
+      "machines": [
+        {"id": "hbm:launch_pad", "name": "Base de lancement des missiles"},
+        {"id": "hbm:launch_pad_large", "name": "Launch Pad"},
+        {"id": "hbm:launch_table", "name": "Large Launch Pad"},
+        {"id": "hbm:compact_launcher", "name": "Compact Launch Pad"},
+        {"id": "hbm:machine_missile_assembly", "name": "Missile Assembly Station"},
+        {"id": "hbm:machine_radar_large", "name": "Large Radar"},
+        {"id": "hbm:turret_arty", "name": "Artillery Turret \"Greg\""},
+        {"id": "hbm:turret_himars", "name": "Rocket Artillery Turret \"Henry\""},
+        {"id": "hbm:emp_bomb", "name": "Bombe IEM"},
+        {"id": "hbm:charge_c4", "name": "Demolition Charge"},
+        {"id": "hbm:charge_dynamite", "name": "Time Bomb"},
+        {"id": "hbm:charge_miner", "name": "Timed Mining Charge"},
+        {"id": "hbm:charge_semtex", "name": "Semtex Mining Charge"},
+        {"id": "hbm:det_charge", "name": "Charge explosive"},
+        {"id": "hbm:det_miner", "name": "Mining Charge"},
+        {"id": "hbm:struct_launcher", "name": "Launch Pad Component Block"},
+        {"id": "hbm:struct_launcher_core", "name": "Compact Launcher Core Component"},
+        {"id": "hbm:struct_launcher_core_large", "name": "Launch Table Core Component"}
+      ],
+      "bonuses": [],
+      "legacy": ["defense:7", "defense:8", "pillage:7", "pillage:8"]
+    },
+    {
+      "tier": 5,
+      "name": "Armes nucleaires",
+      "requires": ["nucleaire:3"],
+      "unlocks": [
+        "hbm:nuke_boy",
+        "hbm:nuke_man",
+        "hbm:nuke_gadget",
+        "hbm:nuke_mike",
+        "hbm:nuke_tsar",
+        "hbm:nuke_prototype",
+        "hbm:nuke_custom",
+        "hbm:nuke_n2",
+        "hbm:det_nuke",
+        "hbm:machine_forcefield",
+        "hbm:turret_maxwell",
+        "hbm:tesla",
+        "hbm:field_disturber",
+        "leafia:nuke_chud"
+      ],
+      "machines": [
+        {"id": "hbm:nuke_boy", "name": "Little Boy"},
+        {"id": "hbm:nuke_man", "name": "Fat Man"},
+        {"id": "hbm:nuke_gadget", "name": "Le gadget"},
+        {"id": "hbm:nuke_mike", "name": "Ivy Mike"},
+        {"id": "hbm:nuke_tsar", "name": "Tsar Bomba"},
+        {"id": "hbm:nuke_prototype", "name": "Le prototype"},
+        {"id": "hbm:nuke_custom", "name": "Nuke personnalise"},
+        {"id": "hbm:nuke_n2", "name": "N2 Mine"},
+        {"id": "hbm:det_nuke", "name": "Nuclear Charge"},
+        {"id": "hbm:machine_forcefield", "name": "Forcefield Emitter"},
+        {"id": "hbm:turret_maxwell", "name": "High-Energy MASER Turret \"Maxwell\""},
+        {"id": "hbm:tesla", "name": "Tesla Coil"},
+        {"id": "hbm:field_disturber", "name": "High Energy Field Jammer"},
+        {"id": "leafia:nuke_chud", "name": "Fat Chud"}
+      ],
+      "bonuses": [
+        {"type": "soldier_hp", "value": 10, "label": "assauts des nations : soldats -10 % de vie"}
+      ],
+      "legacy": ["defense:9", "defense:10", "pillage:9", "pillage:10"]
+    },
+    {
+      "tier": 6,
+      "name": "Armes exotiques",
+      "requires": ["nucleaire:6"],
+      "unlocks": [
+        "hbm:nuke_fleija",
+        "hbm:nuke_solinium",
+        "hbm:nuke_fstbmb",
+        "hbmspace:nuke_antimatter",
+        "hbmspace:det_salt",
+        "hbmspace:combat_drop",
+        "leafia:meteor_diverter",
+        "hbm:turret_tauon"
+      ],
+      "machines": [
+        {"id": "hbm:nuke_fleija", "name": "F.L.E.I.J.A"},
+        {"id": "hbm:nuke_solinium", "name": "The Blue Rinse"},
+        {"id": "hbm:nuke_fstbmb", "name": "Balefire Bomb"},
+        {"id": "hbmspace:nuke_antimatter", "name": "Antimatter Bomb"},
+        {"id": "hbmspace:det_salt", "name": "Salted Nuclear Charge"},
+        {"id": "hbmspace:combat_drop", "name": "Combat Drop Pod"},
+        {"id": "leafia:meteor_diverter", "name": "Meteor Protection Beacon"},
+        {"id": "hbm:turret_tauon", "name": "XVL1456 Prototype Turret \"Tauon\""}
+      ],
+      "bonuses": [],
+      "legacy": ["defense:11", "defense:12", "pillage:11", "pillage:12"]
+    }
+  ]
+}

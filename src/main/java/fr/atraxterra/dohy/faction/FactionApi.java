@@ -213,7 +213,7 @@ public final class FactionApi {
             return "Tu n'as pas de nation";
         }
         if (!FactionPerks.of(data).customBanner()) {
-            return "Le blason personnalise se debloque au palier 4 de la branche Globale";
+            return "Le blason personnalise se debloque a l'etape Globale 4 (Gouvernement, /f techno)";
         }
         if (stack.isEmpty()) {
             data.bannerItem = ItemStack.EMPTY;
@@ -295,7 +295,7 @@ public final class FactionApi {
         }
         int cap = claimCap(player);
         if (data.claims.size() >= cap) {
-            return "Plus de claim disponible (" + cap + "). L'arbre de technologie en debloque d'autres";
+            return "Plus de claim disponible (" + cap + "). Les technologies en debloquent d'autres";
         }
         chunk.setData(Factions.CLAIM.get(), ClaimOwner.player(player.getUUID(), data.name, true));
         chunk.markUnsaved();

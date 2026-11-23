@@ -1,0 +1,262 @@
+{
+  "id": "industrie",
+  "name": "Industrie",
+  "summary": "Presses, fonderie, assembleuses",
+  "icons": ["hbm:machine_press", "minecraft:anvil"],
+  "color": "#9AA0A6",
+  "order": 4,
+  "tiers": [
+    {
+      "tier": 1,
+      "name": "Atelier",
+      "start": true,
+      "unlocks": [
+        "hbm:machine_press",
+        "hbm:press_preheater",
+        "hbm:machine_furnace_brick",
+        "hbm:furnace_iron",
+        "hbm:furnace_steel",
+        "hbm:machine_shredder",
+        "hbm:machine_rockmill",
+        "hbm:anvil_iron",
+        "hbm:anvil_lead"
+      ],
+      "machines": [
+        {"id": "hbm:machine_press", "name": "Presse a vapeur"},
+        {"id": "hbm:press_preheater", "name": "Burner Press Preheater"},
+        {"id": "hbm:machine_furnace_brick", "name": "Bricked Furnace"},
+        {"id": "hbm:furnace_iron", "name": "Iron Furnace"},
+        {"id": "hbm:furnace_steel", "name": "Steel Furnace"},
+        {"id": "hbm:machine_shredder", "name": "Broyeur"},
+        {"id": "hbm:machine_rockmill", "name": "Rock Mill"},
+        {"id": "hbm:anvil_iron", "name": "Iron Anvil"},
+        {"id": "hbm:anvil_lead", "name": "Lead Anvil"}
+      ],
+      "bonuses": []
+    },
+    {
+      "tier": 2,
+      "name": "Fonderie",
+      "unlocks": [
+        "hbm:machine_blast_furnace",
+        "hbm:machine_crucible",
+        "hbm:foundry_*",
+        "hbm:furnace_combination",
+        "hbm:anvil_steel"
+      ],
+      "machines": [
+        {"id": "hbm:machine_blast_furnace", "name": "Blast Furnace"},
+        {"id": "hbm:machine_crucible", "name": "Crucible"},
+        {"id": "hbm:foundry_basin", "name": "Foundry Basin"},
+        {"id": "hbm:foundry_channel", "name": "Foundry Channel"},
+        {"id": "hbm:foundry_mold", "name": "Shallow Foundry Basin"},
+        {"id": "hbm:foundry_outlet", "name": "Foundry Outlet"},
+        {"id": "hbm:foundry_slagtap", "name": "Foundry Spill Outlet"},
+        {"id": "hbm:foundry_tank", "name": "Foundry Storage Basin"},
+        {"id": "hbm:furnace_combination", "name": "Combination Oven"},
+        {"id": "hbm:anvil_steel", "name": "Steel Anvil"}
+      ],
+      "bonuses": [
+        {"type": "miner_money", "value": 5, "label": "Mineur +5 % d'argent"}
+      ],
+      "cost": {
+        "money": 25000,
+        "hours": 6,
+        "items": [
+          {"id": "hbm:plate_steel", "count": 32, "label": "plaques d'acier"},
+          {"id": "hbm:coil_copper", "count": 16, "label": "bobines de cuivre"}
+        ]
+      }
+    },
+    {
+      "tier": 3,
+      "name": "Electromecanique",
+      "requires": ["energie:2"],
+      "unlocks": [
+        "hbm:machine_electric_furnace",
+        "hbm:machine_epress",
+        "hbm:machine_assembly_machine",
+        "hbm:machine_arc_welder",
+        "hbm:machine_soldering_station",
+        "hbm:machine_centrifuge",
+        "hbm:machine_arc_furnace",
+        "hbm:machine_rotary_furnace",
+        "hbm:machine_strand_caster",
+        "hbm:machine_autocrafter",
+        "hbm:conveyor*",
+        "hbm:crane_*",
+        "hbm:piston_inserter",
+        "hbm:anvil_desh",
+        "hbm:machine_funnel"
+      ],
+      "machines": [
+        {"id": "hbm:machine_electric_furnace", "name": "Four electrique"},
+        {"id": "hbm:machine_epress", "name": "Electric Press"},
+        {"id": "hbm:machine_assembly_machine", "name": "Assembly Machine"},
+        {"id": "hbm:machine_arc_welder", "name": "Arc Welder"},
+        {"id": "hbm:machine_soldering_station", "name": "Soldering Station"},
+        {"id": "hbm:machine_centrifuge", "name": "Centrifugeuse"},
+        {"id": "hbm:machine_arc_furnace", "name": "Electric Arc Furnace"},
+        {"id": "hbm:machine_rotary_furnace", "name": "Rotary Furnace"},
+        {"id": "hbm:machine_strand_caster", "name": "Strand Caster"},
+        {"id": "hbm:machine_autocrafter", "name": "Automatic Crafting Table"},
+        {"id": "hbm:conveyor", "name": "Conveyor Belt"},
+        {"id": "hbm:conveyor_chute", "name": "Conveyor Chute"},
+        {"id": "hbm:conveyor_double", "name": "Double-Lane Conveyor Belt"},
+        {"id": "hbm:conveyor_express", "name": "Express Conveyor Belt"},
+        {"id": "hbm:conveyor_lift", "name": "Conveyor Chain Lift"},
+        {"id": "hbm:conveyor_triple", "name": "Triple-Lane Conveyor Belt"},
+        {"id": "hbm:crane_boxer", "name": "Conveyor Boxer"},
+        {"id": "hbm:crane_extractor", "name": "Conveyor Ejector"},
+        {"id": "hbm:crane_grabber", "name": "Conveyor Grabber"},
+        {"id": "hbm:crane_inserter", "name": "Conveyor Inserter"},
+        {"id": "hbm:crane_partitioner", "name": "Acidizer Input Partitioner"},
+        {"id": "hbm:crane_router", "name": "Conveyor Sorter"},
+        {"id": "hbm:crane_splitter", "name": "Conveyor Splitter"},
+        {"id": "hbm:crane_unboxer", "name": "Conveyor Unboxer"},
+        {"id": "hbm:piston_inserter", "name": "Inserter"},
+        {"id": "hbm:anvil_desh", "name": "Desh Anvil"},
+        {"id": "hbm:machine_funnel", "name": "Combinator Funnel"}
+      ],
+      "bonuses": [
+        {"type": "mines_ore", "value": 10, "label": "mines de la Terre : minerais +10 %"}
+      ],
+      "cost": {
+        "money": 100000,
+        "hours": 12,
+        "items": [
+          {"id": "hbm:circuit_basic", "count": 16, "label": "circuits integres"},
+          {"id": "hbm:circuit_capacitor", "count": 16, "label": "condensateurs"}
+        ]
+      }
+    },
+    {
+      "tier": 4,
+      "name": "Production de masse",
+      "unlocks": [
+        "hbm:machine_assembly_factory",
+        "hbm:machine_precass",
+        "hbm:machine_conveyor_press",
+        "hbm:machine_excavator",
+        "hbm:machine_ore_slopper",
+        "hbm:drone_*",
+        "hbm:pneumatic_*",
+        "hbm:cargo_elevator",
+        "leafia:elevator_*",
+        "hbm:anvil_ferrouranium",
+        "hbm:anvil_saturnite",
+        "hbm:anvil_arsenic_bronze",
+        "hbm:anvil_bismuth_bronze",
+        "leafia:regex_filter"
+      ],
+      "machines": [
+        {"id": "hbm:machine_assembly_factory", "name": "Assembly Factory"},
+        {"id": "hbm:machine_precass", "name": "Precision Assembly Machine"},
+        {"id": "hbm:machine_conveyor_press", "name": "Conveyor Press"},
+        {"id": "hbm:machine_excavator", "name": "Large Mining Drill"},
+        {"id": "hbm:machine_ore_slopper", "name": "Bedrock Ore Processor"},
+        {"id": "hbm:drone_crate", "name": "Transport Drone Crate"},
+        {"id": "hbm:drone_crate_provider", "name": "Logistics Provider Crate"},
+        {"id": "hbm:drone_crate_requester", "name": "Logistics Requester Crate"},
+        {"id": "hbm:drone_dock", "name": "Logistics Drone Dock"},
+        {"id": "hbm:drone_waypoint", "name": "Transport Drone Waypoint"},
+        {"id": "hbm:drone_waypoint_request", "name": "Logistics Drone Waypoint"},
+        {"id": "hbm:pneumatic_storage_access", "name": "Pneumatic Storage Network - Access Terminal"},
+        {"id": "hbm:pneumatic_storage_clutter", "name": "Pneumatic Storage Network - Clutter Storage"},
+        {"id": "hbm:pneumatic_storage_exporter", "name": "Pneumatic Storage Network - Exporter"},
+        {"id": "hbm:pneumatic_storage_importer", "name": "Pneumatic Storage Network - Importer"},
+        {"id": "hbm:pneumatic_storage_mono", "name": "Pneumatic Storage Network - Bulk Storage"},
+        {"id": "hbm:pneumatic_tube", "name": "Pneumatic Tube"},
+        {"id": "hbm:pneumatic_tube_paintable", "name": "Paintable Pneumatic Tube"},
+        {"id": "hbm:cargo_elevator", "name": "Cargo Elevator"},
+        {"id": "leafia:elevator_buffer", "name": "Elevator Buffer"},
+        {"id": "leafia:elevator_pulley", "name": "Elevator Pulley"},
+        {"id": "leafia:elevator_shaft", "name": "Elevator Shaft"},
+        {"id": "hbm:anvil_ferrouranium", "name": "Ferrouranium Anvil"},
+        {"id": "hbm:anvil_saturnite", "name": "Saturnite Anvil"},
+        {"id": "hbm:anvil_arsenic_bronze", "name": "Arsenic Bronze Anvil"},
+        {"id": "hbm:anvil_bismuth_bronze", "name": "Bismuth Bronze Anvil"},
+        {"id": "leafia:regex_filter", "name": "Pneumatic Tube RegEx Filter"}
+      ],
+      "bonuses": [
+        {"type": "vault_slots", "value": 27, "label": "coffre de la banque +27 cases"}
+      ],
+      "cost": {
+        "money": 500000,
+        "hours": 24,
+        "items": [
+          {"id": "hbm:circuit_advanced", "count": 16, "label": "circuits militaires"},
+          {"id": "hbm:circuit_chip", "count": 32, "label": "micropuces"}
+        ]
+      }
+    },
+    {
+      "tier": 5,
+      "name": "Laser et calcul",
+      "requires": ["energie:4"],
+      "unlocks": [
+        "hbm:machine_mining_laser",
+        "hbm:machine_supercomputer",
+        "hbm:machine_tape_drive",
+        "hbmspace:machine_drive_processor",
+        "hbmspace:machine_vacuum_circuit",
+        "hbm:machine_exposure_chamber",
+        "hbm:machine_keyforge",
+        "hbm:anvil_schrabidate"
+      ],
+      "machines": [
+        {"id": "hbm:machine_mining_laser", "name": "Mining Laser"},
+        {"id": "hbm:machine_supercomputer", "name": "Supercomputer"},
+        {"id": "hbm:machine_tape_drive", "name": "Drive Enclosure"},
+        {"id": "hbmspace:machine_drive_processor", "name": "Drive Processor"},
+        {"id": "hbmspace:machine_vacuum_circuit", "name": "Vacuum Solderer"},
+        {"id": "hbm:machine_exposure_chamber", "name": "Exposure Chamber"},
+        {"id": "hbm:machine_keyforge", "name": "Locksmith Table"},
+        {"id": "hbm:anvil_schrabidate", "name": "Ferric Schrabidate Anvil"}
+      ],
+      "bonuses": [
+        {"type": "research", "value": 10, "label": "recherche +10 %"}
+      ],
+      "cost": {
+        "money": 2000000,
+        "hours": 48,
+        "items": [
+          {"id": "hbm:circuit_bismoid", "count": 8, "label": "circuits polyvalents"},
+          {"id": "hbm:circuit_controller", "count": 8, "label": "unites de controle"}
+        ]
+      }
+    },
+    {
+      "tier": 6,
+      "name": "Forge a plasma",
+      "requires": ["nucleaire:6"],
+      "unlocks": [
+        "hbm:fusion_plasma_forge",
+        "hbm:machine_annihilator",
+        "hbm:machine_fel",
+        "hbm:anvil_dnt",
+        "hbm:anvil_osmiridium",
+        "hbm:anvil_murky"
+      ],
+      "machines": [
+        {"id": "hbm:fusion_plasma_forge", "name": "Plasma Forge"},
+        {"id": "hbm:machine_annihilator", "name": "Annihilator"},
+        {"id": "hbm:machine_fel", "name": "FEL"},
+        {"id": "hbm:anvil_dnt", "name": "Dineutronium Anvil"},
+        {"id": "hbm:anvil_osmiridium", "name": "Osmiridium Anvil"},
+        {"id": "hbm:anvil_murky", "name": "Murky Anvil"}
+      ],
+      "bonuses": [
+        {"type": "miner_money", "value": 10, "label": "Mineur +10 % d'argent"}
+      ],
+      "cost": {
+        "money": 10000000,
+        "hours": 72,
+        "items": [
+          {"id": "hbm:circuit_quantum", "count": 4, "label": "processeurs quantiques"},
+          {"id": "hbm:circuit_atomic_clock", "count": 4, "label": "horloges atomiques"}
+        ]
+      }
+    }
+  ]
+}

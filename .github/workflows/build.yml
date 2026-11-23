@@ -227,11 +227,12 @@ jobs:
       - name: Le parcours NTM doit etre coherent
         run: python3 tools/check_ntm_path.py
 
-      # Les arbres de technologie de la nation (chapitre 23, docs/NATION.md) :
+      # Les technologies de la nation (chapitre 23, docs/NATION.md, data/tech) :
       # chaque machine nommee existe dans l'inventaire des trois mods de NTM
       # (tools/data/ntm_machines.json, les jars ne sont pas dans la CI), aucune
-      # n'est rangee deux fois, les prerequis tiennent.
-      - name: Le brouillon des technologies doit nommer des machines qui existent
+      # n'est rangee deux fois, les prerequis tiennent sans boucle, chaque
+      # ancien palier de l'arbre est repris une fois, chaque recherche a un cout.
+      - name: Les technologies doivent nommer des machines qui existent
         run: python3 -I tools/check_tech_catalogue.py
 
       # Le pass : douze themes, des quetes dont le type et la cible existent,

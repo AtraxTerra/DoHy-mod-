@@ -1,0 +1,73 @@
+{
+  "id": "gouvernement",
+  "name": "Gouvernement",
+  "summary": "Claims, homes, laboratoires, recherches",
+  "icons": ["minecraft:bell"],
+  "color": "#2F5BEA",
+  "order": 1,
+  "tiers": [
+    {
+      "tier": 1,
+      "name": "Fondation",
+      "start": true,
+      "unlocks": ["dohy:laboratoire"],
+      "machines": [
+        {"id": "dohy:laboratoire", "name": "Laboratoire de recherche"}
+      ],
+      "bonuses": [
+        {"type": "labs", "value": 1, "label": "1 laboratoire"},
+        {"type": "parallel", "value": 1, "label": "1 recherche a la fois"}
+      ],
+      "legacy": ["global:1", "global:2"]
+    },
+    {
+      "tier": 2,
+      "name": "Administration",
+      "unlocks": [],
+      "machines": [],
+      "bonuses": [],
+      "legacy": ["global:3", "global:4"]
+    },
+    {
+      "tier": 3,
+      "name": "Symboles",
+      "unlocks": [],
+      "machines": [],
+      "bonuses": [
+        {"type": "labs", "value": 2, "label": "2 laboratoires"}
+      ],
+      "legacy": ["global:5", "global:6"]
+    },
+    {
+      "tier": 4,
+      "name": "Etat",
+      "unlocks": [],
+      "machines": [],
+      "bonuses": [
+        {"type": "parallel", "value": 2, "label": "2 recherches a la fois"}
+      ],
+      "legacy": ["global:7", "global:8"]
+    },
+    {
+      "tier": 5,
+      "name": "Centralisation",
+      "unlocks": [],
+      "machines": [],
+      "bonuses": [
+        {"type": "labs", "value": 3, "label": "3 laboratoires"},
+        {"type": "research_per_country", "value": 10, "label": "apport des pays a la recherche +10 %"}
+      ],
+      "legacy": ["global:9", "global:10"]
+    },
+    {
+      "tier": 6,
+      "name": "Superpuissance",
+      "unlocks": [],
+      "machines": [],
+      "bonuses": [
+        {"type": "parallel", "value": 3, "label": "3 recherches a la fois"}
+      ],
+      "legacy": ["global:11", "global:12"]
+    }
+  ]
+}
