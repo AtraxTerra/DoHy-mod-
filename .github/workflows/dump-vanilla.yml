@@ -1,0 +1,48 @@
+name: dump-vanilla
+# Temporaire (points ouverts) : un resume factuel des echanges de villageois, de quelques tags et du
+# soufre de Minecraft 26.2, lu dans son jar ; et le wrapper Gradle 9.1.0. Pousse sur dump-out.
+on:
+  push:
+    branches: [tmp/dump-vanilla]
+permissions:
+  contents: write
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.1.0"
+      - name: Artefacts de Minecraft
+        run: gradle --no-daemon -q createMinecraftArtifacts || gradle --no-daemon -q compileJava
+      - name: Resume
+        run: |
+          mkdir -p /tmp/out
+          found=""
+          for j in $(find build/moddev ~/.gradle/caches -name '*.jar' -size +3M 2>/dev/null); do
+            if unzip -l "$j" 2>/dev/null | grep -q 'data/minecraft/villager_trade/'; then found="$j"; break; fi
+          done
+          echo "jar : $found"
+          python3 -I .tmp-dump/summarize.py "$found" > /tmp/out/vanilla-26.2.txt
+          wc -l /tmp/out/vanilla-26.2.txt
+      - name: Wrapper
+        run: |
+          SUM=$(curl -fsSL https://services.gradle.org/distributions/gradle-9.1.0-bin.zip.sha256)
+          echo "sha256 : $SUM"
+          mkdir -p /tmp/wrap && cd /tmp/wrap && touch settings.gradle
+          gradle --no-daemon -q wrapper --gradle-version 9.1.0 --distribution-type bin --gradle-distribution-sha256-sum "$SUM"
+          mkdir -p /tmp/out/wrapper && cp -r gradlew gradlew.bat gradle /tmp/out/wrapper/
+          cat /tmp/out/wrapper/gradle/wrapper/gradle-wrapper.properties
+          sha256sum /tmp/out/wrapper/gradle/wrapper/gradle-wrapper.jar
+      - name: Pousser
+        if: always()
+        run: |
+          cd /tmp/out
+          git init -q && git checkout -q -b dump-out && git add .
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "dump ${GITHUB_SHA}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" dump-out
