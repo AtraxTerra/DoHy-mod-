@@ -499,7 +499,8 @@ au journal.
   changent les lois ; la pastille dit la loi en couleur (légale en vert, tolérée en jaune,
   interdite en rouge).
 - **Tableau de bord** : une section **Menaces** (pour chaque opération : l'acheter, se mettre au
-  vert) en tête, une section **Contrats** (accepter, refuser, livrer).
+  vert) en tête, une section **Contrats** (accepter, refuser, livrer) juste sous les chiffres,
+  avant la liste des entreprises.
 - **Une organisation** : ses contrats, le geste **Opération de police**.
 - **Une nation** (Diplomatie) : ses lois et le zèle de sa police, ce que tes lois font à son humeur.
 - **Le catalogue** : la loi du pays où tu te tiens sur chaque affaire illégale, le risque estimé

@@ -421,13 +421,14 @@ public final class EnterpriseMenus {
                         threats));
             }
             sections.add(new MenuView.Section("TABLEAU DE BORD", "resources", MenuView.GRID, board));
-            sections.add(new MenuView.Section("TES ENTREPRISES|" + enterprises.size() + " / "
-                    + Enterprises.cap(player), "craft", MenuView.ROWS, owned));
+            // les contrats ont un delai : au-dessus de la liste des entreprises, qui peut etre longue
             List<Card> deals = contracts(player, null);
             if (!deals.isEmpty()) {
                 sections.add(new MenuView.Section("CONTRATS|des organisations criminelles", "upgrade", MenuView.GRID,
                         deals));
             }
+            sections.add(new MenuView.Section("TES ENTREPRISES|" + enterprises.size() + " / "
+                    + Enterprises.cap(player), "craft", MenuView.ROWS, owned));
             sections.add(new MenuView.Section("OUVRIR ET GERER", "upgrade", MenuView.GRID, open));
             sections.add(new MenuView.Section("ORGANISATIONS CRIMINELLES", "armor", MenuView.GRID, syndicates));
             List<Card> journal = journal(holdings, 6);
