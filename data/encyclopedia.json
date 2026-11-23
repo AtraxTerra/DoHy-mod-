@@ -1303,7 +1303,8 @@
             "- Les graines de PalaMod tombent de l'herbe des que leur culture est debloquee.",
             "- Les cultures de PalaMod donnent parfois un lingot a la place du fruit.",
             "- La terre fertilisee fait pousser environ trois fois plus vite.",
-            "- Fermier 10 : le tracteur. Fermier 20 : la machine a OGM."
+            "- Fermier 10 : le tracteur. Fermier 20 : la machine a OGM.",
+            "- L'Agriculture II de ta nation donne +5 % d'XP de Fermier, l'Agriculture IV +10 % d'argent (niveaux et primes)."
           ]
         }
       ],
@@ -2791,14 +2792,17 @@
             "- Taxe du marche international et argent des mines de la Terre (Economie), minerais des mines (Industrie), champs de petrole et de gaz (Chimie).",
             "- Industrie II et VI : +5 puis +10 % d'argent de Mineur, aux niveaux et aux primes. Industrie IV : 27 cases de plus au coffre de la banque.",
             "- Energie III et V : -10 puis -15 % d'energie pour le moulin, la machine a pain et le serveur de trading ; la machine le lit sur la nation de celui qui l'a posee.",
-            "- Les autres (Fermier et machines agricoles, largages, assauts) arrivent avec les contenus de chaque domaine : la bulle du bonus dit son lot."
+            "- Agriculture II : +5 % d'XP de Fermier ; IV : +10 % d'argent de Fermier. Agriculture III et V : machines agricoles 10 puis 20 % plus rapides (moulin et machine a pain en automate, tracteur, bots de farming).",
+            "- Les autres (largages nucleaires, assauts des nations) arrivent avec le Nucleaire et la Defense : la bulle du bonus dit son lot."
           ]
         },
         {
           "title": "Dans l'ordre de NTM",
           "text": [
             "Energie et Industrie suivent la fabrication de NTM NEXT : le haut fourneau, l'acier et son enclume des le depart (Industrie I), l'assembleuse et la fonderie au II, la soudeuse et le four a arc au III, avec l'usine chimique (Chimie II) pour le beton et le desh.",
-            "Les carburants et la turbine a gaz demandent le raffinage (Chimie III), d'ou vient le caoutchouc ; l'assemblage de masse aussi. Les circuits polyvalents du laser et du supercalculateur demandent la petrochimie (Chimie IV)."
+            "Les carburants et la turbine a gaz demandent le raffinage (Chimie III), d'ou vient le caoutchouc ; l'assemblage de masse aussi. Les circuits polyvalents du laser et du supercalculateur demandent la petrochimie (Chimie IV).",
+            "La Chimie suit le meme ordre : tuyaux, vannes et pompes a vapeur d'office ; reservoir et drain avec la fonderie (Chimie II) ; le raffinage (III) demande l'Industrie III pour ses plaques soudees, avec le chevalet de pompage, l'electrolyseur et la pompe electrique ; le four a pyrolyse passe a la petrochimie (IV).",
+            "Le film d'algues, qui demande la feuille de sel des plantes de Laythe, passe de l'Agriculture V a l'Espace V."
           ]
         },
         {
@@ -3869,7 +3873,7 @@
         {
           "title": "Moulin, pains, elevage",
           "text": [
-            "- Le moulin fait la farine, la machine a pain cuit les dix pains et le pain d'epices, avec leurs effets.",
+            "- Le moulin fait la farine, la machine a pain cuit les dix pains et le pain d'epices, avec leurs effets. En automate, l'Agriculture III et V de ta nation les font travailler 10 puis 20 % plus vite, l'Energie III et V consommer moins.",
             "- Une mangeoire et un abreuvoir nourrissent les betes : creme, saindoux, oeufs."
           ]
         },
@@ -3913,7 +3917,7 @@
         "Charrue, semoir..."
       ],
       "summary": [
-        "Un tracteur a conduire, des le niveau 10 de Fermier, avec sa charrue, son semoir, son epandeur et sa moissonneuse, un silo et une pompe a carburant."
+        "Un tracteur a conduire, des le niveau 10 de Fermier, avec sa charrue, son semoir, son epandeur et sa moissonneuse, un silo et une pompe a carburant. L'Agriculture III et V de ta nation le font rouler 10 puis 20 % plus vite."
       ],
       "see": [
         "agriculture",
@@ -3971,7 +3975,8 @@
         {
           "title": "Limites",
           "text": [
-            "Quatre bots par joueur. Un bot travaille quand sa zone est chargee, c'est-a-dire quand tu es dans le coin."
+            "Quatre bots par joueur. Un bot travaille quand sa zone est chargee, c'est-a-dire quand tu es dans le coin.",
+            "L'Agriculture III et V de ta nation le font aller 10 puis 20 % plus vite, et souffler moins entre deux recoltes."
           ]
         }
       ],

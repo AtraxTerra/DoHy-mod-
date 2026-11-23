@@ -103,13 +103,20 @@ public final class JobApi {
 
     /**
      * Le bonus des technologies de la nation sur l'argent de ce metier : l'Industrie II et VI pour le
-     * Mineur (lot 23e, +5 puis +10 %). Il s'ajoute a celui des renaissances.
+     * Mineur (lot 23e, +5 puis +10 %), l'Agriculture IV pour le Fermier (lot 23f, +10 %). Il s'ajoute
+     * a celui des renaissances.
      */
     public static double techBonus(ServerPlayer player, Job job) {
-        if (job != Job.MINER) {
-            return 0.0d;
-        }
-        return fr.atraxterra.dohy.faction.tech.TechPerks.of(player).minerMoney() / 100.0d;
+        return switch (job) {
+            case MINER -> fr.atraxterra.dohy.faction.tech.TechPerks.of(player).minerMoney() / 100.0d;
+            case FARMER -> fr.atraxterra.dohy.faction.tech.TechPerks.of(player).farmerMoney() / 100.0d;
+            default -> 0.0d;
+        };
+    }
+
+    /** Le bonus des technologies de la nation sur l'XP de ce metier : l'Agriculture II pour le Fermier (lot 23f). */
+    public static double techXpBonus(ServerPlayer player, Job job) {
+        return job == Job.FARMER ? fr.atraxterra.dohy.faction.tech.TechPerks.of(player).farmerXp() / 100.0d : 0.0d;
     }
 
     /** L'argent d'un niveau de ce metier pour ce joueur, renaissances et technologies comprises. */
@@ -187,7 +194,8 @@ public final class JobApi {
                 + UpgradeApi.bonus(player, UpgradeApi.JOB_XP_BONUS)
                 + fr.atraxterra.dohy.palamod.defense.Amulets.xpBonus(player, job)
                 + fr.atraxterra.dohy.grade.Grades.jobXpBonus(player)
-                + rebirthBonus(player, job))
+                + rebirthBonus(player, job)
+                + techXpBonus(player, job))
                 * fr.atraxterra.dohy.palamod.boost.PalaXpPotions.multiplier(player)
                 // « Divise XP » (lucky block en findium) : moitie moins pendant quinze minutes.
                 * (player.hasEffect(fr.atraxterra.dohy.palamod.lucky.PalaLucky.HALF_JOB_XP) ? 0.5d : 1.0d));

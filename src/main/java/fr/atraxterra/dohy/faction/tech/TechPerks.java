@@ -14,8 +14,9 @@ import java.util.Map;
  * Nucleaire font +25 %).
  *
  * <p>Ils agissent sur les systemes de DoHy, jamais sur le code de NTM. Ceux qui ne servent pas
- * encore attendent leur lot ({@link #pending(String)}) : les contenus de chaque domaine (23f et
- * 23g ; l'Energie et l'Industrie sont en service depuis le lot 23e).
+ * encore attendent leur lot ({@link #pending(String)}) : les contenus du Nucleaire et de la Defense
+ * (23g) ; l'Energie et l'Industrie sont en service depuis le lot 23e, la Chimie et l'Agriculture
+ * depuis le 23f.
  */
 public record TechPerks(Map<String, Integer> values) {
 
@@ -75,6 +76,21 @@ public record TechPerks(Map<String, Integer> values) {
         return Math.max(0, value("vault_slots"));
     }
 
+    /** L'XP du metier de Fermier, en pour cent (Agriculture II). */
+    public int farmerXp() {
+        return Math.max(0, value("farmer_xp"));
+    }
+
+    /** L'argent du metier de Fermier (niveaux et primes), en pour cent (Agriculture IV). */
+    public int farmerMoney() {
+        return Math.max(0, value("farmer_money"));
+    }
+
+    /** La vitesse des machines agricoles de DoHy, en pour cent (Agriculture III et V), 200 au plus. */
+    public int agriSpeed() {
+        return Math.max(0, Math.min(200, value("agri_speed")));
+    }
+
     public static TechPerks of(ServerPlayer player) {
         return of(FactionApi.data(player));
     }
@@ -100,8 +116,8 @@ public record TechPerks(Map<String, Integer> values) {
     public static String pending(String type) {
         return switch (type) {
             case "parallel", "research", "market_tax", "mines_money", "mines_ore", "oil_fields", "labs",
-                 "research_per_country", "lab_energy", "machine_energy", "miner_money", "vault_slots" -> "";
-            case "farmer_xp", "agri_speed", "farmer_money" -> "lot 23f";
+                 "research_per_country", "lab_energy", "machine_energy", "miner_money", "vault_slots",
+                 "farmer_xp", "agri_speed", "farmer_money" -> "";
             case "nuclear_loot", "soldier_hp" -> "lot 23g";
             default -> "a venir";
         };

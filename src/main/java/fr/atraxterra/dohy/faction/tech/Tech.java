@@ -404,6 +404,17 @@ public final class Tech {
         return (int) Math.max(1L, (long) base * kept / 100L);
     }
 
+    /**
+     * Ce que dure un travail de {@code ticks} pour une machine agricole qui va {@code speed} pour cent
+     * plus vite (lot 23f : Agriculture III +10 %, V +20 %) ; jamais moins d'un tick.
+     */
+    public static int faster(int ticks, int speed) {
+        if (ticks <= 1 || speed <= 0) {
+            return ticks;
+        }
+        return (int) Math.max(1L, Math.round(ticks * 100.0d / (100 + speed)));
+    }
+
     /** L'energie d'un laboratoire par tick de marche, en FE, moins ce qu'effacent les technologies de l'Energie. */
     public static int labEnergy(FactionData data) {
         int base = ResearchLabConfig.config().energyPerTick();
