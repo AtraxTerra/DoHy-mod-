@@ -172,12 +172,16 @@ public class ResearchLabBlock extends BaseEntityBlock {
     }
 
     /**
-     * Un clic droit avec du combustible : il prend la pile, jusqu'a ce qu'il en ait assez, et la brule
-     * a mi-regime, faute d'electricite.
+     * Un clic droit avec une piece des paliers : il la garde pour les recherches de sa nation (lot 23i).
+     * Avec du combustible : il prend la pile, jusqu'a ce qu'il en ait assez, et la brule a mi-regime,
+     * faute d'electricite.
      */
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
+        if (TechConfig.isPart(stack)) {
+            return deliver(stack, level, pos, player, hand);
+        }
         if (stack.isEmpty() || !level.fuelValues().isFuel(stack)) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
@@ -209,6 +213,29 @@ public class ResearchLabBlock extends BaseEntityBlock {
         server.playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.4f, 1.3f);
         player.sendSystemMessage(Component.literal("Combustible : " + burned + " de plus, " + lab.fuel() / 20
                 + " s de combustion en reserve.").withStyle(ChatFormatting.GRAY));
+        return InteractionResult.SUCCESS;
+    }
+
+    /** La pile en main va aux pieces du laboratoire ; ce qui ne tient pas reste en main. */
+    private static InteractionResult deliver(ItemStack stack, Level level, BlockPos pos, Player player,
+                                             InteractionHand hand) {
+        if (!(level instanceof ServerLevel server) || !(server.getBlockEntity(pos) instanceof ResearchLabBlockEntity lab)) {
+            return InteractionResult.SUCCESS;
+        }
+        net.minecraft.world.item.Item item = stack.getItem();
+        ItemStack rest = lab.storePart(stack);
+        int moved = stack.getCount() - rest.getCount();
+        if (moved <= 0) {
+            player.sendSystemMessage(Component.literal("Le laboratoire est plein : " + ResearchLabBlockEntity.PART_SLOTS
+                    + " cases au plus.").withStyle(ChatFormatting.YELLOW));
+            return InteractionResult.SUCCESS;
+        }
+        if (!player.getAbilities().instabuild) {
+            player.setItemInHand(hand, rest);
+        }
+        server.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.7f, 1.1f);
+        player.sendSystemMessage(Component.literal("Pieces livrees : " + moved + " ; le laboratoire en garde "
+                + lab.partCount(item) + " pour les recherches de sa nation.").withStyle(ChatFormatting.GRAY));
         return InteractionResult.SUCCESS;
     }
 

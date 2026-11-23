@@ -679,6 +679,8 @@ public final class FactionTreeMenus {
                 parts.add(MoneyFormat.shortForm(cost.money()) + " $");
                 tooltip.add("- " + MoneyFormat.exact(cost.money()) + " $ de la banque nationale");
             }
+            List<ResearchLabBlockEntity> labs = cost.items().isEmpty() ? List.of()
+                    : Tech.loadedLabs(player, FactionApi.data(player));
             for (TechConfig.ItemCost item : cost.items()) {
                 Optional<Item> found = item.item();
                 if (found.isEmpty()) {
@@ -687,8 +689,12 @@ public final class FactionTreeMenus {
                 }
                 parts.add(item.count() + " " + item.label());
                 int have = Tech.count(player.getInventory(), found.get());
-                tooltip.add((have >= item.count() ? "✔ " : "✘ ") + item.count() + " " + item.label() + " (" + have
-                        + " sur toi)");
+                int stored = Tech.delivered(labs, found.get());
+                tooltip.add((have + stored >= item.count() ? "✔ " : "✘ ") + item.count() + " " + item.label() + " ("
+                        + have + " sur toi" + (stored > 0 ? ", " + stored + " au labo" : "") + ")");
+            }
+            if (!labs.isEmpty() && !cost.items().isEmpty()) {
+                tooltip.add("Les pieces livrees a tes laboratoires comptent aussi");
             }
             return parts.isEmpty() ? "gratuit" : String.join(" + ", parts);
         }

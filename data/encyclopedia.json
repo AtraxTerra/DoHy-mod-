@@ -2774,7 +2774,7 @@
         {
           "title": "Les domaines nouveaux",
           "text": [
-            "Energie, Industrie, Chimie, Agriculture, Nucleaire et Espace se recherchent : de l'argent de la banque nationale et des pieces de NTM sur toi au lancement (plaques d'acier et bobines de cuivre, puis des circuits de plus en plus fins), puis les points de recherche de tes laboratoires, de 1 500 au palier II a 180 000 au VI.",
+            "Energie, Industrie, Chimie, Agriculture, Nucleaire et Espace se recherchent : de l'argent de la banque nationale et des pieces de NTM au lancement, sur toi ou livrees a tes laboratoires (plaques d'acier et bobines de cuivre, puis des circuits de plus en plus fins), puis les points de recherche de tes laboratoires, de 1 500 au palier II a 180 000 au VI.",
             "Le palier I est acquis d'office, sauf dans l'Espace. Il faut un laboratoire pose pour lancer une recherche. Une recherche a la fois ; le Gouvernement IV en permet deux, le VI trois, et les points se partagent entre elles. Sans NTM installe, ses pieces ne se demandent pas."
           ]
         },
@@ -2866,6 +2866,13 @@
           "text": [
             "En marche, il fait 3 600 points par heure, plus la vitesse de recherche (Industrie, Nucleaire, Espace) et l'apport des pays : 5 % par pays tenu, 10 % la capitale, 100 % au plus, davantage au Gouvernement V.",
             "Les points passent aux recherches en cours chaque seconde, a parts egales, quand tu es connecte. Sans recherche, il en garde une heure, puis s'arrete. Il ne tourne que dans un chunk charge, comme toute machine."
+          ]
+        },
+        {
+          "title": "Les pieces",
+          "text": [
+            "Les pieces des paliers peuvent lui etre livrees : un clic droit avec la pile, le bouton Deposer de son ecran, ou un entonnoir, un convoyeur ou un tuyau d'objets. Il ne prend que ce que demandent les paliers, en garde 18 piles, et rien ne le vide.",
+            "Une recherche prend ses pieces sur toi, puis dans les laboratoires charges de ta nation. Sa nation les reprend depuis son ecran (clic : une pile, clic droit : tout) ; casse, il les rend."
           ]
         }
       ],

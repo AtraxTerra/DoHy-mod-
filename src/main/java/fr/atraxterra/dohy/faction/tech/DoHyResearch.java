@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.faction.tech;
 
 import fr.atraxterra.dohy.DoHy;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Rarity;
@@ -16,6 +17,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 
 import java.util.Set;
 
@@ -49,8 +51,14 @@ public final class DoHyResearch {
         NeoForge.EVENT_BUS.addListener((ServerStoppedEvent event) -> ResearchLabBlockEntity.forgetAll());
     }
 
-    /** L'energie du laboratoire, offerte sur toutes ses faces : les cables de NTM NEXT et de tout mod FE la trouvent. */
+    /**
+     * L'energie du laboratoire, offerte sur toutes ses faces : les cables de NTM NEXT et de tout mod FE la
+     * trouvent. Ses pieces aussi (lot 23i) : un entonnoir, un convoyeur ou un tuyau d'objets y livre ce que
+     * demandent les paliers, et rien ne peut l'en vider (sans face, il se lit comme par le haut).
+     */
     private static void onCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, LAB_TYPE.get(), (lab, side) -> lab.energy());
+        event.registerBlockEntity(Capabilities.Item.BLOCK, LAB_TYPE.get(), (lab, side) ->
+                new WorldlyContainerWrapper(lab, side == null ? Direction.UP : side));
     }
 }
