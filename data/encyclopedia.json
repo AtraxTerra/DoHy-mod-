@@ -2314,7 +2314,8 @@
           "title": "Les claims",
           "text": [
             "- Un claim protege un chunk contre le monde : explosions de monstres, endermen, champs pietines, foudre.",
-            "- Chaque claim peut refuser l'apparition des monstres."
+            "- Chaque claim peut refuser l'apparition des monstres.",
+            "- Sur la grande carte (M), la puce CLAIMS revendique ou rend des chunks d'un clic, a 1 024 blocs de toi au plus."
           ]
         },
         {
@@ -3379,10 +3380,27 @@
         "Touches M et N"
       ],
       "summary": [
-        "Une carte faite maison : la minicarte en haut a gauche (le nord en haut, tes coordonnees, le pays, la saison) et l'atlas en plein ecran."
+        "Une carte faite maison : la minicarte en haut a gauche (le nord en haut, tes coordonnees, le pays, la saison) et l'atlas en plein ecran, qui montre le monde entier."
+      ],
+      "sections": [
+        {
+          "title": "Le monde entier",
+          "text": [
+            "La grande carte montre tout le monde, pas seulement la ou tu es passe : le serveur lit ses fichiers et en tire la carte, en tache de fond des son demarrage (la premiere fois, compte une demi-heure a une heure pour la Terre entiere), puis la tient a jour. Ce qui n'est pas encore pret se prepare des que tu le regardes.",
+            "Ce que tu explores passe devant : c'est ta propre vue, a jour de ce que tu construis."
+          ]
+        },
+        {
+          "title": "Les claims",
+          "text": [
+            "Le calque Claims montre tes chunks en or, les bases ennemies et les places fortes en rouge, les nations des autres joueurs en rose.",
+            "La puce CLAIMS, en haut a droite de la grande carte, ouvre le mode claim : un clic revendique un chunk libre ou rend un des tiens, Maj + glisser choisit une zone (clic droit pour la rendre), Echap en sort. A 1 024 blocs de toi au plus, 64 chunks a la fois, dans la limite de ta nation."
+          ]
+        }
       ],
       "commands": [
         "M : l'atlas",
+        "CLAIMS, sur l'atlas : revendiquer des chunks d'un clic",
         "N : afficher ou cacher la minicarte",
         "= et - : zoomer la minicarte"
       ],

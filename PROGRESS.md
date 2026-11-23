@@ -192,6 +192,29 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-23 (suite) — la grande carte : les claims, et le monde entier révélé
+
+**Demande** : « Ajoute un système de claim directement sur la worldmap », puis « je veux que la map
+soit entièrement révélée, pas au fur et à mesure que j'explore ». Détail : `docs/CONTENU_DOHY.md`,
+« L'atlas », « Le monde entier et les claims ».
+
+- **Le monde entier** : le serveur rend ses propres fichiers de région en dalles de carte, aux trois
+  échelles de l'atlas (`atlas/WorldTiles`, `RegionReader`, `ChunkNbt`, `ChunkColors`, `MapShade`,
+  partagé avec le relevé du client), sur un fil à part : **passage de fond** de tout l'overworld dès
+  le démarrage (de l'ordre d'une demi-heure à une heure pour les 3 936 régions de la Terre la première
+  fois, puis seulement les régions changées, toutes les dix minutes), et rendu immédiat de ce que la
+  grande carte demande (`client/atlas/AtlasRemote`). Dessinées sous le relevé du client, qui reste
+  devant. Vérifié en CI : pixels d'un coin jamais vu par le client aux trois échelles, banc de rendu
+  sur des chunks du Nether (environ 0,5 ms par chunk plein).
+- **Les claims sur la carte** : calque Claims (tes chunks, bases ennemies, places fortes, autres
+  nations ; `faction/ClaimMap`), mode claim par la puce CLAIMS (clic, ou Maj + glisser pour une zone
+  de 64 chunks au plus, à 1 024 blocs de toi). Le serveur passe par `FactionApi.claimChunk`, qui
+  refait toutes les vérifications de `/f claim` (le code de `/f claim` est le même, découpé).
+- **`AtlasScreen(zoom, x, z)`** : la grande carte peut s'ouvrir sur un point donné (captures).
+- **Mis de côté** : les points ouverts (tag `minecraft:dirt` sur la carte de la Terre, plafonds
+  villageois, barème d'XP du niveau global) sont commencés sur la branche `feat/points-ouverts`
+  (poussée, sans PR) — à reprendre.
+
 ### 2026-11-22 — organisations et économie souterraine, lot 24a
 
 **Demande** : un long prompt (fusion factions/pays avec hiérarchie, diplomatie, influence ;

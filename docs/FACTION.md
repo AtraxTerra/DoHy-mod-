@@ -60,7 +60,10 @@ chapitre 24 : `docs/ORGANISATIONS.md`.
   revendiqué porte aussi son propriétaire (`ClaimOwner`), pour que la protection réponde sans le
   joueur.
 - **Claims** : 5 au départ (l'arbre en ajoute), dans le Monde, le Nether ou l'End. Tes propres
-  explosions (TNT, dynamites) cassent ton claim, celles des monstres non.
+  explosions (TNT, dynamites) cassent ton claim, celles des monstres non. Depuis le 2026-11-23,
+  aussi **sur la grande carte** (M, puce CLAIMS) : un clic ou une zone de 64 chunks au plus, à
+  1 024 blocs de toi, avec les mêmes vérifications que `/f claim` (voir l'atlas dans
+  `CONTENU_DOHY.md`).
 - **Banque de faction** : dépôts et retraits, historique des 30 derniers mouvements ; elle paiera
   l'arbre de technologie.
 - **F homes** : posés dans un claim, rejoints après quelques secondes immobile. Aucun avant le
