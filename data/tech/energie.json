@@ -152,7 +152,6 @@
         "hbm:red_pylon_large",
         "hbm:substation",
         "hbm:red_connector_super",
-        "leafia:hp_boiler",
         "leafia:wind_turbine_medium"
       ],
       "machines": [
@@ -167,7 +166,6 @@
         {"id": "hbm:red_pylon_large", "name": "Large Electricity Pylon"},
         {"id": "hbm:substation", "name": "Substation"},
         {"id": "hbm:red_connector_super", "name": "Heavy Duty Electricity Connector"},
-        {"id": "leafia:hp_boiler", "name": "High-Pressure Boiler"},
         {"id": "leafia:wind_turbine_medium", "name": "Medium Wind Turbine"}
       ],
       "bonuses": [
@@ -185,12 +183,13 @@
     {
       "tier": 5,
       "name": "Grandes turbines",
-      "requires": ["industrie:4"],
+      "requires": ["industrie:4", "nucleaire:3"],
       "unlocks": [
         "hbm:machine_chungus",
         "leafia:modular_turbine_*",
         "leafia:coolant_heatex",
-        "hbm:machine_tower_large"
+        "hbm:machine_tower_large",
+        "leafia:hp_boiler"
       ],
       "machines": [
         {"id": "hbm:machine_chungus", "name": "Leviathan Steam Turbine"},
@@ -225,7 +224,8 @@
         {"id": "leafia:modular_turbine_port", "name": "Modular Turbine Electricity Port"},
         {"id": "leafia:modular_turbine_shaft", "name": "Modular Turbine Shaft"},
         {"id": "leafia:coolant_heatex", "name": "Coolant Heat Exchanger"},
-        {"id": "hbm:machine_tower_large", "name": "Cooling Tower"}
+        {"id": "hbm:machine_tower_large", "name": "Cooling Tower"},
+        {"id": "leafia:hp_boiler", "name": "High-Pressure Boiler"}
       ],
       "bonuses": [
         {"type": "machine_energy", "value": 15, "label": "machines DoHy -15 % d'energie"}

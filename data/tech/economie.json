@@ -43,10 +43,8 @@
     {
       "tier": 4,
       "name": "Concessions",
-      "unlocks": ["hbm:mass_storage_desh"],
-      "machines": [
-        {"id": "hbm:mass_storage_desh", "name": "Mass Storage Unit"}
-      ],
+      "unlocks": [],
+      "machines": [],
       "bonuses": [
         {"type": "mines_money", "value": 10, "label": "mines de la Terre +10 %"}
       ],
@@ -55,10 +53,8 @@
     {
       "tier": 5,
       "name": "Bourse",
-      "unlocks": ["hbm:mass_storage_tcalloy"],
-      "machines": [
-        {"id": "hbm:mass_storage_tcalloy", "name": "Mass Storage Unit"}
-      ],
+      "unlocks": [],
+      "machines": [],
       "bonuses": [
         {"type": "market_tax", "value": 2, "label": "taxe du marche international -2 points"}
       ],

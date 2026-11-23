@@ -131,7 +131,8 @@
         "hbm:pump_electric",
         "hbm:fluid_duct_gauge",
         "hbm:machine_pumpjack",
-        "hbm:machine_electrolyser"
+        "hbm:machine_electrolyser",
+        "hbm:anvil_desh"
       ],
       "machines": [
         {"id": "hbm:machine_refinery", "name": "Raffinerie de petrole"},
@@ -147,7 +148,8 @@
         {"id": "hbm:pump_electric", "name": "Electric Groundwater Pump"},
         {"id": "hbm:fluid_duct_gauge", "name": "Flow Gauge Pipe"},
         {"id": "hbm:machine_pumpjack", "name": "Pumpjack"},
-        {"id": "hbm:machine_electrolyser", "name": "Electrolysis Machine"}
+        {"id": "hbm:machine_electrolyser", "name": "Electrolysis Machine"},
+        {"id": "hbm:anvil_desh", "name": "Desh Anvil"}
       ],
       "bonuses": [],
       "cost": {
@@ -162,6 +164,7 @@
     {
       "tier": 4,
       "name": "Petrochimie",
+      "requires": ["nucleaire:2"],
       "unlocks": [
         "hbm:machine_vacuum_distill",
         "hbm:machine_coker",
@@ -169,7 +172,6 @@
         "hbm:machine_catalytic_reformer",
         "hbm:machine_bigasstank",
         "hbm:machine_orbus",
-        "hbm:barrel_tcalloy",
         "leafia:mixingvat",
         "leafia:ff_*",
         "leafia:fluid_duct_*",
@@ -182,7 +184,6 @@
         {"id": "hbm:machine_catalytic_reformer", "name": "Catalytic Reformer"},
         {"id": "hbm:machine_bigasstank", "name": "Big-Ass Tank"},
         {"id": "hbm:machine_orbus", "name": "Heavy Magnetic Storage Tank"},
-        {"id": "hbm:barrel_tcalloy", "name": "Technetium Steel Barrel"},
         {"id": "leafia:mixingvat", "name": "Mixing Vat"},
         {"id": "leafia:ff_converter", "name": "Special Pipe Adapter"},
         {"id": "leafia:ff_duct", "name": "Special Pipe"},
@@ -210,7 +211,7 @@
     {
       "tier": 5,
       "name": "Chimie lourde",
-      "requires": ["industrie:4"],
+      "requires": ["industrie:4", "nucleaire:3"],
       "unlocks": [
         "hbm:machine_fracking_tower",
         "hbm:machine_chemical_factory",

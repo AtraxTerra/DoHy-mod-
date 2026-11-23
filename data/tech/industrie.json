@@ -87,7 +87,6 @@
         "hbm:conveyor*",
         "hbm:crane_*",
         "hbm:piston_inserter",
-        "hbm:anvil_desh",
         "hbm:machine_funnel"
       ],
       "machines": [
@@ -115,7 +114,6 @@
         {"id": "hbm:crane_splitter", "name": "Conveyor Splitter"},
         {"id": "hbm:crane_unboxer", "name": "Conveyor Unboxer"},
         {"id": "hbm:piston_inserter", "name": "Inserter"},
-        {"id": "hbm:anvil_desh", "name": "Desh Anvil"},
         {"id": "hbm:machine_funnel", "name": "Combinator Funnel"}
       ],
       "bonuses": [
@@ -144,9 +142,9 @@
         "hbm:pneumatic_*",
         "hbm:cargo_elevator",
         "leafia:elevator_*",
-        "hbm:anvil_saturnite",
-        "hbm:anvil_bismuth_bronze",
-        "leafia:regex_filter"
+        "leafia:regex_filter",
+        "hbm:mass_storage_desh",
+        "hbm:mass_storage_tcalloy"
       ],
       "machines": [
         {"id": "hbm:machine_assembly_factory", "name": "Assembly Factory"},
@@ -171,9 +169,9 @@
         {"id": "leafia:elevator_buffer", "name": "Elevator Buffer"},
         {"id": "leafia:elevator_pulley", "name": "Elevator Pulley"},
         {"id": "leafia:elevator_shaft", "name": "Elevator Shaft"},
-        {"id": "hbm:anvil_saturnite", "name": "Saturnite Anvil"},
-        {"id": "hbm:anvil_bismuth_bronze", "name": "Bismuth Bronze Anvil"},
-        {"id": "leafia:regex_filter", "name": "Pneumatic Tube RegEx Filter"}
+        {"id": "leafia:regex_filter", "name": "Pneumatic Tube RegEx Filter"},
+        {"id": "hbm:mass_storage_desh", "name": "Mass Storage Unit"},
+        {"id": "hbm:mass_storage_tcalloy", "name": "Mass Storage Unit"}
       ],
       "bonuses": [
         {"type": "vault_slots", "value": 27, "label": "coffre de la banque +27 cases"}
@@ -198,7 +196,9 @@
         "hbmspace:machine_drive_processor",
         "hbmspace:machine_vacuum_circuit",
         "hbm:machine_exposure_chamber",
-        "hbm:machine_keyforge"
+        "hbm:machine_keyforge",
+        "hbm:anvil_saturnite",
+        "hbm:anvil_bismuth_bronze"
       ],
       "machines": [
         {"id": "hbm:machine_mining_laser", "name": "Mining Laser"},
@@ -207,7 +207,9 @@
         {"id": "hbmspace:machine_drive_processor", "name": "Drive Processor"},
         {"id": "hbmspace:machine_vacuum_circuit", "name": "Vacuum Solderer"},
         {"id": "hbm:machine_exposure_chamber", "name": "Exposure Chamber"},
-        {"id": "hbm:machine_keyforge", "name": "Locksmith Table"}
+        {"id": "hbm:machine_keyforge", "name": "Locksmith Table"},
+        {"id": "hbm:anvil_saturnite", "name": "Saturnite Anvil"},
+        {"id": "hbm:anvil_bismuth_bronze", "name": "Bismuth Bronze Anvil"}
       ],
       "bonuses": [
         {"type": "research", "value": 10, "label": "recherche +10 %"}

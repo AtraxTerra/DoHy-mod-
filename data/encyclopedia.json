@@ -2799,10 +2799,11 @@
         {
           "title": "Dans l'ordre de NTM",
           "text": [
-            "Energie et Industrie suivent la fabrication de NTM NEXT : le haut fourneau, l'acier et son enclume des le depart (Industrie I), l'assembleuse et la fonderie au II, la soudeuse et le four a arc au III, avec l'usine chimique (Chimie II) pour le beton et le desh.",
-            "Les carburants et la turbine a gaz demandent le raffinage (Chimie III), d'ou vient le caoutchouc ; l'assemblage de masse aussi. Les circuits polyvalents du laser et du supercalculateur demandent la petrochimie (Chimie IV).",
+            "Energie et Industrie suivent la fabrication de NTM NEXT : le haut fourneau, l'acier et son enclume des le depart (Industrie I), l'assembleuse et la fonderie au II, la soudeuse et le four a arc au III, avec l'usine chimique (Chimie II) pour le beton. Le desh vient du raffinage : son enclume est a la Chimie III.",
+            "Les carburants et la turbine a gaz demandent le raffinage (Chimie III), d'ou vient le caoutchouc ; l'assemblage de masse aussi. Les circuits polyvalents du laser et du supercalculateur demandent la petrochimie (Chimie IV), et le bismuth que donnent les RTG (Nucleaire II) : la Chimie IV demande le Nucleaire II.",
             "La Chimie suit le meme ordre : tuyaux, vannes et pompes a vapeur d'office ; reservoir et drain avec la fonderie (Chimie II) ; le raffinage (III) demande l'Industrie III pour ses plaques soudees, avec le chevalet de pompage, l'electrolyseur et la pompe electrique ; le four a pyrolyse passe a la petrochimie (IV).",
             "Le film d'algues, qui demande la feuille de sel des plantes de Laythe, passe de l'Agriculture V a l'Espace V.",
+            "L'Espace : les liaisons satellites rejoignent les lanceurs (Espace II) ; les stations orbitales (IV) demandent la Chimie V (l'argon du propulseur) et le Nucleaire IV (le tritium de l'orrery, le fil de schrabidate).",
             "Le Nucleaire et la Defense aussi : la ZIRNOX et la centrifugeuse a gaz rejoignent le RBMK (Nucleaire III, qui demande la Chimie III) ; la forge a plasma (Industrie VI) vient avant la fusion (Nucleaire VI), qui en a besoin ; les tourelles demandent l'Industrie III, les grandes la Chimie III.",
             "Un palier d'office ne verrouille rien : il peut garder une machine qu'on ne fabrique qu'avec un autre domaine (portes blindees, absorbeur de radiations). Elle se pose des qu'on sait la faire."
           ]
