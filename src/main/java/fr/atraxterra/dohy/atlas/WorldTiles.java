@@ -22,16 +22,21 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-import java.io.ByteArrayInputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.file.DirectoryIteratorException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,9 +50,9 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
+import java.util.zip.Inflater;
 
 /**
  * L'atlas du serveur : le terrain du monde entier, lu dans ses fichiers de region, pour que la
@@ -62,6 +67,11 @@ import java.util.zip.InflaterInputStream;
  *
  * <p>Une dalle d'ensemble couvre 64 regions (4 096 blocs de cote) : la premiere fois, elle se remplit
  * en plusieurs envois, au fil des regions lues.
+ *
+ * <p>Le passage de fond : quand personne ne demande rien, le fil rend une a une toutes les regions du
+ * monde (l'overworld) qui n'ont pas encore de rendu, en commencant pres du joueur connecte, puis, toutes
+ * les dix minutes, celles dont le fichier a change. La carte d'ensemble est ainsi prete avant d'etre
+ * regardee ; il va moitie moins vite quand un joueur est la.
  */
 @EventBusSubscriber
 public final class WorldTiles {
@@ -84,6 +94,14 @@ public final class WorldTiles {
     private static final long SAVE_MS = 30_000L;
     /** Au-dela de 30 millions de blocs, rien n'existe. */
     private static final long WORLD_LIMIT = 30_000_000L;
+    /** Le passage de fond reprend, pour les regions changees, au plus toutes les dix minutes. */
+    private static final long SWEEP_EVERY_MS = 10L * 60_000L;
+    /** Un passage de fond plus court ne se raconte pas dans la console (sauf le premier). */
+    private static final int SWEEP_LOG_MIN = 64;
+    /** Le passage de fond repart du joueur quand il s'est eloigne de plus de deux regions. */
+    private static final int REFOCUS_BLOCKS = 1024;
+    /** La position du joueur connecte (blocs x et z tasses) et sa presence, relues toutes les cinq secondes. */
+    private static final int WATCH_EVERY = 100;
 
     /** La demande d'une dalle de la carte. */
     public record TileRequest(String dimension, int level, int tx, int tz) implements CustomPacketPayload {
@@ -150,6 +168,12 @@ public final class WorldTiles {
     private static volatile MinecraftServer server;
     private static volatile boolean running;
     private static Thread worker;
+    /** D'ou part le passage de fond : un joueur de l'overworld ({@code Long.MIN_VALUE} : personne encore). */
+    private static volatile long focus = Long.MIN_VALUE;
+    /** Vrai quand un joueur est connecte : le passage de fond va moins vite. */
+    private static volatile boolean playing;
+    /** Les chunks lus depuis le demarrage (fil de l'atlas). */
+    private static long chunksRead;
 
     private WorldTiles() {
     }
@@ -172,6 +196,9 @@ public final class WorldTiles {
     @SubscribeEvent
     public static void onStarted(ServerStartedEvent event) {
         server = event.getServer();
+        // Le passage de fond commence tout de suite : la carte du monde sera prete quand on la regardera.
+        store(event.getServer(), event.getServer().overworld());
+        start();
     }
 
     @SubscribeEvent
@@ -195,6 +222,8 @@ public final class WorldTiles {
         QUEUE.clear();
         OUTBOX.clear();
         server = null;
+        focus = Long.MIN_VALUE;
+        playing = false;
     }
 
     @SubscribeEvent
@@ -208,9 +237,19 @@ public final class WorldTiles {
         });
     }
 
-    /** Une dalle par joueur tous les cinq ticks. */
+    /** Une dalle par joueur tous les cinq ticks ; ou est le joueur, pour le passage de fond. */
     @SubscribeEvent
     public static void onTick(ServerTickEvent.Post event) {
+        if (event.getServer().getTickCount() % WATCH_EVERY == 0) {
+            List<ServerPlayer> players = event.getServer().getPlayerList().getPlayers();
+            playing = !players.isEmpty();
+            for (ServerPlayer player : players) {
+                if (player.level().dimension() == Level.OVERWORLD) {
+                    focus = key(player.getBlockX(), player.getBlockZ());
+                    break;
+                }
+            }
+        }
         if (OUTBOX.isEmpty() || event.getServer().getTickCount() % SEND_EVERY != 0) {
             return;
         }
@@ -253,11 +292,8 @@ public final class WorldTiles {
             return;
         }
         server = current;
-        STORES.computeIfAbsent(request.dimension(), key -> new Store(regionFolder(current, level),
-                current.getWorldPath(LevelResource.ROOT).resolve("dohy").resolve("atlas")
-                        .resolve(dimensionId.getNamespace()).resolve(dimensionId.getPath()),
-                level.dimensionType().hasCeiling()));
-        Job job = new Job(request.dimension(), request.level(), request.tx(), request.tz());
+        Store store = store(current, level);
+        Job job = new Job(store.name, request.level(), request.tx(), request.tz());
         boolean[] created = new boolean[1];
         WAITING.computeIfAbsent(job, key -> {
             created[0] = true;
@@ -267,6 +303,15 @@ public final class WorldTiles {
             QUEUE.add(new Queued(job, ORDER.incrementAndGet()));
         }
         start();
+    }
+
+    /** Les dalles d'une dimension, sous son identifiant ({@code minecraft:overworld}). */
+    private static Store store(MinecraftServer current, ServerLevel level) {
+        Identifier id = level.dimension().identifier();
+        return STORES.computeIfAbsent(id.toString(), name -> new Store(name, regionFolder(current, level),
+                current.getWorldPath(LevelResource.ROOT).resolve("dohy").resolve("atlas")
+                        .resolve(id.getNamespace()).resolve(id.getPath()),
+                level.dimensionType().hasCeiling()));
     }
 
     /** Le dossier des regions d'une dimension : celui du jeu, ou celui d'un monde range par dimension. */
@@ -305,17 +350,30 @@ public final class WorldTiles {
 
     private static void work() {
         while (running) {
-            Queued next;
-            try {
-                next = QUEUE.poll(2, TimeUnit.SECONDS);
-            } catch (InterruptedException interrupted) {
-                break;
-            }
             for (Store store : STORES.values()) {
                 store.saveIfDue();
             }
+            Queued next = QUEUE.poll();
             if (next == null) {
-                continue;
+                // Personne n'attend rien : une region du passage de fond, puis on revient aux demandes.
+                Store world = STORES.get(Level.OVERWORLD.identifier().toString());
+                try {
+                    if (world != null && world.sweepStep()) {
+                        continue;
+                    }
+                } catch (RuntimeException | LinkageError error) {
+                    // Il reprendra au prochain passage, dans dix minutes.
+                    world.abandon();
+                    DoHy.LOGGER.warn("Atlas du serveur : passage de fond interrompu ({})", error.toString());
+                }
+                try {
+                    next = QUEUE.poll(2, TimeUnit.SECONDS);
+                } catch (InterruptedException interrupted) {
+                    break;
+                }
+                if (next == null) {
+                    continue;
+                }
             }
             Job job = next.job();
             Store store = STORES.get(job.dimension());
@@ -355,10 +413,21 @@ public final class WorldTiles {
     // -- Les dalles d'une dimension (fil de l'atlas seulement) -----------------------------------------
 
     private static final class Store {
+        final String name;
         final Path regions;
         final Path cache;
         final boolean ceiling;
         final Map<Long, Long> stamps = new HashMap<>();
+        /** Le passage de fond : les regions qui restent a voir, la plus proche du joueur en tete. */
+        final ArrayDeque<Long> sweep = new ArrayDeque<>();
+        long sweptAt = Long.MIN_VALUE / 2;
+        long sortedFor = Long.MIN_VALUE;
+        boolean firstSweep = true;
+        int sweepTotal;
+        int sweepDone;
+        long sweepStarted;
+        long sweepBusy;
+        long sweepChunks;
         final LinkedHashMap<Long, int[]> rendered = new LinkedHashMap<>(16, 0.75f, true);
         final LinkedHashMap<Long, int[]> middle = new LinkedHashMap<>(32, 0.75f, true);
         final LinkedHashMap<Long, int[]> overview = new LinkedHashMap<>(32, 0.75f, true);
@@ -368,7 +437,8 @@ public final class WorldTiles {
         boolean stampsDirty;
         long savedAt = System.currentTimeMillis();
 
-        Store(Path regions, Path cache, boolean ceiling) {
+        Store(String name, Path regions, Path cache, boolean ceiling) {
+            this.name = name;
             this.regions = regions;
             this.cache = cache;
             this.ceiling = ceiling;
@@ -383,7 +453,7 @@ public final class WorldTiles {
             if (!Files.isRegularFile(file)) {
                 return;
             }
-            try (DataInputStream in = new DataInputStream(Files.newInputStream(file))) {
+            try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(file)))) {
                 int count = in.readInt();
                 for (int index = 0; index < count; index++) {
                     stamps.put(in.readLong(), in.readLong());
@@ -394,7 +464,7 @@ public final class WorldTiles {
         }
 
         int[] fine(int tx, int tz) {
-            int[] region = region(Math.floorDiv(tx, 2), Math.floorDiv(tz, 2), true);
+            int[] region = region(Math.floorDiv(tx, 2), Math.floorDiv(tz, 2), true, false);
             if (region == null) {
                 return null;
             }
@@ -409,8 +479,8 @@ public final class WorldTiles {
 
         int[] middle(int tx, int tz) {
             boolean any = false;
-            for (int dz = 0; dz < 2; dz++) {
-                for (int dx = 0; dx < 2; dx++) {
+            for (int dz = 0; dz < 2 && running; dz++) {
+                for (int dx = 0; dx < 2 && running; dx++) {
                     any |= ensure(tx * 2 + dx, tz * 2 + dz);
                 }
             }
@@ -421,8 +491,8 @@ public final class WorldTiles {
         int[] overview(int tx, int tz, Consumer<int[]> partial) {
             boolean any = false;
             int rendered = 0;
-            for (int dz = 0; dz < 8; dz++) {
-                for (int dx = 0; dx < 8; dx++) {
+            for (int dz = 0; dz < 8 && running; dz++) {
+                for (int dx = 0; dx < 8 && running; dx++) {
                     boolean exists = Files.isRegularFile(file(tx * 8 + dx, tz * 8 + dz));
                     boolean fresh = exists && fresh(tx * 8 + dx, tz * 8 + dz);
                     any |= ensure(tx * 8 + dx, tz * 8 + dz);
@@ -463,13 +533,16 @@ public final class WorldTiles {
                 return false;
             }
             if (!fresh(rx, rz)) {
-                region(rx, rz, false);
+                region(rx, rz, false, false);
             }
             return true;
         }
 
-        /** Les couleurs de la region, un pixel par bloc ; {@code null} si elle n'existe pas. */
-        private int[] region(int rx, int rz, boolean pixels) {
+        /**
+         * Les couleurs de la region, un pixel par bloc ; {@code null} si elle n'existe pas. Celles du
+         * passage de fond ({@code background}) ne se gardent pas en memoire et laissent plus de repos.
+         */
+        private int[] region(int rx, int rz, boolean pixels, boolean background) {
             Path path = file(rx, rz);
             if (!Files.isRegularFile(path)) {
                 return null;
@@ -481,20 +554,149 @@ public final class WorldTiles {
             }
             if (pixels || !fresh(rx, rz)) {
                 long started = System.nanoTime();
+                long chunksBefore = chunksRead;
                 int[] colors = render(path, rx, rz, ceiling);
-                rendered.put(key, colors);
-                while (rendered.size() > 6) {
-                    Iterator<Long> eldest = rendered.keySet().iterator();
-                    eldest.next();
-                    eldest.remove();
+                if (!background) {
+                    rendered.put(key, colors);
+                    while (rendered.size() > 6) {
+                        Iterator<Long> eldest = rendered.keySet().iterator();
+                        eldest.next();
+                        eldest.remove();
+                    }
                 }
                 apply(rx, rz, colors);
                 stamps.put(key, System.currentTimeMillis());
                 stampsDirty = true;
-                rest(System.nanoTime() - started);
+                long elapsed = System.nanoTime() - started;
+                if (background) {
+                    sweepBusy += elapsed;
+                    sweepChunks += chunksRead - chunksBefore;
+                }
+                rest(elapsed, background);
                 return colors;
             }
             return null;
+        }
+
+        // -- Le passage de fond (fil de l'atlas) ---------------------------------------------------------
+
+        /** Une region du passage de fond ; faux s'il n'y a rien a rendre pour l'instant. */
+        boolean sweepStep() {
+            if (sweep.isEmpty()) {
+                long now = System.currentTimeMillis();
+                if (now - sweptAt < SWEEP_EVERY_MS) {
+                    return false;
+                }
+                sweptAt = now;
+                plan();
+                if (sweep.isEmpty()) {
+                    firstSweep = false;
+                    return false;
+                }
+            }
+            long wanted = focus;
+            if (wanted != Long.MIN_VALUE && (sortedFor == Long.MIN_VALUE || distance(wanted, sortedFor) > REFOCUS_BLOCKS)) {
+                List<Long> left = new ArrayList<>(sweep);
+                sweep.clear();
+                sweep.addAll(sorted(left, wanted));
+                sortedFor = wanted;
+            }
+            while (!sweep.isEmpty() && running) {
+                long key = sweep.poll();
+                int rx = (int) (key >> 32);
+                int rz = (int) key;
+                if (Files.isRegularFile(file(rx, rz)) && !fresh(rx, rz)) {
+                    region(rx, rz, false, true);
+                    sweepDone++;
+                    if (sweepTotal >= SWEEP_LOG_MIN && sweepDone % 500 == 0 && !sweep.isEmpty()) {
+                        DoHy.LOGGER.info("Atlas du serveur : carte de {}, {} / {} regions", name, sweepDone, sweepTotal);
+                    }
+                    if (sweep.isEmpty()) {
+                        finish();
+                    }
+                    return true;
+                }
+            }
+            finish();
+            return false;
+        }
+
+        /** Les regions du monde qui n'ont pas de rendu a jour, de la plus proche du joueur a la plus loin. */
+        private void plan() {
+            List<Long> todo = new ArrayList<>();
+            try (DirectoryStream<Path> files = Files.newDirectoryStream(regions, "r.*.mca")) {
+                for (Path path : files) {
+                    String[] parts = path.getFileName().toString().split("\\.");
+                    if (parts.length != 4) {
+                        continue;
+                    }
+                    int rx;
+                    int rz;
+                    try {
+                        rx = Integer.parseInt(parts[1]);
+                        rz = Integer.parseInt(parts[2]);
+                    } catch (NumberFormatException wrong) {
+                        continue;
+                    }
+                    if (!fresh(rx, rz)) {
+                        todo.add(key(rx, rz));
+                    }
+                }
+            } catch (IOException | DirectoryIteratorException error) {
+                return;
+            }
+            if (todo.isEmpty()) {
+                return;
+            }
+            long from = focus;
+            sortedFor = from;
+            sweep.addAll(sorted(todo, from == Long.MIN_VALUE ? 0L : from));
+            sweepTotal = todo.size();
+            sweepDone = 0;
+            sweepBusy = 0L;
+            sweepChunks = 0L;
+            sweepStarted = System.currentTimeMillis();
+            if (firstSweep || sweepTotal >= SWEEP_LOG_MIN) {
+                DoHy.LOGGER.info("Atlas du serveur : {} regions a rendre pour la carte de {}, en tache de fond",
+                        sweepTotal, name);
+            }
+        }
+
+        /** Le passage s'arrete sur une erreur : le suivant repartira dans dix minutes. */
+        void abandon() {
+            sweep.clear();
+            sweptAt = System.currentTimeMillis();
+            firstSweep = false;
+            sweepTotal = 0;
+            sweepDone = 0;
+        }
+
+        /** Le passage est fini : il se raconte s'il etait long (ou le premier). */
+        private void finish() {
+            if (sweepTotal > 0 && (firstSweep || sweepTotal >= SWEEP_LOG_MIN)) {
+                long minutes = Math.round((System.currentTimeMillis() - sweepStarted) / 60_000.0d);
+                long busy = Math.round(sweepBusy / 60_000_000_000.0d);
+                DoHy.LOGGER.info("Atlas du serveur : carte de {} a jour, {} regions ({} chunks) en {} min, dont {} de"
+                                + " rendu ({} ms par region)", name, sweepDone, sweepChunks, minutes, busy,
+                        sweepDone == 0 ? 0 : sweepBusy / 1_000_000L / sweepDone);
+            }
+            firstSweep = false;
+            sweepTotal = 0;
+            sweepDone = 0;
+        }
+
+        private static List<Long> sorted(List<Long> keys, long from) {
+            List<Long> copy = new ArrayList<>(keys);
+            copy.sort(Comparator.comparingLong(key -> {
+                long dx = (long) (int) (key >> 32) * REGION + REGION / 2 - (int) (from >> 32);
+                long dz = (long) (int) (long) key * REGION + REGION / 2 - (int) (long) from;
+                return dx * dx + dz * dz;
+            }));
+            return copy;
+        }
+
+        private static long distance(long a, long b) {
+            return Math.max(Math.abs((long) (int) (a >> 32) - (int) (b >> 32)), Math.abs((long) (int) a - (int) b));
         }
 
         /** Le rendu d'une region passe dans ses dalles moyenne et d'ensemble. */
@@ -568,7 +770,8 @@ public final class WorldTiles {
             stampsDirty = false;
             try {
                 Files.createDirectories(cache);
-                try (DataOutputStream out = new DataOutputStream(Files.newOutputStream(cache.resolve("regions.bin")))) {
+                try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(
+                        Files.newOutputStream(cache.resolve("regions.bin"))))) {
                     out.writeInt(stamps.size());
                     for (Map.Entry<Long, Long> entry : stamps.entrySet()) {
                         out.writeLong(entry.getKey());
@@ -593,10 +796,17 @@ public final class WorldTiles {
         }
     }
 
-    /** Laisse respirer le serveur : une pause d'un tiers du temps de rendu. */
-    private static void rest(long nanos) {
+    /**
+     * Laisse respirer le serveur : une pause d'un tiers du temps de rendu ; pour le passage de fond, quand
+     * un joueur est la, une pause aussi longue que le rendu.
+     */
+    private static void rest(long nanos, boolean background) {
+        long millis = background && playing ? Math.min(1_000L, nanos / 1_000_000L) : Math.min(400L, nanos / 3_000_000L);
+        if (millis <= 0L || !running) {
+            return;
+        }
         try {
-            Thread.sleep(Math.min(400L, nanos / 3_000_000L));
+            Thread.sleep(millis);
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
         }
@@ -611,25 +821,28 @@ public final class WorldTiles {
         Arrays.fill(heights, Integer.MIN_VALUE);
         int[] chunkColors = new int[256];
         int[] chunkHeights = new int[256];
-        try (RegionReader reader = new RegionReader(path, rx, rz)) {
-            for (int lz = 0; lz < 32; lz++) {
-                for (int lx = 0; lx < 32; lx++) {
-                    if (!reader.has(lx, lz)) {
-                        continue;
-                    }
-                    var chunk = reader.chunk(lx, lz);
-                    if (chunk == null || !ChunkColors.decode(chunk, ceiling, chunkColors, chunkHeights)) {
-                        continue;
-                    }
-                    for (int z = 0; z < 16; z++) {
-                        int row = (lz * 16 + z) * REGION + lx * 16;
-                        System.arraycopy(chunkColors, z * 16, colors, row, 16);
-                        System.arraycopy(chunkHeights, z * 16, heights, row, 16);
-                    }
-                }
-            }
+        RegionReader reader;
+        try {
+            reader = new RegionReader(path, rx, rz);
         } catch (IOException error) {
             return colors;
+        }
+        for (int lz = 0; lz < 32; lz++) {
+            for (int lx = 0; lx < 32; lx++) {
+                if (!reader.has(lx, lz)) {
+                    continue;
+                }
+                List<ChunkNbt.Section> sections = reader.sections(lx, lz);
+                if (sections == null || !ChunkColors.decode(sections, ceiling, chunkColors, chunkHeights)) {
+                    continue;
+                }
+                chunksRead++;
+                for (int z = 0; z < 16; z++) {
+                    int row = (lz * 16 + z) * REGION + lx * 16;
+                    System.arraycopy(chunkColors, z * 16, colors, row, 16);
+                    System.arraycopy(chunkHeights, z * 16, heights, row, 16);
+                }
+            }
         }
         // La pente, avec le voisin du nord, comme le releve du client.
         for (int z = REGION - 1; z >= 0; z--) {
@@ -675,28 +888,50 @@ public final class WorldTiles {
         return ((long) x << 32) | (z & 0xFFFFFFFFL);
     }
 
+    /** Les couleurs d'une dalle, compressees d'un coup (zlib, entiers gros-boutistes). */
     static byte[] deflate(int[] pixels) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream(64 * 1024);
-        try (DataOutputStream out = new DataOutputStream(new DeflaterOutputStream(bytes,
-                new Deflater(Deflater.BEST_SPEED)))) {
-            for (int pixel : pixels) {
-                out.writeInt(pixel);
+        ByteBuffer raw = ByteBuffer.allocate(pixels.length * 4);
+        raw.asIntBuffer().put(pixels);
+        Deflater deflater = new Deflater(Deflater.BEST_SPEED);
+        try {
+            deflater.setInput(raw.array());
+            deflater.finish();
+            ByteArrayOutputStream out = new ByteArrayOutputStream(64 * 1024);
+            byte[] buffer = new byte[32 * 1024];
+            while (!deflater.finished()) {
+                int written = deflater.deflate(buffer);
+                out.write(buffer, 0, written);
             }
-        } catch (IOException error) {
-            return new byte[0];
+            return out.toByteArray();
+        } finally {
+            deflater.end();
         }
-        return bytes.toByteArray();
     }
 
+    /** Les couleurs d'une dalle ; {@code null} si les donnees sont illisibles. */
     static int[] inflate(byte[] data) {
-        int[] pixels = new int[SIZE * SIZE];
-        try (DataInputStream in = new DataInputStream(new InflaterInputStream(new ByteArrayInputStream(data)))) {
-            for (int index = 0; index < pixels.length; index++) {
-                pixels[index] = in.readInt();
+        Inflater inflater = new Inflater();
+        try {
+            inflater.setInput(data);
+            byte[] raw = new byte[SIZE * SIZE * 4];
+            int done = 0;
+            while (done < raw.length && !inflater.finished()) {
+                int read = inflater.inflate(raw, done, raw.length - done);
+                if (read == 0 && (inflater.needsInput() || inflater.needsDictionary())) {
+                    return null;
+                }
+                done += read;
             }
-        } catch (IOException error) {
+            if (done < raw.length) {
+                return null;
+            }
+            int[] pixels = new int[SIZE * SIZE];
+            ByteBuffer.wrap(raw).asIntBuffer().get(pixels);
+            return pixels;
+        } catch (DataFormatException error) {
             return null;
+        } finally {
+            inflater.end();
         }
-        return pixels;
     }
 }

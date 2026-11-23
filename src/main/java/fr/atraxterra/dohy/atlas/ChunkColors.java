@@ -1,20 +1,16 @@
 package fr.atraxterra.dohy.atlas;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 /**
- * Le terrain d'un chunk lu dans son NBT (un fichier de region), colonne par colonne, comme le releve
+ * Le terrain d'un chunk lu dans son NBT (un fichier de region, par {@link ChunkNbt}), colonne par colonne, comme le releve
  * du client le fait des chunks recus : la couleur de carte du bloc du dessus (jusqu'a quatre blocs
  * plus bas s'il n'en a pas), l'eau plus sombre quand elle est profonde ; sous un plafond (le Nether),
  * le premier sol sous la place libre. La pente se teinte ensuite, avec le voisin du nord.
@@ -25,9 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 final class ChunkColors {
 
     private static final BlockState AIR = Blocks.AIR.defaultBlockState();
-    private static final BlockState UNKNOWN = Blocks.STONE.defaultBlockState();
-    /** Les etats de bloc deja lus, par leur ecriture NBT : les palettes se repetent d'un chunk a l'autre. */
-    private static final Map<String, BlockState> STATES = new ConcurrentHashMap<>();
     /** Sous un plafond, on cherche le sol a partir de cette hauteur, comme le releve du client. */
     private static final int CEILING_START = 120;
 
@@ -57,44 +50,33 @@ final class ChunkColors {
      *
      * @return faux si le chunk n'a pas de terrain lisible
      */
-    static boolean decode(CompoundTag chunk, boolean ceiling, int[] colors, int[] heights) {
-        ListTag list = chunk.getListOrEmpty("sections");
+    static boolean decode(List<ChunkNbt.Section> list, boolean ceiling, int[] colors, int[] heights) {
         if (list.isEmpty()) {
             return false;
         }
         Section[] sections = new Section[64];
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
-        for (int index = 0; index < list.size(); index++) {
-            CompoundTag section = list.getCompoundOrEmpty(index);
-            int y = section.getByteOr("Y", (byte) 0);
-            min = Math.min(min, y);
-            max = Math.max(max, y);
+        for (ChunkNbt.Section section : list) {
+            min = Math.min(min, section.y());
+            max = Math.max(max, section.y());
         }
         if (max - min >= sections.length) {
             return false;
         }
         int offset = min;
         boolean any = false;
-        for (int index = 0; index < list.size(); index++) {
-            CompoundTag section = list.getCompoundOrEmpty(index);
-            int y = section.getByteOr("Y", (byte) 0);
-            CompoundTag states = section.getCompoundOrEmpty("block_states");
-            ListTag palette = states.getListOrEmpty("palette");
-            if (palette.isEmpty()) {
-                continue;
-            }
-            BlockState[] read = new BlockState[palette.size()];
+        for (ChunkNbt.Section section : list) {
+            BlockState[] read = section.palette();
             boolean empty = true;
-            for (int entry = 0; entry < read.length; entry++) {
-                read[entry] = state(palette.getCompoundOrEmpty(entry));
-                empty &= read[entry].isAir();
+            for (BlockState state : read) {
+                empty &= state.isAir();
             }
             if (empty) {
                 continue;
             }
             int bits = Math.max(4, 32 - Integer.numberOfLeadingZeros(read.length - 1));
-            sections[y - offset] = new Section(read, states.getLongArray("data").orElse(null), bits);
+            sections[section.y() - offset] = new Section(read, section.data(), bits);
             any = true;
         }
         if (!any) {
@@ -167,19 +149,5 @@ final class ChunkColors {
             }
         }
         return 0;
-    }
-
-    /** Un etat de la palette ; un bloc inconnu (d'un mod retire) se voit comme de la pierre. */
-    private static BlockState state(CompoundTag entry) {
-        String key = entry.toString();
-        BlockState known = STATES.get(key);
-        if (known != null) {
-            return known;
-        }
-        BlockState parsed = BlockState.CODEC.parse(NbtOps.INSTANCE, entry).result().orElse(UNKNOWN);
-        if (STATES.size() < 65_536) {
-            STATES.put(key, parsed);
-        }
-        return parsed;
     }
 }
