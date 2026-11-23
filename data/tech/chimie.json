@@ -71,6 +71,7 @@
     {
       "tier": 2,
       "name": "Petrole",
+      "requires": ["industrie:2"],
       "unlocks": [
         "hbm:machine_well",
         "hbm:machine_pumpjack",

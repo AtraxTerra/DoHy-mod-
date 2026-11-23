@@ -18,9 +18,16 @@
         "hbm:machine_boiler",
         "hbm:machine_steam_engine",
         "hbm:cable",
-        "hbm:red_cable_*",
+        "hbm:red_cable_box_0",
+        "hbm:red_cable_box_1",
+        "hbm:red_cable_box_2",
+        "hbm:red_cable_box_3",
+        "hbm:red_cable_box_4",
+        "hbm:red_cable_classic",
+        "hbm:red_cable_paintable",
         "hbm:red_wire_coated",
-        "hbm:cable_*",
+        "hbm:cable_detector",
+        "hbm:cable_switch",
         "hbm:machine_battery_socket",
         "hbm:charger",
         "hbm:red_pylon",
@@ -42,11 +49,9 @@
         {"id": "hbm:red_cable_box_3", "name": "Red Copper Boxcable"},
         {"id": "hbm:red_cable_box_4", "name": "Red Copper Boxcable"},
         {"id": "hbm:red_cable_classic", "name": "Red Copper Cable (Classic)"},
-        {"id": "hbm:red_cable_gauge", "name": "Power Gauge"},
         {"id": "hbm:red_cable_paintable", "name": "Paintable Red Copper Cable"},
         {"id": "hbm:red_wire_coated", "name": "Cable en cuivre rouge isole"},
         {"id": "hbm:cable_detector", "name": "Redstone Power Switch"},
-        {"id": "hbm:cable_diode", "name": "Red Copper Diode"},
         {"id": "hbm:cable_switch", "name": "Power Switch"},
         {"id": "hbm:machine_battery_socket", "name": "Battery Socket"},
         {"id": "hbm:charger", "name": "Charging Station"},
@@ -60,23 +65,16 @@
     {
       "tier": 2,
       "name": "Vapeur",
+      "requires": ["industrie:2"],
       "unlocks": [
-        "hbm:machine_industrial_boiler",
-        "hbm:machine_industrial_turbine",
         "hbm:machine_condenser",
-        "hbm:machine_tower_small",
         "hbm:machine_stirling_steel",
-        "hbm:heater_heatex",
         "hbm:machine_transformer",
         "hbm:red_pylon_medium_wood*"
       ],
       "machines": [
-        {"id": "hbm:machine_industrial_boiler", "name": "Industrial Boiler"},
-        {"id": "hbm:machine_industrial_turbine", "name": "Industrial Steam Turbine"},
         {"id": "hbm:machine_condenser", "name": "Steam Condenser"},
-        {"id": "hbm:machine_tower_small", "name": "Auxiliary Cooling Tower"},
         {"id": "hbm:machine_stirling_steel", "name": "Heavy Stirling Engine"},
-        {"id": "hbm:heater_heatex", "name": "Heat Exchanging Heater"},
         {"id": "hbm:machine_transformer", "name": "Transformateur"},
         {"id": "hbm:red_pylon_medium_wood", "name": "Medium Wooden Electricity Pylon"},
         {"id": "hbm:red_pylon_medium_wood_transformer", "name": "Medium Wooden Electricity Pylon with Transformer"}
@@ -96,7 +94,7 @@
     {
       "tier": 3,
       "name": "Carburants",
-      "requires": ["chimie:2"],
+      "requires": ["chimie:3", "industrie:3"],
       "unlocks": [
         "hbm:machine_diesel",
         "hbm:machine_combustion_engine",
@@ -105,7 +103,12 @@
         "hbm:machine_turbinegas",
         "hbm:chimney_*",
         "hbm:machine_condenser_powered",
-        "hbm:machine_tower_large"
+        "hbm:red_cable_gauge",
+        "hbm:cable_diode",
+        "hbm:machine_industrial_boiler",
+        "hbm:machine_tower_small",
+        "hbm:heater_heatex",
+        "hbm:machine_industrial_turbine"
       ],
       "machines": [
         {"id": "hbm:machine_diesel", "name": "Generateur diesel"},
@@ -116,7 +119,12 @@
         {"id": "hbm:chimney_brick", "name": "Smokestack"},
         {"id": "hbm:chimney_industrial", "name": "Industrial Smokestack"},
         {"id": "hbm:machine_condenser_powered", "name": "High-Power Steam Condenser"},
-        {"id": "hbm:machine_tower_large", "name": "Cooling Tower"}
+        {"id": "hbm:red_cable_gauge", "name": "Power Gauge"},
+        {"id": "hbm:cable_diode", "name": "Red Copper Diode"},
+        {"id": "hbm:machine_industrial_boiler", "name": "Industrial Boiler"},
+        {"id": "hbm:machine_tower_small", "name": "Auxiliary Cooling Tower"},
+        {"id": "hbm:heater_heatex", "name": "Heat Exchanging Heater"},
+        {"id": "hbm:machine_industrial_turbine", "name": "Industrial Steam Turbine"}
       ],
       "bonuses": [
         {"type": "machine_energy", "value": 10, "label": "machines DoHy -10 % d'energie"}
@@ -178,7 +186,12 @@
       "tier": 5,
       "name": "Grandes turbines",
       "requires": ["industrie:4"],
-      "unlocks": ["hbm:machine_chungus", "leafia:modular_turbine_*", "leafia:coolant_heatex"],
+      "unlocks": [
+        "hbm:machine_chungus",
+        "leafia:modular_turbine_*",
+        "leafia:coolant_heatex",
+        "hbm:machine_tower_large"
+      ],
       "machines": [
         {"id": "hbm:machine_chungus", "name": "Leviathan Steam Turbine"},
         {"id": "leafia:modular_turbine_2x2_blades", "name": "Modular Turbine 2x2 Blades"},
@@ -211,7 +224,8 @@
         {"id": "leafia:modular_turbine_core", "name": "Modular Turbine Core"},
         {"id": "leafia:modular_turbine_port", "name": "Modular Turbine Electricity Port"},
         {"id": "leafia:modular_turbine_shaft", "name": "Modular Turbine Shaft"},
-        {"id": "leafia:coolant_heatex", "name": "Coolant Heat Exchanger"}
+        {"id": "leafia:coolant_heatex", "name": "Coolant Heat Exchanger"},
+        {"id": "hbm:machine_tower_large", "name": "Cooling Tower"}
       ],
       "bonuses": [
         {"type": "machine_energy", "value": 15, "label": "machines DoHy -15 % d'energie"}
@@ -220,7 +234,7 @@
         "money": 2000000,
         "points": 60000,
         "items": [
-          {"id": "hbm:circuit_bismoid", "count": 8, "label": "circuits polyvalents"},
+          {"id": "hbm:coil_advanced_alloy", "count": 16, "label": "bobines d'alliage avance"},
           {"id": "hbm:circuit_controller", "count": 8, "label": "unites de controle"}
         ]
       }
@@ -228,7 +242,7 @@
     {
       "tier": 6,
       "name": "Stockage massif",
-      "requires": ["nucleaire:4"],
+      "requires": ["industrie:6"],
       "unlocks": ["hbm:machine_battery_redd"],
       "machines": [
         {"id": "hbm:machine_battery_redd", "name": "FEnSU"}
