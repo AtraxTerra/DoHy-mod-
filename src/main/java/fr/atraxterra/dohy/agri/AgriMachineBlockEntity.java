@@ -71,6 +71,8 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
      * chaque seconde quand il est la, gardee sinon.
      */
     private int energyCut;
+    /** La vitesse que la nation du proprietaire donne aux automates, en pour cent (Agriculture III et V, lot 23f). */
+    private int speedBonus;
     private int fuel;
     private int burning;
     private int progress;
@@ -110,6 +112,16 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
     /** L'energie effacee par la nation du proprietaire, en pour cent. */
     public int energyCut() {
         return energyCut;
+    }
+
+    /** La vitesse donnee par la nation du proprietaire, en pour cent. */
+    public int speedBonus() {
+        return speedBonus;
+    }
+
+    /** Ce que dure ici un travail de {@code ticks} : les technologies de l'Agriculture l'abregent. */
+    public int duration(int ticks) {
+        return Tech.faster(ticks, speedBonus);
     }
 
     /** Depense de l'energie. Faux, et rien n'est pris, s'il n'y en a pas assez. */
@@ -155,15 +167,18 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
                 burn(config);
                 push(server, config);
             }
-            case MILL -> work(server, millJob(config), config.millTicks());
-            case OVEN -> work(server, bakeJob(), config.bakeTicks());
+            case MILL -> work(server, millJob(config), duration(config.millTicks()));
+            case OVEN -> work(server, bakeJob(), duration(config.bakeTicks()));
         }
         if (ticks++ % 20 == 0) {
             if (!generator() && owner != null
                     && server.getServer().getPlayerList().getPlayer(owner) instanceof ServerPlayer player) {
-                int cut = TechPerks.of(player).machineEnergy();
-                if (cut != energyCut) {
+                TechPerks perks = TechPerks.of(player);
+                int cut = perks.machineEnergy();
+                int speed = perks.agriSpeed();
+                if (cut != energyCut || speed != speedBonus) {
                     energyCut = cut;
+                    speedBonus = speed;
                     dirty = true;
                 }
             }
@@ -250,7 +265,7 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
     /** Le travail en cours, en pour mille ; 0 quand la machine attend. */
     public int progressPermille() {
         AgriConfig.Machines config = AgriConfig.config().machines();
-        int duration = kind() == AgriMachineBlock.Kind.MILL ? config.millTicks() : config.bakeTicks();
+        int duration = duration(kind() == AgriMachineBlock.Kind.MILL ? config.millTicks() : config.bakeTicks());
         return duration <= 0 ? 0 : Math.min(1000, progress * 1000 / duration);
     }
 
@@ -554,6 +569,7 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
         output.putInt("progress", progress);
         output.putString("owner", owner == null ? "" : owner.toString());
         output.putInt("energy_cut", energyCut);
+        output.putInt("speed_bonus", speedBonus);
         ContainerHelper.saveAllItems(output, items);
     }
 
@@ -571,6 +587,7 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
             owner = null;
         }
         energyCut = Math.max(0, Math.min(90, input.getIntOr("energy_cut", 0)));
+        speedBonus = Math.max(0, Math.min(200, input.getIntOr("speed_bonus", 0)));
         items.clear();
         ContainerHelper.loadAllItems(input, items);
     }

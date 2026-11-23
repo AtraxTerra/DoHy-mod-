@@ -95,6 +95,8 @@ public class FarmBot extends PathfinderMob {
     /** Et au moins toutes les cinq minutes s'il porte quelque chose. */
     private static final long DEPOSIT_EVERY = 6000L;
     private static final int HARVEST_PAUSE = 8;
+    /** Sa vitesse de base, avant les technologies de l'Agriculture. */
+    private static final double BASE_SPEED = 0.27d;
     private static final long WARN_EVERY = 6000L;
     private static final int REGISTRY_EVERY = 400;
 
@@ -136,6 +138,11 @@ public class FarmBot extends PathfinderMob {
 
     private UUID owner;
     private String ownerName = "";
+    /**
+     * La vitesse que la nation du proprietaire donne au bot, en pour cent (Agriculture III et V, lot
+     * 23f) : relue quand il est la, gardee sinon.
+     */
+    private int speedBonus;
     private BotZone zone;
     private final List<BlockPos> chests = new ArrayList<>();
     private boolean paused;
@@ -170,7 +177,7 @@ public class FarmBot extends PathfinderMob {
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0d)
-                .add(Attributes.MOVEMENT_SPEED, 0.27d)
+                .add(Attributes.MOVEMENT_SPEED, BASE_SPEED)
                 .add(Attributes.FOLLOW_RANGE, 64.0d)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0d);
     }
@@ -330,6 +337,17 @@ public class FarmBot extends PathfinderMob {
         if (tickCount % REGISTRY_EVERY == 0) {
             FarmBots.update(level, this);
         }
+        if (tickCount % 20 == 0) {
+            ServerPlayer player = ownerOnline(level);
+            if (player != null) {
+                speedBonus = fr.atraxterra.dohy.faction.tech.TechPerks.of(player).agriSpeed();
+            }
+            net.minecraft.world.entity.ai.attributes.AttributeInstance speed = getAttribute(Attributes.MOVEMENT_SPEED);
+            double wanted = BASE_SPEED * (1.0d + speedBonus / 100.0d);
+            if (speed != null && speed.getBaseValue() != wanted) {
+                speed.setBaseValue(wanted);
+            }
+        }
         if (zone == null) {
             status = Status.NO_ZONE;
             idle();
@@ -426,7 +444,7 @@ public class FarmBot extends PathfinderMob {
             swing(InteractionHand.MAIN_HAND);
             mode = Mode.IDLE;
             target = null;
-            cooldown = HARVEST_PAUSE;
+            cooldown = fr.atraxterra.dohy.faction.tech.Tech.faster(HARVEST_PAUSE, speedBonus);
             return;
         }
         progress(level, distance);
@@ -912,6 +930,7 @@ public class FarmBot extends PathfinderMob {
         output.store("Chests", BlockPos.CODEC.listOf(), List.copyOf(chests));
         output.putBoolean("Paused", paused);
         output.putLong("Harvested", harvested);
+        output.putInt("SpeedBonus", speedBonus);
         ContainerHelper.saveAllItems(output, inventory.getItems());
     }
 
@@ -925,6 +944,7 @@ public class FarmBot extends PathfinderMob {
         chests.addAll(input.read("Chests", BlockPos.CODEC.listOf()).orElse(List.of()));
         paused = input.getBooleanOr("Paused", false);
         harvested = Math.max(0L, input.getLongOr("Harvested", 0L));
+        speedBonus = Math.max(0, Math.min(200, input.getIntOr("SpeedBonus", 0)));
         NonNullList<ItemStack> items = inventory.getItems();
         ContainerHelper.loadAllItems(input, items);
         resetWork();

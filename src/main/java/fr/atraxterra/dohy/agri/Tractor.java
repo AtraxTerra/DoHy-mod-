@@ -104,6 +104,8 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
     private Vec3 last;
     private double burn;
     private int quiet;
+    /** La vitesse que la nation du conducteur donne au tracteur, en pour cent (Agriculture III et V, lot 23f). */
+    private int speedBonus;
 
     public Tractor(EntityType<? extends Tractor> type, Level level) {
         super(type, level);
@@ -291,9 +293,14 @@ public class Tractor extends PathfinderMob implements PlayerRideableJumping, Has
 
     private void serverTick(ServerLevel server) {
         AgriConfig.Farming config = AgriConfig.config().farming();
+        if (tickCount % 20 == 0) {
+            speedBonus = getControllingPassenger() instanceof ServerPlayer driver
+                    ? fr.atraxterra.dohy.faction.tech.TechPerks.of(driver).agriSpeed() : 0;
+        }
+        double wanted = config.speed() * (1.0d + speedBonus / 100.0d);
         AttributeInstance speed = getAttribute(Attributes.MOVEMENT_SPEED);
-        if (speed != null && speed.getBaseValue() != config.speed()) {
-            speed.setBaseValue(config.speed());
+        if (speed != null && speed.getBaseValue() != wanted) {
+            speed.setBaseValue(wanted);
         }
         if (quiet > 0) {
             quiet--;

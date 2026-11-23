@@ -144,7 +144,8 @@
         "hbmspace:machine_atmo_tower",
         "hbmspace:machine_atmo_emitter",
         "hbmspace:machine_magma",
-        "hbmspace:gas_dock"
+        "hbmspace:gas_dock",
+        "hbmspace:algae_film"
       ],
       "machines": [
         {"id": "hbmspace:air_scrubber", "name": "CO2 Scrubber"},
@@ -153,7 +154,8 @@
         {"id": "hbmspace:machine_atmo_tower", "name": "Atmospheric Liquefaction Tower"},
         {"id": "hbmspace:machine_atmo_emitter", "name": "Atmospheric Emitter"},
         {"id": "hbmspace:machine_magma", "name": "Magma Drill"},
-        {"id": "hbmspace:gas_dock", "name": "Gas Giant Harvester"}
+        {"id": "hbmspace:gas_dock", "name": "Gas Giant Harvester"},
+        {"id": "hbmspace:algae_film", "name": "Microgravity Algae Film"}
       ],
       "bonuses": [],
       "cost": {
