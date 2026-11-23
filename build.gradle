@@ -151,6 +151,10 @@ tasks.named('processResources', ProcessResources).configure {
     from(rootProject.file('data/tech_free.json')) {
         into "data/${mod_id}"
     }
+    // Le laboratoire de recherche (lot 23c) : energie, points, combustible, pays.
+    from(rootProject.file('data/research_lab.json')) {
+        into "data/${mod_id}"
+    }
     // Table des deblocages de metier. Generee par tools/palamod_jobs.py depuis
     // le bytecode de PalaMod, jamais ecrite a la main.
     from(rootProject.file('data/jobs.json')) {

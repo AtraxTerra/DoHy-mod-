@@ -15,8 +15,8 @@ jar), les machines laissees libres dans data/tech_free.json.
 - un prerequis nomme un domaine et un palier qui existent, et jamais le palier
   lui-meme ni un palier plus haut du meme domaine ; pas de boucle entre domaines ;
 - un domaine repris de l'ancien arbre (Gouvernement, Economie, Defense) range
-  chaque ancien palier une fois, dans l'ordre ; un autre domaine donne un cout a
-  chaque palier qui n'est pas acquis d'office ;
+  chaque ancien palier une fois, dans l'ordre ; un autre domaine donne un cout
+  (argent et points de recherche) a chaque palier qui n'est pas acquis d'office ;
 - les bonus ont un type connu, une valeur positive et un libelle ;
 - aucun texte affiche n'a d'accent (les menus n'en portent pas).
 
@@ -35,7 +35,7 @@ INVENTORY = pathlib.Path("tools/data/ntm_machines.json")
 ASSETS = pathlib.Path("src/main/resources/assets/dohy")
 
 # Les blocs DoHy que l'arbre annonce avant qu'ils existent, et le lot qui les fera.
-FUTURE = {"dohy:laboratoire": "23c"}
+FUTURE = {}
 
 # Les bonus que le moteur connait (faction/tech/TechPerks.java).
 BONUSES = {"labs", "parallel", "research_per_country", "market_tax", "mines_money", "lab_energy",
@@ -138,8 +138,10 @@ def main(argv):
                     legacy_seen[step] = where
             elif not tier.get("start"):
                 cost = tier.get("cost")
-                if not cost or cost.get("money", 0) <= 0 or cost.get("hours", 0) <= 0:
-                    errors.append(f"{where} : palier sans cout (argent et heures)")
+                if not cost or cost.get("money", 0) <= 0 or cost.get("points", 0) <= 0:
+                    errors.append(f"{where} : palier sans cout (argent et points de recherche)")
+                elif "hours" in cost:
+                    errors.append(f"{where} : « hours » n'existe plus, les laboratoires font des points (lot 23c)")
                 else:
                     for item in cost.get("items", []):
                         if item.get("count", 0) <= 0 or not item.get("label") or ":" not in item.get("id", ""):

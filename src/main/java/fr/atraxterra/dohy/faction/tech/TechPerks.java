@@ -14,8 +14,8 @@ import java.util.Map;
  * Nucleaire font +25 %).
  *
  * <p>Ils agissent sur les systemes de DoHy, jamais sur le code de NTM. Ceux qui ne servent pas
- * encore attendent leur lot ({@link #pending(String)}) : le laboratoire (23c), puis les contenus
- * de chaque domaine (23e a 23g).
+ * encore attendent leur lot ({@link #pending(String)}) : les contenus de chaque domaine (23e a
+ * 23g).
  */
 public record TechPerks(Map<String, Integer> values) {
 
@@ -84,8 +84,8 @@ public record TechPerks(Map<String, Integer> values) {
     /** Le lot qui mettra ce bonus en service ; vide s'il agit deja. */
     public static String pending(String type) {
         return switch (type) {
-            case "parallel", "research", "market_tax", "mines_money", "mines_ore", "oil_fields" -> "";
-            case "labs", "research_per_country", "lab_energy" -> "lot 23c";
+            case "parallel", "research", "market_tax", "mines_money", "mines_ore", "oil_fields", "labs",
+                 "research_per_country", "lab_energy" -> "";
             case "machine_energy", "miner_money", "vault_slots" -> "lot 23e";
             case "farmer_xp", "agri_speed", "farmer_money" -> "lot 23f";
             case "nuclear_loot", "soldier_hp" -> "lot 23g";

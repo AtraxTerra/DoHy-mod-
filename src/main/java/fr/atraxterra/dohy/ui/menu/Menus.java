@@ -56,6 +56,7 @@ public final class Menus {
                 fr.atraxterra.dohy.faction.market.WorldMarketMenu.INSTANCE,
                 TrixiumMenu.INSTANCE, AchievementMenu.INSTANCE,
                 fr.atraxterra.dohy.tech.TradingServerMenu.INSTANCE,
+                fr.atraxterra.dohy.faction.tech.ResearchLabMenu.INSTANCE,
                 fr.atraxterra.dohy.agri.GmoMachineMenu.INSTANCE,
                 fr.atraxterra.dohy.agri.MillMenu.INSTANCE,
                 fr.atraxterra.dohy.agri.TractorMenu.INSTANCE,

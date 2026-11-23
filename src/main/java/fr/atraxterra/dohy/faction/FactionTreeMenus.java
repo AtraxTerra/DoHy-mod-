@@ -1,5 +1,8 @@
 package fr.atraxterra.dohy.faction;
 
+import fr.atraxterra.dohy.faction.tech.DoHyResearch;
+import fr.atraxterra.dohy.faction.tech.ResearchLabBlockEntity;
+import fr.atraxterra.dohy.faction.tech.ResearchLabConfig;
 import fr.atraxterra.dohy.faction.tech.Tech;
 import fr.atraxterra.dohy.faction.tech.TechConfig;
 import fr.atraxterra.dohy.faction.tech.TechPerks;
@@ -56,6 +59,22 @@ public final class FactionTreeMenus {
         return time(Duration.ofMillis(Math.max(0L, end - System.currentTimeMillis())));
     }
 
+    /** Le temps qu'il faut pour {@code remaining} points a {@code perHour} points par heure. */
+    public static String eta(long remaining, long perHour) {
+        if (remaining <= 0L) {
+            return "Points reunis";
+        }
+        if (perHour <= 0L) {
+            return "En attente : aucun laboratoire en marche";
+        }
+        return "~ " + time(Duration.ofSeconds(Math.max(1L, remaining * 3600L / perHour))) + " a ce rythme";
+    }
+
+    /** « 25k pts ». */
+    static String points(long points) {
+        return MoneyFormat.shortForm(points) + " pts";
+    }
+
     private static final int GREEN = 0xFF22E558;
     private static final int GOLD = 0xFFFAC400;
 
@@ -100,16 +119,17 @@ public final class FactionTreeMenus {
             for (TechConfig.Domain domain : TechConfig.domains()) {
                 domains.add(domain.merged() ? mergedCard(player, data, domain) : domainCard(player, data, domain));
             }
-            List<Card> running = running(data);
+            List<Card> running = running(player, data);
             List<MenuView.Section> sections = new ArrayList<>();
             sections.add(new MenuView.Section("DOMAINES", "upgrade", MenuView.GRID, domains));
             if (!running.isEmpty()) {
                 sections.add(new MenuView.Section("EN COURS", "craft", MenuView.ROWS, running));
             }
-            sections.add(new MenuView.Section("ACQUIS", "resources", MenuView.GRID, acquired(data, bonuses)));
+            sections.add(new MenuView.Section("ACQUIS", "resources", MenuView.GRID, acquired(player, data, bonuses)));
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("PALIERS", Tech.researched(data) + " / " + Tech.total(), GREEN),
                     new MenuView.Stat("RECHERCHES", Tech.running(data) + " / " + bonuses.parallel(), 0xFF27C4E8),
+                    new MenuView.Stat("POINTS / H", MoneyFormat.shortForm(Tech.rate(player)), 0xFF9B6BFF),
                     new MenuView.Stat("BANQUE", MoneyFormat.shortForm(data.bank()), GOLD));
             return new MenuView(id(), "Technologies", "", stats, sections, true)
                     .withTabs(FactionMenus.tabs(player, FactionMenus.TECHNOLOGY));
@@ -120,21 +140,21 @@ public final class FactionTreeMenus {
             int level = Tech.level(data, domain);
             TechConfig.Tier current = domain.tier(level);
             TechConfig.Tier next = Tech.next(data, domain);
-            long end = Tech.end(data, domain);
+            boolean researching = Tech.researching(data, domain) && next != null;
             String first = current == null ? "Palier I a rechercher" : "Palier " + TechConfig.roman(level) + " · "
                     + current.name();
             String second;
-            if (end > 0L && next != null) {
-                second = "En cours : " + next.name() + ", " + until(end);
+            if (researching) {
+                second = "En cours : " + next.name() + ", " + percent(Tech.progress(data, domain), Tech.target(next));
             } else if (next == null) {
                 second = "Domaine termine";
             } else {
-                second = "Suivant : " + next.name() + " · " + MoneyFormat.shortForm(Tech.cost(next).money()) + " $";
+                second = "Suivant : " + next.name() + " · " + points(Tech.target(next));
             }
             Card card = Card.of(domain.icon(), domain.name(), List.of(first, second)).accent(domain.accent())
                     .progress(level, domain.max()).action("domain:" + domain.id() + "|ouvrir")
                     .tooltip(domainTooltip(data, domain, level));
-            if (end > 0L) {
+            if (researching) {
                 return card.badge("...");
             }
             if (next == null) {
@@ -192,16 +212,20 @@ public final class FactionTreeMenus {
             return lines;
         }
 
-        /** Les recherches et les etapes en cours, avec ce qu'il leur reste. */
-        private static List<Card> running(FactionData data) {
+        /** Les recherches et les etapes en cours : leurs points, ou ce qu'il leur reste. */
+        private static List<Card> running(ServerPlayer player, FactionData data) {
             List<Card> cards = new ArrayList<>();
+            List<TechConfig.Domain> researching = Tech.runningDomains(data);
+            long rate = Tech.rate(player);
             for (TechConfig.Domain domain : TechConfig.domains()) {
-                long end = Tech.end(data, domain);
-                TechConfig.Tier next = Tech.next(data, domain);
-                if (end > 0L && next != null) {
-                    cards.add(Card.of(new ItemStack(Items.CLOCK), next.title(domain), List.of(
-                                    "Recherche : encore " + until(end), "Le temps court meme hors ligne"))
-                            .accent(domain.accent()).badge(until(end))
+                if (researching.contains(domain)) {
+                    TechConfig.Tier next = Tech.next(data, domain);
+                    long have = Tech.progress(data, domain);
+                    long need = Tech.target(next);
+                    cards.add(Card.of(new ItemStack(Items.ENCHANTED_BOOK), next.title(domain), List.of(
+                                    MoneyFormat.exact(have) + " / " + MoneyFormat.exact(need) + " points",
+                                    eta(need - have, rate / Math.max(1, researching.size()))))
+                            .accent(domain.accent()).badge(percent(have, need)).progress(have, need)
                             .action("domain:" + domain.id() + "|ouvrir"));
                 }
                 if (domain.merged()) {
@@ -211,7 +235,7 @@ public final class FactionTreeMenus {
                             int number = data.tier(branch.key()) + 1;
                             cards.add(Card.of(new ItemStack(Items.CLOCK), "Etape " + branch.label() + " " + number,
                                             List.of(domain.name() + " · encore " + until(stepEnd),
-                                                    "Amelioration de l'ancien arbre"))
+                                                    "Amelioration de l'ancien arbre, meme hors ligne"))
                                     .accent(domain.accent()).badge(until(stepEnd))
                                     .action("domain:" + domain.id() + "|ouvrir"));
                         }
@@ -222,16 +246,26 @@ public final class FactionTreeMenus {
         }
 
         /** Ce que la nation a gagne : les recompenses de l'ancien arbre, puis la recherche et les bonus. */
-        private static List<Card> acquired(FactionData data, TechPerks bonuses) {
+        private static List<Card> acquired(ServerPlayer player, FactionData data, TechPerks bonuses) {
             List<Card> cards = new ArrayList<>(perks(data));
-            cards.add(Card.of(new ItemStack(Items.ENCHANTING_TABLE), "Recherche", List.of(
-                            bonuses.parallel() + (bonuses.parallel() > 1 ? " recherches a la fois" : " recherche a la fois"),
-                            "Vitesse +" + bonuses.research() + " %"))
-                    .accent(0xFF27C4E8).tooltip(List.of(
-                            "Les domaines nouveaux se recherchent un par un : deux a la fois au Gouvernement IV,"
-                                    + " trois au VI.",
-                            "Chaque etape de l'ancien arbre garde son amelioration a elle.",
-                            "Laboratoires : " + bonuses.labs() + " (lot 23c)")));
+            int labs = data.labs().size();
+            List<String> labLines = new ArrayList<>();
+            labLines.add("Le Gouvernement en permet un, deux au III, trois au V.");
+            labLines.add("Chacun fait " + MoneyFormat.exact(ResearchLabConfig.config().pointsPerHour())
+                    + " points par heure de marche, avant les bonus.");
+            labLines.add("Vitesse de recherche +" + bonuses.research() + " %, pays +"
+                    + Tech.countries(player, bonuses) + " %.");
+            for (String key : data.labs()) {
+                Double rate = ResearchLabBlockEntity.loadedRate(player.getUUID(), key);
+                labLines.add("- " + key.substring(key.indexOf('@') + 1).replace(',', ' ') + " : "
+                        + (rate == null ? "chunk decharge" : rate > 0.0d ? "en marche" : "a l'arret"));
+            }
+            cards.add(Card.of(new ItemStack(DoHyResearch.LAB_ITEM.get()), "Laboratoires", List.of(
+                            labs + " / " + bonuses.labs() + " · " + MoneyFormat.shortForm(Tech.rate(player))
+                                    + " points / h",
+                            bonuses.parallel() + (bonuses.parallel() > 1 ? " recherches a la fois"
+                                    : " recherche a la fois")))
+                    .accent(0xFF27C4E8).badge(labs == 0 ? "A POSER" : "").tooltip(labLines));
             List<String> lines = new ArrayList<>();
             for (TechConfig.Domain domain : TechConfig.domains()) {
                 for (TechConfig.Bonus bonus : effective(domain, Tech.level(data, domain)).values()) {
@@ -440,8 +474,10 @@ public final class FactionTreeMenus {
                             .anchor(branch.label() + "|" + tier + "/" + FactionTree.tiers(branch).size()));
                 }
             } else {
-                long end = Tech.end(data, domain);
-                stats.add(new MenuView.Stat("EN COURS", end > 0L ? until(end) : "-", 0xFFFFFFFF));
+                TechConfig.Tier next = Tech.next(data, domain);
+                boolean researching = Tech.researching(data, domain) && next != null;
+                stats.add(new MenuView.Stat("EN COURS", researching
+                        ? percent(Tech.progress(data, domain), Tech.target(next)) : "-", 0xFFFFFFFF));
                 stats.add(new MenuView.Stat("RECHERCHES", Tech.running(data) + " / " + TechPerks.of(data).parallel(),
                         0xFF27C4E8));
             }
@@ -460,28 +496,33 @@ public final class FactionTreeMenus {
             requireLines(data, domain, tier, acquired, tooltip);
             TechConfig.Cost cost = Tech.cost(tier);
             String price = price(player, cost, acquired || office, tooltip);
+            long need = Tech.target(tier);
+            long rate = Tech.rate(player);
             if (!acquired && !office) {
-                tooltip.add("Duree : " + time(Tech.duration(data, tier)));
+                tooltip.add("Points de recherche : " + MoneyFormat.exact(need) + " (" + eta(need, rate) + ")");
             }
             String title = "Palier " + TechConfig.roman(tier.tier()) + " · " + tier.name();
             String summary = summary(tier);
             Card card;
-            long end = Tech.end(data, domain);
+            boolean researching = Tech.researching(data, domain) && tier.tier() == level + 1;
             if (acquired) {
                 card = Card.of(icon(tier, new ItemStack(Items.DYE.pick(DyeColor.LIME))), title,
                         List.of(summary, office ? "Acquis d'office" : "Acquis")).state(MenuView.DONE);
             } else if (tier.tier() == level + 1) {
                 String blocker = Tech.blocker(player, domain);
-                if (end > 0L) {
-                    card = Card.of(new ItemStack(Items.CLOCK), title, List.of(summary,
-                                    "Recherche : encore " + until(end)))
-                            .accent(GOLD).badge(until(end));
+                if (researching) {
+                    long have = Tech.progress(data, domain);
+                    int slots = Math.max(1, Tech.runningDomains(data).size());
+                    card = Card.of(new ItemStack(Items.ENCHANTED_BOOK), title, List.of(summary,
+                                    "Recherche : " + MoneyFormat.exact(have) + " / " + MoneyFormat.exact(need)
+                                            + " points · " + eta(need - have, rate / slots)))
+                            .accent(GOLD).badge(percent(have, need)).progress(have, need);
                 } else if (blocker == null) {
                     card = Card.of(icon(tier, new ItemStack(Items.ENCHANTED_BOOK)), title, List.of(summary,
-                                    price + " · " + time(Tech.duration(data, tier))))
+                                    price + " · " + points(need)))
                             .accent(GREEN).badge("PRET").action("research|rechercher")
-                            .confirm("Rechercher " + tier.title(domain) + " ?|" + price + ", "
-                                    + time(Tech.duration(data, tier)));
+                            .confirm("Rechercher " + tier.title(domain) + " ?|" + price + ", puis "
+                                    + MoneyFormat.exact(need) + " points de tes laboratoires");
                 } else {
                     tooltip.add("");
                     tooltip.add(blocker);
@@ -490,7 +531,7 @@ public final class FactionTreeMenus {
                 }
             } else {
                 card = Card.of(icon(tier, new ItemStack(Items.DYE.pick(DyeColor.GRAY))), title, List.of(summary,
-                        price + " · " + time(Tech.duration(data, tier)))).state(MenuView.DISABLED);
+                        price + " · " + points(need))).state(MenuView.DISABLED);
             }
             return card.right("tier:" + tier.tier() + "|voir ses machines").tooltip(tooltip);
         }
@@ -748,7 +789,8 @@ public final class FactionTreeMenus {
                 FactionData data = FactionApi.data(player);
                 TechConfig.Tier next = Tech.next(data, domain);
                 report(player, Tech.start(player, domain), next == null ? ""
-                        : "Recherche lancee : " + next.title(domain) + ", " + time(Tech.duration(data, next)) + ".");
+                        : "Recherche lancee : " + next.title(domain) + ", " + MoneyFormat.exact(Tech.target(next))
+                        + " points a produire dans tes laboratoires.");
                 if (next != null) {
                     shown.remove(player.getUUID());
                 }

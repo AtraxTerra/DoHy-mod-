@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "IGI",
+    "RBR",
+    "ICI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:glass",
+    "R": "minecraft:redstone",
+    "B": "minecraft:bookshelf",
+    "C": "minecraft:comparator"
+  },
+  "result": {
+    "id": "dohy:research_lab",
+    "count": 1
+  }
+}

@@ -35,6 +35,7 @@ public final class DoHy {
         PalaMod.register(modBus);
         // Les machines propres a DoHy, sous l'espace de noms « dohy ».
         fr.atraxterra.dohy.tech.DoHyTech.register(modBus);
+        fr.atraxterra.dohy.faction.tech.DoHyResearch.register(modBus);
         fr.atraxterra.dohy.agri.DoHyAgri.register(modBus);
         // L'economie souterraine (lot 24c) : plantes, produits, conditionnement, postes, planques.
         fr.atraxterra.dohy.underground.DoHyUnderground.register(modBus);

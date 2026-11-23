@@ -2772,8 +2772,8 @@
         {
           "title": "Les domaines nouveaux",
           "text": [
-            "Energie, Industrie, Chimie, Agriculture, Nucleaire et Espace se recherchent : de l'argent de la banque nationale, des pieces de NTM sur toi (plaques d'acier et bobines de cuivre, puis des circuits de plus en plus fins), puis une duree reelle, de 6 heures a 4 jours.",
-            "Le palier I est acquis d'office, sauf dans l'Espace. Une recherche a la fois ; le Gouvernement IV en permet deux, le VI trois. Sans NTM installe, ses pieces ne se demandent pas."
+            "Energie, Industrie, Chimie, Agriculture, Nucleaire et Espace se recherchent : de l'argent de la banque nationale et des pieces de NTM sur toi au lancement (plaques d'acier et bobines de cuivre, puis des circuits de plus en plus fins), puis les points de recherche de tes laboratoires, de 1 500 au palier II a 180 000 au VI.",
+            "Le palier I est acquis d'office, sauf dans l'Espace. Il faut un laboratoire pose pour lancer une recherche. Une recherche a la fois ; le Gouvernement IV en permet deux, le VI trois, et les points se partagent entre elles. Sans NTM installe, ses pieces ne se demandent pas."
           ]
         },
         {
@@ -2786,9 +2786,9 @@
         {
           "title": "Les bonus",
           "text": [
-            "- Recherche plus rapide (Industrie, Nucleaire, Espace) et recherches en parallele (Gouvernement).",
+            "- Recherche plus rapide (Industrie, Nucleaire, Espace), laboratoires et recherches en parallele (Gouvernement), laboratoires plus sobres (Energie), apport des pays (Gouvernement V).",
             "- Taxe du marche international et argent des mines de la Terre (Economie), minerais des mines (Industrie), champs de petrole et de gaz (Chimie).",
-            "- Les autres (laboratoires, energie, metiers, coffre, largages, assauts) arrivent avec le laboratoire et les contenus de chaque domaine : la bulle du bonus dit son lot."
+            "- Les autres (energie des machines, metiers, coffre, largages, assauts) arrivent avec les contenus de chaque domaine : la bulle du bonus dit son lot."
           ]
         },
         {
@@ -2803,6 +2803,7 @@
         "/f techno voir <domaine> : les paliers d'un domaine"
       ],
       "see": [
+        "laboratoire",
         "defense",
         "pillage",
         "reserve_or"
@@ -2811,6 +2812,48 @@
         "views": [
           "dohy:faction_tree",
           "dohy:faction_branch"
+        ]
+      }
+    },
+    {
+      "id": "laboratoire",
+      "category": "faction",
+      "order": 7,
+      "icon": "dohy:research_lab",
+      "title": "Laboratoire",
+      "card": [
+        "L'energie en points",
+        "Un, deux puis trois"
+      ],
+      "summary": [
+        "Le laboratoire de recherche fait les points des technologies. Il se pose dans un de tes claims ; le Gouvernement en permet un, deux au III, trois au V. Il se fabrique a l'etabli : quatre lingots de fer, du verre, deux poudres de redstone, une bibliotheque et un comparateur."
+      ],
+      "sections": [
+        {
+          "title": "L'energie",
+          "text": [
+            "Il prend l'energie FE par toutes ses faces : un cable de NTM NEXT branche dessus l'alimente (100 HE par tick, ce que donne un generateur a bois), comme le biogenerateur de DoHy pose a cote. Les technologies de l'Energie baissent sa consommation.",
+            "A defaut, un clic droit avec du combustible (charbon, bois, seau de lave) le fait tourner a mi-regime ; accroupi, toute la pile. Il en garde 64 charbons."
+          ]
+        },
+        {
+          "title": "Les points",
+          "text": [
+            "En marche, il fait 3 600 points par heure, plus la vitesse de recherche (Industrie, Nucleaire, Espace) et l'apport des pays : 5 % par pays tenu, 10 % la capitale, 100 % au plus, davantage au Gouvernement V.",
+            "Les points passent aux recherches en cours chaque seconde, a parts egales, quand tu es connecte. Sans recherche, il en garde une heure, puis s'arrete. Il ne tourne que dans un chunk charge, comme toute machine."
+          ]
+        }
+      ],
+      "commands": [
+        "/f techno : les technologies et tes laboratoires"
+      ],
+      "see": [
+        "arbre_techno",
+        "faction"
+      ],
+      "discover": {
+        "views": [
+          "dohy:research_lab"
         ]
       }
     },

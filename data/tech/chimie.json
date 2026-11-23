@@ -94,7 +94,7 @@
       ],
       "cost": {
         "money": 25000,
-        "hours": 6,
+        "points": 1500,
         "items": [
           {"id": "hbm:plate_steel", "count": 32, "label": "plaques d'acier"},
           {"id": "hbm:coil_copper", "count": 16, "label": "bobines de cuivre"}
@@ -131,7 +131,7 @@
       "bonuses": [],
       "cost": {
         "money": 100000,
-        "hours": 12,
+        "points": 6000,
         "items": [
           {"id": "hbm:circuit_basic", "count": 16, "label": "circuits integres"},
           {"id": "hbm:circuit_capacitor", "count": 16, "label": "condensateurs"}
@@ -177,7 +177,7 @@
       ],
       "cost": {
         "money": 500000,
-        "hours": 24,
+        "points": 20000,
         "items": [
           {"id": "hbm:circuit_advanced", "count": 16, "label": "circuits militaires"},
           {"id": "hbm:circuit_chip", "count": 32, "label": "micropuces"}
@@ -207,7 +207,7 @@
       "bonuses": [],
       "cost": {
         "money": 2000000,
-        "hours": 48,
+        "points": 60000,
         "items": [
           {"id": "hbm:circuit_bismoid", "count": 8, "label": "circuits polyvalents"},
           {"id": "hbm:circuit_controller", "count": 8, "label": "unites de controle"}

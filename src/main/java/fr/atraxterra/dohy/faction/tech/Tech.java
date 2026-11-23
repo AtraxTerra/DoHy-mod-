@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +25,9 @@ import java.util.Optional;
  * <ul>
  *   <li><b>Les domaines nouveaux</b> (Energie, Industrie, Chimie, Agriculture, Nucleaire,
  *   Espace) se recherchent palier par palier : le palier d'avant, les prerequis des autres
- *   domaines, l'argent de la banque nationale, des pieces de NTM, puis une duree reelle. Le
- *   palier I est acquis d'office, sauf dans l'Espace.</li>
+ *   domaines, l'argent de la banque nationale et des pieces de NTM au lancement, puis les points
+ *   de recherche des laboratoires ({@link ResearchLabBlockEntity}, lot 23c). Le palier I est
+ *   acquis d'office, sauf dans l'Espace.</li>
  *   <li><b>Les domaines repris</b> (Gouvernement, Economie, Defense) se gagnent par les etapes
  *   de l'ancien arbre ({@link FactionTree}, intact) : un palier est acquis quand toutes ses
  *   etapes le sont et que ses prerequis tiennent. Chaque etape garde sa recompense et ses
@@ -35,8 +35,8 @@ import java.util.Optional;
  * </ul>
  *
  * <p>Les recherches des domaines nouveaux se menent une a la fois, puis deux et trois avec le
- * Gouvernement ({@link TechPerks#parallel()}). Les points du laboratoire remplaceront la duree au
- * lot 23c.
+ * Gouvernement ({@link TechPerks#parallel()}) ; les points des laboratoires se partagent entre
+ * elles a parts egales.
  */
 public final class Tech {
 
@@ -292,22 +292,36 @@ public final class Tech {
         return domain.tier(level(data, domain) + 1);
     }
 
-    private static final TechConfig.Cost FREE = new TechConfig.Cost(0L, 1, List.of());
+    private static final TechConfig.Cost FREE = new TechConfig.Cost(0L, 1L, List.of());
 
     public static TechConfig.Cost cost(TechConfig.Tier tier) {
         return tier.cost().orElse(FREE);
     }
 
-    /** La duree de la recherche, raccourcie par la vitesse de recherche des technologies acquises. */
-    public static Duration duration(FactionData data, TechConfig.Tier tier) {
-        double hours = Math.max(0, cost(tier).hours());
-        int bonus = TechPerks.of(data).research();
-        long minutes = Math.round(hours * 60.0d / (1.0d + bonus / 100.0d));
-        return Duration.ofMinutes(Math.max(1L, minutes));
+    /** Les points de recherche qu'il faut a ce palier. */
+    public static long target(TechConfig.Tier tier) {
+        return Math.max(1L, cost(tier).points());
     }
 
-    public static long end(FactionData data, TechConfig.Domain domain) {
-        return data.techEnd(domain.id());
+    /** Les points deja apportes a la recherche en cours de ce domaine, 0 sans recherche. */
+    public static long progress(FactionData data, TechConfig.Domain domain) {
+        return Math.max(0L, data.techPoints(domain.id()));
+    }
+
+    /** Vrai si une recherche est en cours dans ce domaine. */
+    public static boolean researching(FactionData data, TechConfig.Domain domain) {
+        return data.techRunning(domain.id());
+    }
+
+    /** Les domaines nouveaux ou une recherche est en cours, dans l'ordre de l'ecran. */
+    public static List<TechConfig.Domain> runningDomains(FactionData data) {
+        List<TechConfig.Domain> running = new ArrayList<>();
+        for (TechConfig.Domain domain : TechConfig.domains()) {
+            if (!domain.merged() && data.techRunning(domain.id()) && next(data, domain) != null) {
+                running.add(domain);
+            }
+        }
+        return running;
     }
 
     /** Pourquoi le palier suivant ne peut pas se rechercher, ou {@code null}. */
@@ -319,7 +333,7 @@ public final class Tech {
         if (domain.merged()) {
             return domain.name() + " avance par les etapes de l'ancien arbre";
         }
-        if (end(data, domain) > 0L) {
+        if (data.techRunning(domain.id())) {
             return "Une recherche est deja en cours dans ce domaine";
         }
         TechConfig.Tier next = next(data, domain);
@@ -337,6 +351,9 @@ public final class Tech {
             return slots == 1 ? "Une recherche a la fois : le Gouvernement IV en permet deux"
                     : running + " recherches en cours, " + slots + " au plus";
         }
+        if (data.labs().isEmpty()) {
+            return "Il faut d'abord un laboratoire de recherche, pose dans un de tes claims";
+        }
         TechConfig.Cost cost = cost(next);
         boolean creative = player.getAbilities().instabuild;
         for (TechConfig.ItemCost item : cost.items()) {
@@ -351,7 +368,7 @@ public final class Tech {
         return null;
     }
 
-    /** Lance la recherche du palier suivant : paiement, pieces, puis la duree reelle. */
+    /** Lance la recherche du palier suivant : l'argent et les pieces tout de suite, puis les points des laboratoires. */
     public static String start(ServerPlayer player, TechConfig.Domain domain) {
         String refusal = blocker(player, domain);
         if (refusal != null) {
@@ -368,31 +385,144 @@ public final class Tech {
                 item.item().ifPresent(found -> take(player.getInventory(), found, item.count()));
             }
         }
-        data.startTech(domain.id(), System.currentTimeMillis() + duration(data, next).toMillis());
+        data.startTech(domain.id(), System.currentTimeMillis());
         return null;
     }
 
+    // -- Les points des laboratoires (lot 23c) -------------------------------------------------------
+
+    /** L'energie d'un laboratoire par tick de marche, en FE, moins ce qu'effacent les technologies de l'Energie. */
+    public static int labEnergy(FactionData data) {
+        int base = ResearchLabConfig.config().energyPerTick();
+        int cut = Math.max(0, Math.min(90, TechPerks.of(data).value("lab_energy")));
+        return Math.max(1, base * (100 - cut) / 100);
+    }
+
+    /** L'apport des pays a la recherche, en pour cent : chaque pays, la capitale, un plafond, puis le Gouvernement V. */
+    public static int countries(ServerPlayer player, TechPerks perks) {
+        if (!fr.atraxterra.dohy.earth.EarthNations.active()) {
+            return 0;
+        }
+        ResearchLabConfig.Config config = ResearchLabConfig.config();
+        int held = fr.atraxterra.dohy.earth.EarthNations.heldBy(player).size();
+        boolean capital = fr.atraxterra.dohy.earth.EarthNations.nation(player).capital() != 0;
+        int base = Math.min(config.countryCap(), held * config.countryPercent()
+                + (capital ? config.capitalPercent() : 0));
+        return base * (100 + perks.value("research_per_country")) / 100;
+    }
+
+    /** Ce que valent les points d'un laboratoire pour cette nation : vitesse de recherche, puis apport des pays. */
+    public static double multiplier(ServerPlayer player) {
+        TechPerks perks = TechPerks.of(player);
+        return (1.0d + perks.research() / 100.0d) * (1.0d + countries(player, perks) / 100.0d);
+    }
+
+    /** Les points par heure que font en ce moment les laboratoires charges de la nation, bonus compris. */
+    public static long rate(ServerPlayer player) {
+        return Math.round(ResearchLabBlockEntity.rawRate(player.getUUID()) * multiplier(player));
+    }
+
     /**
-     * Termine ce qui est echu : les etapes de l'ancien arbre, puis les recherches ; {@code force}
-     * termine tout (operateurs). Un palier gagne, recherche ou par ses etapes, est annonce.
+     * Verse des points bruts d'un laboratoire aux recherches en cours, multiplies, a parts egales ;
+     * une recherche remplie s'acheve aussitot.
+     *
+     * @return les points bruts pris ; le reste reste au laboratoire
+     */
+    public static long feed(ServerPlayer player, long raw, double multiplier) {
+        FactionData data = FactionApi.data(player);
+        if (raw <= 0L || !data.exists()) {
+            return 0L;
+        }
+        migrate(data);
+        List<TechConfig.Domain> open = runningDomains(data);
+        long need = 0L;
+        for (TechConfig.Domain domain : open) {
+            need += Math.max(0L, target(next(data, domain)) - progress(data, domain));
+        }
+        if (need <= 0L) {
+            return 0L;
+        }
+        double factor = Math.max(0.01d, multiplier);
+        long used = Math.min(raw, (long) Math.ceil(need / factor));
+        long left = Math.min(need, (long) Math.floor(used * factor));
+        while (left > 0L && !open.isEmpty()) {
+            long share = Math.max(1L, left / open.size());
+            for (TechConfig.Domain domain : List.copyOf(open)) {
+                long remaining = target(next(data, domain)) - progress(data, domain);
+                long given = Math.min(remaining, Math.min(share, left));
+                data.setTechPoints(domain.id(), progress(data, domain) + given);
+                left -= given;
+                if (given >= remaining) {
+                    open.remove(domain);
+                }
+                if (left <= 0L) {
+                    break;
+                }
+            }
+        }
+        complete(player, false);
+        return used;
+    }
+
+    /** Les heures d'une recherche du lot 23b, au palier de cout (l'Espace paie au niveau du palier suivant). */
+    private static double legacyHours(TechConfig.Domain domain, int tier) {
+        int level = tier + (domain.startLevel() == 0 ? 1 : 0);
+        return switch (level) {
+            case 2 -> 6.0d;
+            case 3 -> 12.0d;
+            case 4 -> 24.0d;
+            case 5 -> 48.0d;
+            case 6 -> 72.0d;
+            case 7 -> 96.0d;
+            default -> 24.0d;
+        };
+    }
+
+    /**
+     * Une recherche lancee au lot 23b avait une fin prevue et pas de points : elle garde la part
+     * du temps deja ecoulee, en points. Une recherche echue est remplie.
+     */
+    private static void migrate(FactionData data) {
+        long now = System.currentTimeMillis();
+        for (String id : data.techRunning()) {
+            if (data.techPoints(id) >= 0L) {
+                continue;
+            }
+            TechConfig.Domain domain = TechConfig.domain(id);
+            TechConfig.Tier next = domain == null ? null : next(data, domain);
+            if (next == null || domain.merged()) {
+                data.stopTech(id);
+                continue;
+            }
+            double total = legacyHours(domain, next.tier()) * 3_600_000.0d;
+            double done = Math.max(0.0d, Math.min(1.0d, 1.0d - (data.techStart(id) - now) / total));
+            data.resumeTech(id, now, Math.round(target(next) * done));
+        }
+    }
+
+    /**
+     * Termine ce qui est rempli : les etapes de l'ancien arbre, puis les recherches qui ont leurs
+     * points ; {@code force} termine tout (operateurs). Un palier gagne, recherche ou par ses
+     * etapes, est annonce.
      */
     public static void complete(ServerPlayer player, boolean force) {
         FactionData data = FactionApi.data(player);
         if (!data.exists()) {
             return;
         }
+        migrate(data);
         Map<String, Integer> before = levels(data);
         FactionTree.complete(player, force);
-        long now = System.currentTimeMillis();
         for (String id : data.techRunning()) {
-            long end = data.techEnd(id);
-            if (!force && end > now) {
+            TechConfig.Domain domain = TechConfig.domain(id);
+            TechConfig.Tier next = domain == null || domain.merged() ? null : next(data, domain);
+            if (next == null) {
+                data.stopTech(id);
                 continue;
             }
-            data.stopTech(id);
-            TechConfig.Domain domain = TechConfig.domain(id);
-            if (domain != null && !domain.merged() && next(data, domain) != null) {
-                data.setTechTier(id, level(data, domain) + 1);
+            if (force || progress(data, domain) >= target(next)) {
+                data.stopTech(id);
+                data.setTechTier(id, next.tier());
             }
         }
         Map<String, Integer> after = levels(data);
@@ -406,6 +536,11 @@ public final class Tech {
                 }
             }
         }
+    }
+
+    /** Ajoute des points aux recherches en cours (operateurs, essais), comme un laboratoire sans bonus. */
+    public static long grant(ServerPlayer player, long points) {
+        return feed(player, points, 1.0d);
     }
 
     private static Map<String, Integer> levels(FactionData data) {
