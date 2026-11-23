@@ -30,11 +30,7 @@
       "requires": ["industrie:2"],
       "unlocks": [
         "hbm:machine_reactor_small",
-        "hbm:reactor_zirnox",
         "hbm:machine_rtg_grey",
-        "hbm:machine_radgen",
-        "leafia:heater_rt",
-        "hbm:machine_gascent",
         "hbm:machine_uf6_tank",
         "hbm:machine_waste_drum",
         "hbm:rad_absorber_red",
@@ -42,11 +38,7 @@
       ],
       "machines": [
         {"id": "hbm:machine_reactor_small", "name": "Research Reactor (LEGACY)"},
-        {"id": "hbm:reactor_zirnox", "name": "ZIRNOX Nuclear Reactor"},
         {"id": "hbm:machine_rtg_grey", "name": "Generateur RT"},
-        {"id": "hbm:machine_radgen", "name": "Moteur alimente par rayonnement [WIP]"},
-        {"id": "leafia:heater_rt", "name": "Chauffage thermique a radio-isotopes"},
-        {"id": "hbm:machine_gascent", "name": "Gas Centrifuge"},
         {"id": "hbm:machine_uf6_tank", "name": "Reservoir d'hexafluorure d'uranium"},
         {"id": "hbm:machine_waste_drum", "name": "Spent Fuel Pool Drum"},
         {"id": "hbm:rad_absorber_red", "name": "Enhanced Radiation Absorber"},
@@ -67,13 +59,17 @@
     {
       "tier": 3,
       "name": "RBMK",
-      "requires": ["energie:2", "industrie:3"],
+      "requires": ["energie:2", "industrie:3", "chimie:3"],
       "unlocks": [
         "hbm:rbmk_*",
         "hbm:machine_puf6_tank",
         "hbm:machine_radiolysis",
-        "hbm:vitrified_barrel",
-        "leafia:rbmk_rod_realersim*"
+        "leafia:rbmk_rod_realersim*",
+        "hbm:anvil_ferrouranium",
+        "hbm:anvil_arsenic_bronze",
+        "hbm:reactor_zirnox",
+        "hbm:machine_radgen",
+        "hbm:machine_gascent"
       ],
       "machines": [
         {"id": "hbm:rbmk_absorber", "name": "RBMK Boron Neutron Absorber"},
@@ -115,9 +111,13 @@
         {"id": "hbm:rbmk_terminal", "name": "Redstone-over-Radio Terminal"},
         {"id": "hbm:machine_puf6_tank", "name": "Reservoir d'hexafluorure de plutonium"},
         {"id": "hbm:machine_radiolysis", "name": "Radioisotope Thermoelectric Generator and Radiolysis Chamber"},
-        {"id": "hbm:vitrified_barrel", "name": "Vitrified Nuclear Waste Drum"},
         {"id": "leafia:rbmk_rod_realersim", "name": "RBMK Fuel Channel (RealerSim)"},
-        {"id": "leafia:rbmk_rod_realersim_mod", "name": "RBMK Moderated Fuel Channel (RealerSim)"}
+        {"id": "leafia:rbmk_rod_realersim_mod", "name": "RBMK Moderated Fuel Channel (RealerSim)"},
+        {"id": "hbm:anvil_ferrouranium", "name": "Ferrouranium Anvil"},
+        {"id": "hbm:anvil_arsenic_bronze", "name": "Arsenic Bronze Anvil"},
+        {"id": "hbm:reactor_zirnox", "name": "ZIRNOX Nuclear Reactor"},
+        {"id": "hbm:machine_radgen", "name": "Moteur alimente par rayonnement [WIP]"},
+        {"id": "hbm:machine_gascent", "name": "Gas Centrifuge"}
       ],
       "bonuses": [],
       "cost": {
@@ -138,7 +138,8 @@
         "leafia:reactor_*",
         "hbm:machine_purex",
         "hbm:machine_silex",
-        "hbm:rad_absorber_green"
+        "hbm:rad_absorber_green",
+        "hbm:vitrified_barrel"
       ],
       "machines": [
         {"id": "hbm:pwr_block", "name": "PWR"},
@@ -172,7 +173,8 @@
         {"id": "leafia:reactor_hatch_alt", "name": "PWR Control Terminal"},
         {"id": "hbm:machine_purex", "name": "PUREX"},
         {"id": "hbm:machine_silex", "name": "Laser Isotope Separation Chamber (SILEX)"},
-        {"id": "hbm:rad_absorber_green", "name": "Advanced Radiation Absorber"}
+        {"id": "hbm:rad_absorber_green", "name": "Advanced Radiation Absorber"},
+        {"id": "hbm:vitrified_barrel", "name": "Vitrified Nuclear Waste Drum"}
       ],
       "bonuses": [
         {"type": "research", "value": 10, "label": "recherche +10 %"}
@@ -189,7 +191,7 @@
     {
       "tier": 5,
       "name": "Reacteurs avances",
-      "requires": ["chimie:4"],
+      "requires": ["chimie:4", "industrie:5"],
       "unlocks": [
         "hbm:watz*",
         "hbm:struct_watz_core",
@@ -197,10 +199,10 @@
         "leafia:salt_separator",
         "leafia:apr_*",
         "hbm:machine_cyclotron",
-        "hbm:machine_icf_press",
         "hbm:pa_*",
         "hbm:rad_absorber_pink",
-        "leafia:sol_blaster"
+        "leafia:sol_blaster",
+        "leafia:heater_rt"
       ],
       "machines": [
         {"id": "hbm:watz", "name": "Watz Powerplant"},
@@ -223,7 +225,6 @@
         {"id": "leafia:apr_outlet", "name": "APR Electricity Port"},
         {"id": "leafia:apr_port", "name": "APR Fluid Port"},
         {"id": "hbm:machine_cyclotron", "name": "Cyclotron"},
-        {"id": "hbm:machine_icf_press", "name": "ICF Fuel Pellet Maker"},
         {"id": "hbm:pa_beamline", "name": "Beamline"},
         {"id": "hbm:pa_detector", "name": "Particle Detector"},
         {"id": "hbm:pa_dipole", "name": "Dipole Magnets"},
@@ -231,7 +232,8 @@
         {"id": "hbm:pa_rfc", "name": "RF Cavity"},
         {"id": "hbm:pa_source", "name": "Particle Source"},
         {"id": "hbm:rad_absorber_pink", "name": "Elite Radiation Absorber"},
-        {"id": "leafia:sol_blaster", "name": "Neutron Blaster"}
+        {"id": "leafia:sol_blaster", "name": "Neutron Blaster"},
+        {"id": "leafia:heater_rt", "name": "Chauffage thermique a radio-isotopes"}
       ],
       "bonuses": [],
       "cost": {
@@ -246,7 +248,7 @@
     {
       "tier": 6,
       "name": "Fusion et antimatiere",
-      "requires": ["energie:5", "industrie:5"],
+      "requires": ["energie:5", "industrie:6"],
       "unlocks": [
         "hbm:fusion_boiler",
         "hbm:fusion_breeder",
@@ -268,7 +270,8 @@
         "leafia:amat_duct*",
         "hbm:barrel_antimatter",
         "hbm:hadron_coil_alloy",
-        "leafia:spk_cable"
+        "leafia:spk_cable",
+        "hbm:machine_icf_press"
       ],
       "machines": [
         {"id": "hbm:fusion_boiler", "name": "Fusion Reactor Boiler"},
@@ -317,7 +320,8 @@
         {"id": "leafia:amat_duct_charger", "name": "Electromagnetic Fluid Duct Charger"},
         {"id": "hbm:barrel_antimatter", "name": "Magnetic Antimatter Container"},
         {"id": "hbm:hadron_coil_alloy", "name": "Dense Superconducting Coil"},
-        {"id": "leafia:spk_cable", "name": "DFC Redirection Cable"}
+        {"id": "leafia:spk_cable", "name": "DFC Redirection Cable"},
+        {"id": "hbm:machine_icf_press", "name": "ICF Fuel Pellet Maker"}
       ],
       "bonuses": [
         {"type": "research", "value": 15, "label": "recherche +15 %"}

@@ -144,9 +144,7 @@
         "hbm:pneumatic_*",
         "hbm:cargo_elevator",
         "leafia:elevator_*",
-        "hbm:anvil_ferrouranium",
         "hbm:anvil_saturnite",
-        "hbm:anvil_arsenic_bronze",
         "hbm:anvil_bismuth_bronze",
         "leafia:regex_filter"
       ],
@@ -173,9 +171,7 @@
         {"id": "leafia:elevator_buffer", "name": "Elevator Buffer"},
         {"id": "leafia:elevator_pulley", "name": "Elevator Pulley"},
         {"id": "leafia:elevator_shaft", "name": "Elevator Shaft"},
-        {"id": "hbm:anvil_ferrouranium", "name": "Ferrouranium Anvil"},
         {"id": "hbm:anvil_saturnite", "name": "Saturnite Anvil"},
-        {"id": "hbm:anvil_arsenic_bronze", "name": "Arsenic Bronze Anvil"},
         {"id": "hbm:anvil_bismuth_bronze", "name": "Bismuth Bronze Anvil"},
         {"id": "leafia:regex_filter", "name": "Pneumatic Tube RegEx Filter"}
       ],
@@ -228,7 +224,7 @@
     {
       "tier": 6,
       "name": "Forge a plasma",
-      "requires": ["nucleaire:6"],
+      "requires": ["nucleaire:5"],
       "unlocks": [
         "hbm:fusion_plasma_forge",
         "hbm:machine_annihilator",

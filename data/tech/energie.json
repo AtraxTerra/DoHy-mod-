@@ -242,7 +242,7 @@
     {
       "tier": 6,
       "name": "Stockage massif",
-      "requires": ["industrie:6"],
+      "requires": ["nucleaire:6"],
       "unlocks": ["hbm:machine_battery_redd"],
       "machines": [
         {"id": "hbm:machine_battery_redd", "name": "FEnSU"}

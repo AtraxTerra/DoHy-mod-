@@ -23,7 +23,6 @@
         "hbm:c4",
         "hbm:semtex",
         "hbm:red_barrel",
-        "hbm:mine_fat",
         "hbm:mine_naval",
         "hbm:vault_door"
       ],
@@ -40,7 +39,6 @@
         {"id": "hbm:c4", "name": "C-4"},
         {"id": "hbm:semtex", "name": "Semtex"},
         {"id": "hbm:red_barrel", "name": "Baril explosif"},
-        {"id": "hbm:mine_fat", "name": "Fat Mine"},
         {"id": "hbm:mine_naval", "name": "Naval Mine"},
         {"id": "hbm:vault_door", "name": "Vault-Tec Blast Door"}
       ],
@@ -50,23 +48,21 @@
     {
       "tier": 2,
       "name": "Tourelles legeres",
-      "requires": ["energie:1"],
+      "requires": ["industrie:3"],
       "unlocks": [
-        "hbm:turret_chekhov",
         "hbm:turret_friendly",
         "hbm:turret_sentry",
         "hbm:machine_siren",
         "hbm:floodlight",
-        "hbm:spotlight_*"
+        "hbm:spotlight_fluoro",
+        "hbm:spotlight_incandescent"
       ],
       "machines": [
-        {"id": "hbm:turret_chekhov", "name": "Heavy Machine Gun Turret \"Chekhov's Gun\""},
         {"id": "hbm:turret_friendly", "name": "Chaingun Turret \"Mister Friendly\""},
         {"id": "hbm:turret_sentry", "name": "Sentry Turret \"Brown\""},
         {"id": "hbm:machine_siren", "name": "sirene"},
         {"id": "hbm:floodlight", "name": "Powered Floodlight"},
         {"id": "hbm:spotlight_fluoro", "name": "Fluorescent Light"},
-        {"id": "hbm:spotlight_halogen", "name": "Halogen Floodlight"},
         {"id": "hbm:spotlight_incandescent", "name": "Cage Lamp"}
       ],
       "bonuses": [],
@@ -75,7 +71,7 @@
     {
       "tier": 3,
       "name": "Artillerie",
-      "requires": ["industrie:3"],
+      "requires": ["industrie:3", "chimie:3"],
       "unlocks": [
         "hbm:turret_jeremy",
         "hbm:turret_richard",
@@ -90,8 +86,8 @@
         "hbm:therm_endo",
         "hbm:therm_exo",
         "hbm:float_bomb",
-        "hbm:fissure_bomb",
-        "hbm:flame_war"
+        "hbm:flame_war",
+        "hbm:turret_chekhov"
       ],
       "machines": [
         {"id": "hbm:turret_jeremy", "name": "Autocannon Turret \"Jeremy\""},
@@ -107,8 +103,8 @@
         {"id": "hbm:therm_endo", "name": "Bombe endothermique"},
         {"id": "hbm:therm_exo", "name": "Bombe exothermique"},
         {"id": "hbm:float_bomb", "name": "Bombe a levitation"},
-        {"id": "hbm:fissure_bomb", "name": "Fissure Bomb"},
-        {"id": "hbm:flame_war", "name": "Flame War in a box"}
+        {"id": "hbm:flame_war", "name": "Flame War in a box"},
+        {"id": "hbm:turret_chekhov", "name": "Heavy Machine Gun Turret \"Chekhov's Gun\""}
       ],
       "bonuses": [
         {"type": "soldier_hp", "value": 5, "label": "assauts des nations : soldats -5 % de vie"}
@@ -118,7 +114,7 @@
     {
       "tier": 4,
       "name": "Missiles",
-      "requires": ["chimie:3"],
+      "requires": ["chimie:4"],
       "unlocks": [
         "hbm:launch_pad",
         "hbm:launch_pad_large",
@@ -132,7 +128,8 @@
         "hbm:charge_*",
         "hbm:det_charge",
         "hbm:det_miner",
-        "hbm:struct_launcher*"
+        "hbm:struct_launcher*",
+        "hbm:spotlight_halogen"
       ],
       "machines": [
         {"id": "hbm:launch_pad", "name": "Base de lancement des missiles"},
@@ -152,7 +149,8 @@
         {"id": "hbm:det_miner", "name": "Mining Charge"},
         {"id": "hbm:struct_launcher", "name": "Launch Pad Component Block"},
         {"id": "hbm:struct_launcher_core", "name": "Compact Launcher Core Component"},
-        {"id": "hbm:struct_launcher_core_large", "name": "Launch Table Core Component"}
+        {"id": "hbm:struct_launcher_core_large", "name": "Launch Table Core Component"},
+        {"id": "hbm:spotlight_halogen", "name": "Halogen Floodlight"}
       ],
       "bonuses": [],
       "legacy": ["defense:7", "defense:8", "pillage:7", "pillage:8"]
@@ -160,7 +158,7 @@
     {
       "tier": 5,
       "name": "Armes nucleaires",
-      "requires": ["nucleaire:3"],
+      "requires": ["nucleaire:4", "chimie:4"],
       "unlocks": [
         "hbm:nuke_boy",
         "hbm:nuke_man",
@@ -175,7 +173,9 @@
         "hbm:turret_maxwell",
         "hbm:tesla",
         "hbm:field_disturber",
-        "leafia:nuke_chud"
+        "leafia:nuke_chud",
+        "hbm:mine_fat",
+        "hbm:fissure_bomb"
       ],
       "machines": [
         {"id": "hbm:nuke_boy", "name": "Little Boy"},
@@ -191,7 +191,9 @@
         {"id": "hbm:turret_maxwell", "name": "High-Energy MASER Turret \"Maxwell\""},
         {"id": "hbm:tesla", "name": "Tesla Coil"},
         {"id": "hbm:field_disturber", "name": "High Energy Field Jammer"},
-        {"id": "leafia:nuke_chud", "name": "Fat Chud"}
+        {"id": "leafia:nuke_chud", "name": "Fat Chud"},
+        {"id": "hbm:mine_fat", "name": "Fat Mine"},
+        {"id": "hbm:fissure_bomb", "name": "Fissure Bomb"}
       ],
       "bonuses": [
         {"type": "soldier_hp", "value": 10, "label": "assauts des nations : soldats -10 % de vie"}
