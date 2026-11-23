@@ -646,7 +646,10 @@ public final class FactionTreeMenus {
             return parts.isEmpty() ? "gratuit" : String.join(" + ", parts);
         }
 
-        /** Les machines d'un palier, dans la bulle : douze au plus, les memes noms regroupes. */
+        /**
+         * Les machines d'un palier, dans la bulle : douze lignes au plus. Le nom d'une machine du jeu
+         * se traduit chez le joueur ; ceux des donnees (mod absent) se regroupent quand ils se repetent.
+         */
         private static List<String> machineLines(TechConfig.Domain domain, TechConfig.Tier tier) {
             List<String> lines = new ArrayList<>();
             List<TechConfig.Machine> machines = tier.resolved();
@@ -657,7 +660,14 @@ public final class FactionTreeMenus {
             List<String> names = new ArrayList<>();
             List<Integer> counts = new ArrayList<>();
             for (TechConfig.Machine machine : machines) {
-                String name = name(machine);
+                Optional<Block> block = machine.block();
+                if (block.isPresent()) {
+                    names.add(MenuView.text(net.minecraft.network.chat.Component.literal("- ")
+                            .append(block.get().getName())));
+                    counts.add(1);
+                    continue;
+                }
+                String name = "- " + (machine.name().isEmpty() ? machine.id() : machine.name());
                 int at = names.indexOf(name);
                 if (at >= 0) {
                     counts.set(at, counts.get(at) + 1);
@@ -668,7 +678,7 @@ public final class FactionTreeMenus {
             }
             int limit = Math.min(names.size(), 12);
             for (int index = 0; index < limit; index++) {
-                lines.add("- " + names.get(index) + (counts.get(index) > 1 ? " x" + counts.get(index) : ""));
+                lines.add(names.get(index) + (counts.get(index) > 1 ? " x" + counts.get(index) : ""));
             }
             if (names.size() > limit) {
                 lines.add("... et " + (names.size() - limit) + " autres");
