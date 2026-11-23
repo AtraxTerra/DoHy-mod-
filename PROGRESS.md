@@ -280,6 +280,11 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   tourelles avec l'Industrie III ; un palier d'office peut garder une machine que seul un autre
   domaine fait fabriquer. Bonus en service, tous désormais : une pile de plus aux largages
   nucléaires (Nucléaire II), soldats des assauts affaiblis (Défense III et V).
+- **Lot 23h — Espace** (2026-11-23, `docs/NATION.md`, « Espace ») : les liaisons satellites aux
+  lanceurs, l'orrery aux stations orbitales (qui demandent la Chimie V et le Nucléaire IV) ; l'outil
+  suit le métal fondu et les réglages par défaut de NTM (le bismuth vient des RTG, le desh du
+  raffinage) : **les 52 paliers sans problème** (enclume en desh à la Chimie III, Chimie IV après le
+  Nucléaire II, stockages de masse à l'Industrie IV…).
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 

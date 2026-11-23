@@ -27,7 +27,7 @@ Choix du joueur (2026-11-20) :
 | 23e | Contenu : Énergie et Industrie (paliers, coûts, bonus) | fait |
 | 23f | Contenu : Chimie et Agriculture | fait |
 | 23g | Contenu : Nucléaire et Défense | fait |
-| 23h | Contenu : Espace | à faire |
+| 23h | Contenu : Espace | fait |
 | 23i | Équilibrage, captures, vérification en jeu | à faire |
 
 L'ordre compte : la nation (23a) donne le menu où vivent les technologies ; le moteur (23b) et le
@@ -165,7 +165,9 @@ Quelques jalons, pour lire l'arbre (le détail est dans le brouillon) :
   broyeur (II) ; soudeuse, soudeuse à l'arc, four à arc, centrifugeuse, convoyeurs (III) ; usine
   d'assemblage, assembleuse de précision, grande foreuse, drones, réseau pneumatique (IV) ; laser
   minier, supercalculateur (V) ; forge à plasma, annihilateur (VI). Les enclumes de NTM suivent :
-  fer, plomb et acier (I), desh (III)… jusqu'au schrabidate et au dineutronium (VI).
+  fer, plomb et acier (I), saturnite et bronze au bismuth (V), schrabidate et dineutronium (VI) ;
+  celle en desh est à la Chimie III (le desh vient du raffinage), celles de ferro-uranium et de
+  bronze à l'arsenic au Nucléaire III.
   Depuis le lot 23e, cet ordre est celui de la fabrication de NTM (voir plus bas).
 - **Chimie** : tuyaux, vannes et pompes à vapeur (I) ; derrick, usine chimique, mélangeur,
   réservoir (II) ; raffinerie, tour de fractionnement, craquage, chevalet de pompage,
@@ -183,10 +185,10 @@ Quelques jalons, pour lire l'arbre (le détail est dans le brouillon) :
   autocanon, lance-roquettes, mitrailleuse, radar, presse à munitions (III) ; pas de tir de
   missiles, radar lourd, artillerie (IV) ; bombes nucléaires, mine Fat Man, champ de force,
   tourelle MASER (V) ; F.L.E.I.J.A., bombe au balefire, bombe à antimatière de Space (VI).
-- **Espace** : récepteur satellite (I) ; pas de tir Soyouz (II) ; bâtiment d'assemblage des
-  fusées, pas de tir de Space (III) ; stations orbitales et propulseurs (IV) ; atmosphère,
-  foreuse à magma, collecteur de géante gazeuse (V) ; sphère de Dyson, éditeur d'atmosphère,
-  téléporteur (VI).
+- **Espace** : récepteur satellite (I) ; pas de tir Soyouz et liaisons satellites (II) ;
+  bâtiment d'assemblage des fusées, pas de tir de Space (III) ; stations orbitales, propulseurs et
+  orrery (IV) ; atmosphère, foreuse à magma, collecteur de géante gazeuse, film d'algues (V) ;
+  sphère de Dyson, éditeur d'atmosphère, téléporteur (VI).
 
 **Les bonus** agissent sur les systèmes de DoHy — les machines de NTM elles-mêmes ne sont pas
 modifiées (aucune injection dans leur code) :
@@ -506,7 +508,40 @@ demandait la forge à plasma de l'Industrie VI, qui demandait elle-même la fusi
   guerre (l'assaut), les zones irradiées (les largages).
 - **Pour le lot 23i** : les deux stockages de masse de l'Économie IV et V demandent du desh et des
   circuits ; l'Économie, domaine repris, ne peut pas recevoir de prérequis sans retarder ses bonus
-  d'anciennes étapes — ils changeront plutôt de domaine.
+  d'anciennes étapes — ils changeront plutôt de domaine (fait au lot 23h : Industrie IV).
+
+## Espace (23h)
+
+Le dernier domaine. Ses problèmes étaient peu nombreux (les liaisons satellites demandaient des
+circuits d'après les lanceurs, l'orrery du tritium, le propulseur au xénon de l'argon), mais l'outil,
+affiné une dernière fois, en a révélé d'autres dans les domaines déjà faits.
+
+### Fait (2026-11-23)
+
+- **L'outil** suit désormais le **métal fondu** : le four à arc, le four rotatif, l'électrolyse et le
+  creuset versent des matières dans la fonderie, qui en coule lingots, plaques et fils (la
+  saturnite ne sort que du four rotatif). Il ne compte que les recettes que NTM **charge avec ses
+  réglages par défaut** : ni mode cher, ni 528, ni LBSM — le bismuth ne sort donc plus des minerais
+  d'or et de plomb à la centrifugeuse (une recette LBSM) : il vient des RTG. Et une électrode usée
+  demande l'électrode neuve : le desh ne venait que de là, il vient du raffinage.
+- **Les 52 paliers : 0 problème** (27 avant, avec l'outil affiné). Les machines d'un palier d'office
+  qui attendent un autre domaine (portes blindées, absorbeur…) restent listées par `--details`.
+- **Espace** : les liaisons satellites (lieur et liaison) passent du I aux lanceurs (II) ; l'orrery
+  du III aux stations orbitales (IV), qui demandent désormais la **Chimie V** (l'argon du
+  propulseur au xénon) et le **Nucléaire IV** (le tritium de l'orrery, le fil de schrabidate du
+  HTR-F4).
+- **Corrections ailleurs**, ce que l'outil affiné a montré :
+  - l'enclume en desh passe à la **Chimie III** (là où le desh devient fabricable, que demandent
+    toutes les machines qui en ont besoin) ; celles de saturnite (four rotatif, gaz de reformage) et
+    de bronze au bismuth à l'**Industrie V** ;
+  - la **Chimie IV demande le Nucléaire II** : ses puces polyvalentes (distillation sous vide,
+    reformage, hydrotraitement) demandent du bismuth, que donnent les RTG ;
+  - la **Chimie V** et l'**Énergie V** demandent le **Nucléaire III** (une enclume de niveau 4 pour
+    la tour de deutérium et la grande tour de refroidissement) ; la chaudière haute pression de
+    Cursed (bismuth) passe à l'Énergie V ; le baril en alliage Tc au Nucléaire IV ;
+  - les **stockages de masse** en desh et en alliage Tc quittent l'Économie (domaine repris : un
+    prérequis y retarderait les bonus des anciennes étapes) pour l'**Industrie IV**.
+- **L'encyclopédie** : la fiche « Technologies » (le desh, le bismuth, l'Espace).
 
 ## L'arbre actuel, fondu dedans
 
