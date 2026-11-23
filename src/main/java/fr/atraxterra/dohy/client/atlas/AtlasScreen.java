@@ -68,6 +68,8 @@ public final class AtlasScreen extends Screen {
 
     private double centerX;
     private double centerZ;
+    /** Ouverte sur un point donne : l'ouverture ne la recentre pas sur le joueur. */
+    private boolean placed;
     private double scale = 2.0d;
     private double targetScale = 2.0d;
     private boolean anchored;
@@ -112,10 +114,18 @@ public final class AtlasScreen extends Screen {
         this.targetScale = this.scale;
     }
 
+    /** La grande carte a ce zoom, centree sur ce point du monde (un lieu, un point de passage). */
+    public AtlasScreen(double scale, double x, double z) {
+        this(scale);
+        this.centerX = x;
+        this.centerZ = z;
+        this.placed = true;
+    }
+
     @Override
     protected void init() {
         LocalPlayer player = minecraft.player;
-        if (player != null && lastFrame < 0) {
+        if (player != null && lastFrame < 0 && !placed) {
             centerX = player.getX();
             centerZ = player.getZ();
         }
