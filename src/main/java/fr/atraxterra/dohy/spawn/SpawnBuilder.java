@@ -837,9 +837,10 @@ final class SpawnBuilder {
         // le pilote de la navette d'Arrakis, en face du passeur
         npc(-5, FLOOR + 1, PAD_Z + 5, 180.0f, SpawnNpc.Role.SHUTTLE, new BlockPos(-5, FLOOR + 4, PAD_Z + 5));
         labels.add(new Label(new BlockPos(-5, FLOOR + 5, PAD_Z + 5), "Arrakis", 0xE8C27A, 0.7f));
-        // l'intendant des kits : devant l'arrivant, a gauche de l'allee du pont, tourne vers lui
-        npc(-5, FLOOR + 1, PAD_Z - 3, -63.0f, SpawnNpc.Role.KITS, new BlockPos(-5, FLOOR + 4, PAD_Z - 3));
-        labels.add(new Label(new BlockPos(-5, FLOOR + 5, PAD_Z - 3), "Ton kit de depart, et les autres", 0xFAC400,
+        // l'intendant des kits : devant l'arrivant (dans son champ de vision, tourne vers le pont), a
+        // gauche de l'allee, et tourne vers lui
+        npc(-4, FLOOR + 1, PAD_Z - 6, -34.0f, SpawnNpc.Role.KITS, new BlockPos(-4, FLOOR + 4, PAD_Z - 6));
+        labels.add(new Label(new BlockPos(-4, FLOOR + 5, PAD_Z - 6), "Ton kit de depart, et les autres", 0xFAC400,
                 0.7f));
         labels.add(new Label(new BlockPos(0, FLOOR + 5, PAD_Z - 9), "SPAWN", 0xFFFFFF, 3.0f));
         labels.add(new Label(new BlockPos(0, FLOOR + 3, PAD_Z - 9), "Le hall des box est au bout du pont", 0xFAC400,
