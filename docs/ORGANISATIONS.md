@@ -33,7 +33,7 @@
 | 24b | Entreprises : le modèle commun (propriétaire, catégorie, niveau, capital, coûts, revenus, employés, stock, lieu, risque, améliorations), les catégories légales et illégales, les revenus horaires hors ligne, l'influence par pays, les six organisations criminelles, l'onglet Entreprises | fait |
 | 24c | Objets, blocs et textures : plantes, produits, conditionnement, caisses, balance, matériel de laboratoire, protections, bidons, laboratoire clandestin, table de conditionnement, coffres sécurisés — chacun branché sur une entreprise | fait |
 | 24d | Interactions : lois des pays, descentes de police, opérations contre le crime, rivalités qui coûtent, alliances qui rapportent, contrats entre organisations, notifications | fait |
-| 24e | La farmland : dimension du Chasseur où n'apparaissent que les créatures du métier | à faire |
+| 24e | La farmland : dimension du Chasseur où n'apparaissent que les créatures du métier | fait |
 
 ## Lot 24a — régime, cadres et diplomatie (fait, 2026-11-22)
 
@@ -516,15 +516,99 @@ en cours, remplis, manqués, expirés), les douze derniers de chaque, la fin de 
 dernière opération contre le crime. `Standing` garde la date de ta dernière opération contre
 chaque organisation. Rien de nouveau dans `Organisation` : la prison est dans le poste du cadre.
 
-## Lots suivants — la conception retenue
-
-### 24e — la farmland
+## Lot 24e — la farmland (fait, 2026-11-23)
 
 D'après le wiki de Paladium : une carte construite et indestructible, avec un lac, une forêt,
 un coin du Nether et un coin de l'End ; PvP inactif, PvE actif ; on peut y mourir mais la faim
-ne baisse pas ; les commandes de faction n'y marchent pas. Y apparaissent les créatures du
-Chasseur : hostiles vanilla (zombies, squelettes, araignées, araignées venimeuses, sorcières,
-creepers, slimes, piglins zombifiés, cubes de magma, ghasts, squelettes wither, endermen),
-passives (vaches, champimeuh, lapins, moutons, poules, chevaux, ânes, loups, villageois) et
-celles du mod qui existent ici (éléphant ; chèvres, pandas, tortues, dauphins, perroquets en
-vanilla). Les animaux y vivent dix minutes s'ils ne sont pas attaqués.
+ne baisse pas ; les commandes de faction n'y marchent pas ; n'y apparaissent que les créatures
+du Chasseur ; les animaux y vivent dix minutes s'ils ne sont pas attaqués. Le plan, les
+bâtiments et les textures sont ceux de DoHy (rien n'est repris de la carte du serveur).
+
+### La carte
+
+Une dimension à part, `dohy:farmland` (générateur plat vide, cycle jour-nuit de l'overworld,
+`monsters_burn` à faux : les morts-vivants n'y brûlent pas au soleil). `FarmlandMap` dessine
+le sol colonne par colonne, de façon déterministe ; `FarmlandDecor` pose ce qui s'élève.
+
+| Coin | Où | Ce qu'on y voit |
+|---|---|---|
+| Le camp | au centre, 13 blocs | parvis d'andésite, lanternes, bancs, la borne RETOUR, des panneaux flottants vers chaque coin |
+| La forêt | nord-ouest | chênes, bouleaux, bosquets de chênes noirs, podzol, mousse, litière |
+| La prairie | nord-est | herbes, fleurs, un enclos ; le **hameau** (trois maisons, un puits, du foin) ; les **champignons** (mycélium, trois champignons géants) |
+| Les collines | est | trois sommets de roche, épicéas ; la **grotte** : un tunnel dans le flanc ouest, une salle sous le sommet (toiles, lanternes) |
+| La jungle | sud-est | bambous, arbres de la jungle et leurs lianes, fougères, melons |
+| Le lac | sud-ouest | jusqu'à 8 blocs de fond, varech et herbes, nénuphars, un îlot et son chêne ; la **plage** de sable et ses cannes à sucre |
+| Le marais | ouest, autour du lac | boue, flaques, nénuphars, chênes à lianes, orchidées |
+| Le coin du Nether | angle sud-ouest | netherrack, nylium carmin et biscornu, sable des âmes, champignons géants, piliers de basalte et pierre lumineuse, bassins de lave, une ruine de forteresse et son carré de verrues |
+| Le coin de l'End | angle sud-est | plateau de pierre de l'End, cinq piliers d'obsidienne, plantes de chorus fanées, une ruine de purpur et sa tête de dragon |
+| Les falaises | tout autour (92 à 104 blocs) | roche qui monte de 24 blocs, une couronne de barrières au sommet ; au-delà, le vide |
+
+Des chemins de terre (de briques de pierre noire au Nether, de briques de l'End à l'End) mènent
+du camp à chaque coin. Les biomes sont peints coin par coin (forêt, prairie, champs de
+champignons, collines venteuses, jungle de bambous, rivière, plage, marais, forêt carmin, End) :
+couleurs de l'herbe et de l'eau, brouillard rouge du Nether, ciel de l'End.
+
+La carte se construit à la première visite : 8 000 blocs par tick, chunk par chunk depuis le
+camp, puis les formes (barrières, vitres, chorus), les panneaux et les biomes ; les joueurs
+attendent quelques secondes et partent dès qu'elle est prête. Sa version est gardée sur la
+dimension (`farmland_built`) ; la changer la fait vider et redessiner.
+
+### Les créatures
+
+`FarmlandSpawner` : toutes les deux secondes, près de chaque joueur, jusqu'à trois créatures
+arrivent à 14-72 blocs (jamais à moins de 10 d'un joueur), dans le coin qui en manque le plus.
+Plafonds pour toute la carte, 110 créatures au plus :
+
+| Réserve | Coin | Plafond | Espèces (poids) |
+|---|---|---|---|
+| foret | forêt | 14 | zombie 30, squelette 25, araignée 20, creeper 15, sorcière 6 |
+| foret_betes | forêt | 6 | loup 3, lapin 4 |
+| prairie | prairie | 16 | vache 10, mouton 10, poule 8, cheval 4, âne 2, lapin 3 |
+| hameau | hameau | 4 | villageois |
+| champignons | champignons | 4 | champimeuh |
+| collines | collines | 4 | chèvre |
+| grotte | salle et tunnel | 5 | araignée venimeuse |
+| jungle | jungle | 7 | panda 3, perroquet 4, éléphant 2 |
+| lac | eau profonde | 3 | dauphin |
+| plage | plage | 4 | tortue |
+| marais | marais | 6 | slime 4, sorcière 2 |
+| nether | coin du Nether | 11 | piglin zombifié 6, cube de magma 4, squelette wither 3 |
+| nether_ciel | au-dessus du Nether | 2 | ghast |
+| end | coin de l'End | 6 | enderman |
+
+En paisible, seulement les animaux. Ces créatures naissent « naturelles » : le Chasseur en tire
+toute son XP. Les animaux (et les villageois) qu'aucun joueur n'a frappés, nourris, apprivoisés,
+pris en laisse ou nommés s'en vont au bout de dix minutes ; les monstres disparaissent comme
+ailleurs, loin des joueurs. Ce qui quitte la carte est retiré. Le jeu, lui, n'y fait rien
+apparaître (créatures des biomes peints, patrouilles) et la foudre n'y tombe pas.
+
+### Les règles
+
+- Rien ne se casse ni ne se pose (le mode créatif excepté) ; ni seaux, ni briquet, ni poudre
+  d'os, ni hache, houe ou pelle sur les blocs ; les explosions et les créatures (endermen,
+  moutons) n'abîment rien.
+- Pas de PvP ; une créature peut tuer, et l'on réapparaît au spawn.
+- La faim et la saturation sont gardées telles qu'à l'arrivée (manger les remonte).
+- `/f`, `/faction`, `/nation` ne marchent pas.
+- Qui tombe ou passe les falaises revient au camp.
+
+### Entrer, sortir
+
+- La borne **DONJONS** du spawn : carte **Farmland** → la page de la farmland (ses coins, ce qui
+  y apparaît et combien, ses règles, le départ).
+- `/farmland`, au grade Héros (comme sur Paladium), depuis l'overworld, le Nether, l'End, le
+  spawn, la Mine ou Arrakis, après les trois secondes des téléportations de grade.
+- Sortie : la borne **RETOUR** du camp, ou `/spawn` ; la borne RETOUR du spawn ramène ensuite là
+  où l'on était avant la farmland (elle ne devient pas une navette vers la farmland). Les
+  téléportations de grade (`/home`, `/tpa`) partent aussi de la farmland ; on n'y pose pas de
+  home.
+
+### Données
+
+`farmland_built` (la version de la carte) sur la dimension ; sur les créatures, les marques
+`dohy_farmland`, `dohy_farmland_<réserve>`, `dohy_farmland_hit` et la date de naissance des
+animaux. Rien sur les joueurs.
+
+## Lots suivants
+
+Les arbres de technologie NTM (lots 23b à 23i), prévus après ce chapitre.

@@ -4207,7 +4207,8 @@ La FAQ précise que les grades classiques durent le temps acheté ; Premium, jus
   de trois secondes ne vaut que pour les nouvelles téléportations.
 - **Pas d'équivalent** : l'accès prioritaire, l'anti-AFK, les macros NEI, `/go`, `/re`,
   `/serverhistory`, le serveur de test et le home depuis n'importe quel serveur (un seul monde) ;
-  la remise sur un AP ou une MDF (rien à louer dans DoHy) ; `/farmland` (pas de zone de farm
-  commune) ; `/skin` (pas d'apparences d'armure) ; `/me` est la commande du jeu, ouverte à tous.
+  la remise sur un AP ou une MDF (rien à louer dans DoHy) ; `/skin` (pas d'apparences d'armure) ;
+  `/me` est la commande du jeu, ouverte à tous. `/farmland` mène à la farmland du Chasseur (lot 24e,
+  `docs/ORGANISATIONS.md`).
 - **Un grade ne s'arrête pas** : sur Paladium, les grades classiques durent le temps acheté ; ici,
   ils sont permanents (choix du joueur). Seul Premium est un abonnement.
