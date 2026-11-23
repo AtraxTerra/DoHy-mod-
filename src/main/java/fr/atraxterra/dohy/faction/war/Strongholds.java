@@ -256,6 +256,16 @@ public final class Strongholds {
     private static Job job;
     private static boolean loaded;
 
+    /** Une place forte batie, vue de la carte des claims : son nom, son centre, le rayon de ses claims en chunks. */
+    public record Holding(String name, BlockPos center, int radius) {
+    }
+
+    /** La place forte debout contre ce joueur, ou {@code null} : la carte des claims montre ses chunks. */
+    public static Holding holding(UUID player) {
+        Fort fort = of(player);
+        return fort == null ? null : new Holding(fort.name, fort.center, fort.kind().claimRadius());
+    }
+
     /** La place forte de la nation qui fait la guerre a ce joueur, debout ; {@code null} sinon. */
     static Fort of(UUID player) {
         Fort fort = FORTS.get(player);

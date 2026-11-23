@@ -171,6 +171,31 @@ public final class AtlasTiles {
         }
     }
 
+    /**
+     * Remplace toute une dalle par ces couleurs, ARGB, ligne par ligne (une dalle revelee, de
+     * l'atlas du serveur) ; rien ne change si elles sont deja les memes.
+     */
+    void replace(int tx, int tz, int[] argb) {
+        if (argb.length != SIZE * SIZE) {
+            return;
+        }
+        Tile tile = tile(tx, tz, true);
+        boolean changed = false;
+        for (int z = 0; z < SIZE; z++) {
+            for (int x = 0; x < SIZE; x++) {
+                int color = argb[z * SIZE + x];
+                if (tile.image.getPixel(x, z) != color) {
+                    tile.image.setPixel(x, z, color);
+                    changed = true;
+                }
+            }
+        }
+        if (changed) {
+            tile.dirty = true;
+            tile.unsaved = true;
+        }
+    }
+
     /** Envoie a la carte graphique les dalles modifiees (au plus {@code max}), avec leurs niveaux. */
     void upload(int max) {
         List<Tile> pending = new ArrayList<>();

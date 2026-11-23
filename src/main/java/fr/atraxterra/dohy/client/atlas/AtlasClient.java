@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.blaze3d.platform.InputConstants;
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.atlas.WorldTiles;
 import fr.atraxterra.dohy.earth.EarthAtlas;
+import fr.atraxterra.dohy.faction.ClaimMap;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -54,6 +56,8 @@ public final class AtlasClient {
         public boolean markers = true;
         /** Le calque des catastrophes en cours (seismes, eruptions, ouragans, mousson). */
         public boolean disasters = true;
+        /** Le calque des claims : ceux de ta nation, et ceux des autres que le serveur connait. */
+        public boolean claims = true;
     }
 
     /** Les tailles de minimap proposees par la grande carte. */
@@ -112,6 +116,9 @@ public final class AtlasClient {
         event.register(EarthAtlas.Globe.TYPE, (payload, context) -> AtlasData.accept(payload));
         event.register(EarthAtlas.Layers.TYPE, (payload, context) -> AtlasData.accept(payload));
         event.register(EarthAtlas.Nations.TYPE, (payload, context) -> AtlasData.accept(payload));
+        event.register(ClaimMap.State.TYPE, (payload, context) -> AtlasClaims.accept(payload));
+        event.register(ClaimMap.Result.TYPE, (payload, context) -> AtlasClaims.accept(payload));
+        event.register(WorldTiles.TileData.TYPE, (payload, context) -> AtlasRemote.accept(payload));
     }
 
     @SubscribeEvent
@@ -126,6 +133,8 @@ public final class AtlasClient {
         closeMap();
         Waypoints.close();
         AtlasData.clear();
+        AtlasClaims.clear();
+        AtlasRemote.clear();
         AtlasGlobe.release();
         MarkIcons.clear();
         world = null;

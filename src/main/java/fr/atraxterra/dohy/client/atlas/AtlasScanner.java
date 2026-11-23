@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.client.atlas;
 
+import fr.atraxterra.dohy.atlas.MapShade;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -79,9 +80,7 @@ final class AtlasScanner {
                 }
                 int color = color(level, chunk, x, y, z, pos);
                 if (color != 0) {
-                    int above = north[lx];
-                    double shade = above == Integer.MIN_VALUE || above == y ? 1.0d : y > above ? 1.12d : 0.84d;
-                    map.set(x, z, shaded(color, shade));
+                    map.set(x, z, shaded(color, MapShade.slope(y, north[lx])));
                 }
                 north[lx] = y;
             }
@@ -119,10 +118,11 @@ final class AtlasScanner {
             BlockState state = chunk.getBlockState(pos.set(x, y, z));
             if (state.getFluidState().is(FluidTags.WATER)) {
                 int depth = 1;
-                while (depth < 12 && chunk.getBlockState(pos.set(x, y - depth, z)).getFluidState().is(FluidTags.WATER)) {
+                while (depth < MapShade.WATER_DEPTH
+                        && chunk.getBlockState(pos.set(x, y - depth, z)).getFluidState().is(FluidTags.WATER)) {
                     depth++;
                 }
-                return 0xFF000000 | shaded(MapColor.WATER.col, 1.05d - depth * 0.045d);
+                return MapShade.water(depth);
             }
             MapColor color = state.getMapColor(level, pos);
             if (color != MapColor.NONE && color.col != 0) {
@@ -133,9 +133,6 @@ final class AtlasScanner {
     }
 
     static int shaded(int color, double factor) {
-        int r = Math.min(255, (int) (((color >> 16) & 0xFF) * factor));
-        int g = Math.min(255, (int) (((color >> 8) & 0xFF) * factor));
-        int b = Math.min(255, (int) ((color & 0xFF) * factor));
-        return 0xFF000000 | r << 16 | g << 8 | b;
+        return MapShade.shaded(color, factor);
     }
 }
