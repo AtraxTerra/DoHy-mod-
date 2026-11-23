@@ -680,7 +680,7 @@
         {
           "title": "Les trois grades",
           "text": [
-            "- Heros, 10 M : 5 homes, 5 /rtp par mois, 36 cases d'Ender Chest, +5 % d'XP de metier et du pass, +10 % d'XP classique, /craft et /minage.",
+            "- Heros, 10 M : 5 homes, 5 /rtp par mois, 36 cases d'Ender Chest, +5 % d'XP de metier et du pass, +10 % d'XP classique, /craft, /minage et /farmland.",
             "- Legende, 100 M : 10 homes, 10 /rtp, 45 cases, +10 % et +20 %, -10 % de taxe au marche international, teleportation sans attente, emojis, /feed, /furnace, /rangement et /tptoggle.",
             "- Divinite, 1 G : 15 homes, 10 /rtp, 54 cases, +15 % et +30 %, -20 % de taxe, /condense, /hat et /deathlocate.",
             "Chaque grade donne aussi ceux d'en dessous, le pseudo et le chat en couleur, l'XP gardee a la mort et dix annonces de plus a l'hotel des ventes.",
@@ -723,6 +723,7 @@
         "/tpaccept ou /tpdeny : repondre",
         "/craft : un etabli partout (Heros)",
         "/minage : direct a la Mine (Heros)",
+        "/farmland : direct a la farmland (Heros)",
         "/feed : rassasie, toutes les 5 min (Legende)",
         "/furnace : cuit ce que tu tiens (Legende)",
         "/rangement : trie ton sac (Legende)",
@@ -1265,7 +1266,8 @@
             "- L'epee de capture enferme la creature tuee dans une pierre de capture vide.",
             "- Le marteau de caverne recolte les ames des spawners de donjon pour remplir un spawner vide.",
             "- Capturer une monture demande l'epee et la pierre de capture.",
-            "- L'elephant se tue des le niveau 40, et rapporte un bonus des le 55 s'il a ete bien nourri."
+            "- L'elephant se tue des le niveau 40, et rapporte un bonus des le 55 s'il a ete bien nourri.",
+            "- La farmland (borne DONJONS du spawn, ou /farmland au grade Heros) : une carte ou n'apparaissent que les creatures du Chasseur."
           ]
         }
       ],
@@ -1273,7 +1275,8 @@
         "metiers",
         "spawners",
         "monture",
-        "elephant"
+        "elephant",
+        "farmland"
       ],
       "progress": "metier:hunter"
     },
@@ -3652,6 +3655,59 @@
       "discover": {
         "dimensions": [
           "dohy:mine"
+        ]
+      }
+    },
+    {
+      "id": "farmland",
+      "category": "lieux",
+      "order": 3,
+      "icon": "minecraft:bone",
+      "title": "La farmland",
+      "card": [
+        "Les creatures du Chasseur",
+        "Une carte indestructible"
+      ],
+      "summary": [
+        "La dimension du Chasseur : une carte batie, avec sa foret, sa prairie et son hameau, ses collines et leur grotte, sa jungle, son lac et son marais, un coin du Nether et un coin de l'End. N'y apparaissent que les creatures du metier, chacune dans son coin. On y entre par la borne DONJONS du spawn (carte Farmland), ou par /farmland au grade Heros."
+      ],
+      "commands": [
+        "/farmland : direct a la farmland (Heros)",
+        "/spawn : en sortir"
+      ],
+      "sections": [
+        {
+          "title": "Les regles",
+          "text": [
+            "- Rien ne s'y casse ni ne s'y pose ; ni les explosions ni les creatures n'y abiment rien.",
+            "- PvP inactif, PvE actif : on peut y mourir, et l'on reapparait au spawn.",
+            "- La faim n'y baisse pas.",
+            "- Les commandes de faction n'y marchent pas.",
+            "- Un animal que personne n'attaque s'en va au bout de dix minutes ; une bete touchee, nourrie ou nommee reste.",
+            "- Sortie : la borne RETOUR du camp, ou /spawn. Qui passe les falaises ou tombe revient au camp."
+          ]
+        },
+        {
+          "title": "Ce qui y apparait",
+          "text": [
+            "- La foret : zombies, squelettes, araignees, creepers, sorcieres ; loups et lapins.",
+            "- La prairie : vaches, moutons, poules, chevaux, anes, lapins. Le hameau : villageois. Les champignons : champimeuh.",
+            "- Les collines : chevres, et des araignees venimeuses dans la grotte.",
+            "- La jungle : pandas, perroquets, elephants.",
+            "- Le lac : dauphins. La plage : tortues. Le marais : slimes et sorcieres.",
+            "- Le coin du Nether : piglins zombifies, cubes de magma, squelettes wither, ghasts. Le coin de l'End : endermen.",
+            "! Les creatures y apparaissent de jour comme de nuit, et les morts-vivants n'y brulent pas au soleil."
+          ]
+        }
+      ],
+      "see": [
+        "chasseur",
+        "spawn",
+        "mine"
+      ],
+      "discover": {
+        "dimensions": [
+          "dohy:farmland"
         ]
       }
     },

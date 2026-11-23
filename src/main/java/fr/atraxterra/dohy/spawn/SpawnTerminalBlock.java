@@ -127,9 +127,12 @@ public class SpawnTerminalBlock extends Block {
             case CONTRACTS -> ContractsController.INSTANCE.open(server);
             case MUSEUM -> MuseumController.INSTANCE.open(server);
             case RETURN -> {
-                // a l'arrivee de la Mine, la borne ramene au spawn ; au spawn, d'ou l'on venait
+                // a l'arrivee de la Mine et au camp de la farmland, la borne ramene au spawn ; au spawn,
+                // d'ou l'on venait
                 if (fr.atraxterra.dohy.mine.MineService.inMine(server)) {
                     fr.atraxterra.dohy.mine.MineService.leave(server);
+                } else if (fr.atraxterra.dohy.farmland.Farmland.inFarmland(server)) {
+                    fr.atraxterra.dohy.farmland.Farmland.leave(server);
                 } else {
                     SpawnApi.leave(server);
                 }

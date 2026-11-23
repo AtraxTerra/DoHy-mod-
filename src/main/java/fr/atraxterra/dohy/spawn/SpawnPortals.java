@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * La borne DONJONS du spawn : le depart vers les quatre donjons et les
- * evenements de faction.
+ * La borne DONJONS du spawn : le depart vers les quatre donjons, la farmland du
+ * Chasseur et les evenements de faction.
  *
  * <p>Un donjon se lance toujours avec sa cle, comme partout ailleurs : la
  * borne la prend dans l'inventaire, la met en main et ouvre le choix du
@@ -70,6 +70,8 @@ public final class SpawnPortals extends MenuController {
                             "Metier lie : " + dungeon.job().display())));
         }
         List<Card> others = List.of(
+                Card.of(new ItemStack(Items.BONE), "Farmland", List.of("La dimension du Chasseur",
+                        "Ses creatures, et elles seules")).accent(0xFF22E558).action("farmland"),
                 Card.of(new ItemStack(Items.IRON_SWORD), "Evenements de faction", List.of("Les arenes de ta nation",
                         "Totem, chasse aux oeufs, boss")).accent(0xFFEF3826).action("events"),
                 Card.of(new ItemStack(Items.TOTEM_OF_UNDYING), "Profil RPG", List.of(
@@ -85,7 +87,9 @@ public final class SpawnPortals extends MenuController {
 
     @Override
     protected void card(ServerPlayer player, String key, int button) {
-        if ("events".equals(key)) {
+        if ("farmland".equals(key)) {
+            fr.atraxterra.dohy.farmland.FarmlandMenu.INSTANCE.open(player);
+        } else if ("events".equals(key)) {
             FactionEventMenu.INSTANCE.open(player);
         } else if ("rpg".equals(key)) {
             UiNet.forget(player);

@@ -178,13 +178,14 @@ public final class SpawnApi {
     }
 
     /**
-     * Le spawn ne se rejoint que depuis les trois dimensions du jeu, la Mine et Arrakis : ni d'un
-     * donjon, ni d'une arene.
+     * Le spawn ne se rejoint que depuis les trois dimensions du jeu, la Mine, Arrakis et la
+     * farmland : ni d'un donjon, ni d'une arene.
      */
     private static boolean reachable(ServerPlayer player) {
         return player.level().dimension() == Level.OVERWORLD || player.level().dimension() == Level.NETHER
                 || player.level().dimension() == Level.END || fr.atraxterra.dohy.mine.MineService.inMine(player)
-                || fr.atraxterra.dohy.arrakis.DoHyArrakis.onArrakis(player);
+                || fr.atraxterra.dohy.arrakis.DoHyArrakis.onArrakis(player)
+                || fr.atraxterra.dohy.farmland.Farmland.inFarmland(player);
     }
 
     /**
@@ -220,10 +221,11 @@ public final class SpawnApi {
     }
 
     private static void send(ServerPlayer player, ServerLevel level) {
-        // depuis la Mine ou Arrakis, le point de retour reste celui d'avant : la borne RETOUR ne
-        // doit pas devenir une navette gratuite vers Arrakis
+        // depuis la Mine, Arrakis ou la farmland, le point de retour reste celui d'avant : la borne
+        // RETOUR ne doit pas devenir une navette gratuite vers Arrakis (ni vers la farmland)
         if (!fr.atraxterra.dohy.mine.MineService.inMine(player)
-                && !fr.atraxterra.dohy.arrakis.DoHyArrakis.onArrakis(player)) {
+                && !fr.atraxterra.dohy.arrakis.DoHyArrakis.onArrakis(player)
+                && !fr.atraxterra.dohy.farmland.Farmland.inFarmland(player)) {
             player.setData(DoHySpawn.RETURN.get(), ReturnPoint.of(player));
         }
         player.closeContainer();
