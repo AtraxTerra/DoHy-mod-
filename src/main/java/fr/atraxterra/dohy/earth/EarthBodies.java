@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.util.Soils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -246,7 +247,8 @@ public final class EarthBodies {
             }
             BlockState state = chunk.getBlockState(near);
             if (!targets.contains(state.getBlock()) && natural(state)) {
-                return state.getBlock().defaultBlockState();
+                // une herbe voisine donne de la terre : sous un bloc, elle n'en serait plus une
+                return Soils.covered(state) ? Blocks.DIRT.defaultBlockState() : state.getBlock().defaultBlockState();
             }
         }
         return (pos.getY() < 0 ? Blocks.DEEPSLATE : Blocks.STONE).defaultBlockState();
@@ -270,10 +272,14 @@ public final class EarthBodies {
         return Set.copyOf(set);
     }
 
-    /** De la roche ou de la terre en place : ce qu'un gisement ou un nettoyage peut prendre. */
+    /**
+     * De la roche ou de la terre en place : ce qu'un gisement ou un nettoyage peut prendre. La terre
+     * compte l'herbe, le podzol, les mousses et la boue, que le tag {@code minecraft:dirt} ne range
+     * plus en 26.2 (une poche sous un marais de mangrove gardait des trous de boue).
+     */
     private static boolean natural(BlockState state) {
         return state.is(BlockTags.STONE_ORE_REPLACEABLES) || state.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES)
-                || state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(BlockTags.DIRT) || state.is(BlockTags.SAND)
+                || state.is(BlockTags.BASE_STONE_OVERWORLD) || Soils.earth(state) || state.is(BlockTags.SAND)
                 || state.is(Blocks.GRAVEL) || state.is(Blocks.SANDSTONE) || state.is(Blocks.CLAY)
                 || state.is(BlockTags.TERRACOTTA) || OTHER_ROCKS.contains(state.getBlock());
     }
