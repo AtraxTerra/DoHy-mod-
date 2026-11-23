@@ -67,9 +67,16 @@ public final class DoHyAgri {
     private static final DeferredRegister.DataComponents COMPONENTS =
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, DoHy.MOD_ID);
 
-    /** Tout ce qu'une mangeoire et un biogenerateur acceptent : les grains d'ici et le ble. */
+    /** Les grains d'ici et le ble : ce que le silo et la tremie du tracteur gardent. */
     public static final TagKey<Item> CEREALS =
             TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "cereals"));
+
+    /**
+     * Le fourrage : ce qu'une mangeoire donne aux betes et ce qu'un biogenerateur brule. Les
+     * cereales, et les graines du chanvre de NTM NEXT ({@link Hemp}) — que le silo ne garde pas.
+     */
+    public static final TagKey<Item> FODDER =
+            TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DoHy.MOD_ID, "fodder"));
 
     /** La cle du ble de Minecraft dans les tables de farines. */
     public static final String WHEAT = "wheat";
@@ -109,6 +116,15 @@ public final class DoHyAgri {
 
     public static final DeferredItem<Item> CREAM = ITEMS.registerItem("cream", Item::new);
     public static final DeferredItem<Item> LARD = ITEMS.registerItem("lard", Item::new);
+
+    // -- Le chanvre de NTM NEXT : ce qu'en tire DoHy ({@link Hemp}) -------------------------
+
+    /** La fibre : de la ficelle, de la corde, de la toile. */
+    public static final DeferredItem<Item> HEMP_FIBER = ITEMS.registerItem("hemp_fiber", Item::new);
+    /** Les graines : du fourrage pour les betes et le biogenerateur, de la graine pour les poules. */
+    public static final DeferredItem<Item> HEMP_SEEDS = ITEMS.registerItem("hemp_seeds", Item::new);
+    /** La toile : du papier, et la toile d'un tableau. */
+    public static final DeferredItem<Item> HEMP_CANVAS = ITEMS.registerItem("hemp_canvas", Item::new);
 
     public static final DeferredBlock<FeederBlock> TROUGH = BLOCKS.registerBlock("trough",
             properties -> new FeederBlock(properties, FeederBlock.Kind.TROUGH),
@@ -271,6 +287,9 @@ public final class DoHyAgri {
         }
         list.add(CREAM);
         list.add(LARD);
+        list.add(HEMP_FIBER);
+        list.add(HEMP_SEEDS);
+        list.add(HEMP_CANVAS);
         list.add(TROUGH_ITEM);
         list.add(WATER_DISPENSER_ITEM);
         list.add(GMO_MACHINE_ITEM);

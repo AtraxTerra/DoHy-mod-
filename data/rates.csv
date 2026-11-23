@@ -199,6 +199,10 @@ dohy:sorghum_flour,AGRI,FARM,90,moulin : 3 grains d'OGM ; non achetable,,0
 dohy:kamut_flour,AGRI,FARM,90,moulin : 3 grains d'OGM ; non achetable,,0
 dohy:cream,AGRI,MOB,250,elevage : 4 cereales par vache nourrie,,
 dohy:lard,AGRI,MOB,250,elevage : 4 cereales par cochon nourri,,
+dohy:hemp_fiber,AGRI,FARM,3600,chanvre de NTM NEXT : 2 a 4 par couronne recoltee ; la moitie du revenu d'un champ,,
+dohy:hemp_seeds,AGRI,FARM,2600,chanvre de NTM NEXT : 1 a 2 par couronne ; fourrage non achetable (sinon la mangeoire rendrait plus que les graines),,0
+dohy:hemp_canvas,AGRI,FARM,900,4 fibres de chanvre,,
+hbm:plant_flower_weed,AGRI,FARM,3600,chanvre de NTM NEXT : la fleur se replante ; une par couronne ; achetable pour lancer un champ,,
 dohy:corn_bread,AGRI,FOOD,200,machine a pain : 1 farine par pain,,
 dohy:oat_bread,AGRI,FOOD,185,machine a pain : 1 farine par pain,,
 dohy:rye_bread,AGRI,FOOD,171,machine a pain : 1 farine par pain,,

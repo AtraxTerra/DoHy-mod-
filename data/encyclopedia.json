@@ -5101,6 +5101,58 @@
           "palamod:christmas_lucky_block"
         ]
       }
+    },
+    {
+      "id": "chanvre",
+      "category": "agriculture",
+      "order": 5,
+      "icon": "dohy:hemp_fiber",
+      "title": "Le chanvre",
+      "card": [
+        "Le chanvre de NTM NEXT",
+        "Fibre, toile, fourrage"
+      ],
+      "summary": [
+        "Le chanvre de NTM NEXT est une culture de DoHy : du chanvre a fibre, qu'on recolte pour sa fibre et ses graines. Rien a voir avec le cannabis des affaires illegales : il ne donne aucune herbe."
+      ],
+      "sections": [
+        {
+          "title": "Le trouver",
+          "text": [
+            "- L'herbe des climats tempere et chaud lache parfois une fleur de chanvre, a peu pres une fois sur cent.",
+            "- Le shop en vend au rayon agriculture, pour lancer un champ d'un coup."
+          ]
+        },
+        {
+          "title": "Le cultiver",
+          "text": [
+            "Plante la fleur sur de l'herbe, de la terre ou une terre labouree, avec de l'air au-dessus : elle grandit seule en chanvre haut en une dizaine de minutes, plus vite a l'engrais.",
+            "Casse la couronne, le haut de la plante : elle redevient fleur et repousse. Chaque couronne rend sa fleur, 2 a 4 fibres, 1 ou 2 graines et 6 XP de Fermier. Casser le pied avec la couronne rend une fleur de plus, mais compte une seule recolte.",
+            "! Seule une recolte a la main compte : une couronne cassee par l'eau ou un piston ne rend que la fleur."
+          ]
+        },
+        {
+          "title": "Ce qu'on en fait",
+          "text": [
+            "- Fibre : une ficelle ; trois en colonne, quatre cordes de NTM ; quatre en carre, une toile de chanvre.",
+            "- Toile : trois feuilles de papier, ou la toile d'un tableau (huit batons autour).",
+            "- Graines : du fourrage pour la mangeoire et le biogenerateur, de quoi nourrir poules et perroquets, du compost.",
+            "- Fibre, toile, graines et fleurs se vendent au shop, rayon agriculture. Les graines ne s'y achetent pas."
+          ]
+        }
+      ],
+      "see": [
+        "agriculture",
+        "cultures",
+        "fermier"
+      ],
+      "discover": {
+        "items": [
+          "dohy:hemp_fiber",
+          "dohy:hemp_seeds",
+          "dohy:hemp_canvas"
+        ]
+      }
     }
   ]
 }

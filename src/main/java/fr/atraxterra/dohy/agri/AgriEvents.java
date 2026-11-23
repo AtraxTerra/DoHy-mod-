@@ -59,6 +59,9 @@ public final class AgriEvents {
         if (state.is(Blocks.SHORT_GRASS) || state.is(Blocks.TALL_GRASS) || state.is(Blocks.FERN)
                 || state.is(Blocks.LARGE_FERN)) {
             extra = grassSeed(player, level, pos);
+            if (extra == null) {
+                extra = Hemp.grassFlower(player, level, pos);
+            }
         } else if (state.is(BlockTags.BASE_STONE_OVERWORLD)) {
             extra = prospect(player, level);
         }

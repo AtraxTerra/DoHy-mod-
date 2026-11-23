@@ -130,7 +130,7 @@ public class AgriMachineBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
-        if (kind != Kind.BIOGEN || !stack.is(DoHyAgri.CEREALS)) {
+        if (kind != Kind.BIOGEN || !stack.is(DoHyAgri.FODDER)) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (level.isClientSide() || !(level.getBlockEntity(pos) instanceof AgriMachineBlockEntity machine)) {

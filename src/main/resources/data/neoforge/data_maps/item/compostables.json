@@ -1,0 +1,10 @@
+{
+  "values": {
+    "dohy:hemp_seeds": {
+      "chance": 0.3
+    },
+    "dohy:hemp_fiber": {
+      "chance": 0.3
+    }
+  }
+}

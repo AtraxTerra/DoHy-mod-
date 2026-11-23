@@ -2216,6 +2216,50 @@
       "sellable": true,
       "rate_per_hour": 250.0
     },
+    "dohy:hemp_fiber": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 5,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 20,
+      "sellable": true,
+      "rate_per_hour": 3600.0
+    },
+    "dohy:hemp_seeds": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 6,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 0,
+      "sellable": true,
+      "rate_per_hour": 2600.0
+    },
+    "dohy:hemp_canvas": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 20,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 80,
+      "sellable": true,
+      "rate_per_hour": 900.0
+    },
+    "hbm:plant_flower_weed": {
+      "category": "AGRI",
+      "tier": "FARM",
+      "base_price": 5,
+      "s0": 2000,
+      "floor_pct": 0.15,
+      "ceiling_pct": 1.8,
+      "buy_price": 20,
+      "sellable": true,
+      "rate_per_hour": 3600.0
+    },
     "dohy:corn_bread": {
       "category": "AGRI",
       "tier": "FOOD",

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "SCS",
+    "SSS"
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "C": "dohy:hemp_canvas"
+  },
+  "result": {
+    "id": "minecraft:painting",
+    "count": 1
+  }
+}

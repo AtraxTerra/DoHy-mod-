@@ -104,7 +104,7 @@ public class FeederBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
-        boolean fits = kind == Kind.TROUGH ? stack.is(DoHyAgri.CEREALS) : stack.is(Items.WATER_BUCKET);
+        boolean fits = kind == Kind.TROUGH ? stack.is(DoHyAgri.FODDER) : stack.is(Items.WATER_BUCKET);
         if (!fits) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }

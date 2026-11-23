@@ -349,5 +349,14 @@
       "minecraft:coal_block": 2250,
       "minecraft:blaze_rod": 400
     }
+  },
+  "_hemp": "Le chanvre de NTM NEXT (agri/Hemp.java) : grass_chance est la chance qu'une herbe cassee hors climat froid lache une fleur de chanvre, quand elle n'a pas lache de semence de cereale. Une couronne de chanvre haut cassee a la main rend, en plus de la fleur de NTM, fiber_min a fiber_max fibres, seeds_min a seeds_max graines et farmer_xp XP de Fermier ; casser le pied avec la couronne ne compte qu'une recolte.",
+  "hemp": {
+    "grass_chance": 0.01,
+    "fiber_min": 2,
+    "fiber_max": 4,
+    "seeds_min": 1,
+    "seeds_max": 2,
+    "farmer_xp": 6
   }
 }

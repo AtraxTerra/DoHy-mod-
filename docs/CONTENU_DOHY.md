@@ -105,7 +105,7 @@ devinettes, puis les quantités une à une) : **28 essais en moyenne avec un ind
 |---|---|
 | **Moulin** (`dohy:flour_mill`) | 3 céréales + 120 FE → 1 farine. Clic gauche une farine, clic droit jusqu'à une pile. |
 | **Machine à pain** (`dohy:bread_machine`) | la liste des pains ; un clic par fournée, clic droit huit fournées. |
-| **Biogénérateur** (`dohy:biogenerator`) | brûle des céréales (clic avec la céréale en main, 64 en attente) : 400 FE par céréale, 20 FE par tick, poussés vers les machines qui le touchent. |
+| **Biogénérateur** (`dohy:biogenerator`) | brûle du fourrage (clic avec la céréale ou les graines de chanvre en main, 64 en attente) : 400 FE par grain, 20 FE par tick, poussés vers les machines qui le touchent. |
 
 - **À la main** : un clic sur une recette de l'écran puise dans l'inventaire du joueur et y rend
   le produit, tout de suite. C'est ce travail-là qui donne de l'XP de Fermier (2 par farine, 8 à
@@ -167,8 +167,8 @@ Un Fermier de niveau 40 a 10 % de chance de sortir un pain de plus par fournée.
 
 ### L'élevage
 
-Inchangé dans son principe : une **mangeoire** (64 céréales) et un **abreuvoir** (4 seaux) à
-6 blocs. Toutes les 2 minutes, la mangeoire nourrit jusqu'à 6 bêtes adultes ; chacune mange
+Inchangé dans son principe : une **mangeoire** (64 céréales, ou graines de chanvre) et un
+**abreuvoir** (4 seaux) à 6 blocs. Toutes les 2 minutes, la mangeoire nourrit jusqu'à 6 bêtes adultes ; chacune mange
 **4 céréales** et laisse un produit : la vache de la **crème**, le cochon du **saindoux**, la poule
 un œuf. Une tournée coûte une dose d'eau.
 
@@ -240,6 +240,43 @@ et à la lave.
 Réglages : bloc `farming` et `tractor_level` de `data/agriculture.json` (réservoir, consommation,
 vitesses, capacités, portées, table des carburants).
 
+### Le chanvre de NTM NEXT (2026-11-23)
+
+Demandé le 2026-11-23 (« trouve une utilité au chanvre du mod ntm next »). Dans NTM NEXT, le
+chanvre (`hbm:plant_flower_weed`, « Hemp ») est une fleur qui grandit seule en **chanvre haut**
+(`hbm:plant_tall_weed`) ; casser sa couronne rend une fleur et la plante redevient fleur, qui
+repousse. Il n'en sortait que de la ficelle (une fleur, trois ficelles), de la corde, de la
+biomasse et de l'éthanol au liquéfacteur — et, sur la carte de la Terre générée d'avance, il
+n'en pousse nulle part. DoHy en fait une **culture de chanvre à fibre**, sans rapport avec le
+cannabis des affaires illégales : il ne donne aucune herbe.
+
+- **Le trouver** : une herbe cassée hors climat froid lâche une fleur de chanvre une fois sur
+  cent quand elle n'a pas lâché de semence de céréale ; le shop vend la fleur (5 $, achat 20 $).
+- **Le cultiver** : la fleur se plante sur l'herbe, la terre, le podzol ou la terre labourée,
+  avec de l'air au-dessus ; elle grandit en une dizaine de minutes (plus vite à l'engrais). Une
+  **couronne cassée à la main** rend, en plus de la fleur de NTM, **2 à 4 fibres**, **1 ou 2
+  graines** et **6 XP de Fermier**. Casser le pied avec la couronne rend une fleur de plus mais
+  ne compte qu'une récolte : le bonus suit la couronne, jamais le pied. L'eau et les pistons ne
+  rendent que la fleur.
+- **Ce qu'on en fait** :
+
+| Objet | D'où | Usages |
+|---|---|---|
+| Fibre de chanvre (`dohy:hemp_fiber`) | la couronne | 1 → 1 ficelle ; 3 en colonne → 4 cordes de NTM (si NTM NEXT est là) ; 4 en carré → 1 toile ; compost |
+| Graines de chanvre (`dohy:hemp_seeds`) | la couronne | **fourrage** (tag `dohy:fodder`) : la mangeoire et le biogénérateur les prennent comme une céréale ; nourriture des poules et des perroquets ; compost ; tag `c:seeds` |
+| Toile de chanvre (`dohy:hemp_canvas`) | 4 fibres | 1 → 3 papiers ; 8 bâtons autour → un tableau |
+
+- **Au shop**, rayon Agriculture, au cours de l'heure : fibre 5 $, graines 6 $ (vente seule :
+  achetées, elles nourriraient une vache qui rend plus que leur prix), toile 20 $, fleur 5 $.
+  Calcul dans `BALANCE.md` § 6 untrigesies.
+- **Les noms français** du chanvre et de la corde de NTM NEXT, que son `fr_fr` n'a pas, sont
+  dans `assets/hbm/lang/fr_fr.json` du mod (« Chanvre », « Corde »).
+- **Le silo et la trémie du tracteur** ne gardent que les céréales : le tag `dohy:cereals` reste
+  celui des grains, le nouveau `dohy:fodder` (céréales et graines de chanvre) sert à la mangeoire
+  et au biogénérateur.
+- Réglages : bloc `hemp` de `data/agriculture.json` (chance dans l'herbe, fibres, graines, XP).
+- Code : `agri/Hemp.java` ; icônes par `tools/hemp_assets.py`.
+
 ### Contrats et commandes
 
 - Un nouveau type de contrat, **`PRODUCE`** : produire à une machine. Sa cible est l'objet produit
@@ -263,7 +300,8 @@ Les grains, les farines, les pains, la crème et le saindoux sont au shop, ongle
   `AgriData` (le carnet, attaché au joueur) ; `AgriMachineBlock`, `AgriMachineBlockEntity`,
   `MillMenu`, `BreadMachineMenu`, `AgriProduction` (contrats) ; `Bread`, `BreadItem`,
   `AgriEffects` ; `FeederBlock`,
-  `FeederBlockEntity` ; `AgriEvents` (herbe, flair du mineur) ; `AgriConfig`.
+  `FeederBlockEntity` ; `AgriEvents` (herbe, flair du mineur) ; `AgriConfig` ; `Hemp` (le
+  chanvre de NTM NEXT).
 - Le tracteur : `Tractor` (l'entité), `TractorTool`, `TractorToolItem`, `TractorItem`,
   `TractorFuel`, `TractorMenu`, `TractorEvents` ; `SiloBlock`, `SiloBlockEntity`, `SiloMenu` ;
   `FuelPumpBlock`, `FuelPumpBlockEntity` ; côté client `client/agri/` (`TractorGeometry` est

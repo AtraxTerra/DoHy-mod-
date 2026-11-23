@@ -332,7 +332,7 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
         }
         switch (kind()) {
             case BIOGEN -> {
-                return stack.is(DoHyAgri.CEREALS);
+                return stack.is(DoHyAgri.FODDER);
             }
             case MILL -> {
                 for (String key : DoHyAgri.flourKeys()) {
