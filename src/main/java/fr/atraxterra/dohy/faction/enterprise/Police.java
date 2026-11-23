@@ -166,7 +166,7 @@ public final class Police {
                     Operation.State.ANNONCEE.name(), 1.0d, false, 0);
             holdings.justice.put(operation);
             long hours = notice / Enterprises.HOUR_MS;
-            sim.events.add(new Payout.Event(time, traits.name() + " " + traits.verb("prepare", "preparent")
+            sim.events.add(new Payout.Event(time, traits.verb("prepare", "preparent")
                     + " une operation de police contre tes affaires dans " + targets.size() + " de "
                     + (traits.plural() ? "leurs" : "ses") + " pays : elle frappera dans " + hours + " h"
                     + (warned ? " (une organisation alliee t'a prevenu)" : "")
@@ -290,8 +290,9 @@ public final class Police {
             return text;
         }
         holdings.justice.put(operation.bribeFailed());
-        String text = "Corruption ratee : " + traits.the() + " " + traits.verb("garde", "gardent") + " ton argent ("
-                + MoneyFormat.exact(price) + " $) et " + traits.verb("renforce", "renforcent") + " l'operation";
+        String text = "Corruption ratee : " + traits.the() + " " + (traits.plural() ? "gardent" : "garde")
+                + " ton argent (" + MoneyFormat.exact(price) + " $) et " + (traits.plural() ? "renforcent" : "renforce")
+                + " l'operation";
         holdings.log(now, text);
         return "!" + text;
     }

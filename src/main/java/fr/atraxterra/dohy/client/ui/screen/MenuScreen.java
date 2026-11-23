@@ -747,7 +747,10 @@ public class MenuScreen extends UiScreen implements ViewScreen<MenuView> {
             }
             if (!card.badge().isEmpty()) {
                 int badgeColor = card.state() == MenuView.DONE ? Ui.Theme.GREEN
-                        : card.badge().startsWith("PRET") ? Ui.Theme.YELLOW : off ? 0xFF3A3C42 : Ui.Theme.RED;
+                        : card.badge().startsWith("PRET") ? Ui.Theme.YELLOW : off ? 0xFF3A3C42
+                        // les lois (lot 24d) : legale en vert, toleree en jaune, interdite en rouge
+                        : card.badge().startsWith("LEGAL") ? Ui.Theme.GREEN
+                        : card.badge().startsWith("TOLER") ? Ui.Theme.YELLOW : Ui.Theme.RED;
                 float pulse = card.badge().startsWith("PRET") ? Anim.pulse(1.6d) : 0.0f;
                 badgeWidth = Shell.pill(g, p, card.badge(), cardX + cardWidth - 4.7f, top + 5.3f,
                         Paint.mix(badgeColor, 0xFFFFFFFF, 0.12f * pulse), !off) + 3.0f;

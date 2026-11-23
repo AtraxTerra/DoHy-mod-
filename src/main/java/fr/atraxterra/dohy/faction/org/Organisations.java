@@ -258,11 +258,11 @@ public final class Organisations {
         if (cadre == null) {
             return "Ce cadre n'est plus dans ta nation";
         }
-        if (cadre.grade() < post.grade().ordinal()) {
-            return post.label() + " : il faut le grade de " + post.grade().label();
-        }
         if (cadre.jailed()) {
             return cadre.name() + " est en prison : paie sa caution ou attends sa sortie";
+        }
+        if (cadre.grade() < post.grade().ordinal()) {
+            return post.label() + " : il faut le grade de " + post.grade().label();
         }
         if (post.name().equals(cadre.post())) {
             return cadre.name() + " tient deja ce poste";

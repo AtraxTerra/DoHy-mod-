@@ -32,14 +32,15 @@ public final class Contracts {
     private Contracts() {
     }
 
-    // -- Chaque jour ------------------------------------------------------------------------------
+    // -- Chaque heure ------------------------------------------------------------------------------
 
-    static void daily(Payout.World world, Payout.Sim sim, long time, RandomSource random) {
+    /** Une offre qui a fait son temps expire ; un contrat accepte dont l'echeance passe est manque. */
+    static void expire(Payout.World world, Payout.Sim sim, long time) {
         Holdings holdings = world.holdings;
         Justice justice = holdings.justice;
         for (Contract contract : List.copyOf(justice.contracts)) {
             Syndicate syndicate = contract.from();
-            if (contract.phase() == Contract.State.OFFRE && contract.offered() + OFFER_DAYS * Payout.DAY <= time) {
+            if (contract.phase() == Contract.State.OFFRE && offerEnds(contract) <= time) {
                 justice.put(contract.as(Contract.State.EXPIRE));
             } else if (contract.phase() == Contract.State.EN_COURS && contract.deadline() <= time) {
                 justice.put(contract.as(Contract.State.ECHOUE));
@@ -52,6 +53,20 @@ public final class Contracts {
                 }
             }
         }
+    }
+
+    /** Quand une offre cesse d'etre proposee. */
+    static long offerEnds(Contract contract) {
+        return contract.offered() + OFFER_DAYS * Payout.DAY;
+    }
+
+    // -- Chaque jour ------------------------------------------------------------------------------
+
+    /** De nouvelles offres, trois au plus a la fois, jamais d'une organisation en guerre ni deja occupee. */
+    static void daily(Payout.World world, Payout.Sim sim, long time, RandomSource random) {
+        Holdings holdings = world.holdings;
+        Justice justice = holdings.justice;
+        expire(world, sim, time);
         int offers = 0;
         for (Contract contract : justice.contracts) {
             if (contract.phase() == Contract.State.OFFRE) {
@@ -156,10 +171,10 @@ public final class Contracts {
         }
         Holdings holdings = Enterprises.of(player);
         Contract contract = holdings.justice.contract(id);
-        if (contract == null || contract.phase() != Contract.State.OFFRE) {
+        long now = System.currentTimeMillis();
+        if (contract == null || contract.phase() != Contract.State.OFFRE || offerEnds(contract) <= now) {
             return "Ce contrat n'est plus propose";
         }
-        long now = System.currentTimeMillis();
         holdings.justice.put(contract.accepted(now + DELIVERY_DAYS * Payout.DAY));
         Syndicate syndicate = contract.from();
         holdings.log(now, "Contrat accepte avec " + (syndicate == null ? "?" : syndicate.label()) + " : "

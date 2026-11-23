@@ -311,11 +311,11 @@ public final class OrgMenus {
                         .state(MenuView.DONE));
             } else {
                 long price = Organisations.promotionPrice(player, cadre);
-                boolean ready = now >= cadre.promotable();
+                boolean ready = now >= cadre.promotable() && !cadre.jailed();
                 Card promote = Card.of(helmet(next), "Promouvoir " + next.label(), List.of(
                                 MoneyFormat.exact(price) + " $ (une semaine du nouveau salaire)",
-                                ready ? "Loyaute +10" : "Possible dans " + Organisations.duration(
-                                        cadre.promotable() - now)))
+                                cadre.jailed() ? "Pas depuis la prison" : ready ? "Loyaute +10"
+                                        : "Possible dans " + Organisations.duration(cadre.promotable() - now)))
                         .accent(0xFFFAC400);
                 actions.add(ready ? promote.action("promote|promouvoir").confirm("Promouvoir " + cadre.name() + " "
                         + next.label() + " ?|" + MoneyFormat.exact(price) + " $ depuis la banque nationale")

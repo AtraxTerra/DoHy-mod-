@@ -76,6 +76,8 @@ final class Payout {
     /** Ce qu'un casino blanchit par heure au niveau 1. */
     static final double CASINO_LAUNDER = 1_500.0d;
     static final double CASINO_FEE = 0.20d;
+    /** Les fournitures payees par la banque faute d'argent sale coutent 25 % de plus. */
+    static final double CLEAN_SURCHARGE = 1.25d;
 
     /**
      * Un evenement a dire au joueur a la fin du versement : la ligne du chat et du journal, et
@@ -123,6 +125,8 @@ final class Payout {
         final Map<Integer, HolderView> holders = new HashMap<>();
         final Map<String, Factors> factors = new HashMap<>();
         final long iron;
+        /** La banque nationale au debut du versement : ce que les fournisseurs peuvent prendre faute d'argent sale. */
+        final long bank;
         private Set<Region> heldRegions;
 
         World(ServerPlayer player, Holdings holdings, long now) {
@@ -171,6 +175,7 @@ final class Payout {
                 }
             }
             this.iron = Enterprises.ironIn(FactionVault.of(player));
+            this.bank = FactionApi.has(player) ? Math.max(0L, FactionApi.data(player).bank()) : 0L;
         }
 
         Region region(int country) {
@@ -468,6 +473,9 @@ final class Payout {
         double fees;
         double seized;
         double supplies;
+        /** Les fournitures payees par la banque, faute d'argent sale (surcout compris), et celles de l'heure. */
+        double cleanSupplies;
+        double hourClean;
         double sold;
         double lost;
         double ironUsed;
@@ -561,6 +569,7 @@ final class Payout {
         double startSeized = sim.seized;
         double startLaundered = sim.laundered;
         double startFines = sim.finesBank;
+        sim.hourClean = 0.0d;
 
         // 1. ce qui pousse et ce qui se monte
         for (Enterprise enterprise : open) {
@@ -577,9 +586,7 @@ final class Payout {
                         (world.iron - sim.ironUsed) / Enterprises.IRON_PER_CRATE));
                 sim.ironUsed += fromIron * Enterprises.IRON_PER_CRATE;
                 double rest = crates - fromIron;
-                double bought = Math.max(0.0d, Math.min(rest, sim.dirty / Enterprises.CRATE_PARTS));
-                sim.dirty -= bought * Enterprises.CRATE_PARTS;
-                sim.supplies += bought * Enterprises.CRATE_PARTS;
+                double bought = buy(world, sim, rest, Enterprises.CRATE_PARTS);
                 sim.add(Enterprises.CRATES, fromIron + bought);
             }
         }
@@ -597,13 +604,8 @@ final class Payout {
             double used = Math.min(capacity, sim.stock(line.rawKey()));
             sim.add(line.rawKey(), -used);
             double missing = capacity - used;
-            double bought = 0.0d;
             long price = Enterprises.rawPrice(world, line);
-            if (missing > 0.0d && price > 0L) {
-                bought = Math.max(0.0d, Math.min(missing, sim.dirty / price));
-                sim.dirty -= bought * price;
-                sim.supplies += bought * price;
-            }
+            double bought = buy(world, sim, missing, price);
             sim.add(line.productKey(), used + bought);
         }
 
@@ -679,9 +681,7 @@ final class Payout {
                     // le fournisseur ne remplit que la moitie de ce que le reseau peut encore ecouler
                     Line best = Line.HEROINE;
                     long price = Enterprises.wholesale(world, best);
-                    double units = Math.max(0.0d, Math.min(capacity * 0.5d, sim.dirty / price));
-                    sim.dirty -= units * price;
-                    sim.supplies += units * price;
+                    double units = buy(world, sim, capacity * 0.5d, price);
                     revenue += units * best.street();
                     sim.sold += units;
                 }
@@ -697,9 +697,7 @@ final class Payout {
                 double missing = capacity - units;
                 if (missing > 0.0d && world.deal(Syndicate.LOTUS)) {
                     long price = Math.round(Enterprises.CRATE_SUPPLY * (world.allied(Syndicate.LOTUS) ? 0.85d : 1.0d));
-                    double bought = Math.max(0.0d, Math.min(missing * 0.5d, sim.dirty / price));
-                    sim.dirty -= bought * price;
-                    sim.supplies += bought * price;
+                    double bought = buy(world, sim, missing * 0.5d, price);
                     revenue += bought * street;
                     units += bought;
                 }
@@ -777,6 +775,7 @@ final class Payout {
             }
         }
         costs += sim.finesBank - startFines;
+        costs += sim.hourClean;
 
         sim.clean += clean;
         sim.dirtyEarned += Math.max(0.0d, dirty);
@@ -784,6 +783,31 @@ final class Payout {
         double gross = clean + Math.max(0.0d, dirty);
         return new Hour(gross, costs, clean, Math.max(0.0d, dirty), sim.laundered - startLaundered,
                 sim.seized - startSeized);
+    }
+
+    /**
+     * Achete aux fournisseurs jusqu'a {@code units} unites a {@code price} : l'argent sale d'abord ; s'il
+     * manque, la banque nationale, 25 % plus cher (il faut maquiller le paiement), sans la mettre a
+     * decouvert. Sans ce recours, une nation aux lois souples, qui ne gagne plus d'argent sale, verrait
+     * ses ateliers et ses laboratoires s'arreter pour de bon. Rend les unites achetees.
+     */
+    static double buy(World world, Sim sim, double units, double price) {
+        if (units <= 0.0d || price <= 0.0d) {
+            return 0.0d;
+        }
+        double fromDirty = Math.max(0.0d, Math.min(units, sim.dirty / price));
+        sim.dirty -= fromDirty * price;
+        sim.supplies += fromDirty * price;
+        double rest = units - fromDirty;
+        if (rest <= 0.0d) {
+            return fromDirty;
+        }
+        double cleanPrice = price * CLEAN_SURCHARGE;
+        double room = world.bank + sim.clean + sim.laundered - sim.costs - sim.hourClean;
+        double fromClean = Math.max(0.0d, Math.min(rest, room / cleanPrice));
+        sim.hourClean += fromClean * cleanPrice;
+        sim.cleanSupplies += fromClean * cleanPrice;
+        return fromDirty + fromClean;
     }
 
     /** Ce qu'une vente rapporte a l'affaire, et a la region quand l'argent est sale. */
@@ -909,6 +933,7 @@ final class Payout {
             holdings.hour(Math.round(hour.gross()), Math.round(hour.costs()));
             holdings.book(day(time), Math.round(hour.clean()), Math.round(hour.dirty()), Math.round(hour.costs()),
                     Math.round(hour.laundered()), Math.round(hour.seized()));
+            Contracts.expire(world, sim, time);
             while (time - holdings.dayTick >= DAY) {
                 holdings.dayTick += DAY;
                 Syndicates.daily(world, sim, holdings.dayTick, random);
@@ -1035,8 +1060,8 @@ final class Payout {
 
     /** Ce que rapporterait la prochaine heure, sans police, avec les stocks d'aujourd'hui. */
     record Preview(double clean, double dirty, double costs, double laundered, double fees, double supplies,
-                   double sold, double lost, Map<String, Double> earned) {
-        static final Preview NONE = new Preview(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, Map.of());
+                   double cleanSupplies, double sold, double lost, Map<String, Double> earned) {
+        static final Preview NONE = new Preview(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, Map.of());
 
         double net() {
             return clean + laundered - costs;
@@ -1052,8 +1077,8 @@ final class Payout {
         World world = new World(player, holdings, now);
         Sim sim = new Sim(holdings);
         hour(world, sim, now + HOUR, false, player.getRandom());
-        return new Preview(sim.clean, sim.dirtyEarned, sim.costs, sim.laundered, sim.fees, sim.supplies, sim.sold,
-                sim.lost, Map.copyOf(sim.earned));
+        return new Preview(sim.clean, sim.dirtyEarned, sim.costs, sim.laundered, sim.fees, sim.supplies,
+                sim.cleanSupplies, sim.sold, sim.lost, Map.copyOf(sim.earned));
     }
 
     // -- Les petits outils ------------------------------------------------------------------------

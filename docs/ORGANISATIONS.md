@@ -467,6 +467,20 @@ Caravane : cannabis ; Lotus : caisses ou héroïne ; Récifs : n'importe quel pr
 | Rempli | — | prix de gros × 1,35 (× 1,55 alliée) en argent sale, hostilité −8 |
 | Manqué | — | hostilité +12 |
 
+Les offres sont tirées chaque jour, mais les délais se vérifient **à chaque heure** : une offre
+expire et un contrat est manqué dans l'heure qui suit son échéance, et on ne peut plus accepter
+une offre ni livrer passé le délai.
+
+### Les fournisseurs, quand l'argent sale manque
+
+Les achats aux fournisseurs (pièces d'armes faute de fer, matière première des laboratoires,
+héroïne des Récifs, caisses du Lotus) se paient en argent sale d'abord. Une nation aux lois
+souples ne gagne parfois plus d'argent sale (casinos et réseaux légaux, blanchiment qui vide le
+solde) : sans recours, ses ateliers et ses laboratoires s'arrêteraient pour de bon, faute de quoi
+payer les pièces qui relanceraient leurs ventes. La **banque nationale** prend donc le relais,
+**25 % plus cher** (il faut maquiller le paiement), sans jamais passer à découvert ; la carte
+« Achats aux fournisseurs » montre la part payée par la banque, comptée dans les frais.
+
 ### Les notifications
 
 Chaque événement passe par le journal des entreprises, le chat et une notification : contrôle,
@@ -479,7 +493,8 @@ au journal.
 
 - **Lois** (`faction_laws`, `/f lois`, carte « Lois » du tableau de bord) : tes sept lois (clic
   gauche assouplir, clic droit durcir), celles des douze nations et la loi commune, ce que
-  changent les lois.
+  changent les lois ; la pastille dit la loi en couleur (légale en vert, tolérée en jaune,
+  interdite en rouge).
 - **Tableau de bord** : une section **Menaces** (pour chaque opération : l'acheter, se mettre au
   vert) en tête, une section **Contrats** (accepter, refuser, livrer).
 - **Une organisation** : ses contrats, le geste **Opération de police**.

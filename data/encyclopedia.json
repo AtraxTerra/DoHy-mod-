@@ -2509,7 +2509,7 @@
         {
           "title": "Argent sale et descentes",
           "text": [
-            "L'argent sale paie d'abord tes affaires illegales, tes accords et tes tributs.",
+            "L'argent sale paie d'abord tes affaires illegales, tes accords et tes tributs. S'il manque pour les fournisseurs (pieces, matiere premiere), la banque paie a sa place, 25 % plus cher.",
             "- Une societe ecran le blanchit vers la banque nationale (15 % de commission, moins aux niveaux suivants) ; un casino un peu aussi (20 %).",
             "! Chaque heure, une affaire illegale risque une descente de police : fermee 24 h, une part de ses stocks et 15 % de l'argent sale saisis (250 000 $ au plus). Le chef des operations, un gerant, des guetteurs et l'influence baissent le risque ; un entrepot divise les saisies par deux."
           ]

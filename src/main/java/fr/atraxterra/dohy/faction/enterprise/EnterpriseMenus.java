@@ -1024,10 +1024,14 @@ public final class EnterpriseMenus {
                             "+" + MoneyFormat.exact(Math.round(preview.laundered())) + " $ propres",
                             "Commission " + MoneyFormat.exact(Math.round(preview.fees())) + " $"))
                     .accent(0xFF27C4E8));
+            long fromBank = Math.round(preview.cleanSupplies());
             dirty.add(Card.of(new ItemStack(Items.HOPPER), "Achats aux fournisseurs", List.of(
                             MoneyFormat.exact(Math.round(preview.supplies())) + " $ sales / h",
-                            "Matiere premiere, pieces, produits"))
-                    .accent(0xFF9AA0A6));
+                            fromBank > 0L ? "+ " + MoneyFormat.exact(fromBank) + " $ de la banque (+25 %)"
+                                    : "Matiere premiere, pieces, produits"))
+                    .accent(0xFF9AA0A6)
+                    .tooltip(List.of("Matiere premiere, pieces, produits", "L'argent sale paie d'abord ; s'il manque, "
+                            + "la banque prend le relais, 25 % plus cher")));
             dirty.add(Card.of(new ItemStack(Items.BARREL), "Ventes et pertes", List.of(
                             "~" + Math.round(preview.sold()) + " unite(s) vendue(s) / h",
                             Math.round(preview.lost()) > 0 ? "~" + Math.round(preview.lost()) + " perdue(s) faute de place"
