@@ -121,7 +121,8 @@ public final class DoHyCommand {
         boolean jobs = JobConfig.load(source.getServer());
         boolean auction = fr.atraxterra.dohy.auction.AuctionConfig.load(source.getServer());
         boolean path = fr.atraxterra.dohy.nuclear.path.NtmPath.load(source.getServer());
-        boolean tech = fr.atraxterra.dohy.faction.tech.TechConfig.load(source.getServer());
+        boolean tech = fr.atraxterra.dohy.faction.tech.TechConfig.load(source.getServer())
+                & fr.atraxterra.dohy.faction.tech.ResearchLabConfig.load(source.getServer());
 
         if (prices && tiers && progression && contracts && crates && economy && museum && upgrades && jobs
                 && auction && notations && server && agriculture && earth && path && tech) {

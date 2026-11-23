@@ -22,7 +22,7 @@ Choix du joueur (2026-11-20) :
 | 23-0 | Préparation : inventaire des trois mods, brouillon des neuf arbres, ce document | fait |
 | 23a | Une seule nation : le menu à onglets (territoire, technologies, économie, guerre…), le rang, la façade `Nation` | fait |
 | 23b | Le moteur des technologies : domaines en données, état de recherche, écran des arbres ; l'arbre actuel fondu dedans | fait |
-| 23c | Le laboratoire de recherche : bloc, énergie (FE, réseaux de NTM NEXT), points de recherche, les pays qui nourrissent la recherche | à faire |
+| 23c | Le laboratoire de recherche : bloc, énergie (FE, réseaux de NTM NEXT), points de recherche, les pays qui nourrissent la recherche | fait |
 | 23d | Les verrous : pose des machines, exemptions, infobulles, encyclopédie | à faire |
 | 23e | Contenu : Énergie et Industrie (paliers, coûts, bonus) | à faire |
 | 23f | Contenu : Chimie et Agriculture | à faire |
@@ -217,7 +217,7 @@ métiers.
   machines connues et rangées une seule fois, liste des machines conforme aux motifs, prérequis
   existants et sans boucle, chaque ancienne étape reprise une fois et dans l'ordre (rien ne se
   perd), un coût pour chaque palier à rechercher, des bonus connus, aucun accent.
-- **Les coûts, en attendant le laboratoire** (23c) : II 25 000 $ + 32 plaques d'acier + 16 bobines
+- **Les coûts, en attendant le laboratoire** (23c, qui remplace les durées par des points) : II 25 000 $ + 32 plaques d'acier + 16 bobines
   de cuivre, 6 h ; III 100 000 $ + 16 circuits intégrés + 16 condensateurs, 12 h ; IV 500 000 $ +
   16 circuits militaires + 32 micropuces, 24 h ; V 2 000 000 $ + 8 circuits polyvalents + 8 unités
   de contrôle, 48 h ; VI 10 000 000 $ + 4 processeurs quantiques + 4 horloges atomiques, 72 h.
@@ -294,6 +294,44 @@ permet un, deux puis trois.
   | VI | 180 000 | processeurs quantiques, horloges atomiques | 10 000 000 $ |
 
 - **Une recherche à la fois**, puis deux et trois avec le Gouvernement.
+
+### Fait (2026-11-23)
+
+- **Le bloc** `dohy:research_lab` (« Laboratoire de recherche ») : une paillasse blanche à bandeau
+  cyan, un plan de travail d'époxy, une cuve de verre où bouillonne un liquide, un écran sur pied et
+  deux fioles (modèle 3D, dessin original, `tools/research_lab_assets.py`). En marche, le liquide
+  s'éclaircit, l'écran trace une courbe, le voyant passe au vert et le bloc éclaire (9). Il se
+  fabrique à l'établi sans pièce de NTM (4 lingots de fer, verre, 2 redstone, bibliothèque,
+  comparateur) : il doit pouvoir se poser dès le premier jour.
+- **La pose** : dans un claim de sa nation, dans la limite du Gouvernement (1, 2 au III, 3 au V) ;
+  le créatif passe outre le claim et la limite. La nation tient la liste de ses laboratoires
+  (`FactionData`, champ `tech.labs`) ; un laboratoire disparu d'un chunk chargé en sort, un
+  laboratoire sans place s'inscrit tout seul quand il y en a, un laboratoire en surnombre attend.
+- **L'énergie** : la capacité d'énergie de NeoForge, en réception, sur toutes ses faces (le même
+  branchement que le serveur de trading) : un câble de NTM NEXT l'alimente (5 HE = 1 FE), le
+  biogénérateur de DoHy aussi. 20 FE par tick en marche (100 HE, un générateur à bois de NTM), moins
+  10, 15 puis 25 % avec l'Énergie II, IV et VI ; réserve de 100 000 FE. **À défaut**, un clic droit
+  avec du combustible (charbon, bois, seau de lave) : il prend la pile, jusqu'à 64 charbons, et
+  tourne à mi-régime (10 FE par tick de combustion).
+- **Les points** : 3 600 par heure de marche et par laboratoire, multipliés par la vitesse de
+  recherche (Industrie, Nucléaire, Espace) et par l'apport des pays : 5 % par pays tenu, 10 % la
+  capitale, 100 % au plus, +10 % au Gouvernement V. Le laboratoire garde ses points et les verse aux
+  recherches chaque seconde, à parts égales, quand son propriétaire est connecté (la nation vit sur
+  le joueur) ; sans recherche, il en garde une heure, puis s'arrête. Il ne tourne que dans un chunk
+  chargé, comme toute machine.
+- **Les coûts** : les durées du lot 23b deviennent des points — II 1 500, III 6 000, IV 20 000,
+  V 60 000, VI 180 000 (l'Espace, un cran plus haut : son VI 360 000). L'argent et les pièces
+  restent payés au lancement. Il faut au moins un laboratoire pour lancer une recherche. Une
+  recherche lancée au lot 23b garde, en points, la part de son temps déjà écoulée.
+- **Les écrans** : l'écran du laboratoire (état, énergie, combustible, production et son détail,
+  réserve, recherches en cours avec leur temps estimé, laboratoires de la nation) ; dans
+  Technologies, les points par heure de la nation, la carte « Laboratoires », les recherches en
+  points (« 840 / 1 500 points · ~ 11 min à ce rythme »), le coût de chaque palier en points.
+- **Les bonus** du Gouvernement (laboratoires, apport des pays) et de l'Énergie (laboratoires plus
+  sobres) sont en service.
+- **Les commandes** : `/f techno points <n>` (opérateurs) verse des points aux recherches en cours.
+- **Pas fait** : les pièces de NTM se prennent toujours sur le joueur au lancement, pas dans le
+  laboratoire (à revoir avec l'équilibrage, 23i).
 
 ## Les verrous (23d)
 

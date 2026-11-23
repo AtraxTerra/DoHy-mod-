@@ -10,9 +10,9 @@
       "tier": 1,
       "name": "Fondation",
       "start": true,
-      "unlocks": ["dohy:laboratoire"],
+      "unlocks": ["dohy:research_lab"],
       "machines": [
-        {"id": "dohy:laboratoire", "name": "Laboratoire de recherche"}
+        {"id": "dohy:research_lab", "name": "Laboratoire de recherche"}
       ],
       "bonuses": [
         {"type": "labs", "value": 1, "label": "1 laboratoire"},

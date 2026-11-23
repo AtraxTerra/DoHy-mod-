@@ -34,8 +34,8 @@ import java.util.regex.Pattern;
  * <p>Un palier deverrouille la pose de ses machines (des motifs, {@code *} accepte, lot 23d) et
  * donne ses bonus. Les domaines repris de l'ancien arbre (Gouvernement, Economie, Defense) se
  * gagnent par leurs anciens paliers ({@code legacy}) ; les autres se recherchent, contre de
- * l'argent de la banque nationale, des pieces de NTM et du temps ({@code cost}), en attendant les
- * points du laboratoire (lot 23c).
+ * l'argent de la banque nationale et des pieces de NTM au lancement, puis les points des
+ * laboratoires ({@code cost}, lot 23c).
  */
 @EventBusSubscriber
 public final class TechConfig {
@@ -54,11 +54,14 @@ public final class TechConfig {
         }
     }
 
-    /** Ce que coute une recherche : l'argent de la banque, les pieces, la duree en heures. */
-    public record Cost(long money, int hours, List<ItemCost> items) {
+    /**
+     * Ce que coute une recherche : l'argent de la banque et les pieces au lancement, puis les points
+     * de recherche que produisent les laboratoires (lot 23c).
+     */
+    public record Cost(long money, long points, List<ItemCost> items) {
         static final Codec<Cost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.LONG.optionalFieldOf("money", 0L).forGetter(Cost::money),
-                Codec.INT.optionalFieldOf("hours", 1).forGetter(Cost::hours),
+                Codec.LONG.optionalFieldOf("points", 1L).forGetter(Cost::points),
                 ItemCost.CODEC.listOf().optionalFieldOf("items", List.of()).forGetter(Cost::items)
         ).apply(instance, Cost::new));
     }

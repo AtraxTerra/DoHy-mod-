@@ -219,6 +219,15 @@ public final class FactionCommand {
                                     fr.atraxterra.dohy.faction.tech.Tech.complete(player, true);
                                     return 1;
                                 })))
+                        .then(Commands.literal("points")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .then(Commands.argument("points", LongArgumentType.longArg(1L, 10_000_000L))
+                                        .executes(ctx -> as(ctx.getSource(), player -> {
+                                            long used = fr.atraxterra.dohy.faction.tech.Tech.grant(player,
+                                                    LongArgumentType.getLong(ctx, "points"));
+                                            return result(player, used > 0L ? null : "Aucune recherche en cours",
+                                                    MoneyFormat.exact(used) + " points verses aux recherches.");
+                                        }))))
                         .then(Commands.literal("palier")
                                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                 .then(Commands.argument("domaine", StringArgumentType.word())

@@ -1,0 +1,17 @@
+{
+  "_comment": "Le laboratoire de recherche de la nation (chapitre 23, lot 23c, docs/NATION.md). Pose dans un claim, alimente en energie, il produit les points de recherche des technologies. Le Gouvernement en permet un, puis deux (III) et trois (V).",
+  "_energie": "L'energie est celle de NeoForge (FE), que les cables de NTM NEXT alimentent directement (5 HE = 1 FE) : 20 FE par tick, c'est 100 HE par tick, ce que donne un generateur a bois de NTM. Les technologies de l'Energie en retirent 10, 15 puis 25 %.",
+  "_points": "points_per_hour points par heure de marche, avant les bonus : vitesse de recherche (Industrie, Nucleaire, Espace) et pays tenus. Sans recherche en cours, le laboratoire garde buffer_points points, puis s'arrete.",
+  "_combustible": "A defaut d'electricite, un clic droit avec du combustible (charbon, bois...) le fait tourner : chaque tick de combustion rend fuel_fe_per_tick FE, la moitie de ce qu'il consomme. Il garde fuel_max_ticks ticks de combustible (64 charbons).",
+  "_pays": "Chaque pays tenu ajoute country_percent % aux points des laboratoires, la capitale capital_percent %, au plus country_cap_percent % ; le Gouvernement V augmente cet apport.",
+  "energy_per_tick": 20,
+  "energy_capacity": 100000,
+  "energy_max_input": 2000,
+  "points_per_hour": 3600,
+  "buffer_points": 3600,
+  "fuel_fe_per_tick": 10,
+  "fuel_max_ticks": 102400,
+  "country_percent": 5,
+  "capital_percent": 10,
+  "country_cap_percent": 100
+}

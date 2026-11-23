@@ -73,17 +73,25 @@ public final class FactionData {
     }
 
     /**
-     * Les technologies de la nation (lot 23b) : le palier atteint dans chaque domaine nouveau, et
-     * la fin des recherches en cours. Les domaines repris de l'ancien arbre (Gouvernement,
-     * Economie, Defense) n'y sont pas : ils se lisent dans {@code tiers}.
+     * Les technologies de la nation (lots 23b et 23c) : le palier atteint dans chaque domaine
+     * nouveau, les recherches en cours (leur depart) et leurs points, et les laboratoires poses.
+     * Les domaines repris de l'ancien arbre (Gouvernement, Economie, Defense) n'y sont pas : ils se
+     * lisent dans {@code tiers}.
+     *
+     * <p>Une recherche lancee au lot 23b n'a pas de points : sa valeur dans {@code running} est sa
+     * fin prevue, que {@code faction/tech/Tech} convertit en points a la premiere occasion.
      */
-    public record Research(Map<String, Integer> tiers, Map<String, Long> running) {
-        static final Research EMPTY = new Research(Map.of(), Map.of());
+    public record Research(Map<String, Integer> tiers, Map<String, Long> running, Map<String, Long> points,
+                           List<String> labs) {
+        static final Research EMPTY = new Research(Map.of(), Map.of(), Map.of(), List.of());
         static final Codec<Research> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("tiers", Map.of())
                         .forGetter(Research::tiers),
                 Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("running", Map.of())
-                        .forGetter(Research::running)
+                        .forGetter(Research::running),
+                Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("points", Map.of())
+                        .forGetter(Research::points),
+                Codec.STRING.listOf().optionalFieldOf("labs", List.of()).forGetter(Research::labs)
         ).apply(instance, Research::new));
     }
 
@@ -108,7 +116,8 @@ public final class FactionData {
             ItemStack.OPTIONAL_CODEC.optionalFieldOf("banner_item", ItemStack.EMPTY)
                     .forGetter(data -> data.bannerItem),
             Research.CODEC.optionalFieldOf("tech", Research.EMPTY)
-                    .forGetter(data -> new Research(Map.copyOf(data.techTiers), Map.copyOf(data.techRunning)))
+                    .forGetter(data -> new Research(Map.copyOf(data.techTiers), Map.copyOf(data.techRunning),
+                            Map.copyOf(data.techPoints), List.copyOf(data.labs)))
     ).apply(instance, FactionData::new));
 
     /** Lignes d'historique gardees. */
@@ -135,8 +144,12 @@ public final class FactionData {
     ItemStack bannerItem;
     /** Palier atteint par domaine de technologie nouveau (lot 23b) ; absent, le palier d'office. */
     final Map<String, Integer> techTiers;
-    /** Recherche en cours par domaine : sa fin, en millisecondes epoch. */
+    /** Recherche en cours par domaine : son depart (lot 23c), ou sa fin prevue (lot 23b), en millisecondes epoch. */
     final Map<String, Long> techRunning;
+    /** Les points deja apportes a chaque recherche en cours (lot 23c). */
+    final Map<String, Long> techPoints;
+    /** Les laboratoires de recherche de la nation : « dimension@x,y,z », dans l'ordre de pose. */
+    final List<String> labs;
 
     public FactionData() {
         this("", "", List.of(), 14, "", 0L, 0L, List.of(), List.of(), List.of(), Ranking.EMPTY, Map.of(), Map.of(),
@@ -164,6 +177,8 @@ public final class FactionData {
         this.bannerItem = bannerItem.copy();
         this.techTiers = new HashMap<>(tech.tiers());
         this.techRunning = new HashMap<>(tech.running());
+        this.techPoints = new HashMap<>(tech.points());
+        this.labs = new ArrayList<>(tech.labs());
     }
 
     public boolean exists() {
@@ -241,8 +256,13 @@ public final class FactionData {
         return Math.max(start, techTiers.getOrDefault(domain, start));
     }
 
-    /** La fin de la recherche en cours dans ce domaine, 0 sans recherche. */
-    public long techEnd(String domain) {
+    /** Vrai si une recherche est en cours dans ce domaine. */
+    public boolean techRunning(String domain) {
+        return techRunning.containsKey(domain);
+    }
+
+    /** Le depart de la recherche en cours (ou sa fin prevue pour une recherche du lot 23b), 0 sans recherche. */
+    public long techStart(String domain) {
         return techRunning.getOrDefault(domain, 0L);
     }
 
@@ -251,16 +271,48 @@ public final class FactionData {
         return java.util.Set.copyOf(techRunning.keySet());
     }
 
+    /** Les points apportes a la recherche en cours ; -1 pour une recherche du lot 23b pas encore convertie. */
+    public long techPoints(String domain) {
+        return techPoints.getOrDefault(domain, -1L);
+    }
+
     public void setTechTier(String domain, int tier) {
         techTiers.put(domain, Math.max(0, tier));
     }
 
-    public void startTech(String domain, long end) {
-        techRunning.put(domain, end);
+    public void startTech(String domain, long start) {
+        techRunning.put(domain, start);
+        techPoints.put(domain, 0L);
+    }
+
+    public void setTechPoints(String domain, long points) {
+        techPoints.put(domain, Math.max(0L, points));
+    }
+
+    /** Reprend une recherche du lot 23b (une fin prevue) avec un depart et des points (lot 23c). */
+    public void resumeTech(String domain, long start, long points) {
+        techRunning.put(domain, start);
+        techPoints.put(domain, Math.max(0L, points));
     }
 
     public void stopTech(String domain) {
         techRunning.remove(domain);
+        techPoints.remove(domain);
+    }
+
+    /** Les laboratoires de recherche poses, dans l'ordre de pose. */
+    public List<String> labs() {
+        return List.copyOf(labs);
+    }
+
+    public void addLab(String key) {
+        if (!labs.contains(key)) {
+            labs.add(key);
+        }
+    }
+
+    public void removeLab(String key) {
+        labs.remove(key);
     }
 
     void addStat(String key, long amount) {
@@ -292,5 +344,7 @@ public final class FactionData {
         bannerItem = ItemStack.EMPTY;
         techTiers.clear();
         techRunning.clear();
+        techPoints.clear();
+        labs.clear();
     }
 }
