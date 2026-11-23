@@ -514,6 +514,7 @@ public final class FactionMenus {
             case "enterprises" -> fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Hub.INSTANCE;
             case "influence" -> fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Territory.INSTANCE;
             case "enterprise_finance" -> fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Finance.INSTANCE;
+            case "laws" -> fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Laws.INSTANCE;
             default -> null;
         };
         if (target == null) {

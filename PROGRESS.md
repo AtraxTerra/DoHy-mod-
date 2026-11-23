@@ -226,6 +226,14 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   d'assemblage) et NTM NEXT (usine chimique, presse, assembleuse) reprennent les rapports des
   postes ; les masques et tenues hazmat de NTM protègent au laboratoire ; la planque s'ouvre aux
   machines (remplir, jamais vider) et verse d'elle-même aux stocks chaque minute.
+- **Lot 24d — lois, police et contrats** (2026-11-23, `docs/ORGANISATIONS.md`) : sept sujets de loi
+  (cannabis, drogues dures, armes, jeu, contrebande, racket et recel, blanchiment), légaux, tolérés
+  ou interdits — chez toi par vote (`/f lois`), ailleurs selon le caractère de la nation qui tient le
+  pays, avec le zèle de sa police ; trois gravités de police (contrôle, descente, coup de filet qui
+  arrête le gérant, caution) ; opérations des nations annoncées 12 h à l'avance (acheter ou se mettre
+  au vert) ; opérations de police de l'État contre une organisation ; vols et racket des organisations
+  hostiles, avantages des alliées ; contrats des organisations (livrer avant une date) ; un journal
+  et une notification pour chaque événement.
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 

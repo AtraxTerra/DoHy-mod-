@@ -49,6 +49,7 @@ public final class Menus {
                 fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Finance.INSTANCE,
                 fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Territory.INSTANCE,
                 fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.SyndicatePage.INSTANCE,
+                fr.atraxterra.dohy.faction.enterprise.EnterpriseMenus.Laws.INSTANCE,
                 fr.atraxterra.dohy.underground.WorkstationMenus.Lab.INSTANCE,
                 fr.atraxterra.dohy.underground.WorkstationMenus.Packaging.INSTANCE,
                 fr.atraxterra.dohy.underground.WorkstationMenus.Arms.INSTANCE,

@@ -256,10 +256,29 @@ public final class DiplomacyMenus {
                     new MenuView.Stat("POSTURE", stance(relation).toUpperCase(), 0xFFFFFFFF),
                     new MenuView.Stat("TRAITE", current == null ? "AUCUN" : current.kind().label().toUpperCase(),
                             current == null ? 0xFF9AA0A6 : current.kind().color()));
+            // lot 24d : ses lois et le zele de sa police, ce qu'en dit l'humeur
+            List<Card> laws = new ArrayList<>();
+            java.util.Map<fr.atraxterra.dohy.faction.enterprise.Law.Topic,
+                    fr.atraxterra.dohy.faction.enterprise.Law.Status> code =
+                    fr.atraxterra.dohy.faction.enterprise.Law.of(index);
+            for (fr.atraxterra.dohy.faction.enterprise.Law.Topic topic
+                    : fr.atraxterra.dohy.faction.enterprise.Law.Topic.values()) {
+                fr.atraxterra.dohy.faction.enterprise.Law.Status status = code.get(topic);
+                laws.add(Card.of(topic.icon(), topic.label(), List.of(status.label(), topic.scope()))
+                        .accent(status.color()));
+            }
+            double mood = fr.atraxterra.dohy.faction.enterprise.Enterprises.lawMood(player, index);
+            laws.add(Card.of(new ItemStack(Items.IRON_BARS), "Sa police", List.of("Zele x" + String.format(
+                            java.util.Locale.FRANCE, "%.2f", fr.atraxterra.dohy.faction.enterprise.Law.police(index)),
+                    Math.abs(mood) < 0.5d ? "Tes lois ne la derangent pas" : "Tes lois et ta police : humeur "
+                            + (mood > 0.0d ? "+" : "") + Math.round(mood)))
+                    .accent(mood > 0.5d ? 0xFFEF3826 : 0xFF55545C));
             return new MenuView(id(), traits.name(), "Armee " + traits.doctrine().label() + ", voix "
                     + traits.voice(), stats, List.of(
                     new MenuView.Section("TRAITES", "craft", MenuView.GRID, treaties),
                     new MenuView.Section("RIVALITE", "armor", MenuView.GRID, rivalry),
+                    new MenuView.Section("SES LOIS|ce que sa police laisse faire chez elle", "resources",
+                            MenuView.GRID, laws),
                     new MenuView.Section("CARACTERE", "resources", MenuView.GRID, character)), true)
                     .withTabs(FactionMenus.tabs(player, FactionMenus.DIPLOMACY));
         }

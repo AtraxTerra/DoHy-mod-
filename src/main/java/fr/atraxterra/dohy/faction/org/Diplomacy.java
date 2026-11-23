@@ -260,6 +260,8 @@ public final class Diplomacy {
         if (rival(player, nation)) {
             shift += 12.0d;
         }
+        // lot 24d : tes lois plus laxistes que les siennes la fachent, ta lutte contre le crime lui plait
+        shift += fr.atraxterra.dohy.faction.enterprise.Enterprises.lawMood(player, nation);
         return shift;
     }
 

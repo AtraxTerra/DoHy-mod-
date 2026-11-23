@@ -8,6 +8,7 @@ import fr.atraxterra.dohy.faction.Factions;
 import fr.atraxterra.dohy.faction.Nation;
 import fr.atraxterra.dohy.faction.org.Cadre;
 import fr.atraxterra.dohy.faction.org.Organisations;
+import fr.atraxterra.dohy.faction.war.NationTraits;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.server.level.ServerPlayer;
@@ -540,6 +541,94 @@ public final class Enterprises {
         return holdings.enterprises.isEmpty() ? "" : String.valueOf(holdings.enterprises.size());
     }
 
+    // -- Les lois (lot 24d) -----------------------------------------------------------------------
+
+    /** La loi de ta nation sur ce sujet, dans ses pays : la loi commune tant qu'elle n'a rien vote. */
+    public static Law.Status law(ServerPlayer player, Law.Topic topic) {
+        return of(player).justice.law(topic);
+    }
+
+    /** La nation qui tient ce pays, -1 pour aucune (ou un joueur), -2 pour ta nation. */
+    static int holderOf(ServerPlayer player, int country) {
+        if (country <= 0 || EarthData.get() == null) {
+            return -1;
+        }
+        EarthNations.Holder holder = EarthNations.holder(player.level().getServer(), country);
+        if (holder.ownedBy(player.getUUID())) {
+            return -2;
+        }
+        int nation = holder.rival();
+        return holder.player() || nation < 0 || nation >= NationTraits.count() ? -1 : nation;
+    }
+
+    /** La loi qui s'applique a ce sujet dans ce pays : la tienne, celle de la nation qui le tient, ou la loi commune. */
+    public static Law.Status lawAt(ServerPlayer player, int country, Law.Topic topic) {
+        int holder = holderOf(player, country);
+        return holder == -2 ? law(player, topic) : holder >= 0 ? Law.of(holder, topic) : topic.common();
+    }
+
+    /** Le zele de la police de ce pays (x1 chez toi ou hors de toute nation). */
+    public static double policeAt(ServerPlayer player, int country) {
+        int holder = holderOf(player, country);
+        return holder >= 0 ? Law.police(holder) : 1.0d;
+    }
+
+    /** Le dernier changement de cette loi (ms), 0 jamais. */
+    public static long lawChanged(ServerPlayer player, Law.Topic topic) {
+        return of(player).justice.changed(topic);
+    }
+
+    /** Change une loi d'un cran, vers plus de liberte ({@code looser}) ou de rigueur. Le refus, ou {@code null}. */
+    public static String setLaw(ServerPlayer player, Law.Topic topic, boolean looser) {
+        if (!FactionApi.has(player)) {
+            return "Il te faut une nation";
+        }
+        Holdings holdings = of(player);
+        Law.Status current = holdings.justice.law(topic);
+        Law.Status next = looser ? topic.looser(current) : topic.stricter(current);
+        if (next == null) {
+            return looser ? topic.legalizable() ? topic.label() + " : deja legal" : topic.label()
+                    + " ne peut pas etre legal, au mieux tolere" : topic.label() + " : deja interdit";
+        }
+        long now = System.currentTimeMillis();
+        long since = holdings.justice.changed(topic);
+        if (since > now - Law.COOLDOWN) {
+            return "Une loi change au plus une fois par jour : encore " + Organisations.duration(
+                    since + Law.COOLDOWN - now);
+        }
+        holdings.justice.set(topic, next, now);
+        holdings.log(now, "Loi : " + topic.label().toLowerCase() + ", desormais " + next.label().toLowerCase()
+                + " dans tes pays");
+        return null;
+    }
+
+    /**
+     * Ce que tes lois et ta lutte contre le crime font a l'humeur d'une nation : chaque cran de
+     * laxisme de plus que sa propre loi +1,2 x (0,5 + son honneur), 10 au plus, des que ta nation
+     * tient un pays ; une operation reussie contre le crime, -3 x (0,5 + son honneur) deux semaines.
+     */
+    public static double lawMood(ServerPlayer player, int nation) {
+        if (!FactionApi.has(player) || nation < 0 || nation >= NationTraits.count()) {
+            return 0.0d;
+        }
+        Holdings holdings = of(player);
+        double honor = NationTraits.of(nation).honor();
+        double shift = 0.0d;
+        if (EarthNations.active() && !EarthNations.heldBy(player).isEmpty()) {
+            for (Law.Topic topic : Law.Topic.values()) {
+                int gap = holdings.justice.law(topic).ordinal() - Law.of(nation, topic).ordinal();
+                if (gap > 0) {
+                    shift += 1.2d * gap * (0.5d + honor);
+                }
+            }
+            shift = Math.min(10.0d, shift);
+        }
+        if (holdings.justice.crackdown > System.currentTimeMillis()) {
+            shift -= 3.0d * (0.5d + honor);
+        }
+        return shift;
+    }
+
     /** Fait tourner les entreprises (chaque minute, et au retour du joueur). */
     public static void tick(ServerPlayer player, boolean login) {
         Payout.run(player, login);
@@ -561,6 +650,7 @@ public final class Enterprises {
         for (Holdings.Standing standing : List.copyOf(holdings.standings)) {
             holdings.put(standing.shifted(shift));
         }
+        holdings.justice.shift(shift);
         FactionApi.tell(player, hours + " h passent pour tes entreprises.", ChatFormatting.GRAY);
         Payout.run(player, false);
     }

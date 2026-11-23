@@ -201,6 +201,9 @@ public final class Organisations {
         if (cadre == null) {
             return "Ce cadre n'est plus dans ta nation";
         }
+        if (cadre.jailed()) {
+            return cadre.name() + " est en prison";
+        }
         Grade next = cadre.rank().next();
         if (next == null) {
             return cadre.name() + " est deja au sommet";
@@ -257,6 +260,9 @@ public final class Organisations {
         }
         if (cadre.grade() < post.grade().ordinal()) {
             return post.label() + " : il faut le grade de " + post.grade().label();
+        }
+        if (cadre.jailed()) {
+            return cadre.name() + " est en prison : paie sa caution ou attends sa sortie";
         }
         if (post.name().equals(cadre.post())) {
             return cadre.name() + " tient deja ce poste";
@@ -315,6 +321,7 @@ public final class Organisations {
         }
         Organisation org = of(player);
         long now = System.currentTimeMillis();
+        releaseServed(org, now);
         if (org.cadres.isEmpty() || org.paidUntil == 0L) {
             org.paidUntil = now;
             return;
@@ -398,7 +405,9 @@ public final class Organisations {
             org.regimeSince -= shift;
         }
         for (Cadre cadre : List.copyOf(org.cadres)) {
-            org.replace(new Cadre(cadre.id(), cadre.name(), cadre.grade(), cadre.skill(), cadre.trait(), cadre.post(),
+            // la detention (lot 24d) avance aussi : son heure de sortie est dans le poste
+            String post = cadre.jailed() ? Cadre.JAIL + (cadre.jailedUntil() - shift) : cadre.post();
+            org.replace(new Cadre(cadre.id(), cadre.name(), cadre.grade(), cadre.skill(), cadre.trait(), post,
                     cadre.hired() - shift, cadre.promoted() - shift, cadre.loyalty()));
         }
         for (int index = 0; index < org.treaties.size(); index++) {
@@ -436,6 +445,9 @@ public final class Organisations {
         if (cadre == null) {
             return "Ce cadre n'est plus dans ta nation";
         }
+        if (cadre.jailed()) {
+            return cadre.name() + " est en prison";
+        }
         if (!cadre.free()) {
             return cadre.name() + " a deja une charge : libere-le d'abord";
         }
@@ -457,6 +469,62 @@ public final class Organisations {
         org.replace(cadre.get().withPost(""));
         org.log(System.currentTimeMillis(), cadre.get().name() + " quitte la tete de " + label);
         return null;
+    }
+
+    // -- La prison (lot 24d) ----------------------------------------------------------------------
+
+    /**
+     * Un gerant est arrete dans un coup de filet : il quitte sa charge et part en detention jusqu'a
+     * {@code until} ; sa loyaute baisse de 5. Une caution le fait sortir plus tot.
+     */
+    public static void arrest(ServerPlayer player, String id, long until, String where) {
+        Organisation org = of(player);
+        Cadre cadre = org.cadre(id);
+        if (cadre == null || cadre.jailed()) {
+            return;
+        }
+        org.replace(cadre.withPost(Cadre.JAIL + until).withLoyalty(cadre.loyalty() - 5.0d));
+        org.log(System.currentTimeMillis(), cadre.name() + " est arrete" + where + " : detention jusqu'au "
+                + java.time.format.DateTimeFormatter.ofPattern("dd/MM HH:mm").withZone(java.time.ZoneId.of(
+                "Europe/Paris")).format(java.time.Instant.ofEpochMilli(until)));
+    }
+
+    /** La caution : cinq jours de son salaire. */
+    public static long bail(ServerPlayer player, Cadre cadre) {
+        return round(salary(player, cadre) * 5L);
+    }
+
+    /** Paie la caution depuis la banque nationale : il sort aussitot, sa loyaute monte de 5. */
+    public static String payBail(ServerPlayer player, String id) {
+        Organisation org = of(player);
+        Cadre cadre = org.cadre(id);
+        if (cadre == null) {
+            return "Ce cadre n'est plus dans ta nation";
+        }
+        if (!cadre.jailed()) {
+            return cadre.name() + " n'est pas en prison";
+        }
+        long price = bail(player, cadre);
+        if (FactionApi.data(player).bank() < price) {
+            return "Il faut " + MoneyFormat.exact(price) + " $ a la banque nationale";
+        }
+        if (!FactionApi.payFromBank(player, price, "Caution : " + cadre.name())) {
+            return "La banque nationale ne peut pas payer";
+        }
+        org.replace(cadre.withPost("").withLoyalty(cadre.loyalty() + 5.0d));
+        org.log(System.currentTimeMillis(), "Caution de " + MoneyFormat.exact(price) + " $ : " + cadre.name()
+                + " sort de prison");
+        return null;
+    }
+
+    /** Ceux dont la detention est finie sortent ; sans caution, ils t'en veulent (loyaute -10). */
+    static void releaseServed(Organisation org, long now) {
+        for (Cadre cadre : List.copyOf(org.cadres)) {
+            if (cadre.jailed() && cadre.jailedUntil() <= now) {
+                org.replace(cadre.withPost("").withLoyalty(cadre.loyalty() - 10.0d));
+                org.log(now, cadre.name() + " sort de prison, sans caution : loyaute -10");
+            }
+        }
     }
 
     /** La nation est dissoute : ses cadres partent, ses traites tombent. */
