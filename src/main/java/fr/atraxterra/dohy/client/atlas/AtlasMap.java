@@ -29,7 +29,8 @@ final class AtlasMap {
         this.fine.feeds(middle, overview);
         this.revealFine = new AtlasTiles(folder, "rt", 1, 72, true);
         this.revealMiddle = new AtlasTiles(folder, "rm", AtlasTiles.MIDDLE, 48, false);
-        this.revealOverview = new AtlasTiles(folder, "ro", AtlasTiles.OVERVIEW, 48, false);
+        // La Terre entiere tient en 60 dalles d'ensemble : toutes visibles a la fois au plus loin du zoom.
+        this.revealOverview = new AtlasTiles(folder, "ro", AtlasTiles.OVERVIEW, 96, false);
     }
 
     /** La couleur d'une colonne ; les niveaux grossiers suivent a l'envoi des dalles fines. */
