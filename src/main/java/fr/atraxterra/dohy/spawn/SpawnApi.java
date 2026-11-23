@@ -275,6 +275,11 @@ public final class SpawnApi {
             }
         }
         SpawnBoards.tick(server);
+        if (server.getTickCount() % 20 == 0) {
+            // les etiquettes et les guichetiers des coins charges, meme hors de la distance de simulation
+            HologramBlockEntity.upkeep();
+            NpcPostBlockEntity.upkeep();
+        }
         if (job == null) {
             return;
         }
@@ -295,6 +300,8 @@ public final class SpawnApi {
 
     static void stop() {
         ARRIVALS.clear();
+        HologramBlockEntity.LOADED.clear();
+        NpcPostBlockEntity.LOADED.clear();
         job = null;
         mapSource = null;
         mapMosaic = null;

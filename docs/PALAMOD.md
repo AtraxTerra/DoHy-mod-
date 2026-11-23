@@ -4212,3 +4212,62 @@ La FAQ précise que les grades classiques durent le temps acheté ; Premium, jus
   `docs/ORGANISATIONS.md`).
 - **Un grade ne s'arrête pas** : sur Paladium, les grades classiques durent le temps acheté ; ici,
   ils sont permanents (choix du joueur). Seul Premium est un abonnement.
+
+## 43. Les kits (2026-11-23)
+
+Demandés le 2026-11-23 (« ajoute un système de kit de départ comme sur paladium »). Pas de choix à
+faire : le kit de départ arrive de lui-même, les autres se prennent quand on veut.
+
+### Ce que dit Paladium
+
+Comme les grades, les kits ne sont pas dans le jar : c'est le serveur qui les donne (`/kit`). Le
+wiki n'en publie pas le contenu ; il dit seulement que le grade Bedrock comprend un « kit basique ».
+Le contenu et les délais de DoHy sont donc **calibrés sur sa propre économie** (`BALANCE.md`
+§ 6 trigesies), pas recopiés.
+
+### Ce que fait DoHy
+
+| Kit | Pour qui | Délai | Contenu |
+|---|---|---|---|
+| Kit de départ | tous | une seule fois, **donné à la première connexion** | épée, pioche, hache et pelle en fer ; armure de fer complète ; 32 steaks, 32 torches, un lit, un établi, un four ; une clé de box Améthyste ; 10 000 $ |
+| Kit joueur | tous | 24 h | 16 steaks, 16 torches |
+| Kit Héros | Héros et plus | 7 jours | clé Améthyste, potion d'XP de métier ×2 (1 h), 32 steaks, 2 pommes dorées |
+| Kit Légende | Légende et plus | 7 jours | clé Saharia, potion ×3 (1 h), 32 carottes dorées, 4 pommes dorées |
+| Kit Divinité | Divinité | 7 jours | clé Paladium, deux potions ×3 (1 h), 8 pommes dorées, une pomme dorée enchantée |
+| Kit Premium | Premium en cours | 7 jours | clé Améthyste, potion ×2 (1 h), 16 carottes dorées |
+
+- **Où** : `/kit` (la liste), `/kit <kit>` (le prendre directement, comme sur Paladium), l'entrée
+  **Kits** de la barre latérale (groupe Personnage, avec une pastille quand un kit attend), et
+  l'**intendant**, le PNJ de la plateforme d'arrivée du spawn (`CONTENU_DOHY.md`, « Les
+  guichetiers »).
+- **L'écran** : une carte par kit — **Prêt** (un clic le prend), **Dans 5 h 12 min**, **Déjà
+  pris**, ou grisée avec le grade qu'il faut — et son contenu dans la bulle ; en tête, ton grade, le
+  nombre de kits prêts et le temps avant le prochain.
+- **Le kit de départ** arrive dans le sac à la première connexion d'un nouveau joueur (moins d'une
+  minute de jeu, la même règle que l'arrivée au spawn). Un joueur qui jouait avant les kits est
+  seulement prévenu à chaque connexion (« Kit de départ t'attend : /kit depart. ») jusqu'à ce qu'il
+  le prenne.
+- **Les délais** sont en heures réelles, partie fermée comprise. Un grade donne aussi les kits des
+  grades d'en dessous, chacun avec son propre délai. Les kits pris sont gardés à la mort
+  (attachement `kits`).
+- **Le kit entier, ou rien** : il faut assez de cases libres dans le sac (une par pile du kit) ;
+  sinon le kit attend, rien ne tombe par terre. Pas de kit en plein combat (`CombatTag`).
+- **Administration** : `/kit reset <joueurs>` (opérateurs) efface les kits pris.
+- **Le fichier** : `data/kits.json` (copié dans le jar en `data/dohy/kits.json`), lu au démarrage
+  du monde ; un objet d'un mod absent est écarté avec une ligne au journal. Chaque kit : `id`,
+  `name`, `icon`, `color`, `once`, `first_join`, `cooldown_hours`, `grade`, `premium`, `money`,
+  `items`.
+
+### Code
+
+- `kits/PlayerKits` (le fichier, les règles, donner), `PlayerKitsMenu` (l'écran `dohy:kits`),
+  `DoHyKits` (l'attachement `kits`, `/kit`, la première connexion) ; la pastille dans
+  `ui/NavBadges`, l'entrée dans `client/ui/shell/Nav` et `HubController`.
+- L'intendant : `spawn/SpawnNpc.Role.KITS`.
+
+### Écarts
+
+- **Le contenu est celui de DoHy** : Paladium ne le publie pas. Les clés de box et les potions d'XP
+  font des kits de grade un petit revenu hebdomadaire (de 2 à 6 % de la valeur du grade par mois) ;
+  le kit joueur ne donne que de quoi manger et s'éclairer.
+- **Pas de kit de faction ni de kit d'événement** : rien dans DoHy n'en appelle un pour l'instant.

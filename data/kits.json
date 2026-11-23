@@ -1,6 +1,6 @@
 {
   "_comment": "Les kits, comme sur Paladium : /kit (ou l'intendant de la plateforme du spawn) ouvre la liste ; /kit <id> prend un kit. Lus au demarrage du monde. Chaque kit : id (sans espace), name, icon (un objet), color (RRGGBB), once (une seule fois par joueur), first_join (donne de lui-meme a la premiere connexion), cooldown_hours (heures REELLES entre deux prises, si once est faux), grade (aucun, heros, legende, divinite : ce grade ou un plus haut), premium (Premium actif), money (dollars en liquide), items (id, count). Un objet inconnu (mod absent) est ecarte au chargement, avec une ligne dans le journal.",
-  "_valeurs": "Calibrage (BALANCE.md, section Kits) : le kit de depart vaut une cle Amethyste (100 k) et 10 000 $ en plus de l'equipement de fer ; le kit joueur ne donne que de quoi manger et s'eclairer ; les kits de grade valent chaque semaine de 1 a 6 % du prix du grade par mois, Premium environ 6 % de ses 15 M.",
+  "_valeurs": "Calibrage (BALANCE.md, section Kits) : le kit de depart vaut une cle Amethyste (100 k) et 10 000 $ en plus de l'equipement de fer ; le kit joueur ne donne que de quoi manger et s'eclairer ; les kits de grade rendent de 2 a 6 % du prix du grade par mois (en valeur pour le joueur : une box rend ~85 % de sa cle, une potion la moitie de son prix).",
   "kits": [
     {
       "id": "depart",

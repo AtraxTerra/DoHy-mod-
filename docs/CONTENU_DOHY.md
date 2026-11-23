@@ -813,7 +813,7 @@ passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, c
 ### Y aller, en revenir
 
 - **`/spawn`**, ou la carte « Spawn » du menu : on arrive sur la plateforme ronde. La même commande,
-  ou une borne « RETOUR », ramène d'où l'on venait, au bloc près.
+  ou le **passeur** (le PNJ « RETOUR »), ramène d'où l'on venait, au bloc près.
 - On ne le rejoint que depuis l'Overworld, le Nether ou l'End (pas depuis un donjon ou une arène).
 - La première visite **construit** le lieu : quelques secondes, pendant lesquelles on attend où
   l'on est ; on y est envoyé dès que c'est fini. Les visites suivantes sont immédiates.
@@ -838,29 +838,81 @@ passer aux guichets. Thème **brutaliste et industriel** : béton brut, acier, c
   Son sol est de brique ; au centre, un **jardin** (un massif, quatre jardinières, deux bancs). Les
   **six box** sont dans des niches à leur couleur (améthyste, saharia, paladium à l'ouest ;
   halloween, trixium, endium à l'est) : un clic avec sa clé ouvre une box, comme chez soi.
-- De part et d'autre de l'atrium, deux **travées de bornes** : COMMERCE à l'est (shop, boutique,
-  marché), CARRIÈRE à l'ouest (banque, contrats, musée). Une borne ouvre le même écran que le menu ;
-  les trois bornes du commerce ouvrent chacune son onglet (Acheter, Boutique, Hôtel des ventes).
-  La borne RETOUR est à côté de l'entrée (et sur la plateforme d'arrivée).
+- De part et d'autre de l'atrium, deux **travées de guichets** : COMMERCE à l'est (shop, boutique,
+  marché), CARRIÈRE à l'ouest (banque, contrats, musée). Devant chaque stèle se tient son
+  **guichetier**, un PNJ (voir plus bas) ; les trois du commerce ouvrent chacun son onglet (Acheter,
+  Boutique, Hôtel des ventes). Le passeur (RETOUR) est à côté de l'entrée, et sur la plateforme
+  d'arrivée.
 - Deux **étages de galeries** regardent l'atrium, de la verdure retombe de leurs garde-corps ; des
   escaliers de pierre taillée, entre deux limons massifs, y montent depuis chaque travée. Chaque galerie ouvre sur sa terrasse, sur l'anneau et sur les passerelles.
 - Derrière le bâtiment, deux **cheminées** qui fument, des cuves et leurs tuyaux.
 - Le ciel et l'heure sont ceux de l'Overworld ; les nuages passent sous le parvis.
 
+### Les guichetiers (2026-11-23)
+
+Demandé le 2026-11-23 (« remplace les blocs "utilisable" par des pnj custom au spawn ») : les
+**bornes du spawn sont devenues des PNJ**, comme sur les spawns de serveurs. Un clic droit sur un
+guichetier ouvre exactement l'écran de l'ancienne borne (`SpawnTerminalBlock.open`, partagé par les
+deux) ; son enseigne (le mot de la borne, dans sa couleur) flotte au-dessus de lui, son nom au-dessus
+de sa tête.
+
+| Où | PNJ | Service |
+|---|---|---|
+| Plateforme d'arrivée, devant l'arrivant | l'Intendant | les kits (`/kit`) |
+| Plateforme, derrière l'arrivant | le Passeur, le Pilote | RETOUR, NAVETTE (Arrakis) |
+| Nef, travée COMMERCE | le Marchand, la Boutiquière, le Commissaire-priseur | SHOP, BOUTIQUE, MARCHÉ |
+| Nef, travée CARRIÈRE | le Banquier, l'Agent des contrats, la Conservatrice | BANQUE, CONTRATS, MUSÉE |
+| Devant les piles du portail de l'atrium | l'Hôtesse, le Gardien des donjons | RÉCOMPENSE, DONJONS |
+| À la sortie | le Passeur, le Contremaître | RETOUR, MINE |
+| Planque sous le pont | le Receleur, derrière son comptoir | MARCHÉ NOIR |
+| Autel du parvis, sur l'estrade | la Prêtresse | AUTEL |
+
+- **Quatorze tenues originales** (`tools/spawn_npc_assets.py`, 64 × 64, disposition du modèle
+  humain) : le tablier vert du marchand, la veste d'or de la boutiquière, le trois-pièces et le
+  nœud papillon du commissaire-priseur, le costume bleu nuit du banquier, la veste pervenche et la
+  sacoche de l'agent, la conservatrice à chignon et lunettes, l'uniforme rouge de chef de gare du
+  passeur, l'hôtesse en jaune et son foulard, la robe violette à capuche du gardien, le casque et le
+  gilet du contremaître, la capuche et le masque du receleur, la robe orange et l'étole de la
+  prêtresse, la combinaison et le casque du pilote, l'uniforme blanc et rouge de l'intendant.
+- **Ils ne bougent pas** : invulnérables, ni poussés ni tenus en laisse ; ils suivent des yeux qui
+  approche à moins de huit blocs et, seuls, regardent devant leur guichet. Déplacés (un piston, une
+  commande), ils reviennent à leur poste.
+- **Jamais sur disque** : chaque guichetier a son **poste**, un bloc invisible sous ses pieds
+  (`dohy:npc_post`), qui le fait venir quand son coin du spawn se charge, vérifie chaque seconde
+  qu'il est là (un `/kill` le fait revenir) et le reprend quand le coin se décharge — comme les
+  étiquettes flottantes. Un spawn reconstruit ou un monde rechargé ne laisse donc aucun PNJ en
+  double ; un PNJ revenu d'une sauvegarde est refusé.
+- **Chargé suffit** : le serveur ne fait tourner que deux chunks autour du joueur
+  (`simulation-distance=2`) ; postes et étiquettes flottantes sont donc tenus en liste dès que
+  leur coin est chargé, et vérifiés chaque seconde par `SpawnApi`, qu'ils tournent ou non. Avant,
+  les enseignes du fond de la nef ou de l'autel n'apparaissaient qu'à une trentaine de blocs ;
+  c'est vrai aussi des étiquettes d'Arrakis, de la farmland et de la Terre (même bloc).
+- **Les bornes restent ailleurs** : la salle d'arrivée de la Mine, le camp de la farmland et
+  l'astroport d'Arrakis gardent leurs bornes (RETOUR, NAVETTE, ÉPICE, EAU), et le bloc
+  `dohy:terminal` reste dans l'onglet créatif pour qui veut en poser. Les **box** du hall restent
+  des blocs : on y pose sa clé.
+- **Spawn version 11** : un spawn plus ancien est vidé puis reconstruit à la visite suivante. Le
+  plan dit au journal (« Spawn : le PNJ … est dans un bloc », « … n'a pas de sol », « l'enseigne …
+  remplace un bloc du dessin ») ce qui serait mal posé.
+
 ### Les règles
 
 - On n'y casse rien et on n'y pose rien (sauf en créatif), les explosions n'abîment rien.
 - On n'y prend aucun dégât. Qui tombe dans le vide est reposé sur la plateforme d'arrivée.
-- Aucune créature n'y apparaît.
+- Aucune créature n'y apparaît (les guichetiers ne sont pas des créatures du jeu : seuls leurs
+  postes les font venir).
 
 ### Code
 
-- `spawn/DoHySpawn` (dimension, borne, étiquette, pièces jointes), `SpawnApi` (aller, revenir,
-  construire par tranches de 5 000 blocs par tick), `SpawnBuilder` (le dessin : tout est calculé,
-  aucun fichier de structure ; `VERSION` à augmenter pour faire reconstruire — un spawn d'une autre
-  version est d'abord vidé, pitons compris, puis rebâti à la visite suivante), `SpawnEvents`
-  (règles, `/spawn`), `SpawnTerminalBlock` (`dohy:terminal`, une propriété `kind` par service),
-  `HologramBlock` (`dohy:hologram`, les textes flottants).
+- `spawn/DoHySpawn` (dimension, borne, étiquette, poste et PNJ, pièces jointes), `SpawnApi` (aller,
+  revenir, construire par tranches de 5 000 blocs par tick, puis étiqueter et poster les PNJ),
+  `SpawnBuilder` (le dessin : tout est calculé, aucun fichier de structure ; `VERSION` à augmenter
+  pour faire reconstruire — un spawn d'une autre version est d'abord vidé, pitons compris, puis
+  rebâti à la visite suivante ; `npc(...)` poste un guichetier et son enseigne), `SpawnEvents`
+  (règles, `/spawn`), `SpawnTerminalBlock` (`dohy:terminal`, une propriété `kind` par service, et
+  `open(joueur, service)` pour les PNJ), `SpawnNpc` (`dohy:spawn_npc` et ses rôles), `NpcPostBlock`
+  / `NpcPostBlockEntity` (`dohy:npc_post`), `HologramBlock` (`dohy:hologram`, les textes flottants) ;
+  côté client, `client/spawn/SpawnNpcRenderer`.
 - `data/dohy/dimension/spawn.json`, `dimension_type/spawn.json`, `worldgen/biome/spawn.json`,
   écrits par `tools/dohy_assets.py`.
 
@@ -872,8 +924,8 @@ de la roche du fond au plafond, ni ciel ni surface.
 
 ### Y aller, en revenir
 
-- On n'y entre que par la **borne MINE** (cyan) de l'atrium du spawn, près de l'entrée, en face de
-  la borne RETOUR.
+- On n'y entre que par le **contremaître** (le PNJ « MINE ») du spawn, près de l'entrée, en face du
+  passeur (RETOUR) — une borne MINE jusqu'au 2026-11-23.
 - On arrive dans une **salle creusée** en pleine roche, à y = 30 : sol de pierre polie, quatre
   lanternes, la **borne RETOUR** contre la paroi nord. Ses parois sont bouchées là où il le faut
   (galerie, lave, eau, gravier) : on arrive toujours au sec, et on en sort à la pioche.
@@ -926,8 +978,8 @@ de la roche du fond au plafond, ni ciel ni surface.
 ### Code
 
 - `mine/MineService` (calendrier, zone en cours, salle d'arrivée, règles, ménage des fichiers,
-  commande) ; `spawn/SpawnTerminalBlock` (la borne MINE), `SpawnBuilder` (la borne dans l'atrium,
-  `VERSION` 7), `SpawnApi.backToPad`.
+  commande) ; `spawn/SpawnTerminalBlock` (le service MINE), `SpawnBuilder` (le contremaître près de
+  l'entrée, depuis la version 11), `SpawnApi.backToPad`.
 - `data/dohy/dimension/mine.json`, `dimension_type/mine.json` (plafond, pas de ciel),
   `worldgen/noise_settings/mine.json` (densité constante : de la roche partout ; surface : bedrock et
   ardoise), `worldgen/biome/mine.json`, le tag `worldgen/placed_feature/mine_mod_ores` et le
@@ -1190,7 +1242,8 @@ un nouvel arrivage chaque matin à 5 h (la bascule des contrats). On y paie en l
 
 - **Y aller** : au milieu du pont, une **trappe de bois** dans le béton (une étiquette « trappe du
   receleur » flotte au-dessus) ; une échelle descend dans une pièce basse sous le tablier, éclairée
-  aux lanternes d'âmes, où la borne **MARCHÉ NOIR** attend contre le mur du fond.
+  aux lanternes d'âmes, où le **receleur** (le PNJ « MARCHÉ NOIR ») attend derrière son comptoir,
+  contre le mur du fond.
 - **La marchandise volée** (quatre offres par jour) : des lingots, des blocs, du trixium, des
   pépites d'endium, des fragments de rune, des essences, des gemmes, des clés de box, volés aux
   nations rivales, entre **50 et 70 %** de leur valeur boutique. La nation volée finit par
@@ -1217,8 +1270,8 @@ un nouvel arrivage chaque matin à 5 h (la bascule des contrats). On y paie en l
 - `blackmarket/BlackMarketConfig` (le fichier), `BlackMarket` (l'arrivage du jour, acheter, le
   lot, revendre), `BlackMarketData`, `BlackMarketMenu`.
 - La planque : `SpawnBuilder.blackMarket()` (version 8 du spawn : un spawn plus ancien est
-  reconstruit tout seul), la borne `SpawnTerminalBlock.Kind.BLACK_MARKET` (texture dessinée par
-  `tools/dohy_assets.py`).
+  reconstruit tout seul), le service `SpawnTerminalBlock.Kind.BLACK_MARKET`, tenu depuis la version
+  11 par le receleur (`SpawnNpc.Role.BLACK_MARKET`).
 
 ## Les donjons façon V12 : modes, boss Dark, nouvelles salles (2026-11-14)
 
@@ -1343,8 +1396,9 @@ Choix du joueur : **des offrandes au spawn ; le boss arrive une heure après, da
   le gardien garde la taille de Paladium, sa boîte de collision celle de son monstre vanilla.
 
 - **L'autel des offrandes** : sur le **parvis du spawn, à gauche de l'allée en arrivant** (spawn
-  version 9, reconstruit tout seul) : un dallage rond, une estrade, la **borne AUTEL** au milieu et un
-  pilier par métier (foin, fer brut, os, améthyste). La borne ouvre l'écran de l'autel, où l'on
+  version 9, reconstruit tout seul) : un dallage rond, une estrade, la **prêtresse** (le PNJ
+  « AUTEL », une borne jusqu'au 2026-11-23) au milieu et un pilier par métier (foin, fer brut, os,
+  améthyste). La prêtresse ouvre l'écran de l'autel, où l'on
   **dépose** ; ouvert d'ailleurs (carte « Boss de métier » du menu principal, `/autel`), l'écran ne
   fait que montrer et lancer un combat.
 - **L'offrande** (niveau 1 ; × 1,5 au niveau 2, × 2 au niveau 3… × 5,5 au niveau 10) :
@@ -1384,8 +1438,8 @@ Choix du joueur : **des offrandes au spawn ; le boss arrive une heure après, da
 - `jobboss/JobBossData` (attachement `job_boss` : niveau, dépôt, arrivée, annonces, victoires ;
   gardé à la mort), `JobBossApi` (offrandes, arrivée, combat, victoire, annonces), `JobBossMenu`
   (l'écran `dohy:autel`), `JobBossEvents` (annonces, `/autel`).
-- La borne `SpawnTerminalBlock.Kind.JOB_ALTAR` et `SpawnBuilder.altar()` ; texture de la borne par
-  `tools/dohy_assets.py`.
+- Le service `SpawnTerminalBlock.Kind.JOB_ALTAR` et `SpawnBuilder.altar()` (la prêtresse,
+  `SpawnNpc.Role.JOB_ALTAR`, depuis la version 11 du spawn).
 
 ## Create relié au reste du mod (2026-11-18)
 

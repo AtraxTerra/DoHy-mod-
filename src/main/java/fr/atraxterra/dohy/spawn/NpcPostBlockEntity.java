@@ -10,24 +10,28 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Le poste d'un PNJ du spawn : son role et la direction ou il regarde.
  *
  * <p>Comme les etiquettes flottantes ({@link HologramBlockEntity}), le poste fait venir son
- * PNJ a son premier tick, verifie chaque seconde qu'il est toujours la, et le renvoie quand
- * le bloc disparait ou que son coin se decharge. Le PNJ n'etant jamais sauvegarde, il n'y en
- * a qu'un par poste, meme apres un spawn reconstruit ou un monde recharge.
+ * PNJ des que son coin est charge (qu'il tourne ou non : un serveur a courte distance de
+ * simulation ne fait tourner que les abords du joueur), verifie chaque seconde qu'il est
+ * toujours la, et le renvoie quand le bloc disparait ou que son coin se decharge. Le PNJ
+ * n'etant jamais sauvegarde, il n'y en a qu'un par poste, meme apres un spawn reconstruit ou
+ * un monde recharge.
  */
 public class NpcPostBlockEntity extends BlockEntity {
-
-    private static final int CHECK = 20;
 
     private SpawnNpc.Role role = SpawnNpc.Role.SHOP;
     private int facing;
     private boolean configured;
     private SpawnNpc npc;
-    private int ticks;
+
+    /** Les postes des coins charges, qu'ils tournent ou non. */
+    static final Set<NpcPostBlockEntity> LOADED = ConcurrentHashMap.newKeySet();
 
     public NpcPostBlockEntity(BlockPos pos, BlockState state) {
         super(DoHySpawn.NPC_POST_TYPE.get(), pos, state);
@@ -51,8 +55,34 @@ public class NpcPostBlockEntity extends BlockEntity {
         setChanged();
     }
 
+    /** Le tick d'un coin qui tourne : s'inscrire, au cas ou le chargement ne l'aurait pas fait. */
     void serverTick() {
-        if (!(level instanceof ServerLevel server) || !configured || ticks++ % CHECK != 0) {
+        LOADED.add(this);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide()) {
+            LOADED.add(this);
+        }
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        LOADED.remove(this);
+    }
+
+    /** Chaque seconde : fait venir les PNJ des postes charges qui n'ont pas le leur. */
+    static void upkeep() {
+        for (NpcPostBlockEntity post : LOADED) {
+            post.ensure();
+        }
+    }
+
+    private void ensure() {
+        if (!(level instanceof ServerLevel server) || isRemoved() || !configured) {
             return;
         }
         if (npc != null && npc.isAlive()) {
@@ -94,6 +124,7 @@ public class NpcPostBlockEntity extends BlockEntity {
     @Override
     public void setRemoved() {
         super.setRemoved();
+        LOADED.remove(this);
         drop();
     }
 
