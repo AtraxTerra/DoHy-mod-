@@ -6,6 +6,8 @@ import fr.atraxterra.dohy.palamod.dungeon.ReturnPoint;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
@@ -14,6 +16,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -48,6 +51,8 @@ public final class DoHySpawn {
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, DoHy.MOD_ID);
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, DoHy.MOD_ID);
+    private static final DeferredRegister<EntityType<?>> ENTITIES =
+            DeferredRegister.create(Registries.ENTITY_TYPE, DoHy.MOD_ID);
 
     /** La borne : un guichet qui ouvre un ecran du mod. Un seul bloc, une propriete par service. */
     public static final DeferredBlock<SpawnTerminalBlock> TERMINAL = BLOCKS.registerBlock("terminal",
@@ -65,6 +70,22 @@ public final class DoHySpawn {
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HologramBlockEntity>> HOLOGRAM_TYPE =
             TYPES.register("hologram", () -> new BlockEntityType<>(HologramBlockEntity::new, Set.of(HOLOGRAM.get())));
+
+    /** Le poste d'un PNJ : un bloc invisible, sous ses pieds, qui le fait venir et le garde. */
+    public static final DeferredBlock<NpcPostBlock> NPC_POST = BLOCKS.registerBlock("npc_post",
+            NpcPostBlock::new,
+            properties -> properties.mapColor(MapColor.NONE).noCollision().noOcclusion().strength(-1.0f, 3600000.0f)
+                    .noLootTable().pushReaction(PushReaction.BLOCK));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NpcPostBlockEntity>> NPC_POST_TYPE =
+            TYPES.register("npc_post", () -> new BlockEntityType<>(NpcPostBlockEntity::new, Set.of(NPC_POST.get())));
+
+    /** Les PNJ des guichets : jamais d'apparition naturelle, seuls leurs postes les font venir. */
+    public static final DeferredHolder<EntityType<?>, EntityType<SpawnNpc>> NPC = ENTITIES.register(
+            "spawn_npc", key -> EntityType.Builder.<SpawnNpc>of(SpawnNpc::new, MobCategory.MISC)
+                    .sized(0.6f, 1.95f)
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
 
     /** D'ou vient le joueur : pose a l'arrivee au spawn, effacee au retour. */
     public static final Supplier<AttachmentType<ReturnPoint>> RETURN = ATTACHMENTS.register(
@@ -101,5 +122,11 @@ public final class DoHySpawn {
         ITEMS.register(modBus);
         TYPES.register(modBus);
         ATTACHMENTS.register(modBus);
+        ENTITIES.register(modBus);
+        modBus.addListener(DoHySpawn::onAttributes);
+    }
+
+    private static void onAttributes(EntityAttributeCreationEvent event) {
+        event.put(NPC.get(), SpawnNpc.createAttributes().build());
     }
 }

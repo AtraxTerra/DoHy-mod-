@@ -161,10 +161,15 @@ public final class SpawnEvents {
         }
     }
 
-    /** Un texte flottant revenu d'une sauvegarde est un double : son bloc en a deja refait un. */
+    /**
+     * Un texte flottant revenu d'une sauvegarde est un double : son bloc en a deja refait un. Un
+     * PNJ du spawn ne s'ecrit jamais ; s'il en revenait un (une sauvegarde d'une autre version),
+     * son poste l'a deja refait aussi.
+     */
     @SubscribeEvent
     public static void onJoin(EntityJoinLevelEvent event) {
-        if (event.loadedFromDisk() && event.getEntity().entityTags().contains(HologramBlockEntity.TAG)) {
+        if (event.loadedFromDisk() && (event.getEntity().entityTags().contains(HologramBlockEntity.TAG)
+                || event.getEntity() instanceof SpawnNpc)) {
             event.setCanceled(true);
         }
     }

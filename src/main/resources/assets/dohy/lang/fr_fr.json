@@ -5,6 +5,8 @@
   "block.dohy.research_lab": "Laboratoire de recherche",
   "block.dohy.terminal": "Borne du spawn",
   "block.dohy.hologram": "Etiquette flottante",
+  "block.dohy.npc_post": "Poste de PNJ",
+  "entity.dohy.spawn_npc": "PNJ du spawn",
   "block.dohy.trough": "Mangeoire",
   "block.dohy.water_dispenser": "Abreuvoir",
   "block.dohy.gmo_machine": "Machine a OGM",

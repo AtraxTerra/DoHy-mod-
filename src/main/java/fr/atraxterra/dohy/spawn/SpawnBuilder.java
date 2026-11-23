@@ -31,7 +31,7 @@ import java.util.List;
  *
  * <p>Dedans : une nef basse en travers, puis l'atrium — un puits de beton de
  * quarante-six blocs sous une verriere — ou les six box attendent dans leurs
- * niches. De part et d'autre, deux travees de bornes ; deux etages de
+ * niches. De part et d'autre, deux travees de guichets ; deux etages de
  * galeries regardent l'atrium et ouvrent sur les terrasses.
  *
  * <p>Tout est calcule, rien n'est lu : la roche vient de quelques sinus, le
@@ -43,7 +43,7 @@ import java.util.List;
 final class SpawnBuilder {
 
     /** A augmenter des que le dessin change : un spawn d'une autre version est reconstruit. */
-    static final int VERSION = 10;
+    static final int VERSION = 11;
 
     /** Le niveau du sol du parvis : on marche a {@code FLOOR + 1}. */
     static final int FLOOR = 200;
@@ -77,12 +77,20 @@ final class SpawnBuilder {
     record Label(BlockPos pos, String text, int color, float scale) {
     }
 
-    /** Le plan : les blocs dans l'ordre ou ils ont ete dessines, et les etiquettes. */
-    record Plan(Long2ObjectLinkedOpenHashMap<BlockState> blocks, List<Label> labels) {
+    /**
+     * Un PNJ a poster : le bloc de ses pieds, son guichet, la direction ou il regarde
+     * (degres du jeu : 0 au sud, 90 a l'ouest, 180 au nord, -90 a l'est).
+     */
+    record Npc(BlockPos pos, SpawnNpc.Role role, float facing) {
+    }
+
+    /** Le plan : les blocs dans l'ordre ou ils ont ete dessines, les etiquettes et les PNJ. */
+    record Plan(Long2ObjectLinkedOpenHashMap<BlockState> blocks, List<Label> labels, List<Npc> npcs) {
     }
 
     private final Long2ObjectLinkedOpenHashMap<BlockState> blocks = new Long2ObjectLinkedOpenHashMap<>();
     private final List<Label> labels = new ArrayList<>();
+    private final List<Npc> npcs = new ArrayList<>();
 
     // -- La palette --------------------------------------------------------------------
 
@@ -477,7 +485,38 @@ final class SpawnBuilder {
         builder.pylon();
         builder.industry();
         builder.worldMap(mosaic);
-        return new Plan(builder.blocks, builder.labels);
+        builder.checkNpcs();
+        return new Plan(builder.blocks, builder.labels, builder.npcs);
+    }
+
+    /**
+     * Un PNJ poste dans un mur, sous un plafond trop bas ou au-dessus du vide, ou une enseigne
+     * qui ecraserait un bloc du dessin : rien ne casse, mais le lieu aurait l'air faux. Le
+     * journal le dit a chaque construction (les captures de la CI le lisent).
+     */
+    private void checkNpcs() {
+        for (Npc npc : npcs) {
+            BlockPos pos = npc.pos();
+            if (has(pos.getX(), pos.getY(), pos.getZ()) || has(pos.getX(), pos.getY() + 1, pos.getZ())) {
+                fr.atraxterra.dohy.DoHy.LOGGER.warn("Spawn : le PNJ {} en {} est dans un bloc", npc.role().id(), pos);
+            }
+            if (!has(pos.getX(), pos.getY() - 1, pos.getZ())) {
+                fr.atraxterra.dohy.DoHy.LOGGER.warn("Spawn : le PNJ {} en {} n'a pas de sol", npc.role().id(), pos);
+            }
+            for (Label label : labels) {
+                if (label.pos().equals(pos) || label.pos().equals(pos.above())) {
+                    fr.atraxterra.dohy.DoHy.LOGGER.warn("Spawn : l'enseigne {} gene le PNJ {}", label.text(),
+                            npc.role().id());
+                }
+            }
+        }
+        for (Label label : labels) {
+            BlockPos pos = label.pos();
+            if (has(pos.getX(), pos.getY(), pos.getZ())) {
+                fr.atraxterra.dohy.DoHy.LOGGER.warn("Spawn : l'enseigne « {} » en {} remplace un bloc du dessin",
+                        label.text(), pos);
+            }
+        }
     }
 
     /** La roche d'abord : tout le reste se pose dessus et la remplace ou elle gene. */
@@ -657,7 +696,7 @@ final class SpawnBuilder {
      * Le marche noir : la planque du receleur, sous le tablier du pont. Une
      * trappe de bois dans le beton du pont, une echelle, et en dessous une
      * piece basse eclairee aux lanternes d'ames : des tonneaux, un tapis, des
-     * toiles d'araignee, et la borne du receleur contre le mur du fond.
+     * toiles d'araignee, et le receleur derriere son comptoir, contre le mur du fond.
      */
     private void blackMarket() {
         int top = FLOOR - 2;
@@ -705,12 +744,12 @@ final class SpawnBuilder {
         BlockState soul = with(block("soul_lantern"), "hanging", "true");
         put(0, top - 1, 43, soul);
         put(0, top - 1, 47, soul);
-        // le comptoir du receleur, contre le mur du fond, et son etiquette
-        put(3, bottom + 1, 45, barrel);
-        put(3, bottom + 1, 44, block("dark_oak_slab"));
-        put(3, bottom + 1, 46, block("dark_oak_slab"));
-        terminal(3, bottom + 2, 45, Direction.WEST, SpawnTerminalBlock.Kind.BLACK_MARKET,
-                new BlockPos(3, top - 1, 45));
+        // le comptoir du receleur, devant le mur du fond, et le receleur derriere, sous son enseigne
+        put(2, bottom + 1, 45, barrel);
+        put(2, bottom + 1, 44, block("dark_oak_slab"));
+        put(2, bottom + 1, 46, block("dark_oak_slab"));
+        put(2, bottom + 2, 45, with(block("candle"), "lit", "true"));
+        npc(3, bottom + 1, 45, 90.0f, SpawnNpc.Role.BLACK_MARKET, new BlockPos(3, top - 1, 45));
         // sur le pont, un mot discret au-dessus de la trappe
         labels.add(new Label(new BlockPos(-2, FLOOR + 2, 45), "trappe du receleur", 0x9B6BFF, 0.6f));
     }
@@ -723,7 +762,7 @@ final class SpawnBuilder {
     /** La plateforme d'arrivee : un disque marque d'un cercle jaune, ouvert vers le pont. */
     /**
      * L'autel des offrandes, sur le parvis : un dallage rond borde de pierre,
-     * une estrade, la borne AUTEL au milieu, tournee vers l'allee, et aux quatre
+     * une estrade, la pretresse au milieu, tournee vers l'allee, et aux quatre
      * coins un pilier par metier — foin, fer brut, os, amethyste — sous une
      * lanterne.
      */
@@ -757,11 +796,9 @@ final class SpawnBuilder {
             put(x, FLOOR + 3, z, postLantern);
             labels.add(new Label(new BlockPos(x, FLOOR + 4, z), names[i], 0xE0E0E0, 0.6f));
         }
-        // la borne, sur son socle, tournee vers l'allee
+        // la pretresse, sur son socle, tournee vers l'allee
         put(ALTAR_X, FLOOR + 1, ALTAR_Z, rib);
-        terminal(ALTAR_X, FLOOR + 2, ALTAR_Z, Direction.EAST, SpawnTerminalBlock.Kind.JOB_ALTAR,
-                new BlockPos(ALTAR_X, FLOOR + 4, ALTAR_Z));
-        put(ALTAR_X, FLOOR + 3, ALTAR_Z, accentFor(SpawnTerminalBlock.Kind.JOB_ALTAR));
+        npc(ALTAR_X, FLOOR + 2, ALTAR_Z, -90.0f, SpawnNpc.Role.JOB_ALTAR, new BlockPos(ALTAR_X, FLOOR + 5, ALTAR_Z));
         labels.add(new Label(new BlockPos(ALTAR_X, FLOOR + 7, ALTAR_Z), "AUTEL DES OFFRANDES", 0xFF8A3D, 1.4f));
         labels.add(new Label(new BlockPos(ALTAR_X, FLOOR + 6, ALTAR_Z), "Une offrande, une heure, un gardien",
                 0xFAC400, 0.7f));
@@ -796,21 +833,26 @@ final class SpawnBuilder {
             }
         }
         put(0, FLOOR, PAD_Z, lamp);
-        terminal(5, FLOOR + 1, PAD_Z + 5, Direction.NORTH, SpawnTerminalBlock.Kind.RETURN,
-                new BlockPos(5, FLOOR + 2, PAD_Z + 5));
-        // la navette d'Arrakis, en face du retour
-        terminal(-5, FLOOR + 1, PAD_Z + 5, Direction.NORTH, SpawnTerminalBlock.Kind.SHUTTLE,
-                new BlockPos(-5, FLOOR + 2, PAD_Z + 5));
-        labels.add(new Label(new BlockPos(-5, FLOOR + 3, PAD_Z + 5), "Arrakis", 0xE8C27A, 0.7f));
+        npc(5, FLOOR + 1, PAD_Z + 5, 180.0f, SpawnNpc.Role.RETURN, new BlockPos(5, FLOOR + 4, PAD_Z + 5));
+        // le pilote de la navette d'Arrakis, en face du passeur
+        npc(-5, FLOOR + 1, PAD_Z + 5, 180.0f, SpawnNpc.Role.SHUTTLE, new BlockPos(-5, FLOOR + 4, PAD_Z + 5));
+        labels.add(new Label(new BlockPos(-5, FLOOR + 5, PAD_Z + 5), "Arrakis", 0xE8C27A, 0.7f));
+        // l'intendant des kits : devant l'arrivant, a gauche de l'allee du pont, tourne vers lui
+        npc(-5, FLOOR + 1, PAD_Z - 3, -63.0f, SpawnNpc.Role.KITS, new BlockPos(-5, FLOOR + 4, PAD_Z - 3));
+        labels.add(new Label(new BlockPos(-5, FLOOR + 5, PAD_Z - 3), "Ton kit de depart, et les autres", 0xFAC400,
+                0.7f));
         labels.add(new Label(new BlockPos(0, FLOOR + 5, PAD_Z - 9), "SPAWN", 0xFFFFFF, 3.0f));
         labels.add(new Label(new BlockPos(0, FLOOR + 3, PAD_Z - 9), "Le hall des box est au bout du pont", 0xFAC400,
                 1.0f));
     }
 
-    private void terminal(int x, int y, int z, Direction facing, SpawnTerminalBlock.Kind kind, BlockPos label) {
-        put(x, y, z, DoHySpawn.TERMINAL.get().defaultBlockState()
-                .setValue(SpawnTerminalBlock.FACING, facing).setValue(SpawnTerminalBlock.KIND, kind));
-        labels.add(new Label(label, kind.label(), kind.color(), 1.0f));
+    /**
+     * Un guichetier : son poste (les pieds en {@code x, y, z}, sur un sol, deux blocs de vide)
+     * et son enseigne, le mot de l'ancienne borne dans sa couleur.
+     */
+    private void npc(int x, int y, int z, float facing, SpawnNpc.Role role, BlockPos label) {
+        npcs.add(new Npc(new BlockPos(x, y, z), role, facing));
+        labels.add(new Label(label, role.label(), role.color(), 1.0f));
     }
 
     private BlockState accent(BoxKind kind) {
@@ -1217,18 +1259,18 @@ final class SpawnBuilder {
         }
         labels.add(new Label(new BlockPos(0, FLOOR + 5, CORE_SOUTH + 2), "HALL DES BOX", 0xFFFFFF, 2.2f));
         labels.add(new Label(new BlockPos(0, FLOOR + 4, CORE_SOUTH + 2),
-                "Clic sur une box avec sa cle  -  les cles sont a la borne BOUTIQUE", 0xC9D2DA, 0.8f));
+                "Clic sur une box avec sa cle  -  les cles sont a la BOUTIQUE", 0xC9D2DA, 0.8f));
     }
 
     /**
      * La nef et ses deux travees : une colonnade sous une poutre, trois steles
-     * de bornes par travee, des plantes en pot, et les escaliers — deux par
+     * par travee et leur guichetier devant, des plantes en pot, et les escaliers — deux par
      * cote, du sol a la premiere galerie puis a la seconde.
      */
     private void nave() {
-        SpawnTerminalBlock.Kind[][] kinds = {
-                {SpawnTerminalBlock.Kind.SHOP, SpawnTerminalBlock.Kind.BOUTIQUE, SpawnTerminalBlock.Kind.MARKET},
-                {SpawnTerminalBlock.Kind.BANK, SpawnTerminalBlock.Kind.CONTRACTS, SpawnTerminalBlock.Kind.MUSEUM},
+        SpawnNpc.Role[][] roles = {
+                {SpawnNpc.Role.SHOP, SpawnNpc.Role.BOUTIQUE, SpawnNpc.Role.MARKET},
+                {SpawnNpc.Role.BANK, SpawnNpc.Role.CONTRACTS, SpawnNpc.Role.MUSEUM},
         };
         for (int index = 0; index < 2; index++) {
             int side = index == 0 ? 1 : -1;
@@ -1244,11 +1286,11 @@ final class SpawnBuilder {
             }
             for (int slot = 0; slot < 3; slot++) {
                 int x = (13 + 7 * slot) * side;
-                SpawnTerminalBlock.Kind kind = kinds[index][slot];
+                SpawnTerminalBlock.Kind kind = roles[index][slot].service();
                 fill(x - 1, FLOOR + 1, -20, x + 1, FLOOR + 3, -20, tile);
                 fill(x - 1, FLOOR + 4, -20, x + 1, FLOOR + 4, -20, accentFor(kind));
                 fill(x - 1, FLOOR + 1, -20, x + 1, FLOOR + 1, -20, rib);
-                terminal(x, FLOOR + 2, -20, Direction.SOUTH, kind, new BlockPos(x, FLOOR + 5, -20));
+                npc(x, FLOOR + 1, -19, 0.0f, roles[index][slot], new BlockPos(x, FLOOR + 5, -20));
                 put(x, FLOOR, -18, lamp);
             }
             labels.add(new Label(new BlockPos(20 * side, FLOOR + 5, CORE_SOUTH + 2),
@@ -1258,27 +1300,24 @@ final class SpawnBuilder {
             // un banc de bois sur la premiere galerie, face a l'atrium
             fill(3 * side, FLOOR + STOREY + 1, -6, 7 * side, FLOOR + STOREY + 1, -6, rail);
         }
-        // la borne du retour, a droite en sortant ; celle de la Mine, a gauche
-        put(-6, FLOOR + 1, 3, rib);
-        terminal(-6, FLOOR + 2, 3, Direction.NORTH, SpawnTerminalBlock.Kind.RETURN, new BlockPos(-6, FLOOR + 3, 3));
-        put(6, FLOOR + 1, 3, rib);
-        terminal(6, FLOOR + 2, 3, Direction.NORTH, SpawnTerminalBlock.Kind.MINE, new BlockPos(6, FLOOR + 3, 3));
+        // le passeur, a droite en sortant ; le contremaitre de la Mine, a gauche
+        npc(-6, FLOOR + 1, 3, 180.0f, SpawnNpc.Role.RETURN, new BlockPos(-6, FLOOR + 4, 3));
+        npc(6, FLOOR + 1, 3, 180.0f, SpawnNpc.Role.MINE, new BlockPos(6, FLOOR + 4, 3));
     }
 
     /**
-     * Les services du portail et les tableaux de l'atrium : la borne de la
-     * recompense quotidienne et celle des departs, encastrees dans les deux
+     * Les services du portail et les tableaux de l'atrium : l'hotesse de la
+     * recompense quotidienne et le gardien des departs, devant les deux
      * piles du portail ; au premier etage, deux panneaux noirs sur les piles
      * du milieu, devant lesquels flottent le classement du concours et le
      * profil du joueur.
      */
     private void services() {
-        SpawnTerminalBlock.Kind[] kinds = {SpawnTerminalBlock.Kind.DAILY, SpawnTerminalBlock.Kind.PORTALS};
+        SpawnNpc.Role[] roles = {SpawnNpc.Role.DAILY, SpawnNpc.Role.PORTALS};
         for (int index = 0; index < 2; index++) {
             int x = index == 0 ? -9 : 9;
-            terminal(x, FLOOR + 2, CORE_SOUTH, Direction.SOUTH, kinds[index],
-                    new BlockPos(x, FLOOR + 4, CORE_SOUTH + 1));
-            put(x, FLOOR + 3, CORE_SOUTH, accentFor(kinds[index]));
+            npc(x, FLOOR + 1, CORE_SOUTH + 1, 0.0f, roles[index], new BlockPos(x, FLOOR + 4, CORE_SOUTH + 1));
+            put(x, FLOOR + 3, CORE_SOUTH, accentFor(roles[index].service()));
             put(x, FLOOR, CORE_SOUTH + 2, lamp);
             fill(x, FLOOR + 9, -20, x, FLOOR + 12, -18, black);
         }

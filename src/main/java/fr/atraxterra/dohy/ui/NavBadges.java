@@ -92,6 +92,14 @@ public final class NavBadges {
         } catch (RuntimeException ignored) {
             // pas de pastille
         }
+        try {
+            int kits = fr.atraxterra.dohy.kits.PlayerKits.readyCount(player);
+            if (kits > 0) {
+                badges.put("kits", String.valueOf(kits));
+            }
+        } catch (RuntimeException ignored) {
+            // pas de pastille
+        }
         int level = 0;
         try {
             level = ContractApi.globalLevel(player);
