@@ -114,7 +114,7 @@ public final class GradesController extends MenuController {
     /** La ligne d'une carte d'achat : ce qui se voit d'abord. */
     private static String headline(PlayerGrade grade) {
         return switch (grade) {
-            case HEROS -> grade.homes() + " homes · /craft · /minage";
+            case HEROS -> grade.homes() + " homes · /craft · /minage · /farmland";
             case LEGENDE -> grade.homes() + " homes · /feed · TP direct";
             case DIVINITE -> grade.homes() + " homes · /hat · /condense";
             case NONE -> "";

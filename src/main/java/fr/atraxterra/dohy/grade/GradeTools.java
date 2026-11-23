@@ -89,6 +89,7 @@ public final class GradeTools {
         switch (command) {
             case CRAFT -> craft(player);
             case MINAGE -> minage(player);
+            case FARMLAND -> farmland(player);
             case FEED -> feed(player);
             case FURNACE -> furnace(player);
             case RANGEMENT -> sort(player);
@@ -270,6 +271,15 @@ public final class GradeTools {
             }
             MineService.enter(player);
         });
+    }
+
+    /** {@code /farmland} : la dimension du Chasseur sans passer par le spawn ; la borne RETOUR ramene ou l'on etait. */
+    static void farmland(ServerPlayer player) {
+        if (fr.atraxterra.dohy.farmland.Farmland.inFarmland(player)) {
+            tell(player, "Tu es deja a la farmland.", ChatFormatting.GRAY);
+            return;
+        }
+        GradeTeleports.schedule(player, "vers la farmland", () -> fr.atraxterra.dohy.farmland.Farmland.enter(player));
     }
 
     // -- Les commandes de grade ----------------------------------------------------------------

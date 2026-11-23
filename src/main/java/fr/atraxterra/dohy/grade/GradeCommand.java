@@ -10,12 +10,13 @@ import java.util.function.Supplier;
  *
  * <p>Toutes sont enregistrees pour tout le monde : sans le grade, elles disent lequel il faut.
  * Celles de Paladium qui ne servent qu'a son reseau de serveurs ({@code /re},
- * {@code /serverhistory}, {@code /go}) ne sont pas portees, ni {@code /farmland} (pas de zone de
- * farm commune) ni {@code /skin} (pas d'apparences d'armure dans DoHy).
+ * {@code /serverhistory}, {@code /go}) ne sont pas portees, ni {@code /skin} (pas d'apparences
+ * d'armure dans DoHy). {@code /farmland} mene a la dimension du Chasseur (lot 24e).
  */
 public enum GradeCommand {
     CRAFT("craft", PlayerGrade.HEROS, false, "Un etabli, partout", () -> Items.CRAFTING_TABLE),
     MINAGE("minage", PlayerGrade.HEROS, false, "Direct a la Mine", () -> Items.IRON_PICKAXE),
+    FARMLAND("farmland", PlayerGrade.HEROS, false, "Direct a la farmland", () -> Items.BONE),
     FEED("feed", PlayerGrade.LEGENDE, false, "Rassasie d'un coup", () -> Items.COOKED_BEEF),
     FURNACE("furnace", PlayerGrade.LEGENDE, false, "Cuit ce que tu tiens", () -> Items.FURNACE),
     RANGEMENT("rangement", PlayerGrade.LEGENDE, false, "Trie ton sac", () -> Items.CHEST),

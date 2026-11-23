@@ -30,7 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Les teleportations des grades : {@code /home}, {@code /rtp}, {@code /minage} et les demandes
+ * Les teleportations des grades : {@code /home}, {@code /rtp}, {@code /minage}, {@code /farmland} et les demandes
  * {@code /tpa}.
  *
  * <p>Comme sur Paladium, on attend trois secondes sans bouger ni prendre de coup avant de partir ;
@@ -64,7 +64,8 @@ public final class GradeTeleports {
     /** Vrai pour les dimensions ou l'on circule librement. */
     static boolean travelLevel(ServerLevel level) {
         ResourceKey<Level> dimension = level.dimension();
-        return homeLevel(level) || dimension == DoHySpawn.DIMENSION || dimension == MineService.DIMENSION;
+        return homeLevel(level) || dimension == DoHySpawn.DIMENSION || dimension == MineService.DIMENSION
+                || dimension == fr.atraxterra.dohy.farmland.Farmland.DIMENSION;
     }
 
     /** Vrai la ou un home peut se poser : pas au spawn, ni a la Mine, remise a neuf toutes les cinq heures. */

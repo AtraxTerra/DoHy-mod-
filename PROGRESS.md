@@ -234,6 +234,17 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   au vert) ; opérations de police de l'État contre une organisation ; vols et racket des organisations
   hostiles, avantages des alliées ; contrats des organisations (livrer avant une date) ; un journal
   et une notification pour chaque événement.
+  Vérifié en jeu : après avoir tout légalisé, l'argent sale tombait à zéro et l'atelier d'armes ne
+  pouvait plus payer ses pièces ; la banque prend désormais le relais (+25 %) et le blanchiment
+  garde de côté l'argent sale des fournisseurs.
+- **Lot 24e — la farmland du Chasseur** (2026-11-23, `docs/ORGANISATIONS.md`) : une dimension à
+  part, `dohy:farmland`, bâtie à la première visite et indestructible — camp d'arrivée, forêt,
+  prairie et hameau, champignons géants, collines et leur grotte, jungle de bambous, lac et plage,
+  marais, coin du Nether (ruine de forteresse, basalte, lave), coin de l'End (piliers d'obsidienne,
+  chorus, ruine de purpur), falaises tout autour. N'y apparaissent que les créatures du Chasseur,
+  chacune dans son coin et à son plafond ; les animaux vivent dix minutes si personne ne les
+  attaque ; pas de PvP, la faim ne baisse pas, pas de commandes de faction ni de foudre. Entrée
+  par la borne DONJONS du spawn ou `/farmland` (Héros), sortie par la borne RETOUR ou `/spawn`.
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 

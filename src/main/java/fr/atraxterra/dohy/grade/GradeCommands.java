@@ -90,6 +90,7 @@ public final class GradeCommands {
         // Une commande par avantage de grade, chacune enregistree a part.
         dispatcher.register(Commands.literal("craft").executes(context -> grade(context, GradeCommand.CRAFT)));
         dispatcher.register(Commands.literal("minage").executes(context -> grade(context, GradeCommand.MINAGE)));
+        dispatcher.register(Commands.literal("farmland").executes(context -> grade(context, GradeCommand.FARMLAND)));
         dispatcher.register(Commands.literal("feed").executes(context -> grade(context, GradeCommand.FEED)));
         dispatcher.register(Commands.literal("furnace").executes(context -> grade(context, GradeCommand.FURNACE)));
         dispatcher.register(Commands.literal("rangement").executes(context -> grade(context, GradeCommand.RANGEMENT)));
