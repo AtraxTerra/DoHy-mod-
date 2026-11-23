@@ -1,0 +1,78 @@
+name: ui-shots
+# Temporaire : XP verte des marteaux en fusion. Monde plat cree par le serveur
+# dedie, puis client sous Xvfb ; pousse le tout sur shots-out.
+on:
+  push:
+    branches: [tmp/shots-carte]
+permissions:
+  contents: write
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.1.0"
+      - name: Paquets graphiques
+        run: |
+          if which Xvfb xvfb-run && ls /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so /usr/lib/x86_64-linux-gnu/libgallium* 2>/dev/null | head -3; then
+            echo "paquets graphiques deja presents"
+          else
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq xvfb libgl1-mesa-dri > /dev/null
+          fi
+      - name: Monde
+        run: |
+          mkdir -p run/world/datapacks
+          # la carte de la Terre (calage et grille des pays) : ses gisements geants existent
+          git fetch -q --depth 1 origin datapack-terre
+          git show FETCH_HEAD:dohy_terre.zip > run/world/datapacks/dohy_terre.zip
+          ls -la run/world/datapacks
+          echo "eula=true" > run/eula.txt
+          printf 'online-mode=false\nenable-rcon=true\nrcon.password=shots\nrcon.port=25575\nlevel-seed=dohy\nlevel-type=minecraft\\:flat\nspawn-protection=0\n' > run/server.properties
+          cat > /tmp/rcon.py <<'RCON'
+          import socket, struct, sys
+          s = socket.create_connection(("127.0.0.1", 25575), timeout=120)
+          def send(kind, body, rid):
+              data = struct.pack("<ii", rid, kind) + body.encode() + b"\x00\x00"
+              s.sendall(struct.pack("<i", len(data)) + data)
+              size = struct.unpack("<i", s.recv(4))[0]
+              got = b""
+              while len(got) < size:
+                  got += s.recv(size - len(got))
+              return got[8:-2].decode(errors="replace")
+          send(3, "shots", 1)
+          for number, command in enumerate(sys.argv[1:], 2):
+              print("rcon>", command, "->", send(2, command, number)[:300])
+          RCON
+          ( timeout 900 gradle runServer --no-daemon > /tmp/server.log 2>&1; echo "fin du serveur : $?" >> /tmp/server.log ) &
+          for i in $(seq 1 120); do grep -qE 'Done \(|fin du serveur' /tmp/server.log && break; sleep 5; done
+          grep -q 'Done (' /tmp/server.log || { grep -vE '^\s+at ' /tmp/server.log | tail -80; exit 1; }
+          sleep 20
+          grep -niE "guerre|place forte|ERROR|Exception" /tmp/server.log | grep -v DEBUG | head -40
+          python3 /tmp/rcon.py "stop" || true
+          for i in $(seq 1 90); do grep -q 'fin du serveur' /tmp/server.log && break; sleep 2; done
+          mkdir -p run/saves && cp -r run/world run/saves/shots
+      - name: Client
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          printf 'lang:fr_fr\nonboardAccessibility:false\nnarrator:0\ntutorialStep:none\njoinedFirstServer:true\nsoundCategory_master:0.0\nguiScale:0\nfullscreen:false\nrenderDistance:6\nsimulationDistance:6\n' > run/options.txt
+          ( timeout 2400 xvfb-run -a -s "-screen 0 1920x1080x24" gradle runClient --no-daemon > /tmp/client.log 2>&1; echo "fin du client : $?" >> /tmp/client.log ) || true
+          grep -nE "dohy-bug|ERROR|Exception|Caused by|fin du client|BUILD" /tmp/client.log | grep -v DEBUG | grep -v "Missing translations" | cut -c1-400 | head -400
+          ls -la run/screenshots || true
+      - name: Pousser
+        if: always()
+        run: |
+          mkdir out && cp run/screenshots/*.png out/ 2>/dev/null || true
+          cp /tmp/client.log out/client.log 2>/dev/null || true
+          cp /tmp/server.log out/server.log 2>/dev/null || true
+          cd out
+          git init -q && git checkout -q -b shots-out && git add .
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "shots ${GITHUB_SHA}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" shots-out
