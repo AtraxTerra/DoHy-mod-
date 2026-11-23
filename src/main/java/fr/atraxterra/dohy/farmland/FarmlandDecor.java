@@ -164,8 +164,8 @@ final class FarmlandDecor {
         d.labels.add(new Label(new BlockPos(8, G + 3, -8), "LA PRAIRIE · betail, hameau", 0xFAC400, 1.1f));
         d.labels.add(new Label(new BlockPos(12, G + 3, 0), "LES COLLINES · grotte", 0xB8BCC6, 1.1f));
         d.labels.add(new Label(new BlockPos(8, G + 3, 8), "LA JUNGLE · coin de l'End", 0x9B6BFF, 1.1f));
-        d.labels.add(new Label(new BlockPos(0, G + 3, 12), "LE LAC · plage", 0x4FB8FF, 1.1f));
-        d.labels.add(new Label(new BlockPos(-8, G + 3, 6), "LE MARAIS · coin du Nether", 0xEF3826, 1.1f));
+        d.labels.add(new Label(new BlockPos(-3, G + 3, 12), "LE LAC · plage", 0x4FB8FF, 1.1f));
+        d.labels.add(new Label(new BlockPos(-11, G + 3, 4), "LE MARAIS · coin du Nether", 0xEF3826, 1.1f));
     }
 
     // -- Le hameau --------------------------------------------------------------------------------

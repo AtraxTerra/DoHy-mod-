@@ -526,8 +526,9 @@ bâtiments et les textures sont ceux de DoHy (rien n'est repris de la carte du s
 
 ### La carte
 
-Une dimension à part, `dohy:farmland` (générateur plat vide, cycle jour-nuit de l'overworld,
-`monsters_burn` à faux : les morts-vivants n'y brûlent pas au soleil). `FarmlandMap` dessine
+Une dimension à part, `dohy:farmland` (générateur plat vide ; un jour sans fin, le temps y est
+arrêté en plein jour, et `monsters_burn` à faux : les morts-vivants n'y brûlent pas au soleil —
+avec le cycle de l'overworld, sa chronologie du jour les faisait brûler). `FarmlandMap` dessine
 le sol colonne par colonne, de façon déterministe ; `FarmlandDecor` pose ce qui s'élève.
 
 | Coin | Où | Ce qu'on y voit |
