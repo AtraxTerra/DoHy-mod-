@@ -32,6 +32,18 @@ Ce qui est relie :
       le rapport du moulin de DoHy. Le ble garde la meule de Create (farine
       de Create).
 
+  Economie souterraine (lot 24c) -> bassin, presse, scie, chaine d'assemblage.
+      Les rapports des postes de travail, que les machines tiennent seules :
+      bassin chauffe pour secher les feuilles et passer coca et pavot au
+      bidon de precurseurs, surchauffe pour les cristaux ; presse sur bassin
+      pour les pilules, les sachets (4 portions et un sachet vide) et les
+      colis (8 sachets et une feuille) ; presse pour les sachets vides (deux
+      par feuille, comme a l'etabli) ; scie pour les pieces usinees (une
+      plaque de fer, 75 % de chance, l'etabli en tire deux tiers) ; chaine
+      d'assemblage pour les caisses scellees (une plaque, quatre pieces, deux
+      coups de presse). Ni balance ni vapeurs : c'est l'avantage de la
+      machine. Tout reste abstrait : des etapes de jeu, aucun procede reel.
+
 Usage :
     python3 -I tools/create_recipes.py          # ecrit les fichiers
     python3 -I tools/create_recipes.py --check  # verifie qu'ils sont a jour
@@ -160,6 +172,52 @@ def recipes():
     for cereal in ("corn", "barley", "oat", "rye", "sunflower", "soy", "fonio", "sorghum", "kamut"):
         files[f"milling/{cereal}"] = recipe(
             [CREATE], "create:milling", f"dohy:{cereal}", [out(f"dohy:{cereal}_flour", 1, 0.333)], 150)
+
+    # -- Economie souterraine (lot 24c) : les rapports des postes de travail -----
+    def basin(kind, ingredients, results, heat=None):
+        body = {"neoforge:conditions": [CREATE], "type": kind}
+        if heat:
+            body["heat_requirement"] = heat
+        body["ingredients"] = ingredients
+        body["results"] = results
+        return body
+
+    files["mixing/underground_dried_herb"] = basin(
+        "create:mixing", ["dohy:cannabis_leaf"] * 4, [out("dohy:dried_herb", 3)], "heated")
+    files["mixing/underground_cocaine_powder"] = basin(
+        "create:mixing", ["dohy:coca_leaf"] * 4 + ["dohy:precursor_can"], [out("dohy:cocaine_powder", 3)], "heated")
+    files["mixing/underground_heroin"] = basin(
+        "create:mixing", ["dohy:poppy_pod"] * 4 + ["dohy:precursor_can"], [out("dohy:heroin", 3)], "heated")
+    files["mixing/underground_synthetic_crystals"] = basin(
+        "create:mixing", ["dohy:precursor_can"] * 3, [out("dohy:synthetic_crystals", 3)], "superheated")
+    files["compacting/underground_synthetic_pills"] = basin(
+        "create:compacting", ["dohy:precursor_can"] * 2, [out("dohy:synthetic_pills", 4)])
+    bags = {"dried_herb": "herb_bag", "cocaine_powder": "powder_bag", "heroin": "heroin_bag",
+            "synthetic_pills": "pill_bag", "synthetic_crystals": "crystal_bag"}
+    for product, bag in bags.items():
+        files[f"compacting/underground_{bag}"] = basin(
+            "create:compacting", [f"dohy:{product}"] * 4 + ["dohy:empty_bag"], [out(f"dohy:{bag}")])
+    parcels = {"herb_bag": "herb_parcel", "powder_bag": "powder_parcel", "heroin_bag": "heroin_parcel",
+               "pill_bag": "synthetic_parcel"}
+    for bag, parcel in parcels.items():
+        files[f"compacting/underground_{parcel}"] = basin(
+            "create:compacting", [f"dohy:{bag}"] * 8 + ["minecraft:paper"], [out(f"dohy:{parcel}")])
+    files["pressing/underground_empty_bag"] = recipe(
+        [CREATE], "create:pressing", "minecraft:paper", [out("dohy:empty_bag", 2)])
+    files["cutting/underground_machined_parts"] = recipe(
+        [CREATE], "create:cutting", "#c:plates/iron", [out("dohy:machined_parts", 1, 0.75)], 150)
+    step = {"type": "create:deploying", "target": "$ingredient", "ingredient": "dohy:machined_parts",
+            "results": ["$result"]}
+    files["sequenced_assembly/underground_sealed_crate"] = {
+        "neoforge:conditions": [CREATE],
+        "type": "create:sequenced_assembly",
+        "ingredient": "#c:plates/iron",
+        "transitional_item": {"id": "dohy:incomplete_sealed_crate"},
+        "result": {"id": "dohy:sealed_crate"},
+        "loops": 2,
+        "sequence": [step, dict(step),
+                     {"type": "create:pressing", "ingredient": "$ingredient", "results": ["$result"]}],
+    }
 
     return files
 

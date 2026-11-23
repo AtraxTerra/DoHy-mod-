@@ -1,0 +1,21 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:compacting",
+  "ingredients": [
+    "dohy:synthetic_crystals",
+    "dohy:synthetic_crystals",
+    "dohy:synthetic_crystals",
+    "dohy:synthetic_crystals",
+    "dohy:empty_bag"
+  ],
+  "results": [
+    {
+      "id": "dohy:crystal_bag"
+    }
+  ]
+}

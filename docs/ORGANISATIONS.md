@@ -31,7 +31,7 @@
 |---|---|---|
 | 24a | Régime de la nation, hiérarchie de cadres PNJ (grades, postes, salaires, loyauté), diplomatie avec les douze nations (pacte, accord commercial, alliance, rivalité), onglets Organisation et Diplomatie | fait |
 | 24b | Entreprises : le modèle commun (propriétaire, catégorie, niveau, capital, coûts, revenus, employés, stock, lieu, risque, améliorations), les catégories légales et illégales, les revenus horaires hors ligne, l'influence par pays, les six organisations criminelles, l'onglet Entreprises | fait |
-| 24c | Objets, blocs et textures : plantes, produits, conditionnement, caisses, balance, matériel de laboratoire, protections, bidons, laboratoire clandestin, table de conditionnement, coffres sécurisés — chacun branché sur une entreprise | à faire |
+| 24c | Objets, blocs et textures : plantes, produits, conditionnement, caisses, balance, matériel de laboratoire, protections, bidons, laboratoire clandestin, table de conditionnement, coffres sécurisés — chacun branché sur une entreprise | fait |
 | 24d | Interactions : lois des pays, descentes de police, opérations contre le crime, rivalités qui coûtent, alliances qui rapportent, contrats entre organisations, notifications | à faire |
 | 24e | La farmland : dimension du Chasseur où n'apparaissent que les créatures du métier | à faire |
 
@@ -258,15 +258,91 @@ Commandes : `/f entreprises`, `/f entreprises renommer <id> <nom>` ; pour les op
 payée, relations avec les organisations, 7 jours de comptes, 48 heures de revenus et de frais,
 journal (30 lignes), dernier versement. Dissoudre la nation la remet à zéro.
 
+## Lot 24c — objets, blocs et textures (fait, 2026-11-22)
+
+Paquet `underground/`, onglet créatif « Berskar — économie souterraine ». Textures 16×16
+**originales**, dessinées par `tools/underground_assets.py` (qui écrit aussi modèles, états de
+blocs, définitions d'objets, butins, recettes et tags). Tout reste **abstrait** : des étapes de
+jeu, aucun procédé.
+
+| Objet ou bloc | D'où il vient | À quoi il sert |
+|---|---|---|
+| Graines de cannabis, de coca, de pavot | l'herbe sauvage (une sur quarante, celles qui poussent là), les plantes mûres, les fournisseurs (Comptes) | se plantent à la latitude de leur drogue (cannabis jusqu'à 60°, coca sous les tropiques, pavot entre 15 et 45° ; sans carte, la température du biome) |
+| Plant de cannabis, arbuste de coca, pavot | les graines | huit stades ; mûrs, ils donnent feuilles ou capsules et des graines |
+| Feuilles de cannabis, de coca, capsule de pavot | les plantes | le séchoir, le laboratoire ; une unité de matière dans les stocks |
+| Bidon de précurseurs | les fournisseurs (90 $ sans accord, 60 $ avec le Cartel des Récifs) | le laboratoire ; une unité de matière de synthèse |
+| Herbe séchée, cocaïne, héroïne, pilules, cristaux | le séchoir, le laboratoire | la table de conditionnement ; une portion (les cristaux deux) |
+| Sachet vide | 3 papiers → 6 | la table de conditionnement |
+| Sachets (herbe, cocaïne, héroïne, pilules, cristaux) | la table : 4 portions + 1 sachet, la balance s'use | 4 portions (cristaux 8) dans les stocks ; 8 sachets font un colis |
+| Colis (herbe, cocaïne, héroïne, synthèse) | la table : 8 sachets + 1 papier | 32 portions dans les stocks |
+| Balance de précision | recette | obligatoire pour peser un sachet, 256 pesées |
+| Matériel de laboratoire | recette | la recette du laboratoire, et sur soi pour faire des cristaux |
+| Masque et combinaison de protection | recettes (cuir) | portés, ils arrêtent les vapeurs : sans rien, nausée et poison ; avec une pièce, nausée |
+| Pièces usinées, caisse d'armes scellée | l'établi : 3 fers → 2 pièces ; 4 pièces + 2 fers → 1 caisse | une caisse dans les stocks, que les trafics d'armes vendent |
+| Séchoir | recette (bâtons, ficelle) | 4 feuilles de cannabis, 2 minutes, 3 portions d'herbe ; une fournée à la fois |
+| Laboratoire clandestin | recette (matériel, alambic, chaudron) | herbe (4 feuilles → 3), cocaïne et héroïne (4 + 1 bidon → 3), pilules (2 bidons → 4), cristaux (3 bidons → 3, matériel sur soi) |
+| Table de conditionnement | recette | sachets et colis |
+| Établi d'armurier | recette | pièces et caisses scellées |
+| Planque sécurisée | recette | 27 cases, à son seul propriétaire, résiste aux explosions ; à la fermeture, verse aux stocks ce qu'elle peut, garde le reste |
+
+Les comptes de l'onglet Entreprises gagnent deux sections : **Sortir des stocks** (un colis,
+un sachet ou une caisse, en objet) et **Fournisseurs** (16 bidons, 8 graines, payés en argent
+sale d'abord). Les trois postes ont leur écran (clic gauche une fois, clic droit jusqu'à seize
+fois) ; la planque a celui des coffres du kit.
+
+### Postes en relief
+
+Les cinq blocs sont des **modèles à éléments**, comme l'alambic ou le lutrin du jeu, et leur
+forme de collision suit leurs pièces (tournée comme le poste, `TurnedShapes`) :
+
+- **Laboratoire clandestin** : un meuble d'acier à deux portes et bandeau de danger, un plan de
+  travail noir, une hotte grillagée au fond ; dessus, une plaque chauffante et son ballon, un
+  pont de distillation vers un erlenmeyer, deux tubes à essai sur leur portoir, un bidon de
+  précurseurs.
+- **Table de conditionnement** : une table de chêne à étagère ; dessus, la balance (écran vert,
+  plateau, un peu de poudre), trois sachets fermés d'un trait rouge, un colis au ruban, un
+  rouleau ; dessous, des cartons à plat et des sachets vides.
+- **Établi d'armurier** : un caisson à trois tiroirs, un plateau d'acier, un étau (vis et barre,
+  une pièce serrée), une caisse scellée cerclée, un bac de pièces, un marteau ; sur l'étagère,
+  une caisse à outils.
+- **Planque sécurisée** : un coffre-fort sur pieds, porte en saillie, gonds, cadran, poignée en
+  croix et fente de dépôt.
+- **Séchoir** : quatre montants de pin, trois ficelles et, chargé, trois rangées de bottes
+  pendues tête en bas (vertes puis sèches), décalées pour qu'on voie entre elles.
+
+Les grandes pièces n'ont pas d'uv : le jeu les cale sur leur position, et chaque poste se
+dessine comme un plan (façade, flanc, dessus). Les petits objets prennent leur matière dans une
+planche commune de 32×32 (`underground_parts`).
+
+### Avec Create et NTM NEXT
+
+Toutes ces recettes portent leur condition `neoforge:mod_loaded` : sans le mod, elles
+n'existent pas. Les rapports sont ceux des postes ; l'avantage de la machine, c'est qu'elle
+travaille seule, sans balance ni vapeurs.
+
+| Machine | Ce qu'elle fait |
+|---|---|
+| Create — bassin chauffé (mélangeur) | 4 feuilles de cannabis → 3 herbes ; 4 feuilles de coca + 1 bidon → 3 cocaïne ; 4 capsules + 1 bidon → 3 héroïne |
+| Create — bassin surchauffé | 3 bidons → 3 cristaux |
+| Create — presse sur bassin | 2 bidons → 4 pilules ; 4 portions + 1 sachet vide → 1 sachet (les cinq) ; 8 sachets + 1 papier → 1 colis (les quatre) |
+| Create — presse | 1 papier → 2 sachets vides |
+| Create — scie | 1 plaque de fer → 1 pièce usinée (75 %) |
+| Create — chaîne d'assemblage | plaque de fer, 2 × (pièce, pièce, presse) → 1 caisse scellée (objet de passage : la caisse en cours de montage) |
+| NTM — usine chimique | 1 plaque d'acier + 500 mB de gaz de pétrole → 2 bidons de précurseurs |
+| NTM — presse, matrice plate | 1 cristal → 2 pilules (deux unités, comme lui) |
+| NTM — assembleuse | 2 plaques d'acier → 3 pièces usinées ; 6 pièces + 2 plaques → 2 caisses scellées |
+
+Au laboratoire, les masques à gaz et les casques hazmat de NTM comptent comme masque, ses
+plastrons hazmat comme combinaison (tags `dohy:lab_masks` et `dohy:lab_suits`).
+
+La planque s'ouvre aux machines : tapis et entonnoirs de Create, convoyeurs de NTM, entonnoirs
+du jeu y mettent ce que les stocks prennent (et rien d'autre), et rien n'en sort par une
+machine. Chaque minute, si son propriétaire est en ligne, elle verse d'elle-même aux stocks ce
+qu'elle a reçu, autant qu'il y a de place ; le journal des entreprises en fait le compte toutes
+les dix minutes. Les plantes sont des cultures comme les autres : la moissonneuse de Create les
+récolte et les replante.
+
 ## Lots suivants — la conception retenue
-
-### 24c — objets et textures
-
-Textures 16×16 originales, à la palette du mod. Chaque objet sert : les plantes se cultivent,
-les produits se transforment dans des machines (laboratoire, table de conditionnement,
-presse), se stockent dans des caisses et des coffres sécurisés, se vendent par le réseau de
-distribution ou au receleur. La fabrication reste **abstraite** : des étapes de jeu (récolter,
-traiter, conditionner) sans procédé réel.
 
 ### 24d — interactions
 

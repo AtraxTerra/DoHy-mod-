@@ -1,0 +1,21 @@
+{
+  "values": [
+    "dohy:hazmat_suit",
+    {
+      "id": "hbm:hazmat_plate",
+      "required": false
+    },
+    {
+      "id": "hbm:hazmat_plate_red",
+      "required": false
+    },
+    {
+      "id": "hbm:hazmat_plate_grey",
+      "required": false
+    },
+    {
+      "id": "hbm:hazmat_paa_plate",
+      "required": false
+    }
+  ]
+}

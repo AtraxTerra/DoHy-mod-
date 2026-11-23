@@ -212,7 +212,20 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   blanchiment ; risque et descentes plafonnées ; influence pays par pays ; six organisations
   criminelles PNJ (accord, alliance, guerre de territoire, tribut, riposte) ; neuvième onglet
   Entreprises (tableau de bord, catalogue, fiche, comptes, territoire, organisation) ; le
-  receleur paie plus avec des recels ; ligne « Entreprises » du rapport d'absence.
+  receleur paie plus avec des recels ; ligne « Entreprises » du rapport d'absence (PR #188).
+- **Lot 24c** : les objets et les blocs de l'économie souterraine (`underground/`) — trois
+  plantes à la latitude de leur drogue, feuilles, bidons, produits, sachets, colis, balance,
+  matériel de laboratoire, masque et combinaison (vapeurs du laboratoire), pièces et caisses
+  scellées ; séchoir, laboratoire clandestin, table de conditionnement, établi d'armurier,
+  planque sécurisée qui verse aux stocks ; sortir des stocks et fournisseurs dans les comptes ;
+  textures originales par `tools/underground_assets.py`.
+- **Demande** : « Fais des modèles 3d pour les blocs et n'hésite pas à relier ntm next et create
+  avec la partie "drogues" ». Les cinq blocs deviennent des modèles à éléments (meuble et
+  verrerie, table et balance, établi et étau, coffre-fort, séchoir à bottes pendues), avec des
+  formes de collision qui suivent leurs pièces ; Create (bassin, presse, scie, chaîne
+  d'assemblage) et NTM NEXT (usine chimique, presse, assembleuse) reprennent les rapports des
+  postes ; les masques et tenues hazmat de NTM protègent au laboratoire ; la planque s'ouvre aux
+  machines (remplir, jamais vider) et verse d'elle-même aux stocks chaque minute.
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 

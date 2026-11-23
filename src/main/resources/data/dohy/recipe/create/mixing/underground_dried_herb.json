@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    "dohy:cannabis_leaf",
+    "dohy:cannabis_leaf",
+    "dohy:cannabis_leaf",
+    "dohy:cannabis_leaf"
+  ],
+  "results": [
+    {
+      "id": "dohy:dried_herb",
+      "count": 3
+    }
+  ]
+}

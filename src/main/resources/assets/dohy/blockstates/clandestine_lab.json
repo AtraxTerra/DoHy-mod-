@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dohy:block/clandestine_lab"
+    },
+    "facing=east": {
+      "model": "dohy:block/clandestine_lab",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dohy:block/clandestine_lab",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dohy:block/clandestine_lab",
+      "y": 270
+    }
+  }
+}

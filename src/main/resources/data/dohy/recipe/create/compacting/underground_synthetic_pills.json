@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:compacting",
+  "ingredients": [
+    "dohy:precursor_can",
+    "dohy:precursor_can"
+  ],
+  "results": [
+    {
+      "id": "dohy:synthetic_pills",
+      "count": 4
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "hbm"
+    }
+  ],
+  "type": "hbm:chemical_plant",
+  "duration": 100,
+  "input_fluids": [
+    {
+      "type": "hbm:petroleum",
+      "amount": 500
+    }
+  ],
+  "input_items": [
+    {
+      "ingredient": "#c:plates/steel"
+    }
+  ],
+  "order": 60101,
+  "output_items": [
+    {
+      "count": 2,
+      "id": "dohy:precursor_can"
+    }
+  ],
+  "power": 100
+}

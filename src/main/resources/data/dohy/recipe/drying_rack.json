@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "SSS",
+    "STS",
+    "S S"
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "T": "minecraft:string"
+  },
+  "result": {
+    "id": "dohy:drying_rack",
+    "count": 1
+  }
+}

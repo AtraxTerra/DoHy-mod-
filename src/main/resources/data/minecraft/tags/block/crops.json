@@ -13,6 +13,9 @@
     "palamod:chervil_crop",
     "palamod:eggplant_crop",
     "palamod:kiwano_crop",
-    "palamod:orangeblue_crop"
+    "palamod:orangeblue_crop",
+    "dohy:cannabis_crop",
+    "dohy:coca_crop",
+    "dohy:poppy_crop"
   ]
 }

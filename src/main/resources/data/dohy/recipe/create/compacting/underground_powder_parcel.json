@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:compacting",
+  "ingredients": [
+    "dohy:powder_bag",
+    "dohy:powder_bag",
+    "dohy:powder_bag",
+    "dohy:powder_bag",
+    "dohy:powder_bag",
+    "dohy:powder_bag",
+    "dohy:powder_bag",
+    "dohy:powder_bag",
+    "minecraft:paper"
+  ],
+  "results": [
+    {
+      "id": "dohy:powder_parcel"
+    }
+  ]
+}

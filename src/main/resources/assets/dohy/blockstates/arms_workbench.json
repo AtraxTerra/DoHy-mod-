@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dohy:block/arms_workbench"
+    },
+    "facing=east": {
+      "model": "dohy:block/arms_workbench",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dohy:block/arms_workbench",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dohy:block/arms_workbench",
+      "y": 270
+    }
+  }
+}

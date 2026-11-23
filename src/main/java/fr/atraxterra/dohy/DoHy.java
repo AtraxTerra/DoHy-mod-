@@ -36,6 +36,8 @@ public final class DoHy {
         // Les machines propres a DoHy, sous l'espace de noms « dohy ».
         fr.atraxterra.dohy.tech.DoHyTech.register(modBus);
         fr.atraxterra.dohy.agri.DoHyAgri.register(modBus);
+        // L'economie souterraine (lot 24c) : plantes, produits, conditionnement, postes, planques.
+        fr.atraxterra.dohy.underground.DoHyUnderground.register(modBus);
         fr.atraxterra.dohy.spawn.DoHySpawn.register(modBus);
         fr.atraxterra.dohy.earth.DoHyEarth.register(modBus);
         // Les palettes d'armement : obus, munitions et missiles de NTM NEXT en caisses.

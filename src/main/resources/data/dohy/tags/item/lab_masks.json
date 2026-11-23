@@ -1,0 +1,37 @@
+{
+  "values": [
+    "dohy:gas_mask",
+    {
+      "id": "hbm:gas_mask",
+      "required": false
+    },
+    {
+      "id": "hbm:gas_mask_m65",
+      "required": false
+    },
+    {
+      "id": "hbm:gas_mask_mono",
+      "required": false
+    },
+    {
+      "id": "hbm:gas_mask_olde",
+      "required": false
+    },
+    {
+      "id": "hbm:hazmat_helmet",
+      "required": false
+    },
+    {
+      "id": "hbm:hazmat_helmet_red",
+      "required": false
+    },
+    {
+      "id": "hbm:hazmat_helmet_grey",
+      "required": false
+    },
+    {
+      "id": "hbm:hazmat_paa_helmet",
+      "required": false
+    }
+  ]
+}

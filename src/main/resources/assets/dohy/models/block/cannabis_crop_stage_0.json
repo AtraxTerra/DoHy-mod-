@@ -1,0 +1,6 @@
+{
+  "parent": "dohy:block/crop_cross",
+  "textures": {
+    "cross": "dohy:block/cannabis_crop_stage_0"
+  }
+}

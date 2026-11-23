@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    "dohy:coca_leaf",
+    "dohy:coca_leaf",
+    "dohy:coca_leaf",
+    "dohy:coca_leaf",
+    "dohy:precursor_can"
+  ],
+  "results": [
+    {
+      "id": "dohy:cocaine_powder",
+      "count": 3
+    }
+  ]
+}

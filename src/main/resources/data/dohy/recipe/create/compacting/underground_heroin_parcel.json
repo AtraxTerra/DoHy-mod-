@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:compacting",
+  "ingredients": [
+    "dohy:heroin_bag",
+    "dohy:heroin_bag",
+    "dohy:heroin_bag",
+    "dohy:heroin_bag",
+    "dohy:heroin_bag",
+    "dohy:heroin_bag",
+    "dohy:heroin_bag",
+    "dohy:heroin_bag",
+    "minecraft:paper"
+  ],
+  "results": [
+    {
+      "id": "dohy:heroin_parcel"
+    }
+  ]
+}
