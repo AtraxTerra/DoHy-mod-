@@ -2833,7 +2833,7 @@
           "title": "L'energie",
           "text": [
             "Il prend l'energie FE par toutes ses faces : un cable de NTM NEXT branche dessus l'alimente (100 HE par tick, ce que donne un generateur a bois), comme le biogenerateur de DoHy pose a cote. Les technologies de l'Energie baissent sa consommation.",
-            "A defaut, un clic droit avec du combustible (charbon, bois, seau de lave) le fait tourner a mi-regime ; accroupi, toute la pile. Il en garde 64 charbons."
+            "A defaut, un clic droit avec du combustible (charbon, bois, seau de lave) le fait tourner a mi-regime : il prend la pile, jusqu'a 64 charbons."
           ]
         },
         {

@@ -171,7 +171,10 @@ public class ResearchLabBlock extends BaseEntityBlock {
         }
     }
 
-    /** Un clic droit avec du combustible : il le brule, a mi-regime, faute d'electricite. */
+    /**
+     * Un clic droit avec du combustible : il prend la pile, jusqu'a ce qu'il en ait assez, et la brule
+     * a mi-regime, faute d'electricite.
+     */
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
@@ -187,7 +190,7 @@ public class ResearchLabBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
         int each = stack.getBurnTime(RecipeType.SMELTING, server.fuelValues());
-        int count = player.isShiftKeyDown() ? stack.getCount() : 1;
+        int count = stack.getCount();
         int burned = 0;
         for (int i = 0; i < count && !lab.fuelFull(); i++) {
             lab.addFuel(each);

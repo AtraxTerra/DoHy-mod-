@@ -89,7 +89,7 @@ public final class ResearchLabMenu extends MenuController {
                 .accent(0xFFFF8A3D).progress(lab.fuel(), config.fuelMaxTicks())
                 .tooltip(List.of("Faute d'electricite, il brule son combustible",
                         "Chaque tick de combustion rend " + config.fuelPerTick() + " FE : il tourne a mi-regime",
-                        "Accroupi : toute la pile d'un coup",
+                        "Un clic droit prend la pile, jusqu'a ce qu'il en ait assez",
                         "Il en garde " + config.fuelMaxTicks() / 1600 + " charbons au plus")));
         long perHour = Math.round(config.pointsPerHour() * multiplier);
         machine.add(Card.of(new ItemStack(Items.ENCHANTED_BOOK), "Production", List.of(
