@@ -252,6 +252,12 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   (argent, pièces de NTM, durée ; une recherche à la fois, trois au Gouvernement VI) ; Gouvernement,
   Économie et Défense reprennent l'ancien arbre étape pour étape, rien ne se perd. Bonus en service :
   recherche, taxe du marché, mines et champs de pétrole ; les autres avec leur lot.
+- **Lot 23c — le laboratoire de recherche** (2026-11-23, `docs/NATION.md`, « Fait ») : un bloc 3D
+  (paillasse, cuve de verre, écran, fioles) posé dans un claim, 1 à 3 selon le Gouvernement,
+  alimenté en FE (câbles de NTM NEXT, biogénérateur) ou au combustible à mi-régime. Il produit
+  3 600 points par heure, plus la vitesse de recherche et les pays tenus ; les recherches coûtent
+  désormais des points (1 500 à 180 000) au lieu d'une durée. Écran du laboratoire, points par heure
+  et laboratoires dans Technologies, `/f techno points` pour les opérateurs.
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 

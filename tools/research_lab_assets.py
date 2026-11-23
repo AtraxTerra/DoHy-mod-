@@ -8,6 +8,8 @@ d'epoxy sombre, une cuve de verre cerclee d'acier ou bouillonne un liquide, un e
 deux fioles. En marche, le liquide s'eclaircit, l'ecran trace une courbe et le voyant passe au vert.
 Les boites du modele restent dans la forme de faction/tech/ResearchLabBlock.java (la paillasse sur
 toute la largeur, ce qui est pose dessus au centre).
+
+En marche, l'ecran affiche un histogramme qui monte.
 """
 import json
 import os
@@ -232,22 +234,24 @@ def fluid(lit):
 
 def screen(lit):
     s = Sheet()
-    # un ecran de 6 x 5 (colonnes 0 a 5, lignes 0 a 4) : bord, dalle
-    s.rect(0, 0, 6, 5, BEZEL)
-    s.rect(1, 1, 4, 3, SCREEN_ON if lit else SCREEN_OFF)
+    # un ecran de 6 x 6 (colonnes 0 a 5, lignes 0 a 5) : un bord d'un pixel, une dalle de 4 x 4
+    s.rect(0, 0, 6, 6, BEZEL)
+    s.rect(1, 1, 4, 4, SCREEN_ON if lit else SCREEN_OFF)
     if lit:
-        for x, y in ((1, 3), (2, 2), (3, 2), (4, 1)):
-            s.put(x, y, TRACE)
-        s.put(1, 1, TRACE_DIM)
+        # un histogramme qui monte : des barres de 1, 2, 3 et 4 pixels
+        for column, height in enumerate((1, 2, 3, 4)):
+            for row in range(height):
+                s.put(1 + column, 4 - row, TRACE if row == height - 1 else TRACE_DIM)
     else:
         s.put(1, 1, SCREEN_GLARE)
         s.put(2, 1, SCREEN_GLARE)
+        s.put(1, 2, SCREEN_GLARE)
     # le reste de l'image : le capot de l'ecran
-    for y in range(5, 16):
+    for y in range(6, 16):
         for x in range(16):
             s.put(x, y, BEZEL_LIGHT if noise(x, y, 23) > 200 else BEZEL)
     for x in range(6, 16):
-        for y in range(5):
+        for y in range(6):
             s.put(x, y, BEZEL_LIGHT if noise(x, y, 29) > 200 else BEZEL)
     return s
 
@@ -308,16 +312,14 @@ def model(lit):
         box([3, 11, 8], [7, 14.5, 12], faces("#fluid", [0, 0, 4, 3.5], [4, 4, 8, 8], skip=("down",))),
         # la cuve de verre
         box([2, 11, 7], [8, 16, 13], faces("#glass", [0, 0, 6, 5], [8, 8, 14, 14], skip=("down",))),
-        # l'ecran sur son pied
-        box([9, 10.5, 9], [15, 15.5, 11], {
-            "north": {"uv": [0, 0, 6, 5], "texture": "#screen"},
-            "east": {"uv": [6, 0, 8, 5], "texture": "#screen"},
-            "south": {"uv": [6, 0, 12, 5], "texture": "#screen"},
-            "west": {"uv": [6, 0, 8, 5], "texture": "#screen"},
+        # l'ecran, pose sur le plan de travail
+        box([9, 10, 9], [15, 16, 11], {
+            "north": {"uv": [0, 0, 6, 6], "texture": "#screen"},
+            "east": {"uv": [6, 0, 8, 6], "texture": "#screen"},
+            "south": {"uv": [6, 0, 12, 6], "texture": "#screen"},
+            "west": {"uv": [6, 0, 8, 6], "texture": "#screen"},
             "up": {"uv": [0, 6, 6, 8], "texture": "#screen"},
-            "down": {"uv": [0, 8, 6, 10], "texture": "#screen"},
         }),
-        box([11, 10, 10], [13, 10.5, 12], faces("#metal", [2, 2, 4, 2.5], [2, 2, 4, 4], skip=("down",))),
         # le tuyau de la cuve a l'ecran
         box([8, 13.5, 9.5], [9, 14.5, 10.5], faces("#metal", [6, 6, 7, 7], skip=("east", "west"))),
         # deux fioles et leurs bouchons
