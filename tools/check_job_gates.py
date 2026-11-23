@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tout gestionnaire de verrou de metier doit exempter le creatif.
+"""Tout gestionnaire de verrou de metier, ou de technologie, doit exempter le creatif.
 
 Le probleme que ce script attrape est une faute d'omission, pas d'ecriture.
 `JobGateEvents` annule des evenements quand le joueur n'a pas le niveau, et le
@@ -21,6 +21,9 @@ import sys
 
 EVENTS = pathlib.Path("src/main/java/fr/atraxterra/dohy/job/JobGateEvents.java")
 GATE = pathlib.Path("src/main/java/fr/atraxterra/dohy/job/JobGate.java")
+# Les verrous de technologie (chapitre 23, lot 23d) obeissent a la meme regle.
+TECH_EVENTS = pathlib.Path("src/main/java/fr/atraxterra/dohy/faction/tech/TechGateEvents.java")
+TECH_GATE = pathlib.Path("src/main/java/fr/atraxterra/dohy/faction/tech/TechGate.java")
 
 # Les marques d'un test de mode de jeu, pour reperer une exemption egaree.
 GAME_MODE_CALLS = ("isCreative", "hasInfiniteMaterials", "getAbilities", "gameMode")
@@ -39,61 +42,69 @@ def handlers(text):
     return found
 
 
-def main():
+def check(events_path, gate_path, events_name, gate_name, what):
+    """Les controles d'une paire de classes : l'application (les gestionnaires) et la resolution."""
     errors = []
 
-    if not EVENTS.exists():
-        print(f"::error::{EVENTS} absent", file=sys.stderr)
-        return 1
+    if not events_path.exists():
+        return [f"{events_path} absent"], 0
 
-    text = EVENTS.read_text(encoding="utf-8")
+    text = events_path.read_text(encoding="utf-8")
 
     marker = "private static boolean exempt("
     if marker not in text:
         errors.append(
-            "JobGateEvents n'a plus de methode exempt() : les joueurs en creatif "
-            "repassent par les verrous de metier")
+            f"{events_name} n'a plus de methode exempt() : les joueurs en creatif "
+            f"repassent par les verrous {what}")
     else:
         body = text.split(marker, 1)[1].split("\n    }", 1)[0]
         if not any(call in body for call in GAME_MODE_CALLS):
             errors.append(
-                "exempt() ne teste aucun mode de jeu : elle ne peut donc plus "
+                f"{events_name}.exempt() ne teste aucun mode de jeu : elle ne peut donc plus "
                 "reconnaitre un joueur en creatif")
 
     found = handlers(text)
     if not found:
         errors.append(
-            "aucun gestionnaire @SubscribeEvent trouve dans JobGateEvents : les "
+            f"aucun gestionnaire @SubscribeEvent trouve dans {events_name} : les "
             "motifs de ce script ne correspondent plus au fichier")
     for name, body in sorted(found.items()):
         if "exempt(" not in body:
             errors.append(
-                f"{name} n'appelle pas exempt() : ce verrou s'appliquerait aussi "
+                f"{events_name}.{name} n'appelle pas exempt() : ce verrou s'appliquerait aussi "
                 "en creatif, et ca ne se voit qu'en jeu")
 
     # L'exemption ne doit pas migrer dans la couche qui repond « a-t-il le
-    # niveau ? », dont se servent le Hub, JobsMenu et /metiers pour afficher la
+    # niveau (la technologie) ? », dont se servent les ecrans pour afficher la
     # progression.
-    if GATE.exists():
-        gate = GATE.read_text(encoding="utf-8")
+    if gate_path.exists():
+        gate = gate_path.read_text(encoding="utf-8")
         allows = gate.split("static boolean allows(", 1)
         if len(allows) > 1:
             body = allows[1].split("\n    }", 1)[0]
             for call in GAME_MODE_CALLS:
                 if call in body:
                     errors.append(
-                        f"JobGate.allows teste {call} : l'exemption appartient a "
-                        "JobGateEvents. Ici elle afficherait « tout deverrouille » "
-                        "dans /metiers et masquerait la vraie progression")
+                        f"{gate_name}.allows teste {call} : l'exemption appartient a "
+                        f"{events_name}. Ici elle afficherait « tout deverrouille » "
+                        "et masquerait la vraie progression")
+    return errors, len(found)
+
+
+def main():
+    errors = []
+    job_errors, jobs = check(EVENTS, GATE, "JobGateEvents", "JobGate", "de metier")
+    tech_errors, techs = check(TECH_EVENTS, TECH_GATE, "TechGateEvents", "TechGate", "de technologie")
+    errors += job_errors + tech_errors
 
     if errors:
         for message in errors:
             print(f"::error::{message}")
-        print(f"\n{len(errors)} probleme(s) sur les verrous de metier.", file=sys.stderr)
+        print(f"\n{len(errors)} probleme(s) sur les verrous.", file=sys.stderr)
         return 1
 
-    print(f"verrous de metier : {len(found)} gestionnaire(s), tous exemptent le "
-          "creatif, et allows() dit toujours le niveau reel")
+    print(f"verrous de metier : {jobs} gestionnaire(s) ; verrous de technologie : {techs} gestionnaire(s) ;"
+          " tous exemptent le creatif, et allows() dit toujours la verite")
     return 0
 
 

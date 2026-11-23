@@ -2792,6 +2792,14 @@
           ]
         },
         {
+          "title": "Les verrous de pose",
+          "text": [
+            "Une machine d'un palier que ta nation n'a pas ne se pose pas : le jeu dit le palier qui la debloque (Technologie requise : Energie II · Vapeur). Son infobulle le dit aussi, en vert si tu l'as, en rouge sinon.",
+            "Les machines deja posees continuent de tourner ; une machine cassee puis reposee demande sa technologie. Elles se fabriquent et se gardent librement. Sans nation, seuls les paliers d'office. Le creatif passe outre.",
+            "Cela vaut pour les machines de NTM NEXT, de Space et de Cursed, et pour les machines agricoles de DoHy (silo, pompe, tracteur, moulin, machine a pain, biogenerateur, machine a OGM, bot de farming). Les plantes, les ruines, les fluides et le decor restent libres."
+          ]
+        },
+        {
           "title": "Les deblocages",
           "text": [
             "Les objets de defense et de pillage de PalaMod se fabriquent librement, mais leur pose ou leur usage demande l'etape qui les debloque."

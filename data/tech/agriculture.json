@@ -82,11 +82,10 @@
       "tier": 4,
       "name": "Genetique",
       "requires": ["chimie:3"],
-      "unlocks": ["dohy:gmo_machine", "dohy:farm_bot", "dohy:bot_remote"],
+      "unlocks": ["dohy:gmo_machine", "dohy:farm_bot"],
       "machines": [
         {"id": "dohy:gmo_machine", "name": "Machine a OGM"},
-        {"id": "dohy:farm_bot", "name": "Bot de farming"},
-        {"id": "dohy:bot_remote", "name": "Telecommande de bot"}
+        {"id": "dohy:farm_bot", "name": "Bot de farming"}
       ],
       "bonuses": [
         {"type": "farmer_money", "value": 10, "label": "Fermier +10 % d'argent"}
