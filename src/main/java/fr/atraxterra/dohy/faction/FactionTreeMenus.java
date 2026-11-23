@@ -182,7 +182,7 @@ public final class FactionTreeMenus {
             }
             List<String> active = new ArrayList<>();
             for (TechConfig.Tier tier : domain.tiers()) {
-                if (tier.tier() <= Math.max(level, domain.startLevel())) {
+                if (tier.tier() <= level) {
                     for (TechConfig.Bonus bonus : tier.bonuses()) {
                         active.add("+ " + TechPerks.label(bonus));
                     }
@@ -238,7 +238,7 @@ public final class FactionTreeMenus {
                             "Laboratoires : " + bonuses.labs() + " (lot 23c)")));
             List<String> lines = new ArrayList<>();
             for (TechConfig.Domain domain : TechConfig.domains()) {
-                int level = Math.max(Tech.level(data, domain), domain.startLevel());
+                int level = Tech.level(data, domain);
                 for (TechConfig.Tier tier : domain.tiers()) {
                     if (tier.tier() <= level) {
                         for (TechConfig.Bonus bonus : tier.bonuses()) {

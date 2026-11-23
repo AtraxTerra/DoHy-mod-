@@ -97,6 +97,11 @@ personnalisé (palier 4 : copier une bannière à motifs) ; MOTD (palier 6) ; d�
 bulle de chaque condition avec sa progression, « PRÊT » quand tout est réuni. `/f arbre` ; pour les
 opérateurs, `/f arbre finir` et `/f arbre palier <branche> <n>`.
 
+**Depuis le lot 23b** (`docs/NATION.md`), ces quatre branches vivent dans les technologies de la
+nation : la Globale fait le Gouvernement, l'Économie l'Économie, la Défense et le Pillage la
+Défense. Leurs paliers s'appellent des « étapes » et n'ont pas changé ; l'écran Technologies les
+montre dans leur domaine.
+
 ## Objets de défense (22c)
 
 Tout est fabricable ; c'est la **pose ou l'usage** qui demande le palier de l'arbre (`DefenseGate`),

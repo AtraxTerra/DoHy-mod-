@@ -123,7 +123,11 @@ public final class Tech {
 
     // -- Les paliers atteints ----------------------------------------------------------------------
 
-    /** Le palier atteint dans ce domaine : 0 a 6. Les paliers d'office comptent dans les domaines nouveaux. */
+    /**
+     * Le palier atteint dans ce domaine, 0 a 6 : celui des recherches (les paliers d'office compris)
+     * dans un domaine nouveau, celui des etapes dans un domaine repris. Les machines et les
+     * prerequis du palier I d'un domaine repris sont acquis d'office ({@link #reached}).
+     */
     public static int level(FactionData data, TechConfig.Domain domain) {
         return level(data, domain, 0);
     }
@@ -219,11 +223,14 @@ public final class Tech {
 
     // -- Le compte de la nation --------------------------------------------------------------------
 
-    /** Les paliers acquis, tous domaines confondus (les paliers d'office compris). */
+    /**
+     * Les paliers acquis, tous domaines confondus : les paliers d'office des domaines nouveaux
+     * comptent, pas le palier I d'un domaine repris tant que ses etapes ne sont pas faites.
+     */
     public static int researched(FactionData data) {
         int done = 0;
         for (TechConfig.Domain domain : TechConfig.domains()) {
-            done += Math.max(level(data, domain), domain.startLevel());
+            done += level(data, domain);
         }
         return done;
     }

@@ -67,7 +67,7 @@ public record TechPerks(Map<String, Integer> values) {
     public static TechPerks of(FactionData data) {
         Map<String, Integer> total = new HashMap<>();
         for (TechConfig.Domain domain : TechConfig.domains()) {
-            int level = Math.max(Tech.level(data, domain), domain.startLevel());
+            int level = Tech.level(data, domain);
             Map<String, Integer> local = new HashMap<>();
             for (TechConfig.Tier tier : domain.tiers()) {
                 if (tier.tier() <= level) {
