@@ -37,7 +37,7 @@ public final class FactionHomes {
         }
         int homes = FactionPerks.of(data).homes();
         if (homes <= 0) {
-            return "Les F homes se debloquent au palier 5 de la branche Globale";
+            return "Les F homes se debloquent a l'etape Globale 5 (Gouvernement, /f techno)";
         }
         if (index < 0 || index >= homes) {
             return "Tu as " + homes + " home(s) : choisis entre 1 et " + homes;

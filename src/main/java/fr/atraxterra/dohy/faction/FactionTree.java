@@ -522,8 +522,8 @@ public final class FactionTree {
                 data.upgrades.remove(branch.key());
                 int tier = data.tier(branch.key()) + 1;
                 data.tiers.put(branch.key(), tier);
-                FactionApi.tell(player, "Arbre de technologie : branche " + branch.label() + ", palier " + tier
-                        + " termine.", ChatFormatting.AQUA);
+                FactionApi.tell(player, "Technologies : etape " + branch.label() + " " + tier + " terminee.",
+                        ChatFormatting.AQUA);
                 Tier done = tier(branch, tier);
                 if (done != null) {
                     for (Reward reward : done.rewards()) {

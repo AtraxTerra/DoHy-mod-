@@ -172,7 +172,7 @@ public final class FactionCommand {
                         .then(Commands.literal("finir")
                                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                 .executes(ctx -> as(ctx.getSource(), player -> {
-                                    FactionTree.complete(player, true);
+                                    fr.atraxterra.dohy.faction.tech.Tech.complete(player, true);
                                     return 1;
                                 })))
                         .then(Commands.literal("palier")
@@ -194,6 +194,47 @@ public final class FactionCommand {
                                                     FactionTree.setTier(player, branch,
                                                             IntegerArgumentType.getInteger(ctx, "palier"));
                                                     return result(player, null, "Palier fixe.");
+                                                }))))))
+                // Les technologies de la nation (lot 23b) : les neuf domaines.
+                .then(Commands.literal("techno")
+                        .executes(ctx -> as(ctx.getSource(), player -> {
+                            FactionTreeMenus.Tree.INSTANCE.open(player);
+                            return 1;
+                        }))
+                        .then(Commands.literal("voir")
+                                .then(Commands.argument("domaine", StringArgumentType.word())
+                                        .suggests(FactionCommand::domains)
+                                        .executes(ctx -> as(ctx.getSource(), player -> {
+                                            var domain = fr.atraxterra.dohy.faction.tech.TechConfig.domain(
+                                                    StringArgumentType.getString(ctx, "domaine"));
+                                            if (domain == null) {
+                                                return result(player, "Domaine inconnu", "");
+                                            }
+                                            FactionTreeMenus.Branch.INSTANCE.show(player, domain);
+                                            return 1;
+                                        }))))
+                        .then(Commands.literal("finir")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .executes(ctx -> as(ctx.getSource(), player -> {
+                                    fr.atraxterra.dohy.faction.tech.Tech.complete(player, true);
+                                    return 1;
+                                })))
+                        .then(Commands.literal("palier")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .then(Commands.argument("domaine", StringArgumentType.word())
+                                        .suggests(FactionCommand::domains)
+                                        .then(Commands.argument("palier", IntegerArgumentType.integer(0, 6))
+                                                .executes(ctx -> as(ctx.getSource(), player -> {
+                                                    var domain = fr.atraxterra.dohy.faction.tech.TechConfig.domain(
+                                                            StringArgumentType.getString(ctx, "domaine"));
+                                                    if (domain == null) {
+                                                        return result(player, "Domaine inconnu", "");
+                                                    }
+                                                    fr.atraxterra.dohy.faction.tech.Tech.setLevel(player, domain,
+                                                            IntegerArgumentType.getInteger(ctx, "palier"));
+                                                    return result(player, null, domain.name() + " : palier "
+                                                            + fr.atraxterra.dohy.faction.tech.Tech.level(
+                                                            FactionApi.data(player), domain) + ".");
                                                 }))))))
                 .then(Commands.literal("reserve")
                         .executes(ctx -> as(ctx.getSource(), player -> {
@@ -322,6 +363,15 @@ public final class FactionCommand {
         }
         return result(player, null, "Cible : les " + base.name() + " (" + base.kind().label() + ") en "
                 + base.center().getX() + ", " + base.center().getZ() + " — " + EnemyBases.where(player, base) + ".");
+    }
+
+    private static java.util.concurrent.CompletableFuture<com.mojang.brigadier.suggestion.Suggestions> domains(
+            com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+            com.mojang.brigadier.suggestion.SuggestionsBuilder builder) {
+        for (var domain : fr.atraxterra.dohy.faction.tech.TechConfig.domains()) {
+            builder.suggest(domain.id());
+        }
+        return builder.buildFuture();
     }
 
     private static int info(ServerPlayer player) {

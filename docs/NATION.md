@@ -21,7 +21,7 @@ Choix du joueur (2026-11-20) :
 |-----|---------|------|
 | 23-0 | Préparation : inventaire des trois mods, brouillon des neuf arbres, ce document | fait |
 | 23a | Une seule nation : le menu à onglets (territoire, technologies, économie, guerre…), le rang, la façade `Nation` | fait |
-| 23b | Le moteur des technologies : domaines en données, état de recherche, écran des arbres ; l'arbre actuel fondu dedans | à faire |
+| 23b | Le moteur des technologies : domaines en données, état de recherche, écran des arbres ; l'arbre actuel fondu dedans | fait |
 | 23c | Le laboratoire de recherche : bloc, énergie (FE, réseaux de NTM NEXT), points de recherche, les pays qui nourrissent la recherche | à faire |
 | 23d | Les verrous : pose des machines, exemptions, infobulles, encyclopédie | à faire |
 | 23e | Contenu : Énergie et Industrie (paliers, coûts, bonus) | à faire |
@@ -49,9 +49,9 @@ français quand le mod en donne un), écrite par `tools/ntm_inventory.py` à par
 dossier mods (lus comme des archives, rien n'est exécuté) ; à relancer quand un des mods change de
 version.
 
-**Le brouillon des arbres** (`tools/data/tech_catalogue.json`) range **570 de ces 593 machines**
+**Les arbres** (`data/tech/<domaine>.json` depuis le lot 23b, le brouillon y est passé) rangent **570 de ces 593 machines**
 dans 52 paliers ; les 23 autres restent libres (plantes et graines, ruines et variantes
-endommagées, fluides, décor). `tools/check_tech_catalogue.py` vérifie que chaque motif nomme une
+endommagées, fluides, décor : `data/tech_free.json`). `tools/check_tech_catalogue.py` vérifie que chaque motif nomme une
 machine qui existe, qu'aucune n'est rangée deux fois, que les prérequis tiennent, et liste avec
 `--orphans` ce qui n'est rangé nulle part.
 
@@ -205,6 +205,70 @@ ses prérequis, et « Rechercher » quand tout est réuni. Les données vivent d
 `data/dohy/tech/<domaine>.json` (le brouillon y passera), rechargées par `/dohy reload` comme les
 métiers.
 
+### Fait (2026-11-23)
+
+- **Les données** : un fichier par domaine, `data/tech/<domaine>.json` (dans le jar :
+  `data/dohy/tech/`), et les machines laissées libres dans `data/tech_free.json`. Chaque palier
+  porte son nom, ses prérequis, ses motifs de machines (`unlocks`, `*` accepté) et la liste de ces
+  machines une par une avec un nom (affiché quand le mod manque), ses bonus typés (`type`, `value`,
+  `label`), puis soit son coût de recherche (`cost` : argent, heures, pièces de NTM), soit les
+  étapes de l'ancien arbre qui le font (`legacy` : « global:3 »). `TechConfig` les charge au
+  démarrage et à `/dohy reload`. `tools/check_tech_catalogue.py` (CI) lit désormais ces fichiers :
+  machines connues et rangées une seule fois, liste des machines conforme aux motifs, prérequis
+  existants et sans boucle, chaque ancienne étape reprise une fois et dans l'ordre (rien ne se
+  perd), un coût pour chaque palier à rechercher, des bonus connus, aucun accent.
+- **Les coûts, en attendant le laboratoire** (23c) : II 25 000 $ + 32 plaques d'acier + 16 bobines
+  de cuivre, 6 h ; III 100 000 $ + 16 circuits intégrés + 16 condensateurs, 12 h ; IV 500 000 $ +
+  16 circuits militaires + 32 micropuces, 24 h ; V 2 000 000 $ + 8 circuits polyvalents + 8 unités
+  de contrôle, 48 h ; VI 10 000 000 $ + 4 processeurs quantiques + 4 horloges atomiques, 72 h.
+  L'Espace, qui part de zéro, paie chaque palier au niveau du suivant (son VI : 20 000 000 $, 8 + 8
+  pièces, 96 h). Les pièces viennent de l'inventaire ; un objet d'un mod absent ne se demande pas ;
+  le créatif ne fournit rien. Les points du laboratoire remplaceront la durée.
+- **Le moteur** (`faction/tech/Tech`) : l'état de recherche est dans la nation (`FactionData`, un
+  champ `tech` facultatif : paliers des domaines nouveaux, fin des recherches en cours) ; aucune
+  pièce jointe ne change de forme, une nation d'avant le lot se lit telle quelle.
+  - Domaines nouveaux : le palier I d'office (sauf l'Espace), puis la recherche palier par palier —
+    le palier d'avant, les prérequis des autres domaines, l'argent, les pièces, la durée. **Une
+    recherche à la fois**, deux au Gouvernement IV, trois au VI. Le temps court hors ligne ; la
+    recherche s'achève à la reconnexion.
+  - Domaines repris : un palier est acquis quand toutes ses étapes de l'ancien arbre le sont **et**
+    que ses prérequis tiennent (la Défense III demande l'Industrie III). Les étapes, elles, gardent
+    exactement leur coût, leurs conditions, leur durée, leurs récompenses et leur amélioration
+    propre à chaque ancienne branche : l'ancien arbre (`FactionTree`) tourne tel quel, aucune étape
+    nouvelle n'est bloquée. Les machines du palier I d'un domaine repris sont libres d'office.
+  - Le Gouvernement donne le rang sans carte de la Terre, les entreprises (4 + 2 par palier) et
+    les cadres (3 + 1 par palier) : ses paliers sont ceux de la Globale divisée par deux, comme
+    au lot 23a, aucun chiffre ne bouge.
+  - Un palier gagné, recherché ou par ses étapes, s'annonce dans le chat avec ses bonus et ses
+    machines.
+- **Les bonus** (`TechPerks`) : dans un domaine, un palier plus haut remplace le bonus du même type ;
+  d'un domaine à l'autre, ils s'additionnent. **En service dès ce lot** : les recherches en
+  parallèle (Gouvernement), la vitesse de recherche (Industrie V, Nucléaire IV et VI, Espace III et
+  VI : la durée est divisée d'autant), la taxe du marché international (Économie III -1 point,
+  V -2 points, même plancher de 2 % que les traités), l'argent des mines de la Terre (Économie IV
+  +10 %, VI +20 %), les champs de pétrole et de gaz (Chimie II +10 %, IV +20 %), les minerais des
+  mines (Industrie III +10 %, la fraction tirée au sort). Les autres attendent leur lot et la bulle
+  le dit : laboratoires, apport des pays et énergie des laboratoires (23c), énergie des machines,
+  argent du Mineur et coffre de la banque (23e), Fermier et machines agricoles (23f), largages
+  nucléaires et soldats des assauts (23g).
+- **Les écrans**, mêmes identifiants (`faction_tree`, `faction_branch`) : les neuf domaines en
+  cartes (palier atteint, recherche en cours, « ! » quand une recherche ou une étape peut partir),
+  les recherches et étapes en cours, puis ce qui est acquis — les récompenses de l'ancien arbre
+  (claims, homes, raids, réserve d'or, objets), la recherche (à la fois, vitesse), la liste des
+  bonus. Un domaine ouvre ses paliers : machines, bonus, prérequis ✔/✘, coût avec ce que tu as sur
+  toi, durée, « Rechercher » (avec confirmation) quand tout est réuni ; un clic droit montre les
+  machines d'un palier en tuiles (leur objet si le mod est là). Un domaine repris montre en plus
+  ses étapes de l'ancien arbre, comme l'ancienne branche les montrait, avec « Améliorer ». Si les
+  données manquent, l'écran retombe sur l'ancien arbre à quatre branches.
+- **Les commandes** : `/f techno` (et toujours `/f arbre`), `/f techno voir <domaine>` ; pour les
+  opérateurs `/f techno finir` et `/f techno palier <domaine> <n>` (un domaine repris fixe ses
+  anciennes branches), `/f arbre finir` et `/f arbre palier` restent.
+- **Les textes** : « Technologies » partout où l'on disait « arbre de technologie » (fiche de
+  l'encyclopédie, messages de verrou des objets de PalaMod, blason, homes, claims) ; une étape de
+  l'ancien arbre s'appelle « étape » (« étape Globale 5 »), un palier de domaine « palier ».
+- **Pas encore** : le laboratoire et ses points (23c), les verrous de pose (23d) — aucune machine
+  n'est bloquée par ce lot.
+
 ## Ce que coûte une recherche (23c)
 
 **Le laboratoire de recherche** est un bloc de DoHy, posé dans un claim. Il consomme de
@@ -260,7 +324,7 @@ permet un, deux puis trois.
   anciens paliers l'étaient ; sinon il reste à rechercher.
 - Les anciennes conditions (« N claims », « N h de jeu », « visiter N structures »…) restent des
   conditions des paliers repris : elles gardent le goût de l'ancien arbre.
-- Une amélioration en cours au moment de la mise à jour s'achève avant la conversion.
+- Une amélioration en cours au moment de la mise à jour continue : chaque ancienne branche garde la sienne.
 
 ## Encore à trancher, lot par lot
 

@@ -1,0 +1,196 @@
+{
+  "id": "espace",
+  "name": "Espace",
+  "summary": "Fusees, stations, sphere de Dyson",
+  "icons": ["minecraft:firework_rocket"],
+  "color": "#9B6BFF",
+  "order": 9,
+  "tiers": [
+    {
+      "tier": 1,
+      "name": "Communications",
+      "requires": ["energie:2"],
+      "unlocks": [
+        "hbm:pole_satellite_receiver",
+        "hbm:pole_top",
+        "hbm:machine_satlinker",
+        "hbm:machine_satlink",
+        "hbm:radiorec"
+      ],
+      "machines": [
+        {"id": "hbm:pole_satellite_receiver", "name": "Recepteur satellite"},
+        {"id": "hbm:pole_top", "name": "Antenne Haut"},
+        {"id": "hbm:machine_satlinker", "name": "Satellite ID Manager"},
+        {"id": "hbm:machine_satlink", "name": "Satellite Ground Station"},
+        {"id": "hbm:radiorec", "name": "FM Radio"}
+      ],
+      "bonuses": [],
+      "cost": {
+        "money": 25000,
+        "hours": 6,
+        "items": [
+          {"id": "hbm:plate_steel", "count": 32, "label": "plaques d'acier"},
+          {"id": "hbm:coil_copper", "count": 16, "label": "bobines de cuivre"}
+        ]
+      }
+    },
+    {
+      "tier": 2,
+      "name": "Lanceurs",
+      "requires": ["chimie:3", "industrie:3"],
+      "unlocks": [
+        "hbm:launchpad_soyuz",
+        "hbm:soyuz_launcher",
+        "hbm:soyuz_capsule",
+        "hbm:sat_dock",
+        "hbm:refueler",
+        "hbm:lox_barrel",
+        "hbm:struct_soyuz_core",
+        "hbm:struct_scaffold"
+      ],
+      "machines": [
+        {"id": "hbm:launchpad_soyuz", "name": "Soyuz Launch Pad"},
+        {"id": "hbm:soyuz_launcher", "name": "Soyuz Launch Platform"},
+        {"id": "hbm:soyuz_capsule", "name": "Cargo Landing Capsule"},
+        {"id": "hbm:sat_dock", "name": "Cargo Landing Pad"},
+        {"id": "hbm:refueler", "name": "Refueling Station"},
+        {"id": "hbm:lox_barrel", "name": "LOX Barrel"},
+        {"id": "hbm:struct_soyuz_core", "name": "Soyuz Launcher Core Component"},
+        {"id": "hbm:struct_scaffold", "name": "Launch Pad Scaffold Block"}
+      ],
+      "bonuses": [],
+      "cost": {
+        "money": 100000,
+        "hours": 12,
+        "items": [
+          {"id": "hbm:circuit_basic", "count": 16, "label": "circuits integres"},
+          {"id": "hbm:circuit_capacitor", "count": 16, "label": "condensateurs"}
+        ]
+      }
+    },
+    {
+      "tier": 3,
+      "name": "Fusees",
+      "requires": ["industrie:4"],
+      "unlocks": [
+        "hbmspace:machine_rocket_assembly",
+        "hbmspace:launch_pad_rocket",
+        "hbmspace:machine_stardar",
+        "hbmspace:dish_control",
+        "hbmspace:orrery",
+        "hbmspace:transporter_rocket"
+      ],
+      "machines": [
+        {"id": "hbmspace:machine_rocket_assembly", "name": "Vehicle Assembly Base (VAB)"},
+        {"id": "hbmspace:launch_pad_rocket", "name": "Rocket Launch Pad"},
+        {"id": "hbmspace:machine_stardar", "name": "StarDar"},
+        {"id": "hbmspace:dish_control", "name": "StarDar Remote Access Console"},
+        {"id": "hbmspace:orrery", "name": "Orrery"},
+        {"id": "hbmspace:transporter_rocket", "name": "Rocket Transporter Pad"}
+      ],
+      "bonuses": [
+        {"type": "research", "value": 10, "label": "recherche +10 %"}
+      ],
+      "cost": {
+        "money": 500000,
+        "hours": 24,
+        "items": [
+          {"id": "hbm:circuit_advanced", "count": 16, "label": "circuits militaires"},
+          {"id": "hbm:circuit_chip", "count": 32, "label": "micropuces"}
+        ]
+      }
+    },
+    {
+      "tier": 4,
+      "name": "Stations orbitales",
+      "unlocks": [
+        "hbmspace:orbital_station*",
+        "hbm:machine_lpw2",
+        "hbmspace:machine_htr3",
+        "hbmspace:machine_htrf4*",
+        "hbmspace:machine_xenon_thruster",
+        "hbmspace:machine_radiator"
+      ],
+      "machines": [
+        {"id": "hbmspace:orbital_station", "name": "Orbital Station Core"},
+        {"id": "hbmspace:orbital_station_computer", "name": "Orbital Station Computer"},
+        {"id": "hbmspace:orbital_station_launcher", "name": "Orbital Station Launching Port"},
+        {"id": "hbmspace:orbital_station_port", "name": "Orbital Station Port"},
+        {"id": "hbm:machine_lpw2", "name": "LPW-2 Station Thruster"},
+        {"id": "hbmspace:machine_htr3", "name": "LPW-3N Station Thruster"},
+        {"id": "hbmspace:machine_htrf4", "name": "HTR-F4 Station Thruster (LEGACY)"},
+        {"id": "hbmspace:machine_htrf4neo", "name": "HTR-F4 NEO Station Thruster"},
+        {"id": "hbmspace:machine_xenon_thruster", "name": "Xenon Station Thruster"},
+        {"id": "hbmspace:machine_radiator", "name": "Steam Radiator"}
+      ],
+      "bonuses": [],
+      "cost": {
+        "money": 2000000,
+        "hours": 48,
+        "items": [
+          {"id": "hbm:circuit_bismoid", "count": 8, "label": "circuits polyvalents"},
+          {"id": "hbm:circuit_controller", "count": 8, "label": "unites de controle"}
+        ]
+      }
+    },
+    {
+      "tier": 5,
+      "name": "Colonisation",
+      "requires": ["chimie:5", "agriculture:5"],
+      "unlocks": [
+        "hbmspace:air_scrubber",
+        "hbmspace:air_vent",
+        "hbmspace:machine_atmo_vent",
+        "hbmspace:machine_atmo_tower",
+        "hbmspace:machine_atmo_emitter",
+        "hbmspace:machine_magma",
+        "hbmspace:gas_dock"
+      ],
+      "machines": [
+        {"id": "hbmspace:air_scrubber", "name": "CO2 Scrubber"},
+        {"id": "hbmspace:air_vent", "name": "Air Vent"},
+        {"id": "hbmspace:machine_atmo_vent", "name": "Atmospheric Compressor"},
+        {"id": "hbmspace:machine_atmo_tower", "name": "Atmospheric Liquefaction Tower"},
+        {"id": "hbmspace:machine_atmo_emitter", "name": "Atmospheric Emitter"},
+        {"id": "hbmspace:machine_magma", "name": "Magma Drill"},
+        {"id": "hbmspace:gas_dock", "name": "Gas Giant Harvester"}
+      ],
+      "bonuses": [],
+      "cost": {
+        "money": 10000000,
+        "hours": 72,
+        "items": [
+          {"id": "hbm:circuit_quantum", "count": 4, "label": "processeurs quantiques"},
+          {"id": "hbm:circuit_atomic_clock", "count": 4, "label": "horloges atomiques"}
+        ]
+      }
+    },
+    {
+      "tier": 6,
+      "name": "Ingenierie stellaire",
+      "requires": ["nucleaire:6"],
+      "unlocks": ["hbmspace:dyson_*", "hbmspace:atmosphere_editor", "hbm:machine_teleporter", "hbm:teleanchor"],
+      "machines": [
+        {"id": "hbmspace:dyson_converter_anatmogenesis", "name": "Dyson Anatmogenesis Terraformer"},
+        {"id": "hbmspace:dyson_converter_he", "name": "Dyson Power Converter"},
+        {"id": "hbmspace:dyson_converter_tu", "name": "Dyson Heat Converter"},
+        {"id": "hbmspace:dyson_launcher", "name": "Dyson Spinlauncher"},
+        {"id": "hbmspace:dyson_receiver", "name": "Dyson Receiver"},
+        {"id": "hbmspace:atmosphere_editor", "name": "Atmosphere Editor"},
+        {"id": "hbm:machine_teleporter", "name": "Teleporteur"},
+        {"id": "hbm:teleanchor", "name": "Teleportation Anchor"}
+      ],
+      "bonuses": [
+        {"type": "research", "value": 20, "label": "recherche +20 %"}
+      ],
+      "cost": {
+        "money": 20000000,
+        "hours": 96,
+        "items": [
+          {"id": "hbm:circuit_quantum", "count": 8, "label": "processeurs quantiques"},
+          {"id": "hbm:circuit_atomic_clock", "count": 8, "label": "horloges atomiques"}
+        ]
+      }
+    }
+  ]
+}

@@ -68,8 +68,7 @@ public final class Nation {
 
     /**
      * Ce qu'il faut pour le rang suivant : « Royaume a 5 pays » ; sans carte de la Terre, le
-     * palier de la branche Globale (« Royaume au palier 8 de la Globale »), deux par palier du
-     * Gouvernement en attendant ses domaines (lot 23b).
+     * palier du Gouvernement (« Royaume au Gouvernement IV »).
      */
     public String nextRank() {
         NationRank next = rank().next();
@@ -80,7 +79,7 @@ public final class Nation {
             return next == NationRank.CITY ? next.label() + " avec une capitale"
                     : next.label() + " a " + next.countries() + " pays";
         }
-        return next.label() + " au palier " + NationRank.governmentFor(next) * 2 + " de la Globale";
+        return next.label() + " au Gouvernement " + roman(NationRank.governmentFor(next));
     }
 
     public ItemStack banner() {
@@ -155,53 +154,42 @@ public final class Nation {
     // -- La recherche ---------------------------------------------------------------------------
 
     /**
-     * Le palier du Gouvernement, de 0 a 6 : en attendant les neuf domaines (lot 23b), deux
-     * paliers de la branche Globale en font un, comme le prevoit la conversion de l'arbre.
+     * Le palier du Gouvernement, de 0 a 6 (lot 23b) : il se gagne par les etapes de l'ancienne
+     * branche Globale, deux par palier. Sans les domaines charges, la meme regle sur la branche.
      */
     public int government() {
         return government(data);
     }
 
     public static int government(FactionData data) {
-        return Math.max(0, Math.min(6, data.tier(FactionBranch.GLOBAL.key()) / 2));
+        fr.atraxterra.dohy.faction.tech.TechConfig.Domain domain =
+                fr.atraxterra.dohy.faction.tech.TechConfig.domain(GOVERNMENT);
+        if (domain == null) {
+            return Math.max(0, Math.min(6, data.tier(FactionBranch.GLOBAL.key()) / 2));
+        }
+        return fr.atraxterra.dohy.faction.tech.Tech.level(data, domain);
     }
 
-    /** Les paliers acquis, toutes branches confondues. */
+    /** Le domaine du Gouvernement. */
+    public static final String GOVERNMENT = "gouvernement";
+
+    /** Les paliers acquis, tous domaines confondus (les paliers d'office compris). */
     public int researched() {
-        int done = 0;
-        for (FactionBranch branch : FactionBranch.values()) {
-            done += data.tier(branch.key());
-        }
-        return done;
+        return fr.atraxterra.dohy.faction.tech.Tech.researched(data);
     }
 
     public int researchTotal() {
-        int total = 0;
-        for (FactionBranch branch : FactionBranch.values()) {
-            total += FactionTree.tiers(branch).size();
-        }
-        return total;
+        return fr.atraxterra.dohy.faction.tech.Tech.total();
     }
 
-    /** Les ameliorations en cours. */
+    /** Ce qui avance : recherches et etapes de l'ancien arbre. */
     public int researching() {
-        int running = 0;
-        for (FactionBranch branch : FactionBranch.values()) {
-            if (data.upgradeEnd(branch.key()) > 0L) {
-                running++;
-            }
-        }
-        return running;
+        return fr.atraxterra.dohy.faction.tech.Tech.researching(data);
     }
 
-    /** Un palier peut se lancer tout de suite. */
+    /** Une recherche ou une etape peut se lancer tout de suite. */
     public boolean researchReady() {
-        for (FactionBranch branch : FactionBranch.values()) {
-            if (data.upgradeEnd(branch.key()) <= 0L && FactionTree.blocker(player, branch) == null) {
-                return true;
-            }
-        }
-        return false;
+        return fr.atraxterra.dohy.faction.tech.Tech.ready(player);
     }
 
     // -- La guerre ------------------------------------------------------------------------------

@@ -1,0 +1,218 @@
+{
+  "id": "chimie",
+  "name": "Chimie",
+  "summary": "Tuyaux, petrole, raffinage",
+  "icons": ["hbm:machine_chemical_plant", "minecraft:brewing_stand"],
+  "color": "#4FB8FF",
+  "order": 5,
+  "tiers": [
+    {
+      "tier": 1,
+      "name": "Fluides",
+      "start": true,
+      "unlocks": [
+        "hbm:fluid_pipe*",
+        "hbm:fluid_valve",
+        "hbm:fluid_counter_valve",
+        "hbm:fluid_switch",
+        "hbm:fluid_pump",
+        "hbm:barrel_steel",
+        "hbm:barrel_plastic",
+        "hbm:machine_fluidtank",
+        "hbm:pump_steam",
+        "hbm:pump_electric",
+        "hbm:machine_drain",
+        "hbm:machine_intake",
+        "hbm:pipe_anchor",
+        "hbm:fluid_duct_*"
+      ],
+      "machines": [
+        {"id": "hbm:fluid_pipe", "name": "Universal Fluid Duct"},
+        {"id": "hbm:fluid_pipe_colored", "name": "Universal Fluid Duct"},
+        {"id": "hbm:fluid_pipe_silver", "name": "Universal Fluid Duct"},
+        {"id": "hbm:fluid_valve", "name": "Fluid Valve"},
+        {"id": "hbm:fluid_counter_valve", "name": "Fluid Valve with Counter"},
+        {"id": "hbm:fluid_switch", "name": "Redstone Fluid Valve"},
+        {"id": "hbm:fluid_pump", "name": "Flow Control Pump"},
+        {"id": "hbm:barrel_steel", "name": "Steel Barrel"},
+        {"id": "hbm:barrel_plastic", "name": "Safe BarrelTM"},
+        {"id": "hbm:machine_fluidtank", "name": "Reservoir"},
+        {"id": "hbm:pump_steam", "name": "Steam-Powered Groundwater Pump"},
+        {"id": "hbm:pump_electric", "name": "Electric Groundwater Pump"},
+        {"id": "hbm:machine_drain", "name": "Drainage Pipe"},
+        {"id": "hbm:machine_intake", "name": "Air Intake"},
+        {"id": "hbm:pipe_anchor", "name": "Pipe Anchor"},
+        {"id": "hbm:fluid_duct_box_copper_0", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_copper_1", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_copper_2", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_copper_3", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_copper_4", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_silver_0", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_silver_1", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_silver_2", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_silver_3", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_silver_4", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_white_0", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_white_1", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_white_2", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_white_3", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_box_white_4", "name": "Universal Fluid Duct (Boxduct)"},
+        {"id": "hbm:fluid_duct_exhaust_0", "name": "Exhaust Pipe"},
+        {"id": "hbm:fluid_duct_exhaust_1", "name": "Exhaust Pipe"},
+        {"id": "hbm:fluid_duct_exhaust_2", "name": "Exhaust Pipe"},
+        {"id": "hbm:fluid_duct_exhaust_3", "name": "Exhaust Pipe"},
+        {"id": "hbm:fluid_duct_exhaust_4", "name": "Exhaust Pipe"},
+        {"id": "hbm:fluid_duct_gauge", "name": "Flow Gauge Pipe"},
+        {"id": "hbm:fluid_duct_paintable", "name": "Paintable Coated Universal Fluid Duct"},
+        {"id": "hbm:fluid_duct_paintable_block_exhaust", "name": "Paintable Coated Exhaust Pipe"}
+      ],
+      "bonuses": []
+    },
+    {
+      "tier": 2,
+      "name": "Petrole",
+      "unlocks": [
+        "hbm:machine_well",
+        "hbm:machine_pumpjack",
+        "hbm:oil_pipe",
+        "hbm:machine_flare",
+        "hbm:machine_mixer",
+        "hbm:machine_chemical_plant",
+        "hbm:machine_electrolyser"
+      ],
+      "machines": [
+        {"id": "hbm:machine_well", "name": "Derrick"},
+        {"id": "hbm:machine_pumpjack", "name": "Pumpjack"},
+        {"id": "hbm:oil_pipe", "name": "Tuyau d'extraction de petrole brut"},
+        {"id": "hbm:machine_flare", "name": "Bruleur a gaz"},
+        {"id": "hbm:machine_mixer", "name": "Industrial Mixer"},
+        {"id": "hbm:machine_chemical_plant", "name": "Chemical Plant"},
+        {"id": "hbm:machine_electrolyser", "name": "Electrolysis Machine"}
+      ],
+      "bonuses": [
+        {"type": "oil_fields", "value": 10, "label": "champs de petrole et de gaz de la Terre +10 %"}
+      ],
+      "cost": {
+        "money": 25000,
+        "hours": 6,
+        "items": [
+          {"id": "hbm:plate_steel", "count": 32, "label": "plaques d'acier"},
+          {"id": "hbm:coil_copper", "count": 16, "label": "bobines de cuivre"}
+        ]
+      }
+    },
+    {
+      "tier": 3,
+      "name": "Raffinage",
+      "requires": ["energie:2"],
+      "unlocks": [
+        "hbm:machine_refinery",
+        "hbm:machine_fraction_tower",
+        "hbm:fraction_spacer",
+        "hbm:machine_cracking_tower",
+        "hbm:machine_solidifier",
+        "hbm:machine_liquefactor",
+        "hbm:machine_compressor*",
+        "hbm:machine_crystallizer",
+        "hbm:machine_pyrooven"
+      ],
+      "machines": [
+        {"id": "hbm:machine_refinery", "name": "Raffinerie de petrole"},
+        {"id": "hbm:machine_fraction_tower", "name": "Fractioning Tower"},
+        {"id": "hbm:fraction_spacer", "name": "Fractioning Tower Separator"},
+        {"id": "hbm:machine_cracking_tower", "name": "Catalytic Cracking Tower"},
+        {"id": "hbm:machine_solidifier", "name": "Industrial Solidification Machine"},
+        {"id": "hbm:machine_liquefactor", "name": "Industrial Liquefaction Machine"},
+        {"id": "hbm:machine_compressor", "name": "Compressor"},
+        {"id": "hbm:machine_compressor_compact", "name": "Compact Compressor"},
+        {"id": "hbm:machine_crystallizer", "name": "Ore Acidizer"},
+        {"id": "hbm:machine_pyrooven", "name": "Pyrolysis Oven"}
+      ],
+      "bonuses": [],
+      "cost": {
+        "money": 100000,
+        "hours": 12,
+        "items": [
+          {"id": "hbm:circuit_basic", "count": 16, "label": "circuits integres"},
+          {"id": "hbm:circuit_capacitor", "count": 16, "label": "condensateurs"}
+        ]
+      }
+    },
+    {
+      "tier": 4,
+      "name": "Petrochimie",
+      "unlocks": [
+        "hbm:machine_vacuum_distill",
+        "hbm:machine_coker",
+        "hbm:machine_hydrotreater",
+        "hbm:machine_catalytic_reformer",
+        "hbm:machine_bigasstank",
+        "hbm:machine_orbus",
+        "hbm:barrel_tcalloy",
+        "leafia:mixingvat",
+        "leafia:ff_*",
+        "leafia:fluid_duct_*"
+      ],
+      "machines": [
+        {"id": "hbm:machine_vacuum_distill", "name": "Vacuum Refinery"},
+        {"id": "hbm:machine_coker", "name": "Coker Unit"},
+        {"id": "hbm:machine_hydrotreater", "name": "Hydrotreater"},
+        {"id": "hbm:machine_catalytic_reformer", "name": "Catalytic Reformer"},
+        {"id": "hbm:machine_bigasstank", "name": "Big-Ass Tank"},
+        {"id": "hbm:machine_orbus", "name": "Heavy Magnetic Storage Tank"},
+        {"id": "hbm:barrel_tcalloy", "name": "Technetium Steel Barrel"},
+        {"id": "leafia:mixingvat", "name": "Mixing Vat"},
+        {"id": "leafia:ff_converter", "name": "Special Pipe Adapter"},
+        {"id": "leafia:ff_duct", "name": "Special Pipe"},
+        {"id": "leafia:ff_duct_solid_shielded", "name": "Rad Shielded Special Pipe"},
+        {"id": "leafia:ff_filter", "name": "Special Pipe Mixture Filter"},
+        {"id": "leafia:ff_pump", "name": "Special Pipe Pump"},
+        {"id": "leafia:ff_tank", "name": "Special Tank"},
+        {"id": "leafia:fluid_duct_gauge_mdl", "name": "Fluid Flow Gauge"},
+        {"id": "leafia:fluid_duct_valve_mdl", "name": "Fluid Valve"},
+        {"id": "leafia:fluid_duct_valve_mdl_rs", "name": "Redstone Fluid Valve"}
+      ],
+      "bonuses": [
+        {"type": "oil_fields", "value": 20, "label": "champs de petrole et de gaz de la Terre +20 %"}
+      ],
+      "cost": {
+        "money": 500000,
+        "hours": 24,
+        "items": [
+          {"id": "hbm:circuit_advanced", "count": 16, "label": "circuits militaires"},
+          {"id": "hbm:circuit_chip", "count": 32, "label": "micropuces"}
+        ]
+      }
+    },
+    {
+      "tier": 5,
+      "name": "Chimie lourde",
+      "requires": ["industrie:4"],
+      "unlocks": [
+        "hbm:machine_fracking_tower",
+        "hbm:machine_chemical_factory",
+        "hbmspace:machine_alkylation",
+        "hbmspace:machine_cryo_distill",
+        "hbm:machine_deuterium_extractor",
+        "hbm:machine_deuterium_tower"
+      ],
+      "machines": [
+        {"id": "hbm:machine_fracking_tower", "name": "Hydraulic Fracking Tower"},
+        {"id": "hbm:machine_chemical_factory", "name": "Chemical Factory"},
+        {"id": "hbmspace:machine_alkylation", "name": "Alkylation Unit"},
+        {"id": "hbmspace:machine_cryo_distill", "name": "Cryogenic Distillation Machine"},
+        {"id": "hbm:machine_deuterium_extractor", "name": "Deuterium Extractor"},
+        {"id": "hbm:machine_deuterium_tower", "name": "Deuterium Extraction Tower"}
+      ],
+      "bonuses": [],
+      "cost": {
+        "money": 2000000,
+        "hours": 48,
+        "items": [
+          {"id": "hbm:circuit_bismoid", "count": 8, "label": "circuits polyvalents"},
+          {"id": "hbm:circuit_controller", "count": 8, "label": "unites de controle"}
+        ]
+      }
+    }
+  ]
+}

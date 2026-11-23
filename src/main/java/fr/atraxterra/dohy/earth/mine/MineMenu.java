@@ -105,6 +105,12 @@ public final class MineMenu extends MenuController {
             tooltip.add("Capturee le " + DATE.format(Instant.ofEpochMilli(concession.since())
                     .atZone(FactionWeekly.zone())));
             tooltip.add("Verse " + EarthMines.output(body));
+            int bonus = EarthMines.moneyBonus(player, body);
+            int ores = fr.atraxterra.dohy.faction.tech.TechPerks.of(player).minesOre();
+            if (bonus > 0 || ores > 0 && blocks > 0) {
+                tooltip.add("Technologies : +" + bonus + " % d'argent" + (blocks > 0 ? ", +" + ores + " % de minerais"
+                        : ""));
+            }
             tooltip.add("Tu peux toujours y miner toi-meme");
             if (stake != null && stake.id().equals(body.id())) {
                 tooltip.add("En jeu : reprise si " + nation + " gagne un assaut");
@@ -112,7 +118,7 @@ public final class MineMenu extends MenuController {
             tooltip.add("Clic : la rendre a " + nation);
             held.add(Card.of(EarthMines.icon(body), body.name(), List.of(
                             body.resource() + " · " + EarthMines.countryName(body),
-                            "+" + MoneyFormat.exact(EarthMines.moneyPerHour(body)) + " $"
+                            "+" + MoneyFormat.exact(EarthMines.moneyPerHour(player, body)) + " $"
                                     + (blocks > 0 ? " et " + blocks + " bloc" + (blocks > 1 ? "s" : "") : "") + " / h"))
                     .accent(stake != null && stake.id().equals(body.id()) ? ORANGE : GREEN)
                     .badge("RANG " + EarthMines.tier(body))

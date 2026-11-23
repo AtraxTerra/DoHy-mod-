@@ -2295,7 +2295,7 @@
             "- Territoire : tes claims, ta capitale, tes pays, les pays a prendre, les mines de la Terre et ton influence.",
             "- Organisation : ton regime, tes cadres et leurs postes, le recrutement, les parametres.",
             "- Diplomatie : tes traites, les douze nations, la guerre et le pillage.",
-            "- Technologies : l'arbre de ta nation.",
+            "- Technologies : les neuf domaines de ta nation, leurs machines et leurs bonus.",
             "- Entreprises : tes affaires legales et illegales, l'argent sale, l'influence pays par pays, les organisations criminelles.",
             "- Economie : la banque nationale, son coffre, la reserve d'or, le marche international.",
             "- Events et Classement (ligue, ELO, notation)."
@@ -2304,7 +2304,7 @@
         {
           "title": "Le rang",
           "text": [
-            "Faction, Cite, Etat, Royaume, Empire, Superpuissance. Sur la carte de la Terre, il suit tes pays : une capitale fait une cite, 1, 5, 15 puis 40 pays les rangs suivants. Sans carte de la Terre, il suit la branche Globale de ton arbre : Cite au palier 4, puis un rang tous les deux paliers.",
+            "Faction, Cite, Etat, Royaume, Empire, Superpuissance. Sur la carte de la Terre, il suit tes pays : une capitale fait une cite, 1, 5, 15 puis 40 pays les rangs suivants. Sans carte de la Terre, il suit le Gouvernement : Cite au Gouvernement II, Etat au III, Royaume au IV, Empire au V, Superpuissance au VI.",
             "Il s'affiche dans le HUD et la liste des joueurs, et baisse la taxe du marche international (de 15 a 6 %)."
           ]
         },
@@ -2318,7 +2318,7 @@
         {
           "title": "La banque nationale",
           "text": [
-            "Elle paie l'arbre de technologie, la reserve d'or et les bases ennemies. Pendant un assaut des nations, rien n'en sort."
+            "Elle paie les technologies, la reserve d'or et les bases ennemies. Pendant un assaut des nations, rien n'en sort."
           ]
         },
         {
@@ -2759,25 +2759,48 @@
       "id": "arbre_techno",
       "category": "faction",
       "order": 7,
-      "icon": "minecraft:enchanted_book",
-      "title": "Arbre de techno",
+      "icon": "minecraft:enchanting_table",
+      "title": "Technologies",
       "card": [
-        "Global, Pillage",
-        "Defense, Economie"
+        "Neuf domaines",
+        "Machines, bonus, recherches"
       ],
       "summary": [
-        "Quatre branches : Global, Pillage, Defense et Economie. Un palier se paie avec la banque nationale (et de l'or liquide pour l'Economie), demande ses conditions, puis s'ameliore pendant une duree reelle, de 2 heures a 14 jours."
+        "Neuf domaines de cinq ou six paliers : Gouvernement, Economie, Energie, Industrie, Chimie, Agriculture, Nucleaire, Defense et Espace. Un palier deverrouille ses machines (NTM NEXT, Space, Cursed et celles de DoHy) et donne ses bonus ; il demande le palier d'avant, parfois celui d'un autre domaine : on ne raffine pas sans electricite."
       ],
       "sections": [
         {
+          "title": "Les domaines nouveaux",
+          "text": [
+            "Energie, Industrie, Chimie, Agriculture, Nucleaire et Espace se recherchent : de l'argent de la banque nationale, des pieces de NTM sur toi (plaques d'acier et bobines de cuivre, puis des circuits de plus en plus fins), puis une duree reelle, de 6 heures a 4 jours.",
+            "Le palier I est acquis d'office, sauf dans l'Espace. Une recherche a la fois ; le Gouvernement IV en permet deux, le VI trois. Sans NTM installe, ses pieces ne se demandent pas."
+          ]
+        },
+        {
+          "title": "L'ancien arbre, fondu dedans",
+          "text": [
+            "Gouvernement, Economie et Defense reprennent les branches Globale, Economie, Defense et Pillage. Leurs etapes gardent leur cout, leurs conditions, leur duree et leurs recompenses : claims, homes, blason, MOTD, reserve d'or, reduction des degats, objets.",
+            "Deux etapes de la Globale font un palier du Gouvernement ; une etape de l'Economie, un palier de l'Economie ; deux de la Defense et deux du Pillage, un palier de la Defense. Chaque ancienne branche garde son amelioration a elle, en plus des recherches."
+          ]
+        },
+        {
+          "title": "Les bonus",
+          "text": [
+            "- Recherche plus rapide (Industrie, Nucleaire, Espace) et recherches en parallele (Gouvernement).",
+            "- Taxe du marche international et argent des mines de la Terre (Economie), minerais des mines (Industrie), champs de petrole et de gaz (Chimie).",
+            "- Les autres (laboratoires, energie, metiers, coffre, largages, assauts) arrivent avec le laboratoire et les contenus de chaque domaine : la bulle du bonus dit son lot."
+          ]
+        },
+        {
           "title": "Les deblocages",
           "text": [
-            "Les objets de defense et de pillage se fabriquent librement, mais leur pose ou leur usage demande le palier qui les debloque."
+            "Les objets de defense et de pillage de PalaMod se fabriquent librement, mais leur pose ou leur usage demande l'etape qui les debloque."
           ]
         }
       ],
       "commands": [
-        "/f arbre : l'arbre de technologie"
+        "/f techno : les technologies (aussi /f arbre)",
+        "/f techno voir <domaine> : les paliers d'un domaine"
       ],
       "see": [
         "defense",
@@ -2809,7 +2832,7 @@
           "title": "A savoir",
           "text": [
             "- L'obsidienne renforcee ne se mine pas et resiste a la TNT ordinaire ; un wither la casse.",
-            "- Leur pose demande le palier Defense de l'arbre."
+            "- Leur pose demande l'etape Defense qui les debloque (domaine Defense des technologies)."
           ]
         }
       ],
@@ -2843,7 +2866,7 @@
           "title": "A savoir",
           "text": [
             "- Les dynamites se collent au premier bloc ou a la premiere creature touches, et sautent peu apres.",
-            "- Leur usage demande le palier Pillage de l'arbre."
+            "- Leur usage demande l'etape Pillage qui les debloque (domaine Defense des technologies)."
           ]
         },
         {

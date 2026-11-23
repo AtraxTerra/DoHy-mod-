@@ -1,0 +1,101 @@
+package fr.atraxterra.dohy.faction.tech;
+
+import fr.atraxterra.dohy.faction.FactionApi;
+import fr.atraxterra.dohy.faction.FactionData;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Les bonus des technologies acquises (lot 23b). Dans un domaine, un palier plus haut remplace
+ * le bonus du meme type (Energie IV, « -15 % », remplace Energie II, « -10 % ») ; d'un domaine a
+ * l'autre, les bonus du meme type s'ajoutent (la recherche +10 % de l'Industrie et +15 % du
+ * Nucleaire font +25 %).
+ *
+ * <p>Ils agissent sur les systemes de DoHy, jamais sur le code de NTM. Ceux qui ne servent pas
+ * encore attendent leur lot ({@link #pending(String)}) : le laboratoire (23c), puis les contenus
+ * de chaque domaine (23e a 23g).
+ */
+public record TechPerks(Map<String, Integer> values) {
+
+    public static final TechPerks NONE = new TechPerks(Map.of());
+
+    public int value(String type) {
+        return values.getOrDefault(type, 0);
+    }
+
+    /** Les recherches menees a la fois dans les domaines nouveaux : une, puis deux et trois avec le Gouvernement. */
+    public int parallel() {
+        return Math.max(1, value("parallel"));
+    }
+
+    /** Les laboratoires que la nation peut poser (lot 23c). */
+    public int labs() {
+        return Math.max(1, value("labs"));
+    }
+
+    /** La vitesse de recherche, en pour cent. */
+    public int research() {
+        return value("research");
+    }
+
+    /** Les points de taxe du marche international que les technologies effacent. */
+    public int marketTax() {
+        return value("market_tax");
+    }
+
+    /** L'argent des mines de la Terre, en pour cent. */
+    public int minesMoney() {
+        return value("mines_money");
+    }
+
+    /** Les minerais des mines de la Terre, en pour cent. */
+    public int minesOre() {
+        return value("mines_ore");
+    }
+
+    /** L'argent des champs de petrole et de gaz de la Terre, en pour cent. */
+    public int oilFields() {
+        return value("oil_fields");
+    }
+
+    public static TechPerks of(ServerPlayer player) {
+        return of(FactionApi.data(player));
+    }
+
+    public static TechPerks of(FactionData data) {
+        Map<String, Integer> total = new HashMap<>();
+        for (TechConfig.Domain domain : TechConfig.domains()) {
+            int level = Tech.level(data, domain);
+            Map<String, Integer> local = new HashMap<>();
+            for (TechConfig.Tier tier : domain.tiers()) {
+                if (tier.tier() <= level) {
+                    for (TechConfig.Bonus bonus : tier.bonuses()) {
+                        local.merge(bonus.type(), bonus.value(), Math::max);
+                    }
+                }
+            }
+            local.forEach((type, value) -> total.merge(type, value, Integer::sum));
+        }
+        return total.isEmpty() ? NONE : new TechPerks(Map.copyOf(total));
+    }
+
+    /** Le lot qui mettra ce bonus en service ; vide s'il agit deja. */
+    public static String pending(String type) {
+        return switch (type) {
+            case "parallel", "research", "market_tax", "mines_money", "mines_ore", "oil_fields" -> "";
+            case "labs", "research_per_country", "lab_energy" -> "lot 23c";
+            case "machine_energy", "miner_money", "vault_slots" -> "lot 23e";
+            case "farmer_xp", "agri_speed", "farmer_money" -> "lot 23f";
+            case "nuclear_loot", "soldier_hp" -> "lot 23g";
+            default -> "a venir";
+        };
+    }
+
+    /** Le libelle d'un bonus, avec le lot qui l'attend s'il ne sert pas encore. */
+    public static String label(TechConfig.Bonus bonus) {
+        String lot = pending(bonus.type());
+        return lot.isEmpty() ? bonus.label() : bonus.label() + " (" + lot + ")";
+    }
+}

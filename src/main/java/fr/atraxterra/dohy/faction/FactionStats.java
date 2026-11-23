@@ -32,7 +32,7 @@ public final class FactionStats {
     private FactionStats() {
     }
 
-    /** Toutes les cinq secondes : la structure ou se tient le joueur, et les ameliorations echues. */
+    /** Toutes les cinq secondes : la structure ou se tient le joueur, et les recherches et etapes echues. */
     @SubscribeEvent
     public static void onTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || player.tickCount % 100 != 0) {
@@ -42,7 +42,7 @@ public final class FactionStats {
         if (!data.exists()) {
             return;
         }
-        FactionTree.complete(player, false);
+        fr.atraxterra.dohy.faction.tech.Tech.complete(player, false);
         ServerLevel level = (ServerLevel) player.level();
         BlockPos pos = player.blockPosition();
         Map<Structure, it.unimi.dsi.fastutil.longs.LongSet> here = level.structureManager().getAllStructuresAt(pos);
@@ -66,7 +66,7 @@ public final class FactionStats {
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            FactionTree.complete(player, false);
+            fr.atraxterra.dohy.faction.tech.Tech.complete(player, false);
         }
     }
 }

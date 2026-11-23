@@ -108,13 +108,14 @@ public final class DefenseGate {
 
     private static Component refusal(ServerPlayer player, String key) {
         if (!FactionApi.has(player)) {
-            return Component.literal("Il te faut une nation et son arbre de technologie (/f create).")
+            return Component.literal("Il te faut une nation et ses technologies (/f create).")
                     .withStyle(ChatFormatting.RED);
         }
         return FactionTree.unlockOf(key)
-                .<Component>map(unlock -> Component.literal("Verrouille : " + unlock.label() + ". Palier "
-                        + unlock.tier().number() + " de la branche " + unlock.tier().branch().label()
-                        + " de ton arbre de faction.").withStyle(ChatFormatting.RED))
-                .orElse(Component.literal("Verrouille par l'arbre de faction.").withStyle(ChatFormatting.RED));
+                .<Component>map(unlock -> Component.literal("Verrouille : " + unlock.label() + ". Etape "
+                        + unlock.tier().branch().label() + " " + unlock.tier().number()
+                        + " du domaine Defense (/f techno).").withStyle(ChatFormatting.RED))
+                .orElse(Component.literal("Verrouille par les technologies (/f techno).")
+                        .withStyle(ChatFormatting.RED));
     }
 }

@@ -43,10 +43,12 @@ public enum NationRank {
 
     /**
      * La taxe que paie ce joueur : celle du rang de sa nation, moins ce qu'effacent ses accords
-     * et alliances (lot 24a, 2 % au plus bas), puis la part que son grade efface.
+     * et alliances (lot 24a) et les technologies de l'Economie (lot 23b, un point par palier qui
+     * le dit), 2 % au plus bas, puis la part que son grade efface.
      */
     public static double fee(ServerPlayer player) {
-        double treaties = fr.atraxterra.dohy.faction.org.Diplomacy.taxCut(player);
+        double treaties = fr.atraxterra.dohy.faction.org.Diplomacy.taxCut(player)
+                + fr.atraxterra.dohy.faction.tech.TechPerks.of(player).marketTax() / 100.0d;
         double fee = Math.max(Math.min(of(player).fee, fr.atraxterra.dohy.faction.org.Diplomacy.TAX_FLOOR),
                 of(player).fee - treaties);
         return fee * (1.0d - fr.atraxterra.dohy.grade.Grades.marketTaxCut(player));

@@ -72,6 +72,21 @@ public final class FactionData {
         ).apply(instance, Ranking::new));
     }
 
+    /**
+     * Les technologies de la nation (lot 23b) : le palier atteint dans chaque domaine nouveau, et
+     * la fin des recherches en cours. Les domaines repris de l'ancien arbre (Gouvernement,
+     * Economie, Defense) n'y sont pas : ils se lisent dans {@code tiers}.
+     */
+    public record Research(Map<String, Integer> tiers, Map<String, Long> running) {
+        static final Research EMPTY = new Research(Map.of(), Map.of());
+        static final Codec<Research> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("tiers", Map.of())
+                        .forGetter(Research::tiers),
+                Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("running", Map.of())
+                        .forGetter(Research::running)
+        ).apply(instance, Research::new));
+    }
+
     public static final MapCodec<FactionData> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("name", "").forGetter(data -> data.name),
             Codec.STRING.optionalFieldOf("description", "").forGetter(data -> data.description),
@@ -91,7 +106,9 @@ public final class FactionData {
             Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("stats", Map.of())
                     .forGetter(data -> Map.copyOf(data.stats)),
             ItemStack.OPTIONAL_CODEC.optionalFieldOf("banner_item", ItemStack.EMPTY)
-                    .forGetter(data -> data.bannerItem)
+                    .forGetter(data -> data.bannerItem),
+            Research.CODEC.optionalFieldOf("tech", Research.EMPTY)
+                    .forGetter(data -> new Research(Map.copyOf(data.techTiers), Map.copyOf(data.techRunning)))
     ).apply(instance, FactionData::new));
 
     /** Lignes d'historique gardees. */
@@ -116,16 +133,20 @@ public final class FactionData {
     final Map<String, Long> stats;
     /** Le blason personnalise (palier 4 de la branche Globale) : une banniere a motifs ; vide sinon. */
     ItemStack bannerItem;
+    /** Palier atteint par domaine de technologie nouveau (lot 23b) ; absent, le palier d'office. */
+    final Map<String, Integer> techTiers;
+    /** Recherche en cours par domaine : sa fin, en millisecondes epoch. */
+    final Map<String, Long> techRunning;
 
     public FactionData() {
         this("", "", List.of(), 14, "", 0L, 0L, List.of(), List.of(), List.of(), Ranking.EMPTY, Map.of(), Map.of(),
-                Map.of(), ItemStack.EMPTY);
+                Map.of(), ItemStack.EMPTY, Research.EMPTY);
     }
 
     private FactionData(String name, String description, List<String> tags, int banner, String motd, long created,
                         long bank, List<BankEntry> history, List<Claim> claims, List<Home> homes, Ranking ranking,
                         Map<String, Integer> tiers, Map<String, Long> upgrades, Map<String, Long> stats,
-                        ItemStack bannerItem) {
+                        ItemStack bannerItem, Research tech) {
         this.name = name;
         this.description = description;
         this.tags = new ArrayList<>(tags);
@@ -141,6 +162,8 @@ public final class FactionData {
         this.upgrades = new HashMap<>(upgrades);
         this.stats = new HashMap<>(stats);
         this.bannerItem = bannerItem.copy();
+        this.techTiers = new HashMap<>(tech.tiers());
+        this.techRunning = new HashMap<>(tech.running());
     }
 
     public boolean exists() {
@@ -211,6 +234,35 @@ public final class FactionData {
         return stats.getOrDefault(key, 0L);
     }
 
+    // -- Les technologies (lot 23b, faction/tech) ---------------------------------------------------
+
+    /** Le palier atteint dans un domaine nouveau, {@code start} s'il n'a rien recherche. */
+    public int techTier(String domain, int start) {
+        return Math.max(start, techTiers.getOrDefault(domain, start));
+    }
+
+    /** La fin de la recherche en cours dans ce domaine, 0 sans recherche. */
+    public long techEnd(String domain) {
+        return techRunning.getOrDefault(domain, 0L);
+    }
+
+    /** Les domaines ou une recherche est en cours. */
+    public java.util.Set<String> techRunning() {
+        return java.util.Set.copyOf(techRunning.keySet());
+    }
+
+    public void setTechTier(String domain, int tier) {
+        techTiers.put(domain, Math.max(0, tier));
+    }
+
+    public void startTech(String domain, long end) {
+        techRunning.put(domain, end);
+    }
+
+    public void stopTech(String domain) {
+        techRunning.remove(domain);
+    }
+
     void addStat(String key, long amount) {
         stats.merge(key, amount, Long::sum);
     }
@@ -238,5 +290,7 @@ public final class FactionData {
         tiers.clear();
         upgrades.clear();
         bannerItem = ItemStack.EMPTY;
+        techTiers.clear();
+        techRunning.clear();
     }
 }

@@ -245,6 +245,13 @@ Plan en cinq lots : `docs/ORGANISATIONS.md` (chapitre 24).
   chacune dans son coin et à son plafond ; les animaux vivent dix minutes si personne ne les
   attaque ; pas de PvP, la faim ne baisse pas, pas de commandes de faction ni de foudre. Entrée
   par la borne DONJONS du spawn ou `/farmland` (Héros), sortie par la borne RETOUR ou `/spawn`.
+- **Lot 23b — le moteur des technologies** (2026-11-23, `docs/NATION.md`, « Fait ») : neuf domaines
+  en données (`data/tech/`, 52 paliers, 570 machines de NTM NEXT, Space et Cursed et les machines
+  agricoles de DoHy), l'état de recherche dans la nation, l'écran des neuf domaines et de leurs
+  paliers (machines, bonus, prérequis, coût, durée). Les six domaines nouveaux se recherchent
+  (argent, pièces de NTM, durée ; une recherche à la fois, trois au Gouvernement VI) ; Gouvernement,
+  Économie et Défense reprennent l'ancien arbre étape pour étape, rien ne se perd. Bonus en service :
+  recherche, taxe du marché, mines et champs de pétrole ; les autres avec leur lot.
 
 ### 2026-11-21 — remise à zéro du serveur, puis la nation, lot 23a
 

@@ -1,0 +1,23 @@
+{
+  "note": "Laisses libres : plantes et graines, ruines et variantes endommagees, fluides, decor.",
+  "patterns": [
+    "hbm:plant_*",
+    "hbmspace:crop_*",
+    "hbm:launch_pad_rusted",
+    "hbm:zirnox_destroyed",
+    "hbm:turret_*_damaged",
+    "hbm:crate",
+    "hbm:barrel_corroded",
+    "hbm:yellow_barrel",
+    "hbm:capacitor_copper",
+    "hbmspace:war_controller",
+    "hbmspace:troll_disturber",
+    "hbmspace:tumor",
+    "leafia:*_fluid",
+    "leafia:poster_*",
+    "leafia:pribris_smoke",
+    "leafia:sellacity_rack",
+    "leafia:spinny_light",
+    "leafia:scorched_earth"
+  ]
+}
