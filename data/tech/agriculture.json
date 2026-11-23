@@ -73,7 +73,7 @@
         "money": 100000,
         "points": 6000,
         "items": [
-          {"id": "hbm:circuit_basic", "count": 16, "label": "circuits integres"},
+          {"id": "hbm:motor", "count": 16, "label": "moteurs"},
           {"id": "hbm:circuit_capacitor", "count": 16, "label": "condensateurs"}
         ]
       }
@@ -103,10 +103,9 @@
       "tier": 5,
       "name": "Serres industrielles",
       "requires": ["industrie:4"],
-      "unlocks": ["hbmspace:hydrobay", "hbmspace:algae_film"],
+      "unlocks": ["hbmspace:hydrobay"],
       "machines": [
-        {"id": "hbmspace:hydrobay", "name": "Industrial Greenhouse"},
-        {"id": "hbmspace:algae_film", "name": "Microgravity Algae Film"}
+        {"id": "hbmspace:hydrobay", "name": "Industrial Greenhouse"}
       ],
       "bonuses": [
         {"type": "agri_speed", "value": 20, "label": "machines agricoles DoHy +20 % de vitesse"}
@@ -115,7 +114,7 @@
         "money": 2000000,
         "points": 60000,
         "items": [
-          {"id": "hbm:circuit_bismoid", "count": 8, "label": "circuits polyvalents"},
+          {"id": "hbm:motor_desh", "count": 16, "label": "moteurs en desh"},
           {"id": "hbm:circuit_controller", "count": 8, "label": "unites de controle"}
         ]
       }

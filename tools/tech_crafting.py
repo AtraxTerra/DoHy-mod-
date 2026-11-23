@@ -30,6 +30,7 @@ tools/ntm_inventory.py. Code retour 1 si un palier demande ce qu'on ne peut pas 
 import fnmatch
 import json
 import pathlib
+import re
 import sys
 import zipfile
 
@@ -158,8 +159,9 @@ FREE_FLUIDS = {"minecraft:water", "minecraft:lava", "minecraft:empty"}
 
 # Les planetes de HBM Space (data/hbmspace/dimension) : ce qui ne s'y trouve qu'elles attend les
 # fusees, Espace III. Leurs generateurs sont dans le code (« hbmspace:rubber_plant »), pas dans les
-# donnees : les matieres premieres d'une planete se reconnaissent a leur nom (ore_iron_duna) et les
-# forets de Tekto (caoutchouc, vinyle, PVC) sont nommees ici.
+# donnees : les matieres premieres d'une planete se reconnaissent a leur nom (ore_iron_duna), les
+# forets de Tekto (caoutchouc, vinyle, PVC) sont nommees ici, et ce que seuls des blocs de planete
+# donnent quand on les casse (leur table de butin) en vient aussi.
 PLANETS = ("dres", "duna", "eve", "ike", "laythe", "minmus", "moho", "mun", "tekto", "thatmo", "orbit")
 SPACE_ONLY = tuple(f"hbmspace:*_{p}" for p in PLANETS) + tuple(f"hbmspace:{p}_*" for p in PLANETS) + (
     "hbmspace:rubber_*", "hbmspace:leaf_rubber", "hbmspace:vinyl_*", "hbmspace:pvc_*", "hbmspace:sapling_pvc",
@@ -252,12 +254,19 @@ class Book:
         self.fluids = {}
         self.tags = {}
         self.unknown = {}
+        dropped_by = {}
         for jar in jars:
             with zipfile.ZipFile(jar) as zipped:
                 for name in zipped.namelist():
                     if not name.endswith(".json"):
                         continue
                     parts = name.split("/")
+                    if len(parts) == 5 and parts[0] == "data" and parts[2] == "loot_table" and parts[3] == "blocks":
+                        block = parts[1] + ":" + parts[4][:-5]
+                        text = zipped.read(name).decode("utf-8", "replace")
+                        for item in set(re.findall(r'"name"\s*:\s*"([a-z0-9_]+:[a-z0-9_/]+)"', text)):
+                            dropped_by.setdefault(item, set()).add(block)
+                        continue
                     if len(parts) >= 4 and parts[0] == "data" and parts[2] == "tags" and parts[3] in ("item", "items"):
                         data = load_json(zipped, name)
                         if data:
@@ -270,6 +279,9 @@ class Book:
                         data = load_json(zipped, name)
                         if data:
                             self.add(data, name)
+        # Ce que ne donnent que des blocs d'autres planetes (la feuille de sel des plantes de Laythe).
+        self.space = {item for item, blocks in dropped_by.items() if item.startswith("hbmspace:")
+                      and all(any(fnmatch.fnmatch(b, p) for p in SPACE_ONLY) for b in blocks)}
 
     def add(self, data, name):
         kind = data.get("type", "")
@@ -404,7 +416,8 @@ def available(book, tree, reached):
         for pattern, machine in CODE_MADE.items():
             if fnmatch.fnmatch(identifier, pattern):
                 return placed(machine)
-        return in_space or not any(fnmatch.fnmatch(identifier, pattern) for pattern in SPACE_ONLY)
+        return in_space or not (identifier in book.space
+                                or any(fnmatch.fnmatch(identifier, pattern) for pattern in SPACE_ONLY))
 
     def placed(machine):
         lock = tree.lock.get(machine)
