@@ -56,7 +56,7 @@ dédié ».
 ## À faire — phase 0 (reste)
 
 - [ ] **Faire passer la CI au vert.** C'est la seule validation possible des signatures 26.2 : ni JDK 25 ni accès aux dépôts Maven NeoForge depuis l'environnement de dev.
-- [ ] **Générer le wrapper Gradle** : `gradle wrapper --gradle-version 9.1.0` à lancer en local (impossible ici, `services.gradle.org` est injoignable). En attendant, la CI épingle Gradle 9.1.0 via `setup-gradle` et lance `gradle build` au lieu de `./gradlew build`.
+- [x] **Générer le wrapper Gradle** → **fait le 2026-11-23** : généré en CI (`gradle wrapper --gradle-version 9.1.0`, somme SHA-256 de la distribution comprise) et commité ; la CI lance `./gradlew build`, et `setup-gradle` vérifie que `gradle-wrapper.jar` est celui d'une version publiée.
 - [x] ~~Vérifier `pack.mcmeta`~~ → **tranché le 2026-11-07, sur preuve.** `gradle packMeta` (tâche ajoutée au chapitre 2) lit le jar de Minecraft et celui de NeoForge : MC 26.2 annonce `resource 88.0` / `data 107.1`, et le jar universel de NeoForge déclare `min_format` = `max_format` = `[107, 1]`. Les deux clés sont des paires `[majeur, mineur]` et l'ancienne forme `pack_format` + `supported_formats` est abandonnée. On copie ce que le loader ship.
 
 ## À faire — phases 1 à 10
@@ -173,16 +173,16 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ## Points ouverts à trancher
 
 - ~~**IDs d'attributs 26.2** : les perks de `job_progression.json` utilisent des ids plausibles qui doivent être validés contre l'API réelle.~~ → **sans objet depuis le 2026-11-11** : les perks sont devenus des primes en argent, plus aucun attribut n'est touché par les métiers.
-- **Trocs de villageois en registres de datapack** (nouveauté 26.1 : `data/<ns>/villager_trade/*.json` et `trade_set/*.json`). **Piste à évaluer en phase 3** : plutôt que de plafonner le prix de vente du lapis, de la perle de l'ender et du reste, on peut retirer ou renchérir directement le troc fautif par datapack — et rendre leurs vrais prix à ces items. C'est traiter la cause au lieu du symptôme, et ça rendrait les plafonds inutiles.
+- ~~**Trocs de villageois en registres de datapack**~~ (nouveauté 26.1 : `data/<ns>/villager_trade/*.json` et `trade_set/*.json`). → **écarté le 2026-11-23 par le joueur** : à la question « retirer les trocs fautifs ou plafonner les prix ? », il a choisi de plafonner (les trocs restent, les prix s'effondrent). Voir `BALANCE.md`, « Plafonds villageois ».
 - **HUD et GUI en mode retenu** : 26.2 a supprimé `GuiGraphics`. Le HUD de la monnaie et le GUI du shop doivent être écrits directement en `extract*` + `GuiGraphicsExtractor`. L'API exacte d'enregistrement d'une couche de HUD côté NeoForge 26.2 est à confirmer en CI (l'ancien `RegisterGuiLayersEvent` n'est pas garanti sous cette forme). → **tranché le 2026-11-08** : relevé par sonde et écrit — `extractBackground` et `extractContents` (il n'y a plus de `renderLabels`), `blit` avec `RenderPipelines.GUI_TEXTURED`, `centeredText` pour le texte, `getLeftPos` / `getTopPos` (`getGuiLeft` / `getGuiTop` sont marqués pour suppression), `RegisterMenuScreensEvent` avec témoins de type explicites. Voir `MachineScreen` et `docs/PALAMOD.md`.
-- **Plafonds villageois** : ~~à confirmer~~ → **tranché le 2026-11-03 : on garde les plafonds.** Ne pas relancer `gen_prices.py` avec `--no-villager-caps`. Audit encore à compléter sur : briques, argile, papier, verre teinté, charbon, fer.
+- **Plafonds villageois** : ~~à confirmer~~ → **tranché le 2026-11-03 : on garde les plafonds.** Ne pas relancer `gen_prices.py` avec `--no-villager-caps`. ~~Audit encore à compléter~~ → **audit fait le 2026-11-23** sur les 388 trocs de 26.2 et les recettes de Create (`BALANCE.md`) : pomme, dripstone, laine blanche, charbon de bois, morue, ficelle, cuir et argile plafonnés ; redstone et glowstone corrigées ; le quartz sort des plafonds.
 - ~~**Catégorie COMPONENT** : liste et prix d'achat à établir (phase 3).~~ → **tranché le 2026-11-05 : la catégorie est supprimée.** Elle n'a jamais contenu d'item (aucune ligne de `rates.csv`, aucune règle de `tag_prices.json`), donc l'onglet du shop était vide et l'aile de musée correspondante ne pouvait pas se compléter. L'onglet est remplacé par la boutique ; la remise d'achat de −10 % est passée sur l'aile NTM.
 - ~~**Table de loot des caisses** : non écrite.~~ → **écrite le 2026-11-11** (BALANCE § 6 quater).
-- **Barème d'XP du niveau global** par type de jalon : à fixer quand les contrats tournent.
-- **Tag `minecraft:dirt` réduit en 26.2** (relevé le 2026-11-13 : `dirt`, `coarse_dirt`, `rooted_dirt`
-  seulement). Deux usages restent à revoir : `EarthBodies.natural()` (l'herbe n'y compte pas comme
-  terre en place) et `EarthSites` (une plante morte n'est gardée que sur de la terre, plus sur de
-  l'herbe). Le champ de mines des bases ennemies a été corrigé.
+- ~~**Barème d'XP du niveau global** par type de jalon~~ → **fixé le 2026-11-23** (`BALANCE.md` § 6 novovicies, `tools/global_level.py`) : la queue des paliers de collection monte de 150 à 290 au lieu de 9 390, les blocs de masse ne donnent plus d'XP globale.
+- ~~**Tag `minecraft:dirt` réduit en 26.2**~~ (relevé le 2026-11-13 : `dirt`, `coarse_dirt`, `rooted_dirt`
+  seulement). → **corrigé le 2026-11-23** : `util/Soils` (les tags `substrate_overworld` et
+  `grass_blocks` de 26.2, et les blocs nommés un par un) pour `EarthBodies.natural()` et
+  `EarthSites` ; une herbe voisine donne de la terre au remplissage d'une poche.
 - **`minecraft:potent_sulfur`** classé farmable sur la base des tags de geyser de 26.2 — **à vérifier en jeu** : si l'éruption ne produit pas de gain net, le reclasser en `FOUND`.
 - ~~**Les minerais de PalaMod ne rapportent pas d'XP de Mineur** (relevé le 2026-11-15 en écrivant
   l'onglet XP).~~ → **corrigé le 2026-11-15** : des lignes propres dans `job_progression.json`,
@@ -191,6 +191,27 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-23 (suite) — les points ouverts
+
+**Demande** : « Continue » : les points ouverts choisis plus tôt dans la journée (« Points ouverts
+(Recommandé) »), mis de côté pour la carte.
+
+- **La terre de 26.2** (`util/Soils`) : le tag `minecraft:dirt` ne compte plus l'herbe, le podzol, le
+  mycélium, les mousses ni la boue ; la carte de la Terre (`EarthBodies`, `EarthSites`) les reprend.
+- **Les plafonds villageois** : audit sur les données de 26.2 (388 trocs) et les recettes de Create
+  6.0.9. Question posée au joueur (retirer les trocs ou plafonner) : **plafonner**. Pomme 120 → 1,
+  cuir 60 → 4, ficelle 28 → 1, argile 30 → 1, dripstone 60 → 1, laine blanche 15 → 2, charbon de
+  bois 15 → 2, morue 30 → 6, poudre de glowstone 1 → 2 ; le quartz sort des plafonds (2 → 20).
+- **Le niveau global** : barème fixé (`BALANCE.md` § 6 novovicies, `tools/global_level.py`). La
+  corne du Dancarok menait une collection de bloc de masse au bout en trois heures, soit 75 niveaux
+  globaux ; les blocs de masse ne donnent plus d'XP globale (`global_xp_disabled`) et la queue des
+  paliers monte de 150 à 290. Le rythme ordinaire ne bouge pas : niveau 5 en semaine 1, 41 en
+  semaine 16.
+- **Le wrapper Gradle** : commité ; la CI lance `./gradlew build`.
+- **Non vérifié** : le broyeur de NTM NEXT sur des armures ou outils de villageois ; les prix des
+  pièces de NTM n'ont pas été recalculés avec le nouveau prix du quartz, du cuir et de la ficelle
+  (`gen_ntm_prices.py` demande les données de NTM NEXT).
 
 ### 2026-11-23 (suite) — la grande carte : les claims, et le monde entier révélé
 
@@ -212,8 +233,8 @@ soit entièrement révélée, pas au fur et à mesure que j'explore ». Détail 
   refait toutes les vérifications de `/f claim` (le code de `/f claim` est le même, découpé).
 - **`AtlasScreen(zoom, x, z)`** : la grande carte peut s'ouvrir sur un point donné (captures).
 - **Mis de côté** : les points ouverts (tag `minecraft:dirt` sur la carte de la Terre, plafonds
-  villageois, barème d'XP du niveau global) sont commencés sur la branche `feat/points-ouverts`
-  (poussée, sans PR) — à reprendre.
+  villageois, barème d'XP du niveau global), commencés sur la branche `feat/points-ouverts`, repris
+  juste après (entrée « les points ouverts »).
 
 ### 2026-11-22 — organisations et économie souterraine, lot 24a
 
