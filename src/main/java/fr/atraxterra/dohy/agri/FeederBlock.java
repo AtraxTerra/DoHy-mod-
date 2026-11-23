@@ -148,7 +148,7 @@ public class FeederBlock extends BaseEntityBlock {
 
     private void report(Player player, FeederBlockEntity feeder) {
         String text = kind == Kind.TROUGH
-                ? "Mangeoire : " + feeder.amount() + " / " + feeder.capacity() + " cereales ("
+                ? "Mangeoire : " + feeder.amount() + " / " + feeder.capacity() + " rations de fourrage ("
                 + AgriConfig.config().feedRation() + " par bete)  ·  prochaine tournee dans "
                 + feeder.minutesUntilFeed() + " min"
                 : "Abreuvoir : " + feeder.amount() + " / " + feeder.capacity() + " doses d'eau";

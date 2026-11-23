@@ -126,7 +126,7 @@ public class AgriMachineBlock extends BaseEntityBlock {
         }
     }
 
-    /** Le biogenerateur se charge une cereale a la main ; les deux autres n'ont rien a recevoir ainsi. */
+    /** Le biogenerateur se charge de fourrage a la main ; les deux autres n'ont rien a recevoir ainsi. */
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
