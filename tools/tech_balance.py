@@ -62,13 +62,14 @@ def load_lab():
 
 
 def bonus(domains, kind):
-    """La somme d'un bonus sur tout l'arbre (le plus fort que la nation puisse avoir)."""
+    """Le plus fort d'un bonus que la nation puisse avoir : dans un domaine, un palier remplace le
+    precedent (Energie II, IV et VI : -10, -15 puis -25 %) ; d'un domaine a l'autre, ils s'ajoutent
+    (TechPerks.of)."""
     total = 0
     for domain in domains:
-        for tier in domain['tiers']:
-            for entry in tier.get('bonuses', []):
-                if entry.get('type') == kind:
-                    total += entry.get('value', 0)
+        values = [entry.get('value', 0) for tier in domain['tiers'] for entry in tier.get('bonuses', [])
+                  if entry.get('type') == kind]
+        total += max(values) if values else 0
     return total
 
 
