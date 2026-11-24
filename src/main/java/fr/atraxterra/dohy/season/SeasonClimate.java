@@ -74,8 +74,9 @@ public final class SeasonClimate {
      *
      * @param offsets   le decalage de temperature de chaque bande
      * @param strengths la force des couleurs de saison de chaque bande, positive au nord, negative au sud
+     * @param tropics   la force des couleurs de saison seche et de saison des pluies, signee de meme
      */
-    private record Table(Frame frame, float[] offsets, float[] strengths, double phase) {
+    private record Table(Frame frame, float[] offsets, float[] strengths, float[] tropics, double phase) {
 
         float offset(int x, int z) {
             if (!frame.contains(x, z)) {
@@ -89,6 +90,13 @@ public final class SeasonClimate {
                 return 0.0f;
             }
             return strengths[(z - frame.minZ()) >> BAND_SHIFT];
+        }
+
+        float tropics(int x, int z) {
+            if (!frame.contains(x, z)) {
+                return 0.0f;
+            }
+            return tropics[(z - frame.minZ()) >> BAND_SHIFT];
         }
     }
 
@@ -168,13 +176,16 @@ public final class SeasonClimate {
         int bands = ((current.maxZ() - current.minZ()) >> BAND_SHIFT) + 1;
         float[] offsets = new float[bands];
         float[] strengths = new float[bands];
+        float[] tropics = new float[bands];
         for (int band = 0; band < bands; band++) {
             double latitude = current.latitude(current.minZ() + (band << BAND_SHIFT) + 8);
             offsets[band] = (float) SeasonMath.offset(latitude, phase);
             float strength = (float) SeasonMath.colorStrength(latitude);
             strengths[band] = latitude >= 0.0d ? strength : -strength;
+            float wetDry = (float) SeasonMath.tropicsColorStrength(latitude);
+            tropics[band] = latitude >= 0.0d ? wetDry : -wetDry;
         }
-        table = new Table(current, offsets, strengths, phase);
+        table = new Table(current, offsets, strengths, tropics, phase);
     }
 
     /** Le decalage a ajouter a la temperature d'un biome en (x, z). */
@@ -199,5 +210,17 @@ public final class SeasonClimate {
             return 0.0f;
         }
         return current.strength(x, z);
+    }
+
+    /**
+     * La force des couleurs de saison seche et de saison des pluies en (x, z),
+     * signee comme {@link #strength} ; zero loin des tropiques.
+     */
+    public float tropics(int x, int z) {
+        Table current = table;
+        if (current == null || this == CLIENT && !dimension) {
+            return 0.0f;
+        }
+        return current.tropics(x, z);
     }
 }

@@ -2,59 +2,63 @@ package fr.atraxterra.dohy.client.season;
 
 import fr.atraxterra.dohy.season.SeasonClimate;
 import fr.atraxterra.dohy.season.SeasonMath;
+import fr.atraxterra.dohy.season.SeasonPalette;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.FoliageColor;
 
 /**
- * Les teintes de saison de l'herbe et du feuillage.
+ * Les teintes de saison de l'herbe, du feuillage et des bouleaux.
  *
  * <h2>Le modele</h2>
  *
- * <p>Chaque saison a une teinte vers laquelle elle tire les couleurs du jeu, et
- * une force :
- * <ul>
- *   <li><b>automne</b> : le feuillage rougit franchement, et pas d'une seule
- *       couleur — rouge, orange, jaune ou roux selon le bosquet (des taches de 4
- *       blocs, a peu pres un arbre) ; l'herbe tourne a la paille ;</li>
- *   <li><b>hiver</b> : feuillage brun gris, herbe seche et terne ;</li>
- *   <li><b>printemps</b> : un vert tendre et vif ;</li>
- *   <li><b>ete</b> : les couleurs du jeu, intactes.</li>
- * </ul>
- * Les saisons voisines se melent selon {@link SeasonMath#weight} : les teintes
- * glissent sans saut d'une semaine a l'autre. La force est multipliee par celle
- * des couleurs a la latitude du bloc ({@link SeasonMath#colorStrength}) : rien
- * sous les tropiques, toute des 45° — la France comprise. Les sapins et les
- * bouleaux gardent leur couleur fixe : les resineux ne rougissent pas.
+ * <p>Les teintes viennent de {@link SeasonPalette} : douze temps de l'annee
+ * (debut, coeur et fin de chaque saison), dans l'esprit de Serene Seasons, qui
+ * se fondent l'un dans l'autre. L'herbe jaunit a la fin de l'ete, le feuillage
+ * s'embrase a l'automne — une couleur par bosquet, une tache de 4 blocs, a peu
+ * pres un arbre — puis brunit ; l'hiver laisse des arbres nus et une herbe pale ;
+ * le printemps reverdit en vert tendre. Les bosquets sont en avance ou en
+ * retard d'un jour au plus : les arbres ne tournent pas tous ensemble. Les
+ * bouleaux dorent a l'automne ; les sapins gardent leur couleur fixe.
+ *
+ * <p>Deux forces, lues par bande de latitude dans {@link SeasonClimate} :
+ * celle des saisons temperees ({@link SeasonMath#colorStrength}, toute des 40°)
+ * et celle de la saison seche et de la saison des pluies sous les tropiques
+ * ({@link SeasonMath#tropicsColorStrength}). Un bloc recoit la premiere, puis la
+ * seconde par-dessus ; elles ne se croisent qu'entre 23 et 30°, faibles l'une et
+ * l'autre.
  *
  * <h2>Les paliers</h2>
  *
  * <p>Un chunk garde les couleurs de sa construction. Les teintes avancent donc
- * par paliers — 64 par annee, un peu plus de dix heures — et chaque palier fait
+ * par paliers — {@link #STEPS} par annee, sept heures — et chaque palier fait
  * reconstruire les chunks affiches ({@link ClientSeasons}). Entre deux, rien ne
- * bouge, et les fils de construction ne lisent que des valeurs figees.
+ * bouge : les fils de construction ne lisent que des tables figees, refaites
+ * d'un bloc a chaque palier.
  */
 public final class SeasonColors {
 
     /** Paliers de couleur par annee. */
-    public static final int STEPS = 64;
+    public static final int STEPS = 96;
 
-    // hiver, printemps, ete, automne ; la teinte d'automne du feuillage vient de AUTUMN_LEAVES
-    private static final int[] FOLIAGE = {0x7A6A4F, 0x7EDB3A, 0x000000, 0x000000};
-    private static final double[] FOLIAGE_FORCE = {0.75d, 0.50d, 0.0d, 0.85d};
-    private static final int[] GRASS = {0x9C8F6A, 0x86E04A, 0x000000, 0xC2A24A};
-    private static final double[] GRASS_FORCE = {0.75d, 0.50d, 0.0d, 0.65d};
-
-    /** Les feuillages d'automne : rouge, orange, jaune, roux. */
-    private static final int[] AUTUMN_LEAVES = {0xC8321E, 0xE0701A, 0xD8A82A, 0xA8482A};
+    private static final int SHADES = SeasonPalette.AUTUMN.length;
 
     /**
-     * La teinte d'un hemisphere a un palier.
+     * Les teintes d'un hemisphere a un palier.
      *
-     * @param grass        couleur visee par l'herbe, et sa force
-     * @param foliage      couleur visee par le feuillage hors automne (hiver, printemps), et sa force
-     * @param autumnForce  la part de l'automne dans le feuillage ; sa couleur depend du bosquet
+     * @param grass          teinte visee par l'herbe, et sa force
+     * @param foliage        teinte visee par le feuillage, par niveau d'avance puis couleur d'automne du bosquet
+     * @param foliageForce   force du feuillage, par niveau d'avance
+     * @param birch          teinte visee par les bouleaux, par niveau d'avance
+     * @param birchForce     force des bouleaux, par niveau d'avance
+     * @param tropicGrass    sous les tropiques, teinte visee par l'herbe, et sa force
+     * @param tropicFoliage  sous les tropiques, teinte visee par le feuillage et les bouleaux, et sa force
      */
-    private record Tint(int grass, float grassForce, int foliage, float foliageForce, float autumnForce) {
-        static final Tint NONE = new Tint(0, 0.0f, 0, 0.0f, 0.0f);
+    private record Tint(int grass, float grassForce, int[] foliage, float[] foliageForce, int[] birch,
+                        float[] birchForce, int tropicGrass, float tropicGrassForce, int tropicFoliage,
+                        float tropicFoliageForce) {
+        static final Tint NONE = new Tint(0, 0.0f, new int[SeasonPalette.LEVELS * SHADES],
+                new float[SeasonPalette.LEVELS], new int[SeasonPalette.LEVELS], new float[SeasonPalette.LEVELS], 0,
+                0.0f, 0, 0.0f);
     }
 
     private static volatile Tint north = Tint.NONE;
@@ -81,94 +85,85 @@ public final class SeasonColors {
     }
 
     private static Tint tint(double local) {
-        double[] grass = new double[3];
-        double[] foliage = new double[3];
-        double grassForce = 0.0d;
-        double foliageForce = 0.0d;
-        double autumnForce = 0.0d;
-        for (int season = 0; season < 4; season++) {
-            double weight = SeasonMath.weight(local, season);
-            double g = weight * GRASS_FORCE[season];
-            add(grass, GRASS[season], g);
-            grassForce += g;
-            double f = weight * FOLIAGE_FORCE[season];
-            if (season == SeasonMath.AUTUMN) {
-                autumnForce += f;
-            } else {
-                add(foliage, FOLIAGE[season], f);
-                foliageForce += f;
+        SeasonPalette.Key now = SeasonPalette.at(local);
+        int[] foliage = new int[SeasonPalette.LEVELS * SHADES];
+        float[] foliageForce = new float[SeasonPalette.LEVELS];
+        int[] birch = new int[SeasonPalette.LEVELS];
+        float[] birchForce = new float[SeasonPalette.LEVELS];
+        for (int level = 0; level < SeasonPalette.LEVELS; level++) {
+            SeasonPalette.Key key = SeasonPalette.at(local + SeasonPalette.precocity(level));
+            foliageForce[level] = (float) key.foliageForce();
+            for (int shade = 0; shade < SHADES; shade++) {
+                foliage[level * SHADES + shade] = SeasonPalette.foliageTarget(key, shade);
             }
+            birch[level] = key.birch();
+            birchForce[level] = (float) key.birchForce();
         }
-        return new Tint(color(grass, grassForce), (float) grassForce, color(foliage, foliageForce),
-                (float) foliageForce, (float) autumnForce);
+        SeasonPalette.Tropics tropics = SeasonPalette.tropics(local);
+        return new Tint(now.grass(), (float) now.grassForce(), foliage, foliageForce, birch, birchForce,
+                tropics.grass(), (float) tropics.grassForce(), tropics.foliage(), (float) tropics.foliageForce());
     }
 
-    private static void add(double[] sum, int rgb, double weight) {
-        sum[0] += ((rgb >> 16) & 0xFF) * weight;
-        sum[1] += ((rgb >> 8) & 0xFF) * weight;
-        sum[2] += (rgb & 0xFF) * weight;
-    }
-
-    private static int color(double[] sum, double total) {
-        if (total <= 0.0d) {
-            return 0;
+    /** L'hemisphere d'un bloc d'apres ses forces signees ; {@code null} si aucune saison ne le colore. */
+    private static Tint hemisphere(float strength, float tropics) {
+        if (strength == 0.0f && tropics == 0.0f) {
+            return null;
         }
-        int red = (int) Math.round(sum[0] / total);
-        int green = (int) Math.round(sum[1] / total);
-        int blue = (int) Math.round(sum[2] / total);
-        return red << 16 | green << 8 | blue;
+        return (strength != 0.0f ? strength : tropics) > 0.0f ? north : south;
     }
 
     /** L'herbe de ce bloc a la saison. */
     public static int grass(int base, BlockPos pos) {
         float strength = SeasonClimate.CLIENT.strength(pos.getX(), pos.getZ());
-        if (strength == 0.0f) {
+        float tropics = SeasonClimate.CLIENT.tropics(pos.getX(), pos.getZ());
+        Tint tint = hemisphere(strength, tropics);
+        if (tint == null) {
             return base;
         }
-        Tint tint = strength > 0.0f ? north : south;
-        return blend(base, tint.grass(), Math.abs(strength) * tint.grassForce());
+        int color = SeasonPalette.blend(base, tint.grass(), Math.abs(strength) * tint.grassForce());
+        return SeasonPalette.blend(color, tint.tropicGrass(), Math.abs(tropics) * tint.tropicGrassForce());
     }
 
-    /** Le feuillage de ce bloc a la saison. */
+    /** Le feuillage de ce bloc a la saison (feuilles des feuillus, lianes, feuilles mortes au sol). */
     public static int foliage(int base, BlockPos pos) {
         float strength = SeasonClimate.CLIENT.strength(pos.getX(), pos.getZ());
-        if (strength == 0.0f) {
+        float tropics = SeasonClimate.CLIENT.tropics(pos.getX(), pos.getZ());
+        Tint tint = hemisphere(strength, tropics);
+        if (tint == null) {
             return base;
         }
-        Tint tint = strength > 0.0f ? north : south;
-        float total = tint.foliageForce() + tint.autumnForce();
-        if (total <= 0.0f) {
-            return base;
-        }
-        int target = tint.foliage();
-        if (tint.autumnForce() > 0.0f) {
-            target = mix(target, AUTUMN_LEAVES[grove(pos)], tint.autumnForce() / total);
-        }
-        return blend(base, target, Math.abs(strength) * total);
+        int grove = grove(pos);
+        int level = grove % SeasonPalette.LEVELS;
+        int shade = grove / SeasonPalette.LEVELS % SHADES;
+        int color = SeasonPalette.blend(base, tint.foliage()[level * SHADES + shade],
+                Math.abs(strength) * tint.foliageForce()[level]);
+        return SeasonPalette.blend(color, tint.tropicFoliage(), Math.abs(tropics) * tint.tropicFoliageForce());
     }
 
-    /** Le bosquet d'un bloc : une couleur d'automne par tache de 4 blocs, tiree d'un hachage de la position. */
+    /** Les feuilles de bouleau de ce bloc a la saison : la couleur fixe du jeu, tiree vers celle de l'annee. */
+    public static int birch(BlockPos pos) {
+        int base = FoliageColor.FOLIAGE_BIRCH;
+        float strength = SeasonClimate.CLIENT.strength(pos.getX(), pos.getZ());
+        float tropics = SeasonClimate.CLIENT.tropics(pos.getX(), pos.getZ());
+        Tint tint = hemisphere(strength, tropics);
+        if (tint == null) {
+            return base;
+        }
+        int level = grove(pos) % SeasonPalette.LEVELS;
+        int color = SeasonPalette.blend(base, tint.birch()[level], Math.abs(strength) * tint.birchForce()[level]);
+        return SeasonPalette.blend(color, tint.tropicFoliage(), Math.abs(tropics) * tint.tropicFoliageForce());
+    }
+
+    /**
+     * Le bosquet d'un bloc : un nombre tire d'un hachage de sa tache de 4 blocs
+     * (sans la hauteur : un arbre garde la meme couleur de haut en bas). Ses bits
+     * bas donnent l'avance, les suivants la couleur d'automne.
+     */
     private static int grove(BlockPos pos) {
         long hash = (pos.getX() >> 2) * 0x9E3779B97F4A7C15L ^ (pos.getZ() >> 2) * 0xC2B2AE3D27D4EB4FL;
         hash ^= hash >>> 31;
         hash *= 0xBF58476D1CE4E5B9L;
         hash ^= hash >>> 29;
-        return (int) Math.floorMod(hash, (long) AUTUMN_LEAVES.length);
-    }
-
-    /** Un melange de deux couleurs, {@code share} de la seconde. */
-    private static int mix(int first, int second, float share) {
-        float keep = 1.0f - share;
-        int red = Math.round(((first >> 16) & 0xFF) * keep + ((second >> 16) & 0xFF) * share);
-        int green = Math.round(((first >> 8) & 0xFF) * keep + ((second >> 8) & 0xFF) * share);
-        int blue = Math.round((first & 0xFF) * keep + (second & 0xFF) * share);
-        return red << 16 | green << 8 | blue;
-    }
-
-    private static int blend(int base, int target, float amount) {
-        if (amount <= 0.0f) {
-            return base;
-        }
-        return base & 0xFF000000 | mix(base & 0xFFFFFF, target, Math.min(1.0f, amount));
+        return (int) (hash >>> 33);
     }
 }

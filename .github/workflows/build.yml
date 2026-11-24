@@ -102,6 +102,16 @@ jobs:
             tools/SeasonMathTest.java
           java -cp /tmp/season fr.atraxterra.dohy.season.SeasonMathTest
 
+      # Les couleurs des saisons : douze temps de l'annee qui se fondent sans saut,
+      # un ete fidele au jeu, un automne embrase et varie, la saison seche des tropiques.
+      - name: Les couleurs des saisons doivent passer leur test
+        run: |
+          javac -d /tmp/season-palette \
+            src/main/java/fr/atraxterra/dohy/season/SeasonMath.java \
+            src/main/java/fr/atraxterra/dohy/season/SeasonPalette.java \
+            tools/SeasonPaletteTest.java
+          java -cp /tmp/season-palette fr.atraxterra.dohy.season.SeasonPaletteTest
+
       # Les palettes : le decoupage en groupes d'au plus 3 x 3 et la pile de caisses
       # (rien ne flotte, tout tient dans l'emprise du groupe).
       - name: Les palettes doivent passer leur test

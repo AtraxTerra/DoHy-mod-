@@ -4,20 +4,27 @@ import fr.atraxterra.dohy.mixin.BiomeAccessor;
 import fr.atraxterra.dohy.season.SeasonClimate;
 import fr.atraxterra.dohy.season.SeasonMath;
 import fr.atraxterra.dohy.season.SeasonSync;
+import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.FoliageColor;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 
 /**
  * Les saisons cote client : le calendrier recu du serveur, la table de
  * temperature (pour que la pluie devienne neige a l'ecran la ou le serveur fait
- * neiger), les couleurs de saison et la ligne de l'atlas.
+ * neiger), les couleurs de saison (bouleaux compris) et la ligne de l'atlas.
  */
 @EventBusSubscriber(value = Dist.CLIENT)
 public final class ClientSeasons {
@@ -27,6 +34,28 @@ public final class ClientSeasons {
     private static boolean onMap;
 
     private ClientSeasons() {
+    }
+
+    /**
+     * Les feuilles de bouleau : le jeu leur donne une couleur fixe, qui ne passe
+     * pas par le biome. On la remplace par celle de la saison ({@link SeasonColors#birch}) ;
+     * hors du monde (inventaire, main), la couleur du jeu.
+     */
+    private static final BlockTintSource BIRCH = new BlockTintSource() {
+        @Override
+        public int color(BlockState state) {
+            return FoliageColor.FOLIAGE_BIRCH;
+        }
+
+        @Override
+        public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+            return SeasonColors.birch(pos);
+        }
+    };
+
+    @SubscribeEvent
+    public static void onRegisterTints(RegisterColorHandlersEvent.BlockTintSources event) {
+        event.register(List.of(BIRCH), Blocks.BIRCH_LEAVES);
     }
 
     @SubscribeEvent

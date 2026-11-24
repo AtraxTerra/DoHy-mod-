@@ -3436,6 +3436,16 @@
             "- Les cultures poussent selon la saison.",
             "- Les couleurs du monde et de l'atlas suivent."
           ]
+        },
+        {
+          "title": "Les couleurs",
+          "text": [
+            "- Printemps : des bourgeons vert pale, puis un vert tendre et vif.",
+            "- Ete : les couleurs du jeu, puis l'herbe jaunit en fin de saison.",
+            "- Automne : chaque bosquet rougit, dore ou roussit a son heure, puis brunit. Les bouleaux virent a l'or.",
+            "- Hiver : des arbres nus et une herbe pale. Les sapins restent verts.",
+            "- Sous les tropiques : herbe doree a la saison seche, vert vif a la saison des pluies."
+          ]
         }
       ],
       "see": [
