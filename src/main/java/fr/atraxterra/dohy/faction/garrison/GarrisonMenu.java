@@ -74,10 +74,10 @@ public final class GarrisonMenu extends MenuController {
 
     private static String orderHelp(Garrison.Order order) {
         return switch (order) {
-            case GARDE -> "Postes autour de la caserne ; pendant un assaut, autour de ton coffre.";
-            case SUIVRE -> "Derriere toi, partout ou tu vas (sauf au spawn).";
-            case REPOS -> "A la caserne, sans se battre.";
-            case CONGE -> "Personne en jeu ; la solde court toujours.";
+            case GARDE -> "Autour de la caserne. En assaut : au coffre.";
+            case SUIVRE -> "Derriere toi, partout sauf au spawn.";
+            case REPOS -> "A la caserne, sans combattre.";
+            case CONGE -> "Personne en jeu.";
         };
     }
 
@@ -96,14 +96,8 @@ public final class GarrisonMenu extends MenuController {
         String status = live != null ? "En jeu" : garrison.order() == Garrison.Order.CONGE ? "En conge" : "A la caserne";
         List<String> lines = List.of("Vie : " + shown + " / " + (int) Math.ceil(max), status + " · "
                 + member.kills() + " abattu(s)");
-        List<String> tooltip = new ArrayList<>();
-        tooltip.add(role.description());
-        tooltip.add("Solde : " + MoneyFormat.exact(role.pay()) + " $ par jour");
-        if (live != null) {
-            tooltip.add("Pres de " + live.blockPosition().toShortString());
-        }
-        tooltip.add("");
-        tooltip.add("Clic droit : le faire venir pres de toi.");
+        List<String> tooltip = List.of("Solde : " + MoneyFormat.exact(role.pay()) + " $ / jour",
+                "Clic droit : le faire venir");
         return Card.of(icon(player, garrison, role), member.title(), lines)
                 .badge(role == GarrisonRole.CAPITAINE ? "CHEF" : "")
                 .accent(health < max * 0.35f ? RED : color(role))
@@ -120,13 +114,8 @@ public final class GarrisonMenu extends MenuController {
         double damage = role.damage() + garrison.tier().damage();
         List<String> tooltip = new ArrayList<>();
         tooltip.add(role.description());
-        tooltip.add("Vie " + (int) Math.round(health) + ", degats " + (int) Math.round(damage)
-                + (garrison.tier() == GarrisonTier.FER ? "" : " (equipement " + garrison.tier().label().toLowerCase(
-                Locale.ROOT) + ")"));
-        tooltip.add("Recrutement : " + MoneyFormat.exact(role.cost()) + " $, pris dans la banque de la nation");
-        tooltip.add("Solde : " + MoneyFormat.exact(role.pay()) + " $ par jour");
+        tooltip.add("Vie " + (int) Math.round(health) + " · Degats " + (int) Math.round(damage));
         if (refusal != null) {
-            tooltip.add("");
             tooltip.add(refusal);
         }
         Card card = Card.of(icon(player, garrison, role), role.label(), List.of(MoneyFormat.exact(role.cost()) + " $",
@@ -140,20 +129,20 @@ public final class GarrisonMenu extends MenuController {
         }
         return card.action("recruit:" + role.id() + "|recruter")
                 .confirm("Recruter un " + role.label().toLowerCase(Locale.ROOT) + " ?|" + MoneyFormat.exact(role.cost())
-                        + " $ de la banque, puis " + MoneyFormat.exact(role.pay()) + " $ par jour");
+                        + " $");
     }
 
     private static Card order(ServerPlayer player, Garrison garrison, Garrison.Order order) {
         boolean current = garrison.order() == order;
         String refusal = Garrisons.orderRefusal(player, order);
-        Card card = Card.of(icon(order), order.label(), List.of(current ? "L'ordre du moment" : "/garnison "
+        Card card = Card.of(icon(order), order.label(), List.of(current ? "En cours" : "/garnison "
                 + order.id(), ""))
                 .accent(current ? GOLD : GRAY).tooltip(List.of(orderHelp(order)));
         if (current) {
             return card.state(MenuView.DONE);
         }
         if (refusal != null) {
-            return card.state(MenuView.DISABLED).tooltip(List.of(orderHelp(order), "", refusal));
+            return card.state(MenuView.DISABLED).tooltip(List.of(orderHelp(order), refusal));
         }
         return card.action("order:" + order.id() + "|donner l'ordre");
     }
@@ -169,14 +158,10 @@ public final class GarrisonMenu extends MenuController {
         if (top) {
             return card.accent(GREEN).state(MenuView.DONE);
         }
-        List<String> tooltip = new ArrayList<>(List.of("Niveau " + (level + 1) + " : "
-                + Garrison.CAPACITY[level] + " soldats.", "Paye par la banque de la nation."));
         if (refusal != null) {
-            tooltip.add("");
-            tooltip.add(refusal);
-            return card.accent(GRAY).state(MenuView.DISABLED).tooltip(tooltip);
+            return card.accent(GRAY).state(MenuView.DISABLED).tooltip(List.of(refusal));
         }
-        return card.accent(GOLD).tooltip(tooltip).action("level|agrandir")
+        return card.accent(GOLD).action("level|agrandir")
                 .confirm("Agrandir la caserne ?|" + MoneyFormat.exact(Garrison.LEVEL_COST[level]) + " $ de la banque");
     }
 
@@ -193,11 +178,9 @@ public final class GarrisonMenu extends MenuController {
         if (next == null) {
             return card.accent(GREEN).state(MenuView.DONE);
         }
-        List<String> tooltip = new ArrayList<>(List.of("En " + next.label().toLowerCase(Locale.ROOT) + " : vie x"
-                + format(next.health()) + ", +" + (int) next.damage() + " degats, son armure.",
-                "Pour toute la garnison, recrues a venir comprises."));
+        List<String> tooltip = new ArrayList<>(List.of(next.label() + " : vie x" + format(next.health()) + ", +"
+                + (int) next.damage() + " degats"));
         if (refusal != null) {
-            tooltip.add("");
             tooltip.add(refusal);
             return card.accent(GRAY).state(MenuView.DISABLED).tooltip(tooltip);
         }
@@ -236,10 +219,10 @@ public final class GarrisonMenu extends MenuController {
             soldiers.add(member(player, garrison, member));
         }
         if (soldiers.isEmpty()) {
-            soldiers.add(Card.of(new ItemStack(Items.ARMOR_STAND), "Personne", List.of("Recrute tes premiers soldats",
-                    "ci-dessous")).state(MenuView.DISABLED));
+            soldiers.add(Card.of(new ItemStack(Items.ARMOR_STAND), "Aucun soldat", List.of("Recrute ci-dessous", ""))
+                    .state(MenuView.DISABLED));
         }
-        sections.add(new MenuView.Section(kills > 0 ? "TES SOLDATS · " + kills + " ENNEMI(S) ABATTU(S)" : "TES SOLDATS",
+        sections.add(new MenuView.Section(kills > 0 ? "TES SOLDATS · " + kills + " ABATTUS" : "TES SOLDATS",
                 "armor", MenuView.GRID, soldiers));
 
         List<Card> recruits = new ArrayList<>();
@@ -259,34 +242,15 @@ public final class GarrisonMenu extends MenuController {
         upgrades.add(tier(player, garrison));
         Optional<GlobalPos> barracks = garrison.barracks();
         upgrades.add(barracks.isPresent()
-                ? Card.of(new ItemStack(DoHyGarrison.BARRACKS_ITEM.get()), "La caserne", List.of(where(barracks),
-                        "Une par joueur")).accent(STEEL).tooltip(List.of("Ta garnison y loge et s'y poste.",
-                        "La casser met la garnison en conge."))
+                ? Card.of(new ItemStack(DoHyGarrison.BARRACKS_ITEM.get()), "La caserne", List.of(where(barracks), ""))
+                        .accent(STEEL)
                 : Card.of(new ItemStack(DoHyGarrison.BARRACKS_ITEM.get()), "Pas de caserne", List.of(
-                        "A poser dans tes claims", "Pierre taillee, fer, paladium")).accent(RED)
-                        .state(MenuView.DISABLED).tooltip(List.of("Etabli : briques de pierre en haut et en bas,",
-                                "deux blocs de fer et un bloc de paladium au milieu.")));
+                        "A poser dans tes claims", "")).accent(RED).state(MenuView.DISABLED));
         sections.add(new MenuView.Section("LA CASERNE", "upgrade", MenuView.GRID, upgrades));
 
-        sections.add(new MenuView.Section("A SAVOIR", "upgrade", MenuView.GRID, List.of(
-                Card.of(new ItemStack(Items.GOLD_INGOT), "La solde", List.of("Chaque jour, a 5 h", "Banque de la nation"))
-                        .accent(GOLD).tooltip(List.of("Payee le premier moment ou tu es en ligne ce jour-la.",
-                                "Deux jours sans solde : un soldat deserte chaque jour.",
-                                "Pendant un assaut, la banque est sous scelle : la solde attend.")),
-                Card.of(new ItemStack(Items.IRON_SWORD), "Au combat", List.of("Soldats, monstres,", "ce qui t'attaque"))
-                        .accent(STEEL).tooltip(List.of("Ils frappent ce que tu frappes et ce qui te frappe,",
-                                "les soldats des nations, les monstres (pas les creepers).",
-                                "Ni toi ni eux ne vous blessez. Pendant un assaut, ils tiennent ton coffre.",
-                                "Les primes des soldats qu'ils abattent sont pour toi.")),
-                Card.of(new ItemStack(Items.GOLDEN_APPLE), "Les blesses", List.of("Se soignent a la caserne",
-                        "Un mort quitte la garnison")).accent(RED).tooltip(List.of(
-                        "Rappeles, ils reprennent une demi-vie par seconde.",
-                        "Deployes, ils pansent leurs plaies a leur poste.",
-                        "Le medecin soigne les siens, et toi.")))));
-
-        String subtitle = !nation ? "Fonde ta nation (/f) pour entretenir une garnison"
-                : barracks.isEmpty() ? "Pose une caserne dans tes claims pour recruter"
-                : besieged && garrison.order() == Garrison.Order.GARDE ? "Assaut en cours : ta garnison tient ton coffre"
+        String subtitle = !nation ? "Il faut une nation (/f)"
+                : barracks.isEmpty() ? "Pose une caserne dans tes claims"
+                : besieged && garrison.order() == Garrison.Order.GARDE ? "Assaut : la garnison tient ton coffre"
                 : "Caserne en " + where(barracks) + " · " + garrison.order().label().toLowerCase(Locale.ROOT);
         MenuView view = new MenuView(id(), "La garnison", subtitle, stats, sections, true);
         return nation ? view.withTabs(FactionMenus.tabs(player, FactionMenus.DIPLOMACY)) : view;

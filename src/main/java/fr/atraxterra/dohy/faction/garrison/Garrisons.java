@@ -355,20 +355,18 @@ public final class Garrisons {
         long due = garrison.dailyPay();
         if (FactionApi.payFromBank(player, due, "Solde de la garnison")) {
             garrison.unpaid = 0;
-            tell(player, "Garnison : solde du jour payee, " + MoneyFormat.exact(due) + " $ pris dans la banque.",
-                    ChatFormatting.GRAY);
+            tell(player, "Garnison : solde payee (" + MoneyFormat.exact(due) + " $).", ChatFormatting.GRAY);
             return;
         }
         garrison.unpaid++;
         if (garrison.unpaid < PATIENCE) {
-            tell(player, "Garnison : la banque ne peut pas payer la solde (" + MoneyFormat.exact(due)
-                    + " $). Demain, un soldat desertera.", ChatFormatting.RED);
+            tell(player, "Garnison : solde impayee (" + MoneyFormat.exact(due) + " $). Un soldat desertera demain.",
+                    ChatFormatting.RED);
             return;
         }
         Garrison.Member gone = garrison.members().get(garrison.members().size() - 1);
         dismiss(player, garrison, gone);
-        tell(player, "Garnison : " + gone.title() + " deserte, la solde n'est plus payee depuis "
-                + garrison.unpaid + " jours.", ChatFormatting.RED);
+        tell(player, "Garnison : " + gone.title() + " deserte.", ChatFormatting.RED);
         DoHy.LOGGER.info("Garnison de {} : {} deserte ({} jours sans solde)", player.getName().getString(),
                 gone.title(), garrison.unpaid);
     }
@@ -379,13 +377,13 @@ public final class Garrisons {
     static String recruitRefusal(ServerPlayer player, GarrisonRole role) {
         Garrison garrison = of(player);
         if (!FactionApi.has(player)) {
-            return "Il faut une nation (et sa banque) pour entretenir une garnison : /f.";
+            return "Il faut une nation (/f).";
         }
         if (garrison.barracks().isEmpty()) {
-            return "Il faut d'abord une caserne, posee dans tes claims.";
+            return "Il faut une caserne.";
         }
         if (garrison.members().size() >= garrison.capacity()) {
-            return "La caserne est pleine (" + garrison.capacity() + " soldats) : agrandis-la.";
+            return "Caserne pleine (" + garrison.capacity() + ").";
         }
         if (role.max() > 0 && garrison.count(role) >= role.max()) {
             return "Un seul " + role.label().toLowerCase(Locale.ROOT) + " par garnison.";
@@ -404,15 +402,14 @@ public final class Garrisons {
         }
         Garrison garrison = of(player);
         if (!FactionApi.payFromBank(player, role.cost(), "Recrutement : " + role.label())) {
-            return "La banque de la nation ne peut pas payer ce recrutement.";
+            return "Paiement refuse.";
         }
         Garrison.Member member = new Garrison.Member(UUID.randomUUID(), freshName(garrison, player), role, -1.0f, 0);
         garrison.members.add(member);
         if (garrison.payDay == Long.MIN_VALUE) {
             garrison.payDay = ContractApi.today();
         }
-        tell(player, member.title() + " rejoint ta garnison (solde : " + MoneyFormat.exact(role.pay())
-                + " $ par jour).", ChatFormatting.GREEN);
+        tell(player, member.title() + " rejoint la garnison.", ChatFormatting.GREEN);
         return null;
     }
 
@@ -450,13 +447,13 @@ public final class Garrisons {
     static String call(ServerPlayer player, UUID id) {
         GarrisonSoldier soldier = deployed(player.getUUID(), id);
         if (soldier == null) {
-            return "Ce soldat n'est pas deploye en ce moment.";
+            return "Pas deploye.";
         }
         if (soldier.level() != player.level()) {
-            return "Ce soldat est dans une autre dimension.";
+            return "Autre dimension.";
         }
         if (!soldier.catchUp(player)) {
-            return "Pas de place libre a cote de toi.";
+            return "Pas de place a cote de toi.";
         }
         soldier.setTarget(null);
         return null;
@@ -478,7 +475,7 @@ public final class Garrisons {
 
     static String orderRefusal(ServerPlayer player, Garrison.Order order) {
         if (order != Garrison.Order.SUIVRE && order != Garrison.Order.CONGE && of(player).barracks().isEmpty()) {
-            return "Sans caserne, la garnison ne peut que te suivre ou partir en conge.";
+            return "Sans caserne : suivre ou conge.";
         }
         return null;
     }
@@ -486,10 +483,10 @@ public final class Garrisons {
     static String upgradeLevelRefusal(ServerPlayer player) {
         Garrison garrison = of(player);
         if (garrison.level() >= Garrison.CAPACITY.length) {
-            return "La caserne est deja a son plus haut niveau.";
+            return "Niveau maximum.";
         }
         if (garrison.barracks().isEmpty()) {
-            return "Il faut d'abord une caserne, posee dans tes claims.";
+            return "Il faut une caserne.";
         }
         long cost = Garrison.LEVEL_COST[garrison.level()];
         if (FactionApi.data(player).bank() < cost) {
@@ -506,7 +503,7 @@ public final class Garrisons {
         Garrison garrison = of(player);
         long cost = Garrison.LEVEL_COST[garrison.level()];
         if (!FactionApi.payFromBank(player, cost, "Caserne : niveau " + (garrison.level() + 1))) {
-            return "La banque de la nation ne peut pas payer l'agrandissement.";
+            return "Paiement refuse.";
         }
         garrison.level++;
         tell(player, "Caserne : niveau " + garrison.level() + ", " + garrison.capacity() + " soldats.",
@@ -518,10 +515,10 @@ public final class Garrisons {
         Garrison garrison = of(player);
         GarrisonTier next = garrison.tier().next();
         if (next == null) {
-            return "La garnison porte deja le meilleur equipement.";
+            return "Equipement maximum.";
         }
         if (!FactionApi.has(player)) {
-            return "Il faut une nation (et sa banque) pour equiper une garnison : /f.";
+            return "Il faut une nation (/f).";
         }
         if (FactionApi.data(player).bank() < next.cost()) {
             return "Il faut " + MoneyFormat.exact(next.cost()) + " $ dans la banque de la nation.";
@@ -537,7 +534,7 @@ public final class Garrisons {
         Garrison garrison = of(player);
         GarrisonTier next = garrison.tier().next();
         if (!FactionApi.payFromBank(player, next.cost(), "Garnison : equipement " + next.label())) {
-            return "La banque de la nation ne peut pas payer l'equipement.";
+            return "Paiement refuse.";
         }
         garrison.tier = next;
         refresh(player);
@@ -550,7 +547,7 @@ public final class Garrisons {
     /** Pourquoi la caserne ne se pose pas la ({@code null} : elle se pose). */
     static String barracksRefusal(ServerPlayer player, Level level, BlockPos pos) {
         if (!FactionApi.has(player)) {
-            return "Une caserne demande une nation : /f.";
+            return "Il faut une nation (/f).";
         }
         if (!FactionApi.claimAt(level, pos).ownedBy(player.getUUID())) {
             return "Une caserne se pose dans tes claims.";
@@ -572,8 +569,7 @@ public final class Garrisons {
         Garrison garrison = of(player);
         garrison.barracks = Optional.of(GlobalPos.of(level.dimension(), pos.immutable()));
         refresh(player);
-        tell(player, "Caserne posee : ta garnison y loge. Ouvre-la (ou /garnison) pour recruter.",
-                ChatFormatting.GREEN);
+        tell(player, "Caserne posee (/garnison).", ChatFormatting.GREEN);
     }
 
     /**
@@ -601,7 +597,7 @@ public final class Garrisons {
             garrison.order = Garrison.Order.CONGE;
         }
         recall(player, garrison);
-        tell(player, "Ta caserne est tombee : la garnison est en conge jusqu'a la prochaine.", ChatFormatting.RED);
+        tell(player, "Caserne detruite : garnison en conge.", ChatFormatting.RED);
     }
 
     // -- Les combats ------------------------------------------------------------------------------------
@@ -656,8 +652,7 @@ public final class Garrisons {
                 if (live != null) {
                     live.remove(member.id());
                 }
-                tell(owner, "Garnison : " + member.title() + " est tombe au combat (" + member.kills()
-                        + " ennemi(s) abattu(s)).", ChatFormatting.RED);
+                tell(owner, "Garnison : " + member.title() + " est mort.", ChatFormatting.RED);
                 DoHy.LOGGER.info("Garnison de {} : {} tombe en {}", owner.getName().getString(), member.title(),
                         soldier.blockPosition().toShortString());
             }

@@ -477,9 +477,7 @@ public final class WarMenu extends MenuController {
                         "Ta garnison", List.of(garrison.members().size() + " / " + garrison.capacity() + " soldats",
                                 garrison.barracks().isEmpty() ? "Pas encore de caserne" : garrison.order().label()))
                 .accent(garrison.members().isEmpty() ? 0xFF55545C : 0xFF8FA3B8)
-                .action("garrison|ouvrir la garnison")
-                .tooltip(List.of("Recrute des soldats a ta caserne, paye-les par la banque :",
-                        "ils gardent ta base, te suivent, et tiennent ton coffre pendant un assaut.")));
+                .action("garrison|ouvrir la garnison"));
         // Ta puissance (lot 22l-2) : au-dela du seuil, les nations s'allient contre toi.
         List<String> parts = new ArrayList<>(threat.parts());
         parts.add("Au-dela de " + Math.round(WarStrategy.COALITION_AT) + ", les nations hostiles s'allient");

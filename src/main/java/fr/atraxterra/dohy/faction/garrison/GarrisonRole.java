@@ -9,13 +9,13 @@ package fr.atraxterra.dohy.faction.garrison;
  */
 public enum GarrisonRole {
     FANTASSIN("Fantassin", "Fantassins", 26.0d, 4.0d, 0.27d, 20_000L, 2_000L, 0,
-            "Epee et bouclier : il tient la ligne et charge ce qui approche."),
+            "Epee et bouclier."),
     ARCHER("Archer", "Archers", 20.0d, 2.0d, 0.27d, 25_000L, 2_500L, 0,
-            "Il tire de loin et garde ses distances."),
+            "Tire a l'arc."),
     MEDECIN("Medecin", "Medecins", 20.0d, 1.0d, 0.28d, 35_000L, 3_500L, 0,
-            "Il soigne les blesses de la garnison, et toi."),
+            "Soigne la garnison, et toi."),
     CAPITAINE("Capitaine", "Capitaine", 60.0d, 7.0d, 0.25d, 80_000L, 8_000L, 1,
-            "Un seul : Force et Resistance aux soldats a 12 blocs de lui.");
+            "Force et Resistance aux soldats proches.");
 
     private final String label;
     private final String plural;

@@ -3287,48 +3287,38 @@
         "Garde, escorte, coffre"
       ],
       "summary": [
-        "Recrute des soldats a ta caserne et paye-les par la banque de ta nation : ils gardent ta base quand tu es la, te suivent partout si tu le leur ordonnes, et tiennent ton coffre pendant un assaut. Ce sont les soldats des nations rivales, passes de ton cote, a tes couleurs."
+        "Des soldats recrutes a ta caserne et payes par la banque de ta nation. Ils gardent ta base, te suivent, et tiennent ton coffre pendant un assaut."
       ],
       "sections": [
         {
           "title": "La caserne",
           "text": [
-            "- Une par joueur, posee dans tes claims. Etabli : briques de pierre en haut et en bas, deux blocs de fer et un bloc de paladium au milieu.",
-            "- Niveau 1 : 4 soldats ; niveau 2 (100 000 $) : 8 ; niveau 3 (300 000 $) : 12.",
-            "- La casser met la garnison en conge jusqu'a la prochaine."
+            "- Une par joueur, dans tes claims. Etabli : briques de pierre en haut et en bas, 2 blocs de fer et 1 bloc de paladium au milieu.",
+            "- 4 soldats ; 8 au niveau 2 (100 000 $) ; 12 au niveau 3 (300 000 $)."
           ]
         },
         {
           "title": "Les soldats",
           "text": [
-            "- Fantassin : 20 000 $, 2 000 $ par jour. Epee et bouclier, il tient la ligne.",
-            "- Archer : 25 000 $, 2 500 $ par jour. Il tire de loin.",
-            "- Medecin : 35 000 $, 3 500 $ par jour. Il soigne les blesses, et toi.",
-            "- Capitaine : 80 000 $, 8 000 $ par jour, un seul. Force et Resistance aux soldats a 12 blocs.",
-            "- Equipement pour toute la garnison : diamant (150 000 $, vie x1,5, +2 degats), puis paladium (450 000 $, vie x2, +4 degats)."
+            "- Fantassin : 20 000 $, 2 000 $ / jour.",
+            "- Archer : 25 000 $, 2 500 $ / jour.",
+            "- Medecin : 35 000 $, 3 500 $ / jour.",
+            "- Capitaine (un seul) : 80 000 $, 8 000 $ / jour.",
+            "- Equipement diamant : 150 000 $ ; paladium : 450 000 $."
           ]
         },
         {
-          "title": "Les ordres",
+          "title": "A savoir",
           "text": [
-            "- Garder la base : chacun a son poste autour de la caserne, tant que tu es a moins de 64 blocs. Pendant un assaut, ils se postent autour de ton coffre et le tiennent comme tes golems.",
-            "- Me suivre : derriere toi, partout ou tu vas (sauf au spawn) ; ils te rejoignent d'un saut, et dans une autre dimension.",
-            "- Au repos : a la caserne, sans se battre. En conge : personne en jeu.",
-            "- Ils frappent ce que tu frappes et ce qui te frappe, les soldats des nations et les monstres (pas les creepers). Ni toi ni eux ne vous blessez."
-          ]
-        },
-        {
-          "title": "La solde",
-          "text": [
-            "Payee chaque jour (a 5 h) depuis la banque de la nation, le premier moment ou tu es en ligne : rien n'est du pour les jours d'absence. Pendant un assaut, la banque est sous scelle : la solde attend.",
+            "- La solde se paie chaque jour ou tu joues, a 5 h.",
             "! Deux jours sans solde : un soldat deserte chaque jour.",
-            "- Un soldat tombe au combat quitte la garnison. Rappeles, les blesses se soignent a la caserne."
+            "- Un soldat mort quitte la garnison."
           ]
         }
       ],
       "commands": [
-        "/garnison : l'ecran de la garnison",
-        "/garnison suivre : la garnison te suit",
+        "/garnison : la garnison",
+        "/garnison suivre : elle te suit",
         "/garnison garde : elle garde la base"
       ],
       "see": [
