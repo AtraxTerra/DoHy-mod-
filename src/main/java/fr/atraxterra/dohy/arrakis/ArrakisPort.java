@@ -70,7 +70,7 @@ public final class ArrakisPort {
     /** La borne du spawn : le billet, puis le depart (apres la construction de l'astroport s'il le faut). */
     public static void depart(ServerPlayer player) {
         if (!DoHyArrakis.available()) {
-            tell(player, "Arrakis n'existe pas sur ce serveur : NTM NEXT Space n'y est pas installe.",
+            tell(player, "Arrakis indisponible (NTM NEXT Space absent).",
                     ChatFormatting.RED);
             return;
         }
@@ -97,7 +97,7 @@ public final class ArrakisPort {
                 DoHy.LOGGER.info("Arrakis : construction de l'astroport ({} blocs)", job.order.length);
             }
             job.waiting.add(player.getUUID());
-            tell(player, "L'astroport d'Arrakeen se prepare : la navette decolle dans quelques secondes.",
+            tell(player, "Decollage dans quelques secondes.",
                     ChatFormatting.GOLD);
             return;
         }

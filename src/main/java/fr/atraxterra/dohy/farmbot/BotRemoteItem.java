@@ -47,8 +47,7 @@ public class BotRemoteItem extends Item {
         remote.remove(DoHyFarmBots.REMOTE_CORNER.get());
         player.level().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME.value(),
                 SoundSource.PLAYERS, 0.6f, 1.6f);
-        player.sendSystemMessage(Component.literal("Telecommande reliee a ce bot. Clic droit sur deux coins pour sa"
-                + " zone, accroupi + clic droit sur un coffre pour le lier.").withStyle(ChatFormatting.GREEN));
+        player.sendSystemMessage(Component.literal("Telecommande reliee.").withStyle(ChatFormatting.GREEN));
     }
 
     /**
@@ -87,7 +86,7 @@ public class BotRemoteItem extends Item {
         if (bot == null) {
             tell(player, remote.has(DoHyFarmBots.REMOTE_BOT.get())
                     ? "Ton bot n'est pas a portee (trop loin, ou dans un autre monde)."
-                    : "Clic droit d'abord sur ton bot avec la telecommande, pour la relier a lui.", ChatFormatting.RED);
+                    : "Relie d'abord la telecommande a un bot (clic droit dessus).", ChatFormatting.RED);
             return InteractionResult.FAIL;
         }
         BlockPos pos = context.getClickedPos().immutable();
@@ -132,7 +131,7 @@ public class BotRemoteItem extends Item {
         }
         boolean linked = bot.chests().contains(pos);
         if (!storage && !linked) {
-            tell(player, "Ce bloc ne garde pas d'objets : choisis un coffre, un baril, un tiroir...",
+            tell(player, "Ce bloc ne garde pas d'objets.",
                     ChatFormatting.RED);
             return InteractionResult.FAIL;
         }

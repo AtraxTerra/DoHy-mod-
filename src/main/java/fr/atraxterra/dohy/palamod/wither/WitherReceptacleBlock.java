@@ -158,7 +158,7 @@ public class WitherReceptacleBlock extends BaseEntityBlock {
             return "Il faut une nation pour invoquer un wither (/f create).";
         }
         if (FactionApi.claimAt(level, pos).claimed()) {
-            return "Le receptacle doit etre hors de tout claim : un wither ne s'invoque pas dans une base.";
+            return "Le receptacle doit etre hors des claims.";
         }
         if (receptacle.busy()) {
             return "Une invocation est deja en cours sur ce receptacle.";

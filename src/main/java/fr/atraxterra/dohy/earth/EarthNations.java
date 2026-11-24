@@ -871,7 +871,7 @@ public final class EarthNations {
         Nation nation = nation(player);
         if (ledger(server).of(player.getUUID()).isEmpty()) {
             if (nation.capital() == 0) {
-                return "Pose d'abord ta capitale dans un de tes claims : son pays sera ta premiere cible";
+                return "Pose d'abord ta capitale dans un de tes claims";
             }
             if (nation.capital() != country) {
                 return "Ton premier pays est celui de ta capitale : " + countryName(nation.capital());

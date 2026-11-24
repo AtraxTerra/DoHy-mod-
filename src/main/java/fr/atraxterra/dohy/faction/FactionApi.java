@@ -213,7 +213,7 @@ public final class FactionApi {
             return "Tu n'as pas de nation";
         }
         if (!FactionPerks.of(data).customBanner()) {
-            return "Le blason personnalise se debloque a l'etape Globale 4 (Gouvernement, /f techno)";
+            return "Blason personnalise : etape Globale 4 (/f techno)";
         }
         if (stack.isEmpty()) {
             data.bannerItem = ItemStack.EMPTY;
@@ -419,7 +419,7 @@ public final class FactionApi {
             return "La banque nationale est vide";
         }
         if (fr.atraxterra.dohy.faction.war.Sieges.besieged(player.getUUID())) {
-            return "Ta base est assiegee : rien ne sort de ta banque tant que dure l'assaut";
+            return "Assaut en cours : banque sous scelle";
         }
         long taken = Math.min(amount, data.bank);
         data.bank -= taken;
@@ -447,7 +447,7 @@ public final class FactionApi {
             return false;
         }
         if (fr.atraxterra.dohy.faction.war.Sieges.besieged(player.getUUID())) {
-            tell(player, "Ta base est assiegee : rien ne sort de ta banque tant que dure l'assaut",
+            tell(player, "Assaut en cours : banque sous scelle",
                     ChatFormatting.RED);
             return false;
         }

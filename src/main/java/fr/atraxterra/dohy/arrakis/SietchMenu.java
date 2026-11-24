@@ -390,7 +390,7 @@ public final class SietchMenu extends MenuController {
             case "coffee" -> sell(player, COFFEE_MELANGE, 0, new ItemStack(SietchContent.SPICE_COFFEE.get()),
                     "Un cafe d'epice, brulant.");
             case "paracompass" -> sell(player, PARACOMPASS_MELANGE, 0, new ItemStack(SietchContent.PARACOMPASS.get()),
-                    "Paracompas : sur Arrakis, son aiguille montre le sietch le plus proche.");
+                    "Paracompas livre.");
             case "thumper" -> sell(player, THUMPER_MELANGE, 0, new ItemStack(ArrakisContent.THUMPER_ITEM.get()),
                     "Marteleur livre. Plante-le loin de toi.");
             case "krys" -> {

@@ -90,7 +90,7 @@ public class SeedPlanterItem extends Item {
 
         int planted = plant(level, player, seeds, plant);
         if (planted == 0) {
-            return refuse(player, "Rien a planter ici : il faut du sol laboure ou de la terre fertilisee, et de la place au-dessus.");
+            return refuse(player, "Rien a planter ici.");
         }
 
         level.playSound(null, player.blockPosition(), SoundEvents.CROP_PLANTED,

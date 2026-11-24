@@ -353,7 +353,7 @@ public final class Tech {
                     : running + " recherches en cours, " + slots + " au plus";
         }
         if (data.labs().isEmpty()) {
-            return "Il faut d'abord un laboratoire de recherche, pose dans un de tes claims";
+            return "Il faut un laboratoire de recherche dans tes claims";
         }
         TechConfig.Cost cost = cost(next);
         boolean creative = player.getAbilities().instabuild;

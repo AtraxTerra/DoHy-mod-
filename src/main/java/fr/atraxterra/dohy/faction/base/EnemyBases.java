@@ -532,8 +532,7 @@ public final class EnemyBases {
             FactionApi.tell(player, "Dans leurs coffres : " + keys + " cle(s) Saharia.", ChatFormatting.GREEN);
         }
         if (EnemyBaseRegen.schedule(level.getServer(), player, base)) {
-            FactionApi.tell(player, "Emporte le butin : dans 5 minutes la base s'efface et le terrain reprend "
-                    + "ses droits.", ChatFormatting.YELLOW);
+            FactionApi.tell(player, "La base s'efface dans 5 minutes.", ChatFormatting.YELLOW);
         }
     }
 

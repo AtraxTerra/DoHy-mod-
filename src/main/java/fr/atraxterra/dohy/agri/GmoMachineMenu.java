@@ -151,7 +151,7 @@ public final class GmoMachineMenu extends MenuController {
                 new MenuView.Stat("CIBLE", target.label().toUpperCase(), GREEN),
                 new MenuView.Stat("ESSAIS", String.valueOf(data.attempts(target.key())), GOLD));
         String subtitle = allowed
-                ? "Neuf ingredients, chacun en quantite precise : cherche la recette de la souche"
+                ? "Trouve la recette de la souche"
                 : "Il faut etre Fermier niveau " + config.minLevel();
         return new MenuView(id(), "Machine a OGM", subtitle, stats, List.of(
                 new MenuView.Section("SOUCHES", "resources", MenuView.GRID, strains),

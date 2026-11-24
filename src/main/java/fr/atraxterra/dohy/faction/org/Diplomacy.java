@@ -114,7 +114,7 @@ public final class Diplomacy {
         NationTraits traits = NationTraits.of(nation);
         WarData.Relation relation = WarStrategy.relationOf(player, nation);
         if (relation.stance() == WarData.Stance.MENACE || relation.stance() == WarData.Stance.GUERRE) {
-            return traits.name() + " ne signe rien en pleine crise : regle d'abord l'ultimatum ou la guerre";
+            return traits.name() + " ne signe rien en pleine crise";
         }
         if (rival(player, nation)) {
             return "Tu as declare " + traits.the() + " rivale : renonce d'abord a la rivalite";
