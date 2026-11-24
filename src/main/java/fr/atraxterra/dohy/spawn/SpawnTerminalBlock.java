@@ -119,7 +119,16 @@ public class SpawnTerminalBlock extends Block {
                     Block.UPDATE_ALL);
             return InteractionResult.SUCCESS;
         }
-        switch (state.getValue(KIND)) {
+        open(server, state.getValue(KIND));
+        return InteractionResult.SUCCESS;
+    }
+
+    /**
+     * Ouvre le service d'une borne. Les PNJ du spawn ({@link SpawnNpc}) passent par ici : un
+     * guichetier et une borne du meme service menent au meme ecran.
+     */
+    public static void open(ServerPlayer server, Kind kind) {
+        switch (kind) {
             case SHOP -> ShopController.open(server);
             case BOUTIQUE -> BoutiqueController.INSTANCE.open(server);
             case MARKET -> fr.atraxterra.dohy.auction.AuctionController.INSTANCE.open(server);
@@ -146,6 +155,5 @@ public class SpawnTerminalBlock extends Block {
             case SPICE -> fr.atraxterra.dohy.arrakis.SpiceCounterMenu.INSTANCE.open(server);
             case WATER -> fr.atraxterra.dohy.arrakis.WaterMenu.INSTANCE.open(server);
         }
-        return InteractionResult.SUCCESS;
     }
 }

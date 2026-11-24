@@ -65,6 +65,7 @@ public final class Menus {
                 fr.atraxterra.dohy.auction.AuctionController.INSTANCE,
                 fr.atraxterra.dohy.shop.SellController.INSTANCE,
                 fr.atraxterra.dohy.spawn.SpawnDaily.INSTANCE,
+                fr.atraxterra.dohy.kits.PlayerKitsMenu.INSTANCE,
                 fr.atraxterra.dohy.spawn.SpawnPortals.INSTANCE,
                 fr.atraxterra.dohy.farmland.FarmlandMenu.INSTANCE,
                 fr.atraxterra.dohy.faction.absence.AbsenceMenu.INSTANCE,

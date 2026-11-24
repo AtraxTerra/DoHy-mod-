@@ -37,7 +37,7 @@ public final class ShuttleMenu extends MenuController {
                     "NTM NEXT Space n'y est pas installe")).accent(SAND).state(MenuView.DISABLED);
         } else if (DoHyArrakis.onArrakis(player)) {
             trip = Card.of(new ItemStack(Items.COMPASS), "Retour au spawn", List.of("Gratuit",
-                    "La borne RETOUR du spawn te ramene ensuite d'ou tu venais"))
+                    "Au spawn, le passeur RETOUR te ramene d'ou tu venais"))
                     .accent(0xFF22E558).action("home");
         } else {
             trip = Card.of(new ItemStack(Items.FIREWORK_ROCKET), "Arrakis", List.of("Astroport d'Arrakeen",

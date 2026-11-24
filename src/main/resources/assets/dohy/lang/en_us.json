@@ -5,6 +5,8 @@
   "block.dohy.research_lab": "Research Laboratory",
   "block.dohy.terminal": "Spawn Terminal",
   "block.dohy.hologram": "Floating Label",
+  "block.dohy.npc_post": "NPC Post",
+  "entity.dohy.spawn_npc": "Spawn NPC",
   "block.dohy.trough": "Trough",
   "block.dohy.water_dispenser": "Water Dispenser",
   "block.dohy.gmo_machine": "GMO Machine",

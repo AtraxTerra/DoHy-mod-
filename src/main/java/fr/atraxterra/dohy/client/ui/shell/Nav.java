@@ -49,6 +49,7 @@ public final class Nav {
             new Group("PERSONNAGE", List.of(
                     new Item("grade", "Grade", () -> new ItemStack(fr.atraxterra.dohy.grade.DoHyGrades.LEGENDE.get()),
                             "grades"),
+                    new Item("kits", "Kits", () -> new ItemStack(Items.CHEST), "kits"),
                     new Item("ameliorations", "Ameliorations", () -> new ItemStack(Items.NETHER_STAR), "upgrades"),
                     new Item("rpg", "Profil RPG", () -> new ItemStack(Items.TOTEM_OF_UNDYING), "rpg"))),
             new Group("NATION", List.of(
@@ -82,6 +83,7 @@ public final class Nav {
         VIEWS.put("achievements", "succes");
         VIEWS.put("upgrades", "ameliorations");
         VIEWS.put("grades", "grade");
+        VIEWS.put("kits", "kits");
         VIEWS.put("rpg", "rpg");
         VIEWS.put("trixium", "trixium");
         VIEWS.put("encyclopedie", "encyclopedie");

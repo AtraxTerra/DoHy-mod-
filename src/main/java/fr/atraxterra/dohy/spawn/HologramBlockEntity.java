@@ -20,20 +20,28 @@ import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Le texte d'une etiquette flottante.
  *
  * <p>Le texte est une entite d'affichage, tournee vers qui la regarde. Elle
- * n'est jamais ecrite sur disque : la block entity la refait a son premier
- * tick et verifie chaque seconde qu'elle est toujours la ({@link SpawnEvents}
+ * n'est jamais ecrite sur disque : la block entity la refait des que son coin
+ * est charge et verifie chaque seconde qu'elle est toujours la ({@link SpawnEvents}
  * refuse celles qui reviendraient d'une sauvegarde). Un spawn reconstruit ou
  * un monde recharge ne laissent donc pas de texte en double.
+ *
+ * <p>Chargee suffit, sans que le coin tourne : un serveur a courte distance de
+ * simulation (deux chunks sur celui du joueur) ne fait tourner que les abords du
+ * joueur, et les enseignes du fond de la nef n'apparaissaient qu'a trente blocs.
+ * Les etiquettes chargees sont donc tenues en liste ({@link #LOADED}) et
+ * verifiees chaque seconde par {@link SpawnApi}.
  */
 public class HologramBlockEntity extends BlockEntity {
 
     /** La marque des textes flottants : jamais recharges depuis le disque. */
     static final String TAG = "dohy.hologram";
-    private static final int CHECK = 20;
     /** Le nom du mod sur les enseignes du spawn. */
     static final String BRAND = "BERSKAR";
     /** Son ancien nom : les enseignes deja posees le perdent au chargement. */
@@ -43,7 +51,9 @@ public class HologramBlockEntity extends BlockEntity {
     private int color = 0xFFFFFF;
     private float scale = 1.0f;
     private Entity display;
-    private int ticks;
+
+    /** Les etiquettes des coins charges, qu'ils tournent ou non. */
+    static final Set<HologramBlockEntity> LOADED = ConcurrentHashMap.newKeySet();
 
     public HologramBlockEntity(BlockPos pos, BlockState state) {
         super(DoHySpawn.HOLOGRAM_TYPE.get(), pos, state);
@@ -63,8 +73,34 @@ public class HologramBlockEntity extends BlockEntity {
         setChanged();
     }
 
+    /** Le tick d'un coin qui tourne : s'inscrire, au cas ou le chargement ne l'aurait pas fait. */
     void serverTick() {
-        if (!(level instanceof ServerLevel server) || ticks++ % CHECK != 0 || text.isEmpty()) {
+        LOADED.add(this);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide()) {
+            LOADED.add(this);
+        }
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        LOADED.remove(this);
+    }
+
+    /** Chaque seconde : refait le texte des etiquettes chargees qui l'ont perdu. */
+    static void upkeep() {
+        for (HologramBlockEntity hologram : LOADED) {
+            hologram.ensure();
+        }
+    }
+
+    private void ensure() {
+        if (!(level instanceof ServerLevel server) || isRemoved() || text.isEmpty()) {
             return;
         }
         if (display != null && display.isAlive()) {
@@ -116,6 +152,7 @@ public class HologramBlockEntity extends BlockEntity {
     @Override
     public void setRemoved() {
         super.setRemoved();
+        LOADED.remove(this);
         drop();
     }
 

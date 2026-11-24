@@ -275,6 +275,11 @@ public final class SpawnApi {
             }
         }
         SpawnBoards.tick(server);
+        if (server.getTickCount() % 20 == 0) {
+            // les etiquettes et les guichetiers des coins charges, meme hors de la distance de simulation
+            HologramBlockEntity.upkeep();
+            NpcPostBlockEntity.upkeep();
+        }
         if (job == null) {
             return;
         }
@@ -295,6 +300,8 @@ public final class SpawnApi {
 
     static void stop() {
         ARRIVALS.clear();
+        HologramBlockEntity.LOADED.clear();
+        NpcPostBlockEntity.LOADED.clear();
         job = null;
         mapSource = null;
         mapMosaic = null;
@@ -307,7 +314,7 @@ public final class SpawnApi {
         return job != null;
     }
 
-    /** Une construction en cours : vider l'ancien, poser le nouveau, raccorder, etiqueter. */
+    /** Une construction en cours : vider l'ancien, poser le nouveau, raccorder, etiqueter, poster les PNJ. */
     private static final class Job {
         private final ServerLevel level;
         private final SpawnBuilder.Plan plan;
@@ -365,6 +372,13 @@ public final class SpawnApi {
                     level.setBlock(label.pos(), DoHySpawn.HOLOGRAM.get().defaultBlockState(), Block.UPDATE_CLIENTS);
                     if (level.getBlockEntity(label.pos()) instanceof HologramBlockEntity hologram) {
                         hologram.set(label.text(), label.color(), label.scale());
+                    }
+                }
+                // les guichetiers : chaque poste fait venir son PNJ a son premier tick
+                for (SpawnBuilder.Npc npc : plan.npcs()) {
+                    level.setBlock(npc.pos(), DoHySpawn.NPC_POST.get().defaultBlockState(), Block.UPDATE_CLIENTS);
+                    if (level.getBlockEntity(npc.pos()) instanceof NpcPostBlockEntity post) {
+                        post.set(npc.role(), npc.facing());
                     }
                 }
                 return false;

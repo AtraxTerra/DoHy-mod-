@@ -966,7 +966,7 @@
         {
           "title": "L'offrande",
           "text": [
-            "Des recoltes pour le Fermier, des lingots pour le Mineur, des butins de monstres pour le Chasseur, des ingredients de potion pour l'Alchimiste. On la depose en autant de fois qu'il faut, a la borne AUTEL sur le parvis du spawn.",
+            "Des recoltes pour le Fermier, des lingots pour le Mineur, des butins de monstres pour le Chasseur, des ingredients de potion pour l'Alchimiste. On la depose en autant de fois qu'il faut, aupres de la pretresse de l'autel, sur le parvis du spawn.",
             "! Une heure apres l'offrande complete, l'autel previent dans le chat ; un clic sur [Combattre] t'emmene dans l'arene."
           ]
         },
@@ -1271,7 +1271,7 @@
             "- Le marteau de caverne recolte les ames des spawners de donjon pour remplir un spawner vide.",
             "- Capturer une monture demande l'epee et la pierre de capture.",
             "- L'elephant se tue des le niveau 40, et rapporte un bonus des le 55 s'il a ete bien nourri.",
-            "- La farmland (borne DONJONS du spawn, ou /farmland au grade Heros) : une carte ou n'apparaissent que les creatures du Chasseur."
+            "- La farmland (le gardien des donjons du spawn, ou /farmland au grade Heros) : une carte ou n'apparaissent que les creatures du Chasseur."
           ]
         }
       ],
@@ -3631,6 +3631,52 @@
       }
     },
     {
+      "id": "kits",
+      "category": "debuter",
+      "order": 5,
+      "icon": "minecraft:chest",
+      "title": "Les kits",
+      "card": [
+        "Le kit de depart, offert",
+        "Et ceux des grades"
+      ],
+      "summary": [
+        "Comme sur Paladium, des kits d'objets a prendre avec /kit ou aupres de l'intendant, sur la plateforme du spawn. Le kit de depart arrive de lui-meme a ta premiere connexion ; les autres reviennent apres un delai en heures reelles."
+      ],
+      "sections": [
+        {
+          "title": "Les kits",
+          "text": [
+            "- Kit de depart, une seule fois : outils et armure en fer, 32 steaks, 32 torches, un lit, un etabli, un four, une cle de box Amethyste et 10 000 $.",
+            "- Kit joueur, toutes les 24 h : 16 steaks et 16 torches.",
+            "- Kit Heros, chaque semaine : une cle Amethyste, une potion d'XP de metier x2, 32 steaks et 2 pommes dorees.",
+            "- Kit Legende, chaque semaine : une cle Saharia, une potion x3, 32 carottes dorees et 4 pommes dorees.",
+            "- Kit Divinite, chaque semaine : une cle Paladium, deux potions x3, 8 pommes dorees et une pomme doree enchantee.",
+            "- Kit Premium, chaque semaine : une cle Amethyste, une potion x2 et 16 carottes dorees."
+          ]
+        },
+        {
+          "title": "Les regles",
+          "text": [
+            "Un grade donne aussi les kits des grades d'en dessous. Les delais courent en temps reel, meme partie fermee. Les potions durent une heure.",
+            "! Le kit entier ou rien : garde assez de cases libres dans ton sac. Pas de kit en plein combat."
+          ]
+        }
+      ],
+      "commands": [
+        "/kit : la liste des kits",
+        "/kit depart : prendre un kit par son nom"
+      ],
+      "see": [
+        "grades",
+        "spawn",
+        "boutique"
+      ],
+      "discover": {
+        "always": true
+      }
+    },
+    {
       "id": "spawn",
       "category": "lieux",
       "order": 0,
@@ -3638,35 +3684,38 @@
       "title": "Le spawn",
       "card": [
         "Au-dessus des nuages",
-        "Boxes et bornes"
+        "Boxes et guichetiers"
       ],
       "summary": [
-        "Un lieu a part, au-dessus des nuages : on y vient ouvrir ses boxes et passer aux bornes. On n'y prend aucun degat, et rien ne s'y casse."
+        "Un lieu a part, au-dessus des nuages : on y vient ouvrir ses boxes et parler aux guichetiers, des PNJ qui tiennent chacun un service. On n'y prend aucun degat, et rien ne s'y casse."
       ],
       "sections": [
         {
           "title": "Y aller",
           "text": [
-            "/spawn t'y emmene depuis l'Overworld, le Nether ou l'End ; la meme commande, ou la borne RETOUR, te ramene d'ou tu venais."
+            "/spawn t'y emmene depuis l'Overworld, le Nether ou l'End ; la meme commande, ou le passeur (RETOUR), te ramene d'ou tu venais."
           ]
         },
         {
-          "title": "Les bornes",
+          "title": "Les guichetiers",
           "text": [
-            "- La borne MINE mene a la Mine.",
-            "- Le hall des boxes, les bornes du jour et les portails."
+            "Un clic droit sur un PNJ ouvre son service, le meme ecran que dans le menu. Son enseigne flotte au-dessus de lui.",
+            "- Sur la plateforme d'arrivee : l'intendant des kits, le passeur (RETOUR) et le pilote de la navette d'Arrakis.",
+            "- Dans la nef : le marchand (SHOP), la boutiquiere (BOUTIQUE), le commissaire-priseur (MARCHE), le banquier (BANQUE), l'agent des contrats (CONTRATS) et la conservatrice (MUSEE).",
+            "- Devant l'atrium : l'hotesse de la recompense du jour et le gardien des donjons ; a la sortie, le passeur et le contremaitre de la Mine.",
+            "- Le hall des boxes : chaque box s'ouvre d'un clic avec sa cle."
           ]
         },
         {
           "title": "Sous le pont",
           "text": [
-            "Une trappe de bois dans le pont du spawn mene a la planque du receleur : le marche noir."
+            "Une trappe de bois dans le pont du spawn mene a la planque du receleur : le marche noir. Il attend derriere son comptoir."
           ]
         },
         {
           "title": "L'autel",
           "text": [
-            "Sur le parvis, a gauche de l'allee en arrivant : l'autel des offrandes, ou l'on appelle les boss de metier."
+            "Sur le parvis, a gauche de l'allee en arrivant : l'autel des offrandes, ou la pretresse appelle les boss de metier."
           ]
         }
       ],
@@ -3674,6 +3723,7 @@
         "/spawn : aller au spawn, ou en revenir"
       ],
       "see": [
+        "kits",
         "mine",
         "boutique",
         "marche_noir",
@@ -3755,7 +3805,7 @@
         "Sous terre"
       ],
       "summary": [
-        "Un monde de minage remis a neuf toutes les cinq heures, uniquement sous terre. On y entre par la borne MINE du spawn."
+        "Un monde de minage remis a neuf toutes les cinq heures, uniquement sous terre. On y entre par le contremaitre du spawn (MINE)."
       ],
       "sections": [
         {
@@ -3790,7 +3840,7 @@
         "Une carte indestructible"
       ],
       "summary": [
-        "La dimension du Chasseur : une carte batie, avec sa foret, sa prairie et son hameau, ses collines et leur grotte, sa jungle, son lac et son marais, un coin du Nether et un coin de l'End. N'y apparaissent que les creatures du metier, chacune dans son coin. On y entre par la borne DONJONS du spawn (carte Farmland), ou par /farmland au grade Heros."
+        "La dimension du Chasseur : une carte batie, avec sa foret, sa prairie et son hameau, ses collines et leur grotte, sa jungle, son lac et son marais, un coin du Nether et un coin de l'End. N'y apparaissent que les creatures du metier, chacune dans son coin. On y entre par le gardien des donjons du spawn (carte Farmland), ou par /farmland au grade Heros."
       ],
       "commands": [
         "/farmland : direct a la farmland (Heros)",

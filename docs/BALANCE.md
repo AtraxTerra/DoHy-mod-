@@ -1641,6 +1641,38 @@ Leviers : `data/collections.json` (`rewards_per_tier[].global_xp`, `prestige.glo
 et de la commande de trixium), `data/museum.json` (`global_xp_per_donation`), `JobApi`
 (20 par niveau de métier), `ContractApi` (500 par niveau, +35 %).
 
+## 6 trigesies. Kits — ce que vaut un kit (2026-11-23)
+
+Les kits (`PALAMOD.md` § 43) ne doivent ni remplacer le début de partie ni devenir un revenu : le
+kit de départ fait gagner les deux premières soirées, les kits de grade donnent une petite raison
+de revenir chaque semaine. Les valeurs « pour le joueur » sont celles des autres sections : une box
+rend de 80 à 95 % de son prix (§ 6 quater, ~85 % ici), une potion d'XP de métier la moitié du sien
+(§ 6 duovicies). Steaks, torches, pommes et carottes dorées, outils et armures **ne se vendent
+pas** au shop (absents du catalogue) : ils n'apportent pas un dollar.
+
+| Kit | Délai | Prix boutique | Valeur pour le joueur | Par mois (valeur) | Part du prix par mois |
+|---|---|---|---|---|---|
+| Départ | une fois | 100 k de clé, 10 k $, l'équipement de fer | ~95 k et 10 k $ | — | — |
+| Joueur | 24 h | rien qui se vende | ~10 min de récolte par jour | — | — |
+| Héros | 7 j | 220 k | ~145 k (clé 85 k, potion 60 k) | ~0,62 M | 6,2 % de 10 M |
+| Légende | 7 j | 1,3 M | ~0,97 M (clé 850 k, potion 120 k) | ~4,2 M | 4,2 % de 100 M |
+| Divinité | 7 j | 5,6 M | ~4,5 M (clé 4,25 M, deux potions 240 k, pomme enchantée 15 k) | ~19 M | 1,9 % de 1 G |
+| Premium | 7 j | 220 k | ~145 k | ~0,62 M les 30 jours | 4,1 % de 15 M |
+
+- **Le kit de départ** vaut ~105 k : environ quatre jours des trois contrats quotidiens au niveau
+  0 (~27 k par jour, § 6 novovicies), le cinquième de ce que la vente rapporte la première semaine
+  (~0,5 M). L'armure et les outils de fer épargnent la première heure de minage, sans plus : le
+  PalaMod commence au-delà.
+- **Les kits de grade** rendent de 2 à 6 % de la valeur du grade par mois : un grade ne se
+  rembourse pas par ses kits (seize mois pour Héros), il reste du confort (§ 6 quatervicies). Un
+  Divinité qui cumule tout (joueur, Héros, Légende, Divinité, Premium) reçoit ~5,8 M de valeur par
+  semaine, l'équivalent de six heures de revenu en fin de partie (1 M par heure, § 3).
+- **Pas de boucle** : un kit est lié au joueur et à l'horloge réelle ; ce qu'il donne n'achète
+  rien qui le fasse revenir plus vite. Un ancien joueur qui n'a jamais pris le kit de départ le
+  prend une fois, comme un nouveau.
+
+Leviers : `data/kits.json` (contenu, délais, grades), relu au démarrage du monde.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

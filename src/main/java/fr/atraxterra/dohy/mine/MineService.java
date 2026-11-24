@@ -314,7 +314,7 @@ public final class MineService {
             lastPeriod = period;
             warned = Integer.MAX_VALUE;
             for (ServerPlayer player : List.copyOf(level.players())) {
-                tell(player, "La Mine s'effondre : une mine neuve vous attend a la borne MINE du spawn.",
+                tell(player, "La Mine s'effondre : une mine neuve vous attend, le contremaitre MINE du spawn y mene.",
                         ChatFormatting.RED);
                 leave(player);
             }

@@ -120,6 +120,9 @@ public final class DoHyClient {
                 fr.atraxterra.dohy.client.arrakis.SandWormRenderer::new);
         event.registerEntityRenderer(fr.atraxterra.dohy.arrakis.SietchContent.DWELLER.get(),
                 fr.atraxterra.dohy.client.arrakis.SietchDwellerRenderer::new);
+        // Les guichetiers du spawn : un corps humain habille selon son service.
+        event.registerEntityRenderer(fr.atraxterra.dohy.spawn.DoHySpawn.NPC.get(),
+                fr.atraxterra.dohy.client.spawn.SpawnNpcRenderer::new);
         // Les caisses des palettes d'armement, dessinees par le coin nord-ouest de chaque groupe.
         event.registerBlockEntityRenderer(fr.atraxterra.dohy.palette.DoHyPalette.TYPE.get(),
                 fr.atraxterra.dohy.client.palette.PaletteRenderer::new);

@@ -40,6 +40,8 @@ public final class DoHy {
         // L'economie souterraine (lot 24c) : plantes, produits, conditionnement, postes, planques.
         fr.atraxterra.dohy.underground.DoHyUnderground.register(modBus);
         fr.atraxterra.dohy.spawn.DoHySpawn.register(modBus);
+        // Les kits de Paladium : le kit de depart a la premiere connexion, ceux des grades chaque semaine.
+        fr.atraxterra.dohy.kits.DoHyKits.register(modBus);
         fr.atraxterra.dohy.farmland.DoHyFarmland.register(modBus);
         fr.atraxterra.dohy.earth.DoHyEarth.register(modBus);
         // Les palettes d'armement : obus, munitions et missiles de NTM NEXT en caisses.

@@ -192,6 +192,39 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-23 (suite) — les kits, les guichetiers du spawn, et une nouvelle remise à zéro
+
+**Demande** : « ok on oublie, refais un reset et ajoute un système de kit de départ comme sur
+paladium », puis « et remplace les blocs "utilisable" par des pnj custom au spawn » (« on oublie » :
+Create Offroad, qui n'existe pas en 26.2).
+
+- **Les kits** (`PALAMOD.md` § 43, `BALANCE.md` § 6 trigesies, `data/kits.json`) : le kit de départ
+  (outils et armure de fer, de quoi manger et s'éclairer, un lit, une clé Améthyste, 10 000 $),
+  donné de lui-même à la première connexion ; le kit joueur (24 h) ; les kits Héros, Légende,
+  Divinité et Premium (7 jours). `/kit`, `/kit <kit>`, `/kit reset` ; entrée Kits de la barre
+  latérale, avec sa pastille. Paladium ne publie pas le contenu de ses kits : il est calibré sur
+  l'économie de DoHy (de 2 à 6 % de la valeur d'un grade par mois pour les kits de grade).
+- **Les guichetiers** (`CONTENU_DOHY.md`, « Les guichetiers ») : les quatorze bornes du spawn sont
+  devenues quinze PNJ (le passeur est à deux endroits), chacun avec sa tenue
+  (`tools/spawn_npc_assets.py`) ; un clic droit ouvre le même écran que la borne
+  (`SpawnTerminalBlock.open`). Jamais sauvegardés : un poste invisible les fait venir et les garde.
+  L'intendant des kits attend sur la plateforme d'arrivée. Spawn version 11. Les bornes de la
+  Mine, de la farmland et d'Arrakis restent des blocs, les box aussi.
+- **Ce qui est chargé est tenu** : le serveur ne fait tourner que deux chunks autour du joueur ;
+  les étiquettes flottantes et les postes de PNJ ne se refaisaient que dans ce rayon (les enseignes
+  du fond de la nef apparaissaient à trente blocs). Ils sont maintenant tenus dès que leur coin est
+  chargé (`HologramBlockEntity.LOADED`, `NpcPostBlockEntity.LOADED`, vérifiés chaque seconde).
+- **Vérifié en CI** (captures) : quinze PNJ, chacun sur un sol plein avec deux blocs d'air, son
+  enseigne au-dessus, aucun avertissement du plan ; des PNJ présents dans des coins qui ne tournent
+  pas ; les douze clics (hors passeur et contremaître) ouvrent le bon écran ; le passeur ramène du
+  spawn à l'Overworld ; le kit de départ reçu à la connexion ; refus attendus (déjà pris, délai,
+  grade, Premium, sac plein) ; `/kit reset` ; 81 vues et 879 clics sans exception.
+- **Remise à zéro du serveur** (Minestrator 478665) : snapshot « avant-reset-kits », monde mis de
+  côté (`Earth40kChaosCubed_avant_reset2`), carte d'origine extraite de `Earth40kChaosCubed.zip`,
+  datapack de la Terre recopié de l'ancien monde, réglages inchangés (survie, normal). Le serveur
+  reste **arrêté** jusqu'au nouveau jar : le joueur doit l'envoyer dans `/mods` (et retirer
+  l'ancien), puis démarrer, pour que le kit de départ et le spawn version 11 l'accueillent.
+
 ### 2026-11-23 (suite) — les points ouverts
 
 **Demande** : « Continue » : les points ouverts choisis plus tôt dans la journée (« Points ouverts

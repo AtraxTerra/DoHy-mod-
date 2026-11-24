@@ -126,7 +126,7 @@ public final class JobBossMenu extends MenuController {
                     .accent(color(selected));
             actions.add(here.altar() ? give.action("offer|offrir")
                     : give.state(MenuView.DISABLED).tooltip(List.of("Seulement a l'autel du spawn :",
-                    "la borne AUTEL, sur le parvis")));
+                    "la pretresse AUTEL, sur le parvis")));
         } else if (state == JobBossApi.State.COMING) {
             actions.add(Card.of(new ItemStack(Items.CLOCK), "En route", List.of(
                     "Arrive dans " + JobBossApi.when(JobBossApi.remaining(player, selected)),

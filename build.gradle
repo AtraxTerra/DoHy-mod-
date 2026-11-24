@@ -96,6 +96,9 @@ tasks.named('processResources', ProcessResources).configure {
     from(rootProject.file('data/spawn.json')) {
         into "data/${mod_id}"
     }
+    from(rootProject.file('data/kits.json')) {
+        into "data/${mod_id}"
+    }
     from(rootProject.file('data/crates.json')) {
         into "data/${mod_id}"
     }
