@@ -796,14 +796,28 @@ def controller_blockstate(machine):
     return {"variants": dict(sorted(variants.items()))}
 
 
+def mini_uv(face, a, b):
+    """Les uv d'une face de la miniature : le morceau de texture qu'aurait la face en grand (16 au
+    plus). Des uv explicites, car la miniature deborde du bloc et le jeu refuse des uv automatiques
+    hors de la texture."""
+    if face in ("north", "south"):
+        du, dv = b[0] - a[0], b[1] - a[1]
+    elif face in ("east", "west"):
+        du, dv = b[2] - a[2], b[1] - a[1]
+    else:
+        du, dv = b[0] - a[0], b[2] - a[2]
+    return [0, 0, r6(max(1, min(16, du))), r6(max(1, min(16, dv)))]
+
+
 def miniature(machine):
-    """L'objet : la machine entiere, reduite pour tenir dans un bloc et demi."""
+    """L'objet : la machine entiere, reduite a vingt pixels de haut ou de large."""
     W, H, D = machine.size
     span = max(W, H, D) * 16
-    scale = machine.miniature_scale or (24.0 / span)
+    scale = machine.miniature_scale or (20.0 / span)
+    # centree sur le milieu du bloc : les vues de l'objet tournent autour de (8, 8, 8)
     ox = 8 - W * 16 * scale / 2.0
     oz = 8 - D * 16 * scale / 2.0
-    oy = 0.0
+    oy = 8 - H * 16 * scale / 2.0
     textures = {}
     elements = []
     for bx in machine.boxes:
@@ -820,7 +834,7 @@ def miniature(machine):
             if not key:
                 continue
             textures[key] = f"dohy:{TEX_DIR}/{key}"
-            el["faces"][f] = {"texture": "#" + key}
+            el["faces"][f] = {"texture": "#" + key, "uv": bx.uv.get(f) or mini_uv(f, bx.a, bx.b)}
         elements.append(el)
     for mv in machine.moving:
         if mv.glow:
@@ -829,7 +843,7 @@ def miniature(machine):
             textures[key] = f"dohy:{TEX_DIR}/{key}"
             el = {"from": [r6(ox + x0 * scale), r6(oy + y0 * scale), r6(oz + z0 * scale)],
                   "to": [r6(ox + x1 * scale), r6(oy + y1 * scale), r6(oz + z1 * scale)],
-                  "faces": {f: {"texture": "#" + key} for f in FACES}}
+                  "faces": {f: {"texture": "#" + key, "uv": mini_uv(f, (x0, y0, z0), (x1, y1, z1))} for f in FACES}}
             elements.append(el)
     textures["particle"] = f"dohy:{TEX_DIR}/{machine.particle}"
     cutout = any(k in CUTOUT for k in textures)

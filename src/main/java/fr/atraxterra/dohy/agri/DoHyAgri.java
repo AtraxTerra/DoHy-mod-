@@ -250,10 +250,11 @@ public final class DoHyAgri {
     public static final DeferredBlock<BigMachinePartBlock> FUEL_PUMP_PART =
             part("fuel_pump_part", BigMachine.FUEL_PUMP);
 
+    /** Une partie : dure comme sa machine, ni poussee par un piston ni noyee par l'eau qui coule (solide). */
     private static DeferredBlock<BigMachinePartBlock> part(String name, BigMachine machine) {
         return BLOCKS.registerBlock(name, properties -> new BigMachinePartBlock(properties, machine),
                 properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
-                        .noOcclusion().noLootTable().pushReaction(PushReaction.BLOCK));
+                        .noOcclusion().noLootTable().pushReaction(PushReaction.BLOCK).forceSolidOn());
     }
 
     /** Le bloc de partie d'une grande machine. */
