@@ -42,6 +42,10 @@ import java.util.Map;
  * reste retourne dans l'inventaire, et ce qui ne rentre pas tombe aux pieds du
  * joueur. Rien n'est jamais detruit.
  *
+ * <p>Un tiroir de Storage Drawers depose plein : son contenu vendable est vendu
+ * avec le reste, et le tiroir rendu, vide ou avec ce qui ne se vend pas
+ * ({@link DrawerSale}).
+ *
  * <h2>Limite connue</h2>
  * <p>Un plantage du jeu alors que des items sont dans le coffre les perd : le
  * conteneur est transitoire et n'est pas sauvegarde. C'est le compromis de tous
@@ -68,6 +72,11 @@ public final class SellChestMenu extends ChestMenu {
         super(KitMenus.Use.SELL_CHEST.type(), containerId, inventory, deposit, 6);
         this.player = player;
         this.deposit = deposit;
+        // Un SimpleContainer ne previent pas le menu de ses changements : sans
+        // ecouteur, le total courant ne s'affichait jamais.
+        if (deposit instanceof SimpleContainer simple) {
+            simple.addListener(this::slotsChanged);
+        }
     }
 
     @Override
@@ -108,6 +117,8 @@ public final class SellChestMenu extends ChestMenu {
         long payout = 0L;
         int soldCount = 0;
         int soldKinds = 0;
+        int drawers = 0;
+        int drawersLeft = 0;
         List<ItemStack> toReturn = new ArrayList<>();
 
         try {
@@ -120,6 +131,19 @@ public final class SellChestMenu extends ChestMenu {
             for (int slot = 0; slot < deposit.getContainerSize(); slot++) {
                 ItemStack stack = deposit.removeItemNoUpdate(slot);
                 if (stack.isEmpty()) {
+                    continue;
+                }
+
+                DrawerSale.Plan drawer = DrawerSale.plan(player, stack, item -> true,
+                        item -> Integer.MAX_VALUE - batch.getOrDefault(item, 0)).orElse(null);
+                if (drawer != null) {
+                    // Un tiroir : son contenu rejoint la vente, le tiroir revient au joueur.
+                    drawer.sold().forEach((item, amount) -> batch.merge(item, amount, Integer::sum));
+                    toReturn.add(drawer.apply());
+                    drawers++;
+                    if (drawer.leftover()) {
+                        drawersLeft++;
+                    }
                     continue;
                 }
 
@@ -143,16 +167,21 @@ public final class SellChestMenu extends ChestMenu {
                 soldKinds++;
             }
 
+            int returned = toReturn.size() - drawers;
             giveBack(toReturn);
 
             if (payout > 0L) {
                 long balance = Economy.credit(player, payout);
                 fr.atraxterra.dohy.palamod.achievement.Achievements.sold(player, payout);
                 play(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.6f, 1.4f);
-                report(soldCount, soldKinds, payout, balance, toReturn.size());
-            } else if (!toReturn.isEmpty()) {
+                report(soldCount, soldKinds, payout, balance, returned);
+            } else if (returned > 0) {
                 player.sendSystemMessage(Component.literal(
-                                "Rien de vendable : " + toReturn.size() + " pile(s) rendue(s).")
+                                "Rien de vendable : " + returned + " pile(s) rendue(s).")
+                        .withStyle(ChatFormatting.GRAY));
+            }
+            if (drawers > 0) {
+                player.sendSystemMessage(Component.literal(drawers(drawers, drawersLeft))
                         .withStyle(ChatFormatting.GRAY));
             }
         } catch (Throwable error) {
@@ -167,6 +196,15 @@ public final class SellChestMenu extends ChestMenu {
                 }
             }
         }
+    }
+
+    /** « 2 tiroirs rendus, dont 1 avec ce qui ne se vend pas. » */
+    static String drawers(int drawers, int withLeftover) {
+        String line = drawers + (drawers > 1 ? " tiroirs rendus" : " tiroir rendu");
+        if (withLeftover == 0) {
+            return line + (drawers > 1 ? ", vides." : ", vide.");
+        }
+        return line + (drawers > 1 ? ", dont " + withLeftover + " avec ce qui ne se vend pas." : " avec ce qui ne se vend pas.");
     }
 
     private boolean unlocked(ItemStack stack, PriceEntry entry) {
@@ -212,11 +250,20 @@ public final class SellChestMenu extends ChestMenu {
     private void showRunningTotal() {
         long total = 0L;
         int unsellable = 0;
+        int drawers = 0;
         Map<Item, Integer> batch = new LinkedHashMap<>();
 
         for (int slot = 0; slot < deposit.getContainerSize(); slot++) {
             ItemStack stack = deposit.getItem(slot);
             if (stack.isEmpty()) {
+                continue;
+            }
+            DrawerSale.Plan drawer = DrawerSale.plan(player, stack, item -> true,
+                    item -> Integer.MAX_VALUE - batch.getOrDefault(item, 0)).orElse(null);
+            if (drawer != null) {
+                // Apercu seul : le tiroir n'est pas touche avant la fermeture.
+                drawer.sold().forEach((item, amount) -> batch.merge(item, amount, Integer::sum));
+                drawers++;
                 continue;
             }
             PriceEntry entry = Prices.book().entry(stack).orElse(null);
@@ -237,12 +284,18 @@ public final class SellChestMenu extends ChestMenu {
             }
         }
 
-        if (total == 0L && unsellable == 0) {
+        if (total == 0L && unsellable == 0 && drawers == 0) {
             return;
         }
 
         Component line = Component.literal(MoneyFormat.exact(total))
                 .withStyle(ChatFormatting.GOLD);
+        if (drawers > 0) {
+            line = line.copy().append(Component.literal(
+                            "  ·  " + drawers + (drawers > 1 ? " tiroirs, rendus" : " tiroir, rendu")
+                                    + " a la fermeture")
+                    .withStyle(ChatFormatting.GRAY));
+        }
         if (unsellable > 0) {
             line = line.copy().append(Component.literal(
                             "  ·  " + unsellable + " non vendable(s), rendu(s) a la fermeture")
