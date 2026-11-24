@@ -51,18 +51,10 @@ public final class Commerce {
 
     /** Les onglets, dans l'ordre de la rangee. */
     public enum Tab {
-        BUY("shop", "Acheter",
-                "Blocs, minerais, nourriture et pieces, a prix fixe. Grades, boosters et cles a la Boutique, raretes"
-                        + " a l'Hotel des ventes."),
-        SELL("sell", "Vendre",
-                "Le shop rachete ce que tu recoltes, mines ou chasses. Plus tu vends le meme objet, plus son prix "
-                        + "baisse ; il remonte ensuite tout seul."),
-        BOUTIQUE("boutique", "Boutique",
-                "Grades, boosters, cles de box, bots de farming, potions d'XP de metier et services, payes avec "
-                        + "ton argent."),
-        AUCTION("auction", "Hotel des ventes",
-                "Des raretes en vente chaque jour, et tes objets rares que le shop ne rachete pas, vendus a des "
-                        + "acheteurs.");
+        BUY("shop", "Acheter", ""),
+        SELL("sell", "Vendre", ""),
+        BOUTIQUE("boutique", "Boutique", ""),
+        AUCTION("auction", "Hotel des ventes", "");
 
         private final String path;
         private final String label;

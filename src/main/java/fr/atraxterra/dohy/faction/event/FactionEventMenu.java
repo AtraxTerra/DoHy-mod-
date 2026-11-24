@@ -71,8 +71,8 @@ public final class FactionEventMenu extends MenuController {
                             player.level().getServer()))
                     .accent(0xFFEF3826).badge("EN COURS")
                     .tooltip(List.of("Depuis " + fight.seconds() / 60 + " min",
-                            MoneyFormat.shortForm(fight.kind().elo()) + " ELO a la fin, selon le rang",
-                            "Dans l'arene, tu gardes ton inventaire."));
+                            MoneyFormat.shortForm(fight.kind().elo()) + " ELO selon le rang",
+                            "Inventaire garde"));
             if (progress >= 0.0f) {
                 card = card.progress(Math.round(progress * 1000.0f), 1000);
             }
@@ -85,11 +85,7 @@ public final class FactionEventMenu extends MenuController {
             boolean boss = fight instanceof BossFight;
             for (EventRun.Rival rival : fight.rivals()) {
                 running.add(Card.of(new ItemStack(Items.BANNER.pick(rival.color())), rival.name(), List.of(
-                        "Faction rivale", "Deux combattants a la fois")).accent(0xFF55545C)
-                        .tooltip(boss ? List.of("Ils frappent le boss et lui prennent du classement.",
-                                "Ils ne t'attaquent que si tu les frappes.")
-                                : List.of("Ils se battent entre eux et contre toi.",
-                                "Ils visent la zone, le totem ou l'oeuf.")));
+                        "Faction rivale", "")).accent(0xFF55545C));
             }
             sections.add(new MenuView.Section("EN COURS", "upgrade", MenuView.GRID, running));
         }

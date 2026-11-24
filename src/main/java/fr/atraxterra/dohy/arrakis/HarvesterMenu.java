@@ -71,16 +71,6 @@ public final class HarvesterMenu extends MenuController {
         if (harvester != null) {
             sections.add(machine(player, harvester));
             sections.add(hopper(player, harvester));
-            sections.add(new MenuView.Section("MODE D'EMPLOI", "", MenuView.TEXT, List.of(Card.of(ItemStack.EMPTY,
-                    "Recolter l'epice", List.of(
-                            "Roule sur le sable d'epice, la bouche ouverte (touche de saut).",
-                            "- Elle avale trois blocs de large, jusqu'a deux sous le sol",
-                            "- " + SpiceHarvester.YIELD + " melange par bloc, du sable ordinaire a la place",
-                            "- Les champs d'epice : des taches rouille dans l'erg, et les eruptions",
-                            "- Garee pres du comptoir d'Arrakeen, la cargaison s'y vend seule",
-                            "! Le bruit attire les vers : a 100 %, un ver vient. Bouche fermee et",
-                            "  machine arretee, il perd la trace ; sur la roche, il ne passe pas.",
-                            "! Un marteleur plante plus loin le detourne de la moissonneuse.")))));
         }
         String owner = harvester == null || harvester.ownerName().isEmpty() ? "" : " — " + harvester.ownerName();
         return new MenuView(id(), "Moissonneuse d'epice", "Saut : ouvrir ou fermer la bouche" + owner, stats,
@@ -94,13 +84,11 @@ public final class HarvesterMenu extends MenuController {
                         harvester.fuel() + " / " + SpiceHarvester.TANK + " unites",
                         fuelInHand ? "Clic : verser ce que tu tiens" : "Tiens un carburant en main"))
                 .accent(harvester.fuel() > 0 ? GREEN : RED)
-                .tooltip(List.of("Deux unites par bloc parcouru,", "quatre bouche ouverte,",
-                        "une de plus par bloc d'epice avale", "Bloc de charbon, bidon de carburant,",
-                        "seau de lave : clic sur la machine, l'objet en main"));
+                .tooltip(List.of("Charbon, bidon de carburant, lave"));
         cards.add(fuelInHand && harvester.fuel() < SpiceHarvester.TANK ? fuel.action("fuel|faire le plein")
                 : fuel.state(MenuView.DISABLED));
         Card mouth = Card.of(new ItemStack(ArrakisContent.SPICE_SAND_ITEM.get()), "Bouche d'aspiration",
-                List.of(harvester.working() ? "Ouverte : elle avale l'epice" : "Fermee : elle roule sans recolter",
+                List.of(harvester.working() ? "Ouverte" : "Fermee",
                         "Clic : " + (harvester.working() ? "fermer" : "ouvrir")))
                 .accent(harvester.working() ? GREEN : GOLD);
         cards.add(harvester.fuel() > 0 || harvester.working()
@@ -114,7 +102,7 @@ public final class HarvesterMenu extends MenuController {
         int cargo = harvester.cargo();
         if (cargo <= 0) {
             cards.add(Card.of(new ItemStack(ArrakisContent.MELANGE.get()), "Tremie vide", List.of(
-                    "La bouche la remplit", "Elle se vide seule pres du comptoir d'Arrakeen"))
+                    "", ""))
                     .state(MenuView.DISABLED));
         } else {
             cards.add(Card.of(new ItemStack(ArrakisContent.MELANGE.get()), "Melange", List.of(

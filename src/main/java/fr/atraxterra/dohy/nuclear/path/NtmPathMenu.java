@@ -54,14 +54,11 @@ public final class NtmPathMenu extends MenuController {
     @Override
     public MenuView view(ServerPlayer player) {
         if (!NtmPath.installed()) {
-            return message("NTM NEXT absent", List.of(
-                    "Le parcours guide les machines de NTM NEXT, de l'enclume a la fusion.",
-                    "Ce serveur n'a pas NTM NEXT : il n'y a rien a faire ici."));
+            return message("NTM NEXT absent", List.of("NTM NEXT n'est pas installe."));
         }
         List<NtmPath.Located> steps = NtmPath.steps();
         if (steps.isEmpty()) {
-            return message("Parcours illisible", List.of(
-                    "Le fichier du parcours n'a pas pu etre lu : voir le journal du serveur."));
+            return message("Parcours illisible", List.of("Voir le journal du serveur."));
         }
         NtmPathData data = NtmPath.data(player);
         NtmPath.Located current = NtmPath.current(player);
@@ -80,13 +77,7 @@ public final class NtmPathMenu extends MenuController {
         List<MenuView.Section> sections = new ArrayList<>();
         if (shown == null) {
             sections.add(new MenuView.Section("PARCOURS TERMINE", "upgrade", MenuView.TEXT, List.of(
-                    Card.of(ItemStack.EMPTY, "De l'enclume a la fusion", List.of(
-                            "Industrie, petrole, reacteurs, bismuth, fusion : tu as parcouru NTM NEXT de bout en "
-                                    + "bout.",
-                            "- Au-dela : le DFC, l'ICF, les autres planetes. Les fiches NTM de l'encyclopedie "
-                                    + "donnent les bases.",
-                            "- Ce qui manque s'achete au shop, onglets NTM NEXT (pieces) et Machines NTM.",
-                            "! Un clic sur une etape ci-dessous en rouvre le mode d'emploi."))
+                    Card.of(ItemStack.EMPTY, "De l'enclume a la fusion", List.of("Parcours termine."))
                             .accent(GREEN))));
         } else {
             sections.add(new MenuView.Section("ETAPE " + shown.number() + " · " + shown.chapter().name()
@@ -260,7 +251,7 @@ public final class NtmPathMenu extends MenuController {
         return Card.of(current.step().iconStack(), "Etape " + current.number() + " / " + total + " : "
                         + current.step().title(), List.of(
                         current.step().goal().label() + " · " + status.line(),
-                        status.met() ? "Prete : un clic, et valide-la" : current.chapter().name()))
+                        status.met() ? "Prete : clic pour valider" : current.chapter().name()))
                 .accent(status.met() ? GREEN : current.chapter().accent())
                 .badge(status.met() ? "PRET" : MoneyFormat.shortForm(current.step().reward().money()) + " $")
                 .progress(status.have(), status.need())

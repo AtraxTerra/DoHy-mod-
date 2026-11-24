@@ -106,53 +106,37 @@ public final class WaterMenu extends MenuController {
         Card refill = Card.of(CanteenItem.filled(ArrakisContent.CANTEEN.get()), "Remplir mes gourdes",
                 List.of(MoneyFormat.exact(SIP_PRICE) + " $ la gorgee", missing > 0
                         ? missing + " gorgees : " + MoneyFormat.exact(refillCost) + " $"
-                        : "Tes gourdes sont pleines (ou tu n'en as pas)"))
+                        : "Gourdes pleines"))
                 .accent(WATER).badge(missing > 0 ? "x" + missing : "");
         refill = missing > 0 && balance >= refillCost ? refill.action("refill|remplir les gourdes")
                 : refill.state(MenuView.DISABLED);
 
         List<Card> gear = new ArrayList<>();
         gear.add(buy(CanteenItem.filled(ArrakisContent.CANTEEN.get()), "Gourde", CANTEEN_PRICE, balance,
-                "buy_canteen", WATER, List.of("Huit gorgees, livree pleine", "Bois-la quand tu as soif"),
-                List.of("Remplis-la a un piege a vent, ou ici.", "Une gorgee : un cinquieme de ta reserve d'eau.")));
+                "buy_canteen", WATER, List.of("Huit gorgees", "Livree pleine"), null));
         gear.add(buy(new ItemStack(ArrakisContent.STILLSUIT_SUIT.get()), "Distille complet", STILLSUIT_PRICE, balance,
-                "buy_stillsuit", SUIT_ACCENT, List.of("Les quatre pieces", "La soif va pres de sept fois moins vite"),
-                List.of("Il garde l'eau du corps et la rend a boire.",
-                        "Masque 15 %, combinaison 35 %, jambieres 25 %, bottes 10 %.")));
+                "buy_stillsuit", SUIT_ACCENT, List.of("Les quatre pieces", "Soif x7 moins vite"), null));
         gear.add(buy(new ItemStack(ArrakisContent.STILLSUIT_MASK.get()), "Masque de distille", MASK_PRICE, balance,
-                "buy_mask", SUIT_ACCENT, List.of("Garde 15 % de ton eau", "Le souffle ne se perd plus"), null));
+                "buy_mask", SUIT_ACCENT, List.of("Garde 15 % de ton eau", ""), null));
         gear.add(buy(new ItemStack(ArrakisContent.STILLSUIT_SUIT.get()), "Combinaison de distille", SUIT_PRICE,
-                balance, "buy_suit", SUIT_ACCENT, List.of("Garde 35 % de ton eau", "La sueur est bue a nouveau"), null));
+                balance, "buy_suit", SUIT_ACCENT, List.of("Garde 35 % de ton eau", ""), null));
         gear.add(buy(new ItemStack(ArrakisContent.STILLSUIT_LEGGINGS.get()), "Jambieres de distille", LEGGINGS_PRICE,
-                balance, "buy_leggings", SUIT_ACCENT, List.of("Garde 25 % de ton eau", "Les pompes des cuisses"),
+                balance, "buy_leggings", SUIT_ACCENT, List.of("Garde 25 % de ton eau", ""),
                 null));
         gear.add(buy(new ItemStack(ArrakisContent.STILLSUIT_BOOTS.get()), "Bottes de distille", BOOTS_PRICE, balance,
-                "buy_boots", SUIT_ACCENT, List.of("Garde 10 % de ton eau", "Chaque pas pompe l'eau"), null));
+                "buy_boots", SUIT_ACCENT, List.of("Garde 10 % de ton eau", ""), null));
         gear.add(buy(new ItemStack(ArrakisContent.WINDTRAP_ITEM.get()), "Piege a vent", WINDTRAP_PRICE, balance,
-                "buy_windtrap", 0xFFB0B4BA, List.of("Seize gorgees de citerne", "Il tire l'eau de l'air, la nuit surtout"),
-                List.of("Pose-le a ciel ouvert : couvert, il ne recolte rien.",
-                        "Une gorgee toutes les 20 s la nuit, toutes les 60 s le jour.",
-                        "Une gourde ou une bouteille vide s'y remplit.")));
+                "buy_windtrap", 0xFFB0B4BA, List.of("Seize gorgees", "A ciel ouvert"),
+                List.of("1 gorgee / 20 s la nuit, / 60 s le jour")));
 
         gear.add(buy(new ItemStack(SietchContent.PARACOMPASS.get()), "Paracompas", PARACOMPASS_PRICE, balance,
-                "buy_paracompass", 0xFFE8E0C8, List.of("Il montre le sietch le plus proche", "Les sietchs echangent l'eau"),
-                List.of("Huit sietchs sont creuses au pied des falaises de l'erg.",
-                        "Leurs habitants echangent l'eau et l'equipement contre du melange.")));
+                "buy_paracompass", 0xFFE8E0C8, List.of("Vers le sietch le plus proche", ""), null));
 
         int minutes = Hydration.minutesLeft(player);
-        Card rules = Card.of(ItemStack.EMPTY, "L'eau d'Arrakis", List.of(
-                "Hors d'Arrakeen, le desert boit ton eau.",
-                "- En plein soleil, ta reserve dure huit minutes ; a l'ombre et la nuit, plus du double",
-                "- En courant, deux fois moins ; dans la cabine d'une moissonneuse, tu es a l'ombre",
-                "- Le distille garde l'eau du corps : chaque piece compte",
-                "- Sous 6, tu ralentis ; sous 3, tu faiblis ; a sec, tu perds de la vie",
-                "- Sur Arrakis, l'eau versee s'evapore : seuls la gourde et le piege a vent la gardent",
-                minutes < 0 ? "! Ici, a Arrakeen, la ville a ses citernes : tu n'as pas soif."
-                        : "! Au rythme d'ici, ta reserve tiendrait " + minutes + " min."));
-        return new MenuView(id(), "Le marchand d'eau", "Arrakeen — l'eau vaut plus que l'epice", stats, List.of(
+        return new MenuView(id(), "Le marchand d'eau", minutes < 0 ? "Arrakeen" : "Reserve : " + minutes + " min",
+                stats, List.of(
                 new MenuView.Section("BOIRE", "resources", MenuView.GRID, List.of(drink, refill)),
-                new MenuView.Section("MATERIEL", "resources", MenuView.GRID, gear),
-                new MenuView.Section("ARRAKIS", "", MenuView.TEXT, List.of(rules))), false);
+                new MenuView.Section("MATERIEL", "resources", MenuView.GRID, gear)), false);
     }
 
     private static Card buy(ItemStack icon, String title, long price, long balance, String key, int accent,
@@ -203,7 +187,7 @@ public final class WaterMenu extends MenuController {
             }
             case "buy_canteen" -> sell(player, CANTEEN_PRICE, "Gourde pleine livree.",
                     CanteenItem.filled(ArrakisContent.CANTEEN.get()));
-            case "buy_stillsuit" -> sell(player, STILLSUIT_PRICE, "Distille complet livre : porte les quatre pieces.",
+            case "buy_stillsuit" -> sell(player, STILLSUIT_PRICE, "Distille complet livre.",
                     stack(ArrakisContent.STILLSUIT_MASK.get()), stack(ArrakisContent.STILLSUIT_SUIT.get()),
                     stack(ArrakisContent.STILLSUIT_LEGGINGS.get()), stack(ArrakisContent.STILLSUIT_BOOTS.get()));
             case "buy_mask" -> sell(player, MASK_PRICE, "Masque de distille livre.",
@@ -215,10 +199,10 @@ public final class WaterMenu extends MenuController {
             case "buy_boots" -> sell(player, BOOTS_PRICE, "Bottes de distille livrees.",
                     stack(ArrakisContent.STILLSUIT_BOOTS.get()));
             case "buy_paracompass" -> sell(player, PARACOMPASS_PRICE,
-                    "Paracompas livre : sur Arrakis, son aiguille montre le sietch le plus proche.",
+                    "Paracompas livre.",
                     stack(SietchContent.PARACOMPASS.get()));
             case "buy_windtrap" -> sell(player, WINDTRAP_PRICE,
-                    "Piege a vent livre : pose-le a ciel ouvert, il se remplit la nuit.",
+                    "Piege a vent livre.",
                     stack(ArrakisContent.WINDTRAP_ITEM.get()));
             default -> {
             }

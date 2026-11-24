@@ -75,9 +75,7 @@ public final class SellController extends MenuController {
                 rows.add(Card.of(new ItemStack(line.item()), name(line.item()), List.of(
                                 "x" + line.count() + " · vente pas encore ouverte",
                                 "Encore " + MoneyFormat.exact(missing) + " a collecter"))
-                        .state(MenuView.DISABLED).progress(collected, collected + missing)
-                        .tooltip(List.of("Le shop rachete cet objet une fois que tu en as assez collecte",
-                                "Ca se voit dans l'onglet Collections")));
+                        .state(MenuView.DISABLED).progress(collected, collected + missing));
                 continue;
             }
             long unit = DynamicPrice.unitPrice(player, line.id(), line.entry());
@@ -86,15 +84,13 @@ public final class SellController extends MenuController {
             total += payout;
             open++;
             List<String> tooltip = new ArrayList<>();
-            tooltip.add("Clic : vendre les " + line.count() + " pour " + money(payout));
             if (percent < 100) {
-                tooltip.add("Le shop paie moins quand tu en vends beaucoup d'un coup");
-                tooltip.add("Le prix remonte tout seul, partie fermee comprise");
+                tooltip.add("Prix bas : il remonte avec le temps");
             }
             boolean hourly = HourlyCourse.follows(line.entry());
             if (hourly) {
                 int course = HourlyCourse.percent(line.id(), line.entry()) - 100;
-                tooltip.add("Prix de l'heure : " + (course > 0 ? "+" : "") + course + " % (change dans "
+                tooltip.add("Cours : " + (course > 0 ? "+" : "") + course + " % (encore "
                         + HourlyCourse.minutesLeft() + " min)");
             }
             Card row = Card.of(new ItemStack(line.item()), name(line.item()), List.of(
@@ -116,17 +112,14 @@ public final class SellController extends MenuController {
         List<Card> quick = new ArrayList<>();
         Card all = Card.of(new ItemStack(Items.EMERALD), "Tout vendre", List.of(
                         open > 0 ? money(total) : "Rien a vendre",
-                        open > 0 ? open + (open > 1 ? " sortes d'objets" : " sorte d'objet") : "Le shop ne rachete rien de ton sac"))
+                        open > 0 ? open + (open > 1 ? " sortes d'objets" : " sorte d'objet") : ""))
                 .accent(GREEN)
-                .tooltip(List.of("Vend d'un coup tout ce que le shop rachete",
-                        "L'armure portee et la seconde main ne partent pas",
-                        "Ce dont la vente n'est pas ouverte reste dans ton sac"));
+                .tooltip(List.of("Sauf l'armure portee et la seconde main"));
         quick.add(open > 0 ? all.action("all|tout vendre").confirm("Tout vendre pour " + money(total) + " ?|"
                 + open + (open > 1 ? " sortes d'objets" : " sorte d'objet") + " du sac") : all.state(MenuView.DISABLED));
-        quick.add(Card.of(new ItemStack(Items.CHEST), "Coffre de vente", List.of("Depose, ferme : c'est vendu",
-                        "Ce qui ne se vend pas te revient"))
-                .accent(GOLD).action("chest|ouvrir")
-                .tooltip(List.of("Pour vendre une fournee choisie a la main", "La commande /sell coffre l'ouvre aussi")));
+        quick.add(Card.of(new ItemStack(Items.CHEST), "Coffre de vente", List.of("Depose, ferme : vendu",
+                        "/sell coffre"))
+                .accent(GOLD).action("chest|ouvrir"));
 
         List<Card> rare = new ArrayList<>();
         for (Map.Entry<Item, Integer> entry : auction.entrySet()) {
@@ -134,17 +127,15 @@ public final class SellController extends MenuController {
             long each = AuctionSales.recommended(sample);
             rare.add(Card.of(new ItemStack(entry.getKey()), name(entry.getKey()), List.of(
                             "x" + entry.getValue() + " · " + money(each) + " piece conseille",
-                            "Le shop ne le rachete pas"))
+                            "Hotel des ventes"))
                     .accent(BLUE)
-                    .tooltip(List.of("Des acheteurs le prennent a l'hotel des ventes",
-                            "Tu choisis le prix : moins cher, ca part plus vite"))
                     .action("auction:" + BuiltInRegistries.ITEM.getKey(entry.getKey()) + "|mettre en vente"));
         }
 
         List<MenuView.Section> sections = new ArrayList<>();
         sections.add(new MenuView.Section("VENDRE D'UN COUP", "resources", MenuView.GRID, quick));
         if (!moving.isEmpty()) {
-            sections.add(new MenuView.Section("PRIX QUI CHANGENT CHAQUE HEURE|" + moving.size(), "upgrade",
+            sections.add(new MenuView.Section("COURS DE L'HEURE|" + moving.size(), "upgrade",
                     MenuView.GRID, moving));
         }
         if (!rows.isEmpty()) {
@@ -155,11 +146,7 @@ public final class SellController extends MenuController {
         }
         if (rows.isEmpty() && moving.isEmpty() && rare.isEmpty()) {
             sections.add(new MenuView.Section("TON SAC", "craft", MenuView.TEXT, List.of(Card.of(ItemStack.EMPTY, "",
-                    List.of("Rien a vendre pour l'instant.",
-                            "- Le shop rachete presque tout ce qui se recolte, se mine ou se chasse.",
-                            "- Ce qui se fabrique ne se revend pas : vends plutot ce qui sert a le fabriquer.",
-                            "- Les raretes (runes, essences, equipement de donjon, cles...) se vendent a l'hotel des "
-                                    + "ventes.")))));
+                    List.of("Rien a vendre.")))));
         }
         List<MenuView.Stat> stats = List.of(new MenuView.Stat("TON ARGENT", money(balance), 0xFFFFFFFF));
         return new MenuView(id(), Commerce.TITLE, Commerce.Tab.SELL.subtitle(), stats, sections, false)

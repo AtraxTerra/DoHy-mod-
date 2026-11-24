@@ -81,7 +81,7 @@ public final class TractorMenu extends MenuController {
             sections.add(seeder(player, tractor, config));
             sections.add(hopper(tractor, config));
         }
-        return new MenuView(id(), "Tracteur", "Saut tenu : outil en marche ou a l'arret", stats,
+        return new MenuView(id(), "Tracteur", "Saut tenu : outil on/off", stats,
                 sections, true);
     }
 
@@ -92,9 +92,7 @@ public final class TractorMenu extends MenuController {
                         tractor.fuel() + " / " + config.tank() + " unites",
                         fuelInHand ? "Clic : verser ce que tu tiens" : "Tiens un carburant en main"))
                 .accent(tractor.fuel() > 0 ? GREEN : RED)
-                .tooltip(List.of("Une unite par bloc parcouru,", "deux quand l'outil travaille",
-                        "Bidon de carburant, seau de lave, charbon :", "clic sur le tracteur, l'objet en main",
-                        "Gare a cote d'une pompe, il se remplit seul"));
+                .tooltip(List.of("Carburant, lave, charbon", "Se remplit pres d'une pompe"));
         cards.add(fuelInHand && tractor.fuel() < config.tank() ? fuel.action("fuel|faire le plein")
                 : fuel.state(MenuView.DISABLED));
         TractorTool tool = tractor.tool();
@@ -158,7 +156,7 @@ public final class TractorMenu extends MenuController {
         Item sowing = tractor.sowing();
         if (!tractor.seeds().isEmpty()) {
             cards.add(Card.of(new ItemStack(Items.COMPASS), "Semer : au mieux", List.of(
-                            "La premiere semence chargee", "qui pousse dans le climat du champ"))
+                            "Selon le climat", ""))
                     .accent(sowing == null ? GREEN : GREY).state(sowing == null ? MenuView.DONE : MenuView.NORMAL)
                     .action("sow:auto|semer au mieux"));
         }
@@ -178,13 +176,13 @@ public final class TractorMenu extends MenuController {
         List<Card> cards = new ArrayList<>();
         if (tractor.crops().isEmpty()) {
             cards.add(Card.of(new ItemStack(Items.WHEAT), "Tremie vide", List.of(
-                    "La moissonneuse la remplit", "Elle se vide seule a " + config.siloRange() + " blocs d'un silo"))
+                    "Se vide pres d'un silo", ""))
                     .state(MenuView.DISABLED));
         }
         for (Map.Entry<Item, Integer> entry : tractor.crops().entrySet()) {
             Item crop = entry.getKey();
             cards.add(Card.of(new ItemStack(crop), name(crop), List.of("Clic : prendre une pile",
-                            "Se vide seule pres d'un silo"))
+                            ""))
                     .accent(GREEN).badge("x" + entry.getValue())
                     .action("crop:" + BuiltInRegistries.ITEM.getKey(crop) + "|prendre une pile"));
         }

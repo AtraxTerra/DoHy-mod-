@@ -71,12 +71,9 @@ public final class SpiceCounterMenu extends MenuController {
         sellStack = carried > 0 ? sellStack.action("sell_stack|vendre une pile") : sellStack.state(MenuView.DISABLED);
 
         Card harvester = Card.of(new ItemStack(ArrakisContent.HARVESTER_ITEM.get()), "Moissonneuse d'epice",
-                List.of(MoneyFormat.exact(HARVESTER_PRICE) + " $", "Livree avec un quart de plein",
-                        "Deux melange par bloc, trois blocs de large"))
+                List.of(MoneyFormat.exact(HARVESTER_PRICE) + " $", "Trois blocs de large"))
                 .accent(0xFFCC9442).badge("ACHAT")
-                .tooltip(List.of("Pose-la sur le sable : tu en es le proprietaire.",
-                        "Monte dedans, la touche de saut ouvre sa bouche.",
-                        "Carburant : charbon, bidons de NTM, seau de lave."));
+                .tooltip(List.of("Saut : ouvre la bouche", "Charbon, bidons de NTM, lave"));
         harvester = balance >= HARVESTER_PRICE ? harvester.action("buy|acheter la moissonneuse")
                 : harvester.state(MenuView.DISABLED).tooltip(List.of("Il te manque "
                         + MoneyFormat.exact(HARVESTER_PRICE - balance) + " $."));
@@ -84,43 +81,23 @@ public final class SpiceCounterMenu extends MenuController {
         int teeth = SpiceInv.count(player, ArrakisContent.WORM_TOOTH.get());
         Card sellTeeth = Card.of(new ItemStack(ArrakisContent.WORM_TOOTH.get(), Math.max(1, Math.min(16, teeth))),
                 "Dents de ver", List.of(MoneyFormat.exact(TOOTH_PRICE) + " $ la dent",
-                        teeth > 0 ? teeth + " sur toi" : "Un ver en perd parfois en refermant sa gueule"))
+                        teeth > 0 ? teeth + " sur toi" : "Aucune sur toi"))
                 .accent(0xFFE8E0C8).badge(teeth > 0 ? "x" + teeth : "");
         sellTeeth = teeth > 0 ? sellTeeth.action("sell_teeth|vendre les dents") : sellTeeth.state(MenuView.DISABLED);
         Card thumper = Card.of(new ItemStack(ArrakisContent.THUMPER_ITEM.get()), "Marteleur",
-                List.of(MoneyFormat.exact(THUMPER_PRICE) + " $", "Une minute de coups sourds",
-                        "Il appelle les vers, loin de toi"))
-                .accent(0xFFB0B4BA).badge("ACHAT")
-                .tooltip(List.of("Plante-le dans le sable de l'erg : il frappe une minute.",
-                        "Un ver qui l'entend s'y rend, et le broie.",
-                        "Pose-le loin de ta moissonneuse avant qu'il n'arrive."));
+                List.of(MoneyFormat.exact(THUMPER_PRICE) + " $", "Attire les vers"))
+                .accent(0xFFB0B4BA).badge("ACHAT");
         thumper = balance >= THUMPER_PRICE ? thumper.action("buy_thumper|acheter un marteleur")
                 : thumper.state(MenuView.DISABLED);
 
-        Card about = Card.of(ItemStack.EMPTY, "Le cours de l'epice", List.of(
-                "La Guilde ne rachete le melange qu'ici, a Arrakeen.",
-                "- Le cours change toutes les heures : prochain dans " + SpiceMarket.minutesLeft() + " min",
-                "- Plus tu en vends, plus le prix baisse ; il remonte avec le temps",
-                "- Les champs d'epice : des taches rouille dans l'erg, loin de la ville",
-                "- Les eruptions d'epice en font naitre de nouveaux : guette le grondement",
-                "! A la main, une pelle n'en tire qu'un melange sur trois blocs."));
-        Card worms = Card.of(ItemStack.EMPTY, "Les vers des sables", List.of(
-                "Tout ce qui bat le sable de l'erg a un rythme les attire.",
-                "- Moissonneuse bouche ouverte : beaucoup ; en roulant : un peu",
-                "- Course : assez ; marche : a peine ; accroupi ou immobile : rien",
-                "- Signe de ver : le sable bouillonne, il creuse, il vient",
-                "- Le sable tremble sous toi : cours, tu as moins d'une seconde",
-                "- Arrete-toi, tais-toi, ou gagne la roche : il perd ta trace",
-                "! Un marteleur plante loin de toi le detourne."));
         Card course = Card.of(new ItemStack(ArrakisContent.MELANGE.get()), "Cours du melange", List.of(
-                        "Prix de base " + MoneyFormat.exact(SpiceMarket.BASE_PRICE) + " $, fois le cours de l'heure",
+                        "Base " + MoneyFormat.exact(SpiceMarket.BASE_PRICE) + " $",
                         "Prochain cours dans " + SpiceMarket.minutesLeft() + " min"))
                 .accent(SPICE).chart(SpiceMarket.chart(player.level().getServer()));
-        return new MenuView(id(), "Comptoir de l'epice", "Arrakeen — la Guilde rachete le melange", stats, List.of(
+        return new MenuView(id(), "Comptoir de l'epice", "", stats, List.of(
                 new MenuView.Section("COURS", "upgrade", MenuView.CHART, List.of(course)),
                 new MenuView.Section("VENTE", "resources", MenuView.GRID, List.of(sellAll, sellStack, sellTeeth)),
-                new MenuView.Section("MATERIEL", "resources", MenuView.GRID, List.of(harvester, thumper)),
-                new MenuView.Section("ARRAKIS", "", MenuView.TEXT, List.of(about, worms))), false);
+                new MenuView.Section("MATERIEL", "resources", MenuView.GRID, List.of(harvester, thumper))), false);
     }
 
     @Override
@@ -163,7 +140,7 @@ public final class SpiceCounterMenu extends MenuController {
                     return;
                 }
                 SpiceInv.give(player, ArrakisContent.THUMPER_ITEM.get(), 1);
-                report(player, null, "Marteleur achete : plante-le dans le sable, loin de toi.");
+                report(player, null, "Marteleur achete.");
             }
             case "buy" -> {
                 if (!Economy.tryDebit(player, HARVESTER_PRICE)) {
@@ -176,7 +153,7 @@ public final class SpiceCounterMenu extends MenuController {
                 if (!player.getInventory().add(item) || !item.isEmpty()) {
                     player.drop(item, false);
                 }
-                report(player, null, "Moissonneuse livree : pose-la sur le sable, hors de la ville.");
+                report(player, null, "Moissonneuse livree.");
             }
             default -> {
             }

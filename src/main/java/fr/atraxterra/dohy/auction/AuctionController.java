@@ -111,13 +111,11 @@ public final class AuctionController extends MenuController {
         switch (page.step()) {
             case PICK -> {
                 sections = pickSections(player);
-                subtitle = "Choisis l'objet a vendre : les acheteurs cherchent les memes raretes que celles qui sont "
-                        + "en vente ici.";
+                subtitle = "Choisis l'objet a vendre";
             }
             case PRICE -> {
                 sections = priceSections(player, page);
-                subtitle = "Choisis ton prix : moins c'est cher, plus ca part vite. Invendu au bout de "
-                        + Math.round(AuctionSales.buyers().hours()) + " h, l'objet te revient.";
+                subtitle = "Choisis ton prix";
             }
             default -> {
                 sections = mainSections(player, balance);
@@ -142,13 +140,10 @@ public final class AuctionController extends MenuController {
         int sellable = sellableStacks(player).size();
         Card list = Card.of(new ItemStack(Items.NAME_TAG), "Mettre en vente", List.of(
                         free > 0 ? free + (free > 1 ? " emplacements libres" : " emplacement libre")
-                                : "Tous tes emplacements sont pris",
+                                : "Plus de place",
                         sellable > 0 ? sellable + (sellable > 1 ? " objets vendables dans ton sac"
-                                : " objet vendable dans ton sac") : "Rien a vendre ici dans ton sac"))
-                .accent(DEAL)
-                .tooltip(List.of("Les acheteurs prennent les memes raretes que celles en vente ici :",
-                        "runes, essences, equipement de donjon, pierres legendaires, cles...",
-                        "Ce que le shop rachete se vend dans l'onglet Vendre"));
+                                : " objet vendable dans ton sac") : "Rien a vendre"))
+                .accent(DEAL);
         mine.add(free > 0 && sellable > 0 ? list.action("pick|choisir un objet") : list.state(MenuView.DISABLED));
         sections.add(new MenuView.Section("TES VENTES", "upgrade", MenuView.GRID, mine));
 
@@ -164,11 +159,9 @@ public final class AuctionController extends MenuController {
         long reroll = AuctionHouse.rerollPrice(player);
         Card refresh = Card.of(new ItemStack(Items.BELL), "Nouvelles annonces", List.of(
                         reroll < 0L ? "Plus rien de neuf aujourd'hui" : money(reroll),
-                        "Remplace toutes les annonces du jour"))
+                        "Toutes les annonces"))
                 .accent(GOLD)
-                .tooltip(List.of("D'autres vendeurs, d'autres prix",
-                        "Le prix double a chaque fois dans la journee",
-                        "Les annonces changent toutes seules chaque jour",
+                .tooltip(List.of("Le prix double a chaque fois",
                         reroll > balance ? "Il te manque " + money(reroll - balance) : ""));
         refresh = reroll < 0L || reroll > balance ? refresh.state(MenuView.DISABLED)
                 : refresh.action("reroll|payer");
@@ -183,15 +176,13 @@ public final class AuctionController extends MenuController {
         long now = System.currentTimeMillis();
         return switch (sale.state()) {
             case AuctionData.Sale.SOLD -> Card.of(icon, title, List.of("Vendu " + money(sale.price()),
-                            "L'argent est sur ton compte"))
+                            "Paye"))
                     .state(MenuView.DONE).badge("VENDU")
-                    .tooltip(List.of("Clic : effacer de la liste", "Elle s'efface toute seule apres une journee"))
+                    .tooltip(List.of("Clic : effacer"))
                     .action("clear:" + sale.id() + "|effacer");
             case AuctionData.Sale.UNSOLD -> Card.of(icon, title, List.of("Personne n'en a voulu",
                             "Clic : le recuperer"))
                     .accent(GOLD).badge("A RECUPERER")
-                    .tooltip(List.of("Il attend ici, rien ne se perd",
-                            "Remets-le en vente moins cher : il partira plus vite"))
                     .action("claim:" + sale.id() + "|recuperer");
             default -> {
                 long hours = Math.max(0L, (now - sale.listedAt()) / 3_600_000L);
@@ -199,11 +190,9 @@ public final class AuctionController extends MenuController {
                 yield Card.of(icon, title, List.of("En vente : " + money(sale.price()),
                                 preset == null ? "En attente d'un acheteur" : AuctionSales.estimate(preset)))
                         .accent(FAIR).badge("EN VENTE")
-                        .tooltip(List.of("Mise en vente il y a " + (hours > 0 ? hours + " h" : "moins d'une heure"),
-                                "Invendue dans " + left + " h, elle te revient",
-                                "Clic : la retirer, l'objet revient dans ton sac"))
+                        .tooltip(List.of("Revient dans " + left + " h", "Clic : retirer"))
                         .action("cancel:" + sale.id() + "|retirer")
-                        .confirm("Retirer cette annonce ?|L'objet revient dans ton sac.");
+                        .confirm("Retirer cette annonce ?");
             }
         };
     }
@@ -267,13 +256,12 @@ public final class AuctionController extends MenuController {
             cards.add(Card.of(stack.copy(), label(stack), List.of("Prix conseille : " + money(AuctionSales.recommended(stack)),
                             fair == null ? "" : AuctionSales.estimate(fair)))
                     .accent(FAIR)
-                    .tooltip(List.of("Clic : choisir le prix", stack.getCount() > 1
-                            ? "Toute la pile part dans la meme annonce" : ""))
+                    .tooltip(List.of(stack.getCount() > 1 ? "Toute la pile" : ""))
                     .action("pick:" + slot + "|choisir"));
         }
         if (cards.isEmpty()) {
             cards.add(Card.of(new ItemStack(Items.BARRIER), "Rien a vendre ici", List.of(
-                    "Aucune rarete dans ton sac", "Ce que le shop rachete : onglet Vendre")).state(MenuView.DISABLED));
+                    "Aucune rarete dans ton sac", "")).state(MenuView.DISABLED));
         }
         cards.add(cancel());
         return List.of(new MenuView.Section("QUEL OBJET ?", "resources", MenuView.GRID, cards));
@@ -296,17 +284,15 @@ public final class AuctionController extends MenuController {
             int accent = preset.factor() < 1.0d ? DEAL : fair ? FAIR : GREEDY;
             cards.add(Card.of(stack.copy(), preset.label(), List.of(money(price), AuctionSales.estimate(preset)))
                     .accent(accent).badge(fair ? "CONSEILLE" : "")
-                    .tooltip(List.of("Tu recois " + money(price) + " quand il part",
-                            "Invendu au bout de " + Math.round(AuctionSales.buyers().hours())
-                                    + " h : il te revient",
-                            "Tu peux retirer l'annonce a tout moment"))
+                    .tooltip(List.of("Invendu : revient au bout de " + Math.round(AuctionSales.buyers().hours())
+                            + " h"))
                     .action("sell:" + page.slot() + ":" + preset.id() + "|mettre en vente"));
         }
         cards.add(cancel());
         // L'objet en tete, pour rappeler ce qu'on vend : le nom se traduit chez le client.
         cards.addFirst(Card.of(stack.copy(), label(stack), List.of("Prix conseille : "
-                        + money(AuctionSales.recommended(stack)), "Choisis un prix a droite"))
-                .accent(GREY).tooltip(List.of("Toute la pile part dans la meme annonce")));
+                        + money(AuctionSales.recommended(stack)), ""))
+                .accent(GREY));
         return List.of(new MenuView.Section("A QUEL PRIX ?", "upgrade", MenuView.GRID, cards));
     }
 
@@ -338,7 +324,7 @@ public final class AuctionController extends MenuController {
             Page page = page(player);
             int slot = parts.length == 3 ? number(parts[1]) : -1;
             if (page.step() != PRICE || slot != page.slot() || !samePile(player, page)) {
-                report(player, "L'objet a change de place : choisis-le a nouveau.", "");
+                report(player, "L'objet a bouge : choisis-le a nouveau.", "");
                 PAGES.put(uuid, new Page(PICK, -1, null));
                 return;
             }

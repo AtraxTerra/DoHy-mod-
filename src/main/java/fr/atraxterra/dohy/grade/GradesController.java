@@ -40,14 +40,14 @@ public final class GradesController extends MenuController {
                 new MenuView.Stat("PREMIUM", days > 0 ? days + " J" : "NON", days > 0 ? Premium.COLOR : 0xFFB8BCC6),
                 new MenuView.Stat("TON ARGENT", MoneyFormat.exact(Economy.balance(player)) + " $", 0xFFFFFFFF));
         List<MenuView.Section> sections = new ArrayList<>();
-        sections.add(new MenuView.Section("LES GRADES : ACHETES POUR TOUJOURS", "upgrade", MenuView.GRID,
+        sections.add(new MenuView.Section("LES GRADES", "upgrade", MenuView.GRID,
                 offers(player, "")));
         sections.add(new MenuView.Section("TES COMMANDES", "craft", MenuView.GRID, commands(player)));
-        sections.add(new MenuView.Section("CE QUE DONNE CHAQUE GRADE", "resources", MenuView.ROWS, perks(player)));
-        sections.add(new MenuView.Section("POUR TOUS, AVEC OU SANS GRADE", "", MenuView.TEXT, List.of(
+        sections.add(new MenuView.Section("AVANTAGES", "resources", MenuView.ROWS, perks(player)));
+        sections.add(new MenuView.Section("POUR TOUS", "", MenuView.TEXT, List.of(
                 Card.of(ItemStack.EMPTY, "", everyone(player)))));
-        return new MenuView(id(), "Grades", "Du confort, pas de puissance : un grade s'achete pour toujours, Premium "
-                + "dure " + Premium.DAYS + " jours.", stats, sections, true);
+        return new MenuView(id(), "Grades", "Grades a vie · Premium " + Premium.DAYS + " jours", stats, sections,
+                true);
     }
 
     /**
@@ -97,7 +97,7 @@ public final class GradesController extends MenuController {
                 .accent(Premium.COLOR).badge(days > 0 ? days + " J" : "30 J")
                 .action(prefix + "premium|" + (days > 0 ? "prolonger de 30 jours" : "acheter 30 jours"))
                 .confirm((days > 0 ? "Prolonger Premium de " : "Acheter Premium pour ") + Premium.DAYS + " jours ?|"
-                        + MoneyFormat.exact(Premium.PRICE) + " $. Le temps court meme partie fermee.");
+                        + MoneyFormat.exact(Premium.PRICE) + " $");
         if (Premium.PRICE > balance) {
             tooltip.add("Il te manque " + MoneyFormat.exact(Premium.PRICE - balance) + " $");
             premium = premium.state(MenuView.DISABLED);
@@ -145,13 +145,11 @@ public final class GradesController extends MenuController {
     }
 
     static List<String> premiumSummary() {
-        return List.of("S'ajoute a ton grade, ou a l'absence de grade",
-                "+" + Premium.HOMES + " homes, +" + Premium.RTP + " /rtp par mois, une rangee d'Ender Chest",
+        return List.of("+" + Premium.HOMES + " homes, +" + Premium.RTP + " /rtp par mois, une rangee d'Ender Chest",
                 "+" + percent(Premium.JOB_XP) + " XP de metier, +" + percent(Premium.PASS_XP) + " XP du pass, +"
                         + percent(Premium.VANILLA_XP) + " XP classique",
                 "-" + percent(Premium.TAX_CUT) + " de taxe au marche international en plus",
-                "Commandes : /ec /fly (au spawn) /nv", "Ton arrivee annoncee a tous les joueurs",
-                "Racheter ajoute " + Premium.DAYS + " jours");
+                "/ec /fly (au spawn) /nv");
     }
 
     /** Les commandes des grades : celles qu'on a se lancent d'un clic. */
@@ -242,12 +240,9 @@ public final class GradesController extends MenuController {
     private static List<String> everyone(ServerPlayer player) {
         int homes = Grades.data(player).homes().size();
         return List.of(
-                "/sethome [nom] : pose un home la ou tu es (" + homes + " / " + Grades.homes(player) + ")",
-                "/home [nom] : y retourner ; /homes : la liste ; /delhome nom : l'oublier",
-                "/rtp : un endroit au hasard dans le monde (encore " + Grades.rtpLeft(player) + " ce mois-ci)",
-                "/tpa joueur, /tpahere joueur, puis /tpaccept ou /tpdeny : se rejoindre entre joueurs",
-                "! Sans Legende, une teleportation attend trois secondes sans bouger. Jamais en combat, ni depuis "
-                        + "un donjon, une arene, Arrakis ou la dimension du Mineur.");
+                "/sethome [nom] (" + homes + " / " + Grades.homes(player) + ") · /home · /homes · /delhome",
+                "/rtp (encore " + Grades.rtpLeft(player) + " ce mois-ci)",
+                "/tpa · /tpahere · /tpaccept · /tpdeny");
     }
 
     private static String percent(double value) {
