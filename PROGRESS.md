@@ -193,6 +193,28 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-24 (suite) — le Ravirok et le Tedarok rejoignent le Dancarok
+
+**Demande** : le point 5 de « Fais 1 (…), 2, 4 et 5 », première moitié — les deux autres montures
+du mod Mount 6.1.0 (`docs/PALAMOD.md` § 17, « Le Ravirok et le Tedarok »).
+
+- **Espèces** (`palamod/mount/MountSpecies`) relevées dans le jar : PV et cases au niveau 100
+  (Dancarok 400/36, Ravirok 100/9, Tedarok 200/18), vitesse, détente et compétences. La gemme et
+  la monture équipée portent l'espèce ; celles d'avant restent des Dancaroks.
+- **Ravirok** : il vole et ne marche pas — saut pour monter, course pour descendre, il plane
+  entre les deux, plafond à la couche 256, battements d'ailes.
+- **Tedarok** : marche de cinq blocs, saut d'environ cinq blocs, course × 1,9, marche sur l'eau
+  (et y court au niveau 50).
+- La corne reste au Dancarok ; sur les deux autres, on casse et pose des blocs en selle.
+- **Sauvages** : dans leurs biomes (montagnes pour le Ravirok, forêts et taïgas pour le Tedarok,
+  par `DancarokSpawner` et la règle vanilla) et un de chaque dans la farmland (prairie, collines,
+  forêt), comme chez Paladium. Capture à l'épée et à la pierre comme le Dancarok.
+- Modèles, animations, textures et sons du jar (`tools/bedrock_model.py`, qui accepte maintenant les
+  valeurs fixes sans temps). `/mount give [niveau] [espèce]`.
+- Vérifié en CI : les trois sauvages affichés, capture d'un Ravirok (« Gemme de Ravirok
+  sauvage »), Ravirok niveau 50 (50 PV, 4 cases) qui monte, avance et redescend se poser,
+  Tedarok niveau 60 (120 PV, 10 cases) qui court sur un bassin.
+
 ### 2026-11-24 (suite) — moins de texte : menus, chat, infobulles et encyclopédie resserrés
 
 **Demande** : « fais une passe sur l'ensemble du mod pour enlever les textes trop "ia" ou en
