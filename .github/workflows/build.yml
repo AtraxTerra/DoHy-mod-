@@ -271,6 +271,11 @@ jobs:
           python3 -I tools/throne_assets.py --check
           python3 -I tools/xp_potion_assets.py --check
 
+      # Les grandes machines de l'agriculture : textures, modeles coupes case par case,
+      # etats, miniatures, pieces mobiles et le Java des formes, tout est genere.
+      - name: Les grandes machines de l'agriculture doivent etre a jour
+        run: python3 -I tools/agri_machine_assets.py --check
+
       # Les lucky blocks : blocs, butin, noms, et une image par evenement porte.
       # Le script lit les evenements dans le Java : un evenement sans image, ou
       # dont la rarete s'ecarte de PalaMod, fait echouer ce controle.

@@ -185,6 +185,15 @@ public enum BigMachine {
         return controller.offset(wx, y - controllerY, wz);
     }
 
+    /** Toutes les cases de la machine en monde, commande comprise. */
+    public java.util.Set<BlockPos> worldCells(BlockPos controller, Direction facing) {
+        java.util.Set<BlockPos> set = new java.util.HashSet<>();
+        for (Cell cell : cells) {
+            set.add(toWorld(controller, facing, cell.x(), cell.y(), cell.z()));
+        }
+        return set;
+    }
+
     /** La commande d'une partie, depuis sa position et sa case. */
     public BlockPos controllerOf(BlockPos part, Direction facing, int x, int y, int z) {
         BlockPos offset = toWorld(BlockPos.ZERO, facing, x, y, z);

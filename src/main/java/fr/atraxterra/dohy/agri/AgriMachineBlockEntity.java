@@ -1,5 +1,7 @@
 package fr.atraxterra.dohy.agri;
 
+import fr.atraxterra.dohy.agri.machine.BigMachine;
+import fr.atraxterra.dohy.agri.machine.BigMachines;
 import fr.atraxterra.dohy.faction.tech.Tech;
 import fr.atraxterra.dohy.faction.tech.TechPerks;
 import net.minecraft.core.BlockPos;
@@ -30,6 +32,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
 
@@ -531,17 +534,33 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
      * Pousse l'energie vers ce qui touche le biogenerateur et en accepte, a parts
      * egales : a 20 FE par tick, servir les voisins dans un ordre fixe donnerait
      * tout au premier, et la seconde machine attendrait qu'il soit plein.
+     *
+     * <p>Deploye, le biogenerateur touche le monde par toute sa construction : ses
+     * voisins sont ceux de toutes ses cases, hors ses propres parties (qui le
+     * renverraient a lui-meme). Une machine qui le touche par plusieurs cases n'est
+     * servie qu'une fois.
      */
     private void push(ServerLevel server, AgriConfig.Machines config) {
         if (energy.amount <= 0 || config.biogenPush() <= 0) {
             return;
         }
         List<EnergyHandler> neighbors = new ArrayList<>();
-        for (Direction side : Direction.values()) {
-            EnergyHandler neighbor = Capabilities.Energy.BLOCK.getCapability(server, worldPosition.relative(side),
-                    null, null, side.getOpposite());
-            if (neighbor != null) {
-                neighbors.add(neighbor);
+        BlockState state = getBlockState();
+        if (state.getBlock() instanceof AgriMachineBlock block && state.hasProperty(BigMachines.FORMED)
+                && state.getValue(BigMachines.FORMED)) {
+            BigMachine machine = block.big();
+            Set<BlockPos> own = machine.worldCells(worldPosition, state.getValue(BigMachines.FACING));
+            for (BlockPos cell : own) {
+                for (Direction side : Direction.values()) {
+                    BlockPos next = cell.relative(side);
+                    if (!own.contains(next)) {
+                        neighbor(server, next, side.getOpposite(), neighbors);
+                    }
+                }
+            }
+        } else {
+            for (Direction side : Direction.values()) {
+                neighbor(server, worldPosition.relative(side), side.getOpposite(), neighbors);
             }
         }
         // Le premier servi tourne a chaque tick, pour que le reste d'une division ne profite pas toujours au meme.
@@ -557,6 +576,14 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
                     transaction.commit();
                 }
             }
+        }
+    }
+
+    /** Un voisin qui prend l'energie, une seule fois, et jamais le biogenerateur lui-meme. */
+    private void neighbor(ServerLevel server, BlockPos pos, Direction side, List<EnergyHandler> neighbors) {
+        EnergyHandler handler = Capabilities.Energy.BLOCK.getCapability(server, pos, null, null, side);
+        if (handler != null && handler != energy && !neighbors.contains(handler)) {
+            neighbors.add(handler);
         }
     }
 
