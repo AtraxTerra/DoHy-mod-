@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-23
+Dernière mise à jour : 2026-11-24
 
 ---
 
@@ -191,6 +191,37 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-24 — des couleurs de saison plus marquées, façon Serene Seasons
+
+**Demande** : « Je voudrais que tu accentue les variations de couleurs des saisons comme Serenes
+Seasons ».
+
+- **Douze temps dans l'année** (`season/SeasonPalette`, sans Minecraft) : le début, le cœur et la
+  fin de chaque saison, fondus l'un dans l'autre par une courbe douce. Hiver : les dernières
+  feuilles mortes puis des arbres nus gris brun, l'herbe pâle ; printemps : des bourgeons vert pâle
+  puis un vert tendre et vif ; été : un vert profond, les couleurs du jeu, puis l'herbe qui jaunit ;
+  automne : le feuillage embrasé (rouge, orange, ambre, jaune, roux, cuivre) puis brun. Avant :
+  quatre teintes de saison mêlées deux à deux, un été intact et un automne à 85 %.
+- **Les bosquets** : des taches irrégulières d'environ six blocs (un cœur tiré au hasard par
+  maille de six, le plus proche l'emporte) au lieu d'une grille de 4 dont les frontières droites
+  coupaient les couronnes en deux ; chacun a jusqu'à un jour d'avance ou de retard (8 niveaux) :
+  des arbres rouges à côté d'arbres encore verts au début de l'automne.
+- **Les bouleaux** : leur couleur fixe passe maintenant par la saison (`ClientSeasons` remplace
+  leur teinte de bloc, `RegisterColorHandlersEvent.BlockTintSources`) : or à l'automne, gris brun
+  l'hiver, vert pâle au printemps. Les sapins gardent la leur.
+- **Les tropiques** : saison sèche (herbe dorée, feuillage éteint) et saison des pluies (vert vif),
+  de 4 à 30° de latitude, en plein de 12 à 20° (`SeasonMath.tropicsColorStrength`) ; la forêt de
+  l'équateur reste verte.
+- **La latitude et le rythme** : couleurs entières dès 40° au lieu de 45° ; 96 paliers par an
+  (~7 h) au lieu de 64.
+- **Tests** : `tools/SeasonPaletteTest.java` (nouveau, en CI : aucune teinte ne saute, l'année
+  boucle, un été fidèle au jeu, un automne embrasé et varié, des arbres nus, des bouleaux dorés,
+  la saison sèche) ; `SeasonMathTest` couvre la force des tropiques.
+- **Vérifié en CI** (captures à 47° N aux moments clés de l'année, et à 14° N en saison sèche et
+  des pluies, avant et après) : herbe d'hiver A0A97D au lieu de 939B66, feuillage d'hiver gris brun
+  757655 ; au cœur de l'automne des bosquets CC902C, C0772E, A9722F, C0A835, 9E582C et des bouleaux
+  D6A631 (verts avant) ; herbe de saison sèche ABB75F, des pluies 69C54F (inchangées avant).
 
 ### 2026-11-23 (suite) — le chanvre de NTM NEXT
 
