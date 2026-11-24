@@ -111,6 +111,7 @@ public final class DungeonEvents {
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             DungeonManager.settle(player);
+            Rpg.migrate(player);
         }
     }
 

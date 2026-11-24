@@ -2499,13 +2499,27 @@ Global), à droite l'arbre, dont on achète les cases puis « Valider » ; « Re
 n'est pas validé. Ici :
 - **`/profil`** et une vignette du menu `/menu` (le bouton « Profil RPG » au-dessus de l'inventaire
   est parti avec le nouvel inventaire du 2026-11-11, qui ouvre le menu principal) ;
-- un écran de coffre : une rangée par branche, **8 nœuds** à acheter dans l'ordre (coûts 2, 4, 5,
-  7, 9, 11, 12, 15 — 65 par branche) ; un clic réserve le nœud suivant, un clic sur le dernier
-  réservé le rend ; **Valider** achète, **Reset** annule les réserves ;
-- tuiles **Perso** (l'arbre seul) et **Global** (arbre, runes de l'armure portée, équipement de
-  donjon) ;
-- **ajout** : « Réinitialiser l'arbre » rend tous les points validés contre **25 000 $** (le wiki
-  ne dit pas si un choix validé se défait).
+- l'écran de Paladium (refait le 2026-11-24 d'après la capture du joueur, images de PalaRPG) : à
+  gauche le nom, le niveau, l'XP et les statistiques en lignes à icônes, onglets **Perso** (l'arbre
+  seul) et **Global** (arbre, runes de l'armure portée, vie, résistances et dégâts de l'équipement
+  de donjon par donjon) ; à droite l'arbre sur sa croix de lumière — Esquive en haut, Attaque à
+  gauche, Critique à droite, Défense en bas —, **Valider** et **Reset** au centre, le compteur des
+  points en haut à droite ; l'arbre glisse à la souris (molette ou glisser) ;
+- **dix nœuds par branche** (`RpgTree`) : une racine près du centre, puis deux bras qui
+  s'écartent ; un nœud se prend quand son parent est pris. Coûts 2, 3, 4, 4, 6, 6 et quatre à 10 :
+  65 par branche, comme avant. Ce qu'ils donnent, en points de pourcentage :
+
+  | Branche | Racine → bouts | Total |
+  |---|---|---|
+  | Attaque | 2, 2, 3, 3, 3, 3, 4, 4, 4, 4 | 32 % |
+  | Esquive | 1, 1, 1, 1, 2, 2, 2, 2, 2, 2 | 16 % |
+  | Critique | 2, 2, 2, 2, 2, 2, 3, 3, 3, 3 | 24 % |
+  | Défense | 2, 2, 2, 2, 2, 2, 3, 3, 3, 3 | 24 % |
+
+  Un clic choisit un nœud, un second le rend (avec ce qui en descend) ; **Valider** achète,
+  **Reset** annule les choix ; sans choix en cours, Reset remet l'arbre à zéro contre **25 000 $**
+  (ajout : le wiki ne dit pas si un choix validé se défait). L'ancien arbre (huit nœuds en ligne)
+  est rendu une fois, à la connexion : les points reviennent, un message le dit.
 
 ### Les runes
 

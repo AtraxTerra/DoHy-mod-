@@ -1,266 +1,196 @@
 package fr.atraxterra.dohy.palamod.dungeon;
 
 import fr.atraxterra.dohy.economy.Economy;
-import fr.atraxterra.dohy.ui.menu.MenuController;
-import fr.atraxterra.dohy.ui.view.MenuView;
-import fr.atraxterra.dohy.ui.view.MenuView.Card;
+import fr.atraxterra.dohy.ui.view.UiNet;
 import fr.atraxterra.dohy.util.MoneyFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Le profil RPG : niveau, points, statistiques, et l'arbre — une branche par
- * statistique. Un clic reserve le noeud suivant d'une branche, un clic sur le
- * dernier reserve le rend ; « Valider » achete, « Annuler » rend tout.
+ * Le profil RPG ({@link RpgView}) : un clic choisit un noeud dont le parent est pris ou choisi,
+ * un second clic le rend (avec ce qui en descend) ; VALIDER achete les choix, RESET les rend, ou
+ * remet l'arbre a zero contre {@value #RESPEC_PRICE} $.
  */
-public final class RpgMenu extends MenuController {
+public final class RpgMenu {
 
     public static final long RESPEC_PRICE = 25_000L;
     public static final RpgMenu INSTANCE = new RpgMenu();
 
-    /** Les reserves en cours, et la reinitialisation armee, par joueur. */
-    private static final class State {
-        final Map<RpgStat, Integer> pending = new EnumMap<>(RpgStat.class);
-        boolean respecArmed;
+    private static final int WHITE = 0xFFFFFFFF;
+    private static final int GRAY = 0xFF8B8E95;
 
-        State() {
-            for (RpgStat stat : RpgStat.values()) {
-                pending.put(stat, 0);
-            }
-        }
-    }
-
-    private final Map<UUID, State> states = new ConcurrentHashMap<>();
+    /** Les noeuds choisis, pas encore valides, par joueur. */
+    private final Map<UUID, int[]> pending = new ConcurrentHashMap<>();
 
     private RpgMenu() {
-        super("rpg");
     }
 
-    @Override
     public void open(ServerPlayer player) {
-        states.put(player.getUUID(), new State());
-        super.open(player);
+        Rpg.migrate(player);
+        pending.put(player.getUUID(), new int[RpgStat.values().length]);
+        UiNet.show(player, view(player));
     }
 
-    private State state(ServerPlayer player) {
-        return states.computeIfAbsent(player.getUUID(), ignored -> new State());
+    private int[] pending(ServerPlayer player) {
+        return pending.computeIfAbsent(player.getUUID(), ignored -> new int[RpgStat.values().length]);
     }
 
-    private static int pendingCost(RpgData data, State state) {
+    private static int price(int[] masks) {
         int total = 0;
-        for (RpgStat stat : RpgStat.values()) {
-            int owned = data.nodes(stat);
-            total += RpgStat.costOf(owned + state.pending.get(stat)) - RpgStat.costOf(owned);
+        for (int mask : masks) {
+            total += RpgTree.price(mask);
         }
         return total;
     }
 
-    private static int color(ChatFormatting format) {
-        return MenuView.color(format);
+    private static RpgView.Row row(String icon, String label, float value) {
+        return new RpgView.Row("stats/icon/" + icon, label, "+" + RpgStat.percent(value), value > 0.0f ? WHITE : GRAY);
     }
 
-    @Override
-    public MenuView view(ServerPlayer player) {
-        State state = state(player);
+    public RpgView view(ServerPlayer player) {
         RpgData data = Rpg.data(player);
         Rpg.Points points = Rpg.points(player);
-        int cost = pendingCost(data, state);
-        int free = points.total() - data.spent() - cost;
+        int[] chosen = pending(player);
+        int[] owned = new int[RpgStat.values().length];
+        for (RpgStat stat : RpgStat.values()) {
+            owned[stat.ordinal()] = data.mask(stat);
+        }
+        int free = points.total() - data.spent() - price(chosen);
         int level = Rpg.level(data.xp());
 
-        List<Card> profile = new ArrayList<>();
-        Card levelCard = Card.of(new ItemStack(Items.EXPERIENCE_BOTTLE), "Niveau RPG " + level, List.of(
-                        level >= Rpg.MAX_LEVEL ? "Niveau maximum" : MoneyFormat.exact(Rpg.xpInLevel(data.xp())) + " / "
-                                + MoneyFormat.exact(Rpg.xpToNext(level)) + " XP",
-                        "Vient des salles terminees"))
-                .accent(0xFF2F5BEA);
-        profile.add(level >= Rpg.MAX_LEVEL ? levelCard.state(MenuView.DONE)
-                : levelCard.progress(Rpg.xpInLevel(data.xp()), Rpg.xpToNext(level)));
-        profile.add(Card.of(new ItemStack(Items.NETHER_STAR), "Points libres", List.of(
-                        "Total " + points.total() + " · depenses " + data.spent(),
-                        cost > 0 ? cost + " reserve(s)" : "Aucune reserve"))
-                .accent(0xFFFAC400).badge(String.valueOf(free))
-                .tooltip(List.of("Niveau RPG : " + points.level() + " / 100",
-                        "Paliers de donjon : " + points.paliers() + " / 80 (1 tous les 5)",
-                        "Metiers : " + points.jobs() + " / 80 (1 tous les 5 niveaux)")));
-        profile.add(statsCard(player, "Statistiques perso", Rpg.tree(data), null));
-        profile.add(statsCard(player, "Statistiques globales", Rpg.tree(data), Rpg.runes(player)));
+        Map<RpgStat, Float> tree = Rpg.tree(data);
+        List<RpgView.Row> perso = new ArrayList<>();
+        perso.add(row("damage", "DEGATS", tree.get(RpgStat.ATTACK)));
+        perso.add(row("critical_chance", "CHANCE CRITIQUE", tree.get(RpgStat.CRIT)));
+        perso.add(row("dodge", "ESQUIVE", tree.get(RpgStat.DODGE)));
+        perso.add(row("resistance", "RESISTANCE", tree.get(RpgStat.DEFENSE)));
+        perso.add(new RpgView.Row("profile/skilltree/cost", "POINTS DEPENSES", String.valueOf(data.spent()),
+                data.spent() > 0 ? WHITE : GRAY));
 
-        List<MenuView.Section> sections = new ArrayList<>();
-        sections.add(new MenuView.Section("PROFIL", "resources", MenuView.GRID, profile));
-        for (RpgStat stat : RpgStat.values()) {
-            int owned = data.nodes(stat);
-            int reserved = state.pending.get(stat);
-            List<Card> nodes = new ArrayList<>();
-            for (int index = 0; index < RpgStat.NODES; index++) {
-                int nodeCost = RpgStat.NODE_COSTS[index];
-                List<String> lines = List.of("+" + RpgStat.percent(stat.perNode()) + " " + stat.label().toLowerCase(),
-                        "Cout : " + nodeCost + " point(s)");
-                Card card;
-                if (index < owned) {
-                    card = Card.of(new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.LIME)), stat.label() + " "
-                            + (index + 1), lines).state(MenuView.DONE);
-                } else if (index < owned + reserved) {
-                    card = Card.of(new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.YELLOW)), stat.label() + " "
-                            + (index + 1), lines).accent(0xFFFAC400)
-                            .tooltip(List.of("Reserve : Valider pour l'acheter"));
-                    if (index == owned + reserved - 1) {
-                        card = card.action("release:" + stat.name() + "|rendre");
-                    }
-                } else if (index == owned + reserved) {
-                    boolean affordable = nodeCost <= free;
-                    card = Card.of(new ItemStack(Items.STAINED_GLASS_PANE.pick(affordable ? DyeColor.LIGHT_BLUE
-                            : DyeColor.ORANGE)), stat.label() + " " + (index + 1), lines);
-                    card = affordable ? card.accent(0xFF55CCFF).action("reserve:" + stat.name() + "|reserver")
-                            : card.accent(0xFFF0961E).tooltip(List.of("Pas assez de points"));
-                } else {
-                    card = Card.of(new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.GRAY)), stat.label() + " "
-                            + (index + 1), lines).state(MenuView.DISABLED)
-                            .tooltip(List.of("Achetez d'abord les noeuds precedents"));
-                }
-                nodes.add(card.badge(String.valueOf(index + 1)));
-            }
-            String title = stat.label().toUpperCase() + "  ·  " + owned + "/" + RpgStat.NODES + "  ·  "
-                    + RpgStat.percent(stat.perNode() * owned);
-            sections.add(new MenuView.Section(title, "upgrade", MenuView.TILES, nodes));
+        List<RpgView.Row> global = new ArrayList<>();
+        global.add(new RpgView.Row("stats/icon/max_health", "VIE MAX", "+" + Math.round(player.getMaxHealth()),
+                WHITE));
+        global.add(row("damage", "DEGATS", Rpg.stat(player, RpgStat.ATTACK)));
+        global.add(row("critical_chance", "CHANCE CRITIQUE", Rpg.stat(player, RpgStat.CRIT)));
+        global.add(row("critical_damage", "DEGATS CRITIQUES", 0.5f));
+        global.add(row("dodge", "ESQUIVE", Rpg.stat(player, RpgStat.DODGE)));
+        global.add(row("resistance", "RESISTANCE", Rpg.stat(player, RpgStat.DEFENSE)));
+        for (Dungeon dungeon : Dungeon.values()) {
+            global.add(row(dungeon.key() + "_resistance", "RESISTANCE " + dungeon.display().toUpperCase(Locale.ROOT),
+                    DungeonGearItem.reduction(player, dungeon)));
+        }
+        for (Dungeon dungeon : Dungeon.values()) {
+            global.add(row(dungeon.key() + "_damage", "DEGATS " + dungeon.display().toUpperCase(Locale.ROOT),
+                    DungeonGearItem.damageBonus(player, dungeon)));
         }
 
-        List<Card> actions = List.of(
-                Card.of(new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.LIME)), "Valider", List.of(
-                                cost > 0 ? "Cout : " + cost + " point(s)" : "Rien a valider", "Achete les reserves"))
-                        .accent(0xFF22E558).action(cost > 0 ? "validate|acheter les reserves" : "")
-                        .state(cost > 0 ? MenuView.NORMAL : MenuView.DISABLED),
-                Card.of(new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.RED)), "Annuler", List.of(
-                        "Rend les reserves", "Rien n'est perdu")).accent(0xFFEF3826).action("cancel|annuler"),
-                Card.of(new ItemStack(Items.GRINDSTONE), state.respecArmed ? "Confirmer ?" : "Reinitialiser",
-                                List.of(MoneyFormat.exact(RESPEC_PRICE) + " $", "Rend tous les points"))
-                        .accent(state.respecArmed ? 0xFFEF3826 : 0xFF8C8B93)
-                        .action(state.respecArmed ? "respec|confirmer" : "respec|reinitialiser"),
-                Card.of(new ItemStack(Items.PAPER), "Comment ca marche", List.of("Clic : reserver le suivant",
-                        "Clic sur le dernier : le rendre"))
-                        .tooltip(List.of("Valider achete ; Annuler rend les reserves.",
-                                "Les statistiques RPG ne jouent que dans les donjons,", "contre leurs monstres.")));
-        sections.add(new MenuView.Section("ACTIONS", "craft", MenuView.GRID, actions));
-
-        List<MenuView.Stat> stats = List.of(
-                new MenuView.Stat("NIVEAU", String.valueOf(level), 0xFF55CCFF),
-                new MenuView.Stat("POINTS LIBRES", String.valueOf(free), 0xFFFAC400));
-        return new MenuView(id(), "Profil RPG", "", stats, sections, true);
+        List<String> sources = List.of("Niveau RPG : " + points.level(), "Paliers : " + points.paliers(),
+                "Metiers : " + points.jobs());
+        return new RpgView(player.getName().getString(), level, Rpg.xpInLevel(data.xp()),
+                level >= Rpg.MAX_LEVEL ? 0L : Rpg.xpToNext(level), free, owned, chosen.clone(), perso, global, sources,
+                RESPEC_PRICE);
     }
 
-    private static Card statsCard(ServerPlayer player, String title, Map<RpgStat, Float> tree,
-                                  Map<RpgStat, Float> runes) {
-        List<String> lines = new ArrayList<>();
-        List<String> tooltip = new ArrayList<>();
-        for (RpgStat stat : RpgStat.values()) {
-            float value = tree.get(stat) + (runes == null ? 0.0f : runes.get(stat));
-            String line = stat.label() + " : " + RpgStat.percent(Math.min(stat.cap(), value));
-            if (runes != null && runes.get(stat) > 0.0f) {
-                line += "  (runes " + RpgStat.percent(runes.get(stat)) + ")";
-            }
-            tooltip.add(line);
-        }
-        lines.add(tooltip.get(0));
-        lines.add(tooltip.get(1));
-        if (runes == null) {
-            tooltip.add("L'arbre seul.");
-        } else {
-            float reduction = 0.0f;
-            for (Dungeon dungeon : Dungeon.values()) {
-                reduction = Math.max(reduction, DungeonGearItem.reduction(player, dungeon));
-            }
-            tooltip.add("Armure de donjon : -" + RpgStat.percent(reduction) + " de degats");
-            if (player.getMainHandItem().getItem() instanceof DungeonGearItem sword && !sword.isArmor()) {
-                tooltip.add("Epee de donjon : +" + RpgStat.percent(sword.tier().swordBonus()));
-            }
-            tooltip.add("Plafonds : attaque 100 %, esquive 35 %, critique 60 %, defense 50 %.");
-        }
-        return Card.of(new ItemStack(runes == null ? Items.BOOK : Items.ENCHANTED_BOOK), title, lines)
-                .accent(color(RpgStat.values()[0].color())).tooltip(tooltip);
+    private static void play(ServerPlayer player, SoundEvent sound, float pitch) {
+        player.level().playSound(null, player.blockPosition(), sound, SoundSource.MASTER, 0.4f, pitch);
     }
 
-    @Override
-    protected void card(ServerPlayer player, String key, int button) {
-        State state = state(player);
-        if (!key.equals("respec")) {
-            state.respecArmed = false;
-        }
+    private static void refuse(ServerPlayer player) {
+        play(player, SoundEvents.VILLAGER_NO, 1.0f);
+    }
+
+    /** Les clics de l'ecran. */
+    public static void handle(ServerPlayer player, UiNet.Action action) {
+        INSTANCE.act(player, action.verb(), action.argument());
+    }
+
+    private void act(ServerPlayer player, String verb, String argument) {
         RpgData data = Rpg.data(player);
-        switch (key) {
-            case "cancel" -> state.pending.replaceAll((stat, count) -> 0);
-            case "validate" -> {
-                int cost = pendingCost(data, state);
-                if (cost <= 0 || cost > Rpg.points(player).total() - data.spent()) {
-                    state.pending.replaceAll((stat, count) -> 0);
-                    failure(player);
+        int[] chosen = pending(player);
+        switch (verb) {
+            case "node" -> {
+                int colon = argument.indexOf(':');
+                if (colon < 0) {
                     return;
+                }
+                RpgStat stat;
+                int node;
+                try {
+                    stat = RpgStat.valueOf(argument.substring(0, colon));
+                    node = Integer.parseInt(argument.substring(colon + 1));
+                } catch (IllegalArgumentException wrong) {
+                    return;
+                }
+                if (node < 0 || node >= RpgTree.NODES) {
+                    return;
+                }
+                int index = stat.ordinal();
+                if (RpgTree.has(chosen[index], node)) {
+                    // rendu, avec ce qui en descend
+                    chosen[index] &= ~RpgTree.subtree(chosen[index], node);
+                } else {
+                    int free = Rpg.points(player).total() - data.spent() - price(chosen);
+                    if (!RpgTree.open(data.mask(stat) | chosen[index], node) || RpgTree.cost(node) > free) {
+                        refuse(player);
+                        return;
+                    }
+                    chosen[index] |= 1 << node;
+                }
+            }
+            case "validate" -> {
+                int cost = price(chosen);
+                if (cost <= 0 || cost > Rpg.points(player).total() - data.spent()) {
+                    Arrays.fill(chosen, 0);
+                    refuse(player);
+                    break;
                 }
                 Map<RpgStat, Integer> next = new EnumMap<>(RpgStat.class);
                 for (RpgStat stat : RpgStat.values()) {
-                    next.put(stat, data.nodes(stat) + state.pending.get(stat));
+                    next.put(stat, data.mask(stat) | chosen[stat.ordinal()]);
                 }
-                Rpg.store(player, data.withNodes(next));
-                state.pending.replaceAll((stat, count) -> 0);
-                success(player);
+                Rpg.store(player, data.withTree(next));
+                Arrays.fill(chosen, 0);
+                play(player, SoundEvents.EXPERIENCE_ORB_PICKUP, 1.4f);
                 player.sendSystemMessage(Component.translatable("message.palamod.rpg.validated", cost)
                         .withStyle(ChatFormatting.GREEN));
             }
+            case "cancel" -> Arrays.fill(chosen, 0);
             case "respec" -> {
                 if (data.spent() == 0) {
-                    failure(player);
+                    refuse(player);
                     return;
                 }
-                if (!state.respecArmed) {
-                    state.respecArmed = true;
-                    return;
-                }
-                state.respecArmed = false;
                 if (!Economy.tryDebit(player, RESPEC_PRICE)) {
-                    failure(player);
-                    player.sendSystemMessage(Component.translatable("message.palamod.rpg.respec_poor")
-                            .withStyle(ChatFormatting.RED));
+                    refuse(player);
+                    player.sendSystemMessage(Component.translatable("message.palamod.rpg.respec_poor",
+                            MoneyFormat.exact(RESPEC_PRICE)).withStyle(ChatFormatting.RED));
                     return;
                 }
-                Rpg.store(player, data.withNodes(Map.of()));
-                state.pending.replaceAll((stat, count) -> 0);
-                success(player);
+                Rpg.store(player, data.withTree(new EnumMap<>(RpgStat.class)));
+                Arrays.fill(chosen, 0);
+                play(player, SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0f);
                 player.sendSystemMessage(Component.translatable("message.palamod.rpg.respec")
                         .withStyle(ChatFormatting.GOLD));
             }
             default -> {
-                boolean reserve = key.startsWith("reserve:");
-                if (!reserve && !key.startsWith("release:")) {
-                    return;
-                }
-                RpgStat stat;
-                try {
-                    stat = RpgStat.valueOf(key.substring(8));
-                } catch (IllegalArgumentException unknown) {
-                    return;
-                }
-                int owned = data.nodes(stat);
-                int reserved = state.pending.get(stat);
-                int free = Rpg.points(player).total() - data.spent() - pendingCost(data, state);
-                int next = owned + reserved;
-                if (reserve && next < RpgStat.NODES && RpgStat.NODE_COSTS[next] <= free) {
-                    state.pending.put(stat, reserved + 1);
-                } else if (!reserve && reserved > 0) {
-                    state.pending.put(stat, reserved - 1);
-                } else {
-                    failure(player);
-                }
+                return;
             }
+        }
+        if (UiNet.isOpen(player, RpgView.ID)) {
+            UiNet.show(player, view(player));
         }
     }
 }

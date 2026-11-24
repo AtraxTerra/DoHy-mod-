@@ -115,7 +115,7 @@ public final class Rpg {
     public static Map<RpgStat, Float> tree(RpgData data) {
         Map<RpgStat, Float> stats = new EnumMap<>(RpgStat.class);
         for (RpgStat stat : RpgStat.values()) {
-            stats.put(stat, stat.perNode() * data.nodes(stat));
+            stats.put(stat, stat.value(data.mask(stat)));
         }
         return stats;
     }
@@ -139,7 +139,18 @@ public final class Rpg {
 
     /** Arbre et runes, plafonnes. */
     public static float stat(ServerPlayer player, RpgStat stat) {
-        float total = stat.perNode() * data(player).nodes(stat) + runes(player).get(stat);
+        float total = stat.value(data(player).mask(stat)) + runes(player).get(stat);
         return Math.min(stat.cap(), total);
+    }
+
+    /** L'ancien arbre (huit noeuds en ligne) : ses points sont rendus, une fois. */
+    public static void migrate(ServerPlayer player) {
+        RpgData data = data(player);
+        if (!data.legacy()) {
+            return;
+        }
+        store(player, data.withTree(new EnumMap<>(RpgStat.class)));
+        player.sendSystemMessage(Component.translatable("message.palamod.rpg.new_tree")
+                .withStyle(ChatFormatting.GOLD));
     }
 }

@@ -235,6 +235,8 @@ public final class UiNet {
         register(fr.atraxterra.dohy.palamod.lucky.OneMillionView.ID,
                 fr.atraxterra.dohy.palamod.lucky.OneMillionView.STREAM_CODEC,
                 fr.atraxterra.dohy.palamod.lucky.OneMillionView::handle);
+        register(fr.atraxterra.dohy.palamod.dungeon.RpgView.ID, fr.atraxterra.dohy.palamod.dungeon.RpgView.STREAM_CODEC,
+                fr.atraxterra.dohy.palamod.dungeon.RpgMenu::handle);
         for (fr.atraxterra.dohy.ui.menu.MenuController menu : fr.atraxterra.dohy.ui.menu.Menus.all()) {
             register(menu.id(), MenuView.STREAM_CODEC, menu::handle);
         }
