@@ -79,7 +79,7 @@ public final class AdventMenu extends MenuController {
                 tooltip.add("Son jour est passe : elle se rattrape pour " + MoneyFormat.exact(
                         AdventCalendar.catchUpPrice()) + " $, au spawn, jusqu'au 6 janvier.");
                 yield Card.of(gift.iconStack(), title, List.of("Manquee : " + gift.name(),
-                        "Rattraper : " + MoneyFormat.shortForm(AdventCalendar.catchUpPrice()) + " $")).badge(badge)
+                        "Rattraper : " + MoneyFormat.exact(AdventCalendar.catchUpPrice()) + " $")).badge(badge)
                         .accent(GOLD).action("door:" + door + "|rattraper la case")
                         .confirm("Rattraper la case du " + title + " ?|" + MoneyFormat.exact(
                                 AdventCalendar.catchUpPrice()) + " $")
@@ -145,7 +145,7 @@ public final class AdventMenu extends MenuController {
                         .tooltip(List.of("Le jour change a 5 h, comme les contrats.",
                                 "/calendrier montre le calendrier de partout.")),
                 Card.of(item("palamod:crate_key_amethyst"), "Une case manquee", List.of("Se rattrape : "
-                        + MoneyFormat.shortForm(AdventCalendar.catchUpPrice()) + " $", "Jusqu'au 6 janvier"))
+                        + MoneyFormat.exact(AdventCalendar.catchUpPrice()) + " $", "Jusqu'au 6 janvier"))
                         .accent(GOLD).tooltip(List.of("Son contenu se voit une fois son jour passe.")),
                 Card.of(item("palamod:present_bag"), "Le cadeau entier", List.of("Ou rien", "Garde de la place"))
                         .accent(RED).tooltip(List.of("Un sac trop plein laisse la case fermee,",

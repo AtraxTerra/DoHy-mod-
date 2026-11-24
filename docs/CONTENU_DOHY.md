@@ -1997,3 +1997,62 @@ et **les alliances** ; la chute d'une place forte rend **ce qu'elle t'a pris**.
   qu'elles t'ont pris, et défait la coalition.
 - **Écran** : la puissance, la coalition, ta contre-offensive, ce que chaque nation te doit et ce
   qu'elle a appris (`docs/INTERFACES.md`, lot 16). **Équilibre** : `BALANCE.md` § 6 septvicies.
+
+## Noël au spawn (2026-11-24)
+
+Demandé le 2026-11-24 (le point 2 de la liste : « calendrier de l'Avent, un cadeau par jour au
+spawn ; le parvis décoré »). Paladium n'a rien de tel dans son mod : c'est un contenu de DoHy,
+construit sur les objets de Noël déjà portés (lucky block de Noël, cadeaux, carte de vœux, sapin,
+maquette, hache du roi des forêts, pierre de Noël).
+
+### Le calendrier de l'Avent
+
+- **Une case par jour, du 1er au 24 décembre**, à ouvrir au spawn auprès du **Père Noël** du
+  parvis. Le jour change à **5 h** (heure de Paris), comme les contrats et la récompense du jour :
+  à 4 h 59 le 1er décembre, on est encore le 30 novembre.
+- **La surprise** : une case fermée ne montre rien de son contenu ; elle le montre une fois son
+  jour venu.
+- **Une case manquée se rattrape**, au spawn, pour **25 000 $**, jusqu'au **6 janvier** : plus
+  cher que la plupart des cases, une perte sauf pour les clés, les potions et la pépite.
+- **Le grand cadeau** (la 25ᵉ case) : les vingt-quatre cases ouvertes, rattrapées comprises, il
+  s'ouvre du **25 décembre au 6 janvier** — une clé de box Saharia, trois cadeaux multicolores, une
+  carte de vœux.
+- **Le cadeau entier, ou rien** : il faut assez de cases libres dans le sac (une par pile) ; sinon
+  la case reste fermée, rien ne tombe par terre. Pas de cadeau en plein combat.
+- **Où** : le Père Noël (clic droit) ; `/calendrier` montre le calendrier de partout, mais une case
+  ne s'ouvre qu'au spawn. À la connexion, un mot quand la case du jour attend.
+- **Les cases** : lait chaud, cadeaux et sacs de cadeaux, lucky blocks de Noël (2, 3, 4 puis 5),
+  lingots, carte de vœux, deux clés Améthyste (dont la Saint-Nicolas, le 6), deux potions d'XP de
+  métier, biscuits, sapin et maquette, pommes dorées, cadeaux multicolores, une pépite d'endium, la
+  pierre de Noël, 100 000 $ en quatre fois, et le 24 la hache du roi des forêts.
+- **Administration** : `/calendrier reset <joueurs>` (opérateurs) referme les cases.
+- **Le fichier** : `data/advent.json` (copié dans le jar en `data/dohy/advent.json`), lu au
+  démarrage du monde : `days` (24 cases : `day`, `name`, `icon`, `money`, `items`), `bonus` (le grand
+  cadeau), `catch_up_price`. Un objet d'un mod absent est écarté avec une ligne au journal.
+
+### Le parvis en habit de Noël (du 1er décembre au 6 janvier)
+
+- **Le grand sapin**, en face de l'autel des offrandes (à droite de l'allée en arrivant) : vingt
+  blocs de haut, dix-sept étages d'aiguilles en cône à gradins, une guirlande de lumières en
+  spirale, des boules rouges, dorées, bleues et blanches, l'étoile d'or, et douze cadeaux sous les
+  branches. Au-dessus, « JOYEUX NOEL ».
+- **Le Père Noël**, entre l'allée et le sapin, sur un tapis rouge bordé de blanc, deux petits
+  sapins à ses côtés, son enseigne « CALENDRIER DE L'AVENT ». Sa peau suit la charte des PNJ du
+  spawn (`tools/spawn_npc_assets.py`) : manteau rouge bordé de fourrure, bonnet à pompon, barbe
+  blanche.
+- **L'allée** : un arc de guirlande (aiguilles et lumières) au-dessus de chaque paire de
+  lampadaires, de petits sapins le long ; « Joyeux Noel ! » sur la plateforme d'arrivée.
+- **La neige** sur l'herbe, la mousse et les épicéas du parvis — seulement là où la lumière des
+  lampes la laisserait tenir (au-delà de 11, la neige fond) ; le dallage reste dégagé.
+- **Rien n'est changé pour de bon** : le décor se pose de lui-même le 1er décembre et garde tout
+  ce qu'il remplace ; après le 6 janvier, il remet chaque bloc tel qu'il était. Un spawn reconstruit
+  (nouveau dessin) repart sans décor, qui se repose quelques secondes après.
+
+### Code
+
+- `noel/AdventCalendar` (le fichier, la date, les règles, ouvrir), `AdventMenu` (l'écran
+  `dohy:advent`), `DoHyNoel` (l'attachement `advent`, `/calendrier`, la connexion).
+- `spawn/SpawnChristmas` : le dessin du décor, sa pose en deux temps (puis la neige), son retrait ;
+  l'attachement `spawn_christmas` de la dimension du spawn garde ce qu'il a remplacé. Appelé toutes
+  les cinq secondes par `SpawnApi.tick`.
+- `spawn/SpawnNpc.Role.ADVENT` : le Père Noël. **Équilibre** : `BALANCE.md` § 6 duotrigesies.
