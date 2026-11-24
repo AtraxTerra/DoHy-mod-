@@ -169,7 +169,7 @@ public final class Garrisons {
         for (int index = 0; index < members.size(); index++) {
             Garrison.Member member = members.get(index);
             BlockPos post = post(here, center, index, members.size(), vault != null);
-            GarrisonSoldier soldier = live.get(member.id());
+            GarrisonSoldier soldier = withdrawElsewhere(live, member, here);
             if (soldier == null) {
                 if (here.isLoaded(post)) {
                     spawn(player, garrison, member, here, post, post);
@@ -193,13 +193,7 @@ public final class Garrisons {
             return;
         }
         for (Garrison.Member member : garrison.members()) {
-            GarrisonSoldier soldier = live.get(member.id());
-            if (soldier != null && soldier.level() != here) {
-                member.health = soldier.getHealth() >= soldier.getMaxHealth() ? -1.0f : soldier.getHealth();
-                soldier.discard();
-                live.remove(member.id());
-                soldier = null;
-            }
+            GarrisonSoldier soldier = withdrawElsewhere(live, member, here);
             if (soldier == null) {
                 if (here.isLoaded(player.blockPosition())) {
                     GarrisonSoldier fresh = spawn(player, garrison, member, here, player.blockPosition(),
@@ -216,6 +210,22 @@ public final class Garrisons {
                 soldier.catchUp(player);
             }
         }
+    }
+
+    /**
+     * Le soldat en jeu de ce membre, s'il est dans la dimension du joueur ; reste ailleurs (l'ordre a
+     * change juste apres un voyage), il est rappele, sa vie gardee, et sera redeploye ici.
+     */
+    private static GarrisonSoldier withdrawElsewhere(Map<UUID, GarrisonSoldier> live, Garrison.Member member,
+                                                     ServerLevel here) {
+        GarrisonSoldier soldier = live.get(member.id());
+        if (soldier == null || soldier.level() == here) {
+            return soldier;
+        }
+        member.health = soldier.getHealth() >= soldier.getMaxHealth() ? -1.0f : soldier.getHealth();
+        soldier.discard();
+        live.remove(member.id());
+        return null;
     }
 
     /** Les blesses rappeles se soignent a la caserne. */
