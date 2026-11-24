@@ -5,6 +5,7 @@ import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.faction.ClaimOwner;
 import fr.atraxterra.dohy.faction.FactionApi;
 import fr.atraxterra.dohy.faction.FactionData;
+import fr.atraxterra.dohy.faction.garrison.GarrisonSoldier;
 import fr.atraxterra.dohy.palamod.golem.GuardianGolem;
 import fr.atraxterra.dohy.palamod.pillage.PalaPillage;
 import fr.atraxterra.dohy.util.MoneyFormat;
@@ -1568,6 +1569,12 @@ final class Siege {
                 defenders++;
             }
         }
+        // les soldats de sa garnison tiennent le coffre comme ses golems
+        for (GarrisonSoldier ally : level.getEntitiesOfClass(GarrisonSoldier.class, box, GarrisonSoldier::isAlive)) {
+            if (player.equals(ally.owner())) {
+                defenders++;
+            }
+        }
         double before = capture;
         if (attackers > 0 && defenders == 0) {
             capture = Math.min(1.0d, capture + 10.0d / CAPTURE_TICKS * (1.0d + 0.15d * Math.min(6, attackers - 1)));
@@ -1753,6 +1760,10 @@ final class Siege {
         double hit = role.weight() * (alive().stream().anyMatch(s -> s.role() == SoldierRole.MEDECIN) ? 0.8d : 1.0d);
         morale = Math.max(0.0d, morale - hit);
         Player killer = source.getEntity() instanceof Player p ? p : null;
+        // abattu par un soldat de sa garnison : la prime revient au joueur assiege
+        if (killer == null && source.getEntity() instanceof GarrisonSoldier ally && player.equals(ally.owner())) {
+            killer = target();
+        }
         if (killer instanceof ServerPlayer serverPlayer && serverPlayer.getUUID().equals(player)) {
             long prize = switch (role) {
                 case COMMANDANT -> 400L;

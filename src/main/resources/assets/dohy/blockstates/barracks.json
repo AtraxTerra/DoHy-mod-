@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dohy:block/barracks"
+    },
+    "facing=east": {
+      "model": "dohy:block/barracks",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dohy:block/barracks",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dohy:block/barracks",
+      "y": 270
+    }
+  }
+}

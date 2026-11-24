@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "BBB",
+    "IPI",
+    "BBB"
+  ],
+  "key": {
+    "B": "minecraft:stone_bricks",
+    "I": "minecraft:iron_block",
+    "P": "palamod:paladium_block"
+  },
+  "result": {
+    "id": "dohy:barracks",
+    "count": 1
+  }
+}
