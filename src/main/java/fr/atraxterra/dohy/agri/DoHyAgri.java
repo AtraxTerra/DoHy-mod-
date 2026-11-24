@@ -1,7 +1,11 @@
 package fr.atraxterra.dohy.agri;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.agri.machine.BigMachine;
+import fr.atraxterra.dohy.agri.machine.BigMachinePartBlock;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -21,12 +25,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -145,7 +153,8 @@ public final class DoHyAgri {
 
     public static final DeferredBlock<GmoMachineBlock> GMO_MACHINE = BLOCKS.registerBlock("gmo_machine",
             GmoMachineBlock::new,
-            properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL));
+            properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                    .noOcclusion());
     public static final DeferredItem<BlockItem> GMO_MACHINE_ITEM =
             ITEMS.registerSimpleBlockItem(GMO_MACHINE, properties -> properties.rarity(Rarity.UNCOMMON));
 
@@ -168,7 +177,7 @@ public final class DoHyAgri {
     private static DeferredBlock<AgriMachineBlock> machine(String name, AgriMachineBlock.Kind kind) {
         return BLOCKS.registerBlock(name, properties -> new AgriMachineBlock(properties, kind),
                 properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
-                        .lightLevel(state -> state.getValue(AgriMachineBlock.LIT) ? 7 : 0));
+                        .noOcclusion().lightLevel(state -> state.getValue(AgriMachineBlock.LIT) ? 7 : 0));
     }
 
     // -- Le tracteur, ses outils, le silo et la pompe ---------------------------------------
@@ -220,6 +229,44 @@ public final class DoHyAgri {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FuelPumpBlockEntity>> PUMP_TYPE =
             TYPES.register("fuel_pump", () -> new BlockEntityType<>(FuelPumpBlockEntity::new,
                     Set.of(FUEL_PUMP.get())));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GmoMachineBlockEntity>> GMO_TYPE =
+            TYPES.register("gmo_machine", () -> new BlockEntityType<>(GmoMachineBlockEntity::new,
+                    Set.of(GMO_MACHINE.get())));
+
+    // -- Les grandes machines : les parties ------------------------------------------------
+    //
+    // Chaque grande machine (BigMachine) remplit les cases autour de sa commande de
+    // blocs de partie : son morceau du modele, sa boite, et le renvoi a la commande.
+
+    public static final DeferredBlock<BigMachinePartBlock> SILO_PART = part("silo_part", BigMachine.SILO);
+    public static final DeferredBlock<BigMachinePartBlock> FLOUR_MILL_PART =
+            part("flour_mill_part", BigMachine.FLOUR_MILL);
+    public static final DeferredBlock<BigMachinePartBlock> BREAD_MACHINE_PART =
+            part("bread_machine_part", BigMachine.BREAD_MACHINE);
+    public static final DeferredBlock<BigMachinePartBlock> BIOGENERATOR_PART =
+            part("biogenerator_part", BigMachine.BIOGENERATOR);
+    public static final DeferredBlock<BigMachinePartBlock> GMO_MACHINE_PART =
+            part("gmo_machine_part", BigMachine.GMO_MACHINE);
+    public static final DeferredBlock<BigMachinePartBlock> FUEL_PUMP_PART =
+            part("fuel_pump_part", BigMachine.FUEL_PUMP);
+
+    private static DeferredBlock<BigMachinePartBlock> part(String name, BigMachine machine) {
+        return BLOCKS.registerBlock(name, properties -> new BigMachinePartBlock(properties, machine),
+                properties -> properties.mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                        .noOcclusion().noLootTable().pushReaction(PushReaction.BLOCK));
+    }
+
+    /** Le bloc de partie d'une grande machine. */
+    public static Supplier<? extends Block> part(BigMachine machine) {
+        return switch (machine) {
+            case SILO -> SILO_PART;
+            case FLOUR_MILL -> FLOUR_MILL_PART;
+            case BREAD_MACHINE -> BREAD_MACHINE_PART;
+            case BIOGENERATOR -> BIOGENERATOR_PART;
+            case GMO_MACHINE -> GMO_MACHINE_PART;
+            case FUEL_PUMP -> FUEL_PUMP_PART;
+        };
+    }
 
     // -- L'onglet ------------------------------------------------------------------------
 
@@ -270,6 +317,33 @@ public final class DoHyAgri {
         event.registerBlockEntity(Capabilities.Item.BLOCK, SILO_TYPE.get(), (silo, side) ->
                 side == null ? VanillaContainerWrapper.of(silo) : new WorldlyContainerWrapper(silo, side));
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, PUMP_TYPE.get(), (pump, side) -> pump.tank());
+        // Les parties des grandes machines rendent les capacites de leur commande : un tuyau,
+        // un entonnoir ou un cable branche n'importe ou sur la machine l'atteint.
+        for (BigMachine machine : BigMachine.values()) {
+            Block partBlock = part(machine).get();
+            event.registerBlock(Capabilities.Item.BLOCK,
+                    (level, pos, state, entity, side) -> forward(Capabilities.Item.BLOCK, level, pos, state, side),
+                    partBlock);
+            event.registerBlock(Capabilities.Energy.BLOCK,
+                    (level, pos, state, entity, side) -> forward(Capabilities.Energy.BLOCK, level, pos, state, side),
+                    partBlock);
+            event.registerBlock(Capabilities.Fluid.BLOCK,
+                    (level, pos, state, entity, side) -> forward(Capabilities.Fluid.BLOCK, level, pos, state, side),
+                    partBlock);
+        }
+    }
+
+    /** La capacite de la commande d'une partie de grande machine. */
+    private static <T> T forward(BlockCapability<T, Direction> capability, Level level, BlockPos pos,
+                                 BlockState state, Direction side) {
+        if (!(state.getBlock() instanceof BigMachinePartBlock part)) {
+            return null;
+        }
+        BlockPos controller = part.controllerPos(pos, state);
+        if (controller.equals(pos)) {
+            return null;
+        }
+        return level.getCapability(capability, controller, side);
     }
 
     /** L'onglet, dans l'ordre de la filiere : semences, grains, farines, pains, elevage, machines. */

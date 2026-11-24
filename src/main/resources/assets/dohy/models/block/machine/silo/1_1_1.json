@@ -1,0 +1,68 @@
+{
+  "textures": {
+    "brass_band": "dohy:block/machine/brass_band",
+    "particle": "dohy:block/machine/corrugated"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        14,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        14,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        14,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    }
+  ]
+}

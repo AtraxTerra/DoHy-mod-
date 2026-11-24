@@ -1,0 +1,147 @@
+{
+  "textures": {
+    "brass_band": "dohy:block/machine/brass_band",
+    "copper_tank": "dohy:block/machine/copper_tank",
+    "particle": "dohy:block/machine/copper_tank"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        7
+      ],
+      "faces": {
+        "south": {
+          "texture": "#copper_tank"
+        },
+        "west": {
+          "texture": "#copper_tank"
+        }
+      }
+    },
+    {
+      "from": [
+        9,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        12
+      ],
+      "faces": {
+        "south": {
+          "texture": "#copper_tank"
+        },
+        "west": {
+          "texture": "#copper_tank"
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        10
+      ],
+      "faces": {
+        "south": {
+          "texture": "#copper_tank"
+        },
+        "west": {
+          "texture": "#copper_tank"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        14,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        8
+      ],
+      "faces": {
+        "south": {
+          "texture": "#brass_band"
+        },
+        "west": {
+          "texture": "#brass_band"
+        },
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        14,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        13
+      ],
+      "faces": {
+        "south": {
+          "texture": "#brass_band"
+        },
+        "west": {
+          "texture": "#brass_band"
+        },
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        14,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        11
+      ],
+      "faces": {
+        "south": {
+          "texture": "#brass_band"
+        },
+        "west": {
+          "texture": "#brass_band"
+        },
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    }
+  ]
+}

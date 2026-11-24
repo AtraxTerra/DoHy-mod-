@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "dohy:block/fuel_pump"
+    "model": "dohy:item/machine/fuel_pump"
   }
 }

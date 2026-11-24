@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "dohy:block/bread_machine"
+    "model": "dohy:item/machine/bread_machine"
   }
 }

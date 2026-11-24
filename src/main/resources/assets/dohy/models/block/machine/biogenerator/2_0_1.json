@@ -1,0 +1,142 @@
+{
+  "textures": {
+    "andesite_casing": "dohy:block/machine/andesite_casing",
+    "brass_band": "dohy:block/machine/brass_band",
+    "copper_tank": "dohy:block/machine/copper_tank",
+    "particle": "dohy:block/machine/copper_tank"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        15,
+        6,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#andesite_casing"
+        },
+        "up": {
+          "texture": "#andesite_casing"
+        },
+        "down": {
+          "texture": "#andesite_casing"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        6,
+        1
+      ],
+      "to": [
+        4,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_tank"
+        },
+        "east": {
+          "texture": "#copper_tank"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        6,
+        0
+      ],
+      "to": [
+        2,
+        16,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#copper_tank"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        14,
+        0
+      ],
+      "to": [
+        5,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#brass_band"
+        },
+        "east": {
+          "texture": "#brass_band"
+        },
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        14,
+        0
+      ],
+      "to": [
+        3,
+        16,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#brass_band"
+        },
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        6,
+        0
+      ],
+      "to": [
+        14,
+        16,
+        6
+      ],
+      "faces": {
+        "south": {
+          "texture": "#andesite_casing"
+        },
+        "east": {
+          "texture": "#andesite_casing"
+        },
+        "down": {
+          "texture": "#andesite_casing"
+        }
+      }
+    }
+  ]
+}

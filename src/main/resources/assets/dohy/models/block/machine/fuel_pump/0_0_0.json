@@ -1,0 +1,201 @@
+{
+  "textures": {
+    "andesite_casing": "dohy:block/machine/andesite_casing",
+    "brass_band": "dohy:block/machine/brass_band",
+    "copper_tank": "dohy:block/machine/copper_tank",
+    "fuel": "dohy:block/machine/fuel",
+    "particle": "dohy:block/machine/copper_tank"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        16,
+        4,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#andesite_casing"
+        },
+        "west": {
+          "texture": "#andesite_casing"
+        },
+        "up": {
+          "texture": "#andesite_casing"
+        },
+        "down": {
+          "texture": "#andesite_casing"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        4,
+        14
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_tank"
+        },
+        "west": {
+          "texture": "#copper_tank"
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        4,
+        10
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_tank"
+        },
+        "west": {
+          "texture": "#copper_tank"
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        4,
+        12
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_tank"
+        },
+        "west": {
+          "texture": "#copper_tank"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        12,
+        13
+      ],
+      "to": [
+        16,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#brass_band"
+        },
+        "west": {
+          "texture": "#brass_band"
+        },
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        12,
+        9
+      ],
+      "to": [
+        16,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#brass_band"
+        },
+        "west": {
+          "texture": "#brass_band"
+        },
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        12,
+        11
+      ],
+      "to": [
+        16,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#brass_band"
+        },
+        "west": {
+          "texture": "#brass_band"
+        },
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    },
+    {
+      "from": [
+        11,
+        14,
+        9
+      ],
+      "to": [
+        16,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fuel"
+        },
+        "south": {
+          "texture": "#fuel"
+        },
+        "west": {
+          "texture": "#fuel"
+        },
+        "down": {
+          "texture": "#fuel"
+        }
+      }
+    }
+  ]
+}

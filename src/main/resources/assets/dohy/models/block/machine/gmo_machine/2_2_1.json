@@ -1,0 +1,66 @@
+{
+  "textures": {
+    "andesite_casing": "dohy:block/machine/andesite_casing",
+    "particle": "dohy:block/machine/andesite_casing"
+  },
+  "elements": [
+    {
+      "from": [
+        8,
+        0,
+        4
+      ],
+      "to": [
+        14,
+        12,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#andesite_casing"
+        },
+        "south": {
+          "texture": "#andesite_casing"
+        },
+        "west": {
+          "texture": "#andesite_casing"
+        },
+        "east": {
+          "texture": "#andesite_casing"
+        },
+        "up": {
+          "texture": "#andesite_casing"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        6,
+        4
+      ],
+      "to": [
+        14,
+        12,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#andesite_casing"
+        },
+        "south": {
+          "texture": "#andesite_casing"
+        },
+        "east": {
+          "texture": "#andesite_casing"
+        },
+        "up": {
+          "texture": "#andesite_casing"
+        },
+        "down": {
+          "texture": "#andesite_casing"
+        }
+      }
+    }
+  ]
+}

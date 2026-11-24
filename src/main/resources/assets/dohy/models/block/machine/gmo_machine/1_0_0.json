@@ -1,0 +1,74 @@
+{
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "andesite_casing": "dohy:block/machine/andesite_casing",
+    "glass": "dohy:block/machine/glass",
+    "green_liquid": "dohy:block/machine/green_liquid",
+    "particle": "dohy:block/machine/andesite_casing"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1
+      ],
+      "to": [
+        16,
+        8,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#andesite_casing"
+        },
+        "up": {
+          "texture": "#andesite_casing"
+        },
+        "down": {
+          "texture": "#andesite_casing"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        8,
+        10
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#green_liquid"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        8,
+        9
+      ],
+      "to": [
+        16,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass"
+        },
+        "south": {
+          "texture": "#glass"
+        },
+        "down": {
+          "texture": "#glass"
+        }
+      }
+    }
+  ]
+}

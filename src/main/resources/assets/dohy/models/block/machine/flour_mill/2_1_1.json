@@ -1,0 +1,165 @@
+{
+  "textures": {
+    "brass": "dohy:block/machine/brass",
+    "copper": "dohy:block/machine/copper",
+    "millstone_side": "dohy:block/machine/millstone_side",
+    "millstone_top": "dohy:block/machine/millstone_top",
+    "particle": "dohy:block/machine/andesite_casing",
+    "shaft": "dohy:block/machine/shaft"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        11,
+        4,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#millstone_side"
+        },
+        "up": {
+          "texture": "#millstone_top"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        5,
+        4,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#millstone_side"
+        },
+        "up": {
+          "texture": "#millstone_top"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        8,
+        4,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#millstone_side"
+        },
+        "up": {
+          "texture": "#millstone_top"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        0,
+        0
+      ],
+      "to": [
+        14,
+        10,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#brass"
+        },
+        "south": {
+          "texture": "#brass"
+        },
+        "west": {
+          "texture": "#brass"
+        },
+        "east": {
+          "texture": "#brass"
+        },
+        "up": {
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        10,
+        2
+      ],
+      "to": [
+        13,
+        13,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper"
+        },
+        "south": {
+          "texture": "#copper"
+        },
+        "west": {
+          "texture": "#copper"
+        },
+        "east": {
+          "texture": "#copper"
+        },
+        "up": {
+          "texture": "#copper"
+        },
+        "down": {
+          "texture": "#copper"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        2,
+        6
+      ],
+      "to": [
+        5,
+        6,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shaft"
+        },
+        "south": {
+          "texture": "#shaft"
+        },
+        "west": {
+          "texture": "#shaft"
+        },
+        "east": {
+          "texture": "#shaft"
+        },
+        "up": {
+          "texture": "#shaft"
+        },
+        "down": {
+          "texture": "#shaft"
+        }
+      }
+    }
+  ]
+}

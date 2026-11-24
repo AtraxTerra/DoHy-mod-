@@ -1,0 +1,110 @@
+{
+  "textures": {
+    "copper": "dohy:block/machine/copper",
+    "copper_tank": "dohy:block/machine/copper_tank",
+    "particle": "dohy:block/machine/copper_tank"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1
+      ],
+      "to": [
+        4,
+        8,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_tank"
+        },
+        "east": {
+          "texture": "#copper_tank"
+        },
+        "up": {
+          "texture": "#copper"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        2,
+        8,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#copper_tank"
+        },
+        "up": {
+          "texture": "#copper"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        9,
+        10
+      ],
+      "to": [
+        8,
+        12,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper"
+        },
+        "south": {
+          "texture": "#copper"
+        },
+        "east": {
+          "texture": "#copper"
+        },
+        "up": {
+          "texture": "#copper"
+        },
+        "down": {
+          "texture": "#copper"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        0,
+        10
+      ],
+      "to": [
+        8,
+        9,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper"
+        },
+        "south": {
+          "texture": "#copper"
+        },
+        "west": {
+          "texture": "#copper"
+        },
+        "east": {
+          "texture": "#copper"
+        },
+        "up": {
+          "texture": "#copper"
+        }
+      }
+    }
+  ]
+}

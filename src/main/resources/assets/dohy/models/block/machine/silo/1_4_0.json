@@ -1,0 +1,189 @@
+{
+  "textures": {
+    "copper_roof": "dohy:block/machine/copper_roof",
+    "particle": "dohy:block/machine/corrugated"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        8
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_roof"
+        },
+        "up": {
+          "texture": "#copper_roof"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        2
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_roof"
+        },
+        "up": {
+          "texture": "#copper_roof"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        5
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_roof"
+        },
+        "up": {
+          "texture": "#copper_roof"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        2,
+        12
+      ],
+      "to": [
+        16,
+        6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_roof"
+        },
+        "up": {
+          "texture": "#copper_roof"
+        },
+        "down": {
+          "texture": "#copper_roof"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        2,
+        7
+      ],
+      "to": [
+        16,
+        6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_roof"
+        },
+        "up": {
+          "texture": "#copper_roof"
+        },
+        "down": {
+          "texture": "#copper_roof"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        2,
+        9
+      ],
+      "to": [
+        16,
+        6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_roof"
+        },
+        "up": {
+          "texture": "#copper_roof"
+        },
+        "down": {
+          "texture": "#copper_roof"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        6,
+        12
+      ],
+      "to": [
+        16,
+        10,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_roof"
+        },
+        "west": {
+          "texture": "#copper_roof"
+        },
+        "east": {
+          "texture": "#copper_roof"
+        },
+        "up": {
+          "texture": "#copper_roof"
+        },
+        "down": {
+          "texture": "#copper_roof"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        6,
+        14
+      ],
+      "to": [
+        16,
+        10,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#copper_roof"
+        },
+        "up": {
+          "texture": "#copper_roof"
+        },
+        "down": {
+          "texture": "#copper_roof"
+        }
+      }
+    }
+  ]
+}

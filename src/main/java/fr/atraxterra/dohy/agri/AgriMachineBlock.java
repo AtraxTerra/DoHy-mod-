@@ -3,10 +3,13 @@ package fr.atraxterra.dohy.agri;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import fr.atraxterra.dohy.agri.machine.BigMachine;
+import fr.atraxterra.dohy.agri.machine.BigMachines;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,6 +19,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -31,12 +35,19 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * Les trois machines electriques de l'agriculture : le moulin, la machine a
  * pain et le biogenerateur. Un seul bloc, trois roles — elles ne different que
  * par ce que fait leur entite ({@link AgriMachineBlockEntity}) et par l'ecran
  * qu'un clic ouvre.
+ *
+ * <p>Ce sont de grandes machines ({@link BigMachine}) : le moulin et la machine a
+ * pain font 3 x 3 et 4 de haut, le biogenerateur 3 x 3 x 3 ; ce bloc en est la
+ * commande, au centre du socle.
  */
 public class AgriMachineBlock extends BaseEntityBlock {
 
@@ -62,11 +73,21 @@ public class AgriMachineBlock extends BaseEntityBlock {
     public AgriMachineBlock(Properties properties, Kind kind) {
         super(properties);
         this.kind = kind;
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false)
+                .setValue(BigMachines.FORMED, false));
     }
 
     public Kind kind() {
         return kind;
+    }
+
+    /** La grande machine de ce role. */
+    public BigMachine big() {
+        return switch (kind) {
+            case MILL -> BigMachine.FLOUR_MILL;
+            case OVEN -> BigMachine.BREAD_MACHINE;
+            case BIOGEN -> BigMachine.BIOGENERATOR;
+        };
     }
 
     @Override
@@ -76,7 +97,7 @@ public class AgriMachineBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIT);
+        builder.add(FACING, LIT, BigMachines.FORMED);
     }
 
     @Override
@@ -86,7 +107,24 @@ public class AgriMachineBlock extends BaseEntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return BigMachines.placement(big(), defaultBlockState(), context);
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        BigMachines.onPlace(big(), state, level, pos, oldState);
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+        BigMachines.onRemove(big(), state, level, pos);
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return BigMachines.shape(big(), state, Shapes.block());
     }
 
     @Override
@@ -152,6 +190,7 @@ public class AgriMachineBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
+        BigMachines.unfold(big(), state, level, pos, player);
         if (!(player instanceof ServerPlayer server)
                 || !(level.getBlockEntity(pos) instanceof AgriMachineBlockEntity machine)) {
             return InteractionResult.SUCCESS;

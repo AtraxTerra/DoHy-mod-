@@ -1,0 +1,162 @@
+{
+  "textures": {
+    "andesite_casing": "dohy:block/machine/andesite_casing",
+    "brass_band": "dohy:block/machine/brass_band",
+    "log": "dohy:block/machine/log",
+    "log_top": "dohy:block/machine/log_top",
+    "millstone_side": "dohy:block/machine/millstone_side",
+    "particle": "dohy:block/machine/andesite_casing"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        15,
+        12,
+        15
+      ],
+      "faces": {
+        "south": {
+          "texture": "#andesite_casing"
+        },
+        "east": {
+          "texture": "#andesite_casing"
+        },
+        "up": {
+          "texture": "#andesite_casing"
+        },
+        "down": {
+          "texture": "#andesite_casing"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        12,
+        0
+      ],
+      "to": [
+        16,
+        14,
+        16
+      ],
+      "faces": {
+        "south": {
+          "texture": "#brass_band"
+        },
+        "east": {
+          "texture": "#brass_band"
+        },
+        "up": {
+          "texture": "#brass_band"
+        },
+        "down": {
+          "texture": "#brass_band"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        14,
+        0
+      ],
+      "to": [
+        11,
+        16,
+        5
+      ],
+      "faces": {
+        "south": {
+          "texture": "#millstone_side"
+        },
+        "east": {
+          "texture": "#millstone_side"
+        },
+        "down": {
+          "texture": "#millstone_side"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        14,
+        0
+      ],
+      "to": [
+        5,
+        16,
+        11
+      ],
+      "faces": {
+        "south": {
+          "texture": "#millstone_side"
+        },
+        "east": {
+          "texture": "#millstone_side"
+        },
+        "down": {
+          "texture": "#millstone_side"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        14,
+        0
+      ],
+      "to": [
+        8,
+        16,
+        8
+      ],
+      "faces": {
+        "south": {
+          "texture": "#millstone_side"
+        },
+        "east": {
+          "texture": "#millstone_side"
+        },
+        "down": {
+          "texture": "#millstone_side"
+        }
+      }
+    },
+    {
+      "from": [
+        10,
+        14,
+        10
+      ],
+      "to": [
+        14,
+        16,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#log"
+        },
+        "south": {
+          "texture": "#log"
+        },
+        "west": {
+          "texture": "#log"
+        },
+        "east": {
+          "texture": "#log"
+        },
+        "down": {
+          "texture": "#log_top"
+        }
+      }
+    }
+  ]
+}

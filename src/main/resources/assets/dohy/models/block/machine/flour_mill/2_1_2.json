@@ -1,0 +1,105 @@
+{
+  "textures": {
+    "log": "dohy:block/machine/log",
+    "millstone_side": "dohy:block/machine/millstone_side",
+    "millstone_top": "dohy:block/machine/millstone_top",
+    "particle": "dohy:block/machine/andesite_casing"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        11,
+        4,
+        5
+      ],
+      "faces": {
+        "south": {
+          "texture": "#millstone_side"
+        },
+        "east": {
+          "texture": "#millstone_side"
+        },
+        "up": {
+          "texture": "#millstone_top"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        5,
+        4,
+        11
+      ],
+      "faces": {
+        "south": {
+          "texture": "#millstone_side"
+        },
+        "east": {
+          "texture": "#millstone_side"
+        },
+        "up": {
+          "texture": "#millstone_top"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        8,
+        4,
+        8
+      ],
+      "faces": {
+        "south": {
+          "texture": "#millstone_side"
+        },
+        "east": {
+          "texture": "#millstone_side"
+        },
+        "up": {
+          "texture": "#millstone_top"
+        }
+      }
+    },
+    {
+      "from": [
+        10,
+        0,
+        10
+      ],
+      "to": [
+        14,
+        16,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#log"
+        },
+        "south": {
+          "texture": "#log"
+        },
+        "west": {
+          "texture": "#log"
+        },
+        "east": {
+          "texture": "#log"
+        }
+      }
+    }
+  ]
+}
