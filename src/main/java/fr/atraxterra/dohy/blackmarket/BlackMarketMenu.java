@@ -65,7 +65,7 @@ public final class BlackMarketMenu extends MenuController {
             if (listing.stolen()) {
                 NationTraits traits = NationTraits.of(listing.nation());
                 tooltip.add(faction ? traits.name() + " : un grief de plus si tu achetes"
-                        : "Sans nation, personne ne remonte jusqu'a toi");
+                        : "Sans nation : sans grief");
             }
             Card card = Card.of(listing.icon(), name, lines)
                     .accent(listing.stolen() ? RED : PURPLE)
@@ -87,10 +87,10 @@ public final class BlackMarketMenu extends MenuController {
             int left = BlackMarket.lotsLeft(player);
             Card card = Card.of(new ItemStack(Items.BARREL), "Lot sans etiquette", List.of(
                             MoneyFormat.exact(mystery.price()) + " $" + (left > 0 ? " · reste " + left : ""),
-                            "De la ferraille... ou le gros lot"))
+                            "Ferraille ou gros lot"))
                     .accent(GOLD).badge(left > 0 ? "" : "VENDU")
-                    .tooltip(List.of("Un prix fixe, un contenu au hasard",
-                            "Parfois de l'or, parfois du vent",
+                    .tooltip(List.of("Contenu au hasard",
+                            "",
                             left + " lot(s) aujourd'hui"));
             contraband.add(left <= 0 ? card.state(MenuView.DISABLED) : card.action("lot|ouvrir un lot"));
         }

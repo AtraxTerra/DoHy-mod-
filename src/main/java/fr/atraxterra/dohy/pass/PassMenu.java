@@ -49,7 +49,7 @@ public final class PassMenu extends MenuController {
         List<MenuView.Section> sections = new ArrayList<>();
         if (config.themes().isEmpty()) {
             sections.add(new MenuView.Section("", "", MenuView.TEXT, List.of(Card.of(ItemStack.EMPTY,
-                    "Pass indisponible", List.of("Le fichier du pass n'a pas pu etre lu : voir le journal du serveur."))
+                    "Pass indisponible", List.of("Pass illisible : voir le journal du serveur."))
                     .accent(0xFFEF3826))));
             return new MenuView(id(), "Pass", "", stats, sections, true);
         }
@@ -114,7 +114,7 @@ public final class PassMenu extends MenuController {
                     .state(quest.done() ? MenuView.DONE : MenuView.NORMAL));
         }
         if (cards.isEmpty()) {
-            cards.add(Card.of(new ItemStack(Items.PAPER), "Aucune quete", List.of("Elles arrivent a la connexion"))
+            cards.add(Card.of(new ItemStack(Items.PAPER), "Aucune quete", List.of(""))
                     .accent(0xFF55545C));
         }
         return cards;

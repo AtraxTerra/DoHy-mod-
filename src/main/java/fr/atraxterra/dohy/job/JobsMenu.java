@@ -167,16 +167,15 @@ public final class JobsMenu extends MenuController {
         int next = rebirths + 1;
         long after = (long) next * JobRebirth.PERCENT;
         boolean max = detail.level() >= detail.maxLevel();
-        List<String> tooltip = List.of("Le metier repart du niveau 0", "Tes deblocages restent acquis",
-                "+" + JobRebirth.PERCENT + " % d'XP et d'argent de ce metier, pour toujours",
-                "Chaque niveau repaie son argent, sa prime et ses objets", "Sans limite de nombre");
+        List<String> tooltip = List.of("Deblocages gardes",
+                "+" + JobRebirth.PERCENT + " % d'XP et d'argent, pour toujours");
         Card card = Card.of(new ItemStack(Items.TOTEM_OF_UNDYING), "Renaissance " + next, List.of(
                         max ? "Retour au niveau 0" : "Au niveau " + detail.maxLevel(),
                         max ? "Bonus total : +" + after + " %" : "Encore " + (detail.maxLevel() - detail.level())
                                 + " niveaux"))
                 .accent(0xFFFAC400).tooltip(tooltip);
         cards.add(max ? card.action("rebirth|renaitre").confirm("!Faire renaitre le " + job.display().toLowerCase(
-                        Locale.ROOT) + " ?|Retour au niveau 0, deblocages gardes, +" + after + " % d'XP et d'argent.")
+                        Locale.ROOT) + " ?|Retour au niveau 0")
                 : card.state(MenuView.DISABLED).progress(detail.level(), detail.maxLevel()));
         if (rebirths > 0) {
             cards.add(Card.of(new ItemStack(Items.NETHER_STAR), "Renaissance " + rebirths, List.of(

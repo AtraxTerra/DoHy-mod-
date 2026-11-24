@@ -72,7 +72,7 @@ public final class WorldMarketMenu extends MenuController {
                 tip.add("Clic : vendre " + MoneyFormat.exact(sold) + " pour "
                         + MoneyFormat.exact(WorldMarket.sellQuote(player, id, sold)) + " $");
             } else {
-                tip.add(room <= 0 ? "Marche sature : il n'achete plus" : "Clic : vendre ce que tu portes (rien)");
+                tip.add(room <= 0 ? "Marche sature" : "Clic : vendre ce que tu portes (rien)");
             }
             tip.add(pile > 0 ? "Clic droit : acheter " + pile + " pour "
                     + MoneyFormat.exact(WorldMarket.buyQuote(server, id, pile)) + " $" : "Penurie : rien a acheter");
@@ -112,8 +112,8 @@ public final class WorldMarketMenu extends MenuController {
                     List.of(cut > 0 ? capital(line.substring(cut + 3)) : "", "")).accent(0xFF27C4E8));
         }
         if (news.isEmpty()) {
-            news.add(Card.of(new ItemStack(Items.PAPER), "Pas encore de depeche", List.of(
-                    "Une nation bouge un gros lot", "toutes les dix minutes de jeu")).state(MenuView.DISABLED));
+            news.add(Card.of(new ItemStack(Items.PAPER), "Pas encore de depeche", List.of("", ""))
+                    .state(MenuView.DISABLED));
         }
         NationRank next = rank.next();
         List<MenuView.Stat> stats = List.of(
@@ -126,9 +126,7 @@ public final class WorldMarketMenu extends MenuController {
                 + next.label();
         PriceChart index = WorldMarket.index(server);
         Card board = Card.of(new ItemStack(Items.FILLED_MAP), "Indice international", List.of(
-                        "Le cours moyen des " + WorldMarket.goods().size() + " ressources cotees",
-                        index.size() > 1 ? "Un releve apres chaque lot des nations, toutes les dix minutes de jeu"
-                                : "Premier releve au prochain lot des nations"))
+                        "Cours moyen de " + WorldMarket.goods().size() + " ressources", ""))
                 .accent(0xFF27C4E8).chart(index);
         return new MenuView(id(), "Marche international", subtitle, stats, List.of(
                 new MenuView.Section("INDICE", "upgrade", MenuView.CHART, List.of(board)),

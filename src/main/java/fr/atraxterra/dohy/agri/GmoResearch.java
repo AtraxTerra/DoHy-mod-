@@ -258,7 +258,7 @@ public final class GmoResearch {
             data.forgetNotes(gmo.key());
             composition.clear();
             player.sendSystemMessage(Component.literal("Machine a OGM : la souche de " + gmo.label().toLowerCase()
-                    + " a mute. Sa recette a change, la recherche reprend.").withStyle(ChatFormatting.LIGHT_PURPLE));
+                    + " a mute : nouvelle recette.").withStyle(ChatFormatting.LIGHT_PURPLE));
         }
         return null;
     }

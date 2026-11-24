@@ -83,15 +83,11 @@ public final class ReserveMenu extends MenuController {
                     .tooltip(List.of("En " + reserve.origin().toShortString() + " (" + reserve.dimension() + ")",
                             MoneyFormat.exact(perks.goldValue()) + " $ par or liquide",
                             "Interets x" + Math.max(1, perks.interest()),
-                            "Seul un wither la detruit : l'argent place serait perdu.")));
+                            "Un wither la detruit, avec l'argent place")));
         } else {
             mine.add(Card.of(new ItemStack(PalaReserve.FACTION_SAFE.get()), "Aucune reserve", List.of(
                             "Bats un cube ci-dessous,", "puis clic droit mains nues"))
-                    .state(MenuView.DISABLED)
-                    .tooltip(List.of("Aretes, dessus et dessous : coffres-forts de faction.",
-                            "Centre des quatre flancs : vitres de coffre-fort.",
-                            "Coeur : or liquide (ou vide). Le tout dans tes claims.",
-                            "Clic droit mains nues sur un coffre-fort pour l'ouvrir.")));
+                    .state(MenuView.DISABLED));
         }
 
         List<Card> plans = new ArrayList<>();
@@ -106,7 +102,7 @@ public final class ReserveMenu extends MenuController {
                                     + " $"));
             plans.add(tier <= perks.reserveTier() ? card.accent(0xFFFAC400)
                     .badge(reserve.tier() == tier ? "BATIE" : "")
-                    : card.state(MenuView.DISABLED).tooltip(List.of("Branche Economie de l'arbre de faction")));
+                    : card.state(MenuView.DISABLED).tooltip(List.of("Branche Economie")));
         }
 
         List<Card> amounts = new ArrayList<>();
@@ -116,7 +112,7 @@ public final class ReserveMenu extends MenuController {
             String title = amount == 0 ? "Maximum" : MoneyFormat.exact(amount) + " $";
             amounts.add(Card.of(new ItemStack(amount == 0 ? Items.GOLD_BLOCK : amount >= 10_000_000L
                             ? Items.GOLD_INGOT : Items.GOLD_NUGGET), title, List.of(amount == 0
-                            ? "Selon la place et la banque" : "Depuis la banque nationale",
+                            ? "" : "Depuis la banque nationale",
                             "Banque : " + MoneyFormat.shortForm(data.bank()) + " $"))
                     .accent(i == chosen ? 0xFF22E558 : 0xFF55545C).badge(i == chosen ? "CHOISI" : "")
                     .action("amount:" + i + "|choisir"));
@@ -128,7 +124,7 @@ public final class ReserveMenu extends MenuController {
             int permille = term.permille() * multiplier;
             Card card = Card.of(new ItemStack(Items.CLOCK), "Placer " + term.label(), List.of(
                             "+" + permille / 10 + (permille % 10 == 0 ? "" : "," + permille % 10) + " % a l'echeance",
-                            multiplier > 1 ? "Interets x" + multiplier : "Plus c'est long, plus ca rapporte"))
+                            multiplier > 1 ? "Interets x" + multiplier : ""))
                     .tooltip(List.of("Montant choisi : " + (AMOUNTS[chosen] == 0 ? "le maximum"
                                     : MoneyFormat.exact(AMOUNTS[chosen]) + " $"),
                             "Retrait avant l'echeance : la mise moins " + GoldReserves.PENALTY_PERCENT + " %."));

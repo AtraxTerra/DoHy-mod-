@@ -121,20 +121,12 @@ public final class SpawnDaily extends MenuController {
             } else if (index == next) {
                 card = card.accent(0xFFFAC400).action("claim|prendre la recompense");
             } else {
-                card = card.state(MenuView.DISABLED).tooltip(List.of("Reviens demain, puis les jours suivants."));
+                card = card.state(MenuView.DISABLED).tooltip(List.of("Reviens demain."));
             }
             days.add(card);
         }
-        List<Card> rules = List.of(
-                Card.of(new ItemStack(Items.CLOCK), "Le jour", List.of("Change dans " + delay(minutes),
-                        "A la meme heure que les contrats")).accent(0xFF2F5BEA),
-                Card.of(new ItemStack(Items.BEACON), "La serie", List.of("Un jour saute : retour au jour 1",
-                        "Apres le dernier jour, elle reprend")).accent(0xFF2F5BEA)
-                        .tooltip(List.of("La recompense ne se prend qu'ici, au spawn.",
-                                "Elle grandit avec ton niveau global.")));
-        return new MenuView(id(), "Recompense du jour", "", stats, List.of(
-                new MenuView.Section("LA SERIE", "upgrade", MenuView.GRID, days),
-                new MenuView.Section("REGLES", "resources", MenuView.GRID, rules)), false);
+        return new MenuView(id(), "Recompense du jour", "Un jour saute : retour au jour 1", stats, List.of(
+                new MenuView.Section("LA SERIE", "upgrade", MenuView.GRID, days)), false);
     }
 
     @Override

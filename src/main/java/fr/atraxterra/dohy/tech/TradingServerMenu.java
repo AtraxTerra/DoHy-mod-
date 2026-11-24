@@ -68,31 +68,23 @@ public final class TradingServerMenu extends MenuController {
                         MoneyFormat.exact(stored) + " / " + MoneyFormat.exact(config.energyCapacity()) + " FE",
                         "Consomme " + perTick + " FE par tick"))
                 .accent(0xFFFAC400).progress(stored, config.energyCapacity())
-                .tooltip(List.of("Tout cable d'energie FE l'alimente",
-                        "NTM NEXT : " + (perTick * 5L) + " HE par tick (5 HE = 1 FE)",
-                        "Reserve pleine : " + (config.energyCapacity() / Math.max(1, perTick) / 20)
-                                + " s d'autonomie",
-                        server.energyCut() > 0
-                                ? "Technologies de ta nation : -" + server.energyCut() + " % d'energie"
-                                : "L'Energie III et V de ta nation en effacent une part")));
+                .tooltip(List.of("FE, ou " + (perTick * 5L) + " HE par tick (NTM)")));
         cards.add(Card.of(new ItemStack(Items.EMERALD), "Production", List.of(
                         MoneyFormat.exact(config.incomePerHour()) + " $ par heure",
                         MoneyFormat.exact(server.totalProduced()) + " $ produits en tout"))
-                .accent(0xFF27C4E8)
-                .tooltip(List.of("Il ne produit que sous tension,", "et dans un chunk charge")));
+                .accent(0xFF27C4E8));
         Card cash = Card.of(new ItemStack(Items.GOLD_INGOT), "Caisse", List.of(
                         MoneyFormat.exact(pending) + " / " + MoneyFormat.exact(config.bufferMax()) + " $",
                         pending > 0L ? "A encaisser" : "Rien a encaisser"))
                 .accent(0xFFFAC400).progress(pending, config.bufferMax())
-                .tooltip(List.of("Pleine, la machine s'arrete :", config.bufferHours() + " h de production au plus"));
+                .tooltip(List.of("Pleine : la machine s'arrete"));
         cards.add(pending > 0L && server.isOwner(player) ? cash.action("collect|encaisser") : cash);
         int loaded = server.loadedCount();
         cards.add(Card.of(new ItemStack(DoHyTech.TRADING_SERVER_ITEM.get()), "Tes serveurs", List.of(
                         Math.min(loaded, config.maxPerPlayer()) + " / " + config.maxPerPlayer() + " en service",
                         loaded > config.maxPerPlayer() ? (loaded - config.maxPerPlayer()) + " en attente"
                                 : "Places libres : " + (config.maxPerPlayer() - loaded)))
-                .accent(0xFF8F5BEA)
-                .tooltip(List.of("Seuls les serveurs charges comptent", "Les premiers poses tournent d'abord")));
+                .accent(0xFF8F5BEA));
 
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("ETAT", status.label().toUpperCase(), running ? 0xFF22E558 : 0xFFEF3826),
