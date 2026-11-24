@@ -312,7 +312,8 @@ public class GarrisonSoldier extends PathfinderMob implements RangedAttackMob {
         ItemStack weapon = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, Items.BOW));
         ItemStack ammo = new ItemStack(Items.ARROW);
         AbstractArrow arrow = ProjectileUtil.getMobArrow(this, ammo, power, weapon);
-        arrow.setBaseDamage(arrow.getBaseDamage() + tierBonus * 0.5d);
+        // la fleche d'un squelette fait 2 ; l'equipement de la garnison y ajoute
+        arrow.setBaseDamage(2.0d + tierBonus * 0.5d);
         double dx = target.getX() - getX();
         double dy = target.getY(0.3333d) - arrow.getY();
         double dz = target.getZ() - getZ();
