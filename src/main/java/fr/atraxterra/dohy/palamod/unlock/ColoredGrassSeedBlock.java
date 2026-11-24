@@ -81,10 +81,14 @@ public class ColoredGrassSeedBlock extends VegetationBlock implements Bonemealab
         }
     }
 
-    /** La terre devient herbe coloree ; la graine s'en va. */
+    /**
+     * La graine s'en va, puis la terre devient herbe coloree. Dans cet ordre :
+     * la terre changee d'abord, la graine ne tiendrait plus et tomberait en
+     * objet — une graine rendue a chaque pousse.
+     */
     private void grow(ServerLevel level, BlockPos pos) {
-        level.setBlock(pos.below(), grass.get().defaultBlockState(), 3);
         level.removeBlock(pos, false);
+        level.setBlock(pos.below(), grass.get().defaultBlockState(), 3);
     }
 
     @Override

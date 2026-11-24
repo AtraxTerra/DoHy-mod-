@@ -21,6 +21,12 @@ import net.minecraft.world.level.storage.ValueOutput;
  * Un bloc interdit l'arrete ({@code ROOT_BLACKLISTED_BLOCKS}) : le feuillage
  * passe au rouge ({@code setBlocked}).
  *
+ * <p>La liste du code ({@code JobsConstants.ROOT_BLACKLISTED_BLOCKS}) : la
+ * bedrock et l'obsidienne. Le feuillage rougit donc a la bedrock comme a
+ * l'obsidienne : c'est la profondeur de la racine qui dit s'il y a un bunker.
+ * Et la racine n'est arretee que tant que l'obstacle est la : chaque seconde
+ * le code revoit le bloc du dessous, et repart s'il est parti.
+ *
  * <p>Ici, sont interdits : la bedrock et ce qui ne se casse pas, l'obsidienne
  * (et l'obsidienne pleureuse), et tout bloc qui porte des donnees — un coffre,
  * une machine — pour que la racine ne detruise jamais un contenu.
@@ -65,7 +71,7 @@ public class RootLeavesBlockEntity extends BlockEntity {
     }
 
     void serverTick() {
-        if (blocked || !(level instanceof ServerLevel server) || server.getGameTime() % PERIOD != 0L
+        if (!(level instanceof ServerLevel server) || server.getGameTime() % PERIOD != 0L
                 || tip == Integer.MIN_VALUE) {
             return;
         }
@@ -79,6 +85,10 @@ public class RootLeavesBlockEntity extends BlockEntity {
         if (next.getY() < server.getMinY() || forbidden(server, next)) {
             setBlocked(true);
             return;
+        }
+        if (blocked) {
+            // l'obstacle est parti : la racine repart
+            setBlocked(false);
         }
         server.setBlock(current, PalaUnlocks.ROOT_INFERIOR.get().defaultBlockState(), 3);
         server.setBlock(next, PalaUnlocks.ROOT_LAST.get().defaultBlockState(), 3);

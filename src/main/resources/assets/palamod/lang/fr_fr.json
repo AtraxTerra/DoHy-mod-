@@ -1276,6 +1276,7 @@
   "block.palamod.endium_totem.broken_altar": "un autel manque",
   "block.palamod.endium_totem.broken_offering": "un autel a perdu son offrande",
   "block.palamod.endium_totem.broken_alone": "plus personne dans le cercle",
+  "block.palamod.endium_totem.leaving": "Reviens dans la croix : le rituel se rompt dans %s secondes.",
   "block.palamod.endium_totem.bar": "Rituel d'endium : %s / %s zombies",
   "block.palamod.endium_totem.missing": "Il manque %s autel(s) et %s poudre(s) de perlimpinpin",
   "block.palamod.endium_totem.offerings": "Pose une offrande sur chaque autel : toi debout, ou une pierre de capture pleine",

@@ -15,10 +15,17 @@ import net.minecraft.client.renderer.entity.state.BoatRenderState;
 import net.minecraft.resources.Identifier;
 
 /**
- * Le bateau en bambou a l'image : le modele de PalaJobs ({@code ModelBambooBoat}),
- * qui est celui du bateau vanilla de 1.7.10 — un fond et quatre bords, sans
- * pagaies —, et sa texture ({@code palajobs:textures/entity/bamboo_boat.png},
- * 64 x 32).
+ * Le bateau en bambou a l'image : le modele de PalaJobs ({@code ModelBambooBoat},
+ * et {@code RenderBambooBoat} dessine celui du bateau vanilla de 1.7.10 — un
+ * fond et quatre bords, sans pagaies —), et sa texture
+ * ({@code palajobs:textures/entity/bamboo_boat.png}, 64 x 32).
+ *
+ * <p>Cette texture ne dessine que le fond : la place des bords y est
+ * transparente. Sur Paladium comme ici, le bateau en bambou est donc un
+ * <b>radeau</b>, une planche de bambou. Le modele entier est remonte de cinq
+ * pixels pour que la planche flotte a la hauteur du radeau de 26.2 (de 0,25 a
+ * 0,5 bloc au-dessus du pied du bateau) : a la hauteur d'un bateau, l'eau la
+ * recouvrait.
  *
  * <p>Le reste est le rendu des bateaux de 26.2 ({@link AbstractBoatRenderer}) :
  * l'orientation, le roulis quand on le frappe, les bulles. Le modele de 1.7.10
@@ -31,6 +38,9 @@ public class BambooBoatRenderer extends AbstractBoatRenderer {
 
     private static final Identifier TEXTURE =
             Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "textures/entity/bamboo_boat.png");
+
+    /** Le pivot de 1.7.10 (4) remonte de cinq pixels : la planche de 0,25 a 0,5 bloc. */
+    private static final float PIVOT_Y = 4.0f - 5.0f;
 
     private final EntityModel<BoatRenderState> model;
 
@@ -56,11 +66,11 @@ public class BambooBoatRenderer extends AbstractBoatRenderer {
         float quarter = (float) (Math.PI / 2.0d);
         root.addOrReplaceChild("bottom", CubeListBuilder.create().texOffs(0, 8)
                 .addBox(-12.0f, -8.0f, -3.0f, 24.0f, 16.0f, 4.0f),
-                PartPose.offsetAndRotation(0.0f, 4.0f, 0.0f, quarter, 0.0f, 0.0f));
-        root.addOrReplaceChild("back", side(), PartPose.offsetAndRotation(-11.0f, 4.0f, 0.0f, 0.0f, quarter * 3.0f, 0.0f));
-        root.addOrReplaceChild("front", side(), PartPose.offsetAndRotation(11.0f, 4.0f, 0.0f, 0.0f, quarter, 0.0f));
-        root.addOrReplaceChild("right", side(), PartPose.offsetAndRotation(0.0f, 4.0f, -9.0f, 0.0f, quarter * 2.0f, 0.0f));
-        root.addOrReplaceChild("left", side(), PartPose.offset(0.0f, 4.0f, 9.0f));
+                PartPose.offsetAndRotation(0.0f, PIVOT_Y, 0.0f, quarter, 0.0f, 0.0f));
+        root.addOrReplaceChild("back", side(), PartPose.offsetAndRotation(-11.0f, PIVOT_Y, 0.0f, 0.0f, quarter * 3.0f, 0.0f));
+        root.addOrReplaceChild("front", side(), PartPose.offsetAndRotation(11.0f, PIVOT_Y, 0.0f, 0.0f, quarter, 0.0f));
+        root.addOrReplaceChild("right", side(), PartPose.offsetAndRotation(0.0f, PIVOT_Y, -9.0f, 0.0f, quarter * 2.0f, 0.0f));
+        root.addOrReplaceChild("left", side(), PartPose.offset(0.0f, PIVOT_Y, 9.0f));
         return LayerDefinition.create(mesh, 64, 32);
     }
 

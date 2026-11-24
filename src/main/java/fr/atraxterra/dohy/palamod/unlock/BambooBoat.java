@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.palamod.unlock;
 
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.Item;
@@ -32,6 +33,16 @@ public class BambooBoat extends Boat {
 
     public BambooBoat(EntityType<? extends Boat> type, Level level, Supplier<Item> drop) {
         super(type, level, drop);
+    }
+
+    /**
+     * Assis sur le plancher : la texture de PalaJobs ne dessine que le fond, le
+     * bateau est un radeau. On s'y assoit a la hauteur du radeau de 26.2
+     * ({@code Raft.rideHeight} : la hauteur x 0,8888889), pas dans un creux.
+     */
+    @Override
+    protected double rideHeight(EntityDimensions dimensions) {
+        return dimensions.height() * 0.8888889f;
     }
 
     @Override

@@ -71,12 +71,16 @@ public class EndiumTotemBlockEntity extends BlockEntity {
     private static final int MAX_ALIVE = 4;
     /** Les flammes de la revelation ({@code BlockEndiumTotem$1}) : trois secondes. */
     private static final int REVEAL_TICKS = 60;
+    /** Sorti de la zone (un zombie poursuivi, un pas de trop) : dix secondes pour y revenir. */
+    private static final int ALONE_GRACE = 10;
 
     private static final DustParticleOptions BLOOD = new DustParticleOptions(0xB00000, 1.6f);
 
     private int phase = IDLE;
     private int kills;
     private int timer;
+    /** Les secondes passees sans aucun inscrit dans la zone. */
+    private int alone;
     private final List<UUID> participants = new ArrayList<>();
     private ServerBossEvent bar;
 
@@ -130,6 +134,7 @@ public class EndiumTotemBlockEntity extends BlockEntity {
         }
         phase = RUNNING;
         kills = 0;
+        alone = 0;
         timer = FIRST_ZOMBIE;
         participants.clear();
         present.forEach(player -> participants.add(player.getUUID()));
@@ -148,6 +153,18 @@ public class EndiumTotemBlockEntity extends BlockEntity {
     private void running(ServerLevel server) {
         if (server.getGameTime() % 20L == 0L) {
             String broken = brokenReason(server);
+            if (broken == null && players(server).isEmpty()) {
+                // personne dans la zone : un delai de grace, annonce une fois
+                alone++;
+                if (alone >= ALONE_GRACE) {
+                    broken = "block.palamod.endium_totem.broken_alone";
+                } else if (alone == 1) {
+                    say(server, Component.translatable("block.palamod.endium_totem.leaving", ALONE_GRACE)
+                            .withStyle(ChatFormatting.GOLD));
+                }
+            } else if (broken == null) {
+                alone = 0;
+            }
             if (broken != null) {
                 fail(server, broken);
                 return;
@@ -182,16 +199,13 @@ public class EndiumTotemBlockEntity extends BlockEntity {
                 return "block.palamod.endium_totem.broken_offering";
             }
         }
-        if (players(server).isEmpty()) {
-            return "block.palamod.endium_totem.broken_alone";
-        }
         return null;
     }
 
-    /** Les inscrits encore vivants dans la zone. */
+    /** Les inscrits encore vivants dans la zone (un spectateur ne tient pas le rituel). */
     private List<ServerPlayer> players(ServerLevel server) {
         return server.getEntitiesOfClass(ServerPlayer.class, EndiumRitual.area(worldPosition),
-                player -> player.isAlive() && participants.contains(player.getUUID()));
+                player -> player.isAlive() && !player.isSpectator() && participants.contains(player.getUUID()));
     }
 
     void onKill(ServerPlayer player) {

@@ -1276,6 +1276,7 @@
   "block.palamod.endium_totem.broken_altar": "an altar is missing",
   "block.palamod.endium_totem.broken_offering": "an altar lost its offering",
   "block.palamod.endium_totem.broken_alone": "nobody is left in the circle",
+  "block.palamod.endium_totem.leaving": "Get back inside the cross: the ritual breaks in %s seconds.",
   "block.palamod.endium_totem.bar": "Endium ritual: %s / %s zombies",
   "block.palamod.endium_totem.missing": "Missing %s altar(s) and %s perlimpinpin powder(s)",
   "block.palamod.endium_totem.offerings": "Put an offering on each altar: yourself standing, or a full capture stone",
