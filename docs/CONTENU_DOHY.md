@@ -646,7 +646,8 @@ cultures, couleurs et atlas.
   - **été** : un vert profond au début, les couleurs du jeu au cœur, puis l'herbe jaunit et le
     feuillage tourne à l'olive ;
   - **automne** : le feuillage s'embrase, une couleur par bosquet — rouge, orange, ambre, jaune,
-    roux ou cuivre (une tache de 4 blocs, à peu près un arbre) — puis brunit et se fane ; l'herbe
+    roux ou cuivre (des taches irrégulières d'environ six blocs, à peu près un arbre, sans
+    frontière droite qui couperait une couronne en deux) — puis brunit et se fane ; l'herbe
     tourne à la paille, puis à l'olive terne ;
   - les bosquets ne tournent pas ensemble : chacun a jusqu'à un jour d'avance ou de retard
     (8 niveaux) ; au début de l'automne, des arbres rouges côtoient des arbres encore verts ;

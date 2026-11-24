@@ -14,8 +14,8 @@ import net.minecraft.world.level.FoliageColor;
  * <p>Les teintes viennent de {@link SeasonPalette} : douze temps de l'annee
  * (debut, coeur et fin de chaque saison), dans l'esprit de Serene Seasons, qui
  * se fondent l'un dans l'autre. L'herbe jaunit a la fin de l'ete, le feuillage
- * s'embrase a l'automne — une couleur par bosquet, une tache de 4 blocs, a peu
- * pres un arbre — puis brunit ; l'hiver laisse des arbres nus et une herbe pale ;
+ * s'embrase a l'automne — une couleur par bosquet, une tache irreguliere d'environ
+ * six blocs, a peu pres un arbre — puis brunit ; l'hiver laisse des arbres nus et une herbe pale ;
  * le printemps reverdit en vert tendre. Les bosquets sont en avance ou en
  * retard d'un jour au plus : les arbres ne tournent pas tous ensemble. Les
  * bouleaux dorent a l'automne ; les sapins gardent leur couleur fixe.
@@ -41,6 +41,9 @@ public final class SeasonColors {
     public static final int STEPS = 96;
 
     private static final int SHADES = SeasonPalette.AUTUMN.length;
+
+    /** La maille des bosquets, en blocs. */
+    private static final int CELL = 6;
 
     /**
      * Les teintes d'un hemisphere a un palier.
@@ -155,15 +158,41 @@ public final class SeasonColors {
     }
 
     /**
-     * Le bosquet d'un bloc : un nombre tire d'un hachage de sa tache de 4 blocs
-     * (sans la hauteur : un arbre garde la meme couleur de haut en bas). Ses bits
-     * bas donnent l'avance, les suivants la couleur d'automne.
+     * Le bosquet d'un bloc. Chaque maille de {@link #CELL} blocs a un coeur tire au
+     * hasard (d'un hachage de la maille) ; un bloc appartient au coeur le plus
+     * proche parmi ceux de sa maille et des huit voisines. Les bosquets sont donc
+     * des taches irregulieres d'a peu pres un arbre, sans frontiere droite qui
+     * couperait une couronne en deux. La hauteur ne compte pas : un arbre garde la
+     * meme couleur de haut en bas. Les bits bas du nombre rendu donnent l'avance,
+     * les suivants la couleur d'automne.
      */
     private static int grove(BlockPos pos) {
-        long hash = (pos.getX() >> 2) * 0x9E3779B97F4A7C15L ^ (pos.getZ() >> 2) * 0xC2B2AE3D27D4EB4FL;
+        int x = pos.getX();
+        int z = pos.getZ();
+        int cellX = Math.floorDiv(x, CELL);
+        int cellZ = Math.floorDiv(z, CELL);
+        long best = Long.MAX_VALUE;
+        int grove = 0;
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                long hash = hash(cellX + dx, cellZ + dz);
+                int heartX = (cellX + dx) * CELL + (int) ((hash >>> 8 & 0xFF) * CELL >> 8);
+                int heartZ = (cellZ + dz) * CELL + (int) ((hash >>> 16 & 0xFF) * CELL >> 8);
+                long distance = (long) (x - heartX) * (x - heartX) + (long) (z - heartZ) * (z - heartZ);
+                if (distance < best) {
+                    best = distance;
+                    grove = (int) (hash >>> 33);
+                }
+            }
+        }
+        return grove;
+    }
+
+    private static long hash(int cellX, int cellZ) {
+        long hash = cellX * 0x9E3779B97F4A7C15L ^ cellZ * 0xC2B2AE3D27D4EB4FL;
         hash ^= hash >>> 31;
         hash *= 0xBF58476D1CE4E5B9L;
         hash ^= hash >>> 29;
-        return (int) (hash >>> 33);
+        return hash;
     }
 }
