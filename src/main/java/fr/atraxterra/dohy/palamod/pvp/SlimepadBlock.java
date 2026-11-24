@@ -112,6 +112,11 @@ public class SlimepadBlock extends Block {
             case 6 -> dx = PUSH;
             default -> { dx = PUSH; dz = PUSH; }
         }
+        // Le givre des fleches glacantes empeche le rebond ({@code PotionFrost}).
+        if (entity instanceof net.minecraft.world.entity.LivingEntity living
+                && living.hasEffect(fr.atraxterra.dohy.palamod.unlock.PalaUnlocks.FROST)) {
+            return;
+        }
         if (entity instanceof ItemEntity) {
             entity.setPos(entity.getX(), entity.getY() + 0.5d, entity.getZ());
         }

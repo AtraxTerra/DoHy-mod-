@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "blocked=false": {
+      "model": "palamod:block/root_leaves_on"
+    },
+    "blocked=true": {
+      "model": "palamod:block/root_leaves_off"
+    }
+  }
+}

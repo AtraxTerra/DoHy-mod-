@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "palamod:block/root_log_top",
+    "side": "palamod:block/root_log"
+  }
+}

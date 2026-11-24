@@ -1,0 +1,241 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:compass",
+    "target": "lodestone",
+    "scale": 32.0,
+    "entries": [
+      {
+        "threshold": -0.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane00"
+        }
+      },
+      {
+        "threshold": 0.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane01"
+        }
+      },
+      {
+        "threshold": 1.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane02"
+        }
+      },
+      {
+        "threshold": 2.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane03"
+        }
+      },
+      {
+        "threshold": 3.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane04"
+        }
+      },
+      {
+        "threshold": 4.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane05"
+        }
+      },
+      {
+        "threshold": 5.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane06"
+        }
+      },
+      {
+        "threshold": 6.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane07"
+        }
+      },
+      {
+        "threshold": 7.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane08"
+        }
+      },
+      {
+        "threshold": 8.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane09"
+        }
+      },
+      {
+        "threshold": 9.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane10"
+        }
+      },
+      {
+        "threshold": 10.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane11"
+        }
+      },
+      {
+        "threshold": 11.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane12"
+        }
+      },
+      {
+        "threshold": 12.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane13"
+        }
+      },
+      {
+        "threshold": 13.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane14"
+        }
+      },
+      {
+        "threshold": 14.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane15"
+        }
+      },
+      {
+        "threshold": 15.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane16"
+        }
+      },
+      {
+        "threshold": 16.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane17"
+        }
+      },
+      {
+        "threshold": 17.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane18"
+        }
+      },
+      {
+        "threshold": 18.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane19"
+        }
+      },
+      {
+        "threshold": 19.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane20"
+        }
+      },
+      {
+        "threshold": 20.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane21"
+        }
+      },
+      {
+        "threshold": 21.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane22"
+        }
+      },
+      {
+        "threshold": 22.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane23"
+        }
+      },
+      {
+        "threshold": 23.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane24"
+        }
+      },
+      {
+        "threshold": 24.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane25"
+        }
+      },
+      {
+        "threshold": 25.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane26"
+        }
+      },
+      {
+        "threshold": 26.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane27"
+        }
+      },
+      {
+        "threshold": 27.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane28"
+        }
+      },
+      {
+        "threshold": 28.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane29"
+        }
+      },
+      {
+        "threshold": 29.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane30"
+        }
+      },
+      {
+        "threshold": 30.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane31"
+        }
+      },
+      {
+        "threshold": 31.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_titane00"
+        }
+      }
+    ]
+  }
+}

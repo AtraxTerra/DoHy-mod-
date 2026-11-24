@@ -276,6 +276,11 @@ jobs:
       - name: Les grandes machines de l'agriculture doivent etre a jour
         run: python3 -I tools/agri_machine_assets.py --check
 
+      # Les objets des deblocages de metier (herbes colorees, racinier, rituel d'endium,
+      # boussoles, table d'alchimiste...) : etats, modeles, objets, butins, recettes, tags.
+      - name: Les objets de deblocage doivent etre a jour
+        run: python3 -I tools/unlock_assets.py --check
+
       # Les lucky blocks : blocs, butin, noms, et une image par evenement porte.
       # Le script lit les evenements dans le Java : un evenement sans image, ou
       # dont la rarete s'ecarte de PalaMod, fait echouer ce controle.

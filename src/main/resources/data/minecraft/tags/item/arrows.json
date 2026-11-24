@@ -2,6 +2,10 @@
   "replace": false,
   "values": [
     "palamod:mid_life_arrow",
-    "palamod:switch_arrow"
+    "palamod:switch_arrow",
+    "palamod:poison_arrow",
+    "palamod:wither_arrow",
+    "palamod:slowness_arrow",
+    "palamod:frost_arrow"
   ]
 }

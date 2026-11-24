@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:blue_dye",
+    "minecraft:wheat_seeds"
+  ],
+  "result": {
+    "id": "palamod:colored_grass_seeds_blue",
+    "count": 1
+  }
+}

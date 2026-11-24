@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FUF",
+    "ICI",
+    "FIF"
+  ],
+  "key": {
+    "F": "palamod:findium",
+    "U": "palamod:unclaim_finder",
+    "I": "palamod:amethyst_ingot",
+    "C": "minecraft:compass"
+  },
+  "result": {
+    "id": "palamod:hunter_compass_amethyst",
+    "count": 1
+  }
+}

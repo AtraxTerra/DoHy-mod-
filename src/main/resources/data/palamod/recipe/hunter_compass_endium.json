@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FUF",
+    "ICI",
+    "FEF"
+  ],
+  "key": {
+    "F": "palamod:findium",
+    "U": "palamod:unclaim_finder_red",
+    "I": "palamod:paladium_ingot",
+    "C": "minecraft:compass",
+    "E": "palamod:endium_nugget"
+  },
+  "result": {
+    "id": "palamod:hunter_compass_endium",
+    "count": 1
+  }
+}

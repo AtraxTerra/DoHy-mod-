@@ -20,6 +20,9 @@
     "palamod:totem_of_fertility",
     "palamod:wood_spike",
     "dohy:drying_rack",
-    "dohy:packaging_table"
+    "dohy:packaging_table",
+    "palamod:alchemy_creator",
+    "palamod:root_log",
+    "palamod:root_planks"
   ]
 }

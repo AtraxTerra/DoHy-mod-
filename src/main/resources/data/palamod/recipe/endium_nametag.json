@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BCB",
+    "DBD"
+  ],
+  "key": {
+    "A": "palamod:endium_nugget",
+    "B": "palamod:findium",
+    "C": "minecraft:name_tag",
+    "D": "palamod:paladium_ingot"
+  },
+  "result": {
+    "id": "palamod:endium_nametag",
+    "count": 1
+  }
+}

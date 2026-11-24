@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "palamod:block/root_log"
+    },
+    "axis=z": {
+      "model": "palamod:block/root_log_horizontal",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "palamod:block/root_log_horizontal",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

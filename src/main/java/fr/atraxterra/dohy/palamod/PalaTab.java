@@ -81,6 +81,7 @@ public final class PalaTab {
                         PalaSeedPlanters.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaFluids.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaHunter.ORDERED.forEach(item -> output.accept(item.get()));
+                        fr.atraxterra.dohy.palamod.unlock.PalaUnlocks.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaWoods.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaAlchemist.ORDERED.forEach(item -> output.accept(item.get()));
                         PalaSmeltery.ORDERED.forEach(item -> output.accept(item.get()));

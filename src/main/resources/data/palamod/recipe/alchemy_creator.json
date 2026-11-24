@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "YUY",
+    "XZX",
+    "XXX"
+  ],
+  "key": {
+    "Y": "minecraft:blaze_powder",
+    "U": "palamod:compressed_paladium",
+    "X": "palamod:titane_ingot",
+    "Z": "palamod:paladium_core"
+  },
+  "result": {
+    "id": "palamod:alchemy_creator",
+    "count": 1
+  }
+}

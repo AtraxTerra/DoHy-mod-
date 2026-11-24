@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABC",
+    "DEF",
+    "GHI"
+  ],
+  "key": {
+    "A": "palamod:snake_venom",
+    "B": "palamod:parrot_feather",
+    "C": "palamod:turtle_scales",
+    "D": "palamod:goat_shoe",
+    "E": "minecraft:enchanting_table",
+    "F": "palamod:wither_skull_fragment",
+    "G": "palamod:meduse_hook",
+    "H": "palamod:snail_shell",
+    "I": "palamod:panda_drool"
+  },
+  "result": {
+    "id": "palamod:endium_totem",
+    "count": 1
+  }
+}

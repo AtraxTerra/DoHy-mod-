@@ -5,6 +5,7 @@
     "palamod:erable_log",
     "palamod:jacaranda_log",
     "palamod:judeecercis_log",
-    "palamod:ostrya_log"
+    "palamod:ostrya_log",
+    "palamod:root_log"
   ]
 }

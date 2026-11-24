@@ -113,6 +113,8 @@
     "dohy:concession_beacon",
     "dohy:clandestine_lab",
     "dohy:arms_workbench",
-    "dohy:stash_chest"
+    "dohy:stash_chest",
+    "palamod:endium_totem",
+    "palamod:sacrifice_hotel"
   ]
 }

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "DWD",
+    "PPP"
+  ],
+  "key": {
+    "S": "minecraft:wheat_seeds",
+    "D": "palamod:dead_wood",
+    "W": "palamod:angelic_water_bucket",
+    "P": "minecraft:dead_bush"
+  },
+  "result": {
+    "id": "palamod:root_seeds_block",
+    "count": 1
+  }
+}

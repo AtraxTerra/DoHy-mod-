@@ -1,0 +1,241 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:compass",
+    "target": "lodestone",
+    "scale": 32.0,
+    "entries": [
+      {
+        "threshold": -0.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend00"
+        }
+      },
+      {
+        "threshold": 0.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend01"
+        }
+      },
+      {
+        "threshold": 1.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend02"
+        }
+      },
+      {
+        "threshold": 2.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend03"
+        }
+      },
+      {
+        "threshold": 3.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend04"
+        }
+      },
+      {
+        "threshold": 4.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend05"
+        }
+      },
+      {
+        "threshold": 5.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend06"
+        }
+      },
+      {
+        "threshold": 6.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend07"
+        }
+      },
+      {
+        "threshold": 7.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend08"
+        }
+      },
+      {
+        "threshold": 8.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend09"
+        }
+      },
+      {
+        "threshold": 9.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend10"
+        }
+      },
+      {
+        "threshold": 10.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend11"
+        }
+      },
+      {
+        "threshold": 11.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend12"
+        }
+      },
+      {
+        "threshold": 12.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend13"
+        }
+      },
+      {
+        "threshold": 13.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend14"
+        }
+      },
+      {
+        "threshold": 14.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend15"
+        }
+      },
+      {
+        "threshold": 15.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend16"
+        }
+      },
+      {
+        "threshold": 16.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend17"
+        }
+      },
+      {
+        "threshold": 17.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend18"
+        }
+      },
+      {
+        "threshold": 18.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend19"
+        }
+      },
+      {
+        "threshold": 19.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend20"
+        }
+      },
+      {
+        "threshold": 20.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend21"
+        }
+      },
+      {
+        "threshold": 21.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend22"
+        }
+      },
+      {
+        "threshold": 22.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend23"
+        }
+      },
+      {
+        "threshold": 23.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend24"
+        }
+      },
+      {
+        "threshold": 24.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend25"
+        }
+      },
+      {
+        "threshold": 25.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend26"
+        }
+      },
+      {
+        "threshold": 26.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend27"
+        }
+      },
+      {
+        "threshold": 27.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend28"
+        }
+      },
+      {
+        "threshold": 28.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend29"
+        }
+      },
+      {
+        "threshold": 29.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend30"
+        }
+      },
+      {
+        "threshold": 30.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend31"
+        }
+      },
+      {
+        "threshold": 31.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "palamod:item/compass/compass_legend00"
+        }
+      }
+    ]
+  }
+}
