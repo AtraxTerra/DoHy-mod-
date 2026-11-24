@@ -273,13 +273,33 @@ public final class AgriConfig {
         ).apply(instance, Farming::new));
     }
 
+    /**
+     * Le chanvre de NTM NEXT ({@link Hemp}) : la chance qu'une herbe des climats tempere et chaud
+     * lache une fleur de chanvre, ce qu'une couronne recoltee rend en plus de la fleur de NTM, et
+     * l'XP de Fermier de la recolte.
+     */
+    public record HempYield(double grassChance, int fiberMin, int fiberMax, int seedsMin, int seedsMax,
+                            long farmerXp) {
+
+        static final HempYield FALLBACK = new HempYield(0.01d, 2, 4, 1, 2, 6L);
+
+        static final Codec<HempYield> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.doubleRange(0.0d, 1.0d).optionalFieldOf("grass_chance", 0.01d).forGetter(HempYield::grassChance),
+                Codec.intRange(0, 64).optionalFieldOf("fiber_min", 2).forGetter(HempYield::fiberMin),
+                Codec.intRange(0, 64).optionalFieldOf("fiber_max", 4).forGetter(HempYield::fiberMax),
+                Codec.intRange(0, 64).optionalFieldOf("seeds_min", 1).forGetter(HempYield::seedsMin),
+                Codec.intRange(0, 64).optionalFieldOf("seeds_max", 2).forGetter(HempYield::seedsMax),
+                Codec.LONG.optionalFieldOf("farmer_xp", 6L).forGetter(HempYield::farmerXp)
+        ).apply(instance, HempYield::new));
+    }
+
     public record Config(double grassSeedChance, Climate climate, Gmo gmo, Machines machines, List<Batch> breads,
                          Effects effects, int feedIntervalTicks, int feedRadius, int feedMaxAnimals, int feedRation,
                          int troughCapacity, int waterCapacity, int waterPerBucket, Farming farming,
-                         int tractorLevel) {
+                         int tractorLevel, HempYield hemp) {
 
         static final Config FALLBACK = new Config(0.04d, Climate.FALLBACK, Gmo.FALLBACK, Machines.FALLBACK,
-                List.of(), Effects.FALLBACK, 2400, 6, 6, 4, 64, 32, 8, Farming.FALLBACK, 10);
+                List.of(), Effects.FALLBACK, 2400, 6, 6, 4, 64, 32, 8, Farming.FALLBACK, 10, HempYield.FALLBACK);
 
         static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.DOUBLE.optionalFieldOf("grass_seed_chance", 0.04d).forGetter(Config::grassSeedChance),
@@ -297,7 +317,9 @@ public final class AgriConfig {
                 Codec.INT.optionalFieldOf("water_per_bucket", 8).forGetter(Config::waterPerBucket),
                 Farming.CODEC.optionalFieldOf("farming", Farming.FALLBACK).forGetter(Config::farming),
                 // a cote de « farming » et non dedans : un codec de record s'arrete a seize champs
-                Codec.intRange(0, 1_000).optionalFieldOf("tractor_level", 10).forGetter(Config::tractorLevel)
+                Codec.intRange(0, 1_000).optionalFieldOf("tractor_level", 10).forGetter(Config::tractorLevel),
+                // le seizieme et dernier champ possible : un ajout de plus ira dans un sous-objet
+                HempYield.CODEC.optionalFieldOf("hemp", HempYield.FALLBACK).forGetter(Config::hemp)
         ).apply(instance, Config::new));
 
         /** La fournee d'un pain, ou {@code null}. */

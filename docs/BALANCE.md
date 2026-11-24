@@ -1673,6 +1673,31 @@ pas** au shop (absents du catalogue) : ils n'apportent pas un dollar.
 
 Leviers : `data/kits.json` (contenu, délais, grades), relu au démarrage du monde.
 
+## 6 untrigesies. Le chanvre de NTM NEXT (2026-11-23)
+
+Une culture comme une autre : un champ de chanvre doit rapporter le revenu horaire du tier FARM
+(18 000 $/h, § 1), pas plus. Une couronne repousse en une dizaine de minutes ; un joueur qui
+tient un grand champ en casse environ 600 par heure. Elles rendent ensemble 600 fleurs, 1 800
+fibres et 900 graines, et le revenu se partage entre les trois :
+
+| Objet | Par heure | Part du revenu | Débit retenu (`rates.csv`) | Prix |
+|---|---|---|---|---|
+| Fibre | 1 800 | ~50 % | 3 600 | 5 $ |
+| Graines | 900 | ~30 % | 2 600 | 6 $ (vente seule) |
+| Fleur | 600 | ~17 % | 3 600 | 5 $ (achat 20 $) |
+| Toile (4 fibres) | — | — | 900 | 20 $ |
+
+- 600 × 5 + 1 800 × 5 + 900 × 6 = **17 400 $/h**, sous la cible : le chanvre ne bat pas les
+  céréales, il les complète (et donne en plus de l'XP de Fermier, 6 par couronne).
+- **Les graines ne s'achètent pas** : fourrage, elles feraient une pompe à crème (quatre graines
+  achetées 28 $ au plus bas du cours, 4 × 28 × 0,7 = 78 $, pour une crème revendue 100 × 1,4 =
+  140 $). `tools/check_agri_prices.py` les compte désormais dans l'élevage, comme la toile.
+- **La toile** vaut ses quatre fibres : la tisser ne crée pas de valeur, elle sert au papier et aux
+  tableaux. Le papier et les tableaux ne se vendent pas.
+- **La fibre en ficelle** (1 pour 1) ne rapporte rien : la ficelle vaut 1 $, la fibre 5 $.
+- Le biogénérateur tire 400 FE d'une graine comme d'une céréale : les graines (6 $) sont le
+  combustible le moins cher de la ferme, sans arbitrage puisqu'elles ne s'achètent pas.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

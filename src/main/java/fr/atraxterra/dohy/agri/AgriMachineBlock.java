@@ -126,11 +126,11 @@ public class AgriMachineBlock extends BaseEntityBlock {
         }
     }
 
-    /** Le biogenerateur se charge une cereale a la main ; les deux autres n'ont rien a recevoir ainsi. */
+    /** Le biogenerateur se charge de fourrage a la main ; les deux autres n'ont rien a recevoir ainsi. */
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
-        if (kind != Kind.BIOGEN || !stack.is(DoHyAgri.CEREALS)) {
+        if (kind != Kind.BIOGEN || !stack.is(DoHyAgri.FODDER)) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (level.isClientSide() || !(level.getBlockEntity(pos) instanceof AgriMachineBlockEntity machine)) {

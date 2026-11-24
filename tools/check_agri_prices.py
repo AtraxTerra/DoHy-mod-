@@ -39,6 +39,8 @@ BREADS = pathlib.Path("src/main/java/fr/atraxterra/dohy/agri/Bread.java")
 ITEMS = pathlib.Path("src/main/resources/assets/dohy/items")
 CEREALS = ["corn", "barley", "oat", "rye", "sunflower", "soy", "fonio", "sorghum", "kamut"]
 PRODUCTS = ["dohy:cream", "dohy:lard", "minecraft:egg"]
+# Le fourrage qui n'est pas une cereale (tag dohy:fodder) : les graines du chanvre de NTM NEXT.
+FODDER = ["dohy:hemp_seeds"]
 
 
 def main():
@@ -114,9 +116,12 @@ def main():
     for name in sorted(known - seen):
         errors.append("pain %s : aucune fournee ne le produit" % name)
 
-    for cereal in ["minecraft:wheat"] + ["dohy:" + key for key in CEREALS]:
+    for cereal in ["minecraft:wheat"] + ["dohy:" + key for key in CEREALS] + FODDER:
         for product in PRODUCTS:
             recipe("elevage %s -> %s" % (cereal, product), {cereal: agri["feed_ration"]}, {product: 1})
+
+    # Le chanvre : la toile se tisse de quatre fibres (data/dohy/recipe/hemp_canvas.json).
+    recipe("toile de chanvre", {"dohy:hemp_fiber": 4}, {"dohy:hemp_canvas": 1})
 
     # 3. La recherche.
     gmo = agri["gmo"]
@@ -140,7 +145,8 @@ def main():
             print("  - " + error)
         return 1
     print("Agriculture : %d recettes sans arbitrage au cours [%.2f ; %.2f], %d ingredients de recherche."
-          % (len(["wheat"] + CEREALS) + len(agri["breads"]) + (len(CEREALS) + 1) * len(PRODUCTS), low, high,
+          % (len(["wheat"] + CEREALS) + len(agri["breads"]) + (len(CEREALS) + 1 + len(FODDER)) * len(PRODUCTS) + 1,
+             low, high,
              len(pool)))
     return 0
 

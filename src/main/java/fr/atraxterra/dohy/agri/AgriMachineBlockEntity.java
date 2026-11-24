@@ -137,12 +137,12 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
 
     // -- Le biogenerateur ----------------------------------------------------------
 
-    /** Cereales en attente dans la tremie. */
+    /** Fourrage (cereales, graines de chanvre) en attente dans la tremie. */
     public int fuel() {
         return fuel;
     }
 
-    /** Charge des cereales ; rend ce qui a ete pris. */
+    /** Charge du fourrage ; rend ce qui a ete pris. */
     public int addFuel(int offered) {
         int taken = Math.max(0, Math.min(offered, AgriConfig.config().machines().biogenHopper() - fuel));
         if (taken > 0) {
@@ -153,7 +153,7 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
     }
 
     public String fuelReport() {
-        return "Biogenerateur : " + fuel + " cereales en attente  ·  " + energy.amount + " / " + capacity() + " FE";
+        return "Biogenerateur : " + fuel + " rations de fourrage en attente  ·  " + energy.amount + " / " + capacity() + " FE";
     }
 
     void serverTick() {
@@ -332,7 +332,7 @@ public class AgriMachineBlockEntity extends BlockEntity implements WorldlyContai
         }
         switch (kind()) {
             case BIOGEN -> {
-                return stack.is(DoHyAgri.CEREALS);
+                return stack.is(DoHyAgri.FODDER);
             }
             case MILL -> {
                 for (String key : DoHyAgri.flourKeys()) {

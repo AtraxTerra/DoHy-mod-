@@ -1,0 +1,7 @@
+{
+  "_comment": "Le fourrage : ce qu'une mangeoire donne aux betes et ce qu'un biogenerateur brule. Les cereales, et les graines du chanvre de NTM NEXT (agri/Hemp.java), que le silo et la tremie du tracteur ne gardent pas.",
+  "values": [
+    "#dohy:cereals",
+    "dohy:hemp_seeds"
+  ]
+}

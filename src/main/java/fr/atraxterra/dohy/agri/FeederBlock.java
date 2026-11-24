@@ -104,7 +104,7 @@ public class FeederBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
-        boolean fits = kind == Kind.TROUGH ? stack.is(DoHyAgri.CEREALS) : stack.is(Items.WATER_BUCKET);
+        boolean fits = kind == Kind.TROUGH ? stack.is(DoHyAgri.FODDER) : stack.is(Items.WATER_BUCKET);
         if (!fits) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
@@ -148,7 +148,7 @@ public class FeederBlock extends BaseEntityBlock {
 
     private void report(Player player, FeederBlockEntity feeder) {
         String text = kind == Kind.TROUGH
-                ? "Mangeoire : " + feeder.amount() + " / " + feeder.capacity() + " cereales ("
+                ? "Mangeoire : " + feeder.amount() + " / " + feeder.capacity() + " rations de fourrage ("
                 + AgriConfig.config().feedRation() + " par bete)  ·  prochaine tournee dans "
                 + feeder.minutesUntilFeed() + " min"
                 : "Abreuvoir : " + feeder.amount() + " / " + feeder.capacity() + " doses d'eau";
