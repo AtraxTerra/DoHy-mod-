@@ -609,8 +609,8 @@ cultures, couleurs et atlas.
 - **Le calendrier** : l'année dure quatre semaines ; chaque saison s'ouvre le **lundi à 5 h**
   (heure de Paris, comme les contrats). Le 16 novembre 2026 ouvre l'hiver du nord. Le **sud** vit
   la même année à contre-temps : son hiver est l'été du nord. Sous les **tropiques** (moins de
-  23,44°) pas d'hiver, mais une saison sèche et une saison des pluies (un nom, sans effet : la
-  pluie du jeu est la même partout). Le temps est celui de l'horloge réelle : les saisons
+  23,44°) pas d'hiver, mais une saison sèche et une saison des pluies (un nom et des couleurs :
+  la pluie du jeu est la même partout). Le temps est celui de l'horloge réelle : les saisons
   avancent serveur éteint.
 - **Le froid** : la saison s'ajoute à la température des biomes. Sa force monte des tropiques
   (rien) à 65° (toute) ; le plein hiver retire 0,75, le plein été ajoute trois fois moins. Le jeu
@@ -637,13 +637,30 @@ cultures, couleurs et atlas.
   sur cinq au cœur de l'hiver au-delà de 65°. Tropiques et été : tout pousse. La poudre d'os
   n'est pas freinée. Toutes les cultures qui passent par l'événement de pousse de NeoForge sont
   concernées (céréales DoHy, PalaMod, blé, canne, baies...).
-- **Les couleurs** (client, accentuées à la demande du joueur) : en automne le feuillage rougit
-  franchement, et pas d'une seule couleur — rouge, orange, jaune ou roux selon le bosquet (une
-  tache par 4 blocs, à peu près un arbre) — et l'herbe tourne à la paille ; en hiver feuillage
-  brun gris et herbe sèche ; au printemps un vert tendre et vif ; l'été, les couleurs du jeu.
-  Force entière dès 45° (la France comprise), nulle sous les tropiques. Sapins et bouleaux gardent
-  leur couleur fixe. Les couleurs avancent par paliers (~10 h) : à chaque palier, les chunks
-  affichés se reconstruisent, l'ancien rendu restant affiché jusqu'au nouveau.
+- **Les couleurs** (client ; accentuées à la demande du joueur, puis une seconde fois le
+  2026-11-24, « comme Serene Seasons ») : douze temps dans l'année — le début, le cœur et la fin
+  de chaque saison (`season/SeasonPalette`) — qui se fondent l'un dans l'autre sans saut :
+  - **hiver** : les dernières feuilles mortes, brunes, puis des arbres nus gris brun ; l'herbe
+    pâle, olive et sèche ;
+  - **printemps** : des bourgeons vert pâle, puis un vert tendre et vif, puis un vert plein ;
+  - **été** : un vert profond au début, les couleurs du jeu au cœur, puis l'herbe jaunit et le
+    feuillage tourne à l'olive ;
+  - **automne** : le feuillage s'embrase, une couleur par bosquet — rouge, orange, ambre, jaune,
+    roux ou cuivre (des taches irrégulières d'environ six blocs, à peu près un arbre, sans
+    frontière droite qui couperait une couronne en deux) — puis brunit et se fane ; l'herbe
+    tourne à la paille, puis à l'olive terne ;
+  - les bosquets ne tournent pas ensemble : chacun a jusqu'à un jour d'avance ou de retard
+    (8 niveaux) ; au début de l'automne, des arbres rouges côtoient des arbres encore verts ;
+  - les **bouleaux** ont leur propre année (vert pâle au printemps, or à l'automne, gris brun
+    l'hiver) ; les **sapins** gardent leur couleur fixe ;
+  - force entière dès **40°** (France, Espagne, Italie, Japon), nulle sous les tropiques ;
+  - **sous les tropiques**, la saison sèche dore l'herbe et éteint le feuillage, la saison des
+    pluies reverdit plus vif que le jeu : rien près de l'équateur (la forêt humide reste verte),
+    toute la force de 12 à 20° (savanes, mousson), plus rien au-delà de 30° ;
+  - les couleurs avancent par paliers (96 par année, ~7 h) : à chaque palier, les chunks affichés
+    se reconstruisent, l'ancien rendu restant affiché jusqu'au nouveau. `tools/SeasonPaletteTest.java`
+    vérifie en CI qu'aucune teinte ne saute, que l'été reste fidèle au jeu et que l'automne est
+    embrasé et varié.
 - **L'atlas** : sous le pays, la saison, le jour de la semaine de saison et la température du
   lieu — « Hiver  j3/7  -4 °C ». **`/saison`** donne le détail et le temps avant la suivante.
   `/saison admin avancer <jours>` / `remettre` décale l'horloge pour essayer (op, jamais
@@ -652,7 +669,9 @@ cultures, couleurs et atlas.
   `SeasonClimate` (table de décalage par bande de 16 blocs, serveur et client), `Seasons`
   (calendrier, envoi `SeasonSync`, commande), `SeasonGround`, `SeasonCrops` ;
   `mixin/BiomeTemperatureMixin` (la saison dans `Biome.getTemperature`), `BiomeAccessor` ;
-  `client/season/ClientSeasons`, `SeasonColors`, `mixin/BiomeColorsMixin` (client).
+  `season/SeasonPalette` (les teintes des douze temps, sans Minecraft, testées seules en CI) ;
+  `client/season/ClientSeasons` (dont la teinte des feuilles de bouleau), `SeasonColors`,
+  `mixin/BiomeColorsMixin` (client).
 
 ### Les catastrophes (2026-11-14)
 

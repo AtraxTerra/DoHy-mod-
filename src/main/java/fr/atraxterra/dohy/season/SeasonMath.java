@@ -115,15 +115,50 @@ public final class SeasonMath {
     }
 
     /** A partir de cette latitude, les couleurs de saison ont toute leur force. */
-    public static final double COLOR_FULL = 45.0d;
+    public static final double COLOR_FULL = 40.0d;
 
     /**
-     * La force des couleurs de saison : 0 sous les tropiques, 1 des 45°. Plus
+     * La force des couleurs de saison : 0 sous les tropiques, 1 des 40°. Plus
      * tot que le froid ({@link #strength}) : les couleurs ne coutent rien a
-     * l'equilibre du jeu, et l'automne de France doit se voir.
+     * l'equilibre du jeu, et l'automne doit se voir en France comme en Espagne,
+     * en Italie ou au Japon.
      */
     public static double colorStrength(double latitude) {
         double x = (Math.abs(latitude) - TROPIC) / (COLOR_FULL - TROPIC);
+        if (x <= 0.0d) {
+            return 0.0d;
+        }
+        if (x >= 1.0d) {
+            return 1.0d;
+        }
+        return x * x * (3.0d - 2.0d * x);
+    }
+
+    /** Sous les tropiques, les couleurs de saison seche et de saison des pluies naissent a cette latitude... */
+    public static final double TROPICS_COLOR_FROM = 4.0d;
+
+    /** ... ont toute leur force de cette latitude... */
+    public static final double TROPICS_COLOR_FULL = 12.0d;
+
+    /** ... a celle-ci... */
+    public static final double TROPICS_COLOR_FADE = 20.0d;
+
+    /** ... et s'eteignent ici, la ou l'hiver a pris le relais. */
+    public static final double TROPICS_COLOR_END = 30.0d;
+
+    /**
+     * La force des couleurs de la saison seche et de la saison des pluies : rien
+     * pres de l'equateur (la foret humide reste verte toute l'annee), toute de 12
+     * a 20° (les savanes, la mousson), plus rien au-dela de 30°.
+     */
+    public static double tropicsColorStrength(double latitude) {
+        double abs = Math.abs(latitude);
+        return smooth((abs - TROPICS_COLOR_FROM) / (TROPICS_COLOR_FULL - TROPICS_COLOR_FROM))
+                * (1.0d - smooth((abs - TROPICS_COLOR_FADE) / (TROPICS_COLOR_END - TROPICS_COLOR_FADE)));
+    }
+
+    /** Une marche douce : 0 avant 0, 1 apres 1. */
+    private static double smooth(double x) {
         if (x <= 0.0d) {
             return 0.0d;
         }
