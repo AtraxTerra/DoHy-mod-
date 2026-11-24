@@ -394,9 +394,7 @@ public class RpgProfileScreen extends UiScreen implements ViewScreen<RpgView> {
     private List<Component> tooltip(int branch, int node) {
         RpgStat stat = RpgStat.values()[branch];
         List<Component> lines = new ArrayList<>();
-        lines.add(Component.literal(stat.label() + " +" + stat.node(node) + " %").withStyle(Style.EMPTY
-                .withColor(TextColor.fromRgb(0xFFFFFF & (stat.color().getColor() == null ? 0xFFFFFF
-                        : stat.color().getColor())))));
+        lines.add(Component.literal(stat.label() + " +" + stat.node(node) + " %").withStyle(stat.color()));
         int state = state(branch, node);
         String detail = switch (state) {
             case 3 -> "Acquis";
