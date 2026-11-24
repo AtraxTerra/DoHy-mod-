@@ -193,6 +193,26 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-24 (suite) — moins de texte : menus, chat, infobulles et encyclopédie resserrés
+
+**Demande** : « fais une passe sur l'ensemble du mod pour enlever les textes trop "ia" ou en
+réduisant les explications au minimum ».
+
+- **Menus** : les sections d'explication retirées (lois, influence, règles du sietch, de l'eau, de
+  l'épice et de la navette d'Arrakis, modes d'emploi des mines, règles de la farmland, des kits, de
+  la récompense du jour et du calendrier) ; les sous-titres, infobulles et confirmations ramenés à
+  une ou deux lignes ; les justifications (« pour… », « ce qui… ») coupées. Environ 132 000 → 104 000
+  caractères de texte de menus. Ce qui explique un système reste dans sa fiche d'encyclopédie.
+- **Chat** : messages raccourcis (Arrakis, guerre, faction, réserve d'or, bots de farming, Mine,
+  grades…).
+- **Encyclopédie** : 106 fiches réécrites au plus court (résumé d'une phrase, puces factuelles),
+  chiffres, recettes, commandes et voisins gardés ; les recettes de NTM gardées telles quelles.
+  117 000 → 90 000 caractères.
+- **Gardé tel quel** : les textes repris de Paladium (événements des lucky blocks, succès), les
+  répliques des PNJ et des nations, les notes calculées (ce qui compte pour une entreprise).
+- L'infobulle des potions d'XP est réglée dans son générateur (`tools/xp_potion_assets.py`), que la
+  CI compare au fichier de langue.
+
 ### 2026-11-24 (suite) — le profil RPG à la maquette de Paladium
 
 **Demande** : « Met a jour l'arbre de compétences du rpg avec une nouvelle interfaces (en pièces
