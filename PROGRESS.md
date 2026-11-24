@@ -193,6 +193,27 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-24 (suite) — le profil RPG à la maquette de Paladium
+
+**Demande** : « Met a jour l'arbre de compétences du rpg avec une nouvelle interfaces (en pièces
+jointes) » — la maquette « PROFIL RPG » de Paladium (`docs/PALAMOD.md`, section RPG).
+
+- **L'écran** (`client/rpg/RpgProfileScreen`) : à gauche le nom, le niveau, la barre d'XP, les
+  onglets PERSO et GLOBAL, les statistiques avec leurs icônes (en GLOBAL, la vie, les dégâts
+  critiques et les bonus d'équipement donjon par donjon) ; à droite l'arbre sur sa croix colorée
+  (ESQUIVE en haut, ATTAQUE à gauche, CRITIQUE à droite, DÉFENSE en bas), VALIDER et RESET au
+  centre, les points restants en haut à droite. Textures de PalaRPG fournies par le joueur.
+- **L'arbre** (`palamod/dungeon/RpgTree`) : dix nœuds par branche en arborescence (un nœud s'ouvre
+  quand son parent est pris), coûts de 2 à 10 (65 points par branche), valeurs par nœud (32 %
+  d'attaque, 16 % d'esquive, 24 % de critique et de défense au total). Les choix attendent
+  VALIDER ; RESET les annule, ou remet l'arbre à zéro (25 000 $). Rendre un nœud choisi rend ceux
+  qui en descendent. L'arbre se déplace à la souris (glisser, molette) pour voir ses bouts.
+- **Reprise** : l'ancien arbre linéaire est rendu à la connexion (points restitués, un message).
+- Vérifié en CI : reprise d'un joueur niveau 30 (3 nœuds d'attaque, 2 d'esquive) → 30 points
+  libres ; choix, nœud sans parent refusé, validation (+7 % d'attaque, +2 % de défense), sous-branche
+  rendue, remise à zéro (25 000 $ débités), esquive validée. Après les captures : fond rendu opaque
+  (le HUD transparaissait) et compteur de points sur deux lignes (il couvrait un nœud d'esquive).
+
 ### 2026-11-24 (suite) — la garnison : des soldats à soi, payés par la nation
 
 **Demande** : le point 4 de « Fais 1 (…), 2, 4 et 5 » — des soldats alliés recrutables (caserne,

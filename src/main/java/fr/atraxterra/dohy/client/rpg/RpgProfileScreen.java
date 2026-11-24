@@ -166,7 +166,7 @@ public class RpgProfileScreen extends UiScreen implements ViewScreen<RpgView> {
     @Override
     protected void drawBackground(UiGraphics g, double mouseX, double mouseY) {
         Paint p = g.paint();
-        p.rect(0, 0, W, H, 0xF40A0A0B);
+        p.rect(0, 0, W, H, 0xFF0A0A0B);
         frame(p);
         drawLeft(g, mouseX, mouseY);
         drawTree(g, mouseX, mouseY);
@@ -416,30 +416,39 @@ public class RpgProfileScreen extends UiScreen implements ViewScreen<RpgView> {
         g.centered(Ui.WIDE, label, x + BUTTON_W / 2.0f, y + 4.6f, 5.0f, enabled ? 0xFF3A3B40 : 0xFF45464B);
     }
 
-    /** Le compteur des points, en haut a droite de l'arbre. */
+    /**
+     * Le compteur des points, en haut a droite de l'arbre, sur deux lignes : assez etroit pour ne
+     * couvrir aucun noeud, l'arbre deplace ou non.
+     */
     private void points(UiGraphics g, double mx, double my) {
         Paint p = g.paint();
-        String label = "POINTS DE COMPETENCE RESTANTS";
+        String first = "POINTS DE COMPETENCE";
+        String second = "RESTANTS";
         String number = String.valueOf(Math.max(0, view.free()));
-        float labelWidth = g.width(Ui.WIDE, label, 4.4f);
+        float size = 4.4f;
+        float secondWidth = g.width(Ui.WIDE, second, size);
         float numberWidth = g.width(Ui.WIDE, number, 7.0f);
-        float w = labelWidth + numberWidth + 32.0f;
-        float x = TREE_X + TREE_W - w - 6.0f;
-        float y = TREE_Y + 6.0f;
-        p.framed(x, y, w, 17.0f, 3.0f, 0xF0141518, 0xFF2D2F34, 1);
-        g.text(Ui.WIDE, label, x + 7.0f, y + 6.3f, 4.4f, 0xFFE9E8EE);
-        float diamond = x + labelWidth + 12.0f;
+        float inner = Math.max(g.width(Ui.WIDE, first, size), secondWidth + 18.0f + numberWidth);
+        float w = inner + 12.0f;
+        float h = 23.0f;
+        float x = TREE_X + TREE_W - w - 4.0f;
+        float y = TREE_Y + 2.0f;
+        p.framed(x, y, w, h, 3.0f, 0xF0141518, 0xFF2D2F34, 1);
+        g.text(Ui.WIDE, first, x + 6.0f, y + 4.7f, size, 0xFFE9E8EE);
+        g.text(Ui.WIDE, second, x + 6.0f, y + 13.0f, size, 0xFFE9E8EE);
+        float diamond = x + 6.0f + secondWidth + 5.0f;
+        float middle = y + 15.2f;
         Matrix3x2fStack pose = g.raw().pose();
         pose.pushMatrix();
-        pose.translate(diamond - 3.5f, y + 1.0f);
+        pose.translate(diamond - 3.5f, middle - 7.5f);
         g.texture(texture("profile/skilltree/cost_blur"), 0, 0, 15, 15, 15, 15, 0x99FFFFFF);
         pose.popMatrix();
         pose.pushMatrix();
-        pose.translate(diamond, y + 4.5f);
+        pose.translate(diamond, middle - 4.0f);
         g.texture(texture("profile/skilltree/cost"), 0, 0, 8, 8, 8, 8);
         pose.popMatrix();
-        g.text(Ui.WIDE, number, diamond + 12.0f, y + 5.0f, 7.0f, view.free() > 0 ? 0xFFFFFFFF : 0xFF8B8E95);
-        if (over(mx, my, x, y, w, 17.0f)) {
+        g.text(Ui.WIDE, number, diamond + 12.0f, middle - 3.5f, 7.0f, view.free() > 0 ? 0xFFFFFFFF : 0xFF8B8E95);
+        if (over(mx, my, x, y, w, h)) {
             List<Component> lines = new ArrayList<>();
             for (String source : view.sources()) {
                 lines.add(Component.literal(source));
