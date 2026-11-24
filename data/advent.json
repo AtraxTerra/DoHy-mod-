@@ -1,0 +1,298 @@
+{
+  "_comment": "Le calendrier de l'Avent (docs/CONTENU_DOHY.md, Noel) : une case par jour du 1er au 24 decembre, a ouvrir au spawn aupres du Pere Noel du parvis ; /calendrier le montre de partout. Le jour change a 5 h (heure de Paris), comme les contrats. Chaque case : day (1 a 24), name, icon (un objet), money (dollars en liquide), items (id, count). bonus : le grand cadeau (day 25), pour qui a ouvert les vingt-quatre cases, du 25 decembre au 6 janvier. catch_up_price : le prix d'une case manquee, rattrapee au spawn jusqu'au 6 janvier. Un objet inconnu (mod absent) est ecarte au chargement, avec une ligne dans le journal.",
+  "_valeurs": "Calibrage (BALANCE.md, section Calendrier de l'Avent) : les vingt-quatre cases valent ~0,45 M (100 k en liquide, deux cles Amethyste, deux potions d'XP, une pepite d'endium) et des objets de Noel sans prix de revente ; le grand cadeau, une cle Saharia (~0,85 M). Une case rattrapee coute 25 000 $ : plus cher que la plupart des cases, une perte sauf pour les cles, les potions et la pepite.",
+  "catch_up_price": 25000,
+  "days": [
+    {
+      "day": 1,
+      "name": "Un lait chaud",
+      "icon": "palamod:chocolate_milk",
+      "items": [
+        {
+          "id": "palamod:chocolate_milk",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "name": "Un cadeau",
+      "icon": "palamod:present",
+      "items": [
+        {
+          "id": "palamod:present",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "name": "Deux lucky blocks de Noel",
+      "icon": "palamod:christmas_lucky_block",
+      "items": [
+        {
+          "id": "palamod:christmas_lucky_block",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "name": "Des lingots",
+      "icon": "palamod:paladium_ingot",
+      "items": [
+        {
+          "id": "palamod:paladium_ingot",
+          "count": 32
+        },
+        {
+          "id": "palamod:titane_ingot",
+          "count": 32
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "name": "Une carte de voeux",
+      "icon": "palamod:wish_card",
+      "money": 10000,
+      "items": [
+        {
+          "id": "palamod:wish_card",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "name": "La Saint-Nicolas",
+      "icon": "palamod:crate_key_amethyst",
+      "items": [
+        {
+          "id": "palamod:crate_key_amethyst",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "name": "Un sac de cadeaux",
+      "icon": "palamod:present_bag",
+      "items": [
+        {
+          "id": "palamod:present_bag",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "name": "Des biscuits",
+      "icon": "minecraft:cookie",
+      "items": [
+        {
+          "id": "minecraft:cookie",
+          "count": 16
+        },
+        {
+          "id": "palamod:chocolate_milk",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "day": 9,
+      "name": "Trois lucky blocks de Noel",
+      "icon": "palamod:christmas_lucky_block",
+      "items": [
+        {
+          "id": "palamod:christmas_lucky_block",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "day": 10,
+      "name": "Une potion d'XP de metier",
+      "icon": "palamod:double_xp_potion",
+      "items": [
+        {
+          "id": "palamod:double_xp_potion",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 11,
+      "name": "Deux cadeaux",
+      "icon": "palamod:present",
+      "items": [
+        {
+          "id": "palamod:present",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "day": 12,
+      "name": "Un sapin et sa maquette",
+      "icon": "palamod:christmas_tree",
+      "items": [
+        {
+          "id": "palamod:christmas_tree",
+          "count": 1
+        },
+        {
+          "id": "palamod:christmas_mockup",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 13,
+      "name": "Une poignee de billets",
+      "icon": "minecraft:paper",
+      "money": 15000
+    },
+    {
+      "day": 14,
+      "name": "Le cadeau multicolore",
+      "icon": "palamod:multicolor_gift",
+      "items": [
+        {
+          "id": "palamod:multicolor_gift",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 15,
+      "name": "Des pommes dorees",
+      "icon": "minecraft:golden_apple",
+      "items": [
+        {
+          "id": "minecraft:golden_apple",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "day": 16,
+      "name": "Quatre lucky blocks de Noel",
+      "icon": "palamod:christmas_lucky_block",
+      "items": [
+        {
+          "id": "palamod:christmas_lucky_block",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "day": 17,
+      "name": "Deux sacs de cadeaux",
+      "icon": "palamod:present_bag",
+      "items": [
+        {
+          "id": "palamod:present_bag",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "day": 18,
+      "name": "Une cle Amethyste",
+      "icon": "palamod:crate_key_amethyst",
+      "items": [
+        {
+          "id": "palamod:crate_key_amethyst",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 19,
+      "name": "Une potion d'XP de metier",
+      "icon": "palamod:double_xp_potion",
+      "items": [
+        {
+          "id": "palamod:double_xp_potion",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 20,
+      "name": "Une pepite d'endium",
+      "icon": "palamod:endium_nugget",
+      "items": [
+        {
+          "id": "palamod:endium_nugget",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 21,
+      "name": "La pierre de Noel",
+      "icon": "palamod:christmas_stone",
+      "items": [
+        {
+          "id": "palamod:christmas_stone",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "day": 22,
+      "name": "Deux cadeaux multicolores",
+      "icon": "palamod:multicolor_gift",
+      "items": [
+        {
+          "id": "palamod:multicolor_gift",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "day": 23,
+      "name": "Une liasse",
+      "icon": "minecraft:paper",
+      "money": 50000
+    },
+    {
+      "day": 24,
+      "name": "La hache du roi des forets",
+      "icon": "palamod:christmas_axe",
+      "money": 25000,
+      "items": [
+        {
+          "id": "palamod:christmas_axe",
+          "count": 1
+        },
+        {
+          "id": "palamod:christmas_lucky_block",
+          "count": 5
+        }
+      ]
+    }
+  ],
+  "bonus": {
+    "day": 25,
+    "name": "Le grand cadeau",
+    "icon": "palamod:crate_key_saharia",
+    "items": [
+      {
+        "id": "palamod:crate_key_saharia",
+        "count": 1
+      },
+      {
+        "id": "palamod:multicolor_gift",
+        "count": 3
+      },
+      {
+        "id": "palamod:wish_card",
+        "count": 1
+      }
+    ]
+  }
+}

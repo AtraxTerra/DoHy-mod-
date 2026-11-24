@@ -114,6 +114,10 @@ tasks.named('processResources', ProcessResources).configure {
     from(rootProject.file('data/kits.json')) {
         into "data/${mod_id}"
     }
+    // Le calendrier de l'Avent (Noel) : une case par jour du 1er au 24 decembre.
+    from(rootProject.file('data/advent.json')) {
+        into "data/${mod_id}"
+    }
     from(rootProject.file('data/crates.json')) {
         into "data/${mod_id}"
     }

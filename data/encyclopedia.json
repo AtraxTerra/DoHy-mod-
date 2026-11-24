@@ -3893,6 +3893,58 @@
       }
     },
     {
+      "id": "noel",
+      "category": "lieux",
+      "order": 4,
+      "icon": "palamod:christmas_tree",
+      "title": "Noel au spawn",
+      "card": [
+        "Le calendrier de l'Avent",
+        "Du 1er au 24 decembre"
+      ],
+      "summary": [
+        "Du 1er decembre au 6 janvier, le spawn s'habille pour les fetes : un grand sapin sur le parvis, en face de l'autel des offrandes, de la neige, des guirlandes au-dessus de l'allee. Le Pere Noel s'installe au pied du sapin avec son calendrier de l'Avent : une case par jour, du 1er au 24 decembre."
+      ],
+      "sections": [
+        {
+          "title": "Le calendrier",
+          "text": [
+            "- Une case par jour : elle s'ouvre le jour meme, au spawn, aupres du Pere Noel. Le jour change a 5 h, comme les contrats.",
+            "- Son contenu reste une surprise jusqu'a son jour : lait chaud, cadeaux, lucky blocks de Noel, cles de box, potions d'XP de metier, une pepite d'endium, la hache du roi des forets le 24...",
+            "- Une case manquee se rattrape au spawn, pour 25 000 $, jusqu'au 6 janvier.",
+            "! Le cadeau entier ou rien : garde de la place dans ton sac."
+          ]
+        },
+        {
+          "title": "Le grand cadeau",
+          "text": [
+            "Les vingt-quatre cases ouvertes (rattrapees comprises), le grand cadeau s'ouvre du 25 decembre au 6 janvier : une cle de box Saharia, trois cadeaux multicolores et une carte de voeux."
+          ]
+        },
+        {
+          "title": "Le decor",
+          "text": [
+            "Il arrive de lui-meme le 1er decembre et repart apres le 6 janvier : rien du spawn n'est change pour de bon. La neige ne tient pas pres des lampes."
+          ]
+        }
+      ],
+      "commands": [
+        "/calendrier : le calendrier, de partout",
+        "/spawn : aller ouvrir la case du jour"
+      ],
+      "see": [
+        "spawn",
+        "kits",
+        "pass"
+      ],
+      "discover": {
+        "always": true,
+        "views": [
+          "dohy:advent"
+        ]
+      }
+    },
+    {
       "id": "cultures",
       "category": "agriculture",
       "order": 0,

@@ -108,6 +108,12 @@ public final class DoHySpawn {
                     .copyOnDeath()
                     .build());
 
+    /** Le decor de Noel pose sur le spawn, et ce qu'il a remplace ({@link SpawnChristmas}). */
+    public static final Supplier<AttachmentType<SpawnChristmas.Decor>> CHRISTMAS = ATTACHMENTS.register(
+            "spawn_christmas", () -> AttachmentType.builder(() -> SpawnChristmas.Decor.NONE)
+                    .serialize(SpawnChristmas.Decor.CODEC.fieldOf("decor"), decor -> !decor.isNone())
+                    .build());
+
     /** La version du spawn construit, gardee sur sa dimension ; 0 tant qu'il n'existe pas. */
     public static final Supplier<AttachmentType<Integer>> BUILT = ATTACHMENTS.register(
             "spawn_built", () -> AttachmentType.builder(() -> 0)

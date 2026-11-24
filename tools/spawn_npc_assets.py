@@ -11,7 +11,8 @@ paladium, le commissaire-priseur au gilet d'amethyste, le banquier a cravate d'e
 contrats en titane, la conservatrice au foulard de paladium vert, le chef de gare en rouge,
 l'hotesse en or, le passeur en robe d'endium, le contremaitre en armure de titane et casque de
 speleo, le receleur sous la cagoule, la pretresse en amethyste, le pilote de la navette et
-l'intendant des kits en armure de paladium.
+l'intendant des kits en armure de paladium. Et, en decembre seulement, le Pere Noel du parvis
+(le calendrier de l'Avent) : manteau rouge borde de fourrure, bonnet a pompon, barbe blanche.
 
 Le bras et la jambe gauches du modele reprennent, en miroir, la texture des droits : les
 details asymetriques (insigne, pochette) ne vont donc que sur le torse et la tete.
@@ -664,10 +665,48 @@ def kits(s):
     s.on(HAT, "front", 6, 1, GOLD, 0)
 
 
+SANTA_RED = (196, 30, 36)
+FUR = (240, 240, 244)
+GLOVES = (24, 22, 26)
+
+
+def advent(s):
+    # le Pere Noel du parvis, en decembre : manteau rouge borde de fourrure blanche, ceinture
+    # noire a boucle d'or, gants et bottes noirs, barbe et moustache blanches, bonnet a pompon
+    skin = (232, 182, 150)
+    hair = (236, 236, 240)
+    head(s, skin, hair, "short", eyes=(60, 90, 140))
+    beard(s, FUR)
+    s.fill(HEAD, "front", 2, 6, 6, 7, (252, 252, 254), 1)  # la moustache
+    s.fill(HEAD, "front", 3, 7, 5, 8, (150, 70, 70), 1)  # la bouche
+    s.on(HEAD, "front", 1, 5, (236, 146, 132), 1)  # les joues
+    s.on(HEAD, "front", 6, 5, (236, 146, 132), 1)
+    outfit(s, SANTA_RED, trousers=SANTA_RED, shoes=SHOES, skin=skin, cuff=FUR)
+    s.ring(ARM, 10, 12, GLOVES, 2)
+    s.fill(ARM, "bottom", 0, 0, 4, 4, GLOVES, 2)
+    # la fourrure : l'ourlet du manteau et sa fermeture
+    s.ring(BODY, 11, 12, FUR, 2)
+    s.column(BODY, "front", 3, 0, 12, FUR, 2)
+    s.column(BODY, "front", 4, 0, 12, FUR, 2)
+    s.ring(BODY, 0, 1, FUR, 2)
+    belt(s, GLOVES, buckle=GOLD, row=8)
+    # les bottes, hautes, a revers de fourrure
+    s.ring(LEG, 8, 12, SHOES, 3)
+    s.ring(LEG, 7, 8, FUR, 2)
+    # le bonnet : rouge, bande de fourrure, pompon blanc qui retombe derriere
+    s.fill(HAT, "top", 0, 0, 8, 8, SANTA_RED, 4)
+    for face in ("right", "left", "back", "front"):
+        s.fill(HAT, face, 0, 0, 8, 2, SANTA_RED, 4)
+        s.fill(HAT, face, 0, 2, 8, 3, FUR, 2)
+    s.fill(HAT, "top", 5, 5, 8, 8, FUR, 1)
+    s.fill(HAT, "back", 5, 0, 8, 2, FUR, 1)
+
+
 NPCS = [
     ("shop", shop), ("boutique", boutique), ("market", market), ("bank", bank), ("contracts", contracts),
     ("museum", museum), ("return", return_), ("daily", daily), ("portals", portals), ("mine", mine),
     ("black_market", black_market), ("job_altar", job_altar), ("shuttle", shuttle), ("kits", kits),
+    ("advent", advent),
 ]
 
 
@@ -706,7 +745,8 @@ def figure(img, view):
 def preview(images, folder):
     scale = 6
     cell_w, cell_h = 16 * scale * 2 + 24, 32 * scale + 24
-    sheet = Image.new("RGBA", (cell_w * 7, cell_h * 2), (40, 42, 48, 255))
+    rows = (len(images) + 6) // 7
+    sheet = Image.new("RGBA", (cell_w * 7, cell_h * rows), (40, 42, 48, 255))
     for index, (name, img) in enumerate(images):
         col, row = index % 7, index // 7
         for k, view in enumerate(("front", "back")):

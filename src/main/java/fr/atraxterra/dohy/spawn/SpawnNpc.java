@@ -49,10 +49,14 @@ public class SpawnNpc extends PathfinderMob {
         BLACK_MARKET("black_market", "Receleur", SpawnTerminalBlock.Kind.BLACK_MARKET),
         JOB_ALTAR("job_altar", "Pretresse", SpawnTerminalBlock.Kind.JOB_ALTAR),
         SHUTTLE("shuttle", "Pilote", SpawnTerminalBlock.Kind.SHUTTLE),
-        KITS("kits", "Intendant", null);
+        KITS("kits", "Intendant", null),
+        /** Le Pere Noel du parvis, en decembre : le calendrier de l'Avent ({@link SpawnChristmas}). */
+        ADVENT("advent", "Pere Noel", null);
 
         /** La couleur des kits : le rouge de la marque. */
         private static final int KITS_COLOR = 0xEF3826;
+        /** Le rouge du Pere Noel. */
+        private static final int ADVENT_COLOR = 0xD42A2A;
 
         private final String id;
         private final String title;
@@ -73,18 +77,18 @@ public class SpawnNpc extends PathfinderMob {
             return title;
         }
 
-        /** Le service de borne qu'il ouvre ; {@code null} pour l'intendant des kits. */
+        /** Le service de borne qu'il ouvre ; {@code null} pour l'intendant des kits et le Pere Noel. */
         public SpawnTerminalBlock.Kind service() {
             return service;
         }
 
         /** Le mot de son enseigne : celui de l'ancienne borne. */
         public String label() {
-            return service == null ? "KITS" : service.label();
+            return service != null ? service.label() : this == ADVENT ? "CALENDRIER" : "KITS";
         }
 
         public int color() {
-            return service == null ? KITS_COLOR : service.color();
+            return service != null ? service.color() : this == ADVENT ? ADVENT_COLOR : KITS_COLOR;
         }
 
         public static Role of(int ordinal) {
@@ -166,6 +170,8 @@ public class SpawnNpc extends PathfinderMob {
             Role role = role();
             if (role.service() != null) {
                 SpawnTerminalBlock.open(server, role.service());
+            } else if (role == Role.ADVENT) {
+                fr.atraxterra.dohy.noel.AdventMenu.INSTANCE.open(server);
             } else {
                 fr.atraxterra.dohy.kits.PlayerKitsMenu.INSTANCE.open(server);
             }
