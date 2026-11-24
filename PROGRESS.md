@@ -193,6 +193,29 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-24 (suite) — vendre un tiroir plein, et le garder
+
+**Demande** : « avec le mod storage drawer j'aimerais vendre l'intégralité d'un drawer au /sell
+ou coffre de vente, au lieu de tout retirer du drawer et vendre, et j'aimerais récupérer le drawer
+après vente » (`docs/PALAMOD.md` § 35, « Vendre un tiroir plein »).
+
+- Le serveur tourne avec **Storage Drawers 26.2.0.1** (le portage officiel) : un tiroir cassé plein
+  garde son contenu dans ses données. `DrawerSale` les lit sans dépendre du mod : tiroirs simples,
+  compacteurs (la forme qui paie le mieux d'abord), cases retirées du bloc.
+- **Coffre de vente** : le contenu vendable rejoint la vente, le tiroir revient ; **`/sell hand`**
+  et **`/sell stack`** : le tiroir reste en main ; **onglet Vendre** et **`/sellall`** : les tiroirs
+  du sac comptent et sont vidés sans être pris. Ce qui ne se vend pas reste dedans.
+- Vidé, le tiroir redevient un tiroir neuf, qui s'empile. Refusés : le tiroir fermé par la clé d'un
+  autre, l'amélioration de distribution créative.
+- **Corrigé** : le total courant du coffre de vente ne se recalculait pas au dépôt.
+- Vérifié en CI, avec le fichier même du serveur (CurseForge, SHA-256 `411cb9e7…8e98`) : trois
+  tiroirs remplis par l'API du mod puis cassés en survie ; l'onglet Vendre compte 400 diamants dont
+  400 en tiroir ; le coffre de vente affiche « 305 531 · 2 tiroirs, rendus a la fermeture », vend
+  976 objets, rend le 1x1 neuf (pile de 64) et le 2x2 avec ses 500 terres ; `/sell hand` vend 45
+  lingots et 4 pépites du compacteur ; `/sellall` vide un 2x2 de gravier et de diamants ; une case
+  retirée vendue redevient une case vide que le mod reprend ; le 2x2 reposé garde sa terre ; le
+  tiroir d'un autre est refusé.
+
 ### 2026-11-24 (suite) — le gardien des cristaux, boss de la dimension du Mineur
 
 **Demande** : le point 5 de « Fais 1 (…), 2, 4 et 5 », seconde moitié — le boss de la dimension

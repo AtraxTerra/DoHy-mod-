@@ -120,7 +120,7 @@ public final class SellController extends MenuController {
                         open > 0 ? money(total) : "Rien a vendre",
                         open > 0 ? open + (open > 1 ? " sortes d'objets" : " sorte d'objet") : ""))
                 .accent(GREEN)
-                .tooltip(List.of("Sauf l'armure portee et la seconde main", "Les tiroirs sont vides, pas vendus"));
+                .tooltip(List.of("Sauf l'armure portee et la seconde main", "Tiroirs du sac : le contenu se vend, le tiroir reste"));
         quick.add(open > 0 ? all.action("all|tout vendre").confirm("Tout vendre pour " + money(total) + " ?|"
                 + open + (open > 1 ? " sortes d'objets" : " sorte d'objet") + " du sac") : all.state(MenuView.DISABLED));
         quick.add(Card.of(new ItemStack(Items.CHEST), "Coffre de vente", List.of("Depose, ferme : vendu",
