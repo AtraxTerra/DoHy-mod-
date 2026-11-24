@@ -973,7 +973,7 @@
   "block.palamod.alchemist_throne": "Trone de l'alchimiste",
   "item.palamod.xp_potion.named": "%s (%s)",
   "tooltip.palamod.xp_potion": "%s XP sur tous tes metiers pendant %s de jeu",
-  "tooltip.palamod.xp_potion.stack": "La duree s'ajoute.",
+  "tooltip.palamod.xp_potion.stack": "La duree s'ajoute ; le x3 passe avant le x2.",
   "message.palamod.xp_potion": "XP de metier %s : encore %s",
   "item.palamod.double_xp_potion": "Potion de Double XP",
   "effect.palamod.double_job_xp": "Double XP metier",
