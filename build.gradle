@@ -20,6 +20,8 @@ repositories {
         url = 'https://maven.blamejared.com/'
         content {
             includeGroup 'mezz.jei'
+            // la bibliotheque de configuration de JEI, dont le mod complet a besoin pour tourner
+            includeGroup 'net.mezzdev.config'
         }
     }
 }
