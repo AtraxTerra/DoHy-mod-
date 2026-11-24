@@ -306,11 +306,13 @@ def convert(model_path, renderer_path, texture):
     s = scale
     origin = [16 * translate[0], 16 * translate[1], 16 * translate[2]]
 
+    # Une boite peut deborder du patron (un export de Blockbench garde ses UV meme hors de la
+    # texture) : 1.7.10 repetait la texture, 26.2 refuse le modele. On s'arrete au bord.
     def U(px):
-        return round(px * 16.0 / tw, 4)
+        return round(min(max(px, 0), tw) * 16.0 / tw, 4)
 
     def V(py):
-        return round(py * 16.0 / th, 4)
+        return round(min(max(py, 0), th) * 16.0 / th, 4)
 
     def world(p):
         # le retournement de la TESR (180 degres autour de Z) et sa translation
@@ -368,12 +370,17 @@ def convert(model_path, renderer_path, texture):
         walk(root, [0.0, 0.0, 0.0], IDENTITY)
     model = {"parent": "minecraft:block/block", "textures": {"main": texture, "particle": texture},
              "elements": elements}
-    # Un modele qui deborde du bloc (oreilles, noeud, cadre) : l'icone est reduite pour tenir dans
-    # sa case, autour du centre du bloc.
-    half = max(max(8.0 - e["from"][i], e["to"][i] - 8.0) for e in elements for i in range(3))
-    if half > 8.0:
-        scale = round(0.625 * 8.0 / half, 4)
-        model["display"] = {"gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0],
+    # Un modele qui deborde du bloc (oreilles, noeud, cadre) : l'icone est reduite pour tenir a peu
+    # pres dans sa case (un peu moins pour les grands cadres a plat, sans quoi le bloc n'y serait
+    # qu'un point), et recentree en hauteur sur le modele.
+    lo = [min(e["from"][i] for e in elements) for i in range(3)]
+    hi = [max(e["to"][i] for e in elements) for i in range(3)]
+    center = [(lo[i] + hi[i]) / 2.0 for i in range(3)]
+    half = max((hi[i] - lo[i]) / 2.0 for i in range(3))
+    if half > 8.0 or abs(center[1] - 8.0) > 0.5:
+        scale = round(max(0.42, 0.625 * 8.0 / max(half, 8.0)), 4)
+        lift = round(-(center[1] - 8.0) * scale * 0.866, 3) + 0.0
+        model["display"] = {"gui": {"rotation": [30, 225, 0], "translation": [0, lift, 0],
                                     "scale": [scale, scale, scale]}}
     return model, [tw, th]
 
