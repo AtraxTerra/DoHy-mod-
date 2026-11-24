@@ -3530,6 +3530,39 @@ Fichier `vault_drawers-26.2-neoforge-26.2.0.57-0.0.0-beta.9.jar` (1 067 619 octe
 - NTM porte des mixins pour Storage Drawers (`com.jaquadro…`) ; ils ne trouvent pas Vault
   Drawers, dont le paquet diffère : de simples avertissements au démarrage.
 
+### Vendre un tiroir plein — Storage Drawers (2026-11-24)
+
+Demandé le 2026-11-24 : « vendre l'intégralité d'un drawer au /sell ou coffre de vente, au lieu
+de tout retirer du drawer et vendre, et récupérer le drawer après vente ». Le serveur du joueur
+tourne désormais avec **Storage Drawers** lui-même, le portage officiel en 26.2
+(`StorageDrawers-neoforge-26.2.0.1.jar`, CurseForge 223852 ; sources : branche `26.2` de
+jaquadro/StorageDrawers). Berskar n'en dépend toujours pas : `DrawerSale` lit les données de
+l'objet.
+
+- **Ce que porte un tiroir cassé plein** (`dropMode = KEEP`, le réglage par défaut) : les données
+  de son bloc, `BLOCK_ENTITY_DATA`, et une pile limitée à 1. Tiroir simple : `Drawers`, une liste
+  de cases (`Item`, `Count`, `Missing` pour une case retirée) ; compacteur : `Drawers.Count`, le
+  réservoir compté en plus petite forme, et `Drawers.Items` (`Item`, `Slot`, `Conv`). Une case
+  retirée du bloc (`detached_drawer_full`) porte le sien dans le composant
+  `storagedrawers:detached_drawer_content`.
+- **Où ça vend** : le coffre de vente (le contenu rejoint la vente, le tiroir revient dans
+  l'inventaire), `/sell hand` et `/sell stack` (le tiroir reste en main), l'onglet Vendre (les
+  lignes comptent les tiroirs du sac ; « Tout vendre » et la vente d'une ligne les vident sans les
+  prendre) et `/sellall`. Pas l'autosell : il vide un coffre lié, pas un tiroir.
+- **Ce qui se vend** : ce que le catalogue rachète et dont la vente est ouverte. Le reste demeure
+  dans le tiroir. Le prix dynamique compte ensemble les piles et les tiroirs d'un même objet.
+- **Le tiroir rendu** : vidé, une case oublie son objet, comme dans le mod (sauf verrou de la clé,
+  qui le garde) ; plus rien dedans et aucune amélioration, il redevient un tiroir neuf, sans
+  données, qui s'empile. Une case retirée vidée redevient une case vide (`detached_drawer`), que le
+  mod reprend dans un tiroir.
+- **Le compacteur** vend d'abord la forme qui paie le mieux par petite unité (les lingots avant les
+  pépites ; un bloc fabriqué ne se rachète pas) ; une fraction qui ne fait pas une pièce vendable
+  reste.
+- **Refusés** : le tiroir fermé par la clé personnelle d'un autre joueur, et celui qui porte
+  l'amélioration de distribution créative (un stock sans fin).
+- **Corrigé au passage** : le total courant du coffre de vente (barre d'action) n'était pas
+  recalculé au dépôt, son conteneur ne prévenant pas le menu ; un écouteur le relie.
+
 ---
 
 ## 36. Trônes de métier et potions d'XP (2026-11-19)

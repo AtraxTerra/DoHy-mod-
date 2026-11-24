@@ -65,7 +65,7 @@ public final class SellChestMenu extends ChestMenu {
     private boolean settled;
 
     public SellChestMenu(int containerId, Inventory inventory, ServerPlayer player) {
-        this(containerId, inventory, player, new SimpleContainer(54));
+        this(containerId, inventory, player, new Deposit());
     }
 
     private SellChestMenu(int containerId, Inventory inventory, ServerPlayer player, Container deposit) {
@@ -73,9 +73,27 @@ public final class SellChestMenu extends ChestMenu {
         this.player = player;
         this.deposit = deposit;
         // Un SimpleContainer ne previent pas le menu de ses changements : sans
-        // ecouteur, le total courant ne s'affichait jamais.
-        if (deposit instanceof SimpleContainer simple) {
-            simple.addListener(this::slotsChanged);
+        // ce relais, le total courant n'etait jamais recalcule.
+        if (deposit instanceof Deposit relay) {
+            relay.menu = this;
+        }
+    }
+
+    /** Le depot, qui previent le menu a chaque changement (le total courant). */
+    private static final class Deposit extends SimpleContainer {
+
+        private SellChestMenu menu;
+
+        private Deposit() {
+            super(54);
+        }
+
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            if (menu != null) {
+                menu.slotsChanged(this);
+            }
         }
     }
 
