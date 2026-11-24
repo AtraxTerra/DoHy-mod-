@@ -47,11 +47,11 @@ public class Tedarok extends Dancarok {
         return isTamed() && fluid.is(FluidTags.WATER);
     }
 
-    /** Sous l'eau, la poussee de {@code WaterWalkSkill} le ramene a la surface. */
+    /** Enfonce dans l'eau, la poussee de {@code WaterWalkSkill} le ramene a la surface, ou il se tient. */
     @Override
     public void tick() {
         super.tick();
-        if (isTamed() && isInWater()) {
+        if (isTamed() && getFluidHeight(FluidTags.WATER) > 0.5d) {
             Vec3 motion = getDeltaMovement();
             if (motion.y < 0.1d) {
                 setDeltaMovement(motion.x, Math.min(0.1d, motion.y + 0.1d), motion.z);

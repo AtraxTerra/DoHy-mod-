@@ -1712,9 +1712,10 @@ s'excluent. Coûts et effets du code (les descriptions de l'original se trompaie
 ## 17. Monture : le Dancarok et l'enclos (chapitre 14)
 
 Relevé dans le mod Mount 6.1.0 (`fr.paladium.mount`), croisé avec PalaMod (capture, croquettes,
-recettes) et Lindworm (l'animation). Tout passe sous l'espace `palamod`. Seul le Dancarok est porté :
-le Ravirok et le Tedarok, les deux autres espèces, ne le sont pas. Aucun verrou de métier sur les
-objets de monture ; l'épée et la pierre de capture gardent les leurs (Chasseur 65 et 70).
+recettes) et Lindworm (l'animation). Tout passe sous l'espace `palamod`. Les trois espèces sont
+portées : le Dancarok (chapitre 14), le Ravirok et le Tedarok (lot du 2026-11-24, ci-dessous).
+Aucun verrou de métier sur les objets de monture ; l'épée et la pierre de capture gardent les leurs
+(Chasseur 65 et 70).
 
 ### Le cycle — `MountManager`, `CommandMount`
 
@@ -1826,6 +1827,44 @@ horloge s'arrête.
 - Les miniatures de montures au-dessus de l'enclos, l'œuf d'apparition, les permissions
   (multiplicateur Trixium), les protections WorldGuard, le multi-serveur, la compétence
   Vétérinaire du mod Pet, le profil web.
+
+### Le Ravirok et le Tedarok — `RavirokMount`, `TedarokMount`, `MountType`
+
+Relevé dans les classes d'espèce (`hp`, `speed`, `nbSlots`, `jumpStrenght`, `skills`) et dans
+`EntityMount.moveEntityWithHeading`, `EntityRavirokMount` et `CSMountMovement`, croisé avec la page
+« Montures » du wiki de Paladium.
+
+| | Dancarok | Ravirok | Tedarok |
+|---|---|---|---|
+| Taille | 2,5 × 1,9 | 1,85 × 1,6 | 1,45 × 1,65 |
+| PV au niveau 100 | 400 | 100 | 200 |
+| Cases au niveau 100 | 36 (+ la corne) | 9 | 18 |
+| Vitesse (× celle de la monture) | 1 | 1,3 | 1,15 ; 1,9 en course |
+| Détente (× le saut) | 1 | 0 | 3,5 (environ cinq blocs) |
+| Compétences | `MiningSkill` (corne) | `FlySkill` | `AutoJumpSkill(5)`, `RunningSkill(1,9)`, `WaterWalkSkill(1,15)`, `WaterRunSkill(1,9)` au niveau 50 |
+
+- **La gemme porte l'espèce** (`species`, le `Type` de l'original) ; une gemme ou une monture
+  équipée d'avant n'en a pas : c'est un Dancarok. Le nom par défaut est celui de l'espèce.
+- **Le Ravirok vole** et ne marche pas : la touche de saut le fait monter (0,15 bloc par tick), la
+  touche de course descendre (0,3), il plane entre les deux, jamais au-dessus de la couche 256
+  (`onEntityUpdate`, et le correctif V11.0.4.1 de Paladium). En l'air, la vitesse est celle de la
+  monture × 1,3 avec le freinage de l'air (0,91). Il bat des ailes toutes les secondes. Le cavalier
+  qui descend en vol tombe.
+- **Le Tedarok** franchit d'un pas cinq blocs (`stepHeight = 5`), court × 1,9 à la touche de course,
+  marche sur l'eau dès le niveau 1, et y court au niveau 50. **Écart** : Mount le laissait nager à
+  la surface (une poussée de 0,1 rattrapait sa chute) ; ici il marche sur l'eau calme comme
+  l'arpenteur sur la lave, à la vitesse de la terre, et remonte s'il tombe dedans.
+- La **corne** est au Dancarok : la case est fermée sur les deux autres (la corne reste gardée), le
+  clic droit n'y donne aucun coup, et l'on peut **casser et poser des blocs** en selle (wiki).
+- Les **touches** passent du client qui conduit à la monture qu'il simule (`MountClient`) : pas de
+  paquet, la monture contrôlée se déplace côté client en 26.2.
+- **Sauvages** : aucune règle d'apparition dans les jars (Paladium les posait dans sa Farmland ; le
+  correctif V8.5.0.0 y ajoute le Ravirok). Ici : `DancarokSpawner` en pose une de chaque espèce dans
+  ses biomes (Ravirok : collines battues des vents, pics, pentes, cerisaie ; Tedarok : forêts et
+  taïgas), une à la fois par espèce à 128 blocs, et la farmland en garde une par coin (prairie,
+  collines, forêt). Modèles, animations (`idle`, `walk`, `fly` ; `walk`, `run`, `idle`), textures et
+  sons du jar, convertis par `tools/bedrock_model.py`.
+- `/mount give [niveau] [dancarok|ravirok|tedarok]` (opérateurs).
 
 ## 18. Dimension du Mineur (chapitre 15)
 
