@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Consumer;
 
@@ -51,7 +52,7 @@ public class InvokerStoneItem extends Item {
             return InteractionResult.FAIL;
         }
         BlockPos pos = context.getClickedPos().above();
-        if (MinerBoss.awake(level, pos.getCenter())) {
+        if (MinerBoss.awake(level, Vec3.atCenterOf(pos))) {
             DimMinerManager.message(player, ChatFormatting.RED, "boss_already");
             return InteractionResult.FAIL;
         }
