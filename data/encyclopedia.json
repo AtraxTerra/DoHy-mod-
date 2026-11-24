@@ -1903,6 +1903,16 @@
           "text": [
             "Sections de 5 000 blocs, 1 000 points a gagner, trois jours."
           ]
+        },
+        {
+          "title": "Le gardien des cristaux",
+          "text": [
+            "Pierre d'Invocation, accroupi + clic droit au sol : il s'eveille.",
+            "- Six cristaux le protegent : on ne le touche qu'etourdi, apres sa frappe au sol.",
+            "- Un coup fend un cristal et vous renvoie 14 degats ; deux le brisent.",
+            "- Bras leves, il va frapper : eloignez-vous a plus de 5 blocs.",
+            "! S'il vous tue, il se reforme. Il lache des pepites d'endium."
+          ]
         }
       ],
       "commands": [
