@@ -12,6 +12,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
@@ -33,6 +34,23 @@ public class DoHyJeiPlugin implements IModPlugin {
             IRecipeType.create(DoHy.MOD_ID, "palamachine", PalamachineRecipes.Recipe.class);
     public static final IRecipeType<AlchemyCreatorRecipes.Recipe> ALCHEMY_CREATOR =
             IRecipeType.create(DoHy.MOD_ID, "alchemy_creator", AlchemyCreatorRecipes.Recipe.class);
+
+    private static IJeiRuntime runtime;
+
+    /** Le JEI du jeu une fois pret, ou {@code null} : de quoi ouvrir une categorie depuis le code. */
+    public static IJeiRuntime runtime() {
+        return runtime;
+    }
+
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        runtime = jeiRuntime;
+    }
+
+    @Override
+    public void onRuntimeUnavailable() {
+        runtime = null;
+    }
 
     @Override
     public Identifier getPluginUid() {
