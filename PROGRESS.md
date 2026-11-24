@@ -192,6 +192,47 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-24 (suite) — les PNJ à la charte de Paladium, les grandes machines de la ferme
+
+**Demandes** : « Pour l'agriculture (silo, moulin...) remplace les modèles par des plus gros bloc
+genre (3x3x5 ...) avec des modèles 3d dans le thème de Create », puis « Et remplace les textures
+des pnj au spawn avec la même charte graphique que paladium ».
+
+**Les PNJ** (PR #205, `tools/spawn_npc_assets.py`) :
+
+- L'uniforme de la maison : le gris anthracite des interfaces de Paladium (`Ui.BG`), son rouge
+  (`EF3826`) au col, aux poignets, à la ceinture et le long du pantalon, une boucle et un insigne
+  d'or (un losange propre au mod, pas le logo).
+- Une matière de PalaMod par guichet (paladium, titane, améthyste, endium, paladium vert, couleurs
+  relevées sur leurs armures), et de vraies pièces d'armure de PalaMod : l'intendant des kits en
+  armure de paladium, le contremaître en titane avec le haut du casque de spéléo (visage
+  visible), le receleur sous la cagoule.
+- Vérifié en CI : les 15 PNJ à leur poste, captures du spawn.
+
+**Les grandes machines** (`agri/machine/`, `tools/agri_machine_assets.py`) :
+
+- Six machines quittent leur bloc : silo 3 × 3 × 5, moulin et machine à pain 3 × 3 × 4,
+  biogénérateur et machine à OGM 3 × 3 × 3, pompe 2 × 2 × 3. Le bloc posé reste la machine (la
+  **commande** : entité, inventaire, propriétaire) ; il se déploie (`formed=true`) et chaque autre
+  case reçoit un **bloc de partie** (`dohy:<machine>_part`) qui renvoie clics, capacités (objets,
+  énergie, fluide) et casse à la commande. La pose est refusée si la place manque ; une machine
+  déjà posée (un bloc) garde son petit modèle et se déploie au clic.
+- Le dessin, propre au mod dans l'esprit de Create : andésite cerclée de bois, laiton, cuivre,
+  tôle galvanisée, planches, briques, engrenages. Modèles de bloc coupés case par case (faces
+  intérieures retirées, textures calées sur la grille), miniatures d'objet, et des pièces mobiles
+  rendues par `BigMachineRenderer` : girouette du silo, meule et engrenage du moulin, roue du
+  pétrin et gueule rougeoyante du four, volant du biogénérateur, fouet de la machine à OGM.
+- Le biogénérateur pousse son énergie depuis toute sa construction (ses propres parties exclues,
+  chaque voisin servi une fois). Les parties sont solides (l'eau qui coule ne les arrache pas) et
+  ne se poussent pas au piston.
+- La machine à OGM devient une entité de bloc (sans données) pour porter son fouet ; le silo et
+  elle prennent une orientation (`facing`).
+- Vérifié en CI : les six machines posées comme par un joueur, toutes déployées avec toutes leurs
+  parties (30, 26, 26, 44, 20, 11) ; un silo sans la place refusé ; le biogénérateur nourri
+  allume le moulin et la machine à pain qui le touchent ; 48 blés entrés dans le silo par une
+  partie de son toit ; une partie de la pompe cassée : la pompe tombe en objet, ses 11 parties
+  partent ; `tools/agri_machine_assets.py --check` en CI.
+
 ### 2026-11-24 — des couleurs de saison plus marquées, façon Serene Seasons
 
 **Demande** : « Je voudrais que tu accentue les variations de couleurs des saisons comme Serenes
