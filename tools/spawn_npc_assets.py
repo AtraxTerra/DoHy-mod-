@@ -3,11 +3,15 @@
 
     python3 -I tools/spawn_npc_assets.py [dossier_apercu]
 
-Quatorze tenues originales, une par service : le marchand en tablier, la boutiquiere en veste
-d'or, le commissaire-priseur en trois-pieces, le banquier en costume, l'agent des contrats et
-sa sacoche, la conservatrice a lunettes, le passeur en uniforme de chef de gare, l'hotesse,
-le gardien des donjons sous sa capuche, le contremaitre casque, le receleur masque, la
-pretresse de l'autel, le pilote de la navette et l'intendant des kits.
+Quatorze tenues, une par service, a la charte de Paladium : l'uniforme anthracite de la maison,
+son rouge au col, aux poignets et a la ceinture, une boucle et un insigne d'or ; chaque guichet
+porte une matiere de PalaMod (paladium, titane, amethyste, endium, paladium vert), et certains les
+vraies pieces d'armure de PalaMod. Le marchand en tablier rouge, la boutiquiere en veste de
+paladium, le commissaire-priseur au gilet d'amethyste, le banquier a cravate d'endium, l'agent des
+contrats en titane, la conservatrice au foulard de paladium vert, le chef de gare en rouge,
+l'hotesse en or, le passeur en robe d'endium, le contremaitre en armure de titane et casque de
+speleo, le receleur sous la cagoule, la pretresse en amethyste, le pilote de la navette et
+l'intendant des kits en armure de paladium.
 
 Le bras et la jambe gauches du modele reprennent, en miroir, la texture des droits : les
 details asymetriques (insigne, pochette) ne vont donc que sur le torse et la tete.
@@ -375,236 +379,289 @@ def stripes(s, color, rows=(6, 8)):
 
 # -- Les quatorze ---------------------------------------------------------------------------------
 
+# -- La charte de Paladium ------------------------------------------------------------------------
+#
+# Le personnel du spawn porte l'uniforme de la maison : le gris anthracite des interfaces de
+# Paladium (Ui.BG), son rouge (Ui.RED, EF3826) au col, aux poignets et a la ceinture, une boucle et
+# un insigne en or de paladium. Chaque guichet a sa matiere de PalaMod — paladium, titane,
+# amethyste, endium, paladium vert — au brassard, a la cravate ou a la robe, et certains portent
+# les vraies pieces d'armure de PalaMod (le casque de speleo du Mineur, l'armure en paladium de
+# l'intendant des kits). L'insigne est un losange propre au mod, pas le logo de Paladium.
+
+ANTHRACITE = (40, 39, 46)
+ANTHRACITE_DARK = (27, 26, 32)
+ANTHRACITE_LIGHT = (62, 61, 70)
+SHOES = (18, 17, 22)
+RED = (239, 56, 38)
+RED_DARK = (168, 36, 24)
+WHITE = (233, 232, 238)
+GOLD = (255, 178, 62)
+GOLD_LIGHT = (255, 227, 101)
+
+# Les matieres de PalaMod (relevees sur les armures de PalaMod).
+PALADIUM = (221, 84, 17)
+PALADIUM_LIGHT = (255, 111, 39)
+TITANE = (117, 110, 103)
+TITANE_LIGHT = (168, 163, 156)
+AMETHYST = (172, 61, 211)
+AMETHYST_LIGHT = (221, 66, 223)
+ENDIUM = (43, 46, 189)
+ENDIUM_LIGHT = (105, 92, 255)
+GREEN_PALADIUM = (70, 165, 113)
+GREEN_PALADIUM_LIGHT = (86, 198, 137)
+
+ARMOR = os.path.join(ROOT, "src", "main", "resources", "assets", "palamod", "textures", "entity", "equipment")
+
+
+def armor(s, name, pieces):
+    """Les vraies pieces d'armure de PalaMod, peintes sur la peau : meme disposition que le modele.
+
+    helmet : la tete de l'armure sur le calque du chapeau ; cap : son haut seulement (le visage
+    reste visible) ; chest : le torse et les bras ;
+    boots : le bas des jambes ; leggings : la ceinture et les jambes (deuxieme calque).
+    """
+    layer1 = Image.open(os.path.join(ARMOR, "humanoid", name + ".png")).convert("RGBA")
+    regions = []
+    if "helmet" in pieces:
+        regions.append((layer1, (0, 0, 32, 16), (32, 0)))
+    if "cap" in pieces:
+        # le haut du casque seulement, pour garder le visage : le dessus et trois rangs tout autour
+        regions.append((layer1, (8, 0, 16, 8), (40, 0)))
+        regions.append((layer1, (0, 8, 32, 11), (32, 8)))
+    if "chest" in pieces:
+        regions.append((layer1, (16, 16, 40, 32), (16, 16)))
+        regions.append((layer1, (40, 16, 56, 32), (40, 16)))
+    if "boots" in pieces:
+        regions.append((layer1, (0, 16, 16, 32), (0, 16)))
+    if "leggings" in pieces:
+        layer2 = Image.open(os.path.join(ARMOR, "humanoid_leggings", name + ".png")).convert("RGBA")
+        regions.append((layer2, (16, 16, 40, 32), (16, 16)))
+        regions.append((layer2, (0, 16, 16, 32), (0, 16)))
+    for source, box, at in regions:
+        s.img.alpha_composite(source.crop(box), at)
+
+
+def badge(s, col=5, row=2):
+    """L'insigne de la maison : un petit losange rouge a coeur d'or, sur la poitrine."""
+    s.on(BODY, "front", col, row, RED, 0)
+    s.on(BODY, "front", col - 1, row + 1, RED, 0)
+    s.on(BODY, "front", col, row + 1, GOLD, 0)
+    s.on(BODY, "front", col + 1, row + 1, RED_DARK, 0)
+    s.on(BODY, "front", col, row + 2, RED_DARK, 0)
+
+
+def uniform(s, skin, accent, top=ANTHRACITE, trousers=ANTHRACITE_DARK, collar=RED, armband=True,
+            emblem=True, cuff=RED):
+    """L'uniforme du personnel : anthracite, col et poignets rouges, ceinture rouge a boucle d'or."""
+    outfit(s, top, trousers=trousers, shoes=SHOES, skin=skin, cuff=cuff)
+    # le col montant, rouge, tout autour du cou
+    s.ring(BODY, 0, 1, collar, 2)
+    s.fill(BODY, "top", 1, 0, 7, 1, collar, 2)
+    s.fill(BODY, "top", 1, 3, 7, 4, collar, 2)
+    # la couture du milieu et l'ourlet
+    s.column(BODY, "front", 3, 1, 10, shade(top, 0.8), 2)
+    belt(s, RED, buckle=GOLD, row=9)
+    s.ring(BODY, 11, 12, shade(top, 0.75), 2)
+    # le brassard a la matiere du guichet
+    if armband:
+        s.ring(ARM, 2, 4, accent, 3)
+        s.ring(ARM, 2, 3, shade(accent, 1.15), 2)
+    # la bande rouge le long du pantalon
+    s.column(LEG, "right", 1, 0, 10, RED_DARK, 2)
+    if emblem:
+        badge(s)
+
+
+def scarf(s, color):
+    """Un foulard a la matiere du guichet, noue sur le col."""
+    s.fill(BODY, "front", 2, 0, 6, 2, color, 2)
+    s.fill(BODY, "front", 3, 2, 5, 4, shade(color, 0.9), 2)
+    s.on(BODY, "front", 4, 4, shade(color, 0.8), 1)
+
+
 def shop(s):
+    # le marchand : le tablier rouge de la maison sur l'uniforme
     skin = (224, 172, 132)
     hair = (92, 58, 34)
     head(s, skin, hair, "short")
     mustache(s, shade(hair, 0.9))
-    outfit(s, (236, 226, 200), trousers=(96, 70, 48), shoes=(52, 36, 26), skin=skin, rolled=True)
-    apron(s, (46, 140, 70), strap=(32, 98, 50))
-    s.on(BODY, "front", 5, 6, (240, 210, 120), 0)  # un crayon dans la poche
+    uniform(s, skin, RED, emblem=False)
+    apron(s, RED, strap=RED_DARK)
+    s.fill(BODY, "front", 2, 5, 6, 6, RED_DARK, 1)
+    badge(s, col=4, row=6)
+    s.on(BODY, "front", 6, 7, GOLD_LIGHT, 0)  # un crayon dans la poche
+    cap(s, ANTHRACITE, band=RED, rows=2)
 
 
 def boutique(s):
+    # la boutiquiere : veste en or de paladium sur l'anthracite
     skin = (238, 196, 160)
     hair = (64, 36, 24)
     head(s, skin, hair, "long", eyes=(52, 96, 60))
     lips(s, (186, 82, 92))
-    earrings(s, (250, 210, 80))
-    black = (30, 26, 32)
-    outfit(s, (226, 174, 32), trousers=black, shoes=black, skin=skin, cuff=black)
-    shirt_v(s, (248, 244, 236), 4)
-    lapels(s, black)
-    buttons(s, black, rows=(6, 8))
-    belt(s, black, buckle=(250, 214, 90))
-    s.fill(LEG, "front", 1, 10, 3, 11, (250, 214, 90), 0)
+    earrings(s, GOLD_LIGHT)
+    uniform(s, skin, PALADIUM, top=PALADIUM, collar=ANTHRACITE, cuff=ANTHRACITE)
+    shirt_v(s, WHITE, 4)
+    lapels(s, ANTHRACITE)
+    s.ring(ARM, 0, 9, PALADIUM, 3)
+    s.ring(ARM, 0, 1, PALADIUM_LIGHT, 2)
 
 
 def market(s):
+    # le commissaire-priseur : trois-pieces anthracite, gilet et noeud d'amethyste
     skin = (210, 160, 120)
     hair = (150, 150, 152)
     head(s, skin, hair, "slick", eyes=(60, 80, 110))
-    glasses(s, (60, 46, 30))
-    suit = (150, 82, 36)
-    outfit(s, suit, trousers=shade(suit, 0.8), shoes=(24, 24, 28), skin=skin, cuff=(244, 240, 230))
-    shirt_v(s, (244, 240, 230), 4)
-    s.fill(BODY, "front", 2, 4, 6, 9, (110, 58, 28), 3)  # le gilet
-    buttons(s, (230, 190, 90), rows=(5, 7), col=3)
-    bow_tie(s, (176, 28, 40))
-    lapels(s, shade(suit, 0.75))
-    s.on(BODY, "front", 6, 3, (250, 250, 250), 0)  # la pochette
-    s.fill(BODY, "front", 2, 10, 6, 11, shade(suit, 0.9), 2)
+    glasses(s, GOLD)
+    uniform(s, skin, AMETHYST, collar=WHITE, cuff=WHITE)
+    shirt_v(s, WHITE, 4)
+    s.fill(BODY, "front", 2, 4, 6, 9, AMETHYST, 3)  # le gilet
+    s.fill(BODY, "front", 2, 4, 6, 5, AMETHYST_LIGHT, 2)
+    buttons(s, GOLD, rows=(5, 7), col=3)
+    bow_tie(s, AMETHYST_LIGHT)
+    lapels(s, ANTHRACITE_LIGHT)
+    s.on(BODY, "front", 6, 3, WHITE, 0)  # la pochette
 
 
 def bank(s):
+    # le banquier : costume anthracite, cravate d'endium, lunettes d'or
     skin = (232, 186, 150)
-    hair = (30, 28, 30)
+    hair = (40, 32, 28)
     head(s, skin, hair, "slick", eyes=(70, 52, 36))
-    glasses(s, (206, 168, 70))
-    navy = (34, 46, 90)
-    outfit(s, navy, trousers=shade(navy, 0.9), shoes=(16, 16, 20), skin=skin, cuff=(244, 244, 248))
-    shirt_v(s, (244, 244, 248), 5)
-    tie(s, (54, 163, 255), top=0, bottom=8)
-    s.on(BODY, "front", 3, 5, (250, 210, 80), 0)  # la pince a cravate
-    s.on(BODY, "front", 4, 5, (250, 210, 80), 0)
-    lapels(s, shade(navy, 0.7), depth=6)
-    s.fill(BODY, "front", 5, 3, 7, 4, shade(navy, 1.3), 2)  # la poche de poitrine
-    s.ring(ARM, 9, 10, (244, 244, 248), 2)
-    s.on(ARM, "front", 1, 9, (250, 210, 80), 0)  # la montre
+    glasses(s, GOLD)
+    uniform(s, skin, ENDIUM, collar=WHITE, cuff=WHITE)
+    shirt_v(s, WHITE, 5)
+    tie(s, ENDIUM_LIGHT, top=0, bottom=8)
+    lapels(s, ANTHRACITE_LIGHT, depth=6)
+    s.fill(BODY, "front", 6, 2, 7, 3, GOLD_LIGHT, 0)  # la pince a billets
 
 
 def contracts(s):
-    skin = (190, 140, 100)
-    hair = (40, 30, 24)
+    # l'agent des contrats : veste de titane, sacoche en bandouliere, casquette de la maison
+    skin = (196, 150, 112)
+    hair = (30, 24, 20)
     head(s, skin, hair, "short")
-    coat = (100, 120, 220)
-    outfit(s, coat, trousers=(90, 92, 100), shoes=(80, 54, 34), skin=skin)
-    cap(s, (34, 40, 80), band=coat, rows=2)
-    s.fill(BODY, "front", 3, 0, 5, 2, (236, 236, 240), 2)
-    s.fill(BODY, "front", 1, 7, 3, 9, shade(coat, 0.8), 2)
-    s.fill(BODY, "front", 5, 7, 7, 9, shade(coat, 0.8), 2)
-    buttons(s, (230, 230, 240), rows=(3, 5, 7, 9), col=4)
-    # la sanglade de la sacoche, en travers du torse
-    strap = (110, 72, 40)
-    for i in range(8):
-        s.on(BODY, "front", 7 - i, i + 1, strap, 2)
-        s.on(BODY, "back", i, i + 1, strap, 2)
-    s.fill(BODY, "left", 0, 8, 4, 12, strap, 3)
-    s.fill(BODY, "left", 1, 9, 3, 10, (200, 170, 90), 1)
+    uniform(s, skin, TITANE, top=TITANE, collar=RED)
+    cap(s, ANTHRACITE, band=RED, rows=2)
+    buttons(s, WHITE, rows=(3, 5, 7), col=4)
+    # la bandouliere, de l'epaule droite a la hanche gauche
+    for y in range(9):
+        s.on(BODY, "front", 7 - y * 7 // 8, y + 1, (96, 60, 34), 2)
+    s.fill(BODY, "back", 0, 2, 8, 3, (96, 60, 34), 2)
+    s.ring(ARM, 0, 2, TITANE_LIGHT, 2)
 
 
 def museum(s):
-    skin = (244, 206, 176)
-    hair = (150, 60, 36)
+    # la conservatrice : tailleur anthracite, foulard de paladium vert, chignon et lunettes
+    skin = (240, 200, 170)
+    hair = (120, 64, 36)
     head(s, skin, hair, "bun", eyes=(60, 110, 70))
     glasses(s, (40, 40, 44))
     lips(s, (170, 70, 80))
-    s.on(HEAD, "right", 6, 5, (210, 180, 90), 0)  # la chainette des lunettes
-    s.on(HEAD, "left", 1, 5, (210, 180, 90), 0)
-    magenta = (200, 60, 150)
-    plum = (70, 30, 60)
-    outfit(s, magenta, trousers=plum, shoes=(40, 24, 36), skin=skin, cuff=(248, 240, 244))
-    shirt_v(s, (248, 240, 244), 3)
-    lapels(s, shade(magenta, 0.75), depth=4)
-    s.on(BODY, "front", 2, 4, (250, 210, 80), 0)  # la broche
-    s.on(BODY, "front", 2, 5, (236, 79, 181), 0)
-    belt(s, plum)
+    uniform(s, skin, GREEN_PALADIUM)
+    scarf(s, GREEN_PALADIUM_LIGHT)
+    buttons(s, GOLD, rows=(6, 8), col=4)
 
 
 def return_(s):
-    skin = (200, 150, 110)
-    hair = (60, 40, 28)
+    # le chef de gare : uniforme rouge de la maison, galons d'or, casquette
+    skin = (214, 164, 124)
+    hair = (60, 42, 30)
     head(s, skin, hair, "short")
     mustache(s, hair)
-    red = (190, 46, 40)
-    gold = (236, 190, 70)
-    outfit(s, red, trousers=(28, 28, 32), shoes=(16, 16, 18), skin=skin, cuff=gold)
-    cap(s, red, band=gold, rows=3)
-    s.fill(BODY, "front", 3, 0, 5, 2, (240, 240, 240), 2)
-    for y in (3, 5, 7, 9):
-        s.on(BODY, "front", 2, y, gold, 1)
-        s.on(BODY, "front", 5, y, gold, 1)
-    s.fill(ARM, "top", 0, 0, 4, 4, gold, 2)
-    s.ring(ARM, 0, 1, gold, 2)
-    s.column(LEG, "right", 1, 0, 10, red)
-    s.on(BODY, "front", 6, 3, (230, 230, 230), 0)  # le sifflet
+    uniform(s, skin, GOLD, top=RED, trousers=ANTHRACITE_DARK, collar=ANTHRACITE, cuff=GOLD)
+    cap(s, RED, band=GOLD, rows=3)
+    buttons(s, GOLD_LIGHT, rows=(3, 5, 7), col=3)
+    buttons(s, GOLD_LIGHT, rows=(3, 5, 7), col=4)
+    s.fill(BODY, "front", 0, 1, 2, 2, GOLD, 1)  # les epaulettes
+    s.fill(BODY, "front", 6, 1, 8, 2, GOLD, 1)
+    s.ring(ARM, 0, 1, GOLD, 1)
 
 
 def daily(s):
-    skin = (236, 190, 150)
+    # l'hotesse : tailleur anthracite, foulard et toque en or de paladium
+    skin = (236, 190, 156)
     hair = (232, 200, 110)
     head(s, skin, hair, "bob", eyes=(56, 110, 190))
     lips(s, (200, 90, 96))
-    yellow = (240, 200, 40)
-    navy = (40, 48, 80)
-    outfit(s, yellow, trousers=navy, shoes=navy, skin=skin, cuff=(250, 250, 250))
-    pillbox(s, yellow, navy)
-    # le foulard bleu noue au cou
-    scarf = (54, 120, 220)
-    s.fill(BODY, "front", 2, 0, 6, 2, scarf, 2)
-    s.fill(BODY, "front", 4, 2, 6, 4, shade(scarf, 0.85), 2)
-    s.fill(BODY, "back", 2, 0, 6, 1, scarf, 2)
-    s.fill(BODY, "front", 1, 4, 3, 5, (250, 250, 250), 0)  # le badge
-    buttons(s, navy, rows=(6, 8))
-    belt(s, navy)
+    uniform(s, skin, PALADIUM_LIGHT)
+    pillbox(s, ANTHRACITE, PALADIUM_LIGHT)
+    scarf(s, PALADIUM_LIGHT)
+    buttons(s, GOLD, rows=(6, 8), col=4)
 
 
 def portals(s):
-    skin = (170, 130, 110)
-    head(s, skin, (40, 30, 30), "none", eyes=(199, 125, 255), brows=False)
-    s.fill(HEAD, "front", 0, 6, 8, 8, shade(skin, 0.85), 2)
-    purple = (100, 50, 150)
-    gold = (220, 176, 70)
-    outfit(s, purple, trousers=purple, shoes=(40, 26, 50), skin=skin)
-    robe(s, purple, trim=gold, sash=(70, 40, 30))
-    hood(s, shade(purple, 0.9), trim=gold)
-    s.fill(BODY, "front", 2, 1, 6, 3, gold, 2)  # le fermoir
+    # le passeur : la robe d'endium, liseres d'or, capuche
+    skin = (200, 170, 150)
+    head(s, skin, (40, 30, 30), "none", eyes=(178, 134, 255), brows=False)
+    outfit(s, ENDIUM, trousers=ENDIUM, shoes=SHOES, skin=skin, cuff=GOLD)
+    robe(s, ENDIUM, trim=GOLD, sash=RED)
+    hood(s, shade(ENDIUM, 0.8), trim=ENDIUM_LIGHT)
+    s.ring(ARM, 0, 2, ENDIUM_LIGHT, 2)
+    badge(s, col=5, row=2)
 
 
 def mine(s):
-    skin = (206, 150, 108)
-    hair = (160, 80, 40)
+    # le contremaitre : l'armure en titane et le casque de speleo de PalaMod
+    skin = (206, 156, 116)
+    hair = (110, 70, 40)
     head(s, skin, hair, "short", eyes=(70, 90, 110))
     beard(s, hair)
-    outfit(s, (110, 112, 118), trousers=(52, 76, 120), shoes=(96, 60, 32), skin=skin, rolled=False)
-    hard_hat(s, (250, 200, 40))
-    vest = (95, 216, 232)
-    s.fill(BODY, "front", 0, 1, 3, 11, vest, 3)
-    s.fill(BODY, "front", 5, 1, 8, 11, vest, 3)
-    s.fill(BODY, "back", 0, 1, 8, 11, vest, 3)
-    s.fill(BODY, "right", 0, 1, 4, 11, vest, 3)
-    s.fill(BODY, "left", 0, 1, 4, 11, vest, 3)
-    for y in (6, 8):
-        s.ring(BODY, y, y + 1, (220, 224, 230), 2)
-    s.fill(BODY, "front", 3, 6, 5, 7, (110, 112, 118), 2)
-    s.fill(BODY, "front", 3, 8, 5, 9, (110, 112, 118), 2)
-    belt(s, (70, 46, 26), buckle=(180, 180, 186))
-    s.fill(LEG, "front", 0, 9, 4, 10, (240, 140, 40), 1)  # les lacets
+    uniform(s, skin, TITANE)
+    armor(s, "titane", ("chest", "boots"))
+    armor(s, "cave_helmet", ("cap",))
 
 
 def black_market(s):
+    # le receleur : cagoule de PalaMod, manteau noir, liseres d'amethyste
     skin = (180, 136, 104)
-    head(s, skin, (30, 26, 30), "none", eyes=(230, 200, 80), brows=False)
-    mask = (36, 32, 44)
-    s.fill(HEAD, "front", 0, 5, 8, 8, mask, 3)
-    s.fill(HEAD, "right", 4, 5, 8, 8, mask, 3)
-    s.fill(HEAD, "left", 0, 5, 4, 8, mask, 3)
-    coat = (60, 40, 80)
-    outfit(s, coat, trousers=(40, 40, 46), shoes=(14, 14, 16), skin=(24, 22, 26))
-    hood(s, (28, 26, 32), trim=(155, 107, 255))
-    buttons(s, (20, 18, 24), rows=(3, 5, 7, 9), col=3)
+    head(s, skin, (30, 26, 30), "none", eyes=(247, 141, 255), brows=False)
+    coat = (22, 21, 26)
+    outfit(s, coat, trousers=ANTHRACITE_DARK, shoes=SHOES, skin=(24, 22, 26))
+    armor(s, "balaclava", ("helmet",))
+    buttons(s, AMETHYST, rows=(3, 5, 7, 9), col=3)
     s.column(BODY, "front", 4, 0, 12, shade(coat, 0.7))
-    belt(s, (24, 22, 26), buckle=(155, 107, 255))
-    s.ring(ARM, 9, 10, shade(coat, 0.7), 2)
+    belt(s, (14, 14, 18), buckle=AMETHYST_LIGHT)
+    s.ring(ARM, 9, 10, AMETHYST, 2)
+    s.ring(BODY, 0, 1, AMETHYST, 2)
 
 
 def job_altar(s):
+    # la pretresse de l'autel : robe d'amethyste, etole blanche, diademe d'or
     skin = (226, 180, 140)
     hair = (236, 232, 226)
-    head(s, skin, hair, "long", eyes=(190, 120, 40))
-    orange = (230, 120, 40)
-    cream = (246, 238, 220)
-    outfit(s, orange, trousers=orange, shoes=(120, 80, 46), skin=skin)
-    robe(s, orange, trim=(250, 200, 80), sash=(150, 60, 20))
-    # l'etole blanche
-    s.column(BODY, "front", 2, 0, 12, cream)
-    s.column(BODY, "front", 5, 0, 12, cream)
-    s.column(LEG, "front", 1, 0, 9, cream)
-    circlet(s, (240, 196, 80), (255, 138, 61))
+    head(s, skin, hair, "long", eyes=(221, 66, 223))
+    outfit(s, AMETHYST, trousers=AMETHYST, shoes=SHOES, skin=skin)
+    robe(s, AMETHYST, trim=GOLD, sash=RED)
+    s.column(BODY, "front", 2, 0, 12, WHITE)
+    s.column(BODY, "front", 5, 0, 12, WHITE)
+    s.column(LEG, "front", 1, 0, 9, WHITE)
+    s.ring(ARM, 0, 2, AMETHYST_LIGHT, 2)
+    circlet(s, GOLD, AMETHYST_LIGHT)
 
 
 def shuttle(s):
+    # le pilote de la navette : combinaison anthracite, casque blanc a visiere d'endium
     skin = (200, 156, 120)
     hair = (46, 34, 26)
     head(s, skin, hair, "short")
-    suit = (240, 140, 50)
-    outfit(s, suit, trousers=suit, shoes=(24, 24, 28), skin=skin)
-    helmet(s, (236, 236, 240), (40, 60, 110), (232, 116, 44))
-    s.column(BODY, "front", 4, 0, 12, (150, 150, 156))  # la fermeture
-    s.fill(BODY, "front", 1, 3, 3, 5, (54, 110, 200), 1)  # l'ecusson
-    s.on(BODY, "front", 1, 3, (250, 250, 250), 0)
-    s.fill(BODY, "front", 5, 6, 7, 8, shade(suit, 0.8), 2)
-    belt(s, (30, 30, 34), buckle=(190, 190, 196))
-    s.fill(ARM, "right", 1, 2, 3, 4, (250, 250, 250), 1)
-    s.fill(LEG, "right", 0, 4, 4, 6, shade(suit, 0.8), 2)
-    s.ring(LEG, 8, 10, (30, 30, 34), 2)
+    uniform(s, skin, ENDIUM, trousers=ANTHRACITE)
+    helmet(s, WHITE, ENDIUM, RED)
+    s.column(BODY, "front", 4, 1, 9, (150, 150, 156))  # la fermeture
+    s.fill(BODY, "front", 1, 3, 3, 5, ENDIUM_LIGHT, 1)  # l'ecusson
+    s.fill(ARM, "right", 1, 5, 3, 7, WHITE, 1)
+    s.ring(LEG, 6, 8, ANTHRACITE_DARK, 2)
 
 
 def kits(s):
+    # l'intendant des kits : l'armure en paladium de PalaMod, de pied en cap
     skin = (220, 170, 130)
     hair = (70, 44, 30)
     head(s, skin, hair, "short", eyes=(60, 90, 60))
-    white = (236, 236, 240)
-    red = (239, 57, 38)
-    outfit(s, white, trousers=(50, 52, 58), shoes=(16, 16, 18), skin=skin, cuff=red)
-    beret(s, red)
-    lapels(s, red, depth=5)
-    s.fill(BODY, "front", 3, 0, 5, 1, (40, 40, 44), 2)
-    buttons(s, (236, 190, 70), rows=(5, 7, 9), col=3)
-    buttons(s, (236, 190, 70), rows=(5, 7, 9), col=4)
-    s.ring(ARM, 2, 4, red, 2)
-    belt(s, (40, 40, 44), buckle=(236, 190, 70))
-    s.column(LEG, "right", 1, 0, 10, red)
+    uniform(s, skin, PALADIUM)
+    armor(s, "paladium", ("chest", "leggings", "boots"))
+    beret(s, RED)
+    s.on(HAT, "front", 6, 1, GOLD, 0)
 
 
 NPCS = [
