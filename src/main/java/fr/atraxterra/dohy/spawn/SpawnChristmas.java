@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -257,6 +258,18 @@ public final class SpawnChristmas {
                 || state.is(Blocks.MOSS_CARPET);
     }
 
+    private static BlockState wool(DyeColor color) {
+        return Blocks.WOOL.pick(color).defaultBlockState();
+    }
+
+    private static BlockState concrete(DyeColor color) {
+        return Blocks.CONCRETE.pick(color).defaultBlockState();
+    }
+
+    private static BlockState carpet(DyeColor color) {
+        return Blocks.CARPET.pick(color).defaultBlockState();
+    }
+
     private static BlockState leaves() {
         return Blocks.SPRUCE_LEAVES.defaultBlockState().setValue(BlockStateProperties.PERSISTENT, true);
     }
@@ -297,9 +310,9 @@ public final class SpawnChristmas {
         for (int y = FLOOR + 1; y < TREE_TOP; y++) {
             blocks.put(new BlockPos(TREE_X, y, TREE_Z), log);
         }
-        BlockState[] baubles = {Blocks.RED_CONCRETE.defaultBlockState(), Blocks.GOLD_BLOCK.defaultBlockState(),
-                Blocks.RED_CONCRETE.defaultBlockState(), Blocks.LIGHT_BLUE_CONCRETE.defaultBlockState(),
-                Blocks.WHITE_CONCRETE.defaultBlockState()};
+        BlockState[] baubles = {concrete(DyeColor.RED), Blocks.GOLD_BLOCK.defaultBlockState(),
+                concrete(DyeColor.RED), concrete(DyeColor.LIGHT_BLUE),
+                concrete(DyeColor.WHITE)};
         BlockState[] lights = {Blocks.SHROOMLIGHT.defaultBlockState(), Blocks.PEARLESCENT_FROGLIGHT.defaultBlockState(),
                 Blocks.SEA_LANTERN.defaultBlockState()};
         BlockState garland = Blocks.OCHRE_FROGLIGHT.defaultBlockState();
@@ -335,20 +348,21 @@ public final class SpawnChristmas {
         // la pointe et l'etoile
         blocks.put(new BlockPos(TREE_X, TREE_TOP, TREE_Z), leaves());
         blocks.put(new BlockPos(TREE_X, TREE_TOP + 1, TREE_Z), Blocks.GLOWSTONE.defaultBlockState());
+        BlockPos heart = new BlockPos(TREE_X, TREE_TOP + 1, TREE_Z);
         for (Direction side : Direction.Plane.HORIZONTAL) {
-            blocks.put(new BlockPos(TREE_X, TREE_TOP + 1, TREE_Z).relative(side), Blocks.GOLD_BLOCK.defaultBlockState());
+            blocks.put(heart.relative(side), Blocks.GOLD_BLOCK.defaultBlockState());
         }
         blocks.put(new BlockPos(TREE_X, TREE_TOP + 2, TREE_Z), Blocks.GOLD_BLOCK.defaultBlockState());
         blocks.put(new BlockPos(TREE_X, TREE_TOP + 3, TREE_Z),
                 Blocks.END_ROD.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
         // les cadeaux, sous les branches : une boite de laine, un ruban de tapis
         BlockState[][] gifts = {
-                {Blocks.RED_WOOL.defaultBlockState(), Blocks.YELLOW_CARPET.defaultBlockState()},
-                {Blocks.LIME_WOOL.defaultBlockState(), Blocks.RED_CARPET.defaultBlockState()},
-                {Blocks.LIGHT_BLUE_WOOL.defaultBlockState(), Blocks.WHITE_CARPET.defaultBlockState()},
-                {Blocks.YELLOW_WOOL.defaultBlockState(), Blocks.RED_CARPET.defaultBlockState()},
-                {Blocks.PURPLE_WOOL.defaultBlockState(), Blocks.YELLOW_CARPET.defaultBlockState()},
-                {Blocks.WHITE_WOOL.defaultBlockState(), Blocks.GREEN_CARPET.defaultBlockState()},
+                {wool(DyeColor.RED), carpet(DyeColor.YELLOW)},
+                {wool(DyeColor.LIME), carpet(DyeColor.RED)},
+                {wool(DyeColor.LIGHT_BLUE), carpet(DyeColor.WHITE)},
+                {wool(DyeColor.YELLOW), carpet(DyeColor.RED)},
+                {wool(DyeColor.PURPLE), carpet(DyeColor.YELLOW)},
+                {wool(DyeColor.WHITE), carpet(DyeColor.GREEN)},
         };
         int[][] spots = {{-3, 2}, {-4, -1}, {-2, -4}, {1, -4}, {3, -3}, {4, 1}, {2, 4}, {-1, 4}, {-5, 2}, {5, -2},
                 {0, -5}, {-3, -3}};
@@ -367,7 +381,7 @@ public final class SpawnChristmas {
                 BlockPos ground = new BlockPos(SANTA.getX() + dx, FLOOR, SANTA.getZ() + dz);
                 if (holdsSnow(level.getBlockState(ground))) {
                     boolean edge = Math.abs(dz) == 2 || Math.abs(dx) == 1;
-                    blocks.put(ground, edge ? Blocks.WHITE_WOOL.defaultBlockState() : Blocks.RED_WOOL.defaultBlockState());
+                    blocks.put(ground, edge ? wool(DyeColor.WHITE) : wool(DyeColor.RED));
                 }
                 for (int up = 1; up <= 2; up++) {
                     BlockPos above = ground.above(up);
