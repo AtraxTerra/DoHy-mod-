@@ -210,6 +210,9 @@ def build():
     for name in ("root_inferior", "root_last"):
         model(f"block/{name}", "minecraft:block/cross", {"cross": f"palamod:block/{name}"})
         block_state(name, {"": {"model": f"palamod:block/{name}"}})
+    # Le feuillage et la racine ne rendent rien (getDrops : une liste vide).
+    for name in ("root_leaves", "root_inferior", "root_last"):
+        put(D / f"loot_table/blocks/{name}.json", {"type": "minecraft:block", "pools": []})
 
     # -- Recettes (relevees au bytecode) ---------------------------------------------------
     shaped("endium_nametag", [" A ", "BCB", "DBD"],

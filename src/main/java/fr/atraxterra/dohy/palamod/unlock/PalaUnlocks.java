@@ -201,7 +201,7 @@ public final class PalaUnlocks {
                     .pushReaction(PushReaction.DESTROY));
     public static final DeferredBlock<RootLeavesBlock> ROOT_LEAVES = BLOCKS.registerBlock(
             "root_leaves", RootLeavesBlock::new, properties -> properties
-                    .strength(0.2f).sound(SoundType.GRASS).mapColor(MapColor.PLANT).noOcclusion().noLootTable());
+                    .strength(0.2f).sound(SoundType.GRASS).mapColor(MapColor.PLANT).noOcclusion());
     public static final DeferredBlock<RotatedPillarBlock> ROOT_LOG = BLOCKS.registerBlock(
             "root_log", RotatedPillarBlock::new, properties -> properties
                     .strength(2.0f).sound(SoundType.WOOD).mapColor(MapColor.WOOD));
@@ -210,11 +210,11 @@ public final class PalaUnlocks {
                     .strength(2.0f, 3.0f).sound(SoundType.WOOD).mapColor(MapColor.WOOD));
     public static final DeferredBlock<RootColumnBlock> ROOT_INFERIOR = BLOCKS.registerBlock(
             "root_inferior", RootColumnBlock::new, properties -> properties
-                    .strength(0.2f).sound(SoundType.ROOTS).mapColor(MapColor.DIRT).noOcclusion().noLootTable()
+                    .strength(0.2f).sound(SoundType.ROOTS).mapColor(MapColor.DIRT).noOcclusion()
                     .noCollision());
     public static final DeferredBlock<RootColumnBlock> ROOT_LAST = BLOCKS.registerBlock(
             "root_last", RootColumnBlock::new, properties -> properties
-                    .strength(0.2f).sound(SoundType.ROOTS).mapColor(MapColor.DIRT).noOcclusion().noLootTable()
+                    .strength(0.2f).sound(SoundType.ROOTS).mapColor(MapColor.DIRT).noOcclusion()
                     .noCollision());
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RootLeavesBlockEntity>> ROOT_LEAVES_TYPE =
@@ -282,9 +282,7 @@ public final class PalaUnlocks {
     private static List<DeferredItem<HunterCompassItem>> compasses() {
         List<DeferredItem<HunterCompassItem>> list = new ArrayList<>();
         for (HunterCompassItem.Tier tier : HunterCompassItem.Tier.values()) {
-            String name = "hunter_compass_" + (tier == HunterCompassItem.Tier.LEGENDARY ? "legendary"
-                    : tier.texture());
-            list.add(ITEMS.registerItem(name, properties -> new HunterCompassItem(tier, properties.stacksTo(1))));
+            list.add(ITEMS.registerItem(tier.item(), properties -> new HunterCompassItem(tier, properties.stacksTo(1))));
         }
         return List.copyOf(list);
     }

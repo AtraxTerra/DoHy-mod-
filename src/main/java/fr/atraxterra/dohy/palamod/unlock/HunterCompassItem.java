@@ -47,18 +47,25 @@ public class HunterCompassItem extends Item {
 
     /** Les paliers, et la portee de chacun (en blocs). */
     public enum Tier {
-        AMETHYST("amethyst", 48),
-        TITANE("titane", 96),
-        PALADIUM("paladium", 192),
-        ENDIUM("endium", 384),
-        LEGENDARY("legend", 768);
+        AMETHYST("amethyst", "amethyst", 48),
+        TITANE("titane", "titane", 96),
+        PALADIUM("paladium", "paladium", 192),
+        ENDIUM("endium", "endium", 384),
+        LEGENDARY("legendary", "legend", 768);
 
+        private final String item;
         private final String texture;
         private final int range;
 
-        Tier(String texture, int range) {
+        Tier(String item, String texture, int range) {
+            this.item = item;
             this.texture = texture;
             this.range = range;
+        }
+
+        /** Le nom de l'objet : {@code hunter_compass_<palier>}. */
+        public String item() {
+            return "hunter_compass_" + item;
         }
 
         /** Le prefixe des 32 images ({@code compass_<palier>NN}). */
