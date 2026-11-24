@@ -1129,18 +1129,19 @@ Relevé dans `FarmerRegisterer` (verrous), `BaseItemAxe` et `BlockAngelicWater`.
 | 15 / 30 / 75 / 90 / 100 | Seedplanters | 3 / 6 / 15 / 18 / 20 | déjà au chapitre 5a |
 | 35 / 60 / 80 / 100 | Cultures | 7 / 12 / 16 / 20 | déjà au chapitre 3 |
 | 40 | Crusher | 8 | déjà au chapitre 4 |
-| 45 / 55 | Graines d'herbe colorée, herbe colorée | 9 / 11 | **non, écartées par le joueur** |
-| 50 | Graine de racinier | 10 | **non, écartée par le joueur** |
+| 45 / 55 | Graines d'herbe colorée, herbe colorée | 9 / 11 | oui, le 2026-11-24 (§ 44) — écartées une première fois, redemandées |
+| 50 | Graine de racinier | 10 | oui, le 2026-11-24 (§ 44) — écartée une première fois, redemandée |
 | 70 | Totem de fertilité | 14 | déjà au chapitre 5a |
 | 95 | Trône du fermier | 19 | oui, le 2026-11-19 (§ 36) |
 | 100 | Hache en endium (abattage), plastron en endium | 20 | oui (le plastron l'était au chapitre 7) |
 
 Les herbes colorées et le racinier ont été portés puis **retirés à la demande du joueur** après
-lecture du résultat. Leurs relevés restent valables pour qui voudrait y revenir : dix couleurs
+lecture du résultat (2026-11-08), puis **redemandés le 2026-11-24** et refaits avec les vraies
+textures de PalaJobs : voir § 44. Le relevé ci-dessous est celui de la première version. Leurs relevés restent valables pour qui voudrait y revenir : dix couleurs
 en métas, une graine qui change la terre labourée **humide** en herbe teinte ; un arbre de trois
 bûches dont la racine descend en **une seule colonne** jusqu'à la bedrock ou l'obsidienne (pas
 l'obsidienne renforcée), recette à base de **bûches** de bois mort. Leurs verrous restent dans
-`data/jobs.json`, inertes.
+`data/jobs.json`, inertes jusqu'au § 44.
 
 ### Hache en endium — `BaseItemAxe.onBlockDestroyed`, `breakTree`
 
@@ -1190,10 +1191,13 @@ spawner sur le wiki (« spawner customisé »). Niveaux du code ×5. Périmètre
 | 40 / 60 / 80 / 100 | Obsidiennes infusées : structures de spawner I à IV | oui — §32 |
 | — | Contrôleur de spawner | oui — §32 (pas de verrou dans l'original) |
 | 75 | Amélioration de butin de spawner (les trois autres : Mineur 85, Alchimiste 75 et 90) | oui — §32 |
-| 10 / 15 / 35 / 45–100 | Bateau en bambou, cage et familiers, mini golem, détecteur, clé, étiquette, totem, autel, boussole, poudres | **non, écartés par le joueur** |
+| 10 / 45 / 90 / 100 | Bateau en bambou, knocker infernal, étiquette en endium, totem en endium, autel de sacrifice, boussoles, poudre de perlimpinpin | oui, le 2026-11-24 (§ 44) |
+| 15 | Cage à familier (et les familiers) | **pas encore** — lot suivant |
+| 35 / 50 / 85 | Mini golem, détecteur de spawner, clé en paladium | oui, venus avec leurs modules (golem, pillage, stockage) |
 | 95 | Trône du chasseur | oui, le 2026-11-19 (§ 36) |
 
-Les verrous non portés restent dans `data/jobs.json`, inertes.
+Le seul verrou du Chasseur encore sans objet est celui de la cage à familier ; il reste dans
+`data/jobs.json`, inerte.
 
 ### Canne à pêche en paladium — `ItemPaladiumFishingRod`
 
@@ -1356,7 +1360,7 @@ chaudron, portails, enchantements mystiques.
 | 30 / 45 / 60 / 100 | Blocs et clés de portail (améthyste, titane, paladium, endium) | oui |
 | 100 | Bloc d'angle, cœur et pollen d'endium | oui |
 | 100 | Jambières et bottes en endium | déjà au chapitre 7 |
-| 15 | Table d'alchimiste | **non, écartée par le joueur** |
+| 15 | Table d'alchimiste | oui, le 2026-11-24 (§ 44) |
 | 40 | Totem fleuri | oui (jardin, plan de construction) |
 | 75 / 90 | Améliorations de spawner | **non** (sans contrôleur de spawner) |
 | 95 | Trône de l'alchimiste | oui, le 2026-11-19 (§ 36) |
@@ -4271,3 +4275,166 @@ Le contenu et les délais de DoHy sont donc **calibrés sur sa propre économie*
   font des kits de grade un petit revenu hebdomadaire (de 2 à 6 % de la valeur du grade par mois) ;
   le kit joueur ne donne que de quoi manger et s'éclairer.
 - **Pas de kit de faction ni de kit d'événement** : rien dans DoHy n'en appelle un pour l'instant.
+
+---
+
+## 44. Les objets de déblocage qui manquaient (chapitre 25, 2026-11-24)
+
+Demandés le 2026-11-24 (« Fais 1 (en utilisant les fichiers a ta disposition et les textures, aide
+toi du wiki pour l'utilisation) ajoute aussi un support jei pour les crafts dans la palamachine »).
+Onze des douze verrous de métier qui n'avaient pas d'objet en ont un ; le douzième, la **cage à
+familier**, arrive avec les familiers (lot suivant).
+
+Relevé au bytecode dans PalaMod 10.3.0 (`ItemEndiumNametag`, `ItemInfernalKnocker`,
+`ItemHunterCompass`, `BlockEndiumTotem`, `TileEntityEndiumTotem`, `BlockSacrificeHotel`,
+`BlockPerlinpinpinPower`, `PRegister_Craft`) et PalaJobs 8.0.0 (`EntityBambooBoat`,
+`ModelBambooBoat`, `BlockColoredGrassSeeds`, `BlockColoredGrass`, `BlockColoredTallGrass`,
+`CraftRegistry`, le racinier) ; l'usage au wiki. Textures : pack officiel et PalaJobs. Modèles :
+la table d'alchimiste traduite de son fichier Techne (`ModelAlchemyCreator`, 38 pièces), le bateau
+de `ModelBambooBoat`.
+
+### Les verrous
+
+| Métier | Niveau | Objet |
+|---|---|---|
+| Chasseur | 10 | Bateau en bambou |
+| Chasseur | 45 | Knocker infernal |
+| Chasseur | 90 | Étiquette en endium |
+| Chasseur | 100 | Totem en endium, autel de sacrifice, poudre de perlimpinpin, boussoles de chasseur (5 paliers) |
+| Fermier | 45 | Graines d'herbe colorée (10 couleurs) |
+| Fermier | 50 | Graine de racinier |
+| Fermier | 55 | Hautes herbes colorées (10 couleurs) |
+| Alchimiste | 15 | Table d'alchimiste |
+
+Une famille de variantes (couleurs, paliers) passe par un tag : `#palamod:colored_grass_seeds`,
+`#palamod:colored_tall_grass`, `#palamod:hunter_compass`.
+
+### Le rituel d'endium — `BlockEndiumTotem`, `TileEntityEndiumTotem`
+
+- **La structure**, relevée dans le code : le **totem** au centre ; quatre **autels de sacrifice**
+  à trois blocs, au nord, au sud, à l'est et à l'ouest ; **40 poudres de perlimpinpin** en contour
+  de croix grecque autour (x de −2 à 2 à z = ±5, z de −2 à 2 à x = ±5, et les quatre coudes de −4
+  à −2 et de 2 à 4 à ±2). La poudre se pose à plat et dessine un trait ou une croix selon ses voisines.
+- **Les offrandes** : un autel est servi par un joueur **debout dessus**, ou (pour le solo) par
+  une **pierre de capture pleine** posée d'un clic droit ; accroupi, main vide, on la reprend
+  tant qu'aucun rituel ne tourne.
+- **Le rituel** démarre quand la croix est fermée, les quatre autels servis et un joueur dans la
+  zone (±10 blocs). La poudre étincelle ; au bout de 5 s, le totem appelle des **zombies en armure
+  complète en paladium** (un toutes les 3 s, quatre debout au plus, sans butin d'armure). Une barre
+  de boss compte les **25 zombies** à tuer.
+- **Rompu** si une poudre ou un autel est cassé, si une offrande s'en va, ou si plus personne
+  n'est dans la zone depuis **10 secondes** (un mot prévient à la sortie : on peut poursuivre un
+  zombie hors de la croix) : le message dit pourquoi, les zombies repartent, le compteur revient à
+  zéro, les offrandes restent. Un spectateur ne tient pas le rituel.
+- **À 25** : les joueurs debout sur les autels meurent (le sacrifice), les pierres sont
+  consommées. Un clic sur le totem : 3 s de flammes, puis le totem laisse un **coffre** avec un
+  **pépite d'endium** au milieu (case 13).
+- Recettes : totem = venin de serpent, plume de perroquet, écailles de tortue / fer de chèvre,
+  table d'enchantement, fragment de crâne de wither / crochet de méduse, coquille d'escargot, bave
+  de panda ; autel = charbon mixé de paladium, livre / amulette du chasseur, mini golem, amulette
+  de voyance / 3 obsidiennes ; poudre (×1) = glowstone, lingot de paladium, sucre / lingot, boule de
+  slime, lingot / poudre à canon, lingot, redstone.
+
+### Objets du chasseur
+
+- **Étiquette en endium** : sur une créature déjà nommée, le nom passe en aqua et la créature ne
+  disparaît plus. Trois créatures par joueur : la quatrième rend son nom d'origine à la première.
+  Une créature morte sort de la liste. Recette : pépite d'endium / findium, étiquette, findium /
+  lingot de paladium, findium, lingot de paladium.
+- **Knocker infernal** : une épée de bois (4 de dégâts) qui projette la cible au loin dans le sens du
+  regard (la poussée du code : `-sin(yaw) × 3 × 0,5`, 0,1, `cos(yaw) × 3 × 0,5`), withers compris ;
+  pas enchantable. Recette en colonne : lingot de paladium, orbe de recul, bâton en paladium.
+- **Bateau en bambou** : trois fois plus rapide qu'un bateau (le code de PalaJobs : vitesse 1,05
+  et accélération 0,21 au lieu de 0,35 et 0,07). Ici : une poussée de 0,08 ajoutée aux 0,04 du
+  bateau quand on rame des deux mains. Modèle et texture de PalaJobs : la texture ne dessine que le
+  fond (la place des bords est transparente), c'est donc un **radeau**, comme sur Paladium ; la
+  planche et le siège sont à la hauteur du radeau de 26.2. Recette : 5 blocs de bambou en U.
+- **Boussoles de chasseur** (amethyste, titane, paladium, endium, légendaire) : les 32 images de
+  chaque palier. Accroupi, un clic droit sur une créature en fait la **proie** ; accroupi dans le
+  vide, on l'efface (la boussole suit alors le monstre le plus proche). Chaque seconde l'aiguille
+  pointe la plus proche de l'espèce dans la portée du palier — **48, 96, 192, 384 et 768 blocs** —
+  et la barre d'action dit à combien elle est. Recettes : findium, unclaim finder (vert, orange,
+  rouge), lingot du palier, boussole ; l'endium ajoute une pépite, la légendaire remplace la
+  boussole par un paladium compressé.
+
+### La table d'alchimiste — `alchemy_creator`, `AlchemyCreatorRecipes`
+
+- Un bloc orienté au modèle de PalaMod. **Deux ateliers dans le même écran** : potions (4 entrées,
+  10 s) et flèches (4 entrées, seize flèches en 1 s). Les entrées sont en position fixe : un
+  ingrédient, une verrue du Nether, un second ingrédient, une fiole vide ou une flèche.
+- Potions : **poison** (œil d'araignée, verrue, patate empoisonnée), **feu** (poudre de blaze,
+  verrue, boule de feu), **wither** (fragment de crâne de wither, verrue, os), **maladie** (poudre
+  de blaze, verrue, œil d'araignée : potion jetable, nausée II 10 s).
+- Les trois premières se boivent et **imprègnent** le buveur 100 s (2 000 ticks) : chaque coup
+  qu'il porte ajoute wither I 5 s, poison I 0,5 s ou 2 s de feu.
+- Flèches ×16 : **poison** (poison II 6 s), **wither** (wither I 9 s), **lenteur** (œil fermenté,
+  verrue, carotte : lenteur III 5 s), **switch** (deux perles ; déjà portée), **givre** (bloc de
+  neige, verrue, boule de slime : effet Givre 20 s, qui **empêche le rebond du slimepad**). Comme
+  dans le code, l'effet ne part que des flèches tirées à l'**arc en paladium**.
+- Recette de la table : poudre de blaze, paladium compressé, poudre de blaze / lingot de titane,
+  cœur en paladium, lingot de titane / 3 lingots de titane.
+
+### Herbes colorées — `BlockColoredGrassSeeds`, `BlockColoredGrass`, `BlockColoredTallGrass`
+
+- **Dix couleurs** (noir, rouge, vert foncé, marron, bleu, violet, jaune, orange, rose, vert). La
+  graine = colorant + graine de blé, sans forme.
+- Plantée sur de la **terre labourée**, à la lumière (9 au moins), elle pousse comme une culture
+  (plus vite sur terre humide) ; quand elle pousse, la terre devient **herbe colorée** de sa
+  couleur et la graine disparaît. La poudre d'os la fait pousser d'un coup. L'herbe colorée ne se
+  récupère pas (elle rend de la terre), comme le dit le wiki.
+- **Hautes herbes colorées** = graine colorée + herbe : décoration, sur terre, terre labourée ou
+  herbe colorée.
+- Textures de PalaJobs (dessus, flanc et graines), teintes par couleur comme l'herbe vanilla.
+
+### Le racinier
+
+- **Graine de racinier** : graine de blé / bois mort, seau d'eau angélique, bois mort / 3 buissons
+  morts. Sur terre labourée, elle pousse en trois temps (la formule de culture de 1.7.10), puis
+  **germe** : le feuillage à sa place, trois bûches de racinier dessous, et la **racine** qui
+  descend d'un bloc par seconde en une seule colonne, jusqu'à la bedrock.
+- Elle s'arrête sur ce qu'elle ne peut pas traverser : la liste du code est la bedrock et
+  l'obsidienne (`JobsConstants.ROOT_BLACKLISTED_BLOCKS`) ; ici aussi l'obsidienne pleureuse, les
+  blocs incassables et tout bloc qui porte des données (coffre, machine). Le **feuillage rougit**
+  quand elle est arrêtée — à la bedrock comme à l'obsidienne : c'est la **profondeur** de la racine
+  qui dit s'il y a un bunker. L'obstacle parti, elle **repart** (le code revoit le bloc du dessous
+  chaque seconde) et le feuillage reverdit.
+- La racine est fine, on passe au travers et on y grimpe. Casser le feuillage (ou une racine)
+  retire la colonne en dessous ; feuillage et racine ne rendent rien. Bûche (orientable, dans
+  `#logs`) et planches (4 par bûche) de racinier.
+
+### JEI
+
+- **Si JEI est installé**, deux catégories : la **palamachine** (le centre, les quatre coins et la
+  sortie, comme dans la machine) et la **table d'alchimiste** (potions et flèches), avec leur bloc
+  comme poste de fabrication. L'API de JEI n'est là qu'à la compilation : sans JEI, rien ne
+  change.
+
+### Code
+
+- `palamod/unlock/` : `PalaUnlocks` (registres), `EndiumRitual`, `EndiumTotemBlock(Entity)`,
+  `SacrificeAltarBlock(Entity)`, `PerlinpinpinPowderBlock`, `EndiumNametagItem`,
+  `InfernalKnockerItem`, `BambooBoat`, `HunterCompassItem`, `AlchemyCreatorBlock(Entity)`,
+  `AlchemyCreatorRecipes`, `ImbuePotionItem`, `PalaArrowItem`, `UnlockEffect`, `UnlockEvents`,
+  `GrassColor`, `ColoredGrassSeedBlock`, `ColoredTallGrassBlock`, `RootSeedsBlock`,
+  `RootLeavesBlock(Entity)`, `RootColumnBlock`, `PetHooks` (l'attache des familiers).
+- Client : `client/unlock/UnlockClient` (écran, teintes, rendu du bateau),
+  `client/jei/DoHyJeiPlugin`, `PalamachineCategory`, `AlchemyCreatorCategory`.
+- Assets : `tools/unlock_assets.py` (≈ 400 fichiers, `--check` en CI) ; `tools/techne_json.py`
+  traduit un modèle Techne en modèle de bloc.
+- Encyclopédie : quatre fiches (rituel d'endium, objets chasseur, table alchimiste, herbes et
+  racinier).
+
+### Écarts
+
+- **Les offrandes en solo** : une pierre de capture pleine sert d'offrande ; l'original voulait
+  quatre joueurs sur les autels. **Les zombies** viennent du totem ; l'original comptait ceux de la
+  nuit.
+- **La boussole** : la cible venait du serveur de Paladium (canal `huntercompass`), elle n'est pas
+  dans le mod. Ici elle suit une proie choisie ; le palier ne change que la portée.
+- **La table d'alchimiste** montre ses deux ateliers ensemble au lieu de deux onglets.
+- **Le racinier** : la racine se traverse et s'escalade ; elle s'arrête aussi devant un bloc à
+  données, pour ne pas manger un coffre.
+- **Le bloc de bambou** est celui de vanilla ; **la boule de glu bleue**, pas portée, est remplacée
+  par une boule de slime dans la recette de la poudre.
+- **Le verrou du Fermier 55** visait l'herbe colorée elle-même, qui ne se récupère pas : il porte
+  sur les hautes herbes colorées, pour qu'il verrouille quelque chose.
