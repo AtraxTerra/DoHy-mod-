@@ -72,7 +72,7 @@ public class InvokerStoneItem extends Item {
                 1.0d, 0.02d);
         level.playSound(null, boss.getX(), boss.getY(), boss.getZ(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE,
                 1.6f, 0.6f);
-        DimMinerManager.message(player, ChatFormatting.DARK_PURPLE, "boss_awake");
+        DimMinerManager.message(player, ChatFormatting.LIGHT_PURPLE, "boss_awake");
         context.getItemInHand().consume(1, player);
         return InteractionResult.SUCCESS;
     }

@@ -1903,8 +1903,8 @@ portail se referme si son cadre est incomplet ou sa nappe trouée. Incassable, s
   plateforme 6 × 5 d'obsidienne wither et un cadre. **Écart** : ce cadre était décoratif (le kick
   ramenait au serveur Faction) ; il porte ici le **portail de sortie**. Après onze sections sans sol
   (des océans), une plateforme au niveau de la mer.
-- **Dans la dimension** : aucun monstre hors de ceux des spawners des ruines (plus bas), pas de dégâts
-  de chute, aucun conteneur posé, l'obsidienne wither ne se casse pas. **Écart** : une explosion n'y casse aucun bloc — la TNT abattrait les
+- **Dans la dimension** : aucun monstre hors de ceux des spawners des ruines et du gardien des
+  cristaux (plus bas), pas de dégâts de chute, aucun conteneur posé, l'obsidienne wither ne se casse pas. **Écart** : une explosion n'y casse aucun bloc — la TNT abattrait les
   minerais sans payer de points. Une barre en haut de l'écran donne les points et le temps restants
   (`UIDimMinerOverlay`). Le créatif et le spectateur échappent aux règles de pose, de casse et de
   bordure (`bypass`).
@@ -1974,12 +1974,52 @@ monstres. Ces ruines les remplacent, **fréquentes**, chacune autour d'un **spaw
 
 Dureté 5, se rend lui-même ; au four, une **Pierre d'Invocation** (1 XP). Couches du findium, filon
 de 3 : une chance sur deux par chunk dans l'overworld (0,4 à l'origine), un filon par chunk dans
-la dimension. La pierre ne servait qu'aux runes de donjon de PalaRPG, non porté.
+la dimension. La pierre ne servait qu'aux runes de donjon de PalaRPG, non porté ; ici, elle entre
+dans les clés et le sac de donjon, et éveille le gardien des cristaux.
+
+### Le gardien des cristaux — `EntityMinerBoss` (2026-11-24)
+
+Enregistré mais jamais invoqué chez Paladium, et refusé par le filtre anti-monstres de sa propre
+dimension. Porté d'après le bytecode de l'entité, de ses cinq attaques et de son IA, avec son
+modèle (55 pièces), ses animations et ses sept textures.
+
+- **L'éveil** (**ajout**) : la Pierre d'Invocation, accroupi + clic droit au sol, dans la dimension
+  du Mineur seulement. Elle se brise. Un seul gardien à 128 blocs, jamais en paisible (il y
+  disparaîtrait aussitôt), et il lui faut 2 × 2 × 2 blocs libres. Il reste là jusqu'à sa mort.
+- **Fiche** : 2 × 2 blocs, 1 000 PV, insensible au recul et au feu, lent (0,2). Pas de coup
+  ordinaire : il marche sur le joueur le plus proche qu'il voit et, à un peu plus de 4 blocs, tire
+  une attaque ; la suivante attend 130 ticks après le départ de la précédente.
+- **Six cristaux** : tant qu'il en reste, rien ne le blesse, sauf **étourdi**. Étourdi, il est
+  figé 80 ticks ; le premier coup le réveille, renvoie **14 dégâts** à ce qui l'a frappé (une
+  flèche les prend à la place du tireur) et fend un cristal ; deux coups le brisent. Le coup qui ne
+  brise pas le dernier projette le joueur. Les six brisés, il encaisse normalement et ne
+  s'étourdit plus. Sa texture perd un cristal à chaque fois.
+- **Les attaques**, annoncées bras levés, frappent au 45e tick :
+
+| Attaque | Annonce | Effet | Chances, de 0 à 6 cristaux brisés |
+|---|---|---|---|
+| Coup de poing | bras droit | à moins de 3,5 blocs, s'il voit sa cible : mort | 75, 80, 85, 35, 20, 17, 18 |
+| Toupie (dès 4) | deux bras | il tourne ; à moins de 3,5 blocs, du 45e au 60e tick : mort | —, —, —, —, 28, 33, 43 |
+| Onde de choc (dès 3) | bras gauche | il frappe le sol ; à moins de 5 blocs au 50e tick : mort | —, —, —, 40, 32, 35, 38 |
+| Frappe au sol (avant 6) | deux bras | la même, puis **étourdi** | 25, 20, 15, 25, 20, 15, — |
+
+- **S'il tue sa cible, il se reforme** : six cristaux, 1 000 PV. Dans la dimension, la mort est
+  évitée (retour à l'arrivée) ; le combat est à reprendre.
+- **Butin** : de 0 à 2 pépites d'endium, plus de 0 à Butin ; 5 XP.
+- **Écarts** :
+  - la barre de boss compte les cristaux (violette, en six), puis la vie (rouge) ; l'original
+    montrait la vie, pleine jusqu'au dernier cristal ;
+  - ses cristaux sont gardés au rechargement (l'original les oubliait) ;
+  - l'onde de choc lançait 24 blocs en huit arcs, à 4 blocs de lui : sans type, ils n'avaient
+    aucun effet, et c'étaient des blocs d'air. Il en reste une gerbe d'éclats du sol, sans effet ;
+  - une flèche tirée sur lui étourdi aurait planté l'original (il projetait la flèche comme un
+    être vivant) : elle fend son cristal, sans renvoi ni projection ;
+  - à la marche, le bras droit se balance comme le gauche (le modèle écrasait son angle, une
+    faute de frappe) ; la toupie tourne au rendu, l'orientation n'arrivant au client que tous les
+    trois ticks.
 
 ### Ce qui n'est pas porté, et ce qui change de forme
 
-- Le **boss** `EntityMinerBoss` : enregistré mais jamais invoqué dans l'original, et refusé par le
-  filtre anti-monstres de sa propre dimension.
 - L'ambiance du client : éclairs et chauves-souris aléatoires, tremblement de caméra et brouillard
   qui se resserrent avec les points, écran de transition. Il reste un ciel noir et un brouillard
   fixe.
