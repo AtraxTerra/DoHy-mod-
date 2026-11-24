@@ -133,7 +133,8 @@ def main():
                 if channel not in targets:
                     continue
                 target, factory = targets[channel]
-                if not isinstance(frames, dict):
+                # une valeur fixe : un nombre, une liste, ou {"vector": ...} sans temps
+                if not isinstance(frames, dict) or any(key in frames for key in ("vector", "pre", "post")):
                     frames = {"0.0": frames}
                 keys = sorted(frames.items(), key=lambda item: float(item[0]))
                 emit('            .addAnimation("%s", new AnimationChannel(AnimationChannel.Targets.%s,' % (

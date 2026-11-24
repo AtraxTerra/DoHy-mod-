@@ -14,6 +14,12 @@ import fr.atraxterra.dohy.client.hunter.ElephantRenderer;
 import fr.atraxterra.dohy.client.mount.DancarokGeometry;
 import fr.atraxterra.dohy.client.mount.DancarokModel;
 import fr.atraxterra.dohy.client.mount.DancarokRenderer;
+import fr.atraxterra.dohy.client.mount.RavirokGeometry;
+import fr.atraxterra.dohy.client.mount.RavirokModel;
+import fr.atraxterra.dohy.client.mount.RavirokRenderer;
+import fr.atraxterra.dohy.client.mount.TedarokGeometry;
+import fr.atraxterra.dohy.client.mount.TedarokModel;
+import fr.atraxterra.dohy.client.mount.TedarokRenderer;
 import fr.atraxterra.dohy.client.ui.screen.KitChestScreen;
 import fr.atraxterra.dohy.client.ui.screen.MachineDesigns;
 import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen;
@@ -113,6 +119,8 @@ public final class DoHyClient {
         event.registerEntityRenderer(fr.atraxterra.dohy.faction.garrison.DoHyGarrison.SOLDIER.get(),
                 fr.atraxterra.dohy.client.war.GarrisonSoldierRenderer::new);
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
+        event.registerEntityRenderer(PalaMount.RAVIROK.get(), RavirokRenderer::new);
+        event.registerEntityRenderer(PalaMount.TEDAROK.get(), TedarokRenderer::new);
         event.registerEntityRenderer(PalaHunter.ELEPHANT.get(), ElephantRenderer::new);
         event.registerEntityRenderer(DoHyAgri.TRACTOR.get(), TractorRenderer::new);
         event.registerEntityRenderer(fr.atraxterra.dohy.farmbot.DoHyFarmBots.FARM_BOT.get(),
@@ -168,6 +176,8 @@ public final class DoHyClient {
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DancarokModel.LAYER, DancarokGeometry::createBodyLayer);
+        event.registerLayerDefinition(RavirokModel.LAYER, RavirokGeometry::createBodyLayer);
+        event.registerLayerDefinition(TedarokModel.LAYER, TedarokGeometry::createBodyLayer);
         event.registerLayerDefinition(fr.atraxterra.dohy.client.throne.ThroneGeometry.LAYER,
                 fr.atraxterra.dohy.client.throne.ThroneGeometry::createLayer);
         event.registerLayerDefinition(ElephantModel.CHILD, ElephantGeometry::createBoneLayer);

@@ -93,7 +93,14 @@ public final class FarmlandSpawner {
             new Pool("nether", Zone.NETHER, 11, false, Placement.GROUND, List.of(new Entry("zombified_piglin", 6),
                     new Entry("magma_cube", 4), new Entry("wither_skeleton", 3))),
             new Pool("nether_ciel", Zone.NETHER, 2, false, Placement.AIR, List.of(new Entry("ghast", 1))),
-            new Pool("end", Zone.END, 6, false, Placement.GROUND, List.of(new Entry("enderman", 1))));
+            new Pool("end", Zone.END, 6, false, Placement.GROUND, List.of(new Entry("enderman", 1))),
+            // les montures sauvages de Paladium vivaient dans sa Farmland : une de chaque, a capturer
+            new Pool("monture_prairie", Zone.MEADOW, 1, true, Placement.GROUND,
+                    List.of(new Entry("palamod:dancarok", 1))),
+            new Pool("monture_collines", Zone.HILLS, 1, true, Placement.GROUND,
+                    List.of(new Entry("palamod:ravirok", 1))),
+            new Pool("monture_foret", Zone.FOREST, 1, true, Placement.GROUND,
+                    List.of(new Entry("palamod:tedarok", 1))));
 
     /** Les colonnes de chaque coin ou faire apparaitre (une sur deux), calculees une fois. */
     private static final Map<Zone, List<int[]>> COLUMNS = new EnumMap<>(Zone.class);

@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#palamod:tedarok_spawns",
+  "spawners": {
+    "type": "palamod:tedarok",
+    "weight": 3,
+    "minCount": 1,
+    "maxCount": 1
+  }
+}

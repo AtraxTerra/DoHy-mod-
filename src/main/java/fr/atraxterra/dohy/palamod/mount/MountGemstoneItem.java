@@ -48,12 +48,12 @@ public class MountGemstoneItem extends Item {
         MountGem gem = stack.get(PalaMount.MOUNT_GEM.get());
         if (gem == null || gem.isWild()) {
             return Component.translatable("item.palamod.mount_gemstone.of",
-                            Component.literal(gem == null ? MountGem.DEFAULT_NAME : gem.name()))
+                            Component.literal(gem == null ? MountSpecies.DANCAROK.label() : gem.species().label()))
                     .withStyle(ChatFormatting.YELLOW)
                     .append(Component.translatable("item.palamod.mount_gemstone.wild").withStyle(ChatFormatting.RED));
         }
         return Component.translatable("item.palamod.mount_gemstone.of",
-                Component.literal(MountGem.DEFAULT_NAME).withStyle(ChatFormatting.GOLD)).withStyle(ChatFormatting.YELLOW);
+                Component.literal(gem.species().label()).withStyle(ChatFormatting.GOLD)).withStyle(ChatFormatting.YELLOW);
     }
 
     @Override

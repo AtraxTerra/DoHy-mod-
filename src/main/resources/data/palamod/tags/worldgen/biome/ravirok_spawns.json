@@ -1,0 +1,17 @@
+{
+  "values": [
+    "minecraft:windswept_hills",
+    "minecraft:windswept_gravelly_hills",
+    "minecraft:windswept_forest",
+    "minecraft:grove",
+    "minecraft:snowy_slopes",
+    "minecraft:cherry_grove",
+    "minecraft:stony_peaks",
+    "minecraft:jagged_peaks",
+    "minecraft:frozen_peaks",
+    {
+      "id": "#c:is_mountain",
+      "required": false
+    }
+  ]
+}

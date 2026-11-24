@@ -12,27 +12,28 @@ import java.util.UUID;
 
 /**
  * Ce que porte une gemme de monture : le NBT de {@code ItemMountGemstone}
- * ({@code Owner}, {@code Name}, {@code MountUUID}, {@code Xp}, {@code SharedXp},
- * {@code Food}, {@code Damage}, {@code healStart}, {@code healEnd},
- * {@code expireTime}).
+ * ({@code Owner}, {@code Name}, {@code MountUUID}, {@code Type}, {@code Xp},
+ * {@code SharedXp}, {@code Food}, {@code Damage}, {@code healStart},
+ * {@code healEnd}, {@code expireTime}).
  *
  * <p>Sans proprietaire, la gemme est <b>sauvage</b> : elle sort d'une capture
  * et s'apprivoise dans le gestionnaire d'enclos. Les horodatages sont en
  * millisecondes de temps reel, comme l'original : un soin de 1 h 30 avance
  * aussi jeu ferme. {@code -1} veut dire « pas de soin » et « pas de
- * peremption en cours ».
+ * peremption en cours ». Une gemme d'avant les trois especes n'a pas de
+ * {@code species} : c'est un Dancarok.
  */
-public record MountGem(UUID mountId, Optional<UUID> owner, String name, float xp, int sharedXp, int food,
-                       float damage, long healStart, long healEnd, long expireTime) {
+public record MountGem(UUID mountId, MountSpecies species, Optional<UUID> owner, String name, float xp,
+                       int sharedXp, int food, float damage, long healStart, long healEnd, long expireTime) {
 
-    public static final String DEFAULT_NAME = "Dancarok";
     /** {@code CSWithdrawMount} : 2 592 000 000 ms, trente jours. */
     public static final long EXPIRY_MS = 2_592_000_000L;
 
     public static final Codec<MountGem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             UUIDUtil.CODEC.fieldOf("mount_id").forGetter(MountGem::mountId),
+            MountSpecies.CODEC.optionalFieldOf("species", MountSpecies.DANCAROK).forGetter(MountGem::species),
             UUIDUtil.CODEC.optionalFieldOf("owner").forGetter(MountGem::owner),
-            Codec.STRING.optionalFieldOf("name", DEFAULT_NAME).forGetter(MountGem::name),
+            Codec.STRING.optionalFieldOf("name", "").forGetter(MountGem::name),
             Codec.FLOAT.optionalFieldOf("xp", 0.0f).forGetter(MountGem::xp),
             Codec.INT.optionalFieldOf("shared_xp", MountData.DEFAULT_SHARED_XP).forGetter(MountGem::sharedXp),
             Codec.INT.optionalFieldOf("food", 0).forGetter(MountGem::food),
@@ -45,9 +46,15 @@ public record MountGem(UUID mountId, Optional<UUID> owner, String name, float xp
     public static final StreamCodec<ByteBuf, MountGem> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
 
     /** {@code ItemCaptureSword.hitEntity} : XP 0, partage 50 %, sans proprietaire. */
-    public static MountGem wild() {
-        return new MountGem(UUID.randomUUID(), Optional.empty(), DEFAULT_NAME, 0.0f,
+    public static MountGem wild(MountSpecies species) {
+        return new MountGem(UUID.randomUUID(), species, Optional.empty(), species.label(), 0.0f,
                 MountData.DEFAULT_SHARED_XP, 0, 0.0f, -1L, -1L, -1L);
+    }
+
+    /** Le nom choisi, ou celui de l'espece (une gemme d'avant n'en gardait pas). */
+    @Override
+    public String name() {
+        return name.isEmpty() ? species.label() : name;
     }
 
     public boolean isWild() {
@@ -63,7 +70,7 @@ public record MountGem(UUID mountId, Optional<UUID> owner, String name, float xp
     }
 
     public float maxHealth() {
-        return MountLevels.maxHealth(level());
+        return MountLevels.maxHealth(species, level());
     }
 
     public boolean isDead() {
@@ -84,19 +91,20 @@ public record MountGem(UUID mountId, Optional<UUID> owner, String name, float xp
      * nourriture pleine, PV pleins, partage a 50 %.
      */
     public MountGem tame(UUID player) {
-        return new MountGem(UUID.randomUUID(), Optional.of(player), name, xp, MountData.DEFAULT_SHARED_XP,
+        return new MountGem(UUID.randomUUID(), species, Optional.of(player), name, xp, MountData.DEFAULT_SHARED_XP,
                 MountData.MAX_FOOD, 0.0f, -1L, -1L, -1L);
     }
 
     public MountGem withCare(long start, long end) {
-        return new MountGem(mountId, owner, name, xp, sharedXp, food, damage, start, end, expireTime);
+        return new MountGem(mountId, species, owner, name, xp, sharedXp, food, damage, start, end, expireTime);
     }
 
     public MountGem withDamage(float value) {
-        return new MountGem(mountId, owner, name, xp, sharedXp, food, value, healStart, healEnd, expireTime);
+        return new MountGem(mountId, species, owner, name, xp, sharedXp, food, value, healStart, healEnd,
+                expireTime);
     }
 
     public MountGem withExpiry(long value) {
-        return new MountGem(mountId, owner, name, xp, sharedXp, food, damage, healStart, healEnd, value);
+        return new MountGem(mountId, species, owner, name, xp, sharedXp, food, damage, healStart, healEnd, value);
     }
 }
