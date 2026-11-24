@@ -42,7 +42,10 @@ try:
 except ImportError:  # l'apercu seul en a besoin
     np = None
 
-from PIL import Image, ImageDraw
+try:
+    from PIL import Image, ImageDraw
+except ImportError:  # la CI n'a pas Pillow : --check verifie alors le JSON et le Java, pas les images
+    Image = ImageDraw = None
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 RES = os.path.join(ROOT, "src", "main", "resources")
@@ -867,8 +870,9 @@ def miniature(machine):
 # Les pieces mobiles : texture d'entite et geometrie Java
 # --------------------------------------------------------------------------------------------
 
-def pack(machine, tex_images):
-    """Range les boites des pieces mobiles sur une texture (uv de boite de Minecraft)."""
+def layout(machine):
+    """Range les boites des pieces mobiles sur une texture (uv de boite de Minecraft) :
+    (largeur, hauteur, [(piece, boite, u, v, w, h, d)])."""
     W = 128
     x = y = row = 0
     placed = []
@@ -886,7 +890,12 @@ def pack(machine, tex_images):
     height = 16
     while height < y + row:
         height *= 2
-    atlas = Image.new("RGBA", (W, height), (0, 0, 0, 0))
+    return W, height, placed
+
+
+def paint_atlas(size, placed, tex_images):
+    """La texture des pieces mobiles : chaque face peinte de la matiere de sa boite."""
+    atlas = Image.new("RGBA", size, (0, 0, 0, 0))
     for mv, bx, u, v, w, h, d in placed:
         tile = tex_images[bx[6]]
         regions = [(u + d, v, w, d), (u + d + w, v, w, d), (u, v + d, d, h), (u + d, v + d, w, h),
@@ -895,7 +904,7 @@ def pack(machine, tex_images):
             for py in range(rh):
                 for pxl in range(rw):
                     atlas.putpixel((rx + pxl, ry + py), tile.getpixel((pxl % 16, py % 16)))
-    return atlas, placed
+    return atlas
 
 
 def java_name(name):
@@ -943,7 +952,7 @@ def geometry_java(machines, packs):
     for m in machines:
         if not m.moving:
             continue
-        atlas, placed = packs[m.name]
+        width, height, placed = packs[m.name]
         out.append("")
         out.append(f"    public static LayerDefinition create{java_name(m.name)}() {{")
         out.append("        MeshDefinition mesh = new MeshDefinition();")
@@ -956,7 +965,7 @@ def geometry_java(machines, packs):
                 out.append(f"                .texOffs({u}, {v}).addBox({r6(bx[0] - px)}F, {r6(bx[1] - py)}F, "
                            f"{r6(bx[2] - pz)}F, {w}F, {h}F, {d}F)")
             out.append(f"                , PartPose.offset({r6(px)}F, {r6(py)}F, {r6(pz)}F));")
-        out.append(f"        return LayerDefinition.create(mesh, {atlas.width}, {atlas.height});")
+        out.append(f"        return LayerDefinition.create(mesh, {width}, {height});")
         out.append("    }")
     out.append("}")
     return "\n".join(out) + "\n"
@@ -1339,12 +1348,13 @@ def json_bytes(data):
     return (json.dumps(data, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
 
-def outputs():
-    """Tous les fichiers ecrits par ce script : {chemin: octets}."""
+def outputs(images=True):
+    """Tous les fichiers ecrits par ce script : {chemin: octets ou image}. Sans images (pas de
+    Pillow), seulement le JSON et le Java."""
     files = {}
-    tex_images = texture_images()
+    tex_images = texture_images() if images else {}
     for name, img in tex_images.items():
-        files[os.path.join(ASSETS, "textures", TEX_DIR, name + ".png")] = png_bytes(img)
+        files[os.path.join(ASSETS, "textures", TEX_DIR, name + ".png")] = img
     files[os.path.join(ASSETS, "models", MODEL_DIR, "empty.json")] = json_bytes(
         {"textures": {"particle": f"dohy:{TEX_DIR}/andesite_casing"}, "elements": []})
     all_cells = {}
@@ -1363,9 +1373,11 @@ def outputs():
         files[os.path.join(ASSETS, "items", m.block + ".json")] = json_bytes(
             {"model": {"type": "minecraft:model", "model": f"dohy:item/machine/{m.name}"}})
         if m.moving:
-            atlas, placed = pack(m, tex_images)
-            packs[m.name] = (atlas, placed)
-            files[os.path.join(ASSETS, "textures", "entity", "machine", m.name + ".png")] = png_bytes(atlas)
+            width, height, placed = layout(m)
+            packs[m.name] = (width, height, placed)
+            if images:
+                files[os.path.join(ASSETS, "textures", "entity", "machine", m.name + ".png")] = \
+                    paint_atlas((width, height), placed, tex_images)
     files[os.path.join(JAVA, "client", "agri", "machine", "BigMachineGeometry.java")] = \
         geometry_java(MACHINES, packs).encode("utf-8")
     files[os.path.join(JAVA, "agri", "machine", "BigMachineShapes.java")] = \
@@ -1373,25 +1385,37 @@ def outputs():
     return files, tex_images, all_cells
 
 
+def same(path, data):
+    """Le fichier sur le disque est-il celui qu'on ecrirait ? Une image se compare pixel a
+    pixel (deux versions de Pillow ne compressent pas pareil)."""
+    if not os.path.exists(path):
+        return False
+    if isinstance(data, bytes):
+        return open(path, "rb").read() == data
+    on_disk = Image.open(path).convert("RGBA")
+    return on_disk.size == data.size and on_disk.tobytes() == data.convert("RGBA").tobytes()
+
+
 def main():
     args = sys.argv[1:]
-    files, tex_images, all_cells = outputs()
+    images = Image is not None
+    if not images and "--check" not in args:
+        raise SystemExit("Pillow manque : il faut 'pip install pillow' pour ecrire les textures.")
+    files, tex_images, all_cells = outputs(images)
     if "--check" in args:
-        stale = []
-        for path, data in files.items():
-            if not os.path.exists(path) or open(path, "rb").read() != data:
-                stale.append(os.path.relpath(path, ROOT))
+        stale = [os.path.relpath(path, ROOT) for path, data in files.items() if not same(path, data)]
         if stale:
             for path in stale:
                 print(f"::error file={path}::pas a jour : relancer 'python3 -I tools/agri_machine_assets.py'")
             sys.exit(1)
-        print(f"machines agricoles : {len(files)} fichiers a jour")
+        note = "" if images else " (sans Pillow : JSON et Java seulement, pas les textures)"
+        print(f"machines agricoles : {len(files)} fichiers a jour{note}")
         return
     for path, data in files.items():
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        if not os.path.exists(path) or open(path, "rb").read() != data:
+        if not same(path, data):
             with open(path, "wb") as fh:
-                fh.write(data)
+                fh.write(data if isinstance(data, bytes) else png_bytes(data))
     print(f"machines agricoles : {len(files)} fichiers ecrits")
     for m in MACHINES:
         print(f"  {m.name} : {len(all_cells[m.name])} cases sur {m.size[0] * m.size[1] * m.size[2]}")
