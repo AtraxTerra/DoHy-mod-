@@ -558,8 +558,8 @@ dimension (`farmland_built`) ; la changer la fait vider et redessiner.
 
 `FarmlandSpawner` : toutes les deux secondes, près de chaque joueur, jusqu'à six créatures
 arrivent à 14-72 blocs (jamais à moins de 10 d'un joueur). Chacune est tirée parmi les réserves
-à sa portée (les coins des chunks à moins de 72 blocs, la grotte à 96), d'autant plus qu'il leur
-en manque. Plafonds pour toute la carte, 200 créatures au plus :
+à sa portée — un coin dont une colonne est à 14-72 blocs de lui, la grotte à moins de 96 —,
+d'autant plus qu'il leur en manque. Plafonds pour toute la carte, 200 créatures au plus :
 
 | Réserve | Coin | Plafond | Espèces (poids) |
 |---|---|---|---|

@@ -21,8 +21,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,11 +125,7 @@ public final class FarmlandSpawner {
     /** Les colonnes de chaque coin ou faire apparaitre (une sur deux), calculees une fois. */
     private static final Map<Zone, List<int[]>> COLUMNS = new EnumMap<>(Zone.class);
     private static final List<int[]> DEEP_WATER = new ArrayList<>();
-    /** Par chunk : les coins qui y ont des colonnes, et ceux ou le lac est profond. */
-    private static final Map<Long, EnumSet<Zone>> CHUNK_ZONES = new HashMap<>();
-    private static final Set<Long> CHUNK_WATER = new HashSet<>();
     private static List<BlockPos> cave = List.of();
-    private static Set<Long> caveChunks = Set.of();
     /** Les effectifs du dernier passage, par reserve (pour le menu). */
     private static final Map<String, Integer> COUNTS = new LinkedHashMap<>();
 
@@ -140,15 +134,6 @@ public final class FarmlandSpawner {
 
     static void caveFloor(List<BlockPos> floor) {
         cave = List.copyOf(floor);
-        Set<Long> chunks = new HashSet<>();
-        for (BlockPos pos : floor) {
-            chunks.add(chunk(pos.getX() >> 4, pos.getZ() >> 4));
-        }
-        caveChunks = Set.copyOf(chunks);
-    }
-
-    private static long chunk(int cx, int cz) {
-        return ((long) cx << 32) | (cz & 0xFFFFFFFFL);
     }
 
     /** Ce que le dernier passage a compte dans cette reserve. */
@@ -171,11 +156,8 @@ public final class FarmlandSpawner {
             for (int z = -FarmlandMap.PLAY; z <= FarmlandMap.PLAY; z += 2) {
                 Zone zone = FarmlandMap.zone(x, z);
                 COLUMNS.get(zone).add(new int[] {x, z});
-                long key = chunk(x >> 4, z >> 4);
-                CHUNK_ZONES.computeIfAbsent(key, k -> EnumSet.noneOf(Zone.class)).add(zone);
                 if (zone == Zone.LAKE && !FarmlandMap.island(x, z) && FarmlandMap.depth(x, z) >= 3) {
                     DEEP_WATER.add(new int[] {x, z});
-                    CHUNK_WATER.add(key);
                 }
             }
         }
@@ -224,7 +206,11 @@ public final class FarmlandSpawner {
         COUNTS.putAll(counts);
     }
 
-    /** Ce qui est a portee d'un joueur : des coins, l'eau profonde du lac, la grotte. */
+    /**
+     * Ce qui est a portee d'un joueur : les coins dont une colonne est a 14-72 blocs de lui, l'eau
+     * profonde du lac (de meme), la grotte (a {@link #CAVE_DISTANCE} blocs). Une reserve hors de
+     * portee ne peut rien y faire apparaitre : la tirer perdrait l'essai.
+     */
     private record Reach(Set<Zone> zones, boolean water, boolean cave) {
         boolean allows(Pool pool) {
             return switch (pool.placement()) {
@@ -235,30 +221,42 @@ public final class FarmlandSpawner {
         }
     }
 
-    /** Les coins des chunks a moins de {@link #MAX_DISTANCE} blocs ; la grotte, a {@link #CAVE_DISTANCE}. */
     private static Reach reach(ServerPlayer player) {
-        int px = (int) Math.floor(player.getX()) >> 4;
-        int pz = (int) Math.floor(player.getZ()) >> 4;
-        int near = (MAX_DISTANCE >> 4) + 1;
-        int far = (CAVE_DISTANCE >> 4) + 1;
         EnumSet<Zone> zones = EnumSet.noneOf(Zone.class);
-        boolean water = false;
-        boolean inCave = false;
-        for (int dx = -far; dx <= far; dx++) {
-            for (int dz = -far; dz <= far; dz++) {
-                long key = chunk(px + dx, pz + dz);
-                inCave |= caveChunks.contains(key);
-                if (Math.abs(dx) > near || Math.abs(dz) > near) {
-                    continue;
-                }
-                EnumSet<Zone> here = CHUNK_ZONES.get(key);
-                if (here != null) {
-                    zones.addAll(here);
-                }
-                water |= CHUNK_WATER.contains(key);
+        for (Pool pool : POOLS) {
+            Zone zone = pool.zone();
+            if (pool.placement() != Placement.WATER && pool.placement() != Placement.CAVE && !zones.contains(zone)
+                    && ring(COLUMNS.get(zone), player)) {
+                zones.add(zone);
             }
         }
-        return new Reach(zones, water, inCave);
+        boolean inCave = false;
+        for (BlockPos pos : cave) {
+            if (player.distanceToSqr(pos.getX() + 0.5d, pos.getY(), pos.getZ() + 0.5d)
+                    <= (double) CAVE_DISTANCE * CAVE_DISTANCE) {
+                inCave = true;
+                break;
+            }
+        }
+        return new Reach(zones, ring(DEEP_WATER, player), inCave);
+    }
+
+    /** Une de ces colonnes (deux blocs sur deux) dans l'anneau ou {@link #place} cherche, a un bloc pres. */
+    private static boolean ring(List<int[]> columns, ServerPlayer player) {
+        if (columns == null) {
+            return false;
+        }
+        double min = MIN_DISTANCE - 2.0d;
+        double max = MAX_DISTANCE + 2.0d;
+        for (int[] column : columns) {
+            double dx = column[0] + 1.0d - player.getX();
+            double dz = column[1] + 1.0d - player.getZ();
+            double distance = dx * dx + dz * dz;
+            if (distance >= min * min && distance <= max * max) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Les creatures de la farmland encore la, par reserve. */
@@ -372,7 +370,7 @@ public final class FarmlandSpawner {
             }
             BlockPos pos = cave.get(random.nextInt(cave.size()));
             double distance = Math.sqrt(player.distanceToSqr(pos.getX() + 0.5d, pos.getY(), pos.getZ() + 0.5d));
-            return distance <= MAX_DISTANCE + 24 && level.hasChunk(pos.getX() >> 4, pos.getZ() >> 4)
+            return distance <= CAVE_DISTANCE && level.hasChunk(pos.getX() >> 4, pos.getZ() >> 4)
                     && level.getBlockState(pos).isAir() ? pos : null;
         }
         List<int[]> columns = pool.placement() == Placement.WATER ? DEEP_WATER : COLUMNS.get(pool.zone());

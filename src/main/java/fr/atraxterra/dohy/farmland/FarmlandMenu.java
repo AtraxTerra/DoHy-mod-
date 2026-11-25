@@ -45,11 +45,11 @@ public final class FarmlandMenu extends MenuController {
             case HAMLET -> "Villageois";
             case MUSHROOM -> "Champimeuh";
             case HILLS -> "Chevres, et une grotte";
-            case JUNGLE -> "Pandas, perroquets, elephants";
+            case JUNGLE -> "Elephants, pandas";
             case LAKE -> "Dauphins, gardiens";
             case BEACH -> "Tortues";
             case SWAMP -> "Sorcieres, slimes";
-            case NETHER -> "Wither, blazes, magma, ghasts";
+            case NETHER -> "Blazes, wither, ghasts";
             case END -> "Endermen, shulkers";
             default -> "";
         };
