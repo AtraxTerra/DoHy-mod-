@@ -193,6 +193,26 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-25 — la farmland : plus de créatures du métier
+
+**Demande** : « Pour la dimension farmland augmente le spawn des mobs métiers »
+(`docs/ORGANISATIONS.md`, lot 24e, « Les créatures »).
+
+- Plafonds doublés ou plus pour les créatures qui rapportent de l'XP de Chasseur ou
+  d'Alchimiste (environ 53 → 145 sur la carte) ; les autres gardent leurs nombres.
+- Les sept espèces du barème qui manquaient : cochons (prairie), chauves-souris et cubes de
+  soufre (grotte), gardiens (lac), blazes et brutes piglins (Nether ; les brutes ne se changent
+  pas en piglins zombifiés), shulkers (End).
+- Six essais toutes les deux secondes par joueur au lieu de trois, tirés seulement parmi les
+  réserves qui peuvent faire apparaître quelque chose près de lui ; 200 créatures au plus.
+- Cartes du menu : des textes qui tiennent (« Blazes, wither, ghasts », « Elephants, pandas ») ;
+  les infobulles listent les espèces sur deux lignes.
+- Vérifié en CI : les 37 espèces existent en 26.2 ; chaque nouvelle réserve fait apparaître la
+  sienne (la chauve-souris vit dix minutes, comme les animaux) ; les brutes restent des brutes
+  après trente secondes ; un cube de soufre tué se divise en deux petits qui gardent la marque de
+  la farmland (ils comptent dans le plafond). Même chasse d'une minute avant et après : forêt
+  63 → 236 créatures, prairie 75 → 272, Nether 85 → 331 ; tick moyen 12 à 17 ms.
+
 ### 2026-11-24 (suite) — vendre un tiroir plein, et le garder
 
 **Demande** : « avec le mod storage drawer j'aimerais vendre l'intégralité d'un drawer au /sell

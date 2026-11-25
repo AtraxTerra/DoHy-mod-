@@ -591,9 +591,13 @@ d'Alchimiste passent d'environ 53 à 145 sur la carte : plafonds doublés ou plu
 du barème qui manquaient (cochon, niveau 15 ; cube de soufre, 50 ; chauve-souris et gardien, 60 ;
 blaze, shulker et brute piglin, 80). Les autres (loups, chevaux, ânes, villageois, champimeuh,
 chèvres, pandas, perroquets, dauphins, tortues, slimes, piglins zombifiés, montures) gardent
-leurs nombres. Avant, chaque essai tirait une réserve sur toute la carte : près du joueur, un
-essai sur deux ou trois visait un coin hors de portée et se perdait. Les morts sont remplacés
-aussi vite que le joueur les tue.
+leurs nombres. Avant, chaque essai tirait une réserve sur toute la carte, et ceux qui visaient
+un coin hors de portée du joueur (souvent vide : les monstres disparaissent à 128 blocs de lui)
+se perdaient. Mesuré en CI, même scénario avant et après — après quatre minutes de remplissage,
+un chasseur tue pendant une minute, toutes les deux secondes, tout ce qui rapporte à moins de
+72 blocs : forêt 63 → 236 créatures, prairie 75 → 272, Nether 85 → 331 (dont 126 cubes de
+magma, qui se divisent) ; au départ, autour de lui, 30 → 84, 24 → 93 et 19 → 70. Le tick moyen
+du serveur intégré reste entre 12 et 17 ms.
 
 En paisible, seulement les animaux. Ces créatures naissent « naturelles » : le Chasseur en tire
 toute son XP. Les animaux (et les villageois) qu'aucun joueur n'a frappés, nourris, apprivoisés,
