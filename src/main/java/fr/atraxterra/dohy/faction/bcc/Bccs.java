@@ -532,7 +532,9 @@ public final class Bccs {
                     : "Pillard " + des(nation)));
             if (index == 0) {
                 mob.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
-                // Celui qu'il faut abattre garde son nom affiche dans la melee.
+                // Un illageois ne montre pas son casque : celui qu'il faut abattre brille, son nom toujours
+                // affiche dans la melee.
+                mob.setGlowingTag(true);
                 mob.setCustomNameVisible(true);
             } else {
                 mob.setTarget(player);
@@ -550,7 +552,7 @@ public final class Bccs {
         data.lastRaid = System.currentTimeMillis();
         RAIDS.put(player.getUUID(), raid);
         tell(player, capital(les(nation)) + verb(nation, " ont", " a")
-                + " repere ton BCC : des pillards arrivent ! Arrete celui au casque d'or "
+                + " repere ton BCC : des pillards arrivent ! Arrete celui qui brille "
                 + "avant qu'il ne tienne deux minutes au contact.", ChatFormatting.RED);
         level.playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 4.0f, 1.0f);
         return true;
@@ -614,7 +616,7 @@ public final class Bccs {
         raid.progress++;
         if (raid.progress % 20 == 0 && owner.distanceToSqr(center) < 96.0d * 96.0d) {
             owner.connection.send(new ClientboundSetActionBarTextPacket(Component.literal("Ton BCC est pille : "
-                    + clock(raid.progress) + " / " + clock(LOOT_TICKS) + ", frappe le pillard au casque d'or")
+                    + clock(raid.progress) + " / " + clock(LOOT_TICKS) + ", frappe le pillard qui brille")
                     .withStyle(ChatFormatting.RED)));
         }
         if (raid.progress >= LOOT_TICKS && level.getBlockEntity(raid.pos) instanceof BccBlockEntity bcc) {
