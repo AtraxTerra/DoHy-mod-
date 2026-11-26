@@ -98,7 +98,8 @@ def ingredient_key(value):
 
 def load_recipes():
     recipes = []
-    for path in glob.glob(os.path.join(ROOT, "src/main/resources/data/palamod/recipe/*.json")):
+    # Toujours dans le meme ordre : celui du disque change d'une machine a l'autre.
+    for path in sorted(glob.glob(os.path.join(ROOT, "src/main/resources/data/palamod/recipe/*.json"))):
         with open(path) as handle:
             data = json.load(handle)
         result = data.get("result")

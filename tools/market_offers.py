@@ -273,21 +273,29 @@ def farmable_share(item, values, by_result, shop, memo, depth=0):
 
 
 def recipe_share(item, values, by_result, shop, memo, depth=0):
-    """La part de matieres du shop dans la recette la moins chere d'un objet (0 sans recette)."""
+    """La part de matieres du shop dans la recette la moins chere d'un objet (0 sans recette).
+
+    A cout egal (un lingot d'endium se fait de 9 pepites ou d'un neuvieme de
+    bloc), la recette la plus riche en matieres du shop l'emporte : le resultat
+    ne depend pas de l'ordre dans lequel les recettes sont lues.
+    """
     recipes = by_result.get(item)
     if not recipes or depth >= 10:
         return 0.0
-    best = None
+    costed = []
     for count, inputs in recipes:
         known = [value for value in inputs if value is not None and value in values]
-        cost = sum(values[value] for value in known) / count
-        if best is None or cost < best[0]:
-            best = (cost, count, inputs)
-    cost, count, inputs = best
-    farm = sum(values[value] * farmable_share(value, values, by_result, shop, memo, depth + 1)
-               for value in inputs if value is not None and value in values) / count
-    whole = max(values.get(item, 0.0), cost)
-    return farm / whole if whole > 0 else 0.0
+        costed.append((sum(values[value] for value in known) / count, count, known))
+    cheapest = min(cost for cost, _, _ in costed)
+    share = 0.0
+    for cost, count, known in costed:
+        if cost > cheapest * (1 + 1e-9):
+            continue
+        farm = sum(values[value] * farmable_share(value, values, by_result, shop, memo, depth + 1)
+                   for value in known) / count
+        whole = max(values.get(item, 0.0), cost)
+        share = max(share, farm / whole if whole > 0 else 0.0)
+    return share
 
 
 def buyers(offers, values):
