@@ -193,6 +193,20 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-26 — les familiers
+
+**Demande** : point 2 de « 9, 2, 5, 7, 13, 22 », avec le serpent et l'escargot comme sources
+d'appât ; trois familiers originaux, pas ceux de Paladium (`docs/PALAMOD.md`, § 46).
+
+- **Serpent et escargot** de PalaMod (modèles, textures, sons, animations) : appât à 75 % et 25 %,
+  trophées rares, XP de Chasseur, biomes.
+- **Cage à familier**, appât, tirages de 5 % toutes les 2 minutes, **apprivoisement** en trois
+  paliers (mini-jeu de pêche adapté), 5 000 XP de Chasseur.
+- **Pyrolynx, Mordillon, Feu-follet** : modèles, textures et portraits propres au mod
+  (`tools/pet_assets.py`), sur l'épaule droite, visibles des autres.
+- **/pet** : niveau, bonheur, quêtes du jour, vingt emplacements ; **40 compétences** du wiki (25
+  passives branchées sur les systèmes de PalaMod, 15 actives) et la **roue** (R).
+
 ### 2026-11-26 — l'imprimerie : presse à imprimer et table d'écriture
 
 **Demande** : « 9, 2, 5, 7, 13, 22 » — six points de la liste des manques, une PR chacun ; voici
