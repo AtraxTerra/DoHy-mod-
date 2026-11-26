@@ -184,20 +184,29 @@ public final class Marks {
         DoHy.LOGGER.info("A vos marques : manche {} ({})", round.objective(), round.forced() ? "essai" : "prevue");
     }
 
-    /** L'objectif de la manche, ou il compte et ce qu'il rapporte. */
+    /**
+     * L'objectif de la manche, ou il compte et ce qu'il rapporte. Une manche deja en cours (apres un
+     * redemarrage, a la connexion) n'est plus annoncee dans ses deux dernieres minutes.
+     */
     static void announce(ServerPlayer player, MarksRound round) {
         boolean late = now() > round.start() + 60L;
-        String text = (late ? "Manche en cours, encore " + secondsLeft(round) / 60L + " min : "
+        long left = secondsLeft(round);
+        if (late && left < 120L) {
+            return;
+        }
+        String text = (late ? "Manche en cours, encore " + (left + 59L) / 60L + " min : "
                 : "Partez ! 30 min : ") + round.objective().toLowerCase();
         String where = round.points() ? "Toutes les actions comptent (" + MarksRound.scale() + ")."
                 : "Dans " + round.goal().where() + ".";
         tell(player, text + ". " + where + " +" + ELO + " ELO pour ta nation.", ChatFormatting.GOLD);
     }
 
+    /** Qui se connecte pendant une manche deja annoncee la voit annoncee a son tour. */
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         MarksRound round = active();
-        if (round != null && event.getEntity() instanceof ServerPlayer player && !data(player).done(round)) {
+        if (round != null && current != null && current.id() == round.id()
+                && event.getEntity() instanceof ServerPlayer player && !data(player).done(round)) {
             announce(player, round);
         }
     }
@@ -233,10 +242,11 @@ public final class Marks {
         long count = data.count(round);
         boolean done = data.done(round);
         String left = clockText(round.end() - now());
+        // Court, pour ne pas passer sous la carte de nation en haut a droite : l'unite dit l'objectif.
         String unit = round.points() ? "points" : round.goal().unit();
         String name = done ? "A vos marques · objectif atteint · " + left
-                : "A vos marques · " + (round.points() ? "" : round.goal().label() + " ")
-                + MoneyFormat.exact(count) + " / " + MoneyFormat.exact(round.target()) + " " + unit + " · " + left;
+                : "A vos marques · " + MoneyFormat.exact(count) + " / " + MoneyFormat.exact(round.target()) + " "
+                + unit + " · " + left;
         ServerBossEvent bar = BARS.computeIfAbsent(player.getUUID(), id -> new ServerBossEvent(UUID.randomUUID(),
                 Component.literal(name), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_10));
         bar.setName(Component.literal(name));

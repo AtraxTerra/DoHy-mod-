@@ -152,7 +152,7 @@ public final class FactionEventMenu extends MenuController {
             }
             tooltip.add("+" + Marks.ELO + " ELO pour ta nation, " + Marks.DAILY_CAP + " par jour au plus");
             cards.add(Card.of(new ItemStack(round.points() ? Items.CLOCK : round.goal().icon()), "A vos marques",
-                            List.of(round.objective(), done ? "Objectif atteint" : "Encore " + (left / 60L + 1L)
+                            List.of(round.objective(), done ? "Objectif atteint" : "Encore " + (left + 59L) / 60L
                                     + " min"))
                     .accent(done ? 0xFF3FB950 : 0xFFEF3826).badge(done ? "ATTEINT" : "EN COURS")
                     .progress(data.count(round), round.target())
