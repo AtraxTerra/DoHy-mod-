@@ -245,7 +245,7 @@ public final class Bccs {
         if (data.lastPlaced > 0L && System.currentTimeMillis() - data.lastPlaced < COOLDOWN_MS) {
             return "quatorze jours entre deux BCC";
         }
-        ChunkPos center = new ChunkPos(pos);
+        ChunkPos center = new ChunkPos(pos.getX() >> 4, pos.getZ() >> 4);
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 BlockPos probe = new BlockPos(((center.x() + dx) << 4) + 8, pos.getY(), ((center.z() + dz) << 4) + 8);

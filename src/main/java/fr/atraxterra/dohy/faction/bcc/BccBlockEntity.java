@@ -38,7 +38,7 @@ public class BccBlockEntity extends MachineBlockEntity {
     /** Le rayon de surveillance du wiki. */
     public static final int WATCH = 200;
 
-    public static final MachineLayout LAYOUT = layout();
+    public static final MachineLayout LAYOUT = grid();
 
     private UUID owner;
     private String ownerName = "";
@@ -50,7 +50,7 @@ public class BccBlockEntity extends MachineBlockEntity {
         super(DoHyBcc.BCC_TYPE.get(), pos, state, SLOTS, Component.translatable("block.dohy.base_claim_controller"));
     }
 
-    private static MachineLayout layout() {
+    private static MachineLayout grid() {
         List<MachineLayout.SlotPos> slots = new ArrayList<>();
         for (int index = 0; index < SLOTS; index++) {
             slots.add(new MachineLayout.SlotPos(32 + (index % COLUMNS) * 18, 56 + (index / COLUMNS) * 18, true));
