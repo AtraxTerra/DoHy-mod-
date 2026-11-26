@@ -3385,6 +3385,54 @@
       }
     },
     {
+      "id": "bcc",
+      "category": "faction",
+      "order": 17,
+      "icon": "dohy:base_claim_controller",
+      "title": "Le BCC",
+      "card": [
+        "Le coeur de ta base,",
+        "a garder ou a piller"
+      ],
+      "summary": [
+        "Un bloc indestructible au centre de ta base : de la gloire et de l'ELO chaque jour, un coffre de 55 cases. Il ne part qu'au pillage : deux minutes de clic droit sans etre frappe."
+      ],
+      "sections": [
+        {
+          "title": "L'acheter et le poser",
+          "text": [
+            "Onglet Territoire de ta nation : 75 000 $ de la banque, des que la nation a passe le niveau 10 (plus de dix paliers d'arbre de technologie).",
+            "Au centre d'un claim de 3 x 3 chunks a toi, les huit blocs autour et les neuf au-dessus vides, a 1 500 blocs de tout autre BCC. Un seul a la fois, quatorze jours entre deux.",
+            "Une condition manquee : il disparait, et l'argent n'est pas rendu."
+          ]
+        },
+        {
+          "title": "Ce qu'il rapporte",
+          "text": [
+            "120 ELO a la pose, puis chaque jour 30 de gloire et de l'ELO : 10 le premier jour, de plus en plus jusqu'au cinquantieme (109).",
+            "Son coffre de 55 cases (pas de tiroirs) ; il compte les intrus a 200 blocs."
+          ]
+        },
+        {
+          "title": "Le pillage",
+          "text": [
+            "Deux minutes de clic droit sans lacher ni etre frappe : le BCC prend feu, saute sans rien casser et lache son contenu. +300 ELO pour le pillard, -300 pour son maitre.",
+            "Les bases et forteresses rivales gardent leur tresor dans un BCC.",
+            "Sur le podium de la notation, ta nation est reperee : des pillards viennent pour ton BCC. Frappe celui au casque d'or, ou tue-le (+50 ELO)."
+          ]
+        }
+      ],
+      "see": [
+        "bases_ennemies",
+        "notation"
+      ],
+      "discover": {
+        "items": [
+          "dohy:base_claim_controller"
+        ]
+      }
+    },
+    {
       "id": "terre",
       "category": "terre",
       "order": 0,
