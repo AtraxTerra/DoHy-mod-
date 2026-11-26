@@ -1122,7 +1122,7 @@ PalaMod : modèle et texture propres au mod (`tools/bcc_assets.py`).
 ### Le revers et le pillage
 
 - **Repéré** : une nation sur le **podium de la dernière notation** (top 3) est repérée. En solo,
-  ce sont les rivales qui la voient : quand son maître est à 200 blocs du BCC, une **raid de
+  ce sont les rivales qui la voient : quand son maître est à 200 blocs du BCC, un **raid de
   pillards** (deux vindicateurs, deux pillards, au nom d'une nation rivale) peut venir, une fois
   par jour au plus. Le pillard qui brille (son nom toujours affiché ; il porte un casque d'or,
   mais les illageois ne montrent pas leur casque) file vers le BCC ; s'il tient **deux minutes au
