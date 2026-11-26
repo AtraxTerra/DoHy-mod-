@@ -53,7 +53,7 @@ public class BccBlockEntity extends MachineBlockEntity {
     private static MachineLayout grid() {
         List<MachineLayout.SlotPos> slots = new ArrayList<>();
         for (int index = 0; index < SLOTS; index++) {
-            slots.add(new MachineLayout.SlotPos(32 + (index % COLUMNS) * 18, 56 + (index / COLUMNS) * 18, true));
+            slots.add(new MachineLayout.SlotPos(32 + (index % COLUMNS) * 18, 46 + (index / COLUMNS) * 18, true));
         }
         return new MachineLayout(slots);
     }

@@ -32,13 +32,12 @@ public final class BccClient {
 
     private static void paint(UiGraphics g, MachineMenu menu, int mouseX, int mouseY) {
         int intruders = menu.extra(0);
-        g.section(16, 26, "section_resources", "COFFRE DU BCC", 112);
         g.text(Ui.BODY, "Jour " + menu.extra(1) + "  ·  gloire " + menu.extra(2) + "  ·  +" + menu.extra(3)
-                + " ELO demain", 132, 30, 5.0f, Ui.TEXT);
-        g.text(Ui.BODY, intruders == 0 ? "Personne a " + BccBlockEntity.WATCH + " blocs"
+                + " ELO demain", 32, 35, 5.0f, Ui.TEXT);
+        g.right(Ui.BODY, intruders == 0 ? "Personne a " + BccBlockEntity.WATCH + " blocs"
                         : intruders + " intrus a " + BccBlockEntity.WATCH + " blocs",
-                132, 40, 5.0f, intruders == 0 ? Ui.GREEN : Ui.RED);
-        if (mouseX >= 130 && mouseX < 250 && mouseY >= 28 && mouseY < 50) {
+                230, 35, 5.0f, intruders == 0 ? Ui.GREEN : Ui.RED);
+        if (mouseX >= 150 && mouseX < 232 && mouseY >= 32 && mouseY < 44) {
             g.tooltip(List.of(Component.literal("Les intrus : autres joueurs, soldats et pillards rivaux."),
                     Component.literal("Pille en deux minutes de clic droit sans etre frappe.")));
         }
