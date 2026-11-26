@@ -77,9 +77,10 @@ public final class PressClient {
 
     // -- Table d'ecriture ----------------------------------------------------------
 
-    private static final int ENGRAVE_X = 100;
-    private static final int ENGRAVE_Y = 104;
-    private static final int ENGRAVE_W = 84;
+    /** Le bouton sous la plaque gravee, loin du milieu du panneau. */
+    private static final int ENGRAVE_X = 192;
+    private static final int ENGRAVE_Y = 110;
+    private static final int ENGRAVE_W = 54;
     private static final int ENGRAVE_H = 18;
 
     public static final Design TYPE_MACHINE = new Design(Set.of(TypeMachineBlockEntity.SLOT_PLATE),
@@ -103,6 +104,9 @@ public final class PressClient {
                     small(g, "et une plaque d'impression", 100, 66, Ui.MUTED);
                 }
                 g.arrow(120, 89, 64, ready && affordable ? 1.0f : 0.0f);
+                small(g, "Prix : rarete et niveau", 100, 104, Ui.MUTED);
+                small(g, "des enchantements,", 100, 112, Ui.MUTED);
+                small(g, TypesetCost.MAX + " niveaux au plus", 100, 120, Ui.MUTED);
                 boolean hovered = mouseX >= ENGRAVE_X && mouseX < ENGRAVE_X + ENGRAVE_W && mouseY >= ENGRAVE_Y
                         && mouseY < ENGRAVE_Y + ENGRAVE_H;
                 boolean active = ready && affordable;
@@ -110,8 +114,6 @@ public final class PressClient {
                         active ? 0xFF5B2696 : 0xFF2E2D33, hovered && active);
                 g.centered(Ui.PIXEL, "GRAVER", ENGRAVE_X + ENGRAVE_W / 2.0f, ENGRAVE_Y + 5, 5.5f,
                         active ? Ui.WHITE : Ui.MUTED);
-                g.wrapped(Ui.BODY, "Le prix suit la rarete et le niveau des enchantements du livre, "
-                        + TypesetCost.MAX + " niveaux au plus.", 16, 128, 5.5f, 230, 8, Ui.MUTED, 1);
                 tip(g, mouseX, mouseY, ENGRAVE_X, ENGRAVE_Y, ENGRAVE_W, ENGRAVE_H, List.of("Graver la plaque",
                         "Prend le livre, une plaque et les niveaux", "Accroupi, main vide sur la table : pareil"));
             }, Map.of(
