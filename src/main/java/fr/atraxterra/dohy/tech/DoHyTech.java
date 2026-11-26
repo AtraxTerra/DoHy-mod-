@@ -65,6 +65,7 @@ public final class DoHyTech {
                         output.accept(fr.atraxterra.dohy.earth.mine.DoHyMines.BEACON_ITEM.get());
                         output.accept(fr.atraxterra.dohy.faction.garrison.DoHyGarrison.BARRACKS_ITEM.get());
                         output.accept(fr.atraxterra.dohy.faction.bcc.DoHyBcc.BCC_ITEM.get());
+                        fr.atraxterra.dohy.casino.DoHyCasino.items().forEach(output::accept);
                     })
                     .build());
 

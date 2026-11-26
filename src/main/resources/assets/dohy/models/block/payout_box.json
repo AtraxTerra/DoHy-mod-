@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "front": "dohy:block/payout_box_front",
+    "side": "dohy:block/payout_box_side",
+    "top": "dohy:block/payout_box_top",
+    "bottom": "dohy:block/payout_box_bottom"
+  }
+}

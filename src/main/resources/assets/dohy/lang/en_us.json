@@ -269,5 +269,9 @@
   "block.dohy.base_claim_controller": "Base Claim Controller",
   "tooltip.dohy.base_claim_controller": "The heart of your base: glory and ELO every day, 55 slot storage",
   "tooltip.dohy.base_claim_controller.place": "At the center of a 3 x 3 chunk claim, the 8 blocks around and above empty",
-  "tooltip.dohy.base_claim_controller.warn": "Failed placement: it vanishes. Looted with 2 minutes of right click"
+  "tooltip.dohy.base_claim_controller.warn": "Failed placement: it vanishes. Looted with 2 minutes of right click",
+  "block.dohy.random_machine": "Random Machine",
+  "block.dohy.dice": "Casino Die",
+  "block.dohy.coin_slot": "Coin Slot",
+  "block.dohy.payout_box": "Payout Box"
 }

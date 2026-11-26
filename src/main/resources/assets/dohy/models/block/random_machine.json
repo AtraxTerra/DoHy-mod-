@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "dohy:block/random_machine_side",
+    "north": "dohy:block/random_machine_front",
+    "south": "dohy:block/random_machine_back",
+    "east": "dohy:block/random_machine_side",
+    "west": "dohy:block/random_machine_side",
+    "up": "dohy:block/random_machine_top",
+    "down": "dohy:block/random_machine_bottom"
+  }
+}

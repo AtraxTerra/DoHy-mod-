@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "GGG",
+    "GHG",
+    "IRI"
+  ],
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "H": "minecraft:hopper",
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "dohy:coin_slot",
+    "count": 1
+  }
+}
