@@ -1124,9 +1124,10 @@ PalaMod : modèle et texture propres au mod (`tools/bcc_assets.py`).
 - **Repéré** : une nation sur le **podium de la dernière notation** (top 3) est repérée. En solo,
   ce sont les rivales qui la voient : quand son maître est à 200 blocs du BCC, une **raid de
   pillards** (deux vindicateurs, deux pillards, au nom d'une nation rivale) peut venir, une fois
-  par jour au plus. Le pillard qui brille (son nom toujours affiché, un casque d'or que les illageois ne montrent pas) file vers le BCC ; s'il tient **deux minutes au
+  par jour au plus. Le pillard qui brille (son nom toujours affiché ; il porte un casque d'or,
+  mais les illageois ne montrent pas leur casque) file vers le BCC ; s'il tient **deux minutes au
   contact**, le BCC est pillé. Le frapper remet son compte à zéro ; le tuer repousse le raid
-  (+50 ELO). La raid renonce au bout de dix minutes.
+  (+50 ELO). Le raid renonce au bout de dix minutes.
 - **Piller un BCC** (les bases rivales en ont un) : **deux minutes de clic droit**, sans lâcher
   ni être frappé ; le temps s'affiche dans la barre d'action. Pillé, le BCC **prend feu et
   explose sans rien casser**, son contenu tombe. Le pillard gagne **300 ELO**, le maître en perd
