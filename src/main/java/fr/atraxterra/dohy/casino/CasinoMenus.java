@@ -25,7 +25,7 @@ public final class CasinoMenus {
     private CasinoMenus() {
     }
 
-    static String percent(double value) {
+    static String pct(double value) {
         return String.format(Locale.ROOT, "%.1f", value).replace('.', ',') + " %";
     }
 
@@ -57,7 +57,7 @@ public final class CasinoMenus {
                     BlockPos slot = BlockPos.of(game.slot);
                     games.add(Card.of(new ItemStack(DoHyCasino.COIN_SLOT_ITEM.get()), game.title(), List.of(
                                     MoneyFormat.exact(game.price) + " $ · " + game.plays + " parties",
-                                    game.plays > 0 ? "Rend " + percent(game.redistribution()) : "Pas encore joue"))
+                                    game.plays > 0 ? "Rend " + pct(game.redistribution()) : "Pas encore joue"))
                             .badge("JEU " + law.name()).accent(law.color())
                             .tooltip(List.of("Somme jouee : " + MoneyFormat.exact(game.played) + " $",
                                     "Somme distribuee : " + MoneyFormat.exact(game.paid) + " $",
@@ -104,7 +104,7 @@ public final class CasinoMenus {
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("COFFRE", MoneyFormat.exact(balance) + " $", 0xFFFAC400),
                     new MenuView.Stat("PARTIES", String.valueOf(plays), 0xFFFFFFFF),
-                    new MenuView.Stat("REDISTRIBUTION", played > 0L ? percent(100.0d * paid / played) : "-",
+                    new MenuView.Stat("REDISTRIBUTION", played > 0L ? pct(100.0d * paid / played) : "-",
                             0xFF22E558));
             return new MenuView(id(), "Casino", "Machines aleatoires, des et panneaux [Casino]", stats, List.of(
                     new MenuView.Section("LE COFFRE", "resources", MenuView.GRID, safe),
@@ -176,7 +176,7 @@ public final class CasinoMenus {
             for (int step : new int[] {-10, -1, 1, 10}) {
                 boolean up = step > 0;
                 int next = Math.max(1, Math.min(99, chance + step));
-                Card card = Card.of(new ItemStack(up ? Items.LIME_DYE : Items.RED_DYE),
+                Card card = Card.of(new ItemStack(up ? Items.EMERALD : Items.REDSTONE),
                         (up ? "+" : "") + step + " %", List.of("Passe a " + next + " %",
                                 up ? "Plus de gagnants" : "Moins de gagnants"))
                         .accent(up ? 0xFF22E558 : 0xFFEF3826);
@@ -191,7 +191,7 @@ public final class CasinoMenus {
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("CHANCE", chance + " %", 0xFFFAC400),
                     new MenuView.Stat("TIRAGES", String.valueOf(rolls), 0xFFFFFFFF),
-                    new MenuView.Stat("PASSES", rolls > 0L ? percent(100.0d * passes / rolls) : "-", 0xFF22E558));
+                    new MenuView.Stat("PASSES", rolls > 0L ? pct(100.0d * passes / rolls) : "-", 0xFF22E558));
             return new MenuView(id(), "Machine aleatoire", "Laisse passer le signal, ou non", stats, List.of(
                     new MenuView.Section("CHANCE DE PASSAGE", "upgrade", MenuView.GRID, steps),
                     new MenuView.Section("FONCTIONNEMENT", "resources", MenuView.GRID, about)), false);

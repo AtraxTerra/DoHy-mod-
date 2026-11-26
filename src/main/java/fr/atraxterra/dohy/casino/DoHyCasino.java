@@ -60,12 +60,12 @@ public final class DoHyCasino {
 
     /** Les comptes des casinos, sur l'overworld. */
     public static final Supplier<AttachmentType<CasinoBook>> BOOK = ATTACHMENTS.register("casino_book",
-            () -> AttachmentType.builder(CasinoBook::new)
+            () -> AttachmentType.builder(() -> new CasinoBook())
                     .serialize(CasinoBook.MAP_CODEC, book -> !book.isEmpty())
                     .build());
     /** La loterie du spawn, sur l'overworld. */
     public static final Supplier<AttachmentType<LotteryData>> LOTTERY = ATTACHMENTS.register("lottery",
-            () -> AttachmentType.builder(LotteryData::new)
+            () -> AttachmentType.builder(() -> new LotteryData())
                     .serialize(LotteryData.MAP_CODEC, data -> !data.isEmpty())
                     .build());
 
