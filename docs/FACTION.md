@@ -1125,7 +1125,7 @@ PalaMod : modèle et texture propres au mod (`tools/bcc_assets.py`).
   ce sont les rivales qui la voient : quand son maître est à 200 blocs du BCC, une **raid de
   pillards** (deux vindicateurs, deux pillards, au nom d'une nation rivale) peut venir, une fois
   par jour au plus. Le pillard au casque d'or file vers le BCC ; s'il tient **deux minutes au
-  contact**, le BCC est pillé. Le frapper remet son compte à zéro ; le tuer repousse la raid
+  contact**, le BCC est pillé. Le frapper remet son compte à zéro ; le tuer repousse le raid
   (+50 ELO). La raid renonce au bout de dix minutes.
 - **Piller un BCC** (les bases rivales en ont un) : **deux minutes de clic droit**, sans lâcher
   ni être frappé ; le temps s'affiche dans la barre d'action. Pillé, le BCC **prend feu et

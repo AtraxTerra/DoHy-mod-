@@ -94,7 +94,7 @@ public final class Bccs {
     public static final long DAILY_GLORY = 30L;
     /** L'ELO qui change de main au pillage. */
     public static final long LOOT_ELO = 300L;
-    /** Une raid repoussee. */
+    /** Un raid repousse. */
     public static final long DEFENSE_ELO = 50L;
     static final String RAIDER_TAG = "dohy_bcc_raider";
     /** Le pillard abandonne au bout de dix minutes. */
@@ -112,7 +112,7 @@ public final class Bccs {
         }
     }
 
-    /** Une raid de pillards contre le BCC d'un joueur. */
+    /** Un raid de pillards contre le BCC d'un joueur. */
     private static final class Raid {
         final UUID owner;
         final ResourceKey<Level> dimension;
@@ -142,14 +142,29 @@ public final class Bccs {
         return player.getData(DoHyBcc.DATA.get());
     }
 
-    /** « les Titans » ou « les Vautours » : les noms des rivales portent parfois leur article. */
-    static String les(String nation) {
-        return nation.startsWith("Les ") ? "les " + nation.substring(4) : "les " + nation;
+    /** Les rivales en « Les X » sont un pluriel ; les autres (« Basilic ») sont « la nation Basilic ». */
+    static boolean plural(String nation) {
+        return nation.startsWith("Les ");
     }
 
-    /** « des Titans », « des Vautours ». */
+    /** « les Titans » ou « la nation Basilic ». */
+    static String les(String nation) {
+        return plural(nation) ? "les " + nation.substring(4) : "la nation " + nation;
+    }
+
+    /** « des Titans » ou « de la nation Basilic ». */
     static String des(String nation) {
-        return nation.startsWith("Les ") ? "des " + nation.substring(4) : "des " + nation;
+        return plural(nation) ? "des " + nation.substring(4) : "de la nation " + nation;
+    }
+
+    /** Le verbe accorde a la rivale : « ont » pour les Titans, « a » pour la nation Basilic. */
+    static String verb(String nation, String many, String one) {
+        return plural(nation) ? many : one;
+    }
+
+    /** « de Steve », « d'Alex ». */
+    static String de(String name) {
+        return !name.isEmpty() && "AEIOUYaeiouy".indexOf(name.charAt(0)) >= 0 ? "d'" + name : "de " + name;
     }
 
     static String capital(String text) {
@@ -387,7 +402,7 @@ public final class Bccs {
         if (loot == null || !loot.pos.equals(bcc.getBlockPos()) || now - loot.last > 10L) {
             loot = new Loot(bcc.getBlockPos().immutable(), now);
             LOOTING.put(player.getUUID(), loot);
-            String who = bcc.rival().isEmpty() ? "de " + bcc.ownerName() : des(bcc.rival());
+            String who = bcc.rival().isEmpty() ? de(bcc.ownerName()) : des(bcc.rival());
             tell(player, "Pillage du BCC " + who + " : garde le clic droit deux minutes, sans te faire toucher.",
                     ChatFormatting.YELLOW);
         } else {
@@ -409,7 +424,7 @@ public final class Bccs {
             FactionApi.stat(player, "bcc:looted", 1);
             tell(player, "Le BCC " + des(rival) + " part en fumee : son tresor est a terre.", ChatFormatting.GOLD);
         } else if (owner != null) {
-            FactionApi.addElo(player, LOOT_ELO, "pillage du BCC de " + ownerName);
+            FactionApi.addElo(player, LOOT_ELO, "pillage du BCC " + de(ownerName));
             ServerPlayer victim = level.getServer().getPlayerList().getPlayer(owner);
             if (victim != null) {
                 FactionApi.removeElo(victim, LOOT_ELO, "BCC pille par " + player.getGameProfile().name());
@@ -423,7 +438,7 @@ public final class Bccs {
         return seconds / 60 + ":" + String.format("%02d", seconds % 60);
     }
 
-    /** Frappe pendant le pillage : tout est a refaire. Le pillard d'une raid aussi. */
+    /** Frappe pendant le pillage : tout est a refaire. Le pillard d'un raid aussi. */
     @SubscribeEvent
     public static void onHurt(LivingIncomingDamageEvent event) {
         if (event.getEntity() instanceof ServerPlayer player && event.getSource().getEntity() != null
@@ -463,7 +478,7 @@ public final class Bccs {
         return nation.exists() && FactionNotation.hasLast(nation) && rank >= 1 && rank <= 3;
     }
 
-    /** Toutes les 30 s pres de son BCC : une raid de temps en temps, une par jour au plus. */
+    /** Toutes les 30 s pres de son BCC : un raid de temps en temps, un par jour au plus. */
     private static void maybeRaid(ServerPlayer player, BccData data) {
         if (RAIDS.containsKey(player.getUUID()) || !revealed(player)
                 || System.currentTimeMillis() - data.lastRaid < DAY_MS
@@ -517,6 +532,8 @@ public final class Bccs {
                     : "Pillard " + des(nation)));
             if (index == 0) {
                 mob.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
+                // Celui qu'il faut abattre garde son nom affiche dans la melee.
+                mob.setCustomNameVisible(true);
             } else {
                 mob.setTarget(player);
             }
@@ -532,7 +549,8 @@ public final class Bccs {
         }
         data.lastRaid = System.currentTimeMillis();
         RAIDS.put(player.getUUID(), raid);
-        tell(player, capital(les(nation)) + " ont repere ton BCC : des pillards arrivent ! Arrete celui au casque d'or "
+        tell(player, capital(les(nation)) + verb(nation, " ont", " a")
+                + " repere ton BCC : des pillards arrivent ! Arrete celui au casque d'or "
                 + "avant qu'il ne tienne deux minutes au contact.", ChatFormatting.RED);
         level.playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 4.0f, 1.0f);
         return true;
@@ -562,8 +580,9 @@ public final class Bccs {
         boolean bccThere = level != null && level.getBlockEntity(raid.pos) instanceof BccBlockEntity;
         if (!(entity instanceof Mob looter) || !looter.isAlive() || !bccThere) {
             if (owner != null && bccThere) {
-                tell(owner, "Raid repoussee : " + les(raid.nation) + " repartent bredouilles.", ChatFormatting.GREEN);
-                FactionApi.addElo(owner, DEFENSE_ELO, "raid " + des(raid.nation) + " repoussee");
+                tell(owner, "Raid repousse : " + les(raid.nation)
+                        + verb(raid.nation, " repartent bredouilles.", " repart bredouille."), ChatFormatting.GREEN);
+                FactionApi.addElo(owner, DEFENSE_ELO, "raid " + des(raid.nation) + " repousse");
             }
             disband(level, raid);
             return true;
@@ -602,7 +621,8 @@ public final class Bccs {
             explode(level, bcc);
             data(owner).clearPlaced();
             FactionApi.removeElo(owner, LOOT_ELO, "BCC pille par " + les(raid.nation));
-            tell(owner, capital(les(raid.nation)) + " ont pille ton BCC : il a saute et son contenu est a terre.",
+            tell(owner, capital(les(raid.nation)) + verb(raid.nation, " ont", " a")
+                    + " pille ton BCC : il a saute et son contenu est a terre.",
                     ChatFormatting.RED);
             disband(level, raid);
             return true;

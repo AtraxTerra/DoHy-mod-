@@ -46,8 +46,7 @@ public class BccRenderer implements BlockEntityRenderer<BccBlockEntity, BccRende
             state.watch = null;
             return;
         }
-        String who = bcc.rival().isEmpty() ? bcc.ownerName()
-                : bcc.rival().startsWith("Les ") ? "les " + bcc.rival().substring(4) : "les " + bcc.rival();
+        String who = bcc.rival().isEmpty() ? bcc.ownerName() : bcc.rival();
         state.owner = Component.literal("Base Claim Controller · " + who).withStyle(ChatFormatting.GOLD);
         int intruders = bcc.intruders();
         state.watch = Component.literal(intruders == 0 ? "Personne a 200 blocs" : intruders + " intrus a 200 blocs")
