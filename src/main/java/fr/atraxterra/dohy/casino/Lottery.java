@@ -138,10 +138,12 @@ public final class Lottery {
 
     /** Le tirage : un ticket au hasard parmi tous, joueurs fictifs compris. */
     static void draw(MinecraftServer server, LotteryData data, RandomSource random) {
-        long time = data.draw;
+        // Un tirage avance par un operateur garde le dimanche suivant ; un tirage manque (serveur
+        // arrete) part du dimanche qui suit son rattrapage.
+        long time = Math.min(data.draw, now());
         long pot = data.pot;
         int total = data.sold();
-        data.draw = nextDraw(at(Math.max(time, now()))).toEpochSecond();
+        data.draw = nextDraw(at(now())).toEpochSecond();
         if (total == 0) {
             data.history.add(0, new LotteryData.Draw(time, "", pot, 0, false));
             trim(data);
