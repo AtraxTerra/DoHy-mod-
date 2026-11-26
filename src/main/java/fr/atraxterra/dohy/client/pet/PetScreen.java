@@ -67,7 +67,7 @@ public class PetScreen extends UiScreen implements ViewScreen<PetView> {
             Map.entry("enhanced_growth", Items.OAK_SAPLING), Map.entry("powerful_knockback", Items.PISTON),
             Map.entry("legendary_expert", Items.NETHER_STAR), Map.entry("twirling_scythe", Items.IRON_HOE),
             Map.entry("gravitational_axe", Items.IRON_AXE), Map.entry("lucky_miner", Items.DIAMOND),
-            Map.entry("electric_cloud", Items.LIGHTNING_ROD), Map.entry("monster_slayer", Items.DIAMOND_SWORD),
+            Map.entry("electric_cloud", Items.TRIDENT), Map.entry("monster_slayer", Items.DIAMOND_SWORD),
             Map.entry("pocket_happiness", Items.CAKE), Map.entry("enchanted", Items.ENCHANTED_BOOK),
             Map.entry("unbreakable_pickaxe", Items.OBSIDIAN), Map.entry("earth_blessing", Items.BONE_MEAL),
             Map.entry("quick_change", Items.RECOVERY_COMPASS), Map.entry("explosion", Items.TNT),

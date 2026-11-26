@@ -75,7 +75,7 @@ public final class PetClient {
         }
         Minecraft minecraft = Minecraft.getInstance();
         boolean down = wheelKey.isDown();
-        if (down && !wheelHeld && minecraft.player != null && minecraft.screen == null) {
+        if (down && !wheelHeld && minecraft.player != null && minecraft.gui.screen() == null) {
             ClientPacketDistributor.sendToServer(PetNet.OpenWheel.INSTANCE);
         }
         wheelHeld = down;

@@ -169,9 +169,11 @@ ARTY = [(1000, 0), (20000, 16), (40000, 19)]
 # EntityKillObjective) et leur niveau de PalaJobs, sur 20 comme ceux de Bedrock. Elles passent au
 # rapport median Bedrock / PalaJobs des animaux que les deux baremes partagent (vache, mouton,
 # poulet et cochon valent 14 XP dans PalaJobs), arrondi comme les autres : l'elephant, 15 XP de
-# PalaJobs au niveau 8, vaut ainsi a peu pres une vache.
+# PalaJobs au niveau 8, vaut ainsi a peu pres une vache. L'escargot (25 XP au niveau 0) et le
+# serpent (120 XP au niveau 15) viennent du meme HunterRegisterer ; ils donnent l'appat des
+# familiers.
 PALAJOBS_ANIMALS = {"minecraft:cow": 14, "minecraft:sheep": 14, "minecraft:chicken": 14, "minecraft:pig": 14}
-PALAMOD_CREATURES = {"palamod:elephant": (15, 8)}
+PALAMOD_CREATURES = {"palamod:elephant": (15, 8), "palamod:snail": (25, 0), "palamod:snake": (120, 15)}
 
 HOSTILE = ("minecraft:zombie", "minecraft:skeleton", "minecraft:spider", "minecraft:creeper", "minecraft:blaze",
            "minecraft:wither_skeleton")
@@ -250,7 +252,8 @@ def main():
                   "comme sur Bedrock. crafted : chaque objet fabrique a l'etabli.",
         "hunter": "Bareme de Paladium Bedrock (tools/bedrock_jobs.py), animaux compris. Une creature nee d'un "
                   "spawner, ou tuee au controleur, ne rapporte qu'un quarantieme ; un petit, rien. Les "
-                  "creatures de PalaMod (l'elephant) : leur XP de PalaJobs au rapport des animaux.",
+                  "creatures de PalaMod (l'elephant, l'escargot, le serpent) : leur XP de PalaJobs au rapport des "
+                  "animaux.",
     }
     for job in ("miner", "farmer", "hunter"):
         sources = {"_bedrock": notes[job]}
