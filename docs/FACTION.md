@@ -1147,3 +1147,73 @@ Client : `client/bcc/BccClient` (interface), `BccRenderer` (étiquettes).
 - **Niveau de faction** : lu dans l'arbre de technologie ; **XP de faction** : de l'ELO.
 - **« /f f »** et la révélation entre joueurs deviennent les raids des nations rivales.
 - **Un seul BCC par serveur** : un par nation du joueur, plus ceux des bases rivales.
+
+## À vos marques (lot 26, 2026-11-26)
+
+Demandé le 2026-11-26 (point 7 de la liste des manques). Règles : le wiki de Paladium
+(« Java | À vos marques ») — un event quotidien de farm, sur les serveurs de minage et de
+farmland : en 30 minutes, atteindre un objectif (miner, tuer des créatures, couper du bois ou
+pêcher une certaine quantité) ; chaque joueur qui l'atteint rapporte **7 ELO** à sa faction,
+**70 au plus par faction et par jour** ; l'objectif et le compte à rebours restent affichés ; une
+deuxième variante affiche aussi un compteur de points. Le wiki ne donne ni les heures, ni les
+quantités, ni les règles de la variante : ce qui suit les fixe pour le solo.
+
+### Les manches
+
+- **Quand** : une manche de **30 minutes** chaque heure, de **10 h 30 à 23 h 30** (heure de
+  `RealClock`, Paris par défaut) ; elle finit à l'heure pile, comme la remise à neuf de la Mine
+  (10 h, 15 h, 20 h), qui ne coupe donc jamais une manche.
+- **Quel objectif** : chaque jour tire un ordre des quatre objectifs, et les manches le suivent ;
+  **une manche sur trois** (la 3ᵉ, la 6ᵉ…) est la **manche aux points**. Tout se déduit de
+  l'heure : un redémarrage retrouve la même manche et la progression du joueur.
+- **Où** : les serveurs de minage et de farmland de Paladium sont ici des mondes. Chaque
+  objectif compte là où il se fait :
+
+| Objectif | Quantité | Où | Points |
+|---|---|---|---|
+| Miner (blocs à la pioche) | 1 000 | la Mine, la dimension du Mineur | 1 |
+| Couper du bois (bûches) | 250 | l'overworld, la dimension du Mineur | 4 |
+| Tuer des créatures | 50 | la Farmland, la dimension du Mineur | 20 |
+| Pêcher (prises) | 25 | la Farmland, la dimension du Mineur | 40 |
+| Manche aux points | 1 000 points | chaque action dans ses mondes | — |
+
+  La Mine est sous terre et la Farmland ne se casse pas : le bois se coupe dans l'overworld et
+  la dimension du Mineur. Les quantités sont prévues pour un joueur seul en 30 minutes ; dans la
+  manche aux points, les quatre actions valent autant (1 000 points = 1 000 blocs = 250 bûches =
+  50 créatures = 25 prises).
+- **Ce qui compte** : les blocs qui tombent d'un joueur (la pioche, ou la hache pour les bûches),
+  sauf ceux qu'un joueur avait posés ; les créatures tuées par un joueur (ou mortes de ses
+  coups) ; les prises de la canne du jeu et du mini-jeu des cannes de PalaMod. Rien en créatif.
+
+### L'affichage
+
+- **Au départ** : un message à tous (objectif, mondes, récompense), une cloche, et le titre
+  « A vos marques ! » à ceux qui sont déjà dans un monde où l'objectif compte. Un joueur qui se
+  connecte pendant une manche la voit annoncée.
+- **Pendant** : une **barre en haut de l'écran** dans les mondes où l'objectif compte — objectif,
+  compteur (ou points) et compte à rebours ; elle passe au vert une fois l'objectif atteint.
+- **L'écran des events** (`/f event`) : section « A VOS MARQUES » — la manche en cours et ta
+  progression, la prochaine manche, l'ELO du jour, et les cinq sortes de manches.
+- **À la fin** : « Temps écoulé : 640 / 1 000 blocs » pour qui n'a pas fini.
+
+### La récompense
+
+- **7 ELO** pour la nation du joueur à l'objectif atteint (titre « Objectif atteint ! »).
+- **70 au plus par jour** et par nation (remise à zéro à minuit) ; en solo, la nation est celle
+  du joueur. Au-delà, ou sans nation, l'objectif atteint ne rapporte rien (et le dit).
+
+### Code
+
+`faction/marks/` : `MarksGoal` (les quatre objectifs), `MarksRound` (calendrier, rotation,
+variante), `MarksData` (la progression du joueur, gardée à la mort), `Marks` (barres, compteurs,
+annonces, ELO). Crochets : `FishingGame.catchFish` (les prises du mini-jeu),
+`FactionEventMenu` (la section), `FactionCommand` (`/f event marques`).
+
+Essai (opérateur) : `/f event marques lancer <mine|bois|creatures|peche|points>` lance une manche
+de 30 minutes tout de suite, `/f event marques arreter` l'arrête.
+
+### Écarts
+
+- **Les serveurs** de minage et de farmland deviennent des mondes ; le bois, faute d'arbres dans
+  la Mine et la Farmland, se coupe dans l'overworld et la dimension du Mineur.
+- **Les heures, les quantités et la manche aux points** ne sont pas dans le wiki : choix du mod.

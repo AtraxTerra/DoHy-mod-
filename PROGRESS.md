@@ -193,6 +193,18 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-26 — À vos marques
+
+**Demande** : point 7 de « 9, 2, 5, 7, 13, 22 » (`docs/FACTION.md`, « À vos marques »).
+
+- **Manches** de 30 minutes chaque heure, de 10 h 30 à 23 h 30 : miner 1 000 blocs (la Mine, la
+  dimension du Mineur), couper 250 bûches (l'overworld, le Mineur), tuer 50 créatures ou pêcher
+  25 prises (la Farmland, le Mineur) ; une manche sur trois aux points (1 000 points, toutes les
+  actions).
+- **Barre** en haut de l'écran (objectif, compteur, compte à rebours), titre au départ et à
+  l'objectif atteint, section dans l'écran des events.
+- **7 ELO** par objectif atteint, **70 par jour** au plus. Essai : `/f event marques lancer`.
+
 ### 2026-11-26 — le Base Claim Controller
 
 **Demande** : point 5 de « 9, 2, 5, 7, 13, 22 » (`docs/FACTION.md`, « Le Base Claim
