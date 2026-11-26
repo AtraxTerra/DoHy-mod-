@@ -273,5 +273,6 @@
   "block.dohy.random_machine": "Random Machine",
   "block.dohy.dice": "Casino Die",
   "block.dohy.coin_slot": "Coin Slot",
-  "block.dohy.payout_box": "Payout Box"
+  "block.dohy.payout_box": "Payout Box",
+  "block.dohy.unesco_plaque": "UNESCO Plaque"
 }

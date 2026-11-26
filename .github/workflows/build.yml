@@ -275,6 +275,7 @@ jobs:
           python3 -I tools/pet_assets.py --check
           python3 -I tools/bcc_assets.py --check
           python3 -I tools/casino_assets.py --check
+          python3 -I tools/unesco_assets.py --check
 
       # Les grandes machines de l'agriculture : textures, modeles coupes case par case,
       # etats, miniatures, pieces mobiles et le Java des formes, tout est genere.

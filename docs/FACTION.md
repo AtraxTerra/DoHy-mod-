@@ -1217,3 +1217,71 @@ de 30 minutes tout de suite, `/f event marques arreter` l'arrête.
 - **Les serveurs** de minage et de farmland deviennent des mondes ; le bois, faute d'arbres dans
   la Mine et la Farmland, se coupe dans l'overworld et la dimension du Mineur.
 - **Les heures, les quantités et la manche aux points** ne sont pas dans le wiki : choix du mod.
+
+## Le patrimoine mondial : UNESCO et merveilles (lot 28, 2026-11-26)
+
+Demandé le 2026-11-26 (point 22 de la liste des manques). Règles : NationsGlory — le programme
+UNESCO (« UNESCO request » : un bâtiment d'une taille raisonnable, détaillé façade et intérieur,
+cohérent avec le style du pays, intéressant pour le jeu de rôle, après le niveau 10 de la R&D
+Générale ; une subvention de 12 500 $ au plus par pays, une protection contre les missiles et les
+destructions sauf antimatière et matière rouge, un warp devant le bâtiment, un PNJ, 200 de
+puissance ; cinq bâtiments au plus, un grand pouvant compter pour cinq ; pas de bunker dessous ;
+pas de `/f home` dedans) et les merveilles du monde (une par serveur, élue par le conseil
+inter-serveur de l'ONU). La plaque est propre au mod (`tools/unesco_assets.py`).
+
+### Le dossier
+
+- **La plaque UNESCO** (livre, 2 lingots d'or, 4 blocs de quartz) : une stèle à poser dans le
+  bâtiment, tournée vers l'entrée ; nommée à l'enclume, elle donne son nom au monument (sinon
+  « Monument de <nation> »).
+- **Conditions** : une nation de **niveau 10** (paliers de l'arbre, comme le BCC), la plaque dans
+  un de ses claims, un emplacement libre, une zone qui n'empiète sur aucun monument inscrit ; un
+  dossier par minute.
+- **Le jury** (en solo, le mod) arpente **33 × 33 blocs** autour de la plaque, de 6 dessous à 34
+  dessus. Compte comme construit un bloc posé par un joueur, ou qui ne vient pas du terrain (terre,
+  roche, sable, feuilles, bûches, minerais, eau... ne comptent que posés à la main).
+
+| Critère | Points | Pour tout |
+|---|---|---|
+| Taille | 25 | 1 500 blocs construits (300 au moins, sinon refusé) |
+| Détails | 20 | 15 % de détails : escaliers, dalles, murets, barrières, portes, trappes, vitres et barreaux, bannières, bougies, pots, panneaux, lits, tapis, lumières |
+| Intérieur | 15 | autant d'air sous un toit (8 blocs au plus) que 40 % des blocs |
+| Style | 25 | 15 pour une palette tenue (les six blocs les plus posés font de 55 à 92 %), 10 pour 20 sortes de blocs |
+| Fonctions | 15 | six sortes de blocs qui font vivre le lieu (coffres, fours, lits, lutrins, enclumes, machines...) |
+
+  **Il faut 60 / 100.** Refusé, le jury dit le critère qui rapporterait le plus.
+
+### Un monument inscrit
+
+- **Emplacements** : un par tranche de 2 500 blocs construits, cinq au plus ; cinq par nation.
+- **Subvention** : 2 500 $ par emplacement, à la banque nationale (12 500 $ au plus par nation).
+- **Protection** : sa zone (les blocs construits relevés, en boîte) ne se casse plus aux explosions
+  (TNT, dynamite, creepers, withers — pas les armes de NTM : l'antimatière et la matière rouge de
+  NationsGlory), ni par un autre joueur que son maître. **Pas de F home** dedans.
+- **Prestige** : un point de Territoire à la notation par emplacement (la « puissance » de
+  NationsGlory).
+- **Warp et guide** : l'écran (`/f unesco`) y emmène, devant la plaque ; clic droit, un guide (un
+  villageois immobile, nommé) accueille les visiteurs et raconte le monument.
+- **Casser la plaque** retire le monument du programme ; la subvention reste acquise.
+
+### La merveille du monde
+
+- **Le 1er de chaque mois à 21 h** (heure de `RealClock`), le conseil de l'ONU élit la merveille du
+  mois parmi les monuments inscrits et cinq candidats des nations rivales (notés de 62 à 92) : la
+  note, plus de 0 à 12 de « couloirs ». Au premier lancement, une première élection a lieu.
+- **Élue** : 25 000 $ à la banque nationale (payés à la connexion si son maître est absent), trois
+  points de plus à la notation, un halo sur sa plaque, jusqu'à l'élection suivante. Les six
+  dernières merveilles restent à l'écran. Opérateur : `/f unesco elire`.
+
+### Code
+
+`faction/unesco/` : `DoHyUnesco` (registres), `UnescoPlaqueBlock`, `UnescoPlaqueBlockEntity`,
+`UnescoData` (monuments, merveilles, sur l'overworld), `Unesco` (arpentage, note, inscription,
+protection, guides, élections), `UnescoMenu` ; crochets : `FactionHomes.set`, `FactionNotation`
+(Territoire), `FactionCommand` (`/f unesco`).
+
+### Écarts
+
+- Le jury de NationsGlory est l'équipe du serveur ; ici, une note calculée — « cohérent avec le
+  style du pays » devient « une palette tenue ».
+- Le bunker sous le bâtiment n'est pas vérifié.

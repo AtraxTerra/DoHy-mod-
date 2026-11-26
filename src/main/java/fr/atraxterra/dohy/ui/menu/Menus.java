@@ -68,6 +68,7 @@ public final class Menus {
                 fr.atraxterra.dohy.casino.CasinoMenus.Book.INSTANCE,
                 fr.atraxterra.dohy.casino.CasinoMenus.Machine.INSTANCE,
                 fr.atraxterra.dohy.casino.LotteryMenu.INSTANCE,
+                fr.atraxterra.dohy.faction.unesco.UnescoMenu.INSTANCE,
                 fr.atraxterra.dohy.kits.PlayerKitsMenu.INSTANCE,
                 fr.atraxterra.dohy.noel.AdventMenu.INSTANCE,
                 fr.atraxterra.dohy.spawn.SpawnPortals.INSTANCE,

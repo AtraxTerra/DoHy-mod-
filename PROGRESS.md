@@ -193,6 +193,17 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-26 — le patrimoine mondial (UNESCO et merveilles)
+
+**Demande** : point 22 de « 9, 2, 5, 7, 13, 22 » (`docs/FACTION.md`, lot 28).
+
+- **Plaque UNESCO** : le jury (le mod) arpente le bâtiment et le note sur 100 (taille, détails,
+  intérieur, style, fonctions) ; inscrit à 60 : emplacements (5 par nation), subvention de 2 500 $
+  par emplacement, zone protégée des explosions et des autres joueurs, pas de F home, prestige à la
+  notation, warp et guide.
+- **Merveille du monde** : élue le 1er du mois à 21 h parmi les monuments inscrits et ceux des
+  nations rivales ; 25 000 $, +3 à la notation, halo.
+
 ### 2026-11-26 — le casino et la loterie
 
 **Demande** : point 13 de « 9, 2, 5, 7, 13, 22 » (`docs/ORGANISATIONS.md`, lot 27).
