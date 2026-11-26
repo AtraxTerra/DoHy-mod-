@@ -1239,7 +1239,8 @@ inter-serveur de l'ONU). La plaque est propre au mod (`tools/unesco_assets.py`).
   dossier par minute.
 - **Le jury** (en solo, le mod) arpente **33 × 33 blocs** autour de la plaque, de 6 dessous à 34
   dessus. Compte comme construit un bloc posé par un joueur, ou qui ne vient pas du terrain (terre,
-  roche, sable, feuilles, bûches, minerais, eau... ne comptent que posés à la main).
+  roche, sable, feuilles, bûches, minerais, eau... ne comptent que posés à la main) ; sous le sol de
+  la plaque, seuls les blocs posés par un joueur comptent.
 
 | Critère | Points | Pour tout |
 |---|---|---|

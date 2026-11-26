@@ -168,7 +168,11 @@ public final class Unesco {
                 || block == Blocks.GRAVEL
                 || block == Blocks.CLAY || block == Blocks.BEDROCK || block == Blocks.SANDSTONE
                 || block == Blocks.RED_SANDSTONE || block == Blocks.SNOW_BLOCK || block == Blocks.SNOW
-                || block == Blocks.MOSS_BLOCK || block == Blocks.MUD;
+                || block == Blocks.MOSS_BLOCK || block == Blocks.MUD || block == Blocks.PACKED_MUD
+                || block == Blocks.TERRACOTTA || block == Blocks.CALCITE || block == Blocks.DRIPSTONE_BLOCK
+                || block == Blocks.POINTED_DRIPSTONE || block == Blocks.SMOOTH_BASALT || block == Blocks.BASALT
+                || block == Blocks.BLACKSTONE || block == Blocks.MAGMA_BLOCK || block == Blocks.SOUL_SAND
+                || block == Blocks.SOUL_SOIL || block == Blocks.END_STONE || block == Blocks.POWDER_SNOW;
     }
 
     /** Un detail : ce qui sculpte une facade ou meuble un interieur. */
@@ -221,7 +225,13 @@ public final class Unesco {
                     }
                     pos.set(x, y, z);
                     BlockState state = level.getBlockState(pos);
-                    if (state.isAir() || (natural(state) && !PlacedBlocks.isPlayerPlaced(level, pos))) {
+                    if (state.isAir()) {
+                        continue;
+                    }
+                    // Sous le sol de la plaque, seul ce qu'un joueur a pose compte : le terrain n'est
+                    // pas le batiment, quelle que soit sa roche.
+                    boolean placed = PlacedBlocks.isPlayerPlaced(level, pos);
+                    if (!placed && (natural(state) || y < plaque.getY() - 1)) {
                         continue;
                     }
                     built.set(index(dx, dy, dz));
