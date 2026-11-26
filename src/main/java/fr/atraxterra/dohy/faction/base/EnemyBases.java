@@ -475,6 +475,11 @@ public final class EnemyBases {
         FactionApi.tell(player, base.genre().summary() + ".", ChatFormatting.YELLOW);
         FactionApi.tell(player, "Il faudra : " + base.kind().tools() + ". Les coffres : " + base.genre().vault()
                 + ". Y entrer, c'est avoir pille la base.", ChatFormatting.YELLOW);
+        // Le Base Claim Controller rival (lot 25) : leur tresor, au coeur d'une base ou d'une forteresse.
+        if (fr.atraxterra.dohy.faction.bcc.Bccs.placeRival(player.level().getServer().overworld(), base)) {
+            FactionApi.tell(player, "Leur Base Claim Controller garde un tresor au coeur de la base : deux minutes "
+                    + "de clic droit, sans te faire toucher, pour le piller.", ChatFormatting.YELLOW);
+        }
         compass(player);
     }
 

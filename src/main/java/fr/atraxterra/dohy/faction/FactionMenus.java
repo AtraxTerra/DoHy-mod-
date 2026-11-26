@@ -748,9 +748,42 @@ public final class FactionMenus {
             stats.add(new MenuView.Stat("ICI", owner.ownedBy(player.getUUID()) ? "A TOI" : owner.claimed() ? "PRIS"
                     : "LIBRE", owner.claimed() ? 0xFFEF3826 : 0xFFFFFFFF));
             sections.add(new MenuView.Section("ICI", "resources", MenuView.GRID, actions));
+            sections.add(new MenuView.Section("BASE CLAIM CONTROLLER", "craft", MenuView.GRID, List.of(bccCard(player))));
             sections.add(new MenuView.Section("TES CLAIMS", "upgrade", MenuView.ROWS, claims));
             return new MenuView(id(), "Territoire", nation.earth() ? "Tes claims, ta capitale et tes pays"
                     : "Tes claims", stats, sections, true).withTabs(tabs(player, TERRITORY));
+        }
+
+        /** Le Base Claim Controller (lot 25) : l'acheter, ou ce que rapporte celui qui est pose. */
+        private static Card bccCard(ServerPlayer player) {
+            fr.atraxterra.dohy.faction.bcc.BccData bcc = fr.atraxterra.dohy.faction.bcc.Bccs.data(player);
+            ItemStack icon = new ItemStack(fr.atraxterra.dohy.faction.bcc.DoHyBcc.BCC_ITEM.get());
+            if (bcc.placed()) {
+                long days = fr.atraxterra.dohy.faction.bcc.Bccs.daysHeld(bcc);
+                return Card.of(icon, "Ton BCC", List.of(bcc.pos().getX() + " " + bcc.pos().getY() + " "
+                                + bcc.pos().getZ() + " · jour " + days,
+                        "Gloire " + bcc.glory() + " · +" + fr.atraxterra.dohy.faction.bcc.Bccs.eloForDay(days + 1)
+                                + " ELO demain"))
+                        .accent(0xFFFAC400).tooltip(List.of(
+                                "Chaque jour : 30 de gloire et de l'ELO, de plus en plus jusqu'au jour 50.",
+                                fr.atraxterra.dohy.faction.bcc.Bccs.revealed(player)
+                                        ? "Ta nation est sur le podium : les rivales voient ton BCC et viennent le piller."
+                                        : "Hors du podium de la notation : personne ne sait ou il est.",
+                                "ELO tire du BCC : " + bcc.elo()));
+            }
+            String refusal = fr.atraxterra.dohy.faction.bcc.Bccs.cannotBuy(player);
+            Card card = Card.of(icon, "Acheter un BCC", List.of(MoneyFormat.exact(
+                            fr.atraxterra.dohy.faction.bcc.Bccs.PRICE) + " $ (banque)",
+                    refusal == null ? "Au centre d'un claim 3 x 3" : refusal));
+            if (refusal != null) {
+                return card.state(MenuView.DISABLED).tooltip(List.of(refusal,
+                        "Niveau de nation : plus de " + fr.atraxterra.dohy.faction.bcc.Bccs.LEVEL
+                                + " paliers d'arbre (" + fr.atraxterra.dohy.faction.bcc.Bccs.nationLevel(
+                                FactionApi.data(player)) + ")"));
+            }
+            return card.accent(0xFFFAC400).action("bcc|acheter")
+                    .confirm("!Acheter un Base Claim Controller ?|" + MoneyFormat.exact(
+                            fr.atraxterra.dohy.faction.bcc.Bccs.PRICE) + " $ de la banque, non rendus si la pose echoue");
         }
 
         @Override
@@ -759,6 +792,10 @@ public final class FactionMenus {
                 return;
             }
             FactionData data = FactionApi.data(player);
+            if ("bcc".equals(key)) {
+                report(player, fr.atraxterra.dohy.faction.bcc.Bccs.buy(player), "Base Claim Controller achete.");
+                return;
+            }
             if ("claim".equals(key)) {
                 report(player, FactionApi.claim(player), "Chunk revendique.");
             } else if ("unclaim".equals(key)) {

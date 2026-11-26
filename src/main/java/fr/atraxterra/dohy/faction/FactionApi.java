@@ -487,6 +487,22 @@ public final class FactionApi {
         }
     }
 
+    /**
+     * Retire de l'ELO (un BCC pille, lot 25) ; jamais sous zero. La ligue atteinte
+     * reste : elle ne se perd qu'au classement du lundi, comme pour une defaite.
+     */
+    public static void removeElo(ServerPlayer player, long amount, String source) {
+        FactionData data = data(player);
+        if (!data.exists() || amount <= 0) {
+            return;
+        }
+        FactionData.Ranking ranking = data.ranking;
+        long elo = Math.max(0L, ranking.elo() - amount);
+        data.ranking = new FactionData.Ranking(elo, Math.max(0L, ranking.weekElo() - amount), ranking.weekWins(),
+                ranking.league(), ranking.lastMonday());
+        tell(player, "-" + MoneyFormat.exact(amount) + " ELO (" + source + ")", ChatFormatting.RED);
+    }
+
     // -- Stats de l'arbre --------------------------------------------------------
 
     public static void stat(ServerPlayer player, String key, long amount) {
