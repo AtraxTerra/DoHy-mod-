@@ -273,8 +273,7 @@ public final class Bccs {
     }
 
     /** Le bloc vient d'etre pose : il reste, ou il disparait (sans remboursement). */
-    static void placed(ServerPlayer player, BlockPos pos) {
-        ServerLevel level = player.level();
+    static void placed(ServerPlayer player, ServerLevel level, BlockPos pos) {
         if (!(level.getBlockEntity(pos) instanceof BccBlockEntity bcc)) {
             return;
         }

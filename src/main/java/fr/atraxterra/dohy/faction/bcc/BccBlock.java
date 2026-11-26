@@ -57,8 +57,8 @@ public class BccBlock extends MachineBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        if (placer instanceof ServerPlayer player) {
-            Bccs.placed(player, pos);
+        if (placer instanceof ServerPlayer player && level instanceof net.minecraft.server.level.ServerLevel server) {
+            Bccs.placed(player, server, pos);
         }
     }
 
