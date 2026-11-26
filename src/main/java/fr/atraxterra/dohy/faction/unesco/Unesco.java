@@ -163,11 +163,9 @@ public final class Unesco {
         Block block = state.getBlock();
         return !state.getFluidState().isEmpty() || state.is(BlockTags.DIRT) || state.is(BlockTags.BASE_STONE_OVERWORLD)
                 || state.is(BlockTags.BASE_STONE_NETHER) || state.is(BlockTags.SAND) || state.is(BlockTags.LEAVES)
-                || state.is(BlockTags.LOGS) || state.is(BlockTags.REPLACEABLE) || state.is(BlockTags.SAPLINGS)
-                || state.is(BlockTags.ICE) || state.is(BlockTags.COAL_ORES) || state.is(BlockTags.IRON_ORES)
-                || state.is(BlockTags.COPPER_ORES) || state.is(BlockTags.GOLD_ORES)
-                || state.is(BlockTags.REDSTONE_ORES) || state.is(BlockTags.LAPIS_ORES)
-                || state.is(BlockTags.DIAMOND_ORES) || state.is(BlockTags.EMERALD_ORES) || block == Blocks.GRAVEL
+                || state.is(BlockTags.LOGS) || state.is(BlockTags.REPLACEABLE)
+                || state.is(BlockTags.ICE) || state.is(net.neoforged.neoforge.common.Tags.Blocks.ORES)
+                || block == Blocks.GRAVEL
                 || block == Blocks.CLAY || block == Blocks.BEDROCK || block == Blocks.SANDSTONE
                 || block == Blocks.RED_SANDSTONE || block == Blocks.SNOW_BLOCK || block == Blocks.SNOW
                 || block == Blocks.MOSS_BLOCK || block == Blocks.MUD;
