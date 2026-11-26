@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "STS",
+    "TCT",
+    "STS"
+  ],
+  "key": {
+    "S": "palamod:titane_stick",
+    "T": "palamod:titane_ingot",
+    "C": "palamod:compressed_amethyst"
+  },
+  "result": {
+    "id": "palamod:pet_cage",
+    "count": 1
+  }
+}

@@ -84,6 +84,8 @@ public final class PetEvents {
 
     private static Field lureField;
     private static boolean lureSearched;
+    private static Field anvilCostField;
+    private static boolean anvilSearched;
 
     private PetEvents() {
     }
@@ -217,6 +219,29 @@ public final class PetEvents {
             field.setInt(hook, Math.max(1, left - whole));
         } catch (IllegalAccessException ignored) {
             // Le champ a change de nom : la passive se tait.
+        }
+    }
+
+    /** Le cout de l'enclume ({@code AnvilMenu.cost}, une case de donnees privee). */
+    private static boolean setAnvilCost(AnvilMenu menu, int cost) {
+        if (!anvilSearched) {
+            anvilSearched = true;
+            try {
+                anvilCostField = AnvilMenu.class.getDeclaredField("cost");
+                anvilCostField.setAccessible(true);
+            } catch (ReflectiveOperationException | RuntimeException ignored) {
+                anvilCostField = null;
+            }
+        }
+        if (anvilCostField == null) {
+            return false;
+        }
+        try {
+            ((net.minecraft.world.inventory.DataSlot) anvilCostField.get(menu)).set(cost);
+            menu.broadcastChanges();
+            return true;
+        } catch (IllegalAccessException | ClassCastException ignored) {
+            return false;
         }
     }
 
@@ -457,7 +482,8 @@ public final class PetEvents {
             }
             for (MobEffectInstance drunk : potion.getAllEffects()) {
                 MobEffectInstance active = player.getEffect(drunk.getEffect());
-                if (active == null || active.isInfiniteDuration() || drunk.getEffect().value().isInstantenous()) {
+                // Les effets instantanes (soin, degats) durent un tick : rien a allonger.
+                if (active == null || active.isInfiniteDuration() || drunk.getDuration() <= 1) {
                     continue;
                 }
                 int duration = (int) Math.round(active.getDuration() * (1.0d + longer));
@@ -486,8 +512,9 @@ public final class PetEvents {
             return;
         }
         int lower = Math.max(1, cost - (int) Math.floor(levels));
-        menu.setMaximumCost(lower);
-        ANVIL_COSTS.put(player.getUUID(), lower);
+        if (setAnvilCost(menu, lower)) {
+            ANVIL_COSTS.put(player.getUUID(), lower);
+        }
     }
 
     /** Les niveaux payes a l'enclume consomment « Enchante ». */

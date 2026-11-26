@@ -63,8 +63,8 @@ public final class PetHooks {
         if (!player.getInventory().add(bonus)) {
             player.drop(bonus, false);
         }
-        player.displayClientMessage(Component.literal(skill.label() + " : +" + extra)
-                .withStyle(ChatFormatting.LIGHT_PURPLE), true);
+        player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket(
+                Component.literal(skill.label() + " : +" + extra).withStyle(ChatFormatting.LIGHT_PURPLE)));
     }
 
     /** « Portail magique » : la seve versee compte davantage. */

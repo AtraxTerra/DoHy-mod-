@@ -1336,5 +1336,22 @@
   "message.palamod.type_machine.engraved": "Plate engraved: %s levels spent.",
   "hud.palamod.print_press.ink": "%s inks",
   "hud.palamod.print_press.books": "%s books",
-  "hud.palamod.type_machine.cost": "Engraving: %s levels"
+  "hud.palamod.type_machine.cost": "Engraving: %s levels",
+  "block.palamod.pet_cage": "Pet Cage",
+  "item.palamod.pet_bait": "Pet Bait",
+  "item.palamod.pet_snack": "Pet Snack",
+  "item.palamod.pet_xp_small": "Small Pet XP Potion",
+  "item.palamod.pet_xp_medium": "Medium Pet XP Potion",
+  "item.palamod.pet_xp_big": "Big Pet XP Potion",
+  "item.palamod.snake_spawn_egg": "Snake Spawn Egg",
+  "item.palamod.snail_spawn_egg": "Snail Spawn Egg",
+  "entity.palamod.snake": "Snake",
+  "entity.palamod.snail": "Snail",
+  "tooltip.palamod.pet_snack": "Right click: your pet eats it (+%s happiness, daily quest)",
+  "tooltip.palamod.pet_xp": "Drink it: +%s XP for your pet",
+  "tooltip.palamod.pet_bait": "Right click your pet cage: a 5 minute trap",
+  "key.dohy.pet_wheel": "Pet wheel",
+  "subtitles.palamod.snake.living": "Snake hisses",
+  "subtitles.palamod.snake.hurt": "Snake hurts",
+  "subtitles.palamod.snake.death": "Snake dies"
 }

@@ -77,7 +77,7 @@ public final class PalaPets {
             ITEMS.registerSimpleBlockItem(PET_CAGE, properties -> properties);
 
     /** L'appat : tue un serpent (75 %) ou un escargot (25 %) pour en avoir un. */
-    public static final DeferredItem<Item> PET_BAIT = ITEMS.registerSimpleItem("pet_bait");
+    public static final DeferredItem<PetBaitItem> PET_BAIT = ITEMS.registerItem("pet_bait", PetBaitItem::new);
 
     // -- Le serpent et l'escargot ------------------------------------------------------------------
 

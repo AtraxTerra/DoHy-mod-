@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#palamod:snake_spawns",
+  "spawners": {
+    "type": "palamod:snake",
+    "weight": 8,
+    "minCount": 1,
+    "maxCount": 1
+  }
+}

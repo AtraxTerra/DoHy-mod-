@@ -138,7 +138,7 @@ public final class PetTaming {
             end(player);
             return;
         }
-        if (player.level() != level || player.distanceToSqr(session.pos.getCenter()) > REACH * REACH) {
+        if (player.level() != level || player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(session.pos)) > REACH * REACH) {
             end(player);
             player.sendSystemMessage(Component.literal("[Familier] Reste pres de la cage pour l'apprivoiser.")
                     .withStyle(ChatFormatting.GRAY));

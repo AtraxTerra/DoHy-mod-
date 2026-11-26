@@ -115,9 +115,6 @@ public enum PetSkill {
         }
     }
 
-    /** Les paliers du wiki : 5, 20, 40, 60, 80, 100, a partir du niveau de deblocage. */
-    private static final int[] TIERS = {20, 40, 60, 80, 100};
-
     private final Kind kind;
     private final String label;
     private final String description;
@@ -136,15 +133,16 @@ public enum PetSkill {
         this.unlock = unlock;
         this.cooldown = cooldown;
         this.values = values;
-        // Les paliers : le niveau de deblocage, puis ceux du wiki au-dessus.
+        // Les paliers : le niveau de deblocage, puis ceux du wiki au-dessus (20, 40, 60, 80, 100).
+        int[] tiers = {20, 40, 60, 80, 100};
         int[] levels = new int[values.length];
         levels[0] = unlock;
         int next = 0;
         for (int index = 1; index < values.length; index++) {
-            while (next < TIERS.length && TIERS[next] <= levels[index - 1]) {
+            while (next < tiers.length && tiers[next] <= levels[index - 1]) {
                 next++;
             }
-            levels[index] = next < TIERS.length ? TIERS[next] : 100;
+            levels[index] = next < tiers.length ? tiers[next] : 100;
             next++;
         }
         this.levels = levels;
