@@ -142,7 +142,9 @@ public class TypeMachineBlockEntity extends MachineBlockEntity
                     .withStyle(ChatFormatting.GRAY));
             return false;
         }
-        int cost = TypesetCost.levels(book);
+        int base = TypesetCost.levels(book);
+        // Le familier : « Enchante », la gravure coute moins tant que l'effet n'est pas paye.
+        int cost = fr.atraxterra.dohy.palamod.unlock.PetHooks.engraveCost(player, base);
         boolean free = player.hasInfiniteMaterials();
         if (!free && player.experienceLevel < cost) {
             player.sendSystemMessage(Component.translatable("message.palamod.type_machine.levels", cost)
@@ -154,6 +156,9 @@ public class TypeMachineBlockEntity extends MachineBlockEntity
         chase.shrink(1);
         if (!free) {
             player.giveExperienceLevels(-cost);
+            if (cost < base) {
+                fr.atraxterra.dohy.palamod.unlock.PetHooks.spendEnchanted(player);
+            }
         }
         if (level != null) {
             level.playSound(null, worldPosition, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0f, 1.0f);

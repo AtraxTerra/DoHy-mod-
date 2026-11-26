@@ -105,8 +105,11 @@ public class HangGliderItem extends Item {
             return;
         }
         boolean sneaking = player.isShiftKeyDown();
-        double horizontal = sneaking ? 0.1d : 0.03d;
-        double vertical = sneaking ? 0.8d : 0.6d;
+        // Le familier : « Expert aerien » pousse plus fort, « Aviateur » ralentit la descente.
+        double horizontal = (sneaking ? 0.1d : 0.03d)
+                * (1.0d + fr.atraxterra.dohy.palamod.unlock.PetHooks.glideSpeed(player));
+        double vertical = (sneaking ? 0.8d : 0.6d)
+                / (1.0d + fr.atraxterra.dohy.palamod.unlock.PetHooks.glideTime(player));
         double angle = Math.toRadians(player.getYHeadRot() + 90.0f);
         player.setDeltaMovement(motion.x + Math.cos(angle) * horizontal, motion.y * vertical,
                 motion.z + Math.sin(angle) * horizontal);
