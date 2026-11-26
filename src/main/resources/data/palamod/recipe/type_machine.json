@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ICI",
+    "SSS",
+    "BRB"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "C": "palamod:chase",
+    "S": "#minecraft:wooden_slabs",
+    "B": "#minecraft:planks",
+    "R": "palamod:findium"
+  },
+  "result": {
+    "id": "palamod:type_machine",
+    "count": 1
+  }
+}

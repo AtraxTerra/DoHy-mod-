@@ -1319,5 +1319,22 @@
   "block.palamod.colored_tall_grass_pink": "Hautes herbes colorees rose",
   "block.palamod.colored_grass_green": "Herbe coloree vert clair",
   "block.palamod.colored_grass_seeds_green": "Graine d'herbe coloree vert clair",
-  "block.palamod.colored_tall_grass_green": "Hautes herbes colorees vert clair"
+  "block.palamod.colored_tall_grass_green": "Hautes herbes colorees vert clair",
+  "block.palamod.print_press": "Presse a imprimer",
+  "block.palamod.type_machine": "Table d'ecriture",
+  "block.palamod.paladium_slab": "Dalle en paladium",
+  "item.palamod.chase": "Plaque d'impression",
+  "item.palamod.paladium_ink": "Encre de paladium",
+  "item.palamod.enchanted_plate": "Plaque d'impression enchantee",
+  "tooltip.palamod.chase.use": "Se grave a la table d'ecriture avec un livre enchante",
+  "tooltip.palamod.paladium_ink.use": "Presse a imprimer : deux encres par livre",
+  "tooltip.palamod.enchanted_plate.uses": "Impressions restantes : %s / %s",
+  "tooltip.palamod.enchanted_plate.use": "Se pose dans la presse a imprimer",
+  "message.palamod.type_machine.levels": "Il te faut %s niveaux pour graver cette plaque.",
+  "message.palamod.type_machine.missing": "Pose un livre enchante et une plaque d'impression sur la table.",
+  "message.palamod.type_machine.taken": "Retire d'abord la plaque deja gravee.",
+  "message.palamod.type_machine.engraved": "Plaque gravee : %s niveaux depenses.",
+  "hud.palamod.print_press.ink": "%s encres",
+  "hud.palamod.print_press.books": "%s livres",
+  "hud.palamod.type_machine.cost": "Gravure : %s niveaux"
 }

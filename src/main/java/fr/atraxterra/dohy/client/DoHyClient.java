@@ -144,6 +144,11 @@ public final class DoHyClient {
                 fr.atraxterra.dohy.client.throne.ThroneRenderer::new);
         event.registerEntityRenderer(fr.atraxterra.dohy.palamod.throne.PalaThrones.SEAT.get(),
                 net.minecraft.client.renderer.entity.NoopRenderer::new);
+        // L'imprimerie : la presse et ses rouleaux, la table d'ecriture et ses plaques.
+        event.registerBlockEntityRenderer(fr.atraxterra.dohy.palamod.press.PalaPress.PRINT_PRESS_TYPE.get(),
+                fr.atraxterra.dohy.client.press.PrintPressRenderer::new);
+        event.registerBlockEntityRenderer(fr.atraxterra.dohy.palamod.press.PalaPress.TYPE_MACHINE_TYPE.get(),
+                fr.atraxterra.dohy.client.press.TypeMachineRenderer::new);
         // Le clone dans la cuve de la chambre cryogenique.
         event.registerBlockEntityRenderer(fr.atraxterra.dohy.cryo.DoHyCryo.CHAMBER_TYPE.get(),
                 fr.atraxterra.dohy.client.cryo.CryoChamberRenderer::new);
@@ -184,6 +189,18 @@ public final class DoHyClient {
                 fr.atraxterra.dohy.client.miner.MinerBossGeometry::createBodyLayer);
         event.registerLayerDefinition(fr.atraxterra.dohy.client.throne.ThroneGeometry.LAYER,
                 fr.atraxterra.dohy.client.throne.ThroneGeometry::createLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.PRESS,
+                fr.atraxterra.dohy.client.press.PressGeometry::createPressLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.INK_PLATE,
+                fr.atraxterra.dohy.client.press.PressGeometry::createInkPlateLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.PRESS_BOOKS,
+                fr.atraxterra.dohy.client.press.PressGeometry::createPressBooksLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.TYPESET,
+                fr.atraxterra.dohy.client.press.PressGeometry::createTypesetLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.TYPESET_BASE,
+                fr.atraxterra.dohy.client.press.PressGeometry::createTypesetBaseLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.TYPESET_BOOK,
+                fr.atraxterra.dohy.client.press.PressGeometry::createTypesetBookLayer);
         event.registerLayerDefinition(ElephantModel.CHILD, ElephantGeometry::createBoneLayer);
         event.registerLayerDefinition(ElephantModel.TEEN, ElephantGeometry::createBoneALayer);
         event.registerLayerDefinition(ElephantModel.ADULT, ElephantGeometry::createBoneBLayer);
@@ -257,6 +274,10 @@ public final class DoHyClient {
                 fr.atraxterra.dohy.client.unlock.UnlockClient.ALCHEMY_CREATOR);
         machine(event, fr.atraxterra.dohy.palamod.hunter.PalaHunter.SPAWNER_CONTROLLER_MENU.get(),
                 MachineDesigns.SPAWNER_CONTROLLER);
+        machine(event, fr.atraxterra.dohy.palamod.press.PalaPress.PRINT_PRESS_MENU.get(),
+                fr.atraxterra.dohy.client.press.PressClient.PRINT_PRESS);
+        machine(event, fr.atraxterra.dohy.palamod.press.PalaPress.TYPE_MACHINE_MENU.get(),
+                fr.atraxterra.dohy.client.press.PressClient.TYPE_MACHINE);
         event.<MachineMenu, fr.atraxterra.dohy.client.cryo.CryoChamberScreen>register(
                 fr.atraxterra.dohy.cryo.DoHyCryo.MENU.get(), fr.atraxterra.dohy.client.cryo.CryoChamberScreen::new);
         for (KitMenus.Use use : KitMenus.Use.values()) {

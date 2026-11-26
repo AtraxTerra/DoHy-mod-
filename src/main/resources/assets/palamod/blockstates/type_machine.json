@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "palamod:block/type_machine"
+    },
+    "facing=south": {
+      "model": "palamod:block/type_machine"
+    },
+    "facing=west": {
+      "model": "palamod:block/type_machine"
+    },
+    "facing=east": {
+      "model": "palamod:block/type_machine"
+    }
+  }
+}

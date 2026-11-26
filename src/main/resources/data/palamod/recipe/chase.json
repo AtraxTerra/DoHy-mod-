@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "SIS",
+    " S "
+  ],
+  "key": {
+    "S": "palamod:paladium_slab",
+    "I": "minecraft:iron_block"
+  },
+  "result": {
+    "id": "palamod:chase",
+    "count": 1
+  }
+}

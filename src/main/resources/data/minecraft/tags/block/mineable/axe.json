@@ -23,6 +23,7 @@
     "dohy:packaging_table",
     "palamod:alchemy_creator",
     "palamod:root_log",
-    "palamod:root_planks"
+    "palamod:root_planks",
+    "palamod:type_machine"
   ]
 }

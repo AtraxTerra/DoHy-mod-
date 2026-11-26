@@ -5496,6 +5496,60 @@
           "palamod:root_seeds_block"
         ]
       }
+    },
+    {
+      "id": "imprimerie",
+      "category": "palamod",
+      "order": 23,
+      "icon": "palamod:print_press",
+      "title": "L'imprimerie",
+      "card": [
+        "Graver un livre enchante",
+        "puis l'imprimer trois fois"
+      ],
+      "summary": [
+        "La table d'ecriture grave un livre enchante sur une plaque ; la presse a imprimer en tire trois copies, avec de l'encre de paladium et des livres."
+      ],
+      "sections": [
+        {
+          "title": "La table d'ecriture",
+          "text": [
+            "Un livre enchante, une plaque d'impression et des niveaux : le bouton GRAVER, ou accroupi main vide sur la table, rend une plaque d'impression enchantee.",
+            "Le prix suit la rarete et le niveau de chaque enchantement, 50 niveaux au plus. Regarder la table l'affiche.",
+            "- Tranchant V : 21 niveaux. Toucher de soie : 27. Raccommodage : 19. Fortune III : 35."
+          ]
+        },
+        {
+          "title": "La presse a imprimer",
+          "text": [
+            "La plaque, des livres et de l'encre de paladium : deux encres et dix secondes par livre. Chaque livre sort avec les enchantements de la plaque.",
+            "La plaque casse a la troisieme impression. Un entonnoir sous la presse ne prend que les livres imprimes.",
+            "Clic droit avec l'encre, la plaque ou des livres en main : ils vont dans leur case. Main vide : l'interface."
+          ]
+        },
+        {
+          "title": "Les recettes",
+          "text": [
+            "- Dalle en paladium (x6) : trois lingots de paladium en ligne.",
+            "- Plaque d'impression : quatre dalles en paladium autour d'un bloc de fer.",
+            "- Encre de paladium (x4) : huit lingots de paladium autour d'une poche d'encre.",
+            "- Presse : lingots de fer, baton de blaze, dalles en paladium, plaque de pression en or, blocs de fer.",
+            "- Table : lingots de fer, plaque d'impression, dalles de bois, planches, findium."
+          ]
+        }
+      ],
+      "see": [
+        "machines",
+        "table_alchimiste"
+      ],
+      "discover": {
+        "items": [
+          "palamod:print_press",
+          "palamod:type_machine",
+          "palamod:chase",
+          "palamod:enchanted_plate"
+        ]
+      }
     }
   ]
 }
