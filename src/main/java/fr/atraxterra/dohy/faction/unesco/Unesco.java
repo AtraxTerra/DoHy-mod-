@@ -42,6 +42,7 @@ import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
+import java.text.Normalizer;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -51,6 +52,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -128,6 +130,48 @@ public final class Unesco {
 
     static void tell(ServerPlayer player, String text, ChatFormatting color) {
         player.sendSystemMessage(Component.literal("[UNESCO] " + text).withStyle(color));
+    }
+
+    // -- Le francais des noms : « au Grand Palais », « de la Tour », « d'Alexandrie » -------------------------
+
+    /** « au Grand Palais », « aux Jardins », « a la Tour », « a l'Arche », « a Versailles ». */
+    public static String au(String name) {
+        return article(name, "au ", "aux ", "a ");
+    }
+
+    /** « du Grand Palais », « des Jardins », « de la Tour », « de l'Arche », « d'Alexandrie ». */
+    public static String du(String name) {
+        return article(name, "du ", "des ", "de ");
+    }
+
+    private static String article(String name, String masculine, String plural, String preposition) {
+        String lower = name.toLowerCase(Locale.ROOT);
+        if (lower.startsWith("le ")) {
+            return masculine + name.substring(3);
+        }
+        if (lower.startsWith("les ")) {
+            return plural + name.substring(4);
+        }
+        if (lower.startsWith("la ") || lower.startsWith("l'")) {
+            return preposition + Character.toLowerCase(name.charAt(0)) + name.substring(1);
+        }
+        if (preposition.equals("de ") && vowel(name)) {
+            return "d'" + name;
+        }
+        return preposition + name;
+    }
+
+    private static boolean vowel(String name) {
+        if (name.isEmpty()) {
+            return false;
+        }
+        char first = Normalizer.normalize(name.substring(0, 1), Normalizer.Form.NFD).charAt(0);
+        return "AEIOUYaeiouy".indexOf(first) >= 0;
+    }
+
+    /** « 1 bloc construit », « 17 blocs construits » : zero et un au singulier. */
+    static String count(long n, String one, String many) {
+        return n + " " + (n > 1 ? many : one);
     }
 
     static ServerLevel level(MinecraftServer server, String dimension) {
@@ -353,14 +397,16 @@ public final class Unesco {
         }
         LAST_SUBMIT.put(player.getUUID(), now());
         Survey survey = survey(level, plaque);
-        tell(player, "Dossier examine : " + survey.built() + " blocs construits, " + survey.details() + " details, "
-                + survey.roofed() + " d'interieur, " + survey.distinct() + " sortes, " + survey.functions()
-                + " fonctions.", ChatFormatting.GRAY);
+        tell(player, "Dossier examine : " + count(survey.built(), "bloc construit", "blocs construits") + " dont "
+                + survey.details() + " de detail, " + count(survey.roofed(), "bloc d'interieur", "blocs d'interieur")
+                + ", " + count(survey.distinct(), "sorte de bloc", "sortes de blocs") + ", "
+                + count(survey.functions(), "bloc fonctionnel", "blocs fonctionnels") + ".", ChatFormatting.GRAY);
         tell(player, "Taille " + survey.size() + "/25 · details " + survey.detail() + "/20 · interieur "
                 + survey.interior() + "/15 · style " + survey.style() + "/25 · fonctions " + survey.function()
                 + "/15 : " + survey.total() + "/100.", ChatFormatting.YELLOW);
         if (survey.built() < MIN_BLOCKS) {
-            return "Refuse : trop petit (" + survey.built() + " blocs construits, il en faut " + MIN_BLOCKS + ").";
+            return "Refuse : trop petit (" + count(survey.built(), "bloc construit", "blocs construits")
+                    + ", il en faut " + MIN_BLOCKS + ").";
         }
         if (survey.total() < PASS) {
             return "Refuse : " + survey.total() + "/100, il faut " + PASS + ". " + advice(survey);
@@ -371,13 +417,13 @@ public final class Unesco {
         for (UnescoData.Monument other : data.monuments()) {
             if (other.overlaps(dimension, survey.minX(), survey.minY(), survey.minZ(), survey.maxX(), survey.maxY(),
                     survey.maxZ())) {
-                return "Refuse : ce batiment empiete sur " + other.name + ", deja inscrit.";
+                return "Refuse : ce batiment empiete sur " + other.name + ", deja au patrimoine mondial.";
             }
         }
         int weight = Math.min(survey.weight(), MAX_WEIGHT - used(data, player.getUUID()));
         long grant = GRANT * weight;
         FactionData nation = FactionApi.data(player);
-        String name = entity.name().isEmpty() ? "Monument de " + nation.name() : entity.name();
+        String name = entity.name().isEmpty() ? "Monument " + du(nation.name()) : entity.name();
         UnescoData.Monument monument = new UnescoData.Monument(player.getUUID(), player.getGameProfile().name(),
                 nation.name(), UUID.randomUUID().toString(), name, dimension, plaque.asLong(),
                 List.of(survey.minX(), survey.minY(), survey.minZ(), survey.maxX(), survey.maxY(), survey.maxZ()),
@@ -386,8 +432,8 @@ public final class Unesco {
         save(server, data);
         FactionApi.creditBank(player, grant, "subvention UNESCO");
         FactionApi.stat(player, "unesco:inscribed", 1L);
-        tell(player, name + " est inscrit au patrimoine mondial : " + survey.total() + "/100, " + weight
-                + " emplacement" + (weight > 1 ? "s" : "") + ", " + MoneyFormat.exact(grant)
+        tell(player, name + " entre au patrimoine mondial : " + survey.total() + "/100, "
+                + count(weight, "emplacement", "emplacements") + ", " + MoneyFormat.exact(grant)
                 + " $ de subvention a la banque nationale. Sa zone est protegee.", ChatFormatting.GREEN);
         level.playSound(null, plaque, SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.8f, 1.0f);
         level.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, plaque.getX() + 0.5d, plaque.getY() + 1.2d,
@@ -436,7 +482,7 @@ public final class Unesco {
     private static void remove(MinecraftServer server, UnescoData data, UnescoData.Monument monument) {
         data.monuments.remove(monument);
         if (data.wonder != null && monument.id.equals(data.wonder.monument())) {
-            data.wonder = new UnescoData.Wonder(data.wonder.name() + " (detruite)", data.wonder.nation(), "",
+            data.wonder = new UnescoData.Wonder(data.wonder.name() + " (hors programme)", data.wonder.nation(), "",
                     "", data.wonder.month());
         }
         save(server, data);
@@ -454,7 +500,7 @@ public final class Unesco {
         remove(server, data, monument);
         ServerPlayer owner = server.getPlayerList().getPlayer(monument.owner);
         if (owner != null) {
-            tell(owner, "La plaque de " + monument.name + " est cassee : il quitte le programme UNESCO.",
+            tell(owner, "La plaque " + du(monument.name) + " est cassee : le monument quitte le programme UNESCO.",
                     ChatFormatting.RED);
         }
     }
@@ -463,11 +509,11 @@ public final class Unesco {
     static void describe(ServerPlayer player, ServerLevel level, BlockPos pos, UnescoPlaqueBlockEntity plaque) {
         UnescoData.Monument monument = data(level.getServer()).at(FactionApi.dimension(level), pos);
         if (monument == null) {
-            tell(player, "Plaque UNESCO de " + plaque.ownerName() + " : pas encore de monument inscrit.",
+            tell(player, "Plaque UNESCO " + du(plaque.ownerName()) + " : pas encore de monument inscrit.",
                     ChatFormatting.GOLD);
             return;
         }
-        tell(player, monument.name + ", patrimoine mondial de " + monument.nation + " : " + monument.score
+        tell(player, monument.name + ", patrimoine mondial " + du(monument.nation) + " : " + monument.score
                 + "/100." + (isWonder(level.getServer(), monument) ? " Merveille du monde !" : ""),
                 ChatFormatting.GOLD);
     }
@@ -491,7 +537,7 @@ public final class Unesco {
         player.closeContainer();
         player.teleport(new TeleportTransition(level, Vec3.atBottomCenterOf(spot), Vec3.ZERO,
                 front.getOpposite().toYRot(), 0.0f, TeleportTransition.DO_NOTHING));
-        tell(player, "Bienvenue a " + monument.name + ".", ChatFormatting.GOLD);
+        tell(player, "Bienvenue " + au(monument.name) + ".", ChatFormatting.GOLD);
         return null;
     }
 
@@ -511,10 +557,10 @@ public final class Unesco {
                 return "Le guide viendra quand le monument sera charge.";
             }
             summonGuide(level, monument);
-            tell(player, "Un guide accueille les visiteurs de " + monument.name + ".", ChatFormatting.GREEN);
+            tell(player, "Un guide accueille les visiteurs " + du(monument.name) + ".", ChatFormatting.GREEN);
         } else {
             dismissGuide(server, monument);
-            tell(player, "Le guide de " + monument.name + " s'en va.", ChatFormatting.YELLOW);
+            tell(player, "Le guide " + du(monument.name) + " s'en va.", ChatFormatting.YELLOW);
         }
         return null;
     }
@@ -612,7 +658,7 @@ public final class Unesco {
         UnescoData.Monument monument = inMonument(player.level(), event.getPos());
         if (monument != null && !monument.owner.equals(player.getUUID())) {
             event.setCanceled(true);
-            tell(player, monument.name + " est classe au patrimoine mondial : seul son maitre y touche.",
+            tell(player, "Patrimoine mondial : seul le maitre " + du(monument.name) + " peut y toucher.",
                     ChatFormatting.RED);
         }
     }
@@ -651,9 +697,9 @@ public final class Unesco {
                         .byId(tag.substring(GUIDE_PREFIX.length()));
                 if (monument != null) {
                     ZonedDateTime when = Instant.ofEpochSecond(monument.inscribed).atZone(RealClock.zone());
-                    tell(player, "Bienvenue a " + monument.name + ", tresor de " + monument.nation
-                            + ", inscrit le " + when.getDayOfMonth() + "/" + when.getMonthValue() + "/"
-                            + when.getYear() + " avec " + monument.score + "/100."
+                    tell(player, "Bienvenue " + au(monument.name) + ", tresor " + du(monument.nation)
+                            + ", au patrimoine mondial depuis le " + when.getDayOfMonth() + "/"
+                            + when.getMonthValue() + "/" + when.getYear() + " (" + monument.score + "/100)."
                             + (isWonder(player.level().getServer(), monument) ? " C'est la merveille du monde !"
                             : ""), ChatFormatting.GOLD);
                 }

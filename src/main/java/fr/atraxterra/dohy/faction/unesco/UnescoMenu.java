@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,18 @@ public final class UnescoMenu extends MenuController {
 
     private static final String[] CRITERIA = {"Taille", "Details", "Interieur", "Style", "Fonctions"};
     private static final int[] MAX = {25, 20, 15, 25, 15};
+    /** « dans 4 j 23 h », « dans 3 h 12 min », « dans 12 min ». */
+    static String until(ZonedDateTime when) {
+        long seconds = Math.max(0L, Duration.between(ZonedDateTime.now(RealClock.zone()), when).getSeconds());
+        long days = seconds / 86_400L;
+        long hours = seconds / 3600L % 24L;
+        long minutes = seconds / 60L % 60L;
+        if (days > 0) {
+            return "dans " + days + " j " + hours + " h";
+        }
+        return hours > 0 ? "dans " + hours + " h " + minutes + " min" : "dans " + Math.max(1L, minutes) + " min";
+    }
+
     private static final String[] MONTHS = {"janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout",
             "septembre", "octobre", "novembre", "decembre"};
 
@@ -104,7 +117,8 @@ public final class UnescoMenu extends MenuController {
                         : submit.accent(0xFF55545C).state(MenuView.DISABLED).tooltip(List.of(refusal)));
             } else {
                 here.add(Card.of(new ItemStack(DoHyUnesco.PLAQUE_ITEM.get()), monument.name(), List.of(
-                                monument.score() + " / 100 · " + monument.weight() + " emplacement(s)",
+                                monument.score() + " / 100 · " + Unesco.count(monument.weight(), "emplacement",
+                                        "emplacements"),
                                 "Inscrit, zone protegee"))
                         .accent(0xFFFAC400).badge("UNESCO").tooltip(breakdown(monument)));
             }
@@ -141,8 +155,7 @@ public final class UnescoMenu extends MenuController {
         }
         ZonedDateTime next = Unesco.nextElection();
         marvels.add(Card.of(new ItemStack(Items.CLOCK), "Prochaine election", List.of(
-                        "Le 1er, a " + Unesco.ELECTION_HOUR + " h", next.getDayOfMonth() + " " + MONTHS[next.getMonthValue()
-                                - 1]))
+                        "1er " + MONTHS[next.getMonthValue() - 1] + " a " + Unesco.ELECTION_HOUR + " h", until(next)))
                 .accent(0xFF27C4E8).tooltip(List.of("Le conseil de l'ONU elit une merveille par mois",
                         "Les monuments inscrits et ceux des nations rivales",
                         "Elue : +" + MoneyFormat.exact(Unesco.WONDER_BONUS) + " $ et +" + Unesco.WONDER_POINTS
