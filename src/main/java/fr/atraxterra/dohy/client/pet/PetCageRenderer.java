@@ -63,7 +63,9 @@ public class PetCageRenderer implements BlockEntityRenderer<PetCageBlockEntity, 
         BlockEntityRenderState.extractBase(cage, state, crumbling);
         Direction facing = cage.getBlockState().hasProperty(PetCageBlock.FACING)
                 ? cage.getBlockState().getValue(PetCageBlock.FACING) : Direction.NORTH;
-        state.facing = -facing.toYRot();
+        // Le modele regarde vers -z (le nord) : il faut tourner de 180 - angle pour qu'il regarde
+        // du cote de la porte de la cage.
+        state.facing = 180.0f - facing.toYRot();
         long now = cage.getLevel() == null ? 0L : cage.getLevel().getGameTime();
         state.age = now + partialTick;
         state.occupant = Familiar.byId(cage.occupant());
