@@ -44,6 +44,7 @@ neoForge {
         }
         client {
             client()
+            programArguments.addAll('--width', '1920', '--height', '1080', '--quickPlaySingleplayer', 'shots')
         }
         server {
             server()
@@ -67,6 +68,7 @@ dependencies {
     // L'API de JEI, pour le plugin de recettes : rien n'en part dans le jar.
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 }
 
 tasks.withType(JavaCompile).configureEach {
