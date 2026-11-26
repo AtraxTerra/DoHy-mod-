@@ -264,6 +264,32 @@ public final class FactionCommand {
                         .then(Commands.literal("lacher")
                                 .executes(ctx -> as(ctx.getSource(), player -> result(player,
                                         FactionEvents.dropEgg(player), "Tu laches l'oeuf."))))
+                        .then(Commands.literal("marques")
+                                .executes(ctx -> as(ctx.getSource(), player -> {
+                                    FactionEventMenu.INSTANCE.open(player);
+                                    return 1;
+                                }))
+                                .then(Commands.literal("lancer")
+                                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                        .then(Commands.argument("objectif", StringArgumentType.word())
+                                                .suggests((ctx, builder) -> {
+                                                    for (fr.atraxterra.dohy.faction.marks.MarksGoal goal
+                                                            : fr.atraxterra.dohy.faction.marks.MarksGoal.values()) {
+                                                        builder.suggest(goal.key());
+                                                    }
+                                                    builder.suggest("points");
+                                                    return builder.buildFuture();
+                                                })
+                                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                                        fr.atraxterra.dohy.faction.marks.Marks.force(
+                                                                ctx.getSource().getServer(),
+                                                                StringArgumentType.getString(ctx, "objectif")),
+                                                        "Manche d'essai lancee : 30 min.")))))
+                                .then(Commands.literal("arreter")
+                                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                        .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                                fr.atraxterra.dohy.faction.marks.Marks.stopForced(),
+                                                "Manche d'essai arretee.")))))
                         .then(Commands.literal("arreter")
                                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                 .executes(ctx -> as(ctx.getSource(), player -> result(player,
