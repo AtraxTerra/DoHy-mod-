@@ -51,7 +51,9 @@ public final class Nav {
                             "grades"),
                     new Item("kits", "Kits", () -> new ItemStack(Items.CHEST), "kits"),
                     new Item("ameliorations", "Ameliorations", () -> new ItemStack(Items.NETHER_STAR), "upgrades"),
-                    new Item("rpg", "Profil RPG", () -> new ItemStack(Items.TOTEM_OF_UNDYING), "rpg"))),
+                    new Item("rpg", "Profil RPG", () -> new ItemStack(Items.TOTEM_OF_UNDYING), "rpg"),
+                    new Item("familier", "Familier",
+                            () -> new ItemStack(fr.atraxterra.dohy.palamod.pet.PalaPets.PET_CAGE_ITEM.get()), "pet"))),
             new Group("NATION", List.of(
                     new Item("faction", "Ma nation", () -> new ItemStack(Items.BANNER.pick(DyeColor.RED)), "faction"),
                     new Item("trixium", "Concours Trixium",
@@ -85,6 +87,7 @@ public final class Nav {
         VIEWS.put("grades", "grade");
         VIEWS.put("kits", "kits");
         VIEWS.put("rpg", "rpg");
+        VIEWS.put("pet", "familier");
         VIEWS.put("trixium", "trixium");
         VIEWS.put("encyclopedie", "encyclopedie");
         VIEWS.put("plan", "plans");
