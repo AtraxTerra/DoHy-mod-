@@ -56,7 +56,43 @@ contrôleur, l'écran, et sa fabrique dans `UiClient`.
 - Éléments : `UiButton` (rouge, vert, gris), `CloseButton`, `TextField` (recherche), `Dropdown`,
   `ItemGrid` (grille d'objets qui défile), `RowList` (liste qui défile), `QuantityField`
   (Maj = ±16).
-- `Ui` : la palette et les polices.
+- `Ui` : la palette et les polices. `Ui.Paladium` reprend à la lettre celle de Paladium-UI
+  (`ColorConstant` du jar 7.15 : fond `1E1D23`, fond clair `40404D`, rouge `EF3926`, vert
+  `25E251`, noir `0F0F12`, gris `323232` et `989898`, désactivé `A7A7A7`) ; le rouge, le vert, le
+  cadre et le noir du kit s'y alignent.
+- `Anim` : le temps des animations, les courbes de Robert Penner (`Anim.Ease` : linéaire,
+  quadratique, cubique, quartique, quintique, sinus, exponentielle, circulaire, recul, élastique,
+  rebond, en entrée, en sortie et aux deux bouts, celles du moteur d'animation de Zephyr-UI) et
+  `Anim.Tween` (une valeur d'un point à un autre, sur une courbe, après un délai).
+
+### Le moteur Zephyr (2026-11-27)
+
+Les formes du kit (`Paint` : rectangles arrondis, pastilles, anneaux, cadres, dégradés, ombres,
+halos, pointillés) sont dessinées au GPU, comme le moteur de Zephyr-UI et ses shaders `rounded`,
+`shadow` et `circle`, dans le rendu retenu de la 26.2 :
+
+- deux pipelines d'interface du kit (`Zephyr.ROUNDED`, `Zephyr.SHADOW`), sur le modèle du
+  pipeline d'interface du jeu (`GUI_SNIPPET`) avec l'UV dans le format des sommets, et leurs
+  shaders (`assets/dohy/shaders/core/zephyr*.vsh|fsh`) ;
+- une forme est un élément d'interface comme un autre (`ZephyrShape`, `submitGuiElementRenderState`) :
+  elle se range et se coupe aux ciseaux comme le reste ;
+- les coins sont des quads dont l'UV porte la distance au coin intérieur, en rayons : le shader en
+  tire le bord, lissé sur un pixel physique quelle que soit l'échelle (`fwidth`) ; un anneau porte
+  son rayon intérieur dans la partie entière de l'UV ;
+- un dégradé est porté par les couleurs des sommets : un dégradé arrondi est une seule forme, là
+  où l'ancien chemin posait une bande par ligne de pixels ;
+- plus de texture par rayon, d'anneau ou de halo : les formes voisines partagent le même pipeline,
+  donc le même appel de dessin.
+
+Zephyr-UI passait le rayon et le rectangle de chaque forme en uniformes, un appel de dessin par
+forme ; ce n'est pas possible dans le rendu retenu, d'où l'UV. Si la carte graphique refusait les
+shaders (pipeline non valide à la compilation), `Zephyr.active()` le voit et `Paint` reprend ses
+textures générées : l'API de `Paint` n'a pas changé, les écrans n'ont rien à faire. La coche et la
+flèche restent des textures.
+
+Vérifié en captures (CI, rendu logiciel Mesa) : l'accueil, les métiers, le commerce, la boutique,
+les grades et le HUD, moteur actif puis coupé, sont identiques à l'œil ; seuls les pixels de
+lissage des bords diffèrent de quelques unités.
 
 ### Polices
 

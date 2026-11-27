@@ -195,6 +195,22 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-27 — le moteur Zephyr des interfaces
+
+**Demande** : convertir Zephyr-UI (le moteur d'interface de Paladium) pour des interfaces propres
+et optimisées ; le joueur a choisi de porter son moteur GPU sous le kit, puis d'épurer les écrans
+un par un sans rien retirer.
+
+- **Moteur** : les formes du kit (`Paint`) dessinées au GPU par deux pipelines et leurs shaders,
+  bord lissé au pixel physique, dégradés par sommets, plus de texture par rayon ni de bande par
+  ligne de pixels ; repli automatique sur les textures si la carte refuse les shaders.
+  `INTERFACES.md`, « Le moteur Zephyr ».
+- **Animations** : les courbes de Penner de Zephyr-UI (`Anim.Ease`) et `Anim.Tween`.
+- **Palette** : celle de Paladium-UI à la lettre (`Ui.Paladium`), le kit s'y aligne.
+
+**Vérifié** : captures en CI de six écrans, moteur actif puis coupé : identiques à l'œil. Un faux filet à
+la jointure des coins (UV prolongé par les fragments voisins du bord) a été corrigé avant la PR.
+
 ### 2026-11-27 — les withers de PalaWither
 
 **Demande** : suite du remplacement des textures dessinées par celles des jars de Paladium, avec le
