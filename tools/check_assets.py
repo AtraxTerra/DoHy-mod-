@@ -176,6 +176,16 @@ MODEL_TEXTURES = {
     "block/extractor_off.png": (64, 32),
     # La table d'alchimiste reprend la texture de son ModelAlchemyCreator (Tabula, 82 x 64).
     "block/alchemy_creator.png": (82, 64),
+    # Les lucky blocks du mois reprennent le patron de leur modele 3D (tools/data/lucky_block_models.json).
+    "block/march_lucky_block.png": (128, 128),
+    "block/easter_lucky_block.png": (128, 128),
+    "block/may_lucky_block.png": (64, 64),
+    "block/june_lucky_block.png": (64, 64),
+    "block/july_lucky_block.png": (64, 64),
+    "block/august_lucky_block.png": (128, 128),
+    "block/september_lucky_block.png": (64, 64),
+    "block/november_lucky_block.png": (64, 64),
+    "block/christmas_lucky_block.png": (128, 128),
     # Le bout de buche du racinier est en 32 x 32 dans PalaJobs.
     "block/root_log_top.png": (32, 32),
     # La surface du portail : 32 images de 16 x 16, animees par son .mcmeta.

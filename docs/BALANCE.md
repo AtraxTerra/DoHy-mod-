@@ -1698,6 +1698,38 @@ fibres et 900 graines, et le revenu se partage entre les trois :
 - Le biogénérateur tire 400 FE d'une graine comme d'une céréale : les graines (6 $) sont le
   combustible le moins cher de la ferme, sans arbitrage puisqu'elles ne s'achètent pas.
 
+## 6 duotrigesies. Le calendrier de l'Avent — ce que vaut décembre (2026-11-24)
+
+Un cadeau de saison : il doit faire plaisir chaque jour sans devenir un revenu, et le grand cadeau
+récompenser la régularité. Valeurs « pour le joueur » des autres sections : une clé Améthyste
+~85 k, une Saharia ~850 k (§ 6 quater), une potion d'XP de métier ~60 k (§ 6 duovicies), une
+pépite d'endium 40 k (prix de base du catalogue) ; les objets de Noël (cadeaux, lucky blocks de
+Noël, lait chaud, sapin, hache, pierre) n'ont pas de prix de revente et ne comptent pour rien
+ici, comme les lucky blocks (§ 6 tervicies).
+
+| Ce que donnent les 24 cases | Valeur |
+|---|---|
+| Argent liquide (5, 13, 23, 24 décembre) | 100 000 $ |
+| Deux clés Améthyste (6 et 18) | ~170 k |
+| Deux potions d'XP de métier (10 et 19) | ~120 k |
+| Une pépite d'endium (20) | ~40 k |
+| Lingots (4) | ~4 k |
+| **Total** | **~0,43 M** |
+| Le grand cadeau (une clé Saharia) | ~0,85 M |
+
+- **~0,43 M sur le mois**, ~18 k par jour : moins qu'une journée de contrats au niveau 0
+  (~27 k, § 6 novovicies), une demi-heure de revenu en fin de partie (1 M par heure, § 3). Le grand
+  cadeau double la mise pour qui vient chaque jour.
+- **Le rattrapage à 25 000 $** coûte plus que ce que rendent la plupart des cases : il ne vaut que
+  pour les clés (~85 k), les potions (~60 k), la pépite (~40 k), les 50 000 $ du 23 et les 25 000 $
+  du 24 — et pour le grand cadeau, qui exige les vingt-quatre. Manquer cinq jours et tout rattraper
+  coûte 125 000 $ : le grand cadeau reste rentable (~0,85 M), sans rendre l'oubli gratuit.
+- **Pas de boucle** : le calendrier est lié au joueur et à la date réelle ; rien de ce qu'il donne
+  n'ouvre une case plus tôt. Une saison ouverte ne se rouvre pas (l'attachement garde l'année).
+
+Leviers : `data/advent.json` (contenu des cases, grand cadeau, `catch_up_price`), relu au
+démarrage du monde.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

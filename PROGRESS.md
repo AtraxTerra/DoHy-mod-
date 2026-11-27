@@ -193,6 +193,30 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-24 (suite) — Noël au spawn : le calendrier de l'Avent et le parvis décoré
+
+**Demande** : le point 2 de « Fais 1 (…), 2, 4 et 5 » — un calendrier de l'Avent, un cadeau par
+jour au spawn, et le parvis décoré. Livré avant le 1er décembre (`docs/CONTENU_DOHY.md`, « Noël au
+spawn » ; équilibre : `BALANCE.md` § 6 duotrigesies).
+
+- **Le calendrier** (`noel/`) : 24 cases du 1er au 24 décembre, à ouvrir au spawn auprès du Père
+  Noël (`/calendrier` le montre de partout). Le jour change à 5 h comme les contrats ; le contenu
+  d'une case reste une surprise jusqu'à son jour ; une case manquée se rattrape pour 25 000 $
+  jusqu'au 6 janvier ; les 24 ouvertes, le grand cadeau (clé Saharia) du 25 décembre au 6 janvier.
+  Contenu dans `data/advent.json` ; un mot à la connexion quand la case du jour attend.
+- **Le parvis** (`spawn/SpawnChristmas`), du 1er décembre au 6 janvier : un sapin de vingt blocs en
+  face de l'autel des offrandes (boules, guirlande en spirale, étoile, douze cadeaux), le Père Noël
+  sur son tapis (nouvelle peau dans `tools/spawn_npc_assets.py`), des arcs de guirlandes au-dessus de
+  l'allée, de petits sapins, la neige sur l'herbe et les épicéas (pas près des lampes, où elle
+  fondrait). Tout ce qu'il remplace est gardé et remis après le 6 janvier.
+- **Les lucky blocks du mois** retrouvent leur modèle 3D : leur texture-patron avait été réduite à 16
+  pixels (cubes presque transparents, dont celui de Noël que le calendrier donne quatre fois).
+  `tools/blockbench_json.py` traduit les neuf modèles de PalaMod (`PALAMOD.md` § 41).
+- Vérifié en CI, monde au 5 décembre : décor posé (940 blocs, 3 125 couches de neige), Père Noël à son
+  poste ; case du jour ouverte, case manquée rattrapée (25 000 $ débités), case du lendemain refusée,
+  case déjà ouverte refusée ; au 25 décembre, le grand cadeau refusé à 2 cases, ouvert à 24 ; au
+  7 janvier, décor retiré bloc pour bloc (lampadaire et épicéas revenus, neige partie, Père Noël parti).
+
 ### 2026-11-24 (suite) — les objets de déblocage qui manquaient, et JEI
 
 **Demande** : « Fais 1 (en utilisant les fichiers a ta disposition et les textures, aide toi du

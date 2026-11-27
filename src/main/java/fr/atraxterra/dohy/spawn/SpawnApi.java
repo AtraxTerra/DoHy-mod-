@@ -280,6 +280,10 @@ public final class SpawnApi {
             HologramBlockEntity.upkeep();
             NpcPostBlockEntity.upkeep();
         }
+        if (job == null && server.getTickCount() % 100 == 0) {
+            // le decor de Noel, du 1er decembre au 6 janvier
+            SpawnChristmas.tick(server);
+        }
         if (job == null) {
             return;
         }
@@ -287,6 +291,8 @@ public final class SpawnApi {
             Job done = job;
             job = null;
             done.level.setData(DoHySpawn.BUILT.get(), done.version);
+            // la reconstruction a tout efface : le decor de Noel se repose a la verification suivante
+            SpawnChristmas.forget(done.level);
             DoHy.LOGGER.info("Spawn : construit");
             paintNations(server);
             for (UUID id : done.waiting) {
@@ -303,6 +309,7 @@ public final class SpawnApi {
         HologramBlockEntity.LOADED.clear();
         NpcPostBlockEntity.LOADED.clear();
         job = null;
+        SpawnChristmas.placedAt = -1L;
         mapSource = null;
         mapMosaic = null;
         mapCountries = null;

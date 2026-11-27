@@ -3988,6 +3988,15 @@ septembre, Halloween, novembre et Noël — avec leurs 198 événements. Commits
   calendrier.
 - **Leurs événements ne sortent que d'eux** (`Catalog.season`), et la part des bons est celle de
   PalaMod, comme pour les autres (`LuckyEvents.goodScale`).
+- **Leur modèle 3D** (corrigé le 2026-11-24) : les neuf blocs du mois (mars, Pâques, mai, juin,
+  juillet, août, septembre, novembre, Noël) sont dessinés dans PalaMod par une TESR et un modèle
+  exporté de Blockbench (nœud et rubans du bloc de Noël, oreilles de Pâques, cadre d'août…), sur une
+  texture-patron de 64 ou 128 pixels. Cette texture avait été ramenée à 16 pixels comme celle d'un
+  cube : le bloc n'était plus qu'un cube presque transparent. `tools/blockbench_json.py` rejoue
+  maintenant chaque modèle (son constructeur au bytecode : pièces, boîtes, enfants, rotations) en
+  modèle de bloc de 26.2, rotations sur trois axes comprises (permises depuis 25w46a), et
+  `lucky_assets.py` garde leur texture entière (`tools/data/lucky_block_models.json`). L'icône d'un
+  modèle qui déborde du bloc est réduite pour tenir dans sa case. Le noir garde son cube.
 
 ### La boîte à outils (`SeasonKit`)
 

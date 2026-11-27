@@ -77,6 +77,25 @@ TYPES = {
 # Le seul bloc dont l'image n'a pas le nom du type dans le jar.
 TYPE_TEXTURES = {"christmas": "christmas_luckyblock.png"}
 
+# Les lucky blocks du mois ont un modele 3D dans PalaMod (une TESR et un ModelBase exporte de
+# Blockbench) et une texture a son patron (64 ou 128 pixels). Leurs modeles de bloc sont dans
+# ce fichier, tires du jar par tools/blockbench_json.py --lucky : la texture se garde entiere.
+BLOCK_MODELS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "lucky_block_models.json")
+
+
+def block_models():
+    if not os.path.exists(BLOCK_MODELS):
+        return {}
+    with open(BLOCK_MODELS, encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def png_size(path):
+    """La largeur et la hauteur d'un PNG, lues dans son en-tete (sans Pillow)."""
+    with open(path, "rb") as handle:
+        header = handle.read(24)
+    return int.from_bytes(header[16:20], "big"), int.from_bytes(header[20:24], "big")
+
 # Les effets des evenements : nom francais (lang de PalaMod), anglais, image d'evenement.
 EFFECTS = {
     "super_man": ("SuperMan", "SuperMan", "superman"),
@@ -1325,12 +1344,16 @@ def outputs():
     def put(path, payload):
         files[os.path.join(path)] = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
 
+    models = block_models()
     for key in TYPES:
         name = "%s_lucky_block" % key
         put(os.path.join(ASSETS, "blockstates", name + ".json"),
             {"variants": {"": {"model": "%s:block/%s" % (NS, name)}}})
-        put(os.path.join(ASSETS, "models", "block", name + ".json"),
-            {"parent": "minecraft:block/cube_all", "textures": {"all": "%s:block/%s" % (NS, name)}})
+        if key in models:
+            put(os.path.join(ASSETS, "models", "block", name + ".json"), models[key]["model"])
+        else:
+            put(os.path.join(ASSETS, "models", "block", name + ".json"),
+                {"parent": "minecraft:block/cube_all", "textures": {"all": "%s:block/%s" % (NS, name)}})
         put(os.path.join(ASSETS, "models", "item", name + ".json"), {"parent": "%s:block/%s" % (NS, name)})
         put(os.path.join(ASSETS, "items", name + ".json"),
             {"model": {"type": "minecraft:model", "model": "%s:item/%s" % (NS, name)}})
@@ -1591,11 +1614,13 @@ def textures(jar, events):
     effects = os.path.join(ASSETS, "textures", "mob_effect")
     for folder in (block_dir, gui, icons, effects):
         os.makedirs(folder, exist_ok=True)
+    models = block_models()
     for key in TYPES:
         image = Image.open(os.path.join(source, "blocks", TYPE_TEXTURES.get(key, "%s_lucky_block.png" % key))).convert(
             "RGBA")
-        # Les blocs du mois sont dessines en 64 ou 128 pixels : ramenes a 16, comme les autres.
-        if image.size != (16, 16):
+        # Les blocs du mois ont leur modele 3D : leur texture est le patron de ce modele, gardee
+        # entiere. Ramenee a 16 pixels, elle ne donnait qu'un cube presque transparent.
+        if image.size != (16, 16) and key not in models:
             image = image.resize((16, 16), Image.BOX)
         image.save(os.path.join(block_dir, "%s_lucky_block.png" % key))
     frame = Image.open(os.path.join(source, "gui", "LuckyBlock", "minecraft", "foreground.png")).convert("RGBA")
@@ -1940,6 +1965,12 @@ def main():
     for relative in needed:
         if not os.path.exists(os.path.join(ASSETS, relative)):
             stale.append("%s absente (relancer avec --jar)" % relative)
+    for key, entry in block_models().items():
+        path = os.path.join(ASSETS, "textures", "block", "%s_lucky_block.png" % key)
+        if os.path.exists(path) and list(png_size(path)) != entry["texture_size"]:
+            stale.append("%s : %s pixels, le modele en attend %s (relancer avec --jar)"
+                         % (os.path.relpath(path, ROOT), "x".join(map(str, png_size(path))),
+                            "x".join(map(str, entry["texture_size"]))))
     if stale:
         for line in stale:
             print("::error::lucky blocks : %s. Lance 'python3 -I tools/lucky_assets.py'." % line)
