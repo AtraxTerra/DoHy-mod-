@@ -30,7 +30,7 @@ jobs:
         run: |
           # Le port NeoForge de Create Fly (AtraxTerra/Mod-ported), construit depuis sa branche : le
           # harnais compile contre lui et le monde le charge.
-          git clone -q --depth 1 -b port/neoforge-26.2 https://github.com/AtraxTerra/Mod-ported /tmp/flysrc
+          git clone -q --depth 1 -b fix/fluid-root-commit https://github.com/AtraxTerra/Mod-ported /tmp/flysrc
           git -C /tmp/flysrc log --oneline -1
           chmod +x /tmp/flysrc/gradlew
           ( cd /tmp/flysrc && ./gradlew --no-daemon -q jar ) > /tmp/flybuild.log 2>&1 || { tail -60 /tmp/flybuild.log; exit 1; }
