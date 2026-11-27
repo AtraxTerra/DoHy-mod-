@@ -9,7 +9,6 @@ import fr.atraxterra.dohy.palamod.achievement.AchievementMenu;
 import fr.atraxterra.dohy.palamod.alchemist.MysticEnchantMenu;
 import fr.atraxterra.dohy.palamod.dimminer.DimMinerMenus;
 import fr.atraxterra.dohy.palamod.dungeon.DungeonMenus;
-import fr.atraxterra.dohy.palamod.dungeon.RpgMenu;
 import fr.atraxterra.dohy.palamod.golem.GolemMenus;
 import fr.atraxterra.dohy.palamod.mount.MountMenus;
 import fr.atraxterra.dohy.palamod.pillage.ChestExplorerMenu;
@@ -28,7 +27,7 @@ public final class Menus {
                 UpgradesController.INSTANCE, BoutiqueController.INSTANCE, CollectionsController.INSTANCE,
                 MuseumController.INSTANCE,
                 DungeonMenus.Paliers.INSTANCE, DungeonMenus.BoostAltar.INSTANCE, DungeonMenus.Merchant.INSTANCE,
-                DungeonMenus.Bag.INSTANCE, RpgMenu.INSTANCE,
+                DungeonMenus.Bag.INSTANCE,
                 MountMenus.Home.INSTANCE, MountMenus.Barn.INSTANCE, MountMenus.Heal.INSTANCE,
                 GolemMenus.Main.INSTANCE, GolemMenus.Tree.INSTANCE, GolemMenus.Choices.INSTANCE,
                 DimMinerMenus.Entry.INSTANCE, DimMinerMenus.Summary.INSTANCE, MysticEnchantMenu.INSTANCE,

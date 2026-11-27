@@ -2250,9 +2250,16 @@
         "Un arbre, des runes"
       ],
       "summary": [
-        "Les donjons ont leur propre progression : le niveau RPG, sur 100 niveaux, donne des points a placer dans un arbre de quatre branches. Les statistiques RPG ne valent qu'en donjon."
+        "Le niveau RPG (100 niveaux) donne des points a placer dans l'arbre : Attaque, Esquive, Critique, Defense. Ces statistiques ne jouent qu'en donjon."
       ],
       "sections": [
+        {
+          "title": "L'arbre",
+          "text": [
+            "- Un noeud se prend quand celui qui le precede est pris.",
+            "- VALIDER achete les choix ; RESET les annule, ou remet l'arbre a zero (25 000 $)."
+          ]
+        },
         {
           "title": "Les runes",
           "text": [
