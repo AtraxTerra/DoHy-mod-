@@ -441,6 +441,12 @@ final class ShotSamples {
         }));
         ShotHarness.SHOTS.add(server("t3_train", 60, player -> {
             ServerLevel level = over(player);
+            String[] names = {"Gare A", "Gare B", "Gare C"};
+            for (int i = 0; i < STATIONS.size(); i++) {
+                var be = stationAt(player, i);
+                boolean renamed = be.updateName(names[i]);
+                log("gare {} : gare globale {}, renommee {}", names[i], be.getStation() == null ? "aucune" : be.getStation().name, renamed);
+            }
             var a = stationAt(player, 0);
             boolean assembling = a.enterAssemblyMode(player);
             Direction dir = a.getAssemblyDirection();
@@ -454,14 +460,15 @@ final class ShotSamples {
             BlockPos bogey = bogeyTrack.above();
             log("bogie : clic {}, bloc {}", casing, BuiltInRegistries.BLOCK.getKey(level.getBlockState(bogey).getBlock()));
             BlockPos controls = bogey.above();
-            // Les commandes regardent le conducteur : le train avance a l'oppose.
+            // Create compte comme commandes avant celles qui regardent dans le sens d'assemblage.
             level.setBlock(controls, com.zurrtum.create.AllBlocks.TRAIN_CONTROLS.defaultBlockState()
-                    .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, dir.getOpposite()), 3);
+                    .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, dir), 3);
             level.addFreshEntity(new com.zurrtum.create.content.contraptions.glue.SuperGlueEntity(level,
                     new AABB(Vec3.atLowerCornerOf(bogey), Vec3.atLowerCornerOf(controls.offset(1, 1, 1)))));
             a.refreshAssemblyInfo();
             a.assemble(player.getUUID());
-            log("apres assemblage : {} train(s) ; {}", com.zurrtum.create.Create.RAILWAYS.trains.size(), describe(train()));
+            log("apres assemblage : {} train(s) ; {} ; erreur {}", com.zurrtum.create.Create.RAILWAYS.trains.size(),
+                    describe(train()), a.lastException == null ? "aucune" : a.lastException.component.getString());
             look(player, gx + 8.5d, gy + 4.0d, bogey.getZ() + 0.5d, 90.0f, 15.0f);
         }));
         ShotHarness.SHOTS.add(server("t4_depart", 40, player -> {
