@@ -4877,6 +4877,12 @@ centrifugeuse, la réserve de graines et le centre de contrôle.
 - **Le viseur** (`BotanistCrosshairProvider`) : « Bourgeon dans », « Fleurit dans », « Réclame : »,
   « Récoltes restantes », « Fane dans », « Disparaît dans », « Hors climat », « Récupérer les
   graines » ; repris tels quels dans l'étiquette du pot visé.
+- **Les modèles, textures et animations** du pot et des trois plantes (`models/botanist/blocks/pot`,
+  `mutations/<plante>`, au format Bedrock) : une plante a quatre états empilés dans son fichier
+  (graine, bourgeon, fleur, fanée), une animation d'attente par état (`idle_state_<n>`, qui montre
+  le sien et le pose au sol) et une d'évolution par passage (`evolve_<n>_to_<n+1>`). Le pot a aussi
+  les anneaux et étincelles d'une plante mutée (pour le lot 2b). Les icônes d'objet (pot, arrosoir,
+  guitare, graines de mutation) et les icônes de besoin (SVG), sur le losange du kit du botaniste.
 - Les noms des trois plantes (`ironwheat`, `moonfrost`, `sand_coral`) sont ceux des mutations de
   JobsReborn ; leurs noms français sont à nous (blé de fer, givrelune, corail des sables).
 
@@ -4913,13 +4919,17 @@ configuration du serveur de Paladium. Valeurs retenues (`Mutation`, `Need`) :
 
 ### Code
 
-- `palamod/botanist/` : `BotanistPotBlock` (états `stage` et `plant`, pour le modèle),
-  `BotanistPotBlockEntity` (maître, chronos, besoin), `PotStage`, `Mutation`, `Need`,
+- `palamod/botanist/` : `BotanistPotBlock` (sans modèle propre : ses particules seulement),
+  `BotanistPotBlockEntity` (maître, plante, stade, chronos, besoin), `PotStage`, `Mutation`, `Need`,
   `MutationSeedItem`, `WateringCanItem` (composant `palamod:watering_can_charges`), `GuitarItem`.
-- `client/botanist/` : `BotanistPotRenderer` (l'objet du besoin au-dessus de la plante,
-  l'étiquette au viseur), `BotanistClient`.
-- Assets : `tools/botanist_lab_assets.py` (`--check` en CI) — textures dessinées pour le mod ;
-  blockstate multipart (le pot, plus la plante selon le stade).
+- `client/botanist/` : `BotanistPotRenderer` (le pot et la plante de JobsReborn, l'animation de
+  l'état ou de l'évolution, l'icône du besoin, l'étiquette au viseur), `BotanistModels` (les
+  modèles, relus avec les ressources), `BotanistClient`.
+- `client/rpg/BedrockModel` : le moteur des monstres de donjon (géométrie Bedrock, UV par face,
+  animations normalisées) ouvert aux blocs ; le pot en est le premier usage.
+- Assets : `tools/botanist_lab_assets.py` (`--check` en CI ; `--import` reprend du jar les modèles,
+  textures, animations normalisées par `tools/rpg_entities.py` et icônes de besoin rendues par
+  `rsvg-convert`), sous `assets/palamod/botanist/` et `textures/botanist/`.
 
 ### Écarts
 
@@ -4927,5 +4937,7 @@ configuration du serveur de Paladium. Valeurs retenues (`Mutation`, `Need`) :
   cuite et terre ; il n'a pas de recette dans JobsReborn) et se pose où l'on veut.
 - **Déraciner** : JobsReborn le fait au clic maintenu ; ici, deux clics droits accroupi, main vide,
   à moins de trois secondes.
-- **Les modèles animés** de JobsReborn ne sont pas repris : plantes, pot et outils sont dessinés
-  pour le mod, la plante en croix dans le terreau.
+- **L'arrosoir et la guitare** sont des icônes plates en main : JobsReborn a aussi leurs modèles
+  3D tenus en main et leurs animations d'usage, pas encore repris.
+- **La boule de neige** réclamée par la givrelune n'a pas d'icône de besoin dans le jar : c'est
+  l'objet lui-même qui flotte au-dessus de la plante.

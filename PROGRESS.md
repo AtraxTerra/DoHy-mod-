@@ -212,8 +212,11 @@ après ce lot.
 - **Présence** : la plante ne pousse, ne réclame et ne fane que si son maître est à moins de
   48 blocs ; l'étiquette du pot visé dit où elle en est (repris du viseur de JobsReborn).
 - **Fermier** : verrous au niveau 10, pots et graines en récompense, XP par fleur et par besoin ;
-  rattrapage à la connexion. Chiffres : `PALAMOD.md` § 48, `BALANCE.md` § 6 sexatrigesies ;
-  textures dessinées pour le mod (`tools/botanist_lab_assets.py`).
+  rattrapage à la connexion. Chiffres : `PALAMOD.md` § 48, `BALANCE.md` § 6 sexatrigesies.
+- **Modèles et textures de JobsReborn** (à la demande du joueur, crédit dans le README) : le pot et
+  les plantes en 3D, quatre états animés et leurs évolutions, icônes d'objet et de besoin
+  (`tools/botanist_lab_assets.py --import`) ; rendus par le moteur des monstres de donjon
+  (`client/rpg/BedrockModel`).
 
 **Non vérifié en jeu** : le rendu du pot et des plantes, l'étiquette et l'icône de besoin, les
 sons et particules.

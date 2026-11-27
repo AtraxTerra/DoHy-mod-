@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "palamod:block/botanist_pot"
+    "model": "palamod:item/botanist_pot"
   }
 }

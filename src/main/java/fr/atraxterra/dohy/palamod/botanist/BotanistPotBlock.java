@@ -17,8 +17,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
@@ -38,30 +36,23 @@ import java.util.List;
  * (centre de controle, modules) viendra plus tard, et en attendant un pot se
  * fabrique et se pose ou l'on veut. Le climat du pot est celui de son biome.
  *
- * <p>Le stade et la plante sont dans l'etat du bloc, pour le modele ; le reste
- * (maitre, chronos, besoin) dans {@link BotanistPotBlockEntity}.
+ * <p>Le bloc n'a pas de modele propre : le pot et sa plante sont ceux de
+ * JobsReborn, dessines par {@code BotanistPotRenderer}. Tout l'etat (maitre,
+ * plante, stade, chronos, besoin) est dans {@link BotanistPotBlockEntity}.
  */
 public class BotanistPotBlock extends BaseEntityBlock {
 
     public static final MapCodec<BotanistPotBlock> CODEC = simpleCodec(BotanistPotBlock::new);
-    public static final EnumProperty<PotStage> STAGE = EnumProperty.create("stage", PotStage.class);
-    public static final EnumProperty<Mutation> PLANT = EnumProperty.create("plant", Mutation.class);
-    private static final VoxelShape SHAPE = Block.box(1.0d, 0.0d, 1.0d, 15.0d, 11.0d, 15.0d);
+    /** Le pot de JobsReborn : une panse de 12 sur 10, un rebord de 16 de large jusqu'a 12 pixels. */
+    private static final VoxelShape SHAPE = Block.box(0.0d, 0.0d, 0.0d, 16.0d, 12.0d, 16.0d);
 
     public BotanistPotBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(STAGE, PotStage.EMPTY)
-                .setValue(PLANT, Mutation.IRONWHEAT));
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(STAGE, PLANT);
     }
 
     @Override
@@ -109,7 +100,7 @@ public class BotanistPotBlock extends BaseEntityBlock {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         // Une graine tenue sur un pot occupe ne gene pas la recolte : elle ne se plante que dans un pot vide.
-        if (stack.getItem() instanceof MutationSeedItem seed && state.getValue(STAGE) == PotStage.EMPTY) {
+        if (stack.getItem() instanceof MutationSeedItem seed && pot.stage() == PotStage.EMPTY) {
             if (player instanceof ServerPlayer server) {
                 pot.plant(server, stack, seed.mutation());
             }
@@ -130,7 +121,8 @@ public class BotanistPotBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
         boolean emptyHand = player.getMainHandItem().isEmpty();
-        PotStage stage = state.getValue(STAGE);
+        PotStage stage = level.getBlockEntity(pos) instanceof BotanistPotBlockEntity found ? found.stage()
+                : PotStage.EMPTY;
         // La recolte et les graines se prennent quel que soit l'objet tenu ; le reste veut la main vide,
         // pour qu'un bloc tenu se pose a cote du pot comme ailleurs.
         boolean handled = emptyHand || stage == PotStage.BLOOMING || stage == PotStage.WILTED;

@@ -80,6 +80,10 @@ public class BotanistPotBlockEntity extends BlockEntity {
     private long syncedAt;
     private long uprootArmedUntil;
     private int passes;
+    /** Cote client, pour le rendu : le dernier stade vu, celui d'avant, et quand il a change. */
+    private PotStage seenStage;
+    private PotStage seenFrom = PotStage.EMPTY;
+    private long seenSince;
 
     public BotanistPotBlockEntity(BlockPos pos, BlockState state) {
         super(PalaBotanist.POT_TYPE.get(), pos, state);
@@ -121,6 +125,33 @@ public class BotanistPotBlockEntity extends BlockEntity {
 
     public String ownerName() {
         return ownerName;
+    }
+
+    /**
+     * Suit les changements de stade vus par le rendu (cote client) : le passage
+     * d'un etat au suivant se joue avec l'animation d'evolution du modele. Au
+     * premier regard, rien ne se joue : la plante est deja dans son etat.
+     */
+    public void trackStage(long now) {
+        if (seenStage == null) {
+            seenStage = stage;
+            seenFrom = stage;
+            seenSince = now - 20L * 60L;
+            return;
+        }
+        if (seenStage != stage) {
+            seenFrom = seenStage;
+            seenStage = stage;
+            seenSince = now;
+        }
+    }
+
+    public PotStage seenFrom() {
+        return seenFrom;
+    }
+
+    public long seenSince() {
+        return seenSince;
     }
 
     /** Ce qu'il reste du stade, en ticks, a l'heure du jeu {@code now} (cote client : deduit). */
@@ -208,7 +239,6 @@ public class BotanistPotBlockEntity extends BlockEntity {
         Climate here = Climate.at(server, worldPosition);
         outOfClimate = here != seed.climate();
         active = ownerNear(server) != null;
-        updateState();
         server.playSound(null, worldPosition, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1.0f, 1.0f);
         if (outOfClimate) {
             say(player, prefix().append(Component.literal(seed.label() + " plante, mais hors climat : il lui faut un "
@@ -244,7 +274,6 @@ public class BotanistPotBlockEntity extends BlockEntity {
         outOfClimate = false;
         barren = false;
         active = false;
-        updateState();
     }
 
     // -- Le temps ----------------------------------------------------------------------------------
@@ -330,7 +359,6 @@ public class BotanistPotBlockEntity extends BlockEntity {
             default -> {
             }
         }
-        updateState();
         sync();
     }
 
@@ -531,7 +559,6 @@ public class BotanistPotBlockEntity extends BlockEntity {
             say(player, prefix().append(Component.literal("Derniere recolte de " + mutation.label()
                     + " : un clic droit rend ses graines.").withStyle(ChatFormatting.GREEN)));
         }
-        updateState();
         sync();
     }
 
@@ -592,24 +619,6 @@ public class BotanistPotBlockEntity extends BlockEntity {
     private static void say(ServerPlayer player, Component message, boolean actionBar) {
         if (player != null) {
             player.sendSystemMessage(message, actionBar);
-        }
-    }
-
-    /** Le stade et la plante, dans l'etat du bloc : c'est ce que dessine le modele. */
-    private void updateState() {
-        if (level == null) {
-            return;
-        }
-        BlockState state = getBlockState();
-        if (!state.hasProperty(BotanistPotBlock.STAGE)) {
-            return;
-        }
-        BlockState next = state.setValue(BotanistPotBlock.STAGE, stage);
-        if (mutation != null) {
-            next = next.setValue(BotanistPotBlock.PLANT, mutation);
-        }
-        if (next != state) {
-            level.setBlock(worldPosition, next, Block.UPDATE_CLIENTS);
         }
     }
 

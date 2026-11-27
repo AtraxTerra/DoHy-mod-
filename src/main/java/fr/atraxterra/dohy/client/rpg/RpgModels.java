@@ -105,14 +105,24 @@ public final class RpgModels {
     }
 
     private static JsonObject read(String path) throws Exception {
+        return read(Identifier.fromNamespaceAndPath(NAMESPACE, path));
+    }
+
+    /** Un fichier JSON des ressources, de n'importe quel espace de noms ; {@code null} s'il n'existe pas. */
+    static JsonObject read(Identifier id) throws Exception {
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
-        var resource = manager.getResource(Identifier.fromNamespaceAndPath(NAMESPACE, path));
+        var resource = manager.getResource(id);
         if (resource.isEmpty()) {
             return null;
         }
         try (BufferedReader reader = resource.get().openAsReader()) {
             return GsonHelper.parse(reader);
         }
+    }
+
+    /** Les animations d'un modele, cuites a la demande ({@link BedrockModel}). */
+    static Named named(JsonObject animations, RpgGeometry.Built built) {
+        return new Named(animations, built);
     }
 
     private static Entry load(String model) throws Exception {
