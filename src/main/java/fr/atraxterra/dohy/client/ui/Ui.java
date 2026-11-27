@@ -27,22 +27,22 @@ public final class Ui {
     public static final int BG = 0xFF1E1D23;
     /** Le bord exterieur, plus sombre, qui donne les coins crantes. */
     public static final int OUTER = 0xFF15141A;
-    /** Le filet du cadre. */
-    public static final int FRAME = 0xFF40404A;
+    /** Le filet du cadre (le LIGHT_BACKGROUND de Paladium-UI). */
+    public static final int FRAME = Paladium.LIGHT_BACKGROUND;
     /** Les zones en retrait : grille du shop, listes. */
     public static final int INSET = 0xFF16151A;
     /** Les champs : prix, quantite, recherche. */
     public static final int FIELD = 0xFF2A292F;
-    public static final int FIELD_DARK = 0xFF0F0F11;
+    public static final int FIELD_DARK = Paladium.BLACK;
 
     public static final int SLOT_BORDER = 0xFFBFBEC3;
     public static final int SLOT_FILL = 0xFF18171C;
     public static final int SLOT_HOVER = 0xFF2C2B33;
 
-    public static final int RED = 0xFFEF3826;
+    public static final int RED = Paladium.PRIMARY;
     public static final int RED_DARK = 0xFF89130F;
     public static final int RED_SHADE = 0xFFA82418;
-    public static final int GREEN = 0xFF22E558;
+    public static final int GREEN = Paladium.GREEN;
     public static final int GREEN_DARK = 0xFF0E8A33;
     public static final int GRAY_BUTTON = 0xFF4A4955;
     public static final int GRAY_BUTTON_DARK = 0xFF2B2A33;
@@ -53,6 +53,24 @@ public final class Ui {
     public static final int DISABLED = 0xFF55545C;
     public static final int SCROLL_TRACK = 0xFF3A3940;
     public static final int SCROLL_THUMB = 0xFF9E9E9E;
+
+    /**
+     * La palette de Paladium-UI, a la lettre ({@code ColorConstant} du jar Paladium-UI
+     * 7.15) : le reste du kit s'y aligne quand il en reprend une couleur.
+     */
+    public static final class Paladium {
+        public static final int BACKGROUND = 0xFF1E1D23;
+        public static final int LIGHT_BACKGROUND = 0xFF40404D;
+        public static final int PRIMARY = 0xFFEF3926;
+        public static final int GREEN = 0xFF25E251;
+        public static final int DISABLED = 0xFFA7A7A7;
+        public static final int BLACK = 0xFF0F0F12;
+        public static final int GRAY = 0xFF323232;
+        public static final int LIGHT_GRAY = 0xFF989898;
+
+        private Paladium() {
+        }
+    }
 
     /**
      * La palette de l'interface v2, relevee sur les maquettes validees : fonds
@@ -79,7 +97,7 @@ public final class Ui {
         public static final int RED_D = 0xFFC92C1B;
         public static final int RED_DD = 0xFF7E170F;
         public static final int GREEN = 0xFF30CB1F;
-        public static final int GREEN_L = 0xFF22E558;
+        public static final int GREEN_L = Paladium.GREEN;
         public static final int YELLOW = 0xFFFAC400;
         public static final int BLUE = 0xFF2F5BEA;
         public static final int CYAN = 0xFF2BC4C4;

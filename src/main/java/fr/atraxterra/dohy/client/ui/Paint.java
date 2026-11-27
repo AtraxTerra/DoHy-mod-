@@ -21,8 +21,14 @@ import java.util.Map;
  * taille exacte ou ils s'affichent. Rien n'est donc etire ni flou, a toutes les
  * echelles d'interface.
  *
- * <p>Les images sont des textures dynamiques, generees une fois et gardees :
- * disques par rayon, halo radial, rampes de degrade.
+ * <p><b>Le moteur Zephyr</b> ({@link Zephyr}) dessine les formes au GPU : coins
+ * arrondis, anneaux, cadres, degrades, ombres et halos sont des quads dont le shader
+ * calcule le bord, sans texture, et les formes voisines partagent un seul appel de
+ * dessin. Un degrade arrondi est un element, plus une bande par ligne de pixels.
+ *
+ * <p>Sans le moteur (shaders refuses par la carte graphique), les images sont des
+ * textures dynamiques, generees une fois et gardees : disques par rayon, halo radial,
+ * rampes de degrade. La coche et la fleche restent des textures dans les deux cas.
  */
 public final class Paint {
 
@@ -35,6 +41,8 @@ public final class Paint {
     private static Identifier rampHorizontal;
     private static final int GLOW_SIZE = 128;
     private static final int RAMP = 256;
+    /** Le rayon interieur d'un anneau, en 512e du rayon (voir zephyr_rounded.fsh). */
+    private static final int RING_STEPS = 512;
 
     private final GuiGraphicsExtractor graphics;
     /** Le nombre de pixels physiques par unite du repere courant. */
@@ -98,7 +106,12 @@ public final class Paint {
         begin();
         int x0 = p(x);
         int y0 = p(y);
-        graphics.fill(x0, y0, p(x + width), p(y + height), color);
+        if (Zephyr.active()) {
+            ZephyrShape.builder(Zephyr.ROUNDED).quad(x0, y0, p(x + width), p(y + height), 0.0f, 0.0f, 0.0f, 0.0f,
+                    color).submit(graphics);
+        } else {
+            graphics.fill(x0, y0, p(x + width), p(y + height), color);
+        }
         end();
     }
 
@@ -113,6 +126,12 @@ public final class Paint {
     }
 
     private void roundPx(int x, int y, int w, int h, int r, int color) {
+        if (Zephyr.active()) {
+            ZephyrShape.Builder shape = ZephyrShape.builder(Zephyr.ROUNDED);
+            roundShape(shape, x, y, w, h, r, color, color);
+            shape.submit(graphics);
+            return;
+        }
         int radius = Math.max(0, Math.min(r, Math.min(w, h) / 2));
         if (radius <= 0) {
             graphics.fill(x, y, x + w, y + h, color);
@@ -147,6 +166,13 @@ public final class Paint {
         int w = p(x + width) - x0;
         int h = p(y + height) - y0;
         int r = Math.max(line, Math.min(p(radius), Math.min(w, h) / 2));
+        if (Zephyr.active()) {
+            ZephyrShape.Builder shape = ZephyrShape.builder(Zephyr.ROUNDED);
+            ringShape(shape, x0, y0, w, h, r, line, color);
+            shape.submit(graphics);
+            end();
+            return;
+        }
         graphics.fill(x0 + r, y0, x0 + w - r, y0 + line, color);
         graphics.fill(x0 + r, y0 + h - line, x0 + w - r, y0 + h, color);
         graphics.fill(x0, y0 + r, x0 + line, y0 + h - r, color);
@@ -175,6 +201,15 @@ public final class Paint {
         int w = p(x + width) - x0;
         int h = p(y + height) - y0;
         int r = p(radius);
+        if (Zephyr.active()) {
+            // Le filet puis le fond, dans une seule forme : un seul element, dessine dans cet ordre.
+            ZephyrShape.Builder shape = ZephyrShape.builder(Zephyr.ROUNDED);
+            roundShape(shape, x0, y0, w, h, r, border, border);
+            roundShape(shape, x0 + line, y0 + line, w - 2 * line, h - 2 * line, Math.max(0, r - line), fill, fill);
+            shape.submit(graphics);
+            end();
+            return;
+        }
         roundPx(x0, y0, w, h, r, border);
         roundPx(x0 + line, y0 + line, w - 2 * line, h - 2 * line, Math.max(0, r - line), fill);
         end();
@@ -191,6 +226,14 @@ public final class Paint {
         int w = p(x + width) - x0;
         int h = p(y + height) - y0;
         int r = Math.max(0, Math.min(p(radius), Math.min(w, h) / 2));
+        if (Zephyr.active()) {
+            // Le degrade est porte par les couleurs des sommets : une forme, plus une bande par ligne.
+            ZephyrShape.Builder shape = ZephyrShape.builder(Zephyr.ROUNDED);
+            roundShape(shape, x0, y0, w, h, r, top, bottom);
+            shape.submit(graphics);
+            end();
+            return;
+        }
         // Le bord lisse vient de la forme pleine, de la couleur du milieu.
         roundPx(x0, y0, w, h, r, mix(top, bottom, 0.5f));
         for (int row = 0; row < h; row++) {
@@ -222,6 +265,12 @@ public final class Paint {
         int y0 = p(y);
         int w = p(x + width) - x0;
         int h = p(y + height) - y0;
+        if (Zephyr.active()) {
+            ZephyrShape.builder(Zephyr.ROUNDED).quad(x0, y0, x0 + w, y0 + h, 0.0f, 0.0f, 0.0f, 0.0f, top, top,
+                    bottom, bottom).submit(graphics);
+            end();
+            return;
+        }
         graphics.fill(x0, y0, x0 + w, y0 + h, bottom);
         graphics.blit(RenderPipelines.GUI_TEXTURED, rampVertical(), x0, y0, 0.0f, 0.0f, w, h, 1, RAMP, 1, RAMP, top);
         end();
@@ -237,6 +286,12 @@ public final class Paint {
         int y0 = p(y);
         int w = p(x + width) - x0;
         int h = p(y + height) - y0;
+        if (Zephyr.active()) {
+            ZephyrShape.builder(Zephyr.ROUNDED).quad(x0, y0, x0 + w, y0 + h, 0.0f, 0.0f, 0.0f, 0.0f, left, right,
+                    right, left).submit(graphics);
+            end();
+            return;
+        }
         graphics.fill(x0, y0, x0 + w, y0 + h, right);
         graphics.blit(RenderPipelines.GUI_TEXTURED, rampHorizontal(), x0, y0, 0.0f, 0.0f, w, h, RAMP, 1, RAMP, 1, left);
         end();
@@ -249,8 +304,16 @@ public final class Paint {
         }
         begin();
         int size = Math.max(2, p(radius * 2));
-        graphics.blit(RenderPipelines.GUI_TEXTURED, glow(), p(cx) - size / 2, p(cy) - size / 2, 0.0f, 0.0f, size, size,
-                GLOW_SIZE, GLOW_SIZE, GLOW_SIZE, GLOW_SIZE, color);
+        int left = p(cx) - size / 2;
+        int top = p(cy) - size / 2;
+        if (Zephyr.active()) {
+            // Un quad, l'UV de -1 a 1 : la distance au centre, en rayons.
+            ZephyrShape.builder(Zephyr.SHADOW).quad(left, top, left + size, top + size, -1.0f, -1.0f, 1.0f, 1.0f,
+                    color).submit(graphics);
+        } else {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, glow(), left, top, 0.0f, 0.0f, size, size, GLOW_SIZE,
+                    GLOW_SIZE, GLOW_SIZE, GLOW_SIZE, color);
+        }
         end();
     }
 
@@ -268,10 +331,15 @@ public final class Paint {
         int y0 = p(y) - s;
         int w = p(x + width) - p(x) + 2 * s;
         int h = p(y + height) - p(y) + 2 * s;
-        int half = GLOW_SIZE / 2;
-        Identifier texture = glow();
         int innerW = Math.max(0, w - 2 * s);
         int innerH = Math.max(0, h - 2 * s);
+        if (Zephyr.active()) {
+            shadowShape(x0, y0, w, h, s, innerW, innerH, color);
+            end();
+            return;
+        }
+        int half = GLOW_SIZE / 2;
+        Identifier texture = glow();
         // Coins.
         graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x0, y0, 0.0f, 0.0f, s, s, half, half, GLOW_SIZE, GLOW_SIZE,
                 color);
@@ -381,6 +449,16 @@ public final class Paint {
         int x1 = p(x + width);
         int on = Math.max(1, p(dash));
         int off = Math.max(1, p(gap));
+        if (Zephyr.active()) {
+            // Tous les traits dans une forme : un element au lieu d'un par trait.
+            ZephyrShape.Builder shape = ZephyrShape.builder(Zephyr.ROUNDED);
+            for (int cursor = p(x); cursor < x1; cursor += on + off) {
+                shape.quad(cursor, y0, Math.min(x1, cursor + on), y0 + 1, 0.0f, 0.0f, 0.0f, 0.0f, color);
+            }
+            shape.submit(graphics);
+            end();
+            return;
+        }
         for (int cursor = p(x); cursor < x1; cursor += on + off) {
             graphics.fill(cursor, y0, Math.min(x1, cursor + on), y0 + 1, color);
         }
@@ -397,10 +475,93 @@ public final class Paint {
         int y1 = p(y + height);
         int on = Math.max(1, p(dash));
         int off = Math.max(1, p(gap));
+        if (Zephyr.active()) {
+            ZephyrShape.Builder shape = ZephyrShape.builder(Zephyr.ROUNDED);
+            for (int cursor = p(y); cursor < y1; cursor += on + off) {
+                shape.quad(x0, cursor, x0 + 1, Math.min(y1, cursor + on), 0.0f, 0.0f, 0.0f, 0.0f, color);
+            }
+            shape.submit(graphics);
+            end();
+            return;
+        }
         for (int cursor = p(y); cursor < y1; cursor += on + off) {
             graphics.fill(x0, cursor, x0 + 1, Math.min(y1, cursor + on), color);
         }
         end();
+    }
+
+    // -- Formes du moteur Zephyr --------------------------------------------------------
+
+    /**
+     * Un rectangle arrondi plein, en pixels physiques, degrade de {@code top} a
+     * {@code bottom} : quatre coins (l'UV de 1 au bord exterieur a 0 au coin interieur)
+     * et trois bandes pleines (l'UV nul). Les couleurs des sommets suivent la hauteur.
+     */
+    private static void roundShape(ZephyrShape.Builder shape, int x, int y, int w, int h, int r, int top, int bottom) {
+        if (w <= 0 || h <= 0) {
+            return;
+        }
+        int radius = Math.max(0, Math.min(r, Math.min(w, h) / 2));
+        if (radius <= 0) {
+            shape.quad(x, y, x + w, y + h, 0.0f, 0.0f, 0.0f, 0.0f, top, top, bottom, bottom);
+            return;
+        }
+        int upper = top == bottom ? top : mix(top, bottom, radius / (float) h);
+        int lower = top == bottom ? top : mix(top, bottom, (h - radius) / (float) h);
+        int right = x + w - radius;
+        int below = y + h - radius;
+        shape.quad(x, y, x + radius, y + radius, 1.0f, 1.0f, 0.0f, 0.0f, top, top, upper, upper);
+        shape.quad(right, y, x + w, y + radius, 0.0f, 1.0f, 1.0f, 0.0f, top, top, upper, upper);
+        shape.quad(x, below, x + radius, y + h, 1.0f, 0.0f, 0.0f, 1.0f, lower, lower, bottom, bottom);
+        shape.quad(right, below, x + w, y + h, 0.0f, 0.0f, 1.0f, 1.0f, lower, lower, bottom, bottom);
+        shape.quad(x + radius, y, right, y + radius, 0.0f, 0.0f, 0.0f, 0.0f, top, top, upper, upper);
+        shape.quad(x, y + radius, x + w, below, 0.0f, 0.0f, 0.0f, 0.0f, upper, upper, lower, lower);
+        shape.quad(x + radius, below, right, y + h, 0.0f, 0.0f, 0.0f, 0.0f, lower, lower, bottom, bottom);
+    }
+
+    /**
+     * Un contour arrondi de {@code line} pixels physiques : quatre quarts d'anneau (le
+     * rayon interieur porte par la partie entiere de l'UV) et quatre bandes.
+     */
+    private static void ringShape(ZephyrShape.Builder shape, int x, int y, int w, int h, int r, int line, int color) {
+        float inner = Math.max(0, r - line) / (float) r;
+        float n = 2.0f * Math.round(inner * RING_STEPS);
+        int right = x + w - r;
+        int below = y + h - r;
+        shape.quad(x, y, x + r, y + r, 1.0f + n, 1.0f + n, n, n, color);
+        shape.quad(right, y, x + w, y + r, n, 1.0f + n, 1.0f + n, n, color);
+        shape.quad(x, below, x + r, y + h, 1.0f + n, n, n, 1.0f + n, color);
+        shape.quad(right, below, x + w, y + h, n, n, 1.0f + n, 1.0f + n, color);
+        shape.quad(x + r, y, right, y + line, 0.0f, 0.0f, 0.0f, 0.0f, color);
+        shape.quad(x + r, y + h - line, right, y + h, 0.0f, 0.0f, 0.0f, 0.0f, color);
+        shape.quad(x, y + r, x + line, below, 0.0f, 0.0f, 0.0f, 0.0f, color);
+        shape.quad(x + w - line, y + r, x + w, below, 0.0f, 0.0f, 0.0f, 0.0f, color);
+    }
+
+    /**
+     * L'ombre douce coupee en neuf : les coins mesurent depuis leur coin interieur, les
+     * bords depuis leur bord interieur, le milieu est plein.
+     */
+    private void shadowShape(int x0, int y0, int w, int h, int s, int innerW, int innerH, int color) {
+        ZephyrShape.Builder shape = ZephyrShape.builder(Zephyr.SHADOW);
+        int right = x0 + w - s;
+        int below = y0 + h - s;
+        shape.quad(x0, y0, x0 + s, y0 + s, 1.0f, 1.0f, 0.0f, 0.0f, color);
+        shape.quad(right, y0, x0 + w, y0 + s, 0.0f, 1.0f, 1.0f, 0.0f, color);
+        shape.quad(x0, below, x0 + s, y0 + h, 1.0f, 0.0f, 0.0f, 1.0f, color);
+        shape.quad(right, below, x0 + w, y0 + h, 0.0f, 0.0f, 1.0f, 1.0f, color);
+        if (innerW > 0) {
+            shape.quad(x0 + s, y0, x0 + s + innerW, y0 + s, 0.0f, 1.0f, 0.0f, 0.0f, color);
+            shape.quad(x0 + s, below, x0 + s + innerW, y0 + h, 0.0f, 0.0f, 0.0f, 1.0f, color);
+        }
+        if (innerH > 0) {
+            shape.quad(x0, y0 + s, x0 + s, y0 + s + innerH, 1.0f, 0.0f, 0.0f, 0.0f, color);
+            shape.quad(right, y0 + s, x0 + w, y0 + s + innerH, 0.0f, 0.0f, 1.0f, 0.0f, color);
+        }
+        if (innerW > 0 && innerH > 0) {
+            shape.quad(x0 + s, y0 + s, x0 + s + innerW, y0 + s + innerH, 0.0f, 0.0f, 0.0f, 0.0f, color);
+        }
+        shape.submit(graphics);
     }
 
     // -- Textures generees ------------------------------------------------------------
