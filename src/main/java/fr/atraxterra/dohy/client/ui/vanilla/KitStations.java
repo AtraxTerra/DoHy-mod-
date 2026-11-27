@@ -337,12 +337,13 @@ public final class KitStations {
                     color = Ui.Theme.RED_LIGHT;
                 }
             }
+            // Une pastille sous le resultat, entre son cadre (67) et le bas de l'encart (75).
             text = ContainerStyle.plain(text).toUpperCase(Locale.ROOT);
-            float right = imageWidth - 10.0f;
-            float textWidth = g.width(Ui.WIDE, text, 4.2f);
-            g.paint().framed(right - textWidth - 6.0f, 67.5f, textWidth + 8.0f, 7.0f, 3.5f,
+            float right = imageWidth - 13.0f;
+            float textWidth = g.width(Ui.WIDE, text, 3.8f);
+            g.paint().framed(right - textWidth - 3.5f, 68.3f, textWidth + 7.0f, 6.0f, 3.0f,
                     Paint.mix(0xFF141518, color, 0.12f), Paint.mix(0xFF24262A, color, 0.35f), 1);
-            g.right(Ui.WIDE, text, right, 69.0f, 4.2f, color);
+            g.right(Ui.WIDE, text, right, 69.4f, 3.8f, color);
         }
 
         @Override
