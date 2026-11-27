@@ -76,6 +76,8 @@ final class ShotSamples {
         ShotHarness.SHOTS.add(server(name, extra, player -> {
             UiNet.close(player);
             player.closeContainer();
+            // Ce que le conteneur rend tombe dans la case sous la souris : videe.
+            player.getInventory().setItem(13, ItemStack.EMPTY);
             Level level = player.level();
             BlockPos pos = player.blockPosition().above(4);
             Block block = BuiltInRegistries.BLOCK.getValue(Identifier.parse(id));
