@@ -140,6 +140,11 @@ menus, sans rien perdre (mêmes bulles, mêmes clics, mêmes messages).
   l'exécution par NeoForge) ; s'il en manquait un, l'écran reprendrait son dessin du jeu.
 - Restent à l'écran du jeu : le métier à tisser et la table de cartographie (rares, et dont
   l'aperçu — bannière, carte — est dessiné par le jeu lui-même).
+- **Palette d'armement** (`PaletteScreen`) : elle quitte l'ancien panneau (cases grises à bord
+  clair, titre kaki) pour le style des coffres du kit : la fenêtre et son en-tête (la palette, son
+  nom, la croix), « GROUPE 3 X 3 » et le compte par famille (obus, munitions, missiles) dans la
+  bande du haut, les cases du kit, les flèches et la glissière en boutons du kit. Mêmes rangées
+  numérotées, mêmes flèches, même molette.
 
 ### Polices
 
