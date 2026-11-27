@@ -39,6 +39,7 @@ public final class Menus {
                 EnemyBaseMenu.INSTANCE, ReserveMenu.INSTANCE, FactionEventMenu.INSTANCE,
                 fr.atraxterra.dohy.earth.NationMenu.INSTANCE,
                 fr.atraxterra.dohy.faction.war.WarMenu.INSTANCE,
+                fr.atraxterra.dohy.faction.garrison.GarrisonMenu.INSTANCE,
                 fr.atraxterra.dohy.faction.org.OrgMenus.Org.INSTANCE,
                 fr.atraxterra.dohy.faction.org.OrgMenus.CadrePage.INSTANCE,
                 fr.atraxterra.dohy.faction.org.DiplomacyMenus.Hub.INSTANCE,

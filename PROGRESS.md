@@ -193,6 +193,40 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-24 (suite) — la garnison : des soldats à soi, payés par la nation
+
+**Demande** : le point 4 de « Fais 1 (…), 2, 4 et 5 » — des soldats alliés recrutables (caserne,
+solde, équipement) qui gardent la base et suivent le joueur, sur le modèle des soldats des nations
+rivales. Lot 22n (`docs/FACTION.md`, « La garnison (22n) » ; équilibre : `BALANCE.md`
+§ 6 tritrigesies).
+
+- **La caserne** (`faction/garrison/`) : un bloc par joueur, dans ses propres claims, nation
+  exigée ; la pose refusée le dit en rouge (sans nation, hors claims, deuxième caserne). Niveau 1 :
+  4 soldats ; niveau 2 (100 000 $) : 8 ; niveau 3 (300 000 $) : 12. Cassée, la garnison passe en
+  congé jusqu'à la suivante.
+- **Les soldats** : fantassin (20 000 $, 2 000 $ / jour), archer (25 000 $, 2 500 $ / jour, tir de
+  côté comme les squelettes), médecin (35 000 $, 3 500 $ / jour, soigne la garnison et le joueur),
+  capitaine, un seul (80 000 $, 8 000 $ / jour, aura de Force et de Résistance). Équipement fer,
+  diamant (150 000 $) ou paladium (450 000 $) ; au fer, des pièces de cuir teintes aux couleurs
+  de la bannière.
+  Aucun tir ami ; ils ne visent pas les creepers.
+- **Les ordres** (`/garnison`, menu de la garnison) : garde (en cercle autour de la caserne, et
+  autour du coffre pendant un assaut), escorte (ils suivent, d'une dimension à l'autre), repos (à
+  la caserne, ils se soignent), congé (personne en jeu). Ils ne sont en jeu que si le joueur est
+  près de la caserne ou les emmène ; rappelés, ils gardent leur vie.
+- **La solde** se paie chaque jour joué à 5 h, sur la banque de la nation, après la fin d'un
+  assaut ; deux jours impayés, un soldat déserte chaque jour. Un soldat mort quitte la garnison.
+- **La guerre** : les soldats comptent dans la zone du siège, leurs victimes rapportent la prime
+  au joueur, et les nations en tirent la leçon (« gardiens » : plus de fantassins). Carte « Ta
+  garnison » dans l'écran de la guerre.
+- Vérifié en CI (27 captures) : refus de pose, recrues, capitaine unique, niveau 2, six soldats à
+  leurs postes, combat contre zombies et squelette, escorte jusqu'au Nether, solde de 20 500 $
+  débitée, désertion au deuxième jour impayé, équipement diamant. Un assaut de Nordheim
+  (24 soldats) mis en déroute en une minute par cinq soldats (15 tués, trois pertes).
+  **Bug trouvé et corrigé** : de retour du Nether, un ordre de garde donné dans la seconde
+  laissait les soldats là-bas ; un soldat resté dans une autre dimension est maintenant rappelé et
+  redéployé à son poste.
+
 ### 2026-11-24 (suite) — Noël au spawn : le calendrier de l'Avent et le parvis décoré
 
 **Demande** : le point 2 de « Fais 1 (…), 2, 4 et 5 » — un calendrier de l'Avent, un cadeau par

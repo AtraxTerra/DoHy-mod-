@@ -63,6 +63,7 @@ public final class DoHyTech {
                         output.accept(fr.atraxterra.dohy.palette.DoHyPalette.PALETTE_ITEM.get());
                         output.accept(fr.atraxterra.dohy.guide.DoHyGuide.PLAN.get());
                         output.accept(fr.atraxterra.dohy.earth.mine.DoHyMines.BEACON_ITEM.get());
+                        output.accept(fr.atraxterra.dohy.faction.garrison.DoHyGarrison.BARRACKS_ITEM.get());
                     })
                     .build());
 

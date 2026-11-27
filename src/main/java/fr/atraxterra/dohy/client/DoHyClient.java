@@ -109,6 +109,9 @@ public final class DoHyClient {
         // Les soldats des nations rivales (lot 22l) : corps humain, textures originales, equipement de leur role.
         event.registerEntityRenderer(fr.atraxterra.dohy.faction.war.DoHyWar.SOLDIER.get(),
                 fr.atraxterra.dohy.client.war.SoldierRenderer::new);
+        // Les soldats de ta garnison (lot 22n) : les memes corps, a tes couleurs.
+        event.registerEntityRenderer(fr.atraxterra.dohy.faction.garrison.DoHyGarrison.SOLDIER.get(),
+                fr.atraxterra.dohy.client.war.GarrisonSoldierRenderer::new);
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
         event.registerEntityRenderer(PalaHunter.ELEPHANT.get(), ElephantRenderer::new);
         event.registerEntityRenderer(DoHyAgri.TRACTOR.get(), TractorRenderer::new);

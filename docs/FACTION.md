@@ -38,6 +38,7 @@ chapitre 24 : `docs/ORGANISATIONS.md`.
 | 22m | Mines de la Terre à capturer : une balise de concession, rester à côté de 2 à 5 min ; revenus horaires (hors ligne compris) à la banque de faction, argent et minerais (coffre de la banque) ; reprise par la guerre | fait |
 | 22l-2 | La riposte contre les nations : ta contre-offensive (ce qu'elles t'ont pris te revient quand leur place forte tombe), une IA qui apprend de tes défenses d'un assaut à l'autre, les coalitions de nations | fait |
 | 22l-3 | Éclaireurs | à faire |
+| 22n | La garnison : une caserne dans tes claims, des soldats recrutés et payés par la banque (fantassins, archers, médecins, un capitaine), ordres (garde, escorte, repos, congé), équipement fer → diamant → paladium, solde quotidienne et désertion ; pendant un assaut, elle tient ton coffre | fait (en validation) |
 
 ## Ce qui change en solo
 
@@ -1014,3 +1015,78 @@ commandes d'essai), `Siege` (le contingent allié, la troupe selon la leçon, `c
 (le renseignement, la mémoire des morts), `SiegePlanner.capture` (le poids des tourelles),
 `Strongholds` (la récompense, la place forte d'une coalition), `WarMenu`, `WarCommand` ;
 `earth/mine/EarthMines.restore`.
+
+## La garnison (22n)
+
+Demandée le 2026-11-24 (le point 4 de « Fais 1, 2, 4 et 5 ») : des soldats alliés à recruter,
+qui gardent ta base, t'accompagnent et se battent dans les assauts. Ce sont les soldats des
+nations rivales (lot 22l), passés de ton côté : mêmes corps, mêmes visages, le cuir teint à la
+bannière de ta nation.
+
+### La caserne
+
+- **Une par joueur**, posée dans tes claims : hors de tes claims, sans nation ou s'il en existe
+  déjà une, la pose est refusée et l'objet reste en main. Établi : briques de pierre en haut et en
+  bas, deux blocs de fer et un bloc de paladium au milieu (onglet des machines de DoHy).
+- Un corps de garde crénelé, porte ferrée tournée vers celui qui la pose, fanion aux épées
+  croisées (dessin original, `tools/barracks_assets.py`). Un clic ouvre la garnison ; ailleurs,
+  `/garnison`, ou la carte « Ta garnison » de l'écran de la guerre.
+- **Niveaux** : 4 soldats ; 8 (100 000 $) ; 12 (300 000 $). Cassée, la garnison part en congé
+  jusqu'à la prochaine ; les charges des sapeurs ne la touchent pas (elle a une entité de bloc,
+  comme les coffres).
+
+### Les soldats
+
+| Rôle | Recrutement | Solde par jour | Vie | Dégâts | Ce qu'il fait |
+|---|---|---|---|---|---|
+| Fantassin | 20 000 $ | 2 000 $ | 26 | 4 | épée et bouclier, il charge |
+| Archer | 25 000 $ | 2 500 $ | 20 | les flèches d'un squelette | il tire à l'arrêt, tourne autour de sa cible |
+| Médecin | 35 000 $ | 3 500 $ | 20 | 1 | soigne le plus blessé des siens, ou toi, à 12 blocs (6 vie) |
+| Capitaine (un seul) | 80 000 $ | 8 000 $ | 60 | 7 | Force et Résistance aux siens à 12 blocs |
+
+**L'équipement**, pour toute la garnison d'un coup : fer (cuir teint aux couleurs de la nation),
+diamant (150 000 $ : vie ×1,5, +2 dégâts), paladium (450 000 $ : vie ×2, +4 dégâts). Tout est payé
+par la banque de la nation : rien ne sort d'une banque assiégée.
+
+### Les ordres
+
+- **Garder la base** (`/garnison garde`) : chacun à son poste, en cercle autour de la caserne (4 et
+  6 blocs), tant que tu es à moins de 64 blocs d'elle (ils rentrent au-delà de 80). Ils engagent
+  ce qui approche à 24 blocs de leur poste ; sans ennemi, ils pansent leurs plaies.
+- **Me suivre** (`/garnison suivre`) : derrière toi, partout ; au-delà de 20 blocs, ils te
+  rejoignent d'un saut ; dans une autre dimension, ils arrivent avec toi. Pas au spawn, où rien ne
+  se bat : ils attendent dehors. C'est l'escorte des contre-offensives.
+- **Au repos** : à la caserne, sans se battre. **En congé** : personne en jeu (la solde court).
+
+Au combat, ils frappent ce que tu frappes et ce qui te frappe, les soldats des nations et les
+monstres — pas les creepers. Ni toi ni eux ne vous blessez (flèches comprises).
+
+### Pendant un assaut
+
+Du camp à la fuite du trésorier, ceux qui gardent la base **se postent autour de ton coffre** (à
+1 et 3 blocs) : comme tes golems gardiens, ils comptent pour le tenir, et la prise n'avance pas
+tant qu'ils y sont. Les soldats de la nation les prennent pour cible ; la prime des soldats
+qu'ils abattent est pour toi, et la nation retient la leçon « tes gardiens » (plus de
+fantassins au prochain assaut).
+
+### La solde, les blessés, les morts
+
+- **La solde** se paie chaque jour réel (à 5 h, comme les contrats), depuis la banque, le premier
+  moment où tu es en ligne ce jour-là : rien n'est dû pour les jours d'absence. Pendant un assaut,
+  elle attend.
+- **Deux jours sans solde** : un soldat déserte chaque jour (le dernier recruté).
+- **Les blessés** gardent leurs blessures d'un déploiement à l'autre ; rappelés, ils reprennent
+  une demi-vie par seconde à la caserne ; déployés, un point toutes les deux secondes à leur poste.
+- **Un mort** quitte la garnison ; un renvoi (écran, clic avec confirmation) n'est pas remboursé.
+
+### Ce qui se passe hors de ta vue
+
+Les soldats ne sont jamais écrits sur disque : la garnison (sur le joueur, gardée à la mort) les
+refait à chaque déploiement, avec leur vie. Déconnecté, ils sont rappelés : un siège ne vient
+jamais en ton absence, ta base n'a besoin d'eux que quand tu es là.
+
+Code : `faction/garrison/` — `Garrison` (les données), `GarrisonRole`, `GarrisonTier`,
+`GarrisonSoldier` (l'entité, l'arc réécrit pour un soldat qui n'est pas un monstre),
+`Garrisons` (déploiement, solde, actions, combats, `/garnison`), `GarrisonMenu`,
+`BarracksBlock` ; `Siege.tickZone` et `Siege.onDeath`, `Soldier.installGoals`,
+`Sieges.defendedVault`, la carte de `WarMenu` ; `client/war/GarrisonSoldierRenderer`.

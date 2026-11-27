@@ -471,6 +471,13 @@ public final class WarMenu extends MenuController {
         defense.add(Card.of(new ItemStack(Items.SHIELD), fortress, List.of(
                 "Ta force : " + Math.round(WarStrategy.power(player) * 100.0d) + " %",
                 data.assaults() + " assaut(s) subi(s)")));
+        // Ta garnison (lot 22n) : tes soldats gardent la base et tiennent ton coffre pendant un assaut.
+        fr.atraxterra.dohy.faction.garrison.Garrison garrison = fr.atraxterra.dohy.faction.garrison.Garrisons.of(player);
+        defense.add(Card.of(new ItemStack(fr.atraxterra.dohy.faction.garrison.DoHyGarrison.BARRACKS_ITEM.get()),
+                        "Ta garnison", List.of(garrison.members().size() + " / " + garrison.capacity() + " soldats",
+                                garrison.barracks().isEmpty() ? "Pas encore de caserne" : garrison.order().label()))
+                .accent(garrison.members().isEmpty() ? 0xFF55545C : 0xFF8FA3B8)
+                .action("garrison|ouvrir la garnison"));
         // Ta puissance (lot 22l-2) : au-dela du seuil, les nations s'allient contre toi.
         List<String> parts = new ArrayList<>(threat.parts());
         parts.add("Au-dela de " + Math.round(WarStrategy.COALITION_AT) + ", les nations hostiles s'allient");
@@ -573,6 +580,9 @@ public final class WarMenu extends MenuController {
             }
         } else if (key.equals("bases")) {
             fr.atraxterra.dohy.faction.base.EnemyBaseMenu.INSTANCE.open(player);
+            return;
+        } else if (key.equals("garrison")) {
+            fr.atraxterra.dohy.faction.garrison.GarrisonMenu.INSTANCE.open(player);
             return;
         } else if (key.startsWith("declare:")) {
             try {

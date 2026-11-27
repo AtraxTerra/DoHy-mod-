@@ -49,6 +49,8 @@ public final class DoHy {
         fr.atraxterra.dohy.palette.DoHyPalette.register(modBus);
         // La guerre des nations : les soldats des nations rivales.
         fr.atraxterra.dohy.faction.war.DoHyWar.register(modBus);
+        // La garnison : tes soldats, recrutes a la caserne, payes par la banque de ta nation.
+        fr.atraxterra.dohy.faction.garrison.DoHyGarrison.register(modBus);
         fr.atraxterra.dohy.guide.DoHyGuide.register(modBus);
         fr.atraxterra.dohy.pass.DoHyPass.register(modBus);
         // Arrakis : la planete Duna de NTM NEXT Space, reprise (relief, air, navette, astroport).

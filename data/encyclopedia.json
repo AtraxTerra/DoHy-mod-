@@ -3266,12 +3266,72 @@
         "golem",
         "defense",
         "pays",
-        "diplomatie"
+        "diplomatie",
+        "garnison"
       ],
       "progress": "guerre",
       "discover": {
         "views": [
           "dohy:guerre"
+        ]
+      }
+    },
+    {
+      "id": "garnison",
+      "category": "faction",
+      "order": 15,
+      "icon": "dohy:barracks",
+      "title": "La garnison",
+      "card": [
+        "Tes soldats, ta caserne",
+        "Garde, escorte, coffre"
+      ],
+      "summary": [
+        "Des soldats recrutes a ta caserne et payes par la banque de ta nation. Ils gardent ta base, te suivent, et tiennent ton coffre pendant un assaut."
+      ],
+      "sections": [
+        {
+          "title": "La caserne",
+          "text": [
+            "- Une par joueur, dans tes claims. Etabli : briques de pierre en haut et en bas, 2 blocs de fer et 1 bloc de paladium au milieu.",
+            "- 4 soldats ; 8 au niveau 2 (100 000 $) ; 12 au niveau 3 (300 000 $)."
+          ]
+        },
+        {
+          "title": "Les soldats",
+          "text": [
+            "- Fantassin : 20 000 $, 2 000 $ / jour.",
+            "- Archer : 25 000 $, 2 500 $ / jour.",
+            "- Medecin : 35 000 $, 3 500 $ / jour.",
+            "- Capitaine (un seul) : 80 000 $, 8 000 $ / jour.",
+            "- Equipement diamant : 150 000 $ ; paladium : 450 000 $."
+          ]
+        },
+        {
+          "title": "A savoir",
+          "text": [
+            "- La solde se paie chaque jour ou tu joues, a 5 h.",
+            "! Deux jours sans solde : un soldat deserte chaque jour.",
+            "- Un soldat mort quitte la garnison."
+          ]
+        }
+      ],
+      "commands": [
+        "/garnison : la garnison",
+        "/garnison suivre : elle te suit",
+        "/garnison garde : elle garde la base"
+      ],
+      "see": [
+        "guerre",
+        "defense",
+        "faction"
+      ],
+      "discover": {
+        "items": [
+          "dohy:barracks"
+        ],
+        "views": [
+          "dohy:garrison"
         ]
       }
     },
