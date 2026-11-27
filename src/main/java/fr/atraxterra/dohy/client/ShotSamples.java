@@ -760,16 +760,21 @@ final class ShotSamples {
         return tracks + " bloc(s) de voie, " + connections + " raccord(s) courbe(s)";
     }
 
-    /** Pose de voie comme un joueur : clic de depart au sol, clic d'arrivee 16 blocs plus loin vers +Z. */
+    /**
+     * Pose de voie comme un joueur : un premier bloc de voie au sol, un clic dessus pour le choisir comme
+     * depart (l'objet brille), puis un clic au sol 16 blocs plus loin vers +Z.
+     */
     private static void layTrack(ServerPlayer player, int x, int z0, String label) {
         ServerLevel level = over(player);
         look(player, x + 0.5d, gy + 1.0d, z0 - 1.5d, 0.0f, 35.0f);
         ItemStack track = new ItemStack(com.zurrtum.create.AllItems.TRACK, 64);
-        InteractionResult start = click(player, track, new BlockPos(x, gy - 1, z0), Direction.UP);
+        InteractionResult first = click(player, track, new BlockPos(x, gy - 1, z0), Direction.UP);
+        InteractionResult start = click(player, player.getMainHandItem(), new BlockPos(x, gy, z0), Direction.UP);
         ItemStack held = player.getMainHandItem();
         boolean selected = held.has(com.zurrtum.create.AllDataComponents.TRACK_CONNECTING_FROM);
         InteractionResult end = click(player, held, new BlockPos(x, gy - 1, z0 + 16), Direction.UP);
-        log("[trackwright {}] depart {} (selection {}), arrivee {} : {}", label, start, selected, end, trackLine(level, x, z0, z0 + 16));
+        log("[trackwright {}] premier bloc {}, depart {} (selection {}), arrivee {} : {}", label, id(level.getBlockState(new BlockPos(x, gy, z0))),
+                start.getClass().getSimpleName(), selected, end.getClass().getSimpleName(), trackLine(level, x, z0, z0 + 16));
     }
 
     private static void trackwrightSteps() {
