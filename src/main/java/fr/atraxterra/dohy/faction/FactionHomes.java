@@ -45,6 +45,9 @@ public final class FactionHomes {
         if (!FactionApi.claimAt(player.level(), player.blockPosition()).ownedBy(player.getUUID())) {
             return "Un home se pose dans un de tes claims";
         }
+        if (fr.atraxterra.dohy.faction.unesco.Unesco.inMonument(player.level(), player.blockPosition()) != null) {
+            return "Pas de F home dans un monument UNESCO";
+        }
         FactionData.Home home = new FactionData.Home(FactionApi.dimension(player.level()), player.getX(),
                 player.getY(), player.getZ(), player.getYRot());
         while (data.homes.size() <= index) {

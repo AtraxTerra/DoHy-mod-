@@ -315,6 +315,16 @@ public final class FactionCommand {
                                                 .executes(ctx -> as(ctx.getSource(), player -> startEvent(player,
                                                         StringArgumentType.getString(ctx, "event"),
                                                         StringArgumentType.getString(ctx, "boss"))))))))
+                .then(Commands.literal("unesco")
+                        .executes(ctx -> as(ctx.getSource(), player -> {
+                            fr.atraxterra.dohy.faction.unesco.UnescoMenu.INSTANCE.openGeneral(player);
+                            return 1;
+                        }))
+                        .then(Commands.literal("elire")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .executes(ctx -> as(ctx.getSource(), player -> result(player,
+                                        fr.atraxterra.dohy.faction.unesco.Unesco.electNow(
+                                                ctx.getSource().getServer()), "")))))
                 .then(Commands.literal("base")
                         .executes(ctx -> as(ctx.getSource(), FactionCommand::enemyBase))
                         .then(Commands.literal("generer")

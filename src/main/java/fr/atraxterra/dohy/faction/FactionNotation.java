@@ -234,6 +234,12 @@ public final class FactionNotation {
             points = (territory.claims() + spare) * claimPart + (territory.museum() + spare) * museumPart;
             measure = claims + " claim(s), " + exposed + " / " + pieces + " au musee";
         }
+        // Le patrimoine mondial (lot 28) : un point par emplacement UNESCO, trois de plus pour la merveille.
+        int prestige = fr.atraxterra.dohy.faction.unesco.Unesco.prestige(player);
+        if (prestige > 0) {
+            points += prestige;
+            measure += ", UNESCO +" + prestige;
+        }
         lines.add(new Line(Criterion.TERRITORY, cap(points, territory.max()), territory.max(), measure));
         return new Score(List.copyOf(lines));
     }

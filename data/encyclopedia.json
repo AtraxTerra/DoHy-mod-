@@ -3585,6 +3585,59 @@
       }
     },
     {
+      "id": "unesco",
+      "category": "faction",
+      "order": 19,
+      "icon": "dohy:unesco_plaque",
+      "title": "UNESCO",
+      "card": [
+        "Inscris tes monuments,",
+        "vise la merveille du monde"
+      ],
+      "summary": [
+        "Une plaque UNESCO dans ton plus beau batiment : le jury l'arpente et le note sur 100. Inscrit a 60, il touche une subvention, sa zone est protegee et il compte a la notation. Chaque mois, le conseil de l'ONU elit la merveille du monde."
+      ],
+      "sections": [
+        {
+          "title": "Le dossier",
+          "text": [
+            "Il faut une nation de niveau 10 et la plaque dans un de tes claims. Nommee a l'enclume, elle donne son nom au monument.",
+            "Le jury arpente 33 x 33 blocs autour de la plaque, de 6 dessous a 34 dessus : les blocs construits (poses par un joueur, ou qui ne viennent pas du terrain).",
+            "Taille (25 : 1 500 blocs pour tout, 300 au moins), details (20 : escaliers, dalles, vitres, lumieres...), interieur (15 : l'air sous un toit), style (25 : une palette tenue et 20 sortes de blocs), fonctions (15 : coffres, fours, lits, lutrins, machines...).",
+            "Il faut 60 / 100. Refuse, le jury dit ce qui manque le plus ; un nouveau dossier une minute plus tard."
+          ]
+        },
+        {
+          "title": "Un monument inscrit",
+          "text": [
+            "Un emplacement par tranche de 2 500 blocs (cinq au plus), cinq emplacements par nation, et 2 500 $ par emplacement a la banque nationale.",
+            "Sa zone ne se casse plus aux explosions (sauf les armes de NTM), ni par un autre que son maitre. Pas de F home dedans.",
+            "Un point de Territoire a la notation par emplacement. Depuis l'ecran (/f unesco) : y aller, et un guide devant la plaque (clic droit).",
+            "Casser la plaque retire le monument du programme ; la subvention reste."
+          ]
+        },
+        {
+          "title": "La merveille du monde",
+          "text": [
+            "Le 1er de chaque mois a 21 h, le conseil de l'ONU elit une merveille parmi les monuments inscrits et ceux des nations rivales : la note compte, et un peu les couloirs.",
+            "Elue : 25 000 $ a la banque nationale, trois points de plus a la notation, un halo sur sa plaque, jusqu'a l'election suivante."
+          ]
+        }
+      ],
+      "see": [
+        "notation",
+        "faction"
+      ],
+      "discover": {
+        "items": [
+          "dohy:unesco_plaque"
+        ],
+        "views": [
+          "dohy:unesco"
+        ]
+      }
+    },
+    {
       "id": "terre",
       "category": "terre",
       "order": 0,

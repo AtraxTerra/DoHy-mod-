@@ -123,6 +123,7 @@
     "dohy:random_machine",
     "dohy:dice",
     "dohy:coin_slot",
-    "dohy:payout_box"
+    "dohy:payout_box",
+    "dohy:unesco_plaque"
   ]
 }
