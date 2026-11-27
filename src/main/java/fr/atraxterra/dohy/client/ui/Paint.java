@@ -525,7 +525,7 @@ public final class Paint {
      */
     private static void ringShape(ZephyrShape.Builder shape, int x, int y, int w, int h, int r, int line, int color) {
         float inner = Math.max(0, r - line) / (float) r;
-        float n = 2.0f * Math.round(inner * RING_STEPS);
+        float n = 4.0f * Math.round(inner * RING_STEPS);
         int right = x + w - r;
         int below = y + h - r;
         shape.quad(x, y, x + r, y + r, 1.0f + n, 1.0f + n, n, n, color);
