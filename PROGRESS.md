@@ -195,6 +195,22 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-27 — table d'enchantement, enclume et alambic au style du kit
+
+**Demande** : suite de l'épuration des écrans, sans rien retirer.
+
+- **Tour des conteneurs** en captures : l'établi, les fours, les coffres, l'entonnoir et le
+  distributeur sont au kit ; la table d'enchantement, l'enclume, l'alambic, la meule, la table de
+  forgeron, le tailleur de pierre, le métier à tisser et la table de cartographie gardaient l'écran
+  gris du jeu. Les machines de PalaMod et le coffre en paladium suivent les écrans de Paladium.
+- **`KitStations`** : la table d'enchantement, l'enclume et l'alambic (les trois que PalaVanillaGui
+  redessinait) au style du kit ; images du jar PalaVanillaGui 6.6.1 (`tools/palavanillagui_assets.py`,
+  `--check` en CI, crédit au README). `Paint.cross` : une croix générée comme la coche.
+- **En-tête** : un titre long ne touche plus la croix.
+
+**Vérifié** : captures des trois écrans vides et remplis (offres d'enchantement, réparation et coût,
+erreur de l'enclume, distillation en cours) et de l'écran du jeu sur le même menu.
+
 ### 2026-11-27 — l'écran du familier épuré
 
 **Demande** : épurer les écrans un par un, sans rien retirer (suite du moteur Zephyr).
