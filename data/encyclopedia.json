@@ -3433,6 +3433,59 @@
       }
     },
     {
+      "id": "a_vos_marques",
+      "category": "faction",
+      "order": 18,
+      "icon": "minecraft:clock",
+      "title": "A vos marques",
+      "card": [
+        "30 min pour un objectif,",
+        "+7 ELO a la cle"
+      ],
+      "summary": [
+        "Chaque heure, de 10 h 30 a 23 h 30 : une manche de 30 minutes pour miner, couper du bois, tuer des creatures ou pecher. L'objectif atteint rapporte 7 ELO a ta nation, 70 par jour au plus."
+      ],
+      "sections": [
+        {
+          "title": "Les manches",
+          "text": [
+            "Une manche de 30 minutes chaque heure, de 10 h 30 a 23 h 30 (heure de Paris) : elle finit a l'heure pile. L'objectif change a chaque manche, et une sur trois est la manche aux points.",
+            "L'objectif et le compte a rebours restent affiches en haut de l'ecran dans les mondes ou l'objectif compte. L'ecran des events (/f event) montre la manche en cours et la suivante."
+          ]
+        },
+        {
+          "title": "Les objectifs",
+          "text": [
+            "Miner 1 000 blocs a la pioche : la Mine ou la dimension du Mineur.",
+            "Couper 250 buches : l'overworld ou la dimension du Mineur.",
+            "Tuer 50 creatures : la Farmland ou la dimension du Mineur.",
+            "Pecher 25 prises (cannes du jeu ou de PalaMod) : la Farmland ou la dimension du Mineur.",
+            "Aux points : 1 000 points, chaque action compte dans ses mondes (bloc mine 1, buche 4, creature 20, prise 40)."
+          ]
+        },
+        {
+          "title": "La recompense",
+          "text": [
+            "7 ELO pour ta nation par objectif atteint, 70 par jour au plus (remise a zero a minuit). Sans nation, l'objectif ne rapporte rien.",
+            "Les blocs poses par un joueur ne comptent pas, ni ce qu'on fait en creatif."
+          ]
+        }
+      ],
+      "see": [
+        "events",
+        "elo"
+      ],
+      "discover": {
+        "views": [
+          "dohy:faction_events"
+        ],
+        "dimensions": [
+          "dohy:mine",
+          "dohy:farmland"
+        ]
+      }
+    },
+    {
       "id": "terre",
       "category": "terre",
       "order": 0,

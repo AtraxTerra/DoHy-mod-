@@ -163,6 +163,7 @@ public final class FishingGame {
         long xp = FishingTable.XP.getOrDefault(id, 0L) * count;
         Component name = stack.getHoverName();
         CollectionEvents.recordCatch(player, stack.copy());
+        fr.atraxterra.dohy.faction.marks.Marks.fished(player, count);
         if (!player.getInventory().add(stack)) {
             player.drop(stack, false);
         }

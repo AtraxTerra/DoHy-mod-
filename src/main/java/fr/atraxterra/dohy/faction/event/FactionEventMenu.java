@@ -5,6 +5,10 @@ import fr.atraxterra.dohy.faction.FactionData;
 import fr.atraxterra.dohy.faction.FactionEdit;
 import fr.atraxterra.dohy.faction.FactionLeague;
 import fr.atraxterra.dohy.faction.FactionMenus;
+import fr.atraxterra.dohy.faction.marks.Marks;
+import fr.atraxterra.dohy.faction.marks.MarksData;
+import fr.atraxterra.dohy.faction.marks.MarksGoal;
+import fr.atraxterra.dohy.faction.marks.MarksRound;
 import fr.atraxterra.dohy.palamod.boss.BossKind;
 import fr.atraxterra.dohy.ui.menu.MenuController;
 import fr.atraxterra.dohy.ui.view.MenuView.Card;
@@ -20,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * L'ecran des events de faction (lot 22f) : l'event en cours, le calendrier de
- * la semaine aux heures du serveur, et les cinq boss.
+ * L'ecran des events de faction (lot 22f) : l'event en cours, A vos marques
+ * (lot 26), le calendrier de la semaine aux heures du serveur, et les cinq boss.
  */
 public final class FactionEventMenu extends MenuController {
 
@@ -90,6 +94,8 @@ public final class FactionEventMenu extends MenuController {
             sections.add(new MenuView.Section("EN COURS", "upgrade", MenuView.GRID, running));
         }
 
+        sections.add(marks(player, now));
+
         List<Card> calendar = new ArrayList<>();
         ZonedDateTime soonest = null;
         for (FactionEventKind kind : FactionEventKind.values()) {
@@ -129,6 +135,51 @@ public final class FactionEventMenu extends MenuController {
                         : soonest == null ? "-" : until(now, soonest), 0xFFFAC400));
         return new MenuView(id(), "Events de faction", "Heure de Paris", stats, sections, true)
                 .withTabs(fr.atraxterra.dohy.faction.FactionMenus.tabs(player, fr.atraxterra.dohy.faction.FactionMenus.EVENTS));
+    }
+
+    /** A vos marques : la manche en cours, la prochaine, l'ELO du jour et les objectifs possibles. */
+    private static MenuView.Section marks(ServerPlayer player, ZonedDateTime now) {
+        List<Card> cards = new ArrayList<>();
+        MarksRound round = Marks.active();
+        MarksData data = Marks.data(player);
+        if (round != null) {
+            boolean done = data.done(round);
+            long left = Marks.secondsLeft(round);
+            List<String> tooltip = new ArrayList<>();
+            tooltip.add(round.points() ? "Toutes les actions comptent :" : "Dans " + round.goal().where());
+            if (round.points()) {
+                tooltip.add(MarksRound.scale());
+            }
+            tooltip.add("+" + Marks.ELO + " ELO pour ta nation, " + Marks.DAILY_CAP + " par jour au plus");
+            cards.add(Card.of(new ItemStack(round.points() ? Items.CLOCK : round.goal().icon()), "A vos marques",
+                            List.of(round.objective(), done ? "Objectif atteint" : "Encore " + (left + 59L) / 60L
+                                    + " min"))
+                    .accent(done ? 0xFF3FB950 : 0xFFEF3826).badge(done ? "ATTEINT" : "EN COURS")
+                    .progress(data.count(round), round.target())
+                    .tooltip(tooltip));
+        }
+        cards.add(Card.of(new ItemStack(Items.CLOCK), "Prochaine manche", List.of("De 10 h 30 a 23 h 30",
+                        "Dans " + until(now, Marks.next())))
+                .accent(0xFFFAC400).badge("+" + Marks.ELO + " ELO")
+                .tooltip(List.of("Une manche de 30 min chaque heure", "Une manche sur trois est aux points",
+                        "Heure de Paris")));
+        long elo = Marks.eloToday(player);
+        cards.add(Card.of(new ItemStack(Items.GOLD_INGOT), "Aujourd'hui", List.of(elo + " / " + Marks.DAILY_CAP
+                        + " ELO", data.wins() + (data.wins() > 1 ? " manches reussies" : " manche reussie")))
+                .accent(0xFFFAC400).progress(elo, Marks.DAILY_CAP)
+                .tooltip(List.of("Au plus " + Marks.DAILY_CAP + " ELO par jour", "Remise a zero a minuit")));
+        for (MarksGoal goal : MarksGoal.values()) {
+            cards.add(Card.of(new ItemStack(goal.icon()), goal.label(), List.of(MoneyFormat.exact(goal.target())
+                            + " " + goal.unit(), goal.places()))
+                    .accent(round != null && !round.points() && round.goal() == goal ? 0xFFEF3826 : 0xFF55545C)
+                    .tooltip(List.of("Dans " + goal.where(),
+                            "Aux points : " + goal.points() + " par " + goal.single())));
+        }
+        cards.add(Card.of(new ItemStack(Items.CLOCK), "Aux points", List.of(MoneyFormat.exact(MarksRound.POINTS_TARGET)
+                        + " points", "Toutes les actions"))
+                .accent(round != null && round.points() ? 0xFFEF3826 : 0xFF55545C)
+                .tooltip(List.of("La deuxieme variante :", MarksRound.scale())));
+        return new MenuView.Section("A VOS MARQUES", "resources", MenuView.GRID, cards);
     }
 
     /** « 3 h 12 », « 25 min », « 2 j 4 h ». */
