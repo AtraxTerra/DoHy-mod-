@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:hunter_compass_amethyst",
+    "palamod:hunter_compass_titane",
+    "palamod:hunter_compass_paladium",
+    "palamod:hunter_compass_endium",
+    "palamod:hunter_compass_legendary"
+  ]
+}

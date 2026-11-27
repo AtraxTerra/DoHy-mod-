@@ -13,6 +13,17 @@ java {
 
 repositories {
     mavenCentral()
+    // JEI : son API seulement, a la compilation. Le jeu tourne sans JEI ; avec,
+    // le plugin de DoHy (client/jei) montre les recettes de la palamachine.
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com/'
+        content {
+            includeGroup 'mezz.jei'
+            // la bibliotheque de configuration de JEI, dont le mod complet a besoin pour tourner
+            includeGroup 'net.mezzdev.config'
+        }
+    }
 }
 
 neoForge {
@@ -52,6 +63,10 @@ neoForge {
 dependencies {
     // Aucune dependance a NTM NEXT : son shop lit les tags et les identifiants
     // du mod (data/tag_prices.json), et reste inerte s'il n'est pas installe.
+
+    // L'API de JEI, pour le plugin de recettes : rien n'en part dans le jar.
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
 }
 
 tasks.withType(JavaCompile).configureEach {

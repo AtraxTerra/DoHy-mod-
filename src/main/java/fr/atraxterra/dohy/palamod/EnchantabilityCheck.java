@@ -49,7 +49,9 @@ public final class EnchantabilityCheck {
             // Le pillage (chapitre 22) : les detecteurs s'usent tenus en main, le seau a chaque nappe.
             "_finder", "_finder_orange", "_finder_red", "_finder_blue", "extrapolated_bucket",
             // Les withers (22d-bis) : seize envois de laser.
-            "wither_target_laser");
+            "wither_target_laser",
+            // L'infernal knocker ({@code isBookEnchantable} : non).
+            "infernal_knocker");
 
     private EnchantabilityCheck() {
     }

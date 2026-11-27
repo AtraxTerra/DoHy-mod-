@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "palamod:item/colored_tall_grass_purple",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -7785800
+      }
+    ]
+  }
+}

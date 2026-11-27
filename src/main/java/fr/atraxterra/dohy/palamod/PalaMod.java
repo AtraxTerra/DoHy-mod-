@@ -77,6 +77,7 @@ public final class PalaMod {
         PalaSeedPlanters.register(modBus);
         PalaFluids.register(modBus);
         PalaHunter.register(modBus);
+        fr.atraxterra.dohy.palamod.unlock.PalaUnlocks.register(modBus);
         PalaAlchemist.register(modBus);
         PalaSmeltery.register(modBus);
         PalaNature.register(modBus);

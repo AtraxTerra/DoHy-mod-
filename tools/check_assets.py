@@ -69,7 +69,10 @@ ITEMLESS_BLOCKS = ("void_stone", "angelic_water",
                    # block et rendent un vrai bloc a la fin.
                    "paladium_fake_block", "green_paladium_fake_block",
                    # La tombe de « Ton heure a sonne » : elle ne nait que d'une mort.
-                   "tomb")
+                   "tomb",
+                   # Le racinier (lot des objets de deblocage) : son feuillage et sa
+                   # racine naissent de la graine et ne rendent rien.
+                   "root_leaves", "root_inferior", "root_last")
 
 errors = []
 
@@ -119,6 +122,20 @@ def registered():
     tiers = JAVA / "storage" / "ChestTier.java"
     if tiers.exists():
         blocks |= set(re.findall(r'^\s+[A-Z_]+\("([a-z0-9_]+)"', tiers.read_text(encoding="utf-8"), re.M))
+    # Les herbes colorees (lot des objets de deblocage) : trois blocs par couleur,
+    # enregistres par boucle sur GrassColor ; la boussole de chasseur, un objet
+    # par palier de HunterCompassItem.Tier. Les noms coupes par la regle des
+    # fabriques (« colored_grass_ » sans sa couleur) ne sont pas des noms.
+    blocks = {name for name in blocks if not name.endswith("_")}
+    items = {name for name in items if not name.endswith("_")}
+    colors = JAVA / "unlock" / "GrassColor.java"
+    if colors.exists():
+        for key in re.findall(r'^\s+[A-Z]+\("([a-z]+)"', colors.read_text(encoding="utf-8"), re.M):
+            blocks |= {f"colored_grass_{key}", f"colored_grass_seeds_{key}", f"colored_tall_grass_{key}"}
+    compass = JAVA / "unlock" / "HunterCompassItem.java"
+    if compass.exists():
+        for key in re.findall(r'^\s+[A-Z]+\("([a-z]+)", "[a-z]+", \d+\)', compass.read_text(encoding="utf-8"), re.M):
+            items.add(f"hunter_compass_{key}")
     # Un bloc n'est pas un item : son BlockItem est enregistre par boucle, pas
     # par un appel nomme, donc il n'apparait pas dans items.
     itemless |= set(ITEMLESS_BLOCKS) & blocks
@@ -157,6 +174,10 @@ MODEL_TEXTURES = {
     # L'extracteur reprend la texture de son ModelExtractor (Techne, 64 x 32).
     "block/extractor_on.png": (64, 32),
     "block/extractor_off.png": (64, 32),
+    # La table d'alchimiste reprend la texture de son ModelAlchemyCreator (Tabula, 82 x 64).
+    "block/alchemy_creator.png": (82, 64),
+    # Le bout de buche du racinier est en 32 x 32 dans PalaJobs.
+    "block/root_log_top.png": (32, 32),
     # La surface du portail : 32 images de 16 x 16, animees par son .mcmeta.
     "block/alchemist_portal.png": (16, 512),
     # Les boxes : la vignette de la boutique de Paladium, reduite. A 16 x 16

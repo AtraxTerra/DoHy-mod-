@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "palamod:block/sacrifice_hotel"
+    },
+    "active=true": {
+      "model": "palamod:block/sacrifice_hotel_active"
+    }
+  }
+}

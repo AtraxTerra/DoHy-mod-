@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "palamod:block/colored_grass_seeds_red"
+  }
+}

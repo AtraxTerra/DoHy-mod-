@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "palamod:colored_grass_black",
+    "palamod:colored_grass_red",
+    "palamod:colored_grass_darkgreen",
+    "palamod:colored_grass_brown",
+    "palamod:colored_grass_blue",
+    "palamod:colored_grass_purple",
+    "palamod:colored_grass_yellow",
+    "palamod:colored_grass_orange",
+    "palamod:colored_grass_pink",
+    "palamod:colored_grass_green"
+  ]
+}

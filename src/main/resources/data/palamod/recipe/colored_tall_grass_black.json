@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "palamod:colored_grass_seeds_black",
+    "minecraft:short_grass"
+  ],
+  "result": {
+    "id": "palamod:colored_tall_grass_black",
+    "count": 1
+  }
+}

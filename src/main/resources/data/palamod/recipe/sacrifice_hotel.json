@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDE",
+    "FFF"
+  ],
+  "key": {
+    "A": "palamod:pala_mixed_coal",
+    "B": "minecraft:book",
+    "C": "palamod:hunter_amulet",
+    "D": "palamod:mini_golem",
+    "E": "palamod:voyance_amulet",
+    "F": "minecraft:obsidian"
+  },
+  "result": {
+    "id": "palamod:sacrifice_hotel",
+    "count": 1
+  }
+}

@@ -186,7 +186,7 @@
       "label": "Crusher"
     },
     {
-      "id": "palamod:colored_grass_seeds",
+      "id": "#palamod:colored_grass_seeds",
       "job": "farmer",
       "level": 45,
       "label": "Graines d'herbe coloree"
@@ -195,13 +195,13 @@
       "id": "palamod:root_seeds_block",
       "job": "farmer",
       "level": 50,
-      "label": "Bloc de graines de racine"
+      "label": "Graine de racinier"
     },
     {
-      "id": "palamod:colored_grass",
+      "id": "#palamod:colored_tall_grass",
       "job": "farmer",
       "level": 55,
-      "label": "Herbe coloree"
+      "label": "Hautes herbes colorees"
     },
     {
       "id": "palamod:chervil_crop",
@@ -402,13 +402,13 @@
       "label": "Totem en endium"
     },
     {
-      "id": "palamod:hunter_compass",
+      "id": "#palamod:hunter_compass",
       "job": "hunter",
       "level": 100,
       "label": "Boussole de chasseur"
     },
     {
-      "id": "palamod:perlinpinpin_powder",
+      "id": "palamod:perlinpinpin_power",
       "job": "hunter",
       "level": 100,
       "label": "Poudre de perlimpinpin"

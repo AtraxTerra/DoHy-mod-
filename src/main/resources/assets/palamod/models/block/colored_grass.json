@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:block/grass_block",
+  "textures": {
+    "top": "palamod:block/colored_grass_top",
+    "side": "palamod:block/colored_grass_side",
+    "overlay": "palamod:block/colored_grass_side_overlay",
+    "bottom": "minecraft:block/dirt",
+    "particle": "minecraft:block/dirt"
+  }
+}

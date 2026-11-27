@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X",
+    "Z",
+    "Y"
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot",
+    "Z": "palamod:knockback_orb",
+    "Y": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:infernal_knocker",
+    "count": 1
+  }
+}

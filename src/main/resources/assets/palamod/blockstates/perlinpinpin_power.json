@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "active=false,trace=alone": {
+      "model": "palamod:block/perlinpinpin_power_alone"
+    },
+    "active=true,trace=alone": {
+      "model": "palamod:block/perlinpinpin_power_alone"
+    },
+    "active=false,trace=cross": {
+      "model": "palamod:block/perlinpinpin_power_cross"
+    },
+    "active=true,trace=cross": {
+      "model": "palamod:block/perlinpinpin_power_cross"
+    },
+    "active=false,trace=north_south": {
+      "model": "palamod:block/perlinpinpin_power_north_south"
+    },
+    "active=true,trace=north_south": {
+      "model": "palamod:block/perlinpinpin_power_north_south"
+    },
+    "active=false,trace=east_west": {
+      "model": "palamod:block/perlinpinpin_power_east_west"
+    },
+    "active=true,trace=east_west": {
+      "model": "palamod:block/perlinpinpin_power_east_west"
+    }
+  }
+}

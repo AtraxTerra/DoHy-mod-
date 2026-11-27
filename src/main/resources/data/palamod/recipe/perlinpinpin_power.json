@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABC",
+    "BDB",
+    "EBF"
+  ],
+  "key": {
+    "A": "minecraft:glowstone_dust",
+    "B": "palamod:paladium_ingot",
+    "C": "minecraft:sugar",
+    "D": "minecraft:slime_ball",
+    "E": "minecraft:gunpowder",
+    "F": "minecraft:redstone"
+  },
+  "result": {
+    "id": "palamod:perlinpinpin_power",
+    "count": 1
+  }
+}

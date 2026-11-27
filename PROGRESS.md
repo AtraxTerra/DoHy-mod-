@@ -120,6 +120,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 23a | **Aide au joueur** : encyclopédie en jeu (65 fiches en 10 catégories, découverte en jouant, progression du joueur, commandes lancées d'un clic, touche J, bouton « ? »), plans de construction en hologramme (7 structures, couleurs par état, barre d'action, menu du plan) — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
 | 23b | **Pass et marché noir** : pass du mois réel (35 niveaux, 3 quêtes du jour et 6 du mois au thème du mois, une relique exclusive au dernier niveau, bascule le 1er à 5 h), marché noir du receleur sous le pont du spawn (marchandise volée avec grief, contrebande, lot sans étiquette, rachat de ce que le shop refuse), objectifs de contrat PLAYTIME et TRAVEL — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
 | 23c | **Boss de métier et donjons V12** : modes Facile/Normal/Difficile (progression Normal inchangée), boss Dark aux paliers en 0 du Difficile, salles d'élite, de piège et de survie, douze élites, six capacités de boss ; autel des offrandes sur le parvis du spawn, quatre gardiens qui arrivent une heure après l'offrande et attendent dans une salle de boss au décor de leur donjon, dix niveaux ; gardiens et élites aux modèles des donjons de Paladium. Livrés avec : clicker joueur déconnecté, Clic Shop sans attente, pousses des arbres PalaMod — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
+| 25 | **Objets de déblocage qui manquaient** : rituel d'endium (totem, 4 autels, 40 poudres, 25 zombies, pépite d'endium), étiquette en endium, knocker infernal, bateau en bambou, 5 boussoles de chasseur, table d'alchimiste (3 potions d'imprégnation, potion de maladie, 4 flèches, effet Givre), herbes colorées (10 couleurs) et racinier refaits aux textures de PalaJobs ; **JEI** pour la palamachine et la table — sans la cage à familier (familiers) — voir § 44 | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -191,6 +192,43 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-24 (suite) — les objets de déblocage qui manquaient, et JEI
+
+**Demande** : « Fais 1 (en utilisant les fichiers a ta disposition et les textures, aide toi du
+wiki pour l'utilisation) ajoute aussi un support jei pour les crafts dans la palamachine, 2, 4 et
+5 ». Le 1 (ce lot) : les douze objets dont le verrou de métier n'avait rien à débloquer ; le 2 :
+Noël ; le 4 : la garnison ; le 5 : Ravirok, Tedarok et le boss du Mineur. Livrés en PR empilées,
+Noël juste après celle-ci (il doit être là le 1er décembre), puis les familiers (la cage), la
+garnison, les montures et le boss.
+
+**Ce lot** (chapitre 25, `palamod/unlock/`, `docs/PALAMOD.md` § 44) :
+
+- **Rituel d'endium** (Chasseur 100) : la croix de poudres, les quatre autels et le totem relevés
+  au bytecode ; offrande d'un joueur ou d'une pierre de capture pleine (solo), zombies en armure de
+  paladium appelés par le totem, barre de boss des 25, rupture expliquée, sacrifice, flammes et
+  coffre à la pépite d'endium.
+- **Étiquette en endium** (nom aqua, persistant, trois par joueur), **knocker infernal** (le recul
+  du code), **bateau en bambou** (×3, modèle de PalaJobs), **boussoles de chasseur** (5 paliers, 32
+  images chacune ; elles suivent une proie, la portée double à chaque palier).
+- **Table d'alchimiste** (Alchimiste 15) : modèle traduit de son Techne, potions et flèches dans un
+  même écran ; potions de wither, de feu, de poison (imprégnation 100 s) et de maladie (jetable) ;
+  flèches de poison, wither, lenteur et givre (à l'arc en paladium ; le givre coupe le slimepad).
+- **Herbes colorées et racinier** : retirés le 2026-11-08 (« nul et moche »), redemandés ici et
+  refaits avec les vraies textures de PalaJobs (dix couleurs teintes, graines, hautes herbes ; arbre
+  dont la racine descend jusqu'à la bedrock, feuillage éteint devant l'obsidienne).
+- **JEI** (si installé) : catégories de la palamachine et de la table d'alchimiste.
+- Verrous : les variantes passent par des tags ; le Fermier 55 verrouille les hautes herbes colorées.
+- Retours des captures, corrigés : le rituel se rompait dès qu'on sortait de la zone (dix secondes
+  de grâce maintenant) ; la graine d'herbe colorée retombait en objet en poussant ; le bateau,
+  dont la texture n'a que le fond, flottait sous l'eau (c'est un radeau : planche et siège
+  remontés) ; le racinier ne repartait pas quand on retirait l'obstacle (le code le fait).
+- Vérifié en CI : `tools/unlock_assets.py --check`, et en jeu : le rituel joué jusqu'au bout (4
+  zombies en armure de paladium, 25 tués, sacrifice, coffre avec la pépite d'endium en case 13) ;
+  les dix terres teintes et les hautes herbes, sans graine perdue ; deux raciniers dans des
+  colonnes de verre (l'un jusqu'au fond, l'autre arrêté net sur l'obsidienne, qui repart quand on
+  la retire) ; la table qui produit (une potion et 64 flèches en 12 s) ; le radeau avec un
+  passager ; la boussole qui suit une vache ; « Marguerite » en aqua ; le knocker ; JEI.
 
 ### 2026-11-24 (suite) — les PNJ à la charte de Paladium, les grandes machines de la ferme
 

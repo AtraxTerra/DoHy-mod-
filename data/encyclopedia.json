@@ -5171,6 +5171,205 @@
           "dohy:hemp_canvas"
         ]
       }
+    },
+    {
+      "id": "rituel_endium",
+      "category": "palamod",
+      "order": 19,
+      "icon": "palamod:endium_totem",
+      "title": "Rituel d'endium",
+      "card": [
+        "Totem, autels, poudre",
+        "Un nugget d'endium"
+      ],
+      "summary": [
+        "Au niveau 100 du Chasseur, un sacrifice rapporte un nugget d'endium : un totem en endium, quatre autels de sacrifice et quarante poudres de perlimpinpin, puis vingt-cinq zombies en armure de paladium a abattre."
+      ],
+      "sections": [
+        {
+          "title": "La structure",
+          "text": [
+            "- Le totem au centre.",
+            "- Quatre autels a trois blocs du totem, au nord, au sud, a l'est et a l'ouest, au meme niveau.",
+            "- Quarante poudres de perlimpinpin, posees au sol en contour de croix : le bout de chaque bras a cinq blocs du totem (cinq poudres), les cotes des bras a deux blocs du centre.",
+            "! Tout sur le meme niveau, sur un sol plein. Clique le totem : il dit ce qui manque."
+          ]
+        },
+        {
+          "title": "Les offrandes",
+          "text": [
+            "Chaque autel porte une offrande : un joueur debout dessus, ou une pierre de capture pleine posee d'un clic droit. Accroupi, main vide, tu reprends ta pierre tant que le rituel n'a pas commence.",
+            "! Un joueur debout sur un autel a la fin du rituel meurt, comme sur Paladium. Les pierres, elles, partent avec le sacrifice."
+          ]
+        },
+        {
+          "title": "Le rituel",
+          "text": [
+            "Quand tout est pret et que tu es dans la zone, la poudre etincelle et le totem appelle des zombies en armure complete de paladium, quatre a la fois. Une barre compte les vingt-cinq a tuer.",
+            "Une poudre cassee, un autel vide ou plus personne dans la zone, et le rituel est rompu : le compteur repart a zero.",
+            "Les vingt-cinq tues, le sacrifice se fait. Clique alors le totem : des flammes montent, et un coffre le remplace, avec le nugget d'endium au milieu."
+          ]
+        }
+      ],
+      "see": [
+        "chasseur",
+        "spawners",
+        "objets_chasseur"
+      ],
+      "discover": {
+        "items": [
+          "palamod:endium_totem",
+          "palamod:sacrifice_hotel",
+          "palamod:perlinpinpin_power"
+        ]
+      }
+    },
+{
+      "id": "objets_chasseur",
+      "category": "palamod",
+      "order": 20,
+      "icon": "palamod:hunter_compass_paladium",
+      "title": "Objets chasseur",
+      "card": [
+        "Boussole, etiquette",
+        "Knocker, bateau"
+      ],
+      "summary": [
+        "Les objets que debloque le Chasseur en chemin : un bateau trois fois plus rapide, l'infernal knocker qui pousse les withers, l'etiquette en endium et les boussoles de chasseur."
+      ],
+      "sections": [
+        {
+          "title": "Bateau en bambou",
+          "text": [
+            "Chasseur 10. Cinq blocs de bambou. Sur l'eau, il va trois fois plus vite qu'un bateau ordinaire ; sur la glace ou la terre, c'est un bateau comme un autre."
+          ]
+        },
+        {
+          "title": "Infernal knocker",
+          "text": [
+            "Chasseur 45. Une epee de bois a 4 de degats qui repousse tres fort, assez pour faire avancer un wither pendant un pillage. Elle ne s'enchante pas."
+          ]
+        },
+        {
+          "title": "Etiquette en endium",
+          "text": [
+            "Chasseur 90. Nomme-la a l'enclume, puis pose-la sur une creature : son nom s'affiche en bleu et elle ne disparait plus. Trois creatures a la fois : la quatrieme rend son ancien nom a la premiere."
+          ]
+        },
+        {
+          "title": "Boussoles de chasseur",
+          "text": [
+            "Chasseur 100. En amethyste, titane, paladium, endium et legendaire : la meme boussole, de plus en plus loin (48 a 768 blocs).",
+            "Elle pointe la creature la plus proche de l'espece suivie. Accroupi, un clic droit sur une creature la choisit ; accroupi dans le vide, elle revient aux monstres. En main, la barre d'action dit a combien est la proie."
+          ]
+        }
+      ],
+      "see": [
+        "chasseur",
+        "rituel_endium",
+        "withers"
+      ],
+      "discover": {
+        "items": [
+          "palamod:bamboo_boat",
+          "palamod:infernal_knocker",
+          "palamod:endium_nametag",
+          "#palamod:hunter_compass"
+        ]
+      }
+    },
+{
+      "id": "table_alchimiste",
+      "category": "palamod",
+      "order": 21,
+      "icon": "palamod:alchemy_creator",
+      "title": "Table alchimiste",
+      "card": [
+        "Potions et fleches",
+        "moddees"
+      ],
+      "summary": [
+        "Alchimiste 15. La table d'alchimiste fabrique les potions et les fleches de PalaMod : deux ateliers dans le meme bloc, qui travaillent chacun de leur cote."
+      ],
+      "sections": [
+        {
+          "title": "Les potions",
+          "text": [
+            "Quatre cases dans l'ordre : un ingredient, une verrue du Nether, un second ingredient, une fiole vide. Dix secondes par potion.",
+            "- Impregnation de poison : oeil d'araignee, verrue, patate empoisonnee.",
+            "- Impregnation de feu : poudre de blaze, verrue, boule de feu.",
+            "- Impregnation de wither : fragment de crane de wither, verrue, os.",
+            "- Potion de nausee jetable : poudre de blaze, verrue, oeil d'araignee.",
+            "Une impregnation bue dure 1 min 40 : chaque coup que tu portes passe son effet a la cible."
+          ]
+        },
+        {
+          "title": "Les fleches",
+          "text": [
+            "Meme ordre, avec une fleche a la place de la fiole : seize fleches en une seconde. Elles ne font leur effet qu'a l'arc en paladium.",
+            "- Poison : oeil d'araignee, verrue, patate empoisonnee (poison II, 6 s).",
+            "- Wither : fragment de crane de wither, verrue, os (wither, 9 s).",
+            "- Lenteur : oeil d'araignee fermente, verrue, carotte (lenteur III, 5 s).",
+            "- Switch : perle de l'Ender, verrue, perle de l'Ender.",
+            "- Glacante : bloc de neige, verrue, boule de slime (plus de rebond sur un slimepad pendant 20 s)."
+          ]
+        }
+      ],
+      "see": [
+        "alchimiste",
+        "alchimie",
+        "pvp"
+      ],
+      "discover": {
+        "items": [
+          "palamod:alchemy_creator",
+          "palamod:poison_imbue",
+          "palamod:frost_arrow"
+        ]
+      }
+    },
+{
+      "id": "herbes_racinier",
+      "category": "palamod",
+      "order": 22,
+      "icon": "palamod:colored_grass_seeds_green",
+      "title": "Herbes, racinier",
+      "card": [
+        "Herbes colorees",
+        "Graine de racinier"
+      ],
+      "summary": [
+        "Les curiosites du Fermier : des graines qui teignent la terre en dix couleurs, et le racinier, dont la racine descend jusqu'a la bedrock."
+      ],
+      "sections": [
+        {
+          "title": "Les herbes colorees",
+          "text": [
+            "Fermier 45. Un colorant et une graine de ble font une graine d'herbe coloree : noire, rouge, vert fonce, brune, bleue, violette, jaune, orange, rose ou vert clair.",
+            "Plante-la sur une terre labouree, a la lumiere : en poussant, elle change la terre en herbe de sa couleur. La poudre d'os la fait pousser tout de suite. L'herbe coloree ne se recupere pas : cassee, elle rend de la terre.",
+            "Fermier 55 : une graine et une herbe haute font des hautes herbes colorees, pour decorer."
+          ]
+        },
+        {
+          "title": "Le racinier",
+          "text": [
+            "Fermier 50. Une graine de ble, deux buches de bois mort, un seau d'eau angelique et trois buissons morts.",
+            "Plante la graine sur une terre labouree : en trois stades, le racinier sort. Son feuillage reste en surface, trois buches s'enfoncent dessous, puis la racine descend d'un bloc par seconde, en remplacant tout ce qu'elle traverse.",
+            "Le feuillage est vert tant qu'elle descend, rouge quand elle s'arrete. Arretee avant la bedrock, c'est qu'elle a touche de l'obsidienne : une base enterree, peut-etre.",
+            "! La racine ne traverse ni coffre ni machine. Casse le feuillage : tout le racinier s'en va et laisse un puits. On grimpe a la racine comme a une liane."
+          ]
+        }
+      ],
+      "see": [
+        "fermier",
+        "cultures"
+      ],
+      "discover": {
+        "items": [
+          "#palamod:colored_grass_seeds",
+          "palamod:root_seeds_block"
+        ]
+      }
     }
   ]
 }

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FUF",
+    "ICI",
+    "FIF"
+  ],
+  "key": {
+    "F": "palamod:findium",
+    "U": "palamod:unclaim_finder_orange",
+    "I": "palamod:titane_ingot",
+    "C": "minecraft:compass"
+  },
+  "result": {
+    "id": "palamod:hunter_compass_titane",
+    "count": 1
+  }
+}

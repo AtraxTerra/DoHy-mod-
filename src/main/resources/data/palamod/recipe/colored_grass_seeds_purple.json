@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:purple_dye",
+    "minecraft:wheat_seeds"
+  ],
+  "result": {
+    "id": "palamod:colored_grass_seeds_purple",
+    "count": 1
+  }
+}
