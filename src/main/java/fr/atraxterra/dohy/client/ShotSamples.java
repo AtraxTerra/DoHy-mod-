@@ -649,6 +649,77 @@ final class ShotSamples {
             log("snr : conducteur {} , {} present(s)", known ? "enregistre" : "inconnu", found);
             look(player, x0 + 2.5d, gy + 1.6d, z0 - 3.5d, 0.0f, 10.0f);
         }));
+        ShotHarness.SHOTS.add(server("r4_objets_snr", 40, player -> {
+            if (block("railways:track_oak") == null) {
+                return;
+            }
+            ServerLevel level = over(player);
+            // Barre d'objets : modeles d'objet enveloppes (tetes copycat, buffer teint en rouge, pichets).
+            String[] items = {"copycat_headstock", "copycat_headstock_knuckle_coupler", "wooden_headstock_buffer",
+                    "small_buffer", "small_buffer", "buffer", "link_and_pin", "red_paint_pitcher", "blue_paint_pitcher"};
+            List<String> missing = new ArrayList<>();
+            for (int i = 0; i < items.length; i++) {
+                Identifier key = Identifier.parse("railways:" + items[i]);
+                if (!BuiltInRegistries.ITEM.containsKey(key)) {
+                    missing.add(items[i]);
+                    continue;
+                }
+                ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.getValue(key));
+                if (i == 3 && block("railways:small_buffer") instanceof net.minecraft.world.level.block.EntityBlock entityBlock) {
+                    Block b = block("railways:small_buffer");
+                    var be = entityBlock.newBlockEntity(BlockPos.ZERO, b.defaultBlockState());
+                    if (be != null) {
+                        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+                        tag.putInt("Color", 14);
+                        stack.set(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA,
+                                net.minecraft.world.item.component.TypedEntityData.<net.minecraft.world.level.block.entity.BlockEntityType<?>>of(be.getType(), tag));
+                    }
+                }
+                player.getInventory().setItem(i, stack);
+            }
+            log("snr : barre d'objets, absents {}", missing);
+            // Trois reservoirs de Create, remplis a l'etape suivante (le reservoir se forme au premier tick).
+            int x0 = gx + 44;
+            int z0 = gz + 44;
+            for (int i = 0; i < 3; i++) {
+                level.setBlock(new BlockPos(x0 + 3 * i, gy, z0), com.zurrtum.create.AllBlocks.FLUID_TANK.defaultBlockState(), 3);
+            }
+            look(player, x0 + 3.5d, gy + 1.6d, z0 - 4.5d, 0.0f, 10.0f);
+        }));
+        ShotHarness.SHOTS.add(server("r5_peinture_snr", 60, player -> {
+            if (block("railways:track_oak") == null) {
+                return;
+            }
+            ServerLevel level = over(player);
+            net.minecraft.world.level.material.Fluid paint = BuiltInRegistries.FLUID.getValue(Identifier.parse("railways:paint"));
+            String[] colors = {"red", "blue", null};
+            int x0 = gx + 44;
+            int z0 = gz + 44;
+            for (int i = 0; i < 3; i++) {
+                BlockPos pos = new BlockPos(x0 + 3 * i, gy, z0);
+                var handler = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.Fluid.BLOCK, pos, null);
+                if (handler == null) {
+                    log("snr : reservoir {} sans capacite fluide ({})", i, id(level.getBlockState(pos)));
+                    continue;
+                }
+                net.minecraft.core.component.DataComponentPatch patch = net.minecraft.core.component.DataComponentPatch.EMPTY;
+                if (colors[i] != null) {
+                    net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+                    tag.putString("Color", colors[i]);
+                    patch = net.minecraft.core.component.DataComponentPatch.builder()
+                            .set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag))
+                            .build();
+                }
+                var resource = net.neoforged.neoforge.transfer.fluid.FluidResource.of(new net.neoforged.neoforge.fluids.FluidStack(paint, 1000, patch));
+                int inserted;
+                try (var tx = net.neoforged.neoforge.transfer.transaction.Transaction.openRoot()) {
+                    inserted = handler.insert(resource, 8000, tx);
+                    tx.commit();
+                }
+                log("snr : reservoir {} peinture {} : {} mB inseres", i, colors[i] == null ? "sans couleur" : colors[i], inserted);
+            }
+            look(player, x0 + 3.5d, gy + 1.6d, z0 - 4.5d, 0.0f, 10.0f);
+        }));
     }
 
     static void register() {
