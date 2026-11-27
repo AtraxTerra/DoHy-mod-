@@ -1,6 +1,9 @@
 package fr.atraxterra.dohy.client;
 
 import fr.atraxterra.dohy.DoHy;
+import fr.atraxterra.dohy.client.hud.HudKit;
+import fr.atraxterra.dohy.client.ui.ContainerStyle;
+import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Ui;
 import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.palamod.defense.UnclaimHelmet;
@@ -20,6 +23,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.client.gui.GuiLayer;
+
+import java.util.Locale;
 
 /**
  * Le HUD des detecteurs ({@code ModuleUnclaimFinder}, {@code ModuleSpawnerFinder}).
@@ -87,7 +92,7 @@ public final class FinderHudLayer implements GuiLayer {
             computedAt = now;
             scan(level, player.blockPosition(), player.chunkPosition(), type);
         }
-        draw(new UiGraphics(graphics, minecraft.font, 0, 0), minecraft, player.blockPosition(), type);
+        draw(graphics, new UiGraphics(graphics, minecraft.font, 0, 0), minecraft, player.blockPosition(), type);
     }
 
     /** Le finder en main (droite, puis gauche), sinon le casque Unclaim Helmet garni d'un finder. */
@@ -135,12 +140,13 @@ public final class FinderHudLayer implements GuiLayer {
         return entity instanceof Container;
     }
 
-    private void draw(UiGraphics ui, Minecraft minecraft, BlockPos from, FinderType type) {
-        String title = icon.getHoverName().getString();
+    private void draw(GuiGraphicsExtractor graphics, UiGraphics ui, Minecraft minecraft, BlockPos from,
+                      FinderType type) {
+        String title = ContainerStyle.plain(icon.getHoverName().getString()).toUpperCase(Locale.ROOT);
         String line;
         float progress;
         if (type.spawners()) {
-            line = found == 0 ? "Aucun spawner" : found == 1 ? "1 spawner détecté" : found + " spawners détectés";
+            line = found == 0 ? "Aucun spawner" : found == 1 ? "1 spawner detecte" : found + " spawners detectes";
             progress = found > 0 ? 1.0f : 0.0f;
         } else {
             int percent = Math.min(100, found * FinderType.PERCENT_PER_FIND);
@@ -163,19 +169,23 @@ public final class FinderHudLayer implements GuiLayer {
         int height = compass != null ? 46 : 36;
         int x = MARGIN;
         int y = (minecraft.getWindow().getGuiScaledHeight() - height) / 2;
-        ui.panelPlain(x, y, width, height);
-        ui.rect(x + 3, y + 3, 2, height - 6, type.color());
+        // Une carte du HUD : le lisere a la couleur du finder, sa tuile, le texte et la jauge.
+        Paint paint = new Paint(graphics, HudKit.unit(minecraft));
+        int color = type.color();
+        HudKit.card(paint, x, y, width, height, 5.0f);
+        paint.round(x + 3.0f, y + 5.0f, 1.5f, height - 10.0f, 0.75f, color);
+        int tile = Paint.mix(0xFF1A1B1E, color, 0.18f);
+        paint.framed(x + 7.0f, y + (height - 20) / 2.0f, 20.0f, 20.0f, 4.5f, tile, Paint.mix(tile, color, 0.45f), 1);
         ui.item(icon, x + 9, y + (height - 16) / 2.0f, 16, false);
 
         int textX = x + textOffset;
-        ui.text(Ui.WIDE, title, textX, y + 6, 6, Ui.WHITE);
-        ui.text(Ui.BODY, line, textX, y + 15, 7, found > 0 ? Ui.TEXT : Ui.MUTED);
+        ui.text(Ui.WIDE, title, textX, y + 6, 6, Ui.Theme.TEXT);
+        ui.text(Ui.BODY, line, textX, y + 15, 7, found > 0 ? Ui.Theme.TEXT2 : Ui.Theme.MUTED);
         int barWidth = width - textOffset - 8;
-        ui.rect(textX, y + 25, barWidth, 5, 0xFF3D3C46);
-        ui.rect(textX + 1, y + 26, barWidth - 2, 3, Ui.SLOT_FILL);
-        ui.rect(textX + 1, y + 26, Math.round((barWidth - 2) * progress), 3, type.color());
+        HudKit.bar(paint, textX, y + 25, barWidth, 5, progress, Paint.mix(color, 0xFFFFFFFF, 0.25f),
+                Paint.mix(color, 0xFF000000, 0.2f), false);
         if (compass != null) {
-            ui.text(Ui.BODY, compass, textX, y + 34, 6.5f, Ui.MUTED);
+            ui.text(Ui.BODY, compass, textX, y + 34, 6.5f, Ui.Theme.MUTED);
         }
     }
 

@@ -16,7 +16,7 @@ import net.minecraft.world.entity.player.Player;
  * et de la faim, et les compteurs {@code leftHeight} / {@code rightHeight} de NeoForge montent
  * comme ceux du jeu, pour que les HUD des autres mods se posent toujours au-dessus.
  */
-final class HudKit {
+public final class HudKit {
 
     /** La largeur de la hotbar, celle du jeu. */
     static final int WIDTH = 182;
@@ -65,7 +65,7 @@ final class HudKit {
     }
 
     /** Les pixels physiques par pixel d'interface ; la police pixel s'y cale. */
-    static float unit(Minecraft minecraft) {
+    public static float unit(Minecraft minecraft) {
         float unit = Math.max(1, minecraft.getWindow().getGuiScale());
         Ui.drawUnit(unit);
         return unit;
@@ -106,7 +106,7 @@ final class HudKit {
     }
 
     /** Une carte du kit : son ombre, son fond et son filet. */
-    static void card(Paint paint, float x, float y, float width, float height, float radius) {
+    public static void card(Paint paint, float x, float y, float width, float height, float radius) {
         paint.shadow(x + 1.5f, y + 2.5f, width - 3.0f, height - 2.0f, 5.0f, Paint.alpha(Ui.Theme.SHADOW, 0.42f));
         paint.framed(x, y, width, height, radius, Ui.Theme.BG2, Ui.Theme.EDGE, 1);
     }
@@ -115,8 +115,8 @@ final class HudKit {
      * Une barre : la gorge sombre, puis le remplissage en degrade sur {@code fill} de la
      * longueur. {@code fromRight} la remplit depuis la droite (la faim, comme ses cuisses).
      */
-    static void bar(Paint paint, float x, float y, float width, float height, float fill, int top, int bottom,
-                    boolean fromRight) {
+    public static void bar(Paint paint, float x, float y, float width, float height, float fill, int top, int bottom,
+                           boolean fromRight) {
         float radius = height / 2.0f;
         paint.framed(x, y, width, height, radius, TRACK, Ui.Theme.EDGE, 1);
         segment(paint, x, y, width, height, 0.0f, fill, top, bottom, fromRight);
