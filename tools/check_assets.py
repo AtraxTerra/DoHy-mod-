@@ -203,6 +203,14 @@ MODEL_TEXTURES = {
     # L'icone de la cage a familier : rendue en 32 x 32 depuis le modele 3D de PalaPet
     # (tools/palapet_assets.py), illisible en 16 x 16.
     "item/pet_cage.png": (32, 32),
+    # Les tetes de wither, le laser de ciblage et le receptacle : icones rendues en 32 x 32
+    # depuis leurs modeles 3D de PalaWither (tools/palawither_assets.py).
+    "item/passive_wither_head.png": (32, 32),
+    "item/thirsty_wither_head.png": (32, 32),
+    "item/predator_wither_head.png": (32, 32),
+    "item/supreme_wither_head.png": (32, 32),
+    "item/wither_target_laser.png": (32, 32),
+    "item/wither_receptacle.png": (32, 32),
     # Les cles de caisse : l'illustration de PalaShop, reduite de la meme facon.
     "item/crate_key_amethyst.png": (32, 32),
     "item/crate_key_saharia.png": (32, 32),

@@ -2,6 +2,7 @@ package fr.atraxterra.dohy.client.hud;
 
 import fr.atraxterra.dohy.client.ui.Paint;
 import fr.atraxterra.dohy.client.ui.Ui;
+import fr.atraxterra.dohy.client.wither.WitherBars;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -17,6 +18,9 @@ import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
  * Les barres de boss en haut de l'ecran : le nom du jeu au-dessus d'une barre arrondie a la
  * couleur du boss, avec ses crans quand le boss en a, et une lueur au bout. Le jeu garde la
  * main sur la place de chaque barre ; on dessine a sa place et on annule la sienne.
+ *
+ * <p>Les withers de PalaWither ont la leur : la bande de leur genre dans la barre (celle
+ * de l'overlay de PalaWither), et sa couleur pour la lueur.
  *
  * <p>Priorite basse : un mod qui dessine deja sa propre barre (et annule celle du jeu)
  * passe avant, et on ne touche pas a la sienne.
@@ -49,6 +53,7 @@ public final class BossBarsHud {
         float unit = HudKit.unit(minecraft);
         Paint paint = new Paint(graphics, unit);
         int[] colors = colors(boss.getColor());
+        WitherBars.Bar wither = WitherBars.of(boss.getName());
         float barY = y;
         float width = HudKit.WIDTH;
         float height = 5.0f;
@@ -57,9 +62,17 @@ public final class BossBarsHud {
         paint.framed(x, barY, width, height, height / 2.0f, HudKit.TRACK, Ui.Theme.EDGE, 1);
         if (progress > 0.0f) {
             float length = Math.max(height - 2.0f, (width - 2.0f) * progress);
-            paint.roundGradient(x + 1.0f, barY + 1.0f, length, height - 2.0f, (height - 2.0f) / 2.0f, colors[0],
-                    colors[1]);
-            paint.glow(x + 1.0f + length, barY + height / 2.0f, 6.0f, Paint.alpha(colors[0], 0.4f));
+            if (wither != null) {
+                // La bande du genre, decouverte de gauche a droite comme la barre se remplit.
+                int region = Math.max(1, Math.round(WitherBars.TEXTURE_WIDTH * length / (width - 2.0f)));
+                paint.image(wither.texture(), x + 1.0f, barY + 1.0f, length, height - 2.0f, 0.0f, 0.0f, region,
+                        WitherBars.TEXTURE_HEIGHT, WitherBars.TEXTURE_WIDTH, WitherBars.TEXTURE_HEIGHT, 0xFFFFFFFF);
+                paint.glow(x + 1.0f + length, barY + height / 2.0f, 6.0f, Paint.alpha(wither.color(), 0.5f));
+            } else {
+                paint.roundGradient(x + 1.0f, barY + 1.0f, length, height - 2.0f, (height - 2.0f) / 2.0f,
+                        colors[0], colors[1]);
+                paint.glow(x + 1.0f + length, barY + height / 2.0f, 6.0f, Paint.alpha(colors[0], 0.4f));
+            }
         }
         int notches = switch (boss.getOverlay()) {
             case NOTCHED_6 -> 6;

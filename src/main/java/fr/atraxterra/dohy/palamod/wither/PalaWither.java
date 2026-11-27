@@ -1,6 +1,9 @@
 package fr.atraxterra.dohy.palamod.wither;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -42,7 +45,8 @@ import net.neoforged.neoforge.fluids.FluidType;
  *       wither en main pour le diriger du regard. L'eau le desselle, pour de
  *       bon.</li>
  *   <li><b>Supreme</b> : on ne le tue pas ; il appelle un predateur toutes les
- *       deux minutes et s'autodetruit au bout d'un quart d'heure.</li>
+ *       deux minutes et s'autodetruit au bout d'un quart d'heure, apres les six
+ *       secondes et demie de son animation de mort ({@link #dying()}), immobile.</li>
  * </ul>
  */
 public class PalaWither extends WitherBoss {
@@ -55,7 +59,13 @@ public class PalaWither extends WitherBoss {
     static final float SUPREME_BLAST = 16.0f;
     /** Le supreme ne s'eveille qu'au bout d'une minute (douze heures sur Paladium). */
     static final int SUPREME_WAKE = 60 * 20;
+    /** La duree de l'animation de mort du supreme (death, 6,56 s dans PalaWither), avant qu'il saute. */
+    static final int SUPREME_DEATH = 131;
     static final double WAYPOINT_SPEED = 0.3d;
+
+    /** Le supreme joue sa mort : le client lance l'animation, le serveur l'immobilise. */
+    private static final EntityDataAccessor<Boolean> DYING =
+            SynchedEntityData.defineId(PalaWither.class, EntityDataSerializers.BOOLEAN);
     static final double STEER_SPEED = 0.5d;
 
     private int life;
@@ -80,6 +90,17 @@ public class PalaWither extends WitherBoss {
         return WitherKind.of(getType());
     }
 
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DYING, false);
+    }
+
+    /** Le supreme dans les dernieres secondes de sa vie, le temps de son animation de mort. */
+    public boolean dying() {
+        return entityData.get(DYING);
+    }
+
     /** Ce qu'un wither allie peut viser : les monstres, pas les autres withers. */
     static boolean hostile(LivingEntity entity) {
         return entity instanceof Enemy && !(entity instanceof WitherBoss) && entity.isAlive();
@@ -97,7 +118,7 @@ public class PalaWither extends WitherBoss {
 
     @Override
     public void setTarget(LivingEntity target) {
-        if (target != null && kind().allied() && !hostile(target)) {
+        if (target != null && (dying() || kind().allied() && !hostile(target))) {
             return;
         }
         super.setTarget(target);
@@ -105,7 +126,8 @@ public class PalaWither extends WitherBoss {
 
     @Override
     public void setAlternativeTarget(int head, int id) {
-        if (id > 0 && kind().allied() && !(level().getEntity(id) instanceof LivingEntity living && hostile(living))) {
+        if (id > 0 && (dying()
+                || kind().allied() && !(level().getEntity(id) instanceof LivingEntity living && hostile(living)))) {
             id = 0;
         }
         super.setAlternativeTarget(head, id);
@@ -133,6 +155,12 @@ public class PalaWither extends WitherBoss {
             return;
         }
         WitherKind kind = kind();
+        if (dying()) {
+            super.setTarget(null);
+            super.setAlternativeTarget(0, 0);
+            super.setAlternativeTarget(1, 0);
+            super.setAlternativeTarget(2, 0);
+        }
         Player rider = steeringRider();
         if (rider != null) {
             super.setTarget(null);
@@ -146,7 +174,7 @@ public class PalaWither extends WitherBoss {
             setPos(x, getY(), z);
             setDeltaMovement(0.0d, getDeltaMovement().y, 0.0d);
             Vec3 step = Vec3.ZERO;
-            if (waypoint != null) {
+            if (waypoint != null && !dying()) {
                 Vec3 toward = new Vec3(waypoint.getX() + 0.5d - x, 0.0d, waypoint.getZ() + 0.5d - z);
                 if (toward.horizontalDistanceSqr() > 9.0d) {
                     step = toward.normalize().scale(WAYPOINT_SPEED);
@@ -188,6 +216,10 @@ public class PalaWither extends WitherBoss {
         if (life >= SUPREME_LIFE) {
             discard();
             level.explode(this, getX(), getY(), getZ(), SUPREME_BLAST, Level.ExplosionInteraction.MOB);
+            return;
+        }
+        if (life >= SUPREME_LIFE - SUPREME_DEATH) {
+            entityData.set(DYING, true);
             return;
         }
         if (life > SUPREME_WAKE && life % SUPREME_CALL == 0

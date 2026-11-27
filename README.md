@@ -66,6 +66,10 @@ Le script vérifie au passage que le revenu horaire reste constant à l'intérie
   JobsReborn 1.92.0, de Paladium Games.
 - **Familiers** (les vingt et un familiers, leurs modèles 3D et animations, la cage, l'appât ; les
   portraits des menus sont rendus depuis ces modèles) : le jar PalaPet 7.12.0, de Paladium Games.
+- **Withers du pillage** (les cinq withers de PalaWither, leurs modèles 3D, animations et sons, les
+  gemmes, têtes, améliorations, le laser de ciblage, le réceptacle et les barres de vie ; les icônes
+  des têtes, du laser et du réceptacle sont rendues depuis leurs modèles) : le jar PalaWither 3.6.0,
+  de Paladium Games.
 - **Interfaces** (polices, hexagones des métiers, boutons, bannière) : les jars Paladium-UI et
   PalaJobs, de Paladium Games. Montserrat est sous licence SIL OFL (`assets/dohy/font/montserrat_ofl.txt`) ;
   les polices Minecraft Dungeons, Minecraft et Pixel NES sont reprises telles que Paladium les livre.

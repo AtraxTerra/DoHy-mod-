@@ -21,6 +21,9 @@ import java.util.function.Supplier;
  * </ul>
  *
  * @param summonTicks  temps d'invocation au receptacle (wiki : 5 s a 20 min)
+ * @param scale        l'echelle du wither vanilla (0,9 x 3,5) : les tailles de PalaWither,
+ *                     0,6 x 1,8 pour le baby, 1,8 x 6 pour le supreme, celle du vanilla
+ *                     pour les autres
  * @param allied       n'attaque que les monstres
  * @param pinned       ne se deplace pas seul (assoiffe : il faut le pousser ;
  *                     predateur, supreme : au laser de ciblage)
@@ -31,9 +34,9 @@ public enum WitherKind {
     FUNNY("funny_wither", "funny_wither_gem", 5 * 20, 300.0d, 1.0d, false, false, 0),
     BABY("baby_wither", "baby_wither_gem", 5 * 20, 150.0d, 0.5d, false, false, 0),
     PASSIVE("passive_wither", "passive_wither_gem", 10 * 20, 300.0d, 1.0d, true, false, 0),
-    THIRSTY("thirsty_wither", "thirsty_wither_gem", 5 * 60 * 20, 450.0d, 1.1d, true, true, 70),
-    PREDATOR("predator_wither", "predator_wither_gem", 10 * 60 * 20, 600.0d, 1.2d, true, true, 90),
-    SUPREME("supreme_wither", "supreme_wither_gem", 20 * 60 * 20, 1000.0d, 1.4d, true, true, 100);
+    THIRSTY("thirsty_wither", "thirsty_wither_gem", 5 * 60 * 20, 450.0d, 1.0d, true, true, 70),
+    PREDATOR("predator_wither", "predator_wither_gem", 10 * 60 * 20, 600.0d, 1.0d, true, true, 90),
+    SUPREME("supreme_wither", "supreme_wither_gem", 20 * 60 * 20, 1000.0d, 1.7d, true, true, 100);
 
     private final String id;
     private final String gem;

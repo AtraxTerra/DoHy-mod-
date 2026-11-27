@@ -53,9 +53,17 @@ public class RpgEntityModel extends EntityModel<LivingEntityRenderState> {
 
     /** Dessine le corps du modele dans sa pose du moment. */
     public void draw(PoseStack.Pose pose, VertexConsumer buffer, int light, int overlay) {
+        draw(pose, buffer, light, overlay, WHITE);
+    }
+
+    /**
+     * Comme {@link #draw(PoseStack.Pose, VertexConsumer, int, int)}, teinte de {@code color}
+     * (ARGB, multiplie a la texture) : une couleur, ou une transparence pour un rendu translucide.
+     */
+    public void draw(PoseStack.Pose pose, VertexConsumer buffer, int light, int overlay, int color) {
         PoseStack stack = new PoseStack();
         stack.last().set(pose);
-        draw(tree, stack, buffer, light, overlay, new Vector3f(), false, false);
+        draw(tree, stack, buffer, light, overlay, color, new Vector3f(), false, false);
     }
 
     /**
@@ -72,7 +80,7 @@ public class RpgEntityModel extends EntityModel<LivingEntityRenderState> {
     public void drawGlow(PoseStack.Pose pose, VertexConsumer buffer, int overlay) {
         PoseStack stack = new PoseStack();
         stack.last().set(pose);
-        draw(tree, stack, buffer, FULL_BRIGHT, overlay, new Vector3f(), true, false);
+        draw(tree, stack, buffer, FULL_BRIGHT, overlay, WHITE, new Vector3f(), true, false);
     }
 
     /**
@@ -82,7 +90,7 @@ public class RpgEntityModel extends EntityModel<LivingEntityRenderState> {
      * @param inGlow   on est sous un os lumineux
      */
     private static void draw(RpgGeometry.Node node, PoseStack stack, VertexConsumer buffer, int light, int overlay,
-                             Vector3f scratch, boolean glowPass, boolean inGlow) {
+                             int color, Vector3f scratch, boolean glowPass, boolean inGlow) {
         ModelPart part = node.part();
         if (!part.visible || (node.cubes().length == 0 && node.children().length == 0)) {
             return;
@@ -115,14 +123,14 @@ public class RpgEntityModel extends EntityModel<LivingEntityRenderState> {
                     for (ModelPart.Vertex vertex : vertices) {
                         Vector3f at = matrix.transformPosition(vertex.worldX(), vertex.worldY(), vertex.worldZ(),
                                 scratch);
-                        buffer.addVertex(at.x(), at.y(), at.z(), WHITE, vertex.u(), vertex.v(), overlay, light,
+                        buffer.addVertex(at.x(), at.y(), at.z(), color, vertex.u(), vertex.v(), overlay, light,
                                 nx, ny, nz);
                     }
                 }
             }
         }
         for (RpgGeometry.Node child : node.children()) {
-            draw(child, stack, buffer, light, overlay, scratch, glowPass, inGlow);
+            draw(child, stack, buffer, light, overlay, color, scratch, glowPass, inGlow);
         }
         stack.popPose();
     }
