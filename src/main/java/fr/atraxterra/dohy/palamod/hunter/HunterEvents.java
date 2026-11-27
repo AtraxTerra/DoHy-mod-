@@ -99,8 +99,9 @@ public final class HunterEvents {
     }
 
     /**
-     * Branche monture de {@code ItemCaptureSword.hitEntity} : un Dancarok
-     * sauvage tue avec une pierre vide sur soi donne une gemme sauvage, a
+     * Branche monture de {@code ItemCaptureSword.hitEntity} : un Dancarok, un
+     * Ravirok ou un Tedarok sauvage tue avec une pierre vide sur soi donne une
+     * gemme sauvage de son espece, a
      * apprivoiser dans un enclos. La pierre est consommee, pas remplie.
      * <b>Ecarts</b> : la pierre n'est prise qu'une fois la capture acquise
      * (l'original la retirait avant de verifier que la monture etait sauvage),
@@ -115,9 +116,12 @@ public final class HunterEvents {
             return;
         }
         stone.shrink(1);
-        MountManager.give(player, MountGemstoneItem.stackOf(MountGem.wild()));
-        fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "mount:capture", 1);
-        MountTexts.success(player, "captured");
+        MountManager.give(player, MountGemstoneItem.stackOf(MountGem.wild(mount.species())));
+        if (mount.species() == fr.atraxterra.dohy.palamod.mount.MountSpecies.DANCAROK) {
+            // le succes de Paladium compte les Dancaroks
+            fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "mount:capture", 1);
+        }
+        MountTexts.success(player, "captured", mount.species().label());
     }
 
     /** La derniere pierre de capture vide des 36 cases, comme l'original. */

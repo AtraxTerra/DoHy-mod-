@@ -59,11 +59,11 @@ public final class FarmlandMap {
     /** Les coins de la carte, ce qu'on y voit et ce qui y apparait. */
     public enum Zone {
         HUB("Le camp", "L'arrivee : rien n'y apparait"),
-        FOREST("La foret", "Zombies, squelettes, araignees, creepers, sorcieres ; loups et lapins"),
-        MEADOW("La prairie", "Vaches, moutons, poules, chevaux, anes, lapins"),
+        FOREST("La foret", "Zombies, squelettes, araignees, creepers, sorcieres ; loups, lapins, Tedarok"),
+        MEADOW("La prairie", "Vaches, moutons, poules, chevaux, anes, lapins, Dancarok"),
         HAMLET("Le hameau", "Villageois"),
         MUSHROOM("Les champignons", "Champimeuh"),
-        HILLS("Les collines", "Chevres ; araignees venimeuses dans la grotte"),
+        HILLS("Les collines", "Chevres, Ravirok ; araignees venimeuses dans la grotte"),
         JUNGLE("La jungle", "Pandas, perroquets, elephants"),
         LAKE("Le lac", "Dauphins"),
         BEACH("La plage", "Tortues"),

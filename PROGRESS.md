@@ -102,7 +102,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 11 | **Alchimiste** : 4 arbres de PalaMod (générés), sève (fiole, extracteur, tanks), chaudron multibloc, potion de foudre, fleurs et pollens, portails à sève et leurs clés, bibliothèque mystique et table de l'Alchimiste (anti chute, grass breaker) — sans table d'alchimiste, boules de glu ni trône ; le totem fleuri est venu ensuite | fait |
 | 12 | **Grinder** : multibloc, forge des têtes et des outils en paladium, modificateurs ; marteaux, broadswords, fastswords ; buisson à XP (généré) et baies ; pioche des dieux (100 niveaux, Toucher de soie, fusion automatique) | fait |
 | 13 | **Golem gardien** : golem (40 niveaux, arbre à trois voies, choix, gardien de golem), machine à croquettes, boîte à golem et mini golems, pomme en paladium — sans renommeur, cosmétiques, alerte Discord ni trône | fait |
-| 14 | **Monture** : le Dancarok (capture, gemme, niveaux, vie et énergie sur le joueur, invocation, conduite, cornes qui creusent), l'enclos (gestionnaire, fondation, barrière, couveuse, soins aux bandages), l'orbe de régénération ; les coffres manquants (paladium, paladium vert, endium, coffre de l'End en paladium, coffre en or) — sans Ravirok, Tedarok ni palamachine ; l'éléphant est venu ensuite | fait |
+| 14 | **Monture** : le Dancarok (capture, gemme, niveaux, vie et énergie sur le joueur, invocation, conduite, cornes qui creusent), l'enclos (gestionnaire, fondation, barrière, couveuse, soins aux bandages), l'orbe de régénération ; les coffres manquants (paladium, paladium vert, endium, coffre de l'End en paladium, coffre en or) — sans palamachine ; l'éléphant est venu ensuite, le Ravirok et le Tedarok le 2026-11-24 | fait |
 | 15 | **Dimension du Mineur** : obsidienne wither (chargée au paladium, obtenue au piston renforcé), portail du Mineur (propriétaire, Mineur 90), dimension `palamod:miner` (sections de 5 000, 1 000 points, 3 jours, minerais ×3, nuit fixe, sans monstres ni chute), écrans d'entrée et de fin, minerai et Pierre d'Invocation ; la pépite d'endium ne naît plus que dans la dimension — sans boss ni ambiance client | fait |
 | 16 | **Pour le PvP** : palamachine (création et réparation des sticks, anneaux et cornes, enchantements gardés), 7 sticks (effets du code, recharge par type sur le joueur), orbes de force et de saut, 6 anneaux (armure portée, colonne d'anneaux des coffres, capacités de réparation), aile et deltaplane, slimepad, spike en paladium — sans spikes des autres métaux ni modèle 3D du deltaplane | fait |
 | 17 | **Pierres légendaires** : 7 pierres (téléportation, invisibilité, fortune, pouvoir — résistance au feu 30 min —, métier, chaos, et l'aléatoire qui s'ouvre), recharge de 24 h sur la pierre et verrou de 10 min par joueur ; **gant en endium** (établi, grinder, défilement, 12 h complet, Infinity Gauntlet) ; dans les caisses rare et légendaire | fait |
@@ -192,6 +192,28 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-24 (suite) — le Ravirok et le Tedarok rejoignent le Dancarok
+
+**Demande** : le point 5 de « Fais 1 (…), 2, 4 et 5 », première moitié — les deux autres montures
+du mod Mount 6.1.0 (`docs/PALAMOD.md` § 17, « Le Ravirok et le Tedarok »).
+
+- **Espèces** (`palamod/mount/MountSpecies`) relevées dans le jar : PV et cases au niveau 100
+  (Dancarok 400/36, Ravirok 100/9, Tedarok 200/18), vitesse, détente et compétences. La gemme et
+  la monture équipée portent l'espèce ; celles d'avant restent des Dancaroks.
+- **Ravirok** : il vole et ne marche pas — saut pour monter, course pour descendre, il plane
+  entre les deux, plafond à la couche 256, battements d'ailes.
+- **Tedarok** : marche de cinq blocs, saut d'environ cinq blocs, course × 1,9, marche sur l'eau
+  (et y court au niveau 50).
+- La corne reste au Dancarok ; sur les deux autres, on casse et pose des blocs en selle.
+- **Sauvages** : dans leurs biomes (montagnes pour le Ravirok, forêts et taïgas pour le Tedarok,
+  par `DancarokSpawner` et la règle vanilla) et un de chaque dans la farmland (prairie, collines,
+  forêt), comme chez Paladium. Capture à l'épée et à la pierre comme le Dancarok.
+- Modèles, animations, textures et sons du jar (`tools/bedrock_model.py`, qui accepte maintenant les
+  valeurs fixes sans temps). `/mount give [niveau] [espèce]`.
+- Vérifié en CI : les trois sauvages affichés, capture d'un Ravirok (« Gemme de Ravirok
+  sauvage »), Ravirok niveau 50 (50 PV, 4 cases) qui monte, avance et redescend se poser,
+  Tedarok niveau 60 (120 PV, 10 cases) qui court sur un bassin.
 
 ### 2026-11-24 (suite) — moins de texte : menus, chat, infobulles et encyclopédie resserrés
 

@@ -20,27 +20,35 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /**
- * L'apparition des Dancaroks sauvages, en plus de la regle vanilla.
+ * L'apparition des montures sauvages, en plus de la regle vanilla.
  *
- * <p>La regle vanilla (biome_modifier/dancarok.json) ne suffit pas : les
- * creatures paisibles apparaissent surtout a la generation des chunks, et sur
- * une carte deja generee (la Terre de WorldPainter) il n'y en a aucune ; reste
- * le tirage des creatures toutes les 20 secondes, plafonne a une dizaine de
- * betes autour du joueur, que les moutons, cochons, vaches et poules
- * remplissent : un Dancarok n'y passait presque jamais.
+ * <p>La regle vanilla (biome_modifier/dancarok.json, ravirok.json,
+ * tedarok.json) ne suffit pas : les creatures paisibles apparaissent surtout a
+ * la generation des chunks, et sur une carte deja generee (la Terre de
+ * WorldPainter) il n'y en a aucune ; reste le tirage des creatures toutes les
+ * 20 secondes, plafonne a une dizaine de betes autour du joueur, que les
+ * moutons, cochons, vaches et poules remplissent : une monture n'y passait
+ * presque jamais.
  *
  * <p>Ici, une fois par minute, une chance sur huit par joueur dans le monde
- * normal : un Dancarok sauvage apparait a 32-64 blocs, hors de vue, dans une
- * plaine ou une savane ({@link #BIOMES}), sur de l'herbe au jour, s'il n'y en
- * a aucun autre sauvage a 128 blocs. Il ne disparait jamais : on en croise un
- * par coin de plaine ou l'on passe un peu de temps (huit minutes en moyenne).
- * La regle du jeu {@code spawn_mobs} l'arrete comme les autres.
+ * normal : une monture sauvage apparait a 32-64 blocs, hors de vue, dans un
+ * biome de son espece — le Dancarok dans les plaines et les savanes
+ * ({@link #BIOMES}), le Ravirok dans les montagnes, le Tedarok dans les forets
+ * et les taigas —, sur de l'herbe au jour, s'il n'y en a aucune autre de la
+ * meme espece a 128 blocs. Elle ne disparait jamais. La regle du jeu
+ * {@code spawn_mobs} l'arrete comme les autres.
+ *
+ * <p>Chez Paladium, les sauvages vivaient dans la Farmland, posees a la main :
+ * aucun code d'apparition dans les jars.
  */
 @EventBusSubscriber
 public final class DancarokSpawner {
-    /** Les biomes ou il vit : plaines, prairie, savanes. */
-    public static final TagKey<Biome> BIOMES = TagKey.create(Registries.BIOME,
-            Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "dancarok_spawns"));
+    /** Les biomes ou vit le Dancarok : plaines, prairie, savanes. */
+    public static final TagKey<Biome> BIOMES = tag("dancarok_spawns");
+    /** Le Ravirok : collines battues des vents, pics, pentes. */
+    public static final TagKey<Biome> RAVIROK_BIOMES = tag("ravirok_spawns");
+    /** Le Tedarok : forets et taigas. */
+    public static final TagKey<Biome> TEDAROK_BIOMES = tag("tedarok_spawns");
 
     static final int PERIOD = 1200;
     static final int CHANCE = 8;
@@ -48,6 +56,19 @@ public final class DancarokSpawner {
     private static final int TRIES = 12;
 
     private DancarokSpawner() {
+    }
+
+    private static TagKey<Biome> tag(String path) {
+        return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, path));
+    }
+
+    /** Les biomes de l'espece. */
+    public static TagKey<Biome> biomes(MountSpecies species) {
+        return switch (species) {
+            case DANCAROK -> BIOMES;
+            case RAVIROK -> RAVIROK_BIOMES;
+            case TEDAROK -> TEDAROK_BIOMES;
+        };
     }
 
     @SubscribeEvent
@@ -63,13 +84,8 @@ public final class DancarokSpawner {
         }
     }
 
-    /** Un essai pres de ce joueur ; rend le Dancarok pose, ou {@code null}. */
+    /** Un essai pres de ce joueur ; rend la monture posee, ou {@code null}. */
     public static Dancarok near(ServerLevel level, ServerPlayer player, RandomSource random) {
-        if (!level.getEntitiesOfClass(Dancarok.class, player.getBoundingBox().inflate(ALONE),
-                dancarok -> !dancarok.isTamed()).isEmpty()) {
-            return null;
-        }
-        EntityType<Dancarok> type = PalaMount.DANCAROK.get();
         for (int attempt = 0; attempt < TRIES; attempt++) {
             double angle = random.nextDouble() * Math.PI * 2.0d;
             int distance = 32 + random.nextInt(33);
@@ -79,21 +95,37 @@ public final class DancarokSpawner {
                 continue;
             }
             BlockPos pos = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z);
-            if (!level.getBiome(pos).is(BIOMES)
-                    || !Dancarok.checkSpawnRules(type, level, EntitySpawnReason.NATURAL, pos, random)
+            MountSpecies species = null;
+            for (MountSpecies candidate : MountSpecies.values()) {
+                if (level.getBiome(pos).is(biomes(candidate))) {
+                    species = candidate;
+                    break;
+                }
+            }
+            if (species == null || !alone(level, player, species)) {
+                continue;
+            }
+            EntityType<? extends Dancarok> type = species.entityType();
+            if (!Dancarok.checkSpawnRules(type, level, EntitySpawnReason.NATURAL, pos, random)
                     || !level.noCollision(type.getSpawnAABB(x + 0.5d, pos.getY(), z + 0.5d))
                     || level.getNearestPlayer(x + 0.5d, pos.getY(), z + 0.5d, 24.0d, false) != null) {
                 continue;
             }
-            Dancarok dancarok = type.create(level, EntitySpawnReason.NATURAL);
-            if (dancarok == null) {
+            Dancarok mount = type.create(level, EntitySpawnReason.NATURAL);
+            if (mount == null) {
                 return null;
             }
-            dancarok.snapTo(x + 0.5d, pos.getY(), z + 0.5d, random.nextFloat() * 360.0f, 0.0f);
-            dancarok.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), EntitySpawnReason.NATURAL, null);
-            level.addFreshEntity(dancarok);
-            return dancarok;
+            mount.snapTo(x + 0.5d, pos.getY(), z + 0.5d, random.nextFloat() * 360.0f, 0.0f);
+            mount.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), EntitySpawnReason.NATURAL, null);
+            level.addFreshEntity(mount);
+            return mount;
         }
         return null;
+    }
+
+    /** Aucune autre sauvage de cette espece a 128 blocs. */
+    private static boolean alone(ServerLevel level, ServerPlayer player, MountSpecies species) {
+        return level.getEntitiesOfClass(Dancarok.class, player.getBoundingBox().inflate(ALONE),
+                mount -> !mount.isTamed() && mount.species() == species).isEmpty();
     }
 }

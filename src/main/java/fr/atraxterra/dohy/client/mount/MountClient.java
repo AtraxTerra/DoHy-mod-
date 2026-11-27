@@ -20,7 +20,12 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
  * <p>K ouvre le menu de la monture ; elle n'invoque pas directement, comme
  * dans l'original. En selle d'un Dancarok, attaquer et utiliser ne font plus
  * rien ; le clic droit maintenu donne les coups de corne. Mount remplacait les
- * touches par des touches muettes ; on annule ici les clics.
+ * touches par des touches muettes ; on annule ici les clics. Le Ravirok et le
+ * Tedarok laissent casser et poser des blocs.
+ *
+ * <p>Les touches de saut et de course du cavalier passent chaque tick a la
+ * monture, que ce client simule : le Ravirok monte et descend, le Tedarok
+ * court ({@code CSMountMovement} 1 et 2).
  */
 @EventBusSubscriber(Dist.CLIENT)
 public final class MountClient {
@@ -34,6 +39,18 @@ public final class MountClient {
     public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
         mountKey = new KeyMapping("key.palamod.mount", InputConstants.KEY_K, KeyMapping.Category.MISC);
         event.register(mountKey);
+    }
+
+    @SubscribeEvent
+    public static void onClientTickPre(ClientTickEvent.Pre event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        LocalPlayer player = minecraft.player;
+        if (player != null && player.getVehicle() instanceof Dancarok mount
+                && mount.getControllingPassenger() == player) {
+            boolean free = minecraft.gui.screen() == null;
+            mount.setRiderKeys(free && minecraft.options.keyJump.isDown(),
+                    free && minecraft.options.keySprint.isDown());
+        }
     }
 
     @SubscribeEvent
@@ -58,8 +75,10 @@ public final class MountClient {
         }
     }
 
+    /** En selle d'une monture a corne : le Dancarok. */
     private static boolean riding(LocalPlayer player) {
-        return player.getVehicle() instanceof Dancarok mount && mount.getControllingPassenger() == player;
+        return player.getVehicle() instanceof Dancarok mount && mount.getControllingPassenger() == player
+                && mount.species().hasHorn();
     }
 
     /** En selle, ni attaque ni utilisation d'objet. */

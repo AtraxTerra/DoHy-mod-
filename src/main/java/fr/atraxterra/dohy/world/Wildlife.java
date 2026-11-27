@@ -38,7 +38,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  * s'il y a moins de {@value #TARGET} animaux a {@value #RADIUS} blocs, deux
  * groupes au plus arrivent a 32-80 blocs, hors de vue, tires dans la liste du
  * biome comme le fait le jeu — les animaux des mods compris (les pigeons de NTM,
- * par exemple), sauf le Dancarok, qui a son propre tirage
+ * par exemple), sauf les montures, qui ont leur propre tirage
  * ({@code DancarokSpawner}). Chaque bete passe par la regle d'apparition de son
  * espece (le bon sol, la lumiere) : pas de mouton sur la neige ni dans un
  * desert. Groupes de quatre au plus. La regle du jeu {@code spawn_mobs}
@@ -102,7 +102,8 @@ public final class Wildlife {
             Holder<Biome> biome = level.getBiome(pos);
             MobSpawnSettings.SpawnerData data = biome.value().getMobSettings().getMobs(MobCategory.CREATURE)
                     .getRandom(random).orElse(null);
-            if (data == null || data.type() == PalaMount.DANCAROK.get() || !fits(level, data.type(), pos, random)) {
+            if (data == null || data.type() == PalaMount.DANCAROK.get() || data.type() == PalaMount.RAVIROK.get()
+                    || data.type() == PalaMount.TEDAROK.get() || !fits(level, data.type(), pos, random)) {
                 continue;
             }
             int size = Math.min(MAX_GROUP, data.minCount() + random.nextInt(Math.max(1,

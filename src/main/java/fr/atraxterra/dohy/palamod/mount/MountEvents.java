@@ -151,9 +151,16 @@ public final class MountEvents {
                         .executes(ctx -> sharedXp(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "pourcentage")))))
                 .then(Commands.literal("give")
                         .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
-                        .executes(ctx -> give(ctx.getSource(), 1))
+                        .executes(ctx -> give(ctx.getSource(), 1, MountSpecies.DANCAROK))
                         .then(Commands.argument("niveau", IntegerArgumentType.integer(1, MountLevels.MAX_LEVEL))
-                                .executes(ctx -> give(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "niveau"))))));
+                                .executes(ctx -> give(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "niveau"),
+                                        MountSpecies.DANCAROK))
+                                .then(Commands.literal("dancarok").executes(ctx -> give(ctx.getSource(),
+                                        IntegerArgumentType.getInteger(ctx, "niveau"), MountSpecies.DANCAROK)))
+                                .then(Commands.literal("ravirok").executes(ctx -> give(ctx.getSource(),
+                                        IntegerArgumentType.getInteger(ctx, "niveau"), MountSpecies.RAVIROK)))
+                                .then(Commands.literal("tedarok").executes(ctx -> give(ctx.getSource(),
+                                        IntegerArgumentType.getInteger(ctx, "niveau"), MountSpecies.TEDAROK))))));
     }
 
     private static int menu(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
@@ -204,15 +211,15 @@ public final class MountEvents {
     }
 
     /**
-     * {@code /mount give} : une gemme apprivoisee au nom de l'appelant. Le
-     * niveau en option est un ajout, pour essayer la monture sans des heures de
-     * ramassage d'orbes.
+     * {@code /mount give [niveau] [espece]} : une gemme apprivoisee au nom de
+     * l'appelant. Le niveau et l'espece en option sont un ajout, pour essayer
+     * une monture sans des heures de ramassage d'orbes.
      */
-    private static int give(CommandSourceStack source, int level)
+    private static int give(CommandSourceStack source, int level, MountSpecies species)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
         float xp = MountLevels.minXp(level);
-        MountGem gem = new MountGem(UUID.randomUUID(), Optional.of(player.getUUID()), MountGem.DEFAULT_NAME,
+        MountGem gem = new MountGem(UUID.randomUUID(), species, Optional.of(player.getUUID()), species.label(),
                 MountLevels.cap(xp), MountData.DEFAULT_SHARED_XP, MountData.MAX_FOOD, 0.0f, -1L, -1L, -1L);
         MountManager.give(player, MountGemstoneItem.stackOf(gem));
         MountTexts.success(player, "given", gem.level());

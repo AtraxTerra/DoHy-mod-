@@ -19,6 +19,36 @@
       "palamod:dancarok/destroy"
     ]
   },
+  "ravirok.idle": {
+    "sounds": [
+      "palamod:ravirok/idle"
+    ]
+  },
+  "ravirok.jump": {
+    "sounds": [
+      "palamod:ravirok/jump"
+    ]
+  },
+  "ravirok.flap": {
+    "sounds": [
+      "palamod:ravirok/flap"
+    ]
+  },
+  "tedarok.idle": {
+    "sounds": [
+      "palamod:tedarok/idle"
+    ]
+  },
+  "tedarok.jump": {
+    "sounds": [
+      "palamod:tedarok/jump"
+    ]
+  },
+  "tedarok.walk": {
+    "sounds": [
+      "palamod:tedarok/walk"
+    ]
+  },
   "mount.summon": {
     "sounds": [
       "palamod:mount/summon"

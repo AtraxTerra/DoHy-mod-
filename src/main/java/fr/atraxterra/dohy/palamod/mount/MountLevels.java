@@ -8,16 +8,15 @@ package fr.atraxterra.dohy.palamod.mount;
  * tant que l'XP reste sous la somme jusqu'a L. Le plafond, lui, est la meme
  * somme <b>a partir de i = 2</b> ({@code getNeededXpForLvl}) jusqu'a 100 :
  * 2 907 301 XP. Les PV et les cases suivent le niveau en proportion de ceux
- * de l'espece au niveau 100 (le Dancarok : 400 PV, 36 cases).
+ * de l'espece au niveau 100 ({@link MountSpecies} : 400 PV et 36 cases pour le
+ * Dancarok, 100 et 9 pour le Ravirok, 200 et 18 pour le Tedarok).
  */
 public final class MountLevels {
 
     public static final int MAX_LEVEL = 100;
     /** {@code CommandMount} : {@code >= 10}, pas {@code > 10} comme le dit le wiki. */
     public static final int SUMMON_LEVEL = 10;
-    /** {@code DancarokMount.hp} : PV au niveau 100, soit 4 par niveau. */
-    public static final int HEALTH_AT_MAX = 400;
-    /** {@code DancarokMount.nbSlots} : cases au niveau 100. */
+    /** Les cases de l'espece qui en a le plus (le Dancarok) : la taille de l'inventaire garde. */
     public static final int SLOTS_AT_MAX = 36;
 
     /** {@code SUM[i]} : XP a atteindre pour quitter le niveau i. */
@@ -66,12 +65,12 @@ public final class MountLevels {
     }
 
     /** {@code getHPByXp} : {@code hp x niveau / 100}, en demi-coeurs. */
-    public static float maxHealth(int level) {
-        return HEALTH_AT_MAX * level / 100.0f;
+    public static float maxHealth(MountSpecies species, int level) {
+        return species.healthAtMax() * level / 100.0f;
     }
 
     /** {@code getNbSlotsByXp} : division entiere, au moins une case. */
-    public static int slots(int level) {
-        return Math.max(1, SLOTS_AT_MAX * level / 100);
+    public static int slots(MountSpecies species, int level) {
+        return Math.max(1, species.slotsAtMax() * level / 100);
     }
 }

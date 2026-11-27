@@ -60,7 +60,8 @@ public final class HornMining {
     }
 
     public static void strike(ServerPlayer player) {
-        if (!(player.getVehicle() instanceof Dancarok mount) || !player.getUUID().equals(mount.owner())) {
+        if (!(player.getVehicle() instanceof Dancarok mount) || !player.getUUID().equals(mount.owner())
+                || !mount.species().hasHorn()) {
             return;
         }
         ServerLevel level = (ServerLevel) player.level();

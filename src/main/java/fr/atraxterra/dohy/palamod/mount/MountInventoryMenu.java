@@ -42,7 +42,10 @@ public class MountInventoryMenu extends ChestMenu {
         for (int index = 0; index < ROWS * 9; index++) {
             Slot old = slots.get(index);
             Slot replacement;
-            if (index == HORN) {
+            if (index == HORN && !MountManager.data(owner).species().hasHorn()) {
+                // la corne est au Dancarok : gardee, pas posee sur une autre espece
+                replacement = new Locked(container, index, old.x, old.y);
+            } else if (index == HORN) {
                 replacement = new Slot(container, index, old.x, old.y) {
                     @Override
                     public boolean mayPlace(ItemStack stack) {

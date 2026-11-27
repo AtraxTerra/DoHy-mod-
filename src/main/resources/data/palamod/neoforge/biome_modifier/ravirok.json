@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#palamod:ravirok_spawns",
+  "spawners": {
+    "type": "palamod:ravirok",
+    "weight": 3,
+    "minCount": 1,
+    "maxCount": 1
+  }
+}

@@ -32,13 +32,12 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * Les montures (mod Mount 6.1.0 de Paladium) : le Dancarok, sa gemme, ses
- * cornes, le bandage, l'orbe de regeneration qui le fabrique, et l'enclos —
- * gestionnaire, couveuse, fondation, barriere.
+ * Les montures (mod Mount 6.1.0 de Paladium) : le Dancarok, le Ravirok et le
+ * Tedarok, leur gemme, les cornes du Dancarok, le bandage, l'orbe de
+ * regeneration qui le fabrique, et l'enclos — gestionnaire, couveuse,
+ * fondation, barriere.
  *
  * <p>Tout passe sous l'espace {@code palamod}, comme le reste du portage.
- * Le Ravirok et le Tedarok, les deux autres especes du mod, ne sont pas
- * portes.
  */
 @EventBusSubscriber
 public final class PalaMount {
@@ -79,6 +78,12 @@ public final class PalaMount {
     public static final DeferredHolder<SoundEvent, SoundEvent> DANCAROK_IDLE = sound("dancarok.idle");
     public static final DeferredHolder<SoundEvent, SoundEvent> DANCAROK_JUMP = sound("dancarok.jump");
     public static final DeferredHolder<SoundEvent, SoundEvent> DANCAROK_DESTROY = sound("dancarok.destroy");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RAVIROK_IDLE = sound("ravirok.idle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RAVIROK_JUMP = sound("ravirok.jump");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RAVIROK_FLAP = sound("ravirok.flap");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TEDAROK_IDLE = sound("tedarok.idle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TEDAROK_JUMP = sound("tedarok.jump");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TEDAROK_WALK = sound("tedarok.walk");
     public static final DeferredHolder<SoundEvent, SoundEvent> MOUNT_SUMMON = sound("mount.summon");
     public static final DeferredHolder<SoundEvent, SoundEvent> MOUNT_UNSUMMON = sound("mount.unsummon");
 
@@ -94,6 +99,25 @@ public final class PalaMount {
             "dancarok", key -> EntityType.Builder.<Dancarok>of(Dancarok::new, MobCategory.CREATURE)
                     .sized(2.5f, 1.9f)
                     .passengerAttachments(1.81f)
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
+
+    /**
+     * {@code EntityRavirokMount} : 1,85 x 1,6, le cavalier a 0,9 x hauteur,
+     * plus 0,1 comme pour le Dancarok.
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<Ravirok>> RAVIROK = ENTITIES.register(
+            "ravirok", key -> EntityType.Builder.<Ravirok>of(Ravirok::new, MobCategory.CREATURE)
+                    .sized(1.85f, 1.6f)
+                    .passengerAttachments(1.54f)
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
+
+    /** {@code EntityTedarokMount} : 1,45 x 1,65. */
+    public static final DeferredHolder<EntityType<?>, EntityType<Tedarok>> TEDAROK = ENTITIES.register(
+            "tedarok", key -> EntityType.Builder.<Tedarok>of(Tedarok::new, MobCategory.CREATURE)
+                    .sized(1.45f, 1.65f)
+                    .passengerAttachments(1.585f)
                     .clientTrackingRange(10)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
 
@@ -153,6 +177,8 @@ public final class PalaMount {
     @SubscribeEvent
     public static void onAttributes(EntityAttributeCreationEvent event) {
         event.put(DANCAROK.get(), Dancarok.createAttributes().build());
+        event.put(RAVIROK.get(), Ravirok.createAttributes().build());
+        event.put(TEDAROK.get(), Tedarok.createAttributes().build());
     }
 
     /**
@@ -166,6 +192,10 @@ public final class PalaMount {
     @SubscribeEvent
     public static void onSpawnPlacements(RegisterSpawnPlacementsEvent event) {
         event.register(DANCAROK.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Dancarok::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(RAVIROK.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Dancarok::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(TEDAROK.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Dancarok::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 

@@ -1728,13 +1728,22 @@
       "icon": "palamod:mount_gemstone",
       "title": "Monture, enclos",
       "card": [
-        "Une monture qui creuse",
+        "Creuser, voler, courir",
         "L'enclos, 5 tailles"
       ],
       "summary": [
-        "Le Dancarok, monture lente et solide, creuse devant lui avec une corne. Capture a l'epee et a la pierre de capture, apprivoisement dans un enclos."
+        "Trois montures a capturer a l'epee et a la pierre de capture, puis a apprivoiser dans un enclos : le Dancarok creuse, le Ravirok vole, le Tedarok court."
       ],
       "sections": [
+        {
+          "title": "Les especes",
+          "text": [
+            "- Dancarok (plaines, savanes) : 400 PV et 36 cases au niveau 100. Une corne creuse devant lui.",
+            "- Ravirok (montagnes) : 100 PV, 9 cases. Il vole : saut pour monter, course pour descendre, jusqu'a la couche 256.",
+            "- Tedarok (forets, taigas) : 200 PV, 18 cases. Saut de cinq blocs, course x1,9, marche sur l'eau ; court sur l'eau au niveau 50.",
+            "! On en croise aussi dans la farmland."
+          ]
+        },
         {
           "title": "L'enclos",
           "text": [
@@ -1746,8 +1755,8 @@
         {
           "title": "La monture",
           "text": [
-            "Sa gemme la garde ; niveaux, vie, energie. Cornes d'amethyste, de titane, de paladium : de plus en plus large.",
-            "Les cornes se forgent a la palamachine autour d'une defense d'elephant."
+            "Sa gemme la garde ; niveaux, vie, energie. Invocation des le niveau 10.",
+            "Les cornes du Dancarok (amethyste, titane, paladium) se forgent a la palamachine autour d'une defense d'elephant."
           ]
         }
       ],
@@ -3928,9 +3937,9 @@
         {
           "title": "Ce qui y apparait",
           "text": [
-            "- Foret : zombies, squelettes, araignees, creepers, sorcieres, loups, lapins.",
-            "- Prairie : vaches, moutons, poules, chevaux, anes, lapins. Hameau : villageois. Champignons : champimeuh.",
-            "- Collines : chevres ; grotte : araignees venimeuses.",
+            "- Foret : zombies, squelettes, araignees, creepers, sorcieres, loups, lapins, un Tedarok.",
+            "- Prairie : vaches, moutons, poules, chevaux, anes, lapins, un Dancarok. Hameau : villageois. Champignons : champimeuh.",
+            "- Collines : chevres, un Ravirok ; grotte : araignees venimeuses.",
             "- Jungle : pandas, perroquets, elephants.",
             "- Lac : dauphins. Plage : tortues. Marais : slimes, sorcieres.",
             "- Nether : piglins zombifies, cubes de magma, squelettes wither, ghasts. End : endermen.",
