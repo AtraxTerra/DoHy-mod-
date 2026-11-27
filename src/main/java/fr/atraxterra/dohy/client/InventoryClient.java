@@ -19,10 +19,13 @@ import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.DispenserScreen;
 import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
 import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
+import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
 import net.minecraft.client.gui.screens.inventory.HopperScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen;
+import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
+import net.minecraft.client.gui.screens.inventory.StonecutterScreen;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -34,7 +37,8 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
  * ({@link KitTitleScreen}), le menu pause ({@link KitPauseScreen}), l'inventaire
  * ({@link KitInventoryScreen}), les coffres, la boite de shulker, l'entonnoir et le
  * distributeur ({@link KitChests}), l'etabli et les fours ({@link KitWorkstations}), la
- * table d'enchantement, l'enclume et l'alambic ({@link KitStations}).
+ * table d'enchantement, l'enclume, l'alambic, la meule, la table de forgeron et le tailleur
+ * de pierre ({@link KitStations}).
  *
  * <p>Le remplacement se fait a l'ouverture, donc pour toutes les facons d'ouvrir
  * l'ecran (touche, bloc, autre mod) ; le menu reste celui que le jeu a cree. On ne
@@ -118,6 +122,15 @@ public final class InventoryClient {
         }
         if (type == BrewingStandScreen.class) {
             return new KitStations.Brewing(((BrewingStandScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == GrindstoneScreen.class) {
+            return new KitStations.Grindstone(((GrindstoneScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == SmithingScreen.class) {
+            return new KitStations.Smithing(((SmithingScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == StonecutterScreen.class) {
+            return new KitStations.Stonecutter(((StonecutterScreen) screen).getMenu(), inventory, screen.getTitle());
         }
         return null;
     }

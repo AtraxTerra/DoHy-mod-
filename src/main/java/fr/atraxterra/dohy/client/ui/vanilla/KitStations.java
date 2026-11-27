@@ -13,35 +13,51 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
+import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
 import net.minecraft.client.gui.screens.inventory.EnchantmentNames;
 import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
+import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
+import net.minecraft.client.gui.screens.inventory.SmithingScreen;
+import net.minecraft.client.gui.screens.inventory.StonecutterScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.object.book.BookModel;
+import net.minecraft.client.renderer.entity.state.ArmorStandRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.BrewingStandMenu;
 import net.minecraft.world.inventory.EnchantmentMenu;
+import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.SmithingMenu;
+import net.minecraft.world.inventory.StonecutterMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.SelectableRecipe;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.joml.Matrix3x2fStack;
+import org.joml.Quaternionfc;
+import org.joml.Vector3fc;
 
+import java.lang.reflect.Field;
 import java.util.Locale;
 
 /**
- * La table d'enchantement, l'enclume et l'alambic au style du kit : les trois ecrans du
- * jeu que PalaVanillaGui (Paladium) redessinait, en plus de ceux que le kit avait deja
- * (etabli, fours, coffres, entonnoir, distributeur).
+ * La table d'enchantement, l'enclume et l'alambic au style du kit (les trois ecrans du
+ * jeu que PalaVanillaGui, de Paladium, redessinait), puis la meule, la table de forgeron et
+ * le tailleur de pierre, en plus de ceux que le kit avait deja (etabli, fours, coffres,
+ * entonnoir, distributeur).
  *
  * <p>Les cases sont celles du jeu ({@code Slot.x} et {@code Slot.y} sont finals) ; les
  * clics, les bulles, le champ du nom et le livre anime restent ceux du jeu. Ces trois
@@ -433,6 +449,315 @@ public final class KitStations {
             UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
             if (menu.slots.size() > 5) {
                 ContainerStyle.inventoryLabel(g, menu.slots.get(5));
+            }
+        }
+
+        @Override
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            if (event.button() == 0 && ContainerStyle.overClose(event.x() - leftPos, event.y() - topPos, imageWidth)) {
+                onClose();
+                return true;
+            }
+            return super.mouseClicked(event, doubleClick);
+        }
+
+        @Override
+        protected boolean hasClickedOutside(double mouseX, double mouseY, int left, int top) {
+            return super.hasClickedOutside(mouseX, mouseY, left, top)
+                    && !ContainerStyle.inHeader(mouseX, mouseY, left, top, imageWidth);
+        }
+    }
+
+    // -- Champs prives des ecrans du jeu ------------------------------------------------------
+
+    /**
+     * Un champ prive d'un ecran du jeu, lu par son nom : NeoForge garde a l'execution les noms
+     * de Mojang, ceux du jeu en developpement. {@code null} si le jeu l'a renomme : l'ecran
+     * reprend alors son dessin du jeu, rien ne se perd.
+     */
+    static Field field(Class<?> owner, String name) {
+        try {
+            Field field = owner.getDeclaredField(name);
+            field.setAccessible(true);
+            return field;
+        } catch (ReflectiveOperationException | RuntimeException missing) {
+            return null;
+        }
+    }
+
+    static Object read(Field field, Object owner) {
+        try {
+            return field == null ? null : field.get(owner);
+        } catch (ReflectiveOperationException | RuntimeException missing) {
+            return null;
+        }
+    }
+
+    // -- Meule -------------------------------------------------------------------------------
+
+    /**
+     * La meule : les deux objets l'un sur l'autre, la fleche, le resultat cercle ; une croix
+     * rouge quand rien ne sort (la ou le jeu met la sienne).
+     */
+    public static final class Grindstone extends GrindstoneScreen {
+        private final ItemStack icon = new ItemStack(Items.GRINDSTONE);
+
+        public Grindstone(GrindstoneMenu menu, Inventory inventory, Component title) {
+            super(menu, inventory, title);
+        }
+
+        @Override
+        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            ContainerStyle.veil(graphics, width, height);
+            UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
+            Paint p = g.paint();
+            Matrix3x2fStack pose = graphics.pose();
+            pose.pushMatrix();
+            pose.translate(leftPos, topPos);
+            frame(g, p, icon, headerTitle(title, "container.grindstone_title", Blocks.GRINDSTONE), imageWidth,
+                    imageHeight, mouseX - leftPos, mouseY - topPos);
+            ContainerStyle.inset(p, 8, 9, imageWidth - 16, 66);
+            Slot result = menu.getSlot(2);
+            for (int index = 0; index < menu.slots.size(); index++) {
+                Slot slot = menu.slots.get(index);
+                if (index == 2) {
+                    ContainerStyle.bigSlot(p, slot, Ui.Theme.GREEN);
+                } else {
+                    ContainerStyle.slot(p, slot);
+                }
+            }
+            // Les deux entrees se rejoignent, puis la fleche vers le resultat.
+            int line = menu.getSlot(0).hasItem() || menu.getSlot(1).hasItem() ? 0xFF4A4D55 : 0xFF2C2E33;
+            p.rect(70.0f, 27.0f, 1.3f, 22.0f, line);
+            p.rect(66.0f, 27.0f, 5.3f, 1.3f, line);
+            p.rect(66.0f, 47.7f, 5.3f, 1.3f, line);
+            p.rect(70.0f, 41.4f, 18.0f, 1.3f, line);
+            boolean failed = (menu.getSlot(0).hasItem() || menu.getSlot(1).hasItem()) && !result.hasItem();
+            p.arrow(92.0f, 37.5f, 26.0f, 9.0f, failed ? 0xFF4A2A2A : result.hasItem() ? Ui.Theme.TEXT2 : 0xFF3A3C42);
+            if (failed) {
+                p.glow(105.0f, 42.0f, 11.0f, Paint.alpha(Ui.Theme.RED, 0.35f));
+                p.cross(105.0f, 42.0f, 12.0f, Ui.Theme.RED_LIGHT);
+            }
+            pose.popMatrix();
+        }
+
+        @Override
+        protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+            UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
+            if (menu.slots.size() > 3) {
+                ContainerStyle.inventoryLabel(g, menu.slots.get(3));
+            }
+        }
+
+        @Override
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            if (event.button() == 0 && ContainerStyle.overClose(event.x() - leftPos, event.y() - topPos, imageWidth)) {
+                onClose();
+                return true;
+            }
+            return super.mouseClicked(event, doubleClick);
+        }
+
+        @Override
+        protected boolean hasClickedOutside(double mouseX, double mouseY, int left, int top) {
+            return super.hasClickedOutside(mouseX, mouseY, left, top)
+                    && !ContainerStyle.inHeader(mouseX, mouseY, left, top, imageWidth);
+        }
+    }
+
+    // -- Table de forgeron ------------------------------------------------------------------
+
+    /**
+     * La table de forgeron : le modele, l'objet et le materiau, la fleche et le resultat a
+     * gauche ; l'armure posee sur son support a droite, comme le jeu la montre. Les silhouettes
+     * qui defilent dans les cases vides, l'apercu et les bulles d'aide sont ceux du jeu.
+     */
+    public static final class Smithing extends SmithingScreen {
+        private static final Field TEMPLATE = field(SmithingScreen.class, "templateIcon");
+        private static final Field BASE = field(SmithingScreen.class, "baseIcon");
+        private static final Field ADDITION = field(SmithingScreen.class, "additionalIcon");
+        private static final Field PREVIEW = field(SmithingScreen.class, "armorStandPreview");
+        private static final Field TRANSLATION = field(SmithingScreen.class, "ARMOR_STAND_TRANSLATION");
+        private static final Field ANGLE = field(SmithingScreen.class, "ARMOR_STAND_ANGLE");
+        private final ItemStack icon = new ItemStack(Items.SMITHING_TABLE);
+
+        public Smithing(SmithingMenu menu, Inventory inventory, Component title) {
+            super(menu, inventory, title);
+        }
+
+        @Override
+        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            Object template = read(TEMPLATE, this);
+            Object base = read(BASE, this);
+            Object addition = read(ADDITION, this);
+            Object preview = read(PREVIEW, this);
+            Object translation = read(TRANSLATION, null);
+            Object angle = read(ANGLE, null);
+            if (!(template instanceof CyclingSlotBackground templateIcon)
+                    || !(base instanceof CyclingSlotBackground baseIcon)
+                    || !(addition instanceof CyclingSlotBackground additionIcon)
+                    || !(preview instanceof ArmorStandRenderState stand)
+                    || !(translation instanceof Vector3fc offset) || !(angle instanceof Quaternionfc rotation)) {
+                super.extractBackground(graphics, mouseX, mouseY, partialTick);
+                return;
+            }
+            ContainerStyle.veil(graphics, width, height);
+            UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
+            Paint p = g.paint();
+            Matrix3x2fStack pose = graphics.pose();
+            pose.pushMatrix();
+            pose.translate(leftPos, topPos);
+            frame(g, p, icon, headerTitle(title, "container.upgrade", Blocks.SMITHING_TABLE), imageWidth,
+                    imageHeight, mouseX - leftPos, mouseY - topPos);
+            ContainerStyle.inset(p, 8, 9, 110.5f, 66);
+            ContainerStyle.inset(p, 120.5f, 9, 47.5f, 73);
+            Slot result = menu.getSlot(menu.getResultSlot());
+            for (int index = 0; index < menu.slots.size(); index++) {
+                Slot slot = menu.slots.get(index);
+                if (index == menu.getResultSlot()) {
+                    ContainerStyle.bigSlot(p, slot, Ui.Theme.GREEN);
+                } else {
+                    ContainerStyle.slot(p, slot);
+                }
+            }
+            boolean failed = hasError();
+            p.arrow(66.0f, 51.5f, 24.0f, 9.0f, failed ? 0xFF4A2A2A : result.hasItem() ? Ui.Theme.TEXT2 : 0xFF3A3C42);
+            if (failed) {
+                p.glow(78.0f, 56.0f, 11.0f, Paint.alpha(Ui.Theme.RED, 0.35f));
+                p.cross(78.0f, 56.0f, 12.0f, Ui.Theme.RED_LIGHT);
+            }
+            pose.popMatrix();
+            // Les silhouettes des cases vides et l'armure du jeu, en coordonnees d'ecran.
+            templateIcon.extractRenderState(menu, graphics, partialTick, leftPos, topPos);
+            baseIcon.extractRenderState(menu, graphics, partialTick, leftPos, topPos);
+            additionIcon.extractRenderState(menu, graphics, partialTick, leftPos, topPos);
+            graphics.entity(stand, 25.0f, offset, rotation, null, leftPos + 121, topPos + 20, leftPos + 161,
+                    topPos + 80);
+        }
+
+        /** L'erreur du jeu : les trois cases remplies, et rien en sortie. */
+        private boolean hasError() {
+            return menu.hasRecipeError();
+        }
+
+        @Override
+        protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+            UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
+            if (menu.slots.size() > 4) {
+                ContainerStyle.inventoryLabel(g, menu.slots.get(4));
+            }
+        }
+
+        @Override
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            if (event.button() == 0 && ContainerStyle.overClose(event.x() - leftPos, event.y() - topPos, imageWidth)) {
+                onClose();
+                return true;
+            }
+            return super.mouseClicked(event, doubleClick);
+        }
+
+        @Override
+        protected boolean hasClickedOutside(double mouseX, double mouseY, int left, int top) {
+            return super.hasClickedOutside(mouseX, mouseY, left, top)
+                    && !ContainerStyle.inHeader(mouseX, mouseY, left, top, imageWidth);
+        }
+    }
+
+    // -- Tailleur de pierre ----------------------------------------------------------------
+
+    /**
+     * Le tailleur de pierre : la pierre a gauche, la grille des coupes possibles (quatre par
+     * rangee, la choisie en rouge), sa barre de defilement, le resultat cercle a droite. Les
+     * clics, la molette, la barre qu'on tire et la bulle de chaque coupe restent ceux du jeu.
+     */
+    public static final class Stonecutter extends StonecutterScreen {
+        private static final Field START = field(StonecutterScreen.class, "startIndex");
+        private static final Field SCROLL = field(StonecutterScreen.class, "scrollOffs");
+        private static final Field SHOWN = field(StonecutterScreen.class, "displayRecipes");
+        private static final int COLUMNS = 4;
+        private static final int VISIBLE = 12;
+        private final ItemStack icon = new ItemStack(Items.STONECUTTER);
+
+        public Stonecutter(StonecutterMenu menu, Inventory inventory, Component title) {
+            super(menu, inventory, title);
+        }
+
+        @Override
+        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            Object start = read(START, this);
+            Object scroll = read(SCROLL, this);
+            Object shown = read(SHOWN, this);
+            if (!(start instanceof Integer first) || !(scroll instanceof Float offset)
+                    || !(shown instanceof Boolean display)) {
+                super.extractBackground(graphics, mouseX, mouseY, partialTick);
+                return;
+            }
+            ContainerStyle.veil(graphics, width, height);
+            UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
+            Paint p = g.paint();
+            Matrix3x2fStack pose = graphics.pose();
+            pose.pushMatrix();
+            pose.translate(leftPos, topPos);
+            double mx = mouseX - leftPos;
+            double my = mouseY - topPos;
+            frame(g, p, icon, headerTitle(title, "container.stonecutter", Blocks.STONECUTTER), imageWidth,
+                    imageHeight, mx, my);
+            ContainerStyle.inset(p, 8, 9, imageWidth - 16, 66);
+            for (int index = 0; index < menu.slots.size(); index++) {
+                Slot slot = menu.slots.get(index);
+                if (index == StonecutterMenu.RESULT_SLOT) {
+                    ContainerStyle.bigSlot(p, slot, Ui.Theme.GREEN);
+                } else {
+                    ContainerStyle.slot(p, slot);
+                }
+            }
+
+            // La grille des coupes, dans son creux.
+            p.framed(50.5f, 13.5f, 67.0f, 59.0f, 3.5f, 0xFF101113, 0xFF24262A, 1);
+            int count = display ? menu.getNumberOfVisibleRecipes() : 0;
+            int selected = menu.getSelectedRecipeIndex();
+            for (int index = first; index < first + VISIBLE && index < count; index++) {
+                int place = index - first;
+                float x = 52.0f + place % COLUMNS * 16.0f;
+                float y = 15.0f + place / COLUMNS * 18.0f;
+                boolean over = mx >= x && my >= y && mx < x + 16.0f && my < y + 18.0f;
+                int fill = index == selected ? Paint.mix(0xFF1A1B1E, Ui.Theme.RED, 0.3f)
+                        : over ? 0xFF2A2C31 : 0xFF1C1D21;
+                int edge = index == selected ? Ui.Theme.RED : over ? 0xFF5A5D65 : 0xFF2A2C31;
+                p.framed(x + 0.5f, y + 0.5f, 15.0f, 17.0f, 2.5f, fill, edge, 1);
+                if (over) {
+                    graphics.requestCursor(CursorTypes.POINTING_HAND);
+                }
+            }
+
+            // La barre de defilement : le jeu la tire et la fait rouler, on la dessine.
+            boolean active = display && count > VISIBLE;
+            p.round(121.0f, 15.0f, 8.0f, 56.0f, 4.0f, 0xFF16171A);
+            float thumbY = 15.0f + 41.0f * Math.max(0.0f, Math.min(1.0f, offset));
+            boolean overBar = active && mx >= 119.0f && my >= 15.0f && mx < 131.0f && my < 71.0f;
+            p.round(121.0f, thumbY, 8.0f, 15.0f, 4.0f, !active ? 0xFF2A2C31 : overBar ? 0xFF8C8F97 : 0xFF5A5D65);
+            pose.popMatrix();
+
+            // Les coupes elles-memes, comme le jeu les pose.
+            if (count > 0 && minecraft.level != null) {
+                ContextMap context = SlotDisplayContext.fromLevel(minecraft.level);
+                SelectableRecipe.SingleInputSet<StonecutterRecipe> recipes = menu.getVisibleRecipes();
+                for (int index = first; index < first + VISIBLE && index < recipes.size(); index++) {
+                    int place = index - first;
+                    int x = leftPos + 52 + place % COLUMNS * 16;
+                    int y = topPos + 16 + place / COLUMNS * 18;
+                    ItemStack stack = recipes.entries().get(index).recipe().optionDisplay().resolveForFirstStack(context);
+                    graphics.item(stack, x, y);
+                }
+            }
+        }
+
+        @Override
+        protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+            UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
+            if (menu.slots.size() > 2) {
+                ContainerStyle.inventoryLabel(g, menu.slots.get(2));
             }
         }
 
