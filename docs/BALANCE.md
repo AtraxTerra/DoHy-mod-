@@ -1790,6 +1790,43 @@ pépite vaut ~40 k au catalogue (§ 6 ter).
 Leviers : `MinerBoss.Attack` (durées, chances), `STUN_TICKS`, `THORNS`, `ATTACK_DELAY`,
 `dropCustomDeathLoot`.
 
+## 6 quinquatrigesies. Graines minérales — ce que rapporte un plant (2026-11-27)
+
+Description : `docs/PALAMOD.md` § 47. Les chiffres de Paladium sont dans la configuration de son
+serveur, pas dans le jar : tout est calibré ici, sur la valeur des matières au catalogue (§ 6 ter).
+
+**Ce qui borne la culture, c'est la graine, pas le champ.** La terre labourée ne manque pas ; les
+graines, si. Un joueur en reçoit 74 sur toute sa progression (16 + 16 + 16 + 8 + 8 + 4 + 4 + 2,
+récompenses de Fermier), et une récolte n'en rend qu'une partie : 0,5 graine en moyenne avec 2
+tirages, 0,75 avec 3 (Fermier 50), 1 avec 4 (Fermier 100) ; 0,4 à 0,8 pour l'endium. Une graine
+donne donc en moyenne 2 à 4 récoltes avant que sa lignée s'éteigne, sauf au Fermier 100 où les
+sept premières se maintiennent (une graine par récolte). Le laboratoire (lot suivant) sera la
+source durable de graines.
+
+| Graine | Pousse | Minerai par récolte (F 50 / F 100) | $ par heure et par plant (F 50 / F 100) | Ce que rendent les graines données, au niveau du déblocage |
+|---|---|---|---|---|
+| Améthyste | 30 min | 5,6 / 7,5 | 340 / 450 | ~120 lingots (~3,6 k) |
+| Titane | 45 min | 5,6 / 7,5 | 340 / 450 | ~120 lingots (~5,4 k) |
+| Paladium | 1 h | 3,4 / 4,5 | 240 / 320 | ~215 lingots (~15,5 k) |
+| Paladium vert | 1 h 30 | 2,1 / 2,8 | 700 / 930 | ~67 lingots (~34 k) |
+| Findium | 1 h 30 | 2,1 / 2,8 | 560 / 750 | ~67 (~27 k) |
+| Trixium | 3 h | 1,8 / 2,4 | 480 / 640 | ~29 (~23 k) |
+| Invoker | 3 h | 1,8 / 2,4 | 1 200 / 1 600 | ~29 pierres (~58 k) |
+| Endium | 6 h | — / 0,4 | — / 2 700 | ~4 pépites (~160 k) en ~60 h de pousse |
+
+Les plants poussent **chargés** (sauf les graines hors ligne, 5 à 15 % des graines récoltées) :
+dans les claims tenus chargés (§ 22k de `FACTION.md`), ils poussent sans le joueur, comme le blé,
+mais la récolte reste à la main. Le prix dynamique fait le reste : paladium vert, findium,
+trixium et Pierre d'Invocation ont un S₀ de 64, l'endium de 8 ; vendre une saison de récolte d'un
+coup en fait baisser le cours.
+
+**À surveiller** : si un champ de graines au Fermier 100 grossit trop (les lignées critiques
+fluctuent), le levier le plus doux est le poids de la graine dans la liste (`MineralSeed`), puis
+le nombre de tirages (`MineralSeed.draws`).
+
+Leviers : `MineralSeed` (pousse, quantités, poids, niveaux, récompenses), `SeedSpeed`
+(facteurs, chances), `SeedTraits.offlineChance`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

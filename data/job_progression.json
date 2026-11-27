@@ -342,6 +342,38 @@
             "level": 95,
             "xp": 200
           },
+          "palamod:amethyst_crop": {
+            "level": 20,
+            "xp": 60
+          },
+          "palamod:titane_crop": {
+            "level": 35,
+            "xp": 90
+          },
+          "palamod:paladium_crop": {
+            "level": 50,
+            "xp": 120
+          },
+          "palamod:green_paladium_crop": {
+            "level": 60,
+            "xp": 200
+          },
+          "palamod:findium_crop": {
+            "level": 70,
+            "xp": 200
+          },
+          "palamod:trixium_crop": {
+            "level": 80,
+            "xp": 400
+          },
+          "palamod:invoker_crop": {
+            "level": 90,
+            "xp": 400
+          },
+          "palamod:endium_crop": {
+            "level": 100,
+            "xp": 800
+          },
           "minecraft:nether_wart": 3,
           "minecraft:cocoa": 5,
           "minecraft:sweet_berry_bush": 3,

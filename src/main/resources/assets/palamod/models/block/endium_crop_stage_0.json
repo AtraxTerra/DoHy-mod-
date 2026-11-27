@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "palamod:block/endium_crop_stage_0"
+  }
+}
