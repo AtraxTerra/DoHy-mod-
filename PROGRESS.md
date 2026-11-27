@@ -193,6 +193,19 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-26 — le Base Claim Controller
+
+**Demande** : point 5 de « 9, 2, 5, 7, 13, 22 » (`docs/FACTION.md`, « Le Base Claim
+Controller »).
+
+- **Le bloc** : 75 000 $ de la banque nationale (onglet Territoire), niveau de nation > 10, posé au
+  centre d'un claim 3 × 3, indestructible, coffre de 55 cases, intrus à 200 blocs.
+- **Revenus** : 120 ELO à la pose, puis 30 de gloire et de l'ELO croissant chaque jour (plafond au
+  jour 50).
+- **Pillage** : deux minutes de clic droit sans être frappé ; explosion sans dégâts, contenu à
+  terre, ±300 ELO. Les bases rivales ont leur BCC ; sur le podium de la notation, des pillards
+  viennent pour le tien.
+
 ### 2026-11-26 — les familiers
 
 **Demande** : point 2 de « 9, 2, 5, 7, 13, 22 », avec le serpent et l'escargot comme sources

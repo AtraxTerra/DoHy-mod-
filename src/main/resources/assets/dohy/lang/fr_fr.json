@@ -265,5 +265,9 @@
   "tooltip.dohy.clandestine_lab": "Feuilles et bidons en produits finis",
   "tooltip.dohy.packaging_table": "Produits en sachets, sachets en colis",
   "tooltip.dohy.arms_workbench": "Pieces usinees et caisses scellees",
-  "tooltip.dohy.stash_chest": "A toi seul · verse aux stocks de tes entreprises · les machines la remplissent"
+  "tooltip.dohy.stash_chest": "A toi seul · verse aux stocks de tes entreprises · les machines la remplissent",
+  "block.dohy.base_claim_controller": "Base Claim Controller",
+  "tooltip.dohy.base_claim_controller": "Le coeur de ta base : gloire et ELO chaque jour, coffre de 55 cases",
+  "tooltip.dohy.base_claim_controller.place": "Au centre d'un claim de 3 x 3 chunks, les 8 blocs autour et dessus vides",
+  "tooltip.dohy.base_claim_controller.warn": "Pose ratee : il disparait. Pillable en 2 minutes de clic droit"
 }

@@ -1090,3 +1090,60 @@ Code : `faction/garrison/` — `Garrison` (les données), `GarrisonRole`, `Garri
 `Garrisons` (déploiement, solde, actions, combats, `/garnison`), `GarrisonMenu`,
 `BarracksBlock` ; `Siege.tickZone` et `Siege.onDeath`, `Soldier.installGoals`,
 `Sieges.defendedVault`, la carte de `WarMenu` ; `client/war/GarrisonSoldierRenderer`.
+
+## Le Base Claim Controller (lot 25, 2026-11-26)
+
+Demandé le 2026-11-26 (point 5 de la liste des manques). Règles : le wiki de Paladium
+(« Java | Base Claim Controller ») ; le BCC est un bloc du plugin de faction, absent du jar de
+PalaMod : modèle et texture propres au mod (`tools/bcc_assets.py`).
+
+### Le bloc
+
+- **Achat** : 75 000 $ de la banque nationale, carte « Acheter un BCC » de l'onglet
+  **Territoire**, quand la nation a passé le **niveau 10** (lu en paliers de l'arbre de
+  technologie, toutes branches comprises : plus de 10). Sans remboursement si la pose échoue.
+- **Pose** : au centre d'un claim d'au moins **3 × 3 chunks** (son chunk et les huit voisins à la
+  nation), les **huit blocs autour** et les **neuf au-dessus** vides, à **1 500 blocs** de tout
+  autre BCC (en solo : celui de la base rivale en cours), **un seul** à la fois, **14 jours**
+  entre deux poses. Une condition manquée : il disparaît (message dans le chat).
+- **Indestructible** : ni à la main (même par son maître), ni aux explosions, ni au wither ou au
+  dragon, ni aux pistons. Seul le pillage le fait partir.
+- **Coffre de 55 cases** (5 × 11), sans tiroirs (Vault Drawers) ; seul le maître l'ouvre.
+- **Surveillance** : l'interface et le bloc (regardé de près) comptent les **intrus à 200 blocs**
+  : les autres joueurs, les soldats rivaux et les pillards.
+
+### Ce qu'il rapporte
+
+- **120 ELO** à la pose (le wiki dit « 120 XP de faction » ; le mod n'a pas d'XP de faction).
+- Chaque jour réel : **30 de gloire** (comptée sur le BCC) et de l'**ELO** qui croît de 5 % par
+  jour : 10 le premier jour, 109 au cinquantième, puis plafonné. Ces gains comptent comme des
+  victoires ELO de la semaine (critère Militaire de la notation).
+
+### Le revers et le pillage
+
+- **Repéré** : une nation sur le **podium de la dernière notation** (top 3) est repérée. En solo,
+  ce sont les rivales qui la voient : quand son maître est à 200 blocs du BCC, un **raid de
+  pillards** (deux vindicateurs, deux pillards, au nom d'une nation rivale) peut venir, une fois
+  par jour au plus. Le pillard qui brille (son nom toujours affiché ; il porte un casque d'or,
+  mais les illageois ne montrent pas leur casque) file vers le BCC ; s'il tient **deux minutes au
+  contact**, le BCC est pillé. Le frapper remet son compte à zéro ; le tuer repousse le raid
+  (+50 ELO). Le raid renonce au bout de dix minutes.
+- **Piller un BCC** (les bases rivales en ont un) : **deux minutes de clic droit**, sans lâcher
+  ni être frappé ; le temps s'affiche dans la barre d'action. Pillé, le BCC **prend feu et
+  explose sans rien casser**, son contenu tombe. Le pillard gagne **300 ELO**, le maître en perd
+  autant.
+- **Les BCC rivaux** : chaque base ou forteresse ennemie (`EnemyBases`) en pose un au cœur de son
+  bâtiment, rempli du butin des coffres-forts (une fois par palier de la base).
+
+### Code
+
+`faction/bcc/` : `DoHyBcc` (registres), `BccBlock`, `BccBlockEntity` (coffre, intrus),
+`BccItem`, `BccData` (le BCC du joueur), `Bccs` (achat, pose, revenus, pillage, raids, BCC
+rivaux) ; `FactionApi.removeElo` ; la carte de `FactionMenus.Claims` ; `EnemyBases.deliver`.
+Client : `client/bcc/BccClient` (interface), `BccRenderer` (étiquettes).
+
+### Écarts
+
+- **Niveau de faction** : lu dans l'arbre de technologie ; **XP de faction** : de l'ELO.
+- **« /f f »** et la révélation entre joueurs deviennent les raids des nations rivales.
+- **Un seul BCC par serveur** : un par nation du joueur, plus ceux des bases rivales.
