@@ -1,20 +1,30 @@
 package fr.atraxterra.dohy.client;
 
 import com.mojang.logging.LogUtils;
-import fr.atraxterra.dohy.client.atlas.AtlasScreen;
-import fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
-import fr.atraxterra.dohy.client.ui.vanilla.KitPauseScreen;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
-/** Temporaire : le tour des ecrans, avant leur epuration. */
+/** Temporaire : le tour des conteneurs et des machines. */
 final class ShotSamples {
     private static final Logger LOG = LogUtils.getLogger();
 
@@ -36,33 +46,28 @@ final class ShotSamples {
         });
     }
 
-    private static ShotHarness.Shot client(String name, int extra, Runnable action) {
-        return new ShotHarness.Shot(name, () -> {
-            ShotHarness.extraWait = extra;
-            try {
-                action.run();
-            } catch (Throwable t) {
-                LOG.error("dohy-shots: ECHEC client " + name, t);
-            }
-            return null;
-        });
-    }
-
     private static void command(ServerPlayer player, String command) {
         MinecraftServer server = player.level().getServer();
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
     }
 
-    /** Une commande tapee par le joueur lui-meme. */
-    private static void as(ServerPlayer player, String command) {
-        MinecraftServer server = player.level().getServer();
-        server.getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
-    }
-
-    private static void typed(String name, String command) {
+    /** Pose le bloc au-dessus du joueur et l'ouvre comme d'un clic droit, main vide. */
+    private static void block(String name, String id) {
         ShotHarness.SHOTS.add(server(name, 30, player -> {
             UiNet.close(player);
-            as(player, command);
+            player.closeContainer();
+            Level level = player.level();
+            BlockPos pos = player.blockPosition().above(4);
+            Block block = BuiltInRegistries.BLOCK.getValue(Identifier.parse(id));
+            if (block == Blocks.AIR) {
+                LOG.error("dohy-shots: ECHEC bloc inconnu " + id);
+                return;
+            }
+            level.setBlock(pos, block.defaultBlockState(), 3);
+            BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.DOWN, pos, false);
+            InteractionResult result = player.gameMode.useItemOn(player, level, ItemStack.EMPTY,
+                    InteractionHand.OFF_HAND, hit);
+            LOG.info("dohy-shots: bloc " + id + " -> " + result);
         }));
     }
 
@@ -75,35 +80,38 @@ final class ShotSamples {
             command(player, "kill @e[type=minecraft:slime]");
             player.setGameMode(GameType.SURVIVAL);
             Economy.set(player, 125_000L);
+            player.getInventory().add(new ItemStack(Items.IRON_INGOT, 12));
+            player.getInventory().add(new ItemStack(Items.COAL, 20));
+            player.getInventory().add(new ItemStack(Items.OAK_LOG, 16));
+            player.getInventory().add(new ItemStack(Items.DIAMOND_SWORD));
+            player.getInventory().add(new ItemStack(Items.LAPIS_LAZULI, 9));
+            player.getInventory().add(new ItemStack(Items.NETHER_WART, 8));
+            player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE, 3));
+            player.giveExperienceLevels(30);
         }));
-        ShotHarness.SHOTS.add(client("b1_pause", 20, () -> Minecraft.getInstance().gui.setScreen(new KitPauseScreen())));
-        ShotHarness.SHOTS.add(client("b2_inventaire", 20,
-                () -> Minecraft.getInstance().gui.setScreen(new KitInventoryScreen(Minecraft.getInstance().player))));
-        ShotHarness.SHOTS.add(client("b3_atlas", 60, () -> Minecraft.getInstance().gui.setScreen(new AtlasScreen())));
-        ShotHarness.SHOTS.add(client("b4_ferme", 10, () -> Minecraft.getInstance().gui.setScreen(null)));
-        typed("c01_pet", "pet");
-        typed("c02_profil", "profil");
-        typed("c03_luckypass", "luckypass");
-        typed("c04_pass", "pass");
-        typed("c05_rapport", "rapport");
-        typed("c06_clicker", "clicker");
-        typed("c07_casino", "casino");
-        typed("c08_calendrier", "calendrier");
-        typed("c09_bank", "bank");
-        typed("c10_museum", "museum");
-        typed("c11_collections", "collections");
-        typed("c12_contracts", "contracts");
-        typed("c13_trixium", "trixium");
-        typed("c14_faction", "f");
-        typed("c15_entreprises", "entreprises");
-        typed("c16_mines", "mines");
-        typed("c17_bots", "bots");
-        typed("c18_kit", "kit");
-        typed("c19_boutique", "boutique");
-        typed("c20_hdv", "hdv");
-        typed("c21_unesco", "unesco");
-        typed("c22_quetes", "quetes");
-        typed("c23_donjon", "donjon");
-        typed("c24_techno", "techno");
+        block("d01_etabli", "minecraft:crafting_table");
+        block("d02_four", "minecraft:furnace");
+        block("d03_haut_fourneau", "minecraft:blast_furnace");
+        block("d04_coffre", "minecraft:chest");
+        block("d05_ender", "minecraft:ender_chest");
+        block("d06_tonneau", "minecraft:barrel");
+        block("d07_entonnoir", "minecraft:hopper");
+        block("d08_distributeur", "minecraft:dispenser");
+        block("d09_enchant", "minecraft:enchanting_table");
+        block("d10_enclume", "minecraft:anvil");
+        block("d11_alambic", "minecraft:brewing_stand");
+        block("d12_forgeron", "minecraft:smithing_table");
+        block("d13_meule", "minecraft:grindstone");
+        block("d14_tailleur", "minecraft:stonecutter");
+        block("d15_metier", "minecraft:loom");
+        block("d16_cartographie", "minecraft:cartography_table");
+        block("d17_crusher", "palamod:crusher");
+        block("d18_four_pala", "palamod:paladium_furnace");
+        block("d19_coffre_pala", "palamod:paladium_chest");
+        block("d20_palamachine", "palamod:palamachine");
+        block("d21_cryo", "dohy:cryo_chamber");
+        block("d22_palette", "dohy:palette");
+        block("d23_ender_pala", "palamod:paladium_ender_chest");
+        block("d24_grinder", "palamod:grinder");
     }
 }

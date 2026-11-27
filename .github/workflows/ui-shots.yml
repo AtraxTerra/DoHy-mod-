@@ -1,9 +1,9 @@
 name: ui-shots
-# Temporaire : tour des ecrans avant leur epuration.
+# Temporaire : tour des conteneurs et des machines.
 # dedie, puis client sous Xvfb ; pousse le tout sur shots-out.
 on:
   push:
-    branches: [tmp/shots-ecrans]
+    branches: [tmp/shots-conteneurs]
 permissions:
   contents: write
 jobs:
