@@ -53,7 +53,7 @@ public final class Nav {
                     new Item("ameliorations", "Ameliorations", () -> new ItemStack(Items.NETHER_STAR), "upgrades"),
                     new Item("rpg", "Profil RPG", () -> new ItemStack(Items.TOTEM_OF_UNDYING), "rpg"),
                     new Item("familier", "Familier",
-                            () -> new ItemStack(fr.atraxterra.dohy.palamod.pet.PalaPets.PET_CAGE_ITEM.get()), "pet"))),
+                            () -> new ItemStack(fr.atraxterra.dohy.palamod.pet.PalaPets.PET_SNACK.get()), "pet"))),
             new Group("NATION", List.of(
                     new Item("faction", "Ma nation", () -> new ItemStack(Items.BANNER.pick(DyeColor.RED)), "faction"),
                     new Item("trixium", "Concours Trixium",

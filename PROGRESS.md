@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-26
+Dernière mise à jour : 2026-11-27
 
 ---
 
@@ -194,6 +194,21 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-27 — l'écran du familier épuré
+
+**Demande** : épurer les écrans un par un, sans rien retirer (suite du moteur Zephyr).
+
+- **Tour des écrans** en captures : les menus dans la coque sont cohérents ; s'en écartent le
+  familier (cadre à filets), le profil RPG, le clicker et le Lucky Pass, ces trois derniers
+  repris de Paladium et laissés tels quels.
+- **Familier** (`PetScreen`) : dans la coque des menus, entrée Familier dans la barre latérale
+  (`Nav`, `HubController` : cible `pet`). Fiche à gauche, emplacements et compétences à droite,
+  consigne à côté des onglets ; sans familier, étapes numérotées et légende des raretés.
+  `INTERFACES.md`, « L'épuration des écrans ».
+
+**Vérifié** : captures avant et après, sans familier, avec (renard patronus niveau 30), avec un
+emplacement choisi sur l'onglet des actives, et l'accueil avec la nouvelle entrée.
 
 ### 2026-11-27 — le moteur Zephyr des interfaces
 
