@@ -1,9 +1,9 @@
 name: ui-shots
-# Temporaire : tour des ecrans avant leur epuration.
+# Temporaire : table d'enchantement, enclume, alambic au style du kit.
 # dedie, puis client sous Xvfb ; pousse le tout sur shots-out.
 on:
   push:
-    branches: [tmp/shots-ecrans]
+    branches: [tmp/shots-etablis]
 permissions:
   contents: write
 jobs:
