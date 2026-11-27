@@ -351,7 +351,8 @@
         {
           "title": "Vendre vite",
           "text": [
-            "Tout vendre, ou le coffre de vente : depose, ferme, c'est vendu ; le reste te revient. L'autosell vend tout seul."
+            "Tout vendre, ou le coffre de vente : depose, ferme, c'est vendu ; le reste te revient. L'autosell vend tout seul.",
+            "- Un tiroir plein (Storage Drawers) : coffre de vente, /sell hand ou Tout vendre en vendent le contenu, et le tiroir te revient."
           ]
         }
       ],
