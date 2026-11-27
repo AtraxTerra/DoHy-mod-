@@ -45,12 +45,12 @@ public final class FarmlandMenu extends MenuController {
             case HAMLET -> "Villageois";
             case MUSHROOM -> "Champimeuh";
             case HILLS -> "Chevres, et une grotte";
-            case JUNGLE -> "Pandas, perroquets, elephants";
-            case LAKE -> "Dauphins";
+            case JUNGLE -> "Elephants, pandas";
+            case LAKE -> "Dauphins, gardiens";
             case BEACH -> "Tortues";
-            case SWAMP -> "Slimes, sorcieres";
-            case NETHER -> "Piglins, magma, wither, ghasts";
-            case END -> "Endermen";
+            case SWAMP -> "Sorcieres, slimes";
+            case NETHER -> "Blazes, wither, ghasts";
+            case END -> "Endermen, shulkers";
             default -> "";
         };
     }
@@ -125,7 +125,7 @@ public final class FarmlandMenu extends MenuController {
             }
             zones.add(Card.of(icon(zone), zone.label(), List.of(brief(zone),
                             count > 0 ? count + " sur place (" + cap + " au plus)" : cap + " au plus"))
-                    .accent(color(zone)).tooltip(List.of(zone.creatures())));
+                    .accent(color(zone)).tooltip(List.of(zone.creatures().split(" ; "))));
         }
 
         List<MenuView.Stat> stats = List.of(

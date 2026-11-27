@@ -556,26 +556,48 @@ dimension (`farmland_built`) ; la changer la fait vider et redessiner.
 
 ### Les créatures
 
-`FarmlandSpawner` : toutes les deux secondes, près de chaque joueur, jusqu'à trois créatures
-arrivent à 14-72 blocs (jamais à moins de 10 d'un joueur), dans le coin qui en manque le plus.
-Plafonds pour toute la carte, 110 créatures au plus :
+`FarmlandSpawner` : toutes les deux secondes, près de chaque joueur, jusqu'à six créatures
+arrivent à 14-72 blocs (jamais à moins de 10 d'un joueur). Chacune est tirée parmi les réserves
+à sa portée — un coin dont une colonne est à 14-72 blocs de lui, la grotte à moins de 96 —,
+d'autant plus qu'il leur en manque. Plafonds pour toute la carte, 200 créatures au plus :
 
 | Réserve | Coin | Plafond | Espèces (poids) |
 |---|---|---|---|
-| foret | forêt | 14 | zombie 30, squelette 25, araignée 20, creeper 15, sorcière 6 |
-| foret_betes | forêt | 6 | loup 3, lapin 4 |
-| prairie | prairie | 16 | vache 10, mouton 10, poule 8, cheval 4, âne 2, lapin 3 |
+| foret | forêt | 28 | zombie 30, squelette 25, araignée 20, creeper 15, sorcière 6 |
+| foret_betes | forêt | 10 | loup 3, lapin 7 |
+| prairie | prairie | 32 | vache 10, mouton 10, poule 8, cochon 8, lapin 3 |
+| prairie_chevaux | prairie | 3 | cheval 2, âne 1 |
 | hameau | hameau | 4 | villageois |
 | champignons | champignons | 4 | champimeuh |
 | collines | collines | 4 | chèvre |
-| grotte | salle et tunnel | 5 | araignée venimeuse |
-| jungle | jungle | 7 | panda 3, perroquet 4, éléphant 2 |
+| grotte | salle et tunnel | 10 | araignée venimeuse |
+| grotte_chauves_souris | salle et tunnel | 5 | chauve-souris |
+| grotte_soufre | salle et tunnel | 3 | cube de soufre |
+| jungle | jungle | 5 | panda 3, perroquet 4 |
+| jungle_elephants | jungle | 5 | éléphant |
 | lac | eau profonde | 3 | dauphin |
+| lac_gardiens | eau profonde | 6 | gardien |
 | plage | plage | 4 | tortue |
-| marais | marais | 6 | slime 4, sorcière 2 |
-| nether | coin du Nether | 11 | piglin zombifié 6, cube de magma 4, squelette wither 3 |
-| nether_ciel | au-dessus du Nether | 2 | ghast |
-| end | coin de l'End | 6 | enderman |
+| marais | marais | 12 | slime 1, sorcière 2 |
+| nether | coin du Nether | 24 | squelette wither 6, blaze 5, cube de magma 5, piglin zombifié 4 |
+| nether_brutes | coin du Nether | 2 | brute piglin (elle ne se change pas en piglin zombifié) |
+| nether_ciel | au-dessus du Nether | 4 | ghast |
+| end | coin de l'End | 12 | enderman |
+| end_shulkers | coin de l'End | 4 | shulker |
+| monture_prairie, monture_collines, monture_foret | prairie, collines, forêt | 1 chacune | Dancarok, Ravirok, Tedarok |
+
+**Plus de créatures du métier (2026-11-25).** Celles qui rapportent de l'XP de Chasseur ou
+d'Alchimiste passent d'environ 53 à 145 sur la carte : plafonds doublés ou plus, et sept espèces
+du barème qui manquaient (cochon, niveau 15 ; cube de soufre, 50 ; chauve-souris et gardien, 60 ;
+blaze, shulker et brute piglin, 80). Les autres (loups, chevaux, ânes, villageois, champimeuh,
+chèvres, pandas, perroquets, dauphins, tortues, slimes, piglins zombifiés, montures) gardent
+leurs nombres. Avant, chaque essai tirait une réserve sur toute la carte, et ceux qui visaient
+un coin hors de portée du joueur (souvent vide : les monstres disparaissent à 128 blocs de lui)
+se perdaient. Mesuré en CI, même scénario avant et après — après quatre minutes de remplissage,
+un chasseur tue pendant une minute, toutes les deux secondes, tout ce qui rapporte à moins de
+72 blocs : forêt 63 → 236 créatures, prairie 75 → 272, Nether 85 → 331 (dont 126 cubes de
+magma, qui se divisent) ; au départ, autour de lui, 30 → 84, 24 → 93 et 19 → 70. Le tick moyen
+du serveur intégré reste entre 12 et 17 ms.
 
 En paisible, seulement les animaux. Ces créatures naissent « naturelles » : le Chasseur en tire
 toute son XP. Les animaux (et les villageois) qu'aucun joueur n'a frappés, nourris, apprivoisés,

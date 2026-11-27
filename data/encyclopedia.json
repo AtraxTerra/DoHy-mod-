@@ -3949,11 +3949,11 @@
           "title": "Ce qui y apparait",
           "text": [
             "- Foret : zombies, squelettes, araignees, creepers, sorcieres, loups, lapins, un Tedarok.",
-            "- Prairie : vaches, moutons, poules, chevaux, anes, lapins, un Dancarok. Hameau : villageois. Champignons : champimeuh.",
-            "- Collines : chevres, un Ravirok ; grotte : araignees venimeuses.",
+            "- Prairie : vaches, moutons, poules, cochons, lapins, chevaux, anes, un Dancarok. Hameau : villageois. Champignons : champimeuh.",
+            "- Collines : chevres, un Ravirok ; grotte : araignees venimeuses, chauves-souris, cubes de soufre.",
             "- Jungle : pandas, perroquets, elephants.",
-            "- Lac : dauphins. Plage : tortues. Marais : slimes, sorcieres.",
-            "- Nether : piglins zombifies, cubes de magma, squelettes wither, ghasts. End : endermen.",
+            "- Lac : dauphins, gardiens. Plage : tortues. Marais : sorcieres, slimes.",
+            "- Nether : squelettes wither, blazes, cubes de magma, piglins zombifies, brutes piglins, ghasts. End : endermen, shulkers.",
             "! Toujours jour ; les morts-vivants n'y brulent pas."
           ]
         }
