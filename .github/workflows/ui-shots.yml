@@ -1,9 +1,9 @@
 name: ui-shots
-# Temporaire : tour des ecrans avant leur epuration.
+# Temporaire : l'ecran du familier, avant et apres.
 # dedie, puis client sous Xvfb ; pousse le tout sur shots-out.
 on:
   push:
-    branches: [tmp/shots-ecrans]
+    branches: [tmp/shots-familier]
 permissions:
   contents: write
 jobs:

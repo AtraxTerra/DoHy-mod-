@@ -1,9 +1,8 @@
 package fr.atraxterra.dohy.client;
 
 import com.mojang.logging.LogUtils;
-import fr.atraxterra.dohy.client.atlas.AtlasScreen;
-import fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
-import fr.atraxterra.dohy.client.ui.vanilla.KitPauseScreen;
+import fr.atraxterra.dohy.client.pet.PetScreen;
+import fr.atraxterra.dohy.client.pet.PetScreenOld;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import java.util.function.Consumer;
@@ -14,7 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 import org.slf4j.Logger;
 
-/** Temporaire : le tour des ecrans, avant leur epuration. */
+/** Temporaire : l'ecran du familier, avant et apres son passage dans la coque. */
 final class ShotSamples {
     private static final Logger LOG = LogUtils.getLogger();
 
@@ -59,11 +58,14 @@ final class ShotSamples {
         server.getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
     }
 
-    private static void typed(String name, String command) {
-        ShotHarness.SHOTS.add(server(name, 30, player -> {
-            UiNet.close(player);
-            as(player, command);
-        }));
+    /** L'ancien ecran, sur la meme vue. */
+    private static void old() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.gui.screen() instanceof PetScreen screen) {
+            minecraft.gui.setScreen(new PetScreenOld(screen.shotView()));
+        } else {
+            LOG.error("dohy-shots: ECHEC pas d'ecran du familier : " + minecraft.gui.screen());
+        }
     }
 
     static void register() {
@@ -73,37 +75,35 @@ final class ShotSamples {
             command(player, "difficulty peaceful");
             command(player, "gamerule doDaylightCycle false");
             command(player, "kill @e[type=minecraft:slime]");
+            command(player, "execute as @p run pet admin reset");
             player.setGameMode(GameType.SURVIVAL);
             Economy.set(player, 125_000L);
         }));
-        ShotHarness.SHOTS.add(client("b1_pause", 20, () -> Minecraft.getInstance().gui.setScreen(new KitPauseScreen())));
-        ShotHarness.SHOTS.add(client("b2_inventaire", 20,
-                () -> Minecraft.getInstance().gui.setScreen(new KitInventoryScreen(Minecraft.getInstance().player))));
-        ShotHarness.SHOTS.add(client("b3_atlas", 60, () -> Minecraft.getInstance().gui.setScreen(new AtlasScreen())));
-        ShotHarness.SHOTS.add(client("b4_ferme", 10, () -> Minecraft.getInstance().gui.setScreen(null)));
-        typed("c01_pet", "pet");
-        typed("c02_profil", "profil");
-        typed("c03_luckypass", "luckypass");
-        typed("c04_pass", "pass");
-        typed("c05_rapport", "rapport");
-        typed("c06_clicker", "clicker");
-        typed("c07_casino", "casino");
-        typed("c08_calendrier", "calendrier");
-        typed("c09_bank", "bank");
-        typed("c10_museum", "museum");
-        typed("c11_collections", "collections");
-        typed("c12_contracts", "contracts");
-        typed("c13_trixium", "trixium");
-        typed("c14_faction", "f");
-        typed("c15_entreprises", "entreprises");
-        typed("c16_mines", "mines");
-        typed("c17_bots", "bots");
-        typed("c18_kit", "kit");
-        typed("c19_boutique", "boutique");
-        typed("c20_hdv", "hdv");
-        typed("c21_unesco", "unesco");
-        typed("c22_quetes", "quetes");
-        typed("c23_donjon", "donjon");
-        typed("c24_techno", "techno");
+        ShotHarness.SHOTS.add(server("p1_sans", 30, player -> {
+            UiNet.close(player);
+            as(player, "pet");
+        }));
+        ShotHarness.SHOTS.add(client("p2_sans_avant", 20, ShotSamples::old));
+        ShotHarness.SHOTS.add(server("p3_avec", 40, player -> {
+            UiNet.close(player);
+            command(player, "execute as @p run pet admin tame fox_patronus");
+            command(player, "execute as @p run pet admin xp 30000");
+            command(player, "execute as @p run pet admin happiness 150");
+            as(player, "pet");
+        }));
+        ShotHarness.SHOTS.add(client("p4_avec_avant", 20, ShotSamples::old));
+        ShotHarness.SHOTS.add(server("p5_avec_choix", 30, player -> {
+            UiNet.close(player);
+            as(player, "pet");
+        }));
+        ShotHarness.SHOTS.add(client("p6_actives", 20, () -> {
+            if (Minecraft.getInstance().gui.screen() instanceof PetScreen screen) {
+                screen.shotSelect(2, true);
+            }
+        }));
+        ShotHarness.SHOTS.add(server("p7_hub", 30, player -> {
+            UiNet.close(player);
+            as(player, "menu");
+        }));
     }
 }

@@ -139,6 +139,17 @@ public class PetScreen extends UiScreen implements ViewScreen<PetView> {
         return PetView.ID;
     }
 
+    /** Temporaire (captures) : la vue affichee. */
+    public PetView shotView() {
+        return view;
+    }
+
+    /** Temporaire (captures) : un emplacement choisi, et l'onglet. */
+    public void shotSelect(int slot, boolean active) {
+        selected = slot;
+        actives = active;
+    }
+
     @Override
     public void accept(PetView next) {
         this.view = next;
