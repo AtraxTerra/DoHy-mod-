@@ -73,5 +73,23 @@
     "sounds": [
       "palamod:funny_wither/invoke"
     ]
+  },
+  "snake.living": {
+    "subtitle": "subtitles.palamod.snake.living",
+    "sounds": [
+      "palamod:mob/snake/snake_living"
+    ]
+  },
+  "snake.hurt": {
+    "subtitle": "subtitles.palamod.snake.hurt",
+    "sounds": [
+      "palamod:mob/snake/snake_hurt"
+    ]
+  },
+  "snake.death": {
+    "subtitle": "subtitles.palamod.snake.death",
+    "sounds": [
+      "palamod:mob/snake/snake_death"
+    ]
   }
 }

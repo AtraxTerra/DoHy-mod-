@@ -92,7 +92,8 @@ public class GodPickaxeItem extends Item {
         if (!level.isClientSide() && miner instanceof Player
                 && (state.isSolidRender() || state.is(BlockTags.LEAVES))
                 && state.getDestroySpeed(level, pos) > 0.0f) {
-            addXp(stack, 1.0d, level.registryAccess());
+            // Le familier : « Pioche experimentee », plus d'XP par bloc.
+            addXp(stack, fr.atraxterra.dohy.palamod.unlock.PetHooks.godPickaxeXp(miner, 1.0d), level.registryAccess());
         }
         return true;
     }

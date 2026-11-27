@@ -1336,5 +1336,22 @@
   "message.palamod.type_machine.engraved": "Plaque gravee : %s niveaux depenses.",
   "hud.palamod.print_press.ink": "%s encres",
   "hud.palamod.print_press.books": "%s livres",
-  "hud.palamod.type_machine.cost": "Gravure : %s niveaux"
+  "hud.palamod.type_machine.cost": "Gravure : %s niveaux",
+  "block.palamod.pet_cage": "Cage a familier",
+  "item.palamod.pet_bait": "Appat a familier",
+  "item.palamod.pet_snack": "Friandise pour familier",
+  "item.palamod.pet_xp_small": "Petite potion d'XP de familier",
+  "item.palamod.pet_xp_medium": "Moyenne potion d'XP de familier",
+  "item.palamod.pet_xp_big": "Grande potion d'XP de familier",
+  "item.palamod.snake_spawn_egg": "Oeuf d'apparition de serpent",
+  "item.palamod.snail_spawn_egg": "Oeuf d'apparition d'escargot",
+  "entity.palamod.snake": "Serpent",
+  "entity.palamod.snail": "Escargot",
+  "tooltip.palamod.pet_snack": "Clic droit : ton familier la croque (+%s bonheur, quete du jour)",
+  "tooltip.palamod.pet_xp": "A boire : +%s XP pour ton familier",
+  "tooltip.palamod.pet_bait": "Clic droit sur ta cage a familier : 5 minutes de piege",
+  "key.dohy.pet_wheel": "Roue du familier",
+  "subtitles.palamod.snake.living": "Le serpent siffle",
+  "subtitles.palamod.snake.hurt": "Le serpent est blesse",
+  "subtitles.palamod.snake.death": "Le serpent meurt"
 }

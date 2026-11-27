@@ -215,6 +215,8 @@ public final class JobApi {
         if (after > before) {
             for (int level = before + 1; level <= after; level++) {
                 reward(player, job, level);
+                // Le familier gagne de l'XP a chaque niveau de metier franchi.
+                fr.atraxterra.dohy.palamod.pet.PetApi.onJobLevel(player, level);
             }
             ContractApi.grantGlobalXp(player, (after - before) * 20L, "niveau de metier");
             ContractApi.progress(player, ContractType.JOB_LEVELS, target -> true, after - before);

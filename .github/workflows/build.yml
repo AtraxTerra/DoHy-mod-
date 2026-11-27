@@ -265,13 +265,14 @@ jobs:
         run: python3 -I tools/create_recipes.py --check
 
       # Les trones (geometrie de ModelJobThrone, objet en 3D, recettes, butin), les
-      # potions d'XP de metier et l'imprimerie (presse, table d'ecriture) sont generes
-      # de la meme facon.
-      - name: Les trones, les potions d'XP et l'imprimerie doivent etre a jour
+      # potions d'XP de metier, l'imprimerie (presse, table d'ecriture) et les familiers
+      # (geometrie, cage, objets, biomes, noms) sont generes de la meme facon.
+      - name: Les trones, les potions d'XP, l'imprimerie et les familiers doivent etre a jour
         run: |
           python3 -I tools/throne_assets.py --check
           python3 -I tools/xp_potion_assets.py --check
           python3 -I tools/press_assets.py --check
+          python3 -I tools/pet_assets.py --check
 
       # Les grandes machines de l'agriculture : textures, modeles coupes case par case,
       # etats, miniatures, pieces mobiles et le Java des formes, tout est genere.

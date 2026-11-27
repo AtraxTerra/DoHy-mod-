@@ -73,6 +73,9 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
     /** Poussees deja payees sur le lingot en cours. */
     private int boosts;
 
+    /** Poussees offertes par le familier (« Pousse amelioree »), payees avant le carburant. */
+    private int bonus;
+
     private long nextGrowth;
     private long nextScan;
 
@@ -237,6 +240,10 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
 
     /** Compte une poussee, et consomme un lingot quand le compte est atteint. */
     private void charge() {
+        if (bonus > 0) {
+            bonus--;
+            return;
+        }
         boosts++;
         if (boosts < BOOSTS_PER_INGOT) {
             return;
@@ -253,6 +260,7 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
         super.loadAdditional(input);
         fuel = input.read("Fuel", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         boosts = input.getIntOr("Boosts", 0);
+        bonus = input.getIntOr("Bonus", 0);
         // Les echeances ne sont pas sauvegardees : le temps de jeu repart d'ou
         // il s'etait arrete, mais rien ne garantit que ces valeurs aient un
         // sens relatif a lui apres un changement de monde. Les remettre a zero
@@ -269,5 +277,14 @@ public class TotemBlockEntity extends BlockEntity implements ServerTicking {
             output.store("Fuel", ItemStack.CODEC, fuel);
         }
         output.putInt("Boosts", boosts);
+        output.putInt("Bonus", bonus);
+    }
+
+    /** « Pousse amelioree » : un lingot pose par ce joueur dure plus longtemps. */
+    public void addBonus(int boostsOffered) {
+        if (boostsOffered > 0) {
+            bonus += boostsOffered;
+            setChanged();
+        }
     }
 }

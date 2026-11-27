@@ -142,6 +142,9 @@ public final class PalaMachineEvents {
                 return true;
             }
             held.shrink(1);
+            // Le familier : « Pousse amelioree », le lingot dure plus longtemps.
+            totem.addBonus(fr.atraxterra.dohy.palamod.unlock.PetHooks.totemBonus(player,
+                    TotemBlockEntity.BOOSTS_PER_INGOT));
             fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "totem:fuel", 1);
             player.level().playSound(null, totem.getBlockPos(),
                     SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.7f, 1.2f);

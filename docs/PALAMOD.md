@@ -4655,3 +4655,106 @@ relevée boîte par boîte (miroir compris) par `tools/press_assets.py`, qui éc
 - **La plaque d'impression** s'empile par 64 (une par case dans PalaMod, mais la table en gardait 64).
 - **Le mouvement** suit le temps du jeu (un cycle d'une seconde et demie) au lieu d'avancer à chaque
   image.
+
+## 46. Les familiers (2026-11-26)
+
+Demandés le 2026-11-26 (point 2 de la liste des manques, « Familiers », avec le serpent et
+l'escargot comme sources d'appât). Règles : le wiki de Paladium (« Java | Familiers »,
+« Java | Compétences actives », « Java | Compétences passives »). Bytecode de PalaMod 10.3.0 :
+`EntitySnake`, `EntitySnail`, `ModelSnake`, `ModelSnail`, `RenderSnake`, `RenderSnail`,
+`HunterRegisterer`, et le pont `modules/apet` (`PetLootListener`, `LuckyMinerSkill` et
+`LuckyMinerListener`, `AutoHarvestSkill`, `BlessedGrowthSkill`, `ElectricCloudSkill`,
+`MiningFortuneListener`, `PortableCoffinListener`). Le reste du système de Paladium (le plugin
+`fr.paladium.pet`) n'est pas dans le jar : il est refait d'après le wiki.
+
+**Les trois familiers sont propres au mod** : Paladium a les siens (noms et dessins), ils ne sont
+pas repris. **Pyrolynx** (un petit lynx gris cendre aux pointes couleur braise), **Mordillon** (un
+chiot brun et crème au foulard rouge) et **Feu-follet** (une flammèche bleue qui flotte). Boîtes,
+couleurs et portraits : `tools/pet_assets.py`.
+
+### Le serpent et l'escargot
+
+| | Serpent | Escargot |
+|---|---|---|
+| Classe | monstre, 20 PV, vitesse 0,3, 10 dégâts, poison 5 s à la morsure | créature, 1 PV, vitesse 0,15 |
+| Taille | 4 × 1 (`setSize(4F, 1F)`) | 1,1 × 0,9 |
+| Comportement | attaque le joueur à vue | s'écarte à 3 blocs, panique si frappé |
+| Appât (`PetLootListener`) | 75 % si un joueur le tue | 25 % |
+| Trophée | venin, `nextInt(1000) < 4`, puis 0 à 2 (+ Butin) | coquille, idem |
+| XP de Chasseur (`HunterRegisterer` au rapport des animaux) | 810 dès le niveau 75 | 170 dès le niveau 0 |
+| Où | la nuit : jungles, marais, déserts, savanes | le jour : forêts, plaines, marais |
+
+Modèles et textures de PalaMod (`tools/modelbase2java.py`), animations de `setRotationAngles` ;
+sons du serpent du jar.
+
+### La cage et l'apprivoisement
+
+- **Cage à familier** : `STS / TCT / STS` (bâtons et lingots de titane, améthyste compressée),
+  Chasseur niveau 15 (le 3 de PalaJobs). Seul celui qui l'a posée s'en sert.
+- **Appât** : la cage est chargée 5 minutes ; toutes les 2 minutes, 5 % de chances qu'un familier
+  (tiré parmi les trois) y entre. Le maître est prévenu où qu'il soit et a 5 minutes pour venir.
+- **Apprivoisement** : un mini-jeu proche de la pêche. Vert +50, jaune +25, rouge −50, noir −150 ;
+  trois paliers de 100, 200 et 400 points ; 2 minutes entre deux paliers, puis 7 minutes pour
+  revenir. Retombé à 0 au palier 1, la cage casse ; aux paliers 2 et 3, retour au palier d'avant.
+  Réussi : le familier, pour toujours, et 5 000 XP de Chasseur.
+
+### Le familier
+
+- `/pet` : niveau (1 à 100, 250 + 50 × niveau XP pour le suivant), bonheur (0 à 200, plafond de
+  50 au niveau 1 à 200 au niveau 100), vingt emplacements (un tous les 5 niveaux), quêtes du jour,
+  visible ou caché.
+- **Bonheur** : multiplicateur des compétences (bonheur / 100). −25 si les quatre quêtes du jour
+  manquent à minuit (heure de Paris) ; figé à 200 au niveau 100.
+- **XP** : quêtes (250 à 400 chacune, et +10 de bonheur), 1 000 à la première connexion du jour,
+  20 × le niveau atteint à chaque niveau de métier, friandise, potions d'XP de familier (1 000,
+  5 000, 20 000).
+- **Quêtes** (quatre tirées par jour) : s'immerger, donner une friandise, marcher, passer du temps
+  avec lui, vaincre des monstres, miner, récolter, pêcher, sauter.
+- **Sur l'épaule droite** : les terrestres assis, le volant à côté ; visible des autres joueurs.
+
+### Les compétences
+
+Valeurs et paliers du wiki (au niveau de déblocage puis 20, 40, 60, 80, 100), multipliées par le
+bonheur. Une compétence posée reste 24 heures ; une à six actives, lancées par la **roue** (touche
+R tenue, viser, relâcher).
+
+- **Passives** : Aviateur et Expert aérien (deltaplane), Bonne pioche, Chimiste en herbe, Estomac
+  sur pattes, Expert agronome, Extracteur miraculeux, Marche rapide, Pêcheur avisé, Pioche
+  expérimentée, Poids plume, Point vital, Absorbeur d'expérience, Aimanté, Artisan de la croquette,
+  Broyeur acéré, Chance florale, Géologie, Familier autosuffisant, Portail magique, Récupération
+  boostée, Cercueil portable, Pousse améliorée, Recul puissant, Expert légendaire.
+- **Actives** : Faux tournoyante (récolte et replante, la récolte dans l'inventaire), Hache
+  gravitationnelle (bûches de PalaMod), Mineur chanceux (le prochain minerai monte d'un cran :
+  charbon → fer → or → diamant → émeraude, améthyste → titane → paladium → paladium vert →
+  findium), Nuage électrique, Tueur de monstres (9 cœurs), Bonheur de poche, Enchanté (enclume et
+  gravure), Pioche incassable (obsidienne), Bénédiction de la terre, Changement rapide, Explosion !,
+  Explosion bénie, Réparo !, Vétérinaire adroit, Foreuse à bedrock.
+
+### Code
+
+- `palamod/pet/` : `PalaPets` (registres), `PetData`, `PetLook`, `PetApi`, `PetSkill`, `Familiar`,
+  `PetMission`, `PetActives`, `PetEvents`, `PetTaming` et `TamingView`, `PetMenu`, `PetView`,
+  `PetWheelView`, `PetNet`, `PetCommand`, `PetCageBlock(Entity)`, `Snake`, `Snail`, `PetEntities`,
+  les objets.
+- `palamod/unlock/PetHooks` : ce que les passives changent aux machines et objets de PalaMod
+  (crusher, cobblebreaker, croquettes, totem, portail, chaudron, extracteur, pierres légendaires,
+  pioche des dieux, deltaplane, knocker, spawners, étable, table d'écriture).
+- Client : `client/pet/` (modèles, rendus, épaule, cage, menus, roue, apprivoisement).
+- Assets : `tools/pet_assets.py` (`--check` en CI, `--jar` recopie textures et sons de PalaMod) ;
+  XP de Chasseur : `tools/bedrock_jobs.py`.
+- Encyclopédie : la fiche « Les familiers ».
+
+### Écarts
+
+- **Les trois familiers** : créatures propres au mod (voir plus haut).
+- **La roue** : touche R par défaut ; le wiki dit MAJ, qui fait déjà s'accroupir (réglable).
+- **Les points de départ** : le wiki ne les donne pas ; chaque palier part de 50.
+- **Nuage électrique** : comme le pont de PalaMod, des éclairs autour du joueur ; casque en fer ou
+  en or et fiole vide en main, chaque éclair a 15 % de chances d'en faire une potion de foudre.
+- **Explosion !** : 4 096 blocs au plus, sans rien laisser, jamais dans le claim d'un autre.
+- **Machines qui ne savent pas qui s'en sert** (extracteur, spawner soufflé) : le joueur le plus
+  proche, à 32 blocs.
+- **Enchanté** : réduit l'enclume et la gravure de la table d'écriture (pas la table
+  d'enchantement, dont le coût n'est que de 1 à 3 niveaux).
+- **Le serpent et l'escargot vivent dans des biomes** : PalaMod ne les faisait apparaître qu'aux
+  œufs et aux événements.

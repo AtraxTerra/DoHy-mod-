@@ -5550,6 +5550,66 @@
           "palamod:enchanted_plate"
         ]
       }
+    },
+    {
+      "id": "familiers",
+      "category": "palamod",
+      "order": 24,
+      "icon": "palamod:pet_cage",
+      "title": "Les familiers",
+      "card": [
+        "Une cage, un appat,",
+        "un compagnon pour toujours"
+      ],
+      "summary": [
+        "Une cage a familier, un appat tire d'un serpent ou d'un escargot, puis trois paliers d'apprivoisement : le familier s'installe sur ton epaule, gagne des niveaux et porte jusqu'a vingt competences."
+      ],
+      "sections": [
+        {
+          "title": "Attirer un familier",
+          "text": [
+            "La cage (Chasseur niveau 15) : quatre batons et quatre lingots de titane autour d'une amethyste compressee. Seul celui qui l'a posee s'en sert ; les autres ne peuvent que la casser.",
+            "L'appat tombe des serpents (75 %) et des escargots (25 %) tues par un joueur. Le serpent vit la nuit dans les jungles, les marais, les deserts et les savanes ; l'escargot au jour dans les forets et les plaines.",
+            "Clic droit sur la cage avec l'appat : elle est chargee 5 minutes, et toutes les 2 minutes un familier a 5 % de chances d'y entrer. Tu es prevenu ou que tu sois, et tu as 5 minutes pour venir."
+          ]
+        },
+        {
+          "title": "L'apprivoiser",
+          "text": [
+            "Clic droit sur la cage : le curseur parcourt la barre, ESPACE l'arrete. Vert +50, jaune +25, rouge -50, noir -150. Trois paliers : 100, 200 puis 400 points, chacun partant de 50.",
+            "Deux minutes separent deux paliers ; il faut ensuite revenir dans les 7 minutes. Retombe a 0 au palier 1, la cage casse ; aux paliers 2 et 3, on revient au palier d'avant.",
+            "Reussi : le familier est a toi pour toujours (un seul par joueur), et 5 000 XP de Chasseur."
+          ]
+        },
+        {
+          "title": "Le faire grandir",
+          "text": [
+            "/pet ouvre son menu. Il monte du niveau 1 au niveau 100 : quatre quetes d'entretien par jour, 1 000 XP a la premiere connexion du jour, des XP a chaque niveau de metier, la friandise et les potions d'XP de familier.",
+            "Le bonheur (0 a 200) multiplie ses competences : 100 = x1, 200 = x2. Si les quatre quetes manquent a minuit, il perd 25.",
+            "Un emplacement de competence tous les 5 niveaux, vingt au plus. Une competence posee reste 24 heures."
+          ]
+        },
+        {
+          "title": "Ses competences",
+          "text": [
+            "Vingt-cinq passives jouent seules : vitesse de minage, de marche, chute amortie, aimant, peche, machines de PalaMod, cercueil a la mort...",
+            "Quinze actives, une a six posees, se lancent avec la roue : tiens R, vise, relache. Chacune a sa recharge.",
+            "- Faux tournoyante, Hache gravitationnelle, Mineur chanceux, Nuage electrique, Tueur de monstres, Bonheur de poche, Enchante, Pioche incassable, Benediction de la terre, Changement rapide, Explosion !, Explosion benie, Reparo !, Veterinaire adroit, Foreuse a bedrock."
+          ]
+        }
+      ],
+      "see": [
+        "objets_chasseur",
+        "machines"
+      ],
+      "discover": {
+        "items": [
+          "palamod:pet_cage",
+          "palamod:pet_bait",
+          "palamod:pet_snack",
+          "palamod:pet_xp_small"
+        ]
+      }
     }
   ]
 }

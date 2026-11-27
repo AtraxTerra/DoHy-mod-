@@ -282,6 +282,8 @@ public class PortalControllerBlockEntity extends BlockEntity {
         if (added == 0 && pollenAdded == 0) {
             return;
         }
+        // Le familier : « Portail magique », la seve versee compte davantage.
+        added = fr.atraxterra.dohy.palamod.unlock.PetHooks.portalSap(player, added);
         pollen += pollenAdded;
         int total = total() + added;
         int outputs = 0;

@@ -120,6 +120,9 @@ public final class PalaTab {
                         // L'imprimerie : la presse, la table d'ecriture et leurs fournitures.
                         fr.atraxterra.dohy.palamod.press.PalaPress.ORDERED
                                 .forEach(item -> output.accept(item.get()));
+                        // Les familiers : la cage, l'appat, la friandise, les potions et les oeufs.
+                        fr.atraxterra.dohy.palamod.pet.PalaPets.ORDERED
+                                .forEach(item -> output.accept(item.get()));
                         // Les potions d'XP de metier, dans leurs quatre durees.
                         fr.atraxterra.dohy.palamod.boost.PalaXpPotions.tab().forEach(output::accept);
                         // Les lucky blocks.

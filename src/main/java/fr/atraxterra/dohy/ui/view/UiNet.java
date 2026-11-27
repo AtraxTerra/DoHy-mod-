@@ -237,6 +237,13 @@ public final class UiNet {
                 fr.atraxterra.dohy.palamod.lucky.OneMillionView::handle);
         register(fr.atraxterra.dohy.palamod.dungeon.RpgView.ID, fr.atraxterra.dohy.palamod.dungeon.RpgView.STREAM_CODEC,
                 fr.atraxterra.dohy.palamod.dungeon.RpgMenu::handle);
+        register(fr.atraxterra.dohy.palamod.pet.PetView.ID, fr.atraxterra.dohy.palamod.pet.PetView.STREAM_CODEC,
+                fr.atraxterra.dohy.palamod.pet.PetMenu::handle);
+        register(fr.atraxterra.dohy.palamod.pet.PetWheelView.ID,
+                fr.atraxterra.dohy.palamod.pet.PetWheelView.STREAM_CODEC,
+                fr.atraxterra.dohy.palamod.pet.PetMenu::handleWheel);
+        register(fr.atraxterra.dohy.palamod.pet.TamingView.ID, fr.atraxterra.dohy.palamod.pet.TamingView.STREAM_CODEC,
+                fr.atraxterra.dohy.palamod.pet.PetTaming::handle);
         for (fr.atraxterra.dohy.ui.menu.MenuController menu : fr.atraxterra.dohy.ui.menu.Menus.all()) {
             register(menu.id(), MenuView.STREAM_CODEC, menu::handle);
         }
