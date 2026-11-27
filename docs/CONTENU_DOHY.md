@@ -240,6 +240,46 @@ et à la lave.
 Réglages : bloc `farming` et `tractor_level` de `data/agriculture.json` (réservoir, consommation,
 vitesses, capacités, portées, table des carburants).
 
+### Les grandes machines, à la manière de Create (2026-11-24)
+
+Demandé le 2026-11-24 (« pour l'agriculture (silo, moulin...) remplace les modèles par des plus
+gros blocs genre 3x3x5 avec des modèles 3D dans le thème de Create »). Six machines de la ferme
+quittent leur bloc pour une vraie construction :
+
+| Machine | Taille (l × p × h) | Ce qu'on voit | Ce qui tourne |
+|---|---|---|---|
+| Silo | 3 × 3 × 5 | tour de tôle ondulée cerclée de laiton, toit de cuivre à gradins, échelle, goulotte de remplissage, trappe de visite | la girouette d'aération, toujours |
+| Moulin | 3 × 3 × 4 | socle d'andésite, meule dormante, bâti de poutres, trémie à grain, moteur de laiton, sacs de farine | la meule, l'arbre et le grand engrenage, quand il travaille |
+| Machine à pain | 3 × 3 × 4 | four de briques à voûte, gueule cerclée de laiton, cheminée de cuivre, thermomètre, miches | la roue du pétrin ; la gueule rougeoie quand il cuit |
+| Biogénérateur | 3 × 3 × 3 | cuve de digestion en cuivre, trémie à fourrage, conduite de gaz, groupe électrogène et manomètre | le volant, quand il produit |
+| Machine à OGM | 3 × 3 × 3 | cuve vitrée de bouillon vert sous un portique, malaxeur, pupitre, éprouvettes | le fouet, toujours |
+| Pompe à carburant | 2 × 2 × 3 | cuve de cuivre à hublot, colonne de pompe et son compteur, tuyau et pistolet | — |
+
+- **Une commande et des parties** : le bloc posé reste la machine (son entité, son inventaire, ses
+  réglages, son propriétaire). Il se déploie (`formed=true`) et chaque autre case reçoit un bloc de
+  partie (`dohy:<machine>_part`) qui renvoie à la commande les clics, les capacités (objets,
+  énergie, fluide : entonnoirs, tuyaux et câbles de NTM ou de Create se branchent n'importe où sur
+  la machine) et l'objet de la pioche du créatif. Casser une partie casse la machine : elle tombe
+  en objet depuis sa commande, son contenu avec ; une partie retirée autrement (explosion) aussi.
+- **La place** : une machine ne se pose que si toutes ses cases sont libres (air, herbe, neige…),
+  sinon la pose est refusée et le joueur lit la taille qu'il lui faut. Le bloc posé est le centre
+  du socle (un coin pour la pompe) ; la machine regarde le joueur qui la pose.
+- **Les machines déjà posées** (un seul bloc) gardent leur petit modèle et marchent comme avant ;
+  un clic les déploie dès que la place autour est libre.
+- **Le biogénérateur** pousse son énergie depuis toute sa construction : ses voisins sont ceux de
+  toutes ses cases (pas ses propres parties, qui le renverraient à lui-même), et une machine qui le
+  touche par plusieurs cases n'est servie qu'une fois.
+- **Le dessin** est propre au mod, dans l'esprit de Create : pierre d'andésite cerclée de bois,
+  laiton, cuivre, tôle galvanisée, planches, engrenages ; rien n'est copié de Create.
+  `tools/agri_machine_assets.py` dessine les textures, découpe les modèles case par case (faces
+  intérieures retirées, textures calées sur la grille des blocs), écrit les états, les miniatures
+  d'objet (la machine entière en petit), les pièces mobiles (modèle d'entité rendu par
+  `BigMachineRenderer`) et le Java des formes (`BigMachineShapes`, `BigMachineGeometry`) ;
+  `--check` en CI, `--preview DOSSIER` pour des aperçus.
+- Code : `agri/machine/BigMachine` (tailles, repère, pose et retrait des parties),
+  `BigMachinePartBlock`, `BigMachines` (ce que font les commandes),
+  `client/agri/machine/BigMachineRenderer`.
+
 ### Le chanvre de NTM NEXT (2026-11-23)
 
 Demandé le 2026-11-23 (« trouve une utilité au chanvre du mod ntm next »). Dans NTM NEXT, le

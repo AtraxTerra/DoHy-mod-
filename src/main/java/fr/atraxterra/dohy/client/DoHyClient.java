@@ -134,6 +134,13 @@ public final class DoHyClient {
         // Le clone dans la cuve de la chambre cryogenique.
         event.registerBlockEntityRenderer(fr.atraxterra.dohy.cryo.DoHyCryo.CHAMBER_TYPE.get(),
                 fr.atraxterra.dohy.client.cryo.CryoChamberRenderer::new);
+        // Les pieces mobiles des grandes machines de l'agriculture (meule, volant, fouet...).
+        event.registerBlockEntityRenderer(fr.atraxterra.dohy.agri.DoHyAgri.SILO_TYPE.get(),
+                context -> new fr.atraxterra.dohy.client.agri.machine.BigMachineRenderer<>(context));
+        event.registerBlockEntityRenderer(fr.atraxterra.dohy.agri.DoHyAgri.MACHINE_TYPE.get(),
+                context -> new fr.atraxterra.dohy.client.agri.machine.BigMachineRenderer<>(context));
+        event.registerBlockEntityRenderer(fr.atraxterra.dohy.agri.DoHyAgri.GMO_TYPE.get(),
+                context -> new fr.atraxterra.dohy.client.agri.machine.BigMachineRenderer<>(context));
         event.registerEntityRenderer(PalaPillage.DYNAMITE_ENTITY.get(), ThrownItemRenderer::new);
         // TntRenderer est type sur PrimedTnt, dont PalaPrimedTnt herite : le
         // rendu ne lit que l'etat de bloc et la meche, communs aux deux.
@@ -164,6 +171,16 @@ public final class DoHyClient {
         event.registerLayerDefinition(ElephantModel.TEEN, ElephantGeometry::createBoneALayer);
         event.registerLayerDefinition(ElephantModel.ADULT, ElephantGeometry::createBoneBLayer);
         event.registerLayerDefinition(TractorModel.LAYER, TractorGeometry::createBodyLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.agri.machine.BigMachineGeometry.SILO,
+                fr.atraxterra.dohy.client.agri.machine.BigMachineGeometry::createSilo);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.agri.machine.BigMachineGeometry.FLOUR_MILL,
+                fr.atraxterra.dohy.client.agri.machine.BigMachineGeometry::createFlourMill);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.agri.machine.BigMachineGeometry.BREAD_MACHINE,
+                fr.atraxterra.dohy.client.agri.machine.BigMachineGeometry::createBreadMachine);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.agri.machine.BigMachineGeometry.BIOGENERATOR,
+                fr.atraxterra.dohy.client.agri.machine.BigMachineGeometry::createBiogenerator);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.agri.machine.BigMachineGeometry.GMO_MACHINE,
+                fr.atraxterra.dohy.client.agri.machine.BigMachineGeometry::createGmoMachine);
         event.registerLayerDefinition(fr.atraxterra.dohy.client.farmbot.FarmBotModel.LAYER,
                 fr.atraxterra.dohy.client.farmbot.FarmBotModel::createBodyLayer);
         event.registerLayerDefinition(fr.atraxterra.dohy.client.arrakis.HarvesterModel.LAYER,

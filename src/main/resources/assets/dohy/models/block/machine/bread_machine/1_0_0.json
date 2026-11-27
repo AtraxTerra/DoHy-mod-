@@ -1,0 +1,109 @@
+{
+  "textures": {
+    "andesite_casing": "dohy:block/machine/andesite_casing",
+    "bricks": "dohy:block/machine/bricks",
+    "iron": "dohy:block/machine/iron",
+    "oven_mouth": "dohy:block/machine/oven_mouth",
+    "particle": "dohy:block/machine/bricks"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1
+      ],
+      "to": [
+        16,
+        8,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#andesite_casing"
+        },
+        "up": {
+          "texture": "#andesite_casing"
+        },
+        "down": {
+          "texture": "#andesite_casing"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        8,
+        5
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bricks"
+        },
+        "down": {
+          "texture": "#bricks"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        12,
+        4
+      ],
+      "to": [
+        16,
+        16,
+        5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#oven_mouth"
+        },
+        "south": {
+          "texture": "#oven_mouth"
+        },
+        "west": {
+          "texture": "#oven_mouth"
+        },
+        "east": {
+          "texture": "#oven_mouth"
+        },
+        "down": {
+          "texture": "#oven_mouth"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        10,
+        2
+      ],
+      "to": [
+        16,
+        12,
+        5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#iron"
+        },
+        "south": {
+          "texture": "#iron"
+        },
+        "up": {
+          "texture": "#iron"
+        },
+        "down": {
+          "texture": "#iron"
+        }
+      }
+    }
+  ]
+}

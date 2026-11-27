@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "dohy:block/biogenerator"
+    "model": "dohy:item/machine/biogenerator"
   }
 }

@@ -1,18 +1,33 @@
 {
   "variants": {
-    "facing=north": {
-      "model": "dohy:block/fuel_pump"
-    },
-    "facing=east": {
+    "facing=east,formed=false": {
       "model": "dohy:block/fuel_pump",
       "y": 90
     },
-    "facing=south": {
+    "facing=east,formed=true": {
+      "model": "dohy:block/machine/fuel_pump/0_0_0",
+      "y": 90
+    },
+    "facing=north,formed=false": {
+      "model": "dohy:block/fuel_pump"
+    },
+    "facing=north,formed=true": {
+      "model": "dohy:block/machine/fuel_pump/0_0_0"
+    },
+    "facing=south,formed=false": {
       "model": "dohy:block/fuel_pump",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,formed=true": {
+      "model": "dohy:block/machine/fuel_pump/0_0_0",
+      "y": 180
+    },
+    "facing=west,formed=false": {
       "model": "dohy:block/fuel_pump",
+      "y": 270
+    },
+    "facing=west,formed=true": {
+      "model": "dohy:block/machine/fuel_pump/0_0_0",
       "y": 270
     }
   }

@@ -3971,6 +3971,14 @@
           ]
         },
         {
+          "title": "Les grandes machines",
+          "text": [
+            "- Silo 3 x 3 et 5 de haut, moulin et machine a pain 3 x 3 x 4, biogenerateur et machine a OGM 3 x 3 x 3, pompe 2 x 2 x 3 : il leur faut la place libre, sinon la pose est refusee.",
+            "- Un clic, un tuyau ou un cable sur n'importe quelle partie vaut pour toute la machine. En casser un morceau la rend en objet, avec son contenu.",
+            "- Leurs rouages tournent quand elles travaillent : la meule du moulin, la roue du petrin, le volant du biogenerateur."
+          ]
+        },
+        {
           "title": "En vente",
           "text": [
             "Grains, farines et pains sont au shop, a un cours qui change chaque heure."

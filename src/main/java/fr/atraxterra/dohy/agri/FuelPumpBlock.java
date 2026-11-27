@@ -1,10 +1,13 @@
 package fr.atraxterra.dohy.agri;
 
 import com.mojang.serialization.MapCodec;
+import fr.atraxterra.dohy.agri.machine.BigMachine;
+import fr.atraxterra.dohy.agri.machine.BigMachines;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -35,6 +38,9 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
  * La pompe a carburant : une cuve qui fait le plein des tracteurs gares a
  * cote. On la remplit a la main (bidon, seau) ou par un tuyau de fluide —
  * c'est sa cuve que les tuyaux de NTM NEXT trouvent ({@link FuelPumpBlockEntity}).
+ *
+ * <p>C'est une grande machine ({@link BigMachine#FUEL_PUMP}) : 2 x 2 et 3 de
+ * haut ; ce bloc en est la commande, a la place ou on l'a pose.
  */
 public class FuelPumpBlock extends BaseEntityBlock {
 
@@ -44,7 +50,7 @@ public class FuelPumpBlock extends BaseEntityBlock {
 
     public FuelPumpBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(BigMachines.FORMED, false));
     }
 
     @Override
@@ -54,7 +60,7 @@ public class FuelPumpBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, BigMachines.FORMED);
     }
 
     @Override
@@ -64,12 +70,24 @@ public class FuelPumpBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return BigMachines.shape(BigMachine.FUEL_PUMP, state, SHAPE);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return BigMachines.placement(BigMachine.FUEL_PUMP, defaultBlockState(), context);
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        BigMachines.onPlace(BigMachine.FUEL_PUMP, state, level, pos, oldState);
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+        BigMachines.onRemove(BigMachine.FUEL_PUMP, state, level, pos);
     }
 
     @Override
@@ -127,6 +145,7 @@ public class FuelPumpBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
+        BigMachines.unfold(BigMachine.FUEL_PUMP, state, level, pos, player);
         if (level.getBlockEntity(pos) instanceof FuelPumpBlockEntity pump) {
             tell(player, pump);
         }

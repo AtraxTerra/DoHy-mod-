@@ -1,0 +1,25 @@
+{
+  "textures": {
+    "bricks": "dohy:block/machine/bricks",
+    "particle": "dohy:block/machine/bricks"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        13
+      ],
+      "faces": {
+        "south": {
+          "texture": "#bricks"
+        }
+      }
+    }
+  ]
+}

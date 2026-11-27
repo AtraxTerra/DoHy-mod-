@@ -1,0 +1,577 @@
+{
+  "variants": {
+    "facing=north,x=0,y=0,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=0,y=0,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_0_1"
+    },
+    "facing=north,x=0,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=0,y=1,z=0": {
+      "model": "dohy:block/machine/fuel_pump/0_1_0"
+    },
+    "facing=north,x=0,y=1,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_1_1"
+    },
+    "facing=north,x=0,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=0,y=2,z=0": {
+      "model": "dohy:block/machine/fuel_pump/0_2_0"
+    },
+    "facing=north,x=0,y=2,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_2_1"
+    },
+    "facing=north,x=0,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=0,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=0,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=0,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=0,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=0,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=0,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=1,y=0,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_0_0"
+    },
+    "facing=north,x=1,y=0,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_0_1"
+    },
+    "facing=north,x=1,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=1,y=1,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_1_0"
+    },
+    "facing=north,x=1,y=1,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_1_1"
+    },
+    "facing=north,x=1,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=1,y=2,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_2_0"
+    },
+    "facing=north,x=1,y=2,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_2_1"
+    },
+    "facing=north,x=1,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=1,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=1,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=1,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=1,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=1,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=1,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=0,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=0,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=1,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=1,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=2,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=2,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=north,x=2,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=0,y=0,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=0,y=0,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_0_1",
+      "y": 90
+    },
+    "facing=east,x=0,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=0,y=1,z=0": {
+      "model": "dohy:block/machine/fuel_pump/0_1_0",
+      "y": 90
+    },
+    "facing=east,x=0,y=1,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_1_1",
+      "y": 90
+    },
+    "facing=east,x=0,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=0,y=2,z=0": {
+      "model": "dohy:block/machine/fuel_pump/0_2_0",
+      "y": 90
+    },
+    "facing=east,x=0,y=2,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_2_1",
+      "y": 90
+    },
+    "facing=east,x=0,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=0,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=0,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=0,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=0,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=0,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=0,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=1,y=0,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_0_0",
+      "y": 90
+    },
+    "facing=east,x=1,y=0,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_0_1",
+      "y": 90
+    },
+    "facing=east,x=1,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=1,y=1,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_1_0",
+      "y": 90
+    },
+    "facing=east,x=1,y=1,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_1_1",
+      "y": 90
+    },
+    "facing=east,x=1,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=1,y=2,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_2_0",
+      "y": 90
+    },
+    "facing=east,x=1,y=2,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_2_1",
+      "y": 90
+    },
+    "facing=east,x=1,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=1,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=1,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=1,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=1,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=1,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=1,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=0,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=0,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=1,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=1,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=2,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=2,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=east,x=2,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=0,y=0,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=0,y=0,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_0_1",
+      "y": 180
+    },
+    "facing=south,x=0,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=0,y=1,z=0": {
+      "model": "dohy:block/machine/fuel_pump/0_1_0",
+      "y": 180
+    },
+    "facing=south,x=0,y=1,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_1_1",
+      "y": 180
+    },
+    "facing=south,x=0,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=0,y=2,z=0": {
+      "model": "dohy:block/machine/fuel_pump/0_2_0",
+      "y": 180
+    },
+    "facing=south,x=0,y=2,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_2_1",
+      "y": 180
+    },
+    "facing=south,x=0,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=0,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=0,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=0,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=0,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=0,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=0,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=1,y=0,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_0_0",
+      "y": 180
+    },
+    "facing=south,x=1,y=0,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_0_1",
+      "y": 180
+    },
+    "facing=south,x=1,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=1,y=1,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_1_0",
+      "y": 180
+    },
+    "facing=south,x=1,y=1,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_1_1",
+      "y": 180
+    },
+    "facing=south,x=1,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=1,y=2,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_2_0",
+      "y": 180
+    },
+    "facing=south,x=1,y=2,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_2_1",
+      "y": 180
+    },
+    "facing=south,x=1,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=1,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=1,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=1,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=1,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=1,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=1,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=0,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=0,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=1,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=1,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=2,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=2,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=south,x=2,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=0,y=0,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=0,y=0,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_0_1",
+      "y": 270
+    },
+    "facing=west,x=0,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=0,y=1,z=0": {
+      "model": "dohy:block/machine/fuel_pump/0_1_0",
+      "y": 270
+    },
+    "facing=west,x=0,y=1,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_1_1",
+      "y": 270
+    },
+    "facing=west,x=0,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=0,y=2,z=0": {
+      "model": "dohy:block/machine/fuel_pump/0_2_0",
+      "y": 270
+    },
+    "facing=west,x=0,y=2,z=1": {
+      "model": "dohy:block/machine/fuel_pump/0_2_1",
+      "y": 270
+    },
+    "facing=west,x=0,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=0,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=0,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=0,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=0,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=0,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=0,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=1,y=0,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_0_0",
+      "y": 270
+    },
+    "facing=west,x=1,y=0,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_0_1",
+      "y": 270
+    },
+    "facing=west,x=1,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=1,y=1,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_1_0",
+      "y": 270
+    },
+    "facing=west,x=1,y=1,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_1_1",
+      "y": 270
+    },
+    "facing=west,x=1,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=1,y=2,z=0": {
+      "model": "dohy:block/machine/fuel_pump/1_2_0",
+      "y": 270
+    },
+    "facing=west,x=1,y=2,z=1": {
+      "model": "dohy:block/machine/fuel_pump/1_2_1",
+      "y": 270
+    },
+    "facing=west,x=1,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=1,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=1,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=1,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=1,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=1,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=1,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=0,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=0,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=0,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=1,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=1,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=1,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=2,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=2,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=2,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=3,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=3,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=3,z=2": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=4,z=0": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=4,z=1": {
+      "model": "dohy:block/machine/empty"
+    },
+    "facing=west,x=2,y=4,z=2": {
+      "model": "dohy:block/machine/empty"
+    }
+  }
+}

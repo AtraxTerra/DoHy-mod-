@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "dohy:block/gmo_machine"
+    "model": "dohy:item/machine/gmo_machine"
   }
 }
