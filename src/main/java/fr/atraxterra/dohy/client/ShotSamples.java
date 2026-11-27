@@ -476,8 +476,12 @@ final class ShotSamples {
                     new AABB(Vec3.atLowerCornerOf(low), Vec3.atLowerCornerOf(high.offset(1, 1, 1)))));
             a.refreshAssemblyInfo();
             a.assemble(player.getUUID());
-            log("apres assemblage : {} train(s) ; {} ; erreur {}", com.zurrtum.create.Create.RAILWAYS.trains.size(),
-                    describe(train()), a.lastException == null ? "aucune" : a.lastException.component.getString());
+            // Comme le bouton de l'ecran de gare : un train assemble fait quitter le mode assemblage
+            // (une gare en assemblage barre la voie a la recherche de chemin).
+            boolean assembled = a.getStation() != null && a.getStation().getPresentTrain() != null;
+            boolean exited = assembled && a.exitAssemblyMode();
+            log("apres assemblage : {} train(s) ; {} ; erreur {} ; fin du mode assemblage {}", com.zurrtum.create.Create.RAILWAYS.trains.size(),
+                    describe(train()), a.lastException == null ? "aucune" : a.lastException.component.getString(), exited);
             look(player, gx + 8.5d, gy + 4.0d, bogey.getZ() + 0.5d, 90.0f, 15.0f);
         }));
         ShotHarness.SHOTS.add(server("t4_depart", 40, player -> {
