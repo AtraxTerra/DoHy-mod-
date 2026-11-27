@@ -129,8 +129,17 @@ menus, sans rien perdre (mêmes bulles, mêmes clics, mêmes messages).
   PalaVanillaGui 6.6.1 (`tools/palavanillagui_assets.py`, crédit au README).
 - **En-tête des conteneurs** : un titre long (« Coffre de l'End en paladium ») laisse de l'air
   avant la croix au lieu de la toucher.
-- Restent à l'écran du jeu : la meule, la table de forgeron, le tailleur de pierre, le métier à
-  tisser et la table de cartographie (absents de Paladium, sans modèle à suivre).
+- **Meule, table de forgeron, tailleur de pierre** (`KitStations`, absents de Paladium, dessinés
+  dans le même esprit) : la meule montre les deux objets qui se rejoignent vers la flèche, et la
+  croix rouge quand rien ne sort ; la table de forgeron, le modèle, l'objet et le matériau, la
+  flèche, le résultat, et l'armure sur son support dans un encart à droite (les silhouettes qui
+  défilent dans les cases vides, l'aperçu et les bulles d'aide restent ceux du jeu) ; le tailleur
+  de pierre, la grille des coupes (quatre par rangée, la choisie en rouge, curseur main au
+  survol) et sa barre de défilement. Clics, molette, barre tirée et bulles restent ceux du jeu.
+  Ces écrans lisent quelques champs privés du jeu par leur nom (les noms de Mojang, gardés à
+  l'exécution par NeoForge) ; s'il en manquait un, l'écran reprendrait son dessin du jeu.
+- Restent à l'écran du jeu : le métier à tisser et la table de cartographie (rares, et dont
+  l'aperçu — bannière, carte — est dessiné par le jeu lui-même).
 
 ### Polices
 

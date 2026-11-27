@@ -620,6 +620,10 @@ public final class KitStations {
                     ContainerStyle.slot(p, slot);
                 }
             }
+            // Au-dessus des cases, ce que la table attend (le titre du jeu, puis l'ordre des cases).
+            ContainerStyle.label(g, 14.0f, 16.0f, "AMELIORER L'EQUIPEMENT", "");
+            g.wrapped(Ui.BODY, "Un modele, l'objet, puis son materiau : le resultat sort a droite.", 14.0f, 25.0f,
+                    4.6f, 98.0f, 6.6f, Ui.Theme.MUTED, 2);
             boolean failed = hasError();
             p.arrow(66.0f, 51.5f, 24.0f, 9.0f, failed ? 0xFF4A2A2A : result.hasItem() ? Ui.Theme.TEXT2 : 0xFF3A3C42);
             if (failed) {
