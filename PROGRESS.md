@@ -103,7 +103,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 12 | **Grinder** : multibloc, forge des têtes et des outils en paladium, modificateurs ; marteaux, broadswords, fastswords ; buisson à XP (généré) et baies ; pioche des dieux (100 niveaux, Toucher de soie, fusion automatique) | fait |
 | 13 | **Golem gardien** : golem (40 niveaux, arbre à trois voies, choix, gardien de golem), machine à croquettes, boîte à golem et mini golems, pomme en paladium — sans renommeur, cosmétiques, alerte Discord ni trône | fait |
 | 14 | **Monture** : le Dancarok (capture, gemme, niveaux, vie et énergie sur le joueur, invocation, conduite, cornes qui creusent), l'enclos (gestionnaire, fondation, barrière, couveuse, soins aux bandages), l'orbe de régénération ; les coffres manquants (paladium, paladium vert, endium, coffre de l'End en paladium, coffre en or) — sans palamachine ; l'éléphant est venu ensuite, le Ravirok et le Tedarok le 2026-11-24 | fait |
-| 15 | **Dimension du Mineur** : obsidienne wither (chargée au paladium, obtenue au piston renforcé), portail du Mineur (propriétaire, Mineur 90), dimension `palamod:miner` (sections de 5 000, 1 000 points, 3 jours, minerais ×3, nuit fixe, sans monstres ni chute), écrans d'entrée et de fin, minerai et Pierre d'Invocation ; la pépite d'endium ne naît plus que dans la dimension — sans boss ni ambiance client | fait |
+| 15 | **Dimension du Mineur** : obsidienne wither (chargée au paladium, obtenue au piston renforcé), portail du Mineur (propriétaire, Mineur 90), dimension `palamod:miner` (sections de 5 000, 1 000 points, 3 jours, minerais ×3, nuit fixe, sans monstres ni chute), écrans d'entrée et de fin, minerai et Pierre d'Invocation ; la pépite d'endium ne naît plus que dans la dimension ; le gardien des cristaux, son boss, le 2026-11-24 — sans ambiance client | fait |
 | 16 | **Pour le PvP** : palamachine (création et réparation des sticks, anneaux et cornes, enchantements gardés), 7 sticks (effets du code, recharge par type sur le joueur), orbes de force et de saut, 6 anneaux (armure portée, colonne d'anneaux des coffres, capacités de réparation), aile et deltaplane, slimepad, spike en paladium — sans spikes des autres métaux ni modèle 3D du deltaplane | fait |
 | 17 | **Pierres légendaires** : 7 pierres (téléportation, invisibilité, fortune, pouvoir — résistance au feu 30 min —, métier, chaos, et l'aléatoire qui s'ouvre), recharge de 24 h sur la pierre et verrou de 10 min par joueur ; **gant en endium** (établi, grinder, défilement, 12 h complet, Infinity Gauntlet) ; dans les caisses rare et légendaire | fait |
 | 18 | **Donjons, cœur jouable** : 4 clés et l'écran des 100 paliers, groupe de 4, dimension `palamod:dungeon`, salles construites (combat, énigme, boost, marchande, mini-boss en 5, boss en 0), 6 types de monstres renforcés au palier, 40 boss nommés et leurs capacités, coffres individuels, sacs de donjon (9/18/27/36 piles), butin du wiki, XP de métier, mort = palier échoué ; bouteilles d'XP de métier — sans équipement, essences, notes, sorts, runes ni arbre (chapitres 19 à 21) | fait |
@@ -192,6 +192,31 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-24 (suite) — le gardien des cristaux, boss de la dimension du Mineur
+
+**Demande** : le point 5 de « Fais 1 (…), 2, 4 et 5 », seconde moitié — le boss de la dimension
+du Mineur (`docs/PALAMOD.md` § 18, « Le gardien des cristaux »).
+
+- **Porté du bytecode** : `EntityMinerBoss`, ses cinq attaques (`Punch`, `Turn`,
+  `LeftShockWave`, `StrikingGround`, `Repulse`) et son IA (`EntityAIMinerBossAttackOnCollide`) ;
+  le modèle (55 pièces, converti du constructeur de `MinerBossModel`), ses animations
+  (`setRotationAngles2`) et ses sept textures, une par cristal brisé.
+- **Six cristaux** : il ne se blesse qu'étourdi, après sa frappe au sol ; deux coups par cristal,
+  14 dégâts renvoyés à chaque coup ; les six brisés, 1 000 PV à abattre. Ses attaques s'annoncent
+  bras levés et tuent ; s'il tue sa cible, il se reforme.
+- **Éveil** (ajout) : la Pierre d'Invocation, accroupi + clic droit au sol, dans la dimension
+  seulement ; un seul à 128 blocs. Le filtre anti-monstres de la dimension le laisse passer.
+- **Barre de boss** : les cristaux (violette, en six), puis la vie (rouge). **Butin** : de 0 à 2
+  pépites d'endium, plus Butin.
+- Vérifié en CI : 2 × 2, insensible au feu et au recul ; une cible à 2,5 blocs tuée en moins de
+  3 s et le gardien reformé (3 cristaux brisés et 500 PV → aucun et 1 000) ; une frappe au sol hors
+  de portée l'étourdit ; le premier coup renvoie 14 dégâts (20 → 6 PV), projette le joueur et fend
+  le cristal, un coup hors étourdissement ne porte pas, le second brise le cristal ; tous brisés,
+  un coup de 20 retire 20 PV, le feu rien ; `/kill` le tue ; un joueur en survie, totem en main,
+  le voit fondre sur lui, le totem saute et le gardien se reforme ; 3 pépites pour 3 gardiens ; la
+  pierre échoue hors de la dimension, l'éveille dedans, refuse un second ; un zombie y reste
+  refusé ; les poses (annonces, coup de poing, frappe, onde de choc, toupie, étourdi) capturées.
 
 ### 2026-11-24 (suite) — le Ravirok et le Tedarok rejoignent le Dancarok
 

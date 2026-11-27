@@ -30,7 +30,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  * Les regles de la dimension ({@code ServerDimMinerEventHandler}).
  *
  * <ul>
- *   <li>aucun monstre : toute entite hostile est refusee ;</li>
+ *   <li>aucun monstre : toute entite hostile est refusee (hors spawners et gardien des cristaux) ;</li>
  *   <li>pas de degats de chute ;</li>
  *   <li>pas de conteneur pose (coffre, four, entonnoir...) : rien a stocker ;</li>
  *   <li>l'obsidienne wither de l'arrivee ne se casse pas ;</li>
@@ -81,11 +81,13 @@ public final class DimMinerEvents {
     /**
      * Aucun monstre dans la dimension, sauf ceux qu'un spawner fait apparaitre :
      * ses ruines en portent ({@link MinerRuinFeature}), et un spawner qui tourne a
-     * vide ne se remarquerait pas.
+     * vide ne se remarquerait pas. Et sauf son boss, que l'original refusait
+     * aussi : il n'a jamais pu y paraitre.
      */
     @SubscribeEvent
     public static void onJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Enemy && DimMinerManager.levelIs(event.getLevel())
+                && !(event.getEntity() instanceof MinerBoss)
                 && !(event.getEntity() instanceof Mob mob && mob.getSpawnType() == EntitySpawnReason.SPAWNER)) {
             event.setCanceled(true);
         }

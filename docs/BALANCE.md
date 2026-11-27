@@ -1768,6 +1768,28 @@ Leviers : `GarrisonRole` (prix, solde, vie, dégâts), `GarrisonTier` (multiplic
 `Garrison.CAPACITY` et `LEVEL_COST`, `Garrisons.PATIENCE` (jours avant désertion), `NEAR`/`FAR`
 (rayon de déploiement), `REST_HEAL`.
 
+## 6 quatertrigesies. Le gardien des cristaux — ce que vaut un combat (2026-11-24)
+
+Description : `docs/PALAMOD.md` § 18. Le butin est celui de l'original : **de 0 à 2 pépites
+d'endium** (une en moyenne), plus de 0 à Butin (2,5 en moyenne avec Butin III), et 5 XP. Une
+pépite vaut ~40 k au catalogue (§ 6 ter).
+
+- **Ce qu'il coûte** : une Pierre d'Invocation, qui ne manque pas (un filon de minerai par chunk
+  dans la dimension, sans points de session), et l'accès à la dimension (Mineur 90).
+- **Ce qu'il prend** : douze étourdissements pour six cristaux, et l'étourdissement ne vient que
+  de la frappe au sol (15 à 25 % des attaques selon l'état), une attaque toutes les 6,5 s : ~66
+  attaques à esquiver, **~7 minutes**, puis 1 000 PV à abattre. Le temps des cristaux ne se
+  raccourcit pas avec l'équipement.
+- **Ce qu'il rend** : ~40 k par combat, ~100 k avec Butin III, soit **~280 k à 700 k de l'heure**
+  sans erreur — le revenu du milieu de partie (~190 k, § 6 sexvicies), en dessous de celui de fin
+  de partie (1 M, § 3), pour un joueur Mineur 90. Le prix dynamique de la pépite baisse à mesure
+  qu'on en vend.
+- **Ce qui le borne** : une erreur le reforme (six cristaux, pleine vie) ; un seul à la fois à
+  128 blocs ; les pierres se cassent à l'usage.
+
+Leviers : `MinerBoss.Attack` (durées, chances), `STUN_TICKS`, `THORNS`, `ATTACK_DELAY`,
+`dropCustomDeathLoot`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

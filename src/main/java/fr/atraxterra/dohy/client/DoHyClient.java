@@ -121,6 +121,8 @@ public final class DoHyClient {
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
         event.registerEntityRenderer(PalaMount.RAVIROK.get(), RavirokRenderer::new);
         event.registerEntityRenderer(PalaMount.TEDAROK.get(), TedarokRenderer::new);
+        event.registerEntityRenderer(fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner.MINER_BOSS.get(),
+                fr.atraxterra.dohy.client.miner.MinerBossRenderer::new);
         event.registerEntityRenderer(PalaHunter.ELEPHANT.get(), ElephantRenderer::new);
         event.registerEntityRenderer(DoHyAgri.TRACTOR.get(), TractorRenderer::new);
         event.registerEntityRenderer(fr.atraxterra.dohy.farmbot.DoHyFarmBots.FARM_BOT.get(),
@@ -178,6 +180,8 @@ public final class DoHyClient {
         event.registerLayerDefinition(DancarokModel.LAYER, DancarokGeometry::createBodyLayer);
         event.registerLayerDefinition(RavirokModel.LAYER, RavirokGeometry::createBodyLayer);
         event.registerLayerDefinition(TedarokModel.LAYER, TedarokGeometry::createBodyLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.miner.MinerBossModel.LAYER,
+                fr.atraxterra.dohy.client.miner.MinerBossGeometry::createBodyLayer);
         event.registerLayerDefinition(fr.atraxterra.dohy.client.throne.ThroneGeometry.LAYER,
                 fr.atraxterra.dohy.client.throne.ThroneGeometry::createLayer);
         event.registerLayerDefinition(ElephantModel.CHILD, ElephantGeometry::createBoneLayer);
