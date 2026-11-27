@@ -722,6 +722,109 @@ final class ShotSamples {
         }));
     }
 
+    // -- Trackwright (port NeoForge) : voie droite a travers un mur, tunnel creuse, annulation ---------------
+
+    private static int kx() {
+        return gx + 150;
+    }
+
+    /** Un mur de pierre 5 x 4 en travers d'une ligne nord-sud, de z0 a z0 + 3. */
+    private static void wall(ServerLevel level, int x, int z0) {
+        fill(level, x - 2, gy, z0, x + 2, gy + 3, z0 + 3, Blocks.STONE.defaultBlockState());
+    }
+
+    private static int countStone(ServerLevel level, int x, int z0) {
+        int stone = 0;
+        for (int y = gy; y <= gy + 3; y++) {
+            for (int z = z0; z <= z0 + 3; z++) {
+                if (level.getBlockState(new BlockPos(x, y, z)).is(Blocks.STONE)) {
+                    stone++;
+                }
+            }
+        }
+        return stone;
+    }
+
+    private static String trackLine(ServerLevel level, int x, int z0, int z1) {
+        int tracks = 0;
+        int connections = 0;
+        for (int z = z0; z <= z1; z++) {
+            BlockPos pos = new BlockPos(x, gy, z);
+            if (level.getBlockState(pos).getBlock() instanceof com.zurrtum.create.content.trains.track.ITrackBlock) {
+                tracks++;
+            }
+            if (level.getBlockEntity(pos) instanceof com.zurrtum.create.content.trains.track.TrackBlockEntity tbe) {
+                connections += tbe.getConnections().size();
+            }
+        }
+        return tracks + " bloc(s) de voie, " + connections + " raccord(s) courbe(s)";
+    }
+
+    /** Pose de voie comme un joueur : clic de depart au sol, clic d'arrivee 16 blocs plus loin vers +Z. */
+    private static void layTrack(ServerPlayer player, int x, int z0, String label) {
+        ServerLevel level = over(player);
+        look(player, x + 0.5d, gy + 1.0d, z0 - 1.5d, 0.0f, 35.0f);
+        ItemStack track = new ItemStack(com.zurrtum.create.AllItems.TRACK, 64);
+        InteractionResult start = click(player, track, new BlockPos(x, gy - 1, z0), Direction.UP);
+        ItemStack held = player.getMainHandItem();
+        boolean selected = held.has(com.zurrtum.create.AllDataComponents.TRACK_CONNECTING_FROM);
+        InteractionResult end = click(player, held, new BlockPos(x, gy - 1, z0 + 16), Direction.UP);
+        log("[trackwright {}] depart {} (selection {}), arrivee {} : {}", label, start, selected, end, trackLine(level, x, z0, z0 + 16));
+    }
+
+    private static void trackwrightSteps() {
+        ShotHarness.SHOTS.add(server("k1_murs_tw", 40, player -> {
+            ServerLevel level = over(player);
+            boolean loaded = net.neoforged.fml.ModList.get().isLoaded("trackwright");
+            log("trackwright : {}", loaded ? "charge" : "absent");
+            if (!loaded) {
+                return;
+            }
+            int x = kx();
+            fill(level, x - 6, gy - 1, gz - 4, x + 14, gy - 1, gz + 22, Blocks.STONE_BRICKS.defaultBlockState());
+            fill(level, x - 6, gy, gz - 4, x + 14, gy + 8, gz + 22, Blocks.AIR.defaultBlockState());
+            wall(level, x, gz + 6);
+            wall(level, x + 8, gz + 6);
+            log("trackwright : murs poses, pierre {} et {}", countStone(level, x, gz + 6), countStone(level, x + 8, gz + 6));
+            look(player, x + 4.5d, gy + 9.0d, gz - 6.0d, 0.0f, 40.0f);
+        }));
+        ShotHarness.SHOTS.add(server("k2_voie_mur_tw", 60, player -> {
+            if (!net.neoforged.fml.ModList.get().isLoaded("trackwright")) {
+                return;
+            }
+            ServerLevel level = over(player);
+            int x = kx();
+            // Main gauche vide : voie droite a travers le mur sans le creuser (straightThroughBlocks).
+            player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+            layTrack(player, x, gz, "a travers");
+            log("trackwright : mur intact {}", countStone(level, x, gz + 6));
+            look(player, x + 6.5d, gy + 4.0d, gz + 2.0d, 60.0f, 20.0f);
+        }));
+        ShotHarness.SHOTS.add(server("k3_tunnel_tw", 60, player -> {
+            if (!net.neoforged.fml.ModList.get().isLoaded("trackwright")) {
+                return;
+            }
+            ServerLevel level = over(player);
+            int x = kx() + 8;
+            // Une pioche dans l'autre main : la voie creuse son tunnel (boreThroughBlocks).
+            player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.DIAMOND_PICKAXE));
+            layTrack(player, x, gz, "tunnel");
+            log("trackwright : pierre restante dans le mur {}", countStone(level, x, gz + 6));
+            look(player, x + 0.5d, gy + 2.0d, gz + 2.0d, 0.0f, 10.0f);
+        }));
+        ShotHarness.SHOTS.add(server("k4_annuler_tw", 60, player -> {
+            if (!net.neoforged.fml.ModList.get().isLoaded("trackwright")) {
+                return;
+            }
+            ServerLevel level = over(player);
+            int x = kx() + 8;
+            op(player, "trackwright undo");
+            log("trackwright : apres annulation, {} ; pierre {}", trackLine(level, x, gz, gz + 16), countStone(level, x, gz + 6));
+            player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+            look(player, x + 0.5d, gy + 2.0d, gz + 2.0d, 0.0f, 10.0f);
+        }));
+    }
+
     static void register() {
         ShotHarness.SHOTS.add(client("p0_reglages", 5, () -> Minecraft.getInstance().options.renderDistance().set(8)));
         ShotHarness.SHOTS.add(server("p1_monde", 20, player -> {
@@ -741,6 +844,7 @@ final class ShotSamples {
         trainSteps("t", CREATE);
         trainSteps("w", WIDE);
         snrSteps();
+        trackwrightSteps();
         ShotHarness.SHOTS.add(server("z_sauvegarde", 20, player -> {
             var server = player.level().getServer();
             server.saveEverything(false, true, true);

@@ -47,6 +47,15 @@ jobs:
           url=$(gh api repos/AtraxTerra/Mod-ported/releases/tags/snr-latest --jq '.assets[] | select(.name | startswith("Steam_Rails")) | .browser_download_url')
           curl -fsSL -o run/mods/steam-rails-neoforge.jar "$url"
           ls -la run/mods
+      - name: Trackwright (port NeoForge)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Le port NeoForge de Trackwright (AtraxTerra/Mod-ported, version trackwright-latest) : le monde
+          # le charge, le harnais ne compile pas contre lui (commandes et blocs seulement).
+          url=$(gh api repos/AtraxTerra/Mod-ported/releases/tags/trackwright-latest --jq '.assets[] | select(.name | startswith("Trackwright")) | .browser_download_url')
+          curl -fsSL -o run/mods/trackwright-neoforge.jar "$url"
+          ls -la run/mods
       - name: Monde
         run: |
           mkdir -p run/world/datapacks
