@@ -1,20 +1,38 @@
 package fr.atraxterra.dohy.client;
 
 import com.mojang.logging.LogUtils;
-import fr.atraxterra.dohy.client.atlas.AtlasScreen;
-import fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
-import fr.atraxterra.dohy.client.ui.vanilla.KitPauseScreen;
 import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.ui.view.UiNet;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AnvilScreen;
+import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
+import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
 import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
-/** Temporaire : le tour des ecrans, avant leur epuration. */
+/** Temporaire : la palette d'armement au style du kit. */
 final class ShotSamples {
     private static final Logger LOG = LogUtils.getLogger();
 
@@ -53,17 +71,51 @@ final class ShotSamples {
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
     }
 
-    /** Une commande tapee par le joueur lui-meme. */
-    private static void as(ServerPlayer player, String command) {
-        MinecraftServer server = player.level().getServer();
-        server.getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+    /** Pose le bloc au-dessus du joueur (sur de la pierre), l'ouvre d'un clic droit, puis remplit le menu. */
+    private static void station(String name, int extra, String id, Consumer<AbstractContainerMenu> fill) {
+        ShotHarness.SHOTS.add(server(name, extra, player -> {
+            UiNet.close(player);
+            player.closeContainer();
+            // Ce que le conteneur rend tombe dans la case sous la souris : videe.
+            player.getInventory().setItem(13, ItemStack.EMPTY);
+            Level level = player.level();
+            BlockPos pos = player.blockPosition().above(4);
+            Block block = BuiltInRegistries.BLOCK.getValue(Identifier.parse(id));
+            level.setBlock(pos.below(), Blocks.STONE.defaultBlockState(), 3);
+            level.setBlock(pos, block.defaultBlockState(), 3);
+            BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.DOWN, pos, false);
+            InteractionResult result = player.gameMode.useItemOn(player, level, ItemStack.EMPTY,
+                    InteractionHand.MAIN_HAND, hit);
+            LOG.info("dohy-shots: bloc " + id + " -> " + result + " menu " + player.containerMenu);
+            if (fill != null) {
+                fill.accept(player.containerMenu);
+                player.containerMenu.broadcastChanges();
+            }
+        }));
     }
 
-    private static void typed(String name, String command) {
-        ShotHarness.SHOTS.add(server(name, 30, player -> {
-            UiNet.close(player);
-            as(player, command);
-        }));
+    /** L'ecran du jeu, sur le meme menu (une sous-classe anonyme n'est pas remplacee par le kit). */
+    private static void vanilla() {
+        Minecraft minecraft = Minecraft.getInstance();
+        Screen screen = minecraft.gui.screen();
+        Inventory inventory = minecraft.player.getInventory();
+        if (screen instanceof EnchantmentScreen enchant) {
+            minecraft.gui.setScreen(new EnchantmentScreen(enchant.getMenu(), inventory, enchant.getTitle()) {
+            });
+        } else if (screen instanceof AnvilScreen anvil) {
+            minecraft.gui.setScreen(new AnvilScreen(anvil.getMenu(), inventory, anvil.getTitle()) {
+            });
+        } else if (screen instanceof BrewingStandScreen brewing) {
+            minecraft.gui.setScreen(new BrewingStandScreen(brewing.getMenu(), inventory, brewing.getTitle()) {
+            });
+        } else {
+            LOG.error("dohy-shots: ECHEC pas d'ecran a remplacer : " + screen);
+        }
+    }
+
+    private static ItemStack worn(ItemStack stack, int damage) {
+        stack.setDamageValue(damage);
+        return stack;
     }
 
     static void register() {
@@ -75,35 +127,32 @@ final class ShotSamples {
             command(player, "kill @e[type=minecraft:slime]");
             player.setGameMode(GameType.SURVIVAL);
             Economy.set(player, 125_000L);
+            ItemStack center = player.getInventory().getItem(13);
+            player.getInventory().setItem(13, ItemStack.EMPTY);
+            player.getInventory().setItem(35, center);
         }));
-        ShotHarness.SHOTS.add(client("b1_pause", 20, () -> Minecraft.getInstance().gui.setScreen(new KitPauseScreen())));
-        ShotHarness.SHOTS.add(client("b2_inventaire", 20,
-                () -> Minecraft.getInstance().gui.setScreen(new KitInventoryScreen(Minecraft.getInstance().player))));
-        ShotHarness.SHOTS.add(client("b3_atlas", 60, () -> Minecraft.getInstance().gui.setScreen(new AtlasScreen())));
-        ShotHarness.SHOTS.add(client("b4_ferme", 10, () -> Minecraft.getInstance().gui.setScreen(null)));
-        typed("c01_pet", "pet");
-        typed("c02_profil", "profil");
-        typed("c03_luckypass", "luckypass");
-        typed("c04_pass", "pass");
-        typed("c05_rapport", "rapport");
-        typed("c06_clicker", "clicker");
-        typed("c07_casino", "casino");
-        typed("c08_calendrier", "calendrier");
-        typed("c09_bank", "bank");
-        typed("c10_museum", "museum");
-        typed("c11_collections", "collections");
-        typed("c12_contracts", "contracts");
-        typed("c13_trixium", "trixium");
-        typed("c14_faction", "f");
-        typed("c15_entreprises", "entreprises");
-        typed("c16_mines", "mines");
-        typed("c17_bots", "bots");
-        typed("c18_kit", "kit");
-        typed("c19_boutique", "boutique");
-        typed("c20_hdv", "hdv");
-        typed("c21_unesco", "unesco");
-        typed("c22_quetes", "quetes");
-        typed("c23_donjon", "donjon");
-        typed("c24_techno", "techno");
+        station("g1_palette", 30, "dohy:palette", null);
+        // Un groupe de 3 x 3 palettes : neuf rangees, la glissiere et les fleches.
+        ShotHarness.SHOTS.add(server("g2_groupe_pose", 40, player -> {
+            UiNet.close(player);
+            player.closeContainer();
+            Level level = player.level();
+            BlockPos base = player.blockPosition().above(6).offset(3, 0, 3);
+            Block block = BuiltInRegistries.BLOCK.getValue(Identifier.parse("dohy:palette"));
+            for (int dx = 0; dx < 3; dx++) {
+                for (int dz = 0; dz < 3; dz++) {
+                    level.setBlock(base.offset(dx, -1, dz), Blocks.STONE.defaultBlockState(), 3);
+                    level.setBlock(base.offset(dx, 0, dz), block.defaultBlockState(), 3);
+                }
+            }
+        }));
+        ShotHarness.SHOTS.add(server("g3_groupe", 30, player -> {
+            Level level = player.level();
+            BlockPos pos = player.blockPosition().above(6).offset(3, 0, 3);
+            BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
+            InteractionResult result = player.gameMode.useItemOn(player, level, ItemStack.EMPTY,
+                    InteractionHand.MAIN_HAND, hit);
+            LOG.info("dohy-shots: groupe -> " + result + " menu " + player.containerMenu);
+        }));
     }
 }
