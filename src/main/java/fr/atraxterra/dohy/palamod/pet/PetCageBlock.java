@@ -39,7 +39,8 @@ public class PetCageBlock extends BaseEntityBlock {
 
     public static final MapCodec<PetCageBlock> CODEC = simpleCodec(PetCageBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    private static final VoxelShape SHAPE = Block.box(1.0d, 0.0d, 1.0d, 15.0d, 14.0d, 15.0d);
+    /** La caisse de PalaPet : un bloc plein ; le baton qui tient la porte depasse devant. */
+    private static final VoxelShape SHAPE = Block.box(0.0d, 0.0d, 0.0d, 16.0d, 16.0d, 16.0d);
 
     public PetCageBlock(Properties properties) {
         super(properties);

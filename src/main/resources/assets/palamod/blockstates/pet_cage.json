@@ -4,16 +4,13 @@
       "model": "palamod:block/pet_cage"
     },
     "facing=east": {
-      "model": "palamod:block/pet_cage",
-      "y": 90
+      "model": "palamod:block/pet_cage"
     },
     "facing=south": {
-      "model": "palamod:block/pet_cage",
-      "y": 180
+      "model": "palamod:block/pet_cage"
     },
     "facing=west": {
-      "model": "palamod:block/pet_cage",
-      "y": 270
+      "model": "palamod:block/pet_cage"
     }
   }
 }

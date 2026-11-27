@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "palamod:block/pet_cage"
+    "model": "palamod:item/pet_cage"
   }
 }

@@ -64,6 +64,8 @@ Le script vérifie au passage que le revenu horaire reste constant à l'intérie
 - **Botaniste** (graines minérales et leurs plants, endium organique ; puis pot, plantes du
   laboratoire, arrosoir, guitare, icônes des besoins) : textures, modèles 3D et animations du jar
   JobsReborn 1.92.0, de Paladium Games.
+- **Familiers** (les vingt et un familiers, leurs modèles 3D et animations, la cage, l'appât ; les
+  portraits des menus sont rendus depuis ces modèles) : le jar PalaPet 7.12.0, de Paladium Games.
 - **Interfaces** (polices, hexagones des métiers, boutons, bannière) : les jars Paladium-UI et
   PalaJobs, de Paladium Games. Montserrat est sous licence SIL OFL (`assets/dohy/font/montserrat_ofl.txt`) ;
   les polices Minecraft Dungeons, Minecraft et Pixel NES sont reprises telles que Paladium les livre.

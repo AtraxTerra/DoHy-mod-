@@ -195,6 +195,23 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-27 — les familiers de PalaPet
+
+**Demande** : remplacer les textures dessinées par celles des jars de Paladium, avec le crédit ;
+pour les familiers, le joueur a choisi les vingt et un de Paladium plutôt que les trois créatures
+du mod.
+
+- **Vingt et un familiers** du jar PalaPet 7.12.0 : modèles 3D, animations (attente et marche
+  mêlées selon le pas du maître), textures ; portraits des menus rendus depuis ces modèles.
+- **Tirage pondéré** à la cage : communs, peu communs, rares, le dragon de l'End légendaire
+  (`PALAMOD.md` § 46) ; l'écran sans familier les montre tous, cadrés à la couleur de leur rareté.
+- **La cage et l'appât** de PalaPet : la porte tombe quand un familier entre.
+- Les trois anciens familiers deviennent, dans les sauvegardes, le renard patronus, le chien et la
+  fée de l'hiver. Crédit dans le README.
+
+**Non vérifié en jeu** : la taille et la place des familiers sur l'épaule et dans la cage, leurs
+animations, la cage et sa porte.
+
 ### 2026-11-27 — le laboratoire du botaniste, lot 2a : le pot et les plantes de base
 
 **Demande** : suite du point 4 (Botaniste de JobsReborn), le laboratoire découpé en trois lots ;

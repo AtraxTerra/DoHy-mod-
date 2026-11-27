@@ -66,6 +66,26 @@ public class PetCageBlockEntity extends BlockEntity {
         return occupant;
     }
 
+    /** Cote client, pour le rendu : l'occupant vu au dernier dessin, et quand il est arrive. */
+    private String seenOccupant;
+    private long seenSince;
+
+    /**
+     * Quand le familier vu par le rendu est-il arrive ? La porte de la cage se ferme
+     * a son arrivee (animation « closing » de PalaPet). Au premier regard, la porte
+     * est deja fermee.
+     */
+    public long occupantSince(long now) {
+        if (seenOccupant == null) {
+            seenOccupant = occupant;
+            seenSince = now - 20L * 60L;
+        } else if (!seenOccupant.equals(occupant)) {
+            seenOccupant = occupant;
+            seenSince = now;
+        }
+        return seenSince;
+    }
+
     public boolean baited(long now) {
         return occupant.isEmpty() && baitUntil > now;
     }
@@ -213,8 +233,7 @@ public class PetCageBlockEntity extends BlockEntity {
     }
 
     private void capture(ServerLevel server, long now) {
-        Familiar[] all = Familiar.values();
-        occupant = all[server.getRandom().nextInt(all.length)].id();
+        occupant = Familiar.pick(server.getRandom()).id();
         baitUntil = 0L;
         stage = 1;
         points = PetTaming.START_POINTS;

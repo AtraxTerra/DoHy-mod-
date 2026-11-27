@@ -8,7 +8,9 @@ import fr.atraxterra.dohy.client.ui.UiGraphics;
 import fr.atraxterra.dohy.client.ui.UiScreen;
 import fr.atraxterra.dohy.client.ui.ViewScreen;
 import fr.atraxterra.dohy.client.ui.shell.Shell;
+import fr.atraxterra.dohy.palamod.pet.Familiar;
 import fr.atraxterra.dohy.palamod.pet.PetView;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
@@ -155,7 +157,7 @@ public class PetScreen extends UiScreen implements ViewScreen<PetView> {
             drawFamiliar(g, mx, my, tip);
             drawSkills(g, mx, my, tip);
         } else {
-            drawNone(g);
+            drawNone(g, mx, my, tip);
         }
         if (!tip.isEmpty()) {
             g.tooltip(tip);
@@ -343,8 +345,8 @@ public class PetScreen extends UiScreen implements ViewScreen<PetView> {
         g.centered(Ui.WIDE, label, x + w / 2.0f, TAB_Y + 5.4f, 4.6f, 0xFFFFFFFF);
     }
 
-    /** Sans familier : la cage, l'appat et l'apprivoisement, et les trois familiers possibles. */
-    private void drawNone(UiGraphics g) {
+    /** Sans familier : la cage, l'appat et l'apprivoisement, et les vingt et un familiers possibles. */
+    private void drawNone(UiGraphics g, double mx, double my, List<Component> tip) {
         Paint p = g.paint();
         g.textShaded(Ui.TITLE, "FAMILIER", LEFT, 16.0f, 20.0f, 0xFFFFFFFF, 0xFF5A5A60, 1.3f);
         g.text(Ui.WIDE, "TU N'AS PAS ENCORE DE FAMILIER", LEFT, 50.0f, 7.0f, PINK);
@@ -362,15 +364,41 @@ public class PetScreen extends UiScreen implements ViewScreen<PetView> {
         for (String step : steps) {
             y += g.wrapped(Ui.BODY, step, LEFT, y, 5.2f, 300.0f, 8.0f, 0xFFE9E8EE, 4) * 8.0f + 6.0f;
         }
-        String[][] familiars = {{"ember_lynx", "PYROLYNX"}, {"pup", "MORDILLON"}, {"wisp", "FEU-FOLLET"}};
-        for (int index = 0; index < familiars.length; index++) {
-            float x = 344.0f + index * 84.0f;
-            p.framed(x, 60.0f, 78.0f, 104.0f, 3.0f, 0xFF15161A, 0xFF2C2E33, 1);
-            g.texture(FamiliarModels.portrait(familiars[index][0]), (int) x + 3, 64, 72, 72, 96, 96);
-            g.centered(Ui.WIDE, familiars[index][1], x + 39.0f, 146.0f, 5.0f, 0xFFFFFFFF);
+        // Les familiers de PalaPet, sept par rangee, cadres a la couleur de leur rarete.
+        Familiar[] all = Familiar.values();
+        for (int index = 0; index < all.length; index++) {
+            Familiar familiar = all[index];
+            float x = 344.0f + (index % 7) * 35.0f;
+            float top = 60.0f + (index / 7) * 36.0f;
+            boolean hover = over(mx, my, x, top, 33.0f, 33.0f);
+            p.framed(x, top, 33.0f, 33.0f, 3.0f, hover ? 0xFF22232A : 0xFF15161A, rarityColor(familiar), 1);
+            g.texture(FamiliarModels.portrait(familiar.id()), (int) x + 1, (int) top + 1, 31, 31, 96, 96);
+            if (hover) {
+                tip.add(Component.literal(familiar.label()).withStyle(ChatFormatting.WHITE));
+                tip.add(Component.literal(rarity(familiar)).withStyle(
+                        net.minecraft.network.chat.Style.EMPTY.withColor(rarityColor(familiar) & 0xFFFFFF)));
+            }
         }
-        g.wrapped(Ui.BODY, "La cage choisit au hasard. Leur allure ne change rien aux competences.", 344.0f, 176.0f,
-                4.8f, 246.0f, 7.0f, Ui.Theme.MUTED, 3);
+        g.wrapped(Ui.BODY, "La cage choisit au hasard, les familiers d'evenement plus rarement. Leur allure ne "
+                + "change rien aux competences.", 344.0f, 176.0f, 4.8f, 246.0f, 7.0f, Ui.Theme.MUTED, 3);
+    }
+
+    private static String rarity(Familiar familiar) {
+        return switch (familiar.weight()) {
+            case 10 -> "Commun";
+            case 5 -> "Peu commun";
+            case 2 -> "Rare";
+            default -> "Legendaire";
+        };
+    }
+
+    private static int rarityColor(Familiar familiar) {
+        return switch (familiar.weight()) {
+            case 10 -> 0xFF5A5B62;
+            case 5 -> 0xFF22B14C;
+            case 2 -> 0xFF9B59D9;
+            default -> 0xFFFFC533;
+        };
     }
 
     static String duration(long millis) {

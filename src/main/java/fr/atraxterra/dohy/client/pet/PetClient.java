@@ -1,14 +1,17 @@
 package fr.atraxterra.dohy.client.pet;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import fr.atraxterra.dohy.palamod.pet.Familiar;
+import fr.atraxterra.dohy.palamod.PalaMod;
 import fr.atraxterra.dohy.palamod.pet.PalaPets;
 import fr.atraxterra.dohy.palamod.pet.PetNet;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -49,16 +52,22 @@ public final class PetClient {
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SnakeModel.LAYER, SnakeGeometry::createBodyLayer);
         event.registerLayerDefinition(SnailModel.LAYER, SnailGeometry::createBodyLayer);
-        event.registerLayerDefinition(FamiliarModels.LAYERS.get(Familiar.EMBER_LYNX),
-                FamiliarGeometry::createEmberLynxLayer);
-        event.registerLayerDefinition(FamiliarModels.LAYERS.get(Familiar.PUP), FamiliarGeometry::createPupLayer);
-        event.registerLayerDefinition(FamiliarModels.LAYERS.get(Familiar.WISP), FamiliarGeometry::createWispLayer);
+    }
+
+    /** Les modeles de PalaPet (familiers, cage) se relisent avec les ressources. */
+    @SubscribeEvent
+    public static void onReloadListeners(AddClientReloadListenersEvent event) {
+        event.addListener(Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "pet_models"),
+                (ResourceManagerReloadListener) manager -> {
+                    FamiliarModels.clear();
+                    PetCageRenderer.clear();
+                });
     }
 
     /** Le familier sur l'epaule, pour chaque silhouette de joueur. */
     @SubscribeEvent
     public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
-        FamiliarModels models = new FamiliarModels(event.getEntityModels());
+        FamiliarModels models = new FamiliarModels();
         for (var skin : event.getSkins()) {
             var renderer = event.getPlayerRenderer(skin);
             if (renderer != null) {
