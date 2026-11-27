@@ -66,32 +66,28 @@ public final class EnemyBaseMenu extends MenuController {
                             EnemyBases.where(player, base)))
                     .accent(0xFFEF3826).badge("CIBLE")
                     .tooltip(List.of(genre.summary(), "Les coffres : " + genre.vault(),
-                            "Il faudra : " + tier.tools(),
-                            "Entre dans la salle des coffres pour la piller.",
-                            "Clic : une boussole qui pointe vers elle"))
+                            "Il faudra : " + tier.tools(), "Clic : une boussole"))
                     .action("compass|recevoir une boussole"));
             target.add(Card.of(new ItemStack(Items.BARRIER), "Abandonner", List.of(
                             "Sans recompense", "Elle s'efface en 5 minutes"))
                     .accent(0xFF55545C).action("abandon|abandonner")
-                    .confirm("!Abandonner les " + base.name() + " ?|Sans recompense : la base s'efface en 5 minutes"));
+                    .confirm("!Abandonner les " + base.name() + " ?|Sans recompense"));
         } else {
             target.add(Card.of(new ItemStack(Items.MAP), base.state() == EnemyBase.LOOTED
                             ? "Les " + base.name() + " : pillee" : "Aucune cible", List.of(
-                            EnemyBaseRegen.regenerating(base) ? "Le terrain la reprend bientot"
-                                    : "Demande une base ci-dessous", "Une a la fois"))
+                            EnemyBaseRegen.regenerating(base) ? "Le terrain revient"
+                                    : "Choisis-en une", "Une a la fois"))
                     .state(base.state() == EnemyBase.LOOTED ? MenuView.DONE : MenuView.DISABLED));
         }
         // Le genre : celui que les eclaireurs trouveront, ou celui qu'on leur demande.
         EnemyBaseStyle wanted = CHOICE.get(player.getUUID());
         List<Card> genres = new ArrayList<>();
-        Card any = Card.of(new ItemStack(Items.SPYGLASS), "Au hasard", List.of("Ce que les eclaireurs",
-                "trouveront")).tooltip(List.of("Un genre tire au sort a chaque reperage"));
+        Card any = Card.of(new ItemStack(Items.SPYGLASS), "Au hasard", List.of("", ""));
         genres.add(wanted == null ? any.state(MenuView.DONE).badge("CHOISI")
                 : any.accent(0xFF3FA9F5).action("genre:|choisir"));
         for (EnemyBaseStyle genre : EnemyBaseStyle.values()) {
             Card card = Card.of(new ItemStack(genre.icon()), genre.title(), wrap(genre.summary(), 40, 2))
-                    .tooltip(List.of(genre.summary(), "Les coffres : " + genre.vault(),
-                            "Ses machines et ses blocs sont vrais : pillee, elle se demonte"));
+                    .tooltip(List.of(genre.summary(), "Les coffres : " + genre.vault()));
             genres.add(wanted == genre ? card.state(MenuView.DONE).badge("CHOISI")
                     : card.accent(0xFF3FA9F5).action("genre:" + genre.key() + "|choisir"));
         }
@@ -99,27 +95,19 @@ public final class EnemyBaseMenu extends MenuController {
         for (EnemyBaseTier tier : EnemyBaseTier.values()) {
             Card card = Card.of(new ItemStack(tier.icon()), tier.label(), List.of(tier.summary(),
                             "+" + MoneyFormat.exact(tier.elo()) + " ELO · +" + MoneyFormat.exact(tier.money()) + " $"))
-                    .tooltip(List.of(tier.contents(), "Il faudra : " + tier.tools(),
-                            "A plus de " + MoneyFormat.exact(EnemyBases.MIN_DISTANCE) + " blocs de toi et de tes claims"));
+                    .tooltip(List.of(tier.contents(), "Il faudra : " + tier.tools()));
             tiers.add(base.active() || pending ? card.state(MenuView.DISABLED)
                     : card.accent(0xFFEF3826).action("generate:" + tier.level() + "|reperer"));
         }
         List<Card> help = List.of(
                 Card.of(new ItemStack(Items.COMPASS), "La trouver", List.of("Boussole et coordonnees,",
                         "puis l'Unclaim Finder")).accent(0xFF3FA9F5),
-                Card.of(new ItemStack(Items.TNT), "Entrer", List.of("Rien ne se pose dans ses claims :",
-                        "dynamites, canons, withers")).accent(0xFFEF3826)
-                        .tooltip(List.of("Ses claims debordent de deux chunks autour des murs.",
-                                "On n'y casse, n'y pose et n'y ouvre rien, meme en creatif :",
-                                "lance des dynamites, tire au canon a TNT depuis l'exterieur,",
-                                "ou amene un wither invoque hors des claims.")),
+                Card.of(new ItemStack(Items.TNT), "Entrer", List.of("Dynamites, canons,",
+                        "withers")).accent(0xFFEF3826),
                 NtmDefenses.present()
                         ? Card.of(new ItemStack(Items.CROSSBOW), "Ses defenses", List.of("Tourelles, mines,",
                                 "barbeles de NTM")).accent(0xFFEF3826)
-                        .tooltip(List.of("Ses tourelles tirent sur toi a 32 blocs (le Maxwell a 64) :",
-                                "detruis-les de loin, a la dynamite, au canon ou au wither.",
-                                "Des mines attendent dans le glacis, hors de la route de la porterie.",
-                                "Pillee, la base eteint ses tourelles."))
+                        .tooltip(List.of("Tourelles : 32 blocs (Maxwell : 64)"))
                         : Card.of(new ItemStack(Items.CROSSBOW), "Ses defenses", List.of("Gardes, spikes,",
                                 "obsidiennes piegees")).accent(0xFFEF3826),
                 Card.of(new ItemStack(Items.CHEST), "Piller", List.of("Dans la salle des coffres,",

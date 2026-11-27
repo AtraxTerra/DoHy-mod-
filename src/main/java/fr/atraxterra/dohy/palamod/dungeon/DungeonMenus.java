@@ -79,7 +79,7 @@ public final class DungeonMenus {
         private static List<String> describe(DungeonMode mode) {
             return switch (mode) {
                 case FACILE -> List.of("Monstres et boss a 60 %", "XP moitie, un tirage de moins");
-                case NORMAL -> List.of("Le donjon tel quel", "Ta progression d'avant les modes");
+                case NORMAL -> List.of("Le donjon tel quel", "");
                 case DIFFICILE -> List.of("Monstres +50 %, degats +35 %", "XP +50 %, boss Dark aux paliers en 0");
             };
         }
@@ -96,15 +96,11 @@ public final class DungeonMenus {
             for (ServerPlayer member : party) {
                 members.add("- " + member.getDisplayName().getString());
             }
-            members.add("Les joueurs a 6 blocs de vous entrent avec vous.");
             List<Card> modes = new ArrayList<>();
             for (DungeonMode candidate : DungeonMode.values()) {
                 Card card = Card.of(new ItemStack(candidate.icon()), candidate.label(), describe(candidate))
                         .accent(color(candidate.color()))
-                        .tooltip(List.of(candidate == DungeonMode.FACILE
-                                        ? "Sa progression a lui ; Normal et Difficile la font avancer aussi"
-                                        : "Normal et Difficile partagent leur progression",
-                                "Dernier palier reussi : " + DungeonManager.best(player, dungeon, candidate)));
+                        .tooltip(List.of("Dernier palier reussi : " + DungeonManager.best(player, dungeon, candidate)));
                 modes.add(candidate == mode ? card.badge("CHOISI").state(MenuView.DONE)
                         : card.action("mode:" + candidate.name() + "|choisir ce mode"));
             }
@@ -115,7 +111,7 @@ public final class DungeonMenus {
                     Card.of(new ItemStack(Items.BOOK), "Regles", List.of("Mort ou sortie : palier echoue",
                                     "La cle est consommee a l'entree"))
                             .accent(color(dungeon.color()))
-                            .tooltip(List.of("Le sac est perdu, l'inventaire est garde.")));
+                            .tooltip(List.of("Sac perdu, inventaire garde")));
             List<Card> tiles = new ArrayList<>();
             for (int palier = 1; palier <= DungeonManager.MAX_PALIER; palier++) {
                 boolean cleared = palier <= done;
@@ -352,7 +348,7 @@ public final class DungeonMenus {
                             .badge(stack.getCount() > 1 ? String.valueOf(stack.getCount()) : ""));
                 } else if (slot >= capacity) {
                     tiles.add(Card.of(new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)),
-                            "Emplacement ferme", List.of("Un meilleur sac de donjon l'ouvre"))
+                            "Emplacement ferme", List.of("Meilleur sac requis"))
                             .state(MenuView.DISABLED));
                 } else {
                     tiles.add(Card.of(ItemStack.EMPTY, "Emplacement libre", List.of()));

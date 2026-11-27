@@ -111,14 +111,8 @@ public final class WarMenu extends MenuController {
                     "Moral " + Math.round(siege.morale) + " % · " + siege.alive().size() + " soldats"))
                     .accent(0xFFB3261E)
                     .progress(Math.round(siege.morale), 100)
-                    .tooltip(siege.ally >= 0 ? List.of("Abats l'etendard du camp : plus de renforts.",
-                            "Tue le commandant : leur moral s'effondre.",
-                            "Tue le tresorier : ton argent revient.",
-                            NationTraits.of(siege.ally).verb("joint", "joignent") + " " + siege.allyForce
-                                    + " soldats a ses couleurs : la coalition attaque ensemble.")
-                            : List.of("Abats l'etendard du camp : plus de renforts.",
-                            "Tue le commandant : leur moral s'effondre.",
-                            "Tue le tresorier : ton argent revient.")));
+                    .tooltip(List.of("Etendard : plus de renforts", "Commandant : moral au plus bas",
+                            "Tresorier : ton argent revient")));
             cards.add(Card.of(new ItemStack(siege.bannerDown ? Items.BARRIER : Items.BANNER.pick(traits.color())),
                     siege.bannerDown ? "Etendard abattu" : "L'etendard tient",
                     List.of(siege.bannerDown ? "Plus de renforts" : "Renforts : " + siege.reserveCount(),
@@ -144,9 +138,7 @@ public final class WarMenu extends MenuController {
                                     alert ? incoming.status() : "Retour " + WarStrategy.when(due, now),
                                     "Coffres et machines epargnes"))
                     .accent(0xFFB3261E)
-                    .tooltip(List.of("Le terrain revient 5 h apres l'impact.",
-                            "Ce que tu poses ou casses d'ici la reste tel quel.",
-                            "Un antimissile de NTM peut l'abattre en vol.")))));
+                    .tooltip(List.of("Le terrain revient 5 h apres l'impact")))));
         }
 
         // -- l'ultimatum, ou l'heure de l'assaut
@@ -158,11 +150,10 @@ public final class WarMenu extends MenuController {
                         MoneyFormat.exact(relation.tribute()) + " $ de tribut",
                         "Avant " + WarStrategy.when(relation.deadline(), now)))
                         .accent(0xFFE8590C).action("pay").right("refuse").badge("PAYER")
-                        .tooltip(List.of("Clic gauche : payer depuis ta banque nationale",
-                                "Clic droit : refuser, c'est la guerre")));
+                        .tooltip(List.of("Clic gauche : payer", "Clic droit : refuser (la guerre)")));
                 cards.add(Card.of(new ItemStack(Items.WRITABLE_BOOK), relation.negotiated() ? "Contre-offre faite"
                         : "Negocier", List.of(relation.negotiated() ? "Ils ont repondu" : "Proposer la moitie",
-                        "Selon leur avidite et leur crainte"))
+                        ""))
                         .action(relation.negotiated() ? "" : "negotiate")
                         .state(relation.negotiated() ? MenuView.DISABLED : MenuView.NORMAL));
                 stakeCard(player, relation.nation).ifPresent(cards::add);
@@ -208,33 +199,25 @@ public final class WarMenu extends MenuController {
                             List.of(Strongholds.coordinates(fort), Strongholds.where(player, fort.center)))
                     .accent(tint(traits)).action("fort").badge("VISER")
                     .tooltip(List.of(fort.genre().title() + " (" + fort.kind().label().toLowerCase(
-                                    java.util.Locale.ROOT) + ")",
-                            "Un designateur de NTM sur ces coordonnees,",
-                            "puis tire depuis une rampe de lancement.",
-                            "Clic : une boussole vers elle")));
+                                    java.util.Locale.ROOT) + ")", "Clic : une boussole")));
             int worst = Math.min(fort.integrity, fort.vault);
             cards.add(Card.of(new ItemStack(Items.TNT), "Structure " + fort.integrity + " %",
                             List.of("Salle forte " + fort.vault + " %", "Rasee sous " + Strongholds.RAZED_AT + " %"))
                     .accent(worst < 80 ? 0xFFE8590C : 0xFF55545C)
                     .progress(fort.integrity, 100)
-                    .tooltip(List.of("Compte apres chaque impact de missile.",
-                            "Murs de la salle forte sous " + Strongholds.VAULT_AT + " % : rasee.",
-                            "Entrer dans sa salle forte la fait tomber aussi.")));
+                    .tooltip(List.of("Salle forte sous " + Strongholds.VAULT_AT + " %, ou ouverte : rasee")));
             WarData.Relation owner = data.find(fort.nation).orElse(null);
             WarData.Relation partner = owner == null ? null : WarStrategy.comrade(data, owner, now);
             boolean owes = owner != null && owner.holds() || partner != null && partner.holds();
             List<String> fall = new ArrayList<>();
             if (owner != null && owner.holds()) {
-                fall.add("Elle te rend " + WarStrategy.owedLine(player, owner) + ",");
-                fall.add("  l'argent tant que son tresor le permet.");
+                fall.add("Rendu : " + WarStrategy.owedLine(player, owner));
             }
             if (partner != null && partner.holds()) {
-                fall.add(partner.traits().name() + " aussi : " + WarStrategy.owedLine(player, partner) + ".");
+                fall.add(partner.traits().name() + " : " + WarStrategy.owedLine(player, partner));
             }
-            fall.add("Puis 30 % de ce qui reste de son tresor,");
-            fall.add("la moitie de son armee tombe, un de ses pays");
-            fall.add("passe a ta nation (+1 claim), treve de 7 jours.");
-            fall.add("5 minutes plus tard, elle s'efface.");
+            fall.add("30 % de son tresor, un de ses pays (+1 claim)");
+            fall.add("Treve de 7 jours");
             cards.add(Card.of(new ItemStack(Items.GOLD_INGOT), "Si elle tombe",
                             owes ? List.of("Ce qu'elle t'a pris", "+ 30 % de son tresor")
                                     : List.of("30 % de leur tresor", "Treve de 7 jours"))
@@ -243,8 +226,8 @@ public final class WarMenu extends MenuController {
             sections.add(new MenuView.Section("LEUR PLACE FORTE", "armor", MenuView.GRID, cards));
         } else if (Strongholds.building(player.getUUID())) {
             sections.add(new MenuView.Section("LEUR PLACE FORTE", "armor", MenuView.GRID, List.of(
-                    Card.of(new ItemStack(Items.SCAFFOLDING), "En chantier", List.of("Loin de tes claims",
-                            "Ses coordonnees arrivent")).accent(0xFF55545C))));
+                    Card.of(new ItemStack(Items.SCAFFOLDING), "En chantier", List.of("Coordonnees a venir", ""))
+                            .accent(0xFF55545C))));
         }
 
         // -- la coalition contre toi (lot 22l-2)
@@ -252,15 +235,8 @@ public final class WarMenu extends MenuController {
             WarData.Relation first = pair.get(0);
             WarData.Relation second = pair.get(1);
             List<String> tooltip = new ArrayList<>(List.of(
-                    "Ta puissance (" + might + ") les inquiete : au-dela de " + Math.round(WarStrategy.COALITION_AT)
-                            + ", les nations s'allient contre toi.",
-                    "Allies, leur humeur s'entraine l'une l'autre.",
-                    "A chaque assaut, l'allie joint 4 a 10 soldats a ses couleurs,",
-                    "et la place forte de la coalition est plus grande.",
-                    "Si la place forte de l'une tombe, les deux te rendent",
-                    "ce qu'elles t'ont pris, et la coalition se defait.",
-                    "Sous " + Math.round(WarStrategy.DISSOLVE_AT) + " de puissance, ou si l'une se radoucit (un cadeau),",
-                    "elle se defait aussi."));
+                    "Puissance " + might + " : coalition au-dela de " + Math.round(WarStrategy.COALITION_AT),
+                    "Dissoute sous " + Math.round(WarStrategy.DISSOLVE_AT)));
             List<Card> cards = new ArrayList<>();
             for (WarData.Relation member : pair) {
                 WarData.Relation other = member == first ? second : first;
@@ -276,7 +252,7 @@ public final class WarMenu extends MenuController {
             boolean fighting = first.stance() == WarData.Stance.GUERRE || second.stance() == WarData.Stance.GUERRE;
             cards.add(Card.of(new ItemStack(Items.IRON_SWORD), fighting ? "Ils attaquent ensemble" : "Le pacte",
                             List.of(fighting ? "Un contingent allie" : "Fin " + WarStrategy.when(first.pact(), now),
-                                    fighting ? "a chaque assaut" : "Renouvele si tu fais peur"))
+                                    fighting ? "a chaque assaut" : ""))
                     .accent(0xFFB3261E)
                     .tooltip(tooltip));
             sections.add(new MenuView.Section("LA COALITION CONTRE TOI", "armor", MenuView.GRID, cards));
@@ -342,28 +318,22 @@ public final class WarMenu extends MenuController {
                     lines.set(1, why);
                 }
                 List<String> tooltip = new ArrayList<>();
-                tooltip.add("Tu lui declares la guerre : elle batit une place forte");
-                tooltip.add("a 1 200 - 2 000 blocs, et viendra attaquer ta base");
-                tooltip.add("a l'heure que tu fixes.");
-                tooltip.add("Si sa place forte tombe : " + WarStrategy.spoilsLine(player, relation) + ".");
+                tooltip.add("Si sa place forte tombe : " + WarStrategy.spoilsLine(player, relation));
                 long rest = relation.treasury() - Math.min(relation.owed(), relation.treasury());
-                tooltip.add("Ses 30 % : ~" + MoneyFormat.compact(rest * 3L / 10L / 1000L * 1000L)
-                        + " $ (estimes par tes espions).");
+                tooltip.add("Ses 30 % : ~" + MoneyFormat.compact(rest * 3L / 10L / 1000L * 1000L) + " $");
                 WarData.Relation partner = WarStrategy.comrade(data, relation, now);
                 if (partner != null) {
-                    tooltip.add(partner.traits().name() + ", " + (partner.traits().plural() ? "ses allies" : "son allie")
-                            + ", la rejoindra.");
+                    tooltip.add("Avec " + partner.traits().name());
                 }
                 if (refusal != null) {
-                    tooltip.add(refusal + ".");
+                    tooltip.add(refusal);
                 }
                 cards.add(Card.of(banner(traits), traits.name(), lines)
                         .accent(refusal == null ? 0xFFB3261E : 0xFF55545C)
                         .badge(refusal == null ? "GUERRE" : "")
                         .action(refusal == null ? "declare:" + relation.nation() : "")
                         .confirm(refusal == null ? "!Declarer la guerre " + EarthNations.a(traits.name()) + " ?|"
-                                + "Elle batira une place forte et viendra attaquer ta base. Si sa place forte tombe : "
-                                + WarStrategy.spoilsLine(player, relation) + "." : "")
+                                + "Elle viendra attaquer ta base" : "")
                         .state(refusal == null ? MenuView.NORMAL : MenuView.DISABLED)
                         .tooltip(tooltip));
             }
@@ -437,7 +407,7 @@ public final class WarMenu extends MenuController {
             if (mineStake != null) {
                 tooltip.add("Reprendrait la mine de " + mineStake.name() + " sur un assaut reussi");
             }
-            tooltip.add("Clic : un cadeau de 1 000 $ (pas en guerre)");
+            tooltip.add("Clic : cadeau de 1 000 $");
             tooltip.add("/guerre declarer " + traits.slug() + " : lui declarer la guerre");
             nations.add(Card.of(banner(traits), traits.name(), List.of(stance,
                     "Armee " + estimate(relation.army()) + " · tresor " + estimate(relation.treasury())))
@@ -465,8 +435,8 @@ public final class WarMenu extends MenuController {
         List<Card> defense = new ArrayList<>();
         defense.add(Card.of(new ItemStack(Items.CHEST), data.vault().isPresent() ? "Ton coffre" : "Coffre automatique",
                 data.vault().map(v -> List.of(v.pos().getX() + " " + v.pos().getY() + " " + v.pos().getZ(),
-                        "/guerre coffre pour le deplacer"))
-                        .orElse(List.of("Le claim le plus garni", "Clic : le poser ou tu es")))
+                        "/guerre coffre"))
+                        .orElse(List.of("Automatique", "Clic : ici")))
                 .action("vault"));
         defense.add(Card.of(new ItemStack(Items.SHIELD), fortress, List.of(
                 "Ta force : " + Math.round(WarStrategy.power(player) * 100.0d) + " %",
@@ -480,8 +450,6 @@ public final class WarMenu extends MenuController {
                 .action("garrison|ouvrir la garnison"));
         // Ta puissance (lot 22l-2) : au-dela du seuil, les nations s'allient contre toi.
         List<String> parts = new ArrayList<>(threat.parts());
-        parts.add("Au-dela de " + Math.round(WarStrategy.COALITION_AT) + ", les nations hostiles s'allient");
-        parts.add("contre toi ; sous " + Math.round(WarStrategy.DISSOLVE_AT) + ", leur coalition se defait.");
         defense.add(Card.of(new ItemStack(Items.NETHER_STAR), "Ta puissance : " + might,
                         List.of(might >= WarStrategy.COALITION_AT ? "Elles s'allient contre toi"
                                 : "Coalition au-dela de " + Math.round(WarStrategy.COALITION_AT),
@@ -506,10 +474,6 @@ public final class WarMenu extends MenuController {
                     : ", " + WarStrategy.lessonText(lesson)));
         }
         if (keenest != null) {
-            learned.add("Elles evitent les cases ou leurs soldats sont tombes,");
-            learned.add("voient davantage de tes pieges a chaque assaut,");
-            learned.add("et changent leur troupe contre ce qui les a tuees.");
-            learned.add("Deplacer ton coffre efface la carte de leurs morts.");
             String lesson = keenest.lessons().lesson();
             defense.add(Card.of(new ItemStack(Items.WRITABLE_BOOK), "Ce qu'elles ont appris",
                             List.of(keenest.traits().name() + " : " + keenest.lessons().assaults() + " assaut(s)",
@@ -518,7 +482,7 @@ public final class WarMenu extends MenuController {
                     .accent(lesson.isEmpty() ? 0xFF55545C : 0xFFE8590C)
                     .tooltip(learned));
         }
-        sections.add(new MenuView.Section("TA BASE VUE PAR ELLES", "upgrade", MenuView.GRID, defense));
+        sections.add(new MenuView.Section("TA DEFENSE", "upgrade", MenuView.GRID, defense));
 
         // -- l'histoire
         List<WarData.Event> history = data.history();
@@ -530,14 +494,14 @@ public final class WarMenu extends MenuController {
                 rows.add(Card.of(banner(traits), traits.name() + " : " + event.text(),
                         List.of(ago(now - event.time()))));
             }
-            sections.add(new MenuView.Section("L'HISTOIRE DE TES GUERRES", "craft", MenuView.ROWS, rows));
+            sections.add(new MenuView.Section("HISTORIQUE", "craft", MenuView.ROWS, rows));
         }
-        String subtitle = siege != null && !siege.finished() ? "Ta base est assiegee : ta banque est sous scelle"
+        String subtitle = siege != null && !siege.finished() ? "Assaut en cours : banque sous scelle"
                 : conflict.map(r -> r.stance() == WarData.Stance.MENACE ? r.traits().name() + " exige un tribut"
                         : r.declared() ? "Ta contre-offensive contre " + r.traits().the() + " : rase sa place forte"
                         : r.slot() > 0L ? "Assaut " + r.traits().de() + " " + WarStrategy.when(r.slot(), now)
                         : "Fixe l'heure de l'assaut " + r.traits().de()).orElse(FactionApi.has(player)
-                        ? "Les nations t'observent" : "Fonde ta nation : les autres l'observeront");
+                        ? "" : "");
         MenuView view = new MenuView(id(), "La guerre des nations", subtitle, stats, sections, true);
         return FactionApi.has(player) ? view.withTabs(fr.atraxterra.dohy.faction.FactionMenus.tabs(player,
                 fr.atraxterra.dohy.faction.FactionMenus.DIPLOMACY)) : view;
@@ -562,10 +526,10 @@ public final class WarMenu extends MenuController {
             refusal = WarStrategy.peace(player);
         } else if (key.equals("vault")) {
             refusal = WarStrategy.setVault(player);
-            message = "Ton coffre est ici. Defends-le.";
+            message = "Coffre pose ici.";
         } else if (key.equals("fort")) {
             refusal = Strongholds.compass(player);
-            message = "Une boussole pointe vers leur place forte.";
+            message = "Boussole vers leur place forte.";
         } else if (key.startsWith("slot:")) {
             try {
                 refusal = WarStrategy.choose(player, Long.parseLong(key.substring(5)));
@@ -587,7 +551,7 @@ public final class WarMenu extends MenuController {
         } else if (key.startsWith("declare:")) {
             try {
                 refusal = WarStrategy.counter(player, Integer.parseInt(key.substring(8)));
-                message = "La guerre est declaree : sa place forte se dresse bientot.";
+                message = "Guerre declaree.";
             } catch (NumberFormatException invalid) {
                 refusal = "Nation inconnue";
             }
@@ -610,9 +574,7 @@ public final class WarMenu extends MenuController {
         return Optional.of(Card.of(fr.atraxterra.dohy.earth.mine.EarthMines.icon(mine), mine.name(),
                         List.of("Mine en jeu", "Reprise s'ils gagnent"))
                 .accent(0xFFE8590C)
-                .tooltip(List.of("Si leur tresorier rentre au camp avec ta banque,",
-                        "la nation reprend cette mine et ses revenus.",
-                        "C'est la derniere que tu as capturee dans sa region.")));
+                .tooltip(List.of("Si leur tresorier rentre au camp")));
     }
 
     /** La carte du pays en jeu face a cette nation, s'il y en a un. */
@@ -624,9 +586,6 @@ public final class WarMenu extends MenuController {
         return Optional.of(Card.of(new ItemStack(Items.FILLED_MAP), EarthNations.countryName(country),
                         List.of("En jeu", "Repris s'ils gagnent"))
                 .accent(0xFFE8590C)
-                .tooltip(List.of("Si leur tresorier rentre au camp avec ta banque,",
-                        "la nation reprend ce pays, et le claim qu'il donne.",
-                        "C'est le dernier pays que tu lui as pris ;",
-                        "celui de ta capitale n'est jamais en jeu.")));
+                .tooltip(List.of("Si leur tresorier rentre au camp")));
     }
 }

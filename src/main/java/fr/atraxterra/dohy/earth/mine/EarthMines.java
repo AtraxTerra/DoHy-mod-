@@ -702,8 +702,7 @@ public final class EarthMines {
         if (!player.getInventory().add(stack)) {
             player.drop(stack, false);
         }
-        player.sendSystemMessage(Component.literal("Balise de concession achetee : pose-la dans une mine de la Terre"
-                + " (/gisements) et reste a cote.").withStyle(ChatFormatting.GREEN));
+        player.sendSystemMessage(Component.literal("Balise de concession achetee (/gisements).").withStyle(ChatFormatting.GREEN));
         return null;
     }
 

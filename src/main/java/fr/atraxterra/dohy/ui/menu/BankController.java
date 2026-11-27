@@ -63,20 +63,20 @@ public final class BankController extends MenuController {
                         .accent(0xFF22E558)
                         .tooltip(data.interestTotal() > 0
                                 ? List.of("Percus a ce jour : " + MoneyFormat.exact(data.interestTotal()),
-                                "Ils courent aussi monde ferme")
-                                : List.of("Ils courent aussi monde ferme")),
+                                "Meme hors ligne")
+                                : List.of("Meme hors ligne")),
                 Card.of(new ItemStack(Items.SKELETON_SKULL), "A la mort", List.of(
                         freeLeft > 0 ? freeLeft + " mort(s) sans penalite"
                                 : "Perte : " + MoneyFormat.exact(insured ? loss / 2 : loss),
-                        "L'epargne est protegee"))
+                        ""))
                         .accent(freeLeft > 0 ? 0xFF22E558 : 0xFFEF3826),
                 Card.of(new ItemStack(Items.TOTEM_OF_UNDYING), "Assurance", List.of(
                         MoneyFormat.exact(Bank.insurancePrice()) + " la charge",
                         data.insurance() + " charge(s)"))
                         .accent(0xFFFAC400).badge(String.valueOf(data.insurance()))
                         .action("insurance|acheter une charge")
-                        .tooltip(List.of("Divise par deux la perte a la mort",
-                                "Une charge est consommee par mort")));
+                        .tooltip(List.of("Perte a la mort / 2",
+                                "Une charge par mort")));
 
         return new MenuView(id(), "Banque", "", stats, List.of(
                 new MenuView.Section("DEPOSER", "resources", MenuView.GRID, deposit),

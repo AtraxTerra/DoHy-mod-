@@ -52,8 +52,8 @@ public final class TrixiumMenu extends MenuController {
         List<Card> contest = new ArrayList<>();
         Card deposit = Card.of(new ItemStack(PalaItems.TRIXIUM.get()), "Deposer mon trixium", List.of(
                         "Dans ton sac : " + MoneyFormat.exact(carried), "Lingot 1, bloc 9"))
-                .tooltip(List.of("Tout le trixium du sac part au concours.",
-                        "Depose, il ne se vend plus."));
+                .tooltip(List.of("Tout le trixium du sac.",
+                        ""));
         contest.add(carried > 0 ? deposit.accent(TEAL).action("deposit").badge("+" + MoneyFormat.shortForm(carried))
                 : deposit.state(MenuView.DISABLED));
         List<String> tiers = new ArrayList<>();
@@ -132,7 +132,7 @@ public final class TrixiumMenu extends MenuController {
                             MoneyFormat.exact(entry.total()) + " trixium"))
                     .accent(entry.player() ? GREEN : GREY));
         }
-        sections.add(new MenuView.Section("FACTIONS (POUR INFORMATION)", "resources", MenuView.ROWS, factionRows));
+        sections.add(new MenuView.Section("FACTIONS", "resources", MenuView.ROWS, factionRows));
 
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("DEPOSE", MoneyFormat.shortForm(data.deposited()), 0xFFFFFFFF),

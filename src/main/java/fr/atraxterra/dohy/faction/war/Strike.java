@@ -515,9 +515,8 @@ final class Strike {
         if (victim != null) {
             title(victim, "ALERTE MISSILE", warhead.title() + " \u00B7 impact dans " + seconds + " s");
             victim.sendSystemMessage(FactionApi.prefix().append(Component.literal("Alerte : " + warhead.one()
-                    + " " + traits.de() + " vise ta base, impact dans " + seconds + " s. Eloigne-toi d'au moins "
-                    + warhead.danger() + " blocs. Tes coffres et machines seront epargnes ; le terrain reviendra "
-                    + "5 h apres l'impact.").withStyle(ChatFormatting.RED)));
+                    + " " + traits.de() + " vise ta base, impact dans " + seconds + " s. Eloigne-toi de "
+                    + warhead.danger() + " blocs.").withStyle(ChatFormatting.RED)));
         }
         level.playSound(null, target, SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 64.0f, 0.7f);
         refreshBar();

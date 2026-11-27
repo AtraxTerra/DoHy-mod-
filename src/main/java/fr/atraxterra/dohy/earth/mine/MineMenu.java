@@ -89,7 +89,7 @@ public final class MineMenu extends MenuController {
                                             + " blocs"))
                             .accent(near ? GOLD : GREY).progress(capture.progress, capture.need)
                             .tooltip(List.of("Balise en " + capture.beacon.getX() + " " + capture.beacon.getY() + " "
-                                    + capture.beacon.getZ(), "La casser abandonne la capture")))));
+                                    + capture.beacon.getZ(), "La casser : capture perdue")))));
         }
 
         List<Card> held = new ArrayList<>();
@@ -111,7 +111,7 @@ public final class MineMenu extends MenuController {
                 tooltip.add("Technologies : +" + bonus + " % d'argent" + (blocks > 0 ? ", +" + ores + " % de minerais"
                         : ""));
             }
-            tooltip.add("Tu peux toujours y miner toi-meme");
+            tooltip.add("");
             if (stake != null && stake.id().equals(body.id())) {
                 tooltip.add("En jeu : reprise si " + nation + " gagne un assaut");
             }
@@ -124,13 +124,12 @@ public final class MineMenu extends MenuController {
                     .badge("RANG " + EarthMines.tier(body))
                     .tooltip(tooltip)
                     .action("abandon:" + body.id() + "|la rendre")
-                    .confirm("!Rendre " + body.name() + " ?|Elle revient a " + nation + " ; ses revenus s'arretent."));
+                    .confirm("!Rendre " + body.name() + " ?|Elle revient a " + nation));
         }
         if (held.isEmpty()) {
             held.add(Card.of(new ItemStack(DoHyMines.BEACON_ITEM.get()), "Aucune mine", List.of(
-                            "Pose une balise de concession", "dans une mine de la Terre"))
-                    .accent(GOLD).tooltip(List.of("La balise s'achete a la Boutique",
-                            MoneyFormat.exact(DoHyMines.BEACON_PRICE) + " $, consommee par la capture")));
+                            "Balise de concession :", "Boutique, " + MoneyFormat.exact(DoHyMines.BEACON_PRICE) + " $"))
+                    .accent(GOLD));
         }
         sections.add(new MenuView.Section("TES MINES|" + mines.size(), "resources", MenuView.GRID, held));
 
@@ -153,16 +152,7 @@ public final class MineMenu extends MenuController {
         }
         sections.add(new MenuView.Section("LES PLUS PROCHES", "craft", MenuView.GRID, near));
 
-        sections.add(new MenuView.Section("COMMENT FAIRE", "", MenuView.TEXT, List.of(Card.of(ItemStack.EMPTY, "",
-                List.of("1. Achete une balise de concession a la Boutique ("
-                                + MoneyFormat.exact(DoHyMines.BEACON_PRICE) + " $).",
-                        "2. Va dans une mine de la Terre (/gisements) et pose la balise.",
-                        "3. Reste a moins de " + EarthMines.RANGE + " blocs : 2 a 5 min selon le rang de la mine.",
-                        "4. Chaque heure, meme hors ligne : l'argent a ta banque nationale, les minerais au coffre"
-                                + " de la banque (une semaine d'absence au plus).",
-                        "La mine reste ouverte : tu peux toujours y miner toi-meme. La nation depossedee s'en"
-                                + " souvient : si son assaut reussit, elle la reprend.")))));
-        return new MenuView(id(), "Mines de la Terre", "Capture des mines : leurs revenus vont a ta banque nationale.",
+        return new MenuView(id(), "Mines de la Terre", "",
                 stats, sections, true).withTabs(FactionMenus.tabs(player, FactionMenus.TERRITORY));
     }
 

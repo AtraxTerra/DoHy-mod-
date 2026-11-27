@@ -115,13 +115,13 @@ public final class OrgMenus {
                 lines.add(current ? "Ton regime" : now < ready ? "Change dans " + Organisations.duration(ready - now)
                         : "Choisir ce regime");
                 Card card = Card.of(option.icon(), option.label(), lines).accent(option.color())
-                        .tooltip(List.of(option.summary(), "Confiance des nations " + signed(option.trust())
-                                + ", crainte " + signed(option.fear()), "Le regime ne change qu'une fois par semaine"));
+                        .tooltip(List.of(option.summary(), "Confiance " + signed(option.trust())
+                                + ", crainte " + signed(option.fear())));
                 if (current) {
                     card = card.badge("ACTUEL").state(MenuView.DONE);
                 } else if (now >= ready) {
                     card = card.action("regime:" + option.name() + "|choisir").confirm("Devenir "
-                            + option.label().toLowerCase() + " ?|Le regime ne change ensuite qu'une fois par semaine");
+                            + option.label().toLowerCase() + " ?|Une fois par semaine");
                 } else {
                     card = card.state(MenuView.DISABLED);
                 }
@@ -163,7 +163,7 @@ public final class OrgMenus {
             }
             if (cadres.isEmpty()) {
                 cadres.add(Card.of(new ItemStack(Items.PLAYER_HEAD), "Aucun cadre", List.of(
-                        "Recrute parmi les candidats du jour", "Ils tiennent les postes de ta nation"))
+                        "Recrute ci-dessous", ""))
                         .state(MenuView.DISABLED));
             }
 
@@ -180,9 +180,9 @@ public final class OrgMenus {
                         .accent(0xFF27C4E8).tooltip(List.of(candidate.character().hint(),
                                 "Loyaute de depart " + Math.round(candidate.loyalty())));
                 recruits.add(full ? card.state(MenuView.DISABLED) : card.action("hire:" + candidate.id()
-                        + "|embaucher").confirm("Embaucher " + candidate.name() + " ?|Prime de "
+                        + "|embaucher").confirm("Embaucher " + candidate.name() + " ?|"
                         + MoneyFormat.exact(signing) + " $, puis " + MoneyFormat.exact(Organisations.salary(player,
-                        candidate)) + " $ par jour depuis la banque nationale"));
+                        candidate)) + " $ / jour"));
             }
 
             List<Card> settings = List.of(Card.of(new ItemStack(Items.COMPARATOR), "Parametres", List.of(
@@ -307,18 +307,18 @@ public final class OrgMenus {
             Grade next = cadre.rank().next();
             List<Card> actions = new ArrayList<>();
             if (next == null) {
-                actions.add(Card.of(helmet(cadre.rank()), "Au sommet", List.of("Haut cadre", "Plus de grade au-dessus"))
+                actions.add(Card.of(helmet(cadre.rank()), "Au sommet", List.of("Haut cadre", ""))
                         .state(MenuView.DONE));
             } else {
                 long price = Organisations.promotionPrice(player, cadre);
                 boolean ready = now >= cadre.promotable() && !cadre.jailed();
                 Card promote = Card.of(helmet(next), "Promouvoir " + next.label(), List.of(
-                                MoneyFormat.exact(price) + " $ (une semaine du nouveau salaire)",
+                                MoneyFormat.exact(price) + " $",
                                 cadre.jailed() ? "Pas depuis la prison" : ready ? "Loyaute +10"
                                         : "Possible dans " + Organisations.duration(cadre.promotable() - now)))
                         .accent(0xFFFAC400);
                 actions.add(ready ? promote.action("promote|promouvoir").confirm("Promouvoir " + cadre.name() + " "
-                        + next.label() + " ?|" + MoneyFormat.exact(price) + " $ depuis la banque nationale")
+                        + next.label() + " ?|" + MoneyFormat.exact(price) + " $")
                         : promote.state(MenuView.DISABLED));
             }
             Post role = cadre.role();
@@ -326,10 +326,9 @@ public final class OrgMenus {
                 long bail = Organisations.bail(player, cadre);
                 actions.add(Card.of(new ItemStack(Items.IRON_BARS), "Payer la caution", List.of(
                                 "En prison encore " + Organisations.duration(Math.max(60_000L, cadre.jailedUntil() - now)),
-                                MoneyFormat.exact(bail) + " $ · loyaute +5 ; sans caution, -10 a sa sortie"))
+                                MoneyFormat.exact(bail) + " $ · loyaute +5"))
                         .accent(0xFFFAC400).badge("PRISON").action("bail|payer")
-                        .confirm("Payer la caution de " + cadre.name() + " ?|" + MoneyFormat.exact(bail)
-                                + " $ depuis la banque nationale"));
+                        .confirm("Payer la caution de " + cadre.name() + " ?|" + MoneyFormat.exact(bail) + " $"));
             } else if (role != null) {
                 actions.add(Card.of(role.icon(), "Liberer le poste", List.of(role.label(), "Il redevient libre"))
                         .accent(0xFF55545C).action("unpost|liberer"));
@@ -340,9 +339,8 @@ public final class OrgMenus {
                         .right("enterprise|voir l'entreprise"));
             }
             actions.add(Card.of(new ItemStack(Items.BARRIER), "Renvoyer", List.of("Sans indemnite",
-                            "Son poste se libere"))
-                    .accent(0xFFEF3826).action("fire|renvoyer").confirm("!Renvoyer " + cadre.name() + " ?|Il quitte "
-                            + "ta nation sans indemnite"));
+                            ""))
+                    .accent(0xFFEF3826).action("fire|renvoyer").confirm("!Renvoyer " + cadre.name() + " ?"));
 
             List<Card> posts = new ArrayList<>();
             for (Post post : Post.values()) {

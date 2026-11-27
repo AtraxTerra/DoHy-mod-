@@ -73,18 +73,14 @@ public final class NationMenu extends MenuController {
             own.add(Card.of(FactionMenus.banner(data), "Capitale", List.of("Aucune",
                             "Pose-la dans un de tes claims"))
                     .accent(0xFFFAC400).badge("A POSER")
-                    .tooltip(List.of("Tiens-toi dans un de tes claims, sur la carte de la Terre.",
-                            "Son pays sera ta premiere cible.", "Clic : la poser ici"))
+                    .tooltip(List.of("Clic : la poser ici"))
                     .action("capital|poser ici"));
         } else {
             own.add(Card.of(FactionMenus.banner(data), "Capitale", List.of(
                             EarthNations.countryName(nation.capital()),
                             nation.capitalX() + ", " + nation.capitalZ()))
                     .accent(0xFFEF3826)
-                    .tooltip(List.of("En rouge sur la carte du monde du spawn.",
-                            mine.isEmpty() ? "Tant que tu n'as aucun pays, elle se deplace ou tu veux"
-                                    : "Elle se deplace dans un pays que tu tiens",
-                            "Clic : la poser ici"))
+                    .tooltip(List.of("Clic : la deplacer ici"))
                     .action("capital|deplacer ici"));
         }
         List<String> held = new ArrayList<>();
@@ -94,8 +90,7 @@ public final class NationMenu extends MenuController {
         own.add(Card.of(new ItemStack(Items.FILLED_MAP), mine.size() + " pays", List.of(
                         mine.isEmpty() ? "Aucun pour l'instant" : NationCommand.names(mine, 2),
                         "+" + mine.size() + " claim(s)"))
-                .accent(0xFFFAC400).tooltip(held.isEmpty() ? List.of("Chaque pays tenu ajoute un claim",
-                        "et compte pour quatre claims dans la notation") : heldTooltip(held)));
+                .accent(0xFFFAC400).tooltip(held.isEmpty() ? List.of("+1 claim par pays") : heldTooltip(held)));
         if (target == 0) {
             own.add(Card.of(new ItemStack(Items.IRON_SWORD), "Aucune cible", List.of(
                     nation.capital() == 0 ? "Pose d'abord ta capitale" : "Vise un voisin ci-dessous",
@@ -108,10 +103,7 @@ public final class NationMenu extends MenuController {
                             "Aux mains " + EarthNations.de(holder.name()),
                             MoneyFormat.exact(points) + " / " + MoneyFormat.exact(cost) + " points"))
                     .accent(color(holder.rival())).badge("CIBLE").progress(points, cost)
-                    .tooltip(List.of("Ses defenseurs, " + holder.name() + ", sont de la partie aux events.",
-                            "Finis devant eux : l'ELO gagne compte en points.",
-                            "Le pays tombe quand ses points sont reunis.",
-                            "Clic : renoncer (les points restent acquis)"))
+                    .tooltip(List.of("Points : l'ELO des events", "Clic : renoncer"))
                     .action("drop|renoncer"));
         }
         return own;
@@ -123,8 +115,6 @@ public final class NationMenu extends MenuController {
         if (held.size() > 14) {
             lines.add("et " + (held.size() - 14) + " autres");
         }
-        lines.add("Un assaut perdu rend a la nation le dernier");
-        lines.add("pays pris ; jamais celui de ta capitale.");
         return lines;
     }
 

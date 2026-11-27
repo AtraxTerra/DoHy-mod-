@@ -110,13 +110,10 @@ public final class JobXpGuide {
             List<String> notes = new ArrayList<>();
             String badge = "";
             if (first) {
-                notes.add("Valeurs de base, avant les bonus d'XP");
-                if (job != Job.ALCHEMIST) {
-                    notes.add("Bareme de Paladium Bedrock (PalaTracker) : memes XP, niveaux x5");
-                }
+                notes.add("Hors bonus");
                 if (bonus > 0) {
                     badge = "BONUS +" + bonus + " %";
-                    notes.add("Ton bonus actuel : +" + bonus + " % sur chaque gain");
+                    notes.add("Ton bonus : +" + bonus + " % sur chaque gain");
                 }
                 first = false;
             }
@@ -141,17 +138,17 @@ public final class JobXpGuide {
     // -- Les quatre metiers ---------------------------------------------------------------------
 
     private static List<Section> miner() {
-        Section blocks = new Section("BLOCS MINES", "Un bloc pose par un joueur ne rapporte rien",
-                "La pierre et l'ardoise ne rapportent rien, comme sur Bedrock");
+        Section blocks = new Section("BLOCS MINES", "Bloc pose : rien",
+                "Pierre et ardoise : rien");
         blocks(blocks, Job.MINER, "par bloc", Items.STONE);
 
-        Section smelting = new Section("FONTE", "Au four, au haut fourneau ou au palafurnace, pris a la main",
-                "Aussi le marteau et la pioche du dieu en fusion, qui fondent sur place",
-                "La Fortune donne plus de lingots, donc plus d'XP");
+        Section smelting = new Section("FONTE", "Four, haut fourneau, palafurnace",
+                "Outils en fusion compris",
+                "Fortune : plus de lingots");
         items(smelting, Job.MINER, JobProgression.Sources::smelted, "par lingot");
 
-        Section cobble = new Section("COBBLEBREAKER", "Prises a la main dans la machine, par clic ou maj-clic",
-                "Un entonnoir qui vide la machine ne donne pas d'XP");
+        Section cobble = new Section("COBBLEBREAKER", "Pris a la main",
+                "Pas a l'entonnoir");
         int machine = Math.max(MinerXpEvents.PARTICLE_XP_LEVEL,
                 gate(Job.MINER, JobGate.of(PalaMachines.COBBLEBREAKER_BLOCK.get().asItem())));
         for (Map.Entry<Item, Double> particle : MinerXpEvents.particles()) {
@@ -167,18 +164,18 @@ public final class JobXpGuide {
         double god = MinerXpEvents.exact(GodVillager.PALAJOBS_XP);
         gestures.add(new ItemStack(PalaItems.ENDIUM_NUGGET.get()), "Echange avec le God Villager", plus(god),
                 "par echange", GodVillager.REQUIRED_LEVEL, god,
-                "Apparait tres rarement pres d'un Mineur niveau " + GodVillager.REQUIRED_LEVEL,
+                "Rare, pres d'un Mineur niveau " + GodVillager.REQUIRED_LEVEL,
                 "64 blocs de paladium contre une pepite d'endium");
         return sections(blocks, smelting, cobble, gestures);
     }
 
     private static List<Section> hunter() {
-        Section creatures = new Section("CREATURES TUEES", "Les animaux comptent pour le Chasseur, comme sur Bedrock",
-                "Une creature nee d'un spawner, ou tuee au controleur : un quarantieme",
-                "Un petit ne rapporte rien");
+        Section creatures = new Section("CREATURES TUEES", "Les animaux : Chasseur",
+                "Spawner ou controleur : 1/40",
+                "Un petit : rien");
         entities(creatures, Job.HUNTER, "par creature", Items.BONE);
 
-        Section cooking = new Section("CUISSON", "Au four ou au fumoir, pris a la main");
+        Section cooking = new Section("CUISSON", "Four ou fumoir");
         items(cooking, Job.HUNTER, JobProgression.Sources::smelted, "par morceau");
 
         // Le niveau d'un poisson tient compte de la canne en paladium, la canne d'entree : sans
@@ -190,9 +187,9 @@ public final class JobXpGuide {
                         : "La canne en paladium ne demande pas de niveau",
                 endiumRod > 0 ? "La canne en endium demande Chasseur " + endiumRod
                         : "La canne en endium ne demande pas de niveau",
-                "La canne en bois ne lance pas le mini-jeu et ne rapporte rien",
-                "La zone touchee multiplie la prise et son XP (x1 a x5)",
-                "Un poisson au-dessus de ton niveau ne mord pas");
+                "Canne en bois : rien",
+                "Zone touchee : x1 a x5",
+                "Au-dessus de ton niveau : ne mord pas");
         for (Map.Entry<String, Long> fish : FishingTable.XP.entrySet()) {
             Item item = item(fish.getKey());
             if (item == null || fish.getValue() <= 0) {
@@ -220,20 +217,20 @@ public final class JobXpGuide {
     }
 
     private static List<Section> farmer() {
-        Section crops = new Section("RECOLTES", "Une culture ne compte qu'une fois mure",
-                "Un bloc pose par un joueur ne rapporte rien");
+        Section crops = new Section("RECOLTES", "Culture mure seulement",
+                "Bloc pose : rien");
         blocks(crops, Job.FARMER, "par recolte", Items.WHEAT);
 
         Section breeding = new Section("ELEVAGE");
         entities(breeding, Job.FARMER, "par animal", Items.LEATHER);
 
-        Section kitchen = new Section("CUISSON ET ETABLI", "Au four, pris a la main, ou a l'etabli",
-                "Les animaux comptent desormais pour le Chasseur");
+        Section kitchen = new Section("CUISSON ET ETABLI", "Four ou etabli",
+                "Les animaux : Chasseur");
         items(kitchen, Job.FARMER, JobProgression.Sources::smelted, "par objet cuit");
         items(kitchen, Job.FARMER, JobProgression.Sources::crafted, "par objet fabrique");
 
         Section machines = new Section("MACHINES ET OGM",
-                "Moulin et machine a pain : a la main seulement, l'automate ne donne pas d'XP");
+                "Moulin, machine a pain : a la main");
         AgriConfig.Config agri = AgriConfig.config();
         long mill = agri.machines().millXp();
         if (mill > 0) {
@@ -257,7 +254,7 @@ public final class JobXpGuide {
         ItemStack gmoIcon = new ItemStack(DoHyAgri.GMO_MACHINE_ITEM.get());
         if (gmo.discoveryXp() > 0) {
             machines.add(gmoIcon, "Recette OGM decouverte", plus(gmo.discoveryXp()), "par recette", lab,
-                    gmo.discoveryXp(), "Une fois par recette trouvee a la machine OGM");
+                    gmo.discoveryXp(), "Une fois par recette");
         }
         if (gmo.craftXp() > 0) {
             machines.add(gmoIcon, "Graines OGM fabriquees", plus(gmo.craftXp()), "par fabrication", lab,
@@ -267,8 +264,8 @@ public final class JobXpGuide {
     }
 
     private static List<Section> alchemist() {
-        Section harvest = new Section("RECOLTES ET BLOCS", "Une culture ne compte qu'une fois mure",
-                "Un bloc pose par un joueur ne rapporte rien");
+        Section harvest = new Section("RECOLTES ET BLOCS", "Culture mure seulement",
+                "Bloc pose : rien");
         blocks(harvest, Job.ALCHEMIST, "par bloc", Items.NETHER_WART);
         double log = MinerXpEvents.exact(AlchemistEvents.LOG_XP);
         harvest.add(new ItemStack(PalaWoods.JACARANDA_LOG.get()), "Buches de jacaranda, judeecercis, erable",
@@ -281,7 +278,7 @@ public final class JobXpGuide {
         JobProgression.Reward potion = sources(Job.ALCHEMIST).actions().get("potion_brewed");
         if (potion != null) {
             reward(brewing, new ItemStack(Items.BREWING_STAND), "Potion terminee a l'alambic", potion, "par potion",
-                    0, List.of("Chaque potion qui sort de l'alambic"));
+                    0, List.of("Par potion"));
         }
 
         ItemStack extractor = new ItemStack(PalaAlchemist.EXTRACTOR_ITEM.get());
@@ -293,7 +290,7 @@ public final class JobXpGuide {
             double xp = MinerXpEvents.exact(sap.extractionXp());
             brewing.add(extractor, MenuView.text(Component.literal("Extracteur : ").append(sap.displayName())),
                     plus(xp), "par fiole pleine", Math.max(sap.extractionLevel(), extractorGate), xp,
-                    "Une fiole en partie remplie en donne la part");
+                    "Fiole partielle : au prorata");
         }
 
         for (PortalTier tier : PortalTier.values()) {
@@ -343,8 +340,8 @@ public final class JobXpGuide {
         double lightning = MinerXpEvents.exact(AlchemistEvents.LIGHTNING_XP);
         ItemStack bolt = new ItemStack(PalaAlchemist.LIGHTNING_POTION.get());
         brewing.add(bolt, MenuView.text(bolt.getHoverName()), plus(lightning), "par potion", 0, lightning,
-                "Sous la pluie, casque en fer ou en or, fiole vide en main",
-                "La foudre tombe en moyenne au bout de 40 secondes");
+                "Pluie, casque en fer ou or, fiole vide",
+                "~40 s");
         return sections(harvest, creatures, brewing);
     }
 
@@ -379,13 +376,13 @@ public final class JobXpGuide {
         section.add(new ItemStack(JobBosses.icon(job)), "Gardien : " + JobBosses.name(job),
                 "+" + MoneyFormat.exact(bossLow) + " a " + MoneyFormat.exact(bossHigh) + " XP", "par victoire", 0,
                 5, MoneyFormat.exact(bossLow) + " XP par niveau du gardien (1 a " + JobBosses.MAX_LEVEL + ")",
-                "Appele par une offrande a l'autel du spawn",
+                "Offrande a l'autel du spawn",
                 "Repos de " + JobBossApi.REST / 3_600_000L + " h apres chaque victoire");
 
-        String candySource = "Dans les bonbons a deballer : recompense du niveau 95, boss de donjon des le palier 50";
+        String candySource = "Bonbons a deballer";
         ItemStack candy = new ItemStack(candy(job));
         section.add(candy, MenuView.text(candy.getHoverName()), plus(CandyItem.XP), "par bonbon", 0, 4,
-                candySource, "Accroupi : toute la pile d'un coup");
+                candySource, "Accroupi : toute la pile");
         ItemStack rainbow = new ItemStack(PalaDungeon.CANDY_RAINBOW.get());
         section.add(rainbow, MenuView.text(rainbow.getHoverName()), plus(CandyItem.XP), "aux quatre metiers", 0,
                 3, candySource, "Un bonbon a deballer sur dix");
@@ -393,13 +390,13 @@ public final class JobXpGuide {
         ItemStack bottle = new ItemStack(bottle(job));
         section.add(bottle, MenuView.text(bottle.getHoverName()), plus(JobBottleItem.DEFAULT_XP), "par bouteille", 0,
                 2, "Dans le butin des boss de donjon",
-                "Celles du marche noir en contiennent davantage");
+                "Plus au marche noir");
 
         ItemStack stone = new ItemStack(PalaLegendary.JOBS.get());
         section.add(stone, MenuView.text(stone.getHoverName()),
                 "+" + MoneyFormat.exact(LegendaryStones.JOBS_XP_MIN) + " a "
                         + MoneyFormat.exact(LegendaryStones.JOBS_XP_MAX) + " XP", "a un metier", 0,
-                1, "Le metier est tire au hasard parmi les quatre");
+                1, "Metier au hasard");
         return section;
     }
 

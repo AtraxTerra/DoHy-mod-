@@ -297,15 +297,15 @@ public final class FactionMenus {
             if (earth) {
                 // la capitale, les pays et la cible : la faction est une nation, tout tient sur une page
                 List<Card> lands = new ArrayList<>(fr.atraxterra.dohy.earth.NationMenu.ownCards(player));
-                lands.add(Card.of(new ItemStack(Items.COMPASS), "Voisins et rivales", List.of(
-                                "Les pays a viser", "Ce que tient chaque nation"))
+                lands.add(Card.of(new ItemStack(Items.COMPASS), "Voisins", List.of(
+                                "Pays", ""))
                         .accent(0xFFFAC400).action("nations|ouvrir"));
                 if (fr.atraxterra.dohy.earth.mine.EarthMines.active()) {
                     int mines = fr.atraxterra.dohy.earth.mine.EarthMines.of(player).size();
                     long hourly = fr.atraxterra.dohy.earth.mine.EarthMines.moneyPerHour(player);
                     lands.add(Card.of(new ItemStack(Items.IRON_PICKAXE), "Mines", List.of(
                                     mines == 0 ? "Aucune pour l'instant" : mines + " mine" + (mines > 1 ? "s" : ""),
-                                    mines == 0 ? "Une balise les capture" : "+" + MoneyFormat.exact(hourly) + " $ / h"))
+                                    mines == 0 ? "" : "+" + MoneyFormat.exact(hourly) + " $ / h"))
                             .accent(0xFFFAC400).badge(mines > 0 ? String.valueOf(mines) : "")
                             .action("mines|ouvrir"));
                 }
@@ -567,8 +567,8 @@ public final class FactionMenus {
                         .accent(in ? 0xFF22E558 : 0xFFEF3826));
             }
             if (history.isEmpty()) {
-                history.add(Card.of(new ItemStack(Items.PAPER), "Aucun mouvement", List.of("Les depots, retraits",
-                        "et recompenses s'inscrivent ici")).state(MenuView.DISABLED));
+                history.add(Card.of(new ItemStack(Items.PAPER), "Aucun mouvement", List.of("", ""))
+                        .state(MenuView.DISABLED));
             }
             FactionVault vault = FactionVault.of(player);
             List<MenuView.Stat> stats = new ArrayList<>(List.of(
@@ -589,7 +589,7 @@ public final class FactionMenus {
                 int mines = nation.mines();
                 treasury.add(Card.of(new ItemStack(Items.IRON_PICKAXE), "Mines de la Terre", List.of(
                                 mines == 0 ? "Aucune pour l'instant" : mines + " mine" + (mines > 1 ? "s" : ""),
-                                mines == 0 ? "Une balise les capture" : "+" + MoneyFormat.exact(nation.minesPerHour())
+                                mines == 0 ? "" : "+" + MoneyFormat.exact(nation.minesPerHour())
                                         + " $ / h"))
                         .accent(0xFFFAC400).badge(mines > 0 ? String.valueOf(mines) : "").action("mines|ouvrir"));
             }
@@ -605,16 +605,14 @@ public final class FactionMenus {
                         "armor", MenuView.TILES, vaultCards(vault)));
             }
             sections.add(new MenuView.Section("HISTORIQUE", "craft", MenuView.ROWS, history));
-            return new MenuView(id(), "Economie", "La banque nationale, la reserve d'or, le marche et les mines",
-                    stats, sections, true).withTabs(tabs(player, ECONOMY));
+            return new MenuView(id(), "Economie", "", stats, sections, true).withTabs(tabs(player, ECONOMY));
         }
 
         /** Le coffre de la banque : une vignette par pile, un clic la prend ; une carte pour tout prendre. */
         private static List<Card> vaultCards(FactionVault vault) {
             List<Card> cards = new ArrayList<>();
             if (vault.isEmpty()) {
-                cards.add(Card.of(new ItemStack(Items.CHEST), "Vide", List.of("Les minerais de tes mines",
-                                "arrivent ici chaque heure"))
+                cards.add(Card.of(new ItemStack(Items.CHEST), "Vide", List.of("Les minerais des mines", ""))
                         .state(MenuView.DISABLED));
                 return cards;
             }
@@ -700,14 +698,10 @@ public final class FactionMenus {
             actions.add(Card.of(new ItemStack(Items.TNT), "Tout rendre", List.of(
                             data.claims().size() + " claim(s)", "Avec confirmation"))
                     .accent(0xFFEF3826).action("unclaimall|tout rendre")
-                    .confirm("!Rendre tous les claims ?|" + data.claims().size()
-                            + " chunk(s) redeviennent libres, pour tout le monde"));
-            actions.add(Card.of(new ItemStack(Items.SHIELD), "Protection", List.of("Ni explosions de monstres,",
-                            "ni endermen, ni intrus"))
-                    .accent(0xFF2F5BEA).tooltip(List.of("Tes explosions (TNT, dynamite) cassent ton claim ;",
-                            "celles des creepers, ghasts et withers sauvages, non.",
-                            "Les autres joueurs n'y cassent, n'y posent et n'y ouvrent rien.",
-                            "Chaque claim peut refuser l'apparition des monstres.")));
+                    .confirm("!Rendre tous les claims ?|" + data.claims().size() + " chunk(s)"));
+            actions.add(Card.of(new ItemStack(Items.SHIELD), "Protection", List.of("Explosions, endermen,",
+                            "intrus"))
+                    .accent(0xFF2F5BEA));
             List<Card> claims = new ArrayList<>();
             List<FactionData.Claim> list = data.claims();
             for (int index = 0; index < list.size(); index++) {
@@ -733,13 +727,13 @@ public final class FactionMenus {
                 // la capitale, les pays et la cible, puis les pages de la carte de la Terre
                 List<Card> lands = new ArrayList<>(fr.atraxterra.dohy.earth.NationMenu.ownCards(player));
                 lands.add(Card.of(new ItemStack(Items.COMPASS), "Pays a prendre", List.of(
-                                "Les voisins a viser", "Ce que tient chaque nation"))
+                                "Les voisins", ""))
                         .accent(0xFFFAC400).action("nations|ouvrir"));
                 if (fr.atraxterra.dohy.earth.mine.EarthMines.active()) {
                     int mines = nation.mines();
                     lands.add(Card.of(new ItemStack(Items.IRON_PICKAXE), "Mines de la Terre", List.of(
                                     mines == 0 ? "Aucune pour l'instant" : mines + " mine" + (mines > 1 ? "s" : ""),
-                                    mines == 0 ? "Une balise les capture" : "+" + MoneyFormat.exact(
+                                    mines == 0 ? "" : "+" + MoneyFormat.exact(
                                             nation.minesPerHour()) + " $ / h"))
                             .accent(0xFFFAC400).badge(mines > 0 ? String.valueOf(mines) : "")
                             .action("mines|ouvrir"));
@@ -831,8 +825,7 @@ public final class FactionMenus {
                                     ranking.weekWins() + " victoire(s) ELO", "+" + MoneyFormat.exact(ranking.weekElo())
                                             + " ELO"))
                             .accent(active ? 0xFF22E558 : 0xFFEF3826)
-                            .tooltip(List.of("Sans victoire dans la semaine, la nation",
-                                    "redescend d'une ligue et ne touche rien.")),
+                            .tooltip(List.of("Sans victoire : une ligue de moins, sans recompense")),
                     Card.of(new ItemStack(Items.GOLD_BLOCK), "Recompense", List.of(
                             MoneyFormat.exact(current.reward()) + " $", active ? "A la banque lundi" : "Gagne un event"))
                             .accent(0xFFFAC400)));
@@ -842,7 +835,7 @@ public final class FactionMenus {
                     new MenuView.Stat("LIGUE", current.label().toUpperCase(), current.color()),
                     new MenuView.Stat("ELO", MoneyFormat.shortForm(ranking.elo()), 0xFFFFFFFF),
                     new MenuView.Stat("SEMAINE", "+" + MoneyFormat.shortForm(ranking.weekElo()), 0xFF22E558));
-            return new MenuView(id(), "Classement", "Ligue, ELO et notation de la semaine", stats, List.of(
+            return new MenuView(id(), "Classement", "", stats, List.of(
                     new MenuView.Section("LIGUES", "upgrade", MenuView.GRID, leagues),
                     new MenuView.Section("SEMAINE", "resources", MenuView.GRID, week)), true)
                     .withTabs(tabs(player, RANKING));
@@ -877,14 +870,11 @@ public final class FactionMenus {
         public static final Notation INSTANCE = new Notation();
 
         private static final List<List<String>> HELP = List.of(
-                List.of("Dix points pour les jours joues (cinq jours suffisent),", "dix pour les contrats termines",
-                        "Repart de zero le lundi"),
-                List.of("Ventes, primes, contrats et butins de la semaine", "Chaque x10 rapporte autant de points",
-                        "Les retraits de la banque nationale ne comptent pas"),
-                List.of("Ce que tu as vendu et achete au marche international", "Chaque x10 rapporte autant de points"),
-                List.of("Les victoires ELO de la semaine :", "bases ennemies pillees, events gagnes"),
-                List.of("Ta capitale, les pays que tu tiens,", "tes claims et les pieces du musee",
-                        "Ne repart pas de zero"));
+                List.of("Jours joues (5 suffisent), contrats"),
+                List.of("Ventes, primes, contrats, butins"),
+                List.of("Marche international"),
+                List.of("Victoires ELO de la semaine"),
+                List.of("Capitale, pays, claims, musee"));
 
         private Notation() {
             super("faction_notation");

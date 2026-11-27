@@ -261,8 +261,7 @@ public final class WormNoise {
             if (source != null) {
                 if (!source.warned && source.attention >= THRESHOLD * 2.0d / 3.0d) {
                     source.warned = true;
-                    harvester.warnDriver("Le desert ecoute ta moissonneuse : ferme la bouche et arrete-toi, "
-                            + "ou un ver viendra.");
+                    harvester.warnDriver("Un ver approche.");
                 } else if (source.attention < THRESHOLD / 3.0d) {
                     source.warned = false;
                 }

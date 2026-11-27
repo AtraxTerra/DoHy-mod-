@@ -361,14 +361,14 @@ public final class AdventCalendar {
             }
             case LOCKED -> {
                 return door == BONUS
-                        ? "Le grand cadeau s'ouvre a partir du 25 decembre, les vingt-quatre cases ouvertes."
+                        ? "Le grand cadeau : des le 25 decembre, les 24 cases ouvertes."
                         : "Patience : la case du " + label(door) + " s'ouvre le " + label(door) + ".";
             }
             default -> {
             }
         }
         if (!SpawnApi.inSpawn(player)) {
-            return "Les cases s'ouvrent au spawn : le Pere Noel t'attend sur le parvis (/spawn).";
+            return "Les cases s'ouvrent au spawn (/spawn).";
         }
         if (fr.atraxterra.dohy.palamod.trixium.CombatTag.inCombat(player)) {
             return "Pas de cadeau en plein combat.";

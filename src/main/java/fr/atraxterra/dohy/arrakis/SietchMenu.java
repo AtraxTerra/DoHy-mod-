@@ -257,22 +257,16 @@ public final class SietchMenu extends MenuController {
         Card refill = trade(CanteenItem.filled(ArrakisContent.CANTEEN.get()), "Remplir mes gourdes", "refill|remplir",
                 WATER, List.of(friend ? "1 melange les 2 gorgees" : "1 melange la gorgee",
                         missing > 0 ? missing + " gorgees : " + cost + " melange" : "Tes gourdes sont pleines"),
-                missing <= 0 ? "Tes gourdes sont pleines (ou tu n'en as pas)." : lacking(spice, cost, "melange"), null);
+                missing <= 0 ? "Gourdes pleines." : lacking(spice, cost, "melange"), null);
         int sips = sips(player);
         Card offer = trade(CanteenItem.filled(ArrakisContent.CANTEEN.get()), "Offrir 4 gorgees au sietch",
                 "offer4|offrir", TRUST, List.of("+" + 4 * TRUST_PER_SIP + " de confiance", "L'eau versee a la citerne"),
                 lacking(sips, 4, "gorgees dans tes gourdes"), null);
         Card offerAll = trade(CanteenItem.filled(ArrakisContent.CANTEEN.get()), "Offrir toute mon eau",
                 "offer_all|offrir tout", TRUST, List.of(sips + " gorgees : +" + sips * TRUST_PER_SIP + " de confiance",
-                        "Garde-en pour la route !"), sips <= 0 ? "Tes gourdes sont vides." : null, null);
-        Card rules = Card.of(ItemStack.EMPTY, "L'eau du sietch", List.of(
-                "Ici, l'eau d'un homme appartient a sa tribu.",
-                "- Chaque gorgee offerte compte triple dans la confiance des sietchs",
-                "- Ami du sietch (" + FRIEND + ") : on boit pour rien, l'eau des gourdes a moitie prix",
-                "- La confiance te suit d'un sietch a l'autre"));
+                        ""), sips <= 0 ? "Tes gourdes sont vides." : null, null);
         return List.of(new MenuView.Section("LA CITERNE", "resources", MenuView.GRID, List.of(drink, refill)),
-                new MenuView.Section("OFFRANDES", "resources", MenuView.GRID, List.of(offer, offerAll)),
-                new MenuView.Section("SIETCH", "", MenuView.TEXT, List.of(rules)));
+                new MenuView.Section("OFFRANDES", "resources", MenuView.GRID, List.of(offer, offerAll)));
     }
 
     private static int refillCost(int missing, boolean friend) {
@@ -292,10 +286,10 @@ public final class SietchMenu extends MenuController {
         int next = trust >= BROTHER ? 0 : trust >= FRIEND ? BROTHER : FRIEND;
         Card standing = Card.of(ItemStack.EMPTY, "Ta place parmi nous", List.of(
                 "Confiance : " + trust + " — " + rank(trust),
-                next > 0 ? "Prochain rang a " + next + " (" + (next - trust) + " de plus)" : "Plus haut rang atteint",
-                "- Une mesure de melange offerte : +1 ; une gorgee d'eau : +" + TRUST_PER_SIP,
-                "- Ami du sietch (" + FRIEND + ") : distille de sietch, grande gourde, eau a moitie prix",
-                "- Frere d'eau (" + BROTHER + ") : le krys, taille dans une dent de ver"))
+                next > 0 ? "Prochain rang a " + next : "Plus haut rang",
+                "- Melange : +1 · gorgee : +" + TRUST_PER_SIP,
+                "- Ami (" + FRIEND + ") : distille, grande gourde, eau a moitie prix",
+                "- Frere d'eau (" + BROTHER + ") : le krys"))
                 .progress(trust, next > 0 ? next : trust);
         return List.of(new MenuView.Section("OFFRANDES", "resources", MenuView.GRID, List.of(offer16, offer64)),
                 new MenuView.Section("L'ANCIENNE", "resources", MenuView.GRID, List.of(listen, coffee)),
@@ -316,7 +310,7 @@ public final class SietchMenu extends MenuController {
         Card krys = trade(new ItemStack(SietchContent.KRYS.get()), "Krys", "krys|faire tailler", BONE,
                 List.of("1 dent de ver, " + KRYS_MELANGE + " melange, " + KRYS_SIPS + " gorgees",
                         "Une lame laiteuse, vive et sans pareille"), krysRefusal,
-                List.of("La dent est trempee dans l'eau du sietch.", "8 de degats, plus vive qu'une epee."));
+                List.of("", "8 de degats, plus vive qu'une epee."));
         return List.of(new MenuView.Section("L'ATELIER", "resources", MenuView.GRID, List.of(compass, thumper, krys)));
     }
 
@@ -339,13 +333,7 @@ public final class SietchMenu extends MenuController {
         cards.add(upgrade(player, gate, spice, ArrakisContent.STILLSUIT_BOOTS.get(),
                 new ItemStack(SietchContent.SIETCH_BOOTS.get()), "Bottes de sietch", "boots", BOOTS_MELANGE,
                 "tes bottes de distille", SUIT, "Gardent 11 % de ton eau (10 % avant)"));
-        Card rules = Card.of(ItemStack.EMPTY, "Le distille de sietch", List.of(
-                "Les tisserands des sietchs reprennent ton distille d'Arrakeen et le cousent a nouveau.",
-                "- Apporte la piece (portee ou rangee) et le melange : elle t'est rendue a la meme place",
-                "- Les quatre pieces de sietch : la soif va pres de quinze fois moins vite",
-                "- Reserve aux amis du sietch (" + FRIEND + " de confiance)"));
-        return List.of(new MenuView.Section("L'EQUIPEUR", "resources", MenuView.GRID, cards),
-                new MenuView.Section("SIETCH", "", MenuView.TEXT, List.of(rules)));
+        return List.of(new MenuView.Section("L'EQUIPEUR", "resources", MenuView.GRID, cards));
     }
 
     private static Card upgrade(ServerPlayer player, String gate, int spice, Item from, ItemStack icon, String title,
@@ -402,7 +390,7 @@ public final class SietchMenu extends MenuController {
             case "coffee" -> sell(player, COFFEE_MELANGE, 0, new ItemStack(SietchContent.SPICE_COFFEE.get()),
                     "Un cafe d'epice, brulant.");
             case "paracompass" -> sell(player, PARACOMPASS_MELANGE, 0, new ItemStack(SietchContent.PARACOMPASS.get()),
-                    "Paracompas : sur Arrakis, son aiguille montre le sietch le plus proche.");
+                    "Paracompas livre.");
             case "thumper" -> sell(player, THUMPER_MELANGE, 0, new ItemStack(ArrakisContent.THUMPER_ITEM.get()),
                     "Marteleur livre. Plante-le loin de toi.");
             case "krys" -> {

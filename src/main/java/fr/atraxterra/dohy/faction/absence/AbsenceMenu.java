@@ -49,19 +49,18 @@ public final class AbsenceMenu extends MenuController {
         if (produced.isEmpty()) {
             produced.add(Card.of(new ItemStack(report.kept() > 0 ? Items.CHEST : Items.BARRIER),
                     report.kept() > 0 ? "Rien de plus dans tes coffres" : "Ta base ne tournait pas",
-                    report.kept() > 0 ? List.of("Machines, fours et champs", "de tes claims tournaient")
-                            : List.of("Revendique des chunks :", "ils tourneront sans toi"))
+                    List.of("", ""))
                     .tooltip(List.of(report.kept() + " chunk(s) tenus, " + report.boxes() + " machines et coffres")));
             sections.add(new MenuView.Section("TA BASE", "resources", MenuView.GRID, produced));
         } else {
-            sections.add(new MenuView.Section("CE QUE TA BASE A PRODUIT", "resources", MenuView.TILES, produced));
+            sections.add(new MenuView.Section("PRODUIT", "resources", MenuView.TILES, produced));
         }
         if (!report.spent().isEmpty()) {
             List<Card> spent = new ArrayList<>();
             for (AbsenceData.Count count : report.spent()) {
                 spent.add(tile(count, "-", 0xFF8A2A22));
             }
-            sections.add(new MenuView.Section("CE QU'ELLE A CONSOMME", "craft", MenuView.TILES, spent));
+            sections.add(new MenuView.Section("CONSOMME", "craft", MenuView.TILES, spent));
         }
         // -- l'argent, les nations, le monde
         if (!report.money().isEmpty()) {
@@ -74,11 +73,8 @@ public final class AbsenceMenu extends MenuController {
             sections.add(new MenuView.Section("LE MONDE", "resources", MenuView.ROWS, cards(report.world())));
         }
         String subtitle = report.kept() > 0 && report.ran() < report.away() - 60_000L
-                ? "Serveur arrete une partie du temps : ta base a tourne " + AbsenceReport.duration(report.ran())
-                : report.claims() > report.kept() && report.kept() > 0
-                ? report.kept() + " chunks tenus sur " + report.claims() + " claims : les plus actifs"
-                : report.kept() > 0 ? "Tes " + report.kept() + " claims tournaient sans toi"
-                : "/f charge : ce que ta base tient quand tu n'es pas la";
+                ? "Base active " + AbsenceReport.duration(report.ran())
+                : report.kept() > 0 ? report.kept() + " chunks actifs" : "";
         return new MenuView(id(), "Pendant ton absence", subtitle, stats, sections, true);
     }
 
