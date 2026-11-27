@@ -107,7 +107,8 @@ public final class ContainerStyle {
         p.framed(x, y, 16.0f, 16.0f, 4.0f, tile, Paint.mix(tile, Ui.Theme.RED, 0.45f), 1);
         g.item(icon, x + 2.0f, y + 2.0f, 12.0f, false);
         String text = plain(title).toUpperCase(Locale.ROOT);
-        maxWidth -= 20.0f;
+        // La tuile (20), puis un peu d'air avant les boutons : un titre long ne touche plus la croix.
+        maxWidth -= 24.0f;
         float size = 11.0f;
         while (size > 6.0f && g.width(Ui.TITLE, text, size) > maxWidth) {
             size -= 0.5f;

@@ -4,16 +4,20 @@ import fr.atraxterra.dohy.DoHy;
 import fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
 import fr.atraxterra.dohy.client.ui.vanilla.KitChests;
 import fr.atraxterra.dohy.client.ui.vanilla.KitPauseScreen;
+import fr.atraxterra.dohy.client.ui.vanilla.KitStations;
 import fr.atraxterra.dohy.client.ui.vanilla.KitTitleScreen;
 import fr.atraxterra.dohy.client.ui.vanilla.KitWorkstations;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
+import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.DispenserScreen;
+import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
 import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.HopperScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -29,7 +33,8 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
  * Remplace des ecrans du jeu par ceux du kit, a leur ouverture : l'ecran titre
  * ({@link KitTitleScreen}), le menu pause ({@link KitPauseScreen}), l'inventaire
  * ({@link KitInventoryScreen}), les coffres, la boite de shulker, l'entonnoir et le
- * distributeur ({@link KitChests}), l'etabli et les fours ({@link KitWorkstations}).
+ * distributeur ({@link KitChests}), l'etabli et les fours ({@link KitWorkstations}), la
+ * table d'enchantement, l'enclume et l'alambic ({@link KitStations}).
  *
  * <p>Le remplacement se fait a l'ouverture, donc pour toutes les facons d'ouvrir
  * l'ecran (touche, bloc, autre mod) ; le menu reste celui que le jeu a cree. On ne
@@ -104,6 +109,15 @@ public final class InventoryClient {
         }
         if (type == SmokerScreen.class) {
             return new KitWorkstations.Smoker(((SmokerScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == EnchantmentScreen.class) {
+            return new KitStations.Enchanting(((EnchantmentScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == AnvilScreen.class) {
+            return new KitStations.Anvil(((AnvilScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == BrewingStandScreen.class) {
+            return new KitStations.Brewing(((BrewingStandScreen) screen).getMenu(), inventory, screen.getTitle());
         }
         return null;
     }

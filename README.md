@@ -70,6 +70,8 @@ Le script vérifie au passage que le revenu horaire reste constant à l'intérie
   gemmes, têtes, améliorations, le laser de ciblage, le réceptacle et les barres de vie ; les icônes
   des têtes, du laser et du réceptacle sont rendues depuis leurs modèles) : le jar PalaWither 3.6.0,
   de Paladium Games.
+- **Écrans du jeu** (les runes et le losange XP de la table d'enchantement ; le tracé, les bulles et
+  la flèche de l'alambic) : le jar PalaVanillaGui 6.6.1, de Paladium Games.
 - **Interfaces** (polices, hexagones des métiers, boutons, bannière) : les jars Paladium-UI et
   PalaJobs, de Paladium Games. Montserrat est sous licence SIL OFL (`assets/dohy/font/montserrat_ofl.txt`) ;
   les polices Minecraft Dungeons, Minecraft et Pixel NES sont reprises telles que Paladium les livre.
