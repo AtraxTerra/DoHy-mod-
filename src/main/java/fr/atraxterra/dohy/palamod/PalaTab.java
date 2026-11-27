@@ -117,6 +117,9 @@ public final class PalaTab {
                         // Les trones de metier (niveau 95).
                         fr.atraxterra.dohy.palamod.throne.PalaThrones.ORDERED
                                 .forEach(item -> output.accept(item.get()));
+                        // L'imprimerie : la presse, la table d'ecriture et leurs fournitures.
+                        fr.atraxterra.dohy.palamod.press.PalaPress.ORDERED
+                                .forEach(item -> output.accept(item.get()));
                         // Les potions d'XP de metier, dans leurs quatre durees.
                         fr.atraxterra.dohy.palamod.boost.PalaXpPotions.tab().forEach(output::accept);
                         // Les lucky blocks.

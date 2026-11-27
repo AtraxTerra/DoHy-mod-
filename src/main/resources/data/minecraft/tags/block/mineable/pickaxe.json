@@ -116,6 +116,8 @@
     "dohy:stash_chest",
     "dohy:barracks",
     "palamod:endium_totem",
-    "palamod:sacrifice_hotel"
+    "palamod:sacrifice_hotel",
+    "palamod:print_press",
+    "palamod:paladium_slab"
   ]
 }

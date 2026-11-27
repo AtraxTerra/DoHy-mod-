@@ -1319,5 +1319,22 @@
   "block.palamod.colored_tall_grass_pink": "Pink Colored Tall Grass",
   "block.palamod.colored_grass_green": "Lime Colored Grass",
   "block.palamod.colored_grass_seeds_green": "Lime Colored Grass Seeds",
-  "block.palamod.colored_tall_grass_green": "Lime Colored Tall Grass"
+  "block.palamod.colored_tall_grass_green": "Lime Colored Tall Grass",
+  "block.palamod.print_press": "Print Press",
+  "block.palamod.type_machine": "Typesetting Table",
+  "block.palamod.paladium_slab": "Paladium Slab",
+  "item.palamod.chase": "Printing Plate",
+  "item.palamod.paladium_ink": "Paladium Ink",
+  "item.palamod.enchanted_plate": "Enchanted Printing Plate",
+  "tooltip.palamod.chase.use": "Engraved at the typesetting table with an enchanted book",
+  "tooltip.palamod.paladium_ink.use": "Print press: two inks per book",
+  "tooltip.palamod.enchanted_plate.uses": "Prints left: %s / %s",
+  "tooltip.palamod.enchanted_plate.use": "Goes into the print press",
+  "message.palamod.type_machine.levels": "You need %s levels to engrave this plate.",
+  "message.palamod.type_machine.missing": "Put an enchanted book and a printing plate on the table.",
+  "message.palamod.type_machine.taken": "Take the engraved plate out first.",
+  "message.palamod.type_machine.engraved": "Plate engraved: %s levels spent.",
+  "hud.palamod.print_press.ink": "%s inks",
+  "hud.palamod.print_press.books": "%s books",
+  "hud.palamod.type_machine.cost": "Engraving: %s levels"
 }

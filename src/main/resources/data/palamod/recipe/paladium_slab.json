@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX"
+  ],
+  "key": {
+    "X": "palamod:paladium_ingot"
+  },
+  "result": {
+    "id": "palamod:paladium_slab",
+    "count": 6
+  }
+}

@@ -4573,3 +4573,85 @@ Une famille de variantes (couleurs, paliers) passe par un tag : `#palamod:colore
   par une boule de slime dans la recette de la poudre.
 - **Le verrou du Fermier 55** visait l'herbe colorée elle-même, qui ne se récupère pas : il porte
   sur les hautes herbes colorées, pour qu'il verrouille quelque chose.
+
+## 45. L'imprimerie : presse à imprimer et table d'écriture (2026-11-26)
+
+Demandée le 2026-11-26 (point 9 de la liste des manques, « Table d'écriture et presse »). Relevé
+au bytecode dans PalaMod 10.3.0 (`BlockPrintPress`, `TileEntityPrintPress`,
+`TileEntityPrintPressRenderer`, `BlockTypeMachine`, `TileEntityTypeMachine`,
+`TileEntityTypeMachineRenderer`, les six modèles Techne `ModelPrintPress`, `ModelInkPlate`,
+`ModelPrintPressBooks`, `ModelTypeset`, `ModelTypesetBase`, `ModelTypesetBook`, `ItemChase`,
+`ItemEnchantedPlate`, `ItemPaladiumInk`, `PRegister_Craft`) ; les prix au wiki. Textures et noms :
+le jar de PalaMod.
+
+### Le circuit
+
+1. **La table d'écriture** (`type_machine`) : un livre enchanté, une **plaque d'impression**
+   (`chase`) et des niveaux d'expérience donnent une **plaque d'impression enchantée**
+   (`enchanted_plate` ; `echanted_plate` dans PalaMod, la faute n'est pas reprise). Le bouton
+   GRAVER de l'interface, ou accroupi main vide sur la table, comme l'original.
+2. **La presse à imprimer** (`print_press`) : la plaque, des livres et de l'**encre de paladium**.
+   Deux encres et 200 ticks (`furnaceCookTime`) par livre ; chaque livre sort avec les
+   enchantements de la plaque (`StoredEnchantments` recopié). La plaque s'use d'un cran par livre
+   et casse au troisième (`setItemDamage`, détruite au-delà de 2).
+
+### Le prix de la gravure — `TileEntityTypeMachine.addBookorPlate`
+
+Pour chaque enchantement : un multiplicateur tiré de son poids de rareté (1 → 8, 2 → 4, 3 → 10,
+4 → 0,5, 5 → 2, 10 → 1, autre → 2), × 2 × le niveau ; plus 10, plus n(n+1)/2 pour n enchantements ;
+50 au plus. Les poids sont ceux de 26.2, sauf deux recalages sur le tableau du wiki : les
+enchantements de PalaMod comptent comme un poids 5 (15 niveaux au niveau I) et Frost Walker comme un
+poids 1 (27 et 43 niveaux). Exemples : Tranchant V 21, Toucher de soie 27, Raccommodage 19,
+Fortune III 35, Épines III 50 (plafond).
+
+### Les recettes — `PRegister_Craft`
+
+| Objet | Recette |
+|---|---|
+| Presse à imprimer | `IBI / SPS / ZZZ` : lingots de fer, bâton de blaze, dalles en paladium, plaque de pression en or, blocs de fer |
+| Table d'écriture | `ICI / SSS / BRB` : lingots de fer, plaque d'impression, dalles de bois, planches, findium |
+| Plaque d'impression | ` S / SIS / S ` : dalles en paladium autour d'un bloc de fer |
+| Encre de paladium ×4 | `XXX / XYX / XXX` : lingots de paladium autour d'une poche d'encre |
+| Dalle en paladium ×6 | `XXX` : lingots de paladium |
+
+La **dalle en paladium** n'existait pas encore dans le mod : c'est une dalle vanilla, à la texture
+du bloc de paladium, à la pioche en diamant comme lui.
+
+### Le rendu
+
+Les deux blocs sont dessinés par leur rendu, comme l'original : la géométrie des six modèles est
+relevée boîte par boîte (miroir compris) par `tools/press_assets.py`, qui écrit
+`client/press/PressGeometry.java` et les objets en 3D de l'inventaire.
+
+- **La presse** : la plaque d'encre change de texture avec la réserve (`getinkStackSize`, neuf
+  états, une marche toutes les huit encres), les livres vierges s'empilent (`numberBlanks`, un par
+  seize livres, quatre au plus), la plaque et le livre imprimé ont le reflet des objets enchantés.
+  Pendant l'impression, le plateau s'abaisse de 0,3 rad et les rouleaux encreurs basculent de
+  1,7 rad, les amplitudes d'origine.
+- **La table** : le meuble, la casse d'imprimeur, les plaques empilées au fond (`getChaseNum`, une
+  couche par seize plaques), la plaque gravée à droite, le livre à gauche.
+- **Les étiquettes** : regarder la presse affiche ses encres et ses livres ; regarder la table, le
+  prix de la gravure et les enchantements du livre (trois au plus).
+
+### Code
+
+- `palamod/press/` : `PalaPress` (registres), `PrintPressBlock(Entity)`, `TypeMachineBlock(Entity)`,
+  `TypesetCost`, `EnchantedPlateItem`, `PressItem`, `HandFed` (le clic droit objet en main).
+- Client : `client/press/PrintPressRenderer`, `TypeMachineRenderer`, `PressClient` (interfaces),
+  `PressGeometry` (généré).
+- Assets : `tools/press_assets.py` (`--check` en CI, `--jar` recopie les textures).
+- Encyclopédie : la fiche « L'imprimerie ».
+
+### Écarts
+
+- **Une interface** pour chaque bloc, au kit des machines : PalaMod n'en avait pas, on y déposait
+  les fournitures en cliquant sur le bloc. Le geste reste (clic droit objet en main), la main vide
+  ouvre l'interface.
+- **L'encre** : deux par livre, la règle du wiki. Le code d'origine brûlait une encre par cycle
+  mais exigeait d'en avoir deux, si bien que la dernière ne servait jamais.
+- **Seuls les livres enchantés** se gravent : l'original gravait aussi les livres signés, qu'il
+  enregistrait dans des fichiers du serveur pour les réimprimer. Un livre signé se copie déjà en
+  vanilla, à l'établi.
+- **La plaque d'impression** s'empile par 64 (une par case dans PalaMod, mais la table en gardait 64).
+- **Le mouvement** suit le temps du jeu (un cycle d'une seconde et demie) au lieu d'avancer à chaque
+  image.

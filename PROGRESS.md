@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-24
+Dernière mise à jour : 2026-11-26
 
 ---
 
@@ -192,6 +192,22 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-26 — l'imprimerie : presse à imprimer et table d'écriture
+
+**Demande** : « 9, 2, 5, 7, 13, 22 » — six points de la liste des manques, une PR chacun ; voici
+le 9 (`docs/PALAMOD.md`, § 45).
+
+- **Table d'écriture** : livre enchanté + plaque d'impression + niveaux → plaque d'impression
+  enchantée. Prix de `TileEntityTypeMachine` (rareté × niveau, plafond 50) ; bouton GRAVER ou
+  accroupi main vide.
+- **Presse à imprimer** : plaque, livres, encre de paladium (deux par livre), dix secondes par
+  livre, trois livres par plaque. Entonnoir : ne prend que les livres imprimés.
+- **Rendu d'origine** : six modèles Techne relevés boîte par boîte (`tools/press_assets.py`), plaque
+  d'encre à neuf états, livres et plaques empilés, plateau et rouleaux animés pendant
+  l'impression, reflet sur les objets enchantés, étiquettes quand on regarde le bloc.
+- Fournitures et recettes de `PRegister_Craft` : plaque d'impression, encre de paladium (×4),
+  dalle en paladium (×6, nouvelle). Fiche d'encyclopédie « L'imprimerie ».
 
 ### 2026-11-25 — la farmland : plus de créatures du métier
 
